@@ -1,0 +1,16 @@
+%~---------------------------------------------------------------------------~%
+% Copyright (c) 2014 Los Alamos National Security, LLC
+% All rights reserved.
+%~---------------------------------------------------------------------------~%
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\lhead{${${PROJECT_NAME}_VERSION}}
+\chead{Jali User Guide}
+\rhead{\today}
+
+%~---------------------------------------------------------------------------~%
+% Formatting for vim.
+% vim: set tabstop=4 shiftwidth=4 expandtab :
+%~---------------------------------------------------------------------------~%
