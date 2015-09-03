@@ -5,17 +5,19 @@
 
 set(base_HEADERS
   mesh_entity.h
+  mesh_topology.h
   vertex.h
   PARENT_SCOPE
 )
 
-#set(base_SOURCES
-#  PARENT_SCOPE
-#)
+set(base_SOURCES
+  mesh_runtime.cc
+  PARENT_SCOPE
+)
 
 if(ENABLE_UNIT_TESTS)
   cinch_add_unit(vertex
-    SOURCES vertex_test.cc
+    SOURCES unit/vertex_test.cc
   )
 endif(ENABLE_UNIT_TESTS)
 

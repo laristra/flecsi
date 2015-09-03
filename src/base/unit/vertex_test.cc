@@ -5,7 +5,7 @@
 
 #include <gtest/gtest.h>
 
-#include "entity_types.h"
+#include "../entity_types.h"
 
 TEST(vertex_test, create) {
 
