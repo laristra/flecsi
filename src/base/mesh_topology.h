@@ -75,7 +75,102 @@ namespace{
 
 } // namespace
 
-namespace scout{
+namespace jali{
+
+  class MeshEntity{
+  public:
+    MeshEntity(size_t id)
+      : id_(id){}
+
+    size_t id() const{
+      return id_;
+    }
+
+  private:
+    size_t id_;
+  };
+   
+  template<size_t D, class MT>
+  struct CreateEntity{};
+
+  template<class MT>
+  struct CreateEntity<1, MT>{
+    using VertexType = 
+      typename std::tuple_element<0, typename MT::EntityTypes>::type;
+    
+    using CellType = 
+      typename std::tuple_element<MT::topologicalDimension(),
+                                  typename MT::EntityTypes>::type;
+
+    static MeshEntity* create(size_t dim, size_t index){
+      switch(dim){
+      case 0:
+        return new VertexType(index);
+      case 1:
+        return new CellType(index);
+      default:
+        assert(false && "invalid topological dimension");
+      }
+    }
+  };
+
+  template<class MT>
+  struct CreateEntity<2, MT>{
+    using VertexType = 
+      typename std::tuple_element<0, typename MT::EntityTypes>::type;
+    
+    using EdgeType = 
+      typename std::tuple_element<1, typename MT::EntityTypes>::type;  
+
+    using CellType = 
+      typename std::tuple_element<MT::topologicalDimension(),
+                                  typename MT::EntityTypes>::type;
+
+    static MeshEntity* create(size_t dim, size_t index){
+      switch(dim){
+      case 0:
+        return new VertexType(index);
+      case 1:
+        return new EdgeType(index);
+      case 2:
+        return new CellType(index);
+      default:
+        assert(false && "invalid topological dimension");
+      }
+    } 
+  };
+
+  template<class MT>
+  struct CreateEntity<3, MT>{
+    using VertexType = 
+      typename std::tuple_element<0, typename MT::EntityTypes>::type;
+    
+    using EdgeType = 
+      typename std::tuple_element<1, typename MT::EntityTypes>::type;  
+
+    using FaceType = 
+      typename std::tuple_element<MT::topologicalDimension() - 1,
+                                  typename MT::EntityTypes>::type;
+
+    using CellType = 
+      typename std::tuple_element<MT::topologicalDimension(),
+                                  typename MT::EntityTypes>::type;
+
+    MeshEntity* create(size_t dim, size_t index){
+      switch(dim){
+      case 0:
+        return new VertexType(index);
+      case 1:
+        return new EdgeType(index);
+      case 2:
+        return new FaceType(index);
+      case 3:
+        return new CellType(index);
+      default:
+        assert(false && "invalid topological dimension");
+      }
+    }
+  };
 
   class MeshTopologyBase{
   public:
@@ -222,6 +317,10 @@ namespace scout{
         return fromIndexVec_.size() - 1;
       }
 
+      size_t toSize() const{
+        return toIdVec_.size();
+      }
+
       Id* rawIdVec(){
         return toIdVec_.data();
       }
@@ -271,16 +370,6 @@ namespace scout{
       IdVec fromIndexVec_;
     };
 
-    size_t numEntities(size_t dim){
-      size_t size = size_[dim];
-      if(size == 0){
-        build(dim);
-        return size_[dim];
-      }
-
-      return size;
-    }
-
     Id* getToIndices(uint32_t fromDim,
                      uint32_t toDim){
 
@@ -305,98 +394,42 @@ namespace scout{
       return c.rawFromIndexVec();
     }
 
+    virtual size_t numEntities(size_t dim) = 0;
+
     virtual void build(size_t dim) = 0;
     
     virtual void compute(size_t fromDim, size_t toDim) = 0;  
 
     virtual void computeAll() = 0;
 
-    virtual void setConnectivityRaw(size_t fromDim,
-                                    size_t toDim,
-                                    Id* fromIndices,
-                                    size_t fromCount,
-                                    Id* toIds,
-                                    size_t toCount) = 0;
-
-    virtual void getConnectivityRaw(size_t fromDim,
-                                    size_t toDim,
-                                    Id*& fromIndices,
-                                    size_t& fromCount,
-                                    Id*& toIds,
-                                    size_t& toCount) = 0;
-
     virtual size_t topologicalDimension() = 0;
   
     virtual Connectivity&
     getConnectivity(size_t fromDim, size_t toDim) = 0;
-
-  protected:  
-    std::vector<size_t> size_;  
   };
 
   template<class MT>
   class MeshTopology : public MeshTopologyBase{
   public:
+    using VertexType = 
+      typename std::tuple_element<0, typename MT::EntityTypes>::type;
+    
+    using EdgeType = 
+      typename std::tuple_element<1, typename MT::EntityTypes>::type;  
 
-    using Float = typename MT::Float;
-      
-    class Coordinate{
-    public:
-      Coordinate(){}
-    
-      Coordinate(std::initializer_list<Float> il){
-        static_assert(il.size() == MT::geometricDimension(),
-                      "coordinate size mismatch");
-        std::copy(il.begin(), il.end(), coordinate_);
-      }
-    
-      template<size_t I>
-      Float get(){
-        return coordinate_[I];
-      }
-    
-      template<size_t I>
-      void set(Float value){
-        coordinate_[I] = value;
-      }
-    
-      Coordinate& operator=(std::initializer_list<Float> il){
-        size_t i = 0;
-        for(Float v : il){
-          coordinate_[i++] = v;
-        }
-      
-        return *this;
-      }
-    
-    private:
-      using Coordinate_ = std::array<Float, MT::geometricDimension()>;
-    
-      Coordinate_ coordinate_;
-    };
-    
-    class Geometry{
-    public:
-      Geometry(){}
-    
-      void addVertex(Id id, std::initializer_list<Float> il){
-        if(id >= coordinates_.size()){
-          coordinates_.resize(id + 1);
-        }
-      
-        coordinates_[id] = il;
-      }
-    
-    private:
-      using Coordinates_ = std::vector<Coordinate>;
-    
-      Coordinates_ coordinates_;
-    };
-  
+    using FaceType = 
+      typename std::tuple_element<MT::topologicalDimension() - 1,
+                                  typename MT::EntityTypes>::type;
+
+    using CellType = 
+      typename std::tuple_element<MT::topologicalDimension(),
+                                  typename MT::EntityTypes>::type;
+
     class Entity{
     public:
       Entity(MeshTopology& mesh, size_t dim, size_t index=0)
         : mesh_(mesh),
+          ents_(mesh_.getEntities_(dim)),
           dim_(dim),
           index_(index),
           endIndex_(mesh_.numEntities(dim_)){
@@ -431,8 +464,9 @@ namespace scout{
         return mesh_;
       }
     
-    private:
+    protected:
       MeshTopology& mesh_;
+      const std::vector<MeshEntity*>& ents_;
       size_t dim_;
       size_t index_;
       size_t endIndex_;
@@ -442,6 +476,7 @@ namespace scout{
     public:
       EntityIterator(Entity& entity, size_t dim, size_t index=0)
         : mesh_(entity.mesh()),
+          ents_(mesh_.getEntities_(dim)),
           dim_(dim),
           index_(index){
         Connectivity& c = mesh_.getConnectivity_(entity.dim(), dim_);
@@ -455,6 +490,7 @@ namespace scout{
     
       EntityIterator(EntityIterator& itr, size_t dim, size_t index=0)
         : mesh_(itr.mesh_),
+          ents_(mesh_.getEntities_(dim)),
           dim_(dim),
           index_(index){
         Connectivity& c = mesh_.getConnectivity_(itr.dim_, dim_);
@@ -490,8 +526,9 @@ namespace scout{
         return index_ >= endIndex_;
       }
     
-    private:
+    protected:
       MeshTopology& mesh_;
+      const std::vector<MeshEntity*>& ents_;
       size_t dim_;
       size_t index_;
       size_t endIndex_;
@@ -502,93 +539,129 @@ namespace scout{
     public:
       Cell(MeshTopology& mesh, size_t index=0)
         : Entity(mesh, MT::topologicalDimension(), index){}
+
+      CellType& operator*(){
+        return *static_cast<CellType*>(Entity::ents_[Entity::index_]);
+      }
     };
   
     class CellIterator : public EntityIterator{
     public:
       CellIterator(Entity& entity, size_t index=0)
         : EntityIterator(entity, MT::topologicalDimension(), index){}
+
+      CellType& operator*(){
+        return *static_cast<CellType*>(
+          EntityIterator::ents_[EntityIterator::index_]);
+      }
     };
   
     class Vertex : public Entity{
     public:
       Vertex(MeshTopology& mesh, size_t index=0)
         : Entity(mesh, 0, index){}
+
+      VertexType& operator*(){
+        return *static_cast<VertexType*>(Entity::ents_[Entity::index_]);
+      }
     };
   
     class VertexIterator : public EntityIterator{
     public:
       VertexIterator(Entity& entity, size_t index=0)
         : EntityIterator(entity, 0, index){}
+
+      VertexType& operator*(){
+        return *static_cast<CellType*>(
+          EntityIterator::ents_[EntityIterator::index_]);
+      }
     };
   
     class Edge : public Entity{
     public:
       Edge(MeshTopology& mesh, size_t index=0)
         : Entity(mesh, 1, index){}
+
+      EdgeType& operator*(){
+        return *static_cast<EdgeType*>(Entity::ents_[Entity::index_]);
+      }
     };
   
     class EdgeIterator : public EntityIterator{
     public:
       EdgeIterator(Entity& entity, size_t index=0)
         : EntityIterator(entity, 1, index){}
+
+      EdgeType& operator*(){
+        return *static_cast<EdgeType*>(
+          EntityIterator::ents_[EntityIterator::index_]);
+      }
     };
   
     class Face : public Entity{
     public:
       Face(MeshTopology& mesh, size_t index=0)
         : Entity(mesh, MT::topologicalDimension() - 1, index){}
+
+      FaceType& operator*(){
+        return *static_cast<FaceType*>(Entity::ents_[Entity::index_]);
+      }
     };
   
     class FaceIterator : public EntityIterator{
     public:
       FaceIterator(Entity& entity, size_t index=0)
         : EntityIterator(entity, MT::topologicalDimension() - 1, index){}
+
+      FaceType& operator*(){
+        return *static_cast<FaceType*>(
+          EntityIterator::ents_[EntityIterator::index_]);
+      }
     };
   
     MeshTopology(){
       getConnectivity_(MT::topologicalDimension(), 0).init();
-      for(size_t i = 0; i <= MT::topologicalDimension(); ++i){
-        size_.push_back(0);
-      }
     }
   
-    void addVertex(Id id, std::initializer_list<Float> coord){
-      geometry_.addVertex(id, coord);
-      ++size_[0];
+    void addVertex(VertexType* vertex){
+      entities_[0].push_back(vertex);
     }
   
-    void addCell(Id cellId, std::initializer_list<Id> verts){
+    void addCell(CellType* cell,
+                 std::initializer_list<VertexType*> verts){
+
       assert(verts.size() == 
              MT::numVerticesPerEntity(MT::topologicalDimension()) &&
              "invalid number of vertices per cell");
     
       auto& c = getConnectivity_(MT::topologicalDimension(), 0);
 
-      assert(cellId == c.fromSize() && "id mismatch"); 
+      assert(cell->id() == c.fromSize() && "id mismatch"); 
 
-      for(Id id : verts){
-        c.push(id);
+      for(VertexType* v : verts){
+        c.push(v->id());
       }
       c.endFrom();
-      ++size_[MT::topologicalDimension()];
+
+      entities_[MT::topologicalDimension()].push_back(cell);
     }
 
-    void addEdge(Id edgeId, Id vertex1, Id vertex2){
+    void addEdge(EdgeType* edge, VertexType* vertex1, VertexType* vertex2){
       auto& c = getConnectivity_(1, 0);
       if(c.empty()){
         c.init();
       }
 
-      assert(edgeId == c.fromSize() && "id mismatch"); 
+      assert(edge->id() == c.fromSize() && "id mismatch"); 
 
-      c.push(vertex1);
-      c.push(vertex2);
+      c.push(vertex1->id());
+      c.push(vertex2->id());
       c.endFrom();
-      ++size_[1];
+
+      entities_[1].push_back(edge);
     }
 
-    void addFace(Id faceId, std::initializer_list<Id> verts){
+    void addFace(FaceType* face, std::initializer_list<VertexType*> verts){
       assert(verts.size() == 
              MT::numVerticesPerEntity(2) &&
              "invalid number vertices per face");
@@ -598,16 +671,16 @@ namespace scout{
         c.init();
       }
 
-      assert(faceId == c.fromSize() && "id mismatch"); 
+      assert(face->id() == c.fromSize() && "id mismatch"); 
 
-      for(Id id : verts){
-        c.push(id);
+      for(Vertex* v : verts){
+        c.push(v->id());
       }
       c.endFrom();
-      ++size_[MT::topologicalDimension() - 1];
+      entities_[MT::topologicalDimension() - 1].push_back(face);
     }
     
-    void addCellEdges(Id cellId, std::initializer_list<Id> edges){
+    void addCellEdges(CellType* cell, std::initializer_list<EdgeType*> edges){
       assert(edges.size() == 
              MT::numEntitiesPerCell(1) &&
              "invalid number of edges per cell");
@@ -617,15 +690,15 @@ namespace scout{
         c.init();
       }
 
-      assert(cellId == c.fromSize() && "id mismatch"); 
+      assert(cell->id() == c.fromSize() && "id mismatch"); 
       
-      for(Id id : edges){
-        c.push(id);
+      for(Edge* edge : edges){
+        c.push(edge->id());
       }
       c.endFrom();
     }
 
-    void addCellFaces(Id cellId, std::initializer_list<Id> faces){
+    void addCellFaces(CellType* cell, std::initializer_list<FaceType*> faces){
       assert(faces.size() == 
              MT::numEntitiesPerCell(MT::topologicalDimension() - 1) &&
              "invalid number of face per cell");
@@ -636,12 +709,22 @@ namespace scout{
         c.init();
       }
 
-      assert(cellId == c.fromSize() && "id mismatch"); 
+      assert(cell->id() == c.fromSize() && "id mismatch"); 
       
-      for(Id id : faces){
-        c.push(id);
+      for(Face* face : faces){
+        c.push(face->id());
       }
       c.endFrom();
+    }
+
+    size_t numEntities(size_t dim) override{
+      size_t size = entities_[dim].size();
+      if(size == 0){
+        build(dim);
+        return entities_[dim].size();
+      }
+
+      return size;
     }
 
     void build(size_t dim) override{
@@ -709,7 +792,16 @@ namespace scout{
       cellToEntity.init(cellEntityConn);
       entityToVertex.init(entityVertexConn);
 
-      size_[dim] = entityToVertex.fromSize();
+      Id* ids = cellToEntity.rawIdVec();
+      size_t m = cellToEntity.toSize();
+      entities_[dim].reserve(n);
+
+      for(size_t i = 0; i < m; ++i){
+        MeshEntity* ent = 
+          CreateEntity<MT::topologicalDimension(), MT>::create(dim, ids[i]);
+
+        entities_[dim].push_back(ent);
+      }
     }
   
     void transpose(size_t fromDim, size_t toDim){
@@ -871,19 +963,19 @@ namespace scout{
     }
 
     size_t numCells(){
-      return size_[MT::topologicalDimension()];
+      return entities_[MT::topologicalDimension()].size();
     }
   
     size_t numVertices(){
-      return size_[0];
+      return entities_[0].size();
     }
   
     size_t numEdges(){
-      return size_[1];
+      return entities_[1].size();
     }
   
     size_t numFaces(){
-      return size_[MT::topologicalDimension() - 1];
+      return entities_[MT::topologicalDimension() - 1].size();
     }
 
     Connectivity& getConnectivity(size_t fromDim, size_t toDim) override{
@@ -897,53 +989,13 @@ namespace scout{
       return t[toDim];
     }
 
-    void setConnectivityRaw_(size_t fromDim,
-                             size_t toDim,
-                             Id* fromIndices,
-                             size_t fromCount,
-                             Id* toIds,
-                             size_t toCount){
-      Connectivity& c = getConnectivity_(fromDim, toDim);
-      c.init(fromIndices, fromCount, toIds, toCount);
-
-      size_[fromDim] = fromCount - 1;
-      size_[toDim] = toCount;
-    }
-
-    void setConnectivityRaw(size_t fromDim,
-                            size_t toDim,
-                            Id* fromIndices,
-                            size_t fromCount,
-                            Id* toIds,
-                            size_t toCount) override{
-      setConnectivityRaw_(fromDim, toDim, fromIndices,
-                          fromCount, toIds, toCount);
-    }
-
-    void getConnectivityRaw(size_t fromDim,
-                            size_t toDim,
-                            Id*& fromIndices,
-                            size_t& fromCount,
-                            Id*& toIds,
-                            size_t& toCount) override{
-      getConnectivityRaw_(fromDim, toDim, fromIndices,
-                          fromCount, toIds, toCount);
-    }
-
-    void getConnectivityRaw_(size_t fromDim,
-                             size_t toDim,
-                             Id*& fromIndices,
-                             size_t& fromCount,
-                             Id*& toIds,
-                             size_t& toCount){
-      Connectivity& c = getConnectivity_(fromDim, toDim);
-      fromIndices = c.rawFromIndexVec(fromCount);
-      toIds = c.rawIdVec(toCount);
-    }
-
     size_t topologicalDimension() override{
       return MT::topologicalDimension();
     }  
+
+    const std::vector<MeshEntity*>& getEntities_(size_t dim) const{
+      return entities_[dim];
+    }
 
     void dump(){
       for(size_t i = 0; i < topology_.size(); ++i){
@@ -955,248 +1007,20 @@ namespace scout{
         }
       }
     }
-  
+
+ 
   private:
     using Topology_ =
       std::array<std::array<Connectivity, MT::topologicalDimension() + 1>,
       MT::topologicalDimension() + 1>;
-    
+
+    using Entities_ = 
+      std::array<std::vector<MeshEntity*>, MT::topologicalDimension() + 1>;
+
     Topology_ topology_;
-    Geometry geometry_;
+    Entities_ entities_;
   };
 
-  class UniformMesh1dType{
-  public:
-    using Id = uint64_t;
-    using Float = double;
-
-    static constexpr size_t topologicalDimension(){
-      return 1;
-    }
-
-    static constexpr size_t geometricDimension(){
-      return 1;
-    }
-
-    static size_t numEntitiesPerCell(size_t dim){
-      switch(dim){
-      case 0:
-        return 2;
-      case 1:
-        return 1;
-      default:
-        assert(false && "invalid dimension");
-      }
-    }
-
-    static constexpr size_t verticesPerCell(){
-      return 2;
-    }
-  
-    static size_t numVerticesPerEntity(size_t dim){
-      switch(dim){
-      case 0:
-        return 1;
-      case 1:
-        return 2;
-      default:
-        assert(false && "invalid dimension");
-      }
-    }
-  
-    static void createEntities(size_t dim, std::vector<Id>& e, Id* v){
-      assert(false && "nothing to build");
-    }
-  
-  };
-
-  class UniformMesh2dType{
-  public:
-    using Id = uint64_t;
-    using Float = double;
-
-    static constexpr size_t topologicalDimension(){
-      return 2;
-    }
-
-    static constexpr size_t geometricDimension(){
-      return 2;
-    }
-
-    static size_t numEntitiesPerCell(size_t dim){
-      switch(dim){
-      case 0:
-        return 4;
-      case 1:
-        return 4;
-      case 2:
-        return 1;
-      default:
-        assert(false && "invalid dimension");
-      }
-    }
-
-    static constexpr size_t verticesPerCell(){
-      return 4;
-    }
-  
-    static size_t numVerticesPerEntity(size_t dim){
-      switch(dim){
-      case 0:
-        return 1;
-      case 1:
-        return 2;
-      case 2:
-        return 4;
-      default:
-        assert(false && "invalid dimension");
-      }
-    }
-  
-    static void createEntities(size_t dim, std::vector<Id>& e, Id* v){
-      assert(dim = 1);
-      assert(e.size() == 8);
-    
-      e[0] = v[0];
-      e[1] = v[2];
-
-      e[2] = v[1];
-      e[3] = v[3];
-    
-      e[4] = v[0];
-      e[5] = v[1];
-    
-      e[6] = v[2];
-      e[7] = v[3];
-    }
-  
-  };
-
-  class UniformMesh3dType{
-  public:
-    using Id = uint64_t;
-    using Float = double;
-
-    static constexpr size_t topologicalDimension(){
-      return 3;
-    }
-
-    static constexpr size_t geometricDimension(){
-      return 3;
-    }
-
-    static size_t numEntitiesPerCell(size_t dim){
-      switch(dim){
-      case 0:
-        return 8;
-      case 1:
-        return 12;
-      case 2:
-        return 6;
-      default:
-        assert(false && "invalid dimension");
-      }
-    }
-
-    static constexpr size_t verticesPerCell(){
-      return 4;
-    }
-  
-    static size_t numVerticesPerEntity(size_t dim){
-      switch(dim){
-      case 0:
-        return 1;
-      case 1:
-        return 2;
-      case 2:
-        return 4;
-      case 3:
-        return 8;
-      default:
-        assert(false && "invalid dimension");
-      }
-    }
-  
-    static void createEntities(size_t dim, std::vector<Id>& e, Id* v){
-      if(dim == 1){
-        assert(e.size() == 24);
-    
-        e[0] = v[0];
-        e[1] = v[2];
-
-        e[2] = v[1];
-        e[3] = v[3];
-    
-        e[4] = v[0];
-        e[5] = v[1];
-    
-        e[6] = v[2];
-        e[7] = v[3];
-
-        e[8] = v[4];
-        e[9] = v[6];
-
-        e[10] = v[5];
-        e[11] = v[7];
-
-        e[12] = v[4];
-        e[13] = v[5];
-    
-        e[14] = v[6];
-        e[15] = v[7];
-
-        e[16] = v[1];
-        e[17] = v[5];
-
-        e[18] = v[3];
-        e[19] = v[7];
-
-        e[20] = v[0];
-        e[21] = v[4];
-
-        e[22] = v[2];
-        e[23] = v[6];
-      }
-      else if(dim == 2){
-        assert(e.size() == 24);
-
-        e[0] = v[0];
-        e[1] = v[1];
-        e[2] = v[3];
-        e[3] = v[2];
-
-        e[4] = v[4];
-        e[5] = v[5];
-        e[6] = v[7];
-        e[7] = v[6];
-
-        e[8] = v[1];
-        e[9] = v[5];
-        e[10] = v[7];
-        e[11] = v[3];
-
-        e[12] = v[0];
-        e[13] = v[4];
-        e[14] = v[6];
-        e[15] = v[2];
-
-        e[16] = v[0];
-        e[17] = v[1];
-        e[18] = v[5];
-        e[19] = v[4];
-
-        e[20] = v[2];
-        e[21] = v[3];
-        e[22] = v[7];
-        e[23] = v[6];
-      }
-      else{
-        assert(false && "invalid dim");
-      }
-    }
-  
-  };
-
-} // scout
+} // jali
 
 #endif // __MESH_TOPOLOGY_H__
