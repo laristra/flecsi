@@ -11,7 +11,6 @@ set(base_HEADERS
 )
 
 set(base_SOURCES
-  mesh_runtime.cc
   PARENT_SCOPE
 )
 

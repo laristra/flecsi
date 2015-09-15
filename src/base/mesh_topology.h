@@ -68,13 +68,6 @@ __PRETTY_FUNCTION__ << ": " << #X << " = " << X << std::endl
 #define nlog(X) std::cout << __FILE__ << ":" << __LINE__ << ": " << \
 __PRETTY_FUNCTION__ << ": " << X << std::endl
 
-namespace{
-
-  static const uint64_t LAST_FLAG = 1UL << 63;
-  static const uint64_t INDEX_MASK = ~LAST_FLAG;
-
-} // namespace
-
 namespace jali{
 
   class MeshEntity{
@@ -86,100 +79,56 @@ namespace jali{
       return id_;
     }
 
+    static constexpr size_t getDim_(size_t meshDim, size_t dim){
+      return dim > meshDim ? meshDim : dim;
+    }
+
+    template<class MT>
+    static MeshEntity* create_(size_t dim, size_t id){
+      switch(dim){
+      case 0:{
+        using EntityType = 
+          typename std::tuple_element<getDim_(MT::topologicalDimension(), 0),
+                                      typename MT::EntityTypes>::type;
+        return new EntityType(id);
+      }
+      case 1:{
+        using EntityType = 
+          typename std::tuple_element<getDim_(MT::topologicalDimension(), 1),
+                                      typename MT::EntityTypes>::type;
+        return new EntityType(id);
+      }
+      case 2:{
+        using EntityType = 
+          typename std::tuple_element<getDim_(MT::topologicalDimension(), 2),
+                                      typename MT::EntityTypes>::type;
+        return new EntityType(id);
+      }
+      case 3:{
+        using EntityType = 
+          typename std::tuple_element<getDim_(MT::topologicalDimension(), 3),
+                                      typename MT::EntityTypes>::type;
+        return new EntityType(id);
+      }
+      default:
+        assert(false && "invalid topology dim");
+      }
+    }
+
   private:
     size_t id_;
   };
-   
-  template<size_t D, class MT>
-  struct CreateEntity{};
-
-  template<class MT>
-  struct CreateEntity<1, MT>{
-    using VertexType = 
-      typename std::tuple_element<0, typename MT::EntityTypes>::type;
-    
-    using CellType = 
-      typename std::tuple_element<MT::topologicalDimension(),
-                                  typename MT::EntityTypes>::type;
-
-    static MeshEntity* create(size_t dim, size_t index){
-      switch(dim){
-      case 0:
-        return new VertexType(index);
-      case 1:
-        return new CellType(index);
-      default:
-        assert(false && "invalid topological dimension");
-      }
-    }
-  };
-
-  template<class MT>
-  struct CreateEntity<2, MT>{
-    using VertexType = 
-      typename std::tuple_element<0, typename MT::EntityTypes>::type;
-    
-    using EdgeType = 
-      typename std::tuple_element<1, typename MT::EntityTypes>::type;  
-
-    using CellType = 
-      typename std::tuple_element<MT::topologicalDimension(),
-                                  typename MT::EntityTypes>::type;
-
-    static MeshEntity* create(size_t dim, size_t index){
-      switch(dim){
-      case 0:
-        return new VertexType(index);
-      case 1:
-        return new EdgeType(index);
-      case 2:
-        return new CellType(index);
-      default:
-        assert(false && "invalid topological dimension");
-      }
-    } 
-  };
-
-  template<class MT>
-  struct CreateEntity<3, MT>{
-    using VertexType = 
-      typename std::tuple_element<0, typename MT::EntityTypes>::type;
-    
-    using EdgeType = 
-      typename std::tuple_element<1, typename MT::EntityTypes>::type;  
-
-    using FaceType = 
-      typename std::tuple_element<MT::topologicalDimension() - 1,
-                                  typename MT::EntityTypes>::type;
-
-    using CellType = 
-      typename std::tuple_element<MT::topologicalDimension(),
-                                  typename MT::EntityTypes>::type;
-
-    MeshEntity* create(size_t dim, size_t index){
-      switch(dim){
-      case 0:
-        return new VertexType(index);
-      case 1:
-        return new EdgeType(index);
-      case 2:
-        return new FaceType(index);
-      case 3:
-        return new CellType(index);
-      default:
-        assert(false && "invalid topological dimension");
-      }
-    }
-  };
-
-  class MeshTopologyBase{
+  
+  class MeshBase{
   public:
     using Id = uint64_t;
 
     using IdVec = std::vector<Id>;
   
     using ConnVec = std::vector<IdVec>;
-  
+
+    using EntityVec = std::vector<MeshEntity*>;
+
     struct IdVecHash{
       size_t operator()(const IdVec& v) const{
         size_t h = 0;
@@ -198,9 +147,9 @@ namespace jali{
     public:
 
       Connectivity(){}
-    
+
       void clear(){
-        toIdVec_.clear();
+        entityVec_.clear();
         fromIndexVec_.clear();
       }
     
@@ -208,8 +157,8 @@ namespace jali{
         fromIndexVec_.push_back(0);
       }
     
-      void init(const ConnVec& cv){
-        assert(toIdVec_.empty() && fromIndexVec_.empty());
+      void init(EntityVec& ev, const ConnVec& cv){
+        assert(entityVec_.empty() && fromIndexVec_.empty());
       
         fromIndexVec_.push_back(0);
       
@@ -219,30 +168,40 @@ namespace jali{
           const IdVec& iv = cv[i];
           
           for(Id id : iv){
-            toIdVec_.push_back(id);
+            entityVec_.push_back(ev[id]);
           }
           
-          toIdVec_.back() |= LAST_FLAG;
-          fromIndexVec_.push_back(toIdVec_.size());
+          fromIndexVec_.push_back(entityVec_.size());
         }
       }
 
-      void init(Id* fromIndices,
-                size_t fromCount,
-                Id* toIndices,
-                size_t toCount){
+      template<class MT>
+      void initCreate(EntityVec& ev, const ConnVec& cv, size_t dim){
+        assert(entityVec_.empty() && fromIndexVec_.empty());
+      
+        fromIndexVec_.push_back(0);
+      
+        size_t n = cv.size();
 
-        toIdVec_.clear();
-        toIdVec_.resize(toCount);
-        
-        fromIndexVec_.clear();
-        fromIndexVec_.resize(fromCount);
+        Id maxId = 0;
 
-        std::copy(fromIndices, fromIndices + fromCount,
-                  fromIndexVec_.begin());
+        for(size_t i = 0; i < n; ++i){
+          const IdVec& iv = cv[i];
+          
+          for(Id id : iv){
+            maxId = std::max(maxId, id);
+            entityVec_.push_back(MeshEntity::create_<MT>(dim, id));
+          }
+          
+          fromIndexVec_.push_back(entityVec_.size());
+        }
 
-        std::copy(toIndices, toIndices + toCount,
-                  toIdVec_.begin());
+        size_t m = entityVec_.size();
+        ev.resize(maxId + 1);
+
+        for(MeshEntity* ent : entityVec_){
+          ev[ent->id()] = ent;
+        }
       }
     
       void resize(IndexVec& numConns){
@@ -260,24 +219,22 @@ namespace jali{
 
         fromIndexVec_[n] = size;
       
-        toIdVec_.resize(size);
-        std::fill(toIdVec_.begin(), toIdVec_.end(), 0);
+        entityVec_.resize(size);
+        std::fill(entityVec_.begin(), entityVec_.end(), nullptr);
       }
     
       void endFrom(){
-        toIdVec_.back() |= LAST_FLAG;
-        fromIndexVec_.push_back(toIdVec_.size());
+        fromIndexVec_.push_back(entityVec_.size());
       }
     
-      void push(Id id){
-        toIdVec_.push_back(id);
+      void push(MeshEntity* ent){
+        entityVec_.push_back(ent);
       }
     
       void dump(){
         std::cout << "=== idVec" << std::endl;
-        for(Id id : toIdVec_){
-          std::cout << (INDEX_MASK & id) << "(" << 
-            (bool(id & LAST_FLAG)) << ")" << std::endl;
+        for(MeshEntity* ent : entityVec_){
+          std::cout << ent->id() << std::endl;
         }
       
         std::cout << "=== groupVec" << std::endl;
@@ -285,32 +242,33 @@ namespace jali{
           std::cout << id << std::endl;
         }
       }
-    
-      Id* getEntities(size_t index){
-        assert(index < fromIndexVec_.size() - 1);
-        return toIdVec_.data() + fromIndexVec_[index];
+
+      const EntityVec& getEntities() const{
+        return entityVec_;
       }
 
-      Id* getEntities(size_t index, size_t& endIndex){
+      const IdVec& getFromIndexVec() const{
+        return fromIndexVec_;
+      }
+    
+      MeshEntity** getEntities(size_t index){
+        assert(index < fromIndexVec_.size() - 1);
+        return entityVec_.data() + fromIndexVec_[index];
+      }
+
+      MeshEntity** getEntities(size_t index, size_t& endIndex){
         assert(index < fromIndexVec_.size() - 1);
         uint64_t start = fromIndexVec_[index];
         endIndex = fromIndexVec_[index + 1] - start;
-        return toIdVec_.data() + start;
+        return entityVec_.data() + start;
       }
         
       bool empty(){
-        return toIdVec_.empty();
+        return entityVec_.empty();
       }
     
-      void set(size_t fromId, size_t toId, size_t pos){
-        toIdVec_[fromIndexVec_[fromId] + pos] = toId;
-      }
-
-      void finishSet(){
-        size_t n = fromIndexVec_.size();
-        for(size_t i = 1; i < n; ++i){
-          toIdVec_[fromIndexVec_[i] - 1] |= LAST_FLAG;
-        }
+      void set(size_t fromId, MeshEntity* ent, size_t pos){
+        entityVec_[fromIndexVec_[fromId] + pos] = ent;
       }
     
       size_t fromSize() const{
@@ -318,28 +276,10 @@ namespace jali{
       }
 
       size_t toSize() const{
-        return toIdVec_.size();
-      }
-
-      Id* rawIdVec(){
-        return toIdVec_.data();
-      }
-
-      Id* rawFromIndexVec(){
-        return fromIndexVec_.data();
-      }
-
-      Id* rawIdVec(size_t& size){
-        size = toIdVec_.size();
-        return toIdVec_.data();
-      }
-
-      Id* rawFromIndexVec(size_t& size){
-        size = fromIndexVec_.size();
-        return fromIndexVec_.data();
+        return entityVec_.size();
       }
     
-      void set(ConnVec& conns){
+      void set(EntityVec& ev, ConnVec& conns){
         clear();
         
         size_t n = conns.size();      
@@ -347,52 +287,28 @@ namespace jali{
       
         size_t size = 0;
 
-        for(size_t i = 0; i <= n; i++){
+        for(size_t i = 0; i < n; i++){
           fromIndexVec_[i] = size;
           size += conns[i].size();
         }
-            
-        toIdVec_.reserve(size);
+
+        fromIndexVec_[n] = size;
+
+        entityVec_.reserve(size);
 
         for(size_t i = 0; i < n; ++i){
           const IdVec& conn = conns[i];
           uint64_t m = conn.size();
           
           for(size_t j = 0; j < m; ++j){
-            toIdVec_.push_back(conn[j]);
+            entityVec_.push_back(ev[conn[j]]);
           }
-
-          toIdVec_.back() |= LAST_FLAG;
         }
       }
     
-      IdVec toIdVec_;
+      EntityVec entityVec_;
       IdVec fromIndexVec_;
     };
-
-    Id* getToIndices(uint32_t fromDim,
-                     uint32_t toDim){
-
-      Connectivity& c = getConnectivity(fromDim, toDim);
-
-      if(c.empty()){
-        compute(fromDim, toDim);
-      }
-
-      return c.rawIdVec();
-    }
-
-    Id* getFromIndices(uint32_t fromDim,
-                       uint32_t toDim){
-
-      Connectivity& c = getConnectivity(fromDim, toDim);
-
-      if(c.empty()){
-        compute(fromDim, toDim);
-      }
-
-      return c.rawFromIndexVec();
-    }
 
     virtual size_t numEntities(size_t dim) = 0;
 
@@ -409,7 +325,7 @@ namespace jali{
   };
 
   template<class MT>
-  class MeshTopology : public MeshTopologyBase{
+  class Mesh : public MeshBase{
   public:
     using VertexType = 
       typename std::tuple_element<0, typename MT::EntityTypes>::type;
@@ -425,201 +341,102 @@ namespace jali{
       typename std::tuple_element<MT::topologicalDimension(),
                                   typename MT::EntityTypes>::type;
 
-    class Entity{
+    class Iterator{
     public:
-      Entity(MeshTopology& mesh, size_t dim, size_t index=0)
+      Iterator(Mesh& mesh, size_t dim)
         : mesh_(mesh),
-          ents_(mesh_.getEntities_(dim)),
+          entities_(&mesh.getEntities_(dim)),
           dim_(dim),
-          index_(index),
-          endIndex_(mesh_.numEntities(dim_)){
-        assert(index_ < endIndex_);
-      }
-    
-      size_t dim(){
-        return dim_;
-      }
-    
-      size_t index(){
-        return index_;
-      }
-    
-      Id* getEntities(size_t dim){
-        Connectivity& c = mesh_.getConnectivity_(dim_, dim);
-        assert(!c.empty());
-        return c.getEntities(index_);
-      }
-    
-      Entity& operator++(){
-        assert(index_ < endIndex_);
-        ++index_;
-        return *this;
-      }
-    
-      bool end() const{
-        return index_ >= endIndex_;
-      }
-    
-      MeshTopology& mesh(){
-        return mesh_;
-      }
-    
-    protected:
-      MeshTopology& mesh_;
-      const std::vector<MeshEntity*>& ents_;
-      size_t dim_;
-      size_t index_;
-      size_t endIndex_;
-    };
-  
-    class EntityIterator{
-    public:
-      EntityIterator(Entity& entity, size_t dim, size_t index=0)
-        : mesh_(entity.mesh()),
-          ents_(mesh_.getEntities_(dim)),
+          index_(0),
+          endIndex_(entities_->size()),
+          level_(0){}
+
+      Iterator(Iterator& itr, size_t dim)
+        : mesh_(itr.mesh_), 
           dim_(dim),
-          index_(index){
-        Connectivity& c = mesh_.getConnectivity_(entity.dim(), dim_);
-        if(c.empty()){
-          mesh_.compute(entity.dim(), dim_);
-        }
-      
-        entities_ = c.getEntities(entity.index(), endIndex_);
-        assert(index_ < endIndex_);
-      }
-    
-      EntityIterator(EntityIterator& itr, size_t dim, size_t index=0)
-        : mesh_(itr.mesh_),
-          ents_(mesh_.getEntities_(dim)),
-          dim_(dim),
-          index_(index){
-        Connectivity& c = mesh_.getConnectivity_(itr.dim_, dim_);
+          level_(itr.level_ + 1){
+        
+        Connectivity& c = mesh_.getConnectivity(itr.dim_, dim_);
         if(c.empty()){
           mesh_.compute(itr.dim_, dim_);
         }
+
+        entities_ = &c.getEntities();
+
+        const IdVec& fv = c.getFromIndexVec();
+        if(level_ > 1){
+          size_t id = (*itr.entities_)[itr.index_]->id();
+
+          index_ = fv[id];
+          endIndex_ = fv[id + 1];
+        }
+        else{
+          index_ = fv[itr.index_];
+          endIndex_ = fv[itr.index_ + 1];          
+        }
+      }
       
-        entities_ = c.getEntities(itr.index_, endIndex_);
-        assert(index_ < endIndex_);
+      MeshEntity& get(){
+        return *(*entities_)[index_];
       }
-    
-      size_t dim(){
-        return dim_;
+
+      bool end() const{
+        return index_ >= endIndex_;
       }
-    
-      size_t index(){
-        return entities_[index_] & INDEX_MASK;
-      }
-    
-      Id* getEntities(size_t dim){
-        Connectivity& c = mesh_.getConnectivity_(dim_, dim);
-        assert(!c.empty());
-        return c.getEntities(index_);
-      }
-    
-      EntityIterator& operator++(){
+
+      Iterator& operator++(){
         assert(index_ < endIndex_);
         ++index_;
         return *this;
       }
-    
-      bool end() const{
-        return index_ >= endIndex_;
+
+      size_t id() const{
+        return (*entities_)[index_]->id();
       }
-    
-    protected:
-      MeshTopology& mesh_;
-      const std::vector<MeshEntity*>& ents_;
+
+      MeshEntity** getEntities(size_t dim){
+        Connectivity& c = mesh_.getConnectivity_(dim_, dim);
+        assert(!c.empty());
+        return c.getEntities(index_);
+      }
+
+    private:
+
+      Mesh& mesh_;
+      const std::vector<MeshEntity*>* entities_;
       size_t dim_;
       size_t index_;
       size_t endIndex_;
-      Id* entities_;
+      size_t level_;
     };
-  
-    class Cell : public Entity{
-    public:
-      Cell(MeshTopology& mesh, size_t index=0)
-        : Entity(mesh, MT::topologicalDimension(), index){}
 
-      CellType& operator*(){
-        return *static_cast<CellType*>(Entity::ents_[Entity::index_]);
+    template<size_t D>
+    class EntityIterator : public Iterator{
+    public:
+      using EntityType = 
+        typename std::tuple_element<D, typename MT::EntityTypes>::type;
+
+      EntityIterator(Mesh& mesh)
+        : Iterator(mesh, D){}
+
+      EntityIterator(Iterator& itr)
+        : Iterator(itr, D){}
+
+      EntityType& operator*(){
+        return static_cast<EntityType&>(Iterator::get());
+      }
+
+      EntityType* operator->(){
+        return &static_cast<EntityType&>(Iterator::get());
       }
     };
-  
-    class CellIterator : public EntityIterator{
-    public:
-      CellIterator(Entity& entity, size_t index=0)
-        : EntityIterator(entity, MT::topologicalDimension(), index){}
 
-      CellType& operator*(){
-        return *static_cast<CellType*>(
-          EntityIterator::ents_[EntityIterator::index_]);
-      }
-    };
-  
-    class Vertex : public Entity{
-    public:
-      Vertex(MeshTopology& mesh, size_t index=0)
-        : Entity(mesh, 0, index){}
+    using VertexIterator = EntityIterator<0>;
+    using EdgeIterator = EntityIterator<1>;
+    using FaceIterator = EntityIterator<MT::topologicalDimension() - 1>;
+    using CellIterator = EntityIterator<MT::topologicalDimension()>;
 
-      VertexType& operator*(){
-        return *static_cast<VertexType*>(Entity::ents_[Entity::index_]);
-      }
-    };
-  
-    class VertexIterator : public EntityIterator{
-    public:
-      VertexIterator(Entity& entity, size_t index=0)
-        : EntityIterator(entity, 0, index){}
-
-      VertexType& operator*(){
-        return *static_cast<CellType*>(
-          EntityIterator::ents_[EntityIterator::index_]);
-      }
-    };
-  
-    class Edge : public Entity{
-    public:
-      Edge(MeshTopology& mesh, size_t index=0)
-        : Entity(mesh, 1, index){}
-
-      EdgeType& operator*(){
-        return *static_cast<EdgeType*>(Entity::ents_[Entity::index_]);
-      }
-    };
-  
-    class EdgeIterator : public EntityIterator{
-    public:
-      EdgeIterator(Entity& entity, size_t index=0)
-        : EntityIterator(entity, 1, index){}
-
-      EdgeType& operator*(){
-        return *static_cast<EdgeType*>(
-          EntityIterator::ents_[EntityIterator::index_]);
-      }
-    };
-  
-    class Face : public Entity{
-    public:
-      Face(MeshTopology& mesh, size_t index=0)
-        : Entity(mesh, MT::topologicalDimension() - 1, index){}
-
-      FaceType& operator*(){
-        return *static_cast<FaceType*>(Entity::ents_[Entity::index_]);
-      }
-    };
-  
-    class FaceIterator : public EntityIterator{
-    public:
-      FaceIterator(Entity& entity, size_t index=0)
-        : EntityIterator(entity, MT::topologicalDimension() - 1, index){}
-
-      FaceType& operator*(){
-        return *static_cast<FaceType*>(
-          EntityIterator::ents_[EntityIterator::index_]);
-      }
-    };
-  
-    MeshTopology(){
+    Mesh(){
       getConnectivity_(MT::topologicalDimension(), 0).init();
     }
   
@@ -639,8 +456,9 @@ namespace jali{
       assert(cell->id() == c.fromSize() && "id mismatch"); 
 
       for(VertexType* v : verts){
-        c.push(v->id());
+        c.push(v);
       }
+
       c.endFrom();
 
       entities_[MT::topologicalDimension()].push_back(cell);
@@ -654,8 +472,9 @@ namespace jali{
 
       assert(edge->id() == c.fromSize() && "id mismatch"); 
 
-      c.push(vertex1->id());
-      c.push(vertex2->id());
+      c.push(vertex1);
+      c.push(vertex2);
+
       c.endFrom();
 
       entities_[1].push_back(edge);
@@ -673,9 +492,10 @@ namespace jali{
 
       assert(face->id() == c.fromSize() && "id mismatch"); 
 
-      for(Vertex* v : verts){
-        c.push(v->id());
+      for(VertexType* v : verts){
+        c.push(v);
       }
+
       c.endFrom();
       entities_[MT::topologicalDimension() - 1].push_back(face);
     }
@@ -692,9 +512,10 @@ namespace jali{
 
       assert(cell->id() == c.fromSize() && "id mismatch"); 
       
-      for(Edge* edge : edges){
-        c.push(edge->id());
+      for(EdgeType* edge : edges){
+        c.push(edge);
       }
+
       c.endFrom();
     }
 
@@ -711,9 +532,10 @@ namespace jali{
 
       assert(cell->id() == c.fromSize() && "id mismatch"); 
       
-      for(Face* face : faces){
-        c.push(face->id());
+      for(FaceType* face : faces){
+        c.push(face);
       }
+
       c.endFrom();
     }
 
@@ -725,6 +547,10 @@ namespace jali{
       }
 
       return size;
+    }
+
+    size_t numEntities_(size_t dim){
+      return entities_[dim].size();
     }
 
     void build(size_t dim) override{
@@ -741,7 +567,7 @@ namespace jali{
 
       Connectivity& cellToEntity =
         getConnectivity_(MT::topologicalDimension(), dim);
-    
+
       ConnVec entityVertexConn;
 
       size_t entityId = 0;
@@ -762,7 +588,8 @@ namespace jali{
         
         conns.reserve(maxCellEntityConns);
       
-        Id* vertices = cellToVertex.getEntities(c);
+        VertexType** vertices = 
+          reinterpret_cast<VertexType**>(cellToVertex.getEntities(c));
       
         MT::createEntities(dim, entityVertices, vertices);
 
@@ -770,14 +597,12 @@ namespace jali{
           Id* a = &entityVertices[i * verticesPerEntity];
           IdVec ev(a, a + verticesPerEntity);
           std::sort(ev.begin(), ev.end());
-          ev.back() |= LAST_FLAG;
 
           auto itr = entityVerticesMap.emplace(std::move(ev), entityId);
           conns.emplace_back(itr.first->second);
         
           if(itr.second){
             IdVec ev2 = IdVec(a, a + verticesPerEntity);
-            ev2.back() |= LAST_FLAG;
 
             entityVertexConn.emplace_back(std::move(ev2));
           
@@ -789,31 +614,20 @@ namespace jali{
         }
       }
 
-      cellToEntity.init(cellEntityConn);
-      entityToVertex.init(entityVertexConn);
-
-      Id* ids = cellToEntity.rawIdVec();
-      size_t m = cellToEntity.toSize();
-      entities_[dim].reserve(n);
-
-      for(size_t i = 0; i < m; ++i){
-        MeshEntity* ent = 
-          CreateEntity<MT::topologicalDimension(), MT>::create(dim, ids[i]);
-
-        entities_[dim].push_back(ent);
-      }
+      cellToEntity.initCreate<MT>(entities_[dim], cellEntityConn, dim);
+      entityToVertex.init(entities_[0], entityVertexConn);
     }
   
     void transpose(size_t fromDim, size_t toDim){
       //std::cerr << "transpose: " << fromDim << " -> " << 
       //   toDim << std::endl;
     
-      IndexVec pos(numEntities(fromDim), 0);
+      IndexVec pos(numEntities_(fromDim), 0);
     
-      for(Entity toEntity(*this, toDim); !toEntity.end(); ++toEntity){
-        for(EntityIterator fromItr(toEntity, fromDim); 
+      for(Iterator toEntity(*this, toDim); !toEntity.end(); ++toEntity){
+        for(Iterator fromItr(toEntity, fromDim); 
             !fromItr.end(); ++fromItr){
-          pos[fromItr.index()]++;
+          pos[fromItr.id()]++;
         }
       }
     
@@ -822,15 +636,13 @@ namespace jali{
 
       std::fill(pos.begin(), pos.end(), 0);
     
-      for(Entity toEntity(*this, toDim); !toEntity.end(); ++toEntity){
-        for(EntityIterator fromItr(toEntity, fromDim); 
+      for(Iterator toEntity(*this, toDim); !toEntity.end(); ++toEntity){
+        for(Iterator fromItr(toEntity, fromDim); 
             !fromItr.end(); ++fromItr){
-          outConn.set(fromItr.index(), toEntity.index(), 
-                      pos[fromItr.index()]++);
+          outConn.set(fromItr.id(), &toEntity.get(), 
+                      pos[fromItr.id()]++);
         }
       }
-      
-      outConn.finishSet();
     }
   
     void intersect(size_t fromDim, size_t toDim, size_t dim){
@@ -842,53 +654,53 @@ namespace jali{
         return;
       }
     
-      ConnVec conns(numEntities(fromDim));
+      ConnVec conns(numEntities_(fromDim));
     
       using VisitedVec = std::vector<bool>;
-      VisitedVec visited(numEntities(fromDim));
-    
-      IdVec fromVerts(MT::numVerticesPerEntity(fromDim));
-      IdVec toVerts(MT::numVerticesPerEntity(toDim));
+      VisitedVec visited(numEntities_(fromDim));
+
+      EntityVec fromVerts(MT::numVerticesPerEntity(fromDim));
+      EntityVec toVerts(MT::numVerticesPerEntity(toDim));
 
       size_t maxSize = 1;    
 
-      for(Entity fromEntity(*this, fromDim); 
+      for(Iterator fromEntity(*this, fromDim); 
           !fromEntity.end(); ++fromEntity){
-        IdVec& entities = conns[fromEntity.index()];
+        IdVec& entities = conns[fromEntity.id()];
         entities.reserve(maxSize);
 
-        Id* ep = fromEntity.getEntities(0);
+        MeshEntity** ep = fromEntity.getEntities(0);
 
         std::copy(ep, ep + MT::numVerticesPerEntity(fromDim),
                   fromVerts.begin());
       
         std::sort(fromVerts.begin(), fromVerts.end());
       
-        for(EntityIterator fromItr(fromEntity, dim);
+        for(Iterator fromItr(fromEntity, dim);
             !fromItr.end(); ++fromItr){
-          for(EntityIterator toItr(fromItr, toDim);
+          for(Iterator toItr(fromItr, toDim);
               !toItr.end(); ++toItr){
-            visited[toItr.index()] = false;
+            visited[toItr.id()] = false;
           }
         }
       
-        for(EntityIterator fromItr(fromEntity, dim);
+        for(Iterator fromItr(fromEntity, dim);
             !fromItr.end(); ++fromItr){
-          for(EntityIterator toItr(fromItr, toDim);
+          for(Iterator toItr(fromItr, toDim);
               !toItr.end(); ++toItr){
-            if(visited[toItr.index()]){
+            if(visited[toItr.id()]){
               continue;
             }
           
-            visited[toItr.index()] = true;
+            visited[toItr.id()] = true;
           
             if(fromDim == toDim){
-              if(fromEntity.index() != toItr.index()){
-                entities.push_back(toItr.index());
+              if(fromEntity.id() != toItr.id()){
+                entities.push_back(toItr.id());
               }
             }
             else{
-              Id* ep = toItr.getEntities(0);
+              MeshEntity** ep = toItr.getEntities(0);
 
               std::copy(ep, ep + MT::numVerticesPerEntity(toDim),
                         toVerts.begin());
@@ -898,7 +710,7 @@ namespace jali{
               if(std::includes(fromVerts.begin(), fromVerts.end(),
                                toVerts.begin(), toVerts.end())){
               
-                entities.emplace_back(toItr.index());
+                entities.emplace_back(toItr.id());
               }
             }
           }
@@ -906,8 +718,8 @@ namespace jali{
       
         maxSize = std::max(entities.size(), maxSize);
       }
-    
-      outConn.init(conns);
+      
+      outConn.init(entities_[toDim], conns);
     }
   
     void compute(size_t fromDim, size_t toDim) override{
@@ -919,26 +731,26 @@ namespace jali{
         return;
       }
     
-      if(numEntities(fromDim) == 0){
+      if(numEntities_(fromDim) == 0){
         build(fromDim);
       }
     
-      if(numEntities(toDim) == 0){
+      if(numEntities_(toDim) == 0){
         build(toDim);
       }
     
-      if(numEntities(fromDim) == 0 && numEntities(toDim) == 0){
+      if(numEntities_(fromDim) == 0 && numEntities_(toDim) == 0){
         return;
       }
     
       if(fromDim == toDim){
-        ConnVec connVec(numEntities(fromDim), IdVec(1));
+        ConnVec connVec(numEntities_(fromDim), IdVec(1));
       
-        for(Entity entity(*this, fromDim); !entity.end(); ++entity){
-          connVec[entity.index()][0] = entity.index();
+        for(Iterator entity(*this, fromDim); !entity.end(); ++entity){
+          connVec[entity.id()][0] = entity.id();
         }
       
-        outConn.set(connVec);
+        outConn.set(entities_[toDim], connVec);
       }
       else if(fromDim < toDim){
         compute(toDim, fromDim);
@@ -1007,18 +819,17 @@ namespace jali{
         }
       }
     }
-
  
   private:
+    using Entities_ = 
+      std::array<EntityVec, MT::topologicalDimension() + 1>;
+
     using Topology_ =
       std::array<std::array<Connectivity, MT::topologicalDimension() + 1>,
       MT::topologicalDimension() + 1>;
 
-    using Entities_ = 
-      std::array<std::vector<MeshEntity*>, MT::topologicalDimension() + 1>;
-
-    Topology_ topology_;
     Entities_ entities_;
+    Topology_ topology_;
   };
 
 } // jali
