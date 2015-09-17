@@ -118,7 +118,30 @@ namespace jali{
   private:
     size_t id_;
   };
-  
+
+  using EntityVec = std::vector<MeshEntity*>;
+
+  template<size_t D>
+  class EntityGroup{
+  public:
+    EntityGroup(){}
+    
+    void add(MeshEntity* ent){
+      entities_.push_back(ent);
+    }
+    
+    const EntityVec& getEntities() const{
+      return entities_;
+    }
+
+    static constexpr size_t dim(){
+      return D;
+    }
+    
+  private:
+    EntityVec entities_;
+  };
+    
   class MeshBase{
   public:
     using Id = uint64_t;
@@ -126,8 +149,6 @@ namespace jali{
     using IdVec = std::vector<Id>;
   
     using ConnVec = std::vector<IdVec>;
-
-    using EntityVec = std::vector<MeshEntity*>;
 
     struct IdVecHash{
       size_t operator()(const IdVec& v) const{
@@ -351,6 +372,15 @@ namespace jali{
           endIndex_(entities_->size()),
           level_(0){}
 
+      template<class M, size_t D>
+      Iterator(M& mesh, EntityGroup<D>& group)
+        : mesh_(mesh),
+          entities_(&group.getEntities()),
+          dim_(D),
+          index_(0),
+          endIndex_(entities_->size()),
+          level_(0){}
+
       Iterator(Iterator& itr, size_t dim)
         : mesh_(itr.mesh_), 
           dim_(dim),
@@ -403,7 +433,7 @@ namespace jali{
     private:
 
       Mesh& mesh_;
-      const std::vector<MeshEntity*>* entities_;
+      const EntityVec* entities_;
       size_t dim_;
       size_t index_;
       size_t endIndex_;
@@ -421,6 +451,10 @@ namespace jali{
 
       EntityIterator(Iterator& itr)
         : Iterator(itr, D){}
+
+      template<class M, size_t TD>
+      EntityIterator(M& mesh, EntityGroup<TD>& group)
+        : Iterator(mesh, group){}
 
       EntityType& operator*(){
         return static_cast<EntityType&>(Iterator::get());
@@ -805,7 +839,7 @@ namespace jali{
       return MT::topologicalDimension();
     }  
 
-    const std::vector<MeshEntity*>& getEntities_(size_t dim) const{
+    const EntityVec& getEntities_(size_t dim) const{
       return entities_[dim];
     }
 
