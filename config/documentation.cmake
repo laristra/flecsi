@@ -25,20 +25,28 @@ set(ug_pandoc_options
 )
 
 #------------------------------------------------------------------------------#
-# Add charter target
-#------------------------------------------------------------------------------#
-
-cinch_add_doc(charter jali_charter.py src
-  jali-charter-${${PROJECT_NAME}_VERSION}.pdf
-  PANDOC_OPTIONS ${ug_pandoc_options})
-
-#------------------------------------------------------------------------------#
 # Add user guide target
 #------------------------------------------------------------------------------#
 
 cinch_add_doc(user-guide jali_ug.py src
     jali-user-guide-${${PROJECT_NAME}_VERSION}.pdf
     PANDOC_OPTIONS ${ug_pandoc_options} IMAGE_GLOB "*.pdf")
+
+#------------------------------------------------------------------------------#
+# Pandoc options for charter
+#------------------------------------------------------------------------------#
+
+set(charter_pandoc_options
+    "--include-in-header=${CMAKE_SOURCE_DIR}/cinch/tex/addtolength.tex"
+)
+
+#------------------------------------------------------------------------------#
+# Add charter target
+#------------------------------------------------------------------------------#
+
+cinch_add_doc(charter jali_charter.py src
+  jali-charter-${${PROJECT_NAME}_VERSION}.pdf
+  PANDOC_OPTIONS ${charter_pandoc_options})
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options for vim.
