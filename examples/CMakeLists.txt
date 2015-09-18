@@ -3,28 +3,19 @@
 # All rights reserved.
 #~----------------------------------------------------------------------------~#
 
-project(jali)
-
 #------------------------------------------------------------------------------#
-# Set application directory
+# Add a rule to build the executable
 #------------------------------------------------------------------------------#
 
-cinch_add_application_directory("test")
-cinch_add_application_directory("examples")
+add_executable(burton burton.cc)
 
 #------------------------------------------------------------------------------#
-# Add library targets
+# Add link dependencies
 #------------------------------------------------------------------------------#
 
-cinch_add_library_target(jali src)
-
-#------------------------------------------------------------------------------#
-# Set header suffix regular expression
-#------------------------------------------------------------------------------#
-
-set(CINCH_HEADER_SUFFIXES "\\.h")
+target_link_libraries(burton ${CINCH_LINK_LIBRARIES} ${EXTRA_LIBS})
 
 #~---------------------------------------------------------------------------~-#
-# Formatting options for vim.
-# vim: set tabstop=2 shiftwidth=2 expandtab :
+# Formatting options for emacs and vim.
+# vim: set tabstop=4 shiftwidth=4 expandtab :
 #~---------------------------------------------------------------------------~-#
