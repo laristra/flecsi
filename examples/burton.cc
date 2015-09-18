@@ -3,6 +3,8 @@
  * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
 
+#include <jali/specializations/burton.h>
+
 int main(int argc, char ** argv) {
 
   /*

@@ -6,6 +6,8 @@
 #ifndef jali_burton_h
 #define jali_burton_h
 
+#include "../base/mesh_topology.h"
+
 /*!
  * \file burton.h
  * \authors bergen
@@ -22,6 +24,40 @@ class burton
 {
 public:
 
+  // Vertex type
+  struct burton_vertex_t : public MeshEntity {
+    burton_vertex_t(size_t id) : MeshEntity(id) {}
+  }; // struct burton_vertex_t
+
+  // Edge type
+  struct burton_edge_t : public MeshEntity {
+    burton_edge_t(size_t id) : MeshEntity(id) {}
+  }; // struct burton_edge_t
+
+  // Side type
+  struct burton_side_t : public MeshEntity {
+    burton_side_t(size_t id) : MeshEntity(id) {}
+  }; // struct burton_side_t
+
+  // Cell type
+  class burton_cell_t : public MeshEntity {
+    public:
+
+      burton_cell_t(size_t id) : MeshEntity(id) {}
+
+      EntityGroup<2> & getSides() {
+        return sides_;
+      } // getSides
+
+    private:
+
+      EntityGroup<2> sides_;
+
+  }; // struct burton_cell_t
+
+  using EntityTypes =
+    std::tuple<burton_vertex_t, burton_edge_t, burton_cell_t>;
+
   //! Default constructor
   burton() {}
 
@@ -32,32 +68,7 @@ public:
   burton & operator = (const burton &) = delete;
 
   //! Destructor
-   ~burton() {}
-
-  /*!
-    \brief Returns the number of vertices in the mesh.
-   */
-  size_t num_vertices() const {}
-
-  /*!
-    \brief Returns the number of edges in the mesh.
-   */
-  size_t num_edges() const {}
-
-  /*!
-    \brief Returns the number of faces in the mesh.
-   */
-  size_t num_faces() const {}
-
-  /*!
-    \brief Returns the number of facets in the mesh.
-   */
-  size_t num_facets() const {}
-
-  /*!
-    \brief Returns the number of cells in the mesh.
-   */
-  size_t num_cells() const {}
+  ~burton() {}
 
 private:
 
