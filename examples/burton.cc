@@ -5,6 +5,8 @@
 
 #include <jali/specializations/burton.h>
 
+using namespace jali;
+
 int main(int argc, char ** argv) {
 
   /*
@@ -30,6 +32,8 @@ int main(int argc, char ** argv) {
   // wedges@face
 
   // wedges@corner
+
+  burton b;
 
   return 0;
 } // main
