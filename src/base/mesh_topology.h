@@ -410,7 +410,15 @@ namespace jali{
         return *(*entities_)[index_];
       }
 
-      bool end() const{
+		EntityVec::const_iterator begin() const {
+			return entities_->begin();
+		} // auto
+
+		EntityVec::const_iterator end() const {
+			return entities_->end();
+		} // auto
+
+      bool isend() const{
         return index_ >= endIndex_;
       }
 
@@ -658,9 +666,9 @@ namespace jali{
     
       IndexVec pos(numEntities_(fromDim), 0);
     
-      for(Iterator toEntity(*this, toDim); !toEntity.end(); ++toEntity){
+      for(Iterator toEntity(*this, toDim); !toEntity.isend(); ++toEntity){
         for(Iterator fromItr(toEntity, fromDim); 
-            !fromItr.end(); ++fromItr){
+            !fromItr.isend(); ++fromItr){
           pos[fromItr.id()]++;
         }
       }
@@ -670,9 +678,9 @@ namespace jali{
 
       std::fill(pos.begin(), pos.end(), 0);
     
-      for(Iterator toEntity(*this, toDim); !toEntity.end(); ++toEntity){
+      for(Iterator toEntity(*this, toDim); !toEntity.isend(); ++toEntity){
         for(Iterator fromItr(toEntity, fromDim); 
-            !fromItr.end(); ++fromItr){
+            !fromItr.isend(); ++fromItr){
           outConn.set(fromItr.id(), &toEntity.get(), 
                       pos[fromItr.id()]++);
         }
@@ -699,7 +707,7 @@ namespace jali{
       size_t maxSize = 1;    
 
       for(Iterator fromEntity(*this, fromDim); 
-          !fromEntity.end(); ++fromEntity){
+          !fromEntity.isend(); ++fromEntity){
         IdVec& entities = conns[fromEntity.id()];
         entities.reserve(maxSize);
 
@@ -711,17 +719,17 @@ namespace jali{
         std::sort(fromVerts.begin(), fromVerts.end());
       
         for(Iterator fromItr(fromEntity, dim);
-            !fromItr.end(); ++fromItr){
+            !fromItr.isend(); ++fromItr){
           for(Iterator toItr(fromItr, toDim);
-              !toItr.end(); ++toItr){
+              !toItr.isend(); ++toItr){
             visited[toItr.id()] = false;
           }
         }
       
         for(Iterator fromItr(fromEntity, dim);
-            !fromItr.end(); ++fromItr){
+            !fromItr.isend(); ++fromItr){
           for(Iterator toItr(fromItr, toDim);
-              !toItr.end(); ++toItr){
+              !toItr.isend(); ++toItr){
             if(visited[toItr.id()]){
               continue;
             }
@@ -780,7 +788,7 @@ namespace jali{
       if(fromDim == toDim){
         ConnVec connVec(numEntities_(fromDim), IdVec(1));
       
-        for(Iterator entity(*this, fromDim); !entity.end(); ++entity){
+        for(Iterator entity(*this, fromDim); !entity.isend(); ++entity){
           connVec[entity.id()][0] = entity.id();
         }
       

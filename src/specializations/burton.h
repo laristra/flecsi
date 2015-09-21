@@ -45,7 +45,7 @@ namespace jali {
     std::array<T, D> v_;
   };
 
-  class burton_mesh_type{
+  class burton_mesh_types_t{
   public:
     static constexpr size_t Dimension = 2;
 
@@ -75,16 +75,41 @@ namespace jali {
 
       burton_cell_t(size_t id) : MeshEntity(id) {}
 
-      EntityGroup<2> & getSides() {
-        return sides_;
+      EntityGroup<0> & corners() {
+        return corners_;
+      } // getSides
+
+      EntityGroup<2> & wedges() {
+        return wedges_;
       } // getSides
 
     private:
 
-      EntityGroup<2> sides_;
+      EntityGroup<0> corners_;
+      EntityGroup<2> wedges_;
 
-    }; // struct burton_cell_t
+    }; // class burton_cell_t
 
+    // Wedge type
+    struct burton_wedge_t : public MeshEntity {
+      burton_wedge_t(size_t id) : MeshEntity(id) {}
+    }; // struct burton_wedge_t
+
+    // Corner type
+    class burton_corner_t : public MeshEntity {
+    public:
+
+      burton_corner_t(size_t id) : MeshEntity(id) {}
+
+      EntityGroup<2> & wedges() {
+        return wedges_;
+      } // wedges
+
+    private:
+
+      EntityGroup<2> wedges_;
+
+    }; // class burton_corner_t
 
     using EntityTypes =
       std::tuple<burton_vertex_t, burton_edge_t, burton_cell_t>;
@@ -139,17 +164,17 @@ namespace jali {
     }
   };
 
- class dual_mesh_type{
+ class dual_mesh_types_t{
   public:
-    static constexpr size_t Dimension = 2;
+    static constexpr size_t Dimension = burton_mesh_types_t::Dimension;
 
     using Id = uint64_t;
 
-    using Vec = Vector<double, Dimension>;
+    using Vec = Vector<double, burton_mesh_types_t::Dimension>;
 
-    using burton_vertex_t = burton_mesh_type::burton_vertex_t;
+    using burton_vertex_t = burton_mesh_types_t::burton_vertex_t;
 
-    using burton_edge_t = burton_mesh_type::burton_edge_t;
+    using burton_edge_t = burton_mesh_types_t::burton_edge_t;
 
     // Cell type
     class burton_wedge_t : public MeshEntity {
@@ -223,33 +248,83 @@ namespace jali {
 
 
 /*!
-  \class burton burton.h
-  \brief burton provides...
+  \class burton_mesh_t burton.h
+  \brief burton_mesh_t provides...
  */
-class burton
+class burton_mesh_t
 {
+private:
+
+  using private_mesh_t = Mesh<burton_mesh_types_t>;
+  using private_dual_mesh_t = Mesh<dual_mesh_types_t>;
+
 public:
-  using MT = burton_mesh_type;
-  
 
-  using vertex_t = MT::burton_vertex_t;
-  using edge_t = MT::burton_edge_t;
-  using cell_t = MT::burton_cell_t;
+  using Vec = Vector<double, burton_mesh_types_t::Dimension>;
 
-  using Vec = burton_mesh_type::Vec;
+  using vertex_t = burton_mesh_types_t::burton_vertex_t;
+  using edge_t = burton_mesh_types_t::burton_edge_t;
+  using cell_t = burton_mesh_types_t::burton_cell_t;
+  using wedge_t = burton_mesh_types_t::burton_wedge_t;
+  using corner_t = burton_mesh_types_t::burton_corner_t;
+
+  // Iterator types
+  using vertex_iterator_t = private_mesh_t::VertexIterator;
+  using edge_iterator_t = private_mesh_t::EdgeIterator;
+  using cell_iterator_t = private_mesh_t::CellIterator;
+
+  using wedges_at_corner_iterator_t = private_dual_mesh_t::CellIterator;
+  using wedges_at_face_iterator_t = private_mesh_t::CellIterator;
+  using wedges_at_vertex_iterator_t = private_mesh_t::CellIterator;
+  using wedges_at_cell_iterator_t = private_mesh_t::CellIterator;
 
   //! Default constructor
-  burton() {}
+  burton_mesh_t() {}
 
   //! Copy constructor (disabled)
-  burton(const burton &) = delete;
+  burton_mesh_t(const burton_mesh_t &) = delete;
 
   //! Assignment operator (disabled)
-  burton & operator = (const burton &) = delete;
+  burton_mesh_t & operator = (const burton_mesh_t &) = delete;
 
   //! Destructor
-  ~burton() {}
+  ~burton_mesh_t() {}
 
+  /*--------------------------------------------------------------------------*
+   * Primary mesh iterators
+   *--------------------------------------------------------------------------*/
+
+  //! Vertex iterator
+  vertex_iterator_t vertices() {
+    vertex_iterator_t iterator(mesh_);
+    return iterator;
+  } // vertices
+
+  //! Cell iterator
+  cell_iterator_t cells() {
+    cell_iterator_t iterator(mesh_);
+    return iterator;
+  } // cells
+
+  //! Edge iterator
+  edge_iterator_t edges() {
+    edge_iterator_t iterator(mesh_);
+    return iterator;
+  } // edges
+
+  /*--------------------------------------------------------------------------*
+   * Dual mesh iterators
+   *--------------------------------------------------------------------------*/
+
+  wedges_at_corner_iterator_t wedges(corner_t & corner) {
+    wedges_at_corner_iterator_t iterator(dual_mesh_, corner.wedges());
+    return iterator;
+  } // wedges
+
+  /*--------------------------------------------------------------------------*
+   *--------------------------------------------------------------------------*/
+
+/*
   vertex_t* create_vertex(const Vec& pos){
     auto v = new vertex_t(nextVertexId_++, pos);
     mesh_.addVertex(v);
@@ -262,15 +337,18 @@ public:
     mesh_.addCell(c, verts);
     return c;
   }
+*/
 
 private:
-  using mesh_t = Mesh<burton_mesh_type>;
 
-  mesh_t mesh_;
+  private_mesh_t mesh_;
+  private_dual_mesh_t dual_mesh_;
   size_t nextVertexId_ = 0;
   size_t nextCellId_ = 0;
 
-}; // class burton
+}; // class burton_mesh_t
+
+using mesh_t = burton_mesh_t;
 
 } // namespace jali
 

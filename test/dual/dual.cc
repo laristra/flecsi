@@ -239,21 +239,23 @@ int main(int argc, char** argv){
 
   cout << "------------- forall cells, sides" << endl;
 
-  for(TestMesh::CellIterator c(*mesh); !c.end(); ++c){
+  for(TestMesh::CellIterator c(*mesh); !c.isend(); ++c){
     cout << "------- cell id: " << c->id() << endl;
-    for(TestDualMesh::CellIterator s(*dualMesh, c->getSides()); !s.end(); ++s){
+    for(TestDualMesh::CellIterator s(*dualMesh, c->getSides());
+	 	!s.isend(); ++s){
       cout << "--------- side id: " << s->id() << endl;
     }
   }
 
   cout << "------------- forall cells, sides, vertices" << endl;
 
-  for(TestMesh::CellIterator c(*mesh); !c.end(); ++c){
+  for(TestMesh::CellIterator c(*mesh); !c.isend(); ++c){
     cout << "------- cell id: " << c->id() << endl;
-    for(TestDualMesh::CellIterator s(*dualMesh, c->getSides()); !s.end(); ++s){
+    for(TestDualMesh::CellIterator s(*dualMesh, c->getSides());
+	 	!s.isend(); ++s){
       cout << "--------- side id: " << s->id() << endl;
       for(TestDualMesh::VertexIterator sv(s);
-          !sv.end(); ++sv){
+          !sv.isend(); ++sv){
         cout << "--------- side vertex id: " << sv->id() << endl;
       }
     }

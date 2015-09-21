@@ -120,11 +120,11 @@ int main(int argc, char** argv){
 
   cout << "------------- forall cells, vertices" << endl;
 
-  for(TestMesh::CellIterator c(*mesh); !c.end(); ++c){
+  for(TestMesh::CellIterator c(*mesh); !c.isend(); ++c){
     cout << "------- cell id: " << c->id() << endl;
-    for(TestMesh::VertexIterator v(c); !v.end(); ++v){
+    for(TestMesh::VertexIterator v(c); !v.isend(); ++v){
       cout << "--------- vertex id: " << v->id() << endl;
-      for(TestMesh::CellIterator c2(v); !c2.end(); ++c2){
+      for(TestMesh::CellIterator c2(v); !c2.isend(); ++c2){
         cout << "cell2 id: " << c2->id() << endl;
       }
     }
@@ -132,9 +132,9 @@ int main(int argc, char** argv){
 
   cout << "------------- forall cells, edges" << endl;
 
-  for(TestMesh::CellIterator c(*mesh); !c.end(); ++c){
+  for(TestMesh::CellIterator c(*mesh); !c.isend(); ++c){
     cout << "------- cell id: " << c->id() << endl;
-    for(TestMesh::EdgeIterator e(c); !e.end(); ++e){
+    for(TestMesh::EdgeIterator e(c); !e.isend(); ++e){
       cout << "edge id: " << e->id() << endl;
     }
   }
