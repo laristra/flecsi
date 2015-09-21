@@ -48,13 +48,11 @@ private:
 
 class TestMesh2dType{
 public:
+  static constexpr size_t Dimension = 2;
+
   using Id = uint64_t;
 
   using EntityTypes = std::tuple<Vertex, Edge, Cell>;
-
-  static constexpr size_t topologicalDimension(){
-    return 2;
-  }
 
   static size_t numEntitiesPerCell(size_t dim){
     switch(dim){
@@ -106,13 +104,11 @@ public:
 
 class TestDualMesh2dType{
 public:
+  static constexpr size_t Dimension = 2;
+
   using Id = uint64_t;
 
   using EntityTypes = std::tuple<SideVertex, SideEdge, Side>;
-
-  static constexpr size_t topologicalDimension(){
-    return 2;
-  }
 
   static size_t numEntitiesPerCell(size_t dim){
     switch(dim){

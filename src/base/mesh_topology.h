@@ -88,25 +88,25 @@ namespace jali{
       switch(dim){
       case 0:{
         using EntityType = 
-          typename std::tuple_element<getDim_(MT::topologicalDimension(), 0),
+          typename std::tuple_element<getDim_(MT::Dimension, 0),
                                       typename MT::EntityTypes>::type;
         return new EntityType(id);
       }
       case 1:{
         using EntityType = 
-          typename std::tuple_element<getDim_(MT::topologicalDimension(), 1),
+          typename std::tuple_element<getDim_(MT::Dimension, 1),
                                       typename MT::EntityTypes>::type;
         return new EntityType(id);
       }
       case 2:{
         using EntityType = 
-          typename std::tuple_element<getDim_(MT::topologicalDimension(), 2),
+          typename std::tuple_element<getDim_(MT::Dimension, 2),
                                       typename MT::EntityTypes>::type;
         return new EntityType(id);
       }
       case 3:{
         using EntityType = 
-          typename std::tuple_element<getDim_(MT::topologicalDimension(), 3),
+          typename std::tuple_element<getDim_(MT::Dimension, 3),
                                       typename MT::EntityTypes>::type;
         return new EntityType(id);
       }
@@ -355,11 +355,11 @@ namespace jali{
       typename std::tuple_element<1, typename MT::EntityTypes>::type;  
 
     using FaceType = 
-      typename std::tuple_element<MT::topologicalDimension() - 1,
+      typename std::tuple_element<MT::Dimension - 1,
                                   typename MT::EntityTypes>::type;
 
     using CellType = 
-      typename std::tuple_element<MT::topologicalDimension(),
+      typename std::tuple_element<MT::Dimension,
                                   typename MT::EntityTypes>::type;
 
     class Iterator{
@@ -467,11 +467,11 @@ namespace jali{
 
     using VertexIterator = EntityIterator<0>;
     using EdgeIterator = EntityIterator<1>;
-    using FaceIterator = EntityIterator<MT::topologicalDimension() - 1>;
-    using CellIterator = EntityIterator<MT::topologicalDimension()>;
+    using FaceIterator = EntityIterator<MT::Dimension - 1>;
+    using CellIterator = EntityIterator<MT::Dimension>;
 
     Mesh(){
-      getConnectivity_(MT::topologicalDimension(), 0).init();
+      getConnectivity_(MT::Dimension, 0).init();
     }
   
     void addVertex(VertexType* vertex){
@@ -482,10 +482,10 @@ namespace jali{
                  std::initializer_list<VertexType*> verts){
 
       assert(verts.size() == 
-             MT::numVerticesPerEntity(MT::topologicalDimension()) &&
+             MT::numVerticesPerEntity(MT::Dimension) &&
              "invalid number of vertices per cell");
     
-      auto& c = getConnectivity_(MT::topologicalDimension(), 0);
+      auto& c = getConnectivity_(MT::Dimension, 0);
 
       assert(cell->id() == c.fromSize() && "id mismatch"); 
 
@@ -495,7 +495,7 @@ namespace jali{
 
       c.endFrom();
 
-      entities_[MT::topologicalDimension()].push_back(cell);
+      entities_[MT::Dimension].push_back(cell);
     }
 
     void addEdge(EdgeType* edge, VertexType* vertex1, VertexType* vertex2){
@@ -519,7 +519,7 @@ namespace jali{
              MT::numVerticesPerEntity(2) &&
              "invalid number vertices per face");
 
-      auto& c = getConnectivity_(MT::topologicalDimension() - 1, 0);
+      auto& c = getConnectivity_(MT::Dimension - 1, 0);
       if(c.empty()){
         c.init();
       }
@@ -531,7 +531,7 @@ namespace jali{
       }
 
       c.endFrom();
-      entities_[MT::topologicalDimension() - 1].push_back(face);
+      entities_[MT::Dimension - 1].push_back(face);
     }
     
     void addCellEdges(CellType* cell, std::initializer_list<EdgeType*> edges){
@@ -539,7 +539,7 @@ namespace jali{
              MT::numEntitiesPerCell(1) &&
              "invalid number of edges per cell");
 
-      auto& c = getConnectivity_(MT::topologicalDimension(), 1);
+      auto& c = getConnectivity_(MT::Dimension, 1);
       if(c.empty()){
         c.init();
       }
@@ -555,11 +555,11 @@ namespace jali{
 
     void addCellFaces(CellType* cell, std::initializer_list<FaceType*> faces){
       assert(faces.size() == 
-             MT::numEntitiesPerCell(MT::topologicalDimension() - 1) &&
+             MT::numEntitiesPerCell(MT::Dimension - 1) &&
              "invalid number of face per cell");
 
-      auto& c = getConnectivity_(MT::topologicalDimension(),
-                                 MT::topologicalDimension() - 1);
+      auto& c = getConnectivity_(MT::Dimension,
+                                 MT::Dimension - 1);
       if(c.empty()){
         c.init();
       }
@@ -590,7 +590,7 @@ namespace jali{
     void build(size_t dim) override{
       //std::cerr << "build: " << dim << std::endl;
 
-      assert(dim <= MT::topologicalDimension());
+      assert(dim <= MT::Dimension);
 
       size_t verticesPerEntity = MT::numVerticesPerEntity(dim);
       size_t entitiesPerCell =  MT::numEntitiesPerCell(dim);
@@ -600,7 +600,7 @@ namespace jali{
       IdVec entityVertices(entitiesPerCell * verticesPerEntity);
 
       Connectivity& cellToEntity =
-        getConnectivity_(MT::topologicalDimension(), dim);
+        getConnectivity_(MT::Dimension, dim);
 
       ConnVec entityVertexConn;
 
@@ -608,7 +608,7 @@ namespace jali{
       size_t maxCellEntityConns = 1;
 
       Connectivity& cellToVertex =
-        getConnectivity_(MT::topologicalDimension(), 0);
+        getConnectivity_(MT::Dimension, 0);
       assert(!cellToVertex.empty());
 
       size_t n = numCells();
@@ -798,7 +798,7 @@ namespace jali{
     }
     
     void computeAll() override{
-      int d = MT::topologicalDimension();
+      int d = MT::Dimension;
       for(int i = d; i >= 0; --i){
         for(int j = 0; j <= d; ++j){
           if(i != j){
@@ -809,7 +809,7 @@ namespace jali{
     }
 
     size_t numCells(){
-      return entities_[MT::topologicalDimension()].size();
+      return entities_[MT::Dimension].size();
     }
   
     size_t numVertices(){
@@ -821,7 +821,7 @@ namespace jali{
     }
   
     size_t numFaces(){
-      return entities_[MT::topologicalDimension() - 1].size();
+      return entities_[MT::Dimension - 1].size();
     }
 
     Connectivity& getConnectivity(size_t fromDim, size_t toDim) override{
@@ -836,7 +836,7 @@ namespace jali{
     }
 
     size_t topologicalDimension() override{
-      return MT::topologicalDimension();
+      return MT::Dimension;
     }  
 
     const EntityVec& getEntities_(size_t dim) const{
@@ -856,11 +856,11 @@ namespace jali{
  
   private:
     using Entities_ = 
-      std::array<EntityVec, MT::topologicalDimension() + 1>;
+      std::array<EntityVec, MT::Dimension + 1>;
 
     using Topology_ =
-      std::array<std::array<Connectivity, MT::topologicalDimension() + 1>,
-      MT::topologicalDimension() + 1>;
+      std::array<std::array<Connectivity, MT::Dimension + 1>,
+      MT::Dimension + 1>;
 
     Entities_ entities_;
     Topology_ topology_;

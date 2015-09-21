@@ -27,14 +27,13 @@ public:
 
 class TestMesh2dType{
 public:
+  static constexpr size_t Dimension = 2;
+
   using Id = uint64_t;
   using Float = double;
 
   using EntityTypes = std::tuple<Vertex, Edge, Cell>;
 
-  static constexpr size_t topologicalDimension(){
-    return 2;
-  }
 
   static size_t numEntitiesPerCell(size_t dim){
     switch(dim){
