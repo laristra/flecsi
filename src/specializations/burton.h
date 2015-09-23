@@ -6,7 +6,7 @@
 #ifndef flexi_burton_h
 #define flexi_burton_h
 
-#include "../base/mesh_topology.h"
+#include "../mesh/mesh_topology.h"
 
 /*!
  * \file burton.h

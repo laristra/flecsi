@@ -1,7 +1,7 @@
 #include <cinchtest.h>
 #include <iostream>
 
-#include <flexi/base/mesh_topology.h>
+#include "../mesh_topology.h"
 
 using namespace std;
 using namespace flexi;

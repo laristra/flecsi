@@ -3,13 +3,13 @@
 # All rights reserved.
 #-----------------------------------------------------------------------------~#
 
-set(base_HEADERS
+set(mesh_HEADERS
   mesh_entity.h
   mesh_topology.h
   vertex.h
   PARENT_SCOPE)
 
-set(base_SOURCES
+set(mesh_SOURCES
   PARENT_SCOPE)
 
 cinch_add_unit(traversal
