@@ -3,25 +3,23 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_entity_types_h
-#define flexi_entity_types_h
+#ifndef flexi_common_h
+#define flexi_common_h
 
 /*!
- * \file entity_types.h
+ * \file common.h
  * \authors bergen
- * \date Initial file creation: Aug 18, 2015
+ * \date Initial file creation: Sep 23, 2015
  */
-
-#include "default_mesh_policy.h"
-#include "vertex.h"
 
 namespace flexi {
 
-  using vertex_t = vertex_<mesh_policy::vertex_t>;
+//! P.O.D.
+template<typename T> T square(const T && a) { return a*a; }
 
 } // namespace flexi
 
-#endif // flexi_entity_types_h
+#endif // flexi_common_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.
