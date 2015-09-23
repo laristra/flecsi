@@ -27,6 +27,8 @@ template<typename T, size_t D>
 class dimensioned_array_
 {
 public:
+  dimensioned_array_(const dimensioned_array_& a)
+    : data_(a.data_){}
 
   //! Default constructor
   dimensioned_array_(std::initializer_list<T> list) {
@@ -39,9 +41,6 @@ public:
   dimensioned_array_(A ... args) {
     data_ = { args ... };
   }
-
-  //! Copy constructor (disabled)
-  dimensioned_array_(const dimensioned_array_ &) = delete;
 
   //! Assignment operator (disabled)
   dimensioned_array_ & operator = (const dimensioned_array_ &) = delete;
