@@ -4,6 +4,7 @@
  *~--------------------------------------------------------------------------~*/
 
 #include <gtest/gtest.h>
+#include <cinchtest.h>
 
 #include "../entity_types.h"
 

@@ -19,9 +19,10 @@ if(ENABLE_UNIT_TESTS)
     SOURCES unit/vertex_test.cc
   )
 
-#  cinch_add_unit(traversal
-#    SOURCES unit/traversal.cc
-#  )
+  cinch_add_unit(traversal
+    SOURCES unit/traversal.cc
+    INPUT unit/traversal.blessed
+  )
 endif(ENABLE_UNIT_TESTS)
 
 #----------------------------------------------------------------------------~-#
