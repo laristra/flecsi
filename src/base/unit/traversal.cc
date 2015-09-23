@@ -1,4 +1,3 @@
-#include <gtest/gtest.h>
 #include <cinchtest.h>
 #include <iostream>
 
