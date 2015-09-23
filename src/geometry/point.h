@@ -9,6 +9,7 @@
 #include <array>
 #include <cmath>
 
+#include "../data/dimensioned_array.h"
 #include "../utils/common.h"
 
 /*!
@@ -21,50 +22,14 @@ namespace flexi {
 
 enum class axis : size_t { x = 0, y = 1, z = 2 };
 
-/*!
-  \class point point.h
-  \brief point provides...
- */
 template<typename T, size_t D>
-class point_
-{
-public:
-
-  //! Default constructor
-  point_(std::initializer_list<T> list) {
-    assert(list.size() == D && "dimension size mismatch");
-    std::copy(list.begin(), list.end(), data_.begin());
-  } // point
-
-  //!
-  template<typename ... A>
-  point_(A ... args) {
-    data_ = { args ... };
-  }
-
-  //! Copy constructor (disabled)
-  point_(const point_ &) = delete;
-
-  //! Assignment operator (disabled)
-  point_ & operator = (const point_ &) = delete;
-
-  //! Destructor
-   ~point_() {}
-
-  T & operator [](axis a) {
-    return data_[static_cast<size_t>(a)];
-  } // operator ()
-
-private:
-
-  std::array<T, D> data_;
-
-}; // class point_
+using point_ = dimensioned_array_<T,D>;
 
 template<typename T, size_t D>
 T distance(point_<T,D> & a, point_<T,D> & b) {
 
   T sum(square(a[0]-b[0]));
+
   if(D>1) {
     sum += square(a[1]-b[1]);
   }
