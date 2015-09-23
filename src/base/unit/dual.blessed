@@ -1,0 +1,170 @@
+------------- forall cells, sides
+------- cell id: 0
+--------- side id: 0
+--------- side id: 1
+--------- side id: 2
+--------- side id: 3
+--------- side id: 4
+--------- side id: 5
+--------- side id: 6
+--------- side id: 7
+------- cell id: 1
+--------- side id: 8
+--------- side id: 9
+--------- side id: 10
+--------- side id: 11
+--------- side id: 12
+--------- side id: 13
+--------- side id: 14
+--------- side id: 15
+------- cell id: 2
+--------- side id: 16
+--------- side id: 17
+--------- side id: 18
+--------- side id: 19
+--------- side id: 20
+--------- side id: 21
+--------- side id: 22
+--------- side id: 23
+------- cell id: 3
+--------- side id: 24
+--------- side id: 25
+--------- side id: 26
+--------- side id: 27
+--------- side id: 28
+--------- side id: 29
+--------- side id: 30
+--------- side id: 31
+------------- forall cells, sides, vertices
+------- cell id: 0
+--------- side id: 0
+--------- side vertex id: 0
+--------- side vertex id: 1
+--------- side vertex id: 2
+--------- side id: 1
+--------- side vertex id: 1
+--------- side vertex id: 3
+--------- side vertex id: 2
+--------- side id: 2
+--------- side vertex id: 1
+--------- side vertex id: 4
+--------- side vertex id: 5
+--------- side id: 3
+--------- side vertex id: 1
+--------- side vertex id: 5
+--------- side vertex id: 3
+--------- side id: 4
+--------- side vertex id: 2
+--------- side vertex id: 7
+--------- side vertex id: 6
+--------- side id: 5
+--------- side vertex id: 2
+--------- side vertex id: 3
+--------- side vertex id: 7
+--------- side id: 6
+--------- side vertex id: 3
+--------- side vertex id: 5
+--------- side vertex id: 7
+--------- side id: 7
+--------- side vertex id: 5
+--------- side vertex id: 8
+--------- side vertex id: 7
+------- cell id: 1
+--------- side id: 8
+--------- side vertex id: 0
+--------- side vertex id: 1
+--------- side vertex id: 2
+--------- side id: 9
+--------- side vertex id: 1
+--------- side vertex id: 3
+--------- side vertex id: 2
+--------- side id: 10
+--------- side vertex id: 1
+--------- side vertex id: 4
+--------- side vertex id: 5
+--------- side id: 11
+--------- side vertex id: 1
+--------- side vertex id: 5
+--------- side vertex id: 3
+--------- side id: 12
+--------- side vertex id: 2
+--------- side vertex id: 7
+--------- side vertex id: 6
+--------- side id: 13
+--------- side vertex id: 2
+--------- side vertex id: 3
+--------- side vertex id: 7
+--------- side id: 14
+--------- side vertex id: 3
+--------- side vertex id: 5
+--------- side vertex id: 7
+--------- side id: 15
+--------- side vertex id: 5
+--------- side vertex id: 8
+--------- side vertex id: 7
+------- cell id: 2
+--------- side id: 16
+--------- side vertex id: 0
+--------- side vertex id: 1
+--------- side vertex id: 2
+--------- side id: 17
+--------- side vertex id: 1
+--------- side vertex id: 3
+--------- side vertex id: 2
+--------- side id: 18
+--------- side vertex id: 1
+--------- side vertex id: 4
+--------- side vertex id: 5
+--------- side id: 19
+--------- side vertex id: 1
+--------- side vertex id: 5
+--------- side vertex id: 3
+--------- side id: 20
+--------- side vertex id: 2
+--------- side vertex id: 7
+--------- side vertex id: 6
+--------- side id: 21
+--------- side vertex id: 2
+--------- side vertex id: 3
+--------- side vertex id: 7
+--------- side id: 22
+--------- side vertex id: 3
+--------- side vertex id: 5
+--------- side vertex id: 7
+--------- side id: 23
+--------- side vertex id: 5
+--------- side vertex id: 8
+--------- side vertex id: 7
+------- cell id: 3
+--------- side id: 24
+--------- side vertex id: 0
+--------- side vertex id: 1
+--------- side vertex id: 2
+--------- side id: 25
+--------- side vertex id: 1
+--------- side vertex id: 3
+--------- side vertex id: 2
+--------- side id: 26
+--------- side vertex id: 1
+--------- side vertex id: 4
+--------- side vertex id: 5
+--------- side id: 27
+--------- side vertex id: 1
+--------- side vertex id: 5
+--------- side vertex id: 3
+--------- side id: 28
+--------- side vertex id: 2
+--------- side vertex id: 7
+--------- side vertex id: 6
+--------- side id: 29
+--------- side vertex id: 2
+--------- side vertex id: 3
+--------- side vertex id: 7
+--------- side id: 30
+--------- side vertex id: 3
+--------- side vertex id: 5
+--------- side vertex id: 7
+--------- side id: 31
+--------- side vertex id: 5
+--------- side vertex id: 8
+--------- side vertex id: 7

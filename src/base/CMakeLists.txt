@@ -23,6 +23,11 @@ if(ENABLE_UNIT_TESTS)
     SOURCES unit/traversal.cc
     INPUT unit/traversal.blessed
   )
+
+  cinch_add_unit(dual
+    SOURCES unit/dual.cc
+    INPUT unit/dual.blessed
+  )
 endif(ENABLE_UNIT_TESTS)
 
 #----------------------------------------------------------------------------~-#

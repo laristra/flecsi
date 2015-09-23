@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cinchtest.h>
 
 #include <jali/base/mesh_topology.h>
 
@@ -158,7 +159,7 @@ public:
 using TestMesh = Mesh<TestMesh2dType>;
 using TestDualMesh = Mesh<TestDualMesh2dType>;
 
-int main(int argc, char** argv){
+TEST(mesh_topology, dual) {
 
   size_t width = 2;
   size_t height = 2;
@@ -237,29 +238,29 @@ int main(int argc, char** argv){
     }
   }
 
-  cout << "------------- forall cells, sides" << endl;
+  CINCH_TEST_STREAM() << "------------- forall cells, sides" << endl;
 
   for(TestMesh::CellIterator c(*mesh); !c.isend(); ++c){
-    cout << "------- cell id: " << c->id() << endl;
+    CINCH_TEST_STREAM() << "------- cell id: " << c->id() << endl;
     for(TestDualMesh::CellIterator s(*dualMesh, c->getSides());
 	 	!s.isend(); ++s){
-      cout << "--------- side id: " << s->id() << endl;
+      CINCH_TEST_STREAM() << "--------- side id: " << s->id() << endl;
     }
   }
 
-  cout << "------------- forall cells, sides, vertices" << endl;
+  CINCH_TEST_STREAM() << "------------- forall cells, sides, vertices" << endl;
 
   for(TestMesh::CellIterator c(*mesh); !c.isend(); ++c){
-    cout << "------- cell id: " << c->id() << endl;
+    CINCH_TEST_STREAM() << "------- cell id: " << c->id() << endl;
     for(TestDualMesh::CellIterator s(*dualMesh, c->getSides());
 	 	!s.isend(); ++s){
-      cout << "--------- side id: " << s->id() << endl;
+      CINCH_TEST_STREAM() << "--------- side id: " << s->id() << endl;
       for(TestDualMesh::VertexIterator sv(s);
           !sv.isend(); ++sv){
-        cout << "--------- side vertex id: " << sv->id() << endl;
+        CINCH_TEST_STREAM() << "--------- side vertex id: " << sv->id() << endl;
       }
     }
   }
 
-  return 0;
+  ASSERT_TRUE(CINCH_TEST_EQUAL_BLESSED("dual.blessed"));
 }

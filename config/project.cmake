@@ -9,7 +9,6 @@ project(jali)
 # Set application directory
 #------------------------------------------------------------------------------#
 
-cinch_add_application_directory("test")
 #cinch_add_application_directory("examples")
 
 #------------------------------------------------------------------------------#
