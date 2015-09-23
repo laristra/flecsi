@@ -13,7 +13,6 @@ set(utils_SOURCES
   PARENT_SCOPE
 )
 
-#if(ENABLE_UNIT_TESTS)
 #  cinch_add_unit(casename
 #    SOURCES testfile.cc
 #    LIBRARIES list
@@ -21,7 +20,6 @@ set(utils_SOURCES
 #    POLICY MPI
 #    THREADS 1 2 4
 #  )
-#endif(ENABLE_UNIT_TESTS)
 
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.
