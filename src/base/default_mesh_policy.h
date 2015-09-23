@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef jali_default_mesh_policy_h
-#define jali_default_mesh_policy_h
+#ifndef flexi_default_mesh_policy_h
+#define flexi_default_mesh_policy_h
 
 /*!
  * \file default_policy.h
@@ -12,11 +12,11 @@
  * \date Initial file creation: Aug 18, 2015
  */
 
-#if defined(JALI_USER_MESH_POLICY)
-  #include <jali_mesh_policy.h>
+#if defined(FLEXI_USER_MESH_POLICY)
+  #include <flexi_mesh_policy.h>
 #else
 
-namespace jali {
+namespace flexi {
 
 class default_policy_t
 {
@@ -36,11 +36,11 @@ protected:
 
   } // namespace mesh_policy
 
-} // namespace jali
+} // namespace flexi
 
-#endif // if defined(JALI_USER_MESH_POLICY)
+#endif // if defined(FLEXI_USER_MESH_POLICY)
 
-#endif // jali_default_mesh_policy_h
+#endif // flexi_default_mesh_policy_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

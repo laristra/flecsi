@@ -28,8 +28,8 @@ set(ug_pandoc_options
 # Add user guide target
 #------------------------------------------------------------------------------#
 
-cinch_add_doc(user-guide jali_ug.py src
-    jali-user-guide-${${PROJECT_NAME}_VERSION}.pdf
+cinch_add_doc(user-guide flexi_ug.py src
+    flexi-user-guide-${${PROJECT_NAME}_VERSION}.pdf
     PANDOC_OPTIONS ${ug_pandoc_options} IMAGE_GLOB "*.pdf")
 
 #------------------------------------------------------------------------------#
@@ -44,8 +44,8 @@ set(charter_pandoc_options
 # Add charter target
 #------------------------------------------------------------------------------#
 
-cinch_add_doc(charter jali_charter.py src
-  jali-charter-${${PROJECT_NAME}_VERSION}.pdf
+cinch_add_doc(charter flexi_charter.py src
+  flexi-charter-${${PROJECT_NAME}_VERSION}.pdf
   PANDOC_OPTIONS ${charter_pandoc_options})
 
 #~---------------------------------------------------------------------------~-#

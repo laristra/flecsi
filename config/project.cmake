@@ -3,7 +3,7 @@
 # All rights reserved.
 #~----------------------------------------------------------------------------~#
 
-project(jali)
+project(flexi)
 
 #------------------------------------------------------------------------------#
 # Set application directory
@@ -15,7 +15,7 @@ project(jali)
 # Add library targets
 #------------------------------------------------------------------------------#
 
-cinch_add_library_target(jali src)
+cinch_add_library_target(flexi src)
 
 #------------------------------------------------------------------------------#
 # Set header suffix regular expression

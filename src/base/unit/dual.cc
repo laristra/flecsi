@@ -1,10 +1,10 @@
 #include <iostream>
 #include <cinchtest.h>
 
-#include <jali/base/mesh_topology.h>
+#include <flexi/base/mesh_topology.h>
 
 using namespace std;
-using namespace jali;
+using namespace flexi;
 
 class SideVertex : public MeshEntity{
 public:

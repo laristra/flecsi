@@ -68,7 +68,7 @@ __PRETTY_FUNCTION__ << ": " << #X << " = " << X << std::endl
 #define nlog(X) std::cout << __FILE__ << ":" << __LINE__ << ": " << \
 __PRETTY_FUNCTION__ << ": " << X << std::endl
 
-namespace jali{
+namespace flexi{
 
   class MeshEntity{
   public:
@@ -874,6 +874,6 @@ namespace jali{
     Topology_ topology_;
   };
 
-} // jali
+} // flexi
 
 #endif // __MESH_TOPOLOGY_H__

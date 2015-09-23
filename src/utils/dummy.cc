@@ -7,13 +7,13 @@
 
 #include "dummy.h"
 
-namespace jali {
+namespace flexi {
 
 void dummy() {
   std::cerr << "Hello World" << std::endl;
 } // dummy()
 
-} // namespace jali
+} // namespace flexi
 
 /*~------------------------------------------------------------------------~--*
  * Formatting options for vim.

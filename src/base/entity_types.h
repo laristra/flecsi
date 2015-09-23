@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef jali_entity_types_h
-#define jali_entity_types_h
+#ifndef flexi_entity_types_h
+#define flexi_entity_types_h
 
 /*!
  * \file entity_types.h
@@ -15,13 +15,13 @@
 #include "default_mesh_policy.h"
 #include "vertex.h"
 
-namespace jali {
+namespace flexi {
 
   using vertex_t = vertex_<mesh_policy::vertex_t>;
 
-} // namespace jali
+} // namespace flexi
 
-#endif // jali_entity_types_h
+#endif // flexi_entity_types_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

@@ -10,7 +10,7 @@
 
 TEST(vertex_test, create) {
 
-    jali::vertex_t v(0);
+    flexi::vertex_t v(0);
 
 } // TEST
 

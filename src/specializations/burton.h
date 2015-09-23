@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef jali_burton_h
-#define jali_burton_h
+#ifndef flexi_burton_h
+#define flexi_burton_h
 
 #include "../base/mesh_topology.h"
 
@@ -14,7 +14,7 @@
  * \date Initial file creation: Sep 02, 2015
  */
 
-namespace jali {
+namespace flexi {
 
   template<class T, size_t D>
   class Vector{
@@ -350,9 +350,9 @@ private:
 
 using mesh_t = burton_mesh_t;
 
-} // namespace jali
+} // namespace flexi
 
-#endif // jali_burton_h
+#endif // flexi_burton_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

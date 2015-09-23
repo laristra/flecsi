@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef jali_dummy_h
-#define jali_dummy_h
+#ifndef flexi_dummy_h
+#define flexi_dummy_h
 
 /*!
  * \file dummy.h
@@ -12,13 +12,13 @@
  * \date Initial file creation: Aug 18, 2015
  */
 
-namespace jali {
+namespace flexi {
 
   void dummy();
 
-} // namespace jali
+} // namespace flexi
 
-#endif // jali_dummy_h
+#endif // flexi_dummy_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

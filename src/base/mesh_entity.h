@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef jali_mesh_entity_h
-#define jali_mesh_entity_h
+#ifndef flexi_mesh_entity_h
+#define flexi_mesh_entity_h
 
 /*!
  * \file mesh_entity.h
@@ -12,7 +12,7 @@
  * \date Initial file creation: Aug 18, 2015
  */
 
-namespace jali {
+namespace flexi {
 
 /*!
   \class mesh_entity mesh_entity.h
@@ -26,9 +26,9 @@ struct mesh_entity_t {
 
 }; // struct mesh_entity_t
 
-} // namespace jali
+} // namespace flexi
 
-#endif // jali_mesh_entity_h
+#endif // flexi_mesh_entity_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

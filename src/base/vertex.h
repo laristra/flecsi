@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef jali_vertex_h
-#define jali_vertex_h
+#ifndef flexi_vertex_h
+#define flexi_vertex_h
 
 /*!
  * \file vertex.h
@@ -14,7 +14,7 @@
 
 #include "mesh_entity.h"
 
-namespace jali {
+namespace flexi {
 
 /*!
   \class vertex vertex.h
@@ -41,9 +41,9 @@ public:
 
 }; // class vertex_
 
-} // namespace jali
+} // namespace flexi
 
-#endif // jali_vertex_h
+#endif // flexi_vertex_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.
