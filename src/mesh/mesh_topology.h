@@ -410,14 +410,6 @@ namespace flexi{
         return *(*entities_)[index_];
       }
 
-		EntityVec::const_iterator begin() const {
-			return entities_->begin();
-		} // auto
-
-		EntityVec::const_iterator end() const {
-			return entities_->end();
-		} // auto
-
       bool isend() const{
         return index_ >= endIndex_;
       }
@@ -438,6 +430,12 @@ namespace flexi{
         return c.getEntities(index_);
       }
 
+    protected:
+
+      const EntityVec* getEntities_(){
+        return entities_;
+      }
+
     private:
 
       Mesh& mesh_;
@@ -453,6 +451,8 @@ namespace flexi{
     public:
       using EntityType = 
         typename std::tuple_element<D, typename MT::EntityTypes>::type;
+
+      using EntityTypeVec = std::vector<EntityType*>;
 
       EntityIterator(Mesh& mesh)
         : Iterator(mesh, D){}
@@ -470,6 +470,16 @@ namespace flexi{
 
       EntityType* operator->(){
         return &static_cast<EntityType&>(Iterator::get());
+      }
+
+      typename EntityTypeVec::const_iterator begin(){
+        return reinterpret_cast<const EntityTypeVec*>(
+          Iterator::getEntities_())->begin();
+      }
+
+      typename EntityTypeVec::const_iterator end(){
+        return reinterpret_cast<const EntityTypeVec*>(
+          Iterator::getEntities_())->end();
       }
     };
 
@@ -850,6 +860,22 @@ namespace flexi{
     const EntityVec& getEntities_(size_t dim) const{
       return entities_[dim];
     }
+
+    VertexIterator vertices(){
+      return VertexIterator(*this);
+    }
+
+    EdgeIterator edges(){
+      return EdgeIterator(*this);
+    }
+
+    FaceIterator faces(){
+      return FaceIterator(*this);
+    }
+
+    CellIterator cells(){
+      return CellIterator(*this);
+    } 
 
     void dump(){
       for(size_t i = 0; i < topology_.size(); ++i){

@@ -61,10 +61,15 @@ namespace flexi {
       EntityGroup<2> wedges_;
 
     }; // class burton_cell_t
+    
+    class burton_corner_t;
 
     // Wedge type
-    struct burton_wedge_t : public MeshEntity {
+    class burton_wedge_t : public MeshEntity {
       burton_wedge_t(size_t id) : MeshEntity(id) {}
+
+    private:
+      burton_corner_t* corner_;
     }; // struct burton_wedge_t
 
     // Corner type
@@ -308,6 +313,12 @@ public:
     auto c = new cell_t(nextCellId_++);
     mesh_.addCell(c, verts);
     return c;
+  }
+
+  void init(){
+    for(auto c : mesh_.cells()){
+      ndump(c->id());
+    }
   }
 
 private:
