@@ -1009,7 +1009,7 @@ namespace flexi{
 
     template<class E>
     EntityRange<MT::dimension> cellsOf(E& e){
-      return cellsOf<MT::dimension>(e);
+      return entitiesOf<MT::dimension>(e);
     }
 
     void dump(){
