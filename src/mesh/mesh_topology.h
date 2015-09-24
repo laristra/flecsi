@@ -954,7 +954,7 @@ namespace flexi{
       return EntityRange<1>(entities_[1]);
     }
 
-    EntityRange<MT::dimension> faces(){
+    EntityRange<MT::dimension - 1> faces(){
       return EntityRange<MT::dimension - 1>(entities_[MT::dimension - 1]);
     }
 
