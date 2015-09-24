@@ -501,11 +501,11 @@ namespace flexi{
           index_(itr.index_){}
 
       iterator(EntityVec& entities, size_t index)
-        : entities_(reinterpret_cast<EntityTypeVec&>(entities)),
+        : entities_(&reinterpret_cast<EntityTypeVec&>(entities)),
           index_(index){}
 
       iterator(EntityTypeVec& entities, size_t index)
-        : entities_(entities),
+        : entities_(&entities),
           index_(index){}
       
       iterator& operator++(){
@@ -513,12 +513,18 @@ namespace flexi{
         return *this;
       }
 
+      iterator& operator=(const iterator& itr){
+        index_ = itr.index_;
+        entities_ = itr.entities_;
+        return *this;
+      }
+
       EntityType& operator*(){
-        return *entities_[index_];
+        return *(*entities_)[index_];
       }
 
       EntityType* operator->(){
-        return entities_[index_];
+        return (*entities_)[index_];
       }
 
       bool operator==(const iterator& itr) const{
@@ -530,7 +536,7 @@ namespace flexi{
       }
 
     private:
-      const EntityTypeVec entities_;
+      const EntityTypeVec* entities_;
       size_t index_;
     };
 
