@@ -488,6 +488,85 @@ namespace flexi{
     using FaceIterator = EntityIterator<MT::dimension - 1>;
     using CellIterator = EntityIterator<MT::dimension>;
 
+    template<size_t D>
+    class iterator{
+    public:
+      using EntityType = 
+        typename std::tuple_element<D, typename MT::EntityTypes>::type;
+
+      using EntityTypeVec = std::vector<EntityType*>;
+
+      iterator(const iterator& itr)
+        : entities_(itr.entities_),
+          index_(itr.index_){}
+
+      iterator(EntityVec& entities, size_t index)
+        : entities_(reinterpret_cast<EntityTypeVec&>(entities)),
+          index_(index){}
+
+      iterator(EntityTypeVec& entities, size_t index)
+        : entities_(entities),
+          index_(index){}
+      
+      iterator& operator++(){
+        ++index_;
+        return *this;
+      }
+
+      EntityType& operator*(){
+        return *entities_[index_];
+      }
+
+      EntityType* operator->(){
+        return entities_[index_];
+      }
+
+      bool operator==(const iterator& itr) const{
+        return index_ == itr.index_;
+      }
+
+      bool operator!=(const iterator& itr) const{
+        return index_ != itr.index_;
+      }
+
+    private:
+      const EntityTypeVec entities_;
+      size_t index_;
+    };
+
+    using vertex_iterator = iterator<0>;
+    using edge_iterator = iterator<1>;
+    using face_iterator = iterator<MT::dimension - 1>;
+    using cell_iterator = iterator<MT::dimension>;
+
+    template<size_t D>
+    class EntityRange{
+    public:
+      using iterator = iterator<D>;
+      using EntityType = typename iterator::EntityType;
+      using EntityTypeVec = typename iterator::EntityTypeVec;
+
+      EntityRange(EntityVec& v)
+        : v_(reinterpret_cast<EntityTypeVec&>(v)){}
+
+      EntityRange(EntityTypeVec& v)
+        : v_(v){}
+
+      EntityRange(const EntityRange& r)
+        : v_(r.v_){}
+
+      iterator begin(){
+        return iterator(v_, 0);
+      }
+
+      iterator end(){
+        return iterator(v_, v_.size());
+      }
+
+    private:
+      EntityTypeVec& v_;
+    };
+
     Mesh(){
       getConnectivity_(MT::dimension, 0).init();
     }
@@ -861,21 +940,21 @@ namespace flexi{
       return entities_[dim];
     }
 
-    VertexIterator vertices(){
-      return VertexIterator(*this);
+    EntityRange<0> vertices(){
+      return EntityRange<1>(entities_[0]);
     }
 
-    EdgeIterator edges(){
-      return EdgeIterator(*this);
+    EntityRange<1> edges(){
+      return EntityRange<1>(entities_[1]);
     }
 
-    FaceIterator faces(){
-      return FaceIterator(*this);
+    EntityRange<MT::dimension> faces(){
+      return EntityRange<MT::dimension - 1>(entities_[MT::dimension - 1]);
     }
 
-    CellIterator cells(){
-      return CellIterator(*this);
-    } 
+    EntityRange<MT::dimension> cells(){
+      return EntityRange<MT::dimension>(entities_[MT::dimension]);
+    }
 
     void dump(){
       for(size_t i = 0; i < topology_.size(); ++i){

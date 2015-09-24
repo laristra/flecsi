@@ -23,7 +23,7 @@ namespace flexi {
 
     using Id = uint64_t;
 
-    using point_t = point_<double, dimension>;
+    using point_t = point<double, dimension>;
 
     // Vertex type
     struct burton_vertex_t : public MeshEntity {
@@ -147,7 +147,7 @@ namespace flexi {
 
     using Id = uint64_t;
 
-    using point_t = point_<double, burton_mesh_types_t::dimension>;
+    using point_t = point<double, burton_mesh_types_t::dimension>;
 
     using burton_vertex_t = burton_mesh_types_t::burton_vertex_t;
 
@@ -237,7 +237,7 @@ private:
 
 public:
 
-  using point_t = point_<double, burton_mesh_types_t::dimension>;
+  using point_t = point<double, burton_mesh_types_t::dimension>;
 
   using vertex_t = burton_mesh_types_t::burton_vertex_t;
   using edge_t = burton_mesh_types_t::burton_edge_t;
@@ -317,7 +317,7 @@ public:
 
   void init(){
     for(auto c : mesh_.cells()){
-      ndump(c->id());
+      ndump(c.id());
     }
   }
 
