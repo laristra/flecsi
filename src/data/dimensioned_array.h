@@ -19,35 +19,39 @@
 
 namespace flexi {
 
+enum class axis : size_t { x = 0, y = 1, z = 2 };
+
 /*!
   \class dimensioned_array dimensioned_array.h
-  \brief dimensioned_array provides...
+  \brief The dimensioned_array type provides a general base for defining
+  contiguous array types that have a specific dimension.  Please look at
+  the \ref point and \ref vector types for an example of its use.
  */
 template<typename T, size_t D>
-class dimensioned_array_
+class dimensioned_array
 {
 public:
 
   //! Default constructor
-  dimensioned_array_(std::initializer_list<T> list) {
+  dimensioned_array(std::initializer_list<T> list) {
     assert(list.size() == D && "dimension size mismatch");
     std::copy(list.begin(), list.end(), data_.begin());
   } // dimensioned_array
 
   //!
   template<typename ... A>
-  dimensioned_array_(A ... args) {
+  dimensioned_array(A ... args) {
     data_ = { args ... };
   }
 
   //! Copy constructor (disabled)
-  dimensioned_array_(const dimensioned_array_ &) = delete;
+  dimensioned_array(const dimensioned_array &) = delete;
 
   //! Assignment operator (disabled)
-  dimensioned_array_ & operator = (const dimensioned_array_ &) = delete;
+  dimensioned_array & operator = (const dimensioned_array &) = delete;
 
   //! Destructor
-   ~dimensioned_array_() {}
+   ~dimensioned_array() {}
 
   /*!
     \brief 
@@ -63,7 +67,7 @@ private:
 
   std::array<T, D> data_;
 
-}; // class dimensioned_array_
+}; // class dimensioned_array
 
 } // namespace flexi
 

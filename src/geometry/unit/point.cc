@@ -8,7 +8,7 @@
 #include "../point.h"
 
 using namespace flexi;
-using point_t = flexi::point_<double,2>;
+using point_t = flexi::point<double,2>;
 
 TEST(point, sanity) {
 

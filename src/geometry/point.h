@@ -20,13 +20,22 @@
 
 namespace flexi {
 
-enum class axis : size_t { x = 0, y = 1, z = 2 };
+/*!
+  \class point point.h
+  \brief point defines an interface for storing and manipulating
+  coordinate data associated with a geometric domain.
 
+  The point type is implemented using \ref dimensioned_array.  Look there
+  for more information on the point interface.
+ */
 template<typename T, size_t D>
-using point_ = dimensioned_array_<T,D>;
+using point = dimensioned_array<T,D>;
 
+/*!
+  \function distance
+ */
 template<typename T, size_t D>
-T distance(point_<T,D> & a, point_<T,D> & b) {
+T distance(point<T,D> & a, point<T,D> & b) {
 
   T sum(square(a[0]-b[0]));
 
