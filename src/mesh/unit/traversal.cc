@@ -28,7 +28,7 @@ public:
 
 class TestMesh2dType{
 public:
-  static constexpr size_t Dimension = 2;
+  static constexpr size_t dimension = 2;
 
   using Id = uint64_t;
   using Float = double;

@@ -7,6 +7,7 @@
 #define flexi_burton_h
 
 #include "../mesh/mesh_topology.h"
+#include "../geometry/point.h"
 
 /*!
  * \file burton.h
@@ -16,52 +17,23 @@
 
 namespace flexi {
 
-  template<class T, size_t D>
-  class Vector{
-  public:
-    Vector(){}
-
-    Vector(const Vector& v)
-      : v_(v.v_){}
-
-    Vector(std::initializer_list<T> v){
-      assert(v.size() == D && "vector size mismatch");
-
-      std::copy(v.begin(), v.end(), v_.begin()); 
-    }
-
-    T& operator[](size_t i){
-      return v_[i];
-    }
-
-    const T& operator[](size_t i) const{
-      return v_[i];
-    }
-
-    Vector& operator=(const Vector& v) const{
-      v_ = v;
-    }
-
-    std::array<T, D> v_;
-  };
-
   class burton_mesh_types_t{
   public:
-    static constexpr size_t Dimension = 2;
+    static constexpr size_t dimension = 2;
 
     using Id = uint64_t;
 
-    using Vec = Vector<double, Dimension>;
-    
+    using point_t = point_<double, dimension>;
+
     // Vertex type
     struct burton_vertex_t : public MeshEntity {
       burton_vertex_t(size_t id) : MeshEntity(id) {}
 
-      burton_vertex_t(size_t id, const Vec& pos) :
+      burton_vertex_t(size_t id, const point_t& pos) :
         MeshEntity(id),
         pos(pos){}
       
-      Vec pos;
+      point_t pos;
     }; // struct burton_vertex_t
 
     // Edge type
@@ -89,10 +61,15 @@ namespace flexi {
       EntityGroup<2> wedges_;
 
     }; // class burton_cell_t
+    
+    class burton_corner_t;
 
     // Wedge type
-    struct burton_wedge_t : public MeshEntity {
+    class burton_wedge_t : public MeshEntity {
       burton_wedge_t(size_t id) : MeshEntity(id) {}
+
+    private:
+      burton_corner_t* corner_;
     }; // struct burton_wedge_t
 
     // Corner type
@@ -166,11 +143,11 @@ namespace flexi {
 
  class dual_mesh_types_t{
   public:
-    static constexpr size_t Dimension = burton_mesh_types_t::Dimension;
+    static constexpr size_t dimension = burton_mesh_types_t::dimension;
 
     using Id = uint64_t;
 
-    using Vec = Vector<double, burton_mesh_types_t::Dimension>;
+    using point_t = point_<double, burton_mesh_types_t::dimension>;
 
     using burton_vertex_t = burton_mesh_types_t::burton_vertex_t;
 
@@ -260,7 +237,7 @@ private:
 
 public:
 
-  using Vec = Vector<double, burton_mesh_types_t::Dimension>;
+  using point_t = point_<double, burton_mesh_types_t::dimension>;
 
   using vertex_t = burton_mesh_types_t::burton_vertex_t;
   using edge_t = burton_mesh_types_t::burton_edge_t;
@@ -324,20 +301,25 @@ public:
   /*--------------------------------------------------------------------------*
    *--------------------------------------------------------------------------*/
 
-/*
-  vertex_t* create_vertex(const Vec& pos){
+  vertex_t* create_vertex(const point_t& pos){
     auto v = new vertex_t(nextVertexId_++, pos);
     mesh_.addVertex(v);
     return v;
   }
 
   cell_t* create_cell(std::initializer_list<vertex_t*> verts){
-    assert(verts.size() == MT::verticesPerCell() && "vertices size mismatch");
+    assert(verts.size() == burton_mesh_types_t::verticesPerCell() && 
+           "vertices size mismatch");
     auto c = new cell_t(nextCellId_++);
     mesh_.addCell(c, verts);
     return c;
   }
-*/
+
+  void init(){
+    for(auto c : mesh_.cells()){
+      ndump(c->id());
+    }
+  }
 
 private:
 

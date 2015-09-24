@@ -32,6 +32,9 @@ class dimensioned_array
 {
 public:
 
+  dimensioned_array(const dimensioned_array & a)
+    : data_(a.data_){}
+
   //! Default constructor
   dimensioned_array(std::initializer_list<T> list) {
     assert(list.size() == D && "dimension size mismatch");
@@ -43,9 +46,6 @@ public:
   dimensioned_array(A ... args) {
     data_ = { args ... };
   }
-
-  //! Copy constructor (disabled)
-  dimensioned_array(const dimensioned_array &) = delete;
 
   //! Assignment operator (disabled)
   dimensioned_array & operator = (const dimensioned_array &) = delete;
