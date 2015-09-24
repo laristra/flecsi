@@ -5,28 +5,19 @@
 
 #include <cinchtest.h>
 
-#include "../point.h"
+#include "../vector.h"
 
 using namespace flexi;
 
-using point_t = point<double,2>;
+using vector_1d_t = vector<double,1>;
+using vector_2d_t = vector<double,2>;
+using vector_3d_t = vector<double,3>;
 
-TEST(point, sanity) {
+TEST(vector, dot) {
+  vector_2d_t a(1.0, 1.0);
+  vector_2d_t b(3.0, 4.0);
 
-    point_t a{3.0, 0.0};
-
-    ASSERT_EQ(3.0, a[axis::x]);
-    ASSERT_EQ(0.0, a[axis::y]);
-
-} // TEST
-
-TEST(point, distance) {
-    point_t a{1.0, 2.0};
-    point_t b{4.0, 6.0};
-
-    double d = distance(a, b);
-
-    ASSERT_EQ(5.0, d) << "Distance calculation failed";
+  ASSERT_EQ(7.0, dot(a, b));
 } // TEST
 
 /*----------------------------------------------------------------------------*
@@ -59,11 +50,5 @@ TEST(point, distance) {
  *----------------------------------------------------------------------------*/
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for Emacs and vim.
- *
- * mode:c++
- * indent-tabs-mode:t
- * c-basic-offset:4
- * tab-width:4
- * vim: set tabstop=4 shiftwidth=4 expandtab :
+ * vim: set tabstop=2 shiftwidth=2 expandtab :
  *~-------------------------------------------------------------------------~-*/

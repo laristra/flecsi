@@ -15,7 +15,7 @@
 namespace flexi {
 
 //! P.O.D.
-template<typename T> T square(const T && a) { return a*a; }
+template<typename T> T square(const T & a) { return a*a; }
 
 } // namespace flexi
 

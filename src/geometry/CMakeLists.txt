@@ -15,6 +15,9 @@ set(geometry_HEADERS
 cinch_add_unit(point
   SOURCES unit/point.cc)
 
+cinch_add_unit(vector
+  SOURCES unit/vector.cc)
+
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.
 # vim: set tabstop=2 shiftwidth=2 expandtab :

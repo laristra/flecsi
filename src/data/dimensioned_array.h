@@ -44,6 +44,7 @@ public:
   //!
   template<typename ... A>
   dimensioned_array(A ... args) {
+    // add check for dimension
     data_ = { args ... };
   }
 
@@ -60,6 +61,11 @@ public:
    */
   template<typename E>
   T & operator [](E e) {
+    return data_[static_cast<size_t>(e)];
+  } // operator ()
+
+  template<typename E>
+  const T & operator [](E e) const {
     return data_[static_cast<size_t>(e)];
   } // operator ()
 
