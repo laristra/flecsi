@@ -37,15 +37,10 @@ using point = dimensioned_array<T,D>;
 template<typename T, size_t D>
 T distance(point<T,D> & a, point<T,D> & b) {
 
-  T sum(square(a[0]-b[0]));
-
-  if(D>1) {
-    sum += square(a[1]-b[1]);
-  }
-
-  if(D>2) {
-    sum += square(a[2]-b[2]);
-  }
+  T sum(0);
+  for(size_t d(0); d<D; ++d) {
+    sum += square(a[d]-b[d]);
+  } // for
 
   return std::sqrt(sum);
 } // distance

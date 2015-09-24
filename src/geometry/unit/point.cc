@@ -13,10 +13,19 @@ using point_t = flexi::point<double,2>;
 TEST(point, sanity) {
 
     point_t a{3.0, 0.0};
-    point_t b(0.0, 0.0);
 
-    double v = a[axis::x];
-    std::cout << "x value: " << v << std::endl;
+    ASSERT_EQ(3.0, a[axis::x]);
+    ASSERT_EQ(0.0, a[axis::y]);
+
+} // TEST
+
+TEST(point, distance) {
+    point_t a{1.0, 2.0};
+    point_t b{4.0, 6.0};
+
+    double d = distance(a, b);
+
+    ASSERT_EQ(5.0, d) << "Distance calculation failed";
 } // TEST
 
 /*----------------------------------------------------------------------------*
