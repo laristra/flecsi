@@ -27,6 +27,8 @@ namespace flexi {
 
     // Vertex type
     struct burton_vertex_t : public MeshEntity {
+      static const size_t dimension = 0;
+
       burton_vertex_t(size_t id) : MeshEntity(id) {}
 
       burton_vertex_t(size_t id, const point_t& pos) :
@@ -38,12 +40,15 @@ namespace flexi {
 
     // Edge type
     struct burton_edge_t : public MeshEntity {
+      static const size_t dimension = 1;
+
       burton_edge_t(size_t id) : MeshEntity(id) {}
     }; // struct burton_edge_t
 
     // Cell type
     class burton_cell_t : public MeshEntity {
     public:
+      static const size_t dimension = 2;
 
       burton_cell_t(size_t id) : MeshEntity(id) {}
 
@@ -66,6 +71,8 @@ namespace flexi {
 
     // Wedge type
     class burton_wedge_t : public MeshEntity {
+      static const size_t dimension = 2;
+
       burton_wedge_t(size_t id) : MeshEntity(id) {}
 
     private:
@@ -75,6 +82,7 @@ namespace flexi {
     // Corner type
     class burton_corner_t : public MeshEntity {
     public:
+      static const size_t dimension = 0;
 
       burton_corner_t(size_t id) : MeshEntity(id) {}
 
@@ -318,6 +326,9 @@ public:
   void init(){
     for(auto c : mesh_.cells()){
       ndump(c.id());
+      for(auto v : mesh_.verticesOf(c)){
+        ndump(v.id());
+      }
     }
   }
 

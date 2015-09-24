@@ -500,11 +500,11 @@ namespace flexi{
         : entities_(itr.entities_),
           index_(itr.index_){}
 
-      iterator(EntityVec& entities, size_t index)
-        : entities_(&reinterpret_cast<EntityTypeVec&>(entities)),
+      iterator(const EntityVec& entities, size_t index)
+        : entities_(&reinterpret_cast<const EntityTypeVec&>(entities)),
           index_(index){}
 
-      iterator(EntityTypeVec& entities, size_t index)
+      iterator(const EntityTypeVec& entities, size_t index)
         : entities_(&entities),
           index_(index){}
       
@@ -552,17 +552,33 @@ namespace flexi{
       using EntityType = typename iterator::EntityType;
       using EntityTypeVec = typename iterator::EntityTypeVec;
 
-      EntityRange(EntityVec& v)
-        : v_(reinterpret_cast<EntityTypeVec&>(v)){}
+      EntityRange(const EntityVec& v)
+        : v_(reinterpret_cast<const EntityTypeVec&>(v)),
+          begin_(0),
+          end_(v_.size()){}
 
-      EntityRange(EntityTypeVec& v)
-        : v_(v){}
+      EntityRange(const EntityTypeVec& v)
+        : v_(v),
+          begin_(0),
+          end_(v_.size()){}
+
+      EntityRange(const EntityVec& v, size_t begin, size_t end)
+        : v_(reinterpret_cast<const EntityTypeVec&>(v)),
+          begin_(begin),
+          end_(end){}
+
+      EntityRange(const EntityTypeVec& v, size_t begin, size_t end)
+        : v_(v),
+          begin_(begin),
+          end_(end){}
 
       EntityRange(const EntityRange& r)
-        : v_(r.v_){}
+        : v_(r.v_),
+          begin_(0),
+          end_(v_.size()){}
 
       iterator begin(){
-        return iterator(v_, 0);
+        return iterator(v_, begin_);
       }
 
       iterator end(){
@@ -570,7 +586,9 @@ namespace flexi{
       }
 
     private:
-      EntityTypeVec& v_;
+      const EntityTypeVec& v_;
+      size_t begin_;
+      size_t end_;
     };
 
     Mesh(){
@@ -950,16 +968,48 @@ namespace flexi{
       return EntityRange<1>(entities_[0]);
     }
 
+    template<size_t D, class E>
+    EntityRange<D> entitiesOf(E& e){
+      Connectivity& c = getConnectivity(E::dimension, D);
+      if(c.empty()){
+        compute(E::dimension, D);
+      }
+
+      const IdVec& fv = c.getFromIndexVec();
+
+      return EntityRange<D>(c.getEntities(), fv[e.id()], fv[e.id() + 1]);
+    }
+
+    template<class E>
+    EntityRange<0> verticesOf(E& e){
+      return entitiesOf<0>(e);
+    }
+
     EntityRange<1> edges(){
       return EntityRange<1>(entities_[1]);
+    }
+
+    template<class E>
+    EntityRange<1> edgesOf(E& e){
+      return entitiesOf<1>(e);
     }
 
     EntityRange<MT::dimension - 1> faces(){
       return EntityRange<MT::dimension - 1>(entities_[MT::dimension - 1]);
     }
 
+    template<class E>
+    EntityRange<MT::dimension - 1> facesOf(E& e){
+      return entitiesOf<MT::dimension - 1>(e);
+    }
+
     EntityRange<MT::dimension> cells(){
       return EntityRange<MT::dimension>(entities_[MT::dimension]);
+    }
+
+    template<class E>
+    EntityRange<MT::dimension> cellsOf(E& e){
+      return cellsOf<MT::dimension>(e);
     }
 
     void dump(){
