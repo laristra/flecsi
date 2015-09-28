@@ -84,7 +84,7 @@ public:
   }
 };
 
-using TestMesh = Mesh<TestMesh2dType>;
+using TestMesh = MeshTopology<TestMesh2dType>;
 
 TEST(mesh_topology, traversal) {
 

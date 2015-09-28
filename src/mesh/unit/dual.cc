@@ -156,8 +156,8 @@ public:
   }
 };
 
-using TestMesh = Mesh<TestMesh2dType>;
-using TestDualMesh = Mesh<TestDualMesh2dType>;
+using TestMesh = MeshTopology<TestMesh2dType>;
+using TestDualMesh = MeshTopology<TestDualMesh2dType>;
 
 TEST(mesh_topology, dual) {
 
