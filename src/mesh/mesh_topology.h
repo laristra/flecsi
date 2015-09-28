@@ -142,7 +142,7 @@ namespace flexi{
     EntityVec entities_;
   };
     
-  class MeshBase{
+  class MeshTopologyBase{
   public:
     using Id = uint64_t;
 
@@ -346,7 +346,7 @@ namespace flexi{
   };
 
   template<class MT>
-  class Mesh : public MeshBase{
+  class MeshTopology : public MeshTopologyBase{
   public:
     using VertexType = 
       typename std::tuple_element<0, typename MT::EntityTypes>::type;
@@ -364,7 +364,7 @@ namespace flexi{
 
     class Iterator{
     public:
-      Iterator(Mesh& mesh, size_t dim)
+      Iterator(MeshTopology& mesh, size_t dim)
         : mesh_(mesh),
           entities_(&mesh.getEntities_(dim)),
           dim_(dim),
@@ -438,7 +438,7 @@ namespace flexi{
 
     private:
 
-      Mesh& mesh_;
+      MeshTopology& mesh_;
       const EntityVec* entities_;
       size_t dim_;
       size_t index_;
@@ -454,7 +454,7 @@ namespace flexi{
 
       using EntityTypeVec = std::vector<EntityType*>;
 
-      EntityIterator(Mesh& mesh)
+      EntityIterator(MeshTopology& mesh)
         : Iterator(mesh, D){}
 
       EntityIterator(Iterator& itr)
@@ -591,7 +591,7 @@ namespace flexi{
       size_t end_;
     };
 
-    Mesh(){
+    MeshTopology(){
       getConnectivity_(MT::dimension, 0).init();
     }
   
