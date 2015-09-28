@@ -33,6 +33,20 @@ template<typename T, size_t D>
 using vector = dimensioned_array<T,D>;
 
 /*!
+  \function dot
+ */
+template<typename T, size_t D>
+T dot(const vector<T,D> & a, const vector<T,D> & b) {
+  T sum(0);
+
+  for(size_t d(0); d<D; ++d) {
+    sum += a[d]*b[d];
+  } // for
+
+  return sum;
+} // dot
+
+/*!
   \function magnitude
  */
 template<typename T, size_t D>
@@ -46,23 +60,20 @@ T magnitude(const vector<T,D> & a) {
   return std::sqrt(sum);
 } // magnitude
 
-template<typename T, size_t D>
-T dot(const vector<T,D> & a, const vector<T,D> & b) {
-  T sum(0);
-
-  for(size_t d(0); d<D; ++d) {
-    sum += a[d]*b[d];
-  } // for
-
-  return sum;
-} // dot
-
+/*!
+  \function normal
+  \brief for a vector xi + yj the normal vector is -yi + xj. given points
+  a and b we use x = b[0] - a[0] and y = b[1] - a[1]
+ */
 template<typename T>
 vector<T,2> normal(const point<T,2> & a, const point<T,2> & b) {
-  vector<T,2> tmp(b[1] - a[1], a[0] - b[0]);
+  vector<T,2> tmp(a[1] - b[1], b[0] - a[0]);
   return tmp;
 } // normal
 
+/*!
+  \function normal
+ */
 template<typename T>
 vector<T,3> normal(const vector<T,3> & a, const vector<T,3> & b) {
   vector<T,3> tmp(a[1]*b[2] - a[2]*b[1], a[2]*b[0] - a[0]*b[2],
