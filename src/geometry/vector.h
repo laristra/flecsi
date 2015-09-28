@@ -33,6 +33,17 @@ template<typename T, size_t D>
 using vector = dimensioned_array<T,D>;
 
 /*!
+  \function operator*(const vector<T,D> & v, const T s)
+ */
+template<typename T, size_t D>
+vector<T,D> operator*(const vector<T,D> & v, const T s) {
+   vector<T,D> tmp(v);
+   for(size_t d(0); d < D; ++d)
+     tmp[d] = s*v[d];
+   return tmp;
+}
+
+/*!
   \function dot
  */
 template<typename T, size_t D>

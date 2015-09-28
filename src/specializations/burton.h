@@ -24,6 +24,7 @@ namespace flexi {
     using Id = uint64_t;
 
     using point_t = point<double, dimension>;
+    using vector_t = vector<double, dimension>;
 
     // Vertex type
     struct burton_vertex_t : public MeshEntity {
@@ -74,6 +75,9 @@ namespace flexi {
       static const size_t dimension = 2;
 
       burton_wedge_t(size_t id) : MeshEntity(id) {}
+
+      vector_t side_facet_normal();
+      vector_t cell_facet_normal();
 
     private:
       burton_corner_t* corner_;

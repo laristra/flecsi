@@ -578,7 +578,7 @@ namespace flexi{
           end_(v_.size()){}
 
       iterator_t begin(){
-        return iterator_t(v_, begin_);
+	return iterator_t(v_, begin_);
       }
 
       iterator_t end(){
