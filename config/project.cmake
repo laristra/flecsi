@@ -9,7 +9,7 @@ project(flexi)
 # Set application directory
 #------------------------------------------------------------------------------#
 
-#cinch_add_application_directory("examples")
+cinch_add_application_directory("examples")
 
 #------------------------------------------------------------------------------#
 # Add library targets

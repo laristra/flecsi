@@ -70,11 +70,8 @@ __PRETTY_FUNCTION__ << ": " << X << std::endl
 
 namespace flexi{
 
-  class MeshEntity{
+  class MeshEntityBase{
   public:
-    MeshEntity(size_t id)
-      : id_(id){}
-
     size_t id() const{
       return id_;
     }
@@ -84,49 +81,68 @@ namespace flexi{
     }
 
     template<class MT>
-    static MeshEntity* create_(size_t dim, size_t id){
+    static MeshEntityBase* create_(size_t dim, size_t id){
       switch(dim){
       case 0:{
         using EntityType = 
           typename std::tuple_element<getDim_(MT::dimension, 0),
                                       typename MT::EntityTypes>::type;
-        return new EntityType(id);
+        auto entity = new EntityType;
+        entity->id_ = id;
+        return entity;
       }
       case 1:{
         using EntityType = 
           typename std::tuple_element<getDim_(MT::dimension, 1),
                                       typename MT::EntityTypes>::type;
-        return new EntityType(id);
+        auto entity = new EntityType;
+        entity->id_ = id;
+        return entity;
       }
       case 2:{
         using EntityType = 
           typename std::tuple_element<getDim_(MT::dimension, 2),
                                       typename MT::EntityTypes>::type;
-        return new EntityType(id);
+        auto entity = new EntityType;
+        entity->id_ = id;
+        return entity;
       }
       case 3:{
         using EntityType = 
           typename std::tuple_element<getDim_(MT::dimension, 3),
                                       typename MT::EntityTypes>::type;
-        return new EntityType(id);
+        auto entity = new EntityType;
+        entity->id_ = id;
+        return entity;
       }
       default:
         assert(false && "invalid topology dim");
       }
     }
 
+    template<class MT>
+    friend class MeshTopology;
+
   private:
     size_t id_;
   };
 
-  using EntityVec = std::vector<MeshEntity*>;
+  template<size_t D>
+  class MeshEntity : public MeshEntityBase{
+  public:
+    static const size_t dimension = D;
+    
+    MeshEntity(){}
+  };
+
+  using EntityVec = std::vector<MeshEntityBase*>;
 
   template<size_t D>
   class EntityGroup{
   public:
     EntityGroup(){}
     
-    void add(MeshEntity* ent){
+    void add(MeshEntityBase* ent){
       entities_.push_back(ent);
     }
     
@@ -211,7 +227,7 @@ namespace flexi{
           
           for(Id id : iv){
             maxId = std::max(maxId, id);
-            entityVec_.push_back(MeshEntity::create_<MT>(dim, id));
+            entityVec_.push_back(MeshEntityBase::create_<MT>(dim, id));
           }
           
           fromIndexVec_.push_back(entityVec_.size());
@@ -220,7 +236,7 @@ namespace flexi{
         size_t m = entityVec_.size();
         ev.resize(maxId + 1);
 
-        for(MeshEntity* ent : entityVec_){
+        for(MeshEntityBase* ent : entityVec_){
           ev[ent->id()] = ent;
         }
       }
@@ -248,13 +264,13 @@ namespace flexi{
         fromIndexVec_.push_back(entityVec_.size());
       }
     
-      void push(MeshEntity* ent){
+      void push(MeshEntityBase* ent){
         entityVec_.push_back(ent);
       }
     
       void dump(){
         std::cout << "=== idVec" << std::endl;
-        for(MeshEntity* ent : entityVec_){
+        for(MeshEntityBase* ent : entityVec_){
           std::cout << ent->id() << std::endl;
         }
       
@@ -272,12 +288,12 @@ namespace flexi{
         return fromIndexVec_;
       }
     
-      MeshEntity** getEntities(size_t index){
+      MeshEntityBase** getEntities(size_t index){
         assert(index < fromIndexVec_.size() - 1);
         return entityVec_.data() + fromIndexVec_[index];
       }
 
-      MeshEntity** getEntities(size_t index, size_t& endIndex){
+      MeshEntityBase** getEntities(size_t index, size_t& endIndex){
         assert(index < fromIndexVec_.size() - 1);
         uint64_t start = fromIndexVec_[index];
         endIndex = fromIndexVec_[index + 1] - start;
@@ -288,7 +304,7 @@ namespace flexi{
         return entityVec_.empty();
       }
     
-      void set(size_t fromId, MeshEntity* ent, size_t pos){
+      void set(size_t fromId, MeshEntityBase* ent, size_t pos){
         entityVec_[fromIndexVec_[fromId] + pos] = ent;
       }
     
@@ -406,7 +422,7 @@ namespace flexi{
         }
       }
       
-      MeshEntity& get(){
+      MeshEntityBase& get(){
         return *(*entities_)[index_];
       }
 
@@ -424,7 +440,7 @@ namespace flexi{
         return (*entities_)[index_]->id();
       }
 
-      MeshEntity** getEntities(size_t dim){
+      MeshEntityBase** getEntities(size_t dim){
         Connectivity& c = mesh_.getConnectivity_(dim_, dim);
         assert(!c.empty());
         return c.getEntities(index_);
@@ -519,8 +535,8 @@ namespace flexi{
         return *this;
       }
 
-      EntityType& operator*(){
-        return *(*entities_)[index_];
+      EntityType* operator*(){
+        return (*entities_)[index_];
       }
 
       EntityType* operator->(){
@@ -585,6 +601,10 @@ namespace flexi{
         return iterator_t(v_, end_);
       }
 
+      EntityTypeVec toVec(){
+        return EntityTypeVec(v_.begin() + begin_, v_.begin() + end_);
+      }
+
     private:
       const EntityTypeVec& v_;
       size_t begin_;
@@ -593,6 +613,7 @@ namespace flexi{
 
     MeshTopology(){
       getConnectivity_(MT::dimension, 0).init();
+      std::fill(nextIds_.begin(), nextIds_.end(), 0);
     }
   
     void addVertex(VertexType* vertex){
@@ -644,7 +665,7 @@ namespace flexi{
       if(c.empty()){
         c.init();
       }
-
+      
       assert(face->id() == c.fromSize() && "id mismatch"); 
 
       for(VertexType* v : verts){
@@ -665,8 +686,8 @@ namespace flexi{
         c.init();
       }
 
-      assert(cell->id() == c.fromSize() && "id mismatch"); 
-      
+      assert(cell->id() == c.fromSize() && "id mismatch");      
+
       for(EdgeType* edge : edges){
         c.push(edge);
       }
@@ -685,8 +706,8 @@ namespace flexi{
         c.init();
       }
 
-      assert(cell->id() == c.fromSize() && "id mismatch"); 
-      
+      assert(cell->id() == c.fromSize() && "id mismatch");      
+
       for(FaceType* face : faces){
         c.push(face);
       }
@@ -824,7 +845,7 @@ namespace flexi{
         IdVec& entities = conns[fromEntity.id()];
         entities.reserve(maxSize);
 
-        MeshEntity** ep = fromEntity.getEntities(0);
+        MeshEntityBase** ep = fromEntity.getEntities(0);
 
         std::copy(ep, ep + MT::numVerticesPerEntity(fromDim),
                   fromVerts.begin());
@@ -855,7 +876,7 @@ namespace flexi{
               }
             }
             else{
-              MeshEntity** ep = toItr.getEntities(0);
+              MeshEntityBase** ep = toItr.getEntities(0);
 
               std::copy(ep, ep + MT::numVerticesPerEntity(toDim),
                         toVerts.begin());
@@ -960,6 +981,20 @@ namespace flexi{
       return MT::dimension;
     }  
 
+    template<class T, class... S>
+    T* make(S&&... args){
+      T* entity = new T(std::forward<S>(args)...);
+      entity->id_ = nextIds_[T::dimension]++;
+      return entity;
+    }
+
+    template<class T>
+    static T* makeWithId(Id id){
+      T* entity = new T;
+      entity->id_ = id;
+      return entity;
+    }
+
     const EntityVec& getEntities_(size_t dim) const{
       return entities_[dim];
     }
@@ -969,7 +1004,7 @@ namespace flexi{
     }
 
     template<size_t D, class E>
-    EntityRange<D> entitiesOf(E& e){
+    EntityRange<D> entitiesOf(E* e){
       Connectivity& c = getConnectivity(E::dimension, D);
       if(c.empty()){
         compute(E::dimension, D);
@@ -977,11 +1012,11 @@ namespace flexi{
 
       const IdVec& fv = c.getFromIndexVec();
 
-      return EntityRange<D>(c.getEntities(), fv[e.id()], fv[e.id() + 1]);
+      return EntityRange<D>(c.getEntities(), fv[e->id()], fv[e->id() + 1]);
     }
 
     template<class E>
-    EntityRange<0> verticesOf(E& e){
+    EntityRange<0> verticesOf(E* e){
       return entitiesOf<0>(e);
     }
 
@@ -990,7 +1025,7 @@ namespace flexi{
     }
 
     template<class E>
-    EntityRange<1> edgesOf(E& e){
+    EntityRange<1> edgesOf(E* e){
       return entitiesOf<1>(e);
     }
 
@@ -999,7 +1034,7 @@ namespace flexi{
     }
 
     template<class E>
-    EntityRange<MT::dimension - 1> facesOf(E& e){
+    EntityRange<MT::dimension - 1> facesOf(E* e){
       return entitiesOf<MT::dimension - 1>(e);
     }
 
@@ -1008,7 +1043,7 @@ namespace flexi{
     }
 
     template<class E>
-    EntityRange<MT::dimension> cellsOf(E& e){
+    EntityRange<MT::dimension> cellsOf(E* e){
       return entitiesOf<MT::dimension>(e);
     }
 
@@ -1031,8 +1066,12 @@ namespace flexi{
       std::array<std::array<Connectivity, MT::dimension + 1>,
       MT::dimension + 1>;
 
+    using NextIds_ = 
+      std::array<Id, MT::dimension + 1>;
+
     Entities_ entities_;
     Topology_ topology_;
+    NextIds_ nextIds_;
   };
 
 } // flexi

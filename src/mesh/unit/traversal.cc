@@ -6,24 +6,24 @@
 using namespace std;
 using namespace flexi;
 
-class Vertex : public MeshEntity{
+class Vertex : public MeshEntity<0>{
 public:
-  Vertex(size_t id) : MeshEntity(id){}
+
 };
 
-class Edge : public MeshEntity{
+class Edge : public MeshEntity<1>{
 public:
-  Edge(size_t id) : MeshEntity(id){}
+
 };
 
-class Face : public MeshEntity{
+class Face : public MeshEntity<1>{
 public:
-  Face(size_t id) : MeshEntity(id){}
+
 };
 
-class Cell : public MeshEntity{
+class Cell : public MeshEntity<2>{
 public:
-  Cell(size_t id) : MeshEntity(id){}
+
 };
 
 class TestMesh2dType{
@@ -98,7 +98,7 @@ TEST(mesh_topology, traversal) {
   size_t id = 0;
   for(size_t j = 0; j < height + 1; ++j){
     for(size_t i = 0; i < width + 1; ++i){
-      auto v = new Vertex(id++);
+      auto v = mesh->make<Vertex>();
       vs.push_back(v);
       mesh->addVertex(v); 
     }
@@ -108,7 +108,7 @@ TEST(mesh_topology, traversal) {
   size_t width1 = width + 1;
   for(size_t j = 0; j < height; ++j){
     for(size_t i = 0; i < width; ++i){
-      auto c = new Cell(id++);
+      auto c = mesh->make<Cell>();
 
       mesh->addCell(c,
                     {vs[i + j * width1],
