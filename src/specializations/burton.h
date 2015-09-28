@@ -27,35 +27,37 @@ namespace flexi {
     using vector_t = vector<double, dimension>;
 
     // Vertex type
-    struct burton_vertex_t : public MeshEntity {
-      static const size_t dimension = 0;
+    struct burton_vertex_t : public MeshEntity<0> {
+      burton_vertex_t(){}
 
-      burton_vertex_t(size_t id) : MeshEntity(id) {}
-
-      burton_vertex_t(size_t id, const point_t& pos) :
-        MeshEntity(id),
+      burton_vertex_t(const point_t& pos) :
         pos(pos){}
       
       point_t pos;
     }; // struct burton_vertex_t
 
     // Edge type
-    struct burton_edge_t : public MeshEntity {
-      static const size_t dimension = 1;
+    struct burton_edge_t : public MeshEntity<1> {
 
-      burton_edge_t(size_t id) : MeshEntity(id) {}
     }; // struct burton_edge_t
 
-    // Cell type
-    class burton_cell_t : public MeshEntity {
-    public:
-      static const size_t dimension = 2;
+    class burton_corner_t;
+    class burton_wedge_t;
 
-      burton_cell_t(size_t id) : MeshEntity(id) {}
+    // Cell type
+    class burton_cell_t : public MeshEntity<2> {
+    public:
+      void addCorner(burton_corner_t* c){
+        corners_.add(c);
+      }
 
       EntityGroup<0> & corners() {
         return corners_;
       } // getSides
+
+      void addWedge(burton_wedge_t* w){
+        wedges_.add(w);
+      }
 
       EntityGroup<2> & wedges() {
         return wedges_;
@@ -68,13 +70,13 @@ namespace flexi {
 
     }; // class burton_cell_t
     
-    class burton_corner_t;
-
     // Wedge type
-    class burton_wedge_t : public MeshEntity {
-      static const size_t dimension = 2;
+    class burton_wedge_t : public MeshEntity<2> {
+    public:
 
-      burton_wedge_t(size_t id) : MeshEntity(id) {}
+      void setCorner(burton_corner_t* corner){
+        corner_ = corner;
+      }
 
       vector_t side_facet_normal();
       vector_t cell_facet_normal();
@@ -84,11 +86,11 @@ namespace flexi {
     }; // struct burton_wedge_t
 
     // Corner type
-    class burton_corner_t : public MeshEntity {
+    class burton_corner_t : public MeshEntity<0> {
     public:
-      static const size_t dimension = 0;
-
-      burton_corner_t(size_t id) : MeshEntity(id) {}
+      void addWedge(burton_wedge_t* w){
+        wedges_.add(w);
+      }
 
       EntityGroup<2> & wedges() {
         return wedges_;
@@ -129,7 +131,7 @@ namespace flexi {
       case 2:
         return 4;
       default:
-        assert(false && "invalid dimension");
+        assert(false && "iznvalid dimension");
       }
     }
   
@@ -165,32 +167,17 @@ namespace flexi {
 
     using burton_edge_t = burton_mesh_types_t::burton_edge_t;
 
-    // Cell type
-    class burton_wedge_t : public MeshEntity {
-    public:
-
-      burton_wedge_t(size_t id) : MeshEntity(id) {}
-
-      EntityGroup<2> & getSides() {
-        return sides_;
-      } // getSides
-
-    private:
-
-      EntityGroup<2> sides_;
-
-    }; // struct burton_cell_t
-
-
+    using burton_wedge_t = burton_mesh_types_t::burton_wedge_t;
+  
     using EntityTypes =
       std::tuple<burton_vertex_t, burton_edge_t, burton_wedge_t>;
 
     static size_t numEntitiesPerCell(size_t dim){
       switch(dim){
       case 0:
-        return 4;
+        return 3;
       case 1:
-        return 4;
+        return 3;
       case 2:
         return 1;
       default:
@@ -209,7 +196,7 @@ namespace flexi {
       case 1:
         return 2;
       case 2:
-        return 4;
+        return 3;
       default:
         assert(false && "invalid dimension");
       }
@@ -219,7 +206,7 @@ namespace flexi {
                                std::vector<Id>& e,
                                burton_vertex_t** v){
       assert(dim = 1);
-      assert(e.size() == 8);
+      assert(e.size() == 6);
     
       e[0] = v[0]->id();
       e[1] = v[2]->id();
@@ -229,9 +216,6 @@ namespace flexi {
     
       e[4] = v[0]->id();
       e[5] = v[1]->id();
-    
-      e[6] = v[2]->id();
-      e[7] = v[3]->id();
     }
   };
 
@@ -314,7 +298,7 @@ public:
    *--------------------------------------------------------------------------*/
 
   vertex_t* create_vertex(const point_t& pos){
-    auto v = new vertex_t(nextVertexId_++, pos);
+    auto v = mesh_.make<vertex_t>(pos);
     mesh_.addVertex(v);
     return v;
   }
@@ -322,17 +306,62 @@ public:
   cell_t* create_cell(std::initializer_list<vertex_t*> verts){
     assert(verts.size() == burton_mesh_types_t::verticesPerCell() && 
            "vertices size mismatch");
-    auto c = new cell_t(nextCellId_++);
+    auto c = mesh_.make<cell_t>();
     mesh_.addCell(c, verts);
     return c;
   }
 
   void init(){
     for(auto c : mesh_.cells()){
-      std::cout << "-------- cell: " << c.id() << std::endl;
-      for(auto v : mesh_.verticesOf(c)){
-        std::cout << "+++ vertex: " << v.id() << std::endl;
-      }
+      auto vs = mesh_.verticesOf(c).toVec();
+
+      dual_mesh_.addVertex(vs[0]);
+      dual_mesh_.addVertex(vs[1]);
+      dual_mesh_.addVertex(vs[2]);
+      dual_mesh_.addVertex(vs[3]);
+
+      point_t cp;
+      cp[0] = vs[0]->pos[0] + 0.5*(vs[2]->pos[0] - vs[0]->pos[0]);
+      cp[1] = vs[0]->pos[1] + 0.5*(vs[1]->pos[1] - vs[0]->pos[1]);
+
+      auto cv = dual_mesh_.make<vertex_t>(cp);
+      dual_mesh_.addVertex(cv);
+
+      auto w1 = dual_mesh_.make<wedge_t>();
+      dual_mesh_.addCell(w1, {vs[0], vs[1], cv});
+      c->addWedge(w1);
+
+      auto w2 = dual_mesh_.make<wedge_t>();
+      dual_mesh_.addCell(w2, {cv, vs[1], vs[3]});
+      c->addWedge(w2);
+
+      auto w3 = dual_mesh_.make<wedge_t>();
+      dual_mesh_.addCell(w3, {vs[2], cv, vs[3]});
+      c->addWedge(w3);
+
+      auto w4 = dual_mesh_.make<wedge_t>();
+      dual_mesh_.addCell(w4, {vs[0], cv, vs[2]});
+      c->addWedge(w4);
+
+      auto c1 = dual_mesh_.make<corner_t>();
+      c1->addWedge(w1);
+      c1->addWedge(w4);
+      c->addCorner(c1);
+
+      auto c2 = dual_mesh_.make<corner_t>();
+      c2->addWedge(w1);
+      c2->addWedge(w2);
+      c->addCorner(c2);
+
+      auto c3 = dual_mesh_.make<corner_t>();
+      c3->addWedge(w2);
+      c3->addWedge(w3);
+      c->addCorner(c3);
+
+      auto c4 = dual_mesh_.make<corner_t>();
+      c4->addWedge(w3);
+      c4->addWedge(w4);
+      c->addCorner(c4);
     }
   }
 
@@ -340,9 +369,6 @@ private:
 
   private_mesh_t mesh_;
   private_dual_mesh_t dual_mesh_;
-  size_t nextVertexId_ = 0;
-  size_t nextCellId_ = 0;
-
 }; // class burton_mesh_t
 
 using mesh_t = burton_mesh_t;
