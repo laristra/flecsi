@@ -582,7 +582,7 @@ namespace flexi{
       }
 
       iterator_t end(){
-        return iterator_t(v_, v_.size());
+        return iterator_t(v_, end_);
       }
 
     private:

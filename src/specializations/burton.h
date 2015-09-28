@@ -325,9 +325,9 @@ public:
 
   void init(){
     for(auto c : mesh_.cells()){
-      ndump(c.id());
+      std::cout << "-------- cell: " << c.id() << std::endl;
       for(auto v : mesh_.verticesOf(c)){
-        ndump(v.id());
+        std::cout << "+++ vertex: " << v.id() << std::endl;
       }
     }
   }
