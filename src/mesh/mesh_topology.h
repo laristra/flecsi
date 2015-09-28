@@ -142,7 +142,7 @@ namespace flexi{
     EntityVec entities_;
   };
     
-  class MeshBase{
+  class MeshTopologyBase{
   public:
     using Id = uint64_t;
 
@@ -346,7 +346,7 @@ namespace flexi{
   };
 
   template<class MT>
-  class Mesh : public MeshBase{
+  class MeshTopology : public MeshTopologyBase{
   public:
     using VertexType = 
       typename std::tuple_element<0, typename MT::EntityTypes>::type;
@@ -364,7 +364,7 @@ namespace flexi{
 
     class Iterator{
     public:
-      Iterator(Mesh& mesh, size_t dim)
+      Iterator(MeshTopology& mesh, size_t dim)
         : mesh_(mesh),
           entities_(&mesh.getEntities_(dim)),
           dim_(dim),
@@ -438,7 +438,7 @@ namespace flexi{
 
     private:
 
-      Mesh& mesh_;
+      MeshTopology& mesh_;
       const EntityVec* entities_;
       size_t dim_;
       size_t index_;
@@ -454,7 +454,7 @@ namespace flexi{
 
       using EntityTypeVec = std::vector<EntityType*>;
 
-      EntityIterator(Mesh& mesh)
+      EntityIterator(MeshTopology& mesh)
         : Iterator(mesh, D){}
 
       EntityIterator(Iterator& itr)
@@ -548,9 +548,9 @@ namespace flexi{
     template<size_t D>
     class EntityRange{
     public:
-      using iterator = iterator<D>;
-      using EntityType = typename iterator::EntityType;
-      using EntityTypeVec = typename iterator::EntityTypeVec;
+      using iterator_t = iterator<D>;
+      using EntityType = typename iterator_t::EntityType;
+      using EntityTypeVec = typename iterator_t::EntityTypeVec;
 
       EntityRange(const EntityVec& v)
         : v_(reinterpret_cast<const EntityTypeVec&>(v)),
@@ -577,12 +577,12 @@ namespace flexi{
           begin_(0),
           end_(v_.size()){}
 
-      iterator begin(){
-        return iterator(v_, begin_);
+      iterator_t begin(){
+        return iterator_t(v_, begin_);
       }
 
-      iterator end(){
-        return iterator(v_, v_.size());
+      iterator_t end(){
+        return iterator_t(v_, end_);
       }
 
     private:
@@ -591,7 +591,7 @@ namespace flexi{
       size_t end_;
     };
 
-    Mesh(){
+    MeshTopology(){
       getConnectivity_(MT::dimension, 0).init();
     }
   

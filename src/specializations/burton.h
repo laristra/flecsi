@@ -240,8 +240,8 @@ class burton_mesh_t
 {
 private:
 
-  using private_mesh_t = Mesh<burton_mesh_types_t>;
-  using private_dual_mesh_t = Mesh<dual_mesh_types_t>;
+  using private_mesh_t = MeshTopology<burton_mesh_types_t>;
+  using private_dual_mesh_t = MeshTopology<dual_mesh_types_t>;
 
 public:
 
@@ -325,9 +325,9 @@ public:
 
   void init(){
     for(auto c : mesh_.cells()){
-      ndump(c.id());
+      std::cout << "-------- cell: " << c.id() << std::endl;
       for(auto v : mesh_.verticesOf(c)){
-        ndump(v.id());
+        std::cout << "+++ vertex: " << v.id() << std::endl;
       }
     }
   }

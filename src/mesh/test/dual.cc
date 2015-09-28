@@ -156,8 +156,8 @@ public:
   }
 };
 
-using TestMesh = Mesh<TestMesh2dType>;
-using TestDualMesh = Mesh<TestDualMesh2dType>;
+using TestMesh = MeshTopology<TestMesh2dType>;
+using TestDualMesh = MeshTopology<TestDualMesh2dType>;
 
 TEST(mesh_topology, dual) {
 
@@ -238,29 +238,29 @@ TEST(mesh_topology, dual) {
     }
   }
 
-  CINCH_TEST_STREAM() << "------------- forall cells, sides" << endl;
+  CINCH_CAPTURE() << "------------- forall cells, sides" << endl;
 
   for(TestMesh::CellIterator c(*mesh); !c.isend(); ++c){
-    CINCH_TEST_STREAM() << "------- cell id: " << c->id() << endl;
+    CINCH_CAPTURE() << "------- cell id: " << c->id() << endl;
     for(TestDualMesh::CellIterator s(*dualMesh, c->getSides());
 	 	!s.isend(); ++s){
-      CINCH_TEST_STREAM() << "--------- side id: " << s->id() << endl;
+      CINCH_CAPTURE() << "--------- side id: " << s->id() << endl;
     }
   }
 
-  CINCH_TEST_STREAM() << "------------- forall cells, sides, vertices" << endl;
+  CINCH_CAPTURE() << "------------- forall cells, sides, vertices" << endl;
 
   for(TestMesh::CellIterator c(*mesh); !c.isend(); ++c){
-    CINCH_TEST_STREAM() << "------- cell id: " << c->id() << endl;
+    CINCH_CAPTURE() << "------- cell id: " << c->id() << endl;
     for(TestDualMesh::CellIterator s(*dualMesh, c->getSides());
 	 	!s.isend(); ++s){
-      CINCH_TEST_STREAM() << "--------- side id: " << s->id() << endl;
+      CINCH_CAPTURE() << "--------- side id: " << s->id() << endl;
       for(TestDualMesh::VertexIterator sv(s);
           !sv.isend(); ++sv){
-        CINCH_TEST_STREAM() << "--------- side vertex id: " << sv->id() << endl;
+        CINCH_CAPTURE() << "--------- side vertex id: " << sv->id() << endl;
       }
     }
   }
 
-  ASSERT_TRUE(CINCH_TEST_EQUAL_BLESSED("dual.blessed"));
+  ASSERT_TRUE(CINCH_EQUAL_BLESSED("dual.blessed"));
 }
