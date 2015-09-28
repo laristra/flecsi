@@ -548,9 +548,9 @@ namespace flexi{
     template<size_t D>
     class EntityRange{
     public:
-      using iterator = iterator<D>;
-      using EntityType = typename iterator::EntityType;
-      using EntityTypeVec = typename iterator::EntityTypeVec;
+      using iterator_t = iterator<D>;
+      using EntityType = typename iterator_t::EntityType;
+      using EntityTypeVec = typename iterator_t::EntityTypeVec;
 
       EntityRange(const EntityVec& v)
         : v_(reinterpret_cast<const EntityTypeVec&>(v)),
@@ -577,12 +577,12 @@ namespace flexi{
           begin_(0),
           end_(v_.size()){}
 
-      iterator begin(){
-        return iterator(v_, begin_);
+      iterator_t begin(){
+        return iterator_t(v_, begin_);
       }
 
-      iterator end(){
-        return iterator(v_, v_.size());
+      iterator_t end(){
+        return iterator_t(v_, v_.size());
       }
 
     private:
