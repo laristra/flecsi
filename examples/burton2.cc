@@ -60,6 +60,16 @@ int main(int argc, char ** argv) {
       cout << "++++ wedge of: " << w->id() << endl;
       cout << "### corner of: " << w->corner()->id() << endl;
     }
+
+    for(auto c2 : c->corners()){
+      cout << "++++ corner of: " << c2->id() << endl;
+      for(auto w : c2->wedges()){
+        cout << "++ wedge of: " << w->id() << endl;
+        for(auto v : b.verticesOf(w)){
+          cout << "- vertex of: " << v->id() << endl;
+        }
+      }
+    }
   }
 
   return 0;
