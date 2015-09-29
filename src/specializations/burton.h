@@ -285,6 +285,10 @@ public:
     return mesh_.verticesOf(e);
   }
 
+  auto verticesOf(wedge_t* w){
+    return dual_mesh_.verticesOf(w);
+  }
+
   template<class E>
   auto edgesOf(E* e){
     return mesh_.edgesOf(e);
