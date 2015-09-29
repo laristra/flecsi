@@ -43,6 +43,25 @@ int main(int argc, char ** argv) {
 
   b.init();
 
+  for(auto v : b.vertices()){
+    cout << "----------- vertex: " << v->id() << endl;
+  }
+
+  for(auto e : b.edges()){
+    cout << "----------- edge: " << e->id() << endl;
+  }
+
+  for(auto c : b.cells()){
+    cout << "----------- cell: " << c->id() << endl;
+    for(auto e : b.edgesOf(c)){
+      cout << "++++ edge of: " << e->id() << endl;
+    }
+    for(auto w : c->wedges()){
+      cout << "++++ wedge of: " << w->id() << endl;
+      cout << "### corner of: " << w->corner()->id() << endl;
+    }
+  }
+
   return 0;
 } // main
 

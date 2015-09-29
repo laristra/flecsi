@@ -77,6 +77,10 @@ namespace flexi {
         corner_ = corner;
       }
 
+      burton_corner_t* corner(){
+        return corner_;
+      }
+
     private:
       burton_corner_t* corner_;
     }; // struct burton_wedge_t
@@ -271,6 +275,21 @@ public:
     return mesh_.cells();
   }
 
+  template<class E>
+  auto verticesOf(E* e){
+    return mesh_.verticesOf(e);
+  }
+
+  template<class E>
+  auto edgesOf(E* e){
+    return mesh_.edgesOf(e);
+  }
+
+  template<class E>
+  auto cellsOf(E* e){
+    return mesh_.cellsOf(e);
+  }
+
   vertex_t* create_vertex(const point_t& pos){
     auto v = mesh_.make<vertex_t>(pos);
     mesh_.addVertex(v);
@@ -318,21 +337,29 @@ public:
       c->addWedge(w4);
 
       auto c1 = dual_mesh_.make<corner_t>();
+      w1->setCorner(c1);
+      w4->setCorner(c1);
       c1->addWedge(w1);
       c1->addWedge(w4);
       c->addCorner(c1);
 
       auto c2 = dual_mesh_.make<corner_t>();
+      w1->setCorner(c2);
+      w2->setCorner(c2);
       c2->addWedge(w1);
       c2->addWedge(w2);
       c->addCorner(c2);
 
       auto c3 = dual_mesh_.make<corner_t>();
+      w2->setCorner(c3);
+      w3->setCorner(c3);
       c3->addWedge(w2);
       c3->addWedge(w3);
       c->addCorner(c3);
 
       auto c4 = dual_mesh_.make<corner_t>();
+      w3->setCorner(c4);
+      w4->setCorner(c4);
       c4->addWedge(w3);
       c4->addWedge(w4);
       c->addCorner(c4);

@@ -187,7 +187,7 @@ namespace flexi{
       entities_.push_back(ent);
     }
     
-    const Vec& getEntities() const{
+    const Vec& toVec(){
       return entities_;
     }
 
@@ -196,11 +196,11 @@ namespace flexi{
     }
 
     iterator_ begin(){
-      return iterator_t(entities_, 0);
+      return iterator_(entities_, 0);
     }
     
     iterator_ end(){
-      return iterator_t(entities_, entities_.size());
+      return iterator_(entities_, entities_.size());
     }
     
   private:
