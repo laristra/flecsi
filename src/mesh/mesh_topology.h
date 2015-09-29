@@ -137,25 +137,74 @@ namespace flexi{
 
   using EntityVec = std::vector<MeshEntityBase*>;
 
-  template<size_t D>
+  template<class T>
   class EntityGroup{
   public:
+    using Vec = std::vector<T*>;
+
+    class iterator_{
+    public:
+
+      iterator_(const Vec& entities, size_t index)
+        : entities_(&entities),
+          index_(index){}
+      
+      iterator_& operator++(){
+        ++index_;
+        return *this;
+      }
+
+      iterator_& operator=(const iterator_& itr){
+        index_ = itr.index_;
+        entities_ = itr.entities_;
+        return *this;
+      }
+
+      T* operator*(){
+        return (*entities_)[index_];
+      }
+
+      T* operator->(){
+        return (*entities_)[index_];
+      }
+
+      bool operator==(const iterator_& itr) const{
+        return index_ == itr.index_;
+      }
+
+      bool operator!=(const iterator_& itr) const{
+        return index_ != itr.index_;
+      }
+
+    private:
+      const Vec* entities_;
+      size_t index_;
+    };
+
     EntityGroup(){}
     
-    void add(MeshEntityBase* ent){
+    void add(T* ent){
       entities_.push_back(ent);
     }
     
-    const EntityVec& getEntities() const{
+    const Vec& getEntities() const{
       return entities_;
     }
 
     static constexpr size_t dim(){
-      return D;
+      return T::dimension;
+    }
+
+    iterator_ begin(){
+      return iterator_t(entities_, 0);
+    }
+    
+    iterator_ end(){
+      return iterator_t(entities_, entities_.size());
     }
     
   private:
-    EntityVec entities_;
+    Vec entities_;
   };
     
   class MeshTopologyBase{
@@ -388,15 +437,6 @@ namespace flexi{
           endIndex_(entities_->size()),
           level_(0){}
 
-      template<class M, size_t D>
-      Iterator(M& mesh, EntityGroup<D>& group)
-        : mesh_(mesh),
-          entities_(&group.getEntities()),
-          dim_(D),
-          index_(0),
-          endIndex_(entities_->size()),
-          level_(0){}
-
       Iterator(Iterator& itr, size_t dim)
         : mesh_(itr.mesh_), 
           dim_(dim),
@@ -475,10 +515,6 @@ namespace flexi{
 
       EntityIterator(Iterator& itr)
         : Iterator(itr, D){}
-
-      template<class M, size_t TD>
-      EntityIterator(M& mesh, EntityGroup<TD>& group)
-        : Iterator(mesh, group){}
 
       EntityType& operator*(){
         return static_cast<EntityType&>(Iterator::get());
@@ -1000,7 +1036,7 @@ namespace flexi{
     }
 
     EntityRange<0> vertices(){
-      return EntityRange<1>(entities_[0]);
+      return EntityRange<0>(entities_[0]);
     }
 
     template<size_t D, class E>
