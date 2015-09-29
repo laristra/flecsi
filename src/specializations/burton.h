@@ -52,7 +52,7 @@ namespace flexi {
         corners_.add(c);
       }
 
-      EntityGroup<0> & corners() {
+      EntityGroup<burton_corner_t> & corners() {
         return corners_;
       } // getSides
 
@@ -60,14 +60,14 @@ namespace flexi {
         wedges_.add(w);
       }
 
-      EntityGroup<2> & wedges() {
+      EntityGroup<burton_wedge_t> & wedges() {
         return wedges_;
       } // getSides
 
     private:
 
-      EntityGroup<0> corners_;
-      EntityGroup<2> wedges_;
+      EntityGroup<burton_corner_t> corners_;
+      EntityGroup<burton_wedge_t> wedges_;
 
     }; // class burton_cell_t
     
@@ -93,13 +93,13 @@ namespace flexi {
         wedges_.add(w);
       }
 
-      EntityGroup<2> & wedges() {
+      EntityGroup<burton_wedge_t> & wedges() {
         return wedges_;
       } // wedges
 
     private:
 
-      EntityGroup<2> wedges_;
+      EntityGroup<burton_wedge_t> wedges_;
 
     }; // class burton_corner_t
 
@@ -264,39 +264,17 @@ public:
   //! Destructor
   ~burton_mesh_t() {}
 
-  /*--------------------------------------------------------------------------*
-   * Primary mesh iterators
-   *--------------------------------------------------------------------------*/
+  auto vertices(){
+    return mesh_.vertices();
+  }
 
-  //! Vertex iterator
-  vertex_iterator_t vertices() {
-    vertex_iterator_t iterator(mesh_);
-    return iterator;
-  } // vertices
+  auto edges(){
+    return mesh_.edges();
+  }
 
-  //! Cell iterator
-  cell_iterator_t cells() {
-    cell_iterator_t iterator(mesh_);
-    return iterator;
-  } // cells
-
-  //! Edge iterator
-  edge_iterator_t edges() {
-    edge_iterator_t iterator(mesh_);
-    return iterator;
-  } // edges
-
-  /*--------------------------------------------------------------------------*
-   * Dual mesh iterators
-   *--------------------------------------------------------------------------*/
-
-  wedges_at_corner_iterator_t wedges(corner_t & corner) {
-    wedges_at_corner_iterator_t iterator(dual_mesh_, corner.wedges());
-    return iterator;
-  } // wedges
-
-  /*--------------------------------------------------------------------------*
-   *--------------------------------------------------------------------------*/
+  auto cells(){
+    return mesh_.cells();
+  }
 
   vertex_t* create_vertex(const point_t& pos){
     auto v = mesh_.make<vertex_t>(pos);
