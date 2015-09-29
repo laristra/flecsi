@@ -18,18 +18,21 @@ TEST(space_vector, operator_times) {
 
   // 1d scalar vector multiply
   vector_1d_t a(4.0);
-  ASSERT_EQ(8.0, (a*s)[0]);
+  vector_1d_t as = a*s;
+  ASSERT_EQ(8.0, as[0]);
 
   // 2d scalar vector multiply
   vector_2d_t b(4.0, -5.0);
-  ASSERT_EQ(  8.0, (b*s)[0]);
-  ASSERT_EQ(-10.0, (b*s)[1]);
+  vector_2d_t bs = b*s;
+  ASSERT_EQ(  8.0, bs[0]);
+  ASSERT_EQ(-10.0, bs[1]);
 
   // 3d scalar vector multiply
   vector_3d_t c(4.0, -5.0, 6.0);
-  ASSERT_EQ(  8.0, (c*s)[0]);
-  ASSERT_EQ(-10.0, (c*s)[1]);
-  ASSERT_EQ( 12.0, (c*s)[2]);
+  vector_3d_t cs = c*s;
+  ASSERT_EQ(  8.0, cs[0]);
+  ASSERT_EQ(-10.0, cs[1]);
+  ASSERT_EQ( 12.0, cs[2]);
 
 } // TEST
 
