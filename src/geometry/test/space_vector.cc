@@ -5,13 +5,13 @@
 
 #include <cinchtest.h>
 
-#include "../vector.h"
+#include "../space_vector.h"
 
 using namespace flexi;
 
-using vector_1d_t = vector<double,1>;
-using vector_2d_t = vector<double,2>;
-using vector_3d_t = vector<double,3>;
+using vector_1d_t = space_vector<double,1>;
+using vector_2d_t = space_vector<double,2>;
+using vector_3d_t = space_vector<double,3>;
 
 TEST(vector, dot) {
   // 1d vector dot
