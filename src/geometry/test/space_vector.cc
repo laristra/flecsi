@@ -13,7 +13,27 @@ using vector_1d_t = space_vector<double,1>;
 using vector_2d_t = space_vector<double,2>;
 using vector_3d_t = space_vector<double,3>;
 
-TEST(vector, dot) {
+TEST(space_vector, operator_times) {
+  double s = 2.0;
+
+  // 1d scalar vector multiply
+  vector_1d_t a(4.0);
+  ASSERT_EQ(8.0, (a*s)[0]);
+
+  // 2d scalar vector multiply
+  vector_2d_t b(4.0, -5.0);
+  ASSERT_EQ(  8.0, (b*s)[0]);
+  ASSERT_EQ(-10.0, (b*s)[1]);
+
+  // 3d scalar vector multiply
+  vector_3d_t c(4.0, -5.0, 6.0);
+  ASSERT_EQ(  8.0, (c*s)[0]);
+  ASSERT_EQ(-10.0, (c*s)[1]);
+  ASSERT_EQ( 12.0, (c*s)[2]);
+
+} // TEST
+
+TEST(space_vector, dot) {
   // 1d vector dot
   vector_1d_t a1(1.0);
   vector_1d_t b1(3.0);
@@ -40,7 +60,7 @@ TEST(vector, dot) {
 
 } // TEST
 
-TEST(vector, magnitude) {
+TEST(space_vector, magnitude) {
 
   vector_1d_t a(7.0);
   ASSERT_EQ(7.0, magnitude(a));
@@ -65,7 +85,7 @@ TEST(vector, magnitude) {
 using point_2d_t = point<double,2>;
 using point_3d_t = point<double,3>;
 
-TEST(vector, normal) {
+TEST(space_vector, normal) {
 
   // 1d vector normal not defined.
 
