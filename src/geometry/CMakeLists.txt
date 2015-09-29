@@ -5,6 +5,7 @@
 
 set(geometry_HEADERS
   point.h
+  space_vector.h
   PARENT_SCOPE
 )
 
@@ -13,10 +14,10 @@ set(geometry_HEADERS
 #)
 
 cinch_add_unit(point
-  SOURCES unit/point.cc)
+  SOURCES test/point.cc)
 
 cinch_add_unit(vector
-  SOURCES unit/vector.cc)
+  SOURCES test/space_vector.cc)
 
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.

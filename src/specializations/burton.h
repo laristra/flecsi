@@ -8,6 +8,7 @@
 
 #include "../mesh/mesh_topology.h"
 #include "../geometry/point.h"
+#include "../geometry/space_vector.h"
 
 /*!
  * \file burton.h
@@ -24,6 +25,7 @@ namespace flexi {
     using Id = uint64_t;
 
     using point_t = point<double, dimension>;
+    using vector_t = space_vector<double, dimension>;
 
     // Vertex type
     struct burton_vertex_t : public MeshEntity<0> {
@@ -80,6 +82,9 @@ namespace flexi {
       burton_corner_t* corner(){
         return corner_;
       }
+
+      vector_t side_facet_normal();
+      vector_t cell_facet_normal();
 
     private:
       burton_corner_t* corner_;

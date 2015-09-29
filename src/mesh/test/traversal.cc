@@ -120,26 +120,26 @@ TEST(mesh_topology, traversal) {
     }
   }
 
-  CINCH_TEST_STREAM() << "------------- forall cells, vertices" << endl;
+  CINCH_CAPTURE() << "------------- forall cells, vertices" << endl;
 
   for(TestMesh::CellIterator c(*mesh); !c.isend(); ++c){
-    CINCH_TEST_STREAM() << "------- cell id: " << c->id() << endl;
+    CINCH_CAPTURE() << "------- cell id: " << c->id() << endl;
     for(TestMesh::VertexIterator v(c); !v.isend(); ++v){
-      CINCH_TEST_STREAM() << "--------- vertex id: " << v->id() << endl;
+      CINCH_CAPTURE() << "--------- vertex id: " << v->id() << endl;
       for(TestMesh::CellIterator c2(v); !c2.isend(); ++c2){
-        CINCH_TEST_STREAM() << "cell2 id: " << c2->id() << endl;
+        CINCH_CAPTURE() << "cell2 id: " << c2->id() << endl;
       }
     }
   }
 
-  CINCH_TEST_STREAM() << "------------- forall cells, edges" << endl;
+  CINCH_CAPTURE() << "------------- forall cells, edges" << endl;
 
   for(TestMesh::CellIterator c(*mesh); !c.isend(); ++c){
-    CINCH_TEST_STREAM() << "------- cell id: " << c->id() << endl;
+    CINCH_CAPTURE() << "------- cell id: " << c->id() << endl;
     for(TestMesh::EdgeIterator e(c); !e.isend(); ++e){
-      CINCH_TEST_STREAM() << "edge id: " << e->id() << endl;
+      CINCH_CAPTURE() << "edge id: " << e->id() << endl;
     }
   }
 
-  ASSERT_TRUE(CINCH_TEST_EQUAL_BLESSED("traversal.blessed"));
+  ASSERT_TRUE(CINCH_EQUAL_BLESSED("traversal.blessed"));
 }

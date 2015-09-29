@@ -5,20 +5,87 @@
 
 #include <cinchtest.h>
 
-#include "../vector.h"
+#include "../space_vector.h"
 
 using namespace flexi;
 
-using vector_1d_t = vector<double,1>;
-using vector_2d_t = vector<double,2>;
-using vector_3d_t = vector<double,3>;
+using vector_1d_t = space_vector<double,1>;
+using vector_2d_t = space_vector<double,2>;
+using vector_3d_t = space_vector<double,3>;
 
 TEST(vector, dot) {
-  vector_2d_t a(1.0, 1.0);
-  vector_2d_t b(3.0, 4.0);
+  // 1d vector dot
+  vector_1d_t a1(1.0);
+  vector_1d_t b1(3.0);
+  ASSERT_EQ(3.0, dot(a1, b1));
 
-  ASSERT_EQ(7.0, dot(a, b));
+  a1[0] = -1.0;
+  ASSERT_EQ(-3.0, dot(a1, b1));
+
+  // 2d vector dot
+  vector_2d_t a2(1.0, 1.0);
+  vector_2d_t b2(3.0, 4.0);
+  ASSERT_EQ(7.0, dot(a2, b2));
+
+  a2[1] = -1.0;
+  ASSERT_EQ(-1.0, dot(a2, b2));
+
+  // 3d vector dot
+  vector_3d_t a3(1.0, 1.0, 1.0);
+  vector_3d_t b3(3.0, 4.0, 5.0);
+  ASSERT_EQ(12.0, dot(a3, b3));
+
+  b3[2] = -5.0;
+  ASSERT_EQ(2.0, dot(a3, b3));
+
 } // TEST
+
+TEST(vector, magnitude) {
+
+  vector_1d_t a(7.0);
+  ASSERT_EQ(7.0, magnitude(a));
+
+  a[0] = -5.0;
+  ASSERT_EQ(5.0, magnitude(a));
+
+  vector_2d_t b(3.0, 4.0);
+  ASSERT_EQ(5.0, magnitude(b));
+
+  b[1] = -4.0;
+  ASSERT_EQ(5.0, magnitude(b));
+
+  vector_3d_t c(3.0, 4.0, 5.0);
+  ASSERT_EQ(sqrt(50.0), magnitude(c));
+
+  c[2] = -5.0;
+  ASSERT_EQ(sqrt(50.0), magnitude(c));
+
+} // TEST
+
+using point_2d_t = point<double,2>;
+using point_3d_t = point<double,3>;
+
+TEST(vector, normal) {
+
+  // 1d vector normal not defined.
+
+  // 2d normal
+  point_2d_t a2(1.0, 1.0);
+  point_2d_t b2(3.0, 4.0);
+
+  vector_2d_t v2 = normal(a2,b2);
+  ASSERT_EQ(-3.0, v2[0]);
+  ASSERT_EQ( 2.0, v2[1]);
+
+  // 3d normal
+  point_3d_t a3(1.0, 1.0, 1.0);
+  point_3d_t b3(3.0, 4.0, 5.0);
+
+  vector_3d_t v3 = normal(a3, b3);
+
+
+} // TEST
+
 
 /*----------------------------------------------------------------------------*
  * Google Test Macros

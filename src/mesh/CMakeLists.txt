@@ -13,12 +13,12 @@ set(mesh_SOURCES
   PARENT_SCOPE)
 
 cinch_add_unit(traversal
-  SOURCES unit/traversal.cc
-  INPUT unit/traversal.blessed)
+  SOURCES test/traversal.cc
+  INPUT test/traversal.blessed)
 
 cinch_add_unit(dual
-  SOURCES unit/dual.cc
-  INPUT unit/dual.blessed)
+  SOURCES test/dual.cc
+  INPUT test/dual.blessed)
 
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.
