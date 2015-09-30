@@ -40,8 +40,7 @@ namespace flexi {
         precedence_ = 1 << (63 - rank);
       }
 
-      template<class M>
-      uint64_t precedence(M&) const{
+      uint64_t precedence() const{
         return precedence_;
       }
 
@@ -51,15 +50,6 @@ namespace flexi {
 
     // Edge type
     struct burton_edge_t : public MeshEntity<1> {
-
-      template<class M>
-      uint64_t precedence(M& mesh) const{
-        uint64_t p = 0;
-        for(auto v : mesh.vertices(this)){
-          p |= v->precedence(mesh);
-        }
-        return p;
-      }
 
     }; // struct burton_edge_t
 
@@ -116,6 +106,7 @@ namespace flexi {
     public:
       void addWedge(burton_wedge_t* w){
         wedges_.add(w);
+        w->setCorner(this);
       }
 
       EntityGroup<burton_wedge_t> & wedges() {
@@ -166,18 +157,40 @@ namespace flexi {
                                burton_vertex_t** v){
       assert(dim = 1);
       assert(e.size() == 8);
-    
-      e[0] = v[0]->id();
-      e[1] = v[2]->id();
-    
-      e[2] = v[1]->id();
-      e[3] = v[3]->id();
-    
-      e[4] = v[0]->id();
-      e[5] = v[1]->id();
-    
-      e[6] = v[2]->id();
-      e[7] = v[3]->id();
+
+      struct Edge_{
+        Edge_(burton_vertex_t* v1, burton_vertex_t* v2)
+          : v1(v1), v2(v2){}
+        
+        burton_vertex_t* v1;
+        burton_vertex_t* v2;
+
+        uint64_t precedence() const{
+          return v1->precedence() | v2->precedence(); 
+        }
+      };
+
+      std::vector<Edge_> es;
+      es.emplace_back(Edge_(v[0], v[1]));
+      es.emplace_back(Edge_(v[1], v[3]));
+      es.emplace_back(Edge_(v[0], v[1]));
+      es.emplace_back(Edge_(v[2], v[3]));
+
+      std::sort(es.begin(), es.end(), [](const Edge_& e1, const Edge_& e2){
+          return e1.precedence() > e2.precedence();
+        }); 
+
+      e[0] = es[0].v1->id();
+      e[1] = es[0].v2->id();
+
+      e[2] = es[1].v1->id();
+      e[3] = es[1].v2->id();
+
+      e[4] = es[2].v1->id();
+      e[5] = es[2].v2->id();    
+
+      e[6] = es[3].v1->id();
+      e[7] = es[3].v2->id();
     }
   };
 
@@ -233,15 +246,36 @@ namespace flexi {
                                burton_vertex_t** v){
       assert(dim = 1);
       assert(e.size() == 6);
-    
-      e[0] = v[0]->id();
-      e[1] = v[2]->id();
-    
-      e[2] = v[1]->id();
-      e[3] = v[3]->id();
-    
-      e[4] = v[0]->id();
-      e[5] = v[1]->id();
+
+      struct Edge_{
+        Edge_(burton_vertex_t* v1, burton_vertex_t* v2)
+          : v1(v1), v2(v2){}
+        
+        burton_vertex_t* v1;
+        burton_vertex_t* v2;
+
+        uint64_t precedence() const{
+          return v1->precedence() | v2->precedence(); 
+        }
+      };
+
+      std::vector<Edge_> es;
+      es.emplace_back(Edge_(v[0], v[2]));
+      es.emplace_back(Edge_(v[1], v[3]));
+      es.emplace_back(Edge_(v[0], v[1]));
+
+      std::sort(es.begin(), es.end(), [](const Edge_& e1, const Edge_& e2){
+          return e1.precedence() > e2.precedence();
+        });
+
+      e[0] = es[0].v1->id();
+      e[1] = es[0].v2->id();
+
+      e[2] = es[1].v1->id();
+      e[3] = es[1].v2->id();
+
+      e[4] = es[2].v1->id();
+      e[5] = es[2].v2->id();
     }
   };
 
@@ -316,15 +350,6 @@ public:
   }
 
   template<class E>
-  auto sortedEdges(E* e){
-    auto v = mesh_.edges(e).toVec();
-    std::sort(v.begin(), v.end(), [&](edge_t* e1, edge_t* e2){
-        return e1->precedence(mesh_) > e2->precedence(mesh_);
-      });
-    return EntityGroup<edge_t>(std::move(v));
-  }
-
-  template<class E>
   auto cells(E* e){
     return mesh_.cells(e);
   }
@@ -377,29 +402,21 @@ public:
       c->addWedge(w4);
 
       auto c1 = dual_mesh_.make<corner_t>();
-      w1->setCorner(c1);
-      w4->setCorner(c1);
       c1->addWedge(w1);
       c1->addWedge(w4);
       c->addCorner(c1);
 
       auto c2 = dual_mesh_.make<corner_t>();
-      w1->setCorner(c2);
-      w2->setCorner(c2);
       c2->addWedge(w1);
       c2->addWedge(w2);
       c->addCorner(c2);
 
       auto c3 = dual_mesh_.make<corner_t>();
-      w2->setCorner(c3);
-      w3->setCorner(c3);
       c3->addWedge(w2);
       c3->addWedge(w3);
       c->addCorner(c3);
 
       auto c4 = dual_mesh_.make<corner_t>();
-      w3->setCorner(c4);
-      w4->setCorner(c4);
       c4->addWedge(w3);
       c4->addWedge(w4);
       c->addCorner(c4);

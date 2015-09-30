@@ -54,7 +54,7 @@ int main(int argc, char ** argv) {
 
   for(auto c : b.cells()){
     cout << "----------- cell: " << c->id() << endl;
-    for(auto e : b.sortedEdges(c)){
+    for(auto e : b.edges(c)){
       cout << "++++ edge of: " << e->id() << endl;
     }
     for(auto w : c->wedges()){
