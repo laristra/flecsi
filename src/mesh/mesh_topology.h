@@ -182,6 +182,9 @@ namespace flexi{
     };
 
     EntityGroup(){}
+
+    EntityGroup(Vec&& entities)
+      : entities_(std::move(entities)){}
     
     void add(T* ent){
       entities_.push_back(ent);
@@ -1040,7 +1043,7 @@ namespace flexi{
     }
 
     template<size_t D, class E>
-    EntityRange<D> entitiesOf(E* e){
+    EntityRange<D> entities(E* e){
       Connectivity& c = getConnectivity(E::dimension, D);
       if(c.empty()){
         compute(E::dimension, D);
@@ -1052,17 +1055,21 @@ namespace flexi{
     }
 
     template<class E>
-    EntityRange<0> verticesOf(E* e){
-      return entitiesOf<0>(e);
+    EntityRange<0> vertices(E* e){
+      return entities<0>(e);
     }
 
     EntityRange<1> edges(){
+      if(entities_[1].empty()){
+        build(1);
+      }
+      
       return EntityRange<1>(entities_[1]);
     }
 
     template<class E>
-    EntityRange<1> edgesOf(E* e){
-      return entitiesOf<1>(e);
+    EntityRange<1> edges(E* e){
+      return entities<1>(e);
     }
 
     EntityRange<MT::dimension - 1> faces(){
@@ -1070,8 +1077,8 @@ namespace flexi{
     }
 
     template<class E>
-    EntityRange<MT::dimension - 1> facesOf(E* e){
-      return entitiesOf<MT::dimension - 1>(e);
+    EntityRange<MT::dimension - 1> faces(E* e){
+      return entities<MT::dimension - 1>(e);
     }
 
     EntityRange<MT::dimension> cells(){
@@ -1079,8 +1086,8 @@ namespace flexi{
     }
 
     template<class E>
-    EntityRange<MT::dimension> cellsOf(E* e){
-      return entitiesOf<MT::dimension>(e);
+    EntityRange<MT::dimension> cells(E* e){
+      return entities<MT::dimension>(e);
     }
 
     void dump(){

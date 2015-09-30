@@ -29,16 +29,37 @@ namespace flexi {
 
     // Vertex type
     struct burton_vertex_t : public MeshEntity<0> {
-      burton_vertex_t(){}
+      burton_vertex_t()
+        : precedence_(0){}
 
-      burton_vertex_t(const point_t& pos) :
+      burton_vertex_t(const point_t& pos)
+        : precedence_(0),
         pos(pos){}
-      
+
+      void setRank(uint8_t rank){
+        precedence_ = 1 << (63 - rank);
+      }
+
+      template<class M>
+      uint64_t precedence(M&) const{
+        return precedence_;
+      }
+
       point_t pos;
+      uint64_t precedence_;
     }; // struct burton_vertex_t
 
     // Edge type
     struct burton_edge_t : public MeshEntity<1> {
+
+      template<class M>
+      uint64_t precedence(M& mesh) const{
+        uint64_t p = 0;
+        for(auto v : mesh.vertices(this)){
+          p |= v->precedence(mesh);
+        }
+        return p;
+      }
 
     }; // struct burton_edge_t
 
@@ -281,22 +302,31 @@ public:
   }
 
   template<class E>
-  auto verticesOf(E* e){
-    return mesh_.verticesOf(e);
+  auto vertices(E* e){
+    return mesh_.vertices(e);
   }
 
-  auto verticesOf(wedge_t* w){
-    return dual_mesh_.verticesOf(w);
-  }
-
-  template<class E>
-  auto edgesOf(E* e){
-    return mesh_.edgesOf(e);
+  auto vertices(wedge_t* w){
+    return dual_mesh_.vertices(w);
   }
 
   template<class E>
-  auto cellsOf(E* e){
-    return mesh_.cellsOf(e);
+  auto edges(E* e){
+    return mesh_.edges(e);
+  }
+
+  template<class E>
+  auto sortedEdges(E* e){
+    auto v = mesh_.edges(e).toVec();
+    std::sort(v.begin(), v.end(), [&](edge_t* e1, edge_t* e2){
+        return e1->precedence(mesh_) > e2->precedence(mesh_);
+      });
+    return EntityGroup<edge_t>(std::move(v));
+  }
+
+  template<class E>
+  auto cells(E* e){
+    return mesh_.cells(e);
   }
 
   vertex_t* create_vertex(const point_t& pos){
@@ -315,7 +345,7 @@ public:
 
   void init(){
     for(auto c : mesh_.cells()){
-      auto vs = mesh_.verticesOf(c).toVec();
+      auto vs = mesh_.vertices(c).toVec();
 
       dual_mesh_.addVertex(vs[0]);
       dual_mesh_.addVertex(vs[1]);
@@ -328,6 +358,7 @@ public:
 
       auto cv = dual_mesh_.make<vertex_t>(cp);
       dual_mesh_.addVertex(cv);
+      cv->setRank(0);
 
       auto w1 = dual_mesh_.make<wedge_t>();
       dual_mesh_.addCell(w1, {vs[0], vs[1], cv});
