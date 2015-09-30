@@ -4,7 +4,6 @@
 #include "../mesh_topology.h"
 
 using namespace std;
-using namespace cinch;
 using namespace flexi;
 
 class Vertex : public MeshEntity<0>{
