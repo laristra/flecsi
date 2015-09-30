@@ -22,10 +22,11 @@ class Burton : public ::testing::Test {
 protected:
   virtual void SetUp() {
     vector<vertex_t*> vs;
-
+  
     for(size_t j = 0; j < height + 1; ++j){
       for(size_t i = 0; i < width + 1; ++i){
 	auto v = b.create_vertex({double(i), double(j)});
+	v->setRank(1);
 	vs.push_back(v);
       }
     }
@@ -52,35 +53,36 @@ protected:
 };
 
 TEST_F(Burton, mesh) {
-
   for(auto v : b.vertices()){
-    cout << "----------- vertex: " << v->id() << endl;
+    CINCH_CAPTURE() << "----------- vertex: " << v->id() << endl;
   }
 
   for(auto e : b.edges()){
-    cout << "----------- edge: " << e->id() << endl;
+    CINCH_CAPTURE() << "----------- edge: " << e->id() << endl;
   }
 
   for(auto c : b.cells()){
-    cout << "----------- cell: " << c->id() << endl;
-    for(auto e : b.edgesOf(c)){
-      cout << "++++ edge of: " << e->id() << endl;
+    CINCH_CAPTURE() << "----------- cell: " << c->id() << endl;
+    for(auto e : b.edges(c)){
+      CINCH_CAPTURE() << "++++ edge of: " << e->id() << endl;
     }
     for(auto w : c->wedges()){
-      cout << "++++ wedge of: " << w->id() << endl;
-      cout << "### corner of: " << w->corner()->id() << endl;
+      CINCH_CAPTURE() << "++++ wedge of: " << w->id() << endl;
+      CINCH_CAPTURE() << "### corner of: " << w->corner()->id() << endl;
     }
 
     for(auto c2 : c->corners()){
-      cout << "++++ corner of: " << c2->id() << endl;
+      CINCH_CAPTURE() << "++++ corner of: " << c2->id() << endl;
       for(auto w : c2->wedges()){
-        cout << "++ wedge of: " << w->id() << endl;
-        for(auto v : b.verticesOf(w)){
-          cout << "- vertex of: " << v->id() << endl;
+        CINCH_CAPTURE() << "++ wedge of: " << w->id() << endl;
+        for(auto v : b.vertices(w)){
+          CINCH_CAPTURE() << "- vertex of: " << v->id() << endl;
         }
       }
     }
   }
+
+  ASSERT_TRUE(CINCH_EQUAL_BLESSED("burton.blessed"));
 
 } // TEST
 

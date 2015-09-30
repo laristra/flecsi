@@ -9,15 +9,11 @@
 
 #add_executable(burton burton.cc)
 
-add_executable(burton2 burton2.cc)
-
 #------------------------------------------------------------------------------#
 # Add link dependencies
 #------------------------------------------------------------------------------#
 
 #target_link_libraries(burton ${CINCH_LINK_LIBRARIES} ${EXTRA_LIBS})
-
-target_link_libraries(burton2 ${CINCH_LINK_LIBRARIES} ${EXTRA_LIBS})
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options for emacs and vim.

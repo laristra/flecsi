@@ -12,13 +12,9 @@ set(specializations_HEADERS
 #  PARENT_SCOPE
 #)
 
-#  cinch_add_unit(casename
-#    SOURCES testfile.cc
-#    LIBRARIES list
-#    INCLUDES list
-#    POLICY MPI
-#    THREADS 1 2 4
-#  )
+cinch_add_unit(burton
+  SOURCES test/burton.cc
+  INPUT test/burton.blessed)
 
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.
