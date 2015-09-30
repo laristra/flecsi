@@ -26,6 +26,7 @@ int main(int argc, char ** argv) {
   for(size_t j = 0; j < height + 1; ++j){
     for(size_t i = 0; i < width + 1; ++i){
       auto v = b.create_vertex({double(i), double(j)});
+      v->setRank(1);
       vs.push_back(v);
     }
   }
@@ -53,7 +54,7 @@ int main(int argc, char ** argv) {
 
   for(auto c : b.cells()){
     cout << "----------- cell: " << c->id() << endl;
-    for(auto e : b.edgesOf(c)){
+    for(auto e : b.sortedEdges(c)){
       cout << "++++ edge of: " << e->id() << endl;
     }
     for(auto w : c->wedges()){
@@ -65,7 +66,7 @@ int main(int argc, char ** argv) {
       cout << "++++ corner of: " << c2->id() << endl;
       for(auto w : c2->wedges()){
         cout << "++ wedge of: " << w->id() << endl;
-        for(auto v : b.verticesOf(w)){
+        for(auto v : b.vertices(w)){
           cout << "- vertex of: " << v->id() << endl;
         }
       }
