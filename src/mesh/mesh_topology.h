@@ -1060,6 +1060,10 @@ namespace flexi{
     }
 
     EntityRange<1> edges(){
+      if(entities_[1].empty()){
+        build(1);
+      }
+      
       return EntityRange<1>(entities_[1]);
     }
 
