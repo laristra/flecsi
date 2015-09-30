@@ -834,8 +834,8 @@ namespace flexi{
     }
   
     void transpose(size_t fromDim, size_t toDim){
-      //std::cerr << "transpose: " << fromDim << " -> " << 
-      //   toDim << std::endl;
+      std::cerr << "transpose: " << fromDim << " -> " << 
+         toDim << std::endl;
     
       IndexVec pos(numEntities_(fromDim), 0);
     
@@ -861,8 +861,8 @@ namespace flexi{
     }
   
     void intersect(size_t fromDim, size_t toDim, size_t dim){
-      //std::cerr << "intersect: " << fromDim << " -> " << 
-      //  toDim << std::endl;
+      std::cerr << "intersect: " << fromDim << " -> " << 
+        toDim << std::endl;
 
       Connectivity& outConn = getConnectivity_(fromDim, toDim);
       if(!outConn.empty()){
