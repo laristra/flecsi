@@ -48,8 +48,10 @@ public:
     data_ = { args ... };
   }
 
-  //! Assignment operator (disabled)
-  dimensioned_array & operator = (const dimensioned_array &) = delete;
+  dimensioned_array& operator=(const dimensioned_array& a){
+    data_ = a.data_;
+    return *this;
+  }
 
   //! Destructor
    ~dimensioned_array() {}

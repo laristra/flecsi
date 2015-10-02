@@ -32,9 +32,9 @@ namespace flexi {
       burton_vertex_t()
         : precedence_(0){}
 
-      burton_vertex_t(const point_t& pos)
+      burton_vertex_t(const point_t& coordinates)
         : precedence_(0),
-        pos(pos){}
+        coordinates_(coordinates){}
 
       void setRank(uint8_t rank){
         precedence_ = 1 << (63 - rank);
@@ -43,8 +43,17 @@ namespace flexi {
       uint64_t precedence() const{
         return precedence_;
       }
+      
+      void setCoordinates(const point_t& coordinates){
+        coordinates_ = coordinates;
+      }
 
-      point_t pos;
+      const point_t& coordinates() const{
+        return coordinates_;
+      }
+
+    private:
+      point_t coordinates_;
       uint64_t precedence_;
     }; // struct burton_vertex_t
 
@@ -378,8 +387,8 @@ public:
       dual_mesh_.addVertex(vs[3]);
 
       point_t cp;
-      cp[0] = vs[0]->pos[0] + 0.5*(vs[2]->pos[0] - vs[0]->pos[0]);
-      cp[1] = vs[0]->pos[1] + 0.5*(vs[1]->pos[1] - vs[0]->pos[1]);
+      cp[0] = vs[0]->coordinates()[0] + 0.5*(vs[2]->coordinates()[0] - vs[0]->coordinates()[0]);
+      cp[1] = vs[0]->coordinates()[1] + 0.5*(vs[1]->coordinates()[1] - vs[0]->coordinates()[1]);
 
       auto cv = dual_mesh_.make<vertex_t>(cp);
       dual_mesh_.addVertex(cv);
