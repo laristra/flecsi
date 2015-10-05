@@ -4,6 +4,7 @@
 #-----------------------------------------------------------------------------~#
 
 set(specializations_HEADERS
+  burton_types.h
   burton.h
   PARENT_SCOPE
 )

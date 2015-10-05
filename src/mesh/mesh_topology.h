@@ -212,23 +212,22 @@ namespace flexi{
     
   class MeshTopologyBase{
   public:
-    using Id = uint64_t;
 
-    using IdVec = std::vector<Id>;
+    using IdVec = std::vector<id_t>;
   
     using ConnVec = std::vector<IdVec>;
 
     struct IdVecHash{
       size_t operator()(const IdVec& v) const{
         size_t h = 0;
-        for(Id id : v){
+        for(id_t id : v){
           h |= id;
         }
         return h;
       }
     };
   
-    using IdVecMap = std::unordered_map<IdVec, Id, IdVecHash>;
+    using IdVecMap = std::unordered_map<IdVec, id_t, IdVecHash>;
   
     using IndexVec = std::vector<size_t>;
 
@@ -256,7 +255,7 @@ namespace flexi{
         for(size_t i = 0; i < n; ++i){
           const IdVec& iv = cv[i];
           
-          for(Id id : iv){
+          for(id_t id : iv){
             entityVec_.push_back(ev[id]);
           }
           
@@ -272,12 +271,12 @@ namespace flexi{
       
         size_t n = cv.size();
 
-        Id maxId = 0;
+        id_t maxId = 0;
 
         for(size_t i = 0; i < n; ++i){
           const IdVec& iv = cv[i];
           
-          for(Id id : iv){
+          for(id_t id : iv){
             maxId = std::max(maxId, id);
             entityVec_.push_back(MeshEntityBase::create_<MT>(dim, id));
           }
@@ -327,7 +326,7 @@ namespace flexi{
         }
       
         std::cout << "=== groupVec" << std::endl;
-        for(Id id : fromIndexVec_){
+        for(id_t id : fromIndexVec_){
           std::cout << id << std::endl;
         }
       }
@@ -809,7 +808,7 @@ namespace flexi{
         MT::createEntities(dim, entityVertices, vertices);
 
         for(size_t i = 0; i < entitiesPerCell; ++i){
-          Id* a = &entityVertices[i * verticesPerEntity];
+          id_t* a = &entityVertices[i * verticesPerEntity];
           IdVec ev(a, a + verticesPerEntity);
           std::sort(ev.begin(), ev.end());
 
@@ -1028,7 +1027,7 @@ namespace flexi{
     }
 
     template<class T>
-    static T* makeWithId(Id id){
+    static T* makeWithId(id_t id){
       T* entity = new T;
       entity->id_ = id;
       return entity;
@@ -1110,7 +1109,7 @@ namespace flexi{
       MT::dimension + 1>;
 
     using NextIds_ = 
-      std::array<Id, MT::dimension + 1>;
+      std::array<id_t, MT::dimension + 1>;
 
     Entities_ entities_;
     Topology_ topology_;

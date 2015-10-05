@@ -6,6 +6,8 @@
 #ifndef flexi_common_h
 #define flexi_common_h
 
+#include <cstdint>
+
 /*!
  * \file common.h
  * \authors bergen
@@ -13,6 +15,8 @@
  */
 
 namespace flexi {
+
+using id_t = uint64_t;
 
 //! P.O.D.
 template<typename T> T square(const T & a) { return a*a; }

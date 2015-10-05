@@ -1,6 +1,7 @@
 #include <cinchtest.h>
 #include <iostream>
 
+#include "../../utils/common.h"
 #include "../mesh_topology.h"
 
 using namespace std;
@@ -30,7 +31,6 @@ class TestMesh2dType{
 public:
   static constexpr size_t dimension = 2;
 
-  using Id = uint64_t;
   using Float = double;
 
   using EntityTypes = std::tuple<Vertex, Edge, Cell>;
@@ -66,7 +66,7 @@ public:
     }
   }
   
-  static void createEntities(size_t dim, std::vector<Id>& e, Vertex** v){
+  static void createEntities(size_t dim, std::vector<flexi::id_t>& e, Vertex** v){
     assert(dim = 1);
     assert(e.size() == 8);
     
