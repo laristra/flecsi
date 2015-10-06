@@ -5,21 +5,14 @@
 
 set(utils_HEADERS
   dummy.h
-  PARENT_SCOPE
-)
+  PARENT_SCOPE)
 
 set(utils_SOURCES
   dummy.cc
-  PARENT_SCOPE
-)
+  PARENT_SCOPE)
 
-#  cinch_add_unit(casename
-#    SOURCES testfile.cc
-#    LIBRARIES list
-#    INCLUDES list
-#    POLICY MPI
-#    THREADS 1 2 4
-#  )
+cinch_add_unit(bitfield
+  SOURCES test/bitfield.cc)
 
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.
