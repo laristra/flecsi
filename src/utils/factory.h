@@ -50,8 +50,8 @@ public:
     \param ch The handler to call to create a new type associated
     with \emph id.
    */
-  bool registerType(key_t id, createHandler ch) {
-    return map_.insert(typename map_t::value_type(id, ch)).second;
+  bool registerType(key_t key, createHandler ch) {
+    return map_.insert(typename map_t::value_type(key, ch)).second;
   } // registerType
 
   /*!
@@ -80,10 +80,10 @@ public:
     This will statically cast the lvalue to an rvalue reference and
     everything will be good.
    */
-  T * create(key_t id, Args && ... args) {
+  T * create(key_t key, Args && ... args) {
 
     // lookup the create class
-    typename map_t::const_iterator ita = map_.find(id);
+    typename map_t::const_iterator ita = map_.find(key);
 
     // make sure that the id exists in the map
     if(ita == map_.end()) {

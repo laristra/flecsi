@@ -26,9 +26,9 @@ void meshIO<MT>::write(const std::string filename, const MT & m) {
   int exoid = ex_create(filename.c_str(), EX_CLOBBER,
     &CPU_word_size, &IO_word_size);
 
-  int d = m.dimension;
-  //int num_nodes = m.numVertices();
-  //int num_elem = m.numCells();
+  auto d = m.dimension();
+  auto num_nodes = m.numVertices();
+  auto num_elem = m.numCells();
   //int num_elem_blk =
   //int num_node_sets =
   //int num_side_sets = 

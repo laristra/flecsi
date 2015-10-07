@@ -14,6 +14,9 @@ set(utils_SOURCES
 cinch_add_unit(bitfield
   SOURCES test/bitfield.cc)
 
+cinch_add_unit(factory
+  SOURCES test/factory.cc)
+
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.
 # vim: set tabstop=2 shiftwidth=2 expandtab :

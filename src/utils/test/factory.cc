@@ -3,42 +3,60 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
+#include <string>
+
 #include <cinchtest.h>
-#include "../bitfield.h"
 
-using bitfield_t = flexi::bitfield<uint8_t>;
+#include "../factory.h"
 
-enum class wedge_order_t : size_t {
-  point = 0,
-  zone = 1,
-  edge = 2,
-  face = 3
-}; // 
+//----------------------
 
-TEST(bitfield, setbit) {
+// base io class
+class io_base_t
+{
+public:
 
-  bitfield_t bf;
+  io_base_t(std::string & filename) : filename_(filename) {}
 
-  bf.setbit(static_cast<size_t>(wedge_order_t::point));
-  ASSERT_TRUE(bf.bitset(static_cast<size_t>(wedge_order_t::point)));
+  virtual int32_t read() = 0;
 
-  bf.clear();
-  ASSERT_TRUE(bf.bitclear(0));
+protected:
 
-  bitfield_t::field_type_t mask = 1<<0 | 1<<3 | 1<<7;
+  std::string filename_;
 
-  bf.set(mask);
-  ASSERT_TRUE(bf.bitset(0));
-  ASSERT_TRUE(bf.bitset(3));
-  ASSERT_TRUE(bf.bitset(7));
-  ASSERT_TRUE(bf.bitsset(mask));
+}; // struct io_base_t
 
-  bf.clearbit(3);
-  ASSERT_FALSE(bf.bitset(3));
+// create factory type
+using io_factory_t = flexi::Factory_<io_base_t, std::string, std::string &>;
 
-  bf.clear(mask);
-  ASSERT_FALSE(bf.bitsset(mask));
+//----------------------
 
+struct test_io_t : public io_base_t {
+
+  test_io_t(std::string & filename) : io_base_t(filename) {}
+
+  int32_t read() {
+    return 0; 
+  } // read
+
+}; // struct test_io_t
+
+// derived io type
+io_base_t * create_test_io(std::string & filename) {
+  return new test_io_t(filename);
+} // create_test_io
+
+// register this io type with factory
+bool test_registered = io_factory_t::instance().registerType("tst", create_test_io);
+
+//----------------------
+
+TEST(factory, sanity) {
+  std::string filename("myfile");
+  std::string suffix("tst");
+  io_base_t * io = io_factory_t::instance().create(suffix, filename);
+
+  ASSERT_FALSE(io->read());
 } // TEST
 
 /*----------------------------------------------------------------------------*

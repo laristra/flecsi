@@ -988,19 +988,19 @@ namespace flexi{
       }
     }
 
-    size_t numCells(){
+    decltype(auto) numCells() const {
       return entities_[MT::dimension].size();
     }
   
-    size_t numVertices(){
+    decltype(auto) numVertices() const {
       return entities_[0].size();
     }
   
-    size_t numEdges(){
+    decltype(auto) numEdges() const {
       return entities_[1].size();
     }
   
-    size_t numFaces(){
+    decltype(auto) numFaces() const {
       return entities_[MT::dimension - 1].size();
     }
 

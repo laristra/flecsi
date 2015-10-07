@@ -29,10 +29,9 @@ private:
 
 public:
 
-  static constexpr size_t  dimension = burton_mesh_traits_t::dimension;
   using real_t = burton_mesh_traits_t::real_t;
 
-  using point_t = point<real_t, dimension>;
+  using point_t = point<real_t, burton_mesh_traits_t::dimension>;
 
   using vertex_t = burton_mesh_types_t::burton_vertex_t;
   using edge_t = burton_mesh_types_t::burton_edge_t;
@@ -62,6 +61,20 @@ public:
   //! Destructor
   ~burton_mesh_t() {}
 
+  decltype(auto) dimension() const {
+    return burton_mesh_traits_t::dimension;
+  } // dimension
+
+  decltype(auto) numVertices() const {
+    return mesh_.numVertices();
+  } // numVertices
+
+  decltype(auto) numCells() const {
+    return mesh_.numCells();
+  } // numCells
+
+  /*!
+   */
   auto vertices(){
     return mesh_.vertices();
   }
