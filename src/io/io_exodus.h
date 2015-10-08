@@ -80,7 +80,67 @@ namespace flexi {
     auto status = ex_get_init_ext(exoid, &exopar);
     assert(status == 0);
 
-    return 0;
+    // verify 2d mesh
+    assert(m.dimension() == exopar.num_dim);
+    auto num_nodes = exopar.num_nodes;
+    auto num_elem = exopar.num_elem;
+    auto num_elem_blk = exopar.num_elem_blk;
+    auto num_node_sets = exopar.num_node_sets;
+    auto num_side_sets = exopar.num_side_sets;
+
+    // read nodes
+    burton_mesh_t::real_t xcoord[num_nodes];
+    burton_mesh_t::real_t ycoord[num_nodes];
+    status = ex_get_coord(exoid, xcoord, ycoord, nullptr);
+    assert(status == 0);
+
+    // put nodes into mesh
+    std::vector<burton_mesh_t::vertex_t*> vs;
+    for (size_t i = 0; i < num_nodes; ++i) {
+      auto v = m.create_vertex({xcoord[i], ycoord[i]});
+      v->setRank(1);
+      vs.push_back(v);
+    } // for
+
+    // 1 block for now
+
+    // read blocks
+    int blockids[num_elem_blk];
+    status = ex_get_elem_blk_ids(exoid, blockids);
+    assert(status == 0);
+    char block_name[256];
+    status = ex_get_name(exoid, EX_ELEM_BLOCK, blockids[0], block_name);
+    assert(status == 0);
+
+    // get the info about this block
+    auto num_attr = 0;
+    auto num_nodes_per_elem = 0;
+    char elem_type[256];
+    status = ex_get_elem_block(exoid, blockids[0], elem_type, &num_elem,
+      &num_nodes_per_elem, &num_attr);
+    assert(status == 0);
+
+    // verify mesh has quads
+    assert(num_nodes_per_elem == 4);
+    assert(strcmp(elem_type,"quad") == 0);
+
+    // read element definitions
+    int elt_conn[num_elem*num_nodes_per_elem];
+    status = ex_get_elem_conn(exoid, blockids[0], elt_conn);
+    assert(status == 0);
+
+    // store elements
+    for (size_t e = 0; e < num_elem; ++e) {
+//        for ( ex_entity_id iNode=0; iNode<nNodesPerElem; iNode++ ) {
+//          ex_entity_id id = iElem*nNodesPerElem + iNode;
+//          set[i].ElementNodes[ id ] = NodeList[ id ] - 1;
+//        }
+//      auto b = e*num_nodes_per_elem;
+//      auto c = m.create_cell({vs[b+0],vs[b+1],vs[b+2],vs[b+3]});
+    }
+    m.init();
+
+    return status;
   }
 
   //! implementation of exodus write
@@ -132,13 +192,13 @@ namespace flexi {
     // loop over element blocks
     auto blockid = 0;
     auto num_attr = 0;
-    auto num_vertices_per_cell = 4;
+    auto num_nodes_per_elem = 4;
     status = ex_put_elem_block(exoid, blockid, "quad", num_elem,
-      num_vertices_per_cell, num_attr);
+      num_nodes_per_elem, num_attr);
     assert(status == 0);
 
     // element definitions
-    int elt_conn[num_elem*num_vertices_per_cell];
+    int elt_conn[num_elem*num_nodes_per_elem];
     i = 0;
     // FIXME: need const correctness for the following iterators
     //for(auto c: m.cells()) {

@@ -75,13 +75,15 @@ TEST_F(Burton, write_exo) {
 } // TEST_F
 
 TEST_F(Burton, read_g) {
+  burton_mesh_t m;
   std::string filename("test/mesh.g");
-  ASSERT_FALSE(read_mesh(filename, b));
+  ASSERT_FALSE(read_mesh(filename, m));
 } // TEST_F
 
 TEST_F(Burton, read_exo) {
+  burton_mesh_t m;
   std::string filename("test/mesh.exo");
-  ASSERT_FALSE(read_mesh(filename, b));
+  ASSERT_FALSE(read_mesh(filename, m));
 } // TEST_F
 
 /*----------------------------------------------------------------------------*
