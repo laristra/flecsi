@@ -35,12 +35,16 @@ struct burton_mesh_traits_t {
 
 }; // struct burton_mesh_traits_t
 
-/*!---------------------------------------------------------------------------*
- * \class burton_mesh_types_t burton_types.h
- * \brief The burton_mesh_types_t is a collection of type information needed
- *        to specialize the flexi low-level mesh infrastructure for
- *        ALE methods.
+/*----------------------------------------------------------------------------*
+ * struct burton_mesh_types_t
  *----------------------------------------------------------------------------*/
+
+/*!
+  \class burton_mesh_types_t burton_types.h
+  \brief The burton_mesh_types_t is a collection of type information needed
+    to specialize the flexi low-level mesh infrastructure for
+    ALE methods.
+*/
 
 struct burton_mesh_types_t {
 
@@ -50,10 +54,8 @@ struct burton_mesh_types_t {
   using point_t = point<real_t, dimension>;
   using vector_t = space_vector<real_t, dimension>;
 
-  /*!-------------------------------------------------------------------------*
-   * \class burton_vertex_t burton_types.h
-   * \brief The burton_vertex_t type provides an interface for managing and
-   *        geometry and state associated with mesh vertices.
+  /*--------------------------------------------------------------------------*
+   * class burton_vertex_t
    *--------------------------------------------------------------------------*/
 
   class burton_vertex_t : public MeshEntity<0> {
@@ -90,11 +92,15 @@ struct burton_mesh_types_t {
 
   }; // struct burton_vertex_t
 
-  /*!-------------------------------------------------------------------------*
-   * \class burton_edge_t burton_types.h
-   * \brief The burton_edge_t type provides an interface for managing and
-   *        geometry and state associated with mesh edges.
+  /*--------------------------------------------------------------------------*
+   * class burton_edge_t
    *--------------------------------------------------------------------------*/
+
+  /*!
+     \class burton_edge_t burton_types.h
+     \brief The burton_edge_t type provides an interface for managing and
+            geometry and state associated with mesh edges.
+   */   
 
   struct burton_edge_t : public MeshEntity<1> {
   }; // struct burton_edge_t
@@ -102,11 +108,15 @@ struct burton_mesh_types_t {
   class burton_corner_t;
   class burton_wedge_t;
 
-  /*!-------------------------------------------------------------------------*
-   * \class burton_cell_t burton_types.h
-   * \brief The burton_cell_t type provides an interface for managing and
-   *        geometry and state associated with mesh cells.
+  /*--------------------------------------------------------------------------*
+   * class burton_cell_t
    *--------------------------------------------------------------------------*/
+
+  /*!
+     \class burton_cell_t burton_types.h
+     \brief The burton_cell_t type provides an interface for managing and
+            geometry and state associated with mesh cells.
+   */
 
   class burton_cell_t : public MeshEntity<2>
   {
@@ -135,11 +145,15 @@ struct burton_mesh_types_t {
 
   }; // class burton_cell_t
 
-  /*!-------------------------------------------------------------------------*
-   * \class burton_wedge_t burton_types.h
-   * \brief The burton_wedge_t type provides an interface for managing and
-   *        geometry and state associated with mesh wedges.
+  /*--------------------------------------------------------------------------*
+   * class burton_wedge_t
    *--------------------------------------------------------------------------*/
+
+  /*!
+     \class burton_wedge_t burton_types.h
+     \brief The burton_wedge_t type provides an interface for managing and
+            geometry and state associated with mesh wedges.
+   */
 
   class burton_wedge_t : public MeshEntity<2>
   {
@@ -162,11 +176,15 @@ struct burton_mesh_types_t {
 
   }; // struct burton_wedge_t
 
-  /*!-------------------------------------------------------------------------*
-   * \class burton_corner_t burton_types.h
-   * \brief The burton_corner_t type provides an interface for managing and
-   *        geometry and state associated with mesh corners.
+  /*--------------------------------------------------------------------------*
+   * class burton_corner_t
    *--------------------------------------------------------------------------*/
+
+  /*!
+     \class burton_corner_t burton_types.h
+     \brief The burton_corner_t type provides an interface for managing and
+            geometry and state associated with mesh corners.
+   */
 
   class burton_corner_t : public MeshEntity<0> {
   public:
@@ -186,14 +204,14 @@ struct burton_mesh_types_t {
 
   }; // class burton_corner_t
 
-  /*!-------------------------------------------------------------------------*
+  /*--------------------------------------------------------------------------*
    * Specify mesh parameterizations.
    *--------------------------------------------------------------------------*/
 
   using EntityTypes =
     std::tuple<burton_vertex_t, burton_edge_t, burton_cell_t>;
 
-  /*!-------------------------------------------------------------------------*
+  /*--------------------------------------------------------------------------*
    * FIXME
    *--------------------------------------------------------------------------*/
 
@@ -210,7 +228,7 @@ struct burton_mesh_types_t {
     } // switch
   } // numEntitiesPerCell
 
-  /*!-------------------------------------------------------------------------*
+  /*--------------------------------------------------------------------------*
    * FIXME
    *--------------------------------------------------------------------------*/
 
@@ -218,7 +236,7 @@ struct burton_mesh_types_t {
     return 4;
   } // verticesPerCell
 
-  /*!-------------------------------------------------------------------------*
+  /*--------------------------------------------------------------------------*
    * FIXME
    *--------------------------------------------------------------------------*/
 
@@ -235,7 +253,7 @@ struct burton_mesh_types_t {
     } // switch
   } // numVerticesPerEntity
 
-  /*!-------------------------------------------------------------------------*
+  /*--------------------------------------------------------------------------*
    * FIXME
    *--------------------------------------------------------------------------*/
 
