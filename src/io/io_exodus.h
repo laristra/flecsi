@@ -141,12 +141,10 @@ namespace flexi {
     int elt_conn[num_elem*num_vertices_per_cell];
     i = 0;
     // FIXME: need const correctness for the following iterators
-    //for(auto c: m.cells()) {
-    for(auto c: const_cast<burton_mesh_t &>(m).cells()) {
-      //for(auto v: m.vertices(c)) {
-      for(auto v: const_cast<burton_mesh_t &>(m).vertices(c)) {
-	elt_conn[i] = v->id() + 1;
-	i++;
+    for(auto c: m.cells()) {
+      for(auto v: m.vertices(c)) {
+        elt_conn[i] = v->id() + 1;
+        i++;
       } // for
     } // for
 

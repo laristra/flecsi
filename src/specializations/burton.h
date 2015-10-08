@@ -110,15 +110,14 @@ public:
   }
 
   template<class E>
-  auto vertices(E* e){
+  decltype(auto) vertices(const E* e) const {
     return mesh_.vertices(e);
   }
 
-  // FIXME: jgw const correctness
-  //template<class E>
-  //auto vertices(const E* e) const {
-  //  return mesh_.vertices(e);
-  //}
+  template<class E>
+  auto vertices(E* e){
+    return mesh_.vertices(e);
+  }
 
   auto vertices(wedge_t* w){
     return dual_mesh_.vertices(w);

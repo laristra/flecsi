@@ -352,11 +352,11 @@ public:
       } // for
     } // dump
 
-    const EntityVec& getEntities() const{
+    const EntityVec& getEntities() const {
       return entityVec_;
     }
 
-    const IdVec& getFromIndexVec() const{
+    const IdVec& getFromIndexVec() const {
       return fromIndexVec_;
     }
   
@@ -371,12 +371,12 @@ public:
       endIndex = fromIndexVec_[index + 1] - start;
       return entityVec_.data() + start;
     }
-      
-    bool empty(){
+
+    bool empty() const {
       return entityVec_.empty();
     }
   
-    void set(size_t fromId, MeshEntityBase* ent, size_t pos){
+    void set(size_t fromId, MeshEntityBase* ent, size_t pos) {
       entityVec_[fromIndexVec_[fromId] + pos] = ent;
     }
   
@@ -1116,20 +1116,16 @@ public:
   }
 
   template<size_t D, class E>
-  EntityRange<D> entities(E* e) const {
-    Connectivity& c = getConnectivity(E::dimension, D);
-    if(c.empty()){
-      compute(E::dimension, D);
-    }
-
+  EntityRange<D> entities(const E* e) const {
+    const Connectivity & c = getConnectivity(E::dimension, D);
+    assert(!c.empty() && "cannot call entities on empty mesh");
     const IdVec& fv = c.getFromIndexVec();
-
     return EntityRange<D>(c.getEntities(), fv[e->id()], fv[e->id() + 1]);
   } // entities
 
   template<size_t D, class E>
   EntityRange<D> entities(E* e) {
-    Connectivity& c = getConnectivity(E::dimension, D);
+    Connectivity & c = getConnectivity(E::dimension, D);
     if(c.empty()){
       compute(E::dimension, D);
     }
