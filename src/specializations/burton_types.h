@@ -282,7 +282,7 @@ struct burton_mesh_types_t {
 }; // struct burton_mesh_types_t
 
 // FIXME
- class dual_mesh_types_t {
+ class burton_dual_mesh_types_t {
   public:
     static constexpr size_t dimension = burton_mesh_traits_t::dimension;
 

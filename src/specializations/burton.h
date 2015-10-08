@@ -34,7 +34,7 @@ class burton_mesh_t
 private:
 
   using private_mesh_t = MeshTopology<burton_mesh_types_t>;
-  using private_dual_mesh_t = MeshTopology<dual_mesh_types_t>;
+  using private_dual_mesh_t = MeshTopology<burton_dual_mesh_types_t>;
 
 public:
 
