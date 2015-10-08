@@ -43,11 +43,12 @@ protected:
     size_t width1 = width + 1;
     for(size_t j = 0; j < height; ++j){
       for(size_t i = 0; i < width; ++i){
+	// go over vertices counter clockwise to define cell
 	auto c = 
 	  b.create_cell({vs[i + j * width1],
-		vs[i + (j + 1) * width1],
 		vs[i + 1 + j * width1],
-		vs[i + 1 + (j + 1) * width1]});
+		vs[i + 1 + (j + 1) * width1],
+		vs[i + (j + 1) * width1]});
       }
     }
 
