@@ -38,12 +38,10 @@ namespace flexi {
     //! Default constructor
     io_exodus_t() {}
 
-    //! implementation of read
-    int32_t read(const std::string & filename, burton_mesh_t & m) {
-      return 0;
-    } // read
+    //! implementation of exodus read
+    int32_t read(const std::string & filename, burton_mesh_t & m);
 
-    //! implementation of write
+    //! implementation of exodus write
     int32_t write(const std::string & filename, const burton_mesh_t & m);
 
   }; // struct io_exodus_t
@@ -61,7 +59,31 @@ namespace flexi {
   bool exodus_exo_registered
     = io_factory_t::instance().registerType("exo", create_io_exodus);
 
-  //! implementation of write
+
+  //! implementation of exodus read
+  int32_t io_exodus_t::read(const std::string & filename, 
+    burton_mesh_t & m) {
+    std::cout << "Reading mesh from file: " << filename << std::endl;
+
+    // size of floating point variables used in app.
+    int CPU_word_size = sizeof(burton_mesh_t::real_t);
+    // size of floating point to be stored in file.
+    int IO_word_size = 0;
+    float version;
+
+    auto exoid = ex_open(filename.c_str(), EX_READ, &CPU_word_size,
+      &IO_word_size, &version);
+    assert(exoid >= 0);
+
+    // get the initialization parameters
+    ex_init_params exopar;
+    auto status = ex_get_init_ext(exoid, &exopar);
+    assert(status == 0);
+
+    return 0;
+  }
+
+  //! implementation of exodus write
   int32_t io_exodus_t::write(const std::string & filename, 
     const burton_mesh_t & m) {
 
@@ -92,9 +114,7 @@ namespace flexi {
     auto i = 0;
     for(auto v: m.vertices()) {
       xcoord[i] = v->coordinates()[0];
-      std::cerr << "x = " << v->coordinates()[0] << std::endl;
       ycoord[i] = v->coordinates()[1];
-      std::cerr << "y = " << v->coordinates()[1] << std::endl;
       i++;
     } // for
     // write the coordinates to the file

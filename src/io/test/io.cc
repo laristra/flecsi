@@ -64,7 +64,6 @@ protected:
   const size_t height = 20;
 };
 
-
 TEST_F(Burton, write_g) {
   std::string filename("test/mesh.g");
   ASSERT_FALSE(write_mesh(filename, b));
@@ -73,6 +72,16 @@ TEST_F(Burton, write_g) {
 TEST_F(Burton, write_exo) {
   std::string filename("test/mesh.exo");
   ASSERT_FALSE(write_mesh(filename, b));
+} // TEST_F
+
+TEST_F(Burton, read_g) {
+  std::string filename("test/mesh.g");
+  ASSERT_FALSE(read_mesh(filename, b));
+} // TEST_F
+
+TEST_F(Burton, read_exo) {
+  std::string filename("test/mesh.exo");
+  ASSERT_FALSE(read_mesh(filename, b));
 } // TEST_F
 
 /*----------------------------------------------------------------------------*
