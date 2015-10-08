@@ -6,8 +6,8 @@
  * /@@////  /@@      /@@////     @@/@@  /@@
  * /@@      /@@      /@@        @@ //@@ /@@
  * /@@      /@@@@@@@@/@@@@@@@@ @@   //@@/@@
- * //       //////// //////// //     // // 
- * 
+ * //       //////// //////// //     // //
+ *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
@@ -28,7 +28,7 @@ namespace flexi {
 using id_t = uint64_t;
 
 //! P.O.D.
-template<typename T> T square(const T & a) { return a*a; }
+template <typename T> T square(const T &a) { return a * a; }
 
 } // namespace flexi
 

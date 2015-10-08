@@ -6,8 +6,8 @@
  * /@@////  /@@      /@@////     @@/@@  /@@
  * /@@      /@@      /@@        @@ //@@ /@@
  * /@@      /@@@@@@@@/@@@@@@@@ @@   //@@/@@
- * //       //////// //////// //     // // 
- * 
+ * //       //////// //////// //     // //
+ *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
@@ -34,15 +34,12 @@ namespace flexi {
   \brief burton_mesh_t provides...
  */
 
-class burton_mesh_t
-{
+class burton_mesh_t {
 private:
-
   using private_mesh_t = MeshTopology<burton_mesh_types_t>;
   using private_dual_mesh_t = MeshTopology<burton_dual_mesh_types_t>;
 
 public:
-
   using real_t = burton_mesh_traits_t::real_t;
 
   using point_t = point<real_t, burton_mesh_traits_t::dimension>;
@@ -70,7 +67,7 @@ public:
   burton_mesh_t(const burton_mesh_t &) = delete;
 
   //! Assignment operator (disabled)
-  burton_mesh_t & operator = (const burton_mesh_t &) = delete;
+  burton_mesh_t &operator=(const burton_mesh_t &) = delete;
 
   //! Destructor
   ~burton_mesh_t() {}
@@ -83,73 +80,48 @@ public:
     return mesh_.numVertices();
   } // numVertices
 
-  decltype(auto) numCells() const {
-    return mesh_.numCells();
-  } // numCells
+  decltype(auto) numCells() const { return mesh_.numCells(); } // numCells
 
   /*!
    */
-  auto vertices(){
-    return mesh_.vertices();
-  }
+  auto vertices() { return mesh_.vertices(); }
 
-  auto vertices() const {
-    return mesh_.vertices();
-  }
+  auto vertices() const { return mesh_.vertices(); }
 
-  auto edges(){
-    return mesh_.edges();
-  }
+  auto edges() { return mesh_.edges(); }
 
-  auto cells(){
-    return mesh_.cells();
-  }
+  auto cells() { return mesh_.cells(); }
 
-  auto cells() const {
-    return mesh_.cells();
-  }
+  auto cells() const { return mesh_.cells(); }
 
-  template<class E>
-  auto vertices(E* e){
+  template <class E> decltype(auto) vertices(const E *e) const {
     return mesh_.vertices(e);
   }
 
-  // FIXME: jgw const correctness
-  //template<class E>
-  //auto vertices(const E* e) const {
-  //  return mesh_.vertices(e);
-  //}
+  template <class E> auto vertices(E *e) { return mesh_.vertices(e); }
 
-  auto vertices(wedge_t* w){
-    return dual_mesh_.vertices(w);
-  }
+  auto vertices(wedge_t *w) { return dual_mesh_.vertices(w); }
 
-  template<class E>
-  auto edges(E* e){
-    return mesh_.edges(e);
-  }
+  template <class E> auto edges(E *e) { return mesh_.edges(e); }
 
-  template<class E>
-  auto cells(E* e){
-    return mesh_.cells(e);
-  }
+  template <class E> auto cells(E *e) { return mesh_.cells(e); }
 
-  vertex_t* create_vertex(const point_t& pos){
+  vertex_t *create_vertex(const point_t &pos) {
     auto v = mesh_.make<vertex_t>(pos);
     mesh_.addVertex(v);
     return v;
   }
 
-  cell_t* create_cell(std::initializer_list<vertex_t*> verts){
-    assert(verts.size() == burton_mesh_types_t::verticesPerCell() && 
-           "vertices size mismatch");
+  cell_t *create_cell(std::initializer_list<vertex_t *> verts) {
+    assert(verts.size() == burton_mesh_types_t::verticesPerCell() &&
+        "vertices size mismatch");
     auto c = mesh_.make<cell_t>();
     mesh_.addCell(c, verts);
     return c;
   }
 
-  void init(){
-    for(auto c : mesh_.cells()){
+  void init() {
+    for (auto c : mesh_.cells()) {
       auto vs = mesh_.vertices(c).toVec();
 
       dual_mesh_.addVertex(vs[0]);
@@ -159,9 +131,9 @@ public:
 
       point_t cp;
       cp[0] = vs[0]->coordinates()[0] +
-        0.5*(vs[2]->coordinates()[0] - vs[0]->coordinates()[0]);
+          0.5 * (vs[2]->coordinates()[0] - vs[0]->coordinates()[0]);
       cp[1] = vs[0]->coordinates()[1] +
-        0.5*(vs[1]->coordinates()[1] - vs[0]->coordinates()[1]);
+          0.5 * (vs[1]->coordinates()[1] - vs[0]->coordinates()[1]);
 
       auto cv = dual_mesh_.make<vertex_t>(cp);
       dual_mesh_.addVertex(cv);
@@ -206,7 +178,6 @@ public:
   }
 
 private:
-
   private_mesh_t mesh_;
   private_dual_mesh_t dual_mesh_;
 

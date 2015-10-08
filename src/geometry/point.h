@@ -6,8 +6,8 @@
  * /@@////  /@@      /@@////     @@/@@  /@@
  * /@@      /@@      /@@        @@ //@@ /@@
  * /@@      /@@@@@@@@/@@@@@@@@ @@   //@@/@@
- * //       //////// //////// //     // // 
- * 
+ * //       //////// //////// //     // //
+ *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
@@ -37,18 +37,16 @@ namespace flexi {
   The point type is implemented using \ref dimensioned_array.  Look there
   for more information on the point interface.
  */
-template<typename T, size_t D>
-using point = dimensioned_array<T,D>;
+template <typename T, size_t D> using point = dimensioned_array<T, D>;
 
 /*!
   \function distance
  */
-template<typename T, size_t D>
-T distance(point<T,D> & a, point<T,D> & b) {
+template <typename T, size_t D> T distance(point<T, D> &a, point<T, D> &b) {
 
   T sum(0);
-  for(size_t d(0); d<D; ++d) {
-    sum += square(a[d]-b[d]);
+  for (size_t d(0); d < D; ++d) {
+    sum += square(a[d] - b[d]);
   } // for
 
   return std::sqrt(sum);

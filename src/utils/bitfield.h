@@ -6,8 +6,8 @@
  * /@@////  /@@      /@@////     @@/@@  /@@
  * /@@      /@@      /@@        @@ //@@ /@@
  * /@@      /@@@@@@@@/@@@@@@@@ @@   //@@/@@
- * //       //////// //////// //     // // 
- * 
+ * //       //////// //////// //     // //
+ *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
@@ -21,6 +21,8 @@
  * \date Initial file creation: Oct 05, 2015
  */
 
+#include <limits>
+
 namespace flexi {
 
 /*!
@@ -28,39 +30,37 @@ namespace flexi {
   \brief bitfield provides...
  */
 
-template<typename T>
-class bitfield
-{
+template <typename T> class bitfield {
 public:
-
   using field_type_t = T;
 
   //! Default constructor
-  bitfield(const field_type_t bits = 0x0) : bits_(bits) {}
+  bitfield(const field_type_t bits = 0x0) : bits_(bits) {
+    static_assert(std::numeric_limits<T>::is_integer &&
+      !std::numeric_limits<T>::is_signed, "must be an unsigned integer type");
+  }
 
   //! Copy constructor (disabled)
-  bitfield(const bitfield & bf) : bits_(bf.bits_) {}
+  bitfield(const bitfield &bf) : bits_(bf.bits_) {}
 
   //! Assignment operator (disabled)
-  bitfield & operator = (const bitfield & bf) { bits_ = bf.bits_; }
+  bitfield &operator=(const bitfield &bf) { bits_ = bf.bits_; }
 
   //! Destructor
-   ~bitfield() {}
+  ~bitfield() {}
 
   /*!-------------------------------------------------------------------------*
    * Set bits in mask.
    *--------------------------------------------------------------------------*/
 
-  field_type_t set(const field_type_t mask) {
-    return bits_ |= mask;
-  } // set
+  field_type_t set(const field_type_t mask) { return bits_ |= mask; } // set
 
   /*!-------------------------------------------------------------------------*
    * Set individual bit.
    *--------------------------------------------------------------------------*/
 
   field_type_t setbit(const size_t bit) {
-    field_type_t tmp = 1<<bit;
+    field_type_t tmp = 1 << bit;
     return bits_ |= tmp;
   } // setbit
 
@@ -68,24 +68,20 @@ public:
    * Clear all bits.
    *--------------------------------------------------------------------------*/
 
-  field_type_t clear() {
-    return bits_ = 0x0;
-  } // set
+  field_type_t clear() { return bits_ = 0x0; } // set
 
   /*!-------------------------------------------------------------------------*
    * Clear bits in mask.
    *--------------------------------------------------------------------------*/
 
-  field_type_t clear(const field_type_t mask) {
-    return bits_ &= ~mask;
-  } // set
+  field_type_t clear(const field_type_t mask) { return bits_ &= ~mask; } // set
 
   /*!-------------------------------------------------------------------------*
    * Clear individual bit.
    *--------------------------------------------------------------------------*/
 
   field_type_t clearbit(const size_t bit) {
-    field_type_t tmp = 1<<bit;
+    field_type_t tmp = 1 << bit;
     return bits_ &= ~tmp;
   } // setbit
 
@@ -102,7 +98,7 @@ public:
    *--------------------------------------------------------------------------*/
 
   bool bitset(const size_t bit) const {
-    field_type_t tmp = 1<<bit;
+    field_type_t tmp = 1 << bit;
     return tmp & bits_;
   } // bitset
 
@@ -111,7 +107,7 @@ public:
    *--------------------------------------------------------------------------*/
 
   bool bitclear(const size_t bit) const {
-    field_type_t tmp = 1<<bit;
+    field_type_t tmp = 1 << bit;
     return !(tmp & bits_);
   } // bitsset
 
@@ -119,9 +115,7 @@ public:
    * Test clear.
    *--------------------------------------------------------------------------*/
 
-  bool bitsclear() const {
-    return bits_ == 0x0;
-  } // bitsset
+  bool bitsclear() const { return bits_ == 0x0; } // bitsset
 
 private:
 

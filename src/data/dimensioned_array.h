@@ -6,8 +6,8 @@
  * /@@////  /@@      /@@////     @@/@@  /@@
  * /@@      /@@      /@@        @@ //@@ /@@
  * /@@      /@@@@@@@@/@@@@@@@@ @@   //@@/@@
- * //       //////// //////// //     // // 
- * 
+ * //       //////// //////// //     // //
+ *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
@@ -36,13 +36,9 @@ enum class axis : size_t { x = 0, y = 1, z = 2 };
   contiguous array types that have a specific dimension.  Please look at
   the \ref point and \ref vector types for an example of its use.
  */
-template<typename T, size_t D>
-class dimensioned_array
-{
+template <typename T, size_t D> class dimensioned_array {
 public:
-
-  dimensioned_array(const dimensioned_array & a)
-    : data_(a.data_){}
+  dimensioned_array(const dimensioned_array &a) : data_(a.data_) {}
 
   //! Default constructor
   dimensioned_array(std::initializer_list<T> list) {
@@ -51,37 +47,33 @@ public:
   } // dimensioned_array
 
   //!
-  template<typename ... A>
-  dimensioned_array(A ... args) {
+  template <typename... A> dimensioned_array(A... args) {
     // add check for dimension
-    data_ = { args ... };
+    data_ = {args...};
   }
 
-  dimensioned_array& operator=(const dimensioned_array& a){
+  dimensioned_array &operator=(const dimensioned_array &a) {
     data_ = a.data_;
     return *this;
   }
 
   //! Destructor
-   ~dimensioned_array() {}
+  ~dimensioned_array() {}
 
   /*!
-    \brief 
+    \brief
 
     ADD COMMENT ABOUT SUPPORT FOR ENUMS
    */
-  template<typename E>
-  T & operator [](E e) {
+  template <typename E> T &operator[](E e) {
     return data_[static_cast<size_t>(e)];
   } // operator ()
 
-  template<typename E>
-  const T & operator [](E e) const {
+  template <typename E> const T &operator[](E e) const {
     return data_[static_cast<size_t>(e)];
   } // operator ()
 
 private:
-
   std::array<T, D> data_;
 
 }; // class dimensioned_array
