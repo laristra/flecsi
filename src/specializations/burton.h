@@ -25,10 +25,15 @@
 
 namespace flexi {
 
+/*----------------------------------------------------------------------------*
+ * class burton_mesh_t
+ *----------------------------------------------------------------------------*/
+
 /*!
   \class burton_mesh_t burton.h
   \brief burton_mesh_t provides...
  */
+
 class burton_mesh_t
 {
 private:
