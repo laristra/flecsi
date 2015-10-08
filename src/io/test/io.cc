@@ -35,20 +35,22 @@ protected:
   
     for(size_t j = 0; j < height + 1; ++j){
       for(size_t i = 0; i < width + 1; ++i){
-       auto v = b.create_vertex({double(i), 2.0*double(j)});
-       v->setRank(1);
-       vs.push_back(v);
+	auto v =
+	  b.create_vertex({double(i)+ 0.1*pow(double(j),1.8), 1.5*double(j)});
+	v->setRank(1);
+	vs.push_back(v);
       }
     }
 
     size_t width1 = width + 1;
     for(size_t j = 0; j < height; ++j){
       for(size_t i = 0; i < width; ++i){
-       auto c = 
-         b.create_cell({vs[i + j * width1],
-               vs[i + (j + 1) * width1],
-               vs[i + 1 + j * width1],
-               vs[i + 1 + (j + 1) * width1]});
+	// go over vertices counter clockwise to define cell
+	auto c = 
+	  b.create_cell({vs[i + j * width1],
+		vs[i + 1 + j * width1],
+		vs[i + 1 + (j + 1) * width1],
+		vs[i + (j + 1) * width1]});
       }
     }
 
@@ -58,8 +60,8 @@ protected:
   virtual void TearDown() { }
 
   burton_mesh_t b;
-  const size_t width = 2;
-  const size_t height = 2;
+  const size_t width = 10;
+  const size_t height = 20;
 };
 
 
