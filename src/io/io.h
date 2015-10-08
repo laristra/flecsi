@@ -45,6 +45,25 @@ namespace flexi {
     return io->write(filename, m);
   }
 
+  /*!
+  \brief generic file reader that calls the correct method based on the file
+         suffix.
+  \param filename file to read from
+  \param m mesh to create from file
+  \return 0 on success
+   */
+  int32_t read_mesh(const std::string & filename, 
+    burton_mesh_t & m) {
+
+    // get the file suffix.
+    std::string suffix = filename.substr(filename.find_last_of(".")+1);
+    // create the io instance with the factory using the file suffix.
+    io_base_t * io = io_factory_t::instance().create(suffix);
+
+    // call the io write function
+    return io->read(filename, m);
+  }
+
 } // namespace flexi
 
 #endif // flexi_io_h
