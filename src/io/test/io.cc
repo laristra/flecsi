@@ -64,26 +64,36 @@ protected:
   const size_t height = 20;
 };
 
-TEST_F(Burton, write_g) {
-  std::string filename("test/mesh.g");
-  ASSERT_FALSE(write_mesh(filename, b));
-} // TEST_F
-
 TEST_F(Burton, write_exo) {
   std::string filename("test/mesh.exo");
   ASSERT_FALSE(write_mesh(filename, b));
 } // TEST_F
 
-TEST_F(Burton, read_g) {
-  burton_mesh_t m;
+TEST_F(Burton, write_g) {
   std::string filename("test/mesh.g");
-  ASSERT_FALSE(read_mesh(filename, m));
+  ASSERT_FALSE(write_mesh(filename, b));
 } // TEST_F
 
 TEST_F(Burton, read_exo) {
   burton_mesh_t m;
+  // read mesh written by above test
   std::string filename("test/mesh.exo");
   ASSERT_FALSE(read_mesh(filename, m));
+
+  // write m to a different file
+  filename = "test/mesh_out.exo";
+  ASSERT_FALSE(write_mesh(filename, m));
+} // TEST_F
+
+TEST_F(Burton, read_g) {
+  burton_mesh_t m;
+  // read mesh written by above test
+  std::string filename("test/mesh.g");
+  ASSERT_FALSE(read_mesh(filename, m));
+
+  // write m to a different file
+  filename = "test/mesh_out.g";
+  ASSERT_FALSE(write_mesh(filename, m));
 } // TEST_F
 
 /*----------------------------------------------------------------------------*

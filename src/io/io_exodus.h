@@ -125,14 +125,13 @@ int32_t io_exodus_t::read(const std::string &filename, burton_mesh_t &m) {
   status = ex_get_elem_conn(exoid, blockids[0], elt_conn);
   assert(status == 0);
 
-  // store elements
+  // create cells in mesh
   for (size_t e = 0; e < num_elem; ++e) {
-    //        for ( ex_entity_id iNode=0; iNode<nNodesPerElem; iNode++ ) {
-    //          ex_entity_id id = iElem*nNodesPerElem + iNode;
-    //          set[i].ElementNodes[ id ] = NodeList[ id ] - 1;
-    //        }
-    //      auto b = e*num_nodes_per_elem;
-    //      auto c = m.create_cell({vs[b+0],vs[b+1],vs[b+2],vs[b+3]});
+    auto b = e*num_nodes_per_elem; // base offset into elt_conn
+    auto c = m.create_cell({vs[elt_conn[b+0]-1],
+      vs[elt_conn[b+1]-1],
+      vs[elt_conn[b+2]-1],
+      vs[elt_conn[b+3]-1]});
   }
   m.init();
 
