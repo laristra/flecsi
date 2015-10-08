@@ -86,6 +86,19 @@ TEST_F(Burton, mesh) {
 
 } // TEST
 
+TEST_F(Burton, coordinates) {
+
+  for(auto c: b.cells()) {
+    //auto xc = c->coordinates();
+    cout << "---- cell " << c->id() << endl;
+    for(auto v : b.vertices(c)){
+      auto xv = v->coordinates();
+      cout << "++++ vertex " << v->id();
+      cout << ": (" << xv[0] << "," << xv[1] << ")" << endl;
+    } // for
+  } // for
+} // TEST
+
 /*~------------------------------------------------------------------------~--*
  * vim: set tabstop=2 shiftwidth=2 expandtab :
  *~------------------------------------------------------------------------~--*/

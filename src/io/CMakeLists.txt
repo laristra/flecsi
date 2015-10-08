@@ -7,12 +7,13 @@ if(ENABLE_IO)
 
 set(io_HEADERS
   io.h
-  burton_io.h
+  io_base.h
+  io_exodus.h
   PARENT_SCOPE
 )
   
-cinch_add_unit(burton_io
-  SOURCES test/burton_io.cc
+cinch_add_unit(io
+  SOURCES test/io.cc
   LIBRARIES ${IO_LIBRARIES})
 
 endif(ENABLE_IO)
