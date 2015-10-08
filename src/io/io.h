@@ -1,41 +1,46 @@
+/*~--------------------------------------------------------------------------~*
+ * Copyright (c) 2015 Los Alamos National Security, LLC
+ * All rights reserved.
+ *~--------------------------------------------------------------------------~*/
+
 #ifndef flexi_io_h
 #define flexi_io_h
 
-#include <exodusII.h>
+#include "io_base.h"
+#include "io_exodus.h"
 
-template<typename MT>
-class meshIO {
- public:
-  void read(const std::string filename, const MT & m);
-  void write(const std::string filename, const MT & m);
+/*!
+ * \file io.h
+ * \authors wohlbier
+ * \date Initial file creation: Oct 07, 2015
+ */
 
- private:
-};
+namespace flexi {
 
-template<typename MT>
-void meshIO<MT>::read(const std::string filename, const MT & m) {
-  std::cout << "Reading mesh from file: " << filename << std::endl;
-}
+  /*!
+  \brief generic file writer that calls the correct method based on the file
+         suffix.
+  \param filename file to write to
+  \param m mesh to write to the file
+  \return 0 on success
+   */
+  int32_t write_mesh(const std::string & filename, 
+    const burton_mesh_t & m) {
 
-template<typename MT>
-void meshIO<MT>::write(const std::string filename, const MT & m) {
+    // get the file suffix.
+    std::string suffix = filename.substr(filename.find_last_of(".")+1);
+    // create the io instance with the factory using the file suffix.
+    io_base_t * io = io_factory_t::instance().create(suffix);
 
-  std::cout << "Writing mesh to file: " << filename << std::endl;
+    // call the io write function
+    return io->write(filename, m);
+  }
 
-  int CPU_word_size = 0, IO_word_size = 0;
-  int exoid = ex_create(filename.c_str(), EX_CLOBBER,
-    &CPU_word_size, &IO_word_size);
-
-  auto d = m.dimension();
-  auto num_nodes = m.numVertices();
-  auto num_elem = m.numCells();
-  //int num_elem_blk =
-  //int num_node_sets =
-  //int num_side_sets = 
-  //
-  //int error = ex_put_init(exoid, "test", d, num_nodes, num_elem, num_elem_blk, num_node_sets, num_side_sets);
-
-}
-
+} // namespace flexi
 
 #endif // flexi_io_h
+
+/*~-------------------------------------------------------------------------~-*
+ * Formatting options for vim.
+ * vim: set tabstop=2 shiftwidth=2 expandtab :
+ *~-------------------------------------------------------------------------~-*/
