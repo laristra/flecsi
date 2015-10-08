@@ -429,6 +429,8 @@ public:
 
   virtual size_t topologicalDimension() = 0;
 
+  virtual const Connectivity & getConnectivity(size_t fromDim,
+    size_t toDim) const = 0;
   virtual Connectivity & getConnectivity(size_t fromDim, size_t toDim) = 0;
 
 }; // MeshTopologyBase
@@ -1060,11 +1062,23 @@ public:
     return entities_[MT::dimension - 1].size();
   } // numFaces
 
-  Connectivity& getConnectivity(size_t fromDim, size_t toDim) override{
+  const Connectivity & getConnectivity(size_t fromDim,
+    size_t toDim) const override {
     return getConnectivity_(fromDim, toDim);
   } // getConnectivity
 
-  Connectivity& getConnectivity_(size_t fromDim, size_t toDim){
+  Connectivity & getConnectivity(size_t fromDim, size_t toDim) override {
+    return getConnectivity_(fromDim, toDim);
+  } // getConnectivity
+
+  const Connectivity & getConnectivity_(size_t fromDim, size_t toDim) const {
+    assert(fromDim < topology_.size() && "invalid fromDim");
+    auto& t = topology_[fromDim];
+    assert(toDim < t.size() && "invalid toDim");
+    return t[toDim];
+  } // getConnectivity
+
+  Connectivity & getConnectivity_(size_t fromDim, size_t toDim) {
     assert(fromDim < topology_.size() && "invalid fromDim");
     auto& t = topology_[fromDim];
     assert(toDim < t.size() && "invalid toDim");
@@ -1102,6 +1116,18 @@ public:
   }
 
   template<size_t D, class E>
+  EntityRange<D> entities(E* e) const {
+    Connectivity& c = getConnectivity(E::dimension, D);
+    if(c.empty()){
+      compute(E::dimension, D);
+    }
+
+    const IdVec& fv = c.getFromIndexVec();
+
+    return EntityRange<D>(c.getEntities(), fv[e->id()], fv[e->id() + 1]);
+  } // entities
+
+  template<size_t D, class E>
   EntityRange<D> entities(E* e) {
     Connectivity& c = getConnectivity(E::dimension, D);
     if(c.empty()){
@@ -1114,15 +1140,14 @@ public:
   } // entities
 
   template<class E>
-  EntityRange<0> vertices(E* e) {
+  decltype(auto) vertices(const E* e) const {
+    return entities<0>(e);
+  }
+
+  template<class E>
+  decltype(auto) vertices(E* e) {
     return entities<0>(e);
   } // vertices
-
-  // FIXME: jgw const correctness
-  //template<class E>
-  //EntityRange<0> vertices(const E* e) const {
-  //  return entities<0>(e);
-  //}
 
   EntityRange<1> edges() {
     if(entities_[1].empty()) {
