@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef factory_h
-#define factory_h
+#ifndef flexi_factory_h
+#define flexi_factory_h
 
 #include <map>
 
@@ -119,7 +119,7 @@ private:
 
 } // namespace flexi
 
-#endif // factory_h
+#endif // flexi_factory_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

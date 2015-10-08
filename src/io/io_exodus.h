@@ -1,7 +1,17 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
+ *  @@@@@@@@ @@       @@@@@@@@ @@     @@ @@
+ * /@@///// /@@      /@@///// //@@   @@ /@@
+ * /@@      /@@      /@@       //@@ @@  /@@
+ * /@@@@@@@ /@@      /@@@@@@@   //@@@   /@@
+ * /@@////  /@@      /@@////     @@/@@  /@@
+ * /@@      /@@      /@@        @@ //@@ /@@
+ * /@@      /@@@@@@@@/@@@@@@@@ @@   //@@/@@
+ * //       //////// //////// //     // // 
+ * 
+ * Copyright (c) 2016 Los Alamos National Laboratory, LLC
+ * All rights reserved
  *~--------------------------------------------------------------------------~*/
+
 #ifndef flexi_io_exodus_h
 #define flexi_io_exodus_h
 
@@ -124,13 +134,17 @@ namespace flexi {
     status = ex_put_elem_conn(exoid, blockid, elt_conn);
     assert(status == 0);
 
-
     // close
     status = ex_close(exoid);
 
     return status;
-  }
+  } // io_exodus_t::write
 
 } // namespace flexi
 
 #endif // flexi_io_exodus_h
+
+/*~-------------------------------------------------------------------------~-*
+ * Formatting options
+ * vim: set tabstop=2 shiftwidth=2 expandtab :
+ *~-------------------------------------------------------------------------~-*/
