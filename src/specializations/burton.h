@@ -93,6 +93,10 @@ public:
     return mesh_.vertices();
   }
 
+  auto vertices() const {
+    return mesh_.vertices();
+  }
+
   auto edges(){
     return mesh_.edges();
   }
@@ -101,10 +105,20 @@ public:
     return mesh_.cells();
   }
 
+  auto cells() const {
+    return mesh_.cells();
+  }
+
   template<class E>
   auto vertices(E* e){
     return mesh_.vertices(e);
   }
+
+  // FIXME: jgw const correctness
+  //template<class E>
+  //auto vertices(const E* e) const {
+  //  return mesh_.vertices(e);
+  //}
 
   auto vertices(wedge_t* w){
     return dual_mesh_.vertices(w);

@@ -1097,6 +1097,10 @@ public:
     return EntityRange<0>(entities_[0]);
   }
 
+  EntityRange<0> vertices() const {
+    return EntityRange<0>(entities_[0]);
+  }
+
   template<size_t D, class E>
   EntityRange<D> entities(E* e) {
     Connectivity& c = getConnectivity(E::dimension, D);
@@ -1113,6 +1117,12 @@ public:
   EntityRange<0> vertices(E* e) {
     return entities<0>(e);
   } // vertices
+
+  // FIXME: jgw const correctness
+  //template<class E>
+  //EntityRange<0> vertices(const E* e) const {
+  //  return entities<0>(e);
+  //}
 
   EntityRange<1> edges() {
     if(entities_[1].empty()) {
@@ -1137,6 +1147,10 @@ public:
   } // faces
 
   EntityRange<MT::dimension> cells(){
+    return EntityRange<MT::dimension>(entities_[MT::dimension]);
+  } // cells
+
+  EntityRange<MT::dimension> cells() const {
     return EntityRange<MT::dimension>(entities_[MT::dimension]);
   } // cells
 
