@@ -57,9 +57,13 @@ namespace flexi {
 
     std::cout << "Writing mesh to file: " << filename << std::endl;
 
-    auto CPU_word_size = 0, IO_word_size = 0;
+    // size of floating point variables used in app.
+    int CPU_word_size = sizeof(burton_mesh_t::real_t);
+    // size of floating point to be stored in file.
+    int IO_word_size = sizeof(burton_mesh_t::real_t);
     auto exoid = ex_create(filename.c_str(), EX_CLOBBER,
 			   &CPU_word_size, &IO_word_size);
+    assert(exoid >= 0);
     auto d = m.dimension();
     auto num_nodes = m.numVertices();
     auto num_elem = m.numCells();
@@ -68,12 +72,63 @@ namespace flexi {
     auto num_side_sets = 0;
 
     // initialize the file.
-    int error = ex_put_init(exoid, "test", d, num_nodes, num_elem,
-      num_elem_blk, num_node_sets, num_side_sets);
+    auto status = ex_put_init(exoid, "Exodus II output from flexi.", d,
+      num_nodes, num_elem, num_elem_blk, num_node_sets, num_side_sets);
+    assert(status == 0);
+
+    // get the coordinates from the mesh.
+    burton_mesh_t::real_t xcoord[num_nodes];
+    burton_mesh_t::real_t ycoord[num_nodes];
+    auto i = 0;
+    for(auto v: m.vertices()) {
+      xcoord[i] = v->coordinates()[0];
+      std::cerr << "x = " << v->coordinates()[0] << std::endl;
+      ycoord[i] = v->coordinates()[1];
+      std::cerr << "y = " << v->coordinates()[1] << std::endl;
+      i++;
+    } // for
+    // write the coordinates to the file
+    status = ex_put_coord(exoid, xcoord, ycoord, nullptr);
+    assert(status == 0);
+
+    // write the coordinate names
+    const char *coord_names[3];
+    coord_names[0] = "x";
+    coord_names[1] = "y";
+    coord_names[2] = "z";
+    status = ex_put_coord_names(exoid, (char**)coord_names);
+    assert(status == 0);
+
+    // loop over element blocks
+    auto blockid = 0;
+    auto num_attr = 0;
+    auto num_vertices_per_cell = 4;
+    status = ex_put_elem_block(exoid, blockid, "quad", num_elem,
+      num_vertices_per_cell, num_attr);
+    assert(status == 0);
+
+    // element definitions
+    int elt_conn[num_elem*num_vertices_per_cell];
+    i = 0;
+    // FIXME: need const correctness for the following iterators
+    //for(auto c: m.cells()) {
+    for(auto c: const_cast<burton_mesh_t &>(m).cells()) {
+      //for(auto v: m.vertices(c)) {
+      for(auto v: const_cast<burton_mesh_t &>(m).vertices(c)) {
+	elt_conn[i] = v->id() + 1;
+	i++;
+      } // for
+    } // for
+
+    // write connectivity
+    status = ex_put_elem_conn(exoid, blockid, elt_conn);
+    assert(status == 0);
 
 
+    // close
+    status = ex_close(exoid);
 
-    return 0;
+    return status;
   }
 
 } // namespace flexi
