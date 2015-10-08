@@ -1,6 +1,15 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
+ *  @@@@@@@@ @@       @@@@@@@@ @@     @@ @@
+ * /@@///// /@@      /@@///// //@@   @@ /@@
+ * /@@      /@@      /@@       //@@ @@  /@@
+ * /@@@@@@@ /@@      /@@@@@@@   //@@@   /@@
+ * /@@////  /@@      /@@////     @@/@@  /@@
+ * /@@      /@@      /@@        @@ //@@ /@@
+ * /@@      /@@@@@@@@/@@@@@@@@ @@   //@@/@@
+ * //       //////// //////// //     // // 
+ * 
+ * Copyright (c) 2016 Los Alamos National Laboratory, LLC
+ * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flexi_burton_h
@@ -130,8 +139,10 @@ public:
       dual_mesh_.addVertex(vs[3]);
 
       point_t cp;
-      cp[0] = vs[0]->coordinates()[0] + 0.5*(vs[2]->coordinates()[0] - vs[0]->coordinates()[0]);
-      cp[1] = vs[0]->coordinates()[1] + 0.5*(vs[1]->coordinates()[1] - vs[0]->coordinates()[1]);
+      cp[0] = vs[0]->coordinates()[0] +
+        0.5*(vs[2]->coordinates()[0] - vs[0]->coordinates()[0]);
+      cp[1] = vs[0]->coordinates()[1] +
+        0.5*(vs[1]->coordinates()[1] - vs[0]->coordinates()[1]);
 
       auto cv = dual_mesh_.make<vertex_t>(cp);
       dual_mesh_.addVertex(cv);
@@ -189,6 +200,6 @@ using mesh_t = burton_mesh_t;
 #endif // flexi_burton_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
+ * Formatting options
  * vim: set tabstop=2 shiftwidth=2 expandtab :
  *~-------------------------------------------------------------------------~-*/

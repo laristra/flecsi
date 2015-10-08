@@ -1,6 +1,15 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
+ *  @@@@@@@@ @@       @@@@@@@@ @@     @@ @@
+ * /@@///// /@@      /@@///// //@@   @@ /@@
+ * /@@      /@@      /@@       //@@ @@  /@@
+ * /@@@@@@@ /@@      /@@@@@@@   //@@@   /@@
+ * /@@////  /@@      /@@////     @@/@@  /@@
+ * /@@      /@@      /@@        @@ //@@ /@@
+ * /@@      /@@@@@@@@/@@@@@@@@ @@   //@@/@@
+ * //       //////// //////// //     // // 
+ * 
+ * Copyright (c) 2016 Los Alamos National Laboratory, LLC
+ * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flexi_space_vector_h
@@ -99,6 +108,6 @@ space_vector<T,3> normal(const space_vector<T,3> & a,
 #endif // flexi_space_vector_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
+ * Formatting options
  * vim: set tabstop=2 shiftwidth=2 expandtab :
  *~-------------------------------------------------------------------------~-*/
