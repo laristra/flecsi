@@ -18,8 +18,6 @@
 
 #include "../factory.h"
 
-//----------------------
-
 // base io class
 class io_base_t
 {
@@ -38,8 +36,6 @@ protected:
 // create factory type
 using io_factory_t = flexi::Factory_<io_base_t, std::string, std::string &>;
 
-//----------------------
-
 struct test_io_t : public io_base_t {
 
   test_io_t(std::string & filename) : io_base_t(filename) {}
@@ -57,8 +53,6 @@ io_base_t * create_test_io(std::string & filename) {
 
 // register this io type with factory
 bool test_registered = io_factory_t::instance().registerType("tst", create_test_io);
-
-//----------------------
 
 TEST(factory, sanity) {
   std::string filename("myfile");

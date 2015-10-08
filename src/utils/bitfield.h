@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef bitfield_h
-#define bitfield_h
+#ifndef flexi_bitfield_h
+#define flexi_bitfield_h
 
 /*!
  * \file bitfield.h
@@ -27,6 +27,7 @@ namespace flexi {
   \class bitfield bitfield.h
   \brief bitfield provides...
  */
+
 template<typename T>
 class bitfield
 {
@@ -130,7 +131,7 @@ private:
 
 } // namespace flexi
 
-#endif // bitfield_h
+#endif // flexi_bitfield_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options
