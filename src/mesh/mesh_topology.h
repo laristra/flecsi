@@ -300,10 +300,10 @@ public:
         for(id_t id : iv){
           maxId = std::max(maxId, id);
           entityVec_.push_back(MeshEntityBase::create_<MT>(dim, id));
-        }
+        } // for
         
         fromIndexVec_.push_back(entityVec_.size());
-      }
+      } // for
 
       size_t m = entityVec_.size();
       ev.resize(maxId + 1);
