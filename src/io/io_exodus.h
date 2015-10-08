@@ -80,8 +80,8 @@ int32_t io_exodus_t::read(const std::string &filename, burton_mesh_t &m) {
 }
 
 //! implementation of exodus write
-int32_t io_exodus_t::write(
-    const std::string &filename, const burton_mesh_t &m) {
+int32_t io_exodus_t::write(const std::string &filename,
+  const burton_mesh_t &m) {
 
   std::cout << "Writing mesh to file: " << filename << std::endl;
 
@@ -136,7 +136,6 @@ int32_t io_exodus_t::write(
   // element definitions
   int elt_conn[num_elem * num_vertices_per_cell];
   i = 0;
-  // FIXME: need const correctness for the following iterators
   for (auto c : m.cells()) {
     for (auto v : m.vertices(c)) {
       elt_conn[i] = v->id() + 1;
