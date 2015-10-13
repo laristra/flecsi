@@ -37,7 +37,7 @@ protected:
 
   struct meta_data_t {
     size_t type_size;
-    std::vector<unsigned char> data;
+    std::vector<uint8_t> data;
   }; // struct meta_data_
 
   /*!
