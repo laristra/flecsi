@@ -40,6 +40,7 @@ public:
   //! Assignment operator
   index_space_t & operator = (const index_space_t & is) {
     size_ = is.size_;
+    index_ = is.index_;
   } // operator =
 
   //! Destructor
@@ -49,6 +50,7 @@ public:
     return index;
   } // operator []
 
+  // FIXME: This is not thread-safe!!!
   size_t & operator [] (size_t index) {
     index_ = index;
     return index_;
