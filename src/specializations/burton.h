@@ -76,11 +76,11 @@ public:
     return burton_mesh_traits_t::dimension;
   } // dimension
 
-  decltype(auto) numVertices() const {
+  decltype(auto) num_vertices() const {
     return mesh_.numVertices();
   } // numVertices
 
-  decltype(auto) numCells() const { return mesh_.numCells(); } // numCells
+  decltype(auto) num_cells() const { return mesh_.numCells(); } // numCells
 
   /*!
    */
