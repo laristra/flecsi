@@ -59,6 +59,24 @@ public:
     return h;
   }
 
+  constexpr bool operator==(const const_string_t& t) const{
+    if(size_ != t.size_){
+      return false;
+    }
+
+    for(size_t i = 0; i < size_; ++i){
+      if((*this)[i] != t[i]){
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  constexpr bool operator!=(const const_string_t& t) const{
+    return !(*this == t);
+  }
+
 private:
   const char* const str_;
   const size_t size_;
