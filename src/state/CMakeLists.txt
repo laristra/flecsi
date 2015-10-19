@@ -12,8 +12,8 @@ set(state_HEADERS
 #  PARENT_SCOPE
 #)
 
-cinch_add_unit(state
-  SOURCES test/state.cc)
+#cinch_add_unit(state
+#  SOURCES test/state.cc)
 
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.
