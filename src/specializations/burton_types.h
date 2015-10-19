@@ -67,9 +67,9 @@ struct burton_mesh_types_t {
     burton_vertex_t(const point_t &coordinates)
         : precedence_(0), coordinates_(coordinates) {}
 
-    void setRank(uint8_t rank) { precedence_ = 1 << (63 - rank); }
+    void setRank(uint8_t rank) { setInfo(rank); }
 
-    uint64_t precedence() const { return precedence_; }
+    uint64_t precedence() const { return 1 << (63 - info()); }
 
     void setCoordinates(const point_t &coordinates) {
       coordinates_ = coordinates;
@@ -214,51 +214,26 @@ struct burton_mesh_types_t {
     case 2:
       return 4;
     default:
-      assert(false && "iznvalid dimension");
+      assert(false && "invalid dimension");
     } // switch
   }   // numVerticesPerEntity
 
-  /*--------------------------------------------------------------------------*
-   * FIXME
-   *--------------------------------------------------------------------------*/
-
   static void createEntities(
-      size_t dim, std::vector<id_t> &e, burton_vertex_t **v) {
+    size_t dim, std::vector<flexi::id_t> &e, id_t *v) {
     assert(dim = 1);
     assert(e.size() == 8);
 
-    struct Edge_ {
-      Edge_(burton_vertex_t *v1, burton_vertex_t *v2) : v1(v1), v2(v2) {}
+    e[0] = v[0];
+    e[1] = v[1];
 
-      burton_vertex_t *v1;
-      burton_vertex_t *v2;
+    e[2] = v[2];
+    e[3] = v[3];
 
-      uint64_t precedence() const {
-        return v1->precedence() | v2->precedence();
-      }
-    };
+    e[4] = v[0];
+    e[5] = v[3];
 
-    std::vector<Edge_> es;
-    es.emplace_back(Edge_(v[0], v[1]));
-    es.emplace_back(Edge_(v[1], v[3]));
-    es.emplace_back(Edge_(v[0], v[1]));
-    es.emplace_back(Edge_(v[2], v[3]));
-
-    std::sort(es.begin(), es.end(), [](const Edge_ &e1, const Edge_ &e2) {
-      return e1.precedence() > e2.precedence();
-    });
-
-    e[0] = es[0].v1->id();
-    e[1] = es[0].v2->id();
-
-    e[2] = es[1].v1->id();
-    e[3] = es[1].v2->id();
-
-    e[4] = es[2].v1->id();
-    e[5] = es[2].v2->id();
-
-    e[6] = es[3].v1->id();
-    e[7] = es[3].v2->id();
+    e[6] = v[1];
+    e[7] = v[2];
   } // createEntities
 
 }; // struct burton_mesh_types_t
@@ -294,7 +269,7 @@ public:
     }
   }
 
-  static constexpr size_t verticesPerCell() { return 4; }
+  static constexpr size_t verticesPerCell() { return 3; }
 
   static size_t numVerticesPerEntity(size_t dim) {
     switch (dim) {
@@ -310,18 +285,18 @@ public:
   }
 
   static void createEntities(
-      size_t dim, std::vector<id_t> &e, burton_vertex_t **v) {
+    size_t dim, std::vector<flexi::id_t> &e, id_t *v) {
     assert(dim = 1);
     assert(e.size() == 6);
 
-    e[0] = v[0]->id();
-    e[1] = v[2]->id();
+    e[0] = v[0];
+    e[1] = v[2];
 
-    e[2] = v[1]->id();
-    e[3] = v[3]->id();
+    e[2] = v[1];
+    e[3] = v[3];
 
-    e[4] = v[0]->id();
-    e[5] = v[1]->id();
+    e[4] = v[0];
+    e[5] = v[1];
   }
 }; // burton_dual_mesh_t
 

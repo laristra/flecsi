@@ -66,21 +66,22 @@ public:
     }
   }
   
-  static void createEntities(size_t dim, std::vector<flexi::id_t>& e, Vertex** v){
+  static void createEntities(size_t dim, std::vector<flexi::id_t>& e,
+                             flexi::id_t *v){
     assert(dim = 1);
     assert(e.size() == 8);
     
-    e[0] = v[0]->id();
-    e[1] = v[2]->id();
+    e[0] = v[0];
+    e[1] = v[2];
     
-    e[2] = v[1]->id();
-    e[3] = v[3]->id();
+    e[2] = v[1];
+    e[3] = v[3];
     
-    e[4] = v[0]->id();
-    e[5] = v[1]->id();
+    e[4] = v[0];
+    e[5] = v[1];
     
-    e[6] = v[2]->id();
-    e[7] = v[3]->id();
+    e[6] = v[2];
+    e[7] = v[3];
   }
 };
 
@@ -110,7 +111,7 @@ TEST(mesh_topology, traversal) {
     for(size_t i = 0; i < width; ++i){
       auto c = mesh->make<Cell>();
 
-      mesh->addCell(c,
+      mesh->initCell(c,
                     {vs[i + j * width1],
                      vs[i + (j + 1) * width1],
                      vs[i + 1 + j * width1],
@@ -121,22 +122,22 @@ TEST(mesh_topology, traversal) {
 
   CINCH_CAPTURE() << "------------- forall cells, vertices" << endl;
 
-  for(TestMesh::CellIterator c(*mesh); !c.isend(); ++c){
-    CINCH_CAPTURE() << "------- cell id: " << c->id() << endl;
-    for(TestMesh::VertexIterator v(c); !v.isend(); ++v){
-      CINCH_CAPTURE() << "--------- vertex id: " << v->id() << endl;
-      for(TestMesh::CellIterator c2(v); !c2.isend(); ++c2){
-        CINCH_CAPTURE() << "cell2 id: " << c2->id() << endl;
+  for(TestMesh::cell_index_iterator c(*mesh); !c.end(); ++c){
+    CINCH_CAPTURE() << "------- cell id: " << *c << endl;
+    for(TestMesh::vertex_index_iterator v(c); !v.end(); ++v){
+      CINCH_CAPTURE() << "--------- vertex id: " << *v << endl;
+      for(TestMesh::cell_index_iterator c2(v); !c2.end(); ++c2){
+        CINCH_CAPTURE() << "cell2 id: " << *c2 << endl;
       }
     }
   }
 
   CINCH_CAPTURE() << "------------- forall cells, edges" << endl;
 
-  for(TestMesh::CellIterator c(*mesh); !c.isend(); ++c){
-    CINCH_CAPTURE() << "------- cell id: " << c->id() << endl;
-    for(TestMesh::EdgeIterator e(c); !e.isend(); ++e){
-      CINCH_CAPTURE() << "edge id: " << e->id() << endl;
+  for(TestMesh::cell_index_iterator c(*mesh); !c.end(); ++c){
+    CINCH_CAPTURE() << "------- cell id: " << *c << endl;
+    for(TestMesh::edge_index_iterator e(c); !e.end(); ++e){
+      CINCH_CAPTURE() << "edge id: " << *e << endl;
     }
   }
 
