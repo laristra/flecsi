@@ -20,7 +20,7 @@ namespace flexi {
   \function execute
  */
 template<typename F, typename ... Args>
-decltype(auto) execute(F && function, Args && ... args) {
+int32_t execute(F && function, Args && ... args) {
   context_t::instance().entry();
   auto value = function(std::forward<Args>(args) ...);
   context_t::instance().exit();

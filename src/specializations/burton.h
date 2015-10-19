@@ -15,6 +15,7 @@
 #ifndef flexi_burton_h
 #define flexi_burton_h
 
+#include "../state/state.h"
 #include "burton_types.h"
 
 /*!
@@ -34,12 +35,73 @@ namespace flexi {
   \brief burton_mesh_t provides...
  */
 
-class burton_mesh_t {
+class burton_mesh_t
+{
 private:
   using private_mesh_t = MeshTopology<burton_mesh_types_t>;
   using private_dual_mesh_t = MeshTopology<burton_dual_mesh_types_t>;
 
+#ifndef MESH_STORAGE_POLICY
+  // for now: use default storage policy for state
+  using private_mesh_state_t = state_t<>;
+  using private_dual_mesh_state_t = state_t<>;
+#else
+  using private_mesh_state_t = state_t<MESH_STORAGE_POLICY>;
+  using private_dual_mesh_state_t = state_t<MESH_STORAGE_POLICY>;
+#endif
+
 public:
+
+  /*--------------------------------------------------------------------------*
+   * State Interface
+   *--------------------------------------------------------------------------*/
+
+  enum class attachment_site_t : size_t {
+    vertices = 0,
+    edges = 1,
+    cells = 2,
+    corners = 1,
+    wedges = 2
+  }; // enum class attachment_sites_t
+
+#define register_state(mesh, key, site, type) \
+  (mesh).register_state_<type>((key), \
+  burton_mesh_t::attachment_site_t::site)
+
+  template<typename T>
+  decltype(auto) register_state_(const char * key,
+    attachment_site_t site) {
+    switch(site) {
+      case attachment_site_t::vertices:
+        return mesh_state_.register_state<T,0>(key, numVertices());
+        break;
+#if 0
+      case attachment_site_t::corners:
+        return dual_mesh_state_.register_state<T,1>(key, numCorners());
+        break;
+#endif
+    } // switch
+  } // register_state_
+
+#define access_state(mesh, key, site, type) \
+  (mesh).access_state_<type>((key), \
+  burton_mesh_t::attachment_site_t::site)
+
+  template<typename T>
+  decltype(auto) access_state_(const char * key,
+    attachment_site_t site) {
+    switch(site) {
+      case attachment_site_t::vertices:
+        return mesh_state_.accessor<T,0>(key);
+        break;
+    } // switch
+  } // access_state_
+    
+
+  /*--------------------------------------------------------------------------*
+   * FIXME: Other crap
+   *--------------------------------------------------------------------------*/
+
   using real_t = burton_mesh_traits_t::real_t;
 
   using point_t = point<real_t, burton_mesh_traits_t::dimension>;
@@ -178,8 +240,12 @@ public:
   }
 
 private:
+
   private_mesh_t mesh_;
   private_dual_mesh_t dual_mesh_;
+
+  private_mesh_state_t mesh_state_;
+  private_dual_mesh_state_t dual_mesh_state_;
 
 }; // class burton_mesh_t
 
