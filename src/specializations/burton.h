@@ -69,7 +69,7 @@ public:
   burton_mesh_t::attachment_site_t::site)
 
   template<typename T>
-  decltype(auto) register_state_(const char * key,
+  decltype(auto) register_state_(const const_string_t && key,
     attachment_site_t site) {
     switch(site) {
       case attachment_site_t::vertices:
@@ -88,7 +88,7 @@ public:
   burton_mesh_t::attachment_site_t::site)
 
   template<typename T>
-  decltype(auto) access_state_(const char * key,
+  decltype(auto) access_state_(const const_string_t && key,
     attachment_site_t site) {
     switch(site) {
       case attachment_site_t::vertices:

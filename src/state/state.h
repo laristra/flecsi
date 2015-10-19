@@ -7,6 +7,7 @@
 #define flexi_state_h
 
 #include "../utils/index_space.h"
+#include "../utils/const_string.h"
 
 /*!
  * \file state.h
@@ -43,11 +44,11 @@ protected:
   /*!
     Register a new state variable.
 
-    \param key The has of the variable to add.
+    \param key The key of the variable to add.
     \param indices The number of indices that parameterize the state.
    */
   template<typename T, size_t D>
-  void register_state(const char * key, size_t indices) {
+  void register_state(const_string_t key, size_t indices) {
     
     // add space as we need it
     if(meta_.size() < D+1) {
@@ -55,11 +56,12 @@ protected:
     } // if
 
     // keys must be unique within a given dimension
-    assert(meta_[D].find(key) == meta_[D].end() && "key already exists");
+    assert(meta_[D].find(key.hash()) == meta_[D].end() &&
+      "key already exists");
     
     // store the type size and allocate storage
-    meta_[D][key].type_size = sizeof(T);
-    meta_[D][key].data.resize(indices*sizeof(T));
+    meta_[D][key.hash()].type_size = sizeof(T);
+    meta_[D][key.hash()].data.resize(indices*sizeof(T));
   } // register
 
   /*--------------------------------------------------------------------------*
@@ -98,29 +100,29 @@ protected:
   }; // struct accessor_t
 
   /*!
-    Return an accessor to the data for a given key.
+    Return an accessor to the data for a given variable.
 
-    \param key The hash of the data to return.
+    \param name The name of the data to return.
    */
   template<typename T, size_t D>
-  accessor_t<T> accessor(const char * key) {
-    return { meta_[D][key].data.size()/sizeof(T),
-      reinterpret_cast<T *>(&meta_[D][key].data[0]) };
+  accessor_t<T> accessor(const_string_t key) {
+    return { meta_[D][key.hash()].data.size()/sizeof(T),
+      reinterpret_cast<T *>(&meta_[D][key.hash()].data[0]) };
   } // accessor
 
   /*!
     Return pointer to raw data.
 
-    \param key The hash of the data to return.
+    \param name The name of the data to return.
    */
   template<typename T, size_t D>
-  T * data(const char * key) {
-    return static_cast<T *>(&meta_[D][key].data()[0]);
+  T * data(const_string_t && key) {
+    return static_cast<T *>(&meta_[D][key.hash()].data()[0]);
   } // data
 
 private:
 
-  std::vector<std::map<const char *, meta_data_t>> meta_;
+  std::vector<std::map<const_string_t::hash_type_t, meta_data_t>> meta_;
   
 }; // class default_state_storage_policy_t
 
@@ -148,17 +150,17 @@ public:
    ~state_t() {}
 
   template<typename T, size_t D>
-  void register_state(const char * key, size_t indices) {
+  void register_state(const const_string_t & key, size_t indices) {
     storage_policy_t::template register_state<T,D>(key, indices);
   } // register_state
 
   template<typename T, size_t D>
-  accessor_t<T> accessor(const char * key) {
+  accessor_t<T> accessor(const_string_t key) {
     return storage_policy_t::template accessor<T,D>(key);
   } // accessor
 
   template<typename T, size_t D>
-  T * data(const char * key) {
+  T * data(const_string_t key) {
     return storage_policy_t::template data<T,D>(key);
   } // data
 

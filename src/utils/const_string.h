@@ -32,7 +32,10 @@ namespace flexi {
 
 class const_string_t{
 public:
-  template<size_t N>
+
+  using hash_type_t = size_t;
+
+  template<hash_type_t N>
   constexpr const_string_t(const char(&str)[N])
     : str_(str),
       size_(N - 1){}
@@ -41,19 +44,19 @@ public:
     return str_;
   }
 
-  constexpr size_t size() const{
+  constexpr hash_type_t size() const{
     return size_;
   }
    
-  constexpr char operator[](size_t i) const{
+  constexpr char operator[](hash_type_t i) const{
     return i < size_ ? str_[i] : throw std::out_of_range("invalid index");
   }
 
-  constexpr size_t hash() const{
-    size_t h = 0;
+  constexpr hash_type_t hash() const{
+    hash_type_t h = 0;
 
-    for(size_t i = 0; i < size_; ++i){
-      h ^= size_t(str_[i]) << 8 * (i % 8);
+    for(hash_type_t i = 0; i < size_; ++i){
+      h ^= hash_type_t(str_[i]) << 8 * (i % 8);
     }
 
     return h;
@@ -64,7 +67,7 @@ public:
       return false;
     }
 
-    for(size_t i = 0; i < size_; ++i){
+    for(hash_type_t i = 0; i < size_; ++i){
       if((*this)[i] != t[i]){
         return false;
       }
@@ -79,7 +82,7 @@ public:
 
 private:
   const char* const str_;
-  const size_t size_;
+  const hash_type_t size_;
 };
 
 } // namespace flexi
