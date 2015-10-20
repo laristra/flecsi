@@ -593,6 +593,7 @@ public:
     }
 
   private:
+
     MeshTopology &mesh_;
     const IdVec &v_;
     size_t begin_;

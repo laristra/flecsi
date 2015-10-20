@@ -35,7 +35,7 @@ public:
   state_t current() { return state_ > 0 ? state_t::driver : state_t::task; }
 
   state_t entry() { return static_cast<state_t>(++state_); }
-  state_t exit() { return static_cast<state_t>(++state_); }
+  state_t exit() { return static_cast<state_t>(--state_); }
 
   //! Copy constructor (disabled)
   context_t(const context_t &) = delete;

@@ -23,6 +23,9 @@ set(utils_SOURCES
 cinch_add_unit(bitfield
   SOURCES test/bitfield.cc)
 
+cinch_add_unit(const_string
+  SOURCES test/const_string.cc)
+
 cinch_add_unit(factory
   SOURCES test/factory.cc)
 

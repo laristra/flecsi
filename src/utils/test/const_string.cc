@@ -5,21 +5,15 @@
 
 #include <cinchtest.h>
 
-#include "../task.h"
+#include "../const_string.h"
 
-int32_t testme(const char * token) {
-  std::cout << "Hello World: " << token << std::endl;
+int32_t print_test(flexi::const_string_t && s) {
+  std::cout << "hash: " << s.hash() << std::endl;
   return 0;
-} // testme
+} // print_test
 
-int32_t myvoid() {
-  std::cout << "Hello World: " << std::endl;
-  return 0;
-}
-
-TEST(task, execute) {
-  flexi::execute(testme, "shit");
-  flexi::execute(myvoid);
+TEST(const_string, sanity) {
+  print_test("hello world");
 } // TEST
 
 /*----------------------------------------------------------------------------*

@@ -94,7 +94,7 @@ TEST_F(Burton, mesh) {
 
   ASSERT_TRUE(CINCH_EQUAL_BLESSED("burton.blessed"));
 
-} // TEST
+} // TEST_F
 
 TEST_F(Burton, coordinates) {
 
@@ -107,7 +107,22 @@ TEST_F(Burton, coordinates) {
       cout << ": (" << xv[0] << "," << xv[1] << ")" << endl;
     } // for
   } // for
-} // TEST
+} // TEST_F
+
+TEST_F(Burton, state) {
+
+  register_state(b, "pressure", vertices, double);
+
+  auto p = access_state(b, "pressure", vertices, double);
+
+  for(auto v: p) {
+    p[v] = v;
+  } // for
+
+  for(auto v: p) {
+    std::cout << "pressure " << v << ": " << p[v] << std::endl;
+  } // for
+} // TEST_F
 
 /*~------------------------------------------------------------------------~--*
  * Formatting options
