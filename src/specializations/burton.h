@@ -73,7 +73,7 @@ public:
     attachment_site_t site) {
     switch(site) {
       case attachment_site_t::vertices:
-        return mesh_state_.register_state<T,0>(key, numVertices());
+        return mesh_state_.register_state<T,0>(key, num_vertices());
         break;
 #if 0
       case attachment_site_t::corners:

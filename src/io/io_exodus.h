@@ -42,7 +42,9 @@ struct io_exodus_t : public io_base_t {
   int32_t read(const std::string &filename, burton_mesh_t &m);
 
   //! implementation of exodus write
-  int32_t write(const std::string &filename, const burton_mesh_t &m);
+  //FIXME: should allow for const burton_mesh_t &
+  //int32_t write(const std::string &filename, const burton_mesh_t &m);
+  int32_t write(const std::string &filename, burton_mesh_t &m);
 
 }; // struct io_exodus_t
 
@@ -139,8 +141,11 @@ int32_t io_exodus_t::read(const std::string &filename, burton_mesh_t &m) {
 }
 
 //! implementation of exodus write
+//FIXME: should allow for const burton_mesh_t &
+//int32_t io_exodus_t::write(
+//    const std::string &filename, const burton_mesh_t &m) {
 int32_t io_exodus_t::write(
-    const std::string &filename, const burton_mesh_t &m) {
+    const std::string &filename, burton_mesh_t &m) {
 
   std::cout << "Writing mesh to file: " << filename << std::endl;
 
