@@ -25,6 +25,7 @@ using vertex_t = burton_mesh_t::vertex_t;
 using edge_t = burton_mesh_t::edge_t;
 using cell_t = burton_mesh_t::cell_t;
 using point_t = burton_mesh_t::point_t;
+using vector_t = flexi::space_vector<double,burton_mesh_traits_t::dimension>;
 
 // test fixture for creating the mesh
 class Burton : public ::testing::Test {
@@ -111,17 +112,30 @@ TEST_F(Burton, coordinates) {
 
 TEST_F(Burton, state) {
 
-  register_state(b, "pressure", vertices, double);
+  register_state(b, "pressure", cells, double);
+  register_state(b, "velocity", vertices, vector_t);
 
-  auto p = access_state(b, "pressure", vertices, double);
+  auto p = access_state(b, "pressure", cells, double);
+  auto velocity = access_state(b, "velocity", vertices, vector_t);
 
-  for(auto v: p) {
-    p[v] = v;
+  for(auto c: p) {
+    p[c] = c;
   } // for
 
-  for(auto v: p) {
-    std::cout << "pressure " << v << ": " << p[v] << std::endl;
+  for(auto c: p) {
+    ASSERT_EQ(c, p[c]);
   } // for
+
+  for (auto v: velocity) {
+    velocity[v][0] = v;
+    velocity[v][1] = 2.0*v;
+  } // for
+
+  for (auto v: velocity) {
+    ASSERT_EQ(v, velocity[v][0]);
+    ASSERT_EQ(2.0*v, velocity[v][1]);
+  } // for
+
 } // TEST_F
 
 /*~------------------------------------------------------------------------~--*
