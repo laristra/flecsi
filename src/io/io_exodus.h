@@ -38,28 +38,46 @@ struct io_exodus_t : public io_base_t {
   //! Default constructor
   io_exodus_t() {}
 
-  //! implementation of exodus read
+  /*!
+   * Prototype of exodus mesh read.
+   */
   int32_t read(const std::string &filename, burton_mesh_t &m);
 
-  //! implementation of exodus write
-  //FIXME: should allow for const burton_mesh_t &
+  /*!
+   * Prototype of exodus mesh write.
+   */
+  //FIXME: should allow for const burton_mesh_t & in all of the following.
   //int32_t write(const std::string &filename, const burton_mesh_t &m);
   int32_t write(const std::string &filename, burton_mesh_t &m);
 
+  /*!
+   * Prototype of exodus mesh write field.
+   */
+  int32_t write_mesh_field(const std::string &filename, burton_mesh_t &m,
+    const std::string &key);
+
 }; // struct io_exodus_t
 
-//! create an io_exodus_t and return a pointer to the base class
+/*!
+ * Create an io_exodus_t and return a pointer to the base class.
+ */
 io_base_t *create_io_exodus() { return new io_exodus_t; } // create_io_exodus
 
-//! register file extension g with factory
+/*!
+ * Register file extension g with factory.
+ */
 bool exodus_g_registered =
     io_factory_t::instance().registerType("g", create_io_exodus);
 
-//! register file extension exo with factory
+/*!
+ * Register file extension exo with factory.
+ */
 bool exodus_exo_registered =
     io_factory_t::instance().registerType("exo", create_io_exodus);
 
-//! implementation of exodus read
+/*!
+ * Implementation of exodus mesh read.
+ */
 int32_t io_exodus_t::read(const std::string &filename, burton_mesh_t &m) {
   std::cout << "Reading mesh from file: " << filename << std::endl;
 
@@ -140,7 +158,9 @@ int32_t io_exodus_t::read(const std::string &filename, burton_mesh_t &m) {
   return status;
 }
 
-//! implementation of exodus write
+/*!
+ * Implementation of exodus mesh write.
+ */
 //FIXME: should allow for const burton_mesh_t &
 //int32_t io_exodus_t::write(
 //    const std::string &filename, const burton_mesh_t &m) {
@@ -216,6 +236,18 @@ int32_t io_exodus_t::write(
 
   return status;
 } // io_exodus_t::write
+
+/*!
+ * Implementation of exodus mesh write field.
+ */
+int32_t io_exodus_t::write_mesh_field(const std::string &filename,
+  burton_mesh_t &m, const std::string &key) {
+
+  // "key" is not sufficient. would need site and type to access data.
+
+  return 0;
+} // io_exodus_t::write_mesh_field
+
 
 } // namespace flexi
 

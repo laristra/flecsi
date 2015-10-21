@@ -84,8 +84,13 @@ TEST_F(Burton, write_exo) {
     velocity[v][1] = 2.0*v;
   } // for
 
+  // write the mesh
   std::string filename("test/mesh.exo");
   ASSERT_FALSE(write_mesh(filename, b));
+
+  // write the pressure to the file.
+  ASSERT_FALSE(write_mesh_field(filename, b, "pressure"));
+
 } // TEST_F
 
 TEST_F(Burton, write_g) {

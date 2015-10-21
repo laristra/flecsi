@@ -36,18 +36,30 @@ public:
   //! Default constructor
   io_base_t() {}
 
-  //! pure virtual read
+  /*!
+   * Pure virtual mesh read.
+   */
   virtual int32_t read(const std::string &filename, burton_mesh_t &m) = 0;
-  //! pure virtual write
-  //FIXME: should allow for const burton_mesh_t &
+  /*!
+    Pure virtual mesh write.
+  */
+  //FIXME: should allow for const burton_mesh_t & in all of the following.
   //virtual int32_t write(
   //    const std::string &filename, const burton_mesh_t &m) = 0;
   virtual int32_t write(
       const std::string &filename, burton_mesh_t &m) = 0;
 
+  /*!
+   * Pure virtual write field to mesh.
+   */
+  virtual int32_t write_mesh_field(
+    const std::string &filename, burton_mesh_t &m, const std::string &key) = 0;
+
 }; // struct io_base_t
 
-//! define factory type paramaterized on io_base_t and string.
+/*!
+ * Define factory type paramaterized on io_base_t and string.
+ */
 using io_factory_t = flexi::Factory_<io_base_t, std::string>;
 
 } // namespace flexi
