@@ -1,6 +1,15 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
+ *  @@@@@@@@ @@       @@@@@@@@ @@     @@ @@
+ * /@@///// /@@      /@@///// //@@   @@ /@@
+ * /@@      /@@      /@@       //@@ @@  /@@
+ * /@@@@@@@ /@@      /@@@@@@@   //@@@   /@@
+ * /@@////  /@@      /@@////     @@/@@  /@@
+ * /@@      /@@      /@@        @@ //@@ /@@
+ * /@@      /@@@@@@@@/@@@@@@@@ @@   //@@/@@
+ * //       //////// //////// //     // // 
+ * 
+ * Copyright (c) 2016 Los Alamos National Laboratory, LLC
+ * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flexi_index_space_h
@@ -41,6 +50,7 @@ public:
   index_space_t & operator = (const index_space_t & is) {
     size_ = is.size_;
     index_ = is.index_;
+    return *this;
   } // operator =
 
   //! Destructor
@@ -71,6 +81,6 @@ private:
 #endif // flexi_index_space_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options for vim.
+ * Formatting options
  * vim: set tabstop=2 shiftwidth=2 expandtab :
  *~-------------------------------------------------------------------------~-*/
