@@ -42,7 +42,9 @@ struct io_exodus_t : public io_base_t {
   int32_t read(const std::string &filename, burton_mesh_t &m);
 
   //! implementation of exodus write
-  int32_t write(const std::string &filename, const burton_mesh_t &m);
+  //FIXME: should allow for const burton_mesh_t &
+  //int32_t write(const std::string &filename, const burton_mesh_t &m);
+  int32_t write(const std::string &filename, burton_mesh_t &m);
 
 }; // struct io_exodus_t
 
@@ -139,8 +141,11 @@ int32_t io_exodus_t::read(const std::string &filename, burton_mesh_t &m) {
 }
 
 //! implementation of exodus write
+//FIXME: should allow for const burton_mesh_t &
+//int32_t io_exodus_t::write(
+//    const std::string &filename, const burton_mesh_t &m) {
 int32_t io_exodus_t::write(
-    const std::string &filename, const burton_mesh_t &m) {
+    const std::string &filename, burton_mesh_t &m) {
 
   std::cout << "Writing mesh to file: " << filename << std::endl;
 
@@ -152,8 +157,8 @@ int32_t io_exodus_t::write(
       ex_create(filename.c_str(), EX_CLOBBER, &CPU_word_size, &IO_word_size);
   assert(exoid >= 0);
   auto d = m.dimension();
-  auto num_nodes = m.numVertices();
-  auto num_elem = m.numCells();
+  auto num_nodes = m.num_vertices();
+  auto num_elem = m.num_cells();
   auto num_elem_blk = 1;
   auto num_node_sets = 0;
   auto num_side_sets = 0;

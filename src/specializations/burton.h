@@ -72,14 +72,27 @@ public:
   decltype(auto) register_state_(const const_string_t && key,
     attachment_site_t site) {
     switch(site) {
-      case attachment_site_t::vertices:
-        return mesh_state_.register_state<T,0>(key, numVertices());
-        break;
+    case attachment_site_t::vertices:
+      return mesh_state_.register_state<T,0>(key, num_vertices());
+      break;
 #if 0
-      case attachment_site_t::corners:
-        return dual_mesh_state_.register_state<T,1>(key, numCorners());
-        break;
+    case attachment_site_t::edges:
+      return mesh_state_.register_state<T,1>(key, num_edges());
+      break;
 #endif
+    case attachment_site_t::cells:
+      return mesh_state_.register_state<T,2>(key, num_cells());
+      break;
+#if 0
+    case attachment_site_t::corners:
+      return dual_mesh_state_.register_state<T,1>(key, num_corners());
+      break;
+    case attachment_site_t::wedges:
+      return dual_mesh_state_.register_state<T,2>(key, num_wedges());
+      break;
+#endif
+    default:
+      assert(false && "Error: invalid state registration site.");
     } // switch
   } // register_state_
 
@@ -91,9 +104,27 @@ public:
   decltype(auto) access_state_(const const_string_t && key,
     attachment_site_t site) {
     switch(site) {
-      case attachment_site_t::vertices:
-        return mesh_state_.accessor<T,0>(key);
-        break;
+    case attachment_site_t::vertices:
+      return mesh_state_.accessor<T,0>(key);
+      break;
+#if 0
+    case attachment_site_t::edges:
+      return mesh_state_.accessor<T,1>(key);
+      break;
+#endif
+    case attachment_site_t::cells:
+      return mesh_state_.accessor<T,2>(key);
+      break;
+#if 0
+    case attachment_site_t::corners:
+      return dual_mesh_state_.accessor<T,1>(key);
+      break;
+    case attachment_site_t::wedges:
+      return dual_mesh_state_.accessor<T,2>(key);
+      break;
+#endif
+    default:
+      assert(false && "Error: invalid state registration site.");
     } // switch
   } // access_state_
     
@@ -140,11 +171,11 @@ public:
     return burton_mesh_traits_t::dimension;
   } // dimension
 
-  decltype(auto) numVertices() const {
+  decltype(auto) num_vertices() const {
     return mesh_.numVertices();
   } // numVertices
 
-  decltype(auto) numCells() const { return mesh_.numCells(); } // numCells
+  decltype(auto) num_cells() const { return mesh_.numCells(); } // num_cells
 
   /*!
    */

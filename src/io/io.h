@@ -33,8 +33,9 @@ namespace flexi {
 \param m mesh to write to the file
 \return 0 on success
  */
-int32_t write_mesh(const std::string &filename, const burton_mesh_t &m) {
-
+//FIXME: should allow for const burton_mesh_t &
+//int32_t write_mesh(const std::string &filename, const burton_mesh_t &m) {
+int32_t write_mesh(const std::string &filename, burton_mesh_t &m) {
   // get the file suffix.
   std::string suffix = filename.substr(filename.find_last_of(".") + 1);
   // create the io instance with the factory using the file suffix.
