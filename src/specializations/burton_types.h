@@ -112,11 +112,11 @@ struct burton_mesh_types_t {
   public:
     void addCorner(burton_corner_t *c) { corners_.add(c); }
 
-    EntityGroup<burton_corner_t> &corners() { return corners_; } // getSides
+    EntityGroup<burton_corner_t> &corners() { return corners_; } // corners
 
     void addWedge(burton_wedge_t *w) { wedges_.add(w); }
 
-    EntityGroup<burton_wedge_t> &wedges() { return wedges_; } // getSides
+    EntityGroup<burton_wedge_t> &wedges() { return wedges_; } // wedges
 
   private:
     EntityGroup<burton_corner_t> corners_;

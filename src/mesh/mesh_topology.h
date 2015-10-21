@@ -647,7 +647,9 @@ public:
     c.endFrom();
   } // initCell
 
-  void initEdge(EdgeType *edge, VertexType *vertex1, VertexType *vertex2) {
+  void initEdge(EdgeType *edge, const VertexType * vertex1,
+    const VertexType * vertex2) {
+
     auto &c = getConnectivity_(1, 0);
     if (c.empty()) {
       c.init();
@@ -655,8 +657,8 @@ public:
 
     assert(edge->id() == c.fromSize() && "id mismatch");
 
-    c.push(vertex1);
-    c.push(vertex2);
+    c.push(vertex1->id());
+    c.push(vertex2->id());
 
     c.endFrom();
   } // initEdge

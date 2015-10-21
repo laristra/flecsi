@@ -64,7 +64,11 @@ protected:
   const size_t height = 20;
 };
 
+using real_t = burton_mesh_t::real_t;
 TEST_F(Burton, write_exo) {
+  // create state data on b
+  register_state(b, "pressure", cells, real_t);
+
   std::string filename("test/mesh.exo");
   ASSERT_FALSE(write_mesh(filename, b));
 } // TEST_F

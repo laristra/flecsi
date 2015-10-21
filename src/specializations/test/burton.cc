@@ -25,7 +25,7 @@ using vertex_t = burton_mesh_t::vertex_t;
 using edge_t = burton_mesh_t::edge_t;
 using cell_t = burton_mesh_t::cell_t;
 using point_t = burton_mesh_t::point_t;
-using vector_t = flexi::space_vector<double,burton_mesh_traits_t::dimension>;
+using vector_t = burton_mesh_t::vector_t;
 
 // test fixture for creating the mesh
 class Burton : public ::testing::Test {
@@ -50,6 +50,17 @@ protected:
 		vs[i + 1 + j * width1],
 		vs[i + 1 + (j + 1) * width1],
 		vs[i + (j + 1) * width1]});
+#if 0
+	// create the edges
+	auto e =
+	  b.create_edge(vs[i + j * width1], vs[i + 1 + j * width1]);
+	e =
+	  b.create_edge(vs[i + 1 + j * width1],	vs[i + 1 + (j + 1) * width1]);
+	e =
+	  b.create_edge(vs[i + 1 + (j + 1) * width1], vs[i + (j + 1) * width1]);
+	e =
+	  b.create_edge(vs[i + (j + 1) * width1], vs[i + j * width1]);
+#endif
       }
     }
 
@@ -110,14 +121,27 @@ TEST_F(Burton, coordinates) {
   } // for
 } // TEST_F
 
+using real_t = burton_mesh_t::real_t;
+
 TEST_F(Burton, state) {
 
-  register_state(b, "pressure", cells, double);
+  register_state(b, "pressure", cells, real_t);
   register_state(b, "velocity", vertices, vector_t);
+  register_state(b, "H", edges, vector_t);
+#if 0
+  register_state(b, "cornerdata", corners, int32_t);
+  register_state(b, "wedgedata", wedges, bool);
+#endif
 
-  auto p = access_state(b, "pressure", cells, double);
+  auto p = access_state(b, "pressure", cells, real_t);
   auto velocity = access_state(b, "velocity", vertices, vector_t);
+  auto H = access_state(b, "H", edges, vector_t);
+#if 0
+  auto cd = access_state(b, "cornerdata", corners, int32_t);
+  auto wd = access_state(b, "wedgedata", wedges, bool);
+#endif
 
+  // cells
   for(auto c: p) {
     p[c] = c;
   } // for
@@ -126,6 +150,7 @@ TEST_F(Burton, state) {
     ASSERT_EQ(c, p[c]);
   } // for
 
+  // vertices
   for (auto v: velocity) {
     velocity[v][0] = v;
     velocity[v][1] = 2.0*v;
@@ -135,6 +160,37 @@ TEST_F(Burton, state) {
     ASSERT_EQ(v, velocity[v][0]);
     ASSERT_EQ(2.0*v, velocity[v][1]);
   } // for
+
+  // edges
+  for (auto e: H) {
+    H[e][0] = e*e;
+    H[e][1] = e*e*e;
+  } // for
+
+  for (auto e: H) {
+    ASSERT_EQ(0, H[e][0]);
+    ASSERT_EQ(0, H[e][1]);
+  } // for
+
+#if 0
+  // corners
+  for (auto c: cd) {
+    cd[c] = c;
+  } // for
+
+  for (auto c: cd) {
+    ASSERT_EQ(0, cd[c]);
+  } // for
+
+  // wedges
+  for (auto w: wd) {
+    wd[w] = (w%2) ? true : false;
+  } // for
+
+  for (auto w: wd) {
+    ASSERT_FALSE(wd[w]);
+  } // for
+#endif
 
 } // TEST_F
 
