@@ -65,9 +65,24 @@ protected:
 };
 
 using real_t = burton_mesh_t::real_t;
+using vector_t = burton_mesh_t::vector_t;
 TEST_F(Burton, write_exo) {
   // create state data on b
+  // register
   register_state(b, "pressure", cells, real_t);
+  register_state(b, "velocity", vertices, vector_t);
+  // access
+  auto p = access_state(b, "pressure", cells, real_t);
+  auto velocity = access_state(b, "velocity", vertices, vector_t);
+  // initialize
+  for(auto c: p) {
+    p[c] = c;
+  } // for
+  // vertices
+  for (auto v: velocity) {
+    velocity[v][0] = v;
+    velocity[v][1] = 2.0*v;
+  } // for
 
   std::string filename("test/mesh.exo");
   ASSERT_FALSE(write_mesh(filename, b));
