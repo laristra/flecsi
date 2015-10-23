@@ -21,7 +21,7 @@ using state_t = flexi::state_t<flexi::default_state_storage_policy_t>;
 TEST(state, sanity) {
   state_t state;
 
-  state.register_state<double, 0>("density", 10);
+  state.register_state<double, 0>("density", 10, persistent);
   state.register_state<float, 1>("density", 15);
 
   auto d = state.accessor<double, 0>("density");

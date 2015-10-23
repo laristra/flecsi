@@ -114,7 +114,10 @@ using real_t = burton_mesh_t::real_t;
 
 TEST_F(Burton, state) {
 
-  register_state(b, "pressure", cells, real_t);
+  register_state(b, "pressure", cells, real_t, persistent);
+
+  auto attributes = state_attributes(b, "pressure", cells);
+
   register_state(b, "velocity", vertices, vector_t);
   register_state(b, "H", edges, vector_t);
 #if 0
@@ -149,6 +152,8 @@ TEST_F(Burton, state) {
     ASSERT_EQ(v, velocity[v][0]);
     ASSERT_EQ(2.0*v, velocity[v][1]);
   } // for
+
+  b.compute_all();
 
   std::cerr << "num_edges = " << b.num_edges() << std::endl;
 

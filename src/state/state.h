@@ -19,6 +19,7 @@
 
 #include "../utils/index_space.h"
 #include "../utils/const_string.h"
+#include "../utils/bitfield.h"
 
 /*!
  * \file state.h
@@ -27,6 +28,13 @@
  */
 
 namespace flexi {
+
+enum class state_attribute : bitfield_t::field_type_t {
+  persistent = 0
+}; // state_attribute
+
+const bitfield_t::field_type_t persistent =
+  static_cast<bitfield_t::field_type_t>(flexi::state_attribute::persistent);
 
 /*----------------------------------------------------------------------------*
  * class default_state_storage_policy_t
@@ -40,7 +48,7 @@ namespace flexi {
 class default_state_storage_policy_t
 {
 protected:
-  
+
   //! Constructor
   default_state_storage_policy_t() {}
 
@@ -49,6 +57,7 @@ protected:
 
   struct meta_data_t {
     size_t type_size;
+    bitfield_t attributes;
     std::vector<uint8_t> data;
   }; // struct meta_data_
 
@@ -59,7 +68,8 @@ protected:
     \param indices The number of indices that parameterize the state.
    */
   template<typename T, size_t D>
-  void register_state(const_string_t key, size_t indices) {
+  void register_state(const_string_t key, size_t indices,
+    bitfield_t attributes) {
     
     // add space as we need it
     if(meta_.size() < D+1) {
@@ -72,8 +82,14 @@ protected:
     
     // store the type size and allocate storage
     meta_[D][key.hash()].type_size = sizeof(T);
+    meta_[D][key.hash()].attributes = attributes;
     meta_[D][key.hash()].data.resize(indices*sizeof(T));
   } // register
+
+  template<size_t D>
+  bitfield_t & attributes(const_string_t key) {
+    return meta_[D][key.hash()].attributes;
+  } // attributes
 
   /*--------------------------------------------------------------------------*
    * class accessor_t
@@ -154,6 +170,10 @@ public:
   template<typename T>
   using accessor_t = typename storage_policy_t::template accessor_t<T>;
 
+  enum class attribute {
+    persistent = 0x01
+  }; // enum class attribute
+
   //! Default constructor
   state_t() : storage_policy_t() {}
 
@@ -161,14 +181,20 @@ public:
    ~state_t() {}
 
   template<typename T, size_t D>
-  void register_state(const const_string_t & key, size_t indices) {
-    storage_policy_t::template register_state<T,D>(key, indices);
+  void register_state(const const_string_t & key, size_t indices,
+    bitfield_t attributes) {
+    storage_policy_t::template register_state<T,D>(key, indices, attributes);
   } // register_state
 
   template<typename T, size_t D>
   accessor_t<T> accessor(const_string_t key) {
     return storage_policy_t::template accessor<T,D>(key);
   } // accessor
+
+  template<size_t D>
+  bitfield_t & attributes(const_string_t key) {
+    return storage_policy_t::template attributes<D>(key);
+  } // attributes
 
   template<typename T, size_t D>
   T * data(const_string_t key) {
