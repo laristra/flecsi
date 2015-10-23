@@ -7,8 +7,8 @@
 # Create user guide header with version information
 #------------------------------------------------------------------------------#
 
-configure_file(${CMAKE_SOURCE_DIR}/doc/ugheader.tex.in
-    ${CMAKE_BINARY_DIR}/doc/ugheader.tex)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/flexi_ug_header.tex.in
+    ${CMAKE_BINARY_DIR}/doc/flexi_ug_header.tex)
 
 #------------------------------------------------------------------------------#
 # Pandoc options for user guide
@@ -17,8 +17,8 @@ configure_file(${CMAKE_SOURCE_DIR}/doc/ugheader.tex.in
 set(ug_pandoc_options
     "--toc"
     "--include-in-header=${CMAKE_SOURCE_DIR}/cinch/tex/addtolength.tex"
-    "--include-in-header=${CMAKE_BINARY_DIR}/doc/ugheader.tex"
-    "--include-in-header=${CMAKE_SOURCE_DIR}/doc/ugtitle.tex"
+    "--include-in-header=${CMAKE_BINARY_DIR}/doc/flexi_ug_header.tex"
+    "--include-in-header=${CMAKE_CURRENT_SOURCE_DIR}/doc/flexi_ug_title.tex"
     "--include-before-body=${CMAKE_SOURCE_DIR}/cinch/tex/maketitle.tex"
     "--include-before-body=${CMAKE_SOURCE_DIR}/cinch/tex/firstpageempty.tex"
     "--include-before-body=${CMAKE_SOURCE_DIR}/cinch/tex/titlebreak.tex"

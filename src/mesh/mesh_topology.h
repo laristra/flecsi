@@ -313,8 +313,8 @@ public:
     void push(id_t id) { toIdVec_.push_back(id); } // push
 
     void dump() {
-      for(size_t i = 0; i < fromIndexVec_.size(); ++i){
-        for(size_t j = fromIndexVec_[i]; j < fromIndexVec_[i + 1]; ++j){
+      for(size_t i = 1; i < fromIndexVec_.size(); ++i){
+        for(size_t j = fromIndexVec_[i - 1]; j < fromIndexVec_[i]; ++j){
           std::cout << toIdVec_[j] << std::endl;
         }
         std::cout << std::endl;
