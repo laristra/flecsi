@@ -90,11 +90,9 @@ public:
     case attachment_site_t::vertices:
       return mesh_state_.register_state<T,0>(key, num_vertices());
       break;
-#if 0
     case attachment_site_t::edges:
       return mesh_state_.register_state<T,1>(key, num_edges());
       break;
-#endif
     case attachment_site_t::cells:
       return mesh_state_.register_state<T,2>(key, num_cells());
       break;
@@ -122,11 +120,9 @@ public:
     case attachment_site_t::vertices:
       return mesh_state_.accessor<T,0>(key);
       break;
-#if 0
     case attachment_site_t::edges:
       return mesh_state_.accessor<T,1>(key);
       break;
-#endif
     case attachment_site_t::cells:
       return mesh_state_.accessor<T,2>(key);
       break;
@@ -192,6 +188,11 @@ public:
   size_t num_vertices() const {
     return mesh_.numVertices();
   } // num_vertices
+
+  /*!
+    Get number of mesh edges.
+   */
+  size_t num_edges() const { return mesh_.numEdges(); } // num_edges
 
   /*!
     Get number of mesh cells.
