@@ -39,21 +39,15 @@ public:
   /*!
    * Pure virtual mesh read.
    */
-  virtual int32_t read(const std::string &filename, burton_mesh_t &m) = 0;
+  virtual int32_t read(const std::string &name, burton_mesh_t &m) = 0;
   /*!
     Pure virtual mesh write.
   */
   //FIXME: should allow for const burton_mesh_t & in all of the following.
   //virtual int32_t write(
-  //    const std::string &filename, const burton_mesh_t &m) = 0;
+  //  const std::string &name, const burton_mesh_t &m) = 0;
   virtual int32_t write(
-      const std::string &filename, burton_mesh_t &m) = 0;
-
-  /*!
-   * Pure virtual write field to mesh.
-   */
-  virtual int32_t write_mesh_field(
-    const std::string &filename, burton_mesh_t &m, const std::string &key) = 0;
+    const std::string &name, burton_mesh_t &m) = 0;
 
 }; // struct io_base_t
 

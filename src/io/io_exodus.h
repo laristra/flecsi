@@ -41,19 +41,19 @@ struct io_exodus_t : public io_base_t {
   /*!
    * Prototype of exodus mesh read.
    */
-  int32_t read(const std::string &filename, burton_mesh_t &m);
+  int32_t read(const std::string &name, burton_mesh_t &m);
 
   /*!
    * Prototype of exodus mesh write.
    */
   //FIXME: should allow for const burton_mesh_t & in all of the following.
-  //int32_t write(const std::string &filename, const burton_mesh_t &m);
-  int32_t write(const std::string &filename, burton_mesh_t &m);
+  //int32_t write(const std::string &name, const burton_mesh_t &m);
+  int32_t write(const std::string &name, burton_mesh_t &m);
 
   /*!
    * Prototype of exodus mesh write field.
    */
-  int32_t write_mesh_field(const std::string &filename, burton_mesh_t &m,
+  int32_t write_mesh_field(const std::string &name, burton_mesh_t &m,
     const std::string &key);
 
 }; // struct io_exodus_t
@@ -78,8 +78,8 @@ bool exodus_exo_registered =
 /*!
  * Implementation of exodus mesh read.
  */
-int32_t io_exodus_t::read(const std::string &filename, burton_mesh_t &m) {
-  std::cout << "Reading mesh from file: " << filename << std::endl;
+int32_t io_exodus_t::read(const std::string &name, burton_mesh_t &m) {
+  std::cout << "Reading mesh from file: " << name << std::endl;
 
   // size of floating point variables used in app.
   int CPU_word_size = sizeof(burton_mesh_t::real_t);
@@ -88,7 +88,7 @@ int32_t io_exodus_t::read(const std::string &filename, burton_mesh_t &m) {
   float version;
 
   auto exoid = ex_open(
-      filename.c_str(), EX_READ, &CPU_word_size, &IO_word_size, &version);
+    name.c_str(), EX_READ, &CPU_word_size, &IO_word_size, &version);
   assert(exoid >= 0);
 
   // get the initialization parameters
@@ -133,7 +133,7 @@ int32_t io_exodus_t::read(const std::string &filename, burton_mesh_t &m) {
   auto num_nodes_per_elem = 0;
   char elem_type[256];
   status = ex_get_elem_block(
-      exoid, blockids[0], elem_type, &num_elem, &num_nodes_per_elem, &num_attr);
+    exoid, blockids[0], elem_type, &num_elem, &num_nodes_per_elem, &num_attr);
   assert(status == 0);
 
   // verify mesh has quads
@@ -163,18 +163,18 @@ int32_t io_exodus_t::read(const std::string &filename, burton_mesh_t &m) {
  */
 //FIXME: should allow for const burton_mesh_t &
 //int32_t io_exodus_t::write(
-//    const std::string &filename, const burton_mesh_t &m) {
+//    const std::string &name, const burton_mesh_t &m) {
 int32_t io_exodus_t::write(
-    const std::string &filename, burton_mesh_t &m) {
+  const std::string &name, burton_mesh_t &m) {
 
-  std::cout << "Writing mesh to file: " << filename << std::endl;
+  std::cout << "Writing mesh to file: " << name << std::endl;
 
   // size of floating point variables used in app.
   int CPU_word_size = sizeof(burton_mesh_t::real_t);
   // size of floating point to be stored in file.
   int IO_word_size = sizeof(burton_mesh_t::real_t);
   auto exoid =
-      ex_create(filename.c_str(), EX_CLOBBER, &CPU_word_size, &IO_word_size);
+    ex_create(name.c_str(), EX_CLOBBER, &CPU_word_size, &IO_word_size);
   assert(exoid >= 0);
   auto d = m.dimension();
   auto num_nodes = m.num_vertices();
@@ -185,7 +185,7 @@ int32_t io_exodus_t::write(
 
   // initialize the file.
   auto status = ex_put_init(exoid, "Exodus II output from flexi.", d, num_nodes,
-      num_elem, num_elem_blk, num_node_sets, num_side_sets);
+    num_elem, num_elem_blk, num_node_sets, num_side_sets);
   assert(status == 0);
 
   // get the coordinates from the mesh.
@@ -236,18 +236,6 @@ int32_t io_exodus_t::write(
 
   return status;
 } // io_exodus_t::write
-
-/*!
- * Implementation of exodus mesh write field.
- */
-int32_t io_exodus_t::write_mesh_field(const std::string &filename,
-  burton_mesh_t &m, const std::string &key) {
-
-  // "key" is not sufficient. would need site and type to access data.
-
-  return 0;
-} // io_exodus_t::write_mesh_field
-
 
 } // namespace flexi
 
