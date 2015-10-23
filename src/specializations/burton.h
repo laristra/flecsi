@@ -16,6 +16,7 @@
 #define flexi_burton_h
 
 #include "../state/state.h"
+#include "../execution/task.h"
 #include "burton_types.h"
 
 /*!
@@ -42,7 +43,7 @@ private:
   using private_dual_mesh_t = MeshTopology<burton_dual_mesh_types_t>;
 
 #ifndef MESH_STORAGE_POLICY
-  // for now: use default storage policy for state
+  // for now: use default storage policy
   using private_mesh_state_t = state_t<>;
   using private_dual_mesh_state_t = state_t<>;
 #else
@@ -50,7 +51,21 @@ private:
   using private_dual_mesh_state_t = state_t<MESH_STORAGE_POLICY>;
 #endif
 
+#ifndef MESH_EXECUTION_POLICY
+  // for now: use default execution policy
+  using private_mesh_execution_t = execution_t<>;
+#else
+  using private_mesh_execution_t = execution_t<MESH_STORAGE_POLICY>;
+#endif
+
 public:
+
+  /*--------------------------------------------------------------------------*
+   * Execution Interface
+   *--------------------------------------------------------------------------*/
+
+#define execute(task, ...) \
+  private_mesh_execution_t::execute_task(task, ##__VA_ARGS__)
 
   /*--------------------------------------------------------------------------*
    * State Interface
@@ -127,7 +142,6 @@ public:
       assert(false && "Error: invalid state registration site.");
     } // switch
   } // access_state_
-    
 
   /*--------------------------------------------------------------------------*
    * FIXME: Other crap

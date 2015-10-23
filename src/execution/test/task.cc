@@ -16,6 +16,15 @@
 
 #include "../task.h"
 
+#if 0
+task(update, INOUT(state_var d), parameter1, ...) {
+
+  for(auto i: m.vertices()) {
+    d[i] = ...;
+  }
+}
+#endif
+
 int32_t testme(const char * token) {
   std::cout << "Hello World: " << token << std::endl;
   return 0;
@@ -26,9 +35,14 @@ int32_t myvoid() {
   return 0;
 }
 
+using execution_t = flexi::execution_t<>;
+
+#define execute(task, ...) \
+  execution_t::execute_task(task, ##__VA_ARGS__)
+
 TEST(task, execute) {
-  flexi::execute(testme, "shit");
-  flexi::execute(myvoid);
+  execute(testme, "shit");
+  execute(myvoid);
 } // TEST
 
 /*----------------------------------------------------------------------------*
