@@ -15,6 +15,8 @@
 #ifndef flexi_state_h
 #define flexi_state_h
 
+#include <map>
+
 #include "../utils/index_space.h"
 #include "../utils/const_string.h"
 
@@ -125,8 +127,8 @@ protected:
     \param name The name of the data to return.
    */
   template<typename T, size_t D>
-  T * data(const_string_t && key) {
-    return static_cast<T *>(&meta_[D][key.hash()].data()[0]);
+  T * data(const const_string_t& key) {
+    return static_cast<T *>(&meta_[D][key.hash()].data[0]);
   } // data
 
 private:
