@@ -75,9 +75,11 @@ public:
     case attachment_site_t::vertices:
       return mesh_state_.register_state<T,0>(key, num_vertices());
       break;
+#if 0
     case attachment_site_t::edges:
       return mesh_state_.register_state<T,1>(key, num_edges());
       break;
+#endif
     case attachment_site_t::cells:
       return mesh_state_.register_state<T,2>(key, num_cells());
       break;
@@ -105,9 +107,11 @@ public:
     case attachment_site_t::vertices:
       return mesh_state_.accessor<T,0>(key);
       break;
+#if 0
     case attachment_site_t::edges:
       return mesh_state_.accessor<T,1>(key);
       break;
+#endif
     case attachment_site_t::cells:
       return mesh_state_.accessor<T,2>(key);
       break;
@@ -176,13 +180,6 @@ public:
   } // num_vertices
 
   /*!
-    Get number of mesh edges.
-   */
-  decltype(auto) num_edges() const {
-    return mesh_.numEdges();
-  }
-
-  /*!
     Get number of mesh cells.
    */
   decltype(auto) num_cells() const { return mesh_.numCells(); } // num_cells
@@ -212,19 +209,6 @@ public:
     auto v = mesh_.make<vertex_t>(pos);
     mesh_.addVertex(v);
     return v;
-  }
-
-  /*!
-    Create an edge in the mesh.
-
-    \param v1 The first vertex associated with the edge.
-    \param v2 The second vertex associated with the edge.
-   */
-  edge_t *create_edge(const vertex_t * v1, const vertex_t * v2) {
-    auto e = mesh_.make<edge_t>();
-    mesh_.addEdge(e);
-    mesh_.initEdge(e, v1, v2);
-    return e;
   }
 
   /*!
