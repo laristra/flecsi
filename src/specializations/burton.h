@@ -189,14 +189,14 @@ public:
   /*!
     Get number of mesh vertices.
    */
-  decltype(auto) num_vertices() const {
+  size_t num_vertices() const {
     return mesh_.numVertices();
   } // num_vertices
 
   /*!
     Get number of mesh cells.
    */
-  decltype(auto) num_cells() const { return mesh_.numCells(); } // num_cells
+  size_t num_cells() const { return mesh_.numCells(); } // num_cells
 
   /*!
    */
