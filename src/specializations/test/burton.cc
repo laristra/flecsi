@@ -54,6 +54,7 @@ protected:
     }
 
     b.init();
+    b.compute_all();
   }
 
   virtual void TearDown() { }
@@ -150,10 +151,6 @@ TEST_F(Burton, state) {
     ASSERT_EQ(2.0*v, velocity[v][1]);
   } // for
 
-  b.compute_all();
-
-  std::cerr << "num_edges = " << b.num_edges() << std::endl;
-
   // edges
   for (auto e: H) {
     H[e][0] = e*e;
@@ -161,8 +158,8 @@ TEST_F(Burton, state) {
   } // for
 
   for (auto e: H) {
-    ASSERT_EQ(0, H[e][0]);
-    ASSERT_EQ(0, H[e][1]);
+    ASSERT_EQ(e*e, H[e][0]);
+    ASSERT_EQ(e*e*e, H[e][1]);
   } // for
 
 #if 0

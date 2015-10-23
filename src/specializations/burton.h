@@ -184,6 +184,7 @@ public:
 
   void compute_all() {
     mesh_.computeAll();
+    dual_mesh_.computeAll();
   }
 
   /*!
@@ -202,6 +203,11 @@ public:
     Get number of mesh cells.
    */
   size_t num_cells() const { return mesh_.numCells(); } // num_cells
+
+  /*!
+    Get number of corners.
+   */
+  //size_t num_corners() const { return ; } // num_corners
 
   /*!
    */
