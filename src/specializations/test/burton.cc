@@ -150,6 +150,8 @@ TEST_F(Burton, state) {
     ASSERT_EQ(2.0*v, velocity[v][1]);
   } // for
 
+  b.compute_all();
+
   std::cerr << "num_edges = " << b.num_edges() << std::endl;
 
   // edges

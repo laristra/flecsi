@@ -182,6 +182,10 @@ public:
     return burton_mesh_traits_t::dimension;
   } // dimension
 
+  void compute_all() {
+    mesh_.computeAll();
+  }
+
   /*!
     Get number of mesh vertices.
    */
