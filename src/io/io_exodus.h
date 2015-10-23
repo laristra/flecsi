@@ -41,19 +41,19 @@ struct io_exodus_t : public io_base_t {
   /*!
    * Prototype of exodus mesh read.
    */
-  int32_t read(const std::string &name, burton_mesh_t &m);
+  int32_t read(const std::string &name, mesh_t &m);
 
   /*!
    * Prototype of exodus mesh write.
    */
-  //FIXME: should allow for const burton_mesh_t & in all of the following.
-  //int32_t write(const std::string &name, const burton_mesh_t &m);
-  int32_t write(const std::string &name, burton_mesh_t &m);
+  //FIXME: should allow for const mesh_t & in all of the following.
+  //int32_t write(const std::string &name, const mesh_t &m);
+  int32_t write(const std::string &name, mesh_t &m);
 
   /*!
    * Prototype of exodus mesh write field.
    */
-  int32_t write_mesh_field(const std::string &name, burton_mesh_t &m,
+  int32_t write_mesh_field(const std::string &name, mesh_t &m,
     const std::string &key);
 
 }; // struct io_exodus_t
@@ -78,11 +78,11 @@ bool exodus_exo_registered =
 /*!
  * Implementation of exodus mesh read.
  */
-int32_t io_exodus_t::read(const std::string &name, burton_mesh_t &m) {
+int32_t io_exodus_t::read(const std::string &name, mesh_t &m) {
   std::cout << "Reading mesh from file: " << name << std::endl;
 
   // size of floating point variables used in app.
-  int CPU_word_size = sizeof(burton_mesh_t::real_t);
+  int CPU_word_size = sizeof(mesh_t::real_t);
   // size of floating point to be stored in file.
   int IO_word_size = 0;
   float version;
@@ -105,13 +105,13 @@ int32_t io_exodus_t::read(const std::string &name, burton_mesh_t &m) {
   auto num_side_sets = exopar.num_side_sets;
 
   // read nodes
-  burton_mesh_t::real_t xcoord[num_nodes];
-  burton_mesh_t::real_t ycoord[num_nodes];
+  mesh_t::real_t xcoord[num_nodes];
+  mesh_t::real_t ycoord[num_nodes];
   status = ex_get_coord(exoid, xcoord, ycoord, nullptr);
   assert(status == 0);
 
   // put nodes into mesh
-  std::vector<burton_mesh_t::vertex_t *> vs;
+  std::vector<mesh_t::vertex_t *> vs;
   for (size_t i = 0; i < num_nodes; ++i) {
     auto v = m.create_vertex({xcoord[i], ycoord[i]});
     v->setRank(1);
@@ -161,18 +161,18 @@ int32_t io_exodus_t::read(const std::string &name, burton_mesh_t &m) {
 /*!
  * Implementation of exodus mesh write.
  */
-//FIXME: should allow for const burton_mesh_t &
+//FIXME: should allow for const mesh_t &
 //int32_t io_exodus_t::write(
-//    const std::string &name, const burton_mesh_t &m) {
+//    const std::string &name, const mesh_t &m) {
 int32_t io_exodus_t::write(
-  const std::string &name, burton_mesh_t &m) {
+  const std::string &name, mesh_t &m) {
 
   std::cout << "Writing mesh to file: " << name << std::endl;
 
   // size of floating point variables used in app.
-  int CPU_word_size = sizeof(burton_mesh_t::real_t);
+  int CPU_word_size = sizeof(mesh_t::real_t);
   // size of floating point to be stored in file.
-  int IO_word_size = sizeof(burton_mesh_t::real_t);
+  int IO_word_size = sizeof(mesh_t::real_t);
   auto exoid =
     ex_create(name.c_str(), EX_CLOBBER, &CPU_word_size, &IO_word_size);
   assert(exoid >= 0);
@@ -189,8 +189,8 @@ int32_t io_exodus_t::write(
   assert(status == 0);
 
   // get the coordinates from the mesh.
-  burton_mesh_t::real_t xcoord[num_nodes];
-  burton_mesh_t::real_t ycoord[num_nodes];
+  mesh_t::real_t xcoord[num_nodes];
+  mesh_t::real_t ycoord[num_nodes];
   auto i = 0;
   for (auto v : m.vertices()) {
     xcoord[i] = v->coordinates()[0];

@@ -33,7 +33,7 @@ namespace flexi {
 \param m mesh to create from file
 \return 0 on success
  */
-int32_t read_mesh(const std::string &name, burton_mesh_t &m) {
+int32_t read_mesh(const std::string &name, mesh_t &m) {
 
   // get the file suffix.
   std::string suffix = name.substr(name.find_last_of(".") + 1);
@@ -51,9 +51,9 @@ int32_t read_mesh(const std::string &name, burton_mesh_t &m) {
 \param m mesh to write to the file
 \return 0 on success
  */
-//FIXME: should allow for const burton_mesh_t &
-//int32_t write_mesh(const std::string &name, const burton_mesh_t &m) {
-int32_t write_mesh(const std::string &name, burton_mesh_t &m) {
+//FIXME: should allow for const mesh_t &
+//int32_t write_mesh(const std::string &name, const mesh_t &m) {
+int32_t write_mesh(const std::string &name, mesh_t &m) {
   // get the file suffix.
   std::string suffix = name.substr(name.find_last_of(".") + 1);
   // create the io instance with the factory using the file suffix.
@@ -71,8 +71,8 @@ int32_t write_mesh(const std::string &name, burton_mesh_t &m) {
 \param key key of field to write
 \return 0 on success
  */
-//FIXME: should allow for const burton_mesh_t &
-int32_t write_mesh_field(const std::string &name, burton_mesh_t &m,
+//FIXME: should allow for const mesh_t &
+int32_t write_mesh_field(const std::string &name, mesh_t &m,
   const std::string &key) {
   // get the file suffix.
   std::string suffix = name.substr(name.find_last_of(".") + 1);
