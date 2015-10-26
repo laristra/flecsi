@@ -118,18 +118,14 @@ TEST_F(Burton, state) {
   register_state(b, "pressure", cells, real_t);
   register_state(b, "velocity", vertices, vector_t);
   register_state(b, "H", edges, vector_t);
-#if 0
   register_state(b, "cornerdata", corners, int32_t);
   register_state(b, "wedgedata", wedges, bool);
-#endif
 
   auto p = access_state(b, "pressure", cells, real_t);
   auto velocity = access_state(b, "velocity", vertices, vector_t);
   auto H = access_state(b, "H", edges, vector_t);
-#if 0
   auto cd = access_state(b, "cornerdata", corners, int32_t);
   auto wd = access_state(b, "wedgedata", wedges, bool);
-#endif
 
   // cells
   for(auto c: p) {
@@ -162,15 +158,18 @@ TEST_F(Burton, state) {
     ASSERT_EQ(e*e*e, H[e][1]);
   } // for
 
-#if 0
+  std::cerr << "num_corners " << b.num_corners() << std::endl;
+
   // corners
   for (auto c: cd) {
     cd[c] = c;
   } // for
 
   for (auto c: cd) {
-    ASSERT_EQ(0, cd[c]);
+    ASSERT_EQ(c, cd[c]);
   } // for
+
+  std::cerr << "num_wedges " << b.num_wedges() << std::endl;
 
   // wedges
   for (auto w: wd) {
@@ -178,9 +177,13 @@ TEST_F(Burton, state) {
   } // for
 
   for (auto w: wd) {
-    ASSERT_FALSE(wd[w]);
+    if (w%2) {
+      ASSERT_TRUE(wd[w]);
+    }
+    else {
+      ASSERT_FALSE(wd[w]);
+    }
   } // for
-#endif
 
 } // TEST_F
 

@@ -96,14 +96,12 @@ public:
     case attachment_site_t::cells:
       return mesh_state_.register_state<T,2>(key, num_cells());
       break;
-#if 0
     case attachment_site_t::corners:
-      return dual_mesh_state_.register_state<T,1>(key, num_corners());
+      return dual_mesh_state_.register_state<T,0>(key, num_corners());
       break;
     case attachment_site_t::wedges:
       return dual_mesh_state_.register_state<T,2>(key, num_wedges());
       break;
-#endif
     default:
       assert(false && "Error: invalid state registration site.");
     } // switch
@@ -126,14 +124,12 @@ public:
     case attachment_site_t::cells:
       return mesh_state_.accessor<T,2>(key);
       break;
-#if 0
     case attachment_site_t::corners:
-      return dual_mesh_state_.accessor<T,1>(key);
+      return dual_mesh_state_.accessor<T,0>(key);
       break;
     case attachment_site_t::wedges:
       return dual_mesh_state_.accessor<T,2>(key);
       break;
-#endif
     default:
       assert(false && "Error: invalid state registration site.");
     } // switch
@@ -207,7 +203,16 @@ public:
   /*!
     Get number of corners.
    */
-  //size_t num_corners() const { return ; } // num_corners
+  size_t num_corners() {
+    return dual_mesh_.numEntities(0);
+  } // num_corners
+
+  /*!
+    Get number of wedges.
+   */
+  size_t num_wedges() {
+    return dual_mesh_.numEntities(2);
+  } // num_wedges
 
   /*!
    */
