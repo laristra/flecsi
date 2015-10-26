@@ -213,7 +213,7 @@ struct compute_connectivity_{
     using T2 = typename std::tuple_element<1, T>::type;
 
     mesh.compute(T1::dimension, T2::dimension);
-    return compute_conectivity_<I - 1>::compute(mesh, t);
+    return compute_connectivity_<I - 1>::compute(mesh, t);
   }
 };
 
@@ -1042,7 +1042,7 @@ public:
   void init() override {
     using TP = typename MT::TraversalPairs;
 
-    compute_conectivity_<std::tuple_size<TP>::value - 1>::compute(*this, TP());
+    compute_connectivity_<std::tuple_size<TP>::value - 1>::compute(*this, TP());
   } // init
 
   decltype(auto) numCells() const {

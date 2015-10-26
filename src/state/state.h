@@ -15,7 +15,8 @@
 #ifndef flexi_state_h
 #define flexi_state_h
 
-#include <map>
+#include <unordered_map>
+#include <memory>
 
 #include "../utils/index_space.h"
 #include "../utils/const_string.h"
@@ -149,7 +150,8 @@ protected:
 
 private:
 
-  std::vector<std::map<const_string_t::hash_type_t, meta_data_t>> meta_;
+  std::vector<std::unordered_map<const_string_t::hash_type_t,
+    meta_data_t>> meta_;
   
 }; // class default_state_storage_policy_t
 
@@ -197,7 +199,7 @@ public:
   } // attributes
 
   template<typename T, size_t D>
-  T * data(const_string_t key) {
+  std::shared_ptr<T> & data(const_string_t key) {
     return storage_policy_t::template data<T,D>(key);
   } // data
 

@@ -78,6 +78,7 @@ struct burton_mesh_types_t {
     const point_t &coordinates() const { return coordinates_; }
 
   private:
+
     uint64_t precedence_;
     point_t coordinates_;
 
