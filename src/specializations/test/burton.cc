@@ -54,7 +54,6 @@ protected:
     }
 
     b.init();
-    b.compute_all();
   }
 
   virtual void TearDown() { }

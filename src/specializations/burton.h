@@ -198,11 +198,6 @@ public:
     return burton_mesh_traits_t::dimension;
   } // dimension
 
-  void compute_all() {
-    mesh_.computeAll();
-    dual_mesh_.computeAll();
-  }
-
   /*!
     Get number of mesh vertices.
    */
@@ -281,6 +276,8 @@ public:
   }
 
   void init() {
+    mesh_.init();
+
     for (auto c : mesh_.cells()) {
       auto vs = mesh_.vertices(c).toVec();
 
@@ -341,6 +338,8 @@ public:
       c4->addWedge(w4);
       c->addCorner(c4);
     }
+
+    dual_mesh_.init();
   }
 
 private:

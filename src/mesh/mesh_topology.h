@@ -417,7 +417,7 @@ public:
 
   virtual void compute(size_t fromDim, size_t toDim) = 0;
 
-  virtual void computeAll() = 0;
+  virtual void init() = 0;
 
   virtual size_t topologicalDimension() = 0;
 
@@ -464,9 +464,7 @@ public:
         : mesh_(itr.mesh_), dim_(dim), level_(itr.level_ + 1) {
 
       Connectivity &c = mesh_.getConnectivity(itr.dim_, dim_);
-      if (c.empty()) {
-        mesh_.compute(itr.dim_, dim_);
-      }
+      assert(!c.empty());
 
       entities_ = &c.getEntities();
 
@@ -740,13 +738,7 @@ public:
   } // initCellFaces
 
   size_t numEntities(size_t dim) override {
-    size_t size = entities_[dim].size();
-    if (size == 0) {
-      build(dim);
-      return entities_[dim].size();
-    }
-
-    return size;
+    return entities_[dim].size();
   } // numEntities
 
   size_t numEntities_(size_t dim) {
@@ -951,11 +943,11 @@ public:
     }
   } // compute
 
-  void computeAll() override {
+  void init() override {
     using TP = typename MT::TraversalPairs;
 
     compute_conectivity_<std::tuple_size<TP>::value - 1>::compute(*this, TP());
-  } // computeAll
+  } // init
 
   decltype(auto) numCells() const {
     return entities_[MT::dimension].size();
@@ -1037,10 +1029,8 @@ public:
 
   template <size_t D, class E> EntityRange<D> entities(E *e) {
     Connectivity &c = getConnectivity(E::dimension, D);
-    if (c.empty()) {
-      compute(E::dimension, D);
-    }
-
+    assert(!c.empty());
+    
     const IdVec &fv = c.getFromIndexVec();
 
     return EntityRange<D>(*this, c.getEntities(), fv[e->id()], fv[e->id() + 1]);
@@ -1055,10 +1045,7 @@ public:
   } // vertices
 
   EntityRange<1> edges() {
-    if (idVecs_[1].empty()) {
-      build(1);
-    }
-
+    assert(!idVecs_[1].empty());
     return EntityRange<1>(*this, idVecs_[1]);
   } // edges
 

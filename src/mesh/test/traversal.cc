@@ -127,6 +127,8 @@ TEST(mesh_topology, traversal) {
     }
   }
 
+  mesh->init();
+
   CINCH_CAPTURE() << "------------- forall cells, vertices" << endl;
 
   for(TestMesh::cell_index_iterator c(*mesh); !c.end(); ++c){
