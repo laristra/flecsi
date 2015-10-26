@@ -824,6 +824,8 @@ public:
 
     for (index_iterator toEntity(*this, toDim); !toEntity.end(); ++toEntity) {
       for (index_iterator fromItr(toEntity, fromDim); !fromItr.end(); ++fromItr) {
+	std::cerr << "size: " << pos.size() << std::endl;
+	std::cerr << "fromItr: " << *fromItr << std::endl;
         pos[*fromItr]++;
       }
     }

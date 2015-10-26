@@ -115,8 +115,8 @@ using real_t = burton_mesh_t::real_t;
 
 TEST_F(Burton, state) {
 
-  register_state(b, "pressure", cells, real_t);
-  register_state(b, "velocity", vertices, vector_t);
+  register_state(b, "pressure", cells, real_t, persistent);
+  register_state(b, "velocity", vertices, vector_t, persistent);
   register_state(b, "H", edges, vector_t);
   register_state(b, "cornerdata", corners, int32_t);
   register_state(b, "wedgedata", wedges, bool);

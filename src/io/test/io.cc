@@ -69,8 +69,8 @@ using vector_t = burton_mesh_t::vector_t;
 TEST_F(Burton, write_exo) {
   // create state data on b
   // register
-  register_state(b, "pressure", cells, real_t);
-  register_state(b, "velocity", vertices, vector_t);
+  register_state(b, "pressure", cells, real_t, persistent);
+  register_state(b, "velocity", vertices, vector_t, persistent);
   // access
   auto p = access_state(b, "pressure", cells, real_t);
   auto velocity = access_state(b, "velocity", vertices, vector_t);
@@ -87,9 +87,6 @@ TEST_F(Burton, write_exo) {
   // write the mesh
   std::string filename("test/mesh.exo");
   ASSERT_FALSE(write_mesh(filename, b));
-
-  // write the pressure to the file.
-  //ASSERT_FALSE(write_mesh_field(filename, b, data, site, type));
 
 } // TEST_F
 

@@ -100,10 +100,12 @@ public:
         attributes);
       break;
     case attachment_site_t::corners:
-      return dual_mesh_state_.register_state<T,0>(key, num_corners());
+      return dual_mesh_state_.register_state<T,0>(key, num_corners(),
+        attributes);
       break;
     case attachment_site_t::wedges:
-      return dual_mesh_state_.register_state<T,2>(key, num_wedges());
+      return dual_mesh_state_.register_state<T,2>(key, num_wedges(),
+        attributes);
       break;
     default:
       assert(false && "Error: invalid state registration site.");
