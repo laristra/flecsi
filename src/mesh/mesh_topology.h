@@ -1148,6 +1148,15 @@ public:
     return entities<1>(e);
   } // edges
 
+  ConstEntityRange<1> edges() const {
+    assert(!idVecs_[1].empty());
+    return ConstEntityRange<1>(*this, idVecs_[1]);
+  } // edges
+
+  template <class E> EntityRange<1> edges(E *e) const {
+    return entities<1>(e);
+  } // edges
+
   EntityRange<MT::dimension - 1> faces() {
     return EntityRange<MT::dimension - 1>(*this, idVecs_[MT::dimension - 1]);
   } // faces
@@ -1156,11 +1165,27 @@ public:
     return entities<MT::dimension - 1>(e);
   } // faces
 
+  ConstEntityRange<MT::dimension - 1> faces() const {
+    return ConstEntityRange<MT::dimension - 1>(*this, idVecs_[MT::dimension - 1]);
+  } // faces
+
+  template <class E> ConstEntityRange<MT::dimension - 1> faces(E *e) const {
+    return entities<MT::dimension - 1>(e);
+  } // faces
+
   EntityRange<MT::dimension> cells() {
     return EntityRange<MT::dimension>(*this, idVecs_[MT::dimension]);
   } // cells
 
   template <class E> EntityRange<MT::dimension> cells(E *e) {
+    return entities<MT::dimension>(e);
+  } // cells
+
+  ConstEntityRange<MT::dimension> cells() const {
+    return EntityRange<MT::dimension>(*this, idVecs_[MT::dimension]);
+  } // cells
+
+  template <class E> ConstEntityRange<MT::dimension> cells(E *e) const {
     return entities<MT::dimension>(e);
   } // cells
 
