@@ -176,7 +176,16 @@ struct burton_mesh_types_t {
    * Specify mesh parameterizations.
    *--------------------------------------------------------------------------*/
 
-  using EntityTypes = std::tuple<burton_vertex_t, burton_edge_t, burton_cell_t>;
+  using EntityTypes = 
+    std::tuple<burton_vertex_t, burton_edge_t, burton_cell_t>;
+
+  using TraversalPairs = 
+    std::tuple<std::pair<burton_vertex_t, burton_edge_t>,
+               std::pair<burton_vertex_t, burton_cell_t>,
+               std::pair<burton_edge_t, burton_vertex_t>,
+               std::pair<burton_edge_t, burton_cell_t>,
+               std::pair<burton_cell_t, burton_vertex_t>,
+               std::pair<burton_cell_t, burton_edge_t>>;
 
   /*--------------------------------------------------------------------------*
    * FIXME
@@ -255,6 +264,14 @@ public:
 
   using EntityTypes =
       std::tuple<burton_vertex_t, burton_edge_t, burton_wedge_t>;
+
+  using TraversalPairs = 
+    std::tuple<std::pair<burton_vertex_t, burton_edge_t>,
+               std::pair<burton_vertex_t, burton_wedge_t>,
+               std::pair<burton_edge_t, burton_vertex_t>,
+               std::pair<burton_edge_t, burton_wedge_t>,
+               std::pair<burton_wedge_t, burton_vertex_t>,
+               std::pair<burton_wedge_t, burton_edge_t>>;
 
   static size_t numEntitiesPerCell(size_t dim) {
     switch (dim) {

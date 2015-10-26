@@ -204,6 +204,27 @@ private:
   \brief...
  */
 
+template<size_t I>
+struct compute_conectivity_{
+  template<class M, class... TS>
+  static int compute(M& mesh, std::tuple<TS...> t){
+    using T = typename std::tuple_element<I, decltype(t)>::type;
+    using T1 = typename std::tuple_element<0, T>::type;
+    using T2 = typename std::tuple_element<1, T>::type;
+
+    mesh.compute(T1::dimension, T2::dimension);
+    return compute_conectivity_<I - 1>::compute(mesh, t);
+  }
+};
+
+template<>
+struct compute_conectivity_<0>{
+  template<class M, class... TS>
+  static int compute(M& mesh, std::tuple<TS...>){
+    return 0;
+  }
+};
+
 class MeshTopologyBase {
 public:
   using IdVec = std::vector<id_t>;
@@ -929,14 +950,9 @@ public:
   } // compute
 
   void computeAll() override {
-    int d = MT::dimension;
-    for (int i = d; i >= 0; --i) {
-      for (int j = 0; j <= d; ++j) {
-        if (i != j) {
-          compute(i, j);
-        }
-      }
-    }
+    using TP = typename MT::TraversalPairs;
+
+    compute_conectivity_<std::tuple_size<TP>::value - 1>::compute(*this, TP());
   } // computeAll
 
   decltype(auto) numCells() const {
