@@ -79,22 +79,25 @@ public:
     wedges
   }; // enum class attachment_sites_t
 
-#define register_state(mesh, key, site, type) \
+#define register_state(mesh, key, site, type, ...) \
   (mesh).register_state_<type>((key), \
-  burton_mesh_t::attachment_site_t::site)
+  burton_mesh_t::attachment_site_t::site, ##__VA_ARGS__)
 
   template<typename T>
   decltype(auto) register_state_(const const_string_t && key,
-    attachment_site_t site) {
+    attachment_site_t site, bitfield_t attributes = 0x0) {
     switch(site) {
     case attachment_site_t::vertices:
-      return mesh_state_.register_state<T,0>(key, num_vertices());
+      return mesh_state_.register_state<T,0>(key, num_vertices(),
+        attributes);
       break;
     case attachment_site_t::edges:
-      return mesh_state_.register_state<T,1>(key, num_edges());
+      return mesh_state_.register_state<T,1>(key, num_edges(),
+        attributes);
       break;
     case attachment_site_t::cells:
-      return mesh_state_.register_state<T,2>(key, num_cells());
+      return mesh_state_.register_state<T,2>(key, num_cells(),
+        attributes);
       break;
     case attachment_site_t::corners:
       return dual_mesh_state_.register_state<T,0>(key, num_corners());
@@ -134,6 +137,21 @@ public:
       assert(false && "Error: invalid state registration site.");
     } // switch
   } // access_state_
+
+  decltype(auto) state_attributes_(const const_string_t && key,
+    attachment_site_t site) {
+    switch(site) {
+      case attachment_site_t::vertices:
+        return mesh_state_.attributes<0>((key));
+      break;
+    } // switch
+  } // state_attribtutes_
+
+/*!
+  \brief Return the attributes of a state quantity
+ */
+#define state_attributes(mesh, key, site) \
+  (mesh).state_attributes_((key), burton_mesh_t::attachment_site_t::site)
 
   /*--------------------------------------------------------------------------*
    * FIXME: Other crap

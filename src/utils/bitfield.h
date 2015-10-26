@@ -123,6 +123,8 @@ private:
 
 }; // class bitfield
 
+using bitfield_t = bitfield<uint32_t>;
+
 } // namespace flexi
 
 #endif // flexi_bitfield_h

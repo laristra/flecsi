@@ -35,6 +35,13 @@ public:
 
   using EntityTypes = std::tuple<Vertex, Edge, Cell>;
 
+  using TraversalPairs = 
+    std::tuple<std::pair<Vertex, Edge>,
+               std::pair<Vertex, Cell>,
+               std::pair<Edge, Vertex>,
+               std::pair<Edge, Cell>,
+               std::pair<Cell, Vertex>,
+               std::pair<Cell, Edge>>;
 
   static size_t numEntitiesPerCell(size_t dim){
     switch(dim){
