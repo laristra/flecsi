@@ -205,7 +205,7 @@ private:
  */
 
 template<size_t I>
-struct compute_conectivity_{
+struct compute_connectivity_{
   template<class M, class... TS>
   static int compute(M& mesh, std::tuple<TS...> t){
     using T = typename std::tuple_element<I, decltype(t)>::type;
@@ -218,7 +218,7 @@ struct compute_conectivity_{
 };
 
 template<>
-struct compute_conectivity_<0>{
+struct compute_connectivity_<0>{
   template<class M, class... TS>
   static int compute(M&, std::tuple<TS...>){
     return 0;
@@ -423,6 +423,7 @@ public:
 
   virtual const Connectivity &getConnectivity(
       size_t fromDim, size_t toDim) const = 0;
+
   virtual Connectivity &getConnectivity(size_t fromDim, size_t toDim) = 0;
 
 }; // MeshTopologyBase
@@ -911,8 +912,8 @@ public:
 
     for (index_iterator toEntity(*this, toDim); !toEntity.end(); ++toEntity) {
       for (index_iterator fromItr(toEntity, fromDim); !fromItr.end(); ++fromItr) {
-	std::cerr << "size: " << pos.size() << std::endl;
-	std::cerr << "fromItr: " << *fromItr << std::endl;
+	//std::cerr << "size: " << pos.size() << std::endl;
+	//std::cerr << "fromItr: " << *fromItr << std::endl;
         pos[*fromItr]++;
       }
     }
