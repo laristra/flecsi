@@ -220,7 +220,7 @@ struct compute_conectivity_{
 template<>
 struct compute_conectivity_<0>{
   template<class M, class... TS>
-  static int compute(M& mesh, std::tuple<TS...>){
+  static int compute(M&, std::tuple<TS...>){
     return 0;
   }
 };
@@ -411,7 +411,7 @@ public:
     IdVec fromIndexVec_;
   }; // class Connectivity
 
-  virtual size_t numEntities(size_t dim) = 0;
+  virtual size_t numEntities(size_t dim) const = 0;
 
   virtual void build(size_t dim) = 0;
 
@@ -419,7 +419,7 @@ public:
 
   virtual void init() = 0;
 
-  virtual size_t topologicalDimension() = 0;
+  virtual size_t topologicalDimension() const = 0;
 
   virtual const Connectivity &getConnectivity(
       size_t fromDim, size_t toDim) const = 0;
@@ -568,10 +568,58 @@ public:
 
   }; // class iterator
 
+  /*--------------------------------------------------------------------------*
+   * class const_iterator
+   *--------------------------------------------------------------------------*/
+
+  template <size_t D> class const_iterator {
+  public:
+    using EntityType =
+        typename std::tuple_element<D, typename MT::EntityTypes>::type;
+
+    const_iterator(const const_iterator &itr)
+      : mesh_(itr.mesh_), entities_(itr.entities_), index_(itr.index_) {}
+
+    const_iterator(const MeshTopology &mesh, const IdVec &entities, size_t index)
+        : mesh_(mesh), 
+          entities_(&entities),
+          index_(index) {}
+
+    const_iterator &operator++() {
+      ++index_;
+      return *this;
+    }
+
+    const_iterator &operator=(const const_iterator &itr) {
+      index_ = itr.index_;
+      entities_ = itr.entities_;
+      return *this;
+    }
+
+    const EntityType *operator*() { return mesh_.getEntity<D>((*entities_)[index_]); }
+
+    const EntityType *operator->() { return mesh_.getEntity<D>((*entities_)[index_]); }
+
+    bool operator==(const const_iterator &itr) const { return index_ == itr.index_; }
+
+    bool operator!=(const const_iterator &itr) const { return index_ != itr.index_; }
+
+  private:
+    const MeshTopology &mesh_;
+    const IdVec *entities_;
+    size_t index_;
+
+  }; // class iterator
+
   using vertex_iterator = iterator<0>;
   using edge_iterator = iterator<1>;
   using face_iterator = iterator<MT::dimension - 1>;
   using cell_iterator = iterator<MT::dimension>;
+
+  using const_vertex_iterator = const_iterator<0>;
+  using const_edge_iterator = const_iterator<1>;
+  using const_face_iterator = const_iterator<MT::dimension - 1>;
+  using const_cell_iterator = const_iterator<MT::dimension>;
 
   /*--------------------------------------------------------------------------*
    * class EntityRange
@@ -599,11 +647,11 @@ public:
     EntityRange(const EntityRange &r) : mesh_(r.mesh_), v_(r.v_),
                                         begin_(0), end_(v_.size()) {}
 
-    iterator_t begin() { return iterator_t(mesh_, v_, begin_); }
+    iterator_t begin() const { return iterator_t(mesh_, v_, begin_); }
 
-    iterator_t end() { return iterator_t(mesh_, v_, end_); }
+    iterator_t end() const { return iterator_t(mesh_, v_, end_); }
 
-    EntityVec toVec(){
+    EntityVec toVec() const{
       EntityVec ret;
       for(size_t i = begin_; i < end_; ++i){
         ret.push_back(mesh_.getEntity<D>(v_[i]));
@@ -619,6 +667,53 @@ public:
     size_t end_;
 
   }; // class EntityRange
+
+  /*--------------------------------------------------------------------------*
+   * class ConstEntityRange
+   *--------------------------------------------------------------------------*/
+
+  /*!
+    \class ConstEntityRange mesh_topology.h
+    \brief ...
+   */
+
+  template <size_t D> class ConstEntityRange {
+  public:
+    using const_iterator_t = const_iterator<D>;
+    using EntityType = typename const_iterator_t::EntityType;
+    using EntityVec = std::vector<const EntityType*>;
+
+    ConstEntityRange(const MeshTopology &mesh, const IdVec &v)
+      : mesh_(mesh), v_(v), begin_(0),
+        end_(v_.size()) {}
+
+    ConstEntityRange(const MeshTopology &mesh, const IdVec &v, size_t begin, size_t end)
+      : mesh_(mesh), v_(v), begin_(begin),
+        end_(end) {}
+
+    ConstEntityRange(const ConstEntityRange &r) : mesh_(r.mesh_), v_(r.v_),
+                                                  begin_(0), end_(v_.size()) {}
+
+    const_iterator_t begin() const { return const_iterator_t(mesh_, v_, begin_); }
+
+    const_iterator_t end() const { return const_iterator_t(mesh_, v_, end_); }
+
+    EntityVec toVec() const{
+      EntityVec ret;
+      for(size_t i = begin_; i < end_; ++i){
+        ret.push_back(mesh_.getEntity<D>(v_[i]));
+      }
+      return ret;
+    }
+
+  private:
+
+    const MeshTopology &mesh_;
+    const IdVec &v_;
+    size_t begin_;
+    size_t end_;
+
+  }; // class ConstEntityRange
 
   //! Constructor
   MeshTopology() {
@@ -737,11 +832,11 @@ public:
     c.endFrom();
   } // initCellFaces
 
-  size_t numEntities(size_t dim) override {
+  size_t numEntities(size_t dim) const override {
     return entities_[dim].size();
   } // numEntities
 
-  size_t numEntities_(size_t dim) {
+  size_t numEntities_(size_t dim) const {
     return entities_[dim].size();
   } // numEntities_
 
@@ -986,7 +1081,7 @@ public:
     return t[toDim];
   } // getConnectivity
 
-  size_t topologicalDimension() override { return MT::dimension; }
+  size_t topologicalDimension() const override { return MT::dimension; }
 
   template <class T, class... S> T *make(S &&... args) {
     T *entity = new T(std::forward<S>(args)...);
@@ -1020,19 +1115,19 @@ public:
 
   EntityRange<0> vertices() { return EntityRange<0>(*this, idVecs_[0]); }
 
-  template <size_t D, class E> EntityRange<D> entities(const E *e) const {
+  ConstEntityRange<0> vertices() const { return ConstEntityRange<0>(*this, idVecs_[0]); }
+
+  template <size_t D, class E> ConstEntityRange<D> entities(const E *e) const {
     const Connectivity &c = getConnectivity(E::dimension, D);
-    assert(!c.empty() && "cannot call entities on empty mesh");
+    assert(!c.empty() && "empty connectivity");
     const IdVec &fv = c.getFromIndexVec();
-    return EntityRange<D>(c.getEntities(), fv[e->id()], fv[e->id() + 1]);
+    return ConstEntityRange<D>(*this, c.getEntities(), fv[e->id()], fv[e->id() + 1]);
   } // entities
 
-  template <size_t D, class E> EntityRange<D> entities(E *e) {
-    Connectivity &c = getConnectivity(E::dimension, D);
-    assert(!c.empty());
-    
+  template <size_t D, class E> EntityRange<D> entities(const E *e) {
+    const Connectivity &c = getConnectivity(E::dimension, D);
+    assert(!c.empty() && "empty connectivity");
     const IdVec &fv = c.getFromIndexVec();
-
     return EntityRange<D>(*this, c.getEntities(), fv[e->id()], fv[e->id() + 1]);
   } // entities
 
