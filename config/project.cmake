@@ -41,6 +41,15 @@ if(ENABLE_IO)
     -ldl)
 endif(ENABLE_IO)
 
+option(ENABLE_PARTITION "Enable partitioning with third party libraries." OFF)
+if(ENABLE_PARTITION)
+  set(TPL_INSTALL_PREFIX /path/to/third/party/install CACHE PATH
+  "/path/to/third/party/install")
+  include_directories(${TPL_INSTALL_PREFIX}/include)
+  set(PARTITION_LIBRARIES ${TPL_INSTALL_PREFIX}/lib/libmetis.a)
+endif()
+
+
 #~---------------------------------------------------------------------------~-#
 # Formatting options for vim.
 # vim: set tabstop=2 shiftwidth=2 expandtab :

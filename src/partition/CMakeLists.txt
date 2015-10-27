@@ -3,6 +3,8 @@
 # All rights reserved.
 #~----------------------------------------------------------------------------~#
 
+if(ENABLE_PARTITION)
+
 set(partition_HEADERS
   partitioner.h
   PARENT_SCOPE
@@ -14,7 +16,10 @@ set(partition_HEADERS
 
 cinch_add_unit(partition
   SOURCES test/partition.cc
-  LIBRARIES ${PARTITION_LIBRARIES})
+  INPUT   test/partition.blessed
+  LIBRARIES ${PARTITION_LIBRARIES}
+)
+endif()
 
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.
