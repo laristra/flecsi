@@ -12,15 +12,9 @@ set(partition_HEADERS
 #  PARENT_SCOPE
 #)
 
-#if(ENABLE_UNIT_TESTS)
-#  cinch_add_unit(casename
-#    SOURCES testfile.cc
-#    LIBRARIES list
-#    INCLUDES list
-#    POLICY MPI
-#    THREADS 1 2 4
-#  )
-#endif(ENABLE_UNIT_TESTS)
+cinch_add_unit(partition
+  SOURCES test/partition.cc
+  LIBRARIES ${PARTITION_LIBRARIES})
 
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.
