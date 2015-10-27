@@ -660,6 +660,10 @@ public:
       return ret;
     }
 
+    size_t size() const {
+      return end_ - begin_;
+    }
+
   private:
 
     MeshTopology &mesh_;

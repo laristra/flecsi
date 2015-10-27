@@ -3,6 +3,8 @@
 # All rights reserved.
 #~----------------------------------------------------------------------------~#
 
+if(ENABLE_PARTITION)
+
 set(partition_HEADERS
   partitioner.h
   PARENT_SCOPE
@@ -12,15 +14,12 @@ set(partition_HEADERS
 #  PARENT_SCOPE
 #)
 
-#if(ENABLE_UNIT_TESTS)
-#  cinch_add_unit(casename
-#    SOURCES testfile.cc
-#    LIBRARIES list
-#    INCLUDES list
-#    POLICY MPI
-#    THREADS 1 2 4
-#  )
-#endif(ENABLE_UNIT_TESTS)
+cinch_add_unit(partition
+  SOURCES test/partition.cc
+  INPUT   test/partition.blessed
+  LIBRARIES ${PARTITION_LIBRARIES}
+)
+endif()
 
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.
