@@ -308,13 +308,13 @@ public:
     assert(e.size() == 6);
 
     e[0] = v[0];
-    e[1] = v[2];
+    e[1] = v[1];
 
     e[2] = v[1];
-    e[3] = v[3];
+    e[3] = v[2];
 
     e[4] = v[0];
-    e[5] = v[1];
+    e[5] = v[2];
   }
 }; // burton_dual_mesh_t
 
