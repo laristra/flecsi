@@ -39,7 +39,7 @@ protected:
       for(size_t i = 0; i < width + 1; ++i){
 	auto v =
 	  b.create_vertex({double(i)+ 0.1*pow(double(j),1.8), 1.5*double(j)});
-	v->setRank(1);
+	v->set_rank(1);
 	vs.push_back(v);
       }
     }
