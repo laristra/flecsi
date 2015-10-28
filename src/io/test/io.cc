@@ -32,6 +32,8 @@ class Burton : public ::testing::Test {
 protected:
   virtual void SetUp() {
     vector<vertex_t*> vs;
+
+    std::cout << "object: " << &b << " vertices: " << b.num_vertices() << std::endl;
   
     for(size_t j = 0; j < height + 1; ++j){
       for(size_t i = 0; i < width + 1; ++i){
@@ -60,20 +62,21 @@ protected:
   virtual void TearDown() { }
 
   burton_mesh_t b;
-  const size_t width = 10;
-  const size_t height = 20;
+  const size_t width = 4;
+  const size_t height = 8;
 };
 
 using real_t = burton_mesh_t::real_t;
 using vector_t = burton_mesh_t::vector_t;
+
 TEST_F(Burton, write_exo) {
   // create state data on b
   // register
   register_state(b, "pressure", cells, real_t, persistent);
   register_state(b, "velocity", vertices, vector_t, persistent);
   // access
-  auto p = access_state(b, "pressure", cells, real_t);
-  auto velocity = access_state(b, "velocity", vertices, vector_t);
+  auto p = access_state(b, "pressure", real_t);
+  auto velocity = access_state(b, "velocity", vector_t);
   // initialize
   for(auto c: p) {
     p[c] = c;
@@ -95,6 +98,7 @@ TEST_F(Burton, write_g) {
   ASSERT_FALSE(write_mesh(filename, b));
 } // TEST_F
 
+#if 0
 TEST_F(Burton, read_exo) {
   burton_mesh_t m;
   // read mesh written by above test
@@ -116,6 +120,7 @@ TEST_F(Burton, read_g) {
   filename = "test/mesh_out.g";
   ASSERT_FALSE(write_mesh(filename, m));
 } // TEST_F
+#endif
 
 /*----------------------------------------------------------------------------*
  * Cinch test Macros
