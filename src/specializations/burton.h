@@ -15,6 +15,8 @@
 #ifndef flexi_burton_h
 #define flexi_burton_h
 
+#include <string>
+
 #include "../state/state.h"
 #include "../execution/task.h"
 #include "burton_types.h"
@@ -38,17 +40,47 @@ namespace flexi {
 
 class burton_mesh_t
 {
+public:
+
+  enum class attachment_site_t : size_t {
+    vertices,
+    edges,
+    cells,
+    corners,
+    wedges
+  }; // enum class attachment_site_t
+
+  enum class state_attribute_t : bitfield_t::field_type_t {
+    persistent = 0
+  }; // enum class state_attribute_t
+
 private:
   using private_mesh_t = MeshTopology<burton_mesh_types_t>;
   using private_dual_mesh_t = MeshTopology<burton_dual_mesh_types_t>;
 
+  /*--------------------------------------------------------------------------*
+   * State type definitions
+   *--------------------------------------------------------------------------*/
+
+  struct private_state_meta_data_t {
+
+    void initialize(attachment_site_t site_,
+      bitfield_t::field_type_t attributes_) {
+      site = site_;
+      attributes = attributes_;
+    } // initialize
+
+    attachment_site_t site;
+    bitfield_t::field_type_t attributes;
+
+  }; // struct private_state_meta_data_t
+
 #ifndef MESH_STORAGE_POLICY
   // for now: use default storage policy
-  using private_mesh_state_t = state_t<>;
-  using private_dual_mesh_state_t = state_t<>;
+  using private_mesh_state_t = state_t<private_state_meta_data_t>;
 #else
-  using private_mesh_state_t = state_t<MESH_STORAGE_POLICY>;
-  using private_dual_mesh_state_t = state_t<MESH_STORAGE_POLICY>;
+  using private_mesh_state_t =
+    state_t<private_state_meta_data_t, MESH_STORAGE_POLICY>;
 #endif
 
 #ifndef MESH_EXECUTION_POLICY
@@ -71,89 +103,58 @@ public:
    * State Interface
    *--------------------------------------------------------------------------*/
 
-  enum class attachment_site_t : size_t {
-    vertices,
-    edges,
-    cells,
-    corners,
-    wedges
-  }; // enum class attachment_sites_t
-
 #define register_state(mesh, key, site, type, ...) \
   (mesh).register_state_<type>((key), \
   burton_mesh_t::attachment_site_t::site, ##__VA_ARGS__)
 
   template<typename T>
   decltype(auto) register_state_(const const_string_t && key,
-    attachment_site_t site, bitfield_t attributes = 0x0) {
-    switch(site) {
-    case attachment_site_t::vertices:
-      return mesh_state_.register_state<T,0>(key, num_vertices(),
-        attributes);
-      break;
-    case attachment_site_t::edges:
-      return mesh_state_.register_state<T,1>(key, num_edges(),
-        attributes);
-      break;
-    case attachment_site_t::cells:
-      return mesh_state_.register_state<T,2>(key, num_cells(),
-        attributes);
-      break;
-    case attachment_site_t::corners:
-      return dual_mesh_state_.register_state<T,0>(key, num_corners(),
-        attributes);
-      break;
-    case attachment_site_t::wedges:
-      return dual_mesh_state_.register_state<T,2>(key, num_wedges(),
-        attributes);
-      break;
-    default:
-      assert(false && "Error: invalid state registration site.");
-    } // switch
-  } // register_state_
+    attachment_site_t site, bitfield_t::field_type_t attributes = 0x0) {
 
-#define access_state(mesh, key, site, type) \
-  (mesh).access_state_<type>((key), \
-  burton_mesh_t::attachment_site_t::site)
-
-  template<typename T>
-  decltype(auto) access_state_(const const_string_t && key,
-    attachment_site_t site) {
-    switch(site) {
-    case attachment_site_t::vertices:
-      return mesh_state_.accessor<T,0>(key);
-      break;
-    case attachment_site_t::edges:
-      return mesh_state_.accessor<T,1>(key);
-      break;
-    case attachment_site_t::cells:
-      return mesh_state_.accessor<T,2>(key);
-      break;
-    case attachment_site_t::corners:
-      return dual_mesh_state_.accessor<T,0>(key);
-      break;
-    case attachment_site_t::wedges:
-      return dual_mesh_state_.accessor<T,2>(key);
-      break;
-    default:
-      assert(false && "Error: invalid state registration site.");
-    } // switch
-  } // access_state_
-
-  decltype(auto) state_attributes_(const const_string_t && key,
-    attachment_site_t site) {
     switch(site) {
       case attachment_site_t::vertices:
-        return mesh_state_.attributes<0>((key));
-      break;
+        return state_.register_state<T>(key, num_vertices(),
+          attachment_site_t::vertices, attributes);
+        break;
+      case attachment_site_t::edges:
+        return state_.register_state<T>(key, num_edges(),
+          attachment_site_t::edges, attributes);
+        break;
+      case attachment_site_t::cells:
+        return state_.register_state<T>(key, num_cells(),
+          attachment_site_t::cells, attributes);
+        break;
+      case attachment_site_t::corners:
+        return state_.register_state<T>(key, num_corners(),
+          attachment_site_t::corners, attributes);
+        break;
+      case attachment_site_t::wedges:
+        return state_.register_state<T>(key, num_wedges(),
+          attachment_site_t::wedges, attributes);
+        break;
+      default:
+        assert(false && "Error: invalid state registration site.");
     } // switch
+
+  } // register_state_
+
+#define access_state(mesh, key, type) \
+  (mesh).access_state_<type>((key))
+
+  template<typename T>
+  decltype(auto) access_state_(const const_string_t && key) {
+    return state_.accessor<T>(key);
+  } // access_state_
+
+  decltype(auto) state_attributes_(const const_string_t && key) {
+    return state_.meta_data<>((key)).attributes;
   } // state_attribtutes_
 
 /*!
   \brief Return the attributes of a state quantity
  */
-#define state_attributes(mesh, key, site) \
-  (mesh).state_attributes_((key), burton_mesh_t::attachment_site_t::site)
+#define state_attributes(mesh, key) \
+  (mesh).state_attributes_((key))
 
   /*--------------------------------------------------------------------------*
    * FIXME: Other crap
@@ -347,8 +348,7 @@ private:
   private_mesh_t mesh_;
   private_dual_mesh_t dual_mesh_;
 
-  private_mesh_state_t mesh_state_;
-  private_dual_mesh_state_t dual_mesh_state_;
+  private_mesh_state_t state_;
 
 }; // class burton_mesh_t
 

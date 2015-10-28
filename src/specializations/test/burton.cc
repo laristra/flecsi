@@ -120,11 +120,19 @@ TEST_F(Burton, state) {
   register_state(b, "cornerdata", corners, int32_t);
   register_state(b, "wedgedata", wedges, bool);
 
+  auto p = access_state(b, "pressure", real_t);
+  auto velocity = access_state(b, "velocity", vector_t);
+  auto H = access_state(b, "H", vector_t);
+  auto cd = access_state(b, "cornerdata", int32_t);
+  auto wd = access_state(b, "wedgedata", bool);
+
+#if 0
   auto p = access_state(b, "pressure", cells, real_t);
   auto velocity = access_state(b, "velocity", vertices, vector_t);
   auto H = access_state(b, "H", edges, vector_t);
   auto cd = access_state(b, "cornerdata", corners, int32_t);
   auto wd = access_state(b, "wedgedata", wedges, bool);
+#endif
 
   // cells
   for(auto c: p) {
