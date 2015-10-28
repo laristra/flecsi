@@ -45,6 +45,8 @@ namespace flexi {
 
 class MeshEntityBase {
 public:
+  virtual ~MeshEntityBase() {}
+
   /*!
     Return the id of this entity.
 
@@ -125,6 +127,8 @@ public:
   static const size_t dimension = D;
 
   MeshEntity() {}
+
+  virtual ~MeshEntity() {}
 }; // class MeshEntity
 
 using EntityVec = std::vector<MeshEntityBase *>;
@@ -725,6 +729,14 @@ public:
     getConnectivity_(MT::dimension, 0).init();
   } // MeshTopology()
 
+  virtual ~MeshTopology(){
+    for(auto& ev : entities_){
+      for(auto ent : ev){
+        delete ent;
+      } 
+    }
+  }
+
   template<size_t D>
   void addEntity(MeshEntityBase *ent) {
     auto &ents = entities_[D];
@@ -887,6 +899,7 @@ public:
       for (size_t i = 0; i < entitiesPerCell; ++i) {
         id_t *a = &entityVertices[i * verticesPerEntity];
         IdVec ev(a, a + verticesPerEntity);
+
         std::sort(ev.begin(), ev.end());
 
         auto itr = entityVerticesMap.emplace(std::move(ev), entityId);
@@ -894,7 +907,6 @@ public:
 
         if (itr.second) {
           IdVec ev2 = IdVec(a, a + verticesPerEntity);
-
           entityVertexConn.emplace_back(std::move(ev2));
 
           maxCellEntityConns =
