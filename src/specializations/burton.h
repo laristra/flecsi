@@ -55,8 +55,8 @@ public:
   }; // enum class state_attribute_t
 
 private:
-  using private_mesh_t = MeshTopology<burton_mesh_types_t>;
-  using private_dual_mesh_t = MeshTopology<burton_dual_mesh_types_t>;
+  using private_mesh_t = mesh_topology<burton_mesh_types_t>;
+  using private_dual_mesh_t = mesh_topology<burton_dual_mesh_types_t>;
 
   /*--------------------------------------------------------------------------*
    * State type definitions
@@ -203,31 +203,31 @@ public:
     Get number of mesh vertices.
    */
   size_t num_vertices() const {
-    return mesh_.numVertices();
+    return mesh_.num_vertices();
   } // num_vertices
 
   /*!
     Get number of mesh edges.
    */
-  size_t num_edges() const { return mesh_.numEdges(); } // num_edges
+  size_t num_edges() const { return mesh_.num_edges(); } // num_edges
 
   /*!
     Get number of mesh cells.
    */
-  size_t num_cells() const { return mesh_.numCells(); } // num_cells
+  size_t num_cells() const { return mesh_.num_cells(); } // num_cells
 
   /*!
     Get number of corners.
    */
   size_t num_corners() {
-    return dual_mesh_.numEntities(0);
+    return dual_mesh_.num_entities(0);
   } // num_corners
 
   /*!
     Get number of wedges.
    */
   size_t num_wedges() {
-    return dual_mesh_.numEntities(2);
+    return dual_mesh_.num_entities(2);
   } // num_wedges
 
   /*!
@@ -253,7 +253,7 @@ public:
    */
   vertex_t *create_vertex(const point_t &pos) {
     auto v = mesh_.make<vertex_t>(pos);
-    mesh_.addVertex(v);
+    mesh_.add_vertex(v);
     return v;
   }
 
@@ -263,10 +263,10 @@ public:
     \param verts The vertices defining the cell.
    */
   cell_t *create_cell(std::initializer_list<vertex_t *> verts) {
-    assert(verts.size() == burton_mesh_types_t::verticesPerCell() &&
+    assert(verts.size() == burton_mesh_types_t::vertices_per_cell() &&
         "vertices size mismatch");
     auto c = mesh_.make<cell_t>();
-    mesh_.initCell(c, verts);
+    mesh_.init_cell(c, verts);
     return c;
   }
 
@@ -289,55 +289,55 @@ public:
           0.5 * (vs[3]->coordinates()[1] - vs[0]->coordinates()[1]);
 
       auto cv = dual_mesh_.make<vertex_t>(cp);
-      cv->setRank(0);
+      cv->set_rank(0);
 
       auto v0 = dual_mesh_.make<vertex_t>(vs[0]->coordinates());
-      v0->setRank(1);
+      v0->set_rank(1);
 
       auto v1 = dual_mesh_.make<vertex_t>(vs[3]->coordinates());
-      v1->setRank(1);
+      v1->set_rank(1);
 
       auto v2 = dual_mesh_.make<vertex_t>(vs[1]->coordinates());
-      v2->setRank(1);
+      v2->set_rank(1);
 
       auto v3 = dual_mesh_.make<vertex_t>(vs[2]->coordinates());
-      v3->setRank(1);
+      v3->set_rank(1);
 
       auto w1 = dual_mesh_.make<wedge_t>();
-      dual_mesh_.initCell(w1, {v0, v1, cv});
-      c->addWedge(w1);
+      dual_mesh_.init_cell(w1, {v0, v1, cv});
+      c->add_wedge(w1);
 
       auto w2 = dual_mesh_.make<wedge_t>();
-      dual_mesh_.initCell(w2, {cv, v1, v3});
-      c->addWedge(w2);
+      dual_mesh_.init_cell(w2, {cv, v1, v3});
+      c->add_wedge(w2);
 
       auto w3 = dual_mesh_.make<wedge_t>();
-      dual_mesh_.initCell(w3, {v2, cv, v3});
-      c->addWedge(w3);
+      dual_mesh_.init_cell(w3, {v2, cv, v3});
+      c->add_wedge(w3);
 
       auto w4 = dual_mesh_.make<wedge_t>();
-      dual_mesh_.initCell(w4, {v0, cv, v2});
-      c->addWedge(w4);
+      dual_mesh_.init_cell(w4, {v0, cv, v2});
+      c->add_wedge(w4);
 
       auto c1 = dual_mesh_.make<corner_t>();
-      c1->addWedge(w1);
-      c1->addWedge(w4);
-      c->addCorner(c1);
+      c1->add_wedge(w1);
+      c1->add_wedge(w4);
+      c->add_corner(c1);
 
       auto c2 = dual_mesh_.make<corner_t>();
-      c2->addWedge(w1);
-      c2->addWedge(w2);
-      c->addCorner(c2);
+      c2->add_wedge(w1);
+      c2->add_wedge(w2);
+      c->add_corner(c2);
 
       auto c3 = dual_mesh_.make<corner_t>();
-      c3->addWedge(w2);
-      c3->addWedge(w3);
-      c->addCorner(c3);
+      c3->add_wedge(w2);
+      c3->add_wedge(w3);
+      c->add_corner(c3);
 
       auto c4 = dual_mesh_.make<corner_t>();
-      c4->addWedge(w3);
-      c4->addWedge(w4);
-      c->addCorner(c4);
+      c4->add_wedge(w3);
+      c4->add_wedge(w4);
+      c->add_corner(c4);
     }
 
     dual_mesh_.init();

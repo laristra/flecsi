@@ -7,22 +7,22 @@
 using namespace std;
 using namespace flexi;
 
-class Vertex : public MeshEntity<0>{
+class Vertex : public mesh_entity<0>{
 public:
 
 };
 
-class Edge : public MeshEntity<1>{
+class Edge : public mesh_entity<1>{
 public:
 
 };
 
-class Face : public MeshEntity<1>{
+class Face : public mesh_entity<1>{
 public:
 
 };
 
-class Cell : public MeshEntity<2>{
+class Cell : public mesh_entity<2>{
 public:
 
 };
@@ -33,9 +33,9 @@ public:
 
   using Float = double;
 
-  using EntityTypes = std::tuple<Vertex, Edge, Cell>;
+  using entity_types = std::tuple<Vertex, Edge, Cell>;
 
-  using TraversalPairs = 
+  using traversal_pairs = 
     std::tuple<std::pair<Vertex, Edge>,
                std::pair<Vertex, Cell>,
                std::pair<Edge, Vertex>,
@@ -43,7 +43,7 @@ public:
                std::pair<Cell, Vertex>,
                std::pair<Cell, Edge>>;
 
-  static size_t numEntitiesPerCell(size_t dim){
+  static size_t num_entities_per_cell(size_t dim){
     switch(dim){
     case 0:
       return 4;
@@ -56,11 +56,11 @@ public:
     }
   }
 
-  static constexpr size_t verticesPerCell(){
+  static constexpr size_t vertices_per_cell(){
     return 4;
   }
   
-  static size_t numVerticesPerEntity(size_t dim){
+  static size_t num_vertices_per_entity(size_t dim){
     switch(dim){
     case 0:
       return 1;
@@ -73,7 +73,7 @@ public:
     }
   }
   
-  static void createEntities(size_t dim, std::vector<flexi::id_t>& e,
+  static void create_entities(size_t dim, std::vector<flexi::id_t>& e,
                              flexi::id_t *v){
     assert(dim = 1);
     assert(e.size() == 8);
@@ -92,7 +92,7 @@ public:
   }
 };
 
-using TestMesh = MeshTopology<TestMesh2dType>;
+using TestMesh = mesh_topology<TestMesh2dType>;
 
 TEST(mesh_topology, traversal) {
 
@@ -108,7 +108,7 @@ TEST(mesh_topology, traversal) {
     for(size_t i = 0; i < width + 1; ++i){
       auto v = mesh->make<Vertex>();
       vs.push_back(v);
-      mesh->addVertex(v); 
+      mesh->add_vertex(v); 
     }
   }
 
@@ -118,7 +118,7 @@ TEST(mesh_topology, traversal) {
     for(size_t i = 0; i < width; ++i){
       auto c = mesh->make<Cell>();
 
-      mesh->initCell(c,
+      mesh->init_cell(c,
                     {vs[i + j * width1],
                      vs[i + (j + 1) * width1],
                      vs[i + 1 + j * width1],
