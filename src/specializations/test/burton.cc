@@ -36,7 +36,7 @@ protected:
     for(size_t j = 0; j < height + 1; ++j){
       for(size_t i = 0; i < width + 1; ++i){
 	auto v = b.create_vertex({double(i), double(j)});
-	v->setRank(1);
+	v->set_rank(1);
 	vs.push_back(v);
       }
     }
