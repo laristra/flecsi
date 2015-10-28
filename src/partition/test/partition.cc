@@ -16,6 +16,7 @@
 #include <cinchtest.h>
 #include <iostream>
 #include <metis.h>
+#include <scotch.h>
 #include <vector>
 
 // user includes
@@ -24,6 +25,10 @@
 // put the flexi namespace up front
 using namespace flexi;
 using namespace std;
+
+// explicitly use some stuff
+using std::endl;
+using std::vector;
 
 //=============================================================================
 //! \brief Fixture for testing the partitioner.
@@ -55,7 +60,7 @@ protected:
   virtual void SetUp() {
 
     // create the individual vertices
-    std::vector<vertex_t*> vs;
+    vector<vertex_t*> vs;
     
     for(size_t j = 0; j < height + 1; ++j){
       for(size_t i = 0; i < width + 1; ++i){
@@ -89,6 +94,54 @@ protected:
   //---------------------------------------------------------------------------
   virtual void TearDown() { }
 
+
+  //---------------------------------------------------------------------------
+  //! \brief run a final check on the results
+  //!
+  //! This function basically just dumps the output
+  //!  
+  //! \param[in] nparts    The number of partitions
+  //! \param[in] cell_part The new cell partitioning
+  //! \param[in] vert_part The new vertex partitioning
+  //---------------------------------------------------------------------------
+
+  template < typename index_t >
+  void check( size_t nparts, const index_t * cell_part, const index_t * vert_part ) {
+
+    // check stuff on a cell basis
+    vector<index_t> cells_per_part( nparts, 0 );
+
+    for ( auto c : mesh_.cells() ) {
+      CINCH_CAPTURE() << "----   cell: " << std::setw(4) << c->id() 
+                      << ", partition: "  << std::setw(2) << cell_part[ c->id() ] 
+                      << endl;
+      for ( auto v : mesh_.vertices(c) ) {
+        CINCH_CAPTURE() << "++++ vertex: " << std::setw(4) << v->id() 
+                        << ", partition: " << std::setw(2) << vert_part[ v->id() ] 
+                        << endl;
+      }
+      cells_per_part[ cell_part[ c->id() ] ] ++;
+      CINCH_CAPTURE() << endl;
+    }
+    
+    
+    // check stuff on a node basis
+    vector<index_t> verts_per_part( nparts, 0 );
+    
+    for ( auto v : mesh_.vertices() )
+      verts_per_part[ vert_part[ v->id() ] ] ++;
+    
+    // print partition info
+    for ( index_t i=0; i<nparts; i++ ) {
+      CINCH_CAPTURE() << "partition: " << i+1 << endl;
+      CINCH_CAPTURE() << "++++ number of cells: " << cells_per_part[i] << endl;
+      CINCH_CAPTURE() << "++++ number of verts: " << verts_per_part[i] << endl;
+      CINCH_CAPTURE() << endl;
+    }
+    
+  }
+    
+    
   //---------------------------------------------------------------------------
   // Data members
   //---------------------------------------------------------------------------
@@ -104,18 +157,21 @@ protected:
 };
 
 //=============================================================================
-//! \brief A simple partion test
+//! \brief A simple partion test using metis
 //=============================================================================
-TEST_F(partition, simple) {
-
-  using std::endl;
-  using std::vector;
+TEST_F(partition, metis) {
 
   // get metis' index/real type ( metis has no namespace, so all
   // defines provided by metis.h are in the default namespace.
   using index_t = ::idx_t;
-  using real_t  = ::real_t;
 
+  // The number of parts to partition the mesh.
+  index_t nparts = 4;
+
+
+  //---------------------------------------------------------------------------
+  // Extract the cell / vertex information
+  //---------------------------------------------------------------------------
 
   // get the number of cells in the mesh
   index_t num_cells = mesh_.num_cells();
@@ -139,16 +195,19 @@ TEST_F(partition, simple) {
     }
     eptr[ c->id() + 1 ] = vert_cnt;
   }
-  
+
+  //---------------------------------------------------------------------------
+  // Partition with Metis
+  //---------------------------------------------------------------------------
+
+  // prepare metis input / output
   index_t ncommon = 2; // Specifies the number of common nodes that
                        // two elements must have in order to put an
                        // edge between them in the dual graph
 
-  index_t nparts = 4;  // The number of parts to partition the mesh.
-
   index_t objval;
-  vector<index_t> epart( num_cells );
-  vector<index_t> npart( num_verts );
+  vector<index_t> cell_part( num_cells );
+  vector<index_t> vert_part( num_verts );
 
   CINCH_CAPTURE() << "Partitioning...";
 
@@ -166,8 +225,8 @@ TEST_F(partition, simple) {
                                   nullptr, 
                                   nullptr, 
                                   &objval,
-                                  epart.data(), 
-                                  npart.data() );
+                                  cell_part.data(), 
+                                  vert_part.data() );
 
 #else
   // subdivide based on the nodes
@@ -181,49 +240,151 @@ TEST_F(partition, simple) {
                                    nullptr, 
                                    nullptr, 
                                    &objval,
-                                   epart.data(), 
-                                   npart.data() );
+                                   cell_part.data(), 
+                                   vert_part.data() );
 #endif
-
-  CINCH_CAPTURE() << "done." << endl;
 
   ASSERT_EQ( ret, METIS_OK );
 
-  CINCH_CAPTURE() << "edgecuts = " << objval << endl;
+  CINCH_CAPTURE() << "done." << endl;
 
-  // check stuff on a cell basis
-  vector<index_t> cells_per_part( nparts, 0 );
+
+  //---------------------------------------------------------------------------
+  // Final Checks
+  //---------------------------------------------------------------------------
+
+  check( nparts, cell_part.data(), vert_part.data() );
+
+
+  ASSERT_TRUE(CINCH_EQUAL_BLESSED("metis.blessed"));
+    
+} // TEST_F
+
+
+
+
+//=============================================================================
+//! \brief A simple partion test using scotch
+//=============================================================================
+TEST_F(partition, scotch) {
+
+
+
+  // get scotch' index/real type ( metis has no namespace, so all
+  // defines provided by scotch.h are in the default namespace.
+  using index_t = ::SCOTCH_Num;
+
+  // The number of parts to partition the mesh.
+  index_t nparts = 4;
+
+
+  //---------------------------------------------------------------------------
+  // create cell adjacency list
+  //---------------------------------------------------------------------------
+
+  // get the number of cells in the mesh
+  index_t num_cells = mesh_.num_cells();
+  index_t num_verts = mesh_.num_vertices();
+
+  // create storage for element info
+  vector<index_t> cell_idx( num_cells+1 );
+  vector<index_t> cell_neigh;
+
+  // now create the adjacency list
+  index_t neigh_cnt( 0 );
+  cell_idx[0] = 0;
+
+#if 1
+
+  for ( auto c : mesh_.cells() ) 
+    for ( auto e : mesh_.edges(c) ) {
+      // 2d specific, only add the non-c cell
+      auto neigh =  mesh_.cells(e).toVec();
+      if ( neigh[1] == c ) 
+        cell_neigh.push_back( neigh[0]->id() );
+      else if ( neigh[0] == c )
+        cell_neigh.push_back( neigh[1]->id() );
+      else
+        FAIL();
+    }
+
+#else
 
   for ( auto c : mesh_.cells() ) {
-    CINCH_CAPTURE() << "----   cell: " << std::setw(4) << c->id() 
-              << ", partition: "  << std::setw(2) << epart[ c->id() ] 
-              << endl;
-    for ( auto v : mesh_.vertices(c) ) {
-      CINCH_CAPTURE() << "++++ vertex: " << std::setw(4) << v->id() 
-                << ", partition: " << std::setw(2) << npart[ v->id() ] 
-                << endl;
+    for ( auto neigh : mesh_.cells(c) ) {
+      cell_neigh.push_back( neigh->id() );
+      neigh_cnt++;
     }
-    cells_per_part[ epart[ c->id() ] ] ++;
-    CINCH_CAPTURE() << endl;
+    cell_idx[ c->id() + 1 ] = neigh_cnt;
   }
+
+#endif
+
+  //---------------------------------------------------------------------------
+  // Partition with Scotch
+  //---------------------------------------------------------------------------
+
+  // build a scotch graph
+  CINCH_CAPTURE() << "Partitioning...";
+
+  SCOTCH_Graph  graph_data;
+  SCOTCH_graphInit(&graph_data);
+
+  auto ret =
+    SCOTCH_graphBuild( &graph_data,
+                       0,                  /* baseval; 0 to n -1 numbering */
+                       num_cells,          /* vertnbr */
+                       cell_idx.data(),    /* verttab */
+                       NULL,               /* vendtab: verttab + 1 or NULL */
+                       NULL,               /* velotab: vertex weights */
+                       NULL,               /* vlbltab; vertex labels */
+                       neigh_cnt,         /* edgenbr */
+                       cell_neigh.data(),  /* edgetab */
+                       NULL );             /* edlotab */
+  
+  ASSERT_EQ( ret, 0 );
+
+  // check it
+  ret = SCOTCH_graphCheck(&graph_data);
+  ASSERT_EQ( ret, 0 );
+  
+  // now partition
+  vector<index_t> cell_part( num_cells );
+
+  SCOTCH_Strat  strat_data;
+  SCOTCH_stratInit(&strat_data);
+
+  ret = SCOTCH_graphPart(&graph_data, nparts, &strat_data, cell_part.data());
+  ASSERT_EQ( ret, 0 );
+
+  // clean up
+  SCOTCH_stratExit(&strat_data);
+  SCOTCH_graphExit(&graph_data);
+
+
+  // decide on who owns the vertices
+  vector<index_t> vert_part( num_verts );
+
+  for ( auto v : mesh_.vertices() ) {
+    auto cells = mesh_.cells(v);
+    index_t owner_id( cells.begin()->id() );
+    for ( auto c : cells ) 
+      owner_id = std::min( (index_t)c->id(), owner_id );
+    vert_part[ v->id() ] = cell_part[ owner_id ];
+  }
+
+  CINCH_CAPTURE() << "done." << endl;
+
+
+  //---------------------------------------------------------------------------
+  // Final Checks
+  //---------------------------------------------------------------------------
+
+  check( nparts, cell_part.data(), vert_part.data() );
   
 
-  // check stuff on a node basis
-  vector<index_t> verts_per_part( nparts, 0 );
-
-  for ( auto v : mesh_.vertices() )
-    verts_per_part[ npart[ v->id() ] ] ++;
-
-  // print partition info
-  for ( index_t i=0; i<nparts; i++ ) {
-    CINCH_CAPTURE() << "partition: " << i+1 << endl;
-    CINCH_CAPTURE() << "++++ number of cells: " << cells_per_part[i] << endl;
-    CINCH_CAPTURE() << "++++ number of verts: " << verts_per_part[i] << endl;
-    CINCH_CAPTURE() << endl;
-  }
+  ASSERT_TRUE(CINCH_EQUAL_BLESSED("scotch.blessed"));
   
-
-  ASSERT_TRUE(CINCH_EQUAL_BLESSED("partition.blessed"));
     
 } // TEST_F
 
