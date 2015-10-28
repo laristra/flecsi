@@ -16,8 +16,9 @@ set(partition_HEADERS
 
 cinch_add_unit(partition
   SOURCES test/partition.cc
-  INPUT   test/metis.blessed
-  INPUT   test/scotch.blessed
+  INPUTS  test/metis_mesh.blessed 
+          test/metis.blessed 
+          test/scotch.blessed
   LIBRARIES ${PARTITION_LIBRARIES}
 )
 endif()

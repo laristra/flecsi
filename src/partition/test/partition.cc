@@ -534,7 +534,7 @@ TEST_F(partition, morton) {
   check( cell_part.data(), vert_part.data() );
   
 
-  ASSERT_TRUE(CINCH_EQUAL_BLESSED("scotch.blessed"));
+  ASSERT_TRUE(CINCH_EQUAL_BLESSED("morton.blessed"));
   
     
 } // TEST_F

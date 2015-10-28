@@ -23,11 +23,11 @@ set(mesh_SOURCES
 
 cinch_add_unit(traversal
   SOURCES test/traversal.cc
-  INPUT test/traversal.blessed)
+  INPUTS test/traversal.blessed)
 
 cinch_add_unit(dual
   SOURCES test/dual.cc
-  INPUT test/dual.blessed)
+  INPUTS test/dual.blessed)
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options
