@@ -41,7 +41,11 @@ int32_t read_mesh(const std::string &name, mesh_t &m) {
   io_base_t *io = io_factory_t::instance().create(suffix);
 
   // call the io write function
-  return io->read(name, m);
+  auto ret = io->read(name, m);
+
+  // clean up and return
+  delete io;
+  return ret;
 }
 
 /*!
@@ -60,7 +64,11 @@ int32_t write_mesh(const std::string &name, mesh_t &m) {
   io_base_t *io = io_factory_t::instance().create(suffix);
 
   // call the io write function
-  return io->write(name, m);
+  auto ret = io->write(name, m);
+
+  // clean up and return
+  delete io;
+  return ret;
 }
 
 /*!
