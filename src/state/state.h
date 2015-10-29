@@ -43,15 +43,14 @@ const bitfield_t::field_type_t persistent =
  * struct default_state_meta_data_t
  *----------------------------------------------------------------------------*/
 
-// FIXME: this shouldn't be here
-struct default_state_meta_data_t {
+struct default_state_user_meta_data_t {
 
   void initialize(const size_t & site_id_) {
     site_id = site_id_;
   } // initialize
 
   size_t site_id;
-}; // struct default_state_meta_data_t
+}; // struct default_state_user_meta_data_t
 
 /*----------------------------------------------------------------------------*
  * class state_t
@@ -62,20 +61,20 @@ struct default_state_meta_data_t {
   \brief state provides...
  */
 
-template<typename meta_data_t = default_state_meta_data_t,
+template<typename user_meta_data_t = default_state_user_meta_data_t,
   template<typename> typename storage_policy_t =
     default_state_storage_policy_t>
-class state_t : public storage_policy_t<meta_data_t>
+class state_t : public storage_policy_t<user_meta_data_t>
 {
 public:
 
-  using sp_t = storage_policy_t<meta_data_t>;
+  using sp_t = storage_policy_t<user_meta_data_t>;
 
   template<typename T>
   using accessor_t = typename sp_t::template accessor_t<T>;
 
   enum class attribute {
-    persistent = 0x01
+    persistent = 0
   }; // enum class attribute
 
   //! Default constructor
@@ -100,9 +99,9 @@ public:
   } // accessor
 
   template<size_t NS = static_cast<size_t>(state_name_space_t::user)>
-  meta_data_t & meta_data(const_string_t key) {
+  user_meta_data_t & meta_data(const_string_t key) {
     return sp_t::template meta_data<NS>(key);
-  } // meta_data
+  } // user_meta_data
 
   template<typename T,
     size_t NS = static_cast<size_t>(state_name_space_t::user)>

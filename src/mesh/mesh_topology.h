@@ -122,9 +122,10 @@ private:
   \brief ...
  */
 
-template <size_t D> class mesh_entity : public mesh_entity_base {
+template <size_t D, size_t T = 0> class mesh_entity : public mesh_entity_base {
 public:
   static const size_t dimension = D;
+  static const size_t type = T;
 
   mesh_entity() {}
 
