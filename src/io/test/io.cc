@@ -48,9 +48,9 @@ protected:
 	// go over vertices counter clockwise to define cell
 	auto c = 
 	  b.create_cell({vs[i + j * width1],
-		vs[i + 1 + j * width1],
-		vs[i + 1 + (j + 1) * width1],
-		vs[i + (j + 1) * width1]});
+            vs[i + 1 + j * width1],
+            vs[i + 1 + (j + 1) * width1],
+            vs[i + (j + 1) * width1]});
       }
     }
 
