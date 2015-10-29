@@ -15,8 +15,15 @@
 // system includes
 #include <cinchtest.h>
 #include <iostream>
-#include <metis.h>
-#include <scotch.h>
+
+#ifdef HAVE_METIS
+#  include <metis.h>
+#endif
+
+#ifdef HAVE_SCOTCH
+#  include <scotch.h>
+#endif
+
 #include <vector>
 
 // user includes
@@ -24,9 +31,9 @@
 
 // put the flexi namespace up front
 using namespace flexi;
-using namespace std;
 
 // explicitly use some stuff
+using std::cout;
 using std::endl;
 using std::vector;
 
@@ -43,9 +50,6 @@ protected:
   
   //! \brief the mesh type
   using mesh_t = burton_mesh_t;
-
-  //! \brief the real type
-  using real_t = mesh_t::real_t;
 
   //! \brief the vertex type
   using vertex_t = mesh_t::vertex_t;
@@ -112,7 +116,7 @@ protected:
 
     for ( auto c : mesh_.cells() ) {
       CINCH_CAPTURE() << "----   cell: " << std::setw(4) << c->id() 
-                      << ", partition: "  << std::setw(2) << cell_part[ c->id() ] 
+                      << ", partition: " << std::setw(2) << cell_part[ c->id() ] 
                       << endl;
       for ( auto v : mesh_.vertices(c) ) {
         CINCH_CAPTURE() << "++++ vertex: " << std::setw(4) << v->id() 
@@ -171,10 +175,13 @@ protected:
     index_t neigh_cnt( 0 );
 
     for ( auto c : mesh_.cells() ) {
+      cout << c->id();
       for ( auto neigh : mesh_.cells(c) ) {
+        cout << " " << neigh->id();
         cell_neigh.push_back( neigh->id() );
         neigh_cnt++;
       }
+      cout << endl;
       cell_idx[ c->id() + 1 ] = neigh_cnt;
     }
     
@@ -220,9 +227,13 @@ protected:
 };
 
 
+#ifdef HAVE_METIS
 
 //=============================================================================
 //! \brief A simple partion test using metis mesh partitioning
+//!
+//! In this version, you give METIS an actual mesh, i.e., the vertex indices
+//! that comprise each cell, and METIS creates teh graph for you and partitions.
 //=============================================================================
 TEST_F(partition, metis_mesh) {
 
@@ -328,6 +339,11 @@ TEST_F(partition, metis_mesh) {
 
 //=============================================================================
 //! \brief A simple partion test using standard metis graph partitioning
+//!
+//! This version is more basic, and similar to SCOTCH.  You just give it the 
+//! graph of what you want to partition, and METIS partitions the graph vertices 
+//! for you.  So in this case, each vertex is a cell, and the graph is the 
+//! connectivity between cells (i.e., neighbors ).
 //=============================================================================
 TEST_F(partition, metis) {
 
@@ -404,7 +420,9 @@ TEST_F(partition, metis) {
 } // TEST_F
 
 
+#endif
 
+#ifdef HAVE_SCOTCH
 
 //=============================================================================
 //! \brief A simple partion test using scotch
@@ -499,47 +517,10 @@ TEST_F(partition, scotch) {
     
 } // TEST_F
 
-
-#if 0
-
-//=============================================================================
-//! \brief A simple partion test using morton ordering
-//=============================================================================
-TEST_F(partition, morton) {
-
-
-  // use large integers
-  using index_t = uint64_t;
-
-
-  //---------------------------------------------------------------------------
-  // get the bounding box
-  //---------------------------------------------------------------------------
-  point_t min_pt, max_pt;
-  bounding_box( min_pt, max_pt );
-
-  morton( xyz, bbox, depth, id )
-
-  // decide on who owns the vertices
-  vector<index_t> vert_part( num_verts );
-  partition_vertices( cell_part.data(), vert_part.data() );
-
-  CINCH_CAPTURE() << "done." << endl;
-
-
-  //---------------------------------------------------------------------------
-  // Final Checks
-  //---------------------------------------------------------------------------
-
-  check( cell_part.data(), vert_part.data() );
-  
-
-  ASSERT_TRUE(CINCH_EQUAL_BLESSED("morton.blessed"));
-  
-    
-} // TEST_F
-
 #endif
+
+
+
 
 /*----------------------------------------------------------------------------*
  * Cinch test Macros
