@@ -146,15 +146,15 @@ public:
     return state_.accessor<T>(key);
   } // access_state_
 
-  decltype(auto) state_attributes_(const const_string_t && key) {
-    return state_.meta_data<>((key)).attributes;
-  } // state_attribtutes_
-
 /*!
   \brief Return the attributes of a state quantity
  */
 #define state_attributes(mesh, key) \
   (mesh).state_attributes_((key))
+
+  decltype(auto) state_attributes_(const const_string_t && key) {
+    return state_.meta_data<>((key)).attributes;
+  } // state_attribtutes_
 
   /*--------------------------------------------------------------------------*
    * FIXME: Other crap
