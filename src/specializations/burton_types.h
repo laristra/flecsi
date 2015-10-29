@@ -58,7 +58,7 @@ struct burton_mesh_types_t {
    * class burton_vertex_t
    *--------------------------------------------------------------------------*/
 
-  class burton_vertex_t : public MeshEntity<0> {
+  class burton_vertex_t : public mesh_entity<0> {
   public:
     //! Constructor
     burton_vertex_t() : precedence_(0) {}
@@ -67,11 +67,11 @@ struct burton_mesh_types_t {
     burton_vertex_t(const point_t &coordinates)
         : precedence_(0), coordinates_(coordinates) {}
 
-    void setRank(uint8_t rank) { setInfo(rank); }
+    void set_rank(uint8_t rank) { set_info(rank); }
 
     uint64_t precedence() const { return 1 << (63 - info()); }
 
-    void setCoordinates(const point_t &coordinates) {
+    void set_coordinates(const point_t &coordinates) {
       coordinates_ = coordinates;
     }
 
@@ -94,7 +94,7 @@ struct burton_mesh_types_t {
             geometry and state associated with mesh edges.
    */
 
-  struct burton_edge_t : public MeshEntity<1> {}; // struct burton_edge_t
+  struct burton_edge_t : public mesh_entity<1> {}; // struct burton_edge_t
 
   class burton_corner_t;
   class burton_wedge_t;
@@ -109,19 +109,19 @@ struct burton_mesh_types_t {
             geometry and state associated with mesh cells.
    */
 
-  class burton_cell_t : public MeshEntity<2> {
+  class burton_cell_t : public mesh_entity<2> {
   public:
-    void addCorner(burton_corner_t *c) { corners_.add(c); }
+    void add_corner(burton_corner_t *c) { corners_.add(c); }
 
-    EntityGroup<burton_corner_t> &corners() { return corners_; } // corners
+    entity_group<burton_corner_t> &corners() { return corners_; } // corners
 
-    void addWedge(burton_wedge_t *w) { wedges_.add(w); }
+    void add_wedge(burton_wedge_t *w) { wedges_.add(w); }
 
-    EntityGroup<burton_wedge_t> &wedges() { return wedges_; } // wedges
+    entity_group<burton_wedge_t> &wedges() { return wedges_; } // wedges
 
   private:
-    EntityGroup<burton_corner_t> corners_;
-    EntityGroup<burton_wedge_t> wedges_;
+    entity_group<burton_corner_t> corners_;
+    entity_group<burton_wedge_t> wedges_;
 
   }; // class burton_cell_t
 
@@ -135,9 +135,9 @@ struct burton_mesh_types_t {
             geometry and state associated with mesh wedges.
    */
 
-  class burton_wedge_t : public MeshEntity<2> {
+  class burton_wedge_t : public mesh_entity<2> {
   public:
-    void setCorner(burton_corner_t *corner) { corner_ = corner; }
+    void set_corner(burton_corner_t *corner) { corner_ = corner; }
 
     burton_corner_t *corner() { return corner_; }
 
@@ -159,17 +159,17 @@ struct burton_mesh_types_t {
             geometry and state associated with mesh corners.
    */
 
-  class burton_corner_t : public MeshEntity<0> {
+  class burton_corner_t : public mesh_entity<0> {
   public:
-    void addWedge(burton_wedge_t *w) {
+    void add_wedge(burton_wedge_t *w) {
       wedges_.add(w);
-      w->setCorner(this);
+      w->set_corner(this);
     }
 
-    EntityGroup<burton_wedge_t> &wedges() { return wedges_; } // wedges
+    entity_group<burton_wedge_t> &wedges() { return wedges_; } // wedges
 
   private:
-    EntityGroup<burton_wedge_t> wedges_;
+    entity_group<burton_wedge_t> wedges_;
 
   }; // class burton_corner_t
 
@@ -177,10 +177,10 @@ struct burton_mesh_types_t {
    * Specify mesh parameterizations.
    *--------------------------------------------------------------------------*/
 
-  using EntityTypes = 
+  using entity_types = 
     std::tuple<burton_vertex_t, burton_edge_t, burton_cell_t>;
 
-  using TraversalPairs = 
+  using traversal_pairs = 
     std::tuple<std::pair<burton_vertex_t, burton_edge_t>,
                std::pair<burton_vertex_t, burton_cell_t>,
                std::pair<burton_edge_t, burton_vertex_t>,
@@ -192,7 +192,7 @@ struct burton_mesh_types_t {
    * FIXME
    *--------------------------------------------------------------------------*/
 
-  static size_t numEntitiesPerCell(size_t dim) {
+  static size_t num_entities_per_cell(size_t dim) {
     switch (dim) {
     case 0:
       return 4;
@@ -209,13 +209,13 @@ struct burton_mesh_types_t {
    * FIXME
    *--------------------------------------------------------------------------*/
 
-  static constexpr size_t verticesPerCell() { return 4; } // verticesPerCell
+  static constexpr size_t vertices_per_cell() { return 4; } // verticesPerCell
 
   /*--------------------------------------------------------------------------*
    * FIXME
    *--------------------------------------------------------------------------*/
 
-  static size_t numVerticesPerEntity(size_t dim) {
+  static size_t num_vertices_per_entity(size_t dim) {
     switch (dim) {
     case 0:
       return 1;
@@ -228,7 +228,7 @@ struct burton_mesh_types_t {
     } // switch
   }   // numVerticesPerEntity
 
-  static void createEntities(
+  static void create_entities(
     size_t dim, std::vector<flexi::id_t> &e, id_t *v) {
     assert(dim = 1);
     assert(e.size() == 8);
@@ -263,10 +263,10 @@ public:
 
   using burton_wedge_t = burton_mesh_types_t::burton_wedge_t;
 
-  using EntityTypes =
+  using entity_types =
       std::tuple<burton_vertex_t, burton_edge_t, burton_wedge_t>;
 
-  using TraversalPairs = 
+  using traversal_pairs = 
     std::tuple<std::pair<burton_vertex_t, burton_edge_t>,
                std::pair<burton_vertex_t, burton_wedge_t>,
                std::pair<burton_edge_t, burton_vertex_t>,
@@ -274,7 +274,7 @@ public:
                std::pair<burton_wedge_t, burton_vertex_t>,
                std::pair<burton_wedge_t, burton_edge_t>>;
 
-  static size_t numEntitiesPerCell(size_t dim) {
+  static size_t num_entities_per_cell(size_t dim) {
     switch (dim) {
     case 0:
       return 3;
@@ -287,9 +287,9 @@ public:
     }
   }
 
-  static constexpr size_t verticesPerCell() { return 3; }
+  static constexpr size_t vertices_per_cell() { return 3; }
 
-  static size_t numVerticesPerEntity(size_t dim) {
+  static size_t num_vertices_per_entity(size_t dim) {
     switch (dim) {
     case 0:
       return 1;
@@ -302,19 +302,19 @@ public:
     }
   }
 
-  static void createEntities(
+  static void create_entities(
     size_t dim, std::vector<flexi::id_t> &e, id_t *v) {
     assert(dim = 1);
     assert(e.size() == 6);
 
     e[0] = v[0];
-    e[1] = v[2];
+    e[1] = v[1];
 
     e[2] = v[1];
-    e[3] = v[3];
+    e[3] = v[2];
 
     e[4] = v[0];
-    e[5] = v[1];
+    e[5] = v[2];
   }
 }; // burton_dual_mesh_t
 

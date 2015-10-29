@@ -35,16 +35,18 @@
 namespace flexi {
 
 /*----------------------------------------------------------------------------*
- * class MeshEntityBase
+ * class mesh_entity_base
  *----------------------------------------------------------------------------*/
 
 /*!
-  \class MeshEntityBase mesh_topology.h
-  \brief MeshEntityBase defines a base class for...
+  \class mesh_entity_base mesh_topology.h
+  \brief mesh_entity_base defines a base class for...
  */
 
-class MeshEntityBase {
+class mesh_entity_base {
 public:
+  virtual ~mesh_entity_base() {}
+
   /*!
     Return the id of this entity.
 
@@ -58,38 +60,38 @@ public:
   /*!
    */
 
-  static constexpr size_t getDim_(size_t meshDim, size_t dim) {
+  static constexpr size_t get_dim_(size_t meshDim, size_t dim) {
     return dim > meshDim ? meshDim : dim;
-  } // getDim_
+  } // get_dim_
 
-  template <class MT> static MeshEntityBase *create_(size_t dim, size_t id) {
+  template <class MT> static mesh_entity_base *create_(size_t dim, size_t id) {
     switch (dim) {
     case 0: {
-      using EntityType = typename std::tuple_element<getDim_(MT::dimension, 0),
-          typename MT::EntityTypes>::type;
+      using entity_type = typename std::tuple_element<get_dim_(MT::dimension, 0),
+          typename MT::entity_types>::type;
 
-      auto entity = new EntityType;
+      auto entity = new entity_type;
       entity->id_ = id;
       return entity;
     }
     case 1: {
-      using EntityType = typename std::tuple_element<getDim_(MT::dimension, 1),
-          typename MT::EntityTypes>::type;
-      auto entity = new EntityType;
+      using entity_type = typename std::tuple_element<get_dim_(MT::dimension, 1),
+          typename MT::entity_types>::type;
+      auto entity = new entity_type;
       entity->id_ = id;
       return entity;
     }
     case 2: {
-      using EntityType = typename std::tuple_element<getDim_(MT::dimension, 2),
-          typename MT::EntityTypes>::type;
-      auto entity = new EntityType;
+      using entity_type = typename std::tuple_element<get_dim_(MT::dimension, 2),
+          typename MT::entity_types>::type;
+      auto entity = new entity_type;
       entity->id_ = id;
       return entity;
     }
     case 3: {
-      using EntityType = typename std::tuple_element<getDim_(MT::dimension, 3),
-          typename MT::EntityTypes>::type;
-      auto entity = new EntityType;
+      using entity_type = typename std::tuple_element<get_dim_(MT::dimension, 3),
+          typename MT::entity_types>::type;
+      auto entity = new entity_type;
       entity->id_ = id;
       return entity;
     }
@@ -98,39 +100,42 @@ public:
     }
   }
 
-  template <class MT> friend class MeshTopology;
+  template <class MT> friend class mesh_topology;
 
 protected:
 
-  void setInfo(uint16_t info){
+  void set_info(uint16_t info){
     info_ = info;
   }
 
 private:
   id_t id_ : 48;
   uint16_t info_ : 16;
-}; // class MeshEntityBase
+}; // class mesh_entity_base
 
 /*----------------------------------------------------------------------------*
- * class MeshEntity
+ * class mesh_entity
  *----------------------------------------------------------------------------*/
 
 /*!
-  \class MeshEntity mesh_topology.h
+  \class mesh_entity mesh_topology.h
   \brief ...
  */
 
-template <size_t D> class MeshEntity : public MeshEntityBase {
+template <size_t D, size_t T = 0> class mesh_entity : public mesh_entity_base {
 public:
   static const size_t dimension = D;
+  static const size_t type = T;
 
-  MeshEntity() {}
-}; // class MeshEntity
+  mesh_entity() {}
 
-using EntityVec = std::vector<MeshEntityBase *>;
+  virtual ~mesh_entity() {}
+}; // class mesh_entity
+
+using entity_vec = std::vector<mesh_entity_base *>;
 
 /*----------------------------------------------------------------------------*
- * class EntityGroup
+ * class entity_group
  *----------------------------------------------------------------------------*/
 
 /*!
@@ -138,9 +143,9 @@ using EntityVec = std::vector<MeshEntityBase *>;
   \brief ...
  */
 
-template <class T> class EntityGroup {
+template <class T> class entity_group {
 public:
-  using Vec = std::vector<T *>;
+  using vec = std::vector<T *>;
 
   /*--------------------------------------------------------------------------*
    * class iterator_
@@ -148,7 +153,7 @@ public:
 
   class iterator_ {
   public:
-    iterator_(const Vec &entities, size_t index)
+    iterator_(const vec &entities, size_t index)
         : entities_(&entities), index_(index) {}
 
     iterator_ &operator++() {
@@ -171,18 +176,18 @@ public:
     bool operator!=(const iterator_ &itr) const { return index_ != itr.index_; }
 
   private:
-    const Vec *entities_;
+    const vec *entities_;
     size_t index_;
   }; // class iterator_
 
   //! Constructor
-  EntityGroup() {}
+  entity_group() {}
 
-  EntityGroup(Vec &&entities) : entities_(std::move(entities)) {}
+  entity_group(vec &&entities) : entities_(std::move(entities)) {}
 
   void add(T *ent) { entities_.push_back(ent); }
 
-  const Vec &getEntities() const { return entities_; }
+  const vec &get_entities() const { return entities_; }
 
   static constexpr size_t dim() { return T::dimension; }
 
@@ -191,16 +196,16 @@ public:
   iterator_ end() { return iterator_(entities_, entities_.size()); }
 
 private:
-  Vec entities_;
+  vec entities_;
 
-}; // class EntityGroup
+}; // class entity_group
 
 /*----------------------------------------------------------------------------*
- * class MeshTopologyBase
+ * class mesh_topology_base
  *----------------------------------------------------------------------------*/
 
 /*!
-  \class MeshTopologyBase mesh_topology.h
+  \class mesh_topology_base mesh_topology.h
   \brief...
  */
 
@@ -225,78 +230,78 @@ struct compute_connectivity_<0>{
   }
 };
 
-class MeshTopologyBase {
+class mesh_topology_base {
 public:
-  using IdVec = std::vector<id_t>;
+  using id_vec = std::vector<id_t>;
 
-  using ConnVec = std::vector<IdVec>;
+  using conn_vec = std::vector<id_vec>;
 
-  struct IdVecHash {
-    size_t operator()(const IdVec &v) const {
+  struct id_vec_hash {
+    size_t operator()(const id_vec &v) const {
       size_t h = 0;
       for (id_t id : v) {
         h |= id;
       }
       return h;
     }
-  }; // struct IdVecHash
+  }; // struct id_vec_hash
 
-  using IdVecMap = std::unordered_map<IdVec, id_t, IdVecHash>;
+  using id_vec_map = std::unordered_map<id_vec, id_t, id_vec_hash>;
 
-  using IndexVec = std::vector<size_t>;
+  using index_vec = std::vector<size_t>;
 
   /*--------------------------------------------------------------------------*
-   * class Connectivity
+   * class connectivity
    *--------------------------------------------------------------------------*/
 
-  class Connectivity {
+  class connectivity {
   public:
-    Connectivity() {}
+    connectivity() {}
 
     void clear() {
-      toIdVec_.clear();
-      fromIndexVec_.clear();
+      to_id_vec_.clear();
+      from_index_vec_.clear();
     }
 
-    void init() { fromIndexVec_.push_back(0); }
+    void init() { from_index_vec_.push_back(0); }
 
-    void init(const ConnVec &cv) {
-      assert(toIdVec_.empty() && fromIndexVec_.empty());
+    void init(const conn_vec &cv) {
+      assert(to_id_vec_.empty() && from_index_vec_.empty());
 
-      fromIndexVec_.push_back(0);
+      from_index_vec_.push_back(0);
 
       size_t n = cv.size();
 
       for (size_t i = 0; i < n; ++i) {
-        const IdVec &iv = cv[i];
+        const id_vec &iv = cv[i];
 
         for (id_t id : iv) {
-          toIdVec_.push_back(id);
+          to_id_vec_.push_back(id);
         }
 
-        fromIndexVec_.push_back(toIdVec_.size());
+        from_index_vec_.push_back(to_id_vec_.size());
       }
     } // init
 
     template <class MT>
-    void initCreate(IdVec &iv, EntityVec &ev, const ConnVec &cv, size_t dim) {
-      assert(toIdVec_.empty() && fromIndexVec_.empty());
+    void init_create(id_vec &iv, entity_vec &ev, const conn_vec &cv, size_t dim) {
+      assert(to_id_vec_.empty() && from_index_vec_.empty());
 
-      fromIndexVec_.push_back(0);
+      from_index_vec_.push_back(0);
 
       size_t n = cv.size();
 
       id_t maxId = 0;
 
       for (size_t i = 0; i < n; ++i) {
-        const IdVec &iv = cv[i];
+        const id_vec &iv = cv[i];
 
         for (id_t id : iv) {
           maxId = std::max(maxId, id);
-          toIdVec_.push_back(id);
+          to_id_vec_.push_back(id);
         } // for
 
-        fromIndexVec_.push_back(toIdVec_.size());
+        from_index_vec_.push_back(to_id_vec_.size());
       } // for
 
       id_t startId = ev.size();
@@ -304,114 +309,114 @@ public:
       ev.reserve(maxId + 1);
 
       for(id_t id = startId; id <= maxId; ++id){
-        ev.push_back(MeshEntityBase::create_<MT>(dim, id));
+        ev.push_back(mesh_entity_base::create_<MT>(dim, id));
         iv.push_back(id);
       }
 
-    } // initCreate
+    } // init_create
 
-    void resize(IndexVec &numConns) {
+    void resize(index_vec &num_conns) {
       clear();
 
-      size_t n = numConns.size();
-      fromIndexVec_.resize(n + 1);
+      size_t n = num_conns.size();
+      from_index_vec_.resize(n + 1);
 
       uint64_t size = 0;
 
       for (size_t i = 0; i < n; ++i) {
-        fromIndexVec_[i] = size;
-        size += numConns[i];
+        from_index_vec_[i] = size;
+        size += num_conns[i];
       }
 
-      fromIndexVec_[n] = size;
+      from_index_vec_[n] = size;
 
-      toIdVec_.resize(size);
-      std::fill(toIdVec_.begin(), toIdVec_.end(), 0);
+      to_id_vec_.resize(size);
+      std::fill(to_id_vec_.begin(), to_id_vec_.end(), 0);
     } // resize
 
-    void endFrom() { fromIndexVec_.push_back(toIdVec_.size()); } // endFrom
+    void endFrom() { from_index_vec_.push_back(to_id_vec_.size()); } // endFrom
 
-    void push(id_t id) { toIdVec_.push_back(id); } // push
+    void push(id_t id) { to_id_vec_.push_back(id); } // push
 
     void dump() {
-      for(size_t i = 1; i < fromIndexVec_.size(); ++i){
-        for(size_t j = fromIndexVec_[i - 1]; j < fromIndexVec_[i]; ++j){
-          std::cout << toIdVec_[j] << std::endl;
+      for(size_t i = 1; i < from_index_vec_.size(); ++i){
+        for(size_t j = from_index_vec_[i - 1]; j < from_index_vec_[i]; ++j){
+          std::cout << to_id_vec_[j] << std::endl;
         }
         std::cout << std::endl;
       }
 
       std::cout << "=== idVec" << std::endl;
-      for (id_t id : toIdVec_) {
+      for (id_t id : to_id_vec_) {
         std::cout << id << std::endl;
       } // for
 
       std::cout << "=== groupVec" << std::endl;
-      for (id_t id : fromIndexVec_) {
+      for (id_t id : from_index_vec_) {
         std::cout << id << std::endl;
       } // for
     }   // dump
 
-    const IdVec &getFromIndexVec() const { return fromIndexVec_; }
+    const id_vec &get_from_index_vec() const { return from_index_vec_; }
 
-    const IdVec& getEntities() const {
-      return toIdVec_;
+    const id_vec& get_entities() const {
+      return to_id_vec_;
     }
 
-    id_t *getEntities(size_t index) {
-      assert(index < fromIndexVec_.size() - 1);
-      return toIdVec_.data() + fromIndexVec_[index];
+    id_t *get_entities(size_t index) {
+      assert(index < from_index_vec_.size() - 1);
+      return to_id_vec_.data() + from_index_vec_[index];
     }
 
-    id_t *getEntities(size_t index, size_t &endIndex) {
-      assert(index < fromIndexVec_.size() - 1);
-      uint64_t start = fromIndexVec_[index];
-      endIndex = fromIndexVec_[index + 1] - start;
-      return toIdVec_.data() + start;
+    id_t *get_entities(size_t index, size_t &endIndex) {
+      assert(index < from_index_vec_.size() - 1);
+      uint64_t start = from_index_vec_[index];
+      endIndex = from_index_vec_[index + 1] - start;
+      return to_id_vec_.data() + start;
     }
 
-    bool empty() const { return toIdVec_.empty(); }
+    bool empty() const { return to_id_vec_.empty(); }
 
     void set(id_t fromId, id_t toId, size_t pos) {
-      toIdVec_[fromIndexVec_[fromId] + pos] = toId;
+      to_id_vec_[from_index_vec_[fromId] + pos] = toId;
     }
 
-    size_t fromSize() const { return fromIndexVec_.size() - 1; }
+    size_t from_size() const { return from_index_vec_.size() - 1; }
 
-    size_t toSize() const { return toIdVec_.size(); }
+    size_t to_size() const { return to_id_vec_.size(); }
 
-    void set(EntityVec &ev, ConnVec &conns) {
+    void set(entity_vec &ev, conn_vec &conns) {
       clear();
 
       size_t n = conns.size();
-      fromIndexVec_.resize(n + 1);
+      from_index_vec_.resize(n + 1);
 
       size_t size = 0;
 
       for (size_t i = 0; i < n; i++) {
-        fromIndexVec_[i] = size;
+        from_index_vec_[i] = size;
         size += conns[i].size();
       }
 
-      fromIndexVec_[n] = size;
+      from_index_vec_[n] = size;
 
-      toIdVec_.reserve(size);
+      to_id_vec_.reserve(size);
 
       for (size_t i = 0; i < n; ++i) {
-        const IdVec &conn = conns[i];
+        const id_vec &conn = conns[i];
         uint64_t m = conn.size();
 
         for (size_t j = 0; j < m; ++j) {
-          toIdVec_.push_back(ev[conn[j]]->id());
+          to_id_vec_.push_back(ev[conn[j]]->id());
         }
       }
     }
 
-    IdVec toIdVec_;
-    IdVec fromIndexVec_;
-  }; // class Connectivity
+    id_vec to_id_vec_;
+    id_vec from_index_vec_;
+  }; // class connectivity
 
-  virtual size_t numEntities(size_t dim) const = 0;
+  virtual size_t num_entities(size_t dim) const = 0;
 
   virtual void build(size_t dim) = 0;
 
@@ -419,37 +424,37 @@ public:
 
   virtual void init() = 0;
 
-  virtual size_t topologicalDimension() const = 0;
+  virtual size_t topological_dimension() const = 0;
 
-  virtual const Connectivity &getConnectivity(
+  virtual const connectivity &get_connectivity(
       size_t fromDim, size_t toDim) const = 0;
 
-  virtual Connectivity &getConnectivity(size_t fromDim, size_t toDim) = 0;
+  virtual connectivity &get_connectivity(size_t fromDim, size_t toDim) = 0;
 
-}; // MeshTopologyBase
+}; // mesh_topology_base
 
 /*----------------------------------------------------------------------------*
- * class MeshTopology
+ * class mesh_topology
  *----------------------------------------------------------------------------*/
 
 /*!
-  \class MeshTopology mesh_topology.h
+  \class mesh_topology mesh_topology.h
   \brief ...
  */
 
-template <class MT> class MeshTopology : public MeshTopologyBase {
+template <class MT> class mesh_topology : public mesh_topology_base {
 public:
-  using VertexType =
-      typename std::tuple_element<0, typename MT::EntityTypes>::type;
+  using vertex_type =
+      typename std::tuple_element<0, typename MT::entity_types>::type;
 
-  using EdgeType =
-      typename std::tuple_element<1, typename MT::EntityTypes>::type;
+  using edge_type =
+      typename std::tuple_element<1, typename MT::entity_types>::type;
 
-  using FaceType = typename std::tuple_element<MT::dimension - 1,
-      typename MT::EntityTypes>::type;
+  using face_type = typename std::tuple_element<MT::dimension - 1,
+      typename MT::entity_types>::type;
 
-  using CellType = typename std::tuple_element<MT::dimension,
-      typename MT::EntityTypes>::type;
+  using cell_type = typename std::tuple_element<MT::dimension,
+      typename MT::entity_types>::type;
 
   /*--------------------------------------------------------------------------*
    * class Iterator
@@ -457,19 +462,19 @@ public:
 
   class index_iterator {
   public:
-    index_iterator(MeshTopology &mesh, size_t dim)
-      : mesh_(mesh), entities_(&mesh.getIdVec_(dim)), dim_(dim), index_(0),
-        endIndex_(mesh.numEntities(dim)), level_(0) {}
+    index_iterator(mesh_topology &mesh, size_t dim)
+      : mesh_(mesh), entities_(&mesh.get_id_vec_(dim)), dim_(dim), index_(0),
+        endIndex_(mesh.num_entities(dim)), level_(0) {}
 
     index_iterator(index_iterator &itr, size_t dim)
         : mesh_(itr.mesh_), dim_(dim), level_(itr.level_ + 1) {
 
-      Connectivity &c = mesh_.getConnectivity(itr.dim_, dim_);
+      connectivity &c = mesh_.get_connectivity(itr.dim_, dim_);
       assert(!c.empty());
 
-      entities_ = &c.getEntities();
+      entities_ = &c.get_entities();
 
-      const IdVec &fv = c.getFromIndexVec();
+      const id_vec &fv = c.get_from_index_vec();
       if (level_ > 1) {
         size_t id = (*itr.entities_)[itr.index_];
 
@@ -491,18 +496,18 @@ public:
 
     size_t operator*() const { return (*entities_)[index_]; }
 
-    id_t *getEntities(size_t dim) {
-      Connectivity &c = mesh_.getConnectivity_(dim_, dim);
+    id_t *get_entities(size_t dim) {
+      connectivity &c = mesh_.get_connectivity_(dim_, dim);
       assert(!c.empty());
-      return c.getEntities(index_);
+      return c.get_entities(index_);
     }
 
   protected:
-    const IdVec &getEntities_() { return *entities_; }
+    const id_vec &get_entities_() { return *entities_; }
 
   private:
-    MeshTopology &mesh_;
-    const IdVec* entities_;
+    mesh_topology &mesh_;
+    const id_vec* entities_;
     size_t dim_;
     size_t index_;
     size_t endIndex_;
@@ -515,7 +520,7 @@ public:
 
   template <size_t D> class entity_index_iterator : public index_iterator {
   public:
-    entity_index_iterator(MeshTopology &mesh) : index_iterator(mesh, D) {}
+    entity_index_iterator(mesh_topology &mesh) : index_iterator(mesh, D) {}
 
     entity_index_iterator(index_iterator &itr) : index_iterator(itr, D) {}
 
@@ -532,13 +537,13 @@ public:
 
   template <size_t D> class iterator {
   public:
-    using EntityType =
-        typename std::tuple_element<D, typename MT::EntityTypes>::type;
+    using entity_type =
+        typename std::tuple_element<D, typename MT::entity_types>::type;
 
     iterator(const iterator &itr)
       : mesh_(itr.mesh_), entities_(itr.entities_), index_(itr.index_) {}
 
-    iterator(MeshTopology &mesh, const IdVec &entities, size_t index)
+    iterator(mesh_topology &mesh, const id_vec &entities, size_t index)
         : mesh_(mesh), 
           entities_(&entities),
           index_(index) {}
@@ -554,17 +559,17 @@ public:
       return *this;
     }
 
-    EntityType *operator*() { return mesh_.getEntity<D>((*entities_)[index_]); }
+    entity_type *operator*() { return mesh_.get_entity<D>((*entities_)[index_]); }
 
-    EntityType *operator->() { return mesh_.getEntity<D>((*entities_)[index_]); }
+    entity_type *operator->() { return mesh_.get_entity<D>((*entities_)[index_]); }
 
     bool operator==(const iterator &itr) const { return index_ == itr.index_; }
 
     bool operator!=(const iterator &itr) const { return index_ != itr.index_; }
 
   private:
-    MeshTopology &mesh_;
-    const IdVec *entities_;
+    mesh_topology &mesh_;
+    const id_vec *entities_;
     size_t index_;
 
   }; // class iterator
@@ -575,13 +580,13 @@ public:
 
   template <size_t D> class const_iterator {
   public:
-    using EntityType =
-        typename std::tuple_element<D, typename MT::EntityTypes>::type;
+    using entity_type =
+        typename std::tuple_element<D, typename MT::entity_types>::type;
 
     const_iterator(const const_iterator &itr)
       : mesh_(itr.mesh_), entities_(itr.entities_), index_(itr.index_) {}
 
-    const_iterator(const MeshTopology &mesh, const IdVec &entities, size_t index)
+    const_iterator(const mesh_topology &mesh, const id_vec &entities, size_t index)
         : mesh_(mesh), 
           entities_(&entities),
           index_(index) {}
@@ -597,17 +602,17 @@ public:
       return *this;
     }
 
-    const EntityType *operator*() { return mesh_.getEntity<D>((*entities_)[index_]); }
+    const entity_type *operator*() { return mesh_.get_entity<D>((*entities_)[index_]); }
 
-    const EntityType *operator->() { return mesh_.getEntity<D>((*entities_)[index_]); }
+    const entity_type *operator->() { return mesh_.get_entity<D>((*entities_)[index_]); }
 
     bool operator==(const const_iterator &itr) const { return index_ == itr.index_; }
 
     bool operator!=(const const_iterator &itr) const { return index_ != itr.index_; }
 
   private:
-    const MeshTopology &mesh_;
-    const IdVec *entities_;
+    const mesh_topology &mesh_;
+    const id_vec *entities_;
     size_t index_;
 
   }; // class iterator
@@ -623,106 +628,118 @@ public:
   using const_cell_iterator = const_iterator<MT::dimension>;
 
   /*--------------------------------------------------------------------------*
-   * class EntityRange
+   * class entity_range
    *--------------------------------------------------------------------------*/
 
   /*!
-    \class EntityRange mesh_topology.h
+    \class entity_range mesh_topology.h
     \brief ...
    */
 
-  template <size_t D> class EntityRange {
+  template <size_t D> class entity_range {
   public:
     using iterator_t = iterator<D>;
-    using EntityType = typename iterator_t::EntityType;
-    using EntityVec = std::vector<EntityType*>;
+    using entity_type = typename iterator_t::entity_type;
+    using entity_vec = std::vector<entity_type*>;
 
-    EntityRange(MeshTopology &mesh, const IdVec &v)
+    entity_range(mesh_topology &mesh, const id_vec &v)
       : mesh_(mesh), v_(v), begin_(0),
         end_(v_.size()) {}
 
-    EntityRange(MeshTopology &mesh, const IdVec &v, size_t begin, size_t end)
+    entity_range(mesh_topology &mesh, const id_vec &v, size_t begin, size_t end)
       : mesh_(mesh), v_(v), begin_(begin),
         end_(end) {}
 
-    EntityRange(const EntityRange &r) : mesh_(r.mesh_), v_(r.v_),
+    entity_range(const entity_range &r) : mesh_(r.mesh_), v_(r.v_),
                                         begin_(0), end_(v_.size()) {}
 
     iterator_t begin() const { return iterator_t(mesh_, v_, begin_); }
 
     iterator_t end() const { return iterator_t(mesh_, v_, end_); }
 
-    EntityVec toVec() const{
-      EntityVec ret;
+    entity_vec toVec() const{
+      entity_vec ret;
       for(size_t i = begin_; i < end_; ++i){
-        ret.push_back(mesh_.getEntity<D>(v_[i]));
+        ret.push_back(mesh_.get_entity<D>(v_[i]));
       }
       return ret;
     }
 
+    size_t size() const {
+      return end_ - begin_;
+    }
+
   private:
 
-    MeshTopology &mesh_;
-    const IdVec &v_;
+    mesh_topology &mesh_;
+    const id_vec &v_;
     size_t begin_;
     size_t end_;
 
-  }; // class EntityRange
+  }; // class entity_range
 
   /*--------------------------------------------------------------------------*
-   * class ConstEntityRange
+   * class const_entity_range
    *--------------------------------------------------------------------------*/
 
   /*!
-    \class ConstEntityRange mesh_topology.h
+    \class const_entity_range mesh_topology.h
     \brief ...
    */
 
-  template <size_t D> class ConstEntityRange {
+  template <size_t D> class const_entity_range {
   public:
     using const_iterator_t = const_iterator<D>;
-    using EntityType = typename const_iterator_t::EntityType;
-    using EntityVec = std::vector<const EntityType*>;
+    using entity_type = typename const_iterator_t::entity_type;
+    using entity_vec = std::vector<const entity_type*>;
 
-    ConstEntityRange(const MeshTopology &mesh, const IdVec &v)
+    const_entity_range(const mesh_topology &mesh, const id_vec &v)
       : mesh_(mesh), v_(v), begin_(0),
         end_(v_.size()) {}
 
-    ConstEntityRange(const MeshTopology &mesh, const IdVec &v, size_t begin, size_t end)
+    const_entity_range(const mesh_topology &mesh, const id_vec &v, size_t begin, size_t end)
       : mesh_(mesh), v_(v), begin_(begin),
         end_(end) {}
 
-    ConstEntityRange(const ConstEntityRange &r) : mesh_(r.mesh_), v_(r.v_),
+    const_entity_range(const const_entity_range &r) : mesh_(r.mesh_), v_(r.v_),
                                                   begin_(0), end_(v_.size()) {}
 
     const_iterator_t begin() const { return const_iterator_t(mesh_, v_, begin_); }
 
     const_iterator_t end() const { return const_iterator_t(mesh_, v_, end_); }
 
-    EntityVec toVec() const{
-      EntityVec ret;
+    entity_vec toVec() const{
+      entity_vec ret;
       for(size_t i = begin_; i < end_; ++i){
-        ret.push_back(mesh_.getEntity<D>(v_[i]));
+        ret.push_back(mesh_.get_entity<D>(v_[i]));
       }
       return ret;
     }
 
   private:
 
-    const MeshTopology &mesh_;
-    const IdVec &v_;
+    const mesh_topology &mesh_;
+    const id_vec &v_;
     size_t begin_;
     size_t end_;
 
-  }; // class ConstEntityRange
+  }; // class const_entity_range
 
   //! Constructor
-  MeshTopology() {
-    getConnectivity_(MT::dimension, 0).init();
-  } // MeshTopology()
+  mesh_topology() {
+    get_connectivity_(MT::dimension, 0).init();
+  } // mesh_topology()
+
+  virtual ~mesh_topology(){
+    for(auto& ev : entities_){
+      for(auto ent : ev){
+        delete ent;
+      } 
+    }
+  }
 
   template<size_t D>
-  void addEntity(MeshEntityBase *ent) {
+  void add_entity(mesh_entity_base *ent) {
     auto &ents = entities_[D];
     id_t id = ent->id();
     if(ents.size() <= id){
@@ -731,46 +748,46 @@ public:
     ents[id] = ent;
   } // addEntity
 
-  void addVertex(VertexType *vertex) {
-    addEntity<0>(vertex);
+  void add_vertex(vertex_type *vertex) {
+    add_entity<0>(vertex);
   } // addVertex
 
-  void addEdge(EdgeType *edge) {
-    addEntity<1>(edge);
+  void add_edge(edge_type *edge) {
+    add_entity<1>(edge);
   } // addEdge
 
-  void addFace(FaceType *face) {
-    addEntity<MT::dimension - 1>(face);
+  void add_face(face_type *face) {
+    add_entity<MT::dimension - 1>(face);
   } // addFace
 
-  void addCell(CellType *cell) {
-    addEntity<MT::dimension>(cell);
+  void add_cell(cell_type *cell) {
+    add_entity<MT::dimension>(cell);
   } // addCell
 
-  void initCell(CellType *cell, std::initializer_list<VertexType *> verts) {
-    assert(verts.size() == MT::numVerticesPerEntity(MT::dimension) &&
+  void init_cell(cell_type *cell, std::initializer_list<vertex_type *> verts) {
+    assert(verts.size() == MT::num_vertices_per_entity(MT::dimension) &&
         "invalid number of vertices per cell");
 
-    auto &c = getConnectivity_(MT::dimension, 0);
+    auto &c = get_connectivity_(MT::dimension, 0);
 
-    assert(cell->id() == c.fromSize() && "id mismatch");
+    assert(cell->id() == c.from_size() && "id mismatch");
 
-    for (VertexType *v : verts) {
+    for (vertex_type *v : verts) {
       c.push(v->id());
     } // for
 
     c.endFrom();
   } // initCell
 
-  void initEdge(EdgeType *edge, const VertexType * vertex1,
-    const VertexType * vertex2) {
+  void init_edge(edge_type *edge, const vertex_type * vertex1,
+    const vertex_type * vertex2) {
 
-    auto &c = getConnectivity_(1, 0);
+    auto &c = get_connectivity_(1, 0);
     if (c.empty()) {
       c.init();
     } // if
 
-    assert(edge->id() == c.fromSize() && "id mismatch");
+    assert(edge->id() == c.from_size() && "id mismatch");
 
     c.push(vertex1->id());
     c.push(vertex2->id());
@@ -778,311 +795,311 @@ public:
     c.endFrom();
   } // initEdge
 
-  void initFace(FaceType *face, std::initializer_list<VertexType *> verts) {
-    assert(verts.size() == MT::numVerticesPerEntity(2) &&
+  void init_face(face_type *face, std::initializer_list<vertex_type *> verts) {
+    assert(verts.size() == MT::num_vertices_per_entity(2) &&
         "invalid number vertices per face");
 
-    auto &c = getConnectivity_(MT::dimension - 1, 0);
+    auto &c = get_connectivity_(MT::dimension - 1, 0);
     if (c.empty()) {
       c.init();
     }
 
-    assert(face->id() == c.fromSize() && "id mismatch");
+    assert(face->id() == c.from_size() && "id mismatch");
 
-    for (VertexType *v : verts) {
+    for (vertex_type *v : verts) {
       c.push(v);
     }
 
     c.endFrom();
   } // initFace
 
-  void initCellEdges(CellType *cell, std::initializer_list<EdgeType *> edges) {
-    assert(edges.size() == MT::numEntitiesPerCell(1) &&
+  void init_cell_edges(cell_type *cell, std::initializer_list<edge_type *> edges) {
+    assert(edges.size() == MT::num_entities_per_cell(1) &&
         "invalid number of edges per cell");
 
-    auto &c = getConnectivity_(MT::dimension, 1);
+    auto &c = get_connectivity_(MT::dimension, 1);
     if (c.empty()) {
       c.init();
     }
 
-    assert(cell->id() == c.fromSize() && "id mismatch");
+    assert(cell->id() == c.from_size() && "id mismatch");
 
-    for (EdgeType *edge : edges) {
+    for (edge_type *edge : edges) {
       c.push(edge);
     }
 
-    c.endFrom();
+    c.end_from();
   } // initCellEdges
 
-  void initCellFaces(CellType *cell, std::initializer_list<FaceType *> faces) {
+  void init_cell_faces(cell_type *cell, std::initializer_list<face_type *> faces) {
 
-    assert(faces.size() == MT::numEntitiesPerCell(MT::dimension - 1) &&
+    assert(faces.size() == MT::num_entities_per_cell(MT::dimension - 1) &&
         "invalid number of face per cell");
 
-    auto &c = getConnectivity_(MT::dimension, MT::dimension - 1);
+    auto &c = get_connectivity_(MT::dimension, MT::dimension - 1);
     if (c.empty()) {
       c.init();
     }
 
-    assert(cell->id() == c.fromSize() && "id mismatch");
+    assert(cell->id() == c.from_size() && "id mismatch");
 
-    for (FaceType *face : faces) {
+    for (face_type *face : faces) {
       c.push(face);
     }
 
     c.endFrom();
   } // initCellFaces
 
-  size_t numEntities(size_t dim) const override {
+  size_t num_entities(size_t dim) const override {
     return entities_[dim].size();
-  } // numEntities
+  } // num_entities
 
-  size_t numEntities_(size_t dim) const {
+  size_t num_entities_(size_t dim) const {
     return entities_[dim].size();
-  } // numEntities_
+  } // num_entities_
 
   void build(size_t dim) override {
     // std::cerr << "build: " << dim << std::endl;
 
     assert(dim <= MT::dimension);
 
-    size_t verticesPerEntity = MT::numVerticesPerEntity(dim);
-    size_t entitiesPerCell = MT::numEntitiesPerCell(dim);
+    size_t vertices_per_entity = MT::num_vertices_per_entity(dim);
+    size_t entities_per_cell = MT::num_entities_per_cell(dim);
 
-    Connectivity &entityToVertex = getConnectivity_(dim, 0);
+    connectivity &entity_to_vertex = get_connectivity_(dim, 0);
 
-    IdVec entityVertices(entitiesPerCell * verticesPerEntity);
+    id_vec entity_vertices(entities_per_cell * vertices_per_entity);
 
-    Connectivity &cellToEntity = getConnectivity_(MT::dimension, dim);
+    connectivity &cell_to_entity = get_connectivity_(MT::dimension, dim);
 
-    ConnVec entityVertexConn;
+    conn_vec entity_vertex_conn;
 
-    size_t entityId = 0;
-    size_t maxCellEntityConns = 1;
+    size_t entity_id = 0;
+    size_t max_cell_entity_conns = 1;
 
-    Connectivity &cellToVertex = getConnectivity_(MT::dimension, 0);
-    assert(!cellToVertex.empty());
+    connectivity &cell_to_vertex = get_connectivity_(MT::dimension, 0);
+    assert(!cell_to_vertex.empty());
 
-    size_t n = numCells();
+    size_t n = num_cells();
 
-    ConnVec cellEntityConn(n);
+    conn_vec cell_entity_conn(n);
 
-    IdVecMap entityVerticesMap(n * MT::numEntitiesPerCell(dim) / 2);
+    id_vec_map entity_vertices_map(n * MT::num_entities_per_cell(dim) / 2);
 
-    using TestVec = std::vector<std::vector<VertexType*>>;
+    using TestVec = std::vector<std::vector<vertex_type*>>;
 
     for (size_t c = 0; c < n; ++c) {
-      IdVec &conns = cellEntityConn[c];
+      id_vec &conns = cell_entity_conn[c];
 
-      conns.reserve(maxCellEntityConns);
+      conns.reserve(max_cell_entity_conns);
 
-      id_t *vertices = cellToVertex.getEntities(c);
+      id_t *vertices = cell_to_vertex.get_entities(c);
 
-      MT::createEntities(dim, entityVertices, vertices);
+      MT::create_entities(dim, entity_vertices, vertices);
 
-      for (size_t i = 0; i < entitiesPerCell; ++i) {
-        id_t *a = &entityVertices[i * verticesPerEntity];
-        IdVec ev(a, a + verticesPerEntity);
+      for (size_t i = 0; i < entities_per_cell; ++i) {
+        id_t *a = &entity_vertices[i * vertices_per_entity];
+        id_vec ev(a, a + vertices_per_entity);
+
         std::sort(ev.begin(), ev.end());
 
-        auto itr = entityVerticesMap.emplace(std::move(ev), entityId);
+        auto itr = entity_vertices_map.emplace(std::move(ev), entity_id);
         conns.emplace_back(itr.first->second);
 
         if (itr.second) {
-          IdVec ev2 = IdVec(a, a + verticesPerEntity);
+          id_vec ev2 = id_vec(a, a + vertices_per_entity);
+          entity_vertex_conn.emplace_back(std::move(ev2));
 
-          entityVertexConn.emplace_back(std::move(ev2));
+          max_cell_entity_conns =
+              std::max(max_cell_entity_conns, cell_entity_conn[c].size());
 
-          maxCellEntityConns =
-              std::max(maxCellEntityConns, cellEntityConn[c].size());
-
-          ++entityId;
+          ++entity_id;
         }
       }
     }
 
-    cellToEntity.initCreate<MT>(idVecs_[dim], entities_[dim], cellEntityConn, dim);
-    entityToVertex.init(entityVertexConn);
+    cell_to_entity.init_create<MT>(id_vecs_[dim], entities_[dim], cell_entity_conn, dim);
+    entity_to_vertex.init(entity_vertex_conn);
   } // build
 
-  void transpose(size_t fromDim, size_t toDim) {
+  void transpose(size_t from_dim, size_t to_dim) {
     //std::cerr << "transpose: " << fromDim << " -> " << toDim << std::endl;
 
-    IndexVec pos(numEntities_(fromDim), 0);
+    index_vec pos(num_entities_(from_dim), 0);
 
-    for (index_iterator toEntity(*this, toDim); !toEntity.end(); ++toEntity) {
-      for (index_iterator fromItr(toEntity, fromDim); !fromItr.end(); ++fromItr) {
+    for (index_iterator to_entity(*this, to_dim); !to_entity.end(); ++to_entity) {
+      for (index_iterator from_itr(to_entity, from_dim); !from_itr.end(); ++from_itr) {
 	//std::cerr << "size: " << pos.size() << std::endl;
-	//std::cerr << "fromItr: " << *fromItr << std::endl;
-        pos[*fromItr]++;
+	//std::cerr << "from_itr: " << *from_itr << std::endl;
+        pos[*from_itr]++;
       }
     }
 
-    Connectivity &outConn = getConnectivity_(fromDim, toDim);
-    outConn.resize(pos);
+    connectivity &out_conn = get_connectivity_(from_dim, to_dim);
+    out_conn.resize(pos);
 
     std::fill(pos.begin(), pos.end(), 0);
 
-    for (index_iterator toEntity(*this, toDim); !toEntity.end(); ++toEntity) {
-      for (index_iterator fromItr(toEntity, fromDim); !fromItr.end(); ++fromItr) {
-        outConn.set(*fromItr, *toEntity, pos[*fromItr]++);
+    for (index_iterator to_entity(*this, to_dim); !to_entity.end(); ++to_entity) {
+      for (index_iterator from_itr(to_entity, from_dim); !from_itr.end(); ++from_itr) {
+        out_conn.set(*from_itr, *to_entity, pos[*from_itr]++);
       }
     }
   } // transpose
 
-  void intersect(size_t fromDim, size_t toDim, size_t dim) {
+  void intersect(size_t from_dim, size_t to_dim, size_t dim) {
     //std::cerr << "intersect: " << fromDim << " -> " << toDim << std::endl;
 
-    Connectivity &outConn = getConnectivity_(fromDim, toDim);
-    if (!outConn.empty()) {
+    connectivity &out_conn = get_connectivity_(from_dim, to_dim);
+    if (!out_conn.empty()) {
       return;
     }
 
-    ConnVec conns(numEntities_(fromDim));
+    conn_vec conns(num_entities_(from_dim));
 
-    using VisitedVec = std::vector<bool>;
-    VisitedVec visited(numEntities_(fromDim));
+    using visited_vec = std::vector<bool>;
+    visited_vec visited(num_entities_(from_dim));
 
-    IdVec fromVerts(MT::numVerticesPerEntity(fromDim));
-    IdVec toVerts(MT::numVerticesPerEntity(toDim));
+    id_vec from_verts(MT::num_vertices_per_entity(from_dim));
+    id_vec to_verts(MT::num_vertices_per_entity(to_dim));
 
-    size_t maxSize = 1;
+    size_t max_size = 1;
 
-    for (index_iterator fromEntity(*this, fromDim); !fromEntity.end();
-         ++fromEntity) {
-      IdVec &entities = conns[*fromEntity];
-      entities.reserve(maxSize);
+    for (index_iterator from_entity(*this, from_dim); !from_entity.end();
+         ++from_entity) {
+      id_vec &entities = conns[*from_entity];
+      entities.reserve(max_size);
 
-      id_t *ep = fromEntity.getEntities(0);
+      id_t *ep = from_entity.get_entities(0);
 
-      std::copy(ep, ep + MT::numVerticesPerEntity(fromDim), fromVerts.begin());
+      std::copy(ep, ep + MT::num_vertices_per_entity(from_dim), from_verts.begin());
 
-      std::sort(fromVerts.begin(), fromVerts.end());
+      std::sort(from_verts.begin(), from_verts.end());
 
-      for (index_iterator fromItr(fromEntity, dim); !fromItr.end(); ++fromItr) {
-        for (index_iterator toItr(fromItr, toDim); !toItr.end(); ++toItr) {
-          visited[*toItr] = false;
+      for (index_iterator from_itr(from_entity, dim); !from_itr.end(); ++from_itr) {
+        for (index_iterator to_itr(from_itr, to_dim); !to_itr.end(); ++to_itr) {
+          visited[*to_itr] = false;
         }
       }
 
-      for (index_iterator fromItr(fromEntity, dim); !fromItr.end(); ++fromItr) {
-        for (index_iterator toItr(fromItr, toDim); !toItr.end(); ++toItr) {
-          if (visited[*toItr]) {
+      for (index_iterator from_itr(from_entity, dim); !from_itr.end(); ++from_itr) {
+        for (index_iterator to_itr(from_itr, to_dim); !to_itr.end(); ++to_itr) {
+          if (visited[*to_itr]) {
             continue;
           }
 
-          visited[*toItr] = true;
+          visited[*to_itr] = true;
 
-          if (fromDim == toDim) {
-            if (*fromEntity != *toItr) {
-              entities.push_back(*toItr);
+          if (from_dim == to_dim) {
+            if (*from_entity != *to_itr) {
+              entities.push_back(*to_itr);
             }
           } else {
-            id_t *ep = toItr.getEntities(0);
+            id_t *ep = to_itr.get_entities(0);
 
             std::copy(
-                ep, ep + MT::numVerticesPerEntity(toDim), toVerts.begin());
+                ep, ep + MT::num_vertices_per_entity(to_dim), to_verts.begin());
 
-            std::sort(toVerts.begin(), toVerts.end());
+            std::sort(to_verts.begin(), to_verts.end());
 
-            if (std::includes(fromVerts.begin(), fromVerts.end(),
-                    toVerts.begin(), toVerts.end())) {
+            if (std::includes(from_verts.begin(), from_verts.end(),
+                    to_verts.begin(), to_verts.end())) {
 
-              entities.emplace_back(*toItr);
+              entities.emplace_back(*to_itr);
             }
           }
         }
       }
 
-      maxSize = std::max(entities.size(), maxSize);
+      max_size = std::max(entities.size(), max_size);
     }
 
-    outConn.init(conns);
+    out_conn.init(conns);
   } // intersect
 
-  void compute(size_t fromDim, size_t toDim) override {
+  void compute(size_t from_dim, size_t to_dim) override {
     // std::cerr << "compute: " << fromDim << " -> " << toDim << std::endl;
 
-    Connectivity &outConn = getConnectivity_(fromDim, toDim);
+    connectivity &out_conn = get_connectivity_(from_dim, to_dim);
 
-    if (!outConn.empty()) {
+    if (!out_conn.empty()) {
       return;
     }
 
-    if (numEntities_(fromDim) == 0) {
-      build(fromDim);
+    if (num_entities_(from_dim) == 0) {
+      build(from_dim);
     }
 
-    if (numEntities_(toDim) == 0) {
-      build(toDim);
+    if (num_entities_(to_dim) == 0) {
+      build(to_dim);
     }
 
-    if (numEntities_(fromDim) == 0 && numEntities_(toDim) == 0) {
+    if (num_entities_(from_dim) == 0 && num_entities_(to_dim) == 0) {
       return;
     }
 
-    if (fromDim == toDim) {
-      ConnVec connVec(numEntities_(fromDim), IdVec(1));
+    if (from_dim == to_dim) {
+      conn_vec conn_vec(num_entities_(from_dim), id_vec(1));
 
-      for (index_iterator entity(*this, fromDim); !entity.end(); ++entity) {
-        connVec[*entity][0] = *entity;
+      for (index_iterator entity(*this, from_dim); !entity.end(); ++entity) {
+        conn_vec[*entity][0] = *entity;
       }
 
-      outConn.set(entities_[toDim], connVec);
-    } else if (fromDim < toDim) {
-      compute(toDim, fromDim);
-      transpose(fromDim, toDim);
+      out_conn.set(entities_[to_dim], conn_vec);
+    } else if (from_dim < to_dim) {
+      compute(to_dim, from_dim);
+      transpose(from_dim, to_dim);
     } else {
-      compute(fromDim, 0);
-      compute(0, toDim);
-      intersect(fromDim, toDim, 0);
+      compute(from_dim, 0);
+      compute(0, to_dim);
+      intersect(from_dim, to_dim, 0);
     }
   } // compute
 
   void init() override {
-    using TP = typename MT::TraversalPairs;
+    using TP = typename MT::traversal_pairs;
 
     compute_connectivity_<std::tuple_size<TP>::value - 1>::compute(*this, TP());
   } // init
 
-  decltype(auto) numCells() const {
+  decltype(auto) num_cells() const {
     return entities_[MT::dimension].size();
-  } // numCells
+  } // num_cells
 
-  decltype(auto) numVertices() const {
+  decltype(auto) num_vertices() const {
     return entities_[0].size();
-  } // numVertices
+  } // num_vertices
 
-  decltype(auto) numEdges() const { return entities_[1].size(); } // numEdges
+  decltype(auto) num_edges() const { return entities_[1].size(); } // numEdges
 
-  decltype(auto) numFaces() const {
+  decltype(auto) num_faces() const {
     return entities_[MT::dimension - 1].size();
-  } // numFaces
+  } // num_faces
 
-  const Connectivity &getConnectivity(
-      size_t fromDim, size_t toDim) const override {
-    return getConnectivity_(fromDim, toDim);
-  } // getConnectivity
+  const connectivity &get_connectivity(
+      size_t from_dim, size_t to_dim) const override {
+    return get_connectivity_(from_dim, to_dim);
+  } // get_connectivity
 
-  Connectivity &getConnectivity(size_t fromDim, size_t toDim) override {
-    return getConnectivity_(fromDim, toDim);
-  } // getConnectivity
+  connectivity &get_connectivity(size_t from_dim, size_t to_dim) override {
+    return get_connectivity_(from_dim, to_dim);
+  } // get_connectivity
 
-  const Connectivity &getConnectivity_(size_t fromDim, size_t toDim) const {
-    assert(fromDim < topology_.size() && "invalid fromDim");
-    auto &t = topology_[fromDim];
-    assert(toDim < t.size() && "invalid toDim");
-    return t[toDim];
-  } // getConnectivity
+  const connectivity &get_connectivity_(size_t from_dim, size_t to_dim) const {
+    assert(from_dim < topology_.size() && "invalid fromDim");
+    auto &t = topology_[from_dim];
+    assert(to_dim < t.size() && "invalid toDim");
+    return t[to_dim];
+  } // get_connectivity
 
-  Connectivity &getConnectivity_(size_t fromDim, size_t toDim) {
-    assert(fromDim < topology_.size() && "invalid fromDim");
-    auto &t = topology_[fromDim];
-    assert(toDim < t.size() && "invalid toDim");
-    return t[toDim];
-  } // getConnectivity
+  connectivity &get_connectivity_(size_t from_dim, size_t to_dim) {
+    assert(from_dim < topology_.size() && "invalid fromDim");
+    auto &t = topology_[from_dim];
+    assert(to_dim < t.size() && "invalid toDim");
+    return t[to_dim];
+  } // get_connectivity
 
-  size_t topologicalDimension() const override { return MT::dimension; }
+  size_t topological_dimension() const override { return MT::dimension; }
 
   template <class T, class... S> T *make(S &&... args) {
     T *entity = new T(std::forward<S>(args)...);
@@ -1091,45 +1108,45 @@ public:
     entity->id_ = ents.size();
     ents.push_back(entity);
 
-    auto &idVec = idVecs_[T::dimension];
+    auto &idVec = id_vecs_[T::dimension];
     idVec.push_back(idVec.size());
 
     return entity;
   }
 
-  const EntityVec &getEntities_(size_t dim) const { return entities_[dim]; }
+  const entity_vec &get_entities_(size_t dim) const { return entities_[dim]; }
 
-  const IdVec &getIdVec_(size_t dim) const { return idVecs_[dim]; }
+  const id_vec &get_id_vec_(size_t dim) const { return id_vecs_[dim]; }
 
   template<size_t D>
-  typename std::tuple_element<D, typename MT::EntityTypes>::type*
-  getEntity(id_t id){
-    using Type = typename std::tuple_element<D, typename MT::EntityTypes>::type;
+  typename std::tuple_element<D, typename MT::entity_types>::type*
+  get_entity(id_t id){
+    using Type = typename std::tuple_element<D, typename MT::entity_types>::type;
 
     return static_cast<Type*>(entities_[D][id]);
   }
   
-  MeshEntityBase*
-  getEntity(size_t dim, id_t id){
+  mesh_entity_base*
+  get_entity(size_t dim, id_t id){
     return entities_[dim][id];
   }
 
-  EntityRange<0> vertices() { return EntityRange<0>(*this, idVecs_[0]); }
+  entity_range<0> vertices() { return entity_range<0>(*this, id_vecs_[0]); }
 
-  ConstEntityRange<0> vertices() const { return ConstEntityRange<0>(*this, idVecs_[0]); }
+  const_entity_range<0> vertices() const { return const_entity_range<0>(*this, id_vecs_[0]); }
 
-  template <size_t D, class E> ConstEntityRange<D> entities(const E *e) const {
-    const Connectivity &c = getConnectivity(E::dimension, D);
+  template <size_t D, class E> const_entity_range<D> entities(const E *e) const {
+    const connectivity &c = get_connectivity(E::dimension, D);
     assert(!c.empty() && "empty connectivity");
-    const IdVec &fv = c.getFromIndexVec();
-    return ConstEntityRange<D>(*this, c.getEntities(), fv[e->id()], fv[e->id() + 1]);
+    const id_vec &fv = c.get_from_index_vec();
+    return const_entity_range<D>(*this, c.get_entities(), fv[e->id()], fv[e->id() + 1]);
   } // entities
 
-  template <size_t D, class E> EntityRange<D> entities(const E *e) {
-    const Connectivity &c = getConnectivity(E::dimension, D);
+  template <size_t D, class E> entity_range<D> entities(const E *e) {
+    const connectivity &c = get_connectivity(E::dimension, D);
     assert(!c.empty() && "empty connectivity");
-    const IdVec &fv = c.getFromIndexVec();
-    return EntityRange<D>(*this, c.getEntities(), fv[e->id()], fv[e->id() + 1]);
+    const id_vec &fv = c.get_from_index_vec();
+    return entity_range<D>(*this, c.get_entities(), fv[e->id()], fv[e->id() + 1]);
   } // entities
 
   template <class E> decltype(auto) vertices(const E *e) const {
@@ -1140,53 +1157,53 @@ public:
     return entities<0>(e);
   } // vertices
 
-  EntityRange<1> edges() {
-    assert(!idVecs_[1].empty());
-    return EntityRange<1>(*this, idVecs_[1]);
+  entity_range<1> edges() {
+    assert(!id_vecs_[1].empty());
+    return entity_range<1>(*this, id_vecs_[1]);
   } // edges
 
-  template <class E> EntityRange<1> edges(E *e) {
+  template <class E> entity_range<1> edges(E *e) {
     return entities<1>(e);
   } // edges
 
-  ConstEntityRange<1> edges() const {
-    assert(!idVecs_[1].empty());
-    return ConstEntityRange<1>(*this, idVecs_[1]);
+  const_entity_range<1> edges() const {
+    assert(!id_vecs_[1].empty());
+    return const_entity_range<1>(*this, id_vecs_[1]);
   } // edges
 
-  template <class E> EntityRange<1> edges(E *e) const {
+  template <class E> entity_range<1> edges(E *e) const {
     return entities<1>(e);
   } // edges
 
-  EntityRange<MT::dimension - 1> faces() {
-    return EntityRange<MT::dimension - 1>(*this, idVecs_[MT::dimension - 1]);
+  entity_range<MT::dimension - 1> faces() {
+    return entity_range<MT::dimension - 1>(*this, id_vecs_[MT::dimension - 1]);
   } // faces
 
-  template <class E> EntityRange<MT::dimension - 1> faces(E *e) {
+  template <class E> entity_range<MT::dimension - 1> faces(E *e) {
     return entities<MT::dimension - 1>(e);
   } // faces
 
-  ConstEntityRange<MT::dimension - 1> faces() const {
-    return ConstEntityRange<MT::dimension - 1>(*this, idVecs_[MT::dimension - 1]);
+  const_entity_range<MT::dimension - 1> faces() const {
+    return const_entity_range<MT::dimension - 1>(*this, id_vecs_[MT::dimension - 1]);
   } // faces
 
-  template <class E> ConstEntityRange<MT::dimension - 1> faces(E *e) const {
+  template <class E> const_entity_range<MT::dimension - 1> faces(E *e) const {
     return entities<MT::dimension - 1>(e);
   } // faces
 
-  EntityRange<MT::dimension> cells() {
-    return EntityRange<MT::dimension>(*this, idVecs_[MT::dimension]);
+  entity_range<MT::dimension> cells() {
+    return entity_range<MT::dimension>(*this, id_vecs_[MT::dimension]);
   } // cells
 
-  template <class E> EntityRange<MT::dimension> cells(E *e) {
+  template <class E> entity_range<MT::dimension> cells(E *e) {
     return entities<MT::dimension>(e);
   } // cells
 
-  ConstEntityRange<MT::dimension> cells() const {
-    return EntityRange<MT::dimension>(*this, idVecs_[MT::dimension]);
+  const_entity_range<MT::dimension> cells() const {
+    return entity_range<MT::dimension>(*this, id_vecs_[MT::dimension]);
   } // cells
 
-  template <class E> ConstEntityRange<MT::dimension> cells(E *e) const {
+  template <class E> const_entity_range<MT::dimension> cells(E *e) const {
     return entities<MT::dimension>(e);
   } // cells
 
@@ -1202,17 +1219,17 @@ public:
   } // dump
 
 private:
-  using Entities_ = std::array<EntityVec, MT::dimension + 1>;
+  using entities_t = std::array<entity_vec, MT::dimension + 1>;
 
-  using Topology_ = std::array<std::array<Connectivity, MT::dimension + 1>,
+  using topology_t = std::array<std::array<connectivity, MT::dimension + 1>,
       MT::dimension + 1>;
 
-  using IdVecs_ = std::array<IdVec, MT::dimension + 1>;
+  using id_vecs_t = std::array<id_vec, MT::dimension + 1>;
 
-  Entities_ entities_;
-  Topology_ topology_;
-  IdVecs_ idVecs_;
-}; // class MeshTopology
+  entities_t entities_;
+  topology_t topology_;
+  id_vecs_t id_vecs_;
+}; // class mesh_topology
 
 } // flexi
 

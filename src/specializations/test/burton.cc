@@ -36,7 +36,7 @@ protected:
     for(size_t j = 0; j < height + 1; ++j){
       for(size_t i = 0; i < width + 1; ++i){
 	auto v = b.create_vertex({double(i), double(j)});
-	v->setRank(1);
+	v->set_rank(1);
 	vs.push_back(v);
       }
     }
@@ -93,7 +93,7 @@ TEST_F(Burton, mesh) {
     }
   }
 
-  ASSERT_TRUE(CINCH_EQUAL_BLESSED("burton.blessed"));
+  CINCH_ASSERT(TRUE, CINCH_EQUAL_BLESSED("burton.blessed"));
 
 } // TEST_F
 
@@ -120,11 +120,11 @@ TEST_F(Burton, state) {
   register_state(b, "cornerdata", corners, int32_t);
   register_state(b, "wedgedata", wedges, bool);
 
-  auto p = access_state(b, "pressure", cells, real_t);
-  auto velocity = access_state(b, "velocity", vertices, vector_t);
-  auto H = access_state(b, "H", edges, vector_t);
-  auto cd = access_state(b, "cornerdata", corners, int32_t);
-  auto wd = access_state(b, "wedgedata", wedges, bool);
+  auto p = access_state(b, "pressure", real_t);
+  auto velocity = access_state(b, "velocity", vector_t);
+  auto H = access_state(b, "H", vector_t);
+  auto cd = access_state(b, "cornerdata", int32_t);
+  auto wd = access_state(b, "wedgedata", bool);
 
   // cells
   for(auto c: p) {
