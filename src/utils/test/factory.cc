@@ -60,6 +60,8 @@ TEST(factory, sanity) {
   io_base_t * io = io_factory_t::instance().create(suffix, filename);
 
   ASSERT_FALSE(io->read());
+
+  delete io;
 } // TEST
 
 /*----------------------------------------------------------------------------*
