@@ -238,11 +238,11 @@ public:
 
   auto cell_ents() { return mesh_.cell_ents(); }
 
-  auto vertex_ids() { return mesh_.vertex_ids(); }
+  auto vertices() { return mesh_.vertices(); }
 
-  auto edge_ids() { return mesh_.edge_ids(); }
+  auto edges() { return mesh_.edges(); }
 
-  auto cell_ids() { return mesh_.cell_ids(); }
+  auto cells() { return mesh_.cells(); }
 
   auto vertex_ents(wedge_t *w) { return dual_mesh_.vertex_ents(w); }
 
@@ -252,11 +252,11 @@ public:
 
   template <class E> auto cell_ents(E *e) { return mesh_.cell_ents(e); }
 
-  template <class E> auto vertex_ids(E *e) { return mesh_.vertex_ids(e); }
+  template <class E> auto vertices(E *e) { return mesh_.vertices(e); }
 
-  template <class E> auto edge_ids(E *e) { return mesh_.edge_ids(e); }
+  template <class E> auto edges(E *e) { return mesh_.edges(e); }
 
-  template <class E> auto cell_ids(E *e) { return mesh_.cell_ids(e); }
+  template <class E> auto cells(E *e) { return mesh_.cells(e); }
 
   /*!
     Create a vertex in the mesh.
