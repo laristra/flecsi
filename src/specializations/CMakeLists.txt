@@ -15,11 +15,14 @@
 set(specializations_HEADERS
   burton_types.h
   burton.h
-  burton_io_exodus.h
   unstruct_types.h
   unstruct.h
   PARENT_SCOPE
 )
+if(ENABLE_IO)
+  list(APPEND specializations_HEADERS burton_io_exodus.h)
+endif(ENABLE_IO)
+
 
 #set(specializations_SOURCES
 #  PARENT_SCOPE
@@ -30,10 +33,12 @@ cinch_add_unit(burton
   INPUTS test/burton.blessed
 )
 
-cinch_add_unit(burton_io
-  SOURCES test/burton_io.cc
-  LIBRARIES ${IO_LIBRARIES}
-)
+if(ENABLE_IO)
+  cinch_add_unit(burton_io
+    SOURCES test/burton_io.cc
+    LIBRARIES ${IO_LIBRARIES}
+  )
+endif(ENABLE_IO)
 
 #cinch_add_unit(unstruct
 #  SOURCES test/unstruct.cc
