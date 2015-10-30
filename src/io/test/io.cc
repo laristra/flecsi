@@ -42,8 +42,6 @@ TEST(io, readwrite) {
 
 } // namespace flexi
 
-#endif // HAVE_EXODUS
-
 /*----------------------------------------------------------------------------*
  * Cinch test Macros
  *
