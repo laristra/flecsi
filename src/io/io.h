@@ -16,7 +16,10 @@
 #define flexi_io_h
 
 #include "io_base.h"
-#include "io_exodus.h"
+
+#ifdef HAVE_EXODUS
+#  include "io_exodus.h"
+#endif
 
 /*!
  * \file io.h

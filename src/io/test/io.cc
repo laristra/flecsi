@@ -69,6 +69,8 @@ protected:
 using real_t = burton_mesh_t::real_t;
 using vector_t = burton_mesh_t::vector_t;
 
+#if HAVE_EXODUS
+
 TEST_F(Burton, write_exo) {
   // create state data on b
   // register
@@ -121,6 +123,8 @@ TEST_F(Burton, read_g) {
   ASSERT_FALSE(write_mesh(filename, m));
 } // TEST_F
 #endif
+
+#endif // HAVE_EXODUS
 
 /*----------------------------------------------------------------------------*
  * Cinch test Macros
