@@ -55,8 +55,6 @@ public:
 
   id_t id() const { return id_; } // id
 
-  operator id_t() const { return id_; } // id
-
   uint16_t info() const { return info_; } // info
 
   /*!
