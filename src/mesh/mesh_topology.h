@@ -725,6 +725,95 @@ public:
 
   }; // class const_entity_range
 
+  /*--------------------------------------------------------------------------*
+   * class iterator
+   *--------------------------------------------------------------------------*/
+
+  template <size_t D> class id_iterator {
+  public:
+    using entity_type =
+        typename std::tuple_element<D, typename MT::entity_types>::type;
+
+    id_iterator(const id_iterator &itr)
+      : mesh_(itr.mesh_), entities_(itr.entities_), index_(itr.index_) {}
+
+    id_iterator(const mesh_topology &mesh, const id_vec &entities, size_t index)
+        : mesh_(mesh), 
+          entities_(&entities),
+          index_(index) {}
+
+    id_iterator &operator++() {
+      ++index_;
+      return *this;
+    }
+
+    id_iterator &operator=(const id_iterator &itr) {
+      index_ = itr.index_;
+      entities_ = itr.entities_;
+      return *this;
+    }
+
+    id_t operator*() { return (*entities_)[index_]; }
+
+    bool operator==(const id_iterator &itr) const { return index_ == itr.index_; }
+
+    bool operator!=(const id_iterator &itr) const { return index_ != itr.index_; }
+
+  private:
+    const mesh_topology &mesh_;
+    const id_vec *entities_;
+    size_t index_;
+
+  }; // class iterator
+
+  /*--------------------------------------------------------------------------*
+   * class id_range
+   *--------------------------------------------------------------------------*/
+
+  /*!
+    \class id_range mesh_topology.h
+    \brief ...
+   */
+
+  template <size_t D> class id_range {
+  public:
+
+    id_range(const mesh_topology &mesh, const id_vec &v)
+      : mesh_(mesh), v_(v), begin_(0),
+        end_(v_.size()) {}
+
+    id_range(const mesh_topology &mesh, const id_vec &v, id_t begin, id_t end)
+      : mesh_(mesh), v_(v), begin_(begin),
+        end_(end) {}
+
+    id_range(const id_range &r) : mesh_(r.mesh_), v_(r.v_),
+                                        begin_(0), end_(v_.size()) {}
+
+    id_iterator<D> begin() const { return id_iterator<D>(mesh_, v_, begin_); }
+
+    id_iterator<D> end() const { return id_iterator<D>(mesh_, v_, end_); }
+
+    id_vec toVec() const{
+      id_vec ret;
+      for(size_t i = begin_; i < end_; ++i){
+        ret.push_back(v_[i]);
+      }
+      return ret;
+    }
+
+    size_t size() const {
+      return end_ - begin_;
+    }
+
+  private:
+
+    const mesh_topology &mesh_;
+    const id_vec &v_;
+    id_t begin_;
+    id_t end_;
+
+  }; // class id_range
+
   //! Constructor
   mesh_topology() {
     get_connectivity_(MT::dimension, 0).init();
@@ -1131,9 +1220,14 @@ public:
     return entities_[dim][id];
   }
 
-  entity_range<0> vertices() { return entity_range<0>(*this, id_vecs_[0]); }
+  entity_range<0> vertex_ents() { return entity_range<0>(*this, id_vecs_[0]); }
 
-  const_entity_range<0> vertices() const { return const_entity_range<0>(*this, id_vecs_[0]); }
+  const_entity_range<0> vertex_ents() const { return const_entity_range<0>(*this, id_vecs_[0]); }
+
+  id_range<0> vertices() const {
+    assert(!id_vecs_[0].empty());
+    return id_range<0>(*this, id_vecs_[0]);
+  } // vertex_ids
 
   template <size_t D, class E> const_entity_range<D> entities(const E *e) const {
     const connectivity &c = get_connectivity(E::dimension, D);
@@ -1142,68 +1236,102 @@ public:
     return const_entity_range<D>(*this, c.get_entities(), fv[e->id()], fv[e->id() + 1]);
   } // entities
 
-  template <size_t D, class E> entity_range<D> entities(const E *e) {
+  template <size_t D, class E> entity_range<D> entities(E *e) {
     const connectivity &c = get_connectivity(E::dimension, D);
     assert(!c.empty() && "empty connectivity");
     const id_vec &fv = c.get_from_index_vec();
     return entity_range<D>(*this, c.get_entities(), fv[e->id()], fv[e->id() + 1]);
   } // entities
 
-  template <class E> decltype(auto) vertices(const E *e) const {
+  template <size_t D, class E> id_range<D> entities(const E *e) {
+    const connectivity &c = get_connectivity(E::dimension, D);
+    assert(!c.empty() && "empty connectivity");
+    const id_vec &fv = c.get_from_index_vec();
+    return id_range<D>(*this, c.get_entities(), fv[e->id()], fv[e->id() + 1]);
+  } // entity_ids
+
+  template <class E> decltype(auto) vertex_ents(const E *e) const {
     return entities<0>(e);
   }
 
-  template <class E> decltype(auto) vertices(E *e) {
+  template <class E> decltype(auto) vertex_ents(E *e) {
     return entities<0>(e);
   } // vertices
 
-  entity_range<1> edges() {
+  entity_range<1> edge_ents() {
     assert(!id_vecs_[1].empty());
     return entity_range<1>(*this, id_vecs_[1]);
   } // edges
 
-  template <class E> entity_range<1> edges(E *e) {
+  template <class E> entity_range<1> edge_ents(E *e) {
     return entities<1>(e);
   } // edges
 
-  const_entity_range<1> edges() const {
+  template <class E> decltype(auto) edges(const E *e) const {
+    return entities<1>(e);
+  }
+
+  const_entity_range<1> edge_ents() const {
     assert(!id_vecs_[1].empty());
     return const_entity_range<1>(*this, id_vecs_[1]);
   } // edges
 
-  template <class E> entity_range<1> edges(E *e) const {
+  id_range<1> edges() const {
+    assert(!id_vecs_[1].empty());
+    return id_range<1>(*this, id_vecs_[1]);
+  } // edge_ids
+
+  template <class E> entity_range<1> edge_ents(E *e) const {
     return entities<1>(e);
   } // edges
 
-  entity_range<MT::dimension - 1> faces() {
+  entity_range<MT::dimension - 1> face_ents() {
     return entity_range<MT::dimension - 1>(*this, id_vecs_[MT::dimension - 1]);
   } // faces
 
-  template <class E> entity_range<MT::dimension - 1> faces(E *e) {
+  template <class E> entity_range<MT::dimension - 1> face_ents(E *e) {
     return entities<MT::dimension - 1>(e);
   } // faces
 
-  const_entity_range<MT::dimension - 1> faces() const {
+  template <class E> decltype(auto) faces(const E *e) const {
+    return entities<MT::dimension - 1>(e);
+  }
+
+  const_entity_range<MT::dimension - 1> face_ents() const {
     return const_entity_range<MT::dimension - 1>(*this, id_vecs_[MT::dimension - 1]);
   } // faces
 
-  template <class E> const_entity_range<MT::dimension - 1> faces(E *e) const {
+  id_range<MT::dimension - 1> faces() const {
+    assert(!id_vecs_[MT::dimension - 1].empty());
+    return id_range<MT::dimension - 1>(*this, id_vecs_[MT::dimension - 1]);
+  } // face_ids
+
+  template <class E> const_entity_range<MT::dimension - 1> face_ents(E *e) const {
     return entities<MT::dimension - 1>(e);
   } // faces
 
-  entity_range<MT::dimension> cells() {
+  entity_range<MT::dimension> cell_ents() {
     return entity_range<MT::dimension>(*this, id_vecs_[MT::dimension]);
   } // cells
 
-  template <class E> entity_range<MT::dimension> cells(E *e) {
+  template <class E> entity_range<MT::dimension> cell_ents(E *e) {
     return entities<MT::dimension>(e);
   } // cells
 
-  const_entity_range<MT::dimension> cells() const {
+  const_entity_range<MT::dimension> cell_ents() const {
     return entity_range<MT::dimension>(*this, id_vecs_[MT::dimension]);
   } // cells
 
-  template <class E> const_entity_range<MT::dimension> cells(E *e) const {
+  template <class E> decltype(auto) cells(const E *e) const {
+    return entities<MT::dimension>(e);
+  }
+
+  id_range<MT::dimension> cells() const {
+    assert(!id_vecs_[MT::dimension].empty());
+    return id_range<MT::dimension>(*this, id_vecs_[MT::dimension]);
+  } // cell_ids
+
+  template <class E> const_entity_range<MT::dimension> cell_ents(E *e) const {
     return entities<MT::dimension>(e);
   } // cells
 

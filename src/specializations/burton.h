@@ -232,15 +232,27 @@ public:
 
   /*!
    */
+  auto vertex_ents() { return mesh_.vertex_ents(); }
+
+  auto edge_ents() { return mesh_.edge_ents(); }
+
+  auto cell_ents() { return mesh_.cell_ents(); }
+
   auto vertices() { return mesh_.vertices(); }
 
   auto edges() { return mesh_.edges(); }
 
   auto cells() { return mesh_.cells(); }
 
-  template <class E> auto vertices(E *e) { return mesh_.vertices(e); }
+  auto vertex_ents(wedge_t *w) { return dual_mesh_.vertex_ents(w); }
 
-  auto vertices(wedge_t *w) { return dual_mesh_.vertices(w); }
+  template <class E> auto vertex_ents(E *e) { return mesh_.vertex_ents(e); }
+
+  template <class E> auto edge_ents(E *e) { return mesh_.edge_ents(e); }
+
+  template <class E> auto cell_ents(E *e) { return mesh_.cell_ents(e); }
+
+  template <class E> auto vertices(E *e) { return mesh_.vertices(e); }
 
   template <class E> auto edges(E *e) { return mesh_.edges(e); }
 
@@ -279,8 +291,8 @@ public:
   void init() {
     mesh_.init();
 
-    for (auto c : mesh_.cells()) {
-      auto vs = mesh_.vertices(c).toVec();
+    for (auto c : mesh_.cell_ents()) {
+      auto vs = mesh_.vertex_ents(c).toVec();
 
       point_t cp;
       cp[0] = vs[0]->coordinates()[0] +
