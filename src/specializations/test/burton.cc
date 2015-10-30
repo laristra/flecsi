@@ -26,6 +26,7 @@ using edge_t = burton_mesh_t::edge_t;
 using cell_t = burton_mesh_t::cell_t;
 using point_t = burton_mesh_t::point_t;
 using vector_t = burton_mesh_t::vector_t;
+using real_t = burton_mesh_t::real_t;
 
 // test fixture for creating the mesh
 class Burton : public ::testing::Test {
@@ -112,8 +113,6 @@ TEST_F(Burton, coordinates) {
   } // for
 } // TEST_F
 
-using real_t = burton_mesh_t::real_t;
-
 TEST_F(Burton, state) {
 
   register_state(b, "pressure", cells, real_t, persistent);
@@ -188,7 +187,6 @@ TEST_F(Burton, state) {
     }
   } // for
 #endif
-
 } // TEST_F
 
 /*~------------------------------------------------------------------------~--*

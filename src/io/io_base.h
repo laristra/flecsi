@@ -15,7 +15,6 @@
 #ifndef flexi_io_base_h
 #define flexi_io_base_h
 
-#include "../specializations/burton.h"
 #include "../utils/factory.h"
 
 /*!
@@ -40,6 +39,7 @@ public:
    * Pure virtual mesh read.
    */
   virtual int32_t read(const std::string &name, mesh_t &m) = 0;
+
   /*!
     Pure virtual mesh write.
   */
