@@ -33,8 +33,6 @@ protected:
   virtual void SetUp() {
     vector<vertex_t*> vs;
 
-    std::cout << "object: " << &b << " vertices: " << b.num_vertices() << std::endl;
-  
     for(size_t j = 0; j < height + 1; ++j){
       for(size_t i = 0; i < width + 1; ++i){
 	auto v =
@@ -88,8 +86,8 @@ TEST_F(Burton, write_exo) {
   } // for
 
   // write the mesh
-  std::string filename("test/mesh.exo");
-  ASSERT_FALSE(write_mesh(filename, b));
+  std::string name("test/mesh.exo");
+  ASSERT_FALSE(write_mesh(name, b));
 
 } // TEST_F
 
