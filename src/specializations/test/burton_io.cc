@@ -36,6 +36,8 @@ protected:
   virtual void SetUp() {
     vector<vertex_t*> vs;
 
+    b.init_parameters((height+1)*(width+1));
+
     for(size_t j = 0; j < height + 1; ++j){
       for(size_t i = 0; i < width + 1; ++i){
 	auto v =

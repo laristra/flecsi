@@ -57,6 +57,8 @@ int32_t io_exodus_t::read(const std::string &name, mesh_t &m) {
   auto num_node_sets = exopar.num_node_sets;
   auto num_side_sets = exopar.num_side_sets;
 
+  m.init_parameters(num_nodes);
+
   // read nodes
   mesh_t::real_t xcoord[num_nodes];
   mesh_t::real_t ycoord[num_nodes];

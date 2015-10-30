@@ -132,12 +132,12 @@ int main(int argc, char ** argv) {
 
     for(auto w: m.wedges(v)) {
       auto sc = 0.0;
-      auto c = w.cell();
+      auto c = w->cell_id();
 
       auto xc = c.coordinates();
 
       for(auto vv: m.vertices(c)) {
-        auto xv = vv.coordinates();
+        auto xv = vv->coordinates();
         sc += fn(sv(vv), xv, xc);
       } // for
 

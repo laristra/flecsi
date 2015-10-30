@@ -30,9 +30,43 @@ namespace flexi {
 
 struct burton_mesh_traits_t {
   static constexpr size_t dimension = 2;
-
   using real_t = double;
 
+  enum class attachment_site_t : size_t {
+    vertices,
+    edges,
+    cells,
+    corners,
+    wedges
+  }; // enum class attachment_site_t
+
+  enum class state_attribute_t : bitfield_t::field_type_t {
+    persistent = 0
+  }; // enum class state_attribute_t
+
+  /*--------------------------------------------------------------------------*
+   * State type definitions
+   *--------------------------------------------------------------------------*/
+
+  struct private_state_meta_data_t {
+
+    void initialize(attachment_site_t site_,
+      bitfield_t::field_type_t attributes_) {
+      site = site_;
+      attributes = attributes_;
+    } // initialize
+
+    attachment_site_t site;
+    bitfield_t::field_type_t attributes;
+
+  }; // struct private_state_meta_data_t
+  
+#ifndef MESH_STORAGE_POLICY
+  using private_mesh_state_t = state_t<private_state_meta_data_t>;
+#else
+  using private_mesh_state_t =
+    state_t<private_state_meta_data_t, MESH_STORAGE_POLICY>;
+#endif
 }; // struct burton_mesh_traits_t
 
 /*----------------------------------------------------------------------------*
@@ -60,18 +94,21 @@ struct burton_mesh_types_t {
 
   class burton_vertex_t : public mesh_entity<0> {
   public:
+    using state_t = burton_mesh_traits_t::private_mesh_state_t;
+
     //! Constructor
     burton_vertex_t() : precedence_(0) {}
 
     //! Constructor
-    burton_vertex_t(const point_t &coordinates)
-        : precedence_(0), coordinates_(coordinates) {}
+    burton_vertex_t(const point_t &coordinates, state_t * state)
+        : precedence_(0), coordinates_(coordinates), state_(state) {}
 
     void set_rank(uint8_t rank) { set_info(rank); }
 
     uint64_t precedence() const { return 1 << (63 - info()); }
 
     void set_coordinates(const point_t &coordinates) {
+      auto c = state_->accessor<point_t>("coordinates");
       coordinates_ = coordinates;
     }
 
@@ -81,6 +118,7 @@ struct burton_mesh_types_t {
 
     uint64_t precedence_;
     point_t coordinates_;
+    state_t * state_;
 
   }; // struct burton_vertex_t
 

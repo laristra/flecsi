@@ -1190,6 +1190,10 @@ public:
 
   size_t topological_dimension() const override { return MT::dimension; }
 
+  template<class T> void set_num_entities(size_t size) {
+    entities_[T::dimension].resize(size);
+  } // set_num_entities
+
   template <class T, class... S> T *make(S &&... args) {
     T *entity = new T(std::forward<S>(args)...);
 
