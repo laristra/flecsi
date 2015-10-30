@@ -15,6 +15,7 @@
 set(specializations_HEADERS
   burton_types.h
   burton.h
+  burton_io_exodus.h
   unstruct_types.h
   unstruct.h
   PARENT_SCOPE
@@ -26,7 +27,13 @@ set(specializations_HEADERS
 
 cinch_add_unit(burton
   SOURCES test/burton.cc
-  INPUTS test/burton.blessed)
+  INPUTS test/burton.blessed
+)
+
+cinch_add_unit(burton_io
+  SOURCES test/burton_io.cc
+  LIBRARIES ${IO_LIBRARIES}
+)
 
 #cinch_add_unit(unstruct
 #  SOURCES test/unstruct.cc
