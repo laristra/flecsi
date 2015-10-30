@@ -232,6 +232,7 @@ public:
 
   /*!
    */
+
   auto vertices() { return mesh_.vertices(); }
 
   auto edges() { return mesh_.edges(); }

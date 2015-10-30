@@ -98,6 +98,16 @@ protected:
     accessor_t(size_t size, T * data)
       : size_(size), data_(data), is_(size_) {}
 
+    template<typename E>
+    const T & operator [] (E * e) const {
+      return this->operator [] (e->id());
+    } // operator
+
+    template<typename E>
+    T & operator [] (E * e) {
+      return this->operator [] (e->id());
+    } // operator
+
     const T & operator [] (size_t index) const {
       assert(index < size_ && "index out of range");
       return data_[index];
