@@ -1220,11 +1220,11 @@ public:
     return entities_[dim][id];
   }
 
-  entity_range<0> vertex_ents() { return entity_range<0>(*this, id_vecs_[0]); }
+  entity_range<0> vertices() { return entity_range<0>(*this, id_vecs_[0]); }
 
-  const_entity_range<0> vertex_ents() const { return const_entity_range<0>(*this, id_vecs_[0]); }
+  const_entity_range<0> vertices() const { return const_entity_range<0>(*this, id_vecs_[0]); }
 
-  id_range<0> vertices() const {
+  id_range<0> vertex_ids() const {
     assert(!id_vecs_[0].empty());
     return id_range<0>(*this, id_vecs_[0]);
   } // vertex_ids
@@ -1250,20 +1250,20 @@ public:
     return id_range<D>(*this, c.get_entities(), fv[e->id()], fv[e->id() + 1]);
   } // entity_ids
 
-  template <class E> decltype(auto) vertex_ents(const E *e) const {
+  template <class E> decltype(auto) vertices(const E *e) const {
     return entities<0>(e);
   }
 
-  template <class E> decltype(auto) vertex_ents(E *e) {
+  template <class E> decltype(auto) vertices(E *e) {
     return entities<0>(e);
   } // vertices
 
-  entity_range<1> edge_ents() {
+  entity_range<1> edges() {
     assert(!id_vecs_[1].empty());
     return entity_range<1>(*this, id_vecs_[1]);
   } // edges
 
-  template <class E> entity_range<1> edge_ents(E *e) {
+  template <class E> entity_range<1> edges(E *e) {
     return entities<1>(e);
   } // edges
 
@@ -1271,25 +1271,25 @@ public:
     return entities<1>(e);
   }
 
-  const_entity_range<1> edge_ents() const {
+  const_entity_range<1> edges() const {
     assert(!id_vecs_[1].empty());
     return const_entity_range<1>(*this, id_vecs_[1]);
   } // edges
 
-  id_range<1> edges() const {
+  id_range<1> edge_ids() const {
     assert(!id_vecs_[1].empty());
     return id_range<1>(*this, id_vecs_[1]);
   } // edge_ids
 
-  template <class E> entity_range<1> edge_ents(E *e) const {
+  template <class E> entity_range<1> edges(E *e) const {
     return entities<1>(e);
   } // edges
 
-  entity_range<MT::dimension - 1> face_ents() {
+  entity_range<MT::dimension - 1> faces() {
     return entity_range<MT::dimension - 1>(*this, id_vecs_[MT::dimension - 1]);
   } // faces
 
-  template <class E> entity_range<MT::dimension - 1> face_ents(E *e) {
+  template <class E> entity_range<MT::dimension - 1> faces(E *e) {
     return entities<MT::dimension - 1>(e);
   } // faces
 
@@ -1297,28 +1297,28 @@ public:
     return entities<MT::dimension - 1>(e);
   }
 
-  const_entity_range<MT::dimension - 1> face_ents() const {
+  const_entity_range<MT::dimension - 1> faces() const {
     return const_entity_range<MT::dimension - 1>(*this, id_vecs_[MT::dimension - 1]);
   } // faces
 
-  id_range<MT::dimension - 1> faces() const {
+  id_range<MT::dimension - 1> face_ids() const {
     assert(!id_vecs_[MT::dimension - 1].empty());
     return id_range<MT::dimension - 1>(*this, id_vecs_[MT::dimension - 1]);
   } // face_ids
 
-  template <class E> const_entity_range<MT::dimension - 1> face_ents(E *e) const {
+  template <class E> const_entity_range<MT::dimension - 1> faces(E *e) const {
     return entities<MT::dimension - 1>(e);
   } // faces
 
-  entity_range<MT::dimension> cell_ents() {
+  entity_range<MT::dimension> cells() {
     return entity_range<MT::dimension>(*this, id_vecs_[MT::dimension]);
   } // cells
 
-  template <class E> entity_range<MT::dimension> cell_ents(E *e) {
+  template <class E> entity_range<MT::dimension> cells(E *e) {
     return entities<MT::dimension>(e);
   } // cells
 
-  const_entity_range<MT::dimension> cell_ents() const {
+  const_entity_range<MT::dimension> cells() const {
     return entity_range<MT::dimension>(*this, id_vecs_[MT::dimension]);
   } // cells
 
@@ -1326,12 +1326,12 @@ public:
     return entities<MT::dimension>(e);
   }
 
-  id_range<MT::dimension> cells() const {
+  id_range<MT::dimension> cell_ids() const {
     assert(!id_vecs_[MT::dimension].empty());
     return id_range<MT::dimension>(*this, id_vecs_[MT::dimension]);
   } // cell_ids
 
-  template <class E> const_entity_range<MT::dimension> cell_ents(E *e) const {
+  template <class E> const_entity_range<MT::dimension> cells(E *e) const {
     return entities<MT::dimension>(e);
   } // cells
 

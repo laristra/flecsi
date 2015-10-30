@@ -64,17 +64,17 @@ protected:
 };
 
 TEST_F(Burton, mesh) {
-  for(auto v : b.vertex_ents()){
+  for(auto v : b.vertices()){
     CINCH_CAPTURE() << "----------- vertex: " << v->id() << endl;
   }
 
-  for(auto e : b.edge_ents()){
+  for(auto e : b.edges()){
     CINCH_CAPTURE() << "----------- edge: " << e->id() << endl;
   }
 
-  for(auto c : b.cell_ents()){
+  for(auto c : b.cells()){
     CINCH_CAPTURE() << "----------- cell: " << c->id() << endl;
-    for(auto e : b.edge_ents(c)){
+    for(auto e : b.edges(c)){
       CINCH_CAPTURE() << "++++ edge of: " << e->id() << endl;
     }
     for(auto w : c->wedges()){
@@ -86,7 +86,7 @@ TEST_F(Burton, mesh) {
       CINCH_CAPTURE() << "++++ corner of: " << c2->id() << endl;
       for(auto w : c2->wedges()){
         CINCH_CAPTURE() << "++ wedge of: " << w->id() << endl;
-        for(auto v : b.vertex_ents(w)){
+        for(auto v : b.vertices(w)){
           CINCH_CAPTURE() << "- vertex of: " << v->id() << endl;
         }
       }
@@ -99,10 +99,10 @@ TEST_F(Burton, mesh) {
 
 TEST_F(Burton, coordinates) {
 
-  for(auto c: b.cell_ents()) {
+  for(auto c: b.cells()) {
     //auto xc = c->coordinates();
     cout << "---- cell " << c->id() << endl;
-    for(auto v : b.vertex_ents(c)){
+    for(auto v : b.vertices(c)){
       auto xv = v->coordinates();
       cout << "++++ vertex " << v->id();
       cout << ": (" << xv[0] << "," << xv[1] << ")" << endl;

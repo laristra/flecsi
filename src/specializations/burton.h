@@ -232,31 +232,31 @@ public:
 
   /*!
    */
-  auto vertex_ents() { return mesh_.vertex_ents(); }
-
-  auto edge_ents() { return mesh_.edge_ents(); }
-
-  auto cell_ents() { return mesh_.cell_ents(); }
-
   auto vertices() { return mesh_.vertices(); }
 
   auto edges() { return mesh_.edges(); }
 
   auto cells() { return mesh_.cells(); }
 
-  auto vertex_ents(wedge_t *w) { return dual_mesh_.vertex_ents(w); }
+  auto vertex_ids() { return mesh_.vertex_ids(); }
 
-  template <class E> auto vertex_ents(E *e) { return mesh_.vertex_ents(e); }
+  auto edge_ids() { return mesh_.edge_ids(); }
 
-  template <class E> auto edge_ents(E *e) { return mesh_.edge_ents(e); }
+  auto cell_ids() { return mesh_.cell_ids(); }
 
-  template <class E> auto cell_ents(E *e) { return mesh_.cell_ents(e); }
+  auto vertices(wedge_t *w) { return dual_mesh_.vertices(w); }
 
   template <class E> auto vertices(E *e) { return mesh_.vertices(e); }
 
   template <class E> auto edges(E *e) { return mesh_.edges(e); }
 
   template <class E> auto cells(E *e) { return mesh_.cells(e); }
+
+  template <class E> auto vertex_ids(E *e) { return mesh_.vertex_ids(e); }
+
+  template <class E> auto edge_ids(E *e) { return mesh_.edge_ids(e); }
+
+  template <class E> auto cell_ids(E *e) { return mesh_.cell_ids(e); }
 
   /*!
     Create a vertex in the mesh.
@@ -291,8 +291,8 @@ public:
   void init() {
     mesh_.init();
 
-    for (auto c : mesh_.cell_ents()) {
-      auto vs = mesh_.vertex_ents(c).toVec();
+    for (auto c : mesh_.cells()) {
+      auto vs = mesh_.vertices(c).toVec();
 
       point_t cp;
       cp[0] = vs[0]->coordinates()[0] +
