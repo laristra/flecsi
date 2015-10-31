@@ -69,7 +69,7 @@ public:
 
 #define register_state(mesh, key, site, type, ...) \
   (mesh).register_state_<type>((key), \
-  burton_mesh_traits_t::attachment_site_t::site, ##__VA_ARGS__)
+  flexi::burton_mesh_traits_t::attachment_site_t::site, ##__VA_ARGS__)
 
   template<typename T>
   decltype(auto) register_state_(const const_string_t && key,
