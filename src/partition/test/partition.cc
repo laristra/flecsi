@@ -63,6 +63,9 @@ protected:
   //---------------------------------------------------------------------------
   virtual void SetUp() {
 
+    // reserve storage for the mesh
+    mesh_.init_parameters((height+1)*(width+1));
+
     // create the individual vertices
     vector<vertex_t*> vs;
     
