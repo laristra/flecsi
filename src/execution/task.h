@@ -15,6 +15,8 @@
 #ifndef flexi_task_h
 #define flexi_task_h
 
+#include <iostream>
+
 #include "context.h"
 #include "../utils/static_for_each.h"
 
