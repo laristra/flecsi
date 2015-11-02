@@ -60,8 +60,11 @@ struct default_state_user_meta_data_t {
  *----------------------------------------------------------------------------*/
 
 /*!
-  \class state state.h
-  \brief state provides...
+  \class state_t state.h
+  \brief state_t provides an interface for registering and accessing
+    state data.
+
+  This type can be statically configured to use various implementations.
  */
 
 template<typename user_meta_data_t = default_state_user_meta_data_t,
@@ -69,22 +72,46 @@ template<typename user_meta_data_t = default_state_user_meta_data_t,
     default_state_storage_policy_t>
 class state_t : public storage_policy_t<user_meta_data_t>
 {
-public:
+private:
 
+  // This is just for convenience...
   using sp_t = storage_policy_t<user_meta_data_t>;
 
+public:
+
+  //! Use the accessor type defined by the storage policy.
   template<typename T>
   using accessor_t = typename sp_t::template accessor_t<T>;
-
-  enum class attribute {
-    persistent = 0
-  }; // enum class attribute
 
   //! Default constructor
   state_t() : sp_t() {}
 
   //! Destructor
    ~state_t() {}
+
+  /*!
+    Register a state variable with the state manager.  This method
+    logically allocates space for the variable of size \e indices which
+    will be identified by \e key.
+
+    \tparam T The type of the variable to be registered.  Any type that
+      does not contain a pointer is supported.
+    \tparam NS The namespace in which to register the state variable.  The
+      default namespace is the \e user namespace as defined by
+      \ref flexi::state_name_space_t.  Other namespaces may
+      be defined to avoid naming collisions.
+    \tparam Args A variadic list of arguments that are  passed to the
+      inititalization method of the user-defined meta data type.
+
+    \param key The name of the state variable to register. See the
+      documentation for \ref const_string_t for more information on
+      valid usage.  Normally, this parameter is just a
+      \e const \e char \e *, e.g., "density".
+    \param indices The size of the index space with which this variable
+      is associated, i.e., the number of elements to allocate.
+    \param args A variadic list of arguments to pass to the initialization
+      function of the user-defined meta data type.
+   */
 
   template<typename T,
     size_t NS = static_cast<size_t>(state_name_space_t::user),
@@ -95,11 +122,40 @@ public:
       std::forward<Args>(args) ...);
   } // register_state
 
+  /*!
+    Return an accessor_t instance that provides logical array-based access
+    to the state data.
+
+    \tparam T The type of the variable to be returned.  The type information
+      for a state variable is not necessarily stored, meaning that the
+      state can be interpreted however the user wants.  Needless to say,
+      if the type requested is not consistent with the actual stored type,
+      bad things will happen.
+    \tparam NS The namespace of the requested state variable.  The
+      default namespace is the \e user namespace as defined by
+      \ref flexi::state_name_space_t.
+
+    \param key The name of the state variable to return.
+
+    \return An accessor to the requested state data.
+   */
+
   template<typename T,
     size_t NS = static_cast<size_t>(state_name_space_t::user)>
   accessor_t<T> accessor(const const_string_t & key) {
     return sp_t::template accessor<T,NS>(key);
   } // accessor
+
+  /*!
+    Return a std::vector of accessors to the stored states with
+    type \e T in namespace \e NS.
+
+    \tparam T All state variables of this type will be returned.
+    \tparam NS Namespace to use.
+
+    \return A std::vector of accessors to the state variables that
+      match the type and namespace criteria.
+   */
 
   template<typename T,
     size_t NS = static_cast<size_t>(state_name_space_t::user)>
@@ -107,17 +163,102 @@ public:
     return sp_t::template accessors<T,NS>();
   } // accessors
 
+  /*!
+    Return a std::vector of accessors to the stored states with
+    type \e T in namespace \e NS satisfying the predicate function
+    \e predicate.
+
+    \tparam T All state variables of this type will be returned.
+    \tparam NS Namespace to use.
+
+    \param predicate A predicate function (returns true or false) that
+      will be used to select which state variables are included in the
+      return vector.  Valid predicate funcitons must match the
+      signature:
+      \code
+      bool predicate(const & user_meta_data_t)
+      \endcode
+
+    \return A std::vector of accessors to the state variables that
+      match the namespace and predicate criteria.
+   */
+
   template<typename T,
-    size_t NS = static_cast<size_t>(state_name_space_t::user),
-    typename P>
-  std::vector<accessor_t<T>> accessors(P predicate) {
-    return sp_t::template accessors<T,NS,P>(predicate);
+    typename P,
+    size_t NS = static_cast<size_t>(state_name_space_t::user)>
+  std::vector<accessor_t<T>> accessors(P && predicate) {
+    return sp_t::template accessors<T,NS,P>(std::forward<P>(predicate));
   } // accessors
+
+  /*!
+    Return a std::vector of raw accessors to the stored states with
+    in namespace \e NS.  Raw accessors are of type uint8_t.
+
+    \tparam NS Namespace to use.
+
+    \return A std::vector of raw accessors to the state variables that
+      match the namespace criteria.
+   */
+
+  template<size_t NS = static_cast<size_t>(state_name_space_t::user)>
+  std::vector<accessor_t<uint8_t>> raw_accessors() {
+    return sp_t::template raw_accessors<NS>();
+  } // raw_accessors
+
+  /*!
+    Return a std::vector of raw accessors to the stored states with
+    in namespace \e NS satisfying the predicate function \e predicate.
+
+    \tparam NS Namespace to use.
+
+    \param predicate A predicate function (returns true or false) that
+      will be used to select which state variables are included in the
+      return vector.  Valid predicate funcitons must match the
+      signature:
+      \code
+      bool predicate(const & user_meta_data_t)
+      \endcode
+
+    \return A std::vector of raw accessors to the state variables that
+      match the namespace and predicate criteria.
+   */
+
+  template<typename P,
+    size_t NS = static_cast<size_t>(state_name_space_t::user)>
+  std::vector<accessor_t<uint8_t>> raw_accessors(P && predicate) {
+    return sp_t::template raw_accessors<NS>(std::forward<P>(predicate));
+  } // raw_accessors
+
+  /*!
+    Return the user meta data for the state variable identified by \e key
+    in namespace \e NS.
+
+    \param key The name of the state variable for which to return
+      the meta data.
+
+    \return The meta data corresponding to the key and namespace.
+   */
 
   template<size_t NS = static_cast<size_t>(state_name_space_t::user)>
   user_meta_data_t & meta_data(const const_string_t & key) {
     return sp_t::template meta_data<NS>(key);
   } // user_meta_data
+
+  /*!
+    Return a copy of the state variable as an array of type \e T.
+
+    \attention Calls to this function are expensive because they
+      require that data (that may not be physically stored as an array)
+      be replicated and repackaged to satisfy this request.
+
+    \tparam T The type to be used to interpret the state variable.
+    \tparam NS The namespace of the desired state variable.
+
+    \param key The name of the state variable for which to return
+      the data.
+
+    \return A std::shared_ptr<T> with a copy of the state data.
+   */
 
   template<typename T,
     size_t NS = static_cast<size_t>(state_name_space_t::user)>

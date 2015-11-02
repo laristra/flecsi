@@ -24,9 +24,9 @@ using flexi::persistent;
 TEST(state, sanity) {
   state_t state;
 
-  state.register_state<double, 0>("density", 10, 0, persistent);
-  state.register_state<double, 0>("pressure", 10, 0, 0x0);
-  state.register_state<float, 1>("density", 15, 0, 0x0);
+  state.register_state<double>("density", 10, 0, persistent);
+  state.register_state<double>("pressure", 10, 1, persistent);
+  state.register_state<float>("velocity", 15, 0, persistent);
 
   auto d = state.accessor<double, 0>("density");
 
@@ -41,11 +41,12 @@ TEST(state, sanity) {
   // define a predicate to test for persistent state
   auto pred = [](const auto & a) -> bool {
     flexi::bitfield_t bf(a.meta().attributes);
-    return bf.bitsset(persistent);
+    return a.meta().site_id == 0 && bf.bitsset(persistent);
   };
 
   // get accessors that match type 'double' and predicate
-  for(auto a: state.accessors<double, 0>(pred)) {
+  for(auto a: state.accessors<double>(pred)) {
+    std::cout << a.label() << std::endl;
     ASSERT_TRUE(pred(a));
   } // for
 
