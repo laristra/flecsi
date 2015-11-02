@@ -56,6 +56,7 @@ protected:
   struct meta_data_t {
     std::string label;
     user_meta_data_t user_data;
+    size_t size;
     size_t type_size;
 
     struct type_info_t {
@@ -93,6 +94,7 @@ protected:
     
     // store the type size and allocate storage
     meta_[NS][key.hash()].label = key.c_str();
+    meta_[NS][key.hash()].size = indices;
     meta_[NS][key.hash()].type_size = sizeof(T);
     meta_[NS][key.hash()].rtti.reset(
       new typename meta_data_t::type_info_t(typeid(T)));
@@ -159,8 +161,7 @@ protected:
    */
   template<typename T, size_t NS>
   accessor_t<T> accessor(const const_string_t & key) {
-    return { meta_[NS][key.hash()].label,
-      meta_[NS][key.hash()].data.size()/sizeof(T),
+    return { meta_[NS][key.hash()].label, meta_[NS][key.hash()].size,
       reinterpret_cast<T *>(&meta_[NS][key.hash()].data[0]),
       meta_[NS][key.hash()].user_data };
   } // accessor
@@ -172,8 +173,7 @@ protected:
    */
   template<typename T, size_t NS>
   accessor_t<T> accessor(const_string_t::hash_type_t hash) {
-    return { meta_[NS][hash].label,
-      meta_[NS][hash].data.size()/sizeof(T),
+    return { meta_[NS][hash].label, meta_[NS][hash].size,
       reinterpret_cast<T *>(&meta_[NS][hash].data[0]),
       meta_[NS][hash].user_data };
   } // accessor
@@ -198,7 +198,7 @@ protected:
     Return an accessor to all data for a given type and predicate.
    */
   template<typename T, size_t NS, typename P>
-  std::vector<accessor_t<T>> accessors(P predicate) {
+  std::vector<accessor_t<T>> accessors(P && predicate) {
     std::vector<accessor_t<T>> v;
 
     for(auto entry_pair: meta_[NS]) {
@@ -207,6 +207,39 @@ protected:
 
       if(entry_pair.second.rtti->type_info == typeid(T) &&
         predicate(a)) {
+        v.push_back(a);
+      } // if
+    } // for
+
+    return v;
+  } // accessors_predicate
+
+  /*!
+    Return accessors to all data.
+   */
+  template<size_t NS>
+  std::vector<accessor_t<uint8_t>> accessors() {
+    std::vector<accessor_t<uint8_t>> v;
+
+    for(auto entry_pair: meta_[NS]) {
+      v.push_back(accessor<uint8_t,NS>(entry_pair.first));
+    } // for
+
+    return v;
+  } // accessors
+
+  /*!
+    Return an accessor to all data for a given type and predicate.
+   */
+  template<size_t NS, typename P>
+  std::vector<accessor_t<uint8_t>> accessors(P && predicate) {
+    std::vector<accessor_t<uint8_t>> v;
+
+    for(auto entry_pair: meta_[NS]) {
+      // create an accessor
+      auto a = accessor<uint8_t,NS>(entry_pair.first);
+
+      if(predicate(a)) {
         v.push_back(a);
       } // if
     } // for
@@ -230,8 +263,11 @@ protected:
     \param name The name of the data to return.
    */
   template<typename T, size_t NS>
-  T * data(const const_string_t & key) {
-    return static_cast<T *>(&meta_[NS][key.hash()].data[0]);
+  std::shared_ptr<T> & data(const const_string_t & key) {
+    std::shared_ptr<T> sp { new T[meta_[NS][key.hash()].size] };
+    memcpy(*sp, &meta_[NS][key.hash()].data[0],
+      meta_[NS][key.hash()].data.size());
+    return sp;
   } // data
 
 private:

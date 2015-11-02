@@ -58,8 +58,8 @@ public:
    * Execution Interface
    *--------------------------------------------------------------------------*/
 
-#define execute(task, ...) \
-  private_mesh_execution_t::execute_task(task, ##__VA_ARGS__)
+  #define execute(task, ...) \
+    private_mesh_execution_t::execute_task(task, ##__VA_ARGS__)
 
   /*--------------------------------------------------------------------------*
    * State Interface
@@ -67,9 +67,9 @@ public:
 
   using attachment_site_t = burton_mesh_traits_t::attachment_site_t;
 
-#define register_state(mesh, key, site, type, ...) \
-  (mesh).register_state_<type>((key), \
-  flexi::burton_mesh_traits_t::attachment_site_t::site, ##__VA_ARGS__)
+  #define register_state(mesh, key, site, type, ...) \
+    (mesh).register_state_<type>((key), \
+    flexi::burton_mesh_traits_t::attachment_site_t::site, ##__VA_ARGS__)
 
   template<typename T>
   decltype(auto) register_state_(const const_string_t && key,
@@ -102,19 +102,48 @@ public:
 
   } // register_state_
 
-#define access_state(mesh, key, type) \
-  (mesh).access_state_<type>((key))
+  #define access_state(mesh, key, type) \
+    (mesh).access_state_<type>((key))
 
   template<typename T>
   decltype(auto) access_state_(const const_string_t && key) {
     return state_.accessor<T>(key);
   } // access_state_
 
-/*!
-  \brief Return the attributes of a state quantity
- */
-#define state_attributes(mesh, key) \
-  (mesh).state_attributes_((key))
+  #define access_type(mesh, type) \
+    (mesh).access_type_<type>()
+
+  template<typename T>
+  decltype(auto) access_type_() {
+    return state_.accessors<T>();
+  } // access_type_
+
+  #define access_type_if(mesh, type, predicate) \
+    (mesh).access_type_if_<type>(predicate)
+
+  template<typename T, typename P>
+  decltype(auto) access_type_if_(P && predicate) {
+    return state_.accessors<T,P>(std::forward<P>(predicate));
+  } // access_type_if
+
+  #define is_at(site__)                                           \
+    [](const auto & a) -> bool {                                  \
+      bitfield_t bf(a.meta().attributes);                         \
+      return a.meta().site ==                                     \
+        flexi::burton_mesh_traits_t::attachment_site_t::site__; }
+
+  #define is_persistent_at(site__)                                \
+    [](const auto & a) -> bool {                                  \
+      bitfield_t bf(a.meta().attributes);                         \
+      return a.meta().site ==                                     \
+        flexi::burton_mesh_traits_t::attachment_site_t::site__ && \
+        bf.bitsset(persistent); }
+
+  /*!
+    \brief Return the attributes of a state quantity
+   */
+  #define state_attributes(mesh, key) \
+    (mesh).state_attributes_((key))
 
   decltype(auto) state_attributes_(const const_string_t && key) {
     return state_.meta_data<>((key)).attributes;
