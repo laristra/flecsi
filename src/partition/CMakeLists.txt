@@ -19,7 +19,7 @@ cinch_add_unit(partition
   INPUTS  test/metis_mesh.blessed 
           test/metis.blessed 
           test/scotch.blessed
-  LIBRARIES ${PARTITION_LIBRARIES}
+  LIBRARIES     ${PARTITION_LIBRARIES}
 )
 endif()
 

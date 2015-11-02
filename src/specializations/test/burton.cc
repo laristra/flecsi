@@ -26,6 +26,7 @@ using edge_t = burton_mesh_t::edge_t;
 using cell_t = burton_mesh_t::cell_t;
 using point_t = burton_mesh_t::point_t;
 using vector_t = burton_mesh_t::vector_t;
+using real_t = burton_mesh_t::real_t;
 
 // test fixture for creating the mesh
 class Burton : public ::testing::Test {
@@ -33,28 +34,29 @@ protected:
   virtual void SetUp() {
     vector<vertex_t*> vs;
   
+    b.init_parameters((height+1)*(width+1));
+
     for(size_t j = 0; j < height + 1; ++j){
       for(size_t i = 0; i < width + 1; ++i){
-	auto v = b.create_vertex({double(i), double(j)});
-	v->set_rank(1);
-	vs.push_back(v);
-      }
-    }
+        auto v = b.create_vertex({double(i), double(j)});
+        v->set_rank(1);
+        vs.push_back(v);
+      } // for
+    } // for
 
     size_t width1 = width + 1;
     for(size_t j = 0; j < height; ++j){
       for(size_t i = 0; i < width; ++i){
-	// go over vertices counter clockwise to define cell
-	auto c = 
-	  b.create_cell({vs[i + j * width1],
+        // go over vertices counter clockwise to define cell
+        auto c = b.create_cell({vs[i + j * width1],
             vs[i + 1 + j * width1],
             vs[i + 1 + (j + 1) * width1],
             vs[i + (j + 1) * width1]});
-      }
-    }
+      } // for
+    } // for
 
     b.init();
-  }
+  } // SetUp
 
   virtual void TearDown() { }
 
@@ -63,7 +65,6 @@ protected:
   const size_t height = 2;
 };
 
-#if 0
 TEST_F(Burton, mesh) {
   for(auto v : b.vertices()){
     CINCH_CAPTURE() << "----------- vertex: " << v->id() << endl;
@@ -97,7 +98,6 @@ TEST_F(Burton, mesh) {
   CINCH_ASSERT(TRUE, CINCH_EQUAL_BLESSED("burton.blessed"));
 
 } // TEST_F
-#endif
 
 TEST_F(Burton, coordinates) {
 
@@ -111,8 +111,6 @@ TEST_F(Burton, coordinates) {
     } // for
   } // for
 } // TEST_F
-
-using real_t = burton_mesh_t::real_t;
 
 TEST_F(Burton, state) {
 
@@ -188,7 +186,6 @@ TEST_F(Burton, state) {
     }
   } // for
 #endif
-
 } // TEST_F
 
 /*~------------------------------------------------------------------------~--*

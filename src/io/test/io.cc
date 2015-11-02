@@ -14,111 +14,33 @@
 
 #include <cinchtest.h>
 
-#include "../../specializations/burton.h"
+// declare mesh_t for io.h
+class mesh_t {};
+
 #include "../io.h"
 
-#include <vector>
+namespace flexi {
 
-using namespace std;
-using namespace flexi;
+// provide empty implementations of read and write.
+int32_t io_exodus_t::read(const std::string &name, mesh_t &m) {
+  return 0;
+}
+int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
+  return 0;
+}
 
-using vertex_t = burton_mesh_t::vertex_t;
-using edge_t = burton_mesh_t::edge_t;
-using cell_t = burton_mesh_t::cell_t;
-using point_t = burton_mesh_t::point_t;
+// read/write mesh register the .g and .exo suffixes. Call the io.h
+// functions which look for those suffix registrations. Calling read/write
+// with any other file suffixes will fail, until more are implemented.
+TEST(io, readwrite) {
+  mesh_t m;
+  ASSERT_FALSE(read_mesh("test.g", m));
+  ASSERT_FALSE(read_mesh("test.exo", m));
+  ASSERT_FALSE(write_mesh("test.g", m));
+  ASSERT_FALSE(write_mesh("test.exo", m));
+} // TEST
 
-// test fixture for creating the mesh
-class Burton : public ::testing::Test {
-protected:
-  virtual void SetUp() {
-    vector<vertex_t*> vs;
-
-    for(size_t j = 0; j < height + 1; ++j){
-      for(size_t i = 0; i < width + 1; ++i){
-	auto v =
-	  b.create_vertex({double(i)+ 0.1*pow(double(j),1.8), 1.5*double(j)});
-	v->set_rank(1);
-	vs.push_back(v);
-      }
-    }
-
-    size_t width1 = width + 1;
-    for(size_t j = 0; j < height; ++j){
-      for(size_t i = 0; i < width; ++i){
-	// go over vertices counter clockwise to define cell
-	auto c = 
-	  b.create_cell({vs[i + j * width1],
-            vs[i + 1 + j * width1],
-            vs[i + 1 + (j + 1) * width1],
-            vs[i + (j + 1) * width1]});
-      }
-    }
-
-    b.init();
-  }
-
-  virtual void TearDown() { }
-
-  burton_mesh_t b;
-  const size_t width = 4;
-  const size_t height = 8;
-};
-
-using real_t = burton_mesh_t::real_t;
-using vector_t = burton_mesh_t::vector_t;
-
-TEST_F(Burton, write_exo) {
-  // create state data on b
-  // register
-  register_state(b, "pressure", cells, real_t, persistent);
-  register_state(b, "velocity", vertices, vector_t, persistent);
-  // access
-  auto p = access_state(b, "pressure", real_t);
-  auto velocity = access_state(b, "velocity", vector_t);
-  // initialize
-  for(auto c: p) {
-    p[c] = c;
-  } // for
-  // vertices
-  for (auto v: velocity) {
-    velocity[v][0] = v;
-    velocity[v][1] = 2.0*v;
-  } // for
-
-  // write the mesh
-  std::string name("test/mesh.exo");
-  ASSERT_FALSE(write_mesh(name, b));
-
-} // TEST_F
-
-TEST_F(Burton, write_g) {
-  std::string filename("test/mesh.g");
-  ASSERT_FALSE(write_mesh(filename, b));
-} // TEST_F
-
-#if 0
-TEST_F(Burton, read_exo) {
-  burton_mesh_t m;
-  // read mesh written by above test
-  std::string filename("test/mesh.exo");
-  ASSERT_FALSE(read_mesh(filename, m));
-
-  // write m to a different file
-  filename = "test/mesh_out.exo";
-  ASSERT_FALSE(write_mesh(filename, m));
-} // TEST_F
-
-TEST_F(Burton, read_g) {
-  burton_mesh_t m;
-  // read mesh written by above test
-  std::string filename("test/mesh.g");
-  ASSERT_FALSE(read_mesh(filename, m));
-
-  // write m to a different file
-  filename = "test/mesh_out.g";
-  ASSERT_FALSE(write_mesh(filename, m));
-} // TEST_F
-#endif
+} // namespace flexi
 
 /*----------------------------------------------------------------------------*
  * Cinch test Macros

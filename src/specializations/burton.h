@@ -40,48 +40,10 @@ namespace flexi {
 
 class burton_mesh_t
 {
-public:
-
-  enum class attachment_site_t : size_t {
-    vertices,
-    edges,
-    cells,
-    corners,
-    wedges
-  }; // enum class attachment_site_t
-
-  enum class state_attribute_t : bitfield_t::field_type_t {
-    persistent = 0
-  }; // enum class state_attribute_t
-
 private:
+
   using private_mesh_t = mesh_topology<burton_mesh_types_t>;
   using private_dual_mesh_t = mesh_topology<burton_dual_mesh_types_t>;
-
-  /*--------------------------------------------------------------------------*
-   * State type definitions
-   *--------------------------------------------------------------------------*/
-
-  struct private_state_meta_data_t {
-
-    void initialize(attachment_site_t site_,
-      bitfield_t::field_type_t attributes_) {
-      site = site_;
-      attributes = attributes_;
-    } // initialize
-
-    attachment_site_t site;
-    bitfield_t::field_type_t attributes;
-
-  }; // struct private_state_meta_data_t
-
-#ifndef MESH_STORAGE_POLICY
-  // for now: use default storage policy
-  using private_mesh_state_t = state_t<private_state_meta_data_t>;
-#else
-  using private_mesh_state_t =
-    state_t<private_state_meta_data_t, MESH_STORAGE_POLICY>;
-#endif
 
 #ifndef MESH_EXECUTION_POLICY
   // for now: use default execution policy
@@ -103,9 +65,11 @@ public:
    * State Interface
    *--------------------------------------------------------------------------*/
 
+  using attachment_site_t = burton_mesh_traits_t::attachment_site_t;
+
 #define register_state(mesh, key, site, type, ...) \
   (mesh).register_state_<type>((key), \
-  burton_mesh_t::attachment_site_t::site, ##__VA_ARGS__)
+  flexi::burton_mesh_traits_t::attachment_site_t::site, ##__VA_ARGS__)
 
   template<typename T>
   decltype(auto) register_state_(const const_string_t && key,
@@ -265,7 +229,10 @@ public:
     \param pos The position (coordinates) for the vertex.
    */
   vertex_t *create_vertex(const point_t &pos) {
-    auto v = mesh_.make<vertex_t>(pos);
+    auto p = access_state_<point_t>("coordinates");
+    p[mesh_.num_vertices()] = pos;
+
+    auto v = mesh_.make<vertex_t>(pos, &state_);
     mesh_.add_vertex(v);
     return v;
   }
@@ -289,6 +256,14 @@ public:
     dual_mesh_.dump();
   }
 
+  void init_parameters(size_t vertices) {
+
+    // register coordinate state
+    state_.register_state<point_t>("coordinates", vertices,
+      attachment_site_t::vertices, 0x0);
+
+  } // init_parameters
+
   void init() {
     mesh_.init();
 
@@ -301,19 +276,19 @@ public:
       cp[1] = vs[0]->coordinates()[1] +
           0.5 * (vs[3]->coordinates()[1] - vs[0]->coordinates()[1]);
 
-      auto cv = dual_mesh_.make<vertex_t>(cp);
+      auto cv = dual_mesh_.make<vertex_t>(cp, &state_);
       cv->set_rank(0);
 
-      auto v0 = dual_mesh_.make<vertex_t>(vs[0]->coordinates());
+      auto v0 = dual_mesh_.make<vertex_t>(vs[0]->coordinates(), &state_);
       v0->set_rank(1);
 
-      auto v1 = dual_mesh_.make<vertex_t>(vs[3]->coordinates());
+      auto v1 = dual_mesh_.make<vertex_t>(vs[3]->coordinates(), &state_);
       v1->set_rank(1);
 
-      auto v2 = dual_mesh_.make<vertex_t>(vs[1]->coordinates());
+      auto v2 = dual_mesh_.make<vertex_t>(vs[1]->coordinates(), &state_);
       v2->set_rank(1);
 
-      auto v3 = dual_mesh_.make<vertex_t>(vs[2]->coordinates());
+      auto v3 = dual_mesh_.make<vertex_t>(vs[2]->coordinates(), &state_);
       v3->set_rank(1);
 
       auto w1 = dual_mesh_.make<wedge_t>();
@@ -361,7 +336,7 @@ private:
   private_mesh_t mesh_;
   private_dual_mesh_t dual_mesh_;
 
-  private_mesh_state_t state_;
+  burton_mesh_traits_t::private_mesh_state_t state_;
 
 }; // class burton_mesh_t
 

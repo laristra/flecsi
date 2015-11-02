@@ -33,7 +33,7 @@ enum class state_name_space_t : size_t {
 }; // enum class state_name_space_t
 
 enum class state_attribute : bitfield_t::field_type_t {
-  persistent = 0
+  persistent = 0x0001
 }; // enum class state_attribute
 
 const bitfield_t::field_type_t persistent =
@@ -45,11 +45,14 @@ const bitfield_t::field_type_t persistent =
 
 struct default_state_user_meta_data_t {
 
-  void initialize(const size_t & site_id_) {
+  void initialize(const size_t & site_id_,
+    bitfield_t::field_type_t attributes_) {
     site_id = site_id_;
+    attributes = attributes_;
   } // initialize
 
   size_t site_id;
+  bitfield_t::field_type_t attributes;
 }; // struct default_state_user_meta_data_t
 
 /*----------------------------------------------------------------------------*
@@ -94,18 +97,31 @@ public:
 
   template<typename T,
     size_t NS = static_cast<size_t>(state_name_space_t::user)>
-  accessor_t<T> accessor(const_string_t key) {
+  accessor_t<T> accessor(const const_string_t & key) {
     return sp_t::template accessor<T,NS>(key);
   } // accessor
 
+  template<typename T,
+    size_t NS = static_cast<size_t>(state_name_space_t::user)>
+  std::vector<accessor_t<T>> accessors() {
+    return sp_t::template accessors<T,NS>();
+  } // accessors
+
+  template<typename T,
+    size_t NS = static_cast<size_t>(state_name_space_t::user),
+    typename P>
+  std::vector<accessor_t<T>> accessors(P predicate) {
+    return sp_t::template accessors<T,NS,P>(predicate);
+  } // accessors
+
   template<size_t NS = static_cast<size_t>(state_name_space_t::user)>
-  user_meta_data_t & meta_data(const_string_t key) {
+  user_meta_data_t & meta_data(const const_string_t & key) {
     return sp_t::template meta_data<NS>(key);
   } // user_meta_data
 
   template<typename T,
     size_t NS = static_cast<size_t>(state_name_space_t::user)>
-  std::shared_ptr<T> & data(const_string_t key) {
+  std::shared_ptr<T> & data(const const_string_t & key) {
     return sp_t::template data<T,NS>(key);
   } // data
 

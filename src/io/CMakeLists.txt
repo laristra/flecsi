@@ -23,7 +23,7 @@ set(io_HEADERS
   
 cinch_add_unit(io
   SOURCES test/io.cc
-  LIBRARIES ${IO_LIBRARIES})
+)
 
 endif(ENABLE_IO)
 

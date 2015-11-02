@@ -15,14 +15,18 @@
 #include <cinchtest.h>
 
 #include "../state.h"
+#include "../../utils/bitfield.h"
 
-using state_t = flexi::state_t<flexi::default_state_storage_policy_t>;
+using state_t = flexi::state_t<flexi::default_state_user_meta_data_t,
+  flexi::default_state_storage_policy_t>;
+using flexi::persistent;
 
 TEST(state, sanity) {
   state_t state;
 
-  state.register_state<double, 0>("density", 10, persistent);
-  state.register_state<float, 1>("density", 15);
+  state.register_state<double, 0>("density", 10, 0, persistent);
+  state.register_state<double, 0>("pressure", 10, 0, 0x0);
+  state.register_state<float, 1>("density", 15, 0, 0x0);
 
   auto d = state.accessor<double, 0>("density");
 
@@ -31,7 +35,18 @@ TEST(state, sanity) {
   } // for
 
   for(auto i: d) {
-    std::cout << "index " << i << " has value " << d[i] << std::endl;
+    ASSERT_EQ(i, d[i]);
+  } // for
+
+  // define a predicate to test for persistent state
+  auto pred = [](const auto & a) -> bool {
+    flexi::bitfield_t bf(a.meta().attributes);
+    return bf.bitsset(persistent);
+  };
+
+  // get accessors that match type 'double' and predicate
+  for(auto a: state.accessors<double, 0>(pred)) {
+    ASSERT_TRUE(pred(a));
   } // for
 
 } // TEST
