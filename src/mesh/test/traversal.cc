@@ -33,7 +33,7 @@ public:
 
   using Float = double;
 
-  using entity_types = std::tuple<Vertex, Edge, Cell>;
+  using entity_types = std::tuple<std::tuple<Vertex, Edge, Cell>>;
 
   using traversal_pairs = 
     std::tuple<std::pair<Vertex, Edge>,

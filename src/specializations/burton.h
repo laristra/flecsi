@@ -203,47 +203,47 @@ public:
     Get number of mesh vertices.
    */
   size_t num_vertices() const {
-    return mesh_.num_vertices();
+    return mesh_.num_vertices<0>();
   } // num_vertices
 
   /*!
     Get number of mesh edges.
    */
-  size_t num_edges() const { return mesh_.num_edges(); } // num_edges
+  size_t num_edges() const { return mesh_.num_edges<0>(); } // num_edges
 
   /*!
     Get number of mesh cells.
    */
-  size_t num_cells() const { return mesh_.num_cells(); } // num_cells
+  size_t num_cells() const { return mesh_.num_cells<0>(); } // num_cells
 
   /*!
     Get number of corners.
    */
   size_t num_corners() {
-    return dual_mesh_.num_entities(0);
+    return dual_mesh_.num_entities(0, 0);
   } // num_corners
 
   /*!
     Get number of wedges.
    */
   size_t num_wedges() {
-    return dual_mesh_.num_entities(2);
+    return dual_mesh_.num_entities(0, 2);
   } // num_wedges
 
   /*!
    */
 
-  auto vertices() { return mesh_.vertices(); }
+  auto vertices() { return mesh_.vertices<0>(); }
 
-  auto edges() { return mesh_.edges(); }
+  auto edges() { return mesh_.edges<0>(); }
 
-  auto cells() { return mesh_.cells(); }
+  auto cells() { return mesh_.cells<0>(); }
 
-  auto vertex_ids() { return mesh_.vertex_ids(); }
+  auto vertex_ids() { return mesh_.vertex_ids<0>(); }
 
-  auto edge_ids() { return mesh_.edge_ids(); }
+  auto edge_ids() { return mesh_.edge_ids<0>(); }
 
-  auto cell_ids() { return mesh_.cell_ids(); }
+  auto cell_ids() { return mesh_.cell_ids<0>(); }
 
   auto vertices(wedge_t *w) { return dual_mesh_.vertices(w); }
 

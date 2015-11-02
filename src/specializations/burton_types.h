@@ -177,8 +177,10 @@ struct burton_mesh_types_t {
    * Specify mesh parameterizations.
    *--------------------------------------------------------------------------*/
 
-  using entity_types = 
-    std::tuple<burton_vertex_t, burton_edge_t, burton_cell_t>;
+  using entity_types =
+    std::tuple< 
+      std::tuple<burton_vertex_t, burton_edge_t, burton_cell_t>
+    >;
 
   using traversal_pairs = 
     std::tuple<std::pair<burton_vertex_t, burton_edge_t>,
@@ -264,7 +266,9 @@ public:
   using burton_wedge_t = burton_mesh_types_t::burton_wedge_t;
 
   using entity_types =
-      std::tuple<burton_vertex_t, burton_edge_t, burton_wedge_t>;
+      std::tuple<
+        std::tuple<burton_vertex_t, burton_edge_t, burton_wedge_t>
+      >;
 
   using traversal_pairs = 
     std::tuple<std::pair<burton_vertex_t, burton_edge_t>,
