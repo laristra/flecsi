@@ -331,6 +331,22 @@ public:
     dual_mesh_.init();
   }
 
+  /*!
+    Compute the centroid of a cell.
+    
+    \param[in] cell The cell entity whose vertex i want.
+    \return a point_t that is the centroid  
+  */
+  decltype(auto) centroid(const cell_t *c) const {
+    point_t tmp(0.0);
+    auto vert_list = mesh_.vertices(c);
+    for ( auto v : vert_list ) 
+      tmp += v->coordinates();
+    tmp /= vert_list.size();
+    return tmp;
+  }
+
+
 private:
 
   private_mesh_t mesh_;
