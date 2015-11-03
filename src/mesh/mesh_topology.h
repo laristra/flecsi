@@ -1273,7 +1273,7 @@ public:
   const id_vec &get_id_vec_(size_t dim) const { return id_vecs_[M][dim]; }
 
   template<size_t D, size_t M=0>
-  auto get_entity(id_t id) {
+  auto get_entity(id_t id) const {
     using entity_types = 
     typename std::tuple_element<M, typename MT::entity_types>::type;
 
