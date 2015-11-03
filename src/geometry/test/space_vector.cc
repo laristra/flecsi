@@ -15,6 +15,7 @@
 #include <cinchtest.h>
 
 #include "../space_vector.h"
+#include "../point.h"
 
 using namespace flexi;
 

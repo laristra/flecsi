@@ -20,7 +20,6 @@
 
 #include "../data/dimensioned_array.h"
 #include "../utils/common.h"
-#include "point.h"
 
 /*!
  * \file space_vector.h
@@ -84,7 +83,7 @@ template <typename T, size_t D> T magnitude(const space_vector<T, D> &a) {
   a and b we use x = b[0] - a[0] and y = b[1] - a[1]
  */
 template <typename T>
-space_vector<T, 2> normal(const point<T, 2> &a, const point<T, 2> &b) {
+space_vector<T, 2> normal(const space_vector<T, 2> &a, const space_vector<T, 2> &b) {
   space_vector<T, 2> tmp(a[1] - b[1], b[0] - a[0]);
   return tmp;
 } // normal
@@ -99,6 +98,21 @@ space_vector<T, 3> normal(
       a[0] * b[1] - a[1] * b[0]);
   return tmp;
 } // normal
+
+
+/*!
+  \function distance
+ */
+template <typename T, size_t D> 
+T distance(space_vector<T, D> &a, space_vector<T, D> &b) {
+
+  T sum(0);
+  for (size_t d(0); d < D; ++d) {
+    sum += square(a[d] - b[d]);
+  } // for
+
+  return std::sqrt(sum);
+} // distance
 
 } // namespace flexi
 
