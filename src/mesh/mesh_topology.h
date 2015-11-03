@@ -602,9 +602,9 @@ public:
       return *this;
     }
 
-    const entity_type *operator*() { return mesh_.get_entity<D>((*entities_)[index_]); }
+    const entity_type *operator*() const { return mesh_.get_entity<D>((*entities_)[index_]); }
 
-    const entity_type *operator->() { return mesh_.get_entity<D>((*entities_)[index_]); }
+    const entity_type *operator->() const { return mesh_.get_entity<D>((*entities_)[index_]); }
 
     bool operator==(const const_iterator &itr) const { return index_ == itr.index_; }
 
@@ -714,6 +714,10 @@ public:
         ret.push_back(mesh_.get_entity<D>(v_[i]));
       }
       return ret;
+    }
+
+    size_t size() const {
+      return end_ - begin_;
     }
 
   private:
@@ -1213,13 +1217,13 @@ public:
 
   template<size_t D>
   typename std::tuple_element<D, typename MT::entity_types>::type*
-  get_entity(id_t id){
+  get_entity(id_t id) const {
     using Type = typename std::tuple_element<D, typename MT::entity_types>::type;
 
     return static_cast<Type*>(entities_[D][id]);
   }
   
-  mesh_entity_base* get_entity(size_t dim, id_t id) {
+  mesh_entity_base* get_entity(size_t dim, id_t id) const {
     return entities_[dim][id];
   } // get_entity
 
