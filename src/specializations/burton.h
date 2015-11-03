@@ -58,6 +58,21 @@ public:
    * Execution Interface
    *--------------------------------------------------------------------------*/
 
+  /*!
+    Execute a task using the flexi task runtime abstraction.
+
+    This macro function will call into the flexi::execution_t interface
+    to execute the given task.  Task arguments will be analyzed and
+    forwarded to the low-level runtime.
+
+    \param task The task to execute.  Note that the task must conform
+      to the signature required by flexi.  Flexi uses static type
+      checking to insure that tasks are compliant.
+
+   \param ... The task input arguments (variadic list).  All arguments
+     will be passed to the task when it is invoked.
+   */
+
   #define execute(task, ...) \
     private_mesh_execution_t::execute_task(task, ##__VA_ARGS__)
 
@@ -67,9 +82,24 @@ public:
 
   using attachment_site_t = burton_mesh_traits_t::attachment_site_t;
 
+  /*!
+    Register state with the mesh.
+
+    \param mesh The flexi mesh instance with which to register the state.
+    \param key The string name of the state variable to register,
+      e.g., "density".
+    \param site The data attachment site on the mesh where the state
+      should reside.  Valid attachement sites are documented in
+      \ref flexi::burton_mesh_traits_t.
+    \param type A valid C++ type for the registered state.
+   */
+
   #define register_state(mesh, key, site, type, ...) \
     (mesh).register_state_<type>((key), \
     flexi::burton_mesh_traits_t::attachment_site_t::site, ##__VA_ARGS__)
+
+  /*!
+   */
 
   template<typename T>
   decltype(auto) register_state_(const const_string_t && key,
@@ -126,22 +156,49 @@ public:
     return state_.accessors<T,P>(std::forward<P>(predicate));
   } // access_type_if
 
-  #define is_at(site__)                                           \
-    [](const auto & a) -> bool {                                  \
-      bitfield_t bf(a.meta().attributes);                         \
-      return a.meta().site ==                                     \
-        flexi::burton_mesh_traits_t::attachment_site_t::site__; }
+  /*!
+    Predicate function to select state variables that are defined at
+    a specific attachment site.
 
-  #define is_persistent_at(site__)                                \
-    [](const auto & a) -> bool {                                  \
-      bitfield_t bf(a.meta().attributes);                         \
-      return a.meta().site ==                                     \
-        flexi::burton_mesh_traits_t::attachment_site_t::site__ && \
+    \param attachment_site State data must be registered at this site
+      to meet this predicate criterium.  Valid attachement sites are
+      documented in \ref flexi::burton_mesh_traits_t.
+
+    \return bool True if the state is registered at the specified
+      attachment site, false, otherwise.
+   */
+
+  #define is_at(attachment_site)                                           \
+    [](const auto & a) -> bool {                                           \
+      bitfield_t bf(a.meta().attributes);                                  \
+      return a.meta().site ==                                              \
+        flexi::burton_mesh_traits_t::attachment_site_t::attachment_site; }
+
+  /*!
+    \brief Select persistent state variables at an attachment site.
+
+    Predicate function to select state variables that have been tagged as
+    being persistent AND are defined at a specific attachment site.
+
+    \param attachment_site State data must be registered at this site
+      to meet this predicate criterium.  Valid attachement sites are
+      documented in \ref flexi::burton_mesh_traits_t.
+
+    \return bool True if the state is persistent and is registered at
+      the specified attachment site, false, otherwise.
+   */
+
+  #define is_persistent_at(attachment_site)                                \
+    [](const auto & a) -> bool {                                           \
+      bitfield_t bf(a.meta().attributes);                                  \
+      return a.meta().site ==                                              \
+        flexi::burton_mesh_traits_t::attachment_site_t::attachment_site && \
         bf.bitsset(persistent); }
 
   /*!
-    \brief Return the attributes of a state quantity
+    \brief Return the attributes of a state quantity.
    */
+
   #define state_attributes(mesh, key) \
     (mesh).state_attributes_((key))
 
