@@ -102,7 +102,7 @@ endif()
 
 # This configures the script that will be installed when 'make install' is
 # executed.
-configure_file(${CMAKE_SOURCE_DIR}/bin/flexi.in
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flexi.in
   ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flexi-install)
 
 # install script
@@ -116,12 +116,12 @@ install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flexi-install
 )
 
 # Install auxiliary files
-install(FILES ${CMAKE_SOURCE_DIR}/driver/flexi-serial.cc
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/flexi-serial.cc
   DESTINATION share/flexi)
 
 # This configures a locally available script that is suitable for
 # testing within the build configuration before the project has been installed.
-configure_file(${CMAKE_SOURCE_DIR}/bin/flexi-local.in
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flexi-local.in
   ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flexi)
 
 # copy local script to bin directory and change permissions
