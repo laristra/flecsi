@@ -17,7 +17,6 @@ else()
     message(FATAL_ERROR "C++14 compatible compiler not found")
 endif()
 
-
 #------------------------------------------------------------------------------#
 # Enable IO with exodus
 #------------------------------------------------------------------------------#
@@ -95,9 +94,44 @@ if(ENABLE_PARTITION)
      MESSAGE( FATAL_ERROR "Need to specify either SCOTCH or METIS" )
   endif()
 
-
 endif()
 
+#------------------------------------------------------------------------------#
+# Create compile scripts
+#------------------------------------------------------------------------------#
+
+# This configures the script that will be installed when 'make install' is
+# executed.
+configure_file(${CMAKE_SOURCE_DIR}/bin/flexi.in
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flexi-install)
+
+# install script
+install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flexi-install
+  DESTINATION bin
+  RENAME flexi
+  PERMISSIONS
+    OWNER_READ OWNER_WRITE OWNER_EXECUTE
+    GROUP_READ GROUP_EXECUTE
+    WORLD_READ WORLD_EXECUTE
+)
+
+# Install auxiliary files
+install(FILES ${CMAKE_SOURCE_DIR}/driver/flexi-serial.cc
+  DESTINATION share/flexi)
+
+# This configures a locally available script that is suitable for
+# testing within the build configuration before the project has been installed.
+configure_file(${CMAKE_SOURCE_DIR}/bin/flexi-local.in
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flexi)
+
+# copy local script to bin directory and change permissions
+file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flexi
+  DESTINATION ${CMAKE_BINARY_DIR}/bin
+  FILE_PERMISSIONS
+    OWNER_READ OWNER_WRITE OWNER_EXECUTE
+    GROUP_READ GROUP_EXECUTE
+    WORLD_READ WORLD_EXECUTE
+)
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options for vim.

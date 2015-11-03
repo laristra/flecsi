@@ -25,12 +25,14 @@ task(update, INOUT(state_var d), parameter1, ...) {
 }
 #endif
 
-int32_t testme(const char * token) {
+using return_type_t = flexi::execution_t<>::return_type_t;
+
+return_type_t testme(const char * token) {
   std::cout << "Hello World: " << token << std::endl;
   return 0;
 } // testme
 
-int32_t myvoid() {
+return_type_t myvoid() {
   std::cout << "Hello World: " << std::endl;
   return 0;
 }

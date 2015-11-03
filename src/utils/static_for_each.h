@@ -6,6 +6,9 @@
 #ifndef flexi_static_for_each_h
 #define flexi_static_for_each_h
 
+#include <type_traits>
+#include <tuple>
+
 /*!
  * \file static_for_each.h
  * \authors bergen
