@@ -10,8 +10,6 @@
 #undef _UTIL_STRINGIFY
 #undef EXPAND_AND_STRINGIFY
 
-using execution_t = flexi::execution_t<>;
-
 int main(int argc, char ** argv) {
-	return execution_t::execute_task(driver);
+	return flexi::execution_t<>::execute_task(driver, argc, argv);
 } // main

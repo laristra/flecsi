@@ -1,5 +1,7 @@
 #! /usr/bin/env bash
 
-deck=`echo $1 | sed 's,\.h,,g'`
+# strip path and suffix to get output name
+deck=`echo $1 | sed 's,\.h,,g;s,^.*\/,,'`
 
+# compile input deck
 ${CMAKE_CXX_COMPILER} ${CMAKE_CXX_FLAGS} -I. -I${CMAKE_BINARY_DIR}/include/flexi -DFLEXI_DRIVER=$1 ${CMAKE_SOURCE_DIR}/driver/flexi-serial.cc -o $deck.${CMAKE_SYSTEM_NAME} -L${CMAKE_BINARY_DIR}/lib -lflexi
