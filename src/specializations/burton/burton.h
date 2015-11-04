@@ -44,7 +44,8 @@
    will be passed to the task when it is invoked.
  */
 #define execute(task, ...) \
-  private_mesh_execution_t::execute_task(task, ##__VA_ARGS__)
+  flexi::burton_mesh_t::mesh_execution_t::execute_task(task, \
+    ##__VA_ARGS__)
 
 /*----------------------------------------------------------------------------*
  * State Interface

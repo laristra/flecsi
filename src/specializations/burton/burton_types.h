@@ -62,9 +62,9 @@ struct burton_mesh_traits_t {
   }; // struct private_state_meta_data_t
   
 #ifndef MESH_STORAGE_POLICY
-  using private_mesh_state_t = state_t<private_state_meta_data_t>;
+  using mesh_state_t = state_t<private_state_meta_data_t>;
 #else
-  using private_mesh_state_t =
+  using mesh_state_t =
     state_t<private_state_meta_data_t, MESH_STORAGE_POLICY>;
 #endif
 }; // struct burton_mesh_traits_t
@@ -94,7 +94,7 @@ struct burton_mesh_types_t {
 
   class burton_vertex_t : public mesh_entity<0> {
   public:
-    using state_t = burton_mesh_traits_t::private_mesh_state_t;
+    using state_t = burton_mesh_traits_t::mesh_state_t;
 
     //! Constructor
     burton_vertex_t() : precedence_(0) {}

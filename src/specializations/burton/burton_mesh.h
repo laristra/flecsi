@@ -45,14 +45,14 @@ private:
   using private_mesh_t = mesh_topology<burton_mesh_types_t>;
   using private_dual_mesh_t = mesh_topology<burton_dual_mesh_types_t>;
 
+public:
+
 #ifndef MESH_EXECUTION_POLICY
   // for now: use default execution policy
-  using private_mesh_execution_t = execution_t<>;
+  using mesh_execution_t = execution_t<>;
 #else
-  using private_mesh_execution_t = execution_t<MESH_STORAGE_POLICY>;
+  using mesh_execution_t = execution_t<MESH_STORAGE_POLICY>;
 #endif
-
-public:
 
   /*!
     \brief Type defining the data attachment sites on the mesh.
@@ -413,7 +413,7 @@ private:
   private_mesh_t mesh_;
   private_dual_mesh_t dual_mesh_;
 
-  burton_mesh_traits_t::private_mesh_state_t state_;
+  burton_mesh_traits_t::mesh_state_t state_;
 
 }; // class burton_mesh_t
 
