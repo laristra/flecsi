@@ -15,10 +15,10 @@
 #ifndef flexi_burton_types_h
 #define flexi_burton_types_h
 
-#include "../utils/common.h"
-#include "../mesh/mesh_topology.h"
-#include "../geometry/point.h"
-#include "../geometry/space_vector.h"
+#include "../../utils/common.h"
+#include "../../mesh/mesh_topology.h"
+#include "../../geometry/point.h"
+#include "../../geometry/space_vector.h"
 
 /*!
  * \file burton_types.h
