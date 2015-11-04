@@ -70,37 +70,6 @@ protected:
     std::vector<uint8_t> data;
   }; // struct meta_data_t
 
-  /*!
-    Register a new state variable.
-
-    \param key The key of the variable to add.
-    \param indices The number of indices that parameterize the state.
-   */
-  template<typename T, size_t NS, typename ... Args>
-  void register_state(const const_string_t & key, size_t indices,
-    Args && ... args) {
-    
-    // add space as we need it
-    if(meta_.size() < NS+1) {
-      meta_.resize(NS+1);
-    } // if
-
-    // keys must be unique within a given namespace
-    assert(meta_[NS].find(key.hash()) == meta_[NS].end() &&
-      "key already exists");
-
-    // user meta data
-    meta_[NS][key.hash()].user_data.initialize(std::forward<Args>(args) ...);
-    
-    // store the type size and allocate storage
-    meta_[NS][key.hash()].label = key.c_str();
-    meta_[NS][key.hash()].size = indices;
-    meta_[NS][key.hash()].type_size = sizeof(T);
-    meta_[NS][key.hash()].rtti.reset(
-      new typename meta_data_t::type_info_t(typeid(T)));
-    meta_[NS][key.hash()].data.resize(indices*sizeof(T));
-  } // register
-
   /*--------------------------------------------------------------------------*
    * class accessor_t
    *--------------------------------------------------------------------------*/
@@ -177,6 +146,39 @@ protected:
       reinterpret_cast<T *>(&meta_[NS][hash].data[0]),
       meta_[NS][hash].user_data };
   } // accessor
+
+  /*!
+    Register a new state variable.
+
+    \param key The key of the variable to add.
+    \param indices The number of indices that parameterize the state.
+   */
+  template<typename T, size_t NS, typename ... Args>
+  decltype(auto) register_state(const const_string_t & key, size_t indices,
+    Args && ... args) {
+    
+    // add space as we need it
+    if(meta_.size() < NS+1) {
+      meta_.resize(NS+1);
+    } // if
+
+    // keys must be unique within a given namespace
+    assert(meta_[NS].find(key.hash()) == meta_[NS].end() &&
+      "key already exists");
+
+    // user meta data
+    meta_[NS][key.hash()].user_data.initialize(std::forward<Args>(args) ...);
+    
+    // store the type size and allocate storage
+    meta_[NS][key.hash()].label = key.c_str();
+    meta_[NS][key.hash()].size = indices;
+    meta_[NS][key.hash()].type_size = sizeof(T);
+    meta_[NS][key.hash()].rtti.reset(
+      new typename meta_data_t::type_info_t(typeid(T)));
+    meta_[NS][key.hash()].data.resize(indices*sizeof(T));
+
+    return accessor<T,NS>(key.hash());
+  } // register
 
   /*!
     Return an accessor to all data for a given type.

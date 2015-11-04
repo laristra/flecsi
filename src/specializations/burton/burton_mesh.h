@@ -35,9 +35,9 @@ namespace flexi {
 
 /*!
   \class burton_mesh_t burton.h
-  \brief burton_mesh_t provides...
+  \brief burton_mesh_t A specialization of the flexi low-level mesh topology,
+    state and execution models.
  */
-
 class burton_mesh_t
 {
 private:
@@ -54,11 +54,22 @@ private:
 
 public:
 
+  /*!
+    \brief Type defining the data attachment sites on the mesh.
+   */
   using attachment_site_t = burton_mesh_traits_t::attachment_site_t;
 
   /*!
-   */
+    \brief Register state for the named variable at the given attachment
+    site.
 
+    \param key A const_string_t name for the state variable, e.g., "density".
+    \param site The data attachement site where the state variable should
+      be defined.  Valid sites are defined in flexi::burton_mesh_traits_t.
+    \param attributes A bitfield specifying various attributes of the state.
+
+    \return An accessor to the newly registered state.
+   */
   template<typename T>
   decltype(auto) register_state_(const const_string_t && key,
     attachment_site_t site, bitfield_t::field_type_t attributes = 0x0) {
@@ -90,21 +101,33 @@ public:
 
   } // register_state_
 
+  /*!
+    FIXME
+   */
   template<typename T>
   decltype(auto) access_state_(const const_string_t && key) {
     return state_.accessor<T>(key);
   } // access_state_
 
+  /*!
+    FIXME
+   */
   template<typename T>
   decltype(auto) access_type_() {
     return state_.accessors<T>();
   } // access_type_
 
+  /*!
+    FIXME
+   */
   template<typename T, typename P>
   decltype(auto) access_type_if_(P && predicate) {
     return state_.accessors<T,P>(std::forward<P>(predicate));
   } // access_type_if
 
+  /*!
+    FIXME
+   */
   decltype(auto) state_attributes_(const const_string_t && key) {
     return state_.meta_data<>((key)).attributes;
   } // state_attribtutes_
@@ -148,6 +171,9 @@ public:
   //! Destructor
   ~burton_mesh_t() {}
 
+  /*!
+    FIXME
+   */
   decltype(auto) dimension() const {
     return burton_mesh_traits_t::dimension;
   } // dimension
@@ -184,32 +210,68 @@ public:
   } // num_wedges
 
   /*!
+    FIXME
    */
-
   auto vertices() { return mesh_.vertices<0>(); }
 
+  /*!
+    FIXME
+   */
   auto edges() { return mesh_.edges<0>(); }
 
+  /*!
+    FIXME
+   */
   auto cells() { return mesh_.cells<0>(); }
 
+  /*!
+    FIXME
+   */
   auto vertex_ids() { return mesh_.vertex_ids<0>(); }
 
+  /*!
+    FIXME
+   */
   auto edge_ids() { return mesh_.edge_ids<0>(); }
 
+  /*!
+    FIXME
+   */
   auto cell_ids() { return mesh_.cell_ids<0>(); }
 
+  /*!
+    FIXME
+   */
   auto vertices(wedge_t *w) { return dual_mesh_.vertices(w); }
 
+  /*!
+    FIXME
+   */
   template <class E> auto vertices(E *e) { return mesh_.vertices(e); }
 
+  /*!
+    FIXME
+   */
   template <class E> auto edges(E *e) { return mesh_.edges(e); }
 
+  /*!
+    FIXME
+   */
   template <class E> auto cells(E *e) { return mesh_.cells(e); }
 
+  /*!
+    FIXME
+   */
   template <class E> auto vertex_ids(E *e) { return mesh_.vertex_ids(e); }
 
+  /*!
+    FIXME
+   */
   template <class E> auto edge_ids(E *e) { return mesh_.edge_ids(e); }
 
+  /*!
+    FIXME
+   */
   template <class E> auto cell_ids(E *e) { return mesh_.cell_ids(e); }
 
   /*!
@@ -239,12 +301,19 @@ public:
     return c;
   }
 
+  /*!
+    FIXME
+   */
+
   void dump(){
     mesh_.dump();
     ndump("_________________________________");
     dual_mesh_.dump();
   }
 
+  /*!
+    FIXME
+   */
   void init_parameters(size_t vertices) {
 
     // register coordinate state
@@ -253,6 +322,9 @@ public:
 
   } // init_parameters
 
+  /*!
+    FIXME
+   */
   void init() {
     mesh_.init();
 

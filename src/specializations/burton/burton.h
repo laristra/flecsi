@@ -30,7 +30,7 @@
  *----------------------------------------------------------------------------*/
 
 /*!
-  Execute a task using the flexi task runtime abstraction.
+  \brief Execute a task using the flexi task runtime abstraction.
 
   This macro function will call into the flexi::execution_t interface
   to execute the given task.  Task arguments will be analyzed and
@@ -43,7 +43,6 @@
  \param ... The task input arguments (variadic list).  All arguments
    will be passed to the task when it is invoked.
  */
-
 #define execute(task, ...) \
   private_mesh_execution_t::execute_task(task, ##__VA_ARGS__)
 
@@ -52,7 +51,7 @@
  *----------------------------------------------------------------------------*/
 
 /*!
-  Register state with the mesh.
+  \brief Register state with the mesh.
 
   \param mesh The flexi mesh instance with which to register the state.
   \param key The string name of the state variable to register,
@@ -62,21 +61,52 @@
     \ref flexi::burton_mesh_traits_t.
   \param type A valid C++ type for the registered state.
  */
-
 #define register_state(mesh, key, site, type, ...) \
   (mesh).register_state_<type>((key), \
   flexi::burton_mesh_traits_t::attachment_site_t::site, ##__VA_ARGS__)
 
+/*!
+  \brief Access state from a given mesh and key.
+
+  \param mesh The flexi mesh instance from which to access the state.
+  \param key The string name of the state varaiable to retrieve.
+  \param type The C++ type of the requested state.
+
+  \return An accessor to the state data.
+ */
 #define access_state(mesh, key, type) \
   (mesh).access_state_<type>((key))
 
+/*!
+  \brief Access all state of a given type from a given mesh and key.
+
+  \param mesh The flexi mesh instance from which to access the state.
+  \param type The C++ type of the requested state.
+
+  \return A std::vector<accessor_t<type>> holding accessors to
+    the matching state data.
+ */
 #define access_type(mesh, type) \
   (mesh).access_type_<type>()
 
+/*!
+  \brief Access all state of a given type from a given mesh and key that
+  satisfy the given predicate.
+
+  \param mesh The flexi mesh instance from which to access the state.
+  \param type The C++ type of the requested state.
+  \param type A predicate function that returns true or false
+    given a state accessor as input.
+
+  \return A std::vector<accessor_t<type>> holding accessors to
+    the matching state data.
+ */
 #define access_type_if(mesh, type, predicate) \
   (mesh).access_type_if_<type>(predicate)
 
 /*!
+  \brief Select state variables at a given attachment site.
+
   Predicate function to select state variables that are defined at
   a specific attachment site.
 
@@ -87,7 +117,6 @@
   \return bool True if the state is registered at the specified
     attachment site, false, otherwise.
  */
-
 #define is_at(attachment_site)                                           \
   [](const auto & a) -> bool {                                           \
     bitfield_t bf(a.meta().attributes);                                  \
@@ -107,7 +136,6 @@
   \return bool True if the state is persistent and is registered at
     the specified attachment site, false, otherwise.
  */
-
 #define is_persistent_at(attachment_site)                                \
   [](const auto & a) -> bool {                                           \
     bitfield_t bf(a.meta().attributes);                                  \
@@ -118,7 +146,6 @@
 /*!
   \brief Return the attributes of a state quantity.
  */
-
 #define state_attributes(mesh, key) \
   (mesh).state_attributes_((key))
 
