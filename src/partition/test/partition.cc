@@ -27,7 +27,7 @@
 #include <vector>
 
 // user includes
-#include "../../specializations/burton.h"
+#include "flexi/specializations/burton/burton.h"
 
 // put the flexi namespace up front
 using namespace flexi;

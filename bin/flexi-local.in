@@ -1,7 +1,12 @@
 #! /usr/bin/env bash
 
+if [ "$1" == "VERBOSE=1" ] ; then
+	echo "${CMAKE_CXX_COMPILER} ${CMAKE_CXX_FLAGS} -I. -I${CMAKE_BINARY_DIR}/include -DFLEXI_DRIVER=$1 ${CMAKE_SOURCE_DIR}/driver/flexi-serial.cc -o $deck.${CMAKE_SYSTEM_NAME} -L${CMAKE_BINARY_DIR}/lib -lflexi"
+	shift
+fi
+
 # strip path and suffix to get output name
 deck=`echo $1 | sed 's,\.h,,g;s,^.*\/,,'`
 
 # compile input deck
-${CMAKE_CXX_COMPILER} ${CMAKE_CXX_FLAGS} -I. -I${CMAKE_BINARY_DIR}/include/flexi -DFLEXI_DRIVER=$1 ${CMAKE_BINARY_DIR}/share/flexi-serial.cc -o $deck.${CMAKE_SYSTEM_NAME} -L${CMAKE_BINARY_DIR}/lib -lflexi
+${CMAKE_CXX_COMPILER} ${CMAKE_CXX_FLAGS} -I. -I${CMAKE_BINARY_DIR}/include -DFLEXI_DRIVER=$1 ${CMAKE_SOURCE_DIR}/driver/flexi-serial.cc -o $deck.${CMAKE_SYSTEM_NAME} -L${CMAKE_BINARY_DIR}/lib -lflexi

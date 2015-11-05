@@ -10,6 +10,8 @@
 \chead{Flexi User Guide}
 \rhead{\today}
 
+\newcommand{\flexi}{\emph{flexi}}
+
 %~---------------------------------------------------------------------------~%
 % Formatting for vim.
 % vim: set tabstop=4 shiftwidth=4 expandtab :

@@ -12,17 +12,17 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_burton_h
-#define flexi_burton_h
+#ifndef flexi_burton_mesh_h
+#define flexi_burton_mesh_h
 
 #include <string>
 
-#include "../state/state.h"
-#include "../execution/task.h"
+#include "../../state/state.h"
+#include "../../execution/task.h"
 #include "burton_types.h"
 
 /*!
- * \file burton.h
+ * \file burton_mesh.h
  * \authors bergen
  * \date Initial file creation: Sep 02, 2015
  */
@@ -35,9 +35,9 @@ namespace flexi {
 
 /*!
   \class burton_mesh_t burton.h
-  \brief burton_mesh_t provides...
+  \brief burton_mesh_t A specialization of the flexi low-level mesh topology,
+    state and execution models.
  */
-
 class burton_mesh_t
 {
 private:
@@ -45,32 +45,31 @@ private:
   using private_mesh_t = mesh_topology<burton_mesh_types_t>;
   using private_dual_mesh_t = mesh_topology<burton_dual_mesh_types_t>;
 
-#ifndef MESH_EXECUTION_POLICY
-  // for now: use default execution policy
-  using private_mesh_execution_t = execution_t<>;
-#else
-  using private_mesh_execution_t = execution_t<MESH_STORAGE_POLICY>;
-#endif
-
 public:
 
-  /*--------------------------------------------------------------------------*
-   * Execution Interface
-   *--------------------------------------------------------------------------*/
+#ifndef MESH_EXECUTION_POLICY
+  // for now: use default execution policy
+  using mesh_execution_t = execution_t<>;
+#else
+  using mesh_execution_t = execution_t<MESH_STORAGE_POLICY>;
+#endif
 
-  #define execute(task, ...) \
-    private_mesh_execution_t::execute_task(task, ##__VA_ARGS__)
-
-  /*--------------------------------------------------------------------------*
-   * State Interface
-   *--------------------------------------------------------------------------*/
-
+  /*!
+    \brief Type defining the data attachment sites on the mesh.
+   */
   using attachment_site_t = burton_mesh_traits_t::attachment_site_t;
 
-  #define register_state(mesh, key, site, type, ...) \
-    (mesh).register_state_<type>((key), \
-    flexi::burton_mesh_traits_t::attachment_site_t::site, ##__VA_ARGS__)
+  /*!
+    \brief Register state for the named variable at the given attachment
+    site.
 
+    \param key A const_string_t name for the state variable, e.g., "density".
+    \param site The data attachement site where the state variable should
+      be defined.  Valid sites are defined in flexi::burton_mesh_traits_t.
+    \param attributes A bitfield specifying various attributes of the state.
+
+    \return An accessor to the newly registered state.
+   */
   template<typename T>
   decltype(auto) register_state_(const const_string_t && key,
     attachment_site_t site, bitfield_t::field_type_t attributes = 0x0) {
@@ -102,49 +101,33 @@ public:
 
   } // register_state_
 
-  #define access_state(mesh, key, type) \
-    (mesh).access_state_<type>((key))
-
+  /*!
+    FIXME
+   */
   template<typename T>
   decltype(auto) access_state_(const const_string_t && key) {
     return state_.accessor<T>(key);
   } // access_state_
 
-  #define access_type(mesh, type) \
-    (mesh).access_type_<type>()
-
+  /*!
+    FIXME
+   */
   template<typename T>
   decltype(auto) access_type_() {
     return state_.accessors<T>();
   } // access_type_
 
-  #define access_type_if(mesh, type, predicate) \
-    (mesh).access_type_if_<type>(predicate)
-
+  /*!
+    FIXME
+   */
   template<typename T, typename P>
   decltype(auto) access_type_if_(P && predicate) {
     return state_.accessors<T,P>(std::forward<P>(predicate));
   } // access_type_if
 
-  #define is_at(site__)                                           \
-    [](const auto & a) -> bool {                                  \
-      bitfield_t bf(a.meta().attributes);                         \
-      return a.meta().site ==                                     \
-        flexi::burton_mesh_traits_t::attachment_site_t::site__; }
-
-  #define is_persistent_at(site__)                                \
-    [](const auto & a) -> bool {                                  \
-      bitfield_t bf(a.meta().attributes);                         \
-      return a.meta().site ==                                     \
-        flexi::burton_mesh_traits_t::attachment_site_t::site__ && \
-        bf.bitsset(persistent); }
-
   /*!
-    \brief Return the attributes of a state quantity
+    FIXME
    */
-  #define state_attributes(mesh, key) \
-    (mesh).state_attributes_((key))
-
   decltype(auto) state_attributes_(const const_string_t && key) {
     return state_.meta_data<>((key)).attributes;
   } // state_attribtutes_
@@ -188,6 +171,9 @@ public:
   //! Destructor
   ~burton_mesh_t() {}
 
+  /*!
+    FIXME
+   */
   decltype(auto) dimension() const {
     return burton_mesh_traits_t::dimension;
   } // dimension
@@ -224,32 +210,68 @@ public:
   } // num_wedges
 
   /*!
+    FIXME
    */
-
   auto vertices() { return mesh_.vertices<0>(); }
 
+  /*!
+    FIXME
+   */
   auto edges() { return mesh_.edges<0>(); }
 
+  /*!
+    FIXME
+   */
   auto cells() { return mesh_.cells<0>(); }
 
+  /*!
+    FIXME
+   */
   auto vertex_ids() { return mesh_.vertex_ids<0>(); }
 
+  /*!
+    FIXME
+   */
   auto edge_ids() { return mesh_.edge_ids<0>(); }
 
+  /*!
+    FIXME
+   */
   auto cell_ids() { return mesh_.cell_ids<0>(); }
 
+  /*!
+    FIXME
+   */
   auto vertices(wedge_t *w) { return dual_mesh_.vertices(w); }
 
+  /*!
+    FIXME
+   */
   template <class E> auto vertices(E *e) { return mesh_.vertices(e); }
 
+  /*!
+    FIXME
+   */
   template <class E> auto edges(E *e) { return mesh_.edges(e); }
 
+  /*!
+    FIXME
+   */
   template <class E> auto cells(E *e) { return mesh_.cells(e); }
 
+  /*!
+    FIXME
+   */
   template <class E> auto vertex_ids(E *e) { return mesh_.vertex_ids(e); }
 
+  /*!
+    FIXME
+   */
   template <class E> auto edge_ids(E *e) { return mesh_.edge_ids(e); }
 
+  /*!
+    FIXME
+   */
   template <class E> auto cell_ids(E *e) { return mesh_.cell_ids(e); }
 
   /*!
@@ -279,12 +301,19 @@ public:
     return c;
   }
 
+  /*!
+    FIXME
+   */
+
   void dump(){
     mesh_.dump();
     ndump("_________________________________");
     dual_mesh_.dump();
   }
 
+  /*!
+    FIXME
+   */
   void init_parameters(size_t vertices) {
 
     // register coordinate state
@@ -293,6 +322,9 @@ public:
 
   } // init_parameters
 
+  /*!
+    FIXME
+   */
   void init() {
     mesh_.init();
 
@@ -381,7 +413,7 @@ private:
   private_mesh_t mesh_;
   private_dual_mesh_t dual_mesh_;
 
-  burton_mesh_traits_t::private_mesh_state_t state_;
+  burton_mesh_traits_t::mesh_state_t state_;
 
 }; // class burton_mesh_t
 
@@ -389,7 +421,7 @@ using mesh_t = burton_mesh_t;
 
 } // namespace flexi
 
-#endif // flexi_burton_h
+#endif // flexi_burton_mesh_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

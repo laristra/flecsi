@@ -116,9 +116,9 @@ public:
   template<typename T,
     size_t NS = static_cast<size_t>(state_name_space_t::user),
     typename ... Args>
-  void register_state(const const_string_t & key, size_t indices,
+  decltype(auto) register_state(const const_string_t & key, size_t indices,
     Args && ... args) {
-    sp_t::template register_state<T,NS>(key, indices,
+    return sp_t::template register_state<T,NS>(key, indices,
       std::forward<Args>(args) ...);
   } // register_state
 

@@ -13,8 +13,9 @@
 #~----------------------------------------------------------------------------~#
 
 set(specializations_HEADERS
-  burton_types.h
-  burton.h
+  burton/burton.h
+  burton/burton_mesh.h
+  burton/burton_types.h
   unstruct_types.h
   unstruct.h
   PARENT_SCOPE
@@ -29,13 +30,13 @@ endif(ENABLE_IO)
 #)
 
 cinch_add_unit(burton
-  SOURCES test/burton.cc
-  INPUTS test/burton.blessed
+  SOURCES burton/test/burton.cc
+  INPUTS burton/test/burton.blessed
 )
 
 if(ENABLE_IO)
   cinch_add_unit(burton_io
-    SOURCES test/burton_io.cc
+    SOURCES burton/test/burton_io.cc
     LIBRARIES ${IO_LIBRARIES}
   )
 endif(ENABLE_IO)

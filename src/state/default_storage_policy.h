@@ -19,6 +19,7 @@
 #include <vector>
 #include <memory>
 #include <typeinfo>
+#include <cassert>
 
 #include "../utils/index_space.h"
 #include "../utils/const_string.h"
@@ -51,6 +52,71 @@ protected:
   //! Desctructor
   virtual ~default_state_storage_policy_t() {}
 
+  /*--------------------------------------------------------------------------*
+   * class accessor_t
+   *--------------------------------------------------------------------------*/
+
+  template<typename T>
+  class accessor_t
+  {
+  public:
+
+    using iterator_t = index_space_t::iterator_t;
+
+    accessor_t(const std::string & label, const size_t size,
+      T * data, const user_meta_data_t & meta)
+      : label_(label), size_(size), data_(data), meta_(meta), is_(size_) {}
+
+    accessor_t(const accessor_t & a) :
+      label_(a.label_), size_(a.size_), data_(a.data_),
+      meta_(a.meta_), is_(a.is_) {}
+
+    const std::string & label() { return label_; }
+    size_t size() const { return size_; }
+
+    template<typename E>
+    const T & operator [] (E * e) const {
+      return this->operator [] (e->id());
+    } // operator
+
+    template<typename E>
+    T & operator [] (E * e) {
+      return this->operator [] (e->id());
+    } // operator []
+
+    const T & operator [] (size_t index) const {
+      assert(index < size_ && "index out of range");
+      return data_[index];
+    } // operator []
+
+    T & operator [] (size_t index) {
+      assert(index < size_ && "index out of range");
+      return data_[index];
+    } // operator []
+
+    accessor_t & operator = (const accessor_t & a) {
+      label_ = a.label_;
+      size_ = a.size_;
+      data_ = a.data_;
+      meta_ = a.meta_;
+      is_ = a.is_;
+    } // operator =
+
+    const user_meta_data_t & meta() const { return meta_; }
+
+    iterator_t begin() { return { is_, 0 }; }
+    iterator_t end() { return { is_, size_ }; }
+
+  private:
+    
+    std::string label_;
+    size_t size_;
+    T * data_;
+    const user_meta_data_t & meta_;
+    index_space_t is_;
+
+  }; // struct accessor_t
+
   /*!
    */
   struct meta_data_t {
@@ -69,90 +135,6 @@ protected:
 
     std::vector<uint8_t> data;
   }; // struct meta_data_t
-
-  /*!
-    Register a new state variable.
-
-    \param key The key of the variable to add.
-    \param indices The number of indices that parameterize the state.
-   */
-  template<typename T, size_t NS, typename ... Args>
-  void register_state(const const_string_t & key, size_t indices,
-    Args && ... args) {
-    
-    // add space as we need it
-    if(meta_.size() < NS+1) {
-      meta_.resize(NS+1);
-    } // if
-
-    // keys must be unique within a given namespace
-    assert(meta_[NS].find(key.hash()) == meta_[NS].end() &&
-      "key already exists");
-
-    // user meta data
-    meta_[NS][key.hash()].user_data.initialize(std::forward<Args>(args) ...);
-    
-    // store the type size and allocate storage
-    meta_[NS][key.hash()].label = key.c_str();
-    meta_[NS][key.hash()].size = indices;
-    meta_[NS][key.hash()].type_size = sizeof(T);
-    meta_[NS][key.hash()].rtti.reset(
-      new typename meta_data_t::type_info_t(typeid(T)));
-    meta_[NS][key.hash()].data.resize(indices*sizeof(T));
-  } // register
-
-  /*--------------------------------------------------------------------------*
-   * class accessor_t
-   *--------------------------------------------------------------------------*/
-
-  template<typename T>
-  class accessor_t
-  {
-  public:
-
-    using iterator_t = index_space_t::iterator_t;
-
-    accessor_t(const std::string & label, const size_t size,
-      T * data, const user_meta_data_t & meta)
-      : label_(label), size_(size), data_(data), meta_(meta), is_(size_) {}
-
-    const std::string & label() { return label_; }
-    size_t size() const { return size_; }
-
-    template<typename E>
-    const T & operator [] (E * e) const {
-      return this->operator [] (e->id());
-    } // operator
-
-    template<typename E>
-    T & operator [] (E * e) {
-      return this->operator [] (e->id());
-    } // operator
-
-    const T & operator [] (size_t index) const {
-      assert(index < size_ && "index out of range");
-      return data_[index];
-    } // operator
-
-    T & operator [] (size_t index) {
-      assert(index < size_ && "index out of range");
-      return data_[index];
-    } // operator
-
-    const user_meta_data_t & meta() const { return meta_; }
-
-    iterator_t begin() { return { is_, 0 }; }
-    iterator_t end() { return { is_, size_ }; }
-
-  private:
-    
-    std::string label_;
-    size_t size_;
-    T * data_;
-    const user_meta_data_t & meta_;
-    index_space_t is_;
-
-  }; // struct accessor_t
 
   /*!
     Return an accessor to the data for a given variable.
@@ -177,6 +159,39 @@ protected:
       reinterpret_cast<T *>(&meta_[NS][hash].data[0]),
       meta_[NS][hash].user_data };
   } // accessor
+
+  /*!
+    Register a new state variable.
+
+    \param key The key of the variable to add.
+    \param indices The number of indices that parameterize the state.
+   */
+  template<typename T, size_t NS, typename ... Args>
+  decltype(auto) register_state(const const_string_t & key, size_t indices,
+    Args && ... args) {
+    
+    // add space as we need it
+    if(meta_.size() < NS+1) {
+      meta_.resize(NS+1);
+    } // if
+
+    // keys must be unique within a given namespace
+    assert(meta_[NS].find(key.hash()) == meta_[NS].end() &&
+      "key already exists");
+
+    // user meta data
+    meta_[NS][key.hash()].user_data.initialize(std::forward<Args>(args) ...);
+    
+    // store the type size and allocate storage
+    meta_[NS][key.hash()].label = key.c_str();
+    meta_[NS][key.hash()].size = indices;
+    meta_[NS][key.hash()].type_size = sizeof(T);
+    meta_[NS][key.hash()].rtti.reset(
+      new typename meta_data_t::type_info_t(typeid(T)));
+    meta_[NS][key.hash()].data.resize(indices*sizeof(T));
+
+    return accessor<T,NS>(key.hash());
+  } // register
 
   /*!
     Return an accessor to all data for a given type.

@@ -17,7 +17,7 @@
 
 #include <exodusII.h>
 
-#include "../io/io_exodus.h"
+#include "../../io/io_exodus.h"
 #include "burton.h"
 
 /*!
