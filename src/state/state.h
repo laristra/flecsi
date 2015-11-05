@@ -27,22 +27,45 @@
 
 namespace flexi {
 
+/*!
+  \brief state_name_space_t defines the various state namespaces that
+    are available for registering and maintaining state.
+
+  This type is provided as a convenience to avoid naming collisions.
+ */
 enum class state_name_space_t : size_t {
   user = 0,
   flexi = std::numeric_limits<size_t>::max()
 }; // enum class state_name_space_t
 
-enum class state_attribute : bitfield_t::field_type_t {
-  persistent = 0x0001
-}; // enum class state_attribute
+/*!
+  \brief state_attribute_t defines different state attributes.
 
+  This type should probably be pushed up in the interface so that users
+  can define their own attributes.
+ */
+enum class state_attribute_t : bitfield_t::field_type_t {
+  persistent = 0x0001
+}; // enum class state_attribute_t
+
+/*!
+  \brief This exposes the persistent attribute so that it can be used
+    without specifying the full type information.
+ */
 const bitfield_t::field_type_t persistent =
-  static_cast<bitfield_t::field_type_t>(flexi::state_attribute::persistent);
+  static_cast<bitfield_t::field_type_t>(flexi::state_attribute_t::persistent);
 
 /*----------------------------------------------------------------------------*
  * struct default_state_meta_data_t
  *----------------------------------------------------------------------------*/
 
+/*!
+  \brief default_state_user_meta_data_t defines a default meta data type.
+
+  This type should really never get used, i.e., the state specialization
+  should provide a meta data type.  So far, this type has mostly been
+  useful for testing.
+ */
 struct default_state_user_meta_data_t {
 
   void initialize(const size_t & site_id_,
@@ -53,6 +76,7 @@ struct default_state_user_meta_data_t {
 
   size_t site_id;
   bitfield_t::field_type_t attributes;
+
 }; // struct default_state_user_meta_data_t
 
 /*----------------------------------------------------------------------------*
