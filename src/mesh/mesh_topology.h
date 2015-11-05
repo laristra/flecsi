@@ -35,27 +35,27 @@
 namespace flexi {
 
 template<size_t I, class T, size_t D, size_t M>
-struct FindEntity_{
+struct find_entity__{
   static constexpr size_t find(){
     using E = typename std::tuple_element<I - 1, T>::type;
 
     return E::domain == M && E::dimension == D ? I : 
-    FindEntity_<I - 1, T, D, M>::find(); 
+    find_entity__<I - 1, T, D, M>::find(); 
   }
 };
 
 template<class T, size_t D, size_t M>
-struct FindEntity_<0, T, D, M>{
+struct find_entity__<0, T, D, M>{
   static constexpr size_t find(){
     return 0; 
   }
 };
 
 template<class MT, size_t D, size_t M>
-struct FindEntity{
+struct find_entity_{
   using entity_types = typename MT::entity_types;
 
-  using type = typename std::tuple_element<FindEntity_<std::tuple_size<entity_types>::value,
+  using type = typename std::tuple_element<find_entity__<std::tuple_size<entity_types>::value,
     entity_types, D, M>::find() - 1, entity_types>::type;
 };
 
@@ -89,28 +89,28 @@ public:
     return dim > meshDim ? meshDim : dim;
   } // get_dim_
 
-  template <class MT, size_t M> static mesh_entity_base *create_(size_t dim, size_t id) {
+  template <class MT, size_t M> static mesh_entity_base_t *create_(size_t dim, size_t id) {
     switch (dim) {
     case 0: {
-      using entity_type = typename FindEntity<MT, get_dim_(MT::dimension, 0), M>::type;
+      using entity_type = typename find_entity_<MT, get_dim_(MT::dimension, 0), M>::type;
       auto entity = new entity_type;
       entity->id_ = id;
       return entity;
     }
     case 1: {
-      using entity_type = typename FindEntity<MT, get_dim_(MT::dimension, 1), M>::type;
+      using entity_type = typename find_entity_<MT, get_dim_(MT::dimension, 1), M>::type;
       auto entity = new entity_type;
       entity->id_ = id;
       return entity;
     }
     case 2: {
-      using entity_type = typename FindEntity<MT, get_dim_(MT::dimension, 2), M>::type;
+      using entity_type = typename find_entity_<MT, get_dim_(MT::dimension, 2), M>::type;
       auto entity = new entity_type;
       entity->id_ = id;
       return entity;
     }
     case 3: {
-      using entity_type = typename FindEntity<MT, get_dim_(MT::dimension, 3), M>::type;
+      using entity_type = typename find_entity_<MT, get_dim_(MT::dimension, 3), M>::type;
       auto entity = new entity_type;
       entity->id_ = id;
       return entity;
@@ -465,16 +465,16 @@ public:
 template <class MT> class mesh_topology : public mesh_topology_base {
 public:
   template<size_t M>
-  using vertex_type = typename FindEntity<MT, 0, M>::type;
+  using vertex_type = typename find_entity_<MT, 0, M>::type;
 
   template<size_t M>
-  using edge_type = typename FindEntity<MT, 1, M>::type;
+  using edge_type = typename find_entity_<MT, 1, M>::type;
 
   template<size_t M>
-  using face_type = typename FindEntity<MT, MT::dimension - 1, M>::type;
+  using face_type = typename find_entity_<MT, MT::dimension - 1, M>::type;
 
   template<size_t M>
-  using cell_type = typename FindEntity<MT, MT::dimension, M>::type;
+  using cell_type = typename find_entity_<MT, MT::dimension, M>::type;
 
   /*--------------------------------------------------------------------------*
    * class Iterator
@@ -558,7 +558,7 @@ public:
 
   template <size_t D, size_t M=0> class iterator {
   public:
-    using entity_type = typename FindEntity<MT, D, M>::type;
+    using entity_type = typename find_entity_<MT, D, M>::type;
 
     iterator(const iterator &itr)
       : mesh_(itr.mesh_), entities_(itr.entities_), index_(itr.index_) {}
@@ -600,7 +600,7 @@ public:
 
   template <size_t D, size_t M=0> class const_iterator {
   public:
-    using entity_type = typename FindEntity<MT, D, M>::type;
+    using entity_type = typename find_entity_<MT, D, M>::type;
 
     const_iterator(const const_iterator &itr)
       : mesh_(itr.mesh_), entities_(itr.entities_), index_(itr.index_) {}
@@ -1279,7 +1279,7 @@ public:
 
   template<size_t D, size_t M=0>
   auto get_entity(id_t id) const {
-    using entity_type = typename FindEntity<MT, D, M>::type;
+    using entity_type = typename find_entity_<MT, D, M>::type;
 
     return static_cast<entity_type*>(entities_[M][D][id]);
   }
