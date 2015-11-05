@@ -116,6 +116,9 @@ install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flexi-install
 )
 
 # Install auxiliary files
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/driver/flexi-serial.cc
+  DESTINATION ${CMAKE_BINARY_DIR}/share
+)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/flexi-serial.cc
   DESTINATION share/flexi)
 

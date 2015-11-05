@@ -60,17 +60,17 @@ struct FindEntity{
 };
 
 /*----------------------------------------------------------------------------*
- * class mesh_entity_base
+ * class mesh_entity_base_t
  *----------------------------------------------------------------------------*/
 
 /*!
-  \class mesh_entity_base mesh_topology.h
-  \brief mesh_entity_base defines a base class for...
+  \class mesh_entity_base_t mesh_topology.h
+  \brief mesh_entity_base_t defines a base class for...
  */
 
-class mesh_entity_base {
+class mesh_entity_base_t {
 public:
-  virtual ~mesh_entity_base() {}
+  virtual ~mesh_entity_base_t() {}
 
   /*!
     Return the id of this entity.
@@ -131,7 +131,7 @@ protected:
 private:
   id_t id_ : 48;
   uint16_t info_ : 16;
-}; // class mesh_entity_base
+}; // class mesh_entity_base_t
 
 /*----------------------------------------------------------------------------*
  * class mesh_entity
@@ -142,7 +142,7 @@ private:
   \brief ...
  */
 
-template <size_t D, size_t M = 0> class mesh_entity : public mesh_entity_base {
+template <size_t D, size_t M = 0> class mesh_entity : public mesh_entity_base_t {
 public:
   static const size_t dimension = D;
   static const size_t domain = M;
@@ -152,7 +152,7 @@ public:
   virtual ~mesh_entity() {}
 }; // class mesh_entity
 
-using entity_vec = std::vector<mesh_entity_base *>;
+using entity_vec = std::vector<mesh_entity_base_t *>;
 
 /*----------------------------------------------------------------------------*
  * class entity_group
@@ -331,7 +331,7 @@ public:
       ev.reserve(maxId + 1);
 
       for(id_t id = startId; id <= maxId; ++id){
-        ev.push_back(mesh_entity_base::create_<MT, M>(dim, id));
+        ev.push_back(mesh_entity_base_t::create_<MT, M>(dim, id));
         iv.push_back(id);
       }
 
@@ -852,7 +852,7 @@ public:
   }
 
   template<size_t D, size_t M>
-  void add_entity(mesh_entity_base *ent) {
+  void add_entity(mesh_entity_base_t *ent) {
     auto &ents = entities_[M][D];
     id_t id = ent->id();
     if(ents.size() <= id){

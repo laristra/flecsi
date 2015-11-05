@@ -60,6 +60,12 @@ public:
   using attachment_site_t = burton_mesh_traits_t::attachment_site_t;
 
   /*!
+    \brief Accessor type.
+   */
+  template<typename T>
+  using accessor_t = burton_mesh_traits_t::mesh_state_t::accessor_t<T>;
+
+  /*!
     \brief Register state for the named variable at the given attachment
     site.
 
