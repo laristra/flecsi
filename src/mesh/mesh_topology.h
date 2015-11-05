@@ -34,6 +34,31 @@
 
 namespace flexi {
 
+template<size_t I, class T, size_t D, size_t M>
+struct FindEntity_{
+  static constexpr size_t find(){
+    using E = typename std::tuple_element<I - 1, T>::type;
+
+    return E::domain == M && E::dimension == D ? I : 
+    FindEntity_<I - 1, T, D, M>::find(); 
+  }
+};
+
+template<class T, size_t D, size_t M>
+struct FindEntity_<0, T, D, M>{
+  static constexpr size_t find(){
+    return 0; 
+  }
+};
+
+template<class MT, size_t D, size_t M>
+struct FindEntity{
+  using entity_types = typename MT::entity_types;
+
+  using type = typename std::tuple_element<FindEntity_<std::tuple_size<entity_types>::value,
+    entity_types, D, M>::find() - 1, entity_types>::type;
+};
+
 /*----------------------------------------------------------------------------*
  * class mesh_entity_base
  *----------------------------------------------------------------------------*/
@@ -65,35 +90,27 @@ public:
   } // get_dim_
 
   template <class MT, size_t M> static mesh_entity_base *create_(size_t dim, size_t id) {
-    using entity_types = 
-    typename std::tuple_element<M, typename MT::entity_types>::type;
-
     switch (dim) {
     case 0: {
-      using entity_type = typename std::tuple_element<get_dim_(MT::dimension, 0),
-          entity_types>::type;
-
+      using entity_type = typename FindEntity<MT, get_dim_(MT::dimension, 0), M>::type;
       auto entity = new entity_type;
       entity->id_ = id;
       return entity;
     }
     case 1: {
-      using entity_type = typename std::tuple_element<get_dim_(MT::dimension, 1),
-          entity_types>::type;
+      using entity_type = typename FindEntity<MT, get_dim_(MT::dimension, 1), M>::type;
       auto entity = new entity_type;
       entity->id_ = id;
       return entity;
     }
     case 2: {
-      using entity_type = typename std::tuple_element<get_dim_(MT::dimension, 2),
-          entity_types>::type;
+      using entity_type = typename FindEntity<MT, get_dim_(MT::dimension, 2), M>::type;
       auto entity = new entity_type;
       entity->id_ = id;
       return entity;
     }
     case 3: {
-      using entity_type = typename std::tuple_element<get_dim_(MT::dimension, 3),
-          entity_types>::type;
+      using entity_type = typename FindEntity<MT, get_dim_(MT::dimension, 3), M>::type;
       auto entity = new entity_type;
       entity->id_ = id;
       return entity;
@@ -127,8 +144,8 @@ private:
 
 template <size_t D, size_t M = 0> class mesh_entity : public mesh_entity_base {
 public:
-  static constexpr size_t dimension = D;
-  static constexpr size_t domain = M;
+  static const size_t dimension = D;
+  static const size_t domain = M;
 
   mesh_entity() {}
 
@@ -448,24 +465,16 @@ public:
 template <class MT> class mesh_topology : public mesh_topology_base {
 public:
   template<size_t M>
-  using entity_types = 
-  typename std::tuple_element<M, typename MT::entity_types>::type;
+  using vertex_type = typename FindEntity<MT, 0, M>::type;
 
   template<size_t M>
-  using vertex_type =
-      typename std::tuple_element<0, entity_types<M>>::type;
+  using edge_type = typename FindEntity<MT, 1, M>::type;
 
   template<size_t M>
-  using edge_type =
-      typename std::tuple_element<1, entity_types<M>>::type;
+  using face_type = typename FindEntity<MT, MT::dimension - 1, M>::type;
 
   template<size_t M>
-  using face_type =
-      typename std::tuple_element<MT::dimension - 1, entity_types<M>>::type;
-
-  template<size_t M>
-  using cell_type =
-      typename std::tuple_element<MT::dimension, entity_types<M>>::type;
+  using cell_type = typename FindEntity<MT, MT::dimension, M>::type;
 
   /*--------------------------------------------------------------------------*
    * class Iterator
@@ -549,9 +558,7 @@ public:
 
   template <size_t D, size_t M=0> class iterator {
   public:
-    using entity_type =
-      typename std::tuple_element<D, 
-        typename std::tuple_element<M, typename MT::entity_types>::type>::type;
+    using entity_type = typename FindEntity<MT, D, M>::type;
 
     iterator(const iterator &itr)
       : mesh_(itr.mesh_), entities_(itr.entities_), index_(itr.index_) {}
@@ -593,9 +600,7 @@ public:
 
   template <size_t D, size_t M=0> class const_iterator {
   public:
-    using entity_type =
-      typename std::tuple_element<D, 
-        typename std::tuple_element<M, typename MT::entity_types>::type>::type;
+    using entity_type = typename FindEntity<MT, D, M>::type;
 
     const_iterator(const const_iterator &itr)
       : mesh_(itr.mesh_), entities_(itr.entities_), index_(itr.index_) {}
@@ -831,13 +836,13 @@ public:
 
   //! Constructor
   mesh_topology() {
-    for(size_t d = 0; d < num_domains_; ++d){
+    for(size_t d = 0; d < MT::num_domains; ++d){
       get_connectivity_(d, MT::dimension, 0).init();
     }
   } // mesh_topology()
 
   virtual ~mesh_topology(){
-    for(size_t d = 0; d < num_domains_; ++d){
+    for(size_t d = 0; d < MT::num_domains; ++d){
       for(auto& ev : entities_[d]){
         for(auto ent : ev){
           delete ent;
@@ -1274,10 +1279,7 @@ public:
 
   template<size_t D, size_t M=0>
   auto get_entity(id_t id) const {
-    using entity_types = 
-    typename std::tuple_element<M, typename MT::entity_types>::type;
-
-    using entity_type = typename std::tuple_element<D, entity_types>::type;
+    using entity_type = typename FindEntity<MT, D, M>::type;
 
     return static_cast<entity_type*>(entities_[M][D][id]);
   }
@@ -1416,7 +1418,7 @@ public:
   } // cells
 
   void dump() {
-    for(size_t d = 0; d < num_domains_; ++d){
+    for(size_t d = 0; d < MT::num_domains; ++d){
       for (size_t i = 0; i < topology_[d].size(); ++i) {
         auto &ci = topology_[d][i];
         for (size_t j = 0; j < ci.size(); ++j) {
@@ -1438,11 +1440,10 @@ private:
 
   using id_vecs_t = std::array<id_vec, MT::dimension + 1>;
 
-  const size_t num_domains_ = std::tuple_size<entity_types_>::value;
+  std::array<entities_t, MT::num_domains> entities_;
+  std::array<topology_t, MT::num_domains> topology_;
+  std::array<id_vecs_t, MT::num_domains> id_vecs_;
 
-  std::array<entities_t, std::tuple_size<entity_types_>::value> entities_;
-  std::array<topology_t, std::tuple_size<entity_types_>::value> topology_;
-  std::array<id_vecs_t, std::tuple_size<entity_types_>::value> id_vecs_;
 }; // class mesh_topology
 
 } // flexi

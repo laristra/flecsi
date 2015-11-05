@@ -31,9 +31,11 @@ class TestMesh2dType{
 public:
   static constexpr size_t dimension = 2;
 
+  static constexpr size_t num_domains = 1;
+
   using Float = double;
 
-  using entity_types = std::tuple<std::tuple<Vertex, Edge, Cell>>;
+  using entity_types = std::tuple<Vertex, Edge, Cell>;
 
   using traversal_pairs = 
     std::tuple<std::pair<Vertex, Edge>,
