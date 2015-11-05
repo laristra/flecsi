@@ -37,8 +37,15 @@ namespace flexi {
  *----------------------------------------------------------------------------*/
 
 /*!
-  \class default_state_storage_policy_t state.h
-  \brief default_state_storage_policy_t provides...
+  \class default_state_storage_policy_t default_storage_policy.h
+  \brief default_state_storage_policy_t provides a serial/local storage
+    policy for the \e flexi state model.
+
+  This storage policy is probably adequate for serial or MPI-based
+  runtimes.  This implementation should not be used as a template
+  for creating new storage policies.  If you are developing a new
+  policy, look at the interface in \ref state.h.  This is the interface
+  that needs to be implemented by new storage policies.
  */
 
 template<typename user_meta_data_t>
@@ -56,6 +63,16 @@ protected:
    * class accessor_t
    *--------------------------------------------------------------------------*/
 
+  /*!
+    \brief accessor_t provides logically array-based access to state
+      variables that have been registered in the state model.
+
+    \tparam T The type of the state variable.  If this type is not
+      consistent with the type used to register the state, bad things
+      can happen.  However, it can be useful to reinterpret the type, e.g.,
+      when writing raw bytes.  This class is part of the low-level \e flexi
+      interface, so it is assumed that you know what you are doing...
+   */
   template<typename T>
   class accessor_t
   {
@@ -63,37 +80,96 @@ protected:
 
     using iterator_t = index_space_t::iterator_t;
 
+    /*!
+      Constructor.
+
+      \param label The c_str() version of the const_string used for
+        this state variable's hash.
+      \param size The size in elements of the type T of the
+        state variable.
+      \param data A pointer to the raw data.
+      \param meta A reference to the user-defined meta data.
+     */
     accessor_t(const std::string & label, const size_t size,
       T * data, const user_meta_data_t & meta)
       : label_(label), size_(size), data_(data), meta_(meta), is_(size_) {}
 
+    /*!
+      Copy Constructor.
+     */
     accessor_t(const accessor_t & a) :
       label_(a.label_), size_(a.size_), data_(a.data_),
       meta_(a.meta_), is_(a.is_) {}
 
+    /*!
+      \brief Return a std::string containing the label of the state variable
+        reference by this accessor.
+     */
     const std::string & label() { return label_; }
+
+    /*!
+      \brief Return the size of the state variable referenced by this
+        accessor.
+
+      The size is in elements of type T.        
+     */
     size_t size() const { return size_; }
 
+    /*!
+      \brief Provide logical array-based access to the data for this
+        state variable.  This is the const operator version.
+
+      \tparam E A complex index type.
+
+      This version of the operator is provided to support use with
+      \e flexi mesh entity types \ref mesh_entity_base_t.
+     */
     template<typename E>
     const T & operator [] (E * e) const {
       return this->operator [] (e->id());
     } // operator
 
+    /*!
+      \brief Provide logical array-based access to the data for this
+        state variable.
+
+      \tparam E A complex index type.
+
+      This version of the operator is provided to support use with
+      \e flexi mesh entity types \ref mesh_entity_base_t.
+     */
     template<typename E>
     T & operator [] (E * e) {
       return this->operator [] (e->id());
     } // operator []
 
+    /*!
+      \brief Provide logical array-based access to the data for this
+        state variable.  This is the const operator version.
+
+      \param index The index of the state variable to return.
+     */
     const T & operator [] (size_t index) const {
       assert(index < size_ && "index out of range");
       return data_[index];
     } // operator []
 
+    /*!
+      \brief Provide logical array-based access to the data for this
+        state variable.
+
+      \param index The index of the state variable to return.
+     */
     T & operator [] (size_t index) {
       assert(index < size_ && "index out of range");
       return data_[index];
     } // operator []
 
+    /*!
+      \brief Assignment Operator.
+
+      \param a The accessor instance from which to assign values.
+     */
     accessor_t & operator = (const accessor_t & a) {
       label_ = a.label_;
       size_ = a.size_;
@@ -102,9 +178,21 @@ protected:
       is_ = a.is_;
     } // operator =
 
+    /*!
+      \brief Return the user meta data for this state variable.
+
+      \return The user meta data.
+     */
     const user_meta_data_t & meta() const { return meta_; }
 
+    /*!
+      \brief Return an iterator to the beginning of this state data.
+     */
     iterator_t begin() { return { is_, 0 }; }
+
+    /*!
+      \brief Return an iterator to the end of this state data.
+     */
     iterator_t end() { return { is_, size_ }; }
 
   private:

@@ -67,6 +67,7 @@ struct burton_mesh_traits_t {
   using mesh_state_t =
     state_t<private_state_meta_data_t, MESH_STORAGE_POLICY>;
 #endif
+
 }; // struct burton_mesh_traits_t
 
 /*----------------------------------------------------------------------------*
