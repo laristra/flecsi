@@ -32,6 +32,9 @@ template <typename T> T square(const T &a) { return a * a; }
 
 } // namespace flexi
 
+#define _UTIL_STRINGIFY(s)#s
+#define EXPAND_AND_STRINGIFY(s)_UTIL_STRINGIFY(s)
+
 #endif // flexi_common_h
 
 /*~-------------------------------------------------------------------------~-*
