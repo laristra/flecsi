@@ -1110,9 +1110,14 @@ public:
           return v1.first > v2.first;
         });
 
+      uint64_t cell_precedence = 0;
       for(size_t i = 0; i < entities_per_cell; ++i){
         conns.push_back(sortIds[i].second);
+        cell_precedence |= sortIds[i].first;
       }
+
+      auto cell = static_cast<cell_type<M>*>(entities_[M][MT::dimension][c]);
+      cell->set_precedence(cell_precedence);
     }
 
     cell_to_entity.init_create<MT, M>(id_vecs_[M][dim],
