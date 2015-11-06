@@ -258,15 +258,17 @@ struct burton_mesh_types_t {
    *--------------------------------------------------------------------------*/
 
   using entity_types =
-    std::tuple<burton_vertex_t, burton_edge_t, burton_cell_t>;
+       std::tuple<std::pair<domain_<0>, burton_vertex_t>,
+                  std::pair<domain_<0>, burton_edge_t>,
+                  std::pair<domain_<0>, burton_cell_t>>;
 
   using traversal_pairs = 
-    std::tuple<std::pair<burton_vertex_t, burton_edge_t>,
-               std::pair<burton_vertex_t, burton_cell_t>,
-               std::pair<burton_edge_t, burton_vertex_t>,
-               std::pair<burton_edge_t, burton_cell_t>,
-               std::pair<burton_cell_t, burton_vertex_t>,
-               std::pair<burton_cell_t, burton_edge_t>>;
+    std::tuple<std::tuple<domain_<0>, burton_vertex_t, burton_edge_t>,
+               std::tuple<domain_<0>, burton_vertex_t, burton_cell_t>,
+               std::tuple<domain_<0>, burton_edge_t, burton_vertex_t>,
+               std::tuple<domain_<0>, burton_edge_t, burton_cell_t>,
+               std::tuple<domain_<0>, burton_cell_t, burton_vertex_t>,
+               std::tuple<domain_<0>, burton_cell_t, burton_edge_t>>;
 
 }; // struct burton_mesh_types_t
 
@@ -288,15 +290,17 @@ public:
   using burton_wedge_t = burton_mesh_types_t::burton_wedge_t;
 
   using entity_types =
-      std::tuple<burton_vertex_t, burton_edge_t, burton_wedge_t>;
+      std::tuple<std::pair<domain_<0>, burton_vertex_t>,
+                 std::pair<domain_<0>, burton_edge_t>,
+                 std::pair<domain_<0>, burton_wedge_t>>;
 
   using traversal_pairs = 
-    std::tuple<std::pair<burton_vertex_t, burton_edge_t>,
-               std::pair<burton_vertex_t, burton_wedge_t>,
-               std::pair<burton_edge_t, burton_vertex_t>,
-               std::pair<burton_edge_t, burton_wedge_t>,
-               std::pair<burton_wedge_t, burton_vertex_t>,
-               std::pair<burton_wedge_t, burton_edge_t>>;
+    std::tuple<std::tuple<domain_<0>, burton_vertex_t, burton_edge_t>,
+               std::tuple<domain_<0>, burton_vertex_t, burton_wedge_t>,
+               std::tuple<domain_<0>, burton_edge_t, burton_vertex_t>,
+               std::tuple<domain_<0>, burton_edge_t, burton_wedge_t>,
+               std::tuple<domain_<0>, burton_wedge_t, burton_vertex_t>,
+               std::tuple<domain_<0>, burton_wedge_t, burton_edge_t>>;
 
 }; // burton_dual_mesh_t
 

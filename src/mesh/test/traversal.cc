@@ -56,15 +56,18 @@ public:
 
   using Float = double;
 
-  using entity_types = std::tuple<Vertex, Edge, Cell>;
+  using entity_types = std::tuple<
+    std::pair<domain_<0>, Vertex>,
+    std::pair<domain_<0>, Edge>,
+    std::pair<domain_<0>, Cell>>;
 
   using traversal_pairs = 
-    std::tuple<std::pair<Vertex, Edge>,
-               std::pair<Vertex, Cell>,
-               std::pair<Edge, Vertex>,
-               std::pair<Edge, Cell>,
-               std::pair<Cell, Vertex>,
-               std::pair<Cell, Edge>>;
+    std::tuple<std::tuple<domain_<0>, Vertex, Edge>,
+               std::tuple<domain_<0>, Vertex, Cell>,
+               std::tuple<domain_<0>, Edge, Vertex>,
+               std::tuple<domain_<0>, Edge, Cell>,
+               std::tuple<domain_<0>, Cell, Vertex>,
+               std::tuple<domain_<0>, Cell, Edge>>;
 };
 
 using TestMesh = mesh_topology<TestMesh2dType>;
@@ -81,9 +84,9 @@ TEST(mesh_topology, traversal) {
   size_t id = 0;
   for(size_t j = 0; j < height + 1; ++j){
     for(size_t i = 0; i < width + 1; ++i){
-      auto v = mesh->make<Vertex>();
+      auto v = mesh->make<Vertex, 0>();
       vs.push_back(v);
-      mesh->add_vertex(v); 
+      mesh->add_vertex<0>(v); 
     }
   }
 
@@ -91,14 +94,14 @@ TEST(mesh_topology, traversal) {
   size_t width1 = width + 1;
   for(size_t j = 0; j < height; ++j){
     for(size_t i = 0; i < width; ++i){
-      auto c = mesh->make<Cell>();
+      auto c = mesh->make<Cell, 0>();
 
-      mesh->init_cell(c,
-                    {vs[i + j * width1],
-                     vs[i + (j + 1) * width1],
-                     vs[i + 1 + j * width1],
-                     vs[i + 1 + (j + 1) * width1]}
-                    );
+      mesh->init_cell<0>(c,
+                         {vs[i + j * width1],
+                         vs[i + (j + 1) * width1],
+                         vs[i + 1 + j * width1],
+                         vs[i + 1 + (j + 1) * width1]}
+                        );
     }
   }
 

@@ -248,37 +248,37 @@ public:
   /*!
     FIXME
    */
-  auto vertices(wedge_t *w) { return dual_mesh_.vertices(w); }
+  auto vertices(wedge_t *w) { return dual_mesh_.vertices<0>(w); }
 
   /*!
     FIXME
    */
-  template <class E> auto vertices(E *e) { return mesh_.vertices(e); }
+  template <class E> auto vertices(E *e) { return mesh_.vertices<0>(e); }
 
   /*!
     FIXME
    */
-  template <class E> auto edges(E *e) { return mesh_.edges(e); }
+  template <class E> auto edges(E *e) { return mesh_.edges<0>(e); }
 
   /*!
     FIXME
    */
-  template <class E> auto cells(E *e) { return mesh_.cells(e); }
+  template <class E> auto cells(E *e) { return mesh_.cells<0>(e); }
 
   /*!
     FIXME
    */
-  template <class E> auto vertex_ids(E *e) { return mesh_.vertex_ids(e); }
+  template <class E> auto vertex_ids(E *e) { return mesh_.vertex_ids<0>(e); }
 
   /*!
     FIXME
    */
-  template <class E> auto edge_ids(E *e) { return mesh_.edge_ids(e); }
+  template <class E> auto edge_ids(E *e) { return mesh_.edge_ids<0>(e); }
 
   /*!
     FIXME
    */
-  template <class E> auto cell_ids(E *e) { return mesh_.cell_ids(e); }
+  template <class E> auto cell_ids(E *e) { return mesh_.cell_ids<0>(e); }
 
   /*!
     Create a vertex in the mesh.
@@ -289,8 +289,8 @@ public:
     auto p = access_state_<point_t>("coordinates");
     p[mesh_.num_vertices()] = pos;
 
-    auto v = mesh_.make<vertex_t>(pos, &state_);
-    mesh_.add_vertex(v);
+    auto v = mesh_.make<vertex_t, 0>(pos, &state_);
+    mesh_.add_vertex<0>(v);
     return v;
   }
 
@@ -300,8 +300,8 @@ public:
     \param verts The vertices defining the cell.
    */
   cell_t *create_cell(std::initializer_list<vertex_t *> verts) {
-    auto c = mesh_.make<cell_t>();
-    mesh_.init_cell(c, verts);
+    auto c = mesh_.make<cell_t, 0>();
+    mesh_.init_cell<0>(c, verts);
     return c;
   }
 
@@ -332,8 +332,8 @@ public:
   void init() {
     mesh_.init();
 
-    for (auto c : mesh_.cells()) {
-      auto vs = mesh_.vertices(c).toVec();
+    for (auto c : mesh_.cells<0>()) {
+      auto vs = mesh_.vertices<0>(c).toVec();
 
       point_t cp;
       cp[0] = vs[0]->coordinates()[0] +
@@ -341,53 +341,53 @@ public:
       cp[1] = vs[0]->coordinates()[1] +
           0.5 * (vs[3]->coordinates()[1] - vs[0]->coordinates()[1]);
 
-      auto cv = dual_mesh_.make<vertex_t>(cp, &state_);
+      auto cv = dual_mesh_.make<vertex_t, 0>(cp, &state_);
       cv->set_rank(0);
 
-      auto v0 = dual_mesh_.make<vertex_t>(vs[0]->coordinates(), &state_);
+      auto v0 = dual_mesh_.make<vertex_t, 0>(vs[0]->coordinates(), &state_);
       v0->set_rank(1);
 
-      auto v1 = dual_mesh_.make<vertex_t>(vs[3]->coordinates(), &state_);
+      auto v1 = dual_mesh_.make<vertex_t, 0>(vs[3]->coordinates(), &state_);
       v1->set_rank(1);
 
-      auto v2 = dual_mesh_.make<vertex_t>(vs[1]->coordinates(), &state_);
+      auto v2 = dual_mesh_.make<vertex_t, 0>(vs[1]->coordinates(), &state_);
       v2->set_rank(1);
 
-      auto v3 = dual_mesh_.make<vertex_t>(vs[2]->coordinates(), &state_);
+      auto v3 = dual_mesh_.make<vertex_t, 0>(vs[2]->coordinates(), &state_);
       v3->set_rank(1);
 
-      auto w1 = dual_mesh_.make<wedge_t>();
-      dual_mesh_.init_cell(w1, {v0, v1, cv});
+      auto w1 = dual_mesh_.make<wedge_t, 0>();
+      dual_mesh_.init_cell<0>(w1, {v0, v1, cv});
       c->add_wedge(w1);
 
-      auto w2 = dual_mesh_.make<wedge_t>();
-      dual_mesh_.init_cell(w2, {cv, v1, v3});
+      auto w2 = dual_mesh_.make<wedge_t, 0>();
+      dual_mesh_.init_cell<0>(w2, {cv, v1, v3});
       c->add_wedge(w2);
 
-      auto w3 = dual_mesh_.make<wedge_t>();
-      dual_mesh_.init_cell(w3, {v2, cv, v3});
+      auto w3 = dual_mesh_.make<wedge_t, 0>();
+      dual_mesh_.init_cell<0>(w3, {v2, cv, v3});
       c->add_wedge(w3);
 
-      auto w4 = dual_mesh_.make<wedge_t>();
-      dual_mesh_.init_cell(w4, {v0, cv, v2});
+      auto w4 = dual_mesh_.make<wedge_t, 0>();
+      dual_mesh_.init_cell<0>(w4, {v0, cv, v2});
       c->add_wedge(w4);
 
-      auto c1 = dual_mesh_.make<corner_t>();
+      auto c1 = dual_mesh_.make<corner_t, 0>();
       c1->add_wedge(w1);
       c1->add_wedge(w4);
       c->add_corner(c1);
 
-      auto c2 = dual_mesh_.make<corner_t>();
+      auto c2 = dual_mesh_.make<corner_t, 0>();
       c2->add_wedge(w1);
       c2->add_wedge(w2);
       c->add_corner(c2);
 
-      auto c3 = dual_mesh_.make<corner_t>();
+      auto c3 = dual_mesh_.make<corner_t, 0>();
       c3->add_wedge(w2);
       c3->add_wedge(w3);
       c->add_corner(c3);
 
-      auto c4 = dual_mesh_.make<corner_t>();
+      auto c4 = dual_mesh_.make<corner_t, 0>();
       c4->add_wedge(w3);
       c4->add_wedge(w4);
       c->add_corner(c4);
@@ -404,7 +404,7 @@ public:
   */
   decltype(auto) centroid(const cell_t *c) const {
     point_t tmp(0.0);
-    auto vert_list = mesh_.vertices(c);
+    auto vert_list = mesh_.vertices<0>(c);
     for ( auto v : vert_list ) 
       tmp += v->coordinates();
     tmp /= vert_list.size();
