@@ -907,55 +907,56 @@ public:
       ents.resize(id + 1);
     }
     ents[id] = ent;
-  } // addEntity
+  } // add_entity
 
   template<size_t M, class T>
   void add_vertex(T *vertex) {
     add_vertex_<M>(vertex);
-  } // addVertex
+  } // add_vertex
 
   template<size_t M>
   void add_vertex_(vertex_type<M> *vertex) {
     add_entity<0, M>(vertex);
-  } // addVertex
+  } // add_vertex
 
   template<size_t M, class T>
   void add_edge(T *edge) {
     add_edge_<M>(edge);
-  } // addVertex
+  } // add_vertex
 
   template<size_t M>
   void add_edge_(edge_type<M> *edge) {
     add_entity<1, M>(edge);
-  } // addEdge, size_t M
+  } // add_edge, size_t M
 
   template<size_t M, class T>
   void add_face(T *face) {
     add_face_<M>(face);
-  } // addFace
+  } // add_face
 
   template<size_t M>
   void add_face_(face_type<M> *face) {
     add_entity<MT::dimension - 1, M>(face);
-  } // addFace
+  } // add_face
 
   template<size_t M, class T>
   void add_cell(T *cell) {
     add_cell_<M>(cell);
-  } // addCell
+  } // add_cell
 
   template<size_t M>
   void add_cell_(cell_type<M> *cell) {
     add_entity<MT::dimension, M>(cell);
-  } // addCell
+  } // add_cell
 
  template<size_t M, class C, class V>
   void init_cell(C *cell, std::initializer_list<V *> verts) {
     init_cell_<M>(cell, verts);
-  } // initCell
+  } // init_cell
 
   template<size_t M>
-  void init_cell_(cell_type<M> *cell, std::initializer_list<vertex_type<M> *> verts) {
+  void init_cell_(cell_type<M> *cell,
+                  std::initializer_list<vertex_type<M> *> verts) {
     auto &c = get_connectivity_(M, MT::dimension, 0);
 
     assert(cell->id() == c.from_size() && "id mismatch");
@@ -965,7 +966,7 @@ public:
     } // for
 
     c.endFrom();
-  } // initCell
+  } // init_cell
 
   template<size_t M>
   void init_edge(edge_type<M> *edge, const vertex_type<M> * vertex1,
@@ -982,7 +983,7 @@ public:
     c.push(vertex2->id());
 
     c.endFrom();
-  } // initEdge
+  } // init_edge
 
   template<size_t M>
   void init_face(face_type<M> *face,
@@ -1002,7 +1003,7 @@ public:
     }
 
     c.endFrom();
-  } // initFace
+  } // init_face
 
   template<size_t M>
   void init_cell_edges(cell_type<M> *cell,
@@ -1022,7 +1023,7 @@ public:
     }
 
     c.end_from();
-  } // initCellEdges
+  } // init_cell_edges
 
   template<size_t M>
   void init_cell_faces(cell_type<M> *cell,
@@ -1043,7 +1044,7 @@ public:
     }
 
     c.endFrom();
-  } // initCellFaces
+  } // init_cell_faces
 
   size_t num_entities(size_t domain, size_t dim) const override {
     return entities_[domain][dim].size();
@@ -1095,8 +1096,8 @@ public:
       std::tie(entities_per_cell, vertices_per_entity) = 
       cell->create_entities(dim, entity_vertices, vertices, endIndex);
 
-      std::vector<std::pair<uint64_t, id_t>> sortIds;
-      sortIds.reserve(max_cell_entity_conns);
+      std::vector<std::pair<uint64_t, id_t>> sort_ids;
+      sort_ids.reserve(max_cell_entity_conns);
 
       for (size_t i = 0; i < entities_per_cell; ++i) {
         id_t *a = &entity_vertices[i * vertices_per_entity];
@@ -1112,7 +1113,7 @@ public:
 
         auto itr = entity_vertices_map.emplace(std::move(ev), entity_id);
         
-        sortIds.emplace_back(std::make_pair(precedence, itr.first->second));
+        sort_ids.emplace_back(std::make_pair(precedence, itr.first->second));
 
         if (itr.second) {
           id_vec ev2 = id_vec(a, a + vertices_per_entity);
@@ -1125,15 +1126,15 @@ public:
         }
       }
 
-      std::sort(sortIds.begin(), sortIds.end(),
+      std::sort(sort_ids.begin(), sort_ids.end(),
         [](auto& v1, auto& v2) -> bool {
           return v1.first > v2.first;
         });
 
       uint64_t cell_precedence = 0;
       for(size_t i = 0; i < entities_per_cell; ++i){
-        conns.push_back(sortIds[i].second);
-        cell_precedence |= sortIds[i].first;
+        conns.push_back(sort_ids[i].second);
+        cell_precedence |= sort_ids[i].first;
       }
 
       cell->set_precedence(dim, cell_precedence);
@@ -1156,8 +1157,6 @@ public:
       !to_entity.end(); ++to_entity) {
       for (index_iterator<M> from_itr(to_entity, from_dim);
         !from_itr.end(); ++from_itr) {
-	//std::cerr << "size: " << pos.size() << std::endl;
-	//std::cerr << "from_itr: " << *from_itr << std::endl;
         pos[*from_itr]++;
       }
     }
@@ -1310,7 +1309,9 @@ public:
   } // num_vertices
 
   template<size_t M=0>
-  decltype(auto) num_edges() const { return entities_[M][1].size(); } // numEdges
+  decltype(auto) num_edges() const { 
+    return entities_[M][1].size(); 
+  } // numEdges
 
   template<size_t M=0>
   decltype(auto) num_faces() const {
@@ -1388,7 +1389,9 @@ public:
    *--------------------------------------------------------------------------*/
 
   template<size_t M=0>
-  entity_range<0, M> vertices() { return entity_range<0, M>(*this, id_vecs_[M][0]); }
+  entity_range<0, M> vertices() { 
+    return entity_range<0, M>(*this, id_vecs_[M][0]); 
+  }
 
   template<size_t M=0>
   const_entity_range<0, M> vertices() const { 
