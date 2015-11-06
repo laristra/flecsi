@@ -66,15 +66,15 @@ struct find_entity_ {
 };
 
 template<size_t DM, size_t I>
-struct compute_connectivity_{
+struct compute_connectivity_ {
   template<class M, class... TS>
-  static int compute(M& mesh, std::tuple<TS...> t){
+  static int compute(M& mesh, std::tuple<TS...> t) {
     using T = typename std::tuple_element<I - 1, decltype(t)>::type;
     using D1 = typename std::tuple_element<0, T>::type;
     using T1 = typename std::tuple_element<1, T>::type;
     using T2 = typename std::tuple_element<2, T>::type;
 
-    if(D1::domain == DM){
+    if (D1::domain == DM) {
       mesh.template compute<DM>(T1::dimension, T2::dimension);
     }
     return compute_connectivity_<DM, I - 1>::compute(mesh, t);
@@ -82,7 +82,7 @@ struct compute_connectivity_{
 };
 
 template<size_t DM>
-struct compute_connectivity_<DM, 0>{
+struct compute_connectivity_<DM, 0> {
   template<class M, class... TS>
   static int compute(M&, std::tuple<TS...>){
     return 0;
@@ -99,7 +99,7 @@ struct compute_connectivity_<DM, 0>{
  */
 
 template<size_t M>
-class domain_{
+class domain_ {
 public:
   static const size_t domain = M;
 };
