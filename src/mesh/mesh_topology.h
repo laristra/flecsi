@@ -41,8 +41,8 @@ struct find_entity__ {
     using D1 = typename std::tuple_element<0, E>::type;
     using T1 = typename std::tuple_element<1, E>::type;
 
-    return D1::domain == M && T1::dimension == D ? I : 
-    find_entity__<I - 1, T, D, M>::find(); 
+    return D1::domain == M && T1::dimension == D ? 
+      I : find_entity__<I - 1, T, D, M>::find(); 
   }
 };
 
@@ -65,13 +65,37 @@ struct find_entity_ {
   using type = typename std::tuple_element<1, pair_>::type;
 };
 
+template<size_t DM, size_t I>
+struct compute_connectivity_{
+  template<class M, class... TS>
+  static int compute(M& mesh, std::tuple<TS...> t){
+    using T = typename std::tuple_element<I - 1, decltype(t)>::type;
+    using D1 = typename std::tuple_element<0, T>::type;
+    using T1 = typename std::tuple_element<1, T>::type;
+    using T2 = typename std::tuple_element<2, T>::type;
+
+    if(D1::domain == DM){
+      mesh.template compute<DM>(T1::dimension, T2::dimension);
+    }
+    return compute_connectivity_<DM, I - 1>::compute(mesh, t);
+  }
+};
+
+template<size_t DM>
+struct compute_connectivity_<DM, 0>{
+  template<class M, class... TS>
+  static int compute(M&, std::tuple<TS...>){
+    return 0;
+  }
+};
+
 /*----------------------------------------------------------------------------*
  * class mesh_entity_base_t
  *----------------------------------------------------------------------------*/
 
 /*!
-  \class mesh_entity_base_t mesh_topology.h
-  \brief mesh_entity_base_t defines a base class for...
+  \class domain_ mesh_topology.h
+  \brief domain_ allows a domain id to be typeified...
  */
 
 template<size_t M>
@@ -79,6 +103,11 @@ class domain_{
 public:
   static const size_t domain = M;
 };
+
+/*!
+  \class mesh_entity_base_t mesh_topology.h
+  \brief mesh_entity_base_t defines a base class for...
+ */
 
 class mesh_entity_base_t {
 public:
@@ -245,30 +274,6 @@ private:
   \brief...
  */
 
-template<size_t DM, size_t I>
-struct compute_connectivity_{
-  template<class M, class... TS>
-  static int compute(M& mesh, std::tuple<TS...> t){
-    using T = typename std::tuple_element<I - 1, decltype(t)>::type;
-    using D1 = typename std::tuple_element<0, T>::type;
-    using T1 = typename std::tuple_element<1, T>::type;
-    using T2 = typename std::tuple_element<2, T>::type;
-
-    if(D1::domain == DM){
-      mesh.template compute<DM>(T1::dimension, T2::dimension);
-    }
-    return compute_connectivity_<DM, I - 1>::compute(mesh, t);
-  }
-};
-
-template<size_t DM>
-struct compute_connectivity_<DM, 0>{
-  template<class M, class... TS>
-  static int compute(M&, std::tuple<TS...>){
-    return 0;
-  }
-};
-
 class mesh_topology_base {
 public:
   using id_vec = std::vector<id_t>;
@@ -323,7 +328,10 @@ public:
     } // init
 
     template <class MT, size_t M>
-    void init_create(id_vec &iv, entity_vec &ev, const conn_vec &cv, size_t dim) {
+    void init_create(id_vec &iv,
+                     entity_vec &ev,
+                     const conn_vec &cv, 
+                     size_t dim) {
       assert(to_id_vec_.empty() && from_index_vec_.empty());
 
       from_index_vec_.push_back(0);
@@ -549,7 +557,7 @@ public:
 
   private:
     mesh_topology &mesh_;
-    const id_vec* entities_;
+    const id_vec *entities_;
     size_t dim_;
     size_t index_;
     size_t endIndex_;
@@ -706,7 +714,7 @@ public:
         end_(end) {}
 
     entity_range(const entity_range &r) : mesh_(r.mesh_), v_(r.v_),
-                                        begin_(0), end_(v_.size()) {}
+                                          begin_(0), end_(v_.size()) {}
 
     iterator_t begin() const { return iterator_t(mesh_, v_, begin_); }
 
@@ -759,8 +767,9 @@ public:
       : mesh_(mesh), v_(v), begin_(begin),
         end_(end) {}
 
-    const_entity_range(const const_entity_range &r) : mesh_(r.mesh_), v_(r.v_),
-                                                  begin_(0), end_(v_.size()) {}
+    const_entity_range(const const_entity_range &r) : 
+      mesh_(r.mesh_), v_(r.v_),
+      begin_(0), end_(v_.size()) {}
 
     const_iterator_t begin() const {
       return const_iterator_t(mesh_, v_, begin_); 
@@ -798,11 +807,10 @@ public:
   class id_iterator {
   public:
     id_iterator(const id_iterator &itr)
-      : mesh_(itr.mesh_), entities_(itr.entities_), index_(itr.index_) {}
+      : entities_(itr.entities_), index_(itr.index_) {}
 
-    id_iterator(const mesh_topology &mesh, const id_vec &entities, size_t index)
-        : mesh_(mesh), 
-          entities_(&entities),
+    id_iterator(const id_vec &entities, size_t index)
+        : entities_(&entities),
           index_(index) {}
 
     id_iterator &operator++() {
@@ -823,7 +831,6 @@ public:
     bool operator!=(const id_iterator &itr) const { return index_ != itr.index_; }
 
   private:
-    const mesh_topology &mesh_;
     const id_vec *entities_;
     size_t index_;
 
@@ -841,20 +848,20 @@ public:
   class id_range {
   public:
 
-    id_range(const mesh_topology &mesh, const id_vec &v)
-      : mesh_(mesh), v_(v), begin_(0),
+    id_range(const id_vec &v)
+      : v_(v), begin_(0),
         end_(v_.size()) {}
 
-    id_range(const mesh_topology &mesh, const id_vec &v, id_t begin, id_t end)
-      : mesh_(mesh), v_(v), begin_(begin),
+    id_range(const id_vec &v, id_t begin, id_t end)
+      : v_(v), begin_(begin),
         end_(end) {}
 
-    id_range(const id_range &r) : mesh_(r.mesh_), v_(r.v_),
-                                        begin_(0), end_(v_.size()) {}
+    id_range(const id_range &r) : 
+      v_(r.v_), begin_(0), end_(v_.size()) {}
 
-    id_iterator begin() const { return id_iterator(mesh_, v_, begin_); }
+    id_iterator begin() const { return id_iterator(v_, begin_); }
 
-    id_iterator end() const { return id_iterator(mesh_, v_, end_); }
+    id_iterator end() const { return id_iterator(v_, end_); }
 
     id_vec toVec() const{
       id_vec ret;
@@ -869,8 +876,6 @@ public:
     }
 
   private:
-
-    const mesh_topology &mesh_;
     const id_vec &v_;
     id_t begin_;
     id_t end_;
@@ -1393,7 +1398,7 @@ public:
   template<size_t M=0>
   id_range vertex_ids() const {
     assert(!id_vecs_[M][0].empty());
-    return id_range(*this, id_vecs_[M][0]);
+    return id_range(id_vecs_[M][0]);
   } // vertex_ids
 
   template <size_t D, size_t M, class E> const_entity_range<D, M>
@@ -1448,7 +1453,7 @@ public:
   template<size_t M>
   id_range edge_ids() const {
     assert(!id_vecs_[M][1].empty());
-    return id_range(*this, id_vecs_[M][1]);
+    return id_range(id_vecs_[M][1]);
   } // edges
 
   template <size_t M, class E> entity_range<1> edges(E *e) const {
@@ -1479,7 +1484,7 @@ public:
   template<size_t M>
   id_range face_ids() const {
     assert(!id_vecs_[MT::dimension - 1].empty());
-    return id_range(*this, id_vecs_[M][MT::dimension - 1]);
+    return id_range(id_vecs_[M][MT::dimension - 1]);
   } // face_ids
 
   template <size_t M, class E> const_entity_range<MT::dimension - 1> faces(E *e) const {
@@ -1503,7 +1508,7 @@ public:
   template<size_t M>
   id_range cell_ids() const {
     assert(!id_vecs_[M][MT::dimension].empty());
-    return id_range(*this, id_vecs_[M][MT::dimension]);
+    return id_range(id_vecs_[M][MT::dimension]);
   } // cell_ids
 
   template <size_t M, class E> const_entity_range<MT::dimension> cells(E *e) const {
