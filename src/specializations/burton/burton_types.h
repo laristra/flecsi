@@ -265,7 +265,7 @@ struct burton_mesh_types_t {
                   std::pair<domain_<1>, burton_edge_t>,
                   std::pair<domain_<1>, burton_wedge_t>>;
 
-  using traversal_pairs = 
+  using connectivities = 
     std::tuple<std::tuple<domain_<0>, burton_vertex_t, burton_edge_t>,
                std::tuple<domain_<0>, burton_vertex_t, burton_cell_t>,
                std::tuple<domain_<0>, burton_edge_t, burton_vertex_t>,

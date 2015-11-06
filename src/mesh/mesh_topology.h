@@ -1293,7 +1293,7 @@ public:
 
   template<size_t M>
   void init(){
-    using TP = typename MT::traversal_pairs;
+    using TP = typename MT::connectivities;
 
     compute_connectivity_<M, std::tuple_size<TP>::value>::compute(*this, TP());
   } // init
