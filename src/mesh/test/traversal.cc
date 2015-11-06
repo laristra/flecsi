@@ -25,27 +25,8 @@ public:
 class Cell : public mesh_entity<2>{
 public:
   void set_precedence(size_t dim, uint64_t precedence) {}
-};
 
-class TestMesh2dType{
-public:
-  static constexpr size_t dimension = 2;
-
-  static constexpr size_t num_domains = 1;
-
-  using Float = double;
-
-  using entity_types = std::tuple<Vertex, Edge, Cell>;
-
-  using traversal_pairs = 
-    std::tuple<std::pair<Vertex, Edge>,
-               std::pair<Vertex, Cell>,
-               std::pair<Edge, Vertex>,
-               std::pair<Edge, Cell>,
-               std::pair<Cell, Vertex>,
-               std::pair<Cell, Edge>>;
-  
-  static std::pair<size_t, size_t>
+  std::pair<size_t, size_t>
   create_entities(size_t dim, std::vector<flexi::id_t>& e,
                   flexi::id_t *v, size_t vertex_count){  
 
@@ -65,6 +46,25 @@ public:
 
     return {4, 2};
   }
+};
+
+class TestMesh2dType{
+public:
+  static constexpr size_t dimension = 2;
+
+  static constexpr size_t num_domains = 1;
+
+  using Float = double;
+
+  using entity_types = std::tuple<Vertex, Edge, Cell>;
+
+  using traversal_pairs = 
+    std::tuple<std::pair<Vertex, Edge>,
+               std::pair<Vertex, Cell>,
+               std::pair<Edge, Vertex>,
+               std::pair<Edge, Cell>,
+               std::pair<Cell, Vertex>,
+               std::pair<Cell, Edge>>;
 };
 
 using TestMesh = mesh_topology<TestMesh2dType>;

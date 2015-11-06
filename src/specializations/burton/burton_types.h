@@ -161,6 +161,26 @@ struct burton_mesh_types_t {
 
     void set_precedence(size_t dim, uint64_t precedence) {}
 
+    std::pair<size_t, size_t> create_entities(
+      size_t dim, std::vector<flexi::id_t> &e, id_t *v, size_t vertex_count) {
+      
+      e.resize(8);
+
+      e[0] = v[0];
+      e[1] = v[1];
+
+      e[2] = v[2];
+      e[3] = v[3];
+
+      e[4] = v[0];
+      e[5] = v[3];
+
+      e[6] = v[1];
+      e[7] = v[2];
+
+      return {4, 2};
+    } // createEntities
+
   private:
     entity_group<burton_corner_t> corners_;
     entity_group<burton_wedge_t> wedges_;
@@ -187,6 +207,22 @@ struct burton_mesh_types_t {
     vector_t cell_facet_normal();
 
     void set_precedence(size_t dim, uint64_t precedence) {}
+
+    static std::pair<size_t, size_t> create_entities(
+      size_t dim, std::vector<flexi::id_t> &e, id_t *v, size_t vertex_count) {
+      e.resize(6);
+
+      e[0] = v[0];
+      e[1] = v[1];
+
+      e[2] = v[1];
+      e[3] = v[2];
+
+      e[4] = v[0];
+      e[5] = v[2];
+
+      return {3, 2};
+    }
 
   private:
     burton_corner_t *corner_;
@@ -232,26 +268,6 @@ struct burton_mesh_types_t {
                std::pair<burton_cell_t, burton_vertex_t>,
                std::pair<burton_cell_t, burton_edge_t>>;
 
-  static std::pair<size_t, size_t> create_entities(
-    size_t dim, std::vector<flexi::id_t> &e, id_t *v, size_t vertex_count) {
-    
-    e.resize(8);
-
-    e[0] = v[0];
-    e[1] = v[1];
-
-    e[2] = v[2];
-    e[3] = v[3];
-
-    e[4] = v[0];
-    e[5] = v[3];
-
-    e[6] = v[1];
-    e[7] = v[2];
-
-    return {4, 2};
-  } // createEntities
-
 }; // struct burton_mesh_types_t
 
 // FIXME
@@ -282,21 +298,6 @@ public:
                std::pair<burton_wedge_t, burton_vertex_t>,
                std::pair<burton_wedge_t, burton_edge_t>>;
 
-  static std::pair<size_t, size_t> create_entities(
-    size_t dim, std::vector<flexi::id_t> &e, id_t *v, size_t vertex_count) {
-    e.resize(6);
-
-    e[0] = v[0];
-    e[1] = v[1];
-
-    e[2] = v[1];
-    e[3] = v[2];
-
-    e[4] = v[0];
-    e[5] = v[2];
-
-    return {3, 2};
-  }
 }; // burton_dual_mesh_t
 
 } // namespace flexi

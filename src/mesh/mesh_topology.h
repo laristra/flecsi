@@ -1067,6 +1067,8 @@ public:
     id_vec_map entity_vertices_map;
 
     for (size_t c = 0; c < n; ++c) {
+      auto cell = static_cast<cell_type<M>*>(entities_[M][MT::dimension][c]);
+
       id_vec &conns = cell_entity_conn[c];
 
       conns.reserve(max_cell_entity_conns);
@@ -1078,7 +1080,7 @@ public:
       size_t vertices_per_entity; 
       
       std::tie(entities_per_cell, vertices_per_entity) = 
-      MT::create_entities(dim, entity_vertices, vertices, endIndex);
+      cell->create_entities(dim, entity_vertices, vertices, endIndex);
 
       std::vector<std::pair<uint64_t, id_t>> sortIds;
       sortIds.reserve(max_cell_entity_conns);
@@ -1121,7 +1123,6 @@ public:
         cell_precedence |= sortIds[i].first;
       }
 
-      auto cell = static_cast<cell_type<M>*>(entities_[M][MT::dimension][c]);
       cell->set_precedence(dim, cell_precedence);
     }
 
