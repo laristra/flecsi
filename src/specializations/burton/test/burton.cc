@@ -36,10 +36,12 @@ protected:
   
     b.init_parameters((height+1)*(width+1));
 
+    size_t max_rank = (height+1)*(width+1) - 1;
+
     for(size_t j = 0; j < height + 1; ++j){
       for(size_t i = 0; i < width + 1; ++i){
         auto v = b.create_vertex({double(i), double(j)});
-        v->set_rank(1);
+        v->set_rank(max_rank - (i + (j * width + 1)));
         vs.push_back(v);
       } // for
     } // for
