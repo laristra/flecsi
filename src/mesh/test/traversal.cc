@@ -105,7 +105,7 @@ TEST(mesh_topology, traversal) {
     }
   }
 
-  mesh->init();
+  mesh->init<0>();
 
   CINCH_CAPTURE() << "------------- forall cells, vertices" << endl;
 

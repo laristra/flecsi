@@ -84,7 +84,7 @@ struct burton_mesh_traits_t {
 struct burton_mesh_types_t {
 
   static constexpr size_t dimension = burton_mesh_traits_t::dimension;
-  static constexpr size_t num_domains = 1;
+  static constexpr size_t num_domains = 2;
   using real_t = burton_mesh_traits_t::real_t;
 
   using point_t = point<real_t, dimension>;
@@ -260,7 +260,10 @@ struct burton_mesh_types_t {
   using entity_types =
        std::tuple<std::pair<domain_<0>, burton_vertex_t>,
                   std::pair<domain_<0>, burton_edge_t>,
-                  std::pair<domain_<0>, burton_cell_t>>;
+                  std::pair<domain_<0>, burton_cell_t>,
+                  std::pair<domain_<1>, burton_vertex_t>,
+                  std::pair<domain_<1>, burton_edge_t>,
+                  std::pair<domain_<1>, burton_wedge_t>>;
 
   using traversal_pairs = 
     std::tuple<std::tuple<domain_<0>, burton_vertex_t, burton_edge_t>,
@@ -268,41 +271,15 @@ struct burton_mesh_types_t {
                std::tuple<domain_<0>, burton_edge_t, burton_vertex_t>,
                std::tuple<domain_<0>, burton_edge_t, burton_cell_t>,
                std::tuple<domain_<0>, burton_cell_t, burton_vertex_t>,
-               std::tuple<domain_<0>, burton_cell_t, burton_edge_t>>;
+               std::tuple<domain_<0>, burton_cell_t, burton_edge_t>,
+               std::tuple<domain_<1>, burton_vertex_t, burton_edge_t>,
+               std::tuple<domain_<1>, burton_vertex_t, burton_wedge_t>,
+               std::tuple<domain_<1>, burton_edge_t, burton_vertex_t>,
+               std::tuple<domain_<1>, burton_edge_t, burton_wedge_t>,
+               std::tuple<domain_<1>, burton_wedge_t, burton_vertex_t>,
+               std::tuple<domain_<1>, burton_wedge_t, burton_edge_t>>;
 
 }; // struct burton_mesh_types_t
-
-// FIXME
-class burton_dual_mesh_types_t {
-public:
-  static constexpr size_t dimension = burton_mesh_traits_t::dimension;
-
-  static constexpr size_t num_domains = 1;
-
-  using real_t = burton_mesh_traits_t::real_t;
-
-  using point_t = point<real_t, dimension>;
-
-  using burton_vertex_t = burton_mesh_types_t::burton_vertex_t;
-
-  using burton_edge_t = burton_mesh_types_t::burton_edge_t;
-
-  using burton_wedge_t = burton_mesh_types_t::burton_wedge_t;
-
-  using entity_types =
-      std::tuple<std::pair<domain_<0>, burton_vertex_t>,
-                 std::pair<domain_<0>, burton_edge_t>,
-                 std::pair<domain_<0>, burton_wedge_t>>;
-
-  using traversal_pairs = 
-    std::tuple<std::tuple<domain_<0>, burton_vertex_t, burton_edge_t>,
-               std::tuple<domain_<0>, burton_vertex_t, burton_wedge_t>,
-               std::tuple<domain_<0>, burton_edge_t, burton_vertex_t>,
-               std::tuple<domain_<0>, burton_edge_t, burton_wedge_t>,
-               std::tuple<domain_<0>, burton_wedge_t, burton_vertex_t>,
-               std::tuple<domain_<0>, burton_wedge_t, burton_edge_t>>;
-
-}; // burton_dual_mesh_t
 
 } // namespace flexi
 

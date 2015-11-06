@@ -245,7 +245,7 @@ private:
   \brief...
  */
 
-template<size_t I>
+template<size_t DM, size_t I>
 struct compute_connectivity_{
   template<class M, class... TS>
   static int compute(M& mesh, std::tuple<TS...> t){
@@ -254,13 +254,15 @@ struct compute_connectivity_{
     using T1 = typename std::tuple_element<1, T>::type;
     using T2 = typename std::tuple_element<2, T>::type;
 
-    mesh.template compute<D1::domain>(T1::dimension, T2::dimension);
-    return compute_connectivity_<I - 1>::compute(mesh, t);
+    if(D1::domain == DM){
+      mesh.template compute<DM>(T1::dimension, T2::dimension);
+    }
+    return compute_connectivity_<DM, I - 1>::compute(mesh, t);
   }
 };
 
-template<>
-struct compute_connectivity_<0>{
+template<size_t DM>
+struct compute_connectivity_<DM, 0>{
   template<class M, class... TS>
   static int compute(M&, std::tuple<TS...>){
     return 0;
@@ -454,8 +456,6 @@ public:
   }; // class connectivity
 
   virtual size_t num_entities(size_t domain, size_t dim) const = 0;
-
-  virtual void init() = 0;
 
   virtual size_t topological_dimension() const = 0;
 
@@ -1287,10 +1287,11 @@ public:
     }
   } // compute
 
-  void init() override {
+  template<size_t M>
+  void init(){
     using TP = typename MT::traversal_pairs;
 
-    compute_connectivity_<std::tuple_size<TP>::value>::compute(*this, TP());
+    compute_connectivity_<M, std::tuple_size<TP>::value>::compute(*this, TP());
   } // init
 
   template<size_t M=0>

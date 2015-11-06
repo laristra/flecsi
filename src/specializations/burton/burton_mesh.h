@@ -43,7 +43,6 @@ class burton_mesh_t
 private:
 
   using private_mesh_t = mesh_topology<burton_mesh_types_t>;
-  using private_dual_mesh_t = mesh_topology<burton_dual_mesh_types_t>;
 
 public:
 
@@ -153,18 +152,6 @@ public:
   using wedge_t = burton_mesh_types_t::burton_wedge_t;
   using corner_t = burton_mesh_types_t::burton_corner_t;
 
-  // Iterator types
-  /*
-  using vertex_iterator_t = private_mesh_t::VertexIterator;
-  using edge_iterator_t = private_mesh_t::EdgeIterator;
-  using cell_iterator_t = private_mesh_t::CellIterator;
-
-  using wedges_at_corner_iterator_t = private_dual_mesh_t::CellIterator;
-  using wedges_at_face_iterator_t = private_mesh_t::CellIterator;
-  using wedges_at_vertex_iterator_t = private_mesh_t::CellIterator;
-  using wedges_at_cell_iterator_t = private_mesh_t::CellIterator;
-  */
-
   //! Default constructor
   burton_mesh_t() {}
 
@@ -205,14 +192,14 @@ public:
     Get number of corners.
    */
   size_t num_corners() {
-    return dual_mesh_.num_entities(0, 0);
+    return mesh_.num_entities(1, 0);
   } // num_corners
 
   /*!
     Get number of wedges.
    */
   size_t num_wedges() {
-    return dual_mesh_.num_entities(0, 2);
+    return mesh_.num_entities(1, 2);
   } // num_wedges
 
   /*!
@@ -248,7 +235,7 @@ public:
   /*!
     FIXME
    */
-  auto vertices(wedge_t *w) { return dual_mesh_.vertices<0>(w); }
+  auto vertices(wedge_t *w) { return mesh_.vertices<1>(w); }
 
   /*!
     FIXME
@@ -311,8 +298,6 @@ public:
 
   void dump(){
     mesh_.dump();
-    ndump("_________________________________");
-    dual_mesh_.dump();
   }
 
   /*!
@@ -330,7 +315,7 @@ public:
     FIXME
    */
   void init() {
-    mesh_.init();
+    mesh_.init<0>();
 
     for (auto c : mesh_.cells<0>()) {
       auto vs = mesh_.vertices<0>(c).toVec();
@@ -341,59 +326,59 @@ public:
       cp[1] = vs[0]->coordinates()[1] +
           0.5 * (vs[3]->coordinates()[1] - vs[0]->coordinates()[1]);
 
-      auto cv = dual_mesh_.make<vertex_t, 0>(cp, &state_);
+      auto cv = mesh_.make<vertex_t, 1>(cp, &state_);
       cv->set_rank(0);
 
-      auto v0 = dual_mesh_.make<vertex_t, 0>(vs[0]->coordinates(), &state_);
+      auto v0 = mesh_.make<vertex_t, 1>(vs[0]->coordinates(), &state_);
       v0->set_rank(1);
 
-      auto v1 = dual_mesh_.make<vertex_t, 0>(vs[3]->coordinates(), &state_);
+      auto v1 = mesh_.make<vertex_t, 1>(vs[3]->coordinates(), &state_);
       v1->set_rank(1);
 
-      auto v2 = dual_mesh_.make<vertex_t, 0>(vs[1]->coordinates(), &state_);
+      auto v2 = mesh_.make<vertex_t, 1>(vs[1]->coordinates(), &state_);
       v2->set_rank(1);
 
-      auto v3 = dual_mesh_.make<vertex_t, 0>(vs[2]->coordinates(), &state_);
+      auto v3 = mesh_.make<vertex_t, 1>(vs[2]->coordinates(), &state_);
       v3->set_rank(1);
 
-      auto w1 = dual_mesh_.make<wedge_t, 0>();
-      dual_mesh_.init_cell<0>(w1, {v0, v1, cv});
+      auto w1 = mesh_.make<wedge_t, 1>();
+      mesh_.init_cell<1>(w1, {v0, v1, cv});
       c->add_wedge(w1);
 
-      auto w2 = dual_mesh_.make<wedge_t, 0>();
-      dual_mesh_.init_cell<0>(w2, {cv, v1, v3});
+      auto w2 = mesh_.make<wedge_t, 1>();
+      mesh_.init_cell<1>(w2, {cv, v1, v3});
       c->add_wedge(w2);
 
-      auto w3 = dual_mesh_.make<wedge_t, 0>();
-      dual_mesh_.init_cell<0>(w3, {v2, cv, v3});
+      auto w3 = mesh_.make<wedge_t, 1>();
+      mesh_.init_cell<1>(w3, {v2, cv, v3});
       c->add_wedge(w3);
 
-      auto w4 = dual_mesh_.make<wedge_t, 0>();
-      dual_mesh_.init_cell<0>(w4, {v0, cv, v2});
+      auto w4 = mesh_.make<wedge_t, 1>();
+      mesh_.init_cell<1>(w4, {v0, cv, v2});
       c->add_wedge(w4);
 
-      auto c1 = dual_mesh_.make<corner_t, 0>();
+      auto c1 = mesh_.make<corner_t, 1>();
       c1->add_wedge(w1);
       c1->add_wedge(w4);
       c->add_corner(c1);
 
-      auto c2 = dual_mesh_.make<corner_t, 0>();
+      auto c2 = mesh_.make<corner_t, 1>();
       c2->add_wedge(w1);
       c2->add_wedge(w2);
       c->add_corner(c2);
 
-      auto c3 = dual_mesh_.make<corner_t, 0>();
+      auto c3 = mesh_.make<corner_t, 1>();
       c3->add_wedge(w2);
       c3->add_wedge(w3);
       c->add_corner(c3);
 
-      auto c4 = dual_mesh_.make<corner_t, 0>();
+      auto c4 = mesh_.make<corner_t, 1>();
       c4->add_wedge(w3);
       c4->add_wedge(w4);
       c->add_corner(c4);
     }
 
-    dual_mesh_.init();
+    mesh_.init<1>();
   }
 
   /*!
@@ -415,7 +400,6 @@ public:
 private:
 
   private_mesh_t mesh_;
-  private_dual_mesh_t dual_mesh_;
 
   burton_mesh_traits_t::mesh_state_t state_;
 
