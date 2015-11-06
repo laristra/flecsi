@@ -9,7 +9,7 @@ using namespace flexi;
 
 class Vertex : public mesh_entity<0>{
 public:
-
+  uint64_t precedence() const { return 0; }
 };
 
 class Edge : public mesh_entity<1>{

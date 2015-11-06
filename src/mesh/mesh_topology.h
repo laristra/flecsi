@@ -1075,14 +1075,24 @@ public:
 
       MT::create_entities(dim, entity_vertices, vertices);
 
+      std::vector<std::pair<uint64_t, id_t>> sortIds;
+      sortIds.reserve(max_cell_entity_conns);
+
       for (size_t i = 0; i < entities_per_cell; ++i) {
         id_t *a = &entity_vertices[i * vertices_per_entity];
         id_vec ev(a, a + vertices_per_entity);
 
         std::sort(ev.begin(), ev.end());
 
+        uint64_t precedence = 0;
+        for(size_t j = 0; j < vertices_per_entity; ++j){
+          auto vj = static_cast<vertex_type<M>*>(entities_[M][0][ev[j]]);
+          precedence |= vj->precedence();
+        }
+
         auto itr = entity_vertices_map.emplace(std::move(ev), entity_id);
-        conns.emplace_back(itr.first->second);
+        
+        sortIds.emplace_back(std::make_pair(precedence, itr.first->second));
 
         if (itr.second) {
           id_vec ev2 = id_vec(a, a + vertices_per_entity);
@@ -1093,6 +1103,15 @@ public:
 
           ++entity_id;
         }
+      }
+
+      std::sort(sortIds.begin(), sortIds.end(),
+        [](auto& v1, auto& v2) -> bool {
+          return v1.first > v2.first;
+        });
+
+      for(size_t i = 0; i < entities_per_cell; ++i){
+        conns.push_back(sortIds[i].second);
       }
     }
 
