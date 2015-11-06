@@ -530,6 +530,12 @@ public:
       return c.get_entities(index_);
     }
 
+    id_t *get_entities(size_t dim, size_t &count) {
+      connectivity &c = mesh_.get_connectivity_(M, dim_, dim);
+      assert(!c.empty());
+      return c.get_entities(index_, count);
+    }
+
   protected:
     const id_vec &get_entities_() { return *entities_; }
 
@@ -937,9 +943,6 @@ public:
 
   template<size_t M>
   void init_cell_(cell_type<M> *cell, std::initializer_list<vertex_type<M> *> verts) {
-    assert(verts.size() == MT::num_vertices_per_entity(MT::dimension) &&
-        "invalid number of vertices per cell");
-
     auto &c = get_connectivity_(M, MT::dimension, 0);
 
     assert(cell->id() == c.from_size() && "id mismatch");
@@ -1043,12 +1046,9 @@ public:
 
     assert(dim <= MT::dimension);
 
-    size_t vertices_per_entity = MT::num_vertices_per_entity(dim);
-    size_t entities_per_cell = MT::num_entities_per_cell(dim);
-
     connectivity &entity_to_vertex = get_connectivity_(M, dim, 0);
 
-    id_vec entity_vertices(entities_per_cell * vertices_per_entity);
+    id_vec entity_vertices;
 
     connectivity &cell_to_entity = get_connectivity_(M, MT::dimension, dim);
 
@@ -1064,16 +1064,21 @@ public:
 
     conn_vec cell_entity_conn(n);
 
-    id_vec_map entity_vertices_map(n * MT::num_entities_per_cell(dim) / 2);
+    id_vec_map entity_vertices_map;
 
     for (size_t c = 0; c < n; ++c) {
       id_vec &conns = cell_entity_conn[c];
 
       conns.reserve(max_cell_entity_conns);
 
-      id_t *vertices = cell_to_vertex.get_entities(c);
+      size_t endIndex;
+      id_t *vertices = cell_to_vertex.get_entities(c, endIndex);
 
-      MT::create_entities(dim, entity_vertices, vertices);
+      size_t entities_per_cell;
+      size_t vertices_per_entity; 
+      
+      std::tie(entities_per_cell, vertices_per_entity) = 
+      MT::create_entities(dim, entity_vertices, vertices, endIndex);
 
       std::vector<std::pair<uint64_t, id_t>> sortIds;
       sortIds.reserve(max_cell_entity_conns);
@@ -1171,8 +1176,8 @@ public:
     using visited_vec = std::vector<bool>;
     visited_vec visited(num_entities_(M, from_dim));
 
-    id_vec from_verts(MT::num_vertices_per_entity(from_dim));
-    id_vec to_verts(MT::num_vertices_per_entity(to_dim));
+    id_vec from_verts;
+    id_vec to_verts;
 
     size_t max_size = 1;
 
@@ -1181,9 +1186,10 @@ public:
       id_vec &entities = conns[*from_entity];
       entities.reserve(max_size);
 
-      id_t *ep = from_entity.get_entities(0);
+      size_t count;
+      id_t *ep = from_entity.get_entities(0, count);
 
-      std::copy(ep, ep + MT::num_vertices_per_entity(from_dim), from_verts.begin());
+      std::copy(ep, ep + count, from_verts.begin());
 
       std::sort(from_verts.begin(), from_verts.end());
 
@@ -1210,10 +1216,10 @@ public:
               entities.push_back(*to_itr);
             }
           } else {
-            id_t *ep = to_itr.get_entities(0);
+            size_t count;
+            id_t *ep = to_itr.get_entities(0, count);
 
-            std::copy(
-                ep, ep + MT::num_vertices_per_entity(to_dim), to_verts.begin());
+            std::copy(ep, ep + count, to_verts.begin());
 
             std::sort(to_verts.begin(), to_verts.end());
 

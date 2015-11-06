@@ -44,42 +44,13 @@ public:
                std::pair<Edge, Cell>,
                std::pair<Cell, Vertex>,
                std::pair<Cell, Edge>>;
-
-  static size_t num_entities_per_cell(size_t dim){
-    switch(dim){
-    case 0:
-      return 4;
-    case 1:
-      return 4;
-    case 2:
-      return 1;
-    default:
-      assert(false && "invalid dimension");
-    }
-  }
-
-  static constexpr size_t vertices_per_cell(){
-    return 4;
-  }
   
-  static size_t num_vertices_per_entity(size_t dim){
-    switch(dim){
-    case 0:
-      return 1;
-    case 1:
-      return 2;
-    case 2:
-      return 4;
-    default:
-      assert(false && "invalid dimension");
-    }
-  }
-  
-  static void create_entities(size_t dim, std::vector<flexi::id_t>& e,
-                             flexi::id_t *v){
-    assert(dim = 1);
-    assert(e.size() == 8);
-    
+  static std::pair<size_t, size_t>
+  create_entities(size_t dim, std::vector<flexi::id_t>& e,
+                  flexi::id_t *v, size_t vertex_count){  
+
+    e.resize(8);
+
     e[0] = v[0];
     e[1] = v[2];
     
@@ -91,6 +62,8 @@ public:
     
     e[6] = v[2];
     e[7] = v[3];
+
+    return {4, 2};
   }
 };
 

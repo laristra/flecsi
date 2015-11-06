@@ -232,50 +232,10 @@ struct burton_mesh_types_t {
                std::pair<burton_cell_t, burton_vertex_t>,
                std::pair<burton_cell_t, burton_edge_t>>;
 
-  /*--------------------------------------------------------------------------*
-   * FIXME
-   *--------------------------------------------------------------------------*/
-
-  static size_t num_entities_per_cell(size_t dim) {
-    switch (dim) {
-    case 0:
-      return 4;
-    case 1:
-      return 4;
-    case 2:
-      return 1;
-    default:
-      assert(false && "invalid dimension");
-    } // switch
-  }   // numEntitiesPerCell
-
-  /*--------------------------------------------------------------------------*
-   * FIXME
-   *--------------------------------------------------------------------------*/
-
-  static constexpr size_t vertices_per_cell() { return 4; } // verticesPerCell
-
-  /*--------------------------------------------------------------------------*
-   * FIXME
-   *--------------------------------------------------------------------------*/
-
-  static size_t num_vertices_per_entity(size_t dim) {
-    switch (dim) {
-    case 0:
-      return 1;
-    case 1:
-      return 2;
-    case 2:
-      return 4;
-    default:
-      assert(false && "invalid dimension");
-    } // switch
-  }   // numVerticesPerEntity
-
-  static void create_entities(
-    size_t dim, std::vector<flexi::id_t> &e, id_t *v) {
-    assert(dim = 1);
-    assert(e.size() == 8);
+  static std::pair<size_t, size_t> create_entities(
+    size_t dim, std::vector<flexi::id_t> &e, id_t *v, size_t vertex_count) {
+    
+    e.resize(8);
 
     e[0] = v[0];
     e[1] = v[1];
@@ -288,6 +248,8 @@ struct burton_mesh_types_t {
 
     e[6] = v[1];
     e[7] = v[2];
+
+    return {4, 2};
   } // createEntities
 
 }; // struct burton_mesh_types_t
@@ -320,38 +282,9 @@ public:
                std::pair<burton_wedge_t, burton_vertex_t>,
                std::pair<burton_wedge_t, burton_edge_t>>;
 
-  static size_t num_entities_per_cell(size_t dim) {
-    switch (dim) {
-    case 0:
-      return 3;
-    case 1:
-      return 3;
-    case 2:
-      return 1;
-    default:
-      assert(false && "invalid dimension");
-    }
-  }
-
-  static constexpr size_t vertices_per_cell() { return 3; }
-
-  static size_t num_vertices_per_entity(size_t dim) {
-    switch (dim) {
-    case 0:
-      return 1;
-    case 1:
-      return 2;
-    case 2:
-      return 3;
-    default:
-      assert(false && "invalid dimension");
-    }
-  }
-
-  static void create_entities(
-    size_t dim, std::vector<flexi::id_t> &e, id_t *v) {
-    assert(dim = 1);
-    assert(e.size() == 6);
+  static std::pair<size_t, size_t> create_entities(
+    size_t dim, std::vector<flexi::id_t> &e, id_t *v, size_t vertex_count) {
+    e.resize(6);
 
     e[0] = v[0];
     e[1] = v[1];
@@ -361,6 +294,8 @@ public:
 
     e[4] = v[0];
     e[5] = v[2];
+
+    return {3, 2};
   }
 }; // burton_dual_mesh_t
 

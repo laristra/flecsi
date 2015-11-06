@@ -300,8 +300,6 @@ public:
     \param verts The vertices defining the cell.
    */
   cell_t *create_cell(std::initializer_list<vertex_t *> verts) {
-    assert(verts.size() == burton_mesh_types_t::vertices_per_cell() &&
-        "vertices size mismatch");
     auto c = mesh_.make<cell_t>();
     mesh_.init_cell(c, verts);
     return c;
