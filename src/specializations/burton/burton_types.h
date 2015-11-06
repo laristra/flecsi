@@ -159,7 +159,7 @@ struct burton_mesh_types_t {
 
     entity_group<burton_wedge_t> &wedges() { return wedges_; } // wedges
 
-    void set_precedence(uint64_t precedence) {}
+    void set_precedence(size_t dim, uint64_t precedence) {}
 
   private:
     entity_group<burton_corner_t> corners_;
@@ -186,7 +186,7 @@ struct burton_mesh_types_t {
     vector_t side_facet_normal();
     vector_t cell_facet_normal();
 
-    void set_precedence(uint64_t precedence) {}
+    void set_precedence(size_t dim, uint64_t precedence) {}
 
   private:
     burton_corner_t *corner_;

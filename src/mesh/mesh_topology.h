@@ -1117,7 +1117,7 @@ public:
       }
 
       auto cell = static_cast<cell_type<M>*>(entities_[M][MT::dimension][c]);
-      cell->set_precedence(cell_precedence);
+      cell->set_precedence(dim, cell_precedence);
     }
 
     cell_to_entity.init_create<MT, M>(id_vecs_[M][dim],

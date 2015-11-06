@@ -24,7 +24,7 @@ public:
 
 class Cell : public mesh_entity<2>{
 public:
-  void set_precedence(uint64_t precedence) {}
+  void set_precedence(size_t dim, uint64_t precedence) {}
 };
 
 class TestMesh2dType{
