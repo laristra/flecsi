@@ -111,6 +111,9 @@ public:
       data_[i] = val;    
     return *this;
   }
+
+  // use std::move
+  // http://stackoverflow.com/questions/11726171/numeric-vector-operator-overload-rvalue-reference-parameter
   
   //! \brief Addition binary operator involving another array.
   //! \param[in] rhs The array on the right hand side of the operator.

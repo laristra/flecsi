@@ -40,45 +40,6 @@ namespace flexi {
  */
 template <typename T, size_t D> using space_vector = dimensioned_array<T, D>;
 
-
-
-
-//jgw//// NO
-//jgw//// http://stackoverflow.com/questions/11726171/numeric-vector-operator-overload-rvalue-reference-parameter
-//jgw//
-//jgw///*!
-//jgw//  \function opearator+
-//jgw// */
-//jgw//template <typename T, size_t D>
-//jgw//space_vector<T, D> operator+(const space_vector<T, D> &a,
-//jgw//  const space_vector<T, D> &b) {
-//jgw//  space_vector<T, D> tmp;
-//jgw//  for (size_t d(0); d < D; ++d)
-//jgw//    tmp[d] = a[d] + b[d];
-//jgw//  return tmp;
-//jgw//}
-//jgw//
-//jgw///*!
-//jgw//  \function opearator+=
-//jgw// */
-//jgw//template <typename T, size_t D>
-//jgw//space_vector<T, D> & operator+=(const space_vector<T, D> &b) {
-//jgw//  this = this+b;
-//jgw//  return *this;
-//jgw//}
-//jgw//
-//jgw///*!
-//jgw//  \function operator-
-//jgw// */
-//jgw//template <typename T, size_t D>
-//jgw//space_vector<T, D> operator-(const space_vector<T, D> &a,
-//jgw//  const space_vector<T, D> &b) {
-//jgw//  space_vector<T, D> tmp;
-//jgw//  for (size_t d(0); d < D; ++d)
-//jgw//    tmp[d] = a[d] - b[d];
-//jgw//  return tmp;
-//jgw//}
-
 /*!
   \function operator*(const space_vector<T,D> & v, const T s)
  */

@@ -22,54 +22,73 @@ using vector_1d_t = space_vector<double,1>;
 using vector_2d_t = space_vector<double,2>;
 using vector_3d_t = space_vector<double,3>;
 
-//jgw//TEST(space_vector, plus) {
-//jgw//  vector_1d_t a1(1.0), b1(2.0);
-//jgw//  vector_1d_t c1 = a1 + b1;
-//jgw//  ASSERT_EQ(3.0, c1[0]);
-//jgw//
-//jgw//  vector_2d_t a2(1.0,1.0), b2(2.0,2.0);
-//jgw//  vector_2d_t c2 = a2 + b2;
-//jgw//  ASSERT_EQ(3.0, c2[0]);
-//jgw//  ASSERT_EQ(3.0, c2[1]);
-//jgw//
-//jgw//  vector_3d_t a3(1.0,1.0,1.0), b3(2.0,2.0,2.0);
-//jgw//  vector_3d_t c3 = a3 + b3;
-//jgw//  ASSERT_EQ(3.0, c3[0]);
-//jgw//  ASSERT_EQ(3.0, c3[1]);
-//jgw//  ASSERT_EQ(3.0, c3[2]);
-//jgw//}
-//jgw//
-//jgw//TEST(space_vector, plusequal) {
-//jgw//  vector_1d_t a1(1.0), b1(2.0);
-//jgw//  a1 += b1;
-//jgw//  ASSERT_EQ(3.0, a1[0]);
-//jgw//
-//jgw//  vector_2d_t a2(1.0,1.0), b2(2.0,2.0);
-//jgw////  ASSERT_EQ(3.0, a2[0]);
-//jgw////  ASSERT_EQ(3.0, a2[1]);
-//jgw////
-//jgw////  vector_3d_t a3(1.0,1.0,1.0), b3(2.0,2.0,2.0);
-//jgw////  ASSERT_EQ(3.0, a3[0]);
-//jgw////  ASSERT_EQ(3.0, a3[1]);
-//jgw////  ASSERT_EQ(3.0, a3[2]);
-//jgw//}
-//jgw//
-//jgw//TEST(space_vector, minus) {
-//jgw//  vector_1d_t a1(1.0), b1(2.0);
-//jgw//  vector_1d_t c1 = a1 - b1;
-//jgw//  ASSERT_EQ(-1.0, c1[0]);
-//jgw//
-//jgw//  vector_2d_t a2(1.0,1.0), b2(2.0,2.0);
-//jgw//  vector_2d_t c2 = a2 - b2;
-//jgw//  ASSERT_EQ(-1.0, c2[0]);
-//jgw//  ASSERT_EQ(-1.0, c2[1]);
-//jgw//
-//jgw//  vector_3d_t a3(1.0,1.0,1.0), b3(2.0,2.0,2.0);
-//jgw//  vector_3d_t c3 = a3 - b3;
-//jgw//  ASSERT_EQ(-1.0, c3[0]);
-//jgw//  ASSERT_EQ(-1.0, c3[1]);
-//jgw//  ASSERT_EQ(-1.0, c3[2]);
-//jgw//}
+TEST(space_vector, plus) {
+  vector_1d_t a1(1.0), b1(2.0);
+  vector_1d_t c1 = a1 + b1;
+  ASSERT_EQ(3.0, c1[0]);
+
+  vector_2d_t a2(1.0,1.0), b2(2.0,2.0);
+  vector_2d_t c2 = a2 + b2;
+  ASSERT_EQ(3.0, c2[0]);
+  ASSERT_EQ(3.0, c2[1]);
+
+  vector_3d_t a3(1.0,1.0,1.0), b3(2.0,2.0,2.0);
+  vector_3d_t c3 = a3 + b3;
+  ASSERT_EQ(3.0, c3[0]);
+  ASSERT_EQ(3.0, c3[1]);
+  ASSERT_EQ(3.0, c3[2]);
+}
+
+TEST(space_vector, plusequal) {
+  vector_1d_t a1(1.0), b1(2.0);
+  a1 += b1;
+  ASSERT_EQ(3.0, a1[0]);
+
+  vector_2d_t a2(1.0,1.0), b2(2.0,2.0);
+  a2 += b2;
+  ASSERT_EQ(3.0, a2[0]);
+  ASSERT_EQ(3.0, a2[1]);
+
+  vector_3d_t a3(1.0,1.0,1.0), b3(2.0,2.0,2.0);
+  a3 += b3;
+  ASSERT_EQ(3.0, a3[0]);
+  ASSERT_EQ(3.0, a3[1]);
+  ASSERT_EQ(3.0, a3[2]);
+}
+
+TEST(space_vector, minus) {
+  vector_1d_t a1(1.0), b1(2.0);
+  vector_1d_t c1 = a1 - b1;
+  ASSERT_EQ(-1.0, c1[0]);
+
+  vector_2d_t a2(1.0,1.0), b2(2.0,2.0);
+  vector_2d_t c2 = a2 - b2;
+  ASSERT_EQ(-1.0, c2[0]);
+  ASSERT_EQ(-1.0, c2[1]);
+
+  vector_3d_t a3(1.0,1.0,1.0), b3(2.0,2.0,2.0);
+  vector_3d_t c3 = a3 - b3;
+  ASSERT_EQ(-1.0, c3[0]);
+  ASSERT_EQ(-1.0, c3[1]);
+  ASSERT_EQ(-1.0, c3[2]);
+}
+
+TEST(space_vector, minusequal) {
+  vector_1d_t a1(1.0), b1(2.0);
+  a1 -= b1;
+  ASSERT_EQ(-1.0, a1[0]);
+
+  vector_2d_t a2(1.0,1.0), b2(2.0,2.0);
+  a2 -= b2;
+  ASSERT_EQ(-1.0, a2[0]);
+  ASSERT_EQ(-1.0, a2[1]);
+
+  vector_3d_t a3(1.0,1.0,1.0), b3(2.0,2.0,2.0);
+  a3 -= b3;
+  ASSERT_EQ(-1.0, a3[0]);
+  ASSERT_EQ(-1.0, a3[1]);
+  ASSERT_EQ(-1.0, a3[2]);
+}
 
 TEST(space_vector, operator_times) {
   double s = 2.0;
