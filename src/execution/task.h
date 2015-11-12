@@ -15,6 +15,9 @@
 #ifndef flexi_task_h
 #define flexi_task_h
 
+#include <iostream>
+#include <type_traits>
+
 #include "context.h"
 #include "../utils/static_for_each.h"
 
@@ -35,13 +38,17 @@ class default_execution_policy_t
 {
 protected:
 
-  template<typename T, typename ... Args>
-  static int32_t execute_task(T && task, Args && ... args) {
+  using return_type_t = int32_t;
 
+  template<typename T, typename ... Args>
+  static return_type_t execute_task(T && task, Args && ... args) {
+
+#if 0
     // FIXME: place-holder example of static argument processing
     static_for_each(std::make_tuple(args ...), [&](auto arg) {
       std::cout << "test" << std::endl;
       });
+#endif
 
     context_t::instance().entry();
     auto value = task(std::forward<Args>(args) ...);
@@ -61,10 +68,19 @@ class execution_t : public execution_policy_t
 {
 public:
 
+  using return_type_t = typename execution_policy_t::return_type_t;
+
   // FIXME We may need task registration
 
   template<typename T, typename ... Args>
-  static int32_t execute_task(T && task, Args && ... args) {
+  static return_type_t execute_task(T && task, Args && ... args) {
+
+    // Make sure that the task definition returns the correct type
+    static_assert(std::is_same<return_type_t,
+      decltype(task(std::forward<Args>(args)...))>(),
+      "Tasks must return flexi::execution_t::return_type_t");
+
+    // pass the task to the execution policy for handling
     return execution_policy_t::execute_task(std::forward<T>(task),
       std::forward<Args>(args) ...);
   } // execute_task

@@ -12,30 +12,23 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_common_h
-#define flexi_common_h
+#ifndef update_h
+#define update_h
 
-#include <cstdint>
+#include "types.h"
 
-/*!
- * \file common.h
- * \authors bergen
- * \date Initial file creation: Sep 23, 2015
- */
+int32_t update(burton_mesh_t & mesh, const accessor_t & p,
+  const accessor_t & d, accessor_t & r) {
 
-namespace flexi {
+  for(auto z: mesh.cells()) {
+    r[z] = p[z] + d[z];
+  } // for
 
-using id_t = uint64_t;
+  return 0;
 
-//! P.O.D.
-template <typename T> T square(const T &a) { return a * a; }
+} // update
 
-} // namespace flexi
-
-#define _UTIL_STRINGIFY(s)#s
-#define EXPAND_AND_STRINGIFY(s)_UTIL_STRINGIFY(s)
-
-#endif // flexi_common_h
+#endif // update_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

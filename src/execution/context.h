@@ -15,6 +15,8 @@
 #ifndef flexi_context_h
 #define flexi_context_h
 
+#include <cstddef>
+
 /*!
  * \file context.h
  * \authors bergen
@@ -31,20 +33,22 @@ class context_t
 {
 public:
 
-  enum class state_t : size_t {
+  enum class call_state_t : size_t {
     driver = 0,
     task
-  }; // enum class state_t
+  }; // enum class call_state_t
 
   static context_t & instance() {
     static context_t ctx;
     return ctx;
   } // instance
 
-  state_t current() { return state_ > 0 ? state_t::driver : state_t::task; }
+  call_state_t current() {
+    return call_state_ > 0 ? call_state_t::driver : call_state_t::task;
+  } // current
 
-  state_t entry() { return static_cast<state_t>(++state_); }
-  state_t exit() { return static_cast<state_t>(--state_); }
+  call_state_t entry() { return static_cast<call_state_t>(++call_state_); }
+  call_state_t exit() { return static_cast<call_state_t>(--call_state_); }
 
   //! Copy constructor (disabled)
   context_t(const context_t &) = delete;
@@ -54,10 +58,10 @@ public:
 
 private:
 
-  context_t() : state_(static_cast<size_t>(state_t::driver)) {}
+  context_t() : call_state_(static_cast<size_t>(call_state_t::driver)) {}
    ~context_t() {}
 
-  size_t state_;
+  size_t call_state_;
 
 }; // class context_t
 

@@ -12,30 +12,42 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_common_h
-#define flexi_common_h
+#ifndef init_h
+#define init_h
 
-#include <cstdint>
+#include "types.h"
 
-/*!
- * \file common.h
- * \authors bergen
- * \date Initial file creation: Sep 23, 2015
- */
+int32_t init(burton_mesh_t & mesh) {
 
-namespace flexi {
+	mesh.init_parameters((height+1)*(width+1));
 
-using id_t = uint64_t;
+  std::vector<vertex_t*> vs;
+  for(size_t j = 0; j < height + 1; ++j){
+    for(size_t i = 0; i < width + 1; ++i){
+      auto v = mesh.create_vertex({double(i), double(j)});
+      v->set_rank(1);
+      vs.push_back(v);
+    } // for
+  } // for
 
-//! P.O.D.
-template <typename T> T square(const T &a) { return a * a; }
+  size_t width1 = width + 1;
+  for(size_t j = 0; j < height; ++j){
+    for(size_t i = 0; i < width; ++i){
+      // go over vertices counter clockwise to define cell
+      auto c = mesh.create_cell({vs[i + j * width1],
+        vs[i + 1 + j * width1],
+        vs[i + 1 + (j + 1) * width1],
+        vs[i + (j + 1) * width1]});
+    } // for
+  } // for
 
-} // namespace flexi
+  mesh.init();
 
-#define _UTIL_STRINGIFY(s)#s
-#define EXPAND_AND_STRINGIFY(s)_UTIL_STRINGIFY(s)
+	return 0;
 
-#endif // flexi_common_h
+} // init
+
+#endif // init_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

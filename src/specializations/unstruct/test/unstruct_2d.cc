@@ -23,7 +23,7 @@
 #include <cinchtest.h>
 #include <vector>
 
-#include "../unstruct.h"
+#include "flexi/specializations/unstruct/unstruct.h"
 
 // namespaces
 using namespace flexi;
@@ -35,7 +35,7 @@ using namespace flexi;
 //! \brief The fixture for testing the general unstructured mesh
 //=============================================================================
 
-class Unstruct : public ::testing::Test {
+class Unstruct2D : public ::testing::Test {
 
 protected:
 
@@ -49,14 +49,14 @@ protected:
   //! \brief number of cells high
   static constexpr size_t height = 2;
 
-  //! \brief the mesh dimension
-  static constexpr size_t dim = 3;
+  //! \brief the mesh type
+  using mesh_t   = unstruct_2d_mesh_t;
 
   //! \brief the mesh float type
-  using real_t   = double;
+  using real_t   = typename mesh_t::real_t;
+  //! \brief the mesh dimensions
+  static constexpr size_t dimension = mesh_t::dimension;
 
-  //! \brief the mesh type
-  using mesh_t   = unstruct_mesh_t<real_t, dim>;
   //! \brief the point
   using point_t  = typename mesh_t::point_t;
   //! \brief the vertex type
@@ -72,9 +72,11 @@ protected:
   //---------------------------------------------------------------------------
   //! \brief the test setup function
   //---------------------------------------------------------------------------
-  virtual void SetUp() {
+  virtual void SetUp() override {
     
     std::vector<vertex_t*> vs;
+
+    mesh_.init_parameters( (height+1)*(width+1) );
   
     for(size_t j = 0; j < height + 1; ++j){
       for(size_t i = 0; i < width + 1; ++i){
@@ -89,10 +91,10 @@ protected:
       for(size_t i = 0; i < width; ++i){
 	auto c = 
 	  mesh_.create_cell({
-                vs[i + j * width1],
-		vs[i + (j + 1) * width1],
-		vs[i + 1 + j * width1],
-		vs[i + 1 + (j + 1) * width1]});
+            vs[ i      +   j      * width1 ],
+            vs[ i + 1  +   j      * width1 ],
+            vs[ i + 1  +  (j + 1) * width1 ],
+            vs[ i      +  (j + 1) * width1 ]  });
       }
     }
 
@@ -102,7 +104,7 @@ protected:
   //---------------------------------------------------------------------------
   //! \brief the test teardown function 
   //---------------------------------------------------------------------------
-  virtual void TearDown() { }
+  virtual void TearDown() override { }
 
   //---------------------------------------------------------------------------
   // Data members
@@ -117,7 +119,7 @@ protected:
 //=============================================================================
 //! \brief A simple test of the mesh
 //=============================================================================
-TEST_F(Unstruct, mesh) {
+TEST_F(Unstruct2D, mesh) {
   for(auto v : mesh_.vertices()) {
     CINCH_CAPTURE() << "----------- vertex: " << v->id() << std::endl;
   }
@@ -132,15 +134,9 @@ TEST_F(Unstruct, mesh) {
 
   for(auto c : mesh_.cells()) {
     CINCH_CAPTURE() << "----------- cell: " << c->id() << std::endl;
-    //for(auto f : mesh_.faces(c)){
-    //  CINCH_CAPTURE() << "++++ face of: " << f->id() << std::endl;
-    //  for(auto e : c->faces()){
-    //    CINCH_CAPTURE() << "++++ edge of: " << e->id() << std::endl;
-    //  }
-    //}
   }
 
-  ASSERT_TRUE(CINCH_EQUAL_BLESSED("unstruct.blessed"));
+  ASSERT_TRUE(CINCH_EQUAL_BLESSED("unstruct_2d.blessed"));
 
 };
 

@@ -12,30 +12,26 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_common_h
-#define flexi_common_h
+#ifndef type_h
+#define type_h
 
-#include <cstdint>
+#include <flexi/specializations/burton/burton.h>
+#include <flexi/execution/task.h>
 
-/*!
- * \file common.h
- * \authors bergen
- * \date Initial file creation: Sep 23, 2015
- */
+using burton_mesh_t = flexi::burton_mesh_t;
+using vertex_t = burton_mesh_t::vertex_t;
+using edge_t = burton_mesh_t::edge_t;
+using cell_t = burton_mesh_t::cell_t;
+using point_t = burton_mesh_t::point_t;
+using vector_t = burton_mesh_t::vector_t;
+using real_t = burton_mesh_t::real_t;
+using accessor_t = burton_mesh_t::accessor_t<real_t>;
+using flexi::persistent;
 
-namespace flexi {
+const size_t height(2);
+const size_t width(5);
 
-using id_t = uint64_t;
-
-//! P.O.D.
-template <typename T> T square(const T &a) { return a * a; }
-
-} // namespace flexi
-
-#define _UTIL_STRINGIFY(s)#s
-#define EXPAND_AND_STRINGIFY(s)_UTIL_STRINGIFY(s)
-
-#endif // flexi_common_h
+#endif // type_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

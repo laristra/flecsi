@@ -36,10 +36,12 @@ protected:
   
     b.init_parameters((height+1)*(width+1));
 
+    size_t max_rank = (height+1)*(width+1) - 1;
+
     for(size_t j = 0; j < height + 1; ++j){
       for(size_t i = 0; i < width + 1; ++i){
         auto v = b.create_vertex({double(i), double(j)});
-        v->set_rank(1);
+        v->set_rank(max_rank - (i + (j * width + 1)));
         vs.push_back(v);
       } // for
     } // for
@@ -109,6 +111,44 @@ TEST_F(Burton, coordinates) {
       cout << "++++ vertex " << v->id();
       cout << ": (" << xv[0] << "," << xv[1] << ")" << endl;
     } // for
+  } // for
+} // TEST_F
+
+TEST_F(Burton, accessors) {
+  register_state(b, "pressure", cells, real_t, persistent);
+  register_state(b, "density", cells, real_t);
+  register_state(b, "total energy", cells, real_t, persistent);
+  register_state(b, "velocity", edges, real_t, persistent);
+  register_state(b, "H", edges, vector_t);
+
+  std::cout << "Accessing state with type real_t:" << std::endl;
+
+  auto vr = access_type(b, real_t);
+  for(auto v: vr) {
+    std::cout << "\t" << v.label() <<
+      " has type real_t" << std::endl;
+  } // for
+
+  std::cout << std::endl;
+
+  std::cout << "Accessing state with type real_t at cells:" << std::endl;
+
+  auto va = access_type_if(b, real_t, is_at(cells));
+  for(auto v: va) {
+    std::cout << "\t" << v.label() <<
+      " has type real_t and is at cells" << std::endl;
+  } // for
+
+  std::cout << std::endl;
+
+  std::cout << "Accessing persistent state with type real_t at cells:" <<
+    std::endl;
+
+  auto vp = access_type_if(b, real_t, is_persistent_at(cells));
+
+  for(auto v: vp) {
+    std::cout << "\t" << v.label() <<
+      " has type real_t and is persistent at cells" << std::endl;
   } // for
 } // TEST_F
 

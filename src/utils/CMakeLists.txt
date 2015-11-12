@@ -29,6 +29,9 @@ cinch_add_unit(const_string
 cinch_add_unit(factory
   SOURCES test/factory.cc)
 
+cinch_add_unit(zip
+  SOURCES test/zip.cc)
+
 #~---------------------------------------------------------------------------~-#
 # Formatting options
 # vim: set tabstop=2 shiftwidth=2 expandtab :

@@ -20,10 +20,10 @@
 ----------- edge: 10
 ----------- edge: 11
 ----------- cell: 0
-++++ edge of: 0
 ++++ edge of: 1
-++++ edge of: 2
 ++++ edge of: 3
+++++ edge of: 2
+++++ edge of: 0
 ++++ wedge of: 0
 ### corner of: 6
 ++++ wedge of: 1
@@ -69,10 +69,10 @@
 - vertex of: 0
 - vertex of: 3
 ----------- cell: 1
-++++ edge of: 4
 ++++ edge of: 5
-++++ edge of: 3
 ++++ edge of: 6
+++++ edge of: 3
+++++ edge of: 4
 ++++ wedge of: 4
 ### corner of: 15
 ++++ wedge of: 5
@@ -118,10 +118,10 @@
 - vertex of: 9
 - vertex of: 12
 ----------- cell: 2
-++++ edge of: 1
 ++++ edge of: 7
-++++ edge of: 8
 ++++ edge of: 9
+++++ edge of: 8
+++++ edge of: 1
 ++++ wedge of: 8
 ### corner of: 24
 ++++ wedge of: 9
@@ -167,10 +167,10 @@
 - vertex of: 18
 - vertex of: 21
 ----------- cell: 3
-++++ edge of: 5
 ++++ edge of: 10
-++++ edge of: 9
 ++++ edge of: 11
+++++ edge of: 9
+++++ edge of: 5
 ++++ wedge of: 12
 ### corner of: 33
 ++++ wedge of: 13

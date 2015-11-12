@@ -1,4 +1,4 @@
-/*~-------------------------------------------------------------------------~~*
+/*~--------------------------------------------------------------------------~*
  *  @@@@@@@@ @@       @@@@@@@@ @@     @@ @@
  * /@@///// /@@      /@@///// //@@   @@ /@@
  * /@@      /@@      /@@       //@@ @@  /@@
@@ -10,45 +10,52 @@
  * 
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
- *~-------------------------------------------------------------------------~~*/
+ *~--------------------------------------------------------------------------~*/
 
+// system includes
 #include <cinchtest.h>
 
-#include "../state.h"
-#include "../../utils/bitfield.h"
+#include<array>
+#include<iostream>
+#include<list>
+#include<typeinfo>
+#include<vector>
 
-using state_t = flexi::state_t<flexi::default_state_user_meta_data_t,
-  flexi::default_state_storage_policy_t>;
-using flexi::persistent;
+// user includes
+#include "../zip.h"
 
-TEST(state, sanity) {
-  state_t state;
+// some using declarations
+using namespace std;
 
-  state.register_state<double>("density", 10, 0, persistent);
-  state.register_state<double>("pressure", 10, 1, persistent);
-  state.register_state<float>("velocity", 15, 0, persistent);
+//=============================================================================
+//! \brief Test the "zip-like" iterator.
+//=============================================================================
+TEST(zip, simple) {
 
-  auto d = state.accessor<double, 0>("density");
+  vector<double> a{1.0, 2.0, 3.0, 4.0};
+  list<char> b;
+  b.push_back('a');
+  b.push_back('b');
+  b.push_back('c');
+  b.push_back('d');
+  array<int,5> c{5,4,3,2,1};
 
-  for(auto i: d) {
-    d[i] = i;
-  } // for
+  auto d = zip(a, b, c);
 
-  for(auto i: d) {
-    ASSERT_EQ(i, d[i]);
-  } // for
+  for (auto i : zip(a, b, c) ) {
+    cout << get<0>(i) << ", " << get<1>(i) << ", " << get<2>(i) << endl;
+  }
 
-  // define a predicate to test for persistent state
-  auto pred = [](const auto & a) -> bool {
-    flexi::bitfield_t bf(a.meta().attributes);
-    return a.meta().site_id == 0 && bf.bitsset(persistent);
-  };
-
-  // get accessors that match type 'double' and predicate
-  for(auto a: state.accessors<double>(pred)) {
-    std::cout << a.label() << std::endl;
-    ASSERT_TRUE(pred(a));
-  } // for
+  for (auto i : d) {
+    cout << get<0>(i) << ", " << get<1>(i) << ", " << get<2>(i) << endl;
+    get<0>(i) = 5;
+    //cout << i1 << ", " << i2 << ", " << i3 << endl;
+  }
+  for (const auto i : d) {
+    get<0>(i) = 1;
+    cout << get<0>(i) << ", " << get<1>(i) << ", " << get<2>(i) << endl;
+    //cout << i1 << ", " << i2 << ", " << i3 << endl;
+  }  
 
 } // TEST
 
@@ -61,7 +68,7 @@ TEST(state, sanity) {
  *                                 compared using the macros below.
  *
  *    EXAMPLE:
- *      CINCH_CAPTURE() << "My value equals: " << myvalue << std::endl;
+ *      CINCH_CAPTURE() << "My value equals: " << myvalue << endl;
  *
  *  CINCH_COMPARE_BLESSED(file); : Compare captured output with
  *                                 contents of a blessed file.
@@ -95,7 +102,7 @@ TEST(state, sanity) {
  *  ASSERT_STRCASENE(expected, actual); EXPECT_STRCASENE(expected, actual)
  *----------------------------------------------------------------------------*/
 
-/*~------------------------------------------------------------------------~--*
+/*~-------------------------------------------------------------------------~-*
  * Formatting options
  * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~------------------------------------------------------------------------~--*/
+ *~-------------------------------------------------------------------------~-*/
