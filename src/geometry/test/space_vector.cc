@@ -178,8 +178,8 @@ TEST(space_vector, normal) {
   ASSERT_EQ( 2.0, v2[1]);
 
   // 3d normal
-  point_3d_t a3(1.0, 1.0, 1.0);
-  point_3d_t b3(3.0, 4.0, 5.0);
+  vector_3d_t a3(1.0, 1.0, 1.0);
+  vector_3d_t b3(3.0, 4.0, 5.0);
 
   vector_3d_t v3 = normal(a3, b3);
 

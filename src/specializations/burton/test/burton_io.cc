@@ -78,13 +78,13 @@ TEST_F(Burton, write_exo) {
   auto p = access_state(b, "pressure", real_t);
   auto velocity = access_state(b, "velocity", vector_t);
   // initialize
-  for(auto c: p) {
-    p[c] = c;
+  for(auto c: b.cells()) {
+    p[c] = c->id();
   } // for
   // vertices
-  for (auto v: velocity) {
-    velocity[v][0] = v;
-    velocity[v][1] = 2.0*v;
+  for (auto v: b.vertices()) {
+    velocity[v][0] = v->id();
+    velocity[v][1] = 2.0*v->id();
   } // for
 
   // write the mesh

@@ -36,7 +36,7 @@ enum class axis : size_t { x = 0, y = 1, z = 2 };
   contiguous array types that have a specific dimension.  Please look at
   the \ref point and \ref vector types for an example of its use.
  */
-template <typename T, size_t D> class dimensioned_array {
+template <typename T, size_t D, size_t TS> class dimensioned_array {
 public:
   dimensioned_array(const dimensioned_array &a) : data_(a.data_) {}
 
@@ -207,14 +207,15 @@ private:
 //! \brief Addition operator involving two dimensioned_arrays.
 //! \tparam T  The array base value type.
 //! \tparam D  The array dimension.
+//! \tparam TS The "template space".
 //! \param[in] lhs The dimensioned_array on the left hand side of the operator.
 //! \param[in] rhs The dimensioned_array on the right hand side of the operator.
 //! \return A reference to the current object.
-template <typename T, size_t D>
-dimensioned_array<T,D> operator+( const dimensioned_array<T,D>& lhs, 
-                                  const dimensioned_array<T,D>& rhs )
+template <typename T, size_t D, size_t TS>
+dimensioned_array<T,D,TS> operator+( const dimensioned_array<T,D,TS>& lhs, 
+                                     const dimensioned_array<T,D,TS>& rhs )
 {
-  dimensioned_array<T,D> tmp(lhs);
+  dimensioned_array<T,D,TS> tmp(lhs);
   tmp += rhs;
   return tmp;
 }
@@ -222,14 +223,15 @@ dimensioned_array<T,D> operator+( const dimensioned_array<T,D>& lhs,
 //! \brief Subtraction operator involving two dimensioned_arrays.
 //! \tparam T  The array base value type.
 //! \tparam D  The array dimension.
+//! \tparam TS The "template space".
 //! \param[in] lhs The dimensioned_array on the left hand side of the operator.
 //! \param[in] rhs The dimensioned_array on the right hand side of the operator.
 //! \return A reference to the current object.
-template <typename T, size_t D>
-dimensioned_array<T,D> operator-( const dimensioned_array<T,D>& lhs, 
-                                  const dimensioned_array<T,D>& rhs )
+template <typename T, size_t D, size_t TS>
+dimensioned_array<T,D,TS> operator-( const dimensioned_array<T,D,TS>& lhs, 
+                                     const dimensioned_array<T,D,TS>& rhs )
 {
-  dimensioned_array<T,D> tmp(lhs);
+  dimensioned_array<T,D,TS> tmp(lhs);
   tmp -= rhs;
   return tmp;
 }
@@ -237,11 +239,12 @@ dimensioned_array<T,D> operator-( const dimensioned_array<T,D>& lhs,
 //! \brief Output operator for dimensioned_array.
 //! \tparam T  The array base value type.
 //! \tparam D  The array dimension.
+//! \tparam TS The "template space".
 //! \param[in,out] os  The ostream to dump output to.
 //! \param[in]     rhs The dimensioned_array on the right hand side of the operator.
 //! \return A reference to the current ostream.
-template <typename T, size_t D>
-std::ostream& operator<<(std::ostream& os, const dimensioned_array<T,D>& a)
+template <typename T, size_t D, size_t TS>
+std::ostream& operator<<(std::ostream& os, const dimensioned_array<T,D,TS>& a)
 {
   os << "[";
   for ( size_t i=0; i<D; i++ ) 

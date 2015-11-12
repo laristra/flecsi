@@ -121,7 +121,7 @@ int32_t io_exodus_t::read(const std::string &name, mesh_t &m) {
 //    const std::string &name, const mesh_t &m) {
 int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
 
-  std::cout << "Writing mesh to file: " << name << std::endl;
+  std::cout << "Writing mesh to: " << name << std::endl;
 
   // size of floating point variables used in app.
   int CPU_word_size = sizeof(mesh_t::real_t);
@@ -184,6 +184,16 @@ int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
   // write connectivity
   status = ex_put_elem_conn(exoid, blockid, elt_conn);
   assert(status == 0);
+
+  // write field data
+
+  // cell data
+//  auto pc = access_type_if(m, real_t, is_persistent_at(cells));
+//  for(auto v: va) {
+//    std::cout << "\t" << v.label() <<
+//      " has type real_t and is persisitent at cells" << std::endl;
+//  } // for
+
 
   // close
   status = ex_close(exoid);

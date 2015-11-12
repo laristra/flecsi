@@ -307,7 +307,7 @@ public:
 
     // register coordinate state
     state_.register_state<point_t>("coordinates", vertices,
-      attachment_site_t::vertices, 0x0);
+      attachment_site_t::vertices, persistent);
 
   } // init_parameters
 

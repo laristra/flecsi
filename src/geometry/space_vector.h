@@ -38,7 +38,7 @@ namespace flexi {
   The space_vector type is implemented using \ref dimensioned_array.  Look there
   for more information on the vector_t interface.
  */
-template <typename T, size_t D> using space_vector = dimensioned_array<T, D>;
+template <typename T, size_t D> using space_vector = dimensioned_array<T, D, 2>;
 
 /*!
   \function operator*(const space_vector<T,D> & v, const T s)

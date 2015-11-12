@@ -37,7 +37,7 @@ namespace flexi {
   The point type is implemented using \ref dimensioned_array.  Look there
   for more information on the point interface.
  */
-template <typename T, size_t D> using point = dimensioned_array<T, D>;
+template <typename T, size_t D> using point = dimensioned_array<T, D, 1>;
 
 /*!
   \function distance

@@ -118,7 +118,7 @@ TEST_F(Burton, accessors) {
   register_state(b, "pressure", cells, real_t, persistent);
   register_state(b, "density", cells, real_t);
   register_state(b, "total energy", cells, real_t, persistent);
-  register_state(b, "velocity", edges, real_t, persistent);
+  register_state(b, "velocity", vertices, vector_t, persistent);
   register_state(b, "H", edges, vector_t);
 
   std::cout << "Accessing state with type real_t:" << std::endl;
@@ -150,6 +150,61 @@ TEST_F(Burton, accessors) {
     std::cout << "\t" << v.label() <<
       " has type real_t and is persistent at cells" << std::endl;
   } // for
+
+  std::cout << std::endl;
+
+  std::cout << "Accessing state with type vector_t at vertices:" << std::endl;
+
+  auto vv = access_type_if(b, vector_t, is_at(vertices));
+  for(auto v: vv) {
+    std::cout << "\t" << v.label() <<
+      " has type vector_t and is at vertices" << std::endl;
+  } // for
+
+  std::cout << std::endl;
+
+  std::cout << "Accessing persistent state with type vector_t at vertices:"
+            << std::endl;
+
+  auto vpv = access_type_if(b, vector_t, is_persistent_at(vertices));
+  for(auto v: vpv) {
+    std::cout << "\t" << v.label() <<
+      " has type vector_t and is persistent at vertices" << std::endl;
+  } // for
+
+  std::cout << std::endl;
+
+  std::cout << "Accessing state with type vector_t at edges:" << std::endl;
+
+  auto ve = access_type_if(b, vector_t, is_at(edges));
+  for(auto v: ve) {
+    std::cout << "\t" << v.label() <<
+      " has type vector_t and is at edges" << std::endl;
+  } // for
+
+  std::cout << std::endl;
+
+  std::cout << "Accessing state with type point_t at vertices:" << std::endl;
+
+  auto pv = access_type_if(b, point_t, is_at(vertices));
+  for(auto v: pv) {
+    std::cout << "\t" << v.label() <<
+      " has type point_t and is at vertices" << std::endl;
+  } // for
+
+  std::cout << std::endl;
+
+  std::cout << "Accessing persistent state with type point_t at vertices:"
+            << std::endl;
+
+  auto ppv = access_type_if(b, point_t, is_persistent_at(vertices));
+  for(auto v: ppv) {
+    std::cout << "\t" << v.label() <<
+      " has type point_t and is persistent at vertices" << std::endl;
+  } // for
+
+  std::cout << std::endl;
+
 } // TEST_F
 
 TEST_F(Burton, state) {
