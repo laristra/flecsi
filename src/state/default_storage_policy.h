@@ -206,6 +206,9 @@ protected:
   }; // struct accessor_t
 
   /*!
+    \brief meta_data_t provides storage for extra information that is
+      used to interpret state variable information at different points
+      in the low-level runtime.
    */
   struct meta_data_t {
     std::string label;
@@ -213,6 +216,15 @@ protected:
     size_t size;
     size_t type_size;
 
+    /*!
+      \brief type_info_t allows creation of reference information
+        to the user-specified type of the state data.
+
+      The std::type_info type requires dynamic initialization.  The
+        type_info_t type is designed to allow construction without
+        needing a non-trivial default constructor for the
+        meta_data_t type.
+     */
     struct type_info_t {
       type_info_t(const std::type_info & type_info_)
         : type_info(type_info_) {}

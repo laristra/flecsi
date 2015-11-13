@@ -35,6 +35,13 @@ enum class axis : size_t { x = 0, y = 1, z = 2 };
   \brief The dimensioned_array type provides a general base for defining
   contiguous array types that have a specific dimension.  Please look at
   the \ref point and \ref vector types for an example of its use.
+
+  \tparam T The type of the array, e.g., P.O.D. type.
+  \tparam D The dimension of the array, i.e., the number of elements
+    to be stored in the array.
+  \tparam TS The \e type \e space of the array.  This is a dummy parameter
+    that is useful for creating distinct types that alias
+    dimensioned_array.
  */
 template <typename T, size_t D, size_t TS> class dimensioned_array {
 public:
@@ -207,7 +214,7 @@ private:
 //! \brief Addition operator involving two dimensioned_arrays.
 //! \tparam T  The array base value type.
 //! \tparam D  The array dimension.
-//! \tparam TS The "template space".
+//! \tparam TS The \e type \e space.
 //! \param[in] lhs The dimensioned_array on the left hand side of the operator.
 //! \param[in] rhs The dimensioned_array on the right hand side of the operator.
 //! \return A reference to the current object.
@@ -223,7 +230,7 @@ dimensioned_array<T,D,TS> operator+( const dimensioned_array<T,D,TS>& lhs,
 //! \brief Subtraction operator involving two dimensioned_arrays.
 //! \tparam T  The array base value type.
 //! \tparam D  The array dimension.
-//! \tparam TS The "template space".
+//! \tparam TS The \e type \e space.
 //! \param[in] lhs The dimensioned_array on the left hand side of the operator.
 //! \param[in] rhs The dimensioned_array on the right hand side of the operator.
 //! \return A reference to the current object.
@@ -239,7 +246,7 @@ dimensioned_array<T,D,TS> operator-( const dimensioned_array<T,D,TS>& lhs,
 //! \brief Output operator for dimensioned_array.
 //! \tparam T  The array base value type.
 //! \tparam D  The array dimension.
-//! \tparam TS The "template space".
+//! \tparam TS The \e type \e space.
 //! \param[in,out] os  The ostream to dump output to.
 //! \param[in]     rhs The dimensioned_array on the right hand side of the operator.
 //! \return A reference to the current ostream.
