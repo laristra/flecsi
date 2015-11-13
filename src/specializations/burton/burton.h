@@ -120,7 +120,6 @@
  */
 #define is_at(attachment_site)                                           \
   [](const auto & a) -> bool {                                           \
-    bitfield_t bf(a.meta().attributes);                                  \
     return a.meta().site ==                                              \
       flexi::burton_mesh_traits_t::attachment_site_t::attachment_site; }
 
