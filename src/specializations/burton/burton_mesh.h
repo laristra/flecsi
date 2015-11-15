@@ -143,14 +143,17 @@ public:
 
   using real_t = burton_mesh_traits_t::real_t;
 
-  using point_t = point<real_t, burton_mesh_traits_t::dimension>;
-  using vector_t = space_vector<real_t, burton_mesh_traits_t::dimension>;
+  using point_t = burton_mesh_traits_t::point_t;
+  using vector_t = burton_mesh_traits_t::vector_t;
 
-  using vertex_t = burton_mesh_types_t::burton_vertex_t;
-  using edge_t = burton_mesh_types_t::burton_edge_t;
-  using cell_t = burton_mesh_types_t::burton_cell_t;
-  using wedge_t = burton_mesh_types_t::burton_wedge_t;
-  using corner_t = burton_mesh_types_t::burton_corner_t;
+  using vertex_t = burton_mesh_types_t::vertex_t;
+  using edge_t = burton_mesh_types_t::edge_t;
+
+  using cell_t = burton_mesh_types_t::cell_t;
+  using quadrilateral_cell_t = burton_mesh_types_t::quadrilateral_cell_t;
+
+  using wedge_t = burton_mesh_types_t::wedge_t;
+  using corner_t = burton_mesh_types_t::corner_t;
 
   //! Default constructor
   burton_mesh_t() {}
@@ -286,8 +289,10 @@ public:
 
     \param verts The vertices defining the cell.
    */
-  cell_t *create_cell(std::initializer_list<vertex_t *> verts) {
-    auto c = mesh_.make<cell_t, 0>();
+  cell_t * create_cell(std::initializer_list<vertex_t *> verts) {
+    // FIXME: Add element types
+    cell_t * c = mesh_.make<quadrilateral_cell_t, 0>();
+
     mesh_.init_cell<0>(c, verts);
     return c;
   }
