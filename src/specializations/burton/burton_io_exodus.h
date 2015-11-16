@@ -49,7 +49,7 @@ int32_t io_exodus_t::read(const std::string &name, mesh_t &m) {
   auto status = ex_get_init_ext(exoid, &exopar);
   assert(status == 0);
 
-  // verify 2d mesh
+  // verify mesh dimension
   assert(m.dimension() == exopar.num_dim);
   auto num_nodes = exopar.num_nodes;
   auto num_elem = exopar.num_elem;
@@ -109,6 +109,7 @@ int32_t io_exodus_t::read(const std::string &name, mesh_t &m) {
       vs[elt_conn[b+3]-1]});
   }
   m.init();
+
 
   return status;
 }
@@ -176,7 +177,7 @@ int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
   i = 0;
   for (auto c : m.cells()) {
     for (auto v : m.vertices(c)) {
-      elt_conn[i] = v->id() + 1;
+      elt_conn[i] = v->id() + 1; // 1 based index in exodus
       i++;
     } // for
   }   // for
@@ -185,15 +186,161 @@ int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
   status = ex_put_elem_conn(exoid, blockid, elt_conn);
   assert(status == 0);
 
+
   // write field data
 
-  // cell data
-//  auto pc = access_type_if(m, real_t, is_persistent_at(cells));
-//  for(auto v: va) {
-//    std::cout << "\t" << v.label() <<
-//      " has type real_t and is persisitent at cells" << std::endl;
-//  } // for
 
+  int num_n = 0; // number of nodal fields
+  // real scalars persistent at vertices
+  auto rspav = access_type_if(m, mesh_t::real_t, is_persistent_at(vertices));
+  num_n += rspav.size();
+  // int scalars persistent at vertices
+  auto ispav = access_type_if(m, int, is_persistent_at(vertices));
+  num_n += ispav.size();
+  // real vectors persistent at vertices
+  auto rvpav = access_type_if(m, mesh_t::vector_t, is_persistent_at(vertices));
+  num_n += m.dimension()*rvpav.size();
+
+  // variable extension for vectors
+  std::string var_ext[3];
+  var_ext[0] = "_x"; var_ext[1] = "_y";  var_ext[2] = "_z";
+
+  // node variable names array
+  char * node_var_names[num_n];
+  for(int i=0; i<num_n;++i) {
+    node_var_names[i] = new char[MAX_STR_LENGTH];
+    memset(node_var_names[i], 0x00, MAX_STR_LENGTH);
+  } // for
+
+  // fill node variable names array
+  int inum = 0;
+  for(auto sf: rspav) {
+    size_t len = sf.label().size();
+    std::copy(sf.label().begin(),sf.label().end(),node_var_names[inum]);
+    inum++;
+  } // for
+  for(auto sf: ispav) {
+    size_t len = sf.label().size();
+    std::copy(sf.label().begin(),sf.label().end(),node_var_names[inum]);
+    inum++;
+  } // for
+  for(auto vf: rvpav) {
+    size_t len = vf.label().size();
+    for(int d=0; d < m.dimension(); ++d) {
+      std::copy(vf.label().begin(),vf.label().end(),node_var_names[inum]);
+      std::copy(var_ext[d].begin(),var_ext[d].end(),&node_var_names[inum][len]);
+      inum++;
+    } // for
+  } // for
+
+  // put the number of nodal fields
+  if (num_n > 0) {
+    status = ex_put_var_param(exoid, "n", num_n);
+    assert(status == 0);
+    status = ex_put_var_names(exoid, "n", num_n, node_var_names);
+    assert(status == 0);
+  } // if
+
+  // write nodal fields
+  inum = 1;
+  // node field buffer
+  mesh_t::real_t nf[num_nodes];
+  for(auto sf: rspav) {
+    for(auto v: m.vertices()) nf[v->id()] = sf[v];
+    status = ex_put_nodal_var(exoid, 1, inum, num_nodes, nf);
+    assert(status == 0);
+    inum++;
+  } // for
+  for(auto sf: ispav) {
+    // cast int fields to real_t
+    for(auto v: m.vertices()) nf[v->id()] = (mesh_t::real_t)sf[v];
+    status = ex_put_nodal_var(exoid, 1, inum, num_nodes, nf);
+    assert(status == 0);
+    inum++;
+  } // for
+  for(auto vf: rvpav) {
+    for(int d=0; d < m.dimension(); ++d) {
+      for(auto v: m.vertices()) nf[v->id()] = vf[v][d];
+      status = ex_put_nodal_var(exoid, 1, inum, num_nodes, nf);
+      assert(status == 0);
+      inum++;
+    } // for
+  } // for
+
+
+  // element fields
+  int num_e = 0; // number of element fields
+  // real scalars persistent at cells
+  auto rspac = access_type_if(m, mesh_t::real_t, is_persistent_at(cells));
+  num_e += rspac.size();
+  // int scalars persistent at cells
+  auto ispac = access_type_if(m, int, is_persistent_at(cells));
+  num_e += ispac.size();
+  // real vectors persistent at cells
+  auto rvpac = access_type_if(m, mesh_t::vector_t, is_persistent_at(cells));
+  num_e += m.dimension()*rvpac.size();
+
+  // element variable names array
+  char * elem_var_names[num_e];
+  for(int i=0; i<num_e;++i) {
+    elem_var_names[i] = new char[MAX_STR_LENGTH];
+    memset(elem_var_names[i], 0x00, MAX_STR_LENGTH);
+  } // for
+
+  // fill element variable names array
+  inum = 0;
+  for(auto sf: rspac) {
+    size_t len = sf.label().size();
+    std::copy(sf.label().begin(),sf.label().end(),elem_var_names[inum]);
+    inum++;
+  } // for
+  for(auto sf: ispac) {
+    size_t len = sf.label().size();
+    std::copy(sf.label().begin(),sf.label().end(),elem_var_names[inum]);
+    inum++;
+  } // for
+  for(auto vf: rvpac) {
+    size_t len = vf.label().size();
+    for(int d=0; d<m.dimension(); ++d) {
+      std::copy(vf.label().begin(),vf.label().end(),elem_var_names[inum]);
+      std::copy(var_ext[d].begin(),var_ext[d].end(),&elem_var_names[inum][len]);
+      inum++;
+    } // for
+  } // for
+
+  // put the number of element fields
+  if(num_e > 0) {
+    status = ex_put_var_param(exoid, "e", num_e);
+    assert(status == 0);
+    status = ex_put_var_names(exoid, "e", num_e, elem_var_names);
+    assert(status == 0);
+  } // if
+
+  // write element fields
+  inum = 1;
+  // element field buffer
+  mesh_t::real_t ef[num_elem];
+  for(auto sf: rspac) {
+    for(auto c: m.cells()) ef[c->id()] = sf[c];
+    status = ex_put_elem_var(exoid, 1, inum, 0, num_elem, ef);
+    assert(status == 0);
+    inum++;
+  } // for
+  for(auto sf: ispac) {
+    // cast int fields to real_t
+    for(auto c: m.cells()) ef[c->id()] = (mesh_t::real_t)sf[c];
+    status = ex_put_elem_var(exoid, 1, inum, 0, num_elem, ef);
+    assert(status == 0);
+    inum++;
+  } // for
+  for(auto vf: rvpac) {
+    for(int d=0; d < m.dimension(); ++d) {
+      for(auto c: m.cells()) ef[c->id()] = vf[c][d];
+      status = ex_put_elem_var(exoid, 1, inum, 0, num_elem, ef);
+      assert(status == 0);
+      inum++;
+    } // for
+  } // for
 
   // close
   status = ex_close(exoid);

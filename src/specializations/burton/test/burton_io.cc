@@ -73,13 +73,16 @@ TEST_F(Burton, write_exo) {
   // create state data on b
   // register
   register_state(b, "pressure", cells, real_t, persistent);
+  register_state(b, "region", cells, int, persistent);
   register_state(b, "velocity", vertices, vector_t, persistent);
   // access
   auto p = access_state(b, "pressure", real_t);
+  auto r = access_state(b, "region", int);
   auto velocity = access_state(b, "velocity", vector_t);
   // initialize
   for(auto c: b.cells()) {
     p[c] = c->id();
+    r[c] = b.num_cells() - c->id();
   } // for
   // vertices
   for (auto v: b.vertices()) {
