@@ -201,7 +201,7 @@ int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
   auto num_attr = 0;
   auto num_nodes_per_elem = 4;
   status = ex_put_elem_block(
-      exoid, blockid, "quad", num_elem, num_nodes_per_elem, num_attr);
+    exoid, blockid, "quad", num_elem, num_nodes_per_elem, num_attr);
   assert(status == 0);
 
   // element definitions
@@ -212,7 +212,7 @@ int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
       elt_conn[i] = v->id() + 1; // 1 based index in exodus
       i++;
     } // for
-  }   // for
+  } // for
 
   // write connectivity
   status = ex_put_elem_conn(exoid, blockid, elt_conn);
