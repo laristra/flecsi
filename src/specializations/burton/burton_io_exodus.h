@@ -110,6 +110,38 @@ int32_t io_exodus_t::read(const std::string &name, mesh_t &m) {
   }
   m.init();
 
+  // creating fields from an exodus file will be problematic since the type
+  // information on the file has been thrown away. For example, an int field
+  // is written to the file as a floating point field, and there is no way to
+  // recover the fact that it is an int field. Furthermore, vector fields
+  // are stored as individual scalar fields and recovering the fact that a
+  // a collection of scalar fields makes a vector field would require clunky
+  // processing of the variable names.
+
+#if 0
+  // read field data
+
+  // nodal field data
+  int num_nf = 0;
+  status = ex_get_var_param(exoid, "n", &num_nf);
+  assert(status == 0);
+
+  // node variable names array
+  char * node_var_names[num_nf];
+  for(int i=0; i<num_nf;++i) {
+    node_var_names[i] = new char[MAX_STR_LENGTH];
+    memset(node_var_names[i], 0x00, MAX_STR_LENGTH);
+  } // for
+
+  // read node field names
+  if (num_nf > 0) {
+    status = ex_get_var_names(exoid, "n", num_nf, node_var_names);
+    assert(status == 0);
+  } // if
+
+
+  // element field data
+#endif
 
   return status;
 }
@@ -189,25 +221,25 @@ int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
 
   // write field data
 
-
-  int num_n = 0; // number of nodal fields
+  // nodal field data
+  int num_nf = 0; // number of nodal fields
   // real scalars persistent at vertices
   auto rspav = access_type_if(m, mesh_t::real_t, is_persistent_at(vertices));
-  num_n += rspav.size();
+  num_nf += rspav.size();
   // int scalars persistent at vertices
   auto ispav = access_type_if(m, int, is_persistent_at(vertices));
-  num_n += ispav.size();
+  num_nf += ispav.size();
   // real vectors persistent at vertices
   auto rvpav = access_type_if(m, mesh_t::vector_t, is_persistent_at(vertices));
-  num_n += m.dimension()*rvpav.size();
+  num_nf += m.dimension()*rvpav.size();
 
   // variable extension for vectors
   std::string var_ext[3];
   var_ext[0] = "_x"; var_ext[1] = "_y";  var_ext[2] = "_z";
 
   // node variable names array
-  char * node_var_names[num_n];
-  for(int i=0; i<num_n;++i) {
+  char * node_var_names[num_nf];
+  for(int i=0; i<num_nf;++i) {
     node_var_names[i] = new char[MAX_STR_LENGTH];
     memset(node_var_names[i], 0x00, MAX_STR_LENGTH);
   } // for
@@ -234,10 +266,10 @@ int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
   } // for
 
   // put the number of nodal fields
-  if (num_n > 0) {
-    status = ex_put_var_param(exoid, "n", num_n);
+  if (num_nf > 0) {
+    status = ex_put_var_param(exoid, "n", num_nf);
     assert(status == 0);
-    status = ex_put_var_names(exoid, "n", num_n, node_var_names);
+    status = ex_put_var_names(exoid, "n", num_nf, node_var_names);
     assert(status == 0);
   } // if
 
@@ -267,22 +299,27 @@ int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
     } // for
   } // for
 
+  // clean up
+  for(int i=0; i<num_nf;++i) {
+     delete[] node_var_names[i];
+  } // for
 
-  // element fields
-  int num_e = 0; // number of element fields
+
+  // element field data
+  int num_ef = 0; // number of element fields
   // real scalars persistent at cells
   auto rspac = access_type_if(m, mesh_t::real_t, is_persistent_at(cells));
-  num_e += rspac.size();
+  num_ef += rspac.size();
   // int scalars persistent at cells
   auto ispac = access_type_if(m, int, is_persistent_at(cells));
-  num_e += ispac.size();
+  num_ef += ispac.size();
   // real vectors persistent at cells
   auto rvpac = access_type_if(m, mesh_t::vector_t, is_persistent_at(cells));
-  num_e += m.dimension()*rvpac.size();
+  num_ef += m.dimension()*rvpac.size();
 
   // element variable names array
-  char * elem_var_names[num_e];
-  for(int i=0; i<num_e;++i) {
+  char * elem_var_names[num_ef];
+  for(int i=0; i<num_ef;++i) {
     elem_var_names[i] = new char[MAX_STR_LENGTH];
     memset(elem_var_names[i], 0x00, MAX_STR_LENGTH);
   } // for
@@ -309,10 +346,10 @@ int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
   } // for
 
   // put the number of element fields
-  if(num_e > 0) {
-    status = ex_put_var_param(exoid, "e", num_e);
+  if(num_ef > 0) {
+    status = ex_put_var_param(exoid, "e", num_ef);
     assert(status == 0);
-    status = ex_put_var_names(exoid, "e", num_e, elem_var_names);
+    status = ex_put_var_names(exoid, "e", num_ef, elem_var_names);
     assert(status == 0);
   } // if
 
@@ -340,6 +377,11 @@ int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
       assert(status == 0);
       inum++;
     } // for
+  } // for
+
+  // clean up
+  for(int i=0; i<num_ef;++i) {
+    delete [] elem_var_names[i];
   } // for
 
   // close
