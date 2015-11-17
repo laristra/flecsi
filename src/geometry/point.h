@@ -62,6 +62,25 @@ template <typename T, size_t D>
   return point<T,D>((a + b)/2.0);
 } // distance
 
+
+/*!
+  Compute the centroid of a list of points.
+  
+  \param[in] cell The cell to return the centroid for.
+  \return a point_t that is the centroid.
+*/
+template <
+  template <typename...> class LIST,
+  typename T, 
+  size_t D
+  >
+auto centroid( const LIST<point<T,D>> & vert_list ) {
+  point<T, D> tmp(0.0);
+  for ( auto v : vert_list ) tmp += v;
+  tmp /= vert_list.size();
+  return tmp;
+}
+
 } // namespace flexi
 
 #endif // flexi_point_h
