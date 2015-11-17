@@ -42,7 +42,8 @@ template <typename T, size_t D> using point = dimensioned_array<T, D, 1>;
 /*!
   \function distance
  */
-template <typename T, size_t D> T distance(point<T, D> &a, point<T, D> &b) {
+template <typename T, size_t D>
+T distance(const point<T, D> &a, const point<T, D> &b) {
 
   T sum(0);
   for (size_t d(0); d < D; ++d) {
@@ -50,6 +51,15 @@ template <typename T, size_t D> T distance(point<T, D> &a, point<T, D> &b) {
   } // for
 
   return std::sqrt(sum);
+} // distance
+
+/*!
+  \function midpoint
+ */
+template <typename T, size_t D>
+  point<T, D> midpoint(const point<T, D> &a, const point<T, D> &b) {
+
+  return point<T,D>((a + b)/2.0);
 } // distance
 
 } // namespace flexi
