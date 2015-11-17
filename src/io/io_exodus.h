@@ -15,10 +15,6 @@
 #ifndef flexi_io_exodus_h
 #define flexi_io_exodus_h
 
-#ifdef HAVE_EXODUS
-#  include <exodusII.h>
-#endif
-
 #include "io_base.h"
 
 /*!

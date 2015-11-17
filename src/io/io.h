@@ -17,7 +17,6 @@
 
 #include "io_base.h"
 
-
 /*!
  * \file io.h
  * \authors wohlbier

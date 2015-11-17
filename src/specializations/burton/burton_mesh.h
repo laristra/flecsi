@@ -143,14 +143,17 @@ public:
 
   using real_t = burton_mesh_traits_t::real_t;
 
-  using point_t = point<real_t, burton_mesh_traits_t::dimension>;
-  using vector_t = space_vector<real_t, burton_mesh_traits_t::dimension>;
+  using point_t = burton_mesh_traits_t::point_t;
+  using vector_t = burton_mesh_traits_t::vector_t;
 
-  using vertex_t = burton_mesh_types_t::burton_vertex_t;
-  using edge_t = burton_mesh_types_t::burton_edge_t;
-  using cell_t = burton_mesh_types_t::burton_cell_t;
-  using wedge_t = burton_mesh_types_t::burton_wedge_t;
-  using corner_t = burton_mesh_types_t::burton_corner_t;
+  using vertex_t = burton_mesh_types_t::vertex_t;
+  using edge_t = burton_mesh_types_t::edge_t;
+
+  using cell_t = burton_mesh_types_t::cell_t;
+  using quadrilateral_cell_t = burton_mesh_types_t::quadrilateral_cell_t;
+
+  using wedge_t = burton_mesh_types_t::wedge_t;
+  using corner_t = burton_mesh_types_t::corner_t;
 
   //! Default constructor
   burton_mesh_t() {}
@@ -286,8 +289,10 @@ public:
 
     \param verts The vertices defining the cell.
    */
-  cell_t *create_cell(std::initializer_list<vertex_t *> verts) {
-    auto c = mesh_.make<cell_t, 0>();
+  cell_t * create_cell(std::initializer_list<vertex_t *> verts) {
+    // FIXME: Add element types
+    cell_t * c = mesh_.make<quadrilateral_cell_t, 0>();
+
     mesh_.init_cell<0>(c, verts);
     return c;
   }
@@ -312,70 +317,153 @@ public:
   } // init_parameters
 
   /*!
-    FIXME
+    \verbatim
+
+    After cells and vertices for the mesh have been defined, call init() to
+    create the dual mesh entities. The following picture shows the vertex
+    definitions used to create the dual mesh. For each vertex definition there
+    is a corresponding point_t variable containing the geometry of the vertex,
+    which is computed from the primal mesh vertex coordinates.
+
+    v3-----e2-----v2
+    |              |
+    |              |
+    e3     cv     e1
+    |              |
+    |              |
+    v0-----e0-----v1
+
+    The wedge indexing is shown below. A wedge is defined by three vertices in
+    the order w = {cv, v*, e*}.
+
+    v3------e2-------v2
+    | \      |      / |
+    |   \  w6|w5  /   |
+    |  w7 \  |  / w4  |
+    |       \|/       |
+    e3------cv-------e1
+    |       /|\       |
+    |  w0 /  |  \ w3  |
+    |   /  w1|w2  \   |
+    | /      |      \ |
+    v0------e0-------v1
+
+    Corners are defined by the two wedges sharing the center vertex cv and a
+    primal vertex v*.
+    c0 = {w0, w1}
+    c1 = {w2, w3}
+    c2 = {w4, w5}
+    c3 = {w6, w7}
+
+    \endverbatim
    */
   void init() {
     mesh_.init<0>();
 
+    // for each cell in the primal mesh
     for (auto c : mesh_.cells<0>()) {
+      // vertices for cell c
       auto vs = mesh_.vertices<0>(c).toVec();
 
-      point_t cp;
-      cp[0] = vs[0]->coordinates()[0] +
-          0.5 * (vs[1]->coordinates()[0] - vs[0]->coordinates()[0]);
-      cp[1] = vs[0]->coordinates()[1] +
-          0.5 * (vs[3]->coordinates()[1] - vs[0]->coordinates()[1]);
+      // retrieve points for each of the primal vertices
+      auto v0p = vs[0]->coordinates();
+      auto v1p = vs[1]->coordinates();
+      auto v2p = vs[2]->coordinates();
+      auto v3p = vs[3]->coordinates();
 
-      auto cv = mesh_.make<vertex_t, 1>(cp, &state_);
-      cv->set_rank(0);
+      // compute the center vertex
+      auto cvp = centroid(c);
 
-      auto v0 = mesh_.make<vertex_t, 1>(vs[0]->coordinates(), &state_);
+      // compute the edge points as midpoints of the primal vertices
+      // FIXME? flexi:: namespace required so compiler doesn't only look
+      // local to this class for midpoint definition. The midpoint defined
+      // in this class takes an edge_t.
+      auto e0p = flexi::midpoint(v1p, v0p);
+      auto e1p = flexi::midpoint(v2p, v1p);
+      auto e2p = flexi::midpoint(v3p, v2p);
+      auto e3p = flexi::midpoint(v0p, v3p);
+
+      // create the dual mesh vertices using the point_ts
+      auto v0 = mesh_.make<vertex_t, 1>(v0p, &state_);
       v0->set_rank(1);
 
-      auto v1 = mesh_.make<vertex_t, 1>(vs[3]->coordinates(), &state_);
+      auto v1 = mesh_.make<vertex_t, 1>(v1p, &state_);
       v1->set_rank(1);
 
-      auto v2 = mesh_.make<vertex_t, 1>(vs[1]->coordinates(), &state_);
+      auto v2 = mesh_.make<vertex_t, 1>(v2p, &state_);
       v2->set_rank(1);
 
-      auto v3 = mesh_.make<vertex_t, 1>(vs[2]->coordinates(), &state_);
+      auto v3 = mesh_.make<vertex_t, 1>(v3p, &state_);
       v3->set_rank(1);
 
+      auto cv = mesh_.make<vertex_t, 1>(cvp, &state_);
+      cv->set_rank(0);
+
+      auto e0 = mesh_.make<vertex_t, 1>(e0p, &state_);
+      e0->set_rank(1);
+
+      auto e1 = mesh_.make<vertex_t, 1>(e1p, &state_);
+      e1->set_rank(1);
+
+      auto e2 = mesh_.make<vertex_t, 1>(e2p, &state_);
+      e2->set_rank(1);
+
+      auto e3 = mesh_.make<vertex_t, 1>(e3p, &state_);
+      e3->set_rank(1);
+
+      // make wedges using the vertices
+      auto w0 = mesh_.make<wedge_t, 1>();
+      mesh_.init_cell<1>(w0, {cv, v0, e3});
+      c->add_wedge(w0);
+
       auto w1 = mesh_.make<wedge_t, 1>();
-      mesh_.init_cell<1>(w1, {v0, v1, cv});
-      c->add_wedge(w1);
+      mesh_.init_cell<1>(w1, {cv, v0, e0});
+      c->add_wedge(w0);
 
       auto w2 = mesh_.make<wedge_t, 1>();
-      mesh_.init_cell<1>(w2, {cv, v1, v3});
+      mesh_.init_cell<1>(w2, {cv, v1, e0});
       c->add_wedge(w2);
 
       auto w3 = mesh_.make<wedge_t, 1>();
-      mesh_.init_cell<1>(w3, {v2, cv, v3});
+      mesh_.init_cell<1>(w3, {cv, v1, e1});
       c->add_wedge(w3);
 
       auto w4 = mesh_.make<wedge_t, 1>();
-      mesh_.init_cell<1>(w4, {v0, cv, v2});
+      mesh_.init_cell<1>(w4, {cv, v2, e1});
       c->add_wedge(w4);
 
+      auto w5 = mesh_.make<wedge_t, 1>();
+      mesh_.init_cell<1>(w5, {cv, v2, e2});
+      c->add_wedge(w5);
+
+      auto w6 = mesh_.make<wedge_t, 1>();
+      mesh_.init_cell<1>(w6, {cv, v3, e2});
+      c->add_wedge(w6);
+
+      auto w7 = mesh_.make<wedge_t, 1>();
+      mesh_.init_cell<1>(w7, {cv, v3, e3});
+      c->add_wedge(w7);
+
+      // make corners using the wedges
+      auto c0 = mesh_.make<corner_t, 1>();
+      c0->add_wedge(w0);
+      c0->add_wedge(w1);
+      c->add_corner(c0);
+
       auto c1 = mesh_.make<corner_t, 1>();
-      c1->add_wedge(w1);
-      c1->add_wedge(w4);
+      c1->add_wedge(w2);
+      c1->add_wedge(w3);
       c->add_corner(c1);
 
       auto c2 = mesh_.make<corner_t, 1>();
-      c2->add_wedge(w1);
-      c2->add_wedge(w2);
+      c2->add_wedge(w4);
+      c2->add_wedge(w5);
       c->add_corner(c2);
 
       auto c3 = mesh_.make<corner_t, 1>();
-      c3->add_wedge(w2);
-      c3->add_wedge(w3);
+      c3->add_wedge(w6);
+      c3->add_wedge(w7);
       c->add_corner(c3);
-
-      auto c4 = mesh_.make<corner_t, 1>();
-      c4->add_wedge(w3);
-      c4->add_wedge(w4);
-      c->add_corner(c4);
     }
 
     mesh_.init<1>();
@@ -384,10 +472,10 @@ public:
   /*!
     Compute the centroid of a cell.
     
-    \param[in] cell The cell entity whose vertex i want.
-    \return a point_t that is the centroid  
+    \param[in] cell The cell to return the centroid for.
+    \return a point_t that is the centroid.
   */
-  decltype(auto) centroid(const cell_t *c) const {
+  point_t centroid(const cell_t *c) const {
     point_t tmp(0.0);
     auto vert_list = mesh_.vertices<0>(c);
     for ( auto v : vert_list ) 
@@ -396,6 +484,16 @@ public:
     return tmp;
   }
 
+  /*!
+    Compute the midpoint of an edge.
+
+    \param[in] cell The edge to return the midpoint for.
+    \return a point_t that is the midpoint.
+  */
+  point_t midpoint(const edge_t *e) const {
+    auto vs = mesh_.vertices<0>(e).toVec();
+    return point_t(flexi::midpoint(vs[0]->coordinates(),vs[1]->coordinates()));
+  }
 
 private:
 

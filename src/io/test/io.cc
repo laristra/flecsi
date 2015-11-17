@@ -18,6 +18,7 @@
 class fake_mesh_t {};
 
 #include "../io.h"
+#include "../io_exodus.h"
 
 namespace flexi {
 
