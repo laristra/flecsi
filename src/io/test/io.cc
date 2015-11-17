@@ -15,17 +15,19 @@
 #include <cinchtest.h>
 
 // declare mesh_t for io.h
-class mesh_t {};
+class fake_mesh_t {};
 
 #include "../io.h"
 
 namespace flexi {
 
 // provide empty implementations of read and write.
-int32_t io_exodus_t::read(const std::string &name, mesh_t &m) {
+template< typename mesh_t >
+int32_t io_exodus_t<mesh_t>::read(const std::string &name, mesh_t &m) {
   return 0;
 }
-int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
+template< typename mesh_t >
+int32_t io_exodus_t<mesh_t>::write(const std::string &name, mesh_t &m) {
   return 0;
 }
 
@@ -33,7 +35,7 @@ int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
 // functions which look for those suffix registrations. Calling read/write
 // with any other file suffixes will fail, until more are implemented.
 TEST(io, readwrite) {
-  mesh_t m;
+  fake_mesh_t m;
   ASSERT_FALSE(read_mesh("test.g", m));
   ASSERT_FALSE(read_mesh("test.exo", m));
   ASSERT_FALSE(write_mesh("test.g", m));

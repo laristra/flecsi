@@ -15,7 +15,9 @@
 #ifndef flexi_io_exodus_h
 #define flexi_io_exodus_h
 
-#include <exodusII.h>
+#ifdef HAVE_EXODUS
+#  include <exodusII.h>
+#endif
 
 #include "io_base.h"
 
@@ -32,7 +34,8 @@ namespace flexi {
   \brief io_exodus_t provides a derived type of io_base.h and registrations
          of the file extensions.
  */
-struct io_exodus_t : public io_base_t {
+template <typename mesh_t>
+struct io_exodus_t : public io_base_t<mesh_t> {
 
   //! Default constructor
   io_exodus_t() {}
@@ -54,19 +57,8 @@ struct io_exodus_t : public io_base_t {
 /*!
  * Create an io_exodus_t and return a pointer to the base class.
  */
-io_base_t *create_io_exodus() { return new io_exodus_t; } // create_io_exodus
-
-/*!
- * Register file extension g with factory.
- */
-bool exodus_g_registered =
-    io_factory_t::instance().registerType("g", create_io_exodus);
-
-/*!
- * Register file extension exo with factory.
- */
-bool exodus_exo_registered =
-    io_factory_t::instance().registerType("exo", create_io_exodus);
+template <typename mesh_t>
+io_base_t<mesh_t> *create_io_exodus() { return new io_exodus_t<mesh_t>; } // create_io_exodus
 
 } // namespace flexi
 

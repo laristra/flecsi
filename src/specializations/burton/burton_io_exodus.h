@@ -15,8 +15,6 @@
 #ifndef flexi_burton_io_exodus_h
 #define flexi_burton_io_exodus_h
 
-#include <exodusII.h>
-
 #include "../../io/io_exodus.h"
 #include "burton.h"
 
@@ -28,14 +26,37 @@
 
 namespace flexi {
 
+
+/*!
+ * Register file extension g with factory.
+ */
+bool burton_exodus_g_registered =
+  io_factory_t<burton_mesh_t>::instance().registerType("g", create_io_exodus<burton_mesh_t>);
+
+/*!
+ * Register file extension exo with factory.
+ */
+bool burton_exodus_exo_registered =
+  io_factory_t<burton_mesh_t>::instance().registerType("exo", create_io_exodus<burton_mesh_t>);
+
+
 /*!
  * Implementation of exodus mesh read for burton.
  */
-int32_t io_exodus_t::read(const std::string &name, mesh_t &m) {
+template<>
+int32_t io_exodus_t<burton_mesh_t>::read(const std::string &name, burton_mesh_t &m) {
+
+#ifdef HAVE_EXODUS
+
   std::cout << "Reading mesh from: " << name << std::endl;
 
+  // alias some types
+  using   real_t = typename burton_mesh_t::real_t;
+  using vector_t = typename burton_mesh_t::vector_t;
+  using vertex_t = typename burton_mesh_t::vertex_t;
+
   // size of floating point variables used in app.
-  int CPU_word_size = sizeof(mesh_t::real_t);
+  int CPU_word_size = sizeof(real_t);
   // size of floating point stored in name.
   int IO_word_size = 0;
   float version;
@@ -60,13 +81,13 @@ int32_t io_exodus_t::read(const std::string &name, mesh_t &m) {
   m.init_parameters(num_nodes);
 
   // read nodes
-  mesh_t::real_t xcoord[num_nodes];
-  mesh_t::real_t ycoord[num_nodes];
+  real_t xcoord[num_nodes];
+  real_t ycoord[num_nodes];
   status = ex_get_coord(exoid, xcoord, ycoord, nullptr);
   assert(status == 0);
 
   // put nodes into mesh
-  std::vector<mesh_t::vertex_t *> vs;
+  std::vector<vertex_t *> vs;
   for (size_t i = 0; i < num_nodes; ++i) {
     auto v = m.create_vertex({xcoord[i], ycoord[i]});
     v->set_rank(1);
@@ -112,6 +133,15 @@ int32_t io_exodus_t::read(const std::string &name, mesh_t &m) {
 
 
   return status;
+
+#else
+
+  std::cerr << "FLEXI not build with exodus support." << std::endl;
+  std::exit(1);
+
+  return -1;
+
+#endif
 }
 
 /*!
@@ -120,14 +150,21 @@ int32_t io_exodus_t::read(const std::string &name, mesh_t &m) {
 //FIXME: should allow for const mesh_t &
 //int32_t io_exodus_t::write(
 //    const std::string &name, const mesh_t &m) {
-int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
+template<>
+int32_t io_exodus_t<burton_mesh_t>::write(const std::string &name, burton_mesh_t &m) {
+
+#ifdef HAVE_EXODUS
 
   std::cout << "Writing mesh to: " << name << std::endl;
 
+  // alias some types
+  using   real_t = typename burton_mesh_t::real_t;
+  using vector_t = typename burton_mesh_t::vector_t;
+
   // size of floating point variables used in app.
-  int CPU_word_size = sizeof(mesh_t::real_t);
+  int CPU_word_size = sizeof(real_t);
   // size of floating point to be stored in file.
-  int IO_word_size = sizeof(mesh_t::real_t);
+  int IO_word_size = sizeof(real_t);
   auto exoid =
     ex_create(name.c_str(), EX_CLOBBER, &CPU_word_size, &IO_word_size);
   assert(exoid >= 0);
@@ -144,8 +181,8 @@ int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
   assert(status == 0);
 
   // get the coordinates from the mesh.
-  mesh_t::real_t xcoord[num_nodes];
-  mesh_t::real_t ycoord[num_nodes];
+  real_t xcoord[num_nodes];
+  real_t ycoord[num_nodes];
   auto i = 0;
   for (auto v : m.vertices()) {
     xcoord[i] = v->coordinates()[0];
@@ -192,13 +229,13 @@ int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
 
   int num_n = 0; // number of nodal fields
   // real scalars persistent at vertices
-  auto rspav = access_type_if(m, mesh_t::real_t, is_persistent_at(vertices));
+  auto rspav = access_type_if(m, real_t, is_persistent_at(vertices));
   num_n += rspav.size();
   // int scalars persistent at vertices
   auto ispav = access_type_if(m, int, is_persistent_at(vertices));
   num_n += ispav.size();
   // real vectors persistent at vertices
-  auto rvpav = access_type_if(m, mesh_t::vector_t, is_persistent_at(vertices));
+  auto rvpav = access_type_if(m, vector_t, is_persistent_at(vertices));
   num_n += m.dimension()*rvpav.size();
 
   // variable extension for vectors
@@ -244,7 +281,7 @@ int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
   // write nodal fields
   inum = 1;
   // node field buffer
-  mesh_t::real_t nf[num_nodes];
+  real_t nf[num_nodes];
   for(auto sf: rspav) {
     for(auto v: m.vertices()) nf[v->id()] = sf[v];
     status = ex_put_nodal_var(exoid, 1, inum, num_nodes, nf);
@@ -253,7 +290,7 @@ int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
   } // for
   for(auto sf: ispav) {
     // cast int fields to real_t
-    for(auto v: m.vertices()) nf[v->id()] = (mesh_t::real_t)sf[v];
+    for(auto v: m.vertices()) nf[v->id()] = (real_t)sf[v];
     status = ex_put_nodal_var(exoid, 1, inum, num_nodes, nf);
     assert(status == 0);
     inum++;
@@ -271,13 +308,13 @@ int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
   // element fields
   int num_e = 0; // number of element fields
   // real scalars persistent at cells
-  auto rspac = access_type_if(m, mesh_t::real_t, is_persistent_at(cells));
+  auto rspac = access_type_if(m, real_t, is_persistent_at(cells));
   num_e += rspac.size();
   // int scalars persistent at cells
   auto ispac = access_type_if(m, int, is_persistent_at(cells));
   num_e += ispac.size();
   // real vectors persistent at cells
-  auto rvpac = access_type_if(m, mesh_t::vector_t, is_persistent_at(cells));
+  auto rvpac = access_type_if(m, vector_t, is_persistent_at(cells));
   num_e += m.dimension()*rvpac.size();
 
   // element variable names array
@@ -319,7 +356,7 @@ int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
   // write element fields
   inum = 1;
   // element field buffer
-  mesh_t::real_t ef[num_elem];
+  real_t ef[num_elem];
   for(auto sf: rspac) {
     for(auto c: m.cells()) ef[c->id()] = sf[c];
     status = ex_put_elem_var(exoid, 1, inum, 0, num_elem, ef);
@@ -328,7 +365,7 @@ int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
   } // for
   for(auto sf: ispac) {
     // cast int fields to real_t
-    for(auto c: m.cells()) ef[c->id()] = (mesh_t::real_t)sf[c];
+    for(auto c: m.cells()) ef[c->id()] = (real_t)sf[c];
     status = ex_put_elem_var(exoid, 1, inum, 0, num_elem, ef);
     assert(status == 0);
     inum++;
@@ -346,6 +383,17 @@ int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
   status = ex_close(exoid);
 
   return status;
+
+
+#else
+
+  std::cerr << "FLEXI not build with exodus support." << std::endl;
+  std::exit(1);
+
+  return -1;
+
+#endif
+
 } // io_exodus_t::write
 
 } // namespace flexi

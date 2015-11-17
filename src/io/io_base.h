@@ -30,6 +30,7 @@ namespace flexi {
   \brief io_base_t provides a base class using the object factory with pure
          virtual functions for read and write.
  */
+template <typename mesh_t>
 class io_base_t {
 public:
   //! Default constructor
@@ -54,7 +55,8 @@ public:
 /*!
  * Define factory type paramaterized on io_base_t and string.
  */
-using io_factory_t = flexi::Factory_<io_base_t, std::string>;
+template <typename mesh_t>
+using io_factory_t = flexi::Factory_<io_base_t<mesh_t>, std::string>;
 
 } // namespace flexi
 
