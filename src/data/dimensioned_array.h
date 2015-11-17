@@ -194,6 +194,15 @@ public:
     return *this;
   }
 
+  //! \brief Division operator involving a constant.
+  //! \param[in] val The constant on the right hand side of the operator.
+  //! \return A reference to the current object.
+  dimensioned_array &operator/(const T &val) {
+    for ( size_t i=0; i<D; i++ )
+      data_[i] /= val;
+    return *this;
+  }
+
   //! \brief Division binary operator involving a constant.
   //! \param[in] val The constant on the right hand side of the operator.
   //! \return A reference to the current object.
