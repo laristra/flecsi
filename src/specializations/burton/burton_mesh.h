@@ -312,6 +312,8 @@ public:
   } // init_parameters
 
   /*!
+    \verbatim
+
     After cells and vertices for the mesh have been defined, call init() to
     create the dual mesh entities. The following picture shows the vertex
     definitions used to create the dual mesh. For each vertex definition there
@@ -348,6 +350,7 @@ public:
     c2 = {w4, w5}
     c3 = {w6, w7}
 
+    \endverbatim
    */
   void init() {
     mesh_.init<0>();
