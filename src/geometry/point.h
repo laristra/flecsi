@@ -81,6 +81,15 @@ auto centroid( const LIST<point<T,D>> & vert_list ) {
   return tmp;
 }
 
+
+template <typename T, size_t D>
+auto centroid( std::initializer_list<point<T, D>> vert_list ) {
+  point<T, D> tmp(0.0);
+  for ( auto v : vert_list ) tmp += v;
+  tmp /= vert_list.size();
+  return tmp;
+}
+
 } // namespace flexi
 
 #endif // flexi_point_h

@@ -170,7 +170,7 @@ public:
   /*!
     FIXME
    */
-  decltype(auto) dimension() const {
+  static constexpr auto dimension() {
     return burton_mesh_traits_t::dimension;
   } // dimension
 
@@ -372,7 +372,7 @@ public:
       auto v3p = vs[3]->coordinates();
 
       // compute the center vertex
-      auto cvp = centroid(c);
+      auto cvp = flexi::centroid( {v0p, v1p, v2p, v3p } );
 
       // compute the edge points as midpoints of the primal vertices
       // FIXME? flexi:: namespace required so compiler doesn't only look
@@ -470,18 +470,20 @@ public:
   }
 
   /*!
-    Compute the centroid of a cell.
+    Get the centroid of a cell.
     
     \param[in] cell The cell to return the centroid for.
     \return a point_t that is the centroid.
+
+    FIXME : need const iterator for entity group!!!
+    point_t centroid(const cell_t *c) const {
+
   */
-  point_t centroid(const cell_t *c) const {
-    point_t tmp(0.0);
-    auto vert_list = mesh_.vertices<0>(c);
-    for ( auto v : vert_list ) 
-      tmp += v->coordinates();
-    tmp /= vert_list.size();
-    return tmp;
+  point_t centroid(cell_t *c) {
+    // the first vertex of every wedge is the centroid
+    auto w0 = *c->wedges().begin();
+    auto cp = *mesh_.vertices<1>(w0).begin();
+    return cp->coordinates();
   }
 
   /*!
