@@ -63,7 +63,8 @@ struct burton_mesh_traits_t {
   }; // enum class attachment_site_t
 
   enum class state_attribute_t : bitfield_t::field_type_t {
-    persistent = 0
+    persistent = 0,
+    temporary = 1 // just a placeholder for now
   }; // enum class state_attribute_t
 
   /*--------------------------------------------------------------------------*

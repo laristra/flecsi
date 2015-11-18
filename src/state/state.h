@@ -45,7 +45,8 @@ enum class state_name_space_t : size_t {
   can define their own attributes.
  */
 enum class state_attribute_t : bitfield_t::field_type_t {
-  persistent = 0x0001
+  persistent = 0x0001,
+  temporary  = 0x0002
 }; // enum class state_attribute_t
 
 /*!
@@ -54,6 +55,14 @@ enum class state_attribute_t : bitfield_t::field_type_t {
  */
 const bitfield_t::field_type_t persistent =
   static_cast<bitfield_t::field_type_t>(flexi::state_attribute_t::persistent);
+
+
+/*!
+  \brief This exposes the temporary attribute so that it can be used
+    without specifying the full type information.
+ */
+const bitfield_t::field_type_t temporary =
+  static_cast<bitfield_t::field_type_t>(flexi::state_attribute_t::temporary);
 
 /*----------------------------------------------------------------------------*
  * struct default_state_meta_data_t
