@@ -15,17 +15,27 @@
 #include <cinchtest.h>
 
 // declare mesh_t for io.h
-class mesh_t {};
+class fake_mesh_t {};
 
 #include "../io.h"
+#include "../io_exodus.h"
 
 namespace flexi {
 
+// Register file extensions with factory.
+bool exodus_g_registered =
+io_factory_t<fake_mesh_t>::instance().registerType("g", create_io_exodus<fake_mesh_t>);
+
+bool exodus_exo_registered =
+  io_factory_t<fake_mesh_t>::instance().registerType("exo", create_io_exodus<fake_mesh_t>);
+
 // provide empty implementations of read and write.
-int32_t io_exodus_t::read(const std::string &name, mesh_t &m) {
+template<>
+int32_t io_exodus_t<fake_mesh_t>::read(const std::string &name, fake_mesh_t &m) {
   return 0;
 }
-int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
+template<>
+int32_t io_exodus_t<fake_mesh_t>::write(const std::string &name, fake_mesh_t &m) {
   return 0;
 }
 
@@ -33,7 +43,7 @@ int32_t io_exodus_t::write(const std::string &name, mesh_t &m) {
 // functions which look for those suffix registrations. Calling read/write
 // with any other file suffixes will fail, until more are implemented.
 TEST(io, readwrite) {
-  mesh_t m;
+  fake_mesh_t m;
   ASSERT_FALSE(read_mesh("test.g", m));
   ASSERT_FALSE(read_mesh("test.exo", m));
   ASSERT_FALSE(write_mesh("test.g", m));

@@ -17,10 +17,6 @@
 
 #include "io_base.h"
 
-#ifdef HAVE_EXODUS
-#  include "io_exodus.h"
-#endif
-
 /*!
  * \file io.h
  * \authors wohlbier
@@ -35,12 +31,13 @@ namespace flexi {
 \param m mesh to create
 \return 0 on success
  */
+template <typename mesh_t>
 int32_t read_mesh(const std::string &name, mesh_t &m) {
 
   // get the suffix.
-  std::string suffix = name.substr(name.find_last_of(".") + 1);
+  auto suffix = name.substr(name.find_last_of(".") + 1);
   // create the io instance with the factory using the file suffix.
-  io_base_t *io = io_factory_t::instance().create(suffix);
+  auto io = io_factory_t<mesh_t>::instance().create(suffix);
 
   // call the io write function
   auto ret = io->read(name, m);
@@ -58,11 +55,12 @@ int32_t read_mesh(const std::string &name, mesh_t &m) {
  */
 //FIXME: should allow for const mesh_t &
 //int32_t write_mesh(const std::string &name, const mesh_t &m) {
+template <typename mesh_t>
 int32_t write_mesh(const std::string &name, mesh_t &m) {
   // get the suffix.
-  std::string suffix = name.substr(name.find_last_of(".") + 1);
+  auto suffix = name.substr(name.find_last_of(".") + 1);
   // create the io instance with the factory using the suffix.
-  io_base_t *io = io_factory_t::instance().create(suffix);
+  auto io = io_factory_t<mesh_t>::instance().create(suffix);
 
   // call the io write function
   auto ret = io->write(name, m);
