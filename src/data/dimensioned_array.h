@@ -20,6 +20,22 @@
 
 #include "../utils/common.h"
 
+
+template<typename... Conds>
+struct and_ : std::true_type {};
+
+template<typename Cond, typename... Conds>
+struct and_<Cond, Conds...> : 
+  std::conditional< Cond::value, 
+                    and_<Conds...>,
+                    std::false_type >::type 
+{};
+
+
+template<typename Target, typename... Ts>
+using areTypeT = and_<std::is_same<Ts,Target>...>;
+
+
 /*!
  * \file dimensioned_array.h
  * \authors bergen
@@ -45,8 +61,6 @@ enum class axis : size_t { x = 0, y = 1, z = 2 };
  */
 template <typename T, size_t D, size_t TS> class dimensioned_array {
 public:
-  dimensioned_array(const dimensioned_array &a) : data_(a.data_) {}
-
 
   //! \brief The value type.
   using value_type = T;
@@ -55,9 +69,10 @@ public:
   static constexpr size_t dimension = D;
 
   //! \brief Default constructor
-  //! \remark Without this, the dimensioned_array(A... args) args will get 
-  //!         called with zero args!
-  dimensioned_array() {} // dimensioned_array
+  dimensioned_array() = default;
+
+  //! \brief Default copy constructor
+  dimensioned_array(const dimensioned_array &) = default;
 
   //! \brief Constructor with initializer list
   //! \param[in] list the initializer list of values
@@ -68,21 +83,20 @@ public:
 
   //! \brief Constructor with initializer list
   //! \param[in] list the initializer list of values
-  template <typename... A> dimensioned_array(A... args) {
-    static_assert( (sizeof...(A) == D),
-                   "dimension size mismatch" );
+  template <
+    typename... Args,
+    typename = typename std::enable_if< sizeof...(Args) == D &&
+    areTypeT<T,Args...>::value >::type 
+  > 
+  dimensioned_array(Args... args) {
     data_ = {args...};
   }
 
   //! \brief Constructor with one value.
   //! \param[in] val The value to set the array to
   dimensioned_array(const T & val) {
-    for ( size_t i=0; i<D; i++ ) 
-      data_[i] = val;
+    data_.fill( val );
   } // dimensioned_array
-
-  //! Destructor
-  ~dimensioned_array() {}
 
 
   //! \brief Return the size of the array.
