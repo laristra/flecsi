@@ -385,31 +385,31 @@ public:
 
       // create the dual mesh vertices using the point_ts
       auto v0 = mesh_.make<vertex_t, 1>(v0p, &state_);
-      v0->set_rank(1);
+      v0->set_rank<1>(1);
 
       auto v1 = mesh_.make<vertex_t, 1>(v1p, &state_);
-      v1->set_rank(1);
+      v1->set_rank<1>(1);
 
       auto v2 = mesh_.make<vertex_t, 1>(v2p, &state_);
-      v2->set_rank(1);
+      v2->set_rank<1>(1);
 
       auto v3 = mesh_.make<vertex_t, 1>(v3p, &state_);
-      v3->set_rank(1);
+      v3->set_rank<1>(1);
 
       auto cv = mesh_.make<vertex_t, 1>(cvp, &state_);
-      cv->set_rank(0);
+      cv->set_rank<1>(0);
 
       auto e0 = mesh_.make<vertex_t, 1>(e0p, &state_);
-      e0->set_rank(1);
+      e0->set_rank<1>(1);
 
       auto e1 = mesh_.make<vertex_t, 1>(e1p, &state_);
-      e1->set_rank(1);
+      e1->set_rank<1>(1);
 
       auto e2 = mesh_.make<vertex_t, 1>(e2p, &state_);
-      e2->set_rank(1);
+      e2->set_rank<1>(1);
 
       auto e3 = mesh_.make<vertex_t, 1>(e3p, &state_);
-      e3->set_rank(1);
+      e3->set_rank<1>(1);
 
       // make wedges using the vertices
       auto w0 = mesh_.make<wedge_t, 1>();

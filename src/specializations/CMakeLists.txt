@@ -42,13 +42,13 @@ if(ENABLE_IO)
   )
 endif(ENABLE_IO)
 
-cinch_add_unit(unstruct_2d
-  SOURCES unstruct/test/unstruct_2d.cc
-  INPUTS unstruct/test/unstruct_2d.blessed)
+#cinch_add_unit(unstruct_2d
+#  SOURCES unstruct/test/unstruct_2d.cc
+#  INPUTS unstruct/test/unstruct_2d.blessed)
 
-cinch_add_unit(unstruct_3d
-  SOURCES unstruct/test/unstruct_3d.cc
-  INPUTS unstruct/test/unstruct_3d.blessed)
+#cinch_add_unit(unstruct_3d
+#  SOURCES unstruct/test/unstruct_3d.cc
+#  INPUTS unstruct/test/unstruct_3d.blessed)
 
 
 #~---------------------------------------------------------------------------~-#

@@ -109,6 +109,7 @@ public:
   \brief mesh_entity_base_t defines a base class for...
  */
 
+template<size_t N>
 class mesh_entity_base_t {
 public:
   virtual ~mesh_entity_base_t() {}
@@ -119,9 +120,11 @@ public:
     \return The id of the entity.
    */
 
-  id_t id() const { return id_; } // id
+  template<size_t M>
+  id_t id() const { return ids_[M] & 0x0000ffffffffffff; } // id
 
-  uint16_t info() const { return info_; } // info
+  template<size_t M>
+  uint16_t info() const { return (ids_[M] & 0xffff000000000000) >> 48; } // info
 
   /*!
    */
@@ -137,28 +140,28 @@ public:
       using entity_type = 
         typename find_entity_<MT, get_dim_(MT::dimension, 0), M>::type;
       auto entity = new entity_type;
-      entity->id_ = id;
+      entity->ids_[M]= id;
       return entity;
     }
     case 1: {
       using entity_type = 
         typename find_entity_<MT, get_dim_(MT::dimension, 1), M>::type;
       auto entity = new entity_type;
-      entity->id_ = id;
+      entity->ids_[M] = id;
       return entity;
     }
     case 2: {
       using entity_type = 
         typename find_entity_<MT, get_dim_(MT::dimension, 2), M>::type;
       auto entity = new entity_type;
-      entity->id_ = id;
+      entity->ids_[M] = id;
       return entity;
     }
     case 3: {
       using entity_type = 
         typename find_entity_<MT, get_dim_(MT::dimension, 3), M>::type;
       auto entity = new entity_type;
-      entity->id_ = id;
+      entity->ids_[M] = id;
       return entity;
     }
     default:
@@ -170,13 +173,13 @@ public:
 
 protected:
 
+  template<size_t M>
   void set_info(uint16_t info){
-    info_ = info;
+    ids_[M] = uint64_t(info) << 48;
   }
 
 private:
-  id_t id_ : 48;
-  uint16_t info_ : 16;
+  std::array<uint64_t, N> ids_;
 }; // class mesh_entity_base_t
 
 /*----------------------------------------------------------------------------*
@@ -188,7 +191,7 @@ private:
   \brief ...
  */
 
-template <size_t D> class mesh_entity : public mesh_entity_base_t {
+template <size_t D, size_t N> class mesh_entity : public mesh_entity_base_t<N> {
 public:
   static const size_t dimension = D;
 
@@ -197,7 +200,8 @@ public:
   virtual ~mesh_entity() {}
 }; // class mesh_entity
 
-using entity_vec = std::vector<mesh_entity_base_t *>;
+template<size_t N>
+using entity_vec = std::vector<mesh_entity_base_t<N> *>;
 
 /*----------------------------------------------------------------------------*
  * class entity_group
@@ -327,9 +331,9 @@ public:
       }
     } // init
 
-    template <class MT, size_t M>
+    template <class MT, size_t M, size_t N>
     void init_create(id_vec &iv,
-                     entity_vec &ev,
+                     entity_vec<N> &ev,
                      const conn_vec &cv, 
                      size_t dim) {
       assert(to_id_vec_.empty() && from_index_vec_.empty());
@@ -356,7 +360,7 @@ public:
       ev.reserve(maxId + 1);
 
       for(id_t id = startId; id <= maxId; ++id){
-        ev.push_back(mesh_entity_base_t::create_<MT, M>(dim, id));
+        ev.push_back(mesh_entity_base_t<N>::template create_<MT, M>(dim, id));
         iv.push_back(id);
       }
 
@@ -432,7 +436,8 @@ public:
 
     size_t to_size() const { return to_id_vec_.size(); }
 
-    void set(entity_vec &ev, conn_vec &conns) {
+    template<size_t M, size_t N>
+    void set(entity_vec<N> &ev, conn_vec &conns) {
       clear();
 
       size_t n = conns.size();
@@ -454,7 +459,7 @@ public:
         uint64_t m = conn.size();
 
         for (size_t j = 0; j < m; ++j) {
-          to_id_vec_.push_back(ev[conn[j]]->id());
+          to_id_vec_.push_back(ev[conn[j]]->template id<M>());
         }
       }
     }
@@ -900,9 +905,9 @@ public:
   }
 
   template<size_t D, size_t M>
-  void add_entity(mesh_entity_base_t *ent) {
+  void add_entity(mesh_entity_base_t<MT::num_domains> *ent) {
     auto &ents = entities_[M][D];
-    id_t id = ent->id();
+    id_t id = ent->template id<M>();
     if(ents.size() <= id){
       ents.resize(id + 1);
     }
@@ -959,10 +964,10 @@ public:
                   std::initializer_list<vertex_type<M> *> verts) {
     auto &c = get_connectivity_(M, MT::dimension, 0);
 
-    assert(cell->id() == c.from_size() && "id mismatch");
+    assert(cell->template id<M>() == c.from_size() && "id mismatch");
 
     for (vertex_type<M> *v : verts) {
-      c.push(v->id());
+      c.push(v->template id<M>());
     } // for
 
     c.endFrom();
@@ -977,10 +982,10 @@ public:
       c.init();
     } // if
 
-    assert(edge->id() == c.from_size() && "id mismatch");
+    assert(edge->template id<M>() == c.from_size() && "id mismatch");
 
-    c.push(vertex1->id());
-    c.push(vertex2->id());
+    c.push(vertex1->template id<M>());
+    c.push(vertex2->template id<M>());
 
     c.endFrom();
   } // init_edge
@@ -996,7 +1001,7 @@ public:
       c.init();
     }
 
-    assert(face->id() == c.from_size() && "id mismatch");
+    assert(face->template id<M>() == c.from_size() && "id mismatch");
 
     for (vertex_type<M> *v : verts) {
       c.push(v);
@@ -1016,7 +1021,7 @@ public:
       c.init();
     }
 
-    assert(cell->id() == c.from_size() && "id mismatch");
+    assert(cell->template id<M>() == c.from_size() && "id mismatch");
 
     for (edge_type<M> *edge : edges) {
       c.push(edge);
@@ -1037,7 +1042,7 @@ public:
       c.init();
     }
 
-    assert(cell->id() == c.from_size() && "id mismatch");
+    assert(cell->template id<M>() == c.from_size() && "id mismatch");
 
     for (face_type<M> *face : faces) {
       c.push(face);
@@ -1108,7 +1113,7 @@ public:
         uint64_t precedence = 0;
         for(size_t j = 0; j < vertices_per_entity; ++j){
           auto vj = static_cast<vertex_type<M>*>(entities_[M][0][ev[j]]);
-          precedence |= vj->precedence();
+          precedence |= vj->template precedence<M>();
         }
 
         auto itr = entity_vertices_map.emplace(std::move(ev), entity_id);
@@ -1280,7 +1285,7 @@ public:
         conn_vec[*entity][0] = *entity;
       }
 
-      out_conn.set(entities_[M][to_dim], conn_vec);
+      out_conn.set<M, MT::num_domains>(entities_[M][to_dim], conn_vec);
     } else if (from_dim < to_dim) {
       compute<M>(to_dim, from_dim);
       transpose<M>(from_dim, to_dim);
@@ -1353,7 +1358,7 @@ public:
     T *entity = new T(std::forward<S>(args)...);
 
     auto &ents = entities_[M][T::dimension];    
-    entity->id_ = ents.size();
+    entity->ids_[M] = ents.size();
     ents.push_back(entity);
 
     auto &idVec = id_vecs_[M][T::dimension];
@@ -1363,7 +1368,7 @@ public:
   }
 
   template<size_t M=0>
-  const entity_vec &get_entities_(size_t dim) const { 
+  const entity_vec<MT::num_domains> &get_entities_(size_t dim) const { 
     return entities_[M][dim]; 
   }
 
@@ -1410,7 +1415,7 @@ public:
     assert(!c.empty() && "empty connectivity");
     const id_vec &fv = c.get_from_index_vec();
     return const_entity_range<D, M>(*this, c.get_entities(),
-      fv[e->id()], fv[e->id() + 1]);
+      fv[e->template id<M>()], fv[e->template id<M>() + 1]);
   } // entities
 
   template <size_t D, size_t M, class E> entity_range<D, M> entities(E *e) {
@@ -1418,7 +1423,7 @@ public:
     assert(!c.empty() && "empty connectivity");
     const id_vec &fv = c.get_from_index_vec();
     return entity_range<D, M>(*this, c.get_entities(), 
-                              fv[e->id()], fv[e->id() + 1]);
+                              fv[e->template id<M>()], fv[e->template id<M>() + 1]);
   } // entities
 
   template <size_t M, class E> decltype(auto) vertices(const E *e) const {
@@ -1532,7 +1537,7 @@ public:
   } // dump
 
 private:
-  using entities_t = std::array<entity_vec, MT::dimension + 1>;
+  using entities_t = std::array<entity_vec<MT::num_domains>, MT::dimension + 1>;
 
   using topology_t = std::array<std::array<connectivity, MT::dimension + 1>,
       MT::dimension + 1>;

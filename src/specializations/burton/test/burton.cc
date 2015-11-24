@@ -41,7 +41,7 @@ protected:
     for(size_t j = 0; j < height + 1; ++j){
       for(size_t i = 0; i < width + 1; ++i){
         auto v = b.create_vertex({double(i), double(j)});
-        v->set_rank(max_rank - (i + (j * width + 1)));
+        v->set_rank<0>(max_rank - (i + (j * width + 1)));
         vs.push_back(v);
       } // for
     } // for
@@ -75,38 +75,38 @@ TEST_F(Burton, mesh) {
   CINCH_CAPTURE() << separator;
   CINCH_CAPTURE() << "Vertices in mesh:" << std::endl;
   for(auto v : b.vertices()){
-    CINCH_CAPTURE() << "----------- vertex id: " << v->id()
+    CINCH_CAPTURE() << "----------- vertex id: " << v->id<0>()
       << " with coordinates " << v->coordinates() << endl;
   }
 
   CINCH_CAPTURE() << separator;
   CINCH_CAPTURE() << "Edges in mesh:" << std::endl;
   for(auto e : b.edges()){
-    CINCH_CAPTURE() << "----------- edge id: " << e->id()
+    CINCH_CAPTURE() << "----------- edge id: " << e->id<0>()
       << " with midpoint " << b.midpoint(e) << endl;
   }
 
   CINCH_CAPTURE() << separator;
   CINCH_CAPTURE() << "For each cell:" << std::endl;
   for(auto c : b.cells()){
-    CINCH_CAPTURE() << "-----------Edges for cell id: " << c->id()
+    CINCH_CAPTURE() << "-----------Edges for cell id: " << c->id<0>()
       << " with centroid " << b.centroid(c) << endl;
     for(auto e : b.edges(c)){
-      CINCH_CAPTURE() << "++++ edge id: " << e->id()
+      CINCH_CAPTURE() << "++++ edge id: " << e->id<0>()
         << " with midpoint " << b.midpoint(e) << endl;
     }
 #if 0
     for(auto w : c->wedges()){
-      CINCH_CAPTURE() << "++++ wedge of: " << w->id() << endl;
-      CINCH_CAPTURE() << "### corner of: " << w->corner()->id() << endl;
+      CINCH_CAPTURE() << "++++ wedge of: " << w->id<0>() << endl;
+      CINCH_CAPTURE() << "### corner of: " << w->corner()->id<0>() << endl;
     }
 
     for(auto c2 : c->corners()){
-      CINCH_CAPTURE() << "++++ corner of: " << c2->id() << endl;
+      CINCH_CAPTURE() << "++++ corner of: " << c2->id<0>() << endl;
       for(auto w : c2->wedges()){
-        CINCH_CAPTURE() << "++ wedge of: " << w->id() << endl;
+        CINCH_CAPTURE() << "++ wedge of: " << w->id<0>() << endl;
         for(auto v : b.vertices(w)){
-          CINCH_CAPTURE() << "- vertex of: " << v->id() << endl;
+          CINCH_CAPTURE() << "- vertex of: " << v->id<0>() << endl;
         }
       }
     }
@@ -121,10 +121,10 @@ TEST_F(Burton, coordinates) {
 
   for(auto c: b.cells()) {
     auto xc = b.centroid(c);
-    cout << "---- cell " << c->id() << endl;
+    cout << "---- cell " << c->id<0>() << endl;
     for(auto v : b.vertices(c)){
       auto xv = v->coordinates();
-      cout << "++++ vertex " << v->id();
+      cout << "++++ vertex " << v->id<0>();
       cout << ": (" << xv[0] << "," << xv[1] << ")" << endl;
     } // for
   } // for
@@ -239,35 +239,35 @@ TEST_F(Burton, state) {
   // cells
   ASSERT_EQ(4, b.num_cells());
   for(auto c: b.cells()) {
-    p[c] = c->id();
+    p[c] = c->id<0>();
   } // for
 
   for(auto c: b.cells()) {
-    ASSERT_EQ(c->id(), p[c]);
+    ASSERT_EQ(c->id<0>(), p[c]);
   } // for
 
   // vertices
   ASSERT_EQ(9, b.num_vertices());
   for (auto v: b.vertices()) {
-    velocity[v][0] = v->id();
-    velocity[v][1] = 2.0*v->id();
+    velocity[v][0] = v->id<0>();
+    velocity[v][1] = 2.0*v->id<0>();
   } // for
 
   for (auto v: b.vertices()) {
-    ASSERT_EQ(v->id(), velocity[v][0]);
-    ASSERT_EQ(2.0*v->id(), velocity[v][1]);
+    ASSERT_EQ(v->id<0>(), velocity[v][0]);
+    ASSERT_EQ(2.0*v->id<0>(), velocity[v][1]);
   } // for
 
   // edges
   ASSERT_EQ(12, b.num_edges());
   for (auto e: b.edges()) {
-    H[e][0] = e->id()*e->id();
-    H[e][1] = e->id()*e->id()*e->id();
+    H[e][0] = e->id<0>()*e->id<0>();
+    H[e][1] = e->id<0>()*e->id<0>()*e->id<0>();
   } // for
 
   for (auto e: b.edges()) {
-    ASSERT_EQ(e->id()*e->id(), H[e][0]);
-    ASSERT_EQ(e->id()*e->id()*e->id(), H[e][1]);
+    ASSERT_EQ(e->id<0>()*e->id<0>(), H[e][0]);
+    ASSERT_EQ(e->id<0>()*e->id<0>()*e->id<0>(), H[e][1]);
   } // for
 
   // corners
@@ -276,11 +276,11 @@ TEST_F(Burton, state) {
 //FIXME: Need to implement mesh entities
 #if 0
   for (auto c: b.corners()) {
-    cd[c] = c->id();
+    cd[c] = c->id<0>();
   } // for
 
   for (auto c: b.corners()) {
-    ASSERT_EQ(c->id(), cd[c]);
+    ASSERT_EQ(c->id<0>(), cd[c]);
   } // for
 
   std::cerr << "num_wedges " << b.num_wedges() << std::endl;

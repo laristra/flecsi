@@ -50,15 +50,15 @@ struct burton_mesh_types_t {
    * Define basic types.
    *--------------------------------------------------------------------------*/
 
-  using vertex_t = burton_vertex_t;
-  using edge_t = burton_edge_t;
+  using vertex_t = burton_vertex_t<num_domains>;
+  using edge_t = burton_edge_t<num_domains>;
 
   // Cell types
-  using cell_t = burton_cell_t;
-  using quadrilateral_cell_t = burton_quadrilateral_cell_t;
+  using cell_t = burton_cell_t<num_domains>;
+  using quadrilateral_cell_t = burton_quadrilateral_cell_t<num_domains>;
 
-  using wedge_t = burton_wedge_t;
-  using corner_t = burton_corner_t;
+  using wedge_t = burton_wedge_t<num_domains>;
+  using corner_t = burton_corner_t<num_domains>;
 
   /*--------------------------------------------------------------------------*
    * Specify mesh parameterizations.

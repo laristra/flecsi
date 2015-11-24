@@ -20,7 +20,8 @@ namespace flexi {
  * class burton_vertex_t
  *----------------------------------------------------------------------------*/
 
-class burton_vertex_t : public mesh_entity<0>
+template<size_t N>
+class burton_vertex_t : public mesh_entity<0, N>
 {
 public:
 
@@ -34,9 +35,11 @@ public:
   burton_vertex_t(const point_t & coordinates, state_t * state)
       : precedence_(0), coordinates_(coordinates), state_(state) {}
 
-  void set_rank(uint8_t rank) { set_info(rank); }
+  template<size_t M>
+  void set_rank(uint8_t rank) { mesh_entity<0, N>::template set_info<M>(rank); }
 
-  uint64_t precedence() const { return 1 << (63 - info()); }
+  template<size_t M>
+  uint64_t precedence() const { return 1 << (63 - mesh_entity<0, N>::template info<M>()); }
 
   void set_coordinates(const point_t &coordinates) {
     auto c = state_->accessor<point_t>("coordinates");
@@ -62,9 +65,13 @@ private:
    \brief The burton_edge_t type provides an interface for managing and
           geometry and state associated with mesh edges.
  */
-struct burton_edge_t : public mesh_entity<1> {}; // struct burton_edge_t
+template<size_t N>
+struct burton_edge_t : public mesh_entity<1, N> {}; // struct burton_edge_t
 
+template<size_t N>
 class burton_corner_t;
+
+template<size_t N>
 class burton_wedge_t;
 
 /*----------------------------------------------------------------------------*
@@ -76,7 +83,8 @@ class burton_wedge_t;
    \brief The burton_cell_t type provides an interface for managing and
           geometry and state associated with mesh cells.
  */
-class burton_cell_t : public mesh_entity<2>
+template<size_t N>
+class burton_cell_t : public mesh_entity<2, N>
 {
 public:
 
@@ -85,13 +93,13 @@ public:
 
   virtual ~burton_cell_t() {}
 
-  void add_corner(burton_corner_t *c) { corners_.add(c); }
+  void add_corner(burton_corner_t<N> *c) { corners_.add(c); }
 
-  entity_group<burton_corner_t> &corners() { return corners_; } // corners
+  entity_group<burton_corner_t<N>> &corners() { return corners_; } // corners
 
-  void add_wedge(burton_wedge_t *w) { wedges_.add(w); }
+  void add_wedge(burton_wedge_t<N> *w) { wedges_.add(w); }
 
-  entity_group<burton_wedge_t> &wedges() { return wedges_; } // wedges
+  entity_group<burton_wedge_t<N>> &wedges() { return wedges_; } // wedges
 
   void set_precedence(size_t dim, uint64_t precedence) {}
 
@@ -123,8 +131,8 @@ public:
 
 protected:
 
-  entity_group<burton_corner_t> corners_;
-  entity_group<burton_wedge_t> wedges_;
+  entity_group<burton_corner_t<N>> corners_;
+  entity_group<burton_wedge_t<N>> wedges_;
 
 }; // class burton_cell_t
 
@@ -137,7 +145,8 @@ protected:
   \brief The burton_quadrilateral_t type provides an interface
     for managing and geometry and state associated with mesh cells.
  */
-class burton_quadrilateral_cell_t : public burton_cell_t
+template<size_t N>
+class burton_quadrilateral_cell_t : public burton_cell_t<N>
 {
 public:
 
@@ -172,14 +181,15 @@ public:
    \brief The burton_wedge_t type provides an interface for managing and
           geometry and state associated with mesh wedges.
  */
-class burton_wedge_t : public mesh_entity<2> {
+template<size_t N>
+class burton_wedge_t : public mesh_entity<2, N> {
 public:
 
   using vector_t = burton_mesh_traits_t::vector_t;
 
-  void set_corner(burton_corner_t *corner) { corner_ = corner; }
+  void set_corner(burton_corner_t<N> *corner) { corner_ = corner; }
 
-  burton_corner_t *corner() { return corner_; }
+  burton_corner_t<N> *corner() { return corner_; }
 
   vector_t side_facet_normal();
   vector_t cell_facet_normal();
@@ -204,7 +214,7 @@ public:
 
 private:
 
-  burton_corner_t *corner_;
+  burton_corner_t<N> *corner_;
 
 }; // struct burton_wedge_t
 
@@ -218,17 +228,18 @@ private:
           geometry and state associated with mesh corners.
  */
 
-class burton_corner_t : public mesh_entity<0> {
+template<size_t N>
+class burton_corner_t : public mesh_entity<0, N> {
 public:
-  void add_wedge(burton_wedge_t *w) {
+  void add_wedge(burton_wedge_t<N> *w) {
     wedges_.add(w);
     w->set_corner(this);
   }
 
-  entity_group<burton_wedge_t> &wedges() { return wedges_; } // wedges
+  entity_group<burton_wedge_t<N>> &wedges() { return wedges_; } // wedges
 
 private:
-  entity_group<burton_wedge_t> wedges_;
+  entity_group<burton_wedge_t<N>> wedges_;
 
 }; // class burton_corner_t
 

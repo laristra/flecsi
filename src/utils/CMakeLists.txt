@@ -29,8 +29,8 @@ cinch_add_unit(const_string
 cinch_add_unit(factory
   SOURCES test/factory.cc)
 
-cinch_add_unit(zip
-  SOURCES test/zip.cc)
+#cinch_add_unit(zip
+#  SOURCES test/zip.cc)
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options
