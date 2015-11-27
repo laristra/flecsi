@@ -36,10 +36,14 @@ public:
       : precedence_(0), coordinates_(coordinates), state_(state) {}
 
   template<size_t M>
-  void set_rank(uint8_t rank) { mesh_entity<0, N>::template set_info<M>(rank); }
+  void set_rank(uint8_t rank) {
+    mesh_entity<0, N>::template set_info<M>(rank);
+  }
 
   template<size_t M>
-  uint64_t precedence() const { return 1 << (63 - mesh_entity<0, N>::template info<M>()); }
+  uint64_t precedence() const {
+    return 1 << (63 - mesh_entity<0, N>::template info<M>());
+  } // precedence
 
   void set_coordinates(const point_t &coordinates) {
     auto c = state_->accessor<point_t>("coordinates");
