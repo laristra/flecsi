@@ -86,8 +86,8 @@ TEST(mesh_topology, traversal) {
   for(size_t j = 0; j < height + 1; ++j){
     for(size_t i = 0; i < width + 1; ++i){
       auto v = mesh->make<Vertex, 0>();
-      vs.push_back(v);
-      mesh->add_vertex<0>(v); 
+      mesh->add_vertex<0>(v);
+      vs.push_back(v); 
     }
   }
 
@@ -96,6 +96,7 @@ TEST(mesh_topology, traversal) {
   for(size_t j = 0; j < height; ++j){
     for(size_t i = 0; i < width; ++i){
       auto c = mesh->make<Cell, 0>();
+      mesh->add_cell<0>(c);
 
       mesh->init_cell<0>(c,
                          {vs[i + j * width1],
@@ -103,6 +104,8 @@ TEST(mesh_topology, traversal) {
                          vs[i + 1 + j * width1],
                          vs[i + 1 + (j + 1) * width1]}
                         );
+
+
     }
   }
 

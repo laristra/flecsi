@@ -951,11 +951,11 @@ public:
   template<size_t D, size_t M>
   void add_entity(mesh_entity_base_t<MT::num_domains> *ent) {
     auto &ents = entities_[M][D];
-    id_t id = ent->template id<M>();
-    if(ents.size() <= id){
-      ents.resize(id + 1);
-    }
-    ents[id] = ent;
+    ent->ids_[M] = ents.size();
+    ents.push_back(ent);
+
+    auto &idVec = id_vecs_[M][D];
+    idVec.push_back(idVec.size());
   } // add_entity
 
   template<size_t M, class T>
@@ -1400,13 +1400,6 @@ public:
 
   template <class T, size_t M, class... S> T *make(S &&... args) {
     T *entity = new T(std::forward<S>(args)...);
-
-    auto &ents = entities_[M][T::dimension];    
-    entity->ids_[M] = ents.size();
-    ents.push_back(entity);
-
-    auto &idVec = id_vecs_[M][T::dimension];
-    idVec.push_back(idVec.size());
 
     return entity;
   }
