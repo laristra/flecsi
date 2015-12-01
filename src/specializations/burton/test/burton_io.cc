@@ -41,8 +41,8 @@ protected:
     for(size_t j = 0; j < height + 1; ++j){
       for(size_t i = 0; i < width + 1; ++i){
 	auto v =
-	  b.create_vertex({double(i)+ 0.1*pow(double(j),1.8), 1.5*double(j)});
-	v->set_rank(1);
+	  b.create_vertex({double(i)+0.1*pow(double(j),1.8), 1.5*double(j)});
+//	v->set_rank(1);
 	vs.push_back(v);
       }
     }
@@ -81,13 +81,13 @@ TEST_F(Burton, write_exo) {
   auto velocity = access_state(b, "velocity", vector_t);
   // initialize
   for(auto c: b.cells()) {
-    p[c] = c->id();
-    r[c] = b.num_cells() - c->id();
+    p[c] = c.id();
+    r[c] = b.num_cells() - c.id();
   } // for
   // vertices
   for (auto v: b.vertices()) {
-    velocity[v][0] = v->id();
-    velocity[v][1] = 2.0*v->id();
+    velocity[v][0] = v.id();
+    velocity[v][1] = 2.0*v.id();
   } // for
 
   // write the mesh

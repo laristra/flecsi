@@ -31,19 +31,19 @@
 
 namespace flexi {
 
-
 /*!
  * Register file extension g with factory.
  */
 bool burton_exodus_g_registered =
-  io_factory_t<burton_mesh_t>::instance().registerType("g", create_io_exodus<burton_mesh_t>);
+  io_factory_t<burton_mesh_t>::instance().registerType("g",
+  create_io_exodus<burton_mesh_t>);
 
 /*!
  * Register file extension exo with factory.
  */
 bool burton_exodus_exo_registered =
-  io_factory_t<burton_mesh_t>::instance().registerType("exo", create_io_exodus<burton_mesh_t>);
-
+  io_factory_t<burton_mesh_t>::instance().registerType("exo",
+  create_io_exodus<burton_mesh_t>);
 
 /*!
  * Implementation of exodus mesh read for burton.
@@ -95,7 +95,7 @@ int32_t io_exodus_t<burton_mesh_t>::read(const std::string &name, burton_mesh_t 
   std::vector<vertex_t *> vs;
   for (size_t i = 0; i < num_nodes; ++i) {
     auto v = m.create_vertex({xcoord[i], ycoord[i]});
-    v->set_rank(1);
+    v->set_rank<1>(1);
     vs.push_back(v);
   } // for
 
@@ -251,7 +251,7 @@ int32_t io_exodus_t<burton_mesh_t>::write(const std::string &name, burton_mesh_t
   i = 0;
   for (auto c : m.cells()) {
     for (auto v : m.vertices(c)) {
-      elt_conn[i] = v->id() + 1; // 1 based index in exodus
+      elt_conn[i] = v.id() + 1; // 1 based index in exodus
       i++;
     } // for
   } // for
@@ -320,21 +320,21 @@ int32_t io_exodus_t<burton_mesh_t>::write(const std::string &name, burton_mesh_t
   // node field buffer
   real_t nf[num_nodes];
   for(auto sf: rspav) {
-    for(auto v: m.vertices()) nf[v->id()] = sf[v];
+    for(auto v: m.vertices()) nf[v.id()] = sf[v];
     status = ex_put_nodal_var(exoid, 1, inum, num_nodes, nf);
     assert(status == 0);
     inum++;
   } // for
   for(auto sf: ispav) {
     // cast int fields to real_t
-    for(auto v: m.vertices()) nf[v->id()] = (real_t)sf[v];
+    for(auto v: m.vertices()) nf[v.id()] = (real_t)sf[v];
     status = ex_put_nodal_var(exoid, 1, inum, num_nodes, nf);
     assert(status == 0);
     inum++;
   } // for
   for(auto vf: rvpav) {
     for(int d=0; d < m.dimension(); ++d) {
-      for(auto v: m.vertices()) nf[v->id()] = vf[v][d];
+      for(auto v: m.vertices()) nf[v.id()] = vf[v][d];
       status = ex_put_nodal_var(exoid, 1, inum, num_nodes, nf);
       assert(status == 0);
       inum++;
@@ -400,21 +400,21 @@ int32_t io_exodus_t<burton_mesh_t>::write(const std::string &name, burton_mesh_t
   // element field buffer
   real_t ef[num_elem];
   for(auto sf: rspac) {
-    for(auto c: m.cells()) ef[c->id()] = sf[c];
+    for(auto c: m.cells()) ef[c.id()] = sf[c];
     status = ex_put_elem_var(exoid, 1, inum, 0, num_elem, ef);
     assert(status == 0);
     inum++;
   } // for
   for(auto sf: ispac) {
     // cast int fields to real_t
-    for(auto c: m.cells()) ef[c->id()] = (real_t)sf[c];
+    for(auto c: m.cells()) ef[c.id()] = (real_t)sf[c];
     status = ex_put_elem_var(exoid, 1, inum, 0, num_elem, ef);
     assert(status == 0);
     inum++;
   } // for
   for(auto vf: rvpac) {
     for(int d=0; d < m.dimension(); ++d) {
-      for(auto c: m.cells()) ef[c->id()] = vf[c][d];
+      for(auto c: m.cells()) ef[c.id()] = vf[c][d];
       status = ex_put_elem_var(exoid, 1, inum, 0, num_elem, ef);
       assert(status == 0);
       inum++;
