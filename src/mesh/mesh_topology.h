@@ -206,13 +206,9 @@ using entity_vec = std::vector<mesh_entity_base_t<N> *>;
 template<size_t M, class E>
 class domain_entity{
 public:
-  domain_entity(E* entity)
-  : entity_(entity){}
+  domain_entity(E* entity) : entity_(entity) {}
 
-  domain_entity(const E* entity)
-  : entity_(const_cast<E*>(entity)){}
-
-  domain_entity& operator=(domain_entity& e){
+  domain_entity& operator=(domain_entity& e) {
     entity_ = e.entity_;
     return *this;
   }
