@@ -92,7 +92,7 @@ TEST_F(Burton, mesh) {
     CINCH_CAPTURE() << "-----------Edges for cell id: " << c->id<0>()
       << " with centroid " << b.centroid(c) << endl;
     for(auto e : b.edges(c)){
-      CINCH_CAPTURE() << "++++ edge id: " << e->id<0>()
+      CINCH_CAPTURE() << "++++ edge id: " << e.id()
         << " with midpoint " << b.midpoint(e) << endl;
     }
 #if 0
@@ -239,7 +239,7 @@ TEST_F(Burton, state) {
   // cells
   ASSERT_EQ(4, b.num_cells());
   for(auto c: b.cells()) {
-    p[c] = c->id<0>();
+    p[c] = c.id();
   } // for
 
   for(auto c: b.cells()) {

@@ -203,6 +203,48 @@ public:
 template<size_t N>
 using entity_vec = std::vector<mesh_entity_base_t<N> *>;
 
+template<size_t M, class E>
+class domain_entity{
+public:
+  domain_entity(E* entity)
+  : entity_(entity){}
+
+  domain_entity(const E* entity)
+  : entity_(const_cast<E*>(entity)){}
+
+  domain_entity& operator=(domain_entity& e){
+    entity_ = e.entity_;
+    return *this;
+  }
+
+  E* entity(){
+    return entity_;
+  }
+
+  operator E*(){
+    return entity_;
+  }
+
+  E* operator->(){ 
+    return entity_; 
+  }
+
+  E* operator*(){ 
+    return entity_; 
+  }
+
+  operator id_t(){
+    return entity_->template id<M>();
+  }
+
+  id_t id(){
+    return entity_->template id<M>();
+  }
+
+private:
+  E* entity_;
+};
+
 /*----------------------------------------------------------------------------*
  * class entity_group
  *----------------------------------------------------------------------------*/
@@ -614,7 +656,7 @@ public:
       return *this;
     }
 
-    entity_type *operator*() {
+    domain_entity<M, entity_type> operator*() {
       return mesh_.get_entity<D, M>((*entities_)[index_]); 
     }
 
@@ -1438,6 +1480,46 @@ public:
 
   template <size_t M, class E> decltype(auto) vertices(E *e) {
     return entities<0, M>(e);
+  }
+
+  template<size_t M, class E>
+  decltype(auto) vertices(domain_entity<M, E>& e) const {
+    return entities<0, M>(e.entity());
+  }
+
+  template<size_t M, class E>
+  decltype(auto) vertices(domain_entity<M, E>& e){
+    return entities<0, M>(e.entity());
+  }
+
+  template<size_t M, class E>
+  decltype(auto) edges(domain_entity<M, E>& e) const {
+    return entities<1, M>(e.entity());
+  }
+
+  template<size_t M, class E>
+  decltype(auto) edges(domain_entity<M, E>& e){
+    return entities<1, M>(e.entity());
+  }
+
+  template<size_t M, class E>
+  decltype(auto) faces(domain_entity<M, E>& e) const {
+    return entities<MT::dimension - 1, M>(e.entity());
+  }
+
+  template<size_t M, class E>
+  decltype(auto) faces(domain_entity<M, E>& e){
+    return entities<MT::dimension - 1, M>(e.entity());
+  }
+
+  template<size_t M, class E>
+  decltype(auto) cells(domain_entity<M, E>& e) const {
+    return entities<MT::dimension, M>(e.entity());
+  }
+
+  template<size_t M, class E>
+  decltype(auto) cells(domain_entity<M, E>& e){
+    return entities<MT::dimension, M>(e.entity());
   }
 
   /*--------------------------------------------------------------------------*

@@ -245,15 +245,24 @@ public:
    */
   template <class E> auto vertices(E *e) { return mesh_.vertices<0>(e); }
 
+  template<size_t M, class E>
+  auto vertices(domain_entity<M, E>& e) { return mesh_.vertices(e); } 
+
   /*!
     FIXME
    */
   template <class E> auto edges(E *e) { return mesh_.edges<0>(e); }
 
+  template<size_t M, class E>
+  auto edges(domain_entity<M, E>& e) { return mesh_.edges(e); } 
+
   /*!
     FIXME
    */
   template <class E> auto cells(E *e) { return mesh_.cells<0>(e); }
+
+  template<size_t M, class E>
+  auto cells(domain_entity<M, E>& e) { return mesh_.cells(e); } 
 
   /*!
     FIXME
@@ -363,7 +372,8 @@ public:
     // for each cell in the primal mesh
     for (auto c : mesh_.cells<0>()) {
       // vertices for cell c
-      auto vs = mesh_.vertices<0>(c).toVec();
+
+      auto vs = mesh_.vertices(c).toVec();
 
       // retrieve points for each of the primal vertices
       auto v0p = vs[0]->coordinates();
