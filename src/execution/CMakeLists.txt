@@ -14,8 +14,10 @@ set(execution_HEADERS
 #)
 
 cinch_add_unit(task
-  SOURCES test/task.cc
-)
+  SOURCES test/task.cc)
+
+cinch_add_unit(legion
+  SOURCES test/legion.cc)
 
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.

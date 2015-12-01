@@ -14,13 +14,11 @@
 
 #include <cinchtest.h>
 
+#include "flexi/execution/legion_execution_policy.h"
 #include "flexi/execution/task.h"
 
-using return_type_t = flexi::execution_t<>::return_type_t;
-using execution_t = flexi::execution_t<>;
-
-#define execute(task, ...) \
-  execution_t::execute_task(task, ##__VA_ARGS__)
+using execution_t = flexi::execution_t<flexi::legion_execution_policy_t>;
+using return_type_t = execution_t::return_type_t;
 
 return_type_t testme(const char * token) {
   std::cout << "Hello World: " << token << std::endl;
@@ -31,6 +29,9 @@ return_type_t myvoid() {
   std::cout << "Hello World: " << std::endl;
   return 0;
 }
+
+#define execute(task, ...) \
+  execution_t::execute_task(task, ##__VA_ARGS__)
 
 TEST(task, execute) {
   execute(testme, "shit");
