@@ -1398,7 +1398,7 @@ public:
 
   size_t topological_dimension() const override { return MT::dimension; }
 
-  template <class T, size_t M, class... S> T *make(S &&... args) {
+  template <class T, class... S> T *make(S &&... args) {
     T *entity = new T(std::forward<S>(args)...);
 
     return entity;

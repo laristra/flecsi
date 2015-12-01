@@ -288,7 +288,7 @@ public:
     auto p = access_state_<point_t>("coordinates");
     p[mesh_.num_vertices()] = pos;
 
-    auto v = mesh_.make<vertex_t, 0>(pos, &state_);
+    auto v = mesh_.make<vertex_t>(pos, &state_);
     mesh_.add_vertex<0>(v);
     return v;
   }
@@ -300,7 +300,7 @@ public:
    */
   cell_t * create_cell(std::initializer_list<vertex_t *> verts) {
     // FIXME: Add element types
-    cell_t * c = mesh_.make<quadrilateral_cell_t, 0>();
+    cell_t * c = mesh_.make<quadrilateral_cell_t>();
     mesh_.add_cell<0>(c);
 
     mesh_.init_cell<0>(c, verts);
@@ -395,100 +395,100 @@ public:
       auto e3p = flexi::midpoint(v0p, v3p);
 
       // create the dual mesh vertices using the point_ts
-      auto v0 = mesh_.make<vertex_t, 1>(v0p, &state_);
+      auto v0 = mesh_.make<vertex_t>(v0p, &state_);
       mesh_.add_vertex<1>(v0);
       v0->set_rank<1>(1);
 
-      auto v1 = mesh_.make<vertex_t, 1>(v1p, &state_);
+      auto v1 = mesh_.make<vertex_t>(v1p, &state_);
       mesh_.add_vertex<1>(v1);
       v1->set_rank<1>(1);
 
-      auto v2 = mesh_.make<vertex_t, 1>(v2p, &state_);
+      auto v2 = mesh_.make<vertex_t>(v2p, &state_);
       mesh_.add_vertex<1>(v2);
       v2->set_rank<1>(1);
 
-      auto v3 = mesh_.make<vertex_t, 1>(v3p, &state_);
+      auto v3 = mesh_.make<vertex_t>(v3p, &state_);
       mesh_.add_vertex<1>(v3);
       v3->set_rank<1>(1);
 
-      auto cv = mesh_.make<vertex_t, 1>(cvp, &state_);
+      auto cv = mesh_.make<vertex_t>(cvp, &state_);
       mesh_.add_vertex<1>(cv);
       cv->set_rank<1>(0);
 
-      auto e0 = mesh_.make<vertex_t, 1>(e0p, &state_);
+      auto e0 = mesh_.make<vertex_t>(e0p, &state_);
       mesh_.add_vertex<1>(e0);
       e0->set_rank<1>(1);
 
-      auto e1 = mesh_.make<vertex_t, 1>(e1p, &state_);
+      auto e1 = mesh_.make<vertex_t>(e1p, &state_);
       mesh_.add_vertex<1>(e1);
       e1->set_rank<1>(1);
 
-      auto e2 = mesh_.make<vertex_t, 1>(e2p, &state_);
+      auto e2 = mesh_.make<vertex_t>(e2p, &state_);
       mesh_.add_vertex<1>(e2);
       e2->set_rank<1>(1);
 
-      auto e3 = mesh_.make<vertex_t, 1>(e3p, &state_);
+      auto e3 = mesh_.make<vertex_t>(e3p, &state_);
       mesh_.add_vertex<1>(e3);
       e3->set_rank<1>(1);
 
       // make wedges using the vertices
-      auto w0 = mesh_.make<wedge_t, 1>();
+      auto w0 = mesh_.make<wedge_t>();
       mesh_.add_cell<1>(w0);
       mesh_.init_cell<1>(w0, {cv, v0, e3});
       c->add_wedge(w0);
 
-      auto w1 = mesh_.make<wedge_t, 1>();
+      auto w1 = mesh_.make<wedge_t>();
       mesh_.add_cell<1>(w1);
       mesh_.init_cell<1>(w1, {cv, v0, e0});
       c->add_wedge(w0);
 
-      auto w2 = mesh_.make<wedge_t, 1>();
+      auto w2 = mesh_.make<wedge_t>();
       mesh_.add_cell<1>(w2);
       mesh_.init_cell<1>(w2, {cv, v1, e0});
       c->add_wedge(w2);
 
-      auto w3 = mesh_.make<wedge_t, 1>();
+      auto w3 = mesh_.make<wedge_t>();
       mesh_.add_cell<1>(w3);
       mesh_.init_cell<1>(w3, {cv, v1, e1});
       c->add_wedge(w3);
 
-      auto w4 = mesh_.make<wedge_t, 1>();
+      auto w4 = mesh_.make<wedge_t>();
       mesh_.add_cell<1>(w4);
       mesh_.init_cell<1>(w4, {cv, v2, e1});
       c->add_wedge(w4);
 
-      auto w5 = mesh_.make<wedge_t, 1>();
+      auto w5 = mesh_.make<wedge_t>();
       mesh_.add_cell<1>(w5);
       mesh_.init_cell<1>(w5, {cv, v2, e2});
       c->add_wedge(w5);
 
-      auto w6 = mesh_.make<wedge_t, 1>();
+      auto w6 = mesh_.make<wedge_t>();
       mesh_.add_cell<1>(w6);
       mesh_.init_cell<1>(w6, {cv, v3, e2});
       c->add_wedge(w6);
 
-      auto w7 = mesh_.make<wedge_t, 1>();
+      auto w7 = mesh_.make<wedge_t>();
       mesh_.add_cell<1>(w7);
       mesh_.init_cell<1>(w7, {cv, v3, e3});
       c->add_wedge(w7);
 
       // make corners using the wedges
-      auto c0 = mesh_.make<corner_t, 1>();
+      auto c0 = mesh_.make<corner_t>();
       c0->add_wedge(w0);
       c0->add_wedge(w1);
       c->add_corner(c0);
 
-      auto c1 = mesh_.make<corner_t, 1>();
+      auto c1 = mesh_.make<corner_t>();
       c1->add_wedge(w2);
       c1->add_wedge(w3);
       c->add_corner(c1);
 
-      auto c2 = mesh_.make<corner_t, 1>();
+      auto c2 = mesh_.make<corner_t>();
       c2->add_wedge(w4);
       c2->add_wedge(w5);
       c->add_corner(c2);
 
-      auto c3 = mesh_.make<corner_t, 1>();
+      auto c3 = mesh_.make<corner_t>();
       c3->add_wedge(w6);
       c3->add_wedge(w7);
       c->add_corner(c3);
