@@ -175,7 +175,7 @@ protected:
 
   template<size_t M>
   void set_info(uint16_t info){
-    ids_[M] = uint64_t(info) << 48;
+    ids_[M] = (uint64_t(info) << 48) | ids_[M];
   }
 
 private:
