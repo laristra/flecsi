@@ -700,12 +700,12 @@ public:
       return *this;
     }
 
-    const entity_type *operator*() const {
-      return mesh_.get_entity<D>((*entities_)[index_]); 
+    domain_entity<M, entity_type> operator*() {
+      return mesh_.get_entity<D, M>((*entities_)[index_]); 
     }
 
     const entity_type *operator->() const {
-      return mesh_.get_entity<D>((*entities_)[index_]); 
+      return mesh_.get_entity<D, M>((*entities_)[index_]); 
     }
 
     bool operator==(const const_iterator &itr) const { 
