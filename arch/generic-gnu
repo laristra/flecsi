@@ -7,7 +7,7 @@
 # Get the path to the project from which this script was called
 #------------------------------------------------------------------------------#
 
-cinch_dir="$(dirname "$(dirname "$(readlink -f $0)")")"
+cinch_dir="$(dirname "$(cd "$(dirname "$0")"; pwd)")"
 
 #------------------------------------------------------------------------------#
 # Check required environment variables
