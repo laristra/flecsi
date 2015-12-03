@@ -66,6 +66,8 @@ protected:
     // reserve storage for the mesh
     mesh_.init_parameters((height+1)*(width+1));
 
+    auto max_rank = (height+1)*(width+1) - 1;
+
     // create the individual vertices
     vector<vertex_t*> vs;
     
@@ -73,7 +75,7 @@ protected:
       for(size_t i = 0; i < width + 1; ++i){
 	auto v =
 	  mesh_.create_vertex({double(i)+ 0.1*pow(double(j),1.8), 1.5*double(j)});
-	v->set_rank(1);
+        v->set_rank<0>(max_rank - (i + (j * width + 1)));
 	vs.push_back(v);
       }
 
@@ -118,15 +120,15 @@ protected:
     vector<index_t> cells_per_part( nparts_, 0 );
 
     for ( auto c : mesh_.cells() ) {
-      CINCH_CAPTURE() << "----   cell: " << std::setw(4) << c->id() 
-                      << ", partition: " << std::setw(2) << cell_part[ c->id() ] 
+      CINCH_CAPTURE() << "----   cell: " << std::setw(4) << c.id() 
+                      << ", partition: " << std::setw(2) << cell_part[ c.id() ] 
                       << endl;
       for ( auto v : mesh_.vertices(c) ) {
-        CINCH_CAPTURE() << "++++ vertex: " << std::setw(4) << v->id() 
-                        << ", partition: " << std::setw(2) << vert_part[ v->id() ] 
+        CINCH_CAPTURE() << "++++ vertex: " << std::setw(4) << v.id() 
+                        << ", partition: " << std::setw(2) << vert_part[ v.id() ] 
                         << endl;
       }
-      cells_per_part[ cell_part[ c->id() ] ] ++;
+      cells_per_part[ cell_part[ c.id() ] ] ++;
       CINCH_CAPTURE() << endl;
     }
     
@@ -135,7 +137,7 @@ protected:
     vector<index_t> verts_per_part( nparts_, 0 );
     
     for ( auto v : mesh_.vertices() )
-      verts_per_part[ vert_part[ v->id() ] ] ++;
+      verts_per_part[ vert_part[ v.id() ] ] ++;
     
     // print partition info
     for ( index_t i=0; i<nparts_; i++ ) {
@@ -166,9 +168,9 @@ protected:
         // 2d specific, only add the non-c cell
         auto neigh =  mesh_.cells(e).toVec();
         if ( neigh[1] == c ) 
-          cell_neigh.push_back( neigh[0]->id() );
+          cell_neigh.push_back( neigh[0].id() );
         else if ( neigh[0] == c )
-          cell_neigh.push_back( neigh[1]->id() );
+          cell_neigh.push_back( neigh[1].id() );
         else
           FAIL();
       }
@@ -178,14 +180,14 @@ protected:
     index_t neigh_cnt( 0 );
 
     for ( auto c : mesh_.cells() ) {
-      cout << c->id();
+      cout << c.id();
       for ( auto neigh : mesh_.cells(c) ) {
-        cout << " " << neigh->id();
-        cell_neigh.push_back( neigh->id() );
+        cout << " " << neigh.id();
+        cell_neigh.push_back( neigh.id() );
         neigh_cnt++;
       }
       cout << endl;
-      cell_idx[ c->id() + 1 ] = neigh_cnt;
+      cell_idx[ c.id() + 1 ] = neigh_cnt;
     }
     
 #endif
@@ -203,10 +205,10 @@ protected:
 
     for ( auto v : mesh_.vertices() ) {
       auto cells = mesh_.cells(v);
-      index_t owner_id( cells.begin()->id() );
+      index_t owner_id( cells.begin().id() );
       for ( auto c : cells ) 
-        owner_id = std::min( (index_t)c->id(), owner_id );
-      vert_part[ v->id() ] = cell_part[ owner_id ];
+        owner_id = std::min( (index_t)c.id(), owner_id );
+      vert_part[ v.id() ] = cell_part[ owner_id ];
     }
 
   }
@@ -266,9 +268,9 @@ TEST_F(partition, metis_mesh) {
   eptr[0] = 0;
   for ( auto c : mesh_.cells() ) {
     for ( auto v : mesh_.vertices(c) ) {
-      eind[ vert_cnt++ ] = v->id();
+      eind[ vert_cnt++ ] = v.id();
     }
-    eptr[ c->id() + 1 ] = vert_cnt;
+    eptr[ c.id() + 1 ] = vert_cnt;
   }
 
   //---------------------------------------------------------------------------
