@@ -120,14 +120,14 @@ public:
     e[0] = v[0];
     e[1] = v[1];
 
-    e[2] = v[2];
-    e[3] = v[3];
+    e[2] = v[1];
+    e[3] = v[2];
 
-    e[4] = v[0];
+    e[4] = v[2];
     e[5] = v[3];
 
-    e[6] = v[1];
-    e[7] = v[2];
+    e[6] = v[3];
+    e[7] = v[0];
 
     return {4, 2};
   } // createEntities
@@ -157,19 +157,23 @@ public:
   std::pair<size_t, size_t> create_entities(size_t dim,
     std::vector<id_t> &e, id_t * v, size_t vertex_count) {
     
+    for(auto i(0); i<vertex_count; ++i) {
+      std::cout << "VERTEX: " << v[i] << std::endl;
+    } // for
+
     e.resize(8);
 
     e[0] = v[0];
     e[1] = v[1];
 
-    e[2] = v[2];
-    e[3] = v[3];
+    e[2] = v[1];
+    e[3] = v[2];
 
-    e[4] = v[0];
+    e[4] = v[2];
     e[5] = v[3];
 
-    e[6] = v[1];
-    e[7] = v[2];
+    e[6] = v[3];
+    e[7] = v[0];
 
     return {4, 2};
   } // createEntities

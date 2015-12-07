@@ -65,11 +65,11 @@ struct find_entity_ {
   using type = typename std::tuple_element<1, pair_>::type;
 };
 
-template<size_t DM, size_t I>
+template<size_t DM, size_t I, class TS>
 struct compute_connectivity_ {
-  template<class M, class... TS>
-  static int compute(M& mesh, std::tuple<TS...> t) {
-    using T = typename std::tuple_element<I - 1, decltype(t)>::type;
+  template<class M>
+  static int compute(M& mesh) {
+    using T = typename std::tuple_element<I - 1, TS>::type;
     using D1 = typename std::tuple_element<0, T>::type;
     using T1 = typename std::tuple_element<1, T>::type;
     using T2 = typename std::tuple_element<2, T>::type;
@@ -77,14 +77,14 @@ struct compute_connectivity_ {
     if (D1::domain == DM) {
       mesh.template compute<DM>(T1::dimension, T2::dimension);
     }
-    return compute_connectivity_<DM, I - 1>::compute(mesh, t);
+    return compute_connectivity_<DM, I - 1, TS>::compute(mesh);
   }
 };
 
-template<size_t DM>
-struct compute_connectivity_<DM, 0> {
-  template<class M, class... TS>
-  static int compute(M&, std::tuple<TS...>){
+template<size_t DM, class TS>
+struct compute_connectivity_<DM, 0, TS> {
+  template<class M>
+  static int compute(M&) {
     return 0;
   }
 };
@@ -1175,10 +1175,12 @@ public:
         }
       }
 
+#if 0
       std::sort(sort_ids.begin(), sort_ids.end(),
         [](auto& v1, auto& v2) -> bool {
           return v1.first > v2.first;
         });
+#endif
 
       uint64_t cell_precedence = 0;
       for(size_t i = 0; i < entities_per_cell; ++i){
@@ -1302,7 +1304,7 @@ public:
 
   template<size_t M>
   void compute(size_t from_dim, size_t to_dim){
-    // std::cerr << "compute: " << fromDim << " -> " << toDim << std::endl;
+    //std::cerr << "compute: " << from_dim << " -> " << to_dim << std::endl;
 
     connectivity &out_conn = get_connectivity_(M, from_dim, to_dim);
 
@@ -1344,7 +1346,7 @@ public:
   void init(){
     using TP = typename MT::connectivities;
 
-    compute_connectivity_<M, std::tuple_size<TP>::value>::compute(*this, TP());
+    compute_connectivity_<M, std::tuple_size<TP>::value, TP>::compute(*this);
   } // init
 
   template<size_t M=0>
