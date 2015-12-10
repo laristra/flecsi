@@ -166,7 +166,7 @@ protected:
     for ( auto c : mesh_.cells() ) 
       for ( auto e : mesh_.edges(c) ) {
         // 2d specific, only add the non-c cell
-        auto neigh =  mesh_.cells(e).toVec();
+        auto neigh =  mesh_.cells(e).to_vec();
         if ( neigh[1] == c ) 
           cell_neigh.push_back( neigh[0].id() );
         else if ( neigh[0] == c )

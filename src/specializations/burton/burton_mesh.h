@@ -284,6 +284,7 @@ public:
 
     \param pos The position (coordinates) for the vertex.
    */
+  // FIXME: Complete changes to state storage
   vertex_t *create_vertex(const point_t &pos) {
     auto p = access_state_<point_t>("coordinates");
     p[mesh_.num_vertices()] = pos;
@@ -305,7 +306,18 @@ public:
 
     mesh_.init_cell<0>(c, verts);
     return c;
-  }
+  } // create_cell
+
+  /*!
+    Create a wedge in the mesh.
+
+    \param verts The vertices defining the wedge.
+   */
+  wedge_t * create_wedge(std::initializer_list<vertex_t *> vertices) {
+    wedge_t * w = mesh_.make<wedge_t>();
+    mesh_.add_cell<1>(w);
+    mesh_.init_cell<1>(w, vertices);
+  } // create_wedge
 
   /*!
     FIXME
@@ -321,7 +333,7 @@ public:
   void init_parameters(size_t vertices) {
 
     // register coordinate state
-    state_.register_state<point_t>("coordinates", vertices,
+    state_.register_state<point_t,0>("coordinates", vertices,
       attachment_site_t::vertices, persistent);
 
   } // init_parameters
@@ -370,129 +382,90 @@ public:
   void init() {
     mesh_.init<0>();
 
-    // for each cell in the primal mesh
-    for (auto c : mesh_.cells<0>()) {
-      // vertices for cell c
+    std::vector<vertex_t *> dual_vertices;
 
-      auto vs = mesh_.vertices(c).toVec();
+    size_t poff(0);
+    // add primal vertices to dual mesh
+    for(auto v: mesh_.vertices<0>()) {
+      mesh_.add_vertex<1>(v.entity());
+      dual_vertices.push_back(v.entity());
+      ++poff;
+    } // for
+
+    // create zone center vertices for dual mesh
+    size_t coff(0);
+    for(auto c: mesh_.cells<0>()) {
+      auto vertices = mesh_.vertices(c).to_vec();
 
       // retrieve points for each of the primal vertices
-      auto v0p = vs[0]->coordinates();
-      auto v1p = vs[1]->coordinates();
-      auto v2p = vs[2]->coordinates();
-      auto v3p = vs[3]->coordinates();
+      const auto v0p = vertices[0]->coordinates();
+      const auto v1p = vertices[1]->coordinates();
+      const auto v2p = vertices[2]->coordinates();
+      const auto v3p = vertices[3]->coordinates();
 
       // compute the center vertex
-      auto cvp = flexi::centroid( {v0p, v1p, v2p, v3p } );
+      const auto centroid = flexi::centroid({v0p, v1p, v2p, v3p});
 
-      // compute the edge points as midpoints of the primal vertices
-      // FIXME? flexi:: namespace required so compiler doesn't only look
-      // local to this class for midpoint definition. The midpoint defined
-      // in this class takes an edge_t.
-      auto e0p = flexi::midpoint(v1p, v0p);
-      auto e1p = flexi::midpoint(v2p, v1p);
-      auto e2p = flexi::midpoint(v3p, v2p);
-      auto e3p = flexi::midpoint(v0p, v3p);
+      // create the actual dual-mesh vertex
+      auto vertex = mesh_.make<vertex_t>(centroid, &state_);
+      mesh_.add_vertex<1>(vertex);
+      // FIXME: Don't need this
+      vertex->set_rank<1>(1);
+      dual_vertices.push_back(vertex);
+      ++coff;
+    } // for
 
-      // create the dual mesh vertices using the point_ts
-      auto v0 = mesh_.make<vertex_t>(v0p, &state_);
-      mesh_.add_vertex<1>(v0);
-      v0->set_rank<1>(1);
+    // create edge center vertices for dual mesh
+    for(auto e: mesh_.edges<0>()) {
+      auto vertices = mesh_.vertices(e).to_vec();
 
-      auto v1 = mesh_.make<vertex_t>(v1p, &state_);
-      mesh_.add_vertex<1>(v1);
-      v1->set_rank<1>(1);
+      // retrieve points of edge
+      auto v0p = vertices[0]->coordinates();
+      auto v1p = vertices[1]->coordinates();
 
-      auto v2 = mesh_.make<vertex_t>(v2p, &state_);
-      mesh_.add_vertex<1>(v2);
-      v2->set_rank<1>(1);
+      // compute the midpoint vertex
+      auto midpoint = flexi::midpoint(v0p, v1p);
 
-      auto v3 = mesh_.make<vertex_t>(v3p, &state_);
-      mesh_.add_vertex<1>(v3);
-      v3->set_rank<1>(1);
+      // create the actual dual-mesh vertex
+      auto vertex = mesh_.make<vertex_t>(midpoint, &state_);
+      mesh_.add_vertex<1>(vertex);
+      // FIXME: Don't need this
+      vertex->set_rank<1>(2);
+      dual_vertices.push_back(vertex);
+    } // for
 
-      auto cv = mesh_.make<vertex_t>(cvp, &state_);
-      mesh_.add_vertex<1>(cv);
-      cv->set_rank<1>(0);
+    // create wedges and corners
+//    auto vertices = mesh_.vertices<1>().to_vec();
+    for(auto c: mesh_.cells<0>()) {
 
-      auto e0 = mesh_.make<vertex_t>(e0p, &state_);
-      mesh_.add_vertex<1>(e0);
-      e0->set_rank<1>(1);
+      auto edges = mesh_.edges(c).to_vec();
+      size_t cnt(edges.size());
+      size_t tail(cnt-1);
+      size_t head(0);
 
-      auto e1 = mesh_.make<vertex_t>(e1p, &state_);
-      mesh_.add_vertex<1>(e1);
-      e1->set_rank<1>(1);
+      for(auto v: mesh_.vertices(c)) {
+        auto p = dual_vertices[v.id()];
+        auto z = dual_vertices[poff + c.id()];
+        auto etail = dual_vertices[poff + coff + tail];
+        auto ehead = dual_vertices[poff + coff + head];
 
-      auto e2 = mesh_.make<vertex_t>(e2p, &state_);
-      mesh_.add_vertex<1>(e2);
-      e2->set_rank<1>(1);
+        // make tail wedge
+        wedge_t * w = mesh_.make<wedge_t>();
+        mesh_.add_cell<1>(w);
+        mesh_.init_cell<1>(w, {p, z, etail});
 
-      auto e3 = mesh_.make<vertex_t>(e3p, &state_);
-      mesh_.add_vertex<1>(e3);
-      e3->set_rank<1>(1);
+        // make head wedge
+        w = mesh_.make<wedge_t>();
+        mesh_.add_cell<1>(w);
+        mesh_.init_cell<1>(w, {p, z, ehead});
 
-      // make wedges using the vertices
-      auto w0 = mesh_.make<wedge_t>();
-      mesh_.add_cell<1>(w0);
-      mesh_.init_cell<1>(w0, {cv, v0, e3});
-      c->add_wedge(w0);
+        // add corner
 
-      auto w1 = mesh_.make<wedge_t>();
-      mesh_.add_cell<1>(w1);
-      mesh_.init_cell<1>(w1, {cv, v0, e0});
-      c->add_wedge(w0);
-
-      auto w2 = mesh_.make<wedge_t>();
-      mesh_.add_cell<1>(w2);
-      mesh_.init_cell<1>(w2, {cv, v1, e0});
-      c->add_wedge(w2);
-
-      auto w3 = mesh_.make<wedge_t>();
-      mesh_.add_cell<1>(w3);
-      mesh_.init_cell<1>(w3, {cv, v1, e1});
-      c->add_wedge(w3);
-
-      auto w4 = mesh_.make<wedge_t>();
-      mesh_.add_cell<1>(w4);
-      mesh_.init_cell<1>(w4, {cv, v2, e1});
-      c->add_wedge(w4);
-
-      auto w5 = mesh_.make<wedge_t>();
-      mesh_.add_cell<1>(w5);
-      mesh_.init_cell<1>(w5, {cv, v2, e2});
-      c->add_wedge(w5);
-
-      auto w6 = mesh_.make<wedge_t>();
-      mesh_.add_cell<1>(w6);
-      mesh_.init_cell<1>(w6, {cv, v3, e2});
-      c->add_wedge(w6);
-
-      auto w7 = mesh_.make<wedge_t>();
-      mesh_.add_cell<1>(w7);
-      mesh_.init_cell<1>(w7, {cv, v3, e3});
-      c->add_wedge(w7);
-
-      // make corners using the wedges
-      auto c0 = mesh_.make<corner_t>();
-      c0->add_wedge(w0);
-      c0->add_wedge(w1);
-      c->add_corner(c0);
-
-      auto c1 = mesh_.make<corner_t>();
-      c1->add_wedge(w2);
-      c1->add_wedge(w3);
-      c->add_corner(c1);
-
-      auto c2 = mesh_.make<corner_t>();
-      c2->add_wedge(w4);
-      c2->add_wedge(w5);
-      c->add_corner(c2);
-
-      auto c3 = mesh_.make<corner_t>();
-      c3->add_wedge(w6);
-      c3->add_wedge(w7);
-      c->add_corner(c3);
-    }
+        // advance indices
+        tail = (tail+1)%cnt;
+        ++head;
+      } // for
+    } // for
 
     mesh_.init<1>();
   }
@@ -521,7 +494,7 @@ public:
     \return a point_t that is the midpoint.
   */
   point_t midpoint(const edge_t *e) const {
-    auto vs = mesh_.vertices<0>(e).toVec();
+    auto vs = mesh_.vertices<0>(e).to_vec();
     return point_t(flexi::midpoint(vs[0]->coordinates(),vs[1]->coordinates()));
   }
 
