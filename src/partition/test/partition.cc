@@ -205,7 +205,7 @@ protected:
 
     for ( auto v : mesh_.vertices() ) {
       auto cells = mesh_.cells(v);
-      index_t owner_id( cells.begin().id() );
+      index_t owner_id( (*cells.begin()).id() );
       for ( auto c : cells ) 
         owner_id = std::min( (index_t)c.id(), owner_id );
       vert_part[ v.id() ] = cell_part[ owner_id ];

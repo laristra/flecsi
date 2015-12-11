@@ -225,6 +225,14 @@ public:
     return entity_->template id<M>();
   }
 
+  bool operator==(domain_entity e) const {
+    return entity_ == e.entity_;
+  }
+
+  bool operator!=(domain_entity e) const {
+    return entity_ != e.entity_;
+  }
+
 private:
   E* entity_;
 };
@@ -737,7 +745,7 @@ public:
 
     using iterator_t = iterator<D, M>;
     using entity_type = typename iterator_t::entity_type;
-    using entity_vec = std::vector<entity_type*>;
+    using domain_entity_vec = std::vector<domain_entity<M, entity_type>>;
 
     entity_range_t(mesh_topology &mesh, const id_vec &v)
       : mesh_(mesh), v_(v), begin_(0),
@@ -755,8 +763,8 @@ public:
 
     iterator_t end() const { return iterator_t(mesh_, v_, end_); }
 
-    entity_vec to_vec() const{
-      entity_vec ret;
+    domain_entity_vec to_vec() const{
+      domain_entity_vec ret;
       for(size_t i = begin_; i < end_; ++i){
         ret.push_back(mesh_.get_entity<D>(v_[i]));
       }
@@ -789,7 +797,7 @@ public:
   public:
     using const_iterator_t = const_iterator<D>;
     using entity_type = typename const_iterator_t::entity_type;
-    using entity_vec = std::vector<const entity_type*>;
+    using domain_entity_vec = std::vector<domain_entity<M, const entity_type>>;
 
     const_entity_range_t(const mesh_topology &mesh, const id_vec &v)
       : mesh_(mesh), v_(v), begin_(0),
@@ -814,8 +822,8 @@ public:
       return const_iterator_t(mesh_, v_, end_);
     }
 
-    entity_vec to_vec() const{
-      entity_vec ret;
+    domain_entity_vec to_vec() const{
+      domain_entity_vec ret;
       for(size_t i = begin_; i < end_; ++i){
         ret.push_back(mesh_.get_entity<D>(v_[i]));
       }
