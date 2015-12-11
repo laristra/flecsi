@@ -133,7 +133,7 @@ public:
   id_t id() const { return ids_[M] & 0x0000ffffffffffff; } // id
 
   template<size_t M>
-  uint16_t info() const { return (ids_[M] & 0xffff000000000000) >> 48; } // info
+  uint16_t info() const { return ids_[M] >> 48; } // info
 
   /*!
    */
@@ -787,6 +787,10 @@ public:
 
     iterator_t end() const { return iterator_t(mesh_, v_, end_); }
 
+    /*!
+      convert this range to a vector
+     */
+
     domain_entity_vec to_vec() const{
       domain_entity_vec ret;
       for(size_t i = begin_; i < end_; ++i){
@@ -845,6 +849,10 @@ public:
     const_iterator_t end() const {
       return const_iterator_t(mesh_, v_, end_);
     }
+
+    /*!
+      convert this range to a vector
+     */
 
     domain_entity_vec to_vec() const{
       domain_entity_vec ret;
@@ -1125,6 +1133,10 @@ public:
     return entities_[domain][dim].size();
   } // num_entities_
 
+  /*!
+     used internally to build edges and faces
+   */
+
   template<size_t M>
   void build(size_t dim){
     // std::cerr << "build: " << dim << std::endl;
@@ -1220,6 +1232,11 @@ public:
     entity_to_vertex.init(entity_vertex_conn);
   } // build
 
+  /*!
+     used internally to compute connectivity information for topological dimension
+       D1 -> D2 where D1 < D2
+   */
+
   template<size_t M>
   void transpose(size_t from_dim, size_t to_dim) {
     //std::cerr << "transpose: " << fromDim << " -> " << toDim << std::endl;
@@ -1247,6 +1264,11 @@ public:
       }
     }
   } // transpose
+
+  /*!
+     used internally to compute connectivity information for topological dimension
+       D1 -> D2 where D1 > D2
+   */
 
   template<size_t M>
   void intersect(size_t from_dim, size_t to_dim, size_t dim) {
@@ -1323,6 +1345,11 @@ public:
 
     out_conn.init(conns);
   } // intersect
+
+  /*!
+     used to compute connectivity information for topological dimension
+       D1 -> D2
+   */
 
   template<size_t M>
   void compute(size_t from_dim, size_t to_dim){
