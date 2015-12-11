@@ -24,6 +24,10 @@
 
 #include "flexi/utils/common.h"
 
+/*----------------------------------------------------------------------------*
+ * debug dump function
+ *----------------------------------------------------------------------------*/
+
 #define ndump(X)                                                               \
   std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__      \
             << ": " << #X << " = " << X << std::endl
@@ -33,6 +37,10 @@
             << ": " << X << std::endl
 
 namespace flexi {
+
+/*----------------------------------------------------------------------------*
+ * template helper classes
+ *----------------------------------------------------------------------------*/
 
 template<size_t I, class T, size_t D, size_t M>
 struct find_entity__ {
@@ -106,7 +114,8 @@ public:
 
 /*!
   \class mesh_entity_base_t mesh_topology.h
-  \brief mesh_entity_base_t defines a base class for...
+  \brief mesh_entity_base_t defines a base class that stores the raw info that
+    the mesh topology needs, i.e: id and rank data
  */
 
 template<size_t N>
@@ -176,7 +185,8 @@ private:
 
 /*!
   \class mesh_entity mesh_topology.h
-  \brief ...
+  \brief mesh_entity parameterizes a mesh entity base with its dimension and
+    number of domains
  */
 
 template <size_t D, size_t N> class mesh_entity : public mesh_entity_base_t<N> {
@@ -190,6 +200,12 @@ public:
 
 template<size_t N>
 using entity_vec = std::vector<mesh_entity_base_t<N> *>;
+
+/*!
+  \class domain_entity mesh_topology.h
+  \brief domain_entity is a simple wrapper to mesh entity that associates with
+    it a domain id
+ */
 
 template<size_t M, class E>
 class domain_entity{
@@ -242,8 +258,10 @@ private:
  *----------------------------------------------------------------------------*/
 
 /*!
-  \class MeshGroup mesh_topology.h
-  \brief ...
+  \class entity_group mesh_topology.h
+  \brief entity_group is an ordered collection of entities. this can be used
+    for grouping of entities where global / topology connectivity
+    is not required, e.g: "wedges of a corner" 
  */
 
 template <class T> class entity_group {
@@ -309,7 +327,8 @@ private:
 
 /*!
   \class mesh_topology_base mesh_topology.h
-  \brief...
+  \brief contains methods and data about the mesh topology that do not depend
+    on type parameterization, e.g: entity types, domains, etc.
  */
 
 class mesh_topology_base {
@@ -523,7 +542,12 @@ public:
 
 /*!
   \class mesh_topology mesh_topology.h
-  \brief ...
+  \brief mesh_topology is parameterized on a class (MT) which gives information
+    about its entity types, connectivity and more. the mesh topology is
+    responsibly for computing connectivity info between entities of different
+    topological dimension, e.g: vertex -> cell, cell -> edge, etc. and
+    provides methods for traversing these adjancies. it also holds vectors
+    containing the entity instances.
  */
 
 template <class MT> class mesh_topology : public mesh_topology_base {
@@ -737,7 +761,7 @@ public:
 
   /*!
     \class entity_range_t mesh_topology.h
-    \brief ...
+    \brief used to enable range-based for iteration
    */
 
   template <size_t D, size_t M=0> class entity_range_t {
@@ -790,7 +814,7 @@ public:
 
   /*!
     \class const_entity_range_t mesh_topology.h
-    \brief ...
+    \brief used to enable range-based for iteration on a const mesh
    */
 
   template <size_t D, size_t M=0> class const_entity_range_t {
