@@ -196,6 +196,12 @@ public:
   mesh_entity() {}
 
   virtual ~mesh_entity() {}
+
+  template<size_t M>
+  id_t global_id() const {
+    return (id_t(D) << 62) | (id_t(M) << 60) | 
+      mesh_entity_base_t<N>::template id<M>();
+  }
 }; // class mesh_entity
 
 template<size_t N>
