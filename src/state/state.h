@@ -35,8 +35,14 @@ namespace flexi {
  */
 enum class state_name_space_t : size_t {
   user = 0,
-  flexi = std::numeric_limits<size_t>::max()
+  internal = 1
 }; // enum class state_name_space_t
+
+const size_t flexi_user_space =
+  static_cast<size_t>(state_name_space_t::user);
+
+const size_t flexi_internal =
+  static_cast<size_t>(state_name_space_t::internal);
 
 /*!
   \brief state_attribute_t defines different state attributes.
@@ -55,7 +61,6 @@ enum class state_attribute_t : bitfield_t::field_type_t {
  */
 const bitfield_t::field_type_t persistent =
   static_cast<bitfield_t::field_type_t>(flexi::state_attribute_t::persistent);
-
 
 /*!
   \brief This exposes the temporary attribute so that it can be used
@@ -147,7 +152,7 @@ public:
    */
 
   template<typename T,
-    size_t NS = static_cast<size_t>(state_name_space_t::user),
+    size_t NS = flexi_user_space,
     typename ... Args>
   decltype(auto) register_state(const const_string_t & key, size_t indices,
     Args && ... args) {
@@ -174,7 +179,7 @@ public:
    */
 
   template<typename T,
-    size_t NS = static_cast<size_t>(state_name_space_t::user)>
+    size_t NS = flexi_user_space>
   accessor_t<T> accessor(const const_string_t & key) {
     return sp_t::template accessor<T,NS>(key);
   } // accessor
@@ -191,7 +196,7 @@ public:
    */
 
   template<typename T,
-    size_t NS = static_cast<size_t>(state_name_space_t::user)>
+    size_t NS = flexi_user_space>
   std::vector<accessor_t<T>> accessors() {
     return sp_t::template accessors<T,NS>();
   } // accessors
@@ -218,7 +223,7 @@ public:
 
   template<typename T,
     typename P,
-    size_t NS = static_cast<size_t>(state_name_space_t::user)>
+    size_t NS = flexi_user_space>
   std::vector<accessor_t<T>> accessors(P && predicate) {
     return sp_t::template accessors<T,NS,P>(std::forward<P>(predicate));
   } // accessors
@@ -233,7 +238,7 @@ public:
       match the namespace criteria.
    */
 
-  template<size_t NS = static_cast<size_t>(state_name_space_t::user)>
+  template<size_t NS = flexi_user_space>
   std::vector<accessor_t<uint8_t>> raw_accessors() {
     return sp_t::template raw_accessors<NS>();
   } // raw_accessors
@@ -257,7 +262,7 @@ public:
    */
 
   template<typename P,
-    size_t NS = static_cast<size_t>(state_name_space_t::user)>
+    size_t NS = flexi_user_space>
   std::vector<accessor_t<uint8_t>> raw_accessors(P && predicate) {
     return sp_t::template raw_accessors<NS>(std::forward<P>(predicate));
   } // raw_accessors
@@ -272,7 +277,7 @@ public:
     \return The meta data corresponding to the key and namespace.
    */
 
-  template<size_t NS = static_cast<size_t>(state_name_space_t::user)>
+  template<size_t NS = flexi_user_space>
   user_meta_data_t & meta_data(const const_string_t & key) {
     return sp_t::template meta_data<NS>(key);
   } // user_meta_data
@@ -294,7 +299,7 @@ public:
    */
 
   template<typename T,
-    size_t NS = static_cast<size_t>(state_name_space_t::user)>
+    size_t NS = flexi_user_space>
   std::shared_ptr<T> & data(const const_string_t & key) {
     return sp_t::template data<T,NS>(key);
   } // data

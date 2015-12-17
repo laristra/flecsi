@@ -21,42 +21,42 @@ namespace flexi {
  *----------------------------------------------------------------------------*/
 
 template<size_t N>
-class burton_vertex_t : public mesh_entity<0, N>
+class burton_vertex_t : public mesh_entity_t<0, N>
 {
 public:
 
   using point_t = burton_mesh_traits_t::point_t;
   using state_t = burton_mesh_traits_t::mesh_state_t;
+  static constexpr size_t num_domains = burton_mesh_traits_t::num_domains;
 
   //! Constructor
-  burton_vertex_t() : precedence_(0) {}
-
-  //! Constructor
-  burton_vertex_t(const point_t & coordinates, state_t * state)
-      : precedence_(0), coordinates_(coordinates), state_(state) {}
+  burton_vertex_t(state_t & state)
+      : precedence_(0), state_(state) {}
 
   template<size_t M>
   void set_rank(uint8_t rank) {
-    mesh_entity<0, N>::template set_info<M>(rank);
+    mesh_entity_t<0, N>::template set_info<M>(rank);
   }
 
   template<size_t M>
   uint64_t precedence() const {
-    return 1 << (63 - mesh_entity<0, N>::template info<M>());
+    return 1 << (63 - mesh_entity_t<0, N>::template info<M>());
   } // precedence
 
   void set_coordinates(const point_t &coordinates) {
-    auto c = state_->accessor<point_t>("coordinates");
-    coordinates_ = coordinates;
-  }
+    auto c = state_.accessor<point_t,flexi_internal>("coordinates");
+    c[mesh_entity_base_t<num_domains>::id<0>()] = coordinates;
+  } // set_coordinates
 
-  const point_t &coordinates() const { return coordinates_; }
+  const point_t & coordinates() const {
+    auto c = state_.accessor<point_t,flexi_internal>("coordinates");
+    return c[mesh_entity_base_t<num_domains>::id<0>()];
+  } // coordinates
 
 private:
 
   uint64_t precedence_;
-  point_t coordinates_;
-  state_t * state_;
+  state_t & state_;
 
 }; // class burton_vertex_t
 
@@ -70,7 +70,7 @@ private:
           geometry and state associated with mesh edges.
  */
 template<size_t N>
-struct burton_edge_t : public mesh_entity<1, N> {}; // struct burton_edge_t
+struct burton_edge_t : public mesh_entity_t<1, N> {}; // struct burton_edge_t
 
 template<size_t N>
 class burton_corner_t;
@@ -88,7 +88,7 @@ class burton_wedge_t;
           geometry and state associated with mesh cells.
  */
 template<size_t N>
-class burton_cell_t : public mesh_entity<2, N>
+class burton_cell_t : public mesh_entity_t<2, N>
 {
 public:
 
@@ -132,7 +132,7 @@ class burton_quadrilateral_cell_t : public burton_cell_t<N>
 public:
 
   std::pair<size_t, size_t> create_entities(size_t dim,
-    std::vector<id_t> &e, id_t * v, size_t vertex_count) {
+    std::vector<id_t> & e, id_t * v, size_t vertex_count) {
     
     e.resize(8);
 
@@ -163,7 +163,7 @@ public:
           geometry and state associated with mesh wedges.
  */
 template<size_t N>
-class burton_wedge_t : public mesh_entity<2, N> {
+class burton_wedge_t : public mesh_entity_t<2, N> {
 public:
 
   using vector_t = burton_mesh_traits_t::vector_t;
@@ -210,7 +210,7 @@ private:
  */
 
 template<size_t N>
-class burton_corner_t : public mesh_entity<0, N> {
+class burton_corner_t : public mesh_entity_t<0, N> {
 public:
   void add_wedge(burton_wedge_t<N> *w) {
     wedges_.add(w);

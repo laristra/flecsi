@@ -7,23 +7,23 @@
 using namespace std;
 using namespace flexi;
 
-class Vertex : public mesh_entity<0, 1>{
+class Vertex : public mesh_entity_t<0, 1>{
 public:
   template<size_t M>
   uint64_t precedence() const { return 0; }
 };
 
-class Edge : public mesh_entity<1, 1>{
+class Edge : public mesh_entity_t<1, 1>{
 public:
 
 };
 
-class Face : public mesh_entity<1, 1>{
+class Face : public mesh_entity_t<1, 1>{
 public:
 
 };
 
-class Cell : public mesh_entity<2, 1>{
+class Cell : public mesh_entity_t<2, 1>{
 public:
   void set_precedence(size_t dim, uint64_t precedence) {}
 

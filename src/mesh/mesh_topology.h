@@ -116,11 +116,15 @@ public:
   \class mesh_entity_base_t mesh_topology.h
   \brief mesh_entity_base_t defines a base class that stores the raw info that
     the mesh topology needs, i.e: id and rank data
+
+  \tparam N The number of mesh domains.
  */
 
 template<size_t N>
-class mesh_entity_base_t {
+class mesh_entity_base_t
+{
 public:
+
   virtual ~mesh_entity_base_t() {}
 
   /*!
@@ -130,7 +134,9 @@ public:
    */
 
   template<size_t M>
-  id_t id() const { return ids_[M] & 0x0000ffffffffffff; } // id
+  id_t id() const {
+    return ids_[M] & 0x0000ffffffffffff;
+  } // id
 
   template<size_t M>
   uint16_t info() const { return ids_[M] >> 48; } // info
@@ -171,32 +177,38 @@ public:
 protected:
 
   template<size_t M>
-  void set_info(uint16_t info){
+  void set_info(uint16_t info) {
     ids_[M] = (uint64_t(info) << 48) | ids_[M];
-  }
+  } // set_info
 
 private:
+
   std::array<uint64_t, N> ids_;
+
 }; // class mesh_entity_base_t
 
 /*----------------------------------------------------------------------------*
- * class mesh_entity
+ * class mesh_entity_t
  *----------------------------------------------------------------------------*/
 
 /*!
-  \class mesh_entity mesh_topology.h
-  \brief mesh_entity parameterizes a mesh entity base with its dimension and
+  \class mesh_entity_t mesh_topology.h
+  \brief mesh_entity_t parameterizes a mesh entity base with its dimension and
     number of domains
  */
 
-template <size_t D, size_t N> class mesh_entity : public mesh_entity_base_t<N> {
+template <size_t D, size_t N>
+class mesh_entity_t : public mesh_entity_base_t<N>
+{
 public:
+
   static const size_t dimension = D;
 
-  mesh_entity() {}
+  mesh_entity_t() {}
 
-  virtual ~mesh_entity() {}
-}; // class mesh_entity
+  virtual ~mesh_entity_t() {}
+
+}; // class mesh_entity_t
 
 template<size_t N>
 using entity_vec = std::vector<mesh_entity_base_t<N> *>;
@@ -233,11 +245,11 @@ public:
     return entity_; 
   }
 
-  operator id_t(){
+  operator id_t() {
     return entity_->template id<M>();
   }
 
-  id_t id(){
+  id_t id() {
     return entity_->template id<M>();
   }
 

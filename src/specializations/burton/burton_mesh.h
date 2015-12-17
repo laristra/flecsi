@@ -109,17 +109,17 @@ public:
   /*!
     FIXME
    */
-  template<typename T>
+  template<typename T, size_t NS = flexi_user_space>
   decltype(auto) access_state_(const const_string_t && key) {
-    return state_.accessor<T>(key);
+    return state_.accessor<T,NS>(key);
   } // access_state_
 
   /*!
     FIXME
    */
-  template<typename T>
+  template<typename T, size_t NS = flexi_user_space>
   decltype(auto) access_type_() {
-    return state_.accessors<T>();
+    return state_.accessors<T,NS>();
   } // access_type_
 
   /*!
@@ -285,11 +285,11 @@ public:
     \param pos The position (coordinates) for the vertex.
    */
   // FIXME: Complete changes to state storage
-  vertex_t *create_vertex(const point_t &pos) {
-    auto p = access_state_<point_t>("coordinates");
+  vertex_t * create_vertex(const point_t &pos) {
+    auto p = access_state_<point_t,flexi_internal>("coordinates");
     p[mesh_.num_vertices()] = pos;
 
-    auto v = mesh_.make<vertex_t>(pos, &state_);
+    auto v = mesh_.make<vertex_t>(state_);
     mesh_.add_vertex<0>(v);
     return v;
   }
@@ -333,7 +333,7 @@ public:
   void init_parameters(size_t vertices) {
 
     // register coordinate state
-    state_.register_state<point_t,0>("coordinates", vertices,
+    state_.register_state<point_t,flexi_internal>("coordinates", vertices,
       attachment_site_t::vertices, persistent);
 
   } // init_parameters
@@ -382,6 +382,7 @@ public:
   void init() {
     mesh_.init<0>();
 
+#if 0
     std::vector<vertex_t *> dual_vertices;
 
     size_t poff(0);
@@ -468,7 +469,8 @@ public:
     } // for
 
     mesh_.init<1>();
-  }
+#endif
+  } // init
 
   /*!
     Get the centroid of a cell.
