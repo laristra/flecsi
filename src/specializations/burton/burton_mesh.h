@@ -238,31 +238,31 @@ public:
   /*!
     FIXME
    */
-  auto vertices(wedge_t *w) { return mesh_.vertices<1>(w); }
+  auto vertices(wedge_t *w) { return mesh_.vertices<1, 0>(w); }
 
   /*!
     FIXME
    */
-  template <class E> auto vertices(E *e) { return mesh_.vertices<0>(e); }
+  template <class E> auto vertices(E *e) { return mesh_.vertices<0, 0>(e); }
 
   template<size_t M, class E>
-  auto vertices(domain_entity<M, E>& e) { return mesh_.vertices(e); } 
+  auto vertices(domain_entity<M, E>& e) { return mesh_.vertices<M, 0>(e); } 
 
   /*!
     FIXME
    */
-  template <class E> auto edges(E *e) { return mesh_.edges<0>(e); }
+  template <class E> auto edges(E *e) { return mesh_.edges<0, 0>(e); }
 
   template<size_t M, class E>
-  auto edges(domain_entity<M, E>& e) { return mesh_.edges(e); } 
+  auto edges(domain_entity<M, E>& e) { return mesh_.edges<M, 0>(e); } 
 
   /*!
     FIXME
    */
-  template <class E> auto cells(E *e) { return mesh_.cells<0>(e); }
+  template <class E> auto cells(E *e) { return mesh_.cells<0, 0>(e); }
 
   template<size_t M, class E>
-  auto cells(domain_entity<M, E>& e) { return mesh_.cells(e); } 
+  auto cells(domain_entity<M, E>& e) { return mesh_.cells<M, 0>(e); } 
 
   /*!
     FIXME
@@ -380,6 +380,7 @@ public:
     \endverbatim
    */
   void init() {
+    /*
     mesh_.init<0>();
 
     std::vector<vertex_t *> dual_vertices;
@@ -468,6 +469,7 @@ public:
     } // for
 
     mesh_.init<1>();
+    */
   }
 
   /*!
@@ -483,7 +485,7 @@ public:
   point_t centroid(cell_t *c) {
     // the first vertex of every wedge is the centroid
     auto w0 = *c->wedges().begin();
-    auto cp = *mesh_.vertices<1>(w0).begin();
+    auto cp = *mesh_.vertices<1, 0>(w0).begin();
     return cp->coordinates();
   }
 
@@ -494,7 +496,7 @@ public:
     \return a point_t that is the midpoint.
   */
   point_t midpoint(const edge_t *e) const {
-    auto vs = mesh_.vertices<0>(e).to_vec();
+    auto vs = mesh_.vertices<0, 0>(e).to_vec();
     return point_t(flexi::midpoint(vs[0]->coordinates(),vs[1]->coordinates()));
   }
 
