@@ -1511,7 +1511,7 @@ public:
     return id_range(id_vecs_[M][0]);
   } // vertex_ids
 
-  template <size_t D, size_t M, size_t B, class E> const_entity_range_t<D, M>
+  template <size_t D, size_t M, size_t B=0, class E> const_entity_range_t<D, M>
   entities(const E *e) const {
     const connectivity &c = get_connectivity(M, B, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
@@ -1520,7 +1520,7 @@ public:
       fv[e->template id<M>()], fv[e->template id<M>() + 1]);
   } // entities
 
-  template <size_t D, size_t M, size_t B, class E>
+  template <size_t D, size_t M, size_t B=0, class E>
   entity_range_t<D, M> entities(E *e) {
     const connectivity &c = get_connectivity(M, B, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
@@ -1529,50 +1529,50 @@ public:
       fv[e->template id<M>()], fv[e->template id<M>() + 1]);
   } // entities
 
-  template <size_t M, size_t B, class E> decltype(auto) vertices(const E *e) const {
+  template <size_t M, size_t B=0, class E> decltype(auto) vertices(const E *e) const {
     return entities<0, B, M>(e);
   }
 
-  template <size_t M, size_t B, class E> decltype(auto) vertices(E *e) {
+  template <size_t M, size_t B=0, class E> decltype(auto) vertices(E *e) {
     return entities<0, B, M>(e);
   }
 
-  template<size_t M, size_t B, class E>
+  template<size_t M, size_t B=0, class E>
   decltype(auto) vertices(domain_entity<M, E>& e) const {
     return entities<0, B, M>(e.entity());
   }
 
-  template<size_t M, size_t B,class E>
+  template<size_t M, size_t B=0, class E>
   decltype(auto) vertices(domain_entity<M, E>& e){
     return entities<0, B, M>(e.entity());
   }
 
-  template<size_t M, size_t B, class E>
+  template<size_t M, size_t B=0, class E>
   decltype(auto) edges(domain_entity<M, E>& e) const {
     return entities<1, B, M>(e.entity());
   }
 
-  template<size_t M, size_t B, class E>
+  template<size_t M, size_t B=0, class E>
   decltype(auto) edges(domain_entity<M, E>& e){
     return entities<1, B, M>(e.entity());
   }
 
-  template<size_t M, size_t B, class E>
+  template<size_t M, size_t B=0, class E>
   decltype(auto) faces(domain_entity<M, E>& e) const {
     return entities<MT::dimension - 1, B, M>(e.entity());
   }
 
-  template<size_t M, size_t B, class E>
+  template<size_t M, size_t B=0, class E>
   decltype(auto) faces(domain_entity<M, E>& e){
     return entities<MT::dimension - 1, B, M>(e.entity());
   }
 
-  template<size_t M, size_t B, class E>
+  template<size_t M, size_t B=0, class E>
   decltype(auto) cells(domain_entity<M, E>& e) const {
     return entities<MT::dimension, B, M>(e.entity());
   }
 
-  template<size_t M, size_t B, class E>
+  template<size_t M, size_t B=0, class E>
   decltype(auto) cells(domain_entity<M, E>& e){
     return entities<MT::dimension, B, M>(e.entity());
   }
@@ -1607,7 +1607,7 @@ public:
     return id_range(id_vecs_[M][1]);
   } // edges
 
-  template <size_t M, size_t B, class E> entity_range_t<1> edges(E *e) const {
+  template <size_t M, size_t B=0, class E> entity_range_t<1> edges(E *e) const {
     return entities<1, B, M>(e);
   } // edges
 
@@ -1621,7 +1621,7 @@ public:
     return entities<MT::dimension - 1, M>(e);
   } // faces
 
-  template <size_t M, size_t B, class E>
+  template <size_t M, size_t B=0, class E>
   decltype(auto) faces(const E *e) const {
     return entities<MT::dimension - 1, B, M>(e);
   }
@@ -1638,7 +1638,7 @@ public:
     return id_range(id_vecs_[M][MT::dimension - 1]);
   } // face_ids
 
-  template <size_t M, size_t B, class E>
+  template <size_t M, size_t B=0, class E>
   const_entity_range_t<MT::dimension - 1> faces(E *e) const {
     return entities<MT::dimension - 1, B, M>(e);
   } // faces
@@ -1648,7 +1648,7 @@ public:
     return entity_range_t<MT::dimension>(*this, id_vecs_[M][MT::dimension]);
   } // cells
 
-  template <size_t M, size_t B, class E> entity_range_t<MT::dimension, M> cells(E *e) {
+  template <size_t M, size_t B=0, class E> entity_range_t<MT::dimension, M> cells(E *e) {
     return entities<MT::dimension, B, M>(e);
   } // cells
 
@@ -1663,7 +1663,7 @@ public:
     return id_range(id_vecs_[M][MT::dimension]);
   } // cell_ids
 
-  template <size_t M, size_t B, class E>
+  template <size_t M, size_t B=0, class E>
   const_entity_range_t<MT::dimension> cells(E *e) const {
     return entities<MT::dimension, B, M>(e);
   } // cells
