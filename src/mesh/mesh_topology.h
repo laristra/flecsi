@@ -138,6 +138,11 @@ public:
     return ids_[M] & 0x0000ffffffffffff;
   } // id
 
+  template<size_t D, size_t M>
+  id_t global_id() const {
+    return (id_t(D) << 62) | (id_t(M) << 60) | id<M>();
+  }
+
   template<size_t M>
   uint16_t info() const { return ids_[M] >> 48; } // info
 
@@ -208,6 +213,10 @@ public:
 
   virtual ~mesh_entity_t() {}
 
+  template<size_t M>
+  id_t global_id() const {
+    return mesh_entity_base_t<N>::template global_id<D, M>();
+  }
 }; // class mesh_entity_t
 
 template<size_t N>
