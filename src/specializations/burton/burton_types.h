@@ -45,6 +45,7 @@ struct burton_mesh_types_t {
 
   static constexpr size_t dimension = burton_mesh_traits_t::dimension;
   static constexpr size_t num_domains = burton_mesh_traits_t::num_domains;
+  static constexpr size_t num_bindings = burton_mesh_traits_t::num_bindings;
 
   /*--------------------------------------------------------------------------*
    * Define basic types.

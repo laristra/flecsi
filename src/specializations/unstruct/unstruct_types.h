@@ -300,6 +300,8 @@ struct unstruct_mesh_types_t {
   //! \brief there is no special attachment sites
   static constexpr size_t num_domains = 1;
 
+  static constexpr size_t num_bindings = 1;
+
   //---------------------------------------------------------------------------
   //! \class unstruct_vertex_t
   //! \brief The vertex_t type provides an interface for managing and

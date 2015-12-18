@@ -246,7 +246,7 @@ public:
   template <class E> auto vertices(E *e) { return mesh_.vertices<0>(e); }
 
   template<size_t M, class E>
-  auto vertices(domain_entity<M, E>& e) { return mesh_.vertices(e); } 
+  auto vertices(domain_entity<M, E>& e) { return mesh_.vertices<M>(e); } 
 
   /*!
     FIXME
@@ -254,7 +254,7 @@ public:
   template <class E> auto edges(E *e) { return mesh_.edges<0>(e); }
 
   template<size_t M, class E>
-  auto edges(domain_entity<M, E>& e) { return mesh_.edges(e); } 
+  auto edges(domain_entity<M, E>& e) { return mesh_.edges<M>(e); } 
 
   /*!
     FIXME
@@ -262,7 +262,7 @@ public:
   template <class E> auto cells(E *e) { return mesh_.cells<0>(e); }
 
   template<size_t M, class E>
-  auto cells(domain_entity<M, E>& e) { return mesh_.cells(e); } 
+  auto cells(domain_entity<M, E>& e) { return mesh_.cells<M>(e); } 
 
   /*!
     FIXME
@@ -380,6 +380,7 @@ public:
     \endverbatim
    */
   void init() {
+    /*
     mesh_.init<0>();
 
 #if 0
@@ -470,6 +471,7 @@ public:
 
     mesh_.init<1>();
 #endif
+    */
   } // init
 
   /*!

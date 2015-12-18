@@ -43,6 +43,8 @@ struct burton_mesh_traits_t {
   //! Set the number of mesh domains
   static constexpr size_t num_domains = 2;
 
+  static constexpr size_t num_bindings = 1;
+
   //! Set the type for floating-point values
   using real_t = double;
 
