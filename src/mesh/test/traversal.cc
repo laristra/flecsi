@@ -55,8 +55,6 @@ public:
 
   static constexpr size_t num_domains = 1;
 
-  static constexpr size_t num_bindings = 1;
-
   using Float = double;
 
   using entity_types = std::tuple<
