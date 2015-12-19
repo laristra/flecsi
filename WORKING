@@ -1,0 +1,18 @@
+#------------------------------------------------------------------------------#
+# Working issues
+#------------------------------------------------------------------------------#
+
+'mesh/mesh_topology.h' (create_ method):
+	We will need to handle creation of mixed-type sub-entities, e.g.,
+	triangular vs. quadrilateral faces in 3D.  This is currently not
+	handled correctly in the mesh topology.
+
+'specializations/burton/burton_mesh.h'
+	Mesh access of state model needs to be improved/clarified as per dual mesh
+	coordinates and state.
+
+'state/state.h'
+	Add support for state collections.
+
+'utils'
+	Add Marc's static C++ utilities.
