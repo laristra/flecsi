@@ -153,7 +153,8 @@ public:
     return {4, 2};
   } // createEntities
 
-  void create_bound_entities(void * mesh, size_t domain, size_t dimension,
+  void create_bound_entities(mesh_topology_base * mesh,
+    size_t domain, size_t dimension,
     std::vector<mesh_entity_base_t<N> *> & entities) override {
   } // create_bound_entities
 
