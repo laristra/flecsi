@@ -1446,18 +1446,22 @@ public:
   void compute_bindings() {
     using ent_vec = entity_vec<MT::num_domains>;
 
-    ent_vec& from_ents = entities_[M][FD];
-    ent_vec& bound_ents = bound_entities_[M][TD];
-    connectivity& create_conn = bindings_[M][FD][TD];
+    ent_vec &from_ents = entities_[M][FD];
+    ent_vec &bound_ents = bound_entities_[M][TD];
+    id_vec &bound_ids = bound_id_vecs_[M][TD];
+    connectivity &create_conn = bindings_[M][FD][TD];
 
-    for(auto from_ent : from_ents){
+    for(auto from_ent : from_ents) {
       ent_vec create_ents;
       from_ent->create_bound_entities(this, M, TD, create_ents);
 
-      for(auto created_ent : create_ents){
+      for(auto created_ent : create_ents) {
+        id_t id = created_ent->template id<M>();
+        create_conn.push(id);
+        bound_ids.push_back(id);
         bound_ents.push_back(created_ent);
-        create_conn.push(created_ent->template id<M>());
       }
+      
       create_conn.end_from();
     }
   }
@@ -1754,6 +1758,7 @@ private:
   std::array<topology_t, MT::num_domains> topology_;
   std::array<topology_t, MT::num_domains> bindings_;
   std::array<id_vecs_t, MT::num_domains> id_vecs_;
+  std::array<id_vecs_t, MT::num_domains> bound_id_vecs_;
 
 }; // class mesh_topology
 
