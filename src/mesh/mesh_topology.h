@@ -97,6 +97,30 @@ struct compute_connectivity_<DM, 0, TS> {
   }
 };
 
+template<size_t DM, size_t I, class TS>
+struct compute_bindings_ {
+  template<class M>
+  static int compute(M& mesh) {
+    using T = typename std::tuple_element<I - 1, TS>::type;
+    using D1 = typename std::tuple_element<0, T>::type;
+    using T1 = typename std::tuple_element<1, T>::type;
+    using T2 = typename std::tuple_element<2, T>::type;
+
+    if (D1::domain == DM) {
+      mesh.template compute_bindings<DM, T1::dimension, T2::dimension>();
+    }
+    return compute_bindings_<DM, I - 1, TS>::compute(mesh);
+  }
+};
+
+template<size_t DM, class TS>
+struct compute_bindings_<DM, 0, TS> {
+  template<class M>
+  static int compute(M&) {
+    return 0;
+  }
+};
+
 /*----------------------------------------------------------------------------*
  * class mesh_entity_base_t
  *----------------------------------------------------------------------------*/
@@ -178,6 +202,9 @@ public:
   }
 
   template <class MT> friend class mesh_topology;
+
+  virtual void create_bound_entities(void* mesh,
+    std::vector<mesh_entity_base_t<N> *>& ents) {}
 
 protected:
 
@@ -1412,11 +1439,27 @@ public:
     }
   } // compute
 
+  template<size_t M, size_t FD, size_t TD>
+  void compute_bindings() {
+    using from_type = typename find_entity_<MT, FD, M>::type;
+    using to_type = typename find_entity_<MT, TD, M>::type;
+
+    auto& es = entities_[M][FD];
+    for(auto e : es){
+      entity_vec<MT::num_domains> ents;
+      e->create_bound_entities(this, ents);
+    }
+  }
+
   template<size_t M>
   void init(){
     using TP = typename MT::connectivities;
 
     compute_connectivity_<M, std::tuple_size<TP>::value, TP>::compute(*this);
+
+    using BT = typename MT::bindings;
+
+    compute_bindings_<M, std::tuple_size<BT>::value, BT>::compute(*this);
   } // init
 
   template<size_t M=0>
@@ -1696,7 +1739,9 @@ private:
   using id_vecs_t = std::array<id_vec, MT::dimension + 1>;
 
   std::array<entities_t, MT::num_domains> entities_;
+  std::array<entities_t, MT::num_domains> bound_entities_;
   std::array<topology_t, MT::num_domains> topology_;
+  std::array<topology_t, MT::num_domains> bindings_;
   std::array<id_vecs_t, MT::num_domains> id_vecs_;
 
 }; // class mesh_topology

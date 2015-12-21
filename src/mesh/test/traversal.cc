@@ -69,6 +69,8 @@ public:
                std::tuple<domain_<0>, Edge, Cell>,
                std::tuple<domain_<0>, Cell, Vertex>,
                std::tuple<domain_<0>, Cell, Edge>>;
+
+  using bindings = std::tuple<>;
 };
 
 using TestMesh = mesh_topology<TestMesh2dType>;

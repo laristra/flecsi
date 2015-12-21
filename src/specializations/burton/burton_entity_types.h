@@ -45,12 +45,12 @@ public:
 
   void set_coordinates(const point_t &coordinates) {
     auto c = state_.accessor<point_t,flexi_internal>("coordinates");
-    c[mesh_entity_base_t<num_domains>::id<0>()] = coordinates;
+    c[mesh_entity_base_t<num_domains>::template id<0>()] = coordinates;
   } // set_coordinates
 
   const point_t & coordinates() const {
     auto c = state_.accessor<point_t,flexi_internal>("coordinates");
-    return c[mesh_entity_base_t<num_domains>::id<0>()];
+    return c[mesh_entity_base_t<num_domains>::template id<0>()];
   } // coordinates
 
 private:
