@@ -585,6 +585,13 @@ public:
                                          size_t fromDim,
                                          size_t toDim) = 0;
 
+  virtual const connectivity &get_binding(
+      size_t domain, size_t fromDim, size_t toDim) const = 0;
+
+  virtual connectivity &get_binding(size_t domain,
+                                    size_t fromDim,
+                                    size_t toDim) = 0;
+
 }; // mesh_topology_base
 
 /*----------------------------------------------------------------------------*
@@ -1448,7 +1455,6 @@ public:
 
     ent_vec &from_ents = entities_[M][FD];
     ent_vec &bound_ents = bound_entities_[M][TD];
-    id_vec &bound_ids = bound_id_vecs_[M][TD];
     connectivity &create_conn = bindings_[M][FD][TD];
 
     for(auto from_ent : from_ents) {
@@ -1458,7 +1464,6 @@ public:
       for(auto created_ent : create_ents) {
         id_t id = created_ent->template id<M>();
         create_conn.push(id);
-        bound_ids.push_back(id);
         bound_ents.push_back(created_ent);
       }
       
@@ -1526,6 +1531,35 @@ public:
     return t[to_dim];
   } // get_connectivity
 
+  const connectivity &get_binding(size_t domain,
+      size_t from_dim, size_t to_dim) const override {
+    return get_binding_(domain, from_dim, to_dim);
+  } // get_binding
+
+  connectivity &get_binding(size_t domain,
+                            size_t from_dim,
+                            size_t to_dim) override {
+    return get_binding_(domain, from_dim, to_dim);
+  } // get_binding
+
+  const connectivity &get_binding_(size_t domain,
+                                   size_t from_dim,
+                                   size_t to_dim) const {
+    assert(from_dim < bindings_[domain].size() && "invalid fromDim");
+    auto &b = bindings_[domain][from_dim];
+    assert(to_dim < b.size() && "invalid toDim");
+    return b[to_dim];
+  } // get_binding
+
+  connectivity &get_binding_(size_t domain,
+                             size_t from_dim,
+                             size_t to_dim) {
+    assert(from_dim < bindings_[domain].size() && "invalid fromDim");
+    auto &b = bindings_[domain][from_dim];
+    assert(to_dim < b.size() && "invalid toDim");
+    return b[to_dim];
+  } // get_binding
+
   size_t topological_dimension() const override { return MT::dimension; }
 
   template <class T, class... S> T *make(S &&... args) {
@@ -1592,6 +1626,24 @@ public:
     return entity_range_t<D, M>(*this, c.get_entities(),
       fv[e->template id<M>()], fv[e->template id<M>() + 1]);
   } // entities
+
+  template <size_t D, size_t M, class E> const_entity_range_t<D, M>
+  bound_entities(const E *e) const {
+    const connectivity &c = get_binding(M, E::dimension, D);
+    assert(!c.empty() && "empty binding");
+    const id_vec &fv = c.get_from_index_vec();
+    return const_entity_range_t<D, M>(*this, c.get_entities(),
+      fv[e->template id<M>()], fv[e->template id<M>() + 1]);
+  } // bound_entities
+
+  template <size_t D, size_t M, class E> entity_range_t<D, M>
+  bound_entities(E *e) {
+    const connectivity &c = get_binding(M, E::dimension, D);
+    assert(!c.empty() && "empty binding");
+    const id_vec &fv = c.get_from_index_vec();
+    return entity_range_t<D, M>(*this, c.get_entities(),
+      fv[e->template id<M>()], fv[e->template id<M>() + 1]);
+  } // bound_entities
 
   template <size_t M, class E> decltype(auto) vertices(const E *e) const {
     return entities<0, M>(e);
@@ -1758,7 +1810,6 @@ private:
   std::array<topology_t, MT::num_domains> topology_;
   std::array<topology_t, MT::num_domains> bindings_;
   std::array<id_vecs_t, MT::num_domains> id_vecs_;
-  std::array<id_vecs_t, MT::num_domains> bound_id_vecs_;
 
 }; // class mesh_topology
 
