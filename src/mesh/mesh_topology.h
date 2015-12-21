@@ -131,6 +131,8 @@ struct compute_bindings_<DM, 0, TS> {
   \brief domain_ allows a domain id to be typeified...
  */
 
+class mesh_topology_base;
+
 template<size_t M>
 class domain_ {
 public:
@@ -205,7 +207,7 @@ public:
   template <class MT> friend class mesh_topology;
 
   virtual void
-  create_bound_entities(void* mesh,
+  create_bound_entities(mesh_topology_base* mesh,
                         size_t domain,
                         size_t dim,
                         std::vector<mesh_entity_base_t<N> *>& ents) {}
