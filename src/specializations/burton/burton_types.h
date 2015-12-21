@@ -92,7 +92,7 @@ struct burton_mesh_types_t {
 
   using bindings = 
     std::tuple<
-      std::tuple<domain_<0>, cell_t, vertex_t>
+      std::tuple<domain_<0>, cell_t, domain_<1>, vertex_t>
     >;
 
 }; // struct burton_mesh_types_t
