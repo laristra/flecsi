@@ -20,8 +20,8 @@
 #endif
 
 
-#include "../../io/io_exodus.h"
-#include "burton.h"
+#include "flexi/io/io_exodus.h"
+#include "flexi/specializations/burton/burton.h"
 
 /*!
  * \file io_exodus.h

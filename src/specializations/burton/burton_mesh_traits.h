@@ -15,10 +15,10 @@
 #ifndef flexi_burton_mesh_traits_h
 #define flexi_burton_mesh_traits_h
 
-#include "../../utils/bitfield.h"
-#include "../../state/state.h"
-#include "../../geometry/point.h"
-#include "../../geometry/space_vector.h"
+#include "flexi/utils/bitfield.h"
+#include "flexi/state/state.h"
+#include "flexi/geometry/point.h"
+#include "flexi/geometry/space_vector.h"
 
 /*!
  * \file burton_mesh_traits.h

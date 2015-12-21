@@ -204,7 +204,7 @@ public:
   template <class MT> friend class mesh_topology;
 
   virtual void
-  create_bound_entities(void* mesh,
+  create_bound_entities(void * mesh,
                         size_t domain,
                         size_t dim,
                         std::vector<mesh_entity_base_t<N> *>& ents) {}

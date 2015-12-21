@@ -131,6 +131,8 @@ class burton_quadrilateral_cell_t : public burton_cell_t<N>
 {
 public:
 
+  /*!
+   */
   std::pair<size_t, size_t> create_entities(size_t dim,
     std::vector<id_t> & e, id_t * v, size_t vertex_count) {
     
@@ -150,6 +152,10 @@ public:
 
     return {4, 2};
   } // createEntities
+
+  void create_bound_entities(void * mesh, size_t domain, size_t dimension,
+    std::vector<mesh_entity_base_t<N> *> & entities) override {
+  } // create_bound_entities
 
 }; // class burton_quadrilateral_cell_t
 

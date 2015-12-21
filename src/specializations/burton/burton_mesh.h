@@ -17,9 +17,9 @@
 
 #include <string>
 
-#include "../../state/state.h"
-#include "../../execution/task.h"
-#include "burton_types.h"
+#include "flexi/state/state.h"
+#include "flexi/execution/task.h"
+#include "flexi/specializations/burton/burton_types.h"
 
 /*!
  * \file burton_mesh.h

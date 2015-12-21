@@ -12,11 +12,11 @@
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
 
+#include <vector>
 #include <cinchtest.h>
 
-#include "../burton.h"
+#include "flexi/specializations/burton/burton.h"
 
-#include <vector>
 
 using namespace std;
 using namespace flexi;

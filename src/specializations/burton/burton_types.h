@@ -15,9 +15,9 @@
 #ifndef flexi_burton_types_h
 #define flexi_burton_types_h
 
-#include "../../mesh/mesh_topology.h"
-#include "burton_mesh_traits.h"
-#include "burton_entity_types.h"
+#include "flexi/mesh/mesh_topology.h"
+#include "flexi/specializations/burton/burton_mesh_traits.h"
+#include "flexi/specializations/burton/burton_entity_types.h"
 
 /*!
  * \file burton_types.h

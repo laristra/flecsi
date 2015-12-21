@@ -14,9 +14,9 @@
 
 #include <cinchtest.h>
 
-#include "../burton.h"
-#include "../../../io/io.h"
-#include "../burton_io_exodus.h"
+#include "flexi/specializations/burton/burton.h"
+#include "flexi/io/io.h"
+#include "flexi/specializations/burton/burton_io_exodus.h"
 
 #include <vector>
 
