@@ -1456,6 +1456,7 @@ public:
 
     ent_vec &from_ents = entities_[FM][FD];
     ent_vec &bound_ents = entities_[TM][TD];
+    id_vec &bound_ids = id_vecs_[TM][TD];
     connectivity &create_conn = bindings_[FM][FD][TD];
 
     for(auto from_ent : from_ents) {
@@ -1463,9 +1464,10 @@ public:
       from_ent->create_bound_entities(this, FM, TD, create_ents);
 
       for(auto created_ent : create_ents) {
-        id_t id = created_ent->template id<FM>();
+        id_t id = created_ent->template id<TM>();
         create_conn.push(id);
         bound_ents.push_back(created_ent);
+        bound_ids.push_back(id);
       }
       
       create_conn.end_from();
@@ -1628,21 +1630,21 @@ public:
       fv[e->template id<M>()], fv[e->template id<M>() + 1]);
   } // entities
 
-  template <size_t D, size_t FM, size_t TM, class E>
-  const_entity_range_t<D, TM> bound_entities(const E *e) const {
-    const connectivity &c = get_binding(FM, E::dimension, D);
+  template <size_t TD, size_t FM, size_t TM, class E>
+  const_entity_range_t<TD, TM> bound_entities(const E *e) const {
+    const connectivity &c = get_binding(FM, E::dimension, TD);
     assert(!c.empty() && "empty binding");
     const id_vec &fv = c.get_from_index_vec();
-    return const_entity_range_t<D, TM>(*this, c.get_entities(),
+    return const_entity_range_t<TD, TM>(*this, c.get_entities(),
       fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
   } // bound_entities
 
-  template <size_t D, size_t FM, size_t TM, class E>
-  entity_range_t<D, TM> bound_entities(E *e) {
-    const connectivity &c = get_binding(FM, E::dimension, D);
+  template <size_t TD, size_t FM, size_t TM, class E>
+  entity_range_t<TD, TM> bound_entities(E *e) {
+    const connectivity &c = get_binding(FM, E::dimension, TD);
     assert(!c.empty() && "empty binding");
     const id_vec &fv = c.get_from_index_vec();
-    return entity_range_t<D, TM>(*this, c.get_entities(),
+    return entity_range_t<TD, TM>(*this, c.get_entities(),
       fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
   } // bound_entities
 
