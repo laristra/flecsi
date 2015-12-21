@@ -203,8 +203,11 @@ public:
 
   template <class MT> friend class mesh_topology;
 
-  virtual void create_bound_entities(void* mesh,
-    std::vector<mesh_entity_base_t<N> *>& ents) {}
+  virtual void
+  create_bound_entities(void* mesh,
+                        size_t domain,
+                        size_t dim,
+                        std::vector<mesh_entity_base_t<N> *>& ents) {}
 
 protected:
 
@@ -1441,13 +1444,21 @@ public:
 
   template<size_t M, size_t FD, size_t TD>
   void compute_bindings() {
-    using from_type = typename find_entity_<MT, FD, M>::type;
-    using to_type = typename find_entity_<MT, TD, M>::type;
+    using ent_vec = entity_vec<MT::num_domains>;
 
-    auto& es = entities_[M][FD];
-    for(auto e : es){
-      entity_vec<MT::num_domains> ents;
-      e->create_bound_entities(this, ents);
+    ent_vec& from_ents = entities_[M][FD];
+    ent_vec& bound_ents = bound_entities_[M][TD];
+    connectivity& create_conn = bindings_[M][FD][TD];
+
+    for(auto from_ent : from_ents){
+      ent_vec create_ents;
+      from_ent->create_bound_entities(this, M, TD, create_ents);
+
+      for(auto created_ent : create_ents){
+        bound_ents.push_back(created_ent);
+        create_conn.push(created_ent->template id<M>());
+      }
+      create_conn.end_from();
     }
   }
 
