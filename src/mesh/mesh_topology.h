@@ -104,10 +104,11 @@ struct compute_bindings_ {
     using T = typename std::tuple_element<I - 1, TS>::type;
     using D1 = typename std::tuple_element<0, T>::type;
     using T1 = typename std::tuple_element<1, T>::type;
-    using T2 = typename std::tuple_element<2, T>::type;
+    using D2 = typename std::tuple_element<2, T>::type;
+    using T2 = typename std::tuple_element<3, T>::type;
 
     if (D1::domain == DM) {
-      mesh.template compute_bindings<DM, T1::dimension, T2::dimension>();
+      mesh.template compute_bindings<DM, T1::dimension, D2::domain, T2::dimension>();
     }
     return compute_bindings_<DM, I - 1, TS>::compute(mesh);
   }
@@ -1449,20 +1450,20 @@ public:
     }
   } // compute
 
-  template<size_t M, size_t FD, size_t TD>
+  template<size_t FM, size_t FD, size_t TM, size_t TD>
   void compute_bindings() {
     using ent_vec = entity_vec<MT::num_domains>;
 
-    ent_vec &from_ents = entities_[M][FD];
-    ent_vec &bound_ents = bound_entities_[M][TD];
-    connectivity &create_conn = bindings_[M][FD][TD];
+    ent_vec &from_ents = entities_[FM][FD];
+    ent_vec &bound_ents = entities_[TM][TD];
+    connectivity &create_conn = bindings_[FM][FD][TD];
 
     for(auto from_ent : from_ents) {
       ent_vec create_ents;
-      from_ent->create_bound_entities(this, M, TD, create_ents);
+      from_ent->create_bound_entities(this, FM, TD, create_ents);
 
       for(auto created_ent : create_ents) {
-        id_t id = created_ent->template id<M>();
+        id_t id = created_ent->template id<FM>();
         create_conn.push(id);
         bound_ents.push_back(created_ent);
       }
@@ -1627,22 +1628,22 @@ public:
       fv[e->template id<M>()], fv[e->template id<M>() + 1]);
   } // entities
 
-  template <size_t D, size_t M, class E> const_entity_range_t<D, M>
-  bound_entities(const E *e) const {
-    const connectivity &c = get_binding(M, E::dimension, D);
+  template <size_t D, size_t FM, size_t TM, class E>
+  const_entity_range_t<D, TM> bound_entities(const E *e) const {
+    const connectivity &c = get_binding(FM, E::dimension, D);
     assert(!c.empty() && "empty binding");
     const id_vec &fv = c.get_from_index_vec();
-    return const_entity_range_t<D, M>(*this, c.get_entities(),
-      fv[e->template id<M>()], fv[e->template id<M>() + 1]);
+    return const_entity_range_t<D, TM>(*this, c.get_entities(),
+      fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
   } // bound_entities
 
-  template <size_t D, size_t M, class E> entity_range_t<D, M>
-  bound_entities(E *e) {
-    const connectivity &c = get_binding(M, E::dimension, D);
+  template <size_t D, size_t FM, size_t TM, class E>
+  entity_range_t<D, TM> bound_entities(E *e) {
+    const connectivity &c = get_binding(FM, E::dimension, D);
     assert(!c.empty() && "empty binding");
     const id_vec &fv = c.get_from_index_vec();
-    return entity_range_t<D, M>(*this, c.get_entities(),
-      fv[e->template id<M>()], fv[e->template id<M>() + 1]);
+    return entity_range_t<D, TM>(*this, c.get_entities(),
+      fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
   } // bound_entities
 
   template <size_t M, class E> decltype(auto) vertices(const E *e) const {
@@ -1806,7 +1807,6 @@ private:
   using id_vecs_t = std::array<id_vec, MT::dimension + 1>;
 
   std::array<entities_t, MT::num_domains> entities_;
-  std::array<entities_t, MT::num_domains> bound_entities_;
   std::array<topology_t, MT::num_domains> topology_;
   std::array<topology_t, MT::num_domains> bindings_;
   std::array<id_vecs_t, MT::num_domains> id_vecs_;
