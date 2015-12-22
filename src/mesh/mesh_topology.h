@@ -206,12 +206,6 @@ public:
 
   template <class MT> friend class mesh_topology;
 
-  virtual void
-  create_bound_entities(mesh_topology_base * mesh,
-                        size_t domain,
-                        size_t dim,
-                        std::vector<mesh_entity_base_t<N> *>& ents) {}
-
 protected:
 
   template<size_t M>
@@ -1456,14 +1450,28 @@ public:
   void compute_bindings() {
     using ent_vec = entity_vec<MT::num_domains>;
 
-    ent_vec &from_ents = entities_[FM][FD];
     ent_vec &bound_ents = entities_[TM][TD];
     id_vec &bound_ids = id_vecs_[TM][TD];
     connectivity &create_conn = bindings_[FM][FD][TD];
 
-    for(auto from_ent : from_ents) {
+    ent_vec &from_cells = entities_[FM][MT::dimension];
+
+    for(auto from_ent : from_cells) {
+      auto from_cell = static_cast<cell_type<FM> *>(from_ent);
+
+      std::vector<id_t*> ent_ids(MT::num_domains);
+      std::vector<size_t> ent_counts(MT::num_domains);
+
+      for(size_t dim = 0; dim < MT::num_domains; ++dim){
+        connectivity &conn = topology_[FD][MT::dimension][dim];
+        size_t count;
+        ent_ids.push_back(conn.get_entities(from_cell->template id<FD>(), count));
+        ent_counts.push_back(count);
+      }
+
       ent_vec create_ents;
-      from_ent->create_bound_entities(this, FM, TD, create_ents);
+      from_cell->create_bound_entities(FM, FD, TM, TD, ent_ids,
+        ent_counts, create_ents);
 
       for(auto created_ent : create_ents) {
         id_t id = created_ent->template id<TM>();

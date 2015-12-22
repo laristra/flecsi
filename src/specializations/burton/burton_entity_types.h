@@ -110,6 +110,17 @@ public:
   virtual std::pair<size_t, size_t> create_entities(size_t dim,
     std::vector<id_t> &e, id_t * v, size_t vertex_count) = 0;
 
+  void
+  create_bound_entities(size_t from_domain,
+                        size_t from_dim,
+                        size_t to_domain,
+                        size_t to_dim,
+                        const std::vector<id_t *> ent_ids,
+                        const std::vector<size_t> ent_counts,
+                        std::vector<mesh_entity_base_t<N> *> & create_entities){
+
+  }
+
 protected:
 
   entity_group<burton_corner_t<N>> corners_;
@@ -153,10 +164,16 @@ public:
     return {4, 2};
   } // createEntities
 
-  void create_bound_entities(mesh_topology_base * mesh,
-    size_t domain, size_t dimension,
-    std::vector<mesh_entity_base_t<N> *> & entities) override {
-  } // create_bound_entities
+  void
+  create_bound_entities(size_t from_domain,
+                        size_t from_dim,
+                        size_t to_domain,
+                        size_t to_dim,
+                        const std::vector<id_t *> ent_ids,
+                        const std::vector<size_t> ent_counts,
+                        std::vector<mesh_entity_base_t<N> *> & create_entities){
+
+  }
 
 }; // class burton_quadrilateral_cell_t
 
