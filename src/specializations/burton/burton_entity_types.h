@@ -164,15 +164,69 @@ public:
     return {4, 2};
   } // createEntities
 
-  void
-  create_bound_entities(size_t from_domain,
-                        size_t from_dim,
-                        size_t to_domain,
-                        size_t to_dim,
-                        const std::vector<id_t *> ent_ids,
-                        const std::vector<size_t> ent_counts,
-                        std::vector<mesh_entity_base_t<N> *> & create_entities){
+  
+#if 0
+  std::pair<size_t, size_t> create_bound_entities(size_t dim,
+    const std::vector<id_t *> ent_ids, std::vector<id_t> & c) {
 
+    switch(dim) {
+      case 1:
+        c.resize(4);
+
+        // corner 0
+        c[0] = ent_ids[0]; // vertex 0
+
+        // corner 1
+        c[1] = ent_ids[1]; // vertex 1
+
+        // corner 2
+        c[2] = ent_ids[2]; // vertex 2
+
+        // corner 3
+        c[3] = ent_ids[3]; // vertex 3
+
+        return {4, 1};
+
+      case 2:
+        c.resize(16);
+
+        // wedge 0
+        c[0] = ent_ids[0]; // vertex 0
+        c[1] = ent_ids[7]; // edge 3
+
+        // wedge 1
+        c[2] = ent_ids[0]; // vertex 0
+        c[3] = ent_ids[4]; // edge 0
+
+        // wedge 2
+        c[4] = ent_ids[1]; // vertex 1
+        c[5] = ent_ids[4]; // edge 0
+
+        // wedge 3
+        c[6] = ent_ids[1]; // vertex 1
+        c[7] = ent_ids[5]; // edge 1
+
+        // wedge 4
+        c[8] = ent_ids[2]; // vertex 2
+        c[9] = ent_ids[5]; // edge 1
+
+        // wedge 5
+        c[10] = ent_ids[2]; // vertex 2
+        c[11] = ent_ids[6]; // edge 2
+
+        // wedge 6
+        c[12] = ent_ids[3]; // vertex 3
+        c[13] = ent_ids[6]; // edge 2
+
+        // wedge 7
+        c[14] = ent_ids[3]; // vertex 3
+        c[15] = ent_ids[7]; // edge 3
+
+        return {4, 2};
+      default:
+        assert(false && "Unknown bound entity type");
+    } // switch
+#endif
   }
 
 }; // class burton_quadrilateral_cell_t
