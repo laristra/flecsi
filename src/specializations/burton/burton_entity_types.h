@@ -110,16 +110,8 @@ public:
   virtual std::pair<size_t, size_t> create_entities(size_t dim,
     std::vector<id_t> &e, id_t * v, size_t vertex_count) = 0;
 
-  void
-  create_bound_entities(size_t from_domain,
-                        size_t from_dim,
-                        size_t to_domain,
-                        size_t to_dim,
-                        const std::vector<id_t *> ent_ids,
-                        const std::vector<size_t> ent_counts,
-                        std::vector<mesh_entity_base_t<N> *> & create_entities){
-
-  }
+  std::pair<size_t, size_t> create_bound_entities(size_t dim,
+    const std::vector<id_t> ent_ids, std::vector<id_t> & c) {}
 
 protected:
 
@@ -163,11 +155,9 @@ public:
 
     return {4, 2};
   } // createEntities
-
   
-#if 0
   std::pair<size_t, size_t> create_bound_entities(size_t dim,
-    const std::vector<id_t *> ent_ids, std::vector<id_t> & c) {
+    const std::vector<id_t> ent_ids, std::vector<id_t> & c) {
 
     switch(dim) {
       case 1:
@@ -226,7 +216,6 @@ public:
       default:
         assert(false && "Unknown bound entity type");
     } // switch
-#endif
   }
 
 }; // class burton_quadrilateral_cell_t

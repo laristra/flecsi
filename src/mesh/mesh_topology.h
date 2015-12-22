@@ -102,13 +102,11 @@ struct compute_bindings_ {
   template<class M>
   static int compute(M& mesh) {
     using T = typename std::tuple_element<I - 1, TS>::type;
-    using D1 = typename std::tuple_element<0, T>::type;
-    using T1 = typename std::tuple_element<1, T>::type;
-    using D2 = typename std::tuple_element<2, T>::type;
-    using T2 = typename std::tuple_element<3, T>::type;
+    using M1 = typename std::tuple_element<0, T>::type;
+    using M2 = typename std::tuple_element<1, T>::type;
 
-    if (D1::domain == DM) {
-      mesh.template compute_bindings<DM, T1::dimension, D2::domain, T2::dimension>();
+    if (M1::domain == DM) {
+      mesh.template compute_bindings<M1::domain, M2::domain>();
     }
     return compute_bindings_<DM, I - 1, TS>::compute(mesh);
   }
@@ -147,6 +145,16 @@ public:
   \tparam N The number of mesh domains.
  */
 
+template<size_t D, size_t M>
+id_t to_global_id(id_t local_id){
+  return (id_t(D) << 62) | (id_t(M) << 60) | local_id;
+}
+
+template<size_t M>
+id_t to_global_id(size_t dim, id_t local_id){
+  return (id_t(dim) << 62) | (id_t(M) << 60) | local_id;
+}
+
 template<size_t N>
 class mesh_entity_base_t
 {
@@ -167,7 +175,7 @@ public:
 
   template<size_t D, size_t M>
   id_t global_id() const {
-    return (id_t(D) << 62) | (id_t(M) << 60) | id<M>();
+    return to_global_id<D, M>(id<M>());
   }
 
   template<size_t M>
@@ -1446,41 +1454,56 @@ public:
     }
   } // compute
 
-  template<size_t FM, size_t FD, size_t TM, size_t TD>
+  template<size_t FM, size_t TM>
   void compute_bindings() {
     using ent_vec = entity_vec<MT::num_domains>;
-
-    ent_vec &bound_ents = entities_[TM][TD];
-    id_vec &bound_ids = id_vecs_[TM][TD];
-    connectivity &create_conn = bindings_[FM][FD][TD];
 
     ent_vec &from_cells = entities_[FM][MT::dimension];
 
     for(auto from_ent : from_cells) {
       auto from_cell = static_cast<cell_type<FM> *>(from_ent);
-
-      std::vector<id_t*> ent_ids(MT::num_domains);
-      std::vector<size_t> ent_counts(MT::num_domains);
-
-      for(size_t dim = 0; dim < MT::num_domains; ++dim){
-        connectivity &conn = topology_[FD][MT::dimension][dim];
-        size_t count;
-        ent_ids.push_back(conn.get_entities(from_cell->template id<FD>(), count));
-        ent_counts.push_back(count);
-      }
-
-      ent_vec create_ents;
-      from_cell->create_bound_entities(FM, FD, TM, TD, ent_ids,
-        ent_counts, create_ents);
-
-      for(auto created_ent : create_ents) {
-        id_t id = created_ent->template id<TM>();
-        create_conn.push(id);
-        bound_ents.push_back(created_ent);
-        bound_ids.push_back(id);
-      }
       
-      create_conn.end_from();
+      id_vec ent_ids;
+      for(size_t dim = 0; dim < MT::num_domains; ++dim) {
+        connectivity &conn = topology_[FM][MT::dimension][dim];
+        
+        size_t count;
+        id_t *ids = conn.get_entities(from_cell->template id<FM>(), count);
+        
+        for(size_t i = 0; i < count; ++i){
+          ent_ids.push_back(to_global_id<FM>(dim, ids[i]));
+        }
+      }
+
+      for(size_t dim = 0; dim < MT::num_domains; ++dim) {
+        ent_vec &bound_ents = entities_[TM][dim];
+        id_vec &bound_ids = id_vecs_[TM][dim];
+
+        id_vec created_ids;
+        auto p = from_cell->create_bound_entities(dim, ent_ids, created_ids);
+        
+        for(size_t j = 0; j < p.second; ++j){
+          connectivity &create_conn = bindings_[FM][dim][j];
+        
+          for(size_t i = 0; i < p.first; ++i){
+            mesh_entity_base_t<MT::num_domains>* ent;
+            switch(dim){
+              case 1:
+                ent = new edge_type<TM>;
+                break;
+              case MT::dimension:
+                ent = new cell_type<TM>;
+                break;
+            }
+            id_t local_id = 
+              created_ids[i * p.second + j] & 0x0000ffffffffffff;
+            
+            create_conn.push(local_id);
+            bound_ids.push_back(local_id);
+          }
+          create_conn.end_from();
+        }
+      }
     }
   }
 
