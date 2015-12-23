@@ -17,6 +17,24 @@
 namespace flexi {
 
 /*----------------------------------------------------------------------------*
+ * class domain_
+ *----------------------------------------------------------------------------*/
+
+/*!
+  \class domain_ mesh_topology.h
+  \brief domain_ allows a domain id to be typeified...
+ */
+
+template<size_t M>
+class domain_
+{
+public:
+
+  static const size_t domain = M;
+
+}; // class domain_
+
+/*----------------------------------------------------------------------------*
  * class mesh_entity_base_t
  *----------------------------------------------------------------------------*/
 
@@ -85,7 +103,7 @@ public:
     }
   }
 
-  template <class MT> friend class mesh_topology;
+  template <class MT> friend class mesh_topology_t;
 
 protected:
 
@@ -133,7 +151,7 @@ public:
   \tparam N The number of domains.
  */
 template<size_t N>
-using entity_vec = std::vector<mesh_entity_base_t<N> *>;
+using entity_vec_t = std::vector<mesh_entity_base_t<N> *>;
 
 /*----------------------------------------------------------------------------*
  * class domain_entity_t

@@ -28,34 +28,19 @@
 namespace flexi {
 
 /*----------------------------------------------------------------------------*
- * class mesh_entity_base_t
- *----------------------------------------------------------------------------*/
-
-class mesh_topology_base;
-
-/*!
-  \class domain_ mesh_topology.h
-  \brief domain_ allows a domain id to be typeified...
- */
-
-template<size_t M>
-class domain_ {
-public:
-  static const size_t domain = M;
-};
-
-/*----------------------------------------------------------------------------*
- * class mesh_topology_base
+ * class mesh_topology_base_t
  *----------------------------------------------------------------------------*/
 
 /*!
-  \class mesh_topology_base mesh_topology.h
+  \class mesh_topology_base_t mesh_topology.h
   \brief contains methods and data about the mesh topology that do not depend
     on type parameterization, e.g: entity types, domains, etc.
  */
 
-class mesh_topology_base {
+class mesh_topology_base_t
+{
 public:
+
   using id_vec = std::vector<id_t>;
 
   using conn_vec = std::vector<id_vec>;
@@ -109,7 +94,7 @@ public:
 
     template <class MT, size_t M, size_t N>
     void init_create(id_vec &iv,
-                     entity_vec<N> &ev,
+                     entity_vec_t<N> &ev,
                      const conn_vec &cv, 
                      size_t dim) {
       assert(to_id_vec_.empty() && from_index_vec_.empty());
@@ -215,7 +200,7 @@ public:
     size_t to_size() const { return to_id_vec_.size(); }
 
     template<size_t M, size_t N>
-    void set(entity_vec<N> &ev, conn_vec &conns) {
+    void set(entity_vec_t<N> &ev, conn_vec &conns) {
       clear();
 
       size_t n = conns.size();
@@ -264,23 +249,23 @@ public:
                                     size_t fromDim,
                                     size_t toDim) = 0;
 
-}; // mesh_topology_base
+}; // mesh_topology_base_t
 
 /*----------------------------------------------------------------------------*
- * class mesh_topology
+ * class mesh_topology_t
  *----------------------------------------------------------------------------*/
 
 /*!
-  \class mesh_topology mesh_topology.h
-  \brief mesh_topology is parameterized on a class (MT) which gives information
-    about its entity types, connectivity and more. the mesh topology is
-    responsibly for computing connectivity info between entities of different
-    topological dimension, e.g: vertex -> cell, cell -> edge, etc. and
-    provides methods for traversing these adjancies. it also holds vectors
-    containing the entity instances.
+  \class mesh_topology_t mesh_topology.h
+  \brief mesh_topology_t is parameterized on a class (MT) which gives
+    information about its entity types, connectivity and more. the mesh
+    topology is responsibly for computing connectivity info between entities
+    of different topological dimension, e.g: vertex -> cell,
+    cell -> edge, etc. and provides methods for traversing these adjancies.
+    It also holds vectors containing the entity instances.
  */
 
-template <class MT> class mesh_topology : public mesh_topology_base {
+template <class MT> class mesh_topology_t : public mesh_topology_base_t {
 public:
   template<size_t M>
   using vertex_type = typename find_entity_<MT, 0, M>::type;
@@ -301,7 +286,7 @@ public:
   template<size_t M>
   class index_iterator {
   public:
-    index_iterator(mesh_topology &mesh, size_t dim)
+    index_iterator(mesh_topology_t &mesh, size_t dim)
       : mesh_(mesh), entities_(&mesh.get_id_vec_(dim)), dim_(dim), index_(0),
         endIndex_(mesh.num_entities(M, dim)), level_(0) {}
 
@@ -351,7 +336,7 @@ public:
     const id_vec &get_entities_() { return *entities_; }
 
   private:
-    mesh_topology &mesh_;
+    mesh_topology_t &mesh_;
     const id_vec *entities_;
     size_t dim_;
     size_t index_;
@@ -366,7 +351,7 @@ public:
   template <size_t D, size_t M=0>
   class entity_index_iterator : public index_iterator<M> {
   public:
-    entity_index_iterator(mesh_topology &mesh) : index_iterator<M>(mesh, D) {}
+    entity_index_iterator(mesh_topology_t &mesh) : index_iterator<M>(mesh, D) {}
 
     entity_index_iterator(index_iterator<M> &itr) : index_iterator<M>(itr, D) {}
 
@@ -388,7 +373,7 @@ public:
     iterator(const iterator &itr)
       : mesh_(itr.mesh_), entities_(itr.entities_), index_(itr.index_) {}
 
-    iterator(mesh_topology &mesh, const id_vec &entities, size_t index)
+    iterator(mesh_topology_t &mesh, const id_vec &entities, size_t index)
         : mesh_(mesh), 
           entities_(&entities),
           index_(index) {}
@@ -417,7 +402,7 @@ public:
     bool operator!=(const iterator &itr) const { return index_ != itr.index_; }
 
   private:
-    mesh_topology &mesh_;
+    mesh_topology_t &mesh_;
     const id_vec *entities_;
     size_t index_;
 
@@ -434,7 +419,7 @@ public:
     const_iterator(const const_iterator &itr)
       : mesh_(itr.mesh_), entities_(itr.entities_), index_(itr.index_) {}
 
-    const_iterator(const mesh_topology &mesh,
+    const_iterator(const mesh_topology_t &mesh,
                    const id_vec &entities,
                    size_t index)
         : mesh_(mesh), 
@@ -469,7 +454,7 @@ public:
     }
 
   private:
-    const mesh_topology &mesh_;
+    const mesh_topology_t &mesh_;
     const id_vec *entities_;
     size_t index_;
 
@@ -499,13 +484,13 @@ public:
 
     using iterator_t = iterator<D, M>;
     using entity_type = typename iterator_t::entity_type;
-    using domain_entity_vec = std::vector<domain_entity<M, entity_type>>;
+    using domain_entity_vec_t = std::vector<domain_entity<M, entity_type>>;
 
-    entity_range_t(mesh_topology &mesh, const id_vec &v)
+    entity_range_t(mesh_topology_t &mesh, const id_vec &v)
       : mesh_(mesh), v_(v), begin_(0),
         end_(v_.size()) {}
 
-    entity_range_t(mesh_topology &mesh, const id_vec &v,
+    entity_range_t(mesh_topology_t &mesh, const id_vec &v,
       size_t begin, size_t end)
       : mesh_(mesh), v_(v), begin_(begin),
         end_(end) {}
@@ -521,8 +506,8 @@ public:
       convert this range to a vector
      */
 
-    domain_entity_vec to_vec() const{
-      domain_entity_vec ret;
+    domain_entity_vec_t to_vec() const{
+      domain_entity_vec_t ret;
       for(size_t i = begin_; i < end_; ++i){
         ret.push_back(mesh_.get_entity<D>(v_[i]));
       }
@@ -535,7 +520,7 @@ public:
 
   private:
 
-    mesh_topology &mesh_;
+    mesh_topology_t &mesh_;
     const id_vec &v_;
     size_t begin_;
     size_t end_;
@@ -555,13 +540,14 @@ public:
   public:
     using const_iterator_t = const_iterator<D>;
     using entity_type = typename const_iterator_t::entity_type;
-    using domain_entity_vec = std::vector<domain_entity<M, const entity_type>>;
+    using domain_entity_vec_t =
+      std::vector<domain_entity<M, const entity_type>>;
 
-    const_entity_range_t(const mesh_topology &mesh, const id_vec &v)
+    const_entity_range_t(const mesh_topology_t &mesh, const id_vec &v)
       : mesh_(mesh), v_(v), begin_(0),
         end_(v_.size()) {}
 
-    const_entity_range_t(const mesh_topology &mesh,
+    const_entity_range_t(const mesh_topology_t &mesh,
                        const id_vec &v,
                        size_t begin,
                        size_t end)
@@ -584,8 +570,8 @@ public:
       convert this range to a vector
      */
 
-    domain_entity_vec to_vec() const{
-      domain_entity_vec ret;
+    domain_entity_vec_t to_vec() const{
+      domain_entity_vec_t ret;
       for(size_t i = begin_; i < end_; ++i){
         ret.push_back(mesh_.get_entity<D>(v_[i]));
       }
@@ -598,7 +584,7 @@ public:
 
   private:
 
-    const mesh_topology &mesh_;
+    const mesh_topology_t &mesh_;
     const id_vec &v_;
     size_t begin_;
     size_t end_;
@@ -692,13 +678,13 @@ public:
   }; // class id_range
 
   //! Constructor
-  mesh_topology() {
+  mesh_topology_t() {
     for(size_t d = 0; d < MT::num_domains; ++d){
       get_connectivity_(d, MT::dimension, 0).init();
     }
-  } // mesh_topology()
+  } // mesh_topology_t()
 
-  virtual ~mesh_topology(){
+  virtual ~mesh_topology_t(){
     for(size_t d = 0; d < MT::num_domains; ++d){
       for(auto& ev : entities_[d]){
         for(auto ent : ev){
@@ -1123,9 +1109,9 @@ public:
 
   template<size_t FM, size_t TM>
   void compute_bindings() {
-    using ent_vec = entity_vec<MT::num_domains>;
+    using ent_vec_t = entity_vec_t<MT::num_domains>;
 
-    ent_vec &from_cells = entities_[FM][MT::dimension];
+    ent_vec_t &from_cells = entities_[FM][MT::dimension];
 
     for(auto from_ent : from_cells) {
       auto from_cell = static_cast<cell_type<FM> *>(from_ent);
@@ -1143,7 +1129,7 @@ public:
       }
 
       for(size_t dim = 0; dim < MT::num_domains; ++dim) {
-        ent_vec &bound_ents = entities_[TM][dim];
+        ent_vec_t &bound_ents = entities_[TM][dim];
         id_vec &bound_ids = id_vecs_[TM][dim];
 
         id_vec created_ids;
@@ -1272,7 +1258,7 @@ public:
   }
 
   template<size_t M=0>
-  const entity_vec<MT::num_domains> &get_entities_(size_t dim) const { 
+  const entity_vec_t<MT::num_domains> &get_entities_(size_t dim) const { 
     return entities_[M][dim]; 
   }
 
@@ -1501,7 +1487,8 @@ public:
   } // dump
 
 private:
-  using entities_t = std::array<entity_vec<MT::num_domains>, MT::dimension + 1>;
+  using entities_t =
+    std::array<entity_vec_t<MT::num_domains>, MT::dimension + 1>;
 
   using topology_t = std::array<std::array<connectivity, MT::dimension + 1>,
       MT::dimension + 1>;
@@ -1513,7 +1500,7 @@ private:
   std::array<topology_t, MT::num_domains> bindings_;
   std::array<id_vecs_t, MT::num_domains> id_vecs_;
 
-}; // class mesh_topology
+}; // class mesh_topology_t
 
 } // flexi
 
