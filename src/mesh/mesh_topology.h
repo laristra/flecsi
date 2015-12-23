@@ -23,6 +23,7 @@
 #include <unordered_map>
 
 #include "flexi/utils/common.h"
+#include "flexi/mesh/mesh_utils.h"
 
 /*----------------------------------------------------------------------------*
  * debug dump function
@@ -37,88 +38,6 @@
             << ": " << X << std::endl
 
 namespace flexi {
-
-/*----------------------------------------------------------------------------*
- * template helper classes
- *----------------------------------------------------------------------------*/
-
-template<size_t I, class T, size_t D, size_t M>
-struct find_entity__ {
-  static constexpr size_t find() {
-    using E = typename std::tuple_element<I - 1, T>::type;
-    using D1 = typename std::tuple_element<0, E>::type;
-    using T1 = typename std::tuple_element<1, E>::type;
-
-    return D1::domain == M && T1::dimension == D ? 
-      I : find_entity__<I - 1, T, D, M>::find(); 
-  }
-};
-
-template<class T, size_t D, size_t M>
-struct find_entity__<0, T, D, M> {
-  static constexpr size_t find() {
-    return 0; 
-  }
-};
-
-template<class MT, size_t D, size_t M>
-struct find_entity_ {
-  using entity_types = typename MT::entity_types;
-
-  using pair_ = 
-  typename std::tuple_element<find_entity__<
-     std::tuple_size<entity_types>::value, entity_types, D, M>::find() - 1,
-     entity_types>::type;
-
-  using type = typename std::tuple_element<1, pair_>::type;
-};
-
-template<size_t DM, size_t I, class TS>
-struct compute_connectivity_ {
-  template<class M>
-  static int compute(M& mesh) {
-    using T = typename std::tuple_element<I - 1, TS>::type;
-    using D1 = typename std::tuple_element<0, T>::type;
-    using T1 = typename std::tuple_element<1, T>::type;
-    using T2 = typename std::tuple_element<2, T>::type;
-
-    if (D1::domain == DM) {
-      mesh.template compute<DM>(T1::dimension, T2::dimension);
-    }
-    return compute_connectivity_<DM, I - 1, TS>::compute(mesh);
-  }
-};
-
-template<size_t DM, class TS>
-struct compute_connectivity_<DM, 0, TS> {
-  template<class M>
-  static int compute(M&) {
-    return 0;
-  }
-};
-
-template<size_t DM, size_t I, class TS>
-struct compute_bindings_ {
-  template<class M>
-  static int compute(M& mesh) {
-    using T = typename std::tuple_element<I - 1, TS>::type;
-    using M1 = typename std::tuple_element<0, T>::type;
-    using M2 = typename std::tuple_element<1, T>::type;
-
-    if (M1::domain == DM) {
-      mesh.template compute_bindings<M1::domain, M2::domain>();
-    }
-    return compute_bindings_<DM, I - 1, TS>::compute(mesh);
-  }
-};
-
-template<size_t DM, class TS>
-struct compute_bindings_<DM, 0, TS> {
-  template<class M>
-  static int compute(M&) {
-    return 0;
-  }
-};
 
 /*----------------------------------------------------------------------------*
  * class mesh_entity_base_t
