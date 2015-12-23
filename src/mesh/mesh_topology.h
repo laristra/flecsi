@@ -1129,7 +1129,7 @@ public:
       }
 
       for(size_t create_dim = 0; create_dim <= MT::dimension; ++create_dim) {
-        ent_vec &bound_ents = entities_[TM][create_dim];
+        ent_vec_t &bound_ents = entities_[TM][create_dim];
         id_vec &bound_ids = id_vecs_[TM][create_dim];
         connectivity &cell_conn = topology_[TM][MT::dimension][create_dim];
 
