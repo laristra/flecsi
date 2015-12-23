@@ -74,6 +74,10 @@ id_t to_global_id(size_t dim, id_t local_id){
   return (id_t(dim) << 62) | (id_t(M) << 60) | local_id;
 }
 
+id_t to_local_id(id_t global_id){
+  return global_id & 0x0000ffffffffffff;
+}
+
 template<size_t N>
 class mesh_entity_base_t
 {
@@ -89,7 +93,7 @@ public:
 
   template<size_t M>
   id_t id() const {
-    return ids_[M] & 0x0000ffffffffffff;
+    return to_local_id(ids_[M]);
   } // id
 
   template<size_t D, size_t M>
@@ -1394,19 +1398,21 @@ public:
         }
       }
 
-      for(size_t dim = 0; dim < MT::num_domains; ++dim) {
-        ent_vec &bound_ents = entities_[TM][dim];
-        id_vec &bound_ids = id_vecs_[TM][dim];
+      for(size_t create_dim = 0; create_dim <= MT::dimension; ++create_dim) {
+        ent_vec &bound_ents = entities_[TM][create_dim];
+        id_vec &bound_ids = id_vecs_[TM][create_dim];
+        connectivity &cell_conn = topology_[TM][MT::dimension][create_dim];
 
         id_vec created_ids;
-        auto p = from_cell->create_bound_entities(dim, ent_ids, created_ids);
+        auto p = 
+          from_cell->create_bound_entities(create_dim, ent_ids, created_ids);
         
-        for(size_t j = 0; j < p.second; ++j){
-          connectivity &create_conn = bindings_[FM][dim][j];
-        
+        for(size_t to_dim = 0; to_dim < p.second; ++to_dim){
+          connectivity &create_conn = topology_[TM][create_dim][to_dim];
+
           for(size_t i = 0; i < p.first; ++i){
             mesh_entity_base_t<MT::num_domains>* ent;
-            switch(dim){
+            switch(create_dim){
               case 1:
                 ent = new edge_type<TM>;
                 break;
@@ -1414,14 +1420,24 @@ public:
                 ent = new cell_type<TM>;
                 break;
             }
-            id_t local_id = 
-              created_ids[i * p.second + j] & 0x0000ffffffffffff;
+
+            id_t local_id = to_local_id(created_ids[i * p.second + to_dim]);
             
+            ent->ids_[TM] = local_id; 
             create_conn.push(local_id);
+            cell_conn.push(local_id);
             bound_ids.push_back(local_id);
           }
           create_conn.end_from();
         }
+        
+        cell_conn.end_from();
+      }
+    }
+
+    for(size_t from_dim = 0; from_dim <= MT::dimension; ++from_dim){
+      for(size_t to_dim = from_dim + 1; to_dim <= MT::dimension; ++to_dim){
+        transpose<TM>(from_dim, to_dim);
       }
     }
   }
