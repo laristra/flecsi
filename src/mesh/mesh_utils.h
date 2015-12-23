@@ -12,7 +12,59 @@
  * \date Initial file creation: Dec 23, 2015
  */
 
+/*----------------------------------------------------------------------------*
+ * debug dump function
+ *----------------------------------------------------------------------------*/
+
+#define ndump(X)                                                               \
+  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__      \
+            << ": " << #X << " = " << X << std::endl
+
+#define nlog(X)                                                                \
+  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__      \
+            << ": " << X << std::endl
+
 namespace flexi {
+
+/*----------------------------------------------------------------------------*
+ * Id utilities.
+ *----------------------------------------------------------------------------*/
+
+/*!
+  Convert a local id into a global id using a dimension and
+  domain.  Currently, the dimension and domain are each given
+  2 bits.  In this version, both the dimension and domain are
+  given statically as template parameters.
+
+  \tparam D The dimension.
+  \tparam M The domain.
+
+  \param local_id The local id from which to form a global id.
+
+  \return The corresponding global id.
+ */
+template<size_t D, size_t M>
+id_t to_global_id(id_t local_id){
+  return (id_t(D) << 62) | (id_t(M) << 60) | local_id;
+}
+
+/*!
+  Convert a local id into a global id using a dimension and
+  domain.  Currently, the dimension and domain are each given
+  2 bits.  In this version, only the domain is
+  given statically as template parameters.
+
+  \tparam M The domain.
+
+  \param dim The dimension.
+  \param local_id The local id from which to form a global id.
+
+  \return The corresponding global id.
+ */
+template<size_t M>
+id_t to_global_id(size_t dim, id_t local_id){
+  return (id_t(dim) << 62) | (id_t(M) << 60) | local_id;
+}
 
 /*----------------------------------------------------------------------------*
  * Tuple search utilities.
