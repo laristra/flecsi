@@ -73,7 +73,7 @@ public:
   using bindings = std::tuple<>;
 };
 
-using TestMesh = mesh_topology<TestMesh2dType>;
+using TestMesh = mesh_topology_t<TestMesh2dType>;
 
 TEST(mesh_topology, traversal) {
 

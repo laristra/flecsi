@@ -42,7 +42,7 @@ class burton_mesh_t
 {
 private:
 
-  using private_mesh_t = mesh_topology<burton_mesh_types_t>;
+  using private_mesh_t = mesh_topology_t<burton_mesh_types_t>;
 
 public:
 
