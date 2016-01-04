@@ -57,7 +57,7 @@ struct burton_mesh_types_t {
   using cell_t = burton_cell_t<num_domains>;
   using quadrilateral_cell_t = burton_quadrilateral_cell_t<num_domains>;
 
-  using wedge_t = burton_wedge_t<num_domains>;
+//  using wedge_t = burton_wedge_t<num_domains>;
   using corner_t = burton_corner_t<num_domains>;
 
   /*--------------------------------------------------------------------------*
@@ -70,28 +70,21 @@ struct burton_mesh_types_t {
       std::pair<domain_<0>, edge_t>,
       std::pair<domain_<0>, cell_t>,
       std::pair<domain_<1>, vertex_t>,
-      std::pair<domain_<1>, edge_t>,
-      std::pair<domain_<1>, wedge_t>
+      std::pair<domain_<1>, corner_t>
     >;
 
-  using connectivities = 
+  using connectivities =
     std::tuple<
       std::tuple<domain_<0>, vertex_t, edge_t>,
       std::tuple<domain_<0>, vertex_t, cell_t>,
       std::tuple<domain_<0>, edge_t, vertex_t>,
       std::tuple<domain_<0>, edge_t, cell_t>,
       std::tuple<domain_<0>, cell_t, vertex_t>,
-      std::tuple<domain_<0>, cell_t, edge_t>,
-      std::tuple<domain_<1>, vertex_t, edge_t>,
-      std::tuple<domain_<1>, vertex_t, wedge_t>,
-      std::tuple<domain_<1>, edge_t, vertex_t>,
-      std::tuple<domain_<1>, edge_t, wedge_t>,
-      std::tuple<domain_<1>, wedge_t, vertex_t>,
-      std::tuple<domain_<1>, wedge_t, edge_t>
+      std::tuple<domain_<0>, cell_t, edge_t>
     >;
 
   using bindings = std::tuple<
-    std::pair<domain_<0>, domain_<1>>
+    std::tuple<domain_<0>, domain_<1>, dimension_<1>>
     >;
 
 }; // struct burton_mesh_types_t

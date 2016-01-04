@@ -88,35 +88,16 @@ class burton_wedge_t;
           geometry and state associated with mesh cells.
  */
 template<size_t N>
-class burton_cell_t : public mesh_entity_t<2, N>
-{
-public:
+struct burton_cell_t : public mesh_entity_t<2, N> {
 
-  // FIXME: How should we initialize entity groups?
   burton_cell_t() {}
-
   virtual ~burton_cell_t() {}
 
-  void add_corner(burton_corner_t<N> *c) { corners_.add(c); }
-
-  entity_group<burton_corner_t<N>> &corners() { return corners_; } // corners
-
-  void add_wedge(burton_wedge_t<N> *w) { wedges_.add(w); }
-
-  entity_group<burton_wedge_t<N>> &wedges() { return wedges_; } // wedges
-
-  void set_precedence(size_t dim, uint64_t precedence) {}
-
-  virtual std::pair<size_t, size_t> create_entities(size_t dim,
+  virtual std::pair<size_t, std::vector<id_t>> create_entities(size_t dim,
     std::vector<id_t> &e, id_t * v, size_t vertex_count) = 0;
 
-  std::pair<size_t, size_t> create_bound_entities(size_t dim,
-    const std::vector<id_t> ent_ids, std::vector<id_t> & c) {}
-
-protected:
-
-  entity_group<burton_corner_t<N>> corners_;
-  entity_group<burton_wedge_t<N>> wedges_;
+  virtual std::pair<size_t, std::vector<id_t>> create_bound_entities(
+    size_t dim, const std::vector<id_t> ent_ids, std::vector<id_t> & c) = 0;
 
 }; // class burton_cell_t
 
@@ -136,7 +117,7 @@ public:
 
   /*!
    */
-  std::pair<size_t, size_t> create_entities(size_t dim,
+  std::pair<size_t, std::vector<id_t>> create_entities(size_t dim,
     std::vector<id_t> & e, id_t * v, size_t vertex_count) {
     
     e.resize(8);
@@ -153,13 +134,14 @@ public:
     e[6] = v[3];
     e[7] = v[0];
 
-    return {4, 2};
+    return {4, {2, 2, 2, 2}};
   } // createEntities
   
-  std::pair<size_t, size_t> create_bound_entities(size_t dim,
+  std::pair<size_t, std::vector<id_t>> create_bound_entities(size_t dim,
     const std::vector<id_t> ent_ids, std::vector<id_t> & c) {
 
     switch(dim) {
+      // Corners
       case 1:
         c.resize(4);
 
@@ -175,8 +157,12 @@ public:
         // corner 3
         c[3] = ent_ids[3]; // vertex 3
 
-        return {4, 1};
+        return {4, {1, 1, 1, 1}};
 
+#if 0 // Wedges are currently only referenced through corners
+      // so this logic is unused for the time being...
+
+      // Wedges
       case 2:
         c.resize(16);
 
@@ -212,11 +198,13 @@ public:
         c[14] = ent_ids[3]; // vertex 3
         c[15] = ent_ids[7]; // edge 3
 
-        return {4, 2};
+        return {8, {2, 2, 2, 2, 2, 2, 2, 2}};
+#endif
+
       default:
         assert(false && "Unknown bound entity type");
     } // switch
-  }
+  } // create_bound_entities
 
 }; // class burton_quadrilateral_cell_t
 
@@ -244,7 +232,7 @@ public:
 
   void set_precedence(size_t dim, uint64_t precedence) {}
 
-  static std::pair<size_t, size_t> create_entities(
+  std::pair<size_t, std::vector<size_t>> create_entities(
     size_t dim, std::vector<flexi::id_t> &e, id_t *v, size_t vertex_count) {
     e.resize(6);
 
@@ -257,7 +245,7 @@ public:
     e[4] = v[0];
     e[5] = v[2];
 
-    return {3, 2};
+    return {3, {2, 2, 2}};
   }
 
 private:

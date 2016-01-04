@@ -27,7 +27,7 @@ class Cell : public mesh_entity_t<2, 1>{
 public:
   void set_precedence(size_t dim, uint64_t precedence) {}
 
-  std::pair<size_t, size_t>
+  std::pair<size_t, std::vector<size_t>>
   create_entities(size_t dim, std::vector<flexi::id_t>& e,
                   flexi::id_t *v, size_t vertex_count){  
 
@@ -45,7 +45,7 @@ public:
     e[6] = v[2];
     e[7] = v[3];
 
-    return {4, 2};
+    return {4, {2, 2, 2, 2}};
   }
 };
 

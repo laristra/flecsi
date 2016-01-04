@@ -13,9 +13,16 @@
 #~----------------------------------------------------------------------------~#
 
 set(specializations_HEADERS
+  burton/burton_entity_types.h
   burton/burton.h
+  burton/burton_io_exodus.h
   burton/burton_mesh.h
+  burton/burton_mesh_traits.h
   burton/burton_types.h
+  minimal/minimal_entity_types.h
+  minimal/minimal_mesh.h
+  minimal/minimal_mesh_traits.h
+  minimal/minimal_mesh_types.h
   unstruct/unstruct.h
   unstruct/unstruct_mesh.h
   unstruct/unstruct_types.h
@@ -28,6 +35,10 @@ endif(ENABLE_IO)
 
 #set(specializations_SOURCES
 #  PARENT_SCOPE
+#)
+
+#cinch_add_unit(minimal
+#  SOURCES minimal/test/minimal.cc
 #)
 
 cinch_add_unit(burton

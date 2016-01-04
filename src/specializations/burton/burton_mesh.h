@@ -96,10 +96,6 @@ public:
         return state_.register_state<T>(key, num_corners(),
           attachment_site_t::corners, attributes);
         break;
-      case attachment_site_t::wedges:
-        return state_.register_state<T>(key, num_wedges(),
-          attachment_site_t::wedges, attributes);
-        break;
       default:
         assert(false && "Error: invalid state registration site.");
     } // switch
@@ -152,7 +148,7 @@ public:
   using cell_t = burton_mesh_types_t::cell_t;
   using quadrilateral_cell_t = burton_mesh_types_t::quadrilateral_cell_t;
 
-  using wedge_t = burton_mesh_types_t::wedge_t;
+//  using wedge_t = burton_mesh_types_t::wedge_t;
   using corner_t = burton_mesh_types_t::corner_t;
 
   //! Default constructor
@@ -199,13 +195,6 @@ public:
   } // num_corners
 
   /*!
-    Get number of wedges.
-   */
-  size_t num_wedges() {
-    return mesh_.num_entities(1, 2);
-  } // num_wedges
-
-  /*!
     FIXME
    */
   auto vertices() { return mesh_.vertices<0>(); }
@@ -238,7 +227,7 @@ public:
   /*!
     FIXME
    */
-  auto vertices(wedge_t *w) { return mesh_.vertices<1>(w); }
+//  auto vertices(wedge_t *w) { return mesh_.vertices<1>(w); }
 
   /*!
     FIXME
@@ -313,11 +302,13 @@ public:
 
     \param verts The vertices defining the wedge.
    */
+#if 0
   wedge_t * create_wedge(std::initializer_list<vertex_t *> vertices) {
     wedge_t * w = mesh_.make<wedge_t>();
     mesh_.add_cell<1>(w);
     mesh_.init_cell<1>(w, vertices);
   } // create_wedge
+#endif
 
   /*!
     FIXME
@@ -478,15 +469,13 @@ public:
     \param[in] cell The cell to return the centroid for.
     \return a point_t that is the centroid.
 
+    FIXME : This doesn't do anything.
     FIXME : need const iterator for entity group!!!
     point_t centroid(const cell_t *c) const {
 
   */
   point_t centroid(cell_t *c) {
-    // the first vertex of every wedge is the centroid
-    auto w0 = *c->wedges().begin();
-    auto cp = *mesh_.vertices<1>(w0).begin();
-    return cp->coordinates();
+    return {0,0};
   }
 
   /*!

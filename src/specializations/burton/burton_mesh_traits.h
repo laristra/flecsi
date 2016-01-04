@@ -41,7 +41,7 @@ struct burton_mesh_traits_t {
   static constexpr size_t dimension = FLEXI_MESH_DIMENSION;
 
   //! Set the number of mesh domains
-  static constexpr size_t num_domains = 2;
+  static constexpr size_t num_domains = 1;
 
   //! Set the type for floating-point values
   using real_t = double;
@@ -58,8 +58,7 @@ struct burton_mesh_traits_t {
     faces,
 #endif
     cells,
-    corners,
-    wedges
+    corners
   }; // enum class attachment_site_t
 
   enum class state_attribute_t : bitfield_t::field_type_t {

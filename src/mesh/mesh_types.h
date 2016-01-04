@@ -7,14 +7,20 @@
 #define flexi_mesh_types_h
 
 /*!
- * \file mesh_types.h
- * \authors bergen
- * \date Initial file creation: Dec 23, 2015
+   \file mesh_types.h
+   \authors nickm@lanl.gov, bergen@lanl.gov
+   \date Initial file creation: Dec 23, 2015
  */
 
 #include "flexi/mesh/mesh_utils.h"
 
 namespace flexi {
+
+template<typename T, T M>
+struct typeify { static constexpr T value = M; };
+
+template<size_t M>
+using dimension_ = typeify<size_t, M>;
 
 /*----------------------------------------------------------------------------*
  * class domain_
@@ -79,8 +85,8 @@ public:
     return dim > meshDim ? meshDim : dim;
   } // get_dim_
 
-  template <class MT, size_t M> static mesh_entity_base_t
-  *create_(size_t dim, size_t id) {
+  template<class MT, size_t M>
+  static mesh_entity_base_t * create_(size_t dim, size_t id) {
     switch (dim) {
     case 1: {
       using entity_type = 
@@ -126,6 +132,9 @@ private:
   \class mesh_entity_t mesh_types.h
   \brief mesh_entity_t parameterizes a mesh entity base with its dimension and
     number of domains
+
+  \tparam D The dimension of the entity.
+  \tparam N The number of domains.
  */
 
 template <size_t D, size_t N>
@@ -136,13 +145,13 @@ public:
   static const size_t dimension = D;
 
   mesh_entity_t() {}
-
   virtual ~mesh_entity_t() {}
 
   template<size_t M>
   id_t global_id() const {
     return mesh_entity_base_t<N>::template global_id<D, M>();
-  }
+  } // global_id
+
 }; // class mesh_entity_t
 
 /*!
@@ -151,7 +160,7 @@ public:
   \tparam N The number of domains.
  */
 template<size_t N>
-using entity_vec_t = std::vector<mesh_entity_base_t<N> *>;
+using entity_vector_t = std::vector<mesh_entity_base_t<N> *>;
 
 /*----------------------------------------------------------------------------*
  * class domain_entity_t

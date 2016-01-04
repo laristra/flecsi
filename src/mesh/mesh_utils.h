@@ -6,10 +6,12 @@
 #ifndef flexi_mesh_utils_h
 #define flexi_mesh_utils_h
 
+#include "flexi/utils/common.h"
+
 /*!
- * \file mesh_utils.h
- * \authors nickm@lanl.gov, bergen@lanl.gov
- * \date Initial file creation: Dec 23, 2015
+   \file mesh_utils.h
+   \authors nickm@lanl.gov, bergen@lanl.gov
+   \date Initial file creation: Dec 23, 2015
  */
 
 /*----------------------------------------------------------------------------*
@@ -189,7 +191,7 @@ template<size_t DM, class TS>
 struct compute_connectivity_<DM, 0, TS> {
 
   /*!
-    Search last tuple element.
+    Terminate recursion.
 
     \tparam DM The domain to match.
     \tparam TS The tuple typel
@@ -216,19 +218,26 @@ struct compute_bindings_ {
   /*!
     Compute mesh connectivity for the given domain and tuple element.
 
+    \tparam M The mesh type.
     \tparam DM The domain to match.
     \tparam I The current tuple index.
     \tparam TS The tuple typel
    */
   template<class M>
-  static int compute(M& mesh) {
+  static int compute(M & mesh) {
+
+    // Get the indexed tuple
     using T = typename std::tuple_element<I - 1, TS>::type;
+
+    // Get domains and dimension
     using M1 = typename std::tuple_element<0, T>::type;
     using M2 = typename std::tuple_element<1, T>::type;
+    using D = typename std::tuple_element<2, T>::type;
 
     if (M1::domain == DM) {
-      mesh.template compute_bindings<M1::domain, M2::domain>();
-    }
+      mesh.template compute_bindings<M1::domain, M2::domain, D::value>();
+    } // if
+
     return compute_bindings_<DM, I - 1, TS>::compute(mesh);
   } // compute
 
@@ -243,13 +252,13 @@ template<size_t DM, class TS>
 struct compute_bindings_<DM, 0, TS> {
 
   /*!
-    Search last tuple element.
+    Terminate recursion.
 
     \tparam DM The domain to match.
     \tparam TS The tuple typel
    */
   template<class M>
-  static int compute(M&) {
+  static int compute(M &) {
     return 0;
   } // compute
 
