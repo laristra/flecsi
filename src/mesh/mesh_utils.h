@@ -232,10 +232,12 @@ struct compute_bindings_ {
     // Get domains and dimension
     using M1 = typename std::tuple_element<0, T>::type;
     using M2 = typename std::tuple_element<1, T>::type;
-    using D = typename std::tuple_element<2, T>::type;
+    using T1 = typename std::tuple_element<2, T>::type;
+    using T2 = typename std::tuple_element<3, T>::type;
 
-    if (M1::domain == DM) {
-      mesh.template compute_bindings<M1::domain, M2::domain, D::value>();
+    if(M1::domain == DM) {
+      mesh.template compute_bindings<M1::domain, M2::domain,
+        T1::dimension, T2::dimension>();
     } // if
 
     return compute_bindings_<DM, I - 1, TS>::compute(mesh);

@@ -6,6 +6,7 @@
 	We will need to handle creation of mixed-type sub-entities, e.g.,
 	triangular vs. quadrilateral faces in 3D.  This is currently not
 	handled correctly in the mesh topology.
+	Update: Progress has been made on removing this constraint.
 
 'specializations/burton/burton_mesh.h'
 	Mesh access of state model needs to be improved/clarified as per dual mesh
@@ -16,3 +17,7 @@
 
 'utils'
 	Add Marc's static C++ utilities.
+
+'mesh-based example of index spaces'
+	Powerpoint slide of figures on simple mesh with vertices, edges, faces,
+	cells and corners.

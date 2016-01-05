@@ -1177,11 +1177,12 @@ public:
     This method computes bindings of entities between different
     domains.
    */
-  template<size_t FM, size_t TM, size_t D>
+  template<size_t FM, size_t TM, size_t FD, size_t TD>
   void compute_bindings() {
     std::cout << "compute bindings called for domains " <<
-      FM << " " << TM << " and dimension " << D << std::endl;
+      FM << " " << TM << " and dimensions " << FD << " " << TD << std::endl;
 
+#if 0
     using ent_vec_t = entity_vector_t<MT::num_domains>;
 
     // Get cell definitions
@@ -1224,6 +1225,7 @@ public:
         std::sort(ev.begin(), ev.end());
       } // for
     } // for
+#endif
   } // compute_bindings
 
 #if 0
