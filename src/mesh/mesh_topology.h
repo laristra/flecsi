@@ -291,6 +291,7 @@ public:
   virtual connectivity_t &get_connectivity(size_t domain, size_t fromDim,
     size_t toDim) = 0;
 
+#if 0
   /*!
    */
   virtual const connectivity_t &get_binding(size_t domain, size_t fromDim,
@@ -300,6 +301,7 @@ public:
    */
   virtual connectivity_t &get_binding(size_t domain, size_t fromDim,
     size_t toDim) = 0;
+#endif
 
 }; // mesh_topology_base_t
 
@@ -1338,20 +1340,21 @@ public:
 
   const connectivity_t & get_connectivity_(size_t domain, size_t from_dim,
     size_t to_dim) const {
-    assert(from_dim < topology_[domain].size() && "invalid fromDim");
-    auto & t = topology_[domain][from_dim];
+    assert(from_dim < topology_[domain][domain].size() && "invalid fromDim");
+    auto & t = topology_[domain][domain][from_dim];
     assert(to_dim < t.size() && "invalid toDim");
     return t[to_dim];
   } // get_connectivity
 
   connectivity_t & get_connectivity_(size_t domain, size_t from_dim,
     size_t to_dim) {
-    assert(from_dim < topology_[domain].size() && "invalid fromDim");
-    auto & t = topology_[domain][from_dim];
+    assert(from_dim < topology_[domain][domain].size() && "invalid fromDim");
+    auto & t = topology_[domain][domain][from_dim];
     assert(to_dim < t.size() && "invalid toDim");
     return t[to_dim];
   } // get_connectivity
 
+#if 0
   const connectivity_t & get_binding(size_t domain, size_t from_dim,
     size_t to_dim) const override {
     return get_binding_(domain, from_dim, to_dim);
@@ -1377,6 +1380,7 @@ public:
     assert(to_dim < b.size() && "invalid toDim");
     return b[to_dim];
   } // get_binding
+#endif
 
   size_t topological_dimension() const override { return MT::dimension; }
 
@@ -1603,7 +1607,7 @@ public:
   void dump() {
     for(size_t d = 0; d < MT::num_domains; ++d){
       for (size_t i = 0; i < topology_[d].size(); ++i) {
-        auto &ci = topology_[d][i];
+        auto &ci = topology_[d][d][i];
         for (size_t j = 0; j < ci.size(); ++j) {
           auto &cj = ci[j];
           std::cout << "------------- " << i << " -> " << j << std::endl;
@@ -1634,10 +1638,8 @@ private:
   std::array<entities_t, MT::num_domains> entities_;
 
   // array of array of connectivity_t
-  std::array<topology_t, MT::num_domains> topology_;
-
-  // array of array of connectivity_t
-  std::array<topology_t, MT::num_domains> bindings_;
+  std::array<std::array<topology_t, MT::num_domains>, MT::num_domains>
+    topology_;
 
   // array of array of vector of id_t
   std::array<id_vecs_t, MT::num_domains> id_vecs_;
