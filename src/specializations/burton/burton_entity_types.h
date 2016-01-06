@@ -143,21 +143,25 @@ public:
     switch(dim) {
       // Corners
       case 1:
-        c.resize(4);
+        c.resize(8);
 
         // corner 0
         c[0] = ent_ids[0]; // vertex 0
+        c[1] = ent_ids[7]; // cell
 
         // corner 1
-        c[1] = ent_ids[1]; // vertex 1
+        c[2] = ent_ids[1]; // vertex 1
+        c[3] = ent_ids[7]; // cell
 
         // corner 2
-        c[2] = ent_ids[2]; // vertex 2
+        c[4] = ent_ids[2]; // vertex 2
+        c[5] = ent_ids[7]; // cell
 
         // corner 3
-        c[3] = ent_ids[3]; // vertex 3
+        c[6] = ent_ids[3]; // vertex 3
+        c[7] = ent_ids[7]; // cell
 
-        return {4, {1, 1, 1, 1}};
+        return {4, {2, 2, 2, 2}};
 
 #if 0 // Wedges are currently only referenced through corners
       // so this logic is unused for the time being...
@@ -265,7 +269,7 @@ private:
  */
 
 template<size_t N>
-class burton_corner_t : public mesh_entity_t<0, N> {
+class burton_corner_t : public mesh_entity_t<1, N> {
 public:
   void add_wedge(burton_wedge_t<N> *w) {
     wedges_.add(w);

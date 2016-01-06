@@ -1185,34 +1185,68 @@ public:
     } // if
   } // compute_connectivity
 
-  /*!
-    This method computes bindings of entities between different
-    domains.
-   */
   template<size_t FM, size_t TM>
   void compute_bindings(size_t from_dim, size_t to_dim) {
+    connectivity_t & out_conn = get_connectivity_(FM, TM, from_dim, to_dim);
+
+    if(!out_conn.empty()) {
+      return;
+    } // if
+
+    if(num_entities_(FM, from_dim) == 0) {
+      build_bindings<FM>(from_dim);
+    } // if
+
   } // compute_bindings
 
-#if 0
+  template<size_t M>
+  void build_bindings(size_t dim) {
     using ent_vec_t = entity_vector_t<MT::num_domains>;
 
-    // Get cell definitions
-    ent_vec_t & cells = entities_[FM][MT::dimension];
+    // Much of the connectivity informaiton used in this method
+    // is derived from the "primal" mesh, i.e., domain 0
+    static constexpr size_t M0 = 0;
+
+    // Get cell definitions from domain 0
+    ent_vec_t & cells = entities_[M0][MT::dimension];
+
+    for(auto c: cells) {
+      // Get a cell object.
+      auto cell = static_cast<cell_type<M0> *>(c);
+
+      // Get ids of entities with at least this dimension
+      connection_vector_t primal_ids;
+      for(size_t dim(0); dim<=MT::dimension; ++dim) {
+        // Get domain 0 mesh connectivity information
+        connectivity_t & conn = get_connectivity_(M0, MT::dimension, dim);
+
+        size_t count;
+        id_t * ids = conn.get_entities(cell->template id<M0>(), count);
+
+        for(size_t i(0); i<count; ++i) {
+          primal_ids[dim].push_back(to_global_id<M0>(dim, ids[i]));
+          std::cout << "adding primal id: " << ids[i] << std::endl;
+        } // for
+      } // for
+    } // for
+  } // build_bindings
+
+#if 0
 
     for(auto c: cells) {
       // Get a cell object.
       auto cell = static_cast<cell_type<FM> *>(c);
 
       // Get ids of entities with at least this dimension
-      id_vector_t primal_ids;
-      for(size_t dim(0); dim<=D; ++dim) {
-        connectivity_t & conn = topology_[FM][MT::dimension][dim];
+      connection_vector_t primal_ids;
+      for(size_t dim(0); dim<=MT::dimension; ++dim) {
+        connectivity_t & conn = topology_[FM][FM][MT::dimension][dim];
 
         size_t count;
         id_t * ids = conn.get_entities(cell->template id<FM>(), count);
 
         for(size_t i(0); i<count; ++i) {
-          primal_ids.push_back(to_global_id<FM>(dim, ids[i]));
+          primal_ids[dim].push_back(to_global_id<FM>(dim, ids[i]));
         } // for
       } // for
 
