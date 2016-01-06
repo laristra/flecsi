@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "flexi/execution/context.h"
-#include "flexi/utils/static_for_each.h"
+#include "flexi/utils/tuple_for_each.h"
 
 /*!
  * \file legion_execution_policy.h
@@ -38,7 +38,7 @@ protected:
   template<typename T, typename ... Args>
   static return_type_t execute_task(T && task, Args && ... args) {
 
-    static_for_each(std::make_tuple(args ...), [&](auto arg) {
+    utils::tuple_for_each(std::make_tuple(args ...), [&](auto arg) {
       std::cout << "test" << std::endl;
       });
 

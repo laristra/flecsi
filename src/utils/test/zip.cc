@@ -22,10 +22,17 @@
 #include<vector>
 
 // user includes
-#include "../zip.h"
+#include "flexi/utils/zip.h"
 
 // some using declarations
-using namespace std;
+using std::array;
+using std::cout;
+using std::endl;
+using std::list;
+using std::vector;
+
+using flexi::utils::get;
+using flexi::utils::zip;
 
 //=============================================================================
 //! \brief Test the "zip-like" iterator.
@@ -38,8 +45,13 @@ TEST(zip, simple) {
   b.push_back('b');
   b.push_back('c');
   b.push_back('d');
-  array<int,5> c{5,4,3,2,1};
+  array<int,4> c{4,3,2,1};
+  array<int,5> c_fail{4,3,2,1};
 
+  // should die
+  ASSERT_DEATH( zip(a, b, c_fail), "size mismatch" );
+
+  // now test for reals
   auto d = zip(a, b, c);
 
   for (auto i : zip(a, b, c) ) {
@@ -52,7 +64,7 @@ TEST(zip, simple) {
     //cout << i1 << ", " << i2 << ", " << i3 << endl;
   }
   for (const auto i : d) {
-    get<0>(i) = 1;
+    ASSERT_EQ( 5.0, get<0>(i) );
     cout << get<0>(i) << ", " << get<1>(i) << ", " << get<2>(i) << endl;
     //cout << i1 << ", " << i2 << ", " << i3 << endl;
   }  

@@ -7,7 +7,7 @@
 #define flexi_default_execution_policy_h
 
 #include "flexi/execution/context.h"
-#include "flexi/utils/static_for_each.h"
+#include "flexi/utils/tuple_for_each.h"
 
 /*!
  * \file default_execution_policy.h
@@ -37,7 +37,7 @@ protected:
 
 #if 0
     // FIXME: place-holder example of static argument processing
-    static_for_each(std::make_tuple(args ...), [&](auto arg) {
+    utils::tuple_for_each(std::make_tuple(args ...), [&](auto arg) {
       std::cout << "test" << std::endl;
       });
 #endif
