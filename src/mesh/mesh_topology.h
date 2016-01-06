@@ -908,7 +908,7 @@ public:
     given dimension.
    */
   template<size_t M>
-  void build(size_t dim) {
+  void build_connectivity(size_t dim) {
     // std::cerr << "build: " << dim << std::endl;
 
     // Sanity check
@@ -1011,7 +1011,7 @@ public:
     // the vertices.
     connectivity_t & entity_to_vertex = get_connectivity_(M, dim, 0);
     entity_to_vertex.init(entity_vertex_conn);
-  } // build
+  } // build_connectivity
 
   /*!
      used internally to compute connectivity information for
@@ -1132,7 +1132,7 @@ public:
        D1 -> D2
    */
   template<size_t M>
-  void compute(size_t from_dim, size_t to_dim) {
+  void compute_connectivity(size_t from_dim, size_t to_dim) {
     //std::cerr << "compute: " << from_dim << " -> " << to_dim << std::endl;
 
     connectivity_t & out_conn = get_connectivity_(M, from_dim, to_dim);
@@ -1142,11 +1142,11 @@ public:
     } // if
 
     if(num_entities_(M, from_dim) == 0) {
-      build<M>(from_dim);
+      build_connectivity<M>(from_dim);
     } // if
 
     if(num_entities_(M, to_dim) == 0) {
-      build<M>(to_dim);
+      build_connectivity<M>(to_dim);
     } // if
 
     if(num_entities_(M, from_dim) == 0 && num_entities_(M, to_dim) == 0) {
@@ -1163,24 +1163,23 @@ public:
       out_conn.set<M, MT::num_domains>(entities_[M][to_dim], conn_vec);
     }
     else if(from_dim < to_dim) {
-      compute<M>(to_dim, from_dim);
+      compute_connectivity<M>(to_dim, from_dim);
       transpose<M>(from_dim, to_dim);
     }
     else {
-      compute<M>(from_dim, 0);
-      compute<M>(0, to_dim);
+      compute_connectivity<M>(from_dim, 0);
+      compute_connectivity<M>(0, to_dim);
       intersect<M>(from_dim, to_dim, 0);
     } // if
-  } // compute
+  } // compute_connectivity
 
   /*!
     This method computes bindings of entities between different
     domains.
    */
-  template<size_t FM, size_t TM, size_t FD, size_t TD>
-  void compute_bindings() {
-    std::cout << "compute bindings called for domains " <<
-      FM << " " << TM << " and dimensions " << FD << " " << TD << std::endl;
+  template<size_t FM, size_t TM>
+  void compute_bindings(size_t from_dim, size_t to_dim) {
+  } // compute_bindings
 
 #if 0
     using ent_vec_t = entity_vector_t<MT::num_domains>;
@@ -1226,7 +1225,6 @@ public:
       } // for
     } // for
 #endif
-  } // compute_bindings
 
 #if 0
   template<size_t FM, size_t TM>

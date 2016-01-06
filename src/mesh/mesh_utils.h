@@ -175,7 +175,7 @@ struct compute_connectivity_ {
     using T2 = typename std::tuple_element<2, T>::type;
 
     if (D1::domain == DM) {
-      mesh.template compute<DM>(T1::dimension, T2::dimension);
+      mesh.template compute_connectivity<DM>(T1::dimension, T2::dimension);
     }
     return compute_connectivity_<DM, I - 1, TS>::compute(mesh);
   } // compute
@@ -236,8 +236,8 @@ struct compute_bindings_ {
     using T2 = typename std::tuple_element<3, T>::type;
 
     if(M1::domain == DM) {
-      mesh.template compute_bindings<M1::domain, M2::domain,
-        T1::dimension, T2::dimension>();
+      mesh.template compute_bindings<M1::domain, M2::domain>(
+        T1::dimension, T2::dimension);
     } // if
 
     return compute_bindings_<DM, I - 1, TS>::compute(mesh);
