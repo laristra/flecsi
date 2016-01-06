@@ -301,18 +301,6 @@ public:
   virtual connectivity_t &get_connectivity(size_t from_domain,
     size_t to_domain, size_t from_dim, size_t to_dim) = 0;
 
-#if 0
-  /*!
-   */
-  virtual const connectivity_t &get_binding(size_t domain, size_t fromDim,
-    size_t toDim) const = 0;
-
-  /*!
-   */
-  virtual connectivity_t &get_binding(size_t domain, size_t fromDim,
-    size_t toDim) = 0;
-#endif
-
 }; // mesh_topology_base_t
 
 /*----------------------------------------------------------------------------*
