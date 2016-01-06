@@ -284,12 +284,22 @@ public:
   /*!
    */
   virtual const connectivity_t & get_connectivity(size_t domain,
-    size_t fromDim, size_t toDim) const = 0;
+    size_t from_dim, size_t to_dim) const = 0;
 
   /*!
    */
-  virtual connectivity_t &get_connectivity(size_t domain, size_t fromDim,
-    size_t toDim) = 0;
+  virtual connectivity_t &get_connectivity(size_t domain, size_t from_dim,
+    size_t to_dim) = 0;
+
+    /*!
+   */
+  virtual const connectivity_t & get_connectivity(size_t from_domain,
+    size_t to_domain, size_t from_dim, size_t to_dim) const = 0;
+
+  /*!
+   */
+  virtual connectivity_t &get_connectivity(size_t from_domain,
+    size_t to_domain, size_t from_dim, size_t to_dim) = 0;
 
 #if 0
   /*!
@@ -1328,59 +1338,58 @@ public:
     return entities_[M][MT::dimension - 1].size();
   } // num_faces
 
+  const connectivity_t & get_connectivity(size_t from_domain,
+      size_t to_domain, size_t from_dim, size_t to_dim) const override {
+    return get_connectivity_(from_domain, to_domain, from_dim, to_dim);
+  } // get_connectivity
+
+  connectivity_t & get_connectivity(size_t from_domain,
+      size_t to_domain, size_t from_dim,
+    size_t to_dim) override {
+    return get_connectivity_(from_domain, to_domain, from_dim, to_dim);
+  } // get_connectivity
+
   const connectivity_t & get_connectivity(size_t domain,
       size_t from_dim, size_t to_dim) const override {
-    return get_connectivity_(domain, from_dim, to_dim);
+    return get_connectivity_(domain, domain, from_dim, to_dim);
   } // get_connectivity
 
   connectivity_t & get_connectivity(size_t domain, size_t from_dim,
     size_t to_dim) override {
-    return get_connectivity_(domain, from_dim, to_dim);
+    return get_connectivity_(domain, domain, from_dim, to_dim);
   } // get_connectivity
 
-  const connectivity_t & get_connectivity_(size_t domain, size_t from_dim,
+  const connectivity_t & get_connectivity_(size_t from_domain,
+    size_t to_domain,
+    size_t from_dim,
     size_t to_dim) const {
-    assert(from_dim < topology_[domain][domain].size() && "invalid fromDim");
-    auto & t = topology_[domain][domain][from_dim];
+    assert(from_dim < topology_[from_domain][to_domain].size() && "invalid fromDim");
+    auto & t = topology_[from_domain][to_domain][from_dim];
     assert(to_dim < t.size() && "invalid toDim");
     return t[to_dim];
   } // get_connectivity
 
-  connectivity_t & get_connectivity_(size_t domain, size_t from_dim,
+  connectivity_t & get_connectivity_(size_t from_domain,
+    size_t to_domain,
+    size_t from_dim,
     size_t to_dim) {
-    assert(from_dim < topology_[domain][domain].size() && "invalid fromDim");
-    auto & t = topology_[domain][domain][from_dim];
+    assert(from_dim < topology_[from_domain][to_domain].size() && "invalid fromDim");
+    auto & t = topology_[from_domain][to_domain][from_dim];
     assert(to_dim < t.size() && "invalid toDim");
     return t[to_dim];
   } // get_connectivity
 
-#if 0
-  const connectivity_t & get_binding(size_t domain, size_t from_dim,
-    size_t to_dim) const override {
-    return get_binding_(domain, from_dim, to_dim);
-  } // get_binding
-
-  connectivity_t & get_binding(size_t domain, size_t from_dim,
-    size_t to_dim) override {
-    return get_binding_(domain, from_dim, to_dim);
-  } // get_binding
-
-  const connectivity_t & get_binding_(size_t domain, size_t from_dim,
+    const connectivity_t & get_connectivity_(size_t domain,
+    size_t from_dim,
     size_t to_dim) const {
-    assert(from_dim < bindings_[domain].size() && "invalid fromDim");
-    auto &b = bindings_[domain][from_dim];
-    assert(to_dim < b.size() && "invalid toDim");
-    return b[to_dim];
-  } // get_binding
+      return get_connectivity_(domain, domain, from_dim, to_dim);
+  } // get_connectivity
 
-  connectivity_t & get_binding_(size_t domain, size_t from_dim,
+  connectivity_t & get_connectivity_(size_t domain,
+    size_t from_dim,
     size_t to_dim) {
-    assert(from_dim < bindings_[domain].size() && "invalid fromDim");
-    auto &b = bindings_[domain][from_dim];
-    assert(to_dim < b.size() && "invalid toDim");
-    return b[to_dim];
-  } // get_binding
-#endif
+      return get_connectivity_(domain, domain, from_dim, to_dim);
+  } // get_connectivity
 
   size_t topological_dimension() const override { return MT::dimension; }
 
@@ -1430,40 +1439,25 @@ public:
     return id_range(id_vecs_[M][0]);
   } // vertex_ids
 
-  template <size_t D, size_t M, class E> const_entity_range_t<D, M>
+  template <size_t D, size_t FM, size_t TM=FM, class E>
+  const_entity_range_t<D, TM>
   entities(const E *e) const {
-    const connectivity_t &c = get_connectivity(M, E::dimension, D);
+    const connectivity_t &c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
     const id_vector_t &fv = c.get_from_index_vec();
-    return const_entity_range_t<D, M>(*this, c.get_entities(),
-      fv[e->template id<M>()], fv[e->template id<M>() + 1]);
+    return const_entity_range_t<D, TM>(*this, c.get_entities(),
+      fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
   } // entities
 
-  template <size_t D, size_t M, class E> entity_range_t<D, M> entities(E *e) {
-    const connectivity_t &c = get_connectivity(M, E::dimension, D);
+  template <size_t D, size_t FM, size_t TM=FM, class E>
+  entity_range_t<D, TM>
+  entities(E *e) {
+    const connectivity_t &c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
     const id_vector_t &fv = c.get_from_index_vec();
-    return entity_range_t<D, M>(*this, c.get_entities(),
-      fv[e->template id<M>()], fv[e->template id<M>() + 1]);
+    return entity_range_t<D, TM>(*this, c.get_entities(),
+      fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
   } // entities
-
-  template <size_t TD, size_t FM, size_t TM, class E>
-  const_entity_range_t<TD, TM> bound_entities(const E *e) const {
-    const connectivity_t &c = get_binding(FM, E::dimension, TD);
-    assert(!c.empty() && "empty binding");
-    const id_vector_t &fv = c.get_from_index_vec();
-    return const_entity_range_t<TD, TM>(*this, c.get_entities(),
-      fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
-  } // bound_entities
-
-  template <size_t TD, size_t FM, size_t TM, class E>
-  entity_range_t<TD, TM> bound_entities(E *e) {
-    const connectivity_t &c = get_binding(FM, E::dimension, TD);
-    assert(!c.empty() && "empty binding");
-    const id_vector_t &fv = c.get_from_index_vec();
-    return entity_range_t<TD, TM>(*this, c.get_entities(),
-      fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
-  } // bound_entities
 
   template <size_t M, class E> decltype(auto) vertices(const E *e) const {
     return entities<0, M>(e);
