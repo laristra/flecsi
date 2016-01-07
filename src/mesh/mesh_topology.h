@@ -1532,7 +1532,7 @@ public:
   template<size_t M>
   entity_range_t<1, M> edges() {
     assert(!id_vecs_[M][1].empty());
-    return entity_range_t<1>(*this, id_vecs_[M][1]);
+    return entity_range_t<1, M>(*this, id_vecs_[M][1]);
   } // edges
 
   template <size_t M, class E> entity_range_t<1> edges(E *e) {
@@ -1601,7 +1601,7 @@ public:
 
   template<size_t M>
   entity_range_t<MT::dimension, M> cells() {
-    return entity_range_t<MT::dimension>(*this, id_vecs_[M][MT::dimension]);
+    return entity_range_t<MT::dimension, M>(*this, id_vecs_[M][MT::dimension]);
   } // cells
 
   template <size_t M, class E> entity_range_t<MT::dimension, M> cells(E *e) {
