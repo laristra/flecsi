@@ -137,18 +137,16 @@ public:
    * FIXME: Other crap
    *--------------------------------------------------------------------------*/
 
+  // Geometry
   using real_t = burton_mesh_traits_t::real_t;
-
   using point_t = burton_mesh_traits_t::point_t;
   using vector_t = burton_mesh_traits_t::vector_t;
 
+  // Entity types
   using vertex_t = burton_mesh_types_t::vertex_t;
   using edge_t = burton_mesh_types_t::edge_t;
-
   using cell_t = burton_mesh_types_t::cell_t;
   using quadrilateral_cell_t = burton_mesh_types_t::quadrilateral_cell_t;
-
-//  using wedge_t = burton_mesh_types_t::wedge_t;
   using corner_t = burton_mesh_types_t::corner_t;
 
   //! Default constructor
@@ -164,11 +162,18 @@ public:
   ~burton_mesh_t() {}
 
   /*!
-    FIXME
+    Return the topological dimension of the mesh.
+
+    \return auto A non-negative number describing the highest dimension
+      of the entities in the mesh, e.g., 3 for a three-dimensional mesh.
    */
   static constexpr auto dimension() {
     return burton_mesh_traits_t::dimension;
   } // dimension
+
+  /*--------------------------------------------------------------------------*
+   * Vertex Interface
+   *--------------------------------------------------------------------------*/
 
   /*!
     Get number of mesh vertices.
@@ -178,11 +183,93 @@ public:
   } // num_vertices
 
   /*!
+    FIXME
+   */
+  auto vertices() {
+    return mesh_.entities<0,0>();
+  } // vertices
+
+  /*!
+    FIXME
+   */
+  template <class E>
+  auto vertices(E *e) {
+    return mesh_.entities<0,0>(e);
+  } // vertices
+
+  template<size_t M, class E>
+  auto vertices(domain_entity<M, E> & e) {
+    return mesh_.entities<0, M>(e);
+  } 
+
+  /*!
+    FIXME
+   */
+  auto vertex_ids() {
+    return mesh_.entity_ids<0,0>();
+  } // vertex_ids
+
+  /*!
+    FIXME
+   */
+  template <class E>
+  auto vertex_ids(E *e) {
+    return mesh_.entity_ids<0,0>(e);
+  } // vertex_ids
+
+  /*--------------------------------------------------------------------------*
+   * Edge Interface
+   *--------------------------------------------------------------------------*/
+
+  /*!
     Get number of mesh edges.
    */
   size_t num_edges() const {
     return mesh_.num_entities<1,0>();
   } // num_edges
+
+  /*!
+    FIXME
+   */
+  auto edges() {
+    return mesh_.entities<1,0>();
+  } // edges
+
+  /*!
+    FIXME
+   */
+  auto edge_ids() {
+    return mesh_.entity_ids<1,0>();
+  } // edge_ids
+
+  /*!
+    FIXME
+   */
+  template <class E>
+  auto edge_ids(E *e) {
+    return mesh_.entity_ids<1,0>(e);
+  } // edge_ids
+
+  /*!
+    FIXME
+   */
+  template <class E>
+  auto edges(E *e) {
+    return mesh_.entities<1,0>(e);
+  } // edges
+
+  template<size_t M, class E>
+  auto edges(domain_entity<M, E>& e) {
+    return mesh_.entities<1,M>(e);
+  } // edges
+
+  /*--------------------------------------------------------------------------*
+   * Face Interface
+   *--------------------------------------------------------------------------*/
+
+  /*--------------------------------------------------------------------------*
+   * Cell Interface
+   *--------------------------------------------------------------------------*/
 
   /*!
     Get number of mesh cells.
@@ -192,92 +279,93 @@ public:
   } // num_cells
 
   /*!
-    Get number of corners.
+    FIXME
    */
-  size_t num_corners() {
+  auto cells() {
+    return mesh_.entities<dimension(),0>();
+  } // cells
+
+  /*!
+    FIXME
+   */
+  auto cell_ids() {
+    return mesh_.entity_ids<dimension(),0>();
+  } // cell_ids
+
+  /*!
+    FIXME
+   */
+  template <class E>
+  auto cell_ids(E *e) {
+    return mesh_.entity_ids<dimension(),0>(e);
+  } // cell_ids
+
+  /*!
+    FIXME
+   */
+  template <class E>
+  auto cells(E *e) {
+    return mesh_.entities<dimension(),0>(e);
+  } // cells
+
+  template<size_t M, class E>
+  auto cells(domain_entity<M, E>& e) {
+    return mesh_.entities<dimension()>(e);
+  } // cells
+
+  /*--------------------------------------------------------------------------*
+   * Corner Interface
+   *--------------------------------------------------------------------------*/
+
+  /*!
+    Get number of mesh corners.
+   */
+  size_t num_corners() const {
     return mesh_.num_entities<1,1>();
   } // num_corners
 
   /*!
     FIXME
    */
-  auto vertices() { return mesh_.vertices<0>(); }
+  auto corners() {
+    return mesh_.entities<1,1>();
+  } // corners
 
   /*!
     FIXME
    */
-  auto edges() { return mesh_.edges<0>(); }
+  template <class E>
+  auto corners(E *e) {
+    return mesh_.entities<1,1>(e);
+  } // corners
 
-  /*!
-    FIXME
-   */
-  auto cells() { return mesh_.cells<0>(); }
-
-  /*!
-    FIXME
-   */
-  auto corners() { return mesh_.edges<1>(); }
-
-  /*!
-    FIXME
-   */
-  auto vertex_ids() { return mesh_.vertex_ids<0>(); }
-
-  /*!
-    FIXME
-   */
-  auto edge_ids() { return mesh_.edge_ids<0>(); }
-
-  /*!
-    FIXME
-   */
-  auto cell_ids() { return mesh_.cell_ids<0>(); }
-
-  /*!
-    FIXME
-   */
-//  auto vertices(wedge_t *w) { return mesh_.vertices<1>(w); }
-
-  /*!
-    FIXME
-   */
-  template <class E> auto vertices(E *e) { return mesh_.vertices<0>(e); }
-
+#if 0
   template<size_t M, class E>
-  auto vertices(domain_entity<M, E>& e) {
-    return mesh_.entities<0, M>(e);
+  auto corners(domain_entity<M, E> & e) {
+    return mesh_.entities<1, M>(e);
   } 
+#endif
 
   /*!
     FIXME
    */
-  template <class E> auto edges(E *e) { return mesh_.edges<0>(e); }
-
-  template<size_t M, class E>
-  auto edges(domain_entity<M, E>& e) { return mesh_.edges(e); } 
-
-  /*!
-    FIXME
-   */
-  template <class E> auto cells(E *e) { return mesh_.cells<0>(e); }
-
-  template<size_t M, class E>
-  auto cells(domain_entity<M, E>& e) { return mesh_.cells(e); } 
+  auto corner_ids() {
+    return mesh_.entity_ids<1,1>();
+  } // corner_ids
 
   /*!
     FIXME
    */
-  template <class E> auto vertex_ids(E *e) { return mesh_.vertex_ids<0>(e); }
+  template <class E>
+  auto corner_ids(E *e) {
+    return mesh_.entity_ids<1,1>(e);
+  } // corner_ids
 
-  /*!
-    FIXME
-   */
-  template <class E> auto edge_ids(E *e) { return mesh_.edge_ids<0>(e); }
-
-  /*!
-    FIXME
-   */
-  template <class E> auto cell_ids(E *e) { return mesh_.cell_ids<0>(e); }
+//
+//
+//
+//
+//
 
   /*!
     Create a vertex in the mesh.
@@ -309,19 +397,6 @@ public:
     mesh_.init_cell<0>(c, verts);
     return c;
   } // create_cell
-
-  /*!
-    Create a wedge in the mesh.
-
-    \param verts The vertices defining the wedge.
-   */
-#if 0
-  wedge_t * create_wedge(std::initializer_list<vertex_t *> vertices) {
-    wedge_t * w = mesh_.make<wedge_t>();
-    mesh_.add_cell<1>(w);
-    mesh_.init_cell<1>(w, vertices);
-  } // create_wedge
-#endif
 
   /*!
     FIXME
