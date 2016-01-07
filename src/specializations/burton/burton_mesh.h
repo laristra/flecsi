@@ -162,7 +162,7 @@ public:
   ~burton_mesh_t() {}
 
   /*!
-    Return the topological dimension of the mesh.
+    \brief Return the topological dimension of the mesh.
 
     \return auto A non-negative number describing the highest dimension
       of the entities in the mesh, e.g., 3 for a three-dimensional mesh.
@@ -176,41 +176,56 @@ public:
    *--------------------------------------------------------------------------*/
 
   /*!
-    Get number of mesh vertices.
+    \brief Return number of vertices in the mesh.
+    \return size_t The number of vertices in the mesh.
    */
   size_t num_vertices() const {
     return mesh_.num_entities<0,0>();
   } // num_vertices
 
   /*!
-    FIXME
+    \brief Return all vertices in the mesh.
+    \return auto Return all vertices in the mesh as a sequence for use, e.g.,
+      in range based for loops.
    */
   auto vertices() {
     return mesh_.entities<0,0>();
   } // vertices
 
   /*!
-    FIXME
+    \brief Return vertices associated with entity instance of template type E.
+    \tparam E entity type of instance to return vertices for.
+    \param e instance of entity to return vertices for.
+    \return auto Return vertices associated with entity instance e as a
+      sequence.
    */
   template <class E>
   auto vertices(E *e) {
     return mesh_.entities<0,0>(e);
   } // vertices
 
+  /*!
+    FIXME
+   */
   template<size_t M, class E>
   auto vertices(domain_entity<M, E> & e) {
     return mesh_.entities<0, M>(e);
-  } 
+  }
 
   /*!
-    FIXME
+    \brief Return ids for all vertices in the mesh.
+    \return auto Ids for all vertices in the mesh.
    */
   auto vertex_ids() {
     return mesh_.entity_ids<0,0>();
   } // vertex_ids
 
   /*!
-    FIXME
+    \brief Return vertex ids associated with entity instance of template type E.
+    \tparam E entity type of instance to return vertex ids for.
+    \param e instance of entity to return vertex ids for.
+    \return auto Return vertex ids associated with entity instance e as a
+      sequence.
    */
   template <class E>
   auto vertex_ids(E *e) {
@@ -222,28 +237,47 @@ public:
    *--------------------------------------------------------------------------*/
 
   /*!
-    Get number of mesh edges.
+    \brief Return the number of mesh edges.
+    \return size_t The number of mesh edges.
    */
   size_t num_edges() const {
     return mesh_.num_entities<1,0>();
   } // num_edges
 
   /*!
-    FIXME
+    \brief Return all edges in the mesh.
+    \return auto Return all edges in the mesh as a sequence for use, e.g.,
+      in range based for loops.
    */
   auto edges() {
     return mesh_.entities<1,0>();
   } // edges
 
   /*!
-    FIXME
+    \brief Return edges associated with entity instance of template type E.
+    \tparam E entity type of instance to return edges for.
+    \param e instance of entity to return edges for.
+    \return auto Return edges associated with entity instance e as a sequence.
+   */
+  template <class E>
+  auto edges(E *e) {
+    return mesh_.entities<1,0>(e);
+  } // edges
+
+  /*!
+    \brief Return ids for all edges in the mesh.
+    \return auto Ids for all edges in the mesh.
    */
   auto edge_ids() {
     return mesh_.entity_ids<1,0>();
   } // edge_ids
 
   /*!
-    FIXME
+    \brief Return edge ids associated with entity instance of template type E.
+    \tparam E entity type of instance to return edge ids for.
+    \param e instance of entity to return edge ids for.
+    \return auto Return edge ids associated with entity instance e as a
+      sequence.
    */
   template <class E>
   auto edge_ids(E *e) {
@@ -253,11 +287,6 @@ public:
   /*!
     FIXME
    */
-  template <class E>
-  auto edges(E *e) {
-    return mesh_.entities<1,0>(e);
-  } // edges
-
   template<size_t M, class E>
   auto edges(domain_entity<M, E>& e) {
     return mesh_.entities<1,M>(e);
@@ -272,67 +301,88 @@ public:
    *--------------------------------------------------------------------------*/
 
   /*!
-    Get number of mesh cells.
+    Return the number of cells in the mesh.
+    \return size_t The number of cells in the mesh.
    */
   size_t num_cells() const {
     return mesh_.num_entities<dimension(),0>();
   } // num_cells
 
   /*!
-    FIXME
+    \brief Return all cells in the mesh.
+    \return auto Return all cells in the mesh as a sequence for use, e.g.,
+      in range based for loops.
    */
   auto cells() {
     return mesh_.entities<dimension(),0>();
   } // cells
 
   /*!
-    FIXME
-   */
-  auto cell_ids() {
-    return mesh_.entity_ids<dimension(),0>();
-  } // cell_ids
-
-  /*!
-    FIXME
-   */
-  template <class E>
-  auto cell_ids(E *e) {
-    return mesh_.entity_ids<dimension(),0>(e);
-  } // cell_ids
-
-  /*!
-    FIXME
+    \brief Return cells associated with entity instance of template type E.
+    \tparam E entity type of instance to return cells for.
+    \param e instance of entity to return cells for.
+    \return auto Return cells associated with entity instance e as a
+      sequence.
    */
   template <class E>
   auto cells(E *e) {
     return mesh_.entities<dimension(),0>(e);
   } // cells
 
+  /*!
+    FIXME
+   */
   template<size_t M, class E>
   auto cells(domain_entity<M, E>& e) {
     return mesh_.entities<dimension()>(e);
   } // cells
+
+  /*!
+    \brief Return ids for all cells in the mesh.
+    \return auto Ids for all cells in the mesh.
+   */
+  auto cell_ids() {
+    return mesh_.entity_ids<dimension(),0>();
+  } // cell_ids
+
+  /*!
+    \brief Return cell ids associated with entity instance of template type E.
+    \tparam E entity type of instance to return cell ids for.
+    \param e instance of entity to return cell ids for.
+    \return auto Return cell ids associated with entity instance e as a
+      sequence.
+   */
+  template <class E>
+  auto cell_ids(E *e) {
+    return mesh_.entity_ids<dimension(),0>(e);
+  } // cell_ids
 
   /*--------------------------------------------------------------------------*
    * Corner Interface
    *--------------------------------------------------------------------------*/
 
   /*!
-    Get number of mesh corners.
+    \brief Return number of corners in the mesh.
    */
   size_t num_corners() const {
     return mesh_.num_entities<1,1>();
   } // num_corners
 
   /*!
-    FIXME
+    \brief Return all corners in the mesh.
+    \return auto Return all corners in the mesh as a sequence for use, e.g.,
+      in range based for loops.
    */
   auto corners() {
     return mesh_.entities<1,1>();
   } // corners
 
   /*!
-    FIXME
+    \brief Return corners associated with entity instance of template type E.
+    \tparam E entity type of instance to return corners for.
+    \param e instance of entity to return corners for.
+    \return auto Return corners associated with entity instance e as a
+      sequence.
    */
   template <class E>
   auto corners(E *e) {
@@ -340,6 +390,9 @@ public:
   } // corners
 
 #if 0
+  /*!
+    FIXME
+   */
   template<size_t M, class E>
   auto corners(domain_entity<M, E> & e) {
     return mesh_.entities<1, M>(e);
@@ -347,14 +400,19 @@ public:
 #endif
 
   /*!
-    FIXME
+    \brief Return ids for all corners in the mesh.
+    \return auto Ids for all corners in the mesh.
    */
   auto corner_ids() {
     return mesh_.entity_ids<1,1>();
   } // corner_ids
 
   /*!
-    FIXME
+    \brief Return corner ids associated with entity instance of template type E.
+    \tparam E entity type of instance to return corner ids for.
+    \param e instance of entity to return corner ids for.
+    \return auto Return corner ids associated with entity instance e as a
+      sequence.
    */
   template <class E>
   auto corner_ids(E *e) {
