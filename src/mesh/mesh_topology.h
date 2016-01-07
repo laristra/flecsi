@@ -774,6 +774,7 @@ public:
     idVec.push_back(idVec.size());
   } // add_entity
 
+#if 0
   template<size_t M, class T>
   void add_vertex(T *vertex) {
     add_vertex_<M>(vertex);
@@ -783,6 +784,7 @@ public:
   void add_vertex_(vertex_type<M> *vertex) {
     add_entity<0, M>(vertex);
   } // add_vertex
+#endif
 
   template<size_t M, class T>
   void add_edge(T *edge) {
@@ -819,6 +821,9 @@ public:
     init_cell_<M>(cell, verts);
   } // init_cell
 
+//
+// This seems problematic, should be more general
+//
   template<size_t M>
   void init_cell_(cell_type<M> *cell,
     std::initializer_list<vertex_type<M> *> verts) {
@@ -951,7 +956,7 @@ public:
     connectivity_t & cell_to_vertex = get_connectivity_(M, MT::dimension, 0);
     assert(!cell_to_vertex.empty());
 
-    const size_t _num_cells = num_cells<M>();
+    const size_t _num_cells = num_entities<MT::dimension,M>();
 
     // Storage for cell-to-entity connectivity information.
     connection_vector_t cell_entity_conn(_num_cells);
@@ -1233,7 +1238,7 @@ public:
     // Helper variables
     size_t entity_id(0);
     size_t max_cell_entity_conns = 1;
-    const size_t _num_cells = num_cells<M0>();
+    const size_t _num_cells = num_entities<MT::dimension,M0>();
 
     // Storage for cell-to-entity connectivity information
     connection_vector_t cell_entity_conn(_num_cells);
@@ -1331,25 +1336,10 @@ public:
 //
 //
 
-  template<size_t M=0>
-  decltype(auto) num_cells() const {
-    return entities_[M][MT::dimension].size();
-  } // num_cells
-
-  template<size_t M=0>
-  decltype(auto) num_vertices() const {
-    return entities_[M][0].size();
-  } // num_vertices
-
-  template<size_t M=0>
-  decltype(auto) num_edges() const { 
-    return entities_[M][1].size(); 
-  } // numEdges
-
-  template<size_t M=0>
-  decltype(auto) num_faces() const {
-    return entities_[M][MT::dimension - 1].size();
-  } // num_faces
+  template<size_t D, size_t M=0>
+  decltype(auto) num_entities() const {
+    return entities_[M][D].size();
+  } // num_entities
 
 //
 //
@@ -1477,14 +1467,34 @@ public:
       fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
   } // entities
 
-  template <size_t M, class E> decltype(auto) vertices(const E *e) const {
+//
+//
+// We need to get rid of these
+//
+//
+
+  template<size_t D, size_t M, class E>
+  decltype(auto) entities(domain_entity<M,E> & e) const {
+    return entities<D,M>(e.entity());
+  } // entities
+
+  template<size_t D, size_t M, class E>
+  decltype(auto) entities(domain_entity<M,E> & e) {
+    return entities<D,M>(e.entity());
+  } // entities
+
+#if 0
+  template <size_t M, class E>
+  decltype(auto) vertices(const E *e) const {
     return entities<0, M>(e);
   } // vertices
 
-  template <size_t M, class E> decltype(auto) vertices(E *e) {
+  template <size_t M, class E>
+  decltype(auto) vertices(E *e) {
     return entities<0, M>(e);
   } // vertices
 
+#endif
   template<size_t M, class E>
   decltype(auto) vertices(domain_entity<M, E>& e) const {
     return entities<0, M>(e.entity());
@@ -1524,6 +1534,12 @@ public:
   decltype(auto) cells(domain_entity<M, E>& e){
     return entities<MT::dimension, M>(e.entity());
   } // cells
+
+//
+//
+//
+//
+//
 
   /*--------------------------------------------------------------------------*
    * Edge Interface

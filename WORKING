@@ -24,3 +24,8 @@
 
 'mesh/mesh_topology.h'
 	Try to merge compute_connectivity and compute_bindings.
+
+'MESH PROBLEM'
+	The low-level interface should avoid using terms like 'cell',
+	'vertex', 'edge', etc...  These should be referenced by domain
+	and dimension.  Need to clean this up...

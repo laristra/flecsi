@@ -93,9 +93,7 @@ TEST_F(Burton, mesh) {
   for(auto c : b.corners()) {
     CINCH_CAPTURE() << "----------- corner id: " << c.id() << endl;
   } // for
-#endif
 
-#if 0
   CINCH_CAPTURE() << separator;
   CINCH_CAPTURE() << "For each cell:" << std::endl;
   for(auto c : b.cells()) {

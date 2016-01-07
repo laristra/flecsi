@@ -174,24 +174,28 @@ public:
     Get number of mesh vertices.
    */
   size_t num_vertices() const {
-    return mesh_.num_vertices<0>();
+    return mesh_.num_entities<0,0>();
   } // num_vertices
 
   /*!
     Get number of mesh edges.
    */
-  size_t num_edges() const { return mesh_.num_edges<0>(); } // num_edges
+  size_t num_edges() const {
+    return mesh_.num_entities<1,0>();
+  } // num_edges
 
   /*!
     Get number of mesh cells.
    */
-  size_t num_cells() const { return mesh_.num_cells<0>(); } // num_cells
+  size_t num_cells() const {
+    return mesh_.num_entities<dimension(),0>();
+  } // num_cells
 
   /*!
     Get number of corners.
    */
   size_t num_corners() {
-    return mesh_.num_entities(1, 1);
+    return mesh_.num_entities<1,1>();
   } // num_corners
 
   /*!
@@ -240,7 +244,9 @@ public:
   template <class E> auto vertices(E *e) { return mesh_.vertices<0>(e); }
 
   template<size_t M, class E>
-  auto vertices(domain_entity<M, E>& e) { return mesh_.vertices(e); } 
+  auto vertices(domain_entity<M, E>& e) {
+    return mesh_.entities<0, M>(e);
+  } 
 
   /*!
     FIXME
@@ -281,10 +287,11 @@ public:
   // FIXME: Complete changes to state storage
   vertex_t * create_vertex(const point_t &pos) {
     auto p = access_state_<point_t,flexi_internal>("coordinates");
-    p[mesh_.num_vertices()] = pos;
+    p[num_vertices()] = pos;
 
     auto v = mesh_.make<vertex_t>(state_);
-    mesh_.add_vertex<0>(v);
+    mesh_.add_entity<0, 0>(v);
+
     return v;
   }
 
@@ -296,8 +303,9 @@ public:
   cell_t * create_cell(std::initializer_list<vertex_t *> verts) {
     // FIXME: Add element types
     cell_t * c = mesh_.make<quadrilateral_cell_t>();
-    mesh_.add_cell<0>(c);
+    mesh_.add_entity<dimension(), 0>(c);
 
+    // FIXME: Need to make mesh interface more general
     mesh_.init_cell<0>(c, verts);
     return c;
   } // create_cell
@@ -377,7 +385,9 @@ public:
    */
   void init() {
     mesh_.init<0>();
+  } // init
 
+// ATTIC...
 #if 0
     std::vector<vertex_t *> dual_vertices;
 
@@ -466,8 +476,6 @@ public:
 
     mesh_.init<1>();
 #endif
-  } // init
-
   /*!
     Get the centroid of a cell.
     
@@ -490,7 +498,7 @@ public:
     \return a point_t that is the midpoint.
   */
   point_t midpoint(const edge_t *e) const {
-    auto vs = mesh_.vertices<0>(e).to_vec();
+    auto vs = mesh_.entities<0,0>(e).to_vec();
     return point_t(flexi::midpoint(vs[0]->coordinates(),vs[1]->coordinates()));
   }
 
