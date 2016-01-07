@@ -1185,36 +1185,86 @@ public:
       build_bindings<FM>(from_dim);
     } // if
 
+    if(num_entities_(TM, to_dim) == 0) {
+      build_bindings<TM>(to_dim);
+    } // if
+
+    if(num_entities_(FM, from_dim) == 0 && num_entities_(TM, to_dim) == 0) {
+      return;
+    } // if
+
+    // FIXME: Need to complete
+
   } // compute_bindings
 
   template<size_t M>
   void build_bindings(size_t dim) {
-    using ent_vec_t = entity_vector_t<MT::num_domains>;
+    // Sanity check
+    assert(dim <= MT::dimension);
 
     // Much of the connectivity informaiton used in this method
     // is derived from the "primal" mesh, i.e., domain 0
     static constexpr size_t M0 = 0;
 
+    // Helper variables
+    size_t entity_id(0);
+    size_t max_cell_entity_conns = 1;
+
+    const size_t _num_cells = num_cells<M0>();
+
+    // Storage for cell-to-entity connectivity information
+    connection_vector_t cell_entity_conn(_num_cells);
+
+    id_vector_map_t entity_ids_map;
+
     // Get cell definitions from domain 0
+    using ent_vec_t = entity_vector_t<MT::num_domains>;
     ent_vec_t & cells = entities_[M0][MT::dimension];
 
     for(auto c: cells) {
       // Get a cell object.
       auto cell = static_cast<cell_type<M0> *>(c);
+      const size_t cell_id = cell->template id<M0>();
 
       // Get ids of entities with at least this dimension
-      connection_vector_t primal_ids;
-      for(size_t dim(0); dim<=MT::dimension; ++dim) {
+      connection_vector_t primal_ids(MT::dimension+1);
+      for(size_t dim(0); dim<MT::dimension; ++dim) {
         // Get domain 0 mesh connectivity information
         connectivity_t & conn = get_connectivity_(M0, MT::dimension, dim);
 
         size_t count;
-        id_t * ids = conn.get_entities(cell->template id<M0>(), count);
+        id_t * ids = conn.get_entities(cell_id, count);
 
         for(size_t i(0); i<count; ++i) {
           primal_ids[dim].push_back(to_global_id<M0>(dim, ids[i]));
-          std::cout << "adding primal id: " << ids[i] << std::endl;
         } // for
+      } // for
+
+      primal_ids[MT::dimension].push_back(
+        to_global_id<M0>(MT::dimension, cell_id));
+
+      id_vector_t entity_ids;
+
+      id_vector_t & conns = cell_entity_conn[cell_id];
+
+      // p.first:   The number of entities per cell.
+      // p.second:  A std::vector of id_t containing the ids of the
+      //            entities that define the bound entity.
+      auto p = cell->create_bound_entities(dim, primal_ids, entity_ids);
+
+      // iterate over the newly-defined entities
+      for(size_t i(0); i<p.first; ++i) {
+
+
+        id_t * a = &entity_ids[i * p.second[i]];        
+        id_vector_t ev(a, a + p.second[i]);
+
+        std::sort(ev.begin(), ev.end());
+
+        auto itr = entity_ids_map.emplace(std::move(ev), entity_id);
+
+        // Add this id to the cell entity connections
+        conns.push_back(itr.first->second);
       } // for
     } // for
   } // build_bindings

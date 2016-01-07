@@ -97,7 +97,8 @@ struct burton_cell_t : public mesh_entity_t<2, N> {
     std::vector<id_t> &e, id_t * v, size_t vertex_count) = 0;
 
   virtual std::pair<size_t, std::vector<id_t>> create_bound_entities(
-    size_t dim, const std::vector<id_t> ent_ids, std::vector<id_t> & c) = 0;
+    size_t dim, const std::vector<std::vector<id_t>> ent_ids,
+    std::vector<id_t> & c) = 0;
 
 }; // class burton_cell_t
 
@@ -138,7 +139,7 @@ public:
   } // createEntities
   
   std::pair<size_t, std::vector<id_t>> create_bound_entities(size_t dim,
-    const std::vector<id_t> ent_ids, std::vector<id_t> & c) {
+    const std::vector<std::vector<id_t>> ent_ids, std::vector<id_t> & c) {
 
     switch(dim) {
       // Corners
@@ -146,20 +147,20 @@ public:
         c.resize(8);
 
         // corner 0
-        c[0] = ent_ids[0]; // vertex 0
-        c[1] = ent_ids[7]; // cell
+        c[0] = ent_ids[0][0]; // vertex 0
+        c[1] = ent_ids[2][0]; // cell
 
         // corner 1
-        c[2] = ent_ids[1]; // vertex 1
-        c[3] = ent_ids[7]; // cell
+        c[2] = ent_ids[0][1]; // vertex 1
+        c[3] = ent_ids[2][0]; // cell
 
         // corner 2
-        c[4] = ent_ids[2]; // vertex 2
-        c[5] = ent_ids[7]; // cell
+        c[4] = ent_ids[0][2]; // vertex 2
+        c[5] = ent_ids[2][0]; // cell
 
         // corner 3
-        c[6] = ent_ids[3]; // vertex 3
-        c[7] = ent_ids[7]; // cell
+        c[6] = ent_ids[0][3]; // vertex 3
+        c[7] = ent_ids[2][0]; // cell
 
         return {4, {2, 2, 2, 2}};
 
