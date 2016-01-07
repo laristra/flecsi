@@ -216,7 +216,7 @@ public:
   /*!
     FIXME
    */
-//  auto corners() { return mesh_.edges<1>(); }
+  auto corners() { return mesh_.edges<1>(); }
 
   /*!
     FIXME
