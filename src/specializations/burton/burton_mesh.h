@@ -191,7 +191,7 @@ public:
     Get number of corners.
    */
   size_t num_corners() {
-    return mesh_.num_entities(1, 0);
+    return mesh_.num_entities(1, 1);
   } // num_corners
 
   /*!
@@ -208,6 +208,11 @@ public:
     FIXME
    */
   auto cells() { return mesh_.cells<0>(); }
+
+  /*!
+    FIXME
+   */
+//  auto corners() { return mesh_.edges<1>(); }
 
   /*!
     FIXME

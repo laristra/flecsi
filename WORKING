@@ -21,3 +21,6 @@
 'mesh-based example of index spaces'
 	Powerpoint slide of figures on simple mesh with vertices, edges, faces,
 	cells and corners.
+
+'mesh/mesh_topology.h'
+	Try to merge compute_connectivity and compute_bindings.
