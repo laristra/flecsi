@@ -76,7 +76,8 @@ struct burton_mesh_traits_t {
    *--------------------------------------------------------------------------*/
 
   /*!
-    FIXME
+    \brief Struct to hold meta data for private state. Meta data includes site
+      and attributes.
    */
   struct private_state_meta_data_t {
 
@@ -91,6 +92,7 @@ struct burton_mesh_traits_t {
 
   }; // struct private_state_meta_data_t
   
+  //! A type definition of state_t based on the storage policy for the mesh
 #ifndef MESH_STORAGE_POLICY
   using mesh_state_t = state_t<private_state_meta_data_t>;
 #else
