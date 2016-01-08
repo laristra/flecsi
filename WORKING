@@ -29,3 +29,5 @@
 	The low-level interface should avoid using terms like 'cell',
 	'vertex', 'edge', etc...  These should be referenced by domain
 	and dimension.  Need to clean this up...
+
+'Boundary Condition Support'

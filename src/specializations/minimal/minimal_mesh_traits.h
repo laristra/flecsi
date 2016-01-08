@@ -19,12 +19,12 @@ struct minimal_mesh_traits_t {
   /*!
     Specify the dimension of the mesh topology.
    */
-  static constexpr size_t dimension = 2;
+  static constexpr size_t dimension = 3;
 
   /*!
     Specify the number of mesh topology domains.
    */
-  static constexpr size_t num_domains = 2;
+  static constexpr size_t num_domains = 1;
 
   /*!
     Specify the data attachment sites on the mesh.
@@ -32,6 +32,7 @@ struct minimal_mesh_traits_t {
   enum class attachment_site_t : size_t {
     vertices,
     edges,
+    faces,
     cells
   }; // enum class attachment_site_t
 
