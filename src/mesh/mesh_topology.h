@@ -319,18 +319,8 @@ public:
 template <class MT> class mesh_topology_t : public mesh_topology_base_t
 {
 public:
-
-  template<size_t M>
-  using vertex_type = typename find_entity_<MT, 0, M>::type;
-
-  template<size_t M>
-  using edge_type = typename find_entity_<MT, 1, M>::type;
-
-  template<size_t M>
-  using face_type = typename find_entity_<MT, MT::dimension - 1, M>::type;
-
-  template<size_t M>
-  using cell_type = typename find_entity_<MT, MT::dimension, M>::type;
+  template<size_t D, size_t M>
+  using entity_type = typename find_entity_<MT, D, M>::type;
 
   /*--------------------------------------------------------------------------*
    * class Iterator
@@ -788,96 +778,18 @@ public:
 // This seems problematic, should be more general
 //
   template<size_t M>
-  void init_cell_(cell_type<M> *cell,
-    std::initializer_list<vertex_type<M> *> verts) {
+  void init_cell_(entity_type<MT::dimension, M> *cell,
+    std::initializer_list<entity_type<0, M> *> verts) {
     auto &c = get_connectivity_(M, MT::dimension, 0);
 
     assert(cell->template id<M>() == c.from_size() && "id mismatch");
 
-    for(vertex_type<M> *v : verts) {
+    for(entity_type<0, M> *v : verts) {
       c.push(v->template id<M>());
     } // for
 
     c.end_from();
   } // init_cell
-
-  template<size_t M>
-  void init_edge(edge_type<M> *edge, const vertex_type<M> * vertex1,
-    const vertex_type<M> * vertex2) {
-
-    auto &c = get_connectivity_(1, 0);
-    if (c.empty()) {
-      c.init();
-    } // if
-
-    assert(edge->template id<M>() == c.from_size() && "id mismatch");
-
-    c.push(vertex1->template id<M>());
-    c.push(vertex2->template id<M>());
-
-    c.end_from();
-  } // init_edge
-
-  template<size_t M>
-  void init_face(face_type<M> *face,
-                 std::initializer_list<vertex_type<M> *> verts) {
-    assert(verts.size() == MT::num_vertices_per_entity(2) &&
-        "invalid number vertices per face");
-
-    auto &c = get_connectivity_(MT::dimension - 1, 0);
-    if (c.empty()) {
-      c.init();
-    }
-
-    assert(face->template id<M>() == c.from_size() && "id mismatch");
-
-    for (vertex_type<M> *v : verts) {
-      c.push(v);
-    }
-
-    c.end_from();
-  } // init_face
-
-  template<size_t M>
-  void init_cell_edges(cell_type<M> *cell,
-                       std::initializer_list<edge_type<M> *> edges) {
-    assert(edges.size() == MT::num_entities_per_cell(1) &&
-        "invalid number of edges per cell");
-
-    auto &c = get_connectivity_(MT::dimension, 1);
-    if (c.empty()) {
-      c.init();
-    }
-
-    assert(cell->template id<M>() == c.from_size() && "id mismatch");
-
-    for (edge_type<M> *edge : edges) {
-      c.push(edge);
-    }
-
-    c.end_from();
-  } // init_cell_edges
-
-  template<size_t M>
-  void init_cell_faces(cell_type<M> *cell,
-                       std::initializer_list<face_type<M> *> faces) {
-
-    assert(faces.size() == MT::num_entities_per_cell(MT::dimension - 1) &&
-        "invalid number of face per cell");
-
-    auto &c = get_connectivity_(MT::dimension, MT::dimension - 1);
-    if (c.empty()) {
-      c.init();
-    }
-
-    assert(cell->template id<M>() == c.from_size() && "id mismatch");
-
-    for (face_type<M> *face : faces) {
-      c.push(face);
-    }
-
-    c.end_from();
-  } // init_cell_faces
 
 //
 //
@@ -937,7 +849,8 @@ public:
     for (size_t c = 0; c < _num_cells; ++c) {
 
       // Get the cell object
-      auto cell = static_cast<cell_type<M>*>(entities_[M][MT::dimension][c]);
+      auto cell = 
+        static_cast<entity_type<MT::dimension, M>*>(entities_[M][MT::dimension][c]);
 
       // Get storage reference.
       id_vector_t & conns = cell_entity_conn[c];
@@ -1217,7 +1130,7 @@ public:
     for(auto c: cells) {
 
       // Get a cell object.
-      auto cell = static_cast<cell_type<M0> *>(c);
+      auto cell = static_cast<entity_type<MT::dimension, M0> *>(c);
       const size_t cell_id = cell->template id<M0>();
 
       // Get ids of entities with at least this dimension
