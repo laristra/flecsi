@@ -1303,26 +1303,6 @@ public:
     return entities_[M][dim][id];
   } // get_entity
 
-  /*--------------------------------------------------------------------------*
-   * Vertex Interface
-   *--------------------------------------------------------------------------*/
-
-  template<size_t M=0>
-  entity_range_t<0, M> vertices() { 
-    return entity_range_t<0, M>(*this, id_vecs_[M][0]); 
-  } // vertices
-
-  template<size_t M=0>
-  const_entity_range_t<0, M> vertices() const { 
-    return const_entity_range_t<0, M>(*this, id_vecs_[M][0]);
-  } // vertices
-
-  template<size_t M=0>
-  id_range vertex_ids() const {
-    assert(!id_vecs_[M][0].empty());
-    return id_range(id_vecs_[M][0]);
-  } // vertex_ids
-
   template <size_t D, size_t FM, size_t TM=FM, class E>
   const_entity_range_t<D, TM>
   entities(const E *e) const {
