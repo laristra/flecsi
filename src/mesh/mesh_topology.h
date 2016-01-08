@@ -402,11 +402,6 @@ public:
 
   }; // class entity_index_iterator
 
-  using vertex_index_iterator = entity_index_iterator<0>;
-  using edge_index_iterator = entity_index_iterator<1>;
-  using face_index_iterator = entity_index_iterator<MT::dimension - 1>;
-  using cell_index_iterator = entity_index_iterator<MT::dimension>;
-
   /*--------------------------------------------------------------------------*
    * class iterator
    *--------------------------------------------------------------------------*/
@@ -463,8 +458,11 @@ public:
    * class const_iterator
    *--------------------------------------------------------------------------*/
 
-  template <size_t D, size_t M=0> class const_iterator {
+  template <size_t D, size_t M=0>
+  class const_iterator
+  {
   public:
+
     using entity_type = typename find_entity_<MT, D, M>::type;
 
     const_iterator(const const_iterator &itr)
@@ -508,16 +506,6 @@ public:
     size_t index_;
 
   }; // class iterator
-
-  using vertex_iterator = iterator<0>;
-  using edge_iterator = iterator<1>;
-  using face_iterator = iterator<MT::dimension - 1>;
-  using cell_iterator = iterator<MT::dimension>;
-
-  using const_vertex_iterator = const_iterator<0>;
-  using const_edge_iterator = const_iterator<1>;
-  using const_face_iterator = const_iterator<MT::dimension - 1>;
-  using const_cell_iterator = const_iterator<MT::dimension>;
 
   /*--------------------------------------------------------------------------*
    * class entity_range_t
@@ -850,7 +838,8 @@ public:
 
       // Get the cell object
       auto cell = 
-        static_cast<entity_type<MT::dimension, M>*>(entities_[M][MT::dimension][c]);
+        static_cast<entity_type<MT::dimension, M>*>(
+        entities_[M][MT::dimension][c]);
 
       // Get storage reference.
       id_vector_t & conns = cell_entity_conn[c];

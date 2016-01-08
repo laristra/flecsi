@@ -74,6 +74,14 @@ public:
 };
 
 using TestMesh = mesh_topology_t<TestMesh2dType>;
+using vertex_index_iterator =
+	TestMesh::entity_index_iterator<0>;
+using edge_index_iterator =
+	TestMesh::entity_index_iterator<1>;
+using face_index_iterator =
+	TestMesh::entity_index_iterator<TestMesh2dType::dimension-1>;
+using cell_index_iterator =
+	TestMesh::entity_index_iterator<TestMesh2dType::dimension>;
 
 TEST(mesh_topology, traversal) {
 
@@ -115,11 +123,11 @@ TEST(mesh_topology, traversal) {
 
   CINCH_CAPTURE() << "------------- forall cells, vertices" << endl;
 
-  for(TestMesh::cell_index_iterator c(*mesh); !c.end(); ++c){
+  for(cell_index_iterator c(*mesh); !c.end(); ++c){
     CINCH_CAPTURE() << "------- cell id: " << *c << endl;
-    for(TestMesh::vertex_index_iterator v(c); !v.end(); ++v){
+    for(vertex_index_iterator v(c); !v.end(); ++v){
       CINCH_CAPTURE() << "--------- vertex id: " << *v << endl;
-      for(TestMesh::cell_index_iterator c2(v); !c2.end(); ++c2){
+      for(cell_index_iterator c2(v); !c2.end(); ++c2){
         CINCH_CAPTURE() << "cell2 id: " << *c2 << endl;
       }
     }
@@ -127,9 +135,9 @@ TEST(mesh_topology, traversal) {
 
   CINCH_CAPTURE() << "------------- forall cells, edges" << endl;
 
-  for(TestMesh::cell_index_iterator c(*mesh); !c.end(); ++c){
+  for(cell_index_iterator c(*mesh); !c.end(); ++c){
     CINCH_CAPTURE() << "------- cell id: " << *c << endl;
-    for(TestMesh::edge_index_iterator e(c); !e.end(); ++e){
+    for(edge_index_iterator e(c); !e.end(); ++e){
       CINCH_CAPTURE() << "edge id: " << *e << endl;
     }
   }
