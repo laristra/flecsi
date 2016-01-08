@@ -721,8 +721,10 @@ public:
 
   //! Constructor
   mesh_topology_t() {
-    for(size_t d = 0; d < MT::num_domains; ++d){
-      get_connectivity_(d, MT::dimension, 0).init();
+    for(size_t from_dim = 0; from_dim < MT::num_domains; ++from_dim){
+      for(size_t to_dim = 0; to_dim < MT::num_domains; ++to_dim){
+        get_connectivity_(from_dim, to_dim, MT::dimension, 0).init();
+      }
     }
   } // mesh_topology_t()
 
@@ -1185,8 +1187,6 @@ public:
 
   template<size_t M = 0>
   void init() {
-    std::cout << "init called for domain " << M << std::endl;
-
     // Compute mesh connectivity
     using TP = typename MT::connectivities;
     compute_connectivity_<M, std::tuple_size<TP>::value, TP>::compute(*this);
@@ -1375,13 +1375,18 @@ public:
 //
 
   void dump() {
-    for(size_t d = 0; d < MT::num_domains; ++d){
-      for (size_t i = 0; i < topology_[d].size(); ++i) {
-        auto &ci = topology_[d][d][i];
-        for (size_t j = 0; j < ci.size(); ++j) {
-          auto &cj = ci[j];
-          std::cout << "------------- " << i << " -> " << j << std::endl;
-          cj.dump();
+    for(size_t from_domain = 0; from_domain < MT::num_domains; ++from_domain){
+      std::cout << "=========== from domain: " << from_domain << std::endl;
+      for(size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain){
+        std::cout << "=== to domain: " << to_domain << std::endl;
+        size_t n = topology_[from_domain][to_domain].size();
+        for (size_t i = 0; i < n; ++i) {
+          auto &ci = topology_[from_domain][to_domain][i];
+          for (size_t j = 0; j < ci.size(); ++j) {
+            auto &cj = ci[j];
+            std::cout << "------------- " << i << " -> " << j << std::endl;
+            cj.dump();
+          }
         }
       }
     }
