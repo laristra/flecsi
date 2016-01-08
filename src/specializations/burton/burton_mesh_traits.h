@@ -46,9 +46,13 @@ struct burton_mesh_traits_t {
   //! Set the type for floating-point values
   using real_t = double;
 
+  //! A point type with real_t data and mesh dimension
   using point_t = point<real_t, dimension>;
+
+  //! A space_vector type of real_t data and mesh dimension
   using vector_t = space_vector<real_t, dimension>;
 
+  //! Enumeration of the locations on the mesh where data may be sited
   enum class attachment_site_t : size_t {
     vertices,
 #if FLEXI_MESH_DIMENSION >= 2
@@ -61,6 +65,7 @@ struct burton_mesh_traits_t {
     corners
   }; // enum class attachment_site_t
 
+  //! Enumeration of the available attributes on state data
   enum class state_attribute_t : bitfield_t::field_type_t {
     persistent = 0,
     temporary = 1 // just a placeholder for now
@@ -70,6 +75,9 @@ struct burton_mesh_traits_t {
    * State type definitions
    *--------------------------------------------------------------------------*/
 
+  /*!
+    FIXME
+   */
   struct private_state_meta_data_t {
 
     void initialize(attachment_site_t site_,
