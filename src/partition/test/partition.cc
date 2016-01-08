@@ -159,26 +159,35 @@ protected:
   template < typename index_t >
   void create_cell_adjacency( vector<index_t> &cell_idx, vector<index_t> &cell_neigh ) {
 
+    index_t neigh_cnt( 0 );
     cell_idx[0] = 0;
     
 #if 1
     
-    for ( auto c : mesh_.cells() ) 
+    for ( auto c : mesh_.cells() ) {
       for ( auto e : mesh_.edges(c) ) {
-        // 2d specific, only add the non-c cell
+        // get the cells on each side of the edge
         auto neigh =  mesh_.cells(e).to_vec();
+        // make sure there are neighbors
+        if ( neigh.size() < 2 ) continue;
+        // figure out which neighbor to add
+        index_t neigh_id;
         if ( neigh[1] == c ) 
-          cell_neigh.push_back( neigh[0].id() );
+          neigh_id = neigh[0].id();
         else if ( neigh[0] == c )
-          cell_neigh.push_back( neigh[1].id() );
+          neigh_id = neigh[1].id();
         else
           FAIL();
+        // add the neighbor to the list
+        cell_neigh.push_back( neigh_id );
+        neigh_cnt++;
       }
+      // set the offset
+      cell_idx[ c.id() + 1 ] = neigh_cnt;
+    }
     
 #else
     
-    index_t neigh_cnt( 0 );
-
     for ( auto c : mesh_.cells() ) {
       cout << c.id();
       for ( auto neigh : mesh_.cells(c) ) {
