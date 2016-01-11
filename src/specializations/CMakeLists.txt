@@ -37,9 +37,9 @@ endif(ENABLE_IO)
 #  PARENT_SCOPE
 #)
 
-#cinch_add_unit(minimal
-#  SOURCES minimal/test/minimal.cc
-#)
+cinch_add_unit(minimal
+  SOURCES minimal/test/minimal.cc
+)
 
 cinch_add_unit(burton
   SOURCES burton/test/burton.cc

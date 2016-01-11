@@ -32,8 +32,7 @@ struct minimal_mesh_types_t {
       std::pair<domain_<0>, vertex_t>,
       std::pair<domain_<0>, edge_t>,
       std::pair<domain_<0>, face_t>,
-      std::pair<domain_<0>, cell_t>,
-      std::pair<domain_<1>, vertex_t>
+      std::pair<domain_<0>, cell_t>
     >;
 
   using connectivities =
@@ -42,10 +41,7 @@ struct minimal_mesh_types_t {
       std::tuple<domain_<0>, vertex_t, cell_t>
     >;
 
-  using bindings =
-    std::tuple<
-      std::tuple<domain_<0>, domain_<1>, cell_t, vertex_t>
-    >;
+  using bindings = std::tuple<>;
 
 }; // struct minimal_mesh_types
 
