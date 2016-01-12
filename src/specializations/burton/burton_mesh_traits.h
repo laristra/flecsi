@@ -37,13 +37,13 @@ struct burton_mesh_traits_t {
 #define FLEXI_MESH_DIMENSION 2
 #endif // FLEXI_MESH_DIMENSION
 
-  //! Set the dimension of the mesh
+  //! The dimension of the burton mesh
   static constexpr size_t dimension = FLEXI_MESH_DIMENSION;
 
-  //! Set the number of mesh domains
+  //! The number of mesh domains in the burton mesh
   static constexpr size_t num_domains = 2;
 
-  //! Set the type for floating-point values
+  //! The type for floating-point values
   using real_t = double;
 
   //! A point type with real_t data and mesh dimension

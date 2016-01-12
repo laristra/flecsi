@@ -20,34 +20,59 @@ namespace flexi {
  * class burton_vertex_t
  *----------------------------------------------------------------------------*/
 
+/*!
+  \class burton_vertex_t burton_entity_types.h
+  \brief The burton_vertex_t type provides an interface for managing
+    geometry and state associated with mesh vertices.
+  \tparam size_t N number of domains
+*/
 template<size_t N>
 class burton_vertex_t : public mesh_entity_t<0, N>
 {
 public:
 
+  //! Type containing coordinates of the vertex
   using point_t = burton_mesh_traits_t::point_t;
+  //! Handle for accessing state at vertex
   using state_t = burton_mesh_traits_t::mesh_state_t;
+  //! Number of domains in the burton mesh
   static constexpr size_t num_domains = burton_mesh_traits_t::num_domains;
 
   //! Constructor
   burton_vertex_t(state_t & state)
       : precedence_(0), state_(state) {}
 
+  /*!
+    \brief Set the rank for the vertex
+    \tparam M FIXME
+    \param uint8_t rank to give the vertex
+  */
   template<size_t M>
   void set_rank(uint8_t rank) {
     mesh_entity_t<0, N>::template set_info<M>(rank);
   }
 
+  /*!
+    \brief Get the precedence for the vertex
+    \tparam M FIXME
+  */
   template<size_t M>
   uint64_t precedence() const {
     return 1 << (63 - mesh_entity_t<0, N>::template info<M>());
   } // precedence
 
+  /*!
+    \brief Set the coordinates for a vertex
+    \param point_t coordinates value to set at vertex
+  */
   void set_coordinates(const point_t &coordinates) {
     auto c = state_.accessor<point_t,flexi_internal>("coordinates");
     c[mesh_entity_base_t<num_domains>::template id<0>()] = coordinates;
   } // set_coordinates
 
+  /*!
+    \brief Get the coordinates at a vertex from the state handle
+  */
   const point_t & coordinates() const {
     auto c = state_.accessor<point_t,flexi_internal>("coordinates");
     return c[mesh_entity_base_t<num_domains>::template id<0>()];
@@ -65,37 +90,68 @@ private:
  *----------------------------------------------------------------------------*/
 
 /*!
-   \class burton_edge_t burton_types.h
-   \brief The burton_edge_t type provides an interface for managing and
-          geometry and state associated with mesh edges.
- */
+  \class burton_edge_t burton_entity_types.h
+  \brief The burton_edge_t type provides an interface for managing
+    geometry and state associated with mesh edges.
+  \tparam size_t N the domain of the edge_t
+*/
 template<size_t N>
 struct burton_edge_t : public mesh_entity_t<1, N> {}; // struct burton_edge_t
 
 template<size_t N>
-class burton_corner_t;
+class burton_corner_t; // class burton_corner_t
 
 template<size_t N>
-class burton_wedge_t;
+class burton_wedge_t; // class burton_wedge_t
 
 /*----------------------------------------------------------------------------*
  * class burton_cell_t
  *----------------------------------------------------------------------------*/
 
 /*!
-   \class burton_cell_t burton_types.h
-   \brief The burton_cell_t type provides an interface for managing and
-          geometry and state associated with mesh cells.
- */
+  \class burton_cell_t burton_entity_types.h
+  \brief The burton_cell_t type provides an interface for managing and
+    geometry and state associated with mesh cells.
+  \tparam size_t N The domain in which to create the entity.
+*/
 template<size_t N>
 struct burton_cell_t : public mesh_entity_t<2, N> {
 
+  //! Constructor
   burton_cell_t() {}
+  //! Destructor
   virtual ~burton_cell_t() {}
 
+  /*!
+    \brief create_entities is a function that creates entities
+      of topological dimension dim, using vertices v, and puts the vertices
+      in e. See, e.g., burton_quadrilateral_cell_t for an implementation of
+      this pure virtual function.
+    \param size_t dim The topological dimension of the entity to create.
+    \param std::vector<id_t> &e Vector to fill with ids of the vertices making
+      the entity.
+    \param id_t * v vertex IDs.
+    \param size_t vertex_count The number of vertices making up the entity.
+    \return std::pair<size_t, std::vector<id_t>> A pair with the first entry
+      the number of vertex collections making up the entity, and the second
+      entry the number of vertices per collection.
+  */
   virtual std::pair<size_t, std::vector<id_t>> create_entities(size_t dim,
     std::vector<id_t> &e, id_t * v, size_t vertex_count) = 0;
 
+  /*!
+    \brief create_bound_entities binds mesh entities across domains.
+      See, e.g., burton_quadrilateral_cell_t for an implementation of
+      this pure virtual function.
+    \param size_t dim The topological dimension of the entity being bound.
+    \param const std::vector<std::vector<id_t>> ent_ids The entity ids
+      of the entities making up the binding.
+    \param std::vector<id_t> & c The collection of the ids making up the bound
+      entity.
+    \return std::pair<size_t, std::vector<id_t>> A pair with the first entry
+      the number of entity collections making up the binding, and the second
+      entry the number of entities per collection.
+  */
   virtual std::pair<size_t, std::vector<id_t>> create_bound_entities(
     size_t dim, const std::vector<std::vector<id_t>> ent_ids,
     std::vector<id_t> & c) = 0;
@@ -107,17 +163,18 @@ struct burton_cell_t : public mesh_entity_t<2, N> {
  *----------------------------------------------------------------------------*/
 
 /*!
-  \class burton_quadrilateral_t burton_types.h
-  \brief The burton_quadrilateral_t type provides an interface
-    for managing and geometry and state associated with mesh cells.
- */
+  \class burton_quadrilateral_t burton_entity_types.h
+  \brief The burton_quadrilateral_t type provides a derived instance of
+    burton_cell_t for 2D quadrilateral cells.
+*/
 template<size_t N>
 class burton_quadrilateral_cell_t : public burton_cell_t<N>
 {
 public:
 
   /*!
-   */
+    \brief create_entities function for burton_quadrilateral_cell_t.
+  */
   std::pair<size_t, std::vector<id_t>> create_entities(size_t dim,
     std::vector<id_t> & e, id_t * v, size_t vertex_count) {
     
@@ -136,8 +193,11 @@ public:
     e[7] = v[0];
 
     return {4, {2, 2, 2, 2}};
-  } // createEntities
+  } // create_entities
   
+  /*!
+    \brief create_bound_entities function for burton_quadrilateral_cell_t.
+  */
   std::pair<size_t, std::vector<id_t>> create_bound_entities(size_t dim,
     const std::vector<std::vector<id_t>> ent_ids, std::vector<id_t> & c) {
 
@@ -218,10 +278,11 @@ public:
  *----------------------------------------------------------------------------*/
 
 /*!
-   \class burton_wedge_t burton_types.h
+   \class burton_wedge_t burton_entity_types.h
    \brief The burton_wedge_t type provides an interface for managing and
           geometry and state associated with mesh wedges.
- */
+   \tparam size_t N The domain for the wedge.
+*/
 template<size_t N>
 class burton_wedge_t : public mesh_entity_t<2, N> {
 public:
@@ -264,7 +325,7 @@ private:
  *----------------------------------------------------------------------------*/
 
 /*!
-   \class burton_corner_t burton_types.h
+   \class burton_corner_t burton_entity_types.h
    \brief The burton_corner_t type provides an interface for managing and
           geometry and state associated with mesh corners.
  */

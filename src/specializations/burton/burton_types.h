@@ -43,7 +43,9 @@ struct burton_mesh_types_t {
    * Define local traits to satisfy mesh_topology requirements.
    *--------------------------------------------------------------------------*/
 
+  //! The dimension of the burton mesh picked up from burton_mesh_traits_t
   static constexpr size_t dimension = burton_mesh_traits_t::dimension;
+  //! The number of domains in burton mesh picked up from burton_mesh_traits_t
   static constexpr size_t num_domains = burton_mesh_traits_t::num_domains;
 
   /*--------------------------------------------------------------------------*
@@ -57,7 +59,7 @@ struct burton_mesh_types_t {
   using cell_t = burton_cell_t<num_domains>;
   using quadrilateral_cell_t = burton_quadrilateral_cell_t<num_domains>;
 
-//  using wedge_t = burton_wedge_t<num_domains>;
+  //using wedge_t = burton_wedge_t<num_domains>;
   using corner_t = burton_corner_t<num_domains>;
 
   /*--------------------------------------------------------------------------*
