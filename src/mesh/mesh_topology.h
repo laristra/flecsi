@@ -47,10 +47,13 @@ class mesh_topology_base_t
 {
 public:
 
+  // the topology represents the connectivities as vectors of id's
   using id_vector_t = std::vector<id_t>;
 
+  // used when building the topology connectivities
   using connection_vector_t = std::vector<id_vector_t>;
 
+  // hash use for mapping in building topology connectivity
   struct id_vector_hash_t {
     size_t operator()(const id_vector_t &v) const {
       size_t h = 0;
@@ -61,9 +64,11 @@ public:
     }
   }; // struct id_vector_hash_t
 
+  // used when building the topology connectivities
   using id_vector_map_t =
     std::unordered_map<id_vector_t, id_t, id_vector_hash_t>;
 
+  // the second topology vector holds the offsets into to from dimension
   using index_vector_t = std::vector<size_t>;
 
   /*--------------------------------------------------------------------------*
@@ -104,7 +109,10 @@ public:
     void init(const connection_vector_t & cv) {
       assert(to_id_vec_.empty() && from_index_vec_.empty());
 
+      // the first offset is always 0
       from_index_vec_.push_back(0);
+
+      // populate the to id's and add from offsets for each connectivity group
 
       size_t n = cv.size();
 
@@ -120,27 +128,30 @@ public:
     } // init
 
     /*!
-      FIXME: Need description...
+      Initialize connectivity and create entities.
+      Used in build_connectivity() for creating edges/faces.
 
-      \tparam MT
-      \tparam M
-      \tparam N
-
-      \param iv
-      \param ev
-      \param cv
-      \param dim
+      \tparam mesh type
+      \tparam domain
+      \tparam num domains
+      \param id vector to populate
+      \param entity vector to populate
+      \param input connection vector
+      \param topological dimension of entities created
      */
     template <class MT, size_t M, size_t N>
     void init_create(id_vector_t & iv, entity_vector_t<N> & ev,
       const connection_vector_t & cv, size_t dim) {
       assert(to_id_vec_.empty() && from_index_vec_.empty());
 
+      // the first offset is always 0
       from_index_vec_.push_back(0);
 
       size_t n = cv.size();
 
       id_t maxId = 0;
+
+      // cv is organized into groups of from entity to entity
 
       for (size_t i = 0; i < n; ++i) {
         const id_vector_t &iv = cv[i];
@@ -164,9 +175,9 @@ public:
     } // init_create
 
     /*!
-      FIXME: Need description...
+      Resize a connection.
 
-      \param num_conns
+      \param num_conns Number of connections for each group
      */
     void resize(index_vector_t & num_conns) {
       clear();
@@ -187,12 +198,22 @@ public:
       std::fill(to_id_vec_.begin(), to_id_vec_.end(), 0);
     } // resize
 
+    /*!
+      End a from entity group by setting the end offset in the
+      from connection vector.
+     */
     void end_from() {
       from_index_vec_.push_back(to_id_vec_.size());
     } // end_from
 
+    /*!
+      Push a single id into the current from group.
+     */
     void push(id_t id) { to_id_vec_.push_back(id); } // push
 
+    /*!
+      Debugging method. Dump the raw vectors of the connection.
+     */
     void dump() {
       for(size_t i = 1; i < from_index_vec_.size(); ++i){
         for(size_t j = from_index_vec_[i - 1]; j < from_index_vec_[i]; ++j){
@@ -212,17 +233,29 @@ public:
       } // for
     }   // dump
 
+    /*!
+      Get the from index vector.
+     */
     const id_vector_t &get_from_index_vec() const { return from_index_vec_; }
 
+    /*!
+      Get the to id's vector.
+     */
     const id_vector_t& get_entities() const {
       return to_id_vec_;
     }
 
+    /*!
+      Get the entities of the specified from index.
+     */
     id_t *get_entities(size_t index) {
       assert(index < from_index_vec_.size() - 1);
       return to_id_vec_.data() + from_index_vec_[index];
     }
 
+    /*!
+      Get the entities of the specified from index and return the count.
+     */
     id_t *get_entities(size_t index, size_t &endIndex) {
       assert(index < from_index_vec_.size() - 1);
       uint64_t start = from_index_vec_[index];
@@ -230,16 +263,31 @@ public:
       return to_id_vec_.data() + start;
     }
 
+    /*!
+      True if the connectivity is empty (hasn't been populated).
+     */
     bool empty() const { return to_id_vec_.empty(); }
 
+    /*!
+      Set a single connection.
+     */
     void set(id_t fromId, id_t toId, size_t pos) {
       to_id_vec_[from_index_vec_[fromId] + pos] = toId;
     }
 
+    /*!
+      Return the number of from entities.
+     */
     size_t from_size() const { return from_index_vec_.size() - 1; }
 
+    /*!
+      Return the number of to entities.
+     */
     size_t to_size() const { return to_id_vec_.size(); }
 
+    /*!
+      Set/init the connectivity use by compute topology methods like transpose.
+     */
     template<size_t M, size_t N>
     void set(entity_vector_t<N> &ev, connection_vector_t &conns) {
       clear();
@@ -274,29 +322,35 @@ public:
   }; // class connectivity_t
 
   /*!
+    Return the number of entities in for a specific domain and topology dim.
    */
   virtual size_t num_entities(size_t domain, size_t dim) const = 0;
 
   /*!
+    Return the topological dimension of the mesh.
    */
   virtual size_t topological_dimension() const = 0;
 
   /*!
+    Get the normal (non-binding) connectivity of a domain.
    */
   virtual const connectivity_t & get_connectivity(size_t domain,
     size_t from_dim, size_t to_dim) const = 0;
 
   /*!
+    Get the normal (non-binding) connectivity of a domain.
    */
   virtual connectivity_t &get_connectivity(size_t domain, size_t from_dim,
     size_t to_dim) = 0;
 
-    /*!
+  /*!
+    Get the binding connectivity of specified domains.
    */
   virtual const connectivity_t & get_connectivity(size_t from_domain,
     size_t to_domain, size_t from_dim, size_t to_dim) const = 0;
 
   /*!
+    Get the binding connectivity of specified domains.
    */
   virtual connectivity_t &get_connectivity(size_t from_domain,
     size_t to_domain, size_t from_dim, size_t to_dim) = 0;
@@ -319,6 +373,7 @@ public:
 template <class MT> class mesh_topology_t : public mesh_topology_base_t
 {
 public:
+  // used to find the entity type of topological dimension D and domain M
   template<size_t D, size_t M>
   using entity_type = typename find_entity_<MT, D, M>::type;
 
@@ -326,14 +381,21 @@ public:
    * class Iterator
    *--------------------------------------------------------------------------*/
 
+  /*!
+   \class index_iterator mesh_topology.h
+   \brief An iterator that returns entity id's rather than the entity's
+   themselves. A performance optimization when only the id's are needed.
+  */
   template<size_t M>
   class index_iterator {
   public:
 
+    // top-level iterator constructed from mesh, e.g: cell id's of the mesh
     index_iterator(mesh_topology_t &mesh, size_t dim)
       : mesh_(mesh), entities_(&mesh.get_id_vec_(dim)), dim_(dim), index_(0),
         endIndex_(mesh.num_entities(M, dim)), level_(0) {}
 
+    // uses connectivity, e.g: edges connected to the iterator of a cell
     index_iterator(index_iterator &itr, size_t dim)
         : mesh_(itr.mesh_), dim_(dim), level_(itr.level_ + 1) {
 
@@ -389,23 +451,14 @@ public:
   }; // class index_iterator
 
   /*--------------------------------------------------------------------------*
-   * class entity_index_iterator
-   *--------------------------------------------------------------------------*/
-
-  template <size_t D, size_t M=0>
-  class entity_index_iterator : public index_iterator<M> {
-  public:
-
-    entity_index_iterator(mesh_topology_t &mesh) : index_iterator<M>(mesh, D) {}
-
-    entity_index_iterator(index_iterator<M> &itr) : index_iterator<M>(itr, D) {}
-
-  }; // class entity_index_iterator
-
-  /*--------------------------------------------------------------------------*
    * class iterator
    *--------------------------------------------------------------------------*/
 
+   /*!
+    \class iterator mesh_topology.h
+    \brief An iterator that returns entities for topological dimension D
+    and domain M. 
+   */
   template <size_t D, size_t M=0>
   class iterator
   {
@@ -413,9 +466,11 @@ public:
 
     using entity_type = typename find_entity_<MT, D, M>::type;
 
+    // construct a top-level iterator, e.g: cells of a mesh
     iterator(const iterator &itr)
       : mesh_(itr.mesh_), entities_(itr.entities_), index_(itr.index_) {}
 
+    // construct a nested iterator, e.g: edges of a cell
     iterator(mesh_topology_t &mesh, const id_vector_t &entities, size_t index)
       : mesh_(mesh), entities_(&entities), index_(index) {}
 
@@ -458,6 +513,11 @@ public:
    * class const_iterator
    *--------------------------------------------------------------------------*/
 
+   /*!
+    \class const_iterator mesh_topology.h
+    \brief A const iterator that returns entities for topological dimension D
+    and domain M. 
+   */
   template <size_t D, size_t M=0>
   class const_iterator
   {
@@ -465,9 +525,11 @@ public:
 
     using entity_type = typename find_entity_<MT, D, M>::type;
 
+    // construct a top-level iterator, e.g: cells of a mesh
     const_iterator(const const_iterator &itr)
       : mesh_(itr.mesh_), entities_(itr.entities_), index_(itr.index_) {}
 
+    // construct a nested iterator, e.g: edges of a cell
     const_iterator(const mesh_topology_t &mesh, const id_vector_t &entities,
       size_t index)
       : mesh_(mesh), entities_(&entities), index_(index) {}
@@ -513,7 +575,7 @@ public:
 
   /*!
     \class entity_range_t mesh_topology.h
-    \brief used to enable range-based for iteration
+    \brief A helper class used to enable range-based for iteration. 
    */
   template <size_t D, size_t M=0>
   class entity_range_t
@@ -524,9 +586,11 @@ public:
     using entity_type = typename iterator_t::entity_type;
     using domain_entity_vector_t = std::vector<domain_entity<M, entity_type>>;
 
+    // top-level constructor, e.g: cells of a mesh
     entity_range_t(mesh_topology_t &mesh, const id_vector_t &v)
       : mesh_(mesh), v_(v), begin_(0), end_(v_.size()) {}
 
+    // nested constructor, e.g: edges of a cell
     entity_range_t(mesh_topology_t &mesh, const id_vector_t &v, size_t begin,
       size_t end)
       : mesh_(mesh), v_(v), begin_(begin), end_(end) {}
@@ -573,7 +637,7 @@ public:
 
   /*!
     \class const_entity_range_t mesh_topology.h
-    \brief used to enable range-based for iteration on a const mesh
+    \brief A helper class used to enable range-based for iteration.
    */
 
   template <size_t D, size_t M=0>
@@ -586,9 +650,11 @@ public:
     using domain_entity_vector_t =
       std::vector<domain_entity<M, const entity_type>>;
 
+    // top-level constructor, e.g: cells of a mesh
     const_entity_range_t(const mesh_topology_t &mesh, const id_vector_t &v)
       : mesh_(mesh), v_(v), begin_(0), end_(v_.size()) {}
 
+    // nested constructor, e.g: edges of a cell
     const_entity_range_t(const mesh_topology_t &mesh, const id_vector_t &v,
       size_t begin, size_t end)
       : mesh_(mesh), v_(v), begin_(begin), end_(end) {}
@@ -800,15 +866,15 @@ public:
     Build connectivity informaiton and add entities to the mesh for the
     given dimension.
    */
-  template<size_t M>
-  void build_connectivity(size_t dim) {
+  template<size_t M, size_t D>
+  void build_connectivity() {
     // std::cerr << "build: " << dim << std::endl;
 
     // Sanity check
-    assert(dim <= MT::dimension);
+    assert(D <= MT::dimension);
 
     // Reference to storage from cells to the entity (to be created here).
-    connectivity_t & cell_to_entity = get_connectivity_(M, MT::dimension, dim);
+    connectivity_t & cell_to_entity = get_connectivity_(M, MT::dimension, D);
 
     // Storage for entity-to-vertex connectivity information.
     connection_vector_t entity_vertex_conn;
@@ -859,7 +925,7 @@ public:
       // p.first:   The number of entities per cell.
       // p.second:  A std::vector of id_t containing the ids of the
       //            vertices that define the entity.
-      auto p = cell->create_entities(dim, entity_vertices, vertices, endIndex);
+      auto p = cell->create_entities(D, entity_vertices, vertices, endIndex);
 
       // iterate over the newly-defined entities
       for (size_t i = 0; i < p.first; ++i) {
@@ -871,7 +937,7 @@ public:
         id_vector_t ev(a, a + p.second[i]);
 
         // Sort the ids for the current entity so that they are
-        // monotonically increasing. This insures that entities are
+        // monotonically increasing. This ensures that entities are
         // created uniquely (using emplace_back below) because the ids
         // will always occur in the same order for the same entity.
         std::sort(ev.begin(), ev.end());
@@ -899,12 +965,12 @@ public:
 
     // This call will create the entity objects in the mesh (The above
     // logic only defines the indices and connectivity.)
-    cell_to_entity.init_create<MT, M>(id_vecs_[M][dim], entities_[M][dim],
-      cell_entity_conn, dim);
+    cell_to_entity.init_create<MT, M>(id_vecs_[M][D], entities_[M][D],
+      cell_entity_conn, D);
     
     // Set the connectivity information from the created entities to
     // the vertices.
-    connectivity_t & entity_to_vertex = get_connectivity_(M, dim, 0);
+    connectivity_t & entity_to_vertex = get_connectivity_(M, D, 0);
     entity_to_vertex.init(entity_vertex_conn);
   } // build_connectivity
 
@@ -913,28 +979,36 @@ public:
      topological dimension
        D1 -> D2 where D1 < D2
    */
-  template<size_t M>
-  void transpose(size_t from_dim, size_t to_dim) {
+  template<size_t M, size_t FD, size_t TD>
+  void transpose() {
     //std::cerr << "transpose: " << fromDim << " -> " << toDim << std::endl;
 
-    index_vector_t pos(num_entities_(M, from_dim), 0);
+    index_vector_t pos(num_entities_(M, FD), 0);
 
-    for (index_iterator<M> to_entity(*this, to_dim);
+    /*
+    for(auto ent : entities<M>(TD)){
+      for(id_t from_id : entity_ids<M>(TD)){
+        
+      }
+    }
+    */
+
+    for (index_iterator<M> to_entity(*this, TD);
       !to_entity.end(); ++to_entity) {
-      for (index_iterator<M> from_itr(to_entity, from_dim);
+      for (index_iterator<M> from_itr(to_entity, FD);
         !from_itr.end(); ++from_itr) {
         pos[*from_itr]++;
       } // for
     } // for
 
-    connectivity_t &out_conn = get_connectivity_(M, from_dim, to_dim);
+    connectivity_t &out_conn = get_connectivity_(M, FD, TD);
     out_conn.resize(pos);
 
     std::fill(pos.begin(), pos.end(), 0);
 
-    for (index_iterator<M> to_entity(*this, to_dim);
+    for (index_iterator<M> to_entity(*this, TD);
       !to_entity.end(); ++to_entity) {
-      for (index_iterator<M> from_itr(to_entity, from_dim);
+      for (index_iterator<M> from_itr(to_entity, FD);
         !from_itr.end(); ++from_itr) {
         out_conn.set(*from_itr, *to_entity, pos[*from_itr]++);
       } // for
@@ -946,26 +1020,26 @@ public:
      topological dimension
        D1 -> D2 where D1 > D2
    */
-  template<size_t M>
-  void intersect(size_t from_dim, size_t to_dim, size_t dim) {
+  template<size_t M, size_t FD, size_t TD, size_t D>
+  void intersect() {
     //std::cerr << "intersect: " << fromDim << " -> " << toDim << std::endl;
 
-    connectivity_t &out_conn = get_connectivity_(M, from_dim, to_dim);
+    connectivity_t &out_conn = get_connectivity_(M, FD, TD);
     if (!out_conn.empty()) {
       return;
     } // if
 
-    connection_vector_t conns(num_entities_(M, from_dim));
+    connection_vector_t conns(num_entities_(M, FD));
 
     using visited_vec = std::vector<bool>;
-    visited_vec visited(num_entities_(M, from_dim));
+    visited_vec visited(num_entities_(M, FD));
 
     id_vector_t from_verts;
     id_vector_t to_verts;
 
     size_t max_size = 1;
 
-    for (index_iterator<M> from_entity(*this, from_dim); !from_entity.end();
+    for (index_iterator<M> from_entity(*this, FD); !from_entity.end();
          ++from_entity) {
       id_vector_t &entities = conns[*from_entity];
       entities.reserve(max_size);
@@ -977,17 +1051,17 @@ public:
 
       std::sort(from_verts.begin(), from_verts.end());
 
-      for (index_iterator<M> from_itr(from_entity, dim);
+      for (index_iterator<M> from_itr(from_entity, D);
         !from_itr.end(); ++from_itr) {
-        for (index_iterator<M> to_itr(from_itr, to_dim);
+        for (index_iterator<M> to_itr(from_itr, TD);
           !to_itr.end(); ++to_itr) {
           visited[*to_itr] = false;
         } // for
       } // for
 
-      for (index_iterator<M> from_itr(from_entity, dim);
+      for (index_iterator<M> from_itr(from_entity, D);
         !from_itr.end(); ++from_itr) {
-        for (index_iterator<M> to_itr(from_itr, to_dim);
+        for (index_iterator<M> to_itr(from_itr, TD);
           !to_itr.end(); ++to_itr) {
           if (visited[*to_itr]) {
             continue;
@@ -995,7 +1069,7 @@ public:
 
           visited[*to_itr] = true;
 
-          if (from_dim == to_dim) {
+          if (FD == TD) {
             if (*from_entity != *to_itr) {
               entities.push_back(*to_itr);
             } // if
@@ -1026,45 +1100,45 @@ public:
      used to compute connectivity information for topological dimension
        D1 -> D2
    */
-  template<size_t M>
-  void compute_connectivity(size_t from_dim, size_t to_dim) {
+  template<size_t M, size_t FD, size_t TD>
+  void compute_connectivity() {
     //std::cerr << "compute: " << from_dim << " -> " << to_dim << std::endl;
 
-    connectivity_t & out_conn = get_connectivity_(M, from_dim, to_dim);
+    connectivity_t & out_conn = get_connectivity_(M, FD, TD);
 
     if(!out_conn.empty()) {
       return;
     } // if
 
-    if(num_entities_(M, from_dim) == 0) {
-      build_connectivity<M>(from_dim);
+    if(num_entities_(M, FD) == 0) {
+      build_connectivity<M, FD>();
     } // if
 
-    if(num_entities_(M, to_dim) == 0) {
-      build_connectivity<M>(to_dim);
+    if(num_entities_(M, TD) == 0) {
+      build_connectivity<M, TD>();
     } // if
 
-    if(num_entities_(M, from_dim) == 0 && num_entities_(M, to_dim) == 0) {
+    if(num_entities_(M, FD) == 0 && num_entities_(M, TD) == 0) {
       return;
     } // if
 
-    if(from_dim == to_dim) {
-      connection_vector_t conn_vec(num_entities_(M, from_dim), id_vector_t(1));
+    if(FD == TD) {
+      connection_vector_t conn_vec(num_entities_(M, FD), id_vector_t(1));
 
-      for(index_iterator<M> entity(*this, from_dim); !entity.end(); ++entity) {
+      for(index_iterator<M> entity(*this, FD); !entity.end(); ++entity) {
         conn_vec[*entity][0] = *entity;
       } // for
 
-      out_conn.set<M, MT::num_domains>(entities_[M][to_dim], conn_vec);
+      out_conn.set<M, MT::num_domains>(entities_[M][TD], conn_vec);
     }
-    else if(from_dim < to_dim) {
-      compute_connectivity<M>(to_dim, from_dim);
-      transpose<M>(from_dim, to_dim);
+    else if(FD < TD) {
+      compute_connectivity<M, TD, FD>();
+      transpose<M, FD, TD>();
     }
     else {
-      compute_connectivity<M>(from_dim, 0);
-      compute_connectivity<M>(0, to_dim);
-      intersect<M>(from_dim, to_dim, 0);
+      compute_connectivity<M, FD, 0>();
+      compute_connectivity<M, 0, TD>();
+      intersect<M, FD, TD, 0>();
     } // if
   } // compute_connectivity
 
@@ -1110,7 +1184,7 @@ public:
     // Storage for cell-to-entity connectivity information
     connection_vector_t cell_entity_conn(_num_cells);
 
-    // Map used to insure unique entity creation
+    // Map used to ensure unique entity creation
     id_vector_map_t entity_ids_map;
 
     // Get cell definitions from domain 0
@@ -1157,7 +1231,7 @@ public:
         id_t * a = &entity_ids[i * p.second[i]];        
         id_vector_t ev(a, a + p.second[i]);
 
-        // Sort the id range so that it is ascending (insures uniqueness)
+        // Sort the id range so that it is ascending (ensures uniqueness)
         std::sort(ev.begin(), ev.end());
 
         // Emplace will only create a new entry if it doesn't
@@ -1345,6 +1419,21 @@ public:
     assert(!id_vecs_[M][D].empty());
     return id_range(id_vecs_[M][D]);
   } // entity_ids
+
+  template<size_t M>
+  id_range entity_ids(size_t dim) const {
+    assert(!id_vecs_[M][dim].empty());
+    return id_range(id_vecs_[M][dim]);
+  } // entity_ids
+
+  template <size_t FM, size_t TM=FM, class E>
+  id_range entity_ids(const E *e, size_t dim) const {
+    const connectivity_t &c = get_connectivity(FM, TM, E::dimension, dim);
+    assert(!c.empty() && "empty connectivity");
+    const id_vector_t& fv = c.get_from_index_vec();
+    return id_range(c.get_entities(),
+      fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
+  } // entities
 
 #if 0
   template <size_t D, size_t M, class E>
