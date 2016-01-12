@@ -175,7 +175,7 @@ struct compute_connectivity_ {
     using T2 = typename std::tuple_element<2, T>::type;
 
     if (D1::domain == DM) {
-      mesh.template compute_connectivity<DM>(T1::dimension, T2::dimension);
+      mesh.template compute_connectivity<DM, T1::dimension, T2::dimension>();
     }
     return compute_connectivity_<DM, I - 1, TS>::compute(mesh);
   } // compute
