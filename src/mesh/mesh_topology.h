@@ -47,10 +47,13 @@ class mesh_topology_base_t
 {
 public:
 
+  // the topology represents the connectivities as vectors of id's
   using id_vector_t = std::vector<id_t>;
 
+  // used when building the topology connectivities
   using connection_vector_t = std::vector<id_vector_t>;
 
+  // hash use for mapping in building topology connectivity
   struct id_vector_hash_t {
     size_t operator()(const id_vector_t &v) const {
       size_t h = 0;
@@ -61,9 +64,11 @@ public:
     }
   }; // struct id_vector_hash_t
 
+  // used when building the topology connectivities
   using id_vector_map_t =
     std::unordered_map<id_vector_t, id_t, id_vector_hash_t>;
 
+  // the second topology vector holds the offsets into to from dimension
   using index_vector_t = std::vector<size_t>;
 
   /*--------------------------------------------------------------------------*
@@ -104,7 +109,10 @@ public:
     void init(const connection_vector_t & cv) {
       assert(to_id_vec_.empty() && from_index_vec_.empty());
 
+      // the first offset is always 0
       from_index_vec_.push_back(0);
+
+      // populate the to id's and add from offsets for each connectivity group
 
       size_t n = cv.size();
 
@@ -120,11 +128,12 @@ public:
     } // init
 
     /*!
-      FIXME: Need description...
+      This methods initializes the connectivity and creates entities. It
+      is used in build_connectivty.
 
-      \tparam MT
-      \tparam M
-      \tparam N
+      \tparam MT mesh traits
+      \tparam M domain
+      \tparam N number of domains
 
       \param iv
       \param ev
@@ -136,6 +145,7 @@ public:
       const connection_vector_t & cv, size_t dim) {
       assert(to_id_vec_.empty() && from_index_vec_.empty());
 
+      // the first offset is always 0
       from_index_vec_.push_back(0);
 
       size_t n = cv.size();
@@ -871,7 +881,7 @@ public:
         id_vector_t ev(a, a + p.second[i]);
 
         // Sort the ids for the current entity so that they are
-        // monotonically increasing. This insures that entities are
+        // monotonically increasing. This ensures that entities are
         // created uniquely (using emplace_back below) because the ids
         // will always occur in the same order for the same entity.
         std::sort(ev.begin(), ev.end());
@@ -1110,7 +1120,7 @@ public:
     // Storage for cell-to-entity connectivity information
     connection_vector_t cell_entity_conn(_num_cells);
 
-    // Map used to insure unique entity creation
+    // Map used to ensure unique entity creation
     id_vector_map_t entity_ids_map;
 
     // Get cell definitions from domain 0
@@ -1157,7 +1167,7 @@ public:
         id_t * a = &entity_ids[i * p.second[i]];        
         id_vector_t ev(a, a + p.second[i]);
 
-        // Sort the id range so that it is ascending (insures uniqueness)
+        // Sort the id range so that it is ascending (ensures uniqueness)
         std::sort(ev.begin(), ev.end());
 
         // Emplace will only create a new entry if it doesn't
