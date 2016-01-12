@@ -381,14 +381,21 @@ public:
    * class Iterator
    *--------------------------------------------------------------------------*/
 
+  /*!
+   \class index_iterator mesh_topology.h
+   \brief An iterator that returns entity id's rather than the entity's
+   themselves. A performance optimization when only the id's are needed.
+  */
   template<size_t M>
   class index_iterator {
   public:
 
+    // top-level iterator constructed from mesh, e.g: cell id's of the mesh
     index_iterator(mesh_topology_t &mesh, size_t dim)
       : mesh_(mesh), entities_(&mesh.get_id_vec_(dim)), dim_(dim), index_(0),
         endIndex_(mesh.num_entities(M, dim)), level_(0) {}
 
+    // uses connectivity, e.g: edges connected to the iterator of a cell
     index_iterator(index_iterator &itr, size_t dim)
         : mesh_(itr.mesh_), dim_(dim), level_(itr.level_ + 1) {
 
@@ -442,20 +449,6 @@ public:
     size_t endIndex_;
     size_t level_;
   }; // class index_iterator
-
-  /*--------------------------------------------------------------------------*
-   * class entity_index_iterator
-   *--------------------------------------------------------------------------*/
-
-  template <size_t D, size_t M=0>
-  class entity_index_iterator : public index_iterator<M> {
-  public:
-
-    entity_index_iterator(mesh_topology_t &mesh) : index_iterator<M>(mesh, D) {}
-
-    entity_index_iterator(index_iterator<M> &itr) : index_iterator<M>(itr, D) {}
-
-  }; // class entity_index_iterator
 
   /*--------------------------------------------------------------------------*
    * class iterator
