@@ -128,17 +128,16 @@ public:
     } // init
 
     /*!
-      This methods initializes the connectivity and creates entities. It
-      is used in build_connectivty.
+      Initialize connectivity and create entities.
+      Used in build_connectivity() for creating edges/faces.
 
-      \tparam MT mesh traits
-      \tparam M domain
-      \tparam N number of domains
-
-      \param iv
-      \param ev
-      \param cv
-      \param dim
+      \tparam mesh type
+      \tparam domain
+      \tparam num domains
+      \param id vector to populate
+      \param entity vector to populate
+      \param input connection vector
+      \param topological dimension of entities created
      */
     template <class MT, size_t M, size_t N>
     void init_create(id_vector_t & iv, entity_vector_t<N> & ev,
@@ -151,6 +150,8 @@ public:
       size_t n = cv.size();
 
       id_t maxId = 0;
+
+      // cv is organized into groups of from entity to entity
 
       for (size_t i = 0; i < n; ++i) {
         const id_vector_t &iv = cv[i];
@@ -174,9 +175,9 @@ public:
     } // init_create
 
     /*!
-      FIXME: Need description...
+      Resize a connection.
 
-      \param num_conns
+      \param num_conns Number of connections for each group
      */
     void resize(index_vector_t & num_conns) {
       clear();
@@ -197,12 +198,22 @@ public:
       std::fill(to_id_vec_.begin(), to_id_vec_.end(), 0);
     } // resize
 
+    /*!
+      End a from entity group by setting the end offset in the
+      from connection vector.
+     */
     void end_from() {
       from_index_vec_.push_back(to_id_vec_.size());
     } // end_from
 
+    /*!
+      Push a single id into the current from group.
+     */
     void push(id_t id) { to_id_vec_.push_back(id); } // push
 
+    /*!
+      Debugging method. Dump the raw vectors of the connection.
+     */
     void dump() {
       for(size_t i = 1; i < from_index_vec_.size(); ++i){
         for(size_t j = from_index_vec_[i - 1]; j < from_index_vec_[i]; ++j){
@@ -222,17 +233,29 @@ public:
       } // for
     }   // dump
 
+    /*!
+      Get the from index vector.
+     */
     const id_vector_t &get_from_index_vec() const { return from_index_vec_; }
 
+    /*!
+      Get the to id's vector.
+     */
     const id_vector_t& get_entities() const {
       return to_id_vec_;
     }
 
+    /*!
+      Get the entities of the specified from index.
+     */
     id_t *get_entities(size_t index) {
       assert(index < from_index_vec_.size() - 1);
       return to_id_vec_.data() + from_index_vec_[index];
     }
 
+    /*!
+      Get the entities of the specified from index and return the count.
+     */
     id_t *get_entities(size_t index, size_t &endIndex) {
       assert(index < from_index_vec_.size() - 1);
       uint64_t start = from_index_vec_[index];
@@ -240,16 +263,31 @@ public:
       return to_id_vec_.data() + start;
     }
 
+    /*!
+      True if the connectivity is empty (hasn't been populated).
+     */
     bool empty() const { return to_id_vec_.empty(); }
 
+    /*!
+      Set a single connection.
+     */
     void set(id_t fromId, id_t toId, size_t pos) {
       to_id_vec_[from_index_vec_[fromId] + pos] = toId;
     }
 
+    /*!
+      Return the number of from entities.
+     */
     size_t from_size() const { return from_index_vec_.size() - 1; }
 
+    /*!
+      Return the number of to entities.
+     */
     size_t to_size() const { return to_id_vec_.size(); }
 
+    /*!
+      Set/init the connectivity use by compute topology methods like transpose.
+     */
     template<size_t M, size_t N>
     void set(entity_vector_t<N> &ev, connection_vector_t &conns) {
       clear();
@@ -284,29 +322,35 @@ public:
   }; // class connectivity_t
 
   /*!
+    Return the number of entities in for a specific domain and topology dim.
    */
   virtual size_t num_entities(size_t domain, size_t dim) const = 0;
 
   /*!
+    Return the topological dimension of the mesh.
    */
   virtual size_t topological_dimension() const = 0;
 
   /*!
+    Get the normal (non-binding) connectivity of a domain.
    */
   virtual const connectivity_t & get_connectivity(size_t domain,
     size_t from_dim, size_t to_dim) const = 0;
 
   /*!
+    Get the normal (non-binding) connectivity of a domain.
    */
   virtual connectivity_t &get_connectivity(size_t domain, size_t from_dim,
     size_t to_dim) = 0;
 
-    /*!
+  /*!
+    Get the binding connectivity of specified domains.
    */
   virtual const connectivity_t & get_connectivity(size_t from_domain,
     size_t to_domain, size_t from_dim, size_t to_dim) const = 0;
 
   /*!
+    Get the binding connectivity of specified domains.
    */
   virtual connectivity_t &get_connectivity(size_t from_domain,
     size_t to_domain, size_t from_dim, size_t to_dim) = 0;
@@ -329,6 +373,7 @@ public:
 template <class MT> class mesh_topology_t : public mesh_topology_base_t
 {
 public:
+  // used to find the entity type of topological dimension D and domain M
   template<size_t D, size_t M>
   using entity_type = typename find_entity_<MT, D, M>::type;
 
