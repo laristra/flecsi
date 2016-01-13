@@ -378,79 +378,6 @@ public:
   using entity_type = typename find_entity_<MT, D, M>::type;
 
   /*--------------------------------------------------------------------------*
-   * class Iterator
-   *--------------------------------------------------------------------------*/
-
-  /*!
-   \class index_iterator mesh_topology.h
-   \brief An iterator that returns entity id's rather than the entity's
-   themselves. A performance optimization when only the id's are needed.
-  */
-  template<size_t M>
-  class index_iterator {
-  public:
-
-    // top-level iterator constructed from mesh, e.g: cell id's of the mesh
-    index_iterator(mesh_topology_t &mesh, size_t dim)
-      : mesh_(mesh), entities_(&mesh.get_id_vec_(dim)), dim_(dim), index_(0),
-        endIndex_(mesh.num_entities(M, dim)), level_(0) {}
-
-    // uses connectivity, e.g: edges connected to the iterator of a cell
-    index_iterator(index_iterator &itr, size_t dim)
-        : mesh_(itr.mesh_), dim_(dim), level_(itr.level_ + 1) {
-
-      connectivity_t &c = mesh_.get_connectivity(M, itr.dim_, dim_);
-      assert(!c.empty());
-
-      entities_ = &c.get_entities();
-
-      const id_vector_t &fv = c.get_from_index_vec();
-      if (level_ > 1) {
-        size_t id = (*itr.entities_)[itr.index_];
-
-        index_ = fv[id];
-        endIndex_ = fv[id + 1];
-      } else {
-        index_ = fv[itr.index_];
-        endIndex_ = fv[itr.index_ + 1];
-      }
-    }
-
-    bool end() const { return index_ >= endIndex_; }
-
-    index_iterator &operator++() {
-      assert(index_ < endIndex_);
-      ++index_;
-      return *this;
-    }
-
-    size_t operator*() const { return (*entities_)[index_]; }
-
-    id_t *get_entities(size_t dim) {
-      connectivity_t &c = mesh_.get_connectivity_(M, dim_, dim);
-      assert(!c.empty());
-      return c.get_entities(index_);
-    }
-
-    id_t *get_entities(size_t dim, size_t &count) {
-      connectivity_t &c = mesh_.get_connectivity_(M, dim_, dim);
-      assert(!c.empty());
-      return c.get_entities(index_, count);
-    }
-
-  protected:
-    const id_vector_t &get_entities_() { return *entities_; }
-
-  private:
-    mesh_topology_t &mesh_;
-    const id_vector_t *entities_;
-    size_t dim_;
-    size_t index_;
-    size_t endIndex_;
-    size_t level_;
-  }; // class index_iterator
-
-  /*--------------------------------------------------------------------------*
    * class iterator
    *--------------------------------------------------------------------------*/
 
@@ -985,34 +912,22 @@ public:
 
     index_vector_t pos(num_entities_(M, FD), 0);
 
-    /*
-    for(auto ent : entities<M>(TD)){
-      for(id_t from_id : entity_ids<M>(TD)){
-        
+    for(auto to_entity : entities<TD, M>()) {
+      for(id_t from_id : entity_ids<FD, M>(to_entity)) {
+        ++pos[from_id];
       }
     }
-    */
-
-    for (index_iterator<M> to_entity(*this, TD);
-      !to_entity.end(); ++to_entity) {
-      for (index_iterator<M> from_itr(to_entity, FD);
-        !from_itr.end(); ++from_itr) {
-        pos[*from_itr]++;
-      } // for
-    } // for
 
     connectivity_t &out_conn = get_connectivity_(M, FD, TD);
     out_conn.resize(pos);
 
     std::fill(pos.begin(), pos.end(), 0);
 
-    for (index_iterator<M> to_entity(*this, TD);
-      !to_entity.end(); ++to_entity) {
-      for (index_iterator<M> from_itr(to_entity, FD);
-        !from_itr.end(); ++from_itr) {
-        out_conn.set(*from_itr, *to_entity, pos[*from_itr]++);
-      } // for
-    } // for
+    for(auto to_entity : entities<TD, M>()) {
+      for(id_t from_id : entity_ids<FD, M>(to_entity)) {
+        out_conn.set(from_id, to_entity->template id<M>(), pos[from_id]++);
+      }
+    }
   } // transpose
 
   /*!
@@ -1039,44 +954,46 @@ public:
 
     size_t max_size = 1;
 
-    for (index_iterator<M> from_entity(*this, FD); !from_entity.end();
-         ++from_entity) {
-      id_vector_t &entities = conns[*from_entity];
-      entities.reserve(max_size);
+    connectivity_t &c = get_connectivity_(M, FD, 0);
+    assert(!c.empty());
+
+    connectivity_t &c2 = get_connectivity_(M, TD, 0);
+    assert(!c2.empty());
+
+    for(auto from_entity : entities<FD, M>()) {
+      id_t from_id = from_entity->template id<M>();
+      id_vector_t &ents = conns[from_id];
+      ents.reserve(max_size);
 
       size_t count;
-      id_t *ep = from_entity.get_entities(0, count);
+      id_t *ep = c.get_entities(from_id, count);
 
       std::copy(ep, ep + count, from_verts.begin());
 
       std::sort(from_verts.begin(), from_verts.end());
 
-      for (index_iterator<M> from_itr(from_entity, D);
-        !from_itr.end(); ++from_itr) {
-        for (index_iterator<M> to_itr(from_itr, TD);
-          !to_itr.end(); ++to_itr) {
-          visited[*to_itr] = false;
-        } // for
-      } // for
+      for(auto from_ent2 : entities<D, M>(from_entity)) {
+        for(id_t to_id : entity_ids<TD, M>(from_ent2)) {
+          visited[to_id] = false;
+        }
+      }
 
-      for (index_iterator<M> from_itr(from_entity, D);
-        !from_itr.end(); ++from_itr) {
-        for (index_iterator<M> to_itr(from_itr, TD);
-          !to_itr.end(); ++to_itr) {
-          if (visited[*to_itr]) {
+      for(auto from_ent2 : entities<D, M>(from_entity)) {
+        for(id_t to_id : entity_ids<TD, M>(from_ent2)) {
+          if (visited[to_id]) {
             continue;
           } // if
 
-          visited[*to_itr] = true;
+          visited[to_id] = true;
 
           if (FD == TD) {
-            if (*from_entity != *to_itr) {
-              entities.push_back(*to_itr);
+            if (from_id != to_id) {
+              ents.push_back(to_id);
             } // if
           }
           else {
             size_t count;
-            id_t *ep = to_itr.get_entities(0, count);
+            id_t *ep = c2.get_entities(to_id, count);
 
             std::copy(ep, ep + count, to_verts.begin());
 
@@ -1084,13 +1001,13 @@ public:
 
             if (std::includes(from_verts.begin(), from_verts.end(),
               to_verts.begin(), to_verts.end())) {
-              entities.emplace_back(*to_itr);
+              ents.emplace_back(to_id);
             } // if
           } // if
         } // for
       } // for
 
-      max_size = std::max(entities.size(), max_size);
+      max_size = std::max(ents.size(), max_size);
     } // for
 
     out_conn.init(conns);
@@ -1125,9 +1042,9 @@ public:
     if(FD == TD) {
       connection_vector_t conn_vec(num_entities_(M, FD), id_vector_t(1));
 
-      for(index_iterator<M> entity(*this, FD); !entity.end(); ++entity) {
-        conn_vec[*entity][0] = *entity;
-      } // for
+      for(id_t ent_id : entity_ids<FD, M>()) {
+        conn_vec[ent_id][0] = ent_id;
+      }
 
       out_conn.set<M, MT::num_domains>(entities_[M][TD], conn_vec);
     }
@@ -1408,27 +1325,26 @@ public:
     return const_entity_range_t<D>(*this, id_vecs_[M][D]);
   } // entities
 
-  template<size_t D, size_t M>
+  template<size_t D, size_t M=0>
   entity_range_t<D, M> entities() {
     assert(!id_vecs_[M][D].empty());
     return entity_range_t<D, M>(*this, id_vecs_[M][D]);
   } // entities
 
-  template<size_t D, size_t M>
+  template<size_t D, size_t M=0>
   id_range entity_ids() const {
     assert(!id_vecs_[M][D].empty());
     return id_range(id_vecs_[M][D]);
   } // entity_ids
 
-  template<size_t M>
-  id_range entity_ids(size_t dim) const {
-    assert(!id_vecs_[M][dim].empty());
-    return id_range(id_vecs_[M][dim]);
-  } // entity_ids
+  template<size_t D, size_t M, class E>
+  decltype(auto) entity_ids(domain_entity<M,E> & e) {
+    return entity_ids<D,M>(e.entity());
+  } // entities
 
-  template <size_t FM, size_t TM=FM, class E>
-  id_range entity_ids(const E *e, size_t dim) const {
-    const connectivity_t &c = get_connectivity(FM, TM, E::dimension, dim);
+  template <size_t D, size_t FM, size_t TM=FM, class E>
+  id_range entity_ids(const E *e) const {
+    const connectivity_t &c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
     const id_vector_t& fv = c.get_from_index_vec();
     return id_range(c.get_entities(),

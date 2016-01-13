@@ -115,22 +115,22 @@ TEST(mesh_topology, traversal) {
 
   CINCH_CAPTURE() << "------------- forall cells, vertices" << endl;
 
-  for(TestMesh::index_iterator<0> c(*mesh, 2); !c.end(); ++c){
-    CINCH_CAPTURE() << "------- cell id: " << *c << endl;
-    for(TestMesh::index_iterator<0> v(c, 0); !v.end(); ++v){
-      CINCH_CAPTURE() << "--------- vertex id: " << *v << endl;
-      for(TestMesh::index_iterator<0> c2(v, 2); !c2.end(); ++c2){
-        CINCH_CAPTURE() << "cell2 id: " << *c2 << endl;
+  for(auto cell : mesh->entities<2>()) {
+    CINCH_CAPTURE() << "------- cell id: " << cell.id() << endl;
+    for(auto vertex : mesh->entities<0>(cell)) {
+      CINCH_CAPTURE() << "--------- vertex id: " << vertex.id() << endl;
+      for(auto cell2 : mesh->entities<2>(vertex)) {
+        CINCH_CAPTURE() << "cell2 id: " << cell2.id() << endl;
       }
     }
   }
 
   CINCH_CAPTURE() << "------------- forall cells, edges" << endl;
 
-  for(TestMesh::index_iterator<0> c(*mesh, 2); !c.end(); ++c){
-    CINCH_CAPTURE() << "------- cell id: " << *c << endl;
-    for(TestMesh::index_iterator<0> e(c, 1); !e.end(); ++e){
-      CINCH_CAPTURE() << "edge id: " << *e << endl;
+  for(auto cell : mesh->entities<2>()) {
+    CINCH_CAPTURE() << "------- cell id: " << cell.id() << endl;
+    for(auto edge : mesh->entities<1>(cell)) {
+      CINCH_CAPTURE() << "edge id: " << edge.id() << endl;
     }
   }
 
