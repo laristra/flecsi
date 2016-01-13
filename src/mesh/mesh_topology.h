@@ -1059,44 +1059,30 @@ public:
     } // if
   } // compute_connectivity
 
-  template<size_t FM, size_t TM>
-  void compute_bindings(size_t from_dim, size_t to_dim) {
-    connectivity_t & out_conn = get_connectivity_(FM, TM, from_dim, to_dim);
+  template<size_t FM, size_t TM, size_t FD, size_t TD>
+  void compute_bindings() {
+    connectivity_t & out_conn = get_connectivity_(FM, TM, FD, TD);
 
     if(!out_conn.empty()) {
       return;
     } // if
 
-    if(num_entities_(FM, from_dim) == 0) {
-      build_bindings<FM>(from_dim);
-    } // if
-
-    if(num_entities_(TM, to_dim) == 0) {
-      build_bindings<TM>(to_dim);
-    } // if
-
-    if(num_entities_(FM, from_dim) == 0 && num_entities_(TM, to_dim) == 0) {
-      return;
-    } // if
+    build_bindings<FM, TM, FD, TD>();
 
     // FIXME: Need to complete
 
   } // compute_bindings
 
-  template<size_t M>
-  void build_bindings(size_t dim) {
+  template<size_t FM, size_t TM, size_t FD, size_t TD>
+  void build_bindings() {
 
     // Sanity check
-    assert(dim <= MT::dimension);
-
-    // Much of the connectivity informaiton used in this method
-    // is derived from the "primal" mesh, i.e., domain 0
-    static constexpr size_t M0 = 0;
+    static_assert(TD <= MT::dimension, "invalid dimension");
 
     // Helper variables
     size_t entity_id(0);
     size_t max_cell_entity_conns = 1;
-    const size_t _num_cells = num_entities<MT::dimension,M0>();
+    const size_t _num_cells = num_entities<MT::dimension, FM>();
 
     // Storage for cell-to-entity connectivity information
     connection_vector_t cell_entity_conn(_num_cells);
@@ -1106,39 +1092,41 @@ public:
 
     // Get cell definitions from domain 0
     using ent_vec_t = entity_vector_t<MT::num_domains>;
-    ent_vec_t & cells = entities_[M0][MT::dimension];
+    ent_vec_t & cells = entities_[FM][MT::dimension];
+
+    static constexpr size_t M0 = 0;
 
     // Iterate over cells
     for(auto c: cells) {
 
       // Get a cell object.
       auto cell = static_cast<entity_type<MT::dimension, M0> *>(c);
-      const size_t cell_id = cell->template id<M0>();
+      const size_t cell_id = cell->template id<FM>();
 
       // Get ids of entities with at least this dimension
       connection_vector_t primal_ids(MT::dimension+1);
       for(size_t dim(0); dim<MT::dimension; ++dim) {
 
         // Get domain 0 mesh connectivity information
-        connectivity_t & conn = get_connectivity_(M0, MT::dimension, dim);
+        connectivity_t & conn = get_connectivity_(FM, MT::dimension, dim);
 
         size_t count;
         id_t * ids = conn.get_entities(cell_id, count);
 
         for(size_t i(0); i<count; ++i) {
-          primal_ids[dim].push_back(to_global_id<M0>(dim, ids[i]));
+          primal_ids[dim].push_back(to_global_id<FM>(dim, ids[i]));
         } // for
       } // for
 
       // Add the cell id
       primal_ids[MT::dimension].push_back(
-        to_global_id<M0>(MT::dimension, cell_id));
+        to_global_id<FM>(MT::dimension, cell_id));
 
       // p.first:   The number of entities per cell.
       // p.second:  A std::vector of id_t containing the ids of the
       //            entities that define the bound entity.
       id_vector_t entity_ids;
-      auto p = cell->create_bound_entities(dim, primal_ids, entity_ids);
+      auto p = cell->create_bound_entities(TD, primal_ids, entity_ids);
 
       // Iterate over the newly-defined entities
       id_vector_t & conns = cell_entity_conn[cell_id];
@@ -1169,11 +1157,16 @@ public:
 
     // Reference to storage from cells to the entity (to be created here).
     connectivity_t & cell_to_entity =
-      get_connectivity_(M0, M, MT::dimension, dim);
+      get_connectivity_(FM, TM, FD, TD);
 
-    // Create the entity objects
-    cell_to_entity.init_create<MT, M>(id_vecs_[M][dim], entities_[M][dim],
-      cell_entity_conn, dim);
+    if(entities_[TM][TD].empty()){
+      // Create the entity objects
+      cell_to_entity.init_create<MT, TM>(id_vecs_[TM][TD], entities_[TM][TD],
+        cell_entity_conn, TD);      
+    }
+    else{
+      cell_to_entity.init(cell_entity_conn);   
+    }
   } // build_bindings
 
   template<size_t M = 0>
