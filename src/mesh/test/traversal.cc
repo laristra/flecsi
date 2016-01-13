@@ -55,8 +55,6 @@ public:
 
   static constexpr size_t num_domains = 1;
 
-  using Float = double;
-
   using entity_types = std::tuple<
     std::pair<domain_<0>, Vertex>,
     std::pair<domain_<0>, Edge>,

@@ -374,7 +374,7 @@ template <class MT> class mesh_topology_t : public mesh_topology_base_t
 {
 public:
   // used to find the entity type of topological dimension D and domain M
-  template<size_t D, size_t M>
+  template<size_t D, size_t M=0>
   using entity_type = typename find_entity_<MT, D, M>::type;
 
   /*--------------------------------------------------------------------------*
@@ -737,7 +737,7 @@ public:
 //
 //
 
-  template<size_t D, size_t M>
+  template<size_t D, size_t M=0>
   void add_entity(mesh_entity_base_t<MT::num_domains> * ent) {
     auto &ents = entities_[M][D];
     ent->ids_[M] = ents.size();
@@ -1309,17 +1309,17 @@ public:
 //
 //
 
-  template<size_t D, size_t M, class E>
+  template<size_t D, size_t M=0, class E>
   decltype(auto) entities(domain_entity<M,E> & e) const {
     return entities<D,M>(e.entity());
   } // entities
 
-  template<size_t D, size_t M, class E>
+  template<size_t D, size_t M=0, class E>
   decltype(auto) entities(domain_entity<M,E> & e) {
     return entities<D,M>(e.entity());
   } // entities
 
-  template<size_t D, size_t M>
+  template<size_t D, size_t M=0>
   const_entity_range_t<D, M> entities() const {
     assert(!id_vecs_[M][D].empty());
     return const_entity_range_t<D>(*this, id_vecs_[M][D]);
@@ -1337,12 +1337,12 @@ public:
     return id_range(id_vecs_[M][D]);
   } // entity_ids
 
-  template<size_t D, size_t M, class E>
+  template<size_t D, size_t M=0, class E>
   decltype(auto) entity_ids(domain_entity<M,E> & e) {
     return entity_ids<D,M>(e.entity());
   } // entities
 
-  template <size_t D, size_t FM, size_t TM=FM, class E>
+  template <size_t D, size_t FM=0, size_t TM=FM, class E>
   id_range entity_ids(const E *e) const {
     const connectivity_t &c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
