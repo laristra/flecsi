@@ -25,7 +25,7 @@ namespace flexi {
   \brief The burton_vertex_t type provides an interface for managing
     geometry and state associated with mesh vertices.
   \tparam size_t N number of domains
-*/
+ */
 template<size_t N>
 class burton_vertex_t : public mesh_entity_t<0, N>
 {
@@ -46,7 +46,7 @@ public:
     \brief Set the rank for the vertex
     \tparam M FIXME
     \param uint8_t rank to give the vertex
-  */
+   */
   template<size_t M>
   void set_rank(uint8_t rank) {
     mesh_entity_t<0, N>::template set_info<M>(rank);
@@ -55,7 +55,7 @@ public:
   /*!
     \brief Get the precedence for the vertex
     \tparam M FIXME
-  */
+   */
   template<size_t M>
   uint64_t precedence() const {
     return 1 << (63 - mesh_entity_t<0, N>::template info<M>());
@@ -64,7 +64,7 @@ public:
   /*!
     \brief Set the coordinates for a vertex
     \param point_t coordinates value to set at vertex
-  */
+   */
   void set_coordinates(const point_t &coordinates) {
     auto c = state_.accessor<point_t,flexi_internal>("coordinates");
     c[mesh_entity_base_t<num_domains>::template id<0>()] = coordinates;
@@ -72,7 +72,7 @@ public:
 
   /*!
     \brief Get the coordinates at a vertex from the state handle
-  */
+   */
   const point_t & coordinates() const {
     auto c = state_.accessor<point_t,flexi_internal>("coordinates");
     return c[mesh_entity_base_t<num_domains>::template id<0>()];
@@ -94,7 +94,7 @@ private:
   \brief The burton_edge_t type provides an interface for managing
     geometry and state associated with mesh edges.
   \tparam size_t N the domain of the edge_t
-*/
+ */
 template<size_t N>
 struct burton_edge_t : public mesh_entity_t<1, N> {}; // struct burton_edge_t
 
@@ -113,7 +113,7 @@ class burton_wedge_t; // class burton_wedge_t
   \brief The burton_cell_t type provides an interface for managing and
     geometry and state associated with mesh cells.
   \tparam size_t N The domain in which to create the entity.
-*/
+ */
 template<size_t N>
 struct burton_cell_t : public mesh_entity_t<2, N> {
 
@@ -135,7 +135,7 @@ struct burton_cell_t : public mesh_entity_t<2, N> {
     \return std::pair<size_t, std::vector<id_t>> A pair with the first entry
       the number of vertex collections making up the entity, and the second
       entry the number of vertices per collection.
-  */
+   */
   virtual std::pair<size_t, std::vector<id_t>> create_entities(size_t dim,
     std::vector<id_t> &e, id_t * v, size_t vertex_count) = 0;
 
@@ -151,7 +151,7 @@ struct burton_cell_t : public mesh_entity_t<2, N> {
     \return std::pair<size_t, std::vector<id_t>> A pair with the first entry
       the number of entity collections making up the binding, and the second
       entry the number of entities per collection.
-  */
+   */
   virtual std::pair<size_t, std::vector<id_t>> create_bound_entities(
     size_t dim, const std::vector<std::vector<id_t>> ent_ids,
     std::vector<id_t> & c) = 0;
@@ -166,7 +166,7 @@ struct burton_cell_t : public mesh_entity_t<2, N> {
   \class burton_quadrilateral_t burton_entity_types.h
   \brief The burton_quadrilateral_t type provides a derived instance of
     burton_cell_t for 2D quadrilateral cells.
-*/
+ */
 template<size_t N>
 class burton_quadrilateral_cell_t : public burton_cell_t<N>
 {
@@ -174,7 +174,7 @@ public:
 
   /*!
     \brief create_entities function for burton_quadrilateral_cell_t.
-  */
+   */
   std::pair<size_t, std::vector<id_t>> create_entities(size_t dim,
     std::vector<id_t> & e, id_t * v, size_t vertex_count) {
     
@@ -197,7 +197,7 @@ public:
   
   /*!
     \brief create_bound_entities function for burton_quadrilateral_cell_t.
-  */
+   */
   std::pair<size_t, std::vector<id_t>> create_bound_entities(size_t dim,
     const std::vector<std::vector<id_t>> ent_ids, std::vector<id_t> & c) {
 
@@ -282,22 +282,42 @@ public:
    \brief The burton_wedge_t type provides an interface for managing and
           geometry and state associated with mesh wedges.
    \tparam size_t N The domain for the wedge.
-*/
+ */
 template<size_t N>
 class burton_wedge_t : public mesh_entity_t<2, N> {
 public:
 
+  //! Physics vector type
   using vector_t = burton_mesh_traits_t::vector_t;
 
+  //! Set the corner that a wedge is a part of.
   void set_corner(burton_corner_t<N> *corner) { corner_ = corner; }
 
+  //! Get the corner that a wedge is a part of.
   burton_corner_t<N> *corner() { return corner_; }
 
+  /*!
+    \brief Get the side facet normal for the wedege.
+    \return vector_t Side facet normal vector.
+   */
   vector_t side_facet_normal();
+
+  /*!
+    \brief Get the cell facet normal for the wedege.
+    \return vector_t Cell facet normal vector.
+   */
   vector_t cell_facet_normal();
 
+  /*!
+    \brief Set the precedence for the wedge.
+    \param size_t dim Topological dimension of the wedge.
+    \param uint64_t precedence Value of precedence to set.
+   */
   void set_precedence(size_t dim, uint64_t precedence) {}
 
+  /*!
+    \brief create_entities function for burton_wedge_t.
+   */
   std::pair<size_t, std::vector<size_t>> create_entities(
     size_t dim, std::vector<flexi::id_t> &e, id_t *v, size_t vertex_count) {
     e.resize(6);
@@ -328,16 +348,24 @@ private:
    \class burton_corner_t burton_entity_types.h
    \brief The burton_corner_t type provides an interface for managing and
           geometry and state associated with mesh corners.
+   \tparam size_t N The domain for the corner.
  */
-
 template<size_t N>
 class burton_corner_t : public mesh_entity_t<1, N> {
 public:
+  /*!
+    \brief Add a wedge to the mesh.
+    \param burton_wedge_t<N> *w The wedge to add to the mesh.
+   */
   void add_wedge(burton_wedge_t<N> *w) {
     wedges_.add(w);
     w->set_corner(this);
   }
 
+  /*!
+    \brief Get the wedges for the mesh.
+    \return entity_group<burton_wedge_t<N>> &wedges The wedges in the mesh.
+   */
   entity_group<burton_wedge_t<N>> &wedges() { return wedges_; } // wedges
 
 private:
