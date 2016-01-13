@@ -7,18 +7,18 @@
 using namespace std;
 using namespace flexi;
 
-class Vertex : public mesh_entity_t<0, 1>{
+class Vertex : public mesh_entity_t<0, 2>{
 public:
   template<size_t M>
   uint64_t precedence() const { return 0; }
 };
 
-class Edge : public mesh_entity_t<1, 1>{
+class Edge : public mesh_entity_t<1, 2>{
 public:
 
 };
 
-class Cell : public mesh_entity_t<2, 1>{
+class Cell : public mesh_entity_t<2, 2>{
 public:
   void set_precedence(size_t dim, uint64_t precedence) {}
 
@@ -68,20 +68,10 @@ public:
       default:
         assert(false);
     }
-
-    /*
-    std::cout << "cell: " << id<0>() << std::endl;
-    for(size_t i = 0; i < ent_ids.size(); ++i){
-      for(size_t j = 0; j < ent_ids[i].size(); ++j){
-        std::cout << "ent[" << i << "][" << j << "] = " << 
-          ent_ids[i][j] << std::endl;
-      }
-    }
-    */
   }
 };
 
-class Corner : public mesh_entity_t<1, 1>{
+class Corner : public mesh_entity_t<1, 2>{
 public:
 
 };
@@ -90,7 +80,7 @@ class TestMesh2dType{
 public:
   static constexpr size_t dimension = 2;
 
-  static constexpr size_t num_domains = 1;
+  static constexpr size_t num_domains = 2;
 
   using entity_types = std::tuple<
     std::pair<domain_<0>, Vertex>,
@@ -151,5 +141,12 @@ TEST(mesh_topology, traversal) {
 
   mesh->init<0>();
 
-  //ASSERT_TRUE(CINCH_EQUAL_BLESSED("bindings.blessed"));
+  for(auto cell : mesh->entities<2>()) {
+    CINCH_CAPTURE() << "------- cell id: " << cell.id() << endl;
+    for(auto corner : mesh->entities<1, 0, 1>(cell)) {
+      CINCH_CAPTURE() << "--- corner id: " << corner.id() << endl;
+    }
+  }
+
+  ASSERT_TRUE(CINCH_EQUAL_BLESSED("bindings.blessed"));
 }

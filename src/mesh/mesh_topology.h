@@ -1302,14 +1302,14 @@ public:
 //
 //
 
-  template<size_t D, size_t M=0, class E>
-  decltype(auto) entities(domain_entity<M,E> & e) const {
-    return entities<D,M>(e.entity());
+  template<size_t D, size_t FM=0, size_t TM=FM, class E>
+  decltype(auto) entities(domain_entity<FM,E> & e) const {
+    return entities<D,FM,TM>(e.entity());
   } // entities
 
-  template<size_t D, size_t M=0, class E>
-  decltype(auto) entities(domain_entity<M,E> & e) {
-    return entities<D,M>(e.entity());
+  template<size_t D, size_t FM=0, size_t TM=FM, class E>
+  decltype(auto) entities(domain_entity<FM,E> & e) {
+    return entities<D,FM,TM>(e.entity());
   } // entities
 
   template<size_t D, size_t M=0>
@@ -1374,9 +1374,9 @@ public:
 
   void dump() {
     for(size_t from_domain = 0; from_domain < MT::num_domains; ++from_domain){
-      std::cout << "=========== from domain: " << from_domain << std::endl;
+      std::cout << "=================== from domain: " << from_domain << std::endl;
       for(size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain){
-        std::cout << "=== to domain: " << to_domain << std::endl;
+        std::cout << "========== to domain: " << to_domain << std::endl;
         size_t n = topology_[from_domain][to_domain].size();
         for (size_t i = 0; i < n; ++i) {
           auto &ci = topology_[from_domain][to_domain][i];
