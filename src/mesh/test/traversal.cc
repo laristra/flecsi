@@ -114,11 +114,11 @@ TEST(mesh_topology, traversal) {
   CINCH_CAPTURE() << "------------- forall cells, vertices" << endl;
 
   for(auto cell : mesh->entities<2>()) {
-    CINCH_CAPTURE() << "------- cell id: " << cell.id() << endl;
+    CINCH_CAPTURE() << "------------- cell id: " << cell.id() << endl;
     for(auto vertex : mesh->entities<0>(cell)) {
-      CINCH_CAPTURE() << "--------- vertex id: " << vertex.id() << endl;
+      CINCH_CAPTURE() << "--- vertex id: " << vertex.id() << endl;
       for(auto cell2 : mesh->entities<2>(vertex)) {
-        CINCH_CAPTURE() << "cell2 id: " << cell2.id() << endl;
+        CINCH_CAPTURE() << "+ cell2 id: " << cell2.id() << endl;
       }
     }
   }
@@ -128,7 +128,43 @@ TEST(mesh_topology, traversal) {
   for(auto cell : mesh->entities<2>()) {
     CINCH_CAPTURE() << "------- cell id: " << cell.id() << endl;
     for(auto edge : mesh->entities<1>(cell)) {
-      CINCH_CAPTURE() << "edge id: " << edge.id() << endl;
+      CINCH_CAPTURE() << "--- edge id: " << edge.id() << endl;
+    }
+  }
+
+  CINCH_CAPTURE() << "------------- forall vertices, edges" << endl;
+
+  for(auto vertex : mesh->entities<0>()) {
+    CINCH_CAPTURE() << "------- vertex id: " << vertex.id() << endl;
+    for(auto edge : mesh->entities<1>(vertex)) {
+      CINCH_CAPTURE() << "--- edge id: " << edge.id() << endl;
+    }
+  }
+
+  CINCH_CAPTURE() << "------------- forall vertices, cells" << endl;
+
+  for(auto vertex : mesh->entities<0>()) {
+    CINCH_CAPTURE() << "------- vertex id: " << vertex.id() << endl;
+    for(auto cell : mesh->entities<2>(vertex)) {
+      CINCH_CAPTURE() << "--- cell id: " << cell.id() << endl;
+    }
+  }
+
+  CINCH_CAPTURE() << "------------- forall edges, cells" << endl;
+
+  for(auto edge : mesh->entities<1>()) {
+    CINCH_CAPTURE() << "------- edge id: " << edge.id() << endl;
+    for(auto cell : mesh->entities<2>(edge)) {
+      CINCH_CAPTURE() << "--- cell id: " << cell.id() << endl;
+    }
+  }
+
+  CINCH_CAPTURE() << "------------- forall edges, vertices" << endl;
+
+  for(auto edge : mesh->entities<1>()) {
+    CINCH_CAPTURE() << "------- edge id: " << edge.id() << endl;
+    for(auto vertex : mesh->entities<0>(edge)) {
+      CINCH_CAPTURE() << "--- vertex id: " << vertex.id() << endl;
     }
   }
 
