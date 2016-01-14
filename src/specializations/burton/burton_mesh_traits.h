@@ -37,22 +37,22 @@ struct burton_mesh_traits_t {
 #define FLEXI_MESH_DIMENSION 2
 #endif // FLEXI_MESH_DIMENSION
 
-  //! Set the dimension of the mesh
+  //! The dimension of the burton mesh.
   static constexpr size_t dimension = FLEXI_MESH_DIMENSION;
 
-  //! Set the number of mesh domains
+  //! The number of mesh domains in the burton mesh.
   static constexpr size_t num_domains = 2;
 
-  //! Set the type for floating-point values
+  //! The type for floating-point values.
   using real_t = double;
 
-  //! A point type with real_t data and mesh dimension
+  //! A point type with real_t data and mesh dimension.
   using point_t = point<real_t, dimension>;
 
-  //! A space_vector type of real_t data and mesh dimension
+  //! A space ("physics") vector type with real_t data and mesh dimension.
   using vector_t = space_vector<real_t, dimension>;
 
-  //! Enumeration of the locations on the mesh where data may be sited
+  //! Enumeration of the locations on the mesh where data may be sited.
   enum class attachment_site_t : size_t {
     vertices,
 #if FLEXI_MESH_DIMENSION >= 2
@@ -65,7 +65,7 @@ struct burton_mesh_traits_t {
     corners
   }; // enum class attachment_site_t
 
-  //! Enumeration of the available attributes on state data
+  //! Enumeration of the available attributes on state data.
   enum class state_attribute_t : bitfield_t::field_type_t {
     persistent = 0,
     temporary = 1 // just a placeholder for now
@@ -76,7 +76,8 @@ struct burton_mesh_traits_t {
    *--------------------------------------------------------------------------*/
 
   /*!
-    FIXME
+    \brief Struct to hold meta data for private state. Meta data includes site
+      and attributes.
    */
   struct private_state_meta_data_t {
 
@@ -91,6 +92,7 @@ struct burton_mesh_traits_t {
 
   }; // struct private_state_meta_data_t
   
+  //! A type definition of state_t based on the storage policy for the mesh.
 #ifndef MESH_STORAGE_POLICY
   using mesh_state_t = state_t<private_state_meta_data_t>;
 #else

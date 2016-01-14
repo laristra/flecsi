@@ -29,6 +29,10 @@ cinch_add_unit(dual
   SOURCES test/dual.cc
   INPUTS test/dual.blessed)
 
+cinch_add_unit(bindings
+  SOURCES test/bindings.cc
+  INPUTS test/bindings.blessed)
+
 #~---------------------------------------------------------------------------~-#
 # Formatting options
 # vim: set tabstop=2 shiftwidth=2 expandtab :
