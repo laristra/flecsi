@@ -168,8 +168,12 @@ using entity_vector_t = std::vector<mesh_entity_base_t<N> *>;
 
 /*!
   \class domain_entity mesh_types.h
+
   \brief domain_entity is a simple wrapper to mesh entity that associates with
     it a domain id
+
+  \tparam M Domain
+  \tparam E Entity type
  */
 
 template<size_t M, class E>

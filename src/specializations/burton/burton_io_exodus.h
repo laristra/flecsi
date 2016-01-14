@@ -49,7 +49,8 @@ bool burton_exodus_exo_registered =
  * Implementation of exodus mesh read for burton.
  */
 template<>
-int32_t io_exodus_t<burton_mesh_t>::read(const std::string &name, burton_mesh_t &m) {
+int32_t io_exodus_t<burton_mesh_t>::read(const std::string &name,
+  burton_mesh_t &m) {
 
 #ifdef HAVE_EXODUS
 
@@ -188,7 +189,8 @@ int32_t io_exodus_t<burton_mesh_t>::read(const std::string &name, burton_mesh_t 
 //int32_t io_exodus_t::write(
 //    const std::string &name, const mesh_t &m) {
 template<>
-int32_t io_exodus_t<burton_mesh_t>::write(const std::string &name, burton_mesh_t &m) {
+int32_t io_exodus_t<burton_mesh_t>::write(const std::string &name,
+  burton_mesh_t &m) {
 
 #ifdef HAVE_EXODUS
 
