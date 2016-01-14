@@ -20,7 +20,7 @@
 // user includes
 #include "detail/tuple_visit.h"
 
-namespace flexi {
+namespace flecsi {
 namespace utils {
 
 ////////////////////////////////////////////////////////////////////////////////

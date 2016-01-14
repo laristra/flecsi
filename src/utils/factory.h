@@ -12,12 +12,12 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_factory_h
-#define flexi_factory_h
+#ifndef flecsi_factory_h
+#define flecsi_factory_h
 
 #include <map>
 
-namespace flexi {
+namespace flecsi {
 
 /*!
   \class Factory_ Factory.h
@@ -113,9 +113,9 @@ private:
 
 }; // class Factory_
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_factory_h
+#endif // flecsi_factory_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

@@ -102,13 +102,13 @@ endif()
 
 # This configures the script that will be installed when 'make install' is
 # executed.
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flexi.in
-  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flexi-install)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi.in
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install)
 
 # install script
-install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flexi-install
+install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install
   DESTINATION bin
-  RENAME flexi
+  RENAME flecsi
   PERMISSIONS
     OWNER_READ OWNER_WRITE OWNER_EXECUTE
     GROUP_READ GROUP_EXECUTE
@@ -116,19 +116,19 @@ install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flexi-install
 )
 
 # Install auxiliary files
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/driver/flexi-serial.cc
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/driver/flecsi-serial.cc
   DESTINATION ${CMAKE_BINARY_DIR}/share
 )
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/flexi-serial.cc
-  DESTINATION share/flexi)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/flecsi-serial.cc
+  DESTINATION share/flecsi)
 
 # This configures a locally available script that is suitable for
 # testing within the build configuration before the project has been installed.
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flexi-local.in
-  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flexi)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi-local.in
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi)
 
 # copy local script to bin directory and change permissions
-file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flexi
+file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi
   DESTINATION ${CMAKE_BINARY_DIR}/bin
   FILE_PERMISSIONS
     OWNER_READ OWNER_WRITE OWNER_EXECUTE

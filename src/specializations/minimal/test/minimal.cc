@@ -5,7 +5,7 @@
 
 #include <cinchtest.h>
 
-#include "flexi/specializations/minimal/minimal_mesh.h"
+#include "flecsi/specializations/minimal/minimal_mesh.h"
 
 TEST(minimal, sanity) {
 } // TEST

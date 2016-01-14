@@ -14,14 +14,14 @@
 
 #include <cinchtest.h>
 
-#include "flexi/specializations/burton/burton.h"
-#include "flexi/io/io.h"
-#include "flexi/specializations/burton/burton_io_exodus.h"
+#include "flecsi/specializations/burton/burton.h"
+#include "flecsi/io/io.h"
+#include "flecsi/specializations/burton/burton_io_exodus.h"
 
 #include <vector>
 
 using namespace std;
-using namespace flexi;
+using namespace flecsi;
 
 using vertex_t = burton_mesh_t::vertex_t;
 using edge_t = burton_mesh_t::edge_t;

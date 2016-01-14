@@ -12,14 +12,14 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_burton_mesh_h
-#define flexi_burton_mesh_h
+#ifndef flecsi_burton_mesh_h
+#define flecsi_burton_mesh_h
 
 #include <string>
 
-#include "flexi/state/state.h"
-#include "flexi/execution/task.h"
-#include "flexi/specializations/burton/burton_types.h"
+#include "flecsi/state/state.h"
+#include "flecsi/execution/task.h"
+#include "flecsi/specializations/burton/burton_types.h"
 
 /*!
  * \file burton_mesh.h
@@ -27,7 +27,7 @@
  * \date Initial file creation: Sep 02, 2015
  */
 
-namespace flexi {
+namespace flecsi {
 
 /*----------------------------------------------------------------------------*
  * class burton_mesh_t
@@ -35,7 +35,7 @@ namespace flexi {
 
 /*!
   \class burton_mesh_t burton_mesh.h
-  \brief A specialization of the flexi low-level mesh topology, state and
+  \brief A specialization of the flecsi low-level mesh topology, state and
     execution models.
  */
 class burton_mesh_t
@@ -73,7 +73,7 @@ public:
 
     \param[in] key A name for the state variable, e.g., "density".
     \param[in] site The data attachement site where the state variable should
-      be defined.  Valid sites are defined in flexi::burton_mesh_traits_t.
+      be defined.  Valid sites are defined in flecsi::burton_mesh_traits_t.
     \param[in] attributes A bitfield specifying various attributes of the state.
 
     \return An accessor to the newly registered state.
@@ -116,7 +116,7 @@ public:
 
     \return Accessor to the state with \e key.
    */
-  template<typename T, size_t NS = flexi_user_space>
+  template<typename T, size_t NS = flecsi_user_space>
   decltype(auto) access_state_(const const_string_t && key) {
     return state_.accessor<T,NS>(key);
   } // access_state_
@@ -129,7 +129,7 @@ public:
 
     \return A vector of accessors to state registered with type \e T.
    */
-  template<typename T, size_t NS = flexi_user_space>
+  template<typename T, size_t NS = flecsi_user_space>
   decltype(auto) access_type_() {
     return state_.accessors<T,NS>();
   } // access_type_
@@ -533,7 +533,7 @@ public:
    */
   // FIXME: Complete changes to state storage
   vertex_t * create_vertex(const point_t &pos) {
-    auto p = access_state_<point_t,flexi_internal>("coordinates");
+    auto p = access_state_<point_t,flecsi_internal>("coordinates");
     p[num_vertices()] = pos;
 
     auto v = mesh_.make<vertex_t>(state_);
@@ -575,7 +575,7 @@ public:
   void init_parameters(size_t vertices) {
 
     // register coordinate state
-    state_.register_state<point_t,flexi_internal>("coordinates", vertices,
+    state_.register_state<point_t,flecsi_internal>("coordinates", vertices,
       attachment_site_t::vertices, persistent);
 
   } // init_parameters
@@ -651,7 +651,7 @@ public:
       const auto v3p = vertices[3]->coordinates();
 
       // compute the center vertex
-      const auto centroid = flexi::centroid({v0p, v1p, v2p, v3p});
+      const auto centroid = flecsi::centroid({v0p, v1p, v2p, v3p});
 
       // create the actual dual-mesh vertex
       auto vertex = mesh_.make<vertex_t>(centroid, &state_);
@@ -671,7 +671,7 @@ public:
       auto v1p = vertices[1]->coordinates();
 
       // compute the midpoint vertex
-      auto midpoint = flexi::midpoint(v0p, v1p);
+      auto midpoint = flecsi::midpoint(v0p, v1p);
 
       // create the actual dual-mesh vertex
       auto vertex = mesh_.make<vertex_t>(midpoint, &state_);
@@ -741,7 +741,7 @@ public:
   */
   point_t midpoint(const edge_t *e) const {
     auto vs = mesh_.entities<0,0>(e).to_vec();
-    return point_t(flexi::midpoint(vs[0]->coordinates(),vs[1]->coordinates()));
+    return point_t(flecsi::midpoint(vs[0]->coordinates(),vs[1]->coordinates()));
   }
 
 private:
@@ -754,9 +754,9 @@ private:
 
 using mesh_t = burton_mesh_t;
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_burton_mesh_h
+#endif // flecsi_burton_mesh_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

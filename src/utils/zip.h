@@ -41,7 +41,7 @@
 #endif
 
 
-namespace flexi {
+namespace flecsi {
 namespace utils {
 
 

@@ -3,11 +3,11 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_minimal_entity_types_h
-#define flexi_minimal_entity_types_h
+#ifndef flecsi_minimal_entity_types_h
+#define flecsi_minimal_entity_types_h
 
-#include "flexi/mesh/mesh_types.h"
-#include "flexi/specializations/minimal/minimal_mesh_traits.h"
+#include "flecsi/mesh/mesh_types.h"
+#include "flecsi/specializations/minimal/minimal_mesh_traits.h"
 
 /*!
  * \file minimal_entity_types.h
@@ -15,7 +15,7 @@
  * \date Initial file creation: Dec 26, 2015
  */
 
-namespace flexi {
+namespace flecsi {
 
 /*!
  */
@@ -57,9 +57,9 @@ public:
 
 }; // class minimal_cell_t
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_minimal_entity_types_h
+#endif // flecsi_minimal_entity_types_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

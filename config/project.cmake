@@ -3,7 +3,7 @@
 # All rights reserved.
 #~----------------------------------------------------------------------------~#
 
-project(flexi)
+project(flecsi)
 
 #------------------------------------------------------------------------------#
 # Set application directory
@@ -15,7 +15,7 @@ cinch_add_application_directory("examples")
 # Add library targets
 #------------------------------------------------------------------------------#
 
-cinch_add_library_target(flexi src)
+cinch_add_library_target(flecsi src)
 
 #------------------------------------------------------------------------------#
 # Set header suffix regular expression

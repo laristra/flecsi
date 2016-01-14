@@ -1,5 +1,5 @@
 
-namespace flexi {
+namespace flecsi {
 namespace utils {
 namespace detail {
 
@@ -21,13 +21,13 @@ void tuple_for_each( std::index_sequence<Is...>, Tuple&& tup, F&& f ) {
 
 // convenience define
 template<typename TupleType>
-using __flexi_integral_constant_t = std::integral_constant<size_t,
+using __flecsi_integral_constant_t = std::integral_constant<size_t,
    std::tuple_size<typename std::remove_reference<TupleType>::type>::value>;
 
 // Empty sequence call to terminate
 template<typename TupleType, typename FunctionType>
 void tuple_for_each(TupleType &&, FunctionType,
-   __flexi_integral_constant_t<TupleType>) {}
+   __flecsi_integral_constant_t<TupleType>) {}
 
 // Expand each index
 template<

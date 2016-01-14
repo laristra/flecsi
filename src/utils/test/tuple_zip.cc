@@ -18,17 +18,17 @@
 #include <string>
 
 // user includes
-#include "flexi/utils/tuple_zip.h"
-#include "flexi/utils/tuple_visit.h"
+#include "flecsi/utils/tuple_zip.h"
+#include "flecsi/utils/tuple_visit.h"
 
 
 // using declarations
 using std::cout;
 using std::endl;
 using std::get;
-using flexi::utils::tuple_tie;
-using flexi::utils::tuple_visit;
-using flexi::utils::tuple_zip;
+using flecsi::utils::tuple_tie;
+using flecsi::utils::tuple_visit;
+using flecsi::utils::tuple_zip;
 
 //=============================================================================
 //! \brief Test the tuple_zip function.

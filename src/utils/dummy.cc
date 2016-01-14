@@ -16,13 +16,13 @@
 
 #include "dummy.h"
 
-namespace flexi {
+namespace flecsi {
 
 void dummy() {
   std::cerr << "Hello World" << std::endl;
 } // dummy()
 
-} // namespace flexi
+} // namespace flecsi
 
 /*~------------------------------------------------------------------------~--*
  * Formatting options

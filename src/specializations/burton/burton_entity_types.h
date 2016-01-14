@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_burton_entity_types_h
-#define flexi_burton_entity_types_h
+#ifndef flecsi_burton_entity_types_h
+#define flecsi_burton_entity_types_h
 
 #include "burton_mesh_traits.h"
 
@@ -14,7 +14,7 @@
  * \date Initial file creation: Nov 15, 2015
  */
 
-namespace flexi {
+namespace flecsi {
 
 /*----------------------------------------------------------------------------*
  * class burton_vertex_t
@@ -71,7 +71,7 @@ public:
     \param[in] coordinates Coordinates value to set for vertex.
    */
   void set_coordinates(const point_t &coordinates) {
-    auto c = state_.accessor<point_t,flexi_internal>("coordinates");
+    auto c = state_.accessor<point_t,flecsi_internal>("coordinates");
     c[mesh_entity_base_t<num_domains>::template id<0>()] = coordinates;
   } // set_coordinates
 
@@ -80,7 +80,7 @@ public:
     \return coordinates of vertex.
    */
   const point_t & coordinates() const {
-    auto c = state_.accessor<point_t,flexi_internal>("coordinates");
+    auto c = state_.accessor<point_t,flecsi_internal>("coordinates");
     return c[mesh_entity_base_t<num_domains>::template id<0>()];
   } // coordinates
 
@@ -328,7 +328,7 @@ public:
     \brief create_entities function for burton_wedge_t.
    */
   std::pair<size_t, std::vector<size_t>> create_entities(
-    size_t dim, std::vector<flexi::id_t> &e, id_t *v, size_t vertex_count) {
+    size_t dim, std::vector<flecsi::id_t> &e, id_t *v, size_t vertex_count) {
     e.resize(6);
 
     e[0] = v[0];
@@ -384,9 +384,9 @@ private:
 
 }; // class burton_corner_t
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_burton_entity_types_h
+#endif // flecsi_burton_entity_types_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

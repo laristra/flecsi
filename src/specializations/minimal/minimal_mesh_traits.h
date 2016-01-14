@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_minimal_mesh_traits_h
-#define flexi_minimal_mesh_traits_h
+#ifndef flecsi_minimal_mesh_traits_h
+#define flecsi_minimal_mesh_traits_h
 
 /*!
  * \file minimal_mesh_traits.h
@@ -12,7 +12,7 @@
  * \date Initial file creation: Dec 26, 2015
  */
 
-namespace flexi {
+namespace flecsi {
 
 struct minimal_mesh_traits_t {
 
@@ -38,9 +38,9 @@ struct minimal_mesh_traits_t {
 
 }; // struct minimal_mesh_traits
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_minimal_mesh_traits_h
+#endif // flecsi_minimal_mesh_traits_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

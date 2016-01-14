@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_dummy_h
-#define flexi_dummy_h
+#ifndef flecsi_dummy_h
+#define flecsi_dummy_h
 
 /*!
  * \file dummy.h
@@ -21,13 +21,13 @@
  * \date Initial file creation: Aug 18, 2015
  */
 
-namespace flexi {
+namespace flecsi {
 
 void dummy();
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_dummy_h
+#endif // flecsi_dummy_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

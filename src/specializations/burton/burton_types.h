@@ -12,12 +12,12 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_burton_types_h
-#define flexi_burton_types_h
+#ifndef flecsi_burton_types_h
+#define flecsi_burton_types_h
 
-#include "flexi/mesh/mesh_topology.h"
-#include "flexi/specializations/burton/burton_mesh_traits.h"
-#include "flexi/specializations/burton/burton_entity_types.h"
+#include "flecsi/mesh/mesh_topology.h"
+#include "flecsi/specializations/burton/burton_mesh_traits.h"
+#include "flecsi/specializations/burton/burton_entity_types.h"
 
 /*!
  * \file burton_types.h
@@ -25,7 +25,7 @@
  * \date Initial file creation: Sep 02, 2015
  */
 
-namespace flexi {
+namespace flecsi {
 
 /*----------------------------------------------------------------------------*
  * struct burton_mesh_types_t
@@ -33,7 +33,7 @@ namespace flexi {
 
 /*!
   \class burton_mesh_types_t burton_types.h
-  \brief A collection of type information needed to specialize the flexi
+  \brief A collection of type information needed to specialize the flecsi
     low-level mesh infrastructure for ALE methods.
 */
 struct burton_mesh_types_t {
@@ -100,9 +100,9 @@ struct burton_mesh_types_t {
 
 }; // struct burton_mesh_types_t
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_burton_types_h
+#endif // flecsi_burton_types_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

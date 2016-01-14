@@ -16,7 +16,7 @@
 
 #include "../const_string.h"
 
-int32_t print_test(flexi::const_string_t && s) {
+int32_t print_test(flecsi::const_string_t && s) {
   std::cout << "hash: " << s.hash() << std::endl;
   return 0;
 } // print_test

@@ -20,7 +20,7 @@ class fake_mesh_t {};
 #include "../io.h"
 #include "../io_exodus.h"
 
-namespace flexi {
+namespace flecsi {
 
 // Register file extensions with factory.
 bool exodus_g_registered =
@@ -50,7 +50,7 @@ TEST(io, readwrite) {
   ASSERT_FALSE(write_mesh("test.exo", m));
 } // TEST
 
-} // namespace flexi
+} // namespace flecsi
 
 /*----------------------------------------------------------------------------*
  * Cinch test Macros

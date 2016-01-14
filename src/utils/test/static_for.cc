@@ -17,13 +17,13 @@
 #include <iostream>
 
 // user includes
-#include "flexi/utils/static_for.h"
+#include "flecsi/utils/static_for.h"
 
 
 // using declarations
 using std::cout;
 using std::endl;
-using flexi::utils::static_for;
+using flecsi::utils::static_for;
 
 //=============================================================================
 //! \brief Test the static_for function.

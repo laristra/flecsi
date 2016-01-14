@@ -14,10 +14,10 @@
 
 #include <cinchtest.h>
 
-#include "flexi/execution/task.h"
+#include "flecsi/execution/task.h"
 
-using return_type_t = flexi::execution_t<>::return_type_t;
-using execution_t = flexi::execution_t<>;
+using return_type_t = flecsi::execution_t<>::return_type_t;
+using execution_t = flecsi::execution_t<>;
 
 #define execute(task, ...) \
   execution_t::execute_task(task, ##__VA_ARGS__)

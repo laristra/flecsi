@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_mesh_types_h
-#define flexi_mesh_types_h
+#ifndef flecsi_mesh_types_h
+#define flecsi_mesh_types_h
 
 /*!
    \file mesh_types.h
@@ -12,9 +12,9 @@
    \date Initial file creation: Dec 23, 2015
  */
 
-#include "flexi/mesh/mesh_utils.h"
+#include "flecsi/mesh/mesh_utils.h"
 
-namespace flexi {
+namespace flecsi {
 
 template<typename T, T M>
 struct typeify { static constexpr T value = M; };
@@ -290,9 +290,9 @@ private:
 
 }; // class entity_group
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_mesh_types_h
+#endif // flecsi_mesh_types_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

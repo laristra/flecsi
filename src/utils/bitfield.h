@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_bitfield_h
-#define flexi_bitfield_h
+#ifndef flecsi_bitfield_h
+#define flecsi_bitfield_h
 
 /*!
  * \file bitfield.h
@@ -23,7 +23,7 @@
 
 #include <limits>
 
-namespace flexi {
+namespace flecsi {
 
 /*!
   \class bitfield bitfield.h
@@ -125,9 +125,9 @@ private:
 
 using bitfield_t = bitfield<uint32_t>;
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_bitfield_h
+#endif // flecsi_bitfield_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

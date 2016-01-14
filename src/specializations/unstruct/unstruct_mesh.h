@@ -23,11 +23,11 @@
 #pragma once
 
 // includes
-#include "flexi/execution/task.h"
-#include "flexi/mesh/mesh_topology.h"
-#include "flexi/specializations/unstruct/unstruct_types.h"
+#include "flecsi/execution/task.h"
+#include "flecsi/mesh/mesh_topology.h"
+#include "flecsi/specializations/unstruct/unstruct_types.h"
 
-namespace flexi {
+namespace flecsi {
 
 //=============================================================================
 //! \class unstruct_mesh_t
@@ -82,7 +82,7 @@ public:
   //!
   //! \param key A const_string_t name for the state variable, e.g., "density".
   //! \param site The data attachement site where the state variable should
-  //!   be defined.  Valid sites are defined in flexi::burton_mesh_traits_t.
+  //!   be defined.  Valid sites are defined in flecsi::burton_mesh_traits_t.
   //! \param attributes A bitfield specifying various attributes of the state.
   //!
   //! \return An accessor to the newly registered state.
@@ -291,7 +291,7 @@ private:
 using unstruct_2d_mesh_t = unstruct_mesh_t<double,2>;
 using unstruct_3d_mesh_t = unstruct_mesh_t<double,3>;
 
-} // namespace flexi
+} // namespace flecsi
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

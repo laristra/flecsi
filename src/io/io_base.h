@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_io_base_h
-#define flexi_io_base_h
+#ifndef flecsi_io_base_h
+#define flecsi_io_base_h
 
 #include "../utils/factory.h"
 
@@ -23,7 +23,7 @@
  * \date Initial file creation: Oct 07, 2015
  */
 
-namespace flexi {
+namespace flecsi {
 
 /*!
   \class io_base_t io_base.h
@@ -56,11 +56,11 @@ public:
  * Define factory type paramaterized on io_base_t and string.
  */
 template <typename mesh_t>
-using io_factory_t = flexi::Factory_<io_base_t<mesh_t>, std::string>;
+using io_factory_t = flecsi::Factory_<io_base_t<mesh_t>, std::string>;
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_io_h
+#endif // flecsi_io_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

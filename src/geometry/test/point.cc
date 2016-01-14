@@ -16,7 +16,7 @@
 
 #include "../point.h"
 
-using namespace flexi;
+using namespace flecsi;
 
 using point_1d_t = point<double,1>;
 using point_2d_t = point<double,2>;

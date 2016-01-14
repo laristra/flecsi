@@ -4,11 +4,11 @@
  *~--------------------------------------------------------------------------~*/
 
 /*!
-  \mainpage \e flexi - An Interface Development Tool to Support Multi-Physics Application Development
+  \mainpage \e flecsi - An Interface Development Tool to Support Multi-Physics Application Development
 
   \section Introduction
 
-  \e flexi is intended as a building block for developing high-level interfaces
+  \e flecsi is intended as a building block for developing high-level interfaces
   suitable for use by physicists and computational scientists.
 
   \image html scale-hierarchy.png

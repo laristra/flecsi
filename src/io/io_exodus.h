@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_io_exodus_h
-#define flexi_io_exodus_h
+#ifndef flecsi_io_exodus_h
+#define flecsi_io_exodus_h
 
 #include "io_base.h"
 
@@ -23,7 +23,7 @@
  * \date Initial file creation: Oct 07, 2015
  */
 
-namespace flexi {
+namespace flecsi {
 
 /*!
   \class io_exodus_t io_exodus.h
@@ -56,9 +56,9 @@ struct io_exodus_t : public io_base_t<mesh_t> {
 template <typename mesh_t>
 io_base_t<mesh_t> *create_io_exodus() { return new io_exodus_t<mesh_t>; } // create_io_exodus
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_io_exodus_h
+#endif // flecsi_io_exodus_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_const_string_h
-#define flexi_const_string_h
+#ifndef flecsi_const_string_h
+#define flecsi_const_string_h
 
 /*!
  * \file const_string.h
@@ -23,7 +23,7 @@
 
 #include <limits>
 
-namespace flexi {
+namespace flecsi {
 
 /*!
   \class const_string const_string.h
@@ -85,9 +85,9 @@ private:
   const hash_type_t size_;
 };
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_const_string
+#endif // flecsi_const_string
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

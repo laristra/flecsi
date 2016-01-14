@@ -18,13 +18,13 @@
 #include <string>
 
 // user includes
-#include "flexi/utils/tuple_visit.h"
+#include "flecsi/utils/tuple_visit.h"
 
 
 // using declarations
 using std::cout;
 using std::endl;
-using flexi::utils::tuple_visit;
+using flecsi::utils::tuple_visit;
 
 //=============================================================================
 //! \brief Test the tuple_visit function.

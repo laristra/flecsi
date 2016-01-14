@@ -3,14 +3,14 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_legion_execution_policy_h
-#define flexi_legion_execution_policy_h
+#ifndef flecsi_legion_execution_policy_h
+#define flecsi_legion_execution_policy_h
 
 #include <iostream>
 #include <utility>
 
-#include "flexi/execution/context.h"
-#include "flexi/utils/tuple_for_each.h"
+#include "flecsi/execution/context.h"
+#include "flecsi/utils/tuple_for_each.h"
 
 /*!
  * \file legion_execution_policy.h
@@ -18,7 +18,7 @@
  * \date Initial file creation: Nov 15, 2015
  */
 
-namespace flexi {
+namespace flecsi {
 
 /*!
   \class legion_execution_policy legion_execution_policy.h
@@ -50,9 +50,9 @@ protected:
 
 }; // class legion_execution_policy_t
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_legion_execution_policy_h
+#endif // flecsi_legion_execution_policy_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

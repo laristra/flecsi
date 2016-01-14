@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_partitioner_h
-#define flexi_partitioner_h
+#ifndef flecsi_partitioner_h
+#define flecsi_partitioner_h
 
 #if 0
 /*!
@@ -13,7 +13,7 @@
  * \date Initial file creation: Oct 26, 2015
  */
 
-namespace flexi {
+namespace flecsi {
 
 #if 0
 struct partition_info_t {
@@ -50,10 +50,10 @@ private:
 
 }; // class partitioner
 
-} // namespace flexi
+} // namespace flecsi
 
 #endif
-#endif // flexi_partitioner_h
+#endif // flecsi_partitioner_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

@@ -21,7 +21,7 @@
 // user includes
 #include "detail/tuple_zip.h"
 
-namespace flexi {
+namespace flecsi {
 namespace utils {
 
 

@@ -12,13 +12,13 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_burton_mesh_traits_h
-#define flexi_burton_mesh_traits_h
+#ifndef flecsi_burton_mesh_traits_h
+#define flecsi_burton_mesh_traits_h
 
-#include "flexi/utils/bitfield.h"
-#include "flexi/state/state.h"
-#include "flexi/geometry/point.h"
-#include "flexi/geometry/space_vector.h"
+#include "flecsi/utils/bitfield.h"
+#include "flecsi/state/state.h"
+#include "flecsi/geometry/point.h"
+#include "flecsi/geometry/space_vector.h"
 
 /*!
  * \file burton_mesh_traits.h
@@ -26,19 +26,19 @@
  * \date Initial file creation: Nov 15, 2015
  */
 
-namespace flexi {
+namespace flecsi {
 
 struct burton_mesh_traits_t {
 
 /*!
   Compile-time selection of mesh dimension.  Valid selections are 2 or 3.
  */
-#ifndef FLEXI_MESH_DIMENSION
-#define FLEXI_MESH_DIMENSION 2
-#endif // FLEXI_MESH_DIMENSION
+#ifndef FLECSI_MESH_DIMENSION
+#define FLECSI_MESH_DIMENSION 2
+#endif // FLECSI_MESH_DIMENSION
 
   //! The dimension of the burton mesh.
-  static constexpr size_t dimension = FLEXI_MESH_DIMENSION;
+  static constexpr size_t dimension = FLECSI_MESH_DIMENSION;
 
   //! The number of mesh domains in the burton mesh.
   static constexpr size_t num_domains = 2;
@@ -55,10 +55,10 @@ struct burton_mesh_traits_t {
   //! Enumeration of the locations on the mesh where data may be sited.
   enum class attachment_site_t : size_t {
     vertices,
-#if FLEXI_MESH_DIMENSION >= 2
+#if FLECSI_MESH_DIMENSION >= 2
     edges,
 #endif
-#if FLEXI_MESH_DIMENSION == 3
+#if FLECSI_MESH_DIMENSION == 3
     faces,
 #endif
     cells,
@@ -102,9 +102,9 @@ struct burton_mesh_traits_t {
 
 }; // struct burton_mesh_traits_t
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_burton_mesh_traits_h
+#endif // flecsi_burton_mesh_traits_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

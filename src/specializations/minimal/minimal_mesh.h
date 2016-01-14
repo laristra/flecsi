@@ -3,11 +3,11 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_minimal_mesh_h
-#define flexi_minimal_mesh_h
+#ifndef flecsi_minimal_mesh_h
+#define flecsi_minimal_mesh_h
 
-#include "flexi/mesh/mesh_topology.h"
-#include "flexi/specializations/minimal/minimal_mesh_types.h"
+#include "flecsi/mesh/mesh_topology.h"
+#include "flecsi/specializations/minimal/minimal_mesh_types.h"
 
 /*!
  * \file minimal_mesh.h
@@ -15,7 +15,7 @@
  * \date Initial file creation: Dec 26, 2015
  */
 
-namespace flexi {
+namespace flecsi {
 
 /*!
   \class minimal_mesh minimal_mesh.h
@@ -41,9 +41,9 @@ private:
 
 }; // class minimal_mesh_t
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_minimal_mesh_h
+#endif // flecsi_minimal_mesh_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

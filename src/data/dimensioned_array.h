@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_dimensioned_array_h
-#define flexi_dimensioned_array_h
+#ifndef flecsi_dimensioned_array_h
+#define flecsi_dimensioned_array_h
 
 #include <array>
 #include <cmath>
@@ -42,7 +42,7 @@ using areTypeT = and_<std::is_same<Ts,Target>...>;
  * \date Initial file creation: Sep 23, 2015
  */
 
-namespace flexi {
+namespace flecsi {
 
 enum class axis : size_t { x = 0, y = 1, z = 2 };
 
@@ -283,9 +283,9 @@ std::ostream& operator<<(std::ostream& os, const dimensioned_array<T,D,TS>& a)
   return os;
 }
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_dimensioned_array_h
+#endif // flecsi_dimensioned_array_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

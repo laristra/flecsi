@@ -7,7 +7,7 @@
 #include "../mesh_topology.h"
 
 using namespace std;
-using namespace flexi;
+using namespace flecsi;
 
 class SideVertex : public MeshEntity{
 public:

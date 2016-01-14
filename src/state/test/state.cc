@@ -17,9 +17,9 @@
 #include "../state.h"
 #include "../../utils/bitfield.h"
 
-using state_t = flexi::state_t<flexi::default_state_user_meta_data_t,
-  flexi::default_state_storage_policy_t>;
-using flexi::persistent;
+using state_t = flecsi::state_t<flecsi::default_state_user_meta_data_t,
+  flecsi::default_state_storage_policy_t>;
+using flecsi::persistent;
 
 TEST(state, sanity) {
   state_t state;
@@ -40,7 +40,7 @@ TEST(state, sanity) {
 
   // define a predicate to test for persistent state
   auto pred = [](const auto & a) -> bool {
-    flexi::bitfield_t bf(a.meta().attributes);
+    flecsi::bitfield_t bf(a.meta().attributes);
     return a.meta().site_id == 0 && bf.bitsset(persistent);
   };
 

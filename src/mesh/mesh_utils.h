@@ -3,10 +3,10 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_mesh_utils_h
-#define flexi_mesh_utils_h
+#ifndef flecsi_mesh_utils_h
+#define flecsi_mesh_utils_h
 
-#include "flexi/utils/common.h"
+#include "flecsi/utils/common.h"
 
 /*!
    \file mesh_utils.h
@@ -26,7 +26,7 @@
   std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__      \
             << ": " << X << std::endl
 
-namespace flexi {
+namespace flecsi {
 
 /*----------------------------------------------------------------------------*
  * Id utilities.
@@ -70,14 +70,6 @@ id_t to_global_id(size_t dim, id_t local_id){
 
 id_t to_local_id(id_t global_id){
   return global_id & 0x0000ffffffffffff;
-}
-
-id_t to_dimension_id(id_t global_id) {
-  return global_id & (0x3 << 62);
-}
-
-id_t to_domain_id(id_t global_id) {
-  return global_id & (0x3 << 60);
 }
 
 /*----------------------------------------------------------------------------*
@@ -274,9 +266,9 @@ struct compute_bindings_<DM, 0, TS> {
 
 }; // struct compute_bindings_
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_mesh_utils_h
+#endif // flecsi_mesh_utils_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

@@ -2,7 +2,7 @@
 
 # State Model
 
-From the user's point of view, the \flexi{} state model is extremely
+From the user's point of view, the \flecsi{} state model is extremely
 easy to use.  Users can register state of any normal C++ type.  This includes
 P.O.D. (plain-old-data) types and user-defined types.
 
@@ -10,7 +10,7 @@ P.O.D. (plain-old-data) types and user-defined types.
 
 # State Model
 
-The \flexi{} state model \texttt{state\_t} is an interface class that
+The \flecsi{} state model \texttt{state\_t} is an interface class that
 provides a standard interface to policy-based C++ implementations called
-storage policies.  Allowing for different storage policies allows \flexi{}
+storage policies.  Allowing for different storage policies allows \flecsi{}
 to target many different low-level runtime data managers.

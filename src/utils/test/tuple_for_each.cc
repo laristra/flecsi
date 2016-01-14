@@ -18,14 +18,14 @@
 #include <string>
 
 // user includes
-#include "flexi/utils/tuple_for_each.h"
+#include "flecsi/utils/tuple_for_each.h"
 
 
 // using declarations
 using std::cout;
 using std::endl;
 using std::get;
-using flexi::utils::tuple_for_each;
+using flecsi::utils::tuple_for_each;
 
 //=============================================================================
 //! \brief Test the tuple_zip function.

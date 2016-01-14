@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_io_h
-#define flexi_io_h
+#ifndef flecsi_io_h
+#define flecsi_io_h
 
 #include "io_base.h"
 
@@ -23,7 +23,7 @@
  * \date Initial file creation: Oct 07, 2015
  */
 
-namespace flexi {
+namespace flecsi {
 
 /*!
 \brief Generic mesh reader that calls the correct method based on the suffix.
@@ -70,9 +70,9 @@ int32_t write_mesh(const std::string &name, mesh_t &m) {
   return ret;
 }
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_io_h
+#endif // flecsi_io_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

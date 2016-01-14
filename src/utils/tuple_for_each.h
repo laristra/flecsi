@@ -24,7 +24,7 @@
 // user includes
 #include "detail/tuple_for_each.h"
 
-namespace flexi {
+namespace flecsi {
 namespace utils {
 
 

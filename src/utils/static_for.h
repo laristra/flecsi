@@ -20,7 +20,7 @@
 //! user includes
 #include "detail/static_for.h"
 
-namespace flexi {
+namespace flecsi {
 namespace utils {
 
 

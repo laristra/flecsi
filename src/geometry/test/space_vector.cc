@@ -16,7 +16,7 @@
 
 #include "../space_vector.h"
 
-using namespace flexi;
+using namespace flecsi;
 
 using vector_1d_t = space_vector<double,1>;
 using vector_2d_t = space_vector<double,2>;

@@ -27,10 +27,10 @@
 #include <vector>
 
 // user includes
-#include "flexi/specializations/burton/burton.h"
+#include "flecsi/specializations/burton/burton.h"
 
-// put the flexi namespace up front
-using namespace flexi;
+// put the flecsi namespace up front
+using namespace flecsi;
 
 // explicitly use some stuff
 using std::cout;

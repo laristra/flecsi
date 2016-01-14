@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_context_h
-#define flexi_context_h
+#ifndef flecsi_context_h
+#define flecsi_context_h
 
 #include <cstddef>
 
@@ -23,7 +23,7 @@
  * \date Initial file creation: Oct 19, 2015
  */
 
-namespace flexi {
+namespace flecsi {
 
 /*!
   \class context_t context.h
@@ -65,9 +65,9 @@ private:
 
 }; // class context_t
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_context_h
+#endif // flecsi_context_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

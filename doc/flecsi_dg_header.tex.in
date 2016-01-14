@@ -3,16 +3,14 @@
 % All rights reserved.
 %~---------------------------------------------------------------------------~%
 
-\title{\textbf{\emph{flexi} User Guide}}
-\date{\today}
-\author{\begin{tabular}{rl}
-        \textbf{\emph{flexi} Project Team:} & Ben Bergen \\
-                                     & Marc Charest \\
-                                     & Li-Ta (Ollie) Lo \\
-                                     & Nick Moss \\
-                                     & Chris Sewell \\
-                                     & John Wohlbier
-        \end{tabular}}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\lhead{${${PROJECT_NAME}_VERSION}}
+\chead{Flexi Developer Guide}
+\rhead{\today}
+
+\newcommand{\flecsi}{\emph{FleCSI}}
 
 %~---------------------------------------------------------------------------~%
 % Formatting for vim.

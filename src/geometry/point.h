@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_point_h
-#define flexi_point_h
+#ifndef flecsi_point_h
+#define flecsi_point_h
 
 #include <array>
 #include <cmath>
@@ -27,7 +27,7 @@
  * \date Initial file creation: Sep 23, 2015
  */
 
-namespace flexi {
+namespace flecsi {
 
 /*!
   \class point point.h
@@ -90,9 +90,9 @@ auto centroid( std::initializer_list<point<T, D>> vert_list ) {
   return tmp;
 }
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_point_h
+#endif // flecsi_point_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

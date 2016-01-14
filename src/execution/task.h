@@ -12,12 +12,12 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_task_h
-#define flexi_task_h
+#ifndef flecsi_task_h
+#define flecsi_task_h
 
 #include <type_traits>
 
-#include "flexi/execution/default_execution_policy.h"
+#include "flecsi/execution/default_execution_policy.h"
 
 /*!
  * \file task.h
@@ -25,7 +25,7 @@
  * \date Initial file creation: Oct 19, 2015
  */
 
-namespace flexi {
+namespace flecsi {
 
 /*!
   \class execution_t task.h
@@ -46,7 +46,7 @@ public:
     // Make sure that the task definition returns the correct type
     static_assert(std::is_same<return_type_t,
       decltype(task(std::forward<Args>(args)...))>(),
-      "Driver must return flexi::execution_t::return_type_t");
+      "Driver must return flecsi::execution_t::return_type_t");
 
     // pass the driver to the execution policy for handling
     return execution_policy_t::execute_task(std::forward<T>(task),
@@ -59,7 +59,7 @@ public:
     // Make sure that the task definition returns the correct type
     static_assert(std::is_same<return_type_t,
       decltype(task(std::forward<Args>(args)...))>(),
-      "Tasks must return flexi::execution_t::return_type_t");
+      "Tasks must return flecsi::execution_t::return_type_t");
 
     // pass the task to the execution policy for handling
     return execution_policy_t::execute_task(std::forward<T>(task),
@@ -68,11 +68,11 @@ public:
 
 }; // class execution_t
 
-} // namespace flexi
+} // namespace flecsi
 
 #define task
 
-#endif // flexi_task_h
+#endif // flecsi_task_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

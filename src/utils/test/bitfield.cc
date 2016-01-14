@@ -15,7 +15,7 @@
 #include <cinchtest.h>
 #include "../bitfield.h"
 
-using bitfield_t = flexi::bitfield<uint8_t>;
+using bitfield_t = flecsi::bitfield<uint8_t>;
 
 enum class wedge_order_t : size_t {
   point = 0,

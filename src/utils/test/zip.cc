@@ -22,7 +22,7 @@
 #include<vector>
 
 // user includes
-#include "flexi/utils/zip.h"
+#include "flecsi/utils/zip.h"
 
 // some using declarations
 using std::array;
@@ -31,8 +31,8 @@ using std::endl;
 using std::list;
 using std::vector;
 
-using flexi::utils::get;
-using flexi::utils::zip;
+using flecsi::utils::get;
+using flecsi::utils::zip;
 
 //=============================================================================
 //! \brief Test the "zip-like" iterator.

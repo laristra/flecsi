@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_iterator_h
-#define flexi_iterator_h
+#ifndef flecsi_iterator_h
+#define flecsi_iterator_h
 
 /*!
  * \file iterator.h
@@ -21,7 +21,7 @@
  * \date Initial file creation: Oct 09, 2015
  */
 
-namespace flexi {
+namespace flecsi {
 
 /*!
   \class iterator iterator.h
@@ -76,9 +76,9 @@ private:
 
 }; // class iterator
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_iterator_h
+#endif // flecsi_iterator_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

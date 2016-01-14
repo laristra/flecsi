@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_common_h
-#define flexi_common_h
+#ifndef flecsi_common_h
+#define flecsi_common_h
 
 #include <cstdint>
 
@@ -23,19 +23,19 @@
  * \date Initial file creation: Sep 23, 2015
  */
 
-namespace flexi {
+namespace flecsi {
 
 using id_t = uint64_t;
 
 //! P.O.D.
 template <typename T> T square(const T &a) { return a * a; }
 
-} // namespace flexi
+} // namespace flecsi
 
 #define _UTIL_STRINGIFY(s)#s
 #define EXPAND_AND_STRINGIFY(s)_UTIL_STRINGIFY(s)
 
-#endif // flexi_common_h
+#endif // flecsi_common_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

@@ -19,7 +19,7 @@
 
 
 
-namespace flexi {
+namespace flecsi {
 namespace utils {
 namespace detail {
 

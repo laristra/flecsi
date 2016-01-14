@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_index_space_h
-#define flexi_index_space_h
+#ifndef flecsi_index_space_h
+#define flecsi_index_space_h
 
 #include "iterator.h"
 
@@ -23,7 +23,7 @@
  * \date Initial file creation: Oct 09, 2015
  */
 
-namespace flexi {
+namespace flecsi {
 
 /*!
   \class index_space index_space.h
@@ -76,9 +76,9 @@ private:
 
 }; // class index_space_t
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_index_space_h
+#endif // flecsi_index_space_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

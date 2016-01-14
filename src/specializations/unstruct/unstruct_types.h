@@ -23,13 +23,13 @@
 #pragma once
 
 // includes
-#include "flexi/geometry/point.h"
-#include "flexi/geometry/space_vector.h"
-#include "flexi/state/state.h"
-#include "flexi/utils/bitfield.h"
-#include "flexi/utils/common.h"
+#include "flecsi/geometry/point.h"
+#include "flecsi/geometry/space_vector.h"
+#include "flecsi/state/state.h"
+#include "flecsi/utils/bitfield.h"
+#include "flecsi/utils/common.h"
 
-namespace flexi {
+namespace flecsi {
 
 //=============================================================================
 //! \class unstruct_mesh_traits_t
@@ -117,7 +117,7 @@ public :
   //! \param [in] v the list of vertex ids
   //! \param [in] vertex_count The number of vertices
   std::pair<size_t,size_t> create_entities( size_t dim, 
-                                            std::vector<flexi::id_t> &e, 
+                                            std::vector<flecsi::id_t> &e, 
                                             id_t *v, 
                                             size_t vertex_count) 
   {
@@ -140,7 +140,7 @@ public :
 template<>
 std::pair<size_t,size_t> 
  unstruct_cell_t<2>::create_entities( size_t dim, 
-                                      std::vector<flexi::id_t> &e, 
+                                      std::vector<flecsi::id_t> &e, 
                                       id_t *v, 
                                       size_t vertex_count) 
 {
@@ -173,7 +173,7 @@ std::pair<size_t,size_t>
 template<>
 std::pair<size_t,size_t> 
  unstruct_cell_t<3>::create_entities( size_t dim, 
-                                      std::vector<flexi::id_t> &e, 
+                                      std::vector<flecsi::id_t> &e, 
                                       id_t *v, 
                                       size_t vertex_count) 
 {
@@ -267,7 +267,7 @@ std::pair<size_t,size_t>
 //=============================================================================
 //! \class unstruct_mesh_types_t
 //!
-//! \brief A collection of the type information needed to specialize the flexi
+//! \brief A collection of the type information needed to specialize the flecsi
 //!        low-level mesh infastructure.
 //!
 //! This specialization is for a general multi-dimensional unstructured mesh.
@@ -386,7 +386,7 @@ struct unstruct_mesh_types_t {
 };
 
 
-} // namespace flexi
+} // namespace flecsi
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

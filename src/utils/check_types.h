@@ -22,7 +22,7 @@
 #include "detail/check_types.h"
 
 
-namespace flexi {
+namespace flecsi {
 namespace utils {
 
 

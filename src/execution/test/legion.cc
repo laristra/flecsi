@@ -14,10 +14,10 @@
 
 #include <cinchtest.h>
 
-#include "flexi/execution/legion_execution_policy.h"
-#include "flexi/execution/task.h"
+#include "flecsi/execution/legion_execution_policy.h"
+#include "flecsi/execution/task.h"
 
-using execution_t = flexi::execution_t<flexi::legion_execution_policy_t>;
+using execution_t = flecsi::execution_t<flecsi::legion_execution_policy_t>;
 using return_type_t = execution_t::return_type_t;
 
 return_type_t testme(const char * token) {

@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_space_vector_h
-#define flexi_space_vector_h
+#ifndef flecsi_space_vector_h
+#define flecsi_space_vector_h
 
 #include <array>
 #include <cmath>
@@ -28,7 +28,7 @@
  * \date Initial file creation: Sep 23, 2015
  */
 
-namespace flexi {
+namespace flecsi {
 
 /*!
   \class space_vector space_vector.h
@@ -100,9 +100,9 @@ space_vector<T, 3> normal(
   return tmp;
 } // normal
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_space_vector_h
+#endif // flecsi_space_vector_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

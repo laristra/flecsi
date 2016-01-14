@@ -12,16 +12,16 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_burton_io_exodus_h
-#define flexi_burton_io_exodus_h
+#ifndef flecsi_burton_io_exodus_h
+#define flecsi_burton_io_exodus_h
 
 #ifdef HAVE_EXODUS
 #  include <exodusII.h>
 #endif
 
 
-#include "flexi/io/io_exodus.h"
-#include "flexi/specializations/burton/burton.h"
+#include "flecsi/io/io_exodus.h"
+#include "flecsi/specializations/burton/burton.h"
 
 /*!
  * \file io_exodus.h
@@ -29,7 +29,7 @@
  * \date Initial file creation: Oct 07, 2015
  */
 
-namespace flexi {
+namespace flecsi {
 
 /*!
  * Register file extension g with factory.
@@ -174,7 +174,7 @@ int32_t io_exodus_t<burton_mesh_t>::read(const std::string &name,
 
 #else
 
-  std::cerr << "FLEXI not build with exodus support." << std::endl;
+  std::cerr << "FLECSI not build with exodus support." << std::endl;
   std::exit(1);
 
   return -1;
@@ -215,7 +215,7 @@ int32_t io_exodus_t<burton_mesh_t>::write(const std::string &name,
   auto num_side_sets = 0;
 
   // initialize the file.
-  auto status = ex_put_init(exoid, "Exodus II output from flexi.", d, num_nodes,
+  auto status = ex_put_init(exoid, "Exodus II output from flecsi.", d, num_nodes,
     num_elem, num_elem_blk, num_node_sets, num_side_sets);
   assert(status == 0);
 
@@ -436,7 +436,7 @@ int32_t io_exodus_t<burton_mesh_t>::write(const std::string &name,
 
 #else
 
-  std::cerr << "FLEXI not build with exodus support." << std::endl;
+  std::cerr << "FLECSI not build with exodus support." << std::endl;
   std::exit(1);
 
   return -1;
@@ -445,9 +445,9 @@ int32_t io_exodus_t<burton_mesh_t>::write(const std::string &name,
 
 } // io_exodus_t::write
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_burton_io_exodus_h
+#endif // flecsi_burton_io_exodus_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

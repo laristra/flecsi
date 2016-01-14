@@ -7,10 +7,10 @@
 \pagestyle{fancy}
 
 \lhead{${${PROJECT_NAME}_VERSION}}
-\chead{Flexi Developer Guide}
+\chead{Flexi User Guide}
 \rhead{\today}
 
-\newcommand{\flexi}{\emph{flexi}}
+\newcommand{\flecsi}{\emph{FleCSI}}
 
 %~---------------------------------------------------------------------------~%
 % Formatting for vim.

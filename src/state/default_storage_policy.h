@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flexi_default_storage_policy_h
-#define flexi_default_storage_policy_h
+#ifndef flecsi_default_storage_policy_h
+#define flecsi_default_storage_policy_h
 
 #include <unordered_map>
 #include <vector>
@@ -30,7 +30,7 @@
  * \date Initial file creation: Oct 27, 2015
  */
 
-namespace flexi {
+namespace flecsi {
 
 /*----------------------------------------------------------------------------*
  * class default_state_storage_policy_t
@@ -39,7 +39,7 @@ namespace flexi {
 /*!
   \class default_state_storage_policy_t default_storage_policy.h
   \brief default_state_storage_policy_t provides a serial/local storage
-    policy for the \e flexi state model.
+    policy for the \e flecsi state model.
 
   This storage policy is probably adequate for serial or MPI-based
   runtimes.  This implementation should not be used as a template
@@ -70,7 +70,7 @@ protected:
     \tparam T The type of the state variable.  If this type is not
       consistent with the type used to register the state, bad things
       can happen.  However, it can be useful to reinterpret the type, e.g.,
-      when writing raw bytes.  This class is part of the low-level \e flexi
+      when writing raw bytes.  This class is part of the low-level \e flecsi
       interface, so it is assumed that you know what you are doing...
    */
   template<typename T>
@@ -122,7 +122,7 @@ protected:
       \tparam E A complex index type.
 
       This version of the operator is provided to support use with
-      \e flexi mesh entity types \ref mesh_entity_base_t.
+      \e flecsi mesh entity types \ref mesh_entity_base_t.
      */
     template<typename E>
     const T & operator [] (E * e) const {
@@ -136,7 +136,7 @@ protected:
       \tparam E A complex index type.
 
       This version of the operator is provided to support use with
-      \e flexi mesh entity types \ref mesh_entity_base_t.
+      \e flecsi mesh entity types \ref mesh_entity_base_t.
      */
     template<typename E>
     T & operator [] (E * e) {
@@ -392,9 +392,9 @@ private:
   
 }; // class default_state_storage_policy_t
 
-} // namespace flexi
+} // namespace flecsi
 
-#endif // flexi_default_storage_policy_h
+#endif // flecsi_default_storage_policy_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

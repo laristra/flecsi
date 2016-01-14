@@ -5,7 +5,7 @@
 #include "../mesh_topology.h"
 
 using namespace std;
-using namespace flexi;
+using namespace flecsi;
 
 class Vertex : public mesh_entity_t<0, 1>{
 public:
@@ -28,8 +28,8 @@ public:
   void set_precedence(size_t dim, uint64_t precedence) {}
 
   std::pair<size_t, std::vector<size_t>>
-  create_entities(size_t dim, std::vector<flexi::id_t>& e,
-                  flexi::id_t *v, size_t vertex_count){  
+  create_entities(size_t dim, std::vector<flecsi::id_t>& e,
+                  flecsi::id_t *v, size_t vertex_count){  
 
     e.resize(8);
 
