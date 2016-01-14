@@ -1094,6 +1094,9 @@ public:
     // Sanity check
     static_assert(TD <= MT::dimension, "invalid dimension");
 
+    // Storage for entity-to-vertex connectivity information.
+    connection_vector_t entity_vertex_conn;
+
     // Helper variables
     size_t entity_id(0);
     size_t max_output_conns = 1;
@@ -1163,6 +1166,15 @@ public:
 
         // Increment
         if(itr.second) {
+          id_vector_t ev2;
+          = id_vector_t(a, a + p.second[i]);
+
+          for(size_t e(0); e<p.second[i], ++e) {
+            if(to_dimension_id(a[i]) == 0) {
+              entity_vertex_conn.emplace_back(a[i]);
+            } // if
+          } // for
+
           max_output_conns =
             std::max(max_output_conns, output_conn[cell_id].size());
           ++entity_id;
@@ -1182,6 +1194,10 @@ public:
     else{
       output.init(output_conn);   
     }
+
+    // ????
+    connectivity_t & entity_to_vertex = get_connectivity_(FM, D, 0);
+    entity_to_vertex.init(entity_vertex_conn);
   } // build_bindings
 
   template<size_t M = 0>
