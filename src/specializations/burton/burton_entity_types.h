@@ -24,6 +24,7 @@ namespace flexi {
   \class burton_vertex_t burton_entity_types.h
   \brief The burton_vertex_t type provides an interface for managing
     geometry and state associated with mesh vertices.
+
   \tparam N The domain of the vertex.
  */
 template<size_t N>
@@ -44,7 +45,9 @@ public:
 
   /*!
     \brief Set the rank for the vertex.
+
     \tparam M FIXME
+
     \param[in] rank Rank to give the vertex.
    */
   template<size_t M>
@@ -54,6 +57,7 @@ public:
 
   /*!
     \brief Get the precedence for the vertex.
+
     \tparam M FIXME
    */
   template<size_t M>
@@ -63,6 +67,7 @@ public:
 
   /*!
     \brief Set the coordinates for a vertex.
+
     \param[in] coordinates Coordinates value to set for vertex.
    */
   void set_coordinates(const point_t &coordinates) {
@@ -94,6 +99,7 @@ private:
   \class burton_edge_t burton_entity_types.h
   \brief The burton_edge_t type provides an interface for managing
     geometry and state associated with mesh edges.
+
   \tparam N The domain of the edge.
  */
 template<size_t N>
@@ -113,6 +119,7 @@ class burton_wedge_t; // class burton_wedge_t
   \class burton_cell_t burton_entity_types.h
   \brief The burton_cell_t type provides an interface for managing and
     geometry and state associated with mesh cells.
+
   \tparam N The domain of the cell.
  */
 template<size_t N>
@@ -128,10 +135,12 @@ struct burton_cell_t : public mesh_entity_t<2, N> {
       of topological dimension dim, using vertices v, and puts the vertices
       in e. See, e.g., burton_quadrilateral_cell_t for an implementation of
       this pure virtual function.
+
     \param[in] dim The topological dimension of the entity to create.
     \param[out] e Vector to fill with ids of the vertices making the entity.
     \param[in] v Vertex ids for the cell.
     \param[in] vertex_count The number of vertices making up the entity.
+
     \return A pair with a) the number of vertex collections making up the
       entity and b) the number of vertices per collection.
    */
@@ -142,9 +151,11 @@ struct burton_cell_t : public mesh_entity_t<2, N> {
     \brief create_bound_entities binds mesh entities across domains.
       See, e.g., burton_quadrilateral_cell_t for an implementation of
       this pure virtual function.
+
     \param[in] dim The topological dimension of the entity being bound.
     \param[in] ent_ids The entity ids of the entities making up the binding.
     \param[out] c The collection of the ids making up the bound entity.
+
     \return A pair with a) the number of entity collections making up the
       binding and b) the number of entities per collection.
    */
@@ -277,6 +288,7 @@ public:
   \class burton_wedge_t burton_entity_types.h
   \brief The burton_wedge_t type provides an interface for managing and
     geometry and state associated with mesh wedges.
+
   \tparam N The domain of the wedge.
  */
 template<size_t N>
@@ -306,6 +318,7 @@ public:
 
   /*!
     \brief Set the precedence for the wedge.
+
     \param[in] dim Topological dimension of the wedge.
     \param[in] precedence Value of precedence to set.
    */
@@ -344,6 +357,7 @@ private:
   \class burton_corner_t burton_entity_types.h
   \brief The burton_corner_t type provides an interface for managing and
     geometry and state associated with mesh corners.
+
   \tparam N The domain of the corner.
  */
 template<size_t N>
@@ -351,6 +365,7 @@ class burton_corner_t : public mesh_entity_t<1, N> {
 public:
   /*!
     \brief Add a wedge to the mesh.
+
     \param[in] w The wedge to add to the mesh.
    */
   void add_wedge(burton_wedge_t<N> *w) {

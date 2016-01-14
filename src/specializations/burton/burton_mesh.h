@@ -34,44 +34,47 @@ namespace flexi {
  *----------------------------------------------------------------------------*/
 
 /*!
-  \class burton_mesh_t burton.h
-  \brief burton_mesh_t A specialization of the flexi low-level mesh topology,
-    state and execution models.
+  \class burton_mesh_t burton_mesh.h
+  \brief A specialization of the flexi low-level mesh topology, state and
+    execution models.
  */
 class burton_mesh_t
 {
 private:
 
+  //! Type for storing instance of template specialized low level mesh.
   using private_mesh_t = mesh_topology_t<burton_mesh_types_t>;
 
 public:
 
+  //! Type defining the execution policy.
 #ifndef MESH_EXECUTION_POLICY
-  // for now: use default execution policy
   using mesh_execution_t = execution_t<>;
 #else
-  using mesh_execution_t = execution_t<MESH_STORAGE_POLICY>;
+  using mesh_execution_t = execution_t<MESH_EXECUTION_POLICY>;
 #endif
 
-  /*!
-    \brief Type defining the data attachment sites on the mesh.
-   */
+  //! Type defining the data attachment sites on the burton mesh.
   using attachment_site_t = burton_mesh_traits_t::attachment_site_t;
 
   /*!
     \brief Accessor type.
+
+    \tparam T The type of the underlying data to access.
    */
   template<typename T>
   using accessor_t = burton_mesh_traits_t::mesh_state_t::accessor_t<T>;
 
   /*!
     \brief Register state for the named variable at the given attachment
-    site.
+      site with attributes.
 
-    \param key A const_string_t name for the state variable, e.g., "density".
-    \param site The data attachement site where the state variable should
+    \tparam T The type of the underlying data to access.
+
+    \param[in] key A name for the state variable, e.g., "density".
+    \param[in] site The data attachement site where the state variable should
       be defined.  Valid sites are defined in flexi::burton_mesh_traits_t.
-    \param attributes A bitfield specifying various attributes of the state.
+    \param[in] attributes A bitfield specifying various attributes of the state.
 
     \return An accessor to the newly registered state.
    */
@@ -103,7 +106,15 @@ public:
   } // register_state_
 
   /*!
-    FIXME
+    \brief Access state associated with \e key.
+
+    \tparam T Data type of underlying state.
+    \tparam NS The namespace in which the state variable is registered.
+      See \ref state_t::register_state for additional information.
+
+    \param[in] key The \e key for the state to access.
+
+    \return Accessor to the state with \e key.
    */
   template<typename T, size_t NS = flexi_user_space>
   decltype(auto) access_state_(const const_string_t && key) {
@@ -111,7 +122,12 @@ public:
   } // access_state_
 
   /*!
-    FIXME
+    \brief Access state registered with type \e T.
+
+    \tparam T All state variables of this type will be returned.
+    \tparam NS Namespace to use.
+
+    \return A vector of accessors to state registered with type \e T.
    */
   template<typename T, size_t NS = flexi_user_space>
   decltype(auto) access_type_() {
@@ -119,7 +135,17 @@ public:
   } // access_type_
 
   /*!
-    FIXME
+    \brief Access state registered with type \e T that matches predicate
+      function of type \e P.
+
+    \tparam T All state variables of this type will be returned that match
+      predicate \e P will be returned.
+    \tparam P Predicate function type.
+
+    \param[in] predicate Predicate function.
+
+    \return Accessors to the state variables of type \e T matching the
+      predicate function.
    */
   template<typename T, typename P>
   decltype(auto) access_type_if_(P && predicate) {
@@ -127,7 +153,11 @@ public:
   } // access_type_if
 
   /*!
-    FIXME
+    \brief Return the attributes for the state with \e key.
+
+    \param[in] key The \e key for the state to return attributes for.
+
+    \return The attributes for the state with \e key.
    */
   decltype(auto) state_attributes_(const const_string_t && key) {
     return state_.meta_data<>((key)).attributes;
@@ -138,15 +168,23 @@ public:
    *--------------------------------------------------------------------------*/
 
   // Geometry
+  //! Floating point data type.
   using real_t = burton_mesh_traits_t::real_t;
+  //! Point data type.
   using point_t = burton_mesh_traits_t::point_t;
+  //! Physics vector type.
   using vector_t = burton_mesh_traits_t::vector_t;
 
   // Entity types
+  //! Vertex type.
   using vertex_t = burton_mesh_types_t::vertex_t;
+  //! Edge type.
   using edge_t = burton_mesh_types_t::edge_t;
+  //! Cell type.
   using cell_t = burton_mesh_types_t::cell_t;
+  //! 2D quadrilateral cell type.
   using quadrilateral_cell_t = burton_mesh_types_t::quadrilateral_cell_t;
+  //! Corner type.
   using corner_t = burton_mesh_types_t::corner_t;
 
   //! Default constructor
@@ -162,10 +200,11 @@ public:
   ~burton_mesh_t() {}
 
   /*!
-    \brief Return the topological dimension of the mesh.
+    \brief Return the topological dimension of the burton mesh.
 
-    \return auto A non-negative number describing the highest dimension
-      of the entities in the mesh, e.g., 3 for a three-dimensional mesh.
+    \return A non-negative number describing the highest dimension
+      of the entities in the burton mesh, e.g., 3 for a three-dimensional
+      burton mesh.
    */
   static constexpr auto dimension() {
     return burton_mesh_traits_t::dimension;
@@ -176,16 +215,18 @@ public:
    *--------------------------------------------------------------------------*/
 
   /*!
-    \brief Return number of vertices in the mesh.
-    \return size_t The number of vertices in the mesh.
+    \brief Return number of vertices in the burton mesh.
+
+    \return The number of vertices in the burton mesh.
    */
   size_t num_vertices() const {
     return mesh_.num_entities<0,0>();
   } // num_vertices
 
   /*!
-    \brief Return all vertices in the mesh.
-    \return auto Return all vertices in the mesh as a sequence for use, e.g.,
+    \brief Return all vertices in the burton mesh.
+
+    \return Return all vertices in the burton mesh as a sequence for use, e.g.,
       in range based for loops.
    */
   auto vertices() {
@@ -193,10 +234,13 @@ public:
   } // vertices
 
   /*!
-    \brief Return vertices associated with entity instance of template type E.
+    \brief Return vertices associated with entity instance of type \e E.
+
     \tparam E entity type of instance to return vertices for.
-    \param e instance of entity to return vertices for.
-    \return auto Return vertices associated with entity instance e as a
+
+    \param[in] e instance of entity to return vertices for.
+
+    \return Return vertices associated with entity instance \e e as a
       sequence.
    */
   template <class E>
@@ -205,7 +249,14 @@ public:
   } // vertices
 
   /*!
-    FIXME
+    \brief Return vertices for entity \e e in domain \e M.
+
+    \tparam M Domain.
+    \tparam E Entity type to get vertices for.
+
+    \param[in] e Entity to get vertices for.
+
+    \return Vertices for entity \e e in domain \e M.
    */
   template<size_t M, class E>
   auto vertices(domain_entity<M, E> & e) {
@@ -213,18 +264,22 @@ public:
   }
 
   /*!
-    \brief Return ids for all vertices in the mesh.
-    \return auto Ids for all vertices in the mesh.
+    \brief Return ids for all vertices in the burton mesh.
+
+    \return Ids for all vertices in the burton mesh.
    */
   auto vertex_ids() {
     return mesh_.entity_ids<0,0>();
   } // vertex_ids
 
   /*!
-    \brief Return vertex ids associated with entity instance of template type E.
+    \brief Return vertex ids associated with entity instance of type \e E.
+
     \tparam E entity type of instance to return vertex ids for.
-    \param e instance of entity to return vertex ids for.
-    \return auto Return vertex ids associated with entity instance e as a
+
+    \param[in] e instance of entity to return vertex ids for.
+
+    \return Return vertex ids associated with entity instance \e e as a
       sequence.
    */
   template <class E>
@@ -237,27 +292,31 @@ public:
    *--------------------------------------------------------------------------*/
 
   /*!
-    \brief Return the number of mesh edges.
-    \return size_t The number of mesh edges.
+    \brief Return the number of burton mesh edges.
+
+    \return The number of burton mesh edges.
    */
   size_t num_edges() const {
     return mesh_.num_entities<1,0>();
   } // num_edges
 
   /*!
-    \brief Return all edges in the mesh.
-    \return auto Return all edges in the mesh as a sequence for use, e.g.,
-      in range based for loops.
+    \brief Return all edges in the burton mesh.
+    \return Return all edges in the burton mesh as a sequence for use, e.g., in
+      range based for loops.
    */
   auto edges() {
     return mesh_.entities<1,0>();
   } // edges
 
   /*!
-    \brief Return edges associated with entity instance of template type E.
+    \brief Return edges associated with entity instance of type \e E.
+
     \tparam E entity type of instance to return edges for.
-    \param e instance of entity to return edges for.
-    \return auto Return edges associated with entity instance e as a sequence.
+
+    \param[in] e instance of entity to return edges for.
+
+    \return Return edges associated with entity instance \e e as a sequence.
    */
   template <class E>
   auto edges(E *e) {
@@ -265,19 +324,22 @@ public:
   } // edges
 
   /*!
-    \brief Return ids for all edges in the mesh.
-    \return auto Ids for all edges in the mesh.
+    \brief Return ids for all edges in the burton mesh.
+
+    \return Ids for all edges in the burton mesh.
    */
   auto edge_ids() {
     return mesh_.entity_ids<1,0>();
   } // edge_ids
 
   /*!
-    \brief Return edge ids associated with entity instance of template type E.
+    \brief Return edge ids associated with entity instance of type \e E.
+
     \tparam E entity type of instance to return edge ids for.
-    \param e instance of entity to return edge ids for.
-    \return auto Return edge ids associated with entity instance e as a
-      sequence.
+
+    \param[in] e instance of entity to return edge ids for.
+
+    \return Return edge ids associated with entity instance \e e as a sequence.
    */
   template <class E>
   auto edge_ids(E *e) {
@@ -285,7 +347,14 @@ public:
   } // edge_ids
 
   /*!
-    FIXME
+    \brief Return edges for entity \e e in domain \e M.
+
+    \tparam M Domain.
+    \tparam E Entity type to get edges for.
+
+    \param[in] e Entity to get edges for.
+
+    \return Edges for entity \e e in domain \e M.
    */
   template<size_t M, class E>
   auto edges(domain_entity<M, E>& e) {
@@ -301,16 +370,18 @@ public:
    *--------------------------------------------------------------------------*/
 
   /*!
-    Return the number of cells in the mesh.
-    \return size_t The number of cells in the mesh.
+    \brief Return the number of cells in the burton mesh.
+
+    \return The number of cells in the burton mesh.
    */
   size_t num_cells() const {
     return mesh_.num_entities<dimension(),0>();
   } // num_cells
 
   /*!
-    \brief Return all cells in the mesh.
-    \return auto Return all cells in the mesh as a sequence for use, e.g.,
+    \brief Return all cells in the burton mesh.
+
+    \return Return all cells in the burton mesh as a sequence for use, e.g.,
       in range based for loops.
    */
   auto cells() {
@@ -318,11 +389,13 @@ public:
   } // cells
 
   /*!
-    \brief Return cells associated with entity instance of template type E.
+    \brief Return cells associated with entity instance of type \e E.
+
     \tparam E entity type of instance to return cells for.
-    \param e instance of entity to return cells for.
-    \return auto Return cells associated with entity instance e as a
-      sequence.
+
+    \param[in] e instance of entity to return cells for.
+
+    \return Return cells associated with entity instance \e e as a sequence.
    */
   template <class E>
   auto cells(E *e) {
@@ -330,7 +403,14 @@ public:
   } // cells
 
   /*!
-    FIXME
+    \brief Return cells for entity \e e in domain \e M.
+
+    \tparam M Domain.
+    \tparam E Entity type to get cells for.
+
+    \param[in] e Entity to get cells for.
+
+    \return Cells for entity \e e in domain \e M.
    */
   template<size_t M, class E>
   auto cells(domain_entity<M, E>& e) {
@@ -338,19 +418,22 @@ public:
   } // cells
 
   /*!
-    \brief Return ids for all cells in the mesh.
-    \return auto Ids for all cells in the mesh.
+    \brief Return ids for all cells in the burton mesh.
+
+    \return Ids for all cells in the burton mesh.
    */
   auto cell_ids() {
     return mesh_.entity_ids<dimension(),0>();
   } // cell_ids
 
   /*!
-    \brief Return cell ids associated with entity instance of template type E.
+    \brief Return cell ids associated with entity instance of type \e E.
+
     \tparam E entity type of instance to return cell ids for.
-    \param e instance of entity to return cell ids for.
-    \return auto Return cell ids associated with entity instance e as a
-      sequence.
+
+    \param[in] e instance of entity to return cell ids for.
+
+    \return Return cell ids associated with entity instance \e e as a sequence.
    */
   template <class E>
   auto cell_ids(E *e) {
@@ -362,15 +445,18 @@ public:
    *--------------------------------------------------------------------------*/
 
   /*!
-    \brief Return number of corners in the mesh.
+    \brief Return number of corners in the burton mesh.
+
+    \return The number of corners in the burton mesh.
    */
   size_t num_corners() const {
     return mesh_.num_entities<1,1>();
   } // num_corners
 
   /*!
-    \brief Return all corners in the mesh.
-    \return auto Return all corners in the mesh as a sequence for use, e.g.,
+    \brief Return all corners in the burton mesh.
+
+    \return Return all corners in the burton mesh as a sequence for use, e.g.,
       in range based for loops.
    */
   auto corners() {
@@ -378,11 +464,13 @@ public:
   } // corners
 
   /*!
-    \brief Return corners associated with entity instance of template type E.
+    \brief Return corners associated with entity instance of type \e E.
+
     \tparam E entity type of instance to return corners for.
-    \param e instance of entity to return corners for.
-    \return auto Return corners associated with entity instance e as a
-      sequence.
+
+    \param[in] e instance of entity to return corners for.
+
+    \return Return corners associated with entity instance \e e as a sequence.
    */
   template <class E>
   auto corners(E *e) {
@@ -391,7 +479,14 @@ public:
 
 #if 0
   /*!
-    FIXME
+    \brief Return corners for entity \e e in domain \e M.
+
+    \tparam M Domain.
+    \tparam E Entity type to get corners for.
+
+    \param[in] e Entity to get corners for.
+
+    \return Corners for entity \e e in domain \e M.
    */
   template<size_t M, class E>
   auto corners(domain_entity<M, E> & e) {
@@ -400,18 +495,22 @@ public:
 #endif
 
   /*!
-    \brief Return ids for all corners in the mesh.
-    \return auto Ids for all corners in the mesh.
+    \brief Return ids for all corners in the burton mesh.
+
+    \return Ids for all corners in the burton mesh.
    */
   auto corner_ids() {
     return mesh_.entity_ids<1,1>();
   } // corner_ids
 
   /*!
-    \brief Return corner ids associated with entity instance of template type E.
+    \brief Return corner ids associated with entity instance of type \e E.
+
     \tparam E entity type of instance to return corner ids for.
-    \param e instance of entity to return corner ids for.
-    \return auto Return corner ids associated with entity instance e as a
+
+    \param[in] e instance of entity to return corner ids for.
+
+    \return Return corner ids associated with entity instance \e e as a
       sequence.
    */
   template <class E>
@@ -426,9 +525,11 @@ public:
 //
 
   /*!
-    Create a vertex in the mesh.
+    \brief Create a vertex in the burton mesh.
 
-    \param pos The position (coordinates) for the vertex.
+    \param[in] pos The position (coordinates) for the vertex.
+
+    \return Pointer to a vertex created at \e pos.
    */
   // FIXME: Complete changes to state storage
   vertex_t * create_vertex(const point_t &pos) {
@@ -442,9 +543,11 @@ public:
   }
 
   /*!
-    Create a cell in the mesh.
+    \brief Create a cell in the burton mesh.
 
-    \param verts The vertices defining the cell.
+    \param[in] verts The vertices defining the cell.
+
+    \return Pointer to cell created with \e verts.
    */
   cell_t * create_cell(std::initializer_list<vertex_t *> verts) {
     // FIXME: Add element types
@@ -457,15 +560,17 @@ public:
   } // create_cell
 
   /*!
-    FIXME
+    \brief Dump the burton mesh to standard out.
    */
-
   void dump(){
     mesh_.dump();
   }
 
   /*!
-    FIXME
+    \brief Initialize burton mesh state for the number of \e vertices.
+
+    \param[in] vertices The number of \e vertices to initialize the burton mesh
+      with.
    */
   void init_parameters(size_t vertices) {
 
@@ -476,6 +581,8 @@ public:
   } // init_parameters
 
   /*!
+    \brief Initialize the burton mesh.
+
     \verbatim
 
     After cells and vertices for the mesh have been defined, call init() to
@@ -610,10 +717,11 @@ public:
     mesh_.init<1>();
 #endif
   /*!
-    Get the centroid of a cell.
+    \brief Get the centroid of a cell.
     
     \param[in] cell The cell to return the centroid for.
-    \return a point_t that is the centroid.
+
+    \return The centroid.
 
     FIXME : This doesn't do anything.
     FIXME : need const iterator for entity group!!!
@@ -625,10 +733,11 @@ public:
   }
 
   /*!
-    Compute the midpoint of an edge.
+    \brief Compute the midpoint of an edge.
 
-    \param[in] cell The edge to return the midpoint for.
-    \return a point_t that is the midpoint.
+    \param[in] e The edge to return the midpoint for.
+
+    \return The midpoint of the edge.
   */
   point_t midpoint(const edge_t *e) const {
     auto vs = mesh_.entities<0,0>(e).to_vec();
