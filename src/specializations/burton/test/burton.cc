@@ -67,6 +67,10 @@ protected:
   const size_t height = 2;
 };
 
+TEST_F(Burton, dump) {
+  b.dump();
+}
+
 TEST_F(Burton, mesh) {
   std::string separator;
   separator.insert(0,80,'=');
