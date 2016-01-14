@@ -1082,13 +1082,15 @@ public:
       return;
     } // if
 
-    build_bindings<FM, TM, FD, TD>();
+    if(entities_[TM][TD].empty()){
+      build_bindings<FM, TM, TD>();      
+    }
 
     // FIXME: Need to complete
 
   } // compute_bindings
 
-  template<size_t FM, size_t TM, size_t FD, size_t TD>
+  template<size_t FM, size_t TM, size_t TD>
   void build_bindings() {
 
     // Sanity check
@@ -1110,6 +1112,9 @@ public:
     ent_vec_t & cells = entities_[FM][MT::dimension];
 
     static constexpr size_t M0 = 0;
+
+    connectivity_t & entity_vertex_conn =
+      get_connectivity_(TM, FM, TD, 0);
 
     // Iterate over cells
     for(auto c: cells) {
@@ -1141,7 +1146,8 @@ public:
       // p.second:  A std::vector of id_t containing the ids of the
       //            entities that define the bound entity.
       id_vector_t entity_ids;
-      auto p = cell->create_bound_entities(TD, primal_ids, entity_ids);
+      auto p = cell->create_bound_entities(FM, TM,
+                                           TD, primal_ids, entity_ids);
 
       // Iterate over the newly-defined entities
       id_vector_t & conns = output_conn[cell_id];
@@ -1163,16 +1169,22 @@ public:
 
         // Increment
         if(itr.second) {
-          //id_vector_t ev2;
-          //= id_vector_t(a, a + p.second[i]);
+          size_t n = p.second.size();
 
-          /*
-          for(size_t e(0); e<p.second[i], ++e) {
-            if(to_dimension_id(a[i]) == 0) {
-              entity_vertex_conn.emplace_back(a[i]);
-            } // if
-          } // for
-          */
+          size_t idx = 0;
+          for(size_t j = 0; j < n; ++j){
+            size_t m = p.second[j];
+            
+            for(size_t k = 0; k < m; ++k){
+              id_t global_id = entity_ids[idx++];
+
+              if(dimension_from_global_id(global_id) == 0) {
+                entity_vertex_conn.push(to_local_id(global_id));
+              } // if
+            }
+
+            entity_vertex_conn.end_from();
+          }
 
           max_output_conns =
             std::max(max_output_conns, output_conn[cell_id].size());
@@ -1183,7 +1195,7 @@ public:
 
     // Reference to storage from cells to the entity (to be created here).
     connectivity_t & output =
-      get_connectivity_(FM, TM, FD, TD);
+      get_connectivity_(FM, TM, MT::dimension, TD);
 
     if(entities_[TM][TD].empty()){
       // Create the entity objects
