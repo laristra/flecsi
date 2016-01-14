@@ -95,7 +95,7 @@ struct burton_mesh_types_t {
     std::tuple<
       std::tuple<domain_<0>, domain_<1>, vertex_t, corner_t>,
       std::tuple<domain_<0>, domain_<1>, cell_t, corner_t>,
-      std::tuple<domain_<1>, domain_<0>, corner_t, cell_t> // hypothetical...
+      std::tuple<domain_<1>, domain_<0>, corner_t, cell_t>
     >;
 
 }; // struct burton_mesh_types_t
