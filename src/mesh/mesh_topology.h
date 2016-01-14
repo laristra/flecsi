@@ -6,10 +6,10 @@
  * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
  * /@@       /@@/@@//// //@@    @@       /@@/@@
  * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
+ * //       ///  //////   //////  ////////  //
  * 
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
+ * All rights reserved 
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_mesh_topology_h
@@ -1098,11 +1098,11 @@ public:
 
     // Helper variables
     size_t entity_id(0);
-    size_t max_output_conns = 1;
+    size_t max_cell_conns = 1;
     const size_t _num_cells = num_entities<MT::dimension, FM>();
 
-    // Storage for output connectivity information
-    connection_vector_t output_conn(_num_cells);
+    // Storage for cell connectivity information
+    connection_vector_t cell_conn(_num_cells);
 
     // Map used to ensure unique entity creation
     id_vector_map_t entity_ids_map;
@@ -1150,7 +1150,7 @@ public:
                                            TD, primal_ids, entity_ids);
 
       // Iterate over the newly-defined entities
-      id_vector_t & conns = output_conn[cell_id];
+      id_vector_t & conns = cell_conn[cell_id];
       for(size_t i(0); i<p.first; ++i) {
 
         // Get the id range for this entity
@@ -1186,24 +1186,24 @@ public:
             entity_vertex_conn.end_from();
           }
 
-          max_output_conns =
-            std::max(max_output_conns, output_conn[cell_id].size());
+          max_cell_conns =
+            std::max(max_cell_conns, cell_conn[cell_id].size());
           ++entity_id;
         } // if
       } // for
     } // for
 
     // Reference to storage from cells to the entity (to be created here).
-    connectivity_t & output =
+    connectivity_t & cell_out =
       get_connectivity_(FM, TM, MT::dimension, TD);
 
     if(entities_[TM][TD].empty()){
       // Create the entity objects
-      output.init_create<MT, TM>(id_vecs_[TM][TD], entities_[TM][TD],
-        output_conn, TD);      
+      cell_out.init_create<MT, TM>(id_vecs_[TM][TD], entities_[TM][TD],
+        cell_conn, TD);      
     }
     else{
-      output.init(output_conn);   
+      cell_out.init(cell_conn);   
     }
 
     // ????
