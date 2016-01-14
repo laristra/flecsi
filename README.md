@@ -17,9 +17,9 @@ this equates to G++ 5.0 or greater.
 * CMake >= 3.0
 * GCC >= 5.0
 * Doxygen >= 1.8
-* Cinch-utils 1.0
+* cinch-utils 1.0
 
-Cinch-utils is available [here](http://gitlab.lanl.gov/csse/cinch-utils).
+cinch-utils is available [here](http://gitlab.lanl.gov/csse/cinch-utils).
 
 # Developer Instructions
 
