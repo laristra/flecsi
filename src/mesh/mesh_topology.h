@@ -918,7 +918,7 @@ public:
 
     for(auto to_entity : entities<TD, TM>()) {
       for(id_t from_id : entity_ids<FD, TM, FM>(to_entity)) {
-        out_conn.set(from_id, to_entity->template id<FM>(), pos[from_id]++);
+        out_conn.set(from_id, to_entity->template id<TM>(), pos[from_id]++);
       }
     }
   } // transpose
