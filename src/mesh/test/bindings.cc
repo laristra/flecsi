@@ -107,7 +107,8 @@ public:
 
   using bindings = 
     std::tuple<
-              std::tuple<domain_<0>, domain_<1>, Cell, Corner>>;
+              std::tuple<domain_<0>, domain_<1>, Cell, Corner>,
+              std::tuple<domain_<0>, domain_<1>, Vertex, Corner>>;
 };
 
 using TestMesh = mesh_topology_t<TestMesh2dType>;
