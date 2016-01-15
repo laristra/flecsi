@@ -1224,6 +1224,12 @@ public:
     compute_bindings_<M, std::tuple_size<BT>::value, BT>::compute(*this);
   } // init
 
+  template<size_t M = 0>
+  void init_bindings() {
+    using BT = typename MT::bindings;
+    compute_bindings_<M, std::tuple_size<BT>::value, BT>::compute(*this);
+  } // init
+
 //
 //
 // Need to document
