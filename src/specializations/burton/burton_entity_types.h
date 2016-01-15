@@ -169,6 +169,7 @@ struct burton_cell_t : public mesh_entity_t<2, N> {
       binding and b) the number of entities per collection.
    */
   virtual std::pair<size_t, std::vector<id_t>> create_bound_entities(
+    size_t from_domain, size_t to_domain,
     size_t dim, const std::vector<std::vector<id_t>> ent_ids,
     std::vector<id_t> & c) = 0;
 
@@ -214,7 +215,8 @@ public:
   /*!
     \brief create_bound_entities function for burton_quadrilateral_cell_t.
    */
-  std::pair<size_t, std::vector<id_t>> create_bound_entities(size_t dim,
+  std::pair<size_t, std::vector<id_t>> create_bound_entities(
+    size_t from_domain, size_t to_domain, size_t dim,
     const std::vector<std::vector<id_t>> ent_ids, std::vector<id_t> & c) {
 
     switch(dim) {

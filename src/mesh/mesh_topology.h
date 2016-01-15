@@ -6,10 +6,10 @@
  * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
  * /@@       /@@/@@//// //@@    @@       /@@/@@
  * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
+ * //       ///  //////   //////  ////////  //
  * 
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
+ * All rights reserved 
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_mesh_topology_h
@@ -1082,13 +1082,15 @@ public:
       return;
     } // if
 
-    build_bindings<FM, TM, FD, TD>();
+    if(entities_[TM][TD].empty()){
+      build_bindings<FM, TM, TD>();      
+    }
 
     // FIXME: Need to complete
 
   } // compute_bindings
 
-  template<size_t FM, size_t TM, size_t FD, size_t TD>
+  template<size_t FM, size_t TM, size_t TD>
   void build_bindings() {
 
     // Sanity check
@@ -1096,11 +1098,11 @@ public:
 
     // Helper variables
     size_t entity_id(0);
-    size_t max_output_conns = 1;
+    size_t max_cell_conns = 1;
     const size_t _num_cells = num_entities<MT::dimension, FM>();
 
-    // Storage for output connectivity information
-    connection_vector_t output_conn(_num_cells);
+    // Storage for cell connectivity information
+    connection_vector_t cell_conn(_num_cells);
 
     // Map used to ensure unique entity creation
     id_vector_map_t entity_ids_map;
@@ -1110,6 +1112,9 @@ public:
     ent_vec_t & cells = entities_[FM][MT::dimension];
 
     static constexpr size_t M0 = 0;
+
+    connectivity_t & entity_vertex_conn =
+      get_connectivity_(TM, FM, TD, 0);
 
     // Iterate over cells
     for(auto c: cells) {
@@ -1141,10 +1146,11 @@ public:
       // p.second:  A std::vector of id_t containing the ids of the
       //            entities that define the bound entity.
       id_vector_t entity_ids;
-      auto p = cell->create_bound_entities(TD, primal_ids, entity_ids);
+      auto p = cell->create_bound_entities(FM, TM,
+                                           TD, primal_ids, entity_ids);
 
       // Iterate over the newly-defined entities
-      id_vector_t & conns = output_conn[cell_id];
+      id_vector_t & conns = cell_conn[cell_id];
       for(size_t i(0); i<p.first; ++i) {
 
         // Get the id range for this entity
@@ -1163,25 +1169,46 @@ public:
 
         // Increment
         if(itr.second) {
-          max_output_conns =
-            std::max(max_output_conns, output_conn[cell_id].size());
+          size_t n = p.second.size();
+
+          size_t idx = 0;
+          for(size_t j = 0; j < n; ++j){
+            size_t m = p.second[j];
+            
+            for(size_t k = 0; k < m; ++k){
+              id_t global_id = entity_ids[idx++];
+
+              if(dimension_from_global_id(global_id) == 0) {
+                entity_vertex_conn.push(to_local_id(global_id));
+              } // if
+            }
+
+            entity_vertex_conn.end_from();
+          }
+
+          max_cell_conns =
+            std::max(max_cell_conns, cell_conn[cell_id].size());
           ++entity_id;
         } // if
       } // for
     } // for
 
     // Reference to storage from cells to the entity (to be created here).
-    connectivity_t & output =
-      get_connectivity_(FM, TM, FD, TD);
+    connectivity_t & cell_out =
+      get_connectivity_(FM, TM, MT::dimension, TD);
 
     if(entities_[TM][TD].empty()){
       // Create the entity objects
-      output.init_create<MT, TM>(id_vecs_[TM][TD], entities_[TM][TD],
-        output_conn, TD);      
+      cell_out.init_create<MT, TM>(id_vecs_[TM][TD], entities_[TM][TD],
+        cell_conn, TD);      
     }
     else{
-      output.init(output_conn);   
+      cell_out.init(cell_conn);   
     }
+
+    // ????
+    //connectivity_t & entity_to_vertex = get_connectivity_(FM, D, 0);
+    //entity_to_vertex.init(entity_vertex_conn);
   } // build_bindings
 
   template<size_t M = 0>

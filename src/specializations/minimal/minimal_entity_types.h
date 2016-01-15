@@ -59,7 +59,8 @@ public:
     return {0,{0}};
   } // create_entities
 
-  std::pair<size_t, std::vector<id_t>> create_bound_entities(size_t dim,
+  std::pair<size_t, std::vector<id_t>> create_bound_entities(
+    size_t from_domain, size_t to_domain, size_t dim,
     const std::vector<std::vector<id_t>> ent_ids, std::vector<id_t> & c) {
     return {0,{0}};
   } // create_bound_entities

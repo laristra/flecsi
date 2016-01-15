@@ -81,6 +81,14 @@ id_t to_local_id(id_t global_id){
   return global_id & 0x0000ffffffffffff;
 }
 
+size_t dimension_from_global_id(id_t global_id) {
+  return global_id & (0b11ULL << 62);
+}
+
+size_t domain_from_global_id(id_t global_id) {
+  return global_id & (0b11ULL << 60);
+}
+
 /*----------------------------------------------------------------------------*
  * Tuple search utilities.
  *----------------------------------------------------------------------------*/
