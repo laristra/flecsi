@@ -98,13 +98,6 @@ public:
                std::tuple<domain_<0>, Cell, Vertex>,
                std::tuple<domain_<0>, Cell, Edge>>;
 
-/*
-  using bindings = 
-    std::tuple<
-              std::tuple<domain_<0>, domain_<1>, Cell, Corner>,
-              std::tuple<domain_<0>, domain_<1>, Vertex, Corner>>;
-*/
-
   using bindings = 
     std::tuple<
               std::tuple<domain_<0>, domain_<1>, Cell, Corner>,
