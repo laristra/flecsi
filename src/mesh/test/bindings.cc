@@ -101,7 +101,8 @@ public:
   using bindings = 
     std::tuple<
               std::tuple<domain_<0>, domain_<1>, Cell, Corner>,
-              std::tuple<domain_<0>, domain_<1>, Vertex, Corner>>;
+              std::tuple<domain_<0>, domain_<1>, Vertex, Corner>,
+              std::tuple<domain_<1>, domain_<0>, Corner, Cell>>;
 };
 
 using TestMesh = mesh_topology_t<TestMesh2dType>;
@@ -143,8 +144,7 @@ TEST(mesh_topology, traversal) {
   }
 
   mesh->init<0>();
-
-  mesh->dump();
+  mesh->init_bindings<1>();
 
   /*
   for(auto cell : mesh->entities<2>()) {

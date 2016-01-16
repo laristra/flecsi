@@ -899,26 +899,26 @@ public:
      topological dimension
        FD -> TD where FD < TD
    */
-  template<size_t M, size_t FD, size_t TD>
+  template<size_t FM, size_t TM, size_t FD, size_t TD>
   void transpose() {
     //std::cerr << "transpose: " << fromDim << " -> " << toDim << std::endl;
 
-    index_vector_t pos(num_entities_(M, FD), 0);
+    index_vector_t pos(num_entities_(FM, FD), 0);
 
-    for(auto to_entity : entities<TD, M>()) {
-      for(id_t from_id : entity_ids<FD, M>(to_entity)) {
+    for(auto to_entity : entities<TD, TM>()) {
+      for(id_t from_id : entity_ids<FD, TM, FM>(to_entity)) {
         ++pos[from_id];
       }
     }
 
-    connectivity_t &out_conn = get_connectivity_(M, FD, TD);
+    connectivity_t &out_conn = get_connectivity_(FM, TM, FD, TD);
     out_conn.resize(pos);
 
     std::fill(pos.begin(), pos.end(), 0);
 
-    for(auto to_entity : entities<TD, M>()) {
-      for(id_t from_id : entity_ids<FD, M>(to_entity)) {
-        out_conn.set(from_id, to_entity->template id<M>(), pos[from_id]++);
+    for(auto to_entity : entities<TD, TM>()) {
+      for(id_t from_id : entity_ids<FD, TM, FM>(to_entity)) {
+        out_conn.set(from_id, to_entity->template id<TM>(), pos[from_id]++);
       }
     }
   } // transpose
@@ -1065,7 +1065,7 @@ public:
     }
     else if(FD < TD) {
       compute_connectivity<M, TD, FD>();
-      transpose<M, FD, TD>();
+      transpose<M, M, FD, TD>();
     }
     else {
       compute_connectivity<M, FD, 0>();
@@ -1081,6 +1081,12 @@ public:
     if(!out_conn.empty()) {
       return;
     } // if
+
+    if(FD < TD) {
+      //build_bindings<TM, FM, FD>();
+      transpose<FM, TM, FD, TD>();
+      return;
+    }
 
     if(entities_[TM][TD].empty()){
       build_bindings<FM, TM, TD>();      
@@ -1115,6 +1121,7 @@ public:
 
     connectivity_t & entity_vertex_conn =
       get_connectivity_(TM, FM, TD, 0);
+    entity_vertex_conn.init();
 
     // Iterate over cells
     for(auto c: cells) {
@@ -1151,6 +1158,8 @@ public:
 
       // Iterate over the newly-defined entities
       id_vector_t & conns = cell_conn[cell_id];
+      size_t pos = 0;
+
       for(size_t i(0); i<p.first; ++i) {
 
         // Get the id range for this entity
@@ -1167,29 +1176,26 @@ public:
         // Add this id to the cell entity connections
         conns.push_back(itr.first->second);
 
+        size_t m = p.second[i];
+
         // Increment
         if(itr.second) {
-          size_t n = p.second.size();
+          for(size_t k = 0; k < m; ++k) {
+            id_t global_id = entity_ids[pos + k];
 
-          size_t idx = 0;
-          for(size_t j = 0; j < n; ++j){
-            size_t m = p.second[j];
-            
-            for(size_t k = 0; k < m; ++k){
-              id_t global_id = entity_ids[idx++];
-
-              if(dimension_from_global_id(global_id) == 0) {
-                entity_vertex_conn.push(to_local_id(global_id));
-              } // if
-            }
-
-            entity_vertex_conn.end_from();
+            if(dimension_from_global_id(global_id) == 0) {
+              entity_vertex_conn.push(to_local_id(global_id));
+            } // if
           }
+
+          entity_vertex_conn.end_from();
 
           max_cell_conns =
             std::max(max_cell_conns, cell_conn[cell_id].size());
           ++entity_id;
         } // if
+
+        pos += m;
       } // for
     } // for
 
@@ -1206,9 +1212,6 @@ public:
       cell_out.init(cell_conn);   
     }
 
-    // ????
-    //connectivity_t & entity_to_vertex = get_connectivity_(FM, D, 0);
-    //entity_to_vertex.init(entity_vertex_conn);
   } // build_bindings
 
   template<size_t M = 0>
@@ -1217,6 +1220,12 @@ public:
     using TP = typename MT::connectivities;
     compute_connectivity_<M, std::tuple_size<TP>::value, TP>::compute(*this);
 
+    using BT = typename MT::bindings;
+    compute_bindings_<M, std::tuple_size<BT>::value, BT>::compute(*this);
+  } // init
+
+  template<size_t M = 0>
+  void init_bindings() {
     using BT = typename MT::bindings;
     compute_bindings_<M, std::tuple_size<BT>::value, BT>::compute(*this);
   } // init
@@ -1412,12 +1421,12 @@ public:
   } // entity_ids
 
   /*!
-    Get the top-level entity id's of topological dimension D of the specified 
-    domain M. e.g: cells of the mesh.
+    Get the entity id's of topological dimension D connected to another entity 
+    by specified connectivity from domain FM and to domain TM.
   */
-  template<size_t D, size_t M=0, class E>
-  decltype(auto) entity_ids(domain_entity<M,E> & e) {
-    return entity_ids<D,M>(e.entity());
+  template<size_t D, size_t FM=0, size_t TM=FM, class E>
+  decltype(auto) entity_ids(domain_entity<FM,E> & e) {
+    return entity_ids<D, FM, TM>(e.entity());
   } // entities
 
   /*!

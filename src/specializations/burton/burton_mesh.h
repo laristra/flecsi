@@ -625,6 +625,7 @@ public:
    */
   void init() {
     mesh_.init<0>();
+    mesh_.init_bindings<1>();
   } // init
 
 // ATTIC...

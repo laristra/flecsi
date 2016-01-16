@@ -186,6 +186,9 @@ struct compute_connectivity_ {
    */
   template<class M>
   static int compute(M & mesh) {
+    //static constexpr size_t size = std::tuple_size<TS>::value;
+    //using T = typename std::tuple_element<size - I, TS>::type;
+
     using T = typename std::tuple_element<I - 1, TS>::type;
     using D1 = typename std::tuple_element<0, T>::type;
     using T1 = typename std::tuple_element<1, T>::type;
@@ -243,8 +246,10 @@ struct compute_bindings_ {
   template<class M>
   static int compute(M & mesh) {
 
+    static constexpr size_t size = std::tuple_size<TS>::value;
+
     // Get the indexed tuple
-    using T = typename std::tuple_element<I - 1, TS>::type;
+    using T = typename std::tuple_element<size - I, TS>::type;
 
     // Get domains and dimension
     using M1 = typename std::tuple_element<0, T>::type;
