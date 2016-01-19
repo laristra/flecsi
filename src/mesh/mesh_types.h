@@ -21,9 +21,15 @@
    \date Initial file creation: Dec 23, 2015
  */
 
+#include <array>
+
 #include "flecsi/mesh/mesh_utils.h"
 
 namespace flecsi {
+
+/*----------------------------------------------------------------------------*
+ * struct typeify
+ *----------------------------------------------------------------------------*/
 
 template<typename T, T M>
 struct typeify { static constexpr T value = M; };
@@ -31,23 +37,36 @@ struct typeify { static constexpr T value = M; };
 template<size_t M>
 using dimension_ = typeify<size_t, M>;
 
+template<size_t M>
+using domain_ = typeify<size_t, M>;
+
 /*----------------------------------------------------------------------------*
- * class domain_
+ * Simple types
  *----------------------------------------------------------------------------*/
 
-/*!
-  \class domain_ mesh_topology.h
-  \brief domain_ allows a domain id to be typeified...
- */
+using id_vector_t = std::vector<id_t>;
+using connection_vector_t = std::vector<id_vector_t>;
 
-template<size_t M>
-class domain_
-{
-public:
+// hash use for mapping in building topology connectivity
+struct id_vector_hash_t {
 
-  static const size_t domain = M;
+  size_t operator()(const id_vector_t &v) const {
+    size_t h = 0;
+    for (id_t id : v) {
+      h |= id;
+    } // for
 
-}; // class domain_
+    return h;
+  } // operator()
+
+}; // struct id_vector_hash_t
+
+// used when building the topology connectivities
+using id_vector_map_t =
+  std::unordered_map<id_vector_t, id_t, id_vector_hash_t>;
+
+// the second topology vector holds the offsets into to from dimension
+using index_vector_t = std::vector<size_t>;
 
 /*----------------------------------------------------------------------------*
  * class mesh_entity_base_t
@@ -298,6 +317,283 @@ private:
   vec entities_;
 
 }; // class entity_group
+
+/*----------------------------------------------------------------------------*
+ * class connectivity_t
+ *----------------------------------------------------------------------------*/
+
+/*!
+  \class connectivity_t mesh_topology.h
+  \brief connectivity_t provides basic connectivity information in a
+    compressed storage format.
+ */
+class connectivity_t
+{
+public:
+
+  //! Constructor.
+  connectivity_t() {}
+
+  /*!
+    Clear the storage arrays for this instance.
+   */
+  void clear() {
+    to_id_vec_.clear();
+    from_index_vec_.clear();
+  } // clear
+
+  /*!
+    Initialize the offset array.
+   */
+  void init() { from_index_vec_.push_back(0); }
+
+  /*!
+    Initialize the connectivity information from a given connectivity
+    vector.
+
+    \param cv The connectivity information.
+   */
+  void init(const connection_vector_t & cv) {
+    assert(to_id_vec_.empty() && from_index_vec_.empty());
+
+    // the first offset is always 0
+    from_index_vec_.push_back(0);
+
+    // populate the to id's and add from offsets for each connectivity group
+
+    size_t n = cv.size();
+
+    for (size_t i = 0; i < n; ++i) {
+      const id_vector_t &iv = cv[i];
+
+      for (id_t id : iv) {
+        to_id_vec_.push_back(id);
+      } // for
+
+      from_index_vec_.push_back(to_id_vec_.size());
+    } // for
+  } // init
+
+  /*!
+    Initialize connectivity and create entities.
+    Used in build_connectivity() for creating edges/faces.
+
+    \tparam mesh type
+    \tparam domain
+    \tparam num domains
+    \param id vector to populate
+    \param entity vector to populate
+    \param input connection vector
+    \param topological dimension of entities created
+   */
+  template <class MT, size_t M, size_t N>
+  void init_create(id_vector_t & iv, entity_vector_t<N> & ev,
+    const connection_vector_t & cv, size_t dim) {
+    assert(to_id_vec_.empty() && from_index_vec_.empty());
+
+    // the first offset is always 0
+    from_index_vec_.push_back(0);
+
+    size_t n = cv.size();
+
+    id_t maxId = 0;
+
+    // cv is organized into groups of from entity to entity
+
+    for (size_t i = 0; i < n; ++i) {
+      const id_vector_t &iv = cv[i];
+
+      for (id_t id : iv) {
+        maxId = std::max(maxId, id);
+        to_id_vec_.push_back(id);
+      } // for
+
+      from_index_vec_.push_back(to_id_vec_.size());
+    } // for
+
+    id_t startId = ev.size();
+
+    ev.reserve(maxId + 1);
+
+    for(id_t id = startId; id <= maxId; ++id){
+      ev.push_back(mesh_entity_base_t<N>::template create_<MT, M>(dim, id));
+      iv.push_back(id);
+    } // for
+  } // init_create
+
+  /*!
+    Resize a connection.
+
+    \param num_conns Number of connections for each group
+   */
+  void resize(index_vector_t & num_conns) {
+    clear();
+
+    size_t n = num_conns.size();
+    from_index_vec_.resize(n + 1);
+
+    uint64_t size = 0;
+
+    for(size_t i = 0; i < n; ++i) {
+      from_index_vec_[i] = size;
+      size += num_conns[i];
+    } // for
+
+    from_index_vec_[n] = size;
+
+    to_id_vec_.resize(size);
+    std::fill(to_id_vec_.begin(), to_id_vec_.end(), 0);
+  } // resize
+
+  /*!
+    End a from entity group by setting the end offset in the
+    from connection vector.
+   */
+  void end_from() {
+    from_index_vec_.push_back(to_id_vec_.size());
+  } // end_from
+
+  /*!
+    Push a single id into the current from group.
+   */
+  void push(id_t id) { to_id_vec_.push_back(id); } // push
+
+  /*!
+    Debugging method. Dump the raw vectors of the connection.
+   */
+  void dump() {
+    for(size_t i = 1; i < from_index_vec_.size(); ++i){
+      for(size_t j = from_index_vec_[i - 1]; j < from_index_vec_[i]; ++j){
+        std::cout << to_id_vec_[j] << std::endl;
+      }
+      std::cout << std::endl;
+    }
+
+    std::cout << "=== idVec" << std::endl;
+    for (id_t id : to_id_vec_) {
+      std::cout << id << std::endl;
+    } // for
+
+    std::cout << "=== groupVec" << std::endl;
+    for (id_t id : from_index_vec_) {
+      std::cout << id << std::endl;
+    } // for
+  }   // dump
+
+  /*!
+    Get the from index vector.
+   */
+  const id_vector_t &get_from_index_vec() const { return from_index_vec_; }
+
+  /*!
+    Get the to id's vector.
+   */
+  const id_vector_t& get_entities() const {
+    return to_id_vec_;
+  }
+
+  /*!
+    Get the entities of the specified from index.
+   */
+  id_t *get_entities(size_t index) {
+    assert(index < from_index_vec_.size() - 1);
+    return to_id_vec_.data() + from_index_vec_[index];
+  }
+
+  /*!
+    Get the entities of the specified from index and return the count.
+   */
+  id_t *get_entities(size_t index, size_t &endIndex) {
+    assert(index < from_index_vec_.size() - 1);
+    uint64_t start = from_index_vec_[index];
+    endIndex = from_index_vec_[index + 1] - start;
+    return to_id_vec_.data() + start;
+  }
+
+  /*!
+    True if the connectivity is empty (hasn't been populated).
+   */
+  bool empty() const { return to_id_vec_.empty(); }
+
+  /*!
+    Set a single connection.
+   */
+  void set(id_t fromId, id_t toId, size_t pos) {
+    to_id_vec_[from_index_vec_[fromId] + pos] = toId;
+  }
+
+  /*!
+    Return the number of from entities.
+   */
+  size_t from_size() const { return from_index_vec_.size() - 1; }
+
+  /*!
+    Return the number of to entities.
+   */
+  size_t to_size() const { return to_id_vec_.size(); }
+
+  /*!
+    Set/init the connectivity use by compute topology methods like transpose.
+   */
+  template<size_t M, size_t N>
+  void set(entity_vector_t<N> &ev, connection_vector_t &conns) {
+    clear();
+
+    size_t n = conns.size();
+    from_index_vec_.resize(n + 1);
+
+    size_t size = 0;
+
+    for (size_t i = 0; i < n; i++) {
+      from_index_vec_[i] = size;
+      size += conns[i].size();
+    }
+
+    from_index_vec_[n] = size;
+
+    to_id_vec_.reserve(size);
+
+    for (size_t i = 0; i < n; ++i) {
+      const id_vector_t &conn = conns[i];
+      uint64_t m = conn.size();
+
+      for (size_t j = 0; j < m; ++j) {
+        to_id_vec_.push_back(ev[conn[j]]->template id<M>());
+      }
+    }
+  }
+
+  id_vector_t to_id_vec_;
+  id_vector_t from_index_vec_;
+
+}; // class connectivity_t
+
+template<size_t D, size_t NM>
+struct mesh_storage_t {
+
+  /*!
+    Defines a type for storing entity instances as an array of
+    \ref entity_vector_t, which is a std::vector of \ref mesh_entity_base_t.
+   */
+  using entities_t = std::array<entity_vector_t<NM>, D+1>;
+  
+  /*!
+    Defines a type for storing connectivity information.
+   */
+  using topology_t = std::array<std::array<connectivity_t, D+1>, D+1>;
+
+  using id_vecs_t = std::array<id_vector_t, D+1>;
+
+  // array of array of vector of mesh_entity_base_t *
+  std::array<entities_t, NM> entities;
+
+  // array of array of connectivity_t
+  std::array<std::array<topology_t, NM>, NM> topology;
+
+  // array of array of vector of id_t
+  std::array<id_vecs_t, NM> id_vecs;
+
+}; // struct mesh_storage_t
 
 } // namespace flecsi
 

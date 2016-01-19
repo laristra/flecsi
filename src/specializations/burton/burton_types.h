@@ -44,6 +44,7 @@ struct burton_mesh_types_t {
 
   //! The dimension of the burton mesh picked up from burton_mesh_traits_t.
   static constexpr size_t dimension = burton_mesh_traits_t::dimension;
+
   //! The number of domains in burton mesh picked up from burton_mesh_traits_t.
   static constexpr size_t num_domains = burton_mesh_traits_t::num_domains;
 
@@ -53,16 +54,19 @@ struct burton_mesh_types_t {
 
   //! Type for burton mesh vertices.
   using vertex_t = burton_vertex_t<num_domains>;
+
   //! Type for burton mesh edges.
   using edge_t = burton_edge_t<num_domains>;
 
   // Cell types
   //! Type for burton mesh cells.
   using cell_t = burton_cell_t<num_domains>;
+
   //! Type for burton mesh quadrilateral cells.
   using quadrilateral_cell_t = burton_quadrilateral_cell_t<num_domains>;
 
   //using wedge_t = burton_wedge_t<num_domains>;
+
   //! Type for burton mesh corners.
   using corner_t = burton_corner_t<num_domains>;
 

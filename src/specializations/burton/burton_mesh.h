@@ -628,95 +628,6 @@ public:
     mesh_.init_bindings<1>();
   } // init
 
-// ATTIC...
-#if 0
-    std::vector<vertex_t *> dual_vertices;
-
-    size_t poff(0);
-    // add primal vertices to dual mesh
-    for(auto v: mesh_.vertices<0>()) {
-      mesh_.add_vertex<1>(v.entity());
-      dual_vertices.push_back(v.entity());
-      ++poff;
-    } // for
-
-    // create zone center vertices for dual mesh
-    size_t coff(0);
-    for(auto c: mesh_.cells<0>()) {
-      auto vertices = mesh_.vertices(c).to_vec();
-
-      // retrieve points for each of the primal vertices
-      const auto v0p = vertices[0]->coordinates();
-      const auto v1p = vertices[1]->coordinates();
-      const auto v2p = vertices[2]->coordinates();
-      const auto v3p = vertices[3]->coordinates();
-
-      // compute the center vertex
-      const auto centroid = flecsi::centroid({v0p, v1p, v2p, v3p});
-
-      // create the actual dual-mesh vertex
-      auto vertex = mesh_.make<vertex_t>(centroid, &state_);
-      mesh_.add_vertex<1>(vertex);
-      // FIXME: Don't need this
-      vertex->set_rank<1>(1);
-      dual_vertices.push_back(vertex);
-      ++coff;
-    } // for
-
-    // create edge center vertices for dual mesh
-    for(auto e: mesh_.edges<0>()) {
-      auto vertices = mesh_.vertices(e).to_vec();
-
-      // retrieve points of edge
-      auto v0p = vertices[0]->coordinates();
-      auto v1p = vertices[1]->coordinates();
-
-      // compute the midpoint vertex
-      auto midpoint = flecsi::midpoint(v0p, v1p);
-
-      // create the actual dual-mesh vertex
-      auto vertex = mesh_.make<vertex_t>(midpoint, &state_);
-      mesh_.add_vertex<1>(vertex);
-      // FIXME: Don't need this
-      vertex->set_rank<1>(2);
-      dual_vertices.push_back(vertex);
-    } // for
-
-    // create wedges and corners
-//    auto vertices = mesh_.vertices<1>().to_vec();
-    for(auto c: mesh_.cells<0>()) {
-
-      auto edges = mesh_.edges(c).to_vec();
-      size_t cnt(edges.size());
-      size_t tail(cnt-1);
-      size_t head(0);
-
-      for(auto v: mesh_.vertices(c)) {
-        auto p = dual_vertices[v.id()];
-        auto z = dual_vertices[poff + c.id()];
-        auto etail = dual_vertices[poff + coff + tail];
-        auto ehead = dual_vertices[poff + coff + head];
-
-        // make tail wedge
-        wedge_t * w = mesh_.make<wedge_t>();
-        mesh_.add_cell<1>(w);
-        mesh_.init_cell<1>(w, {p, z, etail});
-
-        // make head wedge
-        w = mesh_.make<wedge_t>();
-        mesh_.add_cell<1>(w);
-        mesh_.init_cell<1>(w, {p, z, ehead});
-
-        // add corner
-
-        // advance indices
-        tail = (tail+1)%cnt;
-        ++head;
-      } // for
-    } // for
-
-    mesh_.init<1>();
-#endif
   /*!
     \brief Get the centroid of a cell.
     
@@ -729,8 +640,18 @@ public:
     point_t centroid(const cell_t *c) const {
 
   */
-  point_t centroid(cell_t *c) {
-    return {0,0};
+  point_t centroid(cell_t * c) {
+    auto vs = mesh_.entities<0,0>(c).to_vec();
+
+    std::vector<point_t> pts(vs.size());
+
+    point_t tmp(0.0);
+    for(auto v: vs) {
+      tmp += v->coordinates();
+    } // for
+
+    //return c->centroid(vs);
+    return tmp/vs.size();
   }
 
   /*!
@@ -740,7 +661,7 @@ public:
 
     \return The midpoint of the edge.
   */
-  point_t midpoint(const edge_t *e) const {
+  point_t midpoint(const edge_t * e) const {
     auto vs = mesh_.entities<0,0>(e).to_vec();
     return point_t(flecsi::midpoint(vs[0]->coordinates(),vs[1]->coordinates()));
   }

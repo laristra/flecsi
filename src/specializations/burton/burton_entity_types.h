@@ -43,8 +43,10 @@ public:
 
   //! Type containing coordinates of the vertex.
   using point_t = burton_mesh_traits_t::point_t;
+
   //! Handle for accessing state at vertex.
   using state_t = burton_mesh_traits_t::mesh_state_t;
+
   //! Number of domains in the burton mesh.
   static constexpr size_t num_domains = burton_mesh_traits_t::num_domains;
 
@@ -89,7 +91,7 @@ public:
     \return coordinates of vertex.
    */
   const point_t & coordinates() const {
-    auto c = state_.accessor<point_t,flecsi_internal>("coordinates");
+    const auto c = state_.accessor<point_t,flecsi_internal>("coordinates");
     return c[mesh_entity_base_t<num_domains>::template id<0>()];
   } // coordinates
 
@@ -136,6 +138,7 @@ struct burton_cell_t : public mesh_entity_t<2, N> {
 
   //! Constructor
   burton_cell_t() {}
+
   //! Destructor
   virtual ~burton_cell_t() {}
 

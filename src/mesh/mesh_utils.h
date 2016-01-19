@@ -117,7 +117,7 @@ struct find_entity__ {
 
     // Check match for domain and dimension and return
     // index if matched or recurse if not matched.
-    return D1::domain == M && T1::dimension == D ? 
+    return D1::value == M && T1::dimension == D ? 
       I : find_entity__<I - 1, T, D, M>::find(); 
   }
 };
@@ -194,7 +194,7 @@ struct compute_connectivity_ {
     using T1 = typename std::tuple_element<1, T>::type;
     using T2 = typename std::tuple_element<2, T>::type;
 
-    if (D1::domain == DM) {
+    if (D1::value == DM) {
       mesh.template compute_connectivity<DM, T1::dimension, T2::dimension>();
     }
     return compute_connectivity_<DM, I - 1, TS>::compute(mesh);
@@ -257,8 +257,8 @@ struct compute_bindings_ {
     using T1 = typename std::tuple_element<2, T>::type;
     using T2 = typename std::tuple_element<3, T>::type;
 
-    if(M1::domain == DM) {
-      mesh.template compute_bindings<M1::domain, M2::domain,
+    if(M1::value == DM) {
+      mesh.template compute_bindings<M1::value, M2::value,
         T1::dimension, T2::dimension>();
     } // if
 

@@ -12,21 +12,21 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_minimal_mesh_types_h
-#define flecsi_minimal_mesh_types_h
+#ifndef flecsi_minimal_types_h
+#define flecsi_minimal_types_h
 
 #include "flecsi/specializations/minimal/minimal_mesh_traits.h"
 #include "flecsi/specializations/minimal/minimal_entity_types.h"
 
 /*!
- * \file minimal_mesh_types.h
+ * \file minimal_types.h
  * \authors bergen
  * \date Initial file creation: Dec 26, 2015
  */
 
 namespace flecsi {
 
-struct minimal_mesh_types_t {
+struct minimal_types_t {
 
   static constexpr size_t dimension = minimal_mesh_traits_t::dimension;
   static constexpr size_t num_domains = minimal_mesh_traits_t::num_domains;
@@ -52,11 +52,11 @@ struct minimal_mesh_types_t {
 
   using bindings = std::tuple<>;
 
-}; // struct minimal_mesh_types
+}; // struct minimal_types
 
 } // namespace flecsi
 
-#endif // flecsi_minimal_mesh_types_h
+#endif // flecsi_minimal_types_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options
