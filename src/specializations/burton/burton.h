@@ -36,11 +36,10 @@
   to execute the given task.  Task arguments will be analyzed and
   forwarded to the low-level runtime.
 
-  \param task The task to execute.  Note that the task must conform
+  \param[in] task The task to execute.  Note that the task must conform
     to the signature required by FleCSI.  FleCSI uses static type
     checking to insure that tasks are compliant.
-
- \param ... The task input arguments (variadic list).  All arguments
+  \param[in] ... The task input arguments (variadic list).  All arguments
    will be passed to the task when it is invoked.
  */
 #define execute(task, ...) \
@@ -54,24 +53,26 @@
 /*!
   \brief Register state with the mesh.
 
-  \param mesh The flecsi mesh instance with which to register the state.
-  \param key The string name of the state variable to register,
+  \param[in] mesh The flecsi mesh instance with which to register the state.
+  \param[in] key The string name of the state variable to register,
     e.g., "density".
-  \param site The data attachment site on the mesh where the state
+  \param[in] site The data attachment site on the mesh where the state
     should reside.  Valid attachement sites are documented in
     \ref flecsi::burton_mesh_traits_t.
-  \param type A valid C++ type for the registered state.
+  \param[in] type A valid C++ type for the registered state.
+  \param[in] ... A variadic list of arguments to pass to the initialization
+    function of the user-defined meta data type.
  */
 #define register_state(mesh, key, site, type, ...) \
   (mesh).register_state_<type>((key), \
   flecsi::burton_mesh_traits_t::attachment_site_t::site, ##__VA_ARGS__)
 
 /*!
-  \brief Access state from a given mesh and key.
+  \brief Access state from a given \e mesh and \e key.
 
-  \param mesh The flecsi mesh instance from which to access the state.
-  \param key The string name of the state varaiable to retrieve.
-  \param type The C++ type of the requested state.
+  \param[in] mesh The flecsi mesh instance from which to access the state.
+  \param[in] key The string name of the state variable to retrieve.
+  \param[in] type The C++ type of the requested state.
 
   \return An accessor to the state data.
  */
@@ -79,10 +80,10 @@
   (mesh).access_state_<type>((key))
 
 /*!
-  \brief Access all state of a given type from a given mesh and key.
+  \brief Access all state of a given type from a given \e mesh and \e key.
 
-  \param mesh The flecsi mesh instance from which to access the state.
-  \param type The C++ type of the requested state.
+  \param[in] mesh The flecsi mesh instance from which to access the state.
+  \param[in] type The C++ type of the requested state.
 
   \return A std::vector<accessor_t<type>> holding accessors to
     the matching state data.
@@ -91,12 +92,12 @@
   (mesh).access_type_<type>()
 
 /*!
-  \brief Access all state of a given type from a given mesh and key that
-  satisfy the given predicate.
+  \brief Access all state of a given type from a given \e mesh and \e key that
+    satisfy the given predicate.
 
-  \param mesh The flecsi mesh instance from which to access the state.
-  \param type The C++ type of the requested state.
-  \param type A predicate function that returns true or false
+  \param[in] mesh The flecsi mesh instance from which to access the state.
+  \param[in] type The C++ type of the requested state.
+  \param[in] type A predicate function that returns true or false
     given a state accessor as input.
 
   \return A std::vector<accessor_t<type>> holding accessors to
@@ -111,11 +112,11 @@
   Predicate function to select state variables that are defined at
   a specific attachment site.
 
-  \param attachment_site State data must be registered at this site
+  \param[in] attachment_site State data must be registered at this site
     to meet this predicate criterium.  Valid attachement sites are
     documented in \ref flecsi::burton_mesh_traits_t.
 
-  \return bool True if the state is registered at the specified
+  \return True if the state is registered at the specified
     attachment site, false, otherwise.
  */
 #define is_at(attachment_site)                                           \
@@ -129,11 +130,11 @@
   Predicate function to select state variables that have been tagged as
   being persistent AND are defined at a specific attachment site.
 
-  \param attachment_site State data must be registered at this site
+  \param[in] attachment_site State data must be registered at this site
     to meet this predicate criterium.  Valid attachement sites are
     documented in \ref flecsi::burton_mesh_traits_t.
 
-  \return bool True if the state is persistent and is registered at
+  \return True if the state is persistent and is registered at
     the specified attachment site, false, otherwise.
  */
 #define is_persistent_at(attachment_site)                                \
@@ -145,6 +146,9 @@
 
 /*!
   \brief Return the attributes of a state quantity.
+
+  \param[in] mesh The mesh the state is defined on.
+  \param[in] key The state \e key to get the attributes for.
  */
 #define state_attributes(mesh, key) \
   (mesh).state_attributes_((key))
