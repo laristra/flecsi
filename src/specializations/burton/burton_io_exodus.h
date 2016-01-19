@@ -31,22 +31,23 @@
 
 namespace flecsi {
 
-/*!
- * Register file extension g with factory.
- */
+//! Register file extension "g" with factory.
 bool burton_exodus_g_registered =
   io_factory_t<burton_mesh_t>::instance().registerType("g",
-  create_io_exodus<burton_mesh_t>);
+    create_io_exodus<burton_mesh_t>);
 
-/*!
- * Register file extension exo with factory.
- */
+//! Register file extension "exo" with factory.
 bool burton_exodus_exo_registered =
   io_factory_t<burton_mesh_t>::instance().registerType("exo",
-  create_io_exodus<burton_mesh_t>);
+    create_io_exodus<burton_mesh_t>);
 
 /*!
- * Implementation of exodus mesh read for burton.
+  Implementation of exodus mesh read for burton specialization.
+
+  \param[in] name Read burton mesh \e m from \e name.
+  \param[out] m Populate burton mesh \e m with contents of \e name.
+
+  \return Exodus error code. 0 on success.
  */
 template<>
 int32_t io_exodus_t<burton_mesh_t>::read(const std::string &name,
@@ -183,7 +184,12 @@ int32_t io_exodus_t<burton_mesh_t>::read(const std::string &name,
 }
 
 /*!
- * Implementation of exodus mesh write for burton.
+  Implementation of exodus mesh write for burton specialization.
+
+  \param[in] name Write burton mesh \e m to \e name.
+  \param[in] m Burton mesh to write to \e name.
+
+  \return Exodus error code. 0 on success.
  */
 //FIXME: should allow for const mesh_t &
 //int32_t io_exodus_t::write(
@@ -215,8 +221,8 @@ int32_t io_exodus_t<burton_mesh_t>::write(const std::string &name,
   auto num_side_sets = 0;
 
   // initialize the file.
-  auto status = ex_put_init(exoid, "Exodus II output from flecsi.", d, num_nodes,
-    num_elem, num_elem_blk, num_node_sets, num_side_sets);
+  auto status = ex_put_init(exoid, "Exodus II output from flecsi.", d,
+    num_nodes, num_elem, num_elem_blk, num_node_sets, num_side_sets);
   assert(status == 0);
 
   // get the coordinates from the mesh.

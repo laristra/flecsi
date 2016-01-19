@@ -170,20 +170,26 @@ public:
   // Geometry
   //! Floating point data type.
   using real_t = burton_mesh_traits_t::real_t;
+
   //! Point data type.
   using point_t = burton_mesh_traits_t::point_t;
+
   //! Physics vector type.
   using vector_t = burton_mesh_traits_t::vector_t;
 
   // Entity types
   //! Vertex type.
   using vertex_t = burton_mesh_types_t::vertex_t;
+
   //! Edge type.
   using edge_t = burton_mesh_types_t::edge_t;
+
   //! Cell type.
   using cell_t = burton_mesh_types_t::cell_t;
+
   //! 2D quadrilateral cell type.
   using quadrilateral_cell_t = burton_mesh_types_t::quadrilateral_cell_t;
+
   //! Corner type.
   using corner_t = burton_mesh_types_t::corner_t;
 
