@@ -12,12 +12,12 @@
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
 
-#include <jali/specializations/burton.h>
+#include <flecsi/specializations/burton/burton.h>
 
 #include <vector>
 
 using namespace std;
-using namespace jali;
+using namespace flecsi;
 
 //using vertex_t = burton::vertex_t;
 //using edge_t = burton::edge_t;

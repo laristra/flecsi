@@ -12,12 +12,12 @@
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
 
-#include <jali/specializations/burton.h>
+#include <flecsi/specializations/burton/burton.h>
 
 #include <vector>
 
 using namespace std;
-using namespace jali;
+using namespace flecsi;
 
 int main(int argc, char ** argv) {
 
