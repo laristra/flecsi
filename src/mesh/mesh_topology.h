@@ -445,6 +445,12 @@ public:
 
   }; // class id_range
 
+  // Don't allow the mesh to be copied or copy constructed
+
+  mesh_topology_t(const mesh_topology_t&) = delete;
+
+  mesh_topology_t& operator=(const mesh_topology_t&) = delete;
+
   //! Constructor
   mesh_topology_t() {
     for(size_t from_dim = 0; from_dim < MT::num_domains; ++from_dim){

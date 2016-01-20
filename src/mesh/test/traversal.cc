@@ -25,6 +25,9 @@ public:
 
 class Cell : public mesh_entity_t<2, 1>{
 public:
+  Cell(mesh_topology_base_t& mesh)
+  : mesh_(mesh){}
+
   void set_precedence(size_t dim, uint64_t precedence) {}
 
   std::pair<size_t, std::vector<size_t>>
@@ -47,6 +50,11 @@ public:
 
     return {4, {2, 2, 2, 2}};
   }
+
+  void traverse();
+
+private:
+  mesh_topology_base_t& mesh_;
 };
 
 class TestMesh2dType{
@@ -73,6 +81,14 @@ public:
 
 using TestMesh = mesh_topology_t<TestMesh2dType>;
 
+void Cell::traverse(){
+  auto& mesh = static_cast<TestMesh&>(mesh_);
+
+  for(auto vertex : mesh.entities<0, 0>(this)) {
+    cout << "------- traverse vertex id: " << vertex.id() << endl;
+  }
+}
+
 TEST(mesh_topology, traversal) {
 
   size_t width = 2;
@@ -95,7 +111,8 @@ TEST(mesh_topology, traversal) {
   size_t width1 = width + 1;
   for(size_t j = 0; j < height; ++j){
     for(size_t i = 0; i < width; ++i){
-      auto c = mesh->make<Cell>();
+      auto c = mesh->make<Cell>(*mesh);
+
       mesh->add_entity<2, 0>(c);
 
       mesh->init_cell<0>(c,
@@ -110,6 +127,10 @@ TEST(mesh_topology, traversal) {
   }
 
   mesh->init<0>();
+
+  for(auto cell : mesh->entities<2>()) {
+    cell->traverse();
+  }
 
   CINCH_CAPTURE() << "------------- forall cells, vertices" << endl;
 
