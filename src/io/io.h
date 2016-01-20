@@ -26,10 +26,14 @@
 namespace flecsi {
 
 /*!
-\brief Generic mesh reader that calls the correct method based on the suffix.
-\param name read from
-\param m mesh to create
-\return 0 on success
+  \brief Generic mesh reader that calls the correct method based on the suffix.
+
+  \tparam mesh_t Mesh type to read.
+
+  \param[in] name Read mesh \e m from \e name.
+  \param[out] m Create mesh \e m from \e name.
+
+  \return Error code. 0 on success.
  */
 template <typename mesh_t>
 int32_t read_mesh(const std::string &name, mesh_t &m) {
@@ -39,7 +43,7 @@ int32_t read_mesh(const std::string &name, mesh_t &m) {
   // create the io instance with the factory using the file suffix.
   auto io = io_factory_t<mesh_t>::instance().create(suffix);
 
-  // call the io write function
+  // call the io read function
   auto ret = io->read(name, m);
 
   // clean up and return
@@ -48,10 +52,14 @@ int32_t read_mesh(const std::string &name, mesh_t &m) {
 }
 
 /*!
-\brief Generic mesh writer that calls the correct method based on the suffix.
-\param name write to
-\param m mesh to write
-\return 0 on success
+  \brief Generic mesh writer that calls the correct method based on the suffix.
+
+  \tparam mesh_t Mesh type to write.
+
+  \param[in] name Write mesh \e m to \e name.
+  \param[in] m Write mesh \e m to \e name.
+
+  \return Error code. 0 on success.
  */
 //FIXME: should allow for const mesh_t &
 //int32_t write_mesh(const std::string &name, const mesh_t &m) {
