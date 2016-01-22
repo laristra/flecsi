@@ -265,7 +265,7 @@ public:
      */
     domain_entity_vector_t to_vec() const {
       domain_entity_vector_t ret;
-      for(size_t i = begin_; i < end_; ++i){
+      for (size_t i = begin_; i < end_; ++i){
         ret.push_back(mesh_.get_entity<D>(v_[i]));
       } // for
 
@@ -331,7 +331,7 @@ public:
     domain_entity_vector_t to_vec() const {
       domain_entity_vector_t ret;
 
-      for(size_t i = begin_; i < end_; ++i){
+      for (size_t i = begin_; i < end_; ++i) {
         ret.push_back(mesh_.get_entity<D>(v_[i]));
       } // for
 
@@ -426,7 +426,7 @@ public:
     id_vector_t to_vec() const {
       id_vector_t ret;
 
-      for(size_t i = begin_; i < end_; ++i){
+      for (size_t i = begin_; i < end_; ++i) {
         ret.push_back(v_[i]);
       } // for
 
@@ -453,8 +453,8 @@ public:
 
   //! Constructor
   mesh_topology_t() {
-    for(size_t from_dim = 0; from_dim < MT::num_domains; ++from_dim){
-      for(size_t to_dim = 0; to_dim < MT::num_domains; ++to_dim){
+    for (size_t from_dim = 0; from_dim < MT::num_domains; ++from_dim) {
+      for (size_t to_dim = 0; to_dim < MT::num_domains; ++to_dim) {
         get_connectivity_(from_dim, to_dim, MT::dimension, 0).init();
       }
     }
@@ -463,9 +463,9 @@ public:
   // the mesh retains ownership of the entities and deletes them
   // upon mesh destruction
   virtual ~mesh_topology_t(){
-    for(size_t d = 0; d < MT::num_domains; ++d){
-      for(auto& ev : ms_.entities[d]){
-        for(auto ent : ev){
+    for (size_t d = 0; d < MT::num_domains; ++d) {
+      for (auto& ev : ms_.entities[d]) {
+        for (auto ent : ev) {
           delete ent;
         } 
       }
@@ -497,7 +497,7 @@ public:
 
     assert(cell->template id<M>() == c.from_size() && "id mismatch");
 
-    for(entity_type<0, M> *v : verts) {
+    for (entity_type<0, M> *v : verts) {
       c.push(v->template id<M>());
     } // for
 
@@ -601,7 +601,7 @@ public:
         conns.push_back(itr.first->second);
 
         // If the insertion took place
-        if(itr.second) {
+        if (itr.second) {
           // what does this do?
           id_vector_t ev2 = id_vector_t(a, a + p.second[i]);
           entity_vertex_conn.emplace_back(std::move(ev2));
@@ -637,8 +637,8 @@ public:
 
     index_vector_t pos(num_entities_(FM, FD), 0);
 
-    for(auto to_entity : entities<TD, TM>()) {
-      for(id_t from_id : entity_ids<FD, TM, FM>(to_entity)) {
+    for (auto to_entity : entities<TD, TM>()) {
+      for (id_t from_id : entity_ids<FD, TM, FM>(to_entity)) {
         ++pos[from_id];
       }
     }
@@ -648,8 +648,8 @@ public:
 
     std::fill(pos.begin(), pos.end(), 0);
 
-    for(auto to_entity : entities<TD, TM>()) {
-      for(id_t from_id : entity_ids<FD, TM, FM>(to_entity)) {
+    for (auto to_entity : entities<TD, TM>()) {
+      for (id_t from_id : entity_ids<FD, TM, FM>(to_entity)) {
         out_conn.set(from_id, to_entity->template id<TM>(), pos[from_id]++);
       }
     }
@@ -690,7 +690,7 @@ public:
     assert(!c2.empty());
 
     // iterate through entities in from topological dimension
-    for(auto from_entity : entities<FD, FM>()) {
+    for (auto from_entity : entities<FD, FM>()) {
       id_t from_id = from_entity->template id<FM>();
       id_vector_t &ents = conns[from_id];
       ents.reserve(max_size);
@@ -704,15 +704,15 @@ public:
       std::sort(from_verts.begin(), from_verts.end());
 
       // initially set all to id's to unvisited
-      for(auto from_ent2 : entities<D, FM>(from_entity)) {
-        for(id_t to_id : entity_ids<TD, TM>(from_ent2)) {
+      for (auto from_ent2 : entities<D, FM>(from_entity)) {
+        for (id_t to_id : entity_ids<TD, TM>(from_ent2)) {
           visited[to_id] = false;
         }
       }
 
       // loop through each from entity again
-      for(auto from_ent2 : entities<D, FM>(from_entity)) {
-        for(id_t to_id : entity_ids<TD, TM>(from_ent2)) {
+      for (auto from_ent2 : entities<D, FM>(from_entity)) {
+        for (id_t to_id : entity_ids<TD, TM>(from_ent2)) {
 
           // if we have already visited, skip
           if (visited[to_id]) {
@@ -766,36 +766,36 @@ public:
     connectivity_t & out_conn = get_connectivity_(M, FD, TD);
 
     // check if we have already computed it
-    if(!out_conn.empty()) {
+    if (!out_conn.empty()) {
       return;
     } // if
 
     // check if we need to build entities, e.g: edges or faces
-    if(num_entities_(M, FD) == 0) {
+    if (num_entities_(M, FD) == 0) {
       build_connectivity<M, FD>();
     } // if
 
-    if(num_entities_(M, TD) == 0) {
+    if (num_entities_(M, TD) == 0) {
       build_connectivity<M, TD>();
     } // if
 
-    if(num_entities_(M, FD) == 0 && num_entities_(M, TD) == 0) {
+    if (num_entities_(M, FD) == 0 && num_entities_(M, TD) == 0) {
       return;
     } // if
 
     // depend on the corresponding topological dimensions, call transpose
     // or intersect as need
 
-    if(FD == TD) {
+    if (FD == TD) {
       connection_vector_t conn_vec(num_entities_(M, FD), id_vector_t(1));
 
-      for(id_t ent_id : entity_ids<FD, M>()) {
+      for (id_t ent_id : entity_ids<FD, M>()) {
         conn_vec[ent_id][0] = ent_id;
       }
 
       out_conn.set<M, MT::num_domains>(ms_.entities[M][TD], conn_vec);
     }
-    else if(FD < TD) {
+    else if (FD < TD) {
       compute_connectivity<M, TD, FD>();
       transpose<M, M, FD, TD>();
     }
@@ -810,17 +810,17 @@ public:
   void compute_bindings() {
     connectivity_t & out_conn = get_connectivity_(FM, TM, FD, TD);
 
-    if(!out_conn.empty()) {
+    if (!out_conn.empty()) {
       return;
     } // if
 
-    if(FD < TD) {
+    if (FD < TD) {
       //build_bindings<TM, FM, FD>();
       transpose<FM, TM, FD, TD>();
       return;
     }
 
-    if(ms_.entities[TM][TD].empty()){
+    if (ms_.entities[TM][TD].empty()){
       build_bindings<FM, TM, TD>();      
     }
 
@@ -858,7 +858,7 @@ public:
     entity_vertex_conn.init();
 
     // Iterate over cells
-    for(auto c: cells) {
+    for (auto c: cells) {
 
       // Get a cell object.
       auto cell = static_cast<entity_type<MT::dimension, M0> *>(c);
@@ -866,7 +866,7 @@ public:
 
       // Get ids of entities with at least this dimension
       connection_vector_t primal_ids(MT::dimension+1);
-      for(size_t dim(0); dim<MT::dimension; ++dim) {
+      for (size_t dim(0); dim<MT::dimension; ++dim) {
 
         // Get domain 0 mesh connectivity information
         connectivity_t & conn = get_connectivity_(FM, MT::dimension, dim);
@@ -874,7 +874,7 @@ public:
         size_t count;
         id_t * ids = conn.get_entities(cell_id, count);
 
-        for(size_t i(0); i<count; ++i) {
+        for (size_t i(0); i<count; ++i) {
           primal_ids[dim].push_back(to_global_id<FM>(dim, ids[i]));
         } // for
       } // for
@@ -894,7 +894,7 @@ public:
       id_vector_t & conns = cell_conn[cell_id];
       size_t pos = 0;
 
-      for(size_t i(0); i<p.first; ++i) {
+      for (size_t i(0); i<p.first; ++i) {
 
         // Get the id range for this entity
         id_t * a = &entity_ids[i * p.second[i]];        
@@ -913,11 +913,11 @@ public:
         size_t m = p.second[i];
 
         // Increment
-        if(itr.second) {
-          for(size_t k = 0; k < m; ++k) {
+        if (itr.second) {
+          for (size_t k = 0; k < m; ++k) {
             id_t global_id = entity_ids[pos + k];
 
-            if(dimension_from_global_id(global_id) == 0) {
+            if (dimension_from_global_id(global_id) == 0) {
               entity_vertex_conn.push(to_local_id(global_id));
             } // if
           }
@@ -937,7 +937,7 @@ public:
     connectivity_t & cell_out =
       get_connectivity_(FM, TM, MT::dimension, TD);
 
-    if(ms_.entities[TM][TD].empty()){
+    if (ms_.entities[TM][TD].empty()) {
       // Create the entity objects
       cell_out.init_create<MT, TM>(ms_.id_vecs[TM][TD], ms_.entities[TM][TD],
         cell_conn, TD);      
@@ -1207,10 +1207,10 @@ public:
     topological dimensions.
   */
   void dump() {
-    for(size_t from_domain = 0; from_domain < MT::num_domains; ++from_domain){
+    for (size_t from_domain = 0; from_domain < MT::num_domains; ++from_domain) {
       std::cout << "=================== from domain: " <<
         from_domain << std::endl;
-      for(size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain){
+      for (size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain) {
         std::cout << "========== to domain: " << to_domain << std::endl;
         size_t n = ms_.topology[from_domain][to_domain].size();
         for (size_t i = 0; i < n; ++i) {
