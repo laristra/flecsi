@@ -100,7 +100,7 @@ template <class MT> class mesh_topology_t : public mesh_topology_base_t
 {
 public:
   // used to find the entity type of topological dimension D and domain M
-  template<size_t D, size_t M=0>
+  template<size_t D, size_t M = 0>
   using entity_type = typename find_entity_<MT, D, M>::type;
 
   /*--------------------------------------------------------------------------*
@@ -112,7 +112,7 @@ public:
     \brief An iterator that returns entities for topological dimension D
      and domain M. 
    */
-  template <size_t D, size_t M=0>
+  template <size_t D, size_t M = 0>
   class iterator
   {
   public:
@@ -172,7 +172,7 @@ public:
     \brief A const iterator that returns entities for topological dimension D
     and domain M. 
    */
-  template <size_t D, size_t M=0>
+  template <size_t D, size_t M = 0>
   class const_iterator
   {
   public:
@@ -231,7 +231,7 @@ public:
     \class entity_range_t mesh_topology.h
     \brief A helper class used to enable range-based for iteration. 
    */
-  template <size_t D, size_t M=0>
+  template <size_t D, size_t M = 0>
   class entity_range_t
   {
   public:
@@ -294,7 +294,7 @@ public:
     \brief A helper class used to enable range-based for iteration.
    */
 
-  template <size_t D, size_t M=0>
+  template <size_t D, size_t M = 0>
   class const_entity_range_t
   {
   public:
@@ -473,7 +473,7 @@ public:
   }
 
   // add and entity to a mesh domain and assign its id per domain
-  template<size_t D, size_t M=0>
+  template<size_t D, size_t M = 0>
   void add_entity(mesh_entity_base_t<MT::num_domains> * ent) {
     auto &ents = ms_.entities[M][D];
     ent->ids_[M] = ents.size();
@@ -942,7 +942,7 @@ public:
       cell_out.init_create<MT, TM>(ms_.id_vecs[TM][TD], ms_.entities[TM][TD],
         cell_conn, TD);      
     }
-    else{
+    else {
       cell_out.init(cell_conn);   
     }
 
@@ -977,7 +977,7 @@ public:
    Return the number of entities contained in specified topological dimension
    and domain.
    */
-  template<size_t D, size_t M=0>
+  template<size_t D, size_t M = 0>
   decltype(auto) num_entities() const {
     return ms_.entities[M][D].size();
   } // num_entities
@@ -1077,12 +1077,12 @@ public:
     return entity;
   } // make
 
-  template<size_t M=0>
+  template<size_t M = 0>
   const entity_vector_t<MT::num_domains> & get_entities_(size_t dim) const { 
     return ms_.entities[M][dim]; 
   } // get_entities_
 
-  template<size_t M=0>
+  template<size_t M = 0>
   const id_vector_t & get_id_vec_(size_t dim) const { 
     return ms_.id_vecs[M][dim]; 
   } // get_id_vec_
@@ -1090,7 +1090,7 @@ public:
   /*!
     Get an entity in domain M of topological dimension D with specified id.
   */
-  template<size_t D, size_t M=0>
+  template<size_t D, size_t M = 0>
   auto get_entity(id_t id) const {
     using entity_type = typename find_entity_<MT, D, M>::type;
     return static_cast<entity_type*>(ms_.entities[M][D][id]);
@@ -1099,7 +1099,7 @@ public:
   /*!
     Get an entity in domain M of topological dimension D with specified id.
   */
-  template<size_t M=0>
+  template<size_t M = 0>
   auto get_entity(size_t dim, id_t id) {
     return ms_.entities[M][dim][id];
   } // get_entity
@@ -1108,7 +1108,7 @@ public:
     Get the entities of topological dimension D connected to another entity 
     by specified connectivity from domain FM and to domain TM.
   */
-  template <size_t D, size_t FM, size_t TM=FM, class E>
+  template <size_t D, size_t FM, size_t TM = FM, class E>
   const_entity_range_t<D, TM>
   entities(const E *e) const {
     const connectivity_t &c = get_connectivity(FM, TM, E::dimension, D);
@@ -1122,7 +1122,7 @@ public:
     Get the entities of topological dimension D connected to another entity 
     by specified connectivity from domain FM and to domain TM.
   */
-  template <size_t D, size_t FM, size_t TM=FM, class E>
+  template <size_t D, size_t FM, size_t TM = FM, class E>
   entity_range_t<D, TM>
   entities(E *e) {
     const connectivity_t &c = get_connectivity(FM, TM, E::dimension, D);
@@ -1136,7 +1136,7 @@ public:
     Get the entities of topological dimension D connected to another entity 
     by specified connectivity from domain FM and to domain TM.
   */
-  template<size_t D, size_t FM=0, size_t TM=FM, class E>
+  template<size_t D, size_t FM = 0, size_t TM = FM, class E>
   decltype(auto) entities(domain_entity<FM,E> & e) const {
     return entities<D,FM,TM>(e.entity());
   } // entities
@@ -1145,7 +1145,7 @@ public:
     Get the entities of topological dimension D connected to another entity 
     by specified connectivity from domain FM and to domain TM.
   */
-  template<size_t D, size_t FM=0, size_t TM=FM, class E>
+  template<size_t D, size_t FM = 0, size_t TM = FM, class E>
   decltype(auto) entities(domain_entity<FM,E> & e) {
     return entities<D,FM,TM>(e.entity());
   } // entities
@@ -1154,7 +1154,7 @@ public:
     Get the top-level entities of topological dimension D of the specified 
     domain M. e.g: cells of the mesh.
   */
-  template<size_t D, size_t M=0>
+  template<size_t D, size_t M = 0>
   const_entity_range_t<D, M> entities() const {
     assert(!ms_.id_vecs[M][D].empty());
     return const_entity_range_t<D>(*this, ms_.id_vecs[M][D]);
@@ -1164,7 +1164,7 @@ public:
     Get the top-level entities of topological dimension D of the specified 
     domain M. e.g: cells of the mesh.
   */
-  template<size_t D, size_t M=0>
+  template<size_t D, size_t M = 0>
   entity_range_t<D, M> entities() {
     assert(!ms_.id_vecs[M][D].empty());
     return entity_range_t<D, M>(*this, ms_.id_vecs[M][D]);
@@ -1174,7 +1174,7 @@ public:
     Get the top-level entity id's of topological dimension D of the specified 
     domain M. e.g: cells of the mesh.
   */
-  template<size_t D, size_t M=0>
+  template<size_t D, size_t M = 0>
   id_range entity_ids() const {
     assert(!ms_.id_vecs[M][D].empty());
     return id_range(ms_.id_vecs[M][D]);
@@ -1184,7 +1184,7 @@ public:
     Get the entity id's of topological dimension D connected to another entity 
     by specified connectivity from domain FM and to domain TM.
   */
-  template<size_t D, size_t FM=0, size_t TM=FM, class E>
+  template<size_t D, size_t FM = 0, size_t TM = FM, class E>
   decltype(auto) entity_ids(domain_entity<FM,E> & e) {
     return entity_ids<D, FM, TM>(e.entity());
   } // entities
@@ -1193,7 +1193,7 @@ public:
     Get the entity id's of topological dimension D connected to another entity 
     by specified connectivity from domain FM and to domain TM.
   */
-  template <size_t D, size_t FM=0, size_t TM=FM, class E>
+  template <size_t D, size_t FM = 0, size_t TM = FM, class E>
   id_range entity_ids(const E *e) const {
     const connectivity_t &c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
