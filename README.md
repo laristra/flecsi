@@ -1,6 +1,6 @@
 # FleCSI Project
 
-FleCSI is a set of computer science infrastructure tools designed to aid in the implementation of
+FleCSI is a set of computational science infrastructure tools designed to aid in the implementation of
 multi-physics application development.
 
 # Getting the Code
