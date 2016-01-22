@@ -464,8 +464,8 @@ public:
   // upon mesh destruction
   virtual ~mesh_topology_t(){
     for (size_t d = 0; d < MT::num_domains; ++d) {
-      for (auto& ev : ms_.entities[d]) {
-        for (auto ent : ev) {
+      for (auto& ev: ms_.entities[d]) {
+        for (auto ent: ev) {
           delete ent;
         } 
       }
@@ -497,7 +497,7 @@ public:
 
     assert(cell->template id<M>() == c.from_size() && "id mismatch");
 
-    for (entity_type<0, M> *v : verts) {
+    for (entity_type<0, M> *v: verts) {
       c.push(v->template id<M>());
     } // for
 
@@ -637,8 +637,8 @@ public:
 
     index_vector_t pos(num_entities_(FM, FD), 0);
 
-    for (auto to_entity : entities<TD, TM>()) {
-      for (id_t from_id : entity_ids<FD, TM, FM>(to_entity)) {
+    for (auto to_entity: entities<TD, TM>()) {
+      for (id_t from_id: entity_ids<FD, TM, FM>(to_entity)) {
         ++pos[from_id];
       }
     }
@@ -648,8 +648,8 @@ public:
 
     std::fill(pos.begin(), pos.end(), 0);
 
-    for (auto to_entity : entities<TD, TM>()) {
-      for (id_t from_id : entity_ids<FD, TM, FM>(to_entity)) {
+    for (auto to_entity: entities<TD, TM>()) {
+      for (id_t from_id: entity_ids<FD, TM, FM>(to_entity)) {
         out_conn.set(from_id, to_entity->template id<TM>(), pos[from_id]++);
       }
     }
@@ -690,7 +690,7 @@ public:
     assert(!c2.empty());
 
     // Iterate through entities in from topological dimension
-    for (auto from_entity : entities<FD, FM>()) {
+    for (auto from_entity: entities<FD, FM>()) {
       id_t from_id = from_entity->template id<FM>();
       id_vector_t &ents = conns[from_id];
       ents.reserve(max_size);
@@ -704,15 +704,15 @@ public:
       std::sort(from_verts.begin(), from_verts.end());
 
       // initially set all to id's to unvisited
-      for (auto from_ent2 : entities<D, FM>(from_entity)) {
-        for (id_t to_id : entity_ids<TD, TM>(from_ent2)) {
+      for (auto from_ent2: entities<D, FM>(from_entity)) {
+        for (id_t to_id: entity_ids<TD, TM>(from_ent2)) {
           visited[to_id] = false;
         }
       }
 
       // Loop through each from entity again
-      for (auto from_ent2 : entities<D, FM>(from_entity)) {
-        for (id_t to_id : entity_ids<TD, TM>(from_ent2)) {
+      for (auto from_ent2: entities<D, FM>(from_entity)) {
+        for (id_t to_id: entity_ids<TD, TM>(from_ent2)) {
 
           // If we have already visited, skip
           if (visited[to_id]) {
@@ -789,7 +789,7 @@ public:
     if (FD == TD) {
       connection_vector_t conn_vec(num_entities_(M, FD), id_vector_t(1));
 
-      for (id_t ent_id : entity_ids<FD, M>()) {
+      for (id_t ent_id: entity_ids<FD, M>()) {
         conn_vec[ent_id][0] = ent_id;
       }
 
@@ -934,8 +934,7 @@ public:
     } // for
 
     // Reference to storage from cells to the entity (to be created here).
-    connectivity_t & cell_out =
-      get_connectivity_(FM, TM, MT::dimension, TD);
+    connectivity_t & cell_out = get_connectivity_(FM, TM, MT::dimension, TD);
 
     if (ms_.entities[TM][TD].empty()) {
       // Create the entity objects
