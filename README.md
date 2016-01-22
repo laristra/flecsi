@@ -7,7 +7,7 @@ multi-physics application development.
 
 FleCSI uses git submodules, so it must be checked out recursively:
 
-    % git clone --recursive git@gitlab.lanl.gov:csse/flecsi.git
+    % git clone --recursive git@github.com:losalamos/flecsi.git
 
 # Requirements
 
@@ -25,8 +25,8 @@ cinch-utils is available [here](https://github.com/losalamos/cinch-utils).
 
 To begin, you will need to build the third-party library dependencies:
 
-    % git clone git@gitlab.lanl.gov:csse/thirdparty.git
-    % cd thirdparty
+    % git clone git@github.com:losalamos/flecsi-thirdparty.git
+    % cd flecsi-thirdparty
     % mkdir build
     % cd build
     % ccmake ..
