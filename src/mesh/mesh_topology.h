@@ -660,22 +660,22 @@ public:
      topological dimension
        FD -> TD using FD -> D' and D' -> TD where TD < D' < FD
    */
-  template<size_t M, size_t FD, size_t TD, size_t D>
+  template<size_t FM, size_t TM, size_t FD, size_t TD, size_t D>
   void intersect() {
     //std::cerr << "intersect: " << fromDim << " -> " << toDim << std::endl;
 
     // the connectivity we will be populating
-    connectivity_t &out_conn = get_connectivity_(M, FD, TD);
+    connectivity_t &out_conn = get_connectivity_(FM, TM, FD, TD);
     if (!out_conn.empty()) {
       return;
     } // if
 
     // temporary storage for connection id's
-    connection_vector_t conns(num_entities_(M, FD));
+    connection_vector_t conns(num_entities_(FM, FD));
 
     // keep track of which to id's we have visited
     using visited_vec = std::vector<bool>;
-    visited_vec visited(num_entities_(M, FD));
+    visited_vec visited(num_entities_(FM, FD));
 
     id_vector_t from_verts;
     id_vector_t to_verts;
@@ -683,15 +683,15 @@ public:
     size_t max_size = 1;
 
     // read connectivities
-    connectivity_t &c = get_connectivity_(M, FD, 0);
+    connectivity_t &c = get_connectivity_(FM, FD, 0);
     assert(!c.empty());
 
-    connectivity_t &c2 = get_connectivity_(M, TD, 0);
+    connectivity_t &c2 = get_connectivity_(TM, TD, 0);
     assert(!c2.empty());
 
     // iterate through entities in from topological dimension
-    for(auto from_entity : entities<FD, M>()) {
-      id_t from_id = from_entity->template id<M>();
+    for(auto from_entity : entities<FD, FM>()) {
+      id_t from_id = from_entity->template id<FM>();
       id_vector_t &ents = conns[from_id];
       ents.reserve(max_size);
 
@@ -704,15 +704,15 @@ public:
       std::sort(from_verts.begin(), from_verts.end());
 
       // initially set all to id's to unvisited
-      for(auto from_ent2 : entities<D, M>(from_entity)) {
-        for(id_t to_id : entity_ids<TD, M>(from_ent2)) {
+      for(auto from_ent2 : entities<D, FM>(from_entity)) {
+        for(id_t to_id : entity_ids<TD, TM>(from_ent2)) {
           visited[to_id] = false;
         }
       }
 
       // loop through each from entity again
-      for(auto from_ent2 : entities<D, M>(from_entity)) {
-        for(id_t to_id : entity_ids<TD, M>(from_ent2)) {
+      for(auto from_ent2 : entities<D, FM>(from_entity)) {
+        for(id_t to_id : entity_ids<TD, TM>(from_ent2)) {
 
           // if we have already visited, skip
           if (visited[to_id]) {
@@ -802,7 +802,7 @@ public:
     else {
       compute_connectivity<M, FD, 0>();
       compute_connectivity<M, 0, TD>();
-      intersect<M, FD, TD, 0>();
+      intersect<M, M, FD, TD, 0>();
     } // if
   } // compute_connectivity
 
