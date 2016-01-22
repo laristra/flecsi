@@ -826,6 +826,11 @@ public:
 
   } // compute_bindings
 
+  /*!
+    Build bindings associated with a from/to domain and topological dimension.
+    Compute building will call this on each binding found in the tuple of
+    bindings specified in the mesh type/traits mesh specialization.
+   */
   template<size_t FM, size_t TM, size_t TD>
   void build_bindings() {
 
@@ -849,8 +854,7 @@ public:
 
     static constexpr size_t M0 = 0;
 
-    connectivity_t & entity_vertex_conn =
-      get_connectivity_(TM, FM, TD, 0);
+    connectivity_t & entity_vertex_conn = get_connectivity_(TM, FM, TD, 0);
     entity_vertex_conn.init();
 
     // Iterate over cells
@@ -944,6 +948,10 @@ public:
 
   } // build_bindings
 
+  /*!
+    The init method builds entities as edges/faces and computes adjacencies
+    and bindings.
+   */
   template<size_t M = 0>
   void init() {
     // Compute mesh connectivity
@@ -954,49 +962,67 @@ public:
     compute_bindings_<M, std::tuple_size<BT>::value, BT>::compute(*this);
   } // init
 
+  /*!
+    Similar to init(), but only compute bindings. This method should be called
+    when a domain is sparse, i.e: missing certain entity types such as cells
+    and it is not possible to compute connectivities.
+   */
   template<size_t M = 0>
   void init_bindings() {
     using BT = typename MT::bindings;
     compute_bindings_<M, std::tuple_size<BT>::value, BT>::compute(*this);
   } // init
 
-//
-//
-// Need to document
-//
-//
-
+  /*!
+   Return the number of entities contained in specified topological dimension
+   and domain.
+   */
   template<size_t D, size_t M=0>
   decltype(auto) num_entities() const {
     return ms_.entities[M][D].size();
   } // num_entities
 
-//
-//
-//
-//
-
+  /*!
+   Get the connectivity of the specified from/to domain and from/to topological
+   dimensions.
+   */
   const connectivity_t & get_connectivity(size_t from_domain,
       size_t to_domain, size_t from_dim, size_t to_dim) const override {
     return get_connectivity_(from_domain, to_domain, from_dim, to_dim);
   } // get_connectivity
 
+  /*!
+   Get the connectivity of the specified from/to domain and from/to topological
+   dimensions.
+   */
   connectivity_t & get_connectivity(size_t from_domain,
       size_t to_domain, size_t from_dim,
     size_t to_dim) override {
     return get_connectivity_(from_domain, to_domain, from_dim, to_dim);
   } // get_connectivity
 
+  /*!
+   Get the connectivity of the specified domain and from/to topological
+   dimensions.
+   */
   const connectivity_t & get_connectivity(size_t domain,
       size_t from_dim, size_t to_dim) const override {
     return get_connectivity_(domain, domain, from_dim, to_dim);
   } // get_connectivity
 
+  /*!
+   Get the connectivity of the specified domain and from/to topological
+   dimensions.
+   */
   connectivity_t & get_connectivity(size_t domain, size_t from_dim,
     size_t to_dim) override {
     return get_connectivity_(domain, domain, from_dim, to_dim);
   } // get_connectivity
 
+  /*!
+   Implementation of get_connectivity for various get_connectivity convenience
+   methods.
+   */
   const connectivity_t & get_connectivity_(size_t from_domain,
     size_t to_domain,
     size_t from_dim,
@@ -1008,6 +1034,10 @@ public:
     return t[to_dim];
   } // get_connectivity
 
+  /*!
+   Implementation of get_connectivity for various get_connectivity convenience
+   methods.
+   */
   connectivity_t & get_connectivity_(size_t from_domain,
     size_t to_domain,
     size_t from_dim,
@@ -1019,7 +1049,11 @@ public:
     return t[to_dim];
   } // get_connectivity
 
-    const connectivity_t & get_connectivity_(size_t domain,
+  /*!
+   Implementation of get_connectivity for various get_connectivity convenience
+   methods.
+   */
+  const connectivity_t & get_connectivity_(size_t domain,
     size_t from_dim,
     size_t to_dim) const {
       return get_connectivity_(domain, domain, from_dim, to_dim);
@@ -1098,12 +1132,6 @@ public:
       fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
   } // entities
 
-//
-//
-// We need to document these
-//
-//
-
   /*!
     Get the entities of topological dimension D connected to another entity 
     by specified connectivity from domain FM and to domain TM.
@@ -1173,28 +1201,6 @@ public:
     return id_range(c.get_entities(),
       fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
   } // entities
-
-#if 0
-  template <size_t D, size_t M, class E>
-  entity_range_t<D> entities(const E *e) {
-    return entities<D, M>(e);
-  } // entities
-
-  template <size_t D, size_t M, class E>
-  entity_range_t<D> entities(E *e) {
-    return entities<D, M>(e);
-  } // entities
-
-  template <size_t D, size_t M, class E>
-  entity_range_t<D> entities(E *e) const {
-    return entities<D, M>(e);
-  } // entities
-
-  template <size_t D, size_t M, class E>
-  decltype(auto) entities(const E *e) const {
-    return entities<D, M>(e);
-  }
-#endif
 
   /*!
     Debug method to dump the connectivity of the mesh over all domains and
