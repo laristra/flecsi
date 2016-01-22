@@ -447,9 +447,9 @@ public:
 
   // Don't allow the mesh to be copied or copy constructed
 
-  mesh_topology_t(const mesh_topology_t&) = delete;
+  mesh_topology_t(const mesh_topology_t &) = delete;
 
-  mesh_topology_t& operator=(const mesh_topology_t&) = delete;
+  mesh_topology_t &operator=(const mesh_topology_t &) = delete;
 
   //! Constructor
   mesh_topology_t() {
@@ -464,7 +464,7 @@ public:
   // upon mesh destruction
   virtual ~mesh_topology_t(){
     for (size_t d = 0; d < MT::num_domains; ++d) {
-      for (auto& ev: ms_.entities[d]) {
+      for (auto &ev: ms_.entities[d]) {
         for (auto ent: ev) {
           delete ent;
         } 
@@ -1092,7 +1092,7 @@ public:
   template<size_t D, size_t M = 0>
   auto get_entity(id_t id) const {
     using entity_type = typename find_entity_<MT, D, M>::type;
-    return static_cast<entity_type*>(ms_.entities[M][D][id]);
+    return static_cast<entity_type *>(ms_.entities[M][D][id]);
   } // get_entity
   
   /*!
@@ -1196,7 +1196,7 @@ public:
   id_range entity_ids(const E *e) const {
     const connectivity_t &c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
-    const id_vector_t& fv = c.get_from_index_vec();
+    const id_vector_t &fv = c.get_from_index_vec();
     return id_range(c.get_entities(),
       fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
   } // entities
