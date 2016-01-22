@@ -19,7 +19,7 @@ this equates to G++ 5.0 or greater.
 * Doxygen >= 1.8
 * cinch-utils 1.0
 
-cinch-utils is available [here](http://gitlab.lanl.gov/csse/cinch-utils).
+cinch-utils is available [here](https://github.com/losalamos/cinch-utils).
 
 # Developer Instructions
 
