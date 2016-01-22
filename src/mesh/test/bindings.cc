@@ -146,7 +146,6 @@ TEST(mesh_topology, traversal) {
   mesh->init<0>();
   mesh->init_bindings<1>();
 
-  /*
   for(auto cell : mesh->entities<2>()) {
     CINCH_CAPTURE() << "------- cell id: " << cell.id() << endl;
     for(auto corner : mesh->entities<1, 0, 1>(cell)) {
@@ -154,6 +153,19 @@ TEST(mesh_topology, traversal) {
     }
   }
 
+  for(auto vertex : mesh->entities<0>()) {
+    CINCH_CAPTURE() << "------- vertex id: " << vertex.id() << endl;
+    for(auto corner : mesh->entities<1, 0, 1>(vertex)) {
+      CINCH_CAPTURE() << "--- corner id: " << corner.id() << endl;
+    }
+  }
+
+  for(auto corner : mesh->entities<1, 1>()) {
+    CINCH_CAPTURE() << "------- corner id: " << corner.id() << endl;
+    for(auto cell : mesh->entities<2, 1, 0>(corner)) {
+      CINCH_CAPTURE() << "--- cell id: " << cell.id() << endl;
+    }
+  }
+
   ASSERT_TRUE(CINCH_EQUAL_BLESSED("bindings.blessed"));
-  */
 }
