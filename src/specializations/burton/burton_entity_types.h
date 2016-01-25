@@ -178,7 +178,7 @@ public:
   burton_quadrilateral_cell_t(mesh_topology_base_t & mesh)
     : burton_cell_t(mesh) {}
  
-  point_t centroid();
+  point_t centroid() override;
 
   /*!
     \brief create_entities function for burton_quadrilateral_cell_t.
