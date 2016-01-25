@@ -557,7 +557,7 @@ public:
    */
   cell_t * create_cell(std::initializer_list<vertex_t *> verts) {
     // FIXME: Add element types
-    cell_t * c = mesh_.make<quadrilateral_cell_t>();
+    cell_t * c = mesh_.make<quadrilateral_cell_t>(mesh_);
     mesh_.add_entity<dimension(), 0>(c);
 
     // FIXME: Need to make mesh interface more general

@@ -39,6 +39,16 @@ namespace flecsi {
  */
 template <typename T, size_t D> using point = dimensioned_array<T, D, 1>;
 
+template<typename T, size_t D>
+point<T,D> operator * (const T val, const point<T,D> & p) {
+  point<T,D> tmp(p);
+  for(size_t d(0); d<D; ++d) {
+    tmp[d] *= val;
+  } // for
+
+  return tmp;
+} // operator *
+
 /*!
   \function distance
  */

@@ -77,15 +77,15 @@ id_t to_global_id(size_t dim, id_t local_id){
   return (id_t(dim) << 62) | (id_t(M) << 60) | local_id;
 }
 
-id_t to_local_id(id_t global_id){
+inline id_t to_local_id(id_t global_id){
   return global_id & 0x0000ffffffffffff;
 }
 
-size_t dimension_from_global_id(id_t global_id) {
+inline size_t dimension_from_global_id(id_t global_id) {
   return global_id & (0b11ULL << 62);
 }
 
-size_t domain_from_global_id(id_t global_id) {
+inline size_t domain_from_global_id(id_t global_id) {
   return global_id & (0b11ULL << 60);
 }
 

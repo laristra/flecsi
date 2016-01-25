@@ -22,6 +22,10 @@
  */
 
 #include <array>
+#include <unordered_map>
+#include <cassert>
+#include <iostream>
+#include <vector>
 
 #include "flecsi/mesh/mesh_utils.h"
 
@@ -594,6 +598,56 @@ struct mesh_storage_t {
   std::array<id_vecs_t, NM> id_vecs;
 
 }; // struct mesh_storage_t
+
+/*----------------------------------------------------------------------------*
+ * class mesh_topology_base_t
+ *----------------------------------------------------------------------------*/
+
+/*!
+  \class mesh_topology_base_t mesh_topology.h
+  \brief contains methods and data about the mesh topology that do not depend
+    on type parameterization, e.g: entity types, domains, etc.
+ */
+
+class mesh_topology_base_t
+{
+public:
+
+  /*!
+    Return the number of entities in for a specific domain and topology dim.
+   */
+  virtual size_t num_entities(size_t domain, size_t dim) const = 0;
+
+  /*!
+    Return the topological dimension of the mesh.
+   */
+  virtual size_t topological_dimension() const = 0;
+
+  /*!
+    Get the normal (non-binding) connectivity of a domain.
+   */
+  virtual const connectivity_t & get_connectivity(size_t domain,
+    size_t from_dim, size_t to_dim) const = 0;
+
+  /*!
+    Get the normal (non-binding) connectivity of a domain.
+   */
+  virtual connectivity_t &get_connectivity(size_t domain, size_t from_dim,
+    size_t to_dim) = 0;
+
+  /*!
+    Get the binding connectivity of specified domains.
+   */
+  virtual const connectivity_t & get_connectivity(size_t from_domain,
+    size_t to_domain, size_t from_dim, size_t to_dim) const = 0;
+
+  /*!
+    Get the binding connectivity of specified domains.
+   */
+  virtual connectivity_t &get_connectivity(size_t from_domain,
+    size_t to_domain, size_t from_dim, size_t to_dim) = 0;
+
+}; // mesh_topology_base_t
 
 } // namespace flecsi
 

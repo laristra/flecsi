@@ -97,7 +97,6 @@ int32_t io_exodus_t<burton_mesh_t>::read(const std::string &name,
   std::vector<vertex_t *> vs;
   for (size_t i = 0; i < num_nodes; ++i) {
     auto v = m.create_vertex({xcoord[i], ycoord[i]});
-    v->set_rank<1>(1);
     vs.push_back(v);
   } // for
 

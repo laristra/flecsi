@@ -12,7 +12,6 @@
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
 
-#include <vector>
 #include <cinchtest.h>
 
 #include "flecsi/specializations/burton/burton.h"
@@ -41,7 +40,6 @@ protected:
     for(size_t j = 0; j < height + 1; ++j){
       for(size_t i = 0; i < width + 1; ++i){
         auto v = b.create_vertex({double(i), double(j)});
-        v->set_rank<0>(max_rank - (i + (j * width + 1)));
         vs.push_back(v);
       } // for
     } // for
@@ -97,12 +95,12 @@ TEST_F(Burton, mesh) {
     CINCH_CAPTURE() << "----------- corner id: " << c.id() << endl;
   } // for
 
-#if 0
   CINCH_CAPTURE() << separator;
   CINCH_CAPTURE() << "For each cell:" << std::endl;
   for(auto c : b.cells()) {
     CINCH_CAPTURE() << "-----------Edges for cell id: " << c.id()
-      << " with centroid " << b.centroid(c) << endl;
+      << " with centroid " << c->centroid() << endl;
+#if 0
     for(auto e : b.edges(c)){
       CINCH_CAPTURE() << "++++ edge id: " << e.id()
         << " with midpoint " << b.midpoint(e) << endl;
@@ -121,10 +119,10 @@ TEST_F(Burton, mesh) {
         }
       }
     }
+#endif
   }
 
-  CINCH_ASSERT(TRUE, CINCH_EQUAL_BLESSED("burton.blessed"));
-#endif
+  //CINCH_ASSERT(TRUE, CINCH_EQUAL_BLESSED("burton.blessed"));
 
   std::cout << CINCH_DUMP() << std::endl;
 

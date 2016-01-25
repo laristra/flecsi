@@ -22,6 +22,8 @@
  */
 
 #include <limits>
+#include <cstddef>
+#include <cstdint>
 
 namespace flecsi {
 

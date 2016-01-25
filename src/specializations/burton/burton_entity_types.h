@@ -15,7 +15,8 @@
 #ifndef flecsi_burton_entity_types_h
 #define flecsi_burton_entity_types_h
 
-#include "burton_mesh_traits.h"
+#include "flecsi/specializations/burton/burton_mesh_traits.h"
+#include "flecsi/mesh/mesh_types.h"
 
 /*!
  * \file burton_entity_types.h
@@ -36,8 +37,8 @@ namespace flecsi {
 
   \tparam N The domain of the vertex.
  */
-template<size_t N>
-class burton_vertex_t : public mesh_entity_t<0, N>
+class burton_vertex_t
+  : public mesh_entity_t<0, burton_mesh_traits_t::num_domains>
 {
 public:
 
@@ -52,29 +53,7 @@ public:
 
   //! Constructor
   burton_vertex_t(state_t & state)
-      : precedence_(0), state_(state) {}
-
-  /*!
-    \brief Set the rank for the vertex.
-
-    \tparam M FIXME
-
-    \param[in] rank Rank to give the vertex.
-   */
-  template<size_t M>
-  void set_rank(uint8_t rank) {
-    mesh_entity_t<0, N>::template set_info<M>(rank);
-  }
-
-  /*!
-    \brief Get the precedence for the vertex.
-
-    \tparam M FIXME
-   */
-  template<size_t M>
-  uint64_t precedence() const {
-    return 1 << (63 - mesh_entity_t<0, N>::template info<M>());
-  } // precedence
+      : state_(state) {}
 
   /*!
     \brief Set the coordinates for a vertex.
@@ -97,7 +76,6 @@ public:
 
 private:
 
-  uint64_t precedence_;
   state_t & state_;
 
 }; // class burton_vertex_t
@@ -130,17 +108,23 @@ class burton_wedge_t; // class burton_wedge_t
   \class burton_cell_t burton_entity_types.h
   \brief The burton_cell_t type provides an interface for managing and
     geometry and state associated with mesh cells.
-
-  \tparam N The domain of the cell.
  */
-template<size_t N>
-struct burton_cell_t : public mesh_entity_t<2, N> {
+struct burton_cell_t
+  : public mesh_entity_t<2, burton_mesh_traits_t::num_domains> {
+
+  mesh_topology_base_t & mesh_;
+
+  //! Type containing coordinates of the vertex.
+  using point_t = burton_mesh_traits_t::point_t;
 
   //! Constructor
-  burton_cell_t() {}
+  burton_cell_t(mesh_topology_base_t & mesh)
+    : mesh_(mesh) {}
 
   //! Destructor
   virtual ~burton_cell_t() {}
+
+  virtual point_t centroid() = 0;
 
   /*!
     \brief create_entities is a function that creates entities
@@ -187,15 +171,19 @@ struct burton_cell_t : public mesh_entity_t<2, N> {
   \brief The burton_quadrilateral_t type provides a derived instance of
     burton_cell_t for 2D quadrilateral cells.
  */
-template<size_t N>
-class burton_quadrilateral_cell_t : public burton_cell_t<N>
+class burton_quadrilateral_cell_t : public burton_cell_t
 {
 public:
+
+  burton_quadrilateral_cell_t(mesh_topology_base_t & mesh)
+    : burton_cell_t(mesh) {}
+ 
+  point_t centroid();
 
   /*!
     \brief create_entities function for burton_quadrilateral_cell_t.
    */
-  std::pair<size_t, std::vector<id_t>> create_entities(size_t dim,
+  inline std::pair<size_t, std::vector<id_t>> create_entities(size_t dim,
     std::vector<id_t> & e, id_t * v, size_t vertex_count) {
     
     e.resize(8);
@@ -218,7 +206,7 @@ public:
   /*!
     \brief create_bound_entities function for burton_quadrilateral_cell_t.
    */
-  std::pair<size_t, std::vector<id_t>> create_bound_entities(
+  inline std::pair<size_t, std::vector<id_t>> create_bound_entities(
     size_t from_domain, size_t to_domain, size_t dim,
     const std::vector<std::vector<id_t>> ent_ids, std::vector<id_t> & c) {
 
@@ -329,14 +317,6 @@ public:
     \return Cell facet normal vector.
    */
   vector_t cell_facet_normal();
-
-  /*!
-    \brief Set the precedence for the wedge.
-
-    \param[in] dim Topological dimension of the wedge.
-    \param[in] precedence Value of precedence to set.
-   */
-  void set_precedence(size_t dim, uint64_t precedence) {}
 
   /*!
     \brief create_entities function for burton_wedge_t.

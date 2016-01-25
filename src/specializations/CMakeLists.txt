@@ -33,9 +33,10 @@ if(ENABLE_IO)
 endif(ENABLE_IO)
 
 
-#set(specializations_SOURCES
-#  PARENT_SCOPE
-#)
+set(specializations_SOURCES
+  burton/burton_entity_types.cc
+  PARENT_SCOPE
+)
 
 cinch_add_unit(minimal
   SOURCES minimal/test/minimal.cc
@@ -44,12 +45,13 @@ cinch_add_unit(minimal
 cinch_add_unit(burton
   SOURCES burton/test/burton.cc
   INPUTS burton/test/burton.blessed
+  LIBRARIES flecsi
 )
 
 if(ENABLE_IO)
   cinch_add_unit(burton_io
     SOURCES burton/test/burton_io.cc
-    LIBRARIES ${IO_LIBRARIES}
+    LIBRARIES ${IO_LIBRARIES} flecsi
   )
 endif(ENABLE_IO)
 

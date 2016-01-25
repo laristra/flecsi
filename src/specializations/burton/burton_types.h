@@ -53,17 +53,17 @@ struct burton_mesh_types_t {
    *--------------------------------------------------------------------------*/
 
   //! Type for burton mesh vertices.
-  using vertex_t = burton_vertex_t<num_domains>;
+  using vertex_t = burton_vertex_t;
 
   //! Type for burton mesh edges.
   using edge_t = burton_edge_t<num_domains>;
 
   // Cell types
   //! Type for burton mesh cells.
-  using cell_t = burton_cell_t<num_domains>;
+  using cell_t = burton_cell_t;
 
   //! Type for burton mesh quadrilateral cells.
-  using quadrilateral_cell_t = burton_quadrilateral_cell_t<num_domains>;
+  using quadrilateral_cell_t = burton_quadrilateral_cell_t;
 
   //using wedge_t = burton_wedge_t<num_domains>;
 

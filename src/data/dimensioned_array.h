@@ -17,6 +17,7 @@
 
 #include <array>
 #include <cmath>
+#include <ostream>
 
 #include "../utils/common.h"
 
