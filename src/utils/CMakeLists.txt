@@ -16,6 +16,7 @@ set(utils_HEADERS
   dummy.h
   check_types.h
   static_for.h     detail/static_for.h
+  static_list.h
   tuple_for_each.h detail/tuple_for_each.h
   tuple_visit.h    detail/tuple_visit.h
   tuple_zip.h      detail/tuple_zip.h
@@ -43,6 +44,9 @@ cinch_add_unit(zip
 
 cinch_add_unit(static_for
   SOURCES test/static_for.cc)
+
+cinch_add_unit(static_list
+  SOURCES test/static_list.cc)
 
 cinch_add_unit(tuple_for_each
   SOURCES test/tuple_for_each.cc)
