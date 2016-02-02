@@ -634,44 +634,6 @@ public:
     mesh_.init_bindings<1>();
   } // init
 
-  /*!
-    \brief Get the centroid of a cell.
-    
-    \param[in] cell The cell to return the centroid for.
-
-    \return The centroid.
-
-    FIXME : This doesn't do anything.
-    FIXME : need const iterator for entity group!!!
-    point_t centroid(const cell_t *c) const {
-
-  */
-  point_t centroid(cell_t * c) {
-    auto vs = mesh_.entities<0,0>(c).to_vec();
-
-    std::vector<point_t> pts(vs.size());
-
-    point_t tmp(0.0);
-    for(auto v: vs) {
-      tmp += v->coordinates();
-    } // for
-
-    //return c->centroid(vs);
-    return tmp/vs.size();
-  }
-
-  /*!
-    \brief Compute the midpoint of an edge.
-
-    \param[in] e The edge to return the midpoint for.
-
-    \return The midpoint of the edge.
-  */
-  point_t midpoint(const edge_t * e) const {
-    auto vs = mesh_.entities<0,0>(e).to_vec();
-    return point_t(flecsi::midpoint(vs[0]->coordinates(),vs[1]->coordinates()));
-  }
-
 private:
 
   private_mesh_t mesh_;

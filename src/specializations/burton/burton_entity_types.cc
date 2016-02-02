@@ -19,6 +19,22 @@ namespace flecsi {
 
 using point_t = burton_cell_t::point_t;
 
+/*----------------------------------------------------------------------------*
+ * burton_edge_t
+ *----------------------------------------------------------------------------*/
+
+point_t burton_edge_t::midpoint()
+  {
+    auto & mesh = static_cast<mesh_topology_t<burton_mesh_types_t> &>(mesh_);
+    auto vs = mesh.entities<0,0>(this).to_vec();
+
+    return point_t{0.5*(vs[0]->coordinates() + vs[1]->coordinates())};
+  } // burton_edge_t::midpoint
+
+/*----------------------------------------------------------------------------*
+ * burton_quadrilateral_cell_t
+ *----------------------------------------------------------------------------*/
+
 point_t burton_quadrilateral_cell_t::centroid()
   {
     auto & mesh = static_cast<mesh_topology_t<burton_mesh_types_t> &>(mesh_);

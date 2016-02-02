@@ -94,10 +94,15 @@ private:
 struct burton_edge_t
   : public mesh_entity_t<1, burton_mesh_traits_t::num_domains> {
   
+  //! Type containing coordinates of the vertex.
+  using point_t = burton_mesh_traits_t::point_t;
+
   mesh_topology_base_t & mesh_;
 
   burton_edge_t(mesh_topology_base_t & mesh)
     : mesh_(mesh) {}
+
+  point_t midpoint();
 
 }; // struct burton_edge_t
 

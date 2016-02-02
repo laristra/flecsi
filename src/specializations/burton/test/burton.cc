@@ -85,7 +85,7 @@ TEST_F(Burton, mesh) {
   CINCH_CAPTURE() << "Edges in mesh:" << std::endl;
   for(auto e : b.edges()){
     CINCH_CAPTURE() << "----------- edge id: " << e.id()
-      << " with midpoint " << b.midpoint(e) << endl;
+      << " with midpoint " << e->midpoint() << endl;
   }
 
   CINCH_CAPTURE() << separator;
