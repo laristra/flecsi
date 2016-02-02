@@ -215,7 +215,7 @@ public:
      */
     domain_entity_vector_t to_vec() const {
       domain_entity_vector_t ret;
-      for (size_t i = begin_; i < end_; ++i){
+      for (size_t i = begin_; i < end_; ++i) {
         ret.push_back(mesh_.get_entity<D>(v_[i]));
       } // for
 
@@ -412,7 +412,7 @@ public:
 
   // The mesh retains ownership of the entities and deletes them
   // upon mesh destruction
-  virtual ~mesh_topology_t(){
+  virtual ~mesh_topology_t() {
     for (size_t d = 0; d < MT::num_domains; ++d) {
       for (auto &ev: ms_.entities[d]) {
         for (auto ent: ev) {
@@ -765,12 +765,11 @@ public:
     } // if
 
     if (FD < TD) {
-      //build_bindings<TM, FM, FD>();
       transpose<FM, TM, FD, TD>();
       return;
     }
 
-    if (ms_.entities[TM][TD].empty()){
+    if (ms_.entities[TM][TD].empty()) {
       build_bindings<FM, TM, TD>();      
     }
 
