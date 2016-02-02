@@ -82,11 +82,11 @@ inline id_t to_local_id(id_t global_id){
 }
 
 inline size_t dimension_from_global_id(id_t global_id) {
-  return global_id & (0b11ULL << 62);
+  return global_id >> 62;
 }
 
 inline size_t domain_from_global_id(id_t global_id) {
-  return global_id & (0b11ULL << 60);
+  return (global_id >> 60) & 0b11;
 }
 
 /*----------------------------------------------------------------------------*
@@ -187,7 +187,7 @@ struct compute_connectivity_ {
   template<class M>
   static int compute(M & mesh) {
     static constexpr size_t size = std::tuple_size<TS>::value;
-    
+
     using T = typename std::tuple_element<size - I, TS>::type;
     using D1 = typename std::tuple_element<0, T>::type;
     using T1 = typename std::tuple_element<1, T>::type;

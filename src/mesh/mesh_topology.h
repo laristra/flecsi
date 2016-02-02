@@ -583,7 +583,7 @@ public:
    */
   template<size_t FM, size_t TM, size_t FD, size_t TD>
   void transpose() {
-    //std::cerr << "transpose: " << fromDim << " -> " << toDim << std::endl;
+    //std::cerr << "transpose: " << from_dim << " -> " << to_dim << std::endl;
 
     index_vector_t pos(num_entities_(FM, FD), 0);
 
@@ -612,7 +612,7 @@ public:
    */
   template<size_t FM, size_t TM, size_t FD, size_t TD, size_t D>
   void intersect() {
-    //std::cerr << "intersect: " << fromDim << " -> " << toDim << std::endl;
+    //std::cerr << "intersect: " << from_dim << " -> " << to_dim << std::endl;
 
     // The connectivity we will be populating
     connectivity_t &out_conn = get_connectivity_(FM, TM, FD, TD);
@@ -782,6 +782,8 @@ public:
    */
   template<size_t FM, size_t TM, size_t TD>
   void build_bindings() {
+    constexpr size_t face_dim = 
+      MT::dimension > 2 ? MT::dimension - 1 : std::numeric_limits<size_t>::max();
 
     // Sanity check
     static_assert(TD <= MT::dimension, "invalid dimension");
@@ -803,8 +805,9 @@ public:
 
     static constexpr size_t M0 = 0;
 
-    connectivity_t & entity_vertex_conn = get_connectivity_(TM, FM, TD, 0);
-    entity_vertex_conn.init();
+    for(size_t i = 0; i < MT::dimension; ++i){
+      get_connectivity_<TM, FM, TD>(i).init();
+    }
 
     // Iterate over cells
     for (auto c: cells) {
@@ -863,15 +866,38 @@ public:
 
         // Increment
         if (itr.second) {
+          uint32_t dim_flags = 0;
+
           for (size_t k = 0; k < m; ++k) {
             id_t global_id = entity_ids[pos + k];
 
-            if (dimension_from_global_id(global_id) == 0) {
-              entity_vertex_conn.push(to_local_id(global_id));
-            } // if
+            size_t dim = dimension_from_global_id(global_id);
+
+            switch(dim){
+              case 0:
+                get_connectivity_<TM, FM, TD>(0).push(to_local_id(global_id));
+                dim_flags |= 0b001;
+                break;
+              case 1:
+                get_connectivity_<TM, FM, TD>(1).push(to_local_id(global_id));
+                dim_flags |= 0b010;
+                break;
+              case face_dim:
+                get_connectivity_<TM, FM, TD>(face_dim).push(to_local_id(global_id));
+                dim_flags |= 0b100;
+                break;
+              case MT::dimension:
+                break;
+              default:
+                assert(false && "invalid topological dimension");
+            }
           }
 
-          entity_vertex_conn.end_from();
+          for(size_t i = 0; i < MT::dimension; ++i){
+            if(dim_flags & (1U << i)){
+              get_connectivity_<TM, FM, TD>(i).end_from();
+            }            
+          }
 
           max_cell_conns =
             std::max(max_cell_conns, cell_conn[cell_id].size());
@@ -976,9 +1002,9 @@ public:
     size_t from_dim,
     size_t to_dim) const {
     assert(from_dim < ms_.topology[from_domain][to_domain].size() &&
-      "invalid fromDim");
+      "invalid from_dim");
     auto & t = ms_.topology[from_domain][to_domain][from_dim];
-    assert(to_dim < t.size() && "invalid toDim");
+    assert(to_dim < t.size() && "invalid to_dim");
     return t[to_dim];
   } // get_connectivity
 
@@ -991,9 +1017,22 @@ public:
     size_t from_dim,
     size_t to_dim) {
     assert(from_dim < ms_.topology[from_domain][to_domain].size() &&
-      "invalid fromDim");
+      "invalid from_dim");
     auto & t = ms_.topology[from_domain][to_domain][from_dim];
-    assert(to_dim < t.size() && "invalid toDim");
+    assert(to_dim < t.size() && "invalid to_dim");
+    return t[to_dim];
+  } // get_connectivity
+
+  /*!
+   Implementation of get_connectivity for various get_connectivity convenience
+   methods.
+   */
+  template<size_t FM, size_t TM, size_t FD>
+  connectivity_t & get_connectivity_(size_t to_dim) {
+    assert(FD < ms_.topology[FM][TM].size() &&
+      "invalid from_dim");
+    auto & t = ms_.topology[FM][TM][FD];
+    assert(to_dim < t.size() && "invalid to_dim");
     return t[to_dim];
   } // get_connectivity
 
