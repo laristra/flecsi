@@ -40,6 +40,8 @@ class minimal_edge_t
 {
 public:
 
+  minimal_edge_t(mesh_topology_base_t & mesh) {}
+
 }; // class minimal_edge_t
 
 class minimal_face_t
@@ -53,6 +55,8 @@ class minimal_cell_t
   : public mesh_entity_t<3, minimal_mesh_traits_t::num_domains>
 {
 public:
+
+  minimal_cell_t(mesh_topology_base_t & mesh) {}
 
   std::pair<size_t, std::vector<size_t>> create_entities(size_t dimension,
     std::vector<id_t> & entities, id_t * vertices, size_t vertex_count) {

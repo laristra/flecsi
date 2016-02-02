@@ -91,13 +91,18 @@ private:
 
   \tparam N The domain of the edge.
  */
-template<size_t N>
-struct burton_edge_t : public mesh_entity_t<1, N> {}; // struct burton_edge_t
+struct burton_edge_t
+  : public mesh_entity_t<1, burton_mesh_traits_t::num_domains> {
+  
+  mesh_topology_base_t & mesh_;
 
-template<size_t N>
+  burton_edge_t(mesh_topology_base_t & mesh)
+    : mesh_(mesh) {}
+
+}; // struct burton_edge_t
+
 class burton_corner_t; // class burton_corner_t
 
-template<size_t N>
 class burton_wedge_t; // class burton_wedge_t
 
 /*----------------------------------------------------------------------------*
@@ -293,18 +298,19 @@ public:
 
   \tparam N The domain of the wedge.
  */
-template<size_t N>
-class burton_wedge_t : public mesh_entity_t<2, N> {
+class burton_wedge_t
+  : public mesh_entity_t<2, burton_mesh_traits_t::num_domains>
+{
 public:
 
   //! Physics vector type.
   using vector_t = burton_mesh_traits_t::vector_t;
 
   //! Set the corner that a wedge is in.
-  void set_corner(burton_corner_t<N> *corner) { corner_ = corner; }
+  void set_corner(burton_corner_t *corner) { corner_ = corner; }
 
   //! Get the corner that a wedge is in.
-  burton_corner_t<N> *corner() { return corner_; }
+  burton_corner_t *corner() { return corner_; }
 
   /*!
     \brief Get the side facet normal for the wedge.
@@ -339,7 +345,7 @@ public:
 
 private:
 
-  burton_corner_t<N> *corner_;
+  burton_corner_t * corner_;
 
 }; // struct burton_wedge_t
 
@@ -354,15 +360,21 @@ private:
 
   \tparam N The domain of the corner.
  */
-template<size_t N>
-class burton_corner_t : public mesh_entity_t<1, N> {
+class burton_corner_t
+  : public mesh_entity_t<1, burton_mesh_traits_t::num_domains> {
 public:
+
+  mesh_topology_base_t & mesh_;
+
+  burton_corner_t(mesh_topology_base_t & mesh)
+    : mesh_(mesh) {}
+
   /*!
     \brief Add a wedge to the mesh.
 
     \param[in] w The wedge to add to the mesh.
    */
-  void add_wedge(burton_wedge_t<N> *w) {
+  void add_wedge(burton_wedge_t *w) {
     wedges_.add(w);
     w->set_corner(this);
   }
@@ -371,10 +383,10 @@ public:
     \brief Get the wedges for the mesh.
     \return The wedges in the mesh.
    */
-  entity_group<burton_wedge_t<N>> &wedges() { return wedges_; } // wedges
+  entity_group<burton_wedge_t> &wedges() { return wedges_; } // wedges
 
 private:
-  entity_group<burton_wedge_t<N>> wedges_;
+  entity_group<burton_wedge_t> wedges_;
 
 }; // class burton_corner_t
 

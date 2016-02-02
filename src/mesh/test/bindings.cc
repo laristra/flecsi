@@ -15,7 +15,7 @@ public:
 
 class Edge : public mesh_entity_t<1, 2>{
 public:
-
+	Edge(mesh_topology_base_t & mesh) {}
 };
 
 class Cell : public mesh_entity_t<2, 2>{
@@ -83,7 +83,7 @@ public:
 
 class Corner : public mesh_entity_t<1, 2>{
 public:
-
+	Corner(mesh_topology_base_t & mesh) {}
 };
 
 class TestMesh2dType{

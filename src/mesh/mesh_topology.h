@@ -568,7 +568,7 @@ public:
     // This call will create the entity objects in the mesh (The above
     // logic only defines the indices and connectivity.)
     cell_to_entity.init_create<MT, M>(ms_.id_vecs[M][D], ms_.entities[M][D],
-      cell_entity_conn, D);
+      cell_entity_conn, D, *this);
     
     // Set the connectivity information from the created entities to
     // the vertices.
@@ -914,7 +914,7 @@ public:
     if (ms_.entities[TM][TD].empty()) {
       // Create the entity objects
       cell_out.init_create<MT, TM>(ms_.id_vecs[TM][TD], ms_.entities[TM][TD],
-        cell_conn, TD);      
+        cell_conn, TD, *this);      
     }
     else {
       cell_out.init(cell_conn);   

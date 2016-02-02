@@ -56,7 +56,7 @@ struct burton_mesh_types_t {
   using vertex_t = burton_vertex_t;
 
   //! Type for burton mesh edges.
-  using edge_t = burton_edge_t<num_domains>;
+  using edge_t = burton_edge_t;
 
   // Cell types
   //! Type for burton mesh cells.
@@ -68,7 +68,7 @@ struct burton_mesh_types_t {
   //using wedge_t = burton_wedge_t<num_domains>;
 
   //! Type for burton mesh corners.
-  using corner_t = burton_corner_t<num_domains>;
+  using corner_t = burton_corner_t;
 
   /*--------------------------------------------------------------------------*
    * Specify mesh parameterizations.

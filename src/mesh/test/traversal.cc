@@ -15,7 +15,7 @@ public:
 
 class Edge : public mesh_entity_t<1, 1>{
 public:
-
+	Edge(mesh_topology_base_t & mesh) {}
 };
 
 class Face : public mesh_entity_t<1, 1>{

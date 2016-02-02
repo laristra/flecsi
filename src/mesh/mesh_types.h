@@ -76,6 +76,8 @@ using index_vector_t = std::vector<size_t>;
  * class mesh_entity_base_t
  *----------------------------------------------------------------------------*/
 
+class mesh_topology_base_t;
+
 /*!
   \class mesh_entity_base_t mesh_types.h
   \brief mesh_entity_base_t defines a base class that stores the raw info that
@@ -118,12 +120,14 @@ public:
   } // get_dim_
 
   template<class MT, size_t M>
-  static mesh_entity_base_t * create_(size_t dim, size_t id) {
+  static mesh_entity_base_t * create_(size_t dim, size_t id,
+    mesh_topology_base_t & mesh) {
     switch (dim) {
+    // FIXME: switch is probably unnecessary...
     case 1: {
       using entity_type = 
         typename find_entity_<MT, get_dim_(MT::dimension, 1), M>::type;
-      auto entity = new entity_type;
+      auto entity = new entity_type(mesh);
       entity->ids_[M] = id;
       return entity;
     }
@@ -392,7 +396,7 @@ public:
    */
   template <class MT, size_t M, size_t N>
   void init_create(id_vector_t & iv, entity_vector_t<N> & ev,
-    const connection_vector_t & cv, size_t dim) {
+    const connection_vector_t & cv, size_t dim, mesh_topology_base_t & mesh) {
     assert(to_id_vec_.empty() && from_index_vec_.empty());
 
     // the first offset is always 0
@@ -420,7 +424,8 @@ public:
     ev.reserve(maxId + 1);
 
     for(id_t id = startId; id <= maxId; ++id){
-      ev.push_back(mesh_entity_base_t<N>::template create_<MT, M>(dim, id));
+      ev.push_back(mesh_entity_base_t<N>::template create_<MT, M>(
+        dim, id, mesh));
       iv.push_back(id);
     } // for
   } // init_create
