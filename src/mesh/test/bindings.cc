@@ -111,7 +111,8 @@ public:
               std::tuple<domain_<0>, domain_<1>, Cell, Corner>,
               std::tuple<domain_<0>, domain_<1>, Vertex, Corner>,
               std::tuple<domain_<1>, domain_<0>, Corner, Cell>,
-              std::tuple<domain_<1>, domain_<0>, Corner, Edge>>;
+              std::tuple<domain_<1>, domain_<0>, Corner, Edge>,
+              std::tuple<domain_<1>, domain_<0>, Corner, Vertex>>;
 };
 
 using TestMesh = mesh_topology_t<TestMesh2dType>;
@@ -182,6 +183,13 @@ TEST(mesh_topology, traversal) {
     CINCH_CAPTURE() << "------- corner id: " << corner.id() << endl;
     for(auto edge : mesh->entities<1, 1, 0>(corner)) {
       CINCH_CAPTURE() << "--- edge id: " << edge.id() << endl;
+    }
+  }
+
+  for(auto corner : mesh->entities<1, 1>()) {
+    CINCH_CAPTURE() << "------- corner id: " << corner.id() << endl;
+    for(auto vertex : mesh->entities<0, 1, 0>(corner)) {
+      CINCH_CAPTURE() << "--- vertex id: " << vertex.id() << endl;
     }
   }
 
