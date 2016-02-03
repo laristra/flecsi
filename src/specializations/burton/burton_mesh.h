@@ -632,6 +632,11 @@ public:
   void init() {
     mesh_.init<0>();
     mesh_.init_bindings<1>();
+
+    // Create wedges
+    for(auto c: mesh_.entities<1,1>()) {
+      // FIXME...
+    } // for
   } // init
 
 private:
