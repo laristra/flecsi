@@ -448,11 +448,10 @@ public:
     std::initializer_list<entity_type<0, M> *> verts) {
     auto &c = get_connectivity_(M, MT::dimension, 0);
 
-    assert(to_local_id(cell->template id<M>()) == 
-           c.from_size() && "id mismatch");
+    assert(cell->template id<M>() == c.from_size() && "id mismatch");
 
     for (entity_type<0, M> *v: verts) {
-      c.push(v->template id<M>());
+      c.push(v->template global_id<M>());
     } // for
 
     c.end_from();
@@ -607,7 +606,7 @@ public:
       for (id_t from_id: entity_ids<FD, TM, FM>(to_entity)) {
         id_t from_local_id = to_local_id(from_id);
         out_conn.set(from_local_id,
-                     to_entity->template id<TM>(), pos[from_local_id]++);
+                     to_entity->template global_id<TM>(), pos[from_local_id]++);
       }
     }
   } // transpose
@@ -648,7 +647,7 @@ public:
 
     // Iterate through entities in from topological dimension
     for (auto from_entity: entities<FD, FM>()) {
-      id_t from_id = from_entity->template id<FM>();
+      id_t from_id = from_entity->template global_id<FM>();
       id_t local_from_id = to_local_id(from_id);
       id_vector_t &ents = conns[local_from_id];
       ents.reserve(max_size);
@@ -824,7 +823,7 @@ public:
     for (auto c: cells) {
       // Get a cell object.
       auto cell = static_cast<entity_type<MT::dimension, M0> *>(c);
-      id_t cell_id = cell->template id<FM>();
+      id_t cell_id = cell->template global_id<FM>();
       id_t local_cell_id = to_local_id(cell_id);
 
       primal_ids[MT::dimension] = &cell_id;
@@ -1117,7 +1116,7 @@ public:
     assert(!c.empty() && "empty connectivity");
     const id_vector_t &fv = c.get_from_index_vec();
     return entity_range_t<D, TM>(*this, c.get_entities(),
-      fv[e->template local_id<FM>()], fv[e->template local_id<FM>() + 1]);
+      fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
   } // entities
 
   /*!
@@ -1187,7 +1186,7 @@ public:
     assert(!c.empty() && "empty connectivity");
     const id_vector_t &fv = c.get_from_index_vec();
     return id_range(c.get_entities(),
-      fv[e->template local_id<FM>()], fv[e->template local_id<FM>() + 1]);
+      fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
   } // entities
 
   /*!

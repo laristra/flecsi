@@ -100,12 +100,12 @@ public:
    */
 
   template<size_t M>
-  id_t id() const {
+  id_t global_id() const {
     return ids_[M];
   } // id
 
   template<size_t M>
-  id_t local_id() const {
+  id_t id() const {
     return to_local_id(ids_[M]);
   } // id
 
@@ -234,15 +234,15 @@ public:
   }
 
   operator id_t() {
-    return entity_->template local_id<M>();
-  }
-
-  id_t global_id() {
     return entity_->template id<M>();
   }
 
+  id_t global_id() {
+    return entity_->template global_id<M>();
+  }
+
   id_t id() {
-    return entity_->template local_id<M>();
+    return entity_->template id<M>();
   }
 
   bool operator==(domain_entity e) const {
@@ -568,7 +568,7 @@ public:
       uint64_t m = conn.size();
 
       for (size_t j = 0; j < m; ++j) {
-        to_id_vec_.push_back(ev[conn[j]]->template id<M>());
+        to_id_vec_.push_back(ev[conn[j]]->template global_id<M>());
       }
     }
   }
