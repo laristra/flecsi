@@ -128,9 +128,13 @@ TEST(mesh_topology, traversal) {
 
   mesh->init<0>();
 
+/*
   for(auto cell : mesh->entities<2>()) {
     cell->traverse();
   }
+*/
+
+  //mesh->dump();
 
   CINCH_CAPTURE() << "------------- forall cells, vertices" << endl;
 

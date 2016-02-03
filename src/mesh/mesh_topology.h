@@ -426,11 +426,14 @@ public:
   template<size_t D, size_t M = 0>
   void add_entity(mesh_entity_base_t<MT::num_domains> * ent) {
     auto &ents = ms_.entities[M][D];
-    ent->ids_[M] = ents.size();
+    
+    id_t global_id = to_global_id<D, M>(ents.size());
+
+    ent->ids_[M] = global_id;
     ents.push_back(ent);
 
-    auto &idVec = ms_.id_vecs[M][D];
-    idVec.push_back(idVec.size());
+    auto &id_vec = ms_.id_vecs[M][D];
+    id_vec.push_back(global_id);
   } // add_entity
 
   // A mesh is constructed by creating cells and vertices and associating
@@ -445,7 +448,8 @@ public:
     std::initializer_list<entity_type<0, M> *> verts) {
     auto &c = get_connectivity_(M, MT::dimension, 0);
 
-    assert(cell->template id<M>() == c.from_size() && "id mismatch");
+    assert(to_local_id(cell->template id<M>()) == 
+           c.from_size() && "id mismatch");
 
     for (entity_type<0, M> *v: verts) {
       c.push(v->template id<M>());
@@ -470,7 +474,7 @@ public:
    */
   template<size_t M, size_t D>
   void build_connectivity() {
-    // std::cerr << "build: " << dim << std::endl;
+    //std::cerr << "build: " << D << std::endl;
 
     // Sanity check
     assert(D <= MT::dimension);
@@ -482,7 +486,7 @@ public:
     connection_vector_t entity_vertex_conn;
 
     // Helper variables
-    size_t entity_id = 0;
+    id_t entity_id = 0;
     size_t max_cell_entity_conns = 1;
 
     // Get connectivity for cells to vertices.
@@ -545,7 +549,8 @@ public:
         std::sort(ev.begin(), ev.end());
 
         // Emplace the sorted vertices into the entity map
-        auto itr = entity_vertices_map.emplace(std::move(ev), entity_id);
+        auto itr = 
+          entity_vertices_map.emplace(std::move(ev), to_global_id<D, M>(entity_id));
         
         // Add this id to the cell to entity connections
         conns.push_back(itr.first->second);
@@ -589,7 +594,7 @@ public:
 
     for (auto to_entity: entities<TD, TM>()) {
       for (id_t from_id: entity_ids<FD, TM, FM>(to_entity)) {
-        ++pos[from_id];
+        ++pos[to_local_id(from_id)];
       }
     }
 
@@ -600,7 +605,9 @@ public:
 
     for (auto to_entity: entities<TD, TM>()) {
       for (id_t from_id: entity_ids<FD, TM, FM>(to_entity)) {
-        out_conn.set(from_id, to_entity->template id<TM>(), pos[from_id]++);
+        id_t from_local_id = to_local_id(from_id);
+        out_conn.set(from_local_id,
+                     to_entity->template id<TM>(), pos[from_local_id]++);
       }
     }
   } // transpose
@@ -642,11 +649,12 @@ public:
     // Iterate through entities in from topological dimension
     for (auto from_entity: entities<FD, FM>()) {
       id_t from_id = from_entity->template id<FM>();
-      id_vector_t &ents = conns[from_id];
+      id_t local_from_id = to_local_id(from_id);
+      id_vector_t &ents = conns[local_from_id];
       ents.reserve(max_size);
 
       size_t count;
-      id_t *ep = c.get_entities(from_id, count);
+      id_t *ep = c.get_entities(local_from_id, count);
 
       std::copy(ep, ep + count, from_verts.begin());
 
@@ -656,20 +664,21 @@ public:
       // initially set all to id's to unvisited
       for (auto from_ent2: entities<D, FM>(from_entity)) {
         for (id_t to_id: entity_ids<TD, TM>(from_ent2)) {
-          visited[to_id] = false;
+          visited[to_local_id(to_id)] = false;
         }
       }
 
       // Loop through each from entity again
       for (auto from_ent2: entities<D, FM>(from_entity)) {
         for (id_t to_id: entity_ids<TD, TM>(from_ent2)) {
+          id_t local_to_id = to_local_id(to_id);
 
           // If we have already visited, skip
-          if (visited[to_id]) {
+          if (visited[local_to_id]) {
             continue;
           } // if
 
-          visited[to_id] = true;
+          visited[local_to_id] = true;
 
           // If the topological dimensions are the same, always add to id
           if (FD == TD) {
@@ -679,7 +688,7 @@ public:
           }
           else {
             size_t count;
-            id_t *ep = c2.get_entities(to_id, count);
+            id_t *ep = c2.get_entities(local_to_id, count);
 
             // Create a copy of to vertices so they can be sorted
             std::copy(ep, ep + count, to_verts.begin());
@@ -809,44 +818,35 @@ public:
       get_connectivity_<TM, FM, TD>(i).init();
     }
 
+    std::array<id_t *, MT::dimension + 1> primal_ids;
+
     // Iterate over cells
     for (auto c: cells) {
-
       // Get a cell object.
       auto cell = static_cast<entity_type<MT::dimension, M0> *>(c);
-      const size_t cell_id = cell->template id<FM>();
+      id_t cell_id = cell->template id<FM>();
+      id_t local_cell_id = to_local_id(cell_id);
+
+      primal_ids[MT::dimension] = &cell_id;
 
       // Get ids of entities with at least this dimension
-      connection_vector_t primal_ids(MT::dimension+1);
-      for (size_t dim(0); dim<MT::dimension; ++dim) {
-
-        // Get domain 0 mesh connectivity information
-        connectivity_t & conn = get_connectivity_(FM, MT::dimension, dim);
-
-        size_t count;
-        id_t * ids = conn.get_entities(cell_id, count);
-
-        for (size_t i(0); i<count; ++i) {
-          primal_ids[dim].push_back(to_global_id<FM>(dim, ids[i]));
-        } // for
+      for (size_t dim = 0; dim < MT::dimension; ++dim) {
+        primal_ids[dim] = 
+          get_connectivity_<FM, FM, MT::dimension>(dim).get_entities(local_cell_id);
       } // for
-
-      // Add the cell id
-      primal_ids[MT::dimension].push_back(
-        to_global_id<FM>(MT::dimension, cell_id));
 
       // p.first:   The number of entities per cell.
       // p.second:  A std::vector of id_t containing the ids of the
       //            entities that define the bound entity.
       id_vector_t entity_ids;
       auto p = cell->create_bound_entities(FM, TM,
-                                           TD, primal_ids, entity_ids);
+                                           TD, primal_ids.data(), entity_ids);
 
       // Iterate over the newly-defined entities
-      id_vector_t & conns = cell_conn[cell_id];
+      id_vector_t & conns = cell_conn[local_cell_id];
       size_t pos = 0;
 
-      for (size_t i(0); i<p.first; ++i) {
+      for (size_t i = 0; i < p.first; ++i) {
 
         // Get the id range for this entity
         id_t * a = &entity_ids[i * p.second[i]];        
@@ -857,7 +857,8 @@ public:
 
         // Emplace will only create a new entry if it doesn't
         // already exist.
-        auto itr = entity_ids_map.emplace(std::move(ev), entity_id);
+        auto itr =
+          entity_ids_map.emplace(std::move(ev), to_global_id<TD, TM>(entity_id));
 
         // Add this id to the cell entity connections
         conns.push_back(itr.first->second);
@@ -875,15 +876,15 @@ public:
 
             switch(dim){
               case 0:
-                get_connectivity_<TM, FM, TD>(0).push(to_local_id(global_id));
+                get_connectivity_<TM, FM, TD>(0).push(global_id);
                 dim_flags |= 0b001;
                 break;
               case 1:
-                get_connectivity_<TM, FM, TD>(1).push(to_local_id(global_id));
+                get_connectivity_<TM, FM, TD>(1).push(global_id);
                 dim_flags |= 0b010;
                 break;
               case face_dim:
-                get_connectivity_<TM, FM, TD>(face_dim).push(to_local_id(global_id));
+                get_connectivity_<TM, FM, TD>(face_dim).push(global_id);
                 dim_flags |= 0b100;
                 break;
               case MT::dimension:
@@ -900,7 +901,7 @@ public:
           }
 
           max_cell_conns =
-            std::max(max_cell_conns, cell_conn[cell_id].size());
+            std::max(max_cell_conns, cell_conn[local_cell_id].size());
           ++entity_id;
         } // if
 
@@ -1078,17 +1079,17 @@ public:
     Get an entity in domain M of topological dimension D with specified id.
   */
   template<size_t D, size_t M = 0>
-  auto get_entity(id_t id) const {
+  auto get_entity(id_t global_id) const {
     using entity_type = typename find_entity_<MT, D, M>::type;
-    return static_cast<entity_type *>(ms_.entities[M][D][id]);
+    return static_cast<entity_type *>(ms_.entities[M][D][to_local_id(global_id)]);
   } // get_entity
   
   /*!
     Get an entity in domain M of topological dimension D with specified id.
   */
   template<size_t M = 0>
-  auto get_entity(size_t dim, id_t id) {
-    return ms_.entities[M][dim][id];
+  auto get_entity(size_t dim, id_t global_id) {
+    return ms_.entities[M][dim][to_local_id(global_id)];
   } // get_entity
 
   /*!
@@ -1116,7 +1117,7 @@ public:
     assert(!c.empty() && "empty connectivity");
     const id_vector_t &fv = c.get_from_index_vec();
     return entity_range_t<D, TM>(*this, c.get_entities(),
-      fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
+      fv[e->template local_id<FM>()], fv[e->template local_id<FM>() + 1]);
   } // entities
 
   /*!
@@ -1186,7 +1187,7 @@ public:
     assert(!c.empty() && "empty connectivity");
     const id_vector_t &fv = c.get_from_index_vec();
     return id_range(c.get_entities(),
-      fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
+      fv[e->template local_id<FM>()], fv[e->template local_id<FM>() + 1]);
   } // entities
 
   /*!

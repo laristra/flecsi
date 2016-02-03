@@ -15,7 +15,7 @@ public:
 
 class Edge : public mesh_entity_t<1, 2>{
 public:
-	Edge(mesh_topology_base_t & mesh) {}
+  Edge(mesh_topology_base_t &){}
 };
 
 class Cell : public mesh_entity_t<2, 2>{
@@ -47,8 +47,8 @@ public:
   create_bound_entities(size_t from_domain,
                         size_t to_domain,
                         size_t create_dim,
-    const std::vector<std::vector<flecsi::id_t>> ent_ids,
-    std::vector<flecsi::id_t> & c) {
+                        flecsi::id_t **ent_ids,
+                        std::vector<flecsi::id_t> & c) {
     
     switch(create_dim) {
       case 1:
@@ -83,7 +83,7 @@ public:
 
 class Corner : public mesh_entity_t<1, 2>{
 public:
-	Corner(mesh_topology_base_t & mesh) {}
+  Corner(mesh_topology_base_t &){}
 };
 
 class TestMesh2dType{
@@ -155,8 +155,6 @@ TEST(mesh_topology, traversal) {
 
   mesh->init<0>();
   mesh->init_bindings<1>();
-
-  mesh->dump();
 
   for(auto cell : mesh->entities<2>()) {
     CINCH_CAPTURE() << "------- cell id: " << cell.id() << endl;

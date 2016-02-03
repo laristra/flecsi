@@ -62,7 +62,7 @@ public:
    */
   void set_coordinates(const point_t &coordinates) {
     auto c = state_.accessor<point_t,flecsi_internal>("coordinates");
-    c[mesh_entity_base_t<num_domains>::template id<0>()] = coordinates;
+    c[mesh_entity_base_t<num_domains>::template local_id<0>()] = coordinates;
   } // set_coordinates
 
   /*!
@@ -71,7 +71,7 @@ public:
    */
   const point_t & coordinates() const {
     const auto c = state_.accessor<point_t,flecsi_internal>("coordinates");
-    return c[mesh_entity_base_t<num_domains>::template id<0>()];
+    return c[mesh_entity_base_t<num_domains>::template local_id<0>()];
   } // coordinates
 
 private:
@@ -167,7 +167,7 @@ struct burton_cell_t
    */
   virtual std::pair<size_t, std::vector<id_t>> create_bound_entities(
     size_t from_domain, size_t to_domain,
-    size_t dim, const std::vector<std::vector<id_t>> ent_ids,
+    size_t dim, id_t **ent_ids,
     std::vector<id_t> & c) = 0;
 
 }; // class burton_cell_t
@@ -218,7 +218,7 @@ public:
    */
   inline std::pair<size_t, std::vector<id_t>> create_bound_entities(
     size_t from_domain, size_t to_domain, size_t dim,
-    const std::vector<std::vector<id_t>> ent_ids, std::vector<id_t> & c) {
+    id_t **ent_ids, std::vector<id_t> & c) {
 
     switch(dim) {
       // Corners
