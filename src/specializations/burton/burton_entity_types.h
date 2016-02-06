@@ -167,7 +167,7 @@ struct burton_cell_t
    */
   virtual std::pair<size_t, std::vector<id_t>> create_bound_entities(
     size_t from_domain, size_t to_domain,
-    size_t dim, const std::vector<std::vector<id_t>> ent_ids,
+    size_t dim, id_t **ent_ids,
     std::vector<id_t> & c) = 0;
 
 }; // class burton_cell_t
@@ -218,7 +218,7 @@ public:
    */
   inline std::pair<size_t, std::vector<id_t>> create_bound_entities(
     size_t from_domain, size_t to_domain, size_t dim,
-    const std::vector<std::vector<id_t>> ent_ids, std::vector<id_t> & c) {
+    id_t **ent_ids, std::vector<id_t> & c) {
 
     switch(dim) {
       // Corners

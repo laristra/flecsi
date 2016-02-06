@@ -100,14 +100,14 @@ public:
    */
 
   template<size_t M>
-  id_t id() const {
-    return ids_[M] & 0x0000ffffffffffff;
+  id_t global_id() const {
+    return ids_[M];
   } // id
 
-  template<size_t D, size_t M>
-  id_t global_id() const {
-    return to_global_id<D, M>(id<M>());
-  }
+  template<size_t M>
+  id_t id() const {
+    return to_local_id(ids_[M]);
+  } // id
 
   template<size_t M>
   uint16_t info() const { return ids_[M] >> 48; } // info
@@ -183,11 +183,6 @@ public:
   mesh_entity_t() {}
   virtual ~mesh_entity_t() {}
 
-  template<size_t M>
-  id_t global_id() const {
-    return mesh_entity_base_t<N>::template global_id<D, M>();
-  } // global_id
-
 }; // class mesh_entity_t
 
 /*!
@@ -240,6 +235,10 @@ public:
 
   operator id_t() {
     return entity_->template id<M>();
+  }
+
+  id_t global_id() {
+    return entity_->template global_id<M>();
   }
 
   id_t id() {
@@ -404,7 +403,7 @@ public:
 
     size_t n = cv.size();
 
-    id_t maxId = 0;
+    id_t max_id = 0;
 
     // cv is organized into groups of from entity to entity
 
@@ -412,21 +411,22 @@ public:
       const id_vector_t &iv = cv[i];
 
       for (id_t id : iv) {
-        maxId = std::max(maxId, id);
+        max_id = std::max(max_id, to_local_id(id));
         to_id_vec_.push_back(id);
       } // for
 
       from_index_vec_.push_back(to_id_vec_.size());
     } // for
 
-    id_t startId = ev.size();
+    id_t start_id = ev.size();
 
-    ev.reserve(maxId + 1);
+    ev.reserve(max_id + 1);
 
-    for(id_t id = startId; id <= maxId; ++id){
+    for(id_t local_id = start_id; local_id <= max_id; ++local_id){
+      id_t global_id = to_global_id<M>(dim, local_id);
       ev.push_back(mesh_entity_base_t<N>::template create_<MT, M>(
-        dim, id, mesh));
-      iv.push_back(id);
+        dim, global_id, mesh));
+      iv.push_back(global_id);
     } // for
   } // init_create
 
@@ -473,17 +473,18 @@ public:
   void dump() {
     for(size_t i = 1; i < from_index_vec_.size(); ++i){
       for(size_t j = from_index_vec_[i - 1]; j < from_index_vec_[i]; ++j){
-        std::cout << to_id_vec_[j] << std::endl;
+        std::cout << to_local_id(to_id_vec_[j]) << std::endl;
+        //std::cout << to_id_vec_[j] << std::endl;
       }
       std::cout << std::endl;
     }
 
-    std::cout << "=== idVec" << std::endl;
+    std::cout << "=== id_vec" << std::endl;
     for (id_t id : to_id_vec_) {
-      std::cout << id << std::endl;
+      std::cout << to_local_id(id) << std::endl;
     } // for
 
-    std::cout << "=== groupVec" << std::endl;
+    std::cout << "=== group_vec" << std::endl;
     for (id_t id : from_index_vec_) {
       std::cout << id << std::endl;
     } // for
@@ -527,8 +528,8 @@ public:
   /*!
     Set a single connection.
    */
-  void set(id_t fromId, id_t toId, size_t pos) {
-    to_id_vec_[from_index_vec_[fromId] + pos] = toId;
+  void set(id_t from_local_id, id_t to_id, size_t pos) {
+    to_id_vec_[from_index_vec_[from_local_id] + pos] = to_id;
   }
 
   /*!
@@ -567,7 +568,7 @@ public:
       uint64_t m = conn.size();
 
       for (size_t j = 0; j < m; ++j) {
-        to_id_vec_.push_back(ev[conn[j]]->template id<M>());
+        to_id_vec_.push_back(ev[conn[j]]->template global_id<M>());
       }
     }
   }
