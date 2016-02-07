@@ -93,6 +93,10 @@ TEST_F(Burton, mesh) {
 
   for(auto c : b.corners()) {
     CINCH_CAPTURE() << "----------- corner id: " << c.id() << endl;
+
+    for(auto e: b.edges(c)) {
+      CINCH_CAPTURE() << "----------- edge id: " << e.id() << endl;
+    } // for
   } // for
 
   CINCH_CAPTURE() << separator;

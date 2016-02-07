@@ -324,10 +324,12 @@ public:
 
     \return Return edges associated with entity instance \e e as a sequence.
    */
-  template <class E>
-  auto edges(E *e) {
-    return mesh_.entities<1,0>(e);
+#if 0
+  template <size_t FM, class E>
+  auto edges(domain_entity<FM,E> & e) {
+    return mesh_.entities<1,FM,0>(e.entity());
   } // edges
+#endif
 
   /*!
     \brief Return ids for all edges in the burton mesh.
@@ -364,7 +366,7 @@ public:
    */
   template<size_t M, class E>
   auto edges(domain_entity<M, E>& e) {
-    return mesh_.entities<1,M>(e);
+    return mesh_.entities<1,M,0>(e.entity());
   } // edges
 
   /*--------------------------------------------------------------------------*
@@ -635,7 +637,9 @@ public:
 
     // Create wedges
     for(auto c: mesh_.entities<1,1>()) {
-      // FIXME...
+//      auto vertex = vertices(c).to_vec()[0];
+//      auto edge = edges(c).to_vec()[0];
+//      auto cell = cellc(c).to_vec()[0];
     } // for
   } // init
 

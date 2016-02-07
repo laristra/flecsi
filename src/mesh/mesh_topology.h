@@ -222,6 +222,14 @@ public:
       return ret;
     } // to_vec
 
+    domain_entity<M, entity_type> first() const {
+      return mesh_.get_entity<D>(v_[begin_]);
+    } // first
+
+    domain_entity<M, entity_type> last() const {
+      return mesh_.get_entity<D>(v_[end_-1]);
+    } // last
+
     size_t size() const {
       return end_ - begin_;
     } // size
