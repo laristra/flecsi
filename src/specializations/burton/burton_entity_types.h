@@ -323,7 +323,7 @@ public:
   void set_corner(burton_corner_t *corner) { corner_ = corner; }
 
   //! Get the corner that a wedge is in.
-  burton_corner_t *corner() { return corner_; }
+  burton_corner_t * corner() { return corner_; }
 
   /*!
     \brief Get the side facet normal for the wedge.

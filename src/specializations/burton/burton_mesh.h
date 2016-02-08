@@ -266,7 +266,7 @@ public:
    */
   template<size_t M, class E>
   auto vertices(domain_entity<M, E> & e) {
-    return mesh_.entities<0, M>(e);
+    return mesh_.entities<0,M,0>(e.entity());
   }
 
   /*!
@@ -316,6 +316,21 @@ public:
   } // edges
 
   /*!
+    \brief Return edges for entity \e e in domain \e M.
+
+    \tparam M Domain.
+    \tparam E Entity type to get edges for.
+
+    \param[in] e Entity to get edges for.
+
+    \return Edges for entity \e e in domain \e M.
+   */
+  template<size_t M, class E>
+  auto edges(domain_entity<M, E>& e) {
+    return mesh_.entities<1,M,0>(e.entity());
+  } // edges
+
+  /*!
     \brief Return edges associated with entity instance of type \e E.
 
     \tparam E entity type of instance to return edges for.
@@ -353,21 +368,6 @@ public:
   auto edge_ids(E *e) {
     return mesh_.entity_ids<1,0>(e);
   } // edge_ids
-
-  /*!
-    \brief Return edges for entity \e e in domain \e M.
-
-    \tparam M Domain.
-    \tparam E Entity type to get edges for.
-
-    \param[in] e Entity to get edges for.
-
-    \return Edges for entity \e e in domain \e M.
-   */
-  template<size_t M, class E>
-  auto edges(domain_entity<M, E>& e) {
-    return mesh_.entities<1,M,0>(e.entity());
-  } // edges
 
   /*--------------------------------------------------------------------------*
    * Face Interface
@@ -422,7 +422,7 @@ public:
    */
   template<size_t M, class E>
   auto cells(domain_entity<M, E>& e) {
-    return mesh_.entities<dimension()>(e);
+    return mesh_.entities<dimension(),M,0>(e);
   } // cells
 
   /*!
@@ -639,9 +639,10 @@ public:
 
     // Create wedges
     for(auto c: mesh_.entities<1,1>()) {
-//      auto vertex = vertices(c).to_vec()[0];
-//      auto edge = edges(c).to_vec()[0];
-//      auto cell = cellc(c).to_vec()[0];
+      auto vertex = vertices(c).first();
+      auto edge0 = edges(c).first();
+      auto edge1 = edges(c).last();
+      auto cell = cells(c).first();
     } // for
   } // init
 
