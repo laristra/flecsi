@@ -27,17 +27,29 @@ else()
 endif()
 
 #------------------------------------------------------------------------------#
-# Runtime model setup
+# Runtime model setup for script interface
 #------------------------------------------------------------------------------#
 
+# Serial interface
 if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
-  set(FLECSI_RUNTIME_MAIN flecsi-serial.cc)
+
+  set(FLECSI_RUNTIME_MAIN script-driver-serial.cc)
+
+# Legion interface
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
-  set(FLECSI_RUNTIME_MAIN flecsi-legion.cc)
+
+  set(FLECSI_RUNTIME_MAIN script-driver-legion.cc)
+
+# MPI interface
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
-  set(FLECSI_RUNTIME_MAIN flecsi-mpi.cc)
+
+  set(FLECSI_RUNTIME_MAIN script-driver-mpi.cc)
+
+# Default
 else(FLECSI_RUNTIME_MODEL STREQUAL "serial")
+
   message(FATAL_ERROR "Unrecognized runtime selection")  
+
 endif(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
 #------------------------------------------------------------------------------#
@@ -139,16 +151,21 @@ install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install
 )
 
 # Install auxiliary files
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/driver/flecsi-serial.cc
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-serial.cc
   DESTINATION ${CMAKE_BINARY_DIR}/share
 )
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/driver/flecsi-mpi.cc
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-legion.cc
+  DESTINATION ${CMAKE_BINARY_DIR}/share
+)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-mpi.cc
   DESTINATION ${CMAKE_BINARY_DIR}/share
 )
 
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/flecsi-serial.cc
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-serial.cc
   DESTINATION share/flecsi)
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/flecsi-mpi.cc
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-legion.cc
+  DESTINATION share/flecsi)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-mpi.cc
   DESTINATION share/flecsi)
 
 # This configures a locally available script that is suitable for
