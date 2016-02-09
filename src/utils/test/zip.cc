@@ -63,11 +63,16 @@ TEST(zip, simple) {
     get<0>(i) = 5;
     //cout << i1 << ", " << i2 << ", " << i3 << endl;
   }
+
+  auto cnt = 0;
   for (const auto i : d) {
     ASSERT_EQ( 5.0, get<0>(i) );
     cout << get<0>(i) << ", " << get<1>(i) << ", " << get<2>(i) << endl;
     //cout << i1 << ", " << i2 << ", " << i3 << endl;
+    cnt ++;
   }  
+
+  ASSERT_EQ( cnt, a.size() )  << "iterator count mismatch";
 
 } // TEST
 

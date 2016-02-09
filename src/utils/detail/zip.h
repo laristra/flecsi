@@ -99,11 +99,12 @@ bool not_equal_tuples( const std::tuple<T1>& t1,  const std::tuple<T1>& t2 )
 }
 
 template<typename T1, typename... Ts>
-bool not_equal_tuples( const std::tuple<T1, Ts...>& t1,  
-                       const std::tuple<T1, Ts...>& t2 )
+typename std::enable_if<(sizeof...(Ts)>0), bool>::type
+not_equal_tuples( const std::tuple<T1, Ts...>& t1,  
+                  const std::tuple<T1, Ts...>& t2 )
 {
   return 
-    (std::get<0>(t1) != std::get<0>(t2)) && 
+    (std::get<0>(t1) != std::get<0>(t2)) ||
     not_equal_tuples( tuple_tail(t1), tuple_tail(t2) );
 }
 
@@ -117,8 +118,9 @@ bool equal_tuples( const std::tuple<T1>& t1,  const std::tuple<T1>& t2 )
 }
 
 template<typename T1, typename... Ts>
-bool equal_tuples( const std::tuple<T1, Ts...>& t1,  
-                   const std::tuple<T1, Ts...>& t2 )
+typename std::enable_if<(sizeof...(Ts)>0), bool>::type
+equal_tuples( const std::tuple<T1, Ts...>& t1,  
+              const std::tuple<T1, Ts...>& t2 )
 {
   return 
     (std::get<0>(t1) == std::get<0>(t2)) && 
