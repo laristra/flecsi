@@ -117,7 +117,7 @@ public :
   //! \param [in] v the list of vertex ids
   //! \param [in] vertex_count The number of vertices
   std::pair<size_t,size_t> create_entities( size_t dim, 
-                                            std::vector<flecsi::id_t> &e, 
+                                            id_t *e, 
                                             id_t *v, 
                                             size_t vertex_count) 
   {
@@ -140,12 +140,10 @@ public :
 template<>
 std::pair<size_t,size_t> 
  unstruct_cell_t<2>::create_entities( size_t dim, 
-                                      std::vector<flecsi::id_t> &e, 
+                                      id_t *e, 
                                       id_t *v, 
                                       size_t vertex_count) 
-{
-  e.resize(8);
-  
+{  
   e[0] = v[0];
   e[1] = v[1];
   
@@ -173,16 +171,13 @@ std::pair<size_t,size_t>
 template<>
 std::pair<size_t,size_t> 
  unstruct_cell_t<3>::create_entities( size_t dim, 
-                                      std::vector<flecsi::id_t> &e, 
+                                      id_t *e, 
                                       id_t *v, 
                                       size_t vertex_count) 
 {
 
   // want edges
-  if ( dim == 1 ) {
-  
-    e.resize(12*2);
-    
+  if ( dim == 1 ) {    
     e[ 0] = v[0];
     e[ 1] = v[1];
     
@@ -222,10 +217,7 @@ std::pair<size_t,size_t>
     return {12, 2};
   }
   // want faces
-  else if ( dim == 2 ) {
-  
-    e.resize(6*4);
-    
+  else if ( dim == 2 ) {    
     e[ 0] = v[ 0];
     e[ 1] = v[ 1];
     e[ 2] = v[ 4];

@@ -58,15 +58,15 @@ public:
 
   minimal_cell_t(mesh_topology_base_t & mesh) {}
 
-  std::pair<size_t, std::vector<size_t>> create_entities(size_t dimension,
-    std::vector<id_t> & entities, id_t * vertices, size_t vertex_count) {
-    return {0,{0}};
+  std::vector<size_t> create_entities(size_t dimension,
+    id_t * entities, id_t * vertices, size_t vertex_count) {
+    return {0};
   } // create_entities
 
-  std::pair<size_t, std::vector<id_t>> create_bound_entities(
+  std::vector<id_t> create_bound_entities(
     size_t from_domain, size_t to_domain, size_t dim,
-    id_t ** ent_ids, std::vector<id_t> & c) {
-    return {0,{0}};
+    id_t ** ent_ids, id_t * c) {
+    return {0};
   } // create_bound_entities
 
 }; // class minimal_cell_t

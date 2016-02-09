@@ -150,8 +150,8 @@ struct burton_cell_t
     \return A pair with a) the number of vertex collections making up the
       entity and b) the number of vertices per collection.
    */
-  virtual std::pair<size_t, std::vector<id_t>> create_entities(size_t dim,
-    std::vector<id_t> &e, id_t * v, size_t vertex_count) = 0;
+  virtual std::vector<id_t> create_entities(size_t dim,
+    id_t * e, id_t * v, size_t vertex_count) = 0;
 
   /*!
     \brief create_bound_entities binds mesh entities across domains.
@@ -165,10 +165,9 @@ struct burton_cell_t
     \return A pair with a) the number of entity collections making up the
       binding and b) the number of entities per collection.
    */
-  virtual std::pair<size_t, std::vector<id_t>> create_bound_entities(
+  virtual std::vector<id_t> create_bound_entities(
     size_t from_domain, size_t to_domain,
-    size_t dim, id_t **ent_ids,
-    std::vector<id_t> & c) = 0;
+    size_t dim, id_t **ent_ids, id_t *c) = 0;
 
 }; // class burton_cell_t
 
@@ -193,11 +192,9 @@ public:
   /*!
     \brief create_entities function for burton_quadrilateral_cell_t.
    */
-  inline std::pair<size_t, std::vector<id_t>> create_entities(size_t dim,
-    std::vector<id_t> & e, id_t * v, size_t vertex_count) override {
+  inline std::vector<id_t> create_entities(size_t dim,
+    id_t * e, id_t * v, size_t vertex_count) {
     
-    e.resize(8);
-
     e[0] = v[0];
     e[1] = v[1];
 
@@ -210,21 +207,19 @@ public:
     e[6] = v[3];
     e[7] = v[0];
 
-    return {4, {2, 2, 2, 2}};
+    return {2, 2, 2, 2};
   } // create_entities
   
   /*!
     \brief create_bound_entities function for burton_quadrilateral_cell_t.
    */
-  inline std::pair<size_t, std::vector<id_t>> create_bound_entities(
+  inline std::vector<id_t> create_bound_entities(
     size_t from_domain, size_t to_domain, size_t dim,
-    id_t **ent_ids, std::vector<id_t> & c) override {
+    id_t **ent_ids, id_t *c) {
 
     switch(dim) {
       // Corners
       case 1:
-        c.resize(16);
-
         // corner 0
         c[0] = ent_ids[0][0]; // vertex 0
         c[1] = ent_ids[1][0]; // edge 0
@@ -249,7 +244,7 @@ public:
         c[14] = ent_ids[1][3]; // edge 3
         c[15] = ent_ids[2][0]; // cell
 
-        return {4, {4, 4, 4, 4}};
+        return {4, 4, 4, 4};
 
 #if 0 // Wedges are currently only referenced through corners
       // so this logic is unused for the time being...
@@ -290,7 +285,7 @@ public:
         c[14] = ent_ids[3]; // vertex 3
         c[15] = ent_ids[7]; // edge 3
 
-        return {8, {2, 2, 2, 2, 2, 2, 2, 2}};
+        return {2, 2, 2, 2, 2, 2, 2, 2};
 #endif
 
       default:

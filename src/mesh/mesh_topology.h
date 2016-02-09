@@ -511,9 +511,9 @@ public:
     // if it does not already exist in the map.
     id_vector_map_t entity_vertices_map;
 
-    // This will be filled with the vertices that define each cell
-    // and passed to the 'create_entities' method as input information.
-    id_vector_t entity_vertices;
+    // This buffer should be large enough to hold all entities
+    // vertices that potentially need to be created
+    std::array<id_t, 4096> entity_vertices;
 
     for (size_t c = 0; c < _num_cells; ++c) {
 
@@ -538,16 +538,18 @@ public:
       // p.first:   The number of entities per cell.
       // p.second:  A std::vector of id_t containing the ids of the
       //            vertices that define the entity.
-      auto p = cell->create_entities(D, entity_vertices, vertices, endIndex);
+      auto sv = cell->create_entities(D, entity_vertices.data(), vertices, endIndex);
+
+      size_t n = sv.size(); 
 
       // iterate over the newly-defined entities
-      for (size_t i = 0; i < p.first; ++i) {
+      for (size_t i = 0; i < n; ++i) {
 
         // Get the vertices that define this entity by getting
         // a pointer to the vector-of-vector data and then constructing 
         // a vector of ids for only this entity.
-        id_t * a = &entity_vertices[i * p.second[i]];
-        id_vector_t ev(a, a + p.second[i]);
+        id_t * a = &entity_vertices[i * sv[i]];
+        id_vector_t ev(a, a + sv[i]);
 
         // Sort the ids for the current entity so that they are
         // monotonically increasing. This ensures that entities are
@@ -565,7 +567,7 @@ public:
         // If the insertion took place
         if (itr.second) {
           // what does this do?
-          id_vector_t ev2 = id_vector_t(a, a + p.second[i]);
+          id_vector_t ev2 = id_vector_t(a, a + sv[i]);
           entity_vertex_conn.emplace_back(std::move(ev2));
 
           max_cell_entity_conns =
@@ -827,6 +829,10 @@ public:
 
     std::array<id_t *, MT::dimension + 1> primal_ids;
 
+    // This buffer should be large enough to hold all entities
+    // that potentially need to be created
+    std::array<id_t, 4096> entity_ids;
+
     // Iterate over cells
     for (auto c: cells) {
       // Get a cell object.
@@ -845,19 +851,26 @@ public:
       // p.first:   The number of entities per cell.
       // p.second:  A std::vector of id_t containing the ids of the
       //            entities that define the bound entity.
-      id_vector_t entity_ids;
-      auto p = cell->create_bound_entities(FM, TM,
-                                           TD, primal_ids.data(), entity_ids);
+
+      auto sv = cell->create_bound_entities(FM, TM, TD, primal_ids.data(), 
+                                           entity_ids.data());
+
+      size_t n = sv.size();
 
       // Iterate over the newly-defined entities
       id_vector_t & conns = cell_conn[local_cell_id];
+
+      conns.reserve(max_cell_conns);
+
       size_t pos = 0;
 
-      for (size_t i = 0; i < p.first; ++i) {
+      for (size_t i = 0; i < n; ++i) {
+
+        size_t m = sv[i];
 
         // Get the id range for this entity
-        id_t * a = &entity_ids[i * p.second[i]];        
-        id_vector_t ev(a, a + p.second[i]);
+        id_t * a = &entity_ids[i * m];        
+        id_vector_t ev(a, a + m);
 
         // Sort the id range so that it is ascending (ensures uniqueness)
         std::sort(ev.begin(), ev.end());
@@ -870,8 +883,6 @@ public:
         // Add this id to the cell entity connections
         conns.push_back(itr.first->second);
 
-        size_t m = p.second[i];
-
         // Increment
         if (itr.second) {
           uint32_t dim_flags = 0;
@@ -881,24 +892,8 @@ public:
 
             size_t dim = dimension_from_global_id(global_id);
 
-            switch(dim){
-              case 0:
-                get_connectivity_<TM, FM, TD>(0).push(global_id);
-                dim_flags |= 0b001;
-                break;
-              case 1:
-                get_connectivity_<TM, FM, TD>(1).push(global_id);
-                dim_flags |= 0b010;
-                break;
-              case face_dim:
-                get_connectivity_<TM, FM, TD>(face_dim).push(global_id);
-                dim_flags |= 0b100;
-                break;
-              case MT::dimension:
-                break;
-              default:
-                assert(false && "invalid topological dimension");
-            }
+            get_connectivity_<TM, FM, TD>(dim).push(global_id);
+            dim_flags |= 1 << dim;
           }
 
           for(size_t i = 0; i < MT::dimension; ++i){
@@ -909,6 +904,7 @@ public:
 
           max_cell_conns =
             std::max(max_cell_conns, cell_conn[local_cell_id].size());
+          
           ++entity_id;
         } // if
 
@@ -927,7 +923,7 @@ public:
     else {
       cell_out.init(cell_conn);   
     }
-
+    
   } // build_bindings
 
   /*!
@@ -1042,6 +1038,15 @@ public:
     auto & t = ms_.topology[FM][TM][FD];
     assert(to_dim < t.size() && "invalid to_dim");
     return t[to_dim];
+  } // get_connectivity
+
+  /*!
+   Implementation of get_connectivity for various get_connectivity convenience
+   methods.
+   */
+  template<size_t FM, size_t TM, size_t FD, size_t TD>
+  connectivity_t & get_connectivity_() {
+    return ms_.topology[FM][TM][FD][TD];
   } // get_connectivity
 
   /*!

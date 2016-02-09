@@ -22,11 +22,9 @@ class Cell : public mesh_entity_t<2, 2>{
 public:
   void set_precedence(size_t dim, uint64_t precedence) {}
 
-  std::pair<size_t, std::vector<size_t>>
-  create_entities(size_t dim, std::vector<flecsi::id_t>& e,
+  std::vector<size_t>
+  create_entities(size_t dim, flecsi::id_t *e,
                   flecsi::id_t *v, size_t vertex_count){  
-
-    e.resize(8);
 
     e[0] = v[0];
     e[1] = v[2];
@@ -40,41 +38,35 @@ public:
     e[6] = v[2];
     e[7] = v[3];
 
-    return {4, {2, 2, 2, 2}};
+    return {2, 2, 2, 2};
   }
 
-  std::pair<size_t, std::vector<flecsi::id_t>>
+  std::vector<flecsi::id_t>
   create_bound_entities(size_t from_domain,
                         size_t to_domain,
                         size_t create_dim,
                         flecsi::id_t **ent_ids,
-                        std::vector<flecsi::id_t> & c) {
+                        flecsi::id_t *c) {
     
     switch(create_dim) {
       case 1:
-        c.resize(16);
-
         c[0] = ent_ids[0][0];
         c[1] = ent_ids[1][0];
         c[2] = ent_ids[1][2];
-        c[3] = ent_ids[2][0];
 
-        c[4] = ent_ids[0][1];
-        c[5] = ent_ids[1][1];
-        c[6] = ent_ids[1][2];
-        c[7] = ent_ids[2][0];
+        c[3] = ent_ids[0][1];
+        c[4] = ent_ids[1][1];
+        c[5] = ent_ids[1][2];
 
-        c[8] = ent_ids[0][2];
-        c[9] = ent_ids[1][0];
+        c[6] = ent_ids[0][2];
+        c[7] = ent_ids[1][0];
+        c[8] = ent_ids[1][3];
+
+        c[9] = ent_ids[0][3];
         c[10] = ent_ids[1][3];
-        c[11] = ent_ids[2][0];
+        c[11] = ent_ids[1][1];
 
-        c[12] = ent_ids[0][3];
-        c[13] = ent_ids[1][3];
-        c[14] = ent_ids[1][1];
-        c[15] = ent_ids[2][0];
-
-        return {4, {4, 4, 4, 4}};
+        return {3, 3, 3, 3};
       default:
         assert(false);
     }
