@@ -392,6 +392,16 @@ public:
     \return Return all cells in the burton mesh as a sequence for use, e.g.,
       in range based for loops.
    */
+  auto cells() const {
+    return mesh_.entities<dimension(),0>();
+  } // cells
+
+  /*!
+    \brief Return all cells in the burton mesh.
+
+    \return Return all cells in the burton mesh as a sequence for use, e.g.,
+      in range based for loops.
+   */
   auto cells() {
     return mesh_.entities<dimension(),0>();
   } // cells

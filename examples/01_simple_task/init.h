@@ -25,7 +25,6 @@ int32_t init(burton_mesh_t & mesh) {
   for(size_t j = 0; j < height + 1; ++j){
     for(size_t i = 0; i < width + 1; ++i){
       auto v = mesh.create_vertex({double(i), double(j)});
-      v->set_rank(1);
       vs.push_back(v);
     } // for
   } // for
