@@ -224,25 +224,21 @@ public:
         c[0] = ent_ids[0][0]; // vertex 0
         c[1] = ent_ids[1][0]; // edge 0
         c[2] = ent_ids[1][3]; // edge 3
-        c[3] = ent_ids[2][0]; // cell
 
         // corner 1
         c[4] = ent_ids[0][1]; // vertex 1
         c[5] = ent_ids[1][0]; // edge 0
         c[6] = ent_ids[1][1]; // edge 1
-        c[7] = ent_ids[2][0]; // cell
 
         // corner 2
         c[8] = ent_ids[0][2]; // vertex 2
         c[9] = ent_ids[1][1]; // edge 1
         c[10] = ent_ids[1][2]; // edge 2
-        c[11] = ent_ids[2][0]; // cell
 
         // corner 3
         c[12] = ent_ids[0][3]; // vertex 3
         c[13] = ent_ids[1][2]; // edge 2
         c[14] = ent_ids[1][3]; // edge 3
-        c[15] = ent_ids[2][0]; // cell
 
         return {4, 4, 4, 4};
 
