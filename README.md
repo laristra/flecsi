@@ -7,7 +7,7 @@ multi-physics application development.
 
 FleCSI uses git submodules, so it must be checked out recursively:
 
-    % git clone --recursive git@github.com:losalamos/flecsi.git
+    % git clone --recursive git@github.com:flecsi/flecsi.git
 
 # Requirements
 
