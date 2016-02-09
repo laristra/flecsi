@@ -15,7 +15,7 @@
 #include <flecsi/execution/task.h>
 #include <flecsi/utils/common.h>
 
-#include EXPAND_AND_STRINGIFY(FLEXI_DRIVER)
+#include EXPAND_AND_STRINGIFY(FLECSI_DRIVER)
 
 /*----------------------------------------------------------------------------*
  * Serial execution harness.
