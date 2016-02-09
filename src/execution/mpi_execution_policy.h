@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_default_execution_policy_h
-#define flecsi_default_execution_policy_h
+#ifndef flecsi_mpi_execution_policy_h
+#define flecsi_mpi_execution_policy_h
 
 #include <cstdint>
 
@@ -21,7 +21,7 @@
 #include "flecsi/utils/tuple_for_each.h"
 
 /*!
- * \file default_execution_policy.h
+ * \file mpi_execution_policy.h
  * \authors bergen
  * \date Initial file creation: Nov 15, 2015
  */
@@ -29,10 +29,10 @@
 namespace flecsi {
 
 /*!
-  \class default_execution_policy default_execution_policy.h
-  \brief default_execution_policy provides...
+  \class mpi_execution_policy mpi_execution_policy.h
+  \brief mpi_execution_policy provides...
  */
-class default_execution_policy_t
+class mpi_execution_policy_t
 {
 protected:
 
@@ -40,7 +40,8 @@ protected:
 
   template<typename T, typename ... Args>
   static return_type_t execute_driver(T && task, Args && ... args) {
-    return task(std::forward<Args>(args) ...);
+    auto value = task(std::forward<Args>(args) ...);
+    return value;
   } // execute_driver
 
   template<typename T, typename ... Args>
@@ -59,11 +60,11 @@ protected:
     return value;
   } // execute_task
   
-}; // class default_execution_policy_t
+}; // class mpi_execution_policy_t
 
 } // namespace flecsi
 
-#endif // flecsi_default_execution_policy_h
+#endif // flecsi_mpi_execution_policy_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

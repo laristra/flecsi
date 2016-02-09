@@ -12,8 +12,9 @@
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
 
-#include <flecsi/execution/task.h>
+#include <flecsi/execution/mpi_execution_policy.h>
 #include <flecsi/utils/common.h>
+#include <flecsi/execution/task.h>
 
 #include EXPAND_AND_STRINGIFY(FLEXI_DRIVER)
 
@@ -26,7 +27,8 @@
  *----------------------------------------------------------------------------*/
 
 int main(int argc, char ** argv) {
-  return flecsi::execution_t<>::execute_task(driver, argc, argv);
+  return flecsi::execution_t<
+    flecsi::mpi_execution_policy_t>::execute_driver(driver, argc, argv);
 } // main
 
 /*~------------------------------------------------------------------------~--*

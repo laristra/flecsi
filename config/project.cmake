@@ -33,6 +33,13 @@ cinch_add_library_target(flecsi src)
 set(CINCH_HEADER_SUFFIXES "\\.h")
 
 #------------------------------------------------------------------------------#
+# Add options for runtime selection
+#------------------------------------------------------------------------------#
+
+set(FLECSI_RUNTIME_MODEL "serial" CACHE STRING
+  "Select the runtime model [legion,mpi,serial]")
+
+#------------------------------------------------------------------------------#
 # Add build options
 #------------------------------------------------------------------------------#
 

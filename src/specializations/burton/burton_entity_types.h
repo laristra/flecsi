@@ -194,7 +194,7 @@ public:
     \brief create_entities function for burton_quadrilateral_cell_t.
    */
   inline std::pair<size_t, std::vector<id_t>> create_entities(size_t dim,
-    std::vector<id_t> & e, id_t * v, size_t vertex_count) {
+    std::vector<id_t> & e, id_t * v, size_t vertex_count) override {
     
     e.resize(8);
 
@@ -218,7 +218,7 @@ public:
    */
   inline std::pair<size_t, std::vector<id_t>> create_bound_entities(
     size_t from_domain, size_t to_domain, size_t dim,
-    id_t **ent_ids, std::vector<id_t> & c) {
+    id_t **ent_ids, std::vector<id_t> & c) override {
 
     switch(dim) {
       // Corners
@@ -336,25 +336,6 @@ public:
     \return Cell facet normal vector.
    */
   vector_t cell_facet_normal();
-
-  /*!
-    \brief create_entities function for burton_wedge_t.
-   */
-  std::pair<size_t, std::vector<size_t>> create_entities(
-    size_t dim, std::vector<flecsi::id_t> &e, id_t *v, size_t vertex_count) {
-    e.resize(6);
-
-    e[0] = v[0];
-    e[1] = v[1];
-
-    e[2] = v[1];
-    e[3] = v[2];
-
-    e[4] = v[0];
-    e[5] = v[2];
-
-    return {3, {2, 2, 2}};
-  }
 
 private:
 
