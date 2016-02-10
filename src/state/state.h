@@ -118,7 +118,7 @@ public:
 
   //! Use the accessor type defined by the storage policy.
   template<typename T>
-  using accessor_t = typename sp_t::template accessor_t<T>;
+  using dense_accessor_t = typename sp_t::template dense_accessor_t<T>;
 
   //! Default constructor
   state_t() : sp_t() {}
@@ -161,8 +161,8 @@ public:
   } // register_state
 
   /*!
-    Return an accessor_t instance that provides logical array-based access
-    to the state data.
+    Return a dense_accessor_t instance that provides logical
+    array-based access to the state data.
 
     \tparam T The type of the variable to be returned.  The type information
       for a state variable is not necessarily stored, meaning that the
@@ -180,9 +180,9 @@ public:
 
   template<typename T,
     size_t NS = flecsi_user_space>
-  accessor_t<T> accessor(const const_string_t & key) {
-    return sp_t::template accessor<T,NS>(key);
-  } // accessor
+  dense_accessor_t<T> dense_accessor(const const_string_t & key) {
+    return sp_t::template dense_accessor<T,NS>(key);
+  } // dense_accessor
 
   /*!
     \brief Return a std::vector of accessors to the stored states with
@@ -196,9 +196,9 @@ public:
    */
   template<typename T,
     size_t NS = flecsi_user_space>
-  std::vector<accessor_t<T>> accessors() {
-    return sp_t::template accessors<T,NS>();
-  } // accessors
+  std::vector<dense_accessor_t<T>> dense_accessors() {
+    return sp_t::template dense_accessors<T,NS>();
+  } // dense_accessors
 
   /*!
     \brief Return a std::vector of accessors to the stored states with
@@ -224,9 +224,9 @@ public:
   template<typename T,
     typename P,
     size_t NS = flecsi_user_space>
-  std::vector<accessor_t<T>> accessors(P && predicate) {
-    return sp_t::template accessors<T,NS,P>(std::forward<P>(predicate));
-  } // accessors
+  std::vector<dense_accessor_t<T>> dense_accessors(P && predicate) {
+    return sp_t::template dense_accessors<T,NS,P>(std::forward<P>(predicate));
+  } // dense_accessors
 
   /*!
     Return a std::vector of raw accessors to the stored states with
@@ -239,9 +239,9 @@ public:
    */
 
   template<size_t NS = flecsi_user_space>
-  std::vector<accessor_t<uint8_t>> raw_accessors() {
-    return sp_t::template raw_accessors<NS>();
-  } // raw_accessors
+  std::vector<dense_accessor_t<uint8_t>> raw_dense_accessors() {
+    return sp_t::template raw_dense_accessors<NS>();
+  } // raw_dense_accessors
 
   /*!
     Return a std::vector of raw accessors to the stored states with
@@ -263,20 +263,19 @@ public:
 
   template<typename P,
     size_t NS = flecsi_user_space>
-  std::vector<accessor_t<uint8_t>> raw_accessors(P && predicate) {
-    return sp_t::template raw_accessors<NS>(std::forward<P>(predicate));
-  } // raw_accessors
+  std::vector<dense_accessor_t<uint8_t>> raw_dense_accessors(P && predicate) {
+    return sp_t::template raw_dense_accessors<NS>(std::forward<P>(predicate));
+  } // raw_dense_accessors
 
   /*!
-    \brief Return the user meta data for the state variable identified by \e key
-      in namespace \e NS.
+    \brief Return the user meta data for the state variable identified
+      by \e key in namespace \e NS.
 
     \param key The name of the state variable for which to return
       the meta data.
 
     \return The meta data corresponding to the key and namespace.
    */
-
   template<size_t NS = flecsi_user_space>
   user_meta_data_t & meta_data(const const_string_t & key) {
     return sp_t::template meta_data<NS>(key);

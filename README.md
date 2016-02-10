@@ -61,6 +61,10 @@ On Darwin, you can simplify some of the build requirements by using the
 
 This will load up-to-date compiler and documentation tools.
 
+# Release
+
+This software has been approved for open source release and has been assigned **LA-CC-15-000**.
+
 # Copyright
 
 Copyright (c) 2016, Los Alamos National Security, LLC

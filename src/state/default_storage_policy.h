@@ -60,11 +60,11 @@ protected:
   virtual ~default_state_storage_policy_t() {}
 
   /*--------------------------------------------------------------------------*
-   * class accessor_t
+   * class dense_accessor_t
    *--------------------------------------------------------------------------*/
 
   /*!
-    \brief accessor_t provides logically array-based access to state
+    \brief dense_accessor_t provides logically array-based access to state
       variables that have been registered in the state model.
 
     \tparam T The type of the state variable.  If this type is not
@@ -74,7 +74,7 @@ protected:
       interface, so it is assumed that you know what you are doing...
    */
   template<typename T>
-  class accessor_t
+  class dense_accessor_t
   {
   public:
 
@@ -90,14 +90,14 @@ protected:
       \param data A pointer to the raw data.
       \param meta A reference to the user-defined meta data.
      */
-    accessor_t(const std::string & label, const size_t size,
+    dense_accessor_t(const std::string & label, const size_t size,
       T * data, const user_meta_data_t & meta)
       : label_(label), size_(size), data_(data), meta_(meta), is_(size_) {}
 
     /*!
       Copy Constructor.
      */
-    accessor_t(const accessor_t & a) :
+    dense_accessor_t(const dense_accessor_t & a) :
       label_(a.label_), size_(a.size_), data_(a.data_),
       meta_(a.meta_), is_(a.is_) {}
 
@@ -170,7 +170,7 @@ protected:
 
       \param a The accessor instance from which to assign values.
      */
-    accessor_t & operator = (const accessor_t & a) {
+    dense_accessor_t & operator = (const dense_accessor_t & a) {
       label_ = a.label_;
       size_ = a.size_;
       data_ = a.data_;
@@ -203,7 +203,153 @@ protected:
     const user_meta_data_t & meta_;
     index_space_t is_;
 
-  }; // struct accessor_t
+  }; // struct dense_accessor_t
+
+  /*--------------------------------------------------------------------------*
+   * class sparse_accessor_t
+   *--------------------------------------------------------------------------*/
+
+  /*!
+    \brief sparse_accessor_t provides logically array-based access to state
+      variables that have been registered in the state model.
+
+    \tparam T The type of the state variable.  If this type is not
+      consistent with the type used to register the state, bad things
+      can happen.  However, it can be useful to reinterpret the type, e.g.,
+      when writing raw bytes.  This class is part of the low-level \e flecsi
+      interface, so it is assumed that you know what you are doing...
+   */
+  template<typename T>
+  class sparse_accessor_t
+  {
+  public:
+
+    using iterator_t = index_space_t::iterator_t;
+
+    /*!
+      Constructor.
+
+      \param label The c_str() version of the const_string used for
+        this state variable's hash.
+      \param size The size in elements of the type T of the
+        state variable.
+      \param data A pointer to the raw data.
+      \param meta A reference to the user-defined meta data.
+     */
+    sparse_accessor_t(const std::string & label, const size_t size,
+      T * data, const user_meta_data_t & meta)
+      : label_(label), size_(size), data_(data), meta_(meta), is_(size_) {}
+
+    /*!
+      Copy Constructor.
+     */
+    sparse_accessor_t(const sparse_accessor_t & a) :
+      label_(a.label_), size_(a.size_), data_(a.data_),
+      meta_(a.meta_), is_(a.is_) {}
+
+    /*!
+      \brief Return a std::string containing the label of the state variable
+        reference by this accessor.
+     */
+    const std::string & label() { return label_; }
+
+    /*!
+      \brief Return the size of the state variable referenced by this
+        accessor.
+
+      The size is in elements of type T.        
+     */
+    size_t size() const { return size_; }
+
+    /*!
+      \brief Provide logical array-based access to the data for this
+        state variable.  This is the const operator version.
+
+      \tparam E A complex index type.
+
+      This version of the operator is provided to support use with
+      \e flecsi mesh entity types \ref mesh_entity_base_t.
+     */
+    template<typename E>
+    const T & operator [] (E * e) const {
+      return this->operator [] (e->id());
+    } // operator
+
+    /*!
+      \brief Provide logical array-based access to the data for this
+        state variable.
+
+      \tparam E A complex index type.
+
+      This version of the operator is provided to support use with
+      \e flecsi mesh entity types \ref mesh_entity_base_t.
+     */
+    template<typename E>
+    T & operator [] (E * e) {
+      return this->operator [] (e->template local_id<0>());
+    } // operator []
+
+    /*!
+      \brief Provide logical array-based access to the data for this
+        state variable.  This is the const operator version.
+
+      \param index The index of the state variable to return.
+     */
+    const T & operator [] (size_t index) const {
+      assert(index < size_ && "index out of range");
+      return data_[index];
+    } // operator []
+
+    /*!
+      \brief Provide logical array-based access to the data for this
+        state variable.
+
+      \param index The index of the state variable to return.
+     */
+    T & operator [] (size_t index) {
+      assert(index < size_ && "index out of range");
+      return data_[index];
+    } // operator []
+
+    /*!
+      \brief Assignment Operator.
+
+      \param a The accessor instance from which to assign values.
+     */
+    sparse_accessor_t & operator = (const sparse_accessor_t & a) {
+      label_ = a.label_;
+      size_ = a.size_;
+      data_ = a.data_;
+      meta_ = a.meta_;
+      is_ = a.is_;
+    } // operator =
+
+    /*!
+      \brief Return the user meta data for this state variable.
+
+      \return The user meta data.
+     */
+    const user_meta_data_t & meta() const { return meta_; }
+
+    /*!
+      \brief Return an iterator to the beginning of this state data.
+     */
+    iterator_t begin() { return { is_, 0 }; }
+
+    /*!
+      \brief Return an iterator to the end of this state data.
+     */
+    iterator_t end() { return { is_, size_ }; }
+
+  private:
+    
+    std::string label_;
+    size_t size_;
+    T * data_;
+    const user_meta_data_t & meta_;
+    index_space_t is_;
+
+  }; // struct sparse_accessor_t
 
   /*!
     \brief meta_data_t provides storage for extra information that is
@@ -242,7 +388,7 @@ protected:
     \param key The name of the data to return.
    */
   template<typename T, size_t NS>
-  accessor_t<T> accessor(const const_string_t & key) {
+  dense_accessor_t<T> dense_accessor(const const_string_t & key) {
     return { meta_[NS][key.hash()].label, meta_[NS][key.hash()].size,
       reinterpret_cast<T *>(&meta_[NS][key.hash()].data[0]),
       meta_[NS][key.hash()].user_data };
@@ -254,7 +400,7 @@ protected:
     \param hash A hash key for the data to return.
    */
   template<typename T, size_t NS>
-  accessor_t<T> accessor(const_string_t::hash_type_t hash) {
+  dense_accessor_t<T> dense_accessor(const_string_t::hash_type_t hash) {
     return { meta_[NS][hash].label, meta_[NS][hash].size,
       reinterpret_cast<T *>(&meta_[NS][hash].data[0]),
       meta_[NS][hash].user_data };
@@ -290,35 +436,35 @@ protected:
       new typename meta_data_t::type_info_t(typeid(T)));
     meta_[NS][key.hash()].data.resize(indices*sizeof(T));
 
-    return accessor<T,NS>(key.hash());
+    return dense_accessor<T,NS>(key.hash());
   } // register
 
   /*!
     Return an accessor to all data for a given type.
    */
   template<typename T, size_t NS>
-  std::vector<accessor_t<T>> accessors() {
-    std::vector<accessor_t<T>> v;
+  std::vector<dense_accessor_t<T>> dense_accessors() {
+    std::vector<dense_accessor_t<T>> v;
 
     for(auto entry_pair: meta_[NS]) {
       if(entry_pair.second.rtti->type_info == typeid(T)) {
-        v.push_back(accessor<T,NS>(entry_pair.first));
+        v.push_back(dense_accessor<T,NS>(entry_pair.first));
       } // if
     } // for
 
     return v;
-  } // accessors
+  } // dense_accessors
 
   /*!
     Return an accessor to all data for a given type and predicate.
    */
   template<typename T, size_t NS, typename P>
-  std::vector<accessor_t<T>> accessors(P && predicate) {
-    std::vector<accessor_t<T>> v;
+  std::vector<dense_accessor_t<T>> dense_accessors(P && predicate) {
+    std::vector<dense_accessor_t<T>> v;
 
     for(auto entry_pair: meta_[NS]) {
       // create an accessor
-      auto a = accessor<T,NS>(entry_pair.first);
+      auto a = dense_accessor<T,NS>(entry_pair.first);
 
       if(entry_pair.second.rtti->type_info == typeid(T) &&
         predicate(a)) {
@@ -333,26 +479,26 @@ protected:
     Return accessors to all data.
    */
   template<size_t NS>
-  std::vector<accessor_t<uint8_t>> accessors() {
-    std::vector<accessor_t<uint8_t>> v;
+  std::vector<dense_accessor_t<uint8_t>> dense_accessors() {
+    std::vector<dense_accessor_t<uint8_t>> v;
 
     for(auto entry_pair: meta_[NS]) {
-      v.push_back(accessor<uint8_t,NS>(entry_pair.first));
+      v.push_back(dense_accessor<uint8_t,NS>(entry_pair.first));
     } // for
 
     return v;
-  } // accessors
+  } // dense_accessors
 
   /*!
     Return an accessor to all data for a given type and predicate.
    */
   template<size_t NS, typename P>
-  std::vector<accessor_t<uint8_t>> accessors(P && predicate) {
-    std::vector<accessor_t<uint8_t>> v;
+  std::vector<dense_accessor_t<uint8_t>> dense_accessors(P && predicate) {
+    std::vector<dense_accessor_t<uint8_t>> v;
 
     for(auto entry_pair: meta_[NS]) {
       // create an accessor
-      auto a = accessor<uint8_t,NS>(entry_pair.first);
+      auto a = dense_accessor<uint8_t,NS>(entry_pair.first);
 
       if(predicate(a)) {
         v.push_back(a);
@@ -360,7 +506,7 @@ protected:
     } // for
 
     return v;
-  } // accessors_predicate
+  } // dense_accessors_predicate
 
   /*!
     Return user meta data for a given variable.
