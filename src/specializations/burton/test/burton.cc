@@ -95,7 +95,7 @@ TEST_F(Burton, mesh) {
     CINCH_CAPTURE() << "----------- corner id: " << c.id() << endl;
 
     for(auto e: b.edges(c)) {
-      CINCH_CAPTURE() << "----------- edge id: " << e.id() << endl;
+      CINCH_CAPTURE() << "       ++++ edge id: " << e.id() << endl;
     } // for
   } // for
 
@@ -104,11 +104,11 @@ TEST_F(Burton, mesh) {
   for(auto c : b.cells()) {
     CINCH_CAPTURE() << "-----------Edges for cell id: " << c.id()
       << " with centroid " << c->centroid() << endl;
-#if 0
     for(auto e : b.edges(c)){
       CINCH_CAPTURE() << "++++ edge id: " << e.id()
-        << " with midpoint " << b.midpoint(e) << endl;
+        << " with midpoint " << e->midpoint() << endl;
     }
+#if 0
     for(auto w : c->wedges()){
       CINCH_CAPTURE() << "++++ wedge of: " << w.id() << endl;
       CINCH_CAPTURE() << "### corner of: " << w->corner().id() << endl;

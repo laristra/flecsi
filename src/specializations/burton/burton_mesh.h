@@ -603,11 +603,8 @@ public:
 
     \verbatim
 
-    After cells and vertices for the mesh have been defined, call init() to
-    create the dual mesh entities. The following picture shows the vertex
-    definitions used to create the dual mesh. For each vertex definition there
-    is a corresponding point_t variable containing the geometry of the vertex,
-    which is computed from the primal mesh vertex coordinates.
+    The following shows the labeling of the primitives making up a cell. Given
+    vertices v*, edges e*, and center vertex cv.
 
     v3-----e2-----v2
     |              |
@@ -617,8 +614,8 @@ public:
     |              |
     v0-----e0-----v1
 
-    The wedge indexing is shown below. A wedge is defined by three vertices in
-    the order w = {cv, v*, e*}.
+    The wedge indexing is shown below. A wedge is defined by three vertices
+    w = {cv, v*, e*}.
 
     v3------e2-------v2
     | \      |      / |
@@ -632,12 +629,12 @@ public:
     | /      |      \ |
     v0------e0-------v1
 
-    Corners are defined by the two wedges sharing the center vertex cv and a
-    primal vertex v*.
-    c0 = {w0, w1}
-    c1 = {w2, w3}
-    c2 = {w4, w5}
-    c3 = {w6, w7}
+    A corner is defined by a vertex and the two connecting edges.
+
+    c0 = {v0, e0, e3}
+    c1 = {v1, e0, e1}
+    c2 = {v2, e1, e2}
+    c3 = {v3, e2, e3}
 
     \endverbatim
    */
@@ -645,7 +642,7 @@ public:
     mesh_.init<0>();
     mesh_.init_bindings<1>();
 
-    mesh_.dump();
+    //mesh_.dump();
 
     // Create wedges
     for(auto c: mesh_.entities<1,1>()) {
