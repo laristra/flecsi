@@ -180,7 +180,8 @@ public:
 
   template<typename T,
     size_t NS = flecsi_user_space>
-  dense_accessor_t<T> dense_accessor(const const_string_t & key) {
+  dense_accessor_t<T> dense_accessor(const const_string_t & key)
+  {
     return sp_t::template dense_accessor<T,NS>(key);
   } // dense_accessor
 

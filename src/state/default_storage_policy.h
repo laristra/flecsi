@@ -47,7 +47,6 @@ namespace flecsi {
   policy, look at the interface in \ref state.h.  This is the interface
   that needs to be implemented by new storage policies.
  */
-
 template<typename user_meta_data_t>
 class default_state_storage_policy_t
 {
@@ -85,8 +84,7 @@ protected:
 
       \param label The c_str() version of the const_string used for
         this state variable's hash.
-      \param size The size in elements of the type T of the
-        state variable.
+      \param size The size of the associated index space.
       \param data A pointer to the raw data.
       \param meta A reference to the user-defined meta data.
      */
@@ -111,7 +109,7 @@ protected:
       \brief Return the size of the state variable referenced by this
         accessor.
 
-      The size is in elements of type T.        
+      The size of the assocated index space.
      */
     size_t size() const { return size_; }
 
@@ -231,8 +229,7 @@ protected:
 
       \param label The c_str() version of the const_string used for
         this state variable's hash.
-      \param size The size in elements of the type T of the
-        state variable.
+      \param size The size of the associated index space.
       \param data A pointer to the raw data.
       \param meta A reference to the user-defined meta data.
      */
