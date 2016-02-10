@@ -63,7 +63,8 @@ public:
     \tparam T The type of the underlying data to access.
    */
   template<typename T>
-  using accessor_t = burton_mesh_traits_t::mesh_state_t::accessor_t<T>;
+  using dense_accessor_t =
+    burton_mesh_traits_t::mesh_state_t::dense_accessor_t<T>;
 
   /*!
     \brief Register state for the named variable at the given attachment
@@ -118,7 +119,7 @@ public:
    */
   template<typename T, size_t NS = flecsi_user_space>
   decltype(auto) access_state_(const const_string_t && key) {
-    return state_.accessor<T,NS>(key);
+    return state_.dense_accessor<T,NS>(key);
   } // access_state_
 
   /*!
@@ -131,7 +132,7 @@ public:
    */
   template<typename T, size_t NS = flecsi_user_space>
   decltype(auto) access_type_() {
-    return state_.accessors<T,NS>();
+    return state_.dense_accessors<T,NS>();
   } // access_type_
 
   /*!
@@ -149,7 +150,7 @@ public:
    */
   template<typename T, typename P>
   decltype(auto) access_type_if_(P && predicate) {
-    return state_.accessors<T,P>(std::forward<P>(predicate));
+    return state_.dense_accessors<T,P>(std::forward<P>(predicate));
   } // access_type_if
 
   /*!

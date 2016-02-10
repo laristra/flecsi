@@ -61,7 +61,7 @@ public:
     \param[in] coordinates Coordinates value to set for vertex.
    */
   void set_coordinates(const point_t &coordinates) {
-    auto c = state_.accessor<point_t,flecsi_internal>("coordinates");
+    auto c = state_.dense_accessor<point_t,flecsi_internal>("coordinates");
     c[mesh_entity_base_t<num_domains>::template id<0>()] = coordinates;
   } // set_coordinates
 
@@ -70,7 +70,8 @@ public:
     \return coordinates of vertex.
    */
   const point_t & coordinates() const {
-    const auto c = state_.accessor<point_t,flecsi_internal>("coordinates");
+    const auto c =
+      state_.dense_accessor<point_t,flecsi_internal>("coordinates");
     return c[mesh_entity_base_t<num_domains>::template id<0>()];
   } // coordinates
 
