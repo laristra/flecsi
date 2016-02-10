@@ -800,14 +800,11 @@ public:
    */
   template<size_t FM, size_t TM, size_t TD>
   void build_bindings() {
-    constexpr size_t face_dim = 
-      MT::dimension > 2 ? MT::dimension - 1 : std::numeric_limits<size_t>::max();
-
     // Sanity check
     static_assert(TD <= MT::dimension, "invalid dimension");
 
     // Helper variables
-    size_t entity_id(0);
+    size_t entity_id = 0;
     size_t max_cell_conns = 1;
     const size_t _num_cells = num_entities<MT::dimension, FM>();
 
@@ -827,7 +824,7 @@ public:
       get_connectivity_<TM, FM, TD>(i).init();
     }
 
-    std::array<id_t *, MT::dimension + 1> primal_ids;
+    std::array<id_t *, MT::dimension> primal_ids;
 
     // This buffer should be large enough to hold all entities
     // that potentially need to be created
@@ -840,8 +837,6 @@ public:
       id_t cell_id = cell->template global_id<FM>();
       id_t local_cell_id = to_local_id(cell_id);
 
-      primal_ids[MT::dimension] = &cell_id;
-
       // Get ids of entities with at least this dimension
       for (size_t dim = 0; dim < MT::dimension; ++dim) {
         primal_ids[dim] = 
@@ -853,7 +848,7 @@ public:
       //            entities that define the bound entity.
 
       auto sv = cell->create_bound_entities(FM, TM, TD, primal_ids.data(), 
-                                           entity_ids.data());
+                                            entity_ids.data());
 
       size_t n = sv.size();
 
@@ -893,11 +888,11 @@ public:
             size_t dim = dimension_from_global_id(global_id);
 
             get_connectivity_<TM, FM, TD>(dim).push(global_id);
-            dim_flags |= 1 << dim;
+            dim_flags |= 1U << dim;
           }
 
-          for(size_t i = 0; i < MT::dimension; ++i){
-            if(dim_flags & (1U << i)){
+          for (size_t i = 0; i < MT::dimension; ++i) {
+            if (dim_flags & (1U << i)) {
               get_connectivity_<TM, FM, TD>(i).end_from();
             }            
           }
