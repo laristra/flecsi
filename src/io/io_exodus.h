@@ -6,8 +6,8 @@
  * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
  * /@@       /@@/@@//// //@@    @@       /@@/@@
  * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
- * 
+ * //       ///  //////   //////  ////////  //
+ *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
@@ -23,8 +23,8 @@
  * \date Initial file creation: Oct 07, 2015
  */
 
-namespace flecsi {
-
+namespace flecsi
+{
 /*!
   \class io_exodus_t io_exodus.h
   \brief io_exodus_t provides a derived type of io_base.h and registrations
@@ -34,10 +34,8 @@ namespace flecsi {
  */
 template <typename mesh_t>
 struct io_exodus_t : public io_base_t<mesh_t> {
-
   //! Default constructor
   io_exodus_t() {}
-
   /*!
     \brief Prototype of exodus mesh read. Implementation provided in
       specialization.
@@ -47,7 +45,7 @@ struct io_exodus_t : public io_base_t<mesh_t> {
 
     \return Error code. 0 on success.
    */
-  int32_t read(const std::string &name, mesh_t &m);
+  int32_t read(const std::string & name, mesh_t & m);
 
   /*!
     \brief Prototype of exodus mesh write. Implementation provided in
@@ -58,9 +56,9 @@ struct io_exodus_t : public io_base_t<mesh_t> {
 
     \return Error code. 0 on success.
    */
-  //FIXME: should allow for const mesh_t & in all of the following.
-  //int32_t write(const std::string &name, const mesh_t &m);
-  int32_t write(const std::string &name, mesh_t &m);
+  // FIXME: should allow for const mesh_t & in all of the following.
+  // int32_t write(const std::string &name, const mesh_t &m);
+  int32_t write(const std::string & name, mesh_t & m);
 
 }; // struct io_exodus_t
 
@@ -72,8 +70,10 @@ struct io_exodus_t : public io_base_t<mesh_t> {
   \return Pointer to io_base_t base class of io_exodus_t.
  */
 template <typename mesh_t>
-io_base_t<mesh_t> *create_io_exodus()
-  { return new io_exodus_t<mesh_t>; } // create_io_exodus
+io_base_t<mesh_t> * create_io_exodus()
+{
+  return new io_exodus_t<mesh_t>;
+} // create_io_exodus
 
 } // namespace flecsi
 

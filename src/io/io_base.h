@@ -6,8 +6,8 @@
  * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
  * /@@       /@@/@@//// //@@    @@       /@@/@@
  * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
- * 
+ * //       ///  //////   //////  ////////  //
+ *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
@@ -23,8 +23,8 @@
  * \date Initial file creation: Oct 07, 2015
  */
 
-namespace flecsi {
-
+namespace flecsi
+{
 /*!
   \class io_base_t io_base.h
   \brief io_base_t provides a base class using the object factory with pure
@@ -33,11 +33,11 @@ namespace flecsi {
   \tparam mesh_t Mesh to template io_base_t on.
  */
 template <typename mesh_t>
-class io_base_t {
-public:
+class io_base_t
+{
+ public:
   //! Default constructor
   io_base_t() {}
-
   /*!
     \brief Pure virtual mesh read.
 
@@ -46,7 +46,7 @@ public:
 
     \return Error code. 0 on success.
    */
-  virtual int32_t read(const std::string &name, mesh_t &m) = 0;
+  virtual int32_t read(const std::string & name, mesh_t & m) = 0;
 
   /*!
     \brief Pure virtual mesh write.
@@ -56,11 +56,10 @@ public:
 
     \return Error code. 0 on success.
    */
-  //FIXME: should allow for const mesh_t & in all of the following.
-  //virtual int32_t write(
+  // FIXME: should allow for const mesh_t & in all of the following.
+  // virtual int32_t write(
   //  const std::string &name, const mesh_t &m) = 0;
-  virtual int32_t write(
-    const std::string &name, mesh_t &m) = 0;
+  virtual int32_t write(const std::string & name, mesh_t & m) = 0;
 
 }; // struct io_base_t
 

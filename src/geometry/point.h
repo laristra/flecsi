@@ -6,8 +6,8 @@
  * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
  * /@@       /@@/@@//// //@@    @@       /@@/@@
  * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
- * 
+ * //       ///  //////   //////  ////////  //
+ *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
@@ -27,8 +27,8 @@
  * \date Initial file creation: Sep 23, 2015
  */
 
-namespace flecsi {
-
+namespace flecsi
+{
 /*!
   \class point point.h
   \brief point defines an interface for storing and manipulating
@@ -37,12 +37,14 @@ namespace flecsi {
   The point type is implemented using \ref dimensioned_array.  Look there
   for more information on the point interface.
  */
-template <typename T, size_t D> using point = dimensioned_array<T, D, 1>;
+template <typename T, size_t D>
+using point = dimensioned_array<T, D, 1>;
 
-template<typename T, size_t D>
-point<T,D> operator * (const T val, const point<T,D> & p) {
-  point<T,D> tmp(p);
-  for(size_t d(0); d<D; ++d) {
+template <typename T, size_t D>
+point<T, D> operator*(const T val, const point<T, D> & p)
+{
+  point<T, D> tmp(p);
+  for (size_t d(0); d < D; ++d) {
     tmp[d] *= val;
   } // for
 
@@ -53,8 +55,8 @@ point<T,D> operator * (const T val, const point<T,D> & p) {
   \function distance
  */
 template <typename T, size_t D>
-T distance(const point<T, D> &a, const point<T, D> &b) {
-
+T distance(const point<T, D> & a, const point<T, D> & b)
+{
   T sum(0);
   for (size_t d(0); d < D; ++d) {
     sum += square(a[d] - b[d]);
@@ -67,35 +69,33 @@ T distance(const point<T, D> &a, const point<T, D> &b) {
   \function midpoint
  */
 template <typename T, size_t D>
-  point<T, D> midpoint(const point<T, D> &a, const point<T, D> &b) {
-
-  return point<T,D>((a + b)/2.0);
+point<T, D> midpoint(const point<T, D> & a, const point<T, D> & b)
+{
+  return point<T, D>((a + b) / 2.0);
 } // distance
-
 
 /*!
   Compute the centroid of a list of points.
-  
+
   \param[in] cell The cell to return the centroid for.
   \return a point_t that is the centroid.
 */
-template <
-  template <typename...> class LIST,
-  typename T, 
-  size_t D
-  >
-auto centroid( const LIST<point<T,D>> & vert_list ) {
+template <template <typename...> class LIST, typename T, size_t D>
+auto centroid(const LIST<point<T, D>> & vert_list)
+{
   point<T, D> tmp(0.0);
-  for ( auto v : vert_list ) tmp += v;
+  for (auto v : vert_list)
+    tmp += v;
   tmp /= vert_list.size();
   return tmp;
 }
 
-
 template <typename T, size_t D>
-auto centroid( std::initializer_list<point<T, D>> vert_list ) {
+auto centroid(std::initializer_list<point<T, D>> vert_list)
+{
   point<T, D> tmp(0.0);
-  for ( auto v : vert_list ) tmp += v;
+  for (auto v : vert_list)
+    tmp += v;
   tmp /= vert_list.size();
   return tmp;
 }

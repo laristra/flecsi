@@ -6,8 +6,8 @@
  * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
  * /@@       /@@/@@//// //@@    @@       /@@/@@
  * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
- * 
+ * //       ///  //////   //////  ////////  //
+ *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
@@ -24,10 +24,9 @@
  * \date Initial file creation: Dec 26, 2015
  */
 
-namespace flecsi {
-
+namespace flecsi
+{
 struct minimal_types_t {
-
   static constexpr size_t dimension = minimal_mesh_traits_t::dimension;
   static constexpr size_t num_domains = minimal_mesh_traits_t::num_domains;
 
@@ -37,18 +36,11 @@ struct minimal_types_t {
   using cell_t = minimal_cell_t;
 
   using entity_types =
-    std::tuple<
-      std::pair<domain_<0>, vertex_t>,
-      std::pair<domain_<0>, edge_t>,
-      std::pair<domain_<0>, face_t>,
-      std::pair<domain_<0>, cell_t>
-    >;
+      std::tuple<std::pair<domain_<0>, vertex_t>, std::pair<domain_<0>, edge_t>,
+          std::pair<domain_<0>, face_t>, std::pair<domain_<0>, cell_t> >;
 
-  using connectivities =
-    std::tuple<
-      std::tuple<domain_<0>, vertex_t, edge_t>,
-      std::tuple<domain_<0>, vertex_t, cell_t>
-    >;
+  using connectivities = std::tuple<std::tuple<domain_<0>, vertex_t, edge_t>,
+      std::tuple<domain_<0>, vertex_t, cell_t> >;
 
   using bindings = std::tuple<>;
 

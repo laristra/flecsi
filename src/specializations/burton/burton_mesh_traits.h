@@ -6,8 +6,8 @@
  * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
  * /@@       /@@/@@//// //@@    @@       /@@/@@
  * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
- * 
+ * //       ///  //////   //////  ////////  //
+ *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
@@ -26,10 +26,9 @@
  * \date Initial file creation: Nov 15, 2015
  */
 
-namespace flecsi {
-
+namespace flecsi
+{
 struct burton_mesh_traits_t {
-
 /*!
   Compile-time selection of mesh dimension.  Valid selections are 2 or 3.
  */
@@ -80,9 +79,9 @@ struct burton_mesh_traits_t {
       and attributes.
    */
   struct private_state_meta_data_t {
-
-    void initialize(attachment_site_t site_,
-      bitfield_t::field_type_t attributes_) {
+    void initialize(
+        attachment_site_t site_, bitfield_t::field_type_t attributes_)
+    {
       site = site_;
       attributes = attributes_;
     } // initialize
@@ -91,13 +90,12 @@ struct burton_mesh_traits_t {
     bitfield_t::field_type_t attributes;
 
   }; // struct private_state_meta_data_t
-  
-  //! A type definition of state_t based on the storage policy for the mesh.
+
+//! A type definition of state_t based on the storage policy for the mesh.
 #ifndef MESH_STORAGE_POLICY
   using mesh_state_t = state_t<private_state_meta_data_t>;
 #else
-  using mesh_state_t =
-    state_t<private_state_meta_data_t, MESH_STORAGE_POLICY>;
+  using mesh_state_t = state_t<private_state_meta_data_t, MESH_STORAGE_POLICY>;
 #endif
 
 }; // struct burton_mesh_traits_t

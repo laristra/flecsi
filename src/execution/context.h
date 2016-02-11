@@ -6,8 +6,8 @@
  * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
  * /@@       /@@/@@//// //@@    @@       /@@/@@
  * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
- * 
+ * //       ///  //////   //////  ////////  //
+ *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
@@ -23,44 +23,42 @@
  * \date Initial file creation: Oct 19, 2015
  */
 
-namespace flecsi {
-
+namespace flecsi
+{
 /*!
   \class context_t context.h
   \brief context_t provides...
  */
 class context_t
 {
-public:
-
+ public:
   enum class call_state_t : size_t {
     driver = 0,
     task
   }; // enum class call_state_t
 
-  static context_t & instance() {
+  static context_t & instance()
+  {
     static context_t ctx;
     return ctx;
   } // instance
 
-  call_state_t current() {
+  call_state_t current()
+  {
     return call_state_ > 0 ? call_state_t::driver : call_state_t::task;
   } // current
 
   call_state_t entry() { return static_cast<call_state_t>(++call_state_); }
   call_state_t exit() { return static_cast<call_state_t>(--call_state_); }
-
   //! Copy constructor (disabled)
   context_t(const context_t &) = delete;
 
   //! Assignment operator (disabled)
-  context_t & operator = (const context_t &) = delete;
+  context_t & operator=(const context_t &) = delete;
 
-private:
-
+ private:
   context_t() : call_state_(static_cast<size_t>(call_state_t::driver)) {}
-   ~context_t() {}
-
+  ~context_t() {}
   size_t call_state_;
 
 }; // class context_t
