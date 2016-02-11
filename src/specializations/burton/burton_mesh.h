@@ -276,7 +276,11 @@ class burton_mesh_t
 
     \return Ids for all vertices in the burton mesh.
    */
-  auto vertex_ids() { return mesh_.entity_ids<0, 0>(); } // vertex_ids
+  auto vertex_ids()
+  {
+    return mesh_.entity_ids<0, 0>();
+  } // vertex_ids
+
   /*!
     \brief Return vertex ids associated with entity instance of type \e E.
 
@@ -302,13 +306,21 @@ class burton_mesh_t
 
     \return The number of burton mesh edges.
    */
-  size_t num_edges() const { return mesh_.num_entities<1, 0>(); } // num_edges
+  size_t num_edges() const
+  {
+    return mesh_.num_entities<1, 0>();
+  } // num_edges
+
   /*!
     \brief Return all edges in the burton mesh.
     \return Return all edges in the burton mesh as a sequence for use, e.g., in
       range based for loops.
    */
-  auto edges() { return mesh_.entities<1, 0>(); } // edges
+  auto edges()
+  {
+    return mesh_.entities<1, 0>();
+  } // edges
+
   /*!
     \brief Return edges for entity \e e in domain \e M.
 
@@ -346,7 +358,11 @@ class burton_mesh_t
 
     \return Ids for all edges in the burton mesh.
    */
-  auto edge_ids() { return mesh_.entity_ids<1, 0>(); } // edge_ids
+  auto edge_ids()
+  {
+    return mesh_.entity_ids<1, 0>();
+  } // edge_ids
+
   /*!
     \brief Return edge ids associated with entity instance of type \e E.
 
@@ -386,14 +402,22 @@ class burton_mesh_t
     \return Return all cells in the burton mesh as a sequence for use, e.g.,
       in range based for loops.
    */
-  auto cells() const { return mesh_.entities<dimension(), 0>(); } // cells
+  auto cells() const
+  {
+    return mesh_.entities<dimension(), 0>();
+  } // cells
+
   /*!
     \brief Return all cells in the burton mesh.
 
     \return Return all cells in the burton mesh as a sequence for use, e.g.,
       in range based for loops.
    */
-  auto cells() { return mesh_.entities<dimension(), 0>(); } // cells
+  auto cells()
+  {
+    return mesh_.entities<dimension(), 0>();
+  } // cells
+
   /*!
     \brief Return cells associated with entity instance of type \e E.
 
@@ -430,7 +454,11 @@ class burton_mesh_t
 
     \return Ids for all cells in the burton mesh.
    */
-  auto cell_ids() { return mesh_.entity_ids<dimension(), 0>(); } // cell_ids
+  auto cell_ids()
+  {
+    return mesh_.entity_ids<dimension(), 0>();
+  } // cell_ids
+
   /*!
     \brief Return cell ids associated with entity instance of type \e E.
 
@@ -466,7 +494,11 @@ class burton_mesh_t
     \return Return all corners in the burton mesh as a sequence for use, e.g.,
       in range based for loops.
    */
-  auto corners() { return mesh_.entities<1, 1>(); } // corners
+  auto corners()
+  {
+    return mesh_.entities<1, 1>();
+  } // corners
+
   /*!
     \brief Return corners associated with entity instance of type \e E.
 
@@ -504,7 +536,11 @@ class burton_mesh_t
 
     \return Ids for all corners in the burton mesh.
    */
-  auto corner_ids() { return mesh_.entity_ids<1, 1>(); } // corner_ids
+  auto corner_ids()
+  {
+    return mesh_.entity_ids<1, 1>();
+  } // corner_ids
+
   /*!
     \brief Return corner ids associated with entity instance of type \e E.
 
@@ -567,7 +603,11 @@ class burton_mesh_t
   /*!
     \brief Dump the burton mesh to standard out.
    */
-  void dump() { mesh_.dump(); }
+  void dump()
+  {
+    mesh_.dump();
+  }
+
   /*!
     \brief Initialize burton mesh state for the number of \e vertices.
 
@@ -578,7 +618,7 @@ class burton_mesh_t
   {
     // register coordinate state
     state_.register_state<point_t, flecsi_internal>(
-        "coordinates", vertices, attachment_site_t::vertices, persistent);
+      "coordinates", vertices, attachment_site_t::vertices, persistent);
 
   } // init_parameters
 
