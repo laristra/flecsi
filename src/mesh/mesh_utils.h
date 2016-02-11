@@ -60,6 +60,12 @@ id_t to_global_id(id_t local_id)
   return (id_t(D) << 62) | (id_t(M) << 60) | local_id;
 }
 
+template <size_t D, size_t M>
+id_t to_global_id(id_t local_id, id_t partition_id)
+{
+  return (id_t(D) << 62) | (id_t(M) << 60) | (partition_id << 40) | local_id;
+}
+
 /*!
   Convert a local id into a global id using a dimension and
   domain.  Currently, the dimension and domain are each given
@@ -79,9 +85,15 @@ id_t to_global_id(size_t dim, id_t local_id)
   return (id_t(dim) << 62) | (id_t(M) << 60) | local_id;
 }
 
+template <size_t M>
+id_t to_global_id(size_t dim, id_t local_id, id_t partition_id)
+{
+  return (id_t(dim) << 62) | (id_t(M) << 60) | (partition_id << 40) | local_id;
+}
+
 inline id_t to_local_id(id_t global_id)
 {
-  return global_id & 0x0000ffffffffffff;
+  return global_id & 0x000000ffffffffff;
 }
 
 inline size_t dimension_from_global_id(id_t global_id)
@@ -92,6 +104,11 @@ inline size_t dimension_from_global_id(id_t global_id)
 inline size_t domain_from_global_id(id_t global_id)
 {
   return (global_id >> 60) & 0b11;
+}
+
+inline size_t partition_from_global_id(id_t global_id)
+{
+  return (global_id >> 40) & 0xfffff;
 }
 
 /*----------------------------------------------------------------------------*
