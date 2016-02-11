@@ -452,11 +452,12 @@ class mesh_topology_t : public mesh_topology_base_t
 
   // Add and entity to a mesh domain and assign its id per domain
   template <size_t D, size_t M = 0>
-  void add_entity(mesh_entity_base_t<MT::num_domains> * ent)
+  void add_entity(mesh_entity_base_t<MT::num_domains> * ent,
+                  id_t partition_id=0)
   {
     auto & ents = ms_.entities[M][D];
 
-    id_t global_id = to_global_id<D, M>(ents.size());
+    id_t global_id = to_global_id<D, M>(ents.size(), partition_id);
 
     ent->ids_[M] = global_id;
     ents.push_back(ent);
@@ -545,6 +546,9 @@ class mesh_topology_t : public mesh_topology_base_t
       // Get the cell object
       auto cell = static_cast<entity_type<MT::dimension, M> *>(
           ms_.entities[M][MT::dimension][c]);
+      
+      id_t cell_id = cell->template global_id<M>();
+      id_t partition_id = partition_from_global_id(cell_id);
 
       // Get storage reference.
       id_vector_t & conns = cell_entity_conn[c];
@@ -583,7 +587,7 @@ class mesh_topology_t : public mesh_topology_base_t
 
         // Emplace the sorted vertices into the entity map
         auto itr = entity_vertices_map.emplace(
-            std::move(ev), to_global_id<D, M>(entity_id));
+            std::move(ev), to_global_id<D, M>(entity_id, partition_id));
 
         // Add this id to the cell to entity connections
         conns.push_back(itr.first->second);
@@ -861,6 +865,7 @@ class mesh_topology_t : public mesh_topology_base_t
       // Get a cell object.
       auto cell = static_cast<entity_type<MT::dimension, M0> *>(c);
       id_t cell_id = cell->template global_id<FM>();
+      id_t partition_id = partition_from_global_id(cell_id);
       id_t local_cell_id = to_local_id(cell_id);
 
       // Get ids of entities with at least this dimension
@@ -898,7 +903,7 @@ class mesh_topology_t : public mesh_topology_base_t
         // Emplace will only create a new entry if it doesn't
         // already exist.
         auto itr = entity_ids_map.emplace(
-            std::move(ev), to_global_id<TD, TM>(entity_id));
+            std::move(ev), to_global_id<TD, TM>(entity_id, partition_id));
 
         // Add this id to the cell entity connections
         conns.push_back(itr.first->second);

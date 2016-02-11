@@ -93,7 +93,7 @@ id_t to_global_id(size_t dim, id_t local_id, id_t partition_id)
 
 inline id_t to_local_id(id_t global_id)
 {
-  return global_id & 0x000000ffffffffff;
+  return global_id & 0xffffffffff;
 }
 
 inline size_t dimension_from_global_id(id_t global_id)
