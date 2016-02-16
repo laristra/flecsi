@@ -40,6 +40,13 @@ set(FLECSI_RUNTIME_MODEL "serial" CACHE STRING
   "Select the runtime model [legion,mpi,serial]")
 
 #------------------------------------------------------------------------------#
+# Add option for setting id bits
+#------------------------------------------------------------------------------#
+
+set(FLECSI_ID_PBITS "20" CACHE STRING
+  "Select the number of bits to use for partition ids. There will be 60-FLECSI_ID_PBITS available for entity ids")
+
+#------------------------------------------------------------------------------#
 # Add build options
 #------------------------------------------------------------------------------#
 
