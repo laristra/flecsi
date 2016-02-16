@@ -105,9 +105,9 @@ class mesh_entity_base_t
   } // id
 
   template <size_t M>
-  id_t id() const
+  size_t id() const
   {
-    return to_local_id(ids_[M]);
+    return ids_[M].entity();
   } // id
 
   template <size_t M>
@@ -162,7 +162,7 @@ class mesh_entity_base_t
   } // set_info
 
  private:
-  std::array<uint64_t, N> ids_;
+  std::array<id_t, N> ids_;
 
 }; // class mesh_entity_base_t
 
@@ -226,9 +226,9 @@ class domain_entity
   operator E *() { return entity_; }
   E * operator->() { return entity_; }
   E * operator*() { return entity_; }
-  operator id_t() { return entity_->template id<M>(); }
+  operator size_t() { return entity_->template id<M>(); }
   id_t global_id() { return entity_->template global_id<M>(); }
-  id_t id() { return entity_->template id<M>(); }
+  size_t id() { return entity_->template id<M>(); }
   bool operator==(domain_entity e) const { return entity_ == e.entity_; }
   bool operator!=(domain_entity e) const { return entity_ != e.entity_; }
  private:
@@ -385,7 +385,7 @@ class connectivity_t
 
     size_t n = cv.size();
 
-    id_t max_id = 0;
+    size_t max_id = 0;
 
     // cv is organized into groups of from entity to entity
 
@@ -393,19 +393,19 @@ class connectivity_t
       const id_vector_t & iv = cv[i];
 
       for (id_t id : iv) {
-        max_id = std::max(max_id, to_local_id(id));
+        max_id = std::max(max_id, id.entity());
         to_id_vec_.push_back(id);
       } // for
 
       from_index_vec_.push_back(to_id_vec_.size());
     } // for
 
-    id_t start_id = ev.size();
+    size_t start_id = ev.size();
 
     ev.reserve(max_id + 1);
 
-    for (id_t local_id = start_id; local_id <= max_id; ++local_id) {
-      id_t global_id = to_global_id<M>(dim, local_id);
+    for (size_t local_id = start_id; local_id <= max_id; ++local_id) {
+      id_t global_id = id_t::make<M>(dim, local_id);
       ev.push_back(
           mesh_entity_base_t<N>::template create_<MT, M>(dim, global_id, mesh));
       iv.push_back(global_id);
@@ -453,7 +453,7 @@ class connectivity_t
   {
     for (size_t i = 1; i < from_index_vec_.size(); ++i) {
       for (size_t j = from_index_vec_[i - 1]; j < from_index_vec_[i]; ++j) {
-        std::cout << to_local_id(to_id_vec_[j]) << std::endl;
+        std::cout << to_id_vec_[j].entity() << std::endl;
         // std::cout << to_id_vec_[j] << std::endl;
       }
       std::cout << std::endl;
@@ -461,19 +461,19 @@ class connectivity_t
 
     std::cout << "=== id_vec" << std::endl;
     for (id_t id : to_id_vec_) {
-      std::cout << to_local_id(id) << std::endl;
+      std::cout << id.entity() << std::endl;
     } // for
 
     std::cout << "=== group_vec" << std::endl;
-    for (id_t id : from_index_vec_) {
-      std::cout << id << std::endl;
+    for (size_t index : from_index_vec_) {
+      std::cout << index << std::endl;
     } // for
   } // dump
 
   /*!
     Get the from index vector.
    */
-  const id_vector_t & get_from_index_vec() const { return from_index_vec_; }
+  const index_vector_t & get_from_index_vec() const { return from_index_vec_; }
   /*!
     Get the to id's vector.
    */
@@ -551,7 +551,7 @@ class connectivity_t
   }
 
   id_vector_t to_id_vec_;
-  id_vector_t from_index_vec_;
+  index_vector_t from_index_vec_;
 
 }; // class connectivity_t
 

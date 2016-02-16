@@ -41,7 +41,7 @@ public:
     return {2, 2, 2, 2};
   }
 
-  std::vector<flecsi::id_t>
+  flecsi::index_vector_t
   create_bound_entities(size_t from_domain,
                         size_t to_domain,
                         size_t create_dim,
