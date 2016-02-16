@@ -30,6 +30,8 @@ endif()
 # Runtime model setup for script interface
 #------------------------------------------------------------------------------#
 
+set(FLECSI_RUNTIME_LIBRARIES)
+
 # Serial interface
 if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
@@ -41,6 +43,8 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(FLECSI_RUNTIME_MAIN script-driver-legion.cc)
 
   # Add legion setup here...
+  # include_directories(${Legion_INC_DIRS})
+  # set(FLECSI_RUNTIME_LIBRARIES ${Legion_LIBRARIES})
 
 # MPI interface
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
