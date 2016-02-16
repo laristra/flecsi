@@ -48,6 +48,13 @@ cinch_add_unit(burton
   LIBRARIES flecsi
 )
 
+if(ENABLE_LAPACK)
+  cinch_add_unit(burton_gradients
+    SOURCES burton/test/burton_gradients.cc
+    LIBRARIES ${LAPACK_LIBRARIES} flecsi
+  )
+endif(ENABLE_LAPACK)
+
 if(ENABLE_IO)
   cinch_add_unit(burton_io
     SOURCES burton/test/burton_io.cc

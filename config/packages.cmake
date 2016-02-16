@@ -70,6 +70,22 @@ if(ENABLE_IO)
 endif(ENABLE_IO)
 
 #------------------------------------------------------------------------------#
+# Enable LAPACK
+#------------------------------------------------------------------------------#
+option(ENABLE_LAPACK "Enable use of LAPACK solver." OFF)
+if(ENABLE_LAPACK)
+  set(LAPACK_LIBRARIES
+      ${TPL_INSTALL_PREFIX}/lib/liblapacke.a
+      ${TPL_INSTALL_PREFIX}/lib/liblapack.a
+      ${TPL_INSTALL_PREFIX}/lib/libcblas.a
+      ${TPL_INSTALL_PREFIX}/lib/libblas.a
+      -lgfortran
+      )
+  include_directories( ${TPL_INSTALL_PREFIX}/include )
+  add_definitions( -DHAVE_LAPACK )
+endif(ENABLE_LAPACK)
+
+#------------------------------------------------------------------------------#
 # Enable partitioning with METIS or SCOTCH
 #------------------------------------------------------------------------------#
 
