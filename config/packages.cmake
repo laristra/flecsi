@@ -40,6 +40,8 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(FLECSI_RUNTIME_MAIN script-driver-legion.cc)
 
+  # Add legion setup here...
+
 # MPI interface
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
