@@ -17,6 +17,8 @@
 
 #include <cstdint>
 
+#include "id.h"
+
 /*!
  * \file common.h
  * \authors bergen
@@ -25,7 +27,7 @@
 
 namespace flecsi
 {
-using id_t = uint64_t;
+using id_t = id_<20, 40>;
 
 //! P.O.D.
 template <typename T>
