@@ -6,8 +6,8 @@
  * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
  * /@@       /@@/@@//// //@@    @@       /@@/@@
  * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
- * 
+ * //       ///  //////   //////  ////////  //
+ *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
@@ -25,8 +25,8 @@
  * \date Initial file creation: Oct 09, 2015
  */
 
-namespace flecsi {
-
+namespace flecsi
+{
 /*!
   \brief state_name_space_t defines the various state namespaces that
     are available for registering and maintaining state.
@@ -38,11 +38,10 @@ enum class state_name_space_t : size_t {
   internal = 1
 }; // enum class state_name_space_t
 
-const size_t flecsi_user_space =
-  static_cast<size_t>(state_name_space_t::user);
+const size_t flecsi_user_space = static_cast<size_t>(state_name_space_t::user);
 
 const size_t flecsi_internal =
-  static_cast<size_t>(state_name_space_t::internal);
+    static_cast<size_t>(state_name_space_t::internal);
 
 /*!
   \brief state_attribute_t defines different state attributes.
@@ -52,7 +51,7 @@ const size_t flecsi_internal =
  */
 enum class state_attribute_t : bitfield_t::field_type_t {
   persistent = 0x0001,
-  temporary  = 0x0002
+  temporary = 0x0002
 }; // enum class state_attribute_t
 
 /*!
@@ -60,14 +59,15 @@ enum class state_attribute_t : bitfield_t::field_type_t {
     without specifying the full type information.
  */
 const bitfield_t::field_type_t persistent =
-  static_cast<bitfield_t::field_type_t>(flecsi::state_attribute_t::persistent);
+    static_cast<bitfield_t::field_type_t>(
+        flecsi::state_attribute_t::persistent);
 
 /*!
   \brief This exposes the temporary attribute so that it can be used
     without specifying the full type information.
  */
 const bitfield_t::field_type_t temporary =
-  static_cast<bitfield_t::field_type_t>(flecsi::state_attribute_t::temporary);
+    static_cast<bitfield_t::field_type_t>(flecsi::state_attribute_t::temporary);
 
 /*----------------------------------------------------------------------------*
  * struct default_state_meta_data_t
@@ -81,9 +81,8 @@ const bitfield_t::field_type_t temporary =
   useful for testing.
  */
 struct default_state_user_meta_data_t {
-
-  void initialize(const size_t & site_id_,
-    bitfield_t::field_type_t attributes_) {
+  void initialize(const size_t & site_id_, bitfield_t::field_type_t attributes_)
+  {
     site_id = site_id_;
     attributes = attributes_;
   } // initialize
@@ -104,28 +103,24 @@ struct default_state_user_meta_data_t {
 
   This type can be statically configured to use various implementations.
  */
-template<typename user_meta_data_t = default_state_user_meta_data_t,
-  template<typename> typename storage_policy_t =
-    default_state_storage_policy_t>
+template <typename user_meta_data_t = default_state_user_meta_data_t,
+    template <typename> typename storage_policy_t =
+        default_state_storage_policy_t>
 class state_t : public storage_policy_t<user_meta_data_t>
 {
-private:
-
+ private:
   // This is just for convenience...
   using sp_t = storage_policy_t<user_meta_data_t>;
 
-public:
-
+ public:
   //! Use the accessor type defined by the storage policy.
-  template<typename T>
+  template <typename T>
   using dense_accessor_t = typename sp_t::template dense_accessor_t<T>;
 
   //! Default constructor
   state_t() : sp_t() {}
-
   //! Destructor
-   ~state_t() {}
-
+  ~state_t() {}
   /*!
     \brief Register a state variable with the state manager.  This method
       logically allocates space for the variable of size \e indices which
@@ -151,13 +146,12 @@ public:
 
     \return FIXME
    */
-  template<typename T,
-    size_t NS = flecsi_user_space,
-    typename ... Args>
-  decltype(auto) register_state(const const_string_t & key, size_t indices,
-    Args && ... args) {
-    return sp_t::template register_state<T,NS>(key, indices,
-      std::forward<Args>(args) ...);
+  template <typename T, size_t NS = flecsi_user_space, typename... Args>
+  decltype(auto) register_state(
+      const const_string_t & key, size_t indices, Args &&... args)
+  {
+    return sp_t::template register_state<T, NS>(
+        key, indices, std::forward<Args>(args)...);
   } // register_state
 
   /*!
@@ -178,10 +172,10 @@ public:
     \return An accessor to the requested state data.
    */
 
-  template<typename T,
-    size_t NS = flecsi_user_space>
-  dense_accessor_t<T> dense_accessor(const const_string_t & key) {
-    return sp_t::template dense_accessor<T,NS>(key);
+  template <typename T, size_t NS = flecsi_user_space>
+  dense_accessor_t<T> dense_accessor(const const_string_t & key)
+  {
+    return sp_t::template dense_accessor<T, NS>(key);
   } // dense_accessor
 
   /*!
@@ -194,10 +188,10 @@ public:
     \return A std::vector of accessors to the state variables that
       match the type and namespace criteria.
    */
-  template<typename T,
-    size_t NS = flecsi_user_space>
-  std::vector<dense_accessor_t<T>> dense_accessors() {
-    return sp_t::template dense_accessors<T,NS>();
+  template <typename T, size_t NS = flecsi_user_space>
+  std::vector<dense_accessor_t<T>> dense_accessors()
+  {
+    return sp_t::template dense_accessors<T, NS>();
   } // dense_accessors
 
   /*!
@@ -221,11 +215,10 @@ public:
       match the namespace and predicate criteria.
    */
 
-  template<typename T,
-    typename P,
-    size_t NS = flecsi_user_space>
-  std::vector<dense_accessor_t<T>> dense_accessors(P && predicate) {
-    return sp_t::template dense_accessors<T,NS,P>(std::forward<P>(predicate));
+  template <typename T, typename P, size_t NS = flecsi_user_space>
+  std::vector<dense_accessor_t<T>> dense_accessors(P && predicate)
+  {
+    return sp_t::template dense_accessors<T, NS, P>(std::forward<P>(predicate));
   } // dense_accessors
 
   /*!
@@ -238,8 +231,9 @@ public:
       match the namespace criteria.
    */
 
-  template<size_t NS = flecsi_user_space>
-  std::vector<dense_accessor_t<uint8_t>> raw_dense_accessors() {
+  template <size_t NS = flecsi_user_space>
+  std::vector<dense_accessor_t<uint8_t>> raw_dense_accessors()
+  {
     return sp_t::template raw_dense_accessors<NS>();
   } // raw_dense_accessors
 
@@ -261,9 +255,9 @@ public:
       match the namespace and predicate criteria.
    */
 
-  template<typename P,
-    size_t NS = flecsi_user_space>
-  std::vector<dense_accessor_t<uint8_t>> raw_dense_accessors(P && predicate) {
+  template <typename P, size_t NS = flecsi_user_space>
+  std::vector<dense_accessor_t<uint8_t>> raw_dense_accessors(P && predicate)
+  {
     return sp_t::template raw_dense_accessors<NS>(std::forward<P>(predicate));
   } // raw_dense_accessors
 
@@ -276,8 +270,9 @@ public:
 
     \return The meta data corresponding to the key and namespace.
    */
-  template<size_t NS = flecsi_user_space>
-  user_meta_data_t & meta_data(const const_string_t & key) {
+  template <size_t NS = flecsi_user_space>
+  user_meta_data_t & meta_data(const const_string_t & key)
+  {
     return sp_t::template meta_data<NS>(key);
   } // user_meta_data
 
@@ -296,17 +291,17 @@ public:
 
     \return A std::shared_ptr<T> with a copy of the state data.
    */
-  template<typename T,
-    size_t NS = flecsi_user_space>
-  std::shared_ptr<T> & data(const const_string_t & key) {
-    return sp_t::template data<T,NS>(key);
+  template <typename T, size_t NS = flecsi_user_space>
+  std::shared_ptr<T> & data(const const_string_t & key)
+  {
+    return sp_t::template data<T, NS>(key);
   } // data
 
   //! Copy constructor (disabled)
   state_t(const state_t &) = delete;
 
   //! Assignment operator (disabled)
-  state_t & operator = (const state_t &) = delete;
+  state_t & operator=(const state_t &) = delete;
 
 }; // class state_t
 

@@ -6,8 +6,8 @@
  * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
  * /@@       /@@/@@//// //@@    @@       /@@/@@
  * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
- * 
+ * //       ///  //////   //////  ////////  //
+ *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
@@ -24,28 +24,22 @@
  * \date Initial file creation: Dec 26, 2015
  */
 
-namespace flecsi {
-
+namespace flecsi
+{
 /*!
   \class minimal_mesh minimal_mesh.h
   \brief minimal_mesh provides...
  */
 class minimal_mesh_t
 {
-private:
-
+ private:
   using mesh_t = mesh_topology_t<minimal_types_t>;
 
-public:
-
+ public:
   /*!
    */
-  void init() {
-    mesh_.init();
-  } // init
-
-private:
-
+  void init() { mesh_.init(); } // init
+ private:
   mesh_t mesh_;
 
 }; // class minimal_mesh_t

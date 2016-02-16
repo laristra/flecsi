@@ -6,8 +6,8 @@
  * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
  * /@@       /@@/@@//// //@@    @@       /@@/@@
  * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
- * 
+ * //       ///  //////   //////  ////////  //
+ *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
@@ -17,16 +17,18 @@
 
 #include <map>
 
-namespace flecsi {
-
+namespace flecsi
+{
 /*!
   \class Factory_ Factory.h
   \brief Factory_ provides a generic object factory class.
  */
-template <typename T, typename K, typename... Args> class Factory_ {
-public:
+template <typename T, typename K, typename... Args>
+class Factory_
+{
+ public:
   //! Function pointer type for creation method.
-  using createHandler = T *(*)(Args... args);
+  using createHandler = T * (*)(Args... args);
 
   //! Map key type.
   using key_t = K;
@@ -35,16 +37,17 @@ public:
   using map_t = std::map<key_t, createHandler>;
 
   //! Constructor (hidden)
-  Factory_(const Factory_ &f) = delete;
+  Factory_(const Factory_ & f) = delete;
 
   //! Assignment operator (hidden)
-  Factory_ &operator=(const Factory_ &) = delete;
+  Factory_ & operator=(const Factory_ &) = delete;
 
   /*!
     Return an instance of the Factory_ class. This uses a
     Meyer's singleton.
    */
-  static Factory_ &instance() {
+  static Factory_ & instance()
+  {
     static Factory_ f;
     return f;
   } // instance
@@ -57,7 +60,8 @@ public:
     \param ch The handler to call to create a new type associated
     with \emph id.
    */
-  bool registerType(key_t key, createHandler ch) {
+  bool registerType(key_t key, createHandler ch)
+  {
     return map_.insert(typename map_t::value_type(key, ch)).second;
   } // registerType
 
@@ -87,8 +91,8 @@ public:
     This will statically cast the lvalue to an rvalue reference and
     everything will be good.
    */
-  T *create(key_t key, Args &&... args) {
-
+  T * create(key_t key, Args &&... args)
+  {
     // lookup the create class
     typename map_t::const_iterator ita = map_.find(key);
 
@@ -102,15 +106,13 @@ public:
     return (ita->second(std::forward<Args>(args)...));
   } // create
 
-private:
+ private:
   map_t map_;
 
   //! Constructor
   Factory_() {}
-
   //! Destructor
   ~Factory_() {}
-
 }; // class Factory_
 
 } // namespace flecsi

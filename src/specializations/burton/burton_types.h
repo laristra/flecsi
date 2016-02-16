@@ -6,8 +6,8 @@
  * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
  * /@@       /@@/@@//// //@@    @@       /@@/@@
  * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
- * 
+ * //       ///  //////   //////  ////////  //
+ *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
@@ -25,8 +25,8 @@
  * \date Initial file creation: Sep 02, 2015
  */
 
-namespace flecsi {
-
+namespace flecsi
+{
 /*----------------------------------------------------------------------------*
  * struct burton_mesh_types_t
  *----------------------------------------------------------------------------*/
@@ -37,7 +37,6 @@ namespace flecsi {
     low-level mesh infrastructure for ALE methods.
 */
 struct burton_mesh_types_t {
-
   /*--------------------------------------------------------------------------*
    * Define local traits to satisfy mesh_topology requirements.
    *--------------------------------------------------------------------------*/
@@ -65,7 +64,7 @@ struct burton_mesh_types_t {
   //! Type for burton mesh quadrilateral cells.
   using quadrilateral_cell_t = burton_quadrilateral_cell_t;
 
-  //using wedge_t = burton_wedge_t<num_domains>;
+  // using wedge_t = burton_wedge_t<num_domains>;
 
   //! Type for burton mesh corners.
   using corner_t = burton_corner_t;
@@ -75,13 +74,12 @@ struct burton_mesh_types_t {
    *--------------------------------------------------------------------------*/
 
   //! Definitions of burton mesh entities and their domain.
+  // clang-format off
   using entity_types =
-    std::tuple<
-      std::pair<domain_<0>, vertex_t>,
-      std::pair<domain_<0>, edge_t>,
-      std::pair<domain_<0>, cell_t>,
-      std::pair<domain_<1>, corner_t>
-    >;
+      std::tuple<
+        std::pair<domain_<0>, vertex_t>, std::pair<domain_<0>, edge_t>,
+        std::pair<domain_<0>, cell_t>, std::pair<domain_<1>, corner_t>
+      >;
 
   //! Connectivities are adjacencies of entities within a single domain.
   using connectivities =
@@ -92,17 +90,18 @@ struct burton_mesh_types_t {
       std::tuple<domain_<0>, edge_t, cell_t>,
       std::tuple<domain_<0>, cell_t, vertex_t>,
       std::tuple<domain_<0>, cell_t, edge_t>
-    >;
+      >;
 
   //! Bindings are adjacencies of entities across two domains.
   using bindings =
-    std::tuple<
-      std::tuple<domain_<0>, domain_<1>, cell_t, corner_t>,
-      std::tuple<domain_<0>, domain_<1>, vertex_t, corner_t>,
-      std::tuple<domain_<1>, domain_<0>, corner_t, cell_t>,
-      std::tuple<domain_<1>, domain_<0>, corner_t, edge_t>,
-      std::tuple<domain_<1>, domain_<0>, corner_t, vertex_t>
-    >;
+      std::tuple<
+        std::tuple<domain_<0>, domain_<1>, cell_t, corner_t>,
+        std::tuple<domain_<0>, domain_<1>, vertex_t, corner_t>,
+        std::tuple<domain_<1>, domain_<0>, corner_t, cell_t>,
+        std::tuple<domain_<1>, domain_<0>, corner_t, edge_t>,
+        std::tuple<domain_<1>, domain_<0>, corner_t, vertex_t>
+      >;
+  // clang-format on
 
 }; // struct burton_mesh_types_t
 
