@@ -76,22 +76,6 @@ if(ENABLE_IO)
 endif(ENABLE_IO)
 
 #------------------------------------------------------------------------------#
-# Enable LAPACK
-#------------------------------------------------------------------------------#
-option(ENABLE_LAPACK "Enable use of LAPACK solver." OFF)
-if(ENABLE_LAPACK)
-  set(LAPACK_LIBRARIES
-      ${TPL_INSTALL_PREFIX}/lib/liblapacke.a
-      ${TPL_INSTALL_PREFIX}/lib/liblapack.a
-      ${TPL_INSTALL_PREFIX}/lib/libcblas.a
-      ${TPL_INSTALL_PREFIX}/lib/libblas.a
-      -lgfortran
-      )
-  include_directories( ${TPL_INSTALL_PREFIX}/include )
-  add_definitions( -DHAVE_LAPACK )
-endif(ENABLE_LAPACK)
-
-#------------------------------------------------------------------------------#
 # Enable partitioning with METIS or SCOTCH
 #------------------------------------------------------------------------------#
 
@@ -152,6 +136,17 @@ if(ENABLE_PARTITION)
   endif()
 
 endif()
+
+#------------------------------------------------------------------------------#
+# LAPACK
+#------------------------------------------------------------------------------#
+# NB: The code that uses lapack actually requires lapacke:
+# http://www.netlib.org/lapack/lapacke.html
+# If the installation of lapack that this finds does not contain lapacke then
+# the build will fail.
+find_package( LAPACK )
+# append lapacke to list of lapack libraries
+list( APPEND LAPACK_LIBRARIES lapacke )
 
 #------------------------------------------------------------------------------#
 # Create compile scripts
