@@ -35,14 +35,23 @@ struct minimal_types_t {
   using face_t = minimal_face_t;
   using cell_t = minimal_cell_t;
 
+  // clang-format off
   using entity_types =
-      std::tuple<std::pair<domain_<0>, vertex_t>, std::pair<domain_<0>, edge_t>,
-          std::pair<domain_<0>, face_t>, std::pair<domain_<0>, cell_t> >;
+    std::tuple<
+      std::pair<domain_<0>, vertex_t>,
+      std::pair<domain_<0>, edge_t>,
+      std::pair<domain_<0>, face_t>,
+      std::pair<domain_<0>, cell_t>
+    >;
 
-  using connectivities = std::tuple<std::tuple<domain_<0>, vertex_t, edge_t>,
-      std::tuple<domain_<0>, vertex_t, cell_t> >;
+  using connectivities =
+    std::tuple<
+      std::tuple<domain_<0>, vertex_t, edge_t>,
+      std::tuple<domain_<0>, vertex_t, cell_t>
+    >;
 
   using bindings = std::tuple<>;
+  // clang-format on
 
 }; // struct minimal_types
 

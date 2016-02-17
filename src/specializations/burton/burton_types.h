@@ -77,8 +77,10 @@ struct burton_mesh_types_t {
   // clang-format off
   using entity_types =
       std::tuple<
-        std::pair<domain_<0>, vertex_t>, std::pair<domain_<0>, edge_t>,
-        std::pair<domain_<0>, cell_t>, std::pair<domain_<1>, corner_t>
+        std::pair<domain_<0>, vertex_t>,
+        std::pair<domain_<0>, edge_t>,
+        std::pair<domain_<0>, cell_t>,
+        std::pair<domain_<1>, corner_t>
       >;
 
   //! Connectivities are adjacencies of entities within a single domain.
