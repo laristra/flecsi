@@ -93,6 +93,7 @@ class dimensioned_array
   //! \brief Constructor with one value.
   //! \param[in] val The value to set the array to
   dimensioned_array(const T & val) { data_.fill(val); } // dimensioned_array
+
   //! \brief Return the size of the array.
   static constexpr size_t size() { return dimension; };
   /*!

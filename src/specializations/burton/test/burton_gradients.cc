@@ -28,7 +28,7 @@ using point_t = burton_mesh_t::point_t;
 using vector_t = burton_mesh_t::vector_t;
 using real_t = burton_mesh_t::real_t;
 
-const int W = 20, H = 20;
+const int W = 40, H = 40;
 const real_t xmin = -1.0, xmax = 1.0, ymin = -1.0, ymax = 1.0;
 const real_t dx = (xmax-xmin)/real_t(W), dy = (ymax-ymin)/real_t(H);
 #if 1
@@ -238,13 +238,8 @@ TEST_F(Burton, gradients) {
         area = 1/2 mag(A X B) + 1/2 mag(C X D)
      */
 
-    // The first vertex is hosed
-    std::cerr << "==================\n";
-    std::cerr << "vertex: " << v.id() << std::endl;
     real_t area = 0.0;
     for(auto cnr: b.corners(v)) {
-      std::cerr << "corner: " << cnr.id() << std::endl;
-
       // the cell center for the cell containing this corner
       auto xc = b.cells(cnr).to_vec()[0]->centroid();
       auto xv = v->coordinates();
@@ -252,21 +247,19 @@ TEST_F(Burton, gradients) {
       for(auto e: b.edges(cnr)) { // the midpoints of the edges for this corner
         mp.push_back(e->midpoint());
       }
-
-      vector_t A; A[0] = mp[0][0]-xv[0]; A[1] = mp[0][1]-xv[1];
-      vector_t B; B[0] = mp[1][0]-xv[0]; B[1] = mp[1][1]-xv[1];
-      vector_t C; C[0] = mp[0][0]-xc[0]; C[1] = mp[0][1]-xc[1];
-      vector_t D; D[0] = mp[1][0]-xc[0]; D[1] = mp[1][1]-xc[1];
+      vector_t A(point_to_vector(mp[0]-xv));
+      vector_t B(point_to_vector(mp[1]-xv));
+      vector_t C(point_to_vector(mp[0]-xc));
+      vector_t D(point_to_vector(mp[1]-xc));
       area += 0.5*(cross_magnitude(A,B) + cross_magnitude(C,D));
     }
 
-    std::cerr << "vertex area: " << area << std::endl;
-
+    // go over wedges to finalize gradient
 //    for(auto w: wedges(v)) {
-//      auto Si = normal(w, SIDE_FACET);
-//      // normal(w, CELL_FACET) is also defined
-
-//      gsv(v) += Si * sc(cell(w))/volume;
+////      auto Si = normal(w, SIDE_FACET);
+////      // normal(w, CELL_FACET) is also defined
+//
+////      gsv(v) += Si * sc(cell(w))/volume;
 //    } // for
   } // for
 

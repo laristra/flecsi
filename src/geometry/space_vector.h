@@ -42,6 +42,29 @@ template <typename T, size_t D>
 using space_vector = dimensioned_array<T, D, 2>;
 
 /*!
+  \function point_to_vector(const point<T, D> & a)
+  \brief Copies the contents of a point type to a space_vector type. Because
+    point has template parameter TS = 1, and space_vector has template
+    parameter TS = 2, the usual copy/assignment constructors don't work as
+    one would hope. There is probably a better way to do this.
+
+  \tparam T Data type.
+  \tparam D Mesh dimension.
+
+  \param[in] p The point to create a space_vector from.
+
+  \return Space vector with the contents of point \e p.
+ */
+template <typename T, size_t D>
+space_vector<T, D> point_to_vector(const point<T, D> & p)
+{
+  space_vector<T, D> sv;
+  for (size_t d(0); d < D; ++d)
+    sv[d] = p[d];
+  return sv;
+}
+
+/*!
   \function operator*(const space_vector<T,D> & v, const T s)
  */
 template <typename T, size_t D>
