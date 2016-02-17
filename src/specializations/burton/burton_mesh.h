@@ -514,7 +514,6 @@ class burton_mesh_t
     return mesh_.entities<1, 1>(e);
   } // corners
 
-#if 0
   /*!
     \brief Return corners for entity \e e in domain \e M.
 
@@ -527,9 +526,8 @@ class burton_mesh_t
    */
   template<size_t M, class E>
   auto corners(domain_entity<M, E> & e) {
-    return mesh_.entities<1, M>(e);
+    return mesh_.entities<1, M, 1>(e.entity());
   }
-#endif
 
   /*!
     \brief Return ids for all corners in the burton mesh.
