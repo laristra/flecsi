@@ -83,6 +83,37 @@ T magnitude(const space_vector<T, D> & a)
 } // magnitude
 
 /*!
+  \function cross_magnitude
+ */
+template <typename T>
+T cross_magnitude(const space_vector<T, 1> & a, const space_vector<T, 1> & b)
+{
+  return 0.0;
+} // cross_magnitude
+
+/*!
+  \function cross_magnitude
+ */
+template <typename T>
+T cross_magnitude(const space_vector<T, 2> & a, const space_vector<T, 2> & b)
+{
+  return fabs(a[0]*b[1] - a[1]*b[0]);
+} // cross_magnitude
+
+/*!
+  \function cross_magnitude
+ */
+template <typename T>
+T cross_magnitude(const space_vector<T, 3> & a, const space_vector<T, 3> & b)
+{
+  space_vector<T,3> cross;
+  cross[0] =  a[1]*b[2] - a[2]*b[1];
+  cross[1] = -a[0]*b[2] + a[2]*b[0];
+  cross[2] =  a[0]*b[1] - a[1]*b[0];
+  return magnitude(cross);
+} // cross_magnitude
+
+/*!
   \function normal
   \brief for a vector xi + yj the normal vector is -yi + xj. given points
   a and b we use x = b[0] - a[0] and y = b[1] - a[1]

@@ -24,15 +24,20 @@ using namespace flecsi;
 using vertex_t = burton_mesh_t::vertex_t;
 //using edge_t = burton_mesh_t::edge_t;
 //using cell_t = burton_mesh_t::cell_t;
-//using point_t = burton_mesh_t::point_t;
+using point_t = burton_mesh_t::point_t;
 using vector_t = burton_mesh_t::vector_t;
 using real_t = burton_mesh_t::real_t;
 
-const int W = 50, H = 50;
+const int W = 4, H = 4;
 const real_t xmin = -1.0, xmax = 1.0, ymin = -1.0, ymax = 1.0;
 const real_t dx = (xmax-xmin)/real_t(W), dy = (ymax-ymin)/real_t(H);
+#if 0
 real_t x(size_t i, size_t j) { return xmin + pow(j+1,0.2)*i*dx; }
 real_t y(size_t i, size_t j) { return ymin + pow(i+1,0.2)*j*dy; }
+#else
+real_t x(size_t i, size_t j) { return xmin + i*dx; }
+real_t y(size_t i, size_t j) { return ymin + j*dy; }
+#endif
 // test fixture for creating the mesh
 class Burton : public ::testing::Test {
 protected:
@@ -202,44 +207,117 @@ TEST_F(Burton, gradients) {
     auto sc = access_state(b, "sc", real_t);
     auto gsv = access_state(b, "gsv", vector_t);
 
-    
-    // go over vertices and load some data
+    // go over vertices and initialize vertex data
+    const real_t pi = 3.1415;
     for(auto v: b.vertices()) {
       auto xv = v->coordinates();
-      sv[v] = sin(xv[0]) * cos(xv[1]);
+      sv[v] = sin(pi*xv[0]) * cos(pi*xv[1]);
     } // for
     
-    // go over cells to get zone centered average sc
+    // go over cells to get zone centered average stored in sc
     for(auto c: b.cells()) {
       sc[c] = interpolate(b, sv, c);
-
-      std::cerr << "sc[" << c.id() << "] = " << sc[c] << std::endl;
-
-      // cell centroid coordinates
-//    auto xc = c->centroid();
-//
-//    // go over vertices in cell
-//    for(auto v: b.vertices(c)) {
-//      auto xv = v->coordinates();
-//      std::cerr << "xv: " << xv << std::endl;
-//      std::cerr << "sv[v]: " << sv[v] << std::endl;
-//      sc(c) += f(sv(v), xv, xc);
-//    } // for
     } // for
+
+  // go over vertices and compute gradient using cell centered average
+  for(auto v: b.vertices()) {
+
+    // volume of dual mesh surrounding vertex
+
+    /*!
+      Area of a quadrilateral. No sides parallel.
+
+                    c
+             /-------------\
+            /                \
+        b  /                   \  d
+          /                      \
+         /-------------------------\
+                    a
+
+        A = 1/2 mag(a X b) + 1/2 mag(c X d)
+     */
+
+    // get cell centroids of cells surrounding vertex
+    std::vector<point_t> cc;
+    size_t nc = 0;
+    for (auto c: b.cells(v)) {
+      cc.push_back(c->centroid());
+      nc++;
+    }
+
+    // handle special case cells on boundary
+    if (nc == 1) { // domain corner
+      cc.push_back(v->coordinates()); // add the vertex itself as a cc
+      nc++;
+      for (auto e: b.edges(v)) {
+        cc.push_back(e->midpoint()); // add the midpoints of the edges
+        nc++;
+      }
+    } else if (nc == 2) { // domain side THIS DOESN'T WORK FOR ARBITRARY GRIDS
+      std::vector<point_t> mp;
+      for (auto e: b.edges(v)) {
+        mp.push_back(e->midpoint()); // record the three midpoints of the edges
+      }
+      // find the two edges that share a common x or y
+      bool xory_equal[3] = {false, false, false};
+      if (mp[0][0] == mp[1][0] or mp[0][1] == mp[1][1]) xory_equal[0] = true;
+      if (mp[0][0] == mp[2][0] or mp[0][1] == mp[2][1]) xory_equal[1] = true;
+      if (mp[1][0] == mp[2][0] or mp[1][1] == mp[2][1]) xory_equal[2] = true;
+      int eqid = -1;
+      for (size_t i=0; i<3; i++) {
+        if (xory_equal[i]) { eqid = i; break; }
+      }
+      // pick the two midpoints that have an equal x or y coordinate
+      if (eqid == 0) {
+        cc.push_back(mp[0]); cc.push_back(mp[1]); nc+=2;
+      } else if (eqid == 1) {
+        cc.push_back(mp[0]); cc.push_back(mp[2]); nc+=2;
+      } else if (eqid == 2) {
+        cc.push_back(mp[1]); cc.push_back(mp[2]); nc+=2;
+      }
+
+    }
+
+    // make space vectors for the sides of the "dual" cell
+    vector_t a, b, c, d;
+    a[0] = cc[1][0]-cc[0][0]; a[1] = cc[1][1]-cc[0][1];
+    b[0] = cc[3][0]-cc[0][0]; b[1] = cc[3][1]-cc[0][1];
+    c[0] = cc[3][0]-cc[2][0]; c[1] = cc[3][1]-cc[2][1];
+    d[0] = cc[1][0]-cc[2][0]; d[1] = cc[1][1]-cc[2][1];
+
+    std::cerr << "=============\n";
+    std::cerr << "vertex: " << v.id() << " coordinates: " << v->coordinates()
+              << std::endl;
+    std::cerr << "nc: " << nc << std::endl;
+    std::cerr << "cc[0]: [" << cc[0][0] << " " << cc[0][1] << "]" << std::endl;
+    std::cerr << "cc[1]: [" << cc[1][0] << " " << cc[1][1] << "]" << std::endl;
+    std::cerr << "cc[2]: [" << cc[2][0] << " " << cc[2][1] << "]" << std::endl;
+    std::cerr << "cc[3]: [" << cc[3][0] << " " << cc[3][1] << "]" << std::endl;
+    std::cerr << "a: " << a << std::endl;
+    std::cerr << "b: " << b << std::endl;
+    std::cerr << "c: " << c << std::endl;
+    std::cerr << "d: " << d << std::endl;
+
+    // compute the area
+    real_t A = 0.5*(cross_magnitude(a,b) + cross_magnitude(c,d));
+
+    std::cerr << "area: " << A << std::endl;
+
+    // USING CORNERS INSTEAD
+
+//    for(auto c: b.corners(v)) {
 //
-//  // go over vertices and compute gradient using cell centered average
-//  for(auto v: vertices()) {
-//
-//    // volume of dual mesh surrounding vertex
-//    auto volume = volume(v);
-//
+//    }
+
+
 //    for(auto w: wedges(v)) {
 //      auto Si = normal(w, SIDE_FACET);
 //      // normal(w, CELL_FACET) is also defined
-//
+
 //      gsv(v) += Si * sc(cell(w))/volume;
 //    } // for
-//  } // for
+  } // for
 
     // write the mesh
     std::string name("test/ex1.exo");

@@ -318,6 +318,15 @@ TEST_F(Burton, state) {
 #endif
 } // TEST_F
 
+TEST_F(Burton, where_are_edges) {
+  std::cerr << "adfljad\n";
+  for(auto c: b.cells()) {
+    for (auto e: b.edges(c)) {
+      std::cerr << "hola\n";
+    }
+  }
+}
+
 /*~------------------------------------------------------------------------~--*
  * Formatting options
  * vim: set tabstop=2 shiftwidth=2 expandtab :

@@ -162,6 +162,24 @@ TEST(space_vector, magnitude) {
 
 } // TEST
 
+TEST(space_vector, cross_magnitude) {
+  vector_1d_t a1(1.0);
+  vector_1d_t b1(2.0);
+  double c1 = cross_magnitude(a1, b1);
+  ASSERT_EQ(0.0, c1);
+
+  vector_2d_t a2(1.0, 3.0);
+  vector_2d_t b2(2.0,-5.0);
+  double c2 = cross_magnitude(a2, b2);
+  ASSERT_EQ(11.0, c2);
+
+  vector_3d_t a3(1.0, 3.0, -2.0);
+  vector_3d_t b3(2.0,-5.0, 10.0);
+  double c3 = cross_magnitude(a3, b3);
+  ASSERT_EQ(sqrt(20.0*20.0 + 14.0*14.0 + 11.0*11.0), c3);
+
+} // TEST
+
 using point_2d_t = point<double,2>;
 using point_3d_t = point<double,3>;
 
