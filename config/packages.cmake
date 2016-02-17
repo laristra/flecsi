@@ -65,11 +65,15 @@ endif(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 # Process id bits
 #------------------------------------------------------------------------------#
 
-add_definitions(-DFLECSI_ID_PBITS=${FLECSI_ID_PBITS})
+execute_process(COMMAND echo "60-${FLECSI_ID_PBITS}" COMMAND bc -l
+  OUTPUT_VARIABLE FLECSI_ID_EBITS OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-execute_process( COMMAND echo "2^${FLECSI_ID_PBITS}" COMMAND bc -l
+add_definitions(-DFLECSI_ID_PBITS=${FLECSI_ID_PBITS})
+add_definitions(-DFLECSI_ID_EBITS=${FLECSI_ID_EBITS})
+
+execute_process(COMMAND echo "2^${FLECSI_ID_PBITS}" COMMAND bc -l
   OUTPUT_VARIABLE flecsi_partitions OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process( COMMAND echo "2^(60-${FLECSI_ID_PBITS})" COMMAND bc -l
+execute_process(COMMAND echo "2^${FLECSI_ID_EBITS}" COMMAND bc -l
   OUTPUT_VARIABLE flecsi_entities OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with ${flecsi_entities} entities each")

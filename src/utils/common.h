@@ -25,9 +25,17 @@
  * \date Initial file creation: Sep 23, 2015
  */
 
+#ifndef FLECSI_ID_PBITS
+#define FLECSI_ID_PBITS 20
+#endif
+
+#ifndef FLECSI_ID_EBITS
+#define FLECSI_ID_EBITS 40
+#endif
+
 namespace flecsi
 {
-using id_t = id_<20, 40>;
+using id_t = id_<FLECSI_ID_PBITS, FLECSI_ID_EBITS>;
 
 //! P.O.D.
 template <typename T>
