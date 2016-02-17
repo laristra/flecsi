@@ -238,6 +238,7 @@ TEST_F(Burton, gradients) {
         A = 1/2 mag(a X b) + 1/2 mag(c X d)
      */
 
+#if 0
     // get cell centroids of cells surrounding vertex
     std::vector<point_t> cc;
     size_t nc = 0;
@@ -276,15 +277,14 @@ TEST_F(Burton, gradients) {
       } else if (eqid == 2) {
         cc.push_back(mp[1]); cc.push_back(mp[2]); nc+=2;
       }
-
     }
 
     // make space vectors for the sides of the "dual" cell
-    vector_t a, b, c, d;
-    a[0] = cc[1][0]-cc[0][0]; a[1] = cc[1][1]-cc[0][1];
-    b[0] = cc[3][0]-cc[0][0]; b[1] = cc[3][1]-cc[0][1];
-    c[0] = cc[3][0]-cc[2][0]; c[1] = cc[3][1]-cc[2][1];
-    d[0] = cc[1][0]-cc[2][0]; d[1] = cc[1][1]-cc[2][1];
+    vector_t A, B, C, D;
+    A[0] = cc[1][0]-cc[0][0]; A[1] = cc[1][1]-cc[0][1];
+    B[0] = cc[3][0]-cc[0][0]; B[1] = cc[3][1]-cc[0][1];
+    C[0] = cc[3][0]-cc[2][0]; C[1] = cc[3][1]-cc[2][1];
+    D[0] = cc[1][0]-cc[2][0]; D[1] = cc[1][1]-cc[2][1];
 
     std::cerr << "=============\n";
     std::cerr << "vertex: " << v.id() << " coordinates: " << v->coordinates()
@@ -294,21 +294,27 @@ TEST_F(Burton, gradients) {
     std::cerr << "cc[1]: [" << cc[1][0] << " " << cc[1][1] << "]" << std::endl;
     std::cerr << "cc[2]: [" << cc[2][0] << " " << cc[2][1] << "]" << std::endl;
     std::cerr << "cc[3]: [" << cc[3][0] << " " << cc[3][1] << "]" << std::endl;
-    std::cerr << "a: " << a << std::endl;
-    std::cerr << "b: " << b << std::endl;
-    std::cerr << "c: " << c << std::endl;
-    std::cerr << "d: " << d << std::endl;
+    std::cerr << "A: " << A << std::endl;
+    std::cerr << "B: " << B << std::endl;
+    std::cerr << "C: " << C << std::endl;
+    std::cerr << "D: " << D << std::endl;
 
     // compute the area
-    real_t A = 0.5*(cross_magnitude(a,b) + cross_magnitude(c,d));
+    real_t area = 0.5*(cross_magnitude(A,B) + cross_magnitude(C,D));
 
-    std::cerr << "area: " << A << std::endl;
+    std::cerr << "area: " << area << std::endl;
+#endif
 
     // USING CORNERS INSTEAD
 
-//    for(auto c: b.corners(v)) {
-//
-//    }
+    std::cerr << "==================\n";
+    std::cerr << "vertex: " << v.id() << std::endl;
+    for(auto c: b.corners(v)) {
+      std::cerr << "corner: " << c.id() << std::endl;
+      for(auto e: b.edges(c)) {
+        std::cerr << e->midpoint() << std::endl;
+      }
+    }
 
 
 //    for(auto w: wedges(v)) {
@@ -319,9 +325,9 @@ TEST_F(Burton, gradients) {
 //    } // for
   } // for
 
-    // write the mesh
-    std::string name("test/ex1.exo");
-    ASSERT_FALSE(write_mesh(name, b));
+//    // write the mesh
+//    std::string name("test/ex1.exo");
+//    ASSERT_FALSE(write_mesh(name, b));
   } // scope
 
 
