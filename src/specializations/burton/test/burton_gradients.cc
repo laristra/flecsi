@@ -15,7 +15,8 @@
 #include <cinchtest.h>
 
 #include "flecsi/specializations/burton/burton.h"
-
+#include "flecsi/io/io.h"
+#include "flecsi/specializations/burton/burton_io_exodus.h"
 
 using namespace std;
 using namespace flecsi;
@@ -27,9 +28,11 @@ using vertex_t = burton_mesh_t::vertex_t;
 using vector_t = burton_mesh_t::vector_t;
 using real_t = burton_mesh_t::real_t;
 
-real_t x(size_t i, size_t j) { return double(i); }
-real_t y(size_t i, size_t j) { return double(j); }
-
+const int W = 50, H = 50;
+const real_t xmin = -1.0, xmax = 1.0, ymin = -1.0, ymax = 1.0;
+const real_t dx = (xmax-xmin)/real_t(W), dy = (ymax-ymin)/real_t(H);
+real_t x(size_t i, size_t j) { return xmin + pow(j+1,0.2)*i*dx; }
+real_t y(size_t i, size_t j) { return ymin + pow(i+1,0.2)*j*dy; }
 // test fixture for creating the mesh
 class Burton : public ::testing::Test {
 protected:
@@ -64,11 +67,13 @@ protected:
   virtual void TearDown() { }
 
   burton_mesh_t b;
-  const size_t width = 10;
-  const size_t height = 10;
+  const size_t width = W;
+  const size_t height = H;
 };
 
-#include <lapacke.h>
+// this may not be a portable way to point to lapacke.h. works on darwin.
+#include <ccomplex>
+#include <lapacke/lapacke.h>
 // compute cell centered average of scalar s. used in test below.
 real_t interpolate(mesh_t & m, auto & s, auto & c) {
 
@@ -164,15 +169,9 @@ real_t interpolate(mesh_t & m, auto & s, auto & c) {
   
   lapack_int ipiv[N]; for (int i=0; i<N; i++) ipiv[i] = 0;
 
-  //for (int i=0; i<N; i++) std::cerr << "b[" << i << "] = " << b[i] << std::endl;
-
   int nrhs = 1; // NB: last argument, ldb, is equal to 1, not N!
   lapack_int err = LAPACKE_dgesv(LAPACK_ROW_MAJOR, N, nrhs, A,
     N, ipiv, b, nrhs);
-
-  //for (int i=0; i<N; i++) std::cerr << "b[" << i << "] = " << b[i] << std::endl;
-  //for (int i=0; i<N; i++) std::cerr << "ipiv[" << i << "] = "
-  //  << ipiv[i] << std::endl;
 
   auto cc = c->centroid();
 
@@ -206,7 +205,8 @@ TEST_F(Burton, gradients) {
     
     // go over vertices and load some data
     for(auto v: b.vertices()) {
-      sv[v] = 1.0 + v.id();
+      auto xv = v->coordinates();
+      sv[v] = sin(xv[0]) * cos(xv[1]);
     } // for
     
     // go over cells to get zone centered average sc
@@ -241,7 +241,12 @@ TEST_F(Burton, gradients) {
 //    } // for
 //  } // for
 
+    // write the mesh
+    std::string name("test/ex1.exo");
+    ASSERT_FALSE(write_mesh(name, b));
   } // scope
+
+
 
   /*--------------------------------------------------------------------------*
    * Example 4.
@@ -281,6 +286,9 @@ TEST_F(Burton, gradients) {
 //    } // for
 //  } // for
 //
+//    // write the mesh
+//    std::string name("test/ex4.exo");
+//    ASSERT_FALSE(write_mesh(name, b));
   } // scope
 }
 

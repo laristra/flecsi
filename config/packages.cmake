@@ -43,8 +43,11 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(FLECSI_RUNTIME_MAIN script-driver-legion.cc)
 
   # Add legion setup here...
-  # include_directories(${Legion_INC_DIRS})
-  # set(FLECSI_RUNTIME_LIBRARIES ${Legion_LIBRARIES})
+  set (Legion_INSTALL_DIRS "/usr/local"  CACHE PATH "Path to the Legion install directory")
+  set (Legion_INC_DIRS "${Legion_INSTALL_DIRS}/include") 
+  include_directories(${Legion_INC_DIRS})
+  set (Legion_LIBRARIES "${Legion_INSTALL_DIRS}/lib")
+  set(FLECSI_RUNTIME_LIBRARIES ${Legion_LIBRARIES})
 
 # MPI interface
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
@@ -87,22 +90,6 @@ if(ENABLE_IO)
   include_directories( ${TPL_INSTALL_PREFIX}/include )
   add_definitions( -DHAVE_EXODUS )
 endif(ENABLE_IO)
-
-#------------------------------------------------------------------------------#
-# Enable LAPACK
-#------------------------------------------------------------------------------#
-option(ENABLE_LAPACK "Enable use of LAPACK solver." OFF)
-if(ENABLE_LAPACK)
-  set(LAPACK_LIBRARIES
-      ${TPL_INSTALL_PREFIX}/lib/liblapacke.a
-      ${TPL_INSTALL_PREFIX}/lib/liblapack.a
-      ${TPL_INSTALL_PREFIX}/lib/libcblas.a
-      ${TPL_INSTALL_PREFIX}/lib/libblas.a
-      -lgfortran
-      )
-  include_directories( ${TPL_INSTALL_PREFIX}/include )
-  add_definitions( -DHAVE_LAPACK )
-endif(ENABLE_LAPACK)
 
 #------------------------------------------------------------------------------#
 # Enable partitioning with METIS or SCOTCH
@@ -165,6 +152,17 @@ if(ENABLE_PARTITION)
   endif()
 
 endif()
+
+#------------------------------------------------------------------------------#
+# LAPACK
+#------------------------------------------------------------------------------#
+# NB: The code that uses lapack actually requires lapacke:
+# http://www.netlib.org/lapack/lapacke.html
+# If the installation of lapack that this finds does not contain lapacke then
+# the build will fail.
+find_package( LAPACK )
+# append lapacke to list of lapack libraries
+list( APPEND LAPACK_LIBRARIES lapacke )
 
 #------------------------------------------------------------------------------#
 # Create compile scripts
