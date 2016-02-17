@@ -22,16 +22,16 @@ using namespace std;
 using namespace flecsi;
 
 using vertex_t = burton_mesh_t::vertex_t;
-//using edge_t = burton_mesh_t::edge_t;
+using edge_t = burton_mesh_t::edge_t;
 //using cell_t = burton_mesh_t::cell_t;
 using point_t = burton_mesh_t::point_t;
 using vector_t = burton_mesh_t::vector_t;
 using real_t = burton_mesh_t::real_t;
 
-const int W = 4, H = 4;
+const int W = 20, H = 20;
 const real_t xmin = -1.0, xmax = 1.0, ymin = -1.0, ymax = 1.0;
 const real_t dx = (xmax-xmin)/real_t(W), dy = (ymax-ymin)/real_t(H);
-#if 0
+#if 1
 real_t x(size_t i, size_t j) { return xmin + pow(j+1,0.2)*i*dx; }
 real_t y(size_t i, size_t j) { return ymin + pow(i+1,0.2)*j*dy; }
 #else
@@ -227,95 +227,40 @@ TEST_F(Burton, gradients) {
     /*!
       Area of a quadrilateral. No sides parallel.
 
-                    c
+                    D
              /-------------\
             /                \
-        b  /                   \  d
+        B  /                   \  C
           /                      \
          /-------------------------\
-                    a
+                    A
 
-        A = 1/2 mag(a X b) + 1/2 mag(c X d)
+        area = 1/2 mag(A X B) + 1/2 mag(C X D)
      */
 
-#if 0
-    // get cell centroids of cells surrounding vertex
-    std::vector<point_t> cc;
-    size_t nc = 0;
-    for (auto c: b.cells(v)) {
-      cc.push_back(c->centroid());
-      nc++;
-    }
-
-    // handle special case cells on boundary
-    if (nc == 1) { // domain corner
-      cc.push_back(v->coordinates()); // add the vertex itself as a cc
-      nc++;
-      for (auto e: b.edges(v)) {
-        cc.push_back(e->midpoint()); // add the midpoints of the edges
-        nc++;
-      }
-    } else if (nc == 2) { // domain side THIS DOESN'T WORK FOR ARBITRARY GRIDS
-      std::vector<point_t> mp;
-      for (auto e: b.edges(v)) {
-        mp.push_back(e->midpoint()); // record the three midpoints of the edges
-      }
-      // find the two edges that share a common x or y
-      bool xory_equal[3] = {false, false, false};
-      if (mp[0][0] == mp[1][0] or mp[0][1] == mp[1][1]) xory_equal[0] = true;
-      if (mp[0][0] == mp[2][0] or mp[0][1] == mp[2][1]) xory_equal[1] = true;
-      if (mp[1][0] == mp[2][0] or mp[1][1] == mp[2][1]) xory_equal[2] = true;
-      int eqid = -1;
-      for (size_t i=0; i<3; i++) {
-        if (xory_equal[i]) { eqid = i; break; }
-      }
-      // pick the two midpoints that have an equal x or y coordinate
-      if (eqid == 0) {
-        cc.push_back(mp[0]); cc.push_back(mp[1]); nc+=2;
-      } else if (eqid == 1) {
-        cc.push_back(mp[0]); cc.push_back(mp[2]); nc+=2;
-      } else if (eqid == 2) {
-        cc.push_back(mp[1]); cc.push_back(mp[2]); nc+=2;
-      }
-    }
-
-    // make space vectors for the sides of the "dual" cell
-    vector_t A, B, C, D;
-    A[0] = cc[1][0]-cc[0][0]; A[1] = cc[1][1]-cc[0][1];
-    B[0] = cc[3][0]-cc[0][0]; B[1] = cc[3][1]-cc[0][1];
-    C[0] = cc[3][0]-cc[2][0]; C[1] = cc[3][1]-cc[2][1];
-    D[0] = cc[1][0]-cc[2][0]; D[1] = cc[1][1]-cc[2][1];
-
-    std::cerr << "=============\n";
-    std::cerr << "vertex: " << v.id() << " coordinates: " << v->coordinates()
-              << std::endl;
-    std::cerr << "nc: " << nc << std::endl;
-    std::cerr << "cc[0]: [" << cc[0][0] << " " << cc[0][1] << "]" << std::endl;
-    std::cerr << "cc[1]: [" << cc[1][0] << " " << cc[1][1] << "]" << std::endl;
-    std::cerr << "cc[2]: [" << cc[2][0] << " " << cc[2][1] << "]" << std::endl;
-    std::cerr << "cc[3]: [" << cc[3][0] << " " << cc[3][1] << "]" << std::endl;
-    std::cerr << "A: " << A << std::endl;
-    std::cerr << "B: " << B << std::endl;
-    std::cerr << "C: " << C << std::endl;
-    std::cerr << "D: " << D << std::endl;
-
-    // compute the area
-    real_t area = 0.5*(cross_magnitude(A,B) + cross_magnitude(C,D));
-
-    std::cerr << "area: " << area << std::endl;
-#endif
-
-    // USING CORNERS INSTEAD
-
+    // The first vertex is hosed
     std::cerr << "==================\n";
     std::cerr << "vertex: " << v.id() << std::endl;
-    for(auto c: b.corners(v)) {
-      std::cerr << "corner: " << c.id() << std::endl;
-      for(auto e: b.edges(c)) {
-        std::cerr << e->midpoint() << std::endl;
+    real_t area = 0.0;
+    for(auto cnr: b.corners(v)) {
+      std::cerr << "corner: " << cnr.id() << std::endl;
+
+      // the cell center for the cell containing this corner
+      auto xc = b.cells(cnr).to_vec()[0]->centroid();
+      auto xv = v->coordinates();
+      std::vector<point_t> mp;
+      for(auto e: b.edges(cnr)) { // the midpoints of the edges for this corner
+        mp.push_back(e->midpoint());
       }
+
+      vector_t A; A[0] = mp[0][0]-xv[0]; A[1] = mp[0][1]-xv[1];
+      vector_t B; B[0] = mp[1][0]-xv[0]; B[1] = mp[1][1]-xv[1];
+      vector_t C; C[0] = mp[0][0]-xc[0]; C[1] = mp[0][1]-xc[1];
+      vector_t D; D[0] = mp[1][0]-xc[0]; D[1] = mp[1][1]-xc[1];
+      area += 0.5*(cross_magnitude(A,B) + cross_magnitude(C,D));
     }
 
+    std::cerr << "vertex area: " << area << std::endl;
 
 //    for(auto w: wedges(v)) {
 //      auto Si = normal(w, SIDE_FACET);
@@ -325,9 +270,9 @@ TEST_F(Burton, gradients) {
 //    } // for
   } // for
 
-//    // write the mesh
-//    std::string name("test/ex1.exo");
-//    ASSERT_FALSE(write_mesh(name, b));
+    // write the mesh
+    std::string name("test/ex1.exo");
+    ASSERT_FALSE(write_mesh(name, b));
   } // scope
 
 
