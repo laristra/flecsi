@@ -318,21 +318,6 @@ TEST_F(Burton, state) {
 #endif
 } // TEST_F
 
-TEST_F(Burton, corners_for_vertices) {
-  CINCH_CAPTURE() << std::endl << "corners_for_vertices" << std::endl;
-  std::string separator;
-  separator.insert(0,80,'=');
-  separator.append("\n");
-  for(auto v: b.vertices()) {
-    CINCH_CAPTURE() << separator;
-    CINCH_CAPTURE() << "vertex: " << v.id() << std::endl;
-    for (auto c: b.corners(v)) {
-      CINCH_CAPTURE() << "corner: " << c.id() << std::endl;
-    }
-  }
-  std::cout << CINCH_DUMP() << std::endl;
-}
-
 /*~------------------------------------------------------------------------~--*
  * Formatting options
  * vim: set tabstop=2 shiftwidth=2 expandtab :
