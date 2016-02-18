@@ -266,7 +266,7 @@ TEST_F(Burton, vertex_gradient_1) {
   } // for
 
     // write the mesh
-  std::string name("test/ex1.exo");
+  std::string name("ex1.exo");
   ASSERT_FALSE(write_mesh(name, b));
 }
 
