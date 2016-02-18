@@ -64,10 +64,11 @@ struct burton_mesh_types_t {
   //! Type for burton mesh quadrilateral cells.
   using quadrilateral_cell_t = burton_quadrilateral_cell_t;
 
-  // using wedge_t = burton_wedge_t<num_domains>;
-
   //! Type for burton mesh corners.
   using corner_t = burton_corner_t;
+
+  //! Type for burton mesh wedges.
+  using wedge_t = burton_wedge_t;
 
   /*--------------------------------------------------------------------------*
    * Specify mesh parameterizations.
@@ -80,6 +81,9 @@ struct burton_mesh_types_t {
         std::pair<domain_<0>, vertex_t>,
         std::pair<domain_<0>, edge_t>,
         std::pair<domain_<0>, cell_t>,
+#if TMP_WEDGES
+        std::pair<domain_<1>, wedge_t>,
+#endif
         std::pair<domain_<1>, corner_t>
       >;
 
@@ -97,8 +101,22 @@ struct burton_mesh_types_t {
   //! Bindings are adjacencies of entities across two domains.
   using bindings =
       std::tuple<
+
+#if TMP_WEDGES
+        std::tuple<domain_<0>, domain_<1>, cell_t, wedge_t>,
+        std::tuple<domain_<0>, domain_<1>, edge_t, wedge_t>,
+        std::tuple<domain_<0>, domain_<1>, vertex_t, wedge_t>,
+#endif
+
         std::tuple<domain_<0>, domain_<1>, cell_t, corner_t>,
         std::tuple<domain_<0>, domain_<1>, vertex_t, corner_t>,
+
+#if TMP_WEDGES
+        std::tuple<domain_<1>, domain_<0>, wedge_t, cell_t>,
+        std::tuple<domain_<1>, domain_<0>, wedge_t, edge_t>,
+        std::tuple<domain_<1>, domain_<0>, wedge_t, vertex_t>,
+#endif
+
         std::tuple<domain_<1>, domain_<0>, corner_t, cell_t>,
         std::tuple<domain_<1>, domain_<0>, corner_t, edge_t>,
         std::tuple<domain_<1>, domain_<0>, corner_t, vertex_t>

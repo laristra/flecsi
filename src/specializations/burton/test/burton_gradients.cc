@@ -14,6 +14,8 @@
 
 #include <cinchtest.h>
 
+//#define TMP_WEDGES 1
+
 #include "flecsi/specializations/burton/burton.h"
 #include "flecsi/io/io.h"
 #include "flecsi/specializations/burton/burton_io_exodus.h"
@@ -266,7 +268,7 @@ TEST_F(Burton, vertex_gradient_1) {
   } // for
 
     // write the mesh
-  std::string name("ex1.exo");
+  std::string name("vertex_gradient_1.exo");
   ASSERT_FALSE(write_mesh(name, b));
 }
 
@@ -311,7 +313,7 @@ TEST_F(Burton, vertex_gradient_4) {
   } // for
 
     // write the mesh
-  std::string name("test/ex4.exo");
+  std::string name("vertex_gradient_4.exo");
   ASSERT_FALSE(write_mesh(name, b));
 #endif
 }

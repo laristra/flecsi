@@ -207,6 +207,7 @@ class burton_quadrilateral_cell_t : public burton_cell_t
   inline std::vector<id_t> create_bound_entities(size_t from_domain,
       size_t to_domain, size_t dim, id_t ** ent_ids, id_t * c)
   {
+
     switch (dim) {
       // Corners
       case 1:
@@ -232,47 +233,43 @@ class burton_quadrilateral_cell_t : public burton_cell_t
 
         return {3, 3, 3, 3};
 
-#if 0 // Wedges are currently only referenced through corners
-      // so this logic is unused for the time being...
-
+#if TMP_WEDGES
       // Wedges
       case 2:
-        c.resize(16);
-
         // A wedge is defined by a vertex, an edge, and the cell itself.
         // The cell is implicit so add the vertex and edge for each wedge.
 
         // wedge 0
-        c[0] = ent_ids[0]; // vertex 0
-        c[1] = ent_ids[7]; // edge 3
+        c[0] = ent_ids[0][0]; // vertex 0
+        c[1] = ent_ids[1][3]; // edge 3
 
         // wedge 1
-        c[2] = ent_ids[0]; // vertex 0
-        c[3] = ent_ids[4]; // edge 0
+        c[2] = ent_ids[0][0]; // vertex 0
+        c[3] = ent_ids[1][0]; // edge 0
 
         // wedge 2
-        c[4] = ent_ids[1]; // vertex 1
-        c[5] = ent_ids[4]; // edge 0
+        c[4] = ent_ids[0][1]; // vertex 1
+        c[5] = ent_ids[1][0]; // edge 0
 
         // wedge 3
-        c[6] = ent_ids[1]; // vertex 1
-        c[7] = ent_ids[5]; // edge 1
+        c[6] = ent_ids[0][1]; // vertex 1
+        c[7] = ent_ids[1][1]; // edge 1
 
         // wedge 4
-        c[8] = ent_ids[2]; // vertex 2
-        c[9] = ent_ids[5]; // edge 1
+        c[8] = ent_ids[0][2]; // vertex 2
+        c[9] = ent_ids[1][1]; // edge 1
 
         // wedge 5
-        c[10] = ent_ids[2]; // vertex 2
-        c[11] = ent_ids[6]; // edge 2
+        c[10] = ent_ids[0][2]; // vertex 2
+        c[11] = ent_ids[1][2]; // edge 2
 
         // wedge 6
-        c[12] = ent_ids[3]; // vertex 3
-        c[13] = ent_ids[6]; // edge 2
+        c[12] = ent_ids[0][3]; // vertex 3
+        c[13] = ent_ids[1][2]; // edge 2
 
         // wedge 7
-        c[14] = ent_ids[3]; // vertex 3
-        c[15] = ent_ids[7]; // edge 3
+        c[14] = ent_ids[0][3]; // vertex 3
+        c[15] = ent_ids[1][3]; // edge 3
 
         return {2, 2, 2, 2, 2, 2, 2, 2};
 #endif

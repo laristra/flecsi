@@ -819,7 +819,7 @@ class mesh_topology_t : public mesh_topology_base_t
 
   /*!
     Build bindings associated with a from/to domain and topological dimension.
-    Compute building will call this on each binding found in the tuple of
+    compute_bindings will call this on each binding found in the tuple of
     bindings specified in the mesh type/traits mesh specialization.
    */
   template <size_t FM, size_t TM, size_t TD>
