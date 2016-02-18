@@ -43,7 +43,8 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(FLECSI_RUNTIME_MAIN script-driver-legion.cc)
 
   # Add legion setup here...
-  set (Legion_INSTALL_DIRS "/usr/local"  CACHE PATH "Path to the Legion install directory")
+  set (Legion_INSTALL_DIRS "/usr/local"  CACHE PATH
+    "Path to the Legion install directory")
   set (Legion_INC_DIRS "${Legion_INSTALL_DIRS}/include") 
   include_directories(${Legion_INC_DIRS})
   set (Legion_LIBRARIES "${Legion_INSTALL_DIRS}/lib")
