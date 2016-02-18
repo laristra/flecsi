@@ -21,12 +21,15 @@
 using namespace std;
 using namespace flecsi;
 
+using real_t = burton_mesh_t::real_t;
+
+using point_t = burton_mesh_t::point_t;
+using vector_t = burton_mesh_t::vector_t;
+
 using vertex_t = burton_mesh_t::vertex_t;
 using edge_t = burton_mesh_t::edge_t;
 //using cell_t = burton_mesh_t::cell_t;
-using point_t = burton_mesh_t::point_t;
-using vector_t = burton_mesh_t::vector_t;
-using real_t = burton_mesh_t::real_t;
+using corner_t = burton_mesh_t::corner_t;
 
 const int W = 40, H = 40;
 const real_t xmin = -1.0, xmax = 1.0, ymin = -1.0, ymax = 1.0;
@@ -185,7 +188,7 @@ real_t interpolate(mesh_t & m, auto & s, auto & c) {
     + b[3]*cc[0] + b[4]*cc[1] + b[5];
 }
 
-TEST_F(Burton, gradients) {
+TEST_F(Burton, vertex_gradient_1) {
 
   /*--------------------------------------------------------------------------*
    * Example 1.
@@ -194,30 +197,29 @@ TEST_F(Burton, gradients) {
    * computes the gradient.
    *--------------------------------------------------------------------------*/
 
-  {
-    // register state
-    // vertex based scalar (sv = scalar vertex)
-    register_state(b, "sv", vertices, real_t, persistent);
-    // cell based scalar (sc = scalar cell)
-    register_state(b, "sc", cells, real_t, persistent);
-    // vertex based vector (gsv = gradient scalar vector)
-    register_state(b, "gsv", vertices, vector_t, persistent);
+  // register state
+  // vertex based scalar (sv = scalar vertex)
+  register_state(b, "sv", vertices, real_t, persistent);
+  // cell based scalar (sc = scalar cell)
+  register_state(b, "sc", cells, real_t, persistent);
+  // vertex based vector (gsv = gradient scalar vector)
+  register_state(b, "gsv", vertices, vector_t, persistent);
     
-    auto sv = access_state(b, "sv", real_t);
-    auto sc = access_state(b, "sc", real_t);
-    auto gsv = access_state(b, "gsv", vector_t);
+  auto sv = access_state(b, "sv", real_t);
+  auto sc = access_state(b, "sc", real_t);
+  auto gsv = access_state(b, "gsv", vector_t);
 
-    // go over vertices and initialize vertex data
-    const real_t pi = 3.1415;
-    for(auto v: b.vertices()) {
-      auto xv = v->coordinates();
-      sv[v] = sin(pi*xv[0]) * cos(pi*xv[1]);
-    } // for
+  // go over vertices and initialize vertex data
+  const real_t pi = 3.1415;
+  for(auto v: b.vertices()) {
+    auto xv = v->coordinates();
+    sv[v] = sin(pi*xv[0]) * cos(pi*xv[1]);
+  } // for
     
     // go over cells to get zone centered average stored in sc
-    for(auto c: b.cells()) {
-      sc[c] = interpolate(b, sv, c);
-    } // for
+  for(auto c: b.cells()) {
+    sc[c] = interpolate(b, sv, c);
+  } // for
 
   // go over vertices and compute gradient using cell centered average
   for(auto v: b.vertices()) {
@@ -227,15 +229,15 @@ TEST_F(Burton, gradients) {
     /*!
       Area of a quadrilateral. No sides parallel.
 
-                    D
-             /-------------\
-            /                \
-        B  /                   \  C
-          /                      \
-         /-------------------------\
-                    A
+                 D
+          /-------------\
+         /                \
+      B /                   \  C
+       /                      \
+      /-------------------------\
+                 A
 
-        area = 1/2 mag(A X B) + 1/2 mag(C X D)
+      area = 1/2 mag(A X B) + 1/2 mag(C X D)
      */
 
     real_t area = 0.0;
@@ -254,21 +256,21 @@ TEST_F(Burton, gradients) {
       area += 0.5*(cross_magnitude(A,B) + cross_magnitude(C,D));
     }
 
+#if 0
     // go over wedges to finalize gradient
-//    for(auto w: wedges(v)) {
-////      auto Si = normal(w, SIDE_FACET);
-////      // normal(w, CELL_FACET) is also defined
-//
-////      gsv(v) += Si * sc(cell(w))/volume;
-//    } // for
+    for(auto w: wedges(v)) {
+      auto Si = w->side_facet_normal();
+      gsv[v] += Si * sc[cell(w)]/area;
+    } // for
+#endif
   } // for
 
     // write the mesh
-    std::string name("test/ex1.exo");
-    ASSERT_FALSE(write_mesh(name, b));
-  } // scope
+  std::string name("test/ex1.exo");
+  ASSERT_FALSE(write_mesh(name, b));
+}
 
-
+TEST_F(Burton, vertex_gradient_4) {
 
   /*--------------------------------------------------------------------------*
    * Example 4.
@@ -277,41 +279,41 @@ TEST_F(Burton, gradients) {
    * is an se scalar inside the loop.
    *--------------------------------------------------------------------------*/
 
-  {
-//  // register state
-//  register_scalar("sv", VERTEX);
-//  register_vector("gsv", VERTEX);
-//
-//  // Do other stuff...
-//
-//  auto sv = get_scalar("sv");
-//  auto gsv = get_vector("gsv");
-//
-//  for(auto v: vertices()) {
-//    auto volume = volume(v);
-//
-//    for(auto w: wedges(v)) {
-//      auto se = 0.0;
-//
-//      // do we need to iterate over edges of a wedge???
-//      for(auto e: edges(w)) {
-//        for(auto c: cells(e)) {
-//          for(auto vv: vertices(c)) {
-//            auto xv = coordinates(vv);
-//            se += f(sv(vv), xv, xe);
-//          } // for
-//        } // for
-//      } // for
-//
-//      auto Si = normal(w, SIDE_FACET);
-//      gsv(v) += Si * se/volume;
-//    } // for
-//  } // for
-//
-//    // write the mesh
-//    std::string name("test/ex4.exo");
-//    ASSERT_FALSE(write_mesh(name, b));
-  } // scope
+#if 0
+  // register state
+  register_scalar("sv", VERTEX);
+  register_vector("gsv", VERTEX);
+
+  // Do other stuff...
+
+  auto sv = get_scalar("sv");
+  auto gsv = get_vector("gsv");
+
+  for(auto v: vertices()) {
+    auto volume = volume(v);
+
+    for(auto w: wedges(v)) {
+      auto se = 0.0;
+
+      // do we need to iterate over edges of a wedge???
+      for(auto e: edges(w)) {
+        for(auto c: cells(e)) {
+          for(auto vv: vertices(c)) {
+            auto xv = coordinates(vv);
+            se += f(sv(vv), xv, xe);
+          } // for
+        } // for
+      } // for
+
+      auto Si = normal(w, SIDE_FACET);
+      gsv(v) += Si * se/volume;
+    } // for
+  } // for
+
+    // write the mesh
+  std::string name("test/ex4.exo");
+  ASSERT_FALSE(write_mesh(name, b));
+#endif
 }
 
 /*~------------------------------------------------------------------------~--*

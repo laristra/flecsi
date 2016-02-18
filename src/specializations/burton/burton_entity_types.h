@@ -212,23 +212,23 @@ class burton_quadrilateral_cell_t : public burton_cell_t
       case 1:
         // corner 0
         c[0] = ent_ids[0][0]; // vertex 0
-        c[1] = ent_ids[1][0]; // edge 0
-        c[2] = ent_ids[1][3]; // edge 3
+        c[1] = ent_ids[1][0]; // edge 0, abuts vertex 0
+        c[2] = ent_ids[1][3]; // edge 3, abuts vertex 0
 
         // corner 1
         c[3] = ent_ids[0][1]; // vertex 1
-        c[4] = ent_ids[1][0]; // edge 0
-        c[5] = ent_ids[1][1]; // edge 1
+        c[4] = ent_ids[1][0]; // edge 0, abuts vertex 1
+        c[5] = ent_ids[1][1]; // edge 1, abuts vertex 1
 
         // corner 2
         c[6] = ent_ids[0][2]; // vertex 2
-        c[7] = ent_ids[1][1]; // edge 1
-        c[8] = ent_ids[1][2]; // edge 2
+        c[7] = ent_ids[1][1]; // edge 1, abuts vertex 2
+        c[8] = ent_ids[1][2]; // edge 2, abuts vertex 2
 
         // corner 3
         c[9] = ent_ids[0][3]; // vertex 3
-        c[10] = ent_ids[1][2]; // edge 2
-        c[11] = ent_ids[1][3]; // edge 3
+        c[10] = ent_ids[1][2]; // edge 2, abuts vertex 3
+        c[11] = ent_ids[1][3]; // edge 3, abuts vertex 3
 
         return {3, 3, 3, 3};
 
@@ -238,6 +238,9 @@ class burton_quadrilateral_cell_t : public burton_cell_t
       // Wedges
       case 2:
         c.resize(16);
+
+        // A wedge is defined by a vertex, an edge, and the cell itself.
+        // The cell is implicit so add the vertex and edge for each wedge.
 
         // wedge 0
         c[0] = ent_ids[0]; // vertex 0
@@ -301,19 +304,29 @@ class burton_wedge_t
 
   //! Set the corner that a wedge is in.
   void set_corner(burton_corner_t * corner) { corner_ = corner; }
+
   //! Get the corner that a wedge is in.
   burton_corner_t * corner() { return corner_; }
+
   /*!
     \brief Get the side facet normal for the wedge.
     \return Side facet normal vector.
    */
-  vector_t side_facet_normal();
+  vector_t side_facet_normal()
+  {
+    vector_t sfn;
+    return sfn;
+  }
 
   /*!
     \brief Get the cell facet normal for the wedge.
     \return Cell facet normal vector.
    */
-  vector_t cell_facet_normal();
+  vector_t cell_facet_normal()
+  {
+    vector_t cfn;
+    return cfn;
+  }
 
  private:
   burton_corner_t * corner_;
