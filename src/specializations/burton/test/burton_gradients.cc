@@ -14,8 +14,6 @@
 
 #include <cinchtest.h>
 
-//#define TMP_WEDGES 1
-
 #include "flecsi/specializations/burton/burton.h"
 #include "flecsi/io/io.h"
 #include "flecsi/specializations/burton/burton_io_exodus.h"

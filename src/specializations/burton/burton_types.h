@@ -81,7 +81,7 @@ struct burton_mesh_types_t {
         std::pair<domain_<0>, vertex_t>,
         std::pair<domain_<0>, edge_t>,
         std::pair<domain_<0>, cell_t>,
-#if TMP_WEDGES
+#ifdef TMP_WEDGES
         std::pair<domain_<1>, wedge_t>,
 #endif
         std::pair<domain_<1>, corner_t>
@@ -102,7 +102,7 @@ struct burton_mesh_types_t {
   using bindings =
       std::tuple<
 
-#if TMP_WEDGES
+#ifdef TMP_WEDGES
         std::tuple<domain_<0>, domain_<1>, cell_t, wedge_t>,
         std::tuple<domain_<0>, domain_<1>, edge_t, wedge_t>,
         std::tuple<domain_<0>, domain_<1>, vertex_t, wedge_t>,
@@ -111,7 +111,7 @@ struct burton_mesh_types_t {
         std::tuple<domain_<0>, domain_<1>, cell_t, corner_t>,
         std::tuple<domain_<0>, domain_<1>, vertex_t, corner_t>,
 
-#if TMP_WEDGES
+#ifdef TMP_WEDGES
         std::tuple<domain_<1>, domain_<0>, wedge_t, cell_t>,
         std::tuple<domain_<1>, domain_<0>, wedge_t, edge_t>,
         std::tuple<domain_<1>, domain_<0>, wedge_t, vertex_t>,

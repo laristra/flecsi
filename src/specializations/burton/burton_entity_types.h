@@ -15,6 +15,8 @@
 #ifndef flecsi_burton_entity_types_h
 #define flecsi_burton_entity_types_h
 
+//#define TMP_WEDGES 1
+
 #include "flecsi/specializations/burton/burton_mesh_traits.h"
 #include "flecsi/mesh/mesh_types.h"
 
@@ -208,6 +210,11 @@ class burton_quadrilateral_cell_t : public burton_cell_t
       size_t to_domain, size_t dim, id_t ** ent_ids, id_t * c)
   {
 
+#ifdef TMP_WEDGES
+    std::cerr << "fd: " << from_domain << " td: " << to_domain
+              << " dim: " << dim << std::endl;
+#endif
+
     switch (dim) {
       // Corners
       case 1:
@@ -233,7 +240,7 @@ class burton_quadrilateral_cell_t : public burton_cell_t
 
         return {3, 3, 3, 3};
 
-#if TMP_WEDGES
+#ifdef TMP_WEDGES
       // Wedges
       case 2:
         // A wedge is defined by a vertex, an edge, and the cell itself.
