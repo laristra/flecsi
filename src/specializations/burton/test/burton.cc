@@ -79,14 +79,14 @@ TEST_F(Burton, mesh) {
   for(auto v : b.vertices()){
     CINCH_CAPTURE() << "----------- vertex id: " << v.id()
       << " with coordinates " << v->coordinates() << endl;
-  }
+  } // for
 
   CINCH_CAPTURE() << separator;
   CINCH_CAPTURE() << "Edges in mesh:" << std::endl;
   for(auto e : b.edges()){
     CINCH_CAPTURE() << "----------- edge id: " << e.id()
       << " with midpoint " << e->midpoint() << endl;
-  }
+  } // for
 
   CINCH_CAPTURE() << separator;
   CINCH_CAPTURE() << "Corners in mesh:" << std::endl;
@@ -100,31 +100,57 @@ TEST_F(Burton, mesh) {
   } // for
 
   CINCH_CAPTURE() << separator;
+  CINCH_CAPTURE() << "Wedges in mesh:" << std::endl;
+
+  for(auto w : b.wedges()) {
+    CINCH_CAPTURE() << "----------- wedge id: " << w.id() << endl;
+
+    for(auto c: b.cells(w)) {
+      CINCH_CAPTURE() << "       ++++ c id: " << c.id() << endl;
+    } // for
+
+    for(auto e: b.edges(w)) {
+      CINCH_CAPTURE() << "       ++++ edge id: " << e.id() << endl;
+    } // for
+
+    for(auto v: b.vertices(w)) {
+      CINCH_CAPTURE() << "       ++++ vertex id: " << v.id() << endl;
+    } // for
+  } // for
+
+  CINCH_CAPTURE() << separator;
+  CINCH_CAPTURE() << "For each vertex:" << std::endl;
+  for(auto v: b.vertices()) {
+    CINCH_CAPTURE() << "^^^^^^^^Vertex id: " << v.id()
+      << " with coordinates " << v->coordinates() << endl;
+    CINCH_CAPTURE() << "    ----Wedges:" << endl;
+    for(auto w: b.wedges(v)) {
+      CINCH_CAPTURE() << "    ++++ wedge id: " << w.id() << endl;
+    } // for
+  } // for
+
+  CINCH_CAPTURE() << separator;
   CINCH_CAPTURE() << "For each cell:" << std::endl;
   for(auto c : b.cells()) {
-    CINCH_CAPTURE() << "-----------Edges for cell id: " << c.id()
+    CINCH_CAPTURE() << "^^^^^^^^Cell id: " << c.id()
       << " with centroid " << c->centroid() << endl;
-    for(auto e : b.edges(c)){
-      CINCH_CAPTURE() << "++++ edge id: " << e.id()
-        << " with midpoint " << e->midpoint() << endl;
-    }
-#if 0
-    for(auto w : c->wedges()){
-      CINCH_CAPTURE() << "++++ wedge of: " << w.id() << endl;
-      CINCH_CAPTURE() << "### corner of: " << w->corner().id() << endl;
-    }
 
-    for(auto c2 : c->corners()){
-      CINCH_CAPTURE() << "++++ corner of: " << c2.id() << endl;
-      for(auto w : c2->wedges()){
-        CINCH_CAPTURE() << "++ wedge of: " << w.id() << endl;
-        for(auto v : b.vertices(w)){
-          CINCH_CAPTURE() << "- vertex of: " << v.id() << endl;
-        }
-      }
-    }
-#endif
-  }
+    CINCH_CAPTURE() << "    ----Edges:" << endl;
+    for(auto e : b.edges(c)){
+      CINCH_CAPTURE() << "    ++++ edge id: " << e.id()
+        << " with midpoint " << e->midpoint() << endl;
+    } // for
+
+    CINCH_CAPTURE() << "    ----Wedges:" << endl;
+    for(auto w : b.wedges(c)){
+      CINCH_CAPTURE() << "    ++++ wedge id: " << w.id() << endl;
+    } // for
+
+    CINCH_CAPTURE() << "    ----Corners:" << endl;
+    for(auto cnr : b.corners(c)){
+      CINCH_CAPTURE() << "    ++++ corner id: " << cnr.id() << endl;
+    } // for
+  } // for
 
   //CINCH_ASSERT(TRUE, CINCH_EQUAL_BLESSED("burton.blessed"));
 
@@ -297,10 +323,7 @@ TEST_F(Burton, state) {
     ASSERT_EQ(c.id(), cd[c]);
   } // for
 
-#ifdef TMP_WEDGES
-  std::cerr << "num_wedges " << b.num_wedges() << std::endl;
-  //ASSERT_EQ(32, b.num_wedges());
-  EXPECT_EQ(32, b.num_wedges());
+  ASSERT_EQ(32, b.num_wedges());
   // wedges
   for (auto w: wd) {
     wd[w] = (w%2) ? true : false;
@@ -314,7 +337,7 @@ TEST_F(Burton, state) {
       ASSERT_FALSE(wd[w]);
     }
   } // for
-#endif
+
 } // TEST_F
 
 /*~------------------------------------------------------------------------~--*
