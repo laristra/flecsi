@@ -98,6 +98,10 @@ class burton_mesh_t
         return state_.register_state<T>(
             key, num_corners(), attachment_site_t::corners, attributes);
         break;
+      case attachment_site_t::wedges:
+        return state_.register_state<T>(
+            key, num_wedges(), attachment_site_t::wedges, attributes);
+        break;
       default:
         assert(false && "Error: invalid state registration site.");
     } // switch
@@ -192,6 +196,9 @@ class burton_mesh_t
 
   //! 2D quadrilateral cell type.
   using quadrilateral_cell_t = burton_mesh_types_t::quadrilateral_cell_t;
+
+  //! Wedge type.
+  using wedge_t = burton_mesh_types_t::wedge_t;
 
   //! Corner type.
   using corner_t = burton_mesh_types_t::corner_t;
@@ -473,6 +480,90 @@ class burton_mesh_t
   {
     return mesh_.entity_ids<dimension(), 0>(e);
   } // cell_ids
+
+#ifdef TMP_WEDGES
+  /*--------------------------------------------------------------------------*
+   * Wedge Interface
+   *--------------------------------------------------------------------------*/
+
+  /*!
+    \brief Return number of wedges in the burton mesh.
+
+    \return The number of wedges in the burton mesh.
+   */
+  size_t num_wedges() const
+  {
+    return mesh_.num_entities<dimension(), 1>();
+  } // num_wedges
+
+  /*!
+    \brief Return all wedges in the burton mesh.
+
+    \return Return all wedges in the burton mesh as a sequence for use, e.g.,
+      in range based for loops.
+   */
+  auto wedges()
+  {
+    return mesh_.entities<dimension(), 1>();
+  } // wedges
+
+  /*!
+    \brief Return wedges associated with entity instance of type \e E.
+
+    \tparam E entity type of instance to return wedges for.
+
+    \param[in] e instance of entity to return wedges for.
+
+    \return Return wedges associated with entity instance \e e as a sequence.
+   */
+  template <class E>
+  auto wedges(E * e)
+  {
+    return mesh_.entities<dimension(), 1>(e);
+  } // wedges
+
+  /*!
+    \brief Return wedges for entity \e e in domain \e M.
+
+    \tparam M Domain.
+    \tparam E Entity type to get wedges for.
+
+    \param[in] e Entity to get wedges for.
+
+    \return Wedges for entity \e e in domain \e M.
+   */
+  template<size_t M, class E>
+  auto wedges(domain_entity<M, E> & e) {
+    return mesh_.entities<dimension(), M, 1>(e.entity());
+  }
+
+  /*!
+    \brief Return ids for all wedges in the burton mesh.
+
+    \return Ids for all wedges in the burton mesh.
+   */
+  auto wedge_ids()
+  {
+    return mesh_.entity_ids<dimension(), 1>();
+  } // wedge_ids
+
+  /*!
+    \brief Return wedge ids associated with entity instance of type \e E.
+
+    \tparam E entity type of instance to return wedge ids for.
+
+    \param[in] e instance of entity to return wedge ids for.
+
+    \return Return wedge ids associated with entity instance \e e as a
+      sequence.
+   */
+  template <class E>
+  auto wedge_ids(E * e)
+  {
+    return mesh_.entity_ids<dimension(), 1>(e);
+  } // wedge_ids
+
+#endif
 
   /*--------------------------------------------------------------------------*
    * Corner Interface

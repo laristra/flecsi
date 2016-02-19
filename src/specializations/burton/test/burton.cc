@@ -244,14 +244,14 @@ TEST_F(Burton, state) {
   register_state(b, "pressure", cells, real_t, persistent);
   register_state(b, "velocity", vertices, vector_t, persistent);
   register_state(b, "H", edges, vector_t);
-//  register_state(b, "cornerdata", corners, int32_t);
-//  register_state(b, "wedgedata", wedges, bool);
+  register_state(b, "cornerdata", corners, int32_t);
+  register_state(b, "wedgedata", wedges, bool);
 
   auto p = access_state(b, "pressure", real_t);
   auto velocity = access_state(b, "velocity", vector_t);
   auto H = access_state(b, "H", vector_t);
-//  auto cd = access_state(b, "cornerdata", int32_t);
-//  auto wd = access_state(b, "wedgedata", bool);
+  auto cd = access_state(b, "cornerdata", int32_t);
+  auto wd = access_state(b, "wedgedata", bool);
 
   // cells
   ASSERT_EQ(4, b.num_cells());
@@ -287,11 +287,8 @@ TEST_F(Burton, state) {
     ASSERT_EQ(e.id()*e.id()*e.id(), H[e][1]);
   } // for
 
-#if 0
   // corners
-  std::cerr << "num_corners " << b.num_corners() << std::endl;
-  ASSERT_EQ(5, b.num_corners());
-//FIXME: Need to implement mesh entities
+  ASSERT_EQ(16, b.num_corners());
   for (auto c: b.corners()) {
     cd[c] = c.id();
   } // for
@@ -300,8 +297,10 @@ TEST_F(Burton, state) {
     ASSERT_EQ(c.id(), cd[c]);
   } // for
 
+#ifdef TMP_WEDGES
   std::cerr << "num_wedges " << b.num_wedges() << std::endl;
-
+  //ASSERT_EQ(32, b.num_wedges());
+  EXPECT_EQ(32, b.num_wedges());
   // wedges
   for (auto w: wd) {
     wd[w] = (w%2) ? true : false;
