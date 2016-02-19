@@ -836,9 +836,6 @@ class mesh_topology_t : public mesh_topology_base_t
     // Storage for cell connectivity information
     connection_vector_t cell_conn(_num_cells);
 
-    // Map used to ensure unique entity creation
-    id_vector_map_t entity_ids_map;
-
     // Get cell definitions from domain 0
     using ent_vec_t = entity_vector_t<MT::num_domains>;
     ent_vec_t & cells = ms_.entities[FM][MT::dimension];
@@ -857,6 +854,9 @@ class mesh_topology_t : public mesh_topology_base_t
 
     // Iterate over cells
     for (auto c : cells) {
+      // Map used to ensure unique entity creation
+      id_vector_map_t entity_ids_map;
+      
       // Get a cell object.
       auto cell = static_cast<entity_type<MT::dimension, M0> *>(c);
       id_t cell_id = cell->template global_id<FM>();
