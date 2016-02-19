@@ -481,7 +481,6 @@ class burton_mesh_t
     return mesh_.entity_ids<dimension(), 0>(e);
   } // cell_ids
 
-#ifdef TMP_WEDGES
   /*--------------------------------------------------------------------------*
    * Wedge Interface
    *--------------------------------------------------------------------------*/
@@ -562,8 +561,6 @@ class burton_mesh_t
   {
     return mesh_.entity_ids<dimension(), 1>(e);
   } // wedge_ids
-
-#endif
 
   /*--------------------------------------------------------------------------*
    * Corner Interface
