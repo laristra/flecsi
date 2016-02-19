@@ -427,6 +427,11 @@ class mesh_topology_t : public mesh_topology_base_t
 
   mesh_topology_t & operator=(const mesh_topology_t &) = delete;
 
+  // Allow move operations
+  mesh_topology_t(mesh_topology_t &&) = default;
+  mesh_topology_t & operator=(mesh_topology_t &&) = default;
+
+
   //! Constructor
   mesh_topology_t()
   {

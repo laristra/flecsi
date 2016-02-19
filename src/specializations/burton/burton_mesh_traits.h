@@ -62,7 +62,8 @@ struct burton_mesh_traits_t {
 #endif
     cells,
     corners,
-    wedges
+    wedges,
+    global
   }; // enum class attachment_site_t
 
   //! Enumeration of the available attributes on state data.

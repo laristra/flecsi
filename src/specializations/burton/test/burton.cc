@@ -237,6 +237,11 @@ TEST_F(Burton, accessors) {
   register_state(b, "velocity", vertices, vector_t, persistent);
   register_state(b, "H", edges, vector_t);
 
+  struct data_t {
+    double x, y;
+  };  
+  register_global_state(b, "const", data_t);
+
   CINCH_CAPTURE() << "Accessing state with type real_t:" << endl;
 
   auto vr = access_type(b, real_t);
@@ -245,6 +250,15 @@ TEST_F(Burton, accessors) {
   } // for
 
   CINCH_CAPTURE() << endl;
+
+  CINCH_CAPTURE() << "Accessing state with type data_t:" << endl;
+
+  auto vd = access_type(b, data_t);
+  for(auto v: vd) {
+    CINCH_CAPTURE() << "\t" << v.label() << " has type data_t" << endl;
+  } // for
+
+  CINCH_CAPTURE() << std::endl;
 
   CINCH_CAPTURE() << "Accessing state with type real_t at cells:" << endl;
 
@@ -339,11 +353,18 @@ TEST_F(Burton, state) {
   register_state(b, "cornerdata", corners, int32_t);
   register_state(b, "wedgedata", wedges, bool);
 
+  struct data_t {
+    int x, y;
+  };  
+  register_global_state(b, "const", data_t);
+
+
   auto p = access_state(b, "pressure", real_t);
   auto velocity = access_state(b, "velocity", vector_t);
   auto H = access_state(b, "H", vector_t);
   auto cd = access_state(b, "cornerdata", int32_t);
   auto wd = access_state(b, "wedgedata", bool);
+  auto c = access_global_state(b, "const", data_t);
 
   // cells
   ASSERT_EQ(4, b.num_cells());
@@ -403,6 +424,11 @@ TEST_F(Burton, state) {
       ASSERT_FALSE(wd[w]);
     }
   } // for
+
+  // test global data
+  c = { 1, 2 };
+  ASSERT_EQ(1, c->x);  ASSERT_EQ(1, (*c).x);
+  ASSERT_EQ(2, c->y);  ASSERT_EQ(2, (*c).y);
 
 } // TEST_F
 

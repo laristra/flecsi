@@ -142,6 +142,67 @@
         flecsi::burton_mesh_traits_t::attachment_site_t::attachment_site && \
         bf.bitsset(persistent);                                             \
   }
+/*----------------------------------------------------------------------------*
+ * Global State Interface
+ *----------------------------------------------------------------------------*/
+
+/*!
+  \brief Register state with the mesh.
+
+  \param[in] mesh The flecsi mesh instance with which to register the state.
+  \param[in] key The string name of the state variable to register,
+    e.g., "density".
+  \param[in] type A valid C++ type for the registered state.
+  \param[in] ... A variadic list of arguments to pass to the initialization
+    function of the user-defined meta data type.
+ */
+#define register_global_state(mesh_, key, type, ...) \
+  (mesh_).register_global_state_<type>((key), ##__VA_ARGS__)
+
+
+/*!
+  \brief Access state from a given \e mesh and \e key.
+
+  \param[in] mesh The flecsi mesh instance from which to access the state.
+  \param[in] key The string name of the state variable to retrieve.
+  \param[in] type The C++ type of the requested state.
+
+  \return An accessor to the state data.
+ */
+#define access_global_state(mesh, key, type) \
+  (mesh).template access_global_state_<type>((key))
+
+/*!
+  \brief Access all state of a given type from a given \e mesh and \e key.
+
+  \param[in] mesh The flecsi mesh instance from which to access the state.
+  \param[in] type The C++ type of the requested state.
+
+  \return A std::vector<accessor_t<type>> holding accessors to
+    the matching state data.
+ */
+#define access_global_type(mesh, type) \
+  (mesh).access_global_type_<type>()
+
+/*!
+  \brief Access all state of a given type from a given \e mesh and \e key that
+    satisfy the given predicate.
+
+  \param[in] mesh The flecsi mesh instance from which to access the state.
+  \param[in] type The C++ type of the requested state.
+  \param[in] type A predicate function that returns true or false
+    given a state accessor as input.
+
+  \return A std::vector<accessor_t<type>> holding accessors to
+    the matching state data.
+ */
+#define access_global_type_if(mesh, type, predicate) \
+  (mesh).access_global_type_if_<type>(predicate)
+
+
+/*----------------------------------------------------------------------------*
+ * General Interface
+ *----------------------------------------------------------------------------*/
 
 /*!
   \brief Return the attributes of a state quantity.

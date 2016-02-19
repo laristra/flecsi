@@ -63,6 +63,9 @@ class burton_mesh_t
   template <typename T>
   using dense_accessor_t =
       burton_mesh_traits_t::mesh_state_t::dense_accessor_t<T>;
+  /*--------------------------------------------------------------------------*
+   * Dense Accessors
+   *--------------------------------------------------------------------------*/
 
   /*!
     \brief Register state for the named variable at the given attachment
@@ -157,6 +160,84 @@ class burton_mesh_t
   {
     return state_.dense_accessors<T, P>(std::forward<P>(predicate));
   } // access_type_if
+
+
+  /*--------------------------------------------------------------------------*
+   * Global Accessors
+   *--------------------------------------------------------------------------*/
+
+  /*!
+    \brief Register state for the named variable with attributes.
+
+    \tparam T The type of the underlying data to access.
+
+    \param[in] key A name for the state variable, e.g., "density".
+    \param[in] attributes A bitfield specifying various attributes of the state.
+
+    \return An accessor to the newly registered state.
+   */
+  template <typename T>
+  decltype(auto) register_global_state_(const const_string_t && key,
+    bitfield_t::field_type_t attributes = 0x0) {
+    
+    return state_.register_global_state<T>(key, attachment_site_t::global, attributes);
+
+  } // register_state_
+
+  /*!
+    \brief Access state associated with \e key.
+
+    \tparam T Data type of underlying state.
+    \tparam NS The namespace in which the state variable is registered.
+      See \ref state_t::register_state for additional information.
+
+    \param[in] key The \e key for the state to access.
+
+    \return Accessor to the state with \e key.
+   */
+  template <typename T, size_t NS = flecsi_user_space>
+  decltype(auto) access_global_state_(const const_string_t && key)
+  {
+    return state_.global_accessor<T, NS>(key);
+  } // access_state_
+
+  /*!
+    \brief Access state registered with type \e T.
+
+    \tparam T All state variables of this type will be returned.
+    \tparam NS Namespace to use.
+
+    \return A vector of accessors to state registered with type \e T.
+   */
+  template <typename T, size_t NS = flecsi_user_space>
+  decltype(auto) access_global_type_()
+  {
+    return state_.global_accessors<T, NS>();
+  } // access_type_
+
+  /*!
+    \brief Access state registered with type \e T that matches predicate
+      function of type \e P.
+
+    \tparam T All state variables of this type will be returned that match
+      predicate \e P will be returned.
+    \tparam P Predicate function type.
+
+    \param[in] predicate Predicate function.
+
+    \return Accessors to the state variables of type \e T matching the
+      predicate function.
+   */
+  template <typename T, typename P>
+  decltype(auto) access_global_type_if_(P && predicate)
+  {
+    return state_.global_accessors<T, P>(std::forward<P>(predicate));
+  } // access_type_if
+
+
+  /*--------------------------------------------------------------------------*
+   * General Accessors
+   *--------------------------------------------------------------------------*/
 
   /*!
     \brief Return the attributes for the state with \e key.
