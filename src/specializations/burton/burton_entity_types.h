@@ -15,7 +15,7 @@
 #ifndef flecsi_burton_entity_types_h
 #define flecsi_burton_entity_types_h
 
-//#define TMP_WEDGES 1
+#define TMP_WEDGES 1
 
 #include "flecsi/specializations/burton/burton_mesh_traits.h"
 #include "flecsi/mesh/mesh_types.h"
@@ -128,7 +128,7 @@ struct burton_cell_t
   burton_cell_t(mesh_topology_base_t & mesh) : mesh_(mesh) {}
   //! Destructor
   virtual ~burton_cell_t() {}
-  virtual point_t centroid() = 0;
+  virtual point_t centroid(){}
 
   /*!
     \brief create_entities is a function that creates entities
@@ -145,7 +145,7 @@ struct burton_cell_t
       entity and b) the number of vertices per collection.
    */
   virtual std::vector<id_t> create_entities(
-      size_t dim, id_t * e, id_t * v, size_t vertex_count) = 0;
+      size_t dim, id_t * e, id_t * v, size_t vertex_count){}
 
   /*!
     \brief create_bound_entities binds mesh entities across domains.
@@ -160,7 +160,7 @@ struct burton_cell_t
       binding and b) the number of entities per collection.
    */
   virtual std::vector<id_t> create_bound_entities(size_t from_domain,
-      size_t to_domain, size_t dim, id_t ** ent_ids, id_t * c) = 0;
+      size_t to_domain, size_t dim, id_t ** ent_ids, id_t * c){};
 
 }; // class burton_cell_t
 
@@ -303,6 +303,10 @@ class burton_wedge_t
     : public mesh_entity_t<2, burton_mesh_traits_t::num_domains>
 {
  public:
+  burton_wedge_t(){}
+
+  burton_wedge_t(mesh_topology_base_t & mesh){}
+
   //! Physics vector type.
   using vector_t = burton_mesh_traits_t::vector_t;
 

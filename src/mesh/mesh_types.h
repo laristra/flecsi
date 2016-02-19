@@ -137,6 +137,13 @@ class mesh_entity_base_t
         entity->ids_[M] = id;
         return entity;
       }
+      case MT::dimension: {
+        using entity_type =
+            typename find_entity_<MT, get_dim_(MT::dimension, 2), M>::type;
+        auto entity = new entity_type(mesh);
+        entity->ids_[M] = id;
+        return entity;
+      }
 #if 0 // FIXME: This will have to be included for 3D
     case 2: {
       using entity_type = 

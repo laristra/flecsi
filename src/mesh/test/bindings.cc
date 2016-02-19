@@ -9,17 +9,27 @@ using namespace flecsi;
 
 class Vertex : public mesh_entity_t<0, 2>{
 public:
+  Vertex(){}
+
+  Vertex(mesh_topology_base_t &){}
+
   template<size_t M>
   uint64_t precedence() const { return 0; }
 };
 
 class Edge : public mesh_entity_t<1, 2>{
 public:
+  Edge(){}
+
   Edge(mesh_topology_base_t &){}
 };
 
 class Cell : public mesh_entity_t<2, 2>{
 public:
+  Cell(){}
+
+  Cell(mesh_topology_base_t &){}
+
   void set_precedence(size_t dim, uint64_t precedence) {}
 
   std::vector<size_t>
@@ -75,7 +85,16 @@ public:
 
 class Corner : public mesh_entity_t<1, 2>{
 public:
+  Corner(){}
+
   Corner(mesh_topology_base_t &){}
+};
+
+class Wedge : public mesh_entity_t<2, 2>{
+public:
+  Wedge(){}
+
+  Wedge(mesh_topology_base_t &){}
 };
 
 class TestMesh2dType{
@@ -88,7 +107,8 @@ public:
     std::pair<domain_<0>, Vertex>,
     std::pair<domain_<0>, Edge>,
     std::pair<domain_<0>, Cell>,
-    std::pair<domain_<1>, Corner>>;
+    std::pair<domain_<1>, Corner>,
+    std::pair<domain_<1>, Wedge>>;
 
   using connectivities = 
     std::tuple<std::tuple<domain_<0>, Vertex, Edge>,
