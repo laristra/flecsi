@@ -856,7 +856,7 @@ class mesh_topology_t : public mesh_topology_base_t
     for (auto c : cells) {
       // Map used to ensure unique entity creation
       id_vector_map_t entity_ids_map;
-      
+
       // Get a cell object.
       auto cell = static_cast<entity_type<MT::dimension, M0> *>(c);
       id_t cell_id = cell->template global_id<FM>();
@@ -879,50 +879,34 @@ class mesh_topology_t : public mesh_topology_base_t
       // Iterate over the newly-defined entities
       id_vector_t & conns = cell_conn[cell_id.entity()];
 
-      conns.reserve(max_cell_conns);
+      conns.reserve(n);
 
       size_t pos = 0;
 
       for (size_t i = 0; i < n; ++i) {
         size_t m = sv[i];
 
-        // Get the id range for this entity
-        id_t * a = &entity_ids[i * m];
-        id_vector_t ev(a, a + m);
-
-        // Sort the id range so that it is ascending (ensures uniqueness)
-        std::sort(ev.begin(), ev.end());
-
-        // Emplace will only create a new entry if it doesn't
-        // already exist.
-        auto itr = entity_ids_map.emplace(
-            std::move(ev), id_t::make<TD, TM>(entity_id, cell_id.partition()));
+        id_t create_id = id_t::make<TD, TM>(entity_id, cell_id.partition());
 
         // Add this id to the cell entity connections
-        conns.push_back(itr.first->second);
+        conns.push_back(create_id);
 
-        // Increment
-        if (itr.second) {
-          uint32_t dim_flags = 0;
+        uint32_t dim_flags = 0;
 
-          for (size_t k = 0; k < m; ++k) {
-            id_t global_id = entity_ids[pos + k];
+        for (size_t k = 0; k < m; ++k) {
+          id_t global_id = entity_ids[pos + k];
 
-            get_connectivity_<TM, FM, TD>(global_id.dimension()).push(global_id);
-            dim_flags |= 1U << global_id.dimension();
+          get_connectivity_<TM, FM, TD>(global_id.dimension()).push(global_id);
+          dim_flags |= 1U << global_id.dimension();
+        }
+
+        for (size_t i = 0; i < MT::dimension; ++i) {
+          if (dim_flags & (1U << i)) {
+            get_connectivity_<TM, FM, TD>(i).end_from();
           }
+        }
 
-          for (size_t i = 0; i < MT::dimension; ++i) {
-            if (dim_flags & (1U << i)) {
-              get_connectivity_<TM, FM, TD>(i).end_from();
-            }
-          }
-
-          max_cell_conns =
-              std::max(max_cell_conns, cell_conn[cell_id.entity()].size());
-
-          ++entity_id;
-        } // if
+        ++entity_id;
 
         pos += m;
       } // for
