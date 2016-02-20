@@ -168,6 +168,7 @@ struct burton_cell_t
 
 /*!
   \class burton_quadrilateral_t burton_entity_types.h
+
   \brief The burton_quadrilateral_t type provides a derived instance of
     burton_cell_t for 2D quadrilateral cells.
  */
@@ -203,6 +204,47 @@ class burton_quadrilateral_cell_t : public burton_cell_t
 
   /*!
     \brief create_bound_entities function for burton_quadrilateral_cell_t.
+
+    \verbatim
+
+    The following shows the labeling of the primitives making up a cell. Given
+    vertices v*, edges e*, and center vertex cv.
+
+    v3------e2-------v2
+    |                 |
+    |                 |
+    |                 |
+    |                 |
+    e3      cv       e1
+    |                 |
+    |                 |
+    |                 |
+    |                 |
+    v0------e0-------v1
+
+    A wedge is defined by a vertex, an edge, and the cell itself. The wedge
+    indexing is shown below.
+
+    v3------e2-------v2
+    | \      |      / |
+    |   \  w6|w5  /   |
+    |  w7 \  |  / w4  |
+    |       \|/       |
+    e3------cv-------e1
+    |       /|\       |
+    |  w0 /  |  \ w3  |
+    |   /  w1|w2  \   |
+    | /      |      \ |
+    v0------e0-------v1
+
+    A corner is defined by a vertex and two edges.
+
+    c0 = {v0, e0, e3}
+    c1 = {v1, e0, e1}
+    c2 = {v2, e1, e2}
+    c3 = {v3, e2, e3}
+
+    \endverbatim
    */
   inline std::vector<id_t> create_bound_entities(size_t from_domain,
       size_t to_domain, size_t dim, id_t ** ent_ids, id_t * c)
@@ -235,8 +277,6 @@ class burton_quadrilateral_cell_t : public burton_cell_t
 
       // Wedges
       case 2:
-        // A wedge is defined by a vertex, an edge, and the cell itself.
-        // The cell is implicit so add the vertex and edge for each wedge.
 
         // wedge 0
         c[0] = ent_ids[0][0]; // vertex 0
@@ -301,8 +341,26 @@ class burton_wedge_t
   //! Physics vector type.
   using vector_t = burton_mesh_traits_t::vector_t;
 
+  //! Set the cell that a wedge is in.
+  void set_cell(burton_cell_t * cell) { cell_ = cell; }
+
+  //! Set the edge that a wedge has.
+  void set_edge(burton_edge_t * edge) { edge_ = edge; }
+
+  //! Set the vertex that a wedge has.
+  void set_vertex(burton_vertex_t * vertex) { vertex_ = vertex; }
+
   //! Set the corner that a wedge is in.
   void set_corner(burton_corner_t * corner) { corner_ = corner; }
+
+  //! Get the cell that a wedge is in.
+  burton_cell_t * cell() { return cell_; }
+
+  //! Get the edge that a wedge has.
+  burton_edge_t * edge() { return edge_; }
+
+  //! Get the vertex that a wedge has.
+  burton_vertex_t * vertex() { return vertex_; }
 
   //! Get the corner that a wedge is in.
   burton_corner_t * corner() { return corner_; }
@@ -313,8 +371,10 @@ class burton_wedge_t
    */
   vector_t side_facet_normal()
   {
-    vector_t sfn;
-    return sfn;
+    // Use the edge midpoint and the cell centroid to create the normal vector.
+    auto c = cell()->centroid();
+    auto e = edge()->midpoint();
+    return vector_t(normal(c,e));
   }
 
   /*!
@@ -323,11 +383,16 @@ class burton_wedge_t
    */
   vector_t cell_facet_normal()
   {
-    vector_t cfn;
-    return cfn;
+    // Use the edge midpoint and vertex to create the normal vector.
+    auto e = edge()->midpoint();
+    auto v = vertex()->coordinates();
+    return vector_t(normal(e,v));
   }
 
  private:
+  burton_cell_t * cell_;
+  burton_edge_t * edge_;
+  burton_vertex_t * vertex_;
   burton_corner_t * corner_;
 
 }; // struct burton_wedge_t

@@ -711,42 +711,6 @@ class burton_mesh_t
   /*!
     \brief Initialize the burton mesh.
 
-    \verbatim
-
-    The following shows the labeling of the primitives making up a cell. Given
-    vertices v*, edges e*, and center vertex cv.
-
-    v3-----e2-----v2
-    |              |
-    |              |
-    e3     cv     e1
-    |              |
-    |              |
-    v0-----e0-----v1
-
-    The wedge indexing is shown below. A wedge is defined by three vertices
-    w = {cv, v*, e*}.
-
-    v3------e2-------v2
-    | \      |      / |
-    |   \  w6|w5  /   |
-    |  w7 \  |  / w4  |
-    |       \|/       |
-    e3------cv-------e1
-    |       /|\       |
-    |  w0 /  |  \ w3  |
-    |   /  w1|w2  \   |
-    | /      |      \ |
-    v0------e0-------v1
-
-    A corner is defined by a vertex and the two connecting edges.
-
-    c0 = {v0, e0, e3}
-    c1 = {v1, e0, e1}
-    c2 = {v2, e1, e2}
-    c3 = {v3, e2, e3}
-
-    \endverbatim
    */
   void init()
   {
@@ -755,13 +719,16 @@ class burton_mesh_t
 
     //mesh_.dump();
 
-    // Create wedges
-    for (auto c : mesh_.entities<1, 1>()) {
-      auto vertex = vertices(c).first();
-      auto edge0 = edges(c).first();
-      auto edge1 = edges(c).last();
-      auto cell = cells(c).first();
+    // Initialize wedges
+    for (auto w : wedges()) {
+// FIXME
+#if 0
+      w->set_cell(cells(w).first());
+#endif
+      w->set_edge(edges(w).first());
+      w->set_vertex(vertices(w).first());
     } // for
+
   } // init
 
  private:
