@@ -435,11 +435,7 @@ class mesh_topology_t : public mesh_topology_base_t
   //! Constructor
   mesh_topology_t()
   {
-    for (size_t from_dim = 0; from_dim < MT::num_domains; ++from_dim) {
-      for (size_t to_dim = 0; to_dim < MT::num_domains; ++to_dim) {
-        get_connectivity_(from_dim, to_dim, MT::dimension, 0).init();
-      }
-    }
+    get_connectivity_(0, 0, MT::dimension, 0).init();
   } // mesh_topology_t()
 
   // The mesh retains ownership of the entities and deletes them
@@ -656,7 +652,7 @@ class mesh_topology_t : public mesh_topology_base_t
   /*!
      Used internally to compute connectivity information for
      topological dimension
-       FD -> TD using FD -> D' and D' -> TD where TD < D' < FD
+       FD -> TD using FD -> D' and D' -> TD
    */
   template <size_t FM, size_t TM, size_t FD, size_t TD, size_t D>
   void intersect()
