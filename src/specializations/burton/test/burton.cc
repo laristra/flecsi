@@ -116,7 +116,7 @@ TEST_F(Burton, mesh) {
     CINCH_CAPTURE() << "----------- wedge id: " << w.id() << endl;
 
     for(auto c: b.cells(w)) {
-      CINCH_CAPTURE() << "       ++++ c id: " << c.id() << endl;
+      CINCH_CAPTURE() << "       ++++ cell id: " << c.id() << endl;
     } // for
 
     for(auto e: b.edges(w)) {
@@ -186,23 +186,25 @@ TEST_F(Burton, geometry) {
   CINCH_CAPTURE() << separator;
   for(auto v: b.vertices()) {
     auto xv = v->coordinates();
-    CINCH_CAPTURE() << "---- vertex id: " << v.id() 
+    CINCH_CAPTURE() << "^^^^ vertex id: " << v.id()
       << " with coordinates " << xv << endl;
     for(auto w: b.wedges(v)) {
 
+      CINCH_CAPTURE() << "     ---- wedge id: " << w.id() << endl;
+
       // Why do we have to do .first()?
       auto c = b.cells(w).first();
-      CINCH_CAPTURE() << "     ++++ cell id: " << c.id()
+      CINCH_CAPTURE() << "          ++++ cell id: " << c.id()
         << " with centroid " << c->centroid() << endl;
 
       auto e = b.edges(w).first();
-      CINCH_CAPTURE() << "     ++++ edge id: " << e.id()
+      CINCH_CAPTURE() << "          ++++ edge id: " << e.id()
         << " with midpoint " << e->midpoint() << endl;
 
-      CINCH_CAPTURE() << "     ++++ side_facet_normal: "
+      CINCH_CAPTURE() << "          ++++ side_facet_normal: "
         << w->side_facet_normal() << endl;
 
-      CINCH_CAPTURE() << "     ++++ cell_facet_normal: "
+      CINCH_CAPTURE() << "          ++++ cell_facet_normal: "
         << w->cell_facet_normal() << endl;
 
     } // for
