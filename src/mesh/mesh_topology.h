@@ -573,11 +573,13 @@ class mesh_topology_t : public mesh_topology_base_t
 
       // iterate over the newly-defined entities
       for (size_t i = 0; i < n; ++i) {
+        size_t m = sv[i];
+
         // Get the vertices that define this entity by getting
         // a pointer to the vector-of-vector data and then constructing
         // a vector of ids for only this entity.
-        id_t * a = &entity_vertices[i * sv[i]];
-        id_vector_t ev(a, a + sv[i]);
+        id_t * a = &entity_vertices[i * m];
+        id_vector_t ev(a, a + m);
 
         // Sort the ids for the current entity so that they are
         // monotonically increasing. This ensures that entities are
@@ -595,11 +597,11 @@ class mesh_topology_t : public mesh_topology_base_t
         // If the insertion took place
         if (itr.second) {
           // what does this do?
-          id_vector_t ev2 = id_vector_t(a, a + sv[i]);
+          id_vector_t ev2 = id_vector_t(a, a + m);
           entity_vertex_conn.emplace_back(std::move(ev2));
 
-          max_cell_entity_conns =
-              std::max(max_cell_entity_conns, cell_entity_conn[c].size());
+          max_cell_entity_conns = 
+            std::max(max_cell_entity_conns, conns.size());
 
           // A new entity was added, so we advance the id counter.
           ++entity_id;
