@@ -190,86 +190,86 @@ TEST(mesh_topology, traversal) {
   mesh->dump();
 
   for(auto cell : mesh->entities<2>()) {
-    cout << "------- cell id: " << cell.id() << endl;
+    CINCH_CAPTURE() << "------- cell id: " << cell.id() << endl;
     for(auto corner : mesh->entities<1, 0, 1>(cell)) {
-      cout << "--- corner id: " << corner.id() << endl;
+      CINCH_CAPTURE() << "--- corner id: " << corner.id() << endl;
     }
   }
 
   for(auto vertex : mesh->entities<0>()) {
-    cout << "------- vertex id: " << vertex.id() << endl;
+    CINCH_CAPTURE() << "------- vertex id: " << vertex.id() << endl;
     for(auto corner : mesh->entities<1, 0, 1>(vertex)) {
-      cout << "--- corner id: " << corner.id() << endl;
+      CINCH_CAPTURE() << "--- corner id: " << corner.id() << endl;
     }
   }
 
   for(auto corner : mesh->entities<1, 1>()) {
-    cout << "------- corner id: " << corner.id() << endl;
+    CINCH_CAPTURE() << "------- corner id: " << corner.id() << endl;
     for(auto cell : mesh->entities<2, 1, 0>(corner)) {
-      cout << "--- cell id: " << cell.id() << endl;
+      CINCH_CAPTURE() << "--- cell id: " << cell.id() << endl;
     }
   }
 
   for(auto corner : mesh->entities<1, 1>()) {
-    cout << "------- corner id: " << corner.id() << endl;
+    CINCH_CAPTURE() << "------- corner id: " << corner.id() << endl;
     for(auto edge : mesh->entities<1, 1, 0>(corner)) {
-      cout << "--- edge id: " << edge.id() << endl;
+      CINCH_CAPTURE() << "--- edge id: " << edge.id() << endl;
     }
   }
 
   for(auto edge : mesh->entities<1>()) {
-    cout << "------- edge id: " << edge.id() << endl;
+    CINCH_CAPTURE() << "------- edge id: " << edge.id() << endl;
     for(auto corner : mesh->entities<1, 0, 1>(edge)) {
-      cout << "--- corner id: " << corner.id() << endl;
+      CINCH_CAPTURE() << "--- corner id: " << corner.id() << endl;
     }
   }
 
   for(auto corner : mesh->entities<1, 1>()) {
-    cout << "------- corner id: " << corner.id() << endl;
+    CINCH_CAPTURE() << "------- corner id: " << corner.id() << endl;
     for(auto vertex : mesh->entities<0, 1, 0>(corner)) {
-      cout << "--- vertex id: " << vertex.id() << endl;
+      CINCH_CAPTURE() << "--- vertex id: " << vertex.id() << endl;
     }
   }
 
   for(auto cell : mesh->entities<2>()) {
-    cout << "------- cell id: " << cell.id() << endl;
+    CINCH_CAPTURE() << "------- cell id: " << cell.id() << endl;
     for(auto wedge : mesh->entities<2, 0, 1>(cell)) {
-      cout << "--- wedge id: " << wedge.id() << endl;
+      CINCH_CAPTURE() << "--- wedge id: " << wedge.id() << endl;
     }
   }
 
   for(auto edge : mesh->entities<1>()) {
-    cout << "------- edge id: " << edge.id() << endl;
+    CINCH_CAPTURE() << "------- edge id: " << edge.id() << endl;
     for(auto wedge : mesh->entities<2, 0, 1>(edge)) {
-      cout << "--- wedge id: " << wedge.id() << endl;
+      CINCH_CAPTURE() << "--- wedge id: " << wedge.id() << endl;
     }
   }
 
   for(auto vertex : mesh->entities<0>()) {
-    cout << "------- vertex id: " << vertex.id() << endl;
+    CINCH_CAPTURE() << "------- vertex id: " << vertex.id() << endl;
     for(auto wedge : mesh->entities<2, 0, 1>(vertex)) {
-      cout << "--- wedge id: " << wedge.id() << endl;
+      CINCH_CAPTURE() << "--- wedge id: " << wedge.id() << endl;
     }
   }
 
   for(auto wedge : mesh->entities<2, 1>()) {
-    cout << "------- wedge id: " << wedge.id() << endl;
+    CINCH_CAPTURE() << "------- wedge id: " << wedge.id() << endl;
     for(auto cell : mesh->entities<2, 1, 0>(wedge)) {
-      cout << "--- cell id: " << cell.id() << endl;
+      CINCH_CAPTURE() << "--- cell id: " << cell.id() << endl;
     }
   }
 
   for(auto wedge : mesh->entities<2, 1>()) {
-    cout << "------- wedge id: " << wedge.id() << endl;
+    CINCH_CAPTURE() << "------- wedge id: " << wedge.id() << endl;
     for(auto edge : mesh->entities<1, 1, 0>(wedge)) {
-      cout << "--- edge id: " << edge.id() << endl;
+      CINCH_CAPTURE() << "--- edge id: " << edge.id() << endl;
     }
   }
 
   for(auto wedge : mesh->entities<2, 1>()) {
-    cout << "------- wedge id: " << wedge.id() << endl;
+    CINCH_CAPTURE() << "------- wedge id: " << wedge.id() << endl;
     for(auto vertex : mesh->entities<0, 1, 0>(wedge)) {
-      cout << "--- vertex id: " << vertex.id() << endl;
+      CINCH_CAPTURE() << "--- vertex id: " << vertex.id() << endl;
     }
   }
 
