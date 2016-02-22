@@ -115,11 +115,9 @@ TEST_F(Burton, mesh) {
   for(auto w : b.wedges()) {
     CINCH_CAPTURE() << "----------- wedge id: " << w.id() << endl;
 
-#if 0
     for(auto c: b.cells(w)) {
       CINCH_CAPTURE() << "       ++++ c id: " << c.id() << endl;
     } // for
-#endif
 
     for(auto e: b.edges(w)) {
       CINCH_CAPTURE() << "       ++++ edge id: " << e.id() << endl;
@@ -164,10 +162,6 @@ TEST_F(Burton, mesh) {
     } // for
   } // for
 
-  //CINCH_ASSERT(TRUE, CINCH_EQUAL_BLESSED("burton.blessed"));
-
-  cout << CINCH_DUMP() << endl;
-
 } // TEST_F
 
 TEST_F(Burton, geometry) {
@@ -195,21 +189,18 @@ TEST_F(Burton, geometry) {
     CINCH_CAPTURE() << "---- vertex id: " << v.id() 
       << " with coordinates " << xv << endl;
     for(auto w: b.wedges(v)) {
-// FIXME ... and why do we have to do first()?
-#if 0
+
+      // Why do we have to do .first()?
       auto c = b.cells(w).first();
       CINCH_CAPTURE() << "     ++++ cell id: " << c.id()
         << " with centroid " << c->centroid() << endl;
-#endif
+
       auto e = b.edges(w).first();
       CINCH_CAPTURE() << "     ++++ edge id: " << e.id()
         << " with midpoint " << e->midpoint() << endl;
 
-// FIXME
-#if 0
       CINCH_CAPTURE() << "     ++++ side_facet_normal: "
         << w->side_facet_normal() << endl;
-#endif
 
       CINCH_CAPTURE() << "     ++++ cell_facet_normal: "
         << w->cell_facet_normal() << endl;
@@ -217,8 +208,6 @@ TEST_F(Burton, geometry) {
     } // for
 
   } // for
-
-  cout << CINCH_DUMP() << endl;
 
 } // TEST_F
 
@@ -334,8 +323,6 @@ TEST_F(Burton, accessors) {
 
   CINCH_CAPTURE() << endl;
 
-  cout << CINCH_DUMP() << endl;
-
 } // TEST_F
 
 TEST_F(Burton, state) {
@@ -431,6 +418,12 @@ TEST_F(Burton, state) {
   ASSERT_EQ(2, c->y);  ASSERT_EQ(2, (*c).y);
 
 } // TEST_F
+
+// A final dummy test to compare the blessed file and do CINCH_DUMP().
+TEST_F(Burton, cinch_dump) {
+  //CINCH_ASSERT(TRUE, CINCH_EQUAL_BLESSED("burton.blessed"));
+  cout << CINCH_DUMP() << endl;
+}
 
 /*~------------------------------------------------------------------------~--*
  * Formatting options
