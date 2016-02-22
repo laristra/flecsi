@@ -807,9 +807,18 @@ class mesh_topology_t : public mesh_topology_base_t
       return;
     } // if
 
-    if (FD < TD) {
-      transpose<FM, TM, FD, TD>();
-      return;
+    if (FD <= TD) {
+      connectivity_t & trans_conn = get_connectivity_(TM, FM, TD, FD);
+      if(!trans_conn.empty() && 
+         !ms_.entities[FD].empty() &&
+         !ms_.entities[TD].empty()){
+        transpose<FM, TM, FD, TD>();
+        return;        
+      }
+    }
+
+    if (FD == TD) {
+      connectivity_t & out_conn = get_connectivity_(FM, TM, FD, TD);
     }
 
     if (ms_.entities[TM][TD].empty()) {
