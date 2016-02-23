@@ -31,11 +31,11 @@ using edge_t = burton_mesh_t::edge_t;
 //using cell_t = burton_mesh_t::cell_t;
 using corner_t = burton_mesh_t::corner_t;
 
-const int W = 40, H = 40;
+const int W = 64, H = 64;
 const real_t xmin = -1.0, xmax = 1.0, ymin = -1.0, ymax = 1.0;
 const real_t dx = (xmax-xmin)/real_t(W), dy = (ymax-ymin)/real_t(H);
 #if 1
-real_t x(size_t i, size_t j) { return xmin + pow(j+1,0.2)*i*dx; }
+real_t x(size_t i, size_t j) { return xmin + pow(j+1,0.15)*i*dx; }
 real_t y(size_t i, size_t j) { return ymin + pow(i+1,0.2)*j*dy; }
 #else
 real_t x(size_t i, size_t j) { return xmin + i*dx; }
@@ -86,7 +86,10 @@ protected:
 real_t interpolate(mesh_t & m, auto & s, auto & c) {
 
   // from:
-  // http://math.stackexchange.com/questions/828392/spatial-interpolation-for-irregular-grid
+  /*
+    http://math.stackexchange.com/questions/828392
+    /spatial-interpolation-for-irregular-grid
+   */
 
   // s(x,y) = a_xx x^2 + a_xy x y  + a_yy y^2 + b_x x + b_y y + c
 
@@ -180,6 +183,7 @@ real_t interpolate(mesh_t & m, auto & s, auto & c) {
   int nrhs = 1; // NB: last argument, ldb, is equal to 1, not N!
   lapack_int err = LAPACKE_dgesv(LAPACK_ROW_MAJOR, N, nrhs, A,
     N, ipiv, b, nrhs);
+  assert(err == 0);
 
   auto cc = c->centroid();
 
@@ -204,16 +208,22 @@ TEST_F(Burton, vertex_gradient_1) {
   register_state(b, "sc", cells, real_t, persistent);
   // vertex based vector (gsv = gradient scalar vector)
   register_state(b, "gsv", vertices, vector_t, persistent);
+  // analytic answer for vertex based vector
+  register_state(b, "ans_gsv", vertices, vector_t, persistent);
     
   auto sv = access_state(b, "sv", real_t);
   auto sc = access_state(b, "sc", real_t);
   auto gsv = access_state(b, "gsv", vector_t);
+  auto ans_gsv = access_state(b, "ans_gsv", vector_t);
 
-  // go over vertices and initialize vertex data
+  // go over vertices and initialize vertex data and answer
   const real_t pi = 3.1415;
   for(auto v: b.vertices()) {
     auto xv = v->coordinates();
     sv[v] = sin(pi*xv[0]) * cos(pi*xv[1]);
+    ans_gsv[v][0] = pi * cos(pi*xv[0]) * cos(pi*xv[1]);
+    ans_gsv[v][1] = -pi * sin(pi*xv[0]) * sin(pi*xv[1]);
+    gsv[v] = 0.0;
   } // for
     
     // go over cells to get zone centered average stored in sc
@@ -243,7 +253,7 @@ TEST_F(Burton, vertex_gradient_1) {
     real_t area = 0.0;
     for(auto cnr: b.corners(v)) {
       // the cell center for the cell containing this corner
-      auto xc = b.cells(cnr).to_vec()[0]->centroid();
+      auto xc = b.cells(cnr).first()->centroid();
       auto xv = v->coordinates();
       std::vector<point_t> mp;
       for(auto e: b.edges(cnr)) { // the midpoints of the edges for this corner
@@ -256,20 +266,30 @@ TEST_F(Burton, vertex_gradient_1) {
       area += 0.5*(cross_magnitude(A,B) + cross_magnitude(C,D));
     }
 
-#if 0
-    // go over wedges to finalize gradient
-    for(auto w: wedges(v)) {
+    // This hack avoids computing gradients on the mesh boundary. Since
+    // boundary conditions are not implemented, the contributions from Si are
+    // not "offset" for boundary vertices and leads to large gradient
+    // values on the boundary. This makes it a PIA in the viz tool where
+    // one has to rescale plot attributes to compare results. Instead this
+    // just skips over boundary vertices.
+    if (b.wedges(v).size() < 8) continue;
+
+    // go over wedges at vertex to finalize gradient
+    for(auto w: b.wedges(v)) {
       auto Si = w->side_facet_normal();
-      gsv[v] += Si * sc[cell(w)]/area;
+      // need to clean up the access to a wedge's cell
+      auto c = b.cells(w).first();
+      gsv[v] += Si * sc[c]/area;
     } // for
-#endif
+
   } // for
 
-    // write the mesh
+  // write the mesh
   std::string name("vertex_gradient_1.exo");
   ASSERT_FALSE(write_mesh(name, b));
 }
 
+#if 0
 TEST_F(Burton, vertex_gradient_4) {
 
   /*--------------------------------------------------------------------------*
@@ -279,7 +299,6 @@ TEST_F(Burton, vertex_gradient_4) {
    * is an se scalar inside the loop.
    *--------------------------------------------------------------------------*/
 
-#if 0
   // register state
   register_scalar("sv", VERTEX);
   register_vector("gsv", VERTEX);
@@ -313,8 +332,8 @@ TEST_F(Burton, vertex_gradient_4) {
     // write the mesh
   std::string name("vertex_gradient_4.exo");
   ASSERT_FALSE(write_mesh(name, b));
-#endif
 }
+#endif
 
 /*~------------------------------------------------------------------------~--*
  * Formatting options
