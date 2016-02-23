@@ -372,9 +372,13 @@ class burton_wedge_t
   vector_t side_facet_normal()
   {
     // Use the edge midpoint and the cell centroid to create the normal vector.
+    // Multiply normal by the sign of the dot between the normal and the vector
+    // from v to e to get "outward facing" normal.
     auto c = cell()->centroid();
     auto e = edge()->midpoint();
-    return vector_t(normal(c,e));
+    auto v = vertex()->coordinates();
+    auto nrml = normal(c,e);
+    return nrml*sgn(dot(nrml,point_to_vector(e-v)));
   }
 
   /*!
@@ -384,12 +388,28 @@ class burton_wedge_t
   vector_t cell_facet_normal()
   {
     // Use the edge midpoint and vertex to create the normal vector.
+    // Multiply normal by the sign of the dot between the normal and the vector
+    // from c to e to get "outward facing" normal.
     auto e = edge()->midpoint();
     auto v = vertex()->coordinates();
-    return vector_t(normal(e,v));
+    auto c = cell()->centroid();
+    auto nrml = normal(e,v);
+    return nrml*sgn(dot(nrml,point_to_vector(e-c)));
   }
 
  private:
+  /*!
+    \function sgn
+
+    \tparam T type of data to work on
+
+    \returns 1 if positive, -1 if negative.
+   */
+  template <typename T>
+  T sgn(T val) {
+    return (T(0) < val) - (val < T(0));
+  }
+
   burton_cell_t * cell_;
   burton_edge_t * edge_;
   burton_vertex_t * vertex_;

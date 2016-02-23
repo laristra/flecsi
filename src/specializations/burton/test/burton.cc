@@ -227,6 +227,8 @@ TEST_F(Burton, accessors) {
   register_state(b, "total energy", cells, real_t, persistent);
   register_state(b, "velocity", vertices, vector_t, persistent);
   register_state(b, "H", edges, vector_t);
+  register_state(b, "point_not_persistent", vertices, point_t);
+  register_state(b, "point_is_persistent", vertices, point_t, persistent);
 
   struct data_t {
     double x, y;
@@ -249,7 +251,7 @@ TEST_F(Burton, accessors) {
     CINCH_CAPTURE() << "\t" << v.label() << " has type data_t" << endl;
   } // for
 
-  CINCH_CAPTURE() << std::endl;
+  CINCH_CAPTURE() << endl;
 
   CINCH_CAPTURE() << "Accessing state with type real_t at cells:" << endl;
 
@@ -421,9 +423,9 @@ TEST_F(Burton, state) {
 
 } // TEST_F
 
-// A final dummy test to compare the blessed file and do CINCH_DUMP().
+// A final test to compare the blessed file and do CINCH_DUMP().
 TEST_F(Burton, cinch_dump) {
-  //CINCH_ASSERT(TRUE, CINCH_EQUAL_BLESSED("burton.blessed"));
+  CINCH_ASSERT(TRUE, CINCH_EQUAL_BLESSED("burton.blessed"));
   cout << CINCH_DUMP() << endl;
 }
 
