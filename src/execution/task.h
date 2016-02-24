@@ -43,12 +43,12 @@ class execution_t : public execution_policy_t
   static return_type_t execute_driver(T && task, Args &&... args)
   {
     // Make sure that the task definition returns the correct type
-    static_assert(std::is_same<return_type_t,
-                      decltype(task(std::forward<Args>(args)...))>(),
-        "Driver must return flecsi::execution_t::return_type_t");
+//    static_assert(std::is_same<return_type_t,
+//                      decltype(task(std::forward<Args>(args)...))>(),
+//        "Driver must return flecsi::execution_t::return_type_t");
 
     // pass the driver to the execution policy for handling
-    return execution_policy_t::execute_task(
+    return execution_policy_t::execute_driver(
         std::forward<T>(task), std::forward<Args>(args)...);
   } // execute_driver
 

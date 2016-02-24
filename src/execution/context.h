@@ -30,8 +30,8 @@ namespace flecsi
   \brief context_t is a dummy class that must have a specialization
   	  	 for a specific execution policy.
  */
-template<class T>
-class context_t
+template<class execution_policy>
+class context_t : public execution_policy::context_t
 {
  public:
   enum class call_state_t : size_t {
@@ -62,6 +62,9 @@ class context_t
   context_t() : call_state_(static_cast<size_t>(call_state_t::driver)) {}
   ~context_t() {}
   size_t call_state_;
+
+  using runtime_metadata_t = execution_policy::runtime_metadata_t;
+
 
 }; // class context_t
 

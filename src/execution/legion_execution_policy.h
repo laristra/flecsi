@@ -36,6 +36,7 @@
 namespace flecsi
 {
 
+extern void top_level_task(int argc, char** argv);
 
 
 /*!
@@ -45,6 +46,20 @@ namespace flecsi
 class legion_execution_policy_t
 {
 
+ public:
+	  template <typename T>
+	  static void driver_top_task(const LegionRuntime::HighLevel::Task *task,
+	                             const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
+	                             LegionRuntime::HighLevel::Context ctx, LegionRuntime::HighLevel::HighLevelRuntime *runtime)
+	  {
+		  using namespace LegionRuntime::HighLevel;
+		  const InputArgs &args = HighLevelRuntime::get_input_args();
+
+
+		  top_level_task(args.argc,args.argv);
+
+	  }
+
  protected:
   using return_type_t = int32_t;
 
@@ -53,18 +68,7 @@ class legion_execution_policy_t
   	TOP_LEVEL_TASK_ID
   };
 
-  template <typename T>
-  static void driver_top_task(const LegionRuntime::HighLevel::Task *task,
-                             const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
-                             LegionRuntime::HighLevel::Context ctx, LegionRuntime::HighLevel::HighLevelRuntime *runtime)
-  {
-	  using namespace LegionRuntime::HighLevel;
-	  const InputArgs &args = HighLevelRuntime::get_input_args();
 
-
-	  return T(context_t<legion_execution_policy_t>::instance(ctx,runtime,task,regions),args.argc,args.argv);
-
-  }
 
 
   template <typename T>
@@ -76,6 +80,7 @@ class legion_execution_policy_t
 	      Processor::LOC_PROC, true/*single*/, false/*index*/);
 
 	  return HighLevelRuntime::start(argc, argv);
+
   } // execute_driver
 
   template <typename T, typename... Args>
