@@ -7,14 +7,11 @@
 #define flecsi_context_legion_h
 
 #include <legion.h>
-#include <legion_tasks.h>
 
 
 #ifdef __ECLIPSE__
-#include "src/execution/legion_execution_policy.h"
 #include "src/execution/context.h"
 #else
-#include "flecsi/execution/legion_execution_policy.h"
 #include "flecsi/execution/context.h"
 #endif
 
@@ -25,7 +22,7 @@
  */
 
 namespace flecsi {
-
+class legion_execution_policy_t;
 /*!
   \class context_t context_legion.h.h
   \brief context_t provides...
@@ -39,13 +36,13 @@ public:
    task
  }; // enum class call_state_t
 
- static context_t<flecsi::legion_execution_policy_t> & instance(
+ static context_t<legion_execution_policy_t> & instance(
 		 LegionRuntime::HighLevel::Context _ctx_l,
 		 LegionRuntime::HighLevel::HighLevelRuntime* _rt,
 		 const LegionRuntime::HighLevel::Task *_task,
 		 const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &_regions)
  {
-   static context_t<flecsi::legion_execution_policy_t> ctx(_ctx_l,_rt,_task,_regions);
+   static context_t<legion_execution_policy_t> ctx(_ctx_l,_rt,_task,_regions);
    return ctx;
  } // instance
  call_state_t current()
@@ -63,7 +60,7 @@ public:
 
 private:
  // Constructor
- context_t<flecsi::legion_execution_policy_t>(
+ context_t<legion_execution_policy_t>(
 		 LegionRuntime::HighLevel::Context _ctx_l,
 		 LegionRuntime::HighLevel::HighLevelRuntime* _rt,
 		 const LegionRuntime::HighLevel::Task *_task,
@@ -72,7 +69,7 @@ private:
 				 ctx_l(_ctx_l),rt(_rt),task(_task),regions(_regions){}
 
 
- ~context_t<flecsi::legion_execution_policy_t>() {}
+ ~context_t<legion_execution_policy_t>() {}
  size_t call_state_;
 
  LegionRuntime::HighLevel::Context ctx_l;
@@ -84,7 +81,7 @@ private:
 
 }; // class context_t
 
-typedef context_t<flecsi::legion_execution_policy_t> context_legion;
+typedef context_t<legion_execution_policy_t> context_legion;
 
 } // namespace flecsi
 

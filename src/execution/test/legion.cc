@@ -34,7 +34,7 @@ return_type_t myvoid() {
   return 0;
 }
 
-void top_level_task(flecsi::context_t* ctx,int argc, char** argv)
+void top_level_task(flecsi::context_t<flecsi::legion_execution_policy_t>* ctx,int argc, char** argv)
 {
 	std::cout << "Hello World Top Level Task" << std::endl;
 }

@@ -35,6 +35,8 @@ struct check_sig<T,rVal(*)(Args...)>
 		return std::true_type();
 	}
 
+
+
 	/* SFINAE foo-exists :) */
 	template<typename A>
 	static decltype(test(&A::operator()))
@@ -53,7 +55,7 @@ struct check_sig<T,rVal(*)(Args...)>
 	/* This will be either `std::true_type` or `std::false_type` */
 	typedef decltype(test<T>(0,0)) type;
 
-	static const bool value = type::value; /* Which is it? */
+	static const bool value = bool(type::value); /* Which is it? */
 
 	/*  `eval(T const &,std::true_type)`
 		delegates to `T::foo()` when `type` == `std::true_type`
