@@ -16,6 +16,7 @@
 #define flecsi_mpi_execution_policy_h
 
 #include <cstdint>
+#include <mpi.h>
 
 #include "flecsi/execution/context.h"
 #include "flecsi/utils/tuple_for_each.h"

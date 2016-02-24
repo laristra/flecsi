@@ -30,6 +30,11 @@ cinch_add_unit(legion
   SOURCES test/legion.cc)
 endif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
+cinch_add_unit(mpi
+  SOURCES test/mpi.cc
+  POLICY MPI
+        THREADS 2)
+
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.
 # vim: set tabstop=2 shiftwidth=2 expandtab :

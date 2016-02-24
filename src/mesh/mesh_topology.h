@@ -427,14 +427,15 @@ class mesh_topology_t : public mesh_topology_base_t
 
   mesh_topology_t & operator=(const mesh_topology_t &) = delete;
 
+  // Allow move operations
+  mesh_topology_t(mesh_topology_t &&) = default;
+  mesh_topology_t & operator=(mesh_topology_t &&) = default;
+
+
   //! Constructor
   mesh_topology_t()
   {
-    for (size_t from_dim = 0; from_dim < MT::num_domains; ++from_dim) {
-      for (size_t to_dim = 0; to_dim < MT::num_domains; ++to_dim) {
-        get_connectivity_(from_dim, to_dim, MT::dimension, 0).init();
-      }
-    }
+    get_connectivity_(0, 0, MT::dimension, 0).init();
   } // mesh_topology_t()
 
   // The mesh retains ownership of the entities and deletes them
@@ -572,11 +573,13 @@ class mesh_topology_t : public mesh_topology_base_t
 
       // iterate over the newly-defined entities
       for (size_t i = 0; i < n; ++i) {
+        size_t m = sv[i];
+
         // Get the vertices that define this entity by getting
         // a pointer to the vector-of-vector data and then constructing
         // a vector of ids for only this entity.
-        id_t * a = &entity_vertices[i * sv[i]];
-        id_vector_t ev(a, a + sv[i]);
+        id_t * a = &entity_vertices[i * m];
+        id_vector_t ev(a, a + m);
 
         // Sort the ids for the current entity so that they are
         // monotonically increasing. This ensures that entities are
@@ -594,11 +597,11 @@ class mesh_topology_t : public mesh_topology_base_t
         // If the insertion took place
         if (itr.second) {
           // what does this do?
-          id_vector_t ev2 = id_vector_t(a, a + sv[i]);
+          id_vector_t ev2 = id_vector_t(a, a + m);
           entity_vertex_conn.emplace_back(std::move(ev2));
 
-          max_cell_entity_conns =
-              std::max(max_cell_entity_conns, cell_entity_conn[c].size());
+          max_cell_entity_conns = 
+            std::max(max_cell_entity_conns, conns.size());
 
           // A new entity was added, so we advance the id counter.
           ++entity_id;
@@ -651,7 +654,7 @@ class mesh_topology_t : public mesh_topology_base_t
   /*!
      Used internally to compute connectivity information for
      topological dimension
-       FD -> TD using FD -> D' and D' -> TD where TD < D' < FD
+       FD -> TD using FD -> D' and D' -> TD
    */
   template <size_t FM, size_t TM, size_t FD, size_t TD, size_t D>
   void intersect()
@@ -806,9 +809,18 @@ class mesh_topology_t : public mesh_topology_base_t
       return;
     } // if
 
-    if (FD < TD) {
-      transpose<FM, TM, FD, TD>();
-      return;
+    if (FD <= TD) {
+      connectivity_t & trans_conn = get_connectivity_(TM, FM, TD, FD);
+      if(!trans_conn.empty() && 
+         !ms_.entities[FD].empty() &&
+         !ms_.entities[TD].empty()){
+        transpose<FM, TM, FD, TD>();
+        return;        
+      }
+    }
+
+    if (FD == TD) {
+      connectivity_t & out_conn = get_connectivity_(FM, TM, FD, TD);
     }
 
     if (ms_.entities[TM][TD].empty()) {
@@ -819,7 +831,7 @@ class mesh_topology_t : public mesh_topology_base_t
 
   /*!
     Build bindings associated with a from/to domain and topological dimension.
-    Compute building will call this on each binding found in the tuple of
+    compute_bindings will call this on each binding found in the tuple of
     bindings specified in the mesh type/traits mesh specialization.
    */
   template <size_t FM, size_t TM, size_t TD>
@@ -835,9 +847,6 @@ class mesh_topology_t : public mesh_topology_base_t
 
     // Storage for cell connectivity information
     connection_vector_t cell_conn(_num_cells);
-
-    // Map used to ensure unique entity creation
-    id_vector_map_t entity_ids_map;
 
     // Get cell definitions from domain 0
     using ent_vec_t = entity_vector_t<MT::num_domains>;
@@ -857,6 +866,9 @@ class mesh_topology_t : public mesh_topology_base_t
 
     // Iterate over cells
     for (auto c : cells) {
+      // Map used to ensure unique entity creation
+      id_vector_map_t entity_ids_map;
+
       // Get a cell object.
       auto cell = static_cast<entity_type<MT::dimension, M0> *>(c);
       id_t cell_id = cell->template global_id<FM>();
@@ -879,50 +891,34 @@ class mesh_topology_t : public mesh_topology_base_t
       // Iterate over the newly-defined entities
       id_vector_t & conns = cell_conn[cell_id.entity()];
 
-      conns.reserve(max_cell_conns);
+      conns.reserve(n);
 
       size_t pos = 0;
 
       for (size_t i = 0; i < n; ++i) {
         size_t m = sv[i];
 
-        // Get the id range for this entity
-        id_t * a = &entity_ids[i * m];
-        id_vector_t ev(a, a + m);
-
-        // Sort the id range so that it is ascending (ensures uniqueness)
-        std::sort(ev.begin(), ev.end());
-
-        // Emplace will only create a new entry if it doesn't
-        // already exist.
-        auto itr = entity_ids_map.emplace(
-            std::move(ev), id_t::make<TD, TM>(entity_id, cell_id.partition()));
+        id_t create_id = id_t::make<TD, TM>(entity_id, cell_id.partition());
 
         // Add this id to the cell entity connections
-        conns.push_back(itr.first->second);
+        conns.push_back(create_id);
 
-        // Increment
-        if (itr.second) {
-          uint32_t dim_flags = 0;
+        uint32_t dim_flags = 0;
 
-          for (size_t k = 0; k < m; ++k) {
-            id_t global_id = entity_ids[pos + k];
+        for (size_t k = 0; k < m; ++k) {
+          id_t global_id = entity_ids[pos + k];
 
-            get_connectivity_<TM, FM, TD>(global_id.dimension()).push(global_id);
-            dim_flags |= 1U << global_id.dimension();
+          get_connectivity_<TM, FM, TD>(global_id.dimension()).push(global_id);
+          dim_flags |= 1U << global_id.dimension();
+        }
+
+        for (size_t i = 0; i < MT::dimension; ++i) {
+          if (dim_flags & (1U << i)) {
+            get_connectivity_<TM, FM, TD>(i).end_from();
           }
+        }
 
-          for (size_t i = 0; i < MT::dimension; ++i) {
-            if (dim_flags & (1U << i)) {
-              get_connectivity_<TM, FM, TD>(i).end_from();
-            }
-          }
-
-          max_cell_conns =
-              std::max(max_cell_conns, cell_conn[cell_id.entity()].size());
-
-          ++entity_id;
-        } // if
+        ++entity_id;
 
         pos += m;
       } // for

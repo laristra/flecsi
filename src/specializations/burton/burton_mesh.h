@@ -63,6 +63,9 @@ class burton_mesh_t
   template <typename T>
   using dense_accessor_t =
       burton_mesh_traits_t::mesh_state_t::dense_accessor_t<T>;
+  /*--------------------------------------------------------------------------*
+   * Dense Accessors
+   *--------------------------------------------------------------------------*/
 
   /*!
     \brief Register state for the named variable at the given attachment
@@ -97,6 +100,10 @@ class burton_mesh_t
       case attachment_site_t::corners:
         return state_.register_state<T>(
             key, num_corners(), attachment_site_t::corners, attributes);
+        break;
+      case attachment_site_t::wedges:
+        return state_.register_state<T>(
+            key, num_wedges(), attachment_site_t::wedges, attributes);
         break;
       default:
         assert(false && "Error: invalid state registration site.");
@@ -154,6 +161,84 @@ class burton_mesh_t
     return state_.dense_accessors<T, P>(std::forward<P>(predicate));
   } // access_type_if
 
+
+  /*--------------------------------------------------------------------------*
+   * Global Accessors
+   *--------------------------------------------------------------------------*/
+
+  /*!
+    \brief Register state for the named variable with attributes.
+
+    \tparam T The type of the underlying data to access.
+
+    \param[in] key A name for the state variable, e.g., "density".
+    \param[in] attributes A bitfield specifying various attributes of the state.
+
+    \return An accessor to the newly registered state.
+   */
+  template <typename T>
+  decltype(auto) register_global_state_(const const_string_t && key,
+    bitfield_t::field_type_t attributes = 0x0) {
+    
+    return state_.register_global_state<T>(key, attachment_site_t::global, attributes);
+
+  } // register_state_
+
+  /*!
+    \brief Access state associated with \e key.
+
+    \tparam T Data type of underlying state.
+    \tparam NS The namespace in which the state variable is registered.
+      See \ref state_t::register_state for additional information.
+
+    \param[in] key The \e key for the state to access.
+
+    \return Accessor to the state with \e key.
+   */
+  template <typename T, size_t NS = flecsi_user_space>
+  decltype(auto) access_global_state_(const const_string_t && key)
+  {
+    return state_.global_accessor<T, NS>(key);
+  } // access_state_
+
+  /*!
+    \brief Access state registered with type \e T.
+
+    \tparam T All state variables of this type will be returned.
+    \tparam NS Namespace to use.
+
+    \return A vector of accessors to state registered with type \e T.
+   */
+  template <typename T, size_t NS = flecsi_user_space>
+  decltype(auto) access_global_type_()
+  {
+    return state_.global_accessors<T, NS>();
+  } // access_type_
+
+  /*!
+    \brief Access state registered with type \e T that matches predicate
+      function of type \e P.
+
+    \tparam T All state variables of this type will be returned that match
+      predicate \e P will be returned.
+    \tparam P Predicate function type.
+
+    \param[in] predicate Predicate function.
+
+    \return Accessors to the state variables of type \e T matching the
+      predicate function.
+   */
+  template <typename T, typename P>
+  decltype(auto) access_global_type_if_(P && predicate)
+  {
+    return state_.global_accessors<T, P>(std::forward<P>(predicate));
+  } // access_type_if
+
+
+  /*--------------------------------------------------------------------------*
+   * General Accessors
+   *--------------------------------------------------------------------------*/
+
   /*!
     \brief Return the attributes for the state with \e key.
 
@@ -192,6 +277,9 @@ class burton_mesh_t
 
   //! 2D quadrilateral cell type.
   using quadrilateral_cell_t = burton_mesh_types_t::quadrilateral_cell_t;
+
+  //! Wedge type.
+  using wedge_t = burton_mesh_types_t::wedge_t;
 
   //! Corner type.
   using corner_t = burton_mesh_types_t::corner_t;
@@ -475,6 +563,87 @@ class burton_mesh_t
   } // cell_ids
 
   /*--------------------------------------------------------------------------*
+   * Wedge Interface
+   *--------------------------------------------------------------------------*/
+
+  /*!
+    \brief Return number of wedges in the burton mesh.
+
+    \return The number of wedges in the burton mesh.
+   */
+  size_t num_wedges() const
+  {
+    return mesh_.num_entities<dimension(), 1>();
+  } // num_wedges
+
+  /*!
+    \brief Return all wedges in the burton mesh.
+
+    \return Return all wedges in the burton mesh as a sequence for use, e.g.,
+      in range based for loops.
+   */
+  auto wedges()
+  {
+    return mesh_.entities<dimension(), 1>();
+  } // wedges
+
+  /*!
+    \brief Return wedges associated with entity instance of type \e E.
+
+    \tparam E entity type of instance to return wedges for.
+
+    \param[in] e instance of entity to return wedges for.
+
+    \return Return wedges associated with entity instance \e e as a sequence.
+   */
+  template <class E>
+  auto wedges(E * e)
+  {
+    return mesh_.entities<dimension(), 1>(e);
+  } // wedges
+
+  /*!
+    \brief Return wedges for entity \e e in domain \e M.
+
+    \tparam M Domain.
+    \tparam E Entity type to get wedges for.
+
+    \param[in] e Entity to get wedges for.
+
+    \return Wedges for entity \e e in domain \e M.
+   */
+  template<size_t M, class E>
+  auto wedges(domain_entity<M, E> & e) {
+    return mesh_.entities<dimension(), M, 1>(e.entity());
+  }
+
+  /*!
+    \brief Return ids for all wedges in the burton mesh.
+
+    \return Ids for all wedges in the burton mesh.
+   */
+  auto wedge_ids()
+  {
+    return mesh_.entity_ids<dimension(), 1>();
+  } // wedge_ids
+
+  /*!
+    \brief Return wedge ids associated with entity instance of type \e E.
+
+    \tparam E entity type of instance to return wedge ids for.
+
+    \param[in] e instance of entity to return wedge ids for.
+
+    \return Return wedge ids associated with entity instance \e e as a
+      sequence.
+   */
+  template <class E>
+  auto wedge_ids(E * e)
+  {
+    return mesh_.entity_ids<dimension(), 1>(e);
+  } // wedge_ids
+
+  /*--------------------------------------------------------------------------*
    * Corner Interface
    *--------------------------------------------------------------------------*/
 
@@ -623,42 +792,6 @@ class burton_mesh_t
   /*!
     \brief Initialize the burton mesh.
 
-    \verbatim
-
-    The following shows the labeling of the primitives making up a cell. Given
-    vertices v*, edges e*, and center vertex cv.
-
-    v3-----e2-----v2
-    |              |
-    |              |
-    e3     cv     e1
-    |              |
-    |              |
-    v0-----e0-----v1
-
-    The wedge indexing is shown below. A wedge is defined by three vertices
-    w = {cv, v*, e*}.
-
-    v3------e2-------v2
-    | \      |      / |
-    |   \  w6|w5  /   |
-    |  w7 \  |  / w4  |
-    |       \|/       |
-    e3------cv-------e1
-    |       /|\       |
-    |  w0 /  |  \ w3  |
-    |   /  w1|w2  \   |
-    | /      |      \ |
-    v0------e0-------v1
-
-    A corner is defined by a vertex and the two connecting edges.
-
-    c0 = {v0, e0, e3}
-    c1 = {v1, e0, e1}
-    c2 = {v2, e1, e2}
-    c3 = {v3, e2, e3}
-
-    \endverbatim
    */
   void init()
   {
@@ -667,13 +800,13 @@ class burton_mesh_t
 
     //mesh_.dump();
 
-    // Create wedges
-    for (auto c : mesh_.entities<1, 1>()) {
-      auto vertex = vertices(c).first();
-      auto edge0 = edges(c).first();
-      auto edge1 = edges(c).last();
-      auto cell = cells(c).first();
+    // Initialize wedges
+    for (auto w : wedges()) {
+      w->set_cell(cells(w).first());
+      w->set_edge(edges(w).first());
+      w->set_vertex(vertices(w).first());
     } // for
+
   } // init
 
  private:
