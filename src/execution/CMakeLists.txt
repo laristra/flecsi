@@ -25,8 +25,9 @@ set(execution_HEADERS
 cinch_add_unit(task
   SOURCES test/task.cc)
 
-cinch_add_unit(legion
-  SOURCES test/legion.cc)
+cinch_add_unit(legion_flecsi_example
+  SOURCES test/legion.cc
+  LIBRARIES ${LEGION_LIBRARIES})
 
 cinch_add_unit(mpi
   SOURCES test/mpi.cc

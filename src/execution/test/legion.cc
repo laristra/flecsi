@@ -17,6 +17,9 @@
 #include "flecsi/execution/legion_execution_policy.h"
 #include "flecsi/execution/task.h"
 
+#include "legion.h"
+using namespace LegionRuntime::HighLevel;
+
 using execution_t = flecsi::execution_t<flecsi::legion_execution_policy_t>;
 using return_type_t = execution_t::return_type_t;
 
@@ -33,7 +36,7 @@ return_type_t myvoid() {
 #define execute(task, ...) \
   execution_t::execute_task(task, ##__VA_ARGS__)
 
-TEST(task, execute) {
+TEST(flecsi_task, execute) {
   execute(testme, "shit");
   execute(myvoid);
 } // TEST
