@@ -79,22 +79,25 @@ protected:
   const size_t height = H;
 };
 
-// this may not be a portable way to point to lapacke.h. works on darwin.
+// this may not be a portable way to point to lapacke.h. it works on darwin.
 #include <ccomplex>
 #include <lapacke/lapacke.h>
-// compute cell centered average of scalar s. used in test below.
-real_t interpolate(mesh_t & m, auto & s, auto & c) {
 
-  // from:
+const int N = 10;
+
+// core interpolation shared by vertex and cell centered gradients
+void interpolate(const auto x[4], const auto y[4], auto b[N]) {
   /*
+    from:
+
     http://math.stackexchange.com/questions/828392
     /spatial-interpolation-for-irregular-grid
    */
 
   // s(x,y) = a_xx x^2 + a_xy x y  + a_yy y^2 + b_x x + b_y y + c
 
-  // minimize e = axx^2 + axy^2 + ayy^2 by solving the following. Then evaluate
-  // the above.
+  // Minimize e = axx^2 + axy^2 + ayy^2 by solving the following.
+  // The calling function evaluates s(x,y) using the contents of b.
 
   // 4x6
   //     | x1^2 x1y1 y1^2 x1 y1 1 |
@@ -135,20 +138,6 @@ real_t interpolate(mesh_t & m, auto & s, auto & c) {
   // |        | |   | = |   |
   // | X   0  | | l |   | z |
 
-  const int N = 10;
-
-  // rhs in b
-  real_t b[N]; for (int i=0; i<N; i++) b[i] = 0.0;
-  // x,y coords in x, y.
-  real_t x[4], y[4];
-  int i = 0;
-  for (auto v: m.vertices(c)) {
-    x[i] = v->coordinates()[0];
-    y[i] = v->coordinates()[1];
-    b[i+6] = s[v]; // the scalar at the vertices
-    i++;
-  }
-
   real_t A[N*N]; for (int i=0; i<N*N;i++) A[i] = 0.0;
   // row 1
   A[0] = 1.0;
@@ -184,33 +173,51 @@ real_t interpolate(mesh_t & m, auto & s, auto & c) {
   lapack_int err = LAPACKE_dgesv(LAPACK_ROW_MAJOR, N, nrhs, A,
     N, ipiv, b, nrhs);
   assert(err == 0);
-
-  auto cc = c->centroid();
-
-  //s(x,y) = a_xx x^2 + a_xy x y  + a_yy y^2 + b_x x + b_y y + c
-  return b[0]*cc[0]*cc[0] + b[1]*cc[0]*cc[1] + b[2]*cc[1]*cc[1]
-    + b[3]*cc[0] + b[4]*cc[1] + b[5];
 }
 
-TEST_F(Burton, vertex_gradient_1) {
+// compute cell centered average of vertex centered scalar s at cell c.
+real_t interpolate_to_cell(mesh_t & m, auto & s, auto & c) {
+  // declare and initialize b, x, y for sending to interpolate.
+  real_t b[N]; for (int i=0; i<N; i++) b[i] = 0.0;
+  // x,y coords in x,y.
+  real_t x[4] = {0.0,0.0,0.0,0.0}, y[4] = {0.0,0.0,0.0,0.0};
+  int i = 0;
+  for (auto v: m.vertices(c)) {
+    x[i] = v->coordinates()[0];
+    y[i] = v->coordinates()[1];
+    b[i+6] = s[v]; // the scalar at the vertices
+    i++;
+  }
+
+  interpolate(x,y,b);
+
+  auto xc = c->centroid();
+
+  // evaluate function at xc
+  // s(x,y) = a_xx x^2 + a_xy x y  + a_yy y^2 + b_x x + b_y y + c
+  return b[0]*xc[0]*xc[0] + b[1]*xc[0]*xc[1] + b[2]*xc[1]*xc[1]
+    + b[3]*xc[0] + b[4]*xc[1] + b[5];
+}
+
+TEST_F(Burton, vertex_gradient) {
 
   /*--------------------------------------------------------------------------*
-   * Example 1.
-   * Vertex centered gradient computed in two loops. The first loop stores
-   * the cell centered average in a temporary variable. The second loop
-   * computes the gradient.
+   * Vertex centered gradient. Store the cell centered average in a temporary
+   * variable, and then compute the gradient. Punt on boundary vertices.
    *--------------------------------------------------------------------------*/
 
   // register state
   // vertex based scalar (sv = scalar vertex)
   register_state(b, "sv", vertices, real_t, persistent);
-  // cell based scalar (sc = scalar cell)
+  // cell based scalar (sc = scalar cell). make it "persistent" so it appears
+  // in graphics dumps.
   register_state(b, "sc", cells, real_t, persistent);
   // vertex based vector (gsv = gradient scalar vector)
   register_state(b, "gsv", vertices, vector_t, persistent);
   // analytic answer for vertex based vector
   register_state(b, "ans_gsv", vertices, vector_t, persistent);
     
+  // access the state
   auto sv = access_state(b, "sv", real_t);
   auto sc = access_state(b, "sc", real_t);
   auto gsv = access_state(b, "gsv", vector_t);
@@ -225,18 +232,25 @@ TEST_F(Burton, vertex_gradient_1) {
     ans_gsv[v][1] = -pi * sin(pi*xv[0]) * sin(pi*xv[1]);
     gsv[v] = 0.0;
   } // for
-    
-    // go over cells to get zone centered average stored in sc
+
+  // go over cells to initialize sc
   for(auto c: b.cells()) {
-    sc[c] = interpolate(b, sv, c);
+    sc[c] = 0.0;
+  } // for
+    
+  // go over cells to get zone centered average stored in sc
+  for(auto c: b.cells()) {
+    sc[c] = interpolate_to_cell(b, sv, c);
   } // for
 
   // go over vertices and compute gradient using cell centered average
   for(auto v: b.vertices()) {
 
-    // volume of dual mesh surrounding vertex
+    // volume of dual mesh surrounding vertex.
 
     /*!
+      THIS SHOULD BE A METHOD PROVIDED BY VERTICES.
+
       Area of a quadrilateral. No sides parallel.
 
                  D
@@ -250,6 +264,7 @@ TEST_F(Burton, vertex_gradient_1) {
       area = 1/2 mag(A X B) + 1/2 mag(C X D)
      */
 
+    // go over corners for vertex to get the area
     real_t area = 0.0;
     for(auto cnr: b.corners(v)) {
       // the cell center for the cell containing this corner
@@ -285,55 +300,106 @@ TEST_F(Burton, vertex_gradient_1) {
   } // for
 
   // write the mesh
-  std::string name("vertex_gradient_1.exo");
+  std::string name("vertex_gradient.exo");
   ASSERT_FALSE(write_mesh(name, b));
 }
 
-#if 0
-TEST_F(Burton, vertex_gradient_4) {
+// compute vertex centered average of cell centered scalar s at vertex v.
+real_t interpolate_to_vertex(mesh_t & m, auto & s, auto & v) {
+  // declare and initialize b, x, y for sending to interpolate.
+  real_t b[N]; for (int i=0; i<N; i++) b[i] = 0.0;
+  // x,y coords in x, y.
+  real_t x[4] = {0.0,0.0,0.0,0.0}, y[4] = {0.0,0.0,0.0,0.0};
+  int i = 0;
+  for (auto c: m.cells(v)) {
+    x[i] = c->centroid()[0];
+    y[i] = c->centroid()[1];
+    b[i+6] = s[c]; // the scalar at the centroids
+    i++;
+  } // for
+
+  // punt on computing and interpolation for the boundary vertices.
+  if (i < 4) return 0.0;
+
+  interpolate(x,y,b);
+
+  auto xv = v->coordinates();
+
+  // evaluate function at xv
+  // s(x,y) = a_xx x^2 + a_xy x y  + a_yy y^2 + b_x x + b_y y + c
+  return b[0]*xv[0]*xv[0] + b[1]*xv[0]*xv[1] + b[2]*xv[1]*xv[1]
+    + b[3]*xv[0] + b[4]*xv[1] + b[5];
+}
+
+
+TEST_F(Burton, cell_gradient) {
 
   /*--------------------------------------------------------------------------*
-   * Example 4.
-   * Vertex centered gradient computed in one loop. The edge centered
-   * average is computed in the loop. The se field is not needed. There
-   * is an se scalar inside the loop.
+   * Cell centered gradient. Store the vertex centered average in a temporary
+   * variable, and then compute the gradient. Punt on boundary cells.
    *--------------------------------------------------------------------------*/
 
   // register state
-  register_scalar("sv", VERTEX);
-  register_vector("gsv", VERTEX);
+  // cell based scalar (sc = scalar cell)
+  register_state(b, "sc", cells, real_t, persistent);
+  // vertex based scalar (sv = scalar vertex). make it "persistent" so it
+  // appears in graphics dumps.
+  register_state(b, "sv", vertices, real_t, persistent);
+  // cell based vector (gsc = gradient scalar cell)
+  register_state(b, "gsc", cells, vector_t, persistent);
+  // analytic answer for vertex based vector
+  register_state(b, "ans_gsc", cells, vector_t, persistent);
 
-  // Do other stuff...
+  // access the state
+  auto sc = access_state(b, "sc", real_t);
+  auto sv = access_state(b, "sv", real_t);
+  auto gsc = access_state(b, "gsc", vector_t);
+  auto ans_gsc = access_state(b, "ans_gsc", vector_t);
 
-  auto sv = get_scalar("sv");
-  auto gsv = get_vector("gsv");
+  // go over cells and initialize cell data and answer
+  const real_t pi = 3.1415;
+  for(auto c: b.cells()) {
+    auto xc = c->centroid();
+    sc[c] = sin(pi*xc[0]) * cos(pi*xc[1]);
+    ans_gsc[c][0] = pi * cos(pi*xc[0]) * cos(pi*xc[1]);
+    ans_gsc[c][1] = -pi * sin(pi*xc[0]) * sin(pi*xc[1]);
+    gsc[c] = 0.0;
+  } // for
 
-  for(auto v: vertices()) {
-    auto volume = volume(v);
+  // go over vertices to initialize sv
+  for(auto v: b.vertices()) {
+    sv[v] = 0.0;
+  } // for
 
-    for(auto w: wedges(v)) {
-      auto se = 0.0;
+  // go over vertices to get vertex centered average stored in sv
+  for(auto v: b.vertices()) {
+    sv[v] = interpolate_to_vertex(b, sc, v);
+  } // for
 
-      // do we need to iterate over edges of a wedge???
-      for(auto e: edges(w)) {
-        for(auto c: cells(e)) {
-          for(auto vv: vertices(c)) {
-            auto xv = coordinates(vv);
-            se += f(sv(vv), xv, xe);
-          } // for
-        } // for
-      } // for
+  // iterate over cells.
+  for (auto c: b.cells()) {
+    // get the area of the cell from the provided function
+    real_t area = c->area();
 
-      auto Si = normal(w, SIDE_FACET);
-      gsv(v) += Si * se/volume;
+    // punt on cells on the boundary
+    bool bdry = false;
+    for (auto v: b.vertices(c)) { if (b.wedges(v).size() < 8) bdry = true; }
+    if (bdry) continue;
+
+    // go over wedges of the cell
+    for (auto w: b.wedges(c)) {
+      auto Ni = w->cell_facet_normal();
+      // get the wedge's vertex to look up the vertex value
+      auto v = b.vertices(w).first();
+      gsc[c] += Ni * sv[v]/area;
     } // for
   } // for
 
-    // write the mesh
-  std::string name("vertex_gradient_4.exo");
+  // write the mesh
+  std::string name("cell_gradient.exo");
   ASSERT_FALSE(write_mesh(name, b));
+
 }
-#endif
 
 /*~------------------------------------------------------------------------~--*
  * Formatting options

@@ -27,8 +27,10 @@ namespace flecsi
 {
 /*!
   \class context_t context.h
-  \brief context_t provides...
+  \brief context_t is a dummy class that must have a specialization
+  	  	 for a specific execution policy.
  */
+template<class T>
 class context_t
 {
  public:

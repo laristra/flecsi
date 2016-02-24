@@ -25,9 +25,11 @@ set(execution_HEADERS
 cinch_add_unit(task
   SOURCES test/task.cc)
 
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 cinch_add_unit(legion_flecsi_example
   SOURCES test/legion.cc
   LIBRARIES ${LEGION_LIBRARIES})
+endif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
 cinch_add_unit(mpi
   SOURCES test/mpi.cc

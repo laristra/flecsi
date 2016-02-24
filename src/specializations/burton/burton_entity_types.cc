@@ -17,13 +17,15 @@
 
 namespace flecsi {
 
-using point_t = burton_cell_t::point_t;
+using real_t = burton_mesh_traits_t::real_t;
+using vector_t = burton_mesh_traits_t::vector_t;
+using point_t = burton_mesh_traits_t::point_t;
 
 /*----------------------------------------------------------------------------*
  * burton_edge_t
  *----------------------------------------------------------------------------*/
 
-point_t burton_edge_t::midpoint()
+point_t burton_edge_t::midpoint() const
   {
     auto & mesh = static_cast<mesh_topology_t<burton_mesh_types_t> &>(mesh_);
     auto vs = mesh.entities<0,0>(this).to_vec();
@@ -31,11 +33,48 @@ point_t burton_edge_t::midpoint()
     return point_t{0.5*(vs[0]->coordinates() + vs[1]->coordinates())};
   } // burton_edge_t::midpoint
 
+real_t burton_edge_t::length() const
+  {
+    auto & mesh = static_cast<mesh_topology_t<burton_mesh_types_t> &>(mesh_);
+    auto vs = mesh.entities<0,0>(this).to_vec();
+
+    auto & a = vs[0]->coordinates();
+    auto & b = vs[1]->coordinates();
+    
+    return std::sqrt( pow(a[0]-b[0],2) + pow(a[1]-b[1],2) );
+  } // burton_edge_t::length
+
+vector_t burton_edge_t::normal() const
+  {
+    auto & mesh = static_cast<mesh_topology_t<burton_mesh_types_t> &>(mesh_);
+    auto vs = mesh.entities<0,0>(this).to_vec();
+
+    auto & a = vs[0]->coordinates();
+    auto & b = vs[1]->coordinates();
+
+    return { a[1] - b[1], b[0] - a[0] };
+  } // burton_edge_t::normal
+
+real_t burton_quadrilateral_cell_t::area() const
+{
+  auto & mesh = static_cast<mesh_topology_t<burton_mesh_types_t> &>(mesh_);
+  auto vs = mesh.entities<0,0>(this).to_vec();
+
+  using vector_t = burton_mesh_traits_t::vector_t;
+
+  vector_t A = point_to_vector(vs[1]->coordinates() - vs[0]->coordinates());
+  vector_t B = point_to_vector(vs[3]->coordinates() - vs[0]->coordinates());
+  vector_t C = point_to_vector(vs[1]->coordinates() - vs[2]->coordinates());
+  vector_t D = point_to_vector(vs[3]->coordinates() - vs[2]->coordinates());
+
+  return 0.5*(cross_magnitude(A,B) + cross_magnitude(C,D));
+} // burton_quadrilateral_cell_t::area
+
 /*----------------------------------------------------------------------------*
  * burton_quadrilateral_cell_t
  *----------------------------------------------------------------------------*/
 
-point_t burton_quadrilateral_cell_t::centroid()
+point_t burton_quadrilateral_cell_t::centroid() const
   {
     auto & mesh = static_cast<mesh_topology_t<burton_mesh_types_t> &>(mesh_);
     auto vs = mesh.entities<0,0>(this).to_vec();
