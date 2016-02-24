@@ -92,13 +92,31 @@ class burton_vertex_t
  */
 struct burton_edge_t
     : public mesh_entity_t<1, burton_mesh_traits_t::num_domains> {
+
+  //! Type of floating point.
+  using real_t = burton_mesh_traits_t::real_t;
+
   //! Type containing coordinates of the vertex.
   using point_t = burton_mesh_traits_t::point_t;
 
+  //! Type vector type.
+  using vector_t = burton_mesh_traits_t::vector_t;
+
+  //! the constructor
+  burton_edge_t(mesh_topology_base_t & mesh) : mesh_(mesh) {}
+  
+  //! the edge midpoint
+  point_t midpoint() const;
+
+  //! the edge length
+  real_t  length() const;
+
+  //! the edge normal
+  vector_t normal() const;
+
+  //! a reference to the mesh topology
   mesh_topology_base_t & mesh_;
 
-  burton_edge_t(mesh_topology_base_t & mesh) : mesh_(mesh) {}
-  point_t midpoint();
 
 }; // struct burton_edge_t
 
@@ -122,12 +140,19 @@ struct burton_cell_t
   //! Type containing coordinates of the vertex.
   using point_t = burton_mesh_traits_t::point_t;
 
+  //! Type of floating point.
+  using real_t = burton_mesh_traits_t::real_t;
+
   //! Constructor
   burton_cell_t(mesh_topology_base_t & mesh) : mesh_(mesh) {}
   //! Destructor
   virtual ~burton_cell_t() {}
-  virtual burton_mesh_traits_t::real_t area(){}
-  virtual point_t centroid(){}
+
+  //! the centroid
+  virtual point_t centroid() const {};
+
+  //! the area of the cell
+  virtual real_t area() const {};
 
   /*!
     \brief create_entities is a function that creates entities
@@ -180,8 +205,11 @@ class burton_quadrilateral_cell_t : public burton_cell_t
   {
   }
 
-  burton_mesh_traits_t::real_t area() override;
-  point_t centroid() override;
+  //! the centroid
+  point_t centroid() const override;
+
+  //! the area of the cell
+  real_t area() const override;
 
   /*!
     \brief create_entities function for burton_quadrilateral_cell_t.
@@ -356,22 +384,22 @@ class burton_wedge_t
   void set_corner(burton_corner_t * corner) { corner_ = corner; }
 
   //! Get the cell that a wedge is in.
-  burton_cell_t * cell() { return cell_; }
+  const burton_cell_t * cell() const { return cell_; }
 
   //! Get the edge that a wedge has.
-  burton_edge_t * edge() { return edge_; }
+  const burton_edge_t * edge() const { return edge_; }
 
   //! Get the vertex that a wedge has.
-  burton_vertex_t * vertex() { return vertex_; }
+  const burton_vertex_t * vertex() const { return vertex_; }
 
   //! Get the corner that a wedge is in.
-  burton_corner_t * corner() { return corner_; }
+  const burton_corner_t * corner() const { return corner_; }
 
   /*!
     \brief Get the side facet normal for the wedge.
     \return Side facet normal vector.
    */
-  vector_t side_facet_normal()
+  vector_t side_facet_normal() const
   {
     // Use the edge midpoint and the cell centroid to create the normal vector.
     // Multiply normal by the sign of the dot between the normal and the vector
@@ -387,7 +415,7 @@ class burton_wedge_t
     \brief Get the cell facet normal for the wedge.
     \return Cell facet normal vector.
    */
-  vector_t cell_facet_normal()
+  vector_t cell_facet_normal() const
   {
     // Use the edge midpoint and vertex to create the normal vector.
     // Multiply normal by the sign of the dot between the normal and the vector
@@ -408,7 +436,7 @@ class burton_wedge_t
     \returns 1 if positive, -1 if negative.
    */
   template <typename T>
-  T sgn(T val) {
+  T sgn(T val) const {
     return (T(0) < val) - (val < T(0));
   }
 
