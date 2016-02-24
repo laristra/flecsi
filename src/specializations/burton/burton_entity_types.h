@@ -126,6 +126,7 @@ struct burton_cell_t
   burton_cell_t(mesh_topology_base_t & mesh) : mesh_(mesh) {}
   //! Destructor
   virtual ~burton_cell_t() {}
+  virtual burton_mesh_traits_t::real_t area(){}
   virtual point_t centroid(){}
 
   /*!
@@ -179,6 +180,7 @@ class burton_quadrilateral_cell_t : public burton_cell_t
   {
   }
 
+  burton_mesh_traits_t::real_t area() override;
   point_t centroid() override;
 
   /*!

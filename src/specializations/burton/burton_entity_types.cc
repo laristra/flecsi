@@ -35,6 +35,23 @@ point_t burton_edge_t::midpoint()
  * burton_quadrilateral_cell_t
  *----------------------------------------------------------------------------*/
 
+using real_t = burton_mesh_traits_t::real_t;
+
+real_t burton_quadrilateral_cell_t::area()
+{
+  auto & mesh = static_cast<mesh_topology_t<burton_mesh_types_t> &>(mesh_);
+  auto vs = mesh.entities<0,0>(this).to_vec();
+
+  using vector_t = burton_mesh_traits_t::vector_t;
+
+  vector_t A = point_to_vector(vs[1]->coordinates() - vs[0]->coordinates());
+  vector_t B = point_to_vector(vs[3]->coordinates() - vs[0]->coordinates());
+  vector_t C = point_to_vector(vs[1]->coordinates() - vs[2]->coordinates());
+  vector_t D = point_to_vector(vs[3]->coordinates() - vs[2]->coordinates());
+
+  return 0.5*(cross_magnitude(A,B) + cross_magnitude(C,D));
+} // burton_quadrilateral_cell_t::area
+
 point_t burton_quadrilateral_cell_t::centroid()
   {
     auto & mesh = static_cast<mesh_topology_t<burton_mesh_types_t> &>(mesh_);
