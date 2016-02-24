@@ -25,8 +25,15 @@ set(execution_HEADERS
 cinch_add_unit(task
   SOURCES test/task.cc)
 
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 cinch_add_unit(legion
   SOURCES test/legion.cc)
+endif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+
+cinch_add_unit(mpi
+  SOURCES test/mpi.cc
+  POLICY MPI
+        THREADS 2)
 
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.

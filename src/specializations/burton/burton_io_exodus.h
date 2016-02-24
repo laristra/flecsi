@@ -6,8 +6,8 @@
  * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
  * /@@       /@@/@@//// //@@    @@       /@@/@@
  * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
- * 
+ * //       ///  //////   //////  ////////  //
+ *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
@@ -16,9 +16,8 @@
 #define flecsi_burton_io_exodus_h
 
 #ifdef HAVE_EXODUS
-#  include <exodusII.h>
+#include <exodusII.h>
 #endif
-
 
 #include "flecsi/io/io_exodus.h"
 #include "flecsi/specializations/burton/burton.h"
@@ -29,17 +28,17 @@
  * \date Initial file creation: Oct 07, 2015
  */
 
-namespace flecsi {
-
+namespace flecsi
+{
 //! Register file extension "g" with factory.
 bool burton_exodus_g_registered =
-  io_factory_t<burton_mesh_t>::instance().registerType("g",
-    create_io_exodus<burton_mesh_t>);
+    io_factory_t<burton_mesh_t>::instance().registerType(
+        "g", create_io_exodus<burton_mesh_t>);
 
 //! Register file extension "exo" with factory.
 bool burton_exodus_exo_registered =
-  io_factory_t<burton_mesh_t>::instance().registerType("exo",
-    create_io_exodus<burton_mesh_t>);
+    io_factory_t<burton_mesh_t>::instance().registerType(
+        "exo", create_io_exodus<burton_mesh_t>);
 
 /*!
   Implementation of exodus mesh read for burton specialization.
@@ -49,16 +48,16 @@ bool burton_exodus_exo_registered =
 
   \return Exodus error code. 0 on success.
  */
-template<>
-int32_t io_exodus_t<burton_mesh_t>::read(const std::string &name,
-  burton_mesh_t &m) {
-
+template <>
+int32_t io_exodus_t<burton_mesh_t>::read(
+    const std::string & name, burton_mesh_t & m)
+{
 #ifdef HAVE_EXODUS
 
   std::cout << "Reading mesh from: " << name << std::endl;
 
   // alias some types
-  using   real_t = typename burton_mesh_t::real_t;
+  using real_t = typename burton_mesh_t::real_t;
   using vector_t = typename burton_mesh_t::vector_t;
   using vertex_t = typename burton_mesh_t::vertex_t;
 
@@ -68,8 +67,8 @@ int32_t io_exodus_t<burton_mesh_t>::read(const std::string &name,
   int IO_word_size = 0;
   float version;
 
-  auto exoid = ex_open(
-    name.c_str(), EX_READ, &CPU_word_size, &IO_word_size, &version);
+  auto exoid =
+      ex_open(name.c_str(), EX_READ, &CPU_word_size, &IO_word_size, &version);
   assert(exoid >= 0);
 
   // get the initialization parameters
@@ -115,7 +114,7 @@ int32_t io_exodus_t<burton_mesh_t>::read(const std::string &name,
   auto num_nodes_per_elem = 0;
   char elem_type[256];
   status = ex_get_elem_block(
-    exoid, blockids[0], elem_type, &num_elem, &num_nodes_per_elem, &num_attr);
+      exoid, blockids[0], elem_type, &num_elem, &num_nodes_per_elem, &num_attr);
   assert(status == 0);
 
   // verify mesh has quads
@@ -129,21 +128,19 @@ int32_t io_exodus_t<burton_mesh_t>::read(const std::string &name,
 
   // create cells in mesh
   for (size_t e = 0; e < num_elem; ++e) {
-    auto b = e*num_nodes_per_elem; // base offset into elt_conn
-    auto c = m.create_cell({vs[elt_conn[b+0]-1],
-      vs[elt_conn[b+1]-1],
-      vs[elt_conn[b+2]-1],
-      vs[elt_conn[b+3]-1]});
+    auto b = e * num_nodes_per_elem; // base offset into elt_conn
+    auto c = m.create_cell({vs[elt_conn[b + 0] - 1], vs[elt_conn[b + 1] - 1],
+        vs[elt_conn[b + 2] - 1], vs[elt_conn[b + 3] - 1]});
   }
   m.init();
 
-  // creating fields from an exodus file will be problematic since the type
-  // information on the file has been thrown away. For example, an int field
-  // is written to the file as a floating point field, and there is no way to
-  // recover the fact that it is an int field. Furthermore, vector fields
-  // are stored as individual scalar fields and recovering the fact that a
-  // a collection of scalar fields makes a vector field would require clunky
-  // processing of the variable names.
+// creating fields from an exodus file will be problematic since the type
+// information on the file has been thrown away. For example, an int field
+// is written to the file as a floating point field, and there is no way to
+// recover the fact that it is an int field. Furthermore, vector fields
+// are stored as individual scalar fields and recovering the fact that a
+// a collection of scalar fields makes a vector field would require clunky
+// processing of the variable names.
 
 #if 0
   // read field data
@@ -190,19 +187,19 @@ int32_t io_exodus_t<burton_mesh_t>::read(const std::string &name,
 
   \return Exodus error code. 0 on success.
  */
-//FIXME: should allow for const mesh_t &
-//int32_t io_exodus_t::write(
+// FIXME: should allow for const mesh_t &
+// int32_t io_exodus_t::write(
 //    const std::string &name, const mesh_t &m) {
-template<>
-int32_t io_exodus_t<burton_mesh_t>::write(const std::string &name,
-  burton_mesh_t &m) {
-
+template <>
+int32_t io_exodus_t<burton_mesh_t>::write(
+    const std::string & name, burton_mesh_t & m)
+{
 #ifdef HAVE_EXODUS
 
   std::cout << "Writing mesh to: " << name << std::endl;
 
   // alias some types
-  using   real_t = typename burton_mesh_t::real_t;
+  using real_t = typename burton_mesh_t::real_t;
   using vector_t = typename burton_mesh_t::vector_t;
 
   // size of floating point variables used in app.
@@ -210,7 +207,7 @@ int32_t io_exodus_t<burton_mesh_t>::write(const std::string &name,
   // size of floating point to be stored in file.
   int IO_word_size = sizeof(real_t);
   auto exoid =
-    ex_create(name.c_str(), EX_CLOBBER, &CPU_word_size, &IO_word_size);
+      ex_create(name.c_str(), EX_CLOBBER, &CPU_word_size, &IO_word_size);
   assert(exoid >= 0);
   auto d = m.dimension();
   auto num_nodes = m.num_vertices();
@@ -221,7 +218,7 @@ int32_t io_exodus_t<burton_mesh_t>::write(const std::string &name,
 
   // initialize the file.
   auto status = ex_put_init(exoid, "Exodus II output from flecsi.", d,
-    num_nodes, num_elem, num_elem_blk, num_node_sets, num_side_sets);
+      num_nodes, num_elem, num_elem_blk, num_node_sets, num_side_sets);
   assert(status == 0);
 
   // get the coordinates from the mesh.
@@ -238,7 +235,7 @@ int32_t io_exodus_t<burton_mesh_t>::write(const std::string &name,
   assert(status == 0);
 
   // write the coordinate names
-  const char *coord_names[3];
+  const char * coord_names[3];
   coord_names[0] = "x";
   coord_names[1] = "y";
   coord_names[2] = "z";
@@ -250,7 +247,7 @@ int32_t io_exodus_t<burton_mesh_t>::write(const std::string &name,
   auto num_attr = 0;
   auto num_nodes_per_elem = 4;
   status = ex_put_elem_block(
-    exoid, blockid, "quad", num_elem, num_nodes_per_elem, num_attr);
+      exoid, blockid, "quad", num_elem, num_nodes_per_elem, num_attr);
   assert(status == 0);
 
   // element definitions
@@ -267,7 +264,6 @@ int32_t io_exodus_t<burton_mesh_t>::write(const std::string &name,
   status = ex_put_elem_conn(exoid, blockid, elt_conn);
   assert(status == 0);
 
-
   // write field data
 
   // nodal field data
@@ -280,36 +276,39 @@ int32_t io_exodus_t<burton_mesh_t>::write(const std::string &name,
   num_nf += ispav.size();
   // real vectors persistent at vertices
   auto rvpav = access_type_if(m, vector_t, is_persistent_at(vertices));
-  num_nf += m.dimension()*rvpav.size();
+  num_nf += m.dimension() * rvpav.size();
 
   // variable extension for vectors
   std::string var_ext[3];
-  var_ext[0] = "_x"; var_ext[1] = "_y";  var_ext[2] = "_z";
+  var_ext[0] = "_x";
+  var_ext[1] = "_y";
+  var_ext[2] = "_z";
 
   // node variable names array
   char * node_var_names[num_nf];
-  for(int i=0; i<num_nf;++i) {
+  for (int i = 0; i < num_nf; ++i) {
     node_var_names[i] = new char[MAX_STR_LENGTH];
     memset(node_var_names[i], 0x00, MAX_STR_LENGTH);
   } // for
 
   // fill node variable names array
   int inum = 0;
-  for(auto sf: rspav) {
+  for (auto sf : rspav) {
     size_t len = sf.label().size();
-    std::copy(sf.label().begin(),sf.label().end(),node_var_names[inum]);
+    std::copy(sf.label().begin(), sf.label().end(), node_var_names[inum]);
     inum++;
   } // for
-  for(auto sf: ispav) {
+  for (auto sf : ispav) {
     size_t len = sf.label().size();
-    std::copy(sf.label().begin(),sf.label().end(),node_var_names[inum]);
+    std::copy(sf.label().begin(), sf.label().end(), node_var_names[inum]);
     inum++;
   } // for
-  for(auto vf: rvpav) {
+  for (auto vf : rvpav) {
     size_t len = vf.label().size();
-    for(int d=0; d < m.dimension(); ++d) {
-      std::copy(vf.label().begin(),vf.label().end(),node_var_names[inum]);
-      std::copy(var_ext[d].begin(),var_ext[d].end(),&node_var_names[inum][len]);
+    for (int d = 0; d < m.dimension(); ++d) {
+      std::copy(vf.label().begin(), vf.label().end(), node_var_names[inum]);
+      std::copy(
+          var_ext[d].begin(), var_ext[d].end(), &node_var_names[inum][len]);
       inum++;
     } // for
   } // for
@@ -326,22 +325,25 @@ int32_t io_exodus_t<burton_mesh_t>::write(const std::string &name,
   inum = 1;
   // node field buffer
   real_t nf[num_nodes];
-  for(auto sf: rspav) {
-    for(auto v: m.vertices()) nf[v.id()] = sf[v];
+  for (auto sf : rspav) {
+    for (auto v : m.vertices())
+      nf[v.id()] = sf[v];
     status = ex_put_nodal_var(exoid, 1, inum, num_nodes, nf);
     assert(status == 0);
     inum++;
   } // for
-  for(auto sf: ispav) {
+  for (auto sf : ispav) {
     // cast int fields to real_t
-    for(auto v: m.vertices()) nf[v.id()] = (real_t)sf[v];
+    for (auto v : m.vertices())
+      nf[v.id()] = (real_t)sf[v];
     status = ex_put_nodal_var(exoid, 1, inum, num_nodes, nf);
     assert(status == 0);
     inum++;
   } // for
-  for(auto vf: rvpav) {
-    for(int d=0; d < m.dimension(); ++d) {
-      for(auto v: m.vertices()) nf[v.id()] = vf[v][d];
+  for (auto vf : rvpav) {
+    for (int d = 0; d < m.dimension(); ++d) {
+      for (auto v : m.vertices())
+        nf[v.id()] = vf[v][d];
       status = ex_put_nodal_var(exoid, 1, inum, num_nodes, nf);
       assert(status == 0);
       inum++;
@@ -349,10 +351,9 @@ int32_t io_exodus_t<burton_mesh_t>::write(const std::string &name,
   } // for
 
   // clean up
-  for(int i=0; i<num_nf;++i) {
-     delete[] node_var_names[i];
+  for (int i = 0; i < num_nf; ++i) {
+    delete[] node_var_names[i];
   } // for
-
 
   // element field data
   int num_ef = 0; // number of element fields
@@ -364,38 +365,39 @@ int32_t io_exodus_t<burton_mesh_t>::write(const std::string &name,
   num_ef += ispac.size();
   // real vectors persistent at cells
   auto rvpac = access_type_if(m, vector_t, is_persistent_at(cells));
-  num_ef += m.dimension()*rvpac.size();
+  num_ef += m.dimension() * rvpac.size();
 
   // element variable names array
   char * elem_var_names[num_ef];
-  for(int i=0; i<num_ef;++i) {
+  for (int i = 0; i < num_ef; ++i) {
     elem_var_names[i] = new char[MAX_STR_LENGTH];
     memset(elem_var_names[i], 0x00, MAX_STR_LENGTH);
   } // for
 
   // fill element variable names array
   inum = 0;
-  for(auto sf: rspac) {
+  for (auto sf : rspac) {
     size_t len = sf.label().size();
-    std::copy(sf.label().begin(),sf.label().end(),elem_var_names[inum]);
+    std::copy(sf.label().begin(), sf.label().end(), elem_var_names[inum]);
     inum++;
   } // for
-  for(auto sf: ispac) {
+  for (auto sf : ispac) {
     size_t len = sf.label().size();
-    std::copy(sf.label().begin(),sf.label().end(),elem_var_names[inum]);
+    std::copy(sf.label().begin(), sf.label().end(), elem_var_names[inum]);
     inum++;
   } // for
-  for(auto vf: rvpac) {
+  for (auto vf : rvpac) {
     size_t len = vf.label().size();
-    for(int d=0; d<m.dimension(); ++d) {
-      std::copy(vf.label().begin(),vf.label().end(),elem_var_names[inum]);
-      std::copy(var_ext[d].begin(),var_ext[d].end(),&elem_var_names[inum][len]);
+    for (int d = 0; d < m.dimension(); ++d) {
+      std::copy(vf.label().begin(), vf.label().end(), elem_var_names[inum]);
+      std::copy(
+          var_ext[d].begin(), var_ext[d].end(), &elem_var_names[inum][len]);
       inum++;
     } // for
   } // for
 
   // put the number of element fields
-  if(num_ef > 0) {
+  if (num_ef > 0) {
     status = ex_put_var_param(exoid, "e", num_ef);
     assert(status == 0);
     status = ex_put_var_names(exoid, "e", num_ef, elem_var_names);
@@ -406,22 +408,25 @@ int32_t io_exodus_t<burton_mesh_t>::write(const std::string &name,
   inum = 1;
   // element field buffer
   real_t ef[num_elem];
-  for(auto sf: rspac) {
-    for(auto c: m.cells()) ef[c.id()] = sf[c];
+  for (auto sf : rspac) {
+    for (auto c : m.cells())
+      ef[c.id()] = sf[c];
     status = ex_put_elem_var(exoid, 1, inum, 0, num_elem, ef);
     assert(status == 0);
     inum++;
   } // for
-  for(auto sf: ispac) {
+  for (auto sf : ispac) {
     // cast int fields to real_t
-    for(auto c: m.cells()) ef[c.id()] = (real_t)sf[c];
+    for (auto c : m.cells())
+      ef[c.id()] = (real_t)sf[c];
     status = ex_put_elem_var(exoid, 1, inum, 0, num_elem, ef);
     assert(status == 0);
     inum++;
   } // for
-  for(auto vf: rvpac) {
-    for(int d=0; d < m.dimension(); ++d) {
-      for(auto c: m.cells()) ef[c.id()] = vf[c][d];
+  for (auto vf : rvpac) {
+    for (int d = 0; d < m.dimension(); ++d) {
+      for (auto c : m.cells())
+        ef[c.id()] = vf[c][d];
       status = ex_put_elem_var(exoid, 1, inum, 0, num_elem, ef);
       assert(status == 0);
       inum++;
@@ -429,15 +434,14 @@ int32_t io_exodus_t<burton_mesh_t>::write(const std::string &name,
   } // for
 
   // clean up
-  for(int i=0; i<num_ef;++i) {
-    delete [] elem_var_names[i];
+  for (int i = 0; i < num_ef; ++i) {
+    delete[] elem_var_names[i];
   } // for
 
   // close
   status = ex_close(exoid);
 
   return status;
-
 
 #else
 

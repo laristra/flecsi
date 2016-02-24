@@ -30,11 +30,9 @@ public:
 
   void set_precedence(size_t dim, uint64_t precedence) {}
 
-  std::pair<size_t, std::vector<size_t>>
-  create_entities(size_t dim, std::vector<flecsi::id_t>& e,
+  std::vector<size_t>
+  create_entities(size_t dim, flecsi::id_t *e,
                   flecsi::id_t *v, size_t vertex_count){  
-
-    e.resize(8);
 
     e[0] = v[0];
     e[1] = v[2];
@@ -48,7 +46,7 @@ public:
     e[6] = v[2];
     e[7] = v[3];
 
-    return {4, {2, 2, 2, 2}};
+    return {2, 2, 2, 2};
   }
 
   void traverse();

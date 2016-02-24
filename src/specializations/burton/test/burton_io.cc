@@ -91,7 +91,7 @@ TEST_F(Burton, write_exo) {
   } // for
 
   // write the mesh
-  std::string name("test/mesh.exo");
+  std::string name("mesh.exo");
   ASSERT_FALSE(write_mesh(name, b));
 
 } // TEST_F
@@ -99,27 +99,27 @@ TEST_F(Burton, write_exo) {
 TEST_F(Burton, read_exo) {
   burton_mesh_t m;
   // read mesh written by above test
-  std::string name("test/mesh.exo");
+  std::string name("mesh.exo");
   ASSERT_FALSE(read_mesh(name, m));
 
   // write m to a different file
-  name = "test/mesh_out.exo";
+  name = "mesh_out.exo";
   ASSERT_FALSE(write_mesh(name, m));
 } // TEST_F
 
 TEST_F(Burton, write_g) {
-  std::string name("test/mesh.g");
+  std::string name("mesh.g");
   ASSERT_FALSE(write_mesh(name, b));
 } // TEST_F
 
 TEST_F(Burton, read_g) {
   burton_mesh_t m;
   // read mesh written by above test
-  std::string name("test/mesh.g");
+  std::string name("mesh.g");
   ASSERT_FALSE(read_mesh(name, m));
 
   // write m to a different file
-  name = "test/mesh_out.g";
+  name = "mesh_out.g";
   ASSERT_FALSE(write_mesh(name, m));
 } // TEST_F
 

@@ -6,8 +6,8 @@
  * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
  * /@@       /@@/@@//// //@@    @@       /@@/@@
  * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
- * 
+ * //       ///  //////   //////  ////////  //
+ *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
@@ -27,68 +27,16 @@
  * debug dump function
  *----------------------------------------------------------------------------*/
 
-#define ndump(X)                                                               \
-  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__      \
+#define ndump(X)                                                          \
+  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
             << ": " << #X << " = " << X << std::endl
 
-#define nlog(X)                                                                \
-  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__      \
+#define nlog(X)                                                           \
+  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
             << ": " << X << std::endl
 
-namespace flecsi {
-
-/*----------------------------------------------------------------------------*
- * Id utilities.
- *----------------------------------------------------------------------------*/
-
-/*!
-  Convert a local id into a global id using a dimension and
-  domain.  Currently, the dimension and domain are each given
-  2 bits.  In this version, both the dimension and domain are
-  given statically as template parameters.
-
-  \tparam D The dimension.
-  \tparam M The domain.
-
-  \param local_id The local id from which to form a global id.
-
-  \return The corresponding global id.
- */
-template<size_t D, size_t M>
-id_t to_global_id(id_t local_id){
-  return (id_t(D) << 62) | (id_t(M) << 60) | local_id;
-}
-
-/*!
-  Convert a local id into a global id using a dimension and
-  domain.  Currently, the dimension and domain are each given
-  2 bits.  In this version, only the domain is
-  given statically as template parameters.
-
-  \tparam M The domain.
-
-  \param dim The dimension.
-  \param local_id The local id from which to form a global id.
-
-  \return The corresponding global id.
- */
-template<size_t M>
-id_t to_global_id(size_t dim, id_t local_id){
-  return (id_t(dim) << 62) | (id_t(M) << 60) | local_id;
-}
-
-inline id_t to_local_id(id_t global_id){
-  return global_id & 0x0000ffffffffffff;
-}
-
-inline size_t dimension_from_global_id(id_t global_id) {
-  return global_id >> 62;
-}
-
-inline size_t domain_from_global_id(id_t global_id) {
-  return (global_id >> 60) & 0b11;
-}
-
+namespace flecsi
+{
 /*----------------------------------------------------------------------------*
  * Tuple search utilities.
  *----------------------------------------------------------------------------*/
@@ -97,9 +45,8 @@ inline size_t domain_from_global_id(id_t global_id) {
   \struct find_entity__ mesh_utils.h
   \brief find_entity__ provides static search capabilities.
  */
-template<size_t I, class T, size_t D, size_t M>
+template <size_t I, class T, size_t D, size_t M>
 struct find_entity__ {
-
   /*!
     Find the position index of a type that matches the
     given domain and dimension.
@@ -109,7 +56,8 @@ struct find_entity__ {
     \tparam D The dimension to match.
     \tparam M The domain to match.
    */
-  static constexpr size_t find() {
+  static constexpr size_t find()
+  {
     // grab current types
     using E = typename std::tuple_element<I - 1, T>::type;
     using D1 = typename std::tuple_element<0, E>::type;
@@ -117,8 +65,9 @@ struct find_entity__ {
 
     // Check match for domain and dimension and return
     // index if matched or recurse if not matched.
-    return D1::value == M && T1::dimension == D ? 
-      I : find_entity__<I - 1, T, D, M>::find(); 
+    return D1::value == M && T1::dimension == D
+        ? I
+        : find_entity__<I - 1, T, D, M>::find();
   }
 };
 
@@ -126,9 +75,8 @@ struct find_entity__ {
   \struct find_entity__ mesh_utils.h
   \brief find_entity__ provides a specialization for the root recursion.
  */
-template<class T, size_t D, size_t M>
+template <class T, size_t D, size_t M>
 struct find_entity__<0, T, D, M> {
-
   /*!
     Search last tuple element.
 
@@ -136,10 +84,7 @@ struct find_entity__<0, T, D, M> {
     \tparam D The dimension to match.
     \tparam M The domain to match.
    */
-  static constexpr size_t find() {
-    return 0; 
-  } // find
-
+  static constexpr size_t find() { return 0; } // find
 }; // struct find_entity__
 
 /*!
@@ -149,14 +94,15 @@ struct find_entity__<0, T, D, M> {
   Top-level interface for recursive type search matching dimension and
   domain.
  */
-template<class MT, size_t D, size_t M>
+template <class MT, size_t D, size_t M>
 struct find_entity_ {
   using entity_types = typename MT::entity_types;
 
-  using pair_ = 
-  typename std::tuple_element<find_entity__<
-     std::tuple_size<entity_types>::value, entity_types, D, M>::find() - 1,
-     entity_types>::type;
+  using pair_ = typename std::tuple_element<
+      find_entity__<std::tuple_size<entity_types>::value, entity_types, D,
+          M>::find() -
+          1,
+      entity_types>::type;
 
   /*!
     Define the type returned by searching the tuple for matching
@@ -174,9 +120,8 @@ struct find_entity_ {
   \brief compute_connectivity_ provides static recursion to process
   connectivity computation of mesh entity types.
  */
-template<size_t DM, size_t I, class TS>
+template <size_t DM, size_t I, class TS>
 struct compute_connectivity_ {
-
   /*!
     Compute mesh connectivity for the given domain and tuple element.
 
@@ -184,8 +129,9 @@ struct compute_connectivity_ {
     \tparam I The current tuple index.
     \tparam TS The tuple typel
    */
-  template<class M>
-  static int compute(M & mesh) {
+  template <class M>
+  static int compute(M & mesh)
+  {
     static constexpr size_t size = std::tuple_size<TS>::value;
 
     using T = typename std::tuple_element<size - I, TS>::type;
@@ -206,17 +152,17 @@ struct compute_connectivity_ {
   \brief compute_connectivity_ provides a specialization for
   the root recursion.
  */
-template<size_t DM, class TS>
+template <size_t DM, class TS>
 struct compute_connectivity_<DM, 0, TS> {
-
   /*!
     Terminate recursion.
 
     \tparam DM The domain to match.
     \tparam TS The tuple typel
    */
-  template<class M>
-  static int compute(M &) {
+  template <class M>
+  static int compute(M &)
+  {
     return 0;
   } // compute
 
@@ -231,9 +177,8 @@ struct compute_connectivity_<DM, 0, TS> {
   \brief compute_bindings_ provides static recursion to process
   binding computation of mesh entity types.
  */
-template<size_t DM, size_t I, class TS>
+template <size_t DM, size_t I, class TS>
 struct compute_bindings_ {
-
   /*!
     Compute mesh connectivity for the given domain and tuple element.
 
@@ -242,9 +187,9 @@ struct compute_bindings_ {
     \tparam I The current tuple index.
     \tparam TS The tuple typel
    */
-  template<class M>
-  static int compute(M & mesh) {
-
+  template <class M>
+  static int compute(M & mesh)
+  {
     static constexpr size_t size = std::tuple_size<TS>::value;
 
     // Get the indexed tuple
@@ -256,9 +201,9 @@ struct compute_bindings_ {
     using T1 = typename std::tuple_element<2, T>::type;
     using T2 = typename std::tuple_element<3, T>::type;
 
-    if(M1::value == DM) {
-      mesh.template compute_bindings<M1::value, M2::value,
-        T1::dimension, T2::dimension>();
+    if (M1::value == DM) {
+      mesh.template compute_bindings<M1::value, M2::value, T1::dimension,
+          T2::dimension>();
     } // if
 
     return compute_bindings_<DM, I - 1, TS>::compute(mesh);
@@ -271,17 +216,17 @@ struct compute_bindings_ {
   \brief compute_bindings_ provides a specialization for
   the root recursion.
  */
-template<size_t DM, class TS>
+template <size_t DM, class TS>
 struct compute_bindings_<DM, 0, TS> {
-
   /*!
     Terminate recursion.
 
     \tparam DM The domain to match.
     \tparam TS The tuple typel
    */
-  template<class M>
-  static int compute(M &) {
+  template <class M>
+  static int compute(M &)
+  {
     return 0;
   } // compute
 

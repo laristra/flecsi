@@ -27,8 +27,9 @@ TEST(state, sanity) {
   state.register_state<double>("density", 10, 0, persistent);
   state.register_state<double>("pressure", 10, 1, persistent);
   state.register_state<float>("velocity", 15, 0, persistent);
+  state.register_global_state<float>("constant", 0, 0x0);
 
-  auto d = state.accessor<double, 0>("density");
+  auto d = state.dense_accessor<double, 0>("density");
 
   for(auto i: d) {
     d[i] = i;
@@ -45,10 +46,15 @@ TEST(state, sanity) {
   };
 
   // get accessors that match type 'double' and predicate
-  for(auto a: state.accessors<double>(pred)) {
+  for(auto a: state.dense_accessors<double>(pred)) {
     std::cout << a.label() << std::endl;
     ASSERT_TRUE(pred(a));
   } // for
+
+  auto c = state.global_accessor<float,0>("constant");
+  c = 1.0;
+  ASSERT_EQ( 1.0,  *c );
+
 
 } // TEST
 

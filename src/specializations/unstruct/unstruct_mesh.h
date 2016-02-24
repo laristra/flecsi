@@ -6,8 +6,8 @@
  * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
  * /@@       /@@/@@//// //@@    @@       /@@/@@
  * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
- * 
+ * //       ///  //////   //////  ////////  //
+ *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
@@ -27,8 +27,8 @@
 #include "flecsi/mesh/mesh_topology.h"
 #include "flecsi/specializations/unstruct/unstruct_types.h"
 
-namespace flecsi {
-
+namespace flecsi
+{
 //=============================================================================
 //! \class unstruct_mesh_t
 //!
@@ -37,14 +37,14 @@ namespace flecsi {
 //! \tparam D the number of dimensions
 //! \tparam T the real type
 //=============================================================================
-template <typename R, int D> class unstruct_mesh_t {
-
-
+template <typename R, int D>
+class unstruct_mesh_t
+{
   //---------------------------------------------------------------------------
   // Private Types
   //---------------------------------------------------------------------------
 
-private:
+ private:
   //! \brief the mesh types tuple
   using mesh_types_t = unstruct_mesh_types_t<R, D>;
 
@@ -54,14 +54,11 @@ private:
   //! \brief the mesh topology type
   using mesh_topology_t = mesh_topology<mesh_types_t>;
 
-
   //---------------------------------------------------------------------------
   // Intermediate API
   //---------------------------------------------------------------------------
 
-public:
-
-
+ public:
 #ifndef MESH_EXECUTION_POLICY
   // for now: use default execution policy
   using mesh_execution_t = execution_t<>;
@@ -73,7 +70,7 @@ public:
   using attachment_site_t = typename traits_t::attachment_site_t;
 
   //! \brief Accessor type.
-  template<typename T>
+  template <typename T>
   using accessor_t = typename traits_t::mesh_state_t::template accessor_t<T>;
 
   //---------------------------------------------------------------------------
@@ -87,22 +84,22 @@ public:
   //!
   //! \return An accessor to the newly registered state.
   //---------------------------------------------------------------------------
-  template<typename T>
+  template <typename T>
   decltype(auto) register_state_(const const_string_t && key,
-    attachment_site_t site, bitfield_t::field_type_t attributes = 0x0) {
-
-    switch(site) {
+      attachment_site_t site, bitfield_t::field_type_t attributes = 0x0)
+  {
+    switch (site) {
       case attachment_site_t::vertices:
-        return state_.template register_state<T>(key, num_vertices(),
-          attachment_site_t::vertices, attributes);
+        return state_.template register_state<T>(
+            key, num_vertices(), attachment_site_t::vertices, attributes);
         break;
       case attachment_site_t::edges:
-        return state_.template register_state<T>(key, num_edges(),
-          attachment_site_t::edges, attributes);
+        return state_.template register_state<T>(
+            key, num_edges(), attachment_site_t::edges, attributes);
         break;
       case attachment_site_t::cells:
-        return state_.template register_state<T>(key, num_cells(),
-          attachment_site_t::cells, attributes);
+        return state_.template register_state<T>(
+            key, num_cells(), attachment_site_t::cells, attributes);
         break;
       default:
         assert(false && "Error: invalid state registration site.");
@@ -111,32 +108,35 @@ public:
   } // register_state_
 
   //! FIXME
-  template<typename T>
-  auto access_state_(const const_string_t && key) {
+  template <typename T>
+  auto access_state_(const const_string_t && key)
+  {
     return state_.template accessor<T>(key);
   }
 
   //! FIXME
-  template<typename T>
-  auto access_type_() {
+  template <typename T>
+  auto access_type_()
+  {
     return state_.template accessors<T>();
   }
 
   //! FIXME
-  template<typename T, typename P>
-  auto access_type_if_(P && predicate) {
-    return state_.template accessors<T,P>(std::forward<P>(predicate));
+  template <typename T, typename P>
+  auto access_type_if_(P && predicate)
+  {
+    return state_.template accessors<T, P>(std::forward<P>(predicate));
   }
 
   //! FIXME
-  auto state_attributes_(const const_string_t && key) {
+  auto state_attributes_(const const_string_t && key)
+  {
     return state_.template meta_data<>((key)).attributes;
   }
 
   //---------------------------------------------------------------------------
   // Public Types
   //---------------------------------------------------------------------------
-
 
   //! \brief the number of dimensions
   static constexpr auto dimension = traits_t::dimension;
@@ -164,77 +164,95 @@ public:
   unstruct_mesh_t(const unstruct_mesh_t &) = delete;
 
   //! \brief Assignment operator (disabled)
-  unstruct_mesh_t &operator=(const unstruct_mesh_t &) = delete;
+  unstruct_mesh_t & operator=(const unstruct_mesh_t &) = delete;
 
   //---------------------------------------------------------------------------
   //! \brief Default member functions
   //---------------------------------------------------------------------------
   unstruct_mesh_t() {}
-
   //---------------------------------------------------------------------------
   //! \brief Destructor
   //---------------------------------------------------------------------------
   ~unstruct_mesh_t() {}
-
   //---------------------------------------------------------------------------
   //! \brief get the vertices
   //! \return a pointer to the list of vertices
   //---------------------------------------------------------------------------
   auto vertices() { return mesh_.vertices<0>(); }
   auto vertex_ids() { return mesh_.vertex_ids<0>(); }
+  template <class E>
+  auto vertices(E * e)
+  {
+    return mesh_.vertices<0>(e);
+  }
+  template <class E>
+  auto vertex_ids(E * e)
+  {
+    return mesh_.vertex_ids<0>(e);
+  }
 
-  template <class E> auto vertices(E *e) { return mesh_.vertices<0>(e); }
-  template <class E> auto vertex_ids(E *e) { return mesh_.vertex_ids<0>(e); }
-
-  auto num_vertices() const 
-  { return mesh_.template num_vertices<0>(); }
-
-
+  auto num_vertices() const { return mesh_.template num_vertices<0>(); }
   //---------------------------------------------------------------------------
   //! \brief get all the edges
   //! \return a pointer to the list of edges
   //---------------------------------------------------------------------------
   auto edges() { return mesh_.edges<0>(); }
   auto edge_ids() { return mesh_.edge_ids<0>(); }
+  template <class E>
+  auto edges(E * e)
+  {
+    return mesh_.edges<0>(e);
+  }
+  template <class E>
+  auto edge_ids(E * e)
+  {
+    return mesh_.edge_ids<0>(e);
+  }
 
-  template <class E> auto edges(E *e) { return mesh_.edges<0>(e); }
-  template <class E> auto edge_ids(E *e) { return mesh_.edge_ids<0>(e); }
-
-  auto num_edges() const 
-  { return mesh_.template num_edges<0>(); }
-
+  auto num_edges() const { return mesh_.template num_edges<0>(); }
   //---------------------------------------------------------------------------
   //! \brief get all the faces
   //! \return a pointer to the list of faces
   //---------------------------------------------------------------------------
   auto faces() { return mesh_.faces<0>(); }
   auto face_ids() { return mesh_.face_ids<0>(); }
+  template <class E>
+  auto faces(E * e)
+  {
+    return mesh_.faces<0>(e);
+  }
+  template <class E>
+  auto face_ids(E * e)
+  {
+    return mesh_.face_ids<0>(e);
+  }
 
-  template <class E> auto faces(E *e) { return mesh_.faces<0>(e); }
-  template <class E> auto face_ids(E *e) { return mesh_.face_ids<0>(e); }
-
-  auto num_faces() const 
-  { return mesh_.template num_faces<0>(); }
-
+  auto num_faces() const { return mesh_.template num_faces<0>(); }
   //---------------------------------------------------------------------------
   //! \brief get all the cells
   //! \return a pointer to the list of cells
   //---------------------------------------------------------------------------
   auto cells() { return mesh_.cells<0>(); }
   auto cell_ids() { return mesh_.cell_ids<0>(); }
+  template <class E>
+  auto cells(E * e)
+  {
+    return mesh_.cells<0>(e);
+  }
+  template <class E>
+  auto cell_ids(E * e)
+  {
+    return mesh_.cell_ids<0>(e);
+  }
 
-  template <class E> auto cells(E *e) { return mesh_.cells<0>(e); }
-  template <class E> auto cell_ids(E *e) { return mesh_.cell_ids<0>(e); }
-
-  auto num_cells() const 
-  { return mesh_.template num_cells<0>(); }
-
+  auto num_cells() const { return mesh_.template num_cells<0>(); }
   //---------------------------------------------------------------------------
   //! \brief create a vertex
   //! \param[in] pos the coordinates to the vertex
   //! \return a pointer to the vertex
   //---------------------------------------------------------------------------
-  auto create_vertex(const point_t &pos) {
+  auto create_vertex(const point_t & pos)
+  {
     auto p = access_state_<point_t>("coordinates");
     p[mesh_.num_vertices()] = pos;
 
@@ -248,7 +266,8 @@ public:
   //! \param[in] verts the list of pointers to cell vertices
   //! \return a pointer to the cell
   //---------------------------------------------------------------------------
-  auto create_cell(std::initializer_list<vertex_t *> verts) {
+  auto create_cell(std::initializer_list<vertex_t *> verts)
+  {
     auto c = mesh_.template make<cell_t, 0>();
     mesh_.template init_cell<0>(c, verts);
     return c;
@@ -258,27 +277,22 @@ public:
   //! \brief initialize some data that requires state storage
   //! \param[in] vertices the number of total vertices
   //---------------------------------------------------------------------------
-  void init_parameters(size_t vertices) {
-
+  void init_parameters(size_t vertices)
+  {
     // register coordinate state
     state_.template register_state<point_t>(
-      "coordinates", vertices,
-      attachment_site_t::vertices, persistent
-    );
-
+        "coordinates", vertices, attachment_site_t::vertices, persistent);
   }
 
   //---------------------------------------------------------------------------
   //! \brief the main init function
   //---------------------------------------------------------------------------
-  void init() 
-  { mesh_.template init<0>(); }
-
+  void init() { mesh_.template init<0>(); }
   //---------------------------------------------------------------------------
   // Member data
   //---------------------------------------------------------------------------
 
-private:
+ private:
   //! the actual mesh object
   mesh_topology_t mesh_;
 
@@ -286,10 +300,9 @@ private:
   typename traits_t::mesh_state_t state_;
 };
 
-
 //! some aliases for 2 and 3 dimensional mesh
-using unstruct_2d_mesh_t = unstruct_mesh_t<double,2>;
-using unstruct_3d_mesh_t = unstruct_mesh_t<double,3>;
+using unstruct_2d_mesh_t = unstruct_mesh_t<double, 2>;
+using unstruct_3d_mesh_t = unstruct_mesh_t<double, 3>;
 
 } // namespace flecsi
 

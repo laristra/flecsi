@@ -6,8 +6,8 @@
  * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
  * /@@       /@@/@@//// //@@    @@       /@@/@@
  * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
- * 
+ * //       ///  //////   //////  ////////  //
+ *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
@@ -21,10 +21,9 @@
  * \date Initial file creation: Dec 26, 2015
  */
 
-namespace flecsi {
-
+namespace flecsi
+{
 struct minimal_mesh_traits_t {
-
   /*!
     Specify the dimension of the mesh topology.
    */

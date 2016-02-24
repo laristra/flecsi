@@ -6,14 +6,15 @@
  * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
  * /@@       /@@/@@//// //@@    @@       /@@/@@
  * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
- * 
+ * //       ///  //////   //////  ////////  //
+ *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
 /*!
-  \mainpage \e flecsi - An Interface Development Tool to Support Multi-Physics Application Development
+  \mainpage \e flecsi - An Interface Development Tool to Support Multi-Physics
+  Application Development
 
   \section Introduction
 

@@ -30,6 +30,8 @@ endif()
 # Runtime model setup for script interface
 #------------------------------------------------------------------------------#
 
+set(FLECSI_RUNTIME_LIBRARIES)
+
 # Serial interface
 if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
@@ -39,6 +41,14 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(FLECSI_RUNTIME_MAIN script-driver-legion.cc)
+
+  # Add legion setup here...
+  set (Legion_INSTALL_DIRS "/usr/local"  CACHE PATH
+    "Path to the Legion install directory")
+  set (Legion_INC_DIRS "${Legion_INSTALL_DIRS}/include") 
+  include_directories(${Legion_INC_DIRS})
+  set (Legion_LIBRARIES "${Legion_INSTALL_DIRS}/lib")
+  set(FLECSI_RUNTIME_LIBRARIES ${Legion_LIBRARIES})
 
 # MPI interface
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
@@ -51,6 +61,23 @@ else(FLECSI_RUNTIME_MODEL STREQUAL "serial")
   message(FATAL_ERROR "Unrecognized runtime selection")  
 
 endif(FLECSI_RUNTIME_MODEL STREQUAL "serial")
+
+#------------------------------------------------------------------------------#
+# Process id bits
+#------------------------------------------------------------------------------#
+
+execute_process(COMMAND echo "60-${FLECSI_ID_PBITS}" COMMAND bc -l
+  OUTPUT_VARIABLE FLECSI_ID_EBITS OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+add_definitions(-DFLECSI_ID_PBITS=${FLECSI_ID_PBITS})
+add_definitions(-DFLECSI_ID_EBITS=${FLECSI_ID_EBITS})
+
+execute_process(COMMAND echo "2^${FLECSI_ID_PBITS}" COMMAND bc -l
+  OUTPUT_VARIABLE flecsi_partitions OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND echo "2^${FLECSI_ID_EBITS}" COMMAND bc -l
+  OUTPUT_VARIABLE flecsi_entities OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with ${flecsi_entities} entities each")
 
 #------------------------------------------------------------------------------#
 # Enable IO with exodus
@@ -130,6 +157,17 @@ if(ENABLE_PARTITION)
   endif()
 
 endif()
+
+#------------------------------------------------------------------------------#
+# LAPACK
+#------------------------------------------------------------------------------#
+# NB: The code that uses lapack actually requires lapacke:
+# http://www.netlib.org/lapack/lapacke.html
+# If the installation of lapack that this finds does not contain lapacke then
+# the build will fail.
+find_package( LAPACK )
+# append lapacke to list of lapack libraries
+list( APPEND LAPACK_LIBRARIES lapacke )
 
 #------------------------------------------------------------------------------#
 # Create compile scripts

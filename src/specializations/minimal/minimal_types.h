@@ -6,8 +6,8 @@
  * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
  * /@@       /@@/@@//// //@@    @@       /@@/@@
  * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
- * 
+ * //       ///  //////   //////  ////////  //
+ *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
@@ -24,10 +24,9 @@
  * \date Initial file creation: Dec 26, 2015
  */
 
-namespace flecsi {
-
+namespace flecsi
+{
 struct minimal_types_t {
-
   static constexpr size_t dimension = minimal_mesh_traits_t::dimension;
   static constexpr size_t num_domains = minimal_mesh_traits_t::num_domains;
 
@@ -36,6 +35,7 @@ struct minimal_types_t {
   using face_t = minimal_face_t;
   using cell_t = minimal_cell_t;
 
+  // clang-format off
   using entity_types =
     std::tuple<
       std::pair<domain_<0>, vertex_t>,
@@ -51,6 +51,7 @@ struct minimal_types_t {
     >;
 
   using bindings = std::tuple<>;
+  // clang-format on
 
 }; // struct minimal_types
 
