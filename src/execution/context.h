@@ -36,7 +36,7 @@ class context_t : public execution_policy::context_t
  public:
   enum class call_state_t : size_t {
     driver = 0,
-    task
+    flecsi_task
   }; // enum class call_state_t
 
   static context_t & instance()
@@ -47,7 +47,7 @@ class context_t : public execution_policy::context_t
 
   call_state_t current()
   {
-    return call_state_ > 0 ? call_state_t::driver : call_state_t::task;
+    return call_state_ > 0 ? call_state_t::driver : call_state_t::flecsi_task;
   } // current
 
   call_state_t entry() { return static_cast<call_state_t>(++call_state_); }
