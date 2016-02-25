@@ -268,7 +268,7 @@ TEST_F(Burton, vertex_gradient) {
     real_t area = 0.0;
     for(auto cnr: b.corners(v)) {
       // the cell center for the cell containing this corner
-      auto xc = b.cells(cnr).first()->centroid();
+      auto xc = b.cells(cnr).front()->centroid();
       auto xv = v->coordinates();
       std::vector<point_t> mp;
       for(auto e: b.edges(cnr)) { // the midpoints of the edges for this corner

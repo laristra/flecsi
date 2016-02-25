@@ -1,59 +1,48 @@
 /*~-------------------------------------------------------------------------~~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
- * 
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
+ * Copyright (c) 2014 Los Alamos National Security, LLC
+ * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
 
 #include <cinchtest.h>
+#include "../check_sig.h"
 
-#ifdef __ECLIPSE__
-#include "src/execution/legion_execution_policy.h"
-#include "src/execution/task.h"
-#else
-#include "flecsi/execution/legion_execution_policy.h"
-#include "flecsi/execution/task.h"
-#endif
-
-using namespace LegionRuntime::HighLevel;
-
-using execution_t = flecsi::execution_t<flecsi::legion_execution_policy_t>;
-using return_type_t = execution_t::return_type_t;
-
-return_type_t testme(const char * token) {
-  std::cout << "Hello World: " << token << std::endl;
-  return 0;
-} // testme
-
-return_type_t myvoid() {
-  std::cout << "Hello World: " << std::endl;
-  return 0;
-}
-
-void top_level_task(flecsi::context_t<flecsi::legion_execution_policy_t>* ctx,int argc, char** argv)
+class void_double
 {
-	std::cout << "Hello World Top Level Task" << std::endl;
-}
+public:
+	double operator()(double d){printf("double: %e",d);return d+1.0;};
+};
 
-#define execute(task, ...) \
-  execution_t::execute_task(task, ##__VA_ARGS__)
 
-TEST(flecsi_task, execute) {
-  execute(testme, "shit");
-  execute(myvoid);
+TEST(check_sig, check_void) {
+
+	using namespace flecsi;
+  /* Test Logic: See 'Google Test Macros' section below. */
+
+	typedef check_sig<void_double,decltype(&DummyFoo<double,double>)> sig1;
+	typedef check_sig<void_double,decltype(&DummyFoo<double,std::string>)> sig2;
+
+
+	void_double tmp;
+
+//	ASSERT_TRUE(sig1::value);
+	ASSERT_FALSE(sig2::value);
+
+
 } // TEST
 
-TEST(driver, execute) {
-  execute(testme, "shit");
-  execute(myvoid);
+# if 0 /* Remove guards to create more tests */
+TEST(check_sig, testname) {
+
+  /* Test Logic: See 'Google Test Macros' section below. */
+
 } // TEST
+
+TEST(check_sig, testname) {
+
+  /* Test Logic: See 'Google Test Macros' section below. */
+
+} // TEST
+#endif // if 0
 
 /*----------------------------------------------------------------------------*
  * Cinch test Macros
@@ -99,6 +88,6 @@ TEST(driver, execute) {
  *----------------------------------------------------------------------------*/
 
 /*~------------------------------------------------------------------------~--*
- * Formatting options
+ * Formatting options for vim.
  * vim: set tabstop=2 shiftwidth=2 expandtab :
  *~------------------------------------------------------------------------~--*/
