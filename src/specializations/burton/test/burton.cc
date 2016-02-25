@@ -192,12 +192,12 @@ TEST_F(Burton, geometry) {
 
       CINCH_CAPTURE() << "     ---- wedge id: " << w.id() << endl;
 
-      // Why do we have to do .first()?
-      auto c = b.cells(w).first();
+      // Why do we have to do .front()?
+      auto c = b.cells(w).front();
       CINCH_CAPTURE() << "          ++++ cell id: " << c.id()
         << " with centroid " << c->centroid() << endl;
 
-      auto e = b.edges(w).first();
+      auto e = b.edges(w).front();
       CINCH_CAPTURE() << "          ++++ edge id: " << e.id()
         << " with midpoint " << e->midpoint() << endl;
 

@@ -802,9 +802,9 @@ class burton_mesh_t
 
     // Initialize wedges
     for (auto w : wedges()) {
-      w->set_cell(cells(w).first());
-      w->set_edge(edges(w).first());
-      w->set_vertex(vertices(w).first());
+      w->set_cell(cells(w).front());
+      w->set_edge(edges(w).front());
+      w->set_vertex(vertices(w).front());
     } // for
 
   } // init
