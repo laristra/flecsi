@@ -126,8 +126,8 @@ struct burton_cell_t
   burton_cell_t(mesh_topology_base_t & mesh) : mesh_(mesh) {}
   //! Destructor
   virtual ~burton_cell_t() {}
-  virtual burton_mesh_traits_t::real_t area(){}
-  virtual point_t centroid(){}
+  virtual burton_mesh_traits_t::real_t area() {} // = 0; FIXME
+  virtual point_t centroid() {} // = 0; FIXME
 
   /*!
     \brief create_entities is a function that creates entities
@@ -400,6 +400,7 @@ class burton_wedge_t
   }
 
  private:
+
   /*!
     \function sgn
 

@@ -293,7 +293,7 @@ TEST_F(Burton, vertex_gradient) {
     for(auto w: b.wedges(v)) {
       auto Si = w->side_facet_normal();
       // need to clean up the access to a wedge's cell
-      auto c = b.cells(w).first();
+      auto c = w->cell();
       gsv[v] += Si * sc[c]/area;
     } // for
 
@@ -390,7 +390,7 @@ TEST_F(Burton, cell_gradient) {
     for (auto w: b.wedges(c)) {
       auto Ni = w->cell_facet_normal();
       // get the wedge's vertex to look up the vertex value
-      auto v = b.vertices(w).first();
+      auto v = w->vertex();
       gsc[c] += Ni * sv[v]/area;
     } // for
   } // for
