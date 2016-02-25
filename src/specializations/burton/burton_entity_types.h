@@ -149,10 +149,10 @@ struct burton_cell_t
   virtual ~burton_cell_t() {}
 
   //! the centroid
-  virtual point_t centroid() const {};
+  virtual point_t centroid() const {}; // = 0; FIXME
 
   //! the area of the cell
-  virtual real_t area() const {};
+  virtual real_t area() const {}; // = 0; FIXME
 
   /*!
     \brief create_entities is a function that creates entities
@@ -428,6 +428,7 @@ class burton_wedge_t
   }
 
  private:
+
   /*!
     \function sgn
 

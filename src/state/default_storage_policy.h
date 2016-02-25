@@ -300,7 +300,7 @@ class default_state_storage_policy_t
     template <typename E>
     T & operator[](E * e)
     {
-      return this->operator[](e->template local_id<0>());
+      return this->operator[](e->template id<0>());
     } // operator []
 
     /*!
@@ -450,7 +450,7 @@ class default_state_storage_policy_t
     template <typename E>
     T & operator[](E * e)
     {
-      return this->operator[](e->template local_id<0>());
+      return this->operator[](e->template id<0>());
     } // operator []
 
     /*!
