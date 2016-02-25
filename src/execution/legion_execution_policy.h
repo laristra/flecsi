@@ -79,6 +79,8 @@ class legion_execution_policy_t
 	  HighLevelRuntime::register_legion_task<legion_execution_policy_t::driver_top_task<T>>(TOP_LEVEL_TASK_ID,
 	      Processor::LOC_PROC, true/*single*/, false/*index*/);
 
+
+
 	  return HighLevelRuntime::start(argc, argv);
 
   } // execute_driver

@@ -28,7 +28,7 @@ cinch_add_unit(task
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 cinch_add_unit(legion_flecsi_example
   SOURCES test/legion.cc
-  LIBRARIES ${LEGION_LIBRARIES})
+  LIBRARIES ${LEGION_LIBRARIES} -ldl)
 endif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
 cinch_add_unit(mpi

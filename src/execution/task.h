@@ -69,7 +69,7 @@ class execution_t : public execution_policy_t
 
 } // namespace flecsi
 
-#define flecsi_task
+#define task
 
 #endif // flecsi_task_h
 

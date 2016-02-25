@@ -31,12 +31,12 @@ namespace flecsi
   	  	 for a specific execution policy.
  */
 template<class execution_policy>
-class context_t : public execution_policy::context_t
+class context_t
 {
  public:
   enum class call_state_t : size_t {
     driver = 0,
-    flecsi_task
+    task
   }; // enum class call_state_t
 
   static context_t & instance()
@@ -47,7 +47,7 @@ class context_t : public execution_policy::context_t
 
   call_state_t current()
   {
-    return call_state_ > 0 ? call_state_t::driver : call_state_t::flecsi_task;
+    return call_state_ > 0 ? call_state_t::driver : call_state_t::task;
   } // current
 
   call_state_t entry() { return static_cast<call_state_t>(++call_state_); }
@@ -63,7 +63,6 @@ class context_t : public execution_policy::context_t
   ~context_t() {}
   size_t call_state_;
 
-  using runtime_metadata_t = execution_policy::runtime_metadata_t;
 
 
 }; // class context_t
