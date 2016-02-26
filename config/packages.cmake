@@ -172,9 +172,12 @@ endif()
 # http://www.netlib.org/lapack/lapacke.html
 # If the installation of lapack that this finds does not contain lapacke then
 # the build will fail.
-find_package( LAPACK )
-# append lapacke to list of lapack libraries
-list( APPEND LAPACK_LIBRARIES lapacke )
+if(NOT APPLE)
+  find_package(LAPACK)
+
+  # append lapacke to list of lapack libraries
+  list( APPEND LAPACK_LIBRARIES lapacke )
+endif(NOT APPLE)
 
 #------------------------------------------------------------------------------#
 # Create compile scripts
