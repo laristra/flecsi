@@ -785,6 +785,8 @@ class burton_mesh_t
    */
   void init_parameters(size_t vertices)
   {
+    std::cout << "flecsi_internal: " << flecsi_internal << std::endl;
+
     // register coordinate state
     state_.register_state<point_t, flecsi_internal>(
       "coordinates", vertices, attachment_site_t::vertices, persistent);

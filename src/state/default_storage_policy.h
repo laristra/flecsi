@@ -204,7 +204,9 @@ class default_state_storage_policy_t
       \return The user meta data.
      */
     const user_meta_data_t & meta() const { return meta_; }
+
    private:
+
     std::string label_;
     size_t size_;
     T * data_;
@@ -347,15 +349,19 @@ class default_state_storage_policy_t
       \return The user meta data.
      */
     const user_meta_data_t & meta() const { return meta_; }
+
     /*!
       \brief Return an iterator to the beginning of this state data.
      */
     iterator_t begin() { return {is_, 0}; }
+
     /*!
       \brief Return an iterator to the end of this state data.
      */
     iterator_t end() { return {is_, size_}; }
+
    private:
+
     std::string label_;
     size_t size_;
     T * data_;
@@ -497,15 +503,19 @@ class default_state_storage_policy_t
       \return The user meta data.
      */
     const user_meta_data_t & meta() const { return meta_; }
+
     /*!
       \brief Return an iterator to the beginning of this state data.
      */
     iterator_t begin() { return {is_, 0}; }
+
     /*!
       \brief Return an iterator to the end of this state data.
      */
     iterator_t end() { return {is_, size_}; }
+
    private:
+
     std::string label_;
     size_t size_;
     T * data_;
@@ -578,11 +588,6 @@ class default_state_storage_policy_t
         meta_[NS][hash].user_data};
   } // accessor
 
-
-
-
-
-
   /*!
     Register a new state variable.
 
@@ -593,14 +598,9 @@ class default_state_storage_policy_t
   decltype(auto) register_global_state(
       const const_string_t & key, Args &&... args)
   {
-    // add space as we need it
-    if (meta_.size() < NS + 1) {
-      meta_.resize(NS + 1);
-    } // if
-
     // keys must be unique within a given namespace
-    assert(
-        meta_[NS].find(key.hash()) == meta_[NS].end() && "key already exists");
+    assert(meta_[NS].find(key.hash()) == meta_[NS].end() &&
+      "key already exists");
 
     // user meta data
     meta_[NS][key.hash()].user_data.initialize(std::forward<Args>(args)...);
@@ -731,11 +731,6 @@ class default_state_storage_policy_t
   decltype(auto) register_state(
       const const_string_t & key, size_t indices, Args &&... args)
   {
-    // add space as we need it
-    if (meta_.size() < NS + 1) {
-      meta_.resize(NS + 1);
-    } // if
-
     // keys must be unique within a given namespace
     assert(
         meta_[NS].find(key.hash()) == meta_[NS].end() && "key already exists");
@@ -855,9 +850,10 @@ class default_state_storage_policy_t
     return sp;
   } // data
 
- private:
-  std::vector<std::unordered_map<const_string_t::hash_type_t, meta_data_t>>
-      meta_;
+private:
+
+  std::unordered_map<size_t,
+    std::unordered_map<const_string_t::hash_type_t, meta_data_t>> meta_;
 
 }; // class default_state_storage_policy_t
 
