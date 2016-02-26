@@ -13,9 +13,9 @@
 #~----------------------------------------------------------------------------~#
 
 set(mesh_HEADERS
-  mesh_entity.h
   mesh_topology.h
-  vertex.h
+  mesh_types.h
+  mesh_utils.h
   PARENT_SCOPE)
 
 set(mesh_SOURCES
