@@ -15,6 +15,8 @@
 #ifndef flecsi_state_h
 #define flecsi_state_h
 
+#include <limits>
+
 #include "default_storage_policy.h"
 #include "../utils/const_string.h"
 #include "../utils/bitfield.h"
@@ -27,6 +29,10 @@
 
 namespace flecsi
 {
+
+static constexpr size_t __flecsi_internal_state_offset__ =
+  std::numeric_limits<size_t>::max()-10;
+
 /*!
   \brief state_name_space_t defines the various state namespaces that
     are available for registering and maintaining state.
@@ -35,13 +41,13 @@ namespace flecsi
  */
 enum class state_name_space_t : size_t {
   user = 0,
-  internal = 1
+  internal = __flecsi_internal_state_offset__
 }; // enum class state_name_space_t
 
-const size_t flecsi_user_space = static_cast<size_t>(state_name_space_t::user);
-
-const size_t flecsi_internal =
-    static_cast<size_t>(state_name_space_t::internal);
+static const size_t flecsi_user_space =
+  static_cast<size_t>(state_name_space_t::user);
+static const size_t flecsi_internal =
+  static_cast<size_t>(state_name_space_t::internal);
 
 /*!
   \brief state_attribute_t defines different state attributes.

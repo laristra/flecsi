@@ -564,6 +564,7 @@ class connectivity_t
 
 template <size_t D, size_t NM>
 struct mesh_storage_t {
+
   /*!
     Defines a type for storing entity instances as an array of
     \ref entity_vector_t, which is a std::vector of \ref mesh_entity_base_t.
@@ -601,6 +602,7 @@ struct mesh_storage_t {
 class mesh_topology_base_t
 {
  public:
+
   /*!
     Return the number of entities in for a specific domain and topology dim.
    */

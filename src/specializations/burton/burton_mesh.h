@@ -45,7 +45,8 @@ class burton_mesh_t
   using private_mesh_t = mesh_topology_t<burton_mesh_types_t>;
 
  public:
-//! Type defining the execution policy.
+
+  //! Type defining the execution policy.
 #ifndef MESH_EXECUTION_POLICY
   using mesh_execution_t = execution_t<>;
 #else
@@ -63,6 +64,7 @@ class burton_mesh_t
   template <typename T>
   using dense_accessor_t =
       burton_mesh_traits_t::mesh_state_t::dense_accessor_t<T>;
+
   /*--------------------------------------------------------------------------*
    * Dense Accessors
    *--------------------------------------------------------------------------*/

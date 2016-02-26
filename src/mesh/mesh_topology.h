@@ -50,6 +50,7 @@ template <class MT>
 class mesh_topology_t : public mesh_topology_base_t
 {
  public:
+
   // used to find the entity type of topological dimension D and domain M
   template <size_t D, size_t M = 0>
   using entity_type = typename find_entity_<MT, D, M>::type;
