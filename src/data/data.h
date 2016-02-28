@@ -12,17 +12,17 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_state_h
-#define flecsi_state_h
+#ifndef flecsi_data_h
+#define flecsi_data_h
 
 #include <limits>
 
 #include "default_storage_policy.h"
-#include "../utils/const_string.h"
-#include "../utils/bitfield.h"
+#include "data_constants.h"
+#include "default_meta_data.h"
 
 /*!
- * \file state.h
+ * \file data.h
  * \authors bergen
  * \date Initial file creation: Oct 09, 2015
  */
@@ -30,95 +30,47 @@
 namespace flecsi
 {
 
-static constexpr size_t __flecsi_internal_state_offset__ =
-  std::numeric_limits<size_t>::max()-10;
-
-/*!
-  \brief state_name_space_t defines the various state namespaces that
-    are available for registering and maintaining state.
-
-  This type is provided as a convenience to avoid naming collisions.
- */
-enum class state_name_space_t : size_t {
-  user = 0,
-  internal = __flecsi_internal_state_offset__
-}; // enum class state_name_space_t
-
-static const size_t flecsi_user_space =
-  static_cast<size_t>(state_name_space_t::user);
-static const size_t flecsi_internal =
-  static_cast<size_t>(state_name_space_t::internal);
-
-/*!
-  \brief state_attribute_t defines different state attributes.
-
-  This type should probably be pushed up in the interface so that users
-  can define their own attributes.
- */
-enum class state_attribute_t : bitfield_t::field_type_t {
-  persistent = 0x0001,
-  temporary = 0x0002
-}; // enum class state_attribute_t
-
-/*!
-  \brief This exposes the persistent attribute so that it can be used
-    without specifying the full type information.
- */
-const bitfield_t::field_type_t persistent =
-    static_cast<bitfield_t::field_type_t>(
-        flecsi::state_attribute_t::persistent);
-
-/*!
-  \brief This exposes the temporary attribute so that it can be used
-    without specifying the full type information.
- */
-const bitfield_t::field_type_t temporary =
-    static_cast<bitfield_t::field_type_t>(flecsi::state_attribute_t::temporary);
+namespace data_model
+{
 
 /*----------------------------------------------------------------------------*
- * struct default_state_meta_data_t
+ * class data_t
  *----------------------------------------------------------------------------*/
 
 /*!
-  \brief default_state_user_meta_data_t defines a default meta data type.
-
-  This type should really never get used, i.e., the state specialization
-  should provide a meta data type.  So far, this type has mostly been
-  useful for testing.
- */
-struct default_state_user_meta_data_t {
-  void initialize(const size_t & site_id_, bitfield_t::field_type_t attributes_)
-  {
-    site_id = site_id_;
-    attributes = attributes_;
-  } // initialize
-
-  size_t site_id;
-  bitfield_t::field_type_t attributes;
-
-}; // struct default_state_user_meta_data_t
-
-/*----------------------------------------------------------------------------*
- * class state_t
- *----------------------------------------------------------------------------*/
-
-/*!
-  \class state_t state.h
-  \brief state_t provides an interface for registering and accessing
-    state data.
+  \class data_t data.h
+  \brief data_t provides an interface for registering and accessing
+    data data.
 
   This type can be statically configured to use various implementations.
  */
-template <typename user_meta_data_t = default_state_user_meta_data_t,
-    template <typename> typename storage_policy_t =
-        default_state_storage_policy_t>
-class state_t : public storage_policy_t<user_meta_data_t>
+template<
+  typename user_meta_data_t = default_state_user_meta_data_t,
+  template <typename> typename storage_policy_t = default_data_storage_policy_t
+  >
+class data_t : public storage_policy_t<user_meta_data_t>
 {
- private:
+private:
+
   // This is just for convenience...
   using sp_t = storage_policy_t<user_meta_data_t>;
 
- public:
+public:
+
+  /*!
+    Return an instance of the data manager.
+   */
+  static data_t & instance()
+  {
+    static data_t d;
+    std::cout << "state address: " << &d << std::endl;
+    return d;
+  } // instance
+
+  void reset() {
+    sp_t::reset();
+  } // reset
+
   //! Use the accessor type defined by the storage policy.
   template <typename T>
   using dense_accessor_t = typename sp_t::template dense_accessor_t<T>;
@@ -128,9 +80,10 @@ class state_t : public storage_policy_t<user_meta_data_t>
   using global_accessor_t = typename sp_t::template global_accessor_t<T>;
 
   //! Default constructor
-  state_t() : sp_t() {}
+  data_t() : sp_t() {}
+
   //! Destructor
-  ~state_t() {}
+  ~data_t() {}
 
   /*--------------------------------------------------------------------------*
    * Dense Registration / Access
@@ -458,20 +411,21 @@ class state_t : public storage_policy_t<user_meta_data_t>
   } // data
 
   //! Copy constructor (disabled)
-  state_t(const state_t &) = delete;
+  data_t(const data_t &) = delete;
 
   //! Assignment operator (disabled)
-  state_t & operator=(const state_t &) = delete;
+  data_t & operator=(const data_t &) = delete;
 
   // Allow move operations
-  state_t(state_t &&) = default;
-  state_t & operator=(state_t &&) = default;
+  data_t(data_t &&) = default;
+  data_t & operator=(data_t &&) = default;
 
-}; // class state_t
+}; // class data_t
 
+} // namespace data_model
 } // namespace flecsi
 
-#endif // flecsi_state_h
+#endif // flecsi_data_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

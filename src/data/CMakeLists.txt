@@ -13,7 +13,7 @@
 #~----------------------------------------------------------------------------~#
 
 set(data_HEADERS
-  dimensioned_array.h
+  state.h
   PARENT_SCOPE
 )
 
@@ -21,15 +21,10 @@ set(data_HEADERS
 #  PARENT_SCOPE
 #)
 
-#  cinch_add_unit(casename
-#    SOURCES testfile.cc
-#    LIBRARIES list
-#    INCLUDES list
-#    POLICY MPI
-#    THREADS 1 2 4
-#  )
+cinch_add_unit(data
+  SOURCES test/data.cc)
 
-#~---------------------------------------------------------------------------~-#
-# Formatting options
+#----------------------------------------------------------------------------~-#
+# Formatting options for vim.
 # vim: set tabstop=2 shiftwidth=2 expandtab :
-#~---------------------------------------------------------------------------~-#
+#----------------------------------------------------------------------------~-#

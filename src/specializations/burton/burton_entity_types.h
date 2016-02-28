@@ -38,20 +38,22 @@ namespace flecsi
   \tparam N The domain of the vertex.
  */
 class burton_vertex_t
-    : public mesh_entity_t<0, burton_mesh_traits_t::num_domains>
+  : public mesh_entity_t<0, burton_mesh_traits_t::num_domains>
 {
- public:
+public:
+
   //! Type containing coordinates of the vertex.
   using point_t = burton_mesh_traits_t::point_t;
 
   //! Handle for accessing state at vertex.
-  using state_t = burton_mesh_traits_t::mesh_state_t;
+  using data_t = burton_mesh_traits_t::data_t;
 
   //! Number of domains in the burton mesh.
   static constexpr size_t num_domains = burton_mesh_traits_t::num_domains;
 
   //! Constructor
-  burton_vertex_t(state_t & state) : state_(state) {}
+  burton_vertex_t() {}
+
   /*!
     \brief Set the coordinates for a vertex.
 
@@ -59,7 +61,8 @@ class burton_vertex_t
    */
   void set_coordinates(const point_t & coordinates)
   {
-    auto c = state_.dense_accessor<point_t, flecsi_internal>("coordinates");
+    auto c = data_t::instance().dense_accessor<point_t, flecsi_internal>(
+      "coordinates");
     c[mesh_entity_base_t<num_domains>::template id<0>()] = coordinates;
   } // set_coordinates
 
@@ -69,13 +72,10 @@ class burton_vertex_t
    */
   const point_t & coordinates() const
   {
-    const auto c =
-        state_.dense_accessor<point_t, flecsi_internal>("coordinates");
+    const auto c = data_t::instance().dense_accessor<point_t, flecsi_internal>(
+      "coordinates");
     return c[mesh_entity_base_t<num_domains>::template id<0>()];
   } // coordinates
-
- private:
-  state_t & state_;
 
 }; // class burton_vertex_t
 
@@ -200,7 +200,7 @@ struct burton_cell_t
  */
 class burton_quadrilateral_cell_t : public burton_cell_t
 {
- public:
+public:
   burton_quadrilateral_cell_t(mesh_topology_base_t & mesh) : burton_cell_t(mesh)
   {
   }
@@ -363,7 +363,7 @@ class burton_quadrilateral_cell_t : public burton_cell_t
 class burton_wedge_t
     : public mesh_entity_t<2, burton_mesh_traits_t::num_domains>
 {
- public:
+public:
   burton_wedge_t(){}
 
   burton_wedge_t(mesh_topology_base_t & mesh){}
@@ -427,7 +427,7 @@ class burton_wedge_t
     return nrml*sgn(dot(nrml,point_to_vector(e-c)));
   }
 
- private:
+private:
 
   /*!
     \function sgn
@@ -462,7 +462,7 @@ class burton_wedge_t
 class burton_corner_t
     : public mesh_entity_t<1, burton_mesh_traits_t::num_domains>
 {
- public:
+public:
   mesh_topology_base_t & mesh_;
 
   burton_corner_t(mesh_topology_base_t & mesh) : mesh_(mesh) {}
@@ -482,7 +482,7 @@ class burton_corner_t
     \return The wedges in the mesh.
    */
   entity_group<burton_wedge_t> & wedges() { return wedges_; } // wedges
- private:
+private:
   entity_group<burton_wedge_t> wedges_;
 
 }; // class burton_corner_t

@@ -16,6 +16,8 @@
 #define flecsi_common_h
 
 #include <cstdint>
+#include <sstream>
+#include <typeinfo>
 
 #include "id.h"
 
@@ -35,6 +37,7 @@
 
 namespace flecsi
 {
+
 using id_t = id_<FLECSI_ID_PBITS, FLECSI_ID_EBITS>;
 
 //! P.O.D.
@@ -44,7 +47,46 @@ T square(const T & a)
   return a * a;
 }
 
+/*----------------------------------------------------------------------------*
+ * Unique Identifier Utilities
+ *----------------------------------------------------------------------------*/
+
+//! Generate unique ids
+template<typename T>
+struct unique_id_t {
+  static unique_id_t & instance() {
+    static unique_id_t u;
+    return u;
+  } // instance
+
+  auto next() {
+    return ++id_;
+  } // next
+
+private:
+
+  unique_id_t() : id_(0) {}
+  unique_id_t(const unique_id_t &) {}
+  ~unique_id_t() {}
+
+  size_t id_;
+};
+
+//! Create a unique name from the type, address, and unique id
+template<typename T>
+std::string unique_name(const T * t) {
+  const void * address = static_cast<const void *>(t);
+  size_t id = unique_id_t<T>::instance().next();
+  std::stringstream ss;
+  ss << typeid(T).name() << "-" << address << "-" << id;
+  return ss.str();
+}; // unique_name
+
 } // namespace flecsi
+
+/*----------------------------------------------------------------------------*
+ * Preprocessor String Utilities
+ *----------------------------------------------------------------------------*/
 
 #define _UTIL_STRINGIFY(s) #s
 #define EXPAND_AND_STRINGIFY(s) _UTIL_STRINGIFY(s)
