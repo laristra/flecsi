@@ -14,15 +14,17 @@
 
 #include <cinchtest.h>
 
-#include "../state.h"
-#include "../../utils/bitfield.h"
+#include "flecsi/data/data.h"
+#include "flecsi/utils/bitfield.h"
 
-using state_t = flecsi::state_t<flecsi::default_state_user_meta_data_t,
-  flecsi::default_state_storage_policy_t>;
+using data_t = flecsi::data_model::data_t<
+  flecsi::data_model::default_state_user_meta_data_t,
+  flecsi::data_model::default_data_storage_policy_t>;
+
 using flecsi::persistent;
 
 TEST(state, sanity) {
-  state_t state;
+  data_t & state = data_t::instance();
 
   state.register_state<double>("density", 10, 0, persistent);
   state.register_state<double>("pressure", 10, 1, persistent);
@@ -54,8 +56,6 @@ TEST(state, sanity) {
   auto c = state.global_accessor<float,0>("constant");
   c = 1.0;
   ASSERT_EQ( 1.0,  *c );
-
-
 } // TEST
 
 /*----------------------------------------------------------------------------*

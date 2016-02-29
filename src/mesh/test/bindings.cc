@@ -7,6 +7,8 @@
 using namespace std;
 using namespace flecsi;
 
+#define FILTER(E) [&](auto E) -> bool
+
 class Vertex : public mesh_entity_t<0, 2>{
 public:
   Vertex(){}
@@ -271,6 +273,16 @@ TEST(mesh_topology, traversal) {
     for(auto vertex : mesh->entities<0, 1, 0>(wedge)) {
       CINCH_CAPTURE() << "--- vertex id: " << vertex.id() << endl;
     }
+  }
+
+  auto f = FILTER(ent){
+    return ent.id() > 2;
+  };
+
+  auto range = mesh->entities<1>().filter(f);
+
+  for(auto edge : range){
+    CINCH_CAPTURE() << "---- filter edge id: " << edge.id() << endl;   
   }
 
   ASSERT_TRUE(CINCH_EQUAL_BLESSED("bindings.blessed"));

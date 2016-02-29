@@ -26,7 +26,8 @@ namespace flecsi
 template <typename T, typename K, typename... Args>
 class Factory_
 {
- public:
+public:
+
   //! Function pointer type for creation method.
   using createHandler = T * (*)(Args... args);
 
@@ -106,13 +107,15 @@ class Factory_
     return (ita->second(std::forward<Args>(args)...));
   } // create
 
- private:
+private:
+
   map_t map_;
 
   //! Constructor
   Factory_() {}
   //! Destructor
   ~Factory_() {}
+
 }; // class Factory_
 
 } // namespace flecsi

@@ -32,41 +32,49 @@
 
 namespace flecsi
 {
+namespace data_model
+{
+
 /*----------------------------------------------------------------------------*
- * class default_state_storage_policy_t
+ * class default_data_storage_policy_t
  *----------------------------------------------------------------------------*/
 
 /*!
-  \class default_state_storage_policy_t default_storage_policy.h
-  \brief default_state_storage_policy_t provides a serial/local storage
-    policy for the \e flecsi state model.
+  \class default_data_storage_policy_t default_storage_policy.h
+  \brief default_data_storage_policy_t provides a serial/local storage
+    policy for the \e flecsi data model.
 
   This storage policy is probably adequate for serial or MPI-based
   runtimes.  This implementation should not be used as a template
   for creating new storage policies.  If you are developing a new
-  policy, look at the interface in \ref state.h.  This is the interface
+  policy, look at the interface in \ref data.h.  This is the interface
   that needs to be implemented by new storage policies.
  */
 template <typename user_meta_data_t>
-class default_state_storage_policy_t
+class default_data_storage_policy_t
 {
  protected:
-  //! Constructor
-  default_state_storage_policy_t() {}
-  //! Desctructor
-  virtual ~default_state_storage_policy_t() {}
 
+  //! Constructor
+  default_data_storage_policy_t() {}
+
+  //! Desctructor
+  virtual ~default_data_storage_policy_t() {}
+
+  void reset() {
+    meta_.clear();
+  } // reset
 
   /*--------------------------------------------------------------------------*
    * class global_accessor_t
    *--------------------------------------------------------------------------*/
 
   /*!
-    \brief global_accessor_t provides type-based access to state
-      variables that have been registered in the state model.
+    \brief global_accessor_t provides type-based access to data
+      variables that have been registered in the data model.
 
-    \tparam T The type of the state variable.  If this type is not
-      consistent with the type used to register the state, bad things
+    \tparam T The type of the data variable.  If this type is not
+      consistent with the type used to register the data, bad things
       can happen.  However, it can be useful to reinterpret the type, e.g.,
       when writing raw bytes.  This class is part of the low-level \e flecsi
       interface, so it is assumed that you know what you are doing...
@@ -81,7 +89,7 @@ class default_state_storage_policy_t
       Constructor.
 
       \param label The c_str() version of the const_string used for
-        this state variable's hash.
+        this data variable's hash.
       \param data A pointer to the raw data.
       \param meta A reference to the user-defined meta data.
      */
@@ -104,12 +112,12 @@ class default_state_storage_policy_t
     }
 
     /*!
-      \brief Return a std::string containing the label of the state variable
+      \brief Return a std::string containing the label of the data variable
         reference by this accessor.
      */
     const std::string & label() { return label_; }
     /*!
-      \brief Return the size of the state variable referenced by this
+      \brief Return the size of the data variable referenced by this
         accessor.
 
       The size of the assocated index space.
@@ -117,7 +125,7 @@ class default_state_storage_policy_t
     size_t size() const { return size_; }
     /*!
       \brief Provide access to the data for this
-        state variable.  This is the const operator version.
+        data variable.  This is the const operator version.
      */
     const T & operator*() const
     {
@@ -126,7 +134,7 @@ class default_state_storage_policy_t
 
     /*!
       \brief Provide access to the data for this
-        state variable.
+        data variable.
      */
     T & operator*()
     {
@@ -134,7 +142,7 @@ class default_state_storage_policy_t
     } // operator *
     /*!
       \brief Provide access to the data for this
-        state variable.  This is the const operator version.
+        data variable.  This is the const operator version.
      */
     const T * operator->() const
     {
@@ -143,7 +151,7 @@ class default_state_storage_policy_t
 
     /*!
       \brief Provide access to the data for this
-        state variable.
+        data variable.
      */
     T * operator->()
     {
@@ -199,12 +207,14 @@ class default_state_storage_policy_t
       return *data_; 
     }
     /*!
-      \brief Return the user meta data for this state variable.
+      \brief Return the user meta data for this data variable.
 
       \return The user meta data.
      */
     const user_meta_data_t & meta() const { return meta_; }
+
    private:
+
     std::string label_;
     size_t size_;
     T * data_;
@@ -219,11 +229,11 @@ class default_state_storage_policy_t
    *--------------------------------------------------------------------------*/
 
   /*!
-    \brief dense_accessor_t provides logically array-based access to state
-      variables that have been registered in the state model.
+    \brief dense_accessor_t provides logically array-based access to data
+      variables that have been registered in the data model.
 
-    \tparam T The type of the state variable.  If this type is not
-      consistent with the type used to register the state, bad things
+    \tparam T The type of the data variable.  If this type is not
+      consistent with the type used to register the data, bad things
       can happen.  However, it can be useful to reinterpret the type, e.g.,
       when writing raw bytes.  This class is part of the low-level \e flecsi
       interface, so it is assumed that you know what you are doing...
@@ -238,7 +248,7 @@ class default_state_storage_policy_t
       Constructor.
 
       \param label The c_str() version of the const_string used for
-        this state variable's hash.
+        this data variable's hash.
       \param size The size of the associated index space.
       \param data A pointer to the raw data.
       \param meta A reference to the user-defined meta data.
@@ -262,20 +272,22 @@ class default_state_storage_policy_t
     }
 
     /*!
-      \brief Return a std::string containing the label of the state variable
+      \brief Return a std::string containing the label of the data variable
         reference by this accessor.
      */
     const std::string & label() { return label_; }
+
     /*!
-      \brief Return the size of the state variable referenced by this
+      \brief Return the size of the data variable referenced by this
         accessor.
 
       The size of the assocated index space.
      */
     size_t size() const { return size_; }
+
     /*!
       \brief Provide logical array-based access to the data for this
-        state variable.  This is the const operator version.
+        data variable.  This is the const operator version.
 
       \tparam E A complex index type.
 
@@ -290,7 +302,7 @@ class default_state_storage_policy_t
 
     /*!
       \brief Provide logical array-based access to the data for this
-        state variable.
+        data variable.
 
       \tparam E A complex index type.
 
@@ -300,14 +312,14 @@ class default_state_storage_policy_t
     template <typename E>
     T & operator[](E * e)
     {
-      return this->operator[](e->template local_id<0>());
+      return this->operator[](e->template id<0>());
     } // operator []
 
     /*!
       \brief Provide logical array-based access to the data for this
-        state variable.  This is the const operator version.
+        data variable.  This is the const operator version.
 
-      \param index The index of the state variable to return.
+      \param index The index of the data variable to return.
      */
     const T & operator[](size_t index) const
     {
@@ -317,9 +329,9 @@ class default_state_storage_policy_t
 
     /*!
       \brief Provide logical array-based access to the data for this
-        state variable.
+        data variable.
 
-      \param index The index of the state variable to return.
+      \param index The index of the data variable to return.
      */
     T & operator[](size_t index)
     {
@@ -342,20 +354,24 @@ class default_state_storage_policy_t
     } // operator =
 
     /*!
-      \brief Return the user meta data for this state variable.
+      \brief Return the user meta data for this data variable.
 
       \return The user meta data.
      */
     const user_meta_data_t & meta() const { return meta_; }
+
     /*!
-      \brief Return an iterator to the beginning of this state data.
+      \brief Return an iterator to the beginning of this data data.
      */
     iterator_t begin() { return {is_, 0}; }
+
     /*!
-      \brief Return an iterator to the end of this state data.
+      \brief Return an iterator to the end of this data data.
      */
     iterator_t end() { return {is_, size_}; }
+
    private:
+
     std::string label_;
     size_t size_;
     T * data_;
@@ -369,11 +385,11 @@ class default_state_storage_policy_t
    *--------------------------------------------------------------------------*/
 
   /*!
-    \brief sparse_accessor_t provides logically array-based access to state
-      variables that have been registered in the state model.
+    \brief sparse_accessor_t provides logically array-based access to data
+      variables that have been registered in the data model.
 
-    \tparam T The type of the state variable.  If this type is not
-      consistent with the type used to register the state, bad things
+    \tparam T The type of the data variable.  If this type is not
+      consistent with the type used to register the data, bad things
       can happen.  However, it can be useful to reinterpret the type, e.g.,
       when writing raw bytes.  This class is part of the low-level \e flecsi
       interface, so it is assumed that you know what you are doing...
@@ -388,7 +404,7 @@ class default_state_storage_policy_t
       Constructor.
 
       \param label The c_str() version of the const_string used for
-        this state variable's hash.
+        this data variable's hash.
       \param size The size of the associated index space.
       \param data A pointer to the raw data.
       \param meta A reference to the user-defined meta data.
@@ -412,12 +428,12 @@ class default_state_storage_policy_t
     }
 
     /*!
-      \brief Return a std::string containing the label of the state variable
+      \brief Return a std::string containing the label of the data variable
         reference by this accessor.
      */
     const std::string & label() { return label_; }
     /*!
-      \brief Return the size of the state variable referenced by this
+      \brief Return the size of the data variable referenced by this
         accessor.
 
       The size is in elements of type T.
@@ -425,7 +441,7 @@ class default_state_storage_policy_t
     size_t size() const { return size_; }
     /*!
       \brief Provide logical array-based access to the data for this
-        state variable.  This is the const operator version.
+        data variable.  This is the const operator version.
 
       \tparam E A complex index type.
 
@@ -440,7 +456,7 @@ class default_state_storage_policy_t
 
     /*!
       \brief Provide logical array-based access to the data for this
-        state variable.
+        data variable.
 
       \tparam E A complex index type.
 
@@ -450,14 +466,14 @@ class default_state_storage_policy_t
     template <typename E>
     T & operator[](E * e)
     {
-      return this->operator[](e->template local_id<0>());
+      return this->operator[](e->template id<0>());
     } // operator []
 
     /*!
       \brief Provide logical array-based access to the data for this
-        state variable.  This is the const operator version.
+        data variable.  This is the const operator version.
 
-      \param index The index of the state variable to return.
+      \param index The index of the data variable to return.
      */
     const T & operator[](size_t index) const
     {
@@ -467,9 +483,9 @@ class default_state_storage_policy_t
 
     /*!
       \brief Provide logical array-based access to the data for this
-        state variable.
+        data variable.
 
-      \param index The index of the state variable to return.
+      \param index The index of the data variable to return.
      */
     T & operator[](size_t index)
     {
@@ -492,20 +508,24 @@ class default_state_storage_policy_t
     } // operator =
 
     /*!
-      \brief Return the user meta data for this state variable.
+      \brief Return the user meta data for this data variable.
 
       \return The user meta data.
      */
     const user_meta_data_t & meta() const { return meta_; }
+
     /*!
-      \brief Return an iterator to the beginning of this state data.
+      \brief Return an iterator to the beginning of this data data.
      */
     iterator_t begin() { return {is_, 0}; }
+
     /*!
-      \brief Return an iterator to the end of this state data.
+      \brief Return an iterator to the end of this data data.
      */
     iterator_t end() { return {is_, size_}; }
+
    private:
+
     std::string label_;
     size_t size_;
     T * data_;
@@ -520,7 +540,7 @@ class default_state_storage_policy_t
 
   /*!
     \brief meta_data_t provides storage for extra information that is
-      used to interpret state variable information at different points
+      used to interpret data variable information at different points
       in the low-level runtime.
    */
   struct meta_data_t {
@@ -531,7 +551,7 @@ class default_state_storage_policy_t
 
     /*!
       \brief type_info_t allows creation of reference information
-        to the user-specified type of the state data.
+        to the user-specified type of the data data.
 
       The std::type_info type requires dynamic initialization.  The
         type_info_t type is designed to allow construction without
@@ -578,11 +598,6 @@ class default_state_storage_policy_t
         meta_[NS][hash].user_data};
   } // accessor
 
-
-
-
-
-
   /*!
     Register a new state variable.
 
@@ -593,14 +608,9 @@ class default_state_storage_policy_t
   decltype(auto) register_global_state(
       const const_string_t & key, Args &&... args)
   {
-    // add space as we need it
-    if (meta_.size() < NS + 1) {
-      meta_.resize(NS + 1);
-    } // if
-
     // keys must be unique within a given namespace
-    assert(
-        meta_[NS].find(key.hash()) == meta_[NS].end() && "key already exists");
+    assert(meta_[NS].find(key.hash()) == meta_[NS].end() &&
+      "key already exists");
 
     // user meta data
     meta_[NS][key.hash()].user_data.initialize(std::forward<Args>(args)...);
@@ -731,11 +741,6 @@ class default_state_storage_policy_t
   decltype(auto) register_state(
       const const_string_t & key, size_t indices, Args &&... args)
   {
-    // add space as we need it
-    if (meta_.size() < NS + 1) {
-      meta_.resize(NS + 1);
-    } // if
-
     // keys must be unique within a given namespace
     assert(
         meta_[NS].find(key.hash()) == meta_[NS].end() && "key already exists");
@@ -855,12 +860,14 @@ class default_state_storage_policy_t
     return sp;
   } // data
 
- private:
-  std::vector<std::unordered_map<const_string_t::hash_type_t, meta_data_t>>
-      meta_;
+private:
 
-}; // class default_state_storage_policy_t
+  std::unordered_map<size_t,
+    std::unordered_map<const_string_t::hash_type_t, meta_data_t>> meta_;
 
+}; // class default_data_storage_policy_t
+
+} // namespace data_model
 } // namespace flecsi
 
 #endif // flecsi_default_storage_policy_h

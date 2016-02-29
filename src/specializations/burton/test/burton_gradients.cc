@@ -268,7 +268,7 @@ TEST_F(Burton, vertex_gradient) {
     real_t area = 0.0;
     for(auto cnr: b.corners(v)) {
       // the cell center for the cell containing this corner
-      auto xc = b.cells(cnr).first()->centroid();
+      auto xc = b.cells(cnr).front()->centroid();
       auto xv = v->coordinates();
       std::vector<point_t> mp;
       for(auto e: b.edges(cnr)) { // the midpoints of the edges for this corner
@@ -293,7 +293,7 @@ TEST_F(Burton, vertex_gradient) {
     for(auto w: b.wedges(v)) {
       auto Si = w->side_facet_normal();
       // need to clean up the access to a wedge's cell
-      auto c = b.cells(w).first();
+      auto c = w->cell();
       gsv[v] += Si * sc[c]/area;
     } // for
 
@@ -390,7 +390,7 @@ TEST_F(Burton, cell_gradient) {
     for (auto w: b.wedges(c)) {
       auto Ni = w->cell_facet_normal();
       // get the wedge's vertex to look up the vertex value
-      auto v = b.vertices(w).first();
+      auto v = w->vertex();
       gsc[c] += Ni * sv[v]/area;
     } // for
   } // for

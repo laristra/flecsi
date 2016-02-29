@@ -26,8 +26,9 @@ cinch_add_unit(task
   SOURCES test/task.cc)
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
-cinch_add_unit(legion
-  SOURCES test/legion.cc)
+cinch_add_unit(legion_flecsi_example
+  SOURCES test/legion.cc
+  POLICY LEGION)
 endif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
 cinch_add_unit(mpi

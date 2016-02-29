@@ -18,7 +18,7 @@
 #include <array>
 #include <cmath>
 
-#include "../data/dimensioned_array.h"
+#include "../utils/dimensioned_array.h"
 #include "../utils/common.h"
 #include "point.h"
 

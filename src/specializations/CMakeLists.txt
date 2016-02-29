@@ -22,10 +22,7 @@ set(specializations_HEADERS
   minimal/minimal_entity_types.h
   minimal/minimal_mesh.h
   minimal/minimal_mesh_traits.h
-  minimal/minimal_mesh_types.h
-  unstruct/unstruct.h
-  unstruct/unstruct_mesh.h
-  unstruct/unstruct_types.h
+  minimal/minimal_types.h
   PARENT_SCOPE
 )
 if(ENABLE_IO)

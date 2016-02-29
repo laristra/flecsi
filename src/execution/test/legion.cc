@@ -34,11 +34,12 @@ return_type_t myvoid() {
   return 0;
 }
 
-void top_level_task(flecsi::context_t<flecsi::legion_execution_policy_t>* ctx,int argc, char** argv)
+namespace flecsi{
+void top_level_task(int argc, char** argv)
 {
 	std::cout << "Hello World Top Level Task" << std::endl;
 }
-
+}
 #define execute(task, ...) \
   execution_t::execute_task(task, ##__VA_ARGS__)
 
@@ -48,8 +49,8 @@ TEST(task, execute) {
 } // TEST
 
 TEST(driver, execute) {
-  execute(testme, "shit");
-  execute(myvoid);
+	char* argv = "shit";
+	execution_t::execute_driver(flecsi::top_level_task,1,&argv);
 } // TEST
 
 /*----------------------------------------------------------------------------*
