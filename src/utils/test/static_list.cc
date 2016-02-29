@@ -17,7 +17,7 @@
 #include <iostream>
 
 // user includes
-#include "flexi/utils/static_list.h"
+#include "flecsi/utils/static_list.h"
 
 
 // using declarations

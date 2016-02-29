@@ -45,8 +45,8 @@ cinch_add_unit(zip
 cinch_add_unit(static_for
   SOURCES test/static_for.cc)
 
-cinch_add_unit(static_list
-  SOURCES test/static_list.cc)
+#cinch_add_unit(static_list
+#  SOURCES test/static_list.cc)
 
 cinch_add_unit(tuple_for_each
   SOURCES test/tuple_for_each.cc)
