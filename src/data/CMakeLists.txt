@@ -12,10 +12,10 @@
 # All rights reserved
 #~----------------------------------------------------------------------------~#
 
-set(data_HEADERS
-  state.h
-  PARENT_SCOPE
-)
+#set(data_HEADERS
+#  state.h
+#  PARENT_SCOPE
+#)
 
 #set(data_SOURCES
 #  PARENT_SCOPE
