@@ -209,24 +209,38 @@ class mesh_topology_t : public mesh_topology_base_t
 
     // Top-level constructor, e.g: cells of a mesh
     entity_range_t(mesh_topology_t & mesh, const id_vector_t & v)
-        : mesh_(mesh), v_(v), begin_(0), end_(v_.size())
+        : mesh_(mesh), v_(&v), begin_(0), end_(v_->size()), owned_(false)
     {
     }
 
     // Nested constructor, e.g: edges of a cell
     entity_range_t(
         mesh_topology_t & mesh, const id_vector_t & v, size_t begin, size_t end)
-        : mesh_(mesh), v_(v), begin_(begin), end_(end)
+        : mesh_(mesh), v_(&v), begin_(begin), end_(end), owned_(false)
     {
     }
 
     entity_range_t(const entity_range_t & r)
-        : mesh_(r.mesh_), v_(r.v_), begin_(0), end_(v_.size())
+        : mesh_(r.mesh_), v_(r.v_), begin_(0),
+        end_(v_->size()), owned_(false)
     {
     }
 
-    iterator_t begin() const { return iterator_t(mesh_, v_, begin_); } // begin
-    iterator_t end() const { return iterator_t(mesh_, v_, end_); } // end
+    // Top-level constructor, e.g: cells of a mesh
+    entity_range_t(mesh_topology_t & mesh, id_vector_t && v)
+        : mesh_(mesh), v_(new id_vector_t(std::move(v))),
+        begin_(0), end_(v_->size()), owned_(true)
+    {
+    }
+
+    ~entity_range_t(){
+      if(owned_){
+        delete v_;
+      }
+    }
+
+    iterator_t begin() const { return iterator_t(mesh_, *v_, begin_); } // begin
+    iterator_t end() const { return iterator_t(mesh_, *v_, end_); } // end
     /*!
       convert this range to a vector
      */
@@ -234,7 +248,7 @@ class mesh_topology_t : public mesh_topology_base_t
     {
       domain_entity_vector_t ret;
       for (size_t i = begin_; i < end_; ++i) {
-        ret.push_back(mesh_.get_entity<D, M>(v_[i]));
+        ret.push_back(mesh_.get_entity<D, M>((*v_)[i]));
       } // for
 
       return ret;
@@ -242,33 +256,34 @@ class mesh_topology_t : public mesh_topology_base_t
 
     domain_entity<M, entity_type> operator[](size_t i) const
     {
-      return mesh_.get_entity<D, M>(v_[begin_+i]);
+      return mesh_.get_entity<D, M>((*v_)[begin_ + i]);
     } // []
 
     domain_entity<M, entity_type> at(size_t i) const
     {
       assert( i >= begin_ && i < end_ );
-      return mesh_.get_entity<D, M>(v_[begin_+i]);
+      return mesh_.get_entity<D, M>((*v_)[begin_ + i]);
     } // at
 
 
     domain_entity<M, entity_type> front() const
     {
-      return mesh_.get_entity<D, M>(v_[begin_]);
+      return mesh_.get_entity<D, M>((*v_)[begin_]);
     } // first
 
     domain_entity<M, entity_type> back() const
     {
-      return mesh_.get_entity<D, M>(v_[end_ - 1]);
+      return mesh_.get_entity<D, M>((*v_)[end_ - 1]);
     } // last
 
     size_t size() const { return end_ - begin_; } // size
+
    private:
     mesh_topology_t & mesh_;
-    const id_vector_t & v_;
+    const id_vector_t * v_;
     size_t begin_;
     size_t end_;
-
+    bool owned_;
   }; // class entity_range_t
 
   /*--------------------------------------------------------------------------*
@@ -291,30 +306,43 @@ class mesh_topology_t : public mesh_topology_base_t
 
     // Top-level constructor, e.g: cells of a mesh
     const_entity_range_t(const mesh_topology_t & mesh, const id_vector_t & v)
-        : mesh_(mesh), v_(v), begin_(0), end_(v_.size())
+        : mesh_(mesh), v_(&v), begin_(0), end_(v_->size()), owned_(false)
     {
     }
 
     // Nested constructor, e.g: edges of a cell
     const_entity_range_t(const mesh_topology_t & mesh, const id_vector_t & v,
         size_t begin, size_t end)
-        : mesh_(mesh), v_(v), begin_(begin), end_(end)
+        : mesh_(mesh), v_(&v), begin_(begin), end_(end), owned_(false)
     {
     }
 
     const_entity_range_t(const const_entity_range_t & r)
-        : mesh_(r.mesh_), v_(r.v_), begin_(0), end_(v_.size())
+        : mesh_(r.mesh_), v_(r.v_), begin_(0), end_(v_->size()), owned_(false)
     {
+    }
+
+    // Top-level constructor, e.g: cells of a mesh
+    const_entity_range_t(const mesh_topology_t & mesh, id_vector_t && v)
+        : mesh_(mesh), v_(new id_vector_t(std::move(v))),
+        begin_(0), end_(v_->size()), owned_(true)
+    {
+    }
+
+    ~const_entity_range_t(){
+      if(owned_){
+        delete v_;
+      }
     }
 
     const_iterator_t begin() const
     {
-      return const_iterator_t(mesh_, v_, begin_);
+      return const_iterator_t(mesh_, *v_, begin_);
     } // begin
 
     const_iterator_t end() const
     {
-      return const_iterator_t(mesh_, v_, end_);
+      return const_iterator_t(mesh_, *v_, end_);
     } // end
 
     /*!
@@ -326,7 +354,7 @@ class mesh_topology_t : public mesh_topology_base_t
       domain_entity_vector_t ret;
 
       for (size_t i = begin_; i < end_; ++i) {
-        ret.push_back(mesh_.get_entity<D, M>(v_[i]));
+        ret.push_back(mesh_.get_entity<D, M>((*v_)[i]));
       } // for
 
       return ret;
@@ -334,33 +362,33 @@ class mesh_topology_t : public mesh_topology_base_t
 
     domain_entity<M, entity_type> operator[](size_t i) const
     {
-      return mesh_.get_entity<D, M>(v_[begin_+i]);
+      return mesh_.get_entity<D, M>((*v_)[begin_+i]);
     } // []
 
     domain_entity<M, entity_type> at(size_t i) const
     {
       assert( i >= begin_ && i < end_ );
-      return mesh_.get_entity<D, M>(v_[begin_+i]);
+      return mesh_.get_entity<D, M>((*v_)[begin_+i]);
     } // at
 
 
     domain_entity<M, entity_type> front() const
     {
-      return mesh_.get_entity<D, M>(v_[begin_]);
+      return mesh_.get_entity<D, M>((*v_)[begin_]);
     } // first
 
     domain_entity<M, entity_type> back() const
     {
-      return mesh_.get_entity<D, M>(v_[end_ - 1]);
+      return mesh_.get_entity<D, M>((*v_)[end_ - 1]);
     } // last
 
     size_t size() const { return end_ - begin_; } // size
    private:
     const mesh_topology_t & mesh_;
-    const id_vector_t & v_;
+    const id_vector_t * v_;
     size_t begin_;
     size_t end_;
-
+    bool owned_;
   }; // class const_entity_range_t
 
   /*--------------------------------------------------------------------------*
