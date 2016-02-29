@@ -27,6 +27,7 @@
 #include <vector>
 #include <cassert>
 #include <unordered_map>
+#include <functional>
 
 #include "flecsi/utils/common.h"
 #include "flecsi/mesh/mesh_types.h"
@@ -205,7 +206,9 @@ class mesh_topology_t : public mesh_topology_base_t
    public:
     using iterator_t = iterator<D, M>;
     using entity_type = typename iterator_t::entity_type;
-    using domain_entity_vector_t = std::vector<domain_entity<M, entity_type>>;
+    using domain_entity_t = domain_entity<M, entity_type>;
+    using domain_entity_vector_t = std::vector<domain_entity_t>;
+    using filter_function = std::function<bool(domain_entity_t)>;
 
     // Top-level constructor, e.g: cells of a mesh
     entity_range_t(mesh_topology_t & mesh, const id_vector_t & v)
@@ -278,6 +281,18 @@ class mesh_topology_t : public mesh_topology_base_t
 
     size_t size() const { return end_ - begin_; } // size
 
+    entity_range_t filter(filter_function f) {
+      id_vector_t v;
+      
+      for (auto ent : *this) {
+        if (f(ent)) {
+          v.push_back(ent.id());
+        }
+      }
+
+      return entity_range_t(mesh_, std::move(v));
+    }
+
    private:
     mesh_topology_t & mesh_;
     const id_vector_t * v_;
@@ -301,8 +316,9 @@ class mesh_topology_t : public mesh_topology_base_t
    public:
     using const_iterator_t = const_iterator<D>;
     using entity_type = typename const_iterator_t::entity_type;
-    using domain_entity_vector_t =
-        std::vector<domain_entity<M, const entity_type>>;
+    using domain_entity_t = domain_entity<M, entity_type>;
+    using domain_entity_vector_t = std::vector<domain_entity_t>;
+    using filter_function = std::function<bool(domain_entity_t)>;
 
     // Top-level constructor, e.g: cells of a mesh
     const_entity_range_t(const mesh_topology_t & mesh, const id_vector_t & v)
@@ -383,6 +399,19 @@ class mesh_topology_t : public mesh_topology_base_t
     } // last
 
     size_t size() const { return end_ - begin_; } // size
+
+    const_entity_range_t filter(filter_function f) {
+      id_vector_t v;
+      
+      for (auto ent : *this) {
+        if (f(ent)) {
+          v.push_back(ent.id());
+        }
+      }
+
+      return const_entity_range_t(mesh_, std::move(v));
+    }
+
    private:
     const mesh_topology_t & mesh_;
     const id_vector_t * v_;
