@@ -234,7 +234,7 @@ class mesh_topology_t : public mesh_topology_base_t
     {
       domain_entity_vector_t ret;
       for (size_t i = begin_; i < end_; ++i) {
-        ret.push_back(mesh_.get_entity<D>(v_[i]));
+        ret.push_back(mesh_.get_entity<D, M>(v_[i]));
       } // for
 
       return ret;
@@ -242,24 +242,24 @@ class mesh_topology_t : public mesh_topology_base_t
 
     domain_entity<M, entity_type> operator[](size_t i) const
     {
-      return mesh_.get_entity<D>(v_[begin_+i]);
+      return mesh_.get_entity<D, M>(v_[begin_+i]);
     } // []
 
     domain_entity<M, entity_type> at(size_t i) const
     {
       assert( i >= begin_ && i < end_ );
-      return mesh_.get_entity<D>(v_[begin_+i]);
+      return mesh_.get_entity<D, M>(v_[begin_+i]);
     } // at
 
 
     domain_entity<M, entity_type> front() const
     {
-      return mesh_.get_entity<D>(v_[begin_]);
+      return mesh_.get_entity<D, M>(v_[begin_]);
     } // first
 
     domain_entity<M, entity_type> back() const
     {
-      return mesh_.get_entity<D>(v_[end_ - 1]);
+      return mesh_.get_entity<D, M>(v_[end_ - 1]);
     } // last
 
     size_t size() const { return end_ - begin_; } // size
@@ -326,7 +326,7 @@ class mesh_topology_t : public mesh_topology_base_t
       domain_entity_vector_t ret;
 
       for (size_t i = begin_; i < end_; ++i) {
-        ret.push_back(mesh_.get_entity<D>(v_[i]));
+        ret.push_back(mesh_.get_entity<D, M>(v_[i]));
       } // for
 
       return ret;
@@ -334,24 +334,24 @@ class mesh_topology_t : public mesh_topology_base_t
 
     domain_entity<M, entity_type> operator[](size_t i) const
     {
-      return mesh_.get_entity<D>(v_[begin_+i]);
+      return mesh_.get_entity<D, M>(v_[begin_+i]);
     } // []
 
     domain_entity<M, entity_type> at(size_t i) const
     {
       assert( i >= begin_ && i < end_ );
-      return mesh_.get_entity<D>(v_[begin_+i]);
+      return mesh_.get_entity<D, M>(v_[begin_+i]);
     } // at
 
 
     domain_entity<M, entity_type> front() const
     {
-      return mesh_.get_entity<D>(v_[begin_]);
+      return mesh_.get_entity<D, M>(v_[begin_]);
     } // first
 
     domain_entity<M, entity_type> back() const
     {
-      return mesh_.get_entity<D>(v_[end_ - 1]);
+      return mesh_.get_entity<D, M>(v_[end_ - 1]);
     } // last
 
     size_t size() const { return end_ - begin_; } // size
