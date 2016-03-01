@@ -15,7 +15,6 @@ addons:
       - openmpi-bin
       - gcc-5
       - g++-5
-      - bc
 
 before_install:
  - git -C cinch submodule init && git -C cinch submodule update
