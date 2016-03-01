@@ -12,10 +12,13 @@
 # All rights reserved
 #~----------------------------------------------------------------------------~#
 
-#set(data_HEADERS
-#  state.h
-#  PARENT_SCOPE
-#)
+set(data_HEADERS
+  data_constants.h
+  data.h
+  default_meta_data.h
+  default_storage_policy.h
+  PARENT_SCOPE
+)
 
 #set(data_SOURCES
 #  PARENT_SCOPE
