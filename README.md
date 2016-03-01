@@ -1,3 +1,5 @@
+![logo](config/flecsi.png)
+
 # FleCSI Project
 
 FleCSI is a set of computational science infrastructure tools designed to aid in the implementation of
