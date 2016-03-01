@@ -212,19 +212,21 @@ class mesh_topology_t : public mesh_topology_base_t
 
     // Top-level constructor, e.g: cells of a mesh
     entity_range_t(mesh_topology_t & mesh, const id_vector_t & v)
-        : mesh_(mesh), v_(&v), begin_(0), end_(v_->size()), owned_(false)
+        : mesh_(mesh), v_(&v), begin_(0), end_(v_->size()),
+        owned_(false), sorted_(false)
     {
     }
 
     // Nested constructor, e.g: edges of a cell
     entity_range_t(
         mesh_topology_t & mesh, const id_vector_t & v, size_t begin, size_t end)
-        : mesh_(mesh), v_(&v), begin_(begin), end_(end), owned_(false)
+        : mesh_(mesh), v_(&v), begin_(begin), end_(end),
+        owned_(false), sorted_(false)
     {
     }
 
     entity_range_t(const entity_range_t & r)
-        : mesh_(r.mesh_), begin_(0), owned_(r.owned_)
+        : mesh_(r.mesh_), begin_(0), owned_(r.owned_), sorted_(r.sorted_)
     {
       if (owned_) {
         v_ = new id_vector_t(*r.v_);
@@ -237,9 +239,9 @@ class mesh_topology_t : public mesh_topology_base_t
     }
 
     // Top-level constructor, e.g: cells of a mesh
-    entity_range_t(mesh_topology_t & mesh, id_vector_t && v)
+    entity_range_t(mesh_topology_t & mesh, id_vector_t && v, bool sorted)
         : mesh_(mesh), v_(new id_vector_t(std::move(v))),
-        begin_(0), end_(v_->size()), owned_(true)
+        begin_(0), end_(v_->size()), owned_(true), sorted_(sorted)
     {
     }
 
@@ -252,6 +254,7 @@ class mesh_topology_t : public mesh_topology_base_t
     entity_range_t & operator=(const entity_range_t & r)
     {
       owned_ = r.owned_;
+      sorted_ = r.sorted_;
 
       if (owned_) {
         v_ = new id_vector_t(*r.v_);
@@ -315,7 +318,138 @@ class mesh_topology_t : public mesh_topology_base_t
         }
       }
 
-      return entity_range_t(mesh_, std::move(v));
+      return entity_range_t(mesh_, std::move(v), sorted_);
+    }
+
+    void prepare_(){
+      if(!owned_){
+        v_ = new id_vector_t(*v_);
+        owned_ = true;
+      }
+
+      if(!sorted_){
+        auto vc = const_cast<id_vector_t*>(v_);
+        std::sort(vc->begin(), vc->end());
+        sorted_ = true;
+      }     
+    }
+
+    entity_range_t& operator&=(const entity_range_t& r){
+      prepare_();
+
+      id_vector_t ret;
+
+      if(r.sorted_){
+        ret.resize(std::min(v_->size(), r.v_->size()));
+
+        auto itr = std::set_intersection(v_->begin(), v_->end(),
+          r.v_->begin(), r.v_->end(), ret.begin());
+
+        ret.resize(itr - ret.begin());
+      }
+      else{
+        id_vector_t v2(*r.v_);
+        std::sort(v2.begin(), v2.end());
+
+        ret.resize(std::min(v_->size(), v2.size()));
+
+        auto itr = std::set_intersection(v_->begin(), v_->end(),
+          v2.begin(), v2.end(), ret.begin());
+
+        ret.resize(itr - ret.begin());
+      }
+
+      delete v_;
+      v_ = new id_vector_t(std::move(ret));
+
+      begin_ = 0;
+      end_ = v_->size();
+
+      return *this;
+    }
+
+    entity_range_t operator&(const entity_range_t& r) const{
+      entity_range_t ret(*this);
+      ret &= r;
+      return ret;
+    }
+
+    entity_range_t& operator|=(const entity_range_t& r){
+      prepare_();
+
+      id_vector_t ret;
+
+      if(r.sorted_){
+        ret.resize(v_->size() + r.v_->size());
+
+        auto itr = std::set_union(v_->begin(), v_->end(),
+          r.v_->begin(), r.v_->end(), ret.begin());
+
+        ret.resize(itr - ret.begin());
+      }
+      else{
+        id_vector_t v2(*r.v_);
+
+        std::sort(v2.begin(), v2.end());
+
+        ret.resize(v_->size() + v2.size());
+
+        auto itr = std::set_union(v_->begin(), v_->end(),
+          v2.begin(), v2.end(), ret.begin());
+
+        ret.resize(itr - ret.begin());
+      }
+
+      delete v_;
+      v_ = new id_vector_t(std::move(ret));
+
+      begin_ = 0;
+      end_ = v_->size();
+
+      return *this;
+    }
+
+    entity_range_t operator|(const entity_range_t& r) const{
+      entity_range_t ret(*this);
+      ret |= r;
+      return ret;
+    }
+
+    entity_range_t& operator-=(const entity_range_t& r){
+      prepare_();
+
+      id_vector_t ret(v_->size());
+
+      if(r.sorted_){
+        auto itr = std::set_difference(v_->begin(), v_->end(),
+          r.v_->begin(), r.v_->end(), ret.begin());
+
+        ret.resize(itr - ret.begin());
+      }
+      else{
+        id_vector_t v2(*r.v_);
+
+        std::sort(v2.begin(), v2.end());
+
+        auto itr = std::set_difference(v_->begin(), v_->end(),
+          v2.begin(), v2.end(), ret.begin());
+
+        ret.resize(itr - ret.begin());
+      }
+
+      delete v_;
+      v_ = new id_vector_t(std::move(ret));
+
+      begin_ = 0;
+      end_ = v_->size();
+
+      return *this;
+    }
+
+    entity_range_t operator-(const entity_range_t& r) const{
+      entity_range_t ret(*this);
+      ret -= r;
+      return ret;
     }
 
    private:
@@ -324,6 +458,7 @@ class mesh_topology_t : public mesh_topology_base_t
     size_t begin_;
     size_t end_;
     bool owned_;
+    bool sorted_;
   }; // class entity_range_t
 
   /*--------------------------------------------------------------------------*
