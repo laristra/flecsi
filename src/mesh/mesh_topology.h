@@ -224,9 +224,16 @@ class mesh_topology_t : public mesh_topology_base_t
     }
 
     entity_range_t(const entity_range_t & r)
-        : mesh_(r.mesh_), v_(r.v_), begin_(0),
-        end_(v_->size()), owned_(false)
+        : mesh_(r.mesh_), begin_(0), owned_(r.owned_)
     {
+      if (owned_) {
+        v_ = new id_vector_t(*r.v_);
+      }
+      else {
+        v_ = r.v_;
+      }
+
+      end_ = v_->size();
     }
 
     // Top-level constructor, e.g: cells of a mesh
@@ -240,6 +247,24 @@ class mesh_topology_t : public mesh_topology_base_t
       if(owned_){
         delete v_;
       }
+    }
+
+    entity_range_t & operator=(const entity_range_t & r)
+    {
+      owned_ = r.owned_;
+
+      if (owned_) {
+        v_ = new id_vector_t(*r.v_);
+      }
+      else {
+        v_ = r.v_;
+      }
+
+      mesh_ = r.mesh_;
+      begin_ = 0;
+      end_ = v_->size();
+
+      return *this;
     }
 
     iterator_t begin() const { return iterator_t(mesh_, *v_, begin_); } // begin
@@ -281,7 +306,7 @@ class mesh_topology_t : public mesh_topology_base_t
 
     size_t size() const { return end_ - begin_; } // size
 
-    entity_range_t filter(filter_function f) {
+    entity_range_t filter(filter_function f) const {
       id_vector_t v;
       
       for (auto ent : *this) {
@@ -334,8 +359,16 @@ class mesh_topology_t : public mesh_topology_base_t
     }
 
     const_entity_range_t(const const_entity_range_t & r)
-        : mesh_(r.mesh_), v_(r.v_), begin_(0), end_(v_->size()), owned_(false)
+        : mesh_(r.mesh_), begin_(0), owned_(r.owned_)
     {
+      if (owned_) {
+        v_ = new id_vector_t(*r.v_);
+      }
+      else {
+        v_ = r.v_;
+      }
+
+      end_ = v_->size();
     }
 
     // Top-level constructor, e.g: cells of a mesh
@@ -349,6 +382,24 @@ class mesh_topology_t : public mesh_topology_base_t
       if(owned_){
         delete v_;
       }
+    }
+
+    const_entity_range_t & operator=(const const_entity_range_t & r)
+    {
+      owned_ = r.owned_;
+
+      if (owned_) {
+        v_ = new id_vector_t(*r.v_);
+      }
+      else {
+        v_ = r.v_;
+      }
+
+      mesh_ = r.mesh_;
+      begin_ = 0;
+      end_ = v_->size();
+
+      return *this;
     }
 
     const_iterator_t begin() const
@@ -400,7 +451,7 @@ class mesh_topology_t : public mesh_topology_base_t
 
     size_t size() const { return end_ - begin_; } // size
 
-    const_entity_range_t filter(filter_function f) {
+    const_entity_range_t filter(filter_function f) const {
       id_vector_t v;
       
       for (auto ent : *this) {
