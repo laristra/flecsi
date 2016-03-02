@@ -811,6 +811,14 @@ public:
 
     //mesh_.dump();
 
+    // Initialize corners
+    for (auto c : corners()) {
+      c->set_cell(cells(c).front());
+      c->set_edge1(edges(c).front());
+      c->set_edge2(edges(c).back());
+      c->set_vertex(vertices(c).front());
+    } // for
+
     // Initialize wedges
     for (auto w : wedges()) {
       w->set_cell(cells(w).front());
