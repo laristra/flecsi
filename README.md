@@ -11,7 +11,7 @@ FleCSI uses git submodules, so it must be checked out recursively:
 
     % git clone --recursive git@github.com:flecsi/flecsi.git
 
-(https)  
+https:  
 
     % git clone --recursive https://github.com/flecsi/flecsi.git
 
