@@ -11,6 +11,10 @@ FleCSI uses git submodules, so it must be checked out recursively:
 
     % git clone --recursive git@github.com:flecsi/flecsi.git
 
+(https)  
+
+    % git clone --recursive https://github.com/flecsi/flecsi.git
+
 # Requirements
 
 The primary requirement to build FleCSI is a C++14 capable compiler.
