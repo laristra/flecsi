@@ -31,7 +31,7 @@ cinch-utils is available [here](https://github.com/losalamos/cinch-utils).
 
 To begin, you will need to build the third-party library dependencies:
 
-    % git clone git@github.com:flecsi/third-party.git
+    % git clone git@github.com:flecsi/third-party.git flecsi-thirdparty
     % cd flecsi-thirdparty
     % mkdir build
     % cd build
