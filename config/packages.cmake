@@ -73,22 +73,15 @@ endif(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 # Process id bits
 #------------------------------------------------------------------------------#
 
-find_program(BC bc DOC "bc executable")
-if(NOT BC)
-  message(FATAL_ERROR "bc executable not found")  
-endif(NOT BC)
-execute_process(COMMAND echo "60-${FLECSI_ID_PBITS}" COMMAND ${BC} -l
-  OUTPUT_VARIABLE FLECSI_ID_EBITS OUTPUT_STRIP_TRAILING_WHITESPACE)
+math(EXPR FLECSI_ID_EBITS "60 - ${FLECSI_ID_PBITS}")
 
 add_definitions(-DFLECSI_ID_PBITS=${FLECSI_ID_PBITS})
 add_definitions(-DFLECSI_ID_EBITS=${FLECSI_ID_EBITS})
 
-execute_process(COMMAND echo "2^${FLECSI_ID_PBITS}" COMMAND ${BC} -l
-  OUTPUT_VARIABLE flecsi_partitions OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process(COMMAND echo "2^${FLECSI_ID_EBITS}" COMMAND ${BC} -l
-  OUTPUT_VARIABLE flecsi_entities OUTPUT_STRIP_TRAILING_WHITESPACE)
+math(EXPR flecsi_partitions "1 << ${FLECSI_ID_PBITS}")
+math(EXPR flecsi_entities "1 << ${FLECSI_ID_EBITS}")
 
-message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with ${flecsi_entities} entities each")
+message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with 2^${FLECSI_ID_EBITS} entities each")
 
 #------------------------------------------------------------------------------#
 # Enable IO with exodus
