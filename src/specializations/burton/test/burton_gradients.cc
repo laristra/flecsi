@@ -79,9 +79,8 @@ protected:
   const size_t height = H;
 };
 
-// this may not be a portable way to point to lapacke.h. it works on darwin.
 #include <ccomplex>
-#include <lapacke/lapacke.h>
+#include <lapacke.h>
 
 const int N = 10;
 

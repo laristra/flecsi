@@ -170,10 +170,31 @@ endif()
 # If the installation of lapack that this finds does not contain lapacke then
 # the build will fail.
 if(NOT APPLE)
-  find_package(LAPACK)
+  # need a find_package that can discern between system installs and our TPLs
 
-  # append lapacke to list of lapack libraries
-  list( APPEND LAPACK_LIBRARIES lapacke )
+  # look in tpl's first, then try the system find_package(LAPACK)
+
+  # This is a workaround that finds the TPL install if it's there. The link
+  # to -lgfortan is a serious hack, and a documented issue.
+  set(LAPACK_FOUND)
+  set(LAPACK_LIBRARIES)
+  if(EXISTS ${TPL_INSTALL_PREFIX}/include/lapacke.h
+     AND EXISTS ${TPL_INSTALL_PREFIX}/lib64/liblapacke.a)
+    set(LAPACK_FOUND 1)
+    include_directories(${TPL_INSTALL_PREFIX}/include)
+    list( APPEND LAPACK_LIBRARIES
+          ${TPL_INSTALL_PREFIX}/lib64/liblapacke.a
+          ${TPL_INSTALL_PREFIX}/lib64/liblapack.a
+          ${TPL_INSTALL_PREFIX}/lib64/libblas.a)
+
+  else()
+    # append lapacke to list of lapack libraries
+    find_package(LAPACK)
+    list( APPEND LAPACK_LIBRARIES lapacke)
+    # want to add ${LAPACK_INCLUDES}/lapacke to the include search path,
+    # but FindLAPACK.cmake defines no such variable.
+  endif()
+
 endif(NOT APPLE)
 
 #------------------------------------------------------------------------------#
