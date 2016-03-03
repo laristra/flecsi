@@ -491,14 +491,19 @@ public:
   //! Set the cell that a corner is in.
   void set_cell(burton_cell_t * cell) { cell_ = cell; }
 
-  // FIXME: having to set/get the edges 1 and 2 is hacky. Need to review
-  // this with Bergen to come up with a cleaner solution.
-
   //! Set the first edge that a corner has.
   void set_edge1(burton_edge_t * edge) { edge1_ = edge; }
 
   //! Set the second edge that a corner has.
   void set_edge2(burton_edge_t * edge) { edge2_ = edge; }
+
+#if 0
+  // FIXME: having to set/get the edges 1 and 2 is hacky. Need to review
+  // this with Bergen to come up with a cleaner solution.
+  using entity_range_t = entity_range_t<1,1>;
+  //! Set the edges that a corner has.
+  void set_edges(entity_range_t edges) { edges_ = edges; }
+#endif
 
   //! Set the vertex that a corner has.
   void set_vertex(burton_vertex_t * vertex) { vertex_ = vertex; }
@@ -511,6 +516,11 @@ public:
 
   //! Get edge2 that a corner has.
   const burton_edge_t * edge2() const { return edge2_; }
+
+#if 0
+  //! Get edges that a corner has.
+  const entity_range_t & edges() const { return edges_; }
+#endif
 
   //! Get the vertex that a corner has.
   const burton_vertex_t * vertex() const { return vertex_; }
@@ -541,6 +551,13 @@ public:
     vector_t C(point_to_vector(edge1()->midpoint() - xc));
     vector_t D(point_to_vector(edge2()->midpoint() - xc));
 
+#if 0
+    vector_t A(point_to_vector(edges()[0]->midpoint() - xv));
+    vector_t B(point_to_vector(edges()[1]->midpoint() - xv));
+    vector_t C(point_to_vector(edges()[0]->midpoint() - xc));
+    vector_t D(point_to_vector(edges()[1]->midpoint() - xc));
+#endif
+
     return 0.5*(cross_magnitude(A,B) + cross_magnitude(C,D));
   }
 
@@ -554,6 +571,9 @@ private:
   burton_cell_t * cell_;
   burton_edge_t * edge1_;
   burton_edge_t * edge2_;
+#if 0
+  entity_range_t  edges_;
+#endif
   burton_vertex_t * vertex_;
 
 }; // class burton_corner_t

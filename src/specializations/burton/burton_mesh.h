@@ -816,6 +816,9 @@ public:
       c->set_cell(cells(c).front());
       c->set_edge1(edges(c).front());
       c->set_edge2(edges(c).back());
+#if 0
+      c->set_edges(edges(c));
+#endif
       c->set_vertex(vertices(c).front());
     } // for
 
