@@ -185,8 +185,8 @@ if(NOT APPLE)
     list( APPEND LAPACK_LIBRARIES
           ${TPL_INSTALL_PREFIX}/lib64/liblapacke.a
           ${TPL_INSTALL_PREFIX}/lib64/liblapack.a
-          ${TPL_INSTALL_PREFIX}/lib64/libblas.a)
-
+          ${TPL_INSTALL_PREFIX}/lib64/libblas.a
+          -lgfortan)
   else()
     # append lapacke to list of lapack libraries
     find_package(LAPACK)
