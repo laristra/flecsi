@@ -191,7 +191,7 @@ if(NOT APPLE)
     # append lapacke to list of lapack libraries
     find_package(LAPACK)
     find_library(LAPACKE_LIB NAMES lapacke)
-    find_path(LAPACKE_INCLUDE_DIRS NAMES lapacke.h)
+    find_path(LAPACKE_INCLUDE_DIRS NAMES lapacke.h PATH_SUFFIXES lapacke)
     if(LAPACKE_INCLUDE_DIRS AND LAPACK_FOUND AND LAPACKE_LIB)
       set(LAPACKE_FOUND TRUE)
       include_directories(${LAPACKE_INCLUDE_DIRS})
