@@ -309,6 +309,19 @@ class entity_group
   static constexpr size_t dim() { return T::dimension; }
   iterator_ begin() { return iterator_(entities_, 0); }
   iterator_ end() { return iterator_(entities_, entities_.size()); }
+
+  auto operator[](size_t i) const
+  { return entities_[i]; }
+
+  auto front() const
+  { return entities_.front(); }
+
+  auto back() const 
+  { return entities_.back(); }
+
+  auto size() const 
+  { return entities_.size(); }
+
  private:
   vec entities_;
 
