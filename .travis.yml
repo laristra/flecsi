@@ -15,14 +15,14 @@ addons:
       - openmpi-bin
       - gcc-5
       - g++-5
-  coverity_scan:
-    project:
-      name: "flecsi/flecsi"
-      description: "Build submitted via Travis CI"
-    notification_email: flecsi-commit@lanl.gov 
-    build_command_prepend: "mkdir cov_build && cd cov_build && CC=gcc-${GVER} CXX=g++-${GVER} cmake -DENABLE_MPI=OFF -DENABLE_UNIT_TESTS=ON .."
-    build_command:   "make -j4"
-    branch_pattern: master
+#  coverity_scan:
+#    project:
+#      name: "flecsi/flecsi"
+#      description: "Build submitted via Travis CI"
+#    notification_email: flecsi-commit@lanl.gov 
+#    build_command_prepend: "mkdir cov_build && cd cov_build && CC=gcc-${GVER} CXX=g++-${GVER} cmake -DENABLE_MPI=OFF -DENABLE_UNIT_TESTS=ON .."
+#    build_command:   "make -j4"
+#    branch_pattern: master
 
 before_install:
  - git -C cinch submodule init && git -C cinch submodule update
