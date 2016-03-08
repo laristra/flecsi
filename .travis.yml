@@ -20,7 +20,7 @@ addons:
       name: "flecsi/flecsi"
       description: "Build submitted via Travis CI"
     notification_email: flecsi-commit@lanl.gov 
-    build_command_prepend: "mkdir cov_build && cd cov_build && cmake -DENABLE_MPI=OFF -DENABLE_UNIT_TESTS=ON .."
+    build_command_prepend: "mkdir cov_build && cd cov_build && CC=gcc-${GVER} CXX=g++-${GVER} cmake -DENABLE_MPI=OFF -DENABLE_UNIT_TESTS=ON .."
     build_command:   "make -j4"
     branch_pattern: master
 
