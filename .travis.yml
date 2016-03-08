@@ -45,3 +45,7 @@ cache:
 
 compiler:
   - gcc
+
+notifications:
+  email:
+    - flecsi-commit@lanl.gov
