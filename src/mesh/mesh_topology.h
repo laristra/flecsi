@@ -69,6 +69,7 @@ class mesh_topology_t : public mesh_topology_base_t
   class iterator
   {
    public:
+    using mesh_t = mesh_topology_t;
     using entity_type = typename find_entity_<MT, D, M>::type;
 
     // construct a top-level iterator, e.g: cells of a mesh
@@ -78,7 +79,7 @@ class mesh_topology_t : public mesh_topology_base_t
     }
 
     // construct a nested iterator, e.g: edges of a cell
-    iterator(mesh_topology_t & mesh, const id_vector_t & entities, size_t index)
+    iterator(mesh_t & mesh, const id_vector_t & entities, size_t index)
         : mesh_(mesh), entities_(&entities), index_(index)
     {
     }
@@ -118,7 +119,7 @@ class mesh_topology_t : public mesh_topology_base_t
     } // operator !=
 
    private:
-    mesh_topology_t & mesh_;
+    mesh_t & mesh_;
     const id_vector_t * entities_;
     size_t index_;
 
@@ -137,6 +138,7 @@ class mesh_topology_t : public mesh_topology_base_t
   class const_iterator
   {
    public:
+    using mesh_t = const mesh_topology_t;
     using entity_type = typename find_entity_<MT, D, M>::type;
 
     // construct a top-level iterator, e.g: cells of a mesh
@@ -146,7 +148,7 @@ class mesh_topology_t : public mesh_topology_base_t
     }
 
     // construct a nested iterator, e.g: edges of a cell
-    const_iterator(const mesh_topology_t & mesh, const id_vector_t & entities,
+    const_iterator(mesh_t & mesh, const id_vector_t & entities,
         size_t index)
         : mesh_(mesh), entities_(&entities), index_(index)
     {
@@ -186,425 +188,285 @@ class mesh_topology_t : public mesh_topology_base_t
     } // operator !=
 
    private:
-    const mesh_topology_t & mesh_;
+    mesh_t & mesh_;
     const id_vector_t * entities_;
     size_t index_;
 
   }; // class iterator
 
   /*--------------------------------------------------------------------------*
-   * class entity_range_t
+   * class entity_set
    *--------------------------------------------------------------------------*/
 
-  /*!
-    \class entity_range_t mesh_topology.h
-    \brief A helper class used to enable range-based for iteration.
-   */
-  template <size_t D, size_t M = 0>
-  class entity_range_t
-  {
-   public:
-    using iterator_t = iterator<D, M>;
-    using entity_type = typename iterator_t::entity_type;
-    using domain_entity_t = domain_entity<M, entity_type>;
-    using domain_entity_vector_t = std::vector<domain_entity_t>;
-    using filter_function = std::function<bool(domain_entity_t)>;
-
-    // Top-level constructor, e.g: cells of a mesh
-    entity_range_t(mesh_topology_t & mesh, const id_vector_t & v)
-        : mesh_(mesh), v_(&v), begin_(0), end_(v_->size()),
-        owned_(false), sorted_(false)
-    {
-    }
-
-    // Nested constructor, e.g: edges of a cell
-    entity_range_t(
-        mesh_topology_t & mesh, const id_vector_t & v, size_t begin, size_t end)
-        : mesh_(mesh), v_(&v), begin_(begin), end_(end),
-        owned_(false), sorted_(false)
-    {
-    }
-
-    entity_range_t(const entity_range_t & r)
-        : mesh_(r.mesh_), begin_(0), owned_(r.owned_), sorted_(r.sorted_)
-    {
-      if (owned_) {
-        v_ = new id_vector_t(*r.v_);
-      }
-      else {
-        v_ = r.v_;
-      }
-
-      end_ = v_->size();
-    }
-
-    // Top-level constructor, e.g: cells of a mesh
-    entity_range_t(mesh_topology_t & mesh, id_vector_t && v, bool sorted)
-        : mesh_(mesh), v_(new id_vector_t(std::move(v))),
-        begin_(0), end_(v_->size()), owned_(true), sorted_(sorted)
-    {
-    }
-
-    ~entity_range_t(){
-      if(owned_){
-        delete v_;
-      }
-    }
-
-    entity_range_t & operator=(const entity_range_t & r)
-    {
-      owned_ = r.owned_;
-      sorted_ = r.sorted_;
-
-      if (owned_) {
-        v_ = new id_vector_t(*r.v_);
-      }
-      else {
-        v_ = r.v_;
-      }
-
-      mesh_ = r.mesh_;
-      begin_ = 0;
-      end_ = v_->size();
-
-      return *this;
-    }
-
-    iterator_t begin() const { return iterator_t(mesh_, *v_, begin_); } // begin
-    iterator_t end() const { return iterator_t(mesh_, *v_, end_); } // end
-    /*!
-      convert this range to a vector
-     */
-    domain_entity_vector_t to_vec() const
-    {
-      domain_entity_vector_t ret;
-      for (size_t i = begin_; i < end_; ++i) {
-        ret.push_back(mesh_.get_entity<D, M>((*v_)[i]));
-      } // for
-
-      return ret;
-    } // to_vec
-
-    domain_entity<M, entity_type> operator[](size_t i) const
-    {
-      return mesh_.get_entity<D, M>((*v_)[begin_ + i]);
-    } // []
-
-    domain_entity<M, entity_type> at(size_t i) const
-    {
-      assert( i >= begin_ && i < end_ );
-      return mesh_.get_entity<D, M>((*v_)[begin_ + i]);
-    } // at
-
-
-    domain_entity<M, entity_type> front() const
-    {
-      return mesh_.get_entity<D, M>((*v_)[begin_]);
-    } // first
+   template <size_t D, class I, size_t M = 0>
+   class entity_set
+   {
+    public:
+     using iterator_t = I;
+     using mesh_t = typename iterator_t::mesh_t;
+     using entity_type = typename iterator_t::entity_type;
+     using domain_entity_t = domain_entity<M, entity_type>;
+     using domain_entity_vector_t = std::vector<domain_entity_t>;
+     using filter_function = std::function<bool(domain_entity_t)>;
+
+     // Top-level constructor, e.g: cells of a mesh
+     entity_set(mesh_t & mesh, const id_vector_t & v,
+                    bool sorted = false)
+         : mesh_(mesh), v_(&v), begin_(0), end_(v_->size()),
+         owned_(false), sorted_(sorted)
+     {
+     }
+
+     // Nested constructor, e.g: edges of a cell
+     entity_set(
+         mesh_t & mesh, const id_vector_t & v, size_t begin,
+         size_t end, bool sorted = false)
+         : mesh_(mesh), v_(&v), begin_(begin), end_(end),
+         owned_(false), sorted_(sorted)
+     {
+     }
+
+     entity_set(const entity_set & r)
+         : mesh_(r.mesh_), begin_(0), owned_(r.owned_), sorted_(r.sorted_)
+     {
+       if (owned_) {
+         v_ = new id_vector_t(*r.v_);
+       }
+       else {
+         v_ = r.v_;
+       }
+
+       end_ = v_->size();
+     }
+
+     // Top-level constructor, e.g: cells of a mesh
+     entity_set(mesh_t & mesh, id_vector_t && v, bool sorted)
+         : mesh_(mesh), v_(new id_vector_t(std::move(v))),
+         begin_(0), end_(v_->size()), owned_(true), sorted_(sorted)
+     {
+     }
+
+     ~entity_set(){
+       if(owned_){
+         delete v_;
+       }
+     }
+
+     entity_set & operator=(const entity_set & r)
+     {
+       owned_ = r.owned_;
+       sorted_ = r.sorted_;
+
+       if (owned_) {
+         v_ = new id_vector_t(*r.v_);
+       }
+       else {
+         v_ = r.v_;
+       }
+
+       mesh_ = r.mesh_;
+       begin_ = 0;
+       end_ = v_->size();
+
+       return *this;
+     }
+
+     iterator_t begin() const { return iterator_t(mesh_, *v_, begin_); } // begin
+     iterator_t end() const { return iterator_t(mesh_, *v_, end_); } // end
+     /*!
+       convert this range to a vector
+      */
+     domain_entity_vector_t to_vec() const
+     {
+       domain_entity_vector_t ret;
+       for (size_t i = begin_; i < end_; ++i) {
+         ret.push_back(mesh_.get_entity<D, M>((*v_)[i]));
+       } // for
+
+       return ret;
+     } // to_vec
+
+     domain_entity<M, entity_type> operator[](size_t i) const
+     {
+       return mesh_.get_entity<D, M>((*v_)[begin_ + i]);
+     } // []
+
+     domain_entity<M, entity_type> at(size_t i) const
+     {
+       assert( i >= begin_ && i < end_ );
+       return mesh_.get_entity<D, M>((*v_)[begin_ + i]);
+     } // at
+
+
+     domain_entity<M, entity_type> front() const
+     {
+       return mesh_.get_entity<D, M>((*v_)[begin_]);
+     } // first
 
-    domain_entity<M, entity_type> back() const
-    {
-      return mesh_.get_entity<D, M>((*v_)[end_ - 1]);
-    } // last
+     domain_entity<M, entity_type> back() const
+     {
+       return mesh_.get_entity<D, M>((*v_)[end_ - 1]);
+     } // last
 
-    size_t size() const { return end_ - begin_; } // size
+     size_t size() const { return end_ - begin_; } // size
 
-    entity_range_t filter(filter_function f) const {
-      id_vector_t v;
-      
-      for (auto ent : *this) {
-        if (f(ent)) {
-          v.push_back(ent.id());
-        }
-      }
+     entity_set filter(filter_function f) const {
+       id_vector_t v;
+       
+       for (auto ent : *this) {
+         if (f(ent)) {
+           v.push_back(ent.id());
+         }
+       }
 
-      return entity_range_t(mesh_, std::move(v), sorted_);
-    }
+       return entity_set(mesh_, std::move(v), sorted_);
+     }
 
-    void prepare_(){
-      if(!owned_){
-        v_ = new id_vector_t(*v_);
-        owned_ = true;
-      }
+     void prepare_(){
+       if(!owned_){
+         v_ = new id_vector_t(*v_);
+         owned_ = true;
+       }
 
-      if(!sorted_){
-        auto vc = const_cast<id_vector_t*>(v_);
-        std::sort(vc->begin(), vc->end());
-        sorted_ = true;
-      }     
-    }
+       if(!sorted_){
+         auto vc = const_cast<id_vector_t*>(v_);
+         std::sort(vc->begin(), vc->end());
+         sorted_ = true;
+       }     
+     }
 
-    entity_range_t& operator&=(const entity_range_t& r){
-      prepare_();
+     entity_set& operator&=(const entity_set& r){
+       prepare_();
 
-      id_vector_t ret;
+       id_vector_t ret;
 
-      if(r.sorted_){
-        ret.resize(std::min(v_->size(), r.v_->size()));
+       if(r.sorted_){
+         ret.resize(std::min(v_->size(), r.v_->size()));
 
-        auto itr = std::set_intersection(v_->begin(), v_->end(),
-          r.v_->begin(), r.v_->end(), ret.begin());
+         auto itr = std::set_intersection(v_->begin(), v_->end(),
+           r.v_->begin(), r.v_->end(), ret.begin());
 
-        ret.resize(itr - ret.begin());
-      }
-      else{
-        id_vector_t v2(*r.v_);
-        std::sort(v2.begin(), v2.end());
+         ret.resize(itr - ret.begin());
+       }
+       else{
+         id_vector_t v2(*r.v_);
+         std::sort(v2.begin(), v2.end());
 
-        ret.resize(std::min(v_->size(), v2.size()));
+         ret.resize(std::min(v_->size(), v2.size()));
 
-        auto itr = std::set_intersection(v_->begin(), v_->end(),
-          v2.begin(), v2.end(), ret.begin());
+         auto itr = std::set_intersection(v_->begin(), v_->end(),
+           v2.begin(), v2.end(), ret.begin());
 
-        ret.resize(itr - ret.begin());
-      }
+         ret.resize(itr - ret.begin());
+       }
 
-      delete v_;
-      v_ = new id_vector_t(std::move(ret));
+       delete v_;
+       v_ = new id_vector_t(std::move(ret));
 
-      begin_ = 0;
-      end_ = v_->size();
+       begin_ = 0;
+       end_ = v_->size();
 
-      return *this;
-    }
+       return *this;
+     }
 
-    entity_range_t operator&(const entity_range_t& r) const{
-      entity_range_t ret(*this);
-      ret &= r;
-      return ret;
-    }
+     entity_set operator&(const entity_set& r) const{
+       entity_set ret(*this);
+       ret &= r;
+       return ret;
+     }
 
-    entity_range_t& operator|=(const entity_range_t& r){
-      prepare_();
+     entity_set& operator|=(const entity_set& r){
+       prepare_();
 
-      id_vector_t ret;
+       id_vector_t ret;
 
-      if(r.sorted_){
-        ret.resize(v_->size() + r.v_->size());
+       if(r.sorted_){
+         ret.resize(v_->size() + r.v_->size());
 
-        auto itr = std::set_union(v_->begin(), v_->end(),
-          r.v_->begin(), r.v_->end(), ret.begin());
+         auto itr = std::set_union(v_->begin(), v_->end(),
+           r.v_->begin(), r.v_->end(), ret.begin());
 
-        ret.resize(itr - ret.begin());
-      }
-      else{
-        id_vector_t v2(*r.v_);
+         ret.resize(itr - ret.begin());
+       }
+       else{
+         id_vector_t v2(*r.v_);
 
-        std::sort(v2.begin(), v2.end());
+         std::sort(v2.begin(), v2.end());
 
-        ret.resize(v_->size() + v2.size());
+         ret.resize(v_->size() + v2.size());
 
-        auto itr = std::set_union(v_->begin(), v_->end(),
-          v2.begin(), v2.end(), ret.begin());
+         auto itr = std::set_union(v_->begin(), v_->end(),
+           v2.begin(), v2.end(), ret.begin());
 
-        ret.resize(itr - ret.begin());
-      }
-
-      delete v_;
-      v_ = new id_vector_t(std::move(ret));
-
-      begin_ = 0;
-      end_ = v_->size();
-
-      return *this;
-    }
-
-    entity_range_t operator|(const entity_range_t& r) const{
-      entity_range_t ret(*this);
-      ret |= r;
-      return ret;
-    }
-
-    entity_range_t& operator-=(const entity_range_t& r){
-      prepare_();
-
-      id_vector_t ret(v_->size());
-
-      if(r.sorted_){
-        auto itr = std::set_difference(v_->begin(), v_->end(),
-          r.v_->begin(), r.v_->end(), ret.begin());
-
-        ret.resize(itr - ret.begin());
-      }
-      else{
-        id_vector_t v2(*r.v_);
-
-        std::sort(v2.begin(), v2.end());
-
-        auto itr = std::set_difference(v_->begin(), v_->end(),
-          v2.begin(), v2.end(), ret.begin());
-
-        ret.resize(itr - ret.begin());
-      }
-
-      delete v_;
-      v_ = new id_vector_t(std::move(ret));
-
-      begin_ = 0;
-      end_ = v_->size();
-
-      return *this;
-    }
-
-    entity_range_t operator-(const entity_range_t& r) const{
-      entity_range_t ret(*this);
-      ret -= r;
-      return ret;
-    }
-
-   private:
-    mesh_topology_t & mesh_;
-    const id_vector_t * v_;
-    size_t begin_;
-    size_t end_;
-    bool owned_;
-    bool sorted_;
-  }; // class entity_range_t
-
-  /*--------------------------------------------------------------------------*
-   * class const_entity_range_t
-   *--------------------------------------------------------------------------*/
-
-  /*!
-    \class const_entity_range_t mesh_topology.h
-    \brief A helper class used to enable range-based for iteration.
-   */
-
-  template <size_t D, size_t M = 0>
-  class const_entity_range_t
-  {
-   public:
-    using const_iterator_t = const_iterator<D>;
-    using entity_type = typename const_iterator_t::entity_type;
-    using domain_entity_t = domain_entity<M, entity_type>;
-    using domain_entity_vector_t = std::vector<domain_entity_t>;
-    using filter_function = std::function<bool(domain_entity_t)>;
-
-    // Top-level constructor, e.g: cells of a mesh
-    const_entity_range_t(const mesh_topology_t & mesh, const id_vector_t & v)
-        : mesh_(mesh), v_(&v), begin_(0), end_(v_->size()), owned_(false)
-    {
-    }
-
-    // Nested constructor, e.g: edges of a cell
-    const_entity_range_t(const mesh_topology_t & mesh, const id_vector_t & v,
-        size_t begin, size_t end)
-        : mesh_(mesh), v_(&v), begin_(begin), end_(end), owned_(false)
-    {
-    }
-
-    const_entity_range_t(const const_entity_range_t & r)
-        : mesh_(r.mesh_), begin_(0), owned_(r.owned_)
-    {
-      if (owned_) {
-        v_ = new id_vector_t(*r.v_);
-      }
-      else {
-        v_ = r.v_;
-      }
-
-      end_ = v_->size();
-    }
-
-    // Top-level constructor, e.g: cells of a mesh
-    const_entity_range_t(const mesh_topology_t & mesh, id_vector_t && v)
-        : mesh_(mesh), v_(new id_vector_t(std::move(v))),
-        begin_(0), end_(v_->size()), owned_(true)
-    {
-    }
-
-    ~const_entity_range_t(){
-      if(owned_){
-        delete v_;
-      }
-    }
-
-    const_entity_range_t & operator=(const const_entity_range_t & r)
-    {
-      owned_ = r.owned_;
-
-      if (owned_) {
-        v_ = new id_vector_t(*r.v_);
-      }
-      else {
-        v_ = r.v_;
-      }
-
-      mesh_ = r.mesh_;
-      begin_ = 0;
-      end_ = v_->size();
-
-      return *this;
-    }
-
-    const_iterator_t begin() const
-    {
-      return const_iterator_t(mesh_, *v_, begin_);
-    } // begin
-
-    const_iterator_t end() const
-    {
-      return const_iterator_t(mesh_, *v_, end_);
-    } // end
-
-    /*!
-      convert this range to a vector
-     */
-
-    domain_entity_vector_t to_vec() const
-    {
-      domain_entity_vector_t ret;
-
-      for (size_t i = begin_; i < end_; ++i) {
-        ret.push_back(mesh_.get_entity<D, M>((*v_)[i]));
-      } // for
-
-      return ret;
-    } // to_vec
-
-    domain_entity<M, entity_type> operator[](size_t i) const
-    {
-      return mesh_.get_entity<D, M>((*v_)[begin_+i]);
-    } // []
-
-    domain_entity<M, entity_type> at(size_t i) const
-    {
-      assert( i >= begin_ && i < end_ );
-      return mesh_.get_entity<D, M>((*v_)[begin_+i]);
-    } // at
-
-
-    domain_entity<M, entity_type> front() const
-    {
-      return mesh_.get_entity<D, M>((*v_)[begin_]);
-    } // first
-
-    domain_entity<M, entity_type> back() const
-    {
-      return mesh_.get_entity<D, M>((*v_)[end_ - 1]);
-    } // last
-
-    size_t size() const { return end_ - begin_; } // size
-
-    const_entity_range_t filter(filter_function f) const {
-      id_vector_t v;
-      
-      for (auto ent : *this) {
-        if (f(ent)) {
-          v.push_back(ent.id());
-        }
-      }
-
-      return const_entity_range_t(mesh_, std::move(v));
-    }
-
-   private:
-    const mesh_topology_t & mesh_;
-    const id_vector_t * v_;
-    size_t begin_;
-    size_t end_;
-    bool owned_;
-  }; // class const_entity_range_t
+         ret.resize(itr - ret.begin());
+       }
+
+       delete v_;
+       v_ = new id_vector_t(std::move(ret));
+
+       begin_ = 0;
+       end_ = v_->size();
+
+       return *this;
+     }
+
+     entity_set operator|(const entity_set& r) const{
+       entity_set ret(*this);
+       ret |= r;
+       return ret;
+     }
+
+     entity_set& operator-=(const entity_set& r){
+       prepare_();
+
+       id_vector_t ret(v_->size());
+
+       if(r.sorted_){
+         auto itr = std::set_difference(v_->begin(), v_->end(),
+           r.v_->begin(), r.v_->end(), ret.begin());
+
+         ret.resize(itr - ret.begin());
+       }
+       else{
+         id_vector_t v2(*r.v_);
+
+         std::sort(v2.begin(), v2.end());
+
+         auto itr = std::set_difference(v_->begin(), v_->end(),
+           v2.begin(), v2.end(), ret.begin());
+
+         ret.resize(itr - ret.begin());
+       }
+
+       delete v_;
+       v_ = new id_vector_t(std::move(ret));
+
+       begin_ = 0;
+       end_ = v_->size();
+
+       return *this;
+     }
+
+     entity_set operator-(const entity_set& r) const{
+       entity_set ret(*this);
+       ret -= r;
+       return ret;
+     }
+
+    private:
+     mesh_t & mesh_;
+     const id_vector_t * v_;
+     size_t begin_;
+     size_t end_;
+     bool owned_;
+     bool sorted_;
+   }; // class entity_set
+
+   template<size_t D, size_t M = 0>
+   using entity_range_t = entity_set<D, iterator<D, M>, M>;
+
+   template<size_t D, size_t M = 0>
+   using const_entity_range_t = entity_set<D, const_iterator<D, M>, M>;
 
   /*--------------------------------------------------------------------------*
    * class iterator
