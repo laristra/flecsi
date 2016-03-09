@@ -500,9 +500,9 @@ public:
 #if 0
   // FIXME: having to set/get the edges 1 and 2 is hacky. Need to review
   // this with Bergen to come up with a cleaner solution.
-  using entity_range_t = entity_range_t<1,1>;
+  using entity_set_t = entity_set_t<1,1>;
   //! Set the edges that a corner has.
-  void set_edges(entity_range_t edges) { edges_ = edges; }
+  void set_edges(entity_set_t edges) { edges_ = edges; }
 #endif
 
   //! Set the vertex that a corner has.
@@ -519,7 +519,7 @@ public:
 
 #if 0
   //! Get edges that a corner has.
-  const entity_range_t & edges() const { return edges_; }
+  const entity_set_t & edges() const { return edges_; }
 #endif
 
   //! Get the vertex that a corner has.
@@ -572,7 +572,7 @@ private:
   burton_edge_t * edge1_;
   burton_edge_t * edge2_;
 #if 0
-  entity_range_t  edges_;
+  entity_set_t  edges_;
 #endif
   burton_vertex_t * vertex_;
 

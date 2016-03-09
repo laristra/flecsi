@@ -463,10 +463,10 @@ class mesh_topology_t : public mesh_topology_base_t
    }; // class entity_set
 
    template<size_t D, size_t M = 0>
-   using entity_range_t = entity_set<D, iterator<D, M>, M>;
+   using entity_set_t = entity_set<D, iterator<D, M>, M>;
 
    template<size_t D, size_t M = 0>
-   using const_entity_range_t = entity_set<D, const_iterator<D, M>, M>;
+   using const_entity_set_t = entity_set<D, const_iterator<D, M>, M>;
 
   /*--------------------------------------------------------------------------*
    * class iterator
@@ -1271,12 +1271,12 @@ class mesh_topology_t : public mesh_topology_base_t
     by specified connectivity from domain FM and to domain TM.
   */
   template <size_t D, size_t FM, size_t TM = FM, class E>
-  const_entity_range_t<D, TM> entities(const E * e) const
+  const_entity_set_t<D, TM> entities(const E * e) const
   {
     const connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
     const index_vector_t & fv = c.get_from_index_vec();
-    return const_entity_range_t<D, TM>(*this, c.get_entities(),
+    return const_entity_set_t<D, TM>(*this, c.get_entities(),
         fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
   } // entities
 
@@ -1285,12 +1285,12 @@ class mesh_topology_t : public mesh_topology_base_t
     by specified connectivity from domain FM and to domain TM.
   */
   template <size_t D, size_t FM, size_t TM = FM, class E>
-  entity_range_t<D, TM> entities(E * e)
+  entity_set_t<D, TM> entities(E * e)
   {
     const connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
     const index_vector_t & fv = c.get_from_index_vec();
-    return entity_range_t<D, TM>(*this, c.get_entities(),
+    return entity_set_t<D, TM>(*this, c.get_entities(),
         fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
   } // entities
 
@@ -1319,10 +1319,10 @@ class mesh_topology_t : public mesh_topology_base_t
     domain M. e.g: cells of the mesh.
   */
   template <size_t D, size_t M = 0>
-  const_entity_range_t<D, M> entities() const
+  const_entity_set_t<D, M> entities() const
   {
     assert(!ms_.id_vecs[M][D].empty());
-    return const_entity_range_t<D>(*this, ms_.id_vecs[M][D]);
+    return const_entity_set_t<D>(*this, ms_.id_vecs[M][D]);
   } // entities
 
   /*!
@@ -1330,10 +1330,10 @@ class mesh_topology_t : public mesh_topology_base_t
     domain M. e.g: cells of the mesh.
   */
   template <size_t D, size_t M = 0>
-  entity_range_t<D, M> entities()
+  entity_set_t<D, M> entities()
   {
     assert(!ms_.id_vecs[M][D].empty());
-    return entity_range_t<D, M>(*this, ms_.id_vecs[M][D]);
+    return entity_set_t<D, M>(*this, ms_.id_vecs[M][D]);
   } // entities
 
   /*!
