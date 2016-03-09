@@ -1338,7 +1338,7 @@ class mesh_topology_t : public mesh_topology_base_t
   const_entity_set_t<D, M> entities() const
   {
     assert(!ms_.id_vecs[M][D].empty());
-    return const_entity_set_t<D>(*this, ms_.id_vecs[M][D]);
+    return const_entity_set_t<D>(*this, ms_.id_vecs[M][D], true);
   } // entities
 
   /*!
@@ -1349,7 +1349,7 @@ class mesh_topology_t : public mesh_topology_base_t
   entity_set_t<D, M> entities()
   {
     assert(!ms_.id_vecs[M][D].empty());
-    return entity_set_t<D, M>(*this, ms_.id_vecs[M][D]);
+    return entity_set_t<D, M>(*this, ms_.id_vecs[M][D], true);
   } // entities
 
   /*!
