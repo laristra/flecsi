@@ -293,6 +293,10 @@ TEST(mesh_topology, traversal) {
 
   auto r3 = mesh->entities<1>().filter(f3);
 
+  auto r4 = r3;
+
+  r4 << r2[0];
+
   for(auto edge : (r1 | r2) & r3){
     CINCH_CAPTURE() << "---- filter edge id: " << edge.id() << endl;   
   }

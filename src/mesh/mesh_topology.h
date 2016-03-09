@@ -453,6 +453,22 @@ class mesh_topology_t : public mesh_topology_base_t
        return ret;
      }
 
+     void add(const domain_entity<M, entity_type>& ent){
+       if(!owned_){
+         v_ = new id_vector_t(*v_);
+         owned_ = true;
+       }
+
+       auto vc = const_cast<id_vector_t*>(v_);
+
+       vc->push_back(ent.id());
+     }
+
+     entity_set& operator<<(const domain_entity<M, entity_type>& ent){
+      add(ent);
+      return *this;
+     }
+
     private:
      mesh_t & mesh_;
      const id_vector_t * v_;

@@ -233,9 +233,9 @@ class domain_entity
   operator E *() { return entity_; }
   E * operator->() { return entity_; }
   E * operator*() { return entity_; }
-  operator size_t() { return entity_->template id<M>(); }
-  id_t global_id() { return entity_->template global_id<M>(); }
-  size_t id() { return entity_->template id<M>(); }
+  operator size_t() const { return entity_->template id<M>(); }
+  id_t global_id() const { return entity_->template global_id<M>(); }
+  size_t id() const { return entity_->template id<M>(); }
   bool operator==(domain_entity e) const { return entity_ == e.entity_; }
   bool operator!=(domain_entity e) const { return entity_ != e.entity_; }
  private:
