@@ -291,6 +291,16 @@ public:
   //! Corner type.
   using corner_t = burton_mesh_types_t::corner_t;
 
+  using vertex_set_t = private_mesh_t::entity_set_t<0, 0>;
+
+  using edge_set_t = private_mesh_t::entity_set_t<1, 0>;
+
+  using cell_set_t = private_mesh_t::entity_set_t<2, 0>;
+
+  using corner_set_t = private_mesh_t::entity_set_t<1, 1>;
+
+  using wedge_set_t = private_mesh_t::entity_set_t<2, 1>;
+
   //! Default constructor
   burton_mesh_t() {}
 
