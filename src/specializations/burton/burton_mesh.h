@@ -67,6 +67,10 @@ public:
   template <typename T>
   using dense_accessor_t = data_t::dense_accessor_t<T>;
 
+  uintptr_t id() const{
+    return mesh_.id();
+  }
+
   /*--------------------------------------------------------------------------*
    * Dense Accessors
    *--------------------------------------------------------------------------*/
@@ -130,9 +134,10 @@ public:
     \return Accessor to the state with \e key.
    */
   template <typename T, size_t NS = flecsi_user_space>
-  decltype(auto) access_state_(const const_string_t && key)
+  decltype(auto) access_state_(const const_string_t && key,
+                               uintptr_t runtime_namespace)
   {
-    return data_t::instance().dense_accessor<T, NS>(key);
+    return data_t::instance().dense_accessor<T, NS>(key, runtime_namespace);
   } // access_state_
 
   /*!

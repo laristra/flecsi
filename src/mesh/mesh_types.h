@@ -609,7 +609,7 @@ class mesh_topology_base_t
   /*!
     Return a unique runtime identifier for this mesh.
    */
-  uintptr_t id() { return reinterpret_cast<uintptr_t>(this); }
+  uintptr_t id() const { return reinterpret_cast<uintptr_t>(this); }
   
   /*!
     Return the number of entities in for a specific domain and topology dim.

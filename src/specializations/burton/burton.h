@@ -75,7 +75,8 @@
 
   \return An accessor to the state data.
  */
-#define access_state(mesh, key, type) (mesh).access_state_<type>((key))
+#define access_state(mesh, key, type) \
+  (mesh).access_state_<type>(key, mesh.id())
 
 /*!
   \brief Access all state of a given type from a given \e mesh and \e key.

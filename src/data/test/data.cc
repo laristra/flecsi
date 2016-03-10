@@ -26,10 +26,10 @@ using flecsi::persistent;
 TEST(state, sanity) {
   data_t & state = data_t::instance();
 
-  state.register_state<double>("density", 10, 0, persistent);
-  state.register_state<double>("pressure", 10, 1, persistent);
-  state.register_state<float>("velocity", 15, 0, persistent);
-  state.register_global_state<float>("constant", 0, 0x0);
+  state.register_state<double>("density", 10, 0, 0, persistent);
+  state.register_state<double>("pressure", 10, 0, 1, persistent);
+  state.register_state<float>("velocity", 15, 0, 0, persistent);
+  state.register_global_state<float>("constant", 0, 0, 0x0);
 
   auto d = state.dense_accessor<double, 0>("density");
 

@@ -778,7 +778,7 @@ class default_data_storage_policy_t
 
     for (auto entry_pair : meta_[NS]) {
       if (entry_pair.second.rtti->type_info == typeid(T)) {
-        v.push_back(dense_accessor<T, NS>(entry_pair.first));
+        v.push_back(dense_accessor<T, NS>(entry_pair.first, runtime_namespace));
       } // if
     } // for
 
@@ -796,7 +796,7 @@ class default_data_storage_policy_t
 
     for (auto entry_pair : meta_[NS]) {
       // create an accessor
-      auto a = dense_accessor<T, NS>(entry_pair.first);
+      auto a = dense_accessor<T, NS>(entry_pair.first, runtime_namespace);
 
       if (entry_pair.second.rtti->type_info == typeid(T) && predicate(a)) {
         v.push_back(a);
@@ -816,7 +816,7 @@ class default_data_storage_policy_t
     std::vector<dense_accessor_t<uint8_t>> v;
 
     for (auto entry_pair : meta_[NS]) {
-      v.push_back(dense_accessor<uint8_t, NS>(entry_pair.first));
+      v.push_back(dense_accessor<uint8_t, NS>(entry_pair.first, runtime_namespace));
     } // for
 
     return v;
