@@ -63,7 +63,7 @@ public:
   static data_t & instance()
   {
     static data_t d;
-    std::cout << "state address: " << &d << std::endl;
+    //std::cout << "state address: " << &d << std::endl;
     return d;
   } // instance
 
