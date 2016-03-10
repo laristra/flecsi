@@ -581,9 +581,11 @@ class default_data_storage_policy_t
   global_accessor_t<T> global_accessor(const const_string_t & key,
     uintptr_t runtime_namespace)
   {
-    return {meta_[NS][key.hash()].label, meta_[NS][key.hash()].size,
-        reinterpret_cast<T *>(&meta_[NS][key.hash()].data[0]),
-        meta_[NS][key.hash()].user_data};
+    size_t h = key.hash() ^ runtime_namespace;
+
+    return {meta_[NS][h].label, meta_[NS][h].size,
+        reinterpret_cast<T *>(&meta_[NS][h].data[0]),
+        meta_[NS][h].user_data};
   } // accessor
 
   /*!
@@ -595,9 +597,11 @@ class default_data_storage_policy_t
   global_accessor_t<T> global_accessor(const_string_t::hash_type_t hash,
     uintptr_t runtime_namespace)
   {
-    return {meta_[NS][hash].label, meta_[NS][hash].size,
-        reinterpret_cast<T *>(&meta_[NS][hash].data[0]),
-        meta_[NS][hash].user_data};
+    size_t h = hash ^ runtime_namespace;
+
+    return {meta_[NS][h].label, meta_[NS][h].size,
+        reinterpret_cast<T *>(&meta_[NS][h].data[0]),
+        meta_[NS][h].user_data};
   } // accessor
 
   /*!
@@ -610,20 +614,22 @@ class default_data_storage_policy_t
   decltype(auto) register_global_state(
       const const_string_t & key, uintptr_t runtime_namespace, Args &&... args)
   {
+    size_t h = key.hash() ^ runtime_namespace;
+
     // keys must be unique within a given namespace
-    assert(meta_[NS].find(key.hash()) == meta_[NS].end() &&
+    assert(meta_[NS].find(h) == meta_[NS].end() &&
       "key already exists");
 
     // user meta data
-    meta_[NS][key.hash()].user_data.initialize(std::forward<Args>(args)...);
+    meta_[NS][h].user_data.initialize(std::forward<Args>(args)...);
 
     // store the type size and allocate storage
-    meta_[NS][key.hash()].label = key.c_str();
-    meta_[NS][key.hash()].size = 1;
-    meta_[NS][key.hash()].type_size = sizeof(T);
-    meta_[NS][key.hash()].rtti.reset(
+    meta_[NS][h].label = key.c_str();
+    meta_[NS][h].size = 1;
+    meta_[NS][h].type_size = sizeof(T);
+    meta_[NS][h].rtti.reset(
         new typename meta_data_t::type_info_t(typeid(T)));
-    meta_[NS][key.hash()].data.resize(sizeof(T));
+    meta_[NS][h].data.resize(sizeof(T));
 
     return global_accessor<T, NS>(key.hash(), runtime_namespace);
   } // register
@@ -639,7 +645,7 @@ class default_data_storage_policy_t
 
     for (auto entry_pair : meta_[NS]) {
       if (entry_pair.second.rtti->type_info == typeid(T)) {
-        v.push_back(global_accessor<T, NS>(entry_pair.first));
+        v.push_back(global_accessor<T, NS>(entry_pair.first ^ runtime_namespace));
       } // if
     } // for
 
@@ -657,7 +663,7 @@ class default_data_storage_policy_t
 
     for (auto entry_pair : meta_[NS]) {
       // create an accessor
-      auto a = global_accessor<T, NS>(entry_pair.first);
+      auto a = global_accessor<T, NS>(entry_pair.first ^ runtime_namespace);
 
       if (entry_pair.second.rtti->type_info == typeid(T) && predicate(a)) {
         v.push_back(a);
@@ -694,7 +700,7 @@ class default_data_storage_policy_t
 
     for (auto entry_pair : meta_[NS]) {
       // create an accessor
-      auto a = global_accessor<uint8_t, NS>(entry_pair.first);
+      auto a = global_accessor<uint8_t, NS>(entry_pair.first ^ runtime_namespace);
 
       if (predicate(a)) {
         v.push_back(a);
@@ -720,9 +726,10 @@ class default_data_storage_policy_t
   dense_accessor_t<T> dense_accessor(const const_string_t & key,
     uintptr_t runtime_namespace)
   {
-    return {meta_[NS][key.hash()].label, meta_[NS][key.hash()].size,
-        reinterpret_cast<T *>(&meta_[NS][key.hash()].data[0]),
-        meta_[NS][key.hash()].user_data};
+    size_t h = key.hash() ^ runtime_namespace;
+    return {meta_[NS][h].label, meta_[NS][h].size,
+        reinterpret_cast<T *>(&meta_[NS][h].data[0]),
+        meta_[NS][h].user_data};
   } // accessor
 
   /*!
@@ -734,9 +741,11 @@ class default_data_storage_policy_t
   dense_accessor_t<T> dense_accessor(const_string_t::hash_type_t hash,
     uintptr_t runtime_namespace)
   {
-    return {meta_[NS][hash].label, meta_[NS][hash].size,
-        reinterpret_cast<T *>(&meta_[NS][hash].data[0]),
-        meta_[NS][hash].user_data};
+    size_t h = hash ^ runtime_namespace;
+
+    return {meta_[NS][h].label, meta_[NS][h].size,
+        reinterpret_cast<T *>(&meta_[NS][h].data[0]),
+        meta_[NS][h].user_data};
   } // accessor
 
   /*!
@@ -750,20 +759,22 @@ class default_data_storage_policy_t
       const const_string_t & key, size_t indices, uintptr_t runtime_namespace,
       Args &&... args)
   {
+    size_t h = key.hash() ^ runtime_namespace;
+
     // keys must be unique within a given namespace
     assert(
-        meta_[NS].find(key.hash()) == meta_[NS].end() && "key already exists");
+        meta_[NS].find(h) == meta_[NS].end() && "key already exists");
 
     // user meta data
-    meta_[NS][key.hash()].user_data.initialize(std::forward<Args>(args)...);
+    meta_[NS][h].user_data.initialize(std::forward<Args>(args)...);
 
     // store the type size and allocate storage
-    meta_[NS][key.hash()].label = key.c_str();
-    meta_[NS][key.hash()].size = indices;
-    meta_[NS][key.hash()].type_size = sizeof(T);
-    meta_[NS][key.hash()].rtti.reset(
+    meta_[NS][h].label = key.c_str();
+    meta_[NS][h].size = indices;
+    meta_[NS][h].type_size = sizeof(T);
+    meta_[NS][h].rtti.reset(
         new typename meta_data_t::type_info_t(typeid(T)));
-    meta_[NS][key.hash()].data.resize(indices * sizeof(T));
+    meta_[NS][h].data.resize(indices * sizeof(T));
 
     return dense_accessor<T, NS>(key.hash(), runtime_namespace);
   } // register
@@ -833,7 +844,7 @@ class default_data_storage_policy_t
 
     for (auto entry_pair : meta_[NS]) {
       // create an accessor
-      auto a = dense_accessor<uint8_t, NS>(entry_pair.first);
+      auto a = dense_accessor<uint8_t, NS>(entry_pair.first ^ runtime_namespace);
 
       if (predicate(a)) {
         v.push_back(a);
@@ -856,7 +867,8 @@ class default_data_storage_policy_t
   user_meta_data_t & meta_data(const const_string_t & key,
     uintptr_t runtime_namespace)
   {
-    return meta_[NS][key.hash()].user_data;
+    size_t h = key.hash() ^ runtime_namespace;
+    return meta_[NS][h].user_data;
   } // meta_data
 
   /*!
