@@ -52,7 +52,8 @@ public:
   static constexpr size_t num_domains = burton_mesh_traits_t::num_domains;
 
   //! Constructor
-  burton_vertex_t() {}
+  burton_vertex_t(mesh_topology_base_t & mesh)
+    : mesh_(mesh) {}
 
   /*!
     \brief Set the coordinates for a vertex.
@@ -62,7 +63,7 @@ public:
   void set_coordinates(const point_t & coordinates)
   {
     auto c = data_t::instance().dense_accessor<point_t, flecsi_internal>(
-      "coordinates");
+      "coordinates", mesh_.id());
     c[mesh_entity_base_t<num_domains>::template id<0>()] = coordinates;
   } // set_coordinates
 
@@ -76,6 +77,8 @@ public:
       "coordinates");
     return c[mesh_entity_base_t<num_domains>::template id<0>()];
   } // coordinates
+
+  mesh_topology_base_t & mesh_;
 
 }; // class burton_vertex_t
 
@@ -116,7 +119,6 @@ struct burton_edge_t
 
   //! a reference to the mesh topology
   mesh_topology_base_t & mesh_;
-
 
 }; // struct burton_edge_t
 

@@ -93,23 +93,24 @@ public:
     switch (site) {
       case attachment_site_t::vertices:
         return data_.register_state<T>(
-            key, num_vertices(), attachment_site_t::vertices, attributes);
+            key, num_vertices(), mesh_.id(), attachment_site_t::vertices,
+            attributes);
         break;
       case attachment_site_t::edges:
         return data_.register_state<T>(
-            key, num_edges(), attachment_site_t::edges, attributes);
+            key, num_edges(), mesh_.id(), attachment_site_t::edges, attributes);
         break;
       case attachment_site_t::cells:
         return data_.register_state<T>(
-            key, num_cells(), attachment_site_t::cells, attributes);
+            key, num_cells(), mesh_.id(), attachment_site_t::cells, attributes);
         break;
       case attachment_site_t::corners:
         return data_.register_state<T>(
-            key, num_corners(), attachment_site_t::corners, attributes);
+            key, num_corners(), mesh_.id(), attachment_site_t::corners, attributes);
         break;
       case attachment_site_t::wedges:
         return data_.register_state<T>(
-            key, num_wedges(), attachment_site_t::wedges, attributes);
+            key, num_wedges(), mesh_.id(), attachment_site_t::wedges, attributes);
         break;
       default:
         assert(false && "Error: invalid state registration site.");
@@ -187,7 +188,7 @@ public:
   decltype(auto) register_global_state_(const const_string_t && key,
     bitfield_t::field_type_t attributes = 0x0) {
     return data_t::instance().register_global_state<T>(
-      key, attachment_site_t::global, attributes);
+      key, mesh_.id(), attachment_site_t::global, attributes);
   } // register_state_
 
   /*!
@@ -748,10 +749,11 @@ public:
   // FIXME: Complete changes to state storage
   vertex_t * create_vertex(const point_t & pos)
   {
-    auto p = access_state_<point_t, flecsi_internal>("coordinates");
+    auto p = access_state_<point_t, flecsi_internal>("coordinates",
+      mesh_.id());
     p[num_vertices()] = pos;
 
-    auto v = mesh_.make<vertex_t>();
+    auto v = mesh_.make<vertex_t>(mesh_);
     mesh_.add_entity<0, 0>(v);
 
     return v;
@@ -797,7 +799,8 @@ public:
 
     // register coordinate state
     data_t::instance().register_state<point_t, flecsi_internal>(
-      "coordinates", vertices, attachment_site_t::vertices, persistent);
+      "coordinates", vertices, mesh_.id(), attachment_site_t::vertices,
+      persistent);
   } // init_parameters
 
   /*!

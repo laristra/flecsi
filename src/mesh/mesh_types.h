@@ -91,13 +91,14 @@ template <size_t N>
 class mesh_entity_base_t
 {
  public:
+
   virtual ~mesh_entity_base_t() {}
+
   /*!
     Return the id of this entity.
 
     \return The id of the entity.
    */
-
   template <size_t M>
   id_t global_id() const
   {
@@ -162,6 +163,7 @@ class mesh_entity_base_t
   friend class mesh_topology_t;
 
  protected:
+
   template <size_t M>
   void set_info(uint16_t info)
   {
@@ -169,6 +171,7 @@ class mesh_entity_base_t
   } // set_info
 
  private:
+
   std::array<id_t, N> ids_;
 
 }; // class mesh_entity_base_t
@@ -603,6 +606,11 @@ class mesh_topology_base_t
 {
  public:
 
+  /*!
+    Return a unique runtime identifier for this mesh.
+   */
+  uintptr_t id() { return reinterpret_cast<uintptr_t>(this); }
+  
   /*!
     Return the number of entities in for a specific domain and topology dim.
    */

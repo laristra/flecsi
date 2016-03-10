@@ -115,10 +115,11 @@ public:
    */
   template <typename T, size_t NS = flecsi_user_space, typename... Args>
   decltype(auto) register_state(
-      const const_string_t & key, size_t indices, Args &&... args)
+      const const_string_t & key, size_t indices, uintptr_t runtime_namespace,
+      Args &&... args)
   {
     return sp_t::template register_state<T, NS>(
-        key, indices, std::forward<Args>(args)...);
+        key, indices, runtime_namespace, std::forward<Args>(args)...);
   } // register_state
 
   /*!
@@ -140,9 +141,10 @@ public:
    */
 
   template <typename T, size_t NS = flecsi_user_space>
-  dense_accessor_t<T> dense_accessor(const const_string_t & key)
+  dense_accessor_t<T> dense_accessor(const const_string_t & key,
+    uintptr_t runtime_namespace = flecsi_runtime_user_space)
   {
-    return sp_t::template dense_accessor<T, NS>(key);
+    return sp_t::template dense_accessor<T, NS>(key, runtime_namespace);
   } // dense_accessor
 
   /*!
@@ -156,9 +158,10 @@ public:
       match the type and namespace criteria.
    */
   template <typename T, size_t NS = flecsi_user_space>
-  std::vector<dense_accessor_t<T>> dense_accessors()
+  std::vector<dense_accessor_t<T>> dense_accessors(
+    uintptr_t runtime_namespace = flecsi_runtime_user_space)
   {
-    return sp_t::template dense_accessors<T, NS>();
+    return sp_t::template dense_accessors<T, NS>(runtime_namespace);
   } // dense_accessors
 
   /*!
@@ -183,9 +186,11 @@ public:
    */
 
   template <typename T, typename P, size_t NS = flecsi_user_space>
-  std::vector<dense_accessor_t<T>> dense_accessors(P && predicate)
+  std::vector<dense_accessor_t<T>> dense_accessors(P && predicate,
+    uintptr_t runtime_namespace = flecsi_runtime_user_space)
   {
-    return sp_t::template dense_accessors<T, NS, P>(std::forward<P>(predicate));
+    return sp_t::template dense_accessors<T, NS, P>(
+      std::forward<P>(predicate), runtime_namespace);
   } // dense_accessors
 
   /*!
@@ -199,9 +204,10 @@ public:
    */
 
   template <size_t NS = flecsi_user_space>
-  std::vector<dense_accessor_t<uint8_t>> raw_dense_accessors()
+  std::vector<dense_accessor_t<uint8_t>> raw_dense_accessors(
+    uintptr_t runtime_namespace = flecsi_runtime_user_space)
   {
-    return sp_t::template raw_dense_accessors<NS>();
+    return sp_t::template raw_dense_accessors<NS>(runtime_namespace);
   } // raw_dense_accessors
 
   /*!
@@ -223,9 +229,11 @@ public:
    */
 
   template <typename P, size_t NS = flecsi_user_space>
-  std::vector<dense_accessor_t<uint8_t>> raw_dense_accessors(P && predicate)
+  std::vector<dense_accessor_t<uint8_t>> raw_dense_accessors(P && predicate,
+    uintptr_t runtime_namespace = flecsi_runtime_user_space)
   {
-    return sp_t::template raw_dense_accessors<NS>(std::forward<P>(predicate));
+    return sp_t::template raw_dense_accessors<NS>(
+      std::forward<P>(predicate), runtime_namespace);
   } // raw_dense_accessors
 
   /*--------------------------------------------------------------------------*
@@ -257,10 +265,10 @@ public:
    */
   template <typename T, size_t NS = flecsi_user_space, typename... Args>
   decltype(auto) register_global_state(
-      const const_string_t & key, Args &&... args)
+    const const_string_t & key, uintptr_t runtime_namespace, Args &&... args)
   {
     return sp_t::template register_global_state<T, NS>(
-        key, std::forward<Args>(args)...);
+        key, runtime_namespace, std::forward<Args>(args)...);
   } // register_state
 
   /*!
@@ -282,9 +290,10 @@ public:
    */
 
   template <typename T, size_t NS = flecsi_user_space>
-  global_accessor_t<T> global_accessor(const const_string_t & key)
+  global_accessor_t<T> global_accessor(const const_string_t & key,
+    uintptr_t runtime_namespace = flecsi_runtime_user_space)
   {
-    return sp_t::template global_accessor<T, NS>(key);
+    return sp_t::template global_accessor<T, NS>(key, runtime_namespace);
   } // global_accessor
 
   /*!
@@ -298,9 +307,10 @@ public:
       match the type and namespace criteria.
    */
   template <typename T, size_t NS = flecsi_user_space>
-  std::vector<global_accessor_t<T>> global_accessors()
+  std::vector<global_accessor_t<T>> global_accessors(
+    uintptr_t runtime_namespace = flecsi_runtime_user_space)
   {
-    return sp_t::template global_accessors<T, NS>();
+    return sp_t::template global_accessors<T, NS>(runtime_namespace);
   } // global_accessors
 
   /*!
@@ -325,9 +335,11 @@ public:
    */
 
   template <typename T, typename P, size_t NS = flecsi_user_space>
-  std::vector<global_accessor_t<T>> global_accessors(P && predicate)
+  std::vector<global_accessor_t<T>> global_accessors(P && predicate,
+    uintptr_t runtime_namespace = flecsi_runtime_user_space)
   {
-    return sp_t::template global_accessors<T, NS, P>(std::forward<P>(predicate));
+    return sp_t::template global_accessors<T, NS, P>(
+      std::forward<P>(predicate), runtime_namespace);
   } // global_accessors
 
   /*!
@@ -341,9 +353,10 @@ public:
    */
 
   template <size_t NS = flecsi_user_space>
-  std::vector<global_accessor_t<uint8_t>> raw_global_accessors()
+  std::vector<global_accessor_t<uint8_t>> raw_global_accessors(
+    uintptr_t runtime_namespace = flecsi_runtime_user_space)
   {
-    return sp_t::template raw_global_accessors<NS>();
+    return sp_t::template raw_global_accessors<NS>(runtime_namespace);
   } // raw_global_accessors
 
   /*!
@@ -365,9 +378,11 @@ public:
    */
 
   template <typename P, size_t NS = flecsi_user_space>
-  std::vector<global_accessor_t<uint8_t>> raw_global_accessors(P && predicate)
+  std::vector<global_accessor_t<uint8_t>> raw_global_accessors(P && predicate,
+    uintptr_t runtime_namespace = flecsi_runtime_user_space)
   {
-    return sp_t::template raw_global_accessors<NS>(std::forward<P>(predicate));
+    return sp_t::template raw_global_accessors<NS>(
+      std::forward<P>(predicate), runtime_namespace);
   } // raw_global_accessors
 
   /*--------------------------------------------------------------------------*
@@ -384,9 +399,10 @@ public:
     \return The meta data corresponding to the key and namespace.
    */
   template <size_t NS = flecsi_user_space>
-  user_meta_data_t & meta_data(const const_string_t & key)
+  user_meta_data_t & meta_data(const const_string_t & key,
+    uintptr_t runtime_namespace = flecsi_runtime_user_space)
   {
-    return sp_t::template meta_data<NS>(key);
+    return sp_t::template meta_data<NS>(key, runtime_namespace);
   } // user_meta_data
 
   /*!
@@ -405,9 +421,10 @@ public:
     \return A std::shared_ptr<T> with a copy of the state data.
    */
   template <typename T, size_t NS = flecsi_user_space>
-  std::shared_ptr<T> & data(const const_string_t & key)
+  std::shared_ptr<T> & data(const const_string_t & key,
+    uintptr_t runtime_namespace = flecsi_runtime_user_space)
   {
-    return sp_t::template data<T, NS>(key);
+    return sp_t::template data<T, NS>(key, runtime_namespace);
   } // data
 
   //! Copy constructor (disabled)

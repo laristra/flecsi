@@ -272,6 +272,7 @@ class mesh_topology_t : public mesh_topology_base_t
 
     iterator_t begin() const { return iterator_t(mesh_, *v_, begin_); } // begin
     iterator_t end() const { return iterator_t(mesh_, *v_, end_); } // end
+
     /*!
       convert this range to a vector
      */

@@ -578,7 +578,8 @@ class default_data_storage_policy_t
     \param key The name of the data to return.
    */
   template <typename T, size_t NS>
-  global_accessor_t<T> global_accessor(const const_string_t & key)
+  global_accessor_t<T> global_accessor(const const_string_t & key,
+    uintptr_t runtime_namespace)
   {
     return {meta_[NS][key.hash()].label, meta_[NS][key.hash()].size,
         reinterpret_cast<T *>(&meta_[NS][key.hash()].data[0]),
@@ -591,7 +592,8 @@ class default_data_storage_policy_t
     \param hash A hash key for the data to return.
    */
   template <typename T, size_t NS>
-  global_accessor_t<T> global_accessor(const_string_t::hash_type_t hash)
+  global_accessor_t<T> global_accessor(const_string_t::hash_type_t hash,
+    uintptr_t runtime_namespace)
   {
     return {meta_[NS][hash].label, meta_[NS][hash].size,
         reinterpret_cast<T *>(&meta_[NS][hash].data[0]),
@@ -606,7 +608,7 @@ class default_data_storage_policy_t
    */
   template <typename T, size_t NS, typename... Args>
   decltype(auto) register_global_state(
-      const const_string_t & key, Args &&... args)
+      const const_string_t & key, uintptr_t runtime_namespace, Args &&... args)
   {
     // keys must be unique within a given namespace
     assert(meta_[NS].find(key.hash()) == meta_[NS].end() &&
@@ -623,14 +625,15 @@ class default_data_storage_policy_t
         new typename meta_data_t::type_info_t(typeid(T)));
     meta_[NS][key.hash()].data.resize(sizeof(T));
 
-    return global_accessor<T, NS>(key.hash());
+    return global_accessor<T, NS>(key.hash(), runtime_namespace);
   } // register
 
   /*!
     Return an accessor to all data for a given type.
    */
   template <typename T, size_t NS>
-  std::vector<global_accessor_t<T>> global_accessors()
+  std::vector<global_accessor_t<T>> global_accessors(
+    uintptr_t runtime_namespace)
   {
     std::vector<global_accessor_t<T>> v;
 
@@ -647,7 +650,8 @@ class default_data_storage_policy_t
     Return an accessor to all data for a given type and predicate.
    */
   template <typename T, size_t NS, typename P>
-  std::vector<global_accessor_t<T>> global_accessors(P && predicate)
+  std::vector<global_accessor_t<T>> global_accessors(P && predicate,
+    uintptr_t runtime_namespace)
   {
     std::vector<global_accessor_t<T>> v;
 
@@ -667,7 +671,8 @@ class default_data_storage_policy_t
     Return accessors to all data.
    */
   template <size_t NS>
-  std::vector<global_accessor_t<uint8_t>> global_accessors()
+  std::vector<global_accessor_t<uint8_t>> global_accessors(
+    uintptr_t runtime_namespace)
   {
     std::vector<global_accessor_t<uint8_t>> v;
 
@@ -682,7 +687,8 @@ class default_data_storage_policy_t
     Return an accessor to all data for a given type and predicate.
    */
   template <size_t NS, typename P>
-  std::vector<global_accessor_t<uint8_t>> global_accessors(P && predicate)
+  std::vector<global_accessor_t<uint8_t>> global_accessors(P && predicate,
+    uintptr_t runtime_namespace)
   {
     std::vector<global_accessor_t<uint8_t>> v;
 
@@ -711,7 +717,8 @@ class default_data_storage_policy_t
     \param key The name of the data to return.
    */
   template <typename T, size_t NS>
-  dense_accessor_t<T> dense_accessor(const const_string_t & key)
+  dense_accessor_t<T> dense_accessor(const const_string_t & key,
+    uintptr_t runtime_namespace)
   {
     return {meta_[NS][key.hash()].label, meta_[NS][key.hash()].size,
         reinterpret_cast<T *>(&meta_[NS][key.hash()].data[0]),
@@ -724,7 +731,8 @@ class default_data_storage_policy_t
     \param hash A hash key for the data to return.
    */
   template <typename T, size_t NS>
-  dense_accessor_t<T> dense_accessor(const_string_t::hash_type_t hash)
+  dense_accessor_t<T> dense_accessor(const_string_t::hash_type_t hash,
+    uintptr_t runtime_namespace)
   {
     return {meta_[NS][hash].label, meta_[NS][hash].size,
         reinterpret_cast<T *>(&meta_[NS][hash].data[0]),
@@ -739,7 +747,8 @@ class default_data_storage_policy_t
    */
   template <typename T, size_t NS, typename... Args>
   decltype(auto) register_state(
-      const const_string_t & key, size_t indices, Args &&... args)
+      const const_string_t & key, size_t indices, uintptr_t runtime_namespace,
+      Args &&... args)
   {
     // keys must be unique within a given namespace
     assert(
@@ -756,14 +765,14 @@ class default_data_storage_policy_t
         new typename meta_data_t::type_info_t(typeid(T)));
     meta_[NS][key.hash()].data.resize(indices * sizeof(T));
 
-    return dense_accessor<T, NS>(key.hash());
+    return dense_accessor<T, NS>(key.hash(), runtime_namespace);
   } // register
 
   /*!
     Return an accessor to all data for a given type.
    */
   template <typename T, size_t NS>
-  std::vector<dense_accessor_t<T>> dense_accessors()
+  std::vector<dense_accessor_t<T>> dense_accessors(uintptr_t runtime_namespace)
   {
     std::vector<dense_accessor_t<T>> v;
 
@@ -780,7 +789,8 @@ class default_data_storage_policy_t
     Return an accessor to all data for a given type and predicate.
    */
   template <typename T, size_t NS, typename P>
-  std::vector<dense_accessor_t<T>> dense_accessors(P && predicate)
+  std::vector<dense_accessor_t<T>> dense_accessors(P && predicate,
+    uintptr_t runtime_namespace)
   {
     std::vector<dense_accessor_t<T>> v;
 
@@ -800,7 +810,8 @@ class default_data_storage_policy_t
     Return accessors to all data.
    */
   template <size_t NS>
-  std::vector<dense_accessor_t<uint8_t>> dense_accessors()
+  std::vector<dense_accessor_t<uint8_t>> dense_accessors(
+    uintptr_t runtime_namespace)
   {
     std::vector<dense_accessor_t<uint8_t>> v;
 
@@ -815,7 +826,8 @@ class default_data_storage_policy_t
     Return an accessor to all data for a given type and predicate.
    */
   template <size_t NS, typename P>
-  std::vector<dense_accessor_t<uint8_t>> dense_accessors(P && predicate)
+  std::vector<dense_accessor_t<uint8_t>> dense_accessors(P && predicate,
+    uintptr_t runtime_namespace)
   {
     std::vector<dense_accessor_t<uint8_t>> v;
 
@@ -841,7 +853,8 @@ class default_data_storage_policy_t
     \param key The name of the data to return.
    */
   template <size_t NS>
-  user_meta_data_t & meta_data(const const_string_t & key)
+  user_meta_data_t & meta_data(const const_string_t & key,
+    uintptr_t runtime_namespace)
   {
     return meta_[NS][key.hash()].user_data;
   } // meta_data
