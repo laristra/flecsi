@@ -461,7 +461,14 @@ class mesh_topology_t : public mesh_topology_base_t
 
        auto vc = const_cast<id_vector_t*>(v_);
 
-       vc->push_back(ent.id());
+       if(sorted_){
+        auto id = ent.id();
+        auto itr = std::upper_bound(vc->begin(), vc->end(), id);
+        vc->insert(itr, id);
+       }
+       else{
+         vc->push_back(ent.id());        
+       }
      }
 
      entity_set& operator<<(const domain_entity<M, entity_type>& ent){
