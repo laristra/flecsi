@@ -55,9 +55,9 @@ class mpi_execution_policy_t
       });
 #endif
 
-    context_t::instance().entry();
+    context_t<mpi_execution_policy_t>::instance().entry();
     auto value = task(std::forward<Args>(args)...);
-    context_t::instance().exit();
+    context_t<mpi_execution_policy_t>::instance().exit();
     return value;
   } // execute_task
 

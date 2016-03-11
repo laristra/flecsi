@@ -13,7 +13,10 @@
 #~----------------------------------------------------------------------------~#
 
 set(data_HEADERS
-  state.h
+  data_constants.h
+  data.h
+  default_meta_data.h
+  default_storage_policy.h
   PARENT_SCOPE
 )
 

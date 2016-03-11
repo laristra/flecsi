@@ -79,9 +79,8 @@ protected:
   const size_t height = H;
 };
 
-// this may not be a portable way to point to lapacke.h. it works on darwin.
 #include <ccomplex>
-#include <lapacke/lapacke.h>
+#include <lapacke.h>
 
 const int N = 10;
 
@@ -246,40 +245,11 @@ TEST_F(Burton, vertex_gradient) {
   // go over vertices and compute gradient using cell centered average
   for(auto v: b.vertices()) {
 
-    // volume of dual mesh surrounding vertex.
-
-    /*!
-      THIS SHOULD BE A METHOD PROVIDED BY VERTICES.
-
-      Area of a quadrilateral. No sides parallel.
-
-                 D
-          /-------------\
-         /                \
-      B /                   \  C
-       /                      \
-      /-------------------------\
-                 A
-
-      area = 1/2 mag(A X B) + 1/2 mag(C X D)
-     */
-
     // go over corners for vertex to get the area
     real_t area = 0.0;
     for(auto cnr: b.corners(v)) {
-      // the cell center for the cell containing this corner
-      auto xc = b.cells(cnr).front()->centroid();
-      auto xv = v->coordinates();
-      std::vector<point_t> mp;
-      for(auto e: b.edges(cnr)) { // the midpoints of the edges for this corner
-        mp.push_back(e->midpoint());
-      }
-      vector_t A(point_to_vector(mp[0]-xv));
-      vector_t B(point_to_vector(mp[1]-xv));
-      vector_t C(point_to_vector(mp[0]-xc));
-      vector_t D(point_to_vector(mp[1]-xc));
-      area += 0.5*(cross_magnitude(A,B) + cross_magnitude(C,D));
-    }
+      area += cnr->area();
+    } // for
 
     // This hack avoids computing gradients on the mesh boundary. Since
     // boundary conditions are not implemented, the contributions from Si are

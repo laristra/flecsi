@@ -58,6 +58,15 @@ if (NOT TPL_INSTALL_PREFIX STREQUAL "")
   set(SCOTCH_ROOT ${TPL_INSTALL_PREFIX})
 endif()
 
+option(USE_GCOV "Enable gcov support" OFF)
+if(USE_GCOV)
+  message(STATUS "Enabling gcov support")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage -O0")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage -O0")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} --coverage")
+endif()
+
 #~---------------------------------------------------------------------------~-#
 # Formatting options
 # vim: set tabstop=2 shiftwidth=2 expandtab :
