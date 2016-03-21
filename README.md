@@ -72,7 +72,7 @@ This will load up-to-date compiler and documentation tools.
 # Release
 
 This software has been approved for open source release and has
-been assigned **LA-CC-15-000**.
+been assigned **LA-CC-16-022**.
 
 # Copyright
 
