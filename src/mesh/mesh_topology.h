@@ -29,8 +29,8 @@
 #include <unordered_map>
 #include <functional>
 
-#include "flecsi/utils/common.h"
-#include "flecsi/mesh/mesh_types.h"
+#include "../utils/common.h"
+#include "mesh_types.h"
 
 namespace flecsi
 {

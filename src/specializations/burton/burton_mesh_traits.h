@@ -15,10 +15,10 @@
 #ifndef flecsi_burton_mesh_traits_h
 #define flecsi_burton_mesh_traits_h
 
-#include "flecsi/utils/bitfield.h"
-#include "flecsi/data/data.h"
-#include "flecsi/geometry/point.h"
-#include "flecsi/geometry/space_vector.h"
+#include "../../utils/bitfield.h"
+#include "../../data/data.h"
+#include "../../geometry/point.h"
+#include "../../geometry/space_vector.h"
 
 /*!
  * \file burton_mesh_traits.h

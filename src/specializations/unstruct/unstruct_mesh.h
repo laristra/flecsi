@@ -23,9 +23,9 @@
 #pragma once
 
 // includes
-#include "flecsi/execution/task.h"
-#include "flecsi/mesh/mesh_topology.h"
-#include "flecsi/specializations/unstruct/unstruct_types.h"
+#include "../../execution/task.h"
+#include "../../mesh/mesh_topology.h"
+#include "unstruct_types.h"
 
 namespace flecsi
 {

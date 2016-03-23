@@ -23,7 +23,7 @@
 #pragma once
 
 // includes
-#include "flecsi/specializations/unstruct/unstruct_mesh.h"
+#include "unstruct_mesh.h"
 
 /*----------------------------------------------------------------------------*
  * Execution Interface

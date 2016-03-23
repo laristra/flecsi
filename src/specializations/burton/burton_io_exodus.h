@@ -19,8 +19,8 @@
 #include <exodusII.h>
 #endif
 
-#include "flecsi/io/io_exodus.h"
-#include "flecsi/specializations/burton/burton.h"
+#include "../../io/io_exodus.h"
+#include "burton.h"
 
 /*!
  * \file io_exodus.h

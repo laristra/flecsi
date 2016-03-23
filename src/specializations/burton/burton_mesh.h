@@ -17,9 +17,9 @@
 
 #include <string>
 
-#include "flecsi/data/data.h"
-#include "flecsi/execution/task.h"
-#include "flecsi/specializations/burton/burton_types.h"
+#include "../../data/data.h"
+#include "../../execution/task.h"
+#include "burton_types.h"
 
 /*!
  * \file burton_mesh.h

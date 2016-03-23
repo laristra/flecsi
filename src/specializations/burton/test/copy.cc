@@ -14,7 +14,7 @@
 
 #include <cinchtest.h>
 
-#include "flecsi/specializations/burton/burton.h"
+#include "../burton.h"
 
 using namespace flecsi;
 

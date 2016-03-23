@@ -17,7 +17,7 @@
 
 #include <limits>
 
-#include "flecsi/utils/bitfield.h"
+#include "../utils/bitfield.h"
 
 /*!
  * \file data_constants.h

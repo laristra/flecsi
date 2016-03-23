@@ -15,7 +15,7 @@
 #ifndef flecsi_default_meta_data_h
 #define flecsi_default_meta_data_h
 
-#include "flecsi/utils/bitfield.h"
+#include "../utils/bitfield.h"
 
 /*!
  * \file default_meta_data.h

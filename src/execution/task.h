@@ -17,7 +17,7 @@
 
 #include <type_traits>
 
-#include "flecsi/execution/default_execution_policy.h"
+#include "default_execution_policy.h"
 
 /*!
  * \file task.h

@@ -23,7 +23,7 @@
 #include <cinchtest.h>
 #include <vector>
 
-#include "flecsi/specializations/unstruct/unstruct.h"
+#include "../unstruct.h"
 
 // namespaces
 using namespace flecsi;

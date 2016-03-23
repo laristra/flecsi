@@ -23,11 +23,11 @@
 #pragma once
 
 // includes
-#include "flecsi/geometry/point.h"
-#include "flecsi/geometry/space_vector.h"
-#include "flecsi/state/state.h"
-#include "flecsi/utils/bitfield.h"
-#include "flecsi/utils/common.h"
+#include "../../geometry/point.h"
+#include "../../geometry/space_vector.h"
+#include "../../state/state.h"
+#include "../../utils/bitfield.h"
+#include "../../utils/common.h"
 
 namespace flecsi
 {

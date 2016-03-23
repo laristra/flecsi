@@ -15,8 +15,8 @@
 #ifndef flecsi_minimal_types_h
 #define flecsi_minimal_types_h
 
-#include "flecsi/specializations/minimal/minimal_mesh_traits.h"
-#include "flecsi/specializations/minimal/minimal_entity_types.h"
+#include "minimal_mesh_traits.h"
+#include "minimal_entity_types.h"
 
 /*!
  * \file minimal_types.h

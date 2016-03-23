@@ -9,11 +9,7 @@
 #include <legion.h>
 
 
-#ifdef __ECLIPSE__
-#include "src/execution/context.h"
-#else
-#include "flecsi/execution/context.h"
-#endif
+#include "context.h"
 
 /*!
  * \file context_legion.h.h
