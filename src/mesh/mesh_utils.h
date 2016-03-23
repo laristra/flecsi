@@ -15,7 +15,7 @@
 #ifndef flecsi_mesh_utils_h
 #define flecsi_mesh_utils_h
 
-#include "flecsi/utils/common.h"
+#include "../utils/common.h"
 
 /*!
    \file mesh_utils.h
