@@ -96,25 +96,24 @@ public:
 
     switch (site) {
       case attachment_site_t::vertices:
-        return data_.register_state<T>(
-            key, num_vertices(), mesh_.id(), attachment_site_t::vertices,
-            attributes);
+        return data_.register_state<T>(key, num_vertices(), mesh_.id(),
+          attachment_site_t::vertices, attributes);
         break;
       case attachment_site_t::edges:
-        return data_.register_state<T>(
-            key, num_edges(), mesh_.id(), attachment_site_t::edges, attributes);
+        return data_.register_state<T>(key, num_edges(), mesh_.id(),
+          attachment_site_t::edges, attributes);
         break;
       case attachment_site_t::cells:
-        return data_.register_state<T>(
-            key, num_cells(), mesh_.id(), attachment_site_t::cells, attributes);
+        return data_.register_state<T>(key, num_cells(), mesh_.id(),
+          attachment_site_t::cells, attributes);
         break;
       case attachment_site_t::corners:
-        return data_.register_state<T>(
-            key, num_corners(), mesh_.id(), attachment_site_t::corners, attributes);
+        return data_.register_state<T>(key, num_corners(), mesh_.id(),
+          attachment_site_t::corners, attributes);
         break;
       case attachment_site_t::wedges:
-        return data_.register_state<T>(
-            key, num_wedges(), mesh_.id(), attachment_site_t::wedges, attributes);
+        return data_.register_state<T>(key, num_wedges(), mesh_.id(),
+          attachment_site_t::wedges, attributes);
         break;
       default:
         assert(false && "Error: invalid state registration site.");
@@ -134,10 +133,9 @@ public:
     \return Accessor to the state with \e key.
    */
   template <typename T, size_t NS = flecsi_user_space>
-  decltype(auto) access_state_(const const_string_t && key,
-                               uintptr_t runtime_namespace)
+  decltype(auto) access_state_(const const_string_t && key)
   {
-    return data_t::instance().dense_accessor<T, NS>(key, runtime_namespace);
+    return data_t::instance().dense_accessor<T, NS>(key, mesh_.id());
   } // access_state_
 
   /*!
@@ -192,8 +190,8 @@ public:
   template <typename T>
   decltype(auto) register_global_state_(const const_string_t && key,
     bitfield_t::field_type_t attributes = 0x0) {
-    return data_t::instance().register_global_state<T>(
-      key, mesh_.id(), attachment_site_t::global, attributes);
+    return data_t::instance().register_global_state<T>(key, mesh_.id(),
+      attachment_site_t::global, attributes);
   } // register_state_
 
   /*!
@@ -210,7 +208,7 @@ public:
   template <typename T, size_t NS = flecsi_user_space>
   decltype(auto) access_global_state_(const const_string_t && key)
   {
-    return data_t::instance().global_accessor<T, NS>(key);
+    return data_t::instance().global_accessor<T, NS>(key, mesh_.id());
   } // access_state_
 
   /*!
@@ -754,8 +752,7 @@ public:
   // FIXME: Complete changes to state storage
   vertex_t * create_vertex(const point_t & pos)
   {
-    auto p = access_state_<point_t, flecsi_internal>("coordinates",
-      mesh_.id());
+    auto p = access_state_<point_t, flecsi_internal>("coordinates");
     p[num_vertices()] = pos;
 
     auto v = mesh_.make<vertex_t>(mesh_);
@@ -798,10 +795,6 @@ public:
    */
   void init_parameters(size_t vertices)
   {
-    // FIXME: For now, we need to clear the mesh data to avoid
-    // multiple initializations of the data singleton
-    data_t::instance().reset();
-
     // register coordinate state
     data_t::instance().register_state<point_t, flecsi_internal>(
       "coordinates", vertices, mesh_.id(), attachment_site_t::vertices,

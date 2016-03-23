@@ -27,7 +27,7 @@
 #include <iostream>
 #include <vector>
 
-#include "flecsi/mesh/mesh_utils.h"
+#include "mesh_utils.h"
 
 namespace flecsi
 {
@@ -604,12 +604,20 @@ struct mesh_storage_t {
 
 class mesh_topology_base_t
 {
- public:
+private:
+
+  size_t id_;
+
+public:
+
+  mesh_topology_base_t() : id_(unique_id_t<size_t>::instance().next()) {}
 
   /*!
     Return a unique runtime identifier for this mesh.
    */
-  uintptr_t id() const { return reinterpret_cast<uintptr_t>(this); }
+  uintptr_t id() const {
+    return reinterpret_cast<uintptr_t>(this+id_);
+  } // id
   
   /*!
     Return the number of entities in for a specific domain and topology dim.

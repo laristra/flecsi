@@ -74,7 +74,7 @@ public:
   const point_t & coordinates() const
   {
     const auto c = data_t::instance().dense_accessor<point_t, flecsi_internal>(
-      "coordinates");
+      "coordinates", mesh_.id());
     return c[mesh_entity_base_t<num_domains>::template id<0>()];
   } // coordinates
 
