@@ -15,14 +15,6 @@ addons:
       - openmpi-bin
       - gcc-5
       - g++-5
-#  coverity_scan:
-#    project:
-#      name: "flecsi/flecsi"
-#      description: "Build submitted via Travis CI"
-#    notification_email: flecsi-commit@lanl.gov 
-#    build_command_prepend: "mkdir cov_build && cd cov_build && CC=gcc-${GVER} CXX=g++-${GVER} cmake -DENABLE_MPI=OFF -DENABLE_UNIT_TESTS=ON .."
-#    build_command:   "make -j4"
-#    branch_pattern: master
 
 before_install:
  - git -C cinch submodule init && git -C cinch submodule update
@@ -33,9 +25,6 @@ env: #maybe add mpich later
   global:
     - CCACHE_CPP2=yes
     - GVER=5
-    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
-    #   via the "travis encrypt" command using the project repo's public key
-    - secure: "dXtCp+GE0drp5Z82Pg86przy8Epu3YrkfNMny+GfLuTcIPrgJ8dbwGuYXRie4KD1/Af54sG1n0n51iqEyNusuc3gom2BNqxxucxuKJ7d5qITkftHkazocoK/DBBdPQDUSJfjTcTXMC3dOfBZXzCs7Vqyd5o5K5WPXpKwN+nMY5kgsnTnDNukOXkJTiIGnscEbj/ZEOhwihn/2wtFr8yd82tBoaFDUZ+i48S/vRxSzT+HSTybdtEYLu6BBrWzZImBj9A1eso9qd/k63k7PX+B/ZUW9DXPWEigC5a2RgwzbDizEiuXIRiBXQyvYdscyptDrxO8lmjoVlEibf91ss1kCCX+4KepXGWuzQFcn9C5JXpXhz0gWG3mU+LUjsb9Lc428kfICTA6jkcZQqs4pIYCFMMxFaKgoYZTIDgIlj2IBAWJTiIO5J6Q06GsShevDlueliTF1PFIIZtXYRI9Sm5OmYPXOeGG3D2cZFyX+rbbJcz7ZSo5N66IjMS/uFybkuOCzZHARa/5psLZokw2s61M+ZPyaE/D9cSj8K/ze32JFcEMmzeVg7hI5wESNGqzUFNP1yqCfpDrs4Q0znDrpkmQeCitttR31Oft9gReZwyoxfHTRMk5x+HjTbwjJVQ6E4VltQF0pLN29BK5hPAbIdFbAF0sA8w0QfYRSzPdNg+qR6w="
   matrix:
     - MPI=ON
     - MPI=OFF
