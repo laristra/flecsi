@@ -63,7 +63,7 @@ public:
   void set_coordinates(const point_t & coordinates)
   {
     auto c = data_t::instance().dense_accessor<point_t, flecsi_internal>(
-      "coordinates", mesh_.id());
+      "coordinates", mesh_.runtime_id());
     c[mesh_entity_base_t<num_domains>::template id<0>()] = coordinates;
   } // set_coordinates
 
@@ -74,7 +74,7 @@ public:
   const point_t & coordinates() const
   {
     const auto c = data_t::instance().dense_accessor<point_t, flecsi_internal>(
-      "coordinates", mesh_.id());
+      "coordinates", mesh_.runtime_id());
     return c[mesh_entity_base_t<num_domains>::template id<0>()];
   } // coordinates
 

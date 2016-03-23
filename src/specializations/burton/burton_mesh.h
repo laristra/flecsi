@@ -67,10 +67,6 @@ public:
   template <typename T>
   using dense_accessor_t = data_t::dense_accessor_t<T>;
 
-  uintptr_t id() const{
-    return mesh_.id();
-  }
-
   /*--------------------------------------------------------------------------*
    * Dense Accessors
    *--------------------------------------------------------------------------*/
@@ -96,23 +92,23 @@ public:
 
     switch (site) {
       case attachment_site_t::vertices:
-        return data_.register_state<T>(key, num_vertices(), mesh_.id(),
+        return data_.register_state<T>(key, num_vertices(), mesh_.runtime_id(),
           attachment_site_t::vertices, attributes);
         break;
       case attachment_site_t::edges:
-        return data_.register_state<T>(key, num_edges(), mesh_.id(),
+        return data_.register_state<T>(key, num_edges(), mesh_.runtime_id(),
           attachment_site_t::edges, attributes);
         break;
       case attachment_site_t::cells:
-        return data_.register_state<T>(key, num_cells(), mesh_.id(),
+        return data_.register_state<T>(key, num_cells(), mesh_.runtime_id(),
           attachment_site_t::cells, attributes);
         break;
       case attachment_site_t::corners:
-        return data_.register_state<T>(key, num_corners(), mesh_.id(),
+        return data_.register_state<T>(key, num_corners(), mesh_.runtime_id(),
           attachment_site_t::corners, attributes);
         break;
       case attachment_site_t::wedges:
-        return data_.register_state<T>(key, num_wedges(), mesh_.id(),
+        return data_.register_state<T>(key, num_wedges(), mesh_.runtime_id(),
           attachment_site_t::wedges, attributes);
         break;
       default:
@@ -135,7 +131,7 @@ public:
   template <typename T, size_t NS = flecsi_user_space>
   decltype(auto) access_state_(const const_string_t && key)
   {
-    return data_t::instance().dense_accessor<T, NS>(key, mesh_.id());
+    return data_t::instance().dense_accessor<T, NS>(key, mesh_.runtime_id());
   } // access_state_
 
   /*!
@@ -190,7 +186,7 @@ public:
   template <typename T>
   decltype(auto) register_global_state_(const const_string_t && key,
     bitfield_t::field_type_t attributes = 0x0) {
-    return data_t::instance().register_global_state<T>(key, mesh_.id(),
+    return data_t::instance().register_global_state<T>(key, mesh_.runtime_id(),
       attachment_site_t::global, attributes);
   } // register_state_
 
@@ -208,7 +204,7 @@ public:
   template <typename T, size_t NS = flecsi_user_space>
   decltype(auto) access_global_state_(const const_string_t && key)
   {
-    return data_t::instance().global_accessor<T, NS>(key, mesh_.id());
+    return data_t::instance().global_accessor<T, NS>(key, mesh_.runtime_id());
   } // access_state_
 
   /*!
@@ -807,8 +803,8 @@ public:
   {
     // register coordinate state
     data_t::instance().register_state<point_t, flecsi_internal>(
-      "coordinates", vertices, mesh_.id(), attachment_site_t::vertices,
-      persistent);
+      "coordinates", vertices, mesh_.runtime_id(),
+        attachment_site_t::vertices, persistent);
   } // init_parameters
 
   /*!

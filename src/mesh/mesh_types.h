@@ -27,6 +27,7 @@
 #include <iostream>
 #include <vector>
 
+#include "../data/data_client.h"
 #include "mesh_utils.h"
 
 namespace flecsi
@@ -615,23 +616,10 @@ struct mesh_storage_t {
     on type parameterization, e.g: entity types, domains, etc.
  */
 
-class mesh_topology_base_t
+class mesh_topology_base_t : public data_client_t
 {
-private:
-
-  size_t id_;
-
 public:
 
-  mesh_topology_base_t() : id_(unique_id_t<size_t>::instance().next()) {}
-
-  /*!
-    Return a unique runtime identifier for this mesh.
-   */
-  uintptr_t id() const {
-    return reinterpret_cast<uintptr_t>(this+id_);
-  } // id
-  
   /*!
     Return the number of entities in for a specific domain and topology dim.
    */
