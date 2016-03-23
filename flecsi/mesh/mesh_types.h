@@ -227,13 +227,14 @@ class domain_entity
 {
  public:
   domain_entity(E * entity) : entity_(entity) {}
-  domain_entity & operator=(domain_entity & e)
+  domain_entity & operator=(const domain_entity & e)
   {
     entity_ = e.entity_;
     return *this;
   }
 
   E * entity() { return entity_; }
+  const E * entity() const { return entity_; }
   operator E *() { return entity_; }
   E * operator->() { return entity_; }
   E * operator*() { return entity_; }

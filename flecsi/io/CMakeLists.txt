@@ -18,6 +18,8 @@ set(io_HEADERS
   io.h
   io_base.h
   io_exodus.h
+  io_tecplot.h
+  io_vtk.h
   PARENT_SCOPE
 )
   
