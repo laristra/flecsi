@@ -31,6 +31,10 @@ set(utils_HEADERS
   tuple_visit.h    detail/tuple_visit.h
   tuple_zip.h      detail/tuple_zip.h
   zip.h            detail/zip.h
+  static_container/type_list.h
+  static_container/meta_counter.h
+  static_container/meta_list.h
+  static_container/static_for.h
   PARENT_SCOPE)
 
 set(utils_SOURCES
@@ -67,6 +71,8 @@ cinch_add_unit(tuple_visit
 cinch_add_unit(tuple_zip
   SOURCES test/tuple_zip.cc)
 
+cinch_add_unit(meta_container
+  SOURCES test/meta_container.cc)
 #~---------------------------------------------------------------------------~-#
 # Formatting options
 # vim: set tabstop=2 shiftwidth=2 expandtab :
