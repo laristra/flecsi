@@ -17,7 +17,7 @@
 
 #include <limits>
 
-#include "flecsi/utils/bitfield.h"
+#include "../utils/bitfield.h"
 
 /*!
  * \file data_constants.h
@@ -46,6 +46,19 @@ static const size_t flecsi_user_space =
   static_cast<size_t>(data_name_space_t::user);
 static const size_t flecsi_internal =
   static_cast<size_t>(data_name_space_t::internal);
+
+/*!
+  \brief data_runtime_name_space_t defines the various data namespaces that
+  are available for registering and maintaining data.
+
+  This type is provided as a convenience to avoid naming collisions.
+ */
+enum class data_runtime_name_space_t : size_t {
+  user = 0
+}; // enum class data_runtime_name_space_t
+
+static const size_t flecsi_runtime_user_space =
+  static_cast<size_t>(data_runtime_name_space_t::user);
 
 /*!
   \brief data_attribute_t defines different data attributes.

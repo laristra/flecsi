@@ -23,6 +23,7 @@
 
 namespace flecsi
 {
+
 void dummy();
 
 } // namespace flecsi

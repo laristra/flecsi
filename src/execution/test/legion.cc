@@ -14,13 +14,9 @@
 
 #include <cinchtest.h>
 
-#ifdef __ECLIPSE__
-#include "src/execution/legion_execution_policy.h"
-#include "src/execution/task.h"
-#else
-#include "flecsi/execution/legion_execution_policy.h"
-#include "flecsi/execution/task.h"
-#endif
+#include "../legion_execution_policy.h"
+#include "../task.h"
+
 using execution_t = flecsi::execution_t<flecsi::legion_execution_policy_t>;
 using return_type_t = execution_t::return_type_t;
 

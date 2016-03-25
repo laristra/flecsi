@@ -17,9 +17,9 @@
 
 #include <string>
 
-#include "flecsi/data/data.h"
-#include "flecsi/execution/task.h"
-#include "flecsi/specializations/burton/burton_types.h"
+#include "../../data/data.h"
+#include "../../execution/task.h"
+#include "burton_types.h"
 
 /*!
  * \file burton_mesh.h
@@ -92,24 +92,24 @@ public:
 
     switch (site) {
       case attachment_site_t::vertices:
-        return data_.register_state<T>(
-            key, num_vertices(), attachment_site_t::vertices, attributes);
+        return data_.register_state<T>(key, num_vertices(), mesh_.runtime_id(),
+          attachment_site_t::vertices, attributes);
         break;
       case attachment_site_t::edges:
-        return data_.register_state<T>(
-            key, num_edges(), attachment_site_t::edges, attributes);
+        return data_.register_state<T>(key, num_edges(), mesh_.runtime_id(),
+          attachment_site_t::edges, attributes);
         break;
       case attachment_site_t::cells:
-        return data_.register_state<T>(
-            key, num_cells(), attachment_site_t::cells, attributes);
+        return data_.register_state<T>(key, num_cells(), mesh_.runtime_id(),
+          attachment_site_t::cells, attributes);
         break;
       case attachment_site_t::corners:
-        return data_.register_state<T>(
-            key, num_corners(), attachment_site_t::corners, attributes);
+        return data_.register_state<T>(key, num_corners(), mesh_.runtime_id(),
+          attachment_site_t::corners, attributes);
         break;
       case attachment_site_t::wedges:
-        return data_.register_state<T>(
-            key, num_wedges(), attachment_site_t::wedges, attributes);
+        return data_.register_state<T>(key, num_wedges(), mesh_.runtime_id(),
+          attachment_site_t::wedges, attributes);
         break;
       default:
         assert(false && "Error: invalid state registration site.");
@@ -131,7 +131,7 @@ public:
   template <typename T, size_t NS = flecsi_user_space>
   decltype(auto) access_state_(const const_string_t && key)
   {
-    return data_t::instance().dense_accessor<T, NS>(key);
+    return data_t::instance().dense_accessor<T, NS>(key, mesh_.runtime_id());
   } // access_state_
 
   /*!
@@ -186,8 +186,8 @@ public:
   template <typename T>
   decltype(auto) register_global_state_(const const_string_t && key,
     bitfield_t::field_type_t attributes = 0x0) {
-    return data_t::instance().register_global_state<T>(
-      key, attachment_site_t::global, attributes);
+    return data_t::instance().register_global_state<T>(key, mesh_.runtime_id(),
+      attachment_site_t::global, attributes);
   } // register_state_
 
   /*!
@@ -204,7 +204,7 @@ public:
   template <typename T, size_t NS = flecsi_user_space>
   decltype(auto) access_global_state_(const const_string_t && key)
   {
-    return data_t::instance().global_accessor<T, NS>(key);
+    return data_t::instance().global_accessor<T, NS>(key, mesh_.runtime_id());
   } // access_state_
 
   /*!
@@ -290,6 +290,16 @@ public:
 
   //! Corner type.
   using corner_t = burton_mesh_types_t::corner_t;
+
+  using vertex_set_t = private_mesh_t::entity_set_t<0, 0>;
+
+  using edge_set_t = private_mesh_t::entity_set_t<1, 0>;
+
+  using cell_set_t = private_mesh_t::entity_set_t<2, 0>;
+
+  using corner_set_t = private_mesh_t::entity_set_t<1, 1>;
+
+  using wedge_set_t = private_mesh_t::entity_set_t<2, 1>;
 
   //! Default constructor
   burton_mesh_t() {}
@@ -751,7 +761,7 @@ public:
     auto p = access_state_<point_t, flecsi_internal>("coordinates");
     p[num_vertices()] = pos;
 
-    auto v = mesh_.make<vertex_t>();
+    auto v = mesh_.make<vertex_t>(mesh_);
     mesh_.add_entity<0, 0>(v);
 
     return v;
@@ -791,13 +801,10 @@ public:
    */
   void init_parameters(size_t vertices)
   {
-    // FIXME: For now, we need to clear the mesh data to avoid
-    // multiple initializations of the data singleton
-    data_t::instance().reset();
-
     // register coordinate state
     data_t::instance().register_state<point_t, flecsi_internal>(
-      "coordinates", vertices, attachment_site_t::vertices, persistent);
+      "coordinates", vertices, mesh_.runtime_id(),
+        attachment_site_t::vertices, persistent);
   } // init_parameters
 
   /*!
@@ -810,6 +817,17 @@ public:
     mesh_.init_bindings<1>();
 
     //mesh_.dump();
+
+    // Initialize corners
+    for (auto c : corners()) {
+      c->set_cell(cells(c).front());
+      c->set_edge1(edges(c).front());
+      c->set_edge2(edges(c).back());
+#if 0
+      c->set_edges(edges(c));
+#endif
+      c->set_vertex(vertices(c).front());
+    } // for
 
     // Initialize wedges
     for (auto w : wedges()) {

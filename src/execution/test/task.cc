@@ -14,7 +14,7 @@
 
 #include <cinchtest.h>
 
-#include "flecsi/execution/task.h"
+#include "../task.h"
 
 using return_type_t = flecsi::execution_t<>::return_type_t;
 using execution_t = flecsi::execution_t<>;

@@ -15,8 +15,8 @@
 #ifndef flecsi_minimal_mesh_h
 #define flecsi_minimal_mesh_h
 
-#include "flecsi/mesh/mesh_topology.h"
-#include "flecsi/specializations/minimal/minimal_types.h"
+#include "../../mesh/mesh_topology.h"
+#include "minimal_types.h"
 
 /*!
  * \file minimal_mesh.h

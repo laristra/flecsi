@@ -73,18 +73,15 @@ endif(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 # Process id bits
 #------------------------------------------------------------------------------#
 
-execute_process(COMMAND echo "60-${FLECSI_ID_PBITS}" COMMAND bc -l
-  OUTPUT_VARIABLE FLECSI_ID_EBITS OUTPUT_STRIP_TRAILING_WHITESPACE)
+math(EXPR FLECSI_ID_EBITS "60 - ${FLECSI_ID_PBITS}")
 
 add_definitions(-DFLECSI_ID_PBITS=${FLECSI_ID_PBITS})
 add_definitions(-DFLECSI_ID_EBITS=${FLECSI_ID_EBITS})
 
-execute_process(COMMAND echo "2^${FLECSI_ID_PBITS}" COMMAND bc -l
-  OUTPUT_VARIABLE flecsi_partitions OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process(COMMAND echo "2^${FLECSI_ID_EBITS}" COMMAND bc -l
-  OUTPUT_VARIABLE flecsi_entities OUTPUT_STRIP_TRAILING_WHITESPACE)
+math(EXPR flecsi_partitions "1 << ${FLECSI_ID_PBITS}")
+math(EXPR flecsi_entities "1 << ${FLECSI_ID_EBITS}")
 
-message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with ${flecsi_entities} entities each")
+message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with 2^${FLECSI_ID_EBITS} entities each")
 
 #------------------------------------------------------------------------------#
 # Enable IO with exodus
@@ -173,10 +170,37 @@ endif()
 # If the installation of lapack that this finds does not contain lapacke then
 # the build will fail.
 if(NOT APPLE)
-  find_package(LAPACK)
+  # need a find_package that can discern between system installs and our TPLs
 
-  # append lapacke to list of lapack libraries
-  list( APPEND LAPACK_LIBRARIES lapacke )
+  # look in tpl's first, then try the system find_package(LAPACK)
+
+  # This is a workaround that finds the TPL install if it's there. The link
+  # to -lgfortan is a serious hack, and a documented issue.
+  set(LAPACKE_FOUND)
+  set(LAPACK_LIBRARIES)
+  if(EXISTS ${TPL_INSTALL_PREFIX}/include/lapacke.h
+     AND EXISTS ${TPL_INSTALL_PREFIX}/lib64/liblapacke.a)
+    set(LAPACKE_FOUND 1)
+    include_directories(${TPL_INSTALL_PREFIX}/include)
+    list( APPEND LAPACK_LIBRARIES
+          ${TPL_INSTALL_PREFIX}/lib64/liblapacke.a
+          ${TPL_INSTALL_PREFIX}/lib64/liblapack.a
+          ${TPL_INSTALL_PREFIX}/lib64/libblas.a
+          gfortran)
+  else()
+    # append lapacke to list of lapack libraries
+    find_package(LAPACK)
+    find_library(LAPACKE_LIB NAMES lapacke)
+    find_path(LAPACKE_INCLUDE_DIRS NAMES lapacke.h PATH_SUFFIXES lapacke)
+    if(LAPACKE_INCLUDE_DIRS AND LAPACK_FOUND AND LAPACKE_LIB)
+      set(LAPACKE_FOUND TRUE)
+      include_directories(${LAPACKE_INCLUDE_DIRS})
+      list( APPEND LAPACK_LIBRARIES ${LAPACKE_LIB})
+    endif(LAPACKE_INCLUDE_DIRS AND LAPACK_FOUND AND LAPACKE_LIB)
+    # want to add ${LAPACK_INCLUDES}/lapacke to the include search path,
+    # but FindLAPACK.cmake defines no such variable.
+  endif()
+
 endif(NOT APPLE)
 
 #------------------------------------------------------------------------------#

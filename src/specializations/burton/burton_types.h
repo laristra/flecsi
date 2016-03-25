@@ -15,9 +15,9 @@
 #ifndef flecsi_burton_types_h
 #define flecsi_burton_types_h
 
-#include "flecsi/mesh/mesh_topology.h"
-#include "flecsi/specializations/burton/burton_mesh_traits.h"
-#include "flecsi/specializations/burton/burton_entity_types.h"
+#include "../../mesh/mesh_topology.h"
+#include "burton_mesh_traits.h"
+#include "burton_entity_types.h"
 
 /*!
  * \file burton_types.h

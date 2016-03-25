@@ -14,7 +14,7 @@
 
 #include <cinchtest.h>
 
-#include "flecsi/specializations/burton/burton.h"
+#include "../burton.h"
 
 
 using namespace std;
@@ -31,6 +31,7 @@ using real_t = burton_mesh_t::real_t;
 class Burton : public ::testing::Test {
 protected:
   virtual void SetUp() {
+    std::cout << "this: " << this << std::endl;
     vector<vertex_t*> vs;
   
     b.init_parameters((height+1)*(width+1));
@@ -354,7 +355,6 @@ TEST_F(Burton, state) {
   auto H = access_state(b, "H", vector_t);
   auto cd = access_state(b, "cornerdata", int32_t);
   auto wd = access_state(b, "wedgedata", bool);
-  auto c = access_global_state(b, "const", data_t);
 
   // cells
   ASSERT_EQ(4, b.num_cells());
@@ -416,9 +416,10 @@ TEST_F(Burton, state) {
   } // for
 
   // test global data
-  c = { 1, 2 };
-  ASSERT_EQ(1, c->x);  ASSERT_EQ(1, (*c).x);
-  ASSERT_EQ(2, c->y);  ASSERT_EQ(2, (*c).y);
+  auto cnst = access_global_state(b, "const", data_t);
+  cnst = { 1, 2 };
+  ASSERT_EQ(1, cnst->x);  ASSERT_EQ(1, (*cnst).x);
+  ASSERT_EQ(2, cnst->y);  ASSERT_EQ(2, (*cnst).y);
 
 } // TEST_F
 

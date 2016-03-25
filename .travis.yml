@@ -1,0 +1,51 @@
+language: cpp
+
+sudo: false
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+      - george-edison55-precise-backports
+    packages:
+      - ccache
+      - cmake
+      - cmake-data
+      - libopenmpi-dev
+      - openmpi-bin
+      - gcc-5
+      - g++-5
+
+before_install:
+ - git -C cinch submodule init && git -C cinch submodule update
+ - git fetch --unshallow && git fetch --tags #for versioning
+ - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi 
+
+env: #maybe add mpich later
+  global:
+    - CCACHE_CPP2=yes
+    - GVER=5
+  matrix:
+    - MPI=ON
+    - MPI=OFF
+    - MPI=ON  COVERAGE=ON
+    - MPI=OFF COVERAGE=ON
+
+script:
+  - mkdir build && cd build &&
+    PATH="/usr/lib/ccache:$PATH" CC=gcc-${GVER} CXX=g++-${GVER} cmake -DENABLE_MPI=$MPI -DENABLE_UNIT_TESTS=ON ${COVERAGE:+-DUSE_GCOV=ON} .. && 
+    make -j2 && make test ARGS='-E burton' && make install DESTDIR="${HOME}"
+
+after_success:
+  - if [[ ${COVERAGE} ]]; then cd .. && codecov --gcov-exec gcov-${GVER}; fi
+
+cache:
+  directories:
+    - $HOME/.ccache
+
+compiler:
+  - gcc
+
+notifications:
+  email:
+    - flecsi-commit@lanl.gov

@@ -15,8 +15,8 @@
 #ifndef flecsi_burton_entity_types_h
 #define flecsi_burton_entity_types_h
 
-#include "flecsi/specializations/burton/burton_mesh_traits.h"
-#include "flecsi/mesh/mesh_types.h"
+#include "burton_mesh_traits.h"
+#include "../../mesh/mesh_types.h"
 
 /*!
  * \file burton_entity_types.h
@@ -52,7 +52,8 @@ public:
   static constexpr size_t num_domains = burton_mesh_traits_t::num_domains;
 
   //! Constructor
-  burton_vertex_t() {}
+  burton_vertex_t(mesh_topology_base_t & mesh)
+    : mesh_(mesh) {}
 
   /*!
     \brief Set the coordinates for a vertex.
@@ -62,7 +63,7 @@ public:
   void set_coordinates(const point_t & coordinates)
   {
     auto c = data_t::instance().dense_accessor<point_t, flecsi_internal>(
-      "coordinates");
+      "coordinates", mesh_.runtime_id());
     c[mesh_entity_base_t<num_domains>::template id<0>()] = coordinates;
   } // set_coordinates
 
@@ -73,9 +74,11 @@ public:
   const point_t & coordinates() const
   {
     const auto c = data_t::instance().dense_accessor<point_t, flecsi_internal>(
-      "coordinates");
+      "coordinates", mesh_.runtime_id());
     return c[mesh_entity_base_t<num_domains>::template id<0>()];
   } // coordinates
+
+  mesh_topology_base_t & mesh_;
 
 }; // class burton_vertex_t
 
@@ -116,7 +119,6 @@ struct burton_edge_t
 
   //! a reference to the mesh topology
   mesh_topology_base_t & mesh_;
-
 
 }; // struct burton_edge_t
 
@@ -463,9 +465,20 @@ class burton_corner_t
     : public mesh_entity_t<1, burton_mesh_traits_t::num_domains>
 {
 public:
+
+  //! Type of floating point.
+  using real_t = burton_mesh_traits_t::real_t;
+
+  //! Type containing coordinates of a vertex.
+  using point_t = burton_mesh_traits_t::point_t;
+
+  //! Type vector type.
+  using vector_t = burton_mesh_traits_t::vector_t;
+
   mesh_topology_base_t & mesh_;
 
   burton_corner_t(mesh_topology_base_t & mesh) : mesh_(mesh) {}
+
   /*!
     \brief Add a wedge to the mesh.
 
@@ -477,6 +490,79 @@ public:
     w->set_corner(this);
   }
 
+  //! Set the cell that a corner is in.
+  void set_cell(burton_cell_t * cell) { cell_ = cell; }
+
+  //! Set the first edge that a corner has.
+  void set_edge1(burton_edge_t * edge) { edge1_ = edge; }
+
+  //! Set the second edge that a corner has.
+  void set_edge2(burton_edge_t * edge) { edge2_ = edge; }
+
+#if 0
+  // FIXME: having to set/get the edges 1 and 2 is hacky. Need to review
+  // this with Bergen to come up with a cleaner solution.
+  using entity_set_t = entity_set_t<1,1>;
+  //! Set the edges that a corner has.
+  void set_edges(entity_set_t edges) { edges_ = edges; }
+#endif
+
+  //! Set the vertex that a corner has.
+  void set_vertex(burton_vertex_t * vertex) { vertex_ = vertex; }
+
+  //! Get the cell that a corner is in.
+  const burton_cell_t * cell() const { return cell_; }
+
+  //! Get edge1 that a corner has.
+  const burton_edge_t * edge1() const { return edge1_; }
+
+  //! Get edge2 that a corner has.
+  const burton_edge_t * edge2() const { return edge2_; }
+
+#if 0
+  //! Get edges that a corner has.
+  const entity_set_t & edges() const { return edges_; }
+#endif
+
+  //! Get the vertex that a corner has.
+  const burton_vertex_t * vertex() const { return vertex_; }
+
+  //! the area of the corner
+  real_t area() {
+    /*
+      Area of a quadrilateral. No sides parallel.
+
+                 D
+          /-------------\
+         /                \
+      B /                   \  C
+       /                      \
+      /-------------------------\
+                 A
+
+      area = 1/2 mag(A X B) + 1/2 mag(C X D)
+     */
+
+    real_t area = 0.0;
+
+    auto xc = cell()->centroid();
+    auto xv = vertex()->coordinates();
+
+    vector_t A(point_to_vector(edge1()->midpoint() - xv));
+    vector_t B(point_to_vector(edge2()->midpoint() - xv));
+    vector_t C(point_to_vector(edge1()->midpoint() - xc));
+    vector_t D(point_to_vector(edge2()->midpoint() - xc));
+
+#if 0
+    vector_t A(point_to_vector(edges()[0]->midpoint() - xv));
+    vector_t B(point_to_vector(edges()[1]->midpoint() - xv));
+    vector_t C(point_to_vector(edges()[0]->midpoint() - xc));
+    vector_t D(point_to_vector(edges()[1]->midpoint() - xc));
+#endif
+
+    return 0.5*(cross_magnitude(A,B) + cross_magnitude(C,D));
+  }
+
   /*!
     \brief Get the wedges for the mesh.
     \return The wedges in the mesh.
@@ -484,6 +570,13 @@ public:
   entity_group<burton_wedge_t> & wedges() { return wedges_; } // wedges
 private:
   entity_group<burton_wedge_t> wedges_;
+  burton_cell_t * cell_;
+  burton_edge_t * edge1_;
+  burton_edge_t * edge2_;
+#if 0
+  entity_set_t  edges_;
+#endif
+  burton_vertex_t * vertex_;
 
 }; // class burton_corner_t
 

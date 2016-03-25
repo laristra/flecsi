@@ -27,7 +27,7 @@
 #include <vector>
 
 // user includes
-#include "flecsi/specializations/burton/burton.h"
+#include "../../specializations/burton/burton.h"
 
 // put the flecsi namespace up front
 using namespace flecsi;

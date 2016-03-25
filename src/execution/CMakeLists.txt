@@ -14,6 +14,10 @@
 
 set(execution_HEADERS
   context.h
+  context_legion.h
+  default_execution_policy.h
+  legion_execution_policy.h
+  mpi_execution_policy.h
   task.h
   PARENT_SCOPE
 )
@@ -34,7 +38,7 @@ endif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 cinch_add_unit(mpi
   SOURCES test/mpi.cc
   POLICY MPI
-        THREADS 2)
+  THREADS 2)
 
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.

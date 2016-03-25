@@ -75,7 +75,8 @@
 
   \return An accessor to the state data.
  */
-#define access_state(mesh, key, type) (mesh).access_state_<type>((key))
+#define access_state(mesh, key, type) \
+  (mesh).access_state_<type>((key))
 
 /*!
   \brief Access all state of a given type from a given \e mesh and \e key.
@@ -170,7 +171,7 @@
   \return An accessor to the state data.
  */
 #define access_global_state(mesh, key, type) \
-  (mesh).template access_global_state_<type>((key))
+  (mesh).access_global_state_<type>((key))
 
 /*!
   \brief Access all state of a given type from a given \e mesh and \e key.

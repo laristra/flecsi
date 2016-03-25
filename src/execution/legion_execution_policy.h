@@ -19,13 +19,8 @@
 #include <utility>
 
 
-#ifdef __ECLIPSE__
-#include "src/execution/context_legion.h"
-#include "src/utils/tuple_for_each.h"
-#else
-#include "flecsi/execution/context_legion.h"
-#include "flecsi/utils/tuple_for_each.h"
-#endif
+#include "context_legion.h"
+#include "../utils/tuple_for_each.h"
 
 
 /*!

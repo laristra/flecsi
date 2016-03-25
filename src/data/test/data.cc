@@ -14,8 +14,8 @@
 
 #include <cinchtest.h>
 
-#include "flecsi/data/data.h"
-#include "flecsi/utils/bitfield.h"
+#include "../../data/data.h"
+#include "../../utils/bitfield.h"
 
 using data_t = flecsi::data_model::data_t<
   flecsi::data_model::default_state_user_meta_data_t,
@@ -26,10 +26,10 @@ using flecsi::persistent;
 TEST(state, sanity) {
   data_t & state = data_t::instance();
 
-  state.register_state<double>("density", 10, 0, persistent);
-  state.register_state<double>("pressure", 10, 1, persistent);
-  state.register_state<float>("velocity", 15, 0, persistent);
-  state.register_global_state<float>("constant", 0, 0x0);
+  state.register_state<double>("density", 10, 0, 0, persistent);
+  state.register_state<double>("pressure", 10, 0, 1, persistent);
+  state.register_state<float>("velocity", 15, 0, 0, persistent);
+  state.register_global_state<float>("constant", 0, 0, 0x0);
 
   auto d = state.dense_accessor<double, 0>("density");
 

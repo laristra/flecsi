@@ -275,13 +275,29 @@ TEST(mesh_topology, traversal) {
     }
   }
 
-  auto f = FILTER(ent){
-    return ent.id() > 2;
+  auto f1 = FILTER(ent){
+    return ent.id() > 5;
   };
 
-  auto range = mesh->entities<1>().filter(f);
+  auto f2 = FILTER(ent){
+    return ent.id() < 3;
+  };
 
-  for(auto edge : range){
+  auto f3 = FILTER(ent){
+    return ent.id() % 2 == 0;
+  };
+
+  auto r1 = mesh->entities<1>().filter(f1);
+
+  auto r2 = mesh->entities<1>().filter(f2);
+
+  auto r3 = mesh->entities<1>().filter(f3);
+
+  auto r4 = r3;
+
+  r4 << r2[0];
+
+  for(auto edge : (r1 | r2) & r3){
     CINCH_CAPTURE() << "---- filter edge id: " << edge.id() << endl;   
   }
 

@@ -13,8 +13,18 @@
 #~----------------------------------------------------------------------------~#
 
 set(utils_HEADERS
-  dummy.h
+  bitfield.h
+  check_sig.h
   check_types.h
+  common.h
+  const_string.h
+  dimensioned_array.h
+  doxygen_main.h
+  dummy.h
+  factory.h
+  id.h
+  index_space.h
+  iterator.h
   static_for.h     detail/static_for.h
   static_list.h
   tuple_for_each.h detail/tuple_for_each.h

@@ -7,7 +7,7 @@
 \pagestyle{fancy}
 
 \lhead{${${PROJECT_NAME}_VERSION}}
-\chead{Flexi User Guide}
+\chead{FleCSI User Guide}
 \rhead{\today}
 
 \newcommand{\flecsi}{\emph{FleCSI}}

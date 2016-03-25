@@ -27,7 +27,8 @@
 #include <iostream>
 #include <vector>
 
-#include "flecsi/mesh/mesh_utils.h"
+#include "../data/data_client.h"
+#include "mesh_utils.h"
 
 namespace flecsi
 {
@@ -91,13 +92,14 @@ template <size_t N>
 class mesh_entity_base_t
 {
  public:
+
   virtual ~mesh_entity_base_t() {}
+
   /*!
     Return the id of this entity.
 
     \return The id of the entity.
    */
-
   template <size_t M>
   id_t global_id() const
   {
@@ -162,6 +164,7 @@ class mesh_entity_base_t
   friend class mesh_topology_t;
 
  protected:
+
   template <size_t M>
   void set_info(uint16_t info)
   {
@@ -169,6 +172,7 @@ class mesh_entity_base_t
   } // set_info
 
  private:
+
   std::array<id_t, N> ids_;
 
 }; // class mesh_entity_base_t
@@ -233,9 +237,9 @@ class domain_entity
   operator E *() { return entity_; }
   E * operator->() { return entity_; }
   E * operator*() { return entity_; }
-  operator size_t() { return entity_->template id<M>(); }
-  id_t global_id() { return entity_->template global_id<M>(); }
-  size_t id() { return entity_->template id<M>(); }
+  operator size_t() const { return entity_->template id<M>(); }
+  id_t global_id() const { return entity_->template global_id<M>(); }
+  size_t id() const { return entity_->template id<M>(); }
   bool operator==(domain_entity e) const { return entity_ == e.entity_; }
   bool operator!=(domain_entity e) const { return entity_ != e.entity_; }
  private:
@@ -309,6 +313,19 @@ class entity_group
   static constexpr size_t dim() { return T::dimension; }
   iterator_ begin() { return iterator_(entities_, 0); }
   iterator_ end() { return iterator_(entities_, entities_.size()); }
+
+  auto operator[](size_t i) const
+  { return entities_[i]; }
+
+  auto front() const
+  { return entities_.front(); }
+
+  auto back() const 
+  { return entities_.back(); }
+
+  auto size() const 
+  { return entities_.size(); }
+
  private:
   vec entities_;
 
@@ -599,9 +616,9 @@ struct mesh_storage_t {
     on type parameterization, e.g: entity types, domains, etc.
  */
 
-class mesh_topology_base_t
+class mesh_topology_base_t : public data_client_t
 {
- public:
+public:
 
   /*!
     Return the number of entities in for a specific domain and topology dim.
