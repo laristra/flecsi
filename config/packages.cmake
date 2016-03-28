@@ -253,6 +253,36 @@ file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi
     GROUP_READ GROUP_EXECUTE
     WORLD_READ WORLD_EXECUTE
 )
+#------------------------------------------------------------------------------#
+# Check the compiler version and output warnings if it is lower than 5.3.1
+#------------------------------------------------------------------------------#
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.3.1)
+    message(WARNING "your gcc compiler version is lower than 5.3.1, required for static meta container in FleCSi.  We recommend you to update your compiler. Otherwise static meta container will be turned off")
+   set (STATIC_CONTAINER OFF)
+  else()
+   set (STATIC_CONTAINER ON)
+  endif()
+else()
+    message(STATUS "static meta container has not been tested with your comiler so it will be disabled")
+    set (STATIC_CONTAINER OFF)
+elseif(...)
+# etc.
+endif()
+
+#------------------------------------------------------------------------------#
+# option for use of Static meta container
+#------------------------------------------------------------------------------#
+
+if (STATIC_CONTAINER)
+option(ENABLE_STATIC_CONTAINER "Enable static meta container" ON)
+else()
+option(ENABLE_STATIC_CONTAINER "Enable static meta container" OFF)
+endif (STATIC_CONTAINER)
+
+set (MAX_CONTAINER_SIZE 4 CACHE INTEGER  "Set the depth of the container")
+add_definitions( -DMAX_COUNTER_SIZE=${MAX_CONTAINER_SIZE} )
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options
