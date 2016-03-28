@@ -281,7 +281,7 @@ else()
 option(ENABLE_STATIC_CONTAINER "Enable static meta container" OFF)
 endif (STATIC_CONTAINER)
 
-set (MAX_CONTAINER_SIZE 4 CACHE INTEGER  "Set the depth of the container")
+set (MAX_CONTAINER_SIZE 6 CACHE INTEGER  "Set the depth of the container")
 add_definitions( -DMAX_COUNTER_SIZE=${MAX_CONTAINER_SIZE} )
 
 #~---------------------------------------------------------------------------~-#
