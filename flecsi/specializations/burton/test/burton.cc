@@ -31,7 +31,6 @@ using real_t = burton_mesh_t::real_t;
 class Burton : public ::testing::Test {
 protected:
   virtual void SetUp() {
-    std::cout << "this: " << this << std::endl;
     vector<vertex_t*> vs;
   
     b.init_parameters((height+1)*(width+1));
@@ -235,97 +234,113 @@ TEST_F(Burton, accessors) {
   };  
   register_global_state(b, "const", data_t);
 
-  CINCH_CAPTURE() << "Accessing state with type real_t:" << endl;
+  CINCH_CAPTURE() << "Accessing state with type real_t" << endl;
 
+  std::vector<std::string> labels;
   auto vr = access_type(b, real_t);
   for(auto v: vr) {
-    CINCH_CAPTURE() << "\t" << v.label() << " has type real_t" << endl;
+    labels.push_back(v.label());
   } // for
 
-  CINCH_CAPTURE() << endl;
+  ASSERT_TRUE(std::find(labels.begin(), labels.end(), "pressure")
+    != labels.end());
+  ASSERT_TRUE(std::find(labels.begin(), labels.end(), "density")
+    != labels.end());
+  ASSERT_TRUE(std::find(labels.begin(), labels.end(), "total energy")
+    != labels.end());
+  labels.clear();
 
-  CINCH_CAPTURE() << "Accessing state with type data_t:" << endl;
+  CINCH_CAPTURE() << "Accessing state with type data_t" << endl;
 
   auto vd = access_type(b, data_t);
   for(auto v: vd) {
-    CINCH_CAPTURE() << "\t" << v.label() << " has type data_t" << endl;
+    labels.push_back(v.label());
   } // for
+  ASSERT_TRUE(std::find(labels.begin(), labels.end(), "const")
+    != labels.end());
+  labels.clear();
 
-  CINCH_CAPTURE() << endl;
-
-  CINCH_CAPTURE() << "Accessing state with type real_t at cells:" << endl;
+  CINCH_CAPTURE() << "Accessing state with type real_t at cells" << endl;
 
   auto va = access_type_if(b, real_t, is_at(cells));
   for(auto v: va) {
-    CINCH_CAPTURE() << "\t" << v.label() <<
-      " has type real_t and is at cells" << endl;
+    labels.push_back(v.label());
   } // for
+  ASSERT_TRUE(std::find(labels.begin(), labels.end(), "pressure")
+    != labels.end());
+  ASSERT_TRUE(std::find(labels.begin(), labels.end(), "density")
+    != labels.end());
+  ASSERT_TRUE(std::find(labels.begin(), labels.end(), "total energy")
+    != labels.end());
+  labels.clear();
 
-  CINCH_CAPTURE() << endl;
-
-  CINCH_CAPTURE() << "Accessing persistent state with type real_t at cells:"
+  CINCH_CAPTURE() << "Accessing persistent state with type real_t at cells"
     << endl;
 
   auto vp = access_type_if(b, real_t, is_persistent_at(cells));
 
   for(auto v: vp) {
-    CINCH_CAPTURE() << "\t" << v.label() <<
-      " has type real_t and is persistent at cells" << endl;
+    labels.push_back(v.label());
   } // for
+  ASSERT_TRUE(std::find(labels.begin(), labels.end(), "pressure")
+    != labels.end());
+  ASSERT_TRUE(std::find(labels.begin(), labels.end(), "total energy")
+    != labels.end());
+  labels.clear();
 
-  CINCH_CAPTURE() << endl;
-
-  CINCH_CAPTURE() << "Accessing state with type vector_t at vertices:" << endl;
+  CINCH_CAPTURE() << "Accessing state with type vector_t at vertices" << endl;
 
   auto vv = access_type_if(b, vector_t, is_at(vertices));
   for(auto v: vv) {
-    CINCH_CAPTURE() << "\t" << v.label() <<
-      " has type vector_t and is at vertices" << endl;
+    labels.push_back(v.label());
   } // for
-
-  CINCH_CAPTURE() << endl;
+  ASSERT_TRUE(std::find(labels.begin(), labels.end(), "velocity")
+    != labels.end());
+  labels.clear();
 
   CINCH_CAPTURE()
-    << "Accessing persistent state with type vector_t at vertices:" << endl;
+    << "Accessing persistent state with type vector_t at vertices" << endl;
 
   auto vpv = access_type_if(b, vector_t, is_persistent_at(vertices));
   for(auto v: vpv) {
-    CINCH_CAPTURE() << "\t" << v.label() <<
-      " has type vector_t and is persistent at vertices" << endl;
+    labels.push_back(v.label());
   } // for
+  ASSERT_TRUE(std::find(labels.begin(), labels.end(), "velocity")
+    != labels.end());
+  labels.clear();
 
-  CINCH_CAPTURE() << endl;
-
-  CINCH_CAPTURE() << "Accessing state with type vector_t at edges:" << endl;
+  CINCH_CAPTURE() << "Accessing state with type vector_t at edges" << endl;
 
   auto ve = access_type_if(b, vector_t, is_at(edges));
   for(auto v: ve) {
-    CINCH_CAPTURE() << "\t" << v.label() <<
-      " has type vector_t and is at edges" << endl;
+    labels.push_back(v.label());
   } // for
+  ASSERT_TRUE(std::find(labels.begin(), labels.end(), "H")
+    != labels.end());
+  labels.clear();
 
-  CINCH_CAPTURE() << endl;
-
-  CINCH_CAPTURE() << "Accessing state with type point_t at vertices:" << endl;
+  CINCH_CAPTURE() << "Accessing state with type point_t at vertices" << endl;
 
   auto pv = access_type_if(b, point_t, is_at(vertices));
   for(auto v: pv) {
-    CINCH_CAPTURE() << "\t" << v.label() <<
-      " has type point_t and is at vertices" << endl;
+    labels.push_back(v.label());
   } // for
+  ASSERT_TRUE(std::find(labels.begin(), labels.end(), "point_is_persistent")
+    != labels.end());
+  ASSERT_TRUE(std::find(labels.begin(), labels.end(), "point_not_persistent")
+    != labels.end());
+  labels.clear();
 
-  CINCH_CAPTURE() << endl;
-
-  CINCH_CAPTURE() << "Accessing persistent state with type point_t at vertices:"
+  CINCH_CAPTURE() << "Accessing persistent state with type point_t at vertices"
             << endl;
 
   auto ppv = access_type_if(b, point_t, is_persistent_at(vertices));
   for(auto v: ppv) {
-    CINCH_CAPTURE() << "\t" << v.label() <<
-      " has type point_t and is persistent at vertices" << endl;
+    labels.push_back(v.label());
   } // for
-
-  CINCH_CAPTURE() << endl;
+  ASSERT_TRUE(std::find(labels.begin(), labels.end(), "point_is_persistent")
+    != labels.end());
+  labels.clear();
 
 } // TEST_F
 

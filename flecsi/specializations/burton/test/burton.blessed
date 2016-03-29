@@ -538,39 +538,15 @@ geometry
 ================================================================================
 accessors
 ================================================================================
-Accessing state with type real_t:
-	pressure has type real_t
-	density has type real_t
-	total energy has type real_t
-
-Accessing state with type data_t:
-	const has type data_t
-
-Accessing state with type real_t at cells:
-	pressure has type real_t and is at cells
-	density has type real_t and is at cells
-	total energy has type real_t and is at cells
-
-Accessing persistent state with type real_t at cells:
-	pressure has type real_t and is persistent at cells
-	total energy has type real_t and is persistent at cells
-
-Accessing state with type vector_t at vertices:
-	velocity has type vector_t and is at vertices
-
-Accessing persistent state with type vector_t at vertices:
-	velocity has type vector_t and is persistent at vertices
-
-Accessing state with type vector_t at edges:
-	H has type vector_t and is at edges
-
-Accessing state with type point_t at vertices:
-	point_is_persistent has type point_t and is at vertices
-	point_not_persistent has type point_t and is at vertices
-
-Accessing persistent state with type point_t at vertices:
-	point_is_persistent has type point_t and is persistent at vertices
-
+Accessing state with type real_t
+Accessing state with type data_t
+Accessing state with type real_t at cells
+Accessing persistent state with type real_t at cells
+Accessing state with type vector_t at vertices
+Accessing persistent state with type vector_t at vertices
+Accessing state with type vector_t at edges
+Accessing state with type point_t at vertices
+Accessing persistent state with type point_t at vertices
 ================================================================================
 state
 ================================================================================
