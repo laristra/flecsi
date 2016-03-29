@@ -23,6 +23,8 @@
 
 #include <limits>
 
+#include "hash.h"
+
 namespace flecsi
 {
 /*!
@@ -50,13 +52,7 @@ class const_string_t
 
   constexpr hash_type_t hash() const
   {
-    hash_type_t h = 0;
-
-    for (hash_type_t i = 0; i < size_; ++i) {
-      h ^= hash_type_t(str_[i]) << 8 * (i % 8);
-    }
-
-    return h;
+    return flecsi::hash<hash_type_t>( str_, size_ );
   }
 
   constexpr bool operator==(const const_string_t & t) const

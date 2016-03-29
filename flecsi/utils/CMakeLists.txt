@@ -22,6 +22,7 @@ set(utils_HEADERS
   doxygen_main.h
   dummy.h
   factory.h
+  hash.h
   id.h
   index_space.h
   iterator.h

@@ -61,8 +61,41 @@ class default_data_storage_policy_t
   //! Desctructor
   virtual ~default_data_storage_policy_t() {}
 
+  //! \brief delete ALL data
   void reset() {
     meta_.clear();
+  } // reset
+
+  /*! 
+   * \brief delete ALL data associated with this runtime namespace
+   * \param [in] runtime_namespace the namespace to search
+   */
+  void reset( uintptr_t runtime_namespace ) {
+
+    // check each namespace
+    for ( auto & sub_map : meta_ ) {
+
+      // the namespace data
+      auto & namespace_key = sub_map.first;
+      auto & meta_data = sub_map.second;
+      
+      // loop over each element in the namespace
+      auto itr = meta_data.begin();
+      while ( itr != meta_data.end() ) {
+        // get the meta data key and label
+        auto & meta_data_key = itr->first;
+        auto & label = itr->second.label;
+        // now build the hash for this label
+        auto key_hash = hash<const_string_t::hash_type_t>( label, label.size() );
+        auto hash = key_hash ^ runtime_namespace;
+        // test if it should be deleted
+        if ( meta_data_key == hash )
+          itr = meta_data.erase(itr);
+        else 
+          ++itr;
+      } // while
+    } // for
+
   } // reset
 
   /*--------------------------------------------------------------------------*

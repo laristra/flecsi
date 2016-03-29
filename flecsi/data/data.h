@@ -70,6 +70,10 @@ public:
     sp_t::reset();
   } // reset
 
+  void reset(uintptr_t runtime_namespace) {
+    sp_t::reset(runtime_namespace);
+  } // reset
+
   //! Use the accessor type defined by the storage policy.
   template <typename T>
   using dense_accessor_t = typename sp_t::template dense_accessor_t<T>;
