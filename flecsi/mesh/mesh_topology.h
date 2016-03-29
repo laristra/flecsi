@@ -609,6 +609,9 @@ class mesh_topology_t : public mesh_topology_base_t
       return ret;
     } // to_vec
 
+    auto operator[](size_t i) const
+    { return v_[i]; }
+
     size_t size() const { return end_ - begin_; } // size
    private:
     const id_vector_t & v_;

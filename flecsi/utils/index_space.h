@@ -37,6 +37,8 @@ class index_space_t
   using type_t = size_t;
 
   //! Default constructor
+  index_space_t() = default;
+  //! constructor with size
   index_space_t(size_t size) : size_(size), index_(0) {}
   //! Copy constructor
   index_space_t(const index_space_t & is)
@@ -66,8 +68,8 @@ class index_space_t
   iterator_t begin() { return {*this, 0}; }
   iterator_t end() { return {*this, size_}; }
  private:
-  size_t size_;
-  size_t index_;
+  size_t size_ = 0;
+  size_t index_ = 0;
 
 }; // class index_space_t
 

@@ -85,6 +85,9 @@ class default_data_storage_policy_t
    public:
     using iterator_t = index_space_t::iterator_t;
 
+    //! default constructor
+    global_accessor_t() = default;
+
     /*!
       Constructor.
 
@@ -206,6 +209,17 @@ class default_data_storage_policy_t
     { 
       return *data_; 
     }
+
+    /*!
+      \brief Test to see if this accessor is empty
+
+      \return true if registered.
+     */
+    operator bool() const 
+    { 
+      return (data_ != nullptr); 
+    }
+
     /*!
       \brief Return the user meta data for this data variable.
 
@@ -215,10 +229,10 @@ class default_data_storage_policy_t
 
    private:
 
-    std::string label_;
-    size_t size_;
-    T * data_;
-    const user_meta_data_t & meta_;
+    std::string label_ = "";
+    size_t size_ = 0;
+    T * data_ = nullptr;
+    const user_meta_data_t & meta_ = user_meta_data_t();
     index_space_t is_;
 
   }; // struct global_accessor_t
@@ -243,6 +257,9 @@ class default_data_storage_policy_t
   {
    public:
     using iterator_t = index_space_t::iterator_t;
+
+    //! default constructor
+    dense_accessor_t() = default;
 
     /*!
       Constructor.
@@ -370,12 +387,22 @@ class default_data_storage_policy_t
      */
     iterator_t end() { return {is_, size_}; }
 
+    /*!
+      \brief Test to see if this accessor is empty
+
+      \return true if registered.
+     */
+    operator bool() const 
+    { 
+      return (data_ != nullptr); 
+    }
+
    private:
 
-    std::string label_;
-    size_t size_;
-    T * data_;
-    const user_meta_data_t & meta_;
+    std::string label_ = "";
+    size_t size_ = 0;
+    T * data_ = nullptr;
+    const user_meta_data_t & meta_ = user_meta_data_t();
     index_space_t is_;
 
   }; // struct dense_accessor_t
@@ -399,6 +426,9 @@ class default_data_storage_policy_t
   {
    public:
     using iterator_t = index_space_t::iterator_t;
+
+    //! default constructor
+    sparse_accessor_t() = default;
 
     /*!
       Constructor.
@@ -524,12 +554,22 @@ class default_data_storage_policy_t
      */
     iterator_t end() { return {is_, size_}; }
 
+    /*!
+      \brief Test to see if this accessor is empty
+
+      \return true if registered.
+     */
+    operator bool() const 
+    { 
+      return (data_ != nullptr); 
+    }
+
    private:
 
-    std::string label_;
-    size_t size_;
-    T * data_;
-    const user_meta_data_t & meta_;
+    std::string label_ = "";
+    size_t size_ = 0;
+    T * data_ = nullptr;
+    const user_meta_data_t & meta_ = user_meta_data_t();
     index_space_t is_;
 
   }; // struct sparse_accessor_t
@@ -582,10 +622,15 @@ class default_data_storage_policy_t
     uintptr_t runtime_namespace)
   {
     size_t h = key.hash() ^ runtime_namespace;
-
-    return {meta_[NS][h].label, meta_[NS][h].size,
-        reinterpret_cast<T *>(&meta_[NS][h].data[0]),
-        meta_[NS][h].user_data};
+    auto search = meta_[NS].find(h);
+    if ( search == meta_[NS].end() ) 
+      return global_accessor_t<T>();
+    else {
+      auto & meta_data = search->second;
+      return {meta_data.label, meta_data.size,
+          reinterpret_cast<T *>(&meta_data.data[0]),
+          meta_data.user_data};
+    }      
   } // accessor
 
   /*!
@@ -598,10 +643,34 @@ class default_data_storage_policy_t
     uintptr_t runtime_namespace)
   {
     size_t h = hash ^ runtime_namespace;
+    auto search = meta_[NS].find(h);
+    if ( search == meta_[NS].end() ) 
+      return global_accessor_t<T>();
+    else {
+      auto & meta_data = search->second;
+      return {meta_data.label, meta_data.size,
+          reinterpret_cast<T *>(&meta_data.data[0]),
+          meta_data.user_data};
+    }      
+  } // accessor
 
-    return {meta_[NS][h].label, meta_[NS][h].size,
-        reinterpret_cast<T *>(&meta_[NS][h].data[0]),
-        meta_[NS][h].user_data};
+  /*!
+    Return an accessor to the data for a given variable.
+
+    \param hash A hash key for the data to return.
+   */
+  template <typename T, size_t NS>
+  global_accessor_t<T> global_accessor(const_string_t::hash_type_t hash)
+  {
+    auto search = meta_[NS].find(hash);
+    if ( search == meta_[NS].end() ) 
+      return global_accessor_t<T>();
+    else {
+      auto & meta_data = search->second;
+      return {meta_data.label, meta_data.size,
+          reinterpret_cast<T *>(&meta_data.data[0]),
+          meta_data.user_data};
+    }      
   } // accessor
 
   /*!
@@ -644,9 +713,10 @@ class default_data_storage_policy_t
     std::vector<global_accessor_t<T>> v;
 
     for (auto entry_pair : meta_[NS]) {
-      if (entry_pair.second.rtti->type_info == typeid(T)) {
-        v.push_back(global_accessor<T, NS>(entry_pair.first, runtime_namespace));
-      } // if
+      auto a = global_accessor<T, NS>(entry_pair.first);
+      if ( a )
+        if (entry_pair.second.rtti->type_info == typeid(T)) 
+          v.emplace_back( std::move(a) );
     } // for
 
     return v;
@@ -663,11 +733,10 @@ class default_data_storage_policy_t
 
     for (auto entry_pair : meta_[NS]) {
       // create an accessor
-      auto a = global_accessor<T, NS>(entry_pair.first, runtime_namespace);
-
-      if (entry_pair.second.rtti->type_info == typeid(T) && predicate(a)) {
-        v.push_back(a);
-      } // if
+      auto a = global_accessor<T, NS>(entry_pair.first);
+      if ( a )
+        if (entry_pair.second.rtti->type_info == typeid(T) && predicate(a))
+          v.emplace_back( std::move(a) );
     } // for
 
     return v;
@@ -683,7 +752,8 @@ class default_data_storage_policy_t
     std::vector<global_accessor_t<uint8_t>> v;
 
     for (auto entry_pair : meta_[NS]) {
-      v.push_back(global_accessor<uint8_t, NS>(entry_pair.first));
+      auto a = global_accessor<uint8_t, NS>(entry_pair.first);
+      if ( a ) v.emplace_back( std::move(a) );
     } // for
 
     return v;
@@ -700,11 +770,9 @@ class default_data_storage_policy_t
 
     for (auto entry_pair : meta_[NS]) {
       // create an accessor
-      auto a = global_accessor<uint8_t, NS>(entry_pair.first, runtime_namespace);
-
-      if (predicate(a)) {
-        v.push_back(a);
-      } // if
+      auto a = global_accessor<uint8_t, NS>(entry_pair.first);
+      if ( a ) 
+        if ( predicate(a) ) v.emplace_back( std::move(a) );
     } // for
 
     return v;
@@ -727,9 +795,15 @@ class default_data_storage_policy_t
     uintptr_t runtime_namespace)
   {
     size_t h = key.hash() ^ runtime_namespace;
-    return {meta_[NS][h].label, meta_[NS][h].size,
-        reinterpret_cast<T *>(&meta_[NS][h].data[0]),
-        meta_[NS][h].user_data};
+    auto search = meta_[NS].find(h);
+    if ( search == meta_[NS].end() ) 
+      return dense_accessor_t<T>();
+    else {
+      auto & meta_data = search->second;
+      return {meta_data.label, meta_data.size,
+          reinterpret_cast<T *>(&meta_data.data[0]),
+          meta_data.user_data};
+    }      
   } // accessor
 
   /*!
@@ -742,10 +816,34 @@ class default_data_storage_policy_t
     uintptr_t runtime_namespace)
   {
     size_t h = hash ^ runtime_namespace;
+    auto search = meta_[NS].find(h);
+    if ( search == meta_[NS].end() )
+      return dense_accessor_t<T>();
+    else {
+      auto & meta_data = search->second;
+      return {meta_data.label, meta_data.size,
+          reinterpret_cast<T *>(&meta_data.data[0]),
+          meta_data.user_data};
+    }      
+  } // accessor
 
-    return {meta_[NS][h].label, meta_[NS][h].size,
-        reinterpret_cast<T *>(&meta_[NS][h].data[0]),
-        meta_[NS][h].user_data};
+  /*!
+    Return an accessor to the data for a given variable.
+
+    \param hash A hash key for the data to return.
+   */
+  template <typename T, size_t NS>
+  dense_accessor_t<T> dense_accessor(const_string_t::hash_type_t hash)
+  {
+    auto search = meta_[NS].find(hash);
+    if ( search == meta_[NS].end() )
+      return dense_accessor_t<T>();
+    else {
+      auto & meta_data = search->second;
+      return {meta_data.label, meta_data.size,
+          reinterpret_cast<T *>(&meta_data.data[0]),
+          meta_data.user_data};
+    }      
   } // accessor
 
   /*!
@@ -788,9 +886,10 @@ class default_data_storage_policy_t
     std::vector<dense_accessor_t<T>> v;
 
     for (auto entry_pair : meta_[NS]) {
-      if (entry_pair.second.rtti->type_info == typeid(T)) {
-        v.push_back(dense_accessor<T, NS>(entry_pair.first, runtime_namespace));
-      } // if
+      auto a = dense_accessor<T, NS>(entry_pair.first);
+      if ( a )
+        if (entry_pair.second.rtti->type_info == typeid(T)) 
+          v.emplace_back( std::move(a) );
     } // for
 
     return v;
@@ -807,11 +906,10 @@ class default_data_storage_policy_t
 
     for (auto entry_pair : meta_[NS]) {
       // create an accessor
-      auto a = dense_accessor<T, NS>(entry_pair.first, runtime_namespace);
-
-      if (entry_pair.second.rtti->type_info == typeid(T) && predicate(a)) {
-        v.push_back(a);
-      } // if
+      auto a = dense_accessor<T, NS>(entry_pair.first);
+      if ( a )
+        if (entry_pair.second.rtti->type_info == typeid(T) && predicate(a)) 
+          v.emplace_back( std::move(a) );     
     } // for
 
     return v;
@@ -827,7 +925,8 @@ class default_data_storage_policy_t
     std::vector<dense_accessor_t<uint8_t>> v;
 
     for (auto entry_pair : meta_[NS]) {
-      v.push_back(dense_accessor<uint8_t, NS>(entry_pair.first, runtime_namespace));
+      auto a = dense_accessor<uint8_t, NS>(entry_pair.first);
+      if ( a ) v.emplace_back( std::move(a) );
     } // for
 
     return v;
@@ -844,11 +943,9 @@ class default_data_storage_policy_t
 
     for (auto entry_pair : meta_[NS]) {
       // create an accessor
-      auto a = dense_accessor<uint8_t, NS>(entry_pair.first, runtime_namespace);
-
-      if (predicate(a)) {
-        v.push_back(a);
-      } // if
+      auto a = dense_accessor<uint8_t, NS>(entry_pair.first);
+      if ( a )
+        if ( predicate(a) ) v.emplace_back( std::move(a) );
     } // for
 
     return v;
@@ -868,7 +965,7 @@ class default_data_storage_policy_t
     uintptr_t runtime_namespace)
   {
     size_t h = key.hash() ^ runtime_namespace;
-    return meta_[NS][h].user_data;
+    return meta_[NS].at(h).user_data;
   } // meta_data
 
   /*!
