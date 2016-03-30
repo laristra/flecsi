@@ -344,8 +344,10 @@ class entity_group
 class connectivity_t
 {
  public:
+
   //! Constructor.
   connectivity_t() {}
+
   /*!
     Clear the storage arrays for this instance.
    */
@@ -359,14 +361,14 @@ class connectivity_t
     Initialize the offset array.
    */
   void init() { from_index_vec_.push_back(0); }
+
   /*!
     Initialize the connectivity information from a given connectivity
     vector.
 
     \param cv The connectivity information.
    */
-  void init(const connection_vector_t & cv)
-  {
+  void init(const connection_vector_t & cv) {
     assert(to_id_vec_.empty() && from_index_vec_.empty());
 
     // the first offset is always 0
@@ -466,11 +468,17 @@ class connectivity_t
     End a from entity group by setting the end offset in the
     from connection vector.
    */
-  void end_from() { from_index_vec_.push_back(to_id_vec_.size()); } // end_from
+  void end_from() {
+    from_index_vec_.push_back(to_id_vec_.size());
+  } // end_from
+
   /*!
     Push a single id into the current from group.
    */
-  void push(id_t id) { to_id_vec_.push_back(id); } // push
+  void push(id_t id) {
+    to_id_vec_.push_back(id);
+  } // push
+
   /*!
     Debugging method. Dump the raw vectors of the connection.
    */

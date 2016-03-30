@@ -142,6 +142,7 @@ struct compute_connectivity_ {
     if (D1::value == DM) {
       mesh.template compute_connectivity<DM, T1::dimension, T2::dimension>();
     }
+
     return compute_connectivity_<DM, I - 1, TS>::compute(mesh);
   } // compute
 

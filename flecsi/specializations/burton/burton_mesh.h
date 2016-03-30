@@ -324,6 +324,10 @@ public:
     return burton_mesh_traits_t::dimension;
   } // dimension
 
+  auto get_connectivity(size_t fm, size_t tm, size_t fd, size_t td) {
+    return mesh_.get_connectivity(fm, tm, fd, td);
+  } // get_connectivity
+
   /*--------------------------------------------------------------------------*
    * Vertex Interface
    *--------------------------------------------------------------------------*/

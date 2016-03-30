@@ -50,6 +50,11 @@ cinch_add_unit(copy
   LIBRARIES flecsi
 )
 
+cinch_add_unit(connectivity
+  SOURCES burton/test/connectivity.cc
+  LIBRARIES flecsi
+)
+
 if(LAPACKE_FOUND AND ENABLE_IO)
   cinch_add_unit(burton_gradients
     SOURCES burton/test/burton_gradients.cc
