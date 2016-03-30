@@ -98,6 +98,29 @@ class default_data_storage_policy_t
 
   } // reset
 
+  /*! 
+   * \brief delete specific data associated with this runtime namespace
+   * \param [in] key the key to delete
+   * \param [in] runtime_namespace the namespace to search
+   */
+  void release( const const_string_t & key, uintptr_t runtime_namespace ) {
+
+    auto hash = key.hash() ^ runtime_namespace;
+
+    // check each namespace
+    for ( auto & sub_map : meta_ ) {
+
+      // the namespace data
+      auto & namespace_key = sub_map.first;
+      auto & meta_data = sub_map.second;
+
+      // erase the data
+      auto it = meta_data.erase( hash );
+
+    } // for
+
+  } // reset
+
   /*--------------------------------------------------------------------------*
    * class global_accessor_t
    *--------------------------------------------------------------------------*/
