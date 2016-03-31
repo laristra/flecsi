@@ -690,15 +690,15 @@ class mesh_topology_t : public mesh_topology_base_t
   } // init_cell
 
   // Get the number of entities in a given domain and topological dimension
-  size_t num_entities_(size_t domain, size_t dim) const
+  size_t num_entities_(size_t dim, size_t domain=0) const
   {
     return ms_.entities[domain][dim].size();
   } // num_entities_
 
   // Virtual method of num_entities_()
-  size_t num_entities(size_t domain, size_t dim) const override
+  size_t num_entities(size_t dim, size_t domain=0) const override
   {
-    return num_entities_(domain, dim);
+    return num_entities_(dim, domain);
   } // num_entities
 
   /*!
@@ -829,7 +829,7 @@ class mesh_topology_t : public mesh_topology_base_t
   {
     // std::cerr << "transpose: " << from_dim << " -> " << to_dim << std::endl;
 
-    index_vector_t pos(num_entities_(FM, FD), 0);
+    index_vector_t pos(num_entities_(FD, FM), 0);
 
     for (auto to_entity : entities<TD, TM>()) {
       for (id_t from_id : entity_ids<FD, TM, FM>(to_entity)) {
@@ -867,11 +867,11 @@ class mesh_topology_t : public mesh_topology_base_t
     } // if
 
     // Temporary storage for connection id's
-    connection_vector_t conns(num_entities_(FM, FD));
+    connection_vector_t conns(num_entities_(FD, FM));
 
     // Keep track of which to id's we have visited
     using visited_vec = std::vector<bool>;
-    visited_vec visited(num_entities_(FM, FD));
+    visited_vec visited(num_entities_(FD, FM));
 
     id_vector_t from_verts;
     id_vector_t to_verts;
@@ -966,15 +966,15 @@ class mesh_topology_t : public mesh_topology_base_t
     } // if
 
     // Check if we need to build entities, e.g: edges or faces
-    if (num_entities_(M, FD) == 0) {
+    if (num_entities_(FD, M) == 0) {
       build_connectivity<M, FD>();
     } // if
 
-    if (num_entities_(M, TD) == 0) {
+    if (num_entities_(TD, M) == 0) {
       build_connectivity<M, TD>();
     } // if
 
-    if (num_entities_(M, FD) == 0 && num_entities_(M, TD) == 0) {
+    if (num_entities_(FD, M) == 0 && num_entities_(TD, M) == 0) {
       return;
     } // if
 
@@ -982,7 +982,7 @@ class mesh_topology_t : public mesh_topology_base_t
     // or intersect as need
 
     if (FD == TD) {
-      connection_vector_t conn_vec(num_entities_(M, FD), id_vector_t(1));
+      connection_vector_t conn_vec(num_entities_(FD, M), id_vector_t(1));
 
       for (id_t ent_id : entity_ids<FD, M>()) {
         conn_vec[ent_id][0] = ent_id;
@@ -1446,7 +1446,7 @@ class mesh_topology_t : public mesh_topology_base_t
       total_size += pi;
     }
 
-    size_t n = num_entities_(domain, dim);
+    size_t n = num_entities_(dim, domain);
     size_t pn = n / total_size;
 
     size_t to_dim;

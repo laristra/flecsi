@@ -632,7 +632,7 @@ public:
   /*!
     Return the number of entities in for a specific domain and topology dim.
    */
-  virtual size_t num_entities(size_t domain, size_t dim) const = 0;
+  virtual size_t num_entities(size_t dim, size_t domain) const = 0;
 
   /*!
     Return the topological dimension of the mesh.
