@@ -668,21 +668,26 @@ class mesh_topology_t : public mesh_topology_base_t
 
   // A mesh is constructed by creating cells and vertices and associating
   // vertices with cells as in this method.
-  template <size_t M, class C, class V>
-  void init_cell(C * cell, std::initializer_list<V *> verts)
+  template <size_t M, class C, typename V>
+  void init_cell(C * cell, V && verts)
   {
-    init_cell_<M>(cell, verts);
+    init_cell_<M>(cell, std::forward<V>(verts) );
   } // init_cell
 
-  template <size_t M>
-  void init_cell_(entity_type<MT::dimension, M> * cell,
-      std::initializer_list<entity_type<0, M> *> verts)
+  template <size_t M, class C, typename V>
+  void init_cell(C * cell, std::initializer_list<V *> verts)
+  {
+    init_cell_<M>(cell, verts );
+  } // init_cell
+
+  template < size_t M, typename V >
+  void init_cell_(entity_type<MT::dimension, M> * cell, V && verts)
   {
     auto & c = get_connectivity_(M, MT::dimension, 0);
 
     assert(cell->template id<M>() == c.from_size() && "id mismatch");
 
-    for (entity_type<0, M> * v : verts) {
+    for (entity_type<0, M> * v : std::forward<V>(verts) ) {
       c.push(v->template global_id<M>());
     } // for
 
@@ -1058,6 +1063,7 @@ class mesh_topology_t : public mesh_topology_base_t
     }
 
     std::array<id_t *, MT::dimension> primal_ids;
+    std::array<size_t, MT::dimension> num_primal_ids;
 
     // This buffer should be large enough to hold all entities
     // that potentially need to be created
@@ -1074,8 +1080,8 @@ class mesh_topology_t : public mesh_topology_base_t
 
       // Get ids of entities with at least this dimension
       for (size_t dim = 0; dim < MT::dimension; ++dim) {
-        primal_ids[dim] = get_connectivity_<FM, FM, MT::dimension>(dim)
-                              .get_entities(cell_id.entity());
+        auto & c = get_connectivity_<FM, FM, MT::dimension>(dim);
+        primal_ids[dim] = c.get_entities( cell_id.entity(), num_primal_ids[dim] );
       } // for
 
       // p.first:   The number of entities per cell.
@@ -1083,7 +1089,7 @@ class mesh_topology_t : public mesh_topology_base_t
       //            entities that define the bound entity.
 
       auto sv = cell->create_bound_entities(
-          FM, TM, TD, primal_ids.data(), entity_ids.data());
+        FM, TM, TD, primal_ids.data(), num_primal_ids.data(), entity_ids.data() );
 
       size_t n = sv.size();
 

@@ -58,6 +58,7 @@ public:
                         size_t to_domain,
                         size_t create_dim,
                         flecsi::id_t **ent_ids,
+                        size_t * ent_counts,
                         flecsi::id_t *c) {
     
     switch(create_dim) {

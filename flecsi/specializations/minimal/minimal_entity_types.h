@@ -66,7 +66,7 @@ class minimal_cell_t
   } // create_entities
 
   std::vector<id_t> create_bound_entities(size_t from_domain, size_t to_domain,
-      size_t dim, id_t ** ent_ids, id_t * c)
+      size_t dim, id_t ** ent_ids, size_t * ent_counts, id_t * c)
   {
     return {0};
   } // create_bound_entities
