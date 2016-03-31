@@ -113,10 +113,7 @@ class bitfield
 
   bool anybitset() const
   {
-    constexpr auto num_bits = sizeof(T) * CHAR_BIT;
-    for ( auto bit=0; bit < num_bits; bit++ ) 
-      if ( bitset(bit) ) return true;
-    return false;
+    return (bits_ != 0x0);
   } // bitset
 
   /*!-------------------------------------------------------------------------*
