@@ -61,6 +61,21 @@ class io_base_t
   //  const std::string &name, const mesh_t &m) = 0;
   virtual int32_t write(const std::string & name, mesh_t & m) = 0;
 
+
+  /*!
+    \brief Pure virtual mesh write.
+
+    \param[in] name Write mesh to \e name.
+    \param[in] m Write mesh \e m to \e name.
+    \param[in] binary write in binary or not.
+
+    \return Error code. 0 on success.
+    
+    \remark this version allows specifying binary or ascii
+   */
+  virtual int32_t write(const std::string & name, mesh_t & m, bool)
+  { return write(name, m); }
+
 }; // struct io_base_t
 
 /*!
