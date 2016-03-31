@@ -1430,6 +1430,81 @@ class mesh_topology_t : public mesh_topology_base_t
         fv[e->template id<FM>() + 1]);
   } // entities
 
+  template<typename I>
+  void compute_graph_partition(
+    size_t domain,
+    size_t dim,
+    const std::vector<I>& partition_sizes,
+    std::vector<mesh_graph_partition<I>>& partitions){
+
+    using int_t = I;
+
+    partitions.reserve(partition_sizes.size());
+
+    int_t total_size = 0;
+    for(auto pi : partition_sizes){
+      total_size += pi;
+    }
+
+    size_t n = num_entities_(domain, dim);
+    size_t pn = n / total_size;
+
+    size_t to_dim;
+
+    if(dim == 0){
+      to_dim = 1;
+    }
+    else{
+      to_dim = dim - 1;
+    }
+
+    const connectivity_t& c1 = get_connectivity(domain, dim, to_dim);
+    assert(!c1.empty() && "empty connectivity c1");
+    const index_vector_t& fv1 = c1.get_from_index_vec();
+
+    const connectivity_t& c2 = get_connectivity(domain, to_dim, dim);
+    assert(!c2.empty() && "empty connectivity c2");
+    const index_vector_t& fv2 = c2.get_from_index_vec();
+
+    mesh_graph_partition<int_t> cp;
+    cp.offset.reserve(pn);
+
+    size_t offset = 0;
+    size_t pi = 0;
+
+    std::vector<int_t> partition;
+    partition.push_back(0);
+
+    for(size_t from_id = 0; from_id < n; ++from_id){
+      auto to_ids = id_range(c1.get_entities(), fv1[from_id], fv1[from_id + 1]);
+      cp.offset.push_back(offset);
+      
+      for(auto to_id : to_ids){
+        auto ret_ids = id_range(c2.get_entities(), fv2[to_id], fv2[to_id + 1]);
+        
+        for(auto ret_id : ret_ids){
+          if(ret_id != from_id){
+            cp.index.push_back(ret_id);
+            ++offset;
+          }
+        }
+      }
+
+      size_t m = cp.offset.size();
+
+      if(m >= pn * partition_sizes[pi]){
+        partitions.emplace_back(std::move(cp));
+        partition.push_back(m);
+        offset = 0;
+        ++pi;
+      }
+    }
+
+    for(auto& pi : partitions){
+      pi.partition = partition;
+    }
+  }
+
   /*!
     Debug method to dump the connectivity of the mesh over all domains and
     topological dimensions.

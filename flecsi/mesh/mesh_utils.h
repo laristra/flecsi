@@ -233,6 +233,16 @@ struct compute_bindings_<DM, 0, TS> {
 
 }; // struct compute_bindings_
 
+template<typename T>
+class mesh_graph_partition{
+public:
+  using int_t = T;
+
+  std::vector<int_t> offset;
+  std::vector<int_t> index;
+  std::vector<int_t> partition;
+};
+
 } // namespace flecsi
 
 #endif // flecsi_mesh_utils_h
