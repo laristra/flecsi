@@ -69,6 +69,9 @@ if(ENABLE_IO)
   )
 endif(ENABLE_IO)
 
+cinch_add_unit(dolfin_triangle
+        SOURCES dolfin_triangle/test/dolfin_triangle.cc)
+
 #cinch_add_unit(unstruct_2d
 #  SOURCES unstruct/test/unstruct_2d.cc
 #  INPUTS unstruct/test/unstruct_2d.blessed)
