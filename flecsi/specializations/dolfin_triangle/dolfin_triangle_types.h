@@ -22,19 +22,16 @@ struct dolfin_triangle_types_t {
     std::pair<domain_<0>, dolfin_cell_t>
   >;
 
-  // FIXME: cause infinite recursion!!!!
-//  using connectivities = std::tuple<
-//    std::tuple<domain_<0>, dolfin_vertex_t, dolfin_edge_t>,
-//    std::tuple<domain_<0>, dolfin_vertex_t, dolfin_cell_t>,
-//    std::tuple<domain_<0>, dolfin_edge_t, dolfin_vertex_t>,
-//    std::tuple<domain_<0>, dolfin_edge_t, dolfin_cell_t>,
-//    std::tuple<domain_<0>, dolfin_cell_t, dolfin_vertex_t>,
-//    std::tuple<domain_<0>, dolfin_cell_t, dolfin_edge_t>
-//  >;
+  // TODO: vertex->vertex, edge->edge and cell->cell
   using connectivities = std::tuple<
+    std::tuple<domain_<0>, dolfin_vertex_t, dolfin_edge_t>,
     std::tuple<domain_<0>, dolfin_vertex_t, dolfin_cell_t>,
-    std::tuple<domain_<0>, dolfin_cell_t, dolfin_vertex_t>
-    >;
+    std::tuple<domain_<0>, dolfin_edge_t, dolfin_vertex_t>,
+    std::tuple<domain_<0>, dolfin_edge_t, dolfin_cell_t>,
+    std::tuple<domain_<0>, dolfin_cell_t, dolfin_vertex_t>,
+    std::tuple<domain_<0>, dolfin_cell_t, dolfin_edge_t>
+  >;
+
   using bindings = std::tuple<>;
 };
 }

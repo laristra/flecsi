@@ -43,6 +43,9 @@ TEST(dolfin_triangle, initialization) {
   // actually compute connectivities between entities
   dolfin.init();
 
-  auto con = dolfin.get_connectivity(0, 0, 2);
-  con.dump();
+  // this should create 19 edges from cells->vertices
+  ASSERT_EQ(19, dolfin.num_entities(0, 1));
+
+//  auto con = dolfin.get_connectivity(0, 2, 2);
+//  con.dump();
 }

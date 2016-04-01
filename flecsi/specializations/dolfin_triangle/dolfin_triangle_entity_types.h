@@ -16,6 +16,7 @@ public:
   dolfin_vertex_t() = default;
   dolfin_vertex_t(mesh_topology_base_t*) {}
 };
+
 class dolfin_edge_t : public mesh_entity_t<1, 1> {
 public:
   dolfin_edge_t() = default;
@@ -36,6 +37,7 @@ public:
 
     e[4] = v[2];
     e[5] = v[0];
+    return {2, 2, 2};
   }
 };
 }
