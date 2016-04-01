@@ -28,6 +28,7 @@
 #include <cassert>
 #include <unordered_map>
 #include <functional>
+#include <map>
 
 #include "flecsi/utils/common.h"
 #include "flecsi/mesh/mesh_types.h"
@@ -311,6 +312,22 @@ class mesh_topology_t : public mesh_topology_base_t
     }
 
     return entity_set(*mesh_, std::move(v), sorted_);
+  }
+
+  template<typename T>
+  std::vector<entity_set> scatter(map_function<T> f) const {
+
+    std::map<T, id_vector_t> id_map;
+    for (auto ent : *this)
+      id_map[f(ent)].push_back(ent.id());
+
+    std::vector<entity_set> ent_map;
+    for ( auto entry : id_map )
+      ent_map.emplace_back( 
+        std::move( entity_set(*mesh_, std::move(entry.second), sorted_) )
+      );
+
+    return ent_map;
   }
    
   void apply(apply_function f) const {
