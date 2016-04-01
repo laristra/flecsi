@@ -35,13 +35,11 @@ template <typename mesh_type>
 class dolfin_triangle_mesh_t : public mesh_topology_t<dolfin_triangle_types_t>
 {
 private:
-//  using mesh_t = mesh_topology_t<dolfin_triangle_types_t>;
-//  mesh_t mesh_;
+  using super = mesh_topology_t<dolfin_triangle_types_t>;
 
 public:
   void init() {
-    // Not implemented yet
-    throw std::exception();
+    super::init();
   }
 };
 
