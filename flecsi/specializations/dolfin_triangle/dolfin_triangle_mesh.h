@@ -38,9 +38,10 @@ private:
   using super = mesh_topology_t<dolfin_triangle_types_t>;
 
 public:
-  void init() {
-    super::init();
+  auto num_vertices() const {
+    return num_entities<0, 0>();
   }
+  auto vertices() { return entities<0, 0>(); }
 };
 
 }

@@ -873,16 +873,13 @@ class mesh_topology_t : public mesh_topology_base_t
     using visited_vec = std::vector<bool>;
     visited_vec visited(num_entities_(FM, FD));
 
-    id_vector_t from_verts;
-    id_vector_t to_verts;
-
     size_t max_size = 1;
 
     // Read connectivities
-    connectivity_t & c = get_connectivity_(FM, FD, 0);
+    connectivity_t & c = get_connectivity_(FM, FD, D);
     assert(!c.empty());
 
-    connectivity_t & c2 = get_connectivity_(TM, TD, 0);
+    connectivity_t & c2 = get_connectivity_(TM, D, TD);
     assert(!c2.empty());
 
     // Iterate through entities in from topological dimension
@@ -894,8 +891,8 @@ class mesh_topology_t : public mesh_topology_base_t
       size_t count;
       id_t * ep = c.get_entities(from_id.entity(), count);
 
-      std::copy(ep, ep + count, from_verts.begin());
-
+      // Create a copy of to vertices so they can be sorted
+      id_vector_t from_verts(ep, ep+count);
       // sort so we have a unique key for from vertices
       std::sort(from_verts.begin(), from_verts.end());
 
@@ -926,8 +923,7 @@ class mesh_topology_t : public mesh_topology_base_t
             id_t * ep = c2.get_entities(to_id.entity(), count);
 
             // Create a copy of to vertices so they can be sorted
-            std::copy(ep, ep + count, to_verts.begin());
-
+            id_vector_t to_verts(ep, ep + count);
             // Sort to verts so we can do an inclusion check
             std::sort(to_verts.begin(), to_verts.end());
 
@@ -980,22 +976,21 @@ class mesh_topology_t : public mesh_topology_base_t
 
     // Depending on the corresponding topological dimensions, call transpose
     // or intersect as need
-
-    if (FD == TD) {
-      connection_vector_t conn_vec(num_entities_(M, FD), id_vector_t(1));
-
-      for (id_t ent_id : entity_ids<FD, M>()) {
-        conn_vec[ent_id][0] = ent_id;
-      }
-
-      out_conn.set<M, MT::num_domains>(ms_.entities[M][TD], conn_vec);
-    } else if (FD < TD) {
+     if (FD < TD) {
       compute_connectivity<M, TD, FD>();
       transpose<M, M, FD, TD>();
     } else {
-      compute_connectivity<M, FD, 0>();
-      compute_connectivity<M, 0, TD>();
-      intersect<M, M, FD, TD, 0>();
+       if (FD == 0 && TD == 0) {
+         // compute vertex to vertex connectivities through shard cells.
+         compute_connectivity<M, FD, MT::dimension>();
+         compute_connectivity<M, MT::dimension, TD>();
+         intersect<M, M, FD, TD, MT::dimension>();
+       } else {
+         // computer connectivities through shard vertices.
+         compute_connectivity<M, FD, 0>();
+         compute_connectivity<M, 0, TD>();
+         intersect<M, M, FD, TD, 0>();
+       }
     } // if
   } // compute_connectivity
 

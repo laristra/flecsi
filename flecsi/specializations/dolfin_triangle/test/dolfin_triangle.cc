@@ -12,6 +12,7 @@ static int cell_to_vertices[][3] = {
   {4, 5, 9}, {5, 6, 9}, {6, 7, 9}, {7, 8, 9}, {7, 0, 8},
 };
 
+
 TEST(dolfin_triangle, initialization) {
   dolfin_triangle_mesh_t<dolfin_triangle_types_t> dolfin;
 
@@ -46,6 +47,24 @@ TEST(dolfin_triangle, initialization) {
   // this should create 19 edges from cells->vertices
   ASSERT_EQ(19, dolfin.num_entities(0, 1));
 
-//  auto con = dolfin.get_connectivity(0, 2, 2);
-//  con.dump();
+  auto edges = dolfin.entities<1, 0>();
+  for (auto e : edges) {
+    std::cout << e.id() << " ";
+    for (auto v : dolfin.entities<0, 0>(e)) {
+      std::cout << v.id() << " ";
+    }
+    std::cout << std::endl;
+  }
+  auto vertex2vertex = dolfin.get_connectivity(0, 0, 0);
+  vertex2vertex.dump();
+
+  auto edge2vertex = dolfin.get_connectivity(0, 1, 0);
+  edge2vertex.dump();
+
+  auto edge2edge = dolfin.get_connectivity(0, 1, 1);
+  edge2edge.dump();
+
+  auto cell2cell = dolfin.get_connectivity(0, 2, 2);
+  cell2cell.dump();
+
 }
