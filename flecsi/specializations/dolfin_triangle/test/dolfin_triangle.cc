@@ -28,9 +28,10 @@ TEST(dolfin_triangle, initialization) {
     dolfin.add_entity<0, dolfin_vertex_t::dimension>(v);
     vertices.push_back(v);
   }
-  ASSERT_EQ(10, dolfin.num_entities(0, 0));
+  // There are 10 vertices.
+  ASSERT_EQ(10, dolfin.num_vertices());
 
-  // add cells to the mesh
+  // add cells and cell to vertex connectivities to the mesh
   for (size_t i = 0; i < 10; i++) {
     auto cell = dolfin.make<dolfin_cell_t>();
     dolfin.add_entity<2, 0>(cell);
@@ -39,32 +40,106 @@ TEST(dolfin_triangle, initialization) {
                          vertices[cell_to_vertices[i][1]],
                          vertices[cell_to_vertices[i][2]]});
   }
-  ASSERT_EQ(10, dolfin.num_entities(0, 2));
+  // There are 10 cells.
+  ASSERT_EQ(10, dolfin.num_cells());
 
   // actually compute connectivities between entities
   dolfin.init();
 
   // this should create 19 edges from cells->vertices
-  ASSERT_EQ(19, dolfin.num_entities(0, 1));
+  ASSERT_EQ(19, dolfin.num_edges());
 
-  auto edges = dolfin.entities<1, 0>();
-  for (auto e : edges) {
-    std::cout << e.id() << " ";
-    for (auto v : dolfin.entities<0, 0>(e)) {
-      std::cout << v.id() << " ";
+  CINCH_CAPTURE() << "vertex to vertex connectivities:\n";
+  auto vs = dolfin.vertices();
+  for (auto v : vs) {
+    CINCH_CAPTURE() << v.id() << ": ";
+    for (auto v1 : dolfin.vertices(v)) {
+      CINCH_CAPTURE() << v1.id() << " ";
     }
-    std::cout << std::endl;
+    CINCH_CAPTURE() << std::endl;
   }
-  auto vertex2vertex = dolfin.get_connectivity(0, 0, 0);
-  vertex2vertex.dump();
+  CINCH_CAPTURE() << std::endl;
 
-  auto edge2vertex = dolfin.get_connectivity(0, 1, 0);
-  edge2vertex.dump();
+  CINCH_CAPTURE() << "vertex to edge connectivities:\n";
+  for (auto v : vs) {
+    CINCH_CAPTURE() << v.id() << ": ";
+    for (auto e: dolfin.edges(v)) {
+      CINCH_CAPTURE() << e.id() << " ";
+    }
+    CINCH_CAPTURE() << std::endl;
+  }
+  CINCH_CAPTURE() << std::endl;
 
-  auto edge2edge = dolfin.get_connectivity(0, 1, 1);
-  edge2edge.dump();
+  CINCH_CAPTURE() << "vertex to cell connectivities:\n";
+  for (auto v : vs) {
+    CINCH_CAPTURE() << v.id() << ": ";
+    for (auto c: dolfin.cells(v)) {
+      CINCH_CAPTURE() << c.id() << " ";
+    }
+    CINCH_CAPTURE() << std::endl;
+  }
+  CINCH_CAPTURE() << std::endl;
 
-  auto cell2cell = dolfin.get_connectivity(0, 2, 2);
-  cell2cell.dump();
+  CINCH_CAPTURE() << "edge to vertex connectivities:\n";
+  auto edges = dolfin.edges();
+  for (auto e : edges) {
+    CINCH_CAPTURE() << e.id() << ": ";
+    for (auto v: dolfin.vertices(e)) {
+      CINCH_CAPTURE() << v.id() << " ";
+    }
+    CINCH_CAPTURE() << std::endl;
+  }
+  CINCH_CAPTURE() << std::endl;
+
+  CINCH_CAPTURE() << "edge to edge connectivities:\n";
+  for (auto e0: edges) {
+    CINCH_CAPTURE() << e0.id() << ": ";
+    for (auto e1 : dolfin.edges(e0)) {
+      CINCH_CAPTURE() << e1.id() << " ";
+    }
+    CINCH_CAPTURE() << std::endl;
+  }
+  CINCH_CAPTURE() << std::endl;
+
+  CINCH_CAPTURE() << "edge to cell connectivities:\n";
+  for (auto e: edges) {
+    CINCH_CAPTURE() << e.id() << ": ";
+    for (auto c: dolfin.cells(e)) {
+      CINCH_CAPTURE() << c.id() << " ";
+    }
+    CINCH_CAPTURE() << std::endl;
+  }
+  CINCH_CAPTURE() << std::endl;
+
+  CINCH_CAPTURE() << "cell to vertex connectivities:\n";
+  auto cells = dolfin.cells();
+  for (auto c: cells) {
+    CINCH_CAPTURE() << c.id() << ": ";
+    for (auto v: dolfin.vertices(c)) {
+      CINCH_CAPTURE() << v.id() << " ";
+    }
+    CINCH_CAPTURE() << std::endl;
+  }
+  CINCH_CAPTURE() << std::endl;
+
+  CINCH_CAPTURE() << "cell to edge connectivities:\n";
+  for (auto c: cells) {
+    CINCH_CAPTURE() << c.id() << ": ";
+    for (auto e: dolfin.edges(c)) {
+      CINCH_CAPTURE() << e.id() << " ";
+    }
+    CINCH_CAPTURE() << std::endl;
+  }
+  CINCH_CAPTURE() << std::endl;
+
+  CINCH_CAPTURE() << "cell to cell connectivities:\n";
+  for (auto c0: cells) {
+    CINCH_CAPTURE() << c0.id() << ": ";
+    for (auto c1: dolfin.cells(c0)) {
+      CINCH_CAPTURE() << c1.id() << " ";
+    }
+    CINCH_CAPTURE() << std::endl;
+  }
+  CINCH_CAPTURE() << std::endl;
 
 }

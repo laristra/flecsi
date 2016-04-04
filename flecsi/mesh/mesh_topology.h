@@ -986,7 +986,7 @@ class mesh_topology_t : public mesh_topology_base_t
          compute_connectivity<M, MT::dimension, TD>();
          intersect<M, M, FD, TD, MT::dimension>();
        } else {
-         // computer connectivities through shard vertices.
+         // computer connectivities through shared vertices.
          compute_connectivity<M, FD, 0>();
          compute_connectivity<M, 0, TD>();
          intersect<M, M, FD, TD, 0>();

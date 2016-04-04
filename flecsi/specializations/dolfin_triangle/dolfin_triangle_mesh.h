@@ -42,6 +42,22 @@ public:
     return num_entities<0, 0>();
   }
   auto vertices() { return entities<0, 0>(); }
+  template <typename Entity>
+  auto vertices(Entity e) { return entities<0, 0>(e); }
+
+  auto num_edges() const {
+    return num_entities<1, 0>();
+  }
+  auto edges() { return entities<1, 0>(); }
+  template <typename Entity>
+  auto edges(Entity e) { return entities<1, 0>(e); }
+
+  auto num_cells() const {
+    return num_entities<2, 0>();
+  }
+  auto cells() { return entities<2, 0>(); }
+  template <typename Entity>
+  auto cells(Entity e) { return entities<2, 0>(e); }
 };
 
 }
