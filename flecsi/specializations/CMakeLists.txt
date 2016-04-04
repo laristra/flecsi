@@ -19,10 +19,6 @@ set(specializations_HEADERS
   burton/burton_mesh.h
   burton/burton_mesh_traits.h
   burton/burton_types.h
-  minimal/minimal_entity_types.h
-  minimal/minimal_mesh.h
-  minimal/minimal_mesh_traits.h
-  minimal/minimal_types.h
   PARENT_SCOPE
 )
 if(ENABLE_IO)
