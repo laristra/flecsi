@@ -22,6 +22,15 @@
 #include <algorithm>
 #include <cassert>
 #include <iostream>
+#include <set>
+
+#define np(X)                                                             \
+ std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
+           << ": " << #X << " = " << (X) << std::endl
+
+#define hp(X)                                                             \
+ std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
+           << ": " << #X << " = " << std::hex << (X) << std::endl
 
 namespace flecsi{
 namespace ntree_dev{
@@ -146,6 +155,10 @@ public:
 
   int_t value_() const{
     return id_;
+  }
+
+  bool operator<(const branch_id& bid) const{
+    return id_ < bid.id_;
   }
 
 private:
@@ -372,9 +385,9 @@ public:
   }
 
   void remove(entity_t* ent){
-    assert(!ent->branch_id().is_null());
+    assert(!ent->get_branch_id().is_null());
 
-    auto itr = branch_map_.find(ent->branch_id());
+    auto itr = branch_map_.find(ent->get_branch_id());
     assert(itr != branch_map_.end());
     branch_t* b = itr->second;
     
@@ -418,6 +431,36 @@ public:
     max_depth_ = std::max(max_depth_, depth);
   }
 
+  void coarsen_(branch_t* p, branch_t* b){
+    for(auto ent : *b){
+      p->insert(ent);
+      ent->set_branch_id_(p->id());
+    }
+    
+    branch_id_t bid = b->id();
+
+    branch_map_.erase(bid);
+
+    constexpr branch_int_t n = branch_int_t(1) << dimension;
+
+    for(branch_int_t ci = 0; ci < n; ++ci){
+      branch_id_t cid = bid;
+      cid.push(ci);
+
+      auto citr = branch_map_.find(cid);
+      if(citr == branch_map_.end()){
+        continue;
+      }
+
+      auto c = citr->second;
+
+      coarsen_(p, c);
+
+      delete c;
+      branch_map_.erase(citr);
+    }
+  }
+
   void coarsen_(branch_t& l){    
     branch_id_t id = l.id();
     branch_id_t pid = id.parent();
@@ -438,13 +481,7 @@ public:
       assert(citr != branch_map_.end());
       auto c = citr->second;
 
-      for(auto ent : *c){
-        p->insert(ent);
-        ent->set_branch_id_(pid);
-      }
-
-      delete c;
-      branch_map_.erase(citr);
+      coarsen_(p, c);
     }
 
     p->reset();
@@ -517,7 +554,7 @@ public:
     branch_id_ = bid;
   }
 
-  branch_id_t branch_id() const{
+  branch_id_t get_branch_id() const{
     return branch_id_;
   }
 
