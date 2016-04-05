@@ -398,7 +398,7 @@ public:
       case action::none:
         break;
       case action::coarsen:
-        coarsen_(*b);
+        coarsen_(b);
         break;
       case action::refine:
         b->reset();
@@ -431,15 +431,11 @@ public:
     max_depth_ = std::max(max_depth_, depth);
   }
 
-  void coarsen_(branch_t* p, branch_t* b){
-    for(auto ent : *b){
-      p->insert(ent);
-      ent->set_branch_id_(p->id());
-    }
-    
-    branch_id_t bid = b->id();
+  // helper method in coarsening
+  // insert into p, coarsen all recursive children of b
 
-    branch_map_.erase(bid);
+  void coarsen_(branch_t* p, branch_t* b){
+    branch_id_t bid = b->id();
 
     constexpr branch_int_t n = branch_int_t(1) << dimension;
 
@@ -454,6 +450,11 @@ public:
 
       auto c = citr->second;
 
+      for(auto ent : *c){
+        p->insert(ent);
+        ent->set_branch_id_(p->id());
+      }
+
       coarsen_(p, c);
 
       delete c;
@@ -461,32 +462,24 @@ public:
     }
   }
 
-  void coarsen_(branch_t& l){    
-    branch_id_t id = l.id();
-    branch_id_t pid = id.parent();
+  // called on a branch whose siblings will also be coarsened
+
+  void coarsen_(branch_t* b){    
+    branch_id_t bid = b->id();
+
+    size_t depth = bid.depth();
+
+    if(depth == 0){
+      return;
+    }
+
+    branch_id_t pid = bid.parent();
 
     auto itr = branch_map_.find(pid);
     assert(itr != branch_map_.end());
     auto p = itr->second;
 
-    size_t depth = pid.depth();
-
-    constexpr branch_int_t n = branch_int_t(1) << dimension;
-
-    for(branch_int_t ci = 0; ci < n; ++ci){
-      branch_id_t cid = pid;
-      cid.push(ci);
-
-      auto citr = branch_map_.find(cid);
-      assert(citr != branch_map_.end());
-      auto c = citr->second;
-
-      coarsen_(p, c);
-    }
-
-    p->reset();
-
-    l.reset();
+    coarsen_(p, p);
   }
 
   branch_vector_t neighbors(branch_t* l) const{
