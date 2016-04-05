@@ -543,11 +543,11 @@ private:
 }; // tree_topology
 
 template<typename T, size_t D>
-class tree_topology_entity{
+class tree_entity{
 public:
   using branch_id_t = branch_id<T, D>;
 
-  tree_topology_entity()
+  tree_entity()
   : branch_id_(branch_id_t::null()){}
 
   void set_branch_id_(branch_id_t bid){
@@ -563,7 +563,7 @@ private:
 };
 
 template<typename T, size_t D>
-class tree_topology_branch{
+class tree_branch{
 public:
 
   using branch_int_t = T;
@@ -572,7 +572,7 @@ public:
 
   using branch_id_t = branch_id<T, D>;
 
-  tree_topology_branch()
+  tree_branch()
   : action_(action::none){}
 
   void set_id_(branch_id_t id){
@@ -604,9 +604,9 @@ private:
   action action_ : 2;
 };
 
-class tree_topology_policy{
+class tree_policy{
 public:
-  using tree_t = tree_topology<tree_topology_policy>;
+  using tree_t = tree_topology<tree_policy>;
 
   using branch_int_t = uint64_t;
 
@@ -616,7 +616,7 @@ public:
 
   using point_t = coordinates<element_t, dimension>;
 
-  class entity : public tree_topology_entity<branch_int_t, dimension>{
+  class entity : public tree_entity<branch_int_t, dimension>{
   public:
     entity(const point_t& p)
     : coordinates_(p){}
@@ -631,7 +631,7 @@ public:
 
   using entity_t = entity;
 
-  class branch : public tree_topology_branch<branch_int_t, dimension>{
+  class branch : public tree_branch<branch_int_t, dimension>{
   public:
     branch(){}
 
