@@ -33,7 +33,7 @@
            << ": " << #X << " = " << std::hex << (X) << std::endl
 
 namespace flecsi{
-namespace ntree_dev{
+namespace tree_topology_dev{
 
 using entity_id_t = uint64_t;
 
@@ -293,7 +293,7 @@ enum class action : uint64_t{
 };
 
 template<class P>
-class ntree : public P{
+class tree_topology : public P{
 public:
   using Policy = P;
 
@@ -321,7 +321,7 @@ public:
 
   using entity_vector_t = std::vector<entity_t*>;
 
-  ntree(std::initializer_list<element_t> bounds){
+  tree_topology(std::initializer_list<element_t> bounds){
     assert(bounds.size() == bounds_.size());
 
     size_t i = 0;
@@ -398,7 +398,7 @@ public:
       case action::none:
         break;
       case action::coarsen:
-        coarsen_(*b);
+        coarsen_(b);
         break;
       case action::refine:
         b->reset();
@@ -431,15 +431,11 @@ public:
     max_depth_ = std::max(max_depth_, depth);
   }
 
-  void coarsen_(branch_t* p, branch_t* b){
-    for(auto ent : *b){
-      p->insert(ent);
-      ent->set_branch_id_(p->id());
-    }
-    
-    branch_id_t bid = b->id();
+  // helper method in coarsening
+  // insert into p, coarsen all recursive children of b
 
-    branch_map_.erase(bid);
+  void coarsen_(branch_t* p, branch_t* b){
+    branch_id_t bid = b->id();
 
     constexpr branch_int_t n = branch_int_t(1) << dimension;
 
@@ -454,6 +450,11 @@ public:
 
       auto c = citr->second;
 
+      for(auto ent : *c){
+        p->insert(ent);
+        ent->set_branch_id_(p->id());
+      }
+
       coarsen_(p, c);
 
       delete c;
@@ -461,32 +462,24 @@ public:
     }
   }
 
-  void coarsen_(branch_t& l){    
-    branch_id_t id = l.id();
-    branch_id_t pid = id.parent();
+  // called on a branch whose siblings will also be coarsened
+
+  void coarsen_(branch_t* b){    
+    branch_id_t bid = b->id();
+
+    size_t depth = bid.depth();
+
+    if(depth == 0){
+      return;
+    }
+
+    branch_id_t pid = bid.parent();
 
     auto itr = branch_map_.find(pid);
     assert(itr != branch_map_.end());
     auto p = itr->second;
 
-    size_t depth = pid.depth();
-
-    constexpr branch_int_t n = branch_int_t(1) << dimension;
-
-    for(branch_int_t ci = 0; ci < n; ++ci){
-      branch_id_t cid = pid;
-      cid.push(ci);
-
-      auto citr = branch_map_.find(cid);
-      assert(citr != branch_map_.end());
-      auto c = citr->second;
-
-      coarsen_(p, c);
-    }
-
-    p->reset();
-
-    l.reset();
+    coarsen_(p, p);
   }
 
   branch_vector_t neighbors(branch_t* l) const{
@@ -540,14 +533,14 @@ private:
   std::array<element_t, dimension * 2> bounds_;
   
   size_t max_depth_;
-}; // ntree
+}; // tree_topology
 
 template<typename T, size_t D>
-class ntree_entity{
+class tree_entity{
 public:
   using branch_id_t = branch_id<T, D>;
 
-  ntree_entity()
+  tree_entity()
   : branch_id_(branch_id_t::null()){}
 
   void set_branch_id_(branch_id_t bid){
@@ -563,7 +556,7 @@ private:
 };
 
 template<typename T, size_t D>
-class ntree_branch{
+class tree_branch{
 public:
 
   using branch_int_t = T;
@@ -572,7 +565,7 @@ public:
 
   using branch_id_t = branch_id<T, D>;
 
-  ntree_branch()
+  tree_branch()
   : action_(action::none){}
 
   void set_id_(branch_id_t id){
@@ -604,9 +597,9 @@ private:
   action action_ : 2;
 };
 
-class ntree_policy{
+class tree_policy{
 public:
-  using tree_t = ntree<ntree_policy>;
+  using tree_t = tree_topology<tree_policy>;
 
   using branch_int_t = uint64_t;
 
@@ -616,7 +609,7 @@ public:
 
   using point_t = coordinates<element_t, dimension>;
 
-  class entity : public ntree_entity<branch_int_t, dimension>{
+  class entity : public tree_entity<branch_int_t, dimension>{
   public:
     entity(const point_t& p)
     : coordinates_(p){}
@@ -631,7 +624,7 @@ public:
 
   using entity_t = entity;
 
-  class branch : public ntree_branch<branch_int_t, dimension>{
+  class branch : public tree_branch<branch_int_t, dimension>{
   public:
     branch(){}
 
@@ -671,5 +664,5 @@ public:
   using branch_t = branch;
 };
 
-} // namespace ntree_dev
+} // namespace tree_topology_dev
 } // namespace flecsi
