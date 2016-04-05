@@ -24,40 +24,50 @@
  * \date Initial file creation: Mar. 31, 2016
  */
 
-namespace flecsi
-{
+namespace flecsi {
 
 /*!
  * \class dolfin_triangle_mesh dolfin_triangle_mesh.h
  * \brief example mesh in Figure 1 and Figure 2 of the DOLFIN paper.
  */
-template <typename mesh_type>
-class dolfin_triangle_mesh_t : public mesh_topology_t<dolfin_triangle_types_t>
-{
+template<typename mesh_type>
+class dolfin_triangle_mesh_t : public mesh_topology_t<mesh_type> {
 private:
-  using super = mesh_topology_t<dolfin_triangle_types_t>;
+  using super = mesh_topology_t<mesh_type>;
 
 public:
   auto num_vertices() const {
-    return num_entities<0, 0>();
+    return super::template num_entities<0, 0>();
   }
-  auto vertices() { return entities<0, 0>(); }
-  template <typename Entity>
-  auto vertices(Entity e) { return entities<0, 0>(e); }
+
+  auto vertices() {
+    return super::template entities<0, 0>();
+  }
+
+  template<typename Entity>
+  auto vertices(Entity e) {
+    return super::template entities<0, 0>(e);
+  }
 
   auto num_edges() const {
-    return num_entities<1, 0>();
+    return super::template num_entities<1, 0>();
   }
-  auto edges() { return entities<1, 0>(); }
-  template <typename Entity>
-  auto edges(Entity e) { return entities<1, 0>(e); }
+
+  auto edges() {
+    return super::template entities<1, 0>();
+  }
+
+  template<typename Entity>
+  auto edges(Entity e) { return super::template entities<1, 0>(e); }
 
   auto num_cells() const {
-    return num_entities<2, 0>();
+    return super::template num_entities<2, 0>();
   }
-  auto cells() { return entities<2, 0>(); }
-  template <typename Entity>
-  auto cells(Entity e) { return entities<2, 0>(e); }
+
+  auto cells() { return super::template entities<2, 0>(); }
+
+  template<typename Entity>
+  auto cells(Entity e) { return super::template entities<2, 0>(e); }
 };
 
 }
