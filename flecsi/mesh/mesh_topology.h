@@ -317,11 +317,12 @@ class mesh_topology_t : public mesh_topology_base_t
   template<typename T>
   std::vector<entity_set> scatter(map_function<T> f) const {
 
-    std::map<T, id_vector_t> id_map;
+    std::unordered_map<T, id_vector_t> id_map;
     for (auto ent : *this)
       id_map[f(ent)].push_back(ent.id());
 
     std::vector<entity_set> ent_map;
+    ent_map.reserve( id_map.size() );
     for ( auto entry : id_map )
       ent_map.emplace_back( 
         std::move( entity_set(*mesh_, std::move(entry.second), sorted_) )
@@ -631,8 +632,23 @@ class mesh_topology_t : public mesh_topology_base_t
 
   // Allow move operations
   mesh_topology_t(mesh_topology_t &&) = default;
-  mesh_topology_t & operator=(mesh_topology_t &&) = default;
 
+  //! override default move assignement
+  mesh_topology_t & operator=(mesh_topology_t && o) {
+    
+    ms_ = std::move( o.ms_ );
+
+#ifdef NICK_PLEASE_HELP    
+    for (size_t d = 0; d < MT::num_domains; ++d) {
+      auto & cell_out = get_connectivity_(FM, TM, MT::dimension, TD);   
+      if (ms_.entities[TM][TD].empty()) {
+        cell_out.init_create<MT, TM>(
+          ms_.id_vecs[TM][TD], ms_.entities[TM][TD], cell_conn, TD, *this);
+    } else {
+      cell_out.init(cell_conn);
+    }
+#endif
+  } // move assignment
 
   //! Constructor
   mesh_topology_t()

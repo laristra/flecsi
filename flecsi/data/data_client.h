@@ -34,6 +34,10 @@ public:
   //! Assignment operator (disabled)
   data_client_t & operator = (const data_client_t &) = delete;
 
+  // Allow move operations
+  data_client_t(data_client_t && o) = default;
+  data_client_t & operator=(data_client_t && o) = default;
+
   //! Destructor
   virtual ~data_client_t() {}
 
