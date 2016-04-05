@@ -36,6 +36,71 @@
 namespace flecsi{
 namespace tree_topology_dev{
 
+  template<typename T, size_t D>
+  class coordinates{
+  public:
+    using element_t = T;
+
+    static const size_t dimension = D;
+
+    coordinates(){}
+
+    coordinates(std::initializer_list<element_t> il){
+      size_t i = 0;
+      for(auto v : il){
+        pos_[i++] = v;
+      }
+    }
+
+    coordinates& operator=(const coordinates& c){
+      pos_ = c.pos_;
+      return *this;
+    }
+
+    bool operator==(const coordinates& c) const{
+      for(size_t i = 0; i < dimension; ++i){
+        if(pos_[i] != c.pos_[i]){
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    element_t operator[](const size_t i) const{
+      return pos_[i];
+    }
+
+    element_t& operator[](const size_t i){
+      return pos_[i];
+    }
+
+    element_t distance(const coordinates& u){
+      element_t d = 0;
+      
+      for(size_t i = 0; i < dimension; ++i){
+        element_t di = pos_[i] - u.pos_[i];
+        d += di * di;
+      }
+      
+      return sqrt(d);
+    }
+
+    void print(){
+      std::cout << "(";
+      for(size_t i = 0; i < dimension; ++i){
+        if(i > 0){
+          std::cout << ",";
+        }
+        std::cout << pos_[i];
+      }
+      std::cout << ")" << std::endl;   
+    }
+
+  private:
+    std::array<element_t, dimension> pos_;
+  };
+
 template<typename T, size_t D>
 class branch_id{
 public:
@@ -158,6 +223,22 @@ public:
     return id_ < bid.id_;
   }
 
+  size_t coordinates(std::array<int_t, dimension>& coords){
+    int_t id = id_;
+    size_t d = 0;
+
+    while(id != int_t(0)){
+      for(size_t j = 0; j < dimension; ++j){
+        coords[j] |= ((int_t(1) << j) & id) << d - j;
+      }
+
+      id >>= dimension;
+      ++d;
+    }
+
+    return d;
+  }
+
 private:
   int_t id_;
 
@@ -245,68 +326,6 @@ double uniform(double a, double b){
   return a + (b - a) * uniform();
 }
 
-template<typename T, size_t D>
-class coordinates{
-public:
-  using element_t = T;
-
-  static const size_t dimension = D;
-
-  coordinates(){}
-
-  coordinates(std::initializer_list<element_t> il){
-    size_t i = 0;
-    for(auto v : il){
-      pos_[i++] = v;
-    }
-  }
-
-  coordinates& operator=(const coordinates& c){
-    pos_ = c.pos_;
-    return *this;
-  }
-
-  bool operator==(const coordinates& c) const{
-    for(size_t i = 0; i < dimension; ++i){
-      if(pos_[i] != c.pos_[i]){
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  element_t operator[](const size_t i) const{
-    return pos_[i];
-  }
-
-  element_t& operator[](const size_t i){
-    return pos_[i];
-  }
-
-  element_t distance(const coordinates& u){
-    element_t d = 0;
-    
-    for(size_t i = 0; i < dimension; ++i){
-      element_t di = pos_[i] - u.pos_[i];
-      d += di * di;
-    }
-    
-    return sqrt(d);
-  }
-
-  void print(){
-    std::cout << "(";
-    for(size_t i = 0; i < dimension; ++i){
-      std::cout << pos_[i] << ",";
-    }
-    std::cout << ")" << std::endl;   
-  }
-
-private:
-  std::array<element_t, dimension> pos_;
-};
-
 enum class action : uint64_t{
   none = 0b00,
   refine = 0b01,
@@ -344,234 +363,7 @@ public:
 
   using apply_function = std::function<void(branch_t&)>;
 
-  tree_topology(std::initializer_list<element_t> bounds){
-    assert(bounds.size() == bounds_.size());
-
-    size_t i = 0;
-    for(element_t ei : bounds){
-      bounds_[i++] = ei;
-    }
-
-    branch_id_t bid = branch_id_t::root();
-    root_ = make_branch(bid);
-    branch_map_.emplace(bid, root_);
-
-    max_depth_ = 0;
-  }
-
-  branch_t* find_parent_(branch_id_t bid){
-    for(;;){
-      auto itr = branch_map_.find(bid);
-      if(itr != branch_map_.end()){
-        return itr->second;
-      }
-      bid.pop();
-    }
-  }
-
-  branch_t* find_parent(branch_t* b){
-    return find_parent(b->id());
-  }
-
-  branch_t* find_parent(branch_id_t bid){
-    return find_parent(bid, max_depth_);
-  }
-
-  branch_t* find_parent(branch_id_t bid, size_t max_depth){
-    branch_id_t pid = bid;
-    pid.truncate(max_depth);
-
-    return find_parent_(pid);
-  }
-
-  void insert(entity_t* ent, size_t max_depth){
-    branch_id_t bid = to_branch_id(ent->coordinates());
-
-    branch_t* b = find_parent(bid, max_depth);
-    ent->set_branch_id_(b->id());
-
-    b->insert(ent);
-
-    switch(b->requested_action()){
-      case action::none:
-        break;
-      case action::refine:
-        refine_(b);
-        break;
-      default:
-        assert(false && "invalid action");
-    }
-  }
-
-  void insert(entity_t* ent){
-    insert(ent, max_depth_);
-  }
-
-  void remove(entity_t* ent){
-    assert(!ent->get_branch_id().is_null());
-
-    auto itr = branch_map_.find(ent->get_branch_id());
-    assert(itr != branch_map_.end());
-    branch_t* b = itr->second;
-    
-    b->remove(ent);
-    ent->set_branch_id_(branch_id_t::null());
-
-    switch(b->requested_action()){
-      case action::none:
-        break;
-      case action::coarsen:
-        coarsen_(b);
-        break;
-      case action::refine:
-        b->reset();
-        break;
-      default:
-        assert(false && "invalid action");
-    }
-  }
-
-  void refine_(branch_t* b){
-    branch_id_t pid = b->id();
-    size_t depth = pid.depth() + 1;
-
-    branch_int_t n = branch_int_t(1) << dimension;
-    
-    for(branch_int_t bi = 0; bi < n; ++bi){
-      branch_id_t bid = pid;
-      bid.push(bi);
-      auto b = make_branch(bid);
-      branch_map_.emplace(bid, b);
-    }
-
-    for(auto ent : *b){
-      insert(ent, depth);
-    }
-
-    b->clear();
-    b->reset();
-
-    max_depth_ = std::max(max_depth_, depth);
-  }
-
-  // helper method in coarsening
-  // insert into p, coarsen all recursive children of b
-
-  void coarsen_(branch_t* p, branch_t* b){
-    branch_id_t bid = b->id();
-
-    constexpr branch_int_t n = branch_int_t(1) << dimension;
-
-    for(branch_int_t ci = 0; ci < n; ++ci){
-      branch_id_t cid = bid;
-      cid.push(ci);
-
-      auto citr = branch_map_.find(cid);
-      if(citr == branch_map_.end()){
-        continue;
-      }
-
-      auto c = citr->second;
-
-      for(auto ent : *c){
-        p->insert(ent);
-        ent->set_branch_id_(p->id());
-      }
-
-      coarsen_(p, c);
-
-      delete c;
-      branch_map_.erase(citr);
-    }
-  }
-
-  // called on a branch whose siblings will also be coarsened
-
-  void coarsen_(branch_t* b){    
-    branch_id_t bid = b->id();
-
-    size_t depth = bid.depth();
-
-    if(depth == 0){
-      return;
-    }
-
-    branch_id_t pid = bid.parent();
-
-    auto itr = branch_map_.find(pid);
-    assert(itr != branch_map_.end());
-    auto p = itr->second;
-
-    coarsen_(p, p);
-  }
-
-  branch_vector_t neighbors(branch_t* l) const{
-    assert(false && "unimplemented");
-  }
-
-  branch_id_vector_t neighbors(branch_id_t b) const{
-    assert(false && "unimplemented");
-  }
-
-  entity_vector_t locality(entity_t* ent, element_t dist){
-    assert(false && "unimplemented");
-  }
-
-  branch_t* make_branch(branch_id_t id){
-    auto b = new branch_t;
-    b->set_id_(id);
-    return b;
-  }
-
-  template<class... Args>
-  entity_t* make_entity(Args&&... args){
-    auto ent = new entity_t(std::forward<Args>(args)...);
-    return ent;
-  }
-
-  branch_id_t to_branch_id(const point_t& p){    
-    std::array<branch_int_t, dimension> coords;
-    
-    for(size_t i = 0; i < dimension; ++i){
-      element_t start = bounds_[i * 2];
-      element_t end = bounds_[i * 2 + 1];
-
-      coords[i] = (p[i] - start)/(end - start) * 
-        (branch_int_t(1) << (branch_id_t::bits - 1)/dimension);
-    }
-
-    return branch_id_t(coords);
-  }
-
-  size_t max_depth() const{
-    return max_depth_;
-  }
-
-  void apply(apply_function f){
-    apply(f, root_);
-  }
-
-  void apply(apply_function f, branch_t* b){    
-    f(*b);
-
-    branch_id_t bid = b->id();
-
-    constexpr branch_int_t n = branch_int_t(1) << dimension;
-
-    for(branch_int_t ci = 0; ci < n; ++ci){
-      branch_id_t cid = bid;
-      cid.push(ci);
-
-      auto citr = branch_map_.find(cid);
-      if(citr == branch_map_.end()){
-        continue;
-      }
-
-      auto c = citr->second;
-
-      apply(f, c);
-    }
-  }
+  using entity_id_vector_t = std::vector<entity_id_t>;
 
   template<class T>
   class iterator{
@@ -890,6 +682,306 @@ public:
     bool sorted_ = true;
   };
 
+  using branch_set_t = iterable_set<branch_t>;
+  using entity_set_t = iterable_set<entity_t>;
+
+  tree_topology(std::initializer_list<element_t> bounds){
+    assert(bounds.size() == bounds_.size());
+
+    size_t i = 0;
+    for(element_t ei : bounds){
+      bounds_[i++] = ei;
+    }
+
+    branch_id_t bid = branch_id_t::root();
+    root_ = make_branch(bid);
+    branch_map_.emplace(bid, root_);
+
+    max_depth_ = 0;
+  }
+
+  branch_t* find_parent_(branch_id_t bid){
+    for(;;){
+      auto itr = branch_map_.find(bid);
+      if(itr != branch_map_.end()){
+        return itr->second;
+      }
+      bid.pop();
+    }
+  }
+
+  branch_t* find_parent(branch_t* b){
+    return find_parent(b->id());
+  }
+
+  branch_t* find_parent(branch_id_t bid){
+    return find_parent(bid, max_depth_);
+  }
+
+  branch_t* find_parent(branch_id_t bid, size_t max_depth){
+    branch_id_t pid = bid;
+    pid.truncate(max_depth);
+
+    return find_parent_(pid);
+  }
+
+  void insert(entity_t* ent, size_t max_depth){
+    branch_id_t bid = to_branch_id(ent->coordinates());
+
+    branch_t* b = find_parent(bid, max_depth);
+    ent->set_branch_id_(b->id());
+
+    b->insert(ent);
+
+    switch(b->requested_action()){
+      case action::none:
+        break;
+      case action::refine:
+        refine_(b);
+        break;
+      default:
+        assert(false && "invalid action");
+    }
+  }
+
+  void insert(entity_t* ent){
+    insert(ent, max_depth_);
+  }
+
+  void remove(entity_t* ent){
+    assert(!ent->get_branch_id().is_null());
+
+    auto itr = branch_map_.find(ent->get_branch_id());
+    assert(itr != branch_map_.end());
+    branch_t* b = itr->second;
+    
+    b->remove(ent);
+    ent->set_branch_id_(branch_id_t::null());
+
+    switch(b->requested_action()){
+      case action::none:
+        break;
+      case action::coarsen:
+        coarsen_(b);
+        break;
+      case action::refine:
+        b->reset();
+        break;
+      default:
+        assert(false && "invalid action");
+    }
+  }
+
+  void refine_(branch_t* b){
+    branch_id_t pid = b->id();
+    size_t depth = pid.depth() + 1;
+
+    branch_int_t n = branch_int_t(1) << dimension;
+    
+    for(branch_int_t bi = 0; bi < n; ++bi){
+      branch_id_t bid = pid;
+      bid.push(bi);
+      auto b = make_branch(bid);
+      branch_map_.emplace(bid, b);
+    }
+
+    for(auto ent : *b){
+      insert(ent, depth);
+    }
+
+    b->clear();
+    b->reset();
+
+    max_depth_ = std::max(max_depth_, depth);
+  }
+
+  // helper method in coarsening
+  // insert into p, coarsen all recursive children of b
+
+  void coarsen_(branch_t* p, branch_t* b){
+    branch_id_t bid = b->id();
+
+    constexpr branch_int_t n = branch_int_t(1) << dimension;
+
+    for(branch_int_t ci = 0; ci < n; ++ci){
+      branch_id_t cid = bid;
+      cid.push(ci);
+
+      auto citr = branch_map_.find(cid);
+      if(citr == branch_map_.end()){
+        continue;
+      }
+
+      auto c = citr->second;
+
+      for(auto ent : *c){
+        p->insert(ent);
+        ent->set_branch_id_(p->id());
+      }
+
+      coarsen_(p, c);
+
+      delete c;
+      branch_map_.erase(citr);
+    }
+  }
+
+  // called on a branch whose siblings will also be coarsened
+
+  void coarsen_(branch_t* b){    
+    branch_id_t bid = b->id();
+
+    size_t depth = bid.depth();
+
+    if(depth == 0){
+      return;
+    }
+
+    branch_id_t pid = bid.parent();
+
+    auto itr = branch_map_.find(pid);
+    assert(itr != branch_map_.end());
+    auto p = itr->second;
+
+    coarsen_(p, p);
+  }
+
+  entity_set_t find(const point_t& p, element_t radius){
+    // find the lowest level branch which is guaranteed
+    // to contain the point with radius
+
+    branch_id_t bid = to_branch_id(p);
+    
+    size_t d = 0;
+
+    element_t r = radius * element_t(2);
+
+    element_t w = bounds_[1] - bounds_[0];
+    while(w > r){
+      w /= element_t(2);
+      ++d;
+    }
+
+    //np(d);
+    
+    bid.truncate(d - 1);
+
+    point_t p2;
+
+    auto itr = branch_map_.find(bid);
+    assert(itr != branch_map_.end());
+
+    branch_t* b = itr->second;
+
+    entity_id_vector_t entity_ids;
+
+    find_(b, entity_ids, p, radius);
+
+    return entity_set_t(*this, std::move(entity_ids), false);
+  }
+
+  bool intersects(const point_t& r1,
+                  const point_t& r2,
+                  const point_t& center,
+                  element_t radius){
+
+  }
+
+  void find_(branch_t* b,
+             entity_id_vector_t& entity_ids,
+             const point_t& p,
+             element_t radius){
+
+  }
+
+  branch_vector_t neighbors(branch_t* l) const{
+    assert(false && "unimplemented");
+  }
+
+  branch_id_vector_t neighbors(branch_id_t b) const{
+    assert(false && "unimplemented");
+  }
+
+  entity_vector_t locality(entity_t* ent, element_t dist){
+    assert(false && "unimplemented");
+  }
+
+  branch_t* make_branch(branch_id_t id){
+    auto b = new branch_t;
+    b->set_id_(id);
+    return b;
+  }
+
+  template<class... Args>
+  entity_t* make_entity(Args&&... args){
+    auto ent = new entity_t(std::forward<Args>(args)...);
+    ent->set_id_(entities_.size());
+    entities_.push_back(ent);
+    return ent;
+  }
+
+  branch_id_t to_branch_id(const point_t& p){    
+    std::array<branch_int_t, dimension> coords;
+    
+    for(size_t i = 0; i < dimension; ++i){
+      element_t start = bounds_[i * 2];
+      element_t end = bounds_[i * 2 + 1];
+
+      coords[i] = (p[i] - start)/(end - start) * 
+        (branch_int_t(1) << (branch_id_t::bits - 1)/dimension);
+    }
+
+    return branch_id_t(coords);
+  }
+
+  point_t& to_coordinates(branch_id_t bid){
+    std::array<branch_int_t, dimension> coords;
+    bid.coordinates(coords);
+
+    constexpr branch_int_t max = 
+      (branch_int_t(1) << branch_id_t::max_depth + 1) - 1;
+    
+    point_t p;
+    for(size_t i = 0; i < dimension; ++i){
+      element_t start = coords[i * 2];
+      element_t end = coords[i * 2 + 1];
+
+      p[i] = element_t(coords[i])/max * (end - start) + start;
+    }
+
+    return p;
+  }
+
+  size_t max_depth() const{
+    return max_depth_;
+  }
+
+  void apply(apply_function f){
+    apply(f, root_);
+  }
+
+  void apply(apply_function f, branch_t* b){    
+    f(*b);
+
+    branch_id_t bid = b->id();
+
+    constexpr branch_int_t n = branch_int_t(1) << dimension;
+
+    for(branch_int_t ci = 0; ci < n; ++ci){
+      branch_id_t cid = bid;
+      cid.push(ci);
+
+      auto citr = branch_map_.find(cid);
+      if(citr == branch_map_.end()){
+        continue;
+      }
+
+      auto c = citr->second;
+
+      apply(f, c);
+    }
+  }
+
   entity_t* get(entity_id_t id){
     assert(id < entities_.size());
     return entities_[id];
@@ -900,9 +992,6 @@ public:
     assert(itr != branch_map_.end());
     return itr->second;
   }
-
-  using branch_set_t = iterable_set<branch_t>;
-  using entity_set_t = iterable_set<entity_t>;
 
 private:
   using branch_map_t = std::unordered_map<branch_id_t, branch_t*,
@@ -937,8 +1026,17 @@ public:
     return branch_id_;
   }
 
+  entity_id_t id() const{
+    return id_;
+  }
+
+  void set_id_(entity_id_t id){
+    id_ = id;
+  }
+
 private:
   branch_id_t branch_id_;
+  entity_id_t id_;
 };
 
 template<typename T, size_t D>
