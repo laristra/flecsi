@@ -79,6 +79,13 @@ public:
     sp_t::release(std::forward<T>(key), runtime_namespace);
   } // release
 
+  void move(
+    uintptr_t from_runtime_namespace, 
+    uintptr_t to_runtime_namespace ) 
+  {
+    sp_t::move(from_runtime_namespace, to_runtime_namespace);
+  } // reset
+
   //! Use the accessor type defined by the storage policy.
   template <typename T>
   using dense_accessor_t = typename sp_t::template dense_accessor_t<T>;

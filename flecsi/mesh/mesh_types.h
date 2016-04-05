@@ -604,6 +604,17 @@ struct mesh_storage_t {
 
   using id_vecs_t = std::array<id_vector_t, D + 1>;
 
+  /*!
+    Override default assignment move.
+   */
+  mesh_storage_t & operator=( mesh_storage_t && other )
+  {
+    topology = std::move( other.topology );
+    id_vecs  = std::move( other.id_vecs );
+    // entities build from mesh_topology_base_t
+    return *this;
+  }
+
   // array of array of vector of mesh_entity_base_t *
   std::array<entities_t, NM> entities;
 
