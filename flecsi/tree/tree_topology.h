@@ -23,6 +23,7 @@
 #include <cassert>
 #include <iostream>
 #include <set>
+#include <functional>
 
 #define np(X)                                                             \
  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
@@ -34,10 +35,6 @@
 
 namespace flecsi{
 namespace tree_topology_dev{
-
-using entity_id_t = uint64_t;
-
-using entity_id_vec_t = std::vector<entity_id_t>;
 
 template<typename T, size_t D>
 class branch_id{
@@ -203,6 +200,30 @@ private:
   };
 };
 
+class entity_id_t{
+public:
+
+  entity_id_t(){}
+
+  entity_id_t(const entity_id_t& id)
+  : id_(id.id_){}
+
+  entity_id_t(size_t id)
+  : id_(id){}
+
+  operator size_t() const{
+    id_;
+  }
+
+  entity_id_t& operator=(const entity_id_t& id){
+    id_ = id.id_;
+    return *this;
+  }
+
+private:
+  size_t id_;
+};
+
 template<typename T, size_t D>
 std::ostream& operator<<(std::ostream& ostr, const branch_id<T,D>& id){
   id.output_(ostr);
@@ -321,6 +342,8 @@ public:
 
   using entity_vector_t = std::vector<entity_t*>;
 
+  using apply_function = std::function<void(branch_t&)>;
+
   tree_topology(std::initializer_list<element_t> bounds){
     assert(bounds.size() == bounds_.size());
 
@@ -330,8 +353,8 @@ public:
     }
 
     branch_id_t bid = branch_id_t::root();
-    auto b = make_branch(bid);
-    branch_map_.emplace(bid, b);
+    root_ = make_branch(bid);
+    branch_map_.emplace(bid, root_);
 
     max_depth_ = 0;
   }
@@ -373,7 +396,7 @@ public:
       case action::none:
         break;
       case action::refine:
-        refine_(*b);
+        refine_(b);
         break;
       default:
         assert(false && "invalid action");
@@ -408,8 +431,8 @@ public:
     }
   }
 
-  void refine_(branch_t& l){
-    branch_id_t pid = l.id();
+  void refine_(branch_t* b){
+    branch_id_t pid = b->id();
     size_t depth = pid.depth() + 1;
 
     branch_int_t n = branch_int_t(1) << dimension;
@@ -421,12 +444,12 @@ public:
       branch_map_.emplace(bid, b);
     }
 
-    for(auto ent : l){
+    for(auto ent : *b){
       insert(ent, depth);
     }
 
-    l.clear();
-    l.reset();
+    b->clear();
+    b->reset();
 
     max_depth_ = std::max(max_depth_, depth);
   }
@@ -524,6 +547,363 @@ public:
     return max_depth_;
   }
 
+  void apply(apply_function f){
+    apply(f, root_);
+  }
+
+  void apply(apply_function f, branch_t* b){    
+    f(*b);
+
+    branch_id_t bid = b->id();
+
+    constexpr branch_int_t n = branch_int_t(1) << dimension;
+
+    for(branch_int_t ci = 0; ci < n; ++ci){
+      branch_id_t cid = bid;
+      cid.push(ci);
+
+      auto citr = branch_map_.find(cid);
+      if(citr == branch_map_.end()){
+        continue;
+      }
+
+      auto c = citr->second;
+
+      apply(f, c);
+    }
+  }
+
+  template<class T>
+  class iterator{
+   public:
+    using id_t = typename T::id_t;
+    using id_vector_t = std::vector<id_t>;
+
+    iterator(const iterator& itr)
+    : tree_(itr.tree_), items_(itr.items_), index_(itr.index_){}
+
+    iterator(tree_topology& tree, const id_vector_t& items, size_t index)
+    : tree_(tree), items_(&items), index_(index){}
+
+    iterator& operator++(){
+      ++index_;
+      return *this;
+    }
+
+    iterator& operator=(const iterator & itr){
+      tree_ = itr.tree_;
+      index_ = itr.index_;
+      items_ = itr.items_;
+      return *this;
+    }
+
+    T* operator*(){
+      return tree_.get((*items_)[index_]);
+    }
+
+    T* operator->(){
+      return tree_.get((*items_)[index_]);
+    }
+
+    bool operator==(const iterator& itr) const{
+      return index_ == itr.index_;
+    }
+
+    bool operator!=(const iterator& itr) const{
+      return index_ != itr.index_;
+    }
+
+   private:
+    tree_topology& tree_;
+    id_vector_t items_;
+    size_t index_;
+  };
+
+  template<class T>
+  class iterable_set{
+  public:
+    using iterator_t = iterator<T>;
+
+    using id_vector_t = typename iterator_t::id_vector_t;
+    
+    using filter_function = std::function<bool(T&)>;    
+    using apply_function = std::function<void(T&)>;
+
+    template<typename R>
+    using map_function = std::function<R(T&)>;
+
+    template<typename R>
+    using reduce_function = std::function<void(T&, R&)>;
+
+    iterable_set() = default;
+
+    iterable_set(tree_topology& tree, const id_vector_t& v, bool sorted = false)
+    : tree_(&tree), v_(&v), begin_(0), end_(v_->size()),
+    owned_(false), sorted_(sorted){}
+
+    iterable_set(tree_topology& tree, id_vector_t&& v, bool sorted)
+    : tree_(&tree), v_(new id_vector_t(std::move(v))),
+    begin_(0), end_(v_->size()), owned_(true), sorted_(sorted){}
+
+    ~iterable_set(){
+      if(owned_){
+        delete v_;
+      }
+    }
+
+    iterable_set & operator=(const iterable_set& r) = default;
+
+    iterator_t begin() const { return iterator_t(*tree_, *v_, begin_); }
+    
+    iterator_t end() const { return iterator_t(*tree_, *v_, end_); }
+       
+    T* operator[](size_t i) const{
+      return tree_->template get((*v_)[begin_ + i]);
+    }
+     
+    T* front() const{
+      return tree_->template get((*v_)[begin_]);
+    }
+
+    T* back() const{
+      return tree_->template get((*v_)[end_ - 1]);
+    }
+     
+    size_t size() const { return end_ - begin_; }
+     
+    iterable_set filter(filter_function f) const {
+      id_vector_t v;
+
+      for (auto item : *this) {
+        if (f(*item)) {
+          v.push_back(item->id());
+        }
+      }
+
+      return iterable_set(*tree_, std::move(v), sorted_);
+    }
+
+    template<typename S>
+    std::vector<iterable_set> scatter(map_function<T> f) const {
+
+      std::map<S, id_vector_t> id_map;
+      for (auto item : *this)
+        id_map[f(*item)].push_back(item->id());
+
+      std::vector<iterable_set> ent_map;
+      for ( auto entry : id_map )
+        ent_map.emplace_back( 
+          std::move(iterable_set(*tree_, std::move(entry.second), sorted_) )
+        );
+
+      return ent_map;
+    }
+     
+    void apply(apply_function f) const {
+      for (auto ent : *this) {
+        f(ent);
+      }
+    }
+     
+    template<typename S>
+    std::vector<S> map(map_function<T> f) const {
+      std::vector<S> ret;
+      ret.reserve(v_->size());
+      
+      for (auto item : *this) {
+        ret.push_back(f(*item));
+      }
+      return ret;
+    }
+
+    template<typename S>
+    S reduce(T start, reduce_function<T> f) const {
+      T r = start;
+      
+      for (auto item : *this) {
+        f(*item, r);
+      }
+
+      return r;
+    }
+     
+    void prepare_(){
+      if(!owned_){
+        v_ = new id_vector_t(*v_);
+        owned_ = true;
+      }
+
+      if(!sorted_){
+        auto vc = const_cast<id_vector_t*>(v_);
+        std::sort(vc->begin(), vc->end());
+        sorted_ = true;
+      }
+    }
+     
+    iterable_set& operator&=(const iterable_set& r){
+      prepare_();
+
+      id_vector_t ret;
+
+      if(r.sorted_){
+        ret.resize(std::min(v_->size(), r.v_->size()));
+
+        auto itr = std::set_intersection(v_->begin(), v_->end(),
+                                         r.v_->begin(), r.v_->end(), ret.begin());
+
+        ret.resize(itr - ret.begin());
+      }
+      else{
+        id_vector_t v2(*r.v_);
+        std::sort(v2.begin(), v2.end());
+
+        ret.resize(std::min(v_->size(), v2.size()));
+
+        auto itr = std::set_intersection(v_->begin(), v_->end(),
+                                         v2.begin(), v2.end(), ret.begin());
+
+        ret.resize(itr - ret.begin());
+      }
+
+      delete v_;
+      v_ = new id_vector_t(std::move(ret));
+
+      begin_ = 0;
+      end_ = v_->size();
+
+      return *this;
+    }
+     
+    iterable_set operator&(const iterable_set& r) const{
+      iterable_set ret(*this);
+      ret &= r;
+      return ret;
+    }
+     
+    iterable_set& operator|=(const iterable_set& r){
+      prepare_();
+
+      id_vector_t ret;
+
+      if(r.sorted_){
+        ret.resize(v_->size() + r.v_->size());
+
+        auto itr = std::set_union(v_->begin(), v_->end(),
+                                  r.v_->begin(), r.v_->end(), ret.begin());
+
+       ret.resize(itr - ret.begin());
+      }
+      else{
+        id_vector_t v2(*r.v_);
+
+        std::sort(v2.begin(), v2.end());
+
+        ret.resize(v_->size() + v2.size());
+
+        auto itr = std::set_union(v_->begin(), v_->end(),
+                                  v2.begin(), v2.end(), ret.begin());
+
+        ret.resize(itr - ret.begin());
+      }
+
+      delete v_;
+      v_ = new id_vector_t(std::move(ret));
+
+      begin_ = 0;
+      end_ = v_->size();
+
+      return *this;
+    }
+     
+    iterable_set operator|(const iterable_set& r) const{
+      iterable_set ret(*this);
+      ret |= r;
+      return ret;
+    } 
+     
+    iterable_set& operator-=(const iterable_set& r){
+      prepare_();
+
+      id_vector_t ret(v_->size());
+
+      if(r.sorted_){
+        auto itr = std::set_difference(v_->begin(), v_->end(),
+                                       r.v_->begin(), r.v_->end(), ret.begin());
+
+        ret.resize(itr - ret.begin());
+      }
+      else{
+        id_vector_t v2(*r.v_);
+
+        std::sort(v2.begin(), v2.end());
+
+        auto itr = std::set_difference(v_->begin(), v_->end(),
+                                       v2.begin(), v2.end(), ret.begin());
+
+        ret.resize(itr - ret.begin());
+      }
+
+      delete v_;
+      v_ = new id_vector_t(std::move(ret));
+
+      begin_ = 0;
+      end_ = v_->size();
+
+      return *this;
+    }
+     
+    iterable_set operator-(const iterable_set& r) const{
+      iterable_set ret(*this);
+      ret -= r;
+      return ret;
+    }
+     
+    void add(T* item){
+      if(!owned_){
+        v_ = new id_vector_t(*v_);
+        owned_ = true;
+      }
+
+      auto vc = const_cast<id_vector_t*>(v_);
+
+      if(sorted_){
+        auto id = item->id();
+        auto itr = std::upper_bound(vc->begin(), vc->end(), id);
+        vc->insert(itr, id);
+      }
+      else{
+        vc->push_back(item->id());
+      }
+    }
+     
+    iterable_set& operator<<(T* item){
+      add(item);
+      return *this;
+    }
+     
+  private:
+    tree_topology* tree_ = nullptr;
+    const id_vector_t* v_ = nullptr;
+    size_t begin_ = 0;
+    size_t end_ = 0;
+    bool owned_ = false;
+    bool sorted_ = true;
+  };
+
+  entity_t* get(entity_id_t id){
+    assert(id < entities_.size());
+    return entities_[id];
+  }
+
+  branch_t* get(branch_id_t id){
+    auto itr = branch_map_.find(id);
+    assert(itr != branch_map_.end());
+    return itr->second;
+  }
+
+  using branch_set_t = iterable_set<branch_t>;
+  using entity_set_t = iterable_set<entity_t>;
+
 private:
   using branch_map_t = std::unordered_map<branch_id_t, branch_t*,
     branch_id_hasher__<branch_int_t, dimension>>;
@@ -533,11 +913,17 @@ private:
   std::array<element_t, dimension * 2> bounds_;
   
   size_t max_depth_;
-}; // tree_topology
+
+  branch_t* root_;
+
+  std::vector<entity_t*> entities_;
+};
 
 template<typename T, size_t D>
 class tree_entity{
 public:
+  using id_t = entity_id_t;
+
   using branch_id_t = branch_id<T, D>;
 
   tree_entity()
@@ -558,12 +944,13 @@ private:
 template<typename T, size_t D>
 class tree_branch{
 public:
-
   using branch_int_t = T;
 
   static const size_t dimension = D;
 
   using branch_id_t = branch_id<T, D>;
+
+  using id_t = branch_id_t;
 
   tree_branch()
   : action_(action::none){}
@@ -655,6 +1042,10 @@ public:
 
     void clear(){
       ents_.clear();
+    }
+
+    size_t count(){
+      return ents_.size();
     }
 
   private:
