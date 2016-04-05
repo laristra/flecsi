@@ -4,7 +4,7 @@
 #~----------------------------------------------------------------------------~#
 
 set(ntree_HEADERS
-  ntree.h
+  tree_topology.h
   PARENT_SCOPE
 )
 
