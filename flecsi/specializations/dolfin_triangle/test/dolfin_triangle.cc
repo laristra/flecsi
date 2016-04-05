@@ -142,4 +142,5 @@ TEST(dolfin_triangle, initialization) {
   }
   CINCH_CAPTURE() << std::endl;
 
+  CINCH_ASSERT(TRUE, CINCH_EQUAL_BLESSED("dolfin_triangle.blessed"));
 }
