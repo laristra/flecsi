@@ -19,10 +19,6 @@ set(specializations_HEADERS
   burton/burton_mesh.h
   burton/burton_mesh_traits.h
   burton/burton_types.h
-  minimal/minimal_entity_types.h
-  minimal/minimal_mesh.h
-  minimal/minimal_mesh_traits.h
-  minimal/minimal_types.h
   PARENT_SCOPE
 )
 if(ENABLE_IO)
@@ -33,10 +29,6 @@ endif(ENABLE_IO)
 set(specializations_SOURCES
   burton/burton_entity_types.cc
   PARENT_SCOPE
-)
-
-cinch_add_unit(minimal
-  SOURCES minimal/test/minimal.cc
 )
 
 cinch_add_unit(burton
@@ -68,6 +60,11 @@ if(ENABLE_IO)
     LIBRARIES ${IO_LIBRARIES} flecsi
   )
 endif(ENABLE_IO)
+
+cinch_add_unit(dolfin_triangle
+        SOURCES dolfin_triangle/test/dolfin_triangle.cc
+        INPUTS  dolfin_triangle/test/dolfin_triangle.blessed
+        )
 
 #cinch_add_unit(unstruct_2d
 #  SOURCES unstruct/test/unstruct_2d.cc

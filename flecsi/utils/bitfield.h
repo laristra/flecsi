@@ -24,6 +24,7 @@
 #include <limits>
 #include <cstddef>
 #include <cstdint>
+#include <climits>
 
 namespace flecsi
 {
@@ -104,6 +105,15 @@ class bitfield
   {
     field_type_t tmp = 1 << bit;
     return tmp & bits_;
+  } // bitset
+
+  /*!-------------------------------------------------------------------------*
+   * Test all bits.
+   *--------------------------------------------------------------------------*/
+
+  bool anybitset() const
+  {
+    return (bits_ != 0x0);
   } // bitset
 
   /*!-------------------------------------------------------------------------*
