@@ -86,7 +86,7 @@ namespace tree_topology_dev{
       return sqrt(d);
     }
 
-    void print(){
+    void print() const{
       std::cout << "(";
       for(size_t i = 0; i < dimension; ++i){
         if(i > 0){
@@ -224,10 +224,14 @@ public:
   }
 
   size_t coordinates(std::array<int_t, dimension>& coords){
+    for(size_t j = 0; j < dimension; ++j){
+      coords[j] = int_t(0);
+    }
+
     int_t id = id_;
     size_t d = 0;
 
-    while(id != int_t(0)){
+    while(id >> dimension != int_t(0)){
       for(size_t j = 0; j < dimension; ++j){
         coords[j] |= ((int_t(1) << j) & id) << d - j;
       }
@@ -727,6 +731,7 @@ public:
 
   void insert(entity_t* ent, size_t max_depth){
     branch_id_t bid = to_branch_id(ent->coordinates());
+    point_t p = to_coordinates(bid);
 
     branch_t* b = find_parent(bid, max_depth);
     ent->set_branch_id_(b->id());
@@ -934,17 +939,17 @@ public:
     return branch_id_t(coords);
   }
 
-  point_t& to_coordinates(branch_id_t bid){
+  point_t to_coordinates(branch_id_t bid){
     std::array<branch_int_t, dimension> coords;
     bid.coordinates(coords);
 
     constexpr branch_int_t max = 
-      (branch_int_t(1) << branch_id_t::max_depth + 1) - 1;
+      (branch_int_t(1) << branch_id_t::max_depth) - 1;
     
     point_t p;
     for(size_t i = 0; i < dimension; ++i){
-      element_t start = coords[i * 2];
-      element_t end = coords[i * 2 + 1];
+      element_t start = bounds_[i * 2];
+      element_t end = bounds_[i * 2 + 1];
 
       p[i] = element_t(coords[i])/max * (end - start) + start;
     }
