@@ -154,7 +154,6 @@ class default_data_storage_policy_t
         if ( meta_data_key == from_hash ) {
           auto to_hash = key_hash ^ to;                // new hash
           tmp_map[to_hash] = std::move( itr->second ); // move data
-          std::cout << "moving " << from_hash << " to " << to_hash << std::endl;
           itr = meta_data.erase(itr);                  // delete old instance
         }
         // otherwise just go to next instance
