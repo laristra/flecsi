@@ -20,16 +20,10 @@
 ################################################################################
 
 #------------------------------------------------------------------------------#
-# Require some version of cmake
+# Include source-level CMake configuration file
 #------------------------------------------------------------------------------#
 
-cmake_minimum_required(VERSION 2.8)
-
-#------------------------------------------------------------------------------#
-# Include project-level CMake configuration file
-#------------------------------------------------------------------------------#
-
-include(${CMAKE_SOURCE_DIR}/cinch/cmake/ProjectLists.txt)
+include(${CMAKE_SOURCE_DIR}/cinch/cmake/SourceLists.txt)
 
 #------------------------------------------------------------------------------#
 # Formatting options for emacs and vim.

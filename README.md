@@ -1,3 +1,5 @@
+![logo](config/flecsi.png)
+
 # FleCSI Project
 
 FleCSI is a set of computational science infrastructure tools designed to aid in the implementation of
@@ -9,10 +11,14 @@ FleCSI uses git submodules, so it must be checked out recursively:
 
     % git clone --recursive git@github.com:flecsi/flecsi.git
 
+https:  
+
+    % git clone --recursive https://github.com/flecsi/flecsi.git
+
 # Requirements
 
-The primary requirement to build FleCSI is a C++14 capable compiler.  Currently,
-this equates to G++ 5.0 or greater.
+The primary requirement to build FleCSI is a C++14 capable compiler.
+Currently, this equates to G++ 5.0 or greater.
 
 * CMake >= 3.0
 * GCC >= 5.0
@@ -25,22 +31,24 @@ cinch-utils is available [here](https://github.com/losalamos/cinch-utils).
 
 To begin, you will need to build the third-party library dependencies:
 
-    % git clone git@github.com:flecsi/third-party.git
+    % git clone git@github.com:flecsi/third-party.git flecsi-thirdparty
     % cd flecsi-thirdparty
     % mkdir build
     % cd build
     % ccmake ..
 
-At this point, you should enable Exodus (ENABLE\_EXODUS) and set the install path to a
-directory where you have write permissions.
+At this point, you should enable Exodus (ENABLE\_EXODUS) and set the install
+path to a directory where you have write permissions.
 
 Now build the third-party libraries:
 
     % make
 
-This command will build and install the libraries in the prefix that you have specified.
+This command will build and install the libraries in the prefix that
+you have specified.
 
-Next, set the TPL\_INSTALL\_PREFIX environment variable to the path you specified above:
+Next, set the TPL\_INSTALL\_PREFIX environment variable to the path you
+specified above:
 
     % export TPL_INSTALL_PREFIX=/path/to/thirdparty/install/directory
 
@@ -63,7 +71,8 @@ This will load up-to-date compiler and documentation tools.
 
 # Release
 
-This software has been approved for open source release and has been assigned **LA-CC-15-000**.
+This software has been approved for open source release and has
+been assigned **LA-CC-16-022**.
 
 # Copyright
 
