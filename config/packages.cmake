@@ -53,6 +53,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
       message(FATAL_ERROR "Legion is required
                      for this build configuration")
   endif(NOT legion_FOUND)
+  
   include_directories(${LEGION_INCLUDE_DIRS})
   set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES})
   SET_SOURCE_FILES_PROPERTIES(${LEGION_INCLUDE_DIRS}/legion/legion.inl PROPERTIES HEADER_FILE_ONLY 1)
