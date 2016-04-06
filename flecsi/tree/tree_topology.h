@@ -75,7 +75,7 @@ namespace tree_topology_dev{
       return pos_[i];
     }
 
-    element_t distance(const coordinates& u){
+    element_t distance(const coordinates& u) const{
       element_t d = 0;
       
       for(size_t i = 0; i < dimension; ++i){
@@ -223,21 +223,23 @@ public:
     return id_ < bid.id_;
   }
 
-  size_t coordinates(std::array<int_t, dimension>& coords){
-    for(size_t j = 0; j < dimension; ++j){
-      coords[j] = int_t(0);
-    }
+  size_t coordinates(std::array<int_t, dimension>& coords) const{
+    coords.fill(int_t(0));
 
     int_t id = id_;
     size_t d = 0;
 
     while(id >> dimension != int_t(0)){
       for(size_t j = 0; j < dimension; ++j){
-        coords[j] |= ((int_t(1) << j) & id) << d - j;
+        coords[j] |= (((int_t(1) << j) & id) >> j) << d;
       }
 
       id >>= dimension;
       ++d;
+    }
+
+    for(size_t j = 0; j < dimension; ++j){
+      coords[j] <<= max_depth - d;
     }
 
     return d;
@@ -856,7 +858,7 @@ public:
     // to contain the point with radius
 
     branch_id_t bid = to_branch_id(p);
-    
+
     size_t d = 0;
 
     element_t r = radius * element_t(2);
@@ -866,12 +868,8 @@ public:
       w /= element_t(2);
       ++d;
     }
-
-    //np(d);
     
-    bid.truncate(d - 1);
-
-    point_t p2;
+    bid.truncate(d);
 
     auto itr = branch_map_.find(bid);
     assert(itr != branch_map_.end());
@@ -880,23 +878,92 @@ public:
 
     entity_id_vector_t entity_ids;
 
-    find_(b, entity_ids, p, radius);
+    find_(b, entity_ids, p, radius, d);
 
     return entity_set_t(*this, std::move(entity_ids), false);
   }
 
-  bool intersects(const point_t& r1,
-                  const point_t& r2,
-                  const point_t& center,
-                  element_t radius){
+  static bool intersects(const coordinates<element_t, 2>& r1,
+                         element_t w,
+                         const coordinates<element_t, 2>& center,
+                         element_t radius){
+    
+    element_t c1x = center[0] + radius;
+    element_t c1y = center[1] + radius;
 
+    element_t w2 = w / element_t(2);
+
+    element_t c2x = r1[0] + w2;
+    element_t c2y = r1[1] + w2;
+
+    element_t d1x = c1x - c2x;
+    element_t d1y = c1y - c2y;
+
+    if(d1x < -w2){
+      d1x = -w2;
+    }
+    else if(d1x > w2){
+      d1x = w2;
+    }
+
+    if(d1y < -w2){
+      d1y = -w2;
+    }
+    else if(d1y > w2){
+      d1y = w2;
+    }
+
+    c2x += d1x - c1x;
+    c2y += d1y - c1y;
+
+    return sqrt(c2x * c2x + c2y * c2y) < radius;
   }
 
   void find_(branch_t* b,
              entity_id_vector_t& entity_ids,
              const point_t& p,
-             element_t radius){
+             element_t radius,
+             size_t depth){
 
+    branch_id_t bid = b->id();
+
+    constexpr branch_int_t n = branch_int_t(1) << dimension;
+
+    bool leaf = true;
+
+    for(branch_int_t ci = 0; ci < n; ++ci){
+      branch_id_t cid = bid;
+      cid.push(ci);
+
+      auto citr = branch_map_.find(cid);
+      if(leaf){
+        if(citr == branch_map_.end()){
+          leaf = false;
+          break;
+        }
+      }
+      else{
+        assert(citr != branch_map_.end());
+      }
+
+      auto c = citr->second;
+
+      element_t w = pow(bounds_[1] - bounds_[0], 1.0/(2.0 * depth));
+
+      point_t p2 = to_coordinates(c->id());
+
+      if(intersects(p2, w, p, radius)){
+        find_(c, entity_ids, p, radius, depth + 1);
+      }
+    }
+
+    if(leaf){
+      for(auto ent : *b){
+        if(p.distance(ent->coordinates()) <= radius){
+          entity_ids.push_back(ent->id());
+        }
+      }
+    }
   }
 
   branch_vector_t neighbors(branch_t* l) const{
