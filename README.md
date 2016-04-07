@@ -2,8 +2,31 @@
 
 # FleCSI Project
 
-FleCSI is a set of computational science infrastructure tools designed to aid in the implementation of
-multi-physics application development.
+FleCSI is a compile-time configurable framework designed to support
+multi-physics application development.  As such, FleCSI attempts to
+provide a very general set of infrastructure design patterns that can be
+specialized and extended to suit the needs of a broad variety of solver
+and data requirements.  Current support includes multi-dimensional mesh
+topology, mesh geometry, and mesh adjacency information, n-dimensional
+hashed-tree data structures, graph partitioning interfaces, and
+dependency closures.
+
+FleCSI also introduces a functional programming model with control,
+execution, and data abstractions that are consistent with both MPI and
+state-of-the-art task-based runtimes such as Legion and Charm++.  The
+FleCSI abstraction layer provides the developer with insulation from the
+underlying runtime, while allowing support for multiple runtime systems,
+including conventional models like asynchronous MPI.  The intent is to
+give developers a concrete set of user-friendly programming tools that
+can be used now, while allowing flexibility in choosing runtime
+implementations and optimizations that can be applied to architectures
+and runtimes that arise in the future.  The control and execution models
+in FleCSI also provide formal nomenclature for
+describing poorly understood concepts like kernels and tasks.  To
+provide a low barrier to entry, the FleCSI data model does not lock
+developers into particular layouts or data structure representations,
+thus providing a low-buy-in approach that make FleCSI an attractive
+option for many application projects.
 
 # Getting the Code
 
