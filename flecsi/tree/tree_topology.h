@@ -86,15 +86,15 @@ namespace tree_topology_dev{
       return sqrt(d);
     }
 
-    void print() const{
-      std::cout << "(";
+    void output_(std::ostream& ostr) const{
+      ostr << "(";
       for(size_t i = 0; i < dimension; ++i){
         if(i > 0){
-          std::cout << ",";
+          ostr << ",";
         }
-        std::cout << pos_[i];
+        ostr << pos_[i];
       }
-      std::cout << ")" << std::endl;   
+      ostr << ")";   
     }
 
   private:
@@ -318,6 +318,12 @@ std::ostream& operator<<(std::ostream& ostr, const branch_id<T,D>& id){
 }
 
 template<typename T, size_t D>
+std::ostream& operator<<(std::ostream& ostr, const coordinates<T, D>& p){
+  p.output_(ostr);
+  return ostr;
+}
+
+template<typename T, size_t D>
 struct branch_id_hasher__{
   size_t operator()(const branch_id<T, D>& k) const{
     return std::hash<T>()(k.value_());
@@ -413,7 +419,7 @@ public:
 
    private:
     tree_topology& tree_;
-    id_vector_t items_;
+    const id_vector_t* items_;
     size_t index_;
   };
 
@@ -861,10 +867,10 @@ public:
 
     size_t d = 0;
 
-    element_t r = radius * element_t(2);
-
+    element_t dw = radius * element_t(2);
     element_t w = bounds_[1] - bounds_[0];
-    while(w > r){
+    
+    while(w > dw){
       w /= element_t(2);
       ++d;
     }
@@ -878,7 +884,7 @@ public:
 
     entity_id_vector_t entity_ids;
 
-    find_(b, entity_ids, p, radius, d);
+    find_(b, entity_ids, p, radius, w);
 
     return entity_set_t(*this, std::move(entity_ids), false);
   }
@@ -923,7 +929,7 @@ public:
              entity_id_vector_t& entity_ids,
              const point_t& p,
              element_t radius,
-             size_t depth){
+             element_t w){
 
     branch_id_t bid = b->id();
 
@@ -931,14 +937,20 @@ public:
 
     bool leaf = true;
 
+    element_t w2;
+
     for(branch_int_t ci = 0; ci < n; ++ci){
       branch_id_t cid = bid;
       cid.push(ci);
 
       auto citr = branch_map_.find(cid);
+      
       if(leaf){
-        if(citr == branch_map_.end()){
+        if(citr != branch_map_.end()){
+          w2 = w / element_t(2);
           leaf = false;
+        }
+        else{
           break;
         }
       }
@@ -948,18 +960,16 @@ public:
 
       auto c = citr->second;
 
-      element_t w = pow(bounds_[1] - bounds_[0], 1.0/(2.0 * depth));
-
       point_t p2 = to_coordinates(c->id());
 
       if(intersects(p2, w, p, radius)){
-        find_(c, entity_ids, p, radius, depth + 1);
+        find_(c, entity_ids, p, radius, w2);
       }
     }
 
     if(leaf){
       for(auto ent : *b){
-        if(p.distance(ent->coordinates()) <= radius){
+        if(p.distance(ent->coordinates()) < radius){
           entity_ids.push_back(ent->id());
         }
       }
