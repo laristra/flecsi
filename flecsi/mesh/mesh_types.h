@@ -604,6 +604,7 @@ struct mesh_storage_t {
 
   using id_vecs_t = std::array<id_vector_t, D + 1>;
 
+  
   // array of array of vector of mesh_entity_base_t *
   std::array<entities_t, NM> entities;
 

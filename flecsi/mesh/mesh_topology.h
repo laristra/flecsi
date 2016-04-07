@@ -317,11 +317,12 @@ class mesh_topology_t : public mesh_topology_base_t
   template<typename T>
   std::vector<entity_set> scatter(map_function<T> f) const {
 
-    std::map<T, id_vector_t> id_map;
+    std::unordered_map<T, id_vector_t> id_map;
     for (auto ent : *this)
       id_map[f(ent)].push_back(ent.id());
 
     std::vector<entity_set> ent_map;
+    ent_map.reserve( id_map.size() );
     for ( auto entry : id_map )
       ent_map.emplace_back( 
         std::move( entity_set(*mesh_, std::move(entry.second), sorted_) )
@@ -631,8 +632,9 @@ class mesh_topology_t : public mesh_topology_base_t
 
   // Allow move operations
   mesh_topology_t(mesh_topology_t &&) = default;
-  mesh_topology_t & operator=(mesh_topology_t &&) = default;
 
+  //! override default move assignement
+  mesh_topology_t & operator=(mesh_topology_t && o) = default;
 
   //! Constructor
   mesh_topology_t()
