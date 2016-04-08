@@ -707,6 +707,7 @@ public:
 
     branch_id_t bid = branch_id_t::root();
     root_ = make_branch(bid);
+    root_->set_parent_(nullptr);
     branch_map_.emplace(bid, root_);
 
     max_depth_ = 0;
@@ -775,7 +776,7 @@ public:
       case action::none:
         break;
       case action::coarsen:
-        coarsen_(b);
+        coarsen_(b->parent());
         break;
       case action::refine:
         b->reset();
@@ -788,14 +789,14 @@ public:
   void refine_(branch_t* b){
     branch_id_t pid = b->id();
     size_t depth = pid.depth() + 1;
-
-    branch_int_t n = branch_int_t(1) << dimension;
     
-    for(branch_int_t bi = 0; bi < n; ++bi){
+    for(branch_int_t bi = 0; bi < branch_t::num_children; ++bi){
       branch_id_t bid = pid;
       bid.push(bi);
-      auto b = make_branch(bid);
-      branch_map_.emplace(bid, b);
+      auto c = make_branch(bid);
+      c->set_parent_(b);
+      b->set_child_(bi, c);
+      branch_map_.emplace(bid, c);
     }
 
     for(auto ent : *b){
@@ -812,51 +813,27 @@ public:
   // insert into p, coarsen all recursive children of b
 
   void coarsen_(branch_t* p, branch_t* b){
-    branch_id_t bid = b->id();
+    if(b->is_leaf()){
+      return;
+    }
 
-    constexpr branch_int_t n = branch_int_t(1) << dimension;
-
-    for(branch_int_t ci = 0; ci < n; ++ci){
-      branch_id_t cid = bid;
-      cid.push(ci);
-
-      auto citr = branch_map_.find(cid);
-      if(citr == branch_map_.end()){
-        continue;
-      }
-
-      auto c = citr->second;
-
-      for(auto ent : *c){
+    for(size_t i = 0; i < branch_t::num_children; ++i){
+      branch_t* ci = static_cast<branch_t*>(b->child(i));
+      
+      for(auto ent : *ci){
         p->insert(ent);
         ent->set_branch_id_(p->id());
       }
 
-      coarsen_(p, c);
-
-      delete c;
-      branch_map_.erase(citr);
+      coarsen_(p, ci);
+      branch_map_.erase(ci->id());
+      delete ci;
     }
   }
 
-  // called on a branch whose siblings will also be coarsened
-
-  void coarsen_(branch_t* b){    
-    branch_id_t bid = b->id();
-
-    size_t depth = bid.depth();
-
-    if(depth == 0){
-      return;
-    }
-
-    branch_id_t pid = bid.parent();
-
-    auto itr = branch_map_.find(pid);
-    assert(itr != branch_map_.end());
-    auto p = itr->second;
-
+  void coarsen_(branch_t* p){    
     coarsen_(p, p);
+    p->make_leaf();
   }
 
   entity_set_t find(const point_t& p, element_t radius){
@@ -931,47 +908,25 @@ public:
              element_t radius,
              element_t w){
 
-    branch_id_t bid = b->id();
-
-    constexpr branch_int_t n = branch_int_t(1) << dimension;
-
-    bool leaf = true;
-
-    element_t w2;
-
-    for(branch_int_t ci = 0; ci < n; ++ci){
-      branch_id_t cid = bid;
-      cid.push(ci);
-
-      auto citr = branch_map_.find(cid);
-      
-      if(leaf){
-        if(citr != branch_map_.end()){
-          w2 = w / element_t(2);
-          leaf = false;
-        }
-        else{
-          break;
-        }
-      }
-      else{
-        assert(citr != branch_map_.end());
-      }
-
-      auto c = citr->second;
-
-      point_t p2 = to_coordinates(c->id());
-
-      if(intersects(p2, w, p, radius)){
-        find_(c, entity_ids, p, radius, w2);
-      }
-    }
-
-    if(leaf){
+    if(b->is_leaf()){
       for(auto ent : *b){
         if(p.distance(ent->coordinates()) < radius){
           entity_ids.push_back(ent->id());
         }
+      }
+
+      return;      
+    }
+
+    element_t w2 = w / element_t(2);
+
+    for(size_t i = 0; i < branch_t::num_children; ++i){
+      branch_t* ci = static_cast<branch_t*>(b->child(i));
+      
+      point_t p2 = to_coordinates(ci->id());
+
+      if(intersects(p2, w, p, radius)){
+        find_(ci, entity_ids, p, radius, w2);
       }
     }
   }
@@ -1132,8 +1087,12 @@ public:
 
   using id_t = branch_id_t;
 
+  static constexpr size_t num_children = branch_int_t(2) << dimension;
+
   tree_branch()
-  : action_(action::none){}
+  : action_(action::none){
+    children_[0] = nullptr;
+  }
 
   void set_id_(branch_id_t id){
     id_ = id;
@@ -1159,7 +1118,40 @@ public:
     return action_;
   }
 
+  tree_branch* child(size_t ci) const{
+    assert(ci < num_children);
+    return children_[ci];
+  }
+
+  void set_child_(size_t ci, tree_branch* b){
+    assert(ci < num_children);
+    children_[ci] = b;
+  }
+
+  tree_branch* parent() const{
+    return parent_;
+  }
+
+  void set_parent_(tree_branch* b){
+    parent_ = b;
+  }
+
+  std::array<tree_branch*, num_children>& children(){
+    return children_;
+  }
+
+  bool is_leaf() const{
+    return children_[0];
+  }
+
+  void make_leaf(){
+    children_[0] = nullptr;
+  }
+
 private:
+  tree_branch* parent_;
+  std::array<tree_branch*, num_children> children_;
+
   branch_id_t id_;
   action action_ : 2;
 };
