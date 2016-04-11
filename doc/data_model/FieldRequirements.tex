@@ -1,0 +1,151 @@
+%  FleCSI Data Requirements: Field requirementes section.
+
+\section{Field Requirements}\label{FieldRequirementsSec}
+
+\subsection{Use Cases}
+
+\begin{table}[hbt]
+\begin{tabular}{c p{5 in}}
+\toprule
+Use Case & Description \\
+\midrule
+\useNumber & adds a field on request: adds metadata, associates metadata to field\\
+\useNumber & allocates the FieldData corresponding to the field in the right memory\\
+\useNumber & provides accessors to field data\\
+\useNumber & deletes a field\\
+\useNumber & deletes FeildData\\
+\useNumber & retrieves a field\\
+\useNumber & searches fields for matching metadata\\
+\bottomrule
+\end{tabular}
+\centering
+\parbox{5in}{\caption{Use cases for DataStore\label{data_store_field_use_case_table}}}
+\stepcounter{useTable}
+\end{table}
+
+
+\begin{table}[hbt]
+\begin{tabular}{c p{5 in}}
+\toprule
+Use Case & Description \\
+\midrule
+\useNumber & Is given read or write access to a field\\
+\useNumber & updates a field\\
+\useNumber & can declare or initialize a field\\
+\useNumber & associates a field with an index set (dense or sparse) \\
+\bottomrule
+\end{tabular}
+\centering
+\parbox{5in}{\caption{Task/Driver use cases for Fields.\label{task_field_use_case_table}}}
+\stepcounter{useTable}
+\end{table}
+
+
+\subsection{Field Requirements}
+
+% \begin{table*}[!hbt]
+% \begin{tabular}{c p{5 in}}
+\begin{longtable}{c p{5 in}}
+\caption[]{Requirements for Fields\label{data_field_req_table}}\\
+\toprule
+Requirement & Description \\
+\midrule
+\endfirsthead
+\caption[]{(cont.) Requirements for Fields}\\
+\toprule
+Requirement & Description \\
+\midrule
+\endhead
+\bottomrule[1.2pt]
+\endfoot
+\bottomrule[1.2pt]
+\endlastfoot
+% Association with metadata
+& \emph{Metadata} \\
+% name
+\reqNumber & Associate a name with every Field.\\
+& \emph{\tab[0.5cm]Discussion: Does the name need to be unique? Currently, the name is a unique identifier. It's not clear that that needs to be the case, though. For example, can there be a density field for all materials combined (hydro view), and a density field associated with chocolate, peanut butter, etc (chemistry view)? But if there are multiple fields with the same name, how does two packages refer to the same field? Namespacing?}\\
+% namespace
+\reqNumber & Associate a namespace with every Field.\\
+& \Note{1}{The namespace can be defaulted.}\\
+& \Note{2}{A name can occur zero or once in a namespace.}\\
+% version
+\reqNumber & Associate a version with each field.\\
+& \Note{1}{This may be required for techniques like predictor-corrector methods.}\\
+& \Note{2}{The version distinguishes between multiple instances of the same field name.}\\
+& \Example{'pressure after time step 42' versus 'pressure after time step 43'.}\\
+& \Discussion{Name, namespace, and version uniquely identify a field.} \\
+% Id
+\reqNumber & Associate a unique integer identifier with each field.\\
+& \Example{We want to be able to talk about a data object independently of its name.}\\
+& \Note{1}{an id would be more convenient than specifying name, namespace, and version.}\\
+% builtin metadata
+\reqNumber & Associate Fields with various builtin metadata aspects.\\
+& \Note{1}{a field can be associated with 0 or more materials, 0 or more isotopes.} \\
+% user-defined metadata
+\reqNumber & Permit users to register metadata in the form of $<$Key,Value$>$ pairs.\\
+& \Note{1}{Also permit users to search for and set user--define $<$Key,Value$>$ metadata.}\\
+% Search, set
+\reqNumber & Search for Fields matching a given metadata criterion.\\
+\reqNumber & Set each metadata attribute for each Field.\\
+\midrule
+
+% Association of fields & topological elements
+& \emph{Topological Elements} \\
+\reqNumber & Associate Fields with homogeneous sets of elements of one mesh. \\
+& \Note{1}{``homogeneous": only one type of element in the set.} \\
+& \Note{2}{a field may be associated with any subset of the elements of a mesh, including all of the elements of that type on the mesh;} \\
+& \Note{3}{a field need only be associated with the elements of one mesh.} \\
+& \Note{4}{Arbitrary mesh entities, including cell centers, edges, faces, vertices, corners, wedges.}\\
+
+% Association of fields and data
+\midrule
+& \emph{Data Elements} \\
+\reqNumber & Associate fields with FieldData, i.e. the actual data.\\
+& \Note{1}{There is a bijective relationship between Fields and FieldDatas.}\\
+& \Note{2}{The type of FieldData is fairly arbitrary; it probably includes any type with a null constructor---any type that can be allocated via a new [] statement. Further specification is required.}\\
+\reqNumber & Given a field descriptor, get read and write access to the FieldData.\\
+& \Note{1}{Read access may be separated from write access.}\\
+& \Note{2}{It would be nice to have a way of saying "done writing this field".}\\
+\reqNumber & Associate each Field with an IndexSet.\\
+& \Note{1}{Exactly one IndexSet per Field.}\\
+% & \emph{}
+% Initialization and persistence requirements
+
+
+
+% Tracking
+
+% \end{tabular}
+\stepcounter{reqTable}
+\end{longtable}
+% \centering
+%\parbox{5in}{\caption{Requirements for Fields}\label{data_field_req_table}}
+% \end{table*}
+
+Another key concept is the index set with which Field is associated.
+The index set defines the subset of mesh entities to which the FieldData correspond.
+
+
+% \clearpage
+\subsection{FieldData}
+
+FieldData are the actual variables associated with the mesh elements.
+They represent physically or computationally interesting quantities.
+The representation of these data is closely bound up with effecient iteration over them.
+Requirements on these data need to be sensitive to the possibility of needing different views and different layouts of the data for different machines and different algorithms.
+
+\begin{table}[hbt]
+\begin{tabular}{c p{5 in}}
+\toprule
+Requirement & Description \\
+\midrule
+\reqNumber & This table should capture requirements for FieldData. \\
+\bottomrule
+\end{tabular}
+\centering
+\parbox{5in}{\caption{Requirements for accessing FieldData, getting to it, allocation it, initializing and persisting it.}\label{field_data_req_table}}
+\stepcounter{reqTable}
+\end{table}
+
+

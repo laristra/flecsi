@@ -1,0 +1,36 @@
+%  FleCSI Data Requirements: Simulation State Data requirementes section.
+
+\section{Mutable Simulation Configuration Data Requirements}\label{SimMutableRequirementsSec}
+
+
+
+\begin{table}[hbt]
+\begin{tabular}{c p{5 in}}
+\toprule
+Requirement & Description \\
+\midrule
+\reqNumber & Partition Data \\
+\reqNumber & Cycle Information \\
+& \Note{1}{to include: cycle number, cycle start time, delta-t, ... more spec needed}\\
+& \Note{2}{should include data that can be registered and set by the user/package.}\\
+& \Note{2a}{is granularity finer than cycle/time-step required?}\\
+\bottomrule
+\end{tabular}
+\parbox{5in}{\caption{Requirements for Mutable Simulation State Data}\label{mutable_sim_state_data_req_table}}
+\stepcounter{reqTable}
+\end{table}
+
+\begin{table}[hbt]
+\begin{tabular}{c p{5 in}}
+\toprule
+Requirement & Description \\
+\midrule
+\reqNumber & Communications topology \\
+& \Note{1}{There may be multiple partitions of a single mesh.}\\
+& \Note{2}{There may be multiple meshes, each partitioned differently.}\\
+\bottomrule
+\end{tabular}
+\parbox{5in}{\caption{Requirements for Partitioning Data}\label{partition_data_req_table}}
+\stepcounter{reqTable}
+\end{table}
+

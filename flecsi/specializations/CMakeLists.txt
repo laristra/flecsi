@@ -69,7 +69,10 @@ cinch_add_unit(sagittarius
         SOURCES sagittarius/test/sagittarius.cc
         INPUTS  sagittarius/test/sagittarius.blessed
         )
-
+cinch_add_unit(sagittarius_mesh_partition
+        SOURCES sagittarius/test/sagittarius_mesh_partition.cc
+        #INPUTS  sagittarius/test/sagittarius.blessed
+        )
 #cinch_add_unit(unstruct_2d
 #  SOURCES unstruct/test/unstruct_2d.cc
 #  INPUTS unstruct/test/unstruct_2d.blessed)

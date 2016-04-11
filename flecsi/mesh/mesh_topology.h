@@ -1457,10 +1457,11 @@ class mesh_topology_t : public mesh_topology_base_t
 
     size_t to_dim;
 
-    if(dim == 0){
+    if (dim == 0) {
+      // vertex -> vertex via shared edge.
       to_dim = 1;
-    }
-    else{
+    } else {
+      // edge -> edge via shared vertex, cell -> cell via shared edge/face etc.
       to_dim = dim - 1;
     }
 
