@@ -775,9 +775,13 @@ public:
     switch(b->requested_action()){
       case action::none:
         break;
-      case action::coarsen:
-        coarsen_(b->parent());
+      case action::coarsen:{
+        auto p = static_cast<branch_t*>(b->parent());
+        if(p){
+          coarsen_(p);
+        }
         break;
+      }
       case action::refine:
         b->reset();
         break;
@@ -834,6 +838,7 @@ public:
   void coarsen_(branch_t* p){    
     coarsen_(p, p);
     p->make_leaf();
+    p->reset();
   }
 
   entity_set_t find(const point_t& p, element_t radius){
@@ -1087,7 +1092,7 @@ public:
 
   using id_t = branch_id_t;
 
-  static constexpr size_t num_children = branch_int_t(2) << dimension;
+  static constexpr size_t num_children = branch_int_t(1) << dimension;
 
   tree_branch()
   : action_(action::none){
@@ -1141,7 +1146,7 @@ public:
   }
 
   bool is_leaf() const{
-    return children_[0];
+    return !children_[0];
   }
 
   void make_leaf(){
