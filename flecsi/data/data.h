@@ -73,6 +73,18 @@ public:
   void reset(uintptr_t runtime_namespace) {
     sp_t::reset(runtime_namespace);
   } // reset
+  
+  template< typename T >
+  void release(T && key, uintptr_t runtime_namespace) {
+    sp_t::release(std::forward<T>(key), runtime_namespace);
+  } // release
+
+  void move(
+    uintptr_t from_runtime_namespace, 
+    uintptr_t to_runtime_namespace ) 
+  {
+    sp_t::move(from_runtime_namespace, to_runtime_namespace);
+  } // reset
 
   //! Use the accessor type defined by the storage policy.
   template <typename T>

@@ -604,6 +604,7 @@ struct mesh_storage_t {
 
   using id_vecs_t = std::array<id_vector_t, D + 1>;
 
+  
   // array of array of vector of mesh_entity_base_t *
   std::array<entities_t, NM> entities;
 
@@ -632,7 +633,7 @@ public:
   /*!
     Return the number of entities in for a specific domain and topology dim.
    */
-  virtual size_t num_entities(size_t domain, size_t dim) const = 0;
+  virtual size_t num_entities(size_t dim, size_t domain) const = 0;
 
   /*!
     Return the topological dimension of the mesh.

@@ -10,8 +10,6 @@
 namespace flecsi
 {
 struct dolfin_triangle_types_t {
-  // FIXME: why do we need to this boilerplate code to define these in another
-  // class and repeat it here?
   static constexpr size_t dimension = 2;
   static constexpr size_t num_domains = 1;
 
