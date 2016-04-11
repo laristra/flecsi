@@ -43,9 +43,10 @@ protected:
     // actually compute connectivities between entities
     dolfin.init();
 
-    // TODO: convert vertex to vertex and cell to cell connectivities to Distributed
-    // CSR format suitable for Metis
-
+    // convert vertex to vertex and cell to cell connectivities into
+    // Distributed CSR format suitable for Metis
+    dolfin.compute_graph_partition(0, 0, vertex_sizes, vertex_partitions);
+    dolfin.compute_graph_partition(0, 2, cell_sizes, cell_partitions);
   }
 
   const int cell_to_vertices[10][3] = {
@@ -53,6 +54,10 @@ protected:
     {4, 5, 9}, {5, 6, 9}, {6, 7, 9}, {7, 8, 9}, {7, 0, 8},
   };
 
+  std::vector<size_t> vertex_sizes = {5, 5};
+  std::vector<mesh_graph_partition<size_t>> vertex_partitions;
+  std::vector<size_t> cell_sizes = {5, 5};
+  std::vector<mesh_graph_partition<size_t>> cell_partitions;
 };
 }
 #endif //FLECSI_DOLFIN_TRIANGLE_FIXTURE_H
