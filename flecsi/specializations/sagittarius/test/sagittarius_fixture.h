@@ -59,7 +59,7 @@ protected:
     }
 
     constellation.init();
-    
+
     constellation.compute_graph_partition(0, 0, sizes, partitions);
   }
 
