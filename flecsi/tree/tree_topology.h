@@ -841,59 +841,73 @@ public:
     p->reset();
   }
 
-  entity_set_t find(const point_t& p, element_t radius){
+  entity_set_t find(const point_t& center, element_t radius){
     // find the lowest level branch which is guaranteed
     // to contain the point with radius
 
-    branch_id_t bid = to_branch_id(p);
+    branch_id_t bid = to_branch_id(center);
+
+    element_t dw = radius * element_t(2);
+    
+    point_t size;
+
+    for(size_t dim = 0; dim < dimension; ++dim){
+      size[dim] = bounds_[dim * dimension + 1] - bounds_[dim * dimension];
+    }
+
+    bool done = false;
 
     size_t d = 0;
 
-    element_t dw = radius * element_t(2);
-    element_t w = bounds_[1] - bounds_[0];
-    
-    while(w > dw){
-      w /= element_t(2);
-      ++d;
+    while(!done){
+      for(size_t dim = 0; dim < dimension; ++dim){
+        size[dim] /= 2;
+        if(dw > size[dim]){
+          done = true;
+          break;
+        }
+      }
+      
+      ++d;      
     }
     
     branch_t* b = find_parent(bid, d);
 
     entity_id_vector_t entity_ids;
 
-    find_(b, entity_ids, p, radius, w);
+    find_(b, entity_ids, center, radius, size);
 
     return entity_set_t(*this, std::move(entity_ids), false);
   }
 
   // initial attempt to get this working, needs to be optimized
-  
-  static bool intersects(const coordinates<element_t, 2>& r1,
-                         element_t w,
+
+  static bool intersects(const coordinates<element_t, 2>& origin,
+                         const coordinates<element_t, 2>& size,
                          const coordinates<element_t, 2>& center,
                          element_t radius){
     
-    if(r1.distance(center) < radius){
+    if(origin.distance(center) < radius){
       return true;
     }
 
-    point_t r2 = r1;
-    r2[0] += w;
+    point_t p1 = origin;
+    p1[0] += size[0];
 
-    if(r2.distance(center) < radius){
+    if(p1.distance(center) < radius){
       return true;
     } 
 
-    r2 = r1;
-    r2[1] += w;
+    point_t p2 = origin;
+    p2[1] += size[1];
 
-    if(r2.distance(center) < radius){
+    if(p2.distance(center) < radius){
       return true;
     }
 
-    r2[0] += w;
+    p2[0] += size[0];
 
-    if(r2.distance(center) < radius){
+    if(p2.distance(center) < radius){
       return true;
     }
 
@@ -902,13 +916,13 @@ public:
 
   void find_(branch_t* b,
              entity_id_vector_t& entity_ids,
-             const point_t& p,
+             const point_t& center,
              element_t radius,
-             element_t w){
+             point_t size){
     
     if(b->is_leaf()){
       for(auto ent : *b){
-        if(p.distance(ent->coordinates()) < radius){
+        if(center.distance(ent->coordinates()) < radius){
           entity_ids.push_back(ent->id());
         }
       }
@@ -916,15 +930,17 @@ public:
       return;      
     }
 
-    element_t w2 = w / element_t(2);
+    for(size_t dim = 0; dim < dimension; ++dim){
+      size[dim] /= element_t(2);
+    }
 
     for(size_t i = 0; i < branch_t::num_children; ++i){
       branch_t* ci = static_cast<branch_t*>(b->child(i));
       
-      point_t p2 = to_coordinates(ci->id());
+      point_t origin = to_coordinates(ci->id());
 
-      if(intersects(p2, w, p, radius)){
-        find_(ci, entity_ids, p, radius, w2);
+      if(intersects(origin, size, center, radius)){
+        find_(ci, entity_ids, center, radius, size);
       }
     }
   }
