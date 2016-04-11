@@ -299,7 +299,7 @@ public:
   : id_(id){}
 
   operator size_t() const{
-    id_;
+    return id_;
   }
 
   entity_id_t& operator=(const entity_id_t& id){
@@ -841,76 +841,86 @@ public:
     p->reset();
   }
 
-  entity_set_t find(const point_t& p, element_t radius){
+  entity_set_t find(const point_t& center, element_t radius){
     // find the lowest level branch which is guaranteed
     // to contain the point with radius
 
-    branch_id_t bid = to_branch_id(p);
-
-    size_t d = 0;
-
-    element_t dw = radius * element_t(2);
-    element_t w = bounds_[1] - bounds_[0];
+    branch_id_t bid = to_branch_id(center);
     
-    while(w > dw){
-      w /= element_t(2);
-      ++d;
+    point_t size;
+
+    for(size_t dim = 0; dim < dimension; ++dim){
+      size[dim] = bounds_[dim * dimension + 1] - bounds_[dim * dimension];
+    }
+
+    size_t d1 = 0;
+    bool done = false;
+
+    while(!done){
+      for(size_t dim = 0; dim < dimension; ++dim){
+        size[dim] /= 2;
+        if(radius > size[dim]){
+          done = true;
+          break;
+        }
+      }
+      ++d1;      
     }
     
-    branch_t* b = find_parent(bid, d);
+    assert(d1 > 0);
+
+    branch_t* b = find_parent(bid, d1 - 1);
 
     entity_id_vector_t entity_ids;
 
-    find_(b, entity_ids, p, radius, w);
+    find_(b, entity_ids, center, radius, size);
 
     return entity_set_t(*this, std::move(entity_ids), false);
   }
 
-  static bool intersects(const coordinates<element_t, 2>& r1,
-                         element_t w,
+  // initial attempt to get this working, needs to be optimized
+
+  static bool intersects(const coordinates<element_t, 2>& origin,
+                         const coordinates<element_t, 2>& size,
                          const coordinates<element_t, 2>& center,
                          element_t radius){
     
-    element_t c1x = center[0] + radius;
-    element_t c1y = center[1] + radius;
-
-    element_t w2 = w / element_t(2);
-
-    element_t c2x = r1[0] + w2;
-    element_t c2y = r1[1] + w2;
-
-    element_t d1x = c1x - c2x;
-    element_t d1y = c1y - c2y;
-
-    if(d1x < -w2){
-      d1x = -w2;
-    }
-    else if(d1x > w2){
-      d1x = w2;
+    if(origin.distance(center) < radius){
+      return true;
     }
 
-    if(d1y < -w2){
-      d1y = -w2;
-    }
-    else if(d1y > w2){
-      d1y = w2;
+    point_t p1 = origin;
+    p1[0] += size[0];
+
+    if(p1.distance(center) < radius){
+      return true;
+    } 
+
+    point_t p2 = origin;
+    p2[1] += size[1];
+
+    if(p2.distance(center) < radius){
+      return true;
     }
 
-    c2x += d1x - c1x;
-    c2y += d1y - c1y;
+    p2[0] += size[0];
 
-    return sqrt(c2x * c2x + c2y * c2y) < radius;
+    if(p2.distance(center) < radius){
+      return true;
+    }
+
+    return false;
   }
 
   void find_(branch_t* b,
              entity_id_vector_t& entity_ids,
-             const point_t& p,
+             const point_t& center,
              element_t radius,
-             element_t w){
-
+             point_t size){
+    
     if(b->is_leaf()){
       for(auto ent : *b){
-        if(p.distance(ent->coordinates()) < radius){
+        if(center.distance(ent->coordinates()) < radius){
           entity_ids.push_back(ent->id());
         }
       }
@@ -918,15 +928,17 @@ public:
       return;      
     }
 
-    element_t w2 = w / element_t(2);
+    for(size_t dim = 0; dim < dimension; ++dim){
+      size[dim] /= element_t(2);
+    }
 
     for(size_t i = 0; i < branch_t::num_children; ++i){
       branch_t* ci = static_cast<branch_t*>(b->child(i));
       
-      point_t p2 = to_coordinates(ci->id());
+      point_t origin = to_coordinates(ci->id());
 
-      if(intersects(p2, w, p, radius)){
-        find_(ci, entity_ids, p, radius, w2);
+      if(intersects(origin, size, center, radius)){
+        find_(ci, entity_ids, center, radius, size);
       }
     }
   }
@@ -1000,22 +1012,8 @@ public:
   void apply(apply_function f, branch_t* b){    
     f(*b);
 
-    branch_id_t bid = b->id();
-
-    constexpr branch_int_t n = branch_int_t(1) << dimension;
-
-    for(branch_int_t ci = 0; ci < n; ++ci){
-      branch_id_t cid = bid;
-      cid.push(ci);
-
-      auto citr = branch_map_.find(cid);
-      if(citr == branch_map_.end()){
-        continue;
-      }
-
-      auto c = citr->second;
-
-      apply(f, c);
+    for(size_t i = 0; i < branch_t::num_children; ++i){
+      apply(f, static_cast<branch_t*>(b->child(i)));
     }
   }
 

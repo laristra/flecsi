@@ -1,0 +1,46 @@
+% ENAMR-RDIT Requirements section.
+\section{Requirements}\label{RequirementsSec}
+
+Table \ref{amr_req_table} gives the AMR requirements for ENAMR; Table \ref{data_req_table} gives the data requirements.
+
+
+\newcounter{reqTable}
+\setcounter{reqTable}{1}
+\newcounter{reqNum}[reqTable]
+% \numberwithin{reqNum}{table}
+\newcommand\reqNumber{\stepcounter{reqNum}\thereqTable.\arabic{reqNum}}
+
+\begin{table}[hbt]
+%\centering
+\begin{tabular}{c p{5 in}}
+\toprule
+Requirement & \\
+\midrule
+\reqNumber & Associate data fields with homogeneous sets of elements. \\
+& \emph{Note 1: a field is associated with only one type of element.} \\
+& \emph{Note 2: a field may be associated with any subset of the elements of a mesh, including all of the elements} \\
+& \emph{Note 2: a field need only be associated with the elements of one mesh.} \\
+\reqNumber & Provide data fields associated with cell centers.\\
+\reqNumber & Provide data fields associated with cell edges.\\
+\reqNumber & Provide data fields associated with cell faces.\\
+\reqNumber & Provide data fields associated with cell vertices.\\
+\reqNumber & Provide data fields associated with cell corners.\\
+\reqNumber & Provide data fields associated with cell wedges.\\
+\reqNumber & Associate data fields with materials.
+& \emph{Note 1: a field can be associated with 0 or more materials.} \\
+\reqNumber & Associate data fields with isotopes.
+& \emph{Note 1: a field can be associated with 0 or more isotopes.} \\
+\reqNumber
+
+\reqNumber & Data Store: manage data fields: arrays associated with tiles. \\
+\reqNumber & Provide ability to index data fields in data store.\\
+& \emph{For example, index by tile, material, and another key such as field name. That is, distinguish between ``temperature, material 1, tile 1'' and ``temperature, material 2, tile 1''.}\\
+\bottomrule
+\end{tabular}
+\parbox{5in}{\caption{Requirements for Data Fields}\label{data_req_table}}
+\stepcounter{reqTable}
+\end{table}
+
+
+\clearpage
+

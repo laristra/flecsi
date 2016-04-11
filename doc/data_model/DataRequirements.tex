@@ -1,0 +1,135 @@
+%%---------------------------------------------------------------------------%%
+%% DataRequirements.tex
+%% T. M. Kelley
+%% 29 Feb. 2016
+%% (c) 2016 LANS LLC
+%%---------------------------------------------------------------------------%%
+\documentclass[note]{ResearchNote_pdf}
+\usepackage[centertags]{amsmath}
+\usepackage{amssymb,amsthm,graphicx}
+\usepackage[mathcal]{euscript}
+\usepackage{tmadd,tmath}
+\usepackage{cite}
+\usepackage{subfigure}
+\usepackage{afterpage}
+\usepackage[ruled,vlined,norelsize]{algorithm2e}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{xr}
+
+%%---------------------------------------------------------------------------%%
+%% BEGIN DOCUMENT
+%%---------------------------------------------------------------------------%%
+\begin{document}
+
+%%---------------------------------------------------------------------------%%
+%% OPTIONS FOR NOTE
+%%---------------------------------------------------------------------------%%
+
+\date{\today}
+\subject{FleCSI Data Management Requirements}
+\toms{File
+}
+\refno{CCS-7-xyz}
+\revisionnum{DRAFT 1.0}
+
+%-------NO CHANGES
+\divisionname{Computer and Computational Sciences Division}
+\groupname{CCS--7:Applied Computer Science}
+\fromms{
+FleCSI Design Team:\\
+Ben Bergen, CCS--7, MS B287\\
+Marc Charest, XCP--1, MS P365 \\
+Irina Demeshko, BCCS--7, MS 287 \\
+Timothy Kelley, CCS--7, B287\\
+Nick Moss, CCS--7, MS B287 \\
+Josh Payne, CCS--7, MS B287 \\
+John Wohlbier, CCS--2, MS D413 \\
+Geoff Womeldorf, CCS--7, MS B287
+}
+\phone{7--3965}
+\originator{TMK}
+\typist{tk}
+\date{\today}
+%-------NO CHANGES
+
+
+% define requirement number
+\newcounter{reqTable}
+\setcounter{reqTable}{1}
+\newcounter{reqNum}[reqTable]
+% \numberwithin{reqNum}{table}
+\newcommand\reqNumber{R\stepcounter{reqNum}\thereqTable.\arabic{reqNum}}
+
+\newcounter{useTable}
+\setcounter{useTable}{1}
+\newcounter{useNum}[useTable]
+\newcommand\useNumber{U\stepcounter{useNum}\theuseTable.\arabic{useNum}}
+
+% tabs
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+
+% usage: \note{42}{The foo is the bar} -->    Note 42: The foo is the bar
+\newcommand{\Note}[2]{\emph{\tab[0.5cm]Note #1: #2}}
+
+\newcommand{\Example}[1]{\emph{\tab[0.5cm]Example: #1}}
+
+\newcommand{\Discussion}[1]{\emph{\tab[0.5cm]Discussion: #1}}
+
+%%---------------------------------------------------------------------------%%
+%% DISTRIBUTION LIST
+%%---------------------------------------------------------------------------%%
+
+% \distribution {
+% }
+
+%%---------------------------------------------------------------------------%%
+%% BEGIN NOTE
+%%---------------------------------------------------------------------------%%
+\opening
+
+\tableofcontents
+
+
+% When starting a new top-level requirements table, use the following template.
+%
+
+
+% \begin{table}[hbt]
+% \begin{tabular}{c p{5 in}}
+% \toprule
+% Requirement & Description \\
+% \midrule
+% \reqNumber & Do especially silly things at all times. \\
+% & \emph{Note 1: At least one silly thing per person per day.} \\
+% \bottomrule
+% \end{tabular}
+% \parbox{5in}{\caption{Requirements for Silly Things}\label{silly_req_table}}
+% \stepcounter{reqTable}
+% \end{table}
+
+
+\input{Introduction}
+
+\input{FieldRequirements}
+
+\input{ParticleRequirements}
+
+\input{PhysicalModelData}
+
+\input{SimConstData}
+
+\input{SimMutableData}
+
+% \begin{thebibliography}{10}
+% \end{thebibliography}
+
+~\verb+__________________+
+
+\closing
+
+\end{document}
+
+%%---------------------------------------------------------------------------%%
+%% end of <papername>.tex
+%%---------------------------------------------------------------------------%%
