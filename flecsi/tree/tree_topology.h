@@ -857,12 +857,7 @@ public:
       ++d;
     }
     
-    bid.truncate(d);
-
-    auto itr = branch_map_.find(bid);
-    assert(itr != branch_map_.end());
-
-    branch_t* b = itr->second;
+    branch_t* b = find_parent(bid, d);
 
     entity_id_vector_t entity_ids;
 
