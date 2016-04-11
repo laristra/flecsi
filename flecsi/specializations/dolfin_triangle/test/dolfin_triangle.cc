@@ -1,54 +1,38 @@
-//
-// Created by ollie on 3/31/16.
-//
+/*~-------------------------------------------------------------------------~~*
+ *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+ * /@@/////  /@@          @@////@@ @@////// /@@
+ * /@@       /@@  @@@@@  @@    // /@@       /@@
+ * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+ * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+ * /@@       /@@/@@//// //@@    @@       /@@/@@
+ * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+ * //       ///  //////   //////  ////////  //
+ *
+ * Copyright (c) 2016 Los Alamos National Laboratory, LLC
+ * All rights reserved
+ *~-------------------------------------------------------------------------~~*/
 
 #include <cinchtest.h>
+
 #include "../dolfin_triangle_mesh.h"
+#include "dolfin_triangle_fixture.h"
 
 using namespace flecsi;
 
-static int cell_to_vertices[][3] = {
-  {0, 1, 8}, {1, 2, 8}, {2, 3, 8}, {3, 9, 8}, {3, 4, 9},
-  {4, 5, 9}, {5, 6, 9}, {6, 7, 9}, {7, 8, 9}, {7, 0, 8},
-};
-
-
-TEST(dolfin_triangle, initialization) {
-  dolfin_triangle_mesh_t<dolfin_triangle_types_t> dolfin;
-
-  // there are no vertex, edge or cells at the beginning
-  ASSERT_EQ(0, dolfin.num_entities(0, dolfin_vertex_t::dimension));
-  ASSERT_EQ(0, dolfin.num_entities(0, dolfin_edge_t::dimension));
-  ASSERT_EQ(0, dolfin.num_entities(0, dolfin_cell_t::dimension));
-
-  // add vertices to the mesh
-  std::vector<dolfin_vertex_t *> vertices;
-  for (size_t i = 0; i < 10; i++) {
-    auto v = dolfin.make<dolfin_vertex_t>();
-    dolfin.add_entity<0, dolfin_vertex_t::dimension>(v);
-    vertices.push_back(v);
-  }
-  // There are 10 vertices.
+TEST_F(Dolfin_Triangle, number_of_vertices_should_be_10) {
   ASSERT_EQ(10, dolfin.num_vertices());
+}
 
-  // add cells and cell to vertex connectivities to the mesh
-  for (size_t i = 0; i < 10; i++) {
-    auto cell = dolfin.make<dolfin_cell_t>();
-    dolfin.add_entity<2, 0>(cell);
-    dolfin.init_cell<0>(cell,
-                        {vertices[cell_to_vertices[i][0]],
-                         vertices[cell_to_vertices[i][1]],
-                         vertices[cell_to_vertices[i][2]]});
-  }
-  // There are 10 cells.
+TEST_F(Dolfin_Triangle, number_of_cells_should_be_10) {
   ASSERT_EQ(10, dolfin.num_cells());
+}
 
-  // actually compute connectivities between entities
-  dolfin.init();
-
-  // this should create 19 edges from cells->vertices
+TEST_F(Dolfin_Triangle, number_of_edges_should_be_19) {
   ASSERT_EQ(19, dolfin.num_edges());
+}
 
+
+TEST_F(Dolfin_Triangle, dump) {
   CINCH_CAPTURE() << "vertex to vertex connectivities:\n";
   auto vs = dolfin.vertices();
   for (auto v : vs) {
@@ -144,3 +128,4 @@ TEST(dolfin_triangle, initialization) {
 
   CINCH_ASSERT(TRUE, CINCH_EQUAL_BLESSED("dolfin_triangle.blessed"));
 }
+
