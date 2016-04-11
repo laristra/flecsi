@@ -846,8 +846,6 @@ public:
     // to contain the point with radius
 
     branch_id_t bid = to_branch_id(center);
-
-    element_t dw = radius * element_t(2);
     
     point_t size;
 
@@ -855,23 +853,23 @@ public:
       size[dim] = bounds_[dim * dimension + 1] - bounds_[dim * dimension];
     }
 
+    size_t d1 = 0;
     bool done = false;
-
-    size_t d = 0;
 
     while(!done){
       for(size_t dim = 0; dim < dimension; ++dim){
         size[dim] /= 2;
-        if(dw > size[dim]){
+        if(radius > size[dim]){
           done = true;
           break;
         }
       }
-      
-      ++d;      
+      ++d1;      
     }
     
-    branch_t* b = find_parent(bid, d);
+    assert(d1 > 0);
+
+    branch_t* b = find_parent(bid, d1 - 1);
 
     entity_id_vector_t entity_ids;
 
@@ -1014,22 +1012,8 @@ public:
   void apply(apply_function f, branch_t* b){    
     f(*b);
 
-    branch_id_t bid = b->id();
-
-    constexpr branch_int_t n = branch_int_t(1) << dimension;
-
-    for(branch_int_t ci = 0; ci < n; ++ci){
-      branch_id_t cid = bid;
-      cid.push(ci);
-
-      auto citr = branch_map_.find(cid);
-      if(citr == branch_map_.end()){
-        continue;
-      }
-
-      auto c = citr->second;
-
-      apply(f, c);
+    for(size_t i = 0; i < branch_t::num_children; ++i){
+      apply(f, static_cast<branch_t*>(b->child(i)));
     }
   }
 
