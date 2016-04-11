@@ -24,7 +24,7 @@ cinch_add_application_directory("examples")
 # Add library targets
 #------------------------------------------------------------------------------#
 
-cinch_add_library_target(flecsi src)
+cinch_add_library_target(flecsi flecsi)
 
 #------------------------------------------------------------------------------#
 # Set header suffix regular expression

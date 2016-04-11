@@ -34,7 +34,7 @@ env: #maybe add mpich later
 script:
   - mkdir build && cd build &&
     PATH="/usr/lib/ccache:$PATH" CC=gcc-${GVER} CXX=g++-${GVER} cmake -DENABLE_MPI=$MPI -DENABLE_UNIT_TESTS=ON ${COVERAGE:+-DUSE_GCOV=ON} .. && 
-    make -j2 && make test ARGS='-E burton' && make install DESTDIR="${HOME}"
+    make -j2 && make test && make install DESTDIR="${HOME}"
 
 after_success:
   - if [[ ${COVERAGE} ]]; then cd .. && codecov --gcov-exec gcov-${GVER}; fi
