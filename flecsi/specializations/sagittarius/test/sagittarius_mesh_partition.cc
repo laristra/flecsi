@@ -71,18 +71,20 @@ protected:
   std::vector<mesh_graph_partition<size_t>> partitions;
 };
 
-TEST_F(Sagittarius, number_of_vertices) {
+TEST_F(Sagittarius, number_of_vertices_should_be_8) {
   ASSERT_EQ(8, constellation.num_vertices());
 }
 
-TEST_F(Sagittarius, number_partitions) {
+TEST_F(Sagittarius, number_partitions_should_be_2) {
   ASSERT_EQ(2, partitions.size());
 }
 
-TEST_F(Sagittarius, number_of_vertices_in_partition) {
+TEST_F(Sagittarius, number_of_vertices_in_each_partition_should_be_4) {
   ASSERT_EQ(4, partitions[0].offset.size());
+  ASSERT_EQ(4, partitions[1].offset.size());
 }
 
+//TEST_F(Sagittarius, )
 TEST_F(Sagittarius, dump) {
   for (auto partition : partitions) {
     std::cout << "offset: ";
