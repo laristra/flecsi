@@ -299,7 +299,7 @@ public:
   : id_(id){}
 
   operator size_t() const{
-    id_;
+    return id_;
   }
 
   entity_id_t& operator=(const entity_id_t& id){
@@ -866,40 +866,38 @@ public:
     return entity_set_t(*this, std::move(entity_ids), false);
   }
 
+  // initial attempt to get this working, needs to be optimized
+  
   static bool intersects(const coordinates<element_t, 2>& r1,
                          element_t w,
                          const coordinates<element_t, 2>& center,
                          element_t radius){
     
-    element_t c1x = center[0] + radius;
-    element_t c1y = center[1] + radius;
-
-    element_t w2 = w / element_t(2);
-
-    element_t c2x = r1[0] + w2;
-    element_t c2y = r1[1] + w2;
-
-    element_t d1x = c1x - c2x;
-    element_t d1y = c1y - c2y;
-
-    if(d1x < -w2){
-      d1x = -w2;
-    }
-    else if(d1x > w2){
-      d1x = w2;
+    if(r1.distance(center) < radius){
+      return true;
     }
 
-    if(d1y < -w2){
-      d1y = -w2;
-    }
-    else if(d1y > w2){
-      d1y = w2;
+    point_t r2 = r1;
+    r2[0] += w;
+
+    if(r2.distance(center) < radius){
+      return true;
+    } 
+
+    r2 = r1;
+    r2[1] += w;
+
+    if(r2.distance(center) < radius){
+      return true;
     }
 
-    c2x += d1x - c1x;
-    c2y += d1y - c1y;
+    r2[0] += w;
 
-    return sqrt(c2x * c2x + c2y * c2y) < radius;
+    if(r2.distance(center) < radius){
+      return true;
+    }
+
+    return false;
   }
 
   void find_(branch_t* b,
@@ -907,7 +905,7 @@ public:
              const point_t& p,
              element_t radius,
              element_t w){
-
+    
     if(b->is_leaf()){
       for(auto ent : *b){
         if(p.distance(ent->coordinates()) < radius){
