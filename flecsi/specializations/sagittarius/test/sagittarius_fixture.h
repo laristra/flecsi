@@ -60,13 +60,16 @@ protected:
 
     constellation.init();
 
-    constellation.compute_graph_partition(0, 0, sizes, partitions);
+    constellation.compute_graph_partition(0, 0, vertex_sizes, vertex_partitions);
+    constellation.compute_graph_partition(0, 2, cell_sizes, cell_partitions);
   }
 
   virtual void TearDown() override { }
 
-  std::vector<size_t> sizes = {4, 4};
-  std::vector<mesh_graph_partition<size_t>> partitions;
+  std::vector<size_t> vertex_sizes = {4, 4};
+  std::vector<mesh_graph_partition<size_t>> vertex_partitions;
+  std::vector<size_t> cell_sizes = {2, 2};
+  std::vector<mesh_graph_partition<size_t>> cell_partitions;
 };
 }
 #endif //FLECSI_SAGITTARIUS_FIXTURE_H
