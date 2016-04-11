@@ -76,9 +76,6 @@ cinch_add_unit(sagittarius
 cinch_add_unit(sagittarius_mesh_partition
         SOURCES sagittarius/test/sagittarius_mesh_partition.cc
         )
-#cinch_add_unit(unstruct_2d
-#  SOURCES unstruct/test/unstruct_2d.cc
-#  INPUTS unstruct/test/unstruct_2d.blessed)
 
 #cinch_add_unit(unstruct_3d
 #  SOURCES unstruct/test/unstruct_3d.cc
