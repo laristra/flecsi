@@ -16,15 +16,6 @@
 #define FLECSI_SAGITTARIUS_FIXTURE_H
 
 namespace flecsi {
-static const int quads[][4] = {
-  {0, 1, 2, 3},
-  {1, 4, 6, 2}
-};
-
-static const int triangles[][3] = {
-  {4, 5, 6},
-  {2, 6, 7}
-};
 
 class Sagittarius : public ::testing::Test {
 protected:
@@ -70,6 +61,17 @@ protected:
   std::vector<mesh_graph_partition<size_t>> vertex_partitions;
   std::vector<size_t> cell_sizes = {2, 2};
   std::vector<mesh_graph_partition<size_t>> cell_partitions;
+
+private:
+  const int quads[2][4] = {
+    {0, 1, 2, 3},
+    {1, 4, 6, 2}
+  };
+
+  const int triangles[2][3] = {
+    {4, 5, 6},
+    {2, 6, 7}
+  };
 };
 }
 #endif //FLECSI_SAGITTARIUS_FIXTURE_H

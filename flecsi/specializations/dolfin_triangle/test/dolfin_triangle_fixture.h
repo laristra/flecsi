@@ -49,15 +49,16 @@ protected:
     dolfin.compute_graph_partition(0, 2, cell_sizes, cell_partitions);
   }
 
-  const int cell_to_vertices[10][3] = {
-    {0, 1, 8}, {1, 2, 8}, {2, 3, 8}, {3, 9, 8}, {3, 4, 9},
-    {4, 5, 9}, {5, 6, 9}, {6, 7, 9}, {7, 8, 9}, {7, 0, 8},
-  };
-
   std::vector<size_t> vertex_sizes = {5, 5};
   std::vector<mesh_graph_partition<size_t>> vertex_partitions;
   std::vector<size_t> cell_sizes = {5, 5};
   std::vector<mesh_graph_partition<size_t>> cell_partitions;
+
+private:
+  const int cell_to_vertices[10][3] = {
+    {0, 1, 8}, {1, 2, 8}, {2, 3, 8}, {3, 9, 8}, {3, 4, 9},
+    {4, 5, 9}, {5, 6, 9}, {6, 7, 9}, {7, 8, 9}, {7, 0, 8},
+  };
 };
 }
 #endif //FLECSI_DOLFIN_TRIANGLE_FIXTURE_H
