@@ -30,6 +30,7 @@ protected:
       vertices.push_back(v);
     }
 
+    // add cells and cell to vertex connectivities to the mesh
     for (size_t i = 0; i < 2; i++) {
       auto cell = constellation.make<sagittarius_quad_t>();
       constellation.add_entity<2, 0>(cell);
@@ -40,6 +41,7 @@ protected:
                                   vertices[quads[i][3]]});
     }
 
+    // actually compute connectivities between entities
     for (size_t i = 0; i < 2; i++) {
       auto cell = constellation.make<sagittarius_triangle_t>();
       constellation.add_entity<2, 0>(cell);
@@ -51,6 +53,9 @@ protected:
 
     constellation.init();
 
+    // convert and divide vertex to vertex and cell to cell connectivities into
+    // two equal partitions in the form of Distributed CSR format as in ParMetis
+    // manual.
     constellation.compute_graph_partition(0, 0, vertex_sizes, vertex_partitions);
     constellation.compute_graph_partition(0, 2, cell_sizes, cell_partitions);
   }

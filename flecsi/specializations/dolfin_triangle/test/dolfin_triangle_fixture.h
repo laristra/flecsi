@@ -43,8 +43,9 @@ protected:
     // actually compute connectivities between entities
     dolfin.init();
 
-    // convert vertex to vertex and cell to cell connectivities into
-    // Distributed CSR format suitable for Metis
+    // convert and divide vertex to vertex and cell to cell connectivities into
+    // two equal partitions in the form of Distributed CSR format as in ParMetis
+    // manual.
     dolfin.compute_graph_partition(0, 0, vertex_sizes, vertex_partitions);
     dolfin.compute_graph_partition(0, 2, cell_sizes, cell_partitions);
   }
