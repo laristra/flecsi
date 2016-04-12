@@ -29,6 +29,7 @@ TEST_F(Sagittarius, number_of_vertices_in_each_partition_should_be_4) {
   ASSERT_THAT(vertex_partitions[0].offset, SizeIs(4));
   ASSERT_THAT(vertex_partitions[1].offset, SizeIs(4));
 
+  // FIXME: this is different from the vtxdist as in ParMetis
   ASSERT_THAT(vertex_partitions[0].partition, ElementsAre(0, 4, 4));
   ASSERT_THAT(vertex_partitions[1].partition, ElementsAre(0, 4, 4));
 }
@@ -55,4 +56,8 @@ TEST_F(Sagittarius, number_of_cell_partitions_should_be_2) {
 TEST_F(Sagittarius, number_of_cells_in_each_partition_should_be_2) {
   ASSERT_THAT(cell_partitions[0].offset, SizeIs(2));
   ASSERT_THAT(cell_partitions[1].offset, SizeIs(2));
+}
+
+TEST_F(Sagittarius, partition_is_not_the_same_as_vtxdist_in_ParMetis) {
+  ASSERT_THAT(cell_partitions[0].partition, Not(ElementsAre(0, 2, 4)));
 }
