@@ -820,8 +820,8 @@ class mesh_topology_t : public mesh_topology_base_t
 
     // This call will create the entity objects in the mesh (The above
     // logic only defines the indices and connectivity.)
-    cell_to_entity.init_create<MT, M>(
-        ms_.id_vecs[M][D], ms_.entities[M][D], cell_entity_conn, D, *this);
+    cell_to_entity.init_create<MT, M, D>(
+        ms_.id_vecs[M][D], ms_.entities[M][D], cell_entity_conn, *this);
 
     // Set the connectivity information from the created entities to
     // the vertices.
@@ -837,7 +837,7 @@ class mesh_topology_t : public mesh_topology_base_t
   template <size_t FM, size_t TM, size_t FD, size_t TD>
   void transpose()
   {
-    // std::cerr << "transpose: " << from_dim << " -> " << to_dim << std::endl;
+    // std::cerr << "transpose: " << FD << " -> " << TD << std::endl;
 
     index_vector_t pos(num_entities_(FD, FM), 0);
 
@@ -868,7 +868,7 @@ class mesh_topology_t : public mesh_topology_base_t
   template <size_t FM, size_t TM, size_t FD, size_t TD, size_t D>
   void intersect()
   {
-    // std::cerr << "intersect: " << from_dim << " -> " << to_dim << std::endl;
+    // std::cerr << "intersect: " << FD << " -> " << TD;
 
     // The connectivity we will be populating
     connectivity_t & out_conn = get_connectivity_(FM, TM, FD, TD);
@@ -889,7 +889,7 @@ class mesh_topology_t : public mesh_topology_base_t
     connectivity_t & c = get_connectivity_(FM, FD, D);
     assert(!c.empty());
 
-    connectivity_t & c2 = get_connectivity_(TM, D, TD);
+    connectivity_t & c2 = get_connectivity_(TM, TD, D);
     assert(!c2.empty());
 
     // Iterate through entities in from topological dimension
@@ -916,6 +916,7 @@ class mesh_topology_t : public mesh_topology_base_t
       // Loop through each from entity again
       for (auto from_ent2 : entities<D, FM>(from_entity)) {
         for (id_t to_id : entity_ids<TD, TM>(from_ent2)) {
+
           // If we have already visited, skip
           if (visited[to_id.entity()]) {
             continue;
@@ -961,7 +962,7 @@ class mesh_topology_t : public mesh_topology_base_t
   template <size_t M, size_t FD, size_t TD>
   void compute_connectivity()
   {
-    // std::cerr << "compute: " << from_dim << " -> " << to_dim << std::endl;
+    // std::cerr << "compute: " << FD << " -> " << TD << std::endl;
 
     // Get the output connectivity
     connectivity_t & out_conn = get_connectivity_(M, FD, TD);
@@ -1134,8 +1135,8 @@ class mesh_topology_t : public mesh_topology_base_t
 
     if (ms_.entities[TM][TD].empty()) {
       // Create the entity objects
-      cell_out.init_create<MT, TM>(
-          ms_.id_vecs[TM][TD], ms_.entities[TM][TD], cell_conn, TD, *this);
+      cell_out.init_create<MT, TM, TD>(
+          ms_.id_vecs[TM][TD], ms_.entities[TM][TD], cell_conn, *this);
     } else {
       cell_out.init(cell_conn);
     }
