@@ -1501,7 +1501,7 @@ class mesh_topology_t : public mesh_topology_base_t
 
       if(m >= pn * partition_sizes[pi]){
         partitions.emplace_back(std::move(cp));
-        partition.push_back(m);
+        partition.push_back(m + partition.back());
         offset = 0;
         ++pi;
       }

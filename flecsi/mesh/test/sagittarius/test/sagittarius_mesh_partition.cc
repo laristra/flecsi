@@ -29,10 +29,6 @@ TEST_F(A_Sagittarius_Mesh_Partitioned_In_Two,
        number_of_vertices_in_each_partition_should_be_4) {
   ASSERT_THAT(vertex_partitions[0].offset, SizeIs(4));
   ASSERT_THAT(vertex_partitions[1].offset, SizeIs(4));
-
-  // FIXME: this is different from the vtxdist as in ParMetis
-  ASSERT_THAT(vertex_partitions[0].partition, ElementsAre(0, 4, 4));
-  ASSERT_THAT(vertex_partitions[1].partition, ElementsAre(0, 4, 4));
 }
 
 TEST_F(A_Sagittarius_Mesh_Partitioned_In_Two, degree_of_vertices) {
@@ -62,6 +58,9 @@ TEST_F(A_Sagittarius_Mesh_Partitioned_In_Two,
 }
 
 TEST_F(A_Sagittarius_Mesh_Partitioned_In_Two,
-       partition_is_not_the_same_as_vtxdist_in_ParMetis) {
-  ASSERT_THAT(cell_partitions[0].partition, Not(ElementsAre(0, 2, 4)));
+       partition_is_a_range_of_entities_as_expected_by_ParMetis) {
+  ASSERT_THAT(vertex_partitions[0].partition, ElementsAre(0, 4, 8));
+  ASSERT_THAT(vertex_partitions[1].partition, ElementsAre(0, 4, 8));
+  ASSERT_THAT(cell_partitions[0].partition, ElementsAre(0, 2, 4));
+  ASSERT_THAT(cell_partitions[1].partition, ElementsAre(0, 2, 4));
 }
