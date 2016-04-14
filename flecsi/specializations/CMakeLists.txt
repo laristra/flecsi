@@ -61,14 +61,6 @@ if(ENABLE_IO)
   )
 endif(ENABLE_IO)
 
-cinch_add_unit(dolfin_triangle
-        SOURCES dolfin_triangle/test/dolfin_triangle.cc
-        INPUTS  dolfin_triangle/test/dolfin_triangle.blessed
-        )
-cinch_add_unit(dolfin_triangle_mesh_partition
-        SOURCES dolfin_triangle/test/dolfin_triangle_mesh_partition.cc
-        )
-
 cinch_add_unit(sagittarius
         SOURCES sagittarius/test/sagittarius.cc
         INPUTS  sagittarius/test/sagittarius.blessed

@@ -19,20 +19,19 @@
 
 using namespace flecsi;
 
-TEST_F(Dolfin_Triangle, number_of_vertices_should_be_10) {
+TEST_F(A_Dolfin_Triangle, number_of_vertices_should_be_10) {
   ASSERT_EQ(10, dolfin.num_vertices());
 }
 
-TEST_F(Dolfin_Triangle, number_of_cells_should_be_10) {
+TEST_F(A_Dolfin_Triangle, number_of_cells_should_be_10) {
   ASSERT_EQ(10, dolfin.num_cells());
 }
 
-TEST_F(Dolfin_Triangle, number_of_edges_should_be_19) {
+TEST_F(A_Dolfin_Triangle, number_of_edges_should_be_19) {
   ASSERT_EQ(19, dolfin.num_edges());
 }
 
-
-TEST_F(Dolfin_Triangle, dump) {
+TEST_F(A_Dolfin_Triangle, dump_should_match_the_blessed_file) {
   CINCH_CAPTURE() << "vertex to vertex connectivities:\n";
   auto vs = dolfin.vertices();
   for (auto v : vs) {
