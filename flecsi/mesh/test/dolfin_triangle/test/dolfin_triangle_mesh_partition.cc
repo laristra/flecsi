@@ -13,7 +13,6 @@
  *~-------------------------------------------------------------------------~~*/
 
 #include <cinchtest.h>
-#include <gmock/gmock.h>
 
 #include "../dolfin_triangle_mesh.h"
 #include "dolfin_triangle_fixture.h"

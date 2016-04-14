@@ -13,7 +13,6 @@
  *~-------------------------------------------------------------------------~~*/
 
 #include <cinchtest.h>
-#include <gmock/gmock.h>
 
 #include "../sagittarius_mesh.h"
 #include "sagittarius_fixture.h"
