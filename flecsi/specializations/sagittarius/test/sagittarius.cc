@@ -18,19 +18,19 @@
 
 using namespace flecsi;
 
-TEST_F(Sagittarius, number_of_vertices_should_be_8) {
+TEST_F(A_Sagittarius_Mesh, number_of_vertices_should_be_8) {
   ASSERT_EQ(8, constellation.num_vertices());
 }
 
-TEST_F(Sagittarius, number_of_cells_should_be_4) {
+TEST_F(A_Sagittarius_Mesh, number_of_cells_should_be_4) {
   ASSERT_EQ(4, constellation.num_cells());
 }
 
-TEST_F(Sagittarius, number_of_edges_should_be_11) {
+TEST_F(A_Sagittarius_Mesh, number_of_edges_should_be_11) {
   ASSERT_EQ(11, constellation.num_edges());
 }
 
-TEST_F(Sagittarius, dump) {
+TEST_F(A_Sagittarius_Mesh, dump) {
   auto vs = constellation.vertices();
   CINCH_CAPTURE() << "vertex to vertex connectivities:\n";
   for (auto v0 : vs) {
