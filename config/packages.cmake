@@ -87,16 +87,22 @@ message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with 2^${
 # Enable IO with exodus
 #------------------------------------------------------------------------------#
 
-option(ENABLE_IO "Enable I/O with third party libraries." OFF)
+find_package(EXODUSII)
+option(ENABLE_IO "Enable I/O (uses libexodus)" ${EXODUSII_FOUND})
 if(ENABLE_IO)
-  set(IO_LIBRARIES ${TPL_INSTALL_PREFIX}/lib/libexodus.a
-    ${TPL_INSTALL_PREFIX}/lib/libnetcdf.a
-    ${TPL_INSTALL_PREFIX}/lib/libhdf5_hl.a
-    ${TPL_INSTALL_PREFIX}/lib/libhdf5.a
-    ${TPL_INSTALL_PREFIX}/lib/libszip.a
-    ${TPL_INSTALL_PREFIX}/lib/libz.a
-    -ldl)
-  include_directories( ${TPL_INSTALL_PREFIX}/include )
+  if(EXODUSII_FOUND)
+    set(IO_LIBRARIES ${EXODUSII_LIBRARIES})
+    include_directories(${EXODUSII_INCLUDE_DIRS})
+  else()
+    set(IO_LIBRARIES ${TPL_INSTALL_PREFIX}/lib/libexodus.a
+      ${TPL_INSTALL_PREFIX}/lib/libnetcdf.a
+      ${TPL_INSTALL_PREFIX}/lib/libhdf5_hl.a
+      ${TPL_INSTALL_PREFIX}/lib/libhdf5.a
+      ${TPL_INSTALL_PREFIX}/lib/libszip.a
+      ${TPL_INSTALL_PREFIX}/lib/libz.a
+      -ldl)
+    include_directories( ${TPL_INSTALL_PREFIX}/include )
+  endif()
   add_definitions( -DHAVE_EXODUS )
 endif(ENABLE_IO)
 
