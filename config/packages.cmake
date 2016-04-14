@@ -110,7 +110,14 @@ endif(ENABLE_IO)
 # Enable partitioning with METIS or SCOTCH
 #------------------------------------------------------------------------------#
 
-option(ENABLE_PARTITION "Enable partitioning with third party libraries." OFF)
+find_package(METIS 5.1)
+find_package(SCOTCH)
+
+if(METIS_FOUND OR SCOTCH_FOUND)
+  option(ENABLE_PARTITION "Enable partitioning (uses metis or scotch)." ON)
+else()
+  option(ENABLE_PARTITION "Enable partitioning (uses metis or scotch)." OFF)
+endif()
 
 if(ENABLE_PARTITION)
 
@@ -147,15 +154,16 @@ if(ENABLE_PARTITION)
                  NO_DEFAULT_PATH )
 
   if (METIS_LIBRARY AND METIS_INCLUDE_DIR) 
-     message(STATUS "Found METIS: ${METIS_ROOT}")
+     message(STATUS "Found METIS: ${METIS_LIBRARY} and ${METIS_INCLUDE_DIR}")
      set( METIS_FOUND TRUE )
      list( APPEND PARTITION_LIBRARIES ${METIS_LIBRARY} )
      include_directories( ${METIS_INCLUDE_DIR} )
      add_definitions( -DHAVE_METIS )
   endif()
 
+
   if (SCOTCH_LIBRARY AND SCOTCH_ERR_LIBRARY AND SCOTCH_INCLUDE_DIR) 
-     message(STATUS "Found SCOTCH: ${SCOTCH_ROOT}" )
+     message(STATUS "Found SCOTCH: ${SCOTCH_LIBRARY}, ${SCOTCH_ERR_LIBRARY} and ${SCOTCH_INCLUDE_DIR}" )
      set( SCOTCH_FOUND TRUE )
      list( APPEND PARTITION_LIBRARIES ${SCOTCH_LIBRARY} ${SCOTCH_ERR_LIBRARY} )
      include_directories( ${SCOTCH_INCLUDE_DIR} )
