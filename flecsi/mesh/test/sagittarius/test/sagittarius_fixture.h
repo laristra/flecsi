@@ -25,7 +25,7 @@ protected:
 class A_Sagittarius_Mesh_Partitioned_In_Two : public ::testing::Test {
 protected:
   sagittarius_mesh_t <sagittarius_types> constellation;
-  
+
   virtual void SetUp() override {
     // convert and divide vertex to vertex and cell to cell connectivities into
     // two equal partitions in the form of Distributed CSR format as in ParMetis

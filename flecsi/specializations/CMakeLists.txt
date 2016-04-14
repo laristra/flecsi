@@ -61,13 +61,6 @@ if(ENABLE_IO)
   )
 endif(ENABLE_IO)
 
-cinch_add_unit(sagittarius
-        SOURCES sagittarius/test/sagittarius.cc
-        INPUTS  sagittarius/test/sagittarius.blessed
-        )
-cinch_add_unit(sagittarius_mesh_partition
-        SOURCES sagittarius/test/sagittarius_mesh_partition.cc
-        )
 
 #cinch_add_unit(unstruct_3d
 #  SOURCES unstruct/test/unstruct_3d.cc
