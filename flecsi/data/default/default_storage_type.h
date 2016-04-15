@@ -12,10 +12,10 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_default_scalar_h
-#define flecsi_default_scalar_h
+#ifndef flecsi_default_storage_type_h
+#define flecsi_default_storage_type_h
 
-#include "flecsi/data/default/default_storage_type.h"
+#include "flecsi/data/data_constants.h"
 
 /*!
  * \file default_storage_policy.h
@@ -30,18 +30,13 @@ namespace data_model
 namespace default_storage_policy
 {
 
-  /*!
-    FIXME: Scalar storage type.
-   */
-  template<typename storage_t>
-  struct storage_type_t<scalar, storage_t> {
-  }; // struct storage_type_t
+  template<size_t ST, typename storage_t> struct storage_type_t {};
 
 } // namespace default_storage_policy
 } // namespace data_model
 } // namespace flecsi
 
-#endif // flecsi_default_scalar_h
+#endif // flecsi_default_storage_type_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

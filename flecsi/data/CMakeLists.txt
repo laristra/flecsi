@@ -27,6 +27,9 @@ set(data_HEADERS
 cinch_add_unit(data
   SOURCES test/data.cc)
 
+cinch_add_unit(storage
+  SOURCES test/storage.cc)
+
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.
 # vim: set tabstop=2 shiftwidth=2 expandtab :

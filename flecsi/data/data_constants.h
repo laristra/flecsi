@@ -89,28 +89,13 @@ static constexpr bitfield_t::field_type_t temporary =
   FIXME
  */
 
-enum class data_type_t : size_t {
+enum data_type_t : size_t {
   scalar,
   dense,
   sparse,
   scoped,
-  bundle
+  tuple
 }; // enum class data_type_t
-
-static constexpr size_t scalar =
-  static_cast<size_t>(data_type_t::scalar);
-
-static constexpr size_t dense =
-  static_cast<size_t>(data_type_t::dense);
-
-static constexpr size_t sparse =
-  static_cast<size_t>(data_type_t::sparse);
-
-static constexpr size_t scoped =
-  static_cast<size_t>(data_type_t::scoped);
-
-static constexpr size_t bundle =
-  static_cast<size_t>(data_type_t::bundle);
 
 } // namespace flecsi
 
