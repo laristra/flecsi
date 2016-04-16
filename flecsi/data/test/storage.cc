@@ -29,7 +29,7 @@ struct data_t : public storage_policy_t {
 	template<size_t DT, typename T, size_t NS, typename ... Args>
 	decltype(auto) register_data(uintptr_t runtime_namespace,
 		const flecsi::const_string_t & key, Args && ... args) {
-		return storage_type_t<DT>::register_data(data_store_,
+		return storage_type_t<DT>::template register_data<T,NS>(data_store_,
 			runtime_namespace, key, std::forward<Args>(args)...);
 	} // register_data
 
@@ -42,7 +42,7 @@ private:
 TEST(storage, dense) {
 	data_t & d = data_t::instance();
 
-	d.register_data<scalar,double,0,int>(0, "test", 0);
+	d.register_data<flecsi::dense,double,0,int>(0, "test", 0);
 } // TEST
 
 /*----------------------------------------------------------------------------*
