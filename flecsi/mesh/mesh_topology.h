@@ -732,7 +732,7 @@ class mesh_topology_t : public mesh_topology_base_t
     // Storage for cell-to-entity connectivity information.
     connection_vector_t cell_entity_conn(_num_cells);
 
-    // This map is primarily used to make sure that entities are
+    // This map is primarily used to make sure that entities are not
     // created multiple times, i.e., that they are unique.  The
     // emplace method of the map is used to only define a new entity
     // if it does not already exist in the map.
