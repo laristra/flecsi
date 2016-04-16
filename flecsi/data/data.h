@@ -73,6 +73,18 @@ public:
   void reset(uintptr_t runtime_namespace) {
     sp_t::reset(runtime_namespace);
   } // reset
+  
+  template< typename T >
+  void release(T && key, uintptr_t runtime_namespace) {
+    sp_t::release(std::forward<T>(key), runtime_namespace);
+  } // release
+
+  void move(
+    uintptr_t from_runtime_namespace, 
+    uintptr_t to_runtime_namespace ) 
+  {
+    sp_t::move(from_runtime_namespace, to_runtime_namespace);
+  } // reset
 
   //! Use the accessor type defined by the storage policy.
   template <typename T>
@@ -124,6 +136,47 @@ public:
     return sp_t::template register_state<T, NS>(
         key, indices, runtime_namespace, std::forward<Args>(args)...);
   } // register_state
+
+/*----------------------------------------------------------------------------*
+ * New stuff...
+ *----------------------------------------------------------------------------*/
+
+  template<
+    size_t DT,
+    typename T,
+    size_t NS = flecsi_user_space,
+    typename... Args
+  >
+  decltype(auto) register_data(uintptr_t runtime_namespace,
+    const const_string_t & key, Args &&... args)
+  {
+    return sp_t::template register_state<DT, T, NS>(runtime_namespace,
+      key, std::forward<Args>(args)...);
+  } // register_state
+
+  template<
+    size_t DT,
+    typename T,
+    size_t NS = flecsi_user_space
+  >
+  decltype(auto) access_data(uintptr_t runtime_namespace,
+    const const_string_t & key)
+  {
+    return sp_t::template access_data<DT, T, NS>(runtime_namespace, key);
+  } // access_data
+  
+  template<
+    size_t NS = flecsi_user_space
+  >
+  user_meta_data_t & meta_data(uintptr_t runtime_namespace,
+    const const_string_t & key)
+  {
+    return sp_t::template meta_data<NS>(runtime_namespace, key);
+  } // user_meta_data
+
+/*----------------------------------------------------------------------------*
+ * End new stuff...
+ *----------------------------------------------------------------------------*/
 
   /*!
     Return a dense_accessor_t instance that provides logical

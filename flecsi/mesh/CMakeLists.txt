@@ -33,9 +33,21 @@ cinch_add_unit(bindings
   SOURCES test/bindings.cc
   INPUTS test/bindings.blessed)
 
-#cinch_add_unit(bindings2
-#  SOURCES test/bindings2.cc
-#  INPUTS test/bindings.blessed)
+cinch_add_unit(dolfin_triangle
+        SOURCES test/dolfin_triangle/test/dolfin_triangle.cc
+        INPUTS  test/dolfin_triangle/test/dolfin_triangle.blessed
+        )
+cinch_add_unit(dolfin_triangle_mesh_partition
+        SOURCES test/dolfin_triangle/test/dolfin_triangle_mesh_partition.cc
+        )
+
+cinch_add_unit(sagittarius
+        SOURCES test/sagittarius/test/sagittarius.cc
+        INPUTS  test/sagittarius/test/sagittarius.blessed
+        )
+cinch_add_unit(sagittarius_mesh_partition
+        SOURCES test/sagittarius/test/sagittarius_mesh_partition.cc
+        )
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options

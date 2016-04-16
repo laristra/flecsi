@@ -87,16 +87,22 @@ message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with 2^${
 # Enable IO with exodus
 #------------------------------------------------------------------------------#
 
-option(ENABLE_IO "Enable I/O with third party libraries." OFF)
+find_package(EXODUSII)
+option(ENABLE_IO "Enable I/O (uses libexodus)" ${EXODUSII_FOUND})
 if(ENABLE_IO)
-  set(IO_LIBRARIES ${TPL_INSTALL_PREFIX}/lib/libexodus.a
-    ${TPL_INSTALL_PREFIX}/lib/libnetcdf.a
-    ${TPL_INSTALL_PREFIX}/lib/libhdf5_hl.a
-    ${TPL_INSTALL_PREFIX}/lib/libhdf5.a
-    ${TPL_INSTALL_PREFIX}/lib/libszip.a
-    ${TPL_INSTALL_PREFIX}/lib/libz.a
-    -ldl)
-  include_directories( ${TPL_INSTALL_PREFIX}/include )
+  if(EXODUSII_FOUND)
+    set(IO_LIBRARIES ${EXODUSII_LIBRARIES})
+    include_directories(${EXODUSII_INCLUDE_DIRS})
+  else()
+    set(IO_LIBRARIES ${TPL_INSTALL_PREFIX}/lib/libexodus.a
+      ${TPL_INSTALL_PREFIX}/lib/libnetcdf.a
+      ${TPL_INSTALL_PREFIX}/lib/libhdf5_hl.a
+      ${TPL_INSTALL_PREFIX}/lib/libhdf5.a
+      ${TPL_INSTALL_PREFIX}/lib/libszip.a
+      ${TPL_INSTALL_PREFIX}/lib/libz.a
+      -ldl)
+    include_directories( ${TPL_INSTALL_PREFIX}/include )
+  endif()
   add_definitions( -DHAVE_EXODUS )
 endif(ENABLE_IO)
 
@@ -104,7 +110,14 @@ endif(ENABLE_IO)
 # Enable partitioning with METIS or SCOTCH
 #------------------------------------------------------------------------------#
 
-option(ENABLE_PARTITION "Enable partitioning with third party libraries." OFF)
+find_package(METIS 5.1)
+find_package(SCOTCH)
+
+if(METIS_FOUND OR SCOTCH_FOUND)
+  option(ENABLE_PARTITION "Enable partitioning (uses metis or scotch)." ON)
+else()
+  option(ENABLE_PARTITION "Enable partitioning (uses metis or scotch)." OFF)
+endif()
 
 if(ENABLE_PARTITION)
 
@@ -141,15 +154,16 @@ if(ENABLE_PARTITION)
                  NO_DEFAULT_PATH )
 
   if (METIS_LIBRARY AND METIS_INCLUDE_DIR) 
-     message(STATUS "Found METIS: ${METIS_ROOT}")
+     message(STATUS "Found METIS: ${METIS_LIBRARY} and ${METIS_INCLUDE_DIR}")
      set( METIS_FOUND TRUE )
      list( APPEND PARTITION_LIBRARIES ${METIS_LIBRARY} )
      include_directories( ${METIS_INCLUDE_DIR} )
      add_definitions( -DHAVE_METIS )
   endif()
 
+
   if (SCOTCH_LIBRARY AND SCOTCH_ERR_LIBRARY AND SCOTCH_INCLUDE_DIR) 
-     message(STATUS "Found SCOTCH: ${SCOTCH_ROOT}" )
+     message(STATUS "Found SCOTCH: ${SCOTCH_LIBRARY}, ${SCOTCH_ERR_LIBRARY} and ${SCOTCH_INCLUDE_DIR}" )
      set( SCOTCH_FOUND TRUE )
      list( APPEND PARTITION_LIBRARIES ${SCOTCH_LIBRARY} ${SCOTCH_ERR_LIBRARY} )
      include_directories( ${SCOTCH_INCLUDE_DIR} )

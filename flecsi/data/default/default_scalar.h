@@ -12,41 +12,36 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_minimal_mesh_h
-#define flecsi_minimal_mesh_h
+#ifndef flecsi_default_scalar_h
+#define flecsi_default_scalar_h
 
-#include "flecsi/mesh/mesh_topology.h"
-#include "flecsi/specializations/minimal/minimal_types.h"
+#include "flecsi/data/data_constants.h"
 
 /*!
- * \file minimal_mesh.h
+ * \file default_storage_policy.h
  * \authors bergen
- * \date Initial file creation: Dec 26, 2015
+ * \date Initial file creation: Oct 27, 2015
  */
 
 namespace flecsi
 {
-/*!
-  \class minimal_mesh minimal_mesh.h
-  \brief minimal_mesh provides...
- */
-class minimal_mesh_t
+namespace data_model
 {
- private:
-  using mesh_t = mesh_topology_t<minimal_types_t>;
+namespace default_storage_policy
+{
 
- public:
   /*!
+    FIXME: Scalar storage type.
    */
-  void init() { mesh_.init(); } // init
- private:
-  mesh_t mesh_;
+  template<typename storage_t>
+  struct storage_type_t<scalar, storage_t> {
+  }; // struct storage_type_t
 
-}; // class minimal_mesh_t
-
+} // namespace default_storage_policy
+} // namespace data_model
 } // namespace flecsi
 
-#endif // flecsi_minimal_mesh_h
+#endif // flecsi_default_scalar_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options
