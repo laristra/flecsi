@@ -21,11 +21,11 @@
 #include <typeinfo>
 #include <cassert>
 
-//#include "flecsi/utils/index_space.h"
-//#include "flecsi/utils/const_string.h"
 #include "flecsi/data/data_constants.h"
 
 #include "flecsi/data/default/default_meta_data.h"
+
+// Include partial specializations
 #include "flecsi/data/default/default_dense.h"
 #include "flecsi/data/default/default_scalar.h"
 

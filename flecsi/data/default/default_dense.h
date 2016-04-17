@@ -19,7 +19,7 @@
 #include "flecsi/data/default/default_storage_type.h"
 
 /*!
- * \file default_storage_policy.h
+ * \file default_dense.h
  * \authors bergen
  * \date Initial file creation: Oct 27, 2015
  */
@@ -32,10 +32,16 @@ namespace default_storage_policy
 {
 
   /*!
-    FIXME: Scalar storage type.
+    FIXME: Dense storage type.
    */
   template<typename data_store_t>
   struct storage_type_t<dense, data_store_t> {
+
+    struct dense_accessor_t {
+    }; // struct dense_accessor_t
+
+    struct dense_handle_t {
+    }; // struct dense_handle_t
 
     /*!
       \tparam T Data type to register.
@@ -49,19 +55,26 @@ namespace default_storage_policy
       \param runtime_namespace The runtime namespace to be used.
      */
     template<typename T, size_t NS, typename ... Args>
-    static decltype(auto) register_data(data_store_t & data_store,
+    static dense_handle_t register_data(data_store_t & data_store,
       uintptr_t runtime_namespace, const const_string_t & key,
       size_t indeces, Args && ... args) {
+      std::cout << "Indeces: " << indeces << std::endl;
     } // register_data
 
     /*!
      */
-    static decltype(auto) get_accessor() {
+    template<typename T, size_t NS>
+    static dense_accessor_t get_accessor(data_store_t & data_store,
+      uintptr_t runtime_namespace, const const_string_t & key) {
+      return {};
     } // get_accessor
 
     /*!
      */
-    static decltype(auto) get_handle() {
+    template<typename T, size_t NS>
+    static dense_handle_t get_handle(data_store_t & data_store,
+      uintptr_t runtime_namespace, const const_string_t & key) {
+      return {};
     } // get_handle
 
   }; // struct storage_type_t

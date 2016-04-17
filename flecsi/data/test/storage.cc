@@ -4,16 +4,17 @@
  *~-------------------------------------------------------------------------~~*/
 
 #include <cinchtest.h>
-//#include <utility>
 
 #include "flecsi/data/default/default_storage_policy.h"
 
+using namespace flecsi;
+
 struct user_meta_data_t {
-  bool is_set;
+  user_meta_data_t(size_t _dummy) {}
 }; // struct user_meta_data_t
 
 using storage_policy_t =
-  flecsi::data_model::default_storage_policy_t<user_meta_data_t>;
+  data_model::default_storage_policy_t<user_meta_data_t>;
 
 struct data_t : public storage_policy_t {
 
@@ -28,10 +29,24 @@ struct data_t : public storage_policy_t {
 
 	template<size_t DT, typename T, size_t NS, typename ... Args>
 	decltype(auto) register_data(uintptr_t runtime_namespace,
-		const flecsi::const_string_t & key, Args && ... args) {
+		const const_string_t & key, Args && ... args) {
 		return storage_type_t<DT>::template register_data<T,NS>(data_store_,
 			runtime_namespace, key, std::forward<Args>(args)...);
 	} // register_data
+
+  template<size_t DT, typename T, size_t NS>
+  decltype(auto) get_accessor(uintptr_t runtime_namespace,
+    const const_string_t & key) {
+    return storage_type_t<DT>::template get_accessor<T,NS>(data_store_,
+			runtime_namespace, key);
+  } // get_accessor
+
+  template<size_t DT, typename T, size_t NS>
+  decltype(auto) get_handle(uintptr_t runtime_namespace,
+    const const_string_t & key) {
+    return storage_type_t<DT>::template get_handle<T,NS>(data_store_,
+			runtime_namespace, key);
+  } // get_accessor
 
 private:
 
@@ -39,11 +54,24 @@ private:
 
 };
 
+#define register_data(manager, name, data_type, storage_type, ...) \
+  manager.register_data<storage_type, data_type, 0>(0, name, ##__VA_ARGS__)
+
+#define get_accessor(manager, name, data_type, storage_type) \
+  manager.get_accessor<storage_type, data_type, 0>(0, name)
+
 TEST(storage, dense) {
 	data_t & d = data_t::instance();
 
-	d.register_data<flecsi::dense,double,0,int>(0, "test", 0);
+  register_data(d, "pressure", double, dense, 100);
+  register_data(d, "steps", double, scalar);
+
+  auto p = get_accessor(d, "pressure", double, dense);
+  auto steps = get_accessor(d, "steps", double, scalar);
 } // TEST
+
+#undef register_data
+#undef get_accessor
 
 /*----------------------------------------------------------------------------*
  * Cinch test Macros
