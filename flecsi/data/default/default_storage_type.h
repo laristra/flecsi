@@ -35,8 +35,10 @@ namespace default_storage_policy
 
     \tparam type Specialization parameter.
     \tparam data_store_t Data store type.
+    \tparam meta_data_t Metadata type.
    */
-  template<size_t type, typename data_store_t> struct storage_type_t {};
+  template<size_t type, typename data_store_t, typename meta_data_t>
+  struct storage_type_t {};
 
 } // namespace default_storage_policy
 } // namespace data_model

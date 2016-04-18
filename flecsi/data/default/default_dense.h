@@ -34,8 +34,8 @@ namespace default_storage_policy
   /*!
     FIXME: Dense storage type.
    */
-  template<typename data_store_t>
-  struct storage_type_t<dense, data_store_t> {
+  template<typename data_store_t, typename meta_data_t>
+  struct storage_type_t<dense, data_store_t, meta_data_t> {
 
     struct dense_accessor_t {
     }; // struct dense_accessor_t
@@ -70,7 +70,7 @@ namespace default_storage_policy
       data_store[NS][h].size = indeces;
       data_store[NS][h].type_size = sizeof(T);
       data_store[NS][h].rtti.reset(
-        new typename data_store_t::meta_data_t::type_info_t(typeid(T)));
+        new typename meta_data_t::type_info_t(typeid(T)));
         data_store[NS][h].data.resize(indeces * sizeof(T));
 
       return {};

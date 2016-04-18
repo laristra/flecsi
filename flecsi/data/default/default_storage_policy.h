@@ -50,8 +50,8 @@ struct default_storage_policy_t {
 
   // Define the storage type
   template<size_t data_type_t>
-  using storage_type_t =
-    default_storage_policy::storage_type_t<data_type_t, data_store_t>;
+  using storage_type_t = default_storage_policy::storage_type_t<data_type_t,
+    data_store_t, meta_data_t>;
 
   //! \brief delete ALL data.
   void reset() {

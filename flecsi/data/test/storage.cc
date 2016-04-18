@@ -11,7 +11,7 @@
 using namespace flecsi;
 
 struct user_meta_data_t {
-  user_meta_data_t(size_t _dummy) {}
+  void initialize() {}
 }; // struct user_meta_data_t
 
 using storage_policy_t =
