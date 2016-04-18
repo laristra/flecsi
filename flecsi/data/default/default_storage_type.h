@@ -18,9 +18,9 @@
 #include "flecsi/data/data_constants.h"
 
 /*!
- * \file default_storage_policy.h
+ * \file default_storage_type.h
  * \authors bergen
- * \date Initial file creation: Oct 27, 2015
+ * \date Initial file creation: Apr 15, 2016
  */
 
 namespace flecsi
@@ -30,7 +30,13 @@ namespace data_model
 namespace default_storage_policy
 {
 
-  template<size_t ST, typename storage_t> struct storage_type_t {};
+  /*!
+    \struct storage_type_t
+
+    \tparam type Specialization parameter.
+    \tparam data_store_t Data store type.
+   */
+  template<size_t type, typename data_store_t> struct storage_type_t {};
 
 } // namespace default_storage_policy
 } // namespace data_model

@@ -29,7 +29,6 @@
 
 namespace flecsi
 {
-
 namespace data_model
 {
 

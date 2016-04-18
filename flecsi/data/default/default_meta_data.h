@@ -23,7 +23,7 @@
 /*!
  * \file default_meta_data.h
  * \authors bergen
- * \date Initial file creation: Oct 27, 2015
+ * \date Initial file creation: Apr 15, 2016
  */
 
 namespace flecsi

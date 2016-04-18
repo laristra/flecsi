@@ -21,7 +21,7 @@
 /*!
  * \file default_scalar.h
  * \authors bergen
- * \date Initial file creation: Oct 27, 2015
+ * \date Initial file creation: Apr 17, 2016
  */
 
 namespace flecsi
@@ -47,7 +47,6 @@ namespace default_storage_policy
     static decltype(auto) register_data(data_store_t & data_store,
       uintptr_t runtime_namespace, const const_string_t & key,
       Args && ... args) {
-      std::cout << "No Indeces" << std::endl;
     } // register_data
 
     /*!

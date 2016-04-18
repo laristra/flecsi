@@ -12,16 +12,16 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_default_dense_h
-#define flecsi_default_dense_h
+#ifndef flecsi_default_sparse_h
+#define flecsi_default_sparse_h
 
 #include "flecsi/utils/const_string.h"
 #include "flecsi/data/default/default_storage_type.h"
 
 /*!
- * \file default_dense.h
+ * \file default_sparse.h
  * \authors bergen
- * \date Initial file creation: Apr 7, 2016
+ * \date Initial file creation: Apr 17, 2016
  */
 
 namespace flecsi
@@ -32,30 +32,19 @@ namespace default_storage_policy
 {
 
   /*!
-    FIXME: Dense storage type.
+    FIXME: Sparse storage type.
    */
   template<typename data_store_t>
-  struct storage_type_t<dense, data_store_t> {
+  struct storage_type_t<sparse, data_store_t> {
 
-    struct dense_accessor_t {
-    }; // struct dense_accessor_t
+    struct sparse_accessor_t {
+    }; // struct sparse_accessor_t
 
-    struct dense_handle_t {
-    }; // struct dense_handle_t
+    struct sparse_handle_t {
+    }; // struct sparse_handle_t
 
-    /*!
-      \tparam T Data type to register.
-      \tparam NS Namespace
-      \tparam Args Variadic arguments that are passed to
-        metadata initialization.
-      
-      \param stg A data_store_t reference for accessing the low-level data.
-      \param key A const string instance containing the variable name.
-      \param indeces The number of indeces in the index space.
-      \param runtime_namespace The runtime namespace to be used.
-     */
     template<typename T, size_t NS, typename ... Args>
-    static dense_handle_t register_data(data_store_t & data_store,
+    static decltype(auto) register_data(data_store_t & data_store,
       uintptr_t runtime_namespace, const const_string_t & key,
       size_t indeces, Args && ... args) {
     } // register_data
@@ -63,7 +52,7 @@ namespace default_storage_policy
     /*!
      */
     template<typename T, size_t NS>
-    static dense_accessor_t get_accessor(data_store_t & data_store,
+    static sparse_accessor_t get_accessor(data_store_t & data_store,
       uintptr_t runtime_namespace, const const_string_t & key) {
       return {};
     } // get_accessor
@@ -71,7 +60,7 @@ namespace default_storage_policy
     /*!
      */
     template<typename T, size_t NS>
-    static dense_handle_t get_handle(data_store_t & data_store,
+    static sparse_handle_t get_handle(data_store_t & data_store,
       uintptr_t runtime_namespace, const const_string_t & key) {
       return {};
     } // get_handle
@@ -82,7 +71,7 @@ namespace default_storage_policy
 } // namespace data_model
 } // namespace flecsi
 
-#endif // flecsi_default_dense_h
+#endif // flecsi_default_sparse_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

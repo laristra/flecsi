@@ -6,6 +6,7 @@
 #include <cinchtest.h>
 
 #include "flecsi/data/default/default_storage_policy.h"
+#include "flecsi/data/new_data.h"
 
 using namespace flecsi;
 
@@ -64,10 +65,8 @@ TEST(storage, dense) {
 	data_t & d = data_t::instance();
 
   register_data(d, "pressure", double, dense, 100);
-  register_data(d, "steps", double, scalar);
 
   auto p = get_accessor(d, "pressure", double, dense);
-  auto steps = get_accessor(d, "steps", double, scalar);
 } // TEST
 
 #undef register_data
