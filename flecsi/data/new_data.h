@@ -18,7 +18,7 @@ namespace flecsi {
 namespace data_model {
 
 struct default_user_meta_data_t {
-  default_user_meta_data_t(size_t dummy) {}
+  void initialize() {}
 }; // struct default_user_meta_data_t
 
 /*!

@@ -58,6 +58,22 @@ namespace default_storage_policy
     static dense_handle_t register_data(data_store_t & data_store,
       uintptr_t runtime_namespace, const const_string_t & key,
       size_t indeces, Args && ... args) {
+
+      size_t h = key.hash() ^ runtime_namespace;
+
+      assert(data_store[NS].find(h) == data_store[NS].end() &&
+        "key already exists");
+
+      data_store[NS][h].user_data.initialize(std::forward<Args>(args) ...);
+
+      data_store[NS][h].label = key.c_str();
+      data_store[NS][h].size = indeces;
+      data_store[NS][h].type_size = sizeof(T);
+      data_store[NS][h].rtti.reset(
+        new typename data_store_t::meta_data_t::type_info_t(typeid(T)));
+        data_store[NS][h].data.resize(indeces * sizeof(T));
+
+      return {};
     } // register_data
 
     /*!
