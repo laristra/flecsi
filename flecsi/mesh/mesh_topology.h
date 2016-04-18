@@ -31,6 +31,7 @@
 #include <map>
 
 #include "flecsi/utils/common.h"
+#include "flecsi/utils/set_intersection.h"
 #include "flecsi/mesh/mesh_types.h"
 
 namespace flecsi
@@ -639,7 +640,11 @@ class mesh_topology_t : public mesh_topology_base_t
   //! Constructor
   mesh_topology_t()
   {
-    get_connectivity_(0, 0, MT::dimension, 0).init();
+    // initialize all lower connectivities because the user might 
+    // specify different combinations of connections
+    for (size_t i = 1; i < MT::dimension+1; ++i)
+      for (size_t j = 0; j < i; ++j)
+        get_connectivity_(0, i, j).init();
   } // mesh_topology_t()
 
   // The mesh retains ownership of the entities and deletes them
@@ -698,6 +703,35 @@ class mesh_topology_t : public mesh_topology_base_t
 
     c.end_from();
   } // init_cell
+
+
+  // Initialize an entities connectivity with a subset of another
+  template < size_t M, size_t D1, size_t D2, class E1, class E2 >
+  void init_entity(E1 * super, E2 && subs)
+  {
+    init_entity_<M,D1,D2>( super, std::forward<E2>(subs) );
+  } // init_entity
+
+  template < size_t M, size_t D1, size_t D2, class E1, class E2 >
+  void init_entity(E1 * super, std::initializer_list<E2*> subs )
+  {
+    init_entity_<M,D1,D2>( super, subs );
+  } // init_entity
+
+  template < size_t M, size_t D1, size_t D2, class E2 >
+  void init_entity_(
+    entity_type<D1, M> * super, E2 && subs)
+  {
+    auto & c = get_connectivity_(M, D1, D2);
+
+    assert(super->template id<M>() == c.from_size() && "id mismatch");
+
+    for ( auto e : subs ) {
+      c.push( e->template global_id<M>() );
+    } // for
+
+    c.end_from();
+  } // init_entity
 
   // Get the number of entities in a given domain and topological dimension
   size_t num_entities_(size_t dim, size_t domain=0) const
@@ -839,6 +873,12 @@ class mesh_topology_t : public mesh_topology_base_t
   {
     // std::cerr << "transpose: " << FD << " -> " << TD << std::endl;
 
+    // The connectivity we will be populating
+    auto & out_conn = get_connectivity_(FM, TM, FD, TD);
+    if (!out_conn.empty()) {
+      return;
+    } // if
+
     index_vector_t pos(num_entities_(FD, FM), 0);
 
     for (auto to_entity : entities<TD, TM>()) {
@@ -847,7 +887,6 @@ class mesh_topology_t : public mesh_topology_base_t
       }
     }
 
-    connectivity_t & out_conn = get_connectivity_(FM, TM, FD, TD);
     out_conn.resize(pos);
 
     std::fill(pos.begin(), pos.end(), 0);
@@ -868,7 +907,7 @@ class mesh_topology_t : public mesh_topology_base_t
   template <size_t FM, size_t TM, size_t FD, size_t TD, size_t D>
   void intersect()
   {
-    // std::cerr << "intersect: " << FD << " -> " << TD;
+    // std::cerr << "intersect: " << FD << " -> " << TD << std::endl;
 
     // The connectivity we will be populating
     connectivity_t & out_conn = get_connectivity_(FM, TM, FD, TD);
@@ -876,12 +915,16 @@ class mesh_topology_t : public mesh_topology_base_t
       return;
     } // if
 
+    // the number of each entity type
+    auto num_from_ent = num_entities_(FD, FM);
+    auto num_to_ent = num_entities_(TD, FM);
+
     // Temporary storage for connection id's
-    connection_vector_t conns(num_entities_(FD, FM));
+    connection_vector_t conns(num_from_ent);
 
     // Keep track of which to id's we have visited
     using visited_vec = std::vector<bool>;
-    visited_vec visited(num_entities_(FD, FM));
+    visited_vec visited(num_to_ent);
 
     size_t max_size = 1;
 
@@ -940,10 +983,20 @@ class mesh_topology_t : public mesh_topology_base_t
 
             // If from vertices contains the to vertices add to id
             // to this connection set
-            if (std::includes(from_verts.begin(), from_verts.end(),
-                    to_verts.begin(), to_verts.end())) {
-              ents.emplace_back(to_id);
+            if ( D < TD ) {
+              if ( std::includes( from_verts.begin(), from_verts.end(),
+                                  to_verts.begin(), to_verts.end()) )
+                ents.emplace_back(to_id); 
+            } 
+            // If we are going through a higher level, then set
+            // intersection is sufficient. i.e. one set does not need to 
+            // be a subset of the other
+            else {
+              if ( utils::intersects( from_verts.begin(), from_verts.end(),
+                                      to_verts.begin(), to_verts.end() ) )
+                ents.emplace_back(to_id); 
             } // if
+
           } // if
         } // for
       } // for
@@ -972,6 +1025,23 @@ class mesh_topology_t : public mesh_topology_base_t
       return;
     } // if
 
+    // if we don't have cell -> vertex connectivities, then
+    // try building cell -> vertex connectivity through the
+    // faces (3d) or edges(2d)
+    static_assert( MT::dimension <= 3, 
+                   "this needs to be re-thought for higher dimensions" );
+
+    if ( get_connectivity_(M, MT::dimension, 0).empty() ) {
+      assert( !get_connectivity_(M, MT::dimension-1, 0).empty() && 
+              " need at least edges(2d)/faces(3) -> vertex connectivity" );
+      // assume we have cell -> faces, so invert it to get faces -> cells
+      transpose<M, M, MT::dimension-1, MT::dimension>();
+      // invert faces -> vertices to get vertices -> faces
+      transpose<M, M, 0, MT::dimension-1>();
+      // build cells -> vertices via intersections with faces
+      intersect<M, M, MT::dimension, 0, MT::dimension-1>();
+    }
+
     // Check if we need to build entities, e.g: edges or faces
     if (num_entities_(FD, M) == 0) {
       build_connectivity<M, FD>();
@@ -992,7 +1062,7 @@ class mesh_topology_t : public mesh_topology_base_t
       transpose<M, M, FD, TD>();
     } else {
        if (FD == 0 && TD == 0) {
-         // compute vertex to vertex connectivities through shard cells.
+         // compute vertex to vertex connectivities through shared cells.
          compute_connectivity<M, FD, MT::dimension>();
          compute_connectivity<M, MT::dimension, TD>();
          intersect<M, M, FD, TD, MT::dimension>();

@@ -26,6 +26,7 @@ set(utils_HEADERS
   id.h
   index_space.h
   iterator.h
+  set_intersection.h
   static_for.h     detail/static_for.h
   static_list.h
   tuple_for_each.h detail/tuple_for_each.h

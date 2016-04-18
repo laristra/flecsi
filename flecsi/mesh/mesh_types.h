@@ -337,7 +337,10 @@ class connectivity_t
   /*!
     Initialize the offset array.
    */
-  void init() { from_index_vec_.push_back(0); }
+  void init() { 
+    clear();
+    from_index_vec_.push_back(0); 
+  }
 
   /*!
     Initialize the connectivity information from a given connectivity
@@ -346,7 +349,8 @@ class connectivity_t
     \param cv The connectivity information.
    */
   void init(const connection_vector_t & cv) {
-    assert(to_id_vec_.empty() && from_index_vec_.empty());
+    
+    clear();
 
     // the first offset is always 0
     from_index_vec_.push_back(0);
@@ -382,7 +386,7 @@ class connectivity_t
   void init_create(id_vector_t & iv, entity_vector_t<N> & ev,
       const connection_vector_t & cv, mesh_topology_base_t & mesh)
   {
-    assert(to_id_vec_.empty() && from_index_vec_.empty());
+    clear();
 
     // the first offset is always 0
     from_index_vec_.push_back(0);
