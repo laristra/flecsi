@@ -94,18 +94,18 @@ using branch_t = tree_topology_t::branch_t;
 using branch_id_t = tree_topology_t::branch_id_t;
 
 TEST(tree_topology, insert_find_remove) {
-  tree_topology_t t({0.0, 100.0, 0.0, 100.0});
+  tree_topology_t t;
 
   std::vector<entity_t*> ents;
 
   for(size_t i = 0; i < 100000; ++i){
-    point_t p = {uniform(0.0, 100.0), uniform(0.0, 100.0)};
+    point_t p = {uniform(), uniform()};
     auto e = t.make_entity(p);
     t.insert(e);
     ents.push_back(e);
   }
 
-  auto s = t.find_in_radius({10.0, 10.0}, 1.0);
+  auto s = t.find_in_radius({0.5, 0.3}, 0.01);
   for(auto ent : s){
     CINCH_CAPTURE() << ent->coordinates() << endl;
   }

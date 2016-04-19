@@ -581,14 +581,7 @@ public:
   using branch_set_t = iterable_set<branch_t>;
   using entity_set_t = iterable_set<entity_t>;
 
-  tree_topology(std::initializer_list<element_t> bounds){
-    assert(bounds.size() == bounds_.size());
-
-    size_t i = 0;
-    for(element_t ei : bounds){
-      bounds_[i++] = ei;
-    }
-
+  tree_topology(){
     branch_id_t bid = branch_id_t::root();
     root_ = make_branch(bid);
     root_->set_parent_(nullptr);
@@ -729,31 +722,13 @@ public:
     // find the lowest level branch which is guaranteed
     // to contain the point with radius
 
+    size_t depth = -std::log2(radius);
+    assert(depth <= branch_id_t::max_depth);
+
+    element_t size = std::pow(element_t(2), -element_t(depth));
+
     branch_id_t bid = to_branch_id(center);
-    
-    point_t size;
-
-    for(size_t dim = 0; dim < dimension; ++dim){
-      size[dim] = bounds_[dim * dimension + 1] - bounds_[dim * dimension];
-    }
-
-    size_t d1 = 0;
-    bool done = false;
-
-    while(!done){
-      for(size_t dim = 0; dim < dimension; ++dim){
-        size[dim] /= 2;
-        if(radius > size[dim]){
-          done = true;
-          break;
-        }
-      }
-      ++d1;      
-    }
-    
-    assert(d1 > 0);
-
-    branch_t* b = find_parent(bid, d1 - 1);
+    branch_t* b = find_parent(bid, depth);
 
     entity_id_vector_t entity_ids;
 
@@ -868,11 +843,10 @@ public:
     std::array<branch_int_t, dimension> coords;
     
     for(size_t i = 0; i < dimension; ++i){
-      element_t start = bounds_[i * 2];
-      element_t end = bounds_[i * 2 + 1];
+      assert(p[i] >= 0 && p[i] <= 1 && "invalid coordinates");
 
-      coords[i] = (p[i] - start)/(end - start) * 
-        (branch_int_t(1) << (branch_id_t::bits - 1)/dimension);
+      coords[i] = 
+        p[i] * (branch_int_t(1) << (branch_id_t::bits - 1)/dimension);
     }
 
     return branch_id_t(coords);
@@ -887,10 +861,7 @@ public:
     
     point_t p;
     for(size_t i = 0; i < dimension; ++i){
-      element_t start = bounds_[i * 2];
-      element_t end = bounds_[i * 2 + 1];
-
-      p[i] = element_t(coords[i])/max * (end - start) + start;
+      p[i] = element_t(coords[i])/max;
     }
 
     return p;
@@ -928,8 +899,6 @@ private:
     branch_id_hasher__<branch_int_t, dimension>>;
 
   branch_map_t branch_map_;
-
-  std::array<element_t, dimension * 2> bounds_;
   
   size_t max_depth_;
 
