@@ -130,10 +130,14 @@ endif(ENABLE_IO)
 find_package(METIS 5.1)
 find_package(SCOTCH)
 
-if(METIS_FOUND OR SCOTCH_FOUND)
-  option(ENABLE_PARTITION "Enable partitioning (uses metis or scotch)." ON)
+if(ENABLE_MPI)
+  find_package(ParMETIS)
+endif()
+
+if(METIS_FOUND OR SCOTCH_FOUND OR PARMETIS_FOUND)
+  option(ENABLE_PARTITION "Enable partitioning (uses metis/parmetis or scotch)." ON)
 else()
-  option(ENABLE_PARTITION "Enable partitioning (uses metis or scotch)." OFF)
+  option(ENABLE_PARTITION "Enable partitioning (uses metis/parmetis or scotch)." OFF)
 endif()
 
 if(ENABLE_PARTITION)
@@ -151,6 +155,19 @@ if(ENABLE_PARTITION)
                  PATHS ${METIS_ROOT} 
                  PATH_SUFFIXES include
                  NO_DEFAULT_PATH )
+  if(ENABLE_MPI)
+      find_library( PARMETIS_LIBRARY
+                    NAMES parmetis
+                    PATHS ${PARMETIS_ROOT}
+                    PATH_SUFFIXES lib
+                    NO_DEFAULT_PATH )
+
+      find_path( PARMETIS_INCLUDE_DIR
+                 NAMES parmetis.h
+                 PATHS ${PARMETIS_ROOT}
+                 PATH_SUFFIXES include
+                 NO_DEFAULT_PATH )
+  endif()
 
   find_library ( SCOTCH_LIBRARY 
                  NAMES scotch
@@ -178,6 +195,13 @@ if(ENABLE_PARTITION)
      add_definitions( -DHAVE_METIS )
   endif()
 
+  if (ENABLE_MPI AND PARMETIS_LIBRARY AND PARMETIS_INCLUDE_DIR)
+     message(STATUS "Found ParMETIS: ${PARMETIS_LIBRARY} and ${PARMETIS_INCLUDE_DIR}")
+     set( PARMETIS_FOUND TRUE )
+     list( APPEND PARTITION_LIBRARIES ${PARMETIS_LIBRARY} )
+     include_directories( ${PARMETIS_INCLUDE_DIR} )
+     add_definitions( -DHAVE_PARMETIS )
+  endif()
 
   if (SCOTCH_LIBRARY AND SCOTCH_ERR_LIBRARY AND SCOTCH_INCLUDE_DIR) 
      message(STATUS "Found SCOTCH: ${SCOTCH_LIBRARY}, ${SCOTCH_ERR_LIBRARY} and ${SCOTCH_INCLUDE_DIR}" )
@@ -188,7 +212,7 @@ if(ENABLE_PARTITION)
   endif()
 
   if ( NOT PARTITION_LIBRARIES )
-     MESSAGE( FATAL_ERROR "Need to specify either SCOTCH or METIS" )
+     MESSAGE( FATAL_ERROR "Need to specify either SCOTCH or METIS/ParMETIS" )
   endif()
 
 endif()
