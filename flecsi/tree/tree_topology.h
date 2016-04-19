@@ -12,6 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
+#pragma once
+
 #include <map>
 #include <unordered_map>
 #include <vector>
@@ -25,6 +27,8 @@
 #include <set>
 #include <functional>
 
+#include "flecsi/geometry/point.h"
+
 #define np(X)                                                             \
  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
            << ": " << #X << " = " << (X) << std::endl
@@ -35,71 +39,6 @@
 
 namespace flecsi{
 namespace tree_topology_dev{
-
-  template<typename T, size_t D>
-  class coordinates{
-  public:
-    using element_t = T;
-
-    static const size_t dimension = D;
-
-    coordinates(){}
-
-    coordinates(std::initializer_list<element_t> il){
-      size_t i = 0;
-      for(auto v : il){
-        pos_[i++] = v;
-      }
-    }
-
-    coordinates& operator=(const coordinates& c){
-      pos_ = c.pos_;
-      return *this;
-    }
-
-    bool operator==(const coordinates& c) const{
-      for(size_t i = 0; i < dimension; ++i){
-        if(pos_[i] != c.pos_[i]){
-          return false;
-        }
-      }
-
-      return true;
-    }
-
-    element_t operator[](const size_t i) const{
-      return pos_[i];
-    }
-
-    element_t& operator[](const size_t i){
-      return pos_[i];
-    }
-
-    element_t distance(const coordinates& u) const{
-      element_t d = 0;
-      
-      for(size_t i = 0; i < dimension; ++i){
-        element_t di = pos_[i] - u.pos_[i];
-        d += di * di;
-      }
-      
-      return sqrt(d);
-    }
-
-    void output_(std::ostream& ostr) const{
-      ostr << "(";
-      for(size_t i = 0; i < dimension; ++i){
-        if(i > 0){
-          ostr << ",";
-        }
-        ostr << pos_[i];
-      }
-      ostr << ")";   
-    }
-
-  private:
-    std::array<element_t, dimension> pos_;
-  };
 
 template<typename T, size_t D>
 class branch_id{
@@ -278,12 +217,6 @@ std::ostream& operator<<(std::ostream& ostr, const branch_id<T,D>& id){
 }
 
 template<typename T, size_t D>
-std::ostream& operator<<(std::ostream& ostr, const coordinates<T, D>& p){
-  p.output_(ostr);
-  return ostr;
-}
-
-template<typename T, size_t D>
 struct branch_id_hasher__{
   size_t operator()(const branch_id<T, D>& k) const{
     return std::hash<T>()(k.value_());
@@ -303,10 +236,9 @@ public:
 
   static const size_t dimension = Policy::dimension;
 
+  using element_t = typename Policy::element_t;
   
-  using point_t = typename Policy::point_t;
-
-  using element_t = typename Policy::point_t::element_t;
+  using point_t = point<element_t, dimension>;
 
 
   using branch_int_t = typename Policy::branch_int_t;
@@ -832,32 +764,32 @@ public:
 
   // initial attempt to get this working, needs to be optimized
 
-  static bool intersects(const coordinates<element_t, 2>& origin,
-                         const coordinates<element_t, 2>& size,
-                         const coordinates<element_t, 2>& center,
+  static bool intersects(const point<element_t, 2>& origin,
+                         const point<element_t, 2>& size,
+                         const point<element_t, 2>& center,
                          element_t radius){
     
-    if(origin.distance(center) < radius){
+    if(distance(origin, center) < radius){
       return true;
     }
 
     point_t p1 = origin;
     p1[0] += size[0];
 
-    if(p1.distance(center) < radius){
+    if(distance(p1, center) < radius){
       return true;
     } 
 
     point_t p2 = origin;
     p2[1] += size[1];
 
-    if(p2.distance(center) < radius){
+    if(distance(p2, center) < radius){
       return true;
     }
 
     p2[0] += size[0];
 
-    if(p2.distance(center) < radius){
+    if(distance(p2, center) < radius){
       return true;
     }
 
@@ -872,7 +804,7 @@ public:
     
     if(b->is_leaf()){
       for(auto ent : *b){
-        if(center.distance(ent->coordinates()) < radius){
+        if(distance(center, ent->coordinates()) < radius){
           entity_ids.push_back(ent->id());
         }
       }

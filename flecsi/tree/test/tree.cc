@@ -17,7 +17,7 @@ public:
 
   using element_t = double;
 
-  using point_t = coordinates<element_t, dimension>;
+  using point_t = point<element_t, dimension>;
 
   class entity : public tree_entity<branch_int_t, dimension>{
   public:
@@ -48,6 +48,7 @@ public:
 
     void remove(entity_t* ent){
       auto itr = std::find(ents_.begin(), ents_.end(), ent);
+      assert(itr != ents_.end());
       ents_.erase(itr);
       
       if(ents_.empty()){
