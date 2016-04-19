@@ -105,9 +105,7 @@ TEST(tree_topology, insert_find_remove) {
     ents.push_back(e);
   }
 
-  point_t p = {10.0, 10.0};
-
-  auto s = t.find(p, 1.0);
+  auto s = t.find_in_radius({10.0, 10.0}, 1.0);
   for(auto ent : s){
     CINCH_CAPTURE() << ent->coordinates() << endl;
   }

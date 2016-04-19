@@ -725,7 +725,7 @@ public:
     p->reset();
   }
 
-  entity_set_t find(const point_t& center, element_t radius){
+  entity_set_t find_in_radius(const point_t& center, element_t radius){
     // find the lowest level branch which is guaranteed
     // to contain the point with radius
 
@@ -757,12 +757,19 @@ public:
 
     entity_id_vector_t entity_ids;
 
-    find_(b, entity_ids, center, radius, size);
+    find_(b, entity_ids, size,
+          tree_topology::within, tree_topology::intersects, center, radius);
 
     return entity_set_t(*this, std::move(entity_ids), false);
   }
 
   // initial attempt to get this working, needs to be optimized
+
+  static bool within(const point<element_t, 2>& origin,
+                     const point<element_t, 2>& center,
+                     element_t radius){
+    return distance(origin, center) < radius;
+  }
 
   static bool intersects(const point<element_t, 2>& origin,
                          const point<element_t, 2>& size,
@@ -796,15 +803,17 @@ public:
     return false;
   }
 
+  template<typename EF, typename BF, typename... ARGS>
   void find_(branch_t* b,
              entity_id_vector_t& entity_ids,
-             const point_t& center,
-             element_t radius,
-             point_t size){
+             point_t size,
+             EF&& ef,
+             BF&& bf,
+             ARGS&&... args){
     
     if(b->is_leaf()){
       for(auto ent : *b){
-        if(distance(center, ent->coordinates()) < radius){
+        if((*ef)(ent->coordinates(), std::forward<ARGS>(args)...)){
           entity_ids.push_back(ent->id());
         }
       }
@@ -821,8 +830,10 @@ public:
       
       point_t origin = to_coordinates(ci->id());
 
-      if(intersects(origin, size, center, radius)){
-        find_(ci, entity_ids, center, radius, size);
+      if((*bf)(origin, size, std::forward<ARGS>(args)...)){
+        find_(ci, entity_ids, size,
+              std::forward<EF>(ef), std::forward<BF>(bf),
+              std::forward<ARGS>(args)...);
       }
     }
   }
