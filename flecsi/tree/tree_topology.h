@@ -41,6 +41,122 @@ namespace flecsi{
 namespace tree_topology_dev{
 
 template<typename T, size_t D>
+struct tree_geometry{};
+
+template<typename T>
+struct tree_geometry<T, 2>{
+  using point_t = point<T, 2>;
+  using element_t = T;
+
+  static bool within(const point_t& origin,
+                     const point_t& center,
+                     element_t radius){
+    return distance(origin, center) < radius;
+  }
+
+  static bool intersects(const point_t& origin,
+                         const point_t& size,
+                         const point_t& center,
+                         element_t radius){
+    
+    if(distance(origin, center) < radius){
+      return true;
+    }
+
+    point_t p1 = origin;
+    p1[0] += size[0];
+
+    if(distance(p1, center) < radius){
+      return true;
+    } 
+
+    point_t p2 = origin;
+    p2[1] += size[1];
+
+    if(distance(p2, center) < radius){
+      return true;
+    }
+
+    p2[0] += size[0];
+
+    if(distance(p2, center) < radius){
+      return true;
+    }
+
+    return false;
+  }
+};
+
+template<typename T>
+struct tree_geometry<T, 3>{
+  using point_t = point<T, 3>;
+  using element_t = T;
+
+  static bool within(const point_t& origin,
+                     const point_t& center,
+                     element_t radius){
+    return distance(origin, center) < radius;
+  }
+
+  static bool intersects(const point_t& origin,
+                         const point_t& size,
+                         const point_t& center,
+                         element_t radius){
+    
+    if(distance(origin, center) < radius){
+      return true;
+    }
+
+    point_t p1 = origin;
+    p1[0] += size[0];
+
+    if(distance(p1, center) < radius){
+      return true;
+    } 
+
+    p1[1] += size[1];
+
+    if(distance(p1, center) < radius){
+      return true;
+    } 
+
+    p1[2] += size[2];
+
+    if(distance(p1, center) < radius){
+      return true;
+    } 
+
+    point_t p2 = origin;
+    p2[1] += size[1];
+
+    if(distance(p2, center) < radius){
+      return true;
+    }
+
+    p2[2] += size[2];
+
+    if(distance(p2, center) < radius){
+      return true;
+    }
+
+    point_t p3 = origin;
+    p3[2] += size[2];
+
+    if(distance(p3, center) < radius){
+      return true;
+    }
+
+    p3[0] += size[0];
+
+    if(distance(p3, center) < radius){
+      return true;
+    }
+
+    return false;
+  }
+};
+
+template<typename T, size_t D>
 class branch_id{
 public:
   using int_t = T;
@@ -733,50 +849,15 @@ public:
     entity_id_vector_t entity_ids;
 
     find_(b, entity_ids, size,
-          tree_topology::within, tree_topology::intersects, center, radius);
+          tree_geometry<element_t, dimension>::within,
+          tree_geometry<element_t, dimension>::intersects,
+          center, radius);
 
     return entity_set_t(*this, std::move(entity_ids), false);
   }
 
   // initial attempt to get this working, needs to be optimized
 
-  static bool within(const point<element_t, 2>& origin,
-                     const point<element_t, 2>& center,
-                     element_t radius){
-    return distance(origin, center) < radius;
-  }
-
-  static bool intersects(const point<element_t, 2>& origin,
-                         const point<element_t, 2>& size,
-                         const point<element_t, 2>& center,
-                         element_t radius){
-    
-    if(distance(origin, center) < radius){
-      return true;
-    }
-
-    point_t p1 = origin;
-    p1[0] += size[0];
-
-    if(distance(p1, center) < radius){
-      return true;
-    } 
-
-    point_t p2 = origin;
-    p2[1] += size[1];
-
-    if(distance(p2, center) < radius){
-      return true;
-    }
-
-    p2[0] += size[0];
-
-    if(distance(p2, center) < radius){
-      return true;
-    }
-
-    return false;
-  }
 
   template<typename EF, typename BF, typename... ARGS>
   void find_(branch_t* b,
