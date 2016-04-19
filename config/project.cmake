@@ -37,7 +37,7 @@ set(CINCH_HEADER_SUFFIXES "\\.h")
 #------------------------------------------------------------------------------#
 
 set(FLECSI_RUNTIME_MODEL "serial" CACHE STRING
-  "Select the runtime model [legion,mpi,serial]")
+  "Select the runtime model [legion,mpi,mpilegion,serial]")
 
 #------------------------------------------------------------------------------#
 # Add option for setting id bits

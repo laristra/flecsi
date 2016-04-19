@@ -62,6 +62,23 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(FLECSI_RUNTIME_MAIN script-driver-mpi.cc)
 
+#MPI+Legion interface
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+   set(FLECSI_RUNTIME_MAIN script-driver-mpilegion.cc)
+
+  # Add legion setup here...
+  set (Legion_INSTALL_DIRS ${legion_DIR}  CACHE PATH
+    "Path to the Legion install directory")
+  set(CMAKE_PREFIX_PATH  ${CMAKE_PREFIX_PATH}
+     ${LEGION_INSTALL_DIRS})
+  find_package (legion REQUIRED NO_MODULE)
+  if(NOT legion_FOUND)
+      message(FATAL_ERROR "Legion is required
+                     for this build configuration")
+  endif(NOT legion_FOUND)
+  include_directories(${LEGION_INCLUDE_DIRS})
+  set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES})
+
 # Default
 else(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
