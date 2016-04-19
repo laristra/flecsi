@@ -290,14 +290,6 @@ struct branch_id_hasher__{
   }
 };
 
-double uniform(){
-  return double(rand())/RAND_MAX;
-}
-
-double uniform(double a, double b){
-  return a + (b - a) * uniform();
-}
-
 enum class action : uint64_t{
   none = 0b00,
   refine = 0b01,

@@ -78,12 +78,42 @@ public:
   using branch_t = branch;
 };
 
+double uniform(){
+  return double(rand())/RAND_MAX;
+}
+
+double uniform(double a, double b){
+  return a + (b - a) * uniform();
+}
+
 using tree_topology_t = tree_topology<tree_policy>;
 using entity_t = tree_topology_t::entity;
 using point_t = tree_topology_t::point_t;
 using branch_t = tree_topology_t::branch_t;
 using branch_id_t = tree_topology_t::branch_id_t;
 
-TEST(tree_topology, insert) {
-  //ASSERT_TRUE(CINCH_EQUAL_BLESSED("tree.blessed"));
+TEST(tree_topology, insert_find_remove) {
+  tree_topology_t t({0.0, 100.0, 0.0, 100.0});
+
+  std::vector<entity_t*> ents;
+
+  for(size_t i = 0; i < 100000; ++i){
+    point_t p = {uniform(0.0, 100.0), uniform(0.0, 100.0)};
+    auto e = t.make_entity(p);
+    t.insert(e);
+    ents.push_back(e);
+  }
+
+  point_t p = {10.0, 10.0};
+
+  auto s = t.find(p, 1.0);
+  for(auto ent : s){
+    CINCH_CAPTURE() << ent->coordinates() << endl;
+  }
+
+  for(auto e : ents){
+    t.remove(e);
+  }
+
+  ASSERT_TRUE(CINCH_EQUAL_BLESSED("tree.blessed"));
 }
