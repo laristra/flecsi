@@ -76,6 +76,10 @@ public:
     std::vector<entity_t*> ents_;
   };
 
+  bool should_coarsen(branch* parent){
+    return true;
+  }
+
   using branch_t = branch;
 };
 

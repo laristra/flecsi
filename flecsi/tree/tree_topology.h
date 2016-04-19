@@ -54,8 +54,10 @@ struct tree_geometry<T, 2>{
     return distance(origin, center) < radius;
   }
 
+  // initial attempt to get this working, needs to be optimized
+
   static bool intersects(const point_t& origin,
-                         const point_t& size,
+                         element_t size,
                          const point_t& center,
                          element_t radius){
     
@@ -64,20 +66,20 @@ struct tree_geometry<T, 2>{
     }
 
     point_t p1 = origin;
-    p1[0] += size[0];
+    p1[0] += size;
 
     if(distance(p1, center) < radius){
       return true;
     } 
 
     point_t p2 = origin;
-    p2[1] += size[1];
+    p2[1] += size;
 
     if(distance(p2, center) < radius){
       return true;
     }
 
-    p2[0] += size[0];
+    p2[0] += size;
 
     if(distance(p2, center) < radius){
       return true;
@@ -99,7 +101,7 @@ struct tree_geometry<T, 3>{
   }
 
   static bool intersects(const point_t& origin,
-                         const point_t& size,
+                         element_t size,
                          const point_t& center,
                          element_t radius){
     
@@ -108,45 +110,45 @@ struct tree_geometry<T, 3>{
     }
 
     point_t p1 = origin;
-    p1[0] += size[0];
+    p1[0] += size;
 
     if(distance(p1, center) < radius){
       return true;
     } 
 
-    p1[1] += size[1];
+    p1[1] += size;
 
     if(distance(p1, center) < radius){
       return true;
     } 
 
-    p1[2] += size[2];
+    p1[2] += size;
 
     if(distance(p1, center) < radius){
       return true;
     } 
 
     point_t p2 = origin;
-    p2[1] += size[1];
+    p2[1] += size;
 
     if(distance(p2, center) < radius){
       return true;
     }
 
-    p2[2] += size[2];
+    p2[2] += size;
 
     if(distance(p2, center) < radius){
       return true;
     }
 
     point_t p3 = origin;
-    p3[2] += size[2];
+    p3[2] += size;
 
     if(distance(p3, center) < radius){
       return true;
     }
 
-    p3[0] += size[0];
+    p3[0] += size;
 
     if(distance(p3, center) < radius){
       return true;
@@ -770,7 +772,7 @@ public:
         break;
       case action::coarsen:{
         auto p = static_cast<branch_t*>(b->parent());
-        if(p){
+        if(p && Policy::should_coarsen(p)){
           coarsen_(p);
         }
         break;
@@ -856,13 +858,10 @@ public:
     return entity_set_t(*this, std::move(entity_ids), false);
   }
 
-  // initial attempt to get this working, needs to be optimized
-
-
   template<typename EF, typename BF, typename... ARGS>
   void find_(branch_t* b,
              entity_id_vector_t& entity_ids,
-             point_t size,
+             element_t size,
              EF&& ef,
              BF&& bf,
              ARGS&&... args){
@@ -877,9 +876,7 @@ public:
       return;      
     }
 
-    for(size_t dim = 0; dim < dimension; ++dim){
-      size[dim] /= element_t(2);
-    }
+    size /= element_t(2);
 
     for(size_t i = 0; i < branch_t::num_children; ++i){
       branch_t* ci = static_cast<branch_t*>(b->child(i));
@@ -899,10 +896,6 @@ public:
   }
 
   branch_id_vector_t neighbors(branch_id_t b) const{
-    assert(false && "unimplemented");
-  }
-
-  entity_vector_t locality(entity_t* ent, element_t dist){
     assert(false && "unimplemented");
   }
 
