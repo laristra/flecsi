@@ -61,12 +61,6 @@ if(ENABLE_IO)
   )
 endif(ENABLE_IO)
 
-
-#cinch_add_unit(unstruct_3d
-#  SOURCES unstruct/test/unstruct_3d.cc
-#  INPUTS unstruct/test/unstruct_3d.blessed)
-
-
 #~---------------------------------------------------------------------------~-#
 # Formatting options
 # vim: set tabstop=2 shiftwidth=2 expandtab :
