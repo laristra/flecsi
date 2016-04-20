@@ -13,35 +13,42 @@ addons:
       - cmake-data
       - libopenmpi-dev
       - openmpi-bin
+      - gcc-4.9
+      - g++-4.9
+      - gfortran-4.9
       - gcc-5
       - g++-5
+      - gfortran-5
+      - libscotch-dev
 
 before_install:
+ - if [[ ${GVER} ]]; then export CC=gcc-${GVER}; export CXX=g++-${GVER}; export FC=gfortran-${GVER}; fi
  - git -C cinch submodule init && git -C cinch submodule update
  - git fetch --unshallow && git fetch --tags #for versioning
  - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi 
 
-env: #maybe add mpich later
+env:
   global:
     - CCACHE_CPP2=yes
     - GVER=5
   matrix:
+    - MININAL=ON MPI=OFF
+    - GVER=4.9 MPI=ON
     - MPI=ON
-    - MPI=OFF
-    - MPI=ON  COVERAGE=ON
-    - MPI=OFF COVERAGE=ON
+    - MPI=ON COVERAGE=ON
 
 script:
   - mkdir build && cd build &&
-    PATH="/usr/lib/ccache:$PATH" CC=gcc-${GVER} CXX=g++-${GVER} cmake -DENABLE_MPI=$MPI -DENABLE_UNIT_TESTS=ON ${COVERAGE:+-DUSE_GCOV=ON} .. && 
-    make -j2 && make test && make install DESTDIR="${HOME}"
+    cmake -DENABLE_MPI=$MPI
+          ${MININAL:+-DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON -DCMAKE_DISABLE_FIND_PACKAGE_SCOTCH=ON -DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON}
+          -DENABLE_UNIT_TESTS=ON ${COVERAGE:+-DUSE_GCOV=ON} .. && 
+    make -j2 && make test && make install DESTDIR="${HOME}" && cd ..
 
 after_success:
-  - if [[ ${COVERAGE} ]]; then cd .. && codecov --gcov-exec gcov-${GVER}; fi
+  - if [[ ${COVERAGE} ]]; then codecov --gcov-exec gcov-${GVER}; fi
 
 cache:
-  directories:
-    - $HOME/.ccache
+  - ccache
 
 compiler:
   - gcc
