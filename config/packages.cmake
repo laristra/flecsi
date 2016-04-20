@@ -239,9 +239,9 @@ if(NOT APPLE)
     set(LAPACKE_FOUND 1)
     include_directories(${TPL_INSTALL_PREFIX}/include)
     list( APPEND LAPACK_LIBRARIES
-          ${TPL_INSTALL_PREFIX}/lib64/liblapacke.a
-          ${TPL_INSTALL_PREFIX}/lib64/liblapack.a
-          ${TPL_INSTALL_PREFIX}/lib64/libblas.a
+          ${TPL_INSTALL_PREFIX}/lib/liblapacke.a
+          ${TPL_INSTALL_PREFIX}/lib/liblapack.a
+          ${TPL_INSTALL_PREFIX}/lib/libblas.a
           gfortran)
   else()
     # append lapacke to list of lapack libraries
