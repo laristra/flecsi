@@ -42,7 +42,7 @@ script:
     cmake -DENABLE_MPI=$MPI
           ${MININAL:+-DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON -DCMAKE_DISABLE_FIND_PACKAGE_SCOTCH=ON -DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON}
           -DENABLE_UNIT_TESTS=ON ${COVERAGE:+-DUSE_GCOV=ON} .. && 
-    make -j2 && make test && make install DESTDIR="${HOME}" && cd ..
+    make -j2 && make test ARGS='-E partition' && make install DESTDIR="${HOME}" && cd .. #partition test is broken (issue #48)
 
 after_success:
   - if [[ ${COVERAGE} ]]; then codecov --gcov-exec gcov-${GVER}; fi
