@@ -40,6 +40,10 @@ cinch_add_unit(dolfin_triangle
 cinch_add_unit(dolfin_triangle_mesh_partition
         SOURCES test/dolfin_triangle/test/dolfin_triangle_mesh_partition.cc
         )
+cinch_add_unit(dolfin_triangle_connectivity
+        SOURCES test/dolfin_triangle/test/dolfin_triangle_connectivity.cc
+        )
+
 if (ENABLE_PARTITION AND METIS_FOUND)
     cinch_add_unit(dolfin_triangle_metis
             SOURCES test/dolfin_triangle/test/dolfin_triangle_metis.cc
