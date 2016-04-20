@@ -121,6 +121,7 @@ if(ENABLE_IO)
     include_directories( ${TPL_INSTALL_PREFIX}/include )
   endif()
   add_definitions( -DHAVE_EXODUS )
+  message(STATUS "Found EXODUSII: ${IO_LIBRARIES}")
 endif(ENABLE_IO)
 
 #------------------------------------------------------------------------------#
