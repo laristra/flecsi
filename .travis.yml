@@ -33,7 +33,7 @@ env:
     - GVER=5
   matrix:
     - MININAL=ON MPI=OFF
-    - GVER=4.9 MPI=ON
+#    - GVER=4.9 MPI=ON (issue #47)
     - MPI=ON
     - MPI=ON COVERAGE=ON
 
