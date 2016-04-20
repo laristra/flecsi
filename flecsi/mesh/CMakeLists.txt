@@ -40,6 +40,11 @@ cinch_add_unit(dolfin_triangle
 cinch_add_unit(dolfin_triangle_mesh_partition
         SOURCES test/dolfin_triangle/test/dolfin_triangle_mesh_partition.cc
         )
+if (ENABLE_PARTITION AND METIS_FOUND)
+    cinch_add_unit(dolfin_triangle_metis
+            SOURCES test/dolfin_triangle/test/dolfin_triangle_metis.cc
+            LIBRARIES ${PARTITION_LIBRARIES})
+endif()
 
 cinch_add_unit(sagittarius
         SOURCES test/sagittarius/test/sagittarius.cc
