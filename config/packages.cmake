@@ -235,7 +235,7 @@ if(NOT APPLE)
   set(LAPACKE_FOUND)
   set(LAPACK_LIBRARIES)
   if(EXISTS ${TPL_INSTALL_PREFIX}/include/lapacke.h
-     AND EXISTS ${TPL_INSTALL_PREFIX}/lib64/liblapacke.a)
+     AND EXISTS ${TPL_INSTALL_PREFIX}/lib/liblapacke.a)
     set(LAPACKE_FOUND 1)
     include_directories(${TPL_INSTALL_PREFIX}/include)
     list( APPEND LAPACK_LIBRARIES
