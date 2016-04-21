@@ -209,7 +209,10 @@ if(NOT APPLE)
     # want to add ${LAPACK_INCLUDES}/lapacke to the include search path,
     # but FindLAPACK.cmake defines no such variable.
   endif()
-  message(STATUS "Found LAPACK: ${LAPACK_LIBRARIES}")
+
+  if(LAPACKE_FOUND)
+    message(STATUS "Found LAPACKE: ${LAPACKE_LIBRARIES}")
+  endif(LAPACKE_FOUND)
 
 endif(NOT APPLE)
 
