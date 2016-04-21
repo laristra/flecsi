@@ -40,13 +40,13 @@ env:
   matrix:
     - MININAL=ON MPI=OFF
 #    - GVER=4.9 MPI=ON (issue #47)
-    - MINIMAL=ON MPI=OFF TPL=ON
+    - MPI=OFF TPL=ON
     - MPI=ON
     - MPI=ON COVERAGE=ON
 
 script:
   - mkdir build && cd build &&
-    cmake -DENABLE_MPI=$MPI ${TPL:+-DTPL_INSTALL_PREFIX=$HOME/tpl}
+    cmake -DENABLE_MPI=$MPI ${TPL:+-DTPL_INSTALL_PREFIX=$HOME/tpl -DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON}
           ${MININAL:+-DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON -DCMAKE_DISABLE_FIND_PACKAGE_SCOTCH=ON -DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON}
           -DENABLE_UNIT_TESTS=ON ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} .. && 
     make -j2 && make test ARGS='-E partition' && make install DESTDIR="${HOME}" && cd .. #partition test is broken (issue #48)

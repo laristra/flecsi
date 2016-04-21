@@ -170,24 +170,6 @@ if(ENABLE_PARTITION)
                  NO_DEFAULT_PATH )
   endif()
 
-  find_library ( SCOTCH_LIBRARY 
-                 NAMES scotch
-                 PATHS ${SCOTCH_ROOT} 
-                 PATH_SUFFIXES lib
-                 NO_DEFAULT_PATH )
-
-  find_library ( SCOTCH_ERR_LIBRARY 
-                 NAMES scotcherr
-                 PATHS ${SCOTCH_ROOT} 
-                 PATH_SUFFIXES lib
-                 NO_DEFAULT_PATH )
-
-  find_path    ( SCOTCH_INCLUDE_DIR 
-                 NAMES scotch.h
-                 PATHS ${SCOTCH_ROOT} 
-                 PATH_SUFFIXES include
-                 NO_DEFAULT_PATH )
-
   if (METIS_LIBRARY AND METIS_INCLUDE_DIR) 
      message(STATUS "Found METIS: ${METIS_LIBRARY} and ${METIS_INCLUDE_DIR}")
      set( METIS_FOUND TRUE )
@@ -204,11 +186,9 @@ if(ENABLE_PARTITION)
      add_definitions( -DHAVE_PARMETIS )
   endif()
 
-  if (SCOTCH_LIBRARY AND SCOTCH_ERR_LIBRARY AND SCOTCH_INCLUDE_DIR) 
-     message(STATUS "Found SCOTCH: ${SCOTCH_LIBRARY}, ${SCOTCH_ERR_LIBRARY} and ${SCOTCH_INCLUDE_DIR}" )
-     set( SCOTCH_FOUND TRUE )
-     list( APPEND PARTITION_LIBRARIES ${SCOTCH_LIBRARY} ${SCOTCH_ERR_LIBRARY} )
-     include_directories( ${SCOTCH_INCLUDE_DIR} )
+  if (SCOTCH_FOUND)
+     list( APPEND PARTITION_LIBRARIES ${SCOTCH_LIBRARIES} )
+     include_directories( ${SCOTCH_INCLUDE_DIRS} )
      add_definitions( -DHAVE_SCOTCH )
   endif()
 
