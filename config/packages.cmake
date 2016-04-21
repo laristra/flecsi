@@ -107,10 +107,7 @@ message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with 2^${
 find_package(EXODUSII)
 option(ENABLE_IO "Enable I/O (uses libexodus)" ${EXODUSII_FOUND})
 if(ENABLE_IO)
-  if(EXODUSII_FOUND)
-    set(IO_LIBRARIES ${EXODUSII_LIBRARIES})
-    include_directories(${EXODUSII_INCLUDE_DIRS})
-  else()
+  if(EXISTS ${TPL_INSTALL_PREFIX}/include/exodusII.h)
     set(IO_LIBRARIES ${TPL_INSTALL_PREFIX}/lib/libexodus.a
       ${TPL_INSTALL_PREFIX}/lib/libnetcdf.a
       ${TPL_INSTALL_PREFIX}/lib/libhdf5_hl.a
@@ -119,6 +116,11 @@ if(ENABLE_IO)
       ${TPL_INSTALL_PREFIX}/lib/libz.a
       -ldl)
     include_directories( ${TPL_INSTALL_PREFIX}/include )
+  elseif(EXODUSII_FOUND)
+    set(IO_LIBRARIES ${EXODUSII_LIBRARIES})
+    include_directories(${EXODUSII_INCLUDE_DIRS})
+  else()
+    MESSAGE( FATAL_ERROR "You need libexodus either from TPL or system to enable I/O" )
   endif()
   add_definitions( -DHAVE_EXODUS )
   message(STATUS "Found EXODUSII: ${IO_LIBRARIES}")
