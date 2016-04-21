@@ -61,24 +61,6 @@ if(ENABLE_IO)
   )
 endif(ENABLE_IO)
 
-cinch_add_unit(dolfin_triangle
-        SOURCES dolfin_triangle/test/dolfin_triangle.cc
-        INPUTS  dolfin_triangle/test/dolfin_triangle.blessed
-        )
-cinch_add_unit(sagittarius
-        SOURCES sagittarius/test/sagittarius.cc
-        INPUTS  sagittarius/test/sagittarius.blessed
-        )
-
-#cinch_add_unit(unstruct_2d
-#  SOURCES unstruct/test/unstruct_2d.cc
-#  INPUTS unstruct/test/unstruct_2d.blessed)
-
-#cinch_add_unit(unstruct_3d
-#  SOURCES unstruct/test/unstruct_3d.cc
-#  INPUTS unstruct/test/unstruct_3d.blessed)
-
-
 #~---------------------------------------------------------------------------~-#
 # Formatting options
 # vim: set tabstop=2 shiftwidth=2 expandtab :

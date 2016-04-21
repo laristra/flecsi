@@ -634,21 +634,7 @@ class mesh_topology_t : public mesh_topology_base_t
   mesh_topology_t(mesh_topology_t &&) = default;
 
   //! override default move assignement
-  mesh_topology_t & operator=(mesh_topology_t && o) {
-    
-    ms_ = std::move( o.ms_ );
-
-#ifdef NICK_PLEASE_HELP    
-    for (size_t d = 0; d < MT::num_domains; ++d) {
-      auto & cell_out = get_connectivity_(FM, TM, MT::dimension, TD);   
-      if (ms_.entities[TM][TD].empty()) {
-        cell_out.init_create<MT, TM>(
-          ms_.id_vecs[TM][TD], ms_.entities[TM][TD], cell_conn, TD, *this);
-    } else {
-      cell_out.init(cell_conn);
-    }
-#endif
-  } // move assignment
+  mesh_topology_t & operator=(mesh_topology_t && o) = default;
 
   //! Constructor
   mesh_topology_t()
@@ -756,7 +742,7 @@ class mesh_topology_t : public mesh_topology_base_t
     // Storage for cell-to-entity connectivity information.
     connection_vector_t cell_entity_conn(_num_cells);
 
-    // This map is primarily used to make sure that entities are
+    // This map is primarily used to make sure that entities are not
     // created multiple times, i.e., that they are unique.  The
     // emplace method of the map is used to only define a new entity
     // if it does not already exist in the map.
@@ -1471,10 +1457,11 @@ class mesh_topology_t : public mesh_topology_base_t
 
     size_t to_dim;
 
-    if(dim == 0){
+    if (dim == 0) {
+      // vertex -> vertex via shared edge.
       to_dim = 1;
-    }
-    else{
+    } else {
+      // edge -> edge via shared vertex, cell -> cell via shared edge/face etc.
       to_dim = dim - 1;
     }
 
@@ -1514,7 +1501,7 @@ class mesh_topology_t : public mesh_topology_base_t
 
       if(m >= pn * partition_sizes[pi]){
         partitions.emplace_back(std::move(cp));
-        partition.push_back(m);
+        partition.push_back(m + partition.back());
         offset = 0;
         ++pi;
       }

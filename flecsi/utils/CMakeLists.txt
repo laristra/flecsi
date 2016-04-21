@@ -44,6 +44,14 @@ set(utils_HEADERS
    PARENT_SCOPE)
 endif (ENABLE_STATIC_CONTAINER)
 
+if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+set(utils_HEADERS 
+   ${utils_HEADERS}
+   mpi_legion_interoperability/legion_handshake.h
+   mpi_legion_interoperability/macros.h
+   PARENT_SCOPE)
+endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+
 set(utils_SOURCES
   dummy.cc
   PARENT_SCOPE)
@@ -82,6 +90,12 @@ if (ENABLE_STATIC_CONTAINER)
 cinch_add_unit(meta_container
   SOURCES test/meta_container.cc)
 endif (ENABLE_STATIC_CONTAINER)
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+cinch_add_unit(mpi_with_legion
+  SOURCES test/mpi_with_legion.cc
+  POLICY MPILEGION)
+endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 #~---------------------------------------------------------------------------~-#
 # Formatting options
 # vim: set tabstop=2 shiftwidth=2 expandtab :

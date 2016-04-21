@@ -37,7 +37,7 @@ set(CINCH_HEADER_SUFFIXES "\\.h")
 #------------------------------------------------------------------------------#
 
 set(FLECSI_RUNTIME_MODEL "serial" CACHE STRING
-  "Select the runtime model [legion,mpi,serial]")
+  "Select the runtime model [legion,mpi,mpilegion,serial]")
 
 #------------------------------------------------------------------------------#
 # Add option for setting id bits
@@ -56,15 +56,6 @@ set( TPL_INSTALL_PREFIX /path/to/third/party/install
 if (NOT TPL_INSTALL_PREFIX STREQUAL "")
   set(METIS_ROOT  ${TPL_INSTALL_PREFIX})
   set(SCOTCH_ROOT ${TPL_INSTALL_PREFIX})
-endif()
-
-option(USE_GCOV "Enable gcov support" OFF)
-if(USE_GCOV)
-  message(STATUS "Enabling gcov support")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage -O0")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage -O0")
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
-  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} --coverage")
 endif()
 
 #~---------------------------------------------------------------------------~-#
