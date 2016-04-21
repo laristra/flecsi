@@ -108,10 +108,7 @@ message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with 2^${
 find_package(EXODUSII)
 option(ENABLE_IO "Enable I/O (uses libexodus)" ${EXODUSII_FOUND})
 if(ENABLE_IO)
-  if(EXODUSII_FOUND)
-    set(IO_LIBRARIES ${EXODUSII_LIBRARIES})
-    include_directories(${EXODUSII_INCLUDE_DIRS})
-  else()
+  if(EXISTS ${TPL_INSTALL_PREFIX}/include/exodusII.h)
     set(IO_LIBRARIES ${TPL_INSTALL_PREFIX}/lib/libexodus.a
       ${TPL_INSTALL_PREFIX}/lib/libnetcdf.a
       ${TPL_INSTALL_PREFIX}/lib/libhdf5_hl.a
@@ -120,6 +117,11 @@ if(ENABLE_IO)
       ${TPL_INSTALL_PREFIX}/lib/libz.a
       -ldl)
     include_directories( ${TPL_INSTALL_PREFIX}/include )
+  elseif(EXODUSII_FOUND)
+    set(IO_LIBRARIES ${EXODUSII_LIBRARIES})
+    include_directories(${EXODUSII_INCLUDE_DIRS})
+  else()
+    MESSAGE( FATAL_ERROR "You need libexodus either from TPL or system to enable I/O" )
   endif()
   add_definitions( -DHAVE_EXODUS )
   message(STATUS "Found EXODUSII: ${IO_LIBRARIES}")
@@ -146,75 +148,26 @@ if(ENABLE_PARTITION)
 
   set( PARTITION_LIBRARIES )
 
-  find_library ( METIS_LIBRARY 
-                 NAMES metis 
-                 PATHS ${METIS_ROOT} 
-                 PATH_SUFFIXES lib
-                 NO_DEFAULT_PATH )
-
-  find_path    ( METIS_INCLUDE_DIR 
-                 NAMES metis.h 
-                 PATHS ${METIS_ROOT} 
-                 PATH_SUFFIXES include
-                 NO_DEFAULT_PATH )
-  if(ENABLE_MPI)
-      find_library( PARMETIS_LIBRARY
-                    NAMES parmetis
-                    PATHS ${PARMETIS_ROOT}
-                    PATH_SUFFIXES lib
-                    NO_DEFAULT_PATH )
-
-      find_path( PARMETIS_INCLUDE_DIR
-                 NAMES parmetis.h
-                 PATHS ${PARMETIS_ROOT}
-                 PATH_SUFFIXES include
-                 NO_DEFAULT_PATH )
-  endif()
-
-  find_library ( SCOTCH_LIBRARY 
-                 NAMES scotch
-                 PATHS ${SCOTCH_ROOT} 
-                 PATH_SUFFIXES lib
-                 NO_DEFAULT_PATH )
-
-  find_library ( SCOTCH_ERR_LIBRARY 
-                 NAMES scotcherr
-                 PATHS ${SCOTCH_ROOT} 
-                 PATH_SUFFIXES lib
-                 NO_DEFAULT_PATH )
-
-  find_path    ( SCOTCH_INCLUDE_DIR 
-                 NAMES scotch.h
-                 PATHS ${SCOTCH_ROOT} 
-                 PATH_SUFFIXES include
-                 NO_DEFAULT_PATH )
-
-  if (METIS_LIBRARY AND METIS_INCLUDE_DIR) 
-     message(STATUS "Found METIS: ${METIS_LIBRARY} and ${METIS_INCLUDE_DIR}")
-     set( METIS_FOUND TRUE )
-     list( APPEND PARTITION_LIBRARIES ${METIS_LIBRARY} )
-     include_directories( ${METIS_INCLUDE_DIR} )
+  if (METIS_FOUND)
+     list( APPEND PARTITION_LIBRARIES ${METIS_LIBRARIES} )
+     include_directories( ${METIS_INCLUDE_DIRS} )
      add_definitions( -DHAVE_METIS )
   endif()
 
-  if (ENABLE_MPI AND PARMETIS_LIBRARY AND PARMETIS_INCLUDE_DIR)
-     message(STATUS "Found ParMETIS: ${PARMETIS_LIBRARY} and ${PARMETIS_INCLUDE_DIR}")
-     set( PARMETIS_FOUND TRUE )
-     list( APPEND PARTITION_LIBRARIES ${PARMETIS_LIBRARY} )
-     include_directories( ${PARMETIS_INCLUDE_DIR} )
+  if (PARMETIS_FOUND)
+     list( APPEND PARTITION_LIBRARIES ${PARMETIS_LIBRARIES} )
+     include_directories( ${PARMETIS_INCLUDE_DIRS} )
      add_definitions( -DHAVE_PARMETIS )
   endif()
 
-  if (SCOTCH_LIBRARY AND SCOTCH_ERR_LIBRARY AND SCOTCH_INCLUDE_DIR) 
-     message(STATUS "Found SCOTCH: ${SCOTCH_LIBRARY}, ${SCOTCH_ERR_LIBRARY} and ${SCOTCH_INCLUDE_DIR}" )
-     set( SCOTCH_FOUND TRUE )
-     list( APPEND PARTITION_LIBRARIES ${SCOTCH_LIBRARY} ${SCOTCH_ERR_LIBRARY} )
-     include_directories( ${SCOTCH_INCLUDE_DIR} )
+  if (SCOTCH_FOUND)
+     list( APPEND PARTITION_LIBRARIES ${SCOTCH_LIBRARIES} )
+     include_directories( ${SCOTCH_INCLUDE_DIRS} )
      add_definitions( -DHAVE_SCOTCH )
   endif()
 
   if ( NOT PARTITION_LIBRARIES )
-     MESSAGE( FATAL_ERROR "Need to specify either SCOTCH or METIS/ParMETIS" )
+     MESSAGE( FATAL_ERROR "You need scotch, metis or parmetis to enable partitioning" )
   endif()
 
 endif()
@@ -257,7 +210,10 @@ if(NOT APPLE)
     # want to add ${LAPACK_INCLUDES}/lapacke to the include search path,
     # but FindLAPACK.cmake defines no such variable.
   endif()
-  message(STATUS "Found LAPACK: ${LAPACK_LIBRARIES}")
+
+  if(LAPACKE_FOUND)
+    message(STATUS "Found LAPACKE: ${LAPACKE_LIBRARIES}")
+  endif(LAPACKE_FOUND)
 
 endif(NOT APPLE)
 

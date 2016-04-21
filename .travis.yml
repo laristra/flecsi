@@ -40,7 +40,7 @@ env:
   matrix:
     - MININAL=ON MPI=OFF
 #    - GVER=4.9 MPI=ON (issue #47)
-    - MINIMAL=ON MPI=OFF TPL=ON
+    - MPI=OFF TPL=ON
     - MPI=ON
     - MPI=ON COVERAGE=ON
 
