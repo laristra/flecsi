@@ -30,23 +30,23 @@ struct data_t : public storage_policy_t {
 
 	template<size_t DT, typename T, size_t NS, typename ... Args>
 	decltype(auto) register_data(uintptr_t runtime_namespace,
-		const const_string_t & key, Args && ... args) {
+		const const_string_t & key, size_t versions=1, Args && ... args) {
 		return storage_type_t<DT>::template register_data<T,NS>(data_store_,
-			runtime_namespace, key, std::forward<Args>(args)...);
+			runtime_namespace, key, versions, std::forward<Args>(args)...);
 	} // register_data
 
   template<size_t DT, typename T, size_t NS>
   decltype(auto) get_accessor(uintptr_t runtime_namespace,
-    const const_string_t & key) {
+    const const_string_t & key, size_t version=0) {
     return storage_type_t<DT>::template get_accessor<T,NS>(data_store_,
-			runtime_namespace, key);
+			runtime_namespace, key, version);
   } // get_accessor
 
   template<size_t DT, typename T, size_t NS>
   decltype(auto) get_handle(uintptr_t runtime_namespace,
-    const const_string_t & key) {
+    const const_string_t & key, size_t version=0) {
     return storage_type_t<DT>::template get_handle<T,NS>(data_store_,
-			runtime_namespace, key);
+			runtime_namespace, key, version);
   } // get_accessor
 
 private:
@@ -55,18 +55,19 @@ private:
 
 };
 
-#define register_data(manager, name, data_type, storage_type, ...) \
-  manager.register_data<storage_type, data_type, 0>(0, name, ##__VA_ARGS__)
+#define register_data(manager, name, versions, data_type, storage_type, ...) \
+  manager.register_data<storage_type, data_type, 0>(0, name, \
+    versions, ##__VA_ARGS__)
 
-#define get_accessor(manager, name, data_type, storage_type) \
-  manager.get_accessor<storage_type, data_type, 0>(0, name)
+#define get_accessor(manager, name, version, data_type, storage_type) \
+  manager.get_accessor<storage_type, data_type, 0>(0, name, version)
 
 TEST(storage, dense) {
 	data_t & d = data_t::instance();
 
-  register_data(d, "pressure", double, dense, 100);
+  register_data(d, "pressure", 3, double, dense, 100);
 
-  auto p = get_accessor(d, "pressure", double, dense);
+  auto p = get_accessor(d, "pressure", 0, double, dense);
 } // TEST
 
 #undef register_data

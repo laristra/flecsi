@@ -57,10 +57,11 @@ namespace default_storage_policy
     template<typename T, size_t NS, typename ... Args>
     static dense_handle_t register_data(data_store_t & data_store,
       uintptr_t runtime_namespace, const const_string_t & key,
-      size_t indeces, Args && ... args) {
+      size_t indeces, size_t versions, Args && ... args) {
 
       size_t h = key.hash() ^ runtime_namespace;
 
+      // Runtime assertion that this key is unique
       assert(data_store[NS].find(h) == data_store[NS].end() &&
         "key already exists");
 
@@ -71,7 +72,10 @@ namespace default_storage_policy
       data_store[NS][h].type_size = sizeof(T);
       data_store[NS][h].rtti.reset(
         new typename meta_data_t::type_info_t(typeid(T)));
-        data_store[NS][h].data.resize(indeces * sizeof(T));
+
+      for(size_t i=0; i<versions; ++i) {
+        data_store[NS][h].data[i].resize(indeces * sizeof(T));
+      } // for
 
       return {};
     } // register_data
@@ -80,7 +84,8 @@ namespace default_storage_policy
      */
     template<typename T, size_t NS>
     static dense_accessor_t get_accessor(data_store_t & data_store,
-      uintptr_t runtime_namespace, const const_string_t & key) {
+      uintptr_t runtime_namespace, const const_string_t & key,
+      size_t version) {
       return {};
     } // get_accessor
 
@@ -88,7 +93,8 @@ namespace default_storage_policy
      */
     template<typename T, size_t NS>
     static dense_handle_t get_handle(data_store_t & data_store,
-      uintptr_t runtime_namespace, const const_string_t & key) {
+      uintptr_t runtime_namespace, const const_string_t & key,
+      size_t version) {
       return {};
     } // get_handle
 

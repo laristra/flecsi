@@ -34,8 +34,8 @@ namespace default_storage_policy
   /*!
     FIXME: Tuple storage type.
    */
-  template<typename data_store_t>
-  struct storage_type_t<tuple, data_store_t> {
+  template<typename data_store_t, typename meta_data_t>
+  struct storage_type_t<tuple, data_store_t, meta_data_t> {
 
     struct tuple_accessor_t {
     }; // struct tuple_accessor_t

@@ -26,8 +26,11 @@
 #include "flecsi/data/default/default_meta_data.h"
 
 // Include partial specializations
-#include "flecsi/data/default/default_dense.h"
 #include "flecsi/data/default/default_scalar.h"
+#include "flecsi/data/default/default_dense.h"
+#include "flecsi/data/default/default_sparse.h"
+#include "flecsi/data/default/default_scoped.h"
+#include "flecsi/data/default/default_tuple.h"
 
 /*!
  * \file default_storage_policy.h
@@ -45,6 +48,8 @@ struct default_storage_policy_t {
 
   using meta_data_t = default_meta_data_t<user_meta_data_t>;
 
+  // Define the data store type
+  // This will likely be much more complicated in a real policy
   using data_store_t = std::unordered_map<size_t,
     std::unordered_map<const_string_t::hash_type_t, meta_data_t>>;
 
