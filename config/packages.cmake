@@ -145,17 +145,6 @@ if(ENABLE_PARTITION)
 
   set( PARTITION_LIBRARIES )
 
-  find_library ( METIS_LIBRARY 
-                 NAMES metis 
-                 PATHS ${METIS_ROOT} 
-                 PATH_SUFFIXES lib
-                 NO_DEFAULT_PATH )
-
-  find_path    ( METIS_INCLUDE_DIR 
-                 NAMES metis.h 
-                 PATHS ${METIS_ROOT} 
-                 PATH_SUFFIXES include
-                 NO_DEFAULT_PATH )
   if(ENABLE_MPI)
       find_library( PARMETIS_LIBRARY
                     NAMES parmetis
@@ -170,11 +159,9 @@ if(ENABLE_PARTITION)
                  NO_DEFAULT_PATH )
   endif()
 
-  if (METIS_LIBRARY AND METIS_INCLUDE_DIR) 
-     message(STATUS "Found METIS: ${METIS_LIBRARY} and ${METIS_INCLUDE_DIR}")
-     set( METIS_FOUND TRUE )
-     list( APPEND PARTITION_LIBRARIES ${METIS_LIBRARY} )
-     include_directories( ${METIS_INCLUDE_DIR} )
+  if (METIS_FOUND)
+     list( APPEND PARTITION_LIBRARIES ${METIS_LIBRARIES} )
+     include_directories( ${METIS_INCLUDE_DIRS} )
      add_definitions( -DHAVE_METIS )
   endif()
 

@@ -54,7 +54,6 @@ set( TPL_INSTALL_PREFIX /path/to/third/party/install
                         CACHE PATH
                         "path to thirdparty install" )
 if (NOT TPL_INSTALL_PREFIX STREQUAL "")
-  set(METIS_ROOT  ${TPL_INSTALL_PREFIX})
   list(APPEND CMAKE_PREFIX_PATH "${TPL_INSTALL_PREFIX}")
 endif()
 
