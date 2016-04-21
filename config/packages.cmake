@@ -147,31 +147,15 @@ if(ENABLE_PARTITION)
 
   set( PARTITION_LIBRARIES )
 
-  if(ENABLE_MPI)
-      find_library( PARMETIS_LIBRARY
-                    NAMES parmetis
-                    PATHS ${PARMETIS_ROOT}
-                    PATH_SUFFIXES lib
-                    NO_DEFAULT_PATH )
-
-      find_path( PARMETIS_INCLUDE_DIR
-                 NAMES parmetis.h
-                 PATHS ${PARMETIS_ROOT}
-                 PATH_SUFFIXES include
-                 NO_DEFAULT_PATH )
-  endif()
-
   if (METIS_FOUND)
      list( APPEND PARTITION_LIBRARIES ${METIS_LIBRARIES} )
      include_directories( ${METIS_INCLUDE_DIRS} )
      add_definitions( -DHAVE_METIS )
   endif()
 
-  if (ENABLE_MPI AND PARMETIS_LIBRARY AND PARMETIS_INCLUDE_DIR)
-     message(STATUS "Found ParMETIS: ${PARMETIS_LIBRARY} and ${PARMETIS_INCLUDE_DIR}")
-     set( PARMETIS_FOUND TRUE )
-     list( APPEND PARTITION_LIBRARIES ${PARMETIS_LIBRARY} )
-     include_directories( ${PARMETIS_INCLUDE_DIR} )
+  if (PARMETIS_FOUND)
+     list( APPEND PARTITION_LIBRARIES ${PARMETIS_LIBRARIES} )
+     include_directories( ${PARMETIS_INCLUDE_DIRS} )
      add_definitions( -DHAVE_PARMETIS )
   endif()
 
@@ -182,7 +166,7 @@ if(ENABLE_PARTITION)
   endif()
 
   if ( NOT PARTITION_LIBRARIES )
-     MESSAGE( FATAL_ERROR "Need to specify either SCOTCH or METIS/ParMETIS" )
+     MESSAGE( FATAL_ERROR "You need scotch, metis or parmetis to enable partitioning" )
   endif()
 
 endif()
