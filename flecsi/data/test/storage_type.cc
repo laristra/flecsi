@@ -55,6 +55,8 @@ private:
 
 };
 
+using new_data_t = data_model::new_data_t<>;
+
 #define register_data(manager, name, versions, data_type, storage_type, ...) \
   manager.register_data<storage_type, data_type, 0>(0, name, \
     versions, ##__VA_ARGS__)
@@ -64,10 +66,13 @@ private:
 
 TEST(storage, dense) {
 	data_t & d = data_t::instance();
+  new_data_t & nd = new_data_t::instance();
 
   register_data(d, "pressure", 3, double, dense, 100);
+  register_data(nd, "pressure", 3, double, dense, 100);
 
   auto p = get_accessor(d, "pressure", 0, double, dense);
+  auto np = get_accessor(nd, "pressure", 0, double, dense);
 } // TEST
 
 #undef register_data

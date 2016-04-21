@@ -43,8 +43,11 @@ namespace data_model
   \tparam user_meta_data_t A user-defined data type that will be carried
     with the meta data.
  */
-template<typename user_meta_data_t>
+template<typename UMD>
 struct default_meta_data_t {
+
+  using user_meta_data_t = UMD;
+
   std::string label;
   user_meta_data_t user_data;
   size_t size;

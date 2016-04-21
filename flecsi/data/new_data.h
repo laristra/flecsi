@@ -31,53 +31,139 @@ template<
   >
 struct new_data_t : public storage_policy_t<user_meta_data_t> {
 
-  // Type definitions
+  /*--------------------------------------------------------------------------*
+   * Type definitions.
+   *--------------------------------------------------------------------------*/
+
   using sp_t = storage_policy_t<user_meta_data_t>;
 
   template<size_t data_type_t>
   using st_t = typename sp_t::template storage_type_t<data_type_t>;
 
-  // Hide these
-  new_data_t() = delete;
+  /*--------------------------------------------------------------------------*
+   * Class interface.
+   *--------------------------------------------------------------------------*/
+
+	// Constructor.
+  new_data_t() {}
+
+  // Hide these.
   new_data_t(const new_data_t &) = delete;
   new_data_t & operator = (const new_data_t &) = delete;
 
-  // Allow move operations
+  // Allow move operations.
   new_data_t(new_data_t &&) = default;
   new_data_t & operator = (new_data_t &&) = default;
 
-  //! Meyer's singleton instance.
+	/*!
+		\brief Return a static instance of the data manager.
+	 */
   static new_data_t & instance() {
     static new_data_t d;
     return d;
   } // instance
 
+  /*--------------------------------------------------------------------------*
+   * Data registration.
+   *--------------------------------------------------------------------------*/
+
   /*!
+		\brief Register data with the data manager.
+
     \tparam DT Data type...
     \tparam T Type...
     \tparam NS Namespace...
     \tparam Args Variadic arguments...
+
+		\param[in] runtime_namespace
+		\param[in] key
+		\param[in] versions
+		\param[in] args
+
+		\return Returns a handle to the newly registered data.
    */
   template<size_t DT, typename T, size_t NS, typename ... Args>
   decltype(auto) register_data(uintptr_t runtime_namespace,
-    const const_string_t & key, Args && ... args) {
+    const const_string_t & key, size_t versions=1, Args && ... args) {
     return st_t<DT>::template register_data<T, NS>(sp_t::data_store_,
-      runtime_namespace, key, std::forward<Args>(args) ...);
+      runtime_namespace, key, versions, std::forward<Args>(args) ...);
   } // register_data
 
+  /*--------------------------------------------------------------------------*
+   * Data accessors.
+   *--------------------------------------------------------------------------*/
+
+  /*!
+    \brief get an accessor to registered data.
+
+    \tparam DT
+    \tparam T
+    \tparam NS
+
+    \param[in] runtime_namespace
+    \param[in] key
+    \param[in] version
+   */
   template<size_t DT, typename T, size_t NS>
   decltype(auto) get_accessor(uintptr_t runtime_namespace,
-    const const_string_t & key) {
+    const const_string_t & key, size_t version=0) {
     return st_t<DT>::template get_accessor<T, NS>(sp_t::data_store_,
-      runtime_namespace, key);
+      runtime_namespace, key, version);
   } // get_accessor
 
+  /*!
+    \brief Return a std::vector of accessors to the stored states with
+      type \e T in namespace \e NS satisfying the predicate function
+      \e predicate.
+
+    \tparam DT
+    \tparam T All state variables of this type will be returned.
+    \tparam NS Namespace to use.
+    \tparam P Predicate function type.
+
+    \param predicate A predicate function (returns true or false) that
+      will be used to select which state variables are included in the
+      return vector.  Valid predicate funcitons must match the
+      signature:
+      \code
+      bool predicate(const & user_meta_data_t)
+      \endcode
+
+    \return A std::vector of accessors to the state variables that
+      match the namespace and predicate criteria.
+   */
+  template<size_t DT, typename T, size_t NS, typename P>
+  decltype(auto) get_accessors(uintptr_t runtime_namespace,
+    P && predicate) {
+    return st_t<DT>::template get_accessors<T, NS, P>(sp_t::data_store_,
+			std::forward<P>(predicate), runtime_namespace);
+  } // get_accessors
+
+  /*--------------------------------------------------------------------------*
+   * Data handles.
+   *--------------------------------------------------------------------------*/
+
+  /*!
+    \brief get a handle to registered data.
+
+    \tparam DT
+    \tparam T
+    \tparam NS
+
+    \param[in] runtime_namespace
+    \param[in] key
+    \param[in] version
+   */
   template<size_t DT, typename T, size_t NS>
   decltype(auto) get_handle(uintptr_t runtime_namespace,
-    const const_string_t & key) {
+    const const_string_t & key, size_t version=0) {
     return st_t<DT>::template get_handle<T, NS>(sp_t::data_store_,
-      runtime_namespace, key);
+      runtime_namespace, key, version);
   } // get_accessor
+
+  /*--------------------------------------------------------------------------*
+   * Data management.
+   *--------------------------------------------------------------------------*/
 
   void reset() {
     sp_t::reset();
