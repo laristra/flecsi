@@ -23,6 +23,9 @@ cinch_add_unit(tree
   SOURCES test/tree.cc
   INPUTS test/tree.blessed)
 
+cinch_add_unit(gravity
+  SOURCES test/gravity.cc)
+
 #~---------------------------------------------------------------------------~-#
 # Formatting options
 # vim: set tabstop=2 shiftwidth=2 expandtab :

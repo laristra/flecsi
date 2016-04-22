@@ -790,8 +790,15 @@ public:
   }
 
   void update(entity_t* ent){
-    //branch_id_t bid = ent->get_branch_id();
-    //branch_id_t nid(ent->coordinates());  
+    branch_id_t bid = ent->get_branch_id();
+    branch_id_t nid(ent->coordinates(), max_depth_);
+
+    if(bid == nid){
+      return;
+    }
+
+    remove(ent);
+    insert(ent, max_depth_);  
   }
 
   void remove(entity_t* ent){
