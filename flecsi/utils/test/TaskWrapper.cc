@@ -18,7 +18,7 @@ void example_task2(int beta,double alpha,bool what,state_accessor_t<double> a, s
 
 }
 
-TEST(TaskWrapper, TaskWrapper) {
+TEST(TaskWrapper, TaskWrapper2) {
 
   /* Test Logic: See 'Google Test Macros' section below. */
 

@@ -15,6 +15,8 @@
 #include <typeinfo>
 #include <functional>
 
+namespace flecsi
+{
 
 template<typename T>
 class state_handle_t
