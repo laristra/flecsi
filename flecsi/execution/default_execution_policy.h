@@ -34,6 +34,14 @@ namespace flecsi
  */
 class default_execution_policy_t
 {
+public:
+	class context_ep
+	{
+	public:
+
+	protected:
+
+	};
  protected:
   using return_type_t = int32_t;
 

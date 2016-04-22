@@ -40,8 +40,19 @@ extern void top_level_task(int argc, char** argv);
  */
 class legion_execution_policy_t
 {
+ public: // Member Classes
+	class context_ep
+	{
+	public:
 
- public:
+	protected:
+		 LegionRuntime::HighLevel::Context ctx_l;
+		 LegionRuntime::HighLevel::HighLevelRuntime* rt;
+		 const LegionRuntime::HighLevel::Task *task;
+		 const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions;
+	};
+
+ public: // Member Functions
 	  template <typename T>
 	  static void driver_top_task(const LegionRuntime::HighLevel::Task *task,
 	                             const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
@@ -73,8 +84,6 @@ class legion_execution_policy_t
 	  HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
 	  HighLevelRuntime::register_legion_task<legion_execution_policy_t::driver_top_task<T>>(TOP_LEVEL_TASK_ID,
 	      Processor::LOC_PROC, true/*single*/, false/*index*/);
-
-
 
 	  return HighLevelRuntime::start(argc, argv);
 
