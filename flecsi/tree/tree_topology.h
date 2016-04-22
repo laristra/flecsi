@@ -172,12 +172,38 @@ public:
   branch_id()
   : id_(0){}
 
-  branch_id(const std::array<int_t, dimension>& coords)
+  template<typename S>
+  branch_id(const point<S, dimension>& p)
   : id_(int_t(1) << bits - 1){  
     
+    std::array<int_t, dimension> coords;
+
+    for(size_t i = 0; i < dimension; ++i){
+      assert(p[i] >= 0 && p[i] <= 1 && "invalid coordinates");
+      coords[i] = p[i] * (int_t(1) << (bits - 1)/dimension);
+    }
+
     for(size_t i = 0; i < max_depth; ++i){
       for(size_t j = 0; j < dimension; ++j){
         id_ |= (coords[j] & int_t(1) << i) << i + j;
+      }
+    }
+  }
+
+  template<typename S>
+  branch_id(const point<S, dimension>& p, size_t depth)
+  : id_(int_t(1) << bits - 1){  
+    
+    std::array<int_t, dimension> coords;
+
+    for(size_t i = 0; i < dimension; ++i){
+      assert(p[i] >= 0 && p[i] <= 1 && "invalid coordinates");
+      coords[i] = p[i] * (int_t(1) << (bits - 1)/dimension);
+    }
+
+    for(int i = depth; i >= 0; --i){
+      for(size_t j = 0; j < dimension; ++j){
+        id_ |= (coords[j] & int_t(1) << (max_depth - i)) << (max_depth - i) + j;
       }
     }
   }
@@ -381,6 +407,8 @@ public:
   using apply_function = std::function<void(branch_t&)>;
 
   using entity_id_vector_t = std::vector<entity_id_t>;
+
+  using geometry_t = tree_geometry<element_t, dimension>;
 
   template<class T>
   class iterator{
@@ -737,7 +765,7 @@ public:
   }
 
   void insert(entity_t* ent, size_t max_depth){
-    branch_id_t bid = to_branch_id(ent->coordinates());
+    branch_id_t bid(ent->coordinates(), max_depth);
     point_t p;
     bid.coordinates(p);
 
@@ -759,6 +787,11 @@ public:
 
   void insert(entity_t* ent){
     insert(ent, max_depth_);
+  }
+
+  void update(entity_t* ent){
+    //branch_id_t bid = ent->get_branch_id();
+    //branch_id_t nid(ent->coordinates());  
   }
 
   void remove(entity_t* ent){
@@ -849,14 +882,12 @@ public:
 
     element_t size = std::pow(element_t(2), -element_t(depth));
 
-    branch_id_t bid = to_branch_id(center);
+    branch_id_t bid(center);
     branch_t* b = find_parent(bid, depth);
 
     entity_id_vector_t entity_ids;
 
-    find_(b, entity_ids, size,
-          tree_geometry<element_t, dimension>::within,
-          tree_geometry<element_t, dimension>::intersects,
+    find_(b, entity_ids, size, geometry_t::within, geometry_t::intersects,
           center, radius);
 
     return entity_set_t(*this, std::move(entity_ids), false);
@@ -913,19 +944,6 @@ public:
     ent->set_id_(entities_.size());
     entities_.push_back(ent);
     return ent;
-  }
-
-  branch_id_t to_branch_id(const point_t& p){    
-    std::array<branch_int_t, dimension> coords;
-    
-    for(size_t i = 0; i < dimension; ++i){
-      assert(p[i] >= 0 && p[i] <= 1 && "invalid coordinates");
-
-      coords[i] = 
-        p[i] * (branch_int_t(1) << (branch_id_t::bits - 1)/dimension);
-    }
-
-    return branch_id_t(coords);
   }
 
   size_t max_depth() const{
