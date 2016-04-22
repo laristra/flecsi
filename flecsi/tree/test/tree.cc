@@ -72,6 +72,12 @@ public:
       return ents_.size();
     }
 
+    point_t coordinates() const{
+      point_t p;
+      id().coordinates(p);
+      return p;
+    }
+
   private:
     std::vector<entity_t*> ents_;
   };

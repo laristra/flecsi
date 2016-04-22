@@ -275,7 +275,9 @@ public:
     return id_ < bid.id_;
   }
 
-  size_t coordinates(std::array<int_t, dimension>& coords) const{
+  template<typename S>
+  void coordinates(point<S, dimension>& p) const{
+    std::array<int_t, dimension> coords;
     coords.fill(int_t(0));
 
     int_t id = id_;
@@ -290,11 +292,12 @@ public:
       ++d;
     }
 
+    constexpr int_t max = (int_t(1) << max_depth) - 1;
+
     for(size_t j = 0; j < dimension; ++j){
       coords[j] <<= max_depth - d;
+      p[j] = S(coords[j])/max;
     }
-
-    return d;
   }
 
 private:
@@ -735,7 +738,8 @@ public:
 
   void insert(entity_t* ent, size_t max_depth){
     branch_id_t bid = to_branch_id(ent->coordinates());
-    point_t p = to_coordinates(bid);
+    point_t p;
+    bid.coordinates(p);
 
     branch_t* b = find_parent(bid, max_depth);
     ent->set_branch_id_(b->id());
@@ -881,9 +885,7 @@ public:
     for(size_t i = 0; i < branch_t::num_children; ++i){
       branch_t* ci = static_cast<branch_t*>(b->child(i));
       
-      point_t origin = to_coordinates(ci->id());
-
-      if((*bf)(origin, size, std::forward<ARGS>(args)...)){
+      if((*bf)(ci->coordinates(), size, std::forward<ARGS>(args)...)){
         find_(ci, entity_ids, size,
               std::forward<EF>(ef), std::forward<BF>(bf),
               std::forward<ARGS>(args)...);
@@ -924,21 +926,6 @@ public:
     }
 
     return branch_id_t(coords);
-  }
-
-  point_t to_coordinates(branch_id_t bid){
-    std::array<branch_int_t, dimension> coords;
-    bid.coordinates(coords);
-
-    constexpr branch_int_t max = 
-      (branch_int_t(1) << branch_id_t::max_depth) - 1;
-    
-    point_t p;
-    for(size_t i = 0; i < dimension; ++i){
-      p[i] = element_t(coords[i])/max;
-    }
-
-    return p;
   }
 
   size_t max_depth() const{
