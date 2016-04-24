@@ -108,7 +108,8 @@ message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with 2^${
 find_package(EXODUSII)
 option(ENABLE_IO "Enable I/O (uses libexodus)" ${EXODUSII_FOUND})
 if(ENABLE_IO)
-  if(EXISTS ${TPL_INSTALL_PREFIX}/include/exodusII.h)
+  if(EXISTS ${TPL_INSTALL_PREFIX}/include/exodusII.h
+     AND EXISTS ${TPL_INSTALL_PREFIX}/lib/libexodus.a)
     set(IO_LIBRARIES ${TPL_INSTALL_PREFIX}/lib/libexodus.a
       ${TPL_INSTALL_PREFIX}/lib/libnetcdf.a
       ${TPL_INSTALL_PREFIX}/lib/libhdf5_hl.a
