@@ -133,7 +133,7 @@ using branch_id_t = tree_topology_t::branch_id_t;
 static const size_t N = 10000;
 static const size_t TS = 50;
 
-TEST(tree_topology, insert_find_remove) {
+TEST(tree_topology, gravity) {
   tree_topology_t t;
 
   std::vector<body*> bodies;
@@ -146,17 +146,20 @@ TEST(tree_topology, insert_find_remove) {
     t.insert(bi);
   }
 
+  auto f = [&](body* b, body* b0){
+    if(b0 == b){
+      return;
+    }
+    
+    b0->interact(b);
+  };
+
   for(size_t ts = 0; ts < TS; ++ts){
-    //cout << "---- ts = " << ts << endl;
+    cout << "---- ts = " << ts << endl;
 
     for(size_t i = 0; i < N; ++i){
       auto bi = bodies[i];
-      auto s = t.find_in_radius(bi->coordinates(), 0.01);
-      for(auto si : s){
-        if(si != bi){
-          bi->interact(si);
-        }
-      }
+      t.apply_in_radius(bi->coordinates(), 0.1, f, bi);
     }
 
     for(size_t i = 0; i < N; ++i){

@@ -192,8 +192,7 @@ public:
 
   template<typename S>
   branch_id(const point<S, dimension>& p, size_t depth)
-  : id_(int_t(1) << bits - 1){  
-    
+  : id_(int_t(1) << depth * dimension + 1){  
     std::array<int_t, dimension> coords;
 
     for(size_t i = 0; i < dimension; ++i){
@@ -201,10 +200,13 @@ public:
       coords[i] = p[i] * (int_t(1) << (bits - 1)/dimension);
     }
 
-    for(int i = depth; i >= 0; --i){
+    size_t k = 0;
+    for(size_t i = max_depth - depth; i < max_depth; ++i){
       for(size_t j = 0; j < dimension; ++j){
-        id_ |= (coords[j] & int_t(1) << (max_depth - i)) << (max_depth - i) + j;
+        int_t bit = (coords[j] & int_t(1) << i) >> i;
+        id_ |= bit << k * dimension + j;
       }
+      ++k;
     }
   }
 
@@ -791,7 +793,7 @@ public:
 
   void update(entity_t* ent){
     branch_id_t bid = ent->get_branch_id();
-    branch_id_t nid(ent->coordinates(), max_depth_);
+    branch_id_t nid(ent->coordinates(), bid.depth());
 
     if(bid == nid){
       return;
@@ -910,7 +912,7 @@ public:
     
     if(b->is_leaf()){
       for(auto ent : *b){
-        if((*ef)(ent->coordinates(), std::forward<ARGS>(args)...)){
+        if(ef(ent->coordinates(), std::forward<ARGS>(args)...)){
           entity_ids.push_back(ent->id());
         }
       }
@@ -923,10 +925,67 @@ public:
     for(size_t i = 0; i < branch_t::num_children; ++i){
       branch_t* ci = static_cast<branch_t*>(b->child(i));
       
-      if((*bf)(ci->coordinates(), size, std::forward<ARGS>(args)...)){
+      if(bf(ci->coordinates(), size, std::forward<ARGS>(args)...)){
         find_(ci, entity_ids, size,
               std::forward<EF>(ef), std::forward<BF>(bf),
               std::forward<ARGS>(args)...);
+      }
+    }
+  }
+
+  template<typename EF, typename... ARGS>
+  void apply_in_radius(const point_t& center,
+                       element_t radius,
+                       EF&& ef,
+                       ARGS&&... args){
+    // find the lowest level branch which is guaranteed
+    // to contain the point with radius
+
+    size_t depth = -std::log2(radius);
+    assert(depth <= branch_id_t::max_depth);
+
+    element_t size = std::pow(element_t(2), -element_t(depth));
+
+    branch_id_t bid(center);
+    branch_t* b = find_parent(bid, depth);
+
+    entity_id_vector_t entity_ids;
+
+    auto f = [&](entity_t* ent, const point_t& center, element_t radius){
+      if(geometry_t::within(ent->coordinates(), center, radius)){
+        ef(ent, std::forward<ARGS>(args)...);
+      }
+    };
+
+    find_apply_(b, entity_ids, size, f, geometry_t::intersects,
+                center, radius);
+  }
+
+  template<typename EF, typename BF, typename... ARGS>
+  void find_apply_(branch_t* b,
+                   entity_id_vector_t& entity_ids,
+                   element_t size,
+                   EF&& ef,
+                   BF&& bf,
+                   ARGS&&... args){
+    
+    if(b->is_leaf()){
+      for(auto ent : *b){
+        ef(ent, std::forward<ARGS>(args)...);
+      }
+
+      return;
+    }
+
+    size /= element_t(2);
+
+    for(size_t i = 0; i < branch_t::num_children; ++i){
+      branch_t* ci = static_cast<branch_t*>(b->child(i));
+      
+      if(bf(ci->coordinates(), size, std::forward<ARGS>(args)...)){
+        find_apply_(ci, entity_ids, size,
+                    std::forward<EF>(ef), std::forward<BF>(bf),
+                    std::forward<ARGS>(args)...);
       }
     }
   }
