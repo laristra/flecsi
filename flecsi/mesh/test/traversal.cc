@@ -11,15 +11,19 @@ class Vertex : public mesh_entity_t<0, 1>{
 public:
   template<size_t M>
   uint64_t precedence() const { return 0; }
+  Vertex() = default;
+  Vertex(mesh_topology_base_t &) {}
+
 };
 
 class Edge : public mesh_entity_t<1, 1>{
 public:
-	Edge(mesh_topology_base_t & mesh) {}
+  Edge(mesh_topology_base_t &) {}
 };
 
 class Face : public mesh_entity_t<1, 1>{
 public:
+  Face(mesh_topology_base_t &) {}
 
 };
 

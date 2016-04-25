@@ -126,38 +126,15 @@ class mesh_entity_base_t
     return dim > meshDim ? meshDim : dim;
   } // get_dim_
 
-  template <class MT, size_t M>
+  template <class MT, size_t M, size_t D>
   static mesh_entity_base_t * create_(
-      size_t dim, size_t id, mesh_topology_base_t & mesh)
+      size_t id, mesh_topology_base_t & mesh)
   {
-    switch (dim) {
-      // FIXME: switch is probably unnecessary...
-      case 1: {
-        using entity_type =
-            typename find_entity_<MT, get_dim_(MT::dimension, 1), M>::type;
-        auto entity = new entity_type(mesh);
-        entity->ids_[M] = id;
-        return entity;
-      }
-      case MT::dimension: {
-        using entity_type =
-            typename find_entity_<MT, get_dim_(MT::dimension, 2), M>::type;
-        auto entity = new entity_type(mesh);
-        entity->ids_[M] = id;
-        return entity;
-      }
-#if 0 // FIXME: This will have to be included for 3D
-    case 2: {
-      using entity_type = 
-        typename find_entity_<MT, get_dim_(MT::dimension, 2), M>::type;
-      auto entity = new entity_type;
-      entity->ids_[M] = id;
-      return entity;
-    }
-#endif
-      default:
-        assert(false && "invalid topology dim");
-    }
+    using entity_type =
+      typename find_entity_<MT, get_dim_(MT::dimension, D), M>::type;
+    auto entity = new entity_type(mesh);
+    entity->ids_[M] = id;
+    return entity;
   }
 
   template <class MT>
@@ -360,7 +337,10 @@ class connectivity_t
   /*!
     Initialize the offset array.
    */
-  void init() { from_index_vec_.push_back(0); }
+  void init() { 
+    clear();
+    from_index_vec_.push_back(0); 
+  }
 
   /*!
     Initialize the connectivity information from a given connectivity
@@ -369,7 +349,8 @@ class connectivity_t
     \param cv The connectivity information.
    */
   void init(const connection_vector_t & cv) {
-    assert(to_id_vec_.empty() && from_index_vec_.empty());
+    
+    clear();
 
     // the first offset is always 0
     from_index_vec_.push_back(0);
@@ -401,11 +382,11 @@ class connectivity_t
     \param input connection vector
     \param topological dimension of entities created
    */
-  template <class MT, size_t M, size_t N>
+  template <class MT, size_t M, size_t D, size_t N>
   void init_create(id_vector_t & iv, entity_vector_t<N> & ev,
-      const connection_vector_t & cv, size_t dim, mesh_topology_base_t & mesh)
+      const connection_vector_t & cv, mesh_topology_base_t & mesh)
   {
-    assert(to_id_vec_.empty() && from_index_vec_.empty());
+    clear();
 
     // the first offset is always 0
     from_index_vec_.push_back(0);
@@ -432,9 +413,9 @@ class connectivity_t
     ev.reserve(max_id + 1);
 
     for (size_t local_id = start_id; local_id <= max_id; ++local_id) {
-      id_t global_id = id_t::make<M>(dim, local_id);
+      id_t global_id = id_t::make<M>(D, local_id);
       ev.push_back(
-          mesh_entity_base_t<N>::template create_<MT, M>(dim, global_id, mesh));
+        mesh_entity_base_t<N>::template create_<MT, M, D>(global_id, mesh));
       iv.push_back(global_id);
     } // for
   } // init_create
