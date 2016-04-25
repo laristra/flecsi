@@ -18,6 +18,7 @@ set(execution_HEADERS
   default_execution_policy.h
   legion_execution_policy.h
   mpi_execution_policy.h
+  mpilegion_execution_policy.h
   task.h
   PARENT_SCOPE
 )
