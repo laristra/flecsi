@@ -203,8 +203,7 @@ public:
     size_t k = 0;
     for(size_t i = max_depth - depth; i < max_depth; ++i){
       for(size_t j = 0; j < dimension; ++j){
-        int_t bit = (coords[j] & int_t(1) << i) >> i;
-        id_ |= bit << k * dimension + j;
+        id_ |= (coords[j] & int_t(1) << i) >> i - k * dimension + j;
       }
       ++k;
     }
@@ -405,7 +404,7 @@ public:
   using entity_t = typename Policy::entity_t;
 
   using entity_vector_t = std::vector<entity_t*>;
-
+  
   using apply_function = std::function<void(branch_t&)>;
 
   using entity_id_vector_t = std::vector<entity_id_t>;
@@ -896,41 +895,15 @@ public:
 
     entity_id_vector_t entity_ids;
 
-    find_(b, entity_ids, size, geometry_t::within, geometry_t::intersects,
-          center, radius);
+    auto f = [&](entity_t* ent, const point_t& center, element_t radius){
+      if(geometry_t::within(ent->coordinates(), center, radius)){
+        entity_ids.push_back(ent->id());
+      }
+    };
+
+    find_(b, entity_ids, size, f, geometry_t::intersects, center, radius);
 
     return entity_set_t(*this, std::move(entity_ids), false);
-  }
-
-  template<typename EF, typename BF, typename... ARGS>
-  void find_(branch_t* b,
-             entity_id_vector_t& entity_ids,
-             element_t size,
-             EF&& ef,
-             BF&& bf,
-             ARGS&&... args){
-    
-    if(b->is_leaf()){
-      for(auto ent : *b){
-        if(ef(ent->coordinates(), std::forward<ARGS>(args)...)){
-          entity_ids.push_back(ent->id());
-        }
-      }
-
-      return;      
-    }
-
-    size /= element_t(2);
-
-    for(size_t i = 0; i < branch_t::num_children; ++i){
-      branch_t* ci = static_cast<branch_t*>(b->child(i));
-      
-      if(bf(ci->coordinates(), size, std::forward<ARGS>(args)...)){
-        find_(ci, entity_ids, size,
-              std::forward<EF>(ef), std::forward<BF>(bf),
-              std::forward<ARGS>(args)...);
-      }
-    }
   }
 
   template<typename EF, typename... ARGS>
@@ -957,17 +930,16 @@ public:
       }
     };
 
-    find_apply_(b, entity_ids, size, f, geometry_t::intersects,
-                center, radius);
+    find_(b, entity_ids, size, f, geometry_t::intersects, center, radius);
   }
 
   template<typename EF, typename BF, typename... ARGS>
-  void find_apply_(branch_t* b,
-                   entity_id_vector_t& entity_ids,
-                   element_t size,
-                   EF&& ef,
-                   BF&& bf,
-                   ARGS&&... args){
+  void find_(branch_t* b,
+             entity_id_vector_t& entity_ids,
+             element_t size,
+             EF&& ef,
+             BF&& bf,
+             ARGS&&... args){
     
     if(b->is_leaf()){
       for(auto ent : *b){
@@ -983,9 +955,9 @@ public:
       branch_t* ci = static_cast<branch_t*>(b->child(i));
       
       if(bf(ci->coordinates(), size, std::forward<ARGS>(args)...)){
-        find_apply_(ci, entity_ids, size,
-                    std::forward<EF>(ef), std::forward<BF>(bf),
-                    std::forward<ARGS>(args)...);
+        find_(ci, entity_ids, size,
+              std::forward<EF>(ef), std::forward<BF>(bf),
+              std::forward<ARGS>(args)...);
       }
     }
   }
