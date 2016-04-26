@@ -13,8 +13,8 @@ cinch_dir="$(dirname "$(cd "$(dirname "$0")"; pwd)")"
 # Check required environment variables
 #------------------------------------------------------------------------------#
 
-if [ -z "${TPL_INSTALL_PREFIX}" ] ; then
-  echo "You must set TPL_INSTALL_PREFIX in your environment"
+if [ -z "${CMAKE_PREFIX_PATH}" ] ; then
+  echo "You must set CMAKE_PREFIX_PATH in your environment"
   exit 1
 fi
 
@@ -30,7 +30,7 @@ cmake \
   -DENABLE_JENKINS_OUTPUT=ON \
   -DENABLE_IO=ON \
   -DENABLE_PARTITION=ON \
-  -DTPL_INSTALL_PREFIX=${TPL_INSTALL_PREFIX} \
+  -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH} \
   $cinch_dir
 
 #------------------------------------------------------------------------------#
