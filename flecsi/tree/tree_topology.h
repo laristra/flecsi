@@ -203,7 +203,8 @@ public:
     size_t k = 0;
     for(size_t i = max_depth - depth; i < max_depth; ++i){
       for(size_t j = 0; j < dimension; ++j){
-        id_ |= (coords[j] & int_t(1) << i) >> i - k * dimension + j;
+        int_t bit = (coords[j] & int_t(1) << i) >> i;
+        id_ |= bit << k * dimension + j;
       }
       ++k;
     }
