@@ -33,11 +33,11 @@ option for many application projects.
 
 FleCSI uses git submodules, so it must be checked out recursively:
 
-    % git clone --recursive git@github.com:flecsi/flecsi.git
+    % git clone --recursive git@github.com:losalamos/flecsi.git
 
 https:  
 
-    % git clone --recursive https://github.com/flecsi/flecsi.git
+    % git clone --recursive https://github.com/losalamos/flecsi.git
 
 # Requirements
 
