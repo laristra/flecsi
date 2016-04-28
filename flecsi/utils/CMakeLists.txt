@@ -50,6 +50,8 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 set(utils_HEADERS 
    ${utils_HEADERS}
    mpi_legion_interoperability/legion_handshake.h
+   mpi_legion_interoperability/task_ids.h
+   mpi_legion_interoperability/mapper.h
    mpi_legion_interoperability/macros.h
    PARENT_SCOPE)
 endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
