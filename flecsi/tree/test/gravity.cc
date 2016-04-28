@@ -32,7 +32,7 @@ public:
 
     void interact(const body* b){
       double d = distance(position_, b->position_);
-      velocity_ += 1e-9*(b->position_ - position_)/(d*d);
+      velocity_ += 1e-9 * mass_ * (b->position_ - position_)/(d*d);
     }
 
     void update(){
@@ -138,7 +138,7 @@ TEST(tree_topology, gravity) {
 
   std::vector<body*> bodies;
   for(size_t i = 0; i < N; ++i){
-    double m = uniform(0.0, 0.5);
+    double m = uniform(0.1, 0.5);
     point_t p = {uniform(0.0, 1.0), uniform(0.0, 1.0)};
     point_t v = {uniform(0.0, 0.001), uniform(0.0, 0.001)};
     auto bi = t.make_entity(m, p, v);
@@ -155,11 +155,11 @@ TEST(tree_topology, gravity) {
   };
 
   for(size_t ts = 0; ts < TS; ++ts){
-    cout << "---- ts = " << ts << endl;
+    //cout << "---- ts = " << ts << endl;
 
     for(size_t i = 0; i < N; ++i){
       auto bi = bodies[i];
-      t.apply_in_radius(bi->coordinates(), 0.1, f, bi);
+      t.apply_in_radius(bi->coordinates(), 0.01, f, bi);
     }
 
     for(size_t i = 0; i < N; ++i){
