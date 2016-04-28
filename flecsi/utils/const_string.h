@@ -22,6 +22,7 @@
  */
 
 #include <limits>
+#include <cstring>
 
 #include "hash.h"
 
@@ -40,6 +41,11 @@ class const_string_t
   template <hash_type_t N>
   constexpr const_string_t(const char(&str)[N])
       : str_(str), size_(N - 1)
+  {
+  }
+
+  constexpr const_string_t(const char* str)
+      : str_(str), size_(strlen(str))
   {
   }
 
