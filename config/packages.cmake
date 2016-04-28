@@ -108,24 +108,13 @@ message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with 2^${
 find_package(EXODUSII)
 option(ENABLE_IO "Enable I/O (uses libexodus)" ${EXODUSII_FOUND})
 if(ENABLE_IO)
-  if(EXISTS ${TPL_INSTALL_PREFIX}/include/exodusII.h
-     AND EXISTS ${TPL_INSTALL_PREFIX}/lib/libexodus.a)
-    set(IO_LIBRARIES ${TPL_INSTALL_PREFIX}/lib/libexodus.a
-      ${TPL_INSTALL_PREFIX}/lib/libnetcdf.a
-      ${TPL_INSTALL_PREFIX}/lib/libhdf5_hl.a
-      ${TPL_INSTALL_PREFIX}/lib/libhdf5.a
-      ${TPL_INSTALL_PREFIX}/lib/libszip.a
-      ${TPL_INSTALL_PREFIX}/lib/libz.a
-      -ldl)
-    include_directories( ${TPL_INSTALL_PREFIX}/include )
-  elseif(EXODUSII_FOUND)
+  if(EXODUSII_FOUND)
     set(IO_LIBRARIES ${EXODUSII_LIBRARIES})
     include_directories(${EXODUSII_INCLUDE_DIRS})
   else()
     MESSAGE( FATAL_ERROR "You need libexodus either from TPL or system to enable I/O" )
   endif()
   add_definitions( -DHAVE_EXODUS )
-  message(STATUS "Found EXODUSII: ${IO_LIBRARIES}")
 endif(ENABLE_IO)
 
 #------------------------------------------------------------------------------#
@@ -181,31 +170,7 @@ endif()
 # If the installation of lapack that this finds does not contain lapacke then
 # the build will fail.
 if(NOT APPLE)
-  # need a find_package that can discern between system installs and our TPLs
-
-  # look in tpl's first, then try the system find_package(LAPACK)
-
-  # This is a workaround that finds the TPL install if it's there. The link
-  # to -lgfortan is a serious hack, and a documented issue.
-  set(LAPACKE_FOUND)
-  set(LAPACKE_LIBRARIES)
-  if(EXISTS ${TPL_INSTALL_PREFIX}/include/lapacke.h
-     AND EXISTS ${TPL_INSTALL_PREFIX}/lib/liblapacke.a)
-    set(LAPACKE_FOUND 1)
-    include_directories(${TPL_INSTALL_PREFIX}/include)
-    list( APPEND LAPACKE_LIBRARIES
-          ${TPL_INSTALL_PREFIX}/lib/liblapacke.a
-          ${TPL_INSTALL_PREFIX}/lib/liblapack.a
-          ${TPL_INSTALL_PREFIX}/lib/libblas.a
-          gfortran)
-  else()
-    find_package(LAPACKE)
-  endif()
-
-  if(LAPACKE_FOUND)
-    message(STATUS "Found LAPACKE: ${LAPACKE_LIBRARIES}")
-  endif(LAPACKE_FOUND)
-
+  find_package(LAPACKE)
 endif(NOT APPLE)
 
 #------------------------------------------------------------------------------#
