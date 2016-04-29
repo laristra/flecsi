@@ -1,18 +1,32 @@
 #~----------------------------------------------------------------------------~#
-# Copyright (c) 2014 Los Alamos National Security, LLC
-# All rights reserved.
+#  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+# /@@/////  /@@          @@////@@ @@////// /@@
+# /@@       /@@  @@@@@  @@    // /@@       /@@
+# /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+# /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+# /@@       /@@/@@//// //@@    @@       /@@/@@
+# /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+# //       ///  //////   //////  ////////  // 
+# 
+# Copyright (c) 2016 Los Alamos National Laboratory, LLC
+# All rights reserved
 #~----------------------------------------------------------------------------~#
 
-set(ntree_HEADERS
+set(tree_HEADERS
   tree_topology.h
-  PARENT_SCOPE
-)
+  PARENT_SCOPE)
 
-#set(ntree_SOURCES
-#  PARENT_SCOPE
-#)
+set(tree_SOURCES
+  PARENT_SCOPE)
 
-#----------------------------------------------------------------------------~-#
-# Formatting options for vim.
+cinch_add_unit(tree
+  SOURCES test/tree.cc
+  INPUTS test/tree.blessed)
+
+cinch_add_unit(gravity
+  SOURCES test/gravity.cc)
+
+#~---------------------------------------------------------------------------~-#
+# Formatting options
 # vim: set tabstop=2 shiftwidth=2 expandtab :
-#----------------------------------------------------------------------------~-#
+#~---------------------------------------------------------------------------~-#

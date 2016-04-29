@@ -26,12 +26,14 @@ set(utils_HEADERS
   id.h
   index_space.h
   iterator.h
+  set_intersection.h
   static_for.h     detail/static_for.h
   static_list.h
   tuple_for_each.h detail/tuple_for_each.h
   tuple_visit.h    detail/tuple_visit.h
   tuple_zip.h      detail/tuple_zip.h
   zip.h            detail/zip.h
+  TaskWrapper.h
   PARENT_SCOPE)
 
 if (ENABLE_STATIC_CONTAINER)
@@ -43,6 +45,16 @@ set(utils_HEADERS
    static_container/static_for.h
    PARENT_SCOPE)
 endif (ENABLE_STATIC_CONTAINER)
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+set(utils_HEADERS 
+   ${utils_HEADERS}
+   mpi_legion_interoperability/legion_handshake.h
+   mpi_legion_interoperability/task_ids.h
+   mpi_legion_interoperability/mapper.h
+   mpi_legion_interoperability/macros.h
+   PARENT_SCOPE)
+endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
 set(utils_SOURCES
   dummy.cc
@@ -77,11 +89,20 @@ cinch_add_unit(tuple_visit
 
 cinch_add_unit(tuple_zip
   SOURCES test/tuple_zip.cc)
+  
+cinch_add_unit(TaskWrapper
+  SOURCES test/TaskWrapper.cc)
 
 if (ENABLE_STATIC_CONTAINER)
 cinch_add_unit(meta_container
   SOURCES test/meta_container.cc)
 endif (ENABLE_STATIC_CONTAINER)
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+cinch_add_unit(mpi_with_legion
+  SOURCES test/mpi_with_legion.cc
+  POLICY MPILEGION)
+endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 #~---------------------------------------------------------------------------~-#
 # Formatting options
 # vim: set tabstop=2 shiftwidth=2 expandtab :

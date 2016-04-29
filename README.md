@@ -33,11 +33,11 @@ option for many application projects.
 
 FleCSI uses git submodules, so it must be checked out recursively:
 
-    % git clone --recursive git@github.com:flecsi/flecsi.git
+    % git clone --recursive git@github.com:losalamos/flecsi.git
 
 https:  
 
-    % git clone --recursive https://github.com/flecsi/flecsi.git
+    % git clone --recursive https://github.com/losalamos/flecsi.git
 
 # Requirements
 
@@ -55,7 +55,11 @@ cinch-utils is available [here](https://github.com/losalamos/cinch-utils).
 
 To begin, you will need to build the third-party library dependencies:
 
-    % git clone git@github.com:flecsi/third-party.git flecsi-thirdparty
+    % sudo apt-get install liblapacke-dev libscotch-dev libmetis-dev libexodusii-dev 
+    
+or build them yourself:
+
+    % git clone git@github.com:losalamos/flecsi-third-party.git flecsi-thirdparty
     % cd flecsi-thirdparty
     % mkdir build
     % cd build
@@ -71,10 +75,10 @@ Now build the third-party libraries:
 This command will build and install the libraries in the prefix that
 you have specified.
 
-Next, set the TPL\_INSTALL\_PREFIX environment variable to the path you
+Next, set the CMAKE\_PREFIX\_PATH environment variable to the path you
 specified above:
 
-    % export TPL_INSTALL_PREFIX=/path/to/thirdparty/install/directory
+    % export CMAKE_PREFIX_PATH=/path/to/thirdparty/install/directory
 
 Now, you can configure FleCSI using the ***arch/developer-gnu*** script:
 

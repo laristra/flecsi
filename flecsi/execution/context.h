@@ -31,7 +31,7 @@ namespace flecsi
   	  	 for a specific execution policy.
  */
 template<class execution_policy>
-class context_t
+class context_t : public execution_policy::context_ep
 {
  public:
   enum class call_state_t : size_t {

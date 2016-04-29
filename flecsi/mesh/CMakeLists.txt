@@ -33,9 +33,33 @@ cinch_add_unit(bindings
   SOURCES test/bindings.cc
   INPUTS test/bindings.blessed)
 
-#cinch_add_unit(bindings2
-#  SOURCES test/bindings2.cc
-#  INPUTS test/bindings.blessed)
+cinch_add_unit(dolfin_triangle
+        SOURCES test/dolfin_triangle/test/dolfin_triangle.cc
+        INPUTS  test/dolfin_triangle/test/dolfin_triangle.blessed
+        )
+cinch_add_unit(dolfin_triangle_mesh_partition
+        SOURCES test/dolfin_triangle/test/dolfin_triangle_mesh_partition.cc
+        )
+cinch_add_unit(dolfin_triangle_connectivity
+        SOURCES test/dolfin_triangle/test/dolfin_triangle_connectivity.cc
+        )
+
+if (ENABLE_PARTITION AND METIS_FOUND)
+    cinch_add_unit(dolfin_triangle_metis
+            SOURCES test/dolfin_triangle/test/metis_partition_mesh_dual.cc
+            LIBRARIES ${PARTITION_LIBRARIES})
+    cinch_add_unit(metis_partition_mesh_nodal
+            SOURCES test/dolfin_triangle/test/metis_partition_mesh_nodal.cc
+            LIBRARIES ${PARTITION_LIBRARIES})
+endif()
+
+cinch_add_unit(sagittarius
+        SOURCES test/sagittarius/test/sagittarius.cc
+        INPUTS  test/sagittarius/test/sagittarius.blessed
+        )
+cinch_add_unit(sagittarius_mesh_partition
+        SOURCES test/sagittarius/test/sagittarius_mesh_partition.cc
+        )
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options

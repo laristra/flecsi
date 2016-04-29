@@ -50,7 +50,7 @@ cinch_add_unit(connectivity
 if(LAPACKE_FOUND AND ENABLE_IO)
   cinch_add_unit(burton_gradients
     SOURCES burton/test/burton_gradients.cc
-    LIBRARIES flecsi ${LAPACK_LIBRARIES} ${IO_LIBRARIES}
+    LIBRARIES flecsi ${LAPACKE_LIBRARIES} ${IO_LIBRARIES}
   )
 endif(LAPACKE_FOUND AND ENABLE_IO)
 
@@ -60,27 +60,6 @@ if(ENABLE_IO)
     LIBRARIES ${IO_LIBRARIES} flecsi
   )
 endif(ENABLE_IO)
-
-cinch_add_unit(dolfin_triangle
-        SOURCES dolfin_triangle/test/dolfin_triangle.cc
-        INPUTS  dolfin_triangle/test/dolfin_triangle.blessed
-        )
-cinch_add_unit(dolfin_triangle_mesh_partition
-        SOURCES dolfin_triangle/test/dolfin_triangle_mesh_partition.cc
-        )
-
-cinch_add_unit(sagittarius
-        SOURCES sagittarius/test/sagittarius.cc
-        INPUTS  sagittarius/test/sagittarius.blessed
-        )
-cinch_add_unit(sagittarius_mesh_partition
-        SOURCES sagittarius/test/sagittarius_mesh_partition.cc
-        )
-
-#cinch_add_unit(unstruct_3d
-#  SOURCES unstruct/test/unstruct_3d.cc
-#  INPUTS unstruct/test/unstruct_3d.blessed)
-
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options

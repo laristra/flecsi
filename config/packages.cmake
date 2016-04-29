@@ -53,6 +53,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
       message(FATAL_ERROR "Legion is required
                      for this build configuration")
   endif(NOT legion_FOUND)
+  
   include_directories(${LEGION_INCLUDE_DIRS})
   set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES})
   SET_SOURCE_FILES_PROPERTIES(${LEGION_INCLUDE_DIRS}/legion/legion.inl PROPERTIES HEADER_FILE_ONLY 1)
@@ -61,6 +62,23 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(FLECSI_RUNTIME_MAIN script-driver-mpi.cc)
+
+#MPI+Legion interface
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+   set(FLECSI_RUNTIME_MAIN script-driver-mpilegion.cc)
+
+  # Add legion setup here...
+  set (Legion_INSTALL_DIRS ${legion_DIR}  CACHE PATH
+    "Path to the Legion install directory")
+  set(CMAKE_PREFIX_PATH  ${CMAKE_PREFIX_PATH}
+     ${LEGION_INSTALL_DIRS})
+  find_package (legion REQUIRED NO_MODULE)
+  if(NOT legion_FOUND)
+      message(FATAL_ERROR "Legion is required
+                     for this build configuration")
+  endif(NOT legion_FOUND)
+  include_directories(${LEGION_INCLUDE_DIRS})
+  set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES})
 
 # Default
 else(FLECSI_RUNTIME_MODEL STREQUAL "serial")
@@ -87,77 +105,70 @@ message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with 2^${
 # Enable IO with exodus
 #------------------------------------------------------------------------------#
 
-option(ENABLE_IO "Enable I/O with third party libraries." OFF)
+find_package(EXODUSII)
+option(ENABLE_IO "Enable I/O (uses libexodus)" ${EXODUSII_FOUND})
 if(ENABLE_IO)
-  set(IO_LIBRARIES ${TPL_INSTALL_PREFIX}/lib/libexodus.a
-    ${TPL_INSTALL_PREFIX}/lib/libnetcdf.a
-    ${TPL_INSTALL_PREFIX}/lib/libhdf5_hl.a
-    ${TPL_INSTALL_PREFIX}/lib/libhdf5.a
-    ${TPL_INSTALL_PREFIX}/lib/libszip.a
-    ${TPL_INSTALL_PREFIX}/lib/libz.a
-    -ldl)
-  include_directories( ${TPL_INSTALL_PREFIX}/include )
+  if(EXISTS ${TPL_INSTALL_PREFIX}/include/exodusII.h
+     AND EXISTS ${TPL_INSTALL_PREFIX}/lib/libexodus.a)
+    set(IO_LIBRARIES ${TPL_INSTALL_PREFIX}/lib/libexodus.a
+      ${TPL_INSTALL_PREFIX}/lib/libnetcdf.a
+      ${TPL_INSTALL_PREFIX}/lib/libhdf5_hl.a
+      ${TPL_INSTALL_PREFIX}/lib/libhdf5.a
+      ${TPL_INSTALL_PREFIX}/lib/libszip.a
+      ${TPL_INSTALL_PREFIX}/lib/libz.a
+      -ldl)
+    include_directories( ${TPL_INSTALL_PREFIX}/include )
+  elseif(EXODUSII_FOUND)
+    set(IO_LIBRARIES ${EXODUSII_LIBRARIES})
+    include_directories(${EXODUSII_INCLUDE_DIRS})
+  else()
+    MESSAGE( FATAL_ERROR "You need libexodus either from TPL or system to enable I/O" )
+  endif()
   add_definitions( -DHAVE_EXODUS )
+  message(STATUS "Found EXODUSII: ${IO_LIBRARIES}")
 endif(ENABLE_IO)
 
 #------------------------------------------------------------------------------#
 # Enable partitioning with METIS or SCOTCH
 #------------------------------------------------------------------------------#
 
-option(ENABLE_PARTITION "Enable partitioning with third party libraries." OFF)
+find_package(METIS 5.1)
+find_package(SCOTCH)
+
+if(ENABLE_MPI)
+  find_package(ParMETIS)
+endif()
+
+if(METIS_FOUND OR SCOTCH_FOUND OR PARMETIS_FOUND)
+  option(ENABLE_PARTITION "Enable partitioning (uses metis/parmetis or scotch)." ON)
+else()
+  option(ENABLE_PARTITION "Enable partitioning (uses metis/parmetis or scotch)." OFF)
+endif()
 
 if(ENABLE_PARTITION)
 
   set( PARTITION_LIBRARIES )
 
-  find_library ( METIS_LIBRARY 
-                 NAMES metis 
-                 PATHS ${METIS_ROOT} 
-                 PATH_SUFFIXES lib
-                 NO_DEFAULT_PATH )
-
-  find_path    ( METIS_INCLUDE_DIR 
-                 NAMES metis.h 
-                 PATHS ${METIS_ROOT} 
-                 PATH_SUFFIXES include
-                 NO_DEFAULT_PATH )
-
-  find_library ( SCOTCH_LIBRARY 
-                 NAMES scotch
-                 PATHS ${SCOTCH_ROOT} 
-                 PATH_SUFFIXES lib
-                 NO_DEFAULT_PATH )
-
-  find_library ( SCOTCH_ERR_LIBRARY 
-                 NAMES scotcherr
-                 PATHS ${SCOTCH_ROOT} 
-                 PATH_SUFFIXES lib
-                 NO_DEFAULT_PATH )
-
-  find_path    ( SCOTCH_INCLUDE_DIR 
-                 NAMES scotch.h
-                 PATHS ${SCOTCH_ROOT} 
-                 PATH_SUFFIXES include
-                 NO_DEFAULT_PATH )
-
-  if (METIS_LIBRARY AND METIS_INCLUDE_DIR) 
-     message(STATUS "Found METIS: ${METIS_ROOT}")
-     set( METIS_FOUND TRUE )
-     list( APPEND PARTITION_LIBRARIES ${METIS_LIBRARY} )
-     include_directories( ${METIS_INCLUDE_DIR} )
+  if (METIS_FOUND)
+     list( APPEND PARTITION_LIBRARIES ${METIS_LIBRARIES} )
+     include_directories( ${METIS_INCLUDE_DIRS} )
      add_definitions( -DHAVE_METIS )
   endif()
 
-  if (SCOTCH_LIBRARY AND SCOTCH_ERR_LIBRARY AND SCOTCH_INCLUDE_DIR) 
-     message(STATUS "Found SCOTCH: ${SCOTCH_ROOT}" )
-     set( SCOTCH_FOUND TRUE )
-     list( APPEND PARTITION_LIBRARIES ${SCOTCH_LIBRARY} ${SCOTCH_ERR_LIBRARY} )
-     include_directories( ${SCOTCH_INCLUDE_DIR} )
+  if (PARMETIS_FOUND)
+     list( APPEND PARTITION_LIBRARIES ${PARMETIS_LIBRARIES} )
+     include_directories( ${PARMETIS_INCLUDE_DIRS} )
+     add_definitions( -DHAVE_PARMETIS )
+  endif()
+
+  if (SCOTCH_FOUND)
+     list( APPEND PARTITION_LIBRARIES ${SCOTCH_LIBRARIES} )
+     include_directories( ${SCOTCH_INCLUDE_DIRS} )
      add_definitions( -DHAVE_SCOTCH )
   endif()
 
   if ( NOT PARTITION_LIBRARIES )
-     MESSAGE( FATAL_ERROR "Need to specify either SCOTCH or METIS" )
+     MESSAGE( FATAL_ERROR "You need scotch, metis or parmetis to enable partitioning" )
   endif()
 
 endif()
@@ -177,29 +188,23 @@ if(NOT APPLE)
   # This is a workaround that finds the TPL install if it's there. The link
   # to -lgfortan is a serious hack, and a documented issue.
   set(LAPACKE_FOUND)
-  set(LAPACK_LIBRARIES)
+  set(LAPACKE_LIBRARIES)
   if(EXISTS ${TPL_INSTALL_PREFIX}/include/lapacke.h
-     AND EXISTS ${TPL_INSTALL_PREFIX}/lib64/liblapacke.a)
+     AND EXISTS ${TPL_INSTALL_PREFIX}/lib/liblapacke.a)
     set(LAPACKE_FOUND 1)
     include_directories(${TPL_INSTALL_PREFIX}/include)
-    list( APPEND LAPACK_LIBRARIES
-          ${TPL_INSTALL_PREFIX}/lib64/liblapacke.a
-          ${TPL_INSTALL_PREFIX}/lib64/liblapack.a
-          ${TPL_INSTALL_PREFIX}/lib64/libblas.a
+    list( APPEND LAPACKE_LIBRARIES
+          ${TPL_INSTALL_PREFIX}/lib/liblapacke.a
+          ${TPL_INSTALL_PREFIX}/lib/liblapack.a
+          ${TPL_INSTALL_PREFIX}/lib/libblas.a
           gfortran)
   else()
-    # append lapacke to list of lapack libraries
-    find_package(LAPACK)
-    find_library(LAPACKE_LIB NAMES lapacke)
-    find_path(LAPACKE_INCLUDE_DIRS NAMES lapacke.h PATH_SUFFIXES lapacke)
-    if(LAPACKE_INCLUDE_DIRS AND LAPACK_FOUND AND LAPACKE_LIB)
-      set(LAPACKE_FOUND TRUE)
-      include_directories(${LAPACKE_INCLUDE_DIRS})
-      list( APPEND LAPACK_LIBRARIES ${LAPACKE_LIB})
-    endif(LAPACKE_INCLUDE_DIRS AND LAPACK_FOUND AND LAPACKE_LIB)
-    # want to add ${LAPACK_INCLUDES}/lapacke to the include search path,
-    # but FindLAPACK.cmake defines no such variable.
+    find_package(LAPACKE)
   endif()
+
+  if(LAPACKE_FOUND)
+    message(STATUS "Found LAPACKE: ${LAPACKE_LIBRARIES}")
+  endif(LAPACKE_FOUND)
 
 endif(NOT APPLE)
 
