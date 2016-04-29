@@ -318,7 +318,7 @@ class mesh_topology_t : public mesh_topology_base_t
   template<typename T>
   std::vector<entity_set> scatter(map_function<T> f) const {
 
-    std::unordered_map<T, id_vector_t> id_map;
+    std::map<T, id_vector_t> id_map;
     for (auto ent : *this)
       id_map[f(ent)].push_back(ent.id());
 
