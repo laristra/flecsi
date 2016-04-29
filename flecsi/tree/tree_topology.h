@@ -60,7 +60,7 @@ struct tree_geometry<T, 2>{
                          element_t size,
                          const point_t& center,
                          element_t radius){
-    
+
     if(distance(origin, center) < radius){
       return true;
     }
@@ -104,7 +104,7 @@ struct tree_geometry<T, 3>{
                          element_t size,
                          const point_t& center,
                          element_t radius){
-    
+
     if(distance(origin, center) < radius){
       return true;
     }
@@ -942,7 +942,7 @@ public:
     for(size_t i = 0; i < branch_t::num_children; ++i){
       branch_t* ci = static_cast<branch_t*>(b->child(i));
 
-      if(ci){
+      if(ci && bf(ci->coordinates(), size, std::forward<ARGS>(args)...)){
         find_(ci, size/element_t(2),
               std::forward<EF>(ef), std::forward<BF>(bf),
               std::forward<ARGS>(args)...);
