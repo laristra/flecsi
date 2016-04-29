@@ -69,7 +69,6 @@ struct default_meta_data_t {
 
   std::shared_ptr<type_info_t> rtti;
 
-  //std::vector<uint8_t> data;
   std::unordered_map<size_t, std::vector<uint8_t>> data;
 }; // struct default_meta_data_t
 

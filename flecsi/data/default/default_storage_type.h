@@ -33,11 +33,11 @@ namespace default_storage_policy
   /*!
     \struct storage_type_t
 
-    \tparam type Specialization parameter.
-    \tparam data_store_t Data store type.
-    \tparam meta_data_t Metadata type.
+    \tparam T Specialization parameter.
+    \tparam DS Data store type.
+    \tparam MD Metadata type.
    */
-  template<size_t type, typename data_store_t, typename meta_data_t>
+  template<size_t T, typename DS, typename MD>
   struct storage_type_t {};
 
 } // namespace default_storage_policy

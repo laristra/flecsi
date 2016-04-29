@@ -93,7 +93,7 @@ struct dense_accessor_t {
 		\brief Return a std::string containing the label of the data variable
 			reference by this accessor.
 	 */
-  const std::string & label() {
+  const std::string & label() const {
     return label_;
   } // label
 
@@ -208,15 +208,18 @@ struct dense_handle_t {
 /*!
   FIXME: Dense storage type.
  */
-template<typename data_store_t, typename meta_data_t>
-struct storage_type_t<dense, data_store_t, meta_data_t> {
+template<typename DS, typename MD>
+struct storage_type_t<dense, DS, MD> {
 
   /*--------------------------------------------------------------------------*
    * Type definitions.
    *--------------------------------------------------------------------------*/
 
+  using data_store_t = DS;
+  using meta_data_t = MD;
+
   template<typename T>
-  using accessor_t = dense_accessor_t<T, meta_data_t>;
+  using accessor_t = dense_accessor_t<T, MD>;
 
   template<typename T>
   using handle_t = dense_handle_t<T>;
