@@ -14,6 +14,8 @@
 
 #include <cinchtest.h>
 
+#include <numeric>
+
 #include "../dolfin_triangle_mesh.h"
 
 using namespace flecsi;

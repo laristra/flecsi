@@ -50,10 +50,11 @@ set(FLECSI_ID_PBITS "20" CACHE STRING
 # Add build options
 #------------------------------------------------------------------------------#
 
-set( TPL_INSTALL_PREFIX /path/to/third/party/install 
+set( TPL_INSTALL_PREFIX ""
                         CACHE PATH
                         "path to thirdparty install" )
 if (NOT TPL_INSTALL_PREFIX STREQUAL "")
+  message(WARNING "TPL_INSTALL_PREFIX is obsolete, use CMAKE_PREFIX_PATH instead (and rebuild the latest version third-party libraries)")
   list(APPEND CMAKE_PREFIX_PATH "${TPL_INSTALL_PREFIX}")
 endif()
 

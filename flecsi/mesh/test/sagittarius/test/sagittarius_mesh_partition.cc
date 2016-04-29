@@ -14,6 +14,8 @@
 
 #include <cinchtest.h>
 
+#include <numeric>
+
 #include "../sagittarius_mesh.h"
 #include "sagittarius_fixture.h"
 
