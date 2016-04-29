@@ -372,7 +372,7 @@ struct branch_id_hasher__{
   }
 };
 
-enum class action : uint64_t{
+enum class action : uint8_t{
   none = 0b00,
   refine = 0b01,
   coarsen = 0b10
@@ -1133,7 +1133,7 @@ private:
   std::array<tree_branch*, num_children> children_;
 
   branch_id_t id_;
-  action action_ : 2;
+  action action_;
 };
 
 } // namespace tree_topology_dev
