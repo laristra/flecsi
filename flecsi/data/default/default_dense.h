@@ -67,7 +67,7 @@ struct dense_accessor_t {
   /*!
     Constructor.
 
-    \param label The c_str() version of the const_string used for
+    \param label The c_str() version of the const_string_t used for
       this data variable's hash.
     \param size The size of the associated index space.
     \param data A pointer to the raw data.
