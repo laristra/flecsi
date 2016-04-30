@@ -1,4 +1,4 @@
-![logo](config/flecsi.png)
+![logo](doc/flecsi.png)
 [![Build Status](https://travis-ci.org/losalamos/flecsi.svg?branch=master)](https://travis-ci.org/losalamos/flecsi)
 
 # FleCSI Project
