@@ -122,7 +122,9 @@ void ExtLegionHandshake::legion_init(void)
                            UserEvent::create_user_event() :
                            UserEvent());
   }
-  //printf("handshake %p: legion init - counts = L=%d, E=%d\n", this, legion_count, ext_count);
+#ifdef DEBUG
+  printf("handshake %p: legion init - counts = L=%d, E=%d\n", this, legion_count, ext_count);
+#endif
   legion_count++;
 
   if(ext_count == 0) {

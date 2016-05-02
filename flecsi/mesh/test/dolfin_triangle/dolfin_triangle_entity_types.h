@@ -22,6 +22,7 @@ namespace flecsi
 class dolfin_vertex_t : public mesh_entity_t<0, 1> {
 public:
   dolfin_vertex_t() = default;
+  dolfin_vertex_t(mesh_topology_base_t&) {}
 };
 
 class dolfin_edge_t : public mesh_entity_t<1, 1> {

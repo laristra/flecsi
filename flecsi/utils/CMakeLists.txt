@@ -26,6 +26,7 @@ set(utils_HEADERS
   id.h
   index_space.h
   iterator.h
+  set_intersection.h
   static_for.h     detail/static_for.h
   static_list.h
   tuple_for_each.h detail/tuple_for_each.h
@@ -49,6 +50,8 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 set(utils_HEADERS 
    ${utils_HEADERS}
    mpi_legion_interoperability/legion_handshake.h
+   mpi_legion_interoperability/task_ids.h
+   mpi_legion_interoperability/mapper.h
    mpi_legion_interoperability/macros.h
    PARENT_SCOPE)
 endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")

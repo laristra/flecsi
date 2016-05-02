@@ -108,7 +108,8 @@ message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with 2^${
 find_package(EXODUSII)
 option(ENABLE_IO "Enable I/O (uses libexodus)" ${EXODUSII_FOUND})
 if(ENABLE_IO)
-  if(EXISTS ${TPL_INSTALL_PREFIX}/include/exodusII.h)
+  if(EXISTS ${TPL_INSTALL_PREFIX}/include/exodusII.h
+     AND EXISTS ${TPL_INSTALL_PREFIX}/lib/libexodus.a)
     set(IO_LIBRARIES ${TPL_INSTALL_PREFIX}/lib/libexodus.a
       ${TPL_INSTALL_PREFIX}/lib/libnetcdf.a
       ${TPL_INSTALL_PREFIX}/lib/libhdf5_hl.a
@@ -187,28 +188,18 @@ if(NOT APPLE)
   # This is a workaround that finds the TPL install if it's there. The link
   # to -lgfortan is a serious hack, and a documented issue.
   set(LAPACKE_FOUND)
-  set(LAPACK_LIBRARIES)
+  set(LAPACKE_LIBRARIES)
   if(EXISTS ${TPL_INSTALL_PREFIX}/include/lapacke.h
      AND EXISTS ${TPL_INSTALL_PREFIX}/lib/liblapacke.a)
     set(LAPACKE_FOUND 1)
     include_directories(${TPL_INSTALL_PREFIX}/include)
-    list( APPEND LAPACK_LIBRARIES
+    list( APPEND LAPACKE_LIBRARIES
           ${TPL_INSTALL_PREFIX}/lib/liblapacke.a
           ${TPL_INSTALL_PREFIX}/lib/liblapack.a
           ${TPL_INSTALL_PREFIX}/lib/libblas.a
           gfortran)
   else()
-    # append lapacke to list of lapack libraries
-    find_package(LAPACK)
-    find_library(LAPACKE_LIB NAMES lapacke)
-    find_path(LAPACKE_INCLUDE_DIRS NAMES lapacke.h PATH_SUFFIXES lapacke)
-    if(LAPACKE_INCLUDE_DIRS AND LAPACK_FOUND AND LAPACKE_LIB)
-      set(LAPACKE_FOUND TRUE)
-      include_directories(${LAPACKE_INCLUDE_DIRS})
-      list( APPEND LAPACK_LIBRARIES ${LAPACKE_LIB})
-    endif(LAPACKE_INCLUDE_DIRS AND LAPACK_FOUND AND LAPACKE_LIB)
-    # want to add ${LAPACK_INCLUDES}/lapacke to the include search path,
-    # but FindLAPACK.cmake defines no such variable.
+    find_package(LAPACKE)
   endif()
 
   if(LAPACKE_FOUND)
