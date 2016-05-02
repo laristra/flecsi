@@ -102,6 +102,11 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 cinch_add_unit(mpi_with_legion
   SOURCES test/mpi_with_legion.cc
   POLICY MPILEGION)
+
+cinch_add_unit(more_complex_mpi_with_legion
+  SOURCES test/more_complex_mpi_with_legion.cc
+  POLICY MPILEGION)
+
 endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 #~---------------------------------------------------------------------------~-#
 # Formatting options
