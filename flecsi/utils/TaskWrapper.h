@@ -14,6 +14,7 @@
 #include <stddef.h>
 #include <typeinfo>
 #include <functional>
+#include "flecsi/execution/context.h"
 
 namespace flecsi
 {
@@ -44,10 +45,7 @@ class element_t
 
 };
 
-class context_t
-{
 
-};
 
 
 /*
@@ -182,17 +180,22 @@ public:
 
 };
 
-template<bool isSingle,bool isIndex,int mapperID,bool isLeaf,class callable>
+template<bool isSingle,bool isIndex,int mapperID,bool isLeaf,class execution_policy_t,class callable>
 class TaskWrapper
 {
 
 };
 
-template<bool isSingle,bool isIndex,int mapperID,bool isLeaf,class R,class... Args,template<class,class...>class callable>
-class TaskWrapper<isSingle,isIndex,mapperID,isLeaf,callable<R(Args...)>>
+template<bool isSingle,bool isIndex,int mapperID,bool isLeaf,
+		class execution_policy_t,
+		class R,class... Args,template<class,class...>class callable>
+class TaskWrapper<isSingle,isIndex,mapperID,isLeaf,execution_policy_t,callable<R(Args...)>>
 {
 public: // Required Flecsi members
-	context_t context;
+
+	typename execution_policy_t::context_ep context;
+
+
 
 	using wrapper_t = FunctionWrapper<R(Args...)>;
 	using argsT = typename wrapper_t::split_t::Tail;
@@ -203,6 +206,8 @@ public: // Required Flecsi members
 	hArgT handles;
 	sArgT const_args;
 
+	TaskWrapper(hArgT _handles,sArgT _const_args,typename execution_policy_t::context_ep _context) :
+		handles(_handles),const_args(_const_args),context(_context){}
 
 
 
@@ -211,6 +216,10 @@ public: // Required static members
 	static const int INDEX = isIndex;
 	static const int MAPPER_ID = mapperID;
 	static const bool IS_LEAF = isLeaf;
+	static inline const char* TASK_NAME()
+	{return typeid(TaskWrapper<isSingle,isIndex,mapperID,isLeaf,execution_policy_t,callable<R(Args...)>>).name();};
+	static const size_t TASK_ID()
+	{return typeid(TaskWrapper<isSingle,isIndex,mapperID,isLeaf,execution_policy_t,callable<R(Args...)>>).hash_code();}
 
 public: // Task Simple Arguments
 

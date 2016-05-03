@@ -33,6 +33,7 @@ namespace flecsi
 
 extern void top_level_task(int argc, char** argv);
 
+using namespace LegionRuntime::HighLevel;
 
 /*!
   \class legion_execution_policy legion_execution_policy.h
@@ -44,6 +45,9 @@ class legion_execution_policy_t
 	class context_ep
 	{
 	public:
+		context_ep(const Task *_task,
+                            const std::vector<PhysicalRegion> &_regions,
+                            Context ctx, HighLevelRuntime *runtime) : ctx_l(ctx),rt(runtime),task(_task),regions(_regions){}
 
 	protected:
 		 LegionRuntime::HighLevel::Context ctx_l;
@@ -89,6 +93,8 @@ class legion_execution_policy_t
 
   } // execute_driver
 
+
+
   template <typename T, typename... Args>
   static return_type_t execute_task(T && task, Args &&... args)
   {
@@ -100,6 +106,16 @@ class legion_execution_policy_t
 //    context_t<legion_execution_policy_t>::instance().exit();
     return value;
   } // execute_task
+
+
+  // Builds up the function signature for a task from
+  template<typename... sArgs,typename... aArgs,typename T>
+  static void build_task_sig(context_t<legion_execution_policy_t> && ctx,
+							 std::tuple<sArgs...> && sArgT, std::tuple<aArgs...> && aArgT,
+							 T && task)
+  {
+
+  }
 
 }; // class legion_execution_policy_t
 

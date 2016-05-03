@@ -55,7 +55,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   endif(NOT legion_FOUND)
   
   include_directories(${LEGION_INCLUDE_DIRS})
-  set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES})
+  set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES} -ldl)
   SET_SOURCE_FILES_PROPERTIES(${LEGION_INCLUDE_DIRS}/legion/legion.inl PROPERTIES HEADER_FILE_ONLY 1)
 
 # MPI interface
@@ -78,7 +78,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
                      for this build configuration")
   endif(NOT legion_FOUND)
   include_directories(${LEGION_INCLUDE_DIRS})
-  set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES})
+  set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES} dl)
 
 # Default
 else(FLECSI_RUNTIME_MODEL STREQUAL "serial")

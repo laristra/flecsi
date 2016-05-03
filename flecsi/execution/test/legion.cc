@@ -16,9 +16,19 @@
 
 #include "flecsi/execution/legion_execution_policy.h"
 #include "flecsi/execution/task.h"
+#include "flecsi/utils/TaskWrapper.h"
 
+#include "flecsi/execution/register_legion.h"
+
+using namespace flecsi;
 using execution_t = flecsi::execution_t<flecsi::legion_execution_policy_t>;
-using return_type_t = execution_t::return_type_t;
+using return_type_t = flecsi::execution_t<flecsi::legion_execution_policy_t>::return_type_t;
+
+
+void example_task(int beta,double alpha,element_t i,state_accessor_t<double> a, state_accessor_t<int> b)
+{
+
+}
 
 return_type_t testme(const char * token) {
   std::cout << "Hello World: " << token << std::endl;
@@ -39,14 +49,20 @@ void top_level_task(int argc, char** argv)
 #define execute(task, ...) \
   execution_t::execute_task(task, ##__VA_ARGS__)
 
-TEST(task, execute) {
-  execute(testme, "shit");
-  execute(myvoid);
+TEST(legion, register_task) {
+  using wrapper_t = TaskWrapper<1,0,0,0,legion_execution_policy_t,std::function<decltype(example_task)>>;
+
+//  register_legion<wrapper_t>::register_task();
 } // TEST
+
+//TEST(task, execute) {
+//  execute(testme, "shit");
+//  execute(myvoid);
+//} // TEST
 
 TEST(driver, execute) {
 	char* argv = "shit";
-	execution_t::execute_driver(flecsi::top_level_task,1,&argv);
+	flecsi::execution_t<flecsi::legion_execution_policy_t>::execute_driver(flecsi::top_level_task,1,&argv);
 } // TEST
 
 /*----------------------------------------------------------------------------*
