@@ -99,7 +99,6 @@ void ExtLegionHandshake::ext_init(void)
       sync_cond.notify_all();
     }
   }
-   lock.unlock();
 }
 
 void ExtLegionHandshake::legion_init(void)
@@ -137,8 +136,6 @@ void ExtLegionHandshake::legion_init(void)
        sync_cond.notify_all();
     }
   }
-
-  lock.unlock();
 }
 
 void ExtLegionHandshake::ext_handoff_to_legion(void)
