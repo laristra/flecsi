@@ -1005,6 +1005,47 @@ public:
     return itr->second;
   }
 
+  branch_t* root(){
+    return root_;
+  }
+
+  template<typename F, typename... ARGS>
+  void visit(branch_t* b, F&& f, ARGS&&... args){
+    visit_(b, 0, std::forward<F>(f), std::forward<ARGS>(args)...);
+  }
+
+  template<typename F, typename... ARGS>
+  void visit_(branch_t* b, size_t depth, F&& f, ARGS&&... args){
+    if(f(b, depth, std::forward<ARGS>(args)...)){
+      return;
+    }
+
+    for(auto bi : b->children()){
+      if(!bi){
+        return;
+      }
+
+      branch_t* bc = static_cast<branch_t*>(bi);
+      visit_(bc, depth + 1, std::forward<F>(f), std::forward<ARGS>(args)...);
+    }
+  }
+
+  template<typename F, typename... ARGS>
+  void apply(branch_t* b, F&& f, ARGS&&... args){
+    for(auto bi : b->children()){
+      if(bi){
+        branch_t* bc = static_cast<branch_t*>(bi);
+        apply(bc, std::forward<F>(f), std::forward<ARGS>(args)...);
+      }
+      else{
+        for(auto ent : *b){
+          f(ent, std::forward<ARGS>(args)...);
+        }
+        return;
+      }
+    }  
+  }
+
 private:
   using branch_map_t = std::unordered_map<branch_id_t, branch_t*,
     branch_id_hasher__<branch_int_t, dimension>>;
