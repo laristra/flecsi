@@ -982,18 +982,6 @@ public:
     return max_depth_;
   }
 
-  void apply(apply_function f){
-    apply(f, root_);
-  }
-
-  void apply(apply_function f, branch_t* b){    
-    f(*b);
-
-    for(size_t i = 0; i < branch_t::num_children; ++i){
-      apply(f, static_cast<branch_t*>(b->child(i)));
-    }
-  }
-
   entity_t* get(entity_id_t id){
     assert(id < entities_.size());
     return entities_[id];

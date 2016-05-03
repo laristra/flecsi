@@ -10,6 +10,7 @@ using namespace tree_topology_dev;
 struct Aggregate{
   Aggregate(){
     center = {0, 0};
+    mass = 0;
   }
 
   double mass;
@@ -92,7 +93,7 @@ public:
     }
 
     void remove(body* ent){
-      auto itr = std::find(ents_.begin(), ents_.end(), ent);
+      auto itr = find(ents_.begin(), ents_.end(), ent);
       assert(itr != ents_.end());
       ents_.erase(itr);
       
@@ -124,7 +125,7 @@ public:
     }
 
   private:
-    std::vector<body*> ents_;
+    vector<body*> ents_;
   };
 
   bool should_coarsen(branch* parent){
@@ -148,13 +149,13 @@ using point_t = tree_topology_t::point_t;
 using branch_t = tree_topology_t::branch_t;
 using branch_id_t = tree_topology_t::branch_id_t;
 
-static const size_t N = 10000;
-static const size_t TS = 20;
+static const size_t N = 5000;
+static const size_t TS = 10;
 
 TEST(tree_topology, gravity) {
   tree_topology_t t;
 
-  std::vector<body*> bodies;
+  vector<body*> bodies;
   for(size_t i = 0; i < N; ++i){
     double m = uniform(0.1, 0.5);
     point_t p = {uniform(0.0, 1.0), uniform(0.0, 1.0)};
@@ -176,8 +177,8 @@ TEST(tree_topology, gravity) {
   };
 
   auto g = 
-  [&](branch_t* b, size_t depth, std::vector<Aggregate>& aggs) -> bool{
-    if(depth > 4){    
+  [&](branch_t* b, size_t depth, vector<Aggregate>& aggs) -> bool{
+    if(depth > 4 || b->is_leaf()){    
       auto h = [&](body* bi, Aggregate& agg){
        agg.center += bi->mass() * bi->coordinates();
        agg.mass += bi->mass(); 
@@ -196,12 +197,12 @@ TEST(tree_topology, gravity) {
   for(size_t ts = 0; ts < TS; ++ts){
     //cout << "---- ts = " << ts << endl;
 
-    std::vector<Aggregate> aggs;
+    vector<Aggregate> aggs;
     t.visit(t.root(), g, aggs);
 
     for(size_t i = 0; i < N; ++i){
       auto bi = bodies[i];
-      t.apply_in_radius(bi->coordinates(), 0.001, f, bi);
+      t.apply_in_radius(bi->coordinates(), 0.01, f, bi);
     }
 
     for(size_t i = 0; i < N; ++i){
