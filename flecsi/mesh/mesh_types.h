@@ -119,6 +119,15 @@ class mesh_entity_base_t
   } // info
 
   /*!
+    Set the id of this entity.
+   */
+  template <size_t M>
+  void set_global_id( const id_t & id )
+  {
+    ids_[M] = id;
+  } // id
+
+  /*!
    */
 
   static constexpr size_t get_dim_(size_t meshDim, size_t dim)

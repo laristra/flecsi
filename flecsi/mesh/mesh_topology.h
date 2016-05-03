@@ -669,7 +669,7 @@ class mesh_topology_t : public mesh_topology_base_t
 
     id_t global_id = id_t::make<D, M>(ents.size(), partition_id);
 
-    ent->ids_[M] = global_id;
+    ent->template set_global_id<M>( global_id );
     ents.push_back(ent);
 
     auto & id_vec = ms_.id_vecs[M][D];
