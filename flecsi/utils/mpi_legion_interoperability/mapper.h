@@ -104,10 +104,6 @@ void MPIMapper::slice_domain(const Task *task, const Domain &domain,
         continue;
       proc_list.push_back(*it);
     }
-/*
-printf ("Irina DEBUG2 \n");
-printf ("domain.get_rect<DIM>().hi[0] +1= %d \n", (domain.get_rect<DIM>().hi[0]+1));
-printf ("proc_list.size() = %d ", proc_list.size());
 
     assert(proc_list.size() == (size_t)(domain.get_rect<DIM>().hi[0]+1));
     for (Domain::DomainPointIterator pir(domain); pir; pir++) {
@@ -118,7 +114,7 @@ printf ("proc_list.size() = %d ", proc_list.size());
                             false , false );
       slices.push_back(ds);
     }
-*/
+   return;
   }
    DefaultMapper::decompose_index_space(domain, local_cpus, 1/*splitting factor*/, slices);
 }
