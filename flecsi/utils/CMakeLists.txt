@@ -52,7 +52,6 @@ set(utils_HEADERS
    mpi_legion_interoperability/legion_handshake.h
    mpi_legion_interoperability/task_ids.h
    mpi_legion_interoperability/mapper.h
-   mpi_legion_interoperability/macros.h
    PARENT_SCOPE)
 endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
@@ -108,6 +107,10 @@ cinch_add_unit(mpi_with_legion
 cinch_add_unit(more_complex_mpi_with_legion
   SOURCES test/more_complex_mpi_with_legion.cc
   POLICY MPILEGION)
+
+cinch_add_unit(legion_with_mpi
+  SOURCES test/legion_with_mpi.cc
+  POLICY LEGION)
 
 endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 #~---------------------------------------------------------------------------~-#
