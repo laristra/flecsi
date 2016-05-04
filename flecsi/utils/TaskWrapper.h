@@ -206,7 +206,7 @@ public: // Required Flecsi members
 	hArgT handles;
 	sArgT const_args;
 
-	TaskWrapper(hArgT _handles,sArgT _const_args,typename execution_policy_t::context_ep _context) :
+	TaskWrapper(hArgT _handles,sArgT _const_args,context_t<execution_policy_t> _context) :
 		handles(_handles),const_args(_const_args),context(_context){}
 
 

@@ -53,14 +53,20 @@ class context_t : public execution_policy::context_ep
   call_state_t entry() { return static_cast<call_state_t>(++call_state_); }
   call_state_t exit() { return static_cast<call_state_t>(--call_state_); }
   //! Copy constructor (disabled)
-  context_t(const context_t &) = delete;
+//  context_t(const context_t &) = delete;
 
   //! Assignment operator (disabled)
-  context_t & operator=(const context_t &) = delete;
+//  context_t & operator=(const context_t &) = delete;
+  context_t() : call_state_(static_cast<size_t>(call_state_t::driver)) {}
+
+
+  template<class... args>
+  context_t(size_t call_state, args... a):call_state_(call_state),execution_policy::context_ep(a...){}
 
  private:
-  context_t() : call_state_(static_cast<size_t>(call_state_t::driver)) {}
-  ~context_t() {}
+
+
+//  ~context_t() {}
   size_t call_state_;
 
 
