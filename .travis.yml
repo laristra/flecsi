@@ -20,6 +20,7 @@ addons:
       - g++-5
       - gfortran-5
       - libscotch-dev
+      - libexodusii-dev
 
 before_install:
  - if [[ ${GVER} ]]; then export CC=gcc-${GVER}; export CXX=g++-${GVER}; export FC=gfortran-${GVER}; fi
@@ -62,4 +63,4 @@ compiler:
 
 notifications:
   email:
-    - flecsi-commit@lanl.gov
+#    - flecsi-commit@lanl.gov
