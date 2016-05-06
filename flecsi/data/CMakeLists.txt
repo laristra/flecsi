@@ -13,6 +13,7 @@
 #~----------------------------------------------------------------------------~#
 
 set(data_HEADERS
+  data_client.h
   data_constants.h
   data.h
   default_meta_data.h
