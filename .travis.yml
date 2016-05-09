@@ -20,15 +20,16 @@ addons:
       - g++-5
       - gfortran-5
       - libscotch-dev
+      - libexodusii-dev
 
 before_install:
  - if [[ ${GVER} ]]; then export CC=gcc-${GVER}; export CXX=g++-${GVER}; export FC=gfortran-${GVER}; fi
  - git -C cinch submodule init && git -C cinch submodule update
  - git fetch --unshallow && git fetch --tags #for versioning
  - if [[ ${TPL} ]]; then
-     git clone --depth=1 https://github.com/losalamos/flecsi-third-party $HOME/tpl/src;
+     git clone --recursive --depth=1 https://github.com/losalamos/flecsi-third-party $HOME/tpl/src;
      mkdir -p $HOME/tpl/src/build && cd $HOME/tpl/src/build;
-     cmake -DENABLE_EXODUS=ON -DENABLE_LAPACK=ON -DENABLE_METIS=ON -DENABLE_SCOTCH=ON -DENABLE_ZLIB=ON -DCMAKE_INSTALL_PREFIX=$HOME/tpl .. && make -j2;
+     cmake -DENABLE_EXODUS=ON -DENABLE_LAPACK=ON -DENABLE_METIS=ON -DENABLE_SCOTCH=ON -DENABLE_LEGION=ON -DCMAKE_INSTALL_PREFIX=$HOME/tpl .. && make -j2;
      cd -;
    fi
  - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi 
@@ -38,15 +39,15 @@ env:
     - CCACHE_CPP2=yes
     - GVER=5
   matrix:
-    - MININAL=ON MPI=OFF
+    - MININAL=ON MPI=OFF RUNTIME=serial
 #    - GVER=4.9 MPI=ON (issue #47)
-    - MPI=OFF TPL=ON
-    - MPI=ON
-    - MPI=ON COVERAGE=ON
+    - MPI=OFF TPL=ON RUNTIME=legion
+    - MPI=ON RUNTIME=serial
+    - MPI=ON COVERAGE=ON RUNTIME=serial
 
 script:
   - mkdir build && cd build &&
-    cmake -DENABLE_MPI=$MPI ${TPL:+-DCMAKE_PREFIX_PATH=$HOME/tpl}
+    cmake -DENABLE_MPI=$MPI ${TPL:+-DCMAKE_PREFIX_PATH=$HOME/tpl} -DFLECSI_RUNTIME_MODEL=${RUNTIME}
           ${MININAL:+-DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON -DCMAKE_DISABLE_FIND_PACKAGE_SCOTCH=ON -DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON -DCMAKE_DISABLE_FIND_PACKAGE_LAPACKE=ON}
           -DENABLE_UNIT_TESTS=ON ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} .. && 
     make -j2 && make test ARGS='-E partition' && make install DESTDIR="${HOME}" && cd .. #partition test is broken (issue #48)

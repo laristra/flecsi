@@ -14,6 +14,7 @@
 #include <stddef.h>
 #include <typeinfo>
 #include <functional>
+#include "flecsi/execution/context.h"
 
 namespace flecsi
 {
@@ -44,10 +45,7 @@ class element_t
 
 };
 
-class context_t
-{
 
-};
 
 
 /*
@@ -109,6 +107,16 @@ public:
 	typedef typename NEXT::Tail Tail;
 };
 
+template<class sArg0>
+class ArgSplitter<sArg0>
+{
+public:
+	typedef ArgSplitter<std::tuple<sArg0>> NEXT;
+	typedef typename NEXT::sArgT sArgT;
+	typedef typename NEXT::aArgT aArgT;
+	typedef typename NEXT::Tail Tail;
+};
+
 template<class sArg0, class... sArgs,class... rest>
 class ArgSplitter<std::tuple<sArgs...>,sArg0,rest...>
 {
@@ -120,15 +128,18 @@ public:
 
 };
 
+template<bool qElement,class... sArgs>
+class ArgSplitter_end
+{
 
-template<class ... sArgs,class ... aArgs>
-class ArgSplitter<std::tuple<sArgs...>,element_t,aArgs...>
+};
+
+template<bool qElement,class... sArgs,class... aArgs>
+class ArgSplitter_end<qElement,std::tuple<sArgs...>,std::tuple<aArgs...>>
 {
 public:
 	typedef std::tuple<sArgs...> sArgT;
 	typedef std::tuple<aArgs...> aArgT;
-
-	typedef ArgSplitter<std::tuple<sArgs...>,element_t,aArgs...> Tail;
 
 	template<std::size_t N>
 	using type_s = typename std::tuple_element<N,std::tuple<sArgs...>>::type;
@@ -136,12 +147,39 @@ public:
 	template<std::size_t N>
 	using type_a = typename std::tuple_element<N,std::tuple<aArgs...>>::type;
 
-	static const bool needs_element = true;
+	static const bool needs_element = qElement;
 
 	sArgT sargs;
 	aArgT aargs;
+};
 
-	ArgSplitter(void* _sargs) : sargs(*(sArgT*)_sargs) {}
+template<class... sArgs>
+class ArgSplitter_end<false,std::tuple<sArgs...>>
+{
+public:
+	typedef std::tuple<sArgs...> sArgT;
+	typedef void aArgT;
+
+	template<std::size_t N>
+	using type_s = typename std::tuple_element<N,std::tuple<sArgs...>>::type;
+
+	template<std::size_t N>
+	using type_a = std::false_type;
+
+	static const bool needs_element = false;
+
+	sArgT sargs;
+};
+
+
+template<class ... sArgs,class ... aArgs>
+class ArgSplitter<std::tuple<sArgs...>,element_t,aArgs...>
+{
+public:
+	typedef std::tuple<sArgs...> sArgT;
+	typedef std::tuple<aArgs...> aArgT;
+	typedef ArgSplitter_end<true,std::tuple<sArgs...>,std::tuple<aArgs...>> Tail;
+
 };
 
 template<class ... sArgs,class sType0,class ... aArgs>
@@ -150,22 +188,19 @@ class ArgSplitter<std::tuple<sArgs...>,state_accessor_t<sType0>,aArgs...>
 public:
 	typedef std::tuple<sArgs...> sArgT;
 	typedef std::tuple<state_accessor_t<sType0>,aArgs...> aArgT;
-
-	typedef ArgSplitter<std::tuple<sArgs...>,state_accessor_t<sType0>,aArgs...> Tail;
-
-	template<std::size_t N>
-	using type_s = typename std::tuple_element<N,std::tuple<sArgs...>>::type;
-
-	template<std::size_t N>
-	using type_a = typename std::tuple_element<N,std::tuple<state_accessor_t<sType0>,aArgs...>>::type;
-
-	static const bool needs_element = false;
+	typedef ArgSplitter_end<false,std::tuple<sArgs...>,std::tuple<state_accessor_t<sType0>,aArgs...>> Tail;
+};
 
 
-	sArgT sargs;
-	aArgT aargs;
+template<class ... sArgs>
+class ArgSplitter<std::tuple<sArgs...>>
+{
+public:
+	typedef std::tuple<sArgs...> sArgT;
+	typedef void aArgT;
 
-	ArgSplitter(void* _sargs) : sargs(*(sArgT*)_sargs) {}
+	typedef ArgSplitter_end<false,std::tuple<sArgs...>> Tail;
+
 };
 
 template<class T>
@@ -182,27 +217,59 @@ public:
 
 };
 
-template<bool isSingle,bool isIndex,int mapperID,bool isLeaf,class callable>
+template<bool isSingle,bool isIndex,int mapperID,bool isLeaf,class execution_policy_t,class callable>
 class TaskWrapper
 {
 
 };
 
-template<bool isSingle,bool isIndex,int mapperID,bool isLeaf,class R,class... Args,template<class,class...>class callable>
-class TaskWrapper<isSingle,isIndex,mapperID,isLeaf,callable<R(Args...)>>
+template<bool isSingle,bool isIndex,int mapperID,bool isLeaf,
+		class execution_policy_t,
+		class R,class... Args,template<class,class...>class callable>
+class TaskWrapper<isSingle,isIndex,mapperID,isLeaf,execution_policy_t,callable<R(Args...)>>
 {
 public: // Required Flecsi members
-	context_t context;
+
+	typename execution_policy_t::context_ep context;
+
+
 
 	using wrapper_t = FunctionWrapper<R(Args...)>;
 	using argsT = typename wrapper_t::split_t::Tail;
 	using sArgT = typename argsT::sArgT;
 	using aArgT = typename argsT::aArgT;
-	using hArgT = typename state_handle_sep<aArgT>::handles;
+
+//	using hArgT = typename std::enable_if<!std::is_void<aArgT>::value,typename state_handle_sep<aArgT>::handles>::type;
+
+	template<typename T,bool Enable>
+	class hArgT_temp{};
+
+	template<typename T>
+	class hArgT_temp<T,true>
+	{
+		typedef typename state_handle_sep<T>::handles type;
+		type handles;
+
+	};
+
+	template<typename T>
+	class hArgT_temp<T,false>
+	{
+		typedef void* type;
+	};
+
+	using hArgT = hArgT_temp<aArgT,!std::is_void<aArgT>::value>;
 
 	hArgT handles;
-	sArgT const_args;
 
+	sArgT const_args;
+	template<typename U = std::is_void<aArgT>,typename = typename std::enable_if<!U::value>>
+	TaskWrapper(hArgT _handles,sArgT _const_args,context_t<execution_policy_t> _context) :
+		handles(_handles),const_args(_const_args),context(_context){}
+
+	template<typename U = std::is_void<aArgT>,typename = typename std::enable_if<U::value>>
+	TaskWrapper(sArgT _const_args,context_t<execution_policy_t> _context) :
+		const_args(_const_args),context(_context){}
 
 
 
@@ -211,6 +278,10 @@ public: // Required static members
 	static const int INDEX = isIndex;
 	static const int MAPPER_ID = mapperID;
 	static const bool IS_LEAF = isLeaf;
+	static inline const char* TASK_NAME()
+	{return typeid(TaskWrapper<isSingle,isIndex,mapperID,isLeaf,execution_policy_t,callable<R(Args...)>>).name();};
+	static const size_t TASK_ID()
+	{return typeid(TaskWrapper<isSingle,isIndex,mapperID,isLeaf,execution_policy_t,callable<R(Args...)>>).hash_code();}
 
 public: // Task Simple Arguments
 

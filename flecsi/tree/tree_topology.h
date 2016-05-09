@@ -60,7 +60,7 @@ struct tree_geometry<T, 2>{
                          element_t size,
                          const point_t& center,
                          element_t radius){
-    
+
     if(distance(origin, center) < radius){
       return true;
     }
@@ -104,7 +104,7 @@ struct tree_geometry<T, 3>{
                          element_t size,
                          const point_t& center,
                          element_t radius){
-    
+
     if(distance(origin, center) < radius){
       return true;
     }
@@ -372,7 +372,7 @@ struct branch_id_hasher__{
   }
 };
 
-enum class action : uint64_t{
+enum class action : uint8_t{
   none = 0b00,
   refine = 0b01,
   coarsen = 0b10
@@ -942,7 +942,7 @@ public:
     for(size_t i = 0; i < branch_t::num_children; ++i){
       branch_t* ci = static_cast<branch_t*>(b->child(i));
 
-      if(ci){
+      if(ci && bf(ci->coordinates(), size, std::forward<ARGS>(args)...)){
         find_(ci, size/element_t(2),
               std::forward<EF>(ef), std::forward<BF>(bf),
               std::forward<ARGS>(args)...);
@@ -982,18 +982,6 @@ public:
     return max_depth_;
   }
 
-  void apply(apply_function f){
-    apply(f, root_);
-  }
-
-  void apply(apply_function f, branch_t* b){    
-    f(*b);
-
-    for(size_t i = 0; i < branch_t::num_children; ++i){
-      apply(f, static_cast<branch_t*>(b->child(i)));
-    }
-  }
-
   entity_t* get(entity_id_t id){
     assert(id < entities_.size());
     return entities_[id];
@@ -1003,6 +991,47 @@ public:
     auto itr = branch_map_.find(id);
     assert(itr != branch_map_.end());
     return itr->second;
+  }
+
+  branch_t* root(){
+    return root_;
+  }
+
+  template<typename F, typename... ARGS>
+  void visit(branch_t* b, F&& f, ARGS&&... args){
+    visit_(b, 0, std::forward<F>(f), std::forward<ARGS>(args)...);
+  }
+
+  template<typename F, typename... ARGS>
+  void visit_(branch_t* b, size_t depth, F&& f, ARGS&&... args){
+    if(f(b, depth, std::forward<ARGS>(args)...)){
+      return;
+    }
+
+    for(auto bi : b->children()){
+      if(!bi){
+        return;
+      }
+
+      branch_t* bc = static_cast<branch_t*>(bi);
+      visit_(bc, depth + 1, std::forward<F>(f), std::forward<ARGS>(args)...);
+    }
+  }
+
+  template<typename F, typename... ARGS>
+  void apply(branch_t* b, F&& f, ARGS&&... args){
+    for(auto bi : b->children()){
+      if(bi){
+        branch_t* bc = static_cast<branch_t*>(bi);
+        apply(bc, std::forward<F>(f), std::forward<ARGS>(args)...);
+      }
+      else{
+        for(auto ent : *b){
+          f(ent, std::forward<ARGS>(args)...);
+        }
+        return;
+      }
+    }  
   }
 
 private:
@@ -1126,7 +1155,7 @@ private:
   std::array<tree_branch*, num_children> children_;
 
   branch_id_t id_;
-  action action_ : 2;
+  action action_;
 };
 
 } // namespace tree_topology_dev

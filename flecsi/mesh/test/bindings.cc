@@ -147,6 +147,35 @@ public:
               std::tuple<domain_<1>, domain_<0>, Wedge, Cell>,
               std::tuple<domain_<1>, domain_<0>, Wedge, Edge>,
               std::tuple<domain_<1>, domain_<0>, Wedge, Vertex>>;
+
+  template<size_t M, size_t D>
+  static mesh_entity_base_t<num_domains>*
+  create_entity(mesh_topology_base_t* mesh, size_t num_vertices){
+    switch(M){
+      case 0:{
+        switch(D){
+          case 1:
+            return mesh->make<Edge>();
+          default:
+            assert(false);
+        }
+        break;
+      }
+      case 1:{
+        switch(D){
+          case 1:
+            return mesh->make<Corner>();
+          case 2:
+            return mesh->make<Wedge>();
+          default:
+            assert(false);
+        }
+        break;
+      }
+      default:
+        assert(false);
+    }
+  }
 };
 
 using TestMesh = mesh_topology_t<TestMesh2dType>;

@@ -1,60 +1,53 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2014 Los Alamos National Security, LLC
- * All rights reserved.
- *~-------------------------------------------------------------------------~~*/
+/*~--------------------------------------------------------------------------~*
+ *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+ * /@@/////  /@@          @@////@@ @@////// /@@
+ * /@@       /@@  @@@@@  @@    // /@@       /@@
+ * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+ * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+ * /@@       /@@/@@//// //@@    @@       /@@/@@
+ * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+ * //       ///  //////   //////  ////////  // 
+ * 
+ * Copyright (c) 2016 Los Alamos National Laboratory, LLC
+ * All rights reserved
+ *~--------------------------------------------------------------------------~*/
 
+// system includes
 #include <cinchtest.h>
-#include "flecsi/utils/TaskWrapper.h"
+#include <iostream>
+#include <string>
+#include <type_traits> // std::is_same
+#include "legion.h"
+
+// user includes
+//#include "flecsi/utils/mpi_legion_interoperability/legion_handshake.h"
+#include "flecsi/utils/mpi_legion_interoperability/mapper.h"
+#include "flecsi/utils/mpi_legion_interoperability/task_ids.h"
 #include "flecsi/execution/legion_execution_policy.h"
+#include "flecsi/execution/task.h"
 
-using namespace flecsi;
+using execution_t = flecsi::execution_t<flecsi::legion_execution_policy_t>;
+using return_type_t = execution_t::return_type_t;
 
-void example_task(int beta,double alpha,element_t i,state_accessor_t<double> a, state_accessor_t<int> b)
-{
+enum TaskIDs{
+ TOP_LEVEL_TASK_ID         =0x00000100,
+ PRINT_TASK_ID             =0x00000300,
+ COMPUTE_SOMETHING_ID      =0x00000400,
+ INIT_FIELD_TASK_ID        =0x00000500,
+};
 
-}
+enum FieldIDs {
+  CELLS_ON_CELL,
+  EDGES_ON_CELL,
+  SOMETHING,
+};
 
-void example_task2(int beta,double alpha,bool what,state_accessor_t<double> a, state_accessor_t<int> b)
-{
+TEST(legion_with_mpi, simple) {
 
-}
-
-void example_task3(int beta)
-{
-
-}
-
-TEST(TaskWrapper, TaskWrapper2) {
-
-  /* Test Logic: See 'Google Test Macros' section below. */
-
-	using TW = TaskWrapper<true,false,0,true,legion_execution_policy_t,std::function<decltype(example_task)>>;
-
-	ASSERT_EQ(sizeof(TW::sArgT),sizeof(std::tuple<int,double>));
-
-	using TW2 = TaskWrapper<true,false,0,true,legion_execution_policy_t,std::function<decltype(example_task2)>>;
-
-	ASSERT_EQ(sizeof(TW2::sArgT),sizeof(std::tuple<int,double,bool>));
-
-	using TW3 = TaskWrapper<true,false,0,true,legion_execution_policy_t,std::function<decltype(example_task3)>>;
-
-	ASSERT_EQ(sizeof(TW3::sArgT),sizeof(std::tuple<int>));
+//   my_init_legion();
+  int i=0;
 
 } // TEST
-
-# if 0 /* Remove guards to create more tests */
-TEST(TaskWrapper, testname) {
-
-  /* Test Logic: See 'Google Test Macros' section below. */
-
-} // TEST
-
-TEST(TaskWrapper, testname) {
-
-  /* Test Logic: See 'Google Test Macros' section below. */
-
-} // TEST
-#endif // if 0
 
 /*----------------------------------------------------------------------------*
  * Cinch test Macros
@@ -65,7 +58,7 @@ TEST(TaskWrapper, testname) {
  *                                 compared using the macros below.
  *
  *    EXAMPLE:
- *      CINCH_CAPTURE() << "My value equals: " << myvalue << std::endl;
+ *      CINCH_CAPTURE() << "My value equals: " << myvalue << endl;
  *
  *  CINCH_COMPARE_BLESSED(file); : Compare captured output with
  *                                 contents of a blessed file.
@@ -79,6 +72,7 @@ TEST(TaskWrapper, testname) {
  *  ==== Fatal ====             ==== Non-Fatal ====
  *  ASSERT_TRUE(condition);     EXPECT_TRUE(condition)
  *  ASSERT_FALSE(condition);    EXPECT_FALSE(condition)
+ *
  *
  * Binary Comparison:
  *
@@ -99,7 +93,9 @@ TEST(TaskWrapper, testname) {
  *  ASSERT_STRCASENE(expected, actual); EXPECT_STRCASENE(expected, actual)
  *----------------------------------------------------------------------------*/
 
-/*~------------------------------------------------------------------------~--*
- * Formatting options for vim.
+/*~-------------------------------------------------------------------------~-*
+ * Formatting options
  * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~------------------------------------------------------------------------~--*/
+ *~-------------------------------------------------------------------------~-*/
+
+

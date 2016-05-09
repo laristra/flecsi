@@ -42,6 +42,24 @@ struct sagittarius_types {
   >;
 
   using bindings = std::tuple<>;
+
+  template<size_t M, size_t D>
+  static mesh_entity_base_t<num_domains>*
+  create_entity(mesh_topology_base_t* mesh, size_t num_vertices){
+    switch(M){
+      case 0:{
+        switch(D){
+          case 1:
+            return mesh->make<sagittarius_edge_t>(*mesh);
+          default:
+            assert(false && "invalid topological dimension");
+        }
+        break;
+      }
+      default:
+        assert(false && "invalid domain");
+    }
+  }
 };
 }
 #endif //FLECSI_SAGITTAIRUS_TYPES_H_H
