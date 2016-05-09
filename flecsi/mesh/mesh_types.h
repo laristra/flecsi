@@ -371,56 +371,6 @@ class connectivity_t
   } // init
 
   /*!
-    Initialize connectivity and create entities.
-    Used in build_connectivity() for creating edges/faces.
-
-    \tparam mesh type
-    \tparam domain
-    \tparam num domains
-    \param id vector to populate
-    \param entity vector to populate
-    \param input connection vector
-    \param topological dimension of entities created
-   */
-  template <class MT, size_t M, size_t D, size_t N>
-  void init_create(id_vector_t & iv, entity_vector_t<N> & ev,
-      const connection_vector_t & cv, mesh_topology_base_t & mesh)
-  {
-    clear();
-
-    // the first offset is always 0
-    from_index_vec_.push_back(0);
-
-    size_t n = cv.size();
-
-    size_t max_id = 0;
-
-    // cv is organized into groups of from entity to entity
-
-    for (size_t i = 0; i < n; ++i) {
-      const id_vector_t & iv = cv[i];
-
-      for (id_t id : iv) {
-        max_id = std::max(max_id, id.entity());
-        to_id_vec_.push_back(id);
-      } // for
-
-      from_index_vec_.push_back(to_id_vec_.size());
-    } // for
-
-    size_t start_id = ev.size();
-
-    ev.reserve(max_id + 1);
-
-    for (size_t local_id = start_id; local_id <= max_id; ++local_id) {
-      id_t global_id = id_t::make<M>(D, local_id);
-      ev.push_back(
-        mesh_entity_base_t<N>::template create_<MT, M, D>(global_id, mesh));
-      iv.push_back(global_id);
-    } // for
-  } // init_create
-
-  /*!
     Resize a connection.
 
     \param num_conns Number of connections for each group
@@ -644,6 +594,19 @@ public:
    */
   virtual connectivity_t & get_connectivity(
       size_t from_domain, size_t to_domain, size_t from_dim, size_t to_dim) = 0;
+
+  /*!
+    This method should be called to construct and entity rather than
+    calling the constructor directly. This way, the ability to have
+    extra initialization behavior is reserved.
+  */
+  template <class T, class... S>
+  T * make(S &&... args)
+  {
+    T * entity = new T(std::forward<S>(args)...);
+    return entity;
+  } // make
+
 
 }; // mesh_topology_base_t
 

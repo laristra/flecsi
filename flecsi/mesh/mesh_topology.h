@@ -846,21 +846,25 @@ class mesh_topology_t : public mesh_topology_base_t
           max_cell_entity_conns = 
             std::max(max_cell_entity_conns, conns.size());
 
+          id_t global_id = id_t::make<M>(D, entity_id);
+          
+          auto ent = MT::template create_entity<M, D>(this, m);
+          ent->ids_[M] = global_id;
+          
+          ms_.entities[M][D].push_back(ent);
+          ms_.id_vecs[M][D].push_back(global_id);
+
           // A new entity was added, so we advance the id counter.
           ++entity_id;
         } // if
       } // for
     } // for
 
-    // This call will create the entity objects in the mesh (The above
-    // logic only defines the indices and connectivity.)
-    cell_to_entity.init_create<MT, M, D>(
-        ms_.id_vecs[M][D], ms_.entities[M][D], cell_entity_conn, *this);
-
     // Set the connectivity information from the created entities to
     // the vertices.
     connectivity_t & entity_to_vertex = get_connectivity_(M, D, 0);
     entity_to_vertex.init(entity_vertex_conn);
+    cell_to_entity.init(cell_entity_conn);
   } // build_connectivity
 
   /*!
@@ -1194,6 +1198,14 @@ class mesh_topology_t : public mesh_topology_base_t
           }
         }
 
+        id_t global_id = id_t::make<TM>(TD, entity_id);
+        
+        auto ent = MT::template create_entity<TM, TD>(this, m);
+        ent->ids_[TM] = global_id;
+        
+        ms_.entities[TM][TD].push_back(ent);
+        ms_.id_vecs[TM][TD].push_back(global_id);
+
         ++entity_id;
 
         pos += m;
@@ -1202,14 +1214,7 @@ class mesh_topology_t : public mesh_topology_base_t
 
     // Reference to storage from cells to the entity (to be created here).
     connectivity_t & cell_out = get_connectivity_(FM, TM, MT::dimension, TD);
-
-    if (ms_.entities[TM][TD].empty()) {
-      // Create the entity objects
-      cell_out.init_create<MT, TM, TD>(
-          ms_.id_vecs[TM][TD], ms_.entities[TM][TD], cell_conn, *this);
-    } else {
-      cell_out.init(cell_conn);
-    }
+    cell_out.init(cell_conn);
 
   } // build_bindings
 
@@ -1358,18 +1363,7 @@ class mesh_topology_t : public mesh_topology_base_t
   } // get_connectivity
 
   size_t topological_dimension() const override { return MT::dimension; }
-  /*!
-    This method should be called to construct and entity rather than
-    calling the constructor directly. This way, the ability to have
-    extra initialization behavior is reserved.
-  */
-  template <class T, class... S>
-  T * make(S &&... args)
-  {
-    T * entity = new T(std::forward<S>(args)...);
-    return entity;
-  } // make
-
+  
   template <size_t M = 0>
   const entity_vector_t<MT::num_domains> & get_entities_(size_t dim) const
   {
