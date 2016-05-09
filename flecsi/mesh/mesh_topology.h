@@ -861,7 +861,7 @@ class mesh_topology_t : public mesh_topology_base_t
           id_t global_id = id_t::make<M>(D, entity_id);
           
           auto ent = MT::template create_entity<M, D>(this, m);
-          ent->ids_[M] = global_id;
+          ent->template set_global_id<M>( global_id );
           
           ms_.entities[M][D].push_back(ent);
           ms_.id_vecs[M][D].push_back(global_id);
@@ -1213,7 +1213,7 @@ class mesh_topology_t : public mesh_topology_base_t
         id_t global_id = id_t::make<TM>(TD, entity_id);
         
         auto ent = MT::template create_entity<TM, TD>(this, m);
-        ent->ids_[TM] = global_id;
+        ent->template set_global_id<TM>( global_id );
         
         ms_.entities[TM][TD].push_back(ent);
         ms_.id_vecs[TM][TD].push_back(global_id);
