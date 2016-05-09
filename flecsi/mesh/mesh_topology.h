@@ -92,6 +92,12 @@ class mesh_topology_t : public mesh_topology_base_t
       return *this;
     } // operator ++
 
+    iterator & operator--()
+    {
+      --index_;
+      return *this;
+    } // operator ++
+
     iterator & operator=(const iterator & itr)
     {
       index_ = itr.index_;
@@ -159,6 +165,12 @@ class mesh_topology_t : public mesh_topology_base_t
     const_iterator & operator++()
     {
       ++index_;
+      return *this;
+    } // operator ++
+
+    const_iterator & operator--()
+    {
+      --index_;
       return *this;
     } // operator ++
 
@@ -1500,6 +1512,31 @@ class mesh_topology_t : public mesh_topology_base_t
     return id_range(c.get_entities(), fv[e->template id<FM>()],
         fv[e->template id<FM>() + 1]);
   } // entities
+
+
+
+  /*!
+    Get the entities of topological dimension D connected to another entity
+    by specified connectivity from domain FM and to domain TM.
+  */
+  template <size_t D, size_t FM, size_t TM = FM, class E>
+  void reverse_entities(E * e)
+  {
+    auto & c = get_connectivity(FM, TM, E::dimension, D);
+    assert(!c.empty() && "empty connectivity");
+    c.reverse_entities( e->template id<FM>() );
+  } // entities
+
+  /*!
+    Get the entities of topological dimension D connected to another entity
+    by specified connectivity from domain FM and to domain TM.
+  */
+  template <size_t D, size_t FM = 0, size_t TM = FM, class E>
+  void reverse_entities(domain_entity<FM, E> & e)
+  {
+    return reverse_entities<D, FM, TM>(e.entity());
+  } // entities
+
 
   template<typename I>
   void compute_graph_partition(

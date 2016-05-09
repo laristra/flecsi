@@ -461,6 +461,18 @@ class connectivity_t
   }
 
   /*!
+    Get the entities of the specified from index and return the count.
+   */
+  void reverse_entities(size_t index)
+  {
+    assert(index < from_index_vec_.size() - 1);
+    auto start = from_index_vec_[index];
+    auto end = from_index_vec_[index + 1];
+    std::reverse( to_id_vec_.begin() + start, to_id_vec_.begin() + end );
+  }
+
+
+  /*!
     True if the connectivity is empty (hasn't been populated).
    */
   bool empty() const { return to_id_vec_.empty(); }
