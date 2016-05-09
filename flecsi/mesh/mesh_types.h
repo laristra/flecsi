@@ -126,17 +126,6 @@ class mesh_entity_base_t
     return dim > meshDim ? meshDim : dim;
   } // get_dim_
 
-  template <class MT, size_t M, size_t D>
-  static mesh_entity_base_t * create_(
-      size_t id, mesh_topology_base_t & mesh)
-  {
-    using entity_type =
-      typename find_entity_<MT, get_dim_(MT::dimension, D), M>::type;
-    auto entity = new entity_type(mesh);
-    entity->ids_[M] = id;
-    return entity;
-  }
-
   template <class MT>
   friend class mesh_topology_t;
 
