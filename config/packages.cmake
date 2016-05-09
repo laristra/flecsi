@@ -32,7 +32,8 @@ endif()
 
 set(FLECSI_RUNTIME_LIBRARIES)
 
-find_package (legion NO_MODULE)
+find_package (legion QUIET NO_MODULE)
+set (Legion_INSTALL_DIR "" CACHE PATH "Path to the Legion install directory")
 if (NOT Legion_INSTALL_DIR STREQUAL "")
   message(WARNING "Legion_INSTALL_DIR is obsolete, use CMAKE_PREFIX_PATH instead (and rebuild the latest version third-party libraries)")
   list(APPEND CMAKE_PREFIX_PATH "${Legion_INSTALL_DIR}")
