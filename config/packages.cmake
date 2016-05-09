@@ -148,6 +148,10 @@ if(ENABLE_PARTITION)
      list( APPEND PARTITION_LIBRARIES ${SCOTCH_LIBRARIES} )
      include_directories( ${SCOTCH_INCLUDE_DIRS} )
      add_definitions( -DHAVE_SCOTCH )
+     if(SCOTCH_VERSION MATCHES ^5)
+       #SCOTCH_VERSION from scotch.h is broken in scotch-5
+       add_definitions( -DHAVE_SCOTCH_V5 )
+     endif(SCOTCH_VERSION MATCHES ^5)
   endif()
 
   if ( NOT PARTITION_LIBRARIES )

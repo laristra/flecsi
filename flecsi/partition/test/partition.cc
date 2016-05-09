@@ -427,7 +427,6 @@ TEST_F(partition, metis) {
 
   check( cell_part.data(), vert_part.data() );
 
-
   ASSERT_TRUE(CINCH_EQUAL_BLESSED("metis.blessed"));
     
 } // TEST_F
@@ -525,7 +524,11 @@ TEST_F(partition, scotch) {
   check( cell_part.data(), vert_part.data() );
   
 
+#ifdef HAVE_SCOTCH_V5
+  ASSERT_TRUE(CINCH_EQUAL_BLESSED("scotch_v5.blessed"));
+#else 
   ASSERT_TRUE(CINCH_EQUAL_BLESSED("scotch.blessed"));
+#endif
   
     
 } // TEST_F

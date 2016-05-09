@@ -27,6 +27,7 @@ cinch_add_unit(partition
   SOURCES test/partition.cc
   INPUTS  test/metis_mesh.blessed 
           test/metis.blessed 
+          test/scotch_v5.blessed
           test/scotch.blessed
   LIBRARIES     ${PARTITION_LIBRARIES} flecsi
 )
