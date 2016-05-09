@@ -32,6 +32,12 @@ endif()
 
 set(FLECSI_RUNTIME_LIBRARIES)
 
+find_package (legion NO_MODULE)
+if (NOT Legion_INSTALL_DIR STREQUAL "")
+  message(WARNING "Legion_INSTALL_DIR is obsolete, use CMAKE_PREFIX_PATH instead (and rebuild the latest version third-party libraries)")
+  list(APPEND CMAKE_PREFIX_PATH "${Legion_INSTALL_DIR}")
+endif()
+
 # Serial interface
 if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
@@ -42,13 +48,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(FLECSI_RUNTIME_MAIN script-driver-legion.cc)
 
-  # Add legion setup here...
-  set (Legion_INSTALL_DIRS ${legion_DIR}  CACHE PATH
-    "Path to the Legion install directory")
-  set(CMAKE_PREFIX_PATH  ${CMAKE_PREFIX_PATH}
-     ${LEGION_INSTALL_DIRS})
- # set (legion_DIR ${LEGION_INSTALL_DIRS})
-  find_package (legion REQUIRED NO_MODULE)
   if(NOT legion_FOUND)
       message(FATAL_ERROR "Legion is required
                      for this build configuration")
@@ -67,12 +66,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
    set(FLECSI_RUNTIME_MAIN script-driver-mpilegion.cc)
 
-  # Add legion setup here...
-  set (Legion_INSTALL_DIRS ${legion_DIR}  CACHE PATH
-    "Path to the Legion install directory")
-  set(CMAKE_PREFIX_PATH  ${CMAKE_PREFIX_PATH}
-     ${LEGION_INSTALL_DIRS})
-  find_package (legion REQUIRED NO_MODULE)
   if(NOT legion_FOUND)
       message(FATAL_ERROR "Legion is required
                      for this build configuration")
