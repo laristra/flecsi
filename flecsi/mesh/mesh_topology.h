@@ -1196,12 +1196,14 @@ class mesh_topology_t : public mesh_topology_base_t
         conns.push_back(create_id);
 
         uint32_t dim_flags = 0;
+        size_t num_vertices = 0;
 
         for (size_t k = 0; k < m; ++k) {
           id_t global_id = entity_ids[pos + k];
-
-          get_connectivity_<TM, FM, TD>(global_id.dimension()).push(global_id);
-          dim_flags |= 1U << global_id.dimension();
+          size_t dim = global_id.dimension();
+          get_connectivity_<TM, FM, TD>(dim).push(global_id);
+          dim_flags |= 1U << dim;
+          num_vertices += dim == 0 ? 1 : 0;
         }
 
         for (size_t i = 0; i < MT::dimension; ++i) {
@@ -1212,7 +1214,7 @@ class mesh_topology_t : public mesh_topology_base_t
 
         id_t global_id = id_t::make<TM>(TD, entity_id);
         
-        auto ent = MT::template create_entity<TM, TD>(this, m);
+        auto ent = MT::template create_entity<TM, TD>(this, num_vertices);
         ent->template set_global_id<TM>( global_id );
         
         ms_.entities[TM][TD].push_back(ent);
