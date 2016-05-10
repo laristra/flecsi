@@ -91,8 +91,16 @@ TEST_F(metis_partition_mesh_dual, vertices_are_partitioned_into_partition_0_or_1
 
 TEST_F(metis_partition_mesh_dual, there_are_5_vertices_in_each_partition) {
   auto count0 = std::count_if(npart.begin(), npart.end(), [](auto part) {return part == 0;});
+#if IDXTYPEWIDTH == 64
+  ASSERT_THAT(count0, Eq(6));
+#else
   ASSERT_THAT(count0, Eq(5));
+#endif
 
   auto count1 = std::count_if(npart.begin(), npart.end(), [](auto part) {return part == 1;});
+#if IDXTYPEWIDTH == 64
+  ASSERT_THAT(count1, Eq(4));
+#else
   ASSERT_THAT(count1, Eq(5));
+#endif
 }
