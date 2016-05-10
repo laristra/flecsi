@@ -33,6 +33,7 @@ before_install:
      cd -;
    fi
  - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi 
+ - if [[ ${WERROR} ]]; then export CXXFLAGS="-Werror"; fi
 
 env:
   global:
@@ -42,7 +43,9 @@ env:
     - MININAL=ON MPI=OFF RUNTIME=serial
 #    - GVER=4.9 MPI=ON (issue #47)
     - MPI=OFF TPL=ON RUNTIME=legion
+    - MPI=OFF TPL=ON RUNTIME=legion WERROR=yes
     - MPI=ON RUNTIME=serial
+    - MPI=ON RUNTIME=serial WERROR=yes
     - MPI=ON COVERAGE=ON RUNTIME=serial
 
 script:
