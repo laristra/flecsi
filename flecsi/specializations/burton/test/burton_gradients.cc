@@ -271,6 +271,7 @@ TEST_F(Burton, vertex_gradient) {
 
   // write the mesh
   std::string name("vertex_gradient.exo");
+  remove(name.c_str());
   ASSERT_FALSE(write_mesh(name, b));
 }
 
@@ -367,6 +368,7 @@ TEST_F(Burton, cell_gradient) {
 
   // write the mesh
   std::string name("cell_gradient.exo");
+  remove(name.c_str());
   ASSERT_FALSE(write_mesh(name, b));
 
 }
