@@ -63,7 +63,8 @@ TEST(legion, register_task) {
 //} // TEST
 
 TEST(driver, execute) {
-	char* argv = "shit";
+	char dummy[] = "shit";
+	char *argv = &(dummy[0]);
 	flecsi::execution_t<flecsi::legion_execution_policy_t>::execute_driver(flecsi::top_level_task,1,&argv);
 } // TEST
 
