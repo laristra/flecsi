@@ -595,7 +595,7 @@ public:
    */
   size_t num_wedges() const
   {
-    return mesh_.num_entities<dimension(), 1>();
+    return mesh_.num_entities<1, 1>();
   } // num_wedges
 
   /*!
@@ -606,7 +606,7 @@ public:
    */
   auto wedges()
   {
-    return mesh_.entities<dimension(), 1>();
+    return mesh_.entities<1, 1>();
   } // wedges
 
   /*!
@@ -621,7 +621,7 @@ public:
   template <class E>
   auto wedges(E * e)
   {
-    return mesh_.entities<dimension(), 1>(e);
+    return mesh_.entities<1, 1>(e);
   } // wedges
 
   /*!
@@ -636,7 +636,7 @@ public:
    */
   template<size_t M, class E>
   auto wedges(domain_entity<M, E> & e) {
-    return mesh_.entities<dimension(), M, 1>(e.entity());
+    return mesh_.entities<1, M, 1>(e.entity());
   }
 
   /*!
@@ -646,7 +646,7 @@ public:
    */
   auto wedge_ids()
   {
-    return mesh_.entity_ids<dimension(), 1>();
+    return mesh_.entity_ids<1, 1>();
   } // wedge_ids
 
   /*!
@@ -662,7 +662,7 @@ public:
   template <class E>
   auto wedge_ids(E * e)
   {
-    return mesh_.entity_ids<dimension(), 1>(e);
+    return mesh_.entity_ids<1, 1>(e);
   } // wedge_ids
 
   /*--------------------------------------------------------------------------*
@@ -676,7 +676,7 @@ public:
    */
   size_t num_corners() const
   {
-    return mesh_.num_entities<1, 1>();
+    return mesh_.num_entities<0, 1>();
   } // num_corners
 
   /*!
@@ -687,7 +687,7 @@ public:
    */
   auto corners()
   {
-    return mesh_.entities<1, 1>();
+    return mesh_.entities<0, 1>();
   } // corners
 
   /*!
@@ -702,7 +702,7 @@ public:
   template <class E>
   auto corners(E * e)
   {
-    return mesh_.entities<1, 1>(e);
+    return mesh_.entities<0, 1>(e);
   } // corners
 
   /*!
@@ -717,7 +717,7 @@ public:
    */
   template<size_t M, class E>
   auto corners(domain_entity<M, E> & e) {
-    return mesh_.entities<1, M, 1>(e.entity());
+    return mesh_.entities<0, M, 1>(e.entity());
   }
 
   /*!
@@ -727,7 +727,7 @@ public:
    */
   auto corner_ids()
   {
-    return mesh_.entity_ids<1, 1>();
+    return mesh_.entity_ids<0, 1>();
   } // corner_ids
 
   /*!
@@ -743,7 +743,7 @@ public:
   template <class E>
   auto corner_ids(E * e)
   {
-    return mesh_.entity_ids<1, 1>(e);
+    return mesh_.entity_ids<0, 1>(e);
   } // corner_ids
 
   //

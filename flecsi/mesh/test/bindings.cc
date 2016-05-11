@@ -59,10 +59,12 @@ public:
                         size_t create_dim,
                         flecsi::id_t **ent_ids,
                         size_t * ent_counts,
+                        flecsi::id_t **dom_ids,
+                        size_t * dom_counts,
                         flecsi::id_t *c) {
     
     switch(create_dim) {
-      case 1:
+      case 0:
         c[0] = ent_ids[0][0];
         c[1] = ent_ids[1][0];
         c[2] = ent_ids[1][2];
@@ -80,7 +82,7 @@ public:
         c[11] = ent_ids[1][1];
 
         return {3, 3, 3, 3};
-      case 2:
+      case 1:
         c[0] = ent_ids[0][0];
         c[1] = ent_ids[1][2];
 
@@ -98,14 +100,14 @@ public:
   }
 };
 
-class Corner : public mesh_entity_t<1, 2>{
+class Corner : public mesh_entity_t<0, 2>{
 public:
   Corner(){}
 
   Corner(mesh_topology_base_t &){}
 };
 
-class Wedge : public mesh_entity_t<2, 2>{
+class Wedge : public mesh_entity_t<1, 2>{
 public:
   Wedge(){}
 
@@ -163,9 +165,9 @@ public:
       }
       case 1:{
         switch(D){
-          case 1:
+          case 0:
             return mesh->make<Corner>();
-          case 2:
+          case 1:
             return mesh->make<Wedge>();
           default:
             assert(false);
@@ -223,26 +225,26 @@ TEST(mesh_topology, traversal) {
 
   for(auto cell : mesh->entities<2>()) {
     CINCH_CAPTURE() << "------- cell id: " << cell.id() << endl;
-    for(auto corner : mesh->entities<1, 0, 1>(cell)) {
+    for(auto corner : mesh->entities<0, 0, 1>(cell)) {
       CINCH_CAPTURE() << "--- corner id: " << corner.id() << endl;
     }
   }
 
   for(auto vertex : mesh->entities<0>()) {
     CINCH_CAPTURE() << "------- vertex id: " << vertex.id() << endl;
-    for(auto corner : mesh->entities<1, 0, 1>(vertex)) {
+    for(auto corner : mesh->entities<0, 0, 1>(vertex)) {
       CINCH_CAPTURE() << "--- corner id: " << corner.id() << endl;
     }
   }
 
-  for(auto corner : mesh->entities<1, 1>()) {
+  for(auto corner : mesh->entities<0, 1>()) {
     CINCH_CAPTURE() << "------- corner id: " << corner.id() << endl;
     for(auto cell : mesh->entities<2, 1, 0>(corner)) {
       CINCH_CAPTURE() << "--- cell id: " << cell.id() << endl;
     }
   }
 
-  for(auto corner : mesh->entities<1, 1>()) {
+  for(auto corner : mesh->entities<0, 1>()) {
     CINCH_CAPTURE() << "------- corner id: " << corner.id() << endl;
     for(auto edge : mesh->entities<1, 1, 0>(corner)) {
       CINCH_CAPTURE() << "--- edge id: " << edge.id() << endl;
@@ -251,12 +253,12 @@ TEST(mesh_topology, traversal) {
 
   for(auto edge : mesh->entities<1>()) {
     CINCH_CAPTURE() << "------- edge id: " << edge.id() << endl;
-    for(auto corner : mesh->entities<1, 0, 1>(edge)) {
+    for(auto corner : mesh->entities<0, 0, 1>(edge)) {
       CINCH_CAPTURE() << "--- corner id: " << corner.id() << endl;
     }
   }
 
-  for(auto corner : mesh->entities<1, 1>()) {
+  for(auto corner : mesh->entities<0, 1>()) {
     CINCH_CAPTURE() << "------- corner id: " << corner.id() << endl;
     for(auto vertex : mesh->entities<0, 1, 0>(corner)) {
       CINCH_CAPTURE() << "--- vertex id: " << vertex.id() << endl;
@@ -265,40 +267,40 @@ TEST(mesh_topology, traversal) {
 
   for(auto cell : mesh->entities<2>()) {
     CINCH_CAPTURE() << "------- cell id: " << cell.id() << endl;
-    for(auto wedge : mesh->entities<2, 0, 1>(cell)) {
+    for(auto wedge : mesh->entities<1, 0, 1>(cell)) {
       CINCH_CAPTURE() << "--- wedge id: " << wedge.id() << endl;
     }
   }
 
   for(auto edge : mesh->entities<1>()) {
     CINCH_CAPTURE() << "------- edge id: " << edge.id() << endl;
-    for(auto wedge : mesh->entities<2, 0, 1>(edge)) {
+    for(auto wedge : mesh->entities<1, 0, 1>(edge)) {
       CINCH_CAPTURE() << "--- wedge id: " << wedge.id() << endl;
     }
   }
 
   for(auto vertex : mesh->entities<0>()) {
     CINCH_CAPTURE() << "------- vertex id: " << vertex.id() << endl;
-    for(auto wedge : mesh->entities<2, 0, 1>(vertex)) {
+    for(auto wedge : mesh->entities<1, 0, 1>(vertex)) {
       CINCH_CAPTURE() << "--- wedge id: " << wedge.id() << endl;
     }
   }
 
-  for(auto wedge : mesh->entities<2, 1>()) {
+  for(auto wedge : mesh->entities<1, 1>()) {
     CINCH_CAPTURE() << "------- wedge id: " << wedge.id() << endl;
     for(auto cell : mesh->entities<2, 1, 0>(wedge)) {
       CINCH_CAPTURE() << "--- cell id: " << cell.id() << endl;
     }
   }
 
-  for(auto wedge : mesh->entities<2, 1>()) {
+  for(auto wedge : mesh->entities<1, 1>()) {
     CINCH_CAPTURE() << "------- wedge id: " << wedge.id() << endl;
     for(auto edge : mesh->entities<1, 1, 0>(wedge)) {
       CINCH_CAPTURE() << "--- edge id: " << edge.id() << endl;
     }
   }
 
-  for(auto wedge : mesh->entities<2, 1>()) {
+  for(auto wedge : mesh->entities<1, 1>()) {
     CINCH_CAPTURE() << "------- wedge id: " << wedge.id() << endl;
     for(auto vertex : mesh->entities<0, 1, 0>(wedge)) {
       CINCH_CAPTURE() << "--- vertex id: " << vertex.id() << endl;

@@ -99,17 +99,18 @@ struct burton_mesh_types_t {
   //! Bindings are adjacencies of entities across two domains.
   using bindings =
       std::tuple<
+        std::tuple<domain_<0>, domain_<1>, cell_t, corner_t>,
+        std::tuple<domain_<0>, domain_<1>, edge_t, corner_t>,
+        std::tuple<domain_<0>, domain_<1>, vertex_t, corner_t>,
         std::tuple<domain_<0>, domain_<1>, cell_t, wedge_t>,
         std::tuple<domain_<0>, domain_<1>, edge_t, wedge_t>,
         std::tuple<domain_<0>, domain_<1>, vertex_t, wedge_t>,
-        std::tuple<domain_<0>, domain_<1>, cell_t, corner_t>,
-        std::tuple<domain_<0>, domain_<1>, vertex_t, corner_t>,
-        std::tuple<domain_<1>, domain_<0>, wedge_t, cell_t>,
-        std::tuple<domain_<1>, domain_<0>, wedge_t, edge_t>,
-        std::tuple<domain_<1>, domain_<0>, wedge_t, vertex_t>,
         std::tuple<domain_<1>, domain_<0>, corner_t, cell_t>,
         std::tuple<domain_<1>, domain_<0>, corner_t, edge_t>,
-        std::tuple<domain_<1>, domain_<0>, corner_t, vertex_t>
+        std::tuple<domain_<1>, domain_<0>, corner_t, vertex_t>,
+        std::tuple<domain_<1>, domain_<0>, wedge_t, cell_t>,
+        std::tuple<domain_<1>, domain_<0>, wedge_t, edge_t>,
+        std::tuple<domain_<1>, domain_<0>, wedge_t, vertex_t>
       >;
   // clang-format on
 
@@ -128,9 +129,9 @@ struct burton_mesh_types_t {
       }
       case 1:{
         switch(D){
-          case 1:
+          case 0:
             return mesh->make<burton_corner_t>(*mesh);
-          case 2:
+          case 1:
             return mesh->make<burton_wedge_t>(*mesh);
           default:
             assert(false && "invalid topological dimension");
