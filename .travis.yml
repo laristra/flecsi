@@ -44,9 +44,12 @@ env:
 #    - GVER=4.9 MPI=ON (issue #47)
     - MPI=OFF TPL=ON RUNTIME=legion
     - MPI=OFF TPL=ON RUNTIME=legion WERROR=yes
-    - MPI=ON RUNTIME=serial
-    - MPI=ON RUNTIME=serial WERROR=yes
-    - MPI=ON COVERAGE=ON RUNTIME=serial
+    - MPI=ON TPL=ON RUNTIME=mpilegion
+    - MPI=ON TPL=ON RUNTIME=mpilegion WERROR=yes
+    - MPI=ON RUNTIME=mpi
+    - MPI=ON RUNTIME=mpi WERROR=yes
+    - MPI=OFF RUNTIME=serial WERROR=yes
+    - MPI=OFF COVERAGE=ON RUNTIME=serial
 
 script:
   - mkdir build && cd build &&
