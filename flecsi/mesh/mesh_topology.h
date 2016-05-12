@@ -21,6 +21,40 @@
   \date Initial file creation: Sep 23, 2015
  */
 
+/*
+
+ Description of major features and terms specific to FleCSI:
+
+ mesh dimension MD - e.g: MD = 2 for a 2d mesh. We currently support 2d and 3d
+   meshes.
+
+ topological dimension D - the dimensionality associated with entities, 
+   e.g: D = 0 is interpreted as a vertex, D = 1 an edge or face for MD = 2, 
+   D = 2 is a cell for MD = 2 
+
+ domain M - a sub-mesh or mesh space that holds entities of various topological
+   dimension
+
+ connectivity - a directed connection or adjancy between entities of differing 
+   topological dimension in the same domain. e.g: D1 -> D2 (edges -> faces)
+   for MD = 3
+
+ binding - a type of connectivity that connects entities of potentially 
+   differing topological dimension across two different domains
+
+ entity - an object associated with a topological dimension, e.g: cell. Each
+   entity has an associated integer id.
+
+ mesh topology - the top-level container for domains, entities,
+   and connectivities, referred to as the low-level interface
+
+ mesh policy - the top-level class that a specialization creates to 
+   parameterize the mesh policy to define such things as: mesh dimension,
+   number of domains, connectivity and binding pairs of interest, and entity
+   classes/types per each domain/topological dimension.  
+
+*/
+
 #include <algorithm>
 #include <iostream>
 #include <array>
