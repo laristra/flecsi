@@ -37,7 +37,8 @@
 
  connectivity - a directed connection or adjancy between entities of differing 
    topological dimension in the same domain. e.g: D1 -> D2 (edges -> faces)
-   for MD = 3
+   for MD = 3. Cell to vertex connectivity is supplied by the user and all
+   other connectivies are computed by the topology.
 
  binding - a type of connectivity that connects entities of potentially 
    differing topological dimension across two different domains
@@ -49,9 +50,13 @@
    and connectivities, referred to as the low-level interface
 
  mesh policy - the top-level class that a specialization creates to 
-   parameterize the mesh policy to define such things as: mesh dimension,
+   parameterize the mesh topology to define such things as: mesh dimension,
    number of domains, connectivity and binding pairs of interest, and entity
-   classes/types per each domain/topological dimension.  
+   classes/types per each domain/topological dimension.
+
+ entity set - contains an iterable set of entities. Support set operations such
+   as intersection, union, etc. and functional operations like apply, map,
+   reduce, etc. to apply a custom function to the set.  
 
 */
 
