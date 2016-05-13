@@ -100,7 +100,7 @@ message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with 2^${
 #------------------------------------------------------------------------------#
 
 find_package(EXODUSII)
-find_package(netCDF)
+find_package(netCDF QUIET)
 option(ENABLE_IO "Enable I/O (uses libexodus)" ${EXODUSII_FOUND})
 if(ENABLE_IO)
   if(EXODUSII_FOUND)
