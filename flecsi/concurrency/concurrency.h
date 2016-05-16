@@ -30,10 +30,10 @@
 
 namespace flecsi
 {
-
   class virtual_semaphore{
   public:
-    
+    using lock_t = std::unique_lock<std::mutex>;
+
     virtual_semaphore(int count=0)
     : count_(count),
     max_count_(0){
@@ -53,14 +53,13 @@ namespace flecsi
         return false;
       }
 
-      lock_.lock();
+      lock_t lock(mutex_);
       
       while(count_ <= 0){
-        cond_.wait(lock_);
+        cond_.wait(lock);
       }
       
       --count_;
-      lock_.unlock();
       
       return true;
     }
@@ -70,27 +69,24 @@ namespace flecsi
         return false;
       }
 
-      lock_.lock();
+      lock_t lock(mutex_);
 
       if(count_ > 0){
         --count_;
-        lock_.unlock();
         return true;
       }
 
-      lock_.unlock();
       return false;
     }
     
     void release(){
-      lock_.lock();
+      lock_t lock(mutex_);
 
       if(max_count_ == 0 || count_ < max_count_){
         ++count_;
       }
 
       cond_.notify_one();
-      lock_.unlock();
     }
 
     void interrupt(){
@@ -103,7 +99,7 @@ namespace flecsi
     virtual_semaphore(const virtual_semaphore&) = delete;
 
   private:
-    std::unique_lock<std::mutex> lock_;
+    std::mutex mutex_;
     std::condition_variable cond_;
 
     int count_;
@@ -149,13 +145,12 @@ namespace flecsi
     }
 
     void join(){
+      done_ = true;
+      sem_.interrupt();
+
       for(auto t : threads_){
         t->join();
       }
-    }
-
-    void stop(){
-      done_ = true;
     }
 
   private:
@@ -165,7 +160,7 @@ namespace flecsi
     virtual_semaphore sem_;
     std::atomic_bool done_;    
   };
-
+  
 } // namespace flecsi
 
 #endif // flecsi_concurrency_h
