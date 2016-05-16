@@ -109,7 +109,7 @@ namespace flecsi
 
   class thread_pool{
   public:
-    using function_type = std::function<void(void)>;
+    using function_type = std::function<void(void*)>;
 
     thread_pool(){
       done_ = false;
@@ -125,16 +125,16 @@ namespace flecsi
           return;
         }
 
-        auto f = queue_.front();
+        auto item = queue_.front();
         queue_.pop_front();
         mutex_.unlock();
-        f();
+        item.f(item.args);
       }
     }
 
-    void queue(function_type f){
+    void queue(function_type f, void* args = nullptr){
       mutex_.lock();
-      queue_.emplace_back(f);
+      queue_.emplace_back(item(f, args));
       mutex_.unlock();
       sem_.release();
     }
@@ -154,13 +154,22 @@ namespace flecsi
     }
 
   private:
+    struct item{
+      item(function_type f, void* args)
+      : f(f),
+      args(args){}
+
+      function_type f;
+      void* args;
+    };
+
     std::mutex mutex_;
-    std::deque<function_type> queue_;
+    std::deque<item> queue_;
     std::vector<std::thread*> threads_;
     virtual_semaphore sem_;
     std::atomic_bool done_;    
   };
-  
+
 } // namespace flecsi
 
 #endif // flecsi_concurrency_h
