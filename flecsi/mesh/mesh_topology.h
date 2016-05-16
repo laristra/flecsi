@@ -21,6 +21,45 @@
   \date Initial file creation: Sep 23, 2015
  */
 
+/*
+
+ Description of major features and terms specific to FleCSI:
+
+ mesh dimension MD - e.g: MD = 2 for a 2d mesh. We currently support 2d and 3d
+   meshes.
+
+ topological dimension D - the dimensionality associated with entities, 
+   e.g: D = 0 is interpreted as a vertex, D = 1 an edge or face for MD = 2, 
+   D = 2 is a cell for MD = 2 
+
+ domain M - a sub-mesh or mesh space that holds entities of various topological
+   dimension
+
+ connectivity - a directed connection or adjancy between entities of differing 
+   topological dimension in the same domain. e.g: D1 -> D2 (edges -> faces)
+   for MD = 3. Cell to vertex connectivity is supplied by the user and all
+   other connectivies are computed by the topology.
+
+ binding - a type of connectivity that connects entities of potentially 
+   differing topological dimension across two different domains
+
+ entity - an object associated with a topological dimension, e.g: cell. Each
+   entity has an associated integer id.
+
+ mesh topology - the top-level container for domains, entities,
+   and connectivities, referred to as the low-level interface
+
+ mesh policy - the top-level class that a specialization creates to 
+   parameterize the mesh topology to define such things as: mesh dimension,
+   number of domains, connectivity and binding pairs of interest, and entity
+   classes/types per each domain/topological dimension.
+
+ entity set - contains an iterable set of entities. Support set operations such
+   as intersection, union, etc. and functional operations like apply, map,
+   reduce, etc. to apply a custom function to the set.  
+
+*/
+
 #include <algorithm>
 #include <iostream>
 #include <array>
@@ -1091,34 +1130,86 @@ class mesh_topology_t : public mesh_topology_base_t
     } // if
   } // compute_connectivity
 
-  template <size_t FM, size_t TM, size_t FD, size_t TD>
-  void compute_bindings()
+  /*!
+    if the to-dimension is larger than the from-dimension, build the bindings 
+    using the create_bound_entities functionality
+  */
+  template <
+    size_t FM, size_t TM, size_t FD, size_t TD,
+    typename std::enable_if< (FM < TM) >::type* = nullptr
+  >
+  void _compute_bindings()
   {
-    connectivity_t & out_conn = get_connectivity_(FM, TM, FD, TD);
 
-    if (!out_conn.empty()) {
-      return;
-    } // if
+    // if the connectivity for a transpose exists, do it
+    if( !get_connectivity_(TM, FM, TD, FD).empty() )
+      transpose<FM, TM, FD, TD>();
 
-    if (FD <= TD) {
-      connectivity_t & trans_conn = get_connectivity_(TM, FM, TD, FD);
-      if(!trans_conn.empty() && 
-         !ms_.entities[FD].empty() &&
-         !ms_.entities[TD].empty()){
-        transpose<FM, TM, FD, TD>();
-        return;        
-      }
-    }
-
-    if (FD == TD) {
-      connectivity_t & out_conn = get_connectivity_(FM, TM, FD, TD);
-    }
-
-    if (ms_.entities[TM][TD].empty()) {
+    // otherwise try building the connectivity directly
+    else if (num_entities_(TD, TM) == 0)
       build_bindings<FM, TM, TD>();
-    }
 
   } // compute_bindings
+
+
+  /*!
+    if the from-dimension is larger than the to-dimension, we want
+    to transpose.  So make sure the opposite connectivity exists first
+  */
+  template <
+    size_t FM, size_t TM, size_t FD, size_t TD,
+    typename = typename std::enable_if< (FM > TM) >::type
+  >
+  void _compute_bindings()
+  {
+
+    // build the opposite connectivity first
+    _compute_bindings< TM, FM, TD, FD>();
+
+    // now apply a transpose to get the requested connectivity
+    transpose<FM, TM, FD, TD>();
+
+  } // compute_bindings
+
+  /*!
+    in the odd case the from-dimension matches the to-dimension, try and 
+    build the connectivity between the two
+  */
+  template < size_t FM, size_t TM, size_t FD, size_t TD >
+  typename std::enable_if< (FM == TM) >::type
+  _compute_bindings()
+  {
+
+    // compute connectivities through shared vertices at the at the lowest
+    // dimension ( doesn't matter which one really )
+    _compute_bindings<0, TM, 0, FD>();
+    _compute_bindings<0, TM, 0, TD>();
+    
+    // now try and transpose it
+    auto & trans_conn = get_connectivity_(TM, FM, TD, FD);
+    if( !trans_conn.empty() )
+      transpose<FM, TM, FD, TD>();
+
+  } // compute_bindings
+
+
+  /*!
+    Main driver for computing bindings
+  */
+  template < size_t FM, size_t TM, size_t FD, size_t TD >
+  void compute_bindings() 
+  {
+    // std::cerr << "compute: , dom " << FM << " -> " << TM 
+    //           <<  ", dim " << FD << " -> " << TD << std::endl;
+
+    // check if requested connectivity is already there, nothing to do
+    connectivity_t & out_conn = get_connectivity_(FM, TM, FD, TD);
+    
+    if (!out_conn.empty()) return;
+    
+    _compute_bindings< FM, TM, FD, TD >();
+
+  }
 
   /*!
     Build bindings associated with a from/to domain and topological dimension.
@@ -1128,6 +1219,10 @@ class mesh_topology_t : public mesh_topology_base_t
   template <size_t FM, size_t TM, size_t TD>
   void build_bindings()
   {
+
+    // std::cerr << "build bindings: dom " << FM << " -> " << TM 
+    //           << " dim " << TD << std::endl;
+
     // Sanity check
     static_assert(TD <= MT::dimension, "invalid dimension");
 
@@ -1148,9 +1243,15 @@ class mesh_topology_t : public mesh_topology_base_t
     for (size_t i = 0; i < MT::dimension; ++i) {
       get_connectivity_<TM, FM, TD>(i).init();
     }
+    for (size_t i = 0; i < TD; ++i) {
+      get_connectivity_(TM, TM, TD, i).init();
+    }
 
     std::array<id_t *, MT::dimension> primal_ids;
     std::array<size_t, MT::dimension> num_primal_ids;
+
+    std::array<id_t *, MT::dimension> domain_ids;
+    std::array<size_t, MT::dimension> num_domain_ids;
 
     // This buffer should be large enough to hold all entities
     // that potentially need to be created
@@ -1171,12 +1272,25 @@ class mesh_topology_t : public mesh_topology_base_t
         primal_ids[dim] = c.get_entities( cell_id.entity(), num_primal_ids[dim] );
       } // for
 
+      for (size_t dim = 0; dim < TD; ++dim) {
+        auto & c = get_connectivity_<FM, TM, MT::dimension>(dim);
+        if ( !c.empty() )
+          domain_ids[dim] = c.get_entities( cell_id.entity(), num_domain_ids[dim] );
+        else {
+          num_domain_ids[dim] = 0;
+          domain_ids[dim] = nullptr;
+        }
+        
+      } // for
+
       // p.first:   The number of entities per cell.
       // p.second:  A std::vector of id_t containing the ids of the
       //            entities that define the bound entity.
 
       auto sv = cell->create_bound_entities(
-        FM, TM, TD, primal_ids.data(), num_primal_ids.data(), entity_ids.data() );
+        FM, TM, TD, primal_ids.data(), num_primal_ids.data(), 
+        domain_ids.data(), num_domain_ids.data(), 
+        entity_ids.data() );
 
       size_t n = sv.size();
 
@@ -1196,19 +1310,32 @@ class mesh_topology_t : public mesh_topology_base_t
         conns.push_back(create_id);
 
         uint32_t dim_flags = 0;
+        uint32_t dom_flags = 0;
         size_t num_vertices = 0;
+
 
         for (size_t k = 0; k < m; ++k) {
           id_t global_id = entity_ids[pos + k];
-          size_t dim = global_id.dimension();
-          get_connectivity_<TM, FM, TD>(dim).push(global_id);
-          dim_flags |= 1U << dim;
-          num_vertices += dim == 0 ? 1 : 0;
+          auto dim = global_id.dimension();
+          auto dom = global_id.domain();
+          get_connectivity_(TM, dom, TD, dim).push(global_id);
+          if ( dom == FM ) {
+            dim_flags |= 1U << dim;
+            num_vertices += dim == 0 ? 1 : 0;
+          }
+          else 
+            dom_flags |= 1U << dim;
         }
 
         for (size_t i = 0; i < MT::dimension; ++i) {
           if (dim_flags & (1U << i)) {
             get_connectivity_<TM, FM, TD>(i).end_from();
+          }
+        }
+
+        for (size_t i = 0; i < TD; ++i) {
+          if (dom_flags & (1U << i)) {
+            get_connectivity_(TM, TM, TD, i).end_from();
           }
         }
 
