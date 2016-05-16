@@ -21,11 +21,14 @@
 #include <algorithm>
 #include <functional>
 #include <thread>
+#include <mutex>
+#include <atomic>
+#include <condition_variable>
 
 /*!
  * \file concurrency.h
  * \authors nickm
- * \date Initial file creation: Oct 09, 2015
+ * \date Initial file creation: May 12, 2016
  */
 
 namespace flecsi
@@ -104,7 +107,7 @@ namespace flecsi
 
     int count_;
     int max_count_;
-    atomic_bool done_;
+    std::atomic_bool done_;
   };
 
   class thread_pool{
@@ -140,7 +143,7 @@ namespace flecsi
     }
 
     void start(){
-      auto t = new thread(&thread_pool::run_, this);
+      auto t = new std::thread(&thread_pool::run_, this);
       threads_.push_back(t);
     }
 

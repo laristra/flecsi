@@ -28,6 +28,7 @@
 #include <functional>
 
 #include "flecsi/geometry/point.h"
+#include "flecsi/concurrency/concurrency.h"
 
 #define np(X)                                                             \
  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
@@ -888,7 +889,7 @@ public:
 
     size_t depth = -std::log2(radius);
     assert(depth <= branch_id_t::max_depth);
-
+    
     element_t size = std::pow(element_t(2), -element_t(depth));
 
     branch_id_t bid(center);
@@ -903,6 +904,40 @@ public:
     };
 
     find_(b, size, f, geometry_t::intersects, center, radius);
+
+    return entity_set_t(*this, std::move(entity_ids), false);
+  }
+
+  entity_set_t find_in_radius(thread_pool& pool,
+                              size_t to_queue,
+                              const point_t& center,
+                              element_t radius){
+    
+    // find the lowest level branch which is guaranteed
+    // to contain the point with radius
+
+    size_t queue_depth = std::log2(to_queue)/std::pow(2, P::dimension);
+
+    size_t depth = -std::log2(radius);
+    assert(depth <= branch_id_t::max_depth);
+
+    queue_depth += depth;
+    
+    element_t size = std::pow(element_t(2), -element_t(depth));
+
+    branch_id_t bid(center);
+    branch_t* b = find_parent(bid, depth);
+
+    entity_id_vector_t entity_ids;
+
+    auto f = [&](entity_t* ent, const point_t& center, element_t radius){
+      if(geometry_t::within(ent->coordinates(), center, radius)){
+        entity_ids.push_back(ent->id());
+      }
+    };
+
+    find_(pool, queue_depth, depth, b, size, f,
+      geometry_t::intersects, center, radius);
 
     return entity_set_t(*this, std::move(entity_ids), false);
   }
@@ -932,6 +967,38 @@ public:
     find_(b, size, f, geometry_t::intersects, center, radius);
   }
 
+  template<typename EF, typename... ARGS>
+  void apply_in_radius(thread_pool& pool,
+                       size_t to_queue,
+                       const point_t& center,
+                       element_t radius,
+                       EF&& ef,
+                       ARGS&&... args){
+
+    size_t queue_depth = std::log2(to_queue)/std::pow(2, P::dimension);
+
+    // find the lowest level branch which is guaranteed
+    // to contain the point with radius
+
+    size_t depth = -std::log2(radius);
+    assert(depth <= branch_id_t::max_depth);
+
+    queue_depth += depth;
+
+    element_t size = std::pow(element_t(2), -element_t(depth));
+
+    branch_id_t bid(center);
+    branch_t* b = find_parent(bid, depth);
+
+    auto f = [&](entity_t* ent, const point_t& center, element_t radius){
+      if(geometry_t::within(ent->coordinates(), center, radius)){
+        ef(ent, std::forward<ARGS>(args)...);
+      }
+    };
+
+    find_(pool, queue_depth, depth, b, size, f, geometry_t::intersects, center, radius);
+  }
+
   template<typename EF, typename BF, typename... ARGS>
   void find_(branch_t* b,
              element_t size,
@@ -946,6 +1013,44 @@ public:
         find_(ci, size/element_t(2),
               std::forward<EF>(ef), std::forward<BF>(bf),
               std::forward<ARGS>(args)...);
+      }
+      else{
+        for(auto ent : *b){
+          ef(ent, std::forward<ARGS>(args)...);
+        }
+        return;        
+      }
+    }
+  }
+
+  template<typename EF, typename BF, typename... ARGS>
+  void find_(thread_pool& pool,
+             size_t queue_depth,
+             size_t depth,
+             branch_t* b,
+             element_t size,
+             EF&& ef,
+             BF&& bf,
+             ARGS&&... args){
+    
+    for(size_t i = 0; i < branch_t::num_children; ++i){
+      branch_t* ci = static_cast<branch_t*>(b->child(i));
+
+      if(ci && bf(ci->coordinates(), size, std::forward<ARGS>(args)...)){
+        if(depth == queue_depth){
+          auto f = [&](void*){
+            find_(pool, queue_depth, depth + 1, ci, size/element_t(2),
+                  std::forward<EF>(ef), std::forward<BF>(bf),
+                  std::forward<ARGS>(args)...);
+          };
+
+          pool.queue(f);
+        }
+        else{
+          find_(pool, queue_depth, depth + 1, ci, size/element_t(2),
+                std::forward<EF>(ef), std::forward<BF>(bf),
+                std::forward<ARGS>(args)...);          
+        }
       }
       else{
         for(auto ent : *b){
