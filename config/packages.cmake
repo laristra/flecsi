@@ -100,17 +100,11 @@ message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with 2^${
 #------------------------------------------------------------------------------#
 
 find_package(EXODUSII)
-find_package(netCDF QUIET)
 option(ENABLE_IO "Enable I/O (uses libexodus)" ${EXODUSII_FOUND})
 if(ENABLE_IO)
   if(EXODUSII_FOUND)
     set(IO_LIBRARIES ${EXODUSII_LIBRARIES})
     include_directories(${EXODUSII_INCLUDE_DIRS})
-    if (netCDF_FOUND)
-      include( ${netCDF_CONFIG} )
-      include_directories( ${netCDF_INCLUDE_DIRS} )
-      list(APPEND IO_LIBRARIES ${netCDF_LIBRARIES} )
-    endif()
   else()
     MESSAGE( FATAL_ERROR "You need libexodus either from TPL or system to enable I/O" )
   endif()
