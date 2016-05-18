@@ -34,11 +34,11 @@ public:
   static void cpu_base_impl(const Task *taskt,const std::vector<PhysicalRegion> &regions,
                             Context ctx, HighLevelRuntime *runtime)
   {
-//	  wrapper_t* wrapper = (wrapper_t*)(taskt->args);
-//
-//	  wrapper_t wrapper2(wrapper->handles,wrapper->const_args,legion_execution_policy_t::context_ep(taskt,regions,ctx,runtime));
-//
-//	  wrapper2.evaluate();
+	  wrapper_t* wrapper = (wrapper_t*)(taskt->args);
+
+	  wrapper_t wrapper2(wrapper->handles,wrapper->const_args,context_t<legion_execution_policy_t>(1,taskt,regions,ctx,runtime));
+
+	  wrapper2.evaluate();
 
   }
 

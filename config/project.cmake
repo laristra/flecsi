@@ -46,17 +46,6 @@ set(FLECSI_RUNTIME_MODEL "serial" CACHE STRING
 set(FLECSI_ID_PBITS "20" CACHE STRING
   "Select the number of bits to use for partition ids. There will be 60-FLECSI_ID_PBITS available for entity ids")
 
-#------------------------------------------------------------------------------#
-# Add build options
-#------------------------------------------------------------------------------#
-
-set( TPL_INSTALL_PREFIX ""
-                        CACHE PATH
-                        "path to thirdparty install" )
-if (NOT TPL_INSTALL_PREFIX STREQUAL "")
-  message(WARNING "TPL_INSTALL_PREFIX is obsolete, use CMAKE_PREFIX_PATH instead (and rebuild the latest version third-party libraries)")
-  list(APPEND CMAKE_PREFIX_PATH "${TPL_INSTALL_PREFIX}")
-endif()
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options

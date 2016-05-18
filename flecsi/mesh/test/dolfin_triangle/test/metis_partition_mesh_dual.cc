@@ -29,9 +29,9 @@ protected:
     connectivity_t conn = dolfin.get_connectivity(0, 2, 0);
 
     idx_t num_cells = dolfin.num_cells();
-    epart.resize(num_cells);
+    epart.resize(static_cast<size_t>(num_cells));
     idx_t num_vertices = dolfin.num_vertices();
-    npart.resize(num_vertices);
+    npart.resize(static_cast<size_t>(num_vertices));
 
     // Because the type of indices (id_t a.k.a size_t) in connectivity_t is
     // not the same as idx_t (a.k.a. int32 or int64) Metis expects, we have
@@ -89,10 +89,26 @@ TEST_F(metis_partition_mesh_dual, vertices_are_partitioned_into_partition_0_or_1
   ASSERT_THAT(epart, Each(Le(1)));
 }
 
-TEST_F(metis_partition_mesh_dual, there_are_5_vertices_in_each_partition) {
+#if IDXTYPEWIDTH == 64
+TEST_F(metis_partition_mesh_dual,
+       there_are_6_and_4_vertices_in_each_partition_for_64bits_ids) {
   auto count0 = std::count_if(npart.begin(), npart.end(), [](auto part) {return part == 0;});
-  ASSERT_THAT(count0, Eq(5));
+
+  ASSERT_THAT(count0, Eq(6));
 
   auto count1 = std::count_if(npart.begin(), npart.end(), [](auto part) {return part == 1;});
+  ASSERT_THAT(count1, Eq(4));
+}
+#else
+TEST_F(metis_partition_mesh_dual,
+       there_are_5_vertices_in_each_partition_for_32bits_ids) {
+  auto count0 = std::count_if(npart.begin(), npart.end(),
+                              [](auto part) {return part == 0;});
+
+  ASSERT_THAT(count0, Eq(5));
+
+  auto count1 = std::count_if(npart.begin(), npart.end(),
+                              [](auto part) {return part == 1;});
   ASSERT_THAT(count1, Eq(5));
 }
+#endif

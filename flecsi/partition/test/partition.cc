@@ -344,7 +344,11 @@ TEST_F(partition, metis_mesh) {
   check( cell_part.data(), vert_part.data() );
 
 
+#if IDXTYPEWIDTH == 64
+  ASSERT_TRUE(CINCH_EQUAL_BLESSED("metis_mesh_int64.blessed"));
+#else
   ASSERT_TRUE(CINCH_EQUAL_BLESSED("metis_mesh.blessed"));
+#endif
     
 } // TEST_F
 
@@ -426,9 +430,11 @@ TEST_F(partition, metis) {
   //---------------------------------------------------------------------------
 
   check( cell_part.data(), vert_part.data() );
-
-
+#if IDXTYPEWIDTH == 64
+  ASSERT_TRUE(CINCH_EQUAL_BLESSED("metis_int64.blessed"));
+#else
   ASSERT_TRUE(CINCH_EQUAL_BLESSED("metis.blessed"));
+#endif
     
 } // TEST_F
 
@@ -525,7 +531,11 @@ TEST_F(partition, scotch) {
   check( cell_part.data(), vert_part.data() );
   
 
+#ifdef HAVE_SCOTCH_V5
+  ASSERT_TRUE(CINCH_EQUAL_BLESSED("scotch_v5.blessed"));
+#else 
   ASSERT_TRUE(CINCH_EQUAL_BLESSED("scotch.blessed"));
+#endif
   
     
 } // TEST_F

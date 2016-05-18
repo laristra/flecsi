@@ -32,6 +32,13 @@ endif()
 
 set(FLECSI_RUNTIME_LIBRARIES)
 
+find_package (legion QUIET NO_MODULE)
+set (Legion_INSTALL_DIR "" CACHE PATH "Path to the Legion install directory")
+if (NOT Legion_INSTALL_DIR STREQUAL "")
+  message(WARNING "Legion_INSTALL_DIR is obsolete, use CMAKE_PREFIX_PATH instead (and rebuild the latest version third-party libraries)")
+  list(APPEND CMAKE_PREFIX_PATH "${Legion_INSTALL_DIR}")
+endif()
+
 # Serial interface
 if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
@@ -42,13 +49,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(FLECSI_RUNTIME_MAIN script-driver-legion.cc)
 
-  # Add legion setup here...
-  set (Legion_INSTALL_DIRS ${legion_DIR}  CACHE PATH
-    "Path to the Legion install directory")
-  set(CMAKE_PREFIX_PATH  ${CMAKE_PREFIX_PATH}
-     ${LEGION_INSTALL_DIRS})
- # set (legion_DIR ${LEGION_INSTALL_DIRS})
-  find_package (legion REQUIRED NO_MODULE)
   if(NOT legion_FOUND)
       message(FATAL_ERROR "Legion is required
                      for this build configuration")
@@ -67,12 +67,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
    set(FLECSI_RUNTIME_MAIN script-driver-mpilegion.cc)
 
-  # Add legion setup here...
-  set (Legion_INSTALL_DIRS ${legion_DIR}  CACHE PATH
-    "Path to the Legion install directory")
-  set(CMAKE_PREFIX_PATH  ${CMAKE_PREFIX_PATH}
-     ${LEGION_INSTALL_DIRS})
-  find_package (legion REQUIRED NO_MODULE)
   if(NOT legion_FOUND)
       message(FATAL_ERROR "Legion is required
                      for this build configuration")
@@ -116,24 +110,13 @@ message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with 2^${
 find_package(EXODUSII)
 option(ENABLE_IO "Enable I/O (uses libexodus)" ${EXODUSII_FOUND})
 if(ENABLE_IO)
-  if(EXISTS ${TPL_INSTALL_PREFIX}/include/exodusII.h
-     AND EXISTS ${TPL_INSTALL_PREFIX}/lib/libexodus.a)
-    set(IO_LIBRARIES ${TPL_INSTALL_PREFIX}/lib/libexodus.a
-      ${TPL_INSTALL_PREFIX}/lib/libnetcdf.a
-      ${TPL_INSTALL_PREFIX}/lib/libhdf5_hl.a
-      ${TPL_INSTALL_PREFIX}/lib/libhdf5.a
-      ${TPL_INSTALL_PREFIX}/lib/libszip.a
-      ${TPL_INSTALL_PREFIX}/lib/libz.a
-      -ldl)
-    include_directories( ${TPL_INSTALL_PREFIX}/include )
-  elseif(EXODUSII_FOUND)
+  if(EXODUSII_FOUND)
     set(IO_LIBRARIES ${EXODUSII_LIBRARIES})
     include_directories(${EXODUSII_INCLUDE_DIRS})
   else()
     MESSAGE( FATAL_ERROR "You need libexodus either from TPL or system to enable I/O" )
   endif()
   add_definitions( -DHAVE_EXODUS )
-  message(STATUS "Found EXODUSII: ${IO_LIBRARIES}")
 endif(ENABLE_IO)
 
 #------------------------------------------------------------------------------#
@@ -173,6 +156,10 @@ if(ENABLE_PARTITION)
      list( APPEND PARTITION_LIBRARIES ${SCOTCH_LIBRARIES} )
      include_directories( ${SCOTCH_INCLUDE_DIRS} )
      add_definitions( -DHAVE_SCOTCH )
+     if(SCOTCH_VERSION MATCHES ^5)
+       #SCOTCH_VERSION from scotch.h is broken in scotch-5
+       add_definitions( -DHAVE_SCOTCH_V5 )
+     endif(SCOTCH_VERSION MATCHES ^5)
   endif()
 
   if ( NOT PARTITION_LIBRARIES )
@@ -189,31 +176,7 @@ endif()
 # If the installation of lapack that this finds does not contain lapacke then
 # the build will fail.
 if(NOT APPLE)
-  # need a find_package that can discern between system installs and our TPLs
-
-  # look in tpl's first, then try the system find_package(LAPACK)
-
-  # This is a workaround that finds the TPL install if it's there. The link
-  # to -lgfortan is a serious hack, and a documented issue.
-  set(LAPACKE_FOUND)
-  set(LAPACKE_LIBRARIES)
-  if(EXISTS ${TPL_INSTALL_PREFIX}/include/lapacke.h
-     AND EXISTS ${TPL_INSTALL_PREFIX}/lib/liblapacke.a)
-    set(LAPACKE_FOUND 1)
-    include_directories(${TPL_INSTALL_PREFIX}/include)
-    list( APPEND LAPACKE_LIBRARIES
-          ${TPL_INSTALL_PREFIX}/lib/liblapacke.a
-          ${TPL_INSTALL_PREFIX}/lib/liblapack.a
-          ${TPL_INSTALL_PREFIX}/lib/libblas.a
-          gfortran)
-  else()
-    find_package(LAPACKE)
-  endif()
-
-  if(LAPACKE_FOUND)
-    message(STATUS "Found LAPACKE: ${LAPACKE_LIBRARIES}")
-  endif(LAPACKE_FOUND)
-
+  find_package(LAPACKE)
 endif(NOT APPLE)
 
 #------------------------------------------------------------------------------#

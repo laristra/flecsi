@@ -49,12 +49,12 @@ public:
  call_state_t entry() { return static_cast<call_state_t>(++call_state_); }
  call_state_t exit() { return static_cast<call_state_t>(--call_state_); }
  //! Copy constructor (disabled)
- context_t(const context_t &) = delete;
+// context_t(const context_t &) = delete;
 
- //! Assignment operator (disabled)
- context_t & operator=(const context_t &) = delete;
+// //! Assignment operator (disabled)
+// context_t & operator=(const context_t &) = delete;
 
-private:
+public:
  // Constructor
  context_t<legion_execution_policy_t>(
 		 LegionRuntime::HighLevel::Context _ctx_l,

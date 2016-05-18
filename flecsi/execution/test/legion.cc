@@ -41,7 +41,7 @@ return_type_t myvoid() {
 }
 
 namespace flecsi{
-void top_level_task(int argc, char** argv)
+void top_level_task(context_t<flecsi::legion_execution_policy_t> &&ctx,int argc, char** argv)
 {
 	std::cout << "Hello World Top Level Task" << std::endl;
 }
@@ -53,6 +53,8 @@ TEST(legion, register_task) {
   using wrapper_t = TaskWrapper<1,0,0,0,legion_execution_policy_t,std::function<decltype(example_task)>>;
 
 //  register_legion<wrapper_t>::register_task();
+
+
 } // TEST
 
 //TEST(task, execute) {
@@ -61,7 +63,8 @@ TEST(legion, register_task) {
 //} // TEST
 
 TEST(driver, execute) {
-	char* argv = "shit";
+	char dummy[] = "shit";
+	char *argv = &(dummy[0]);
 	flecsi::execution_t<flecsi::legion_execution_policy_t>::execute_driver(flecsi::top_level_task,1,&argv);
 } // TEST
 
