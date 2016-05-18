@@ -57,7 +57,7 @@ Description:    This code solves a system corresponding to a discretization
 #include <math.h>
 #include "_hypre_utilities.h"
 #include "HYPRE_struct_ls.h"
-#include "vis.c"
+//#include "vis.c"
 
 
 using execution_t = flecsi::execution_t<flecsi::legion_execution_policy_t>;
@@ -136,7 +136,7 @@ void my_init_legion(){
 #define execute(task, ...) \
   execution_t::execute_task(task, ##__VA_ARGS__)
 
-  int hypre_test (void)
+  int hypre_test ()
   {
      int i, j, k;
   
@@ -163,9 +163,9 @@ void my_init_legion(){
      int vis;
   
      /* Initialize MPI */
-     MPI_Init(&argc, &argv);
-     MPI_Comm_rank(MPI_COMM_WORLD, &myid);
-     MPI_Comm_size(MPI_COMM_WORLD, &num_procs);
+     //MPI_Init(&argc, &argv);
+     //MPI_Comm_rank(MPI_COMM_WORLD, &myid);
+     //MPI_Comm_size(MPI_COMM_WORLD, &num_procs);
   
      /* Set defaults */
      n = 33;
@@ -174,65 +174,6 @@ void my_init_legion(){
      n_post = 1;
      vis = 0;
   
-     /* Parse command line */
-     {
-       int arg_index = 0;
-        int print_usage = 0;
-  
-        while (arg_index < argc)
-        {
-           if ( strcmp(argv[arg_index], "-n") == 0 )
-           {
-              arg_index++;
-              n = atoi(argv[arg_index++]);
-           }
-           else if ( strcmp(argv[arg_index], "-solver") == 0 )
-           {
-              arg_index++;
-              solver_id = atoi(argv[arg_index++]);
-           }
-          else if ( strcmp(argv[arg_index], "-v") == 0 )
-          {
-             arg_index++;
-             n_pre = atoi(argv[arg_index++]);
-             n_post = atoi(argv[arg_index++]);
-          }
-          else if ( strcmp(argv[arg_index], "-vis") == 0 )
-          {
-             arg_index++;
-             vis = 1;
-          }
-          else if ( strcmp(argv[arg_index], "-help") == 0 )
-          {
-             print_usage = 1;
-             break;
-          }
-          else
-          {
-             arg_index++;
-          }
-       }
- 
-       if ((print_usage) && (myid == 0))
-       {
-          printf("\n");
-          printf("Usage: %s [<options>]\n", argv[0]);
-          printf("\n");
-          printf("  -n <n>              : problem size per processor (default: 33)\n");
-          printf("  -solver <ID>        : solver ID\n");
-          printf("                        0  - PCG with SMG precond (default)\n");
-          printf("                        1  - SMG\n");
-          printf("  -v <n_pre> <n_post> : number of pre and post relaxations (default: 1 1)\n");
-          printf("  -vis                : save the solution for GLVis visualization\n");
-          printf("\n");
-       }
- 
-       if (print_usage)
-       {
-          MPI_Finalize();
-          return (0);
-       }
-    }
  
     /* Figure out the processor grid (N x N).  The local problem
        size for the interior nodes is indicated by n (n x n).
@@ -292,7 +233,7 @@ void my_init_legion(){
        /* Indicate that the matrix coefficients are ready to be set */
        HYPRE_StructMatrixInitialize(A);
  
-       values = calloc(nvalues, sizeof(double));
+       values = new double[nvalues];
  
        for (j = 0; j < nentries; j++)
           stencil_indices[j] = j;
@@ -309,7 +250,7 @@ void my_init_legion(){
        HYPRE_StructMatrixSetBoxValues(A, ilower, iupper, nentries,
                                       stencil_indices, values);
  
-       free(values);
+       delete [] values;
     }
  
     /* 4. Incorporate the zero boundary conditions: go along each edge of
@@ -324,7 +265,7 @@ void my_init_legion(){
        double *values;
        int stencil_indices[1];
  
-       values = calloc(nvalues, sizeof(double));
+       values = new double[nvalues];
        for (j = 0; j < nvalues; j++)
           values[j] = 0.0; 
 
@@ -389,7 +330,7 @@ void my_init_legion(){
                                          stencil_indices, values);
        }
  
-       free(values);
+       delete [] values;
     } 
 
     /* This is a collective call finalizing the matrix assembly.
@@ -401,7 +342,7 @@ void my_init_legion(){
        int    nvalues = n*n;
        double *values;
  
-       values = calloc(nvalues, sizeof(double));
+       values = new double[nvalues];
  
        /* Create an empty vector object */
        HYPRE_StructVectorCreate(MPI_COMM_WORLD, grid, &b);
@@ -420,7 +361,7 @@ void my_init_legion(){
           values[i] = 0.0;
        HYPRE_StructVectorSetBoxValues(x, ilower, iupper, values);
  
-       free(values);
+       delete [] values;
  
        /* This is a collective call finalizing the vector assembly.
           The vector is now ``ready to be used'' */
@@ -494,7 +435,8 @@ void my_init_legion(){
        char filename[255];
  
        int nvalues = n*n;
-       double *values = calloc(nvalues, sizeof(double));
+       double *values;
+       values = new double[nvalues];
  
        /* get the local solution */
        HYPRE_StructVectorGetBoxValues(x, ilower, iupper, values);
@@ -503,7 +445,7 @@ void my_init_legion(){
        if ((file = fopen(filename, "w")) == NULL)
        {
           printf("Error: can't open output file %s\n", filename);
-          MPI_Finalize();
+          //MPI_Finalize();
           exit(1);
        }
  
@@ -515,11 +457,11 @@ void my_init_legion(){
  
        fflush(file);
        fclose(file);
-       free(values);
+       delete [] values;
  
        /* save global finite element mesh */
-       if (myid == 0)
-          GLVis_PrintGlobalSquareMesh("vis/ex3.mesh", N*n-1);
+    //   if (myid == 0)
+    //TOFIX      GLVis_PrintGlobalSquareMesh("vis/ex3.mesh", N*n-1);
     }
  
     if (myid == 0)
@@ -538,7 +480,7 @@ void my_init_legion(){
     HYPRE_StructVectorDestroy(x);
  
     /* Finalize MPI */
-    MPI_Finalize();
+    //MPI_Finalize();
  
     return (0);
  }

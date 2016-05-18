@@ -111,7 +111,8 @@ cinch_add_unit(more_complex_mpi_with_legion
 if (ENABLE_HYPRE)
 cinch_add_unit(legion_with_Hypre
   SOURCES test/legion_with_Hypre.cc
-  POLICY MPILEGION)
+  POLICY MPILEGION
+  LIBRARIES     ${HYPRE_LIBRARIES} )
 endif (ENABLE_HYPRE)
 
 endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")

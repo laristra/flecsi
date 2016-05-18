@@ -85,7 +85,11 @@ endif(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 # Hypre
 #------------------------------------------------------------------------------#
   find_package (Hypre)
-  option(ENABLE_HYPRE "Enable Hypre" ${Hypre_FOUND})
+  option(ENABLE_HYPRE "Enable Hypre" ${HYPRE_FOUND})
+ if (HYPRE_FOUND)
+  include_directories(${HYPRE_INCLUDE_DIR})
+  set(HYPRE_LIBRARIES "${HYPRE_DIR}/lib/libHYPRE.a")
+ endif (HYPRE_FOUND)
 
 
 
