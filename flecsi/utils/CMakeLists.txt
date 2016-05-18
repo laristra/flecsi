@@ -108,9 +108,11 @@ cinch_add_unit(more_complex_mpi_with_legion
   SOURCES test/more_complex_mpi_with_legion.cc
   POLICY MPILEGION)
 
-cinch_add_unit(legion_with_mpi
-  SOURCES test/legion_with_mpi.cc
-  POLICY LEGION)
+if (ENABLE_HYPRE)
+cinch_add_unit(legion_with_Hypre
+  SOURCES test/legion_with_Hypre.cc
+  POLICY MPILEGION)
+endif (ENABLE_HYPRE)
 
 endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 #~---------------------------------------------------------------------------~-#
