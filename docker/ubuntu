@@ -1,0 +1,37 @@
+from ubuntu:latest
+
+RUN apt-get -q update -y
+RUN apt-get -qq install -y make cmake cmake-data git g++ gfortran libopenmpi-dev \
+ openmpi-bin libscotch-dev libexodusii-dev
+
+RUN groupadd -r flecsi && useradd -r -m -g flecsi flecsi
+USER flecsi
+
+WORKDIR /tmp
+RUN git clone --recursive https://github.com/losalamos/flecsi.git
+WORKDIR flecsi
+RUN mkdir build
+
+ARG MININAL
+ARG MPI
+ARG RUNTIME
+ARG WERROR
+
+ENV PATH=$PATH:/usr/lib64/openmpi/bin/
+
+RUN echo MPI=$MPI --build-arg RUNTIME=$RUNTIME --build-arg WERROR=$WERROR
+
+WORKDIR build
+RUN cmake -DENABLE_MPI=$MPI \
+#          ${TPL:+-DCMAKE_PREFIX_PATH=$HOME/tpl} \
+          -DFLECSI_RUNTIME_MODEL=$RUNTIME \
+#          ${MININAL:+-DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON
+#          -DCMAKE_DISABLE_FIND_PACKAGE_SCOTCH=ON \
+#          -DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON  \
+#          -DCMAKE_DISABLE_FIND_PACKAGE_LAPACKE=ON}
+          -DENABLE_UNIT_TESTS=ON ..
+#          ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} ..
+
+RUN make -j2
+RUN make test
+RUN make install DESTDIR=$PWD

@@ -1,68 +1,35 @@
-language: cpp
+language: generic
 
-sudo: false
+sudo: required
 
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-      - george-edison55-precise-backports
-    packages:
-      - ccache
-      - cmake
-      - cmake-data
-      - libopenmpi-dev
-      - openmpi-bin
-      - gcc-4.9
-      - g++-4.9
-      - gfortran-4.9
-      - gcc-5
-      - g++-5
-      - gfortran-5
-      - libscotch-dev
-      - libexodusii-dev
-
-before_install:
- - if [[ ${GVER} ]]; then export CC=gcc-${GVER}; export CXX=g++-${GVER}; export FC=gfortran-${GVER}; fi
- - git -C cinch submodule init && git -C cinch submodule update
- - git fetch --unshallow && git fetch --tags #for versioning
- - if [[ ${TPL} ]]; then
-     git clone --recursive --depth=1 https://github.com/losalamos/flecsi-third-party $HOME/tpl/src;
-     mkdir -p $HOME/tpl/src/build && cd $HOME/tpl/src/build;
-     cmake -DENABLE_EXODUS=ON -DENABLE_LAPACK=ON -DENABLE_METIS=ON -DENABLE_SCOTCH=ON -DENABLE_LEGION=ON -DCMAKE_INSTALL_PREFIX=$HOME/tpl .. && make -j2;
-     cd -;
-   fi
- - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi 
- - if [[ ${WERROR} ]]; then export CXXFLAGS="-Werror"; fi
+services:
+ - docker
 
 env:
-  global:
-    - CCACHE_CPP2=yes
-    - GVER=5
   matrix:
-    - MININAL=ON MPI=OFF RUNTIME=serial
-#    - GVER=4.9 MPI=ON (issue #47)
-    - MPI=OFF TPL=ON RUNTIME=legion
-    - MPI=OFF TPL=ON RUNTIME=legion WERROR=yes
-    - MPI=ON TPL=ON RUNTIME=mpilegion
-    - MPI=ON TPL=ON RUNTIME=mpilegion WERROR=yes
-    - MPI=ON RUNTIME=mpi
-    - MPI=ON RUNTIME=mpi WERROR=yes
-    - MPI=OFF RUNTIME=serial WERROR=yes
-    - MPI=OFF COVERAGE=ON RUNTIME=serial
+    - DOCKERFILE=ubuntu MININAL=ON MPI=OFF RUNTIME=serial
+    - DOCKERFILE=ubuntu MPI=OFF TPL=ON RUNTIME=legion
+#    - DOCKERFILE=ubuntu MPI=OFF TPL=ON RUNTIME=legion WERROR=yes
+    - DOCKERFILE=ubuntu MPI=ON TPL=ON RUNTIME=mpilegion
+#    - DOCKERFILE=ubuntu MPI=ON TPL=ON RUNTIME=mpilegion WERROR=yes
+    - DOCKERFILE=ubuntu MPI=ON RUNTIME=mpi
+    - DOCKERFILE=ubuntu MPI=ON RUNTIME=mpi WERROR=yes
+    - DOCKERFILE=ubuntu MPI=OFF RUNTIME=serial WERROR=yes
+#    - DOCKERFILE=ubuntu MPI=OFF COVERAGE=ON RUNTIME=serial
+
+    - DOCKERFILE=fedora MININAL=ON MPI=OFF RUNTIME=serial
+    - DOCKERFILE=fedora MPI=OFF TPL=ON RUNTIME=legion
+#    - DOCKERFILE=fedora MPI=OFF TPL=ON RUNTIME=legion WERROR=yes
+    - DOCKERFILE=fedora MPI=ON TPL=ON RUNTIME=mpilegion
+#    - DOCKERFILE=fedora MPI=ON TPL=ON RUNTIME=mpilegion WERROR=yes
+    - DOCKERFILE=fedora MPI=ON RUNTIME=mpi
+    - DOCKERFILE=fedora MPI=ON RUNTIME=mpi WERROR=yes
+    - DOCKERFILE=fedora MPI=OFF RUNTIME=serial WERROR=yes
+#    - DOCKERFILE=fedora MPI=OFF COVERAGE=ON RUNTIME=serial
 
 script:
-  - mkdir build && cd build &&
-    cmake -DENABLE_MPI=$MPI ${TPL:+-DCMAKE_PREFIX_PATH=$HOME/tpl} -DFLECSI_RUNTIME_MODEL=${RUNTIME}
-          ${MININAL:+-DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON -DCMAKE_DISABLE_FIND_PACKAGE_SCOTCH=ON -DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON -DCMAKE_DISABLE_FIND_PACKAGE_LAPACKE=ON}
-          -DENABLE_UNIT_TESTS=ON ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} .. && 
-    make -j2 && make test && make install DESTDIR="${HOME}" && cd ..
-
-after_success:
-  - if [[ ${COVERAGE} ]]; then codecov --gcov-exec gcov-${GVER}; fi
-
-cache:
-  - ccache
+ - echo MPI=$MPI --build-arg RUNTIME=$RUNTIME --build-arg WERROR=$WERROR
+ - docker build --build-arg MPI=$MPI --build-arg RUNTIME=$RUNTIME --build-arg WERROR=$WERROR -t flecsi_${DOCKERFILE} -f docker/${DOCKERFILE} docker/
 
 compiler:
   - gcc
