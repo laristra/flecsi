@@ -109,7 +109,7 @@ namespace flecsi
 
     int count_;
     int max_count_;
-    atomic_bool done_;
+    std::atomic_bool done_;
   };
 
   class thread_pool{
