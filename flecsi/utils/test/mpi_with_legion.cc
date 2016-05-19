@@ -54,25 +54,11 @@ void top_level_task(const Task *task,
                     const std::vector<PhysicalRegion> &regions,
                     Context ctx, HighLevelRuntime *runtime)
 {
-//  int num_procs=0;
   int num_local_procs=0;
 #ifdef DEBUG
   printf ("inside top_level_task function \n");
 #endif
 
-//TOFIX: change to the correct allocation
-//what "all_procs" index space represents?
-/*  std::set<Processor> all_procs;
-  Realm::Machine::get_machine().get_all_processors(all_procs);
-  int num_loc_procs = 0;
-  for(std::set<Processor>::const_iterator it = all_procs.begin();
-      it != all_procs.end();
-      it++){
-    if((*it).kind() == Processor::LOC_PROC)
-      num_loc_procs++;
-    num_procs++;
-   }
-*/
 
 #ifndef SHARED_LOWLEVEL
   // Only the shared lowlevel runtime needs to iterate over all points
@@ -82,13 +68,11 @@ void top_level_task(const Task *task,
   {
    std::set<Processor> all_procs;
    Realm::Machine::get_machine().get_all_processors(all_procs);
-  //  const std::set<Processor>& all_procs = Machine::get_machine()->get_all_processors();
    for(std::set<Processor>::const_iterator it = all_procs.begin();
       it != all_procs.end();
       it++){
     if((*it).kind() == Processor::LOC_PROC)
       num_procs++;
-    //num_procs++;
    }
   }
   num_local_procs=num_procs;  
@@ -104,9 +88,6 @@ void top_level_task(const Task *task,
   all_procs_hi.x[1] = num_points - 1;
   Rect<2> all_processes = Rect<2>(all_procs_lo, all_procs_hi); 
 
-//  printf ("Irina DEBUG: \n");
-//  printf ("num_loc_procs = %d \n", num_loc_procs);
-//  Rect<2> all_processes(make_point(0,0),make_point(num_loc_procs-1,num_loc_procs-1));
   Rect<1> local_procs(0,num_local_procs);
   ArgumentMap arg_map;
 
