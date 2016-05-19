@@ -151,9 +151,13 @@ namespace flecsi
       sem_.release();
     }
 
-    void start(){
-      auto t = new std::thread(&thread_pool::run_, this);
-      threads_.push_back(t);
+    void start(size_t num_threads){
+      assert(threads_.empty() && "thread pool already started");
+
+      for(size_t i = 0; i < num_threads; ++i){
+        auto t = new std::thread(&thread_pool::run_, this);
+        threads_.push_back(t);
+      }
     }
 
     void join(){
@@ -164,6 +168,10 @@ namespace flecsi
         t->join();
         delete t;
       }
+    }
+
+    size_t num_threads() const{
+      return threads_.size();
     }
 
   private:

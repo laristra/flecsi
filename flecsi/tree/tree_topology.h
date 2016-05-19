@@ -909,14 +909,14 @@ public:
   }
 
   entity_set_t find_in_radius(thread_pool& pool,
-                              size_t to_queue,
                               const point_t& center,
                               element_t radius){
     
     // find the lowest level branch which is guaranteed
     // to contain the point with radius
 
-    size_t queue_depth = std::log2(to_queue)/std::pow(2, P::dimension);
+    size_t queue_depth = 
+      std::log2(pool.num_threads())/(branch_int_t(1) << P::dimension);
 
     size_t depth = -std::log2(radius);
     assert(depth <= branch_id_t::max_depth);
@@ -969,13 +969,13 @@ public:
 
   template<typename EF, typename... ARGS>
   void apply_in_radius(thread_pool& pool,
-                       size_t to_queue,
                        const point_t& center,
                        element_t radius,
                        EF&& ef,
                        ARGS&&... args){
 
-    size_t queue_depth = std::log2(to_queue)/std::pow(2, P::dimension);
+    size_t queue_depth = 
+      std::log2(pool.num_threads())/(branch_int_t(1) << P::dimension);
 
     // find the lowest level branch which is guaranteed
     // to contain the point with radius
@@ -1038,13 +1038,9 @@ public:
 
       if(ci && bf(ci->coordinates(), size, std::forward<ARGS>(args)...)){
         if(depth == queue_depth){
-          auto f = [&](void*){
-            find_(pool, queue_depth, depth + 1, ci, size/element_t(2),
-                  std::forward<EF>(ef), std::forward<BF>(bf),
-                  std::forward<ARGS>(args)...);
-          };
-
-          pool.queue(f);
+          pool.queue([&](){find_(ci, size/element_t(2),
+            std::forward<EF>(ef), std::forward<BF>(bf),
+            std::forward<ARGS>(args)...);});
         }
         else{
           find_(pool, queue_depth, depth + 1, ci, size/element_t(2),
