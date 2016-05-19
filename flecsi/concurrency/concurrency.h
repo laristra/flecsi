@@ -152,7 +152,7 @@ namespace flecsi
     }
 
     void start(){
-      auto t = new thread(&thread_pool::run_, this);
+      auto t = new std::thread(&thread_pool::run_, this);
       threads_.push_back(t);
     }
 
