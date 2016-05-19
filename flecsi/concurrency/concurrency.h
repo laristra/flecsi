@@ -24,6 +24,7 @@
 #include <mutex>
 #include <atomic>
 #include <condition_variable>
+#include <queue>
 
 /*!
  * \file concurrency.h
@@ -33,6 +34,7 @@
 
 namespace flecsi
 {
+  
   class virtual_semaphore{
   public:
     using lock_t = std::unique_lock<std::mutex>;
@@ -112,10 +114,16 @@ namespace flecsi
 
   class thread_pool{
   public:
-    using function_type = std::function<void(void*)>;
+    using function_t = std::function<void(void)>;
 
     thread_pool(){
       done_ = false;
+    }
+
+    ~thread_pool(){
+      if(!done_){
+        join();
+      }
     }
 
     void run_(){
@@ -128,16 +136,17 @@ namespace flecsi
           return;
         }
 
-        auto item = queue_.front();
-        queue_.pop_front();
+        auto f = queue_.front();
+        queue_.pop();
         mutex_.unlock();
-        item.f(item.args);
+        f();
       }
     }
 
-    void queue(function_type f, void* args = nullptr){
+    template <typename FT, typename... ARGS>
+    void queue(FT f, ARGS... args){
       mutex_.lock();
-      queue_.emplace_back(item(f, args));
+      queue_.emplace(std::bind(f, std::forward<ARGS>(args)...));
       mutex_.unlock();
       sem_.release();
     }
@@ -153,21 +162,13 @@ namespace flecsi
 
       for(auto t : threads_){
         t->join();
+        delete t;
       }
     }
 
   private:
-    struct item{
-      item(function_type f, void* args)
-      : f(f),
-      args(args){}
-
-      function_type f;
-      void* args;
-    };
-
     std::mutex mutex_;
-    std::deque<item> queue_;
+    std::queue<function_t> queue_;
     std::vector<std::thread*> threads_;
     virtual_semaphore sem_;
     std::atomic_bool done_;    
