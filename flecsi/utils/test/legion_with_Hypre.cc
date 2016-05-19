@@ -126,7 +126,8 @@ void top_level_task(const Task *task,
   FutureMap fm1 = runtime->execute_index_space(ctx, connect_mpi_launcher);
    printf("connect_mpi finished \n");
   //run some legion task here 
-
+   fm1.wait_all_results();
+  
  //handoff to MPI
  TaskLauncher handoff_to_mpi_launcher(HANDOFF_TO_MPI_TASK_ID,
       TaskArgument(0, 0));
@@ -230,9 +231,11 @@ void my_init_legion(){
   
      /* Initialize MPI */
      //MPI_Init(&argc, &argv);
-     //MPI_Comm_rank(MPI_COMM_WORLD, &myid);
-     //MPI_Comm_size(MPI_COMM_WORLD, &num_procs);
-  
+     MPI_Comm_rank(MPI_COMM_WORLD, &myid);
+     MPI_Comm_size(MPI_COMM_WORLD, &num_procs);
+ 
+    printf ("myid = %d \n", myid);
+ 
      /* Set defaults */
      n = 33;
      solver_id = 0;
