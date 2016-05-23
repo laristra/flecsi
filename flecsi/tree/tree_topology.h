@@ -1089,11 +1089,13 @@ public:
           ef(ent, std::forward<ARGS>(args)...);
         }
 
-        size_t m = std::pow(rb, queue_depth - depth);
+        size_t m = std::pow(rb, queue_depth - depth + 1);
 
         for(size_t i = 0; i < m; ++i){
           sem.release(); 
         }
+
+        return;
       }
     }
   }

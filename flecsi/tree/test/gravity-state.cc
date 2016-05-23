@@ -195,7 +195,7 @@ using branch_t = tree_topology_t::branch_t;
 using branch_id_t = tree_topology_t::branch_id_t;
 
 static const size_t N = 5000;
-static const size_t TS = 5;
+static const size_t TS = 2;
 
 TEST(tree_topology, gravity) {
   tree_topology_t t;

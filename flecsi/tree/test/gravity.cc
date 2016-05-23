@@ -121,7 +121,8 @@ public:
 
     point_t coordinates() const{
       point_t p;
-      id().coordinates(p);
+      branch_id_t bid = id();
+      bid.coordinates(p);
       return p;
     }
 
@@ -206,7 +207,12 @@ TEST(tree_topology, gravity) {
 
     for(size_t i = 0; i < N; ++i){
       auto bi = bodies[i];
-      t.apply_in_radius(pool, bi->coordinates(), 0.01, f, bi);
+      auto ents = t.find_in_radius(pool, bi->coordinates(), 0.01);
+      for(auto e : ents){
+        if(bi != e){
+          bi->interact(e);
+        }
+      }
     }
 
     for(size_t i = 0; i < N; ++i){
