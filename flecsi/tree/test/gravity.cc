@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "flecsi/tree/tree_topology.h"
+#include "flecsi/concurrency/concurrency.h"
 
 using namespace std;
 using namespace flecsi;
@@ -150,10 +151,13 @@ using branch_t = tree_topology_t::branch_t;
 using branch_id_t = tree_topology_t::branch_id_t;
 
 static const size_t N = 5000;
-static const size_t TS = 10;
+static const size_t TS = 5;
 
 TEST(tree_topology, gravity) {
   tree_topology_t t;
+
+  thread_pool pool;
+  pool.start(8);
 
   vector<body*> bodies;
   for(size_t i = 0; i < N; ++i){
@@ -202,7 +206,7 @@ TEST(tree_topology, gravity) {
 
     for(size_t i = 0; i < N; ++i){
       auto bi = bodies[i];
-      t.apply_in_radius(bi->coordinates(), 0.01, f, bi);
+      t.apply_in_radius(pool, bi->coordinates(), 0.01, f, bi);
     }
 
     for(size_t i = 0; i < N; ++i){

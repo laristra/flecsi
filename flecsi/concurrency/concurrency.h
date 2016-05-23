@@ -62,6 +62,9 @@ namespace flecsi
       
       while(count_ <= 0){
         cond_.wait(lock);
+        if(done_){
+          return false;
+        }
       }
       
       --count_;
@@ -121,14 +124,13 @@ namespace flecsi
     }
 
     ~thread_pool(){
-      if(!done_){
-        join();
-      }
+      join();
     }
 
     void run_(){
       for(;;){
         sem_.acquire();
+
         mutex_.lock();
 
         if(done_){
@@ -161,6 +163,10 @@ namespace flecsi
     }
 
     void join(){
+      if(done_){
+        return;
+      }
+
       done_ = true;
       sem_.interrupt();
 
