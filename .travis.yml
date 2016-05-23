@@ -9,27 +9,32 @@ env:
   matrix:
     - DOCKERFILE=ubuntu MININAL=ON MPI=OFF RUNTIME=serial
     - DOCKERFILE=ubuntu MPI=OFF TPL=ON RUNTIME=legion
-#    - DOCKERFILE=ubuntu MPI=OFF TPL=ON RUNTIME=legion WERROR=yes
+    - DOCKERFILE=ubuntu MPI=OFF TPL=ON RUNTIME=legion WERROR=yes
     - DOCKERFILE=ubuntu MPI=ON TPL=ON RUNTIME=mpilegion
-#    - DOCKERFILE=ubuntu MPI=ON TPL=ON RUNTIME=mpilegion WERROR=yes
+    - DOCKERFILE=ubuntu MPI=ON TPL=ON RUNTIME=mpilegion WERROR=yes
     - DOCKERFILE=ubuntu MPI=ON RUNTIME=mpi
     - DOCKERFILE=ubuntu MPI=ON RUNTIME=mpi WERROR=yes
     - DOCKERFILE=ubuntu MPI=OFF RUNTIME=serial WERROR=yes
-#    - DOCKERFILE=ubuntu MPI=OFF COVERAGE=ON RUNTIME=serial
+    - DOCKERFILE=ubuntu MPI=OFF COVERAGE=ON RUNTIME=serial
 
     - DOCKERFILE=fedora MININAL=ON MPI=OFF RUNTIME=serial
     - DOCKERFILE=fedora MPI=OFF TPL=ON RUNTIME=legion
-#    - DOCKERFILE=fedora MPI=OFF TPL=ON RUNTIME=legion WERROR=yes
+    - DOCKERFILE=fedora MPI=OFF TPL=ON RUNTIME=legion WERROR=yes
     - DOCKERFILE=fedora MPI=ON TPL=ON RUNTIME=mpilegion
-#    - DOCKERFILE=fedora MPI=ON TPL=ON RUNTIME=mpilegion WERROR=yes
+    - DOCKERFILE=fedora MPI=ON TPL=ON RUNTIME=mpilegion WERROR=yes
     - DOCKERFILE=fedora MPI=ON RUNTIME=mpi
     - DOCKERFILE=fedora MPI=ON RUNTIME=mpi WERROR=yes
     - DOCKERFILE=fedora MPI=OFF RUNTIME=serial WERROR=yes
-#    - DOCKERFILE=fedora MPI=OFF COVERAGE=ON RUNTIME=serial
+    - DOCKERFILE=fedora MPI=OFF COVERAGE=ON RUNTIME=serial
 
 script:
- - echo MPI=$MPI --build-arg RUNTIME=$RUNTIME --build-arg WERROR=$WERROR
- - docker build --build-arg MPI=$MPI --build-arg RUNTIME=$RUNTIME --build-arg WERROR=$WERROR -t flecsi_${DOCKERFILE} -f docker/${DOCKERFILE} docker/
+ - docker build --build-arg MPI=${MPI} --build-arg RUNTIME=${RUNTIME} --build-arg WERROR=${WERROR}
+                --build-arg TPL=${TPL} --build-arg COVERAGE=${COVERAGE} --build-arg MININAL=${MININAL}
+                --build-arg CI=${CI} --build-arg TRAVIS=${TRAVIS} --build-arg TRAVIS_BRANCH=${TRAVIS_BRANCH}
+                --build-arg TRAVIS_COMMIT=${TRAVIS_COMMIT} --build-arg TRAVIS_JOB_NUMBER=${TRAVIS_JOB_NUMBER}
+                --build-arg TRAVIS_PULL_REQUEST=${TRAVIS_PULL_REQUEST} --build-arg TRAVIS_JOB_ID=${TRAVIS_JOB_ID}
+                --build-arg TRAVIS_REPO_SLUG=${TRAVIS_REPO_SLUG} --build-arg TRAVIS_TAG=${TRAVIS_TAG}
+                -t flecsi_${DOCKERFILE} -f docker/${DOCKERFILE} docker/
 
 compiler:
   - gcc
