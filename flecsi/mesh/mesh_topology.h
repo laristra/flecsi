@@ -818,8 +818,10 @@ class mesh_topology_t : public mesh_topology_base_t
     size_t entity_id = 0;
     size_t max_cell_entity_conns = 1;
 
+    domain_connectivity_t<MT::dimension> & dc = ms_.topology[M][M];
+
     // Get connectivity for cells to vertices.
-    connectivity_t & cell_to_vertex = get_connectivity_(M, MT::dimension, 0);
+    connectivity_t & cell_to_vertex = dc.template get<MT::dimension>(0);
     assert(!cell_to_vertex.empty());
 
     const size_t _num_cells = num_entities<MT::dimension, M>();
@@ -913,7 +915,7 @@ class mesh_topology_t : public mesh_topology_base_t
 
     // Set the connectivity information from the created entities to
     // the vertices.
-    connectivity_t & entity_to_vertex = get_connectivity_(M, D, 0);
+    connectivity_t & entity_to_vertex = dc.template get<D>(0);
     entity_to_vertex.init(entity_vertex_conn);
     cell_to_entity.init(cell_entity_conn);
   } // build_connectivity

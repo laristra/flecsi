@@ -578,7 +578,7 @@ public:
 
   void dump(){
     for(size_t i = 0; i < conns_.size(); ++i){
-      auto ci = conns_[i];
+      auto & ci = conns_[i];
       for(size_t j = 0; j < ci.size(); ++j){
         auto & cj = ci[j];
         std::cout << "------------- " << i << " -> " << j << std::endl;
