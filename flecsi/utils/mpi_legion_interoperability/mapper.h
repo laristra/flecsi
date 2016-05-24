@@ -17,8 +17,9 @@
 #define _MPI_MAPPERS_H_
 
 #include "legion.h"
-#include "default_mapper.h"
+//#include "default_mapper.h"
 #include "task_ids.h"
+#include "shim_mapper.h"
 
 using namespace LegionRuntime::HighLevel;
 using namespace LegionRuntime::Arrays;
@@ -27,16 +28,49 @@ enum {
   MPI_MAPPER_ID       = 1,
 };
 
-class MPIMapper : public DefaultMapper {
+/*
+using namespace LegionRuntime::HighLevel;
+
+class CircuitMapper : public ShimMapper {
 public:
-  MPIMapper(Machine machine, HighLevelRuntime *runtime, Processor local);
-  virtual ~MPIMapper(void);
+  CircuitMapper(Machine machine, HighLevelRuntime *runtime, Processor local);
+public:
   virtual void select_task_options(Task *task);
   virtual void slice_domain(const Task *task, const Domain &domain,
                             std::vector<DomainSplit> &slices);
   virtual bool map_task(Task *task);
+  virtual bool map_inline(Inline *inline_operation);
+
   virtual void notify_mapping_failed(const Mappable *mappable);
-  virtual void notify_profiling_info(const Task *task);
+#if 0
+  virtual bool rank_copy_targets(const Mappable *mappble,
+                                 const std::set<Memory> &current_instances,
+                                 bool complete,
+                                 size_t max_blocking_factor,
+                                 std::set<Memory> &to_reuse,
+                                 std::vector<Memory> &to_create,
+                                 bool &create_one,
+                                 size_t &blocking_factor);
+#endif
+protected:
+  bool map_to_gpus;
+  std::vector<Processor> all_cpus;
+  std::vector<Processor> all_gpus;
+  std::map<Processor, Memory> all_sysmems;
+};
+*/
+
+
+class MPIMapper : public ShimMapper {
+public:
+  MPIMapper(Machine machine, HighLevelRuntime *runtime, Processor local);
+  virtual ~MPIMapper(void);
+  virtual void select_task_options(Task *task);
+  typedef TaskSlice DomainSplit;
+  virtual void slice_domain(const Task *task, const Domain &domain,
+                            std::vector<DomainSplit> &slices);
+  virtual bool map_task(Task *task);
+  virtual void notify_mapping_failed(const Mappable *mappable);
 protected:
   std::vector<Processor> local_cpus;
   std::vector<unsigned> local_next_cpu;
@@ -48,8 +82,9 @@ void mapper_registration(Machine machine, HighLevelRuntime *rt,
 
 LegionRuntime::Logger::Category log_mapper("mpi_mapper");
 
+
 MPIMapper::MPIMapper(Machine machine, HighLevelRuntime *rt, Processor local)
-  : DefaultMapper(machine, rt, local)
+  : ShimMapper(machine, rt, rt->get_mapper_runtime(), local)
 {
 
   std::set<Processor> all_procs;
@@ -104,23 +139,19 @@ void MPIMapper::slice_domain(const Task *task, const Domain &domain,
         continue;
       proc_list.push_back(*it);
     }
-/*
-printf ("Irina DEBUG2 \n");
-printf ("domain.get_rect<DIM>().hi[0] +1= %d \n", (domain.get_rect<DIM>().hi[0]+1));
-printf ("proc_list.size() = %d ", proc_list.size());
 
     assert(proc_list.size() == (size_t)(domain.get_rect<DIM>().hi[0]+1));
     for (Domain::DomainPointIterator pir(domain); pir; pir++) {
       DomainPoint dp = pir.p;
       Point<DIM> p = dp.get_point<DIM>();
       Processor proc = proc_list[p[0]];
-      Mapper::DomainSplit ds(Domain::from_rect<DIM>(Rect<DIM>(p, p)), proc,
+      DomainSplit ds(Domain::from_rect<DIM>(Rect<DIM>(p, p)), proc,
                             false , false );
       slices.push_back(ds);
     }
-*/
+   return;
   }
-   DefaultMapper::decompose_index_space(domain, local_cpus, 1/*splitting factor*/, slices);
+   ShimMapper::decompose_index_space(domain, local_cpus, 1/*splitting factor*/, slices);
 }
 
 bool MPIMapper::map_task(Task *task)
@@ -213,13 +244,6 @@ void MPIMapper::notify_mapping_failed(const Mappable *mappable)
   }
 }
 
-void MPIMapper::notify_profiling_info(const Task *task)
-{
-  log_mapper.info("profile data for %s: %lld %lld (%lld)",
-                  task->variants->name,
-                  task->start_time, task->stop_time,
-                  task->stop_time - task->start_time);
-}
 /*
 int RHSFMapper::get_tunable_value(const Task *task, TunableID tid, MappingTagID tag)
 {

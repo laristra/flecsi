@@ -119,23 +119,21 @@ class mesh_entity_base_t
   } // info
 
   /*!
+    Set the id of this entity.
+   */
+  template <size_t M>
+  void set_global_id( const id_t & id )
+  {
+    ids_[M] = id;
+  } // id
+
+  /*!
    */
 
   static constexpr size_t get_dim_(size_t meshDim, size_t dim)
   {
     return dim > meshDim ? meshDim : dim;
   } // get_dim_
-
-  template <class MT, size_t M, size_t D>
-  static mesh_entity_base_t * create_(
-      size_t id, mesh_topology_base_t & mesh)
-  {
-    using entity_type =
-      typename find_entity_<MT, get_dim_(MT::dimension, D), M>::type;
-    auto entity = new entity_type(mesh);
-    entity->ids_[M] = id;
-    return entity;
-  }
 
   template <class MT>
   friend class mesh_topology_t;
@@ -371,56 +369,6 @@ class connectivity_t
   } // init
 
   /*!
-    Initialize connectivity and create entities.
-    Used in build_connectivity() for creating edges/faces.
-
-    \tparam mesh type
-    \tparam domain
-    \tparam num domains
-    \param id vector to populate
-    \param entity vector to populate
-    \param input connection vector
-    \param topological dimension of entities created
-   */
-  template <class MT, size_t M, size_t D, size_t N>
-  void init_create(id_vector_t & iv, entity_vector_t<N> & ev,
-      const connection_vector_t & cv, mesh_topology_base_t & mesh)
-  {
-    clear();
-
-    // the first offset is always 0
-    from_index_vec_.push_back(0);
-
-    size_t n = cv.size();
-
-    size_t max_id = 0;
-
-    // cv is organized into groups of from entity to entity
-
-    for (size_t i = 0; i < n; ++i) {
-      const id_vector_t & iv = cv[i];
-
-      for (id_t id : iv) {
-        max_id = std::max(max_id, id.entity());
-        to_id_vec_.push_back(id);
-      } // for
-
-      from_index_vec_.push_back(to_id_vec_.size());
-    } // for
-
-    size_t start_id = ev.size();
-
-    ev.reserve(max_id + 1);
-
-    for (size_t local_id = start_id; local_id <= max_id; ++local_id) {
-      id_t global_id = id_t::make<M>(D, local_id);
-      ev.push_back(
-        mesh_entity_base_t<N>::template create_<MT, M, D>(global_id, mesh));
-      iv.push_back(global_id);
-    } // for
-  } // init_create
-
-  /*!
     Resize a connection.
 
     \param num_conns Number of connections for each group
@@ -513,6 +461,18 @@ class connectivity_t
   }
 
   /*!
+    Get the entities of the specified from index and return the count.
+   */
+  void reverse_entities(size_t index)
+  {
+    assert(index < from_index_vec_.size() - 1);
+    auto start = from_index_vec_[index];
+    auto end = from_index_vec_[index + 1];
+    std::reverse( to_id_vec_.begin() + start, to_id_vec_.begin() + end );
+  }
+
+
+  /*!
     True if the connectivity is empty (hasn't been populated).
    */
   bool empty() const { return to_id_vec_.empty(); }
@@ -569,6 +529,71 @@ class connectivity_t
 
 }; // class connectivity_t
 
+/*!
+  Holds the connectivities from domain M1 -> M2 for all topological dimensions.
+ */
+template<size_t FDS, size_t TDS = FDS>
+class domain_connectivity_t{
+public:
+
+  template<size_t FD, size_t TD>
+  connectivity_t& get(){
+    static_assert(FD <= FDS, "invalid from dimension");
+    static_assert(TD <= TDS, "invalid to dimension");
+    return conns_[FD][TD];
+  }
+
+  template<size_t FD, size_t TD>
+  const connectivity_t& get() const{
+    static_assert(FD <= FDS, "invalid from dimension");
+    static_assert(TD <= TDS, "invalid to dimension");
+    return conns_[FD][TD];
+  }
+
+  template<size_t FD>
+  connectivity_t& get(size_t to_dim){
+    static_assert(FD <= FDS, "invalid from dimension");
+    assert(to_dim <= TDS && "invalid to dimension");
+    return conns_[FD][to_dim];
+  }
+
+  template<size_t FD>
+  const connectivity_t& get(size_t to_dim) const{
+    static_assert(FD <= FDS, "invalid from dimension");
+    assert(to_dim <= TDS && "invalid to dimension");
+    return conns_[FD][to_dim];
+  }
+
+  connectivity_t& get(size_t from_dim, size_t to_dim){
+    assert(from_dim <= FDS && "invalid from dimension");
+    assert(to_dim <= TDS && "invalid to dimension");
+    return conns_[from_dim][to_dim];
+  }
+
+  const connectivity_t& get(size_t from_dim, size_t to_dim) const{
+    assert(from_dim <= FDS && "invalid from dimension");
+    assert(to_dim <= TDS && "invalid to dimension");
+    return conns_[from_dim][to_dim];
+  }
+
+  void dump(){
+    for(size_t i = 0; i < conns_.size(); ++i){
+      auto & ci = conns_[i];
+      for(size_t j = 0; j < ci.size(); ++j){
+        auto & cj = ci[j];
+        std::cout << "------------- " << i << " -> " << j << std::endl;
+        cj.dump();
+      }
+    }
+  }
+
+private:
+  using conn_array_t = 
+    std::array<std::array<connectivity_t, FDS + 1>, TDS + 1>;
+
+  conn_array_t conns_;
+};
+
 template <size_t D, size_t NM>
 struct mesh_storage_t {
 
@@ -578,19 +603,13 @@ struct mesh_storage_t {
    */
   using entities_t = std::array<entity_vector_t<NM>, D + 1>;
 
-  /*!
-    Defines a type for storing connectivity information.
-   */
-  using topology_t = std::array<std::array<connectivity_t, D + 1>, D + 1>;
-
   using id_vecs_t = std::array<id_vector_t, D + 1>;
-
   
   // array of array of vector of mesh_entity_base_t *
   std::array<entities_t, NM> entities;
 
-  // array of array of connectivity_t
-  std::array<std::array<topology_t, NM>, NM> topology;
+  // array of array of domain_connectivity_t
+  std::array<std::array<domain_connectivity_t<D>, NM>, NM> topology;
 
   // array of array of vector of id_t
   std::array<id_vecs_t, NM> id_vecs;
@@ -644,6 +663,19 @@ public:
    */
   virtual connectivity_t & get_connectivity(
       size_t from_domain, size_t to_domain, size_t from_dim, size_t to_dim) = 0;
+
+  /*!
+    This method should be called to construct and entity rather than
+    calling the constructor directly. This way, the ability to have
+    extra initialization behavior is reserved.
+  */
+  template <class T, class... S>
+  T * make(S &&... args)
+  {
+    T * entity = new T(std::forward<S>(args)...);
+    return entity;
+  } // make
+
 
 }; // mesh_topology_base_t
 

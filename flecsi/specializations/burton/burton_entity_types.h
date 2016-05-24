@@ -186,8 +186,10 @@ struct burton_cell_t
       binding and b) the number of entities per collection.
    */
   virtual std::vector<id_t> create_bound_entities(size_t from_domain,
-      size_t to_domain, size_t dim, id_t ** ent_ids, 
-      size_t * ent_counts, id_t * c){};
+      size_t to_domain, size_t dim, 
+      id_t ** ent_ids, size_t * ent_counts, 
+      id_t ** dom_ids, size_t * dom_counts, 
+      id_t * c){};
 
 }; // class burton_cell_t
 
@@ -280,13 +282,15 @@ public:
     \endverbatim
    */
   inline std::vector<id_t> create_bound_entities(size_t from_domain,
-      size_t to_domain, size_t dim, id_t ** ent_ids, 
-      size_t * ent_counts, id_t * c)
+      size_t to_domain, size_t dim, 
+      id_t ** ent_ids, size_t * ent_counts, 
+      id_t ** dom_ids, size_t * dom_counts, 
+      id_t * c)
   {
 
     switch (dim) {
       // Corners
-      case 1:
+      case 0:
         // corner 0
         c[0] = ent_ids[0][0]; // vertex 0
         c[1] = ent_ids[1][0]; // edge 0, abuts vertex 0
@@ -310,7 +314,7 @@ public:
         return {3, 3, 3, 3};
 
       // Wedges
-      case 2:
+      case 1:
 
         // wedge 0
         c[0] = ent_ids[0][0]; // vertex 0
@@ -365,7 +369,7 @@ public:
   \tparam N The domain of the wedge.
  */
 class burton_wedge_t
-    : public mesh_entity_t<2, burton_mesh_traits_t::num_domains>
+    : public mesh_entity_t<1, burton_mesh_traits_t::num_domains>
 {
 public:
   burton_wedge_t(){}
@@ -464,7 +468,7 @@ private:
   \tparam N The domain of the corner.
  */
 class burton_corner_t
-    : public mesh_entity_t<1, burton_mesh_traits_t::num_domains>
+    : public mesh_entity_t<0, burton_mesh_traits_t::num_domains>
 {
 public:
 

@@ -2,11 +2,19 @@
 #include <iostream>
 
 #include "flecsi/tree/tree_topology.h"
-#include "flecsi/concurrency/concurrency.h"
+#include "flecsi/data/data.h"
 
 using namespace std;
 using namespace flecsi;
+using namespace data_model;
 using namespace tree_topology_dev;
+
+struct state_user_meta_data_t {
+  void initialize(){}
+};
+
+using state_t = 
+  data_t<state_user_meta_data_t, default_data_storage_policy_t>;
 
 struct Aggregate{
   Aggregate(){
@@ -30,53 +38,88 @@ public:
 
   using point_t = point<element_t, dimension>;
 
+  using vector_t = point<element_t, dimension>;
+
   class body : public tree_entity<branch_int_t, dimension>{
   public:
-    body(double mass, const point_t& position, const point_t& velocity)
-    : mass_(mass), 
-    position_(position),
-    velocity_(velocity){}
+    body(){}
 
-    const point_t& coordinates() const{
-      return position_;
+    void init(double mass, const point_t& position, const vector_t& velocity){
+      state_t& state = state_t::instance();
+
+      auto am = state.dense_accessor<double, flecsi_internal>("mass");
+      auto av = state.dense_accessor<vector_t, flecsi_internal>("velocity");
+      auto ap = state.dense_accessor<vector_t, flecsi_internal>("position");
+      
+      am[id()] = mass;
+      ap[id()] = position;
+      av[id()] = velocity;
     }
 
-    double mass() const{
-      return mass_;
+    double mass(){
+      state_t& state = state_t::instance();
+      auto am = state.dense_accessor<double, flecsi_internal>("mass");
+      return am[id()];
+    }
+
+    point_t coordinates() const{
+      state_t& state = state_t::instance();
+      auto ap = state.dense_accessor<point_t, flecsi_internal>("position");
+      return ap[id()];
     }
 
     void interact(const body* b){
-      double d = distance(position_, b->position_);
-      velocity_ += 1e-9 * b->mass_ * (b->position_ - position_)/(d*d);
+      state_t& state = state_t::instance();
+      auto av = state.dense_accessor<vector_t, flecsi_internal>("velocity");
+      auto am = state.dense_accessor<double, flecsi_internal>("mass");
+      auto ap = state.dense_accessor<point_t, flecsi_internal>("position");
+
+      point_t p = ap[id()];
+      point_t pb = ap[b->id()];
+
+      double d = distance(p, pb);
+      av[id()] += 1e-9 * am[id()] * (pb - p)/(d*d);
     }
 
     void interact(Aggregate& a){
-      double d = distance(position_, a.center);
-      velocity_ += 1e-9 * a.mass * (a.center - position_)/(d*d);
+      state_t& state = state_t::instance();
+      auto av = state.dense_accessor<vector_t, flecsi_internal>("velocity");
+      auto am = state.dense_accessor<double, flecsi_internal>("mass");
+      auto ap = state.dense_accessor<point_t, flecsi_internal>("position");
+
+      point_t p = ap[id()];
+
+      double d = distance(p, a.center);
+      
+      vector_t& v = av[id()];
+      v += 1e-9 * a.mass * (a.center - p)/(d*d);
+      av[id()] = v;
     }
 
     void update(){
-      position_ += velocity_;
+      state_t& state = state_t::instance();
+      auto av = state.dense_accessor<vector_t, flecsi_internal>("velocity");
+      auto ap = state.dense_accessor<point_t, flecsi_internal>("position");
 
-      if(position_[0] > 1.0){
-        position_[0] = 0;
+      point_t& p = ap[id()];
+      vector_t& v = av[id()];
+
+      p += v;
+
+      if(p[0] > 1.0){
+        p[0] = 0;
       }
-      else if(position_[0] < 0.0){
-        position_[0] = 1.0;
+      else if(p[0] < 0.0){
+        p[0] = 1.0;
       }
       
-      if(position_[1] > 1.0){
-        position_[1] = 0;
+      if(p[1] > 1.0){
+        p[1] = 0;
       }
-      else if(position_[1] < 0.0){
-        position_[1] = 1.0;
+      else if(p[1] < 0.0){
+        p[1] = 1.0;
       }
     }
-
-  private:
-    point_t position_;
-    point_t velocity_;
-    double mass_;
   };
 
   using entity_t = body;
@@ -121,8 +164,7 @@ public:
 
     point_t coordinates() const{
       point_t p;
-      branch_id_t bid = id();
-      bid.coordinates(p);
+      id().coordinates(p);
       return p;
     }
 
@@ -148,24 +190,29 @@ double uniform(double a, double b){
 using tree_topology_t = tree_topology<tree_policy>;
 using body = tree_topology_t::body;
 using point_t = tree_topology_t::point_t;
+using vector_t = tree_topology_t::vector_t;
 using branch_t = tree_topology_t::branch_t;
 using branch_id_t = tree_topology_t::branch_id_t;
 
 static const size_t N = 5000;
-static const size_t TS = 5;
+static const size_t TS = 2;
 
 TEST(tree_topology, gravity) {
   tree_topology_t t;
 
-  thread_pool pool;
-  pool.start(8);
+  state_t& state = state_t::instance();
+
+  state.register_state<double, flecsi_internal>("mass", N, 0);
+  state.register_state<vector_t, flecsi_internal>("velocity", N, 0);
+  state.register_state<vector_t, flecsi_internal>("position", N, 0);
 
   vector<body*> bodies;
   for(size_t i = 0; i < N; ++i){
     double m = uniform(0.1, 0.5);
     point_t p = {uniform(0.0, 1.0), uniform(0.0, 1.0)};
     point_t v = {uniform(0.0, 0.001), uniform(0.0, 0.001)};
-    auto bi = t.make_entity(m, p, v);
+    auto bi = t.make_entity();
+    bi->init(m, p, v);
     bodies.push_back(bi);
     t.insert(bi);
   }
@@ -207,12 +254,7 @@ TEST(tree_topology, gravity) {
 
     for(size_t i = 0; i < N; ++i){
       auto bi = bodies[i];
-      auto ents = t.find_in_radius(pool, bi->coordinates(), 0.01);
-      for(auto e : ents){
-        if(bi != e){
-          bi->interact(e);
-        }
-      }
+      t.apply_in_radius(bi->coordinates(), 0.01, f, bi);
     }
 
     for(size_t i = 0; i < N; ++i){

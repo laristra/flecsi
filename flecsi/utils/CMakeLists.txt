@@ -52,7 +52,6 @@ set(utils_HEADERS
    mpi_legion_interoperability/legion_handshake.h
    mpi_legion_interoperability/task_ids.h
    mpi_legion_interoperability/mapper.h
-   mpi_legion_interoperability/macros.h
    PARENT_SCOPE)
 endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
@@ -89,9 +88,11 @@ cinch_add_unit(tuple_visit
 
 cinch_add_unit(tuple_zip
   SOURCES test/tuple_zip.cc)
-  
+ 
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 cinch_add_unit(TaskWrapper
   SOURCES test/TaskWrapper.cc)
+endif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
 if (ENABLE_STATIC_CONTAINER)
 cinch_add_unit(meta_container
@@ -102,6 +103,18 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 cinch_add_unit(mpi_with_legion
   SOURCES test/mpi_with_legion.cc
   POLICY MPILEGION)
+
+cinch_add_unit(more_complex_mpi_with_legion
+  SOURCES test/more_complex_mpi_with_legion.cc
+  POLICY MPILEGION)
+
+if (ENABLE_HYPRE)
+cinch_add_unit(legion_with_Hypre
+  SOURCES test/legion_with_Hypre.cc
+  POLICY MPILEGION
+  LIBRARIES     ${HYPRE_LIBRARIES} )
+endif (ENABLE_HYPRE)
+
 endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 #~---------------------------------------------------------------------------~-#
 # Formatting options

@@ -27,6 +27,11 @@ set(data_HEADERS
 	default/default_storage_type.h
 	default/default_meta_data.h
 	default/default_scalar.h
+  data_client.h
+  data_constants.h
+  data.h
+  default_meta_data.h
+  default_storage_policy.h
   PARENT_SCOPE
 )
 

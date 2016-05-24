@@ -28,6 +28,7 @@
 #include <functional>
 
 #include "flecsi/geometry/point.h"
+#include "flecsi/concurrency/concurrency.h"
 
 #define np(X)                                                             \
  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
@@ -888,7 +889,7 @@ public:
 
     size_t depth = -std::log2(radius);
     assert(depth <= branch_id_t::max_depth);
-
+    
     element_t size = std::pow(element_t(2), -element_t(depth));
 
     branch_id_t bid(center);
@@ -903,6 +904,48 @@ public:
     };
 
     find_(b, size, f, geometry_t::intersects, center, radius);
+
+    return entity_set_t(*this, std::move(entity_ids), false);
+  }
+
+  entity_set_t find_in_radius(thread_pool& pool,
+                              const point_t& center,
+                              element_t radius){
+    
+    size_t n = pool.num_threads();
+
+    constexpr size_t rb = branch_int_t(1) << P::dimension;
+    constexpr double bn = std::log2(double(rb));
+    size_t queue_depth = std::log2(double(n))/bn;
+    size_t m = std::pow(rb, queue_depth + 1);
+
+    // find the lowest level branch which is guaranteed
+    // to contain the point with radius
+
+    size_t depth = -std::log2(radius);
+    assert(depth <= branch_id_t::max_depth);
+
+    queue_depth += depth;
+    
+    element_t size = std::pow(element_t(2), -element_t(depth));
+
+    branch_id_t bid(center);
+    branch_t* b = find_parent(bid, depth);
+
+    entity_id_vector_t entity_ids;
+
+    auto f = [&](entity_t* ent, const point_t& center, element_t radius){
+      if(geometry_t::within(ent->coordinates(), center, radius)){
+        entity_ids.push_back(ent->id());
+      }
+    };
+
+    virtual_semaphore sem(1 - int(m));
+
+    find_(pool, sem, queue_depth, depth, b, size, f,
+      geometry_t::intersects, center, radius);
+
+    sem.acquire();
 
     return entity_set_t(*this, std::move(entity_ids), false);
   }
@@ -932,6 +975,47 @@ public:
     find_(b, size, f, geometry_t::intersects, center, radius);
   }
 
+  template<typename EF, typename... ARGS>
+  void apply_in_radius(thread_pool& pool,
+                       const point_t& center,
+                       element_t radius,
+                       EF&& ef,
+                       ARGS&&... args){
+
+    size_t n = pool.num_threads();
+
+    constexpr size_t rb = branch_int_t(1) << P::dimension;
+    constexpr double bn = std::log2(double(rb));
+    size_t queue_depth = std::log2(double(n))/bn;
+    size_t m = std::pow(rb, queue_depth + 1);
+
+    // find the lowest level branch which is guaranteed
+    // to contain the point with radius
+
+    size_t depth = -std::log2(radius);
+    assert(depth <= branch_id_t::max_depth);
+
+    queue_depth += depth;
+
+    element_t size = std::pow(element_t(2), -element_t(depth));
+
+    branch_id_t bid(center);
+    branch_t* b = find_parent(bid, depth);
+
+    auto f = [&](entity_t* ent, const point_t& center, element_t radius){
+      if(geometry_t::within(ent->coordinates(), center, radius)){
+        ef(ent, std::forward<ARGS>(args)...);
+      }
+    };
+
+    virtual_semaphore sem(1 - int(m));
+
+    find_(pool, sem, queue_depth, depth, b, size,
+          f, geometry_t::intersects, center, radius);
+
+    sem.acquire();
+  }
+
   template<typename EF, typename BF, typename... ARGS>
   void find_(branch_t* b,
              element_t size,
@@ -952,6 +1036,66 @@ public:
           ef(ent, std::forward<ARGS>(args)...);
         }
         return;        
+      }
+    }
+  }
+
+  template<typename EF, typename BF, typename... ARGS>
+  void find_(thread_pool& pool,
+             virtual_semaphore& sem,
+             size_t queue_depth,
+             size_t depth,
+             branch_t* b,
+             element_t size,
+             EF&& ef,
+             BF&& bf,
+             ARGS&&... args){
+    
+    constexpr size_t rb = branch_int_t(1) << P::dimension;
+
+    for(size_t i = 0; i < branch_t::num_children; ++i){
+      branch_t* ci = static_cast<branch_t*>(b->child(i));
+
+      if(ci){
+        if(bf(ci->coordinates(), size, std::forward<ARGS>(args)...)){        
+          if(depth == queue_depth){
+
+            auto f = [&](){
+              find_(ci, size/element_t(2),
+                std::forward<EF>(ef), std::forward<BF>(bf),
+                std::forward<ARGS>(args)...);
+
+              sem.release();
+            };
+
+            pool.queue(f);
+          }
+          else{
+            find_(pool, sem, queue_depth, depth + 1, ci, size/element_t(2),
+                  std::forward<EF>(ef), std::forward<BF>(bf),
+                  std::forward<ARGS>(args)...);
+          }
+        }
+        else{
+          size_t m = std::pow(rb, queue_depth - depth);
+
+          for(size_t i = 0; i < m; ++i){
+            sem.release(); 
+          }
+        }
+      }
+      else{
+        for(auto ent : *b){
+          ef(ent, std::forward<ARGS>(args)...);
+        }
+
+        size_t m = std::pow(rb, queue_depth - depth + 1);
+
+        for(size_t i = 0; i < m; ++i){
+          sem.release(); 
+        }
+
+        return;
       }
     }
   }
@@ -982,18 +1126,6 @@ public:
     return max_depth_;
   }
 
-  void apply(apply_function f){
-    apply(f, root_);
-  }
-
-  void apply(apply_function f, branch_t* b){    
-    f(*b);
-
-    for(size_t i = 0; i < branch_t::num_children; ++i){
-      apply(f, static_cast<branch_t*>(b->child(i)));
-    }
-  }
-
   entity_t* get(entity_id_t id){
     assert(id < entities_.size());
     return entities_[id];
@@ -1003,6 +1135,47 @@ public:
     auto itr = branch_map_.find(id);
     assert(itr != branch_map_.end());
     return itr->second;
+  }
+
+  branch_t* root(){
+    return root_;
+  }
+
+  template<typename F, typename... ARGS>
+  void visit(branch_t* b, F&& f, ARGS&&... args){
+    visit_(b, 0, std::forward<F>(f), std::forward<ARGS>(args)...);
+  }
+
+  template<typename F, typename... ARGS>
+  void visit_(branch_t* b, size_t depth, F&& f, ARGS&&... args){
+    if(f(b, depth, std::forward<ARGS>(args)...)){
+      return;
+    }
+
+    for(auto bi : b->children()){
+      if(!bi){
+        return;
+      }
+
+      branch_t* bc = static_cast<branch_t*>(bi);
+      visit_(bc, depth + 1, std::forward<F>(f), std::forward<ARGS>(args)...);
+    }
+  }
+
+  template<typename F, typename... ARGS>
+  void apply(branch_t* b, F&& f, ARGS&&... args){
+    for(auto bi : b->children()){
+      if(bi){
+        branch_t* bc = static_cast<branch_t*>(bi);
+        apply(bc, std::forward<F>(f), std::forward<ARGS>(args)...);
+      }
+      else{
+        for(auto ent : *b){
+          f(ent, std::forward<ARGS>(args)...);
+        }
+        return;
+      }
+    }  
   }
 
 private:

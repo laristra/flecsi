@@ -5,6 +5,7 @@
 
 #include <cinchtest.h>
 #include "flecsi/utils/TaskWrapper.h"
+#include "flecsi/execution/legion_execution_policy.h"
 
 using namespace flecsi;
 
@@ -18,17 +19,26 @@ void example_task2(int beta,double alpha,bool what,state_accessor_t<double> a, s
 
 }
 
+void example_task3(int beta)
+{
+
+}
+
 TEST(TaskWrapper, TaskWrapper2) {
 
   /* Test Logic: See 'Google Test Macros' section below. */
 
-	using TW = TaskWrapper<true,false,0,true,std::function<decltype(example_task)>>;
+	using TW = TaskWrapper<true,false,0,true,legion_execution_policy_t,std::function<decltype(example_task)>>;
 
 	ASSERT_EQ(sizeof(TW::sArgT),sizeof(std::tuple<int,double>));
 
-	using TW2 = TaskWrapper<true,false,0,true,std::function<decltype(example_task2)>>;
+	using TW2 = TaskWrapper<true,false,0,true,legion_execution_policy_t,std::function<decltype(example_task2)>>;
 
 	ASSERT_EQ(sizeof(TW2::sArgT),sizeof(std::tuple<int,double,bool>));
+
+	using TW3 = TaskWrapper<true,false,0,true,legion_execution_policy_t,std::function<decltype(example_task3)>>;
+
+	ASSERT_EQ(sizeof(TW3::sArgT),sizeof(std::tuple<int>));
 
 } // TEST
 
