@@ -22,7 +22,7 @@
 #include "legion.h"
 #include "realm.h"
 
-#include "flecsi/utils/mpi_legion_interoperability/legionArrays.h"
+#include "flecsi/utils/mpi_legion_interoperability/legion_arrays.h"
 
 template <typename Type>
 class MPILegionArray{
