@@ -80,6 +80,23 @@ class MPILegionArray{
           return *legion_object.legion_accessor;
         }
 
+  void copy_legion_to_mpi (LegionRuntime::HighLevel::Context &ctx,
+          HighLevelRuntime *runtime)
+  {
+   auto *acc=legion_object.get_accessor(READ_ONLY, EXCLUSIVE, ctx, runtime);
+   for(GenericPointInRectIterator<1> pir(legion_object.bounds); pir; pir++)
+    *mpi_object++ = acc.read(DomainPoint::from_point<1>(pir.p));
+  }
+
+  void copy_mpi_to_legion (LegionRuntime::HighLevel::Context &ctx,
+          HighLevelRuntime *runtime)
+  {
+     auto *acc=legion_object.get_accessor(WRITE_DISCARD, EXCLUSIVE, ctx, runtime);
+     for(GenericPointInRectIterator<1> pir(legion_object.bounds); pir; pir++)
+          acc.write(DomainPoint::from_point<1>(pir.p), *mpi_object++);    
+
+  }
+
 };
 
 

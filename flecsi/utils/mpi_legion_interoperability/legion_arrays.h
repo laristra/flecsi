@@ -305,10 +305,10 @@ public:
     }
    
    template <typename Enum>
-   auto accessor (Enum &priviledge, 
-                  Enum &coherence_property,
-                  LegionRuntime::HighLevel::Context &ctx,
-                  LegionRuntime::HighLevel::HighLevelRuntime *lrt)
+   auto get_accessor (Enum &priviledge, 
+           Enum &coherence_property,
+           LegionRuntime::HighLevel::Context &ctx,
+           LegionRuntime::HighLevel::HighLevelRuntime *lrt)
     {
         using namespace LegionRuntime::HighLevel;
         using namespace LegionRuntime::Accessor;
