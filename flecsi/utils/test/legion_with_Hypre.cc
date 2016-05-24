@@ -47,7 +47,8 @@ Description:    This code solves a system corresponding to a discretization
 #include "legion.h"
 
 // user includes
-#include "flecsi/utils/mpi_legion_interoperability/legion_handshake.h"
+#include "flecsi/utils/mpi_legion_interoperability/mpi_legion_interop.h"
+//#include "flecsi/utils/mpi_legion_interoperability/legion_handshake.h"
 #include "flecsi/utils/mpi_legion_interoperability/mapper.h"
 #include "flecsi/utils/mpi_legion_interoperability/task_ids.h"
 #include "flecsi/execution/mpi_execution_policy.h"
