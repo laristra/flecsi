@@ -529,6 +529,71 @@ class connectivity_t
 
 }; // class connectivity_t
 
+/*!
+  Holds the connectivities from domain M1 -> M2 for all topological dimensions.
+ */
+template<size_t FDS, size_t TDS = FDS>
+class domain_connectivity_t{
+public:
+
+  template<size_t FD, size_t TD>
+  connectivity_t& get(){
+    static_assert(FD <= FDS, "invalid from dimension");
+    static_assert(TD <= TDS, "invalid to dimension");
+    return conns_[FD][TD];
+  }
+
+  template<size_t FD, size_t TD>
+  const connectivity_t& get() const{
+    static_assert(FD <= FDS, "invalid from dimension");
+    static_assert(TD <= TDS, "invalid to dimension");
+    return conns_[FD][TD];
+  }
+
+  template<size_t FD>
+  connectivity_t& get(size_t to_dim){
+    static_assert(FD <= FDS, "invalid from dimension");
+    assert(to_dim <= TDS && "invalid to dimension");
+    return conns_[FD][to_dim];
+  }
+
+  template<size_t FD>
+  const connectivity_t& get(size_t to_dim) const{
+    static_assert(FD <= FDS, "invalid from dimension");
+    assert(to_dim <= TDS && "invalid to dimension");
+    return conns_[FD][to_dim];
+  }
+
+  connectivity_t& get(size_t from_dim, size_t to_dim){
+    assert(from_dim <= FDS && "invalid from dimension");
+    assert(to_dim <= TDS && "invalid to dimension");
+    return conns_[from_dim][to_dim];
+  }
+
+  const connectivity_t& get(size_t from_dim, size_t to_dim) const{
+    assert(from_dim <= FDS && "invalid from dimension");
+    assert(to_dim <= TDS && "invalid to dimension");
+    return conns_[from_dim][to_dim];
+  }
+
+  void dump(){
+    for(size_t i = 0; i < conns_.size(); ++i){
+      auto ci = conns_[i];
+      for(size_t j = 0; j < ci.size(); ++j){
+        auto & cj = ci[j];
+        std::cout << "------------- " << i << " -> " << j << std::endl;
+        cj.dump();
+      }
+    }
+  }
+
+private:
+  using conn_array_t = 
+    std::array<std::array<connectivity_t, FDS + 1>, TDS + 1>;
+
+  conn_array_t conns_;
+};
+
 template <size_t D, size_t NM>
 struct mesh_storage_t {
 
@@ -538,19 +603,13 @@ struct mesh_storage_t {
    */
   using entities_t = std::array<entity_vector_t<NM>, D + 1>;
 
-  /*!
-    Defines a type for storing connectivity information.
-   */
-  using topology_t = std::array<std::array<connectivity_t, D + 1>, D + 1>;
-
   using id_vecs_t = std::array<id_vector_t, D + 1>;
-
   
   // array of array of vector of mesh_entity_base_t *
   std::array<entities_t, NM> entities;
 
-  // array of array of connectivity_t
-  std::array<std::array<topology_t, NM>, NM> topology;
+  // array of array of domain_connectivity_t
+  std::array<std::array<domain_connectivity_t<D>, NM>, NM> topology;
 
   // array of array of vector of id_t
   std::array<id_vecs_t, NM> id_vecs;

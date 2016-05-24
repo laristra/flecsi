@@ -1443,11 +1443,9 @@ class mesh_topology_t : public mesh_topology_base_t
   const connectivity_t & get_connectivity_(size_t from_domain, size_t to_domain,
       size_t from_dim, size_t to_dim) const
   {
-    assert(from_dim < ms_.topology[from_domain][to_domain].size() &&
-        "invalid from_dim");
-    auto & t = ms_.topology[from_domain][to_domain][from_dim];
-    assert(to_dim < t.size() && "invalid to_dim");
-    return t[to_dim];
+    assert(from_domain < MT::num_domains && "invalid from domain");
+    assert(to_domain < MT::num_domains && "invalid to domain");
+    return ms_.topology[from_domain][to_domain].get(from_dim, to_dim);
   } // get_connectivity
 
   /*!
@@ -1457,11 +1455,9 @@ class mesh_topology_t : public mesh_topology_base_t
   connectivity_t & get_connectivity_(
       size_t from_domain, size_t to_domain, size_t from_dim, size_t to_dim)
   {
-    assert(from_dim < ms_.topology[from_domain][to_domain].size() &&
-        "invalid from_dim");
-    auto & t = ms_.topology[from_domain][to_domain][from_dim];
-    assert(to_dim < t.size() && "invalid to_dim");
-    return t[to_dim];
+    assert(from_domain < MT::num_domains && "invalid from domain");
+    assert(to_domain < MT::num_domains && "invalid to domain");
+    return ms_.topology[from_domain][to_domain].get(from_dim, to_dim);
   } // get_connectivity
 
   /*!
@@ -1471,10 +1467,7 @@ class mesh_topology_t : public mesh_topology_base_t
   template <size_t FM, size_t TM, size_t FD>
   connectivity_t & get_connectivity_(size_t to_dim)
   {
-    assert(FD < ms_.topology[FM][TM].size() && "invalid from_dim");
-    auto & t = ms_.topology[FM][TM][FD];
-    assert(to_dim < t.size() && "invalid to_dim");
-    return t[to_dim];
+    return ms_.topology[FM][TM].template get<FD>(to_dim);
   } // get_connectivity
 
   /*!
@@ -1484,7 +1477,7 @@ class mesh_topology_t : public mesh_topology_base_t
   template <size_t FM, size_t TM, size_t FD, size_t TD>
   connectivity_t & get_connectivity_()
   {
-    return ms_.topology[FM][TM][FD][TD];
+    return ms_.topology[FM][TM].template get<FD, TD>();
   } // get_connectivity
 
   /*!
@@ -1754,15 +1747,7 @@ class mesh_topology_t : public mesh_topology_base_t
                 << std::endl;
       for (size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain) {
         std::cout << "========== to domain: " << to_domain << std::endl;
-        size_t n = ms_.topology[from_domain][to_domain].size();
-        for (size_t i = 0; i < n; ++i) {
-          auto & ci = ms_.topology[from_domain][to_domain][i];
-          for (size_t j = 0; j < ci.size(); ++j) {
-            auto & cj = ci[j];
-            std::cout << "------------- " << i << " -> " << j << std::endl;
-            cj.dump();
-          }
-        }
+        ms_.topology[from_domain][to_domain].dump();
       }
     }
   } // dump

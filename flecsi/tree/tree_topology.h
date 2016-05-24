@@ -912,11 +912,15 @@ public:
                               const point_t& center,
                               element_t radius){
     
+    size_t n = pool.num_threads();
+
+    constexpr size_t rb = branch_int_t(1) << P::dimension;
+    constexpr double bn = std::log2(double(rb));
+    size_t queue_depth = std::log2(double(n))/bn;
+    size_t m = std::pow(rb, queue_depth + 1);
+
     // find the lowest level branch which is guaranteed
     // to contain the point with radius
-
-    size_t queue_depth = 
-      std::log2(pool.num_threads())/(branch_int_t(1) << P::dimension);
 
     size_t depth = -std::log2(radius);
     assert(depth <= branch_id_t::max_depth);
@@ -936,8 +940,12 @@ public:
       }
     };
 
-    find_(pool, queue_depth, depth, b, size, f,
+    virtual_semaphore sem(1 - int(m));
+
+    find_(pool, sem, queue_depth, depth, b, size, f,
       geometry_t::intersects, center, radius);
+
+    sem.acquire();
 
     return entity_set_t(*this, std::move(entity_ids), false);
   }
@@ -974,8 +982,12 @@ public:
                        EF&& ef,
                        ARGS&&... args){
 
-    size_t queue_depth = 
-      std::log2(pool.num_threads())/(branch_int_t(1) << P::dimension);
+    size_t n = pool.num_threads();
+
+    constexpr size_t rb = branch_int_t(1) << P::dimension;
+    constexpr double bn = std::log2(double(rb));
+    size_t queue_depth = std::log2(double(n))/bn;
+    size_t m = std::pow(rb, queue_depth + 1);
 
     // find the lowest level branch which is guaranteed
     // to contain the point with radius
@@ -996,7 +1008,12 @@ public:
       }
     };
 
-    find_(pool, queue_depth, depth, b, size, f, geometry_t::intersects, center, radius);
+    virtual_semaphore sem(1 - int(m));
+
+    find_(pool, sem, queue_depth, depth, b, size,
+          f, geometry_t::intersects, center, radius);
+
+    sem.acquire();
   }
 
   template<typename EF, typename BF, typename... ARGS>
@@ -1025,6 +1042,7 @@ public:
 
   template<typename EF, typename BF, typename... ARGS>
   void find_(thread_pool& pool,
+             virtual_semaphore& sem,
              size_t queue_depth,
              size_t depth,
              branch_t* b,
@@ -1033,26 +1051,51 @@ public:
              BF&& bf,
              ARGS&&... args){
     
+    constexpr size_t rb = branch_int_t(1) << P::dimension;
+
     for(size_t i = 0; i < branch_t::num_children; ++i){
       branch_t* ci = static_cast<branch_t*>(b->child(i));
 
-      if(ci && bf(ci->coordinates(), size, std::forward<ARGS>(args)...)){
-        if(depth == queue_depth){
-          pool.queue([&](){find_(ci, size/element_t(2),
-            std::forward<EF>(ef), std::forward<BF>(bf),
-            std::forward<ARGS>(args)...);});
+      if(ci){
+        if(bf(ci->coordinates(), size, std::forward<ARGS>(args)...)){        
+          if(depth == queue_depth){
+
+            auto f = [&](){
+              find_(ci, size/element_t(2),
+                std::forward<EF>(ef), std::forward<BF>(bf),
+                std::forward<ARGS>(args)...);
+
+              sem.release();
+            };
+
+            pool.queue(f);
+          }
+          else{
+            find_(pool, sem, queue_depth, depth + 1, ci, size/element_t(2),
+                  std::forward<EF>(ef), std::forward<BF>(bf),
+                  std::forward<ARGS>(args)...);
+          }
         }
         else{
-          find_(pool, queue_depth, depth + 1, ci, size/element_t(2),
-                std::forward<EF>(ef), std::forward<BF>(bf),
-                std::forward<ARGS>(args)...);          
+          size_t m = std::pow(rb, queue_depth - depth);
+
+          for(size_t i = 0; i < m; ++i){
+            sem.release(); 
+          }
         }
       }
       else{
         for(auto ent : *b){
           ef(ent, std::forward<ARGS>(args)...);
         }
-        return;        
+
+        size_t m = std::pow(rb, queue_depth - depth + 1);
+
+        for(size_t i = 0; i < m; ++i){
+          sem.release(); 
+        }
+
+        return;
       }
     }
   }
