@@ -1275,31 +1275,15 @@ class mesh_topology_t : public mesh_topology_base_t
       auto cell = static_cast<entity_type<MT::dimension, M0> *>(c);
       id_t cell_id = cell->template global_id<FM>();
 
-      // Get ids of entities with at least this dimension
-      for (size_t dim = 0; dim < MT::dimension; ++dim) {
-        auto & c = get_connectivity_<FM, FM, MT::dimension>(dim);
-        primal_ids[dim] = c.get_entities( cell_id.entity(), num_primal_ids[dim] );
-      } // for
-
-      for (size_t dim = 0; dim < TD; ++dim) {
-        auto & c = get_connectivity_<FM, TM, MT::dimension>(dim);
-        if ( !c.empty() )
-          domain_ids[dim] = c.get_entities( cell_id.entity(), num_domain_ids[dim] );
-        else {
-          num_domain_ids[dim] = 0;
-          domain_ids[dim] = nullptr;
-        }
-        
-      } // for
+      domain_connectivity<MT::dimension> & primal_conn = ms_.topology[FM][FM];
+      domain_connectivity<MT::dimension> & domain_conn = ms_.topology[FM][TM];
 
       // p.first:   The number of entities per cell.
       // p.second:  A std::vector of id_t containing the ids of the
       //            entities that define the bound entity.
 
       auto sv = cell->create_bound_entities(
-        FM, TM, TD, primal_ids.data(), num_primal_ids.data(), 
-        domain_ids.data(), num_domain_ids.data(), 
-        entity_ids.data() );
+        FM, TM, TD, cell_id, primal_conn, domain_conn, entity_ids.data());
 
       size_t n = sv.size();
 
