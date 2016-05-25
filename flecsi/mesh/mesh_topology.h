@@ -1558,7 +1558,7 @@ class mesh_topology_t : public mesh_topology_base_t
   template <size_t D, size_t FM = 0, size_t TM = FM, class E>
   decltype(auto) entities(domain_entity<FM, E> & e) const
   {
-    return entities<D, FM, TM>(e.entity()());
+    return entities<D, FM, TM>(e.entity());
   } // entities
 
   /*!

@@ -29,6 +29,7 @@
 
 #include "flecsi/data/data_client.h"
 #include "flecsi/mesh/mesh_utils.h"
+#include "flecsi/utils/array_ref.h"
 
 namespace flecsi
 {
@@ -470,6 +471,19 @@ class connectivity_t
     return to_id_vec_.data() + start;
   }
 
+
+  /*!
+    Get the entities of the specified from index and return the count.
+   */
+  auto get_entity_vec(size_t index) const
+  {
+    assert(index < from_index_vec_.size() - 1);
+    auto start = from_index_vec_[index];
+    auto count = from_index_vec_[index + 1] - start;
+    return utils::make_array_ref( to_id_vec_.data() + start, count );
+  }
+
+
   /*!
     Get the entities of the specified from index and return the count.
    */
@@ -609,6 +623,19 @@ public:
 
   id_t* get_entities(id_t from_id, size_t to_dim, size_t & count){
     return get(from_id.dimension(), to_dim).get_entities(from_id.entity(), count); 
+  }
+
+  template<size_t FD, size_t ND>
+  auto get_entity_vec(mesh_entity_t<FD, ND>* from_ent, size_t to_dim) const
+  {
+    auto & conn = get<FD>(to_dim);
+    return conn.get_entity_vec( from_ent.id(from_domain_) ); 
+  }
+
+  auto get_entity_vec(id_t from_id, size_t to_dim) const
+  {
+    auto & conn = get(from_id.dimension(), to_dim);
+    return conn.get_entity_vec( from_id.entity() ); 
   }
 
   void dump(){
