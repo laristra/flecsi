@@ -7,7 +7,7 @@ services:
 
 env:
   matrix:
-    - DOCKERFILE=ubuntu MININAL=ON MPI=OFF RUNTIME=serial
+    - DOCKERFILE=ubuntu MINIMAL=ON MPI=OFF RUNTIME=serial
     - DOCKERFILE=ubuntu MPI=OFF TPL=ON RUNTIME=legion
     - DOCKERFILE=ubuntu MPI=OFF TPL=ON RUNTIME=legion WERROR=yes
     - DOCKERFILE=ubuntu MPI=ON TPL=ON RUNTIME=mpilegion
@@ -17,7 +17,7 @@ env:
     - DOCKERFILE=ubuntu MPI=OFF RUNTIME=serial WERROR=yes
     - DOCKERFILE=ubuntu MPI=OFF COVERAGE=ON RUNTIME=serial
 
-    - DOCKERFILE=fedora MININAL=ON MPI=OFF RUNTIME=serial
+    - DOCKERFILE=fedora MINIMAL=ON MPI=OFF RUNTIME=serial
     - DOCKERFILE=fedora MPI=OFF TPL=ON RUNTIME=legion
     - DOCKERFILE=fedora MPI=OFF TPL=ON RUNTIME=legion WERROR=yes
     - DOCKERFILE=fedora MPI=ON TPL=ON RUNTIME=mpilegion
@@ -29,7 +29,7 @@ env:
 
 script:
  - docker build --build-arg MPI=${MPI} --build-arg RUNTIME=${RUNTIME} --build-arg WERROR=${WERROR}
-                --build-arg TPL=${TPL} --build-arg COVERAGE=${COVERAGE} --build-arg MININAL=${MININAL}
+                --build-arg TPL=${TPL} --build-arg COVERAGE=${COVERAGE} --build-arg MINIMAL=${MINIMAL}
                 --build-arg CI=${CI} --build-arg TRAVIS=${TRAVIS} --build-arg TRAVIS_BRANCH=${TRAVIS_BRANCH}
                 --build-arg TRAVIS_COMMIT=${TRAVIS_COMMIT} --build-arg TRAVIS_JOB_NUMBER=${TRAVIS_JOB_NUMBER}
                 --build-arg TRAVIS_PULL_REQUEST=${TRAVIS_PULL_REQUEST} --build-arg TRAVIS_JOB_ID=${TRAVIS_JOB_ID}
