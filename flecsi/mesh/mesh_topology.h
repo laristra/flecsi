@@ -691,11 +691,18 @@ class mesh_topology_t : public mesh_topology_base_t
   //! Constructor
   mesh_topology_t()
   {
+    for (size_t from_domain = 0; from_domain < MT::num_domains; ++from_domain) {
+      for (size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain) {
+        ms_.topology[from_domain][to_domain].init_(from_domain, to_domain);
+      }
+    }
+
     // initialize all lower connectivities because the user might 
     // specify different combinations of connections
     for (size_t i = 1; i < MT::dimension+1; ++i)
       for (size_t j = 0; j < i; ++j)
         get_connectivity_(0, i, j).init();
+
   } // mesh_topology_t()
 
   // The mesh retains ownership of the entities and deletes them
@@ -818,7 +825,7 @@ class mesh_topology_t : public mesh_topology_base_t
     size_t entity_id = 0;
     size_t max_cell_entity_conns = 1;
 
-    domain_connectivity_t<MT::dimension> & dc = ms_.topology[M][M];
+    domain_connectivity<MT::dimension> & dc = ms_.topology[M][M];
 
     // Get connectivity for cells to vertices.
     connectivity_t & cell_to_vertex = dc.template get<MT::dimension>(0);
@@ -862,8 +869,8 @@ class mesh_topology_t : public mesh_topology_base_t
       // p.first:   The number of entities per cell.
       // p.second:  A std::vector of id_t containing the ids of the
       //            vertices that define the entity.
-      auto sv =
-          cell->create_entities(D, entity_vertices.data(), vertices, end_index);
+      auto sv = 
+        cell->template create_entities(cell_id, D, dc, entity_vertices.data());
 
       size_t n = sv.size();
 

@@ -170,8 +170,10 @@ struct burton_cell_t
     \return A pair with a) the number of vertex collections making up the
       entity and b) the number of vertices per collection.
    */
-  virtual std::vector<id_t> create_entities(
-      size_t dim, id_t * e, id_t * v, size_t vertex_count){}
+  virtual
+  std::vector<size_t>
+  create_entities(flecsi::id_t cell_id, size_t dim, domain_connectivity<2> & c, flecsi::id_t * e)
+  {}
 
   /*!
     \brief create_bound_entities binds mesh entities across domains.
@@ -219,9 +221,10 @@ public:
   /*!
     \brief create_entities function for burton_quadrilateral_cell_t.
    */
-  inline std::vector<id_t> create_entities(
-      size_t dim, id_t * e, id_t * v, size_t vertex_count)
-  {
+  std::vector<size_t>
+  create_entities(flecsi::id_t cell_id, size_t dim, domain_connectivity<2> & c, flecsi::id_t * e){
+    flecsi::id_t* v = c.get_entities(cell_id, 0);
+
     e[0] = v[0];
     e[1] = v[1];
 
