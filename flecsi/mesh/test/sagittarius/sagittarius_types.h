@@ -20,7 +20,7 @@
 namespace flecsi
 {
 struct sagittarius_types {
-  static constexpr size_t dimension = 2;
+  static constexpr size_t num_dimensions = 2;
   static constexpr size_t num_domains = 1;
 
   using entity_types = std::tuple<

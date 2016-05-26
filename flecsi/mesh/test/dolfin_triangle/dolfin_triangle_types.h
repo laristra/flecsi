@@ -20,7 +20,7 @@
 namespace flecsi
 {
 struct dolfin_triangle_types_t {
-  static constexpr size_t dimension = 2;
+  static constexpr size_t num_dimensions = 2;
   static constexpr size_t num_domains = 1;
 
   // FIXME: what exactly is a DOMAIN?

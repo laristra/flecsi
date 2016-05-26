@@ -119,7 +119,7 @@ public:
 
 class TestMesh2dType{
 public:
-  static constexpr size_t dimension = 2;
+  static constexpr size_t num_dimensions = 2;
 
   static constexpr size_t num_domains = 2;
 
