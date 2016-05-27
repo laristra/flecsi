@@ -65,6 +65,10 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
 #MPI+Legion interface
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+  if(NOT ENABLE_MPI)
+    message (FATAL_ERROR " MPI is required for the mpilegion runtime model")
+  endif ()
+ 
    set(FLECSI_RUNTIME_MAIN script-driver-mpilegion.cc)
 
   if(NOT legion_FOUND)

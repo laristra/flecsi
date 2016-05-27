@@ -93,10 +93,10 @@ cinch_add_unit(tuple_visit
 cinch_add_unit(tuple_zip
   SOURCES test/tuple_zip.cc)
  
-if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion" OR FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 cinch_add_unit(TaskWrapper
   SOURCES test/TaskWrapper.cc)
-endif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+endif(FLECSI_RUNTIME_MODEL STREQUAL "legion" OR FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
 if (ENABLE_STATIC_CONTAINER)
 cinch_add_unit(meta_container
