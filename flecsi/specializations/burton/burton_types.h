@@ -42,7 +42,7 @@ struct burton_mesh_types_t {
    *--------------------------------------------------------------------------*/
 
   //! The dimension of the burton mesh picked up from burton_mesh_traits_t.
-  static constexpr size_t dimension = burton_mesh_traits_t::dimension;
+  static constexpr size_t num_dimensions = burton_mesh_traits_t::num_dimensions;
 
   //! The number of domains in burton mesh picked up from burton_mesh_traits_t.
   static constexpr size_t num_domains = burton_mesh_traits_t::num_domains;

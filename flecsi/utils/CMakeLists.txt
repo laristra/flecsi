@@ -13,6 +13,7 @@
 #~----------------------------------------------------------------------------~#
 
 set(utils_HEADERS
+  array_ref.h
   bitfield.h
   check_sig.h
   check_types.h

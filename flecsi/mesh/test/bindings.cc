@@ -3,6 +3,7 @@
 
 #include "flecsi/utils/common.h"
 #include "flecsi/mesh/mesh_topology.h"
+#include "flecsi/mesh/mesh_types.h"
 
 using namespace std;
 using namespace flecsi;
@@ -35,8 +36,8 @@ public:
   void set_precedence(size_t dim, uint64_t precedence) {}
 
   std::vector<size_t>
-  create_entities(size_t dim, flecsi::id_t *e,
-                  flecsi::id_t *v, size_t vertex_count){  
+  create_entities(flecsi::id_t cell_id, size_t dim, domain_connectivity<2> & c, flecsi::id_t * e){
+    flecsi::id_t* v = c.get_entities(cell_id, 0);
 
     e[0] = v[0];
     e[1] = v[2];
@@ -57,43 +58,45 @@ public:
   create_bound_entities(size_t from_domain,
                         size_t to_domain,
                         size_t create_dim,
-                        flecsi::id_t **ent_ids,
-                        size_t * ent_counts,
-                        flecsi::id_t **dom_ids,
-                        size_t * dom_counts,
+                        flecsi::id_t cell_id,
+                        domain_connectivity<2>& primal_conn,
+                        domain_connectivity<2>& domain_conn, 
                         flecsi::id_t *c) {
     
+    flecsi::id_t* v = primal_conn.get_entities(cell_id, 0);
+    flecsi::id_t* e = primal_conn.get_entities(cell_id, 1);
+
     switch(create_dim) {
       case 0:
-        c[0] = ent_ids[0][0];
-        c[1] = ent_ids[1][0];
-        c[2] = ent_ids[1][2];
+        c[0] = v[0];
+        c[1] = e[0];
+        c[2] = e[2];
 
-        c[3] = ent_ids[0][1];
-        c[4] = ent_ids[1][1];
-        c[5] = ent_ids[1][2];
+        c[3] = v[1];
+        c[4] = e[1];
+        c[5] = e[2];
 
-        c[6] = ent_ids[0][2];
-        c[7] = ent_ids[1][0];
-        c[8] = ent_ids[1][3];
+        c[6] = v[2];
+        c[7] = e[0];
+        c[8] = e[3];
 
-        c[9] = ent_ids[0][3];
-        c[10] = ent_ids[1][3];
-        c[11] = ent_ids[1][1];
+        c[9]  = v[3];
+        c[10] = e[3];
+        c[11] = e[1];
 
         return {3, 3, 3, 3};
       case 1:
-        c[0] = ent_ids[0][0];
-        c[1] = ent_ids[1][2];
+        c[0] = v[0];
+        c[1] = e[2];
 
-        c[2] = ent_ids[0][1];
-        c[3] = ent_ids[1][1];
+        c[2] = v[1];
+        c[3] = e[1];
 
-        c[4] = ent_ids[0][3];
-        c[5] = ent_ids[1][3];
+        c[4] = v[3];
+        c[5] = e[3];
 
-        c[6] = ent_ids[0][2];
-        c[7] = ent_ids[1][0];
+        c[6] = v[2];
+        c[7] = e[0];
 
         return {2, 2, 2, 2};
     }
@@ -116,7 +119,7 @@ public:
 
 class TestMesh2dType{
 public:
-  static constexpr size_t dimension = 2;
+  static constexpr size_t num_dimensions = 2;
 
   static constexpr size_t num_domains = 2;
 

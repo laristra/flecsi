@@ -29,6 +29,7 @@
 
 #include "flecsi/data/data_client.h"
 #include "flecsi/mesh/mesh_utils.h"
+#include "flecsi/utils/array_ref.h"
 
 namespace flecsi
 {
@@ -106,10 +107,20 @@ class mesh_entity_base_t
     return ids_[M];
   } // id
 
+  id_t global_id(size_t domain) const
+  {
+    return ids_[domain];
+  } // id
+
   template <size_t M>
   size_t id() const
   {
     return ids_[M].entity();
+  } // id
+
+  size_t id(size_t domain) const
+  {
+    return ids_[domain].entity();
   } // id
 
   template <size_t M>
@@ -452,13 +463,26 @@ class connectivity_t
   /*!
     Get the entities of the specified from index and return the count.
    */
-  id_t * get_entities(size_t index, size_t & endIndex)
+  id_t * get_entities(size_t index, size_t & count)
   {
     assert(index < from_index_vec_.size() - 1);
     uint64_t start = from_index_vec_[index];
-    endIndex = from_index_vec_[index + 1] - start;
+    count = from_index_vec_[index + 1] - start;
     return to_id_vec_.data() + start;
   }
+
+
+  /*!
+    Get the entities of the specified from index and return the count.
+   */
+  auto get_entity_vec(size_t index) const
+  {
+    assert(index < from_index_vec_.size() - 1);
+    auto start = from_index_vec_[index];
+    auto count = from_index_vec_[index + 1] - start;
+    return utils::make_array_ref( to_id_vec_.data() + start, count );
+  }
+
 
   /*!
     Get the entities of the specified from index and return the count.
@@ -532,53 +556,91 @@ class connectivity_t
 /*!
   Holds the connectivities from domain M1 -> M2 for all topological dimensions.
  */
-template<size_t FDS, size_t TDS = FDS>
-class domain_connectivity_t{
+template<size_t D>
+class domain_connectivity{
 public:
+
+  void init_(size_t from_domain, size_t to_domain){
+    from_domain_ = from_domain;
+    to_domain_ = to_domain;
+  }
 
   template<size_t FD, size_t TD>
   connectivity_t& get(){
-    static_assert(FD <= FDS, "invalid from dimension");
-    static_assert(TD <= TDS, "invalid to dimension");
+    static_assert(FD <= D, "invalid from dimension");
+    static_assert(TD <= D, "invalid to dimension");
     return conns_[FD][TD];
   }
 
   template<size_t FD, size_t TD>
   const connectivity_t& get() const{
-    static_assert(FD <= FDS, "invalid from dimension");
-    static_assert(TD <= TDS, "invalid to dimension");
+    static_assert(FD <= D, "invalid from dimension");
+    static_assert(TD <= D, "invalid to dimension");
     return conns_[FD][TD];
   }
 
   template<size_t FD>
   connectivity_t& get(size_t to_dim){
-    static_assert(FD <= FDS, "invalid from dimension");
-    assert(to_dim <= TDS && "invalid to dimension");
+    static_assert(FD <= D, "invalid from dimension");
+    assert(to_dim <= D && "invalid to dimension");
     return conns_[FD][to_dim];
   }
 
   template<size_t FD>
   const connectivity_t& get(size_t to_dim) const{
-    static_assert(FD <= FDS, "invalid from dimension");
-    assert(to_dim <= TDS && "invalid to dimension");
+    static_assert(FD <= D, "invalid from dimension");
+    assert(to_dim <= D && "invalid to dimension");
     return conns_[FD][to_dim];
   }
 
   connectivity_t& get(size_t from_dim, size_t to_dim){
-    assert(from_dim <= FDS && "invalid from dimension");
-    assert(to_dim <= TDS && "invalid to dimension");
+    assert(from_dim <= D && "invalid from dimension");
+    assert(to_dim <= D && "invalid to dimension");
     return conns_[from_dim][to_dim];
   }
 
   const connectivity_t& get(size_t from_dim, size_t to_dim) const{
-    assert(from_dim <= FDS && "invalid from dimension");
-    assert(to_dim <= TDS && "invalid to dimension");
+    assert(from_dim <= D && "invalid from dimension");
+    assert(to_dim <= D && "invalid to dimension");
     return conns_[from_dim][to_dim];
+  }
+
+  template<size_t FD, size_t ND>
+  id_t* get_entities(mesh_entity_t<FD, ND>* from_ent, size_t to_dim){
+    return get<FD>(to_dim).get_entities(from_ent.id(from_domain_)); 
+  }
+
+  template<size_t FD, size_t ND>
+  id_t* get_entities(mesh_entity_t<FD, ND>* from_ent,
+                     size_t to_dim,
+                     size_t & count){
+    return get<FD>(to_dim).get_entities(from_ent.id(from_domain_), count); 
+  }
+
+  id_t* get_entities(id_t from_id, size_t to_dim){
+    return get(from_id.dimension(), to_dim).get_entities(from_id.entity()); 
+  }
+
+  id_t* get_entities(id_t from_id, size_t to_dim, size_t & count){
+    return get(from_id.dimension(), to_dim).get_entities(from_id.entity(), count); 
+  }
+
+  template<size_t FD, size_t ND>
+  auto get_entity_vec(mesh_entity_t<FD, ND>* from_ent, size_t to_dim) const
+  {
+    auto & conn = get<FD>(to_dim);
+    return conn.get_entity_vec( from_ent.id(from_domain_) ); 
+  }
+
+  auto get_entity_vec(id_t from_id, size_t to_dim) const
+  {
+    auto & conn = get(from_id.dimension(), to_dim);
+    return conn.get_entity_vec( from_id.entity() ); 
   }
 
   void dump(){
     for(size_t i = 0; i < conns_.size(); ++i){
-      auto ci = conns_[i];
+      auto & ci = conns_[i];
       for(size_t j = 0; j < ci.size(); ++j){
         auto & cj = ci[j];
         std::cout << "------------- " << i << " -> " << j << std::endl;
@@ -589,9 +651,11 @@ public:
 
 private:
   using conn_array_t = 
-    std::array<std::array<connectivity_t, FDS + 1>, TDS + 1>;
+    std::array<std::array<connectivity_t, D + 1>, D + 1>;
 
   conn_array_t conns_;
+  size_t from_domain_;
+  size_t to_domain_;
 };
 
 template <size_t D, size_t NM>
@@ -608,8 +672,8 @@ struct mesh_storage_t {
   // array of array of vector of mesh_entity_base_t *
   std::array<entities_t, NM> entities;
 
-  // array of array of domain_connectivity_t
-  std::array<std::array<domain_connectivity_t<D>, NM>, NM> topology;
+  // array of array of domain_connectivity
+  std::array<std::array<domain_connectivity<D>, NM>, NM> topology;
 
   // array of array of vector of id_t
   std::array<id_vecs_t, NM> id_vecs;
