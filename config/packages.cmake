@@ -84,12 +84,17 @@ endif(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 #------------------------------------------------------------------------------#
 # Hypre
 #------------------------------------------------------------------------------#
-  find_package (Hypre)
-  option(ENABLE_HYPRE "Enable Hypre" ${HYPRE_FOUND})
+set (ENABLE_HYPRE OFF CACHE BOOL " do you want to enable HYPRE?")
+if (ENABLE_HYPRE)
+  find_package (HYPRE)
+
  if (HYPRE_FOUND)
-  include_directories(${HYPRE_INCLUDE_DIR})
-  set(HYPRE_LIBRARIES "${HYPRE_DIR}/lib/libHYPRE.a")
- endif (HYPRE_FOUND)
+   include_directories(${HYPRE_INCLUDE_DIRS})
+   set(HYPRE_LIBRARY ${HYPRE_LIBRARIES})
+ else()
+   message (ERROR "HYPRE required for this build is not found")
+  endif ()
+endif (ENABLE_HYPRE)
 
 
 
