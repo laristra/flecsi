@@ -24,34 +24,43 @@
 
 #include "flecsi/utils/mpi_legion_interoperability/legion_arrays.h"
 
+namespace flecsi
+{
+namespace mpilegion
+{
+
 template <typename Type>
 class MPILegionArray{
 
  public:
-  MPILegionArray();
-  ~MPILegionArray(){ delete[] mpi_object;}
+  MPILegionArray(int64_t nElems) {numberOfElements=nElems;};
+  MPILegionArray(){numberOfElements=1;};
+  ~MPILegionArray(){ if (mpi_allocated) delete[] mpi_object;}
 
+ private: 
+  bool mpi_allocated=false;
+  int64_t numberOfElements;
+  
  public:
 
  LogicalArray<Type> legion_object;
  Type *mpi_object;
 
- void  allocate_legion(int64_t nElems,
-        LegionRuntime::HighLevel::Context &ctx,
-        LegionRuntime::HighLevel::HighLevelRuntime *lrt)
+ void  allocate_legion(LegionRuntime::HighLevel::Context &ctx,
+                       LegionRuntime::HighLevel::HighLevelRuntime *lrt)
        {
-           legion_object.allocate(nElems, ctx, lrt);
+           legion_object.allocate(numberOfElements, ctx, lrt);
        }
- void  partition_legion(int64_t nElems,
-        LegionRuntime::HighLevel::Context &ctx,
-        LegionRuntime::HighLevel::HighLevelRuntime *lrt)
+ void  partition_legion( LegionRuntime::HighLevel::Context &ctx,
+                        LegionRuntime::HighLevel::HighLevelRuntime *lrt)
        {
-         legion_object.partition(nElems, ctx, lrt);
+         legion_object.partition(numberOfElements, ctx, lrt);
        }
 
- void allocate_mpi(int64_t nElems)
+ void allocate_mpi(void)
       {
-        Type *mpi_object=new Type[nElems];
+        mpi_allocated=true;
+        Type *mpi_object=new Type[numberOfElements];
       }
 
  Type legion_accessor(const PhysicalRegion &physicalRegion,
@@ -65,8 +74,9 @@ class MPILegionArray{
   //      return data;
       }
 
- Type mpi_accessor(void)
+ Type *mpi_accessor(void)
        {
+        assert (mpi_allocated);
          return mpi_object;
        }
 
@@ -79,6 +89,8 @@ class MPILegionArray{
         {
           return *legion_object.legion_accessor;
         }
+
+  int64_t size(void){ return numberOfElements;}
 
   void copy_legion_to_mpi (LegionRuntime::HighLevel::Context &ctx,
           HighLevelRuntime *runtime)
@@ -94,12 +106,13 @@ class MPILegionArray{
      auto *acc=legion_object.get_accessor(WRITE_DISCARD, EXCLUSIVE, ctx, runtime);
      for(GenericPointInRectIterator<1> pir(legion_object.bounds); pir; pir++)
           acc.write(DomainPoint::from_point<1>(pir.p), *mpi_object++);    
-
   }
 
 };
 
+}//end namespace mpilegion
 
+}//end namespace flecsi
 
 
 #endif

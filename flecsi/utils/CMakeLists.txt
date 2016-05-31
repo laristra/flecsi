@@ -37,6 +37,11 @@ set(utils_HEADERS
   TaskWrapper.h
   PARENT_SCOPE)
 
+set(utils_SOURCES
+  dummy.cc
+  PARENT_SCOPE)
+
+
 if (ENABLE_STATIC_CONTAINER)
 set(utils_HEADERS 
    ${utils_HEADERS} 
@@ -57,11 +62,14 @@ set(utils_HEADERS
    mpi_legion_interoperability/task_ids.h
    mpi_legion_interoperability/mapper.h
    PARENT_SCOPE)
-endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
 set(utils_SOURCES
-  dummy.cc
+  ${utils_SOURCES}
+  #mpi_legion_interoperability/mpi_legion_interop.cc
   PARENT_SCOPE)
+
+endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+
 
 cinch_add_unit(bitfield
   SOURCES test/bitfield.cc)
@@ -118,6 +126,14 @@ cinch_add_unit(legion_with_Hypre
   POLICY MPILEGION
   LIBRARIES     ${HYPRE_LIBRARIES} )
 endif (ENABLE_HYPRE)
+
+cinch_add_unit(mpi_legion_interop
+  SOURCES test/mpi_legion_interop.cc
+  POLICY MPILEGION)
+
+cinch_add_unit(mpi_legion_data
+  SOURCES test/mpi_legion_data.cc
+  POLICY MPILEGION)
 
 endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 #~---------------------------------------------------------------------------~-#

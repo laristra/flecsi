@@ -27,10 +27,18 @@
 
 #include "flecsi/utils/mpi_legion_interoperability/legion_handshake.h"
 #include "flecsi/utils/mpi_legion_interoperability/mpi_legion_data.h"
+#include "flecsi/utils/mpi_legion_interoperability/mapper.h"
+#include "flecsi/utils/mpi_legion_interoperability/task_ids.h"
 
 using namespace LegionRuntime::HighLevel;
 using namespace LegionRuntime::Accessor;
 using namespace LegionRuntime::Arrays;
+using namespace flecsi::mpilegion;
+
+namespace flecsi
+{
+namespace mpilegion
+{
 
 // MPILegionInterp class
 
@@ -39,7 +47,7 @@ class MPILegionInterop {
 
   public:
   MPILegionInterop(){handshake = new ExtLegionHandshake(ExtLegionHandshake::IN_EXT, 1, 1);};
-  ~MPILegionInterop();
+  ~MPILegionInterop(){};
 
   //variadic arguments for data to be shared
   template <typename... CommonDataTypes>
@@ -65,8 +73,19 @@ class MPILegionInterop {
 
   void wait_on_mpi(void);
 
+ public:
 //  CommonDataType CommonData;
   ExtLegionHandshake *handshake;
+//  std::map<std::string,typename MPILegionArray> MPILegionArrays; //creates a map between the array's name and Array itself
+
+  static MPILegionInterop* get_interop_object(const Point<3> &pt, bool must_match);  
+#ifndef SHARED_LOWLEVEL
+  static MPILegionInterop*& get_local_interop_object(void);
+#else
+  static std::map<Point<3>, MPILegionInterop*, Point<3>::STLComparator>& get_interop_objects(void);
+ // static pthread_mutex_t& get_local_mutex(void);
+#endif
+
 };
 
  template <typename T>
@@ -79,19 +98,19 @@ class MPILegionInterop {
 {
    assign_legion_to_mpi(CommData...) ;
 //   CommData.legion_object = CommData.mpi_object.get_ptr();
-   handshake->ext_handoff_to_legion();
+   this->handshake->ext_handoff_to_legion();
   }
 
  void MPILegionInterop::legion_configure()
  {
-    handshake->ext_init();
+    this->handshake->ext_init();
  }
 
  void MPILegionInterop::connect_to_mpi_task (const Task *legiontask,
                       const std::vector<PhysicalRegion> &regions,
                       Context ctx, HighLevelRuntime *runtime)
  {
-    handshake->legion_init();
+    this->handshake->legion_init();
  }
 
  void MPILegionInterop::handoff_to_legion(void)
@@ -117,6 +136,10 @@ class MPILegionInterop {
   handshake->legion_wait_on_ext();
  }
 
+
+}//end namespace mpilegion
+
+} //end namespace flecsi
 
 #endif
 /*~-------------------------------------------------------------------------~-*

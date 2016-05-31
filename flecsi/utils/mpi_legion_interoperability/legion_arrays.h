@@ -27,6 +27,12 @@ using namespace LegionRuntime::Accessor;
 /**
  * courtesy of some other legion code.
  */
+
+namespace flecsi
+{
+namespace mpilegion
+{
+
 template <unsigned DIM, typename T>
 inline bool
 offsetsAreDense(const Rect<DIM> &bounds,
@@ -401,4 +407,7 @@ public:
     length(void) { return this->mLength; }
 };
 
+
+} //end namespace mpilegion
+} //end namspace flecsi
 #endif

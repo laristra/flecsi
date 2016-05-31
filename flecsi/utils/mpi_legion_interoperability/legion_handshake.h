@@ -41,6 +41,10 @@
 // handshake->ext_wait_on_legion();
 // handshake->legion_handoff_to_ext();
 
+namespace flecsi
+{
+namespace mpilegion
+{
 
 class ExtLegionHandshake {
 public:
@@ -181,7 +185,9 @@ void ExtLegionHandshake::legion_wait_on_ext(void)
 }
 
 
+}//end namespace mpilegion
 
+}//end namespace flecsi
 
 #endif
 /*~-------------------------------------------------------------------------~-*

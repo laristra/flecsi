@@ -17,7 +17,6 @@
 #define _MPI_MAPPERS_H_
 
 #include "legion.h"
-//#include "default_mapper.h"
 #include "task_ids.h"
 #include "shim_mapper.h"
 
@@ -28,38 +27,11 @@ enum {
   MPI_MAPPER_ID       = 1,
 };
 
-/*
-using namespace LegionRuntime::HighLevel;
 
-class CircuitMapper : public ShimMapper {
-public:
-  CircuitMapper(Machine machine, HighLevelRuntime *runtime, Processor local);
-public:
-  virtual void select_task_options(Task *task);
-  virtual void slice_domain(const Task *task, const Domain &domain,
-                            std::vector<DomainSplit> &slices);
-  virtual bool map_task(Task *task);
-  virtual bool map_inline(Inline *inline_operation);
-
-  virtual void notify_mapping_failed(const Mappable *mappable);
-#if 0
-  virtual bool rank_copy_targets(const Mappable *mappble,
-                                 const std::set<Memory> &current_instances,
-                                 bool complete,
-                                 size_t max_blocking_factor,
-                                 std::set<Memory> &to_reuse,
-                                 std::vector<Memory> &to_create,
-                                 bool &create_one,
-                                 size_t &blocking_factor);
-#endif
-protected:
-  bool map_to_gpus;
-  std::vector<Processor> all_cpus;
-  std::vector<Processor> all_gpus;
-  std::map<Processor, Memory> all_sysmems;
-};
-*/
-
+namespace flecsi
+{
+namespace mpilegion
+{
 
 class MPIMapper : public ShimMapper {
 public:
@@ -273,7 +245,10 @@ void mapper_registration(Machine machine, HighLevelRuntime *rt,
         new MPIMapper(machine, rt, *it), *it);
   }
 }
- 
+
+}//end namespace mpilegion
+
+}//end namespace flecsi 
 #endif
 
 /*~-------------------------------------------------------------------------~-*
