@@ -1812,6 +1812,91 @@ class mesh_topology_t : public mesh_topology_base_t
     return buf;
   }
 
+  template<size_t M, size_t D>
+  void unserialize_dimensions(char* buf, uint32_t& pos){
+    uint32_t num_entities;
+    std::memcpy(&num_entities, buf + pos, sizeof(num_entities));
+    pos += sizeof(num_entities);    
+
+    auto& iv = ms_.id_vecs[M][D];
+    iv.reserve(num_entities);
+
+    auto& ev = ms_.entities[M][D];
+    ev.reserve(num_entities);
+
+    // TODO - fix
+    size_t partition_id = 0;
+
+    for(size_t local_id = 0; local_id < num_entities; ++local_id){
+      id_t global_id = id_t::make<D, M>(local_id, partition_id);
+
+      auto ent = new entity_type<D, M>();
+      ent->template set_global_id<M>(global_id);
+      ev.push_back(ent);
+      iv.push_back(global_id);
+    }
+
+    if(D == MT::dimensions){
+      return;
+    }
+
+    unserialize_dimensions<M, D + 1>(buf, pos);
+  }
+
+  template<size_t M>
+  void unserialize_domains(char* buf, uint32_t& pos){
+    if(M == MT::num_domains){
+      return;
+    }
+
+    unserialize_dimensions<M, 0>(buf, pos);
+
+    unserialize_domains<M + 1>(buf, pos);
+  }
+
+  void unserialize(const char* buf){
+    uint32_t pos = 0;
+
+    uint32_t num_domains;
+    std::memcpy(&num_domains, buf + pos, sizeof(num_domains));
+    pos += sizeof(num_domains);
+    assert(num_domains == MT::num_domains && "domain size mismatch");
+
+    uint32_t num_dimensions;
+    std::memcpy(&num_dimensions, buf + pos, sizeof(num_dimensions));
+    pos += sizeof(num_dimensions);
+    assert(num_dimensions == MT::num_dimensions && "dimension size mismatch");
+
+    unserialize_domains<0>(buf, pos);
+
+    for(size_t from_domain = 0; from_domain < MT::num_domains; ++from_domain){
+      for(size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain){
+
+        auto& dc = ms_.topology[from_domain][to_domain];
+
+        for(size_t from_dim = 0; from_dim <= MT::num_dimensions; ++from_dim){
+          for(size_t to_dim = 0; to_dim <= MT::num_dimensions; ++to_dim){
+            connectivity_t& c = dc.get(from_dim, to_dim);
+    
+            auto& tv = c.to_id_vec();
+            uint64_t num_to;
+            std::memcpy(&num_to, buf + pos, sizeof(num_to));
+            pos += sizeof(num_to);
+            auto ta = (id_vector_t::value_type*)buf; 
+            tv.insert(tv.begin(), ta, ta + num_to);
+
+            auto& fv = c.from_index_vec();
+            uint64_t num_from;
+            std::memcpy(&num_from, buf + pos, sizeof(num_from));
+            pos += sizeof(num_from);
+            auto fa = (index_vector_t::value_type*)buf; 
+            fv.insert(fv.begin(), fa, fa + num_from);
+          }
+        }
+      }
+    }
+  }
+
  private:
   mesh_storage_t<MT::num_dimensions, MT::num_domains> ms_;
 
