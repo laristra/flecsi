@@ -88,6 +88,13 @@ struct tree_geometry<T, 2>{
 
     return false;
   }
+
+  static bool intersect_true(const point_t& origin,
+                             element_t size,
+                             const point_t& center,
+                             element_t radius){
+    return true;
+  }
 };
 
 template<typename T>
@@ -156,6 +163,13 @@ struct tree_geometry<T, 3>{
     }
 
     return false;
+  }
+
+  static bool intersect_true(const point_t& origin,
+                             element_t size,
+                             const point_t& center,
+                             element_t radius){
+    return true;
   }
 };
 
@@ -887,10 +901,15 @@ public:
     // find the lowest level branch which is guaranteed
     // to contain the point with radius
 
-    size_t depth = -std::log2(radius);
+    int depth = -std::log2(radius) - 1;
+    
+    if(depth < 0){
+      depth = 0;
+    }
+
     assert(depth <= branch_id_t::max_depth);
     
-    element_t size = std::pow(element_t(2), -element_t(depth));
+    element_t size = std::pow(element_t(2), -depth);
 
     branch_id_t bid(center);
     branch_t* b = find_parent(bid, depth);
@@ -922,12 +941,17 @@ public:
     // find the lowest level branch which is guaranteed
     // to contain the point with radius
 
-    size_t depth = -std::log2(radius);
+    int depth = -std::log2(radius) - 1;
+    
+    if(depth < 0){
+      depth = 0;
+    }
+
     assert(depth <= branch_id_t::max_depth);
 
     queue_depth += depth;
     
-    element_t size = std::pow(element_t(2), -element_t(depth));
+    element_t size = std::pow(element_t(2), -depth);
 
     branch_id_t bid(center);
     branch_t* b = find_parent(bid, depth);
@@ -958,10 +982,15 @@ public:
     // find the lowest level branch which is guaranteed
     // to contain the point with radius
 
-    size_t depth = -std::log2(radius);
-    assert(depth <= branch_id_t::max_depth);
+    int depth = -std::log2(radius) - 1;
+    
+    if(depth < 0){
+      depth = 0;
+    }
 
-    element_t size = std::pow(element_t(2), -element_t(depth));
+    assert(depth <= branch_id_t::max_depth);
+    
+    element_t size = std::pow(element_t(2), -depth);
 
     branch_id_t bid(center);
     branch_t* b = find_parent(bid, depth);
@@ -992,12 +1021,17 @@ public:
     // find the lowest level branch which is guaranteed
     // to contain the point with radius
 
-    size_t depth = -std::log2(radius);
+    int depth = -std::log2(radius) - 1;
+    
+    if(depth < 0){
+      depth = 0;
+    }
+
     assert(depth <= branch_id_t::max_depth);
+    
+    element_t size = std::pow(element_t(2), -depth);
 
     queue_depth += depth;
-
-    element_t size = std::pow(element_t(2), -element_t(depth));
 
     branch_id_t bid(center);
     branch_t* b = find_parent(bid, depth);
@@ -1023,13 +1057,17 @@ public:
              BF&& bf,
              ARGS&&... args){
     
+    size /= 2;
+
     for(size_t i = 0; i < branch_t::num_children; ++i){
       branch_t* ci = static_cast<branch_t*>(b->child(i));
 
-      if(ci && bf(ci->coordinates(), size, std::forward<ARGS>(args)...)){
-        find_(ci, size/element_t(2),
-              std::forward<EF>(ef), std::forward<BF>(bf),
-              std::forward<ARGS>(args)...);
+      if(ci){        
+        if(bf(ci->coordinates(), size, std::forward<ARGS>(args)...)){
+          find_(ci, size,
+                std::forward<EF>(ef), std::forward<BF>(bf),
+                std::forward<ARGS>(args)...);
+        }        
       }
       else{
         for(auto ent : *b){
@@ -1053,6 +1091,8 @@ public:
     
     constexpr size_t rb = branch_int_t(1) << P::dimension;
 
+    size /= 2;
+
     for(size_t i = 0; i < branch_t::num_children; ++i){
       branch_t* ci = static_cast<branch_t*>(b->child(i));
 
@@ -1061,7 +1101,7 @@ public:
           if(depth == queue_depth){
 
             auto f = [&](){
-              find_(ci, size/element_t(2),
+              find_(ci, size,
                 std::forward<EF>(ef), std::forward<BF>(bf),
                 std::forward<ARGS>(args)...);
 
@@ -1071,7 +1111,7 @@ public:
             pool.queue(f);
           }
           else{
-            find_(pool, sem, queue_depth, depth + 1, ci, size/element_t(2),
+            find_(pool, sem, queue_depth, depth + 1, ci, size,
                   std::forward<EF>(ef), std::forward<BF>(bf),
                   std::forward<ARGS>(args)...);
           }
