@@ -548,6 +548,16 @@ class connectivity_t
     }
   }
 
+  const id_vector_t & to_id_vec() const
+  {
+    return to_id_vec_;
+  }
+
+  const index_vector_t & from_index_vec() const
+  {
+    return from_index_vec_;
+  }
+
   id_vector_t to_id_vec_;
   index_vector_t from_index_vec_;
 

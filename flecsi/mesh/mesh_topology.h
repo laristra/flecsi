@@ -68,6 +68,7 @@
 #include <unordered_map>
 #include <functional>
 #include <map>
+#include <cstring>
 
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/set_intersection.h"
@@ -1744,6 +1745,72 @@ class mesh_topology_t : public mesh_topology_base_t
       }
     }
   } // dump
+
+  char* serialize(uint32_t& size){
+    const size_t alloc_size = 1048576;
+
+    char* buf = (char*)std::malloc(alloc_size);
+    uint32_t pos = 0;
+    
+    uint32_t num_domains = MT::num_domains;
+    std::memcpy(buf + pos, &num_domains, sizeof(num_domains));
+    pos += sizeof(num_domains);
+
+    uint32_t num_dimensions = MT::num_dimensions;
+    std::memcpy(buf + pos, &num_dimensions, sizeof(num_dimensions));
+    pos += sizeof(num_dimensions);
+
+    for(size_t domain = 0; domain < MT::num_domains; ++domain){
+      for(size_t dimension = 0; dimension <= MT::num_dimensions; ++dimension){
+        uint64_t num_entities = ms_.entities[domain][dimension].size();
+        std::memcpy(buf + pos, &num_entities, sizeof(num_entities));
+        pos += sizeof(num_entities);
+      }
+    }
+
+    for(size_t from_domain = 0; from_domain < MT::num_domains; ++from_domain){
+      for(size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain){
+
+        auto& dc = ms_.topology[from_domain][to_domain];
+
+        for(size_t from_dim = 0; from_dim <= MT::num_dimensions; ++from_dim){
+          for(size_t to_dim = 0; to_dim <= MT::num_dimensions; ++to_dim){
+            connectivity_t& c = dc.get(from_dim, to_dim);
+            auto& tv = c.to_id_vec();
+            uint64_t num_to = tv.size();
+            std::memcpy(buf + pos, &num_to, sizeof(num_to));
+            pos += sizeof(num_to);
+
+            if(size - pos < num_to){
+              size += num_to + alloc_size;
+              buf = (char*)std::realloc(buf, size);
+            }
+
+            std::memcpy(buf + pos, tv.data(),
+                        num_to * sizeof(id_vector_t::value_type));
+
+            auto& fv = c.from_index_vec();
+            uint64_t num_from = fv.size();
+            std::memcpy(buf + pos, &num_from, sizeof(num_from));
+            pos += sizeof(num_from);
+
+            if(size - pos < num_from){
+              size += num_from + alloc_size;
+              buf = (char*)std::realloc(buf, size);
+            }
+
+            std::memcpy(buf + pos, fv.data(),
+                        num_from * sizeof(index_vector_t::value_type));
+
+          }
+        }
+      }
+    }
+
+    size = pos;
+
+    return buf;
+  }
 
  private:
   mesh_storage_t<MT::num_dimensions, MT::num_domains> ms_;
