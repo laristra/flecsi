@@ -26,6 +26,7 @@
 #include <iostream>
 #include <set>
 #include <functional>
+#include <mutex>
 
 #include "flecsi/geometry/point.h"
 #include "flecsi/concurrency/concurrency.h"
@@ -781,10 +782,12 @@ public:
     return find_parent_(pid);
   }
 
+  const std::vector<entity_t*>& entities() const{
+    return entities_;
+  }
+
   void insert(entity_t* ent, size_t max_depth){
     branch_id_t bid(ent->coordinates(), max_depth);
-    point_t p;
-    bid.coordinates(p);
 
     branch_t* b = find_parent(bid, max_depth);
     ent->set_branch_id_(b->id());
@@ -958,9 +961,13 @@ public:
 
     entity_id_vector_t entity_ids;
 
+    std::mutex mt;
+
     auto f = [&](entity_t* ent, const point_t& center, element_t radius){
       if(geometry_t::within(ent->coordinates(), center, radius)){
+        mt.lock();
         entity_ids.push_back(ent->id());
+        mt.unlock();
       }
     };
 
@@ -1088,7 +1095,7 @@ public:
              EF&& ef,
              BF&& bf,
              ARGS&&... args){
-    
+
     constexpr size_t rb = branch_int_t(1) << P::dimension;
 
     size /= 2;
@@ -1100,7 +1107,7 @@ public:
         if(bf(ci->coordinates(), size, std::forward<ARGS>(args)...)){        
           if(depth == queue_depth){
 
-            auto f = [&](){
+            auto f = [&,size,ci](){
               find_(ci, size,
                 std::forward<EF>(ef), std::forward<BF>(bf),
                 std::forward<ARGS>(args)...);

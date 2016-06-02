@@ -1884,6 +1884,7 @@ class mesh_topology_t : public mesh_topology_base_t
             pos += sizeof(num_to);
             auto ta = (id_vector_t::value_type*)buf; 
             tv.insert(tv.begin(), ta, ta + num_to);
+            pos += num_to * sizeof(id_vector_t::value_type);
 
             auto& fv = c.from_index_vec();
             uint64_t num_from;
@@ -1891,6 +1892,7 @@ class mesh_topology_t : public mesh_topology_base_t
             pos += sizeof(num_from);
             auto fa = (index_vector_t::value_type*)buf; 
             fv.insert(fv.begin(), fa, fa + num_from);
+            pos += num_from * sizeof(index_vector_t::value_type);            
           }
         }
       }
