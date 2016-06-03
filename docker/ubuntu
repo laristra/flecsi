@@ -47,7 +47,7 @@ RUN mkdir build
 
 WORKDIR build
 RUN cmake -DENABLE_MPI=$MPI \
-          ${TPL:+-DCMAKE_PREFIX_PATH=/tmp/tpl} \
+          ${TPL:+-DCMAKE_PREFIX_PATH=${HOME}/tpl} \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON \
           -DCMAKE_DISABLE_FIND_PACKAGE_SCOTCH=ON \
