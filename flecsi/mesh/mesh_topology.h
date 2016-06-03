@@ -1746,11 +1746,12 @@ class mesh_topology_t : public mesh_topology_base_t
     }
   } // dump
 
-  char* serialize(uint32_t& size){
+  char* serialize(uint64_t& size){
     const size_t alloc_size = 1048576;
+    size = alloc_size;
 
     char* buf = (char*)std::malloc(alloc_size);
-    uint32_t pos = 0;
+    uint64_t pos = 0;
     
     uint32_t num_domains = MT::num_domains;
     std::memcpy(buf + pos, &num_domains, sizeof(num_domains));
