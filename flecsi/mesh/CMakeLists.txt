@@ -33,6 +33,10 @@ cinch_add_unit(bindings
   SOURCES test/bindings.cc
   INPUTS test/bindings.blessed)
 
+cinch_add_unit(serialize
+  SOURCES test/serialize.cc
+  INPUTS test/serialize.blessed)
+
 cinch_add_unit(dolfin_triangle
         SOURCES test/dolfin_triangle/test/dolfin_triangle.cc
         INPUTS  test/dolfin_triangle/test/dolfin_triangle.blessed
