@@ -7,15 +7,15 @@ services:
 
 env:
   matrix:
-#    - DOCKERFILE=ubuntu MINIMAL=ON MPI=OFF RUNTIME=serial
-#    - DOCKERFILE=ubuntu MPI=OFF TPL=ON RUNTIME=legion
-#    - DOCKERFILE=ubuntu MPI=OFF TPL=ON RUNTIME=legion WERROR=yes
-#    - DOCKERFILE=ubuntu MPI=ON TPL=ON RUNTIME=mpilegion
-#    - DOCKERFILE=ubuntu MPI=ON TPL=ON RUNTIME=mpilegion WERROR=yes
-#    - DOCKERFILE=ubuntu MPI=ON RUNTIME=mpi
-#    - DOCKERFILE=ubuntu MPI=ON RUNTIME=mpi WERROR=yes
-#    - DOCKERFILE=ubuntu MPI=OFF RUNTIME=serial WERROR=yes
-#    - DOCKERFILE=ubuntu MPI=OFF COVERAGE=ON RUNTIME=serial
+    - DOCKERFILE=ubuntu MINIMAL=ON MPI=OFF RUNTIME=serial
+    - DOCKERFILE=ubuntu MPI=OFF TPL=ON RUNTIME=legion
+    - DOCKERFILE=ubuntu MPI=OFF TPL=ON RUNTIME=legion WERROR=yes
+    - DOCKERFILE=ubuntu MPI=ON TPL=ON RUNTIME=mpilegion
+    - DOCKERFILE=ubuntu MPI=ON TPL=ON RUNTIME=mpilegion WERROR=yes
+    - DOCKERFILE=ubuntu MPI=ON RUNTIME=mpi
+    - DOCKERFILE=ubuntu MPI=ON RUNTIME=mpi WERROR=yes
+    - DOCKERFILE=ubuntu MPI=OFF RUNTIME=serial WERROR=yes
+    - DOCKERFILE=ubuntu MPI=OFF COVERAGE=ON RUNTIME=serial
 
     - DOCKERFILE=fedora MINIMAL=ON MPI=OFF RUNTIME=serial
     - DOCKERFILE=fedora_tpl MPI=OFF TPL=ON RUNTIME=legion

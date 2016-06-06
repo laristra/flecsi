@@ -1,4 +1,4 @@
-from flecsi/flecsi_tpl:fedora
+from flecsi/flecsi_tpl:ubuntu
 
 ARG MINIMAL
 ARG MPI
@@ -17,13 +17,13 @@ ARG CI
 ARG COVERAGE
 
 USER root
-RUN dnf install -y -q openmpi-devel python-pip
+RUN apt-get -q update -y
+RUN apt-get -qq install -y libopenmpi-dev openmpi-bin  python-pip
 
 USER flecsi
 
-RUN if [ ${WERROR} ]; then export CXXFLAGS="-Werror"; fi
 RUN if [ ${COVERAGE}  ]; then pip install --user codecov; fi
-ENV PATH=$PATH:/usr/lib64/openmpi/bin/
+RUN if [ ${WERROR} ]; then export CXXFLAGS="-Werror"; fi
 
 WORKDIR /tmp
 RUN git clone --recursive https://github.com/losalamos/flecsi.git
@@ -32,10 +32,10 @@ WORKDIR flecsi
 RUN if [ ${TRAVIS} = true ]; then \
       if [ ${TRAVIS_PULL_REQUEST} != false ]; then \
         git fetch "git://github.com/${TRAVIS_REPO_SLUG}" +refs/pull/"${TRAVIS_PULL_REQUEST}"/merge: ;\
-        git checkout FETCH_HEAD; \
+	git checkout FETCH_HEAD; \
       else \
         git fetch --depth=10 "git://github.com/${TRAVIS_REPO_SLUG}" "${TRAVIS_BRANCH}"; \
-        git checkout "${TRAVIS_COMMIT}"; \
+	git checkout "${TRAVIS_COMMIT}"; \
       fi \
     fi
 RUN mkdir build
@@ -51,7 +51,7 @@ RUN cmake -DENABLE_MPI=$MPI \
           -DENABLE_UNIT_TESTS=ON .. \
           ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} ..
 
-RUN make VERBOSE=1 -j2
+RUN make -j2
 RUN make test
 RUN make install DESTDIR=${PWD}
 RUN cd .. && if [ ${COVERAGE} ]; then $HOME/.local/bin/codecov; fi
