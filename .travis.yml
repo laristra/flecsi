@@ -17,15 +17,15 @@ env:
 #    - DOCKERFILE=ubuntu MPI=OFF RUNTIME=serial WERROR=yes
 #    - DOCKERFILE=ubuntu MPI=OFF COVERAGE=ON RUNTIME=serial
 
-#    - DOCKERFILE=fedora MINIMAL=ON MPI=OFF RUNTIME=serial
+    - DOCKERFILE=fedora MINIMAL=ON MPI=OFF RUNTIME=serial
     - DOCKERFILE=fedora_tpl MPI=OFF TPL=ON RUNTIME=legion
-#    - DOCKERFILE=fedora MPI=OFF TPL=ON RUNTIME=legion WERROR=yes
-#    - DOCKERFILE=fedora MPI=ON TPL=ON RUNTIME=mpilegion
-#    - DOCKERFILE=fedora MPI=ON TPL=ON RUNTIME=mpilegion WERROR=yes
-#    - DOCKERFILE=fedora MPI=ON RUNTIME=mpi
-#    - DOCKERFILE=fedora MPI=ON RUNTIME=mpi WERROR=yes
-#    - DOCKERFILE=fedora MPI=OFF RUNTIME=serial WERROR=yes
-#    - DOCKERFILE=fedora MPI=OFF COVERAGE=ON RUNTIME=serial
+    - DOCKERFILE=fedora_tpl MPI=OFF TPL=ON RUNTIME=legion WERROR=yes
+    - DOCKERFILE=fedora_tpl MPI=ON  TPL=ON RUNTIME=mpilegion
+    - DOCKERFILE=fedora_tpl MPI=ON  TPL=ON RUNTIME=mpilegion WERROR=yes
+    - DOCKERFILE=fedora MPI=ON RUNTIME=mpi
+    - DOCKERFILE=fedora MPI=ON RUNTIME=mpi WERROR=yes
+    - DOCKERFILE=fedora MPI=OFF RUNTIME=serial WERROR=yes
+    - DOCKERFILE=fedora MPI=OFF RUNTIME=serial COVERAGE=ON
 
 script:
 # - if [$TPL == 'ON']
