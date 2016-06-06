@@ -16,8 +16,11 @@ ARG TRAVIS_TAG
 ARG CI
 ARG COVERAGE
 
+USER root
 RUN dnf install -y -q python-pip
 RUN if [ ${COVERAGE}  ]; then pip install --user codecov; fi
+
+USER flecsi
 RUN if [ ${WERROR} ]; then export CXXFLAGS="-Werror"; fi
 
 ENV PATH=$PATH:/usr/lib64/openmpi/bin/
