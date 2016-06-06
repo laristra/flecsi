@@ -1,4 +1,5 @@
 /*~--------------------------------------------------------------------------~*
+ *
  *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
  * /@@/////  /@@          @@////@@ @@////// /@@
  * /@@       /@@  @@@@@  @@    // /@@       /@@
@@ -28,15 +29,15 @@ using return_type_t = execution_t::return_type_t;
 TEST(mpi_legion_interop_and_data, sanity) {
 
   const int nElements=10;
-  MPILegionArray<double> Array(nElements);
-  Array.allocate_mpi();
+  MPILegionArray<double, nElements> Array;
   double *A1=Array.mpi_accessor();  
+  std::cout << A1[0] << std::endl;
 //double *A[nElements]=Array.mpi_accessor();
   //std::cout << A[0] <<std::endl;
-  double A[10];
-  double *B;
-  B=A;
-  std::cout << *(B+0) <<std::endl;
+//  double A[10];
+//  double *B;
+//  B=A;
+//  std::cout << *(B+0) <<std::endl;
 
 
 } // TEST
