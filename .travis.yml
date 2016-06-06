@@ -18,7 +18,7 @@ env:
 #    - DOCKERFILE=ubuntu MPI=OFF COVERAGE=ON RUNTIME=serial
 
 #    - DOCKERFILE=fedora MINIMAL=ON MPI=OFF RUNTIME=serial
-    - DOCKERFILE=fedora MPI=OFF TPL=ON RUNTIME=legion
+    - DOCKERFILE=fedora_tpl MPI=OFF TPL=ON RUNTIME=legion
 #    - DOCKERFILE=fedora MPI=OFF TPL=ON RUNTIME=legion WERROR=yes
 #    - DOCKERFILE=fedora MPI=ON TPL=ON RUNTIME=mpilegion
 #    - DOCKERFILE=fedora MPI=ON TPL=ON RUNTIME=mpilegion WERROR=yes
@@ -28,9 +28,9 @@ env:
 #    - DOCKERFILE=fedora MPI=OFF COVERAGE=ON RUNTIME=serial
 
 script:
- - if [$TPL == 'ON']
-     export DOCKERFILE = ${DOCKERFILE}_tpl
-   fi
+# - if [$TPL == 'ON']
+#     export DOCKERFILE = ${DOCKERFILE}_tpl
+#   fi
  - docker build --build-arg MPI=${MPI} --build-arg RUNTIME=${RUNTIME} --build-arg WERROR=${WERROR}
                 --build-arg TPL=${TPL} --build-arg COVERAGE=${COVERAGE} --build-arg MINIMAL=${MINIMAL}
                 --build-arg CI=${CI} --build-arg TRAVIS=${TRAVIS} --build-arg TRAVIS_BRANCH=${TRAVIS_BRANCH}
