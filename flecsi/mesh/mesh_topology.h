@@ -76,6 +76,86 @@
 
 namespace flecsi
 {
+
+template <class MT, size_t D, size_t M>
+using entity_type_ = typename find_entity_<MT, D, M>::type;
+
+template<class MT, size_t NM, size_t M, size_t D>
+void unserialize_dimension(mesh_topology_base_t& mesh,
+                           char* buf,
+                           uint64_t& pos){
+  uint32_t num_entities;
+  std::memcpy(&num_entities, buf + pos, sizeof(num_entities));
+  pos += sizeof(num_entities);    
+
+  id_vector_t iv;
+  iv.reserve(num_entities);
+
+  entity_vector_t<NM> ev; 
+  ev.reserve(num_entities);
+
+  // TODO - fix
+  size_t partition_id = 0;
+
+  for(size_t local_id = 0; local_id < num_entities; ++local_id){
+    id_t global_id = id_t::make<D, M>(local_id, partition_id);
+
+    auto ent = new entity_type_<MT, D, M>();
+    ent->template set_global_id<M>(global_id);
+    ev.push_back(ent);
+    iv.push_back(global_id);
+  }
+
+  mesh.set_entity_ids_(M, D, move(iv));
+  mesh.set_entities_(M, D, &ev);
+}
+
+template<class MT, size_t NM, size_t ND, size_t M, size_t D>
+struct unserialize_dimensions{
+  
+  static void unserialize(mesh_topology_base_t& mesh,
+                          char* buf,
+                          uint64_t& pos){
+    unserialize_dimension<MT, NM, M, D>(mesh, buf, pos);
+    unserialize_dimensions<MT, NM, ND, M, D + 1>::unserialize(mesh, buf, pos);
+  }
+
+};
+
+template<class MT, size_t NM, size_t ND, size_t M>
+struct unserialize_dimensions<MT, NM, ND, M, ND>{
+
+  static void unserialize(mesh_topology_base_t& mesh,
+                          char* buf,
+                          uint64_t& pos){
+    unserialize_dimension<MT, NM, M, ND>(mesh, buf, pos);
+  }
+
+};
+
+template<class MT, size_t NM, size_t ND, size_t M>
+struct unserialize_domains{
+
+  static void unserialize(mesh_topology_base_t& mesh,
+                          char* buf,
+                          uint64_t& pos){
+    unserialize_dimensions<MT, NM, ND, M, 0>::unserialize(mesh, buf, pos);
+    unserialize_domains<MT, NM, ND, M + 1>::unserialize(mesh, buf, pos);
+  }
+
+};
+
+template<class MT, size_t NM, size_t ND>
+struct unserialize_domains<MT, NM, ND, NM>{
+
+  static void unserialize(mesh_topology_base_t& mesh,
+                          char* buf,
+                          uint64_t& pos){
+    return;
+  }
+
+};
+
 /*----------------------------------------------------------------------------*
  * class mesh_topology_t
  *----------------------------------------------------------------------------*/
@@ -1653,6 +1733,16 @@ class mesh_topology_t : public mesh_topology_base_t
     return reverse_entities<D, FM, TM>(e.entity());
   } // entities
 
+  void
+  set_entity_ids_(size_t domain, size_t dim, id_vector_t && v) override{
+    ms_.id_vecs[domain][dim] = move(v);
+  }
+
+  void
+  set_entities_(size_t domain, size_t dim, void* v) override{
+    auto ents = static_cast<entity_vector_t<MT::num_domains>*>(v);
+    ms_.entities[domain][dim] = move(*ents);
+  }
 
   template<typename I>
   void compute_graph_partition(
@@ -1813,8 +1903,9 @@ class mesh_topology_t : public mesh_topology_base_t
     return buf;
   }
 
+  /*
   template<size_t M, size_t D>
-  void unserialize_dimensions(char* buf, uint32_t& pos){
+  void unserialize_dimensions(char* buf, uint64_t& pos){
     uint32_t num_entities;
     std::memcpy(&num_entities, buf + pos, sizeof(num_entities));
     pos += sizeof(num_entities);    
@@ -1837,7 +1928,7 @@ class mesh_topology_t : public mesh_topology_base_t
       iv.push_back(global_id);
     }
 
-    if(D == MT::dimensions){
+    if(D == MT::num_dimensions){
       return;
     }
 
@@ -1845,7 +1936,7 @@ class mesh_topology_t : public mesh_topology_base_t
   }
 
   template<size_t M>
-  void unserialize_domains(char* buf, uint32_t& pos){
+  void unserialize_domains(char* buf, uint64_t& pos){
     if(M == MT::num_domains){
       return;
     }
@@ -1854,9 +1945,10 @@ class mesh_topology_t : public mesh_topology_base_t
 
     unserialize_domains<M + 1>(buf, pos);
   }
+  */
 
-  void unserialize(const char* buf){
-    uint32_t pos = 0;
+  void unserialize(char* buf){
+    uint64_t pos = 0;
 
     uint32_t num_domains;
     std::memcpy(&num_domains, buf + pos, sizeof(num_domains));
@@ -1868,7 +1960,8 @@ class mesh_topology_t : public mesh_topology_base_t
     pos += sizeof(num_dimensions);
     assert(num_dimensions == MT::num_dimensions && "dimension size mismatch");
 
-    unserialize_domains<0>(buf, pos);
+    unserialize_domains<MT, MT::num_domains, MT::num_dimensions, 0>::
+      unserialize(*this, buf, pos);
 
     for(size_t from_domain = 0; from_domain < MT::num_domains; ++from_domain){
       for(size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain){

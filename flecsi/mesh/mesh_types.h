@@ -749,6 +749,18 @@ public:
       size_t from_domain, size_t to_domain, size_t from_dim, size_t to_dim) = 0;
 
   /*!
+    Helper method for unserialize.
+   */
+  virtual void
+  set_entity_ids_(size_t domain, size_t dim, id_vector_t && v) = 0;
+
+  /*!
+    Helper method for unserialize.
+   */
+  virtual void
+  set_entities_(size_t domain, size_t dim, void* v) = 0;
+
+  /*!
     This method should be called to construct and entity rather than
     calling the constructor directly. This way, the ability to have
     extra initialization behavior is reserved.

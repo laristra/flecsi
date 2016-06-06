@@ -181,7 +181,7 @@ class default_data_storage_policy_t
         meta_data_t& md = mitr.second;
         auto& data = md.data;
 
-        uint64_t data_size = data.size();
+        uint64_t data_size = md.size * md.type_size;
         std::memcpy(buf + pos, &data_size, sizeof(data_size));
         pos += sizeof(data_size);
 
@@ -236,7 +236,9 @@ class default_data_storage_policy_t
       pos += sizeof(data_size); 
 
       data.reserve(data_size);
-      data.insert(data.begin(), buf, buf + data_size);
+      data.assign((unsigned char*)buf + pos,
+                  (unsigned char*)buf + pos + data_size);
+
       pos += data_size;
     }
   }

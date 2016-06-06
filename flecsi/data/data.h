@@ -90,6 +90,10 @@ public:
     return sp_t::serialize(size);
   }
 
+  void unserialize(char* buf){
+    sp_t::unserialize(buf);
+  }
+
   //! Use the accessor type defined by the storage policy.
   template <typename T>
   using dense_accessor_t = typename sp_t::template dense_accessor_t<T>;
