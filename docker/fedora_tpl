@@ -17,7 +17,7 @@ ARG CI
 ARG COVERAGE
 
 USER root
-RUN dnf install -y -q python-pip
+RUN dnf install -y -q openmpi-devel python-pip
 RUN if [ ${COVERAGE}  ]; then pip install --user codecov; fi
 
 USER flecsi
