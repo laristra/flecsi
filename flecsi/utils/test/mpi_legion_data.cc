@@ -18,26 +18,30 @@
 #include <cinchtest.h>
 
 #include "flecsi/utils/mpi_legion_interoperability/mpi_legion_data.h"
-#include "flecsi/execution/mpi_execution_policy.h"
+#include "flecsi/execution/mpilegion_execution_policy.h"
 #include "flecsi/execution/task.h"
+#include "legion.h"
 
 using namespace flecsi::mpilegion;
 
-using execution_t = flecsi::execution_t<flecsi::mpi_execution_policy_t>;
+using execution_t = flecsi::execution_t<flecsi::mpilegion_execution_policy_t>;
 using return_type_t = execution_t::return_type_t;
 
+//make Array global only for the simple test example
+//in general, we are not suppose to do so if the object
+//is used in Legion
+
+const int nElements=10;
+MPILegionArray<double, nElements> Array;
+
+
+//main test function
 TEST(mpi_legion_interop_and_data, sanity) {
 
   const int nElements=10;
   MPILegionArray<double, nElements> Array;
   double *A1=Array.mpi_accessor();  
   std::cout << A1[0] << std::endl;
-//double *A[nElements]=Array.mpi_accessor();
-  //std::cout << A[0] <<std::endl;
-//  double A[10];
-//  double *B;
-//  B=A;
-//  std::cout << *(B+0) <<std::endl;
 
 
 } // TEST
