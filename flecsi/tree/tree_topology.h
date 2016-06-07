@@ -918,17 +918,16 @@ public:
     branch_id_t bid(center);
     branch_t* b = find_parent(bid, depth);
 
-    entity_id_vector_t entity_ids;
+    entity_id_vector_t ents;
 
-    auto f = [&](entity_t* ent, const point_t& center, element_t radius){
-      if(geometry_t::within(ent->coordinates(), center, radius)){
-        entity_ids.push_back(ent->id());
-      }
+    auto ef = 
+    [&](entity_t* ent, const point_t& center, element_t radius) -> bool{
+      return geometry_t::within(ent->coordinates(), center, radius);
     };
 
-    find_(b, size, f, geometry_t::intersects, center, radius);
+    find_(b, size, ents, ef, geometry_t::intersects, center, radius);
 
-    return entity_set_t(*this, std::move(entity_ids), false);
+    return entity_set_t(*this, std::move(ents), false);
   }
 
   entity_set_t find_in_radius(thread_pool& pool,
@@ -962,24 +961,22 @@ public:
 
     entity_id_vector_t entity_ids;
 
-    std::mutex mt;
-
-    auto f = [&](entity_t* ent, const point_t& center, element_t radius){
-      if(geometry_t::within(ent->coordinates(), center, radius)){
-        mt.lock();
-        entity_ids.push_back(ent->id());
-        mt.unlock();
-      }
+    auto ef = 
+    [&](entity_t* ent, const point_t& center, element_t radius) -> bool{
+      return geometry_t::within(ent->coordinates(), center, radius);
     };
 
     virtual_semaphore sem(1 - int(m));
+    std::mutex mtx;
 
-    find_(pool, sem, queue_depth, depth, b, size, f,
-      geometry_t::intersects, center, radius);
+    entity_id_vector_t ents;
+
+    find_(pool, sem, mtx, queue_depth, depth, b, size, ents, ef,
+          geometry_t::intersects, center, radius);
 
     sem.acquire();
 
-    return entity_set_t(*this, std::move(entity_ids), false);
+    return entity_set_t(*this, std::move(ents), false);
   }
 
   template<typename EF, typename... ARGS>
@@ -1009,7 +1006,7 @@ public:
       }
     };
 
-    find_(b, size, f, geometry_t::intersects, center, radius);
+    apply_(b, size, f, geometry_t::intersects, center, radius);
   }
 
   template<typename EF, typename... ARGS>
@@ -1052,18 +1049,18 @@ public:
 
     virtual_semaphore sem(1 - int(m));
 
-    find_(pool, sem, queue_depth, depth, b, size,
-          f, geometry_t::intersects, center, radius);
+    apply_(pool, sem, queue_depth, depth, b, size,
+           f, geometry_t::intersects, center, radius);
 
     sem.acquire();
   }
 
   template<typename EF, typename BF, typename... ARGS>
-  void find_(branch_t* b,
-             element_t size,
-             EF&& ef,
-             BF&& bf,
-             ARGS&&... args){
+  void apply_(branch_t* b,
+              element_t size,
+              EF&& ef,
+              BF&& bf,
+              ARGS&&... args){
     
     size /= 2;
 
@@ -1072,9 +1069,9 @@ public:
 
       if(ci){        
         if(bf(ci->coordinates(), size, std::forward<ARGS>(args)...)){
-          find_(ci, size,
-                std::forward<EF>(ef), std::forward<BF>(bf),
-                std::forward<ARGS>(args)...);
+          apply_(ci, size,
+                 std::forward<EF>(ef), std::forward<BF>(bf),
+                 std::forward<ARGS>(args)...);
         }        
       }
       else{
@@ -1087,12 +1084,107 @@ public:
   }
 
   template<typename EF, typename BF, typename... ARGS>
+  void apply_(thread_pool& pool,
+              virtual_semaphore& sem,
+              size_t queue_depth,
+              size_t depth,
+              branch_t* b,
+              element_t size,
+              EF&& ef,
+              BF&& bf,
+              ARGS&&... args){
+
+    constexpr size_t rb = branch_int_t(1) << P::dimension;
+
+    size /= 2;
+
+    for(size_t i = 0; i < branch_t::num_children; ++i){
+      branch_t* ci = static_cast<branch_t*>(b->child(i));
+
+      if(ci){
+        if(bf(ci->coordinates(), size, std::forward<ARGS>(args)...)){        
+          if(depth == queue_depth){
+
+            auto f = [&, size, ci](){
+              apply_(ci, size,
+                std::forward<EF>(ef), std::forward<BF>(bf),
+                std::forward<ARGS>(args)...);
+
+              sem.release();
+            };
+
+            pool.queue(f);
+          }
+          else{
+            apply_(pool, sem, queue_depth, depth + 1, ci, size,
+                   std::forward<EF>(ef), std::forward<BF>(bf),
+                   std::forward<ARGS>(args)...);
+          }
+        }
+        else{
+          size_t m = std::pow(rb, queue_depth - depth + 1);
+
+          for(size_t i = 0; i < m; ++i){
+            sem.release(); 
+          }
+        }
+      }
+      else{
+        for(auto ent : *b){
+          ef(ent, std::forward<ARGS>(args)...);
+        }
+
+        size_t m = std::pow(rb, queue_depth - depth + 1);
+
+        for(size_t i = 0; i < m; ++i){
+          sem.release(); 
+        }
+
+        return;
+      }
+    }
+  }
+
+  template<typename EF, typename BF, typename... ARGS>
+  void find_(branch_t* b,
+             element_t size,
+             entity_id_vector_t& ents,
+             EF&& ef,
+             BF&& bf,
+             ARGS&&... args){
+    
+    size /= 2;
+
+    for(size_t i = 0; i < branch_t::num_children; ++i){
+      branch_t* ci = static_cast<branch_t*>(b->child(i));
+
+      if(ci){        
+        if(bf(ci->coordinates(), size, std::forward<ARGS>(args)...)){
+          find_(ci, size, ents,
+                std::forward<EF>(ef), std::forward<BF>(bf),
+                std::forward<ARGS>(args)...);
+        }        
+      }
+      else{
+        for(auto ent : *b){
+          if(ef(ent, std::forward<ARGS>(args)...)){
+            ents.push_back(ent->id());
+          }
+        }
+        return;        
+      }
+    }
+  }
+
+  template<typename EF, typename BF, typename... ARGS>
   void find_(thread_pool& pool,
              virtual_semaphore& sem,
+             std::mutex& mtx,
              size_t queue_depth,
              size_t depth,
              branch_t* b,
              element_t size,
+             entity_id_vector_t& ents,
              EF&& ef,
              BF&& bf,
              ARGS&&... args){
@@ -1108,10 +1200,16 @@ public:
         if(bf(ci->coordinates(), size, std::forward<ARGS>(args)...)){        
           if(depth == queue_depth){
 
-            auto f = [&,size,ci](){
-              find_(ci, size,
+            auto f = [&, size, ci](){
+              entity_id_vector_t branch_ents;
+
+              find_(ci, size, branch_ents,
                 std::forward<EF>(ef), std::forward<BF>(bf),
                 std::forward<ARGS>(args)...);
+
+              mtx.lock();
+              ents.insert(ents.end(), branch_ents.begin(), branch_ents.end());
+              mtx.unlock();
 
               sem.release();
             };
@@ -1119,13 +1217,13 @@ public:
             pool.queue(f);
           }
           else{
-            find_(pool, sem, queue_depth, depth + 1, ci, size,
+            find_(pool, sem, mtx, queue_depth, depth + 1, ci, size, ents,
                   std::forward<EF>(ef), std::forward<BF>(bf),
                   std::forward<ARGS>(args)...);
           }
         }
         else{
-          size_t m = std::pow(rb, queue_depth - depth);
+          size_t m = std::pow(rb, queue_depth - depth + 1);
 
           for(size_t i = 0; i < m; ++i){
             sem.release(); 
@@ -1133,9 +1231,13 @@ public:
         }
       }
       else{
+        mtx.lock();
         for(auto ent : *b){
-          ef(ent, std::forward<ARGS>(args)...);
+          if(ef(ent, std::forward<ARGS>(args)...)){
+            ents.push_back(ent->id());
+          }
         }
+        mtx.unlock();
 
         size_t m = std::pow(rb, queue_depth - depth + 1);
 
