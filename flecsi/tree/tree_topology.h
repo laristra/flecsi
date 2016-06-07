@@ -30,6 +30,7 @@
 
 #include "flecsi/geometry/point.h"
 #include "flecsi/concurrency/concurrency.h"
+#include "flecsi/data/data_client.h"
 
 #define np(X)                                                             \
  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
@@ -395,7 +396,7 @@ enum class action : uint8_t{
 };
 
 template<class P>
-class tree_topology : public P{
+class tree_topology : public P, public data_client_t{
 public:
   using Policy = P;
 
