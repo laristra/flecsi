@@ -1383,6 +1383,60 @@ public:
     }  
   }
 
+  template<typename F, typename... ARGS>
+  void visit_children(thread_pool& pool, branch_t* b, F&& f, ARGS&&... args){
+    size_t queue_depth = get_queue_depth(pool);
+    size_t m = branch_int_t(1) << queue_depth + P::dimension + 1;
+
+    virtual_semaphore sem(1 - int(m));
+
+    visit_children_(pool, sem, 0, queue_depth + 1, b,
+                    std::forward<F>(f), std::forward<ARGS>(args)...);
+
+    sem.acquire(); 
+  }
+
+  template<typename F, typename... ARGS>
+  void visit_children_(thread_pool& pool,
+                       virtual_semaphore& sem,
+                       size_t depth,
+                       size_t queue_depth,
+                       branch_t* b,
+                       F&& f,
+                       ARGS&&... args){
+
+    if(depth == queue_depth){
+      auto vf = [&, b](){
+        visit_children(b, std::forward<F>(f), std::forward<ARGS>(args)...);
+        sem.release();
+      };
+
+      pool.queue(vf);
+      return;
+    }
+    
+    for(auto bi : b->children()){
+      if(bi){
+        branch_t* bc = static_cast<branch_t*>(bi);
+        visit_children_(pool, sem, depth + 1, queue_depth,
+                        bc, std::forward<F>(f), std::forward<ARGS>(args)...);
+      }
+      else{
+        for(auto ent : *b){
+          f(ent, std::forward<ARGS>(args)...);
+        }
+
+        size_t m = branch_int_t(1) << queue_depth - depth + P::dimension + 1;
+
+        for(size_t i = 0; i < m; ++i){
+          sem.release(); 
+        }
+
+        return;
+      }
+    }  
+  }
+
 private:
   using branch_map_t = std::unordered_map<branch_id_t, branch_t*,
     branch_id_hasher__<branch_int_t, dimension>>;

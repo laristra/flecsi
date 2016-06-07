@@ -192,7 +192,7 @@ TEST(tree_topology, gravity) {
       };
 
       Aggregate agg;
-      t.visit_children(b, h, agg);
+      t.visit_children(pool, b, h, agg);
       mtx.lock();
       aggs.emplace_back(move(agg));
       mtx.unlock();
