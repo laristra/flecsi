@@ -775,6 +775,85 @@ public:
 
 }; // mesh_topology_base_t
 
+template <class MT, size_t D, size_t M>
+using entity_type_ = typename find_entity_<MT, D, M>::type;
+
+template<class MT, size_t NM, size_t M, size_t D>
+void unserialize_dimension_(mesh_topology_base_t& mesh,
+                            char* buf,
+                            uint64_t& pos){
+  uint64_t num_entities;
+  std::memcpy(&num_entities, buf + pos, sizeof(num_entities));
+  pos += sizeof(num_entities);    
+
+  id_vector_t iv;
+  iv.reserve(num_entities);
+
+  entity_vector_t<NM> ev; 
+  ev.reserve(num_entities);
+
+  // TODO - fix
+  size_t partition_id = 0;
+
+  for(size_t local_id = 0; local_id < num_entities; ++local_id){
+    id_t global_id = id_t::make<D, M>(local_id, partition_id);
+
+    auto ent = new entity_type_<MT, D, M>();
+    ent->template set_global_id<M>(global_id);
+    ev.push_back(ent);
+    iv.push_back(global_id);
+  }
+
+  mesh.set_entity_ids_(M, D, move(iv));
+  mesh.set_entities_(M, D, &ev);
+}
+
+template<class MT, size_t NM, size_t ND, size_t M, size_t D>
+struct unserialize_dimensions_{
+  
+  static void unserialize(mesh_topology_base_t& mesh,
+                          char* buf,
+                          uint64_t& pos){
+    unserialize_dimension_<MT, NM, M, D>(mesh, buf, pos);
+    unserialize_dimensions_<MT, NM, ND, M, D + 1>::unserialize(mesh, buf, pos);
+  }
+
+};
+
+template<class MT, size_t NM, size_t ND, size_t M>
+struct unserialize_dimensions_<MT, NM, ND, M, ND>{
+
+  static void unserialize(mesh_topology_base_t& mesh,
+                          char* buf,
+                          uint64_t& pos){
+    unserialize_dimension_<MT, NM, M, ND>(mesh, buf, pos);
+  }
+
+};
+
+template<class MT, size_t NM, size_t ND, size_t M>
+struct unserialize_domains_{
+
+  static void unserialize(mesh_topology_base_t& mesh,
+                          char* buf,
+                          uint64_t& pos){
+    unserialize_dimensions_<MT, NM, ND, M, 0>::unserialize(mesh, buf, pos);
+    unserialize_domains_<MT, NM, ND, M + 1>::unserialize(mesh, buf, pos);
+  }
+
+};
+
+template<class MT, size_t NM, size_t ND>
+struct unserialize_domains_<MT, NM, ND, NM>{
+
+  static void unserialize(mesh_topology_base_t& mesh,
+                          char* buf,
+                          uint64_t& pos){
+    return;
+  }
+
+};
+
 } // namespace flecsi
 
 #endif // flecsi_mesh_types_h
