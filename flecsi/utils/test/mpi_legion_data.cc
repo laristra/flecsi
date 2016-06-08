@@ -19,13 +19,19 @@
 
 #include "flecsi/utils/mpi_legion_interoperability/mpi_legion_data.h"
 #include "flecsi/execution/mpilegion_execution_policy.h"
+#include "flecsi/execution/legion_execution_policy.h"
 #include "flecsi/execution/task.h"
 #include "legion.h"
 
+#include "flecsi/utils/TaskWrapper.h"
+
+#include "flecsi/execution/register_legion.h"
+
+using namespace flecsi;
 using namespace flecsi::mpilegion;
 
-using execution_t = flecsi::execution_t<flecsi::mpilegion_execution_policy_t>;
-using return_type_t = execution_t::return_type_t;
+using execution_type = execution_t<mpilegion_execution_policy_t>;
+using return_type_t = execution_type::return_type_t;
 
 //make Array global only for the simple test example
 //in general, we are not suppose to do so if the object
@@ -34,15 +40,34 @@ using return_type_t = execution_t::return_type_t;
 const int nElements=10;
 MPILegionArray<double, nElements> Array;
 
+typedef typename flecsi::context_t<flecsi::mpilegion_execution_policy_t> mpilegion_context;
+namespace flecsi
+{
+void mpilegion_top_level_task(mpilegion_context &&ctx,int argc, char** argv)
+{
+  std::cout << "Hello World Top Level Task" << std::endl;
+  //A.allocate_legion
+  
+}
+}
+
+void example_task(int beta,double alpha,element_t i,state_accessor_t<double> a, state_accessor_t<int> b)
+{
+
+}
 
 //main test function
 TEST(mpi_legion_interop_and_data, sanity) {
 
-  const int nElements=10;
-  MPILegionArray<double, nElements> Array;
   double *A1=Array.mpi_accessor();  
   std::cout << A1[0] << std::endl;
 
+  using wrapper_t = TaskWrapper<1,0,0,0,legion_execution_policy_t,std::function<decltype(example_task)>>;
+  //register_legion<wrapper_t>::register_task();
+
+  char d[] = "something";
+  char *argv = &(d[0]);
+  execution_type::execute_driver(flecsi::mpilegion_top_level_task,1,&argv);
 
 } // TEST
 

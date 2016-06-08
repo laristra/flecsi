@@ -32,7 +32,9 @@
  */
 namespace flecsi
 {
-//class mpilegion_execution_policy_t;
+class mpilegion_execution_policy_t;
+
+extern void mpilegion_top_level_task(context_t<flecsi::mpilegion_execution_policy_t> &&ctx,int argc, char** argv);
 
 using namespace LegionRuntime::HighLevel;
 
@@ -42,7 +44,33 @@ using namespace LegionRuntime::HighLevel;
  */
 class mpilegion_execution_policy_t: public legion_execution_policy_t
 {
-//need to add context specialization for mpilegion
+//TOFIX: add Rank information to the context
+  public: // Member Classes
+  class context_ep
+  {
+  public:
+    context_ep():task(NULL),regions( std::vector<LegionRuntime::HighLevel::PhysicalRegion>()){}
+    context_ep(const Task *_task,
+                            const std::vector<PhysicalRegion> &_regions,
+                            Context ctx, HighLevelRuntime *runtime) : ctx_l(ctx),rt(runtime),task(_task),regions(_regions){}
+
+//these 2 functions might be moved to context.h 
+
+   LegionRuntime::HighLevel::HighLevelRuntime * runtime(){
+     return rt;
+   }
+ 
+  LegionRuntime::HighLevel::Context & legion_ctx(){
+    return ctx_l;
+  }
+   
+  protected:
+     LegionRuntime::HighLevel::Context ctx_l;
+     LegionRuntime::HighLevel::HighLevelRuntime* rt;
+     const LegionRuntime::HighLevel::Task *task;
+     const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions;
+  };
+ 
 
  public: // Member Functions
 	  template <typename T>
@@ -54,7 +82,7 @@ class mpilegion_execution_policy_t: public legion_execution_policy_t
 		  const InputArgs &args = HighLevelRuntime::get_input_args();
 
 
-		  top_level_task(context_t<flecsi::legion_execution_policy_t>(0,task,regions,ctx,runtime),args.argc,args.argv);
+		  mpilegion_top_level_task(context_t<flecsi::mpilegion_execution_policy_t>(0,task,regions,ctx,runtime),args.argc,args.argv);
 
 	  }
 
@@ -80,7 +108,7 @@ class mpilegion_execution_policy_t: public legion_execution_policy_t
   } // execute_driver
 
 
-/*  template <typename T, typename... Args>
+  template <typename T, typename... Args>
   static return_type_t execute_task(T && task, Args &&... args)
   {
     utils::tuple_for_each(std::make_tuple(args...),
@@ -95,13 +123,13 @@ class mpilegion_execution_policy_t: public legion_execution_policy_t
 
   // Builds up the function signature for a task from
   template<typename... sArgs,typename... aArgs,typename T>
-  static void build_task_sig(context_t<legion_execution_policy_t> && ctx,
+  static void build_task_sig(context_t<mpilegion_execution_policy_t> && ctx,
 							 std::tuple<sArgs...> && sArgT, std::tuple<aArgs...> && aArgT,
 							 T && task)
   {
 
   }
-*/
+
 }; // class mpilegion_execution_policy_t
 
 } // namespace flecsi
