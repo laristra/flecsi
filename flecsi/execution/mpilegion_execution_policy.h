@@ -60,7 +60,7 @@ class mpilegion_execution_policy_t: public legion_execution_policy_t
      return rt;
    }
  
-  LegionRuntime::HighLevel::Context & legion_ctx(){
+   LegionRuntime::HighLevel::Context legion_ctx() {
     return ctx_l;
   }
    

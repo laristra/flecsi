@@ -46,8 +46,8 @@ namespace flecsi
 void mpilegion_top_level_task(mpilegion_context &&ctx,int argc, char** argv)
 {
   std::cout << "Hello World Top Level Task" << std::endl;
-  //A.allocate_legion
-  
+  Array.allocate_legion(ctx);
+  Array.partition_legion(ctx);
 }
 }
 

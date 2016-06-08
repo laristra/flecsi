@@ -23,13 +23,13 @@
 #include "realm.h"
 
 #include "flecsi/utils/mpi_legion_interoperability/legion_arrays.h"
-
+#include "flecsi/execution/mpilegion_execution_policy.h"
 namespace flecsi
 {
 namespace mpilegion
 {
 
-template <typename Type,  std::size_t N>
+template <typename Type,  uint64_t N>
 class MPILegionArray{
 
  public:
@@ -43,15 +43,14 @@ class MPILegionArray{
  LogicalArray<Type> legion_object;
  std::array<Type,N> mpi_object;
 
- void  allocate_legion(LegionRuntime::HighLevel::Context &ctx,
-                       LegionRuntime::HighLevel::HighLevelRuntime *lrt)
+ void  allocate_legion(context_t<mpilegion_execution_policy_t>  &ctx)
        {
-           legion_object.allocate(N, ctx, lrt);
+           legion_object.allocate(N, ctx.legion_ctx(),
+                                     ctx.runtime());
        }
- void  partition_legion( LegionRuntime::HighLevel::Context &ctx,
-                        LegionRuntime::HighLevel::HighLevelRuntime *lrt)
+ void  partition_legion( context_t<mpilegion_execution_policy_t> &ctx)
        {
-         legion_object.partition(N, ctx, lrt);
+         legion_object.partition(N, ctx.legion_ctx(), ctx.runtime());
        }
 
 // void allocate_mpi(void)
@@ -88,7 +87,7 @@ class MPILegionArray{
           return *legion_object.legion_accessor;
         }
 
-  int64_t size(void){ return N;}
+  uint64_t size(void){ return N;}
 
   void copy_legion_to_mpi (LegionRuntime::HighLevel::Context &ctx,
           HighLevelRuntime *runtime)

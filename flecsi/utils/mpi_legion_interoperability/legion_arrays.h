@@ -118,13 +118,13 @@ public:
     void
     allocate(
         int64_t nElems,
-        LegionRuntime::HighLevel::Context &ctx,
+        LegionRuntime::HighLevel::Context ctx,
         LegionRuntime::HighLevel::HighLevelRuntime *lrt
     ) {
         fid = 0;
         length = nElems;
         // calculate the size of the logicalRegion vec (inclusive)
-        auto n = length - 1;
+        uint64_t n = length - 1;
         // vec rect
         bounds = Rect<1>(Point<1>::ZEROES(), Point<1>(n));
         // vector domain
@@ -153,7 +153,7 @@ public:
      */
     void
     deallocate(
-        LegionRuntime::HighLevel::Context &ctx,
+        LegionRuntime::HighLevel::Context ctx,
         LegionRuntime::HighLevel::HighLevelRuntime *lrt
     ) {
         for (auto i = mPVec.begin(); i != mPVec.end(); i++) {
@@ -222,8 +222,8 @@ public:
      */
     void
     partition(
-        int64_t nParts,
-        LegionRuntime::HighLevel::Context &ctx,
+        uint64_t nParts,
+        LegionRuntime::HighLevel::Context ctx,
         LegionRuntime::HighLevel::HighLevelRuntime *lrt
     ) {
         using namespace LegionRuntime::HighLevel;
@@ -232,7 +232,7 @@ public:
         // For now only allow even partitioning.
         assert(0 == length % nParts && "Uneven partitioning requested.");
         //
-        int64_t inc = length / nParts; // the increment
+        uint64_t inc = length / nParts; // the increment
         Rect<1> colorBounds(Point<1>(0), Point<1>(nParts - 1));
         Domain colorDomain = Domain::from_rect<1>(colorBounds);
         //          +
@@ -242,12 +242,12 @@ public:
         //          | |
         //          | m / nSubregions
         //     (x0) + |
-        int64_t x0 = 0, x1 = inc - 1;
+        uint64_t x0 = 0, x1 = inc - 1;
         DomainColoring disjointColoring;
         // a list of sub-grid bounds.
         // provides a task ID to sub-grid bounds mapping.
         std::vector< Rect<1> > subgridBnds;
-        for (int64_t color = 0; color < nParts; ++color) {
+        for (uint64_t color = 0; color < nParts; ++color) {
             Rect<1> subRect((Point<1>(x0)), (Point<1>(x1)));
             // cache the subgrid bounds
             subgridBnds.push_back(subRect);
@@ -281,7 +281,7 @@ public:
     dump(
         const std::string &prefix,
         int64_t nle,
-        LegionRuntime::HighLevel::Context &ctx,
+        LegionRuntime::HighLevel::Context ctx,
         LegionRuntime::HighLevel::HighLevelRuntime *lrt
     ) const {
         using namespace LegionRuntime::HighLevel;
@@ -313,7 +313,7 @@ public:
    template <typename Enum>
    auto get_accessor (Enum &priviledge, 
            Enum &coherence_property,
-           LegionRuntime::HighLevel::Context &ctx,
+           LegionRuntime::HighLevel::Context ctx,
            LegionRuntime::HighLevel::HighLevelRuntime *lrt)
     {
         using namespace LegionRuntime::HighLevel;
