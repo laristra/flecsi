@@ -14,7 +14,6 @@
 
 set(execution_HEADERS
   context.h
-  context_legion.h
   default_execution_policy.h
   legion_execution_policy.h
   mpi_execution_policy.h

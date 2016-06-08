@@ -86,6 +86,14 @@ public:
     sp_t::move(from_runtime_namespace, to_runtime_namespace);
   } // reset
 
+  char* serialize(uint64_t& size){
+    return sp_t::serialize(size);
+  }
+
+  void unserialize(char* buf){
+    sp_t::unserialize(buf);
+  }
+
   //! Use the accessor type defined by the storage policy.
   template <typename T>
   using dense_accessor_t = typename sp_t::template dense_accessor_t<T>;

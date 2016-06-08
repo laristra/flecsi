@@ -156,6 +156,93 @@ class default_data_storage_policy_t
   //! Desctructor
   virtual ~default_data_storage_policy_t() {}
 
+  char* serialize(uint64_t& size){
+    const size_t alloc_size = 1048576;
+    size = alloc_size;
+
+    char* buf = (char*)std::malloc(alloc_size);
+    uint64_t pos = 4;
+
+    uint32_t num_entries = 0;
+
+    for(auto& itr : meta_){
+      uint64_t ns = itr.first;
+
+      auto& mm = itr.second;
+      
+      for(auto& mitr : mm){
+        std::memcpy(buf + pos, &ns, sizeof(ns));
+        pos += sizeof(ns);
+
+        uint64_t rs = mitr.first;
+        std::memcpy(buf + pos, &rs, sizeof(rs));
+        pos += sizeof(rs);        
+
+        meta_data_t& md = mitr.second;
+        auto& data = md.data;
+
+        uint64_t data_size = md.size * md.type_size;
+        std::memcpy(buf + pos, &data_size, sizeof(data_size));
+        pos += sizeof(data_size);
+
+        if(size - pos < data_size){
+          size += data_size + alloc_size;
+          buf = (char*)std::realloc(buf, size);
+        }
+
+        std::memcpy(buf + pos, data.data(), data_size);
+        pos += data_size;
+
+        ++num_entries;             
+      }
+    }
+
+    std::memcpy(buf, &num_entries, sizeof(num_entries));
+
+    size = pos;
+
+    return buf;
+  }
+
+  void unserialize(char* buf){
+    uint64_t pos = 0;
+
+    uint32_t num_entries;
+    std::memcpy(&num_entries, buf + pos, sizeof(num_entries));
+    pos += sizeof(num_entries);
+
+    for(size_t i = 0; i < num_entries; ++i){
+      uint64_t ns;
+      std::memcpy(&ns, buf + pos, sizeof(ns));
+      pos += sizeof(ns);
+
+      uint64_t rs;
+      std::memcpy(&rs, buf + pos, sizeof(rs));
+      pos += sizeof(rs);
+
+      auto itr = meta_.find(ns);
+      assert(itr != meta_.end() && "invalid namespace");
+
+      auto& m = itr->second;
+
+      auto mitr = m.find(rs);
+      assert(mitr != m.end() && "invalid namespace");
+
+      meta_data_t& md = mitr->second;
+      auto& data = md.data;
+
+      uint64_t data_size;
+      std::memcpy(&data_size, buf + pos, sizeof(data_size));
+      pos += sizeof(data_size); 
+
+      data.reserve(data_size);
+      data.assign((unsigned char*)buf + pos,
+                  (unsigned char*)buf + pos + data_size);
+
+      pos += data_size;
+    }
+  }
+
   //! \brief delete ALL data
   void reset() {
     meta_.clear();

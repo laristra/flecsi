@@ -76,6 +76,7 @@
 
 namespace flecsi
 {
+
 /*----------------------------------------------------------------------------*
  * class mesh_topology_t
  *----------------------------------------------------------------------------*/
@@ -1653,6 +1654,16 @@ class mesh_topology_t : public mesh_topology_base_t
     return reverse_entities<D, FM, TM>(e.entity());
   } // entities
 
+  void
+  set_entity_ids_(size_t domain, size_t dim, id_vector_t && v) override{
+    ms_.id_vecs[domain][dim] = move(v);
+  }
+
+  void
+  set_entities_(size_t domain, size_t dim, void* v) override{
+    auto ents = static_cast<entity_vector_t<MT::num_domains>*>(v);
+    ms_.entities[domain][dim] = move(*ents);
+  }
 
   template<typename I>
   void compute_graph_partition(
@@ -1746,11 +1757,12 @@ class mesh_topology_t : public mesh_topology_base_t
     }
   } // dump
 
-  char* serialize(uint32_t& size){
+  char* serialize(uint64_t& size){
     const size_t alloc_size = 1048576;
+    size = alloc_size;
 
     char* buf = (char*)std::malloc(alloc_size);
-    uint32_t pos = 0;
+    uint64_t pos = 0;
     
     uint32_t num_domains = MT::num_domains;
     std::memcpy(buf + pos, &num_domains, sizeof(num_domains));
@@ -1776,32 +1788,36 @@ class mesh_topology_t : public mesh_topology_base_t
         for(size_t from_dim = 0; from_dim <= MT::num_dimensions; ++from_dim){
           for(size_t to_dim = 0; to_dim <= MT::num_dimensions; ++to_dim){
             connectivity_t& c = dc.get(from_dim, to_dim);
+
             auto& tv = c.to_id_vec();
             uint64_t num_to = tv.size();
             std::memcpy(buf + pos, &num_to, sizeof(num_to));
             pos += sizeof(num_to);
 
-            if(size - pos < num_to){
-              size += num_to + alloc_size;
+            size_t bytes = num_to * sizeof(id_vector_t::value_type);
+
+            if(size - pos < bytes){
+              size += bytes + alloc_size;
               buf = (char*)std::realloc(buf, size);
             }
 
-            std::memcpy(buf + pos, tv.data(),
-                        num_to * sizeof(id_vector_t::value_type));
+            std::memcpy(buf + pos, tv.data(), bytes);
+            pos += bytes;
 
             auto& fv = c.from_index_vec();
             uint64_t num_from = fv.size();
             std::memcpy(buf + pos, &num_from, sizeof(num_from));
             pos += sizeof(num_from);
 
-            if(size - pos < num_from){
-              size += num_from + alloc_size;
+            bytes = num_from * sizeof(index_vector_t::value_type);
+
+            if(size - pos < bytes){
+              size += bytes + alloc_size;
               buf = (char*)std::realloc(buf, size);
             }
 
-            std::memcpy(buf + pos, fv.data(),
-                        num_from * sizeof(index_vector_t::value_type));
-
+            std::memcpy(buf + pos, fv.data(), bytes);
+            pos += bytes;
           }
         }
       }
@@ -1812,50 +1828,8 @@ class mesh_topology_t : public mesh_topology_base_t
     return buf;
   }
 
-  template<size_t M, size_t D>
-  void unserialize_dimensions(char* buf, uint32_t& pos){
-    uint32_t num_entities;
-    std::memcpy(&num_entities, buf + pos, sizeof(num_entities));
-    pos += sizeof(num_entities);    
-
-    auto& iv = ms_.id_vecs[M][D];
-    iv.reserve(num_entities);
-
-    auto& ev = ms_.entities[M][D];
-    ev.reserve(num_entities);
-
-    // TODO - fix
-    size_t partition_id = 0;
-
-    for(size_t local_id = 0; local_id < num_entities; ++local_id){
-      id_t global_id = id_t::make<D, M>(local_id, partition_id);
-
-      auto ent = new entity_type<D, M>();
-      ent->template set_global_id<M>(global_id);
-      ev.push_back(ent);
-      iv.push_back(global_id);
-    }
-
-    if(D == MT::dimensions){
-      return;
-    }
-
-    unserialize_dimensions<M, D + 1>(buf, pos);
-  }
-
-  template<size_t M>
-  void unserialize_domains(char* buf, uint32_t& pos){
-    if(M == MT::num_domains){
-      return;
-    }
-
-    unserialize_dimensions<M, 0>(buf, pos);
-
-    unserialize_domains<M + 1>(buf, pos);
-  }
-
-  void unserialize(const char* buf){
-    uint32_t pos = 0;
+  void unserialize(char* buf){
+    uint64_t pos = 0;
 
     uint32_t num_domains;
     std::memcpy(&num_domains, buf + pos, sizeof(num_domains));
@@ -1867,7 +1841,8 @@ class mesh_topology_t : public mesh_topology_base_t
     pos += sizeof(num_dimensions);
     assert(num_dimensions == MT::num_dimensions && "dimension size mismatch");
 
-    unserialize_domains<0>(buf, pos);
+    unserialize_domains_<MT, MT::num_domains, MT::num_dimensions, 0>::
+      unserialize(*this, buf, pos);
 
     for(size_t from_domain = 0; from_domain < MT::num_domains; ++from_domain){
       for(size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain){
@@ -1882,16 +1857,18 @@ class mesh_topology_t : public mesh_topology_base_t
             uint64_t num_to;
             std::memcpy(&num_to, buf + pos, sizeof(num_to));
             pos += sizeof(num_to);
-            auto ta = (id_vector_t::value_type*)buf; 
-            tv.insert(tv.begin(), ta, ta + num_to);
+            auto ta = (id_vector_t::value_type*)(buf + pos); 
+            tv.resize(num_to);
+            tv.assign(ta, ta + num_to);
             pos += num_to * sizeof(id_vector_t::value_type);
 
             auto& fv = c.from_index_vec();
             uint64_t num_from;
             std::memcpy(&num_from, buf + pos, sizeof(num_from));
             pos += sizeof(num_from);
-            auto fa = (index_vector_t::value_type*)buf; 
-            fv.insert(fv.begin(), fa, fa + num_from);
+            auto fa = (index_vector_t::value_type*)(buf + pos); 
+            fv.resize(num_from);
+            fv.assign(fa, fa + num_from);
             pos += num_from * sizeof(index_vector_t::value_type);            
           }
         }

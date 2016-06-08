@@ -29,39 +29,37 @@ namespace flecsi
 namespace mpilegion
 {
 
-template <typename Type>
+template <typename Type,  std::size_t N>
 class MPILegionArray{
 
  public:
-  MPILegionArray(int64_t nElems) {numberOfElements=nElems;};
-  MPILegionArray(){numberOfElements=1;};
-  ~MPILegionArray(){ if (mpi_allocated) delete[] mpi_object;}
+  MPILegionArray(){};
 
  private: 
-  bool mpi_allocated=false;
-  int64_t numberOfElements;
+  bool mpi_allocated=true;
   
  public:
 
  LogicalArray<Type> legion_object;
- Type *mpi_object;
+ std::array<Type,N> mpi_object;
 
  void  allocate_legion(LegionRuntime::HighLevel::Context &ctx,
                        LegionRuntime::HighLevel::HighLevelRuntime *lrt)
        {
-           legion_object.allocate(numberOfElements, ctx, lrt);
+           legion_object.allocate(N, ctx, lrt);
        }
  void  partition_legion( LegionRuntime::HighLevel::Context &ctx,
                         LegionRuntime::HighLevel::HighLevelRuntime *lrt)
        {
-         legion_object.partition(numberOfElements, ctx, lrt);
+         legion_object.partition(N, ctx, lrt);
        }
 
- void allocate_mpi(void)
-      {
-        mpi_allocated=true;
-        Type *mpi_object=new Type[numberOfElements];
-      }
+// void allocate_mpi(void)
+//      {
+//        mpi_allocated=true;
+//        //Type *mpi_object=new Type[numberOfElements];
+//      }
+
 
  Type legion_accessor(const PhysicalRegion &physicalRegion,
                       Context ctx,
@@ -74,10 +72,10 @@ class MPILegionArray{
   //      return data;
       }
 
- Type *mpi_accessor(void)
+ Type *  mpi_accessor(void)
        {
         assert (mpi_allocated);
-         return mpi_object;
+         return mpi_object.data();
        }
 
   Type mpi_ptr (void)
@@ -90,7 +88,7 @@ class MPILegionArray{
           return *legion_object.legion_accessor;
         }
 
-  int64_t size(void){ return numberOfElements;}
+  int64_t size(void){ return N;}
 
   void copy_legion_to_mpi (LegionRuntime::HighLevel::Context &ctx,
           HighLevelRuntime *runtime)

@@ -181,6 +181,8 @@ TEST(tree_topology, gravity) {
     ++ix;
   };
 
+  std::mutex mtx;
+
   auto g = 
   [&](branch_t* b, size_t depth, vector<Aggregate>& aggs) -> bool{
     if(depth > 4 || b->is_leaf()){    
@@ -190,8 +192,10 @@ TEST(tree_topology, gravity) {
       };
 
       Aggregate agg;
-      t.apply(b, h, agg);
+      t.visit_children(pool, b, h, agg);
+      mtx.lock();
       aggs.emplace_back(move(agg));
+      mtx.unlock();
 
       return true;
     }
@@ -203,7 +207,7 @@ TEST(tree_topology, gravity) {
     //cout << "---- ts = " << ts << endl;
 
     vector<Aggregate> aggs;
-    t.visit(t.root(), g, aggs);
+    t.visit(pool, t.root(), g, aggs);
 
     for(size_t i = 0; i < N; ++i){
       auto bi = bodies[i];
