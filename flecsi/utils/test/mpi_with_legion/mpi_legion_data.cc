@@ -49,8 +49,13 @@ void mpilegion_top_level_task(mpilegion_context &&ctx,int argc, char** argv)
   Array.allocate_legion(ctx);
   Array.partition_legion(ctx);
 
+//  Array.copy_mpi_to_legion(ctx);
+
   Array.copy_mpi_to_legion(ctx);
-  //Array.dump_legion("HPCG_Params", 1, ctx);
+
+  Array.dump_legion("legion Array", 1, ctx);
+
+  Array.copy_legion_to_mpi(ctx);
 
   Array.deallocate_legion(ctx);
 }

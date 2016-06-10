@@ -288,14 +288,18 @@ public:
         using namespace LegionRuntime::Accessor;
         using LegionRuntime::Arrays::Rect;
 
+
         RegionRequirement req(
             logicalRegion, READ_ONLY, EXCLUSIVE, logicalRegion
         );
         req.add_field(fid);
         InlineLauncher dumpl(req);
-        PhysicalRegion reg = lrt->map_region(ctx, dumpl);
-        reg.wait_until_valid();
-        auto acc = reg.get_field_accessor(fid).template typeify<T>();
+        PhysicalRegion preg=lrt->map_region(ctx, dumpl);;
+        
+//        if (req.is_mapped()) lrt->unmap_region(ctx,req);
+//         req= lrt->map_region(ctx, dumpl);
+        preg.wait_until_valid();
+        auto acc = preg.get_field_accessor(fid).template typeify<T>();
         typedef GenericPointInRectIterator<1> GPRI1D;
         typedef DomainPoint DomPt;
         std:: cout << "*** " << prefix << " ***" << std::endl;
@@ -308,6 +312,7 @@ public:
         }
         std::cout << std::endl << std::flush;
         // XXX Do we need to explicitly unmap the region here?
+        if (preg.is_mapped()) lrt->unmap_region(ctx,preg);
     }
    
    auto get_accessor (Legion::PrivilegeMode priviledge, 
@@ -323,12 +328,21 @@ public:
             logicalRegion, priviledge, coherence_property, logicalRegion);
         req.add_field(fid);
         InlineLauncher accessorl(req);
-        PhysicalRegion reg = lrt->map_region(ctx,accessorl);
+        PhysicalRegion reg= lrt->map_region(ctx,accessorl);
         reg.wait_until_valid();
       //  auto acc = reg.get_field_accessor(fid).template typeify<T>();
      
         return reg.get_field_accessor(fid).template typeify<T>();
     }
+   
+   void unmap_all_regions (
+           LegionRuntime::HighLevel::Context ctx,
+           LegionRuntime::HighLevel::HighLevelRuntime *lrt)
+   {
+      lrt->unmap_all_regions(ctx);
+   } 
+   // public:
+   // PhysicalRegion reg;
 
 };
 
@@ -374,6 +388,21 @@ public:
         }
         // It's all good...
     }
+
+    void
+    dump(
+        const std::string &prefix,
+        LegionRuntime::HighLevel::Context &ctx,
+        LegionRuntime::HighLevel::HighLevelRuntime *lrt
+    ) const {
+        if (mData) {
+            std::cout << prefix << " " << *mData << std::endl;
+        }
+        else {
+            std::cout << prefix << "WARNING: NO DATA" << std::endl;
+        }
+    }
+
 
     /**
      *
