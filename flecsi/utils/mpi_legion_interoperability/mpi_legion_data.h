@@ -98,17 +98,36 @@ class MPILegionArray{
 
   void copy_legion_to_mpi (context_t<mpilegion_execution_policy_t>  &ctx)
   {
-   auto *acc=legion_object.get_accessor(READ_ONLY, EXCLUSIVE, ctx.legion_ctx(), ctx.runtime());
-   for(GenericPointInRectIterator<1> pir(legion_object.bounds); pir; pir++)
-    *mpi_object++ = acc.read(DomainPoint::from_point<1>(pir.p));
+    //TOFIX: should we use pointers for acc and mpi_object here?
+   LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic, Type, Type> acc=
+     legion_object.get_accessor(READ_ONLY, EXCLUSIVE, ctx.legion_ctx(), ctx.runtime());
+   int count =0;
+   for(GenericPointInRectIterator<1> pir(legion_object.bounds); pir; pir++){
+    mpi_object[count] = acc.read(DomainPoint::from_point<1>(pir.p));
+   count++;
+   }
   }
 
   void copy_mpi_to_legion (context_t<mpilegion_execution_policy_t>  &ctx)
   {
-     auto *acc=legion_object.get_accessor(WRITE_DISCARD, EXCLUSIVE, ctx.legion_ctx(), ctx.runtime());
-     for(GenericPointInRectIterator<1> pir(legion_object.bounds); pir; pir++)
-          acc.write(DomainPoint::from_point<1>(pir.p), *mpi_object++);    
+
+   //TOFIX: should we use pointers for acc and mpi_object here?
+     LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic, Type, Type> acc=
+        legion_object.get_accessor(WRITE_DISCARD, EXCLUSIVE, ctx.legion_ctx(), ctx.runtime());
+     int count=0;
+     for(GenericPointInRectIterator<1> pir(legion_object.bounds); pir; pir++){
+          acc.write(DomainPoint::from_point<1>(pir.p), mpi_object[count]);
+          count++;
+     }
+         
   }
+
+ void dump_legion(const std::string &prefix,
+                  int64_t nle,
+                  context_t<mpilegion_execution_policy_t>  &ctx)
+ {
+   legion_object.dump(prefix, 1, ctx.legion_ctx(), ctx.runtime());
+ }
 
 };
 

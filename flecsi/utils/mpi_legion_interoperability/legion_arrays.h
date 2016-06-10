@@ -310,9 +310,8 @@ public:
         // XXX Do we need to explicitly unmap the region here?
     }
    
-   template <typename Enum>
-   auto get_accessor (Enum &priviledge, 
-           Enum &coherence_property,
+   auto get_accessor (Legion::PrivilegeMode priviledge, 
+           Legion::CoherenceProperty coherence_property,
            LegionRuntime::HighLevel::Context ctx,
            LegionRuntime::HighLevel::HighLevelRuntime *lrt)
     {

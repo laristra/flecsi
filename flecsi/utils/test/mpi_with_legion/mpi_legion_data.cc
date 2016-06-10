@@ -48,6 +48,11 @@ void mpilegion_top_level_task(mpilegion_context &&ctx,int argc, char** argv)
   std::cout << "Hello World Top Level Task" << std::endl;
   Array.allocate_legion(ctx);
   Array.partition_legion(ctx);
+
+  Array.copy_mpi_to_legion(ctx);
+  //Array.dump_legion("HPCG_Params", 1, ctx);
+
+  Array.deallocate_legion(ctx);
 }
 }
 
@@ -61,6 +66,17 @@ TEST(mpi_legion_interop_and_data, sanity) {
 
   double *A1=Array.mpi_accessor();  
   std::cout << A1[0] << std::endl;
+
+  for (int i=0; i< nElements; i++)
+  {
+    A1[i]=i*0.1;
+  }
+
+
+  int size=Array.size();
+  assert (size=nElements);
+
+  std::cout <<"size of allocated array = "<< size <<std::endl;
 
   using wrapper_t = TaskWrapper<1,0,0,0,legion_execution_policy_t,std::function<decltype(example_task)>>;
   //register_legion<wrapper_t>::register_task();
