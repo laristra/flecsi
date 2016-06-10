@@ -148,9 +148,44 @@ class MPILegionArray{
                   context_t<mpilegion_execution_policy_t>  &ctx)
  {
   
-   legion_object.dump(prefix, 1, ctx.legion_ctx(), ctx.runtime());
+   legion_object.dump(prefix, nle, ctx.legion_ctx(), ctx.runtime());
  }
 
+ void dump_mpi (const std::string &prefix)
+  {
+    Type *temp=mpi_object.data();
+    std::cout <<prefix<< "  " <<std::endl;
+      for (int i=0; i<N;i++)
+         std::cout << temp[i] <<std::endl;
+  }
+
+ void mpi_init(Type &init_value)
+ {
+    Type *temp=mpi_object.data();
+    for (int i=0; i<N ;i++)
+      temp[i]=init_value;
+  }
+
+ void legion_init(Type &init_value, 
+         context_t<mpilegion_execution_policy_t>  &ctx)
+ {
+   using namespace LegionRuntime::HighLevel;
+   using namespace LegionRuntime::Accessor;
+   using LegionRuntime::Arrays::Rect;
+   RegionRequirement req(
+            legion_object.logicalRegion, WRITE_DISCARD, EXCLUSIVE, legion_object.logicalRegion);
+   req.add_field(legion_object.fid);
+   InlineLauncher accessorl(req);
+   PhysicalRegion preg= ctx.runtime()->map_region(ctx.legion_ctx(),accessorl);
+   preg.wait_until_valid();
+
+   LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic, Type, Type> acc=
+     preg.get_field_accessor(legion_object.fid).template typeify<Type>();
+   for(GenericPointInRectIterator<1> pir(legion_object.bounds); pir; pir++){
+      acc.write(DomainPoint::from_point<1>(pir.p), init_value);
+    }   
+    ctx.runtime()->unmap_region(ctx.legion_ctx(),preg);
+  }
 };
 
 }//end namespace mpilegion

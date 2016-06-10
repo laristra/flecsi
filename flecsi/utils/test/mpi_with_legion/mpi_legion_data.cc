@@ -55,8 +55,13 @@ void mpilegion_top_level_task(mpilegion_context &&ctx,int argc, char** argv)
 
   Array.dump_legion("legion Array", 1, ctx);
 
+  double init_value=14;
+  Array.legion_init(init_value, ctx);
+
   Array.copy_legion_to_mpi(ctx);
 
+  Array.dump_mpi("  output for MPI Array ");
+ 
   Array.deallocate_legion(ctx);
 }
 }
@@ -69,14 +74,20 @@ void example_task(int beta,double alpha,element_t i,state_accessor_t<double> a, 
 //main test function
 TEST(mpi_legion_interop_and_data, sanity) {
 
+  double init_value=13;
+  Array.mpi_init(init_value);
+
   double *A1=Array.mpi_accessor();  
   std::cout << A1[0] << std::endl;
 
+  Array.dump_mpi("  output for MPI Array ");
+ 
   for (int i=0; i< nElements; i++)
   {
     A1[i]=i*0.1;
   }
 
+  Array.dump_mpi("  output for MPI Array ");
 
   int size=Array.size();
   assert (size=nElements);
