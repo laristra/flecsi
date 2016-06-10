@@ -47,7 +47,14 @@ class MPILegionArray{
        {
            legion_object.allocate(N, ctx.legion_ctx(),
                                      ctx.runtime());
+      }
+
+ void  deallocate_legion(context_t<mpilegion_execution_policy_t>  &ctx)
+       {
+           legion_object.deallocate( ctx.legion_ctx(),
+                                     ctx.runtime());
        }
+
  void  partition_legion( context_t<mpilegion_execution_policy_t> &ctx)
        {
          legion_object.partition(N, ctx.legion_ctx(), ctx.runtime());
@@ -89,18 +96,16 @@ class MPILegionArray{
 
   uint64_t size(void){ return N;}
 
-  void copy_legion_to_mpi (LegionRuntime::HighLevel::Context &ctx,
-          HighLevelRuntime *runtime)
+  void copy_legion_to_mpi (context_t<mpilegion_execution_policy_t>  &ctx)
   {
-   auto *acc=legion_object.get_accessor(READ_ONLY, EXCLUSIVE, ctx, runtime);
+   auto *acc=legion_object.get_accessor(READ_ONLY, EXCLUSIVE, ctx.legion_ctx(), ctx.runtime());
    for(GenericPointInRectIterator<1> pir(legion_object.bounds); pir; pir++)
     *mpi_object++ = acc.read(DomainPoint::from_point<1>(pir.p));
   }
 
-  void copy_mpi_to_legion (LegionRuntime::HighLevel::Context &ctx,
-          HighLevelRuntime *runtime)
+  void copy_mpi_to_legion (context_t<mpilegion_execution_policy_t>  &ctx)
   {
-     auto *acc=legion_object.get_accessor(WRITE_DISCARD, EXCLUSIVE, ctx, runtime);
+     auto *acc=legion_object.get_accessor(WRITE_DISCARD, EXCLUSIVE, ctx.legion_ctx(), ctx.runtime());
      for(GenericPointInRectIterator<1> pir(legion_object.bounds); pir; pir++)
           acc.write(DomainPoint::from_point<1>(pir.p), *mpi_object++);    
   }

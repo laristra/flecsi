@@ -113,26 +113,26 @@ endif (ENABLE_STATIC_CONTAINER)
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 cinch_add_unit(mpi_with_legion
-  SOURCES test/mpi_with_legion.cc
+  SOURCES test/mpi_with_legion/mpi_with_legion.cc
   POLICY MPILEGION)
 
 cinch_add_unit(more_complex_mpi_with_legion
-  SOURCES test/more_complex_mpi_with_legion.cc
+  SOURCES test/mpi_with_legion/more_complex_mpi_with_legion.cc
   POLICY MPILEGION)
 
 if (ENABLE_HYPRE)
 cinch_add_unit(legion_with_Hypre
-  SOURCES test/legion_with_Hypre.cc
+  SOURCES test/mpi_with_legion/legion_with_Hypre.cc
   POLICY MPILEGION
   LIBRARIES     ${HYPRE_LIBRARIES} )
 endif (ENABLE_HYPRE)
 
 cinch_add_unit(mpi_legion_interop
-  SOURCES test/mpi_legion_interop.cc
+  SOURCES test/mpi_with_legion/mpi_legion_interop.cc
   POLICY MPILEGION)
 
 cinch_add_unit(mpi_legion_data
-  SOURCES test/mpi_legion_data.cc
+  SOURCES test/mpi_with_legion/mpi_legion_data.cc
   POLICY MPILEGION)
 
 endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
