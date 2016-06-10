@@ -315,7 +315,7 @@ public:
         if (preg.is_mapped()) lrt->unmap_region(ctx,preg);
     }
    
-   auto get_accessor (Legion::PrivilegeMode priviledge, 
+/*   auto get_accessor (Legion::PrivilegeMode priviledge, 
            Legion::CoherenceProperty coherence_property,
            LegionRuntime::HighLevel::Context ctx,
            LegionRuntime::HighLevel::HighLevelRuntime *lrt)
@@ -334,15 +334,13 @@ public:
      
         return reg.get_field_accessor(fid).template typeify<T>();
     }
-   
+  */ 
    void unmap_all_regions (
            LegionRuntime::HighLevel::Context ctx,
            LegionRuntime::HighLevel::HighLevelRuntime *lrt)
    {
       lrt->unmap_all_regions(ctx);
    } 
-   // public:
-   // PhysicalRegion reg;
 
 };
 

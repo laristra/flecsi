@@ -98,29 +98,49 @@ class MPILegionArray{
 
   void copy_legion_to_mpi (context_t<mpilegion_execution_policy_t>  &ctx)
   {
-    //TOFIX: should we use pointers for acc and mpi_object here?
+    RegionRequirement req(
+            legion_object.logicalRegion, READ_ONLY, EXCLUSIVE, legion_object.logicalRegion);
+   req.add_field(legion_object.fid);
+   InlineLauncher accessorl(req);
+   PhysicalRegion preg= ctx.runtime()->map_region(ctx.legion_ctx(),accessorl);
+   preg.wait_until_valid();
+
    LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic, Type, Type> acc=
-     legion_object.get_accessor(READ_ONLY, EXCLUSIVE, ctx.legion_ctx(), ctx.runtime());
+     preg.get_field_accessor(legion_object.fid).template typeify<Type>();
+
+    //TOFIX: should we use pointers for an mpi_object here?
    int count =0;
    for(GenericPointInRectIterator<1> pir(legion_object.bounds); pir; pir++){
     mpi_object[count] = acc.read(DomainPoint::from_point<1>(pir.p));
    count++;
    }
-   legion_object.unmap_all_regions(ctx.legion_ctx(), ctx.runtime());
+   ctx.runtime()->unmap_region(ctx.legion_ctx(),preg);
   }
 
   void copy_mpi_to_legion (context_t<mpilegion_execution_policy_t>  &ctx)
   {
-   //TOFIX: should we use pointers for acc and mpi_object here?
-     LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic, Type, Type> acc=
-        legion_object.get_accessor(WRITE_DISCARD, EXCLUSIVE, ctx.legion_ctx(), ctx.runtime());
+
+   using namespace LegionRuntime::HighLevel;
+   using namespace LegionRuntime::Accessor;
+   using LegionRuntime::Arrays::Rect;
+   RegionRequirement req(
+            legion_object.logicalRegion, WRITE_DISCARD, EXCLUSIVE, legion_object.logicalRegion);
+   req.add_field(legion_object.fid);
+   InlineLauncher accessorl(req);
+   PhysicalRegion preg= ctx.runtime()->map_region(ctx.legion_ctx(),accessorl);
+   preg.wait_until_valid();
+   
+   LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic, Type, Type> acc=
+     preg.get_field_accessor(legion_object.fid).template typeify<Type>();
+
+
+   //TOFIX: should we use pointers for an mpi_object here?
      int count=0;
      for(GenericPointInRectIterator<1> pir(legion_object.bounds); pir; pir++){
           acc.write(DomainPoint::from_point<1>(pir.p), mpi_object[count]);
           count++;
      }
-    //TOFIX: instead unmap_all_regions we would like to call unmap only on used region 
-    legion_object.unmap_all_regions(ctx.legion_ctx(), ctx.runtime());   
+    ctx.runtime()->unmap_region(ctx.legion_ctx(),preg);
   }
 
  void dump_legion(const std::string &prefix,
