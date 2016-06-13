@@ -5,23 +5,23 @@ services:
 env:
   matrix:
     - DOCKERFILE=ubuntu MINIMAL=ON MPI=OFF RUNTIME=serial
-    - DOCKERFILE=ubuntu_tpl MPI=OFF TPL=ON RUNTIME=legion
-    - DOCKERFILE=ubuntu_tpl MPI=OFF TPL=ON RUNTIME=legion WERROR=yes
-    - DOCKERFILE=ubuntu_tpl MPI=ON  TPL=ON RUNTIME=mpilegion
+    - DOCKERFILE=ubuntu_tpl MPI=OFF TPL=ON RUNTIME=legion    DOCKERHUB = true
+    - DOCKERFILE=ubuntu_tpl MPI=OFF TPL=ON RUNTIME=legion    WERROR=yes
+    - DOCKERFILE=ubuntu_tpl MPI=ON  TPL=ON RUNTIME=mpilegion DOCKERHUB = true
     - DOCKERFILE=ubuntu_tpl MPI=ON  TPL=ON RUNTIME=mpilegion WERROR=yes
-    - DOCKERFILE=ubuntu MPI=ON RUNTIME=mpi
-    - DOCKERFILE=ubuntu MPI=ON RUNTIME=mpi WERROR=yes
-    - DOCKERFILE=ubuntu MPI=OFF RUNTIME=serial WERROR=yes
-    - DOCKERFILE=ubuntu MPI=OFF COVERAGE=ON RUNTIME=serial
+    - DOCKERFILE=ubuntu MPI=ON   RUNTIME=mpi                 DOCKERHUB = true
+    - DOCKERFILE=ubuntu MPI=ON   RUNTIME=mpi WERROR=yes
+    - DOCKERFILE=ubuntu MPI=OFF  RUNTIME=serial WERROR=yes   DOCKERHUB = true
+    - DOCKERFILE=ubuntu MPI=OFF  COVERAGE=ON RUNTIME=serial
 
     - DOCKERFILE=fedora MINIMAL=ON MPI=OFF RUNTIME=serial
-    - DOCKERFILE=fedora_tpl MPI=OFF TPL=ON RUNTIME=legion
-    - DOCKERFILE=fedora_tpl MPI=OFF TPL=ON RUNTIME=legion WERROR=yes
-    - DOCKERFILE=fedora_tpl MPI=ON  TPL=ON RUNTIME=mpilegion
+    - DOCKERFILE=fedora_tpl MPI=OFF TPL=ON RUNTIME=legion    DOCKERHUB = true
+    - DOCKERFILE=fedora_tpl MPI=OFF TPL=ON RUNTIME=legion    WERROR=yes
+    - DOCKERFILE=fedora_tpl MPI=ON  TPL=ON RUNTIME=mpilegion DOCKERHUB = true
     - DOCKERFILE=fedora_tpl MPI=ON  TPL=ON RUNTIME=mpilegion WERROR=yes
-    - DOCKERFILE=fedora MPI=ON RUNTIME=mpi
-    - DOCKERFILE=fedora MPI=ON RUNTIME=mpi WERROR=yes
-    - DOCKERFILE=fedora MPI=OFF RUNTIME=serial WERROR=yes
+    - DOCKERFILE=fedora MPI=ON  RUNTIME=mpi                  DOCKERHUB = true
+    - DOCKERFILE=fedora MPI=ON  RUNTIME=mpi WERROR=yes
+    - DOCKERFILE=fedora MPI=OFF RUNTIME=serial WERROR=yes    DOCKERHUB = true
     - DOCKERFILE=fedora MPI=OFF RUNTIME=serial COVERAGE=ON
 
 script:
@@ -31,12 +31,12 @@ script:
                 --build-arg TRAVIS_COMMIT=${TRAVIS_COMMIT} --build-arg TRAVIS_JOB_NUMBER=${TRAVIS_JOB_NUMBER}
                 --build-arg TRAVIS_PULL_REQUEST=${TRAVIS_PULL_REQUEST} --build-arg TRAVIS_JOB_ID=${TRAVIS_JOB_ID}
                 --build-arg TRAVIS_REPO_SLUG=${TRAVIS_REPO_SLUG} --build-arg TRAVIS_TAG=${TRAVIS_TAG}
-                -t flecsi/flecsi:${DOCKERFILE} -f docker/${DOCKERFILE} docker/
+                -t flecsi/flecsi:${DOCKERFILE}_${RUNTIME} -f docker/${DOCKERFILE} docker/
 
 after_success:
   - if [[ ${DOCKERHUB} = true && ${DOCKER_EMAIL} && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_PULL_REQUEST} == false && ${TRAVIS_BRANCH} == master ]]; then
       docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-      docker push "flecsi/flecsi:${DOCKERFILE}";
+      docker push "flecsi/flecsi:${DOCKERFILE}_${RUNTIME}";
    fi
 
 compiler:
