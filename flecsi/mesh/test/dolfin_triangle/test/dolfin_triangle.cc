@@ -15,9 +15,13 @@
 #include <cinchtest.h>
 
 #include "../dolfin_triangle_mesh.h"
-#include "dolfin_triangle_fixture.h"
 
 using namespace flecsi;
+
+class A_Dolfin_Triangle : public ::testing::Test {
+protected:
+  dolfin_triangle_mesh_t<dolfin_triangle_types_t> dolfin;
+};
 
 TEST_F(A_Dolfin_Triangle, number_of_vertices_should_be_10) {
   ASSERT_EQ(10, dolfin.num_vertices());
