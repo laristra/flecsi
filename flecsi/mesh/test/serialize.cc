@@ -4,9 +4,11 @@
 #include "flecsi/utils/common.h"
 #include "flecsi/mesh/mesh_topology.h"
 #include "flecsi/mesh/mesh_types.h"
+#include "flecsi/data/data.h"
 
 using namespace std;
 using namespace flecsi;
+using namespace data_model;
 
 #define FILTER(E) [&](auto E) -> bool
 
@@ -185,7 +187,7 @@ public:
 
 using TestMesh = mesh_topology_t<TestMesh2dType>;
 
-TEST(mesh_topology, traversal) {
+TEST(serialize, serialize_mesh) {
 
   size_t width = 2;
   size_t height = 2;
@@ -223,6 +225,27 @@ TEST(mesh_topology, traversal) {
 
   mesh->init<0>();
   mesh->init_bindings<1>();
+
+  uint64_t size;
+  char* buf = mesh->serialize(size);
+
+  FILE* fp = fopen("mesh.out", "wb");
+  fwrite(buf, 1, size, fp);
+  fclose(fp);
+}
+
+TEST(serialize, unserialize_mesh) {
+  auto mesh = new TestMesh;
+
+  FILE* fp = fopen("mesh.out", "rb");
+  fseek(fp, 0, SEEK_END);
+  size_t size = ftell(fp);
+  rewind(fp);
+  char* buf = (char*)malloc(size);
+  fread(buf, 1, size, fp);
+  fclose(fp);
+
+  mesh->unserialize(buf);
 
   mesh->dump();
 
@@ -336,5 +359,67 @@ TEST(mesh_topology, traversal) {
     CINCH_CAPTURE() << "---- filter edge id: " << edge.id() << endl;   
   }
 
-  ASSERT_TRUE(CINCH_EQUAL_BLESSED("bindings.blessed"));
+  ASSERT_TRUE(CINCH_EQUAL_BLESSED("serialize.blessed"));
+}
+
+struct state_user_meta_data_t {
+  void initialize(){}
+};
+
+using state_t = 
+  data_t<state_user_meta_data_t, default_data_storage_policy_t>;
+
+static const size_t N = 10;
+
+TEST(serialize, serialize_state) {
+
+  state_t& state = state_t::instance();
+  state.register_state<double, flecsi_internal>("mass", N, 0);
+  state.register_state<double, flecsi_internal>("density", N, 0);
+
+  auto am = state.dense_accessor<double, flecsi_internal>("mass");
+  auto ad = state.dense_accessor<double, flecsi_internal>("density");
+
+  for(size_t i = 0; i < N; ++i){
+    am[i] = i;
+    ad[i] = i;
+  }
+
+  uint64_t size;
+  char* buf = state.serialize(size);
+
+  FILE* fp = fopen("state.out", "wb");
+  fwrite(buf, 1, size, fp);
+  fclose(fp);
+}
+
+TEST(serialize, unserialize_state) {
+
+  state_t& state = state_t::instance();
+  state.reset();
+
+  state.register_state<double, flecsi_internal>("mass", N, 0);
+  state.register_state<double, flecsi_internal>("density", N, 0);
+
+  FILE* fp = fopen("state.out", "rb");
+  fseek(fp, 0, SEEK_END);
+  size_t size = ftell(fp);
+  rewind(fp);
+  char* buf = (char*)malloc(size);
+  fread(buf, 1, size, fp);
+  fclose(fp);
+
+  state.unserialize(buf);
+
+  auto am = state.dense_accessor<double, flecsi_internal>("mass");
+  auto ad = state.dense_accessor<double, flecsi_internal>("density");
+
+  double sum = 0;
+
+  for(size_t i = 0; i < N; ++i){
+    sum += am[i];
+    sum += ad[i];
+  }
+
+  ASSERT_TRUE(sum == 90);
 }

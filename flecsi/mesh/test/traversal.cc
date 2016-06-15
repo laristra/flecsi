@@ -35,8 +35,8 @@ public:
   void set_precedence(size_t dim, uint64_t precedence) {}
 
   std::vector<size_t>
-  create_entities(size_t dim, flecsi::id_t *e,
-                  flecsi::id_t *v, size_t vertex_count){  
+  create_entities(flecsi::id_t cell_id, size_t dim, domain_connectivity<2> & c, flecsi::id_t * e){
+    flecsi::id_t* v = c.get_entities(cell_id, 0);
 
     e[0] = v[0];
     e[1] = v[2];
@@ -61,7 +61,7 @@ private:
 
 class TestMesh2dType{
 public:
-  static constexpr size_t dimension = 2;
+  static constexpr size_t num_dimensions = 2;
 
   static constexpr size_t num_domains = 1;
 

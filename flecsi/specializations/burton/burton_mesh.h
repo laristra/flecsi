@@ -321,7 +321,7 @@ public:
    */
   static constexpr auto dimension()
   {
-    return burton_mesh_traits_t::dimension;
+    return burton_mesh_traits_t::num_dimensions;
   } // dimension
 
   auto get_connectivity(size_t fm, size_t tm, size_t fd, size_t td) {

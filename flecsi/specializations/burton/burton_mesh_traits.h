@@ -37,7 +37,7 @@ struct burton_mesh_traits_t {
 #endif // FLECSI_MESH_DIMENSION
 
   //! The dimension of the burton mesh.
-  static constexpr size_t dimension = FLECSI_MESH_DIMENSION;
+  static constexpr size_t num_dimensions = FLECSI_MESH_DIMENSION;
 
   //! The number of mesh domains in the burton mesh.
   static constexpr size_t num_domains = 2;
@@ -46,10 +46,10 @@ struct burton_mesh_traits_t {
   using real_t = double;
 
   //! A point type with real_t data and mesh dimension.
-  using point_t = point<real_t, dimension>;
+  using point_t = point<real_t, num_dimensions>;
 
   //! A space ("physics") vector type with real_t data and mesh dimension.
-  using vector_t = space_vector<real_t, dimension>;
+  using vector_t = space_vector<real_t, num_dimensions>;
 
   //! Enumeration of the locations on the mesh where data may be sited.
   enum class attachment_site_t : size_t {

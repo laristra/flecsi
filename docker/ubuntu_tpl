@@ -1,0 +1,57 @@
+from flecsi/flecsi_tpl:ubuntu
+
+ARG MINIMAL
+ARG MPI
+ARG RUNTIME
+ARG WERROR
+ARG TPL
+ARG TRAVIS
+ARG TRAVIS_PULL_REQUEST
+ARG TRAVIS_REPO_SLUG
+ARG TRAVIS_BRANCH
+ARG TRAVIS_COMMIT
+ARG TRAVIS_JOB_NUMBER
+ARG TRAVIS_JOB_ID
+ARG TRAVIS_TAG
+ARG CI
+ARG COVERAGE
+
+USER root
+RUN apt-get -q update -y
+RUN apt-get -qq install -y libopenmpi-dev openmpi-bin  python-pip
+
+USER flecsi
+
+RUN if [ ${COVERAGE}  ]; then pip install --user codecov; fi
+RUN if [ ${WERROR} ]; then export CXXFLAGS="-Werror"; fi
+
+WORKDIR /tmp
+RUN git clone --recursive https://github.com/losalamos/flecsi.git
+
+WORKDIR flecsi
+RUN if [ ${TRAVIS} = true ]; then \
+      if [ ${TRAVIS_PULL_REQUEST} != false ]; then \
+        git fetch "git://github.com/${TRAVIS_REPO_SLUG}" +refs/pull/"${TRAVIS_PULL_REQUEST}"/merge: ;\
+	git checkout FETCH_HEAD; \
+      else \
+        git fetch --depth=10 "git://github.com/${TRAVIS_REPO_SLUG}" "${TRAVIS_BRANCH}"; \
+	git checkout "${TRAVIS_COMMIT}"; \
+      fi \
+    fi
+RUN mkdir build
+
+WORKDIR build
+RUN cmake -DENABLE_MPI=$MPI \
+          ${TPL:+-DCMAKE_PREFIX_PATH=${HOME}/tpl} \
+          -DFLECSI_RUNTIME_MODEL=$RUNTIME \
+          ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON \
+          -DCMAKE_DISABLE_FIND_PACKAGE_SCOTCH=ON \
+          -DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON  \
+          -DCMAKE_DISABLE_FIND_PACKAGE_LAPACKE=ON} \
+          -DENABLE_UNIT_TESTS=ON .. \
+          ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} ..
+
+RUN make -j2
+RUN make test
+RUN make install DESTDIR=${PWD}
+RUN cd .. && if [ ${COVERAGE} ]; then $HOME/.local/bin/codecov; fi

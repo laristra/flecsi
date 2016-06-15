@@ -47,7 +47,8 @@ Description:    This code solves a system corresponding to a discretization
 #include "legion.h"
 
 // user includes
-#include "flecsi/utils/mpi_legion_interoperability/legion_handshake.h"
+#include "flecsi/utils/mpi_legion_interoperability/mpi_legion_interop.h"
+//#include "flecsi/utils/mpi_legion_interoperability/legion_handshake.h"
 #include "flecsi/utils/mpi_legion_interoperability/mapper.h"
 #include "flecsi/utils/mpi_legion_interoperability/task_ids.h"
 #include "flecsi/execution/mpi_execution_policy.h"
@@ -59,6 +60,10 @@ Description:    This code solves a system corresponding to a discretization
 #include "HYPRE_struct_ls.h"
 //#include "vis.c"
 
+using namespace flecsi::mpilegion;
+using namespace LegionRuntime::HighLevel;
+using namespace LegionRuntime::Accessor;
+using namespace LegionRuntime::Arrays;
 
 using execution_t = flecsi::execution_t<flecsi::mpi_execution_policy_t>;
 using return_type_t = execution_t::return_type_t;
@@ -76,10 +81,6 @@ ExtLegionHandshake *handshake;
 
 
 int hypre_test();
-
-using namespace LegionRuntime::HighLevel;
-using namespace LegionRuntime::Accessor;
-using namespace LegionRuntime::Arrays;
 
 void top_level_task(const Task *task,
                     const std::vector<PhysicalRegion> &regions,

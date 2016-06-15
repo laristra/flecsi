@@ -1,5 +1,6 @@
 #include <cinchtest.h>
 #include <iostream>
+#include <cmath>
 
 #include "flecsi/tree/tree_topology.h"
 
@@ -78,6 +79,10 @@ public:
       return p;
     }
 
+    size_t size(){
+      return ents_.size();
+    }
+
   private:
     std::vector<entity_t*> ents_;
   };
@@ -102,6 +107,7 @@ using entity_t = tree_topology_t::entity;
 using point_t = tree_topology_t::point_t;
 using branch_t = tree_topology_t::branch_t;
 using branch_id_t = tree_topology_t::branch_id_t;
+using element_t = tree_topology_t::element_t;
 
 TEST(tree_topology, insert_find_remove) {
   tree_topology_t t;
@@ -123,6 +129,129 @@ TEST(tree_topology, insert_find_remove) {
   for(auto e : ents){
     t.remove(e);
   }
-
   ASSERT_TRUE(CINCH_EQUAL_BLESSED("tree.blessed"));
+}
+
+TEST(tree_topology, assert_branches) {
+  tree_topology_t t;
+
+  std::vector<entity_t*> ents;
+
+  size_t n = 100000;
+
+  for(size_t i = 0; i < n; ++i){
+    point_t p = {uniform(), uniform()};
+    auto e = t.make_entity(p);
+    t.insert(e);
+    ents.push_back(e);
+  }
+
+  for(size_t i = 0; i < 10000; ++i){
+    t.remove(ents[i]);
+  }
+
+  auto f = [&](branch_t* b, size_t depth) -> bool{
+    assert(b->is_leaf() || b->size() == 0);
+    return false;
+  };
+
+  t.visit(t.root(), f);
+}
+
+TEST(tree_topology, find_radius) {
+  tree_topology_t t;
+
+  std::vector<entity_t*> ents;
+
+  double d = sqrt(0.03125);
+  size_t n = 10000;
+
+  for(size_t i = 0; i < n; ++i){
+    point_t p = {0.25, 0.25};
+    point_t pd = {uniform(-d, d), uniform(-d, d)};
+    p += pd;
+    auto e = t.make_entity(p);
+    t.insert(e);
+    ents.push_back(e);
+  }
+
+  for(size_t i = 0; i < n; ++i){
+    point_t p = {0.75, 0.25};
+    point_t pd = {uniform(-d, d), uniform(-d, d)};
+    p += pd;
+    auto e = t.make_entity(p);
+    t.insert(e);
+    ents.push_back(e);
+  }
+
+  for(size_t i = 0; i < n; ++i){
+    point_t p = {0.25, 0.75};
+    point_t pd = {uniform(-d, d), uniform(-d, d)};
+    p += pd;
+    auto e = t.make_entity(p);
+    t.insert(e);
+    ents.push_back(e);
+  }
+
+  for(size_t i = 0; i < n; ++i){
+    point_t p = {0.75, 0.75};
+    point_t pd = {uniform(-d, d), uniform(-d, d)};
+    p += pd;
+    auto e = t.make_entity(p);
+    t.insert(e);
+    ents.push_back(e);
+  }
+
+  auto s = t.find_in_radius({0.25, 0.25}, 0.25);
+  ASSERT_TRUE(s.size() == 10000);
+}
+
+TEST(tree_topology, find_radius_thread_pool) {
+  tree_topology_t t;
+  thread_pool pool;
+  pool.start(8);
+
+  std::vector<entity_t*> ents;
+
+  double d = sqrt(0.03125);
+  size_t n = 10000;
+
+  for(size_t i = 0; i < n; ++i){
+    point_t p = {0.25, 0.25};
+    point_t pd = {uniform(-d, d), uniform(-d, d)};
+    p += pd;
+    auto e = t.make_entity(p);
+    t.insert(e);
+    ents.push_back(e);
+  }
+
+  for(size_t i = 0; i < n; ++i){
+    point_t p = {0.75, 0.25};
+    point_t pd = {uniform(-d, d), uniform(-d, d)};
+    p += pd;
+    auto e = t.make_entity(p);
+    t.insert(e);
+    ents.push_back(e);
+  }
+
+  for(size_t i = 0; i < n; ++i){
+    point_t p = {0.25, 0.75};
+    point_t pd = {uniform(-d, d), uniform(-d, d)};
+    p += pd;
+    auto e = t.make_entity(p);
+    t.insert(e);
+    ents.push_back(e);
+  }
+
+  for(size_t i = 0; i < n; ++i){
+    point_t p = {0.75, 0.75};
+    point_t pd = {uniform(-d, d), uniform(-d, d)};
+    p += pd;
+    auto e = t.make_entity(p);
+    t.insert(e);
+    ents.push_back(e);
+  }
+
+  auto s = t.find_in_radius(pool, {0.25, 0.25}, 0.25);
+  ASSERT_TRUE(s.size() == 10000);
 }

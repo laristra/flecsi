@@ -237,7 +237,7 @@ TEST(tree_topology, gravity) {
       };
 
       Aggregate agg;
-      t.apply(b, h, agg);
+      t.visit_children(b, h, agg);
       aggs.emplace_back(move(agg));
 
       return true;

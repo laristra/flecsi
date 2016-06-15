@@ -1,0 +1,62 @@
+from ubuntu:latest
+
+ARG MINIMAL
+ARG MPI
+ARG RUNTIME
+ARG WERROR
+ARG TPL
+ARG TRAVIS
+ARG TRAVIS_PULL_REQUEST
+ARG TRAVIS_REPO_SLUG
+ARG TRAVIS_BRANCH
+ARG TRAVIS_COMMIT
+ARG TRAVIS_JOB_NUMBER
+ARG TRAVIS_JOB_ID
+ARG TRAVIS_TAG 
+ARG CI
+ARG COVERAGE
+
+RUN apt-get -q update -y
+RUN apt-get -qq install -y make cmake cmake-data git g++ gfortran libopenmpi-dev \
+ openmpi-bin libscotch-dev libexodusii-dev liblapacke-dev flex python-pip
+
+RUN groupadd -r flecsi && useradd -r -m -g flecsi flecsi
+USER flecsi
+
+WORKDIR /tmp
+RUN if [ ${TPL} ]; then \
+       git clone --recursive --depth=1 https://github.com/losalamos/flecsi-third-party tpl; \
+       mkdir -p tpl/build && cd tpl/build; \
+       cmake -DENABLE_EXODUS=ON -DENABLE_LAPACK=ON -DENABLE_METIS=ON -DENABLE_SCOTCH=ON -DENABLE_LEGION=ON -DCMAKE_INSTALL_PREFIX=$HOME/tpl .. && make -j2; \
+       cd -; \
+   fi
+RUN if [ ${COVERAGE}  ]; then pip install --user codecov; fi 
+RUN if [ ${WERROR} ]; then export CXXFLAGS="-Werror"; fi
+RUN git clone --recursive https://github.com/losalamos/flecsi.git
+WORKDIR flecsi
+RUN if [ ${TRAVIS} = true ]; then \
+      if [ ${TRAVIS_PULL_REQUEST} != false ]; then \
+        git fetch "git://github.com/${TRAVIS_REPO_SLUG}" +refs/pull/"${TRAVIS_PULL_REQUEST}"/merge: ;\
+	git checkout FETCH_HEAD; \
+      else \
+        git fetch --depth=10 "git://github.com/${TRAVIS_REPO_SLUG}" "${TRAVIS_BRANCH}"; \
+	git checkout "${TRAVIS_COMMIT}"; \
+      fi \
+    fi
+RUN mkdir build
+
+WORKDIR build
+RUN cmake -DENABLE_MPI=$MPI \
+          ${TPL:+-DCMAKE_PREFIX_PATH=${HOME}/tpl} \
+          -DFLECSI_RUNTIME_MODEL=$RUNTIME \
+          ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON \
+          -DCMAKE_DISABLE_FIND_PACKAGE_SCOTCH=ON \
+          -DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON  \
+          -DCMAKE_DISABLE_FIND_PACKAGE_LAPACKE=ON} \
+          -DENABLE_UNIT_TESTS=ON .. \
+          ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} ..
+
+RUN make -j2
+RUN make test
+RUN make install DESTDIR=${PWD}
+RUN cd .. && if [ ${COVERAGE} ]; then $HOME/.local/bin/codecov; fi

@@ -65,6 +65,10 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
 #MPI+Legion interface
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+  if(NOT ENABLE_MPI)
+    message (FATAL_ERROR " MPI is required for the mpilegion runtime model")
+  endif ()
+ 
    set(FLECSI_RUNTIME_MAIN script-driver-mpilegion.cc)
 
   if(NOT legion_FOUND)
@@ -85,16 +89,18 @@ endif(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 # Hypre
 #------------------------------------------------------------------------------#
 
-option(ENABLE_HYPRE "Enable Hypre" ${HYPRE_FOUND})
+set(ENABLE_HYPRE OFF CACHE BOOL " do you want to enable HYPRE?")
 
 if(ENABLE_HYPRE)
-  find_package (Hypre)
+  find_package (HYPRE)
 
   if(HYPRE_FOUND)
-    include_directories(${HYPRE_INCLUDE_DIR})
-    set(HYPRE_LIBRARIES "${HYPRE_DIR}/lib/libHYPRE.a")
-  endif(HYPRE_FOUND)
-endif(ENABLE_HYPRE)
+    include_directories(${HYPRE_INCLUDE_DIRS})
+    set(HYPRE_LIBRARY ${HYPRE_LIBRARIES})
+  else()
+    message (ERROR "HYPRE required for this build is not found")
+  endif ()
+endif (ENABLE_HYPRE)
 
 #------------------------------------------------------------------------------#
 # Process id bits

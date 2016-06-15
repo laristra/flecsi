@@ -84,7 +84,7 @@ struct find_entity__<0, T, D, M> {
     \tparam D The dimension to match.
     \tparam M The domain to match.
    */
-  static constexpr size_t find() { return 0; } // find
+  static constexpr size_t find() { return 1; } // find
 }; // struct find_entity__
 
 /*!

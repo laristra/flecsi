@@ -14,7 +14,6 @@
 
 set(execution_HEADERS
   context.h
-  context_legion.h
   default_execution_policy.h
   legion_execution_policy.h
   mpi_execution_policy.h
@@ -30,11 +29,11 @@ set(execution_HEADERS
 cinch_add_unit(task
   SOURCES test/task.cc)
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion" OR FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 cinch_add_unit(legion_flecsi_example
   SOURCES test/legion.cc
   POLICY LEGION)
-endif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+endif(FLECSI_RUNTIME_MODEL STREQUAL "legion" OR FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
 cinch_add_unit(mpi
   SOURCES test/mpi.cc

@@ -13,6 +13,7 @@
 #~----------------------------------------------------------------------------~#
 
 set(utils_HEADERS
+  array_ref.h
   bitfield.h
   check_sig.h
   check_types.h
@@ -36,6 +37,11 @@ set(utils_HEADERS
   TaskWrapper.h
   PARENT_SCOPE)
 
+set(utils_SOURCES
+  dummy.cc
+  PARENT_SCOPE)
+
+
 if (ENABLE_STATIC_CONTAINER)
 set(utils_HEADERS 
    ${utils_HEADERS} 
@@ -50,14 +56,20 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 set(utils_HEADERS 
    ${utils_HEADERS}
    mpi_legion_interoperability/legion_handshake.h
+   mpi_legion_interoperability/mpi_legion_interop.h
+   mpi_legion_interoperability/mpi_legion_data.h
+   mpi_legion_interoperability/legion_arrays.h
    mpi_legion_interoperability/task_ids.h
    mpi_legion_interoperability/mapper.h
    PARENT_SCOPE)
-endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
 set(utils_SOURCES
-  dummy.cc
+  ${utils_SOURCES}
+  #mpi_legion_interoperability/mpi_legion_interop.cc
   PARENT_SCOPE)
+
+endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+
 
 cinch_add_unit(bitfield
   SOURCES test/bitfield.cc)
@@ -89,10 +101,10 @@ cinch_add_unit(tuple_visit
 cinch_add_unit(tuple_zip
   SOURCES test/tuple_zip.cc)
  
-if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion" OR FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 cinch_add_unit(TaskWrapper
   SOURCES test/TaskWrapper.cc)
-endif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+endif(FLECSI_RUNTIME_MODEL STREQUAL "legion" OR FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
 if (ENABLE_STATIC_CONTAINER)
 cinch_add_unit(meta_container
@@ -101,19 +113,27 @@ endif (ENABLE_STATIC_CONTAINER)
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 cinch_add_unit(mpi_with_legion
-  SOURCES test/mpi_with_legion.cc
+  SOURCES test/mpi_with_legion/mpi_with_legion.cc
   POLICY MPILEGION)
 
 cinch_add_unit(more_complex_mpi_with_legion
-  SOURCES test/more_complex_mpi_with_legion.cc
+  SOURCES test/mpi_with_legion/more_complex_mpi_with_legion.cc
   POLICY MPILEGION)
 
 if (ENABLE_HYPRE)
 cinch_add_unit(legion_with_Hypre
-  SOURCES test/legion_with_Hypre.cc
+  SOURCES test/mpi_with_legion/legion_with_Hypre.cc
   POLICY MPILEGION
   LIBRARIES     ${HYPRE_LIBRARIES} )
 endif (ENABLE_HYPRE)
+
+cinch_add_unit(mpi_legion_interop
+  SOURCES test/mpi_with_legion/mpi_legion_interop.cc
+  POLICY MPILEGION)
+
+cinch_add_unit(mpi_legion_data
+  SOURCES test/mpi_with_legion/mpi_legion_data.cc
+  POLICY MPILEGION)
 
 endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 #~---------------------------------------------------------------------------~-#

@@ -25,6 +25,8 @@
 #include "flecsi/execution/mpi_execution_policy.h"
 #include "flecsi/execution/task.h"
 
+using namespace flecsi::mpilegion;
+
 using execution_t = flecsi::execution_t<flecsi::mpi_execution_policy_t>;
 using return_type_t = execution_t::return_type_t;
 
