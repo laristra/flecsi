@@ -84,14 +84,17 @@ endif(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 #------------------------------------------------------------------------------#
 # Hypre
 #------------------------------------------------------------------------------#
+
+option(ENABLE_HYPRE "Enable Hypre" ${HYPRE_FOUND})
+
+if(ENABLE_HYPRE)
   find_package (Hypre)
-  option(ENABLE_HYPRE "Enable Hypre" ${HYPRE_FOUND})
- if (HYPRE_FOUND)
-  include_directories(${HYPRE_INCLUDE_DIR})
-  set(HYPRE_LIBRARIES "${HYPRE_DIR}/lib/libHYPRE.a")
- endif (HYPRE_FOUND)
 
-
+  if(HYPRE_FOUND)
+    include_directories(${HYPRE_INCLUDE_DIR})
+    set(HYPRE_LIBRARIES "${HYPRE_DIR}/lib/libHYPRE.a")
+  endif(HYPRE_FOUND)
+endif(ENABLE_HYPRE)
 
 #------------------------------------------------------------------------------#
 # Process id bits
