@@ -85,11 +85,6 @@ namespace flecsi
         (size_t(partition_) << EBITS) | size_t(entity_); 
     }
 
-    operator size_t() const
-    {
-      return global_id();
-    }
-
     id_& operator=(const id_ &id)
     {
       dimension_ = id.dimension_;
@@ -124,6 +119,18 @@ namespace flecsi
     size_t set_flags(size_t flags) {
       assert(flags < 1 << FBITS && "flag bits exceeded");
       flags_ = flags;
+    }
+
+    bool operator<(const id_ & id) const{
+      return global_id() < id.global_id();
+    }
+
+    bool operator==(const id_ & id) const{
+      return global_id() == id.global_id();
+    }
+
+    bool operator!=(const id_ & id) const{
+      return global_id() != id.global_id();
     }
 
   private:
