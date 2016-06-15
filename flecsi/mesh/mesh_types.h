@@ -61,7 +61,7 @@ struct id_vector_hash_t {
   {
     size_t h = 0;
     for (id_t id : v) {
-      h |= id;
+      h |= id.global_id();
     } // for
 
     return h;
@@ -503,7 +503,7 @@ class connectivity_t
   /*!
     Set a single connection.
    */
-  void set(id_t from_local_id, id_t to_id, size_t pos)
+  void set(size_t from_local_id, id_t to_id, size_t pos)
   {
     to_id_vec_[from_index_vec_[from_local_id] + pos] = to_id;
   }

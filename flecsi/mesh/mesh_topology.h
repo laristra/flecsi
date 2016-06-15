@@ -553,7 +553,7 @@ class mesh_topology_t : public mesh_topology_base_t
     auto vc = const_cast<id_vector_t*>(v_);
 
     if(sorted_){
-      auto id = ent.id();
+      auto id = ent.global_id();
       auto itr = std::upper_bound(vc->begin(), vc->end(), id);
       vc->insert(itr, id);
     }
@@ -647,7 +647,7 @@ class mesh_topology_t : public mesh_topology_base_t
   {
    public:
     id_range(const id_vector_t & v) : v_(v), begin_(0), end_(v_.size()) {}
-    id_range(const id_vector_t & v, id_t begin, id_t end)
+    id_range(const id_vector_t & v, size_t begin, size_t end)
         : v_(v), begin_(begin), end_(end)
     {
     }
@@ -673,8 +673,8 @@ class mesh_topology_t : public mesh_topology_base_t
     size_t size() const { return end_ - begin_; } // size
    private:
     const id_vector_t & v_;
-    id_t begin_;
-    id_t end_;
+    size_t begin_;
+    size_t end_;
 
   }; // class id_range
 
@@ -1716,11 +1716,11 @@ class mesh_topology_t : public mesh_topology_base_t
       cp.offset.push_back(offset);
       
       for(auto to_id : to_ids){
-        auto ret_ids = id_range(c2.get_entities(), fv2[to_id], fv2[to_id + 1]);
+        auto ret_ids = id_range(c2.get_entities(), fv2[to_id.entity()], fv2[to_id.entity() + 1]);
         
         for(auto ret_id : ret_ids){
           if(ret_id != from_id){
-            cp.index.push_back(ret_id);
+            cp.index.push_back(ret_id.global_id());
             ++offset;
           }
         }

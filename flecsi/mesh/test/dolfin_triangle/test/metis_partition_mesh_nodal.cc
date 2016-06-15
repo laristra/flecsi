@@ -37,8 +37,12 @@ protected:
     idx_t num_vertices = dolfin.num_vertices();
     npart.resize(num_vertices);
     auto to_index = conn.get_entities();
-    std::vector<idx_t> eind(to_index.begin(), to_index.end());
+    std::vector<idx_t> eind;
 
+    for(auto to_id : to_index){
+      eind.push_back(to_id.global_id());
+    }
+    
     idx_t num_parts = 2;
     idx_t objval;
 

@@ -187,7 +187,7 @@ struct burton_cell_t
     \return A pair with a) the number of entity collections making up the
       binding and b) the number of entities per collection.
    */
-  virtual std::vector<id_t> create_bound_entities(size_t from_domain,
+  virtual flecsi::index_vector_t create_bound_entities(size_t from_domain,
       size_t to_domain, size_t dim, 
       flecsi::id_t cell_id,
       domain_connectivity<2>& primal_conn,
@@ -285,7 +285,7 @@ public:
 
     \endverbatim
    */
-  inline std::vector<id_t> create_bound_entities(size_t from_domain,
+  inline flecsi::index_vector_t create_bound_entities(size_t from_domain,
       size_t to_domain, size_t dim, 
       flecsi::id_t cell_id,
       domain_connectivity<2>& primal_conn,

@@ -41,7 +41,11 @@ protected:
     // The same goes for to_index. However, the elements of to_index are of
     // type id_t which has an implicit type conversion operator to size_t.
     auto to_index = conn.get_entities();
-    std::vector<idx_t> eind(to_index.begin(), to_index.end());
+    std::vector<idx_t> eind;
+
+    for(auto to_id : to_index){
+      eind.push_back(to_id.global_id());
+    }
 
     idx_t num_common = 2;
     idx_t num_parts = 2;
