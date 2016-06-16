@@ -81,8 +81,7 @@ namespace flecsi
 
     size_t global_id() const
     {
-      return (size_t(dimension_) << 62) | (size_t(domain_) << 60) | 
-        (size_t(partition_) << EBITS) | size_t(entity_); 
+      return *reinterpret_cast<const size_t*>(this);
     }
 
     id_& operator=(const id_ &id)
@@ -134,11 +133,11 @@ namespace flecsi
     }
 
   private:
-    size_t dimension_ : 2;
-    size_t domain_ : 2;
-    size_t partition_ : PBITS;
     size_t entity_ : EBITS;
+    size_t partition_ : PBITS;
     size_t flags_ : FBITS;
+    size_t domain_ : 2;
+    size_t dimension_ : 2;
   };
 
 } // namespace flecsi
