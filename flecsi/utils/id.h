@@ -30,6 +30,8 @@ namespace flecsi
   class id_
   {
   public:
+    static constexpr size_t FLAGS_UNMASK = 
+      ~(((size_t(1) << FBITS) - size_t(1)) << 59); 
 
     static_assert(PBITS + EBITS + FBITS == sizeof(size_t) * 8 - 4, 
                   "invalid id bit configuration");
@@ -43,7 +45,7 @@ namespace flecsi
     entity_(id.entity_),
     flags_(id.flags_) { }
 
-    id_(size_t local_id)
+    explicit id_(size_t local_id)
     : dimension_(0),
     domain_(0),
     partition_(0),
@@ -81,8 +83,7 @@ namespace flecsi
 
     size_t global_id() const
     {
-      return (size_t(dimension_) << 62) | (size_t(domain_) << 60) | 
-        (size_t(partition_) << EBITS) | size_t(entity_); 
+      return *reinterpret_cast<const size_t*>(this);
     }
 
     id_& operator=(const id_ &id)
@@ -126,19 +127,19 @@ namespace flecsi
     }
 
     bool operator==(const id_ & id) const{
-      return global_id() == id.global_id();
+      return (global_id() & FLAGS_UNMASK) == (id.global_id() & FLAGS_UNMASK);
     }
 
     bool operator!=(const id_ & id) const{
-      return global_id() != id.global_id();
+      return !(global_id() == id.global_id());
     }
 
   private:
-    size_t dimension_ : 2;
-    size_t domain_ : 2;
-    size_t partition_ : PBITS;
     size_t entity_ : EBITS;
+    size_t partition_ : PBITS;
     size_t flags_ : FBITS;
+    size_t domain_ : 2;
+    size_t dimension_ : 2;
   };
 
 } // namespace flecsi

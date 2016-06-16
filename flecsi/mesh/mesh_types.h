@@ -401,7 +401,7 @@ class connectivity_t
     from_index_vec_[n] = size;
 
     to_id_vec_.resize(size);
-    std::fill(to_id_vec_.begin(), to_id_vec_.end(), 0);
+    std::fill(to_id_vec_.begin(), to_id_vec_.end(), flecsi::id_t(0));
   } // resize
 
   /*!
