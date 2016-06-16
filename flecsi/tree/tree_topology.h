@@ -41,7 +41,7 @@
            << ": " << #X << " = " << std::hex << (X) << std::endl
 
 namespace flecsi{
-namespace tree_topology_dev{
+namespace tree{
 
 template<typename T, size_t D>
 struct tree_geometry{};
@@ -1632,5 +1632,5 @@ private:
   action action_;
 };
 
-} // namespace tree_topology_dev
+} // namespace tree
 } // namespace flecsi

@@ -7,7 +7,7 @@
 using namespace std;
 using namespace flecsi;
 using namespace data_model;
-using namespace tree_topology_dev;
+using namespace tree;
 
 struct state_user_meta_data_t {
   void initialize(){}

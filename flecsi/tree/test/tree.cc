@@ -6,7 +6,7 @@
 
 using namespace std;
 using namespace flecsi;
-using namespace tree_topology_dev;
+using namespace tree;
 
 class tree_policy{
 public:
