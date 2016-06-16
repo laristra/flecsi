@@ -45,7 +45,7 @@ namespace flecsi
     entity_(id.entity_),
     flags_(id.flags_) { }
 
-    id_(size_t local_id)
+    explicit id_(size_t local_id)
     : dimension_(0),
     domain_(0),
     partition_(0),

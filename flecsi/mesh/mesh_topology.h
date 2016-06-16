@@ -361,7 +361,7 @@ class mesh_topology_t : public mesh_topology_base_t
 
     for (auto ent : *this) {
       if (f(ent)) {
-        v.push_back(ent.id());
+        v.push_back(ent.global_id());
       }
     }
 
@@ -558,7 +558,7 @@ class mesh_topology_t : public mesh_topology_base_t
       vc->insert(itr, id);
     }
     else{
-      vc->push_back(ent.id());
+      vc->push_back(ent.global_id());
     }
   }
    
@@ -1719,7 +1719,7 @@ class mesh_topology_t : public mesh_topology_base_t
         auto ret_ids = id_range(c2.get_entities(), fv2[to_id.entity()], fv2[to_id.entity() + 1]);
         
         for(auto ret_id : ret_ids){
-          if(ret_id != from_id){
+          if(ret_id.entity() != from_id){
             cp.index.push_back(ret_id.global_id());
             ++offset;
           }
