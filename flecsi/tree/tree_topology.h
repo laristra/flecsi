@@ -316,6 +316,10 @@ public:
     return id_;
   }
 
+  void set_value_(int_t value){
+    id_ = value;
+  }
+
   bool operator<(const branch_id& bid) const{
     return id_ < bid.id_;
   }
@@ -791,6 +795,23 @@ public:
     branch_id_t bid(ent->coordinates(), max_depth);
 
     branch_t* b = find_parent(bid, max_depth);
+    ent->set_branch_id_(b->id());
+
+    b->insert(ent);
+
+    switch(b->requested_action()){
+      case action::none:
+        break;
+      case action::refine:
+        refine_(b);
+        break;
+      default:
+        assert(false && "invalid action");
+    }
+  }
+
+  void insert(entity_t* ent, branch_id_t bid){
+    branch_t* b = find_parent(bid, max_depth_);
     ent->set_branch_id_(b->id());
 
     b->insert(ent);
@@ -1437,6 +1458,56 @@ public:
     }  
   }
 
+  char* serialize(uint64_t& size){
+    uint64_t num_entities = entities_.size();
+
+    const size_t alloc_size = 
+      sizeof(num_entities) + num_entities * sizeof(branch_id_t);
+    
+    size = alloc_size;
+
+    char* buf = (char*)std::malloc(alloc_size);
+    uint64_t pos = 0;
+
+    std::memcpy(buf + pos, &num_entities, sizeof(num_entities));
+    pos += sizeof(num_entities);
+
+    for(size_t entity_id = 0; entity_id < num_entities; ++entity_id){
+      entity_t* ent = entities_[entity_id];
+      branch_int_t bid = ent->get_branch_id().value_();
+      std::memcpy(buf + pos, &bid, sizeof(bid));
+      pos += sizeof(bid);
+    }
+
+    return buf;
+  }
+
+  void unserialize(char* buf){
+    uint64_t pos = 0;
+
+    uint64_t num_entities;
+    std::memcpy(&num_entities, buf + pos, sizeof(num_entities));
+    pos += sizeof(num_entities);
+
+    entities_.resize(num_entities);
+
+    for(size_t entity_id = 0; entity_id < num_entities; ++entity_id){
+      entity_t* ent = new entity_t;
+      entities_[entity_id] = ent;
+
+      ent->set_id_(entity_id);
+
+      branch_int_t bi;
+      std::memcpy(&bi, buf + pos, sizeof(bi));
+      pos += sizeof(bi);
+      
+      branch_id_t bid;
+      bid.set_value_(bi);
+
+      insert(ent, bid);
+    }
+  }
+    
 private:
   using branch_map_t = std::unordered_map<branch_id_t, branch_t*,
     branch_id_hasher__<branch_int_t, dimension>>;
