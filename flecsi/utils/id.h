@@ -30,6 +30,8 @@ namespace flecsi
   class id_
   {
   public:
+    static constexpr size_t FLAGS_UNMASK = 
+      ~(((size_t(1) << FBITS) - size_t(1)) << 59); 
 
     static_assert(PBITS + EBITS + FBITS == sizeof(size_t) * 8 - 4, 
                   "invalid id bit configuration");
@@ -125,11 +127,11 @@ namespace flecsi
     }
 
     bool operator==(const id_ & id) const{
-      return global_id() == id.global_id();
+      return (global_id() & FLAGS_UNMASK) == (id.global_id() & FLAGS_UNMASK);
     }
 
     bool operator!=(const id_ & id) const{
-      return global_id() != id.global_id();
+      return !(global_id() == id.global_id());
     }
 
   private:
