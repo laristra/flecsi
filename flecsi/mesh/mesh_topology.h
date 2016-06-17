@@ -1239,7 +1239,6 @@ class mesh_topology_t : public mesh_topology_base_t
 
     // Helper variables
     size_t entity_id = 0;
-    size_t max_cell_conns = 1;
     const size_t _num_cells = num_entities<MT::num_dimensions, FM>();
 
     // Storage for cell connectivity information
@@ -1257,12 +1256,6 @@ class mesh_topology_t : public mesh_topology_base_t
     for (size_t i = 0; i < TD; ++i) {
       get_connectivity_(TM, TM, TD, i).init();
     }
-
-    std::array<id_t *, MT::num_dimensions> primal_ids;
-    std::array<size_t, MT::num_dimensions> num_primal_ids;
-
-    std::array<id_t *, MT::num_dimensions> domain_ids;
-    std::array<size_t, MT::num_dimensions> num_domain_ids;
 
     // This buffer should be large enough to hold all entities
     // that potentially need to be created
@@ -1307,7 +1300,6 @@ class mesh_topology_t : public mesh_topology_base_t
         uint32_t dim_flags = 0;
         uint32_t dom_flags = 0;
         size_t num_vertices = 0;
-
 
         for (size_t k = 0; k < m; ++k) {
           id_t global_id = entity_ids[pos + k];
