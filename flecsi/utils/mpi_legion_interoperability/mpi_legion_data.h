@@ -29,8 +29,27 @@ namespace flecsi
 namespace mpilegion
 {
 
+class MPILegionArrayStorage_t
+{
+  public:
+  MPILegionArrayStorage_t(){};
+  ~MPILegionArrayStorage_t(){};
+  virtual void mpi_init(void) = 0;
+  virtual void legion_init(context_t<mpilegion_execution_policy_t>  &ctx) = 0;
+  virtual void  allocate_legion(context_t<mpilegion_execution_policy_t>  &ctx) = 0;
+  virtual void  deallocate_legion(context_t<mpilegion_execution_policy_t>  &ctx) = 0;
+  virtual void  partition_legion( context_t<mpilegion_execution_policy_t> &ctx) = 0;
+  virtual uint64_t size(void) = 0;
+  virtual void copy_legion_to_mpi (context_t<mpilegion_execution_policy_t>  &ctx) = 0;
+   virtual void copy_mpi_to_legion (context_t<mpilegion_execution_policy_t>  &ctx) = 0;
+  virtual void dump_legion(const std::string &prefix,
+                  int64_t nle,
+                  context_t<mpilegion_execution_policy_t>  &ctx) =0;
+  virtual void dump_mpi(const std::string &prefix) = 0;
+};
+
 template <typename Type,  uint64_t N>
-class MPILegionArray{
+class MPILegionArray : public MPILegionArrayStorage_t{
 
  public:
   MPILegionArray(){};
@@ -166,6 +185,13 @@ class MPILegionArray{
       temp[i]=init_value;
   }
 
+ void mpi_init( void )
+ {
+    Type *temp=mpi_object.data();
+    for (int i=0; i<N ;i++)
+      temp[i]=Type(0);
+  }
+
  void legion_init(Type &init_value, 
          context_t<mpilegion_execution_policy_t>  &ctx)
  {
@@ -186,6 +212,28 @@ class MPILegionArray{
     }   
     ctx.runtime()->unmap_region(ctx.legion_ctx(),preg);
   }
+
+  void legion_init( context_t<mpilegion_execution_policy_t>  &ctx)
+ {
+   using namespace LegionRuntime::HighLevel;
+   using namespace LegionRuntime::Accessor;
+   using LegionRuntime::Arrays::Rect;
+   RegionRequirement req(
+            legion_object.logicalRegion, WRITE_DISCARD, EXCLUSIVE, legion_object.logicalRegion);
+   req.add_field(legion_object.fid);
+   InlineLauncher accessorl(req);
+   PhysicalRegion preg= ctx.runtime()->map_region(ctx.legion_ctx(),accessorl);
+   preg.wait_until_valid();
+
+   LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic, Type, Type> acc=
+     preg.get_field_accessor(legion_object.fid).template typeify<Type>();
+   for(GenericPointInRectIterator<1> pir(legion_object.bounds); pir; pir++){
+      acc.write(DomainPoint::from_point<1>(pir.p), Type(0));
+    }
+    ctx.runtime()->unmap_region(ctx.legion_ctx(),preg);
+  }
+
+
 };
 
 }//end namespace mpilegion

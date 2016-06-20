@@ -39,6 +39,8 @@ using return_type_t = execution_type::return_type_t;
 
 const int nElements=10;
 MPILegionArray<double, nElements> Array;
+std::vector<std::shared_ptr<MPILegionArrayStorage_t>> ArrayStorage;
+
 
 typedef typename flecsi::context_t<flecsi::mpilegion_execution_policy_t> mpilegion_context;
 namespace flecsi
@@ -46,23 +48,40 @@ namespace flecsi
 void mpilegion_top_level_task(mpilegion_context &&ctx,int argc, char** argv)
 {
   std::cout << "Hello World Top Level Task" << std::endl;
+
+  //*********** testing Array  
+
   Array.allocate_legion(ctx);
+  Array.legion_init( ctx);
   Array.partition_legion(ctx);
 
 //  Array.copy_mpi_to_legion(ctx);
-
+ //this has to be done on the legion side 
   Array.copy_mpi_to_legion(ctx);
 
   Array.dump_legion("legion Array", 1, ctx);
 
   double init_value=14;
   Array.legion_init(init_value, ctx);
-
+  //this has to be done on the legion side
   Array.copy_legion_to_mpi(ctx);
 
   Array.dump_mpi("  output for MPI Array ");
  
   Array.deallocate_legion(ctx);
+
+  // ********* testing ArrayStorage
+  for (uint i=0; i<ArrayStorage.size(); i++){
+    ArrayStorage[i]->allocate_legion(ctx);
+    ArrayStorage[i]->legion_init(ctx);
+    ArrayStorage[i]->partition_legion(ctx);
+    ArrayStorage[i]->dump_legion("legion Array", 1, ctx);
+    ArrayStorage[i]->copy_mpi_to_legion(ctx);
+    ArrayStorage[i]->copy_legion_to_mpi(ctx);
+    ArrayStorage[i]->dump_mpi("printing array from the storage");
+    ArrayStorage[i]->deallocate_legion(ctx);
+  }
+
 }
 }
 
@@ -72,14 +91,20 @@ void example_task(int beta,double alpha,element_t i,state_accessor_t<double> a, 
 }
 
 //main test function
-TEST(mpi_legion_interop_and_data, sanity) {
+TEST(MPILegionArray, simple) {
 
+  // ********* initialize mpi instance to 0
+  Array.mpi_init();
+
+  // ********** initialize with the value
   double init_value=13;
   Array.mpi_init(init_value);
 
-  double *A1=Array.mpi_accessor();  
-  std::cout << A1[0] << std::endl;
+  // ********** getting mpi accessor
+  double *A1=Array.mpi_accessor();
+  assert (A1[0]==13);  
 
+  // ********* output an mpi instance
   Array.dump_mpi("  output for MPI Array ");
  
   for (int i=0; i< nElements; i++)
@@ -92,8 +117,21 @@ TEST(mpi_legion_interop_and_data, sanity) {
   int size=Array.size();
   assert (size=nElements);
 
-  std::cout <<"size of allocated array = "<< size <<std::endl;
+  // ********* check for ArrayStorage
+  MPILegionArray<double, nElements> *ArrayDouble = new  MPILegionArray<double, nElements>();
+  MPILegionArray<int, nElements-4> *ArrayInt = new MPILegionArray<int, nElements-4 >();
+  MPILegionArray <uint, 10> *ArrayUint = new MPILegionArray<uint, 10>();
 
+  ArrayStorage.push_back(std::shared_ptr<MPILegionArrayStorage_t>(ArrayDouble));
+  ArrayStorage.push_back(std::shared_ptr<MPILegionArrayStorage_t>(ArrayInt));
+  ArrayStorage.push_back(std::shared_ptr<MPILegionArrayStorage_t>(ArrayUint));
+
+  for (uint i=0; i<ArrayStorage.size(); i++){
+    ArrayStorage[i]->mpi_init();
+    ArrayStorage[i]->dump_mpi("printing array from the storage");
+  }
+
+  //TOFIX: uncomment "register_task" when it works
   using wrapper_t = TaskWrapper<1,0,0,0,legion_execution_policy_t,std::function<decltype(example_task)>>;
   //register_legion<wrapper_t>::register_task();
 

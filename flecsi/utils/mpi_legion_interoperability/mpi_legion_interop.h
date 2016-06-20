@@ -76,6 +76,8 @@ class MPILegionInterop {
  public:
 //  CommonDataType CommonData;
   ExtLegionHandshake *handshake;
+
+  std::vector <std::shared_ptr<MPILegionArrayStorage_t>> MpiLegionStorage;
 //  std::map<std::string,typename MPILegionArray> MPILegionArrays; //creates a map between the array's name and Array itself
 
   static MPILegionInterop* get_interop_object(const Point<3> &pt, bool must_match);  
@@ -88,10 +90,6 @@ class MPILegionInterop {
 
 };
 
- template <typename T>
- void assign_legion_to_mpi(T &data){
-  data.legion_accessor = data.mpi_ptr();
- }
 
  template <typename... CommonDataTypes>
  void MPILegionInterop::copy_data_and_handoff_to_legion(CommonDataTypes&&... CommData) 
