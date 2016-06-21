@@ -16,7 +16,8 @@
 #define TASK_IDS
 
 enum HelperTaskIDs{
- CONNECT_MPI_TASK_ID    =0x00000200,
+ CONNECT_MPI_TASK_ID    =0x00000001,
+ HANDOFF_TO_MPI_TASK_ID = 0x00000002,
 };
 
 #endif
