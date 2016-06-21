@@ -14,6 +14,14 @@
 #ifndef MPI_LEGION_INTEROP_HPP
 #define MPI_LEGION_INTEROP_HPP
 
+//WARNING!!!!!!!!!!!!!!!!!!
+//WARNING!!!!!!!!!!!!!!!!!!!
+//
+//this header file should not be explicitly included in flecsi code to avoi 
+//sircular dependency
+//to ensure this, I ude following "define" guard"
+#ifdef MPI_LEGION_INTEROP_HPP_INCLUDED_IN_EXECUTION_POLICY_H
+
 #include <iostream>
 #include <string>
 #include <cstdio>
@@ -29,14 +37,11 @@
 #include "flecsi/utils/mpi_legion_interoperability/mpi_legion_data.h"
 #include "flecsi/utils/mpi_legion_interoperability/mapper.h"
 #include "flecsi/utils/mpi_legion_interoperability/task_ids.h"
-#include "flecsi/execution/mpilegion_execution_policy.h"
 
 using namespace LegionRuntime::HighLevel;
 using namespace LegionRuntime::Accessor;
 using namespace LegionRuntime::Arrays;
 using namespace flecsi::mpilegion;
-//using namespace flecsi;
-
 
 namespace flecsi
 {
@@ -44,8 +49,6 @@ namespace mpilegion
 {
 
 // MPILegionInterp class
-
- //variadic templates for dataTypes for data to be shared
 class MPILegionInterop {
 
   public:
@@ -85,11 +88,16 @@ class MPILegionInterop {
                         const std::vector<PhysicalRegion> &regions,
                         context_t<mpilegion_execution_policy_t>  &ctx);
 
+  template <typename Type, uint64_t value>
+  void add_array_to_storage(MPILegionArray<Type, value> *A);
+
+  uint storage_size(void);
+ 
  public:
 //  CommonDataType CommonData;
   ExtLegionHandshake *handshake;
 
-  std::vector <std::shared_ptr<flecsi::mpilegion::MPILegionArrayStorage_t>> MpiLegionStorage;
+  std::vector <std::shared_ptr<MPILegionArrayStorage_t>> MpiLegionStorage;
 //  std::map<std::string,typename MPILegionArray> MPILegionArrays; //creates a map between the array's name and Array itself
 
   static MPILegionInterop* get_interop_object(const Point<3> &pt, bool must_match);  
@@ -181,9 +189,23 @@ class MPILegionInterop {
  }
 
 
+ template <typename Type, uint64_t value>
+ void MPILegionInterop::add_array_to_storage(MPILegionArray<Type, value> *A)
+ {
+   MpiLegionStorage.push_back(std::shared_ptr<MPILegionArrayStorage_t>(A)); 
+ }
+
+ uint MPILegionInterop::storage_size(void)
+ {
+   return MpiLegionStorage.size();
+ }
+
+
 }//end namespace mpilegion
 
 } //end namespace flecsi
+
+#endif
 
 #endif
 /*~-------------------------------------------------------------------------~-*

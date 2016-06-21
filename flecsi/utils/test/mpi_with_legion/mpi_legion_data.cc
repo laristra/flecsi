@@ -17,7 +17,7 @@
 
 #include <cinchtest.h>
 
-#include "flecsi/utils/mpi_legion_interoperability/mpi_legion_data.h"
+//#include "flecsi/utils/mpi_legion_interoperability/mpi_legion_data.h"
 #include "flecsi/execution/mpilegion_execution_policy.h"
 #include "flecsi/execution/legion_execution_policy.h"
 #include "flecsi/execution/task.h"

@@ -130,7 +130,24 @@ class mpilegion_execution_policy_t: public legion_execution_policy_t
 
   }
 
+
 }; // class mpilegion_execution_policy_t
+
+} //// namespace flecsi
+
+#ifndef MPI_LEGION_INTEROP_HPP_INCLUDED_IN_EXECUTION_POLICY_H
+#define MPI_LEGION_INTEROP_HPP_INCLUDED_IN_EXECUTION_POLICY_H
+#endif
+
+#include "flecsi/utils/mpi_legion_interoperability/mpi_legion_interop.h"
+
+namespace flecsi
+{
+ static flecsi::mpilegion::MPILegionInterop *MPILegionInteropHelper;
+
+ void MPILegion_Init(void){
+   MPILegionInteropHelper = new flecsi::mpilegion::MPILegionInterop();
+ }
 
 } // namespace flecsi
 

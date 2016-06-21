@@ -16,20 +16,32 @@
 
 #include <cinchtest.h>
 
-#include "flecsi/utils/mpi_legion_interoperability/mpi_legion_interop.h"
-#include "flecsi/execution/mpi_execution_policy.h"
+//do not include mpi_legion_interop.h explicitly, it is included in 
+//mpilegion_execution_policy.h to avoid circular dependency
+//#include "flecsi/utils/mpi_legion_interoperability/mpi_legion_interop.h"
+#include "flecsi/execution/mpilegion_execution_policy.h"
 #include "flecsi/execution/task.h"
 
-using namespace flecsi::mpilegion;
+using namespace flecsi;
 
-using execution_t = flecsi::execution_t<flecsi::mpi_execution_policy_t>;
-using return_type_t = execution_t::return_type_t;
+using execution_type = execution_t<flecsi::mpilegion_execution_policy_t>;
+using return_type_t = execution_type::return_type_t;
 
 TEST(mpi_legion_interop_and_data, sanity) {
+ 
+  MPILegion_Init();
+  const int nElements=10;
+  MPILegionArray<double, nElements> *ArrayDouble= new MPILegionArray<double, nElements>;
 
-  MPILegionInterop MPILegionHelper;
+  MPILegionArray<int, nElements> *ArrayInt= new MPILegionArray<int, nElements>;
 
+  MPILegionInteropHelper->add_array_to_storage(ArrayDouble);
+  MPILegionInteropHelper->add_array_to_storage(ArrayInt);
 
+  assert (MPILegionInteropHelper->storage_size()==2);
+
+ 
+ 
 } // TEST
 
 /*----------------------------------------------------------------------------*
