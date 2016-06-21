@@ -27,20 +27,51 @@ using namespace flecsi;
 using execution_type = execution_t<flecsi::mpilegion_execution_policy_t>;
 using return_type_t = execution_type::return_type_t;
 
+
+typedef typename flecsi::context_t<flecsi::mpilegion_execution_policy_t> mpilegion_context;
+namespace flecsi
+{
+void mpilegion_top_level_task(mpilegion_context &&ctx,int argc, char** argv)
+{
+ MPILegionInteropHelper->allocate_legion(ctx);
+ MPILegionInteropHelper->legion_init(ctx);
+ MPILegionInteropHelper->copy_data_from_mpi_to_legion(ctx);
+ //do some stuff on the data
+ MPILegionInteropHelper->copy_data_from_legion_to_mpi(ctx);
+}
+}
+
 TEST(mpi_legion_interop_and_data, sanity) {
  
   MPILegion_Init();
   const int nElements=10;
   MPILegionArray<double, nElements> *ArrayDouble= new MPILegionArray<double, nElements>;
-
   MPILegionArray<int, nElements> *ArrayInt= new MPILegionArray<int, nElements>;
+  MPILegionArray<double, nElements> *ArrayResult= new MPILegionArray<double, nElements>;
 
   MPILegionInteropHelper->add_array_to_storage(ArrayDouble);
   MPILegionInteropHelper->add_array_to_storage(ArrayInt);
+  MPILegionInteropHelper->add_array_to_storage(ArrayResult);
 
-  assert (MPILegionInteropHelper->storage_size()==2);
+  assert (MPILegionInteropHelper->storage_size()==3);
 
- 
+  //zeroing all mpi instances pushed to MPILegionInteropHelper's storage
+  MPILegionInteropHelper->mpi_init();
+
+  ArrayDouble->mpi_init(1.1);
+  ArrayInt->mpi_init(4);
+  int *AInt = ArrayInt->mpi_accessor();
+  double *ADouble = ArrayDouble->mpi_accessor();
+  double *AResult=ArrayResult->mpi_accessor();
+  for (int i=0; i< nElements; i++)
+  {
+    AResult[i]=AInt[i]*ADouble[i];
+  }
+
+  assert(AResult[0]==4.4);
+  
+   
+
  
 } // TEST
 

@@ -92,7 +92,13 @@ class MPILegionInterop {
   void add_array_to_storage(MPILegionArray<Type, value> *A);
 
   uint storage_size(void);
- 
+
+  void allocate_legion(context_t<mpilegion_execution_policy_t>  &ctx);
+  void legion_init(context_t<mpilegion_execution_policy_t>  &ctx);
+  void mpi_init (void);
+
+
+
  public:
 //  CommonDataType CommonData;
   ExtLegionHandshake *handshake;
@@ -125,7 +131,7 @@ class MPILegionInterop {
 
  void MPILegionInterop::copy_data_from_mpi_to_legion(context_t<mpilegion_execution_policy_t>  &ctx)  
  {  
-  assert (MpiLegionStorage.size()==0);
+  assert (MpiLegionStorage.size()!=0);
  for (uint i=0; i<MpiLegionStorage.size(); i++)
   MpiLegionStorage[i]->copy_mpi_to_legion(ctx);
  }
@@ -146,7 +152,7 @@ class MPILegionInterop {
  }
  void MPILegionInterop::copy_data_from_legion_to_mpi(context_t<mpilegion_execution_policy_t>  &ctx)            
  {
- assert (MpiLegionStorage.size()==0);
+ assert (MpiLegionStorage.size()!=0);
  for (uint i=0; i<MpiLegionStorage.size(); i++)
   MpiLegionStorage[i]->copy_legion_to_mpi(ctx);
  }
@@ -198,6 +204,28 @@ class MPILegionInterop {
  uint MPILegionInterop::storage_size(void)
  {
    return MpiLegionStorage.size();
+ }
+
+
+ void MPILegionInterop::allocate_legion(context_t<mpilegion_execution_policy_t>  &ctx)
+ {
+   assert (MpiLegionStorage.size()!=0);
+   for (uint i=0; i<MpiLegionStorage.size(); i++)
+     MpiLegionStorage[i]->allocate_legion(ctx);
+ }
+
+ void MPILegionInterop::legion_init(context_t<mpilegion_execution_policy_t>  &ctx)
+ {
+  assert (MpiLegionStorage.size()!=0);
+  for (uint i=0; i<MpiLegionStorage.size(); i++)
+    MpiLegionStorage[i]->legion_init(ctx);
+ }
+ 
+ void MPILegionInterop::mpi_init (void)
+ {
+   assert (MpiLegionStorage.size()!=0);
+   for (uint i=0; i<MpiLegionStorage.size(); i++)
+     MpiLegionStorage[i]->mpi_init();
  }
 
 

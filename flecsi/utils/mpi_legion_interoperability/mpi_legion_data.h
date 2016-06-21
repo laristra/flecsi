@@ -178,7 +178,7 @@ class MPILegionArray : public MPILegionArrayStorage_t{
          std::cout << temp[i] <<std::endl;
   }
 
- void mpi_init(Type &init_value)
+ void mpi_init(Type init_value)
  {
     Type *temp=mpi_object.data();
     for (int i=0; i<N ;i++)
@@ -192,7 +192,7 @@ class MPILegionArray : public MPILegionArrayStorage_t{
       temp[i]=Type(0);
   }
 
- void legion_init(Type &init_value, 
+ void legion_init(Type init_value, 
          context_t<mpilegion_execution_policy_t>  &ctx)
  {
    using namespace LegionRuntime::HighLevel;
