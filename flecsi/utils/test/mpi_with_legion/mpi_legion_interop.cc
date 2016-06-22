@@ -22,6 +22,10 @@
 #include "flecsi/execution/mpilegion_execution_policy.h"
 #include "flecsi/execution/task.h"
 
+enum TaskIDs{
+ HELLOWORLD_TASK_ID        =0x00000100,
+};
+
 using namespace flecsi;
 
 using execution_type = execution_t<flecsi::mpilegion_execution_policy_t>;
@@ -41,9 +45,28 @@ void mpilegion_top_level_task(mpilegion_context &&ctx,int argc, char** argv)
 }
 }
 
+
+void helloworld_mpi_task (const Task *legiontask,
+                      const std::vector<PhysicalRegion> &regions,
+                      Context ctx, HighLevelRuntime *runtime)
+{
+  printf ("helloworld \n");
+}
+
+
 TEST(mpi_legion_interop_and_data, sanity) {
- 
+
+  //required to be the firs function call. 
+  //TOFIX:: needs to be a part of the driver 
   MPILegion_Init();
+
+  //TOFIX:: needs to be replaced with flecsi's reister task when it is fixed
+  HighLevelRuntime::register_legion_task< helloworld_mpi_task >( HELLOWORLD_TASK_ID,
+                          Processor::LOC_PROC, false/*single*/, true/*index*/,
+                          AUTO_GENERATE_ID, TaskConfigOptions(true/*leaf*/), "hellowrld_task");
+
+  
+
   const int nElements=10;
   MPILegionArray<double, nElements> *ArrayDouble= new MPILegionArray<double, nElements>;
   MPILegionArray<int, nElements> *ArrayInt= new MPILegionArray<int, nElements>;
@@ -70,7 +93,6 @@ TEST(mpi_legion_interop_and_data, sanity) {
 
   assert(AResult[0]==4.4);
   
-   
 
  
 } // TEST

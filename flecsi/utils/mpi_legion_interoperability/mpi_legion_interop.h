@@ -47,7 +47,9 @@ namespace flecsi
 {
 namespace mpilegion
 {
-
+class MPILegionInterop;
+static MPILegionInterop *MPILegionInteropHelper;
+ 
 // MPILegionInterp class
 class MPILegionInterop {
 
@@ -65,17 +67,17 @@ class MPILegionInterop {
 
   void legion_configure();
 
-  void connect_to_mpi_task (const Task *legiontask,
+  static void connect_to_mpi_task (const Legion::Task *legiontask,
                       const std::vector<PhysicalRegion> &regions,
-                      context_t<mpilegion_execution_policy_t>  &ctx);
+                      Legion::Context ctx, HighLevelRuntime *runtime);
 
   void handoff_to_legion(void);
 
   void wait_on_legion(void);
 
-  int handoff_to_mpi_task (const Task *legiontask,
+  static void  handoff_to_mpi_task (const Legion::Task *legiontask,
                       const std::vector<PhysicalRegion> &regions,
-                      context_t<mpilegion_execution_policy_t>  &ctx);
+                      Context ctx, HighLevelRuntime *runtime);
 
 //toimplement
   template <typename... CommonDataTypes>
@@ -97,6 +99,7 @@ class MPILegionInterop {
   void legion_init(context_t<mpilegion_execution_policy_t>  &ctx);
   void mpi_init (void);
 
+  static void register_tasks(void);
 
 
  public:
@@ -162,11 +165,11 @@ class MPILegionInterop {
     this->handshake->ext_init();
  }
 
- void MPILegionInterop::connect_to_mpi_task (const Task *legiontask,
+ void MPILegionInterop::connect_to_mpi_task (const Legion::Task *legiontask,
                       const std::vector<PhysicalRegion> &regions,
-                      context_t<mpilegion_execution_policy_t>  &ctx)
+                     Legion:: Context ctx, HighLevelRuntime *runtime)
  {
-    this->handshake->legion_init();
+   MPILegionInteropHelper->handshake->legion_init();
  }
 
  void MPILegionInterop::handoff_to_legion(void)
@@ -179,12 +182,11 @@ class MPILegionInterop {
    handshake->ext_wait_on_legion();
  }
 
- int MPILegionInterop::handoff_to_mpi_task (const Task *legiontask,
+ void MPILegionInterop::handoff_to_mpi_task (const Legion::Task *legiontask,
                       const std::vector<PhysicalRegion> &regions,
-                      context_t<mpilegion_execution_policy_t>  &ctx)
+                      Context ctx, HighLevelRuntime *runtime)
  {
-  handshake->legion_handoff_to_ext();
-  return 0;
+   MPILegionInteropHelper->handshake->legion_handoff_to_ext();
  }
 
  void MPILegionInterop::wait_on_mpi(const Task *task,
@@ -226,6 +228,18 @@ class MPILegionInterop {
    assert (MpiLegionStorage.size()!=0);
    for (uint i=0; i<MpiLegionStorage.size(); i++)
      MpiLegionStorage[i]->mpi_init();
+ }
+
+ //static:
+ void MPILegionInterop::register_tasks(void)
+ {
+   HighLevelRuntime::register_legion_task<connect_to_mpi_task>( CONNECT_MPI_TASK_ID,
+                          Processor::LOC_PROC, false/*single*/, true/*index*/,
+                          AUTO_GENERATE_ID, TaskConfigOptions(true/*leaf*/), "connect_to_mpi_task");
+
+   HighLevelRuntime::register_legion_task<handoff_to_mpi_task>( HANDOFF_TO_MPI_TASK_ID,
+                           Processor::LOC_PROC, false/*single*/, true/*index*/,
+                          AUTO_GENERATE_ID, TaskConfigOptions(true/*leaf*/), "handoff_to_mpi_task");
  }
 
 
