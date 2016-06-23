@@ -14,7 +14,8 @@
 
 #include <cinchtest.h>
 
- #include <vector>
+#include <vector>
+#include <utility>
 
 #include "flecsi/specializations/basic-tree/basic-tree.h"
 
@@ -34,6 +35,10 @@ struct policy{
   static const size_t dimension = 2;
   static const size_t max_entities_per_branch = 10;
   using floating_type = double;
+
+  using range_t = pair<double, double>;
+
+  static constexpr range_t coordinate_range = {0, 1};
 };
 
 TEST(basic_tree, test1) {

@@ -30,6 +30,10 @@ public:
 
   using point_t = point<element_t, dimension>;
 
+  using range_t = pair<element_t, element_t>;
+
+  static constexpr range_t coordinate_range = {0, 1};
+
   class body : public tree_entity<branch_int_t, dimension>{
   public:
     body(double mass, const point_t& position, const point_t& velocity)
