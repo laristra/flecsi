@@ -47,6 +47,11 @@ cinch_add_unit(connectivity
   LIBRARIES flecsi
 )
 
+cinch_add_unit(basic-tree
+  SOURCES basic-tree/test/basic-tree.cc
+  LIBRARIES flecsi
+)
+
 if(LAPACKE_FOUND AND ENABLE_IO)
   cinch_add_unit(burton_gradients
     SOURCES burton/test/burton_gradients.cc

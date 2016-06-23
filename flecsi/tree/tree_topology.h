@@ -1080,8 +1080,6 @@ public:
               EF&& ef,
               BF&& bf,
               ARGS&&... args){
-    
-    size /= 2;
 
     if(b->is_leaf()){
       for(auto ent : *b){
@@ -1089,6 +1087,8 @@ public:
       }
       return;      
     }
+    
+    size /= 2;
 
     for(size_t i = 0; i < branch_t::num_children; ++i){
       branch_t* ci = b->template child<branch_t>(i);
@@ -1112,8 +1112,6 @@ public:
               BF&& bf,
               ARGS&&... args){
 
-    size /= 2;
-
     if(b->is_leaf()){
       for(auto ent : *b){
         ef(ent, std::forward<ARGS>(args)...);
@@ -1127,6 +1125,8 @@ public:
 
       return;   
     }
+
+    size /= 2;
 
     for(size_t i = 0; i < branch_t::num_children; ++i){
       branch_t* ci = b->template child<branch_t>(i);
@@ -1167,8 +1167,6 @@ public:
              EF&& ef,
              BF&& bf,
              ARGS&&... args){
-    
-    size /= 2;
 
     if(b->is_leaf()){
       for(auto ent : *b){
@@ -1178,6 +1176,8 @@ public:
       }
       return;      
     }
+    
+    size /= 2;
 
     for(size_t i = 0; i < branch_t::num_children; ++i){
       branch_t* ci = b->template child<branch_t>(i);
@@ -1203,8 +1203,6 @@ public:
              BF&& bf,
              ARGS&&... args){
 
-    size /= 2;
-
     if(b->is_leaf()){
       mtx.lock();
       for(auto ent : *b){
@@ -1222,6 +1220,8 @@ public:
 
       return;
     }
+
+    size /= 2;
 
     for(size_t i = 0; i < branch_t::num_children; ++i){
       branch_t* ci = b->template child<branch_t>(i);
