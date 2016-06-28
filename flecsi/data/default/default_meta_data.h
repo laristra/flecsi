@@ -52,6 +52,7 @@ struct default_meta_data_t {
   user_meta_data_t user_data;
   size_t size;
   size_t type_size;
+  size_t versions;
 
   /*!
     \brief type_info_t allows creation of reference information
@@ -70,6 +71,7 @@ struct default_meta_data_t {
   std::shared_ptr<type_info_t> rtti;
 
   std::unordered_map<size_t, std::vector<uint8_t>> data;
+  std::vector<size_t> map;
 }; // struct default_meta_data_t
 
 } // namespace data_model

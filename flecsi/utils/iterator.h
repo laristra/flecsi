@@ -23,47 +23,65 @@
 
 namespace flecsi
 {
+
 /*!
   \class iterator iterator.h
   \brief iterator provides...
  */
-template <typename C>
+template <typename C, typename T>
 class iterator
 {
  public:
-  using type_t = typename C::type_t;
+
+  using container_t = C;
+  using type_t = T;
 
   //! Default constructor
-  iterator(C & values, size_t index) : values_(values), index_(index) {}
+  iterator(container_t & values, size_t index)
+    : values_(values), index_(index) {}
+
   //! Destructor
   ~iterator() {}
+
   //! Copy constructor
   iterator(const iterator & it) : values_(it.values_), index_(it.index_) {}
+
   //! Assignment operator
-  iterator & operator=(const iterator & it)
-  {
+  iterator & operator=(const iterator & it) {
     index_ = it.index_;
     values_ = it.values_;
     return *this;
   } // operator =
 
   //! Increment operator
-  iterator & operator++()
-  {
+  iterator & operator ++ () {
     ++index_;
     return *this;
-  }
+  } // operator ++
 
   //! Dereference operator
-  type_t & operator*() { return values_[index_]; }
+  type_t & operator * () {
+    return values_[index_];
+  } // operator *
+
   //! Dereference operator
-  type_t & operator->() { return values_[index_]; }
+  type_t & operator -> () {
+    return values_[index_];
+  } // operator ->
+
   //! Equivalence operator
-  bool operator==(const iterator & it) const { return index_ == it.index_; }
+  bool operator == (const iterator & it) const {
+    return index_ == it.index_;
+  } // operator ==
+
   //! Comparision operator
-  bool operator!=(const iterator & it) const { return index_ != it.index_; }
+  bool operator != (const iterator & it) const {
+    return index_ != it.index_;
+  } // operator !=
+
  private:
-  C & values_;
+
+  container_t & values_;
   size_t index_;
 
 }; // class iterator

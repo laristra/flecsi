@@ -32,6 +32,10 @@ namespace data_model
 namespace default_storage_policy
 {
 
+/*+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=*
+ * Helper type definitions.
+ *+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=*/
+
 /*----------------------------------------------------------------------------*
  * Dense accessor.
  *----------------------------------------------------------------------------*/
@@ -205,6 +209,14 @@ template<typename T>
 struct dense_handle_t {
 }; // struct dense_handle_t
 
+/*+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=*
+ * Main type definition.
+ *+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=*/
+
+/*----------------------------------------------------------------------------*
+ * Dense storage type.
+ *----------------------------------------------------------------------------*/
+
 /*!
   FIXME: Dense storage type.
  */
@@ -236,13 +248,14 @@ struct storage_type_t<dense, DS, MD> {
     
     \param data_store A reference for accessing the low-level data.
     \param key A const string instance containing the variable name.
-    \param indeces The number of indeces in the index space.
     \param runtime_namespace The runtime namespace to be used.
+    \param versions The number of variable versions for this datum.
+    \param indeces The number of indeces in the index space.
    */
   template<typename T, size_t NS, typename ... Args>
   static handle_t<T> register_data(data_store_t & data_store,
     uintptr_t runtime_namespace, const const_string_t & key,
-    size_t indeces, size_t versions, Args && ... args) {
+    size_t versions, size_t indeces, Args && ... args) {
 
     size_t h = key.hash() ^ runtime_namespace;
 
@@ -255,12 +268,16 @@ struct storage_type_t<dense, DS, MD> {
     data_store[NS][h].label = key.c_str();
     data_store[NS][h].size = indeces;
     data_store[NS][h].type_size = sizeof(T);
+    data_store[NS][h].versions = versions;
     data_store[NS][h].rtti.reset(
       new typename meta_data_t::type_info_t(typeid(T)));
 
     for(size_t i=0; i<versions; ++i) {
       data_store[NS][h].data[i].resize(indeces * sizeof(T));
     } // for
+
+    // map is unused for this storage type
+    data_store[NS][h].map.resize(0);
 
     return {};
   } // register_data
@@ -283,6 +300,10 @@ struct storage_type_t<dense, DS, MD> {
     }
     else {
       auto & meta_data = search->second;
+
+      // check that the requested version exists
+      assert(meta_data.versions > version && "version out-of-range");
+
       return { meta_data.label, meta_data.size,
         reinterpret_cast<T *>(&meta_data.data[version][0]),
 				meta_data.user_data };

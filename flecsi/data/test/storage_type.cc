@@ -64,15 +64,99 @@ using new_data_t = data_model::new_data_t<>;
 #define get_accessor(manager, name, version, data_type, storage_type) \
   manager.get_accessor<storage_type, data_type, 0>(0, name, version)
 
+/*----------------------------------------------------------------------------*
+ * Dense storage type.
+ *----------------------------------------------------------------------------*/
+
 TEST(storage, dense) {
-	data_t & d = data_t::instance();
   new_data_t & nd = new_data_t::instance();
 
-  register_data(d, "pressure", 3, double, dense, 100);
+  // Register 3 versions
   register_data(nd, "pressure", 3, double, dense, 100);
 
-  auto p = get_accessor(d, "pressure", 0, double, dense);
-  auto np = get_accessor(nd, "pressure", 0, double, dense);
+  // Initialize
+  {
+  auto p0 = get_accessor(nd, "pressure", 0, double, dense);
+  auto p1 = get_accessor(nd, "pressure", 1, double, dense);
+  auto p2 = get_accessor(nd, "pressure", 2, double, dense);
+
+  for(size_t i(0); i<100; ++i) {
+    p0[i] = i;
+    p1[i] = 1000 + i;
+    p2[i] = -double(i);
+  } // for
+  } // scope
+
+  // Test
+  {
+  auto p0 = get_accessor(nd, "pressure", 0, double, dense);
+  auto p1 = get_accessor(nd, "pressure", 1, double, dense);
+  auto p2 = get_accessor(nd, "pressure", 2, double, dense);
+
+  for(size_t i(0); i<100; ++i) {
+    ASSERT_EQ(p0[i], i);
+    ASSERT_EQ(p1[i], 1000+p0[i]);
+    ASSERT_EQ(p2[i], -p0[i]);
+  } // for
+  } // scope
+} // TEST
+
+/*----------------------------------------------------------------------------*
+ * Scalar storage type.
+ *----------------------------------------------------------------------------*/
+
+TEST(storage, scalar) {
+  new_data_t & nd = new_data_t::instance();
+
+  struct my_data_t {
+    double t;
+    size_t n;
+  }; // struct my_data_t
+
+  register_data(nd, "simulation data", 2, my_data_t, scalar);
+
+  // initialize simulation data
+  {
+  auto s0 = get_accessor(nd, "simulation data", 0, my_data_t, scalar);
+  auto s1 = get_accessor(nd, "simulation data", 1, my_data_t, scalar);
+  s0->t = 0.5;
+  s0->n = 100;
+  s1->t = 1.5;
+  s1->n = 200;
+  } // scope
+
+  {
+  auto s0 = get_accessor(nd, "simulation data", 0, my_data_t, scalar);
+  auto s1 = get_accessor(nd, "simulation data", 1, my_data_t, scalar);
+
+  ASSERT_EQ(s0->t, 0.5);
+  ASSERT_EQ(s0->n, 100);
+  ASSERT_EQ(s1->t, 1.0 + s0->t);
+  ASSERT_EQ(s1->n, 100 + s0->n);
+  } // scope
+} // TEST
+
+/*----------------------------------------------------------------------------*
+ * Sparse storage type.
+ *----------------------------------------------------------------------------*/
+
+TEST(storage, sparse) {
+  new_data_t & nd = new_data_t::instance();
+
+  register_data(nd, "materials", 1, double, sparse, 100, 4);
+
+  {
+  auto m = get_accessor(nd, "materials", 0, double, sparse);
+  auto data = m.data();
+
+  for(size_t i(0); i<400; ++i) {
+    data[i] = 0.0;
+  } // for
+
+  for(size_t i(0); i<100; ++i) {
+    std::cout << "index: " << i << " equals: " << m[i] << std::endl;
+  } // for
+  } // scope
 } // TEST
 
 #undef register_data

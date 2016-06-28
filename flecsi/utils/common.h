@@ -15,6 +15,7 @@
 #ifndef flecsi_common_h
 #define flecsi_common_h
 
+#include <cstdlib>
 #include <cstdint>
 #include <sstream>
 #include <typeinfo>
@@ -46,6 +47,17 @@ T square(const T & a)
 {
   return a * a;
 }
+
+/*----------------------------------------------------------------------------*
+ * Simple Random Number Utilities
+ *----------------------------------------------------------------------------*/
+
+template<size_t start, size_t end>
+size_t int_rand() {
+  static_assert(end>start, "start parameter must be less than end");
+  static_assert(end<RAND_MAX, "end parameter out-of-range");
+  return start + size_t((end-start)*double(random())/RAND_MAX);
+} // int_rand
 
 /*----------------------------------------------------------------------------*
  * Unique Identifier Utilities
