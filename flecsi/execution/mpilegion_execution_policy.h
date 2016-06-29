@@ -145,11 +145,11 @@ namespace flecsi
     using namespace LegionRuntime::HighLevel;
     HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
     HighLevelRuntime::register_legion_task<mpilegion_execution_policy_t::driver_top_task<T>>(TOP_LEVEL_TASK_ID,
-        Processor::LOC_PROC, true/*single*/, false/*index*/);
+        Processor::LOC_PROC, true/*single*/, false/*index*/, AUTO_GENERATE_ID, TaskConfigOptions(), "top_level_task");
 
     MPILegionInteropHelper->register_tasks();
-
-    return HighLevelRuntime::start(argc, argv);
+    HighLevelRuntime::set_registration_callback(mapper_registration);
+    return HighLevelRuntime::start(argc, argv, true);
 
   }
 

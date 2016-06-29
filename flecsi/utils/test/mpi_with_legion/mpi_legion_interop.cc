@@ -12,9 +12,13 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#include <string>
-
+// system includes
 #include <cinchtest.h>
+#include <iostream>
+#include <string>
+#include <type_traits> // std::is_same
+
+// user includes
 
 //do not include mpi_legion_interop.h explicitly, it is included in 
 //mpilegion_execution_policy.h to avoid circular dependency
@@ -22,30 +26,101 @@
 #include "flecsi/execution/mpilegion_execution_policy.h"
 #include "flecsi/execution/task.h"
 
+using namespace flecsi;
+
+using execution_type = flecsi::execution_t<flecsi::mpilegion_execution_policy_t>;
+using return_type_t = execution_type::return_type_t;
+
 enum TaskIDs{
  HELLOWORLD_TASK_ID        =0x00000100,
 };
 
-using namespace flecsi;
 
-using execution_type = execution_t<flecsi::mpilegion_execution_policy_t>;
-using return_type_t = execution_type::return_type_t;
+return_type_t world_size() {
+#ifdef DEBUG
+  printf ("inside MPI function \n");
+#endif 
+  int world_size = 0;
+  MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+  return 0;
+}
 
 
+using namespace LegionRuntime::HighLevel;
+using namespace LegionRuntime::Accessor;
+using namespace LegionRuntime::Arrays;
+
+/* ------------------------------------------------------------------------- */
 typedef typename flecsi::context_t<flecsi::mpilegion_execution_policy_t> mpilegion_context;
 namespace flecsi
 {
 void mpilegion_top_level_task(mpilegion_context &&ctx,int argc, char** argv)
 {
- MPILegionInteropHelper->allocate_legion(ctx);
- MPILegionInteropHelper->legion_init(ctx);
- MPILegionInteropHelper->copy_data_from_mpi_to_legion(ctx);
- //do some stuff on the data
- MPILegionInteropHelper->copy_data_from_legion_to_mpi(ctx);
-}
+  int num_local_procs=0;
+   //TOFIX this should be part of the helper class 
+#ifndef SHARED_LOWLEVEL
+  // Only the shared lowlevel runtime needs to iterate over all points
+  // on each processor.
+  int num_points = 1;
+  int num_procs = 0;
+  {
+   std::set<Processor> all_procs;
+   Realm::Machine::get_machine().get_all_processors(all_procs);
+   for(std::set<Processor>::const_iterator it = all_procs.begin();
+      it != all_procs.end();
+      it++){
+    if((*it).kind() == Processor::LOC_PROC)
+      num_procs++;
+   }
+  }
+  num_local_procs=num_procs;  
+#else
+  int num_procs = Machine::get_machine()->get_all_processors().size();
+  int num_points = rank->proc_grid_size.x[0] * rank->proc_grid_size.x[1] * rank->proc_grid_size.x[2];
+#endif
+  printf("Attempting to connect %d processors with %d points per processor\n",
+         num_procs, num_points);
+  Point<2> all_procs_lo, all_procs_hi;
+  all_procs_lo.x[0] = all_procs_lo.x[1] = 0;
+  all_procs_hi.x[0] = num_procs - 1;
+  all_procs_hi.x[1] = num_points - 1;
+  Rect<2> all_processes = Rect<2>(all_procs_lo, all_procs_hi); 
+
+  Rect<1> local_procs(0,num_local_procs);
+  ArgumentMap arg_map;
+
+  IndexLauncher connect_mpi_launcher(CONNECT_MPI_TASK_ID,
+                                       Domain::from_rect<2>(all_processes),
+                                       TaskArgument(0, 0),
+                                       arg_map);
+  IndexLauncher helloworld_launcher(HELLOWORLD_TASK_ID,
+                               Domain::from_rect<1>(local_procs),
+                               TaskArgument(0, 0),
+                               arg_map);
+
+  IndexLauncher handoff_to_mpi_launcher(HANDOFF_TO_MPI_TASK_ID,
+                                     Domain::from_rect<2>(all_processes),
+                                     TaskArgument(0, 0),
+                                     arg_map);
+
+  //run legion_init() from each thead
+  FutureMap fm1 = ctx.runtime()->execute_index_space(ctx.legion_ctx(), connect_mpi_launcher);
+
+  //run some legion task here
+  fm1.wait_all_results();
+
+  MPILegionInteropHelper->allocate_legion(ctx);
+  MPILegionInteropHelper->legion_init(ctx);
+  MPILegionInteropHelper->copy_data_from_mpi_to_legion(ctx);
+
+  FutureMap fm2 = ctx.runtime()->execute_index_space(ctx.legion_ctx(), helloworld_launcher);
+  fm2.wait_all_results();
+  //handoff to MPI
+  ctx.runtime()->execute_index_space(ctx.legion_ctx(), handoff_to_mpi_launcher);
+ }
 }
 
-
+/* ------------------------------------------------------------------------- */
 void helloworld_mpi_task (const Task *legiontask,
                       const std::vector<PhysicalRegion> &regions,
                       Context ctx, HighLevelRuntime *runtime)
@@ -53,19 +128,39 @@ void helloworld_mpi_task (const Task *legiontask,
   printf ("helloworld \n");
 }
 
+/* ------------------------------------------------------------------------- */
+void complete_legion_configure(void)
+{
+#ifdef DEBUG
+  printf ("inside complete_legion_configure function \n");
+#endif
+   MPILegionInteropHelper->legion_configure();
+}
 
-TEST(mpi_legion_interop_and_data, sanity) {
+/* ------------------------------------------------------------------------- */
+void run_legion_task(void)
+{
+#ifdef DEBUG
+  printf ("inside run_legion_task function \n");
+#endif
+   MPILegionInteropHelper->handoff_to_legion();
+}
 
-  //required to be the firs function call. 
-  //TOFIX:: needs to be a part of the driver 
+/* ------------------------------------------------------------------------- */
+void my_init_legion(){
+  //should be very first in the main function 
+  //TOFIX need to be moved to the flecsi main
   MPILegion_Init();
 
-  //TOFIX:: needs to be replaced with flecsi's reister task when it is fixed
   HighLevelRuntime::register_legion_task< helloworld_mpi_task >( HELLOWORLD_TASK_ID,
                           Processor::LOC_PROC, false/*single*/, true/*index*/,
                           AUTO_GENERATE_ID, TaskConfigOptions(true/*leaf*/), "hellowrld_task");
 
-  
+
+  const InputArgs &args = HighLevelRuntime::get_input_args();
+  flecsi::execution_t<flecsi::mpilegion_execution_policy_t>::execute_driver(flecsi::mpilegion_top_level_task,1,args.argv);
+
+   MPILegionInteropHelper->legion_configure();
 
   const int nElements=10;
   MPILegionArray<double, nElements> *ArrayDouble= new MPILegionArray<double, nElements>;
@@ -78,7 +173,6 @@ TEST(mpi_legion_interop_and_data, sanity) {
 
   assert (MPILegionInteropHelper->storage_size()==3);
 
-  //zeroing all mpi instances pushed to MPILegionInteropHelper's storage
   MPILegionInteropHelper->mpi_init();
 
   ArrayDouble->mpi_init(1.1);
@@ -92,8 +186,23 @@ TEST(mpi_legion_interop_and_data, sanity) {
   }
 
   assert(AResult[0]==4.4);
-  
 
+  run_legion_task();  
+
+  MPILegionInteropHelper->wait_on_legion(); 
+
+}
+
+/* ------------------------------------------------------------------------- */
+
+#define execute(task, ...) \
+  execution_type::execute_task(task, ##__VA_ARGS__)
+
+/* ------------------------------------------------------------------------- */
+TEST(mpi_with_legion, simple) {
+   ASSERT_LT(execute(world_size), 1);
+
+   my_init_legion(); 
  
 } // TEST
 
@@ -106,7 +215,7 @@ TEST(mpi_legion_interop_and_data, sanity) {
  *                                 compared using the macros below.
  *
  *    EXAMPLE:
- *      CINCH_CAPTURE() << "My value equals: " << myvalue << std::endl;
+ *      CINCH_CAPTURE() << "My value equals: " << myvalue << endl;
  *
  *  CINCH_COMPARE_BLESSED(file); : Compare captured output with
  *                                 contents of a blessed file.
@@ -120,6 +229,7 @@ TEST(mpi_legion_interop_and_data, sanity) {
  *  ==== Fatal ====             ==== Non-Fatal ====
  *  ASSERT_TRUE(condition);     EXPECT_TRUE(condition)
  *  ASSERT_FALSE(condition);    EXPECT_FALSE(condition)
+ *
  *
  * Binary Comparison:
  *

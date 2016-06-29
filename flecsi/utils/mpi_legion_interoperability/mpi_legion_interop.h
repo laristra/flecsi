@@ -86,9 +86,9 @@ class MPILegionInterop {
 
   void copy_data_from_legion_to_mpi (context_t<mpilegion_execution_policy_t>  &ctx);
 
-  void wait_on_mpi(const Task *task,
-                        const std::vector<PhysicalRegion> &regions,
-                        context_t<mpilegion_execution_policy_t>  &ctx);
+  static void wait_on_mpi(const Legion::Task *legiontask,
+                      const std::vector<PhysicalRegion> &regions,
+                      Context ctx, HighLevelRuntime *runtime);
 
   template <typename Type, uint64_t value>
   void add_array_to_storage(MPILegionArray<Type, value> *A);
@@ -162,24 +162,25 @@ class MPILegionInterop {
 
  void MPILegionInterop::legion_configure()
  {
-    this->handshake->ext_init();
+    MPILegionInteropHelper->handshake->ext_init();
  }
 
  void MPILegionInterop::connect_to_mpi_task (const Legion::Task *legiontask,
                       const std::vector<PhysicalRegion> &regions,
                      Legion:: Context ctx, HighLevelRuntime *runtime)
  {
+std::cout <<"inside connect_to_mpi"<<std::endl;
    MPILegionInteropHelper->handshake->legion_init();
  }
 
  void MPILegionInterop::handoff_to_legion(void)
  {
-   handshake->ext_handoff_to_legion();
+   MPILegionInteropHelper->handshake->ext_handoff_to_legion();
  }
 
  void MPILegionInterop::wait_on_legion(void)
  {
-   handshake->ext_wait_on_legion();
+   MPILegionInteropHelper->handshake->ext_wait_on_legion();
  }
 
  void MPILegionInterop::handoff_to_mpi_task (const Legion::Task *legiontask,
@@ -189,11 +190,11 @@ class MPILegionInterop {
    MPILegionInteropHelper->handshake->legion_handoff_to_ext();
  }
 
- void MPILegionInterop::wait_on_mpi(const Task *task,
-                        const std::vector<PhysicalRegion> &regions,
-                        context_t<mpilegion_execution_policy_t>  &ctx)
+ void MPILegionInterop::wait_on_mpi(const Legion::Task *legiontask,
+                      const std::vector<PhysicalRegion> &regions,
+                      Context ctx, HighLevelRuntime *runtime)
  {
-  handshake->legion_wait_on_ext();
+  MPILegionInteropHelper->handshake->legion_wait_on_ext();
  }
 
 
@@ -240,6 +241,11 @@ class MPILegionInterop {
    HighLevelRuntime::register_legion_task<handoff_to_mpi_task>( HANDOFF_TO_MPI_TASK_ID,
                            Processor::LOC_PROC, false/*single*/, true/*index*/,
                           AUTO_GENERATE_ID, TaskConfigOptions(true/*leaf*/), "handoff_to_mpi_task");
+ 
+   HighLevelRuntime::register_legion_task<wait_on_mpi>( WAIT_ON_MPI_TASK_ID,
+                           Processor::LOC_PROC, false/*single*/, true/*index*/,
+                          AUTO_GENERATE_ID, TaskConfigOptions(true/*leaf*/), "wait_on_mpi_task");
+
  }
 
 
