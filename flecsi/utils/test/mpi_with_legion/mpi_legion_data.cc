@@ -75,10 +75,8 @@ void mpilegion_top_level_task(mpilegion_context &&ctx,int argc, char** argv)
     ArrayStorage[i]->allocate_legion(ctx);
     ArrayStorage[i]->legion_init(ctx);
     ArrayStorage[i]->partition_legion(ctx);
-    ArrayStorage[i]->dump_legion("legion Array", 1, ctx);
     ArrayStorage[i]->copy_mpi_to_legion(ctx);
     ArrayStorage[i]->copy_legion_to_mpi(ctx);
-    ArrayStorage[i]->dump_mpi("printing array from the storage");
     ArrayStorage[i]->deallocate_legion(ctx);
   }
 
@@ -128,7 +126,6 @@ TEST(MPILegionArray, simple) {
 
   for (uint i=0; i<ArrayStorage.size(); i++){
     ArrayStorage[i]->mpi_init();
-    ArrayStorage[i]->dump_mpi("printing array from the storage");
   }
 
   //TOFIX: uncomment "register_task" when it works
