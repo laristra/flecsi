@@ -81,6 +81,19 @@ private:
     //
     PVecItem(void) { ; }
 };
+////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+template <typename Type>
+class LegionAccessor{
+ public:
+  LegionAccessor(){};
+  ~LegionAccessor(){};
+// private:: 
+  LegionRuntime::HighLevel::PhysicalRegion preg;
+  RegionAccessor<AccessorType::Generic, Type> acc;
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -164,6 +177,7 @@ public:
         lrt->destroy_field_space(ctx, mFS);
         lrt->destroy_index_space(ctx, mIndexSpace);
     }
+
 
     /**
      * Returns whether or not two LogicalArrays are the same (as far as the
@@ -334,13 +348,41 @@ public:
      
         return reg.get_field_accessor(fid).template typeify<T>();
     }
-  */ 
+  */
+ 
    void unmap_all_regions (
            LegionRuntime::HighLevel::Context ctx,
            LegionRuntime::HighLevel::HighLevelRuntime *lrt)
    {
       lrt->unmap_all_regions(ctx);
    } 
+
+  LegionAccessor<T> get_legion_accessor(Legion::PrivilegeMode priviledge, 
+           Legion::CoherenceProperty coherence_property,
+           LegionRuntime::HighLevel::Context ctx,
+           LegionRuntime::HighLevel::HighLevelRuntime *lrt)
+   {  LegionAccessor<T> LegionAcc=new LegionAccessor<T>();
+      using namespace LegionRuntime::HighLevel;
+      using namespace LegionRuntime::Accessor;
+      using LegionRuntime::Arrays::Rect;
+
+      RegionRequirement req(
+            logicalRegion, priviledge, coherence_property, logicalRegion);
+      req.add_field(fid);
+     InlineLauncher accessorl(req);
+     LegionAcc->preg= lrt->map_region(ctx,accessorl);
+        LegionAcc->preg.wait_until_valid();
+     LegionAcc->acc = LegionAcc->preg.get_field_accessor(fid).template typeify<T>();
+     return LegionAcc;
+   };
+
+  void return_legion_accessor(LegionAccessor<T> &LegionAcc, 
+     LegionRuntime::HighLevel::Context ctx,
+     LegionRuntime::HighLevel::HighLevelRuntime *lrt)
+  {
+     lrt->unmap_region(ctx, LegionAcc.preg);
+     delete LegionAcc;
+  }
 
 };
 
