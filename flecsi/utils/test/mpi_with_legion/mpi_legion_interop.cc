@@ -129,24 +129,6 @@ void helloworld_mpi_task (const Task *legiontask,
 }
 
 /* ------------------------------------------------------------------------- */
-void complete_legion_configure(void)
-{
-#ifdef DEBUG
-  printf ("inside complete_legion_configure function \n");
-#endif
-   MPILegionInteropHelper->legion_configure();
-}
-
-/* ------------------------------------------------------------------------- */
-void run_legion_task(void)
-{
-#ifdef DEBUG
-  printf ("inside run_legion_task function \n");
-#endif
-   MPILegionInteropHelper->handoff_to_legion();
-}
-
-/* ------------------------------------------------------------------------- */
 void my_init_legion(){
   //should be very first in the main function 
   //TOFIX need to be moved to the flecsi main
@@ -187,10 +169,13 @@ void my_init_legion(){
 
   assert(AResult[0]==4.4);
 
-  run_legion_task();  
+  MPILegionInteropHelper->handoff_to_legion();
 
   MPILegionInteropHelper->wait_on_legion(); 
 
+  delete ArrayDouble;
+  delete ArrayInt;
+  delete ArrayResult;
 }
 
 /* ------------------------------------------------------------------------- */

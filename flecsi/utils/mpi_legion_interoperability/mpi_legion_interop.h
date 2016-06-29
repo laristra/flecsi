@@ -55,7 +55,7 @@ class MPILegionInterop {
 
   public:
   MPILegionInterop(){handshake = new ExtLegionHandshake(ExtLegionHandshake::IN_EXT, 1, 1);};
-  ~MPILegionInterop(){};
+  ~MPILegionInterop(){ delete handshake;};
 
   //variadic arguments for data to be shared
   template <typename... CommonDataTypes>

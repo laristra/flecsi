@@ -61,6 +61,7 @@ public:
   typedef Realm::UserEvent UserEvent;
 
   ExtLegionHandshake(int init_state, int _ext_queue_depth = 1, int _legion_queue_depth = 1);
+  ~ExtLegionHandshake(void){delete ext_queue; delete legion_queue;};
 
   void ext_init(void);
 

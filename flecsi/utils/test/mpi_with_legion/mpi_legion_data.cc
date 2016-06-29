@@ -136,6 +136,9 @@ TEST(MPILegionArray, simple) {
   char *argv = &(d[0]);
   execution_type::execute_driver(flecsi::mpilegion_top_level_task,1,&argv);
 
+  //we need to call delete on MPILegion arrays here, but we can't do this because execute_driver 
+  //is non-blocking operation. Please see mpi_legion_interop for the correct implementation
+
 } // TEST
 
 /*----------------------------------------------------------------------------*

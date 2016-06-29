@@ -193,6 +193,7 @@ void my_init_legion(){
 
   handshake->ext_wait_on_legion(); 
 
+ delete handshake;
 }
 
 #define execute(task, ...) \
