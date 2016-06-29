@@ -208,6 +208,26 @@ public:
   }
 
   template<typename S>
+  branch_id(S min, S max, const point<S, dimension>& p)
+  : id_(int_t(1) << bits - 1){  
+    
+    std::array<int_t, dimension> coords;
+
+    S range = max - min;
+
+    for(size_t i = 0; i < dimension; ++i){
+      assert(p[i] >= 0 && p[i] <= 1 && "invalid coordinates");
+      coords[i] = (p[i] - min)/range * (int_t(1) << (bits - 1)/dimension);
+    }
+
+    for(size_t i = 0; i < max_depth; ++i){
+      for(size_t j = 0; j < dimension; ++j){
+        id_ |= (coords[j] & int_t(1) << i) << i + j;
+      }
+    }
+  }
+
+  template<typename S>
   branch_id(const point<S, dimension>& p, size_t depth)
   : id_(int_t(1) << depth * dimension + 1){  
     std::array<int_t, dimension> coords;
@@ -215,6 +235,28 @@ public:
     for(size_t i = 0; i < dimension; ++i){
       assert(p[i] >= 0 && p[i] <= 1 && "invalid coordinates");
       coords[i] = p[i] * (int_t(1) << (bits - 1)/dimension);
+    }
+
+    size_t k = 0;
+    for(size_t i = max_depth - depth; i < max_depth; ++i){
+      for(size_t j = 0; j < dimension; ++j){
+        int_t bit = (coords[j] & int_t(1) << i) >> i;
+        id_ |= bit << k * dimension + j;
+      }
+      ++k;
+    }
+  }
+
+  template<typename S>
+  branch_id(S min, S max, const point<S, dimension>& p, size_t depth)
+  : id_(int_t(1) << depth * dimension + 1){  
+    std::array<int_t, dimension> coords;
+
+    S range = max - min;
+
+    for(size_t i = 0; i < dimension; ++i){
+      assert(p[i] >= 0 && p[i] <= 1 && "invalid coordinates");
+      coords[i] = (p[i] - min)/range * (int_t(1) << (bits - 1)/dimension);
     }
 
     size_t k = 0;
@@ -349,6 +391,33 @@ public:
     }
   }
 
+  template<typename S>
+  void coordinates(S min, S max, point<S, dimension>& p) const{
+    std::array<int_t, dimension> coords;
+    coords.fill(int_t(0));
+
+    int_t id = id_;
+    size_t d = 0;
+
+    while(id >> dimension != int_t(0)){
+      for(size_t j = 0; j < dimension; ++j){
+        coords[j] |= (((int_t(1) << j) & id) >> j) << d;
+      }
+
+      id >>= dimension;
+      ++d;
+    }
+
+    constexpr int_t m = (int_t(1) << max_depth) - 1;
+
+    S range = max - min;
+
+    for(size_t j = 0; j < dimension; ++j){
+      coords[j] <<= max_depth - d;
+      p[j] = min + range * S(coords[j])/m;
+    }
+  }
+
 private:
   int_t id_;
 
@@ -410,6 +479,7 @@ public:
   
   using point_t = point<element_t, dimension>;
 
+  using range_t = std::pair<element_t, element_t>;
 
   using branch_int_t = typename Policy::branch_int_t;
 
@@ -432,6 +502,10 @@ public:
   using entity_id_vector_t = std::vector<entity_id_t>;
 
   using geometry_t = tree_geometry<element_t, dimension>;
+
+  static constexpr bool scale_coordinates = 
+    P::coordinate_range.first != element_t(0) &&
+    P::coordinate_range.second != element_t(1); 
 
   template<class T>
   class iterator{
@@ -791,9 +865,29 @@ public:
     return entities_;
   }
 
-  void insert(entity_t* ent, size_t max_depth){
-    branch_id_t bid(ent->coordinates(), max_depth);
+  branch_id_t to_branch_id(const point_t& p, size_t max_depth){
+    if(scale_coordinates){
+      return branch_id_t(P::coordinate_range.first,
+                         P::coordinate_range.second,
+                         p, max_depth);
+    }
+    else{
+      return branch_id_t(p, max_depth);
+    }
+  }
 
+  branch_id_t to_branch_id(const point_t& p){
+    if(scale_coordinates){
+      return branch_id_t(P::coordinate_range.first,
+                         P::coordinate_range.second, p);
+    }
+    else{
+      return branch_id_t(p);
+    }
+  }
+
+  void insert(entity_t* ent, size_t max_depth){
+    branch_id_t bid = to_branch_id(ent->coordinates(), max_depth);
     branch_t* b = find_parent(bid, max_depth);
     ent->set_branch_id_(b->id());
 
@@ -833,7 +927,7 @@ public:
 
   void update(entity_t* ent){
     branch_id_t bid = ent->get_branch_id();
-    branch_id_t nid(ent->coordinates(), bid.depth());
+    branch_id_t nid = to_branch_id(ent->coordinates(), bid.depth());
 
     if(bid == nid){
       return;
@@ -942,7 +1036,7 @@ public:
     
     element_t size = std::pow(element_t(2), -depth);
 
-    branch_id_t bid(center);
+    branch_id_t bid = to_branch_id(center);
     branch_t* b = find_parent(bid, depth);
 
     entity_id_vector_t ents;
@@ -979,7 +1073,7 @@ public:
     
     element_t size = std::pow(element_t(2), -depth);
 
-    branch_id_t bid(center);
+    branch_id_t bid = to_branch_id(center);
     branch_t* b = find_parent(bid, depth);
 
     entity_id_vector_t entity_ids;
@@ -1020,7 +1114,7 @@ public:
     
     element_t size = std::pow(element_t(2), -depth);
 
-    branch_id_t bid(center);
+    branch_id_t bid = to_branch_id(center);
     branch_t* b = find_parent(bid, depth);
 
     auto f = [&](entity_t* ent, const point_t& center, element_t radius){
@@ -1057,7 +1151,7 @@ public:
 
     queue_depth += depth;
 
-    branch_id_t bid(center);
+    branch_id_t bid = to_branch_id(center);
     branch_t* b = find_parent(bid, depth);
 
     auto f = [&](entity_t* ent, const point_t& center, element_t radius){
@@ -1080,8 +1174,6 @@ public:
               EF&& ef,
               BF&& bf,
               ARGS&&... args){
-    
-    size /= 2;
 
     if(b->is_leaf()){
       for(auto ent : *b){
@@ -1089,6 +1181,8 @@ public:
       }
       return;      
     }
+    
+    size /= 2;
 
     for(size_t i = 0; i < branch_t::num_children; ++i){
       branch_t* ci = b->template child<branch_t>(i);
@@ -1112,8 +1206,6 @@ public:
               BF&& bf,
               ARGS&&... args){
 
-    size /= 2;
-
     if(b->is_leaf()){
       for(auto ent : *b){
         ef(ent, std::forward<ARGS>(args)...);
@@ -1127,6 +1219,8 @@ public:
 
       return;   
     }
+
+    size /= 2;
 
     for(size_t i = 0; i < branch_t::num_children; ++i){
       branch_t* ci = b->template child<branch_t>(i);
@@ -1167,8 +1261,6 @@ public:
              EF&& ef,
              BF&& bf,
              ARGS&&... args){
-    
-    size /= 2;
 
     if(b->is_leaf()){
       for(auto ent : *b){
@@ -1178,6 +1270,8 @@ public:
       }
       return;      
     }
+    
+    size /= 2;
 
     for(size_t i = 0; i < branch_t::num_children; ++i){
       branch_t* ci = b->template child<branch_t>(i);
@@ -1203,8 +1297,6 @@ public:
              BF&& bf,
              ARGS&&... args){
 
-    size /= 2;
-
     if(b->is_leaf()){
       mtx.lock();
       for(auto ent : *b){
@@ -1222,6 +1314,8 @@ public:
 
       return;
     }
+
+    size /= 2;
 
     for(size_t i = 0; i < branch_t::num_children; ++i){
       branch_t* ci = b->template child<branch_t>(i);
