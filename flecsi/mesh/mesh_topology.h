@@ -373,7 +373,7 @@ class mesh_topology_t : public mesh_topology_base_t
 
     std::map<T, id_vector_t> id_map;
     for (auto ent : *this)
-      id_map[f(ent)].push_back(ent.id());
+      id_map[f(ent)].push_back(ent.global_id());
 
     std::vector<entity_set> ent_map;
     ent_map.reserve( id_map.size() );
