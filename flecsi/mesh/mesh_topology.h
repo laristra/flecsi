@@ -69,13 +69,59 @@
 #include <functional>
 #include <map>
 #include <cstring>
+#include <type_traits>
 
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/set_intersection.h"
+#include "flecsi/utils/static_verify.h"
 #include "flecsi/mesh/mesh_types.h"
 
 namespace flecsi
 {
+
+namespace verify_mesh{
+
+class mesh_policy{
+public:
+  using entity_types = std::tuple<int>;
+
+  using connectivities = std::tuple<int>;
+
+  using bindings = std::tuple<int>;
+};
+
+template<size_t N>
+class mesh_entity{
+public:
+  mesh_entity(){}
+
+  mesh_entity(mesh_topology_base_t &){}
+
+  std::vector<size_t>
+  create_entities(flecsi::id_t cell_id,
+                  size_t dim,
+                  domain_connectivity<N> & c,
+                  flecsi::id_t * e){
+    return std::vector<size_t>();
+  }
+
+  index_vector_t
+  create_bound_entities(size_t from_domain,
+                        size_t to_domain,
+                        size_t create_dim,
+                        flecsi::id_t cell_id,
+                        domain_connectivity<N>& primal_conn,
+                        domain_connectivity<N>& domain_conn, 
+                        flecsi::id_t *c){
+    return index_vector_t();
+  }
+};
+
+FLECSI_MEMBER_CHECKER(entity_types);
+FLECSI_MEMBER_CHECKER(connectivities);
+FLECSI_MEMBER_CHECKER(bindings);
+
+} // namespace verify_mesh
 
 /*----------------------------------------------------------------------------*
  * class mesh_topology_t
@@ -93,8 +139,16 @@ namespace flecsi
 template <class MT>
 class mesh_topology_t : public mesh_topology_base_t
 {
+  static_assert(verify_mesh::has_member_entity_types<MT>::value,
+                "mesh policy missing entity_types tuple");
+  
+  static_assert(verify_mesh::has_member_connectivities<MT>::value,
+                "mesh policy missing connectivities tuple");
+  
+  static_assert(verify_mesh::has_member_bindings<MT>::value,
+                "mesh policy missing bindings tuple");
+  
  public:
-
   // used to find the entity type of topological dimension D and domain M
   template <size_t D, size_t M = 0>
   using entity_type = typename find_entity_<MT, D, M>::type;
