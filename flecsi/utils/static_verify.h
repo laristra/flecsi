@@ -32,6 +32,20 @@ struct has_member_##X{ \
 };
 #endif
 
+namespace flecsi{
+
+  template<typename T>
+  struct is_tuple{
+    static const bool value = false;
+  };
+
+  template<typename... T>
+  struct is_tuple<std::tuple<T...>>{
+    static const bool value = true;
+  };
+
+} // namespace flecsi
+
 /*~------------------------------------------------------------------------~--*
  * Formatting options
  * vim: set tabstop=2 shiftwidth=2 expandtab :

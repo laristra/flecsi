@@ -81,13 +81,14 @@ namespace flecsi
 
 namespace verify_mesh{
 
+template<size_t N>
 class mesh_policy{
 public:
-  using entity_types = std::tuple<int>;
-
-  using connectivities = std::tuple<int>;
-
-  using bindings = std::tuple<int>;
+  template<size_t M, size_t D>
+  static mesh_entity_base_t<N>*
+  create_entity(mesh_topology_base_t* mesh, size_t num_vertices){
+    return nullptr;
+  }
 };
 
 template<size_t N>
@@ -117,9 +118,12 @@ public:
   }
 };
 
+FLECSI_MEMBER_CHECKER(num_dimensions);
+FLECSI_MEMBER_CHECKER(num_domains);
 FLECSI_MEMBER_CHECKER(entity_types);
 FLECSI_MEMBER_CHECKER(connectivities);
 FLECSI_MEMBER_CHECKER(bindings);
+FLECSI_MEMBER_CHECKER(create_entity);
 
 } // namespace verify_mesh
 
@@ -139,14 +143,50 @@ FLECSI_MEMBER_CHECKER(bindings);
 template <class MT>
 class mesh_topology_t : public mesh_topology_base_t
 {
+  // static verification of mesh policy
+
+  static_assert(verify_mesh::has_member_num_dimensions<MT>::value,
+                "mesh policy missing num_dimensions size_t");
+  
+  static_assert(std::is_convertible<decltype(MT::num_dimensions), size_t>::value,
+                "mesh policy num_dimensions must be size_t");
+
+
+
+  static_assert(verify_mesh::has_member_num_domains<MT>::value,
+                "mesh policy missing num_domains size_t");
+  
+  static_assert(std::is_convertible<decltype(MT::num_domains), size_t>::value,
+                "mesh policy num_domains must be size_t");
+
+
+
   static_assert(verify_mesh::has_member_entity_types<MT>::value,
                 "mesh policy missing entity_types tuple");
   
+  static_assert(is_tuple<typename MT::entity_types>::value,
+                "mesh policy entity_types is not a tuple");
+
+
+
   static_assert(verify_mesh::has_member_connectivities<MT>::value,
                 "mesh policy missing connectivities tuple");
+
+  static_assert(is_tuple<typename MT::connectivities>::value,
+                "mesh policy connectivities is not a tuple");
+
+
   
   static_assert(verify_mesh::has_member_bindings<MT>::value,
                 "mesh policy missing bindings tuple");
+
+  static_assert(is_tuple<typename MT::bindings>::value,
+                "mesh policy bindings is not a tuple");
+
+
+
+  static_assert(verify_mesh::has_member_create_entity<MT>::value,
+                "mesh policy missing create_entity()");
   
  public:
   // used to find the entity type of topological dimension D and domain M
