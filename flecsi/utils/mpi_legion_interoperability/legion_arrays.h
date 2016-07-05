@@ -329,27 +329,6 @@ public:
         if (preg.is_mapped()) lrt->unmap_region(ctx,preg);
     }
    
-/*   auto get_accessor (Legion::PrivilegeMode priviledge, 
-           Legion::CoherenceProperty coherence_property,
-           LegionRuntime::HighLevel::Context ctx,
-           LegionRuntime::HighLevel::HighLevelRuntime *lrt)
-    {
-        using namespace LegionRuntime::HighLevel;
-        using namespace LegionRuntime::Accessor;
-        using LegionRuntime::Arrays::Rect;
-
-        RegionRequirement req(
-            logicalRegion, priviledge, coherence_property, logicalRegion);
-        req.add_field(fid);
-        InlineLauncher accessorl(req);
-        PhysicalRegion reg= lrt->map_region(ctx,accessorl);
-        reg.wait_until_valid();
-      //  auto acc = reg.get_field_accessor(fid).template typeify<T>();
-     
-        return reg.get_field_accessor(fid).template typeify<T>();
-    }
-  */
- 
    void unmap_all_regions (
            LegionRuntime::HighLevel::Context ctx,
            LegionRuntime::HighLevel::HighLevelRuntime *lrt)
@@ -357,11 +336,11 @@ public:
       lrt->unmap_all_regions(ctx);
    } 
 
-  LegionAccessor<T> get_legion_accessor(Legion::PrivilegeMode priviledge, 
+  LegionAccessor<T> *get_legion_accessor(Legion::PrivilegeMode priviledge, 
            Legion::CoherenceProperty coherence_property,
            LegionRuntime::HighLevel::Context ctx,
            LegionRuntime::HighLevel::HighLevelRuntime *lrt)
-   {  LegionAccessor<T> LegionAcc=new LegionAccessor<T>();
+   {  LegionAccessor<T> *LegionAcc=new LegionAccessor<T>();
       using namespace LegionRuntime::HighLevel;
       using namespace LegionRuntime::Accessor;
       using LegionRuntime::Arrays::Rect;
@@ -376,11 +355,11 @@ public:
      return LegionAcc;
    };
 
-  void return_legion_accessor(LegionAccessor<T> &LegionAcc, 
+  void return_legion_accessor(LegionAccessor<T> *LegionAcc, 
      LegionRuntime::HighLevel::Context ctx,
      LegionRuntime::HighLevel::HighLevelRuntime *lrt)
   {
-     lrt->unmap_region(ctx, LegionAcc.preg);
+     lrt->unmap_region(ctx, LegionAcc->preg);
      delete LegionAcc;
   }
 

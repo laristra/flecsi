@@ -53,14 +53,15 @@ class MPILegionArray : public MPILegionArrayStorage_t{
 
  public:
   MPILegionArray(){};
-
+   
  private: 
   bool mpi_allocated=true;
+  LegionAccessor<Type> *acc;
   
  public:
-
  LogicalArray<Type> legion_object;
  std::array<Type,N> mpi_object;
+ typedef  RegionAccessor<AccessorType::Generic, Type> legion_acc_type;
 
  void  allocate_legion(context_t<mpilegion_execution_policy_t>  &ctx)
        {
@@ -85,6 +86,19 @@ class MPILegionArray : public MPILegionArrayStorage_t{
 //        //Type *mpi_object=new Type[numberOfElements];
 //      }
 
+  RegionAccessor<AccessorType::Generic, Type> get_legion_accessor
+           (Legion::PrivilegeMode priviledge,
+           Legion::CoherenceProperty coherence_property,
+           context_t<mpilegion_execution_policy_t>  &ctx)
+      {
+        acc=legion_object.get_legion_accessor(priviledge, 
+              coherence_property,ctx.legion_ctx(), ctx.runtime());
+        return acc->acc;
+      }
+  void return_legion_accessor(context_t<mpilegion_execution_policy_t>  &ctx)
+     {
+        legion_object.return_legion_accessor(acc, ctx.legion_ctx(), ctx.runtime());
+     }
 
  Type legion_accessor(const PhysicalRegion &physicalRegion,
                       Context ctx,
