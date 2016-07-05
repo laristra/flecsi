@@ -32,7 +32,7 @@
 #endif
 
 #ifndef FLECSI_ID_EBITS
-#define FLECSI_ID_EBITS 40
+#define FLECSI_ID_EBITS 36
 #endif
 
 #ifndef FLECSI_ID_FBITS
