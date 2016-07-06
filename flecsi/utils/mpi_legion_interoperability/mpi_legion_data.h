@@ -38,7 +38,7 @@ class MPILegionArrayStorage_t
   virtual void legion_init(context_t<mpilegion_execution_policy_t>  &ctx) = 0;
   virtual void  allocate_legion(context_t<mpilegion_execution_policy_t>  &ctx) = 0;
   virtual void  deallocate_legion(context_t<mpilegion_execution_policy_t>  &ctx) = 0;
-  virtual void  partition_legion( context_t<mpilegion_execution_policy_t> &ctx) = 0;
+  virtual void  partition_legion(uint nParts, context_t<mpilegion_execution_policy_t> &ctx) = 0;
   virtual uint64_t size(void) = 0;
   virtual void copy_legion_to_mpi (context_t<mpilegion_execution_policy_t>  &ctx) = 0;
    virtual void copy_mpi_to_legion (context_t<mpilegion_execution_policy_t>  &ctx) = 0;
@@ -75,9 +75,9 @@ class MPILegionArray : public MPILegionArrayStorage_t{
                                      ctx.runtime());
        }
 
- void  partition_legion( context_t<mpilegion_execution_policy_t> &ctx)
+ void  partition_legion(uint nParts, context_t<mpilegion_execution_policy_t> &ctx)
        {
-         legion_object.partition(N, ctx.legion_ctx(), ctx.runtime());
+         legion_object.partition(nParts, ctx.legion_ctx(), ctx.runtime());
        }
 
 // void allocate_mpi(void)
@@ -100,15 +100,12 @@ class MPILegionArray : public MPILegionArrayStorage_t{
         legion_object.return_legion_accessor(acc, ctx.legion_ctx(), ctx.runtime());
      }
 
- Type legion_accessor(const PhysicalRegion &physicalRegion,
-                      Context ctx,
-                      HighLevelRuntime *runtime)
+ Type *legion_accessor(const PhysicalRegion &physicalRegion,
+                    Context ctx, HighLevelRuntime *runtime)
+//                    context_t<mpilegion_execution_policy_t>  &ctx)
       {
-        PhysicalArray<Type> PS (physicalRegion, ctx, runtime);
+        PhysicalArray<Type> PS (physicalRegion,ctx, runtime);
         return PS.data();
- //       Type *data = PS.data();
-  //      assert (data);
-  //      return data;
       }
 
  Type *  mpi_accessor(void)

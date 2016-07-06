@@ -33,6 +33,7 @@ using return_type_t = execution_type::return_type_t;
 
 enum TaskIDs{
  HELLOWORLD_TASK_ID        =0x00000100,
+ SPMD_INIT_TID             =0x00000200,
 };
 
 
@@ -45,6 +46,12 @@ return_type_t world_size() {
   return 0;
 }
 
+//make Array global only for the simple test example
+//in general, we are not suppose to do so if the object
+//is used in Legion
+
+const int nElements=10;
+MPILegionArray<double, nElements> Array;
 
 using namespace LegionRuntime::HighLevel;
 using namespace LegionRuntime::Accessor;
@@ -111,6 +118,53 @@ void mpilegion_top_level_task(mpilegion_context &&ctx,int argc, char** argv)
 
   MPILegionInteropHelper->allocate_legion(ctx);
   MPILegionInteropHelper->legion_init(ctx);
+
+  //*********** testing Array  
+  
+  const int nParts=2;
+  Array.allocate_legion(ctx);
+  Array.legion_init( ctx);
+  Array.copy_mpi_to_legion(ctx);
+
+  double init_value=14;
+  Array.legion_init(init_value, ctx);
+  //this has to be done on the legion side
+  
+  int count =0;
+  RegionAccessor<AccessorType::Generic, double> acc=Array.get_legion_accessor(WRITE_DISCARD, EXCLUSIVE, ctx);
+   for(GenericPointInRectIterator<1> pir(Array.legion_object.bounds); pir; pir++){
+          acc.write(DomainPoint::from_point<1>(pir.p), count);
+          count++;
+     }
+  //needs to be calld every time after get_legion_accessor function
+  Array.return_legion_accessor(ctx);
+ 
+  Array.partition_legion(nParts,ctx);
+ 
+  std::cout << "*** Launching Initialization Tasks..." << std::endl;;
+    IndexLauncher launcher(
+        SPMD_INIT_TID,
+        Array.legion_object.launchDomain(),
+        TaskArgument(&nElements, sizeof(nElements)),
+        ArgumentMap()
+    );
+  launcher.add_region_requirement(
+        RegionRequirement(
+            Array.legion_object.logicalPartition(),
+            0,
+            WRITE_DISCARD,
+            EXCLUSIVE,
+            Array.legion_object.logicalRegion
+        )
+    ).add_field(Array.legion_object.fid);
+
+  auto futureMap = ctx.runtime()->execute_index_space(ctx.legion_ctx(), launcher);
+  futureMap.wait_all_results(); 
+ 
+  Array.dump_legion("legion Array", 1, ctx);
+
+  MPILegionInteropHelper->add_array_to_storage(&Array);
+
   MPILegionInteropHelper->copy_data_from_mpi_to_legion(ctx);
 
   FutureMap fm2 = ctx.runtime()->execute_index_space(ctx.legion_ctx(), helloworld_launcher);
@@ -129,6 +183,21 @@ void helloworld_mpi_task (const Task *legiontask,
 }
 
 /* ------------------------------------------------------------------------- */
+void spmd_init_task (const Task *legiontask,
+                      const std::vector<PhysicalRegion> &regions,
+                      Context ctx, HighLevelRuntime *runtime)
+{
+ static const int ridParams = 0;
+ const int nElements = *(int *)legiontask->args;
+ double *acc = Array.legion_accessor (regions[0],ctx, runtime);
+ assert (acc); 
+
+  int counter=0;
+  acc[0]=111;
+
+}
+
+/* ------------------------------------------------------------------------- */
 void my_init_legion(){
   //should be very first in the main function 
   //TOFIX need to be moved to the flecsi main
@@ -138,13 +207,15 @@ void my_init_legion(){
                           Processor::LOC_PROC, false/*single*/, true/*index*/,
                           AUTO_GENERATE_ID, TaskConfigOptions(true/*leaf*/), "hellowrld_task");
 
+ HighLevelRuntime::register_legion_task< spmd_init_task >( SPMD_INIT_TID,
+                          Processor::LOC_PROC, false/*single*/, true/*index*/,
+                          AUTO_GENERATE_ID, TaskConfigOptions(true/*leaf*/), "spmd_init_task");
 
   const InputArgs &args = HighLevelRuntime::get_input_args();
   flecsi::execution_t<flecsi::mpilegion_execution_policy_t>::execute_driver(flecsi::mpilegion_top_level_task,1,args.argv);
 
    MPILegionInteropHelper->legion_configure();
 
-  const int nElements=10;
   MPILegionArray<double, nElements> *ArrayDouble= new MPILegionArray<double, nElements>;
   MPILegionArray<int, nElements> *ArrayInt= new MPILegionArray<int, nElements>;
   MPILegionArray<double, nElements> *ArrayResult= new MPILegionArray<double, nElements>;
@@ -168,6 +239,10 @@ void my_init_legion(){
   }
 
   assert(AResult[0]==4.4);
+
+  Array.mpi_init();
+  int size=Array.size();
+  assert (size=nElements);
 
   MPILegionInteropHelper->handoff_to_legion();
 

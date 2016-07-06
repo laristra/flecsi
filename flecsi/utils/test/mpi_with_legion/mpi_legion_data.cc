@@ -53,7 +53,7 @@ void mpilegion_top_level_task(mpilegion_context &&ctx,int argc, char** argv)
 
   Array.allocate_legion(ctx);
   Array.legion_init( ctx);
-  Array.partition_legion(ctx);
+  Array.partition_legion(2,ctx);
 
 //  Array.copy_mpi_to_legion(ctx);
  //this has to be done on the legion side 
@@ -87,7 +87,7 @@ void mpilegion_top_level_task(mpilegion_context &&ctx,int argc, char** argv)
   for (uint i=0; i<ArrayStorage.size(); i++){
     ArrayStorage[i]->allocate_legion(ctx);
     ArrayStorage[i]->legion_init(ctx);
-    ArrayStorage[i]->partition_legion(ctx);
+    ArrayStorage[i]->partition_legion(10,ctx);
     ArrayStorage[i]->copy_mpi_to_legion(ctx);
     ArrayStorage[i]->copy_legion_to_mpi(ctx);
     ArrayStorage[i]->deallocate_legion(ctx);
