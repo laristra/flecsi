@@ -52,7 +52,7 @@ void top_level_task(context_t<flecsi::legion_execution_policy_t> &&ctx,int argc,
 TEST(legion, register_task) {
   using wrapper_t = TaskWrapper<1,0,0,0,legion_execution_policy_t,std::function<decltype(example_task)>>;
 
-//  register_legion<wrapper_t>::register_task();
+  register_legion<wrapper_t>::register_task();
 
 
 } // TEST

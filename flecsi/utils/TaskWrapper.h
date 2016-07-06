@@ -15,6 +15,7 @@
 #include <typeinfo>
 #include <functional>
 #include "flecsi/execution/context.h"
+#include <legion.h>
 
 namespace flecsi
 {
@@ -263,11 +264,11 @@ public: // Required Flecsi members
 	hArgT handles;
 
 	sArgT const_args;
-	template<typename U = std::is_void<aArgT>,typename = typename std::enable_if<!U::value>>
+	template<typename U = std::is_void<aArgT>,typename = typename std::enable_if<!U::value,void>>
 	TaskWrapper(hArgT _handles,sArgT _const_args,context_t<execution_policy_t> _context) :
 		handles(_handles),const_args(_const_args),context(_context){}
 
-	template<typename U = std::is_void<aArgT>,typename = typename std::enable_if<U::value>>
+	template<typename U = std::is_void<aArgT>,typename = typename std::enable_if<U::value,void>>
 	TaskWrapper(sArgT _const_args,context_t<execution_policy_t> _context) :
 		const_args(_const_args),context(_context){}
 
@@ -280,8 +281,8 @@ public: // Required static members
 	static const bool IS_LEAF = isLeaf;
 	static inline const char* TASK_NAME()
 	{return typeid(TaskWrapper<isSingle,isIndex,mapperID,isLeaf,execution_policy_t,callable<R(Args...)>>).name();};
-	static const size_t TASK_ID()
-	{return typeid(TaskWrapper<isSingle,isIndex,mapperID,isLeaf,execution_policy_t,callable<R(Args...)>>).hash_code();}
+	static const LegionRuntime::HighLevel::TaskID TASK_ID()
+	{return typeid(TaskWrapper<isSingle,isIndex,mapperID,isLeaf,execution_policy_t,callable<R(Args...)>>).hash_code() && 0x7FFFFFFF;}
 
 public: // Task Simple Arguments
 
