@@ -65,13 +65,10 @@ void mpilegion_top_level_task(mpilegion_context &&ctx,int argc, char** argv)
   Array.legion_init(init_value, ctx);
   //this has to be done on the legion side
   
-  int count =0;
-  RegionAccessor<AccessorType::Generic, double> acc=Array.get_legion_accessor(WRITE_DISCARD, EXCLUSIVE, ctx);
-   for(GenericPointInRectIterator<1> pir(Array.legion_object.bounds); pir; pir++){
-          acc.write(DomainPoint::from_point<1>(pir.p), count);
-          count++;
-     }
-
+  double *acc=Array.get_legion_accessor(WRITE_DISCARD, EXCLUSIVE, ctx);
+  for (int i=0; i<nElements; i++)
+   acc[i]=i;
+  //we need to return accessor after calling "get_legion_accessor" to avoid deadlock
   Array.return_legion_accessor(ctx);
 
   Array.dump_legion("legion Array", 1, ctx);

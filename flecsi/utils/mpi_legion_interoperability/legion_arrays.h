@@ -90,9 +90,10 @@ class LegionAccessor{
  public:
   LegionAccessor(){};
   ~LegionAccessor(){};
-// private:: 
   LegionRuntime::HighLevel::PhysicalRegion preg;
   RegionAccessor<AccessorType::Generic, Type> acc;
+  Type *mData = nullptr;
+  
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -352,8 +353,21 @@ public:
      LegionAcc->preg= lrt->map_region(ctx,accessorl);
         LegionAcc->preg.wait_until_valid();
      LegionAcc->acc = LegionAcc->preg.get_field_accessor(fid).template typeify<T>();
+
+     Rect<1> subrect;
+     ByteOffset inOffsets[1];
+     
+     LegionAcc->mData = LegionAcc->acc.template raw_rect_ptr<1>(
+            bounds, subrect, inOffsets);
+        // Sanity.
+        if (!LegionAcc->mData || (subrect != bounds) ||
+            !offsetsAreDense<1, T>(bounds, inOffsets)) {
+            // Signifies that something went south.
+            LegionAcc->mData = nullptr;
+        }
+
      return LegionAcc;
-   };
+   }
 
   void return_legion_accessor(LegionAccessor<T> *LegionAcc, 
      LegionRuntime::HighLevel::Context ctx,

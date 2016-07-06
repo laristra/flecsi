@@ -129,13 +129,11 @@ void mpilegion_top_level_task(mpilegion_context &&ctx,int argc, char** argv)
   double init_value=14;
   Array.legion_init(init_value, ctx);
   //this has to be done on the legion side
-  
-  int count =0;
-  RegionAccessor<AccessorType::Generic, double> acc=Array.get_legion_accessor(WRITE_DISCARD, EXCLUSIVE, ctx);
-   for(GenericPointInRectIterator<1> pir(Array.legion_object.bounds); pir; pir++){
-          acc.write(DomainPoint::from_point<1>(pir.p), count);
-          count++;
-     }
+ 
+  double *acc=Array.get_legion_accessor(WRITE_DISCARD, EXCLUSIVE, ctx);
+  for (int i=0; i<nElements; i++)
+   acc[i]=i;
+ 
   //needs to be calld every time after get_legion_accessor function
   Array.return_legion_accessor(ctx);
  

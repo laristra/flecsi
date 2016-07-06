@@ -104,7 +104,7 @@ class MPILegionInterop {
 
  public:
 //  CommonDataType CommonData;
-  ExtLegionHandshake *handshake;
+  ExtLegionHandshake *handshake=nullptr;
 
   std::vector <std::shared_ptr<MPILegionArrayStorage_t>> MpiLegionStorage;
 //  std::map<std::string,typename MPILegionArray> MPILegionArrays; //creates a map between the array's name and Array itself
