@@ -79,7 +79,6 @@ class MPILegionInterop {
                       const std::vector<PhysicalRegion> &regions,
                       Context ctx, HighLevelRuntime *runtime);
 
-//toimplement
   template <typename... CommonDataTypes>
   void copy_data_from_legion_to_mpi (CommonDataTypes&&... CommData,
                              context_t<mpilegion_execution_policy_t>  &ctx); 
@@ -101,10 +100,18 @@ class MPILegionInterop {
 
   static void register_tasks(void);
 
+  void calculate_number_of_pocs (void);
 
+  void connect_with_mpi(context_t<mpilegion_execution_policy_t>  &ctx);
+
+  void handoff_to_mpi(context_t<mpilegion_execution_policy_t>  &ctx);
+ 
  public:
 //  CommonDataType CommonData;
   ExtLegionHandshake *handshake=nullptr;
+
+  Rect<2> all_processes;
+  Rect<1> local_procs;
 
   std::vector <std::shared_ptr<MPILegionArrayStorage_t>> MpiLegionStorage;
 //  std::map<std::string,typename MPILegionArray> MPILegionArrays; //creates a map between the array's name and Array itself
@@ -248,6 +255,65 @@ std::cout <<"inside connect_to_mpi"<<std::endl;
 
  }
 
+
+ void MPILegionInterop::calculate_number_of_pocs(void)
+ {
+  int num_local_procs=0;
+#ifndef SHARED_LOWLEVEL
+  // Only the shared lowlevel runtime needs to iterate over all points
+  // on each processor.
+  int num_points = 1;
+  int num_procs = 0;
+  {
+   std::set<Processor> all_procs;
+   Realm::Machine::get_machine().get_all_processors(all_procs);
+   for(std::set<Processor>::const_iterator it = all_procs.begin();
+      it != all_procs.end();
+      it++){
+    if((*it).kind() == Processor::LOC_PROC)
+      num_procs++;
+   }
+  }
+  num_local_procs=num_procs;
+#else
+  int num_procs = Machine::get_machine()->get_all_processors().size();
+  int num_points = rank->proc_grid_size.x[0] * rank->proc_grid_size.x[1] * rank->proc_grid_size.x[2];
+#endif
+  printf("Attempting to connect %d processors with %d points per processor\n",
+         num_procs, num_points);
+  Point<2> all_procs_lo, all_procs_hi;
+  all_procs_lo.x[0] = all_procs_lo.x[1] = 0;
+  all_procs_hi.x[0] = num_procs - 1;
+  all_procs_hi.x[1] = num_points - 1;
+  this->all_processes =  Rect<2>(all_procs_lo, all_procs_hi);
+  this->local_procs = Rect<1>(0,num_local_procs);
+ }
+
+ void MPILegionInterop::connect_with_mpi(context_t<mpilegion_execution_policy_t>  &ctx)
+ {
+   calculate_number_of_pocs();
+   ArgumentMap arg_map;
+   IndexLauncher connect_mpi_launcher(CONNECT_MPI_TASK_ID,
+                                       Domain::from_rect<2>(all_processes),
+                                       TaskArgument(0, 0),
+                                       arg_map);
+  //run legion_init() from each thead
+  FutureMap fm1 = ctx.runtime()->execute_index_space(ctx.legion_ctx(), connect_mpi_launcher);
+
+  //run some legion task here
+  fm1.wait_all_results();
+ 
+ }
+
+ void MPILegionInterop::handoff_to_mpi(context_t<mpilegion_execution_policy_t>  &ctx)
+ {
+   ArgumentMap arg_map;
+   IndexLauncher handoff_to_mpi_launcher(HANDOFF_TO_MPI_TASK_ID,
+                                     Domain::from_rect<2>(all_processes),
+                                     TaskArgument(0, 0),
+                                     arg_map);
+    ctx.runtime()->execute_index_space(ctx.legion_ctx(), handoff_to_mpi_launcher);
+ }
 
 }//end namespace mpilegion
 
