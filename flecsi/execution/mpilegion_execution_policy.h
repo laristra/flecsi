@@ -96,16 +96,7 @@ class mpilegion_execution_policy_t: public legion_execution_policy_t
 
 
   template <typename T>
-  static return_type_t execute_driver(T && task, int argc, char** argv)
-  {
-    using namespace LegionRuntime::HighLevel;
-    HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
-    HighLevelRuntime::register_legion_task<mpilegion_execution_policy_t::driver_top_task<T>>(TOP_LEVEL_TASK_ID,
-        Processor::LOC_PROC, true/*single*/, false/*index*/);
-
-    return HighLevelRuntime::start(argc, argv);
-
-  } // execute_driver
+  static return_type_t execute_driver(T && task, int argc, char** argv);
 
 
   template <typename T, typename... Args>
@@ -130,7 +121,37 @@ class mpilegion_execution_policy_t: public legion_execution_policy_t
 
   }
 
+
 }; // class mpilegion_execution_policy_t
+
+} //// namespace flecsi
+
+#ifndef MPI_LEGION_INTEROP_HPP_INCLUDED_IN_EXECUTION_POLICY_H
+#define MPI_LEGION_INTEROP_HPP_INCLUDED_IN_EXECUTION_POLICY_H
+#endif
+
+#include "flecsi/utils/mpi_legion_interoperability/mpi_legion_interop.h"
+
+namespace flecsi
+{
+
+ void MPILegion_Init(void){
+   MPILegionInteropHelper = new flecsi::mpilegion::MPILegionInterop();
+ }
+
+ template <typename T>
+ mpilegion_execution_policy_t::return_type_t mpilegion_execution_policy_t::execute_driver(T && task, int argc, char** argv)
+  {
+    using namespace LegionRuntime::HighLevel;
+    HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
+    HighLevelRuntime::register_legion_task<mpilegion_execution_policy_t::driver_top_task<T>>(TOP_LEVEL_TASK_ID,
+        Processor::LOC_PROC, true/*single*/, false/*index*/, AUTO_GENERATE_ID, TaskConfigOptions(), "top_level_task");
+
+    MPILegionInteropHelper->register_tasks();
+    HighLevelRuntime::set_registration_callback(mapper_registration);
+    return HighLevelRuntime::start(argc, argv, true);
+
+  }
 
 } // namespace flecsi
 

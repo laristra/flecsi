@@ -106,15 +106,17 @@ endif (ENABLE_HYPRE)
 # Process id bits
 #------------------------------------------------------------------------------#
 
-math(EXPR FLECSI_ID_EBITS "60 - ${FLECSI_ID_PBITS}")
+math(EXPR FLECSI_ID_EBITS "60 - ${FLECSI_ID_PBITS} - ${FLECSI_ID_FBITS}")
 
 add_definitions(-DFLECSI_ID_PBITS=${FLECSI_ID_PBITS})
 add_definitions(-DFLECSI_ID_EBITS=${FLECSI_ID_EBITS})
+add_definitions(-DFLECSI_ID_FBITS=${FLECSI_ID_FBITS})
 
 math(EXPR flecsi_partitions "1 << ${FLECSI_ID_PBITS}")
 math(EXPR flecsi_entities "1 << ${FLECSI_ID_EBITS}")
+math(EXPR flecsi_id_flags "1 << ${FLECSI_ID_FBITS}")
 
-message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with 2^${FLECSI_ID_EBITS} entities each")
+message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with 2^${FLECSI_ID_EBITS} entities each and ${FLECSI_ID_FBITS} flag bits")
 
 #------------------------------------------------------------------------------#
 # Enable IO with exodus

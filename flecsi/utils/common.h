@@ -33,13 +33,17 @@
 #endif
 
 #ifndef FLECSI_ID_EBITS
-#define FLECSI_ID_EBITS 40
+#define FLECSI_ID_EBITS 36
+#endif
+
+#ifndef FLECSI_ID_FBITS
+#define FLECSI_ID_FBITS 4
 #endif
 
 namespace flecsi
 {
 
-using id_t = id_<FLECSI_ID_PBITS, FLECSI_ID_EBITS>;
+using id_t = id_<FLECSI_ID_PBITS, FLECSI_ID_EBITS, FLECSI_ID_FBITS>;
 
 //! P.O.D.
 template <typename T>

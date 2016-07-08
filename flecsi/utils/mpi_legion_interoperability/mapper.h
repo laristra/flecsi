@@ -98,7 +98,7 @@ void MPIMapper::slice_domain(const Task *task, const Domain &domain,
                               std::vector<DomainSplit> &slices)
 {
   // Special cases for startup tasks
-  if (task->task_id == CONNECT_MPI_TASK_ID)
+  if (task->task_id == CONNECT_MPI_TASK_ID||task->task_id ==HANDOFF_TO_MPI_TASK_ID|| task->task_id ==WAIT_ON_MPI_TASK_ID)
   {
     const int DIM = 2;
     std::vector<Processor> proc_list;

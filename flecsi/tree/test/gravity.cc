@@ -6,7 +6,7 @@
 
 using namespace std;
 using namespace flecsi;
-using namespace tree_topology_dev;
+using namespace tree;
 
 struct Aggregate{
   Aggregate(){
@@ -29,6 +29,10 @@ public:
   using element_t = double;
 
   using point_t = point<element_t, dimension>;
+
+  using range_t = pair<element_t, element_t>;
+
+  static constexpr range_t coordinate_range = {0, 1};
 
   class body : public tree_entity<branch_int_t, dimension>{
   public:
