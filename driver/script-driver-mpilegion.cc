@@ -27,7 +27,8 @@
  *----------------------------------------------------------------------------*/
 
 int main(int argc, char ** argv) {
-  return flecsi::execution_t<legion_execution_policy_t>::execute_task(driver,
+   MPILegion_Init();
+  return flecsi::execution_t<mpilegion_execution_policy_t>::execute_task(driver,
     argc, argv);
 } // main
 

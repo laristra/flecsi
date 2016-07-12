@@ -223,12 +223,17 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-legion.cc
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-mpi.cc
   DESTINATION ${CMAKE_BINARY_DIR}/share
 )
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-mpilegion.cc
+  DESTINATION ${CMAKE_BINARY_DIR}/share
+)
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-serial.cc
   DESTINATION share/flecsi)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-legion.cc
   DESTINATION share/flecsi)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-mpi.cc
+  DESTINATION share/flecsi)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-mpilegion.cc
   DESTINATION share/flecsi)
 
 # This configures a locally available script that is suitable for

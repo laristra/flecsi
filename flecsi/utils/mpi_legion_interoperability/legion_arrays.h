@@ -179,6 +179,29 @@ public:
         lrt->destroy_index_space(ctx, mIndexSpace);
     }
 
+   void
+    resize(
+        int64_t new_size,
+        LegionRuntime::HighLevel::Context ctx,
+        LegionRuntime::HighLevel::HighLevelRuntime *lrt
+    ) {
+       length =new_size;
+       lrt->destroy_logical_region(ctx, logicalRegion);
+       lrt->destroy_index_space(ctx, mIndexSpace);
+       // calculate the size of the logicalRegion vec (inclusive)
+        uint64_t n = length - 1;
+        // vec rect
+        bounds = Rect<1>(Point<1>::ZEROES(), Point<1>(n));
+        // vector domain
+        Domain dom(Domain::from_rect<1>(bounds));
+        // vec index space
+        mIndexSpace = lrt->create_index_space(ctx, dom);
+        logicalRegion = lrt->create_logical_region(ctx, mIndexSpace, mFS);
+        // stash some info for equality checks
+        mIndexSpaceID = logicalRegion.get_index_space().get_id();
+        mFieldSpaceID = logicalRegion.get_field_space().get_id();
+        mRTreeID      = logicalRegion.get_tree_id();
+    }  
 
     /**
      * Returns whether or not two LogicalArrays are the same (as far as the

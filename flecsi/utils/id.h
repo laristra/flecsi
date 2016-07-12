@@ -15,6 +15,7 @@
 #ifndef flecsi_id_h
 #define flecsi_id_h
 
+#include <cassert>
 #include <cstdint>
 
 /*!

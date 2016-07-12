@@ -15,14 +15,15 @@
 #------------------------------------------------------------------------------#
 # Add a rule to build the executable
 #------------------------------------------------------------------------------#
+add_definitions(-DFLECSI_DRIVER=${CMAKE_SOURCE_DIR}/examples/agile/sprint1.h)
 
-add_executable(sprint1 sprint1.cc)
+add_executable(sprint1 ${CMAKE_SOURCE_DIR}/driver/${FLECSI_RUNTIME_MAIN} )
 
 #------------------------------------------------------------------------------#
 # Add link dependencies
 #------------------------------------------------------------------------------#
 
-#target_link_libraries(burton ${CINCH_LINK_LIBRARIES} ${EXTRA_LIBS})
+#target_link_libraries(sprint1 flecsi )
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options
