@@ -51,7 +51,7 @@ return_type_t world_size() {
 //is used in Legion
 
 const int nElements=10;
-MPILegionArray<double, nElements> Array;
+flecsi::mpilegion::MPILegionArray<double, nElements> Array;
 
 using namespace LegionRuntime::HighLevel;
 using namespace LegionRuntime::Accessor;
@@ -63,10 +63,10 @@ namespace flecsi
 {
 void mpilegion_top_level_task(mpilegion_context &&ctx,int argc, char** argv)
 {
-  MPILegionInteropHelper->connect_with_mpi(ctx);
+  flecsi::mpilegion::MPILegionInteropHelper->connect_with_mpi(ctx);
 
-  MPILegionInteropHelper->allocate_legion(ctx);
-  MPILegionInteropHelper->legion_init(ctx);
+  flecsi::mpilegion::MPILegionInteropHelper->allocate_legion(ctx);
+  flecsi::mpilegion::MPILegionInteropHelper->legion_init(ctx);
 
   //*********** testing Array  
   
@@ -110,20 +110,20 @@ void mpilegion_top_level_task(mpilegion_context &&ctx,int argc, char** argv)
  
   Array.dump_legion("legion Array", 1, ctx);
 
-  MPILegionInteropHelper->add_array_to_storage(&Array);
+  flecsi::mpilegion::MPILegionInteropHelper->add_array_to_storage(&Array);
 
-  MPILegionInteropHelper->copy_data_from_mpi_to_legion(ctx);
+  flecsi::mpilegion::MPILegionInteropHelper->copy_data_from_mpi_to_legion(ctx);
 
   ArgumentMap arg_map;
   IndexLauncher helloworld_launcher(HELLOWORLD_TASK_ID,
-                               Domain::from_rect<1>(MPILegionInteropHelper->local_procs),
+                               Domain::from_rect<1>(flecsi::mpilegion::MPILegionInteropHelper->local_procs),
                                TaskArgument(0, 0),
                                arg_map);
 
   FutureMap fm2 = ctx.runtime()->execute_index_space(ctx.legion_ctx(), helloworld_launcher);
   fm2.wait_all_results();
   //handoff to MPI
-  MPILegionInteropHelper->handoff_to_mpi(ctx);
+  flecsi::mpilegion::MPILegionInteropHelper->handoff_to_mpi(ctx);
  }
 }
 
@@ -154,7 +154,7 @@ void spmd_init_task (const Task *legiontask,
 void my_init_legion(){
   //should be very first in the main function 
   //TOFIX need to be moved to the flecsi main
-  MPILegion_Init();
+  flecsi::MPILegion_Init();
 
   HighLevelRuntime::register_legion_task< helloworld_mpi_task >( HELLOWORLD_TASK_ID,
                           Processor::LOC_PROC, false/*single*/, true/*index*/,
@@ -167,19 +167,22 @@ void my_init_legion(){
   const InputArgs &args = HighLevelRuntime::get_input_args();
   flecsi::execution_t<flecsi::mpilegion_execution_policy_t>::execute_driver(flecsi::mpilegion_top_level_task,1,args.argv);
 
-   MPILegionInteropHelper->legion_configure();
+   flecsi::mpilegion::MPILegionInteropHelper->legion_configure();
 
-  MPILegionArray<double, nElements> *ArrayDouble= new MPILegionArray<double, nElements>;
-  MPILegionArray<int, nElements> *ArrayInt= new MPILegionArray<int, nElements>;
-  MPILegionArray<double, nElements> *ArrayResult= new MPILegionArray<double, nElements>;
+  flecsi::mpilegion::MPILegionArray<double, nElements> *ArrayDouble=
+        new flecsi::mpilegion::MPILegionArray<double, nElements>;
+  flecsi::mpilegion::MPILegionArray<int, nElements> *ArrayInt= 
+        new flecsi::mpilegion::MPILegionArray<int, nElements>;
+  flecsi::mpilegion::MPILegionArray<double, nElements> *ArrayResult= 
+        new flecsi::mpilegion::MPILegionArray<double, nElements>;
 
-  MPILegionInteropHelper->add_array_to_storage(ArrayDouble);
-  MPILegionInteropHelper->add_array_to_storage(ArrayInt);
-  MPILegionInteropHelper->add_array_to_storage(ArrayResult);
+  flecsi::mpilegion::MPILegionInteropHelper->add_array_to_storage(ArrayDouble);
+  flecsi::mpilegion::MPILegionInteropHelper->add_array_to_storage(ArrayInt);
+  flecsi::mpilegion::MPILegionInteropHelper->add_array_to_storage(ArrayResult);
 
-  assert (MPILegionInteropHelper->storage_size()==3);
+  assert (flecsi::mpilegion::MPILegionInteropHelper->storage_size()==3);
 
-  MPILegionInteropHelper->mpi_init();
+  flecsi::mpilegion::MPILegionInteropHelper->mpi_init();
 
   ArrayDouble->mpi_init(1.1);
   ArrayInt->mpi_init(4);
@@ -197,9 +200,9 @@ void my_init_legion(){
   int size=Array.size();
   assert (size=nElements);
 
-  MPILegionInteropHelper->handoff_to_legion();
+  flecsi::mpilegion::MPILegionInteropHelper->handoff_to_legion();
 
-  MPILegionInteropHelper->wait_on_legion(); 
+  flecsi::mpilegion::MPILegionInteropHelper->wait_on_legion(); 
 
   delete ArrayDouble;
   delete ArrayInt;

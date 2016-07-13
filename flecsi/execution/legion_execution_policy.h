@@ -35,8 +35,6 @@ class legion_execution_policy_t;
 
 extern void top_level_task(context_t<flecsi::legion_execution_policy_t> &&ctx,int argc, char** argv);
 
-using namespace LegionRuntime::HighLevel;
-
 /*!
   \class legion_execution_policy legion_execution_policy.h
   \brief legion_execution_policy provides...
@@ -47,10 +45,13 @@ class legion_execution_policy_t
 	class context_ep
 	{
 	public:
-		context_ep():task(NULL),regions( std::vector<LegionRuntime::HighLevel::PhysicalRegion>()){}
-		context_ep(const Task *_task,
-                            const std::vector<PhysicalRegion> &_regions,
-                            Context ctx, HighLevelRuntime *runtime) : ctx_l(ctx),rt(runtime),task(_task),regions(_regions){}
+		context_ep():task(NULL),regions( 
+           std::vector<LegionRuntime::HighLevel::PhysicalRegion>()){}
+		context_ep(const LegionRuntime::HighLevel::Task *_task,
+           const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &_regions,
+           LegionRuntime::HighLevel::Context ctx, 
+           LegionRuntime::HighLevel::HighLevelRuntime *runtime) 
+           : ctx_l(ctx),rt(runtime),task(_task),regions(_regions){}
 
 	protected:
 		 LegionRuntime::HighLevel::Context ctx_l;
@@ -63,12 +64,11 @@ class legion_execution_policy_t
 	  template <typename T>
 	  static void driver_top_task(const LegionRuntime::HighLevel::Task *task,
 	                             const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
-	                             LegionRuntime::HighLevel::Context ctx, LegionRuntime::HighLevel::HighLevelRuntime *runtime)
+	                             LegionRuntime::HighLevel::Context ctx, 
+                               LegionRuntime::HighLevel::HighLevelRuntime *runtime)
 	  {
-		  using namespace LegionRuntime::HighLevel;
-		  const InputArgs &args = HighLevelRuntime::get_input_args();
-
-
+		  const LegionRuntime::HighLevel::InputArgs &args =
+              LegionRuntime::HighLevel::HighLevelRuntime::get_input_args();
 		  top_level_task(context_t<flecsi::legion_execution_policy_t>(0,task,regions,ctx,runtime),args.argc,args.argv);
 
 	  }
@@ -87,12 +87,12 @@ class legion_execution_policy_t
   template <typename T>
   static return_type_t execute_driver(T && task, int argc, char** argv)
   {
-	  using namespace LegionRuntime::HighLevel;
-	  HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
-	  HighLevelRuntime::register_legion_task<legion_execution_policy_t::driver_top_task<T>>(TOP_LEVEL_TASK_ID,
-	      Processor::LOC_PROC, true/*single*/, false/*index*/);
+	  LegionRuntime::HighLevel::HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
+	  LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
+           <legion_execution_policy_t::driver_top_task<T>>(TOP_LEVEL_TASK_ID,
+	              LegionRuntime::HighLevel::Processor::LOC_PROC, true/*single*/, false/*index*/);
 
-	  return HighLevelRuntime::start(argc, argv);
+	  return LegionRuntime::HighLevel::HighLevelRuntime::start(argc, argv);
 
   } // execute_driver
 
