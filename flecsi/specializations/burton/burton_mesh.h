@@ -39,7 +39,7 @@ namespace flecsi
   \brief A specialization of the flecsi low-level mesh topology, state and
     execution models.
  */
-class burton_mesh_t
+class burton_mesh_t : public mesh_topology_t<burton_mesh_types_t>
 {
 private:
 
@@ -325,9 +325,11 @@ public:
     return burton_mesh_traits_t::num_dimensions;
   } // dimension
 
+#if 0
   auto get_connectivity(size_t fm, size_t tm, size_t fd, size_t td) {
     return mesh_.get_connectivity(fm, tm, fd, td);
   } // get_connectivity
+#endif
 
   /*--------------------------------------------------------------------------*
    * Vertex Interface

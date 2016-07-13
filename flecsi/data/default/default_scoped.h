@@ -46,7 +46,7 @@ namespace default_storage_policy
     template<typename T, size_t NS, typename ... Args>
     static decltype(auto) register_data(data_store_t & data_store,
       uintptr_t runtime_namespace, const const_string_t & key,
-      size_t indeces, Args && ... args) {
+      size_t indices, Args && ... args) {
     } // register_data
 
     /*!

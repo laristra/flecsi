@@ -251,7 +251,7 @@ struct storage_type_t<dense, DS, MD> {
     \param data_store A reference for accessing the low-level data.
     \param key A const string instance containing the variable name.
     \param versions The number of variable versions for this datum.
-    \param indeces The number of indeces in the index space.
+    \param indices The number of indices in the index space.
    */
   template<typename T, size_t NS, typename ... Args>
   static handle_t<T> register_data(data_client_t & data_client,
@@ -268,9 +268,9 @@ struct storage_type_t<dense, DS, MD> {
 
     data_store[NS][h].label = key.c_str();
     // FIXME: need lookup from data_client
-    std::cout << "Setting size: " << data_client.indeces(index_space) <<
+    std::cout << "Setting size: " << data_client.indices(index_space) <<
       std::endl;
-    data_store[NS][h].size = data_client.indeces(index_space);
+    data_store[NS][h].size = data_client.indices(index_space);
     data_store[NS][h].type_size = sizeof(T);
     data_store[NS][h].versions = versions;
     data_store[NS][h].rtti.reset(
@@ -279,7 +279,7 @@ struct storage_type_t<dense, DS, MD> {
     for(size_t i=0; i<versions; ++i) {
     // FIXME: need lookup from data_client
       data_store[NS][h].data[i].resize(
-        data_client.indeces(index_space) * sizeof(T));
+        data_client.indices(index_space) * sizeof(T));
     } // for
 
     // map is unused for this storage type

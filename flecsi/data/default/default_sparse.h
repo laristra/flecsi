@@ -113,7 +113,7 @@ struct storage_type_t<sparse, DS, MD> {
   template<typename T, size_t NS, typename ... Args>
   static handle_t<T> register_data(data_client_t & data_client,
     data_store_t & data_store, const const_string_t & key,
-    size_t versions, size_t indeces, size_t max_non_zero_entries,
+    size_t versions, size_t indices, size_t max_non_zero_entries,
 		Args && ... args) {
 
 		size_t h = key.hash() ^ data_client.runtime_id();
@@ -125,24 +125,24 @@ struct storage_type_t<sparse, DS, MD> {
 		data_store[NS][h].user_data.initialize(std::forward<Args>(args) ...);
 
 		data_store[NS][h].label = key.c_str();
-		data_store[NS][h].size = indeces;
+		data_store[NS][h].size = indices;
 		data_store[NS][h].type_size = sizeof(T);
 		data_store[NS][h].versions = versions;
 		data_store[NS][h].rtti.reset(
 			new typename meta_data_t::type_info_t(typeid(T)));
 
     // This implementation just uses CRS
-    data_store[NS][h].map.resize(indeces+1);
+    data_store[NS][h].map.resize(indices+1);
 
     // Set initial offsets
-    for(size_t i(0), o(0); i<indeces+1; ++i, o+=max_non_zero_entries) {
+    for(size_t i(0), o(0); i<indices+1; ++i, o+=max_non_zero_entries) {
       data_store[NS][h].map[i] = o;
     } // for
 
     // Allocate space for versions
 		for(size_t i(0); i<versions; ++i) {
 			data_store[NS][h].data[i].resize(
-				indeces * max_non_zero_entries * sizeof(T));
+				indices * max_non_zero_entries * sizeof(T));
 		} // for
 
 		return {};
