@@ -13,11 +13,15 @@
 #~----------------------------------------------------------------------------~#
 
 #------------------------------------------------------------------------------#
-# Add a rule to build the executable
+# Compile definition to include driver
 #------------------------------------------------------------------------------#
 
 set(CMAKE_CXX_COMPILER "mpiCC")
 add_definitions(-DFLECSI_DRIVER=${CMAKE_SOURCE_DIR}/examples/agile/sprint1.h)
+
+#------------------------------------------------------------------------------#
+# Add a rule to build the executable
+#------------------------------------------------------------------------------#
 
 add_executable(sprint1 ${CMAKE_SOURCE_DIR}/driver/${FLECSI_RUNTIME_MAIN} )
 
