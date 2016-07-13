@@ -20,6 +20,7 @@
 #include "flecsi/data/data.h"
 #include "flecsi/execution/task.h"
 #include "flecsi/specializations/burton/burton_types.h"
+#include "flecsi/data/data_client.h"
 
 /*!
  * \file burton_mesh.h
@@ -42,8 +43,8 @@ class burton_mesh_t
 {
 private:
 
-  //! Type for storing instance of template specialized low level mesh.
-  using private_mesh_t = mesh_topology_t<burton_mesh_types_t>;
+  //! Type for template-specialized low-level mesh topology.
+  using private_topology_t = mesh_topology_t<burton_mesh_types_t>;
 
 public:
 
@@ -291,15 +292,15 @@ public:
   //! Corner type.
   using corner_t = burton_mesh_types_t::corner_t;
 
-  using vertex_set_t = private_mesh_t::entity_set_t<0, 0>;
+  using vertex_set_t = private_topology_t::entity_set_t<0, 0>;
 
-  using edge_set_t = private_mesh_t::entity_set_t<1, 0>;
+  using edge_set_t = private_topology_t::entity_set_t<1, 0>;
 
-  using cell_set_t = private_mesh_t::entity_set_t<2, 0>;
+  using cell_set_t = private_topology_t::entity_set_t<2, 0>;
 
-  using corner_set_t = private_mesh_t::entity_set_t<1, 1>;
+  using corner_set_t = private_topology_t::entity_set_t<1, 1>;
 
-  using wedge_set_t = private_mesh_t::entity_set_t<2, 1>;
+  using wedge_set_t = private_topology_t::entity_set_t<2, 1>;
 
   //! Default constructor
   burton_mesh_t() {}
@@ -844,7 +845,7 @@ public:
 
 private:
 
-  private_mesh_t mesh_;
+  private_topology_t mesh_;
 
 }; // class burton_mesh_t
 

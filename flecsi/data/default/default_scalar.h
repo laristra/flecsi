@@ -17,6 +17,7 @@
 
 #include "flecsi/utils/const_string.h"
 #include "flecsi/data/default/default_storage_type.h"
+#include "flecsi/data/data_client.h"
 
 /*!
  * \file default_scalar.h
@@ -127,11 +128,11 @@ struct storage_type_t<scalar, DS, MD> {
     \param The number of variable versions for this datum.
    */
   template<typename T, size_t NS, typename ... Args>
-  static handle_t<T> register_data(data_store_t & data_store,
-    uintptr_t runtime_namespace, const const_string_t & key,
+  static handle_t<T> register_data(data_client_t & data_client,
+    data_store_t & data_store, const const_string_t & key,
     size_t versions, Args && ... args) {
 
-    size_t h = key.hash() ^ runtime_namespace;
+    size_t h = key.hash() ^ data_client.runtime_id();
 
     // Runtime assertion that this key is unique.
     assert(data_store[NS].find(h) == data_store[NS].end() &&
@@ -163,10 +164,10 @@ struct storage_type_t<scalar, DS, MD> {
   /*!
    */
   template<typename T, size_t NS>
-  static accessor_t<T> get_accessor(data_store_t & data_store,
-    uintptr_t runtime_namespace, const const_string_t & key,
+  static accessor_t<T> get_accessor(data_client_t & data_client,
+    data_store_t & data_store, const const_string_t & key,
 		size_t version) {
-		const size_t h = key.hash() ^ runtime_namespace;
+		const size_t h = key.hash() ^ data_client.runtime_id();
 		auto search = data_store[NS].find(h);
 
 		if(search == data_store[NS].end()) {
@@ -191,8 +192,8 @@ struct storage_type_t<scalar, DS, MD> {
   /*!
    */
   template<typename T, size_t NS>
-  static handle_t<T> get_handle(data_store_t & data_store,
-    uintptr_t runtime_namespace, const const_string_t & key) {
+  static handle_t<T> get_handle(data_client_t & data_client,
+    data_store_t & data_store, const const_string_t & key) {
     return {};
   } // get_handle
 

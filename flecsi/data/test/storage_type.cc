@@ -7,6 +7,7 @@
 
 #include "flecsi/data/default/default_storage_policy.h"
 #include "flecsi/data/new_data.h"
+#include "flecsi/data/data_client.h"
 
 using namespace flecsi;
 
@@ -57,28 +58,63 @@ private:
 
 using new_data_t = data_model::new_data_t<>;
 
-#define register_data(manager, name, versions, data_type, storage_type, ...) \
-  manager.register_data<storage_type, data_type, 0>(0, name, \
-    versions, ##__VA_ARGS__)
+enum mesh_index_spaces_t : size_t {
+  vertices,
+  edges,
+  faces,
+  cells
+}; // enum mesh_index_spaces_t
 
-#define get_accessor(manager, name, version, data_type, storage_type) \
-  manager.get_accessor<storage_type, data_type, 0>(0, name, version)
+enum class privileges : size_t {
+  read,
+  read_write,
+  write_discard
+}; // enum data_access_type_t
+
+struct mesh_t : public data_client_t {
+
+  size_t indeces(size_t index_space_id) override {
+
+    switch(index_space_id) {
+      case cells:
+        return 100;
+        break;
+      default:
+        // FIXME: lookup user-defined index space
+        assert(false && "unknown index space");
+    } // switch
+  }
+
+}; // struct mesh_t
+
+#define register_data(client, name, versions, data_type, storage_type, ...) \
+  new_data_t::instance().register_data<storage_type, data_type,             \
+    data_name_space_t::user>(client, name, versions, ##__VA_ARGS__)
+
+#define get_accessor(client, name, version, data_type, storage_type) \
+  new_data_t::instance().get_accessor<storage_type, data_type,       \
+    data_name_space_t::user>(client, name, version)
+
+#define get_handle(client, name, version, data_type, storage_type,        \
+  privileges)                                                             \
+  new_data_t::instance().get_handle<storage_type, data_type, privileges,  \
+    data_name_space_t::user>(client, name, version)
 
 /*----------------------------------------------------------------------------*
  * Dense storage type.
  *----------------------------------------------------------------------------*/
 
 TEST(storage, dense) {
-  new_data_t & nd = new_data_t::instance();
+  mesh_t m;
 
   // Register 3 versions
-  register_data(nd, "pressure", 3, double, dense, 100);
+  register_data(m, "pressure", 3, double, dense, cells);
 
   // Initialize
   {
-  auto p0 = get_accessor(nd, "pressure", 0, double, dense);
-  auto p1 = get_accessor(nd, "pressure", 1, double, dense);
-  auto p2 = get_accessor(nd, "pressure", 2, double, dense);
+  auto p0 = get_accessor(m, "pressure", 0, double, dense);
+  auto p1 = get_accessor(m, "pressure", 1, double, dense);
+  auto p2 = get_accessor(m, "pressure", 2, double, dense);
 
   for(size_t i(0); i<100; ++i) {
     p0[i] = i;
@@ -89,9 +125,9 @@ TEST(storage, dense) {
 
   // Test
   {
-  auto p0 = get_accessor(nd, "pressure", 0, double, dense);
-  auto p1 = get_accessor(nd, "pressure", 1, double, dense);
-  auto p2 = get_accessor(nd, "pressure", 2, double, dense);
+  auto p0 = get_accessor(m, "pressure", 0, double, dense);
+  auto p1 = get_accessor(m, "pressure", 1, double, dense);
+  auto p2 = get_accessor(m, "pressure", 2, double, dense);
 
   for(size_t i(0); i<100; ++i) {
     ASSERT_EQ(p0[i], i);
@@ -106,19 +142,19 @@ TEST(storage, dense) {
  *----------------------------------------------------------------------------*/
 
 TEST(storage, scalar) {
-  new_data_t & nd = new_data_t::instance();
+  mesh_t m;
 
   struct my_data_t {
     double t;
     size_t n;
   }; // struct my_data_t
 
-  register_data(nd, "simulation data", 2, my_data_t, scalar);
+  register_data(m, "simulation data", 2, my_data_t, scalar);
 
   // initialize simulation data
   {
-  auto s0 = get_accessor(nd, "simulation data", 0, my_data_t, scalar);
-  auto s1 = get_accessor(nd, "simulation data", 1, my_data_t, scalar);
+  auto s0 = get_accessor(m, "simulation data", 0, my_data_t, scalar);
+  auto s1 = get_accessor(m, "simulation data", 1, my_data_t, scalar);
   s0->t = 0.5;
   s0->n = 100;
   s1->t = 1.5;
@@ -126,8 +162,8 @@ TEST(storage, scalar) {
   } // scope
 
   {
-  auto s0 = get_accessor(nd, "simulation data", 0, my_data_t, scalar);
-  auto s1 = get_accessor(nd, "simulation data", 1, my_data_t, scalar);
+  auto s0 = get_accessor(m, "simulation data", 0, my_data_t, scalar);
+  auto s1 = get_accessor(m, "simulation data", 1, my_data_t, scalar);
 
   ASSERT_EQ(s0->t, 0.5);
   ASSERT_EQ(s0->n, 100);
@@ -141,20 +177,20 @@ TEST(storage, scalar) {
  *----------------------------------------------------------------------------*/
 
 TEST(storage, sparse) {
-  new_data_t & nd = new_data_t::instance();
+  mesh_t m;
 
-  register_data(nd, "materials", 1, double, sparse, 100, 4);
+  register_data(m, "materials", 1, double, sparse, 100, 4);
 
   {
-  auto m = get_accessor(nd, "materials", 0, double, sparse);
-  auto data = m.data();
+  auto mats = get_accessor(m, "materials", 0, double, sparse);
+  auto data = mats.data();
 
   for(size_t i(0); i<400; ++i) {
     data[i] = 0.0;
   } // for
 
   for(size_t i(0); i<100; ++i) {
-    std::cout << "index: " << i << " equals: " << m[i] << std::endl;
+    std::cout << "index: " << i << " equals: " << mats[i] << std::endl;
   } // for
   } // scope
 } // TEST

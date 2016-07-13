@@ -18,6 +18,7 @@
 #include "flecsi/utils/index_space.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/data/default/default_storage_type.h"
+#include "flecsi/data/data_client.h"
 
 /*!
  * \file default_dense.h
@@ -246,18 +247,18 @@ struct storage_type_t<dense, DS, MD> {
     \tparam Args Variadic arguments that are passed to
       metadata initialization.
     
+    \param data_client Base class reference to client.
     \param data_store A reference for accessing the low-level data.
     \param key A const string instance containing the variable name.
-    \param runtime_namespace The runtime namespace to be used.
     \param versions The number of variable versions for this datum.
     \param indeces The number of indeces in the index space.
    */
   template<typename T, size_t NS, typename ... Args>
-  static handle_t<T> register_data(data_store_t & data_store,
-    uintptr_t runtime_namespace, const const_string_t & key,
-    size_t versions, size_t indeces, Args && ... args) {
+  static handle_t<T> register_data(data_client_t & data_client,
+    data_store_t & data_store, const const_string_t & key,
+    size_t versions, size_t index_space, Args && ... args) {
 
-    size_t h = key.hash() ^ runtime_namespace;
+    size_t h = key.hash() ^ data_client.runtime_id();
 
     // Runtime assertion that this key is unique
     assert(data_store[NS].find(h) == data_store[NS].end() &&
@@ -266,14 +267,19 @@ struct storage_type_t<dense, DS, MD> {
     data_store[NS][h].user_data.initialize(std::forward<Args>(args) ...);
 
     data_store[NS][h].label = key.c_str();
-    data_store[NS][h].size = indeces;
+    // FIXME: need lookup from data_client
+    std::cout << "Setting size: " << data_client.indeces(index_space) <<
+      std::endl;
+    data_store[NS][h].size = data_client.indeces(index_space);
     data_store[NS][h].type_size = sizeof(T);
     data_store[NS][h].versions = versions;
     data_store[NS][h].rtti.reset(
       new typename meta_data_t::type_info_t(typeid(T)));
 
     for(size_t i=0; i<versions; ++i) {
-      data_store[NS][h].data[i].resize(indeces * sizeof(T));
+    // FIXME: need lookup from data_client
+      data_store[NS][h].data[i].resize(
+        data_client.indeces(index_space) * sizeof(T));
     } // for
 
     // map is unused for this storage type
@@ -289,10 +295,10 @@ struct storage_type_t<dense, DS, MD> {
   /*!
    */
   template<typename T, size_t NS>
-  static accessor_t<T> get_accessor(data_store_t & data_store,
-    uintptr_t runtime_namespace, const const_string_t & key,
+  static accessor_t<T> get_accessor(data_client_t & data_client,
+    data_store_t & data_store, const const_string_t & key,
     size_t version) {
-    const size_t h = key.hash() ^ runtime_namespace;
+    const size_t h = key.hash() ^ data_client.runtime_id();
     auto search = data_store[NS].find(h);
 
     if(search == data_store[NS].end()) {
@@ -314,7 +320,7 @@ struct storage_type_t<dense, DS, MD> {
    */
   template<typename T, size_t NS, typename P>
   static std::vector<accessor_t<T>> get_accessors(
-    uintptr_t runtime_namespace, P && preficate) {
+    data_client_t & data_client, P && preficate) {
     return {};
   } // get_accessors
 
@@ -325,9 +331,8 @@ struct storage_type_t<dense, DS, MD> {
   /*!
    */
   template<typename T, size_t NS>
-  static handle_t<T> get_handle(data_store_t & data_store,
-    uintptr_t runtime_namespace, const const_string_t & key,
-    size_t version) {
+  static handle_t<T> get_handle(data_client_t & data_client,
+    data_store_t & data_store, const const_string_t & key, size_t version) {
     return {};
   } // get_handle
 

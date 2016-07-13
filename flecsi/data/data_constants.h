@@ -37,7 +37,7 @@ static constexpr size_t __flecsi_internal_data_offset__ =
 
   This type is provided as a convenience to avoid naming collisions.
  */
-enum class data_name_space_t : size_t {
+enum data_name_space_t : size_t {
   user = 0,
   internal = __flecsi_internal_data_offset__
 }; // enum class data_name_space_t

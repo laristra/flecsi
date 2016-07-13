@@ -148,16 +148,16 @@ class mesh_topology_t : public mesh_topology_base_t
   static_assert(verify_mesh::has_member_num_dimensions<MT>::value,
                 "mesh policy missing num_dimensions size_t");
   
-  static_assert(std::is_convertible<decltype(MT::num_dimensions), size_t>::value,
-                "mesh policy num_dimensions must be size_t");
+  static_assert(std::is_convertible<decltype(MT::num_dimensions),
+    size_t>::value, "mesh policy num_dimensions must be size_t");
 
 
 
   static_assert(verify_mesh::has_member_num_domains<MT>::value,
                 "mesh policy missing num_domains size_t");
   
-  static_assert(std::is_convertible<decltype(MT::num_domains), size_t>::value,
-                "mesh policy num_domains must be size_t");
+  static_assert(std::is_convertible<decltype(MT::num_domains),
+    size_t>::value, "mesh policy num_domains must be size_t");
 
 
 

@@ -60,23 +60,13 @@ public:
 
     \param[in] coordinates Coordinates value to set for vertex.
    */
-  void set_coordinates(const point_t & coordinates)
-  {
-    auto c = data_t::instance().dense_accessor<point_t, flecsi_internal>(
-      "coordinates", mesh_.runtime_id());
-    c[mesh_entity_base_t<num_domains>::template id<0>()] = coordinates;
-  } // set_coordinates
+  void set_coordinates(const point_t & coordinates);
 
   /*!
     \brief Get the coordinates at a vertex from the state handle.
     \return coordinates of vertex.
    */
-  const point_t & coordinates() const
-  {
-    const auto c = data_t::instance().dense_accessor<point_t, flecsi_internal>(
-      "coordinates", mesh_.runtime_id());
-    return c[mesh_entity_base_t<num_domains>::template id<0>()];
-  } // coordinates
+  const point_t & coordinates() const;
 
   mesh_topology_base_t & mesh_;
 

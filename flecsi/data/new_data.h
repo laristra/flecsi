@@ -7,6 +7,7 @@
 #define flecsi_data_model_new_data_h
 
 #include "flecsi/data/default/default_storage_policy.h"
+#include "flecsi/data/data_client.h"
 
 /*!
  * \file new_data.h
@@ -83,10 +84,10 @@ struct new_data_t : public storage_policy_t<user_meta_data_t> {
 		\return Returns a handle to the newly registered data.
    */
   template<size_t DT, typename T, size_t NS, typename ... Args>
-  decltype(auto) register_data(uintptr_t runtime_namespace,
+  decltype(auto) register_data(data_client_t & data_client,
     const const_string_t & key, size_t versions=1, Args && ... args) {
-    return st_t<DT>::template register_data<T, NS>(sp_t::data_store_,
-      runtime_namespace, key, versions, std::forward<Args>(args) ...);
+    return st_t<DT>::template register_data<T, NS>(data_client,
+      sp_t::data_store_, key, versions, std::forward<Args>(args) ...);
   } // register_data
 
   /*--------------------------------------------------------------------------*
@@ -105,10 +106,10 @@ struct new_data_t : public storage_policy_t<user_meta_data_t> {
     \param[in] version
    */
   template<size_t DT, typename T, size_t NS>
-  decltype(auto) get_accessor(uintptr_t runtime_namespace,
+  decltype(auto) get_accessor(data_client_t & data_client,
     const const_string_t & key, size_t version=0) {
-    return st_t<DT>::template get_accessor<T, NS>(sp_t::data_store_,
-      runtime_namespace, key, version);
+    return st_t<DT>::template get_accessor<T, NS>(data_client,
+      sp_t::data_store_, key, version);
   } // get_accessor
 
   /*!
@@ -133,10 +134,9 @@ struct new_data_t : public storage_policy_t<user_meta_data_t> {
       match the namespace and predicate criteria.
    */
   template<size_t DT, typename T, size_t NS, typename P>
-  decltype(auto) get_accessors(uintptr_t runtime_namespace,
-    P && predicate) {
-    return st_t<DT>::template get_accessors<T, NS, P>(sp_t::data_store_,
-			std::forward<P>(predicate), runtime_namespace);
+  decltype(auto) get_accessors(data_client_t & data_client, P && predicate) {
+    return st_t<DT>::template get_accessors<T, NS, P>(data_client,
+      sp_t::data_store_, std::forward<P>(predicate));
   } // get_accessors
 
   /*--------------------------------------------------------------------------*
@@ -155,10 +155,10 @@ struct new_data_t : public storage_policy_t<user_meta_data_t> {
     \param[in] version
    */
   template<size_t DT, typename T, size_t NS>
-  decltype(auto) get_handle(uintptr_t runtime_namespace,
+  decltype(auto) get_handle(data_client_t & data_client,
     const const_string_t & key, size_t version=0) {
-    return st_t<DT>::template get_handle<T, NS>(sp_t::data_store_,
-      runtime_namespace, key, version);
+    return st_t<DT>::template get_handle<T, NS>(data_client,
+      sp_t::data_store_, key, version);
   } // get_accessor
 
   /*--------------------------------------------------------------------------*
