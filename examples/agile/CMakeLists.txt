@@ -13,9 +13,14 @@
 #~----------------------------------------------------------------------------~#
 
 #------------------------------------------------------------------------------#
+# Compile definition to include driver
+#------------------------------------------------------------------------------#
+
+add_definitions(-DFLECSI_DRIVER=${CMAKE_SOURCE_DIR}/examples/agile/sprint1.h)
+
+#------------------------------------------------------------------------------#
 # Add a rule to build the executable
 #------------------------------------------------------------------------------#
-add_definitions(-DFLECSI_DRIVER=${CMAKE_SOURCE_DIR}/examples/agile/sprint1.h)
 
 add_executable(sprint1 ${CMAKE_SOURCE_DIR}/driver/${FLECSI_RUNTIME_MAIN} )
 
@@ -23,7 +28,7 @@ add_executable(sprint1 ${CMAKE_SOURCE_DIR}/driver/${FLECSI_RUNTIME_MAIN} )
 # Add link dependencies
 #------------------------------------------------------------------------------#
 
-#target_link_libraries(sprint1 flecsi )
+target_link_libraries(sprint1 flecsi)
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options
