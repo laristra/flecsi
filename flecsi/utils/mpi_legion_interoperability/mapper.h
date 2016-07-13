@@ -36,12 +36,12 @@ public:
             LegionRuntime::HighLevel::HighLevelRuntime *runtime, 
             LegionRuntime::HighLevel::Processor local);
   virtual ~MPIMapper(void);
-  virtual void select_task_options(ShimMapper::Task *task);
+  virtual void select_task_options(ShimMapper::Task *legiontask);
   typedef TaskSlice DomainSplit;
-  virtual void slice_domain(const Legion::Task *task, 
+  virtual void slice_domain(const Legion::Task *legiontask, 
                             const LegionRuntime::HighLevel::Domain &domain,
                             std::vector<DomainSplit> &slices);
-  virtual bool map_task(ShimMapper::Task *task);
+  virtual bool map_task(ShimMapper::Task *legiontask);
   virtual void notify_mapping_failed(const Mappable *mappable);
 protected:
   std::vector<LegionRuntime::HighLevel::Processor> local_cpus;
@@ -86,25 +86,25 @@ MPIMapper::~MPIMapper(void)
 }
 
 
-void MPIMapper::select_task_options(ShimMapper::Task *task)
+void MPIMapper::select_task_options(ShimMapper::Task *legiontask)
 {
   // Default values
-  task->inline_task = false;
-  task->spawn_task = false;
-  task->map_locally = false;
-  task->profile_task = false;
-  task->task_priority = 0;
-  task->target_proc = local_proc;
+  legiontask->inline_task = false;
+  legiontask->spawn_task = false;
+  legiontask->map_locally = false;
+  legiontask->profile_task = false;
+  legiontask->task_priority = 0;
+  legiontask->target_proc = local_proc;
 }
 
-void MPIMapper::slice_domain(const Legion::Task *task, 
+void MPIMapper::slice_domain(const Legion::Task *legiontask, 
         const LegionRuntime::HighLevel::Domain &domain,
         std::vector<DomainSplit> &slices)
 {
   // Special cases for startup tasks
-  if (task->task_id == CONNECT_MPI_TASK_ID
-      ||task->task_id ==HANDOFF_TO_MPI_TASK_ID
-      || task->task_id ==WAIT_ON_MPI_TASK_ID)
+  if (legiontask->task_id == CONNECT_MPI_TASK_ID
+      ||legiontask->task_id ==HANDOFF_TO_MPI_TASK_ID
+      || legiontask->task_id ==WAIT_ON_MPI_TASK_ID)
   {
     const int DIM = 2;
     std::vector<LegionRuntime::HighLevel::Processor> proc_list;
@@ -132,7 +132,7 @@ void MPIMapper::slice_domain(const Legion::Task *task,
    ShimMapper::decompose_index_space(domain, local_cpus, 1/*splitting factor*/, slices);
 }
 
-bool MPIMapper::map_task(ShimMapper::Task *task)
+bool MPIMapper::map_task(ShimMapper::Task *legiontask)
 {
   // Add extra fields onto the await MPI task
  /* if (task->task_id == AWAIT_MPI_TASK_ID)
@@ -150,24 +150,24 @@ bool MPIMapper::map_task(ShimMapper::Task *task)
   }
  */
     LegionRuntime::HighLevel::Memory system_mem =
-       machine_interface.find_memory_kind(task->target_proc, 
+       machine_interface.find_memory_kind(legiontask->target_proc, 
        LegionRuntime::HighLevel::Memory::SYSTEM_MEM);
     assert(system_mem.exists());
-    for (unsigned idx = 0; idx < task->regions.size(); idx++)
+    for (unsigned idx = 0; idx < legiontask->regions.size(); idx++)
     {
       // Do a quick check for restricted regions, otherwise put it in system memory
-      if (task->regions[idx].restricted)
+      if (legiontask->regions[idx].restricted)
       {
-        assert(task->regions[idx].current_instances.size() == 1);
-        task->regions[idx].target_ranking.push_back(
-            (task->regions[idx].current_instances.begin())->first);
+        assert(legiontask->regions[idx].current_instances.size() == 1);
+        legiontask->regions[idx].target_ranking.push_back(
+            (legiontask->regions[idx].current_instances.begin())->first);
       }
       else
-        task->regions[idx].target_ranking.push_back(system_mem);
-      task->regions[idx].virtual_map = false;
-      task->regions[idx].enable_WAR_optimization = false;
-      task->regions[idx].reduction_list = false;
-      task->regions[idx].blocking_factor = task->regions[idx].max_blocking_factor;
+        legiontask->regions[idx].target_ranking.push_back(system_mem);
+        legiontask->regions[idx].virtual_map = false;
+        legiontask->regions[idx].enable_WAR_optimization = false;
+        legiontask->regions[idx].reduction_list = false;
+        legiontask->regions[idx].blocking_factor = legiontask->regions[idx].max_blocking_factor;
     }
   return false;
 }
@@ -179,18 +179,18 @@ void MPIMapper::notify_mapping_failed(const Mappable *mappable)
   {
     case Mappable::TASK_MAPPABLE:
       {
-        ShimMapper::Task *task = mappable->as_mappable_task();
+        ShimMapper::Task *legiontask = mappable->as_mappable_task();
         int failed_idx = -1;
-        for (unsigned idx = 0; idx < task->regions.size(); idx++)
+        for (unsigned idx = 0; idx < legiontask->regions.size(); idx++)
         {
-          if (task->regions[idx].mapping_failed)
+          if (legiontask->regions[idx].mapping_failed)
           {
             failed_idx = idx;
             break;
           }
         }
         log_mapper.error("Failed task mapping for region %d of task %s (%p)\n",
-                    failed_idx, task->variants->name, task);
+                    failed_idx, legiontask->variants->name, legiontask);
         assert(false);
         break;
       }
@@ -225,7 +225,7 @@ void MPIMapper::notify_mapping_failed(const Mappable *mappable)
 }
 
 /*
-int RHSFMapper::get_tunable_value(const Task *task, TunableID tid, MappingTagID tag)
+int RHSFMapper::get_tunable_value(const Task *legiontask, TunableID tid, MappingTagID tag)
 {
   switch (tid)
   {

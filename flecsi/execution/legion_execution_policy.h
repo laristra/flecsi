@@ -62,16 +62,18 @@ class legion_execution_policy_t
 
  public: // Member Functions
 	  template <typename T>
-	  static void driver_top_task(const LegionRuntime::HighLevel::Task *task,
-	                             const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
-	                             LegionRuntime::HighLevel::Context ctx, 
-                               LegionRuntime::HighLevel::HighLevelRuntime *runtime)
-	  {
-		  const LegionRuntime::HighLevel::InputArgs &args =
+	  static void driver_top_task(
+       const LegionRuntime::HighLevel::Task *task,
+	     const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
+	     LegionRuntime::HighLevel::Context ctx, 
+       LegionRuntime::HighLevel::HighLevelRuntime *runtime)
+	     {
+		     const LegionRuntime::HighLevel::InputArgs &args =
               LegionRuntime::HighLevel::HighLevelRuntime::get_input_args();
-		  top_level_task(context_t<flecsi::legion_execution_policy_t>(0,task,regions,ctx,runtime),args.argc,args.argv);
+		     top_level_task(context_t<flecsi::legion_execution_policy_t>(0,
+                     task,regions,ctx,runtime),args.argc,args.argv);
 
-	  }
+	     }
 
  protected:
   using return_type_t = int32_t;

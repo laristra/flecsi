@@ -15,6 +15,8 @@
 #------------------------------------------------------------------------------#
 # Add a rule to build the executable
 #------------------------------------------------------------------------------#
+
+set(CMAKE_CXX_COMPILER "mpiCC")
 add_definitions(-DFLECSI_DRIVER=${CMAKE_SOURCE_DIR}/examples/agile/sprint1.h)
 
 add_executable(sprint1 ${CMAKE_SOURCE_DIR}/driver/${FLECSI_RUNTIME_MAIN} )
@@ -23,7 +25,7 @@ add_executable(sprint1 ${CMAKE_SOURCE_DIR}/driver/${FLECSI_RUNTIME_MAIN} )
 # Add link dependencies
 #------------------------------------------------------------------------------#
 
-#target_link_libraries(sprint1 flecsi )
+target_link_libraries(sprint1 ${FLECSI_RUNTIME_LIBRARIES})
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options

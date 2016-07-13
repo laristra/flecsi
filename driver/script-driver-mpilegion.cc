@@ -13,8 +13,10 @@
  *~--------------------------------------------------------------------------~*/
 
 #include <flecsi/execution/task.h>
-#include <flecsi/execution/legion_execution_policy.h>
+#include <flecsi/execution/mpilegion_execution_policy.h>
 #include <flecsi/utils/common.h>
+
+#include <mpi.h>
 
 #include EXPAND_AND_STRINGIFY(FLECSI_DRIVER)
 
@@ -27,8 +29,8 @@
  *----------------------------------------------------------------------------*/
 
 int main(int argc, char ** argv) {
-   MPILegion_Init();
-  return flecsi::execution_t<mpilegion_execution_policy_t>::execute_task(driver,
+//   MPILegion_Init();
+  return flecsi::execution_t<flecsi::mpilegion_execution_policy_t>::execute_task(driver,
     argc, argv);
 } // main
 
