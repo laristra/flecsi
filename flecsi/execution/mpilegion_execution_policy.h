@@ -42,13 +42,16 @@ extern void mpilegion_top_level_task(
  */
 class mpilegion_execution_policy_t: public legion_execution_policy_t
 {
+public:
+
 //TOFIX: add Rank information to the context
-  public: // Member Classes
   class context_ep
   {
   public:
-    context_ep():task(NULL),regions( 
-          std::vector<LegionRuntime::HighLevel::PhysicalRegion>()){}
+    context_ep()
+      : task(NULL),
+        regions(std::vector<LegionRuntime::HighLevel::PhysicalRegion>()){}
+
     context_ep(
           const LegionRuntime::HighLevel::Task *_task,
           const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &_regions,
