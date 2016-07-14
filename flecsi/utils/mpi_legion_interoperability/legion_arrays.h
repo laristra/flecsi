@@ -146,7 +146,8 @@ public:
         // vec field space
         mFS = lrt->create_field_space(ctx);
         // vec field allocator
-        LegionRuntime::HighLevel::FieldAllocator fa = lrt->create_field_allocator(ctx, mFS);
+        LegionRuntime::HighLevel::FieldAllocator fa = 
+                                     lrt->create_field_allocator(ctx, mFS);
         // all elements are going to be of size T
         fa.allocate_field(sizeof(T), fid);
         // now create the logical region
@@ -292,7 +293,8 @@ public:
             printf("vec disjoint partition: (%d) to (%d)\n",
                     subRect.lo.x[0], subRect.hi.x[0]);
 #endif
-            disjointColoring[color] = LegionRuntime::HighLevel::Domain::from_rect<1>(subRect);
+            disjointColoring[color] = 
+                LegionRuntime::HighLevel::Domain::from_rect<1>(subRect);
             x0 += inc;
             x1 += inc;
         }
@@ -366,7 +368,8 @@ public:
      LegionRuntime::HighLevel::InlineLauncher accessorl(req);
      LegionAcc->preg= lrt->map_region(ctx,accessorl);
         LegionAcc->preg.wait_until_valid();
-     LegionAcc->acc = LegionAcc->preg.get_field_accessor(fid).template typeify<T>();
+     LegionAcc->acc =
+                 LegionAcc->preg.get_field_accessor(fid).template typeify<T>();
 
      LegionRuntime::Arrays::Rect<1> subrect;
      LegionRuntime::Accessor::ByteOffset inOffsets[1];

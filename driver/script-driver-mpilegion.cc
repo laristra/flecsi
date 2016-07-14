@@ -29,9 +29,15 @@
  *----------------------------------------------------------------------------*/
 
 int main(int argc, char ** argv) {
-//   MPILegion_Init();
-  return flecsi::execution_t<flecsi::mpilegion_execution_policy_t>::execute_task(driver,
-    argc, argv);
+   MPI_Init(&argc, &argv);
+
+  int return_value=
+  flecsi::execution_t<flecsi::mpilegion_execution_policy_t>::execute_task(
+    driver, argc, argv);
+
+   MPI_Finalize();
+
+   return return_value;
 } // main
 
 /*~------------------------------------------------------------------------~--*

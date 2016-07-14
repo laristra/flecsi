@@ -28,8 +28,8 @@
 
 using namespace flecsi;
 
-using execution_type = flecsi::execution_t<flecsi::mpilegion_execution_policy_t>;
-using return_type_t = execution_type::return_type_t;
+using execution_type=flecsi::execution_t<flecsi::mpilegion_execution_policy_t>;
+using return_type_t=execution_type::return_type_t;
 
 enum TaskIDs{
  HELLOWORLD_TASK_ID        =0x00000100,
@@ -58,11 +58,12 @@ using namespace LegionRuntime::Accessor;
 using namespace LegionRuntime::Arrays;
 
 /* ------------------------------------------------------------------------- */
-typedef typename flecsi::context_t<flecsi::mpilegion_execution_policy_t> mpilegion_context;
+typedef typename flecsi::context_t<flecsi::mpilegion_execution_policy_t>
+                                                          mpilegion_context;
 namespace flecsi
 {
-void mpilegion_top_level_task(mpilegion_context &&ctx,int argc, char** argv)
-{
+ void mpilegion_top_level_task(mpilegion_context &&ctx,int argc, char** argv)
+ {
   flecsi::mpilegion::MPILegionInteropHelper->connect_with_mpi(ctx);
 
   flecsi::mpilegion::MPILegionInteropHelper->allocate_legion(ctx);
@@ -105,7 +106,7 @@ void mpilegion_top_level_task(mpilegion_context &&ctx,int argc, char** argv)
         )
     ).add_field(Array.legion_object.fid);
 
-  auto futureMap = ctx.runtime()->execute_index_space(ctx.legion_ctx(), launcher);
+  auto futureMap=ctx.runtime()->execute_index_space(ctx.legion_ctx(), launcher);
   futureMap.wait_all_results(); 
  
   Array.dump_legion("legion Array", 1, ctx);
@@ -115,12 +116,15 @@ void mpilegion_top_level_task(mpilegion_context &&ctx,int argc, char** argv)
   flecsi::mpilegion::MPILegionInteropHelper->copy_data_from_mpi_to_legion(ctx);
 
   ArgumentMap arg_map;
-  IndexLauncher helloworld_launcher(HELLOWORLD_TASK_ID,
-                               Domain::from_rect<1>(flecsi::mpilegion::MPILegionInteropHelper->local_procs),
-                               TaskArgument(0, 0),
-                               arg_map);
+  IndexLauncher helloworld_launcher(
+       HELLOWORLD_TASK_ID,
+       Domain::from_rect<1>(
+              flecsi::mpilegion::MPILegionInteropHelper->local_procs),
+       TaskArgument(0, 0),
+       arg_map);
 
-  FutureMap fm2 = ctx.runtime()->execute_index_space(ctx.legion_ctx(), helloworld_launcher);
+  FutureMap fm2 =
+     ctx.runtime()->execute_index_space(ctx.legion_ctx(), helloworld_launcher);
   fm2.wait_all_results();
   //handoff to MPI
   flecsi::mpilegion::MPILegionInteropHelper->handoff_to_mpi(ctx);
@@ -156,18 +160,28 @@ void my_init_legion(){
   //TOFIX need to be moved to the flecsi main
   flecsi::MPILegion_Init();
 
-  HighLevelRuntime::register_legion_task< helloworld_mpi_task >( HELLOWORLD_TASK_ID,
-                          Processor::LOC_PROC, false/*single*/, true/*index*/,
-                          AUTO_GENERATE_ID, TaskConfigOptions(true/*leaf*/), "hellowrld_task");
+  HighLevelRuntime::register_legion_task< helloworld_mpi_task >(
+        HELLOWORLD_TASK_ID,
+        Processor::LOC_PROC,
+        false/*single*/, true/*index*/,
+        AUTO_GENERATE_ID, 
+        TaskConfigOptions(true/*leaf*/),
+        "hellowrld_task");
 
- HighLevelRuntime::register_legion_task< spmd_init_task >( SPMD_INIT_TID,
-                          Processor::LOC_PROC, false/*single*/, true/*index*/,
-                          AUTO_GENERATE_ID, TaskConfigOptions(true/*leaf*/), "spmd_init_task");
+ HighLevelRuntime::register_legion_task< spmd_init_task >(
+         SPMD_INIT_TID,
+         Processor::LOC_PROC,
+         false/*single*/, true/*index*/,
+         AUTO_GENERATE_ID,
+         TaskConfigOptions(true/*leaf*/),
+         "spmd_init_task");
 
   const InputArgs &args = HighLevelRuntime::get_input_args();
-  flecsi::execution_t<flecsi::mpilegion_execution_policy_t>::execute_driver(flecsi::mpilegion_top_level_task,1,args.argv);
 
-   flecsi::mpilegion::MPILegionInteropHelper->legion_configure();
+  flecsi::execution_t<flecsi::mpilegion_execution_policy_t>::execute_driver(
+                flecsi::mpilegion_top_level_task,1,args.argv);
+
+  flecsi::mpilegion::MPILegionInteropHelper->legion_configure();
 
   flecsi::mpilegion::MPILegionArray<double, nElements> *ArrayDouble=
         new flecsi::mpilegion::MPILegionArray<double, nElements>;
