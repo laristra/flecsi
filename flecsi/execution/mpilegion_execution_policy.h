@@ -32,6 +32,7 @@
 namespace flecsi
 {
 class mpilegion_execution_policy_t;
+void MPILegion_Init(void);
 
 extern void mpilegion_top_level_task(
    context_t<flecsi::mpilegion_execution_policy_t> &&ctx,int argc, char** argv);
@@ -105,12 +106,15 @@ class mpilegion_execution_policy_t: public legion_execution_policy_t
   template <typename T, typename... Args>
   static return_type_t execute_task(T && task, Args &&... args)
   {
+    MPILegion_Init();
+
     utils::tuple_for_each(std::make_tuple(args...),
         [&](auto arg) { std::cout << "test" << std::endl; });
 
 //    context_t<mpilegion_execution_policy_t>::instance().entry();
     auto value = task(std::forward<Args>(args)...);
 //    context_t<mpilegion_execution_policy_t>::instance().exit();
+   
     return value;
   } // execute_task
 
@@ -146,14 +150,21 @@ namespace flecsi
  mpilegion_execution_policy_t::return_type_t 
         mpilegion_execution_policy_t::execute_driver(T && task, int argc, char** argv)
   {
-    LegionRuntime::HighLevel::HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
+    LegionRuntime::HighLevel::HighLevelRuntime::set_top_level_task_id(
+                                                   TOP_LEVEL_TASK_ID);
     LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
-         <mpilegion_execution_policy_t::driver_top_task<T>>(TOP_LEVEL_TASK_ID,
-          LegionRuntime::HighLevel::Processor::LOC_PROC, true/*single*/, false/*index*/, 
-          AUTO_GENERATE_ID, LegionRuntime::HighLevel::TaskConfigOptions(), "top_level_task");
+         <mpilegion_execution_policy_t::driver_top_task<T>>(
+         TOP_LEVEL_TASK_ID,
+         LegionRuntime::HighLevel::Processor::LOC_PROC,
+         true/*single*/, false/*index*/, 
+         AUTO_GENERATE_ID, 
+         LegionRuntime::HighLevel::TaskConfigOptions(),
+         "top_level_task");
 
     flecsi::mpilegion::MPILegionInteropHelper->register_tasks();
-    LegionRuntime::HighLevel::HighLevelRuntime::set_registration_callback(flecsi::mpilegion::mapper_registration);
+
+    LegionRuntime::HighLevel::HighLevelRuntime::set_registration_callback(
+       flecsi::mpilegion::mapper_registration);
     return LegionRuntime::HighLevel::HighLevelRuntime::start(argc, argv, true);
 
   }
