@@ -129,7 +129,8 @@ void MPIMapper::slice_domain(const Legion::Task *legiontask,
     }
    return;
   }
-   ShimMapper::decompose_index_space(domain, local_cpus, 1/*splitting factor*/, slices);
+   ShimMapper::decompose_index_space(domain, local_cpus,
+                                  1/*splitting factor*/, slices);
 }
 
 bool MPIMapper::map_task(ShimMapper::Task *legiontask)
@@ -167,7 +168,8 @@ bool MPIMapper::map_task(ShimMapper::Task *legiontask)
         legiontask->regions[idx].virtual_map = false;
         legiontask->regions[idx].enable_WAR_optimization = false;
         legiontask->regions[idx].reduction_list = false;
-        legiontask->regions[idx].blocking_factor = legiontask->regions[idx].max_blocking_factor;
+        legiontask->regions[idx].blocking_factor = 
+                           legiontask->regions[idx].max_blocking_factor;
     }
   return false;
 }
@@ -247,7 +249,8 @@ void mapper_registration(LegionRuntime::HighLevel::Machine machine,
                LegionRuntime::HighLevel::HighLevelRuntime *rt,
                const std::set<LegionRuntime::HighLevel::Processor> &local_procs)
 {
-  for (std::set<LegionRuntime::HighLevel::Processor>::const_iterator it = local_procs.begin();
+  for (std::set<LegionRuntime::HighLevel::Processor>::const_iterator 
+        it = local_procs.begin();
         it != local_procs.end(); it++)
   {
     rt->replace_default_mapper(

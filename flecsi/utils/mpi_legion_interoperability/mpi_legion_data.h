@@ -34,14 +34,20 @@ class MPILegionArrayStorage_t
   public:
   MPILegionArrayStorage_t(){};
   ~MPILegionArrayStorage_t(){};
-  virtual void mpi_init(void) = 0;
-  virtual void legion_init(context_t<mpilegion_execution_policy_t>  &ctx) = 0;
-  virtual void  allocate_legion(context_t<mpilegion_execution_policy_t>  &ctx) = 0;
-  virtual void  deallocate_legion(context_t<mpilegion_execution_policy_t>  &ctx) = 0;
-  virtual void  partition_legion(uint nParts, context_t<mpilegion_execution_policy_t> &ctx) = 0;
-  virtual uint64_t size(void) = 0;
-  virtual void copy_legion_to_mpi (context_t<mpilegion_execution_policy_t>  &ctx) = 0;
-   virtual void copy_mpi_to_legion (context_t<mpilegion_execution_policy_t>  &ctx) = 0;
+  virtual void mpi_init(void)=0;
+  virtual void legion_init(
+      context_t<mpilegion_execution_policy_t>  &ctx)=0;
+  virtual void allocate_legion(
+      context_t<mpilegion_execution_policy_t>  &ctx)=0;
+  virtual void deallocate_legion(
+      context_t<mpilegion_execution_policy_t> &ctx)=0;
+  virtual void partition_legion(uint nParts,
+      context_t<mpilegion_execution_policy_t> &ctx)=0;
+  virtual uint64_t size(void)=0;
+  virtual void copy_legion_to_mpi (
+      context_t<mpilegion_execution_policy_t>  &ctx) = 0;
+   virtual void copy_mpi_to_legion (
+      context_t<mpilegion_execution_policy_t>  &ctx) = 0;
   virtual void dump_legion(const std::string &prefix,
                   int64_t nle,
                   context_t<mpilegion_execution_policy_t>  &ctx) =0;
@@ -76,7 +82,8 @@ class MPILegionArray : public MPILegionArrayStorage_t{
                                      ctx.runtime());
        }
 
- void  partition_legion(uint nParts, context_t<mpilegion_execution_policy_t> &ctx)
+ void  partition_legion(uint nParts,
+        context_t<mpilegion_execution_policy_t> &ctx)
        {
          legion_object.partition(nParts, ctx.legion_ctx(), ctx.runtime());
        }
@@ -98,13 +105,14 @@ class MPILegionArray : public MPILegionArrayStorage_t{
       }
   void return_legion_accessor(context_t<mpilegion_execution_policy_t>  &ctx)
      {
-        legion_object.return_legion_accessor(acc, ctx.legion_ctx(), ctx.runtime());
+        legion_object.return_legion_accessor(acc, ctx.legion_ctx(),
+                                                   ctx.runtime());
      }
 
- Type *legion_accessor(const LegionRuntime::HighLevel::PhysicalRegion &physicalRegion,
-                    LegionRuntime::HighLevel::Context ctx, 
-                    LegionRuntime::HighLevel::HighLevelRuntime *runtime)
-//                    context_t<mpilegion_execution_policy_t>  &ctx)
+ Type *legion_accessor(
+      const LegionRuntime::HighLevel::PhysicalRegion &physicalRegion,
+      LegionRuntime::HighLevel::Context ctx, 
+      LegionRuntime::HighLevel::HighLevelRuntime *runtime)
       {
         PhysicalArray<Type> PS (physicalRegion,ctx, runtime);
         return PS.data();
@@ -131,10 +139,13 @@ class MPILegionArray : public MPILegionArrayStorage_t{
   void copy_legion_to_mpi (context_t<mpilegion_execution_policy_t>  &ctx)
   {
     LegionRuntime::HighLevel::RegionRequirement req(
-            legion_object.logicalRegion, READ_ONLY, EXCLUSIVE, legion_object.logicalRegion);
+            legion_object.logicalRegion, 
+            READ_ONLY, EXCLUSIVE, 
+            legion_object.logicalRegion);
    req.add_field(legion_object.fid);
    LegionRuntime::HighLevel::InlineLauncher accessorl(req);
-   LegionRuntime::HighLevel::PhysicalRegion preg= ctx.runtime()->map_region(ctx.legion_ctx(),accessorl);
+   LegionRuntime::HighLevel::PhysicalRegion preg= 
+           ctx.runtime()->map_region(ctx.legion_ctx(),accessorl);
    preg.wait_until_valid();
 
    LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic, Type, Type> acc=
@@ -142,9 +153,10 @@ class MPILegionArray : public MPILegionArrayStorage_t{
 
     //TOFIX: should we use pointers for an mpi_object here?
    int count =0;
-   for(GenericPointInRectIterator<1> pir(legion_object.bounds); pir; pir++){
-    mpi_object[count] = acc.read(Legion::DomainPoint::from_point<1>(pir.p));
-   count++;
+   for(GenericPointInRectIterator<1> pir(legion_object.bounds); pir; pir++)
+   {
+      mpi_object[count] = acc.read(Legion::DomainPoint::from_point<1>(pir.p));
+      count++;
    }
    ctx.runtime()->unmap_region(ctx.legion_ctx(),preg);
   }
@@ -153,10 +165,13 @@ class MPILegionArray : public MPILegionArrayStorage_t{
   {
 
    LegionRuntime::HighLevel::RegionRequirement req(
-            legion_object.logicalRegion, WRITE_DISCARD, EXCLUSIVE, legion_object.logicalRegion);
+            legion_object.logicalRegion,
+            WRITE_DISCARD, EXCLUSIVE,
+            legion_object.logicalRegion);
    req.add_field(legion_object.fid);
    LegionRuntime::HighLevel::InlineLauncher accessorl(req);
-   LegionRuntime::HighLevel::PhysicalRegion preg= ctx.runtime()->map_region(ctx.legion_ctx(),accessorl);
+   LegionRuntime::HighLevel::PhysicalRegion preg=
+       ctx.runtime()->map_region(ctx.legion_ctx(),accessorl);
    preg.wait_until_valid();
    
    LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic, Type, Type> acc=
@@ -165,9 +180,10 @@ class MPILegionArray : public MPILegionArrayStorage_t{
 
    //TOFIX: should we use pointers for an mpi_object here?
      int count=0;
-     for(GenericPointInRectIterator<1> pir(legion_object.bounds); pir; pir++){
-          acc.write(Legion::DomainPoint::from_point<1>(pir.p), mpi_object[count]);
-          count++;
+     for(GenericPointInRectIterator<1> pir(legion_object.bounds); pir; pir++)
+     {
+        acc.write(Legion::DomainPoint::from_point<1>(pir.p), mpi_object[count]);
+        count++;
      }
     ctx.runtime()->unmap_region(ctx.legion_ctx(),preg);
   }
@@ -206,15 +222,19 @@ class MPILegionArray : public MPILegionArrayStorage_t{
          context_t<mpilegion_execution_policy_t>  &ctx)
  {
    LegionRuntime::HighLevel::RegionRequirement req(
-            legion_object.logicalRegion, WRITE_DISCARD, EXCLUSIVE, legion_object.logicalRegion);
+            legion_object.logicalRegion,
+            WRITE_DISCARD, EXCLUSIVE,
+            legion_object.logicalRegion);
    req.add_field(legion_object.fid);
    LegionRuntime::HighLevel::InlineLauncher accessorl(req);
-   LegionRuntime::HighLevel::PhysicalRegion preg= ctx.runtime()->map_region(ctx.legion_ctx(),accessorl);
+   LegionRuntime::HighLevel::PhysicalRegion preg=
+          ctx.runtime()->map_region(ctx.legion_ctx(),accessorl);
    preg.wait_until_valid();
 
    LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic, Type, Type> acc=
      preg.get_field_accessor(legion_object.fid).template typeify<Type>();
-   for(GenericPointInRectIterator<1> pir(legion_object.bounds); pir; pir++){
+   for(GenericPointInRectIterator<1> pir(legion_object.bounds); pir; pir++)
+   {
       acc.write( Legion::DomainPoint::from_point<1>(pir.p), init_value);
     }   
     ctx.runtime()->unmap_region(ctx.legion_ctx(),preg);
@@ -223,15 +243,19 @@ class MPILegionArray : public MPILegionArrayStorage_t{
   void legion_init( context_t<mpilegion_execution_policy_t>  &ctx)
  {
    LegionRuntime::HighLevel::RegionRequirement req(
-            legion_object.logicalRegion, WRITE_DISCARD, EXCLUSIVE, legion_object.logicalRegion);
+            legion_object.logicalRegion,
+            WRITE_DISCARD, EXCLUSIVE,
+            legion_object.logicalRegion);
    req.add_field(legion_object.fid);
    LegionRuntime::HighLevel::InlineLauncher accessorl(req);
-   LegionRuntime::HighLevel::PhysicalRegion preg= ctx.runtime()->map_region(ctx.legion_ctx(),accessorl);
+   LegionRuntime::HighLevel::PhysicalRegion preg=
+          ctx.runtime()->map_region(ctx.legion_ctx(),accessorl);
    preg.wait_until_valid();
 
    LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic, Type, Type> acc=
      preg.get_field_accessor(legion_object.fid).template typeify<Type>();
-   for(GenericPointInRectIterator<1> pir(legion_object.bounds); pir; pir++){
+   for(GenericPointInRectIterator<1> pir(legion_object.bounds); pir; pir++)
+   {
       acc.write(Legion::DomainPoint::from_point<1>(pir.p), Type(0));
     }
     ctx.runtime()->unmap_region(ctx.legion_ctx(),preg);
