@@ -15,7 +15,7 @@
 #------------------------------------------------------------------------------#
 # Compile definition to include driver
 #------------------------------------------------------------------------------#
-
+if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 set(CMAKE_CXX_COMPILER "mpiCC")
 add_definitions(-DFLECSI_DRIVER=${CMAKE_SOURCE_DIR}/examples/agile/sprint1.h)
 
@@ -24,13 +24,12 @@ add_definitions(-DFLECSI_DRIVER=${CMAKE_SOURCE_DIR}/examples/agile/sprint1.h)
 #------------------------------------------------------------------------------#
 
 add_executable(sprint1 ${CMAKE_SOURCE_DIR}/driver/${FLECSI_RUNTIME_MAIN} )
-
 #------------------------------------------------------------------------------#
 # Add link dependencies
 #------------------------------------------------------------------------------#
 
 target_link_libraries(sprint1 ${FLECSI_RUNTIME_LIBRARIES})
-
+endif()
 #~---------------------------------------------------------------------------~-#
 # Formatting options
 # vim: set tabstop=2 shiftwidth=2 expandtab :
