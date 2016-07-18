@@ -39,10 +39,15 @@
 #define FLECSI_ID_FBITS 4
 #endif
 
+#ifndef FLECSI_ID_RBITS
+#define FLECSI_ID_RBITS 32
+#endif
+
 namespace flecsi
 {
 
-using id_t = id_<FLECSI_ID_PBITS, FLECSI_ID_EBITS, FLECSI_ID_FBITS>;
+using id_t = 
+  id_<FLECSI_ID_PBITS, FLECSI_ID_EBITS, FLECSI_ID_FBITS, FLECSI_ID_RBITS>;
 
 //! P.O.D.
 template <typename T>

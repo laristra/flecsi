@@ -50,6 +50,9 @@ set(FLECSI_ID_PBITS "20" CACHE STRING
 set(FLECSI_ID_FBITS "4" CACHE STRING
   "Select the number of bits to use for id flags. There will be 60-FLECSI_ID_PBITS-FLECSI_ID_FBITS available for entity ids")
 
+set(FLECSI_ID_RBITS "32" CACHE STRING
+  "Select the number of bits to use for primary id. The primary id bits must be a multiple of 8 and less than or equal to entity bits")
+
 #~---------------------------------------------------------------------------~-#
 # Formatting options
 # vim: set tabstop=2 shiftwidth=2 expandtab :
