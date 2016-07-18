@@ -27,7 +27,7 @@
 namespace flecsi
 {
 
-  template<size_t PBITS, size_t EBITS, size_t FBITS, size_t RBITS>
+  template<size_t PBITS, size_t EBITS, size_t FBITS, size_t GBITS>
   class id_
   {
   public:
@@ -37,7 +37,7 @@ namespace flecsi
     static_assert(PBITS + EBITS + FBITS <= sizeof(size_t) * 8 - 4, 
                   "invalid id bit configuration");
 
-    static_assert(RBITS <= EBITS, "invalid primary bit configuration");
+    static_assert(GBITS <= EBITS, "invalid global bit configuration");
 
     id_() { }
 
@@ -46,7 +46,7 @@ namespace flecsi
     domain_(id.domain_),
     partition_(id.partition_),
     entity_(id.entity_),
-    primary_(id.primary_),
+    global_(id.global_),
     flags_(id.flags_) { }
 
     explicit id_(size_t local_id)
@@ -54,21 +54,21 @@ namespace flecsi
     domain_(0),
     partition_(0),
     entity_(local_id),
-    primary_(0),
+    global_(0),
     flags_(0) { }
 
     template<size_t D, size_t M>
     static id_ make(size_t local_id,
                     size_t partition_id = 0,
                     size_t flags = 0,
-                    size_t primary = 0)
+                    size_t global = 0)
     {
       id_ global_id;
       global_id.dimension_ = D;
       global_id.domain_ = M;
       global_id.partition_ = partition_id;
       global_id.entity_ = local_id;
-      global_id.primary_ = primary;
+      global_id.global_ = global;
       global_id.flags_ = flags;
 
       return global_id;
@@ -79,33 +79,38 @@ namespace flecsi
                     size_t local_id,
                     size_t partition_id = 0,
                     size_t flags = 0,
-                    size_t primary = 0)
+                    size_t global = 0)
     {
       id_ global_id;
       global_id.dimension_ = dim;
       global_id.domain_ = M;
       global_id.partition_ = partition_id;
       global_id.entity_ = local_id;
-      global_id.primary_ = primary;
+      global_id.global_ = global;
       global_id.flags_ = flags;
 
       return global_id;
     }
 
-    size_t global_id() const
+    size_t local_id() const
     {
       return *reinterpret_cast<const size_t*>(this);
     }
 
-    size_t primary_id() const
+    size_t global_id() const
     {
       constexpr size_t unmask = ~((size_t(1) << EBITS) - 1);
-      return (global_id() & unmask) | primary_;
+      return (local_id() & unmask) | global_;
     }
 
-    void set_primary(size_t primary) const
+    void set_global(size_t global) const
     {
-      primary_ = primary;
+      global_ = global;
+    }
+
+    void set_partition(size_t partition) const
+    {
+      partition_ = partition;
     }
 
     id_& operator=(const id_ &id)
@@ -114,7 +119,7 @@ namespace flecsi
       domain_ = id.domain_;
       partition_ = id.partition_;
       entity_ = id.entity_;
-      primary_ = id.primary_;
+      global_ = id.global_;
       flags_ = id.flags_;
 
       return *this;
@@ -146,15 +151,15 @@ namespace flecsi
     }
 
     bool operator<(const id_ & id) const{
-      return global_id() < id.global_id();
+      return local_id() < id.local_id();
     }
 
     bool operator==(const id_ & id) const{
-      return (global_id() & FLAGS_UNMASK) == (id.global_id() & FLAGS_UNMASK);
+      return (local_id() & FLAGS_UNMASK) == (id.local_id() & FLAGS_UNMASK);
     }
 
     bool operator!=(const id_ & id) const{
-      return !(global_id() == id.global_id());
+      return !(local_id() == id.local_id());
     }
 
   private:
@@ -163,7 +168,7 @@ namespace flecsi
     size_t flags_ : FBITS;
     size_t domain_ : 2;
     size_t dimension_ : 2;
-    size_t primary_ : RBITS;
+    size_t global_ : GBITS;
   };
 
 } // namespace flecsi
