@@ -59,4 +59,7 @@ RUN cmake -DENABLE_MPI=$MPI \
 RUN make VERBOSE=1 -j2
 RUN make test
 RUN make install DESTDIR=${PWD}
-RUN cd .. && if [ ${COVERAGE} ]; then $HOME/.local/bin/codecov; fi
+RUN cd .. && if [ ${COVERAGE} ]; then $HOME/.local/bin/codecov; fi && cd -
+USER root
+RUN make install
+

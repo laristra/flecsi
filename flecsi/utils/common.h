@@ -15,7 +15,6 @@
 #ifndef flecsi_common_h
 #define flecsi_common_h
 
-#include <cstdlib>
 #include <cstdint>
 #include <sstream>
 #include <typeinfo>
@@ -40,15 +39,15 @@
 #define FLECSI_ID_FBITS 4
 #endif
 
-#ifndef FLECSI_ID_RBITS
-#define FLECSI_ID_RBITS 32
+#ifndef FLECSI_ID_GBITS
+#define FLECSI_ID_GBITS 36
 #endif
 
 namespace flecsi
 {
 
 using id_t = 
-  id_<FLECSI_ID_PBITS, FLECSI_ID_EBITS, FLECSI_ID_FBITS, FLECSI_ID_RBITS>;
+  id_<FLECSI_ID_PBITS, FLECSI_ID_EBITS, FLECSI_ID_FBITS, FLECSI_ID_GBITS>;
 
 //! P.O.D.
 template <typename T>
@@ -56,17 +55,6 @@ T square(const T & a)
 {
   return a * a;
 }
-
-/*----------------------------------------------------------------------------*
- * Simple Random Number Utilities
- *----------------------------------------------------------------------------*/
-
-template<size_t start, size_t end>
-size_t int_rand() {
-  static_assert(end>start, "start parameter must be less than end");
-  static_assert(end<RAND_MAX, "end parameter out-of-range");
-  return start + size_t((end-start)*double(random())/RAND_MAX);
-} // int_rand
 
 /*----------------------------------------------------------------------------*
  * Unique Identifier Utilities

@@ -30,6 +30,7 @@ set(utils_HEADERS
   set_intersection.h
   static_for.h     detail/static_for.h
   static_list.h
+  static_verify.h
   tuple_for_each.h detail/tuple_for_each.h
   tuple_visit.h    detail/tuple_visit.h
   tuple_zip.h      detail/tuple_zip.h

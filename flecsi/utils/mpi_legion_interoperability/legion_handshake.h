@@ -60,7 +60,11 @@ public:
 
   typedef Realm::UserEvent UserEvent;
 
-  ExtLegionHandshake(int init_state, int _ext_queue_depth = 1, int _legion_queue_depth = 1);
+  ExtLegionHandshake(
+       int init_state, 
+       int _ext_queue_depth = 1, 
+       int _legion_queue_depth = 1);
+
   ~ExtLegionHandshake(void){delete ext_queue; delete legion_queue;};
 
   void ext_init(void);
@@ -81,9 +85,15 @@ protected:
   pthread_cond_t sync_cond;
 };
 
-ExtLegionHandshake::ExtLegionHandshake(int init_state, int _ext_queue_depth, int _legion_queue_depth)
-  : state(init_state), ext_queue_depth(_ext_queue_depth), legion_queue_depth(_legion_queue_depth),
-    ext_count(0), legion_count(0)
+ExtLegionHandshake::ExtLegionHandshake(
+  int init_state, 
+  int _ext_queue_depth,
+  int _legion_queue_depth)
+  : state(init_state), 
+  ext_queue_depth(_ext_queue_depth),
+  legion_queue_depth(_legion_queue_depth),
+  ext_count(0),
+  legion_count(0)
 {
   pthread_mutex_init(&sync_mutex, 0);
   pthread_cond_init(&sync_cond, 0);
@@ -98,7 +108,8 @@ void ExtLegionHandshake::ext_init(void)
 {
  CHECK_PTHREAD( pthread_mutex_lock(&sync_mutex) );
 
-  //printf("handshake %p: ext init - counts = L=%d, E=%d\n", this, legion_count, ext_count);
+  //printf("handshake %p: ext init - counts = L=%d, E=%d\n",
+  //    this, legion_count, ext_count);
 
   ext_count++;
 
@@ -123,7 +134,8 @@ void ExtLegionHandshake::legion_init(void)
  CHECK_PTHREAD( pthread_mutex_lock(&sync_mutex) );
 
   if(!legion_count) {
-    // first legion thread creates the events/queues for later synchronization, then arrive at initialization barrier
+    // first legion thread creates the events/queues
+    // for later synchronization, then arrive at initialization barrier
     ext_queue = new UserEvent[ext_queue_depth];
     for(int i = 0; i < ext_queue_depth; i++)
       ext_queue[i] = ((i || (state == IN_EXT)) ?
@@ -137,7 +149,8 @@ void ExtLegionHandshake::legion_init(void)
                            UserEvent());
   }
 
-  //printf("handshake %p: legion init - counts = L=%d, E=%d\n", this, legion_count, ext_count);
+  //printf("handshake %p: legion init - counts = L=%d, E=%d\n",
+  // this, legion_count, ext_count);
   legion_count++;
 
   if(ext_count == 0) {
@@ -160,7 +173,8 @@ void ExtLegionHandshake::ext_handoff_to_legion(void)
 {
   assert(state == IN_EXT);
 
-  // we'll trigger the first event in the ext queue, but first, create a new event for the legion queue
+  // we'll trigger the first event in the ext queue, but first, 
+  // create a new event for the legion queue
   //  and shift it onto the end
   assert(legion_queue[0].has_triggered());
   for(int i = 1; i < legion_queue_depth; i++)
@@ -181,7 +195,8 @@ void ExtLegionHandshake::legion_handoff_to_ext(void)
 {
   assert(state == IN_LEGION);
 
-  // we'll trigger the first event in the ext queue, but first, create a new event for the legion queue
+  // we'll trigger the first event in the ext queue, but first, 
+  // create a new event for the legion queue
   //  and shift it onto the end
   assert(ext_queue[0].has_triggered());
   for(int i = 1; i < ext_queue_depth; i++)

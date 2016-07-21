@@ -56,7 +56,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   
   include_directories(${LEGION_INCLUDE_DIRS})
   set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES} -ldl)
-  SET_SOURCE_FILES_PROPERTIES(${LEGION_INCLUDE_DIRS}/legion/legion.inl PROPERTIES HEADER_FILE_ONLY 1)
 
 # MPI interface
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
@@ -88,19 +87,19 @@ endif(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 #------------------------------------------------------------------------------#
 # Hypre
 #------------------------------------------------------------------------------#
-
-set(ENABLE_HYPRE OFF CACHE BOOL " do you want to enable HYPRE?")
-
-if(ENABLE_HYPRE)
+set (ENABLE_HYPRE OFF CACHE BOOL " do you want to enable HYPRE?")
+if (ENABLE_HYPRE)
   find_package (HYPRE)
 
-  if(HYPRE_FOUND)
-    include_directories(${HYPRE_INCLUDE_DIRS})
-    set(HYPRE_LIBRARY ${HYPRE_LIBRARIES})
-  else()
-    message (ERROR "HYPRE required for this build is not found")
+ if (HYPRE_FOUND)
+   include_directories(${HYPRE_INCLUDE_DIRS})
+   set(HYPRE_LIBRARY ${HYPRE_LIBRARIES})
+ else()
+   message (ERROR "HYPRE required for this build is not found")
   endif ()
 endif (ENABLE_HYPRE)
+
+
 
 #------------------------------------------------------------------------------#
 # Process id bits
@@ -111,12 +110,12 @@ math(EXPR FLECSI_ID_EBITS "60 - ${FLECSI_ID_PBITS} - ${FLECSI_ID_FBITS}")
 add_definitions(-DFLECSI_ID_PBITS=${FLECSI_ID_PBITS})
 add_definitions(-DFLECSI_ID_EBITS=${FLECSI_ID_EBITS})
 add_definitions(-DFLECSI_ID_FBITS=${FLECSI_ID_FBITS})
-add_definitions(-DFLECSI_ID_RBITS=${FLECSI_ID_RBITS})
+add_definitions(-DFLECSI_ID_GBITS=${FLECSI_ID_GBITS})
 
 math(EXPR flecsi_partitions "1 << ${FLECSI_ID_PBITS}")
 math(EXPR flecsi_entities "1 << ${FLECSI_ID_EBITS}")
 
-message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with 2^${FLECSI_ID_EBITS} entities each and ${FLECSI_ID_FBITS} flag bits and ${FLECSI_ID_RBITS} bits for primary id")
+message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with 2^${FLECSI_ID_EBITS} entities each and ${FLECSI_ID_FBITS} flag bits and ${FLECSI_ID_GBITS} global bits")
 
 #------------------------------------------------------------------------------#
 # Enable IO with exodus
@@ -223,12 +222,17 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-legion.cc
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-mpi.cc
   DESTINATION ${CMAKE_BINARY_DIR}/share
 )
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-mpilegion.cc
+  DESTINATION ${CMAKE_BINARY_DIR}/share
+)
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-serial.cc
   DESTINATION share/flecsi)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-legion.cc
   DESTINATION share/flecsi)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-mpi.cc
+  DESTINATION share/flecsi)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-mpilegion.cc
   DESTINATION share/flecsi)
 
 # This configures a locally available script that is suitable for

@@ -1159,7 +1159,7 @@ public:
         
         for(auto ret_id : ret_ids){
           if(ret_id.entity() != from_id){
-            cp.index.push_back(ret_id.global_id());
+            cp.index.push_back(ret_id.local_id());
             ++offset;
           }
         }
