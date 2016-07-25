@@ -75,8 +75,10 @@ decltype(auto) zip(T &&... containers)
   // check all the sizes
   size_t sizes[] = {containers.size()...};
   auto first_size = sizes[1];
+#ifndef NDEBUG
   for (size_t i = 2; i < n; i++)
     assert(first_size == sizes[i] && " size mismatch");
+#endif
 
   // do the zip
   auto zip_begin =
