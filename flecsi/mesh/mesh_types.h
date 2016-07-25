@@ -61,7 +61,7 @@ struct id_vector_hash_t {
   {
     size_t h = 0;
     for (id_t id : v) {
-      h |= id.global_id();
+      h |= id.local_id();
     } // for
 
     return h;
