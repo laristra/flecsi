@@ -28,11 +28,11 @@
 namespace flecsi
 {
 /*!
-  \class execution_t task.h
-  \brief execution_t provides...
+  \class execution_ task.h
+  \brief execution_ provides...
 */
 template <typename execution_policy_t = default_execution_policy_t>
-class execution_t : public execution_policy_t
+class execution_ : public execution_policy_t
 {
  public:
   using return_type_t = typename execution_policy_t::return_type_t;
@@ -45,7 +45,7 @@ class execution_t : public execution_policy_t
     // Make sure that the task definition returns the correct type
 //    static_assert(std::is_same<return_type_t,
 //                      decltype(task(std::forward<Args>(args)...))>(),
-//        "Driver must return flecsi::execution_t::return_type_t");
+//        "Driver must return flecsi::execution_::return_type_t");
 
     // pass the driver to the execution policy for handling
     return execution_policy_t::execute_driver(
@@ -58,14 +58,14 @@ class execution_t : public execution_policy_t
     // Make sure that the task definition returns the correct type
     static_assert(std::is_same<return_type_t,
                       decltype(task(std::forward<Args>(args)...))>(),
-        "Tasks must return flecsi::execution_t::return_type_t");
+        "Tasks must return flecsi::execution_::return_type_t");
 
     // pass the task to the execution policy for handling
     return execution_policy_t::execute_task(
         std::forward<T>(task), std::forward<Args>(args)...);
   } // execute_task
 
-}; // class execution_t
+}; // class execution_
 
 } // namespace flecsi
 

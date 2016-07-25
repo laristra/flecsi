@@ -36,6 +36,12 @@ cinch_add_unit(task
 #    POLICY LEGION)
 #endif()
 
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+cinch_add_unit(new_legion
+  SOURCES test/new_legion.cc
+  POLICY LEGION)
+endif()
+
 cinch_add_unit(mpi
   SOURCES test/mpi.cc
   POLICY MPI

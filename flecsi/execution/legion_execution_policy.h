@@ -33,7 +33,7 @@ namespace flecsi
 {
 class legion_execution_policy_t;
 
-extern void top_level_task(context_t<flecsi::legion_execution_policy_t> &&ctx,int argc, char** argv);
+extern void top_level_task(context_<flecsi::legion_execution_policy_t> &&ctx,int argc, char** argv);
 
 /*!
   \class legion_execution_policy legion_execution_policy.h
@@ -42,6 +42,7 @@ extern void top_level_task(context_t<flecsi::legion_execution_policy_t> &&ctx,in
 class legion_execution_policy_t
 {
  public: // Member Classes
+
 	class context_ep
 	{
 	public:
@@ -70,7 +71,7 @@ class legion_execution_policy_t
 	     {
 		     const LegionRuntime::HighLevel::InputArgs &args =
               LegionRuntime::HighLevel::HighLevelRuntime::get_input_args();
-		     top_level_task(context_t<flecsi::legion_execution_policy_t>(0,
+		     top_level_task(context_<flecsi::legion_execution_policy_t>(0,
                      task,regions,ctx,runtime),args.argc,args.argv);
 
 	     }
@@ -106,16 +107,16 @@ class legion_execution_policy_t
     utils::tuple_for_each(std::make_tuple(args...),
         [&](auto arg) { std::cout << "test" << std::endl; });
 
-//    context_t<legion_execution_policy_t>::instance().entry();
+//    context_<legion_execution_policy_t>::instance().entry();
     auto value = task(std::forward<Args>(args)...);
-//    context_t<legion_execution_policy_t>::instance().exit();
+//    context_<legion_execution_policy_t>::instance().exit();
     return value;
   } // execute_task
 
 
   // Builds up the function signature for a task from
   template<typename... sArgs,typename... aArgs,typename T>
-  static void build_task_sig(context_t<legion_execution_policy_t> && ctx,
+  static void build_task_sig(context_<legion_execution_policy_t> && ctx,
 							 std::tuple<sArgs...> && sArgT, std::tuple<aArgs...> && aArgT,
 							 T && task)
   {

@@ -16,8 +16,8 @@
 
 #include "flecsi/execution/task.h"
 
-using return_type_t = flecsi::execution_t<>::return_type_t;
-using execution_t = flecsi::execution_t<>;
+using return_type_t = flecsi::execution_<>::return_type_t;
+using execution_t = flecsi::execution_<>;
 
 #define execute(task, ...) \
   execution_t::execute_task(task, ##__VA_ARGS__)
@@ -33,7 +33,7 @@ return_type_t myvoid() {
 }
 
 TEST(task, execute) {
-  execute(testme, "shit");
+  execute(testme, "this is a test");
   execute(myvoid);
 } // TEST
 

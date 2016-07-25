@@ -49,9 +49,9 @@ public:
 
   //! Type defining the execution policy.
 #ifndef MESH_EXECUTION_POLICY
-  using mesh_execution_t = execution_t<>;
+  using mesh_execution_t = execution_<>;
 #else
-  using mesh_execution_t = execution_t<MESH_EXECUTION_POLICY>;
+  using mesh_execution_t = execution_<MESH_EXECUTION_POLICY>;
 #endif
 
   //! Type defining the data attachment sites on the burton mesh.

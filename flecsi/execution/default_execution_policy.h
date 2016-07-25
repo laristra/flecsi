@@ -56,9 +56,9 @@ protected:
       });
 #endif
 
-    context_t<default_execution_policy_t>::instance().entry();
+    context_<default_execution_policy_t>::instance().entry();
     auto value = task(std::forward<Args>(args)...);
-    context_t<default_execution_policy_t>::instance().exit();
+    context_<default_execution_policy_t>::instance().exit();
     return value;
   } // execute_task
 

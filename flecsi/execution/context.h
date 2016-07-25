@@ -27,12 +27,12 @@ namespace flecsi
 {
 
 /*!
-  \class context_t context.h
-  \brief context_t is a dummy class that must have a specialization
+  \class context_ context.h
+  \brief context_ is a dummy class that must have a specialization
   	  	 for a specific execution policy.
  */
 template<class context_policy_t>
-class context_t : public context_policy_t
+class context_ : public context_policy_t
 {
 public:
 
@@ -40,12 +40,13 @@ public:
 
   enum class call_state_t : size_t {
     driver = 0,
-    task
+    task,
+    kernel
   }; // enum class call_state_t
 
-  static context_t & instance()
+  static context_ & instance()
   {
-    static context_t ctx;
+    static context_ ctx;
     return ctx;
   } // instance
 
@@ -58,28 +59,28 @@ public:
   call_state_t exit() { return static_cast<call_state_t>(--call_state_); }
 
   //! Copy constructor (disabled)
-  context_t(const context_t &) = delete;
+  context_(const context_ &) = delete;
 
   //! Assignment operator (disabled)
-  context_t & operator = (const context_t &) = delete;
+  context_ & operator = (const context_ &) = delete;
 
   //! Move operators
-  context_t(context_t &&) = default;
-  context_t & operator = (context_t &&) = default;
+  context_(context_ &&) = default;
+  context_ & operator = (context_ &&) = default;
 
 private:
 
   //! Default constructor
-  context_t() : cp_t() {}
+  context_() : cp_t() {}
 
   //! Destructor
-  ~context_t() {}
+  ~context_() {}
 
 private:
 
   size_t call_state_;
 
-}; // class context_t
+}; // class context_
 
 } // namespace flecsi
 

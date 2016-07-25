@@ -265,11 +265,11 @@ public: // Required Flecsi members
 
 	sArgT const_args;
 	template<typename U = std::is_void<aArgT>,typename = typename std::enable_if<!U::value,void>>
-	TaskWrapper(hArgT _handles,sArgT _const_args,context_t<execution_policy_t> _context) :
+	TaskWrapper(hArgT _handles,sArgT _const_args,context_<execution_policy_t> _context) :
 		handles(_handles),const_args(_const_args),context(_context){}
 
 	template<typename U = std::is_void<aArgT>,typename = typename std::enable_if<U::value,void>>
-	TaskWrapper(sArgT _const_args,context_t<execution_policy_t> _context) :
+	TaskWrapper(sArgT _const_args,context_<execution_policy_t> _context) :
 		const_args(_const_args),context(_context){}
 
 

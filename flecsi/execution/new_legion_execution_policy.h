@@ -76,12 +76,17 @@ public:
     return context_t::lr_runtime_t::start(argc, argv);
   } // initialize
 
+  static int finalize() {
+  }
+
+#if 1
   template <typename T, typename... Args>
   static return_type_t execute_driver(T && task, Args &&... args)
   {
 
     return task(std::forward<Args>(args)...);
   } // execute_driver
+#endif
 
   template<typename T, typename ... Args>
   void register_task(T && task)
