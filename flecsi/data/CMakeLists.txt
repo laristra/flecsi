@@ -45,6 +45,9 @@ cinch_add_unit(data
 cinch_add_unit(storage_type
   SOURCES test/storage_type.cc)
 
+cinch_add_unit(new_data
+  SOURCES test/new_data.cc)
+
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.
 # vim: set tabstop=2 shiftwidth=2 expandtab :

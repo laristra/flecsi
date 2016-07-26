@@ -18,6 +18,12 @@
 #include "flecsi/utils/const_string.h"
 #include "flecsi/data/default/default_storage_type.h"
 
+/*
+#define np(X)                                                             \
+  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
+             << ": " << #X << " = " << X << std::endl
+*/
+
 /*!
  * \file default_sparse.h
  * \authors bergen
@@ -75,6 +81,42 @@ private:
   
 }; // struct sparse_accessor_t
 
+template<typename T, typename MD>
+struct sparse_mutator_t {
+
+  /*--------------------------------------------------------------------------*
+   * Type definitions.
+   *--------------------------------------------------------------------------*/
+  
+  using iterator_t = index_space_t::iterator_t;
+  using meta_data_t = MD;
+  using user_meta_data_t = typename meta_data_t::user_meta_data_t;
+
+  /*--------------------------------------------------------------------------*
+   * Constructors.
+   *--------------------------------------------------------------------------*/
+
+  sparse_mutator_t() {}
+
+  sparse_mutator_t(const std::string & label, std::vector<size_t> * map,
+    T * data, const user_meta_data_t & meta_data)
+    : label_(label), map_(map), data_(data), meta_data_(meta_data) {}
+
+  T & operator [] (size_t index) {
+    return data_[map_->operator[](index)];
+  } // operator []
+
+  T * data() { return data_; }
+
+private:
+
+  std::string label_ = "";
+  std::vector<size_t> * map_;
+  T * data_ = nullptr;
+  const user_meta_data_t & meta_data_ = {};
+  
+}; // struct sparse_accessor_t
+
 /*----------------------------------------------------------------------------*
  * Sparse handle.
  *----------------------------------------------------------------------------*/
@@ -102,6 +144,9 @@ struct storage_type_t<sparse, DS, MD> {
 
 	template<typename T>
 	using accessor_t = sparse_accessor_t<T, MD>;
+
+  template<typename T>
+  using mutator_t = sparse_mutator_t<T, MD>;
 
 	template<typename T>
 	using handle_t = sparse_handle_t<T>;
@@ -152,6 +197,30 @@ struct storage_type_t<sparse, DS, MD> {
    */
   template<typename T, size_t NS>
   static accessor_t<T> get_accessor(data_client_t & data_client,
+    data_store_t & data_store, const const_string_t & key,
+    size_t version) {
+    const size_t h = key.hash() ^ data_client.runtime_id();
+    auto search = data_store[NS].find(h);
+
+    if(search == data_store[NS].end()) {
+      return {};
+    }
+    else {
+      auto & meta_data = search->second;
+
+      // check that the requested version exists
+      assert(meta_data.versions > version && "version out-of-range");
+
+      return { meta_data.label, &meta_data.map,
+        reinterpret_cast<T *>(&meta_data.data[version][0]),
+        meta_data.user_data };
+    } // if
+  } // get_accessor
+
+  /*!
+   */
+  template<typename T, size_t NS>
+  static mutator_t<T> get_mutator(data_client_t & data_client,
     data_store_t & data_store, const const_string_t & key,
     size_t version) {
     const size_t h = key.hash() ^ data_client.runtime_id();

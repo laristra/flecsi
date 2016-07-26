@@ -113,6 +113,24 @@ struct new_data_t : public storage_policy_t<user_meta_data_t> {
   } // get_accessor
 
   /*!
+    \brief get an accessor to registered data.
+
+    \tparam DT
+    \tparam T
+    \tparam NS
+
+    \param[in] runtime_namespace
+    \param[in] key
+    \param[in] version
+   */
+  template<size_t DT, typename T, size_t NS>
+  decltype(auto) get_mutator(data_client_t & data_client,
+    const const_string_t & key, size_t version=0) {
+    return st_t<DT>::template get_mutator<T, NS>(data_client,
+      sp_t::data_store_, key, version);
+  } // get_accessor
+
+  /*!
     \brief Return a std::vector of accessors to the stored states with
       type \e T in namespace \e NS satisfying the predicate function
       \e predicate.
