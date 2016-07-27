@@ -71,7 +71,7 @@ struct default_meta_data_t {
   std::shared_ptr<type_info_t> rtti;
 
   std::unordered_map<size_t, std::vector<uint8_t>> data;
-  std::vector<size_t> map;
+  size_t num_materials;
 }; // struct default_meta_data_t
 
 } // namespace data_model

@@ -38,11 +38,13 @@ TEST(state, sparse) {
  new_data_t& data = new_data_t::instance();
  data_client client;
 
- data.register_data<sparse, double, 0>(client, "a", 10, 0, persistent);
+ data.register_data<sparse, double, 0>(client, "a", 1, 10, 20);
+ data.register_data<sparse, double, 0>(client, "b", 1, 10, 20);
 
- auto a = data.get_accessor<sparse, double, 0>(client, "a");
+ //auto a = data.get_accessor<sparse, double, 0>(client, "a");
+ //a.dump();
 
- auto b = data.get_mutator<sparse, double, 0>(client, "a");
+ auto b = data.get_mutator<sparse, double, 0>(client, "a", 10);
 
 } // TEST
 

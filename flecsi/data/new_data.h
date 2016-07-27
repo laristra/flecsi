@@ -87,7 +87,8 @@ struct new_data_t : public storage_policy_t<user_meta_data_t> {
   decltype(auto) register_data(data_client_t & data_client,
     const const_string_t & key, size_t versions=1, Args && ... args) {
     return st_t<DT>::template register_data<T, NS>(data_client,
-      sp_t::data_store_, key, versions, std::forward<Args>(args) ...);
+      sp_t::data_store_, key, versions, 
+      std::forward<Args>(args) ...);
   } // register_data
 
   /*--------------------------------------------------------------------------*
@@ -125,9 +126,9 @@ struct new_data_t : public storage_policy_t<user_meta_data_t> {
    */
   template<size_t DT, typename T, size_t NS>
   decltype(auto) get_mutator(data_client_t & data_client,
-    const const_string_t & key, size_t version=0) {
+    const const_string_t & key, size_t slots, size_t version=0) {
     return st_t<DT>::template get_mutator<T, NS>(data_client,
-      sp_t::data_store_, key, version);
+      sp_t::data_store_, key, slots, version);
   } // get_accessor
 
   /*!

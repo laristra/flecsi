@@ -282,8 +282,8 @@ struct storage_type_t<dense, DS, MD> {
         data_client.indices(index_space) * sizeof(T));
     } // for
 
-    // map is unused for this storage type
-    data_store[NS][h].map.resize(0);
+    // num_materials is unused for this storage type
+    data_store[NS][h].num_materials = 0;
 
     return {};
   } // register_data
