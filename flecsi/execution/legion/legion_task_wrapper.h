@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef legion_task_wrapper_h
-#define legion_task_wrapper_h
+#ifndef flecsi_legion_task_wrapper_h
+#define flecsi_legion_task_wrapper_h
 
 /*!
  * \file legion_task_wrapper.h
@@ -14,8 +14,8 @@
 
 namespace flecsi {
 
-template<typename T>
-class legion_task_wrapper_
+//template<typename T>
+struct legion_task_wrapper_
 {
   using lr_context_t = LegionRuntime::HighLevel::Context;
   using lr_runtime_t = LegionRuntime::HighLevel::HighLevelRuntime;
@@ -26,14 +26,14 @@ class legion_task_wrapper_
   static void execute(const lr_task_t * task, const lr_regions_t & regions,
     lr_context_t context, lr_runtime_t * runtime)
     {
-      T::execute();
+      std::cout << "Hello from task_wrapper" << std::endl;
     } // execute
 
 }; // class legion_task_wrapper_
 
 } // namespace flecsi
 
-#endif // legion_task_wrapper_h
+#endif // flecsi_legion_task_wrapper_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

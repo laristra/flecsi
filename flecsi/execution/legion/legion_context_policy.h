@@ -46,10 +46,15 @@ struct legion_context_policy_t
   const size_t TOP_LEVEL_TASK_ID = 0;
 
   int initialize(int argc, char ** argv) {
+
+    // Register top-level task
     lr_runtime_t::set_top_level_task_id(TOP_LEVEL_TASK_ID);
     lr_runtime_t::register_legion_task<legion_runtime_driver>(
       TOP_LEVEL_TASK_ID, lr_loc, true, false);
+
+    // Register user tasks
   
+    // Start the runtime
     return lr_runtime_t::start(argc, argv);
   } // initialize
 

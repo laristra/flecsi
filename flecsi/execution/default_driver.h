@@ -9,6 +9,8 @@
 #include <iostream>
 
 #include "flecsi/execution/context.h"
+//#include "flecsi/execution/task.h"
+#include "flecsi/execution/legion/legion_execution_policy.h"
 
 /*!
  * \file default_driver.h
@@ -17,6 +19,10 @@
  */
 
 namespace flecsi {
+
+void hello() {
+  std::cout << "Executing hello task" << std::endl;
+} // hello
 
 void driver(int argc, char ** argv) {
   std::cout << "Executing default driver" << std::endl;

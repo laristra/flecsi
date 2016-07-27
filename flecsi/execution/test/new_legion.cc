@@ -15,8 +15,7 @@
 #include <cinchtest.h>
 
 #include "flecsi/execution/context.h"
-//#include "flecsi/execution/legion/legion_execution_policy.h"
-//#include "flecsi/execution/execution.h"
+#include "flecsi/execution/task.h"
 
 #if 0
 using execution_t =

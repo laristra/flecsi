@@ -56,10 +56,11 @@ public:
     processor type
     task type (leaf, inner, etc...)
  */
-  template<typename T>
-  void register_task(const const_string_t & key, T && task)
+  //template<typename T>
+  //static void register_task(const const_string_t & key, T && task)
+  static void register_task(const const_string_t & key)
   {
-    using task_wrapper_t = legion_task_wrapper_<T>;
+    using task_wrapper_t = legion_task_wrapper_;
     context_t::lr_runtime_t::register_legion_task<task_wrapper_t::execute>(
       key.hash(), context_t::lr_loc, true, false);
   } // register_task
