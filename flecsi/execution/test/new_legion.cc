@@ -14,11 +14,13 @@
 
 #include <cinchtest.h>
 
-#include "flecsi/execution/new_legion_execution_policy.h"
-#include "flecsi/execution/task.h"
+#include "flecsi/execution/context.h"
+//#include "flecsi/execution/legion/legion_execution_policy.h"
+//#include "flecsi/execution/execution.h"
 
+#if 0
 using execution_t =
-  flecsi::execution_<flecsi::new_legion_execution_policy_t>;
+  flecsi::execution_<flecsi::legion_execution_policy_t>;
 using return_type_t = execution_t::return_type_t;
 
 #define execute(task, ...) \
@@ -33,11 +35,12 @@ return_type_t myvoid() {
   std::cout << "Hello World: " << std::endl;
   return 0;
 }
+#endif
 
 TEST(task, execute) {
   char dummy[] = "1";
   char * argv = &dummy[0];
-  execution_t::initialize(1, &argv);
+  flecsi::context_t::instance().initialize(1, &argv);
 //  execute(testme, "this is a test");
 //  execute(myvoid);
 } // TEST

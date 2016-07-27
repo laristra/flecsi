@@ -15,16 +15,18 @@
 set(execution_HEADERS
   context.h
   default_execution_policy.h
-  legion_execution_policy.h
-  mpi_execution_policy.h
-  mpilegion_execution_policy.h
-  task.h
+  execution.h
+  legion/legion_context_policy.h
+  legion/legion_runtime_driver.h
+  legion/legion_task_wrapper.h
+  legion/legion_execution_policy.h
   PARENT_SCOPE
 )
 
-#set(execution_SOURCES
-#  PARENT_SCOPE
-#)
+set(execution_SOURCES
+  legion/legion_runtime_driver.cc
+  PARENT_SCOPE
+)
 
 cinch_add_unit(task
   SOURCES test/task.cc)
@@ -39,7 +41,8 @@ cinch_add_unit(task
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 cinch_add_unit(new_legion
   SOURCES test/new_legion.cc
-  POLICY LEGION)
+  POLICY LEGION
+  LIBRARIES flecsi)
 endif()
 
 cinch_add_unit(mpi

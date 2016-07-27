@@ -5,7 +5,7 @@
 
 #include <cinchtest.h>
 #include "flecsi/utils/TaskWrapper.h"
-#include "flecsi/execution/legion_execution_policy.h"
+#include "flecsi/execution/old_legion_execution_policy.h"
 
 using namespace flecsi;
 

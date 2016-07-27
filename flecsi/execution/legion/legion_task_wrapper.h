@@ -14,8 +14,21 @@
 
 namespace flecsi {
 
+template<typename T>
 class legion_task_wrapper_
 {
+  using lr_context_t = LegionRuntime::HighLevel::Context;
+  using lr_runtime_t = LegionRuntime::HighLevel::HighLevelRuntime;
+  using lr_task_t = LegionRuntime::HighLevel::Task;
+  using lr_regions_t =
+    std::vector<LegionRuntime::HighLevel::PhysicalRegion>;
+
+  static void execute(const lr_task_t * task, const lr_regions_t & regions,
+    lr_context_t context, lr_runtime_t * runtime)
+    {
+      T::execute();
+    } // execute
+
 }; // class legion_task_wrapper_
 
 } // namespace flecsi

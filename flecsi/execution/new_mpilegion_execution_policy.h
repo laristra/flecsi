@@ -59,7 +59,7 @@ public:
       context_t::instance().set_state(ctx, runtime, task, regions);
 
       const LegionRuntime::HighLevel::InputArgs & args =
-        context_t::lr_runtime_t::get_input_args();
+        LegionRuntime::HighLevel::HighLevelRuntime::get_input_args();
 
       std::cout << "In runtime_driver: " << args.argc << std::endl;
       driver(args.argc, args.argv);

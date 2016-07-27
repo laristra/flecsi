@@ -3,28 +3,27 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef default_driver_h
-#define default_driver_h
+#ifndef legion_runtime_driver_h
+#define legion_runtime_driver_h
 
-#include <iostream>
-
-#include "flecsi/execution/context.h"
+#include <legion.h>
 
 /*!
- * \file default_driver.h
+ * \file legion_runtime_driver.h
  * \authors bergen
- * \date Initial file creation: Jul 24, 2016
+ * \date Initial file creation: Jul 26, 2016
  */
 
 namespace flecsi {
 
-void driver(int argc, char ** argv) {
-  std::cout << "Executing default driver" << std::endl;
-} // driver
+void legion_runtime_driver(const LegionRuntime::HighLevel::Task *task,
+  const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
+  LegionRuntime::HighLevel::Context ctx,
+  LegionRuntime::HighLevel::HighLevelRuntime *runtime);
 
 } // namespace flecsi
 
-#endif // default_driver_h
+#endif // legion_runtime_driver_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

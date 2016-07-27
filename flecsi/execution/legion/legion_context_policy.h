@@ -15,6 +15,18 @@
 #include <memory>
 #include <legion.h>
 
+#include "flecsi/execution/legion/legion_runtime_driver.h"
+
+namespace flecsi {
+
+#if 0
+extern void legion_runtime_driver(
+  const LegionRuntime::HighLevel::Task * task,
+  const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
+  LegionRuntime::HighLevel::Context ctx,
+  LegionRuntime::HighLevel::HighLevelRuntime * runtime);
+#endif
+
 /*!
   \class legion_context_policy_t legion_context_policy.h
   \brief legion_context_policy_t provides...
@@ -30,6 +42,16 @@ struct legion_context_policy_t
 
   const static LegionRuntime::HighLevel::Processor::Kind lr_loc =
     LegionRuntime::HighLevel::Processor::LOC_PROC;
+
+  const size_t TOP_LEVEL_TASK_ID = 0;
+
+  int initialize(int argc, char ** argv) {
+    lr_runtime_t::set_top_level_task_id(TOP_LEVEL_TASK_ID);
+    lr_runtime_t::register_legion_task<legion_runtime_driver>(
+      TOP_LEVEL_TASK_ID, lr_loc, true, false);
+  
+    return lr_runtime_t::start(argc, argv);
+  } // initialize
 
   /*!
     Reset the legion runtime state.
@@ -69,6 +91,8 @@ private:
   std::shared_ptr<legion_runtime_state_t> state_;
 
 }; // class legion_context_policy_t
+
+} // namespace flecsi
 
 #endif // legion_context_policy_h
 

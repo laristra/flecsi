@@ -18,7 +18,7 @@
 #include <string>
 
 #include "flecsi/data/data.h"
-#include "flecsi/execution/task.h"
+#include "flecsi/execution/execution.h"
 #include "flecsi/specializations/burton/burton_types.h"
 
 /*!

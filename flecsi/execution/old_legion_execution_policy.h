@@ -33,7 +33,7 @@ namespace flecsi
 {
 class legion_execution_policy_t;
 
-extern void top_level_task(context_<flecsi::legion_execution_policy_t> &&ctx,int argc, char** argv);
+extern void top_level_task(context__<flecsi::legion_execution_policy_t> &&ctx,int argc, char** argv);
 
 /*!
   \class legion_execution_policy legion_execution_policy.h
@@ -71,7 +71,7 @@ class legion_execution_policy_t
 	     {
 		     const LegionRuntime::HighLevel::InputArgs &args =
               LegionRuntime::HighLevel::HighLevelRuntime::get_input_args();
-		     top_level_task(context_<flecsi::legion_execution_policy_t>(0,
+		     top_level_task(context__<flecsi::legion_execution_policy_t>(0,
                      task,regions,ctx,runtime),args.argc,args.argv);
 
 	     }
@@ -116,7 +116,7 @@ class legion_execution_policy_t
 
   // Builds up the function signature for a task from
   template<typename... sArgs,typename... aArgs,typename T>
-  static void build_task_sig(context_<legion_execution_policy_t> && ctx,
+  static void build_task_sig(context__<legion_execution_policy_t> && ctx,
 							 std::tuple<sArgs...> && sArgT, std::tuple<aArgs...> && aArgT,
 							 T && task)
   {
