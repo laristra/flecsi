@@ -30,8 +30,7 @@
  * \date Initial file creation: Nov 15, 2015
  */
 
-namespace flecsi
-{
+namespace flecsi {
 
 /*!
   \class legion_execution_policy legion_execution_policy.h
@@ -42,6 +41,8 @@ class legion_execution_policy_t
 public:
 
   using return_type_t = int32_t;
+  using task_key_t = const_string_<uint16_t>;
+  //using task_key_t = const_string_<uint32_t>;
 
 #if 0
   template <typename T, typename... Args>
@@ -51,28 +52,30 @@ public:
   } // execute_driver
 #endif
 
-/*
-  To add:
-    processor type
-    task type (leaf, inner, etc...)
- */
-  //template<typename T>
-  //static void register_task(const const_string_t & key, T && task)
-  static void register_task(const const_string_t & key)
-  {
-    using task_wrapper_t = legion_task_wrapper_;
-    context_t::lr_runtime_t::register_legion_task<task_wrapper_t::execute>(
-      key.hash(), context_t::lr_loc, true, false);
+  /*
+    To add:
+      processor type
+      task type (leaf, inner, etc...)
+   */
+  template<typename R, typename ... Args>
+  static bool register_task(const task_key_t & key) {
+      using task_wrapper_t = legion_task_wrapper_<R, Args ...>;
+      std::cout << "registering " << key.hash() << std::endl;
+      return context_t::instance().register_task(key.hash(),
+        task_wrapper_t::runtime_registration);
   } // register_task
 
   template<typename ... Args>
-  static return_type_t execute_task(const const_string_t & key, Args &&... args)
+  static return_type_t execute_task(const task_key_t & key, Args &&... args)
   {
     using namespace Legion;
 
+    std::cout << "trying to execute " << key.hash() << std::endl;
+
     context_t & context_ = context_t::instance();
 
-    TaskLauncher task_launcher(key.hash(), TaskArgument(NULL, 0));
+    TaskLauncher task_launcher(key.hash(), TaskArgument(nullptr, 0));
+    //TaskLauncher task_launcher(100000, TaskArgument(nullptr, 0));
 
     context_.runtime()->execute_task(context_.context(), task_launcher);
 

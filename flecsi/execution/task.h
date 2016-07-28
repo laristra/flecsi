@@ -34,17 +34,20 @@ struct task__
   } // register_task
 #endif
 
-  static decltype(auto) register_task(const const_string_t & key)
-  {
-    return execution_policy_t::register_task(key);
-  } // register_task
+  using task_key_t = typename execution_policy_t::task_key_t;
+
+  template<typename R, typename ... Args>
+  static decltype(auto) register_task(const task_key_t & key)
+    {
+      return execution_policy_t::template register_task<R, Args...>(key);
+    } // register_task
 
   template<typename ... Args>
-  static decltype(auto) execute_task(const const_string_t & key,
+  static decltype(auto) execute_task(const task_key_t & key,
     Args && ... args)
-  {
+    {
     return execution_policy_t::execute_task(key, std::forward<Args>(args) ...);
-  } // execute
+    } // execute
 
 }; // class task
 

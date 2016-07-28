@@ -13,6 +13,8 @@
  */
 
 #include <memory>
+#include <functional>
+#include <unordered_map>
 #include <legion.h>
 
 #include "flecsi/execution/legion/legion_runtime_driver.h"
@@ -53,6 +55,9 @@ struct legion_context_policy_t
       TOP_LEVEL_TASK_ID, lr_loc, true, false);
 
     // Register user tasks
+    for(auto f: registration_) {
+      f.second(f.first);
+    } // for
   
     // Start the runtime
     return lr_runtime_t::start(argc, argv);
@@ -66,6 +71,18 @@ struct legion_context_policy_t
     {
       state_.reset(new legion_runtime_state_t(context, runtime, task, regions));
     } // set_state
+
+  using register_function_t = std::function<void(size_t)>;
+
+  bool register_task(size_t key, const register_function_t & f)
+    {
+      if(registration_.find(key) == registration_.end()) {
+        registration_[key] = f;
+        return true;
+      }
+
+      return false;
+    }
 
   lr_context_t & context() { return state_->context; }
   lr_runtime_t * runtime() { return state_->runtime; }
@@ -94,6 +111,7 @@ private:
   }; // struct legion_runtime_state_t
 
   std::shared_ptr<legion_runtime_state_t> state_;
+  std::unordered_map<size_t, register_function_t> registration_;
 
 }; // class legion_context_policy_t
 

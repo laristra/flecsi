@@ -33,18 +33,19 @@ namespace flecsi
   \brief const_string provides compile-time string constants and hashing...
  */
 
-class const_string_t
+template<typename T>
+class const_string_
 {
  public:
-  using hash_type_t = size_t;
+  using hash_type_t = T;
 
   template <hash_type_t N>
-  constexpr const_string_t(const char(&str)[N])
+  constexpr const_string_(const char(&str)[N])
       : str_(str), size_(N - 1)
   {
   }
 
-  constexpr const_string_t(const char* str)
+  constexpr const_string_(const char* str)
       : str_(str), size_(strlen(str))
   {
   }
@@ -61,7 +62,7 @@ class const_string_t
     return flecsi::hash<hash_type_t>( str_, size_ );
   }
 
-  constexpr bool operator==(const const_string_t & t) const
+  constexpr bool operator==(const const_string_ & t) const
   {
     if (size_ != t.size_) {
       return false;
@@ -76,7 +77,7 @@ class const_string_t
     return true;
   }
 
-  constexpr bool operator!=(const const_string_t & t) const
+  constexpr bool operator!=(const const_string_ & t) const
   {
     return !(*this == t);
   }
@@ -85,6 +86,8 @@ class const_string_t
   const char * const str_;
   const hash_type_t size_;
 };
+
+using const_string_t = const_string_<size_t>;
 
 } // namespace flecsi
 
