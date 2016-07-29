@@ -46,10 +46,8 @@ struct legion_task_wrapper_
       user_function_t user_task = task_args->template get<0>();
 
       std::cout << "Hello from task_wrapper" << std::endl;
-      std::cout << "Value from task_wrapper: " <<
-        task_args->template get<1>() << std::endl;
 
-      user_task(10.0);
+      user_task(task_args->template get<1>());
     } // execute
 
 }; // class legion_task_wrapper_
