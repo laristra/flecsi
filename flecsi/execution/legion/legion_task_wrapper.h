@@ -25,6 +25,8 @@ struct legion_task_wrapper_
   using lr_regions_t =
     std::vector<LegionRuntime::HighLevel::PhysicalRegion>;
 
+  using user_function_t = std::function<R(Args ...)>;
+
   static void runtime_registration(size_t fid)
   {
     std::cout << "runtime registration " << fid << std::endl;
@@ -35,7 +37,19 @@ struct legion_task_wrapper_
   static void execute(const lr_task_t * task, const lr_regions_t & regions,
     lr_context_t context, lr_runtime_t * runtime)
     {
+      // User task arguments
+      tuple_wrapper_<user_function_t, Args ...> * task_args =
+        reinterpret_cast<tuple_wrapper_<
+          user_function_t, Args ...> *>(task->args);
+
+      // User task
+      user_function_t user_task = task_args->template get<0>();
+
       std::cout << "Hello from task_wrapper" << std::endl;
+      std::cout << "Value from task_wrapper: " <<
+        task_args->template get<1>() << std::endl;
+
+      user_task(10.0);
     } // execute
 
 }; // class legion_task_wrapper_

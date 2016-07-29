@@ -8,6 +8,7 @@
 
 #include <iostream>
 
+#include "flecsi/utils/common.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/task.h"
 //#include "flecsi/execution/legion/legion_execution_policy.h"
@@ -18,18 +19,31 @@
  * \date Initial file creation: Jul 24, 2016
  */
 
+#define register_task(task, return_type, ...) \
+  using user_delegate_ ## task ## _t = \
+    std::function<return_type(__VA_ARGS__)>; \
+  bool task ## _registered = \
+    task_t::register_task<return_type, __VA_ARGS__>( \
+    reinterpret_cast<uintptr_t>(&task));
+
+#define execute_task(task, ...) \
+  user_delegate_ ## task ## _t task ## _delegate = task; \
+  task_t::execute_task(reinterpret_cast<uintptr_t>(&task), \
+    task ## _delegate, ## __VA_ARGS__)
+
 namespace flecsi {
 
-void hello(void) {
+void hello(double value) {
   std::cout << "Executing hello task" << std::endl;
+  std::cout << "Value: " << value << std::endl;
 } // hello
 
-bool hello_registered = task_t::register_task<void, void>("hello");
+register_task(hello, void, double);
 
 void driver(int argc, char ** argv) {
-  std::cout << "Executing default driver" << std::endl;
 
-  task_t::execute_task("hello", hello);
+  execute_task(hello, 10.0);
+
 } // driver
 
 } // namespace flecsi

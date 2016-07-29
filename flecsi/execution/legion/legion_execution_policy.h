@@ -17,10 +17,9 @@
 
 #include <cstdint>
 
-#include "flecsi/execution/context.h"
-#include "flecsi/utils/tuple_for_each.h"
-#include "flecsi/utils/const_string.h"
+//#include "flecsi/utils/tuple_for_each.h"
 
+#include "flecsi/execution/context.h"
 #include "flecsi/execution/legion/legion_context_policy.h"
 #include "flecsi/execution/legion/legion_task_wrapper.h"
 
@@ -41,16 +40,7 @@ class legion_execution_policy_t
 public:
 
   using return_type_t = int32_t;
-  using task_key_t = const_string_<uint16_t>;
-  //using task_key_t = const_string_<uint32_t>;
-
-#if 0
-  template <typename T, typename... Args>
-  static return_type_t execute_driver(T && task, Args &&... args)
-  {
-    return task(std::forward<Args>(args)...);
-  } // execute_driver
-#endif
+  using task_key_t = uintptr_t;
 
   /*
     To add:
@@ -58,24 +48,29 @@ public:
       task type (leaf, inner, etc...)
    */
   template<typename R, typename ... Args>
-  static bool register_task(const task_key_t & key) {
+  static bool register_task(uintptr_t key) {
+
       using task_wrapper_t = legion_task_wrapper_<R, Args ...>;
-      std::cout << "registering " << key.hash() << std::endl;
-      return context_t::instance().register_task(key.hash(),
+
+      return context_t::instance().register_task(key,
         task_wrapper_t::runtime_registration);
+
   } // register_task
 
-  template<typename ... Args>
-  static return_type_t execute_task(const task_key_t & key, Args &&... args)
+  template<typename T, typename ... Args>
+  static return_type_t execute_task(uintptr_t key, T user_task,
+    Args &&... args)
   {
     using namespace Legion;
 
-    std::cout << "trying to execute " << key.hash() << std::endl;
-
     context_t & context_ = context_t::instance();
 
-    TaskLauncher task_launcher(key.hash(), TaskArgument(nullptr, 0));
-    //TaskLauncher task_launcher(100000, TaskArgument(nullptr, 0));
+    using tuple_wrapper_t = tuple_wrapper_<T, Args ...>;
+
+    tuple_wrapper_t task_args(user_task, std::forward<Args>(args) ...);
+
+    TaskLauncher task_launcher(context_.task_id(key),
+      TaskArgument(&task_args, sizeof(tuple_wrapper_t)));
 
     context_.runtime()->execute_task(context_.context(), task_launcher);
 
@@ -93,7 +88,7 @@ public:
   } // execute_task
 
 #if 0
-  kernel_handle_t register_kernel(const const_string_t & key, T && kernel,
+  kernel_handle_t register_kernel(uintptr_t key, T && kernel,
     Args &&... args)
   {
   } // register_kernel

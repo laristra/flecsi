@@ -17,6 +17,8 @@
 #include <unordered_map>
 #include <legion.h>
 
+#include "flecsi/utils/common.h"
+#include "flecsi/utils/tuple_wrapper.h"
 #include "flecsi/execution/legion/legion_runtime_driver.h"
 
 namespace flecsi {
@@ -56,7 +58,10 @@ struct legion_context_policy_t
 
     // Register user tasks
     for(auto f: registration_) {
-      f.second(f.first);
+      // funky logic: registration_ is a map of std::pair
+      // f.first is the uintptr_t that holds the user function address
+      // f.second is the pair of unique task id and the registration function
+      f.second.second(f.second.first);
     } // for
   
     // Start the runtime
@@ -72,17 +77,35 @@ struct legion_context_policy_t
       state_.reset(new legion_runtime_state_t(context, runtime, task, regions));
     } // set_state
 
-  using register_function_t = std::function<void(size_t)>;
+  /*--------------------------------------------------------------------------*
+   * Task registraiton.
+   *--------------------------------------------------------------------------*/
 
-  bool register_task(size_t key, const register_function_t & f)
+  using task_id_t = LegionRuntime::HighLevel::TaskID;
+  using register_function_t = std::function<void(size_t)>;
+  using unique_fid_t = unique_id_t<task_id_t>;
+
+  bool register_task(uintptr_t key, const register_function_t & f)
     {
       if(registration_.find(key) == registration_.end()) {
-        registration_[key] = f;
+        registration_[key] = { unique_fid_t::instance().next(), f };
         return true;
       }
 
       return false;
-    }
+    } // register_task
+
+  task_id_t task_id(uintptr_t key)
+    {
+      assert(registration_.find(key) != registration_.end() &&
+        "task key does not exist!");
+
+      return registration_[key].first;
+    } // task_id
+
+  /*--------------------------------------------------------------------------*
+   * Legion runtime accessors.
+   *--------------------------------------------------------------------------*/
 
   lr_context_t & context() { return state_->context; }
   lr_runtime_t * runtime() { return state_->runtime; }
@@ -92,8 +115,8 @@ struct legion_context_policy_t
 private:
 
   /*!
-    \struct legion_runtime_data_t legion_context.h
-    \brief legion_runtime_data_t provides storage for Legion runtime
+    \struct legion_runtime_runtime_state_t legion_context_policy.h
+    \brief legion_runtime_state_t provides storage for Legion runtime
       information that can be reinitialized as needed to store const
       data types and references as required by the Legion runtime.
    */
@@ -111,7 +134,8 @@ private:
   }; // struct legion_runtime_state_t
 
   std::shared_ptr<legion_runtime_state_t> state_;
-  std::unordered_map<size_t, register_function_t> registration_;
+  std::unordered_map<uintptr_t,
+    std::pair<task_id_t, register_function_t>> registration_;
 
 }; // class legion_context_policy_t
 
