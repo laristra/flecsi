@@ -16,6 +16,7 @@
 #define flecsi_default_sparse_h
 
 #include <map>
+#include <algorithm>
 
 #include "flecsi/utils/const_string.h"
 #include "flecsi/data/default/default_storage_type.h"
@@ -48,17 +49,17 @@ namespace default_storage_policy
 using index_pair_ = std::pair<size_t, size_t>;
 
 template<typename T>
-struct entry_value_{
-  entry_value_(size_t entry)
-  : entry(entry){}
+struct material_value_{
+  material_value_(size_t material)
+  : material(material){}
 
-  entry_value_(size_t entry, T value)
-  : entry(entry),
+  material_value_(size_t material, T value)
+  : material(material),
   value(value){}
 
-  entry_value_(){}
+  material_value_(){}
 
-  size_t entry;
+  size_t material;
   T value;
 };
 
@@ -81,10 +82,10 @@ struct sparse_accessor_t {
 
   sparse_accessor_t(const std::string & label,
                     size_t version,
-                    meta_data_t& meta_data_store,
-                    const user_meta_data_t & meta_data)
-    : label_(label), version_(version), meta_data_store_(meta_data_store),
-      meta_data_(meta_data) {}
+                    meta_data_t& meta_data,
+                    const user_meta_data_t & user_meta_data)
+    : label_(label), version_(version), meta_data_(meta_data),
+      user_meta_data_(user_meta_data) {}
 
   T& operator()(size_t index, size_t material = 0){
 
@@ -102,8 +103,8 @@ private:
 
   std::string label_ = "";
   size_t version_;
-  const meta_data_t & meta_data_store_ = {}; 
-  const user_meta_data_t & meta_data_ = {};
+  const meta_data_t & meta_data_ = {}; 
+  const user_meta_data_t & user_meta_data_ = {};
   
 }; // struct sparse_accessor_t
 
@@ -118,7 +119,7 @@ struct sparse_mutator_t {
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
-  using entry_value_t = entry_value_<T>;
+  using material_value_t = material_value_<T>;
 
   /*--------------------------------------------------------------------------*
    * Constructors.
@@ -129,22 +130,24 @@ struct sparse_mutator_t {
   sparse_mutator_t(size_t num_slots,
                    const std::string & label,
                    size_t version,
-                   meta_data_t& meta_data_store,
-                   const user_meta_data_t & meta_data)
-    : num_slots_(num_slots), label_(label), version_(version), 
-    meta_data_store_(meta_data_store), meta_data_(meta_data),
-    num_indices_(meta_data_store_.size),
-    num_materials_(meta_data_store_.num_materials),
-    commited_(false){
-
-
-  }
+                   meta_data_t& meta_data,
+                   const user_meta_data_t & user_meta_data)
+    : num_slots_(num_slots),
+    label_(label),
+    version_(version), 
+    meta_data_(meta_data),
+    user_meta_data_(user_meta_data),
+    num_indices_(meta_data_.size),
+    num_materials_(meta_data_.num_materials),
+    indices_(new index_pair_[num_indices_]),
+    materials_(new material_value_t[num_indices_ * num_slots_]){}
 
   ~sparse_mutator_t(){
-
+    commit();
   }
 
-  T& operator()(size_t index, size_t material = 0){
+  T& operator()(size_t index, size_t material){
+    assert(indices_ && "sparse mutator has alread been committed");
     assert(index < num_indices_ && material < num_materials_);
 
     index_pair_& ip = indices_[index];
@@ -152,18 +155,18 @@ struct sparse_mutator_t {
     size_t n = ip.second - ip.first;
     
     if(n >= num_slots_){
-      return spare_map_.emplace(index, entry_value_t(material))->second.value;
+      return spare_map_.emplace(index, material_value_t(material))->second.value;
     }
 
-    entry_value_t* start = entries_ + index * num_slots_;     
-    entry_value_t* end = start + n;     
+    material_value_t* start = materials_ + index * num_slots_;     
+    material_value_t* end = start + n;     
 
-    entry_value_t k(material);
+    material_value_t k(material);
 
-    entry_value_t* itr = 
+    material_value_t* itr = 
       lower_bound(start, end, k,
                   [](const auto& k1, const auto& k2) -> bool{
-                    return k1.entry < k2.entry;
+                    return k1.material < k2.material;
                   });
 
     while(end != itr){
@@ -171,7 +174,7 @@ struct sparse_mutator_t {
       --end;
     }
 
-    itr->entry = material;
+    itr->material = material;
 
     ip.second++;
 
@@ -187,32 +190,41 @@ struct sparse_mutator_t {
   }
 
   void commit(){
-    if(commited_){
+    if(!indices_){
       return;
     }
 
     constexpr size_t INDICES_KEY = 0;
-    constexpr size_t ENTRIES_KEY = 1;
+    constexpr size_t MATERIALS_KEY = 1;
+
+    auto iitr = meta_data_.data.find(INDICES_KEY);
+    assert(iitr != meta_data_.data.end());
+
+    std::vector<uint8_t>& raw_indices = 
+      const_cast<std::vector<uint8_t>&>(iitr->second);
 
     size_t* indices = 
-      reinterpret_cast<size_t*>(&meta_data_[data][INDICES_KEY][0]);
+      reinterpret_cast<size_t*>(&raw_indices[0]);
 
-    std::vector<uint8_t>& raw_entries = meta_data_[data][ENTRIES_KEY];
+    auto mitr = meta_data_.data.find(MATERIALS_KEY);
+    assert(mitr != meta_data_.data.end());
 
-    constexpr size_t ev_bytes = sizeof(entry_value_t);
+    std::vector<uint8_t>& raw_materials = 
+      const_cast<std::vector<uint8_t>&>(mitr->second);
 
-    size_t s = raw_entries.size();
-    size_t c = raw_entries.capacity();
+    material_value_t* materials = 
+      reinterpret_cast<material_value_t*>(&raw_materials[0]);
+
+    constexpr size_t ev_bytes = sizeof(material_value_t);
+
+    size_t s = raw_materials.size();
     size_t d = (num_indices_ * num_slots_ + spare_map_.size()) * ev_bytes;
 
-    if(c - s < d){
-      raw_entries.resize(c * ev_bytes + d);
+    if(s < d){
+      raw_materials.resize(d);
     }
 
-    entry_value_t* entries = 
-      reinterpret_cast<index_pair_*>(&meta_data_[data][ENTRIES_KEY][0]);
-
-    entry_value_t* entries_end = entries + s / ev_bytes;
+    material_value_t* materials_end = materials + s / ev_bytes;
 
     for(size_t i = 0; i < num_indices_; ++i){
       index_pair_& ip = indices_[i];
@@ -230,22 +242,22 @@ struct sparse_mutator_t {
       
       size_t m = distance(p.first, p.second);
 
-      entry_value_t* start = entries + i * num_slots_;     
-      entry_value_t* end = start + n; 
+      material_value_t* start = materials + i * num_slots_;     
+      material_value_t* end = start + n; 
 
-      auto iitr = entries + pos;
+      auto iitr = materials + pos;
 
-      std::copy(iitr, entries_end, iitr + n + m);
+      std::copy(iitr, materials_end, iitr + n + m);
       std::copy(start, end, iitr);
-      entries_end += n + m;
+      materials_end += n + m;
 
       auto cmp = [](const auto& k1, const auto& k2) -> bool{
-                   return k1.entry < k2.entry;
+                   return k1.material < k2.material;
                   };
 
       auto nitr = iitr + indices[i + 1];
 
-      inplace_merge(iitr, nitr, nitr + n, cmp);
+      std::inplace_merge(iitr, nitr, nitr + n, cmp);
 
       if(m == 0){
         indices[i + 1] = pos + n;
@@ -257,32 +269,35 @@ struct sparse_mutator_t {
       auto vitr = nitr + n;
 
       for(auto itr = p.first; itr != p.second; ++itr){
-        vitr->column = itr->second.column;
+        vitr->material = itr->second.material;
         vitr->value = itr->second.value;
         ++vitr;
       }
 
-      inplace_merge(iitr, nitr + n, nitr + n + m, cmp);
+      std::inplace_merge(iitr, nitr + n, nitr + n + m, cmp);
     }
 
-    commited_ = true;
+    delete[] indices_;
+    indices_ = nullptr;
+
+    delete[] materials_;
+    materials_ = nullptr;
   }
 
 private:
-  using spare_map_t = std::multimap<size_t, entry_value_<T>>;
+  using spare_map_t = std::multimap<size_t, material_value_<T>>;
 
   size_t num_slots_;
   std::string label_ = "";
   size_t version_;
-  const meta_data_t & meta_data_store_ = {}; 
-  const user_meta_data_t & meta_data_ = {};
+  const meta_data_t & meta_data_ = {}; 
+  const user_meta_data_t & user_meta_data_ = {};
 
   size_t num_indices_;
   size_t num_materials_;
   index_pair_* indices_;
-  entry_value_<T>* entries_;
+  material_value_<T>* materials_;
   spare_map_t spare_map_;
-  bool commited_;
 }; // struct sparse_accessor_t
 
 /*----------------------------------------------------------------------------*
@@ -327,8 +342,6 @@ struct storage_type_t<sparse, DS, MD> {
   static handle_t<T> register_data(data_client_t & data_client,
     data_store_t & data_store, const const_string_t & key,
     size_t versions, size_t indices, size_t num_materials, Args && ... args) {
-
-    np(num_materials);
 
 		size_t h = key.hash() ^ data_client.runtime_id();
 
