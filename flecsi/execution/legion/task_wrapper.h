@@ -9,9 +9,10 @@
 #include "flecsi/execution/context.h"
 #include "flecsi/utils/tuple_filter.h"
 #include "flecsi/utils/common.h"
+#include "flecsi/utils/tuple_function.h"
 
 /*!
- * \file legion_task_wrapper.h
+ * \file legion/task_wrapper.h
  * \authors bergen
  * \date Initial file creation: Jul 24, 2016
  */
@@ -41,34 +42,9 @@ struct legion_task_wrapper_
    */
   static void runtime_registration(size_t fid)
   {
-    std::cout << "task wrapper registering task " << fid << std::endl;
-    std::cout << type<legion_task_wrapper_>() << fid << std::endl;
     LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task<execute>(
       fid, context_t::lr_loc, true, false);
   } // runtime_registration
-
-  /*
-    This method unpacks the task arguments from a tuple
-    and calls the user's task.
-   */
-  template<typename ... As, size_t ... Is>
-  static R execute_user_task(user_task_t & f, std::tuple<As ...> & t,
-    std::index_sequence<Is ...>)
-  {
-    return f(std::get<Is>(t) ...);
-  } // execute_user_task
-
-  /*
-    This method takes a tuple of task argements and creates an integer
-    sequence so that the arguments can be unpacked at compile-time,
-    calling the user's task.
-   */
-  template<typename ... As>
-  static R execute_user_task(user_task_t & f, std::tuple<As ...> & t)
-  {
-    return execute_user_task(f, t,
-      std::make_integer_sequence<size_t, sizeof ...(As)>{});
-  } // execute_user_task
 
   /*
     This method executes the user's task after processing the arguments
@@ -98,7 +74,7 @@ struct legion_task_wrapper_
 // passing them to the user function
 
     // Execute the user task
-    return execute_user_task(user_task, user_args);
+    return tuple_function(user_task, user_args);
   } // execute
 
 }; // class legion_task_wrapper_

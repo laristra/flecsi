@@ -42,10 +42,14 @@ endif()
 # Serial interface
 if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
+  add_definitions(-DFLECSI_RUNTIME_MODEL_serial)
+
   set(FLECSI_RUNTIME_MAIN script-driver-serial.cc)
 
 # Legion interface
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+
+  add_definitions(-DFLECSI_RUNTIME_MODEL_legion)
 
   set(FLECSI_RUNTIME_MAIN script-driver-legion.cc)
 
@@ -60,6 +64,8 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 # MPI interface
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
+  add_definitions(-DFLECSI_RUNTIME_MODEL_mpi)
+
   set(FLECSI_RUNTIME_MAIN script-driver-mpi.cc)
 
 #MPI+Legion interface
@@ -68,6 +74,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
     message (FATAL_ERROR " MPI is required for the mpilegion runtime model")
   endif ()
  
+  add_definitions(-DFLECSI_RUNTIME_MODEL_mpilegion)
    set(FLECSI_RUNTIME_MAIN script-driver-mpilegion.cc)
 
   if(NOT legion_FOUND)

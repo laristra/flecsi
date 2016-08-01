@@ -14,28 +14,43 @@
 
 set(execution_HEADERS
   context.h
+  default_driver.h
+  execution.h
   task.h
-  default/default_driver.h
-  default/default_execution_policy.h
+  serial/execution_policy.h
+  serial/runtime_driver.h
+  legion/context_policy.h
+  legion/execution_policy.h
+  legion/runtime_driver.h
+  legion/task_wrapper.h
   PARENT_SCOPE
 )
 
 set(execution_SOURCES
-  legion/legion_runtime_driver.cc
-  PARENT_SCOPE
+    PARENT_SCOPE
 )
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
-  cinch_add_unit(legion
-    SOURCES test/legion.cc
+
+  set(execution_SOURCES ${execution_SOURCES}
+    legion/runtime_driver.cc
+    PARENT_SCOPE
+  )
+
+  cinch_add_unit(task
+    SOURCES test/task.cc
     POLICY LEGION
     LIBRARIES flecsi)
-endif()
+else()
+  set(execution_SOURCES ${execution_SOURCES}
+    serial/runtime_driver.cc
+    PARENT_SCOPE
+  )
 
-#cinch_add_unit(mpi
-#  SOURCES test/mpi.cc
-#  POLICY MPI
-#  THREADS 2)
+  cinch_add_unit(task
+    SOURCES test/task.cc
+    LIBRARIES flecsi)
+endif()
 
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.

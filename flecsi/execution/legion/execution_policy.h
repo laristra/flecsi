@@ -15,16 +15,12 @@
 #ifndef flecsi_legion_execution_policy_h
 #define flecsi_legion_execution_policy_h
 
-#include <cstdint>
-
-//#include "flecsi/utils/tuple_for_each.h"
-
 #include "flecsi/execution/context.h"
-#include "flecsi/execution/legion/legion_context_policy.h"
-#include "flecsi/execution/legion/legion_task_wrapper.h"
+#include "flecsi/execution/legion/context_policy.h"
+#include "flecsi/execution/legion/task_wrapper.h"
 
 /*!
- * \file legion_execution_policy.h
+ * \file legion/execution_policy.h
  * \authors bergen
  * \date Initial file creation: Nov 15, 2015
  */
@@ -32,14 +28,11 @@
 namespace flecsi {
 
 /*!
-  \class legion_execution_policy legion_execution_policy.h
+  \struct legion_execution_policy legion_execution_policy.h
   \brief legion_execution_policy provides...
  */
-class legion_execution_policy_t
+struct legion_execution_policy_t
 {
-public:
-
-  using return_type_t = int32_t;
   using task_key_t = uintptr_t;
 
   /*
@@ -47,25 +40,25 @@ public:
       processor type
       task type (leaf, inner, etc...)
    */
-  template<typename R, typename ... Args>
+  template<typename R, typename ... As>
   static bool register_task(uintptr_t key) {
 
-      using task_wrapper_t = legion_task_wrapper_<R, Args ...>;
+      using task_wrapper_t = legion_task_wrapper_<R, As ...>;
 
       return context_t::instance().register_task(key,
         task_wrapper_t::runtime_registration);
 
   } // register_task
 
-  template<typename T, typename ... Args>
-  static return_type_t execute_task(uintptr_t key, T user_task,
-    Args ... args)
+  template<typename T, typename ... As>
+  static decltype(auto) execute_task(uintptr_t key, T user_task,
+    As ... args)
   {
     using namespace Legion;
 
     context_t & context_ = context_t::instance();
 
-    using task_args_t = std::tuple<T, Args ...>;
+    using task_args_t = std::tuple<T, As ...>;
 
     // We can't use std::forard or && references here because
     // the calling state is not guarunteed to exist when the
@@ -75,17 +68,17 @@ public:
     TaskLauncher task_launcher(context_.task_id(key),
       TaskArgument(&task_args, sizeof(task_args_t)));
 
-    context_.runtime()->execute_task(context_.context(), task_launcher);
+    return context_.runtime()->execute_task(context_.context(), task_launcher);
   } // execute_task
 
 #if 0
   kernel_handle_t register_kernel(uintptr_t key, T && kernel,
-    Args &&... args)
+    As &&... args)
   {
   } // register_kernel
 #endif
 
-}; // class legion_execution_policy_t
+}; // struct legion_execution_policy_t
 
 } // namespace flecsi
 

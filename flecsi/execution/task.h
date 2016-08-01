@@ -6,8 +6,6 @@
 #ifndef flecsi_task_h
 #define flecsi_task_h
 
-#include "flecsi/execution/default/default_execution_policy.h"
-
 /*!
  * \file task.h
  * \authors bergen
@@ -20,7 +18,7 @@ namespace flecsi {
   \struct task__ task.h
   \brief task__ provides...
  */
-template<typename execution_policy_t = default_execution_policy_t>
+template<typename execution_policy_t>
 struct task__
 {
 
@@ -42,10 +40,13 @@ struct task__
 
 } // namespace flecsi
 
-#include "flecsi/execution/legion/legion_execution_policy.h"
+/*
+  This include file defines the flecsi_execution_policy_t used below.
+ */
+#include "flecsi_runtime_execution_policy.h"
 
 namespace flecsi {
-using task_t = task__<legion_execution_policy_t>;
+using task_t = task__<flecsi_execution_policy_t>;
 } // namespace flecsi
 
 #endif // flecsi_task_h

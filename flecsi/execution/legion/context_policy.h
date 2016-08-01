@@ -3,11 +3,11 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef legion_context_policy_h
-#define legion_context_policy_h
+#ifndef flecsi_legion_context_policy_h
+#define flecsi_legion_context_policy_h
 
 /*!
- * \file legion_context_policy.h
+ * \file legion/context_policy.h
  * \authors bergen
  * \date Initial file creation: Jul 14, 2016
  */
@@ -19,7 +19,7 @@
 
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/tuple_wrapper.h"
-#include "flecsi/execution/legion/legion_runtime_driver.h"
+#include "flecsi/execution/legion/runtime_driver.h"
 
 namespace flecsi {
 
@@ -133,7 +133,7 @@ private:
 
 } // namespace flecsi
 
-#endif // legion_context_policy_h
+#endif // flecsi_legion_context_policy_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

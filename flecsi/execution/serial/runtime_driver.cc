@@ -1,0 +1,31 @@
+/*~-------------------------------------------------------------------------~~*
+ * Copyright (c) 2014 Los Alamos National Security, LLC
+ * All rights reserved.
+ *~-------------------------------------------------------------------------~~*/
+
+/*!
+ * \file serial/runtime_driver.cc
+ * \authors bergen
+ * \date Initial file creation: Aug 01, 2016
+ */
+
+#include "flecsi/execution/serial/runtime_driver.h"
+
+#ifndef FLECSI_DRIVER
+  #include "flecsi/execution/default_driver.h"
+#else
+  #include EXPAND_AND_STRINGIFY(FLECSI_DRIVER)
+#endif
+
+namespace flecsi {
+
+void serial_runtime_driver(int argc, char ** argv) {
+  driver(argc, argv);
+} // serial_runtime_driver
+
+} // namespace flecsi
+
+/*~------------------------------------------------------------------------~--*
+ * Formatting options for vim.
+ * vim: set tabstop=2 shiftwidth=2 expandtab :
+ *~------------------------------------------------------------------------~--*/

@@ -3,32 +3,20 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef default_driver_h
-#define default_driver_h
+#ifndef flecsi_default_driver_h
+#define flecsi_default_driver_h
 
 #include <iostream>
 
 #include "flecsi/utils/common.h"
 #include "flecsi/execution/context.h"
-#include "flecsi/execution/task.h"
+#include "flecsi/execution/execution.h"
 
 /*!
  * \file default_driver.h
  * \authors bergen
  * \date Initial file creation: Jul 24, 2016
  */
-
-#define register_task(task, return_type, ...) \
-  using user_delegate_ ## task ## _t = \
-    std::function<return_type(__VA_ARGS__)>; \
-  bool task ## _registered = \
-    task_t::register_task<return_type, __VA_ARGS__>( \
-    reinterpret_cast<uintptr_t>(&task));
-
-#define execute_task(task, ...) \
-  user_delegate_ ## task ## _t task ## _delegate = task; \
-  task_t::execute_task(reinterpret_cast<uintptr_t>(&task), \
-    task ## _delegate, ## __VA_ARGS__)
 
 namespace flecsi {
 
@@ -60,7 +48,7 @@ void driver(int argc, char ** argv) {
 
 } // namespace flecsi
 
-#endif // default_driver_h
+#endif // flecsi_default_driver_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

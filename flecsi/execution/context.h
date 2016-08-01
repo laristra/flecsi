@@ -15,8 +15,6 @@
 #ifndef flecsi_context_h
 #define flecsi_context_h
 
-#include <cstddef>
-
 /*!
  * \file context.h
  * \authors bergen
@@ -82,12 +80,13 @@ private:
 
 } // namespace flecsi
 
-// This should be dependent on a preprocessor option
-//#if ...
-#include "flecsi/execution/legion/legion_context_policy.h"
+/*
+  This include file defines the flecsi_execution_policy_t used below.
+ */
+#include "flecsi_runtime_context_policy.h"
 
 namespace flecsi {
-using context_t = context__<legion_context_policy_t>;
+using context_t = context__<flecsi_context_policy_t>;
 } // namespace flecsi
 
 #endif // flecsi_context_h

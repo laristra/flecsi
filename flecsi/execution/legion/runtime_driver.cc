@@ -4,18 +4,18 @@
  *~-------------------------------------------------------------------------~~*/
 
 /*!
- * \file legion_runtime_driver.cc
+ * \file legion/runtime_driver.cc
  * \authors bergen
  * \date Initial file creation: Jul 26, 2016
  */
 
-#include "flecsi/execution/legion/legion_runtime_driver.h"
+#include "flecsi/execution/legion/runtime_driver.h"
 
 #include "flecsi/utils/common.h"
 #include "flecsi/execution/context.h"
 
 #ifndef FLECSI_DRIVER
-  #include "flecsi/execution/default/default_driver.h"
+  #include "flecsi/execution/default_driver.h"
 #else
   #include EXPAND_AND_STRINGIFY(FLECSI_DRIVER)
 #endif
