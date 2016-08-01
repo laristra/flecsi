@@ -16,14 +16,35 @@
 
 namespace flecsi {
 
+/*!
+  \brief Register data with a data_client_t.
+
+  \param client The data_client_t instance with which to register
+    the data.
+  \param name The string name of the data variable to register.
+  \param versions The number of versions of the data to register. This
+    parameter can be used to manage multiple data versions, e.g.,
+    for new and old state.
+  \param data_type The data type to store, e.g., double or my_type_t.
+  \param storage_type The storage type for the data \ref storage_type_t.
+  
+  Each storage type may have additional parameters that need to be passed
+  to this macro.
+ */
 #define register_data(client, name, versions, data_type, storage_type, ...) \
 	storage_t::instance().register_data<storage_type, data_type,              \
 		data_name_space_t::user>(client, name, versions, ##__VA_ARGS__)
 
+/*!
+  FIXME
+ */
 #define get_accessor(client, name, version, data_type, storage_type) \
 	storage_t::instance().get_accessor<storage_type, data_type,        \
 		data_name_space_t::user>(client, name, version)
 
+/*!
+  FIXME
+ */
 #define get_handle(client, name, version, data_type, storage_type,        \
   privileges)                                                             \
   storage_t::instance().get_handle<storage_type, data_type, privileges,   \
