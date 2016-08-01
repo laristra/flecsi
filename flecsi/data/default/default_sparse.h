@@ -63,6 +63,9 @@ struct material_value_{
   T value;
 };
 
+static constexpr size_t INDICES_KEY = 0;
+static constexpr size_t MATERIALS_KEY = 1;
+
 template<typename T, typename MD>
 struct sparse_accessor_t {
 
@@ -74,6 +77,8 @@ struct sparse_accessor_t {
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
+  using material_value_t = material_value_<T>;
+
   /*--------------------------------------------------------------------------*
    * Constructors.
    *--------------------------------------------------------------------------*/
@@ -84,15 +89,59 @@ struct sparse_accessor_t {
                     size_t version,
                     meta_data_t& meta_data,
                     const user_meta_data_t & user_meta_data)
-    : label_(label), version_(version), meta_data_(meta_data),
-      user_meta_data_(user_meta_data) {}
+    : label_(label),
+    version_(version), 
+    meta_data_(meta_data),
+    user_meta_data_(user_meta_data),
+    num_indices_(meta_data_.size),
+    num_materials_(meta_data_.num_materials){
+      auto iitr = meta_data_.data.find(INDICES_KEY);
+      assert(iitr != meta_data_.data.end());
 
-  T& operator()(size_t index, size_t material = 0){
+      std::vector<uint8_t>& raw_indices = 
+        const_cast<std::vector<uint8_t>&>(iitr->second);
 
+      indices_ = reinterpret_cast<size_t*>(&raw_indices[0]);
+
+      auto mitr = meta_data_.data.find(MATERIALS_KEY);
+      assert(mitr != meta_data_.data.end());
+
+      std::vector<uint8_t>& raw_materials = 
+        const_cast<std::vector<uint8_t>&>(mitr->second);
+
+      materials_ = reinterpret_cast<material_value_t*>(&raw_materials[0]);      
+    }
+
+  T& operator()(size_t index, size_t material){
+    assert(index < num_indices_ && "sparse accessor: index out of bounds");
+
+    material_value_t* start = materials_ + indices_[index];
+    material_value_t* end = materials_ + indices_[index + 1];
+
+    material_value_t* itr = 
+      std::lower_bound(start, end, material_value_t(material),
+                      [](const auto& k1, const auto& k2) -> bool{
+                        return k1.material < k2.material;
+                      });
+
+    assert(itr != end && "sparse accessor: unmapped material");
+
+    return itr->value;
   }
 
   void dump(){
+    for(size_t i = 0; i < num_indices_; ++i){
+      size_t start = indices_[i];
+      size_t end = indices_[i + 1];
 
+      std::cout << "+++++ row: " << i << std::endl;
+
+      for(size_t j = start; j < end; ++j){
+        material_value_t& mj = materials_[j];
+        std::cout << "++ material: " << mj.material << std::endl;
+        std::cout << "++ value: " << mj.value << std::endl << std::endl;
+      }
+    } 
   }
 
   T* data(){
@@ -105,11 +154,11 @@ private:
   size_t version_;
   const meta_data_t & meta_data_ = {}; 
   const user_meta_data_t & user_meta_data_ = {};
-  
+  size_t num_indices_;
+  size_t num_materials_;
+  size_t* indices_;
+  material_value_t* materials_;
 }; // struct sparse_accessor_t
-
-static constexpr size_t INDICES_KEY = 0;
-static constexpr size_t MATERIALS_KEY = 1;
 
 template<typename T, typename MD>
 struct sparse_mutator_t {
@@ -162,12 +211,10 @@ struct sparse_mutator_t {
     }
 
     material_value_t* start = materials_ + index * num_slots_;     
-    material_value_t* end = start + n;     
-
-    material_value_t k(material);
+    material_value_t* end = start + n;
 
     material_value_t* itr = 
-      std::lower_bound(start, end, k,
+      std::lower_bound(start, end, material_value_t(material),
                       [](const auto& k1, const auto& k2) -> bool{
                         return k1.material < k2.material;
                       });
@@ -182,39 +229,6 @@ struct sparse_mutator_t {
     ++ip.second;
 
     return itr->value;
-  }
-
-  void dump(){
-    auto iitr = meta_data_.data.find(INDICES_KEY);
-    assert(iitr != meta_data_.data.end());
-
-    std::vector<uint8_t>& raw_indices = 
-      const_cast<std::vector<uint8_t>&>(iitr->second);
-
-    size_t* indices = 
-      reinterpret_cast<size_t*>(&raw_indices[0]);
-
-    auto mitr = meta_data_.data.find(MATERIALS_KEY);
-    assert(mitr != meta_data_.data.end());
-
-    std::vector<uint8_t>& raw_materials = 
-      const_cast<std::vector<uint8_t>&>(mitr->second);
-
-    material_value_t* materials = 
-      reinterpret_cast<material_value_t*>(&raw_materials[0]);
-
-    for(size_t i = 0; i < num_indices_; ++i){
-      size_t start = indices[i];
-      size_t end = indices[i + 1];
-
-      std::cout << "+++++ row: " << i << std::endl;
-
-      for(size_t j = start; j < end; ++j){
-        material_value_t& mj = materials[j];
-        std::cout << "++ material: " << mj.material << std::endl;
-        std::cout << "++ value: " << mj.value << std::endl << std::endl;
-      }
-    } 
   }
 
   T* data(){
