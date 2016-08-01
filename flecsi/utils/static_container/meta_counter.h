@@ -73,7 +73,7 @@ namespace container{
     //the searcher: the default-argument specified for R will be 
     //evaluated. This will effectively walk down our different
     // overloads until it finds a function that will stop the recursion 
-    // — yielding the current count.
+    // yielding the current count.
     template<size_type N>
     static constexpr size_type value_reader (float, ident<N>,
               size_type R = value_reader (0, ident<N-1> ())) {

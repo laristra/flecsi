@@ -29,7 +29,6 @@
 
 namespace flecsi
 {
-
 namespace data_model
 {
 
@@ -107,6 +106,17 @@ public:
 
   //! Destructor
   ~data_t() {}
+
+  /*--------------------------------------------------------------------------*
+   * FIXME: New Interface
+   *--------------------------------------------------------------------------*/
+
+  template<typename T, size_t NS, typename ... Args>
+  decltype(auto) register_data(uintptr_t runtime_namespace,
+    const const_string_t & key, Args && ... args) {
+//      return sp_t::register_data(data_store_, runtime_namespace, key,
+//        std::forward<Args>(args)...);
+  } // register_data
 
   /*--------------------------------------------------------------------------*
    * Dense Registration / Access

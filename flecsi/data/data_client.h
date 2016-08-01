@@ -49,6 +49,11 @@ public:
     return reinterpret_cast<uintptr_t>(this+id_);
   } // runtime_id
 
+  //virtual size_t indices(size_t index_space) = 0;
+  virtual size_t indices(size_t index_space) {
+    return 0;
+  }
+
 private:
 
   size_t id_;

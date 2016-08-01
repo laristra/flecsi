@@ -75,7 +75,7 @@ namespace default_storage_policy {
     FIXME: Bundle storage type.
    */
   template<typename storage_t>
-  struct storage_type_t<bundle, storage_t> {
+  struct storage_type_t<tuple, storage_t> {
   }; // struct storage_type_t
 
 } // namespace default_storage_policy
