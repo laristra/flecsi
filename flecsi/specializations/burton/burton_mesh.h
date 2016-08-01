@@ -18,7 +18,6 @@
 #include <string>
 
 #include "flecsi/data/data.h"
-#include "flecsi/execution/execution.h"
 #include "flecsi/specializations/burton/burton_types.h"
 
 /*!
@@ -46,13 +45,6 @@ private:
   using private_mesh_t = mesh_topology_t<burton_mesh_types_t>;
 
 public:
-
-  //! Type defining the execution policy.
-#ifndef MESH_EXECUTION_POLICY
-  using mesh_execution_t = execution_<>;
-#else
-  using mesh_execution_t = execution_<MESH_EXECUTION_POLICY>;
-#endif
 
   //! Type defining the data attachment sites on the burton mesh.
   using attachment_site_t = burton_mesh_traits_t::attachment_site_t;

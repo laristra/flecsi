@@ -16,10 +16,10 @@
 
 namespace flecsi {
 
-void legion_runtime_driver(const LegionRuntime::HighLevel::Task *task,
-  const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
+void legion_runtime_driver(const LegionRuntime::HighLevel::Task * task,
+  const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
   LegionRuntime::HighLevel::Context ctx,
-  LegionRuntime::HighLevel::HighLevelRuntime *runtime);
+  LegionRuntime::HighLevel::HighLevelRuntime * runtime);
 
 } // namespace flecsi
 

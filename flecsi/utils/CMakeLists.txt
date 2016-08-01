@@ -21,7 +21,6 @@ set(utils_HEADERS
   const_string.h
   dimensioned_array.h
   doxygen_main.h
-  dummy.h
   factory.h
   hash.h
   id.h
@@ -35,11 +34,10 @@ set(utils_HEADERS
   tuple_visit.h    detail/tuple_visit.h
   tuple_zip.h      detail/tuple_zip.h
   zip.h            detail/zip.h
-  TaskWrapper.h
   )
 
 set(utils_SOURCES
-  dummy.cc
+  common.cc
   PARENT_SCOPE)
 
 
@@ -103,11 +101,6 @@ cinch_add_unit(tuple_visit
 cinch_add_unit(tuple_zip
   SOURCES test/tuple_zip.cc)
  
-if(FLECSI_RUNTIME_MODEL STREQUAL "legion" OR FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
-cinch_add_unit(TaskWrapper
-  SOURCES test/TaskWrapper.cc)
-endif(FLECSI_RUNTIME_MODEL STREQUAL "legion" OR FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
-
 if (ENABLE_STATIC_CONTAINER)
 cinch_add_unit(meta_container
   SOURCES test/meta_container.cc)

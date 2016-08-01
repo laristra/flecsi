@@ -23,14 +23,6 @@
 
 namespace flecsi {
 
-#if 0
-extern void legion_runtime_driver(
-  const LegionRuntime::HighLevel::Task * task,
-  const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
-  LegionRuntime::HighLevel::Context ctx,
-  LegionRuntime::HighLevel::HighLevelRuntime * runtime);
-#endif
-
 /*!
   \class legion_context_policy_t legion_context_policy.h
   \brief legion_context_policy_t provides...

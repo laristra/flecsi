@@ -9,23 +9,20 @@
  * \date Initial file creation: Jul 26, 2016
  */
 
+#include "flecsi/execution/legion/legion_runtime_driver.h"
 
-#include <legion.h>
 #include "flecsi/utils/common.h"
 #include "flecsi/execution/context.h"
 
-#include "flecsi/execution/legion/legion_runtime_driver.h"
-
 #ifndef FLECSI_DRIVER
-  #include "flecsi/execution/default_driver.h"
+  #include "flecsi/execution/default/default_driver.h"
 #else
   #include EXPAND_AND_STRINGIFY(FLECSI_DRIVER)
 #endif
 
 namespace flecsi {
 
-void legion_runtime_driver(
-	const LegionRuntime::HighLevel::Task * task,
+void legion_runtime_driver(const LegionRuntime::HighLevel::Task * task,
 	const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
 	LegionRuntime::HighLevel::Context ctx,
 	LegionRuntime::HighLevel::HighLevelRuntime * runtime)

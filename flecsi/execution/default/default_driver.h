@@ -11,7 +11,6 @@
 #include "flecsi/utils/common.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/task.h"
-//#include "flecsi/execution/legion/legion_execution_policy.h"
 
 /*!
  * \file default_driver.h
@@ -33,16 +32,29 @@
 
 namespace flecsi {
 
-void hello(double value) {
-  std::cout << "Executing hello task" << std::endl;
-  std::cout << "Value: " << value << std::endl;
-} // hello
+void task1(double dval, int ival) {
+  std::cout << "Executing task1" << std::endl;
+  std::cout << "Value(double): " << dval << std::endl;
+  std::cout << "Value(int): " << ival << std::endl;
+} // task1
 
-register_task(hello, void, double);
+register_task(task1, void, double, int);
+
+void task2(double x, double y) {
+  std::cout << "Executing task2" << std::endl;
+  std::cout << "(x,y): (" << x << "," << y << ")" << std::endl;
+  std::cout << "Return: " << x*y << std::endl;
+//  return x*y;
+} // task2
+
+register_task(task2, void, double, double);
 
 void driver(int argc, char ** argv) {
 
-  execute_task(hello, 10.0);
+  double alpha(10.0);
+
+  execute_task(task1, alpha, 5);
+  execute_task(task2, alpha, 5);
 
 } // driver
 

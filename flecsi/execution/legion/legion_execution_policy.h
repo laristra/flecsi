@@ -59,32 +59,23 @@ public:
 
   template<typename T, typename ... Args>
   static return_type_t execute_task(uintptr_t key, T user_task,
-    Args &&... args)
+    Args ... args)
   {
     using namespace Legion;
 
     context_t & context_ = context_t::instance();
 
-    using tuple_wrapper_t = tuple_wrapper_<T, Args ...>;
+    using task_args_t = std::tuple<T, Args ...>;
 
-    tuple_wrapper_t task_args(user_task, std::forward<Args>(args) ...);
+    // We can't use std::forard or && references here because
+    // the calling state is not guarunteed to exist when the
+    // task is invoked, i.e., we have to use copies...
+    task_args_t task_args(user_task, args ...);
 
     TaskLauncher task_launcher(context_.task_id(key),
-      TaskArgument(&task_args, sizeof(tuple_wrapper_t)));
+      TaskArgument(&task_args, sizeof(task_args_t)));
 
     context_.runtime()->execute_task(context_.context(), task_launcher);
-
-#if 0
-    // FIXME: place-holder example of static argument processing
-    utils::tuple_for_each(std::make_tuple(args ...), [&](auto arg) {
-      std::cout << "test" << std::endl;
-      });
-
-    context_t::instance().entry();
-    auto value = task(std::forward<Args>(args)...);
-    context_t::instance().exit();
-    return value;
-#endif
   } // execute_task
 
 #if 0

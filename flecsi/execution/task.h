@@ -6,9 +6,7 @@
 #ifndef flecsi_task_h
 #define flecsi_task_h
 
-#include "flecsi/execution/default_execution_policy.h"
-
-#include "flecsi/utils/const_string.h"
+#include "flecsi/execution/default/default_execution_policy.h"
 
 /*!
  * \file task.h
@@ -25,14 +23,6 @@ namespace flecsi {
 template<typename execution_policy_t = default_execution_policy_t>
 struct task__
 {
-
-#if 0
-  template<typename T>
-  static decltype(auto) register_task(const const_string_t & key, T && task)
-  {
-    return execution_policy_t::register_task(key, std::forward<T>(task));
-  } // register_task
-#endif
 
   using task_key_t = typename execution_policy_t::task_key_t;
 

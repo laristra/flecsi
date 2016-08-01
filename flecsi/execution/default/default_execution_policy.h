@@ -12,23 +12,33 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_dummy_h
-#define flecsi_dummy_h
+#ifndef flecsi_default_execution_policy_h
+#define flecsi_default_execution_policy_h
+
+#include "flecsi/execution/context.h"
 
 /*!
- * \file dummy.h
+ * \file default_execution_policy.h
  * \authors bergen
- * \date Initial file creation: Aug 18, 2015
+ * \date Initial file creation: Nov 15, 2015
  */
 
 namespace flecsi
 {
 
-void dummy();
+struct default_context_policy_t {};
+
+/*!
+  \class default_execution_policy default_execution_policy.h
+  \brief default_execution_policy provides...
+ */
+class default_execution_policy_t
+{
+}; // class default_execution_policy_t
 
 } // namespace flecsi
 
-#endif // flecsi_dummy_h
+#endif // flecsi_default_execution_policy_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options
