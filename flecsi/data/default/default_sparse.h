@@ -108,6 +108,9 @@ private:
   
 }; // struct sparse_accessor_t
 
+static constexpr size_t INDICES_KEY = 0;
+static constexpr size_t MATERIALS_KEY = 1;
+
 template<typename T, typename MD>
 struct sparse_mutator_t {
 
@@ -164,10 +167,10 @@ struct sparse_mutator_t {
     material_value_t k(material);
 
     material_value_t* itr = 
-      lower_bound(start, end, k,
-                  [](const auto& k1, const auto& k2) -> bool{
-                    return k1.material < k2.material;
-                  });
+      std::lower_bound(start, end, k,
+                      [](const auto& k1, const auto& k2) -> bool{
+                        return k1.material < k2.material;
+                      });
 
     while(end != itr){
       *(end) = *(end - 1);
@@ -176,27 +179,12 @@ struct sparse_mutator_t {
 
     itr->material = material;
 
-    ip.second++;
+    ++ip.second;
 
     return itr->value;
   }
 
   void dump(){
-
-  }
-
-  T* data(){
-    return nullptr;
-  }
-
-  void commit(){
-    if(!indices_){
-      return;
-    }
-
-    constexpr size_t INDICES_KEY = 0;
-    constexpr size_t MATERIALS_KEY = 1;
-
     auto iitr = meta_data_.data.find(INDICES_KEY);
     assert(iitr != meta_data_.data.end());
 
@@ -215,14 +203,57 @@ struct sparse_mutator_t {
     material_value_t* materials = 
       reinterpret_cast<material_value_t*>(&raw_materials[0]);
 
+    for(size_t i = 0; i < num_indices_; ++i){
+      size_t start = indices[i];
+      size_t end = indices[i + 1];
+
+      std::cout << "+++++ row: " << i << std::endl;
+
+      for(size_t j = start; j < end; ++j){
+        material_value_t& mj = materials[j];
+        std::cout << "++ material: " << mj.material << std::endl;
+        std::cout << "++ value: " << mj.value << std::endl << std::endl;
+      }
+    } 
+  }
+
+  T* data(){
+    return nullptr;
+  }
+
+  void commit(){
+    if(!indices_){
+      return;
+    }
+
+    auto iitr = meta_data_.data.find(INDICES_KEY);
+    assert(iitr != meta_data_.data.end());
+
+    std::vector<uint8_t>& raw_indices = 
+      const_cast<std::vector<uint8_t>&>(iitr->second);
+
+    size_t* indices = 
+      reinterpret_cast<size_t*>(&raw_indices[0]);
+
+    auto mitr = meta_data_.data.find(MATERIALS_KEY);
+    assert(mitr != meta_data_.data.end());
+
+    std::vector<uint8_t>& raw_materials = 
+      const_cast<std::vector<uint8_t>&>(mitr->second);
+
     constexpr size_t ev_bytes = sizeof(material_value_t);
 
     size_t s = raw_materials.size();
+    size_t c = raw_materials.capacity();
     size_t d = (num_indices_ * num_slots_ + spare_map_.size()) * ev_bytes;
 
-    if(s < d){
-      raw_materials.resize(d);
+    if(c - s < d){
+      //raw_materials.reserve(c * ev_bytes + d);
+      raw_materials.resize(c * ev_bytes + d);
     }
+
+    material_value_t* materials = 
+      reinterpret_cast<material_value_t*>(&raw_materials[0]);
 
     material_value_t* materials_end = materials + s / ev_bytes;
 
@@ -242,7 +273,7 @@ struct sparse_mutator_t {
       
       size_t m = distance(p.first, p.second);
 
-      material_value_t* start = materials + i * num_slots_;     
+      material_value_t* start = materials_ + i * num_slots_;     
       material_value_t* end = start + n; 
 
       auto iitr = materials + pos;
@@ -349,16 +380,22 @@ struct storage_type_t<sparse, DS, MD> {
 		assert(data_store[NS].find(h) == data_store[NS].end() &&
 			"key already exists");
 
-		data_store[NS][h].user_data.initialize(std::forward<Args>(args) ...);
+    meta_data_t& md = data_store[NS][h];
 
-		data_store[NS][h].label = key.c_str();
-		data_store[NS][h].size = indices;
-		data_store[NS][h].type_size = sizeof(T);
-		data_store[NS][h].versions = versions;
-		data_store[NS][h].rtti.reset(
+		md.user_data.initialize(std::forward<Args>(args) ...);
+		md.label = key.c_str();
+		md.size = indices;
+		md.type_size = sizeof(T);
+		md.versions = versions;
+		md.rtti.reset(
 			new typename meta_data_t::type_info_t(typeid(T)));
 
-    data_store[NS][h].num_materials = num_materials;
+    md.num_materials = num_materials;
+
+    auto& iv = md.data[INDICES_KEY] = std::vector<uint8_t>();
+    iv.resize((indices + 1) * sizeof(size_t));
+
+    md.data[MATERIALS_KEY] = std::vector<uint8_t>();
 
 		return {};
   } // register_data
