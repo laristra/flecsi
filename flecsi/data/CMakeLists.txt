@@ -13,25 +13,23 @@
 #~----------------------------------------------------------------------------~#
 
 set(data_HEADERS
-	new_data.h
+  data.h
+	storage.h
 	data_constants.h
-	data.h
+	old_data.h
 	data_client.h
-	default_meta_data.h
-	default_storage_policy.h
-	default/default_scoped.h
-	default/default_dense.h
-	default/default_sparse.h
-	default/default_tuple.h
-	default/default_storage_policy.h
-	default/default_storage_type.h
-	default/default_meta_data.h
-	default/default_scalar.h
+	old/default_meta_data.h
+	old/default_storage_policy.h
+	serial/scoped.h
+	serial/dense.h
+	serial/sparse.h
+	serial/tuple.h
+	serial/storage_policy.h
+	serial/storage_type.h
+	serial/meta_data.h
+	serial/scalar.h
   data_client.h
   data_constants.h
-  data.h
-  default_meta_data.h
-  default_storage_policy.h
   PARENT_SCOPE
 )
 
@@ -44,9 +42,6 @@ cinch_add_unit(data
 
 cinch_add_unit(storage_type
   SOURCES test/storage_type.cc)
-
-cinch_add_unit(new_data
-  SOURCES test/new_data.cc)
 
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.

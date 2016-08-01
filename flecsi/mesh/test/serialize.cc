@@ -4,7 +4,7 @@
 #include "flecsi/utils/common.h"
 #include "flecsi/mesh/mesh_topology.h"
 #include "flecsi/mesh/mesh_types.h"
-#include "flecsi/data/data.h"
+#include "flecsi/data/old_data.h"
 
 using namespace std;
 using namespace flecsi;

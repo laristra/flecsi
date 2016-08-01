@@ -12,26 +12,22 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_default_dense_h
-#define flecsi_default_dense_h
+#ifndef flecsi_serial_dense_h
+#define flecsi_serial_dense_h
 
 #include "flecsi/utils/index_space.h"
 #include "flecsi/utils/const_string.h"
-#include "flecsi/data/default/default_storage_type.h"
+#include "flecsi/data/serial/storage_type.h"
 #include "flecsi/data/data_client.h"
 
 /*!
- * \file default_dense.h
+ * \file serial/dense.h
  * \authors bergen
  * \date Initial file creation: Apr 7, 2016
  */
 
-namespace flecsi
-{
-namespace data_model
-{
-namespace default_storage_policy
-{
+namespace flecsi {
+namespace serial_storage_policy {
 
 /*+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=*
  * Helper type definitions.
@@ -338,11 +334,10 @@ struct storage_type_t<dense, DS, MD> {
 
 }; // struct storage_type_t
 
-} // namespace default_storage_policy
-} // namespace data_model
+} // namespace serial_storage_policy
 } // namespace flecsi
 
-#endif // flecsi_default_dense_h
+#endif // flecsi_serial_dense_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

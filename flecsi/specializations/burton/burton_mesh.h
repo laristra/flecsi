@@ -17,7 +17,7 @@
 
 #include <string>
 
-#include "flecsi/data/data.h"
+#include "flecsi/data/old_data.h"
 #include "flecsi/specializations/burton/burton_types.h"
 #include "flecsi/data/data_client.h"
 

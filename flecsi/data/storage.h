@@ -3,14 +3,14 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_data_model_new_data_h
-#define flecsi_data_model_new_data_h
+#ifndef flecsi_data_storage_h
+#define flecsi_data_storage_h
 
-#include "flecsi/data/default/default_storage_policy.h"
+#include "flecsi/utils/const_string.h"
 #include "flecsi/data/data_client.h"
 
 /*!
- * \file new_data.h
+ * \file storage.h
  * \authors bergen
  * \date Initial file creation: Apr 17, 2016
  */
@@ -18,19 +18,13 @@
 namespace flecsi {
 namespace data_model {
 
-struct default_user_meta_data_t {
-  void initialize() {}
-}; // struct default_user_meta_data_t
-
 /*!
-  \class new_data new_data.h
-  \brief new_data provides an interface for data registration and access.
+  \class storage__ storage.h
+  \brief storage__ provides an interface for data registration and access.
  */
-template<
-  typename user_meta_data_t = default_user_meta_data_t,
-  template<typename> typename storage_policy_t = default_storage_policy_t
-  >
-struct new_data_t : public storage_policy_t<user_meta_data_t> {
+template<typename user_meta_data_t,
+  template<typename> typename storage_policy_t>
+struct storage__ : public storage_policy_t<user_meta_data_t> {
 
   /*--------------------------------------------------------------------------*
    * Type definitions.
@@ -46,21 +40,21 @@ struct new_data_t : public storage_policy_t<user_meta_data_t> {
    *--------------------------------------------------------------------------*/
 
 	// Constructor.
-  new_data_t() {}
+  storage__() {}
 
   // Hide these.
-  new_data_t(const new_data_t &) = delete;
-  new_data_t & operator = (const new_data_t &) = delete;
+  storage__(const storage__ &) = delete;
+  storage__ & operator = (const storage__ &) = delete;
 
   // Allow move operations.
-  new_data_t(new_data_t &&) = default;
-  new_data_t & operator = (new_data_t &&) = default;
+  storage__(storage__ &&) = default;
+  storage__ & operator = (storage__ &&) = default;
 
 	/*!
 		\brief Return a static instance of the data manager.
 	 */
-  static new_data_t & instance() {
-    static new_data_t d;
+  static storage__ & instance() {
+    static storage__ d;
     return d;
   } // instance
 
@@ -202,12 +196,19 @@ struct new_data_t : public storage_policy_t<user_meta_data_t> {
     sp_t::move(from_runtime_namespace, to_runtime_namespace);
   } // move
 
-}; // class new_data_t
+}; // class storage__
 
 } // namespace data_model
 } // namespace flecsi
 
-#endif // flecsi_data_model_new_data_h
+#include "flecsi_runtime_data_policy.h"
+
+namespace flecsi {
+using storage_t = data_model::storage__<flecsi_user_meta_data_policy_t,
+  flecsi_storage_policy_t>;
+} // namespace flecsi
+
+#endif // flecsi_data_storage_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

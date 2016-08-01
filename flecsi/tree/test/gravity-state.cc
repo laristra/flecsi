@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "flecsi/tree/tree_topology.h"
-#include "flecsi/data/data.h"
+#include "flecsi/data/old_data.h"
 
 using namespace std;
 using namespace flecsi;

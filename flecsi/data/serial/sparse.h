@@ -12,31 +12,27 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_default_sparse_h
-#define flecsi_default_sparse_h
+#ifndef flecsi_serial_sparse_h
+#define flecsi_serial_sparse_h
 
 #include <map>
 #include <algorithm>
 
 #include "flecsi/utils/const_string.h"
-#include "flecsi/data/default/default_storage_type.h"
+#include "flecsi/data/serial/storage_type.h"
 
 #define np(X)                                                             \
   std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
              << ": " << #X << " = " << (X) << std::endl
 
 /*!
- * \file default_sparse.h
+ * \file serial/sparse.h
  * \authors bergen
  * \date Initial file creation: Apr 17, 2016
  */
 
-namespace flecsi
-{
-namespace data_model
-{
-namespace default_storage_policy
-{
+namespace flecsi {
+namespace serial_storage_policy {
 
 /*+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=*
  * Helper type definitions.
@@ -468,11 +464,10 @@ struct storage_type_t<sparse, DS, MD> {
 
 }; // struct storage_type_t
 
-} // namespace default_storage_policy
-} // namespace data_model
+} // namespace serial_storage_policy
 } // namespace flecsi
 
-#endif // flecsi_default_sparse_h
+#endif // flecsi_serial_sparse_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

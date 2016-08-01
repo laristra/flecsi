@@ -5,58 +5,9 @@
 
 #include <cinchtest.h>
 
-#include "flecsi/data/default/default_storage_policy.h"
-#include "flecsi/data/new_data.h"
-#include "flecsi/data/data_client.h"
+#include "flecsi/data/data.h"
 
 using namespace flecsi;
-
-struct user_meta_data_t {
-  void initialize() {}
-}; // struct user_meta_data_t
-
-using storage_policy_t =
-  data_model::default_storage_policy_t<user_meta_data_t>;
-
-struct data_t : public storage_policy_t {
-
-	static data_t & instance() {
-		static data_t d;
-		return d;
-	} // instance
-
-	template<size_t data_type_t>
-	using storage_type_t =
-		typename storage_policy_t::template storage_type_t<data_type_t>;
-
-	template<size_t DT, typename T, size_t NS, typename ... Args>
-	decltype(auto) register_data(uintptr_t runtime_namespace,
-		const const_string_t & key, size_t versions=1, Args && ... args) {
-		return storage_type_t<DT>::template register_data<T,NS>(data_store_,
-			runtime_namespace, key, versions, std::forward<Args>(args)...);
-	} // register_data
-
-  template<size_t DT, typename T, size_t NS>
-  decltype(auto) get_accessor(uintptr_t runtime_namespace,
-    const const_string_t & key, size_t version=0) {
-    return storage_type_t<DT>::template get_accessor<T,NS>(data_store_,
-			runtime_namespace, key, version);
-  } // get_accessor
-
-  template<size_t DT, typename T, size_t NS>
-  decltype(auto) get_handle(uintptr_t runtime_namespace,
-    const const_string_t & key, size_t version=0) {
-    return storage_type_t<DT>::template get_handle<T,NS>(data_store_,
-			runtime_namespace, key, version);
-  } // get_accessor
-
-private:
-
-	data_t() {}
-
-};
-
-using new_data_t = data_model::new_data_t<>;
 
 enum mesh_index_spaces_t : size_t {
   vertices,
@@ -86,19 +37,6 @@ struct mesh_t : public data_client_t {
   }
 
 }; // struct mesh_t
-
-#define register_data(client, name, versions, data_type, storage_type, ...) \
-  new_data_t::instance().register_data<storage_type, data_type,             \
-    data_name_space_t::user>(client, name, versions, ##__VA_ARGS__)
-
-#define get_accessor(client, name, version, data_type, storage_type) \
-  new_data_t::instance().get_accessor<storage_type, data_type,       \
-    data_name_space_t::user>(client, name, version)
-
-#define get_handle(client, name, version, data_type, storage_type,        \
-  privileges)                                                             \
-  new_data_t::instance().get_handle<storage_type, data_type, privileges,  \
-    data_name_space_t::user>(client, name, version)
 
 /*----------------------------------------------------------------------------*
  * Dense storage type.

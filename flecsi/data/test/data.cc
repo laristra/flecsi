@@ -14,7 +14,7 @@
 
 #include <cinchtest.h>
 
-#include "flecsi/data/data.h"
+#include "flecsi/data/old_data.h"
 #include "flecsi/utils/bitfield.h"
 
 using data_t = flecsi::data_model::data_t<

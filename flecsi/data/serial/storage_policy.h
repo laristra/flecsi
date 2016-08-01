@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_default_storage_policy_h
-#define flecsi_default_storage_policy_h
+#ifndef flecsi_serial_storage_policy_h
+#define flecsi_serial_storage_policy_h
 
 #include <unordered_map>
 #include <vector>
@@ -23,30 +23,28 @@
 
 #include "flecsi/data/data_constants.h"
 
-#include "flecsi/data/default/default_meta_data.h"
+#include "flecsi/data/serial/meta_data.h"
 
 // Include partial specializations
-#include "flecsi/data/default/default_scalar.h"
-#include "flecsi/data/default/default_dense.h"
-#include "flecsi/data/default/default_sparse.h"
-#include "flecsi/data/default/default_scoped.h"
-#include "flecsi/data/default/default_tuple.h"
+#include "flecsi/data/serial/scalar.h"
+#include "flecsi/data/serial/dense.h"
+#include "flecsi/data/serial/sparse.h"
+#include "flecsi/data/serial/scoped.h"
+#include "flecsi/data/serial/tuple.h"
 
 /*!
- * \file default_storage_policy.h
+ * \file serial/storage_policy.h
  * \authors bergen
  * \date Initial file creation: Apr 17, 2016
  */
 
 namespace flecsi
 {
-namespace data_model
-{
 
 template<typename user_meta_data_t>
-struct default_storage_policy_t {
+struct serial_storage_policy_t {
 
-  using meta_data_t = default_meta_data_t<user_meta_data_t>;
+  using meta_data_t = serial_meta_data_t<user_meta_data_t>;
 
   // Define the data store type
   // This will likely be much more complicated in a real policy
@@ -55,7 +53,7 @@ struct default_storage_policy_t {
 
   // Define the storage type
   template<size_t data_type_t>
-  using storage_type_t = default_storage_policy::storage_type_t<data_type_t,
+  using storage_type_t = serial_storage_policy::storage_type_t<data_type_t,
     data_store_t, meta_data_t>;
 
   //! \brief delete ALL data.
@@ -98,12 +96,11 @@ protected:
   // Storage container instance
   data_store_t data_store_;
 
-}; // struct default_storage_policy_t
+}; // struct serial_storage_policy_t
 
-} // namespace data_model
 } // namespace flecsi
 
-#endif // flecsi_default_storage_policy_h
+#endif // flecsi_serial_storage_policy_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

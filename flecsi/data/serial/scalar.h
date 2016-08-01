@@ -12,25 +12,21 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_default_scalar_h
-#define flecsi_default_scalar_h
+#ifndef flecsi_serial_scalar_h
+#define flecsi_serial_scalar_h
 
 #include "flecsi/utils/const_string.h"
-#include "flecsi/data/default/default_storage_type.h"
+#include "flecsi/data/serial/storage_type.h"
 #include "flecsi/data/data_client.h"
 
 /*!
- * \file default_scalar.h
+ * \file serial/scalar.h
  * \authors bergen
  * \date Initial file creation: Apr 17, 2016
  */
 
-namespace flecsi
-{
-namespace data_model
-{
-namespace default_storage_policy
-{
+namespace flecsi {
+namespace serial_storage_policy {
 
 /*----------------------------------------------------------------------------*
  * Scalar accessor.
@@ -199,11 +195,10 @@ struct storage_type_t<scalar, DS, MD> {
 
 }; // struct storage_type_t
 
-} // namespace default_storage_policy
-} // namespace data_model
+} // namespace serial_storage_policy
 } // namespace flecsi
 
-#endif // flecsi_default_scalar_h
+#endif // flecsi_serial_scalar_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

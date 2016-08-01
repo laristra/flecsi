@@ -16,7 +16,7 @@
 #define flecsi_burton_mesh_traits_h
 
 #include "flecsi/utils/bitfield.h"
-#include "flecsi/data/data.h"
+#include "flecsi/data/old_data.h"
 #include "flecsi/geometry/point.h"
 #include "flecsi/geometry/space_vector.h"
 

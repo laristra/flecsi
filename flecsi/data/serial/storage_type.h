@@ -12,23 +12,19 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_default_storage_type_h
-#define flecsi_default_storage_type_h
+#ifndef flecsi_serial_storage_type_h
+#define flecsi_serial_storage_type_h
 
 #include "flecsi/data/data_constants.h"
 
 /*!
- * \file default_storage_type.h
+ * \file serial/storage_type.h
  * \authors bergen
  * \date Initial file creation: Apr 15, 2016
  */
 
-namespace flecsi
-{
-namespace data_model
-{
-namespace default_storage_policy
-{
+namespace flecsi {
+namespace serial_storage_policy {
 
   /*!
     \struct storage_type_t
@@ -40,11 +36,10 @@ namespace default_storage_policy
   template<size_t T, typename DS, typename MD>
   struct storage_type_t {};
 
-} // namespace default_storage_policy
-} // namespace data_model
+} // namespace serial_storage_policy
 } // namespace flecsi
 
-#endif // flecsi_default_storage_type_h
+#endif // flecsi_serial_storage_type_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

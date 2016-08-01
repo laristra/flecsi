@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_default_meta_data_h
-#define flecsi_default_meta_data_h
+#ifndef flecsi_serial_meta_data_h
+#define flecsi_serial_meta_data_h
 
 #include <unordered_map>
 #include <vector>
@@ -21,22 +21,19 @@
 #include <typeinfo>
 
 /*!
- * \file default_meta_data.h
+ * \file serial/meta_data.h
  * \authors bergen
  * \date Initial file creation: Apr 15, 2016
  */
 
-namespace flecsi
-{
-namespace data_model
-{
+namespace flecsi {
 
 /*-----------------------------------------------------------------------------*
- * struct default_meta_data_t
+ * struct serial_meta_data_t
  *----------------------------------------------------------------------------*/
 
 /*!
-  \brief default_meta_data_t provides storage for extra information that is
+  \brief serial_meta_data_t provides storage for extra information that is
     used to interpret data variable information at different points
     in the low-level runtime.
  
@@ -44,7 +41,7 @@ namespace data_model
     with the meta data.
  */
 template<typename UMD>
-struct default_meta_data_t {
+struct serial_meta_data_t {
 
   using user_meta_data_t = UMD;
 
@@ -61,7 +58,7 @@ struct default_meta_data_t {
     The std::type_info type requires dynamic initialization.  The
       type_info_t type is designed to allow construction without
       needing a non-trivial default constructor for the
-      default_meta_data_t type.
+      serial_meta_data_t type.
    */
   struct type_info_t {
     type_info_t(const std::type_info & type_info_) : type_info(type_info_) {}
@@ -72,12 +69,11 @@ struct default_meta_data_t {
 
   std::unordered_map<size_t, std::vector<uint8_t>> data;
   size_t num_materials;
-}; // struct default_meta_data_t
+}; // struct serial_meta_data_t
 
-} // namespace data_model
 } // namespace flecsi
 
-#endif // flecsi_default_meta_data_h
+#endif // flecsi_serial_meta_data_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options
