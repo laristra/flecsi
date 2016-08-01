@@ -40,7 +40,7 @@ void task1(double dval, int ival) {
 
 register_task(task1, void, double, int);
 
-void task2(double x, double y) {
+double task2(double x, double y) {
   std::cout << "Executing task2" << std::endl;
   std::cout << "(x,y): (" << x << "," << y << ")" << std::endl;
   std::cout << "Return: " << x*y << std::endl;
@@ -54,7 +54,7 @@ void driver(int argc, char ** argv) {
   double alpha(10.0);
 
   execute_task(task1, alpha, 5);
-  execute_task(task2, alpha, 5);
+  execute_task(task2, alpha, 5.0);
 
 } // driver
 
