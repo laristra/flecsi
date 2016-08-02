@@ -41,7 +41,8 @@ struct legion_execution_policy_t
       task type (leaf, inner, etc...)
    */
   template<typename R, typename ... As>
-  static bool register_task(uintptr_t key) {
+  static bool register_task(uintptr_t key)
+  {
 
       using task_wrapper_t = legion_task_wrapper_<R, As ...>;
 
