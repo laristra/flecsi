@@ -7,9 +7,12 @@
 #define flecsi_legion_task_wrapper_h
 
 #include "flecsi/execution/context.h"
-#include "flecsi/utils/tuple_filter.h"
 #include "flecsi/utils/common.h"
+#include "flecsi/utils/tuple_filter.h"
+#include "flecsi/utils/tuple_for_each.h"
 #include "flecsi/utils/tuple_function.h"
+
+#include "flecsi/data/data_handle.h"
 
 /*!
  * \file legion/task_wrapper.h
@@ -34,6 +37,9 @@ struct legion_task_wrapper_
   template<typename T>
   using greater_than = std::conditional_t<(T()>0), std::true_type,
     std::false_type>;
+
+  template<typename T>
+  using is_data_handle = std::is_base_of<data_handle_t,T>;
 
   /*
     This function is called by the context singleton to do the actual
@@ -70,8 +76,15 @@ struct legion_task_wrapper_
     // Get the user task arguments
     auto user_args = tuple_filter_index_<greater_than, task_args_t>(task_args);
 
-// FIXME: Still need to process the data manager arguments here before
-// passing them to the user function
+    // FIXME: Working on processing data handles
+
+    auto data_args = tuple_filter_<is_data_handle, task_args_t>(task_args);
+    std::cout << "data_args size: " <<
+      std::tuple_size<decltype(data_args)>::value << std::endl;
+
+    utils::tuple_for_each(data_args, [&](auto & element) {
+      std::cout << "hello" << std::endl;
+    });
 
     // Execute the user task
     return tuple_function(user_task, user_args);

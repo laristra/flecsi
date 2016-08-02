@@ -19,6 +19,7 @@
 #include "flecsi/utils/const_string.h"
 #include "flecsi/data/serial/storage_type.h"
 #include "flecsi/data/data_client.h"
+#include "flecsi/data/data_handle.h"
 
 /*!
  * \file serial/dense.h
@@ -203,7 +204,8 @@ private:
  *----------------------------------------------------------------------------*/
 
 template<typename T>
-struct dense_handle_t {
+struct dense_handle_t : public data_handle_t {
+  using type = T;
 }; // struct dense_handle_t
 
 /*+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=*

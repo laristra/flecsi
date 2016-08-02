@@ -62,7 +62,7 @@ struct make_filtered_sequence_<P, T, std::index_sequence<Is ...>> {
 }; // struct make_filtered_sequence
 
 /*!
-  Apply a preficate to filter the indices of a tuple.
+  Apply a predicate to filter the indices of a tuple.
  */
 template<template<typename> typename P, typename T, std::size_t ... Is>
 struct make_filtered_sequence_index_<P, T, std::index_sequence<Is ...>> {
