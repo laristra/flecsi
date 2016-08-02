@@ -16,6 +16,7 @@
 #define flecsi_legion_execution_policy_h
 
 #include "flecsi/execution/context.h"
+#include "flecsi/execution/processor.h"
 #include "flecsi/execution/legion/context_policy.h"
 #include "flecsi/execution/legion/task_wrapper.h"
 
@@ -41,7 +42,7 @@ struct legion_execution_policy_t
       task type (leaf, inner, etc...)
    */
   template<typename R, typename ... As>
-  static bool register_task(uintptr_t key)
+  static bool register_task(uintptr_t key, processor_t processor)
   {
 
       using task_wrapper_t = legion_task_wrapper_<R, As ...>;

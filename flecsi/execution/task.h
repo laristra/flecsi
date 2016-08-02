@@ -6,6 +6,8 @@
 #ifndef flecsi_task_h
 #define flecsi_task_h
 
+#include "flecsi/execution/processor.h"
+
 /*!
  * \file task.h
  * \authors bergen
@@ -25,9 +27,10 @@ struct task__
   using task_key_t = typename execution_policy_t::task_key_t;
 
   template<typename R, typename ... Args>
-  static decltype(auto) register_task(uintptr_t key)
+  static decltype(auto) register_task(uintptr_t key, processor_t processor)
     {
-      return execution_policy_t::template register_task<R, Args...>(key);
+      return execution_policy_t::template register_task<R, Args...>(key,
+        processor);
     } // register_task
 
   template<typename ... Args>

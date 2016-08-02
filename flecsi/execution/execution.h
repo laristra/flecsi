@@ -16,12 +16,12 @@
  * \date Initial file creation: Aug 01, 2016
  */
 
-#define register_task(task, return_type, ...)                \
+#define register_task(task, processor, return_type, ...)     \
   using user_delegate_ ## task ## _t =                       \
     std::function<return_type(__VA_ARGS__)>;                 \
   bool task ## _registered =                                 \
     flecsi::task_t::register_task<return_type, __VA_ARGS__>( \
-    reinterpret_cast<uintptr_t>(&task));
+    reinterpret_cast<uintptr_t>(&task), processor);
 
 #define execute_task(task, ...)                                    \
   user_delegate_ ## task ## _t task ## _delegate = task;           \

@@ -18,6 +18,7 @@
 #include <tuple>
 
 #include "flecsi/execution/context.h"
+#include "flecsi/execution/processor.h"
 #include "flecsi/utils/tuple_function.h"
 #include "flecsi/execution/serial/runtime_driver.h"
 
@@ -38,7 +39,7 @@ struct serial_execution_policy_t
   using task_key_t = uintptr_t;
 
   template<typename R, typename ... As>
-  static bool register_task(uintptr_t key) {
+  static bool register_task(uintptr_t key, processor_t processor) {
   } // register_task
 
   template<typename T, typename ... As>

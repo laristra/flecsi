@@ -68,7 +68,7 @@ void task1(double dval, int ival) {
   std::cout << "Value(int): " << ival << std::endl;
 } // task1
 
-register_task(task1, void, double, int);
+register_task(task1, loc, void, double, int);
 
 double task2(double x, double y, dense_field_t<double> p) {
   std::cout << "Executing task2" << std::endl;
@@ -77,7 +77,7 @@ double task2(double x, double y, dense_field_t<double> p) {
 //  return x*y;
 } // task2
 
-register_task(task2, void, double, double, dense_field_t<double>);
+register_task(task2, loc, void, double, double, dense_field_t<double>);
 
 void driver(int argc, char ** argv) {
 
