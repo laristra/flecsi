@@ -77,7 +77,10 @@ struct legion_task_wrapper_
     auto user_args = tuple_filter_index_<greater_than, task_args_t>(task_args);
 
     // FIXME: Working on processing data handles
+    // Somehow (???) we are going to have to interleave the processed
+    // data handle arguments back into the original slots...
 
+    // Get the data handle task arguments
     auto data_args = tuple_filter_<is_data_handle, task_args_t>(task_args);
     std::cout << "data_args size: " <<
       std::tuple_size<decltype(data_args)>::value << std::endl;
