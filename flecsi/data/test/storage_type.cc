@@ -5,6 +5,9 @@
 
 #include <cinchtest.h>
 
+#include <vector>
+#include <algorithm>
+
 #include "flecsi/data/data.h"
 
 /*
@@ -120,7 +123,7 @@ TEST(storage, scalar) {
  * Sparse storage type.
  *----------------------------------------------------------------------------*/
 
-TEST(storage, sparse) {
+TEST(storage, sparse1) {
 // TODO: sparse data changes in progress
   mesh_t m;
 
@@ -143,6 +146,43 @@ TEST(storage, sparse) {
   for(size_t i = 0; i < num_indices ; i += 2){
     for(size_t j = 0; j < num_materials; j += 2){
       ASSERT_EQ(a(i, j), i * 100 + j);
+    }
+  }
+
+} // TEST
+
+TEST(storage, sparse2) {
+// TODO: sparse data changes in progress
+  mesh_t m;
+
+  size_t num_indices = 1000;
+  size_t num_materials = 50;
+
+  register_data(m, "a", 1, double, sparse, num_indices, num_materials);
+
+  std::vector<std::pair<size_t, size_t>> v;
+
+  for(size_t i = 0; i < num_indices; i += 2){
+    for(size_t j = 0; j < num_materials; j += 2){
+      v.push_back({i, j});
+    }
+  }
+
+  std::random_shuffle(v.begin(), v.end());
+
+  auto am = get_mutator(m, "a", 0, double, sparse, 30);
+
+  for(auto p : v){
+    am(p.first, p.second) = p.first * 1000 + p.second;
+  }
+
+  am.commit();
+
+  auto a = get_accessor(m, "a", 0, double, sparse);
+
+  for(size_t i = 0; i < num_indices ; i += 2){
+    for(size_t j = 0; j < num_materials; j += 2){
+      ASSERT_EQ(a(i, j), i * 1000 + j);
     }
   }
 
