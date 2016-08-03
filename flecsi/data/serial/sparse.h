@@ -83,7 +83,7 @@ struct sparse_accessor_t {
 
   sparse_accessor_t(const std::string & label,
                     size_t version,
-                    meta_data_t& meta_data,
+                    meta_data_t & meta_data,
                     const user_meta_data_t & user_meta_data)
     : label_(label),
     version_(version), 
@@ -94,29 +94,29 @@ struct sparse_accessor_t {
       auto iitr = meta_data_.data.find(INDICES_KEY);
       assert(iitr != meta_data_.data.end());
 
-      std::vector<uint8_t>& raw_indices = 
-        const_cast<std::vector<uint8_t>&>(iitr->second);
+      std::vector<uint8_t> & raw_indices = 
+        const_cast<std::vector<uint8_t> &>(iitr->second);
 
-      indices_ = reinterpret_cast<size_t*>(&raw_indices[0]);
+      indices_ = reinterpret_cast<size_t *>(&raw_indices[0]);
 
       auto mitr = meta_data_.data.find(MATERIALS_KEY);
       assert(mitr != meta_data_.data.end());
 
-      std::vector<uint8_t>& raw_materials = 
-        const_cast<std::vector<uint8_t>&>(mitr->second);
+      std::vector<uint8_t> & raw_materials = 
+        const_cast<std::vector<uint8_t> &>(mitr->second);
 
-      materials_ = reinterpret_cast<material_value_t*>(&raw_materials[0]);      
+      materials_ = reinterpret_cast<material_value_t *>(&raw_materials[0]);      
     }
 
-  T& operator()(size_t index, size_t material){
+  T & operator()(size_t index, size_t material){
     assert(index < num_indices_ && "sparse accessor: index out of bounds");
 
-    material_value_t* start = materials_ + indices_[index];
-    material_value_t* end = materials_ + indices_[index + 1];
+    material_value_t * start = materials_ + indices_[index];
+    material_value_t * end = materials_ + indices_[index + 1];
 
-    material_value_t* itr = 
+    material_value_t * itr = 
       std::lower_bound(start, end, material_value_t(material),
-                      [](const auto& k1, const auto& k2) -> bool{
+                      [](const auto & k1, const auto & k2) -> bool{
                         return k1.material < k2.material;
                       });
 
@@ -133,14 +133,14 @@ struct sparse_accessor_t {
       std::cout << "+++++ row: " << i << std::endl;
 
       for(size_t j = start; j < end; ++j){
-        material_value_t& mj = materials_[j];
+        material_value_t & mj = materials_[j];
         std::cout << "++ material: " << mj.material << std::endl;
         std::cout << "++ value: " << mj.value << std::endl << std::endl;
       }
     } 
   }
 
-  T* data(){
+  T * data(){
     return nullptr;
   }
 
@@ -152,8 +152,8 @@ private:
   const user_meta_data_t & user_meta_data_ = {};
   size_t num_indices_;
   size_t num_materials_;
-  size_t* indices_;
-  material_value_t* materials_;
+  size_t * indices_;
+  material_value_t * materials_;
 }; // struct sparse_accessor_t
 
 template<typename T, typename MD>
@@ -178,7 +178,7 @@ struct sparse_mutator_t {
   sparse_mutator_t(size_t num_slots,
                    const std::string & label,
                    size_t version,
-                   meta_data_t& meta_data,
+                   meta_data_t & meta_data,
                    const user_meta_data_t & user_meta_data)
     : num_slots_(num_slots),
     label_(label),
@@ -194,11 +194,11 @@ struct sparse_mutator_t {
     commit();
   }
 
-  T& operator()(size_t index, size_t material){
+  T & operator()(size_t index, size_t material){
     assert(indices_ && "sparse mutator has alread been committed");
     assert(index < num_indices_ && material < num_materials_);
 
-    index_pair_& ip = indices_[index];
+    index_pair_ & ip = indices_[index];
     
     size_t n = ip.second - ip.first;
     
@@ -206,12 +206,12 @@ struct sparse_mutator_t {
       return spare_map_.emplace(index, material_value_t(material))->second.value;
     }
 
-    material_value_t* start = materials_ + index * num_slots_;     
-    material_value_t* end = start + n;
+    material_value_t * start = materials_ + index * num_slots_;     
+    material_value_t * end = start + n;
 
-    material_value_t* itr = 
+    material_value_t * itr = 
       std::lower_bound(start, end, material_value_t(material),
-                      [](const auto& k1, const auto& k2) -> bool{
+                      [](const auto & k1, const auto & k2) -> bool{
                         return k1.material < k2.material;
                       });
 
@@ -227,7 +227,7 @@ struct sparse_mutator_t {
     return itr->value;
   }
 
-  T* data(){
+  T * data(){
     return nullptr;
   }
 
@@ -239,17 +239,17 @@ struct sparse_mutator_t {
     auto iitr = meta_data_.data.find(INDICES_KEY);
     assert(iitr != meta_data_.data.end());
 
-    std::vector<uint8_t>& raw_indices = 
-      const_cast<std::vector<uint8_t>&>(iitr->second);
+    std::vector<uint8_t> & raw_indices = 
+      const_cast<std::vector<uint8_t> &>(iitr->second);
 
-    size_t* indices = 
-      reinterpret_cast<size_t*>(&raw_indices[0]);
+    size_t * indices = 
+      reinterpret_cast<size_t *>(&raw_indices[0]);
 
     auto mitr = meta_data_.data.find(MATERIALS_KEY);
     assert(mitr != meta_data_.data.end());
 
-    std::vector<uint8_t>& raw_materials = 
-      const_cast<std::vector<uint8_t>&>(mitr->second);
+    std::vector<uint8_t> & raw_materials = 
+      const_cast<std::vector<uint8_t> &>(mitr->second);
 
     constexpr size_t ev_bytes = sizeof(material_value_t);
 
@@ -262,13 +262,13 @@ struct sparse_mutator_t {
       raw_materials.resize(c * ev_bytes + d);
     }
 
-    material_value_t* materials = 
-      reinterpret_cast<material_value_t*>(&raw_materials[0]);
+    material_value_t * materials = 
+      reinterpret_cast<material_value_t *>(&raw_materials[0]);
 
-    material_value_t* materials_end = materials + s / ev_bytes;
+    material_value_t * materials_end = materials + s / ev_bytes;
 
     for(size_t i = 0; i < num_indices_; ++i){
-      index_pair_& ip = indices_[i];
+      index_pair_ & ip = indices_[i];
       
       size_t n = ip.second - ip.first;
 
@@ -283,8 +283,8 @@ struct sparse_mutator_t {
       
       size_t m = distance(p.first, p.second);
 
-      material_value_t* start = materials_ + i * num_slots_;     
-      material_value_t* end = start + n; 
+      material_value_t * start = materials_ + i * num_slots_;     
+      material_value_t * end = start + n; 
 
       auto iitr = materials + pos;
 
@@ -292,7 +292,7 @@ struct sparse_mutator_t {
       std::copy(start, end, iitr);
       materials_end += n + m;
 
-      auto cmp = [](const auto& k1, const auto& k2) -> bool{
+      auto cmp = [](const auto & k1, const auto & k2) -> bool{
                    return k1.material < k2.material;
                   };
 
@@ -336,8 +336,8 @@ private:
 
   size_t num_indices_;
   size_t num_materials_;
-  index_pair_* indices_;
-  material_value_<T>* materials_;
+  index_pair_ * indices_;
+  material_value_<T *> materials_;
   spare_map_t spare_map_;
 }; // struct sparse_accessor_t
 
@@ -390,7 +390,7 @@ struct storage_type_t<sparse, DS, MD> {
 		assert(data_store[NS].find(h) == data_store[NS].end() &&
 			"key already exists");
 
-    meta_data_t& md = data_store[NS][h];
+    meta_data_t & md = data_store[NS][h];
 
 		md.user_data.initialize(std::forward<Args>(args) ...);
 		md.label = key.c_str();
@@ -402,7 +402,7 @@ struct storage_type_t<sparse, DS, MD> {
 
     md.num_materials = num_materials;
 
-    auto& iv = md.data[INDICES_KEY] = std::vector<uint8_t>();
+    auto & iv = md.data[INDICES_KEY] = std::vector<uint8_t>();
     iv.resize((indices + 1) * sizeof(size_t));
 
     md.data[MATERIALS_KEY] = std::vector<uint8_t>();
