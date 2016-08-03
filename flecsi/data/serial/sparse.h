@@ -21,9 +21,11 @@
 #include "flecsi/utils/const_string.h"
 #include "flecsi/data/serial/storage_type.h"
 
+/*
 #define np(X)                                                             \
   std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
              << ": " << #X << " = " << (X) << std::endl
+*/
 
 /*!
  * \file serial/sparse.h
@@ -337,7 +339,7 @@ private:
   size_t num_indices_;
   size_t num_materials_;
   index_pair_ * indices_;
-  material_value_<T *> materials_;
+  material_value_<T> * materials_;
   spare_map_t spare_map_;
 }; // struct sparse_accessor_t
 

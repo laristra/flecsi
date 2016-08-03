@@ -42,6 +42,10 @@ namespace flecsi {
 	storage_t::instance().get_accessor<storage_type, data_type,        \
 		data_name_space_t::user>(client, name, version)
 
+#define get_mutator(client, name, version, data_type, storage_type, slots) \
+  storage_t::instance().get_mutator<storage_type, data_type,               \
+    data_name_space_t::user>(client, name, slots, version)
+
 /*!
   FIXME
  */
