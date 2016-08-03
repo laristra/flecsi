@@ -208,15 +208,16 @@ public:
   }
 
   template<typename S>
-  branch_id(S min, S max, const point<S, dimension>& p)
+  branch_id(const std::array<point<S, 2>, dimension>& scale,
+            const point<S, dimension>& p)
   : id_(int_t(1) << bits - 1){  
     
     std::array<int_t, dimension> coords;
 
-    S range = max - min;
-
     for(size_t i = 0; i < dimension; ++i){
       assert(p[i] >= 0 && p[i] <= 1 && "invalid coordinates");
+      S min = scale[i][0];
+      S range = scale[i][1] - min;
       coords[i] = (p[i] - min)/range * (int_t(1) << (bits - 1)/dimension);
     }
 
@@ -248,14 +249,15 @@ public:
   }
 
   template<typename S>
-  branch_id(S min, S max, const point<S, dimension>& p, size_t depth)
+  branch_id(const std::array<point<S, 2>, dimension>& scale,
+            const point<S, dimension>& p, size_t depth)
   : id_(int_t(1) << depth * dimension + 1){  
     std::array<int_t, dimension> coords;
 
-    S range = max - min;
-
     for(size_t i = 0; i < dimension; ++i){
       assert(p[i] >= 0 && p[i] <= 1 && "invalid coordinates");
+      S min = scale[i][0];
+      S range = scale[i][1] - min;
       coords[i] = (p[i] - min)/range * (int_t(1) << (bits - 1)/dimension);
     }
 
@@ -392,7 +394,8 @@ public:
   }
 
   template<typename S>
-  void coordinates(S min, S max, point<S, dimension>& p) const{
+  void coordinates(const std::array<point<S, 2>, dimension>& scale,
+                   point<S, dimension>& p) const{
     std::array<int_t, dimension> coords;
     coords.fill(int_t(0));
 
@@ -410,9 +413,10 @@ public:
 
     constexpr int_t m = (int_t(1) << max_depth) - 1;
 
-    S range = max - min;
-
     for(size_t j = 0; j < dimension; ++j){
+      S min = scale[j][0];
+      S range = scale[j][1] - min;
+
       coords[j] <<= max_depth - d;
       p[j] = min + range * S(coords[j])/m;
     }
@@ -502,10 +506,6 @@ public:
   using entity_id_vector_t = std::vector<entity_id_t>;
 
   using geometry_t = tree_geometry<element_t, dimension>;
-
-  static constexpr bool scale_coordinates = 
-    P::coordinate_range.first != element_t(0) &&
-    P::coordinate_range.second != element_t(1); 
 
   template<class T>
   class iterator{
@@ -834,6 +834,22 @@ public:
     branch_map_.emplace(bid, root_);
 
     max_depth_ = 0;
+
+    for(size_t d = 0; d < dimension; ++d){
+      scale_[d][0] = element_t(0);
+      scale_[d][1] = element_t(1);
+    }
+  }
+
+  tree_topology(const std::array<point<element_t, 2>, dimension>& scale){
+    branch_id_t bid = branch_id_t::root();
+    root_ = new branch_t;
+    root_->set_id_(bid);
+    branch_map_.emplace(bid, root_);
+
+    max_depth_ = 0;
+
+    scale_ = scale;
   }
 
   branch_t* child(branch_t* b, size_t ci){
@@ -1162,24 +1178,11 @@ private:
     branch_id_hasher__<branch_int_t, dimension>>;
 
     branch_id_t to_branch_id(const point_t& p, size_t max_depth){
-      if(scale_coordinates){
-        return branch_id_t(P::coordinate_range.first,
-                           P::coordinate_range.second,
-                           p, max_depth);
-      }
-      else{
-        return branch_id_t(p, max_depth);
-      }
+      return branch_id_t(scale_, p, max_depth);
     }
 
     branch_id_t to_branch_id(const point_t& p){
-      if(scale_coordinates){
-        return branch_id_t(P::coordinate_range.first,
-                           P::coordinate_range.second, p);
-      }
-      else{
-        return branch_id_t(p);
-      }
+      return branch_id_t(scale_, p);
     }
 
     void insert(entity_t* ent, size_t max_depth){
@@ -1604,6 +1607,7 @@ private:
   branch_t* root_;
 
   std::vector<entity_t*> entities_;
+  std::array<point<element_t, 2>, dimension> scale_;
 };
 
 template<typename T, size_t D>

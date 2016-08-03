@@ -31,10 +31,6 @@ public:
 
   using point_t = point<element_t, dimension>;
 
-  using range_t = std::pair<element_t, element_t>;
-
-  static constexpr range_t coordinate_range = P::coordinate_range;
-
   class entity : public tree_entity<branch_int_t, dimension>{
   public:
     entity(const point_t& p)
