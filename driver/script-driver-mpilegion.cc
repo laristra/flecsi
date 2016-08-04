@@ -12,13 +12,13 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#include <flecsi/execution/task.h>
-#include <flecsi/execution/mpilegion_execution_policy.h>
-#include <flecsi/utils/common.h>
+//#include <flecsi/execution/task.h>
+//#include <flecsi/execution/mpilegion/execution_policy.h>
+//#include <flecsi/utils/common.h>
 
 #include <mpi.h>
 
-#include EXPAND_AND_STRINGIFY(FLECSI_DRIVER)
+//#include EXPAND_AND_STRINGIFY(FLECSI_DRIVER)
 
 /*----------------------------------------------------------------------------*
  * Serial execution harness.
@@ -31,13 +31,13 @@
 int main(int argc, char ** argv) {
    MPI_Init(&argc, &argv);
 
-  int return_value=
-  flecsi::execution_t<flecsi::mpilegion_execution_policy_t>::execute_task(
-    driver, argc, argv);
+//  int return_value=
+//  flecsi::execution_t<flecsi::mpilegion_execution_policy_t>::execute_task(
+//    driver, argc, argv);
 
    MPI_Finalize();
 
-   return return_value;
+//   return return_value;
 } // main
 
 /*~------------------------------------------------------------------------~--*

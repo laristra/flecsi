@@ -13,6 +13,7 @@
  */
 
 namespace flecsi {
+namespace execution {
 
 enum processor_t : size_t {
   loc,
@@ -20,6 +21,7 @@ enum processor_t : size_t {
   mpi
 }; // enum processor_t
 
+} //namespace execution 
 } // namespace flecsi
 
 #endif // flecsi_processor_h

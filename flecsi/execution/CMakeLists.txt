@@ -23,8 +23,17 @@ set(execution_HEADERS
   legion/execution_policy.h
   legion/runtime_driver.h
   legion/task_wrapper.h
+  mpilegion/context_policy.h
+  mpilegion/execution_policy.h
+  mpilegion/runtime_driver.h
+  mpilegion/task_wrapper.h
+  mpilegion/legion_handshake.h
+  mpilegion/mapper.h
+  mpilegion/task_ids.h
+  mpilegion/mpi_legion_interop.h
   PARENT_SCOPE
 )
+
 
 set(execution_SOURCES
     PARENT_SCOPE
@@ -41,6 +50,17 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     SOURCES test/task.cc
     POLICY LEGION
     LIBRARIES flecsi)
+elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+   set(execution_SOURCES ${execution_SOURCES}
+    mpilegion/runtime_driver.cc
+    PARENT_SCOPE
+  )
+
+  cinch_add_unit(task
+    SOURCES test/task.cc
+    POLICY LEGION
+    LIBRARIES flecsi)
+ 
 else()
   set(execution_SOURCES ${execution_SOURCES}
     serial/runtime_driver.cc

@@ -29,6 +29,7 @@
  */
 
 namespace flecsi {
+namespace execution {
 
 /*!
   \struct serial_execution_policy serial_execution_policy.h
@@ -43,7 +44,7 @@ struct serial_execution_policy_t
   } // register_task
 
   template<typename T, typename ... As>
-  static decltype(auto) execute_task(uintptr_t key, T user_task, As ... args)
+  static decltype(auto) execute_task(uintptr_t key, processor_t processor, T user_task, As ... args)
   {
     auto t = std::make_tuple(args ...);
     return tuple_function(user_task, t);
@@ -51,6 +52,7 @@ struct serial_execution_policy_t
   
 }; // struct serial_execution_policy_t
 
+} // namespace execution 
 } // namespace flecsi
 
 #endif // flecsi_serial_execution_policy_h

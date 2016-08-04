@@ -13,7 +13,7 @@
  *~--------------------------------------------------------------------------~*/
 
 #include <flecsi/execution/task.h>
-#include <flecsi/execution/legion_execution_policy.h>
+#include <flecsi/execution/legion/execution_policy.h>
 #include <flecsi/utils/common.h>
 
 #include EXPAND_AND_STRINGIFY(FLECSI_DRIVER)

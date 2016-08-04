@@ -25,10 +25,8 @@ enum {
 };
 
 
-namespace flecsi
-{
-namespace mpilegion
-{
+namespace flecsi{
+namespace execution{
 
 class MPIMapper : public LegionRuntime::HighLevel::ShimMapper {
 public:
@@ -258,8 +256,7 @@ void mapper_registration(LegionRuntime::HighLevel::Machine machine,
   }
 }
 
-}//end namespace mpilegion
-
+}//end namespace execution
 }//end namespace flecsi 
 #endif
 

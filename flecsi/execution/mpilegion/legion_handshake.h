@@ -49,10 +49,8 @@
   } \
 } while(0)
 
-namespace flecsi
-{
-namespace mpilegion
-{
+namespace flecsi{
+namespace execution{
 
 class ExtLegionHandshake {
 public:
@@ -213,9 +211,7 @@ void ExtLegionHandshake::legion_wait_on_ext(void)
   assert(state == IN_LEGION);
 }
 
-
-}//end namespace mpilegion
-
+}//end namespace execution
 }//end namespace flecsi
 
 #endif

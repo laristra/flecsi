@@ -15,6 +15,7 @@
  */
 
 namespace flecsi {
+namespace execution {
 
 /*!
   \struct task__ task.h
@@ -41,6 +42,7 @@ struct task__
 
 }; // class task
 
+} // namespace execution 
 } // namespace flecsi
 
 /*
@@ -49,7 +51,9 @@ struct task__
 #include "flecsi_runtime_execution_policy.h"
 
 namespace flecsi {
+namespace execution {
 using task_t = task__<flecsi_execution_policy_t>;
+} // namespace execution 
 } // namespace flecsi
 
 #endif // flecsi_task_h

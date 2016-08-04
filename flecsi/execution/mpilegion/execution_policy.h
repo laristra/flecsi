@@ -12,13 +12,12 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_legion_execution_policy_h
-#define flecsi_legion_execution_policy_h
+#ifndef flecsi_mpilegion_execution_policy_h
+#define flecsi_mpilegion_execution_policy_h
 
-#include "flecsi/execution/context.h"
 #include "flecsi/execution/processor.h"
-#include "flecsi/execution/legion/context_policy.h"
-#include "flecsi/execution/legion/task_wrapper.h"
+#include "flecsi/execution/mpilegion/context_policy.h"
+#include "flecsi/execution/mpilegion/task_wrapper.h"
 
 /*!
  * \file legion/execution_policy.h
@@ -33,7 +32,7 @@ namespace execution {
   \struct legion_execution_policy legion_execution_policy.h
   \brief legion_execution_policy provides...
  */
-struct legion_execution_policy_t
+struct mpilegion_execution_policy_t
 {
   using task_key_t = uintptr_t;
 
@@ -54,17 +53,19 @@ struct legion_execution_policy_t
       return context_t::instance().register_task(key,
         legion_task_wrapper_<toc, 1, 0, R, As ...>::runtime_registration);
      break;
+     case mpi:
+      return context_t::instance().register_task(key,
+        legion_task_wrapper_<mpi, 1, 0, R, As ...>::runtime_registration);
+     break;
      default: throw std::runtime_error("unsupported processor type");
-    }
-//      return context_t::instance().register_task(key,
-//        task_wrapper_t::runtime_registration);
-
+   }
   } // register_task
 
   template<typename T, typename ... As>
-  static decltype(auto) execute_task(uintptr_t key, processor_t processor,
+  static decltype(auto) execute_task(uintptr_t key, processor_t processor, 
     T user_task, As ... args)
   {
+    
     using namespace Legion;
 
     context_t & context_ = context_t::instance();
@@ -76,10 +77,25 @@ struct legion_execution_policy_t
     // task is invoked, i.e., we have to use copies...
     task_args_t task_args(user_task, args ...);
 
-    TaskLauncher task_launcher(context_.task_id(key),
-      TaskArgument(&task_args, sizeof(task_args_t)));
+    if (processor==mpi)
+    {
+     MPILegionInterop *Interop =  MPILegionInterop::instance();
+//TOFIX use std::bind     Interop->shared_functor(
+//                new flecsi::utils::general_functor_<void *, As ...>(
+//                user_task,
+//                std::forward<As>(args) ...));
+     Interop->call_mpi=true;
+     Interop->handoff_to_mpi(context_.context(), context_.runtime());
+     //mpi task is running here
+     Interop->wait_on_mpi(context_.context(), context_.runtime()); 
+    }
+    else{
 
-    return context_.runtime()->execute_task(context_.context(), task_launcher);
+     TaskLauncher task_launcher(context_.task_id(key),
+       TaskArgument(&task_args, sizeof(task_args_t)));
+
+     return context_.runtime()->execute_task(context_.context(), task_launcher);
+    }
   } // execute_task
 
 #if 0
@@ -89,12 +105,12 @@ struct legion_execution_policy_t
   } // register_kernel
 #endif
 
-}; // struct legion_execution_policy_t
+}; // struct mpilegion_execution_policy_t
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
 
-#endif // flecsi_legion_execution_policy_h
+#endif // flecsi_mpilegion_execution_policy_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

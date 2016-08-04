@@ -24,6 +24,7 @@
  */
 
 namespace flecsi {
+namespace execution {
 
 struct serial_context_policy_t
 {
@@ -35,6 +36,7 @@ struct serial_context_policy_t
 
 }; // struct serial_context_policy_t
 
+} // namespace execution 
 } // namespace flecsi
 
 #endif // flecsi_serial_context_policy_h

@@ -18,14 +18,9 @@
 #include <cinchtest.h>
 
 //#include "flecsi/utils/mpi_legion_interoperability/mpi_legion_data.h"
-#include "flecsi/execution/mpilegion_execution_policy.h"
-#include "flecsi/execution/legion_execution_policy.h"
+#include "flecsi/execution/mpilegion/execution_policy.h"
 #include "flecsi/execution/task.h"
 #include "legion.h"
-
-#include "flecsi/utils/TaskWrapper.h"
-
-#include "flecsi/execution/register_legion.h"
 
 using namespace flecsi;
 using namespace flecsi::mpilegion;

@@ -20,13 +20,13 @@
   using user_delegate_ ## task ## _t =                       \
     std::function<return_type(__VA_ARGS__)>;                 \
   bool task ## _registered =                                 \
-    flecsi::task_t::register_task<return_type, __VA_ARGS__>( \
+    flecsi::execution::task_t::register_task<return_type, __VA_ARGS__>( \
     reinterpret_cast<uintptr_t>(&task), processor);
 
-#define execute_task(task, ...)                                    \
+#define execute_task(task,processor, ...)                                    \
   user_delegate_ ## task ## _t task ## _delegate = task;           \
-  flecsi::task_t::execute_task(reinterpret_cast<uintptr_t>(&task), \
-    task ## _delegate, ## __VA_ARGS__)
+  flecsi::execution::task_t::execute_task(reinterpret_cast<uintptr_t>(&task), \
+   processor, task ## _delegate , ##  __VA_ARGS__)
 
 #endif // flecsi_execution_h
 
