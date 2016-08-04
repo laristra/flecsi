@@ -12,7 +12,10 @@ ARG TRAVIS_COMMIT
 ARG COVERAGE
 
 RUN apt-get -q update -y
-RUN apt-get -qq install -y make cmake cmake-data git g++ gfortran libopenmpi-dev \
+RUN apt-get install -y software-properties-common
+RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test
+RUN apt-get -q update -y
+RUN apt-get -qq install -y make cmake cmake-data git g++-6 gfortran-6 libopenmpi-dev \
  openmpi-bin libscotch-dev libexodusii-dev liblapacke-dev flex python-pip
 
 RUN groupadd -r flecsi && useradd -r -m -g flecsi flecsi
@@ -38,7 +41,7 @@ RUN if [ ${TRAVIS} = true ]; then \
 RUN mkdir build
 
 WORKDIR build
-RUN cmake -DENABLE_MPI=$MPI \
+RUN CC=gcc-6 CXX=g++-6 cmake -DENABLE_MPI=$MPI \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON \
           -DCMAKE_DISABLE_FIND_PACKAGE_SCOTCH=ON \
