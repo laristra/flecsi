@@ -31,7 +31,8 @@ RUN if [ ${TRAVIS} = true ]; then \
       else \
         git fetch --depth=10 "git://github.com/${TRAVIS_REPO_SLUG}" "${TRAVIS_BRANCH}"; \
 	git checkout "${TRAVIS_COMMIT}"; \
-      fi \
+      fi; \
+      git submodule update; \
     fi
 RUN mkdir build
 
