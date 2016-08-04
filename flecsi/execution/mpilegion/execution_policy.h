@@ -80,10 +80,7 @@ struct mpilegion_execution_policy_t
     if (processor==mpi)
     {
      MPILegionInterop *Interop =  MPILegionInterop::instance();
-//TOFIX use std::bind     Interop->shared_functor(
-//                new flecsi::utils::general_functor_<void *, As ...>(
-//                user_task,
-//                std::forward<As>(args) ...));
+        Interop->shared_func=std::bind(user_task,std::forward<As>(args) ...);
      Interop->call_mpi=true;
      Interop->handoff_to_mpi(context_.context(), context_.runtime());
      //mpi task is running here

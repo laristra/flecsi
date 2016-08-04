@@ -29,7 +29,6 @@
 #include "flecsi/execution/mpilegion/legion_handshake.h"
 #include "flecsi/execution/mpilegion/mapper.h"
 #include "flecsi/execution/mpilegion/task_ids.h"
-#include "flecsi/utils/general_functor.h"
 
 namespace flecsi{
 namespace execution{ 
@@ -110,9 +109,11 @@ class MPILegionInterop {
 //  CommonDataType CommonData;
   ExtLegionHandshake *handshake=nullptr;
 
-  template<typename R>
-  using functor_ptr_t=flecsi::utils::functor_ptr_<R*>;
-  functor_ptr_t<void> shared_functor;
+  //template<typename R>
+  //using shared_func=std::function<R()>; 
+  std::function<void()> shared_func;
+//  using functor_ptr_t=flecsi::utils::functor_ptr_<R*>;
+//  functor_ptr_t<void> shared_functor;
 
   bool call_mpi=false;
 

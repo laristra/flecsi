@@ -80,8 +80,7 @@ struct mpilegion_context_policy_t
 
      while(Interop->call_mpi)
      {
-      //TOFIX : move to evaluate
-       Interop->shared_functor->evaluate();
+       Interop->shared_func();
        Interop->handoff_to_legion();
        Interop->wait_on_legion();
       }
