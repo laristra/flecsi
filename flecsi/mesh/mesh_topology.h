@@ -1181,16 +1181,23 @@ class mesh_topology_t : public mesh_topology_base_t
     Debug method to dump the connectivity of the mesh over all domains and
     topological dimensions.
   */
-  void dump()
+
+  std::ostream & dump( std::ostream & stream )
   {
     for (size_t from_domain = 0; from_domain < MT::num_domains; ++from_domain) {
-      std::cout << "=================== from domain: " << from_domain
+      stream << "=================== from domain: " << from_domain
                 << std::endl;
       for (size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain) {
-        std::cout << "========== to domain: " << to_domain << std::endl;
-        ms_.topology[from_domain][to_domain].dump();
+        stream << "========== to domain: " << to_domain << std::endl;
+        ms_.topology[from_domain][to_domain].dump( stream );
       }
     }
+    return stream;
+  } // dump
+
+  void dump()
+  {
+    dump( std::cout );
   } // dump
 
   char* serialize(uint64_t& size){
