@@ -44,7 +44,7 @@ struct mesh_t : public data_client_t {
 
     switch(index_space_id) {
       case cells:
-        return 100;
+        return 10;
         break;
       default:
         // FIXME: lookup user-defined index space
@@ -79,16 +79,85 @@ double task2(double x, double y, dense_field_t<double> p) {
 
 register_task(task2, loc, void, double, double, dense_field_t<double>);
 
+/*----------------------------------------------------------------------------*
+ * Kernel registration.
+ *----------------------------------------------------------------------------*/
+
+double eos_copper(double r, double e) {
+  std::cout << "Executing function1" << std::endl;
+  std::cout << "(r,e): (" << r << "," << e << ")" << std::endl;
+  return r*e;
+} // function1
+
+register_function(eos_copper, double, double, double);
+
+double eos_steel(double r, double e) {
+  std::cout << "Executing function2" << std::endl;
+  std::cout << "(r,e): (" << r << "," << e << ")" << std::endl;
+  return 2*r*e;
+} // function1
+
+register_function(eos_steel, double, double, double);
+
+/*----------------------------------------------------------------------------*
+ * User type.
+ *----------------------------------------------------------------------------*/
+
+define_function_type(eos_function_t, double, double, double);
+
+struct material_t {
+  eos_function_t eos_function;
+  double r;
+  double e;
+
+  double eos() {
+    return execute_function(eos_function, r, e);
+  } // eos
+
+  material_t(eos_function_t eos_function_, double r_, double e_)
+    : eos_function(eos_function_), r(r_), e(e_) {}
+}; // struct material_t
+
+struct copper_t : material_t {
+  copper_t(double r_, double e_)
+    : material_t(function_handle(eos_copper), r_, e_) {}
+};
+
+struct steel_t : material_t {
+  steel_t(double r_, double e_)
+    : material_t(function_handle(eos_steel), r_, e_) {}
+};
+
+/*----------------------------------------------------------------------------*
+ * Driver.
+ *----------------------------------------------------------------------------*/
+
 void driver(int argc, char ** argv) {
 
-	mesh_t m;
+  mesh_t m;
 
-	// FIXME: need this to come from get_handle
-	auto p = register_data(m, "pressure", 1, double, dense, cells);
+  // FIXME: need this to come from get_handle
+  auto p = register_data(m, "pressure", 1, double, dense, cells);
   double alpha(10.0);
 
   execute_task(task1, alpha, 5);
   execute_task(task2, alpha, 5.0, p);
+
+  register_data(m, "materials", 1, material_t, dense, cells);
+
+  auto mats = get_accessor(m, "materials", 0, material_t, dense);
+
+  for(size_t i(0); i<5; ++i) {
+    mats[i] = copper_t(2.0, 2.0);
+  } // for
+
+  for(size_t i(5); i<10; ++i) {
+    mats[i] = steel_t(2.0, 2.0);
+  } // for
+
+  for(size_t i(0); i<10; ++i) {
+    std::cout << mats[i].eos() << std::endl;
+  } // for
 
 } // driver
 

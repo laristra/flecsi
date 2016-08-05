@@ -19,6 +19,7 @@
 #include <vector>
 #include <memory>
 #include <typeinfo>
+#include <bitset>
 
 /*!
  * \file serial/meta_data.h
@@ -40,16 +41,20 @@ namespace flecsi {
   \tparam user_meta_data_t A user-defined data type that will be carried
     with the meta data.
  */
-template<typename UMD>
+template<typename T>
 struct serial_meta_data_t {
 
-  using user_meta_data_t = UMD;
+  using user_meta_data_t = T;
 
   std::string label;
   user_meta_data_t user_data;
+  size_t index_space;
   size_t size;
   size_t type_size;
   size_t versions;
+
+  std::bitset<8> attributes;
+  std::bitset<8> user_attributes;
 
   /*!
     \brief type_info_t allows creation of reference information

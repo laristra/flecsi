@@ -29,18 +29,18 @@
 namespace flecsi
 {
 /*!
-  \class bitfield bitfield.h
-  \brief bitfield provides...
+  \class bitfield__ bitfield.h
+  \brief bitfield__ provides...
  */
 
 template <typename T>
-class bitfield
+class bitfield__
 {
  public:
   using field_type_t = T;
 
   //! Default constructor
-  bitfield(const field_type_t bits = 0x0) : bits_(bits)
+  bitfield__(const field_type_t bits = 0x0) : bits_(bits)
   {
     static_assert(std::numeric_limits<T>::is_integer &&
             !std::numeric_limits<T>::is_signed,
@@ -48,11 +48,11 @@ class bitfield
   }
 
   //! Copy constructor (disabled)
-  bitfield(const bitfield & bf) : bits_(bf.bits_) {}
+  bitfield__(const bitfield__ & bf) : bits_(bf.bits_) {}
   //! Assignment operator (disabled)
-  bitfield & operator=(const bitfield & bf) { bits_ = bf.bits_; }
+  bitfield__ & operator=(const bitfield__ & bf) { bits_ = bf.bits_; }
   //! Destructor
-  ~bitfield() {}
+  ~bitfield__() {}
   /*!-------------------------------------------------------------------------*
    * Set bits in mask.
    *--------------------------------------------------------------------------*/
@@ -134,9 +134,9 @@ class bitfield
  private:
   field_type_t bits_;
 
-}; // class bitfield
+}; // class bitfield__
 
-using bitfield_t = bitfield<uint32_t>;
+using bitfield_t = bitfield__<uint32_t>;
 
 } // namespace flecsi
 

@@ -49,8 +49,8 @@ struct legion_context_policy_t
       TOP_LEVEL_TASK_ID, lr_loc, true, false);
 
     // Register user tasks
-    for(auto f: registration_) {
-      // funky logic: registration_ is a map of std::pair
+    for(auto f: task_registry_) {
+      // funky logic: task_registry_ is a map of std::pair
       // f.first is the uintptr_t that holds the user function address
       // f.second is the pair of unique task id and the registration function
       f.second.second(f.second.first);
@@ -79,8 +79,8 @@ struct legion_context_policy_t
 
   bool register_task(uintptr_t key, const register_function_t & f)
     {
-      if(registration_.find(key) == registration_.end()) {
-        registration_[key] = { unique_fid_t::instance().next(), f };
+      if(task_registry_.find(key) == task_registry_.end()) {
+        task_registry_[key] = { unique_fid_t::instance().next(), f };
         return true;
       }
 
@@ -89,10 +89,10 @@ struct legion_context_policy_t
 
   task_id_t task_id(uintptr_t key)
     {
-      assert(registration_.find(key) != registration_.end() &&
+      assert(task_registry_.find(key) != task_registry_.end() &&
         "task key does not exist!");
 
-      return registration_[key].first;
+      return task_registry_[key].first;
     } // task_id
 
   /*--------------------------------------------------------------------------*
@@ -127,7 +127,9 @@ private:
 
   std::shared_ptr<legion_runtime_state_t> state_;
   std::unordered_map<uintptr_t,
-    std::pair<task_id_t, register_function_t>> registration_;
+    std::pair<task_id_t, register_function_t>> task_registry_;
+  std::unordered_map<size_t, std::function<void(void)> *>
+    function_registry_;
 
 }; // class legion_context_policy_t
 

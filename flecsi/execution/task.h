@@ -27,17 +27,17 @@ struct task__
   using task_key_t = typename execution_policy_t::task_key_t;
 
   template<typename R, typename ... Args>
-  static decltype(auto) register_task(uintptr_t key, processor_t processor)
-    {
-      return execution_policy_t::template register_task<R, Args...>(key,
-        processor);
-    } // register_task
+  static decltype(auto) register_task(task_key_t key, processor_t processor)
+  {
+    return execution_policy_t::template register_task<R, Args...>(key,
+      processor);
+  } // register_task
 
   template<typename ... Args>
-  static decltype(auto) execute_task(uintptr_t key, Args && ... args)
-    {
+  static decltype(auto) execute_task(task_key_t key, Args && ... args)
+  {
     return execution_policy_t::execute_task(key, std::forward<Args>(args) ...);
-    } // execute
+  } // execute
 
 }; // class task
 
@@ -49,7 +49,9 @@ struct task__
 #include "flecsi_runtime_execution_policy.h"
 
 namespace flecsi {
+
 using task_t = task__<flecsi_execution_policy_t>;
+
 } // namespace flecsi
 
 #endif // flecsi_task_h

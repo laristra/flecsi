@@ -14,7 +14,6 @@
 
 set(utils_HEADERS
   array_ref.h
-  bitfield.h
   check_sig.h
   check_types.h
   common.h
@@ -71,9 +70,6 @@ endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
 set(utils_HEADERS ${utils_HEADERS} PARENT_SCOPE)
 
-cinch_add_unit(bitfield
-  SOURCES test/bitfield.cc)
-  
 cinch_add_unit(check_sig
   SOURCES test/check_sig.cc)
 
