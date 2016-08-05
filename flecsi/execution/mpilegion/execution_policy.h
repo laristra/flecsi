@@ -87,7 +87,7 @@ struct mpilegion_execution_policy_t
      Interop->wait_on_mpi(context_.context(), context_.runtime()); 
     }
     else{
-
+std::cout <<"inside execute task" << std::endl;
      TaskLauncher task_launcher(context_.task_id(key),
        TaskArgument(&task_args, sizeof(task_args_t)));
 

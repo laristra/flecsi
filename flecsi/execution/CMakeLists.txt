@@ -58,7 +58,7 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
   cinch_add_unit(task
     SOURCES test/task.cc
-    POLICY LEGION
+    POLICY MPILEGION
     LIBRARIES flecsi)
  
 else()
@@ -70,6 +70,19 @@ else()
   cinch_add_unit(task
     SOURCES test/task.cc
     LIBRARIES flecsi)
+endif()
+
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+
+  cinch_add_unit(test_legion_handshake
+  SOURCES mpilegion/test/test_legion_handshake.cc
+  POLICY MPILEGION) 
+
+  cinch_add_unit(test_mpilegion_interop
+  SOURCES mpilegion/test/test_mpi_legion_interop.cc
+  POLICY MPILEGION)
+ 
 endif()
 
 #----------------------------------------------------------------------------~-#

@@ -50,6 +50,8 @@ class MPILegionInterop {
  //Unique point of access to singleton 
   static MPILegionInterop* initialize(void) {
     if (!interop_obj_) interop_obj_= new MPILegionInterop();
+   interop_obj_->register_tasks();
+   Legion::HighLevelRuntime::set_registration_callback(mapper_registration);
    return interop_obj_;
   }
 
@@ -63,17 +65,31 @@ class MPILegionInterop {
               LegionRuntime::HighLevel::Context ctx,
               LegionRuntime::HighLevel::HighLevelRuntime *runtime);
  
-  void legion_configure();
+  void legion_configure(){ 
+     assert(interop_obj_);
+     interop_obj_->handshake->ext_init();
+     }
 
   static void connect_to_mpi_task (
       const Legion::Task *legiontask,
       const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
       LegionRuntime::HighLevel::Context ctx, 
-      LegionRuntime::HighLevel::HighLevelRuntime *runtime);
+      LegionRuntime::HighLevel::HighLevelRuntime *runtime)
+      {
+         std::cout <<"inside connect_to_mpi"<<std::endl;
+         //MPILegionInterop *Iterop= MPILegionInterop::instance();
+         interop_obj_->handshake->legion_init();
+      }
 
-  void handoff_to_legion(void);
+  void handoff_to_legion(void){
+    assert(interop_obj_);
+    interop_obj_->handshake->ext_handoff_to_legion();
+  }
 
-  void wait_on_legion(void);
+  void wait_on_legion(void){
+    assert(interop_obj_);
+    interop_obj_->handshake->ext_wait_on_legion();
+  }
 
   static void  handoff_to_mpi_task (
       const Legion::Task *legiontask,
@@ -107,7 +123,7 @@ class MPILegionInterop {
  
  public:
 //  CommonDataType CommonData;
-  ExtLegionHandshake *handshake=nullptr;
+  static ExtLegionHandshake *handshake;
 
   //template<typename R>
   //using shared_func=std::function<R()>; 
@@ -150,34 +166,6 @@ class MPILegionInterop {
    {  
      }
 
- void MPILegionInterop::legion_configure()
- {
-    assert(interop_obj_);
-    interop_obj_->handshake->ext_init();
- }
-
- void MPILegionInterop::connect_to_mpi_task (
-     const Legion::Task *legiontask,
-     const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
-     LegionRuntime::HighLevel::Context ctx, 
-     LegionRuntime::HighLevel::HighLevelRuntime *runtime)
-    {
-     std::cout <<"inside connect_to_mpi"<<std::endl;
-     assert(interop_obj_);
-     interop_obj_->handshake->legion_init();
-    }
-
- void MPILegionInterop::handoff_to_legion(void)
- {
-   assert(interop_obj_);
-   interop_obj_->handshake->ext_handoff_to_legion();
- }
-
- void MPILegionInterop::wait_on_legion(void)
- {
-   assert(interop_obj_);
-   interop_obj_->handshake->ext_wait_on_legion();
- }
 
  void MPILegionInterop::handoff_to_mpi_task (
      const Legion::Task *legiontask,
@@ -185,7 +173,6 @@ class MPILegionInterop {
      LegionRuntime::HighLevel::Context ctx, 
      LegionRuntime::HighLevel::HighLevelRuntime *runtime)
      {
-       assert(interop_obj_);
        interop_obj_->handshake->legion_handoff_to_ext();
       }
 
@@ -195,7 +182,6 @@ class MPILegionInterop {
     LegionRuntime::HighLevel::Context ctx, 
     LegionRuntime::HighLevel::HighLevelRuntime *runtime)
     {
-     assert(interop_obj_);
      interop_obj_->handshake->legion_wait_on_ext();
     }
 
@@ -316,6 +302,8 @@ class MPILegionInterop {
    runtime->execute_index_space(ctx,wait_on_mpi_launcher);
  }
 
+  MPILegionInterop* MPILegionInterop::interop_obj_=0;
+  ExtLegionHandshake* MPILegionInterop::handshake=0;
 } //end namespace execution
 } //end namespace flecsi
 

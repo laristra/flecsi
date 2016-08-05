@@ -35,9 +35,11 @@ struct task__
     } // register_task
 
   template<typename ... Args>
-  static decltype(auto) execute_task(uintptr_t key, Args && ... args)
+  static decltype(auto) execute_task(uintptr_t key, 
+                 processor_t processor, Args && ... args)
     {
-    return execution_policy_t::execute_task(key, std::forward<Args>(args) ...);
+    return execution_policy_t::execute_task(
+                  key, processor, std::forward<Args>(args) ...);
     } // execute
 
 }; // class task

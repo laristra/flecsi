@@ -98,7 +98,7 @@ ExtLegionHandshake::ExtLegionHandshake(
 #ifndef SHARED_LOWLEVEL
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  printf("handshake %p created on rank %d\n", this, rank);
+//  printf("handshake %p created on rank %d\n", this, rank);
 #endif
 }
 

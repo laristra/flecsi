@@ -46,8 +46,6 @@ struct mpilegion_context_policy_t
 
   int initialize(int argc, char ** argv) {
 
-    MPI_Init(&argc, &argv);
-
     // Register top-level task
     lr_runtime_t::set_top_level_task_id(TOP_LEVEL_TASK_ID);
     lr_runtime_t::register_legion_task<mpilegion_runtime_driver>(
@@ -62,9 +60,10 @@ struct mpilegion_context_policy_t
     } // for
  
     MPILegionInterop *Interop =  MPILegionInterop::initialize();
-   
+    //Interop->register_tasks();  
+ 
     // Start the runtime
-    return lr_runtime_t::start(argc, argv);
+    return lr_runtime_t::start(argc, argv, true);
 
     Interop->legion_configure();
 
@@ -78,14 +77,14 @@ struct mpilegion_context_policy_t
 
     //while loop to do some mpi tasks
 
-     while(Interop->call_mpi)
+/*     while(Interop->call_mpi)
      {
        Interop->shared_func();
        Interop->handoff_to_legion();
        Interop->wait_on_legion();
       }
-
-      MPI_Finalize();
+*/
+      //MPI_Finalize();
    
    return 0;
 

@@ -19,16 +19,12 @@
 #include <type_traits> // std::is_same
 
 // user includes
-#include "flecsi/utils/mpi_legion_interoperability/legion_handshake.h"
-#include "flecsi/utils/mpi_legion_interoperability/mapper.h"
-#include "flecsi/utils/mpi_legion_interoperability/task_ids.h"
-#include "flecsi/execution/mpi_execution_policy.h"
+#include "flecsi/execution/mpilegion/legion_handshake.h"
+#include "flecsi/execution/mpilegion/mapper.h"
+#include "flecsi/execution/mpilegion/task_ids.h"
 #include "flecsi/execution/task.h"
 
-using namespace flecsi::mpilegion;
-
-using execution_t = flecsi::execution_t<flecsi::mpi_execution_policy_t>;
-using return_type_t = execution_t::return_type_t;
+using namespace flecsi::execution;
 
 enum TaskIDs{
  TOP_LEVEL_TASK_ID         =0x00000100,
@@ -36,16 +32,6 @@ enum TaskIDs{
 };
 
 ExtLegionHandshake *handshake;
-
-return_type_t world_size() {
-#ifdef DEBUG
-  printf ("inside MPI function \n");
-#endif 
-  int world_size = 0;
-  MPI_Comm_size(MPI_COMM_WORLD, &world_size);
-
-  return 0;
-}
 
 using namespace LegionRuntime::HighLevel;
 using namespace LegionRuntime::Accessor;
@@ -59,7 +45,6 @@ void top_level_task(const Task *task,
 #ifdef DEBUG
   printf ("inside top_level_task function \n");
 #endif
-
 
 #ifndef SHARED_LOWLEVEL
   // Only the shared lowlevel runtime needs to iterate over all points
@@ -199,8 +184,7 @@ void my_init_legion(){
 #define execute(task, ...) \
   execution_t::execute_task(task, ##__VA_ARGS__)
 
-TEST(mpi_with_legion, simple) {
-   ASSERT_LT(execute(world_size), 1);
+TEST(legion_handshake, simple) {
 
    my_init_legion(); 
  
