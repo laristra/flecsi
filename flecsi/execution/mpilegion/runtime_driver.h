@@ -3,28 +3,30 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_processor_h
-#define flecsi_processor_h
+#ifndef flecsi_mpilegion_runtime_driver_h
+#define flecsi_mpilegion_runtime_driver_h
 
+#include <legion.h>
+
+#include "flecsi/execution/mpilegion/mpi_legion_interop.h"
 /*!
- * \file processor.h
+ * \file mpilegion/runtime_driver.h
  * \authors bergen
- * \date Initial file creation: Aug 02, 2016
+ * \date Initial file creation: Jul 26, 2016
  */
 
 namespace flecsi {
 namespace execution {
 
-enum processor_t : size_t {
-  loc,
-  toc,
-  mpi
-}; // enum processor_t
+void mpilegion_runtime_driver(const LegionRuntime::HighLevel::Task * task,
+  const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
+  LegionRuntime::HighLevel::Context ctx,
+  LegionRuntime::HighLevel::HighLevelRuntime * runtime);
 
-} //namespace execution 
+} // namespace execution
 } // namespace flecsi
 
-#endif // flecsi_processor_h
+#endif // flecsi_mpilegion_runtime_driver_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

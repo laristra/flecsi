@@ -5,7 +5,16 @@
 
 #include <cinchtest.h>
 
+#include <vector>
+#include <algorithm>
+
 #include "flecsi/data/data.h"
+
+/*
+#define np(X)                                                            \
+ std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
+           << ": " << #X << " = " << X << std::endl
+*/
 
 using namespace flecsi;
 
@@ -114,26 +123,69 @@ TEST(storage, scalar) {
  * Sparse storage type.
  *----------------------------------------------------------------------------*/
 
-TEST(storage, sparse) {
+TEST(storage, sparse1) {
 // TODO: sparse data changes in progress
-#if 0
   mesh_t m;
 
-  register_data(m, "materials", 1, double, sparse, 100, 4);
+  size_t num_indices = 100;
+  size_t num_materials = 50;
 
-  {
-  auto mats = get_accessor(m, "materials", 0, double, sparse);
-  auto data = mats.data();
+  register_data(m, "a", 1, double, sparse, num_indices, num_materials);
+  auto am = get_mutator(m, "a", 0, double, sparse, 10);
 
-  for(size_t i(0); i<400; ++i) {
-    data[i] = 0.0;
-  } // for
+  for(size_t i = 0; i < num_indices; i += 2){
+    for(size_t j = 0; j < num_materials; j += 2){
+      am(i, j) = i * 100 + j;
+    }
+  }
 
-  for(size_t i(0); i<100; ++i) {
-    std::cout << "index: " << i << " equals: " << mats(i) << std::endl;
-  } // for
-  } // scope
-#endif
+  am.commit();
+
+  auto a = get_accessor(m, "a", 0, double, sparse);
+
+  for(size_t i = 0; i < num_indices ; i += 2){
+    for(size_t j = 0; j < num_materials; j += 2){
+      ASSERT_EQ(a(i, j), i * 100 + j);
+    }
+  }
+
+} // TEST
+
+TEST(storage, sparse2) {
+// TODO: sparse data changes in progress
+  mesh_t m;
+
+  size_t num_indices = 1000;
+  size_t num_materials = 50;
+
+  register_data(m, "a", 1, double, sparse, num_indices, num_materials);
+
+  std::vector<std::pair<size_t, size_t>> v;
+
+  for(size_t i = 0; i < num_indices; i += 2){
+    for(size_t j = 0; j < num_materials; j += 2){
+      v.push_back({i, j});
+    }
+  }
+
+  std::random_shuffle(v.begin(), v.end());
+
+  auto am = get_mutator(m, "a", 0, double, sparse, 30);
+
+  for(auto p : v){
+    am(p.first, p.second) = p.first * 1000 + p.second;
+  }
+
+  am.commit();
+
+  auto a = get_accessor(m, "a", 0, double, sparse);
+
+  for(size_t i = 0; i < num_indices ; i += 2){
+    for(size_t j = 0; j < num_materials; j += 2){
+      ASSERT_EQ(a(i, j), i * 1000 + j);
+    }
+  }
+
 } // TEST
 
 #undef register_data

@@ -21,8 +21,8 @@
  * \date Initial file creation: Oct 19, 2015
  */
 
-namespace flecsi
-{
+namespace flecsi {
+namespace execution {
 
 /*!
   \class context__ context.h
@@ -78,6 +78,7 @@ private:
 
 }; // class context__
 
+} // namespace execution
 } // namespace flecsi
 
 /*
@@ -86,7 +87,9 @@ private:
 #include "flecsi_runtime_context_policy.h"
 
 namespace flecsi {
+namespace execution {
 using context_t = context__<flecsi_context_policy_t>;
+} //namespace execution 
 } // namespace flecsi
 
 #endif // flecsi_context_h

@@ -13,9 +13,11 @@
  */
 
 namespace flecsi {
+namespace execution {
 
 void serial_runtime_driver(int argc, char ** argv);
 
+} // namespace execution 
 } // namespace flecsi
 
 #endif // flecsi_serial_runtime_driver_h

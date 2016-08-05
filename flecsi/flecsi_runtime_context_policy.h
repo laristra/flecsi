@@ -24,25 +24,24 @@
 #if FLECSI_RUNTIME_MODEL_serial
 
   #include "flecsi/execution/serial/context_policy.h"
-  #define flecsi_context_policy_t serial_context_policy_t
+  #define flecsi_context_policy_t flecsi::execution::serial_context_policy_t
 
 /* Legion Policy */
 #elif FLECSI_RUNTIME_MODEL_legion
 
   #include "flecsi/execution/legion/context_policy.h"
-  #define flecsi_context_policy_t legion_context_policy_t
+  #define flecsi_context_policy_t flecsi::execution::legion_context_policy_t
 
 /* MPI+Legion Policy */
 #elif FLECSI_RUNTIME_MODEL_mpilegion
+  #include "flecsi/execution/mpilegion/context_policy.h"
+  #define flecsi_context_policy_t flecsi::execution::mpilegion_context_policy_t
 
-  #include "flecsi/execution/mpilegion/execution_policy.h"
-  #define flecsi_execution_policy_t mpilegion_execution_policy_t
-
-/* MPI+Legion Policy */
+/* MPI Policy */
 #elif FLECSI_RUNTIME_MODEL_mpi
 
-  #include "flecsi/execution/mpi/execution_policy.h"
-  #define flecsi_execution_policy_t mpi_execution_policy_t
+  #include "flecsi/execution/mpi/context_policy.h"
+  #define flecsi_context_policy_t flecsi::execution::mpi_context_policy_t
 
 #endif
 

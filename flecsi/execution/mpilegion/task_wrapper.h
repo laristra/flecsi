@@ -3,22 +3,17 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_legion_task_wrapper_h
-#define flecsi_legion_task_wrapper_h
+#ifndef flecsi_mpilegion_task_wrapper_h
+#define flecsi_mpilegion_task_wrapper_h
 
 #include "flecsi/execution/context.h"
+
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/tuple_filter.h"
 #include "flecsi/utils/tuple_for_each.h"
 #include "flecsi/utils/tuple_function.h"
 
 #include "flecsi/data/data_handle.h"
-
-/*!
- * \file legion/task_wrapper.h
- * \authors bergen
- * \date Initial file creation: Jul 24, 2016
- */
 
 namespace flecsi {
 namespace execution {
@@ -106,10 +101,11 @@ struct legion_task_wrapper_
 
 }; // class legion_task_wrapper_
 
-} //namespace execution 
+} //namespace execution
 } // namespace flecsi
 
-#endif // flecsi_legion_task_wrapper_h
+
+#endif // flecsi_mpilegion_task_wrapper_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

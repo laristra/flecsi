@@ -15,6 +15,7 @@
  */
 
 namespace flecsi {
+namespace execution {
 
 /*!
   \struct task__ task.h
@@ -34,13 +35,16 @@ struct task__
   } // register_task
 
   template<typename ... Args>
-  static decltype(auto) execute_task(task_key_t key, Args && ... args)
+  static decltype(auto) execute_task(task_key_t key,
+    processor_t processor, Args && ... args)
   {
-    return execution_policy_t::execute_task(key, std::forward<Args>(args) ...);
+    return execution_policy_t::execute_task(key, processor,
+      std::forward<Args>(args) ...);
   } // execute
 
 }; // class task
 
+} // namespace execution 
 } // namespace flecsi
 
 /*
@@ -49,9 +53,11 @@ struct task__
 #include "flecsi_runtime_execution_policy.h"
 
 namespace flecsi {
+namespace execution {
 
 using task_t = task__<flecsi_execution_policy_t>;
 
+} // namespace execution 
 } // namespace flecsi
 
 #endif // flecsi_task_h

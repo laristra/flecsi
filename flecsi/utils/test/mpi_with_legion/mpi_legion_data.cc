@@ -17,21 +17,18 @@
 
 #include <cinchtest.h>
 
-//#include "flecsi/utils/mpi_legion_interoperability/mpi_legion_data.h"
-#include "flecsi/execution/mpilegion_execution_policy.h"
-#include "flecsi/execution/legion_execution_policy.h"
+#include "flecsi/utils/mpi_legion_interoperability/mpi_legion_data.h"
+//#include "flecsi/execution/mpilegion/execution_policy.h"
 #include "flecsi/execution/task.h"
 #include "legion.h"
 
-#include "flecsi/utils/TaskWrapper.h"
-
-#include "flecsi/execution/register_legion.h"
+enum TaskIDs {
+  TOP_LEVEL_TASK_ID,
+};
 
 using namespace flecsi;
-using namespace flecsi::mpilegion;
+using namespace flecsi::execution;
 
-using execution_type = execution_t<mpilegion_execution_policy_t>;
-using return_type_t = execution_type::return_type_t;
 
 //make Array global only for the simple test example
 //in general, we are not suppose to do so if the object
@@ -42,10 +39,9 @@ MPILegionArray<double, nElements> Array;
 std::vector<std::shared_ptr<MPILegionArrayStorage_t>> ArrayStorage;
 
 
-typedef typename flecsi::context_t<flecsi::mpilegion_execution_policy_t> mpilegion_context;
-namespace flecsi
-{
-void mpilegion_top_level_task(mpilegion_context &&ctx,int argc, char** argv)
+void top_level_task(const Task *task,
+                    const std::vector<PhysicalRegion> &regions,
+                    Context ctx, Runtime *runtime)
 {
   std::cout << "Hello World Top Level Task" << std::endl;
 
@@ -90,7 +86,6 @@ void mpilegion_top_level_task(mpilegion_context &&ctx,int argc, char** argv)
     ArrayStorage[i]->deallocate_legion(ctx);
   }
 
-}
 }
 
 void example_task(int beta,double alpha,element_t i,state_accessor_t<double> a, state_accessor_t<int> b)
@@ -138,13 +133,14 @@ TEST(MPILegionArray, simple) {
     ArrayStorage[i]->mpi_init();
   }
 
-  //TOFIX: uncomment "register_task" when it works
-  using wrapper_t = TaskWrapper<1,0,0,0,mpilegion_execution_policy_t,std::function<decltype(example_task)>>;
-  //register_legion<wrapper_t>::register_task();
+  HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
+  HighLevelRuntime::register_legion_task<top_level_task>(TOP_LEVEL_TASK_ID,
+      Processor::LOC_PROC, true/*single*/, false/*index*/);
 
-  char d[] = "something";
-  char *argv = &(d[0]);
-  execution_type::execute_driver(flecsi::mpilegion_top_level_task,1,&argv);
+
+  const InputArgs &args = HighLevelRuntime::get_input_args();
+
+  HighLevelRuntime::start(args.argc, args.argv);
 
   //we need to call delete on MPILegion arrays here, but we can't do this because execute_driver 
   //is non-blocking operation. Please see mpi_legion_interop for the correct implementation

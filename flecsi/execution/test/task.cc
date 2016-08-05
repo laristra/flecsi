@@ -21,7 +21,7 @@ TEST(task, execute) {
   char dummy[] = "1";
   char * argv = &dummy[0];
 
-  flecsi::context_t::instance().initialize(1, &argv);
+  flecsi::execution::context_t::instance().initialize(1, &argv);
 
 } // TEST
 

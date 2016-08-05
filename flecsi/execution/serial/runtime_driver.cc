@@ -18,11 +18,13 @@
 #endif
 
 namespace flecsi {
+namespace execution {
 
 void serial_runtime_driver(int argc, char ** argv) {
   driver(argc, argv);
 } // serial_runtime_driver
 
+} // namespace execution 
 } // namespace flecsi
 
 /*~------------------------------------------------------------------------~--*

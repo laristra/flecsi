@@ -123,7 +123,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     const const_string_t & key, size_t slots, size_t version=0) {
     return st_t<DT>::template get_mutator<T, NS>(data_client,
       sp_t::data_store_, key, slots, version);
-  } // get_accessor
+  } // get_mutator
 
   /*!
     \brief Return a std::vector of accessors to the stored states with

@@ -17,6 +17,7 @@
  */
 
 namespace flecsi {
+namespace execution {
 
 /*!
   \class function_handle__ function_handle.h
@@ -40,6 +41,7 @@ struct function_handle__
   size_t key;
 }; // class function_handle__
 
+} // namespace execution
 } // namespace flecsi
 
 #endif // flecsi_function_handle_h

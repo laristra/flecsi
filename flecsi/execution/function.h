@@ -15,12 +15,11 @@
  */
 
 namespace flecsi {
+namespace execution {
 
 template<typename execution_policy_t>
 struct function__
 {
-
-  using function_key_t = typename execution_policy_t::function_key_t;
 
   template<typename R, typename ... As>
   static decltype(auto) register_function(const const_string_t & key,
@@ -39,6 +38,7 @@ struct function__
 
 }; // struct function__
 
+} // namespace execution
 } // namespace flecsi
 
 /*
@@ -47,9 +47,11 @@ struct function__
 #include "flecsi_runtime_execution_policy.h"
 
 namespace flecsi {
+namespace execution {
 
 using function_t = function__<flecsi_execution_policy_t>;
 
+} // namespace function
 } // namespace flecsi
 
 #endif // flecsi_function_h

@@ -28,14 +28,23 @@
  */
 
 namespace flecsi {
+namespace execution {
 
 struct serial_context_policy_t
 {
+
+  /*--------------------------------------------------------------------------*
+   * Initialization.
+   *--------------------------------------------------------------------------*/
 
   int initialize(int argc, char ** argv) {
     serial_runtime_driver(argc, argv);
     return 0;
   } // initialize
+
+  /*--------------------------------------------------------------------------*
+   * Function registraiton.
+   *--------------------------------------------------------------------------*/
 
   template<typename T>
   bool register_function(const const_string_t & key, T & function)
@@ -62,6 +71,7 @@ private:
 
 }; // struct serial_context_policy_t
 
+} // namespace execution 
 } // namespace flecsi
 
 #endif // flecsi_serial_context_policy_h

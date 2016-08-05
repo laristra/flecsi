@@ -20,6 +20,7 @@
  */
 
 namespace flecsi {
+namespace execution {
 
 /*----------------------------------------------------------------------------*
  * Fake mesh definition.
@@ -140,8 +141,8 @@ void driver(int argc, char ** argv) {
   auto p = register_data(m, "pressure", 1, double, dense, cells);
   double alpha(10.0);
 
-  execute_task(task1, alpha, 5);
-  execute_task(task2, alpha, 5.0, p);
+  execute_task(task1, loc, alpha, 5);
+  execute_task(task2, loc,  alpha, 5.0, p);
 
   register_data(m, "materials", 1, material_t, dense, cells);
 
@@ -161,6 +162,7 @@ void driver(int argc, char ** argv) {
 
 } // driver
 
+} // namespace execution
 } // namespace flecsi
 
 #endif // flecsi_default_driver_h

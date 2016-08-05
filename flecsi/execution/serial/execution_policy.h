@@ -32,6 +32,7 @@
  */
 
 namespace flecsi {
+namespace execution {
 
 /*!
   \struct serial_execution_policy serial_execution_policy.h
@@ -41,7 +42,6 @@ struct serial_execution_policy_t
 {
 
   using task_key_t = uintptr_t;
-  using function_key_t = uintptr_t;
 
   /*--------------------------------------------------------------------------*
    * Task interface.
@@ -52,14 +52,15 @@ struct serial_execution_policy_t
   } // register_task
 
   template<typename T, typename ... As>
-  static decltype(auto) execute_task(task_key_t key, T user_task, As ... args)
+  static decltype(auto) execute_task(task_key_t key, processor_t processor,
+    T user_task, As ... args)
   {
     auto t = std::make_tuple(args ...);
     return tuple_function(user_task, t);
   } // execute_task
   
   /*--------------------------------------------------------------------------*
-   * Kernel interface.
+   * Function interface.
    *--------------------------------------------------------------------------*/
 
   /*!
@@ -97,6 +98,7 @@ struct serial_execution_policy_t
 
 }; // struct serial_execution_policy_t
 
+} // namespace execution 
 } // namespace flecsi
 
 #endif // flecsi_serial_execution_policy_h
