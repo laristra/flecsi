@@ -36,7 +36,15 @@ opts = {
    #---------------------------------------------------------------------------#
 
    'sections' : [
-      'Introduction'
+      'Introduction',
+      'Code Structure',
+      'Data Model',
+      'Execution Model',
+      'Topology Types',
+      'IO',
+      'Utilities',
+      'Style Guide',
+      'Appendix A'
    ]
 
    #---------------------------------------------------------------------------#

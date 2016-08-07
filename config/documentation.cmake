@@ -37,7 +37,7 @@ set(ug_pandoc_options
 # Add user guide target
 #------------------------------------------------------------------------------#
 
-cinch_add_doc(user-guide flecsi_ug.py src
+cinch_add_doc(user-guide flecsi_ug.py flecsi
     flecsi-user-guide-${${PROJECT_NAME}_VERSION}.pdf
     PANDOC_OPTIONS ${ug_pandoc_options} IMAGE_GLOB "*.pdf")
 
@@ -66,7 +66,7 @@ set(dg_pandoc_options
 # Add developer guide target
 #------------------------------------------------------------------------------#
 
-cinch_add_doc(developer-guide flecsi_dg.py src
+cinch_add_doc(developer-guide flecsi_dg.py flecsi
     flecsi-developer-guide-${${PROJECT_NAME}_VERSION}.pdf
     PANDOC_OPTIONS ${dg_pandoc_options} IMAGE_GLOB "*.pdf")
 
