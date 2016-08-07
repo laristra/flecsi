@@ -56,10 +56,13 @@ set(dg_pandoc_options
     "--toc"
     "--include-in-header=${CMAKE_SOURCE_DIR}/cinch/tex/addtolength.tex"
     "--include-in-header=${CMAKE_BINARY_DIR}/doc/flecsi_dg_header.tex"
-    "--include-in-header=${CMAKE_CURRENT_SOURCE_DIR}/doc/flecsi_dg_title.tex"
-    "--include-before-body=${CMAKE_SOURCE_DIR}/cinch/tex/maketitle.tex"
+    "--include-before-body=${CMAKE_CURRENT_SOURCE_DIR}/doc/flecsi_dg_title.tex"
     "--include-before-body=${CMAKE_SOURCE_DIR}/cinch/tex/firstpageempty.tex"
-    "--include-before-body=${CMAKE_SOURCE_DIR}/cinch/tex/titlebreak.tex"
+    #"--include-before-body=${CMAKE_SOURCE_DIR}/cinch/tex/titlebreak.tex"
+)
+
+set(dg_image_list
+  "${CMAKE_SOURCE_DIR}/doc/medium-flecsi.png"
 )
 
 #------------------------------------------------------------------------------#
@@ -68,7 +71,8 @@ set(dg_pandoc_options
 
 cinch_add_doc(developer-guide flecsi_dg.py flecsi
     flecsi-developer-guide-${${PROJECT_NAME}_VERSION}.pdf
-    PANDOC_OPTIONS ${dg_pandoc_options} IMAGE_GLOB "*.pdf")
+    PANDOC_OPTIONS ${dg_pandoc_options} IMAGE_GLOB "*.pdf"
+    IMAGE_LIST ${dg_image_list})
 
 #------------------------------------------------------------------------------#
 # Pandoc options for charter

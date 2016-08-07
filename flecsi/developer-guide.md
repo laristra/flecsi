@@ -1,5 +1,11 @@
 <!-- CINCHDOC DOCUMENT(Developer Guide) SECTION(Introduction) -->
 
+\pagebreak
+
+![](medium-flecsi.png "FleCSI Logo")\ 
+
+\vspace{-1cm}
+
 # Introduction
 
 FleCSI is a C++ library that provides computational science
