@@ -28,6 +28,7 @@
  */
 
 namespace flecsi {
+namespace data {
 
 /*-----------------------------------------------------------------------------*
  * struct serial_meta_data_t
@@ -76,6 +77,7 @@ struct serial_meta_data_t {
   size_t num_materials;
 }; // struct serial_meta_data_t
 
+} // namespace data
 } // namespace flecsi
 
 #endif // flecsi_serial_meta_data_h

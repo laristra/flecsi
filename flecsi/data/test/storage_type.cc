@@ -31,7 +31,7 @@ enum class privileges : size_t {
   write_discard
 }; // enum data_access_type_t
 
-struct mesh_t : public data_client_t {
+struct mesh_t : public data::data_client_t {
 
   size_t indices(size_t index_space_id) override {
 
@@ -52,6 +52,8 @@ struct mesh_t : public data_client_t {
  *----------------------------------------------------------------------------*/
 
 TEST(storage, dense) {
+  using namespace flecsi::data;
+
   mesh_t m;
 
   // Register 3 versions
@@ -89,6 +91,8 @@ TEST(storage, dense) {
  *----------------------------------------------------------------------------*/
 
 TEST(storage, scalar) {
+  using namespace flecsi::data;
+
   mesh_t m;
 
   struct my_data_t {
@@ -124,6 +128,8 @@ TEST(storage, scalar) {
  *----------------------------------------------------------------------------*/
 
 TEST(storage, sparse1) {
+  using namespace flecsi::data;
+
 // TODO: sparse data changes in progress
   mesh_t m;
 
@@ -152,6 +158,8 @@ TEST(storage, sparse1) {
 } // TEST
 
 TEST(storage, sparse2) {
+  using namespace flecsi::data;
+
 // TODO: sparse data changes in progress
   mesh_t m;
 

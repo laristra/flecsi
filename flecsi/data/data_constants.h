@@ -25,8 +25,8 @@
  * \date Initial file creation: Feb 26, 2016
  */
 
-namespace flecsi
-{
+namespace flecsi {
+namespace data {
 
 static constexpr size_t __flecsi_internal_data_offset__ =
   std::numeric_limits<size_t>::max()-10;
@@ -97,6 +97,7 @@ enum data_type_t : size_t {
   tuple
 }; // enum class data_type_t
 
+} // namespace data
 } // namespace flecsi
 
 #endif // flecsi_data_constants_h

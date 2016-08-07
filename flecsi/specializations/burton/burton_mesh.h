@@ -27,11 +27,13 @@
  * \date Initial file creation: Sep 02, 2015
  */
 
-namespace flecsi
-{
+namespace flecsi {
+
 /*----------------------------------------------------------------------------*
  * class burton_mesh_t
  *----------------------------------------------------------------------------*/
+
+using namespace data;
 
 /*!
   \class burton_mesh_t burton_mesh.h

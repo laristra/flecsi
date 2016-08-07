@@ -469,7 +469,7 @@ enum class action : uint8_t{
 };
 
 template<class P>
-class tree_topology : public P, public data_client_t{
+class tree_topology : public P, public data::data_client_t{
 public:
   using Policy = P;
 

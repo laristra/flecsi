@@ -27,10 +27,8 @@
  * \date Initial file creation: Oct 09, 2015
  */
 
-namespace flecsi
-{
-namespace data_model
-{
+namespace flecsi {
+namespace data {
 
 /*----------------------------------------------------------------------------*
  * class data_t
@@ -513,7 +511,7 @@ public:
 
 }; // class data_t
 
-} // namespace data_model
+} // namespace data
 } // namespace flecsi
 
 #endif // flecsi_data_h

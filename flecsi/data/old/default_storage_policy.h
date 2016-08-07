@@ -31,10 +31,8 @@
  * \date Initial file creation: Oct 27, 2015
  */
 
-namespace flecsi
-{
-namespace data_model
-{
+namespace flecsi {
+namespace data {
 
 namespace default_storage_policy {
 
@@ -1283,7 +1281,7 @@ private:
 
 }; // class default_data_storage_policy_t
 
-} // namespace data_model
+} // namespace data
 } // namespace flecsi
 
 #endif // flecsi_default_storage_policy_h

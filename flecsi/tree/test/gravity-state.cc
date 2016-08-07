@@ -6,7 +6,7 @@
 
 using namespace std;
 using namespace flecsi;
-using namespace data_model;
+using namespace flecsi::data; // FIXME: What namespaces do we need?
 using namespace tree;
 
 struct state_user_meta_data_t {

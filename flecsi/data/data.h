@@ -32,27 +32,27 @@ namespace flecsi {
   to this macro.
  */
 #define register_data(client, name, versions, data_type, storage_type, ...) \
-	storage_t::instance().register_data<storage_type, data_type,              \
+	data::storage_t::instance().register_data<storage_type, data_type,        \
 		data_name_space_t::user>(client, name, versions, ##__VA_ARGS__)
 
 /*!
   FIXME
  */
 #define get_accessor(client, name, version, data_type, storage_type) \
-	storage_t::instance().get_accessor<storage_type, data_type,        \
+	data::storage_t::instance().get_accessor<storage_type, data_type,  \
 		data_name_space_t::user>(client, name, version)
 
 #define get_mutator(client, name, version, data_type, storage_type, slots) \
-  storage_t::instance().get_mutator<storage_type, data_type,               \
+  data::storage_t::instance().get_mutator<storage_type, data_type,         \
     data_name_space_t::user>(client, name, slots, version)
 
 /*!
   FIXME
  */
-#define get_handle(client, name, version, data_type, storage_type,        \
-  privileges)                                                             \
-  storage_t::instance().get_handle<storage_type, data_type, privileges,   \
-		data_name_space_t::user>(client, name, version)
+#define get_handle(client, name, version, data_type, storage_type, \
+  privileges)                                                      \
+  data::storage_t::instance().get_handle<storage_type, data_type,  \
+    privileges, data_name_space_t::user>(client, name, version)
 
 } // namespace flecsi
 

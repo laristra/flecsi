@@ -16,7 +16,7 @@
  */
 
 namespace flecsi {
-namespace data_model {
+namespace data {
 
 /*!
   \class storage__ storage.h
@@ -198,14 +198,18 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
 
 }; // class storage__
 
-} // namespace data_model
+} // namespace data
 } // namespace flecsi
 
 #include "flecsi_runtime_data_policy.h"
 
 namespace flecsi {
-using storage_t = data_model::storage__<flecsi_user_meta_data_policy_t,
+namespace data {
+
+using storage_t = storage__<flecsi_user_meta_data_policy_t,
   flecsi_storage_policy_t>;
+
+} // namespace data
 } // namespace flecsi
 
 #endif // flecsi_data_storage_h

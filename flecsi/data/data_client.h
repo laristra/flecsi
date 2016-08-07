@@ -16,6 +16,7 @@
  */
 
 namespace flecsi {
+namespace data {
 
 /*!
   \class data_client_t data_client.h
@@ -60,6 +61,7 @@ private:
 
 }; // class data_client_t
 
+} // namespace data
 } // namespace flecsi
 
 #endif // flecsi_data_client_h

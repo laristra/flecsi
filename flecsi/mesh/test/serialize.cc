@@ -8,7 +8,7 @@
 
 using namespace std;
 using namespace flecsi;
-using namespace data_model;
+using namespace data;
 
 #define FILTER(E) [&](auto E) -> bool
 

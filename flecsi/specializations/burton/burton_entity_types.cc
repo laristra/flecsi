@@ -23,6 +23,7 @@ namespace flecsi {
 using real_t = burton_mesh_traits_t::real_t;
 using vector_t = burton_mesh_traits_t::vector_t;
 using point_t = burton_mesh_traits_t::point_t;
+using namespace data;
 
 /*----------------------------------------------------------------------------*
  * burton_vertex_t

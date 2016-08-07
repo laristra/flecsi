@@ -23,10 +23,8 @@
  * \date Initial file creation: Feb 26, 2016
  */
 
-namespace flecsi
-{
-namespace data_model
-{
+namespace flecsi {
+namespace data {
 
 /*----------------------------------------------------------------------------*
  * struct default_data_meta_data_t
@@ -52,7 +50,7 @@ struct default_state_user_meta_data_t {
 
 }; // struct default_state_user_meta_data_t
 
-} // namespace data_model
+} // namespace data
 } // namespace flecsi
 
 #endif // flecsi_default_meta_data_h

@@ -25,6 +25,7 @@
  */
 
 namespace flecsi {
+namespace data {
 namespace serial_storage_policy {
 
   /*!
@@ -64,6 +65,7 @@ namespace serial_storage_policy {
   }; // struct storage_type_t
 
 } // namespace serial_storage_policy
+} // namespace data
 } // namespace flecsi
 
 #endif // flecsi_serial_scoped_h

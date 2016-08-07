@@ -38,8 +38,8 @@
  * \date Initial file creation: Apr 17, 2016
  */
 
-namespace flecsi
-{
+namespace flecsi {
+namespace data {
 
 template<typename user_meta_data_t>
 struct serial_storage_policy_t {
@@ -98,6 +98,7 @@ protected:
 
 }; // struct serial_storage_policy_t
 
+} // namespace data
 } // namespace flecsi
 
 #endif // flecsi_serial_storage_policy_h

@@ -39,7 +39,7 @@ enum class privileges : size_t {
   write_discard
 }; // enum data_access_type_t
 
-struct mesh_t : public data_client_t {
+struct mesh_t : public data::data_client_t {
 
   size_t indices(size_t index_space_id) override {
 
@@ -56,6 +56,7 @@ struct mesh_t : public data_client_t {
 }; // struct mesh_t
 
 // FIXME: Need to try to hide this
+using namespace flecsi::data;
 template<typename T>
 using dense_field_t = storage_t::st_t<dense>::handle_t<double>;
 
