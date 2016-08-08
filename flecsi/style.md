@@ -9,6 +9,7 @@ Notable exceptions include:
 
 * Type Names
 * Function Names
+* Variable Names (in some cases)
 * Structs vs. Classes
 
 The exceptions are covered in the following sections.
@@ -51,7 +52,17 @@ top-level FleCSI source directory, e.g.:
 ## Directory Structure 
 
 The source code for the core FleCSI infrastructure is located in the
-*top-level/flecsi* directory.
+*top-level/flecsi* directory. For the most part, the subdirectories of
+this directory correspond to the different namespaces in the core
+infrastructure. Each of these subdirectories must contain a valid
+CMakeLists.txt file. However, none of their children should have a
+CMakeLists.txt file, i.e., the build system will not recurse beyond the
+first level of subdirectories. Developers should use relative paths
+within a CMakeLists.txt file to identify source in subdirectories.
+
+Unit test files should be placed in the *test* subdirectory of each
+namespace subdirectory. By convention, developers should not create
+subdirectories within the test subdirectory.
 
 ## Names and Order of Includes
 
@@ -75,21 +86,31 @@ permissions, i.e., *struct* defaults to public, and *class* defaults to
 private. Using a *struct* makes it natural to put the public interface
 at the beginning of the type.
 
+Like the Google C++ Style Guide convention, developers should always use
+a struct for type definitions that do not have restricted access
+permissions.
+
 ## Variable Names
 
-This is **not** an exception to the Google C++ Syle Guide! Please read the
-guide and follow its conventions.
+This is *mostly* not an exception to the Google C++ Style Guide, so you
+should read the guide and understand its conventions for variable names.
+In FleCSI, we follow those conventions for classes, and for structs that
+do not have restricted access permissions. For structs that **do** have
+access permissions, we follow the Google C++ Style Guide convention for
+classes.
 
 ## Function & Method Formatting
 
-Functions and methods should be formatted with the each template
-parameter, return type, name, and each parameter on its own line:
+Functions and methods should be formatted with each template parameter,
+the scope (static, inline), the return type, the name, and each
+signature parameter on its own line:
 
     template<
       typename T1,
       typename T2,
       typename T3
     >
+    static
     return_t &
     name(
       argument1 arg1name,
@@ -99,7 +120,41 @@ parameter, return type, name, and each parameter on its own line:
     {
     } // name
 
-Arguments should have one tab equivalent indentation.
+Parameters should have one tab equivalent indentation. The convention is
+to define a tab as two spaces. FleCSI source files have formatting hints
+for Vim and Emacs to expand tabs to this number of spaces.
+
+**NOTE:** If the parameters to a function or method definition are
+trivial, i.e., there is only a single template parameter, **or** there
+are no signature parameters, it is not necessary to break up the
+arguments:
+
+    // Trivial template and signature
+    template<typename T>
+    return_t &
+    name()
+    {
+    } // name
+
+    // Trivial template
+    template<typename T>
+    return_t &
+    name(
+      argument1 arg1name,
+      argument2 arg2name
+    )
+    {
+    } // name
+
+    // Trivial signature
+    template<
+      typename T1,
+      typename T2
+    >
+    return_t &
+    name()
+    {
+    } // name
 
 ## Type Names
 
@@ -135,7 +190,7 @@ convention listed above, e.g.:
     using my_template_type_t = my_template_type__<double>;
 
 The double underscore was chosen so that it does not conflict with
-aggregate data names, which use a single underscore.
+member variable names, which use a single underscore.
 
 ### Template Parameter Names
 
@@ -149,9 +204,9 @@ the name:
      */
     template<typename T, typename ... As>
 
-In this example, *As* indicates that the parameter is plural. Developers
-should avoid verbose parameter names, opting instead to use Doxygen to
-document the parameter meaning as above.
+In this example, the *s* in *As* indicates that the parameter is plural.
+Developers should avoid verbose parameter names, opting instead to use
+Doxygen to document the parameter meaning (as shown above).
 
 --------------------------------------------------------------------------------
 
@@ -188,7 +243,10 @@ document the parameter meaning as above.
 
         \return A modified value of type T.
        */
-      T two_times(T input)
+      T
+      two_times(
+        T input
+      )
       {
         return 2.0*value_;
       } // two_times
@@ -197,7 +255,10 @@ document the parameter meaning as above.
 
       // private member functions
 
-      void initialize(T value)
+      void
+      initialize(
+        T value
+      )
       {
         return value + 5.0;
       } // initialize
