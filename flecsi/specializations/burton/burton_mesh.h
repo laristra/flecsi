@@ -40,7 +40,8 @@ using namespace data;
   \brief A specialization of the flecsi low-level mesh topology, state and
     execution models.
  */
-class burton_mesh_t : public mesh_topology_t<burton_mesh_types_t>
+class burton_mesh_t
+  : public flecsi::topology::mesh_topology_t<burton_mesh_types_t>
 {
 private:
 
@@ -59,7 +60,7 @@ public:
 
     \tparam T The type of the underlying data to access.
    */
-  template <typename T>
+  template<typename T>
   using dense_accessor_t = data_t::dense_accessor_t<T>;
 
   /*--------------------------------------------------------------------------*
@@ -79,9 +80,15 @@ public:
 
     \return An accessor to the newly registered state.
    */
-  template <typename T>
-  decltype(auto) register_state_(const const_string_t && key,
-      attachment_site_t site, bitfield_t::field_type_t attributes = 0x0)
+  template<
+    typename T
+  >
+  decltype(auto)
+  register_state_(
+    const const_string_t && key,
+    attachment_site_t site,
+    bitfield_t::field_type_t attributes = 0x0
+  )
   {
     data_t & data_ = data_t::instance();
 
@@ -123,8 +130,14 @@ public:
 
     \return Accessor to the state with \e key.
    */
-  template <typename T, size_t NS = flecsi_user_space>
-  decltype(auto) access_state_(const const_string_t && key)
+  template<
+    typename T,
+    size_t NS = flecsi_user_space
+  >
+  decltype(auto)
+  access_state_(
+    const const_string_t && key
+  )
   {
     return data_t::instance().dense_accessor<T, NS>(key, mesh_.runtime_id());
   } // access_state_
@@ -137,8 +150,13 @@ public:
 
     \return A vector of accessors to state registered with type \e T.
    */
-  template <typename T, size_t NS = flecsi_user_space>
-  decltype(auto) access_type_()
+  template<
+    typename T,
+    size_t NS = flecsi_user_space
+  >
+  decltype(auto)
+  access_type_(
+  )
   {
     return data_t::instance().dense_accessors<T, NS>();
   } // access_type_
@@ -156,8 +174,14 @@ public:
     \return Accessors to the state variables of type \e T matching the
       predicate function.
    */
-  template <typename T, typename P>
-  decltype(auto) access_type_if_(P && predicate)
+  template<
+    typename T,
+    typename P
+  >
+  decltype(auto)
+  access_type_if_(
+    P && predicate
+  )
   {
     return data_t::instance().dense_accessors<T, P>(
       std::forward<P>(predicate));
@@ -372,18 +396,26 @@ public:
 
     \return Vertices for entity \e e in domain \e M.
    */
-  template <size_t M, class E>
-  auto vertices(domain_entity<M, E> & e)
+  template<
+    size_t M,
+    class E
+  >
+  auto
+  vertices(
+    flecsi::topology::domain_entity<M, E> & e
+  )
   {
     return mesh_.entities<0, M, 0>(e.entity());
-  }
+  } // vertices
 
   /*!
     \brief Return ids for all vertices in the burton mesh.
 
     \return Ids for all vertices in the burton mesh.
    */
-  auto vertex_ids()
+  auto
+  vertex_ids(
+  )
   {
     return mesh_.entity_ids<0, 0>();
   } // vertex_ids
@@ -398,8 +430,13 @@ public:
     \return Return vertex ids associated with entity instance \e e as a
       sequence.
    */
-  template <class E>
-  auto vertex_ids(E * e)
+  template<
+    class E
+  >
+  auto
+  vertex_ids(
+    E * e
+  )
   {
     return mesh_.entity_ids<0, 0>(e);
   } // vertex_ids
@@ -438,8 +475,14 @@ public:
 
     \return Edges for entity \e e in domain \e M.
    */
-  template <size_t M, class E>
-  auto edges(domain_entity<M, E> & e)
+  template<
+    size_t M,
+    class E
+  >
+  auto
+  edges(
+    flecsi::topology::domain_entity<M, E> & e
+  )
   {
     return mesh_.entities<1, M, 0>(e.entity());
   } // edges
@@ -550,8 +593,14 @@ public:
 
     \return Cells for entity \e e in domain \e M.
    */
-  template <size_t M, class E>
-  auto cells(domain_entity<M, E> & e)
+  template<
+    size_t M,
+    class E
+  >
+  auto
+  cells(
+    flecsi::topology::domain_entity<M, E> & e
+  )
   {
     return mesh_.entities<dimension(), M, 0>(e);
   } // cells
@@ -631,10 +680,17 @@ public:
 
     \return Wedges for entity \e e in domain \e M.
    */
-  template<size_t M, class E>
-  auto wedges(domain_entity<M, E> & e) {
+  template<
+    size_t M,
+    class E
+  >
+  auto
+  wedges(
+    flecsi::topology::domain_entity<M, E> & e
+  )
+  {
     return mesh_.entities<1, M, 1>(e.entity());
-  }
+  } // wedges
 
   /*!
     \brief Return ids for all wedges in the burton mesh.
@@ -712,10 +768,17 @@ public:
 
     \return Corners for entity \e e in domain \e M.
    */
-  template<size_t M, class E>
-  auto corners(domain_entity<M, E> & e) {
+  template<
+    size_t M,
+    class E
+  >
+  auto
+  corners(
+    flecsi::topology::domain_entity<M, E> & e
+  )
+  {
     return mesh_.entities<0, M, 1>(e.entity());
-  }
+  } // corners
 
   /*!
     \brief Return ids for all corners in the burton mesh.

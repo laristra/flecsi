@@ -31,9 +31,12 @@ namespace flecsi {
  * \brief example mesh in Figure 1 and Figure 2 of the DOLFIN paper.
  */
 template<typename mesh_type>
-class dolfin_triangle_mesh_t : public mesh_topology_t<mesh_type> {
+class dolfin_triangle_mesh_t
+  : public flecsi::topology::mesh_topology_t<mesh_type>
+{
 private:
-  using super = mesh_topology_t<mesh_type>;
+
+  using super = flecsi::topology::mesh_topology_t<mesh_type>;
 
   const int cell_to_vertices[10][3] = {
     {0, 1, 8}, {1, 2, 8}, {2, 3, 8}, {3, 9, 8}, {3, 4, 9},

@@ -20,36 +20,36 @@
 namespace flecsi
 {
 
-class sagittarius_vertex_t : public mesh_entity_t<0, 1> {
+class sagittarius_vertex_t : public flecsi::topology::mesh_entity_t<0, 1> {
 public:
   sagittarius_vertex_t() = default;
-  sagittarius_vertex_t(mesh_topology_base_t&) {}
+  sagittarius_vertex_t(flecsi::topology::mesh_topology_base_t &) {}
 };
 
-class sagittarius_edge_t : public mesh_entity_t<1, 1> {
+class sagittarius_edge_t : public flecsi::topology::mesh_entity_t<1, 1> {
 public:
   sagittarius_edge_t() = default;
-  sagittarius_edge_t(mesh_topology_base_t&) {}
+  sagittarius_edge_t(flecsi::topology::mesh_topology_base_t &) {}
 };
 
 // abstrace class
-class sagittarius_cell_t : public mesh_entity_t<2, 1> {
+class sagittarius_cell_t : public flecsi::topology::mesh_entity_t<2, 1> {
 public:
   sagittarius_cell_t() = default;
-  sagittarius_cell_t(mesh_topology_base_t&) {}
+  sagittarius_cell_t(flecsi::topology::mesh_topology_base_t &) {}
   // FIXME: can we make it a pure virtual function?
   virtual
   std::vector<size_t>
-  create_entities(flecsi::id_t cell_id, size_t dim, domain_connectivity<2> & c, flecsi::id_t * e){}
+  create_entities(flecsi::id_t cell_id, size_t dim, flecsi::topology::domain_connectivity<2> & c, flecsi::id_t * e){}
 };
 
 class sagittarius_quad_t : public sagittarius_cell_t {
 public:
   sagittarius_quad_t() = default;
-  sagittarius_quad_t(mesh_topology_base_t&) {}
+  sagittarius_quad_t(flecsi::topology::mesh_topology_base_t&) {}
 
   std::vector<size_t>
-  create_entities(flecsi::id_t cell_id, size_t dim, domain_connectivity<2> & c, flecsi::id_t * e){
+  create_entities(flecsi::id_t cell_id, size_t dim, flecsi::topology::domain_connectivity<2> & c, flecsi::id_t * e){
     flecsi::id_t* v = c.get_entities(cell_id, 0);
     
     e[0] = v[0];
@@ -71,10 +71,10 @@ public:
 class sagittarius_triangle_t : public  sagittarius_cell_t {
 public:
   sagittarius_triangle_t() = default;
-  sagittarius_triangle_t(mesh_topology_base_t&) {}
+  sagittarius_triangle_t(flecsi::topology::mesh_topology_base_t&) {}
 
   std::vector<size_t>
-  create_entities(flecsi::id_t cell_id, size_t dim, domain_connectivity<2> & c, flecsi::id_t * e){
+  create_entities(flecsi::id_t cell_id, size_t dim, flecsi::topology::domain_connectivity<2> & c, flecsi::id_t * e){
     flecsi::id_t* v = c.get_entities(cell_id, 0);
 
     e[0] = v[0];

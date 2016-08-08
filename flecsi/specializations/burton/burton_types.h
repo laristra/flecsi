@@ -25,8 +25,8 @@
  * \date Initial file creation: Sep 02, 2015
  */
 
-namespace flecsi
-{
+namespace flecsi {
+
 /*----------------------------------------------------------------------------*
  * struct burton_mesh_types_t
  *----------------------------------------------------------------------------*/
@@ -74,6 +74,9 @@ struct burton_mesh_types_t {
    * Specify mesh parameterizations.
    *--------------------------------------------------------------------------*/
 
+  template<size_t D>
+  using domain_ = flecsi::topology::domain_<D>;
+
   //! Definitions of burton mesh entities and their domain.
   // clang-format off
   using entity_types =
@@ -114,9 +117,16 @@ struct burton_mesh_types_t {
       >;
   // clang-format on
 
-  template<size_t M, size_t D>
-  static mesh_entity_base_t<num_domains>*
-  create_entity(mesh_topology_base_t* mesh, size_t num_vertices){
+  template<
+    size_t M,
+    size_t D
+  >
+  static flecsi::topology::mesh_entity_base_t<num_domains> *
+  create_entity(
+    flecsi::topology::mesh_topology_base_t* mesh,
+    size_t num_vertices
+  )
+  {
     switch(M){
       case 0:{
         switch(D){

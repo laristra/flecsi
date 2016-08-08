@@ -35,8 +35,9 @@
   std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
             << ": " << X << std::endl
 
-namespace flecsi
-{
+namespace flecsi {
+namespace topology {
+
 /*----------------------------------------------------------------------------*
  * Tuple search utilities.
  *----------------------------------------------------------------------------*/
@@ -243,6 +244,7 @@ public:
   std::vector<int_t> partition;
 };
 
+} // namespace topology
 } // namespace flecsi
 
 #endif // flecsi_mesh_utils_h

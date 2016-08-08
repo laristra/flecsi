@@ -76,10 +76,9 @@
 #include "flecsi/utils/static_verify.h"
 #include "flecsi/topology/mesh_types.h"
 
-namespace flecsi
-{
-
-namespace verify_mesh{
+namespace flecsi {
+namespace topology {
+namespace verify_mesh {
 
 template<size_t N>
 class mesh_policy{
@@ -1977,7 +1976,8 @@ private:
 
 }; // class mesh_topology_t
 
-} // flecsi
+} // namespace topology
+} // namespace flecsi
 
 #endif // flecsi_mesh_topology_h
 

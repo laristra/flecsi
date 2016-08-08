@@ -23,6 +23,9 @@ struct sagittarius_types {
   static constexpr size_t num_dimensions = 2;
   static constexpr size_t num_domains = 1;
 
+  template<size_t D>
+  using domain_ = flecsi::topology::domain_<D>;
+
   using entity_types = std::tuple<
     std::pair<domain_<0>, sagittarius_vertex_t>,
     std::pair<domain_<0>, sagittarius_edge_t>,
@@ -43,9 +46,16 @@ struct sagittarius_types {
 
   using bindings = std::tuple<>;
 
-  template<size_t M, size_t D>
-  static mesh_entity_base_t<num_domains>*
-  create_entity(mesh_topology_base_t* mesh, size_t num_vertices){
+  template<
+    size_t M,
+    size_t D
+  >
+  static flecsi::topology::mesh_entity_base_t<num_domains> *
+  create_entity(
+    flecsi::topology::mesh_topology_base_t * mesh,
+    size_t num_vertices
+  )
+  {
     switch(M){
       case 0:{
         switch(D){

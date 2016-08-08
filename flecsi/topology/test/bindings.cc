@@ -7,6 +7,7 @@
 
 using namespace std;
 using namespace flecsi;
+using namespace topology;
 
 #define FILTER(E) [&](auto E) -> bool
 
@@ -54,7 +55,7 @@ public:
     return {2, 2, 2, 2};
   }
 
-  flecsi::index_vector_t
+  index_vector_t
   create_bound_entities(size_t from_domain,
                         size_t to_domain,
                         size_t create_dim,

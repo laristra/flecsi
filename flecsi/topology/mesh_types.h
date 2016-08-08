@@ -31,8 +31,9 @@
 #include "flecsi/topology/mesh_utils.h"
 #include "flecsi/utils/array_ref.h"
 
-namespace flecsi
-{
+namespace flecsi {
+namespace topology {
+
 /*----------------------------------------------------------------------------*
  * struct typeify
  *----------------------------------------------------------------------------*/
@@ -854,6 +855,7 @@ struct unserialize_domains_<MT, NM, ND, NM>{
 
 };
 
+} // namespace topology
 } // namespace flecsi
 
 #endif // flecsi_mesh_types_h

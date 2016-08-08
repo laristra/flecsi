@@ -6,6 +6,7 @@
 
 using namespace std;
 using namespace flecsi;
+using namespace topology;
 
 class Vertex : public mesh_entity_t<0, 1>{
 public:

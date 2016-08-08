@@ -28,7 +28,7 @@ protected:
   virtual void SetUp() override {
     conn = dolfin.get_connectivity(0, 2, 0);
   }
-  connectivity_t conn;
+  flecsi::topology::connectivity_t conn;
 };
 
 TEST_F(Cell2VertexConnectivity, from_size_equals_to_number_of_cells) {

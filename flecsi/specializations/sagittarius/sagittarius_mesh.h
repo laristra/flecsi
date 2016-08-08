@@ -21,10 +21,10 @@
 namespace flecsi
 {
 template <typename mesh_type>
-class sagittarius_mesh_t : public mesh_topology_t<mesh_type>
+class sagittarius_mesh_t : public flecsi::topology::mesh_topology_t<mesh_type>
 {
 private:
-  using super = mesh_topology_t<mesh_type>;
+  using super = flecsi::topology::mesh_topology_t<mesh_type>;
 
   const int quads[2][4] = {
     {0, 1, 2, 3},

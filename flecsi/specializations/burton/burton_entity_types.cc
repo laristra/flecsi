@@ -18,7 +18,7 @@
 namespace flecsi {
 
 #define burton_topology(m) \
-  static_cast<mesh_topology_t<burton_mesh_types_t> &>((m))
+  static_cast<flecsi::topology::mesh_topology_t<burton_mesh_types_t> &>((m))
 
 using real_t = burton_mesh_traits_t::real_t;
 using vector_t = burton_mesh_traits_t::vector_t;

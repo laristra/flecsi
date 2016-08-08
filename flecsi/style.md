@@ -48,6 +48,11 @@ top-level FleCSI source directory, e.g.:
 
 >     #include "flecsi/topology/mesh_topology.h"
 
+## Directory Structure 
+
+The source code for the core FleCSI infrastructure is located in the
+*top-level/flecsi* directory.
+
 ## Names and Order of Includes
 
 This is **not** an exception to the Google C++ Syle Guide! Please read the
@@ -70,10 +75,31 @@ permissions, i.e., *struct* defaults to public, and *class* defaults to
 private. Using a *struct* makes it natural to put the public interface
 at the beginning of the type.
 
-### Variable Names
+## Variable Names
 
 This is **not** an exception to the Google C++ Syle Guide! Please read the
 guide and follow its conventions.
+
+## Function & Method Formatting
+
+Functions and methods should be formatted with the each template
+parameter, return type, name, and each parameter on its own line:
+
+    template<
+      typename T1,
+      typename T2,
+      typename T3
+    >
+    return_t &
+    name(
+      argument1 arg1name,
+      argument2 arg2name,
+      argument3 arg3name
+    )
+    {
+    } // name
+
+Arguments should have one tab equivalent indentation.
 
 ## Type Names
 

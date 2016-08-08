@@ -40,8 +40,8 @@
  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
            << ": " << #X << " = " << std::hex << (X) << std::endl
 
-namespace flecsi{
-namespace tree{
+namespace flecsi {
+namespace tree {
 
 template<typename T, size_t D>
 struct tree_geometry{};

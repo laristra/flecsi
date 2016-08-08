@@ -37,9 +37,9 @@ protected:
   virtual void TearDown() override { }
 
   std::vector<size_t> vertex_sizes = {4, 4};
-  std::vector<mesh_graph_partition<size_t>> vertex_partitions;
+  std::vector<flecsi::topology::mesh_graph_partition<size_t>> vertex_partitions;
   std::vector<size_t> cell_sizes = {2, 2};
-  std::vector<mesh_graph_partition<size_t>> cell_partitions;
+  std::vector<flecsi::topology::mesh_graph_partition<size_t>> cell_partitions;
 };
 }
 #endif //FLECSI_SAGITTARIUS_FIXTURE_H

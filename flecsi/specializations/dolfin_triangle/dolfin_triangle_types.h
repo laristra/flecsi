@@ -20,8 +20,12 @@
 namespace flecsi
 {
 struct dolfin_triangle_types_t {
+
   static constexpr size_t num_dimensions = 2;
   static constexpr size_t num_domains = 1;
+
+  template<size_t D>
+  using domain_ = flecsi::topology::domain_<D>;
 
   // FIXME: what exactly is a DOMAIN?
   using entity_types = std::tuple<
@@ -46,8 +50,11 @@ struct dolfin_triangle_types_t {
   using bindings = std::tuple<>;
 
   template<size_t M, size_t D>
-  static mesh_entity_base_t<num_domains>*
-  create_entity(mesh_topology_base_t* mesh, size_t num_vertices){
+  static flecsi::topology::mesh_entity_base_t<num_domains> *
+  create_entity(
+    flecsi::topology::mesh_topology_base_t* mesh,
+    size_t num_vertices)
+  {
     switch(M){
       case 0:{
         switch(D){

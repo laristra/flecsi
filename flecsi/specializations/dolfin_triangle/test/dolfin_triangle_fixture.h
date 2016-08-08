@@ -35,9 +35,10 @@ protected:
   }
 
   std::vector<size_t> vertex_sizes = {5, 5};
-  std::vector<mesh_graph_partition<size_t>> vertex_partitions;
+  std::vector<flecsi::topology::mesh_graph_partition<size_t>>
+    vertex_partitions;
   std::vector<size_t> cell_sizes = {5, 5};
-  std::vector<mesh_graph_partition<size_t>> cell_partitions;
+  std::vector<flecsi::topology::mesh_graph_partition<size_t>> cell_partitions;
 };
 }
 #endif //FLECSI_DOLFIN_TRIANGLE_FIXTURE_H

@@ -26,7 +26,7 @@ protected:
   dolfin_triangle_mesh_t<dolfin_triangle_types_t> dolfin;
 
   virtual void SetUp() override {
-    connectivity_t conn = dolfin.get_connectivity(0, 2, 0);
+    flecsi::topology::connectivity_t conn = dolfin.get_connectivity(0, 2, 0);
 
     idx_t num_cells = dolfin.num_cells();
     epart.resize(static_cast<size_t>(num_cells));
