@@ -15,7 +15,7 @@
 #ifndef FLECSI_SAGITTARIUS_ENTITY_TYPES_H
 #define FLECSI_SAGITTARIUS_ENTITY_TYPES_H
 
-#include <flecsi/mesh/mesh_types.h>
+#include "flecsi/topology/mesh_types.h"
 
 namespace flecsi
 {

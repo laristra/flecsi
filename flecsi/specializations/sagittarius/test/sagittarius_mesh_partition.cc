@@ -16,8 +16,8 @@
 
 #include <numeric>
 
-#include "../sagittarius_mesh.h"
-#include "sagittarius_fixture.h"
+#include "flecsi/specializations/sagittarius/sagittarius_mesh.h"
+#include "flecsi/specializations/sagittarius/test/sagittarius_fixture.h"
 
 using namespace flecsi;
 using namespace testing;

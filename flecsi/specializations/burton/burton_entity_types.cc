@@ -13,7 +13,7 @@
  *~--------------------------------------------------------------------------~*/
 
 #include "flecsi/specializations/burton/burton_types.h"
-#include "flecsi/mesh/mesh_topology.h"
+#include "flecsi/topology/mesh_topology.h"
 
 namespace flecsi {
 

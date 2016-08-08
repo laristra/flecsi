@@ -15,7 +15,7 @@
 #ifndef FLECSI_SAGITTAIRUS_TYPES_H_H
 #define FLECSI_SAGITTAIRUS_TYPES_H_H
 
-#include "sagittarius_entity_types.h"
+#include "flecsi/specializations/sagittarius/sagittarius_entity_types.h"
 
 namespace flecsi
 {

@@ -16,10 +16,15 @@ set(mesh_HEADERS
   mesh_topology.h
   mesh_types.h
   mesh_utils.h
+  tree_topology.h
   PARENT_SCOPE)
 
 set(mesh_SOURCES
   PARENT_SCOPE)
+
+#------------------------------------------------------------------------------#
+# Mesh unit tests.
+#------------------------------------------------------------------------------#
 
 cinch_add_unit(traversal
   SOURCES test/traversal.cc
@@ -37,33 +42,19 @@ cinch_add_unit(serialize
   SOURCES test/serialize.cc
   INPUTS test/serialize.blessed)
 
-cinch_add_unit(dolfin_triangle
-        SOURCES test/dolfin_triangle/test/dolfin_triangle.cc
-        INPUTS  test/dolfin_triangle/test/dolfin_triangle.blessed
-        )
-cinch_add_unit(dolfin_triangle_mesh_partition
-        SOURCES test/dolfin_triangle/test/dolfin_triangle_mesh_partition.cc
-        )
-cinch_add_unit(dolfin_triangle_connectivity
-        SOURCES test/dolfin_triangle/test/dolfin_triangle_connectivity.cc
-        )
+#------------------------------------------------------------------------------#
+# N-Tree unit tests.
+#------------------------------------------------------------------------------#
 
-if (ENABLE_PARTITION AND METIS_FOUND)
-    cinch_add_unit(dolfin_triangle_metis
-            SOURCES test/dolfin_triangle/test/metis_partition_mesh_dual.cc
-            LIBRARIES ${PARTITION_LIBRARIES})
-    cinch_add_unit(metis_partition_mesh_nodal
-            SOURCES test/dolfin_triangle/test/metis_partition_mesh_nodal.cc
-            LIBRARIES ${PARTITION_LIBRARIES})
-endif()
+cinch_add_unit(tree
+  SOURCES test/tree.cc
+  INPUTS test/tree.blessed)
 
-cinch_add_unit(sagittarius
-        SOURCES test/sagittarius/test/sagittarius.cc
-        INPUTS  test/sagittarius/test/sagittarius.blessed
-        )
-cinch_add_unit(sagittarius_mesh_partition
-        SOURCES test/sagittarius/test/sagittarius_mesh_partition.cc
-        )
+cinch_add_unit(gravity
+  SOURCES test/gravity.cc)
+
+cinch_add_unit(gravity-state
+  SOURCES test/gravity-state.cc)
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options

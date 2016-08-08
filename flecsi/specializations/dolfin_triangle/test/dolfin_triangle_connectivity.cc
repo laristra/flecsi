@@ -16,7 +16,7 @@
 
 #include <numeric>
 
-#include "../dolfin_triangle_mesh.h"
+#include "flecsi/specializations/dolfin_triangle/dolfin_triangle_mesh.h"
 
 using namespace flecsi;
 using namespace testing;

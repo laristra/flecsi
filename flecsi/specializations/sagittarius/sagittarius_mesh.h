@@ -15,8 +15,8 @@
 #ifndef FLECSI_SAGITTARIUS_MESH_H
 #define FLECSI_SAGITTARIUS_MESH_H
 
-#include <flecsi/mesh/mesh_topology.h>
-#include "sagittarius_types.h"
+#include "flecsi/topology/mesh_topology.h"
+#include "flecsi/specializations/sagittarius/sagittarius_types.h"
 
 namespace flecsi
 {

@@ -15,8 +15,8 @@
 #ifndef FLECSI_DOLFIN_TRIANGLE_MESH_H
 #define FLECSI_DOLFIN_TRIANGLE_MESH_H
 
-#include "flecsi/mesh/mesh_topology.h"
-#include "dolfin_triangle_types.h"
+#include "flecsi/topology/mesh_topology.h"
+#include "flecsi/specializations/dolfin_triangle/dolfin_triangle_types.h"
 
 /*!
  * \file dolfin_mesh.h

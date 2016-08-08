@@ -15,7 +15,7 @@
 #ifndef flecsi_basic_tree_h
 #define flecsi_basic_tree_h
 
-#include "flecsi/tree/tree_topology.h"
+#include "flecsi/topology/tree_topology.h"
 
 namespace flecsi{
 namespace tree{

@@ -14,29 +14,29 @@
 
 #include <cinchtest.h>
 
-#include "../dolfin_triangle_mesh.h"
-#include "dolfin_triangle_fixture.h"
+#include "flecsi/specializations/sagittarius/sagittarius_mesh.h"
+#include "flecsi/specializations/sagittarius/test/sagittarius_fixture.h"
 
 using namespace flecsi;
 
-TEST_F(A_Dolfin_Triangle, number_of_vertices_should_be_10) {
-  ASSERT_EQ(10, dolfin.num_vertices());
+TEST_F(A_Sagittarius_Mesh, number_of_vertices_should_be_8) {
+  ASSERT_EQ(8, constellation.num_vertices());
 }
 
-TEST_F(A_Dolfin_Triangle, number_of_cells_should_be_10) {
-  ASSERT_EQ(10, dolfin.num_cells());
+TEST_F(A_Sagittarius_Mesh, number_of_cells_should_be_4) {
+  ASSERT_EQ(4, constellation.num_cells());
 }
 
-TEST_F(A_Dolfin_Triangle, number_of_edges_should_be_19) {
-  ASSERT_EQ(19, dolfin.num_edges());
+TEST_F(A_Sagittarius_Mesh, number_of_edges_should_be_11) {
+  ASSERT_EQ(11, constellation.num_edges());
 }
 
-TEST_F(A_Dolfin_Triangle, dump_should_match_the_blessed_file) {
+TEST_F(A_Sagittarius_Mesh, dump) {
+  auto vs = constellation.vertices();
   CINCH_CAPTURE() << "vertex to vertex connectivities:\n";
-  auto vs = dolfin.vertices();
-  for (auto v : vs) {
-    CINCH_CAPTURE() << v.id() << ": ";
-    for (auto v1 : dolfin.vertices(v)) {
+  for (auto v0 : vs) {
+    CINCH_CAPTURE() << v0.id() << ": ";
+    for (auto v1 : constellation.vertices(v0)) {
       CINCH_CAPTURE() << v1.id() << " ";
     }
     CINCH_CAPTURE() << std::endl;
@@ -46,7 +46,7 @@ TEST_F(A_Dolfin_Triangle, dump_should_match_the_blessed_file) {
   CINCH_CAPTURE() << "vertex to edge connectivities:\n";
   for (auto v : vs) {
     CINCH_CAPTURE() << v.id() << ": ";
-    for (auto e: dolfin.edges(v)) {
+    for (auto e: constellation.edges(v)) {
       CINCH_CAPTURE() << e.id() << " ";
     }
     CINCH_CAPTURE() << std::endl;
@@ -56,7 +56,7 @@ TEST_F(A_Dolfin_Triangle, dump_should_match_the_blessed_file) {
   CINCH_CAPTURE() << "vertex to cell connectivities:\n";
   for (auto v : vs) {
     CINCH_CAPTURE() << v.id() << ": ";
-    for (auto c: dolfin.cells(v)) {
+    for (auto c: constellation.cells(v)) {
       CINCH_CAPTURE() << c.id() << " ";
     }
     CINCH_CAPTURE() << std::endl;
@@ -64,10 +64,10 @@ TEST_F(A_Dolfin_Triangle, dump_should_match_the_blessed_file) {
   CINCH_CAPTURE() << std::endl;
 
   CINCH_CAPTURE() << "edge to vertex connectivities:\n";
-  auto edges = dolfin.edges();
-  for (auto e : edges) {
+  auto edges = constellation.edges();
+  for (auto e: edges) {
     CINCH_CAPTURE() << e.id() << ": ";
-    for (auto v: dolfin.vertices(e)) {
+    for (auto v: constellation.vertices(e)) {
       CINCH_CAPTURE() << v.id() << " ";
     }
     CINCH_CAPTURE() << std::endl;
@@ -77,7 +77,7 @@ TEST_F(A_Dolfin_Triangle, dump_should_match_the_blessed_file) {
   CINCH_CAPTURE() << "edge to edge connectivities:\n";
   for (auto e0: edges) {
     CINCH_CAPTURE() << e0.id() << ": ";
-    for (auto e1 : dolfin.edges(e0)) {
+    for (auto e1: constellation.edges(e0)) {
       CINCH_CAPTURE() << e1.id() << " ";
     }
     CINCH_CAPTURE() << std::endl;
@@ -87,18 +87,18 @@ TEST_F(A_Dolfin_Triangle, dump_should_match_the_blessed_file) {
   CINCH_CAPTURE() << "edge to cell connectivities:\n";
   for (auto e: edges) {
     CINCH_CAPTURE() << e.id() << ": ";
-    for (auto c: dolfin.cells(e)) {
+    for (auto c: constellation.cells(e)) {
       CINCH_CAPTURE() << c.id() << " ";
     }
     CINCH_CAPTURE() << std::endl;
   }
   CINCH_CAPTURE() << std::endl;
 
+  auto cells = constellation.cells();
   CINCH_CAPTURE() << "cell to vertex connectivities:\n";
-  auto cells = dolfin.cells();
   for (auto c: cells) {
     CINCH_CAPTURE() << c.id() << ": ";
-    for (auto v: dolfin.vertices(c)) {
+    for (auto v: constellation.vertices(c)) {
       CINCH_CAPTURE() << v.id() << " ";
     }
     CINCH_CAPTURE() << std::endl;
@@ -108,7 +108,7 @@ TEST_F(A_Dolfin_Triangle, dump_should_match_the_blessed_file) {
   CINCH_CAPTURE() << "cell to edge connectivities:\n";
   for (auto c: cells) {
     CINCH_CAPTURE() << c.id() << ": ";
-    for (auto e: dolfin.edges(c)) {
+    for (auto e: constellation.edges(c)) {
       CINCH_CAPTURE() << e.id() << " ";
     }
     CINCH_CAPTURE() << std::endl;
@@ -118,13 +118,12 @@ TEST_F(A_Dolfin_Triangle, dump_should_match_the_blessed_file) {
   CINCH_CAPTURE() << "cell to cell connectivities:\n";
   for (auto c0: cells) {
     CINCH_CAPTURE() << c0.id() << ": ";
-    for (auto c1: dolfin.cells(c0)) {
+    for (auto c1: constellation.cells(c0)) {
       CINCH_CAPTURE() << c1.id() << " ";
     }
     CINCH_CAPTURE() << std::endl;
   }
   CINCH_CAPTURE() << std::endl;
 
-  CINCH_ASSERT(TRUE, CINCH_EQUAL_BLESSED("dolfin_triangle.blessed"));
+  CINCH_ASSERT(TRUE, CINCH_EQUAL_BLESSED("sagittarius.blessed"));
 }
-

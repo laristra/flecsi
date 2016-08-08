@@ -28,7 +28,7 @@
 #include <vector>
 
 #include "flecsi/data/data_client.h"
-#include "flecsi/mesh/mesh_utils.h"
+#include "flecsi/topology/mesh_utils.h"
 #include "flecsi/utils/array_ref.h"
 
 namespace flecsi

@@ -14,8 +14,8 @@
 
 #include <cinchtest.h>
 
-#include "../dolfin_triangle_mesh.h"
-#include "dolfin_triangle_fixture.h"
+#include "flecsi/specializations/dolfin_triangle/dolfin_triangle_mesh.h"
+#include "flecsi/specializations/dolfin_triangle/test/dolfin_triangle_fixture.h"
 
 using namespace flecsi;
 using namespace testing;

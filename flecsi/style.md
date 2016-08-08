@@ -39,6 +39,15 @@ of the C++ Standard Template Library.
 >       do_it(i);
 >     } // for
 
+6. FleCSI header includes should use the full relative path from the
+top-level FleCSI source directory, e.g.:
+
+>     #include "../mesh_topology.h" // WRONG!
+
+> Correct way:
+
+>     #include "flecsi/topology/mesh_topology.h"
+
 ## Names and Order of Includes
 
 This is **not** an exception to the Google C++ Syle Guide! Please read the

@@ -15,7 +15,7 @@
 #ifndef FLECSI_DOLFIN_TRIANGLE_TYPES_H
 #define FLECSI_DOLFIN_TRIANGLE_TYPES_H
 
-#include "dolfin_triangle_entity_types.h"
+#include "flecsi/specializations/dolfin_triangle/dolfin_triangle_entity_types.h"
 
 namespace flecsi
 {

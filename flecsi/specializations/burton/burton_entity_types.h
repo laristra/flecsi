@@ -16,7 +16,7 @@
 #define flecsi_burton_entity_types_h
 
 #include "flecsi/specializations/burton/burton_mesh_traits.h"
-#include "flecsi/mesh/mesh_types.h"
+#include "flecsi/topology/mesh_types.h"
 
 /*!
  * \file burton_entity_types.h
