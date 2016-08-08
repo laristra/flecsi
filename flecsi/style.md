@@ -44,8 +44,6 @@ of the C++ Standard Template Library.
 This is **not** an exception to the Google C++ Syle Guide! Please read the
 guide and follow its conventions.
 
---------------------------------------------------------------------------------
-
 ## Struct & Class Conventions
 
 This section describes the basic conventions used in defining structs
@@ -67,8 +65,6 @@ at the beginning of the type.
 
 This is **not** an exception to the Google C++ Syle Guide! Please read the
 guide and follow its conventions.
-
---------------------------------------------------------------------------------
 
 ## Type Names
 
@@ -176,5 +172,7 @@ document the parameter meaning as above.
       T value_;
 
     }; // struct my_interface_t
+
+--------------------------------------------------------------------------------
 
 <!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->
