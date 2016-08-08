@@ -30,31 +30,48 @@ namespace execution {
   	  	 for a specific execution policy.
  */
 template<class context_policy_t>
-class context__ : public context_policy_t
+struct context__ : public context_policy_t
 {
-public:
-
   using cp_t = context_policy_t;
 
+  /*!
+    Identify the calling state of the context, i.e., this method
+    returns the current execution level within the FleCSI model.
+   */
   enum class call_state_t : size_t {
     driver = 0,
     task,
+    function,
     kernel
   }; // enum class call_state_t
 
-  static context__ & instance()
+  /*!
+   */
+  static
+  context__ &
+  instance()
   {
     static context__ context;
     return context;
   } // instance
 
-  call_state_t current()
+  call_state_t
+  current()
   {
     return call_state_ > 0 ? call_state_t::driver : call_state_t::task;
   } // current
 
-  call_state_t entry() { return static_cast<call_state_t>(++call_state_); }
-  call_state_t exit() { return static_cast<call_state_t>(--call_state_); }
+  call_state_t
+  entry()
+  {
+    return static_cast<call_state_t>(++call_state_);
+  } // entry
+
+  call_state_t
+  exit()
+  {
+    return static_cast<call_state_t>(--call_state_);
+  } // exit
 
   //! Copy constructor (disabled)
   context__(const context__ &) = delete;

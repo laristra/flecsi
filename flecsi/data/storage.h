@@ -53,7 +53,9 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
 	/*!
 		\brief Return a static instance of the data manager.
 	 */
-  static storage__ & instance() {
+  static storage__ &
+  instance()
+  {
     static storage__ d;
     return d;
   } // instance
@@ -77,9 +79,20 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
 
 		\return Returns a handle to the newly registered data.
    */
-  template<size_t DT, typename T, size_t NS, typename ... Args>
-  decltype(auto) register_data(data_client_t & data_client,
-    const const_string_t & key, size_t versions=1, Args && ... args) {
+  template<
+    size_t DT,
+    typename T,
+    size_t NS,
+    typename ... Args
+  >
+  decltype(auto)
+  register_data(
+    data_client_t & data_client,
+    const const_string_t & key,
+    size_t versions=1,
+    Args && ... args
+  )
+  {
     return st_t<DT>::template register_data<T, NS>(data_client,
       sp_t::data_store_, key, versions, 
       std::forward<Args>(args) ...);
@@ -100,9 +113,18 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     \param[in] key
     \param[in] version
    */
-  template<size_t DT, typename T, size_t NS>
-  decltype(auto) get_accessor(data_client_t & data_client,
-    const const_string_t & key, size_t version=0) {
+  template<
+    size_t DT,
+    typename T,
+    size_t NS
+  >
+  decltype(auto)
+  get_accessor(
+    data_client_t & data_client,
+    const const_string_t & key,
+    size_t version=0
+  )
+  {
     return st_t<DT>::template get_accessor<T, NS>(data_client,
       sp_t::data_store_, key, version);
   } // get_accessor
@@ -118,9 +140,18 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     \param[in] key
     \param[in] version
    */
-  template<size_t DT, typename T, size_t NS>
-  decltype(auto) get_mutator(data_client_t & data_client,
-    const const_string_t & key, size_t slots, size_t version=0) {
+  template<
+    size_t DT,
+    typename T,
+    size_t NS
+  >
+  decltype(auto)
+  get_mutator(
+    data_client_t & data_client,
+    const const_string_t & key,
+    size_t slots, size_t version=0
+  )
+  {
     return st_t<DT>::template get_mutator<T, NS>(data_client,
       sp_t::data_store_, key, slots, version);
   } // get_mutator
@@ -146,8 +177,18 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     \return A std::vector of accessors to the state variables that
       match the namespace and predicate criteria.
    */
-  template<size_t DT, typename T, size_t NS, typename P>
-  decltype(auto) get_accessors(data_client_t & data_client, P && predicate) {
+  template<
+    size_t DT,
+    typename T,
+    size_t NS,
+    typename P
+  >
+  decltype(auto)
+  get_accessors(
+    data_client_t & data_client,
+    P && predicate
+  )
+  {
     return st_t<DT>::template get_accessors<T, NS, P>(data_client,
       sp_t::data_store_, std::forward<P>(predicate));
   } // get_accessors
@@ -167,9 +208,18 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     \param[in] key
     \param[in] version
    */
-  template<size_t DT, typename T, size_t NS>
-  decltype(auto) get_handle(data_client_t & data_client,
-    const const_string_t & key, size_t version=0) {
+  template<
+    size_t DT,
+    typename T,
+    size_t NS
+  >
+  decltype(auto)
+  get_handle(
+    data_client_t & data_client,
+    const const_string_t & key,
+    size_t version=0
+  )
+  {
     return st_t<DT>::template get_handle<T, NS>(data_client,
       sp_t::data_store_, key, version);
   } // get_accessor
@@ -178,21 +228,36 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
    * Data management.
    *--------------------------------------------------------------------------*/
 
-  void reset() {
+  void
+  reset()
+  {
     sp_t::reset();
   } // reset
 
-  void reset(uintptr_t runtime_namespace) {
+  void
+  reset(
+    uintptr_t runtime_namespace
+  )
+  {
     sp_t::reset(runtime_namespace);
   } // reset
 
   template<typename T>
-  void release(T && key, uintptr_t runtime_namespace) {
+  void
+  release(
+    T && key,
+    uintptr_t runtime_namespace
+  )
+  {
     sp_t::release(std::forward<T>(key), runtime_namespace);
   } // release
 
-  void move(uintptr_t from_runtime_namespace,
-    uintptr_t to_runtime_namespace ) {
+  void
+  move(
+    uintptr_t from_runtime_namespace,
+    uintptr_t to_runtime_namespace
+  )
+  {
     sp_t::move(from_runtime_namespace, to_runtime_namespace);
   } // move
 

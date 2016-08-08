@@ -27,16 +27,29 @@ struct task__
 
   using task_key_t = typename execution_policy_t::task_key_t;
 
-  template<typename R, typename ... Args>
-  static decltype(auto) register_task(task_key_t key, processor_t processor)
+  template<
+    typename R,
+    typename ... Args
+  >
+  static
+  decltype(auto)
+  register_task(
+    task_key_t key,
+    processor_t processor
+  )
   {
     return execution_policy_t::template register_task<R, Args...>(key,
       processor);
   } // register_task
 
   template<typename ... Args>
-  static decltype(auto) execute_task(task_key_t key,
-    processor_t processor, Args && ... args)
+  static
+  decltype(auto)
+  execute_task(
+    task_key_t key,
+    processor_t processor,
+    Args && ... args
+  )
   {
     return execution_policy_t::execute_task(key, processor,
       std::forward<Args>(args) ...);

@@ -96,7 +96,9 @@ struct dense_accessor_t {
 		\brief Return a std::string containing the label of the data variable
 			reference by this accessor.
 	 */
-  const std::string & label() const {
+  const std::string &
+  label() const
+  {
     return label_;
   } // label
 
@@ -104,14 +106,18 @@ struct dense_accessor_t {
 		\brief Return the index space size of the data variable
 			referenced by this accessor.
 	 */
-  size_t size() const {
+  size_t
+  size() const
+  {
     return size_;
   } // size
 
 	/*!
 		\brief Return the user meta data for this data variable.
 	 */
-  const user_meta_data_t & meta_data() const {
+  const user_meta_data_t &
+  meta_data() const
+  {
     return meta_data_;
   } // meta_data
 
@@ -119,13 +125,17 @@ struct dense_accessor_t {
    * Iterator interface.
    *--------------------------------------------------------------------------*/
 
-  iterator_t begin() {
+  iterator_t
+  begin()
+  {
     return {is_, 0};
   } // begin
 
-  iterator_t end() {
+  iterator_t
+  end()
+  {
     return {is_, size_};
-  } // begin
+  } // end
 
   /*--------------------------------------------------------------------------*
    * Operators.
@@ -141,7 +151,11 @@ struct dense_accessor_t {
 		\e flecsi mesh entity types \ref mesh_entity_base_t.
 	 */
   template<typename E>
-  const T & operator [] (E * e) const {
+  const T &
+  operator [] (
+    E * e
+  ) const
+  {
     return this->operator[](e->template id<0>());
   } // operator []
 
@@ -155,7 +169,11 @@ struct dense_accessor_t {
 		\e flecsi mesh entity types \ref mesh_entity_base_t.
 	 */
   template<typename E>
-  T & operator [] (E * e) {
+  T &
+  operator [] (
+    E * e
+  )
+  {
     return this->operator[](e->template id<0>());
   } // operator []
 
@@ -165,7 +183,11 @@ struct dense_accessor_t {
 
 		\param index The index of the data variable to return.
 	 */
-  const T & operator [] (size_t index) const {
+  const T &
+  operator [] (
+    size_t index
+  ) const
+  {
     assert(index < size_ && "index out of range");
     return data_[index];
   } // operator []
@@ -176,7 +198,11 @@ struct dense_accessor_t {
 
 		\param index The index of the data variable to return.
 	 */
-  T & operator [] (size_t index) {
+  T &
+  operator [] (
+    size_t index
+  )
+  {
     assert(index < size_ && "index out of range");
     return data_[index];
   } // operator []
@@ -186,7 +212,8 @@ struct dense_accessor_t {
 
 		\return true if registered.
 	 */
-  operator bool() const {
+  operator bool() const
+  {
     return data_ != nullptr;
   } // operator bool
 
@@ -252,11 +279,22 @@ struct storage_type_t<dense, DS, MD> {
     \param versions The number of variable versions for this datum.
     \param indices The number of indices in the index space.
    */
-  template<typename T, size_t NS, typename ... Args>
-  static handle_t<T> register_data(data_client_t & data_client,
-    data_store_t & data_store, const const_string_t & key,
-    size_t versions, size_t index_space, Args && ... args) {
-
+  template<
+    typename T,
+    size_t NS,
+    typename ... Args
+  >
+  static
+  handle_t<T>
+  register_data(
+    data_client_t & data_client,
+    data_store_t & data_store,
+    const const_string_t & key,
+    size_t versions,
+    size_t index_space,
+    Args && ... args
+  )
+  {
     size_t h = key.hash() ^ data_client.runtime_id();
 
     // Runtime assertion that this key is unique
@@ -293,10 +331,19 @@ struct storage_type_t<dense, DS, MD> {
 
   /*!
    */
-  template<typename T, size_t NS>
-  static accessor_t<T> get_accessor(data_client_t & data_client,
-    data_store_t & data_store, const const_string_t & key,
-    size_t version) {
+  template<
+    typename T,
+    size_t NS
+  >
+  static
+  accessor_t<T>
+  get_accessor(
+    data_client_t & data_client,
+    data_store_t & data_store,
+    const const_string_t & key,
+    size_t version
+  )
+  {
     const size_t h = key.hash() ^ data_client.runtime_id();
     auto search = data_store[NS].find(h);
 
@@ -317,9 +364,18 @@ struct storage_type_t<dense, DS, MD> {
 
   /*!
    */
-  template<typename T, size_t NS, typename P>
-  static std::vector<accessor_t<T>> get_accessors(
-    data_client_t & data_client, P && preficate) {
+  template<
+    typename T,
+    size_t NS,
+    typename P
+  >
+  static
+  std::vector<accessor_t<T>>
+  get_accessors(
+    data_client_t & data_client,
+    P && preficate
+  )
+  {
     return {};
   } // get_accessors
 
@@ -329,9 +385,19 @@ struct storage_type_t<dense, DS, MD> {
 
   /*!
    */
-  template<typename T, size_t NS>
-  static handle_t<T> get_handle(data_client_t & data_client,
-    data_store_t & data_store, const const_string_t & key, size_t version) {
+  template<
+    typename T,
+    size_t NS
+  >
+  static
+  handle_t<T>
+  get_handle(
+    data_client_t & data_client,
+    data_store_t & data_store,
+    const const_string_t & key,
+    size_t version
+  )
+  {
     return {};
   } // get_handle
 

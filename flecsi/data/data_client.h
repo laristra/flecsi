@@ -46,12 +46,19 @@ public:
     Return a unique runtime identifier for namespace access to the
     data manager.
    */
-  uintptr_t runtime_id() const {
+  uintptr_t
+  runtime_id(
+  ) const
+  {
     return reinterpret_cast<uintptr_t>(this+id_);
   } // runtime_id
 
   //virtual size_t indices(size_t index_space) = 0;
-  virtual size_t indices(size_t index_space) {
+  virtual size_t
+  indices(
+    size_t index_space
+  )
+  {
     return 0;
   }
 
