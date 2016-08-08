@@ -16,36 +16,36 @@ The exceptions are covered in the following sections.
 
 ## Guiding Principles
 
-1. No line in a file shall exceed 80 characters!
+* No line in a file shall exceed 80 characters!
 
-2. If you are editing a file, maintain the original formatting unless it
+* If you are editing a file, maintain the original formatting unless it
 violates our style guide.
 
-3. For the most part, all names are lowercase and follow the conventions
+* For the most part, all names are lowercase and follow the conventions
 of the C++ Standard Template Library.
 
-4. All delimiters should be terminated with a C-style comment:
+* All delimiters should be terminated with a C-style comment:
 
 >     struct trivial_t {
 >       double value;
 >     }; // struct trivial_t <- This is the delimiter comment
 
-5. Conditional and loop logic should use explicit delimiters:
+* Conditional and loop logic should use explicit delimiters:
 
 >     for(size_t i(0); i<10; ++i) do_it(i); // WRONG!
 
-   Correct way:
+> Correct way:
 
 >     for(size_t i(0); i<10; ++i) {
 >       do_it(i);
 >     } // for
 
-6. FleCSI header includes should use the full relative path from the
+* FleCSI header includes should use the full relative path from the
 top-level FleCSI source directory, e.g.:
 
 >     #include "../mesh_topology.h" // WRONG!
 
-   Correct way:
+> Correct way:
 
 >     #include "flecsi/topology/mesh_topology.h"
 
