@@ -34,7 +34,7 @@ of the C++ Standard Template Library.
 
 >     for(size_t i(0); i<10; ++i) do_it(i); // WRONG!
 
-> Correct way:
+Correct way:
 
 >     for(size_t i(0); i<10; ++i) {
 >       do_it(i);
@@ -45,7 +45,7 @@ top-level FleCSI source directory, e.g.:
 
 >     #include "../mesh_topology.h" // WRONG!
 
-> Correct way:
+Correct way:
 
 >     #include "flecsi/topology/mesh_topology.h"
 
