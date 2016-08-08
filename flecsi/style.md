@@ -208,6 +208,11 @@ In this example, the *s* in *As* indicates that the parameter is plural.
 Developers should avoid verbose parameter names, opting instead to use
 Doxygen to document the parameter meaning (as shown above).
 
+## Summary
+
+Failure to respect the FleCSI style guidelines will lead to public
+ritualized torture and eventual sacrifice...
+
 --------------------------------------------------------------------------------
 
 <!-- CINCHDOC DOCUMENT(Developer Guide) SECTION(Appendix A) -->

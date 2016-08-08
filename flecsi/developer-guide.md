@@ -29,6 +29,23 @@ used now, while allowing flexibility in choosing runtime implementations
 and optimizations that can be applied to architectures and runtimes that
 arise in the future.
 
+FleCSI uses static polymorphism, template meta-programming techniques,
+and other modern C++ features to achieve high runtime performance,
+customizability, and to enable DSL-like features in our programming
+model. In both the mesh and tree topology types, FleCSI adopts a
+three-tiered approach: a low-level substrate that is specialized by a
+mid-level layer to create high-level application interfaces that hide
+the complexity of the underlying templated classes. This structure
+facilitates separation of concerns, both between developer roles, and
+between the structural components that make up a FleCSI-based
+application. As an example, for a mesh of dimension $D_m$, the low-level
+interface provides generic compile-time configurable components which
+deal with *entities* of varying topological dimension $D_m$ (cell),
+$D_m-1$, (face/edge), etc. Each of these entities resides in a *domain*
+$M$ or sub-mesh. Entities are connected to each other by a
+*connectivity* using a compressed id/offset representation for efficient
+space utilization and fast traversal.
+
 --------------------------------------------------------------------------------
 
 <!-- CINCHDOC DOCUMENT(Developer Guide) SECTION(Code Structure) -->
