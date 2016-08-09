@@ -63,32 +63,11 @@ struct tree_geometry<T, 2>{
                          element_t size,
                          const point_t& center,
                          element_t radius){
-
-    if(distance(origin, center) < radius){
-      return true;
-    }
-
-    point_t p1 = origin;
-    p1[0] += size;
-
-    if(distance(p1, center) < radius){
-      return true;
-    } 
-
-    point_t p2 = origin;
-    p2[1] += size;
-
-    if(distance(p2, center) < radius){
-      return true;
-    }
-
-    p2[0] += size;
-
-    if(distance(p2, center) < radius){
-      return true;
-    }
-
-    return false;
+    
+    return center[0] > origin[0] - radius &&
+           center[0] < origin[0] + size + radius &&
+           center[1] > origin[1] - radius &&
+           center[1] < origin[1] + size + radius;
   }
 
   static bool intersect_true(const point_t& origin,
@@ -115,56 +94,12 @@ struct tree_geometry<T, 3>{
                          const point_t& center,
                          element_t radius){
 
-    if(distance(origin, center) < radius){
-      return true;
-    }
-
-    point_t p1 = origin;
-    p1[0] += size;
-
-    if(distance(p1, center) < radius){
-      return true;
-    } 
-
-    p1[1] += size;
-
-    if(distance(p1, center) < radius){
-      return true;
-    } 
-
-    p1[2] += size;
-
-    if(distance(p1, center) < radius){
-      return true;
-    } 
-
-    point_t p2 = origin;
-    p2[1] += size;
-
-    if(distance(p2, center) < radius){
-      return true;
-    }
-
-    p2[2] += size;
-
-    if(distance(p2, center) < radius){
-      return true;
-    }
-
-    point_t p3 = origin;
-    p3[2] += size;
-
-    if(distance(p3, center) < radius){
-      return true;
-    }
-
-    p3[0] += size;
-
-    if(distance(p3, center) < radius){
-      return true;
-    }
-
-    return false;
+    return center[0] > origin[0] - radius &&
+           center[0] < origin[0] + size + radius &&
+           center[1] > origin[1] - radius &&
+           center[1] < origin[1] + size + radius &&
+           center[2] > origin[2] - radius &&
+           center[2] < origin[2] + size + radius;
   }
 
   static bool intersect_true(const point_t& origin,
