@@ -47,8 +47,12 @@ struct legion_context_policy_t
    * Initialization.
    *--------------------------------------------------------------------------*/
 
-  int initialize(int argc, char ** argv) {
-
+  int
+  initialize(
+    int argc,
+    char ** argv
+  )
+  {
     // Register top-level task
     lr_runtime_t::set_top_level_task_id(TOP_LEVEL_TASK_ID);
     lr_runtime_t::register_legion_task<legion_runtime_driver>(
@@ -69,11 +73,16 @@ struct legion_context_policy_t
   /*!
     Reset the legion runtime state.
    */
-  void set_state(lr_context_t & context, lr_runtime_t * runtime,
-    const lr_task_t * task, const lr_regions_t & regions)
-    {
-      state_.reset(new legion_runtime_state_t(context, runtime, task, regions));
-    } // set_state
+  void
+  set_state(
+    lr_context_t & context,
+    lr_runtime_t * runtime,
+    const lr_task_t * task,
+    const lr_regions_t & regions
+  )
+  {
+    state_.reset(new legion_runtime_state_t(context, runtime, task, regions));
+  } // set_state
 
   /*--------------------------------------------------------------------------*
    * Task registraiton.
@@ -83,30 +92,47 @@ struct legion_context_policy_t
   using register_function_t = std::function<void(size_t)>;
   using unique_fid_t = unique_id_t<task_id_t>;
 
-  bool register_task(uintptr_t key, const register_function_t & f)
-    {
-      if(task_registry_.find(key) == task_registry_.end()) {
-        task_registry_[key] = { unique_fid_t::instance().next(), f };
-        return true;
-      }
+  /*!
+   */
+  bool
+  register_task(
+    uintptr_t key,
+    const register_function_t & f
+  )
+  {
+    if(task_registry_.find(key) == task_registry_.end()) {
+      task_registry_[key] = { unique_fid_t::instance().next(), f };
+      return true;
+    } // if
 
-      return false;
-    } // register_task
+    return false;
+  } // register_task
 
-  task_id_t task_id(uintptr_t key)
-    {
-      assert(task_registry_.find(key) != task_registry_.end() &&
-        "task key does not exist!");
+  /*!
+   */
+  task_id_t
+  task_id(
+    uintptr_t key
+  )
+  {
+    assert(task_registry_.find(key) != task_registry_.end() &&
+      "task key does not exist!");
 
-      return task_registry_[key].first;
-    } // task_id
+    return task_registry_[key].first;
+  } // task_id
 
   /*--------------------------------------------------------------------------*
    * Function registraiton.
    *--------------------------------------------------------------------------*/
 
+  /*!
+   */
   template<typename T>
-  bool register_function(const const_string_t & key, T & function)
+  bool
+  register_function(
+    const const_string_t & key,i
+    T & function
+  )
   {
     size_t h = key.hash();
     if(function_registry_.find(h) == function_registry_.end()) {
@@ -118,7 +144,12 @@ struct legion_context_policy_t
     return false;
   } // register_function
   
-  std::function<void(void)> * function(size_t key)
+  /*!
+   */
+  std::function<void(void)> *
+  function(
+    size_t key
+  )
   {
     return function_registry_[key];
   } // function
