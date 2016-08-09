@@ -21,16 +21,37 @@ template<typename execution_policy_t>
 struct function__
 {
 
-  template<typename R, typename ... As>
-  static decltype(auto) register_function(const const_string_t & key,
-    std::function<R(As ...)> & user_function)
+  // FIXME: Finish Doxygen
+
+  /*!
+   */
+  template<
+    typename R,
+    typename ... As
+  >
+  static
+  decltype(auto)
+  register_function(
+    const const_string_t & key,
+    std::function<R(As ...)> & user_function
+  )
   {
     return execution_policy_t::template register_function<R, As ...>(key,
       user_function);
   } // register_function
 
-  template<typename T, typename ... As>
-  static decltype(auto) execute_function(T & handle, As && ... args)
+  /*!
+   */
+  template<
+    typename T,
+    typename ... As
+  >
+  static
+  decltype(auto)
+  execute_function(
+    T & handle,
+    As && ... args
+  )
   {
     return execution_policy_t::execute_function(handle,
       std::forward<As>(args) ...);

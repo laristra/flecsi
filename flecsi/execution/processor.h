@@ -15,6 +15,10 @@
 namespace flecsi {
 namespace execution {
 
+// FIXME: Finish Doxygen
+
+/*!
+ */
 enum processor_t : size_t {
   loc,
   toc,

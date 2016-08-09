@@ -47,13 +47,37 @@ struct serial_execution_policy_t
    * Task interface.
    *--------------------------------------------------------------------------*/
 
-  template<typename R, typename ... As>
-  static bool register_task(task_key_t key, processor_t processor) {
+  // FIXME: Finish Doxygen
+
+  /*!
+   */
+  template<
+    typename R,
+    typename ... As
+  >
+  static
+  bool
+  register_task(
+    task_key_t key,
+    processor_t processor
+  )
+  {
   } // register_task
 
-  template<typename T, typename ... As>
-  static decltype(auto) execute_task(task_key_t key, processor_t processor,
-    T user_task, As ... args)
+  /*!
+   */
+  template<
+    typename T,
+    typename ... As
+  >
+  static
+  decltype(auto)
+  execute_task(
+    task_key_t key,
+    processor_t processor,
+    T user_task,
+    As ... args
+  )
   {
     auto t = std::make_tuple(args ...);
     return tuple_function(user_task, t);
@@ -73,9 +97,16 @@ struct serial_execution_policy_t
     \return A boolean value indicating whether or not the function was
       successfully registered.
    */
-  template<typename R, typename ... As>
-  static bool register_function(const const_string_t & key,
-    std::function<R(As ...)> & user_function)
+  template<
+    typename R,
+    typename ... As
+  >
+  static
+  bool
+  register_function(
+    const const_string_t & key,
+    std::function<R(As ...)> & user_function
+  )
   {
     context_t::instance().register_function(key, user_function);
   } // register_function
@@ -89,8 +120,16 @@ struct serial_execution_policy_t
 
     \return The return type of the provided function handle.
    */
-  template<typename T, typename ... As>
-  static decltype(auto) execute_function(T & handle, As && ... args)
+  template<
+    typename T,
+    typename ... As
+  >
+  static
+  decltype(auto)
+  execute_function(
+    T & handle,
+    As && ... args
+  )
   {
     auto t = std::make_tuple(args ...);
     return handle(context_t::instance().function(handle.key), t);

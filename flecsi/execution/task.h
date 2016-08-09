@@ -25,8 +25,12 @@ template<typename execution_policy_t>
 struct task__
 {
 
+  // FIXME: Finish Doxygen
+
   using task_key_t = typename execution_policy_t::task_key_t;
 
+  /*!
+   */
   template<
     typename R,
     typename ... Args
@@ -42,6 +46,8 @@ struct task__
       processor);
   } // register_task
 
+  /*!
+   */
   template<typename ... Args>
   static
   decltype(auto)

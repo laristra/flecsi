@@ -37,17 +37,43 @@ struct serial_context_policy_t
    * Initialization.
    *--------------------------------------------------------------------------*/
 
-  int initialize(int argc, char ** argv) {
+  /*!
+    Initialize the context runtime. The arguments to this method should
+    be passed from the main function.
+
+    \param argc The number of command-line arguments.
+    \param argv The array of command-line arguments.
+
+    \return Zero upon clean initialization, non-zero otherwise.
+   */
+  int
+  initialize(
+    int argc,
+    char ** argv
+  )
+  {
     serial_runtime_driver(argc, argv);
     return 0;
   } // initialize
 
   /*--------------------------------------------------------------------------*
-   * Function registraiton.
+   * Function registration.
    *--------------------------------------------------------------------------*/
 
+  /*!
+    \tparam T The type of the function being registered.
+
+    \param key A unique function identifier.
+
+    \return A boolean value that is true if the registration succeeded,
+      false otherwise.
+   */
   template<typename T>
-  bool register_function(const const_string_t & key, T & function)
+  bool
+  register_function(
+    const const_string_t & key,
+    T & function
+  )
   {
     size_t h = key.hash();
     if(function_registry_.find(h) == function_registry_.end()) {
@@ -59,7 +85,18 @@ struct serial_context_policy_t
     return false;
   } // register_function
   
-  std::function<void(void)> * function(size_t key)
+  /*!
+    Return the function assocaited with \e key.
+
+    \param key The unique function identifier.
+
+    \return A pointer to a std::function<void(void)> that may be cast
+      back to the oringinal function type using reinterpret_cast.
+   */
+  std::function<void(void)> *
+  function(
+    size_t key
+  )
   {
     return function_registry_[key];
   } // function

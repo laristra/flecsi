@@ -23,6 +23,8 @@
  * Task Interface
  *----------------------------------------------------------------------------*/
 
+// FIXME: Finish Doxygen
+
 /*!
  */
 #define register_task(task, processor, return_type, ...)                \
@@ -73,6 +75,8 @@
   function_handle_ ## fname ## _t(                      \
     const_string_t{EXPAND_AND_STRINGIFY(fname)}.hash())
 
+/*!
+ */
 #define define_function_type(name, return_type, ...)       \
   using name = function_handle__<return_type, __VA_ARGS__>
 
