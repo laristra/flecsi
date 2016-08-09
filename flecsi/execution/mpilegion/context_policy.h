@@ -19,6 +19,7 @@
 #include <mpi.h>
 
 #include "flecsi/utils/common.h"
+#include "flecsi/utils/const_string.h"
 #include "flecsi/utils/tuple_wrapper.h"
 #include "flecsi/execution/mpilegion/runtime_driver.h"
 
