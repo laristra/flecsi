@@ -1366,17 +1366,46 @@ private:
   /*!
     Build connectivity informaiton and add entities to the mesh for the
     given dimension.
+    
+    \remark this is the general one that gets instantiated even though
+            it may never get called
+  */
+  template <size_t Domain, size_t DimensionToBuild, size_t UsingDimension>
+  typename std::enable_if< (UsingDimension <= 1 || UsingDimension > MT::num_dimensions) >::type
+  build_connectivity() {
+    assert( false && "shouldn't be in here" );
+  }
+
+
+  /*!
+    Build connectivity informaiton and add entities to the mesh for the
+    given dimension.
+    
+    \remark This one is enable_if'd so it never gets instantiated in certain cases,
+            otherwise we would need create_entities in wedges and vertices
    */
-  template <size_t M, size_t D>
-  void build_connectivity()
+  template <size_t Domain, size_t DimensionToBuild, size_t UsingDimension>
+  typename std::enable_if< (UsingDimension > 1 && UsingDimension <= MT::num_dimensions) >::type
+  build_connectivity()
   {
-    // std::cerr << "build: " << D << std::endl;
+    // std::cerr << "build: " << DimensionToBuild << " using " << UsingDimension << std::endl;
 
     // Sanity check
-    assert(D <= MT::num_dimensions);
+    static_assert(
+      DimensionToBuild <= MT::num_dimensions,
+      "DimensionToBuild must be <= total number of dimensions"      
+    );
+    static_assert(
+      UsingDimension <= MT::num_dimensions, 
+      "UsingDimension must be <= total number of dimensions"
+    );
+    static_assert(
+      Domain < MT::num_domains, 
+      "Domain must be < total number of domains"
+    );
 
     // Reference to storage from cells to the entity (to be created here).
-    connectivity_t & cell_to_entity = get_connectivity_(M, MT::num_dimensions, D);
+    connectivity_t & cell_to_entity = get_connectivity_(Domain, UsingDimension, DimensionToBuild);
 
     // Storage for entity-to-vertex connectivity information.
     connection_vector_t entity_vertex_conn;
@@ -1385,13 +1414,13 @@ private:
     size_t entity_id = 0;
     size_t max_cell_entity_conns = 1;
 
-    domain_connectivity<MT::num_dimensions> & dc = ms_.topology[M][M];
+    domain_connectivity<MT::num_dimensions> & dc = ms_.topology[Domain][Domain];
 
     // Get connectivity for cells to vertices.
-    connectivity_t & cell_to_vertex = dc.template get<MT::num_dimensions>(0);
+    connectivity_t & cell_to_vertex = dc.template get<UsingDimension>(0);
     assert(!cell_to_vertex.empty());
 
-    const size_t _num_cells = num_entities<MT::num_dimensions, M>();
+    const size_t _num_cells = num_entities<UsingDimension, Domain>();
 
     // Storage for cell-to-entity connectivity information.
     connection_vector_t cell_entity_conn(_num_cells);
@@ -1408,10 +1437,10 @@ private:
 
     for (size_t c = 0; c < _num_cells; ++c) {
       // Get the cell object
-      auto cell = static_cast<entity_type<MT::num_dimensions, M> *>(
-          ms_.entities[M][MT::num_dimensions][c]);
+      auto cell = static_cast<entity_type<UsingDimension, Domain> *>(
+          ms_.entities[Domain][UsingDimension][c]);
       
-      id_t cell_id = cell->template global_id<M>();
+      id_t cell_id = cell->template global_id<Domain>();
 
       // Get storage reference.
       id_vector_t & conns = cell_entity_conn[c];
@@ -1430,7 +1459,7 @@ private:
       // p.second:  A std::vector of id_t containing the ids of the
       //            vertices that define the entity.
       auto sv = 
-        cell->template create_entities(cell_id, D, dc, entity_vertices.data());
+        cell->template create_entities(cell_id, DimensionToBuild, dc, entity_vertices.data());
 
       size_t n = sv.size();
 
@@ -1452,7 +1481,7 @@ private:
 
         // Emplace the sorted vertices into the entity map
         auto itr = entity_vertices_map.emplace(
-            std::move(ev), id_t::make<D, M>(entity_id, cell_id.partition()));
+            std::move(ev), id_t::make<DimensionToBuild, Domain>(entity_id, cell_id.partition()));
 
         // Add this id to the cell to entity connections
         conns.push_back(itr.first->second);
@@ -1466,13 +1495,13 @@ private:
           max_cell_entity_conns = 
             std::max(max_cell_entity_conns, conns.size());
 
-          id_t global_id = id_t::make<M>(D, entity_id);
+          id_t global_id = id_t::make<Domain>(DimensionToBuild, entity_id);
           
-          auto ent = MT::template create_entity<M, D>(this, m);
-          ent->template set_global_id<M>( global_id );
+          auto ent = MT::template create_entity<Domain, DimensionToBuild>(this, m);
+          ent->template set_global_id<Domain>( global_id );
           
-          ms_.entities[M][D].push_back(ent);
-          ms_.id_vecs[M][D].push_back(global_id);
+          ms_.entities[Domain][DimensionToBuild].push_back(ent);
+          ms_.id_vecs[Domain][DimensionToBuild].push_back(global_id);
 
           // A new entity was added, so we advance the id counter.
           ++entity_id;
@@ -1482,7 +1511,7 @@ private:
 
     // Set the connectivity information from the created entities to
     // the vertices.
-    connectivity_t & entity_to_vertex = dc.template get<D>(0);
+    connectivity_t & entity_to_vertex = dc.template get<DimensionToBuild>(0);
     entity_to_vertex.init(entity_vertex_conn);
     cell_to_entity.init(cell_entity_conn);
   } // build_connectivity
@@ -1668,11 +1697,17 @@ private:
 
     // Check if we need to build entities, e.g: edges or faces
     if (num_entities_(FD, M) == 0) {
-      build_connectivity<M, FD>();
+      if ( get_connectivity_(M, FD+1, 0).empty() )
+        build_connectivity<M, FD, MT::num_dimensions>();
+      else
+        build_connectivity<M, FD, FD+1>();
     } // if
 
     if (num_entities_(TD, M) == 0) {
-      build_connectivity<M, TD>();
+      if ( get_connectivity_(M, TD+1, 0).empty() )
+        build_connectivity<M, TD, MT::num_dimensions>();
+      else
+        build_connectivity<M, TD, TD+1>();
     } // if
 
     if (num_entities_(FD, M) == 0 && num_entities_(TD, M) == 0) {
