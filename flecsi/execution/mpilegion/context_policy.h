@@ -27,7 +27,7 @@ namespace flecsi {
 namespace execution {
 
 /*!
-  \class mpilegion_context_policy_t mpilegion_context_policy.h
+  \class mpilegion_context_policy_t mpilegion/context_policy.h
   \brief mpilegion_context_policy_t provides...
  */
 struct mpilegion_context_policy_t
@@ -44,8 +44,16 @@ struct mpilegion_context_policy_t
 
   const size_t TOP_LEVEL_TASK_ID = 0;
 
-  int initialize(int argc, char ** argv) {
+  /*--------------------------------------------------------------------------*
+   * Initialization.
+   *--------------------------------------------------------------------------*/
 
+  int
+  initialize(
+    int argc,
+    char ** argv
+  )
+  {
     // Register top-level task
     lr_runtime_t::set_top_level_task_id(TOP_LEVEL_TASK_ID);
     lr_runtime_t::register_legion_task<mpilegion_runtime_driver>(
@@ -93,11 +101,17 @@ struct mpilegion_context_policy_t
   /*!
     Reset the legion runtime state.
    */
-  void set_state(lr_context_t & context, lr_runtime_t * runtime,
-    const lr_task_t * task, const lr_regions_t & regions)
-    {
-      state_.reset(new mpilegion_runtime_state_t(context, runtime, task, regions));
-    } // set_state
+  void
+  set_state(
+    lr_context_t & context,
+    lr_runtime_t * runtime,
+    const lr_task_t * task,
+    const lr_regions_t & regions
+  )
+  {
+    state_.reset(
+      new mpilegion_runtime_state_t(context, runtime, task, regions));
+  } // set_state
 
   /*--------------------------------------------------------------------------*
    * Task registraiton.
@@ -107,23 +121,67 @@ struct mpilegion_context_policy_t
   using register_function_t = std::function<void(size_t)>;
   using unique_fid_t = unique_id_t<task_id_t>;
 
-  bool register_task(uintptr_t key, const register_function_t & f)
-    {
-      if(registration_.find(key) == registration_.end()) {
-        registration_[key] = { unique_fid_t::instance().next(), f };
-        return true;
-      }
+  /*!
+   */
+  bool
+  register_task(
+    uintptr_t key,
+    const register_function_t & f
+  )
+  {
+    if(registration_.find(key) == registration_.end()) {
+      registration_[key] = { unique_fid_t::instance().next(), f };
+      return true;
+    } // if
 
-      return false;
-    } // register_task
+    return false;
+  } // register_task
 
-  task_id_t task_id(uintptr_t key)
-    {
-      assert(registration_.find(key) != registration_.end() &&
-        "task key does not exist!");
+  /*!
+   */
+  task_id_t
+  task_id(
+    uintptr_t key
+  )
+  {
+    assert(registration_.find(key) != registration_.end() &&
+    "task key does not exist!");
 
-      return registration_[key].first;
-    } // task_id
+    return registration_[key].first;
+  } // task_id
+
+  /*--------------------------------------------------------------------------*
+   * Function registraiton.
+   *--------------------------------------------------------------------------*/
+
+  /*!
+   */
+  template<typename T>
+  bool
+  register_function(
+    const const_string_t & key,i
+    T & function
+  )
+  {
+    size_t h = key.hash();
+    if(function_registry_.find(h) == function_registry_.end()) {
+      function_registry_[h] =
+        reinterpret_cast<std::function<void(void)> *>(&function);
+      return true;
+    } // if
+
+    return false;
+  } // register_function
+  
+  /*!
+   */
+  std::function<void(void)> *
+  function(
+    size_t key
+  )
+  {
+    return function_registry_[key];
+  } // function
 
   /*--------------------------------------------------------------------------*
    * Legion runtime accessors.
@@ -158,6 +216,8 @@ private:
   std::shared_ptr<mpilegion_runtime_state_t> state_;
   std::unordered_map<uintptr_t,
     std::pair<task_id_t, register_function_t>> registration_;
+  std::unordered_map<size_t, std::function<void(void)> *>
+    function_registry_;
 
 }; // class mpilegion_context_policy_t
 

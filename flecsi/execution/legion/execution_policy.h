@@ -100,9 +100,16 @@ struct legion_execution_policy_t
     \return A boolean value indicating whether or not the function was
       successfully registered.
    */
-  template<typename R, typename ... As>
-  static bool register_function(const const_string_t & key,
-    std::function<R(As ...)> & user_function)
+  template<
+    typename R,
+    typename ... As
+  >
+  static
+  bool
+  register_function(
+    const const_string_t & key,
+    std::function<R(As ...)> & user_function
+  )
   {
     context_t::instance().register_function(key, user_function);
   } // register_function
@@ -116,8 +123,16 @@ struct legion_execution_policy_t
 
     \return The return type of the provided function handle.
    */
-  template<typename T, typename ... As>
-  static decltype(auto) execute_function(T & handle, As && ... args)
+  template<
+    typename T,
+    typename ... As
+  >
+  static
+  decltype(auto)
+  execute_function(
+    T & handle,
+    As && ... args
+  )
   {
     auto t = std::make_tuple(args ...);
     return handle(context_t::instance().function(handle.key), t);

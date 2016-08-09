@@ -65,13 +65,14 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
    *--------------------------------------------------------------------------*/
 
   /*!
-		\brief Register data with the data manager.
+    \brief Register data with the data manager.
 
     \tparam DT Data type...
     \tparam T Type...
     \tparam NS Namespace...
     \tparam Args Variadic arguments...
 
+    // FIXME: Documentation
 		\param[in] runtime_namespace
 		\param[in] key
 		\param[in] versions

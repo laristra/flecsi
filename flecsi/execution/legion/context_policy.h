@@ -26,7 +26,7 @@ namespace flecsi {
 namespace execution {
 
 /*!
-  \class legion_context_policy_t legion_context_policy.h
+  \class legion_context_policy_t legion/context_policy.h
   \brief legion_context_policy_t provides...
  */
 struct legion_context_policy_t
@@ -130,7 +130,7 @@ struct legion_context_policy_t
   template<typename T>
   bool
   register_function(
-    const const_string_t & key,i
+    const const_string_t & key,
     T & function
   )
   {
