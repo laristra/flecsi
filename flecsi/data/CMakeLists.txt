@@ -27,7 +27,7 @@ set(data_HEADERS
 	serial/storage_policy.h
 	serial/storage_type.h
 	serial/meta_data.h
-	serial/scalar.h
+	serial/global.h
   data_client.h
   data_constants.h
   PARENT_SCOPE

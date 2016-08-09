@@ -12,15 +12,15 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_serial_scalar_h
-#define flecsi_serial_scalar_h
+#ifndef flecsi_serial_global_h
+#define flecsi_serial_global_h
 
 #include "flecsi/utils/const_string.h"
 #include "flecsi/data/serial/storage_type.h"
 #include "flecsi/data/data_client.h"
 
 /*!
- * \file serial/scalar.h
+ * \file serial/global.h
  * \authors bergen
  * \date Initial file creation: Apr 17, 2016
  */
@@ -34,57 +34,73 @@ namespace serial_storage_policy {
  *----------------------------------------------------------------------------*/
 
 template<typename T, typename MD>
-struct scalar_accessor_t {
+struct global_accessor_t {
 
-	/*--------------------------------------------------------------------------*
-	 * Type definitions.
-	 *--------------------------------------------------------------------------*/
+  /*--------------------------------------------------------------------------*
+   * Type definitions.
+   *--------------------------------------------------------------------------*/
 
-	using meta_data_t = MD;
-	using user_meta_data_t = typename meta_data_t::user_meta_data_t;
+  using meta_data_t = MD;
+  using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
-	/*--------------------------------------------------------------------------*
-	 * Constructors.
-	 *--------------------------------------------------------------------------*/
+  /*--------------------------------------------------------------------------*
+   * Constructors.
+   *--------------------------------------------------------------------------*/
 
-	scalar_accessor_t() {}
+  global_accessor_t() {}
 
-	scalar_accessor_t(const std::string & label, T * data,
-		const user_meta_data_t & meta_data)
-		: label_(label), data_(data), meta_data_(meta_data) {}
+  global_accessor_t(
+    const std::string & label,
+    T * data,
+    const user_meta_data_t & meta_data
+  )
+  :
+    label_(label),
+    data_(data),
+    meta_data_(meta_data)
+  {}
 
-	const T * operator -> () const {
-		return data_;
-	} // operator ->
+  /*!
+   */
+  const T *
+  operator -> () const
+  {
+    return data_;
+  } // operator ->
 
-	T * operator -> () {
-		return data_;
-	} // operator ->
+  /*!
+   */
+  T *
+  operator -> ()
+  {
+    return data_;
+  } // operator ->
 
-	/*!
-		\brief Test to see if this accessor is empty.
-	
-		\return true if registered.
-	 */
-	operator bool() const {
-		return data_ != nullptr;
-	} // operator bool
+  /*!
+    \brief Test to see if this accessor is empty.
+
+    \return true if registered.
+   */
+  operator bool() const
+  {
+    return data_ != nullptr;
+  } // operator bool
 
 private:
 
-	std::string label_ = "";
-	T * data_ = nullptr;
-	const user_meta_data_t & meta_data_ = {};
+  std::string label_ = "";
+  T * data_ = nullptr;
+  const user_meta_data_t & meta_data_ = {};
 
-}; // struct scalar_accessor_t
+}; // struct global_accessor_t
 
 /*----------------------------------------------------------------------------*
  * Scalar handle.
  *----------------------------------------------------------------------------*/
 
 template<typename T>
-struct scalar_handle_t {
-}; // struct scalar_handle_t
+struct global_handle_t {
+}; // struct global_handle_t
 
 /*----------------------------------------------------------------------------*
  * Scalar storage type.
@@ -94,7 +110,7 @@ struct scalar_handle_t {
   FIXME: Scalar storage type.
  */
 template<typename DS, typename MD>
-struct storage_type_t<scalar, DS, MD> {
+struct storage_type_t<global, DS, MD> {
 
   /*--------------------------------------------------------------------------*
    * Type definitions.
@@ -104,10 +120,10 @@ struct storage_type_t<scalar, DS, MD> {
   using meta_data_t = MD;
 
   template<typename T>
-  using accessor_t = scalar_accessor_t<T, MD>;
+  using accessor_t = global_accessor_t<T, MD>;
 
   template<typename T>
-  using handle_t = scalar_handle_t<T>;
+  using handle_t = global_handle_t<T>;
 
   /*--------------------------------------------------------------------------*
    * Data registration.
@@ -124,11 +140,21 @@ struct storage_type_t<scalar, DS, MD> {
     \param runtime_namespace The runtime namespace to be used.
     \param The number of variable versions for this datum.
    */
-  template<typename T, size_t NS, typename ... Args>
-  static handle_t<T> register_data(data_client_t & data_client,
-    data_store_t & data_store, const const_string_t & key,
-    size_t versions, Args && ... args) {
-
+  template< 
+    typename T,
+    size_t NS,
+    typename ... Args
+  >
+  static
+  handle_t<T>
+  register_data(
+    data_client_t & data_client,
+    data_store_t & data_store,
+    const const_string_t & key,
+    size_t versions,
+    Args && ... args
+  )
+  {
     size_t h = key.hash() ^ data_client.runtime_id();
 
     // Runtime assertion that this key is unique.
@@ -160,26 +186,35 @@ struct storage_type_t<scalar, DS, MD> {
 
   /*!
    */
-  template<typename T, size_t NS>
-  static accessor_t<T> get_accessor(data_client_t & data_client,
-    data_store_t & data_store, const const_string_t & key,
-		size_t version) {
-		const size_t h = key.hash() ^ data_client.runtime_id();
-		auto search = data_store[NS].find(h);
+  template<
+    typename T,
+    size_t NS
+  >
+  static
+  accessor_t<T>
+  get_accessor(
+    data_client_t & data_client,
+    data_store_t & data_store,
+    const const_string_t & key,
+    size_t version
+  )
+  {
+    const size_t h = key.hash() ^ data_client.runtime_id();
+    auto search = data_store[NS].find(h);
 
-		if(search == data_store[NS].end()) {
-			return {};
-		}
-		else {
-			auto & meta_data = search->second;
-      
+    if(search == data_store[NS].end()) {
+      return {};
+    }
+    else {
+      auto & meta_data = search->second;
+          
       // check that the requested version exists.
       assert(meta_data.versions > version && "version out-of-range");
 
-			return { meta_data.label,
-				reinterpret_cast<T *>(&meta_data.data[version][0]),
-				meta_data.user_data };
-		} // if
+      return { meta_data.label,
+        reinterpret_cast<T *>(&meta_data.data[version][0]),
+        meta_data.user_data };
+    } // if
   } // get_accessor
 
   /*--------------------------------------------------------------------------*
@@ -188,9 +223,18 @@ struct storage_type_t<scalar, DS, MD> {
 
   /*!
    */
-  template<typename T, size_t NS>
-  static handle_t<T> get_handle(data_client_t & data_client,
-    data_store_t & data_store, const const_string_t & key) {
+  template<
+    typename T,
+    size_t NS
+  >
+  static
+  handle_t<T>
+  get_handle(
+    data_client_t & data_client,
+    data_store_t & data_store,
+    const const_string_t & key
+  )
+  {
     return {};
   } // get_handle
 
@@ -200,7 +244,7 @@ struct storage_type_t<scalar, DS, MD> {
 } // namespace data
 } // namespace flecsi
 
-#endif // flecsi_serial_scalar_h
+#endif // flecsi_serial_global_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

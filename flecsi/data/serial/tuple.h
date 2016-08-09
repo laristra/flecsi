@@ -40,25 +40,54 @@ namespace serial_storage_policy {
     struct tuple_handle_t {
     }; // struct tuple_handle_t
 
-    template<typename T, size_t NS, typename ... Args>
-    static decltype(auto) register_data(data_store_t & data_store,
-      uintptr_t runtime_namespace, const const_string_t & key,
-      size_t indices, Args && ... args) {
+    template<
+      typename T,
+      size_t NS,
+      typename ... Args
+    >
+    static
+    decltype(auto)
+    register_data(
+      data_store_t & data_store,
+      uintptr_t runtime_namespace,
+      const const_string_t & key,
+      size_t indices,
+      Args && ... args
+    )
+    {
     } // register_data
 
     /*!
      */
-    template<typename T, size_t NS>
-    static tuple_accessor_t get_accessor(data_store_t & data_store,
-      uintptr_t runtime_namespace, const const_string_t & key) {
+    template<
+      typename T,
+      size_t NS
+    >
+    static
+    tuple_accessor_t
+    get_accessor(
+      data_store_t & data_store,
+      uintptr_t runtime_namespace,
+      const const_string_t & key
+    )
+    {
       return {};
     } // get_accessor
 
     /*!
      */
-    template<typename T, size_t NS>
-    static tuple_handle_t get_handle(data_store_t & data_store,
-      uintptr_t runtime_namespace, const const_string_t & key) {
+    template<
+      typename T,
+      size_t NS
+    >
+    static
+    tuple_handle_t
+    get_handle(
+      data_store_t & data_store,
+      uintptr_t runtime_namespace,
+      const const_string_t & key
+    )
+    {
       return {};
     } // get_handle
 

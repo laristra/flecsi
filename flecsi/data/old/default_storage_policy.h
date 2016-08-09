@@ -45,7 +45,7 @@ namespace default_storage_policy {
     FIXME: Scalar storage type.
    */
   template<typename storage_t>
-  struct storage_type_t<scalar, storage_t> {
+  struct storage_type_t<global, storage_t> {
   }; // struct storage_type_t
 
   /*!

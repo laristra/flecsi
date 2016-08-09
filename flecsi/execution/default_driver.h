@@ -33,6 +33,11 @@ enum mesh_index_spaces_t : size_t {
   cells
 }; // enum mesh_index_spaces_t
 
+enum mesh_data_attribute_t : size_t {
+  type_a,
+  type_b
+}; // enum mesh_attribute_t
+
 enum class privileges : size_t {
   read,
   read_write,
@@ -51,7 +56,8 @@ struct mesh_t : public data::data_client_t {
         // FIXME: lookup user-defined index space
         assert(false && "unknown index space");
     } // switch
-  }
+
+  } // indices
 
 }; // struct mesh_t
 

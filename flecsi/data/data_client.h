@@ -53,6 +53,9 @@ public:
     return reinterpret_cast<uintptr_t>(this+id_);
   } // runtime_id
 
+  // FIXME: This needs to be made pure virtual
+  // The current virtual implementation is here to avoid
+  // breaking the old data model.
   //virtual size_t indices(size_t index_space) = 0;
   virtual size_t
   indices(

@@ -366,17 +366,17 @@ struct storage_type_t<sparse, DS, MD> {
    * Type definitions.
    *--------------------------------------------------------------------------*/
 
-	using data_store_t = DS;
-	using meta_data_t = MD;
+  using data_store_t = DS;
+  using meta_data_t = MD;
 
-	template<typename T>
-	using accessor_t = sparse_accessor_t<T, MD>;
+  template<typename T>
+  using accessor_t = sparse_accessor_t<T, MD>;
 
   template<typename T>
   using mutator_t = sparse_mutator_t<T, MD>;
 
-	template<typename T>
-	using handle_t = sparse_handle_t<T>;
+  template<typename T>
+  using handle_t = sparse_handle_t<T>;
 
   /*--------------------------------------------------------------------------*
    * Data registration.
@@ -387,21 +387,21 @@ struct storage_type_t<sparse, DS, MD> {
     data_store_t & data_store, const const_string_t & key,
     size_t versions, size_t indices, size_t num_materials, Args && ... args) {
 
-		size_t h = key.hash() ^ data_client.runtime_id();
+    size_t h = key.hash() ^ data_client.runtime_id();
 
-		// Runtime assertion that this key is unique
-		assert(data_store[NS].find(h) == data_store[NS].end() &&
-			"key already exists");
+    // Runtime assertion that this key is unique
+    assert(data_store[NS].find(h) == data_store[NS].end() &&
+      "key already exists");
 
     meta_data_t & md = data_store[NS][h];
 
-		md.user_data.initialize(std::forward<Args>(args) ...);
-		md.label = key.c_str();
-		md.size = indices;
-		md.type_size = sizeof(T);
-		md.versions = versions;
-		md.rtti.reset(
-			new typename meta_data_t::type_info_t(typeid(T)));
+    md.user_data.initialize(std::forward<Args>(args) ...);
+    md.label = key.c_str();
+    md.size = indices;
+    md.type_size = sizeof(T);
+    md.versions = versions;
+    md.rtti.reset(
+      new typename meta_data_t::type_info_t(typeid(T)));
 
     md.num_materials = num_materials;
 
@@ -410,7 +410,7 @@ struct storage_type_t<sparse, DS, MD> {
 
     md.data[MATERIALS_KEY] = std::vector<uint8_t>();
 
-		return {};
+    return {};
   } // register_data
 
   /*!

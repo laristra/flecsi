@@ -90,7 +90,7 @@ TEST(storage, dense) {
  * Scalar storage type.
  *----------------------------------------------------------------------------*/
 
-TEST(storage, scalar) {
+TEST(storage, global) {
   using namespace flecsi::data;
 
   mesh_t m;
@@ -100,12 +100,12 @@ TEST(storage, scalar) {
     size_t n;
   }; // struct my_data_t
 
-  register_data(m, "simulation data", 2, my_data_t, scalar);
+  register_data(m, "simulation data", 2, my_data_t, global);
 
   // initialize simulation data
   {
-  auto s0 = get_accessor(m, "simulation data", 0, my_data_t, scalar);
-  auto s1 = get_accessor(m, "simulation data", 1, my_data_t, scalar);
+  auto s0 = get_accessor(m, "simulation data", 0, my_data_t, global);
+  auto s1 = get_accessor(m, "simulation data", 1, my_data_t, global);
   s0->t = 0.5;
   s0->n = 100;
   s1->t = 1.5;
@@ -113,8 +113,8 @@ TEST(storage, scalar) {
   } // scope
 
   {
-  auto s0 = get_accessor(m, "simulation data", 0, my_data_t, scalar);
-  auto s1 = get_accessor(m, "simulation data", 1, my_data_t, scalar);
+  auto s0 = get_accessor(m, "simulation data", 0, my_data_t, global);
+  auto s1 = get_accessor(m, "simulation data", 1, my_data_t, global);
 
   ASSERT_EQ(s0->t, 0.5);
   ASSERT_EQ(s0->n, 100);

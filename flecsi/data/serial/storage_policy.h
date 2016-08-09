@@ -26,7 +26,7 @@
 #include "flecsi/data/serial/meta_data.h"
 
 // Include partial specializations
-#include "flecsi/data/serial/scalar.h"
+#include "flecsi/data/serial/global.h"
 #include "flecsi/data/serial/dense.h"
 #include "flecsi/data/serial/sparse.h"
 #include "flecsi/data/serial/scoped.h"
@@ -57,7 +57,9 @@ struct serial_storage_policy_t {
     data_store_t, meta_data_t>;
 
   //! \brief delete ALL data.
-  void reset() {
+  void
+  reset()
+  {
     data_store_.clear();
   } // reset
 
@@ -65,7 +67,11 @@ struct serial_storage_policy_t {
    * \brief delete ALL data associated with this runtime namespace.
    * \param [in] runtime_namespace the namespace to search.
    */
-  void reset(uintptr_t runtime_namespace) {
+  void
+  reset(
+    uintptr_t runtime_namespace
+  )
+  {
     // check each namespace
     for (auto & sub_map : data_store_) {
 

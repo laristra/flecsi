@@ -61,36 +61,41 @@ static const size_t flecsi_runtime_user_space =
   static_cast<size_t>(data_runtime_name_space_t::user);
 
 /*!
-  \brief data_attribute_t defines different data attributes.
+  \brief data_attribute_old_t defines different data attributes.
 
   This type should probably be pushed up in the interface so that users
   can define their own attributes.
  */
-enum class data_attribute_t : bitfield_t::field_type_t {
+enum class data_attribute_old_t : bitfield_t::field_type_t {
   persistent = 0x0001,
   temporary = 0x0002
-}; // enum class data_attribute_t
+}; // enum class data_attribute_old_t
+
+enum data_attribute_t : size_t {
+  persistent = 0x0001, // FIXME: This is just to not break the old model
+  temporary
+}; // enum data_attribute_t
 
 /*!
   \brief This exposes the persistent attribute so that it can be used
   without specifying the full type information.
  */
-static constexpr bitfield_t::field_type_t persistent =
-  static_cast<bitfield_t::field_type_t>(data_attribute_t::persistent);
+static constexpr bitfield_t::field_type_t old_persistent =
+  static_cast<bitfield_t::field_type_t>(data_attribute_old_t::persistent);
 
 /*!
   \brief This exposes the temporary attribute so that it can be used
   without specifying the full type information.
  */
-static constexpr bitfield_t::field_type_t temporary =
-  static_cast<bitfield_t::field_type_t>(data_attribute_t::temporary);
+static constexpr bitfield_t::field_type_t old_temporary =
+  static_cast<bitfield_t::field_type_t>(data_attribute_old_t::temporary);
 
 /*!
   FIXME
  */
 
 enum data_type_t : size_t {
-  scalar,
+  global,
   dense,
   sparse,
   scoped,
