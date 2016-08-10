@@ -44,7 +44,9 @@ brand = {
     'emacs:',
     'Local Variables:',
     'eval:(setq c-basic-offset 2 tab-width 2 indent-tabs-mode t truncate-lines 1)',
-    'End:'
+    'End:',
+    '',
+    'sublime: tab_size 2; translate_tabs_to_spaces true'
   ]
 }
 #------------------------------------------------------------------------------#
