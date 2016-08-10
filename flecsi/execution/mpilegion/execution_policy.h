@@ -21,7 +21,7 @@
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/processor.h"
 #include "flecsi/execution/mpilegion/context_policy.h"
-#include "flecsi/execution/mpilegion/task_wrapper.h"
+#include "flecsi/execution/legion/task_wrapper.h"
 
 /*!
  * \file mpilegion/execution_policy.h
@@ -33,11 +33,12 @@ namespace flecsi {
 namespace execution {
 
 /*!
-  \struct mpilegion_execution_policy mpilegion/execution_policy.h
+  \struct mpilegion_execution_policy mpilegion_execution_policy.h
   \brief mpilegion_execution_policy provides...
  */
 struct mpilegion_execution_policy_t
 {
+
   using task_key_t = uintptr_t;
 
   /*--------------------------------------------------------------------------*
@@ -46,49 +47,27 @@ struct mpilegion_execution_policy_t
 
   /*
     To add:
-      processor type
       task type (leaf, inner, etc...)
    */
-  template<
-    typename R,
-    typename ... As
-  >
-  static
-  bool
-  register_task(
-    uintptr_t key,
-    processor_t processor
-  )
+  template<typename R, typename ... As>
+  static bool register_task(task_key_t key, processor_t processor)
   {
-    switch (processor){
-     case loc:
-      return context_t::instance().register_task(key,
-        legion_task_wrapper_<loc, 1, 0, R, As ...>::runtime_registration);
-     break;
-     case toc:
-      return context_t::instance().register_task(key,
-        legion_task_wrapper_<toc, 1, 0, R, As ...>::runtime_registration);
-     break;
-     case mpi:
-      return context_t::instance().register_task(key,
-        legion_task_wrapper_<mpi, 1, 0, R, As ...>::runtime_registration);
-     break;
-     default: throw std::runtime_error("unsupported processor type");
-   }
+    switch(processor) {
+      case loc:
+        return context_t::instance().register_task(key,
+          legion_task_wrapper_<loc, 1, 0, R, As ...>::runtime_registration);
+        break;
+      case toc:
+        return context_t::instance().register_task(key,
+          legion_task_wrapper_<toc, 1, 0, R, As ...>::runtime_registration);
+        break;
+      default: throw std::runtime_error("unsupported processor type");
+    } // switch
   } // register_task
 
-  template<
-    typename T,
-    typename ... As
-  >
-  static
-  decltype(auto)
-  execute_task(
-    uintptr_t key,
-    processor_t processor, 
-    T user_task,
-    As ... args
-  )
+  template<typename T, typename ... As>
+  static decltype(auto) execute_task(task_key_t key, processor_t processor,
+    T user_task, As ... args)
   {
     using namespace Legion;
 
@@ -96,27 +75,15 @@ struct mpilegion_execution_policy_t
 
     using task_args_t = std::tuple<T, As ...>;
 
-    // We can't use std::forard or && references here because
+    // We can't use std::forward or && references here because
     // the calling state is not guarunteed to exist when the
     // task is invoked, i.e., we have to use copies...
     task_args_t task_args(user_task, args ...);
 
-    if (processor==mpi)
-    {
-     MPILegionInterop *Interop =  MPILegionInterop::instance();
-        Interop->shared_func=std::bind(user_task,std::forward<As>(args) ...);
-     Interop->call_mpi=true;
-     Interop->handoff_to_mpi(context_.context(), context_.runtime());
-     //mpi task is running here
-     Interop->wait_on_mpi(context_.context(), context_.runtime()); 
-    }
-    else{
-std::cout <<"inside execute task" << std::endl;
-     TaskLauncher task_launcher(context_.task_id(key),
-       TaskArgument(&task_args, sizeof(task_args_t)));
+    TaskLauncher task_launcher(context_.task_id(key),
+      TaskArgument(&task_args, sizeof(task_args_t)));
 
-     return context_.runtime()->execute_task(context_.context(), task_launcher);
-    }
+    return context_.runtime()->execute_task(context_.context(), task_launcher);
   } // execute_task
 
   /*--------------------------------------------------------------------------*
@@ -173,7 +140,7 @@ std::cout <<"inside execute task" << std::endl;
 
 }; // struct mpilegion_execution_policy_t
 
-} // namespace execution
+} // namespace execution 
 } // namespace flecsi
 
 #endif // flecsi_mpilegion_execution_policy_h

@@ -7,7 +7,7 @@
 #define flecsi_mpilegion_context_policy_h
 
 /*!
- * \file legion/context_policy.h
+ * \file mpilegion/context_policy.h
  * \authors bergen
  * \date Initial file creation: Jul 14, 2016
  */
@@ -16,13 +16,12 @@
 #include <functional>
 #include <unordered_map>
 #include <legion.h>
-#include <mpi.h>
 
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/tuple_wrapper.h"
 #include "flecsi/execution/mpilegion/runtime_driver.h"
-
+#include "flecsi/execution/mpilegion/mpi_legion_interop.h"
 
 namespace flecsi {
 namespace execution {
@@ -61,42 +60,15 @@ struct mpilegion_context_policy_t
       TOP_LEVEL_TASK_ID, lr_loc, true, false);
 
     // Register user tasks
-    for(auto f: registration_) {
-      // funky logic: registration_ is a map of std::pair
+    for(auto f: task_registry_) {
+      // funky logic: task_registry_ is a map of std::pair
       // f.first is the uintptr_t that holds the user function address
       // f.second is the pair of unique task id and the registration function
       f.second.second(f.second.first);
     } // for
- 
-    MPILegionInterop *Interop =  MPILegionInterop::initialize();
-    //Interop->register_tasks();  
- 
+  
     // Start the runtime
-    return lr_runtime_t::start(argc, argv, true);
-
-    Interop->legion_configure();
-
-    std::cout<<"back in MPI, do something here"<<std::endl;
-
-    Interop->handoff_to_legion();
-
-    //legion is running
-
-    Interop->wait_on_legion();
-
-    //while loop to do some mpi tasks
-
-/*     while(Interop->call_mpi)
-     {
-       Interop->shared_func();
-       Interop->handoff_to_legion();
-       Interop->wait_on_legion();
-      }
-*/
-      //MPI_Finalize();
-   
-   return 0;
-
+    return lr_runtime_t::start(argc, argv);
   } // initialize
 
   /*!
@@ -110,8 +82,7 @@ struct mpilegion_context_policy_t
     const lr_regions_t & regions
   )
   {
-    state_.reset(
-      new mpilegion_runtime_state_t(context, runtime, task, regions));
+    state_.reset(new legion_runtime_state_t(context, runtime, task, regions));
   } // set_state
 
   /*--------------------------------------------------------------------------*
@@ -130,8 +101,8 @@ struct mpilegion_context_policy_t
     const register_function_t & f
   )
   {
-    if(registration_.find(key) == registration_.end()) {
-      registration_[key] = { unique_fid_t::instance().next(), f };
+    if(task_registry_.find(key) == task_registry_.end()) {
+      task_registry_[key] = { unique_fid_t::instance().next(), f };
       return true;
     } // if
 
@@ -145,10 +116,10 @@ struct mpilegion_context_policy_t
     uintptr_t key
   )
   {
-    assert(registration_.find(key) != registration_.end() &&
-    "task key does not exist!");
+    assert(task_registry_.find(key) != task_registry_.end() &&
+      "task key does not exist!");
 
-    return registration_[key].first;
+    return task_registry_[key].first;
   } // task_id
 
   /*--------------------------------------------------------------------------*
@@ -196,14 +167,14 @@ struct mpilegion_context_policy_t
 private:
 
   /*!
-    \struct mpilegion_runtime_runtime_state_t mpilegion_context_policy.h
-    \brief mpilegion_runtime_state_t provides storage for Legion runtime
+    \struct legion_runtime_runtime_state_t legion_context_policy.h
+    \brief legion_runtime_state_t provides storage for Legion runtime
       information that can be reinitialized as needed to store const
       data types and references as required by the Legion runtime.
    */
-  struct mpilegion_runtime_state_t {
+  struct legion_runtime_state_t {
 
-    mpilegion_runtime_state_t(lr_context_t & context_, lr_runtime_t * runtime_,
+    legion_runtime_state_t(lr_context_t & context_, lr_runtime_t * runtime_,
       const lr_task_t * task_, const lr_regions_t & regions_)
       : context(context_), runtime(runtime_), task(task_), regions(regions_) {}
       
@@ -212,17 +183,17 @@ private:
     const lr_task_t * task;
     const lr_regions_t & regions;
 
-  }; // struct mpilegion_runtime_state_t
+  }; // struct legion_runtime_state_t
 
-  std::shared_ptr<mpilegion_runtime_state_t> state_;
+  std::shared_ptr<legion_runtime_state_t> state_;
   std::unordered_map<uintptr_t,
-    std::pair<task_id_t, register_function_t>> registration_;
+    std::pair<task_id_t, register_function_t>> task_registry_;
   std::unordered_map<size_t, std::function<void(void)> *>
     function_registry_;
 
 }; // class mpilegion_context_policy_t
 
-} //namespace execution
+} // namespace execution 
 } // namespace flecsi
 
 #endif // flecsi_mpilegion_context_policy_h

@@ -16,12 +16,13 @@
 #ifndef _MPI_MAPPERS_H_
 #define _MPI_MAPPERS_H_
 
-#include "legion.h"
-#include "task_ids.h"
-#include "shim_mapper.h"
+#include <legion.h>
+#include <shim_mapper.h>
+
+#include "flecsi/execution/mpilegion/task_ids.h"
 
 enum {
-  MPI_MAPPER_ID       = 1,
+  MPI_MAPPER_ID = 1,
 };
 
 
@@ -46,15 +47,15 @@ protected:
   std::vector<unsigned> local_next_cpu;
 };
 
-void mapper_registration(LegionRuntime::HighLevel::Machine machine, 
+inline void mapper_registration(LegionRuntime::HighLevel::Machine machine, 
             LegionRuntime::HighLevel::HighLevelRuntime *rt,
             const std::set<LegionRuntime::HighLevel::Processor> &local_procs);
 
 
-LegionRuntime::Logger::Category log_mapper("mpi_mapper");
+//LegionRuntime::Logger::Category log_mapper("mpi_mapper");
 
 
-MPIMapper::MPIMapper(LegionRuntime::HighLevel::Machine machine, 
+inline MPIMapper::MPIMapper(LegionRuntime::HighLevel::Machine machine, 
          LegionRuntime::HighLevel::HighLevelRuntime *rt, 
          LegionRuntime::HighLevel::Processor local)
   : ShimMapper(machine, rt, rt->get_mapper_runtime(), local)
@@ -79,12 +80,12 @@ MPIMapper::MPIMapper(LegionRuntime::HighLevel::Machine machine,
   //local_next_cpu.resize(MAX_NUM_TASK_ID, 0);
 }
 
-MPIMapper::~MPIMapper(void)
+inline MPIMapper::~MPIMapper(void)
 {
 }
 
 
-void MPIMapper::select_task_options(ShimMapper::Task *legiontask)
+inline void MPIMapper::select_task_options(ShimMapper::Task *legiontask)
 {
   // Default values
   legiontask->inline_task = false;
@@ -95,7 +96,7 @@ void MPIMapper::select_task_options(ShimMapper::Task *legiontask)
   legiontask->target_proc = local_proc;
 }
 
-void MPIMapper::slice_domain(const Legion::Task *legiontask, 
+inline void MPIMapper::slice_domain(const Legion::Task *legiontask, 
         const LegionRuntime::HighLevel::Domain &domain,
         std::vector<DomainSplit> &slices)
 {
@@ -131,7 +132,7 @@ void MPIMapper::slice_domain(const Legion::Task *legiontask,
                                   1/*splitting factor*/, slices);
 }
 
-bool MPIMapper::map_task(ShimMapper::Task *legiontask)
+inline bool MPIMapper::map_task(ShimMapper::Task *legiontask)
 {
   // Add extra fields onto the await MPI task
  /* if (task->task_id == AWAIT_MPI_TASK_ID)
@@ -173,7 +174,7 @@ bool MPIMapper::map_task(ShimMapper::Task *legiontask)
 }
 
 
-void MPIMapper::notify_mapping_failed(const Mappable *mappable)
+inline void MPIMapper::notify_mapping_failed(const Mappable *mappable)
 {
   switch (mappable->get_mappable_kind())
   {
@@ -189,8 +190,8 @@ void MPIMapper::notify_mapping_failed(const Mappable *mappable)
             break;
           }
         }
-        log_mapper.error("Failed task mapping for region %d of task %s (%p)\n",
-                    failed_idx, legiontask->variants->name, legiontask);
+        //log_mapper.error("Failed task mapping for region %d of task %s (%p)\n",
+         //           failed_idx, legiontask->variants->name, legiontask);
         assert(false);
         break;
       }
@@ -214,8 +215,8 @@ void MPIMapper::notify_mapping_failed(const Mappable *mappable)
             break;
           }
         }
-        log_mapper.error("Failed copy mapping for region %d of copy (%p)\n",
-                    failed_idx, copy);
+        //log_mapper.error("Failed copy mapping for region %d of copy (%p)\n",
+          //          failed_idx, copy);
         assert(false);
         break;
       }
@@ -243,7 +244,7 @@ int RHSFMapper::get_tunable_value(const Task *legiontask, TunableID tid, Mapping
 */
 
 
-void mapper_registration(LegionRuntime::HighLevel::Machine machine, 
+inline void mapper_registration(LegionRuntime::HighLevel::Machine machine, 
                LegionRuntime::HighLevel::HighLevelRuntime *rt,
                const std::set<LegionRuntime::HighLevel::Processor> &local_procs)
 {

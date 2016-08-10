@@ -20,10 +20,10 @@
 #include <mutex>
 #include <condition_variable>
 
-#include "mpi.h"
+#include <mpi.h>
 
-#include "legion.h"
-#include "realm.h"
+#include <legion.h>
+#include <realm.h>
 
 // the main idea of the handshake is change from MPI to Legion and vice
 // versa  through locking/unlocking threads's mutex
@@ -63,6 +63,16 @@ public:
        int _ext_queue_depth = 1, 
        int _legion_queue_depth = 1);
 
+  static ExtLegionHandshake & instance() {
+    static ExtLegionHandshake hs;
+    return hs;
+  }
+
+  void initialize(
+       int init_state, 
+       int _ext_queue_depth = 1, 
+       int _legion_queue_depth = 1);
+
   ~ExtLegionHandshake(void){delete ext_queue; delete legion_queue;};
 
   void ext_init(void);
@@ -83,7 +93,7 @@ protected:
   pthread_cond_t sync_cond;
 };
 
-ExtLegionHandshake::ExtLegionHandshake(
+inline ExtLegionHandshake::ExtLegionHandshake(
   int init_state, 
   int _ext_queue_depth,
   int _legion_queue_depth)
@@ -102,7 +112,7 @@ ExtLegionHandshake::ExtLegionHandshake(
 #endif
 }
 
-void ExtLegionHandshake::ext_init(void)
+inline void ExtLegionHandshake::ext_init(void)
 {
  CHECK_PTHREAD( pthread_mutex_lock(&sync_mutex) );
 
@@ -127,7 +137,7 @@ void ExtLegionHandshake::ext_init(void)
   CHECK_PTHREAD( pthread_mutex_unlock(&sync_mutex) ); 
 }
 
-void ExtLegionHandshake::legion_init(void)
+inline void ExtLegionHandshake::legion_init(void)
 {
  CHECK_PTHREAD( pthread_mutex_lock(&sync_mutex) );
 
@@ -167,7 +177,7 @@ void ExtLegionHandshake::legion_init(void)
   CHECK_PTHREAD( pthread_mutex_unlock(&sync_mutex) );
 }
 
-void ExtLegionHandshake::ext_handoff_to_legion(void)
+inline void ExtLegionHandshake::ext_handoff_to_legion(void)
 {
   assert(state == IN_EXT);
 
@@ -183,13 +193,13 @@ void ExtLegionHandshake::ext_handoff_to_legion(void)
   ext_queue[0].trigger();
 }
 
-void ExtLegionHandshake::ext_wait_on_legion(void)
+inline void ExtLegionHandshake::ext_wait_on_legion(void)
 {
   legion_queue[0].external_wait();
   assert(state == IN_EXT);
 }
 
-void ExtLegionHandshake::legion_handoff_to_ext(void)
+inline void ExtLegionHandshake::legion_handoff_to_ext(void)
 {
   assert(state == IN_LEGION);
 
@@ -205,7 +215,7 @@ void ExtLegionHandshake::legion_handoff_to_ext(void)
   legion_queue[0].trigger();
 }
 
-void ExtLegionHandshake::legion_wait_on_ext(void)
+inline void ExtLegionHandshake::legion_wait_on_ext(void)
 {
   ext_queue[0].wait();
   assert(state == IN_LEGION);

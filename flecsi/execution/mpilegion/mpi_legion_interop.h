@@ -31,33 +31,24 @@
 #include "flecsi/execution/mpilegion/task_ids.h"
 
 namespace flecsi{
-namespace execution{ 
+namespace execution{
+
 
 // MPILegionInterp class
 class MPILegionInterop {
 
-  private:
-  MPILegionInterop(){handshake = new ExtLegionHandshake(
-                                    ExtLegionHandshake::IN_EXT, 1, 1);};
-  ~MPILegionInterop(){ delete handshake;};
+  public:
+  MPILegionInterop()
+    : handshake(ExtLegionHandshake::IN_EXT, 1, 1) {};
+  ~MPILegionInterop(){};
 
+  private:
    MPILegionInterop(const MPILegionInterop&);
    MPILegionInterop& operator=(const MPILegionInterop&);
 
-   static MPILegionInterop* interop_obj_;
+//   static MPILegionInterop* interop_obj_;
 
   public:
- //Unique point of access to singleton 
-  static MPILegionInterop* initialize(void) {
-    if (!interop_obj_) interop_obj_= new MPILegionInterop();
-   interop_obj_->register_tasks();
-   Legion::HighLevelRuntime::set_registration_callback(mapper_registration);
-   return interop_obj_;
-  }
-
-  static MPILegionInterop* instance(void){
-    assert(interop_obj_); return interop_obj_; }
-
 
   //variadic arguments for data to be shared
   template <typename... CommonDataTypes>
@@ -66,8 +57,7 @@ class MPILegionInterop {
               LegionRuntime::HighLevel::HighLevelRuntime *runtime);
  
   void legion_configure(){ 
-     assert(interop_obj_);
-     interop_obj_->handshake->ext_init();
+     handshake.ext_init();
      }
 
   static void connect_to_mpi_task (
@@ -77,18 +67,15 @@ class MPILegionInterop {
       LegionRuntime::HighLevel::HighLevelRuntime *runtime)
       {
          std::cout <<"inside connect_to_mpi"<<std::endl;
-         //MPILegionInterop *Iterop= MPILegionInterop::instance();
-         interop_obj_->handshake->legion_init();
+         handshake.legion_init();
       }
 
   void handoff_to_legion(void){
-    assert(interop_obj_);
-    interop_obj_->handshake->ext_handoff_to_legion();
+    handshake.ext_handoff_to_legion();
   }
 
   void wait_on_legion(void){
-    assert(interop_obj_);
-    interop_obj_->handshake->ext_wait_on_legion();
+    handshake.ext_wait_on_legion();
   }
 
   static void  handoff_to_mpi_task (
@@ -123,34 +110,20 @@ class MPILegionInterop {
  
  public:
 //  CommonDataType CommonData;
-  static ExtLegionHandshake *handshake;
+  ExtLegionHandshake handshake;
 
-  //template<typename R>
-  //using shared_func=std::function<R()>; 
   std::function<void()> shared_func;
-//  using functor_ptr_t=flecsi::utils::functor_ptr_<R*>;
-//  functor_ptr_t<void> shared_functor;
 
   bool call_mpi=false;
 
   Rect<2> all_processes;
   Rect<1> local_procs;
 
-
-  static MPILegionInterop* get_interop_object(const Point<3> &pt, bool must_match);  
-#ifndef SHARED_LOWLEVEL
-  static MPILegionInterop*& get_local_interop_object(void);
-#else
-  static std::map<Point<3>, MPILegionInterop*, 
-                   Point<3>::STLComparator>& get_interop_objects(void);
-#endif
-
-
 };
 
 
  template <typename... CommonDataTypes>
- void MPILegionInterop::copy_data_from_mpi_to_legion(
+inline void MPILegionInterop::copy_data_from_mpi_to_legion(
     CommonDataTypes&&... CommData, 
     LegionRuntime::HighLevel::Context ctx,
     LegionRuntime::HighLevel::HighLevelRuntime *runtime)
@@ -159,7 +132,7 @@ class MPILegionInterop {
 
 
  template <typename... CommonDataTypes>
- void MPILegionInterop::copy_data_from_legion_to_mpi(
+inline void MPILegionInterop::copy_data_from_legion_to_mpi(
      CommonDataTypes&&... CommData, 
      LegionRuntime::HighLevel::Context ctx,
      LegionRuntime::HighLevel::HighLevelRuntime *runtime)  
@@ -167,26 +140,26 @@ class MPILegionInterop {
      }
 
 
- void MPILegionInterop::handoff_to_mpi_task (
+inline void MPILegionInterop::handoff_to_mpi_task (
      const Legion::Task *legiontask,
      const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
      LegionRuntime::HighLevel::Context ctx, 
      LegionRuntime::HighLevel::HighLevelRuntime *runtime)
      {
-       interop_obj_->handshake->legion_handoff_to_ext();
+       handshake->legion_handoff_to_ext();
       }
 
- void MPILegionInterop::wait_on_mpi_task(
+inline void MPILegionInterop::wait_on_mpi_task(
     const Legion::Task *legiontask,
     const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
     LegionRuntime::HighLevel::Context ctx, 
     LegionRuntime::HighLevel::HighLevelRuntime *runtime)
     {
-     interop_obj_->handshake->legion_wait_on_ext();
+     handshake->legion_wait_on_ext();
     }
 
  //static:
- void MPILegionInterop::register_tasks(void)
+inline void MPILegionInterop::register_tasks(void)
  {
   LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
         <connect_to_mpi_task>( 
@@ -218,7 +191,7 @@ class MPILegionInterop {
  }
 
 
- void MPILegionInterop::calculate_number_of_procs(void)
+inline void MPILegionInterop::calculate_number_of_procs(void)
  {
   int num_local_procs=0;
 #ifndef SHARED_LOWLEVEL
@@ -255,7 +228,7 @@ class MPILegionInterop {
   this->local_procs = LegionRuntime::Arrays::Rect<1>(0,num_local_procs);
  }
 
- void MPILegionInterop::connect_with_mpi(
+inline void MPILegionInterop::connect_with_mpi(
      LegionRuntime::HighLevel::Context ctx,
      LegionRuntime::HighLevel::HighLevelRuntime *runtime)
  {
@@ -276,7 +249,7 @@ class MPILegionInterop {
  
  }
 
- void MPILegionInterop::handoff_to_mpi(
+inline void MPILegionInterop::handoff_to_mpi(
      LegionRuntime::HighLevel::Context ctx,
      LegionRuntime::HighLevel::HighLevelRuntime *runtime)
  {
@@ -289,7 +262,7 @@ class MPILegionInterop {
    runtime->execute_index_space( ctx, handoff_to_mpi_launcher);
  }
 
- void MPILegionInterop::wait_on_mpi(
+inline void MPILegionInterop::wait_on_mpi(
      LegionRuntime::HighLevel::Context ctx,
      LegionRuntime::HighLevel::HighLevelRuntime *runtime)
  {
@@ -302,8 +275,8 @@ class MPILegionInterop {
    runtime->execute_index_space(ctx,wait_on_mpi_launcher);
  }
 
-  MPILegionInterop* MPILegionInterop::interop_obj_=0;
-  ExtLegionHandshake* MPILegionInterop::handshake=0;
+//  MPILegionInterop* MPILegionInterop::interop_obj_=0;
+  ExtLegionHandshake handshake;
 } //end namespace execution
 } //end namespace flecsi
 

@@ -4,7 +4,7 @@
  *~-------------------------------------------------------------------------~~*/
 
 /*!
- * \file legion/runtime_driver.cc
+ * \file mpilegion/runtime_driver.cc
  * \authors bergen
  * \date Initial file creation: Jul 26, 2016
  */
@@ -30,25 +30,13 @@ void mpilegion_runtime_driver(const LegionRuntime::HighLevel::Task * task,
 	{
 		context_t::instance().set_state(ctx, runtime, task, regions);
 
-    std::cout<<"insidr TLT" <<std::endl;
-    MPILegionInterop *Interop =  MPILegionInterop::instance();
-    Interop->connect_with_mpi(
-         context_t::instance().context(), context_t::instance().runtime());
-
-   std::cout<<"handshake is connected to Legion" <<std::endl;
-   std::cout<<"some computations in Legion"<<std::endl;
-
     const LegionRuntime::HighLevel::InputArgs & args =
       LegionRuntime::HighLevel::HighLevelRuntime::get_input_args();
 
     driver(args.argc, args.argv); 
+	} // mpilegion_runtime_driver
 
-    Interop->call_mpi=false;
-    Interop->handoff_to_mpi(
-           context_t::instance().context(), context_t::instance().runtime());
-    }// legion_runtime_driver
-
-} // namespace execution
+} // namespace execution 
 } // namespace flecsi
 
 /*~------------------------------------------------------------------------~--*

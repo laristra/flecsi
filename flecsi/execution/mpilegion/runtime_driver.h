@@ -22,7 +22,7 @@ void mpilegion_runtime_driver(const LegionRuntime::HighLevel::Task * task,
   LegionRuntime::HighLevel::Context ctx,
   LegionRuntime::HighLevel::HighLevelRuntime * runtime);
 
-} // namespace execution
+} // namespace execution 
 } // namespace flecsi
 
 #endif // flecsi_mpilegion_runtime_driver_h
