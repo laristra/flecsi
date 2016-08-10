@@ -15,6 +15,8 @@
 #ifndef flecsi_context_h
 #define flecsi_context_h
 
+#include <cstddef>
+
 /*!
  * \file context.h
  * \authors bergen

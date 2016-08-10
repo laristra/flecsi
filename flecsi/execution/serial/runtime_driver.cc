@@ -10,6 +10,7 @@
  */
 
 #include "flecsi/execution/serial/runtime_driver.h"
+#include "flecsi/utils/common.h"
 
 #ifndef FLECSI_DRIVER
   #include "flecsi/execution/default_driver.h"

@@ -88,7 +88,7 @@ double task2(double x, double y, dense_field_t<double> p) {
 register_task(task2, loc, void, double, double, dense_field_t<double>);
 
 /*----------------------------------------------------------------------------*
- * Kernel registration.
+ * Function registration.
  *----------------------------------------------------------------------------*/
 
 double eos_copper(double r, double e) {
@@ -151,20 +151,21 @@ void driver(int argc, char ** argv) {
   execute_task(task1, loc, alpha, 5);
   execute_task(task2, loc,  alpha, 5.0, p);
 
-  register_data(m, "materials", 1, material_t, dense, cells);
+  register_data(m, "materials", 2, material_t, dense, cells);
 
-  auto mats = get_accessor(m, "materials", 0, material_t, dense);
+  auto mats1 = get_accessor(m, "materials", 0, material_t, dense);
+  auto mats2 = get_accessor(m, "materials", 1, material_t, dense);
 
   for(size_t i(0); i<5; ++i) {
-    mats[i] = copper_t(2.0, 2.0);
+    mats1[i] = copper_t(2.0, 2.0);
   } // for
 
   for(size_t i(5); i<10; ++i) {
-    mats[i] = steel_t(2.0, 2.0);
+    mats1[i] = steel_t(2.0, 2.0);
   } // for
 
   for(size_t i(0); i<10; ++i) {
-    std::cout << mats[i].eos() << std::endl;
+    std::cout << mats1[i].eos() << std::endl;
   } // for
 
 } // driver

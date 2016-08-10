@@ -44,18 +44,13 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
   add_definitions(-DFLECSI_RUNTIME_MODEL_serial)
 
-  set(FLECSI_RUNTIME_MAIN script-driver-serial.cc)
-
 # Legion interface
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   add_definitions(-DFLECSI_RUNTIME_MODEL_legion)
 
-  set(FLECSI_RUNTIME_MAIN script-driver-legion.cc)
-
   if(NOT legion_FOUND)
-      message(FATAL_ERROR "Legion is required
-                     for this build configuration")
+    message(FATAL_ERROR "Legion is required for this build configuration")
   endif(NOT legion_FOUND)
   
   include_directories(${LEGION_INCLUDE_DIRS})
@@ -66,21 +61,18 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   add_definitions(-DFLECSI_RUNTIME_MODEL_mpi)
 
-  set(FLECSI_RUNTIME_MAIN script-driver-mpi.cc)
-
 #MPI+Legion interface
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
   if(NOT ENABLE_MPI)
-    message (FATAL_ERROR " MPI is required for the mpilegion runtime model")
+    message (FATAL_ERROR "MPI is required for the mpilegion runtime model")
   endif ()
  
   add_definitions(-DFLECSI_RUNTIME_MODEL_mpilegion)
-   set(FLECSI_RUNTIME_MAIN script-driver-mpilegion.cc)
 
   if(NOT legion_FOUND)
-      message(FATAL_ERROR "Legion is required
-                     for this build configuration")
+    message(FATAL_ERROR "Legion is required for this build configuration")
   endif(NOT legion_FOUND)
+
   include_directories(${LEGION_INCLUDE_DIRS})
   set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES} dl)
 
@@ -94,6 +86,7 @@ endif(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 #------------------------------------------------------------------------------#
 # Hypre
 #------------------------------------------------------------------------------#
+
 set (ENABLE_HYPRE OFF CACHE BOOL " do you want to enable HYPRE?")
 if (ENABLE_HYPRE)
   find_package (HYPRE)
@@ -204,6 +197,31 @@ endif(NOT APPLE)
 # Create compile scripts
 #------------------------------------------------------------------------------#
 
+# Get the compiler defines that were used to build the library
+# to pass to the flecsi script
+get_directory_property(_defines DIRECTORY ${CMAKE_SOURCE_DIR}
+  COMPILE_DEFINITIONS)
+get_directory_property(_includes DIRECTORY ${CMAKE_SOURCE_DIR}
+  INCLUDE_DIRECTORIES)
+
+set(FLECSI_SCRIPT_COMPILE_DEFINES)
+foreach(def ${_defines})
+  set(FLECSI_SCRIPT_COMPILE_DEFINES
+    "${FLECSI_SCRIPT_COMPILE_DEFINES} -D${def}")
+endforeach()
+
+set(FLECSI_SCRIPT_INCLUDE_DIRECTORIES)
+foreach(inc ${_includes})
+  set(FLECSI_SCRIPT_INCLUDE_DIRECTORIES
+    "${FLECSI_SCRIPT_INCLUDE_DIRECTORIES} -I${inc}")
+endforeach()
+
+set(FLECSI_SCRIPT_RUNTIME_LIBRARIES)
+foreach(lib ${FLECSI_RUNTIME_LIBRARIES})
+  set(FLECSI_SCRIPT_RUNTIME_LIBRARIES
+    "${FLECSI_SCRIPT_RUNTIME_LIBRARIES} ${lib}")
+endforeach()
+
 # This configures the script that will be installed when 'make install' is
 # executed.
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi.in
@@ -220,26 +238,27 @@ install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install
 )
 
 # Install auxiliary files
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-serial.cc
-  DESTINATION ${CMAKE_BINARY_DIR}/share
-)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-legion.cc
-  DESTINATION ${CMAKE_BINARY_DIR}/share
-)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-mpi.cc
-  DESTINATION ${CMAKE_BINARY_DIR}/share
-)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-mpilegion.cc
-  DESTINATION ${CMAKE_BINARY_DIR}/share
-)
+# FIXME: MERGE THIS WITH THE STUFF ABOVE
+if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
+  set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/serial)
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+  set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/legion)
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
+  set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/mpi)
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+  set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/mpilegion)
+else()
+  message(FATAL_ERROR "Unrecognized runtime selection")
+endif()
 
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-serial.cc
+file(COPY ${CMAKE_SOURCE_DIR}/flecsi/execution/runtime_main.cc
+  DESTINATION ${CMAKE_BINARY_DIR}/share)
+file(COPY ${_runtime_path}/runtime_driver.cc
+  DESTINATION ${CMAKE_BINARY_DIR}/share)
+
+install(FILES ${CMAKE_SOURCE_DIR}/flecsi/execution/runtime_main.cc
   DESTINATION share/flecsi)
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-legion.cc
-  DESTINATION share/flecsi)
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-mpi.cc
-  DESTINATION share/flecsi)
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-mpilegion.cc
+install(FILES ${_runtime_path}/runtime_driver.cc
   DESTINATION share/flecsi)
 
 # This configures a locally available script that is suitable for

@@ -40,35 +40,24 @@ set(execution_SOURCES
 )
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
-
-  set(execution_SOURCES ${execution_SOURCES}
-    legion/runtime_driver.cc
-    PARENT_SCOPE
-  )
-
   cinch_add_unit(task
-    SOURCES test/task.cc
+    SOURCES
+      test/task.cc
+      legion/runtime_driver.cc
     POLICY LEGION
     LIBRARIES flecsi)
 elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
-   set(execution_SOURCES ${execution_SOURCES}
-    mpilegion/runtime_driver.cc
-    PARENT_SCOPE
-  )
-
   cinch_add_unit(task
-    SOURCES test/task.cc
+    SOURCES
+      test/task.cc
+      mpi-legion/runtime_driver.cc
     POLICY MPILEGION
     LIBRARIES flecsi)
- 
 else()
-  set(execution_SOURCES ${execution_SOURCES}
-    serial/runtime_driver.cc
-    PARENT_SCOPE
-  )
-
   cinch_add_unit(task
-    SOURCES test/task.cc
+    SOURCES
+      test/task.cc
+      serial/runtime_driver.cc
     LIBRARIES flecsi)
 endif()
 

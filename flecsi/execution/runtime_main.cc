@@ -12,21 +12,12 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#include <flecsi/execution/task.h>
-#include <flecsi/utils/common.h>
+#include "flecsi/execution/context.h"
 
-#include EXPAND_AND_STRINGIFY(FLECSI_DRIVER)
-
-/*----------------------------------------------------------------------------*
- * Serial execution harness.
- *
- * This harness uses the default execution policy, meaning that it basically
- * just logs task entry and exit and calls the task directly with no other
- * runtime actions.
- *----------------------------------------------------------------------------*/
+using namespace flecsi::execution;
 
 int main(int argc, char ** argv) {
-  return flecsi::execution_t<>::execute_task(driver, argc, argv);
+  return context_t::instance().initialize(argc, argv);
 } // main
 
 /*~------------------------------------------------------------------------~--*
