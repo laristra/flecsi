@@ -8,7 +8,6 @@
 
 #include <legion.h>
 
-#include "flecsi/execution/mpilegion/mpi_legion_interop.h"
 /*!
  * \file mpilegion/runtime_driver.h
  * \authors bergen

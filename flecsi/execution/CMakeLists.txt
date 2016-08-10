@@ -31,13 +31,11 @@ set(execution_HEADERS
   mpilegion/mapper.h
   mpilegion/task_ids.h
   mpilegion/mpi_legion_interop.h
-  PARENT_SCOPE
-)
+  PARENT_SCOPE)
 
 
 set(execution_SOURCES
-    PARENT_SCOPE
-)
+    PARENT_SCOPE)
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   cinch_add_unit(task
@@ -50,7 +48,7 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
   cinch_add_unit(task
     SOURCES
       test/task.cc
-      mpi-legion/runtime_driver.cc
+      mpilegion/runtime_driver.cc
     POLICY MPILEGION
     LIBRARIES flecsi)
 else()
