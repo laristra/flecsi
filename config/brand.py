@@ -39,7 +39,12 @@ brand = {
   # source file footer
   '4' : [
     'Formatting options',
-    'vim: set tabstop=2 shiftwidth=2 expandtab :'
+    'vim: set tabstop=2 shiftwidth=2 expandtab :',
+    '',
+    'emacs:',
+    'Local Variables:',
+    'eval:(setq c-basic-offset 2 tab-width 2 indent-tabs-mode t truncate-lines 1)',
+    'End:'
   ]
 }
 #------------------------------------------------------------------------------#
