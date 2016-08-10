@@ -21,7 +21,6 @@
 
 using namespace std;
 using namespace flecsi;
-using namespace tree;
 
 double uniform(){
   return double(rand())/RAND_MAX;

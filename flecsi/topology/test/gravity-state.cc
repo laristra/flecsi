@@ -7,7 +7,6 @@
 using namespace std;
 using namespace flecsi;
 using namespace flecsi::data; // FIXME: What namespaces do we need?
-using namespace tree;
 
 struct state_user_meta_data_t {
   void initialize(){}
@@ -28,7 +27,7 @@ struct Aggregate{
 
 class tree_policy{
 public:
-  using tree_t = tree_topology<tree_policy>;
+  using tree_t = topology::tree_topology<tree_policy>;
 
   using branch_int_t = uint64_t;
 
@@ -44,7 +43,7 @@ public:
 
   using vector_t = point<element_t, dimension>;
 
-  class body : public tree_entity<branch_int_t, dimension>{
+  class body : public topology::tree_entity<branch_int_t, dimension>{
   public:
     body(){}
 
@@ -128,7 +127,7 @@ public:
 
   using entity_t = body;
 
-  class branch : public tree_branch<branch_int_t, dimension>{
+  class branch : public topology::tree_branch<branch_int_t, dimension>{
   public:
     branch(){}
 
@@ -191,7 +190,7 @@ double uniform(double a, double b){
   return a + (b - a) * uniform();
 }
 
-using tree_topology_t = tree_topology<tree_policy>;
+using tree_topology_t = topology::tree_topology<tree_policy>;
 using body = tree_topology_t::body;
 using point_t = tree_topology_t::point_t;
 using vector_t = tree_topology_t::vector_t;

@@ -6,11 +6,10 @@
 
 using namespace std;
 using namespace flecsi;
-using namespace tree;
 
 class tree_policy{
 public:
-  using tree_t = tree_topology<tree_policy>;
+  using tree_t = topology::tree_topology<tree_policy>;
 
   using branch_int_t = uint64_t;
 
@@ -24,7 +23,7 @@ public:
 
   static constexpr range_t coordinate_range = {0, 1};
 
-  class entity : public tree_entity<branch_int_t, dimension>{
+  class entity : public topology::tree_entity<branch_int_t, dimension>{
   public:
     entity(const point_t& p)
     : coordinates_(p){}
@@ -39,7 +38,7 @@ public:
 
   using entity_t = entity;
 
-  class branch : public tree_branch<branch_int_t, dimension>{
+  class branch : public topology::tree_branch<branch_int_t, dimension>{
   public:
     branch(){}
 
@@ -106,7 +105,7 @@ double uniform(double a, double b){
   return a + (b - a) * uniform();
 }
 
-using tree_topology_t = tree_topology<tree_policy>;
+using tree_topology_t = topology::tree_topology<tree_policy>;
 using entity_t = tree_topology_t::entity;
 using point_t = tree_topology_t::point_t;
 using branch_t = tree_topology_t::branch_t;

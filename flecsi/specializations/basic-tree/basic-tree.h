@@ -18,7 +18,6 @@
 #include "flecsi/topology/tree_topology.h"
 
 namespace flecsi{
-namespace tree{
 
 template<class P>
 class basic_tree_policy{
@@ -35,7 +34,7 @@ public:
 
   static constexpr range_t coordinate_range = P::coordinate_range;
 
-  class entity : public tree_entity<branch_int_t, dimension>{
+  class entity : public topology::tree_entity<branch_int_t, dimension>{
   public:
     entity(const point_t& p)
       : coordinates_(p){}
@@ -50,9 +49,9 @@ public:
 
   using entity_t = entity;
 
-  class branch : public tree_branch<branch_int_t, dimension>{
+  class branch : public topology::tree_branch<branch_int_t, dimension>{
   public:
-    using super_ = tree_branch<branch_int_t, dimension>;
+    using super_ = topology::tree_branch<branch_int_t, dimension>;
 
     branch(){}
 
@@ -112,12 +111,11 @@ public:
 };
 
 template<class P>
-class basic_tree : public tree_topology<basic_tree_policy<P>>{
+class basic_tree : public topology::tree_topology<basic_tree_policy<P>>{
 public:
 
 };
 
-} // namespace tree
 } // namespace flecsi
 
 #endif // flecsi_basic_tree_h
