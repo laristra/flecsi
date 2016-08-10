@@ -1240,12 +1240,13 @@ private:
       }
 
       size /= 2;
+      ++depth;
 
       for(size_t i = 0; i < branch_t::num_children; ++i){
         branch_t* ci = b->template child_<branch_t>(i);
 
         if(bf(ci->coordinates(), size, std::forward<ARGS>(args)...)){        
-          if(depth + 1 == queue_depth){
+          if(depth == queue_depth){
 
             auto f = [&, size, ci](){
               apply_(ci, size,
@@ -1258,18 +1259,18 @@ private:
             pool.queue(f);
           }
           else{
-            apply_(pool, sem, queue_depth, depth + 1, ci, size,
+            apply_(pool, sem, queue_depth, depth, ci, size,
                    std::forward<EF>(ef), std::forward<BF>(bf),
                    std::forward<ARGS>(args)...);
           }
         }
         else{
-          if(depth == queue_depth){
+          if(depth > queue_depth){
             continue;
           }
 
           size_t m = 
-            branch_int_t(1) << (queue_depth - depth - 1) * P::dimension;
+            branch_int_t(1) << (queue_depth - depth) * P::dimension;
 
           for(size_t i = 0; i < m; ++i){
             sem.release(); 
@@ -1341,12 +1342,13 @@ private:
       }
 
       size /= 2;
+      ++depth;
 
       for(size_t i = 0; i < branch_t::num_children; ++i){
         branch_t* ci = b->template child_<branch_t>(i);
 
         if(bf(ci->coordinates(), size, std::forward<ARGS>(args)...)){        
-          if(depth + 1 == queue_depth){
+          if(depth == queue_depth){
 
             auto f = [&, size, ci](){
               entity_id_vector_t branch_ents;
@@ -1365,18 +1367,18 @@ private:
             pool.queue(f);
           }
           else{
-            find_(pool, sem, mtx, queue_depth, depth + 1, ci, size, ents,
+            find_(pool, sem, mtx, queue_depth, depth, ci, size, ents,
                   std::forward<EF>(ef), std::forward<BF>(bf),
                   std::forward<ARGS>(args)...);
           }
         }
         else{
-          if(depth == queue_depth){
+          if(depth > queue_depth){
             continue;
           }
 
           size_t m = 
-            branch_int_t(1) << (queue_depth - depth - 1) * P::dimension;
+            branch_int_t(1) << (queue_depth - depth) * P::dimension;
 
           for(size_t i = 0; i < m; ++i){
             sem.release(); 
