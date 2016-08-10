@@ -840,22 +840,6 @@ public:
   }
 
   entity_set_t find_in_radius(const point_t& center, element_t radius){
-    // find the lowest level branch which is guaranteed
-    // to contain the point with radius
-
-    int depth = -std::log2(radius) - 1;
-    
-    if(depth < 0){
-      depth = 0;
-    }
-
-    assert(depth <= branch_id_t::max_depth);
-    
-    element_t size = std::pow(element_t(2), -depth);
-
-    branch_id_t bid = to_branch_id(center);
-    branch_t* b = find_parent(bid, depth);
-
     entity_id_vector_t ents;
 
     auto ef = 
@@ -863,7 +847,7 @@ public:
       return geometry_t::within(ent->coordinates(), center, radius);
     };
 
-    find_(b, size, ents, ef, geometry_t::intersects, center, radius);
+    find_(root_, element_t(1), ents, ef, geometry_t::intersects, center, radius);
 
     return entity_set_t(*this, std::move(ents), false);
   }

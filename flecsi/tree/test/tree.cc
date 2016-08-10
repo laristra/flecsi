@@ -255,3 +255,39 @@ TEST(tree_topology, find_radius_thread_pool) {
   auto s = t.find_in_radius(pool, {0.25, 0.25}, 0.25);
   ASSERT_TRUE(s.size() == 10000);
 }
+
+TEST(tree_topology, neighbors) {
+  tree_topology_t t;
+
+  std::vector<entity_t*> ents;
+
+  size_t n = 1000;
+
+  for(size_t i = 0; i < n; ++i){
+    point_t p = {uniform(0, 1), uniform(0, 1)};
+    auto e = t.make_entity(p);
+    t.insert(e);
+    ents.push_back(e);
+  }
+
+  for(size_t i = 0; i < n; ++i){
+    auto ent = ents[i];
+
+    auto ns = t.find_in_radius(ent->coordinates(), 0.05);
+
+    set<entity_t*> s1;
+    s1.insert(ns.begin(), ns.end());
+
+    set<entity_t*> s2;
+
+    for(size_t j = 0; j < n; ++j){
+      auto ej = ents[j];
+
+      if(distance(ent->coordinates(), ej->coordinates()) < 0.05){
+        s2.insert(ej);
+      }
+    }
+
+    ASSERT_TRUE(s1 == s2);
+  }
+}
