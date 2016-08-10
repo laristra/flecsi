@@ -291,3 +291,41 @@ TEST(tree_topology, neighbors) {
     ASSERT_TRUE(s1 == s2);
   }
 }
+
+TEST(tree_topology, neighbors_thread_pool) {
+  tree_topology_t t;
+  thread_pool pool;
+  pool.start(8);
+
+  std::vector<entity_t*> ents;
+
+  size_t n = 1000;
+
+  for(size_t i = 0; i < n; ++i){
+    point_t p = {uniform(0, 1), uniform(0, 1)};
+    auto e = t.make_entity(p);
+    t.insert(e);
+    ents.push_back(e);
+  }
+
+  for(size_t i = 0; i < n; ++i){
+    auto ent = ents[i];
+
+    auto ns = t.find_in_radius(pool, ent->coordinates(), 0.05);
+
+    set<entity_t*> s1;
+    s1.insert(ns.begin(), ns.end());
+
+    set<entity_t*> s2;
+
+    for(size_t j = 0; j < n; ++j){
+      auto ej = ents[j];
+
+      if(distance(ent->coordinates(), ej->coordinates()) < 0.05){
+        s2.insert(ej);
+      }
+    }
+
+    ASSERT_TRUE(s1 == s2);    
+  }
+}
