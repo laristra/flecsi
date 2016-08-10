@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "flecsi/tree/tree_topology.h"
-#include "flecsi/concurrency/concurrency.h"
+#include "flecsi/concurrency/thread_pool.h"
 
 using namespace std;
 using namespace flecsi;

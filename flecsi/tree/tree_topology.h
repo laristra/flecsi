@@ -29,7 +29,7 @@
 #include <mutex>
 
 #include "flecsi/geometry/point.h"
-#include "flecsi/concurrency/concurrency.h"
+#include "flecsi/concurrency/thread_pool.h"
 #include "flecsi/data/data_client.h"
 
 #define np(X)                                                             \
