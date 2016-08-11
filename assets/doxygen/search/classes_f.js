@@ -12,13 +12,14 @@ var searchData=
   ['tree_5fentity',['tree_entity',['../classflecsi_1_1tree_1_1tree__entity.html',1,'flecsi::tree']]],
   ['tree_5fentity_3c_20branch_5fint_5ft_2c_20dimension_20_3e',['tree_entity&lt; branch_int_t, dimension &gt;',['../classflecsi_1_1tree_1_1tree__entity.html',1,'flecsi::tree']]],
   ['tree_5fgeometry',['tree_geometry',['../structflecsi_1_1tree_1_1tree__geometry.html',1,'flecsi::tree']]],
+  ['tree_5fgeometry_3c_20t_2c_201_20_3e',['tree_geometry&lt; T, 1 &gt;',['../structflecsi_1_1tree_1_1tree__geometry_3_01T_00_011_01_4.html',1,'flecsi::tree']]],
   ['tree_5fgeometry_3c_20t_2c_202_20_3e',['tree_geometry&lt; T, 2 &gt;',['../structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html',1,'flecsi::tree']]],
   ['tree_5fgeometry_3c_20t_2c_203_20_3e',['tree_geometry&lt; T, 3 &gt;',['../structflecsi_1_1tree_1_1tree__geometry_3_01T_00_013_01_4.html',1,'flecsi::tree']]],
   ['tree_5fpolicy',['tree_policy',['../classtree__policy.html',1,'']]],
   ['tree_5ftopology',['tree_topology',['../classflecsi_1_1tree_1_1tree__topology.html',1,'flecsi::tree']]],
   ['tree_5ftopology_3c_20basic_5ftree_5fpolicy_3c_20p_20_3e_20_3e',['tree_topology&lt; basic_tree_policy&lt; P &gt; &gt;',['../classflecsi_1_1tree_1_1tree__topology.html',1,'flecsi::tree']]],
-  ['type_5finfo_5ft',['type_info_t',['../structflecsi_1_1data__model_1_1default__data__storage__policy__t_1_1meta__data__t_1_1type__info__t.html',1,'flecsi::data_model::default_data_storage_policy_t::meta_data_t']]],
   ['type_5finfo_5ft',['type_info_t',['../structflecsi_1_1data__model_1_1default__storage__policy__t_1_1meta__data__t_1_1type__info__t.html',1,'flecsi::data_model::default_storage_policy_t::meta_data_t']]],
+  ['type_5finfo_5ft',['type_info_t',['../structflecsi_1_1data__model_1_1default__data__storage__policy__t_1_1meta__data__t_1_1type__info__t.html',1,'flecsi::data_model::default_data_storage_policy_t::meta_data_t']]],
   ['type_5flist',['type_list',['../structflecsi_1_1utils_1_1container_1_1type__list.html',1,'flecsi::utils::container']]],
   ['typeify',['typeify',['../structflecsi_1_1typeify.html',1,'flecsi']]]
 ];
