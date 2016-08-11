@@ -47,6 +47,36 @@ template<typename T, size_t D>
 struct tree_geometry{};
 
 template<typename T>
+struct tree_geometry<T, 1>{
+  using point_t = point<T, 1>;
+  using element_t = T;
+
+  static bool within(const point_t& origin,
+                     const point_t& center,
+                     element_t radius){
+    return distance(origin, center) < radius;
+  }
+
+  // initial attempt to get this working, needs to be optimized
+
+  static bool intersects(const point_t& origin,
+                         element_t size,
+                         const point_t& center,
+                         element_t radius){
+    
+    return center[0] > origin[0] - radius &&
+           center[0] < origin[0] + size + radius;
+  }
+
+  static bool intersect_true(const point_t& origin,
+                             element_t size,
+                             const point_t& center,
+                             element_t radius){
+    return true;
+  }
+};
+
+template<typename T>
 struct tree_geometry<T, 2>{
   using point_t = point<T, 2>;
   using element_t = T;
