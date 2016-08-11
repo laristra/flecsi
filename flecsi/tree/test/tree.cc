@@ -73,9 +73,10 @@ public:
       return ents_.size();
     }
 
-    point_t coordinates() const{
+    point_t
+    coordinates(const std::array<point<element_t, dimension>, 2>& range) const{
       point_t p;
-      id().coordinates(p);
+      id().coordinates(range, p);
       return p;
     }
 
@@ -327,5 +328,41 @@ TEST(tree_topology, neighbors_thread_pool) {
     }
 
     ASSERT_TRUE(s1 == s2);    
+  }
+}
+
+TEST(tree_topology, neighbors_rectangular) {
+  tree_topology_t t({0, 0}, {50, 30});
+
+  std::vector<entity_t*> ents;
+
+  size_t n = 1000;
+
+  for(size_t i = 0; i < n; ++i){
+    point_t p = {uniform(0, 50), uniform(0, 30)};
+    auto e = t.make_entity(p);
+    t.insert(e);
+    ents.push_back(e);
+  }
+
+  for(size_t i = 0; i < n; ++i){
+    auto ent = ents[i];
+
+    auto ns = t.find_in_radius(ent->coordinates(), 5.0);
+
+    set<entity_t*> s1;
+    s1.insert(ns.begin(), ns.end());
+
+    set<entity_t*> s2;
+
+    for(size_t j = 0; j < n; ++j){
+      auto ej = ents[j];
+
+      if(distance(ent->coordinates(), ej->coordinates()) < 5.0){
+        s2.insert(ej);
+      }
+    }
+
+    ASSERT_TRUE(s1 == s2);
   }
 }
