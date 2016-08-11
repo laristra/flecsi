@@ -32,8 +32,15 @@ void mpilegion_runtime_driver(const LegionRuntime::HighLevel::Task * task,
 
     const LegionRuntime::HighLevel::InputArgs & args =
       LegionRuntime::HighLevel::HighLevelRuntime::get_input_args();
+ 
+    context_t::instance().InteropHelper.connect_with_mpi(
+         context_t::instance().context(), context_t::instance().runtime());
 
     driver(args.argc, args.argv); 
+
+    context_t::instance().InteropHelper.call_mpi=false;
+    context_t::instance().InteropHelper.handoff_to_mpi(
+           context_t::instance().context(), context_t::instance().runtime());
 	} // mpilegion_runtime_driver
 
 } // namespace execution 

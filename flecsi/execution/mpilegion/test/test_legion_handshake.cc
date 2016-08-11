@@ -31,7 +31,7 @@ enum TaskIDs{
  HELLOWORLD_TASK_ID        =0x00000200,
 };
 
-ExtLegionHandshake *handshake;
+static ExtLegionHandshake &handshake=ExtLegionHandshake::instance();
 
 using namespace LegionRuntime::HighLevel;
 using namespace LegionRuntime::Accessor;
@@ -109,7 +109,7 @@ void connect_mpi_task (const Task *task,
 #ifdef DEBUG
   printf ("inside connect_mpi_task \n");
 #endif
-    handshake->legion_init();
+    handshake.legion_init();
 }
 
 
@@ -124,7 +124,7 @@ void handoff_to_mpi_task (const Task *legiontask,
                       const std::vector<PhysicalRegion> &regions,
                       Context ctx, HighLevelRuntime *runtime)
 {
- handshake->legion_handoff_to_ext();
+ handshake.legion_handoff_to_ext();
 }
 
 void complete_legion_configure(void)
@@ -132,7 +132,7 @@ void complete_legion_configure(void)
 #ifdef DEBUG
   printf ("inside complete_legion_configure function \n");
 #endif
-   handshake->ext_init();
+   handshake.ext_init();
 }
 
 void run_legion_task(void)
@@ -140,13 +140,13 @@ void run_legion_task(void)
 #ifdef DEBUG
   printf ("inside run_legion_task function \n");
 #endif
-   handshake->ext_handoff_to_legion();
+   handshake.ext_handoff_to_legion();
 }
 
 
 void my_init_legion(){
 
-  handshake = new ExtLegionHandshake(ExtLegionHandshake::IN_EXT, 1, 1);
+  handshake.initialize(ExtLegionHandshake::IN_EXT, 1, 1);
 
   HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
 
@@ -176,9 +176,8 @@ void my_init_legion(){
 
   run_legion_task();  
 
-  handshake->ext_wait_on_legion(); 
+  handshake.ext_wait_on_legion(); 
 
- delete handshake;
 }
 
 #define execute(task, ...) \

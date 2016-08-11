@@ -21,6 +21,7 @@
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/tuple_wrapper.h"
 #include "flecsi/execution/mpilegion/runtime_driver.h"
+#include "flecsi/execution/mpilegion/legion_handshake.h"
 #include "flecsi/execution/mpilegion/mpi_legion_interop.h"
 
 namespace flecsi {
@@ -44,6 +45,9 @@ struct mpilegion_context_policy_t
 
   const size_t TOP_LEVEL_TASK_ID = 0;
 
+  ExtLegionHandshake &handshake=ExtLegionHandshake::instance();
+  MPILegionInterop InteropHelper;
+
   /*--------------------------------------------------------------------------*
    * Initialization.
    *--------------------------------------------------------------------------*/
@@ -54,6 +58,8 @@ struct mpilegion_context_policy_t
     char ** argv
   )
   {
+    handshake.initialize(ExtLegionHandshake::IN_EXT, 1,1);
+
     // Register top-level task
     lr_runtime_t::set_top_level_task_id(TOP_LEVEL_TASK_ID);
     lr_runtime_t::register_legion_task<mpilegion_runtime_driver>(
@@ -67,8 +73,18 @@ struct mpilegion_context_policy_t
       f.second.second(f.second.first);
     } // for
   
-    // Start the runtime
-    return lr_runtime_t::start(argc, argv);
+    InteropHelper.initialize();  
+  // Start the runtime
+    lr_runtime_t::start(argc, argv,true);
+
+    InteropHelper.legion_configure();
+
+    InteropHelper.handoff_to_legion();
+
+    InteropHelper.wait_on_legion();
+  
+    return 0;
+
   } // initialize
 
   /*!

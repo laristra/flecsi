@@ -53,15 +53,21 @@ namespace flecsi{
 namespace execution{
 
 class ExtLegionHandshake {
-public:
+private:
+
+  ExtLegionHandshake(void) { }
+  ~ExtLegionHandshake(void){delete ext_queue; delete legion_queue;};
+  ExtLegionHandshake(ExtLegionHandshake const&);     
+  ExtLegionHandshake& operator=(ExtLegionHandshake const&);
+
+  public:
   enum { IN_EXT, IN_LEGION };
 
   typedef Realm::UserEvent UserEvent;
 
-  ExtLegionHandshake(
-       int init_state, 
-       int _ext_queue_depth = 1, 
-       int _legion_queue_depth = 1);
+ // ExtLegionHandshake(int init_state,
+ //      int _ext_queue_depth = 1,
+ //      int _legion_queue_depth = 1);
 
   static ExtLegionHandshake & instance() {
     static ExtLegionHandshake hs;
@@ -73,7 +79,6 @@ public:
        int _ext_queue_depth = 1, 
        int _legion_queue_depth = 1);
 
-  ~ExtLegionHandshake(void){delete ext_queue; delete legion_queue;};
 
   void ext_init(void);
 
@@ -93,22 +98,22 @@ protected:
   pthread_cond_t sync_cond;
 };
 
-inline ExtLegionHandshake::ExtLegionHandshake(
+inline void ExtLegionHandshake::initialize(
   int init_state, 
   int _ext_queue_depth,
   int _legion_queue_depth)
-  : state(init_state), 
-  ext_queue_depth(_ext_queue_depth),
-  legion_queue_depth(_legion_queue_depth),
-  ext_count(0),
-  legion_count(0)
 {
+  state=init_state;
+  ext_queue_depth=_ext_queue_depth;
+  legion_queue_depth=_legion_queue_depth;
+  ext_count=0;
+  legion_count=0;
   pthread_mutex_init(&sync_mutex, 0);
   pthread_cond_init(&sync_cond, 0);
 #ifndef SHARED_LOWLEVEL
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-//  printf("handshake %p created on rank %d\n", this, rank);
+  printf("handshake %p created on rank %d\n", this, rank);
 #endif
 }
 
@@ -123,13 +128,13 @@ inline void ExtLegionHandshake::ext_init(void)
 
   if(legion_count == 0) {
     // no legion threads have arrived, so sleep until one does
-    //printf("ext sleeping...\n");
+    printf("ext sleeping...\n");
     CHECK_PTHREAD( pthread_cond_wait(&sync_cond, &sync_mutex) );
-    //printf("ext awake...\n");
+    printf("ext awake...\n");
   } else {
     // if we were the first ext thread to arrive, wake the legion thread(s)
     if(ext_count == 1) {
-      //printf("signalling\n");
+      printf("signalling\n");
       CHECK_PTHREAD( pthread_cond_broadcast(&sync_cond) );
     }
   }
@@ -157,19 +162,19 @@ inline void ExtLegionHandshake::legion_init(void)
                            UserEvent());
   }
 
-  //printf("handshake %p: legion init - counts = L=%d, E=%d\n",
-  // this, legion_count, ext_count);
+  printf("handshake %p: legion init - counts = L=%d, E=%d\n",
+   this, legion_count, ext_count);
   legion_count++;
 
   if(ext_count == 0) {
     // no external threads have arrived, so sleep until one does
-    //printf("legion sleeping...\n");
+    printf("legion sleeping...\n");
     CHECK_PTHREAD( pthread_cond_wait(&sync_cond, &sync_mutex) );
-    //printf("legion awake...\n");
+    printf("legion awake...\n");
   } else {
     // if we were the first legion thread to arrive, wake the ext thread(s)
     if(legion_count == 1) {
-      //printf("signalling\n");
+      printf("signalling\n");
       CHECK_PTHREAD( pthread_cond_broadcast(&sync_cond) );
     }
   }

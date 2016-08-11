@@ -43,21 +43,25 @@ using namespace LegionRuntime::HighLevel;
 using namespace LegionRuntime::Accessor;
 using namespace LegionRuntime::Arrays;
 
+static MPILegionInterop InteropHelper;
+ExtLegionHandshake &handshake=ExtLegionHandshake::instance(); 
+
 /* ------------------------------------------------------------------------- */
  void top_level_task(const Task *task,
                     const std::vector<PhysicalRegion> &regions,
                     Context ctx, Runtime *runtime)
  {
-  MPILegionInterop *InteropHelper =  MPILegionInterop::instance();
+//  MPILegionInterop *InteropHelper =  MPILegionInterop::instance();
 
-  InteropHelper->connect_with_mpi(ctx, runtime);
+  InteropHelper.connect_with_mpi(ctx, runtime);
 
+  std::cout<<"inside TLT:after connect_with_mpi"<<std::endl;
 
   ArgumentMap arg_map;
   IndexLauncher helloworld_launcher(
        HELLOWORLD_TASK_ID,
        Domain::from_rect<1>(
-              InteropHelper->local_procs),
+              InteropHelper.local_procs),
        TaskArgument(0, 0),
        arg_map);
   //TOFIX:: add checkfor compy data functions
@@ -67,7 +71,7 @@ using namespace LegionRuntime::Arrays;
      runtime->execute_index_space(ctx, helloworld_launcher);
   fm2.wait_all_results();
   //handoff to MPI
-  InteropHelper->handoff_to_mpi(ctx, runtime);
+  InteropHelper.handoff_to_mpi(ctx, runtime);
  }
 
 /* ------------------------------------------------------------------------- */
@@ -94,20 +98,23 @@ void my_init_legion(){
         TaskConfigOptions(true/*leaf*/),
         "hellowrld_task");
 
-   MPILegionInterop *InteropHelper =  MPILegionInterop::initialize();
- //InteropHelper->register_tasks();
- // HighLevelRuntime::set_registration_callback(mapper_registration);
+   handshake.initialize(ExtLegionHandshake::IN_EXT,1,1);
+ //  InteropHelper->register_tasks();
+ //  HighLevelRuntime::set_registration_callback(mapper_registration);
+     InteropHelper.initialize();
 
   const InputArgs &args = HighLevelRuntime::get_input_args();
 
   HighLevelRuntime::start(args.argc, args.argv, true);
 
-  InteropHelper->legion_configure();
+  std::cout<<"before legion_configure" <<std::endl;
+  InteropHelper.legion_configure();
 
+  std::cout<<"before handoff_to_legion" <<std::endl;
+  InteropHelper.handoff_to_legion();
 
-  InteropHelper->handoff_to_legion();
-
-  InteropHelper->wait_on_legion(); 
+  InteropHelper.wait_on_legion(); 
+  std::cout<<"back to MPI to finalize"<<std::endl;
 }
 
 /* ------------------------------------------------------------------------- */
