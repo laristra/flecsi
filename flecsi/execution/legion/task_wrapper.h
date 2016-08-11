@@ -53,11 +53,11 @@ struct legion_task_wrapper_
      switch (P){
      case loc:
       LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task<execute>(
-      fid, Legion::Processor::LOC_PROC, Single, Index);
+      fid, LegionRuntime::HighLevel::Processor::LOC_PROC, Single, Index);
       break;
      case toc:
       LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task<execute>(
-      fid, Legion::Processor::TOC_PROC, Single, Index);
+      fid, LegionRuntime::HighLevel::Processor::TOC_PROC, Single, Index);
       break;
      case mpi:
      break;
