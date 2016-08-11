@@ -57,7 +57,7 @@ struct legion_task_wrapper_
       break;
      case toc:
       LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task<execute>(
-      fid, Legion::Processor::LOC_PROC, Single, Index);
+      fid, Legion::Processor::TOC_PROC, Single, Index);
       break;
      case mpi:
      break;
