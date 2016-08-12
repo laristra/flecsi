@@ -82,7 +82,16 @@ struct mpilegion_context_policy_t
     InteropHelper.handoff_to_legion();
 
     InteropHelper.wait_on_legion();
-  
+
+    //while loop to do some mpi tasks
+
+     while(InteropHelper.call_mpi)
+     {
+       InteropHelper.shared_func();
+       InteropHelper.handoff_to_legion();
+       InteropHelper.wait_on_legion();
+      }
+ 
     return 0;
 
   } // initialize
@@ -217,4 +226,4 @@ private:
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.
  * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~-------------------------------------------------------------------------~-*/
+ :*~-------------------------------------------------------------------------~-*/
