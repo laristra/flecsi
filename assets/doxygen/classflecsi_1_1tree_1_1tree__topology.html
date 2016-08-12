@@ -193,6 +193,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>remove</b> (entity_t 
 <tr class="memitem:ac4fc5b0d15cfac9fc17134af7d20faad"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac4fc5b0d15cfac9fc17134af7d20faad"></a>
 <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">entity_set_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>find_in_radius</b> (<a class="el" href="classflecsi_1_1thread__pool.html">thread_pool</a> &amp;pool, const <a class="el" href="classpoint.html">point_t</a> &amp;center, element_t radius)</td></tr>
 <tr class="separator:ac4fc5b0d15cfac9fc17134af7d20faad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41ad739b624cf130003202c38f8c1b87"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a41ad739b624cf130003202c38f8c1b87"></a>
+<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">entity_set_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>find_in_box</b> (const <a class="el" href="classpoint.html">point_t</a> &amp;min, const <a class="el" href="classpoint.html">point_t</a> &amp;max)</td></tr>
+<tr class="separator:a41ad739b624cf130003202c38f8c1b87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85cef15845aa003fdc374800fd323170"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a85cef15845aa003fdc374800fd323170"></a>
+<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">entity_set_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>find_in_box</b> (<a class="el" href="classflecsi_1_1thread__pool.html">thread_pool</a> &amp;pool, const <a class="el" href="classpoint.html">point_t</a> &amp;min, const <a class="el" href="classpoint.html">point_t</a> &amp;max)</td></tr>
+<tr class="separator:a85cef15845aa003fdc374800fd323170"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a51ec7f8de9c082782ef6a69f60921f0b"><td class="memTemplParams" colspan="2"><a class="anchor" id="a51ec7f8de9c082782ef6a69f60921f0b"></a>
 template&lt;typename EF , typename... ARGS&gt; </td></tr>
 <tr class="memitem:a51ec7f8de9c082782ef6a69f60921f0b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>apply_in_radius</b> (const <a class="el" href="classpoint.html">point_t</a> &amp;center, element_t radius, EF &amp;&amp;ef, ARGS &amp;&amp;...args)</td></tr>
@@ -201,6 +207,14 @@ template&lt;typename EF , typename... ARGS&gt; </td></tr>
 template&lt;typename EF , typename... ARGS&gt; </td></tr>
 <tr class="memitem:aa7d1017d407825b8beed34f9c83e0805"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>apply_in_radius</b> (<a class="el" href="classflecsi_1_1thread__pool.html">thread_pool</a> &amp;pool, const <a class="el" href="classpoint.html">point_t</a> &amp;center, element_t radius, EF &amp;&amp;ef, ARGS &amp;&amp;...args)</td></tr>
 <tr class="separator:aa7d1017d407825b8beed34f9c83e0805"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b9230b3d94c9a9b675fd47485bd5c30"><td class="memTemplParams" colspan="2"><a class="anchor" id="a9b9230b3d94c9a9b675fd47485bd5c30"></a>
+template&lt;typename EF , typename... ARGS&gt; </td></tr>
+<tr class="memitem:a9b9230b3d94c9a9b675fd47485bd5c30"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>apply_in_box</b> (<a class="el" href="classflecsi_1_1thread__pool.html">thread_pool</a> &amp;pool, const <a class="el" href="classpoint.html">point_t</a> &amp;min, const <a class="el" href="classpoint.html">point_t</a> &amp;max, EF &amp;&amp;ef, ARGS &amp;&amp;...args)</td></tr>
+<tr class="separator:a9b9230b3d94c9a9b675fd47485bd5c30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00372aec6287222ccf7b686a735798dd"><td class="memTemplParams" colspan="2"><a class="anchor" id="a00372aec6287222ccf7b686a735798dd"></a>
+template&lt;typename EF , typename... ARGS&gt; </td></tr>
+<tr class="memitem:a00372aec6287222ccf7b686a735798dd"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>apply_in_box</b> (const <a class="el" href="classpoint.html">point_t</a> &amp;min, const <a class="el" href="classpoint.html">point_t</a> &amp;max, EF &amp;&amp;ef, ARGS &amp;&amp;...args)</td></tr>
+<tr class="separator:a00372aec6287222ccf7b686a735798dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ca6bfc8ccc3d68e68b6c2b2576ec818"><td class="memTemplParams" colspan="2"><a class="anchor" id="a1ca6bfc8ccc3d68e68b6c2b2576ec818"></a>
 template&lt;class... Args&gt; </td></tr>
 <tr class="memitem:a1ca6bfc8ccc3d68e68b6c2b2576ec818"><td class="memTemplItemLeft" align="right" valign="top">entity_t *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>make_entity</b> (Args &amp;&amp;...args)</td></tr>
