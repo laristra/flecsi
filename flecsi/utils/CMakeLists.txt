@@ -27,6 +27,7 @@ set(utils_HEADERS
   id.h
   index_space.h
   iterator.h
+  reorder.h
   set_intersection.h
   static_for.h     detail/static_for.h
   static_list.h
@@ -84,6 +85,9 @@ cinch_add_unit(const_string
 
 cinch_add_unit(factory
   SOURCES test/factory.cc)
+
+cinch_add_unit(reorder
+  SOURCES test/reorder.cc)
 
 cinch_add_unit(zip
   SOURCES test/zip.cc)

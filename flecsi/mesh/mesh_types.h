@@ -30,6 +30,7 @@
 #include "flecsi/data/data_client.h"
 #include "flecsi/mesh/mesh_utils.h"
 #include "flecsi/utils/array_ref.h"
+#include "flecsi/utils/reorder.h"
 
 namespace flecsi
 {
@@ -500,6 +501,19 @@ class connectivity_t
     std::reverse( to_id_vec_.begin() + start, to_id_vec_.begin() + end );
   }
 
+
+  /*!
+    Get the entities of the specified from index and return the count.
+   */
+  template< class U >
+  void reorder_entities(size_t index, U && order)
+  {
+    assert(index < from_index_vec_.size() - 1);
+    auto start = from_index_vec_[index];
+    auto count = from_index_vec_[index + 1] - start;
+    assert( order.size() == count );    
+    utils::reorder( order.begin(), order.end(), to_id_vec_.data() + start );
+  }
 
   /*!
     True if the connectivity is empty (hasn't been populated).
