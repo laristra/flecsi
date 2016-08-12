@@ -57,6 +57,12 @@ struct tree_geometry<T, 1>{
     return distance(origin, center) < radius;
   }
 
+  static bool within_box(const point_t& origin,
+                         const point_t& min,
+                         const point_t& max){
+    return origin[0] < max[0] && origin[0] > min[0];
+  }
+
   // initial attempt to get this working, needs to be optimized
 
   static bool intersects(const point_t& origin,
@@ -113,6 +119,13 @@ struct tree_geometry<T, 2>{
                      const point_t& center,
                      element_t radius){
     return distance(origin, center) < radius;
+  }
+
+  static bool within_box(const point_t& origin,
+                         const point_t& min,
+                         const point_t& max){
+    return origin[0] < max[0] && origin[0] > min[0] &&
+           origin[1] < max[1] && origin[1] > min[1];
   }
 
   // initial attempt to get this working, needs to be optimized
@@ -180,6 +193,14 @@ struct tree_geometry<T, 3>{
     return distance(origin, center) < radius;
   }
 
+  static bool within_box(const point_t& origin,
+                         const point_t& min,
+                         const point_t& max){
+    return origin[0] < max[0] && origin[0] > min[0] &&
+           origin[1] < max[1] && origin[1] > min[1] &&
+           origin[2] < max[2] && origin[2] > min[2];
+  }
+
   static bool intersects(const point_t& origin,
                          element_t size,
                          const point_t& scale,
@@ -222,7 +243,7 @@ struct tree_geometry<T, 3>{
         return false;
       }
     }
-    
+
     return true;
   }
 
@@ -946,26 +967,51 @@ public:
     return entity_set_t(*this, std::move(ents), false);
   }
 
+  entity_set_t find_in_box(const point_t& min, const point_t& max){
+    entity_id_vector_t ents;
+
+    auto ef = 
+    [&](entity_t* ent, const point_t& min, const point_t& max) -> bool{
+      return geometry_t::within_box(ent->coordinates(), min, max);
+    };
+
+    find_(root_, element_t(1), ents, ef, geometry_t::intersects_box, min, max);
+
+    return entity_set_t(*this, std::move(ents), false);
+  }
+
+  entity_set_t find_in_box(thread_pool& pool,
+                           const point_t& min,
+                           const point_t& max){
+    
+    size_t queue_depth = get_queue_depth(pool);
+    size_t m = branch_int_t(1) << queue_depth * P::dimension;
+
+    entity_id_vector_t entity_ids;
+
+    auto ef = 
+    [&](entity_t* ent, const point_t& min, const point_t& max) -> bool{
+      return geometry_t::within_box(ent->coordinates(), min, max);
+    };
+
+    virtual_semaphore sem(1 - int(m));
+    std::mutex mtx;
+
+    entity_id_vector_t ents;
+
+    find_(pool, sem, mtx, queue_depth, 0, root_, element_t(1), ents, ef,
+          geometry_t::intersects_box, min, max);
+
+    sem.acquire();
+
+    return entity_set_t(*this, std::move(ents), false);
+  }
+
   template<typename EF, typename... ARGS>
   void apply_in_radius(const point_t& center,
                        element_t radius,
                        EF&& ef,
                        ARGS&&... args){
-    // find the lowest level branch which is guaranteed
-    // to contain the point with radius
-
-    int depth = -std::log2(radius) - 1;
-    
-    if(depth < 0){
-      depth = 0;
-    }
-
-    assert(depth <= branch_id_t::max_depth);
-    
-    element_t size = std::pow(element_t(2), -depth);
-
-    branch_id_t bid = to_branch_id(center);
-    branch_t* b = find_parent(bid, depth);
 
     auto f = [&](entity_t* ent, const point_t& center, element_t radius){
       if(geometry_t::within(ent->coordinates(), center, radius)){
@@ -973,7 +1019,7 @@ public:
       }
     };
 
-    apply_(b, size, f, geometry_t::intersects, center, radius);
+    apply_(root_, element_t(1), f, geometry_t::intersects, center, radius);
   }
 
   template<typename EF, typename... ARGS>
@@ -998,6 +1044,44 @@ public:
            f, geometry_t::intersects, center, radius);
 
     sem.acquire();
+  }
+
+  template<typename EF, typename... ARGS>
+  void apply_in_box(thread_pool& pool,
+                    const point_t& min,
+                    const point_t& max,
+                    EF&& ef,
+                    ARGS&&... args){
+    
+    size_t queue_depth = get_queue_depth(pool);
+    size_t m = branch_int_t(1) << queue_depth * P::dimension;
+
+    auto f = [&](entity_t* ent, const point_t& min, const point_t& max){
+      if(geometry_t::within_box(ent->coordinates(), min, max)){
+        ef(ent, std::forward<ARGS>(args)...);
+      }
+    };
+
+    virtual_semaphore sem(1 - int(m));
+
+    apply_(pool, sem, queue_depth, 0, root_, element_t(1),
+           f, geometry_t::intersects_box, min, max);
+
+    sem.acquire();
+  }
+
+  template<typename EF, typename... ARGS>
+  void apply_in_box(const point_t& min,
+                    const point_t& max,
+                    EF&& ef,
+                    ARGS&&... args){
+    auto f = [&](entity_t* ent, const point_t& min, const point_t& max){
+      if(geometry_t::within_box(ent->coordinates(), min, max)){
+        ef(ent, std::forward<ARGS>(args)...);
+      }
+    };
+
+    apply_(root_, element_t(1), f, geometry_t::intersects_box, min, max);
   }
 
   template<class... Args>

@@ -366,3 +366,43 @@ TEST(tree_topology, neighbors_rectangular) {
     ASSERT_TRUE(s1 == s2);
   }
 }
+
+TEST(tree_topology, neighbors_box) {
+  tree_topology_t t;
+
+  std::vector<entity_t*> ents;
+
+  size_t n = 1000;
+
+  for(size_t i = 0; i < n; ++i){
+    point_t p = {uniform(0, 1), uniform(0, 1)};
+    auto e = t.make_entity(p);
+    t.insert(e);
+    ents.push_back(e);
+  }
+
+  for(element_t x = 0; x < 1.0; x += 0.1){
+    for(element_t y = 0; y < 1.0; y += 0.1){
+      point_t min = {x, y};
+      point_t max = {x + 0.1, y + 0.1};
+
+      auto ns = t.find_in_box(min, max);
+      set<entity_t*> s1;
+      s1.insert(ns.begin(), ns.end());
+
+      set<entity_t*> s2;
+
+      for(size_t j = 0; j < n; ++j){
+        auto ej = ents[j];
+
+        point_t p = ej->coordinates();
+
+        if(p[0] < max[0] && p[0] > min[0] &&
+           p[1] < max[1] && p[1] > min[1]){
+          s2.insert(ej);
+        }
+      }
+      ASSERT_TRUE(s1 == s2);
+    }    
+  }
+}
