@@ -209,6 +209,13 @@ class mesh_topology_t : public mesh_topology_base_t
     using mesh_t = mesh_topology_t;
     using entity_type = typename find_entity_<MT, D, M>::type;
 
+
+    using difference_type = std::ptrdiff_t;
+    using value_type = domain_entity<M, entity_type>;
+    using reference = domain_entity<M, entity_type>;
+    using pointer = entity_type *;
+    using iterator_category = std::bidirectional_iterator_tag;
+
     // construct a top-level iterator, e.g: cells of a mesh
     iterator(const iterator & itr)
         : mesh_(itr.mesh_), entities_(itr.entities_), index_(itr.index_)
@@ -240,13 +247,13 @@ class mesh_topology_t : public mesh_topology_base_t
       return *this;
     } // operator =
 
-    domain_entity<M, entity_type> operator*()
+    reference operator*()
     {
       return mesh_.get_entity<D, M>((*entities_)[index_]);
     } // operator *
 
     // allow the entity methods to be called into
-    entity_type * operator->()
+    pointer operator->()
     {
       return mesh_.get_entity<D, M>((*entities_)[index_]);
     } // operator ->
@@ -284,6 +291,12 @@ class mesh_topology_t : public mesh_topology_base_t
     using mesh_t = const mesh_topology_t;
     using entity_type = typename find_entity_<MT, D, M>::type;
 
+    using difference_type = std::ptrdiff_t;
+    using value_type = domain_entity<M, entity_type>;
+    using reference = domain_entity<M, entity_type>;
+    using pointer = const entity_type *;
+    using iterator_category = std::bidirectional_iterator_tag;
+
     // construct a top-level iterator, e.g: cells of a mesh
     const_iterator(const const_iterator & itr)
         : mesh_(itr.mesh_), entities_(itr.entities_), index_(itr.index_)
@@ -316,12 +329,12 @@ class mesh_topology_t : public mesh_topology_base_t
       return *this;
     } // operator =
 
-    domain_entity<M, entity_type> operator*()
+    reference operator*()
     {
       return mesh_.get_entity<D, M>((*entities_)[index_]);
     } // operator *
 
-    const entity_type * operator->() const
+    pointer operator->() const
     {
       return mesh_.get_entity<D, M>((*entities_)[index_]);
     } // operator ->
