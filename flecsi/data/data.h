@@ -36,7 +36,7 @@ namespace flecsi {
 		data_name_space_t::user>(client, name, versions, ##__VA_ARGS__)
 
 /*!
-  FIXME
+  FIXME: Add Doxygen
  */
 #define get_accessor(client, name, version, data_type, storage_type) \
 	data::storage_t::instance().get_accessor<storage_type, data_type,  \
@@ -47,7 +47,7 @@ namespace flecsi {
     data_name_space_t::user>(client, name, slots, version)
 
 /*!
-  FIXME
+  FIXME: Add Doxygen
  */
 #define get_handle(client, name, version, data_type, storage_type, \
   privileges)                                                      \
