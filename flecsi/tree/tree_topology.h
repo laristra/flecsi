@@ -69,6 +69,32 @@ struct tree_geometry<T, 1>{
            center[0] < origin[0] + size * scale[0] + radius;
   }
 
+  static bool intersects_box(const point_t& origin,
+                             element_t size,
+                             const point_t& scale,
+                             const point_t& min2,
+                             const point_t& max2){
+    point_t max1 = origin;
+    max1[0] += size * scale[0];
+    return intersects_box_(origin, max1, min2, max2);
+  }
+
+  static bool intersects_box_(const point_t& min1,
+                              const point_t& max1,
+                              const point_t& min2,
+                              const point_t& max2){
+    
+    if(max1[0] < min2[0]){
+      return false;
+    }
+    
+    if(min1[0] > max2[0]){
+      return false;
+    }
+
+    return true;
+  }
+
   static bool intersect_true(const point_t& origin,
                              element_t size,
                              const point_t& scale,
@@ -96,11 +122,42 @@ struct tree_geometry<T, 2>{
                          const point_t& scale,
                          const point_t& center,
                          element_t radius){
-    
     return center[0] > origin[0] - radius &&
            center[0] < origin[0] + size * scale[0] + radius &&
            center[1] > origin[1] - radius &&
            center[1] < origin[1] + size * scale[1] + radius;
+  }
+
+  static bool intersects_box(const point_t& origin,
+                             element_t size,
+                             const point_t& scale,
+                             const point_t& min2,
+                             const point_t& max2){
+    point_t max1 = origin;
+
+    for(size_t d = 0; d < 2; ++d){
+      max1[d] += size * scale[d];
+    }
+    
+    return intersects_box_(origin, max1, min2, max2);
+  }
+
+  static bool intersects_box_(const point_t& min1,
+                              const point_t& max1,
+                              const point_t& min2,
+                              const point_t& max2){
+    
+    for(size_t d = 0; d < 2; ++d){
+      if(max1[d] < min2[d]){
+        return false;
+      }
+      
+      if(min1[d] > max2[d]){
+        return false;
+      }
+    }
+    
+    return true;
   }
 
   static bool intersect_true(const point_t& origin,
@@ -135,6 +192,38 @@ struct tree_geometry<T, 3>{
            center[1] < origin[1] + size * scale[1] + radius &&
            center[2] > origin[2] - radius &&
            center[2] < origin[2] + size * scale[2] + radius;
+  }
+
+  static bool intersects_box(const point_t& origin,
+                             element_t size,
+                             const point_t& scale,
+                             const point_t& min2,
+                             const point_t& max2){
+    point_t max1 = origin;
+
+    for(size_t d = 0; d < 3; ++d){
+      max1[d] += size * scale[d];
+    }
+
+    return intersects_box_(origin, max1, min2, max2);
+  }
+
+  static bool intersects_box_(const point_t& min1,
+                              const point_t& max1,
+                              const point_t& min2,
+                              const point_t& max2){
+    
+    for(size_t d = 0; d < 3; ++d){
+      if(max1[d] < min2[d]){
+        return false;
+      }
+      
+      if(min1[d] > max2[d]){
+        return false;
+      }
+    }
+    
+    return true;
   }
 
   static bool intersect_true(const point_t& origin,
