@@ -80,11 +80,17 @@ please look at Appendix A.
 The public interface should appear at the top of the type definition
 when possible.
 
-In general, FleCSI types should prefer *struct* to *class*. The only
-real difference between the two definitions is the default access
-permissions, i.e., *struct* defaults to public, and *class* defaults to
-private. Using a *struct* makes it natural to put the public interface
-at the beginning of the type.
+According to many sources, developers should prefer *class* to *struct*.
+The only real difference between the two definitions is the default
+access permissions, i.e., *struct* defaults to public, and *class*
+defaults to private.
+
+For FleCSI, we mostly follow the Google C++ Style Guide, which prefers
+*class* over *struct* unless the type is intended to offer direct access to
+its data members. An exception to this rule is for metaprogramming
+types. Many of the types used in metaprogramming do not have any data
+members (they only provide type definitions). In this case, developers
+should prefer *struct* over *class*.
 
 Like the Google C++ Style Guide convention, developers should always use
 a struct for type definitions that do not have restricted access
