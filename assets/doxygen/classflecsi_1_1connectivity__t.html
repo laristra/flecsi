@@ -138,6 +138,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>dump</b> ()</td></tr>
 <tr class="separator:a1d7df9036728824b902d561f61e33f25"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a326ad244306e2187b31d3e44082819dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1connectivity__t.html#a326ad244306e2187b31d3e44082819dd">reverse_entities</a> (size_t index)</td></tr>
 <tr class="separator:a326ad244306e2187b31d3e44082819dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab491e8f29a9f8519cd81564d5b6a543f"><td class="memTemplParams" colspan="2">template&lt;class U &gt; </td></tr>
+<tr class="memitem:ab491e8f29a9f8519cd81564d5b6a543f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1connectivity__t.html#ab491e8f29a9f8519cd81564d5b6a543f">reorder_entities</a> (size_t index, U &amp;&amp;order)</td></tr>
+<tr class="separator:ab491e8f29a9f8519cd81564d5b6a543f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa52314e49ca3148e1afcbf752e98d854"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1connectivity__t.html#aa52314e49ca3148e1afcbf752e98d854">empty</a> () const </td></tr>
 <tr class="separator:aa52314e49ca3148e1afcbf752e98d854"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a10065f359b794a0d6f6bf11e063158d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1connectivity__t.html#a10065f359b794a0d6f6bf11e063158d7">set</a> (size_t from_local_id, <a class="el" href="classflecsi_1_1id__.html">id_t</a> to_id, size_t pos)</td></tr>
@@ -505,6 +508,43 @@ index_vector_t&#160;</td><td class="memItemRight" valign="bottom"><b>from_index_
 </table>
 </div><div class="memdoc">
 <p>Push a single id into the current from group. </p>
+
+</div>
+</div>
+<a class="anchor" id="ab491e8f29a9f8519cd81564d5b6a543f"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class U &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::connectivity_t::reorder_entities </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">U &amp;&amp;&#160;</td>
+          <td class="paramname"><em>order</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Get the entities of the specified from index and return the count. </p>
 
 </div>
 </div>

@@ -111,6 +111,21 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>mesh_t</b> = <a clas
 <tr class="memitem:a14058f8e0db0eebf2a40f2e6ab63e60b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a14058f8e0db0eebf2a40f2e6ab63e60b"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>entity_type</b> = typename <a class="el" href="structflecsi_1_1find__entity__.html">find_entity_</a>&lt; MT, D, M &gt;::type</td></tr>
 <tr class="separator:a14058f8e0db0eebf2a40f2e6ab63e60b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d00c8e6af649bbf4f2b3fc49b3b5ea0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1d00c8e6af649bbf4f2b3fc49b3b5ea0"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>difference_type</b> = std::ptrdiff_t</td></tr>
+<tr class="separator:a1d00c8e6af649bbf4f2b3fc49b3b5ea0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1efe4fdd443eea388ac7773ef1ae4703"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1efe4fdd443eea388ac7773ef1ae4703"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>value_type</b> = <a class="el" href="classflecsi_1_1domain__entity.html">domain_entity</a>&lt; M, entity_type &gt;</td></tr>
+<tr class="separator:a1efe4fdd443eea388ac7773ef1ae4703"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3919cd78da77aba23cb4456bbd6aee00"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3919cd78da77aba23cb4456bbd6aee00"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>reference</b> = <a class="el" href="classflecsi_1_1domain__entity.html">domain_entity</a>&lt; M, entity_type &gt;</td></tr>
+<tr class="separator:a3919cd78da77aba23cb4456bbd6aee00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5fd6000278abdbac2abf7ad9bf3013b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa5fd6000278abdbac2abf7ad9bf3013b"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>pointer</b> = entity_type *</td></tr>
+<tr class="separator:aa5fd6000278abdbac2abf7ad9bf3013b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4d97db817c0e54e8672c71d8fdf62f1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af4d97db817c0e54e8672c71d8fdf62f1"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>iterator_category</b> = std::bidirectional_iterator_tag</td></tr>
+<tr class="separator:af4d97db817c0e54e8672c71d8fdf62f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -129,12 +144,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9d7b7472f6eba91cf839837bb4f72fa4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9d7b7472f6eba91cf839837bb4f72fa4"></a>
 <a class="el" href="classflecsi_1_1mesh__topology__t_1_1iterator.html">iterator</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classflecsi_1_1mesh__topology__t_1_1iterator.html">iterator</a> &amp;itr)</td></tr>
 <tr class="separator:a9d7b7472f6eba91cf839837bb4f72fa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc07f3386adc0c386245207829da8934"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acc07f3386adc0c386245207829da8934"></a>
-<a class="el" href="classflecsi_1_1domain__entity.html">domain_entity</a>&lt; M, entity_type &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>operator*</b> ()</td></tr>
-<tr class="separator:acc07f3386adc0c386245207829da8934"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2611d00b2bae51cdfed593f136c012f7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2611d00b2bae51cdfed593f136c012f7"></a>
-entity_type *&#160;</td><td class="memItemRight" valign="bottom"><b>operator-&gt;</b> ()</td></tr>
-<tr class="separator:a2611d00b2bae51cdfed593f136c012f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd690860e8a0811e42f31650e1c157fc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abd690860e8a0811e42f31650e1c157fc"></a>
+<a class="el" href="classflecsi_1_1domain__entity.html">reference</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator*</b> ()</td></tr>
+<tr class="separator:abd690860e8a0811e42f31650e1c157fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8070e28d37b3b219cd6fdbe5b48517b6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8070e28d37b3b219cd6fdbe5b48517b6"></a>
+pointer&#160;</td><td class="memItemRight" valign="bottom"><b>operator-&gt;</b> ()</td></tr>
+<tr class="separator:a8070e28d37b3b219cd6fdbe5b48517b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af370f45233b212266380bc1cdaea9a9d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af370f45233b212266380bc1cdaea9a9d"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="classflecsi_1_1mesh__topology__t_1_1iterator.html">iterator</a> &amp;itr) const </td></tr>
 <tr class="separator:af370f45233b212266380bc1cdaea9a9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
