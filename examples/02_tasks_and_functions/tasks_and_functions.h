@@ -92,7 +92,7 @@ register_task(task2, loc, void, double, double, dense_field_t<double>);
  *----------------------------------------------------------------------------*/
 
 double eos_gruneisen(double r, double e) {
-  std::cout << "Executing function1" << std::endl;
+  std::cout << "Executing gruneisen" << std::endl;
   std::cout << "(r,e): (" << r << "," << e << ")" << std::endl;
   return r*e;
 } // function1
@@ -100,12 +100,20 @@ double eos_gruneisen(double r, double e) {
 register_function(eos_gruneisen, double, double, double);
 
 double eos_gamma(double r, double e) {
-  std::cout << "Executing function2" << std::endl;
+  std::cout << "Executing gamma" << std::endl;
   std::cout << "(r,e): (" << r << "," << e << ")" << std::endl;
   return 2*r*e;
 } // function1
 
 register_function(eos_gamma, double, double, double);
+
+double eos_other(double r, double e) {
+  std::cout << "Executing other" << std::endl;
+  std::cout << "(r,e): (" << r << "," << e << ")" << std::endl;
+  return r*e;
+} // function1
+
+register_function(eos_other, double, double, double);
 
 /*----------------------------------------------------------------------------*
  * User type.
@@ -157,7 +165,6 @@ void driver(int argc, char ** argv) {
 
   for(size_t i(0); i<5; ++i) {
     mats1[i] = copper_t(2.0, 2.0);
-    mats1[i].eos_function = function_handle(eos_gamma);
   } // for
 
   for(size_t i(5); i<10; ++i) {
