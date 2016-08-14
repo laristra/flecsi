@@ -107,11 +107,23 @@ double eos_gamma(double r, double e) {
 
 register_function(eos_gamma, double, double, double);
 
-double eos_other(double r, double e) {
+/*
+  Templated function
+ */
+struct eos_param_t {
+  static constexpr double m = 4.0;
+}; // struct eos_params_t
+
+template<typename P>
+double eos_other__(double r, double e) {
   std::cout << "Executing other" << std::endl;
   std::cout << "(r,e): (" << r << "," << e << ")" << std::endl;
-  return r*e;
+  return P::m*r*e;
 } // function1
+
+double eos_other(double r, double e) {
+  return eos_other__<eos_param_t>(r, e);
+} // eos_other
 
 register_function(eos_other, double, double, double);
 
@@ -144,6 +156,11 @@ struct steel_t : material_t {
     : material_t(function_handle(eos_gamma), r_, e_) {}
 };
 
+struct silver_t : material_t {
+  silver_t(double r_, double e_)
+    : material_t(function_handle(eos_other), r_, e_) {}
+};
+
 /*----------------------------------------------------------------------------*
  * Driver.
  *----------------------------------------------------------------------------*/
@@ -163,12 +180,16 @@ void driver(int argc, char ** argv) {
 
   auto mats1 = get_accessor(m, "materials", 0, material_t, dense);
 
-  for(size_t i(0); i<5; ++i) {
+  for(size_t i(0); i<4; ++i) {
     mats1[i] = copper_t(2.0, 2.0);
   } // for
 
-  for(size_t i(5); i<10; ++i) {
+  for(size_t i(4); i<8; ++i) {
     mats1[i] = steel_t(2.0, 2.0);
+  } // for
+
+  for(size_t i(8); i<10; ++i) {
+    mats1[i] = silver_t(2.0, 2.0);
   } // for
 
   for(size_t i(0); i<10; ++i) {
