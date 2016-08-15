@@ -851,6 +851,7 @@ public:
     branch_map_.emplace(bid, root_);
 
     max_depth_ = 0;
+    max_scale_ = element_t(1);
 
     for(size_t d = 0; d < dimension; ++d){
       range_[0][d] = element_t(0);
@@ -870,6 +871,7 @@ public:
 
     for(size_t d = 0; d < dimension; ++d){
       scale_[d] = end[d] - start[d];
+      max_scale_ = std::max(max_scale_, scale_[d]);
       range_[0][d] = start[d];
       range_[1][d] = end[d];
     }
@@ -927,6 +929,16 @@ public:
     }
   }
 
+  point_t unit_coordinates(const point_t& p){
+    point_t pn;
+
+    for(size_t d = 0; d < dimension; ++d){
+      pn[d] = (p[d] - range_[0][d]) / scale_[d];
+    }
+
+    return pn;
+  }
+
   entity_set_t find_in_radius(const point_t& center, element_t radius){
     entity_id_vector_t ents;
 
@@ -935,7 +947,11 @@ public:
       return geometry_t::within(ent->coordinates(), center, radius);
     };
 
-    find_(root_, element_t(1), ents, ef, geometry_t::intersects, center, radius);
+    size_t depth;
+    element_t size;
+    branch_t* b = find_start_(center, radius, depth, size);
+
+    find_(b, size, ents, ef, geometry_t::intersects, center, radius);
 
     return entity_set_t(*this, std::move(ents), false);
   }
@@ -959,7 +975,12 @@ public:
 
     entity_id_vector_t ents;
 
-    find_(pool, sem, mtx, queue_depth, 0, root_, element_t(1), ents, ef,
+    size_t depth;
+    element_t size;
+    branch_t* b = find_start_(center, radius, depth, size);
+    queue_depth += depth;
+
+    find_(pool, sem, mtx, queue_depth, depth, b, size, ents, ef,
           geometry_t::intersects, center, radius);
 
     sem.acquire();
@@ -975,7 +996,22 @@ public:
       return geometry_t::within_box(ent->coordinates(), min, max);
     };
 
-    find_(root_, element_t(1), ents, ef, geometry_t::intersects_box, min, max);
+    element_t radius = 0;
+    for(size_t d = 0; d < dimension; ++d){
+      radius = std::max(radius, max[d] - min[d]);
+    }
+    
+    constexpr element_t c = std::sqrt(element_t(2))/element_t(2);
+    radius *= c;
+    
+    point_t center = min;
+    center += radius;
+
+    size_t depth;
+    element_t size;
+    branch_t* b = find_start_(center, radius, depth, size);
+
+    find_(b, size, ents, ef, geometry_t::intersects_box, min, max);
 
     return entity_set_t(*this, std::move(ents), false);
   }
@@ -994,12 +1030,29 @@ public:
       return geometry_t::within_box(ent->coordinates(), min, max);
     };
 
-    virtual_semaphore sem(1 - int(m));
-    std::mutex mtx;
+    element_t radius = 0;
+    for(size_t d = 0; d < dimension; ++d){
+      radius = std::max(radius, max[d] - min[d]);
+    }
+
+    constexpr element_t c = std::sqrt(element_t(2))/element_t(2);
+    radius *= c;
+    
+    point_t center = min;
+    center += radius;
+
+    size_t depth;
+    element_t size;
+    branch_t* b = find_start_(center, radius, depth, size);
 
     entity_id_vector_t ents;
 
-    find_(pool, sem, mtx, queue_depth, 0, root_, element_t(1), ents, ef,
+    queue_depth += depth;
+
+    virtual_semaphore sem(1 - int(m));
+    std::mutex mtx;
+
+    find_(pool, sem, mtx, queue_depth, depth, b, size, ents, ef,
           geometry_t::intersects_box, min, max);
 
     sem.acquire();
@@ -1019,7 +1072,11 @@ public:
       }
     };
 
-    apply_(root_, element_t(1), f, geometry_t::intersects, center, radius);
+    size_t depth;
+    element_t size;
+    branch_t* b = find_start_(center, radius, depth, size);
+
+    apply_(b, size, f, geometry_t::intersects, center, radius);
   }
 
   template<typename EF, typename... ARGS>
@@ -1038,9 +1095,14 @@ public:
       }
     };
 
+    size_t depth;
+    element_t size;
+    branch_t* b = find_start_(center, radius, depth, size);
+    queue_depth += depth;
+
     virtual_semaphore sem(1 - int(m));
 
-    apply_(pool, sem, queue_depth, 0, root_, element_t(1),
+    apply_(pool, sem, queue_depth, depth, b, size,
            f, geometry_t::intersects, center, radius);
 
     sem.acquire();
@@ -1062,9 +1124,25 @@ public:
       }
     };
 
+    element_t radius = 0;
+    for(size_t d = 0; d < dimension; ++d){
+      radius = std::max(radius, max[d] - min[d]);
+    }
+
+    constexpr element_t c = std::sqrt(element_t(2))/element_t(2);
+    radius *= c;
+    
+    point_t center = min;
+    center += radius;
+
+    size_t depth;
+    element_t size;
+    branch_t* b = find_start_(center, radius, depth, size);
+    queue_depth += depth;
+
     virtual_semaphore sem(1 - int(m));
 
-    apply_(pool, sem, queue_depth, 0, root_, element_t(1),
+    apply_(pool, sem, queue_depth, depth, b, size,
            f, geometry_t::intersects_box, min, max);
 
     sem.acquire();
@@ -1081,7 +1159,22 @@ public:
       }
     };
 
-    apply_(root_, element_t(1), f, geometry_t::intersects_box, min, max);
+    element_t radius = 0;
+    for(size_t d = 0; d < dimension; ++d){
+      radius = std::max(radius, max[d] - min[d]);
+    }
+
+    constexpr element_t c = std::sqrt(element_t(2))/element_t(2);
+    radius *= c;
+    
+    point_t center = min;
+    center += radius;
+
+    size_t depth;
+    element_t size;
+    branch_t* b = find_start_(center, radius, depth, size);
+
+    apply_(b, size, f, geometry_t::intersects_box, min, max);
   }
 
   template<class... Args>
@@ -1334,6 +1427,47 @@ private:
       constexpr size_t rb = branch_int_t(1) << P::dimension;
       constexpr double bn = std::log2(double(rb));
       return std::log2(double(n))/bn + 1;
+    }
+
+    branch_t* find_start_(const point_t& center,
+                          element_t radius,
+                          size_t& depth,
+                          element_t& size){
+      
+      element_t norm_radius = radius / max_scale_;
+
+      branch_id_t bid = to_branch_id(center, max_depth_);
+
+      int d = -std::log2(norm_radius) - 1;
+
+      while(d > 0){
+        branch_t* b = find_parent(bid, d);
+
+        point_t p2;
+        b->id().coordinates(range_, p2);
+
+        size = std::pow(element_t(2), -d);
+
+        bool found = true;
+        for(size_t dim = 0; dim < dimension; ++dim){
+          if(!(center[dim] - radius > p2[dim] &&
+               center[dim] + radius < p2[dim] + size)){
+            found = false;
+            break;
+          }
+        }
+
+        if(found){
+          depth = d;
+          return b;
+        }
+
+        --d;
+      }
+
+      depth = 0;
+      size = element_t(1);
+      return root_;
     }
 
     template<typename EF, typename BF, typename... ARGS>
@@ -1650,6 +1784,7 @@ private:
   std::vector<entity_t*> entities_;
   std::array<point<element_t, dimension>, 2> range_;
   point<element_t, dimension> scale_;
+  element_t max_scale_;
 };
 
 template<typename T, size_t D>
