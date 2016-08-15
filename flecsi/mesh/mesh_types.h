@@ -308,10 +308,10 @@ class entity_group
   auto front() const
   { return entities_.front(); }
 
-  auto back() const 
+  auto back() const
   { return entities_.back(); }
 
-  auto size() const 
+  auto size() const
   { return entities_.size(); }
 
  private:
@@ -347,9 +347,9 @@ class connectivity_t
   /*!
     Initialize the offset array.
    */
-  void init() { 
+  void init() {
     clear();
-    from_index_vec_.push_back(0); 
+    from_index_vec_.push_back(0);
   }
 
   /*!
@@ -359,7 +359,7 @@ class connectivity_t
     \param cv The connectivity information.
    */
   void init(const connection_vector_t & cv) {
-    
+
     clear();
 
     // the first offset is always 0
@@ -511,7 +511,7 @@ class connectivity_t
     assert(index < from_index_vec_.size() - 1);
     auto start = from_index_vec_[index];
     auto count = from_index_vec_[index + 1] - start;
-    assert( order.size() == count );    
+    assert( order.size() == count );
     utils::reorder( order.begin(), order.end(), to_id_vec_.data() + start );
   }
 
@@ -646,38 +646,38 @@ public:
 
   template<size_t FD, size_t ND>
   id_t* get_entities(mesh_entity_t<FD, ND>* from_ent, size_t to_dim){
-    return get<FD>(to_dim).get_entities(from_ent.id(from_domain_)); 
+    return get<FD>(to_dim).get_entities(from_ent->id(from_domain_));
   }
 
   template<size_t FD, size_t ND>
   id_t* get_entities(mesh_entity_t<FD, ND>* from_ent,
                      size_t to_dim,
                      size_t & count){
-    return get<FD>(to_dim).get_entities(from_ent.id(from_domain_), count); 
+    return get<FD>(to_dim).get_entities(from_ent->id(from_domain_), count);
   }
 
   id_t* get_entities(id_t from_id, size_t to_dim){
-    return get(from_id.dimension(), to_dim).get_entities(from_id.entity()); 
+    return get(from_id.dimension(), to_dim).get_entities(from_id.entity());
   }
 
   id_t* get_entities(id_t from_id, size_t to_dim, size_t & count){
-    return get(from_id.dimension(), to_dim).get_entities(from_id.entity(), count); 
+    return get(from_id.dimension(), to_dim).get_entities(from_id.entity(), count);
   }
 
   template<size_t FD, size_t ND>
   auto get_entity_vec(mesh_entity_t<FD, ND>* from_ent, size_t to_dim) const
   {
     auto & conn = get<FD>(to_dim);
-    return conn.get_entity_vec( from_ent.id(from_domain_) ); 
+    return conn.get_entity_vec( from_ent->id(from_domain_) );
   }
 
   auto get_entity_vec(id_t from_id, size_t to_dim) const
   {
     auto & conn = get(from_id.dimension(), to_dim);
-    return conn.get_entity_vec( from_id.entity() ); 
+    return conn.get_entity_vec( from_id.entity() );
   }
 
-  std::ostream & dump( std::ostream & stream ) 
+  std::ostream & dump( std::ostream & stream )
   {
     for(size_t i = 0; i < conns_.size(); ++i){
       auto & ci = conns_[i];
@@ -694,7 +694,7 @@ public:
   }
 
 private:
-  using conn_array_t = 
+  using conn_array_t =
     std::array<std::array<connectivity_t, D + 1>, D + 1>;
 
   conn_array_t conns_;
@@ -712,7 +712,7 @@ struct mesh_storage_t {
   using entities_t = std::array<entity_vector_t<NM>, D + 1>;
 
   using id_vecs_t = std::array<id_vector_t, D + 1>;
-  
+
   // array of array of vector of mesh_entity_base_t *
   std::array<entities_t, NM> entities;
 
@@ -808,12 +808,12 @@ void unserialize_dimension_(mesh_topology_base_t& mesh,
                             uint64_t& pos){
   uint64_t num_entities;
   std::memcpy(&num_entities, buf + pos, sizeof(num_entities));
-  pos += sizeof(num_entities);    
+  pos += sizeof(num_entities);
 
   id_vector_t iv;
   iv.reserve(num_entities);
 
-  entity_vector_t<NM> ev; 
+  entity_vector_t<NM> ev;
   ev.reserve(num_entities);
 
   // TODO - fix
@@ -834,7 +834,7 @@ void unserialize_dimension_(mesh_topology_base_t& mesh,
 
 template<class MT, size_t NM, size_t ND, size_t M, size_t D>
 struct unserialize_dimensions_{
-  
+
   static void unserialize(mesh_topology_base_t& mesh,
                           char* buf,
                           uint64_t& pos){
