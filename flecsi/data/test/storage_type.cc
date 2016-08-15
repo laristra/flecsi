@@ -196,9 +196,6 @@ TEST(storage, sparse2) {
 
 } // TEST
 
-#undef register_data
-#undef get_accessor
-
 /*----------------------------------------------------------------------------*
  * Cinch test Macros
  *

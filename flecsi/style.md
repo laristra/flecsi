@@ -7,6 +7,7 @@ C++ Style Guide.
 
 Notable exceptions include:
 
+* C++ Exception Handling
 * Type Names
 * Function Names
 * Variable Names (in some cases)
@@ -213,6 +214,46 @@ the name:
 In this example, the *s* in *As* indicates that the parameter is plural.
 Developers should avoid verbose parameter names, opting instead to use
 Doxygen to document the parameter meaning (as shown above).
+
+## Error & Exception Handling
+
+Use assertions and static assertions to assert things that must be true:
+
+    template<size_t FD>
+    connectivity &
+    get(
+      size_t to_dim
+    )
+    {
+      static_assert(FD <= D, "invalid from dimension");
+      assert(to_dim <= D && "invalid to dimension");
+      return conns_[FD][to_dim];
+    } // get
+
+In this case, we can verify that the from dimension (template parameter
+FD) is in bounds using a static assertion. We need to use a dynamic
+assertion to check the to dimension (to_dim) since it is passed as an
+argument to the method. In both cases, the assertions must be true for
+the code to not be broken, i.e., if the assertion is not true, there is
+a bug! Fix it!
+
+Use exception handling to catch exceptional situations, i.e., when a
+condition for the correct functioning of the code is not met. An
+exception may be caught and the program can recover from it:
+
+    try {
+      type_t * t = new type_t;
+    }
+    catch(std::bad_alloc & e) {
+      // do something because the allocation failed...
+    }
+    catch(...) {
+      // default exception
+    } // try
+
+In many cases, exception handling should be reserved for interfaces that
+can be called by a developer. Internal interfaces should use assertions
+to identify bugs.
 
 ## Summary
 
