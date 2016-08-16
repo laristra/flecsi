@@ -44,11 +44,6 @@ class const_string_t
   {
   }
 
-  constexpr const_string_t(const char* str)
-      : str_(str), size_(strlen(str))
-  {
-  }
-
   constexpr const char * c_str() const { return str_; }
   constexpr hash_type_t size() const { return size_; }
   constexpr char operator[](hash_type_t i) const
