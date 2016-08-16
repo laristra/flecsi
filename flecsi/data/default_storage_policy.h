@@ -21,6 +21,7 @@
 #include <typeinfo>
 #include <cassert>
 
+#include "flecsi/utils/humble.h"
 #include "flecsi/utils/index_space.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/data/data_constants.h"
@@ -169,14 +170,14 @@ class default_data_storage_policy_t
       uint64_t ns = itr.first;
 
       auto& mm = itr.second;
-      
+
       for(auto& mitr : mm){
         std::memcpy(buf + pos, &ns, sizeof(ns));
         pos += sizeof(ns);
 
         uint64_t rs = mitr.first;
         std::memcpy(buf + pos, &rs, sizeof(rs));
-        pos += sizeof(rs);        
+        pos += sizeof(rs);
 
         meta_data_t& md = mitr.second;
         auto& data = md.data;
@@ -193,7 +194,7 @@ class default_data_storage_policy_t
         std::memcpy(buf + pos, data.data(), data_size);
         pos += data_size;
 
-        ++num_entries;             
+        ++num_entries;
       }
     }
 
@@ -233,7 +234,7 @@ class default_data_storage_policy_t
 
       uint64_t data_size;
       std::memcpy(&data_size, buf + pos, sizeof(data_size));
-      pos += sizeof(data_size); 
+      pos += sizeof(data_size);
 
       data.reserve(data_size);
       data.assign((unsigned char*)buf + pos,
@@ -248,7 +249,7 @@ class default_data_storage_policy_t
     meta_.clear();
   } // reset
 
-  /*! 
+  /*!
    * \brief delete ALL data associated with this runtime namespace
    * \param [in] runtime_namespace the namespace to search
    */
@@ -260,7 +261,7 @@ class default_data_storage_policy_t
       // the namespace data
       auto & namespace_key = sub_map.first;
       auto & meta_data = sub_map.second;
-      
+
       // loop over each element in the namespace
       auto itr = meta_data.begin();
       while ( itr != meta_data.end() ) {
@@ -273,14 +274,14 @@ class default_data_storage_policy_t
         // test if it should be deleted
         if ( meta_data_key == hash )
           itr = meta_data.erase(itr);
-        else 
+        else
           ++itr;
       } // while
     } // for
 
   } // reset
 
-  /*! 
+  /*!
    * \brief delete specific data associated with this runtime namespace
    * \param [in] key the key to delete
    * \param [in] runtime_namespace the namespace to search
@@ -305,7 +306,7 @@ class default_data_storage_policy_t
 
 
 
-  /*! 
+  /*!
    * \brief move ALL data associated with this runtime namespace
    * \param [in] runtime_namespace the namespace to search
    */
@@ -317,7 +318,7 @@ class default_data_storage_policy_t
       // the namespace data
       auto & namespace_key = sub_map.first;
       auto & meta_data = sub_map.second;
-      
+
       // create a temporary map
       using map_type = typename std::decay< decltype( meta_data ) >::type;
       map_type tmp_map;
@@ -350,8 +351,8 @@ class default_data_storage_policy_t
       using move_iterator = std::move_iterator<iterator>;
 
       // move the data back into the meta data map with the new key
-      meta_data.insert( 
-        move_iterator( tmp_map.begin() ), 
+      meta_data.insert(
+        move_iterator( tmp_map.begin() ),
         move_iterator( tmp_map.end() )
       );
 
@@ -462,6 +463,7 @@ class default_data_storage_policy_t
     global_accessor_t & operator=(const T & a)
     {
       *data_ = a;
+      return *this;
     } // operator =
 
     /*!
@@ -474,13 +476,14 @@ class default_data_storage_policy_t
       label_ = a.label_;
       data_ = a.data_;
       meta_ = a.meta_;
+      return *this;
     } // operator =
     /*!
       \brief Implicit conversion operator.
-      
-      Using explicit keyword forces users to use static_cast<T>().  But 
+
+      Using explicit keyword forces users to use static_cast<T>().  But
       if you dont use this, then it is ambiguous
-      
+
         accessor<int> a, b;
         int c = 2;
         a = c; // ok, uses assignment
@@ -490,18 +493,18 @@ class default_data_storage_policy_t
 
         // which one do you want? accessor/accessor assignement operator or
         // do you want to convert b to int, then assign int to a?
-        a = b; 
+        a = b;
 
-      Making this explicit forces you to have to static cast for all cases, 
+      Making this explicit forces you to have to static cast for all cases,
       which I think is less ambiguous
-  
+
         a = static_cast<int>(b);
         a = static_cast<int>(c);
-      
+
      */
-    explicit operator T() const 
-    { 
-      return *data_; 
+    explicit operator T() const
+    {
+      return *data_;
     }
 
     /*!
@@ -509,9 +512,9 @@ class default_data_storage_policy_t
 
       \return true if registered.
      */
-    operator bool() const 
-    { 
-      return (data_ != nullptr); 
+    operator bool() const
+    {
+      return (data_ != nullptr);
     }
 
     /*!
@@ -686,9 +689,9 @@ class default_data_storage_policy_t
 
       \return true if registered.
      */
-    operator bool() const 
-    { 
-      return (data_ != nullptr); 
+    operator bool() const
+    {
+      return (data_ != nullptr);
     }
 
    private:
@@ -853,9 +856,9 @@ class default_data_storage_policy_t
 
       \return true if registered.
      */
-    operator bool() const 
-    { 
-      return (data_ != nullptr); 
+    operator bool() const
+    {
+      return (data_ != nullptr);
     }
 
    private:
@@ -917,14 +920,14 @@ class default_data_storage_policy_t
   {
     size_t h = key.hash() ^ runtime_namespace;
     auto search = meta_[NS].find(h);
-    if ( search == meta_[NS].end() ) 
+    if ( search == meta_[NS].end() )
       return global_accessor_t<T>();
     else {
       auto & meta_data = search->second;
       return {meta_data.label, meta_data.size,
           reinterpret_cast<T *>(&meta_data.data[0]),
           meta_data.user_data};
-    }      
+    }
   } // accessor
 
   /*!
@@ -938,14 +941,14 @@ class default_data_storage_policy_t
   {
     size_t h = hash ^ runtime_namespace;
     auto search = meta_[NS].find(h);
-    if ( search == meta_[NS].end() ) 
+    if ( search == meta_[NS].end() )
       return global_accessor_t<T>();
     else {
       auto & meta_data = search->second;
       return {meta_data.label, meta_data.size,
           reinterpret_cast<T *>(&meta_data.data[0]),
           meta_data.user_data};
-    }      
+    }
   } // accessor
 
   /*!
@@ -957,14 +960,14 @@ class default_data_storage_policy_t
   global_accessor_t<T> global_accessor(const_string_t::hash_type_t hash)
   {
     auto search = meta_[NS].find(hash);
-    if ( search == meta_[NS].end() ) 
+    if ( search == meta_[NS].end() )
       return global_accessor_t<T>();
     else {
       auto & meta_data = search->second;
       return {meta_data.label, meta_data.size,
           reinterpret_cast<T *>(&meta_data.data[0]),
           meta_data.user_data};
-    }      
+    }
   } // accessor
 
   /*!
@@ -1009,7 +1012,7 @@ class default_data_storage_policy_t
     for (auto entry_pair : meta_[NS]) {
       auto a = global_accessor<T, NS>(entry_pair.first);
       if ( a )
-        if (entry_pair.second.rtti->type_info == typeid(T)) 
+        if (entry_pair.second.rtti->type_info == typeid(T))
           v.emplace_back( std::move(a) );
     } // for
 
@@ -1065,7 +1068,7 @@ class default_data_storage_policy_t
     for (auto entry_pair : meta_[NS]) {
       // create an accessor
       auto a = global_accessor<uint8_t, NS>(entry_pair.first);
-      if ( a ) 
+      if ( a )
         if ( predicate(a) ) v.emplace_back( std::move(a) );
     } // for
 
@@ -1090,14 +1093,14 @@ class default_data_storage_policy_t
   {
     size_t h = key.hash() ^ runtime_namespace;
     auto search = meta_[NS].find(h);
-    if ( search == meta_[NS].end() ) 
+    if ( search == meta_[NS].end() )
       return dense_accessor_t<T>();
     else {
       auto & meta_data = search->second;
       return {meta_data.label, meta_data.size,
           reinterpret_cast<T *>(&meta_data.data[0]),
           meta_data.user_data};
-    }      
+    }
   } // accessor
 
   /*!
@@ -1118,7 +1121,7 @@ class default_data_storage_policy_t
       return {meta_data.label, meta_data.size,
           reinterpret_cast<T *>(&meta_data.data[0]),
           meta_data.user_data};
-    }      
+    }
   } // accessor
 
   /*!
@@ -1137,7 +1140,7 @@ class default_data_storage_policy_t
       return {meta_data.label, meta_data.size,
           reinterpret_cast<T *>(&meta_data.data[0]),
           meta_data.user_data};
-    }      
+    }
   } // accessor
 
   /*!
@@ -1182,7 +1185,7 @@ class default_data_storage_policy_t
     for (auto entry_pair : meta_[NS]) {
       auto a = dense_accessor<T, NS>(entry_pair.first);
       if ( a )
-        if (entry_pair.second.rtti->type_info == typeid(T)) 
+        if (entry_pair.second.rtti->type_info == typeid(T))
           v.emplace_back( std::move(a) );
     } // for
 
@@ -1202,8 +1205,8 @@ class default_data_storage_policy_t
       // create an accessor
       auto a = dense_accessor<T, NS>(entry_pair.first);
       if ( a )
-        if (entry_pair.second.rtti->type_info == typeid(T) && predicate(a)) 
-          v.emplace_back( std::move(a) );     
+        if (entry_pair.second.rtti->type_info == typeid(T) && predicate(a))
+          v.emplace_back( std::move(a) );
     } // for
 
     return v;
