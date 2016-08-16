@@ -1000,10 +1000,10 @@ public:
     for(size_t d = 0; d < dimension; ++d){
       radius = std::max(radius, max[d] - min[d]);
     }
-    
-    constexpr element_t c = std::sqrt(element_t(2))/element_t(2);
+
+    element_t const c = std::sqrt(element_t(2))/element_t(2);
     radius *= c;
-    
+
     point_t center = min;
     center += radius;
 
@@ -1037,7 +1037,7 @@ public:
 
     constexpr element_t c = std::sqrt(element_t(2))/element_t(2);
     radius *= c;
-    
+
     point_t center = min;
     center += radius;
 
@@ -1131,7 +1131,7 @@ public:
 
     constexpr element_t c = std::sqrt(element_t(2))/element_t(2);
     radius *= c;
-    
+
     point_t center = min;
     center += radius;
 
@@ -1166,7 +1166,7 @@ public:
 
     constexpr element_t c = std::sqrt(element_t(2))/element_t(2);
     radius *= c;
-    
+
     point_t center = min;
     center += radius;
 
@@ -1433,7 +1433,7 @@ private:
                           element_t radius,
                           size_t& depth,
                           element_t& size){
-      
+
       element_t norm_radius = radius / max_scale_;
 
       branch_id_t bid = to_branch_id(center, max_depth_);
