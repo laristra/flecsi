@@ -18,6 +18,14 @@ namespace execution {
 // FIXME: Finish Doxygen
 
 /*!
+  The processor_t enum defines the different processor types that
+  are supported by FleCSI's execution model. Some processor types
+  are invalid with a particular backend.
+
+  \note The number of processor types is currently limited to 32! This is
+  due to the hashing strategy being employed by some of the backends. If
+  it becomes necessary to support more processor types, the hashing
+  strategy will need to be changed to accommodate more types.
  */
 enum processor_t : size_t {
   loc,

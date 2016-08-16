@@ -36,7 +36,8 @@ namespace flecsi
 template<typename T>
 class const_string_
 {
- public:
+public:
+
   using hash_type_t = T;
 
   template <hash_type_t N>
@@ -83,9 +84,11 @@ class const_string_
   }
 
  private:
+
   const char * const str_;
   const hash_type_t size_;
-};
+
+}; // const_string_
 
 using const_string_t = const_string_<size_t>;
 

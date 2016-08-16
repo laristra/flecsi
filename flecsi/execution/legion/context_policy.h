@@ -21,6 +21,7 @@
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/tuple_wrapper.h"
 #include "flecsi/execution/legion/runtime_driver.h"
+#include "flecsi/execution/common/task_hash.h"
 
 namespace flecsi {
 namespace execution {
@@ -35,8 +36,7 @@ struct legion_context_policy_t
   using lr_context_t = LegionRuntime::HighLevel::Context;
   using lr_runtime_t = LegionRuntime::HighLevel::HighLevelRuntime;
   using lr_task_t = LegionRuntime::HighLevel::Task;
-  using lr_regions_t =
-    std::vector<LegionRuntime::HighLevel::PhysicalRegion>;
+  using lr_regions_t = std::vector<LegionRuntime::HighLevel::PhysicalRegion>;
 
   const static LegionRuntime::HighLevel::Processor::Kind lr_loc =
     LegionRuntime::HighLevel::Processor::LOC_PROC;
@@ -96,7 +96,7 @@ struct legion_context_policy_t
    */
   bool
   register_task(
-    uintptr_t key,
+    task_hash_key_t key,
     const register_function_t & f
   )
   {
@@ -112,7 +112,7 @@ struct legion_context_policy_t
    */
   task_id_t
   task_id(
-    uintptr_t key
+    task_hash_key_t key
   )
   {
     assert(task_registry_.find(key) != task_registry_.end() &&
@@ -185,8 +185,20 @@ private:
   }; // struct legion_runtime_state_t
 
   std::shared_ptr<legion_runtime_state_t> state_;
-  std::unordered_map<uintptr_t,
-    std::pair<task_id_t, register_function_t>> task_registry_;
+
+  /*--------------------------------------------------------------------------*
+   * Task registry
+   *--------------------------------------------------------------------------*/
+
+  // Define the map type using the task_hash_t hash function.
+  std::unordered_map<task_hash_t::key_t,
+    std::pair<task_id_t, register_function_t>,
+    task_hash_t> task_registry_;
+
+  /*--------------------------------------------------------------------------*
+   * Function registry
+   *--------------------------------------------------------------------------*/
+
   std::unordered_map<size_t, std::function<void(void)> *>
     function_registry_;
 

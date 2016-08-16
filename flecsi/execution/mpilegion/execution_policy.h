@@ -19,7 +19,8 @@
 
 #include "flecsi/utils/const_string.h"
 #include "flecsi/execution/context.h"
-#include "flecsi/execution/processor.h"
+#include "flecsi/execution/common/processor.h"
+#include "flecsi/execution/common/task_hash.h"
 #include "flecsi/execution/mpilegion/context_policy.h"
 #include "flecsi/execution/legion/task_wrapper.h"
 
@@ -33,13 +34,11 @@ namespace flecsi {
 namespace execution {
 
 /*!
-  \struct mpilegion_execution_policy mpilegion_execution_policy.h
+  \struct mpilegion_execution_policy mpilegion/execution_policy.h
   \brief mpilegion_execution_policy provides...
  */
 struct mpilegion_execution_policy_t
 {
-
-  using task_key_t = uintptr_t;
 
   /*--------------------------------------------------------------------------*
    * Task interface.
@@ -49,10 +48,17 @@ struct mpilegion_execution_policy_t
     To add:
       task type (leaf, inner, etc...)
    */
-  template<typename R, typename ... As>
-  static bool register_task(task_key_t key, processor_t processor)
+  template<
+    typename R,
+    typename ... As
+  >
+  static
+  bool
+  register_task(
+    task_hash_key_t key
+  )
   {
-    switch(processor) {
+    switch(key.second) {
       case loc:
         return context_t::instance().register_task(key,
           legion_task_wrapper_<loc, 1, 0, R, As ...>::runtime_registration);
@@ -69,9 +75,16 @@ struct mpilegion_execution_policy_t
     } // switch
   } // register_task
 
-  template<typename T, typename ... As>
-  static decltype(auto) execute_task(task_key_t key, processor_t processor,
-    T user_task, As ... args)
+  template<
+    typename T,
+    typename ... As
+  >
+  static
+  decltype(auto)
+  execute_task(
+    task_hash_key_t key,
+    T user_task, As ... args
+  )
   {
     using namespace Legion;
 
@@ -84,20 +97,24 @@ struct mpilegion_execution_policy_t
     // task is invoked, i.e., we have to use copies...
     task_args_t task_args(user_task, args ...);
  
-    if (processor==mpi)
-    {
-      context_.InteropHelper.shared_func=std::bind(user_task,std::forward<As>(args) ...);
-     context_.InteropHelper.call_mpi=true;
-     context_.InteropHelper.handoff_to_mpi(context_.context(), context_.runtime());
-     //mpi task is running here
-      context_.InteropHelper.wait_on_mpi(context_.context(), context_.runtime());
-    }else{
+    if(key.second == mpi) {
+      context_.InteropHelper.shared_func=std::bind(user_task,
+        std::forward<As>(args) ...);
+      context_.InteropHelper.call_mpi=true;
+      context_.InteropHelper.handoff_to_mpi(context_.context(),
+      context_.runtime());
 
-    TaskLauncher task_launcher(context_.task_id(key),
-      TaskArgument(&task_args, sizeof(task_args_t)));
-
-     return context_.runtime()->execute_task(context_.context(), task_launcher);
+      //mpi task is running here
+      context_.InteropHelper.wait_on_mpi(context_.context(),
+        context_.runtime());
     }
+    else {
+      TaskLauncher task_launcher(context_.task_id(key),
+        TaskArgument(&task_args, sizeof(task_args_t)));
+
+      return context_.runtime()->execute_task(context_.context(),
+        task_launcher);
+    } // if
   } // execute_task
 
   /*--------------------------------------------------------------------------*

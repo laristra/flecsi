@@ -50,7 +50,8 @@ class MPILegionInterop {
    void initialize(void)
    {
     register_tasks(); 
-    LegionRuntime::HighLevel::HighLevelRuntime::set_registration_callback(mapper_registration);
+    LegionRuntime::HighLevel::HighLevelRuntime::set_registration_callback(
+      mapper_registration);
    }
  
   //variadic arguments for data to be shared

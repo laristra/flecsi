@@ -20,7 +20,8 @@
 #include <unordered_map>
 
 #include "flecsi/execution/context.h"
-#include "flecsi/execution/processor.h"
+#include "flecsi/execution/common/processor.h"
+#include "flecsi/execution/common/task_hash.h"
 #include "flecsi/utils/tuple_function.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/execution/serial/runtime_driver.h"
@@ -41,8 +42,6 @@ namespace execution {
 struct serial_execution_policy_t
 {
 
-  using task_key_t = uintptr_t;
-
   /*--------------------------------------------------------------------------*
    * Task interface.
    *--------------------------------------------------------------------------*/
@@ -58,8 +57,7 @@ struct serial_execution_policy_t
   static
   bool
   register_task(
-    task_key_t key,
-    processor_t processor
+    task_hash_key_t key
   )
   {
   } // register_task
@@ -73,8 +71,7 @@ struct serial_execution_policy_t
   static
   decltype(auto)
   execute_task(
-    task_key_t key,
-    processor_t processor,
+    task_hash_key_t key,
     T user_task,
     As ... args
   )

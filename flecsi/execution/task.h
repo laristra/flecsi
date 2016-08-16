@@ -6,7 +6,8 @@
 #ifndef flecsi_task_h
 #define flecsi_task_h
 
-#include "flecsi/execution/processor.h"
+#include "flecsi/execution/common/processor.h"
+#include "flecsi/execution/common/task_hash.h"
 
 /*!
  * \file task.h
@@ -27,8 +28,6 @@ struct task__
 
   // FIXME: Finish Doxygen
 
-  using task_key_t = typename execution_policy_t::task_key_t;
-
   /*!
    */
   template<
@@ -38,12 +37,12 @@ struct task__
   static
   decltype(auto)
   register_task(
-    task_key_t key,
+    uintptr_t address,
     processor_t processor
   )
   {
-    return execution_policy_t::template register_task<R, Args...>(key,
-      processor);
+    return execution_policy_t::template register_task<R, Args...>(
+      task_hash_t::make_key(address, processor));
   } // register_task
 
   /*!
@@ -52,13 +51,14 @@ struct task__
   static
   decltype(auto)
   execute_task(
-    task_key_t key,
+    uintptr_t address,
     processor_t processor,
     Args && ... args
   )
   {
-    return execution_policy_t::execute_task(key, processor,
-      std::forward<Args>(args) ...);
+    return execution_policy_t::execute_task(
+      task_hash_t::make_key(address, processor),
+        std::forward<Args>(args) ...);
   } // execute
 
 }; // class task

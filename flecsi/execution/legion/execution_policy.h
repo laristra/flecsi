@@ -19,7 +19,8 @@
 
 #include "flecsi/utils/const_string.h"
 #include "flecsi/execution/context.h"
-#include "flecsi/execution/processor.h"
+#include "flecsi/execution/common/processor.h"
+#include "flecsi/execution/common/task_hash.h"
 #include "flecsi/execution/legion/context_policy.h"
 #include "flecsi/execution/legion/task_wrapper.h"
 
@@ -39,8 +40,6 @@ namespace execution {
 struct legion_execution_policy_t
 {
 
-  using task_key_t = uintptr_t;
-
   /*--------------------------------------------------------------------------*
    * Task interface.
    *--------------------------------------------------------------------------*/
@@ -49,10 +48,17 @@ struct legion_execution_policy_t
     To add:
       task type (leaf, inner, etc...)
    */
-  template<typename R, typename ... As>
-  static bool register_task(task_key_t key, processor_t processor)
+  template<
+    typename R,
+    typename ... As
+  >
+  static
+  bool
+  register_task(
+    task_hash_key_t key
+  )
   {
-    switch(processor) {
+    switch(key.second) {
       case loc:
         return context_t::instance().register_task(key,
           legion_task_wrapper_<loc, 1, 0, R, As ...>::runtime_registration);
@@ -65,9 +71,16 @@ struct legion_execution_policy_t
     } // switch
   } // register_task
 
-  template<typename T, typename ... As>
-  static decltype(auto) execute_task(task_key_t key, processor_t processor,
-    T user_task, As ... args)
+  template<
+    typename T,
+    typename ... As
+  >
+  static
+  decltype(auto)
+  execute_task(
+    task_hash_key_t key,
+    T user_task, As ... args
+  )
   {
     using namespace Legion;
 

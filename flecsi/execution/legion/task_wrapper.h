@@ -23,7 +23,13 @@
 namespace flecsi {
 namespace execution {
 
-template< processor_t P, bool Single, bool Index,  typename R, typename ... Args>
+template<
+  processor_t P,
+  bool Single,
+  bool Index,
+  typename R,
+  typename ... Args
+>
 struct legion_task_wrapper_
 {
   /*
@@ -78,6 +84,7 @@ struct legion_task_wrapper_
 
     // Define a tuple type for the task arguments
     using task_args_t = std::tuple<user_task_t, Args ...>;
+
     // Get the arguments that were passed to Legion on the task launch
     task_args_t & task_args = *(reinterpret_cast<task_args_t *>(task->args));
 

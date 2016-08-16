@@ -26,7 +26,6 @@ namespace flecsi
 {
 
 /*!
-
   \brief const_string provides compile-time string constants and hashing...
 */
 template< typename T, typename U >

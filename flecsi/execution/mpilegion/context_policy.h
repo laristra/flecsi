@@ -21,6 +21,7 @@
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/tuple_wrapper.h"
 #include "flecsi/execution/mpilegion/runtime_driver.h"
+#include "flecsi/execution/common/task_hash.h"
 #include "flecsi/execution/mpilegion/legion_handshake.h"
 #include "flecsi/execution/mpilegion/mpi_legion_interop.h"
 
@@ -122,7 +123,7 @@ struct mpilegion_context_policy_t
    */
   bool
   register_task(
-    uintptr_t key,
+    task_hash_key_t key,
     const register_function_t & f
   )
   {
@@ -138,7 +139,7 @@ struct mpilegion_context_policy_t
    */
   task_id_t
   task_id(
-    uintptr_t key
+    task_hash_key_t key
   )
   {
     assert(task_registry_.find(key) != task_registry_.end() &&
@@ -211,8 +212,20 @@ private:
   }; // struct legion_runtime_state_t
 
   std::shared_ptr<legion_runtime_state_t> state_;
-  std::unordered_map<uintptr_t,
-    std::pair<task_id_t, register_function_t>> task_registry_;
+
+  /*--------------------------------------------------------------------------*
+   * Task registry
+   *--------------------------------------------------------------------------*/
+
+  // Define the map type using the task_hash_t hash function.
+  std::unordered_map<task_hash_t::key_t,
+    std::pair<task_id_t, register_function_t>,
+    task_hash_t> task_registry_;
+
+  /*--------------------------------------------------------------------------*
+   * Function registry
+   *--------------------------------------------------------------------------*/
+
   std::unordered_map<size_t, std::function<void(void)> *>
     function_registry_;
 
@@ -226,4 +239,4 @@ private:
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.
  * vim: set tabstop=2 shiftwidth=2 expandtab :
- :*~-------------------------------------------------------------------------~-*/
+ *~-------------------------------------------------------------------------~-*/
