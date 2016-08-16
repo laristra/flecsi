@@ -26,25 +26,43 @@ else()
     message(FATAL_ERROR "C++14 compatible compiler not found")
 endif()
 
-#------------------------------------------------------------------------------#
-# Runtime model setup for script interface
-#------------------------------------------------------------------------------#
-
 set(FLECSI_RUNTIME_LIBRARIES)
 
-find_package (legion QUIET NO_MODULE)
-set (Legion_INSTALL_DIR "" CACHE PATH "Path to the Legion install directory")
-if (NOT Legion_INSTALL_DIR STREQUAL "")
-  message(WARNING "Legion_INSTALL_DIR is obsolete, use CMAKE_PREFIX_PATH instead (and rebuild the latest version third-party libraries)")
-  list(APPEND CMAKE_PREFIX_PATH "${Legion_INSTALL_DIR}")
+#------------------------------------------------------------------------------#
+# Legion
+#------------------------------------------------------------------------------#
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion" OR
+  FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+
+  find_package (legion QUIET NO_MODULE)
+
+  set(Legion_INSTALL_DIR "" CACHE PATH
+    "Path to the Legion install directory")
+
+  if(NOT Legion_INSTALL_DIR STREQUAL "")
+    message(WARNING "Legion_INSTALL_DIR is obsolete, "
+      "use CMAKE_PREFIX_PATH instead (and rebuild the latest"
+      " version third-party libraries)")
+    list(APPEND CMAKE_PREFIX_PATH "${Legion_INSTALL_DIR}")
+  endif()
+
 endif()
 
+#------------------------------------------------------------------------------#
+# Runtime models
+#------------------------------------------------------------------------------#
+
+#
 # Serial interface
+#
 if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
   add_definitions(-DFLECSI_RUNTIME_MODEL_serial)
 
+#
 # Legion interface
+#
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   add_definitions(-DFLECSI_RUNTIME_MODEL_legion)
@@ -56,16 +74,21 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   include_directories(${LEGION_INCLUDE_DIRS})
   set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES} -ldl)
 
+#
 # MPI interface
+#
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   add_definitions(-DFLECSI_RUNTIME_MODEL_mpi)
 
+#
 #MPI+Legion interface
+#
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+
   if(NOT ENABLE_MPI)
     message (FATAL_ERROR "MPI is required for the mpilegion runtime model")
-  endif ()
+  endif()
  
   add_definitions(-DFLECSI_RUNTIME_MODEL_mpilegion)
 
@@ -76,7 +99,9 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
   include_directories(${LEGION_INCLUDE_DIRS})
   set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES} -ldl ${MPI_LIBRARIES})
 
+#
 # Default
+#
 else(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
   message(FATAL_ERROR "Unrecognized runtime selection")  
@@ -87,17 +112,19 @@ endif(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 # Hypre
 #------------------------------------------------------------------------------#
 
-set (ENABLE_HYPRE OFF CACHE BOOL " do you want to enable HYPRE?")
-if (ENABLE_HYPRE)
+set(ENABLE_HYPRE OFF CACHE BOOL " do you want to enable HYPRE?")
+
+if(ENABLE_HYPRE)
   find_package (HYPRE)
 
- if (HYPRE_FOUND)
+ if(HYPRE_FOUND)
    include_directories(${HYPRE_INCLUDE_DIRS})
    set(HYPRE_LIBRARY ${HYPRE_LIBRARIES})
  else()
    message (ERROR "HYPRE required for this build is not found")
-  endif ()
-endif (ENABLE_HYPRE)
+  endif()
+
+endif(ENABLE_HYPRE)
 
 
 
@@ -115,7 +142,10 @@ add_definitions(-DFLECSI_ID_GBITS=${FLECSI_ID_GBITS})
 math(EXPR flecsi_partitions "1 << ${FLECSI_ID_PBITS}")
 math(EXPR flecsi_entities "1 << ${FLECSI_ID_EBITS}")
 
-message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with 2^${FLECSI_ID_EBITS} entities each and ${FLECSI_ID_FBITS} flag bits and ${FLECSI_ID_GBITS} global bits")
+message(STATUS "Set id_t bits to allow:\n"
+  "   ${flecsi_partitions} partitions with 2^${FLECSI_ID_EBITS} entities each\n"
+  "   ${FLECSI_ID_FBITS} flag bits\n"
+  "   ${FLECSI_ID_GBITS} global bits")
 
 #------------------------------------------------------------------------------#
 # Enable IO with exodus
@@ -123,14 +153,18 @@ message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with 2^${
 
 find_package(EXODUSII)
 option(ENABLE_IO "Enable I/O (uses libexodus)" ${EXODUSII_FOUND})
+
 if(ENABLE_IO)
+
   if(EXODUSII_FOUND)
     set(IO_LIBRARIES ${EXODUSII_LIBRARIES})
     include_directories(${EXODUSII_INCLUDE_DIRS})
   else()
-    MESSAGE( FATAL_ERROR "You need libexodus either from TPL or system to enable I/O" )
+    MESSAGE(FATAL_ERROR "You need libexodus either from TPL "
+      "or system to enable I/O")
   endif()
   add_definitions( -DHAVE_EXODUS )
+
 endif(ENABLE_IO)
 
 #------------------------------------------------------------------------------#
@@ -145,28 +179,30 @@ if(ENABLE_MPI)
 endif()
 
 if(METIS_FOUND OR SCOTCH_FOUND OR PARMETIS_FOUND)
-  option(ENABLE_PARTITION "Enable partitioning (uses metis/parmetis or scotch)." ON)
+  option(ENABLE_PARTITION
+    "Enable partitioning (uses metis/parmetis or scotch)." ON)
 else()
-  option(ENABLE_PARTITION "Enable partitioning (uses metis/parmetis or scotch)." OFF)
+  option(ENABLE_PARTITION
+    "Enable partitioning (uses metis/parmetis or scotch)." OFF)
 endif()
 
 if(ENABLE_PARTITION)
 
   set( PARTITION_LIBRARIES )
 
-  if (METIS_FOUND)
+  if(METIS_FOUND)
      list( APPEND PARTITION_LIBRARIES ${METIS_LIBRARIES} )
      include_directories( ${METIS_INCLUDE_DIRS} )
      add_definitions( -DHAVE_METIS )
   endif()
 
-  if (PARMETIS_FOUND)
+  if(PARMETIS_FOUND)
      list( APPEND PARTITION_LIBRARIES ${PARMETIS_LIBRARIES} )
      include_directories( ${PARMETIS_INCLUDE_DIRS} )
      add_definitions( -DHAVE_PARMETIS )
   endif()
 
-  if (SCOTCH_FOUND)
+  if(SCOTCH_FOUND)
      list( APPEND PARTITION_LIBRARIES ${SCOTCH_LIBRARIES} )
      include_directories( ${SCOTCH_INCLUDE_DIRS} )
      add_definitions( -DHAVE_SCOTCH )
@@ -176,8 +212,9 @@ if(ENABLE_PARTITION)
      endif(SCOTCH_VERSION MATCHES ^5)
   endif()
 
-  if ( NOT PARTITION_LIBRARIES )
-     MESSAGE( FATAL_ERROR "You need scotch, metis or parmetis to enable partitioning" )
+  if(NOT PARTITION_LIBRARIES)
+    MESSAGE(FATAL_ERROR
+      "You need scotch, metis or parmetis to enable partitioning" )
   endif()
 
 endif()
@@ -249,12 +286,17 @@ string(APPEND LD_PATH_MESSAGE
 
 foreach(_dir ${FLECSI_SCRIPT_DIRECTORIES})
   string(APPEND LD_PATH_MESSAGE
-    "   export LD_LIBRARY_PATH=\${LD_LIBRARY_PATH}:${_dir}\n")
+    "   % export LD_LIBRARY_PATH=\${LD_LIBRARY_PATH}:${_dir}\n")
 endforeach()
 
 string(APPEND LD_PATH_MESSAGE
-  "   export LD_LIBRARY_PATH=\${LD_LIBRARY_PATH}:${CMAKE_INSTALL_PREFIX}/lib")
+  "   % export LD_LIBRARY_PATH="
+  "\${LD_LIBRARY_PATH}:${CMAKE_INSTALL_PREFIX}/lib\n")
 
+string(APPEND LD_PATH_MESSAGE "\n   There are also shell configuration files "
+  "located in the bin directory to set this for you:\n"
+  "   % source bin/flecsi.sh (after install)\n"
+  "   % source bin/flecsi-local.sh (for local development)")
 message(STATUS "${LD_PATH_MESSAGE}\n")
 
 # Create strings for shell files
@@ -351,23 +393,29 @@ file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi
   FILE_PERMISSIONS
     OWNER_READ OWNER_WRITE OWNER_EXECUTE
     GROUP_READ GROUP_EXECUTE
-    WORLD_READ WORLD_EXECUTE
-)
+    WORLD_READ WORLD_EXECUTE)
 
 #------------------------------------------------------------------------------#
-# Check the compiler version and output warnings if it is lower than 5.3.1
+# Check the compiler version and output warnings if it is lower than 6.1.1
 #------------------------------------------------------------------------------#
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.3.1)
-    message(STATUS "your gcc compiler version is lower than 5.3.1, required for static meta container in FleCSi.  We recommend you to update your compiler. Otherwise static meta container will be turned off")
-   set (STATIC_CONTAINER OFF)
-  else()
-   set (STATIC_CONTAINER ON)
-  endif()
-else()
-    message(STATUS "static meta container has not been tested with your comiler so it will be disabled")
+
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 6.1.1)
+    message(STATUS "your gcc compiler version is lower than 6.1.1, "
+      "required for some of the techniques used in FleCSi.  We recommend "
+      "that you to update your compiler.")
     set (STATIC_CONTAINER OFF)
+  else()
+    set (STATIC_CONTAINER ON)
+  endif()
+
+else()
+
+    message(STATUS "static meta container has not been tested "
+      "with your comiler so it will be disabled")
+    set (STATIC_CONTAINER OFF)
+
 elseif(...)
 # etc.
 endif()
@@ -376,11 +424,11 @@ endif()
 # option for use of Static meta container
 #------------------------------------------------------------------------------#
 
-if (STATIC_CONTAINER)
+if(STATIC_CONTAINER)
 option(ENABLE_STATIC_CONTAINER "Enable static meta container" ON)
 else()
 option(ENABLE_STATIC_CONTAINER "Enable static meta container" OFF)
-endif (STATIC_CONTAINER)
+endif(STATIC_CONTAINER)
 
 set (MAX_CONTAINER_SIZE 6 CACHE INTEGER  "Set the depth of the container")
 add_definitions( -DMAX_COUNTER_SIZE=${MAX_CONTAINER_SIZE} )
