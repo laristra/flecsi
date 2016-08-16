@@ -105,6 +105,19 @@ std::string unique_name(const T * t) {
 } // namespace flecsi
 
 /*----------------------------------------------------------------------------*
+ * Function Traits
+ *----------------------------------------------------------------------------*/
+
+template<typename T>
+struct function_traits__ {};
+
+template<typename R, typename ... As>
+struct function_traits__<R(As ...)> {
+  using return_type = R;
+  using arg_type = std::tuple<As ...>;
+}; // struct function_traits__
+
+/*----------------------------------------------------------------------------*
  * Preprocessor String Utilities
  *----------------------------------------------------------------------------*/
 
