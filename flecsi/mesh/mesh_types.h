@@ -442,6 +442,7 @@ class connectivity_t
     for (size_t index : from_index_vec_) {
       stream << index << std::endl;
     } // for
+    return stream;
   } // dump
 
   void dump()
@@ -687,6 +688,7 @@ public:
         cj.dump( stream );
       }
     }
+    return stream;
   }
 
   void dump(){
