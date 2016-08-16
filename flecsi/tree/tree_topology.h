@@ -489,6 +489,14 @@ enum class action : uint8_t{
   coarsen = 0b10
 };
 
+
+template<class T>
+struct default_predicate__{
+  bool operator()(const T& v) const{
+    return true;
+  }
+};
+
 template<class P>
 class tree_topology : public P, public data_client_t{
 public:
@@ -524,17 +532,24 @@ public:
 
   using geometry_t = tree_geometry<element_t, dimension>;
 
-  template<class T>
+  struct filter_valid{
+    bool operator()(const entity_t* ent) const{
+      return ent->is_valid();
+    }
+  };  
+
+  template<class T, class F = default_predicate__<T*>>
   class iterator{
    public:
     using id_t = typename T::id_t;
     using id_vector_t = std::vector<id_t>;
 
     iterator(const iterator& itr)
-    : tree_(itr.tree_), items_(itr.items_), index_(itr.index_){}
+    : tree_(itr.tree_), items_(itr.items_), index_(itr.index_),
+    count_(items_->size()){}
 
     iterator(tree_topology& tree, const id_vector_t& items, size_t index)
-    : tree_(tree), items_(&items), index_(index){}
+    : tree_(tree), items_(&items), index_(index), count_(items_->size()){}
 
     iterator& operator++(){
       ++index_;
@@ -549,11 +564,25 @@ public:
     }
 
     T* operator*(){
-      return tree_.get((*items_)[index_]);
+      while(index_ < count_){
+        auto item = tree_.get((*items_)[index_]);
+        if(F()(item)){
+          return item;
+        }
+        ++index_;
+      }
+
+      return nullptr;
     }
 
     T* operator->(){
-      return tree_.get((*items_)[index_]);
+      while(index_ < count_){
+        auto item = tree_.get((*items_)[index_]);
+        if(F()(item)){
+          return item;
+        }
+        ++index_;
+      }
     }
 
     bool operator==(const iterator& itr) const{
@@ -568,9 +597,10 @@ public:
     tree_topology& tree_;
     const id_vector_t* items_;
     size_t index_;
+    size_t count_;
   };
 
-  template<class T>
+  template<class T, class F = default_predicate__<T*>>
   class iterable_set{
   public:
     using iterator_t = iterator<T>;
@@ -877,12 +907,25 @@ public:
     }
   }
 
+  ~tree_topology(){
+    for(auto ent : entities_){
+      delete ent;
+    }
+
+    root_->template dealloc_<branch_t>();
+    delete root_;
+  }
+
   branch_t* child(branch_t* b, size_t ci){
     return b->template child_<branch_t>(ci);
   }
 
-  const std::vector<entity_t*>& entities() const{
+  const std::vector<entity_t*>& all_entities() const{
     return entities_;
+  }
+
+  iterable_set<entity_t, filter_valid> entities() const{
+    return iterable_set<entity_t, filter_valid>(this, entity_ids_, true);
   }
 
   void insert(entity_t* ent){
@@ -1180,8 +1223,10 @@ public:
   template<class... Args>
   entity_t* make_entity(Args&&... args){
     auto ent = new entity_t(std::forward<Args>(args)...);
-    ent->set_id_(entities_.size());
+    entity_id_t id = entities_.size();
+    ent->set_id_(id);
     entities_.push_back(ent);
+    entity_ids_.push_back(id);
     return ent;
   }
 
@@ -1776,12 +1821,10 @@ private:
 
 
   branch_map_t branch_map_;
-  
   size_t max_depth_;
-
   branch_t* root_;
-
   std::vector<entity_t*> entities_;
+  entity_id_vector_t entity_ids_;
   std::array<point<element_t, dimension>, 2> range_;
   point<element_t, dimension> scale_;
   element_t max_scale_;
@@ -1803,6 +1846,10 @@ public:
 
   entity_id_t id() const{
     return id_;
+  }
+
+  bool is_valid() const{
+    return branch_id_ != branch_id_t::null();
   }
 
 private:
@@ -1863,6 +1910,10 @@ public:
     return !children_;
   }
 
+  bool is_valid() const{
+    return true;
+  }
+
 private:
   template<class P>
   friend class tree_topology;
@@ -1907,6 +1958,17 @@ private:
     if(children_){
       delete[] static_cast<B*>(children_);
       children_ = nullptr;      
+    }
+  }
+
+  template<class B>
+  void dealloc_(){
+    if(children_){
+      for(size_t i = 0; i < num_children; ++i){
+        static_cast<B*>(children_)[i].dealloc_<B>(); 
+      }
+
+      delete[] static_cast<B*>(children_);
     }
   }
 
