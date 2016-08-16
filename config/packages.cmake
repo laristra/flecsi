@@ -142,10 +142,10 @@ add_definitions(-DFLECSI_ID_GBITS=${FLECSI_ID_GBITS})
 math(EXPR flecsi_partitions "1 << ${FLECSI_ID_PBITS}")
 math(EXPR flecsi_entities "1 << ${FLECSI_ID_EBITS}")
 
-message(STATUS "Set id_t bits to allow:\n"
+message(STATUS "${CINCH_Cyan}Set id_t bits to allow:\n"
   "   ${flecsi_partitions} partitions with 2^${FLECSI_ID_EBITS} entities each\n"
   "   ${FLECSI_ID_FBITS} flag bits\n"
-  "   ${FLECSI_ID_GBITS} global bits")
+  "   ${FLECSI_ID_GBITS} global bits${CINCH_ColorReset}")
 
 #------------------------------------------------------------------------------#
 # Enable IO with exodus
@@ -275,7 +275,8 @@ list(APPEND FLECSI_SCRIPT_DIRECTORIES ${CMAKE_BINARY_DIR}/lib)
 list(REMOVE_DUPLICATES FLECSI_SCRIPT_DIRECTORIES)
 
 # Create hint message
-set(LD_PATH_MESSAGE "Linked Directories and library installation prefix:")
+set(LD_PATH_MESSAGE
+  "${CINCH_Cyan}Linked Directories and library installation prefix:")
 foreach(_dir ${FLECSI_SCRIPT_DIRECTORIES})
   string(APPEND LD_PATH_MESSAGE "\n   ${_dir}")
 endforeach()
@@ -297,7 +298,10 @@ string(APPEND LD_PATH_MESSAGE "\n   There are also shell configuration files "
   "located in the bin directory to set this for you:\n"
   "   % source bin/flecsi.sh (after install)\n"
   "   % source bin/flecsi-local.sh (for local development)")
-message(STATUS "${LD_PATH_MESSAGE}\n")
+
+string(APPEND LD_PATH_MESSAGE "${CINCH_ColorReset}")
+
+message(STATUS "${LD_PATH_MESSAGE}")
 
 # Create strings for shell files
 string(REPLACE ";" ":" FLECSI_LOCAL_LD_LIBRARY_PATH
