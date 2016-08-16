@@ -12,6 +12,7 @@ Notable exceptions include:
 * Function Names
 * Variable Names (in some cases)
 * Structs vs. Classes
+* Formatting
 
 The exceptions are covered in the following sections.
 
@@ -20,7 +21,7 @@ The exceptions are covered in the following sections.
 * No line in a file shall exceed 80 characters!
 
 * If you are editing a file, maintain the original formatting unless it
-violates our style guide.
+violates our style guide. If it does, fix it!
 
 * For the most part, all names are lowercase and follow the conventions
 of the C++ Standard Template Library.
@@ -106,7 +107,51 @@ do not have restricted access permissions. For structs that **do** have
 access permissions, we follow the Google C++ Style Guide convention for
 classes.
 
-## Function & Method Formatting
+## Formatting
+
+### Control Flow
+
+Control flow operations should not insert spaces:
+
+    for ( size_t i(0); i<N; ++i ) { // WRONG!
+    } // for
+
+    if ( condition ) {} // WRONG!
+    
+
+Correct way:
+
+    for(size_t i(0); i<N; ++i) {
+    } // for
+
+    if(condition) {
+    } // if
+
+### Braced Initialization
+
+Braced initialization *should* use spaces:
+
+   std::vector<size_t> vec = {1,2,3}; // WRONG!
+
+Correct way:
+
+   std::vector<size_t> vec = { 1, 2, 3 };
+
+### Function & Method Formatting
+
+Function and method invocations should not insert spaces:
+
+    my_function ( argument1, "argument 2" ); // WRONG!
+
+Correct way:
+
+    my_function(argument1, "argument 2");
+
+### More on spaces...
+
+Never put empty characters at the end of a line!
+
+### Function & Method Formatting (prototypes)
 
 Functions and methods should be formatted with each template parameter,
 the scope (static, inline), the return type, the name, and each
