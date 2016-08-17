@@ -23,19 +23,32 @@
 namespace flecsi {
 namespace execution {
 
+/*!
+  \brief
+
+  \tparam P ...
+  \tparam S ...
+  \tparam I ...
+  \tparam R ...
+  \tparam As ...
+ */
 template<
   processor_t P,
-  bool Single,
-  bool Index,
+  bool S,
+  bool I,
   typename R,
-  typename ... Args
+  typename ... As
 >
 struct legion_task_wrapper_
 {
   /*
     Type definition for user task.
    */
-  using user_task_t = std::function<R(Args ...)>;
+  using user_task_t = std::function<R(As ...)>;
+
+  using lr_runtime = LegionRuntime::HighLevel::HighLevelRuntime;
+  using lr_loc = LegionRuntime::HighLevel::Processor::LOC_PROC;
+  using lr_toc = LegionRuntime::HighLevel::Processor::TOC_PROC;
 
   /*
     This defines a predicate function to pass to tuple_filter that
@@ -56,18 +69,16 @@ struct legion_task_wrapper_
    */
   static void runtime_registration(size_t fid)
   {
-     switch (P){
-     case loc:
-      LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task<execute>(
-      fid, LegionRuntime::HighLevel::Processor::LOC_PROC, Single, Index);
-      break;
-     case toc:
-      LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task<execute>(
-      fid, LegionRuntime::HighLevel::Processor::TOC_PROC, Single, Index);
-      break;
-     case mpi:
-     break;
-     }
+    switch(P) {
+      case loc:
+        lr_runtime::register_legion_task<execute>(fid, lr_loc, S, I);
+        break;
+      case toc:
+        lr_runtime::register_legion_task<execute>(fid, lr_toc, S, I);
+        break;
+      case mpi:
+        break;
+    } // switch
   } // runtime_registration
 
   /*
@@ -83,7 +94,7 @@ struct legion_task_wrapper_
     context_t::instance().set_state(context, runtime, task, regions);
 
     // Define a tuple type for the task arguments
-    using task_args_t = std::tuple<user_task_t, Args ...>;
+    using task_args_t = std::tuple<user_task_t, As ...>;
 
     // Get the arguments that were passed to Legion on the task launch
     task_args_t & task_args = *(reinterpret_cast<task_args_t *>(task->args));

@@ -20,15 +20,17 @@ namespace execution {
 /*!
   \struct task_hash_t execution/common/task_hash.h
 
-  The task_hash_t type provides a complex hashing type that combines
+  The task_hash_t type provides a aggregate hashing type that combines
   the task address and an enumerated processor type \ref processor_t
-  into a single key.  There is currently space for 32 unique processor
-  types (5 bits).
+  into a single key.  There is currently space for 256 unique processor
+  types (8 bits).
 
   \note There is some potential for this hashing strategy to not
     be robust. In particular, we are implicitly making the assumption
-    that the 5 most significant bits are not the only part of the
-    task address that uniquely identifies it from other tasks.
+    that the 8 most significant bits are not the only part of the
+    task address that uniquely identifies it from other tasks. This
+    also assumes that function addresses are at least half-byte aligned.
+
  */
 struct task_hash_t
 {
@@ -59,7 +61,7 @@ struct task_hash_t
   const
   {
     // FIXME: We can use a better hash strategy
-    return (k.first << 5) ^ k.second;
+    return (k.first << 4) ^ k.second;
   } // operator ()
 
 }; // task_hash_t

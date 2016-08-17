@@ -71,6 +71,14 @@ struct legion_execution_policy_t
     } // switch
   } // register_task
 
+  /*!
+    \tparam T
+    \tparam As
+
+    \param key
+    \param user_task
+    \param args
+   */
   template<
     typename T,
     typename ... As
@@ -79,7 +87,8 @@ struct legion_execution_policy_t
   decltype(auto)
   execute_task(
     task_hash_key_t key,
-    T user_task, As ... args
+    T user_task,
+    As ... args
   )
   {
     using namespace Legion;
@@ -93,8 +102,13 @@ struct legion_execution_policy_t
     // task is invoked, i.e., we have to use copies...
     task_args_t task_args(user_task, args ...);
 
+    // FIXME: Need to handle different launcher types
+    // This will likely require exposing the launch type
+    // through the context interface...
     TaskLauncher task_launcher(context_.task_id(key),
       TaskArgument(&task_args, sizeof(task_args_t)));
+
+    // FIXME: Add region requirements and fields
 
     return context_.runtime()->execute_task(context_.context(), task_launcher);
   } // execute_task
