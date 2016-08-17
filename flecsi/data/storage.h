@@ -90,12 +90,12 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   register_data(
     data_client_t & data_client,
     const const_string_t & key,
-    size_t versions=1,
+    size_t versions,
     Args && ... args
   )
   {
     return st_t<DT>::template register_data<T, NS>(data_client,
-      sp_t::data_store_, key, versions, 
+      sp_t::data_store_, key, versions,
       std::forward<Args>(args) ...);
   } // register_data
 
