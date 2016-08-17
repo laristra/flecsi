@@ -33,6 +33,10 @@ cinch_add_unit(partition
           test/scotch.blessed
   LIBRARIES     ${PARTITION_LIBRARIES} flecsi
 )
+
+cinch_add_unit(index_partition
+  SOURCES test/index_partition.cc
+  LIBRARIES flecsi)
 endif()
 
 #----------------------------------------------------------------------------~-#
