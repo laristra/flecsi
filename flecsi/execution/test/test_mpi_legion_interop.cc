@@ -103,9 +103,10 @@ void my_init_legion(){
  //  HighLevelRuntime::set_registration_callback(mapper_registration);
      InteropHelper.initialize();
 
-  const InputArgs &args = HighLevelRuntime::get_input_args();
+  char arguments[] = "1";
+  char * argv = &arguments[0];
 
-  HighLevelRuntime::start(args.argc, args.argv, true);
+  HighLevelRuntime::start(1, &argv, true);
 
   std::cout<<"before legion_configure" <<std::endl;
   InteropHelper.legion_configure();

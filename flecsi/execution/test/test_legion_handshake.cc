@@ -166,11 +166,12 @@ void my_init_legion(){
                           AUTO_GENERATE_ID, TaskConfigOptions(true/*leaf*/), "handoff_to_mpi_task");
 
 
-  const InputArgs &args = HighLevelRuntime::get_input_args();
-
   HighLevelRuntime::set_registration_callback(mapper_registration);
 
-  HighLevelRuntime::start(args.argc, args.argv, true);
+  char arguments[] = "1";
+  char * argv = &arguments[0];
+
+  HighLevelRuntime::start(1, &argv, true);
 
   complete_legion_configure();
 
