@@ -21,10 +21,9 @@
 #include <mutex>
 #include <condition_variable>
 
-#include "mpi.h"
-
-#include "legion.h"
-#include "realm.h"
+#include <mpi.h>
+#include <legion.h>
+#include <realm.h>
 
 #include "flecsi/execution/mpilegion/legion_handshake.h"
 #include "flecsi/execution/mpilegion/mapper.h"
