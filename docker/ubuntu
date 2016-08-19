@@ -53,7 +53,7 @@ RUN CC=gcc-6 CXX=g++-6 cmake -DENABLE_MPI=$MPI \
 	  -DENABLE_DOXYGEN=ON \
           ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} ..
 
-RUN make -j2
+RUN make VERBOSE=1 -j2
 RUN make test
 RUN make install DESTDIR=${PWD}
 RUN make doxygen
