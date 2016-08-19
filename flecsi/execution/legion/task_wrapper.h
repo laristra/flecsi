@@ -47,8 +47,7 @@ struct legion_task_wrapper_
   using user_task_t = std::function<R(As ...)>;
 
   using lr_runtime = LegionRuntime::HighLevel::HighLevelRuntime;
-  using lr_loc = LegionRuntime::HighLevel::Processor::LOC_PROC;
-  using lr_toc = LegionRuntime::HighLevel::Processor::TOC_PROC;
+  using lr_proc = LegionRuntime::HighLevel::Processor;
 
   /*
     This defines a predicate function to pass to tuple_filter that
@@ -71,10 +70,10 @@ struct legion_task_wrapper_
   {
     switch(P) {
       case loc:
-        lr_runtime::register_legion_task<execute>(fid, lr_loc, S, I);
+        lr_runtime::register_legion_task<execute>(fid, lr_proc::LOC_PROC, S, I);
         break;
       case toc:
-        lr_runtime::register_legion_task<execute>(fid, lr_toc, S, I);
+        lr_runtime::register_legion_task<execute>(fid, lr_proc::TOC_PROC, S, I);
         break;
       case mpi:
         break;
