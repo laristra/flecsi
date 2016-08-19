@@ -21,6 +21,15 @@
 
 #include "flecsi/execution/mpilegion/task_ids.h"
 
+/*!
+* \file mpilegion/mapper.h
+* \authors demeshko
+* \date Initial file creation: Jul 2016
+*
+* An implementation of Legion mapper that is nesessary for managing 
+* ownership switching between MPI and Legion runtimes
+*/
+
 enum {
   MPI_MAPPER_ID = 1,
 };

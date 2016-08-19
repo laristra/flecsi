@@ -10,7 +10,6 @@
  */
 
 #include "flecsi/execution/mpilegion/runtime_driver.h"
-
 #include "flecsi/utils/common.h"
 #include "flecsi/execution/context.h"
 
@@ -34,12 +33,15 @@ void mpilegion_runtime_driver(const LegionRuntime::HighLevel::Task * task,
 
     const LegionRuntime::HighLevel::InputArgs & args =
       LegionRuntime::HighLevel::HighLevelRuntime::get_input_args();
- 
+
+    //connect legion with MPI
     context_.interop_helper_.connect_with_mpi(
          context_.context(), context_.runtime());
+    //run default or user-defined driver 
     driver(args.argc, args.argv); 
 
-    context_.interop_helper_.call_mpi=false;
+    //finish up legion runtime and handoff to mpi
+    context_.interop_helper_.call_mpi_=false;
     context_.interop_helper_.handoff_to_mpi(
            context_.context(), context_.runtime());
 	} // mpilegion_runtime_driver

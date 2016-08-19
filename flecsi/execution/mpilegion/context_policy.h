@@ -47,7 +47,7 @@ struct mpilegion_context_policy_t
   const size_t TOP_LEVEL_TASK_ID = 0;
 
   ext_legion_handshake_t &handshake_=ext_legion_handshake_t::instance();
-  MPILegionInterop interop_helper_;
+  mpi_legion_interop_t interop_helper_;
 
   /*--------------------------------------------------------------------------*
    * Initialization.
@@ -86,9 +86,9 @@ struct mpilegion_context_policy_t
 
     //while loop to do some mpi tasks
 
-     while(interop_helper_.call_mpi)
+     while(interop_helper_.call_mpi_)
      {
-       interop_helper_.shared_func();
+       interop_helper_.shared_func_();
        interop_helper_.handoff_to_legion();
        interop_helper_.wait_on_legion();
       }

@@ -43,7 +43,7 @@ using namespace LegionRuntime::HighLevel;
 using namespace LegionRuntime::Accessor;
 using namespace LegionRuntime::Arrays;
 
-static MPILegionInterop InteropHelper;
+static mpi_legion_interop_t InteropHelper;
 ext_legion_handshake_t &handshake=ext_legion_handshake_t::instance(); 
 
 /* ------------------------------------------------------------------------- */
@@ -51,8 +51,6 @@ ext_legion_handshake_t &handshake=ext_legion_handshake_t::instance();
                     const std::vector<PhysicalRegion> &regions,
                     Context ctx, Runtime *runtime)
  {
-//  MPILegionInterop *InteropHelper =  MPILegionInterop::instance();
-
   InteropHelper.connect_with_mpi(ctx, runtime);
 
   std::cout<<"inside TLT:after connect_with_mpi"<<std::endl;
@@ -61,7 +59,7 @@ ext_legion_handshake_t &handshake=ext_legion_handshake_t::instance();
   IndexLauncher helloworld_launcher(
        HELLOWORLD_TASK_ID,
        Domain::from_rect<1>(
-              InteropHelper.local_procs),
+              InteropHelper.local_procs_),
        TaskArgument(0, 0),
        arg_map);
   //TOFIX:: add checkfor compy data functions

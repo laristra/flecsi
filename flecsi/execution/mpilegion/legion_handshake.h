@@ -24,6 +24,12 @@
 #include <legion.h>
 #include <realm.h>
 
+/*!
+* \file mpilegion/legion_handshake.h
+* \authors demeshko
+* \date Initial file creation: Jul 2016
+*/
+
 /*! the main idea of the handshake is change from MPI to Legion and vice
     versa  through locking/unlocking threads's mutex
     the order should be like next
