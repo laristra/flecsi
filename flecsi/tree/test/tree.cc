@@ -29,6 +29,10 @@ public:
       return coordinates_;
     }
 
+    void move(const point_t& offset){
+      coordinates_ += offset;
+    }
+
     private:
       point_t coordinates_;
   };
@@ -405,4 +409,23 @@ TEST(tree_topology, neighbors_box) {
       ASSERT_TRUE(s1 == s2);
     }    
   }
+}
+
+TEST(tree_topology, iterator_update_all) {
+  tree_topology_t t;
+
+  size_t n = 10000;
+
+  for(size_t i = 0; i < n; ++i){
+    point_t p = {uniform(0, 1), uniform(0, 1)};
+    auto e = t.make_entity(p);
+    t.insert(e);
+  }
+
+  for(auto ent : t.entities()){
+    point_t dp = {uniform(-0.01, 0.01), uniform(-0.01, 0.01)};
+    ent->move(dp);
+  }
+
+  t.update_all();
 }

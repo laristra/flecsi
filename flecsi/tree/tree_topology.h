@@ -924,8 +924,8 @@ public:
     return entities_;
   }
 
-  iterable_set<entity_t, filter_valid> entities() const{
-    return iterable_set<entity_t, filter_valid>(this, entity_ids_, true);
+  iterable_set<entity_t, filter_valid> entities(){
+    return iterable_set<entity_t, filter_valid>(*this, entity_ids_, true);
   }
 
   void insert(entity_t* ent){
@@ -942,6 +942,39 @@ public:
 
     remove(ent);
     insert(ent, max_depth_);
+  }
+
+  void update_all(){
+    root_->template dealloc_<branch_t>();
+    max_depth_ = 0;
+    branch_map_.clear();
+    branch_map_.emplace(root_->id(), root_);
+
+    for(auto ent : entities_){
+      ent->set_branch_id_(branch_id_t::null());
+      insert(ent);
+    }
+  }
+
+  void update_all(const point<element_t, dimension>& start,
+                  const point<element_t, dimension>& end){
+    
+    for(size_t d = 0; d < dimension; ++d){
+      scale_[d] = end[d] - start[d];
+      max_scale_ = std::max(max_scale_, scale_[d]);
+      range_[0][d] = start[d];
+      range_[1][d] = end[d];
+    }
+    
+    root_->template dealloc_<branch_t>();
+    max_depth_ = 0;
+    branch_map_.clear();
+    branch_map_.emplace(root_->id(), root_);
+
+    for(auto ent : entities_){
+      ent->set_branch_id_(branch_id_t::null());
+      insert(ent);
+    }
   }
 
   void remove(entity_t* ent){
@@ -1969,6 +2002,7 @@ private:
       }
 
       delete[] static_cast<B*>(children_);
+      children_ = nullptr;
     }
   }
 
