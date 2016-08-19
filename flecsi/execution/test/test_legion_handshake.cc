@@ -31,7 +31,7 @@ enum TaskIDs{
  HELLOWORLD_TASK_ID        =0x00000200,
 };
 
-static ExtLegionHandshake &handshake=ExtLegionHandshake::instance();
+static ext_legion_handshake_t &handshake=ext_legion_handshake_t::instance();
 
 using namespace LegionRuntime::HighLevel;
 using namespace LegionRuntime::Accessor;
@@ -146,7 +146,7 @@ void run_legion_task(void)
 
 void my_init_legion(){
 
-  handshake.initialize(ExtLegionHandshake::IN_EXT, 1, 1);
+  handshake.initialize(ext_legion_handshake_t::IN_EXT, 1, 1);
 
   HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
 

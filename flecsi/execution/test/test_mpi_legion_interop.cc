@@ -44,7 +44,7 @@ using namespace LegionRuntime::Accessor;
 using namespace LegionRuntime::Arrays;
 
 static MPILegionInterop InteropHelper;
-ExtLegionHandshake &handshake=ExtLegionHandshake::instance(); 
+ext_legion_handshake_t &handshake=ext_legion_handshake_t::instance(); 
 
 /* ------------------------------------------------------------------------- */
  void top_level_task(const Task *task,
@@ -98,7 +98,7 @@ void my_init_legion(){
         TaskConfigOptions(true/*leaf*/),
         "hellowrld_task");
 
-   handshake.initialize(ExtLegionHandshake::IN_EXT,1,1);
+   handshake.initialize(ext_legion_handshake_t::IN_EXT,1,1);
  //  InteropHelper->register_tasks();
  //  HighLevelRuntime::set_registration_callback(mapper_registration);
      InteropHelper.initialize();

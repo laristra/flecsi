@@ -60,7 +60,7 @@ class MPILegionInterop {
               LegionRuntime::HighLevel::HighLevelRuntime *runtime);
  
   void legion_configure(){ 
-     ExtLegionHandshake::instance().ext_init();
+     ext_legion_handshake_t::instance().ext_init();
      }
 
   static void connect_to_mpi_task (
@@ -70,15 +70,15 @@ class MPILegionInterop {
       LegionRuntime::HighLevel::HighLevelRuntime *runtime)
       {
          std::cout <<"inside connect_to_mpi"<<std::endl;
-         ExtLegionHandshake::instance().legion_init();
+         ext_legion_handshake_t::instance().legion_init();
       }
 
   void handoff_to_legion(void){
-    ExtLegionHandshake::instance().ext_handoff_to_legion();
+    ext_legion_handshake_t::instance().ext_handoff_to_legion();
   }
 
   void wait_on_legion(void){
-    ExtLegionHandshake::instance().ext_wait_on_legion();
+    ext_legion_handshake_t::instance().ext_wait_on_legion();
   }
 
   static void  handoff_to_mpi_task (
@@ -148,7 +148,7 @@ inline void MPILegionInterop::handoff_to_mpi_task (
      LegionRuntime::HighLevel::Context ctx, 
      LegionRuntime::HighLevel::HighLevelRuntime *runtime)
      {
-       ExtLegionHandshake::instance().legion_handoff_to_ext();
+       ext_legion_handshake_t::instance().legion_handoff_to_ext();
       }
 
 inline void MPILegionInterop::wait_on_mpi_task(
@@ -157,7 +157,7 @@ inline void MPILegionInterop::wait_on_mpi_task(
     LegionRuntime::HighLevel::Context ctx, 
     LegionRuntime::HighLevel::HighLevelRuntime *runtime)
     {
-     ExtLegionHandshake::instance().legion_wait_on_ext();
+     ext_legion_handshake_t::instance().legion_wait_on_ext();
     }
 
  //static:

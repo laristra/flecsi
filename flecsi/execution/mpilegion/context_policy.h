@@ -46,8 +46,8 @@ struct mpilegion_context_policy_t
 
   const size_t TOP_LEVEL_TASK_ID = 0;
 
-  ExtLegionHandshake &handshake=ExtLegionHandshake::instance();
-  MPILegionInterop InteropHelper;
+  ext_legion_handshake_t &handshake_=ext_legion_handshake_t::instance();
+  MPILegionInterop interop_helper_;
 
   /*--------------------------------------------------------------------------*
    * Initialization.
@@ -59,7 +59,7 @@ struct mpilegion_context_policy_t
     char ** argv
   )
   {
-    handshake.initialize(ExtLegionHandshake::IN_EXT, 1,1);
+    handshake_.initialize(ext_legion_handshake_t::IN_EXT, 1,1);
 
     // Register top-level task
     lr_runtime_t::set_top_level_task_id(TOP_LEVEL_TASK_ID);
@@ -74,23 +74,23 @@ struct mpilegion_context_policy_t
       f.second.second(f.second.first);
     } // for
   
-    InteropHelper.initialize();  
+    interop_helper_.initialize();  
   // Start the runtime
     lr_runtime_t::start(argc, argv,true);
 
-    InteropHelper.legion_configure();
+    interop_helper_.legion_configure();
 
-    InteropHelper.handoff_to_legion();
+    interop_helper_.handoff_to_legion();
 
-    InteropHelper.wait_on_legion();
+    interop_helper_.wait_on_legion();
 
     //while loop to do some mpi tasks
 
-     while(InteropHelper.call_mpi)
+     while(interop_helper_.call_mpi)
      {
-       InteropHelper.shared_func();
-       InteropHelper.handoff_to_legion();
-       InteropHelper.wait_on_legion();
+       interop_helper_.shared_func();
+       interop_helper_.handoff_to_legion();
+       interop_helper_.wait_on_legion();
       }
  
     return 0;

@@ -21,25 +21,25 @@
 #include <condition_variable>
 
 #include <mpi.h>
-
 #include <legion.h>
 #include <realm.h>
 
-// the main idea of the handshake is change from MPI to Legion and vice
-// versa  through locking/unlocking threads's mutex
-// the order should be like next
-// 
-// handshake->legion_init();
-// .. call legion tasks
-// handshake->ext_wait_on_legion();
-// handshake->ext_init();
-// handshake->legion_handoff_to_ext();
-// .. do some MPI staff
-// handshake.legion_wait_on_ext();
-// handshake->ext_handoff_to_legion();
-// .. do some legion execution
-// handshake->ext_wait_on_legion();
-// handshake->legion_handoff_to_ext();
+/*! the main idea of the handshake is change from MPI to Legion and vice
+    versa  through locking/unlocking threads's mutex
+    the order should be like next
+ 
+   handshake->legion_init();
+   .. call legion tasks 
+   handshake->ext_wait_on_legion();
+   handshake->ext_init();
+   handshake->legion_handoff_to_ext();
+   .. do some MPI staff
+   handshake.legion_wait_on_ext();
+   handshake->ext_handoff_to_legion();
+   .. do some legion execution
+   handshake->ext_wait_on_legion();
+   handshake->legion_handoff_to_ext();
+*/
 
 #define CHECK_PTHREAD(cmd) do { \
   int ret = (cmd); \
@@ -52,25 +52,23 @@
 namespace flecsi{
 namespace execution{
 
-class ExtLegionHandshake {
-private:
+class ext_legion_handshake_t {
+ 
+  private:
 
-  ExtLegionHandshake(void) { }
-  ~ExtLegionHandshake(void){delete ext_queue; delete legion_queue;};
-  ExtLegionHandshake(ExtLegionHandshake const&);     
-  ExtLegionHandshake& operator=(ExtLegionHandshake const&);
+  ext_legion_handshake_t(void) { }
+  ~ext_legion_handshake_t(void){delete ext_queue; delete legion_queue;};
+  ext_legion_handshake_t(ext_legion_handshake_t const&);     
+  ext_legion_handshake_t& operator=(ext_legion_handshake_t const&);
 
   public:
+
   enum { IN_EXT, IN_LEGION };
 
   typedef Realm::UserEvent UserEvent;
 
- // ExtLegionHandshake(int init_state,
- //      int _ext_queue_depth = 1,
- //      int _legion_queue_depth = 1);
-
-  static ExtLegionHandshake & instance() {
-    static ExtLegionHandshake hs;
+  static ext_legion_handshake_t & instance() {
+    static ext_legion_handshake_t hs;
     return hs;
   }
 
@@ -91,17 +89,34 @@ private:
   void legion_handoff_to_ext(void);
   
   void legion_wait_on_ext(void);
-protected:
+
+  protected:
+
   int state, ext_queue_depth, legion_queue_depth, ext_count, legion_count;
   UserEvent *ext_queue, *legion_queue;
   pthread_mutex_t sync_mutex;
   pthread_cond_t sync_cond;
-};
+};//ext_legion_handshake_t
 
-inline void ExtLegionHandshake::initialize(
+
+/*--------------------------------------------------------------------------*/
+/*!  this method initializes all ext_legion_handshake_t with input and default 
+ *   values
+ *   state - is where ext_legion_handshake_t object is originally created:
+ *      IN_EXT - in MPI
+ *      IN_LEGION - in Legion
+ *   ext_queue_depth/ legion_queue_depth - depth of the MPI and legion queue
+ *   ext_count = # of times handshake was in MPI
+ *   legion_count = # of times handshake was in Legion
+ */
+
+inline 
+void 
+ext_legion_handshake_t::initialize(
   int init_state, 
   int _ext_queue_depth,
-  int _legion_queue_depth)
+  int _legion_queue_depth
+)
 {
   state=init_state;
   ext_queue_depth=_ext_queue_depth;
@@ -115,9 +130,18 @@ inline void ExtLegionHandshake::initialize(
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   printf("handshake %p created on rank %d\n", this, rank);
 #endif
-}
+}//initialize
 
-inline void ExtLegionHandshake::ext_init(void)
+/*--------------------------------------------------------------------------*/
+/*! This method creates pthreads mutex on the MPI side and, in case handshake 
+ *  is originally created in MPI, waits on when handshake (user events used for
+ *  synchronization) is created on
+ *  the Legion side
+ */
+
+inline 
+void 
+ext_legion_handshake_t::ext_init(void)
 {
  CHECK_PTHREAD( pthread_mutex_lock(&sync_mutex) );
 
@@ -137,12 +161,20 @@ inline void ExtLegionHandshake::ext_init(void)
       printf("signalling\n");
       CHECK_PTHREAD( pthread_cond_broadcast(&sync_cond) );
     }
-  }
+  }//if
 
   CHECK_PTHREAD( pthread_mutex_unlock(&sync_mutex) ); 
-}
+}//ext_init
 
-inline void ExtLegionHandshake::legion_init(void)
+/*--------------------------------------------------------------------------*/
+/*! This method creates Legion events/queues for both MPI and Legion runtimes
+ *  for the later synchronization.
+ *  Then it swithces to MPI
+ */
+
+inline 
+void 
+ext_legion_handshake_t::legion_init(void)
 {
  CHECK_PTHREAD( pthread_mutex_lock(&sync_mutex) );
 
@@ -160,7 +192,7 @@ inline void ExtLegionHandshake::legion_init(void)
       legion_queue[i] = ((i || (state == IN_LEGION)) ?
                            UserEvent::create_user_event() :
                            UserEvent());
-  }
+  }//end if
 
   printf("handshake %p: legion init - counts = L=%d, E=%d\n",
    this, legion_count, ext_count);
@@ -177,12 +209,18 @@ inline void ExtLegionHandshake::legion_init(void)
       printf("signalling\n");
       CHECK_PTHREAD( pthread_cond_broadcast(&sync_cond) );
     }
-  }
+  }//end if (ext_count == 0)
 
   CHECK_PTHREAD( pthread_mutex_unlock(&sync_mutex) );
-}
+}//legion_init
 
-inline void ExtLegionHandshake::ext_handoff_to_legion(void)
+/*--------------------------------------------------------------------------*/
+/*! This method switches form MPI to Legion runtime
+ */
+
+inline 
+void 
+ext_legion_handshake_t::ext_handoff_to_legion(void)
 {
   assert(state == IN_EXT);
 
@@ -196,15 +234,27 @@ inline void ExtLegionHandshake::ext_handoff_to_legion(void)
 
   state = IN_LEGION;
   ext_queue[0].trigger();
-}
+} //ext_handoff_to_legion
 
-inline void ExtLegionHandshake::ext_wait_on_legion(void)
+/*--------------------------------------------------------------------------*/
+/*! waiting on all Legion tasks to complete and all legion threads 
+ * switch mutex to EXT
+ */
+inline 
+void 
+ext_legion_handshake_t::ext_wait_on_legion(void)
 {
   legion_queue[0].external_wait();
   assert(state == IN_EXT);
-}
+}//ext_wait_on_legion
 
-inline void ExtLegionHandshake::legion_handoff_to_ext(void)
+/*--------------------------------------------------------------------------*/
+/*!This method switches form Legion to MPI runtime
+ */
+
+inline
+void 
+ext_legion_handshake_t::legion_handoff_to_ext(void)
 {
   assert(state == IN_LEGION);
 
@@ -218,13 +268,19 @@ inline void ExtLegionHandshake::legion_handoff_to_ext(void)
 
   state = IN_EXT;
   legion_queue[0].trigger();
-}
+}//legion_handoff_to_ext
 
-inline void ExtLegionHandshake::legion_wait_on_ext(void)
+/*--------------------------------------------------------------------------*/
+/*! waiting on all mutex to be switch to Legion
+ */
+
+inline 
+void 
+ext_legion_handshake_t::legion_wait_on_ext(void)
 {
   ext_queue[0].wait();
   assert(state == IN_LEGION);
-}
+}//legion_wait_on_ext
 
 }//end namespace execution
 }//end namespace flecsi
