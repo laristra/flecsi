@@ -43,16 +43,14 @@ using namespace LegionRuntime::HighLevel;
 using namespace LegionRuntime::Accessor;
 using namespace LegionRuntime::Arrays;
 
-static MPILegionInterop InteropHelper;
-ExtLegionHandshake &handshake=ExtLegionHandshake::instance(); 
+static mpi_legion_interop_t InteropHelper;
+ext_legion_handshake_t &handshake=ext_legion_handshake_t::instance(); 
 
 /* ------------------------------------------------------------------------- */
  void top_level_task(const Task *task,
                     const std::vector<PhysicalRegion> &regions,
                     Context ctx, Runtime *runtime)
  {
-//  MPILegionInterop *InteropHelper =  MPILegionInterop::instance();
-
   InteropHelper.connect_with_mpi(ctx, runtime);
 
   std::cout<<"inside TLT:after connect_with_mpi"<<std::endl;
@@ -61,7 +59,7 @@ ExtLegionHandshake &handshake=ExtLegionHandshake::instance();
   IndexLauncher helloworld_launcher(
        HELLOWORLD_TASK_ID,
        Domain::from_rect<1>(
-              InteropHelper.local_procs),
+              InteropHelper.local_procs_),
        TaskArgument(0, 0),
        arg_map);
   //TOFIX:: add checkfor compy data functions
@@ -98,14 +96,15 @@ void my_init_legion(){
         TaskConfigOptions(true/*leaf*/),
         "hellowrld_task");
 
-   handshake.initialize(ExtLegionHandshake::IN_EXT,1,1);
+   handshake.initialize(ext_legion_handshake_t::IN_EXT,1,1);
  //  InteropHelper->register_tasks();
  //  HighLevelRuntime::set_registration_callback(mapper_registration);
      InteropHelper.initialize();
 
-  const InputArgs &args = HighLevelRuntime::get_input_args();
+  char arguments[] = "1";
+  char * argv = &arguments[0];
 
-  HighLevelRuntime::start(args.argc, args.argv, true);
+  HighLevelRuntime::start(1, &argv, true);
 
   std::cout<<"before legion_configure" <<std::endl;
   InteropHelper.legion_configure();
