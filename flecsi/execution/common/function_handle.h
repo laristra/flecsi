@@ -10,19 +10,19 @@
 
 #include "flecsi/utils/tuple_function.h"
 
-/*!
- * \file function_handle.h
- * \authors bergen
- * \date Initial file creation: Aug 04, 2016
- */
+///
+// \file function_handle.h
+// \authors bergen
+// \date Initial file creation: Aug 04, 2016
+///
 
 namespace flecsi {
 namespace execution {
 
-/*!
-  \class function_handle__ function_handle.h
-  \brief function_handle__ provides...
- */
+///
+// \class function_handle__ function_handle.h
+// \brief function_handle__ provides...
+///
 template<typename R, typename ... As>
 struct function_handle__
 {
@@ -31,7 +31,14 @@ struct function_handle__
   constexpr function_handle__(const size_t key_)
     : key(key_) {}
 
-  R operator () (std::function<void(void)> * user_function, argument_t & args)
+  ///
+  //
+  ///
+  R
+  operator () (
+    std::function<void(void)> * user_function,
+    argument_t & args
+  )
   {
     std::function<R(As ...)> & kr =
       *(reinterpret_cast<std::function<R(As ...)> *>(user_function));
@@ -39,6 +46,7 @@ struct function_handle__
   } // operator ()
 
   size_t key;
+
 }; // class function_handle__
 
 } // namespace execution

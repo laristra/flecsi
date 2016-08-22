@@ -3,11 +3,11 @@
  * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
 
-/*!
- * \file serial/runtime_driver.cc
- * \authors bergen
- * \date Initial file creation: Aug 01, 2016
- */
+///
+// \file serial/runtime_driver.cc
+// \authors bergen
+// \date Initial file creation: Aug 01, 2016
+///
 
 #include "flecsi/execution/serial/runtime_driver.h"
 #include "flecsi/utils/common.h"

@@ -8,11 +8,11 @@
 
 #include "flecsi/utils/const_string.h"
 
-/*!
- * \file function.h
- * \authors bergen
- * \date Initial file creation: Aug 01, 2016
- */
+///
+// \file function.h
+// \authors bergen
+// \date Initial file creation: Aug 01, 2016
+///
 
 namespace flecsi {
 namespace execution {
@@ -23,8 +23,9 @@ struct function__
 
   // FIXME: Finish Doxygen
 
-  /*!
-   */
+  ///
+  //
+  ///
   template<
     typename R,
     typename ... As
@@ -40,8 +41,9 @@ struct function__
       user_function);
   } // register_function
 
-  /*!
-   */
+  ///
+  //
+  ///
   template<
     typename T,
     typename ... As
@@ -62,9 +64,9 @@ struct function__
 } // namespace execution
 } // namespace flecsi
 
-/*
-  This include file defines the flecsi_execution_policy_t used below.
- */
+//
+// This include file defines the flecsi_execution_policy_t used below.
+//
 #include "flecsi_runtime_execution_policy.h"
 
 namespace flecsi {

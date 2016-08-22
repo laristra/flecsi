@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_legion_task_wrapper_h
-#define flecsi_legion_task_wrapper_h
+#ifndef flecsi_execution_legion_task_wrapper_h
+#define flecsi_execution_legion_task_wrapper_h
 
 #include "flecsi/execution/context.h"
 #include "flecsi/utils/common.h"
@@ -14,24 +14,24 @@
 
 #include "flecsi/data/data_handle.h"
 
-/*!
- * \file legion/task_wrapper.h
- * \authors bergen
- * \date Initial file creation: Jul 24, 2016
- */
+///
+// \file legion/task_wrapper.h
+// \authors bergen
+// \date Initial file creation: Jul 24, 2016
+///
 
 namespace flecsi {
 namespace execution {
 
-/*!
-  \brief
-
-  \tparam P ...
-  \tparam S ...
-  \tparam I ...
-  \tparam R ...
-  \tparam As ...
- */
+///
+// \brief
+//
+// \tparam P ...
+// \tparam S ...
+// \tparam I ...
+// \tparam R ...
+// \tparam As ...
+///
 template<
   processor_t P,
   bool S,
@@ -41,18 +41,18 @@ template<
 >
 struct legion_task_wrapper_
 {
-  /*
-    Type definition for user task.
-   */
+  //
+  // Type definition for user task.
+  //
   using user_task_t = std::function<R(As ...)>;
 
   using lr_runtime = LegionRuntime::HighLevel::HighLevelRuntime;
   using lr_proc = LegionRuntime::HighLevel::Processor;
 
-  /*
-    This defines a predicate function to pass to tuple_filter that
-    will select all tuple elements after the first index, i.e., 0.
-   */
+  //
+  // This defines a predicate function to pass to tuple_filter that
+  // will select all tuple elements after the first index, i.e., 0.
+  //
   template<typename T>
   using greater_than = std::conditional_t<(T()>0), std::true_type,
     std::false_type>;
@@ -61,11 +61,11 @@ struct legion_task_wrapper_
   using is_data_handle = std::is_base_of<data_handle_t,T>;
 
 
-  /*
-    This function is called by the context singleton to do the actual
-    registration of the task wrapper with the Legion runtime. The structure
-    of the logic used is really just an object factory pattern.
-   */
+  ///
+  // This function is called by the context singleton to do the actual
+  // registration of the task wrapper with the Legion runtime. The structure
+  // of the logic used is really just an object factory pattern.
+  ///
   static void runtime_registration(size_t fid)
   {
     switch(P) {
@@ -80,10 +80,10 @@ struct legion_task_wrapper_
     } // switch
   } // runtime_registration
 
-  /*
-    This method executes the user's task after processing the arguments
-    from the Legion runtime.
-   */
+  ///
+  // This method executes the user's task after processing the arguments
+  // from the Legion runtime.
+  ///
   static R execute(const LegionRuntime::HighLevel::Task * task,
     const std::vector<LegionRuntime::HighLevel::PhysicalRegion>& regions,
     LegionRuntime::HighLevel::Context context,
@@ -126,7 +126,7 @@ struct legion_task_wrapper_
 } //namespace execution 
 } // namespace flecsi
 
-#endif // flecsi_legion_task_wrapper_h
+#endif // flecsi_execution_legion_task_wrapper_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.
