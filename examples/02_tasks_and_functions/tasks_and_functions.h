@@ -149,17 +149,17 @@ struct material_t {
 struct copper_t : material_t {
   copper_t(double r_, double e_)
     : material_t(function_handle(eos_gruneisen), r_, e_) {}
-};
+}; // struct copper_t
 
 struct steel_t : material_t {
   steel_t(double r_, double e_)
     : material_t(function_handle(eos_gamma), r_, e_) {}
-};
+}; // struct steel_t
 
 struct silver_t : material_t {
   silver_t(double r_, double e_)
     : material_t(function_handle(eos_other), r_, e_) {}
-};
+}; // silver_t
 
 /*----------------------------------------------------------------------------*
  * Driver.
@@ -170,30 +170,30 @@ void driver(int argc, char ** argv) {
   mesh_t m;
 
   // FIXME: need this to come from get_handle
-  auto p = register_data(m, "pressure", 1, double, dense, cells);
+  auto p = register_data(m, hydro, pressure, 1, double, dense, cells);
   double alpha(10.0);
 
   execute_task(task1, loc, alpha, 5);
   execute_task(task2, loc,  alpha, 5.0, p);
 
-  register_data(m, "materials", 1, material_t, dense, cells);
+  register_data(m, hydro, materials, 1, material_t, dense, cells);
 
-  auto mats1 = get_accessor(m, "materials", 0, material_t, dense);
+  auto mats = get_accessor(m, hydro, materials, 0, material_t, dense);
 
   for(size_t i(0); i<4; ++i) {
-    mats1[i] = copper_t(2.0, 2.0);
+    mats[i] = copper_t(2.0, 2.0);
   } // for
 
   for(size_t i(4); i<8; ++i) {
-    mats1[i] = steel_t(2.0, 2.0);
+    mats[i] = steel_t(2.0, 2.0);
   } // for
 
   for(size_t i(8); i<10; ++i) {
-    mats1[i] = silver_t(2.0, 2.0);
+    mats[i] = silver_t(2.0, 2.0);
   } // for
 
   for(size_t i(0); i<10; ++i) {
-    std::cout << mats1[i].eos() << std::endl;
+    std::cout << mats[i].eos() << std::endl;
   } // for
 
 } // driver

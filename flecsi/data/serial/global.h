@@ -19,33 +19,33 @@
 #include "flecsi/data/serial/storage_type.h"
 #include "flecsi/data/data_client.h"
 
-/*!
- * \file serial/global.h
- * \authors bergen
- * \date Initial file creation: Apr 17, 2016
- */
+///
+// \file serial/global.h
+// \authors bergen
+// \date Initial file creation: Apr 17, 2016
+///
 
 namespace flecsi {
 namespace data {
 namespace serial_storage_policy {
 
-/*----------------------------------------------------------------------------*
- * Scalar accessor.
- *----------------------------------------------------------------------------*/
+//----------------------------------------------------------------------------//
+// Scalar accessor.
+//----------------------------------------------------------------------------//
 
 template<typename T, typename MD>
 struct global_accessor_t {
 
-  /*--------------------------------------------------------------------------*
-   * Type definitions.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------//
+  // Type definitions.
+  //--------------------------------------------------------------------------//
 
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
-  /*--------------------------------------------------------------------------*
-   * Constructors.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------//
+  // Constructors.
+  //--------------------------------------------------------------------------//
 
   global_accessor_t() {}
 
@@ -60,27 +60,29 @@ struct global_accessor_t {
     meta_data_(meta_data)
   {}
 
-  /*!
-   */
+  ///
+  //
+  ///
   const T *
   operator -> () const
   {
     return data_;
   } // operator ->
 
-  /*!
-   */
+  ///
+  //
+  ///
   T *
   operator -> ()
   {
     return data_;
   } // operator ->
 
-  /*!
-    \brief Test to see if this accessor is empty.
-
-    \return true if registered.
-   */
+  ///
+  // \brief Test to see if this accessor is empty.
+  //
+  // \return true if registered.
+  ///
   operator bool() const
   {
     return data_ != nullptr;
@@ -94,27 +96,27 @@ private:
 
 }; // struct global_accessor_t
 
-/*----------------------------------------------------------------------------*
- * Scalar handle.
- *----------------------------------------------------------------------------*/
+//----------------------------------------------------------------------------//
+// Scalar handle.
+//----------------------------------------------------------------------------//
 
 template<typename T>
 struct global_handle_t {
 }; // struct global_handle_t
 
-/*----------------------------------------------------------------------------*
- * Scalar storage type.
- *----------------------------------------------------------------------------*/
+//----------------------------------------------------------------------------//
+// Scalar storage type.
+//----------------------------------------------------------------------------//
 
-/*!
-  FIXME: Scalar storage type.
- */
+///
+// FIXME: Scalar storage type.
+///
 template<typename DS, typename MD>
 struct storage_type_t<global, DS, MD> {
 
-  /*--------------------------------------------------------------------------*
-   * Type definitions.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------//
+  // Type definitions.
+  //--------------------------------------------------------------------------//
 
   using data_store_t = DS;
   using meta_data_t = MD;
@@ -125,21 +127,21 @@ struct storage_type_t<global, DS, MD> {
   template<typename T>
   using handle_t = global_handle_t<T>;
 
-  /*--------------------------------------------------------------------------*
-   * Data registration.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------//
+  // Data registration.
+  //--------------------------------------------------------------------------//
 
-  /*!
-    \tparam T Data type to register.
-    \tparam NS Namespace.
-    \tparam Args Variadic arguments that are passed to
-      metadata initialization.
-
-    \param data_store A reference for accessing the low-level data.
-    \param key A const string instance containing the variable name.
-    \param runtime_namespace The runtime namespace to be used.
-    \param The number of variable versions for this datum.
-   */
+  ///
+  // \tparam T Data type to register.
+  // \tparam NS Namespace.
+  // \tparam Args Variadic arguments that are passed to
+  //              metadata initialization.
+  //
+  // \param data_store A reference for accessing the low-level data.
+  // \param key A const string instance containing the variable name.
+  // \param runtime_namespace The runtime namespace to be used.
+  // \param The number of variable versions for this datum.
+  ///
   template< 
     typename T,
     size_t NS,
@@ -180,12 +182,13 @@ struct storage_type_t<global, DS, MD> {
     return {};    
   } // register_data
 
-  /*--------------------------------------------------------------------------*
-   * Data accessors.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------//
+  // Data accessors.
+  //--------------------------------------------------------------------------//
 
-  /*!
-   */
+  ///
+  //
+  ///
   template<
     typename T,
     size_t NS
@@ -217,12 +220,13 @@ struct storage_type_t<global, DS, MD> {
     } // if
   } // get_accessor
 
-  /*--------------------------------------------------------------------------*
-   * Data handles.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------//
+  // Data handles.
+  //--------------------------------------------------------------------------//
 
-  /*!
-   */
+  ///
+  //
+  ///
   template<
     typename T,
     size_t NS

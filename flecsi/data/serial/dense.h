@@ -21,135 +21,142 @@
 #include "flecsi/data/data_client.h"
 #include "flecsi/data/data_handle.h"
 
-/*!
- * \file serial/dense.h
- * \authors bergen
- * \date Initial file creation: Apr 7, 2016
- */
+///
+// \file serial/dense.h
+// \authors bergen
+// \date Initial file creation: Apr 7, 2016
+///
 
 namespace flecsi {
 namespace data {
 namespace serial_storage_policy {
 
-/*+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=*
- * Helper type definitions.
- *+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=*/
+//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
+// Helper type definitions.
+//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 
-/*----------------------------------------------------------------------------*
- * Dense accessor.
- *----------------------------------------------------------------------------*/
+//----------------------------------------------------------------------------//
+// Dense accessor.
+//----------------------------------------------------------------------------//
 
-/*!
-	\brief dense_accessor_t provides logically array-based access to data
-		variables that have been registered in the data model.
-
-	\tparam T The type of the data variable.  If this type is not
-		consistent with the type used to register the data, bad things
-		can happen.  However, it can be useful to reinterpret the type, e.g.,
-		when writing raw bytes.  This class is part of the low-level \e flecsi
-		interface, so it is assumed that you know what you are doing...
-	\tparam MD The meta data type.
- */
+///
+// \brief dense_accessor_t provides logically array-based access to data
+//        variables that have been registered in the data model.
+//
+// \tparam T The type of the data variable. If this type is not
+//           consistent with the type used to register the data, bad things
+//           can happen. However, it can be useful to reinterpret the type,
+//           e.g., when writing raw bytes. This class is part of the
+//           low-level \e flecsi interface, so it is assumed that you
+//           know what you are doing...
+// \tparam MD The meta data type.
+///
 template<typename T, typename MD>
-struct dense_accessor_t {
-
-  /*--------------------------------------------------------------------------*
-   * Type definitions.
-   *--------------------------------------------------------------------------*/
+struct dense_accessor_t
+{
+  //--------------------------------------------------------------------------//
+  // Type definitions.
+  //--------------------------------------------------------------------------//
 
   using iterator_t = index_space_t::iterator_t;
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
-  /*--------------------------------------------------------------------------*
-   * Constructors.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------//
+  // Constructors.
+  //--------------------------------------------------------------------------//
 
   dense_accessor_t() {}
   
-  /*!
-    Constructor.
-
-    \param label The c_str() version of the const_string_t used for
-      this data variable's hash.
-    \param size The size of the associated index space.
-    \param data A pointer to the raw data.
-    \param meta_data A reference to the user-defined meta data.
-   */
+  ///
+  // Constructor.
+  //
+  // \param label The c_str() version of the const_string_t used for
+  //              this data variable's hash.
+  // \param size The size of the associated index space.
+  // \param data A pointer to the raw data.
+  // \param meta_data A reference to the user-defined meta data.
+  ///
   dense_accessor_t(const std::string & label, const size_t size,
     T * data, const user_meta_data_t & meta_data)
     : label_(label), size_(size), data_(data), meta_data_(meta_data),
     is_(size) {}
 
-	/*!
-		Copy constructor.
-	 */
+	///
+  // Copy constructor.
+	///
 	dense_accessor_t(const dense_accessor_t & a)
 		: label_(a.label_), size_(a.size_), data_(a.data_),
 			meta_data_(a.meta_data_), is_(a.is_) {}
 
-  /*--------------------------------------------------------------------------*
-   * Member data interface.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------//
+  // Member data interface.
+  //--------------------------------------------------------------------------//
 
-	/*!
-		\brief Return a std::string containing the label of the data variable
-			reference by this accessor.
-	 */
+	///
+  // \brief Return a std::string containing the label of the data variable
+  //        reference by this accessor.
+	///
   const std::string &
   label() const
   {
     return label_;
   } // label
 
-	/*!
-		\brief Return the index space size of the data variable
-			referenced by this accessor.
-	 */
+	///
+  // \brief Return the index space size of the data variable
+  //        referenced by this accessor.
+	///
   size_t
   size() const
   {
     return size_;
   } // size
 
-	/*!
-		\brief Return the user meta data for this data variable.
-	 */
+	///
+  // \brief Return the user meta data for this data variable.
+	///
   const user_meta_data_t &
   meta_data() const
   {
     return meta_data_;
   } // meta_data
 
-  /*--------------------------------------------------------------------------*
-   * Iterator interface.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------//
+  // Iterator interface.
+  //--------------------------------------------------------------------------//
 
+  ///
+  //
+  ///
   iterator_t
   begin()
   {
     return {is_, 0};
   } // begin
 
+  ///
+  //
+  ///
   iterator_t
   end()
   {
     return {is_, size_};
   } // end
 
-  /*--------------------------------------------------------------------------*
-   * Operators.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------//
+  // Operators.
+  //--------------------------------------------------------------------------//
 
-	/*!
-		\brief Provide logical array-based access to the data for this
-			data variable.  This is the const operator version.
-
-		\tparam E A complex index type.
-
-		This version of the operator is provided to support use with
-		\e flecsi mesh entity types \ref mesh_entity_base_t.
-	 */
+	///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \tparam E A complex index type.
+  //
+  // This version of the operator is provided to support use with
+  // \e flecsi mesh entity types \ref mesh_entity_base_t.
+	///
   template<typename E>
   const T &
   operator [] (
@@ -159,15 +166,15 @@ struct dense_accessor_t {
     return this->operator[](e->template id<0>());
   } // operator []
 
-	/*!
-		\brief Provide logical array-based access to the data for this
-			data variable.  This is the const operator version.
-
-		\tparam E A complex index type.
-
-		This version of the operator is provided to support use with
-		\e flecsi mesh entity types \ref mesh_entity_base_t.
-	 */
+	///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \tparam E A complex index type.
+  //
+  // This version of the operator is provided to support use with
+  // \e flecsi mesh entity types \ref mesh_entity_base_t.
+	///
   template<typename E>
   T &
   operator [] (
@@ -177,12 +184,12 @@ struct dense_accessor_t {
     return this->operator[](e->template id<0>());
   } // operator []
 
-	/*!
-		\brief Provide logical array-based access to the data for this
-			data variable.  This is the const operator version.
-
-		\param index The index of the data variable to return.
-	 */
+	///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+	///
   const T &
   operator [] (
     size_t index
@@ -192,12 +199,12 @@ struct dense_accessor_t {
     return data_[index];
   } // operator []
 
-	/*!
-		\brief Provide logical array-based access to the data for this
-			data variable.  This is the const operator version.
-
-		\param index The index of the data variable to return.
-	 */
+	///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+	///
   T &
   operator [] (
     size_t index
@@ -207,11 +214,11 @@ struct dense_accessor_t {
     return data_[index];
   } // operator []
 
-	/*!
-		\brief Test to see if this accessor is empty
-
-		\return true if registered.
-	 */
+	///
+  // \brief Test to see if this accessor is empty
+  //
+  // \return true if registered.
+	///
   operator bool() const
   {
     return data_ != nullptr;
@@ -227,32 +234,33 @@ private:
 
 }; // struct dense_accessor_t
 
-/*----------------------------------------------------------------------------*
- * Dense handle.
- *----------------------------------------------------------------------------*/
+//----------------------------------------------------------------------------//
+// Dense handle.
+//----------------------------------------------------------------------------//
 
 template<typename T>
-struct dense_handle_t : public data_handle_t {
+struct dense_handle_t : public data_handle_t
+{
   using type = T;
 }; // struct dense_handle_t
 
-/*+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=*
- * Main type definition.
- *+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=*/
+//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
+// Main type definition.
+//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 
-/*----------------------------------------------------------------------------*
- * Dense storage type.
- *----------------------------------------------------------------------------*/
+//----------------------------------------------------------------------------//
+// Dense storage type.
+//----------------------------------------------------------------------------//
 
-/*!
-  FIXME: Dense storage type.
- */
+///
+// FIXME: Dense storage type.
+///
 template<typename DS, typename MD>
-struct storage_type_t<dense, DS, MD> {
-
-  /*--------------------------------------------------------------------------*
-   * Type definitions.
-   *--------------------------------------------------------------------------*/
+struct storage_type_t<dense, DS, MD>
+{
+  //--------------------------------------------------------------------------//
+  // Type definitions.
+  //--------------------------------------------------------------------------//
 
   using data_store_t = DS;
   using meta_data_t = MD;
@@ -263,22 +271,22 @@ struct storage_type_t<dense, DS, MD> {
   template<typename T>
   using handle_t = dense_handle_t<T>;
 
-  /*--------------------------------------------------------------------------*
-   * Data registration.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------//
+  // Data registration.
+  //--------------------------------------------------------------------------//
 
-  /*!
-    \tparam T Data type to register.
-    \tparam NS Namespace
-    \tparam Args Variadic arguments that are passed to
-      metadata initialization.
-    
-    \param data_client Base class reference to client.
-    \param data_store A reference for accessing the low-level data.
-    \param key A const string instance containing the variable name.
-    \param versions The number of variable versions for this datum.
-    \param indices The number of indices in the index space.
-   */
+  ///
+  // \tparam T Data type to register.
+  // \tparam NS Namespace
+  // \tparam Args Variadic arguments that are passed to
+  //              metadata initialization.
+  //
+  // \param data_client Base class reference to client.
+  // \param data_store A reference for accessing the low-level data.
+  // \param key A const string instance containing the variable name.
+  // \param versions The number of variable versions for this datum.
+  // \param indices The number of indices in the index space.
+  ///
   template<
     typename T,
     size_t NS,
@@ -325,12 +333,13 @@ struct storage_type_t<dense, DS, MD> {
     return {};
   } // register_data
 
-  /*--------------------------------------------------------------------------*
-   * Data accessors.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------//
+  // Data accessors.
+  //--------------------------------------------------------------------------//
 
-  /*!
-   */
+  ///
+  //
+  ///
   template<
     typename T,
     size_t NS
@@ -362,8 +371,9 @@ struct storage_type_t<dense, DS, MD> {
     } // if
   } // get_accessor
 
-  /*!
-   */
+  ///
+  //
+  ///
   template<
     typename T,
     size_t NS,
@@ -379,12 +389,13 @@ struct storage_type_t<dense, DS, MD> {
     return {};
   } // get_accessors
 
-  /*--------------------------------------------------------------------------*
-   * Data handles.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------//
+  // Data handles.
+  //--------------------------------------------------------------------------//
 
-  /*!
-   */
+  ///
+  //
+  ///
   template<
     typename T,
     size_t NS

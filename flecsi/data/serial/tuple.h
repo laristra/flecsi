@@ -18,19 +18,19 @@
 #include "flecsi/utils/const_string.h"
 #include "flecsi/data/serial/storage_type.h"
 
-/*!
- * \file serial/tuple.h
- * \authors bergen
- * \date Initial file creation: Apr 17, 2016
- */
+///
+// \file serial/tuple.h
+// \authors bergen
+// \date Initial file creation: Apr 17, 2016
+///
 
 namespace flecsi {
 namespace data {
 namespace serial_storage_policy {
 
-  /*!
-    FIXME: Tuple storage type.
-   */
+  ///
+  // FIXME: Tuple storage type.
+  ///
   template<typename data_store_t, typename meta_data_t>
   struct storage_type_t<tuple, data_store_t, meta_data_t> {
 
@@ -57,8 +57,9 @@ namespace serial_storage_policy {
     {
     } // register_data
 
-    /*!
-     */
+    ///
+    //
+    ///
     template<
       typename T,
       size_t NS
@@ -74,8 +75,9 @@ namespace serial_storage_policy {
       return {};
     } // get_accessor
 
-    /*!
-     */
+    ///
+    //
+    ///
     template<
       typename T,
       size_t NS

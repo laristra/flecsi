@@ -47,9 +47,9 @@ struct mesh_t : public data::data_client_t {
 
 }; // struct mesh_t
 
-/*----------------------------------------------------------------------------*
- * Dense storage type.
- *----------------------------------------------------------------------------*/
+//----------------------------------------------------------------------------//
+// Dense storage type.
+//----------------------------------------------------------------------------//
 
 TEST(storage, dense) {
   using namespace flecsi::data;
@@ -57,13 +57,13 @@ TEST(storage, dense) {
   mesh_t m;
 
   // Register 3 versions
-  register_data(m, "pressure", 3, double, dense, cells);
+  register_data(m, hydro, pressure, 3, double, dense, cells);
 
   // Initialize
   {
-  auto p0 = get_accessor(m, "pressure", 0, double, dense);
-  auto p1 = get_accessor(m, "pressure", 1, double, dense);
-  auto p2 = get_accessor(m, "pressure", 2, double, dense);
+  auto p0 = get_accessor(m, hydro, pressure, 0, double, dense);
+  auto p1 = get_accessor(m, hydro, pressure, 1, double, dense);
+  auto p2 = get_accessor(m, hydro, pressure, 2, double, dense);
 
   for(size_t i(0); i<100; ++i) {
     p0[i] = i;
@@ -74,9 +74,9 @@ TEST(storage, dense) {
 
   // Test
   {
-  auto p0 = get_accessor(m, "pressure", 0, double, dense);
-  auto p1 = get_accessor(m, "pressure", 1, double, dense);
-  auto p2 = get_accessor(m, "pressure", 2, double, dense);
+  auto p0 = get_accessor(m, hydro, pressure, 0, double, dense);
+  auto p1 = get_accessor(m, hydro, pressure, 1, double, dense);
+  auto p2 = get_accessor(m, hydro, pressure, 2, double, dense);
 
   for(size_t i(0); i<100; ++i) {
     ASSERT_EQ(p0[i], i);
@@ -86,9 +86,9 @@ TEST(storage, dense) {
   } // scope
 } // TEST
 
-/*----------------------------------------------------------------------------*
- * Scalar storage type.
- *----------------------------------------------------------------------------*/
+//----------------------------------------------------------------------------//
+// Scalar storage type.
+//----------------------------------------------------------------------------//
 
 TEST(storage, global) {
   using namespace flecsi::data;
@@ -100,12 +100,12 @@ TEST(storage, global) {
     size_t n;
   }; // struct my_data_t
 
-  register_data(m, "simulation data", 2, my_data_t, global);
+  register_data(m, hydro, simulation_data, 2, my_data_t, global);
 
   // initialize simulation data
   {
-  auto s0 = get_accessor(m, "simulation data", 0, my_data_t, global);
-  auto s1 = get_accessor(m, "simulation data", 1, my_data_t, global);
+  auto s0 = get_accessor(m, hydro, simulation_data, 0, my_data_t, global);
+  auto s1 = get_accessor(m, hydro, simulation_data, 1, my_data_t, global);
   s0->t = 0.5;
   s0->n = 100;
   s1->t = 1.5;
@@ -113,8 +113,8 @@ TEST(storage, global) {
   } // scope
 
   {
-  auto s0 = get_accessor(m, "simulation data", 0, my_data_t, global);
-  auto s1 = get_accessor(m, "simulation data", 1, my_data_t, global);
+  auto s0 = get_accessor(m, hydro, simulation_data, 0, my_data_t, global);
+  auto s1 = get_accessor(m, hydro, simulation_data, 1, my_data_t, global);
 
   ASSERT_EQ(s0->t, 0.5);
   ASSERT_EQ(s0->n, 100);
@@ -123,9 +123,9 @@ TEST(storage, global) {
   } // scope
 } // TEST
 
-/*----------------------------------------------------------------------------*
- * Sparse storage type.
- *----------------------------------------------------------------------------*/
+//----------------------------------------------------------------------------//
+// Sparse storage type.
+//----------------------------------------------------------------------------//
 
 TEST(storage, sparse1) {
   using namespace flecsi::data;
@@ -136,8 +136,8 @@ TEST(storage, sparse1) {
   size_t num_indices = 100;
   size_t num_materials = 50;
 
-  register_data(m, "a", 1, double, sparse, num_indices, num_materials);
-  auto am = get_mutator(m, "a", 0, double, sparse, 10);
+  register_data(m, hydro, a, 1, double, sparse, num_indices, num_materials);
+  auto am = get_mutator(m, hydro, a, 0, double, sparse, 10);
 
   for(size_t i = 0; i < num_indices; i += 2){
     for(size_t j = 0; j < num_materials; j += 2){
@@ -147,7 +147,7 @@ TEST(storage, sparse1) {
 
   am.commit();
 
-  auto a = get_accessor(m, "a", 0, double, sparse);
+  auto a = get_accessor(m, hydro, a, 0, double, sparse);
 
   for(size_t i = 0; i < num_indices ; i += 2){
     for(size_t j = 0; j < num_materials; j += 2){
@@ -166,7 +166,7 @@ TEST(storage, sparse2) {
   size_t num_indices = 1000;
   size_t num_materials = 50;
 
-  register_data(m, "a", 1, double, sparse, num_indices, num_materials);
+  register_data(m, hydro, a, 1, double, sparse, num_indices, num_materials);
 
   std::vector<std::pair<size_t, size_t>> v;
 
@@ -178,7 +178,7 @@ TEST(storage, sparse2) {
 
   std::random_shuffle(v.begin(), v.end());
 
-  auto am = get_mutator(m, "a", 0, double, sparse, 30);
+  auto am = get_mutator(m, hydro, a, 0, double, sparse, 30);
 
   for(auto p : v){
     am(p.first, p.second) = p.first * 1000 + p.second;
@@ -186,7 +186,7 @@ TEST(storage, sparse2) {
 
   am.commit();
 
-  auto a = get_accessor(m, "a", 0, double, sparse);
+  auto a = get_accessor(m, hydro, a, 0, double, sparse);
 
   for(size_t i = 0; i < num_indices ; i += 2){
     for(size_t j = 0; j < num_materials; j += 2){

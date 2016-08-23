@@ -17,23 +17,23 @@
 
 #include "flecsi/data/data_constants.h"
 
-/*!
- * \file serial/storage_type.h
- * \authors bergen
- * \date Initial file creation: Apr 15, 2016
- */
+///
+// \file serial/storage_type.h
+// \authors bergen
+// \date Initial file creation: Apr 15, 2016
+///
 
 namespace flecsi {
 namespace data {
 namespace serial_storage_policy {
 
-  /*!
-    \struct storage_type_t
-
-    \tparam T Specialization parameter.
-    \tparam DS Data store type.
-    \tparam MD Metadata type.
-   */
+  ///
+  // \struct storage_type_t
+  //
+  // \tparam T Specialization parameter.
+  // \tparam DS Data store type.
+  // \tparam MD Metadata type.
+  ///
   template<size_t T, typename DS, typename MD>
   struct storage_type_t {};
 

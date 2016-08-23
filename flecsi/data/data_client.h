@@ -9,48 +9,48 @@
 #include "flecsi/utils/common.h"
 #include "flecsi/data/data_constants.h"
 
-/*!
- * \file data_client.h
- * \authors bergen
- * \date Initial file creation: Mar 23, 2016
- */
+///
+// \file data_client.h
+// \authors bergen
+// \date Initial file creation: Mar 23, 2016
+///
 
 namespace flecsi {
 namespace data {
 
-/*!
-  \class data_client_t data_client.h
-  \brief data_client_t provides...
- */
+///
+// \class data_client_t data_client.h
+// \brief data_client_t provides...
+///
 class data_client_t
 {
 public:
 
-  //! Default constructor
+  /// Default constructor
   data_client_t() : id_(unique_id_t<size_t>::instance().next()) {}
 
-  //! Copy constructor (disabled)
+  /// Copy constructor (disabled)
   data_client_t(const data_client_t &) = delete;
 
-  //! Assignment operator (disabled)
+  /// Assignment operator (disabled)
   data_client_t & operator = (const data_client_t &) = delete;
 
-  // Allow move operations
+  /// Allow move operations
   data_client_t(data_client_t && o) = default;
   data_client_t & operator=(data_client_t && o) = default;
 
-  //! Destructor
+  /// Destructor
   virtual ~data_client_t() {}
 
-  /*!
-    Return a unique runtime identifier for namespace access to the
-    data manager.
-   */
+  ///
+  // Return a unique runtime identifier for namespace access to the
+  // data manager.
+  ///
   uintptr_t
   runtime_id(
   ) const
   {
-    return reinterpret_cast<uintptr_t>(this+id_);
+    return (reinterpret_cast<uintptr_t>(this) << 4) ^ id_;
   } // runtime_id
 
   // FIXME: This needs to be made pure virtual

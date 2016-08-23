@@ -49,7 +49,13 @@
 //----------------------------------------------------------------------------//
 
 ///
+// This macro registers a user function with the FleCSI runtime, which may
+// then be passed as state data and executed in any task address space.
 //
+// \param fname The function to register. This should be the plain-text
+//              name of the function (not a string).
+// \param return_type The function return type.
+// \param ... The signature of the function (arguments).
 ///
 #define register_function(fname, return_type, ...)               \
   /* Define fname handle type */                                 \
@@ -67,20 +73,23 @@
       EXPAND_AND_STRINGIFY(fname), fname ## _function_delegate);
 
 ///
+// Execute a user function.
 //
+// \param handle The function handle.
+// \param ... The function arguments.
 ///
 #define execute_function(handle, ...)                                     \
   flecsi::execution::function_t::execute_function(handle, ## __VA_ARGS__)
 
 ///
-//
+// FIXME
 ///
 #define function_handle(fname)                          \
   function_handle_ ## fname ## _t(                      \
     const_string_t{EXPAND_AND_STRINGIFY(fname)}.hash())
 
 ///
-//
+// FIXME
 ///
 #define define_function_type(name, return_type, ...)       \
   using name = function_handle__<return_type, __VA_ARGS__>

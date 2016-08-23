@@ -18,47 +18,35 @@
 #include <limits>
 
 #include "flecsi/utils/bitfield.h"
+#include "flecsi/utils/const_string.h"
 
-/*!
- * \file data_constants.h
- * \authors bergen
- * \date Initial file creation: Feb 26, 2016
- */
+///
+// \file data_constants.h
+// \authors bergen
+// \date Initial file creation: Feb 26, 2016
+///
 
 namespace flecsi {
 namespace data {
 
-static constexpr size_t __flecsi_internal_data_offset__ =
-  std::numeric_limits<size_t>::max()-10;
+///
+//
+///
+enum storage_label_type_t : size_t {
+  global,
+  dense,
+  sparse,
+  scoped,
+  tuple
+}; // enum storage_label_type_t
 
-/*!
-  \brief data_name_space_t defines the various data namespaces that
-  are available for registering and maintaining data.
+// EVERYTHING BELOW THIS LINE IS DEPRECATED AND WILL BE REMOVED SOON!
 
-  This type is provided as a convenience to avoid naming collisions.
- */
-enum data_name_space_t : size_t {
-  user = 0,
-  internal = __flecsi_internal_data_offset__
-}; // enum class data_name_space_t
-
-static const size_t flecsi_user_space =
-  static_cast<size_t>(data_name_space_t::user);
-static const size_t flecsi_internal =
-  static_cast<size_t>(data_name_space_t::internal);
-
-/*!
-  \brief data_runtime_name_space_t defines the various data namespaces that
-  are available for registering and maintaining data.
-
-  This type is provided as a convenience to avoid naming collisions.
- */
-enum class data_runtime_name_space_t : size_t {
-  user = 0
-}; // enum class data_runtime_name_space_t
-
-static const size_t flecsi_runtime_user_space =
-  static_cast<size_t>(data_runtime_name_space_t::user);
+///
+// FIXME: This needs to be removed.
+///
+static constexpr size_t flecsi_internal =
+  const_string_t{"__flecsi_internal__"}.hash();
 
 /*!
   \brief data_attribute_old_t defines different data attributes.
@@ -93,14 +81,6 @@ static constexpr bitfield_t::field_type_t old_temporary =
 /*!
   FIXME
  */
-
-enum data_type_t : size_t {
-  global,
-  dense,
-  sparse,
-  scoped,
-  tuple
-}; // enum class data_type_t
 
 } // namespace data
 } // namespace flecsi

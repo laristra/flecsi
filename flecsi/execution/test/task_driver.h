@@ -174,7 +174,7 @@ void driver(int argc, char ** argv) {
   mesh_t m;
 
   // FIXME: need this to come from get_handle
-  auto p = register_data(m, "pressure", 1, double, dense, cells);
+  auto p = register_data(m, hydro, pressure, 1, double, dense, cells);
   double alpha(10.0);
 
 #if FLECSI_RUNTIME_MODEL_mpilegion
@@ -184,9 +184,9 @@ void driver(int argc, char ** argv) {
 #endif
   execute_task(task2, loc,  alpha, 5.0, p);
 
-  register_data(m, "materials", 1, material_t, dense, cells);
+  register_data(m, hydro, materials, 1, material_t, dense, cells);
 
-  auto mats1 = get_accessor(m, "materials", 0, material_t, dense);
+  auto mats1 = get_accessor(m, hydro, materials, 0, material_t, dense);
 
   for(size_t i(0); i<4; ++i) {
     mats1[i] = copper_t(2.0, 2.0);
