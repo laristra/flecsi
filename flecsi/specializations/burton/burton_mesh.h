@@ -132,7 +132,7 @@ public:
    */
   template<
     typename T,
-    size_t NS = flecsi_user_space
+    size_t NS = 0
   >
   decltype(auto)
   access_state_(
@@ -152,7 +152,7 @@ public:
    */
   template<
     typename T,
-    size_t NS = flecsi_user_space
+    size_t NS = 0
   >
   decltype(auto)
   access_type_(
@@ -220,7 +220,7 @@ public:
 
     \return Accessor to the state with \e key.
    */
-  template <typename T, size_t NS = flecsi_user_space>
+  template <typename T, size_t NS = 0>
   decltype(auto) access_global_state_(const const_string_t && key)
   {
     return data_t::instance().global_accessor<T, NS>(key, mesh_.runtime_id());
@@ -234,7 +234,7 @@ public:
 
     \return A vector of accessors to state registered with type \e T.
    */
-  template <typename T, size_t NS = flecsi_user_space>
+  template <typename T, size_t NS = 0>
   decltype(auto) access_global_type_()
   {
     return data_t::instance().global_accessors<T, NS>();
