@@ -3,23 +3,23 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_default_driver_h
-#define flecsi_default_driver_h
+#ifndef flecsi_execution_default_driver_h
+#define flecsi_execution_default_driver_h
 
 #include <iostream>
 
-/*!
- * \file default_driver.h
- * \authors bergen
- * \date Initial file creation: Jul 24, 2016
- */
+///
+// \file default_driver.h
+// \authors bergen
+// \date Initial file creation: Jul 24, 2016
+///
 
 namespace flecsi {
 namespace execution {
 
-/*----------------------------------------------------------------------------*
- * Default driver.
- *----------------------------------------------------------------------------*/
+//----------------------------------------------------------------------------//
+// Default driver.
+//----------------------------------------------------------------------------//
 
 void driver(int argc, char ** argv) {
 
@@ -33,7 +33,7 @@ void driver(int argc, char ** argv) {
 } // namespace execution
 } // namespace flecsi
 
-#endif // flecsi_default_driver_h
+#endif // flecsi_execution_default_driver_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

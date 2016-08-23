@@ -31,7 +31,7 @@ enum TaskIDs{
  HELLOWORLD_TASK_ID        =0x00000200,
 };
 
-static ExtLegionHandshake &handshake=ExtLegionHandshake::instance();
+static ext_legion_handshake_t &handshake=ext_legion_handshake_t::instance();
 
 using namespace LegionRuntime::HighLevel;
 using namespace LegionRuntime::Accessor;
@@ -146,7 +146,7 @@ void run_legion_task(void)
 
 void my_init_legion(){
 
-  handshake.initialize(ExtLegionHandshake::IN_EXT, 1, 1);
+  handshake.initialize(ext_legion_handshake_t::IN_EXT, 1, 1);
 
   HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
 
@@ -166,11 +166,12 @@ void my_init_legion(){
                           AUTO_GENERATE_ID, TaskConfigOptions(true/*leaf*/), "handoff_to_mpi_task");
 
 
-  const InputArgs &args = HighLevelRuntime::get_input_args();
-
   HighLevelRuntime::set_registration_callback(mapper_registration);
 
-  HighLevelRuntime::start(args.argc, args.argv, true);
+  char arguments[] = "1";
+  char * argv = &arguments[0];
+
+  HighLevelRuntime::start(1, &argv, true);
 
   complete_legion_configure();
 

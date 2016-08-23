@@ -26,7 +26,7 @@
 
 /*!
  * \file mpilegion/execution_policy.h
- * \authors bergen
+ * \authors bergen, demeshko
  * \date Initial file creation: Nov 15, 2015
  */
 
@@ -98,22 +98,22 @@ struct mpilegion_execution_policy_t
     task_args_t task_args(user_task, args ...);
  
     if(key.second == mpi) {
-      context_.InteropHelper.shared_func=std::bind(user_task,
-        std::forward<As>(args) ...);
-      context_.InteropHelper.call_mpi=true;
-      context_.InteropHelper.handoff_to_mpi(context_.context(),
-      context_.runtime());
+      context_.interop_helper_.shared_func_=std::bind(user_task,
+         std::forward<As>(args) ...);
+      context_.interop_helper_.call_mpi_=true;
+      context_.interop_helper_.handoff_to_mpi(context_.context(),
+         context_.runtime());
 
       //mpi task is running here
-      context_.InteropHelper.wait_on_mpi(context_.context(),
-        context_.runtime());
+      context_.interop_helper_.wait_on_mpi(context_.context(),
+         context_.runtime());
     }
     else {
       TaskLauncher task_launcher(context_.task_id(key),
-        TaskArgument(&task_args, sizeof(task_args_t)));
+         TaskArgument(&task_args, sizeof(task_args_t)));
 
       return context_.runtime()->execute_task(context_.context(),
-        task_launcher);
+         task_launcher);
     } // if
   } // execute_task
 

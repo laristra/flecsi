@@ -13,20 +13,21 @@
 #include "flecsi/execution/task.h"
 #include "flecsi/execution/function.h"
 
-/*!
- * \file execution.h
- * \authors bergen
- * \date Initial file creation: Aug 01, 2016
- */
+///
+// \file execution.h
+// \authors bergen
+// \date Initial file creation: Aug 01, 2016
+///
 
-/*----------------------------------------------------------------------------*
- * Task Interface
- *----------------------------------------------------------------------------*/
+//----------------------------------------------------------------------------//
+// Task Interface
+//----------------------------------------------------------------------------//
 
 // FIXME: Finish Doxygen
 
-/*!
- */
+///
+//
+///
 #define register_task(task, processor, return_type, ...)                \
   using user_task_delegate_ ## task ## _t =                             \
     std::function<return_type(__VA_ARGS__)>;                            \
@@ -34,20 +35,22 @@
     flecsi::execution::task_t::register_task<return_type, __VA_ARGS__>( \
     reinterpret_cast<uintptr_t>(&task), processor);
 
-/*!
- */
+///
+//
+///
 #define execute_task(task, processor, ...)                         \
   user_task_delegate_ ## task ## _t task ## _task_delegate = task; \
   flecsi::execution::task_t::execute_task(                         \
     reinterpret_cast<uintptr_t>(&task),                            \
     processor, task ## _task_delegate, ## __VA_ARGS__)
 
-/*----------------------------------------------------------------------------*
- * Function Interface
- *----------------------------------------------------------------------------*/
+//----------------------------------------------------------------------------//
+// Function Interface
+//----------------------------------------------------------------------------//
 
-/*!
- */
+///
+//
+///
 #define register_function(fname, return_type, ...)               \
   /* Define fname handle type */                                 \
   using function_handle_ ## fname ## _t =                        \
@@ -63,19 +66,22 @@
       return_type, __VA_ARGS__>(                                 \
       EXPAND_AND_STRINGIFY(fname), fname ## _function_delegate);
 
-/*!
- */
+///
+//
+///
 #define execute_function(handle, ...)                                     \
   flecsi::execution::function_t::execute_function(handle, ## __VA_ARGS__)
 
-/*!
- */
+///
+//
+///
 #define function_handle(fname)                          \
   function_handle_ ## fname ## _t(                      \
     const_string_t{EXPAND_AND_STRINGIFY(fname)}.hash())
 
-/*!
- */
+///
+//
+///
 #define define_function_type(name, return_type, ...)       \
   using name = function_handle__<return_type, __VA_ARGS__>
 

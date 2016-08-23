@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_serial_context_policy_h
-#define flecsi_serial_context_policy_h
+#ifndef flecsi_execution_serial_context_policy_h
+#define flecsi_execution_serial_context_policy_h
 
 #include <unordered_map>
 #include <functional>
@@ -21,11 +21,11 @@
 #include "flecsi/utils/const_string.h"
 #include "flecsi/execution/serial/runtime_driver.h"
 
-/*!
- * \file serial/execution_policy.h
- * \authors bergen
- * \date Initial file creation: Nov 15, 2015
- */
+///
+// \file serial/execution_policy.h
+// \authors bergen
+// \date Initial file creation: Nov 15, 2015
+///
 
 namespace flecsi {
 namespace execution {
@@ -33,19 +33,19 @@ namespace execution {
 struct serial_context_policy_t
 {
 
-  /*--------------------------------------------------------------------------*
-   * Initialization.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------//
+  // Initialization.
+  //--------------------------------------------------------------------------//
 
-  /*!
-    Initialize the context runtime. The arguments to this method should
-    be passed from the main function.
-
-    \param argc The number of command-line arguments.
-    \param argv The array of command-line arguments.
-
-    \return Zero upon clean initialization, non-zero otherwise.
-   */
+  ///
+  // Initialize the context runtime. The arguments to this method should
+  // be passed from the main function.
+  //
+  // \param argc The number of command-line arguments.
+  // \param argv The array of command-line arguments.
+  //
+  // \return Zero upon clean initialization, non-zero otherwise.
+  ///
   int
   initialize(
     int argc,
@@ -56,18 +56,18 @@ struct serial_context_policy_t
     return 0;
   } // initialize
 
-  /*--------------------------------------------------------------------------*
-   * Function registration.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------//
+  // Function registration.
+  //--------------------------------------------------------------------------//
 
-  /*!
-    \tparam T The type of the function being registered.
-
-    \param key A unique function identifier.
-
-    \return A boolean value that is true if the registration succeeded,
-      false otherwise.
-   */
+  ///
+  // \tparam T The type of the function being registered.
+  //
+  // \param key A unique function identifier.
+  //
+  // \return A boolean value that is true if the registration succeeded,
+  //         false otherwise.
+  ///
   template<typename T>
   bool
   register_function(
@@ -85,14 +85,14 @@ struct serial_context_policy_t
     return false;
   } // register_function
   
-  /*!
-    Return the function assocaited with \e key.
-
-    \param key The unique function identifier.
-
-    \return A pointer to a std::function<void(void)> that may be cast
-      back to the oringinal function type using reinterpret_cast.
-   */
+  ///
+  // Return the function assocaited with \e key.
+  //
+  // \param key The unique function identifier.
+  //
+  // \return A pointer to a std::function<void(void)> that may be cast
+  //         back to the oringinal function type using reinterpret_cast.
+  ///
   std::function<void(void)> *
   function(
     size_t key
@@ -111,7 +111,7 @@ private:
 } // namespace execution 
 } // namespace flecsi
 
-#endif // flecsi_serial_context_policy_h
+#endif // flecsi_execution_serial_context_policy_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_legion_execution_policy_h
-#define flecsi_legion_execution_policy_h
+#ifndef flecsi_execution_legion_execution_policy_h
+#define flecsi_execution_legion_execution_policy_h
 
 #include <functional>
 
@@ -170,7 +170,7 @@ struct legion_execution_policy_t
 } // namespace execution 
 } // namespace flecsi
 
-#endif // flecsi_legion_execution_policy_h
+#endif // flecsi_execution_legion_execution_policy_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

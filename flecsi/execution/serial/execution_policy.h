@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_serial_execution_policy_h
-#define flecsi_serial_execution_policy_h
+#ifndef flecsi_execution_serial_execution_policy_h
+#define flecsi_execution_serial_execution_policy_h
 
 #include <tuple>
 #include <functional>
@@ -26,30 +26,31 @@
 #include "flecsi/utils/const_string.h"
 #include "flecsi/execution/serial/runtime_driver.h"
 
-/*!
- * \file serial/execution_policy.h
- * \authors bergen
- * \date Initial file creation: Nov 15, 2015
- */
+///
+// \file serial/execution_policy.h
+// \authors bergen
+// \date Initial file creation: Nov 15, 2015
+///
 
 namespace flecsi {
 namespace execution {
 
-/*!
-  \struct serial_execution_policy serial_execution_policy.h
-  \brief serial_execution_policy provides...
- */
+///
+// \struct serial_execution_policy serial_execution_policy.h
+// \brief serial_execution_policy provides...
+///
 struct serial_execution_policy_t
 {
 
-  /*--------------------------------------------------------------------------*
-   * Task interface.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------//
+  // Task interface.
+  //--------------------------------------------------------------------------//
 
   // FIXME: Finish Doxygen
 
-  /*!
-   */
+  ///
+  //
+  ///
   template<
     typename R,
     typename ... As
@@ -62,8 +63,9 @@ struct serial_execution_policy_t
   {
   } // register_task
 
-  /*!
-   */
+  ///
+  //
+  ///
   template<
     typename T,
     typename ... As
@@ -80,20 +82,20 @@ struct serial_execution_policy_t
     return tuple_function(user_task, t);
   } // execute_task
   
-  /*--------------------------------------------------------------------------*
-   * Function interface.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------//
+  // Function interface.
+  //--------------------------------------------------------------------------//
 
-  /*!
-    This method registers a user function with the current
-    execution context.
-    
-    \param key The function identifier.
-    \param user_function A reference to the user function as a std::function.
-
-    \return A boolean value indicating whether or not the function was
-      successfully registered.
-   */
+  ///
+  // This method registers a user function with the current
+  // execution context.
+  //
+  // \param key The function identifier.
+  // \param user_function A reference to the user function as a std::function.
+  //
+  // \return A boolean value indicating whether or not the function was
+  //         successfully registered.
+  ///
   template<
     typename R,
     typename ... As
@@ -108,15 +110,15 @@ struct serial_execution_policy_t
     context_t::instance().register_function(key, user_function);
   } // register_function
 
-  /*!
-    This method looks up a function from the \e handle argument
-    and executes the associated it with the provided \e args arguments.
-    
-    \param handle The function handle to execute.
-    \param args A variadic argument list of the function parameters.
-
-    \return The return type of the provided function handle.
-   */
+  ///
+  // This method looks up a function from the \e handle argument
+  // and executes the associated it with the provided \e args arguments.
+  //
+  // \param handle The function handle to execute.
+  // \param args A variadic argument list of the function parameters.
+  //
+  // \return The return type of the provided function handle.
+  ///
   template<
     typename T,
     typename ... As
@@ -137,7 +139,7 @@ struct serial_execution_policy_t
 } // namespace execution 
 } // namespace flecsi
 
-#endif // flecsi_serial_execution_policy_h
+#endif // flecsi_execution_serial_execution_policy_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

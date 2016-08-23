@@ -3,11 +3,11 @@
  * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
 
-/*!
- * \file legion/runtime_driver.cc
- * \authors bergen
- * \date Initial file creation: Jul 26, 2016
- */
+///
+// \file legion/runtime_driver.cc
+// \authors bergen
+// \date Initial file creation: Jul 26, 2016
+///
 
 #include "flecsi/execution/legion/runtime_driver.h"
 

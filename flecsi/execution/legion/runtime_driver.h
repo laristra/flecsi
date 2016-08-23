@@ -3,16 +3,16 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_legion_runtime_driver_h
-#define flecsi_legion_runtime_driver_h
+#ifndef flecsi_execution_legion_runtime_driver_h
+#define flecsi_execution_legion_runtime_driver_h
 
 #include <legion.h>
 
-/*!
- * \file legion/runtime_driver.h
- * \authors bergen
- * \date Initial file creation: Jul 26, 2016
- */
+///
+// \file legion/runtime_driver.h
+// \authors bergen
+// \date Initial file creation: Jul 26, 2016
+///
 
 namespace flecsi {
 namespace execution {
@@ -25,7 +25,7 @@ void legion_runtime_driver(const LegionRuntime::HighLevel::Task * task,
 } // namespace execution 
 } // namespace flecsi
 
-#endif // flecsi_legion_runtime_driver_h
+#endif // flecsi_execution_legion_runtime_driver_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

@@ -6,19 +6,19 @@
 #ifndef flecsi_dmp_index_partition_h
 #define flecsi_dmp_index_partition_h
 
-/*!
- * \file index_partition.h
- * \authors bergen
- * \date Initial file creation: Aug 17, 2016
- */
+///
+// \file index_partition.h
+// \authors bergen
+// \date Initial file creation: Aug 17, 2016
+///
 
 namespace flecsi {
 namespace dmp {
 
-/*!
-  \class partition__ index_partition.h
-  \brief partition__ provides...
- */
+///
+// \class partition__ index_partition.h
+// \brief partition__ provides...
+///
 template<typename T>
 struct index_partition__
 {
