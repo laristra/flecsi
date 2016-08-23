@@ -40,6 +40,9 @@ set(data_HEADERS
 cinch_add_unit(data
   SOURCES test/data.cc)
 
+cinch_add_unit(data_client
+  SOURCES test/data_client.cc)
+
 cinch_add_unit(storage_type
   SOURCES test/storage_type.cc)
 
