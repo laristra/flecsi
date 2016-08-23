@@ -314,7 +314,8 @@ mpi_legion_interop_t::handoff_to_mpi(
          LegionRuntime::HighLevel::Domain::from_rect<2>(all_processes_),
          LegionRuntime::HighLevel::TaskArgument(0, 0),
          arg_map);
-   runtime->execute_index_space( ctx, handoff_to_mpi_launcher);
+   LegionRuntime::HighLevel::FutureMap fm2 =runtime->execute_index_space( ctx, handoff_to_mpi_launcher);
+   fm2.wait_all_results();
 }//handoff_to_mpi
 
 /*--------------------------------------------------------------------------*/
@@ -327,11 +328,13 @@ mpi_legion_interop_t::wait_on_mpi(
 {
    LegionRuntime::HighLevel::ArgumentMap arg_map;
    LegionRuntime::HighLevel::IndexLauncher wait_on_mpi_launcher(
-         HANDOFF_TO_MPI_TASK_ID,
+         WAIT_ON_MPI_TASK_ID,
          LegionRuntime::HighLevel::Domain::from_rect<2>(all_processes_),
          LegionRuntime::HighLevel::TaskArgument(0, 0),
          arg_map);
-   runtime->execute_index_space(ctx,wait_on_mpi_launcher);
+   LegionRuntime::HighLevel::FutureMap fm3 =
+        runtime->execute_index_space(ctx,wait_on_mpi_launcher);
+  fm3.wait_all_results();
 }//wait_on_mpi
 
 } //end namespace execution

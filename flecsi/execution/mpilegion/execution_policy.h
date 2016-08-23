@@ -68,8 +68,7 @@ struct mpilegion_execution_policy_t
           legion_task_wrapper_<toc, 1, 0, R, As ...>::runtime_registration);
         break;
       case mpi:
-      return context_t::instance().register_task(key,
-        legion_task_wrapper_<mpi, 1, 0, R, As ...>::runtime_registration);
+       return true;
       break;
       default: throw std::runtime_error("unsupported processor type");
     } // switch
@@ -98,22 +97,26 @@ struct mpilegion_execution_policy_t
     task_args_t task_args(user_task, args ...);
  
     if(key.second == mpi) {
-      context_.interop_helper_.shared_func_=std::bind(user_task,
+     context_.interop_helper_.shared_func_=std::bind(user_task,
          std::forward<As>(args) ...);
       context_.interop_helper_.call_mpi_=true;
       context_.interop_helper_.handoff_to_mpi(context_.context(),
          context_.runtime());
-
       //mpi task is running here
       context_.interop_helper_.wait_on_mpi(context_.context(),
          context_.runtime());
+       context_.interop_helper_.call_mpi_=false;
+      //TOFIX:: need to return Future
+      return 0;
     }
     else {
       TaskLauncher task_launcher(context_.task_id(key),
          TaskArgument(&task_args, sizeof(task_args_t)));
 
-      return context_.runtime()->execute_task(context_.context(),
+       context_.runtime()->execute_task(context_.context(),
          task_launcher);
+      //TOFIX:: need to return Future
+      return 0;
     } // if
   } // execute_task
 

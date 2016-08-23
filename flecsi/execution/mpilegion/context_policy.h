@@ -92,7 +92,9 @@ struct mpilegion_context_policy_t
        interop_helper_.handoff_to_legion();
        interop_helper_.wait_on_legion();
       }
- 
+
+    interop_helper_.wait_on_legion();
+   
     return 0;
 
   } // initialize
