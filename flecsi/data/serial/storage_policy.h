@@ -32,11 +32,11 @@
 #include "flecsi/data/serial/scoped.h"
 #include "flecsi/data/serial/tuple.h"
 
-/*!
- * \file serial/storage_policy.h
- * \authors bergen
- * \date Initial file creation: Apr 17, 2016
- */
+///
+// \file serial/storage_policy.h
+// \authors bergen
+// \date Initial file creation: Apr 17, 2016
+///
 
 namespace flecsi {
 namespace data {
@@ -56,17 +56,17 @@ struct serial_storage_policy_t {
   using storage_type_t = serial_storage_policy::storage_type_t<data_type_t,
     data_store_t, meta_data_t>;
 
-  //! \brief delete ALL data.
+  /// \brief delete ALL data.
   void
   reset()
   {
     data_store_.clear();
   } // reset
 
-  /*! 
-   * \brief delete ALL data associated with this runtime namespace.
-   * \param [in] runtime_namespace the namespace to search.
-   */
+  ///
+  // \brief delete ALL data associated with this runtime namespace.
+  // \param [in] runtime_namespace the namespace to search.
+  ///
   void
   reset(
     uintptr_t runtime_namespace
