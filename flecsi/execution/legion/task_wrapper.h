@@ -60,7 +60,6 @@ struct legion_task_wrapper_
   template<typename T>
   using is_data_handle = std::is_base_of<data_handle_t,T>;
 
-
   ///
   // This function is called by the context singleton to do the actual
   // registration of the task wrapper with the Legion runtime. The structure

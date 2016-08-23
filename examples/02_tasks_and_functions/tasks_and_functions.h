@@ -178,6 +178,8 @@ void driver(int argc, char ** argv) {
 
   register_data(m, hydro, materials, 1, material_t, dense, cells);
 
+  /// stuff happens...
+
   auto mats = get_accessor(m, hydro, materials, 0, material_t, dense);
 
   for(size_t i(0); i<4; ++i) {
