@@ -76,7 +76,7 @@ void task1(double dval, int ival) {
   std::cout << "Value(int): " << ival << std::endl;
 } // task1
 
-register_task(task1, loc, void, double, int);
+register_task(task1, loc, single, void, double, int);
 
 double task2(double x, double y, dense_field_t<double> p) {
   std::cout << "Executing task2" << std::endl;
@@ -85,7 +85,7 @@ double task2(double x, double y, dense_field_t<double> p) {
 //  return x*y;
 } // task2
 
-register_task(task2, loc, void, double, double, dense_field_t<double>);
+register_task(task2, loc, single, void, double, double, dense_field_t<double>);
 
 /*----------------------------------------------------------------------------*
  * Function registration.
@@ -173,8 +173,8 @@ void driver(int argc, char ** argv) {
   auto p = register_data(m, hydro, pressure, 1, double, dense, cells);
   double alpha(10.0);
 
-  execute_task(task1, loc, alpha, 5);
-  execute_task(task2, loc,  alpha, 5.0, p);
+  execute_task(task1, loc, single, alpha, 5);
+  execute_task(task2, loc, single, alpha, 5.0, p);
 
   register_data(m, hydro, materials, 1, material_t, dense, cells);
 

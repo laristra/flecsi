@@ -64,9 +64,9 @@ else()
   cinch_add_unit(task
     SOURCES
       test/task.cc
+      test/task_driver.h
       serial/runtime_driver.cc
-    INPUTS test/task_driver.h
-    DEFINES FLECSI_DRIVER=task_driver.h
+    DEFINES FLECSI_DRIVER=test/task_driver.h
     LIBRARIES flecsi)
 endif()
 
