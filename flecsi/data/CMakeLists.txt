@@ -16,8 +16,8 @@ set(data_HEADERS
   data.h
 	storage.h
 	data_constants.h
-	old_data.h
 	data_client.h
+	old_data.h
 	old/default_meta_data.h
 	old/default_storage_policy.h
 	serial/scoped.h
@@ -25,11 +25,9 @@ set(data_HEADERS
 	serial/sparse.h
 	serial/tuple.h
 	serial/storage_policy.h
-	serial/storage_type.h
 	serial/meta_data.h
 	serial/global.h
-  data_client.h
-  data_constants.h
+	storage_type.h
   PARENT_SCOPE
 )
 

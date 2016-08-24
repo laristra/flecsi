@@ -23,7 +23,7 @@ namespace execution {
 
 void mpi_task(double val) {
   int rank = 0;
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+//  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   std::cout << "My rank: " << rank << std::endl;
 } // mpi_task
 

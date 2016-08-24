@@ -12,14 +12,14 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_serial_dense_h
-#define flecsi_serial_dense_h
+#ifndef flecsi_legion_dense_h
+#define flecsi_legion_dense_h
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_type.h!!!
 // Using this approach allows us to have only one storage_type_t
 // definintion that can be used by all data policies -> code reuse...
-#define POLICY_NAMSPACE serial
+#define POLICY_NAMSPACE legion
 #include "flecsi/data/storage_type.h"
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
@@ -30,14 +30,14 @@
 #include "flecsi/utils/index_space.h"
 
 ///
-// \file serial/dense.h
+// \file legion/dense.h
 // \authors bergen
 // \date Initial file creation: Apr 7, 2016
 ///
 
 namespace flecsi {
 namespace data {
-namespace serial {
+namespace legion {
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Helper type definitions.
@@ -311,33 +311,6 @@ struct storage_type_t<dense, DS, MD>
     Args && ... args
   )
   {
-    size_t h = key.hash() ^ data_client.runtime_id();
-
-    // Runtime assertion that this key is unique
-    assert(data_store[NS].find(h) == data_store[NS].end() &&
-      "key already exists");
-
-    data_store[NS][h].user_data.initialize(std::forward<Args>(args) ...);
-
-    data_store[NS][h].label = key.c_str();
-    // FIXME: need lookup from data_client
-    std::cout << "Setting size: " << data_client.indices(index_space) <<
-      std::endl;
-    data_store[NS][h].size = data_client.indices(index_space);
-    data_store[NS][h].type_size = sizeof(T);
-    data_store[NS][h].versions = versions;
-    data_store[NS][h].rtti.reset(
-      new typename meta_data_t::type_info_t(typeid(T)));
-
-    for(size_t i=0; i<versions; ++i) {
-    // FIXME: need lookup from data_client
-      data_store[NS][h].data[i].resize(
-        data_client.indices(index_space) * sizeof(T));
-    } // for
-
-    // num_materials is unused for this storage type
-    data_store[NS][h].num_materials = 0;
-
     return {};
   } // register_data
 
@@ -361,22 +334,7 @@ struct storage_type_t<dense, DS, MD>
     size_t version
   )
   {
-    const size_t h = key.hash() ^ data_client.runtime_id();
-    auto search = data_store[NS].find(h);
-
-    if(search == data_store[NS].end()) {
-      return {};
-    }
-    else {
-      auto & meta_data = search->second;
-
-      // check that the requested version exists
-      assert(meta_data.versions > version && "version out-of-range");
-
-      return { meta_data.label, meta_data.size,
-        reinterpret_cast<T *>(&meta_data.data[version][0]),
-				meta_data.user_data };
-    } // if
+    return {};
   } // get_accessor
 
   ///
@@ -422,11 +380,11 @@ struct storage_type_t<dense, DS, MD>
 
 }; // struct storage_type_t
 
-} // namespace serial
+} // namespace legion
 } // namespace data
 } // namespace flecsi
 
-#endif // flecsi_serial_dense_h
+#endif // flecsi_legion_dense_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

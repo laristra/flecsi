@@ -12,14 +12,14 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_serial_tuple_h
-#define flecsi_serial_tuple_h
+#ifndef flecsi_legion_tuple_h
+#define flecsi_legion_tuple_h
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_type.h!!!
 // Using this approach allows us to have only one storage_type_t
 // definintion that can be used by all data policies -> code reuse...
-#define POLICY_NAMSPACE serial
+#define POLICY_NAMSPACE legion
 #include "flecsi/data/storage_type.h"
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
@@ -27,14 +27,14 @@
 #include "flecsi/utils/const_string.h"
 
 ///
-// \file serial/tuple.h
+// \file legion/tuple.h
 // \authors bergen
 // \date Initial file creation: Apr 17, 2016
 ///
 
 namespace flecsi {
 namespace data {
-namespace serial {
+namespace legion {
 
   ///
   // FIXME: Tuple storage type.
@@ -103,11 +103,11 @@ namespace serial {
 
   }; // struct storage_type_t
 
-} // namespace serial
+} // namespace legion
 } // namespace data
 } // namespace flecsi
 
-#endif // flecsi_serial_tuple_h
+#endif // flecsi_legion_tuple_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

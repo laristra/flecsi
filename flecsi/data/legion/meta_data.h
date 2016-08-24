@@ -12,36 +12,41 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_serial_storage_type_h
-#define flecsi_serial_storage_type_h
-
-#include "flecsi/data/data_constants.h"
+#ifndef flecsi_legion_meta_data_h
+#define flecsi_legion_meta_data_h
 
 ///
-// \file serial/storage_type.h
+// \file legion/meta_data.h
 // \authors bergen
 // \date Initial file creation: Apr 15, 2016
 ///
 
 namespace flecsi {
 namespace data {
-namespace serial_storage_policy {
 
-  ///
-  // \struct storage_type_t
-  //
-  // \tparam T Specialization parameter.
-  // \tparam DS Data store type.
-  // \tparam MD Metadata type.
-  ///
-  template<size_t T, typename DS, typename MD>
-  struct storage_type_t {};
+//----------------------------------------------------------------------------//
+// struct legion_meta_data_t
+//----------------------------------------------------------------------------//
 
-} // namespace serial_storage_policy
+///
+// \brief legion_meta_data_t provides storage for extra information that is
+//        used to interpret data variable information at different points
+//        in the low-level runtime.
+// 
+// \tparam T A user-defined data type that will be carried with the meta data.
+///
+template<typename T>
+struct legion_meta_data_t
+{
+
+  using user_meta_data_t = T;
+
+}; // struct legion_meta_data_t
+
 } // namespace data
 } // namespace flecsi
 
-#endif // flecsi_serial_storage_type_h
+#endif // flecsi_legion_meta_data_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

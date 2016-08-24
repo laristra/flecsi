@@ -34,21 +34,12 @@ set(execution_SOURCES
     PARENT_SCOPE)
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
-#  cinch_add_unit(task
-#    SOURCES
-#      test/task.cc
-#      legion/runtime_driver.cc
-#    INPUTS test/task_driver.h
-#    DEFINES FLECSI_DRIVER=task_driver.h
-#    POLICY LEGION
-#    LIBRARIES flecsi)
-
-  cinch_add_unit(sprint
+  cinch_add_unit(task
     SOURCES
       test/task.cc
       legion/runtime_driver.cc
-    INPUTS test/sprint.h
-    DEFINES FLECSI_DRIVER=sprint.h
+    INPUTS test/task_driver.h
+    DEFINES FLECSI_DRIVER=task_driver.h
     POLICY LEGION
     LIBRARIES flecsi)
 elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
