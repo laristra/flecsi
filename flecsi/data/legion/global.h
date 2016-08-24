@@ -12,14 +12,14 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_serial_global_h
-#define flecsi_serial_global_h
+#ifndef flecsi_legion_global_h
+#define flecsi_legion_global_h
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_type.h!!!
 // Using this approach allows us to have only one storage_type_t
 // definintion that can be used by all data policies -> code reuse...
-#define POLICY_NAMSPACE serial
+#define POLICY_NAMSPACE legion
 #include "flecsi/data/storage_type.h"
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
@@ -28,17 +28,17 @@
 #include "flecsi/data/data_client.h"
 
 ///
-// \file serial/global.h
+// \file legion/global.h
 // \authors bergen
 // \date Initial file creation: Apr 17, 2016
 ///
 
 namespace flecsi {
 namespace data {
-namespace serial {
+namespace legion {
 
 //----------------------------------------------------------------------------//
-// Scalar accessor.
+// Global accessor.
 //----------------------------------------------------------------------------//
 
 template<typename T, typename MD>
@@ -105,7 +105,7 @@ private:
 }; // struct global_accessor_t
 
 //----------------------------------------------------------------------------//
-// Scalar handle.
+// Global handle.
 //----------------------------------------------------------------------------//
 
 template<typename T>
@@ -113,11 +113,11 @@ struct global_handle_t {
 }; // struct global_handle_t
 
 //----------------------------------------------------------------------------//
-// Scalar storage type.
+// Global storage type.
 //----------------------------------------------------------------------------//
 
 ///
-// FIXME: Scalar storage type.
+// FIXME: Global storage type.
 ///
 template<typename DS, typename MD>
 struct storage_type_t<global, DS, MD> {
@@ -165,28 +165,6 @@ struct storage_type_t<global, DS, MD> {
     Args && ... args
   )
   {
-    size_t h = key.hash() ^ data_client.runtime_id();
-
-    // Runtime assertion that this key is unique.
-    assert(data_store[NS].find(h) == data_store[NS].end() &&
-      "key already exists");
-
-    data_store[NS][h].user_data.initialize(std::forward<Args>(args) ...);
-
-    data_store[NS][h].label = key.c_str();
-    data_store[NS][h].size = 1;
-    data_store[NS][h].type_size = sizeof(T);
-    data_store[NS][h].versions = versions;
-    data_store[NS][h].rtti.reset(
-      new typename meta_data_t::type_info_t(typeid(T)));
-
-    for(size_t i=0; i<versions; ++i) {
-      data_store[NS][h].data[i].resize(sizeof(T));
-    } // for
-
-    // num_materials is unused for this storage type
-    data_store[NS][h].num_materials = 0;
-
     return {};    
   } // register_data
 
@@ -210,22 +188,7 @@ struct storage_type_t<global, DS, MD> {
     size_t version
   )
   {
-    const size_t h = key.hash() ^ data_client.runtime_id();
-    auto search = data_store[NS].find(h);
-
-    if(search == data_store[NS].end()) {
-      return {};
-    }
-    else {
-      auto & meta_data = search->second;
-          
-      // check that the requested version exists.
-      assert(meta_data.versions > version && "version out-of-range");
-
-      return { meta_data.label,
-        reinterpret_cast<T *>(&meta_data.data[version][0]),
-        meta_data.user_data };
-    } // if
+    return {};
   } // get_accessor
 
   //--------------------------------------------------------------------------//
@@ -252,11 +215,11 @@ struct storage_type_t<global, DS, MD> {
 
 }; // struct storage_type_t
 
-} // namespace serial
+} // namespace legion
 } // namespace data
 } // namespace flecsi
 
-#endif // flecsi_serial_global_h
+#endif // flecsi_legion_global_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

@@ -15,8 +15,16 @@
 #ifndef flecsi_serial_scoped_h
 #define flecsi_serial_scoped_h
 
+//----------------------------------------------------------------------------//
+// POLICY_NAMESPACE must be defined before including storage_type.h!!!
+// Using this approach allows us to have only one storage_type_t
+// definintion that can be used by all data policies -> code reuse...
+#define POLICY_NAMSPACE serial
+#include "flecsi/data/storage_type.h"
+#undef POLICY_NAMESPACE
+//----------------------------------------------------------------------------//
+
 #include "flecsi/utils/const_string.h"
-#include "flecsi/data/serial/storage_type.h"
 
 ///
 // \file serial/scoped.h
@@ -26,7 +34,7 @@
 
 namespace flecsi {
 namespace data {
-namespace serial_storage_policy {
+namespace serial {
 
   ///
   // FIXME: Scoped storage type.
@@ -95,7 +103,7 @@ namespace serial_storage_policy {
 
   }; // struct storage_type_t
 
-} // namespace serial_storage_policy
+} // namespace serial
 } // namespace data
 } // namespace flecsi
 

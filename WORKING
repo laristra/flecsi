@@ -2,35 +2,4 @@
 # Working issues
 #------------------------------------------------------------------------------#
 
-'mesh/mesh_topology.h' (create_ method):
-	We will need to handle creation of mixed-type sub-entities, e.g.,
-	triangular vs. quadrilateral faces in 3D.  This is currently not
-	handled correctly in the mesh topology.
-	Update: Progress has been made on removing this constraint.
-
-'specializations/burton/burton_mesh.h'
-	Mesh access of state model needs to be improved/clarified as per dual mesh
-	coordinates and state.
-
-'state/state.h'
-	Add support for state collections.
-
-'utils'
-	Add Marc's static C++ utilities.
-
-'mesh-based example of index spaces'
-	Powerpoint slide of figures on simple mesh with vertices, edges, faces,
-	cells and corners.
-
-'mesh/mesh_topology.h'
-	Try to merge compute_connectivity and compute_bindings.
-
-'MESH PROBLEM'
-	The low-level interface should avoid using terms like 'cell',
-	'vertex', 'edge', etc...  These should be referenced by domain
-	and dimension.  Need to clean this up...
-
-'Boundary Condition Support'
-
-- Add documentation to wiki
-- Create release branch
+- Need to add generic attributes to data model, e.g., persistent...

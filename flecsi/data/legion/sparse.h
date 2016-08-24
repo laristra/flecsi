@@ -12,37 +12,65 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_serial_global_h
-#define flecsi_serial_global_h
+#ifndef flecsi_legion_sparse_h
+#define flecsi_legion_sparse_h
+
+#include <map>
+#include <algorithm>
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_type.h!!!
 // Using this approach allows us to have only one storage_type_t
 // definintion that can be used by all data policies -> code reuse...
-#define POLICY_NAMSPACE serial
+#define POLICY_NAMSPACE legion
 #include "flecsi/data/storage_type.h"
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
 #include "flecsi/utils/const_string.h"
-#include "flecsi/data/data_client.h"
 
 ///
-// \file serial/global.h
+// \file legion/sparse.h
 // \authors bergen
 // \date Initial file creation: Apr 17, 2016
 ///
 
 namespace flecsi {
 namespace data {
-namespace serial {
+namespace legion {
+
+//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
+// Helper type definitions.
+//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 
 //----------------------------------------------------------------------------//
-// Scalar accessor.
+// Sparse accessor.
 //----------------------------------------------------------------------------//
+
+#if 0
+using index_pair_ = std::pair<size_t, size_t>;
+
+template<typename T>
+struct material_value_{
+  material_value_(size_t material)
+  : material(material){}
+
+  material_value_(size_t material, T value)
+  : material(material),
+  value(value){}
+
+  material_value_(){}
+
+  size_t material;
+  T value;
+};
+
+static constexpr size_t INDICES_KEY = 0;
+static constexpr size_t MATERIALS_KEY = 1;
+#endif
 
 template<typename T, typename MD>
-struct global_accessor_t {
+struct sparse_accessor_t {
 
   //--------------------------------------------------------------------------//
   // Type definitions.
@@ -50,77 +78,146 @@ struct global_accessor_t {
 
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
-
+  
   //--------------------------------------------------------------------------//
   // Constructors.
   //--------------------------------------------------------------------------//
 
-  global_accessor_t() {}
-
-  global_accessor_t(
-    const std::string & label,
-    T * data,
-    const user_meta_data_t & meta_data
-  )
-  :
-    label_(label),
-    data_(data),
-    meta_data_(meta_data)
-  {}
+  ///
+  //
+  ///
+  sparse_accessor_t() {}
 
   ///
   //
   ///
-  const T *
-  operator -> () const
+  sparse_accessor_t(
+    const std::string & label,
+    size_t version,
+    meta_data_t & meta_data,
+    const user_meta_data_t & user_meta_data
+  )
   {
-    return data_;
-  } // operator ->
+  } // sparse_accessor_t
+
+  ///
+  //
+  ///
+  T &
+  operator () (
+    size_t index,
+    size_t material
+  )
+  {
+  } // operator ()
+
+  ///
+  //
+  ///
+  void dump()
+  {
+  } // dump
 
   ///
   //
   ///
   T *
-  operator -> ()
+  data()
   {
-    return data_;
-  } // operator ->
-
-  ///
-  // \brief Test to see if this accessor is empty.
-  //
-  // \return true if registered.
-  ///
-  operator bool() const
-  {
-    return data_ != nullptr;
-  } // operator bool
+    return nullptr;
+  } // data
 
 private:
 
-  std::string label_ = "";
-  T * data_ = nullptr;
-  const user_meta_data_t & meta_data_ = {};
+}; // struct sparse_accessor_t
 
-}; // struct global_accessor_t
+template<typename T, typename MD>
+struct sparse_mutator_t {
+
+  //--------------------------------------------------------------------------//
+  // Type definitions.
+  //--------------------------------------------------------------------------//
+  
+  using meta_data_t = MD;
+  using user_meta_data_t = typename meta_data_t::user_meta_data_t;
+
+  //--------------------------------------------------------------------------//
+  // Constructors.
+  //--------------------------------------------------------------------------//
+
+  ///
+  //
+  ///
+  sparse_mutator_t() {}
+
+  ///
+  //
+  ///
+  sparse_mutator_t(
+    size_t num_slots,
+    const std::string & label,
+    size_t version,
+    meta_data_t & meta_data,
+    const user_meta_data_t & user_meta_data
+  )
+  {}
+
+  ///
+  //
+  ///
+  ~sparse_mutator_t()
+  {
+  } // ~sparse_mutator_t
+
+  ///
+  //
+  ///
+  T &
+  operator () (
+    size_t index,
+    size_t material
+  )
+  {
+  } // operator ()
+
+  ///
+  //
+  ///
+  T *
+  data()
+  {
+    return nullptr;
+  } // data
+
+  ///
+  //
+  ///
+  void
+  commit()
+  {
+  } // commit
+
+private:
+
+}; // struct sparse_accessor_t
 
 //----------------------------------------------------------------------------//
-// Scalar handle.
+// Sparse handle.
 //----------------------------------------------------------------------------//
 
 template<typename T>
-struct global_handle_t {
-}; // struct global_handle_t
+struct sparse_handle_t {
+}; // struct sparse_handle_t
 
-//----------------------------------------------------------------------------//
-// Scalar storage type.
-//----------------------------------------------------------------------------//
+//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
+// Main type definition.
+//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 
 ///
-// FIXME: Scalar storage type.
+// FIXME: Sparse storage type.
 ///
 template<typename DS, typename MD>
-struct storage_type_t<global, DS, MD> {
+struct storage_type_t<sparse, DS, MD> {
 
   //--------------------------------------------------------------------------//
   // Type definitions.
@@ -130,27 +227,22 @@ struct storage_type_t<global, DS, MD> {
   using meta_data_t = MD;
 
   template<typename T>
-  using accessor_t = global_accessor_t<T, MD>;
+  using accessor_t = sparse_accessor_t<T, MD>;
 
   template<typename T>
-  using handle_t = global_handle_t<T>;
+  using mutator_t = sparse_mutator_t<T, MD>;
+
+  template<typename T>
+  using handle_t = sparse_handle_t<T>;
 
   //--------------------------------------------------------------------------//
   // Data registration.
   //--------------------------------------------------------------------------//
 
   ///
-  // \tparam T Data type to register.
-  // \tparam NS Namespace.
-  // \tparam Args Variadic arguments that are passed to
-  //              metadata initialization.
   //
-  // \param data_store A reference for accessing the low-level data.
-  // \param key A const string instance containing the variable name.
-  // \param runtime_namespace The runtime namespace to be used.
-  // \param The number of variable versions for this datum.
   ///
-  template< 
+  template<
     typename T,
     size_t NS,
     typename ... Args
@@ -162,37 +254,13 @@ struct storage_type_t<global, DS, MD> {
     data_store_t & data_store,
     const const_string_t & key,
     size_t versions,
+    size_t indices,
+    size_t num_materials,
     Args && ... args
   )
   {
-    size_t h = key.hash() ^ data_client.runtime_id();
-
-    // Runtime assertion that this key is unique.
-    assert(data_store[NS].find(h) == data_store[NS].end() &&
-      "key already exists");
-
-    data_store[NS][h].user_data.initialize(std::forward<Args>(args) ...);
-
-    data_store[NS][h].label = key.c_str();
-    data_store[NS][h].size = 1;
-    data_store[NS][h].type_size = sizeof(T);
-    data_store[NS][h].versions = versions;
-    data_store[NS][h].rtti.reset(
-      new typename meta_data_t::type_info_t(typeid(T)));
-
-    for(size_t i=0; i<versions; ++i) {
-      data_store[NS][h].data[i].resize(sizeof(T));
-    } // for
-
-    // num_materials is unused for this storage type
-    data_store[NS][h].num_materials = 0;
-
-    return {};    
+    return {};
   } // register_data
-
-  //--------------------------------------------------------------------------//
-  // Data accessors.
-  //--------------------------------------------------------------------------//
 
   ///
   //
@@ -210,27 +278,28 @@ struct storage_type_t<global, DS, MD> {
     size_t version
   )
   {
-    const size_t h = key.hash() ^ data_client.runtime_id();
-    auto search = data_store[NS].find(h);
-
-    if(search == data_store[NS].end()) {
-      return {};
-    }
-    else {
-      auto & meta_data = search->second;
-          
-      // check that the requested version exists.
-      assert(meta_data.versions > version && "version out-of-range");
-
-      return { meta_data.label,
-        reinterpret_cast<T *>(&meta_data.data[version][0]),
-        meta_data.user_data };
-    } // if
+    return {};
   } // get_accessor
 
-  //--------------------------------------------------------------------------//
-  // Data handles.
-  //--------------------------------------------------------------------------//
+  ///
+  //
+  ///
+  template<
+    typename T,
+    size_t NS
+  >
+  static
+  mutator_t<T>
+  get_mutator(
+    data_client_t & data_client,
+    data_store_t & data_store,
+    const const_string_t & key,
+    size_t slots,
+    size_t version
+  )
+  {
+    return {};
+  } // get_accessor
 
   ///
   //
@@ -244,7 +313,8 @@ struct storage_type_t<global, DS, MD> {
   get_handle(
     data_client_t & data_client,
     data_store_t & data_store,
-    const const_string_t & key
+    const const_string_t & key,
+    size_t version
   )
   {
     return {};
@@ -252,11 +322,11 @@ struct storage_type_t<global, DS, MD> {
 
 }; // struct storage_type_t
 
-} // namespace serial
+} // namespace legion
 } // namespace data
 } // namespace flecsi
 
-#endif // flecsi_serial_global_h
+#endif // flecsi_legion_sparse_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

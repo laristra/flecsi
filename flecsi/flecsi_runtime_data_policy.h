@@ -20,7 +20,7 @@
 ///
 
 // Serial Policy
-//#if FLECSI_RUNTIME_MODEL_serial
+#if FLECSI_RUNTIME_MODEL_serial
 
   #include "flecsi/data/default_user_meta_data.h"
   #include "flecsi/data/serial/storage_policy.h"
@@ -28,7 +28,12 @@
   #define flecsi_storage_policy_t serial_storage_policy_t
 
 // Legion Policy
-//#elif FLECSI_RUNTIME_MODEL_legion
+#elif FLECSI_RUNTIME_MODEL_legion
+
+  #include "flecsi/data/default_user_meta_data.h"
+  #include "flecsi/data/legion/storage_policy.h"
+  #define flecsi_user_meta_data_policy_t default_user_meta_data_t
+  #define flecsi_storage_policy_t legion_storage_policy_t
 
 // MPI+Legion Policy
 //#elif FLECSI_RUNTIME_MODEL_mpilegion
@@ -36,7 +41,7 @@
 // MPI+Legion Policy
 //#elif FLECSI_RUNTIME_MODEL_mpi
 
-//#endif
+#endif
 
 #endif // flecsi_runtime_data_policy_h
 

@@ -51,6 +51,15 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
     DEFINES FLECSI_DRIVER=task_driver.h
     POLICY MPILEGION
     LIBRARIES flecsi)
+
+  cinch_add_unit(sprint
+    SOURCES
+      test/task.cc
+      mpilegion/runtime_driver.cc
+    INPUTS test/sprint.h
+    DEFINES FLECSI_DRIVER=sprint.h
+    POLICY MPILEGION
+    LIBRARIES flecsi)
 else()
   cinch_add_unit(task
     SOURCES

@@ -67,7 +67,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   ///
   // \brief Register data with the data manager.
   //
-  // \tparam DT Data type...
+  // \tparam ST Storage type...
   // \tparam T Type...
   // \tparam NS Namespace...
   // \tparam Args Variadic arguments...
@@ -80,7 +80,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   // \return Returns a handle to the newly registered data.
   ///
   template<
-    size_t DT,
+    size_t ST,
     typename T,
     size_t NS,
     typename ... Args
@@ -93,7 +93,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     Args && ... args
   )
   {
-    return st_t<DT>::template register_data<T, NS>(data_client,
+    return st_t<ST>::template register_data<T, NS>(data_client,
       sp_t::data_store_, key, versions,
       std::forward<Args>(args) ...);
   } // register_data
@@ -105,7 +105,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   ///
   // \brief get an accessor to registered data.
   //
-  // \tparam DT
+  // \tparam ST
   // \tparam T
   // \tparam NS
   //
@@ -114,7 +114,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   // \param[in] version
   ///
   template<
-    size_t DT,
+    size_t ST,
     typename T,
     size_t NS
   >
@@ -125,14 +125,14 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     size_t version=0
   )
   {
-    return st_t<DT>::template get_accessor<T, NS>(data_client,
+    return st_t<ST>::template get_accessor<T, NS>(data_client,
       sp_t::data_store_, key, version);
   } // get_accessor
 
   ///
   // \brief get an accessor to registered data.
   //
-  // \tparam DT
+  // \tparam ST
   // \tparam T
   // \tparam NS
   //
@@ -141,7 +141,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   // \param[in] version
   ///
   template<
-    size_t DT,
+    size_t ST,
     typename T,
     size_t NS
   >
@@ -152,7 +152,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     size_t slots, size_t version=0
   )
   {
-    return st_t<DT>::template get_mutator<T, NS>(data_client,
+    return st_t<ST>::template get_mutator<T, NS>(data_client,
       sp_t::data_store_, key, slots, version);
   } // get_mutator
 
@@ -161,7 +161,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   //        type \e T in namespace \e NS satisfying the predicate function
   //        \e predicate.
   //
-  // \tparam DT
+  // \tparam ST
   // \tparam T All state variables of this type will be returned.
   // \tparam NS Namespace to use.
   // \tparam P Predicate function type.
@@ -179,7 +179,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   //         match the namespace and predicate criteria.
   ///
   template<
-    size_t DT,
+    size_t ST,
     typename T,
     size_t NS,
     typename P
@@ -190,7 +190,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     P && predicate
   )
   {
-    return st_t<DT>::template get_accessors<T, NS, P>(data_client,
+    return st_t<ST>::template get_accessors<T, NS, P>(data_client,
       sp_t::data_store_, std::forward<P>(predicate));
   } // get_accessors
 
@@ -201,7 +201,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   ///
   // \brief get a handle to registered data.
   //
-  // \tparam DT
+  // \tparam ST
   // \tparam T
   // \tparam NS
   //
@@ -210,7 +210,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   // \param[in] version
   ///
   template<
-    size_t DT,
+    size_t ST,
     typename T,
     size_t NS
   >
@@ -221,7 +221,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     size_t version=0
   )
   {
-    return st_t<DT>::template get_handle<T, NS>(data_client,
+    return st_t<ST>::template get_handle<T, NS>(data_client,
       sp_t::data_store_, key, version);
   } // get_accessor
 
