@@ -27,10 +27,10 @@ void mpi_task(double val) {
   std::cout << "My rank: " << rank << std::endl;
 } // mpi_task
 
-register_task(mpi_task, mpi, void, double);
+register_task(mpi_task, mpi, index, void, double);
 
 void driver(int argc, char ** argv) {
-  execute_task(mpi_task, mpi, 1.0);
+  execute_task(mpi_task, mpi, index, 1.0);
 } // driver
 
 } // namespace execution
