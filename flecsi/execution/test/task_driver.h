@@ -77,9 +77,9 @@ void task1(double dval, int ival) {
 } // task1
 
 #if FLECSI_RUNTIME_MODEL_mpilegion
-register_task(task1, mpi, void, double, int);
+register_task(task1, mpi, index, void, double, int);
 #else
-register_task(task1, loc, void, double, int);
+register_task(task1, loc, single, void, double, int);
 #endif
 
 double task2(double x, double y, dense_field_t<double> p) {
@@ -89,8 +89,13 @@ double task2(double x, double y, dense_field_t<double> p) {
 //  return x*y;
 } // task2
 
-register_task(task2, loc, void, double, double, dense_field_t<double>);
+register_task(task2, loc, single, void, double, double, dense_field_t<double>);
 
+void task3(double val) {
+   std::cout << "Executing task3 with index launcher" << std::endl;
+}
+
+register_task(task3, loc, index, void, double);
 /*----------------------------------------------------------------------------*
  * Function registration.
  *----------------------------------------------------------------------------*/
@@ -178,11 +183,13 @@ void driver(int argc, char ** argv) {
   double alpha(10.0);
 
 #if FLECSI_RUNTIME_MODEL_mpilegion
-  execute_task(task1, mpi, alpha, 5);
+  execute_task(task1, mpi, index, alpha, 5);
 #else
-  execute_task(task1, loc, alpha, 5);
+  execute_task(task1, loc, single, alpha, 5);
 #endif
-  execute_task(task2, loc,  alpha, 5.0, p);
+  execute_task(task2, loc, single,  alpha, 5.0, p);
+
+  execute_task(task3, loc, index, 5.0);
 
   register_data(m, hydro, materials, 1, material_t, dense, cells);
 

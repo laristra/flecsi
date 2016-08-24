@@ -38,6 +38,31 @@
 namespace flecsi{
 namespace execution{
 
+class mpi_array_storage_t
+{
+  public:
+  mpi_array_storage_t(){};
+  ~mpi_array_storage_t(){};
+ // virtual void instance(void) = 0;
+};
+
+template <typename Type,  uint64_t N>
+class array__ : public mpi_array_storage_t{
+
+ public:
+  array__(){};
+  ~array__(){};
+
+  Type * accessor(void)
+  {
+   return array_.data();
+  }   
+
+  private: 
+  std::array<Type,N> array_;
+};
+
+
 class mpi_legion_interop_t
 {
   public:
@@ -158,6 +183,8 @@ class mpi_legion_interop_t
 
   Rect<2> all_processes_;
   Rect<1> local_procs_;
+
+  std::vector <std::shared_ptr<mpi_array_storage_t>> data_storage_;
 
   private:
   mpi_legion_interop_t(const mpi_legion_interop_t&);

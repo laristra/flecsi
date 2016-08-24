@@ -58,14 +58,29 @@ struct mpilegion_execution_policy_t
     task_hash_key_t key
   )
   {
-    switch(key.second) {
+  
+    switch(std::get<1>(key)) {
       case loc:
-        return context_t::instance().register_task(key,
-          legion_task_wrapper_<loc, 1, 0, R, As ...>::runtime_registration);
+        if (std::get<2>(key) == single)
+          return context_t::instance().register_task(key,
+            legion_task_wrapper_<loc, 1, 0, R, As ...>::runtime_registration);
+        if (std::get<2>(key) == index)
+          return context_t::instance().register_task(key,
+            legion_task_wrapper_<loc, 0, 1, R, As ...>::runtime_registration);
+        if (std::get<2>(key) == any)
+          return context_t::instance().register_task(key,
+            legion_task_wrapper_<loc, 1, 1, R, As ...>::runtime_registration);
         break;
       case toc:
-        return context_t::instance().register_task(key,
-          legion_task_wrapper_<toc, 1, 0, R, As ...>::runtime_registration);
+        if (std::get<2>(key) == single)
+          return context_t::instance().register_task(key,
+            legion_task_wrapper_<toc, 1, 0, R, As ...>::runtime_registration);
+        if (std::get<2>(key) == index)
+          return context_t::instance().register_task(key,
+            legion_task_wrapper_<toc, 0, 1, R, As ...>::runtime_registration);
+        if (std::get<2>(key) == any)
+          return context_t::instance().register_task(key,
+            legion_task_wrapper_<toc, 1, 1, R, As ...>::runtime_registration);
         break;
       case mpi:
        return true;
@@ -96,7 +111,7 @@ struct mpilegion_execution_policy_t
     // task is invoked, i.e., we have to use copies...
     task_args_t task_args(user_task, args ...);
  
-    if(key.second == mpi) {
+    if(std::get<1>(key) == mpi) {
      context_.interop_helper_.shared_func_=std::bind(user_task,
          std::forward<As>(args) ...);
       context_.interop_helper_.call_mpi_=true;
@@ -110,11 +125,26 @@ struct mpilegion_execution_policy_t
       return 0;
     }
     else {
-      TaskLauncher task_launcher(context_.task_id(key),
-         TaskArgument(&task_args, sizeof(task_args_t)));
+      if(std::get<2>(key) == single){
+        TaskLauncher task_launcher(context_.task_id(key),
+          TaskArgument(&task_args, sizeof(task_args_t)));
+        context_.runtime()->execute_task(context_.context(),task_launcher);
+      }
+      else{
+    //FIXME: get launch domain from partitioning of the data used in the task
+    //    currently we use launch domain from interop_helper.
 
-       context_.runtime()->execute_task(context_.context(),
-         task_launcher);
+        LegionRuntime::HighLevel::ArgumentMap arg_map;
+        LegionRuntime::HighLevel::IndexLauncher index_launcher(
+          context_.task_id(key),
+          LegionRuntime::HighLevel::Domain::from_rect<2>(
+                    context_.interop_helper_.all_processes_),
+          TaskArgument(&task_args, sizeof(task_args_t)),
+          arg_map);
+          context_.runtime()->execute_index_space(context_.context(),
+                            index_launcher);
+       }//end if std::get<2>(key)
+
       //TOFIX:: need to return Future
       return 0;
     } // if

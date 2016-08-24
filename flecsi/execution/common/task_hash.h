@@ -7,6 +7,7 @@
 #define flecsi_execution_task_hash_h
 
 #include "flecsi/execution/common/processor.h"
+#include "flecsi/execution/common/launch.h"
 
 ///
 // \file task_hash.h
@@ -33,7 +34,7 @@ namespace execution {
 ///
 struct task_hash_t
 {
-  using key_t = std::pair<uintptr_t, processor_t>;
+  using key_t = std::tuple<uintptr_t, processor_t, launch_t>;
 
   ///
   // Make a key from a task address (uintptr_t) and a processor type.
@@ -44,10 +45,11 @@ struct task_hash_t
   key_t
   make_key(
     uintptr_t address,
-    processor_t processor
+    processor_t processor,
+    launch_t launch_type
   )
   {
-    return std::make_pair(address, processor);
+    return std::make_tuple(address, processor, launch_type);
   } // make_key
 
   ///
@@ -60,7 +62,7 @@ struct task_hash_t
   const
   {
     // FIXME: We can use a better hash strategy
-    return (k.first << 4) ^ k.second;
+    return (std::get<0>(k) << 8) ^ (std::get<1>(k) << 4) ^ std::get<2>(k);
   } // operator ()
 
 }; // task_hash_t
