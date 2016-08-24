@@ -38,7 +38,7 @@
 
 // MPI+Legion Policy
 #elif defined(FLECSI_RUNTIME_MODEL_mpi)
-
+  #error "This policy is not yet implemented!"
 #endif // FLECSI_RUNTIME_MODEL
 
 #endif // flecsi_runtime_data_policy_h

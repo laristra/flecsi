@@ -7,6 +7,7 @@
 #define flecsi_task_h
 
 #include "flecsi/execution/common/processor.h"
+#include "flecsi/execution/common/launch.h"
 #include "flecsi/execution/common/task_hash.h"
 
 ///
@@ -39,11 +40,12 @@ struct task__
   decltype(auto)
   register_task(
     uintptr_t address,
-    processor_t processor
+    processor_t processor,
+    launch_t launch_type
   )
   {
     return execution_policy_t::template register_task<R, Args...>(
-      task_hash_t::make_key(address, processor));
+      task_hash_t::make_key(address, processor, launch_type));
   } // register_task
 
   ///
@@ -55,11 +57,12 @@ struct task__
   execute_task(
     uintptr_t address,
     processor_t processor,
+    launch_t launch_type,
     Args && ... args
   )
   {
     return execution_policy_t::execute_task(
-      task_hash_t::make_key(address, processor),
+      task_hash_t::make_key(address, processor,launch_type),
         std::forward<Args>(args) ...);
   } // execute
 

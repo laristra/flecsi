@@ -58,14 +58,28 @@ struct legion_execution_policy_t
     task_hash_key_t key
   )
   {
-    switch(key.second) {
+    switch(std::get<1>(key)) {
       case loc:
-        return context_t::instance().register_task(key,
-          legion_task_wrapper_<loc, 1, 0, R, As ...>::runtime_registration);
+        if (std::get<2>(key) == single)
+          return context_t::instance().register_task(key,
+            legion_task_wrapper_<loc, 1, 0, R, As ...>::runtime_registration);
+        if (std::get<2>(key) == index)
+          return context_t::instance().register_task(key,
+            legion_task_wrapper_<loc, 0, 1, R, As ...>::runtime_registration);
+        if (std::get<2>(key) == any)
+          return context_t::instance().register_task(key,
+            legion_task_wrapper_<loc, 1, 1, R, As ...>::runtime_registration);
         break;
       case toc:
-        return context_t::instance().register_task(key,
-          legion_task_wrapper_<toc, 1, 0, R, As ...>::runtime_registration);
+        if (std::get<2>(key) == single)
+          return context_t::instance().register_task(key,
+            legion_task_wrapper_<toc, 1, 0, R, As ...>::runtime_registration);
+        if (std::get<2>(key) == index)
+          return context_t::instance().register_task(key,
+            legion_task_wrapper_<toc, 0, 1, R, As ...>::runtime_registration);
+        if (std::get<2>(key) == any)
+          return context_t::instance().register_task(key,
+            legion_task_wrapper_<toc, 1, 1, R, As ...>::runtime_registration);
         break;
       default: throw std::runtime_error("unsupported processor type");
     } // switch
@@ -102,15 +116,33 @@ struct legion_execution_policy_t
     // task is invoked, i.e., we have to use copies...
     task_args_t task_args(user_task, args ...);
 
-    // FIXME: Need to handle different launcher types
-    // This will likely require exposing the launch type
-    // through the context interface...
-    TaskLauncher task_launcher(context_.task_id(key),
-      TaskArgument(&task_args, sizeof(task_args_t)));
+      if (std::get<2>(key)==single){
+        TaskLauncher task_launcher(context_.task_id(key),
+          TaskArgument(&task_args, sizeof(task_args_t)));
+        context_.runtime()->execute_task(context_.context(),task_launcher);
+       //FIXME: return Future
+       return 0;
+      }
+      else{
+     //FIXME: get launch domain from partitioning of the data used in the task
+       //following launch domeing calculation is temporary:
+       Rect<1> launch_bounds(Point<1>(0),Point<1>(5));
+       Domain launch_domain = Domain::from_rect<1>(launch_bounds);
+
+        LegionRuntime::HighLevel::ArgumentMap arg_map;
+        LegionRuntime::HighLevel::IndexLauncher index_launcher(
+          context_.task_id(key),
+          launch_domain,
+          TaskArgument(&task_args, sizeof(task_args_t)),
+          arg_map);
+          context_.runtime()->execute_index_space(context_.context(),
+                            index_launcher);
+          //FEXME: return FUtureMap
+          return 0;
+        } //end if
 
     // FIXME: Add region requirements and fields
 
-    return context_.runtime()->execute_task(context_.context(), task_launcher);
   } // execute_task
 
   /*--------------------------------------------------------------------------*

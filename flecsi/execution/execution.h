@@ -28,21 +28,21 @@
 ///
 //
 ///
-#define register_task(task, processor, return_type, ...)                \
+#define register_task(task, processor, task_type, return_type, ...)                \
   using user_task_delegate_ ## task ## _t =                             \
     std::function<return_type(__VA_ARGS__)>;                            \
   bool task ## _task_registered =                                       \
     flecsi::execution::task_t::register_task<return_type, __VA_ARGS__>( \
-    reinterpret_cast<uintptr_t>(&task), processor);
+    reinterpret_cast<uintptr_t>(&task), processor, task_type);
 
 ///
 //
 ///
-#define execute_task(task, processor, ...)                         \
+#define execute_task(task, processor,task_type, ...)                         \
   user_task_delegate_ ## task ## _t task ## _task_delegate = task; \
   flecsi::execution::task_t::execute_task(                         \
     reinterpret_cast<uintptr_t>(&task),                            \
-    processor, task ## _task_delegate, ## __VA_ARGS__)
+    processor, task_type, task ## _task_delegate, ## __VA_ARGS__)
 
 //----------------------------------------------------------------------------//
 // Function Interface
