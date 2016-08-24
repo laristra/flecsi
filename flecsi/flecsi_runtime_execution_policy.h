@@ -20,34 +20,34 @@
 ///
 
 // Serial Policy
-#if FLECSI_RUNTIME_MODEL_serial
+#if defined(FLECSI_RUNTIME_MODEL_serial)
 
   #include "flecsi/execution/serial/execution_policy.h"
   #define flecsi_execution_policy_t \
     flecsi::execution::serial_execution_policy_t
 
 // Legion Policy
-#elif FLECSI_RUNTIME_MODEL_legion
+#elif defined(FLECSI_RUNTIME_MODEL_legion)
 
   #include "flecsi/execution/legion/execution_policy.h"
   #define flecsi_execution_policy_t \
     flecsi::execution::legion_execution_policy_t
 
 // MPI+Legion Policy
-#elif FLECSI_RUNTIME_MODEL_mpilegion
+#elif defined(FLECSI_RUNTIME_MODEL_mpilegion)
 
   #include "flecsi/execution/mpilegion/execution_policy.h"
   #define flecsi_execution_policy_t \
     flecsi::execution::mpilegion_execution_policy_t
 
 // MPI+Legion Policy
-#elif FLECSI_RUNTIME_MODEL_mpi
+#elif defined(FLECSI_RUNTIME_MODEL_mpi)
 
   #include "flecsi/execution/mpi/execution_policy.h"
   #define flecsi_execution_policy_t \
     flecsi::execution::mpi_execution_policy_t
 
-#endif
+#endif // FLECSI_RUNTIME_MODEL
 
 #endif // flecsi_runtime_execution_policy_h
 

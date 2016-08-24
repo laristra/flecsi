@@ -5,7 +5,6 @@
 
 #include <cinchtest.h>
 #include <cmath>
-#include <cstdlib>
 
 #include "flecsi/partition/index_partition.h"
 
@@ -17,6 +16,7 @@ static constexpr size_t ranks = 2;
 
 TEST(index_partition, basic) {
 
+#if 0
   index_partition_t ip;
   auto parts = std::ldiv(N, ranks);
 
@@ -53,6 +53,7 @@ TEST(index_partition, basic) {
     std::cout << l << " ";
   } // for
   std::cout << std::endl;
+#endif
 
 } // TEST
 
