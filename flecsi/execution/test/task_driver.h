@@ -76,7 +76,11 @@ void task1(double dval, int ival) {
   std::cout << "Value(int): " << ival << std::endl;
 } // task1
 
+#if FLECSI_RUNTIME_MODEL_mpilegion
+register_task(task1, mpi, void, double, int);
+#else
 register_task(task1, loc, void, double, int);
+#endif
 
 double task2(double x, double y, dense_field_t<double> p) {
   std::cout << "Executing task2" << std::endl;
@@ -173,7 +177,11 @@ void driver(int argc, char ** argv) {
   auto p = register_data(m, hydro, pressure, 1, double, dense, cells);
   double alpha(10.0);
 
+#if FLECSI_RUNTIME_MODEL_mpilegion
+  execute_task(task1, mpi, alpha, 5);
+#else
   execute_task(task1, loc, alpha, 5);
+#endif
   execute_task(task2, loc,  alpha, 5.0, p);
 
   register_data(m, hydro, materials, 1, material_t, dense, cells);

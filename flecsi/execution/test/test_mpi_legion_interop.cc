@@ -46,6 +46,11 @@ using namespace LegionRuntime::Arrays;
 static mpi_legion_interop_t InteropHelper;
 ext_legion_handshake_t &handshake=ext_legion_handshake_t::instance(); 
 
+void print_task(void)
+{
+  std::cout<<"print_task from MPI"<<std::endl;
+}
+
 /* ------------------------------------------------------------------------- */
  void top_level_task(const Task *task,
                     const std::vector<PhysicalRegion> &regions,
@@ -69,7 +74,21 @@ ext_legion_handshake_t &handshake=ext_legion_handshake_t::instance();
      runtime->execute_index_space(ctx, helloworld_launcher);
   fm2.wait_all_results();
   //handoff to MPI
+
+  InteropHelper.shared_func_=std::bind(print_task);  
+  InteropHelper.call_mpi_=true;
+
   InteropHelper.handoff_to_mpi(ctx, runtime);
+
+  InteropHelper.wait_on_mpi(ctx, runtime);
+
+  std::cout<< "back to TLT after MPI" <<std::endl;
+  
+   InteropHelper.call_mpi_=false;
+
+  InteropHelper.handoff_to_mpi(ctx, runtime);
+
+   
  }
 
 /* ------------------------------------------------------------------------- */
@@ -112,8 +131,20 @@ void my_init_legion(){
   std::cout<<"before handoff_to_legion" <<std::endl;
   InteropHelper.handoff_to_legion();
 
-  InteropHelper.wait_on_legion(); 
+  InteropHelper.wait_on_legion();
+
+  while(InteropHelper.call_mpi_)
+     {
+       InteropHelper.shared_func_();
+       InteropHelper.handoff_to_legion();
+       InteropHelper.wait_on_legion();
+     }
+
+ InteropHelper.wait_on_legion();
   std::cout<<"back to MPI to finalize"<<std::endl;
+
+
+
 }
 
 /* ------------------------------------------------------------------------- */

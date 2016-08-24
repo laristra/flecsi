@@ -50,7 +50,7 @@ public:
   runtime_id(
   ) const
   {
-    return reinterpret_cast<uintptr_t>(this+id_);
+    return (reinterpret_cast<uintptr_t>(this) << 4) ^ id_;
   } // runtime_id
 
   // FIXME: This needs to be made pure virtual
