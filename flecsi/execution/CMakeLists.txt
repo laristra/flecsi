@@ -39,7 +39,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
       test/task.cc
       test/task_driver.h
       legion/runtime_driver.cc
-    DEFINES FLECSI_DRIVER=test/task_driver.h
+    DEFINES FLECSI_DRIVER=flecsi/execution/test/task_driver.h
     POLICY LEGION
     LIBRARIES flecsi)
 elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
@@ -48,7 +48,7 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
       test/task.cc
       test/task_driver.h
       mpilegion/runtime_driver.cc
-    DEFINES FLECSI_DRIVER=test/task_driver.h
+    DEFINES FLECSI_DRIVER=flecsi/execution/test/task_driver.h
     POLICY MPILEGION
     LIBRARIES flecsi)
 
@@ -57,7 +57,7 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
       test/task.cc
       test/sprint.h
       mpilegion/runtime_driver.cc
-    DEFINES FLECSI_DRIVER=test/sprint.h
+    DEFINES FLECSI_DRIVER=flecsi/execution/test/sprint.h
     POLICY MPILEGION
     LIBRARIES flecsi)
 else()
@@ -66,7 +66,7 @@ else()
       test/task.cc
       test/task_driver.h
       serial/runtime_driver.cc
-    DEFINES FLECSI_DRIVER=test/task_driver.h
+    DEFINES FLECSI_DRIVER=flecsi/execution/test/task_driver.h
     LIBRARIES flecsi)
 endif()
 
