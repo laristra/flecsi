@@ -24,7 +24,7 @@ struct index_partition__
 {
   using identifier_t = T;
 
-  std::vector<identifier_t> independent;
+  std::vector<identifier_t> exclusive;
   std::vector<identifier_t> shared;
   std::vector<identifier_t> ghost;
 }; // class partition__

@@ -15,7 +15,7 @@
 #ifndef flecsi_data_storage_type_h
 #define flecsi_data_storage_type_h
 
-#ifndef POLICY_NAMSPACE
+#ifndef POLICY_NAMESPACE
   #error "You must define a data policy namespace before including this file."
 #endif
 
@@ -29,7 +29,7 @@
 
 namespace flecsi {
 namespace data {
-namespace POLICY_NAMSPACE {
+namespace POLICY_NAMESPACE {
 
   ///
   // \struct storage_type_t
@@ -41,7 +41,7 @@ namespace POLICY_NAMSPACE {
   template<size_t T, typename ST, typename MD>
   struct storage_type_t {};
 
-} // namespace POLICY_NAMSPACE
+} // namespace POLICY_NAMESPACE
 } // namespace data
 } // namespace flecsi
 

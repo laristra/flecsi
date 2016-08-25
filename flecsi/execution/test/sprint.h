@@ -40,8 +40,10 @@ void mpi_task(double val) {
   size_t start = rank*(part + (rem > 0 ? 1 : 0));
   size_t end = rank < rem ? start + part+1 : start + part;
 
-  //std::cout << "rank: " << rank << " start: " << start <<
-  //  " end: " << end << std::endl;
+#if 0
+  std::cout << "rank: " << rank << " start: " << start <<
+    " end: " << end << std::endl;
+#endif
 
   index_partition_t ip;
 
@@ -49,19 +51,18 @@ void mpi_task(double val) {
     for(size_t i(start); i<end; ++i) {
       const size_t id = j*N+i;
 
-      // independent
+      // exclusive
       if(i>start && i<end-1) {
-        ip.independent.push_back(id);
-
-        //std::cout << "rank: " << rank << " independent: " << id << std::endl;
+        ip.exclusive.push_back(id);
+        //std::cout << "rank: " << rank << " exclusive: " << id << std::endl;
       }
       else if(rank == 0 && i==start) {
-        ip.independent.push_back(id);
-        //std::cout << "rank: " << rank << " independent: " << id << std::endl;
+        ip.exclusive.push_back(id);
+        //std::cout << "rank: " << rank << " exclusive: " << id << std::endl;
       }
       else if(rank == size-1 && i==end-1) {
-        ip.independent.push_back(id);
-        //std::cout << "rank: " << rank << " independent: " << id << std::endl;
+        ip.exclusive.push_back(id);
+        //std::cout << "rank: " << rank << " exclusive: " << id << std::endl;
       }
       else if(i==start) {
         ip.shared.push_back(id);
@@ -85,10 +86,10 @@ void mpi_task(double val) {
 
 } // mpi_task
 
-register_task(mpi_task, mpi, index, void, double);
+register_task(mpi_task, mpi, single, void, double);
 
 void driver(int argc, char ** argv) {
-  execute_task(mpi_task, mpi, index, 1.0);
+  execute_task(mpi_task, mpi, single, 1.0);
 } // driver
 
 } // namespace execution
