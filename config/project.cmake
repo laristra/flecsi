@@ -20,6 +20,7 @@ project(flecsi)
 
 cinch_add_application_directory("examples")
 cinch_add_application_directory("examples/agile")
+cinch_add_application_directory("bin")
 
 #------------------------------------------------------------------------------#
 # Add library targets
