@@ -1998,7 +1998,7 @@ private:
   void dealloc_(){
     if(children_){
       for(size_t i = 0; i < num_children; ++i){
-        static_cast<B*>(children_)[i].dealloc_<B>(); 
+        static_cast<B*>(children_)[i].template dealloc_<B>(); 
       }
 
       delete[] static_cast<B*>(children_);

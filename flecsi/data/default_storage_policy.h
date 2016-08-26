@@ -393,7 +393,7 @@ class default_data_storage_policy_t
      */
     global_accessor_t(const std::string & label, const size_t size, T * data,
         const user_meta_data_t & meta)
-        : label_(label), size_(1), data_(data), meta_(meta), is_(1)
+        : label_(label), size_(1), data_(data), meta_(&meta), is_(1)
     {
     }
 
@@ -522,14 +522,14 @@ class default_data_storage_policy_t
 
       \return The user meta data.
      */
-    const user_meta_data_t & meta() const { return meta_; }
+    const user_meta_data_t & meta() const { return *meta_; }
 
    private:
 
     std::string label_ = "";
     size_t size_ = 0;
     T * data_ = nullptr;
-    const user_meta_data_t & meta_ = user_meta_data_t();
+    const user_meta_data_t * meta_ = nullptr;
     index_space_t is_;
 
   }; // struct global_accessor_t
@@ -569,7 +569,7 @@ class default_data_storage_policy_t
      */
     dense_accessor_t(const std::string & label, const size_t size, T * data,
         const user_meta_data_t & meta)
-        : label_(label), size_(size), data_(data), meta_(meta), is_(size_)
+        : label_(label), size_(size), data_(data), meta_(&meta), is_(size_)
     {
     }
 
@@ -672,7 +672,7 @@ class default_data_storage_policy_t
 
       \return The user meta data.
      */
-    const user_meta_data_t & meta() const { return meta_; }
+    const user_meta_data_t & meta() const { return *meta_; }
 
     /*!
       \brief Return an iterator to the beginning of this data data.
@@ -699,7 +699,7 @@ class default_data_storage_policy_t
     std::string label_ = "";
     size_t size_ = 0;
     T * data_ = nullptr;
-    const user_meta_data_t & meta_ = user_meta_data_t();
+    const user_meta_data_t * meta_ = nullptr;
     index_space_t is_;
 
   }; // struct dense_accessor_t
@@ -738,7 +738,7 @@ class default_data_storage_policy_t
      */
     sparse_accessor_t(const std::string & label, const size_t size, T * data,
         const user_meta_data_t & meta)
-        : label_(label), size_(size), data_(data), meta_(meta), is_(size_)
+        : label_(label), size_(size), data_(data), meta_(&meta), is_(size_)
     {
     }
 
@@ -839,7 +839,7 @@ class default_data_storage_policy_t
 
       \return The user meta data.
      */
-    const user_meta_data_t & meta() const { return meta_; }
+    const user_meta_data_t & meta() const { return *meta_; }
 
     /*!
       \brief Return an iterator to the beginning of this data data.
@@ -866,7 +866,7 @@ class default_data_storage_policy_t
     std::string label_ = "";
     size_t size_ = 0;
     T * data_ = nullptr;
-    const user_meta_data_t & meta_ = user_meta_data_t();
+    const user_meta_data_t * meta_ = nullptr;
     index_space_t is_;
 
   }; // struct sparse_accessor_t

@@ -40,7 +40,7 @@ public:
   // FIXME: can we make it a pure virtual function?
   virtual
   std::vector<size_t>
-  create_entities(flecsi::id_t cell_id, size_t dim, domain_connectivity<2> & c, flecsi::id_t * e){}
+  create_entities(flecsi::id_t cell_id, size_t dim, domain_connectivity<2> & c, flecsi::id_t * e) = 0;
 };
 
 class sagittarius_quad_t : public sagittarius_cell_t {
