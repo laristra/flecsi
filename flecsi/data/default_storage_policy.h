@@ -529,7 +529,7 @@ class default_data_storage_policy_t
     std::string label_ = "";
     size_t size_ = 0;
     T * data_ = nullptr;
-    const user_meta_data_t * meta_ = nullptr;
+    const user_meta_data_t * const meta_ = nullptr;
     index_space_t is_;
 
   }; // struct global_accessor_t
@@ -699,7 +699,7 @@ class default_data_storage_policy_t
     std::string label_ = "";
     size_t size_ = 0;
     T * data_ = nullptr;
-    const user_meta_data_t * meta_ = nullptr;
+    const user_meta_data_t * const meta_ = nullptr;
     index_space_t is_;
 
   }; // struct dense_accessor_t
@@ -866,7 +866,7 @@ class default_data_storage_policy_t
     std::string label_ = "";
     size_t size_ = 0;
     T * data_ = nullptr;
-    const user_meta_data_t * meta_ = nullptr;
+    const user_meta_data_t * const meta_ = nullptr;
     index_space_t is_;
 
   }; // struct sparse_accessor_t
