@@ -72,7 +72,11 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   endif(NOT legion_FOUND)
   
   include_directories(${LEGION_INCLUDE_DIRS})
-  set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES} -ldl)
+  if(NOT APPLE)
+    set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES} -ldl)
+  else()
+    message("Skipping -ldl because APPLE")
+  endif()
 
 #
 # MPI interface

@@ -21,6 +21,7 @@
 #include <typeinfo>
 #include <cassert>
 
+#include "flecsi/utils/humble.h"
 #include "flecsi/utils/index_space.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/data/data_constants.h"
@@ -126,7 +127,7 @@ struct default_storage_policy_t {
 
   // Storage container instance
   storage_t storage_;
-}; // struct
+}; // struct default_storage_policy_t
 
 /*----------------------------------------------------------------------------*
  * class default_data_storage_policy_t
@@ -963,6 +964,7 @@ class default_data_storage_policy_t
       auto & meta_data = search->second;
       return {meta_data.label, meta_data.size,
           reinterpret_cast<T *>(&meta_data.data[0]),
+          /*  */
           meta_data.user_data};
     }
   } // accessor

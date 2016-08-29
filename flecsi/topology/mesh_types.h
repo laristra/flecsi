@@ -30,6 +30,7 @@
 #include "flecsi/data/data_client.h"
 #include "flecsi/topology/mesh_utils.h"
 #include "flecsi/utils/array_ref.h"
+#include "flecsi/utils/reorder.h"
 
 namespace flecsi {
 namespace topology {
@@ -423,25 +424,31 @@ class connectivity_t
   /*!
     Debugging method. Dump the raw vectors of the connection.
    */
-  void dump()
+  std::ostream & dump( std::ostream & stream )
   {
     for (size_t i = 1; i < from_index_vec_.size(); ++i) {
       for (size_t j = from_index_vec_[i - 1]; j < from_index_vec_[i]; ++j) {
-        std::cout << to_id_vec_[j].entity() << std::endl;
-        // std::cout << to_id_vec_[j] << std::endl;
+        stream << to_id_vec_[j].entity() << std::endl;
+        // stream << to_id_vec_[j] << std::endl;
       }
-      std::cout << std::endl;
+      stream << std::endl;
     }
 
-    std::cout << "=== id_vec" << std::endl;
+    stream << "=== id_vec" << std::endl;
     for (id_t id : to_id_vec_) {
-      std::cout << id.entity() << std::endl;
+      stream << id.entity() << std::endl;
     } // for
 
-    std::cout << "=== group_vec" << std::endl;
+    stream << "=== group_vec" << std::endl;
     for (size_t index : from_index_vec_) {
-      std::cout << index << std::endl;
+      stream << index << std::endl;
     } // for
+    return stream;
+  } // dump
+
+  void dump()
+  {
+    dump( std::cout );
   } // dump
 
   /*!
@@ -496,6 +503,19 @@ class connectivity_t
     std::reverse( to_id_vec_.begin() + start, to_id_vec_.begin() + end );
   }
 
+
+  /*!
+    Get the entities of the specified from index and return the count.
+   */
+  template< class U >
+  void reorder_entities(size_t index, U && order)
+  {
+    assert(index < from_index_vec_.size() - 1);
+    auto start = from_index_vec_[index];
+    auto count = from_index_vec_[index + 1] - start;
+    assert( order.size() == count );
+    utils::reorder( order.begin(), order.end(), to_id_vec_.data() + start );
+  }
 
   /*!
     True if the connectivity is empty (hasn't been populated).
@@ -659,15 +679,21 @@ public:
     return conn.get_entity_vec( from_id.entity() );
   }
 
-  void dump(){
+  std::ostream & dump( std::ostream & stream )
+  {
     for(size_t i = 0; i < conns_.size(); ++i){
       auto & ci = conns_[i];
       for(size_t j = 0; j < ci.size(); ++j){
         auto & cj = ci[j];
-        std::cout << "------------- " << i << " -> " << j << std::endl;
-        cj.dump();
+        stream << "------------- " << i << " -> " << j << std::endl;
+        cj.dump( stream );
       }
     }
+    return stream;
+  }
+
+  void dump(){
+    dump( std::cout );
   }
 
 private:
