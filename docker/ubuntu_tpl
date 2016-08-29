@@ -21,7 +21,6 @@ RUN apt-get -qq install -y libopenmpi-dev openmpi-bin  python-pip g++-6 gfortran
 USER flecsi
 
 RUN if [ ${COVERAGE}  ]; then pip install --user codecov; fi
-RUN if [ ${WERROR} ]; then export CXXFLAGS="-Werror"; fi
 
 WORKDIR /tmp
 RUN git clone --recursive https://github.com/losalamos/flecsi.git
@@ -41,7 +40,8 @@ RUN if [ ${TRAVIS} = true ]; then \
 RUN mkdir build
 
 WORKDIR build
-RUN CC=gcc-6 CXX=g++-6 cmake -DENABLE_MPI=$MPI \
+RUN if [ ${WERROR} ]; then export CXXFLAGS="-Werror"; fi; \
+    CC=gcc-6 CXX=g++-6 cmake -DENABLE_MPI=$MPI \
           -DCMAKE_PREFIX_PATH=${HOME}/tpl \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON \
