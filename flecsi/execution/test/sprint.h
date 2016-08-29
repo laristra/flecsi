@@ -23,6 +23,7 @@ namespace flecsi {
 namespace execution {
 
 using index_partition_t = dmp::index_partition__<size_t>;
+static mpi_legion_interop_t InteropHelper;
 
 static const size_t N = 8;
 
@@ -40,7 +41,9 @@ void mpi_task(double val) {
   size_t start = rank*(part + (rem > 0 ? 1 : 0));
   size_t end = rank < rem ? start + part+1 : start + part;
 
-#if 0
+  
+                      
+#if 1
   std::cout << "rank: " << rank << " start: " << start <<
     " end: " << end << std::endl;
 #endif
@@ -83,13 +86,48 @@ void mpi_task(double val) {
 
     } // for
   } // for
+  array__<std::shared_ptr<index_partition_t>,3> *array =
+    new array__<std::shared_ptr<index_partition_t>, 3>();
+
+  (*array)[0] = std::make_shared<index_partition_t> (ip); 
+
+#if 0 
+  array__<int,3> *array_2 =
+    new array__<int,  3>();
+  (*array_2)[0] = 1; 
+#endif
+  
+  InteropHelper.data_storage_.push_back(
+    std::shared_ptr<mpi_array_storage_t>(array));
+  
 
 } // mpi_task
-
+  
 register_task(mpi_task, mpi, single, void, double);
+  
+void init_part_task(double val) {
+  int rank; 
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  std::cout << " legion task rank is " << rank << " val is: " << val << std::endl;
+  
+  auto array =
+    InteropHelper.data_storage_[0];
+
+#if 1
+  //array__<std::shared_ptr<index_partition_t>, 3> array2;
+  //array2   = *array;
+  index_partition_t ip = (*array)[0];
+#endif
+  
+}   
+
+register_task(init_part_task, loc, index, void, double);
+
 
 void driver(int argc, char ** argv) {
   execute_task(mpi_task, mpi, single, 1.0);
+  execute_task(init_part_task, loc, index, 2.0);
+  
 } // driver
 
 } // namespace execution

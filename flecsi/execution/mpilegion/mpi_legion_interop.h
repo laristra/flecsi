@@ -56,8 +56,17 @@ class array__ : public mpi_array_storage_t{
   Type * accessor(void)
   {
    return array_.data();
-  }   
-
+  }
+  
+  virtual Type& operator[](std::size_t idx)
+  {
+    return array_[idx];
+  }
+  virtual const Type& operator[](std::size_t idx) const
+  {
+    return array_[idx];
+  }
+  
   private: 
   std::array<Type,N> array_;
 };
