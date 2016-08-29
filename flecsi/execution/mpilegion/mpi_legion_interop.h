@@ -28,6 +28,7 @@
 #include "flecsi/execution/mpilegion/legion_handshake.h"
 #include "flecsi/execution/mpilegion/mapper.h"
 #include "flecsi/execution/mpilegion/task_ids.h"
+#include "flecsi/partition/index_partition.h"
 
 /*!
 * \file mpilegion/mpi_legion_interop.h
@@ -40,10 +41,14 @@ namespace execution{
 
 class mpi_array_storage_t
 {
+  using index_p_type =flecsi::dmp::index_partition__<size_t> ;
+// dmp::index_partition__<size_t>;
   public:
   mpi_array_storage_t(){};
   ~mpi_array_storage_t(){};
- // virtual void instance(void) = 0;
+  virtual  index_p_type* accessor(void) = 0;
+  virtual index_p_type& operator[](std::size_t idx) =0;
+  virtual const index_p_type& operator[](std::size_t idx) const =0;
 };
 
 template <typename Type,  uint64_t N>
@@ -58,11 +63,11 @@ class array__ : public mpi_array_storage_t{
    return array_.data();
   }
   
-  virtual Type& operator[](std::size_t idx)
+  Type& operator[](std::size_t idx)
   {
     return array_[idx];
   }
-  virtual const Type& operator[](std::size_t idx) const
+  const Type& operator[](std::size_t idx) const
   {
     return array_[idx];
   }

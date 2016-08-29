@@ -86,10 +86,10 @@ void mpi_task(double val) {
 
     } // for
   } // for
-  array__<std::shared_ptr<index_partition_t>,3> *array =
-    new array__<std::shared_ptr<index_partition_t>, 3>();
+  array__<index_partition_t,3> *array =
+    new array__<index_partition_t, 3>();
 
-  (*array)[0] = std::make_shared<index_partition_t> (ip); 
+  (*array)[0] = ip; 
 
 #if 0 
   array__<int,3> *array_2 =

@@ -141,9 +141,11 @@ void my_init_legion(){
      }
 
  //check data_storage_
- array__<double,5> *array=new array__<double,5>();
- InteropHelper.data_storage_.push_back(
-            std::shared_ptr<mpi_array_storage_t>(array));
+ //TOFIX:
+// using index_partition_t = dmp::index_partition__<size_t>;
+// array__<index_partition_t,5> *array=new array__<index_partition_t,5>();
+// InteropHelper.data_storage_.push_back(
+//           std::shared_ptr<mpi_array_storage_t>(array));
 
  InteropHelper.wait_on_legion();
   std::cout<<"back to MPI to finalize"<<std::endl;
