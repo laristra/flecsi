@@ -57,6 +57,7 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
       test/task.cc
       test/sprint.h
       mpilegion/runtime_driver.cc
+    DEFINES SPRINT_TEST
     DEFINES FLECSI_DRIVER=flecsi/execution/test/sprint.h
     POLICY MPILEGION
     LIBRARIES flecsi)

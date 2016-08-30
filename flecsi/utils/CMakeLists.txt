@@ -33,6 +33,7 @@ set(utils_HEADERS
   tuple_visit.h    detail/tuple_visit.h
   tuple_zip.h      detail/tuple_zip.h
   zip.h            detail/zip.h
+  any.h
   )
 
 set(utils_SOURCES
@@ -92,6 +93,9 @@ cinch_add_unit(tuple_visit
 
 cinch_add_unit(tuple_zip
   SOURCES test/tuple_zip.cc)
+
+cinch_add_unit(any
+  SOURCES test/any.cc)
  
 if (ENABLE_STATIC_CONTAINER)
 cinch_add_unit(meta_container

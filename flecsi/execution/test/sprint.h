@@ -114,6 +114,10 @@ void mpi_task(double val) {
 register_task(mpi_task, mpi, single, void, double);
   
 void init_part_task(double val) {
+  // context_t & context_ = context_t::instance();
+  // assert((context_.regions()).size() == 1);
+  // assert((context_.task())->regions.size() == 1);
+   
   int rank; 
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   std::cout << " legion task rank is " << rank << " val is: " << val << std::endl;
