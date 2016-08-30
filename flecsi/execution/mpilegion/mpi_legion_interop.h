@@ -236,6 +236,9 @@ mpi_legion_interop_t::wait_on_mpi_task(
 
 /*--------------------------------------------------------------------------*/
 
+void init_partitions(const Legion::Task *task, const std::vector<Legion::PhysicalRegion> & regions,
+                     Legion::Context ctx, Legion::HighLevelRuntime *runtime);
+
 /*! register all Legion tasks used in the mpi_legion_interop_t class
  */
  //static:
@@ -270,6 +273,12 @@ mpi_legion_interop_t::register_tasks(void)
         LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/), 
         "wait_on_mpi_task");
 
+  LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
+    <init_partitions>(
+    INIT_CELL_PARTITIONS_TASK_ID,
+    LegionRuntime::HighLevel::Processor::LOC_PROC,
+    true/*single*/, true/*index*/);
+  
 }//register_tasks
 
 /*--------------------------------------------------------------------------*/
