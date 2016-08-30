@@ -137,9 +137,9 @@ cinch_add_unit(mpi_legion_interop
   SOURCES test/mpi_with_legion/mpi_legion_interop.cc
   POLICY MPILEGION)
 
-cinch_add_unit(mpi_legion_data
-  SOURCES test/mpi_with_legion/mpi_legion_data.cc
-  POLICY MPILEGION)
+#cinch_add_unit(mpi_legion_data
+#  SOURCES test/mpi_with_legion/mpi_legion_data.cc
+#  POLICY MPILEGION)
 
 endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 #~---------------------------------------------------------------------------~-#
