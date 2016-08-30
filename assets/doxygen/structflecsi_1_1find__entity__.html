@@ -104,13 +104,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a1b4909526e9dd984da31b1e13c761fca"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1b4909526e9dd984da31b1e13c761fca"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>entity_types</b> = typename MT::entity_types</td></tr>
+<tr class="memitem:a1b4909526e9dd984da31b1e13c761fca"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1find__entity__.html#a1b4909526e9dd984da31b1e13c761fca">entity_types</a> = typename MT::entity_types</td></tr>
 <tr class="separator:a1b4909526e9dd984da31b1e13c761fca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c04775cb1db95bf7b60b24822e380f0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9c04775cb1db95bf7b60b24822e380f0"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>pair_</b> = typename std::tuple_element&lt; <a class="el" href="structflecsi_1_1find__entity____.html">find_entity__</a>&lt; std::tuple_size&lt; entity_types &gt;::value, entity_types, D, M &gt;::find()-1, entity_types &gt;::<a class="el" href="structflecsi_1_1find__entity__.html#a9a4de441a2c6456968027b309b678380">type</a></td></tr>
+<tr class="memitem:a9c04775cb1db95bf7b60b24822e380f0"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1find__entity__.html#a9c04775cb1db95bf7b60b24822e380f0">pair_</a> = typename std::tuple_element&lt; <a class="el" href="structflecsi_1_1find__entity____.html">find_entity__</a>&lt; std::tuple_size&lt; <a class="el" href="structflecsi_1_1find__entity__.html#a1b4909526e9dd984da31b1e13c761fca">entity_types</a> &gt;::<a class="el" href="meta__list_8h.html#a5e939244be656a9d03dd7d46ea74d461">value</a>, <a class="el" href="structflecsi_1_1find__entity__.html#a1b4909526e9dd984da31b1e13c761fca">entity_types</a>, D, M &gt;::find()-1, <a class="el" href="structflecsi_1_1find__entity__.html#a1b4909526e9dd984da31b1e13c761fca">entity_types</a> &gt;::<a class="el" href="structflecsi_1_1find__entity__.html#a9a4de441a2c6456968027b309b678380">type</a></td></tr>
 <tr class="separator:a9c04775cb1db95bf7b60b24822e380f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a4de441a2c6456968027b309b678380"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1find__entity__.html#a9a4de441a2c6456968027b309b678380">type</a> = typename std::tuple_element&lt; 1, pair_ &gt;::<a class="el" href="structflecsi_1_1find__entity__.html#a9a4de441a2c6456968027b309b678380">type</a></td></tr>
+<tr class="memitem:a9a4de441a2c6456968027b309b678380"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1find__entity__.html#a9a4de441a2c6456968027b309b678380">type</a> = typename std::tuple_element&lt; 1, <a class="el" href="structflecsi_1_1find__entity__.html#a9c04775cb1db95bf7b60b24822e380f0">pair_</a> &gt;::<a class="el" href="structflecsi_1_1find__entity__.html#a9a4de441a2c6456968027b309b678380">type</a></td></tr>
 <tr class="separator:a9a4de441a2c6456968027b309b678380"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -120,6 +118,34 @@ struct flecsi::find_entity_&lt; MT, D, M &gt;</h3>
 <p><a class="el" href="structflecsi_1_1find__entity__.html" title="find_entity_ provides static search capabilities. ">find_entity_</a> provides static search capabilities. </p>
 <p>Top-level interface for recursive type search matching dimension and domain. </p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
+<a class="anchor" id="a1b4909526e9dd984da31b1e13c761fca"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class MT, size_t D, size_t M&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structflecsi_1_1find__entity__.html">flecsi::find_entity_</a>&lt; MT, D, M &gt;::<a class="el" href="structflecsi_1_1find__entity__.html#a1b4909526e9dd984da31b1e13c761fca">entity_types</a> =  typename MT::entity_types</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a9c04775cb1db95bf7b60b24822e380f0"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class MT, size_t D, size_t M&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structflecsi_1_1find__entity__.html">flecsi::find_entity_</a>&lt; MT, D, M &gt;::<a class="el" href="structflecsi_1_1find__entity__.html#a9c04775cb1db95bf7b60b24822e380f0">pair_</a> =  typename std::tuple_element&lt; <a class="el" href="structflecsi_1_1find__entity____.html">find_entity__</a>&lt;std::tuple_size&lt;<a class="el" href="structflecsi_1_1find__entity__.html#a1b4909526e9dd984da31b1e13c761fca">entity_types</a>&gt;::<a class="el" href="meta__list_8h.html#a5e939244be656a9d03dd7d46ea74d461">value</a>, <a class="el" href="structflecsi_1_1find__entity__.html#a1b4909526e9dd984da31b1e13c761fca">entity_types</a>, D, M&gt;::find() - 1, <a class="el" href="structflecsi_1_1find__entity__.html#a1b4909526e9dd984da31b1e13c761fca">entity_types</a>&gt;::<a class="el" href="structflecsi_1_1find__entity__.html#a9a4de441a2c6456968027b309b678380">type</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a9a4de441a2c6456968027b309b678380"></a>
 <div class="memitem">
 <div class="memproto">
@@ -127,7 +153,7 @@ struct flecsi::find_entity_&lt; MT, D, M &gt;</h3>
 template&lt;class MT, size_t D, size_t M&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structflecsi_1_1find__entity__.html">flecsi::find_entity_</a>&lt; MT, D, M &gt;::<a class="el" href="structflecsi_1_1find__entity__.html#a9a4de441a2c6456968027b309b678380">type</a> =  typename std::tuple_element&lt;1, pair_&gt;::<a class="el" href="structflecsi_1_1find__entity__.html#a9a4de441a2c6456968027b309b678380">type</a></td>
+          <td class="memname">using <a class="el" href="structflecsi_1_1find__entity__.html">flecsi::find_entity_</a>&lt; MT, D, M &gt;::<a class="el" href="structflecsi_1_1find__entity__.html#a9a4de441a2c6456968027b309b678380">type</a> =  typename std::tuple_element&lt;1, <a class="el" href="structflecsi_1_1find__entity__.html#a9c04775cb1db95bf7b60b24822e380f0">pair_</a>&gt;::<a class="el" href="structflecsi_1_1find__entity__.html#a9a4de441a2c6456968027b309b678380">type</a></td>
         </tr>
       </table>
 </div><div class="memdoc">

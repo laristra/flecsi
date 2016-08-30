@@ -85,7 +85,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>mpilegion</b></li><li class="navelem"><a class="el" href="classflecsi_1_1mpilegion_1_1MPILegionArrayStorage__t.html">MPILegionArrayStorage_t</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><a class="el" href="namespaceflecsi_1_1mpilegion.html">mpilegion</a></li><li class="navelem"><a class="el" href="classflecsi_1_1mpilegion_1_1MPILegionArrayStorage__t.html">MPILegionArrayStorage_t</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -96,6 +96,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">flecsi::mpilegion::MPILegionArrayStorage_t Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="mpi__legion__data_8h_source.html">mpi_legion_data.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for flecsi::mpilegion::MPILegionArrayStorage_t:</div>
 <div class="dyncontent">
@@ -108,37 +110,365 @@ Inheritance diagram for flecsi::mpilegion::MPILegionArrayStorage_t:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aae56030636412287424b0d2c0c89f534"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aae56030636412287424b0d2c0c89f534"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>mpi_init</b> (void)=0</td></tr>
+<tr class="memitem:a2d77df45c6ccae4d249a67b8803a8929"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mpilegion_1_1MPILegionArrayStorage__t.html#a2d77df45c6ccae4d249a67b8803a8929">MPILegionArrayStorage_t</a> ()</td></tr>
+<tr class="separator:a2d77df45c6ccae4d249a67b8803a8929"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b571c2d70dc057ec95c75fadb5a8ff4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mpilegion_1_1MPILegionArrayStorage__t.html#a2b571c2d70dc057ec95c75fadb5a8ff4">~MPILegionArrayStorage_t</a> ()</td></tr>
+<tr class="separator:a2b571c2d70dc057ec95c75fadb5a8ff4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae56030636412287424b0d2c0c89f534"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mpilegion_1_1MPILegionArrayStorage__t.html#aae56030636412287424b0d2c0c89f534">mpi_init</a> (void)=0</td></tr>
 <tr class="separator:aae56030636412287424b0d2c0c89f534"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:accaa72e819436496c14daf7468c95bf0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="accaa72e819436496c14daf7468c95bf0"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>legion_init</b> (<a class="el" href="classflecsi_1_1context__t.html">context_t</a>&lt; <a class="el" href="classflecsi_1_1mpilegion__execution__policy__t.html">mpilegion_execution_policy_t</a> &gt; &amp;ctx)=0</td></tr>
+<tr class="memitem:accaa72e819436496c14daf7468c95bf0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mpilegion_1_1MPILegionArrayStorage__t.html#accaa72e819436496c14daf7468c95bf0">legion_init</a> (<a class="el" href="classflecsi_1_1context__t.html">context_t</a>&lt; <a class="el" href="classflecsi_1_1mpilegion__execution__policy__t.html">mpilegion_execution_policy_t</a> &gt; &amp;ctx)=0</td></tr>
 <tr class="separator:accaa72e819436496c14daf7468c95bf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a65124b8209d2c1ef09208338c4d5c9a1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a65124b8209d2c1ef09208338c4d5c9a1"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>allocate_legion</b> (<a class="el" href="classflecsi_1_1context__t.html">context_t</a>&lt; <a class="el" href="classflecsi_1_1mpilegion__execution__policy__t.html">mpilegion_execution_policy_t</a> &gt; &amp;ctx)=0</td></tr>
+<tr class="memitem:a65124b8209d2c1ef09208338c4d5c9a1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mpilegion_1_1MPILegionArrayStorage__t.html#a65124b8209d2c1ef09208338c4d5c9a1">allocate_legion</a> (<a class="el" href="classflecsi_1_1context__t.html">context_t</a>&lt; <a class="el" href="classflecsi_1_1mpilegion__execution__policy__t.html">mpilegion_execution_policy_t</a> &gt; &amp;ctx)=0</td></tr>
 <tr class="separator:a65124b8209d2c1ef09208338c4d5c9a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9451e54060195953d57fd4404ba000b3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9451e54060195953d57fd4404ba000b3"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>deallocate_legion</b> (<a class="el" href="classflecsi_1_1context__t.html">context_t</a>&lt; <a class="el" href="classflecsi_1_1mpilegion__execution__policy__t.html">mpilegion_execution_policy_t</a> &gt; &amp;ctx)=0</td></tr>
+<tr class="memitem:a9451e54060195953d57fd4404ba000b3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mpilegion_1_1MPILegionArrayStorage__t.html#a9451e54060195953d57fd4404ba000b3">deallocate_legion</a> (<a class="el" href="classflecsi_1_1context__t.html">context_t</a>&lt; <a class="el" href="classflecsi_1_1mpilegion__execution__policy__t.html">mpilegion_execution_policy_t</a> &gt; &amp;ctx)=0</td></tr>
 <tr class="separator:a9451e54060195953d57fd4404ba000b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d7ecf9cce534903b8e2e49cb92cabd3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4d7ecf9cce534903b8e2e49cb92cabd3"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>partition_legion</b> (uint nParts, <a class="el" href="classflecsi_1_1context__t.html">context_t</a>&lt; <a class="el" href="classflecsi_1_1mpilegion__execution__policy__t.html">mpilegion_execution_policy_t</a> &gt; &amp;ctx)=0</td></tr>
+<tr class="memitem:a4d7ecf9cce534903b8e2e49cb92cabd3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mpilegion_1_1MPILegionArrayStorage__t.html#a4d7ecf9cce534903b8e2e49cb92cabd3">partition_legion</a> (uint nParts, <a class="el" href="classflecsi_1_1context__t.html">context_t</a>&lt; <a class="el" href="classflecsi_1_1mpilegion__execution__policy__t.html">mpilegion_execution_policy_t</a> &gt; &amp;ctx)=0</td></tr>
 <tr class="separator:a4d7ecf9cce534903b8e2e49cb92cabd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a73431da5eac938a11c1318e66e9790a8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a73431da5eac938a11c1318e66e9790a8"></a>
-virtual uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> (void)=0</td></tr>
+<tr class="memitem:a73431da5eac938a11c1318e66e9790a8"><td class="memItemLeft" align="right" valign="top">virtual uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mpilegion_1_1MPILegionArrayStorage__t.html#a73431da5eac938a11c1318e66e9790a8">size</a> (void)=0</td></tr>
 <tr class="separator:a73431da5eac938a11c1318e66e9790a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8328c3652c5ecfaba7d7300221f49c39"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8328c3652c5ecfaba7d7300221f49c39"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>copy_legion_to_mpi</b> (<a class="el" href="classflecsi_1_1context__t.html">context_t</a>&lt; <a class="el" href="classflecsi_1_1mpilegion__execution__policy__t.html">mpilegion_execution_policy_t</a> &gt; &amp;ctx)=0</td></tr>
+<tr class="memitem:a8328c3652c5ecfaba7d7300221f49c39"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mpilegion_1_1MPILegionArrayStorage__t.html#a8328c3652c5ecfaba7d7300221f49c39">copy_legion_to_mpi</a> (<a class="el" href="classflecsi_1_1context__t.html">context_t</a>&lt; <a class="el" href="classflecsi_1_1mpilegion__execution__policy__t.html">mpilegion_execution_policy_t</a> &gt; &amp;ctx)=0</td></tr>
 <tr class="separator:a8328c3652c5ecfaba7d7300221f49c39"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a86c589f68a0e45f75ad86ae115fab001"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a86c589f68a0e45f75ad86ae115fab001"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>copy_mpi_to_legion</b> (<a class="el" href="classflecsi_1_1context__t.html">context_t</a>&lt; <a class="el" href="classflecsi_1_1mpilegion__execution__policy__t.html">mpilegion_execution_policy_t</a> &gt; &amp;ctx)=0</td></tr>
+<tr class="memitem:a86c589f68a0e45f75ad86ae115fab001"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mpilegion_1_1MPILegionArrayStorage__t.html#a86c589f68a0e45f75ad86ae115fab001">copy_mpi_to_legion</a> (<a class="el" href="classflecsi_1_1context__t.html">context_t</a>&lt; <a class="el" href="classflecsi_1_1mpilegion__execution__policy__t.html">mpilegion_execution_policy_t</a> &gt; &amp;ctx)=0</td></tr>
 <tr class="separator:a86c589f68a0e45f75ad86ae115fab001"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a39fe416b5585fd57b8eaff14601684fb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a39fe416b5585fd57b8eaff14601684fb"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>dump_legion</b> (const std::string &amp;prefix, int64_t nle, <a class="el" href="classflecsi_1_1context__t.html">context_t</a>&lt; <a class="el" href="classflecsi_1_1mpilegion__execution__policy__t.html">mpilegion_execution_policy_t</a> &gt; &amp;ctx)=0</td></tr>
+<tr class="memitem:a39fe416b5585fd57b8eaff14601684fb"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mpilegion_1_1MPILegionArrayStorage__t.html#a39fe416b5585fd57b8eaff14601684fb">dump_legion</a> (const std::string &amp;prefix, int64_t nle, <a class="el" href="classflecsi_1_1context__t.html">context_t</a>&lt; <a class="el" href="classflecsi_1_1mpilegion__execution__policy__t.html">mpilegion_execution_policy_t</a> &gt; &amp;ctx)=0</td></tr>
 <tr class="separator:a39fe416b5585fd57b8eaff14601684fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a38b4b499bcb1dad2e396eac21c113a58"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a38b4b499bcb1dad2e396eac21c113a58"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>dump_mpi</b> (const std::string &amp;prefix)=0</td></tr>
+<tr class="memitem:a38b4b499bcb1dad2e396eac21c113a58"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mpilegion_1_1MPILegionArrayStorage__t.html#a38b4b499bcb1dad2e396eac21c113a58">dump_mpi</a> (const std::string &amp;prefix)=0</td></tr>
 <tr class="separator:a38b4b499bcb1dad2e396eac21c113a58"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a2d77df45c6ccae4d249a67b8803a8929"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">flecsi::mpilegion::MPILegionArrayStorage_t::MPILegionArrayStorage_t </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a2b571c2d70dc057ec95c75fadb5a8ff4"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">flecsi::mpilegion::MPILegionArrayStorage_t::~MPILegionArrayStorage_t </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a65124b8209d2c1ef09208338c4d5c9a1"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void flecsi::mpilegion::MPILegionArrayStorage_t::allocate_legion </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1context__t.html">context_t</a>&lt; <a class="el" href="classflecsi_1_1mpilegion__execution__policy__t.html">mpilegion_execution_policy_t</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>ctx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classflecsi_1_1mpilegion_1_1MPILegionArray.html#a111fe43ee13042a9c539eceae7244694">flecsi::mpilegion::MPILegionArray&lt; Type, N &gt;</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a8328c3652c5ecfaba7d7300221f49c39"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void flecsi::mpilegion::MPILegionArrayStorage_t::copy_legion_to_mpi </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1context__t.html">context_t</a>&lt; <a class="el" href="classflecsi_1_1mpilegion__execution__policy__t.html">mpilegion_execution_policy_t</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>ctx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classflecsi_1_1mpilegion_1_1MPILegionArray.html#a2d73aac19e586be380fcb253120d33d7">flecsi::mpilegion::MPILegionArray&lt; Type, N &gt;</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a86c589f68a0e45f75ad86ae115fab001"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void flecsi::mpilegion::MPILegionArrayStorage_t::copy_mpi_to_legion </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1context__t.html">context_t</a>&lt; <a class="el" href="classflecsi_1_1mpilegion__execution__policy__t.html">mpilegion_execution_policy_t</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>ctx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classflecsi_1_1mpilegion_1_1MPILegionArray.html#a252833a5d1de603dafba45772a67cd24">flecsi::mpilegion::MPILegionArray&lt; Type, N &gt;</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a9451e54060195953d57fd4404ba000b3"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void flecsi::mpilegion::MPILegionArrayStorage_t::deallocate_legion </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1context__t.html">context_t</a>&lt; <a class="el" href="classflecsi_1_1mpilegion__execution__policy__t.html">mpilegion_execution_policy_t</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>ctx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classflecsi_1_1mpilegion_1_1MPILegionArray.html#ae87a115497d29620f72f4cf368c65efa">flecsi::mpilegion::MPILegionArray&lt; Type, N &gt;</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a39fe416b5585fd57b8eaff14601684fb"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void flecsi::mpilegion::MPILegionArrayStorage_t::dump_legion </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>prefix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>nle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1context__t.html">context_t</a>&lt; <a class="el" href="classflecsi_1_1mpilegion__execution__policy__t.html">mpilegion_execution_policy_t</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>ctx</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classflecsi_1_1mpilegion_1_1MPILegionArray.html#a86f8e65cbddb6a2392f02ecbb3c30853">flecsi::mpilegion::MPILegionArray&lt; Type, N &gt;</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a38b4b499bcb1dad2e396eac21c113a58"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void flecsi::mpilegion::MPILegionArrayStorage_t::dump_mpi </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>prefix</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classflecsi_1_1mpilegion_1_1MPILegionArray.html#a7546014db37b75475c1ab91625de9579">flecsi::mpilegion::MPILegionArray&lt; Type, N &gt;</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="accaa72e819436496c14daf7468c95bf0"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void flecsi::mpilegion::MPILegionArrayStorage_t::legion_init </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1context__t.html">context_t</a>&lt; <a class="el" href="classflecsi_1_1mpilegion__execution__policy__t.html">mpilegion_execution_policy_t</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>ctx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classflecsi_1_1mpilegion_1_1MPILegionArray.html#aae20a2912d58e86c0b82eb1de7631e50">flecsi::mpilegion::MPILegionArray&lt; Type, N &gt;</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aae56030636412287424b0d2c0c89f534"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void flecsi::mpilegion::MPILegionArrayStorage_t::mpi_init </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classflecsi_1_1mpilegion_1_1MPILegionArray.html#a4ff8a7a0fe1bc5b03bfc77c10ef70c69">flecsi::mpilegion::MPILegionArray&lt; Type, N &gt;</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4d7ecf9cce534903b8e2e49cb92cabd3"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void flecsi::mpilegion::MPILegionArrayStorage_t::partition_legion </td>
+          <td>(</td>
+          <td class="paramtype">uint&#160;</td>
+          <td class="paramname"><em>nParts</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1context__t.html">context_t</a>&lt; <a class="el" href="classflecsi_1_1mpilegion__execution__policy__t.html">mpilegion_execution_policy_t</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>ctx</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classflecsi_1_1mpilegion_1_1MPILegionArray.html#a0875fdff027f1f96b2206ba9b6b42f18">flecsi::mpilegion::MPILegionArray&lt; Type, N &gt;</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a73431da5eac938a11c1318e66e9790a8"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual uint64_t flecsi::mpilegion::MPILegionArrayStorage_t::size </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classflecsi_1_1mpilegion_1_1MPILegionArray.html#a7914b15f57a4fbcefe2255c3fa90649f">flecsi::mpilegion::MPILegionArray&lt; Type, N &gt;</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>/tmp/flecsi/flecsi/utils/mpi_legion_interoperability/<a class="el" href="mpi__legion__data_8h_source.html">mpi_legion_data.h</a></li>
 </ul>

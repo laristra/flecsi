@@ -92,43 +92,268 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classflecsi_1_1const__string__t-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">flecsi::const_string_t Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="const__string_8h_source.html">const_string.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a57cfca8d2ea66d2a0548ed3717ebd8b7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a57cfca8d2ea66d2a0548ed3717ebd8b7"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>hash_type_t</b> = size_t</td></tr>
+<tr class="memitem:a57cfca8d2ea66d2a0548ed3717ebd8b7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1const__string__t.html#a57cfca8d2ea66d2a0548ed3717ebd8b7">hash_type_t</a> = size_t</td></tr>
 <tr class="separator:a57cfca8d2ea66d2a0548ed3717ebd8b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a4b020d4f6261a5131707d95891f96ecd"><td class="memTemplParams" colspan="2"><a class="anchor" id="a4b020d4f6261a5131707d95891f96ecd"></a>
-template&lt;hash_type_t N&gt; </td></tr>
-<tr class="memitem:a4b020d4f6261a5131707d95891f96ecd"><td class="memTemplItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memTemplItemRight" valign="bottom"><b>const_string_t</b> (const char(&amp;str)[N])</td></tr>
+<tr class="memitem:a4b020d4f6261a5131707d95891f96ecd"><td class="memTemplParams" colspan="2">template&lt;hash_type_t N&gt; </td></tr>
+<tr class="memitem:a4b020d4f6261a5131707d95891f96ecd"><td class="memTemplItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1const__string__t.html#a4b020d4f6261a5131707d95891f96ecd">const_string_t</a> (const char(&amp;str)[<a class="el" href="gravity_8cc.html#adf99ea743b5dadbe8dc48388c0d7fa94">N</a>])</td></tr>
 <tr class="separator:a4b020d4f6261a5131707d95891f96ecd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7eae18ff7365a1fd287f8aa802573482"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7eae18ff7365a1fd287f8aa802573482"></a>
-constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><b>c_str</b> () const </td></tr>
+<tr class="memitem:a7eae18ff7365a1fd287f8aa802573482"><td class="memItemLeft" align="right" valign="top">constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1const__string__t.html#a7eae18ff7365a1fd287f8aa802573482">c_str</a> () const </td></tr>
 <tr class="separator:a7eae18ff7365a1fd287f8aa802573482"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a31657b8da3ad2b0c99bc63c7c1f3f32c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a31657b8da3ad2b0c99bc63c7c1f3f32c"></a>
-constexpr hash_type_t&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> () const </td></tr>
+<tr class="memitem:a31657b8da3ad2b0c99bc63c7c1f3f32c"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="classflecsi_1_1const__string__t.html#a57cfca8d2ea66d2a0548ed3717ebd8b7">hash_type_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1const__string__t.html#a31657b8da3ad2b0c99bc63c7c1f3f32c">size</a> () const </td></tr>
 <tr class="separator:a31657b8da3ad2b0c99bc63c7c1f3f32c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab3fa8589bd4e2cb45d6022522164c0f7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab3fa8589bd4e2cb45d6022522164c0f7"></a>
-constexpr char&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (hash_type_t i) const </td></tr>
+<tr class="memitem:ab3fa8589bd4e2cb45d6022522164c0f7"><td class="memItemLeft" align="right" valign="top">constexpr char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1const__string__t.html#ab3fa8589bd4e2cb45d6022522164c0f7">operator[]</a> (<a class="el" href="classflecsi_1_1const__string__t.html#a57cfca8d2ea66d2a0548ed3717ebd8b7">hash_type_t</a> i) const </td></tr>
 <tr class="separator:ab3fa8589bd4e2cb45d6022522164c0f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa526e955f1652cf445d17ee50777dd76"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa526e955f1652cf445d17ee50777dd76"></a>
-constexpr hash_type_t&#160;</td><td class="memItemRight" valign="bottom"><b>hash</b> () const </td></tr>
+<tr class="memitem:aa526e955f1652cf445d17ee50777dd76"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="classflecsi_1_1const__string__t.html#a57cfca8d2ea66d2a0548ed3717ebd8b7">hash_type_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1const__string__t.html#aa526e955f1652cf445d17ee50777dd76">hash</a> () const </td></tr>
 <tr class="separator:aa526e955f1652cf445d17ee50777dd76"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad246d7931a973fdf6d22a47d2c543404"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad246d7931a973fdf6d22a47d2c543404"></a>
-constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="classflecsi_1_1const__string__t.html">const_string_t</a> &amp;t) const </td></tr>
+<tr class="memitem:ad246d7931a973fdf6d22a47d2c543404"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1const__string__t.html#ad246d7931a973fdf6d22a47d2c543404">operator==</a> (const <a class="el" href="classflecsi_1_1const__string__t.html">const_string_t</a> &amp;t) const </td></tr>
 <tr class="separator:ad246d7931a973fdf6d22a47d2c543404"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad3286381182448188475c5169d2b7c44"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad3286381182448188475c5169d2b7c44"></a>
-constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const <a class="el" href="classflecsi_1_1const__string__t.html">const_string_t</a> &amp;t) const </td></tr>
+<tr class="memitem:ad3286381182448188475c5169d2b7c44"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1const__string__t.html#ad3286381182448188475c5169d2b7c44">operator!=</a> (const <a class="el" href="classflecsi_1_1const__string__t.html">const_string_t</a> &amp;t) const </td></tr>
 <tr class="separator:ad3286381182448188475c5169d2b7c44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a7c9b3d40d95302e5550d53a031bee883"><td class="memItemLeft" align="right" valign="top">const char *const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1const__string__t.html#a7c9b3d40d95302e5550d53a031bee883">str_</a></td></tr>
+<tr class="separator:a7c9b3d40d95302e5550d53a031bee883"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c252ccaa52f284fb65a4a598346374b"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classflecsi_1_1const__string__t.html#a57cfca8d2ea66d2a0548ed3717ebd8b7">hash_type_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1const__string__t.html#a8c252ccaa52f284fb65a4a598346374b">size_</a></td></tr>
+<tr class="separator:a8c252ccaa52f284fb65a4a598346374b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Typedef Documentation</h2>
+<a class="anchor" id="a57cfca8d2ea66d2a0548ed3717ebd8b7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classflecsi_1_1const__string__t.html#a57cfca8d2ea66d2a0548ed3717ebd8b7">flecsi::const_string_t::hash_type_t</a> =  size_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a4b020d4f6261a5131707d95891f96ecd"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;hash_type_t N&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr flecsi::const_string_t::const_string_t </td>
+          <td>(</td>
+          <td class="paramtype">const char(&amp;)&#160;</td>
+          <td class="paramname"><em>str</em>[N]</td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a7eae18ff7365a1fd287f8aa802573482"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr const char* flecsi::const_string_t::c_str </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="aa526e955f1652cf445d17ee50777dd76"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classflecsi_1_1const__string__t.html#a57cfca8d2ea66d2a0548ed3717ebd8b7">hash_type_t</a> flecsi::const_string_t::hash </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ad3286381182448188475c5169d2b7c44"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool flecsi::const_string_t::operator!= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1const__string__t.html">const_string_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>t</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ad246d7931a973fdf6d22a47d2c543404"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool flecsi::const_string_t::operator== </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1const__string__t.html">const_string_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>t</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ab3fa8589bd4e2cb45d6022522164c0f7"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr char flecsi::const_string_t::operator[] </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1const__string__t.html#a57cfca8d2ea66d2a0548ed3717ebd8b7">hash_type_t</a>&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a31657b8da3ad2b0c99bc63c7c1f3f32c"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classflecsi_1_1const__string__t.html#a57cfca8d2ea66d2a0548ed3717ebd8b7">hash_type_t</a> flecsi::const_string_t::size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="a8c252ccaa52f284fb65a4a598346374b"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classflecsi_1_1const__string__t.html#a57cfca8d2ea66d2a0548ed3717ebd8b7">hash_type_t</a> flecsi::const_string_t::size_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a7c9b3d40d95302e5550d53a031bee883"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* const flecsi::const_string_t::str_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>/tmp/flecsi/flecsi/utils/<a class="el" href="const__string_8h_source.html">const_string.h</a></li>
 </ul>

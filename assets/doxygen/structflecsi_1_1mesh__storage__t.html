@@ -97,25 +97,23 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">flecsi::mesh_storage_t&lt; D, NM &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="mesh__types_8h_source.html">mesh_types.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:afd8c7efd1fe0393ce4152181a0e57672"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1mesh__storage__t.html#afd8c7efd1fe0393ce4152181a0e57672">entities_t</a> = std::array&lt; <a class="el" href="namespaceflecsi.html#a90449420d2c676601331a21976138632">entity_vector_t</a>&lt; NM &gt;, D+1 &gt;</td></tr>
 <tr class="separator:afd8c7efd1fe0393ce4152181a0e57672"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c70a7f63b43a0aeb30bf8ccdcebae5e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9c70a7f63b43a0aeb30bf8ccdcebae5e"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>id_vecs_t</b> = std::array&lt; id_vector_t, D+1 &gt;</td></tr>
+<tr class="memitem:a9c70a7f63b43a0aeb30bf8ccdcebae5e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1mesh__storage__t.html#a9c70a7f63b43a0aeb30bf8ccdcebae5e">id_vecs_t</a> = std::array&lt; <a class="el" href="namespaceflecsi.html#a185da717e9895fc1da855b2e705e5164">id_vector_t</a>, D+1 &gt;</td></tr>
 <tr class="separator:a9c70a7f63b43a0aeb30bf8ccdcebae5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:abb4814bd17a66cc4a8d479a561a644e6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abb4814bd17a66cc4a8d479a561a644e6"></a>
-std::array&lt; <a class="el" href="structflecsi_1_1mesh__storage__t.html#afd8c7efd1fe0393ce4152181a0e57672">entities_t</a>, NM &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>entities</b></td></tr>
+<tr class="memitem:abb4814bd17a66cc4a8d479a561a644e6"><td class="memItemLeft" align="right" valign="top">std::array&lt; <a class="el" href="structflecsi_1_1mesh__storage__t.html#afd8c7efd1fe0393ce4152181a0e57672">entities_t</a>, NM &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1mesh__storage__t.html#abb4814bd17a66cc4a8d479a561a644e6">entities</a></td></tr>
 <tr class="separator:abb4814bd17a66cc4a8d479a561a644e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab9d4eb11e9ff6f2ed90e350d44272674"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab9d4eb11e9ff6f2ed90e350d44272674"></a>
-std::array&lt; std::array&lt; <a class="el" href="classflecsi_1_1domain__connectivity.html">domain_connectivity</a>&lt; D &gt;, NM &gt;, NM &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>topology</b></td></tr>
+<tr class="memitem:ab9d4eb11e9ff6f2ed90e350d44272674"><td class="memItemLeft" align="right" valign="top">std::array&lt; std::array&lt; <a class="el" href="classflecsi_1_1domain__connectivity.html">domain_connectivity</a>&lt; D &gt;, NM &gt;, NM &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1mesh__storage__t.html#ab9d4eb11e9ff6f2ed90e350d44272674">topology</a></td></tr>
 <tr class="separator:ab9d4eb11e9ff6f2ed90e350d44272674"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a23750c175a209958052c300cd11fe630"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a23750c175a209958052c300cd11fe630"></a>
-std::array&lt; id_vecs_t, NM &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>id_vecs</b></td></tr>
+<tr class="memitem:a23750c175a209958052c300cd11fe630"><td class="memItemLeft" align="right" valign="top">std::array&lt; <a class="el" href="structflecsi_1_1mesh__storage__t.html#a9c70a7f63b43a0aeb30bf8ccdcebae5e">id_vecs_t</a>, NM &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1mesh__storage__t.html#a23750c175a209958052c300cd11fe630">id_vecs</a></td></tr>
 <tr class="separator:a23750c175a209958052c300cd11fe630"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Typedef Documentation</h2>
@@ -131,6 +129,63 @@ template&lt;size_t D, size_t NM&gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Defines a type for storing entity instances as an array of <a class="el" href="namespaceflecsi.html#a90449420d2c676601331a21976138632">entity_vector_t</a>, which is a std::vector of <a class="el" href="classflecsi_1_1mesh__entity__base__t.html">mesh_entity_base_t</a>. </p>
+
+</div>
+</div>
+<a class="anchor" id="a9c70a7f63b43a0aeb30bf8ccdcebae5e"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t D, size_t NM&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structflecsi_1_1mesh__storage__t.html">flecsi::mesh_storage_t</a>&lt; D, NM &gt;::<a class="el" href="structflecsi_1_1mesh__storage__t.html#a9c70a7f63b43a0aeb30bf8ccdcebae5e">id_vecs_t</a> =  std::array&lt;<a class="el" href="namespaceflecsi.html#a185da717e9895fc1da855b2e705e5164">id_vector_t</a>, D + 1&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="abb4814bd17a66cc4a8d479a561a644e6"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t D, size_t NM&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;<a class="el" href="structflecsi_1_1mesh__storage__t.html#afd8c7efd1fe0393ce4152181a0e57672">entities_t</a>, NM&gt; <a class="el" href="structflecsi_1_1mesh__storage__t.html">flecsi::mesh_storage_t</a>&lt; D, NM &gt;::entities</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a23750c175a209958052c300cd11fe630"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t D, size_t NM&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;<a class="el" href="structflecsi_1_1mesh__storage__t.html#a9c70a7f63b43a0aeb30bf8ccdcebae5e">id_vecs_t</a>, NM&gt; <a class="el" href="structflecsi_1_1mesh__storage__t.html">flecsi::mesh_storage_t</a>&lt; D, NM &gt;::id_vecs</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ab9d4eb11e9ff6f2ed90e350d44272674"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t D, size_t NM&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;std::array&lt;<a class="el" href="classflecsi_1_1domain__connectivity.html">domain_connectivity</a>&lt;D&gt;, NM&gt;, NM&gt; <a class="el" href="structflecsi_1_1mesh__storage__t.html">flecsi::mesh_storage_t</a>&lt; D, NM &gt;::topology</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>

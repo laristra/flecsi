@@ -93,6 +93,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classflecsi_1_1Factory__-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">flecsi::Factory_&lt; T, K, Args &gt; Class Template Reference</div>  </div>
@@ -101,31 +103,28 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <p><a class="el" href="classflecsi_1_1Factory__.html" title="Factory_ provides a generic object factory class. ">Factory_</a> provides a generic object factory class.  
  <a href="classflecsi_1_1Factory__.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="factory_8h_source.html">factory.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:aaa9f4416916993a0e455448bd1f4c871"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaa9f4416916993a0e455448bd1f4c871"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1Factory__.html#aaa9f4416916993a0e455448bd1f4c871">createHandler</a> = T *(*)(Args...args)</td></tr>
-<tr class="memdesc:aaa9f4416916993a0e455448bd1f4c871"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function pointer type for creation method. <br /></td></tr>
+<tr class="memitem:aaa9f4416916993a0e455448bd1f4c871"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1Factory__.html#aaa9f4416916993a0e455448bd1f4c871">createHandler</a> = T *(*)(Args...args)</td></tr>
+<tr class="memdesc:aaa9f4416916993a0e455448bd1f4c871"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function pointer type for creation method.  <a href="#aaa9f4416916993a0e455448bd1f4c871">More...</a><br /></td></tr>
 <tr class="separator:aaa9f4416916993a0e455448bd1f4c871"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a80ae34591f79f179e903621bd136739c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a80ae34591f79f179e903621bd136739c"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1Factory__.html#a80ae34591f79f179e903621bd136739c">key_t</a> = K</td></tr>
-<tr class="memdesc:a80ae34591f79f179e903621bd136739c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map key type. <br /></td></tr>
+<tr class="memitem:a80ae34591f79f179e903621bd136739c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1Factory__.html#a80ae34591f79f179e903621bd136739c">key_t</a> = K</td></tr>
+<tr class="memdesc:a80ae34591f79f179e903621bd136739c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map key type.  <a href="#a80ae34591f79f179e903621bd136739c">More...</a><br /></td></tr>
 <tr class="separator:a80ae34591f79f179e903621bd136739c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9f60e3bf9f2501c712c77b0dbdbccf63"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9f60e3bf9f2501c712c77b0dbdbccf63"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1Factory__.html#a9f60e3bf9f2501c712c77b0dbdbccf63">map_t</a> = std::map&lt; <a class="el" href="classflecsi_1_1Factory__.html#a80ae34591f79f179e903621bd136739c">key_t</a>, <a class="el" href="classflecsi_1_1Factory__.html#aaa9f4416916993a0e455448bd1f4c871">createHandler</a> &gt;</td></tr>
-<tr class="memdesc:a9f60e3bf9f2501c712c77b0dbdbccf63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map type to associate ids and creation methods. <br /></td></tr>
+<tr class="memitem:a9f60e3bf9f2501c712c77b0dbdbccf63"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1Factory__.html#a9f60e3bf9f2501c712c77b0dbdbccf63">map_t</a> = std::map&lt; <a class="el" href="classflecsi_1_1Factory__.html#a80ae34591f79f179e903621bd136739c">key_t</a>, <a class="el" href="classflecsi_1_1Factory__.html#aaa9f4416916993a0e455448bd1f4c871">createHandler</a> &gt;</td></tr>
+<tr class="memdesc:a9f60e3bf9f2501c712c77b0dbdbccf63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map type to associate ids and creation methods.  <a href="#a9f60e3bf9f2501c712c77b0dbdbccf63">More...</a><br /></td></tr>
 <tr class="separator:a9f60e3bf9f2501c712c77b0dbdbccf63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a47a7504090a9ea26ba9c0ca9644eefc4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a47a7504090a9ea26ba9c0ca9644eefc4"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1Factory__.html#a47a7504090a9ea26ba9c0ca9644eefc4">Factory_</a> (const <a class="el" href="classflecsi_1_1Factory__.html">Factory_</a> &amp;f)=delete</td></tr>
-<tr class="memdesc:a47a7504090a9ea26ba9c0ca9644eefc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor (hidden) <br /></td></tr>
+<tr class="memitem:a47a7504090a9ea26ba9c0ca9644eefc4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1Factory__.html#a47a7504090a9ea26ba9c0ca9644eefc4">Factory_</a> (const <a class="el" href="classflecsi_1_1Factory__.html">Factory_</a> &amp;f)=delete</td></tr>
+<tr class="memdesc:a47a7504090a9ea26ba9c0ca9644eefc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor (hidden)  <a href="#a47a7504090a9ea26ba9c0ca9644eefc4">More...</a><br /></td></tr>
 <tr class="separator:a47a7504090a9ea26ba9c0ca9644eefc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa643061f6be39f02b2e26d6973fbd36e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa643061f6be39f02b2e26d6973fbd36e"></a>
-<a class="el" href="classflecsi_1_1Factory__.html">Factory_</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1Factory__.html#aa643061f6be39f02b2e26d6973fbd36e">operator=</a> (const <a class="el" href="classflecsi_1_1Factory__.html">Factory_</a> &amp;)=delete</td></tr>
-<tr class="memdesc:aa643061f6be39f02b2e26d6973fbd36e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assignment operator (hidden) <br /></td></tr>
+<tr class="memitem:aa643061f6be39f02b2e26d6973fbd36e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1Factory__.html">Factory_</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1Factory__.html#aa643061f6be39f02b2e26d6973fbd36e">operator=</a> (const <a class="el" href="classflecsi_1_1Factory__.html">Factory_</a> &amp;)=delete</td></tr>
+<tr class="memdesc:aa643061f6be39f02b2e26d6973fbd36e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assignment operator (hidden)  <a href="#aa643061f6be39f02b2e26d6973fbd36e">More...</a><br /></td></tr>
 <tr class="separator:aa643061f6be39f02b2e26d6973fbd36e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a05b481a3af3fe114e7eae5053ae93279"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1Factory__.html#a05b481a3af3fe114e7eae5053ae93279">registerType</a> (<a class="el" href="classflecsi_1_1Factory__.html#a80ae34591f79f179e903621bd136739c">key_t</a> key, <a class="el" href="classflecsi_1_1Factory__.html#aaa9f4416916993a0e455448bd1f4c871">createHandler</a> ch)</td></tr>
 <tr class="separator:a05b481a3af3fe114e7eae5053ae93279"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -136,13 +135,159 @@ Public Member Functions</h2></td></tr>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a51bd945a2bb25429a57084b1031339f5"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classflecsi_1_1Factory__.html">Factory_</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1Factory__.html#a51bd945a2bb25429a57084b1031339f5">instance</a> ()</td></tr>
 <tr class="separator:a51bd945a2bb25429a57084b1031339f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a4859c2cae75b3b58c23a6e320c95e13d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1Factory__.html#a4859c2cae75b3b58c23a6e320c95e13d">Factory_</a> ()</td></tr>
+<tr class="memdesc:a4859c2cae75b3b58c23a6e320c95e13d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor.  <a href="#a4859c2cae75b3b58c23a6e320c95e13d">More...</a><br /></td></tr>
+<tr class="separator:a4859c2cae75b3b58c23a6e320c95e13d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a042fca29741bb2e8bb377635a25beb41"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1Factory__.html#a042fca29741bb2e8bb377635a25beb41">~Factory_</a> ()</td></tr>
+<tr class="memdesc:a042fca29741bb2e8bb377635a25beb41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor.  <a href="#a042fca29741bb2e8bb377635a25beb41">More...</a><br /></td></tr>
+<tr class="separator:a042fca29741bb2e8bb377635a25beb41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a8cddcd0f6289013d5928ebc47a59e9aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1Factory__.html#a9f60e3bf9f2501c712c77b0dbdbccf63">map_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1Factory__.html#a8cddcd0f6289013d5928ebc47a59e9aa">map_</a></td></tr>
+<tr class="separator:a8cddcd0f6289013d5928ebc47a59e9aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename T, typename K, typename... Args&gt;<br />
 class flecsi::Factory_&lt; T, K, Args &gt;</h3>
 
 <p><a class="el" href="classflecsi_1_1Factory__.html" title="Factory_ provides a generic object factory class. ">Factory_</a> provides a generic object factory class. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<a class="anchor" id="aaa9f4416916993a0e455448bd1f4c871"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, typename K, typename... Args&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classflecsi_1_1Factory__.html">flecsi::Factory_</a>&lt; T, K, Args &gt;::<a class="el" href="classflecsi_1_1Factory__.html#aaa9f4416916993a0e455448bd1f4c871">createHandler</a> =  T * (*)(Args... args)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Function pointer type for creation method. </p>
+
+</div>
+</div>
+<a class="anchor" id="a80ae34591f79f179e903621bd136739c"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, typename K, typename... Args&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classflecsi_1_1Factory__.html">flecsi::Factory_</a>&lt; T, K, Args &gt;::<a class="el" href="classflecsi_1_1Factory__.html#a80ae34591f79f179e903621bd136739c">key_t</a> =  K</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Map key type. </p>
+
+</div>
+</div>
+<a class="anchor" id="a9f60e3bf9f2501c712c77b0dbdbccf63"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, typename K, typename... Args&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classflecsi_1_1Factory__.html">flecsi::Factory_</a>&lt; T, K, Args &gt;::<a class="el" href="classflecsi_1_1Factory__.html#a9f60e3bf9f2501c712c77b0dbdbccf63">map_t</a> =  std::map&lt;<a class="el" href="classflecsi_1_1Factory__.html#a80ae34591f79f179e903621bd136739c">key_t</a>, <a class="el" href="classflecsi_1_1Factory__.html#aaa9f4416916993a0e455448bd1f4c871">createHandler</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Map type to associate ids and creation methods. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a47a7504090a9ea26ba9c0ca9644eefc4"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, typename K, typename... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1Factory__.html">flecsi::Factory_</a>&lt; T, K, Args &gt;::<a class="el" href="classflecsi_1_1Factory__.html">Factory_</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1Factory__.html">Factory_</a>&lt; T, K, Args &gt; &amp;&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructor (hidden) </p>
+
+</div>
+</div>
+<a class="anchor" id="a4859c2cae75b3b58c23a6e320c95e13d"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, typename K, typename... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1Factory__.html">flecsi::Factory_</a>&lt; T, K, Args &gt;::<a class="el" href="classflecsi_1_1Factory__.html">Factory_</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructor. </p>
+
+</div>
+</div>
+<a class="anchor" id="a042fca29741bb2e8bb377635a25beb41"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, typename K, typename... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1Factory__.html">flecsi::Factory_</a>&lt; T, K, Args &gt;::~<a class="el" href="classflecsi_1_1Factory__.html">Factory_</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Destructor. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a125654c433b801fd16a65ede4a2d18ee"></a>
 <div class="memitem">
 <div class="memproto">
@@ -217,6 +362,34 @@ template&lt;typename T, typename K, typename... Args&gt; </div>
 
 </div>
 </div>
+<a class="anchor" id="aa643061f6be39f02b2e26d6973fbd36e"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, typename K, typename... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1Factory__.html">Factory_</a>&amp; <a class="el" href="classflecsi_1_1Factory__.html">flecsi::Factory_</a>&lt; T, K, Args &gt;::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1Factory__.html">Factory_</a>&lt; T, K, Args &gt; &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Assignment operator (hidden) </p>
+
+</div>
+</div>
 <a class="anchor" id="a05b481a3af3fe114e7eae5053ae93279"></a>
 <div class="memitem">
 <div class="memproto">
@@ -258,6 +431,29 @@ template&lt;typename T, typename K, typename... Args&gt; </div>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="a8cddcd0f6289013d5928ebc47a59e9aa"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, typename K, typename... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1Factory__.html#a9f60e3bf9f2501c712c77b0dbdbccf63">map_t</a> <a class="el" href="classflecsi_1_1Factory__.html">flecsi::Factory_</a>&lt; T, K, Args &gt;::map_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>

@@ -98,35 +98,146 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">flecsi::dolfin_triangle_types_t Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="dolfin__triangle__types_8h_source.html">dolfin_triangle_types.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a9bc874518b0c6422385fc8a1441bdd2b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9bc874518b0c6422385fc8a1441bdd2b"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>entity_types</b> = std::tuple&lt; std::pair&lt; <a class="el" href="structflecsi_1_1typeify.html">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1dolfin__vertex__t.html">dolfin_vertex_t</a> &gt;, std::pair&lt; <a class="el" href="structflecsi_1_1typeify.html">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1dolfin__edge__t.html">dolfin_edge_t</a> &gt;, std::pair&lt; <a class="el" href="structflecsi_1_1typeify.html">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1dolfin__cell__t.html">dolfin_cell_t</a> &gt; &gt;</td></tr>
+<tr class="memitem:a9bc874518b0c6422385fc8a1441bdd2b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1dolfin__triangle__types__t.html#a9bc874518b0c6422385fc8a1441bdd2b">entity_types</a> = std::tuple&lt; std::pair&lt; <a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1dolfin__vertex__t.html">dolfin_vertex_t</a> &gt;, std::pair&lt; <a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1dolfin__edge__t.html">dolfin_edge_t</a> &gt;, std::pair&lt; <a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1dolfin__cell__t.html">dolfin_cell_t</a> &gt; &gt;</td></tr>
 <tr class="separator:a9bc874518b0c6422385fc8a1441bdd2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe8a34d4c732ec86210d840219f1032b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afe8a34d4c732ec86210d840219f1032b"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>connectivities</b> = std::tuple&lt; std::tuple&lt; <a class="el" href="structflecsi_1_1typeify.html">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1dolfin__vertex__t.html">dolfin_vertex_t</a>, <a class="el" href="classflecsi_1_1dolfin__vertex__t.html">dolfin_vertex_t</a> &gt;, std::tuple&lt; <a class="el" href="structflecsi_1_1typeify.html">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1dolfin__vertex__t.html">dolfin_vertex_t</a>, <a class="el" href="classflecsi_1_1dolfin__edge__t.html">dolfin_edge_t</a> &gt;, std::tuple&lt; <a class="el" href="structflecsi_1_1typeify.html">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1dolfin__vertex__t.html">dolfin_vertex_t</a>, <a class="el" href="classflecsi_1_1dolfin__cell__t.html">dolfin_cell_t</a> &gt;, std::tuple&lt; <a class="el" href="structflecsi_1_1typeify.html">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1dolfin__edge__t.html">dolfin_edge_t</a>, <a class="el" href="classflecsi_1_1dolfin__vertex__t.html">dolfin_vertex_t</a> &gt;, std::tuple&lt; <a class="el" href="structflecsi_1_1typeify.html">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1dolfin__edge__t.html">dolfin_edge_t</a>, <a class="el" href="classflecsi_1_1dolfin__edge__t.html">dolfin_edge_t</a> &gt;, std::tuple&lt; <a class="el" href="structflecsi_1_1typeify.html">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1dolfin__edge__t.html">dolfin_edge_t</a>, <a class="el" href="classflecsi_1_1dolfin__cell__t.html">dolfin_cell_t</a> &gt;, std::tuple&lt; <a class="el" href="structflecsi_1_1typeify.html">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1dolfin__cell__t.html">dolfin_cell_t</a>, <a class="el" href="classflecsi_1_1dolfin__vertex__t.html">dolfin_vertex_t</a> &gt;, std::tuple&lt; <a class="el" href="structflecsi_1_1typeify.html">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1dolfin__cell__t.html">dolfin_cell_t</a>, <a class="el" href="classflecsi_1_1dolfin__edge__t.html">dolfin_edge_t</a> &gt;, std::tuple&lt; <a class="el" href="structflecsi_1_1typeify.html">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1dolfin__cell__t.html">dolfin_cell_t</a>, <a class="el" href="classflecsi_1_1dolfin__cell__t.html">dolfin_cell_t</a> &gt; &gt;</td></tr>
+<tr class="memitem:afe8a34d4c732ec86210d840219f1032b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1dolfin__triangle__types__t.html#afe8a34d4c732ec86210d840219f1032b">connectivities</a> = std::tuple&lt; std::tuple&lt; <a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1dolfin__vertex__t.html">dolfin_vertex_t</a>, <a class="el" href="classflecsi_1_1dolfin__vertex__t.html">dolfin_vertex_t</a> &gt;, std::tuple&lt; <a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1dolfin__vertex__t.html">dolfin_vertex_t</a>, <a class="el" href="classflecsi_1_1dolfin__edge__t.html">dolfin_edge_t</a> &gt;, std::tuple&lt; <a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1dolfin__vertex__t.html">dolfin_vertex_t</a>, <a class="el" href="classflecsi_1_1dolfin__cell__t.html">dolfin_cell_t</a> &gt;, std::tuple&lt; <a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1dolfin__edge__t.html">dolfin_edge_t</a>, <a class="el" href="classflecsi_1_1dolfin__vertex__t.html">dolfin_vertex_t</a> &gt;, std::tuple&lt; <a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1dolfin__edge__t.html">dolfin_edge_t</a>, <a class="el" href="classflecsi_1_1dolfin__edge__t.html">dolfin_edge_t</a> &gt;, std::tuple&lt; <a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1dolfin__edge__t.html">dolfin_edge_t</a>, <a class="el" href="classflecsi_1_1dolfin__cell__t.html">dolfin_cell_t</a> &gt;, std::tuple&lt; <a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1dolfin__cell__t.html">dolfin_cell_t</a>, <a class="el" href="classflecsi_1_1dolfin__vertex__t.html">dolfin_vertex_t</a> &gt;, std::tuple&lt; <a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1dolfin__cell__t.html">dolfin_cell_t</a>, <a class="el" href="classflecsi_1_1dolfin__edge__t.html">dolfin_edge_t</a> &gt;, std::tuple&lt; <a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1dolfin__cell__t.html">dolfin_cell_t</a>, <a class="el" href="classflecsi_1_1dolfin__cell__t.html">dolfin_cell_t</a> &gt; &gt;</td></tr>
 <tr class="separator:afe8a34d4c732ec86210d840219f1032b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5cc4ff6ea4c76061b1bfaee49aa38f98"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5cc4ff6ea4c76061b1bfaee49aa38f98"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>bindings</b> = std::tuple&lt;&gt;</td></tr>
+<tr class="memitem:a5cc4ff6ea4c76061b1bfaee49aa38f98"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1dolfin__triangle__types__t.html#a5cc4ff6ea4c76061b1bfaee49aa38f98">bindings</a> = std::tuple&lt;&gt;</td></tr>
 <tr class="separator:a5cc4ff6ea4c76061b1bfaee49aa38f98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:adf472a52c9f1bf6dc1705c28c7e564f3"><td class="memTemplParams" colspan="2"><a class="anchor" id="adf472a52c9f1bf6dc1705c28c7e564f3"></a>
-template&lt;size_t M, size_t D&gt; </td></tr>
-<tr class="memitem:adf472a52c9f1bf6dc1705c28c7e564f3"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="classflecsi_1_1mesh__entity__base__t.html">mesh_entity_base_t</a>&lt; num_domains &gt; *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>create_entity</b> (<a class="el" href="classflecsi_1_1mesh__topology__base__t.html">mesh_topology_base_t</a> *mesh, size_t num_vertices)</td></tr>
+<tr class="memitem:adf472a52c9f1bf6dc1705c28c7e564f3"><td class="memTemplParams" colspan="2">template&lt;size_t M, size_t D&gt; </td></tr>
+<tr class="memitem:adf472a52c9f1bf6dc1705c28c7e564f3"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="classflecsi_1_1mesh__entity__base__t.html">mesh_entity_base_t</a>&lt; <a class="el" href="structflecsi_1_1dolfin__triangle__types__t.html#a2c0b8a56dff88d5e18d7cf9012d3054f">num_domains</a> &gt; *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1dolfin__triangle__types__t.html#adf472a52c9f1bf6dc1705c28c7e564f3">create_entity</a> (<a class="el" href="classflecsi_1_1mesh__topology__base__t.html">mesh_topology_base_t</a> *mesh, size_t num_vertices)</td></tr>
 <tr class="separator:adf472a52c9f1bf6dc1705c28c7e564f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:ad47ec7a54ba478d1edac0deeb66eae47"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad47ec7a54ba478d1edac0deeb66eae47"></a>
-static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>num_dimensions</b> = 2</td></tr>
+<tr class="memitem:ad47ec7a54ba478d1edac0deeb66eae47"><td class="memItemLeft" align="right" valign="top">static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1dolfin__triangle__types__t.html#ad47ec7a54ba478d1edac0deeb66eae47">num_dimensions</a> = 2</td></tr>
 <tr class="separator:ad47ec7a54ba478d1edac0deeb66eae47"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2c0b8a56dff88d5e18d7cf9012d3054f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2c0b8a56dff88d5e18d7cf9012d3054f"></a>
-static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>num_domains</b> = 1</td></tr>
+<tr class="memitem:a2c0b8a56dff88d5e18d7cf9012d3054f"><td class="memItemLeft" align="right" valign="top">static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1dolfin__triangle__types__t.html#a2c0b8a56dff88d5e18d7cf9012d3054f">num_domains</a> = 1</td></tr>
 <tr class="separator:a2c0b8a56dff88d5e18d7cf9012d3054f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Typedef Documentation</h2>
+<a class="anchor" id="a5cc4ff6ea4c76061b1bfaee49aa38f98"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structflecsi_1_1dolfin__triangle__types__t.html#a5cc4ff6ea4c76061b1bfaee49aa38f98">flecsi::dolfin_triangle_types_t::bindings</a> =  std::tuple&lt;&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="afe8a34d4c732ec86210d840219f1032b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structflecsi_1_1dolfin__triangle__types__t.html#afe8a34d4c732ec86210d840219f1032b">flecsi::dolfin_triangle_types_t::connectivities</a> =  std::tuple&lt; std::tuple&lt;<a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt;0&gt;, <a class="el" href="classflecsi_1_1dolfin__vertex__t.html">dolfin_vertex_t</a>, <a class="el" href="classflecsi_1_1dolfin__vertex__t.html">dolfin_vertex_t</a>&gt;, std::tuple&lt;<a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt;0&gt;, <a class="el" href="classflecsi_1_1dolfin__vertex__t.html">dolfin_vertex_t</a>, <a class="el" href="classflecsi_1_1dolfin__edge__t.html">dolfin_edge_t</a>&gt;, std::tuple&lt;<a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt;0&gt;, <a class="el" href="classflecsi_1_1dolfin__vertex__t.html">dolfin_vertex_t</a>, <a class="el" href="classflecsi_1_1dolfin__cell__t.html">dolfin_cell_t</a>&gt;, std::tuple&lt;<a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt;0&gt;, <a class="el" href="classflecsi_1_1dolfin__edge__t.html">dolfin_edge_t</a>, <a class="el" href="classflecsi_1_1dolfin__vertex__t.html">dolfin_vertex_t</a>&gt;, std::tuple&lt;<a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt;0&gt;, <a class="el" href="classflecsi_1_1dolfin__edge__t.html">dolfin_edge_t</a>, <a class="el" href="classflecsi_1_1dolfin__edge__t.html">dolfin_edge_t</a>&gt;, std::tuple&lt;<a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt;0&gt;, <a class="el" href="classflecsi_1_1dolfin__edge__t.html">dolfin_edge_t</a>, <a class="el" href="classflecsi_1_1dolfin__cell__t.html">dolfin_cell_t</a>&gt;, std::tuple&lt;<a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt;0&gt;, <a class="el" href="classflecsi_1_1dolfin__cell__t.html">dolfin_cell_t</a>, <a class="el" href="classflecsi_1_1dolfin__vertex__t.html">dolfin_vertex_t</a>&gt;, std::tuple&lt;<a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt;0&gt;, <a class="el" href="classflecsi_1_1dolfin__cell__t.html">dolfin_cell_t</a>, <a class="el" href="classflecsi_1_1dolfin__edge__t.html">dolfin_edge_t</a>&gt;, std::tuple&lt;<a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt;0&gt;, <a class="el" href="classflecsi_1_1dolfin__cell__t.html">dolfin_cell_t</a>, <a class="el" href="classflecsi_1_1dolfin__cell__t.html">dolfin_cell_t</a>&gt; &gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a9bc874518b0c6422385fc8a1441bdd2b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structflecsi_1_1dolfin__triangle__types__t.html#a9bc874518b0c6422385fc8a1441bdd2b">flecsi::dolfin_triangle_types_t::entity_types</a> =  std::tuple&lt; std::pair&lt;<a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt;0&gt;, <a class="el" href="classflecsi_1_1dolfin__vertex__t.html">dolfin_vertex_t</a>&gt;, std::pair&lt;<a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt;0&gt;, <a class="el" href="classflecsi_1_1dolfin__edge__t.html">dolfin_edge_t</a>&gt;, std::pair&lt;<a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt;0&gt;, <a class="el" href="classflecsi_1_1dolfin__cell__t.html">dolfin_cell_t</a>&gt; &gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="adf472a52c9f1bf6dc1705c28c7e564f3"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t M, size_t D&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classflecsi_1_1mesh__entity__base__t.html">mesh_entity_base_t</a>&lt;<a class="el" href="structflecsi_1_1dolfin__triangle__types__t.html#a2c0b8a56dff88d5e18d7cf9012d3054f">num_domains</a>&gt;* flecsi::dolfin_triangle_types_t::create_entity </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1mesh__topology__base__t.html">mesh_topology_base_t</a> *&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>num_vertices</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="ad47ec7a54ba478d1edac0deeb66eae47"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr size_t flecsi::dolfin_triangle_types_t::num_dimensions = 2</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a2c0b8a56dff88d5e18d7cf9012d3054f"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr size_t flecsi::dolfin_triangle_types_t::num_domains = 1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/tmp/flecsi/flecsi/mesh/test/dolfin_triangle/<a class="el" href="dolfin__triangle__types_8h_source.html">dolfin_triangle_types.h</a></li>
 </ul>

@@ -85,7 +85,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>tree</b></li><li class="navelem"><a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html">tree_geometry&lt; T, 2 &gt;</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><a class="el" href="namespaceflecsi_1_1tree.html">tree</a></li><li class="navelem"><a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html">tree_geometry&lt; T, 2 &gt;</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -97,37 +97,355 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">flecsi::tree::tree_geometry&lt; T, 2 &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="tree__topology_8h_source.html">tree_topology.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a6eefdf052dc57b6e49e5b79afd3e3250"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6eefdf052dc57b6e49e5b79afd3e3250"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>point_t</b> = <a class="el" href="classflecsi_1_1dimensioned__array.html">point</a>&lt; T, 2 &gt;</td></tr>
+<tr class="memitem:a6eefdf052dc57b6e49e5b79afd3e3250"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> = <a class="el" href="namespaceflecsi.html#a88163bc6541084dd3d424a99102bac7b">point</a>&lt; T, 2 &gt;</td></tr>
 <tr class="separator:a6eefdf052dc57b6e49e5b79afd3e3250"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae07f30caa944705056d5a2f25d374e2d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae07f30caa944705056d5a2f25d374e2d"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>element_t</b> = T</td></tr>
+<tr class="memitem:ae07f30caa944705056d5a2f25d374e2d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#ae07f30caa944705056d5a2f25d374e2d">element_t</a> = T</td></tr>
 <tr class="separator:ae07f30caa944705056d5a2f25d374e2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:ab6ab957eb1cd242256b2e3f86865f975"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab6ab957eb1cd242256b2e3f86865f975"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>within</b> (const <a class="el" href="classflecsi_1_1dimensioned__array.html">point_t</a> &amp;origin, const <a class="el" href="classflecsi_1_1dimensioned__array.html">point_t</a> &amp;center, element_t radius)</td></tr>
+<tr class="memitem:ab6ab957eb1cd242256b2e3f86865f975"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#ab6ab957eb1cd242256b2e3f86865f975">within</a> (const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;origin, const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;center, <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#ae07f30caa944705056d5a2f25d374e2d">element_t</a> radius)</td></tr>
 <tr class="separator:ab6ab957eb1cd242256b2e3f86865f975"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8a626f15712fcd47f0eae897afdd7981"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8a626f15712fcd47f0eae897afdd7981"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>within_box</b> (const <a class="el" href="classflecsi_1_1dimensioned__array.html">point_t</a> &amp;origin, const <a class="el" href="classflecsi_1_1dimensioned__array.html">point_t</a> &amp;min, const <a class="el" href="classflecsi_1_1dimensioned__array.html">point_t</a> &amp;max)</td></tr>
+<tr class="memitem:a8a626f15712fcd47f0eae897afdd7981"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a8a626f15712fcd47f0eae897afdd7981">within_box</a> (const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;origin, const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;min, const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;max)</td></tr>
 <tr class="separator:a8a626f15712fcd47f0eae897afdd7981"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7fbc18202df59a78a216cfce76cdb6bd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7fbc18202df59a78a216cfce76cdb6bd"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>intersects</b> (const <a class="el" href="classflecsi_1_1dimensioned__array.html">point_t</a> &amp;origin, element_t size, const <a class="el" href="classflecsi_1_1dimensioned__array.html">point_t</a> &amp;scale, const <a class="el" href="classflecsi_1_1dimensioned__array.html">point_t</a> &amp;center, element_t radius)</td></tr>
+<tr class="memitem:a7fbc18202df59a78a216cfce76cdb6bd"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a7fbc18202df59a78a216cfce76cdb6bd">intersects</a> (const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;origin, <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#ae07f30caa944705056d5a2f25d374e2d">element_t</a> size, const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;scale, const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;center, <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#ae07f30caa944705056d5a2f25d374e2d">element_t</a> radius)</td></tr>
 <tr class="separator:a7fbc18202df59a78a216cfce76cdb6bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a76784a02113a853995e953ac34a50b78"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a76784a02113a853995e953ac34a50b78"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>intersects_box</b> (const <a class="el" href="classflecsi_1_1dimensioned__array.html">point_t</a> &amp;origin, element_t size, const <a class="el" href="classflecsi_1_1dimensioned__array.html">point_t</a> &amp;scale, const <a class="el" href="classflecsi_1_1dimensioned__array.html">point_t</a> &amp;min2, const <a class="el" href="classflecsi_1_1dimensioned__array.html">point_t</a> &amp;max2)</td></tr>
+<tr class="memitem:a76784a02113a853995e953ac34a50b78"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a76784a02113a853995e953ac34a50b78">intersects_box</a> (const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;origin, <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#ae07f30caa944705056d5a2f25d374e2d">element_t</a> size, const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;scale, const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;min2, const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;max2)</td></tr>
 <tr class="separator:a76784a02113a853995e953ac34a50b78"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a12d58513f8b467273d164e7979ec6147"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a12d58513f8b467273d164e7979ec6147"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>intersects_box_</b> (const <a class="el" href="classflecsi_1_1dimensioned__array.html">point_t</a> &amp;min1, const <a class="el" href="classflecsi_1_1dimensioned__array.html">point_t</a> &amp;max1, const <a class="el" href="classflecsi_1_1dimensioned__array.html">point_t</a> &amp;min2, const <a class="el" href="classflecsi_1_1dimensioned__array.html">point_t</a> &amp;max2)</td></tr>
+<tr class="memitem:a12d58513f8b467273d164e7979ec6147"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a12d58513f8b467273d164e7979ec6147">intersects_box_</a> (const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;min1, const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;max1, const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;min2, const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;max2)</td></tr>
 <tr class="separator:a12d58513f8b467273d164e7979ec6147"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ee016359e822debb0d504bc4a3b3187"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0ee016359e822debb0d504bc4a3b3187"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>intersect_true</b> (const <a class="el" href="classflecsi_1_1dimensioned__array.html">point_t</a> &amp;origin, element_t size, const <a class="el" href="classflecsi_1_1dimensioned__array.html">point_t</a> &amp;scale, const <a class="el" href="classflecsi_1_1dimensioned__array.html">point_t</a> &amp;center, element_t radius)</td></tr>
+<tr class="memitem:a0ee016359e822debb0d504bc4a3b3187"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a0ee016359e822debb0d504bc4a3b3187">intersect_true</a> (const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;origin, <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#ae07f30caa944705056d5a2f25d374e2d">element_t</a> size, const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;scale, const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;center, <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#ae07f30caa944705056d5a2f25d374e2d">element_t</a> radius)</td></tr>
 <tr class="separator:a0ee016359e822debb0d504bc4a3b3187"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Typedef Documentation</h2>
+<a class="anchor" id="ae07f30caa944705056d5a2f25d374e2d"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structflecsi_1_1tree_1_1tree__geometry.html">flecsi::tree::tree_geometry</a>&lt; T, 2 &gt;::<a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#ae07f30caa944705056d5a2f25d374e2d">element_t</a> =  T</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a6eefdf052dc57b6e49e5b79afd3e3250"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structflecsi_1_1tree_1_1tree__geometry.html">flecsi::tree::tree_geometry</a>&lt; T, 2 &gt;::<a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> =  <a class="el" href="namespaceflecsi.html#a88163bc6541084dd3d424a99102bac7b">point</a>&lt;T, 2&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a0ee016359e822debb0d504bc4a3b3187"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool <a class="el" href="structflecsi_1_1tree_1_1tree__geometry.html">flecsi::tree::tree_geometry</a>&lt; T, 2 &gt;::intersect_true </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>origin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#ae07f30caa944705056d5a2f25d374e2d">element_t</a>&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>scale</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>center</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#ae07f30caa944705056d5a2f25d374e2d">element_t</a>&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a7fbc18202df59a78a216cfce76cdb6bd"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool <a class="el" href="structflecsi_1_1tree_1_1tree__geometry.html">flecsi::tree::tree_geometry</a>&lt; T, 2 &gt;::intersects </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>origin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#ae07f30caa944705056d5a2f25d374e2d">element_t</a>&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>scale</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>center</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#ae07f30caa944705056d5a2f25d374e2d">element_t</a>&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a76784a02113a853995e953ac34a50b78"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool <a class="el" href="structflecsi_1_1tree_1_1tree__geometry.html">flecsi::tree::tree_geometry</a>&lt; T, 2 &gt;::intersects_box </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>origin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#ae07f30caa944705056d5a2f25d374e2d">element_t</a>&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>scale</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>min2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>max2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a12d58513f8b467273d164e7979ec6147"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool <a class="el" href="structflecsi_1_1tree_1_1tree__geometry.html">flecsi::tree::tree_geometry</a>&lt; T, 2 &gt;::intersects_box_ </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>min1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>max1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>min2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>max2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ab6ab957eb1cd242256b2e3f86865f975"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool <a class="el" href="structflecsi_1_1tree_1_1tree__geometry.html">flecsi::tree::tree_geometry</a>&lt; T, 2 &gt;::within </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>origin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>center</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#ae07f30caa944705056d5a2f25d374e2d">element_t</a>&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a8a626f15712fcd47f0eae897afdd7981"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool <a class="el" href="structflecsi_1_1tree_1_1tree__geometry.html">flecsi::tree::tree_geometry</a>&lt; T, 2 &gt;::within_box </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>origin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>min</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1tree_1_1tree__geometry_3_01T_00_012_01_4.html#a6eefdf052dc57b6e49e5b79afd3e3250">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>max</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/tmp/flecsi/flecsi/tree/<a class="el" href="tree__topology_8h_source.html">tree_topology.h</a></li>
 </ul>

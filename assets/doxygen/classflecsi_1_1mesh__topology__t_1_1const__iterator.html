@@ -92,6 +92,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classflecsi_1_1mesh__topology__t_1_1const__iterator-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">flecsi::mesh_topology_t&lt; MT &gt;::const_iterator&lt; D, M &gt; Class Template Reference</div>  </div>
@@ -105,57 +106,50 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a17829c542961d0bddca564c012c0ddae"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a17829c542961d0bddca564c012c0ddae"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>mesh_t</b> = const <a class="el" href="classflecsi_1_1mesh__topology__t.html">mesh_topology_t</a></td></tr>
+<tr class="memitem:a17829c542961d0bddca564c012c0ddae"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a17829c542961d0bddca564c012c0ddae">mesh_t</a> = const <a class="el" href="classflecsi_1_1mesh__topology__t.html">mesh_topology_t</a></td></tr>
 <tr class="separator:a17829c542961d0bddca564c012c0ddae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a43f73bf2e87843aae55f991715227db7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a43f73bf2e87843aae55f991715227db7"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>entity_type</b> = typename <a class="el" href="structflecsi_1_1find__entity__.html">find_entity_</a>&lt; MT, D, M &gt;::type</td></tr>
+<tr class="memitem:a43f73bf2e87843aae55f991715227db7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a43f73bf2e87843aae55f991715227db7">entity_type</a> = typename <a class="el" href="structflecsi_1_1find__entity__.html">find_entity_</a>&lt; MT, D, M &gt;::type</td></tr>
 <tr class="separator:a43f73bf2e87843aae55f991715227db7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2cf7008cc7818725a19264173f0ae946"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2cf7008cc7818725a19264173f0ae946"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>difference_type</b> = std::ptrdiff_t</td></tr>
+<tr class="memitem:a2cf7008cc7818725a19264173f0ae946"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a2cf7008cc7818725a19264173f0ae946">difference_type</a> = std::ptrdiff_t</td></tr>
 <tr class="separator:a2cf7008cc7818725a19264173f0ae946"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af0264d3a6e346258e003a5c2fe43d0aa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af0264d3a6e346258e003a5c2fe43d0aa"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>value_type</b> = <a class="el" href="classflecsi_1_1domain__entity.html">domain_entity</a>&lt; M, entity_type &gt;</td></tr>
+<tr class="memitem:af0264d3a6e346258e003a5c2fe43d0aa"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#af0264d3a6e346258e003a5c2fe43d0aa">value_type</a> = <a class="el" href="classflecsi_1_1domain__entity.html">domain_entity</a>&lt; M, <a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a43f73bf2e87843aae55f991715227db7">entity_type</a> &gt;</td></tr>
 <tr class="separator:af0264d3a6e346258e003a5c2fe43d0aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8a2d6f88ecef58f20541908d040c6a97"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8a2d6f88ecef58f20541908d040c6a97"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>reference</b> = <a class="el" href="classflecsi_1_1domain__entity.html">domain_entity</a>&lt; M, entity_type &gt;</td></tr>
+<tr class="memitem:a8a2d6f88ecef58f20541908d040c6a97"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a8a2d6f88ecef58f20541908d040c6a97">reference</a> = <a class="el" href="classflecsi_1_1domain__entity.html">domain_entity</a>&lt; M, <a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a43f73bf2e87843aae55f991715227db7">entity_type</a> &gt;</td></tr>
 <tr class="separator:a8a2d6f88ecef58f20541908d040c6a97"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6310cfdcaa06d300cecc6ea15357e3cf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6310cfdcaa06d300cecc6ea15357e3cf"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>pointer</b> = const entity_type *</td></tr>
+<tr class="memitem:a6310cfdcaa06d300cecc6ea15357e3cf"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a6310cfdcaa06d300cecc6ea15357e3cf">pointer</a> = const <a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a43f73bf2e87843aae55f991715227db7">entity_type</a> *</td></tr>
 <tr class="separator:a6310cfdcaa06d300cecc6ea15357e3cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac422d58ac7459794d1e3c113ac9c22f3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac422d58ac7459794d1e3c113ac9c22f3"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>iterator_category</b> = std::bidirectional_iterator_tag</td></tr>
+<tr class="memitem:ac422d58ac7459794d1e3c113ac9c22f3"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#ac422d58ac7459794d1e3c113ac9c22f3">iterator_category</a> = std::bidirectional_iterator_tag</td></tr>
 <tr class="separator:ac422d58ac7459794d1e3c113ac9c22f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ad643951eac247918a52f49d01c0eff15"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad643951eac247918a52f49d01c0eff15"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>const_iterator</b> (const <a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a> &amp;itr)</td></tr>
+<tr class="memitem:ad643951eac247918a52f49d01c0eff15"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#ad643951eac247918a52f49d01c0eff15">const_iterator</a> (const <a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a> &amp;itr)</td></tr>
 <tr class="separator:ad643951eac247918a52f49d01c0eff15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7743164d990219ad53e686c8ceef9f48"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7743164d990219ad53e686c8ceef9f48"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>const_iterator</b> (<a class="el" href="classflecsi_1_1mesh__topology__t.html">mesh_t</a> &amp;mesh, const id_vector_t &amp;<a class="el" href="classflecsi_1_1mesh__topology__t.html#a172b6f2f5eb958ae24dc0f7a6458b565">entities</a>, size_t index)</td></tr>
+<tr class="memitem:a7743164d990219ad53e686c8ceef9f48"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a7743164d990219ad53e686c8ceef9f48">const_iterator</a> (<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a17829c542961d0bddca564c012c0ddae">mesh_t</a> &amp;mesh, const <a class="el" href="namespaceflecsi.html#a185da717e9895fc1da855b2e705e5164">id_vector_t</a> &amp;<a class="el" href="classflecsi_1_1mesh__topology__t.html#a172b6f2f5eb958ae24dc0f7a6458b565">entities</a>, size_t index)</td></tr>
 <tr class="separator:a7743164d990219ad53e686c8ceef9f48"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a01a7d973f8f0c9d150fcf7e251c4f5e7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a01a7d973f8f0c9d150fcf7e251c4f5e7"></a>
-<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator++</b> ()</td></tr>
+<tr class="memitem:a01a7d973f8f0c9d150fcf7e251c4f5e7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a01a7d973f8f0c9d150fcf7e251c4f5e7">operator++</a> ()</td></tr>
 <tr class="separator:a01a7d973f8f0c9d150fcf7e251c4f5e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a679b306ff8d537d064565beabb2de4f8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a679b306ff8d537d064565beabb2de4f8"></a>
-<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator--</b> ()</td></tr>
+<tr class="memitem:a679b306ff8d537d064565beabb2de4f8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a679b306ff8d537d064565beabb2de4f8">operator--</a> ()</td></tr>
 <tr class="separator:a679b306ff8d537d064565beabb2de4f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae2202a90c2f49eba25d638c00da8b956"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae2202a90c2f49eba25d638c00da8b956"></a>
-<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a> &amp;itr)</td></tr>
+<tr class="memitem:ae2202a90c2f49eba25d638c00da8b956"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#ae2202a90c2f49eba25d638c00da8b956">operator=</a> (const <a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a> &amp;itr)</td></tr>
 <tr class="separator:ae2202a90c2f49eba25d638c00da8b956"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a389bae284330843b7d88261020a081"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5a389bae284330843b7d88261020a081"></a>
-<a class="el" href="classflecsi_1_1domain__entity.html">reference</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator*</b> ()</td></tr>
+<tr class="memitem:a5a389bae284330843b7d88261020a081"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a8a2d6f88ecef58f20541908d040c6a97">reference</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a5a389bae284330843b7d88261020a081">operator*</a> ()</td></tr>
 <tr class="separator:a5a389bae284330843b7d88261020a081"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab4620e21fc96cd41d709c5565fa25206"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab4620e21fc96cd41d709c5565fa25206"></a>
-pointer&#160;</td><td class="memItemRight" valign="bottom"><b>operator-&gt;</b> () const </td></tr>
+<tr class="memitem:ab4620e21fc96cd41d709c5565fa25206"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a6310cfdcaa06d300cecc6ea15357e3cf">pointer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#ab4620e21fc96cd41d709c5565fa25206">operator-&gt;</a> () const </td></tr>
 <tr class="separator:ab4620e21fc96cd41d709c5565fa25206"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89fd94a2590a91acfec7949243d770b9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a89fd94a2590a91acfec7949243d770b9"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a> &amp;itr) const </td></tr>
+<tr class="memitem:a89fd94a2590a91acfec7949243d770b9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a89fd94a2590a91acfec7949243d770b9">operator==</a> (const <a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a> &amp;itr) const </td></tr>
 <tr class="separator:a89fd94a2590a91acfec7949243d770b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a946e147f8e1d877b562957e5ee50cbf5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a946e147f8e1d877b562957e5ee50cbf5"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const <a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a> &amp;itr) const </td></tr>
+<tr class="memitem:a946e147f8e1d877b562957e5ee50cbf5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a946e147f8e1d877b562957e5ee50cbf5">operator!=</a> (const <a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a> &amp;itr) const </td></tr>
 <tr class="separator:a946e147f8e1d877b562957e5ee50cbf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a1f8a790f3a42482a29cfbae47371fde1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a17829c542961d0bddca564c012c0ddae">mesh_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a1f8a790f3a42482a29cfbae47371fde1">mesh_</a></td></tr>
+<tr class="separator:a1f8a790f3a42482a29cfbae47371fde1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acced5b7f75c576fc4271562938b240ab"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespaceflecsi.html#a185da717e9895fc1da855b2e705e5164">id_vector_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#acced5b7f75c576fc4271562938b240ab">entities_</a></td></tr>
+<tr class="separator:acced5b7f75c576fc4271562938b240ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a565ccf8d783de69461c00d4ba3b3d616"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a565ccf8d783de69461c00d4ba3b3d616">index_</a></td></tr>
+<tr class="separator:a565ccf8d783de69461c00d4ba3b3d616"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;class MT&gt;<br />
@@ -163,7 +157,459 @@ template&lt;size_t D, size_t M = 0&gt;<br />
 class flecsi::mesh_topology_t&lt; MT &gt;::const_iterator&lt; D, M &gt;</h3>
 
 <p>A const iterator that returns entities for topological dimension D and domain M. </p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<a class="anchor" id="a2cf7008cc7818725a19264173f0ae946"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class MT&gt; </div>
+<div class="memtemplate">
+template&lt;size_t D, size_t M = 0&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classflecsi_1_1mesh__topology__t.html">flecsi::mesh_topology_t</a>&lt; MT &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&lt; D, M &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a2cf7008cc7818725a19264173f0ae946">difference_type</a> =  std::ptrdiff_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a43f73bf2e87843aae55f991715227db7"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class MT&gt; </div>
+<div class="memtemplate">
+template&lt;size_t D, size_t M = 0&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classflecsi_1_1mesh__topology__t.html">flecsi::mesh_topology_t</a>&lt; MT &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&lt; D, M &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a43f73bf2e87843aae55f991715227db7">entity_type</a> =  typename <a class="el" href="structflecsi_1_1find__entity__.html">find_entity_</a>&lt;MT, D, M&gt;::type</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ac422d58ac7459794d1e3c113ac9c22f3"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class MT&gt; </div>
+<div class="memtemplate">
+template&lt;size_t D, size_t M = 0&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classflecsi_1_1mesh__topology__t.html">flecsi::mesh_topology_t</a>&lt; MT &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&lt; D, M &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#ac422d58ac7459794d1e3c113ac9c22f3">iterator_category</a> =  std::bidirectional_iterator_tag</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a17829c542961d0bddca564c012c0ddae"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class MT&gt; </div>
+<div class="memtemplate">
+template&lt;size_t D, size_t M = 0&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classflecsi_1_1mesh__topology__t.html">flecsi::mesh_topology_t</a>&lt; MT &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&lt; D, M &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a17829c542961d0bddca564c012c0ddae">mesh_t</a> =  const <a class="el" href="classflecsi_1_1mesh__topology__t.html">mesh_topology_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a6310cfdcaa06d300cecc6ea15357e3cf"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class MT&gt; </div>
+<div class="memtemplate">
+template&lt;size_t D, size_t M = 0&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classflecsi_1_1mesh__topology__t.html">flecsi::mesh_topology_t</a>&lt; MT &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&lt; D, M &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a6310cfdcaa06d300cecc6ea15357e3cf">pointer</a> =  const <a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a43f73bf2e87843aae55f991715227db7">entity_type</a> *</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a8a2d6f88ecef58f20541908d040c6a97"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class MT&gt; </div>
+<div class="memtemplate">
+template&lt;size_t D, size_t M = 0&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classflecsi_1_1mesh__topology__t.html">flecsi::mesh_topology_t</a>&lt; MT &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&lt; D, M &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a8a2d6f88ecef58f20541908d040c6a97">reference</a> =  <a class="el" href="classflecsi_1_1domain__entity.html">domain_entity</a>&lt;M, <a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a43f73bf2e87843aae55f991715227db7">entity_type</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="af0264d3a6e346258e003a5c2fe43d0aa"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class MT&gt; </div>
+<div class="memtemplate">
+template&lt;size_t D, size_t M = 0&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classflecsi_1_1mesh__topology__t.html">flecsi::mesh_topology_t</a>&lt; MT &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&lt; D, M &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#af0264d3a6e346258e003a5c2fe43d0aa">value_type</a> =  <a class="el" href="classflecsi_1_1domain__entity.html">domain_entity</a>&lt;M, <a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a43f73bf2e87843aae55f991715227db7">entity_type</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="ad643951eac247918a52f49d01c0eff15"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class MT&gt; </div>
+<div class="memtemplate">
+template&lt;size_t D, size_t M = 0&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1mesh__topology__t.html">flecsi::mesh_topology_t</a>&lt; MT &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&lt; D, M &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&lt; D, M &gt; &amp;&#160;</td>
+          <td class="paramname"><em>itr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a7743164d990219ad53e686c8ceef9f48"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class MT&gt; </div>
+<div class="memtemplate">
+template&lt;size_t D, size_t M = 0&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1mesh__topology__t.html">flecsi::mesh_topology_t</a>&lt; MT &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&lt; D, M &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a> </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a17829c542961d0bddca564c012c0ddae">mesh_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceflecsi.html#a185da717e9895fc1da855b2e705e5164">id_vector_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>entities</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a946e147f8e1d877b562957e5ee50cbf5"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class MT&gt; </div>
+<div class="memtemplate">
+template&lt;size_t D, size_t M = 0&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classflecsi_1_1mesh__topology__t.html">flecsi::mesh_topology_t</a>&lt; MT &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&lt; D, M &gt;::operator!= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&lt; D, M &gt; &amp;&#160;</td>
+          <td class="paramname"><em>itr</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a5a389bae284330843b7d88261020a081"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class MT&gt; </div>
+<div class="memtemplate">
+template&lt;size_t D, size_t M = 0&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a8a2d6f88ecef58f20541908d040c6a97">reference</a> <a class="el" href="classflecsi_1_1mesh__topology__t.html">flecsi::mesh_topology_t</a>&lt; MT &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&lt; D, M &gt;::operator* </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a01a7d973f8f0c9d150fcf7e251c4f5e7"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class MT&gt; </div>
+<div class="memtemplate">
+template&lt;size_t D, size_t M = 0&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&amp; <a class="el" href="classflecsi_1_1mesh__topology__t.html">flecsi::mesh_topology_t</a>&lt; MT &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&lt; D, M &gt;::operator++ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a679b306ff8d537d064565beabb2de4f8"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class MT&gt; </div>
+<div class="memtemplate">
+template&lt;size_t D, size_t M = 0&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&amp; <a class="el" href="classflecsi_1_1mesh__topology__t.html">flecsi::mesh_topology_t</a>&lt; MT &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&lt; D, M &gt;::operator-- </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ab4620e21fc96cd41d709c5565fa25206"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class MT&gt; </div>
+<div class="memtemplate">
+template&lt;size_t D, size_t M = 0&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a6310cfdcaa06d300cecc6ea15357e3cf">pointer</a> <a class="el" href="classflecsi_1_1mesh__topology__t.html">flecsi::mesh_topology_t</a>&lt; MT &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&lt; D, M &gt;::operator-&gt; </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ae2202a90c2f49eba25d638c00da8b956"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class MT&gt; </div>
+<div class="memtemplate">
+template&lt;size_t D, size_t M = 0&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&amp; <a class="el" href="classflecsi_1_1mesh__topology__t.html">flecsi::mesh_topology_t</a>&lt; MT &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&lt; D, M &gt;::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&lt; D, M &gt; &amp;&#160;</td>
+          <td class="paramname"><em>itr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a89fd94a2590a91acfec7949243d770b9"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class MT&gt; </div>
+<div class="memtemplate">
+template&lt;size_t D, size_t M = 0&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classflecsi_1_1mesh__topology__t.html">flecsi::mesh_topology_t</a>&lt; MT &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&lt; D, M &gt;::operator== </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&lt; D, M &gt; &amp;&#160;</td>
+          <td class="paramname"><em>itr</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="acced5b7f75c576fc4271562938b240ab"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class MT&gt; </div>
+<div class="memtemplate">
+template&lt;size_t D, size_t M = 0&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="namespaceflecsi.html#a185da717e9895fc1da855b2e705e5164">id_vector_t</a>* <a class="el" href="classflecsi_1_1mesh__topology__t.html">flecsi::mesh_topology_t</a>&lt; MT &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&lt; D, M &gt;::entities_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a565ccf8d783de69461c00d4ba3b3d616"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class MT&gt; </div>
+<div class="memtemplate">
+template&lt;size_t D, size_t M = 0&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t <a class="el" href="classflecsi_1_1mesh__topology__t.html">flecsi::mesh_topology_t</a>&lt; MT &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&lt; D, M &gt;::index_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a1f8a790f3a42482a29cfbae47371fde1"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class MT&gt; </div>
+<div class="memtemplate">
+template&lt;size_t D, size_t M = 0&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html#a17829c542961d0bddca564c012c0ddae">mesh_t</a>&amp; <a class="el" href="classflecsi_1_1mesh__topology__t.html">flecsi::mesh_topology_t</a>&lt; MT &gt;::<a class="el" href="classflecsi_1_1mesh__topology__t_1_1const__iterator.html">const_iterator</a>&lt; D, M &gt;::mesh_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li>/tmp/flecsi/flecsi/mesh/<a class="el" href="mesh__topology_8h_source.html">mesh_topology.h</a></li>
 </ul>
 </div><!-- contents -->

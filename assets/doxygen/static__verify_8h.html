@@ -116,7 +116,7 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:aecae600285017def088065e8c3730280"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>FLECSI_MEMBER_CHECKER</b>(X)</td></tr>
+<tr class="memitem:aecae600285017def088065e8c3730280"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="static__verify_8h.html#aecae600285017def088065e8c3730280">FLECSI_MEMBER_CHECKER</a>(X)</td></tr>
 <tr class="separator:aecae600285017def088065e8c3730280"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -135,7 +135,8 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt; \</div><div class="line">struct has_member_##X{ \</div><div class="line">  struct F{ <span class="keywordtype">int</span> X; }; \</div><div class="line">  struct D : T, F{}; \</div><div class="line">  template&lt;typename C, C&gt; <span class="keyword">struct </span>ChT; \</div><div class="line">  template&lt;typename C&gt; <span class="keyword">static</span> char (&amp;f(ChT&lt;int F::*, &amp;C::X&gt;*))[1]; \</div><div class="line">  template&lt;typename C&gt; <span class="keyword">static</span> char (&amp;f(...))[2]; \</div><div class="line">  static <span class="keywordtype">bool</span> <span class="keyword">const</span> value = <span class="keyword">sizeof</span>(f&lt;D&gt;(0)) == 2; \</div><div class="line">};</div></div><!-- fragment -->
+<b>Value:</b><div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt; \</div><div class="line">struct has_member_##X{ \</div><div class="line">  struct F{ <span class="keywordtype">int</span> X; }; \</div><div class="line">  struct D : T, F{}; \</div><div class="line">  template&lt;typename C, C&gt; <span class="keyword">struct </span>ChT; \</div><div class="line">  template&lt;typename C&gt; <span class="keyword">static</span> char (&amp;f(ChT&lt;int F::*, &amp;C::X&gt;*))[1]; \</div><div class="line">  template&lt;typename C&gt; <span class="keyword">static</span> char (&amp;f(...))[2]; \</div><div class="line">  static <span class="keywordtype">bool</span> <span class="keyword">const</span> <a class="code" href="meta__list_8h.html#a5e939244be656a9d03dd7d46ea74d461">value</a> = <span class="keyword">sizeof</span>(f&lt;D&gt;(0)) == 2; \</div><div class="line">};</div><div class="ttc" id="meta__list_8h_html_a5e939244be656a9d03dd7d46ea74d461"><div class="ttname"><a href="meta__list_8h.html#a5e939244be656a9d03dd7d46ea74d461">value</a></div><div class="ttdeci">static constexpr size_type value</div><div class="ttdef"><b>Definition:</b> meta_list.h:45</div></div>
+</div><!-- fragment -->
 </div>
 </div>
 </div><!-- contents -->

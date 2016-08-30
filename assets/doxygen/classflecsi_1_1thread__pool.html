@@ -92,37 +92,342 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classflecsi_1_1thread__pool-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">flecsi::thread_pool Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="thread__pool_8h_source.html">thread_pool.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:adcf58232a8812fa96366a4d88c16f92f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adcf58232a8812fa96366a4d88c16f92f"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>function_t</b> = std::function&lt; void(void)&gt;</td></tr>
+<tr class="memitem:adcf58232a8812fa96366a4d88c16f92f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1thread__pool.html#adcf58232a8812fa96366a4d88c16f92f">function_t</a> = std::function&lt; void(void)&gt;</td></tr>
 <tr class="separator:adcf58232a8812fa96366a4d88c16f92f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a21432882e57c6a15750fb03a5197cc4a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a21432882e57c6a15750fb03a5197cc4a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>run_</b> ()</td></tr>
+<tr class="memitem:ab8c2e15f45e169246d43cfee9b7b533e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1thread__pool.html#ab8c2e15f45e169246d43cfee9b7b533e">thread_pool</a> ()</td></tr>
+<tr class="separator:ab8c2e15f45e169246d43cfee9b7b533e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c10d522b7ff50ac6acda0a532639dbe"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1thread__pool.html#a5c10d522b7ff50ac6acda0a532639dbe">~thread_pool</a> ()</td></tr>
+<tr class="separator:a5c10d522b7ff50ac6acda0a532639dbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21432882e57c6a15750fb03a5197cc4a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1thread__pool.html#a21432882e57c6a15750fb03a5197cc4a">run_</a> ()</td></tr>
 <tr class="separator:a21432882e57c6a15750fb03a5197cc4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a24812b5aec048e81c68795f5a5e2c6c5"><td class="memTemplParams" colspan="2"><a class="anchor" id="a24812b5aec048e81c68795f5a5e2c6c5"></a>
-template&lt;typename FT , typename... ARGS&gt; </td></tr>
-<tr class="memitem:a24812b5aec048e81c68795f5a5e2c6c5"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>queue</b> (FT f, ARGS...args)</td></tr>
+<tr class="memitem:a24812b5aec048e81c68795f5a5e2c6c5"><td class="memTemplParams" colspan="2">template&lt;typename FT , typename... ARGS&gt; </td></tr>
+<tr class="memitem:a24812b5aec048e81c68795f5a5e2c6c5"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1thread__pool.html#a24812b5aec048e81c68795f5a5e2c6c5">queue</a> (FT f, ARGS...args)</td></tr>
 <tr class="separator:a24812b5aec048e81c68795f5a5e2c6c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a423ffd797ee7159298bc25d5460625d7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a423ffd797ee7159298bc25d5460625d7"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>start</b> (size_t num_threads)</td></tr>
+<tr class="memitem:a423ffd797ee7159298bc25d5460625d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1thread__pool.html#a423ffd797ee7159298bc25d5460625d7">start</a> (size_t <a class="el" href="classflecsi_1_1thread__pool.html#a702e28fe000616e3a70ad43ef17dcaca">num_threads</a>)</td></tr>
 <tr class="separator:a423ffd797ee7159298bc25d5460625d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a18e2563ce6223ce814326b627df715f6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a18e2563ce6223ce814326b627df715f6"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>join</b> ()</td></tr>
+<tr class="memitem:a18e2563ce6223ce814326b627df715f6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1thread__pool.html#a18e2563ce6223ce814326b627df715f6">join</a> ()</td></tr>
 <tr class="separator:a18e2563ce6223ce814326b627df715f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a702e28fe000616e3a70ad43ef17dcaca"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a702e28fe000616e3a70ad43ef17dcaca"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>num_threads</b> () const </td></tr>
+<tr class="memitem:a702e28fe000616e3a70ad43ef17dcaca"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1thread__pool.html#a702e28fe000616e3a70ad43ef17dcaca">num_threads</a> () const </td></tr>
 <tr class="separator:a702e28fe000616e3a70ad43ef17dcaca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a3244c320f32304d517ecbc2248b39fd3"><td class="memItemLeft" align="right" valign="top">std::mutex&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1thread__pool.html#a3244c320f32304d517ecbc2248b39fd3">mutex_</a></td></tr>
+<tr class="separator:a3244c320f32304d517ecbc2248b39fd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae82130685fb68c5888b938619621575c"><td class="memItemLeft" align="right" valign="top">std::queue&lt; <a class="el" href="classflecsi_1_1thread__pool.html#adcf58232a8812fa96366a4d88c16f92f">function_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1thread__pool.html#ae82130685fb68c5888b938619621575c">queue_</a></td></tr>
+<tr class="separator:ae82130685fb68c5888b938619621575c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a716ae1c8bcaa8f2f6f1fc4a4788c6079"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::thread * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1thread__pool.html#a716ae1c8bcaa8f2f6f1fc4a4788c6079">threads_</a></td></tr>
+<tr class="separator:a716ae1c8bcaa8f2f6f1fc4a4788c6079"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f620229deef5910ac5cc56bdbb43361"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1virtual__semaphore.html">virtual_semaphore</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1thread__pool.html#a1f620229deef5910ac5cc56bdbb43361">sem_</a></td></tr>
+<tr class="separator:a1f620229deef5910ac5cc56bdbb43361"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7aab4d482510de4594bb92bff6bbee56"><td class="memItemLeft" align="right" valign="top">std::atomic_bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1thread__pool.html#a7aab4d482510de4594bb92bff6bbee56">done_</a></td></tr>
+<tr class="separator:a7aab4d482510de4594bb92bff6bbee56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Typedef Documentation</h2>
+<a class="anchor" id="adcf58232a8812fa96366a4d88c16f92f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classflecsi_1_1thread__pool.html#adcf58232a8812fa96366a4d88c16f92f">flecsi::thread_pool::function_t</a> =  std::function&lt;void(void)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="ab8c2e15f45e169246d43cfee9b7b533e"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">flecsi::thread_pool::thread_pool </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a5c10d522b7ff50ac6acda0a532639dbe"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">flecsi::thread_pool::~thread_pool </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a18e2563ce6223ce814326b627df715f6"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::thread_pool::join </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a702e28fe000616e3a70ad43ef17dcaca"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t flecsi::thread_pool::num_threads </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a24812b5aec048e81c68795f5a5e2c6c5"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename FT , typename... ARGS&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::thread_pool::queue </td>
+          <td>(</td>
+          <td class="paramtype">FT&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ARGS...&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a21432882e57c6a15750fb03a5197cc4a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::thread_pool::run_ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a423ffd797ee7159298bc25d5460625d7"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::thread_pool::start </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>num_threads</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="a7aab4d482510de4594bb92bff6bbee56"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::atomic_bool flecsi::thread_pool::done_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a3244c320f32304d517ecbc2248b39fd3"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::mutex flecsi::thread_pool::mutex_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ae82130685fb68c5888b938619621575c"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::queue&lt;<a class="el" href="classflecsi_1_1thread__pool.html#adcf58232a8812fa96366a4d88c16f92f">function_t</a>&gt; flecsi::thread_pool::queue_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a1f620229deef5910ac5cc56bdbb43361"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1virtual__semaphore.html">virtual_semaphore</a> flecsi::thread_pool::sem_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a716ae1c8bcaa8f2f6f1fc4a4788c6079"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::thread*&gt; flecsi::thread_pool::threads_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>/tmp/flecsi/flecsi/concurrency/<a class="el" href="thread__pool_8h_source.html">thread_pool.h</a></li>
 </ul>

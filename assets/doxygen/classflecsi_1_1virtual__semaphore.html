@@ -92,45 +92,391 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classflecsi_1_1virtual__semaphore-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">flecsi::virtual_semaphore Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="virtual__semaphore_8h_source.html">virtual_semaphore.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a7b46f5fc05da9f35f83899a5d68626bb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7b46f5fc05da9f35f83899a5d68626bb"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>lock_t</b> = std::unique_lock&lt; std::mutex &gt;</td></tr>
+<tr class="memitem:a7b46f5fc05da9f35f83899a5d68626bb"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1virtual__semaphore.html#a7b46f5fc05da9f35f83899a5d68626bb">lock_t</a> = std::unique_lock&lt; std::mutex &gt;</td></tr>
 <tr class="separator:a7b46f5fc05da9f35f83899a5d68626bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ada20a58ce96651370758a2848d4b7556"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ada20a58ce96651370758a2848d4b7556"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>virtual_semaphore</b> (int count=0)</td></tr>
+<tr class="memitem:ada20a58ce96651370758a2848d4b7556"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1virtual__semaphore.html#ada20a58ce96651370758a2848d4b7556">virtual_semaphore</a> (int count=0)</td></tr>
 <tr class="separator:ada20a58ce96651370758a2848d4b7556"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8c98d4772af611fdd9aced9d85392692"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8c98d4772af611fdd9aced9d85392692"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>virtual_semaphore</b> (int count, int max_count)</td></tr>
+<tr class="memitem:a8c98d4772af611fdd9aced9d85392692"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1virtual__semaphore.html#a8c98d4772af611fdd9aced9d85392692">virtual_semaphore</a> (int count, int max_count)</td></tr>
 <tr class="separator:a8c98d4772af611fdd9aced9d85392692"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe37a20a2d8f91da5b1e781b3f905b39"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abe37a20a2d8f91da5b1e781b3f905b39"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>acquire</b> ()</td></tr>
+<tr class="memitem:ab74d3d2cf9da52dc402f62c7f99e9770"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1virtual__semaphore.html#ab74d3d2cf9da52dc402f62c7f99e9770">~virtual_semaphore</a> ()</td></tr>
+<tr class="separator:ab74d3d2cf9da52dc402f62c7f99e9770"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe37a20a2d8f91da5b1e781b3f905b39"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1virtual__semaphore.html#abe37a20a2d8f91da5b1e781b3f905b39">acquire</a> ()</td></tr>
 <tr class="separator:abe37a20a2d8f91da5b1e781b3f905b39"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee4ef405c01719c7ec4b92c779e788d5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aee4ef405c01719c7ec4b92c779e788d5"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>try_acquire</b> ()</td></tr>
+<tr class="memitem:aee4ef405c01719c7ec4b92c779e788d5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1virtual__semaphore.html#aee4ef405c01719c7ec4b92c779e788d5">try_acquire</a> ()</td></tr>
 <tr class="separator:aee4ef405c01719c7ec4b92c779e788d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a30e257fa997a81a69ceb800fd03e68a1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a30e257fa997a81a69ceb800fd03e68a1"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>release</b> ()</td></tr>
+<tr class="memitem:a30e257fa997a81a69ceb800fd03e68a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1virtual__semaphore.html#a30e257fa997a81a69ceb800fd03e68a1">release</a> ()</td></tr>
 <tr class="separator:a30e257fa997a81a69ceb800fd03e68a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a087bcc0f653bd3633d773bd1810887c0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a087bcc0f653bd3633d773bd1810887c0"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>interrupt</b> ()</td></tr>
+<tr class="memitem:a087bcc0f653bd3633d773bd1810887c0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1virtual__semaphore.html#a087bcc0f653bd3633d773bd1810887c0">interrupt</a> ()</td></tr>
 <tr class="separator:a087bcc0f653bd3633d773bd1810887c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adac75cb8c6e8c347d28ae7b286cc6e79"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adac75cb8c6e8c347d28ae7b286cc6e79"></a>
-<a class="el" href="classflecsi_1_1virtual__semaphore.html">virtual_semaphore</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classflecsi_1_1virtual__semaphore.html">virtual_semaphore</a> &amp;)=delete</td></tr>
+<tr class="memitem:adac75cb8c6e8c347d28ae7b286cc6e79"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1virtual__semaphore.html">virtual_semaphore</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1virtual__semaphore.html#adac75cb8c6e8c347d28ae7b286cc6e79">operator=</a> (const <a class="el" href="classflecsi_1_1virtual__semaphore.html">virtual_semaphore</a> &amp;)=delete</td></tr>
 <tr class="separator:adac75cb8c6e8c347d28ae7b286cc6e79"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac79d7a0d9490dd4353db74d76d90dd36"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac79d7a0d9490dd4353db74d76d90dd36"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>virtual_semaphore</b> (const <a class="el" href="classflecsi_1_1virtual__semaphore.html">virtual_semaphore</a> &amp;)=delete</td></tr>
+<tr class="memitem:ac79d7a0d9490dd4353db74d76d90dd36"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1virtual__semaphore.html#ac79d7a0d9490dd4353db74d76d90dd36">virtual_semaphore</a> (const <a class="el" href="classflecsi_1_1virtual__semaphore.html">virtual_semaphore</a> &amp;)=delete</td></tr>
 <tr class="separator:ac79d7a0d9490dd4353db74d76d90dd36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a4176c2c7eb114887dd1096a892f84f9e"><td class="memItemLeft" align="right" valign="top">std::mutex&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1virtual__semaphore.html#a4176c2c7eb114887dd1096a892f84f9e">mutex_</a></td></tr>
+<tr class="separator:a4176c2c7eb114887dd1096a892f84f9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab19778012df0bce36478203a77e672a9"><td class="memItemLeft" align="right" valign="top">std::condition_variable&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1virtual__semaphore.html#ab19778012df0bce36478203a77e672a9">cond_</a></td></tr>
+<tr class="separator:ab19778012df0bce36478203a77e672a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6753a2f6897ad70f09d2de54038aa2fe"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1virtual__semaphore.html#a6753a2f6897ad70f09d2de54038aa2fe">count_</a></td></tr>
+<tr class="separator:a6753a2f6897ad70f09d2de54038aa2fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaed95108eabce0b404cadf749aceab5b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1virtual__semaphore.html#aaed95108eabce0b404cadf749aceab5b">max_count_</a></td></tr>
+<tr class="separator:aaed95108eabce0b404cadf749aceab5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4656382e03069341ceaee5c037335205"><td class="memItemLeft" align="right" valign="top">std::atomic_bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1virtual__semaphore.html#a4656382e03069341ceaee5c037335205">done_</a></td></tr>
+<tr class="separator:a4656382e03069341ceaee5c037335205"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Typedef Documentation</h2>
+<a class="anchor" id="a7b46f5fc05da9f35f83899a5d68626bb"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classflecsi_1_1virtual__semaphore.html#a7b46f5fc05da9f35f83899a5d68626bb">flecsi::virtual_semaphore::lock_t</a> =  std::unique_lock&lt;std::mutex&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="ada20a58ce96651370758a2848d4b7556"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">flecsi::virtual_semaphore::virtual_semaphore </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em> = <code>0</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a8c98d4772af611fdd9aced9d85392692"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">flecsi::virtual_semaphore::virtual_semaphore </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>max_count</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ab74d3d2cf9da52dc402f62c7f99e9770"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">flecsi::virtual_semaphore::~virtual_semaphore </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ac79d7a0d9490dd4353db74d76d90dd36"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">flecsi::virtual_semaphore::virtual_semaphore </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1virtual__semaphore.html">virtual_semaphore</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="abe37a20a2d8f91da5b1e781b3f905b39"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool flecsi::virtual_semaphore::acquire </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a087bcc0f653bd3633d773bd1810887c0"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::virtual_semaphore::interrupt </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="adac75cb8c6e8c347d28ae7b286cc6e79"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1virtual__semaphore.html">virtual_semaphore</a>&amp; flecsi::virtual_semaphore::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1virtual__semaphore.html">virtual_semaphore</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a30e257fa997a81a69ceb800fd03e68a1"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::virtual_semaphore::release </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="aee4ef405c01719c7ec4b92c779e788d5"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool flecsi::virtual_semaphore::try_acquire </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="ab19778012df0bce36478203a77e672a9"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::condition_variable flecsi::virtual_semaphore::cond_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a6753a2f6897ad70f09d2de54038aa2fe"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int flecsi::virtual_semaphore::count_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a4656382e03069341ceaee5c037335205"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::atomic_bool flecsi::virtual_semaphore::done_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="aaed95108eabce0b404cadf749aceab5b"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int flecsi::virtual_semaphore::max_count_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a4176c2c7eb114887dd1096a892f84f9e"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::mutex flecsi::virtual_semaphore::mutex_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>/tmp/flecsi/flecsi/concurrency/<a class="el" href="virtual__semaphore_8h_source.html">virtual_semaphore.h</a></li>
 </ul>

@@ -100,7 +100,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:a3c93b12cf7a6fcc11041d539e283a074"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="burton_8h.html#a3c93b12cf7a6fcc11041d539e283a074">execute</a>(task, ...)&#160;&#160;&#160;flecsi::burton_mesh_t::mesh_execution_t::execute_task(task, ##__VA_ARGS__)</td></tr>
+<tr class="memitem:a3c93b12cf7a6fcc11041d539e283a074"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="burton_8h.html#a3c93b12cf7a6fcc11041d539e283a074">execute</a>(task, ...)&#160;&#160;&#160;<a class="el" href="classflecsi_1_1execution__t.html#a84f46a6581e22838ae97788c7657fa58">flecsi::burton_mesh_t::mesh_execution_t::execute_task</a>(task, ##__VA_ARGS__)</td></tr>
 <tr class="memdesc:a3c93b12cf7a6fcc11041d539e283a074"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute a task using the flecsi task runtime abstraction.  <a href="#a3c93b12cf7a6fcc11041d539e283a074">More...</a><br /></td></tr>
 <tr class="separator:a3c93b12cf7a6fcc11041d539e283a074"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa0e1a0e78ac0b080afbe61957916d29"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="burton_8h.html#aaa0e1a0e78ac0b080afbe61957916d29">register_state</a>(mesh,  key,  site,  type, ...)</td></tr>
@@ -404,7 +404,7 @@ Macros</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td>&#160;&#160;&#160;flecsi::burton_mesh_t::mesh_execution_t::execute_task(task, ##__VA_ARGS__)</td>
+          <td></td><td>&#160;&#160;&#160;<a class="el" href="classflecsi_1_1execution__t.html#a84f46a6581e22838ae97788c7657fa58">flecsi::burton_mesh_t::mesh_execution_t::execute_task</a>(task, ##__VA_ARGS__)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -460,7 +460,9 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">[](<span class="keyword">const</span> <span class="keyword">auto</span> &amp; a) -&gt; <span class="keywordtype">bool</span> {                                              \</div><div class="line">    bitfield_t bf(a.meta().attributes);                                     \</div><div class="line">    return a.meta().site ==                                                 \</div><div class="line">        flecsi::burton_mesh_traits_t::attachment_site_t::attachment_site &amp;&amp; \</div><div class="line">        bf.bitsset(persistent);                                             \</div><div class="line">  }</div></div><!-- fragment -->
+<b>Value:</b><div class="fragment"><div class="line">[](<span class="keyword">const</span> <span class="keyword">auto</span> &amp; a) -&gt; <span class="keywordtype">bool</span> {                                              <a class="code" href="bitfield_8cc.html#a1b9905005c951d058cf5ae41bae514a8">\</a></div><div class="line"><a class="code" href="bitfield_8cc.html#a1b9905005c951d058cf5ae41bae514a8">    bitfield_t</a> bf(a.meta().attributes);                                     \</div><div class="line">    return a.meta().site ==                                                 \</div><div class="line">        flecsi::burton_mesh_traits_t::attachment_site_t::attachment_site &amp;&amp; \</div><div class="line">        bf.bitsset(<a class="code" href="namespaceflecsi.html#a4823fda1e9e323b93e737de51ee7f1cf">persistent</a>);                                             \</div><div class="line">  }</div><div class="ttc" id="namespaceflecsi_html_a4823fda1e9e323b93e737de51ee7f1cf"><div class="ttname"><a href="namespaceflecsi.html#a4823fda1e9e323b93e737de51ee7f1cf">flecsi::persistent</a></div><div class="ttdeci">static constexpr bitfield_t::field_type_t persistent</div><div class="ttdoc">This exposes the persistent attribute so that it can be used without specifying the full type informa...</div><div class="ttdef"><b>Definition:</b> data_constants.h:78</div></div>
+<div class="ttc" id="bitfield_8cc_html_a1b9905005c951d058cf5ae41bae514a8"><div class="ttname"><a href="bitfield_8cc.html#a1b9905005c951d058cf5ae41bae514a8">bitfield_t</a></div><div class="ttdeci">flecsi::bitfield&lt; uint8_t &gt; bitfield_t</div><div class="ttdef"><b>Definition:</b> bitfield.cc:18</div></div>
+</div><!-- fragment -->
 <p>Select persistent state variables at an attachment site. </p>
 <p>Predicate function to select state variables that have been tagged as being persistent AND are defined at a specific attachment site.</p>
 <dl class="params"><dt>Parameters</dt><dd>

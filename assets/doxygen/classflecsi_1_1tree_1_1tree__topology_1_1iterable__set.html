@@ -85,117 +85,1098 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>tree</b></li><li class="navelem"><a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">tree_topology</a></li><li class="navelem"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><a class="el" href="namespaceflecsi_1_1tree.html">tree</a></li><li class="navelem"><a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">tree_topology</a></li><li class="navelem"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">flecsi::tree::tree_topology&lt; P &gt;::iterable_set&lt; T, F &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="tree__topology_8h_source.html">tree_topology.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a700e07724f7f333ec20fa0edc53a5f05"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a700e07724f7f333ec20fa0edc53a5f05"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>iterator_t</b> = <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterator.html">iterator</a>&lt; T &gt;</td></tr>
+<tr class="memitem:a700e07724f7f333ec20fa0edc53a5f05"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a700e07724f7f333ec20fa0edc53a5f05">iterator_t</a> = <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterator.html">iterator</a>&lt; T &gt;</td></tr>
 <tr class="separator:a700e07724f7f333ec20fa0edc53a5f05"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f2f0008a64ce41afaaf19f0a20d6d6c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0f2f0008a64ce41afaaf19f0a20d6d6c"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>id_vector_t</b> = typename iterator_t::id_vector_t</td></tr>
+<tr class="memitem:a0f2f0008a64ce41afaaf19f0a20d6d6c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a0f2f0008a64ce41afaaf19f0a20d6d6c">id_vector_t</a> = typename <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterator.html#a9fda2d0eb08b265ef610042d4a6a02f0">iterator_t::id_vector_t</a></td></tr>
 <tr class="separator:a0f2f0008a64ce41afaaf19f0a20d6d6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8cddedfb2e4ae13f87332448db96f75b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8cddedfb2e4ae13f87332448db96f75b"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>filter_function</b> = std::function&lt; bool(T &amp;)&gt;</td></tr>
+<tr class="memitem:a8cddedfb2e4ae13f87332448db96f75b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a8cddedfb2e4ae13f87332448db96f75b">filter_function</a> = std::function&lt; bool(T &amp;)&gt;</td></tr>
 <tr class="separator:a8cddedfb2e4ae13f87332448db96f75b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61f4a79a54e629aced29e624feb1a687"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a61f4a79a54e629aced29e624feb1a687"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>apply_function</b> = std::function&lt; void(T &amp;)&gt;</td></tr>
+<tr class="memitem:a61f4a79a54e629aced29e624feb1a687"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a61f4a79a54e629aced29e624feb1a687">apply_function</a> = std::function&lt; void(T &amp;)&gt;</td></tr>
 <tr class="separator:a61f4a79a54e629aced29e624feb1a687"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a83a039c74f31b10688cf20fef8a4f38d"><td class="memTemplParams" colspan="2"><a class="anchor" id="a83a039c74f31b10688cf20fef8a4f38d"></a>
-template&lt;typename R &gt; </td></tr>
-<tr class="memitem:a83a039c74f31b10688cf20fef8a4f38d"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>map_function</b> = std::function&lt; R(T &amp;)&gt;</td></tr>
+<tr class="memitem:a83a039c74f31b10688cf20fef8a4f38d"><td class="memTemplParams" colspan="2">template&lt;typename R &gt; </td></tr>
+<tr class="memitem:a83a039c74f31b10688cf20fef8a4f38d"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a83a039c74f31b10688cf20fef8a4f38d">map_function</a> = std::function&lt; R(T &amp;)&gt;</td></tr>
 <tr class="separator:a83a039c74f31b10688cf20fef8a4f38d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a9ddf73a47c93118c10f960cded17e0"><td class="memTemplParams" colspan="2"><a class="anchor" id="a9a9ddf73a47c93118c10f960cded17e0"></a>
-template&lt;typename R &gt; </td></tr>
-<tr class="memitem:a9a9ddf73a47c93118c10f960cded17e0"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>reduce_function</b> = std::function&lt; void(T &amp;, R &amp;)&gt;</td></tr>
+<tr class="memitem:a9a9ddf73a47c93118c10f960cded17e0"><td class="memTemplParams" colspan="2">template&lt;typename R &gt; </td></tr>
+<tr class="memitem:a9a9ddf73a47c93118c10f960cded17e0"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a9a9ddf73a47c93118c10f960cded17e0">reduce_function</a> = std::function&lt; void(T &amp;, R &amp;)&gt;</td></tr>
 <tr class="separator:a9a9ddf73a47c93118c10f960cded17e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5949dd90113d895e30b69af69a7f9f44"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5949dd90113d895e30b69af69a7f9f44"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>iterable_set</b> (<a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">tree_topology</a> &amp;tree, const id_vector_t &amp;v, bool sorted=false)</td></tr>
+<tr class="memitem:a1892ceaf236a5bf8f2ac746aba0792d4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a1892ceaf236a5bf8f2ac746aba0792d4">iterable_set</a> ()=default</td></tr>
+<tr class="separator:a1892ceaf236a5bf8f2ac746aba0792d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5949dd90113d895e30b69af69a7f9f44"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a5949dd90113d895e30b69af69a7f9f44">iterable_set</a> (<a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">tree_topology</a> &amp;tree, const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a0f2f0008a64ce41afaaf19f0a20d6d6c">id_vector_t</a> &amp;<a class="el" href="reorder_8cc.html#af17e09276e5c166e0f82ed0108db9edf">v</a>, bool sorted=false)</td></tr>
 <tr class="separator:a5949dd90113d895e30b69af69a7f9f44"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a864dc6bc9226ed5f57d8b7e1d5957994"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a864dc6bc9226ed5f57d8b7e1d5957994"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>iterable_set</b> (<a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">tree_topology</a> &amp;tree, id_vector_t &amp;&amp;v, bool sorted)</td></tr>
+<tr class="memitem:a864dc6bc9226ed5f57d8b7e1d5957994"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a864dc6bc9226ed5f57d8b7e1d5957994">iterable_set</a> (<a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">tree_topology</a> &amp;tree, <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a0f2f0008a64ce41afaaf19f0a20d6d6c">id_vector_t</a> &amp;&amp;<a class="el" href="reorder_8cc.html#af17e09276e5c166e0f82ed0108db9edf">v</a>, bool sorted)</td></tr>
 <tr class="separator:a864dc6bc9226ed5f57d8b7e1d5957994"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9d2b950b9d9a959a4f43c7b9d1212dff"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9d2b950b9d9a959a4f43c7b9d1212dff"></a>
-<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &amp;r)=default</td></tr>
+<tr class="memitem:aedeef92d6594fa831d8b0dc5e1accf5d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#aedeef92d6594fa831d8b0dc5e1accf5d">~iterable_set</a> ()</td></tr>
+<tr class="separator:aedeef92d6594fa831d8b0dc5e1accf5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d2b950b9d9a959a4f43c7b9d1212dff"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a9d2b950b9d9a959a4f43c7b9d1212dff">operator=</a> (const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &amp;r)=default</td></tr>
 <tr class="separator:a9d2b950b9d9a959a4f43c7b9d1212dff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace6231ae3f056fffbf796248cba06920"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ace6231ae3f056fffbf796248cba06920"></a>
-<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterator.html">iterator_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> () const </td></tr>
+<tr class="memitem:ace6231ae3f056fffbf796248cba06920"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a700e07724f7f333ec20fa0edc53a5f05">iterator_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#ace6231ae3f056fffbf796248cba06920">begin</a> () const </td></tr>
 <tr class="separator:ace6231ae3f056fffbf796248cba06920"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa2f99e072437555a9c545759182089a1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa2f99e072437555a9c545759182089a1"></a>
-<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterator.html">iterator_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>end</b> () const </td></tr>
+<tr class="memitem:aa2f99e072437555a9c545759182089a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a700e07724f7f333ec20fa0edc53a5f05">iterator_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#aa2f99e072437555a9c545759182089a1">end</a> () const </td></tr>
 <tr class="separator:aa2f99e072437555a9c545759182089a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8465da149855a818d252cf2228b31c09"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8465da149855a818d252cf2228b31c09"></a>
-T *&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (size_t i) const </td></tr>
+<tr class="memitem:a8465da149855a818d252cf2228b31c09"><td class="memItemLeft" align="right" valign="top">T *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a8465da149855a818d252cf2228b31c09">operator[]</a> (size_t i) const </td></tr>
 <tr class="separator:a8465da149855a818d252cf2228b31c09"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad04ec947598f6bcc8fe417a4d11448af"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad04ec947598f6bcc8fe417a4d11448af"></a>
-T *&#160;</td><td class="memItemRight" valign="bottom"><b>front</b> () const </td></tr>
+<tr class="memitem:ad04ec947598f6bcc8fe417a4d11448af"><td class="memItemLeft" align="right" valign="top">T *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#ad04ec947598f6bcc8fe417a4d11448af">front</a> () const </td></tr>
 <tr class="separator:ad04ec947598f6bcc8fe417a4d11448af"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac2abf3bcd9c64ede56706865c906b18f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac2abf3bcd9c64ede56706865c906b18f"></a>
-T *&#160;</td><td class="memItemRight" valign="bottom"><b>back</b> () const </td></tr>
+<tr class="memitem:ac2abf3bcd9c64ede56706865c906b18f"><td class="memItemLeft" align="right" valign="top">T *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#ac2abf3bcd9c64ede56706865c906b18f">back</a> () const </td></tr>
 <tr class="separator:ac2abf3bcd9c64ede56706865c906b18f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a561feec0222bf8696a72131c0d2c6723"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a561feec0222bf8696a72131c0d2c6723"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> () const </td></tr>
+<tr class="memitem:a561feec0222bf8696a72131c0d2c6723"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a561feec0222bf8696a72131c0d2c6723">size</a> () const </td></tr>
 <tr class="separator:a561feec0222bf8696a72131c0d2c6723"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a544c77bcf6b332fbebc7e91e6e8ccb4a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a544c77bcf6b332fbebc7e91e6e8ccb4a"></a>
-<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&#160;</td><td class="memItemRight" valign="bottom"><b>filter</b> (filter_function f) const </td></tr>
+<tr class="memitem:a544c77bcf6b332fbebc7e91e6e8ccb4a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a544c77bcf6b332fbebc7e91e6e8ccb4a">filter</a> (<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a8cddedfb2e4ae13f87332448db96f75b">filter_function</a> f) const </td></tr>
 <tr class="separator:a544c77bcf6b332fbebc7e91e6e8ccb4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab36a46c05a135538385bd21b715006a6"><td class="memTemplParams" colspan="2"><a class="anchor" id="ab36a46c05a135538385bd21b715006a6"></a>
-template&lt;typename S &gt; </td></tr>
-<tr class="memitem:ab36a46c05a135538385bd21b715006a6"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>scatter</b> (map_function&lt; T &gt; f) const </td></tr>
+<tr class="memitem:ab36a46c05a135538385bd21b715006a6"><td class="memTemplParams" colspan="2">template&lt;typename S &gt; </td></tr>
+<tr class="memitem:ab36a46c05a135538385bd21b715006a6"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#ab36a46c05a135538385bd21b715006a6">scatter</a> (<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a83a039c74f31b10688cf20fef8a4f38d">map_function</a>&lt; T &gt; f) const </td></tr>
 <tr class="separator:ab36a46c05a135538385bd21b715006a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a62592350271fc6825a6c3e43c87460fb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a62592350271fc6825a6c3e43c87460fb"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>apply</b> (apply_function f) const </td></tr>
+<tr class="memitem:a62592350271fc6825a6c3e43c87460fb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a62592350271fc6825a6c3e43c87460fb">apply</a> (<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a61f4a79a54e629aced29e624feb1a687">apply_function</a> f) const </td></tr>
 <tr class="separator:a62592350271fc6825a6c3e43c87460fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa74dd1c62687a2d80a5d94220d467e55"><td class="memTemplParams" colspan="2"><a class="anchor" id="aa74dd1c62687a2d80a5d94220d467e55"></a>
-template&lt;typename S &gt; </td></tr>
-<tr class="memitem:aa74dd1c62687a2d80a5d94220d467e55"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; S &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>map</b> (map_function&lt; T &gt; f) const </td></tr>
+<tr class="memitem:aa74dd1c62687a2d80a5d94220d467e55"><td class="memTemplParams" colspan="2">template&lt;typename S &gt; </td></tr>
+<tr class="memitem:aa74dd1c62687a2d80a5d94220d467e55"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; S &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#aa74dd1c62687a2d80a5d94220d467e55">map</a> (<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a83a039c74f31b10688cf20fef8a4f38d">map_function</a>&lt; T &gt; f) const </td></tr>
 <tr class="separator:aa74dd1c62687a2d80a5d94220d467e55"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77def915e6122ec833c026cf8acbea48"><td class="memTemplParams" colspan="2"><a class="anchor" id="a77def915e6122ec833c026cf8acbea48"></a>
-template&lt;typename S &gt; </td></tr>
-<tr class="memitem:a77def915e6122ec833c026cf8acbea48"><td class="memTemplItemLeft" align="right" valign="top">S&#160;</td><td class="memTemplItemRight" valign="bottom"><b>reduce</b> (T start, reduce_function&lt; T &gt; f) const </td></tr>
+<tr class="memitem:a77def915e6122ec833c026cf8acbea48"><td class="memTemplParams" colspan="2">template&lt;typename S &gt; </td></tr>
+<tr class="memitem:a77def915e6122ec833c026cf8acbea48"><td class="memTemplItemLeft" align="right" valign="top">S&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a77def915e6122ec833c026cf8acbea48">reduce</a> (T start, <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a9a9ddf73a47c93118c10f960cded17e0">reduce_function</a>&lt; T &gt; f) const </td></tr>
 <tr class="separator:a77def915e6122ec833c026cf8acbea48"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa95aa8f4b6f741c3df7fea3997a124f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaa95aa8f4b6f741c3df7fea3997a124f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>prepare_</b> ()</td></tr>
+<tr class="memitem:aaa95aa8f4b6f741c3df7fea3997a124f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#aaa95aa8f4b6f741c3df7fea3997a124f">prepare_</a> ()</td></tr>
 <tr class="separator:aaa95aa8f4b6f741c3df7fea3997a124f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac7435a6ea04766b5104c8823ec912d2f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac7435a6ea04766b5104c8823ec912d2f"></a>
-<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&amp;=</b> (const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &amp;r)</td></tr>
+<tr class="memitem:ac7435a6ea04766b5104c8823ec912d2f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#ac7435a6ea04766b5104c8823ec912d2f">operator&amp;=</a> (const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &amp;r)</td></tr>
 <tr class="separator:ac7435a6ea04766b5104c8823ec912d2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e0b0c9d395de7c2d9ca939c10b004d1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3e0b0c9d395de7c2d9ca939c10b004d1"></a>
-<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator&amp;</b> (const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &amp;r) const </td></tr>
+<tr class="memitem:a3e0b0c9d395de7c2d9ca939c10b004d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a3e0b0c9d395de7c2d9ca939c10b004d1">operator&amp;</a> (const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &amp;r) const </td></tr>
 <tr class="separator:a3e0b0c9d395de7c2d9ca939c10b004d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acff6653311f3fcc41a14c8190c25eb8f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acff6653311f3fcc41a14c8190c25eb8f"></a>
-<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator|=</b> (const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &amp;r)</td></tr>
+<tr class="memitem:acff6653311f3fcc41a14c8190c25eb8f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#acff6653311f3fcc41a14c8190c25eb8f">operator|=</a> (const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &amp;r)</td></tr>
 <tr class="separator:acff6653311f3fcc41a14c8190c25eb8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add4c970cb6dd1f8921f45aa0d089e06b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="add4c970cb6dd1f8921f45aa0d089e06b"></a>
-<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator|</b> (const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &amp;r) const </td></tr>
+<tr class="memitem:add4c970cb6dd1f8921f45aa0d089e06b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#add4c970cb6dd1f8921f45aa0d089e06b">operator|</a> (const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &amp;r) const </td></tr>
 <tr class="separator:add4c970cb6dd1f8921f45aa0d089e06b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a023688ea4f40c4a7dffac3f3809419e5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a023688ea4f40c4a7dffac3f3809419e5"></a>
-<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator-=</b> (const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &amp;r)</td></tr>
+<tr class="memitem:a023688ea4f40c4a7dffac3f3809419e5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a023688ea4f40c4a7dffac3f3809419e5">operator-=</a> (const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &amp;r)</td></tr>
 <tr class="separator:a023688ea4f40c4a7dffac3f3809419e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a310e50bf813258ad325bdf2800c1a32a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a310e50bf813258ad325bdf2800c1a32a"></a>
-<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator-</b> (const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &amp;r) const </td></tr>
+<tr class="memitem:a310e50bf813258ad325bdf2800c1a32a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a310e50bf813258ad325bdf2800c1a32a">operator-</a> (const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &amp;r) const </td></tr>
 <tr class="separator:a310e50bf813258ad325bdf2800c1a32a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f80aa32348a028a5ab08104e85e72bd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8f80aa32348a028a5ab08104e85e72bd"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>add</b> (T *item)</td></tr>
+<tr class="memitem:a8f80aa32348a028a5ab08104e85e72bd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a8f80aa32348a028a5ab08104e85e72bd">add</a> (T *item)</td></tr>
 <tr class="separator:a8f80aa32348a028a5ab08104e85e72bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a16fa92ffffbdf47590208db5047fd0d9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a16fa92ffffbdf47590208db5047fd0d9"></a>
-<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;&lt;</b> (T *item)</td></tr>
+<tr class="memitem:a16fa92ffffbdf47590208db5047fd0d9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a16fa92ffffbdf47590208db5047fd0d9">operator&lt;&lt;</a> (T *item)</td></tr>
 <tr class="separator:a16fa92ffffbdf47590208db5047fd0d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a7b11844db006f2a9f82440845f021bd5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">tree_topology</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a7b11844db006f2a9f82440845f021bd5">tree_</a> = nullptr</td></tr>
+<tr class="separator:a7b11844db006f2a9f82440845f021bd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9dc5ab87076170bcee3bf46dcae78a3b"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a0f2f0008a64ce41afaaf19f0a20d6d6c">id_vector_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a9dc5ab87076170bcee3bf46dcae78a3b">v_</a> = nullptr</td></tr>
+<tr class="separator:a9dc5ab87076170bcee3bf46dcae78a3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b6db4f740f6fc9ed338e4584e84d598"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a5b6db4f740f6fc9ed338e4584e84d598">begin_</a> = 0</td></tr>
+<tr class="separator:a5b6db4f740f6fc9ed338e4584e84d598"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89c69b374ed02866e33879fe276d41ce"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a89c69b374ed02866e33879fe276d41ce">end_</a> = 0</td></tr>
+<tr class="separator:a89c69b374ed02866e33879fe276d41ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3c0da9d3bcf5ee96b0c8214e7427989"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#ae3c0da9d3bcf5ee96b0c8214e7427989">owned_</a> = false</td></tr>
+<tr class="separator:ae3c0da9d3bcf5ee96b0c8214e7427989"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbea3e786997705d10d76afc971cc84d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#adbea3e786997705d10d76afc971cc84d">sorted_</a> = true</td></tr>
+<tr class="separator:adbea3e786997705d10d76afc971cc84d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Typedef Documentation</h2>
+<a class="anchor" id="a61f4a79a54e629aced29e624feb1a687"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a61f4a79a54e629aced29e624feb1a687">apply_function</a> =  std::function&lt;void(T&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a8cddedfb2e4ae13f87332448db96f75b"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a8cddedfb2e4ae13f87332448db96f75b">filter_function</a> =  std::function&lt;bool(T&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a0f2f0008a64ce41afaaf19f0a20d6d6c"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a0f2f0008a64ce41afaaf19f0a20d6d6c">id_vector_t</a> =  typename <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterator.html#a9fda2d0eb08b265ef610042d4a6a02f0">iterator_t::id_vector_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a700e07724f7f333ec20fa0edc53a5f05"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a700e07724f7f333ec20fa0edc53a5f05">iterator_t</a> =  <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterator.html">iterator</a>&lt;T&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a83a039c74f31b10688cf20fef8a4f38d"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<div class="memtemplate">
+template&lt;typename R &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a83a039c74f31b10688cf20fef8a4f38d">map_function</a> =  std::function&lt;R(T&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a9a9ddf73a47c93118c10f960cded17e0"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<div class="memtemplate">
+template&lt;typename R &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a9a9ddf73a47c93118c10f960cded17e0">reduce_function</a> =  std::function&lt;void(T&amp;, R&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a1892ceaf236a5bf8f2ac746aba0792d4"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a5949dd90113d895e30b69af69a7f9f44"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">tree_topology</a> &amp;&#160;</td>
+          <td class="paramname"><em>tree</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a0f2f0008a64ce41afaaf19f0a20d6d6c">id_vector_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>sorted</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a864dc6bc9226ed5f57d8b7e1d5957994"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">tree_topology</a> &amp;&#160;</td>
+          <td class="paramname"><em>tree</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a0f2f0008a64ce41afaaf19f0a20d6d6c">id_vector_t</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>sorted</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="aedeef92d6594fa831d8b0dc5e1accf5d"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::~<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a8f80aa32348a028a5ab08104e85e72bd"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::add </td>
+          <td>(</td>
+          <td class="paramtype">T *&#160;</td>
+          <td class="paramname"><em>item</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a62592350271fc6825a6c3e43c87460fb"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::apply </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a61f4a79a54e629aced29e624feb1a687">apply_function</a>&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ac2abf3bcd9c64ede56706865c906b18f"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">T* <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::back </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ace6231ae3f056fffbf796248cba06920"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a700e07724f7f333ec20fa0edc53a5f05">iterator_t</a> <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::begin </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="aa2f99e072437555a9c545759182089a1"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a700e07724f7f333ec20fa0edc53a5f05">iterator_t</a> <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::end </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a544c77bcf6b332fbebc7e91e6e8ccb4a"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::filter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a8cddedfb2e4ae13f87332448db96f75b">filter_function</a>&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ad04ec947598f6bcc8fe417a4d11448af"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">T* <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::front </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="aa74dd1c62687a2d80a5d94220d467e55"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<div class="memtemplate">
+template&lt;typename S &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;S&gt; <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::map </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a83a039c74f31b10688cf20fef8a4f38d">map_function</a>&lt; T &gt;&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a3e0b0c9d395de7c2d9ca939c10b004d1"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::operator&amp; </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt; &amp;&#160;</td>
+          <td class="paramname"><em>r</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ac7435a6ea04766b5104c8823ec912d2f"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&amp; <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::operator&amp;= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt; &amp;&#160;</td>
+          <td class="paramname"><em>r</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a310e50bf813258ad325bdf2800c1a32a"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::operator- </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt; &amp;&#160;</td>
+          <td class="paramname"><em>r</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a023688ea4f40c4a7dffac3f3809419e5"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&amp; <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::operator-= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt; &amp;&#160;</td>
+          <td class="paramname"><em>r</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a16fa92ffffbdf47590208db5047fd0d9"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&amp; <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::operator&lt;&lt; </td>
+          <td>(</td>
+          <td class="paramtype">T *&#160;</td>
+          <td class="paramname"><em>item</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a9d2b950b9d9a959a4f43c7b9d1212dff"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&amp; <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt; &amp;&#160;</td>
+          <td class="paramname"><em>r</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a8465da149855a818d252cf2228b31c09"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">T* <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::operator[] </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="add4c970cb6dd1f8921f45aa0d089e06b"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a> <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::operator| </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt; &amp;&#160;</td>
+          <td class="paramname"><em>r</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="acff6653311f3fcc41a14c8190c25eb8f"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&amp; <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::operator|= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt; &amp;&#160;</td>
+          <td class="paramname"><em>r</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="aaa95aa8f4b6f741c3df7fea3997a124f"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::prepare_ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a77def915e6122ec833c026cf8acbea48"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<div class="memtemplate">
+template&lt;typename S &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">S <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::reduce </td>
+          <td>(</td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>start</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a9a9ddf73a47c93118c10f960cded17e0">reduce_function</a>&lt; T &gt;&#160;</td>
+          <td class="paramname"><em>f</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ab36a46c05a135538385bd21b715006a6"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<div class="memtemplate">
+template&lt;typename S &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&gt; <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::scatter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a83a039c74f31b10688cf20fef8a4f38d">map_function</a>&lt; T &gt;&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a561feec0222bf8696a72131c0d2c6723"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="a5b6db4f740f6fc9ed338e4584e84d598"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::begin_ = 0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a89c69b374ed02866e33879fe276d41ce"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::end_ = 0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ae3c0da9d3bcf5ee96b0c8214e7427989"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::owned_ = false</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="adbea3e786997705d10d76afc971cc84d"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::sorted_ = true</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a7b11844db006f2a9f82440845f021bd5"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">tree_topology</a>* <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::tree_ = nullptr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a9dc5ab87076170bcee3bf46dcae78a3b"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P&gt; </div>
+<div class="memtemplate">
+template&lt;class T , class F  = default_predicate__&lt;T*&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#a0f2f0008a64ce41afaaf19f0a20d6d6c">id_vector_t</a>* <a class="el" href="classflecsi_1_1tree_1_1tree__topology.html">flecsi::tree::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html">iterable_set</a>&lt; T, F &gt;::v_ = nullptr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>/tmp/flecsi/flecsi/tree/<a class="el" href="tree__topology_8h_source.html">tree_topology.h</a></li>
 </ul>

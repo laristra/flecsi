@@ -85,7 +85,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>tree</b></li><li class="navelem"><a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html">basic_tree_policy</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><a class="el" href="namespaceflecsi_1_1tree.html">tree</a></li><li class="navelem"><a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html">basic_tree_policy</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -99,6 +99,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">flecsi::tree::basic_tree_policy&lt; P &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="basic-tree_8h_source.html">basic-tree.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for flecsi::tree::basic_tree_policy&lt; P &gt;:</div>
 <div class="dyncontent">
@@ -119,34 +121,148 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:aff82d0ff0a518d29f73fbcebac5d4a4f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aff82d0ff0a518d29f73fbcebac5d4a4f"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>branch_int_t</b> = uint64_t</td></tr>
+<tr class="memitem:aff82d0ff0a518d29f73fbcebac5d4a4f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html#aff82d0ff0a518d29f73fbcebac5d4a4f">branch_int_t</a> = uint64_t</td></tr>
 <tr class="separator:aff82d0ff0a518d29f73fbcebac5d4a4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee4336ea4fe663bbdd06a9b5dd40ba95"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aee4336ea4fe663bbdd06a9b5dd40ba95"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>element_t</b> = typename P::floating_type</td></tr>
+<tr class="memitem:aee4336ea4fe663bbdd06a9b5dd40ba95"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html#aee4336ea4fe663bbdd06a9b5dd40ba95">element_t</a> = typename P::floating_type</td></tr>
 <tr class="separator:aee4336ea4fe663bbdd06a9b5dd40ba95"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad5720106b114996da348216d14d85036"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad5720106b114996da348216d14d85036"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>point_t</b> = <a class="el" href="classflecsi_1_1dimensioned__array.html">point</a>&lt; element_t, dimension &gt;</td></tr>
+<tr class="memitem:ad5720106b114996da348216d14d85036"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html#ad5720106b114996da348216d14d85036">point_t</a> = <a class="el" href="namespaceflecsi.html#a88163bc6541084dd3d424a99102bac7b">point</a>&lt; <a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html#aee4336ea4fe663bbdd06a9b5dd40ba95">element_t</a>, <a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html#a71dc1ed3c03392633eb3d68a7079b560">dimension</a> &gt;</td></tr>
 <tr class="separator:ad5720106b114996da348216d14d85036"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e11289790c2f46988c311cc7a5ed1fe"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0e11289790c2f46988c311cc7a5ed1fe"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>entity_t</b> = <a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy_1_1entity.html">entity</a></td></tr>
+<tr class="memitem:a0e11289790c2f46988c311cc7a5ed1fe"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html#a0e11289790c2f46988c311cc7a5ed1fe">entity_t</a> = <a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy_1_1entity.html">entity</a></td></tr>
 <tr class="separator:a0e11289790c2f46988c311cc7a5ed1fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc3331ee3c2b716e24d36af68bf80b20"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abc3331ee3c2b716e24d36af68bf80b20"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>branch_t</b> = <a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy_1_1branch.html">branch</a></td></tr>
+<tr class="memitem:abc3331ee3c2b716e24d36af68bf80b20"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html#abc3331ee3c2b716e24d36af68bf80b20">branch_t</a> = <a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy_1_1branch.html">branch</a></td></tr>
 <tr class="separator:abc3331ee3c2b716e24d36af68bf80b20"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aba58126b94d5a0d0f4061b259b103b11"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aba58126b94d5a0d0f4061b259b103b11"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>should_coarsen</b> (<a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy_1_1branch.html">branch</a> *parent)</td></tr>
+<tr class="memitem:aba58126b94d5a0d0f4061b259b103b11"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html#aba58126b94d5a0d0f4061b259b103b11">should_coarsen</a> (<a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy_1_1branch.html">branch</a> *parent)</td></tr>
 <tr class="separator:aba58126b94d5a0d0f4061b259b103b11"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a71dc1ed3c03392633eb3d68a7079b560"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a71dc1ed3c03392633eb3d68a7079b560"></a>
-static const size_t&#160;</td><td class="memItemRight" valign="bottom"><b>dimension</b> = P::dimension</td></tr>
+<tr class="memitem:a71dc1ed3c03392633eb3d68a7079b560"><td class="memItemLeft" align="right" valign="top">static const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html#a71dc1ed3c03392633eb3d68a7079b560">dimension</a> = P::dimension</td></tr>
 <tr class="separator:a71dc1ed3c03392633eb3d68a7079b560"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Typedef Documentation</h2>
+<a class="anchor" id="aff82d0ff0a518d29f73fbcebac5d4a4f"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html">flecsi::tree::basic_tree_policy</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html#aff82d0ff0a518d29f73fbcebac5d4a4f">branch_int_t</a> =  uint64_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="abc3331ee3c2b716e24d36af68bf80b20"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html">flecsi::tree::basic_tree_policy</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html#abc3331ee3c2b716e24d36af68bf80b20">branch_t</a> =  <a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy_1_1branch.html">branch</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="aee4336ea4fe663bbdd06a9b5dd40ba95"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html">flecsi::tree::basic_tree_policy</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html#aee4336ea4fe663bbdd06a9b5dd40ba95">element_t</a> =  typename P::floating_type</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a0e11289790c2f46988c311cc7a5ed1fe"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html">flecsi::tree::basic_tree_policy</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html#a0e11289790c2f46988c311cc7a5ed1fe">entity_t</a> =  <a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy_1_1entity.html">entity</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ad5720106b114996da348216d14d85036"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html">flecsi::tree::basic_tree_policy</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html#ad5720106b114996da348216d14d85036">point_t</a> =  <a class="el" href="namespaceflecsi.html#a88163bc6541084dd3d424a99102bac7b">point</a>&lt;<a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html#aee4336ea4fe663bbdd06a9b5dd40ba95">element_t</a>, <a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html#a71dc1ed3c03392633eb3d68a7079b560">dimension</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="aba58126b94d5a0d0f4061b259b103b11"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html">flecsi::tree::basic_tree_policy</a>&lt; P &gt;::should_coarsen </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy_1_1branch.html">branch</a> *&#160;</td>
+          <td class="paramname"><em>parent</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="a71dc1ed3c03392633eb3d68a7079b560"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const size_t <a class="el" href="classflecsi_1_1tree_1_1basic__tree__policy.html">flecsi::tree::basic_tree_policy</a>&lt; P &gt;::dimension = P::dimension</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>/tmp/flecsi/flecsi/specializations/basic-tree/<a class="el" href="basic-tree_8h_source.html">basic-tree.h</a></li>
 </ul>

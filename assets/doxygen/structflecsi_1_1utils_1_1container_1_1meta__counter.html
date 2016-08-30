@@ -85,7 +85,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>utils</b></li><li class="navelem"><b>container</b></li><li class="navelem"><a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html">meta_counter</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><a class="el" href="namespaceflecsi_1_1utils.html">utils</a></li><li class="navelem"><a class="el" href="namespaceflecsi_1_1utils_1_1container.html">container</a></li><li class="navelem"><a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html">meta_counter</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -98,6 +98,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">flecsi::utils::container::meta_counter&lt; Tag &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="meta__counter_8h_source.html">meta_counter.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
@@ -108,32 +110,216 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a6ce0382ddbe9e30fc95d7cb47240ff92"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6ce0382ddbe9e30fc95d7cb47240ff92"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>size_type</b> = std::size_t</td></tr>
+<tr class="memitem:a6ce0382ddbe9e30fc95d7cb47240ff92"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a6ce0382ddbe9e30fc95d7cb47240ff92">size_type</a> = std::size_t</td></tr>
 <tr class="separator:a6ce0382ddbe9e30fc95d7cb47240ff92"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a8848ec5fa6fd4978e0dc3c973084019b"><td class="memTemplParams" colspan="2"><a class="anchor" id="a8848ec5fa6fd4978e0dc3c973084019b"></a>
-template&lt;size_type N, int  = adl_lookup (ident&lt;N&gt; {})&gt; </td></tr>
-<tr class="memitem:a8848ec5fa6fd4978e0dc3c973084019b"><td class="memTemplItemLeft" align="right" valign="top">static constexpr size_type&#160;</td><td class="memTemplItemRight" valign="bottom"><b>value_reader</b> (int, <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter_1_1ident.html">ident</a>&lt; N &gt;)</td></tr>
+<tr class="memitem:a8848ec5fa6fd4978e0dc3c973084019b"><td class="memTemplParams" colspan="2">template&lt;size_type N, int  = adl_lookup (ident&lt;N&gt; {})&gt; </td></tr>
+<tr class="memitem:a8848ec5fa6fd4978e0dc3c973084019b"><td class="memTemplItemLeft" align="right" valign="top">static constexpr <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a6ce0382ddbe9e30fc95d7cb47240ff92">size_type</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a8848ec5fa6fd4978e0dc3c973084019b">value_reader</a> (int, <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter_1_1ident.html">ident</a>&lt; <a class="el" href="gravity_8cc.html#adf99ea743b5dadbe8dc48388c0d7fa94">N</a> &gt;)</td></tr>
 <tr class="separator:a8848ec5fa6fd4978e0dc3c973084019b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6c87e7955b2347f3823d55cac6f759e6"><td class="memTemplParams" colspan="2"><a class="anchor" id="a6c87e7955b2347f3823d55cac6f759e6"></a>
-template&lt;size_type N&gt; </td></tr>
-<tr class="memitem:a6c87e7955b2347f3823d55cac6f759e6"><td class="memTemplItemLeft" align="right" valign="top">static constexpr size_type&#160;</td><td class="memTemplItemRight" valign="bottom"><b>value_reader</b> (float, <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter_1_1ident.html">ident</a>&lt; N &gt;, size_type R=value_reader(0, <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter_1_1ident.html">ident</a>&lt; N-1 &gt;()))</td></tr>
+<tr class="memitem:a6c87e7955b2347f3823d55cac6f759e6"><td class="memTemplParams" colspan="2">template&lt;size_type N&gt; </td></tr>
+<tr class="memitem:a6c87e7955b2347f3823d55cac6f759e6"><td class="memTemplItemLeft" align="right" valign="top">static constexpr <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a6ce0382ddbe9e30fc95d7cb47240ff92">size_type</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a6c87e7955b2347f3823d55cac6f759e6">value_reader</a> (float, <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter_1_1ident.html">ident</a>&lt; <a class="el" href="gravity_8cc.html#adf99ea743b5dadbe8dc48388c0d7fa94">N</a> &gt;, <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a6ce0382ddbe9e30fc95d7cb47240ff92">size_type</a> R=value_reader(0, <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter_1_1ident.html">ident</a>&lt; <a class="el" href="gravity_8cc.html#adf99ea743b5dadbe8dc48388c0d7fa94">N</a>-1 &gt;()))</td></tr>
 <tr class="separator:a6c87e7955b2347f3823d55cac6f759e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3338b29f79b40f692eef83bcc812dc1e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3338b29f79b40f692eef83bcc812dc1e"></a>
-static constexpr size_type&#160;</td><td class="memItemRight" valign="bottom"><b>value_reader</b> (float, <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter_1_1ident.html">ident</a>&lt; 0 &gt;)</td></tr>
+<tr class="memitem:a3338b29f79b40f692eef83bcc812dc1e"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a6ce0382ddbe9e30fc95d7cb47240ff92">size_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a3338b29f79b40f692eef83bcc812dc1e">value_reader</a> (float, <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter_1_1ident.html">ident</a>&lt; 0 &gt;)</td></tr>
 <tr class="separator:a3338b29f79b40f692eef83bcc812dc1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a73a885cf0865ca19f1f638757d46897e"><td class="memTemplParams" colspan="2"><a class="anchor" id="a73a885cf0865ca19f1f638757d46897e"></a>
-template&lt;size_type Max = MAX_COUNTER_SIZE&gt; </td></tr>
-<tr class="memitem:a73a885cf0865ca19f1f638757d46897e"><td class="memTemplItemLeft" align="right" valign="top">static constexpr size_type&#160;</td><td class="memTemplItemRight" valign="bottom"><b>value</b> (size_type R=value_reader(0, <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter_1_1ident.html">ident</a>&lt; Max &gt;{}))</td></tr>
+<tr class="memitem:a73a885cf0865ca19f1f638757d46897e"><td class="memTemplParams" colspan="2">template&lt;size_type Max = MAX_COUNTER_SIZE&gt; </td></tr>
+<tr class="memitem:a73a885cf0865ca19f1f638757d46897e"><td class="memTemplItemLeft" align="right" valign="top">static constexpr <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a6ce0382ddbe9e30fc95d7cb47240ff92">size_type</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a73a885cf0865ca19f1f638757d46897e">value</a> (<a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a6ce0382ddbe9e30fc95d7cb47240ff92">size_type</a> R=<a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a8848ec5fa6fd4978e0dc3c973084019b">value_reader</a>(0, <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter_1_1ident.html">ident</a>&lt; Max &gt;{}))</td></tr>
 <tr class="separator:a73a885cf0865ca19f1f638757d46897e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a48664066d8baae8f329add2220e36261"><td class="memTemplParams" colspan="2"><a class="anchor" id="a48664066d8baae8f329add2220e36261"></a>
-template&lt;size_type N = 1, class H  = meta_counter&gt; </td></tr>
-<tr class="memitem:a48664066d8baae8f329add2220e36261"><td class="memTemplItemLeft" align="right" valign="top">static constexpr size_type&#160;</td><td class="memTemplItemRight" valign="bottom"><b>next</b> (size_type R=<a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter_1_1writer.html">writer</a>&lt; <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter_1_1ident.html">ident</a>&lt; N+H::value()&gt;&gt;::value)</td></tr>
+<tr class="memitem:a48664066d8baae8f329add2220e36261"><td class="memTemplParams" colspan="2">template&lt;size_type N = 1, class H  = meta_counter&gt; </td></tr>
+<tr class="memitem:a48664066d8baae8f329add2220e36261"><td class="memTemplItemLeft" align="right" valign="top">static constexpr <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a6ce0382ddbe9e30fc95d7cb47240ff92">size_type</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a48664066d8baae8f329add2220e36261">next</a> (<a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a6ce0382ddbe9e30fc95d7cb47240ff92">size_type</a> R=<a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter_1_1writer.html">writer</a>&lt; <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter_1_1ident.html">ident</a>&lt; <a class="el" href="gravity_8cc.html#adf99ea743b5dadbe8dc48388c0d7fa94">N</a>+<a class="el" href="meta__list_8h.html#a5e939244be656a9d03dd7d46ea74d461">H::value</a>()&gt;&gt;::<a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a73a885cf0865ca19f1f638757d46897e">value</a>)</td></tr>
 <tr class="separator:a48664066d8baae8f329add2220e36261"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Typedef Documentation</h2>
+<a class="anchor" id="a6ce0382ddbe9e30fc95d7cb47240ff92"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Tag &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html">flecsi::utils::container::meta_counter</a>&lt; Tag &gt;::<a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a6ce0382ddbe9e30fc95d7cb47240ff92">size_type</a> =  std::size_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a48664066d8baae8f329add2220e36261"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Tag &gt; </div>
+<div class="memtemplate">
+template&lt;size_type N = 1, class H  = meta_counter&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a6ce0382ddbe9e30fc95d7cb47240ff92">size_type</a> <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html">flecsi::utils::container::meta_counter</a>&lt; Tag &gt;::next </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a6ce0382ddbe9e30fc95d7cb47240ff92">size_type</a>&#160;</td>
+          <td class="paramname"><em>R</em> = <code><a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter_1_1writer.html">writer</a>&lt;<a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter_1_1ident.html">ident</a>&lt;<a class="el" href="gravity_8cc.html#adf99ea743b5dadbe8dc48388c0d7fa94">N</a>&#160;+&#160;<a class="el" href="meta__list_8h.html#a5e939244be656a9d03dd7d46ea74d461">H::value</a>&#160;()&gt;&gt;::<a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a73a885cf0865ca19f1f638757d46897e">value</a></code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a73a885cf0865ca19f1f638757d46897e"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Tag &gt; </div>
+<div class="memtemplate">
+template&lt;size_type Max = MAX_COUNTER_SIZE&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a6ce0382ddbe9e30fc95d7cb47240ff92">size_type</a> <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html">flecsi::utils::container::meta_counter</a>&lt; Tag &gt;::value </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a6ce0382ddbe9e30fc95d7cb47240ff92">size_type</a>&#160;</td>
+          <td class="paramname"><em>R</em> = <code><a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a8848ec5fa6fd4978e0dc3c973084019b">value_reader</a>&#160;(0,&#160;<a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter_1_1ident.html">ident</a>&lt;Max&gt;&#160;{})</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a8848ec5fa6fd4978e0dc3c973084019b"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Tag &gt; </div>
+<div class="memtemplate">
+template&lt;size_type N, int  = adl_lookup (ident&lt;N&gt; {})&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a6ce0382ddbe9e30fc95d7cb47240ff92">size_type</a> <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html">flecsi::utils::container::meta_counter</a>&lt; Tag &gt;::value_reader </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter_1_1ident.html">ident</a>&lt; <a class="el" href="gravity_8cc.html#adf99ea743b5dadbe8dc48388c0d7fa94">N</a> &gt;&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a6c87e7955b2347f3823d55cac6f759e6"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Tag &gt; </div>
+<div class="memtemplate">
+template&lt;size_type N&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a6ce0382ddbe9e30fc95d7cb47240ff92">size_type</a> <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html">flecsi::utils::container::meta_counter</a>&lt; Tag &gt;::value_reader </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter_1_1ident.html">ident</a>&lt; <a class="el" href="gravity_8cc.html#adf99ea743b5dadbe8dc48388c0d7fa94">N</a> &gt;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a6ce0382ddbe9e30fc95d7cb47240ff92">size_type</a>&#160;</td>
+          <td class="paramname"><em>R</em> = <code>value_reader&#160;(0,&#160;<a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter_1_1ident.html">ident</a>&lt;<a class="el" href="gravity_8cc.html#adf99ea743b5dadbe8dc48388c0d7fa94">N</a>-1&gt;&#160;())</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a3338b29f79b40f692eef83bcc812dc1e"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Tag &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html#a6ce0382ddbe9e30fc95d7cb47240ff92">size_type</a> <a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter.html">flecsi::utils::container::meta_counter</a>&lt; Tag &gt;::value_reader </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1utils_1_1container_1_1meta__counter_1_1ident.html">ident</a>&lt; 0 &gt;&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/tmp/flecsi/flecsi/utils/static_container/<a class="el" href="meta__counter_8h_source.html">meta_counter.h</a></li>
 </ul>

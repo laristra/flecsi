@@ -96,6 +96,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">flecsi::sagittarius_cell_t Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="sagittarius__entity__types_8h_source.html">sagittarius_entity_types.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for flecsi::sagittarius_cell_t:</div>
 <div class="dyncontent">
@@ -111,50 +113,147 @@ Inheritance diagram for flecsi::sagittarius_cell_t:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aa8c44f69748dd7b765f4ab28fed50931"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa8c44f69748dd7b765f4ab28fed50931"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>sagittarius_cell_t</b> (<a class="el" href="classflecsi_1_1mesh__topology__base__t.html">mesh_topology_base_t</a> &amp;)</td></tr>
+<tr class="memitem:a4e23deb13919aacec54aef6f9d367cc7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1sagittarius__cell__t.html#a4e23deb13919aacec54aef6f9d367cc7">sagittarius_cell_t</a> ()=default</td></tr>
+<tr class="separator:a4e23deb13919aacec54aef6f9d367cc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8c44f69748dd7b765f4ab28fed50931"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1sagittarius__cell__t.html#aa8c44f69748dd7b765f4ab28fed50931">sagittarius_cell_t</a> (<a class="el" href="classflecsi_1_1mesh__topology__base__t.html">mesh_topology_base_t</a> &amp;)</td></tr>
 <tr class="separator:aa8c44f69748dd7b765f4ab28fed50931"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0257a927d73ae073a5d9f21c63d844be"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0257a927d73ae073a5d9f21c63d844be"></a>
-virtual std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create_entities</b> (<a class="el" href="classflecsi_1_1id__.html">flecsi::id_t</a> cell_id, size_t dim, <a class="el" href="classflecsi_1_1domain__connectivity.html">domain_connectivity</a>&lt; 2 &gt; &amp;c, <a class="el" href="classflecsi_1_1id__.html">flecsi::id_t</a> *e)=0</td></tr>
+<tr class="memitem:a0257a927d73ae073a5d9f21c63d844be"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1sagittarius__cell__t.html#a0257a927d73ae073a5d9f21c63d844be">create_entities</a> (<a class="el" href="namespaceflecsi.html#ae1e21d44c7ac4e80959e26a22bfc769d">flecsi::id_t</a> cell_id, size_t dim, <a class="el" href="classflecsi_1_1domain__connectivity.html">domain_connectivity</a>&lt; 2 &gt; &amp;c, <a class="el" href="namespaceflecsi.html#ae1e21d44c7ac4e80959e26a22bfc769d">flecsi::id_t</a> *e)=0</td></tr>
 <tr class="separator:a0257a927d73ae073a5d9f21c63d844be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classflecsi_1_1mesh__entity__t"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classflecsi_1_1mesh__entity__t')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classflecsi_1_1mesh__entity__t.html">flecsi::mesh_entity_t&lt; 2, 1 &gt;</a></td></tr>
+<tr class="memitem:ae40af16476699f32c28cbd196e1bc592 inherit pub_methods_classflecsi_1_1mesh__entity__t"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__entity__t.html#ae40af16476699f32c28cbd196e1bc592">mesh_entity_t</a> ()</td></tr>
+<tr class="separator:ae40af16476699f32c28cbd196e1bc592 inherit pub_methods_classflecsi_1_1mesh__entity__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a835226b08f71c96632657e4d63b2ed88 inherit pub_methods_classflecsi_1_1mesh__entity__t"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__entity__t.html#a835226b08f71c96632657e4d63b2ed88">~mesh_entity_t</a> ()</td></tr>
+<tr class="separator:a835226b08f71c96632657e4d63b2ed88 inherit pub_methods_classflecsi_1_1mesh__entity__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classflecsi_1_1mesh__entity__base__t"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classflecsi_1_1mesh__entity__base__t')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classflecsi_1_1mesh__entity__base__t.html">flecsi::mesh_entity_base_t&lt; N &gt;</a></td></tr>
+<tr class="memitem:a21a305be8c52be882b38751bb225f31b inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__entity__base__t.html#a21a305be8c52be882b38751bb225f31b">~mesh_entity_base_t</a> ()</td></tr>
+<tr class="separator:a21a305be8c52be882b38751bb225f31b inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a087272f65e8fc51e8aebc9466fdfa72c inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memTemplParams" colspan="2">template&lt;size_t M&gt; </td></tr>
-<tr class="memitem:a087272f65e8fc51e8aebc9466fdfa72c inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1id__.html">id_t</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__entity__base__t.html#a087272f65e8fc51e8aebc9466fdfa72c">global_id</a> () const </td></tr>
+<tr class="memitem:a087272f65e8fc51e8aebc9466fdfa72c inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceflecsi.html#ae1e21d44c7ac4e80959e26a22bfc769d">id_t</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__entity__base__t.html#a087272f65e8fc51e8aebc9466fdfa72c">global_id</a> () const </td></tr>
 <tr class="separator:a087272f65e8fc51e8aebc9466fdfa72c inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6f72ec1db5ac4c0b5af290293f090bb9 inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6f72ec1db5ac4c0b5af290293f090bb9"></a>
-<a class="el" href="classflecsi_1_1id__.html">id_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>global_id</b> (size_t domain) const </td></tr>
+<tr class="memitem:a6f72ec1db5ac4c0b5af290293f090bb9 inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceflecsi.html#ae1e21d44c7ac4e80959e26a22bfc769d">id_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__entity__base__t.html#a6f72ec1db5ac4c0b5af290293f090bb9">global_id</a> (size_t domain) const </td></tr>
 <tr class="separator:a6f72ec1db5ac4c0b5af290293f090bb9 inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aef44d15f8b60a5a5179531770e79fc29 inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memTemplParams" colspan="2"><a class="anchor" id="aef44d15f8b60a5a5179531770e79fc29"></a>
-template&lt;size_t M&gt; </td></tr>
-<tr class="memitem:aef44d15f8b60a5a5179531770e79fc29 inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memTemplItemLeft" align="right" valign="top">size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><b>id</b> () const </td></tr>
+<tr class="memitem:aef44d15f8b60a5a5179531770e79fc29 inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memTemplParams" colspan="2">template&lt;size_t M&gt; </td></tr>
+<tr class="memitem:aef44d15f8b60a5a5179531770e79fc29 inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memTemplItemLeft" align="right" valign="top">size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__entity__base__t.html#aef44d15f8b60a5a5179531770e79fc29">id</a> () const </td></tr>
 <tr class="separator:aef44d15f8b60a5a5179531770e79fc29 inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a708fe39c6b3b9564aadd37c625ee698e inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a708fe39c6b3b9564aadd37c625ee698e"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>id</b> (size_t domain) const </td></tr>
+<tr class="memitem:a708fe39c6b3b9564aadd37c625ee698e inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__entity__base__t.html#a708fe39c6b3b9564aadd37c625ee698e">id</a> (size_t domain) const </td></tr>
 <tr class="separator:a708fe39c6b3b9564aadd37c625ee698e inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a54f53b6c1bb158fa6a0b631e4e2c3d3f inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memTemplParams" colspan="2"><a class="anchor" id="a54f53b6c1bb158fa6a0b631e4e2c3d3f"></a>
-template&lt;size_t M&gt; </td></tr>
-<tr class="memitem:a54f53b6c1bb158fa6a0b631e4e2c3d3f inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memTemplItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memTemplItemRight" valign="bottom"><b>info</b> () const </td></tr>
+<tr class="memitem:a54f53b6c1bb158fa6a0b631e4e2c3d3f inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memTemplParams" colspan="2">template&lt;size_t M&gt; </td></tr>
+<tr class="memitem:a54f53b6c1bb158fa6a0b631e4e2c3d3f inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memTemplItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__entity__base__t.html#a54f53b6c1bb158fa6a0b631e4e2c3d3f">info</a> () const </td></tr>
 <tr class="separator:a54f53b6c1bb158fa6a0b631e4e2c3d3f inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a58d0ac1ab30fe626e76cf03e8aa91541 inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memTemplParams" colspan="2">template&lt;size_t M&gt; </td></tr>
-<tr class="memitem:a58d0ac1ab30fe626e76cf03e8aa91541 inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__entity__base__t.html#a58d0ac1ab30fe626e76cf03e8aa91541">set_global_id</a> (const <a class="el" href="classflecsi_1_1id__.html">id_t</a> &amp;id)</td></tr>
+<tr class="memitem:a58d0ac1ab30fe626e76cf03e8aa91541 inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__entity__base__t.html#a58d0ac1ab30fe626e76cf03e8aa91541">set_global_id</a> (const <a class="el" href="namespaceflecsi.html#ae1e21d44c7ac4e80959e26a22bfc769d">id_t</a> &amp;<a class="el" href="classflecsi_1_1mesh__entity__base__t.html#aef44d15f8b60a5a5179531770e79fc29">id</a>)</td></tr>
 <tr class="separator:a58d0ac1ab30fe626e76cf03e8aa91541 inherit pub_methods_classflecsi_1_1mesh__entity__base__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_static_methods_classflecsi_1_1mesh__entity__base__t"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classflecsi_1_1mesh__entity__base__t')"><img src="closed.png" alt="-"/>&#160;Static Public Member Functions inherited from <a class="el" href="classflecsi_1_1mesh__entity__base__t.html">flecsi::mesh_entity_base_t&lt; N &gt;</a></td></tr>
-<tr class="memitem:a05f3447ec7bbe0bd29f3e9da65ebb6da inherit pub_static_methods_classflecsi_1_1mesh__entity__base__t"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a05f3447ec7bbe0bd29f3e9da65ebb6da"></a>
-static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_dim_</b> (size_t meshDim, size_t dim)</td></tr>
+<tr class="memitem:a05f3447ec7bbe0bd29f3e9da65ebb6da inherit pub_static_methods_classflecsi_1_1mesh__entity__base__t"><td class="memItemLeft" align="right" valign="top">static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__entity__base__t.html#a05f3447ec7bbe0bd29f3e9da65ebb6da">get_dim_</a> (size_t meshDim, size_t dim)</td></tr>
 <tr class="separator:a05f3447ec7bbe0bd29f3e9da65ebb6da inherit pub_static_methods_classflecsi_1_1mesh__entity__base__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_static_attribs_classflecsi_1_1mesh__entity__t"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_classflecsi_1_1mesh__entity__t')"><img src="closed.png" alt="-"/>&#160;Static Public Attributes inherited from <a class="el" href="classflecsi_1_1mesh__entity__t.html">flecsi::mesh_entity_t&lt; 2, 1 &gt;</a></td></tr>
-<tr class="memitem:acb474e2450e3a6e8c04c3d0370ef7325 inherit pub_static_attribs_classflecsi_1_1mesh__entity__t"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acb474e2450e3a6e8c04c3d0370ef7325"></a>
-static const size_t&#160;</td><td class="memItemRight" valign="bottom"><b>dimension</b></td></tr>
+<tr class="memitem:acb474e2450e3a6e8c04c3d0370ef7325 inherit pub_static_attribs_classflecsi_1_1mesh__entity__t"><td class="memItemLeft" align="right" valign="top">static const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__entity__t.html#acb474e2450e3a6e8c04c3d0370ef7325">dimension</a></td></tr>
 <tr class="separator:acb474e2450e3a6e8c04c3d0370ef7325 inherit pub_static_attribs_classflecsi_1_1mesh__entity__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classflecsi_1_1mesh__entity__base__t"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classflecsi_1_1mesh__entity__base__t')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classflecsi_1_1mesh__entity__base__t.html">flecsi::mesh_entity_base_t&lt; N &gt;</a></td></tr>
-<tr class="memitem:a961c3da0f814bdfbf721a8965dc34bcc inherit pro_methods_classflecsi_1_1mesh__entity__base__t"><td class="memTemplParams" colspan="2"><a class="anchor" id="a961c3da0f814bdfbf721a8965dc34bcc"></a>
-template&lt;size_t M&gt; </td></tr>
-<tr class="memitem:a961c3da0f814bdfbf721a8965dc34bcc inherit pro_methods_classflecsi_1_1mesh__entity__base__t"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>set_info</b> (uint16_t info)</td></tr>
+<tr class="memitem:a961c3da0f814bdfbf721a8965dc34bcc inherit pro_methods_classflecsi_1_1mesh__entity__base__t"><td class="memTemplParams" colspan="2">template&lt;size_t M&gt; </td></tr>
+<tr class="memitem:a961c3da0f814bdfbf721a8965dc34bcc inherit pro_methods_classflecsi_1_1mesh__entity__base__t"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1mesh__entity__base__t.html#a961c3da0f814bdfbf721a8965dc34bcc">set_info</a> (uint16_t <a class="el" href="classflecsi_1_1mesh__entity__base__t.html#a54f53b6c1bb158fa6a0b631e4e2c3d3f">info</a>)</td></tr>
 <tr class="separator:a961c3da0f814bdfbf721a8965dc34bcc inherit pro_methods_classflecsi_1_1mesh__entity__base__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a4e23deb13919aacec54aef6f9d367cc7"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">flecsi::sagittarius_cell_t::sagittarius_cell_t </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="aa8c44f69748dd7b765f4ab28fed50931"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">flecsi::sagittarius_cell_t::sagittarius_cell_t </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1mesh__topology__base__t.html">mesh_topology_base_t</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a0257a927d73ae073a5d9f21c63d844be"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::vector&lt;size_t&gt; flecsi::sagittarius_cell_t::create_entities </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceflecsi.html#ae1e21d44c7ac4e80959e26a22bfc769d">flecsi::id_t</a>&#160;</td>
+          <td class="paramname"><em>cell_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>dim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1domain__connectivity.html">domain_connectivity</a>&lt; 2 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceflecsi.html#ae1e21d44c7ac4e80959e26a22bfc769d">flecsi::id_t</a> *&#160;</td>
+          <td class="paramname"><em>e</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="classflecsi_1_1sagittarius__triangle__t.html#ac9e0af776357355c1239f126a2811672">flecsi::sagittarius_triangle_t</a>, and <a class="el" href="classflecsi_1_1sagittarius__quad__t.html#a66c9cca70a2af1345903af6b6db1838f">flecsi::sagittarius_quad_t</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>/tmp/flecsi/flecsi/mesh/test/sagittarius/<a class="el" href="sagittarius__entity__types_8h_source.html">sagittarius_entity_types.h</a></li>
 </ul>
