@@ -43,7 +43,7 @@ namespace data {
  */
 template<
   typename user_meta_data_t = default_state_user_meta_data_t,
-  template <typename> typename storage_policy_t = default_data_storage_policy_t
+  template <typename> class storage_policy_t = default_data_storage_policy_t
   >
 class data_t : public storage_policy_t<user_meta_data_t>
 {

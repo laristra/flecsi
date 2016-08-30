@@ -100,7 +100,7 @@ std::string unique_name(const T * t) {
   std::stringstream ss;
   ss << typeid(T).name() << "-" << address << "-" << id;
   return ss.str();
-}; // unique_name
+} // unique_name
 
 } // namespace flecsi
 

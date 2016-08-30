@@ -29,7 +29,7 @@ struct has_member_##X{ \
   template<typename C> static char (&f(ChT<int F::*, &C::X>*))[1]; \
   template<typename C> static char (&f(...))[2]; \
   static bool const value = sizeof(f<D>(0)) == 2; \
-};
+}
 #endif
 
 namespace flecsi{

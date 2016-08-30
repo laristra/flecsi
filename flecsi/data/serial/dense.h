@@ -24,6 +24,8 @@
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
+#include <memory>
+
 #include "flecsi/data/data_client.h"
 #include "flecsi/data/data_handle.h"
 #include "flecsi/utils/const_string.h"
@@ -83,19 +85,35 @@ struct dense_accessor_t
   //              this data variable's hash.
   // \param size The size of the associated index space.
   // \param data A pointer to the raw data.
-  // \param meta_data A reference to the user-defined meta data.
+  // \param user_meta_data A reference to the user-defined meta data.
   ///
-  dense_accessor_t(const std::string & label, const size_t size,
-    T * data, const user_meta_data_t & meta_data)
-    : label_(label), size_(size), data_(data), meta_data_(meta_data),
-    is_(size) {}
+  dense_accessor_t(
+    const std::string & label,
+    const size_t size,
+    T * data,
+    const user_meta_data_t & user_meta_data
+  )
+  :
+    label_(label),
+    size_(size),
+    data_(data),
+    user_meta_data_(user_meta_data),
+    is_(size)
+  {}
 
 	///
   // Copy constructor.
 	///
-	dense_accessor_t(const dense_accessor_t & a)
-		: label_(a.label_), size_(a.size_), data_(a.data_),
-			meta_data_(a.meta_data_), is_(a.is_) {}
+	dense_accessor_t(
+    const dense_accessor_t & a
+  )
+  :
+    label_(a.label_),
+    size_(a.size_),
+    data_(a.data_),
+    user_meta_data_(a.user_meta_data_),
+    is_(a.is_)
+  {}
 
   //--------------------------------------------------------------------------//
   // Member data interface.
@@ -127,7 +145,7 @@ struct dense_accessor_t
   const user_meta_data_t &
   meta_data() const
   {
-    return meta_data_;
+    return user_meta_data_;
   } // meta_data
 
   //--------------------------------------------------------------------------//
@@ -237,7 +255,8 @@ private:
   std::string label_ = "";
   size_t size_ = 0;
   T * data_ = nullptr;
-  const user_meta_data_t & meta_data_ = {};
+  const user_meta_data_t & user_meta_data_ =
+    *(std::make_unique<user_meta_data_t>());
   index_space_t is_;
 
 }; // struct dense_accessor_t

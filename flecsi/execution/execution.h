@@ -28,17 +28,17 @@
 ///
 //
 ///
-#define register_task(task, processor, task_type, return_type, ...)                \
+#define register_task(task, processor, task_type, return_type, ...)     \
   using user_task_delegate_ ## task ## _t =                             \
     std::function<return_type(__VA_ARGS__)>;                            \
   bool task ## _task_registered =                                       \
     flecsi::execution::task_t::register_task<return_type, __VA_ARGS__>( \
-    reinterpret_cast<uintptr_t>(&task), processor, task_type);
+    reinterpret_cast<uintptr_t>(&task), processor, task_type)
 
 ///
 //
 ///
-#define execute_task(task, processor,task_type, ...)                         \
+#define execute_task(task, processor,task_type, ...)               \
   user_task_delegate_ ## task ## _t task ## _task_delegate = task; \
   flecsi::execution::task_t::execute_task(                         \
     reinterpret_cast<uintptr_t>(&task),                            \
@@ -70,7 +70,7 @@
   bool fname ## _function_registered =                           \
     flecsi::execution::function_t::register_function<            \
       return_type, __VA_ARGS__>(                                 \
-      EXPAND_AND_STRINGIFY(fname), fname ## _function_delegate);
+      EXPAND_AND_STRINGIFY(fname), fname ## _function_delegate)
 
 ///
 // Execute a user function.

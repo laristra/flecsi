@@ -177,8 +177,10 @@ private:
 
   std::string label_ = "";
   size_t version_;
-  const meta_data_t & meta_data_ = {}; 
-  const user_meta_data_t & user_meta_data_ = {};
+  const meta_data_t & meta_data_ =
+    *(std::make_unique<meta_data_t>());
+  const user_meta_data_t & user_meta_data_ =
+    *(std::make_unique<user_meta_data_t>());
   size_t num_indices_;
   size_t num_materials_;
   size_t * indices_;
