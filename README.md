@@ -99,7 +99,7 @@ This will load up-to-date compiler and documentation tools.
 
 ## Workflow
 
-FleCSI uses the [Github Flow](https://guides.github.com/introduction/flow)
+FleCSI uses the [GitHub Flow](https://guides.github.com/introduction/flow)
 workflow pattern.
 
 When you check-out FleCSI, you will be on the master branch. This is the
