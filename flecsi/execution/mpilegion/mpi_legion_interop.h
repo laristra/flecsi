@@ -238,7 +238,14 @@ mpi_legion_interop_t::wait_on_mpi_task(
 
 //#if FLECSI_DRIVER == 'flecsi/execution/test/sprint.h'
 #ifdef SPRINT_TEST
-void init_partitions(const Legion::Task *task, const std::vector<Legion::PhysicalRegion> & regions,
+struct parts {
+  int exclusive;
+  int shared;
+  int ghost;
+};
+
+
+parts init_partitions(const Legion::Task *task, const std::vector<Legion::PhysicalRegion> & regions,
                      Legion::Context ctx, Legion::HighLevelRuntime *runtime);
 #endif
 
@@ -278,7 +285,7 @@ mpi_legion_interop_t::register_tasks(void)
 
 #ifdef SPRINT_TEST
   LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
-    <init_partitions>(
+    <parts, init_partitions>(
     INIT_CELL_PARTITIONS_TASK_ID,
     LegionRuntime::HighLevel::Processor::LOC_PROC,
     true/*single*/, true/*index*/);

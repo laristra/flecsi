@@ -94,8 +94,8 @@ void mpi_task(double val) {
 
     } // for
   } // for
-  array__<index_partition_t,3> *array =
-    new array__<index_partition_t, 3>();
+  array__<index_partition_t,1> *array =
+    new array__<index_partition_t, 1>();
 
   (*array)[0] = ip; 
 
@@ -117,7 +117,8 @@ void init_part_task(double val) {
   // context_t & context_ = context_t::instance();
   // assert((context_.regions()).size() == 1);
   // assert((context_.task())->regions.size() == 1);
-   
+
+  assert(0); 
   int rank; 
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   std::cout << " legion task rank is " << rank << " val is: " << val << std::endl;
@@ -150,8 +151,15 @@ void init_part_task(double val) {
 
 register_task(init_part_task, loc, index, void, double);
 
-
-void init_partitions(const Legion::Task *task, const std::vector<Legion::PhysicalRegion> & regions,
+#if 0
+struct parts {
+  int exclusive;
+  int shared;
+  int ghost;
+};
+#endif
+  
+parts init_partitions(const Legion::Task *task, const std::vector<Legion::PhysicalRegion> & regions,
                      Legion::Context ctx, Legion::HighLevelRuntime *runtime) {
 
 //void init_partitions(const Task *task, const std::vector<PhysicalRegion> & regions,
@@ -161,7 +169,8 @@ void init_partitions(const Legion::Task *task, const std::vector<Legion::Physica
   assert(task->regions.size() == 1);
   assert(task->regions[0].privilege_fields.size() == 1);
   std::cout << "Here I am in init_partitions" << std::endl; 
-  
+
+  struct parts partitions; 
 #if 1
   auto array =
     InteropHelper.data_storage_[0];
@@ -209,13 +218,23 @@ void init_partitions(const Legion::Task *task, const std::vector<Legion::Physica
     acc_part.write(DomainPoint::from_point<2>(pir.p), element);
   }
   
-#endif 
+#endif
+  partitions.exclusive = ip.exclusive.size();
+  partitions.shared = ip.shared.size();
+  partitions.ghost = ip.ghost.size();
+
+  std::cout << "about to return partitions (exclusive,shared,ghost) ("
+            << partitions.exclusive << "," << partitions.shared << "," 
+            << partitions.ghost << ")" << std::endl;
+  return partitions; 
+  
 }
 
 
 void driver(int argc, char ** argv) {
   context_t & context_ = context_t::instance();
-
+  parts partitions;
+  
   // first execute mpi task to setup initial partitions 
   execute_task(mpi_task, mpi, single, 1.0);
 #if 0
@@ -268,8 +287,20 @@ void driver(int argc, char ** argv) {
     RegionRequirement(cell_parts_lp, 0/*projection ID*/,
                       WRITE_DISCARD, EXCLUSIVE, cell_parts_lr));
   init_cell_partitions_launcher.add_field(0, FID_CELL_PART);
-  context_.runtime()->execute_index_space(context_.context(), init_cell_partitions_launcher);
+  FutureMap fm = context_.runtime()->execute_index_space(context_.context(), init_cell_partitions_launcher);
   
+  fm.wait_all_results();
+
+  std::cout << "returned from wait_all_results()" << std::endl;
+
+  for (int i = 0; i < num_ranks; i++) {
+    std::cout << "about to call get_results" << std::endl; 
+    parts received = fm.get_result<parts>(DomainPoint::from_point<2>(make_point(i,0)));
+    std::cout << "From rank " << i << " received (exclusive, shared, ghost) "
+              << "(" << received.exclusive << "," << received.shared << ","
+              << received.ghost << ")" << std::endl; 
+      
+  }
   
   // GMS: back at the top level, we need to read this partitioning information
   RegionRequirement req(cell_parts_lr, READ_WRITE, EXCLUSIVE, cell_parts_lr);
@@ -283,11 +314,11 @@ void driver(int argc, char ** argv) {
   InlineLauncher cell_parts_launcher(req);
   PhysicalRegion cell_parts_region = context_.runtime()->map_region(context_.context(), cell_parts_launcher);
   cell_parts_region.wait_until_valid();
-  RegionAccessor<AccessorType::Generic, double> acc_cell_part =
+  RegionAccessor<AccessorType::Generic, int> acc_cell_part =
     cell_parts_region.get_field_accessor(FID_CELL_PART).typeify<int>();
   for (GenericPointInRectIterator<2> pir(elem_rect); pir; pir++) {
     double value = acc_cell_part.read(DomainPoint::from_point<2>(pir.p));
-    std::cout << "partition value is: " << value << std::endl; 
+    //std::cout << "partition value is: " << value << std::endl; 
   }
 #endif
   
