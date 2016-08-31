@@ -6,6 +6,9 @@
 #ifndef flecsi_dmp_index_partition_h
 #define flecsi_dmp_index_partition_h
 
+#include <vector>
+#include <cereal/types/vector.hpp>
+
 ///
 // \file index_partition.h
 // \authors bergen
@@ -24,9 +27,39 @@ struct index_partition__
 {
   using identifier_t = T;
 
+  //--------------------------------------------------------------------------//
+  // Data members.
+  //--------------------------------------------------------------------------//
+
   std::vector<identifier_t> exclusive;
   std::vector<identifier_t> shared;
   std::vector<identifier_t> ghost;
+
+  ///
+  // Equality operator.
+  //
+  // \param ip The index_partition_t to compare with \e this.
+  //
+  // \return True if \e ip is equivalent to \e this, false otherwise.
+  ///
+  bool
+  operator == (
+    const index_partition__ & ip
+  ) const
+  {
+    return (this->exclusive == ip.exclusive &&
+      this->shared ==  ip.shared &&
+      this->ghost == ip.ghost);
+  } // operator ==
+
+  ///
+  // Cereal serialization method.
+  ///
+  template<typename A>
+  void serialize(A & archive) {
+    archive(exclusive, shared, ghost);
+  } // serialize
+
 }; // class partition__
 
 } // namespace dmp

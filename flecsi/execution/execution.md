@@ -13,6 +13,16 @@ compilation tool that allows fast prototyping of multi-physics ideas,
 and the application interface that is intended for production code
 development.
 
+## Tasks
+
+In computer science nomenclature, FleCSI tasks are basically *pure*
+functions.
+
+
+## Functions
+
+## Kernels
+
 ## Compilation Tool
 
 --------------------------------------------------------------------------------

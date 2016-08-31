@@ -3,59 +3,125 @@
  * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
 
-#include <cinchtest.h>
-#include <cmath>
-
 #include "flecsi/partition/index_partition.h"
+
+#include <cinchtest.h>
+
+#include <cmath>
+#include <mpi.h>
+#include <cereal/archives/binary.hpp>
+#include <sstream>
 
 using index_partition_t = flecsi::dmp::index_partition__<size_t>;
 
-// NxN block mesh
 static constexpr size_t N = 8;
-static constexpr size_t ranks = 2;
 
-TEST(index_partition, basic) {
+// test fixture
+class ip_fixture_t : public ::testing::Test
+{
+protected:
 
-#if 0
-  index_partition_t ip;
-  auto parts = std::ldiv(N, ranks);
+  virtual
+  void
+  SetUp() override
+  {
+    int rank;
+    int size;
 
-  for(size_t j(0); j<N; ++j) {
-    for(size_t i(0); i<N; ++i) {
-      size_t id = i + j*N;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-      if(i<(parts.quot-1)) {
-        ip.local.push_back(id);
-      }
-      else if(i<parts.quot) {
-        ip.shared.push_back(id);
-      }
-      else if(i<parts.quot+1) {
-        ip.ghost.push_back(id);
-      } // if
+    size_t part = N/size;
+    size_t rem = N%size;
+
+    size_t start = rank*(part + (rem > 0 ? 1 : 0));
+    size_t end = rank < rem ? start + part+1 : start + part;
+
+    for(size_t j(0); j<N; ++j) {
+      for(size_t i(start); i<end; ++i) {
+        const size_t id = j*N+i;
+
+        // exclusive
+        if(i>start && i<end-1) {
+          ip_.exclusive.push_back(id);
+        }
+        else if(rank == 0 && i==start) {
+          ip_.exclusive.push_back(id);
+        }
+        else if(rank == size-1 && i==end-1) {
+          ip_.exclusive.push_back(id);
+        }
+        else if(i==start) {
+          ip_.shared.push_back(id);
+
+          const size_t ghost_id = j*N+i-1;
+          ip_.shared.push_back(ghost_id);
+        }
+        else if(i==end-1) {
+          ip_.shared.push_back(id);
+
+          const size_t ghost_id = j*N+i+1;
+          ip_.shared.push_back(ghost_id);
+        } // if
+      } // for
     } // for
-  } // for
+  } // SetUp
 
-  std::cout << "local: ";
-  for(auto l: ip.local) {
-    std::cout << l << " ";
-  } // for
-  std::cout << std::endl;
+  virtual void TearDown() override {}
 
-  std::cout << "shared: ";
-  for(auto l: ip.shared) {
-    std::cout << l << " ";
-  } // for
-  std::cout << std::endl;
+  index_partition_t ip_;
 
-  std::cout << "ghost: ";
-  for(auto l: ip.ghost) {
-    std::cout << l << " ";
-  } // for
-  std::cout << std::endl;
-#endif
+}; // ip_fixture_t
 
-} // TEST
+TEST_F(ip_fixture_t, basic) {
+  int rank;
+
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+  if(rank == 0) {
+    for(auto i: ip_.exclusive) {
+      CINCH_CAPTURE() << i << std::endl;
+    } // for
+
+    for(auto i: ip_.shared) {
+      CINCH_CAPTURE() << i << std::endl;
+    } // for
+
+    for(auto i: ip_.ghost) {
+      CINCH_CAPTURE() << i << std::endl;
+    } // for
+  } // if
+
+} // basic
+
+TEST_F(ip_fixture_t, cereal) {
+  std::stringstream ss;
+
+  // serialize the index partition
+  {
+  cereal::BinaryOutputArchive oarchive(ss);
+  oarchive(ip_);
+  } // scope
+
+  // deserialize the index partition
+  index_partition_t ip_in;
+  {
+  cereal::BinaryInputArchive iarchive(ss);
+  iarchive(ip_in);
+  } // scope
+
+  CINCH_ASSERT(EQ, ip_, ip_in);
+} // cereal
+
+TEST(index_partition, compare_output) {
+  int rank;
+
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+  if(rank == 0) {
+    CINCH_ASSERT(TRUE, CINCH_EQUAL_BLESSED("index_partition.blessed"));
+  } // if
+} // compare_output
 
 /*----------------------------------------------------------------------------*
  * Cinch test Macros
