@@ -12,6 +12,7 @@
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/execution.h"
 #include "flecsi/partition/index_partition.h"
+#include "flecsi/partition/init_partitions_task.h"
 
 ///
 // \file sprint.h
@@ -27,7 +28,6 @@ namespace flecsi {
 namespace execution {
 
 using index_partition_t = dmp::index_partition__<size_t>;
-static mpi_legion_interop_t InteropHelper;
 
 static const size_t N = 8;
 
@@ -104,8 +104,10 @@ void mpi_task(double val) {
     new array__<int,  3>();
   (*array_2)[0] = 1; 
 #endif
-  
-  InteropHelper.data_storage_.push_back(
+ 
+  flecsi::execution::context_t & context_ =
+             flecsi::execution::context_t::instance();
+  context_.interop_helper_.data_storage_.push_back(
     std::shared_ptr<mpi_array_storage_t>(array));
   
 
@@ -122,9 +124,11 @@ void init_part_task(double val) {
   int rank; 
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   std::cout << " legion task rank is " << rank << " val is: " << val << std::endl;
-  
+ 
+  flecsi::execution::context_t & context_ =
+             flecsi::execution::context_t::instance(); 
   auto array =
-    InteropHelper.data_storage_[0];
+    context_.interop_helper_.data_storage_[0];
 
 #if 1
   //array__<std::shared_ptr<index_partition_t>, 3> array2;
@@ -151,89 +155,10 @@ void init_part_task(double val) {
 
 register_task(init_part_task, loc, index, void, double);
 
-#if 0
-struct parts {
-  int exclusive;
-  int shared;
-  int ghost;
-};
-#endif
-  
-parts init_partitions(const Legion::Task *task, const std::vector<Legion::PhysicalRegion> & regions,
-                     Legion::Context ctx, Legion::HighLevelRuntime *runtime) {
-
-//void init_partitions(const Task *task, const std::vector<PhysicalRegion> & regions,
-//                       Context ctx, HighLevelRuntime *runtime) {
-
-  assert(regions.size() == 1);
-  assert(task->regions.size() == 1);
-  assert(task->regions[0].privilege_fields.size() == 1);
-  std::cout << "Here I am in init_partitions" << std::endl; 
-
-  struct parts partitions; 
-#if 1
-  auto array =
-    InteropHelper.data_storage_[0];
-
-//array__<std::shared_ptr<index_partition_t>, 3> array2;
-  //array2   = *array;
-  index_partition_t ip = (*array)[0];
-#endif
-
-#if 1
-  int rank; 
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  std::cout << "in init_partitions native legion task rank is " << rank <<  std::endl;
-    
-
-  
-  for(auto & element : ip.exclusive ) {
-    std::cout << " Found exclusive elemment: " << element << " on rank: " << rank << std::endl;
-  }
-  
-  for(auto & element : ip.shared) {
-    std::cout << " Found shared elemment: " << element << " on rank: " << rank << std::endl;
-  } 
-
-  for(auto & element : ip.ghost) {
-    std::cout << " Found ghost elemment: " << element << " on rank: " << rank << std::endl;
-  }
-
-  // Now that we have the index partitioning let's push it into a logical
-  //  region that can be used at the top level task (once we return) to
-  //  allow creation of the proper index partitions 
-  Domain dom = runtime->get_index_space_domain(ctx, task->regions[0].region.get_index_space());
-  Rect<2> rect = dom.get_rect<2>();
-  FieldID fid = *(task->regions[0].privilege_fields.begin());
-  RegionAccessor<AccessorType::Generic, int> acc_part =
-    regions[0].get_field_accessor(fid).typeify<int>();
-
-  GenericPointInRectIterator<2> pir(rect);
-  for(auto & element : ip.exclusive) {
-    if(pir)
-      pir++;
-    else
-      abort();
-
-    acc_part.write(DomainPoint::from_point<2>(pir.p), element);
-  }
-  
-#endif
-  partitions.exclusive = ip.exclusive.size();
-  partitions.shared = ip.shared.size();
-  partitions.ghost = ip.ghost.size();
-
-  std::cout << "about to return partitions (exclusive,shared,ghost) ("
-            << partitions.exclusive << "," << partitions.shared << "," 
-            << partitions.ghost << ")" << std::endl;
-  return partitions; 
-  
-}
-
 
 void driver(int argc, char ** argv) {
   context_t & context_ = context_t::instance();
-  parts partitions;
+  flecsi::dmp::parts partitions;
   
   // first execute mpi task to setup initial partitions 
   execute_task(mpi_task, mpi, single, 1.0);
@@ -277,7 +202,7 @@ void driver(int argc, char ** argv) {
   LegionRuntime::HighLevel::ArgumentMap arg_map;
    
   LegionRuntime::HighLevel::IndexLauncher init_cell_partitions_launcher(
-    INIT_CELL_PARTITIONS_TASK_ID,
+    task_ids_t::instance().init_cell_partitions_task_id,
     LegionRuntime::HighLevel::Domain::from_rect<2>(context_.interop_helper_.all_processes_), 
     LegionRuntime::HighLevel::TaskArgument(0, 0),
     arg_map);
@@ -295,7 +220,7 @@ void driver(int argc, char ** argv) {
 
   for (int i = 0; i < num_ranks; i++) {
     std::cout << "about to call get_results" << std::endl; 
-    parts received = fm.get_result<parts>(DomainPoint::from_point<2>(make_point(i,0)));
+    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(DomainPoint::from_point<2>(make_point(i,0)));
     std::cout << "From rank " << i << " received (exclusive, shared, ghost) "
               << "(" << received.exclusive << "," << received.shared << ","
               << received.ghost << ")" << std::endl; 

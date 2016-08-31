@@ -16,12 +16,14 @@ if(ENABLE_PARTITION)
 
 set(partition_HEADERS
   partitioner.h
+  init_partitions_task.h
   PARENT_SCOPE
 )
 
-#set(partition_SOURCES
-#  PARENT_SCOPE
-#)
+set(partition_SOURCES
+  init_partitions_task.cc
+  PARENT_SCOPE
+)
 
 cinch_add_unit(partition
   SOURCES test/partition.cc

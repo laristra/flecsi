@@ -20,7 +20,7 @@
 
 // user includes
 
-#include "flecsi/execution/mpilegion/execution_policy.h"
+#include "flecsi/execution/execution.h"
 #include "flecsi/execution/task.h"
 
 using namespace flecsi::execution;
@@ -116,8 +116,7 @@ void my_init_legion(){
         "hellowrld_task");
 
    handshake.initialize(ext_legion_handshake_t::IN_EXT,1,1);
- //  InteropHelper->register_tasks();
- //  HighLevelRuntime::set_registration_callback(mapper_registration);
+     InteropHelper.register_tasks();
      InteropHelper.initialize();
 
   char arguments[] = "1";

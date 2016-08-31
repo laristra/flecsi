@@ -24,6 +24,7 @@
 #include "flecsi/execution/common/task_hash.h"
 #include "flecsi/execution/mpilegion/legion_handshake.h"
 #include "flecsi/execution/mpilegion/mpi_legion_interop.h"
+#include "flecsi/partition/init_partitions_task.h"
 
 namespace flecsi {
 namespace execution {
@@ -65,6 +66,28 @@ struct mpilegion_context_policy_t
     lr_runtime_t::set_top_level_task_id(TOP_LEVEL_TASK_ID);
     lr_runtime_t::register_legion_task<mpilegion_runtime_driver>(
       TOP_LEVEL_TASK_ID, lr_loc, true, false);
+
+    lr_runtime_t::register_legion_task<flecsi::dmp::parts, flecsi::dmp::init_partitions>(
+      task_ids_t::instance().init_cell_partitions_task_id,lr_loc, true, false);
+
+    lr_runtime_t::register_legion_task<connect_to_mpi_task>(
+        task_ids_t::instance().connect_mpi_task_id, lr_loc,
+        false, true, AUTO_GENERATE_ID,
+        LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
+        "connect_to_mpi_task");
+
+     lr_runtime_t::register_legion_task<handoff_to_mpi_task>(
+        task_ids_t::instance().handoff_to_mpi_task_id, lr_loc,
+        false, true, AUTO_GENERATE_ID,
+        LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
+        "handoff_to_mpi_task");
+
+     lr_runtime_t::register_legion_task<wait_on_mpi_task>(
+        task_ids_t::instance().wait_on_mpi_task_id, lr_loc,
+        false, true, AUTO_GENERATE_ID,
+        LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
+        "wait_on_mpi_task");
+
 
     // Register user tasks
     for(auto f: task_registry_) {
@@ -217,7 +240,7 @@ private:
 
   /*--------------------------------------------------------------------------*
    * Task registry
-   *--------------------------------------------------------------------------*/
+   *-------------------------------------------------------------------------*/
 
   // Define the map type using the task_hash_t hash function.
   std::unordered_map<task_hash_t::key_t,

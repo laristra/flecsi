@@ -45,7 +45,7 @@ TEST(any, simple) {
    {
       if (typeid(double) == i->type())
          assert(count == 0);
-      count++;
+    count++;
    }
 
 
@@ -56,7 +56,7 @@ TEST(any, simple) {
   any_t* new_ptr = reinterpret_cast<any_t*>(void_ptr);
 
     //assert(typeid(new_ptr->type())==typeid(index_partition_t));
-  double* a=flecsi::utils::any_cast<double>(new_ptr); 
+  //double* a=flecsi::utils::any_cast<double>(new_ptr); 
 
   ASSERT_EQ( 3, storage.size() )  << "iterator count mismatch";
 

@@ -85,7 +85,7 @@ class mpi_legion_interop_t
 
    void initialize(void)
    {
-    register_tasks(); 
+     
     LegionRuntime::HighLevel::HighLevelRuntime::set_registration_callback(
       mapper_registration);
    }
@@ -118,56 +118,21 @@ class mpi_legion_interop_t
      ext_legion_handshake_t::instance().ext_init();
   }//legion_configure
 
-/*! a legion task that created User Events/Queques for synchronization 
- *  between MPI and Legion
- */
-  static 
-  void 
-  connect_to_mpi_task (
-    const Legion::Task *legiontask,
-    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
-    LegionRuntime::HighLevel::Context ctx, 
-    LegionRuntime::HighLevel::HighLevelRuntime *runtime)
-  {
-     std::cout <<"inside connect_to_mpi"<<std::endl;
-     ext_legion_handshake_t::instance().legion_init();
-  }//connect_to_mpi_task
-
-/*! swithches mutex to Legion runtime
- */
+/// swithches mutex to Legion runtime
+ 
   void 
   handoff_to_legion(void)
   {
     ext_legion_handshake_t::instance().ext_handoff_to_legion();
   }//handoff_to_legion
 
-/*! wait untill mutex switched to MPI runtime and run MPI
- */
+/// wait untill mutex switched to MPI runtime and run MPI
+ 
   void 
   wait_on_legion(void)
   {
     ext_legion_handshake_t::instance().ext_wait_on_legion();
   }//wait_on_legion
-
-/*! a legion task that switches Legion runtime to MPI
- */
-  static 
-  void  
-  handoff_to_mpi_task (
-    const Legion::Task *legiontask,
-    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
-    LegionRuntime::HighLevel::Context ctx, 
-    LegionRuntime::HighLevel::HighLevelRuntime *runtime);
-
-/*! wait on mutex to be switch to Legion runtime
- */
-  static 
-  void 
-  wait_on_mpi_task(
-    const Legion::Task *legiontask,
-    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
-    LegionRuntime::HighLevel::Context ctx, 
-    LegionRuntime::HighLevel::HighLevelRuntime *runtime);
 
   static 
   void 
@@ -210,94 +175,6 @@ class mpi_legion_interop_t
 
 inline 
 void 
-mpi_legion_interop_t::handoff_to_mpi_task (
-  const Legion::Task *legiontask,
-  const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
-  LegionRuntime::HighLevel::Context ctx, 
-  LegionRuntime::HighLevel::HighLevelRuntime *runtime
-)
-{
-   ext_legion_handshake_t::instance().legion_handoff_to_ext();
-}//handoff_to_mpi_task
-
-/*--------------------------------------------------------------------------*/
-
-inline 
-void 
-mpi_legion_interop_t::wait_on_mpi_task(
- const Legion::Task *legiontask,
- const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
- LegionRuntime::HighLevel::Context ctx, 
- LegionRuntime::HighLevel::HighLevelRuntime *runtime
-)
-{
-  ext_legion_handshake_t::instance().legion_wait_on_ext();
-}//wait_on_mpi_task
-
-/*--------------------------------------------------------------------------*/
-
-//#if FLECSI_DRIVER == 'flecsi/execution/test/sprint.h'
-#ifdef SPRINT_TEST
-struct parts {
-  int exclusive;
-  int shared;
-  int ghost;
-};
-
-
-parts init_partitions(const Legion::Task *task, const std::vector<Legion::PhysicalRegion> & regions,
-                     Legion::Context ctx, Legion::HighLevelRuntime *runtime);
-#endif
-
-/*! register all Legion tasks used in the mpi_legion_interop_t class
- */
- //static:
-inline 
-void 
-mpi_legion_interop_t::register_tasks(void)
-{
-  LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
-        <connect_to_mpi_task>( 
-        CONNECT_MPI_TASK_ID,
-        LegionRuntime::HighLevel::Processor::LOC_PROC, 
-        false/*single*/, true/*index*/,
-        AUTO_GENERATE_ID, 
-        LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/), 
-        "connect_to_mpi_task");
-
-  LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
-        <handoff_to_mpi_task>( 
-        HANDOFF_TO_MPI_TASK_ID,
-        LegionRuntime::HighLevel::Processor::LOC_PROC,
-        false/*single*/, true/*index*/,
-        AUTO_GENERATE_ID, 
-        LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/), 
-        "handoff_to_mpi_task");
- 
-  LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
-        <wait_on_mpi_task>( 
-        WAIT_ON_MPI_TASK_ID,
-        LegionRuntime::HighLevel::Processor::LOC_PROC, 
-        false/*single*/, true/*index*/,
-        AUTO_GENERATE_ID, 
-        LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/), 
-        "wait_on_mpi_task");
-
-#ifdef SPRINT_TEST
-  LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
-    <parts, init_partitions>(
-    INIT_CELL_PARTITIONS_TASK_ID,
-    LegionRuntime::HighLevel::Processor::LOC_PROC,
-    true/*single*/, true/*index*/);
-#endif  
-}//register_tasks
-
-/*--------------------------------------------------------------------------*/
-
-/*! helper function to calculate number of local/all processors available
- */
-inline 
-void 
 mpi_legion_interop_t::calculate_number_of_procs(void)
 {
   int num_local_procs=0;
@@ -336,6 +213,20 @@ mpi_legion_interop_t::calculate_number_of_procs(void)
 }//calculate_number_of_procs
 
 /*--------------------------------------------------------------------------*/
+/// a legion task that created User Events/Queques for synchronization 
+ //  between MPI and Legion
+ ///
+  inline 
+  void 
+  connect_to_mpi_task (
+    const Legion::Task *legiontask,
+    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
+    LegionRuntime::HighLevel::Context ctx, 
+    LegionRuntime::HighLevel::HighLevelRuntime *runtime)
+  {
+     std::cout <<"inside connect_to_mpi"<<std::endl;
+     ext_legion_handshake_t::instance().legion_init();
+  }//connect_to_mpi_task
 
 inline 
 void 
@@ -347,7 +238,7 @@ mpi_legion_interop_t::connect_with_mpi(
    calculate_number_of_procs();
    LegionRuntime::HighLevel::ArgumentMap arg_map;
    LegionRuntime::HighLevel::IndexLauncher connect_mpi_launcher(
-         CONNECT_MPI_TASK_ID,
+         task_ids_t::instance().connect_mpi_task_id,
          LegionRuntime::HighLevel::Domain::from_rect<2>(all_processes_),
          LegionRuntime::HighLevel::TaskArgument(0, 0),
          arg_map);
@@ -361,6 +252,17 @@ mpi_legion_interop_t::connect_with_mpi(
 }//connect_with_mpi
 
 /*--------------------------------------------------------------------------*/
+inline
+void
+handoff_to_mpi_task (
+    const Legion::Task *legiontask,
+    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
+    LegionRuntime::HighLevel::Context ctx,
+    LegionRuntime::HighLevel::HighLevelRuntime *runtime)
+{
+   ext_legion_handshake_t::instance().legion_handoff_to_ext();
+}//handoff_to_mpi_task
+
 
 inline 
 void 
@@ -371,7 +273,7 @@ mpi_legion_interop_t::handoff_to_mpi(
 {
    LegionRuntime::HighLevel::ArgumentMap arg_map;
    LegionRuntime::HighLevel::IndexLauncher handoff_to_mpi_launcher(
-         HANDOFF_TO_MPI_TASK_ID,
+         task_ids_t::instance().handoff_to_mpi_task_id,
          LegionRuntime::HighLevel::Domain::from_rect<2>(all_processes_),
          LegionRuntime::HighLevel::TaskArgument(0, 0),
          arg_map);
@@ -381,6 +283,19 @@ mpi_legion_interop_t::handoff_to_mpi(
 
 /*--------------------------------------------------------------------------*/
 
+inline
+void
+wait_on_mpi_task(
+ const Legion::Task *legiontask,
+ const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
+ LegionRuntime::HighLevel::Context ctx,
+ LegionRuntime::HighLevel::HighLevelRuntime *runtime
+)
+{
+  ext_legion_handshake_t::instance().legion_wait_on_ext();
+}//wait_on_mpi_task
+
+
 inline 
 void 
 mpi_legion_interop_t::wait_on_mpi(
@@ -389,7 +304,7 @@ mpi_legion_interop_t::wait_on_mpi(
 {
    LegionRuntime::HighLevel::ArgumentMap arg_map;
    LegionRuntime::HighLevel::IndexLauncher wait_on_mpi_launcher(
-         WAIT_ON_MPI_TASK_ID,
+         task_ids_t::instance().wait_on_mpi_task_id,
          LegionRuntime::HighLevel::Domain::from_rect<2>(all_processes_),
          LegionRuntime::HighLevel::TaskArgument(0, 0),
          arg_map);
@@ -397,6 +312,44 @@ mpi_legion_interop_t::wait_on_mpi(
         runtime->execute_index_space(ctx,wait_on_mpi_launcher);
   fm3.wait_all_results();
 }//wait_on_mpi
+
+/*--------------------------------------------------------------------------*/
+//#if FLECSI_DRIVER == 'flecsi/execution/test/sprint.h'
+/// register all Legion tasks used in the mpi_legion_interop_t class
+ 
+ //static:
+inline
+void
+mpi_legion_interop_t::register_tasks(void)
+{
+    LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
+        <connect_to_mpi_task>(
+        task_ids_t::instance().connect_mpi_task_id,
+        LegionRuntime::HighLevel::Processor::LOC_PROC,
+        false/*single*/, true/*index*/,
+        AUTO_GENERATE_ID,
+        LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
+        "connect_to_mpi_task");
+
+  LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
+        <handoff_to_mpi_task>(
+        task_ids_t::instance().handoff_to_mpi_task_id,
+        LegionRuntime::HighLevel::Processor::LOC_PROC,
+        false/*single*/, true/*index*/,
+        AUTO_GENERATE_ID,
+        LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
+        "handoff_to_mpi_task");
+
+  LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
+        <wait_on_mpi_task>(
+        task_ids_t::instance().wait_on_mpi_task_id,
+        LegionRuntime::HighLevel::Processor::LOC_PROC,
+        false/*single*/, true/*index*/,
+        AUTO_GENERATE_ID,
+        LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
+        "wait_on_mpi_task");
+}//register_tasks
+
 
 } //end namespace execution
 } //end namespace flecsi
