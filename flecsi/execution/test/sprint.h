@@ -137,15 +137,15 @@ void init_part_task(double val) {
 
   
   for(auto & element : ip.exclusive ) {
-    std::cout << " Found exclusive elemment: " << element << " on rank: " << rank << std::endl;
+    std::cout << " Found exclusive element: " << element << " on rank: " << rank << std::endl;
   }
   
   for(auto & element : ip.shared) {
-    std::cout << " Found shared elemment: " << element << " on rank: " << rank << std::endl;
+    std::cout << " Found shared element: " << element << " on rank: " << rank << std::endl;
   } 
 
   for(auto & element : ip.ghost) {
-    std::cout << " Found ghost elemment: " << element << " on rank: " << rank << std::endl;
+    std::cout << " Found ghost element: " << element << " on rank: " << rank << std::endl;
   } 
   
   
@@ -160,7 +160,10 @@ void driver(int argc, char ** argv) {
 
   // first execute mpi task to setup initial partitions 
   execute_task(mpi_task, mpi, single, 1.0);
+#if 0
   execute_task(init_part_task, loc, index, 2.0);
+#endif
+  
 
   // create a field space to store my cell paritioning 
   FieldSpace fs = context_.runtime()->create_field_space(context_.context());
@@ -214,11 +217,16 @@ void driver(int argc, char ** argv) {
   RegionRequirement req(cell_parts_lr, READ_WRITE, EXCLUSIVE, cell_parts_lr);
   req.add_field(FID_CELL_PART);
 
+#endif
+
+#if 1
+  
+  std::cout << "Back in driver (TTL) and checking values in LR" << std::endl;
   InlineLauncher cell_parts_launcher(req);
   PhysicalRegion cell_parts_region = context_.runtime()->map_region(context_.context(), cell_parts_launcher);
   cell_parts_region.wait_until_valid();
-  RegionAccessor<AccessorType::Generic, double> acc_cell_part =
-    cell_parts_region.get_field_accessor(FID_CELL_PART).typeify<double>();
+  RegionAccessor<AccessorType::Generic, int> acc_cell_part =
+    cell_parts_region.get_field_accessor(FID_CELL_PART).typeify<int>();
   for (GenericPointInRectIterator<2> pir(elem_rect); pir; pir++) {
     double value = acc_cell_part.read(DomainPoint::from_point<2>(pir.p));
     std::cout << "partition value is: " << value << std::endl; 

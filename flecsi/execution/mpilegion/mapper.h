@@ -138,11 +138,14 @@ mpi_mapper_t::slice_domain(
   size_t connect_mpi_task_id  = task_ids_t::instance().connect_mpi_task_id;
   size_t handoff_to_mpi_task_id = task_ids_t::instance().handoff_to_mpi_task_id;
   size_t wait_on_mpi_task_id  = task_ids_t::instance().wait_on_mpi_task_id;
+  size_t init_cell_partitions_task_id =
+          task_ids_t::instance().init_cell_partitions_task_id;
 
   // Special cases for startup tasks
   if (legiontask->task_id == connect_mpi_task_id
       ||legiontask->task_id ==handoff_to_mpi_task_id
-      || legiontask->task_id ==wait_on_mpi_task_id)
+      || legiontask->task_id ==wait_on_mpi_task_id
+      || legiontask->task_id ==init_cell_partitions_task_id)
   {
     const int DIM = 2;
     std::vector<LegionRuntime::HighLevel::Processor> proc_list;
