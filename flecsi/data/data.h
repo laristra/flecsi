@@ -32,17 +32,16 @@ namespace flecsi {
 // Each storage type may have additional parameters that need to be passed
 // to this macro.
 ///
-#define register_data(client, nspace, name, versions, data_type,     \
-  storage_type, ...)                                                 \
-	data::storage_t::instance().register_data<storage_type, data_type, \
-		const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>(            \
-      client, EXPAND_AND_STRINGIFY(name), versions, ##__VA_ARGS__)
+#define register_data(client, nspace, name, data_type, storage_type, ...) \
+	data::storage_t::instance().register_data<storage_type, data_type,      \
+		const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>(                 \
+      client, EXPAND_AND_STRINGIFY(name), ##__VA_ARGS__)
 
 ///
 //
 ///
-#define get_accessor(client, nspace, name, version, data_type,      \
-  storage_type)                                                     \
+#define get_accessor(client, nspace, name, data_type, storage_type, \
+  version)                                                          \
 	data::storage_t::instance().get_accessor<storage_type, data_type, \
 		const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>(           \
     client, EXPAND_AND_STRINGIFY(name), version)
@@ -50,8 +49,8 @@ namespace flecsi {
 ///
 //
 ///
-#define get_mutator(client, nspace, name, version, data_type,      \
-  storage_type, slots)                                             \
+#define get_mutator(client, nspace, name, data_type, storage_type, \
+  version, slots)                                                  \
   data::storage_t::instance().get_mutator<storage_type, data_type, \
     const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>(          \
     client, EXPAND_AND_STRINGIFY(name), slots, version)
@@ -59,8 +58,8 @@ namespace flecsi {
 ///
 //
 ///
-#define get_handle(client, nspace, name, version, data_type,          \
-  storage_type, privileges)                                           \
+#define get_handle(client, nspace, name, data_type, storage_type,     \
+  version, privileges)                                                \
   data::storage_t::instance().get_handle<storage_type, data_type,     \
     privileges, const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>( \
       client, EXPAND_AND_STRINGIFY(name), version)
