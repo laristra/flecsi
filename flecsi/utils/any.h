@@ -43,6 +43,7 @@ namespace utils
              }
      private:
        T any_object_;
+      typedef T type_; 
    };
 
    std::shared_ptr<any_concept_t> any_object_;
@@ -50,32 +51,14 @@ namespace utils
   public:
    template< typename T > any_t( const T& obj ) :
       any_object_( new any_model_t<T>( obj ) ) {}
+
+  template< typename T >
+  using type_= typename any_model_t<T>::type_;
+
   public:
         const std::type_info& type() const { return any_object_->type(); }
 };
 
-template <typename T>
-inline
-T* 
-any_cast (any_t* A)
-{
-  assert (typeid(T)==A->type());
-  if (A)
-   return reinterpret_cast<T*>(A);
-  return nullptr;
-}
-
-template <typename T>
-inline
-const 
-T* 
-any_cast (const any_t* A)
-{
-  assert (typeid(T)==A->type());
-  if (A)
-   return reinterpret_cast<T*>(A);
-  return nullptr;
-}
 
 
 }// namespace utils

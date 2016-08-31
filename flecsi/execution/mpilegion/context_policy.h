@@ -24,6 +24,7 @@
 #include "flecsi/execution/common/task_hash.h"
 #include "flecsi/execution/mpilegion/legion_handshake.h"
 #include "flecsi/execution/mpilegion/mpi_legion_interop.h"
+#include "flecsi/partition/init_partitions_task.h"
 
 namespace flecsi {
 namespace execution {
@@ -65,6 +66,32 @@ struct mpilegion_context_policy_t
     lr_runtime_t::set_top_level_task_id(TOP_LEVEL_TASK_ID);
     lr_runtime_t::register_legion_task<mpilegion_runtime_driver>(
       TOP_LEVEL_TASK_ID, lr_loc, true, false);
+
+     lr_runtime_t::register_legion_task<flecsi::dmp::init_partitions>(
+        read_partitioning_id,lr_loc, true, false);
+
+     LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
+        <connect_to_mpi_task>(
+        connect_mpi_task_id, lr_loc,
+        false, true, AUTO_GENERATE_ID,
+        LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
+        "connect_to_mpi_task");
+
+  LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
+        <handoff_to_mpi_task>(
+        handoff_to_mpi_task_id, lr_loc,
+        false, true, AUTO_GENERATE_ID,
+        LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
+        "handoff_to_mpi_task");
+
+  LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
+        <wait_on_mpi_task>(
+        wait_on_mpi_task_id, lr_loc,
+        false, true, AUTO_GENERATE_ID,
+        LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
+        "wait_on_mpi_task");
+
+
 
     // Register user tasks
     for(auto f: task_registry_) {
@@ -223,6 +250,16 @@ private:
   std::unordered_map<task_hash_t::key_t,
     std::pair<task_id_t, register_function_t>,
     task_hash_t> task_registry_;
+
+  /*--------------------------------------------------------------------------*
+   * helper hask's IDs
+   *--------------------------------------------------------------------------*/
+ 
+  size_t read_partitioning_id = unique_fid_t::instance().next();
+  size_t init_cell_partitions_task_id=task_ids_t::instance().init_cell_partitions_task_id;
+  size_t connect_mpi_task_id  = task_ids_t::instance().connect_mpi_task_id;
+  size_t handoff_to_mpi_task_id = task_ids_t::instance().handoff_to_mpi_task_id;
+  size_t wait_on_mpi_task_id  = task_ids_t::instance().wait_on_mpi_task_id;
 
   /*--------------------------------------------------------------------------*
    * Function registry
