@@ -29,17 +29,6 @@ env:
     - DOCKERFILE=fedora MPI=OFF RUNTIME=serial        WERROR=yes
     - DOCKERFILE=fedora MPI=OFF RUNTIME=serial COVERAGE=ON
 
-matrix:
-  allow_failures:
-    - env: DOCKERFILE=ubuntu_tpl MPI=OFF RUNTIME=legion    WERROR=yes
-    - env: DOCKERFILE=ubuntu_tpl MPI=ON  RUNTIME=mpilegion WERROR=yes
-    - env: DOCKERFILE=ubuntu MPI=ON   RUNTIME=mpi          WERROR=yes
-    - env: DOCKERFILE=ubuntu MPI=OFF  RUNTIME=serial       WERROR=yes
-    - env: DOCKERFILE=fedora_tpl MPI=OFF RUNTIME=legion    WERROR=yes
-    - env: DOCKERFILE=fedora_tpl MPI=ON  RUNTIME=mpilegion WERROR=yes
-    - env: DOCKERFILE=fedora MPI=ON  RUNTIME=mpi           WERROR=yes
-    - env: DOCKERFILE=fedora MPI=OFF RUNTIME=serial        WERROR=yes
-
 script:
  - docker build --build-arg MPI=${MPI} --build-arg RUNTIME=${RUNTIME} --build-arg WERROR=${WERROR}
                 --build-arg COVERAGE=${COVERAGE} --build-arg MINIMAL=${MINIMAL}
