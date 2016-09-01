@@ -94,21 +94,12 @@ void mpi_task(double val) {
 
     } // for
   } // for
-  array__<index_partition_t,1> *array =
-    new array__<index_partition_t, 1>();
-
-  (*array)[0] = ip; 
-
-#if 0 
-  array__<int,3> *array_2 =
-    new array__<int,  3>();
-  (*array_2)[0] = 1; 
-#endif
  
+
   flecsi::execution::context_t & context_ =
              flecsi::execution::context_t::instance();
   context_.interop_helper_.data_storage_.push_back(
-    std::shared_ptr<mpi_array_storage_t>(array));
+        flecsi::utils::any_t(ip));
   
 
 } // mpi_task
@@ -127,14 +118,8 @@ void init_part_task(double val) {
  
   flecsi::execution::context_t & context_ =
              flecsi::execution::context_t::instance(); 
-  auto array =
+  index_partition_t ip =
     context_.interop_helper_.data_storage_[0];
-
-#if 1
-  //array__<std::shared_ptr<index_partition_t>, 3> array2;
-  //array2   = *array;
-  index_partition_t ip = (*array)[0];
-#endif
 
   
   for(auto & element : ip.exclusive ) {

@@ -51,6 +51,10 @@ TEST(any, simple) {
    std::array <int,5> B;
    index_partition_t  ip;
 
+   A=3.14;
+   B[0]=1;
+   B[1]=2;
+
    storage.push_back(any_t(A));
    storage.push_back(any_t(B));
    storage.push_back(any_t(ip));
@@ -62,6 +66,9 @@ TEST(any, simple) {
          assert(count == 0);
     count++;
    }
+
+   double Ad= storage[0];
+   std::cout <<"storage[0] = "<< Ad<<std::endl;
 
    any_t val;
   

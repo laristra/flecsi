@@ -29,9 +29,6 @@ parts  init_partitions(const Legion::Task *task,
         Legion::Context ctx, Legion::HighLevelRuntime *runtime) 
 {
 
-//void init_partitions(const Task *task, const std::vector<PhysicalRegion> & regions,
-//                       Context ctx, HighLevelRuntime *runtime) {
-
   assert(regions.size() == 1);
   assert(task->regions.size() == 1);
   assert(task->regions[0].privilege_fields.size() == 1);
@@ -39,14 +36,13 @@ parts  init_partitions(const Legion::Task *task,
 
   struct parts partitions; 
 #if 1
+  using index_partition_t = index_partition__<size_t>;
+
   flecsi::execution::context_t & context_ =
     flecsi::execution::context_t::instance();
-  auto array =
+  index_partition_t ip =
     context_.interop_helper_.data_storage_[0];
   
-  using index_partition_t = index_partition__<size_t>;
-  
-  index_partition_t ip = (*array)[0];
 #endif
 
 #if 1

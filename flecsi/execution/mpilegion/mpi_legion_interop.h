@@ -29,6 +29,7 @@
 #include "flecsi/execution/mpilegion/mapper.h"
 #include "flecsi/execution/mpilegion/task_ids.h"
 #include "flecsi/partition/index_partition.h"
+#include "flecsi/utils/any.h"
 
 /*!
 * \file mpilegion/mpi_legion_interop.h
@@ -38,44 +39,6 @@
 
 namespace flecsi{
 namespace execution{
-
-class mpi_array_storage_t
-{
-  using index_p_type =flecsi::dmp::index_partition__<size_t> ;
-// dmp::index_partition__<size_t>;
-  public:
-  mpi_array_storage_t(){};
-  ~mpi_array_storage_t(){};
-  virtual  index_p_type* accessor(void) = 0;
-  virtual index_p_type& operator[](std::size_t idx) =0;
-  virtual const index_p_type& operator[](std::size_t idx) const =0;
-};
-
-template <typename Type,  uint64_t N>
-class array__ : public mpi_array_storage_t{
-
- public:
-  array__(){};
-  ~array__(){};
-
-  Type * accessor(void)
-  {
-   return array_.data();
-  }
-  
-  Type& operator[](std::size_t idx)
-  {
-    return array_[idx];
-  }
-  const Type& operator[](std::size_t idx) const
-  {
-    return array_[idx];
-  }
-  
-  private: 
-  std::array<Type,N> array_;
-};
-
 
 class mpi_legion_interop_t
 {
@@ -163,7 +126,7 @@ class mpi_legion_interop_t
   Rect<2> all_processes_;
   Rect<1> local_procs_;
 
-  std::vector <std::shared_ptr<mpi_array_storage_t>> data_storage_;
+  std::vector <flecsi::utils::any_t> data_storage_;
 
   private:
   mpi_legion_interop_t(const mpi_legion_interop_t&);
