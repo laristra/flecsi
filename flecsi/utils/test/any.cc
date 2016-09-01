@@ -20,10 +20,25 @@
 #include "flecsi/partition/index_partition.h"
 
 using flecsi::utils::any_t;
+using std::cout;
+using std::endl;
 
 //=============================================================================
 //! \brief Test the "zip-like" iterator.
 //=============================================================================
+
+class temp_class_t
+{
+  int value;
+public:
+  temp_class_t(int value) : value(value){}
+
+  void show()
+  {
+    cout << "Hoge : " << value << endl;
+  }
+};
+
 TEST(any, simple) {
 
    typedef std::vector<any_t> storage_t;
@@ -43,11 +58,26 @@ TEST(any, simple) {
    int count =0;
    for (storage_iter i=storage.begin(); i!=storage.end(); ++i)
    {
-      if (typeid(double) == i->type())
+      if (typeid(double) == i->get_type())
          assert(count == 0);
     count++;
    }
 
+   any_t val;
+  
+   val = 10;
+   int i = val;
+   cout << i << endl;
+  
+   val = 3.14;
+   cout << flecsi::utils::any_cast<double>(val) << endl;
+
+   val = temp_class_t(123);
+   temp_class_t h = val;
+   h.show();
+
+   val = std::string("Hello World!");
+   cout << flecsi::utils::any_cast<std::string>(val) << endl;
 
 //  std::shared_ptr<any_t> original_ptr = std::make_shared<any_t>(ip);
   

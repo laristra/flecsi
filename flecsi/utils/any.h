@@ -15,6 +15,9 @@
 #ifndef flecsi_any_h
 #define flecsi_any_h
 
+#include <iostream>
+#include <typeinfo>
+
 /*!
  * \file any.h
  * \authors demeshko
@@ -26,38 +29,88 @@ namespace flecsi
 namespace utils
 {
 
- class any_t {
-  
-   struct any_concept_t {
-       virtual ~any_concept_t() {}
-       virtual const std::type_info& type() const = 0;
-   };
-
-   template< typename T > 
-   struct any_model_t : any_concept_t {
-       any_model_t( const T& t ) : any_object_( t ) {}
-       virtual ~any_model_t() {}
-       virtual const std::type_info& type() const 
-             { 
-               return typeid(T); 
-             }
-     private:
-       T any_object_;
-      typedef T type_; 
-   };
-
-   std::shared_ptr<any_concept_t> any_object_;
-
+ class any_t
+ {
   public:
-   template< typename T > any_t( const T& obj ) :
-      any_object_( new any_model_t<T>( obj ) ) {}
+	 any_t()
+   {
+    holder = nullptr;
+   }
 
-  template< typename T >
-  using type_= typename any_model_t<T>::type_;
+	 template<class T>
+	 any_t(const T& value)
+   {
+     holder=new holder_t<T>(value);
+   }
 
-  public:
-        const std::type_info& type() const { return any_object_->type(); }
-};
+   ~any_t()
+    {
+      delete holder;
+      holder = nullptr;
+    }
+
+	 any_t(const any_t& rhs)
+   {
+     holder=rhs.holder ? rhs.holder->copy() : nullptr;
+   }
+
+	 any_t& operator=(const any_t& rhs)
+   {
+     delete holder;
+     holder = rhs.holder ? rhs.holder->copy() : nullptr;
+      return *this;
+   }
+
+	 template<class T>
+	 operator T() const
+   {
+    return dynamic_cast<holder_t<T>&>(*holder).value;
+   }
+
+  	template<class T>
+  	friend const T& any_cast(any_t& rhs);
+
+	  const std::type_info& get_type() const
+    {
+      return holder ? holder->get_type() : typeid(void);
+    }
+
+ private:
+  	class i_holder_t
+	 {
+	  public:
+      virtual ~i_holder_t(){}
+      virtual i_holder_t* copy() const = 0;
+      virtual const std::type_info& get_type() const = 0;
+	  };//class i_holder_t
+
+    template<class T>
+    class holder_t : public i_holder_t
+    {
+	   public:
+		   holder_t(const T& value):value(value){}
+       holder_t* copy() const{return new holder_t(value);}
+       const std::type_info& get_type() const{return typeid(T);}
+     public:
+        T value;
+     };//end class Holder
+
+     i_holder_t* holder; 
+     //std::shared_ptr<i_holder_t> holder;
+};//class Any
+
+
+
+
+template<class T>
+inline
+const 
+T& any_cast(any_t& rhs)
+{
+	return dynamic_cast<any_t::holder_t<T>&>(*(rhs.holder)).value;
+}
+
+
 
 
 
