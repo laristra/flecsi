@@ -58,7 +58,6 @@ int32_t io_exodus_t<burton_mesh_t>::read(
 
   // alias some types
   using real_t = typename burton_mesh_t::real_t;
-  using vector_t = typename burton_mesh_t::vector_t;
   using vertex_t = typename burton_mesh_t::vertex_t;
 
   // size of floating point variables used in app.
@@ -78,17 +77,15 @@ int32_t io_exodus_t<burton_mesh_t>::read(
 
   // verify mesh dimension
   assert(m.dimension() == exopar.num_dim);
-  auto num_nodes = exopar.num_nodes;
-  auto num_elem = exopar.num_elem;
-  auto num_elem_blk = exopar.num_elem_blk;
-  auto num_node_sets = exopar.num_node_sets;
-  auto num_side_sets = exopar.num_side_sets;
+  size_t num_nodes = exopar.num_nodes;
+  size_t num_elem = exopar.num_elem;
+  size_t num_elem_blk = exopar.num_elem_blk;
 
   m.init_parameters(num_nodes);
 
   // read nodes
-  real_t xcoord[num_nodes];
-  real_t ycoord[num_nodes];
+  real_t * xcoord = new real_t(num_nodes);
+  real_t * ycoord = new real_t(num_nodes);
   status = ex_get_coord(exoid, xcoord, ycoord, nullptr);
   assert(status == 0);
 
@@ -98,21 +95,24 @@ int32_t io_exodus_t<burton_mesh_t>::read(
     auto v = m.create_vertex({xcoord[i], ycoord[i]});
     vs.push_back(v);
   } // for
+  
+  delete[] xcoord;
+  delete[] ycoord;
 
   // 1 block for now
 
   // read blocks
-  int blockids[num_elem_blk];
+  int * blockids = new int(num_elem_blk);
   status = ex_get_elem_blk_ids(exoid, blockids);
   assert(status == 0);
-  char block_name[256];
+  char * block_name = new char[256]();
   status = ex_get_name(exoid, EX_ELEM_BLOCK, blockids[0], block_name);
   assert(status == 0);
 
   // get the info about this block
   auto num_attr = 0;
   auto num_nodes_per_elem = 0;
-  char elem_type[256];
+  char * elem_type = new char[256]();
   status = ex_get_elem_block(
       exoid, blockids[0], elem_type, &num_elem, &num_nodes_per_elem, &num_attr);
   assert(status == 0);
@@ -122,17 +122,22 @@ int32_t io_exodus_t<burton_mesh_t>::read(
   assert(strcmp(elem_type, "quad") == 0);
 
   // read element definitions
-  int elt_conn[num_elem * num_nodes_per_elem];
+  int * elt_conn = new int(num_elem * num_nodes_per_elem);
   status = ex_get_elem_conn(exoid, blockids[0], elt_conn);
   assert(status == 0);
 
   // create cells in mesh
   for (size_t e = 0; e < num_elem; ++e) {
     auto b = e * num_nodes_per_elem; // base offset into elt_conn
-    auto c = m.create_cell({vs[elt_conn[b + 0] - 1], vs[elt_conn[b + 1] - 1],
+    m.create_cell({vs[elt_conn[b + 0] - 1], vs[elt_conn[b + 1] - 1],
         vs[elt_conn[b + 2] - 1], vs[elt_conn[b + 3] - 1]});
   }
   m.init();
+
+  delete[] block_name;
+  delete[] elem_type;
+  delete[] blockids;
+  delete[] elt_conn;
 
 // creating fields from an exodus file will be problematic since the type
 // information on the file has been thrown away. For example, an int field
@@ -222,8 +227,8 @@ int32_t io_exodus_t<burton_mesh_t>::write(
   assert(status == 0);
 
   // get the coordinates from the mesh.
-  real_t xcoord[num_nodes];
-  real_t ycoord[num_nodes];
+  real_t * xcoord = new real_t(num_nodes);
+  real_t * ycoord = new real_t(num_nodes);
   auto i = 0;
   for (auto v : m.vertices()) {
     xcoord[i] = v->coordinates()[0];
@@ -233,6 +238,9 @@ int32_t io_exodus_t<burton_mesh_t>::write(
   // write the coordinates to the file
   status = ex_put_coord(exoid, xcoord, ycoord, nullptr);
   assert(status == 0);
+
+  delete[] xcoord;
+  delete[] ycoord;
 
   // write the coordinate names
   const char * coord_names[3];
@@ -251,7 +259,7 @@ int32_t io_exodus_t<burton_mesh_t>::write(
   assert(status == 0);
 
   // element definitions
-  int elt_conn[num_elem * num_nodes_per_elem];
+  int * elt_conn = new int(num_elem * num_nodes_per_elem);
   i = 0;
   for (auto c : m.cells()) {
     for (auto v : m.vertices(c)) {
@@ -263,6 +271,8 @@ int32_t io_exodus_t<burton_mesh_t>::write(
   // write connectivity
   status = ex_put_elem_conn(exoid, blockid, elt_conn);
   assert(status == 0);
+
+  delete[] elt_conn;
 
   // write field data
 
@@ -285,27 +295,25 @@ int32_t io_exodus_t<burton_mesh_t>::write(
   var_ext[2] = "_z";
 
   // node variable names array
-  char * node_var_names[num_nf];
+  char ** node_var_names = new char *[num_nf]();
   for (int i = 0; i < num_nf; ++i) {
-    node_var_names[i] = new char[MAX_STR_LENGTH];
+    node_var_names[i] = new char[MAX_STR_LENGTH]();
     memset(node_var_names[i], 0x00, MAX_STR_LENGTH);
   } // for
 
   // fill node variable names array
   int inum = 0;
   for (auto sf : rspav) {
-    size_t len = sf.label().size();
     std::copy(sf.label().begin(), sf.label().end(), node_var_names[inum]);
     inum++;
   } // for
   for (auto sf : ispav) {
-    size_t len = sf.label().size();
     std::copy(sf.label().begin(), sf.label().end(), node_var_names[inum]);
     inum++;
   } // for
   for (auto vf : rvpav) {
     size_t len = vf.label().size();
-    for (int d = 0; d < m.dimension(); ++d) {
+    for (size_t d = 0; d < m.dimension(); ++d) {
       std::copy(vf.label().begin(), vf.label().end(), node_var_names[inum]);
       std::copy(
           var_ext[d].begin(), var_ext[d].end(), &node_var_names[inum][len]);
@@ -324,7 +332,7 @@ int32_t io_exodus_t<burton_mesh_t>::write(
   // write nodal fields
   inum = 1;
   // node field buffer
-  real_t nf[num_nodes];
+  real_t * nf = new real_t(num_nodes);
   for (auto sf : rspav) {
     for (auto v : m.vertices())
       nf[v.id()] = sf[v];
@@ -341,7 +349,7 @@ int32_t io_exodus_t<burton_mesh_t>::write(
     inum++;
   } // for
   for (auto vf : rvpav) {
-    for (int d = 0; d < m.dimension(); ++d) {
+    for (size_t d = 0; d < m.dimension(); ++d) {
       for (auto v : m.vertices())
         nf[v.id()] = vf[v][d];
       status = ex_put_nodal_var(exoid, 1, inum, num_nodes, nf);
@@ -354,6 +362,9 @@ int32_t io_exodus_t<burton_mesh_t>::write(
   for (int i = 0; i < num_nf; ++i) {
     delete[] node_var_names[i];
   } // for
+
+  delete[] node_var_names;
+  delete[] nf;
 
   // element field data
   int num_ef = 0; // number of element fields
@@ -368,7 +379,7 @@ int32_t io_exodus_t<burton_mesh_t>::write(
   num_ef += m.dimension() * rvpac.size();
 
   // element variable names array
-  char * elem_var_names[num_ef];
+  char ** elem_var_names = new char *[num_ef]();
   for (int i = 0; i < num_ef; ++i) {
     elem_var_names[i] = new char[MAX_STR_LENGTH];
     memset(elem_var_names[i], 0x00, MAX_STR_LENGTH);
@@ -377,18 +388,16 @@ int32_t io_exodus_t<burton_mesh_t>::write(
   // fill element variable names array
   inum = 0;
   for (auto sf : rspac) {
-    size_t len = sf.label().size();
     std::copy(sf.label().begin(), sf.label().end(), elem_var_names[inum]);
     inum++;
   } // for
   for (auto sf : ispac) {
-    size_t len = sf.label().size();
     std::copy(sf.label().begin(), sf.label().end(), elem_var_names[inum]);
     inum++;
   } // for
   for (auto vf : rvpac) {
     size_t len = vf.label().size();
-    for (int d = 0; d < m.dimension(); ++d) {
+    for (size_t d = 0; d < m.dimension(); ++d) {
       std::copy(vf.label().begin(), vf.label().end(), elem_var_names[inum]);
       std::copy(
           var_ext[d].begin(), var_ext[d].end(), &elem_var_names[inum][len]);
@@ -407,7 +416,7 @@ int32_t io_exodus_t<burton_mesh_t>::write(
   // write element fields
   inum = 1;
   // element field buffer
-  real_t ef[num_elem];
+  real_t * ef = new real_t(num_elem);
   for (auto sf : rspac) {
     for (auto c : m.cells())
       ef[c.id()] = sf[c];
@@ -424,7 +433,7 @@ int32_t io_exodus_t<burton_mesh_t>::write(
     inum++;
   } // for
   for (auto vf : rvpac) {
-    for (int d = 0; d < m.dimension(); ++d) {
+    for (size_t d = 0; d < m.dimension(); ++d) {
       for (auto c : m.cells())
         ef[c.id()] = vf[c][d];
       status = ex_put_elem_var(exoid, 1, inum, 0, num_elem, ef);
@@ -437,6 +446,9 @@ int32_t io_exodus_t<burton_mesh_t>::write(
   for (int i = 0; i < num_ef; ++i) {
     delete[] elem_var_names[i];
   } // for
+
+  delete[] elem_var_names;
+  delete[] ef;
 
   // close
   status = ex_close(exoid);

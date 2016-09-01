@@ -1488,18 +1488,14 @@ private:
       // Try to optimize storage.
       conns.reserve(max_cell_entity_conns);
 
-      // Get the vertices that define the current cell
-      size_t end_index;
-      id_t * vertices = cell_to_vertex.get_entities(c, end_index);
-
       // This call allows the users specialization to create
       // whatever entities are needed to complete the mesh.
       //
       // p.first:   The number of entities per cell.
       // p.second:  A std::vector of id_t containing the ids of the
       //            vertices that define the entity.
-      auto sv = 
-        cell->template create_entities(cell_id, DimensionToBuild, dc, entity_vertices.data());
+      auto sv = cell->template create_entities(cell_id,
+        DimensionToBuild, dc, entity_vertices.data());
 
       size_t n = sv.size();
 
@@ -1537,7 +1533,8 @@ private:
 
           id_t global_id = id_t::make<Domain>(DimensionToBuild, entity_id);
           
-          auto ent = MT::template create_entity<Domain, DimensionToBuild>(this, m);
+          auto ent =
+            MT::template create_entity<Domain, DimensionToBuild>(this, m);
           ent->template set_global_id<Domain>( global_id );
           
           ms_.entities[Domain][DimensionToBuild].push_back(ent);

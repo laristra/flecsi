@@ -35,7 +35,7 @@ namespace flecsi
       ~(((size_t(1) << FBITS) - size_t(1)) << 59); 
 
     static_assert(PBITS + EBITS + FBITS <= sizeof(size_t) * 8 - 4, 
-                  "invalid id bit configuration");
+      "invalid id bit configuration");
 
     static_assert(GBITS <= EBITS, "invalid global bit configuration");
 
@@ -163,13 +163,14 @@ namespace flecsi
     }
 
   private:
-    size_t entity_ : EBITS;
-    size_t partition_ : PBITS;
-    size_t flags_ : FBITS;
-    size_t domain_ : 2;
+
     size_t dimension_ : 2;
+    size_t domain_ : 2;
+    size_t partition_ : PBITS;
+    size_t entity_ : EBITS;
     size_t global_ : GBITS;
-  };
+    size_t flags_ : FBITS;
+  }; // id_
 
 } // namespace flecsi
 

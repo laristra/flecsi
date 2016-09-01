@@ -141,10 +141,10 @@ struct burton_cell_t
   virtual ~burton_cell_t() {}
 
   //! the centroid
-  virtual point_t centroid() const {}; // = 0; FIXME
+  virtual point_t centroid() const { return {}; }; // = 0; FIXME
 
   //! the area of the cell
-  virtual real_t area() const {}; // = 0; FIXME
+  virtual real_t area() const { return {}; }; // = 0; FIXME
 
   /*!
     \brief create_entities is a function that creates entities
@@ -166,7 +166,9 @@ struct burton_cell_t
     size_t dim,
     topology::domain_connectivity<2> & c,
     flecsi::id_t * e)
-  {}
+  {
+    return {};
+  }
 
   /*!
     \brief create_bound_entities binds mesh entities across domains.
@@ -188,7 +190,9 @@ struct burton_cell_t
     flecsi::topology::domain_connectivity<2>& primal_conn,
     flecsi::topology::domain_connectivity<2>& domain_conn,
     id_t * c)
-    {};
+    {
+      return {};
+    };
 
 }; // class burton_cell_t
 
@@ -561,8 +565,6 @@ public:
 
       area = 1/2 mag(A X B) + 1/2 mag(C X D)
      */
-
-    real_t area = 0.0;
 
     auto xc = cell()->centroid();
     auto xv = vertex()->coordinates();

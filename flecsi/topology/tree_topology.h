@@ -294,7 +294,7 @@ public:
   template<typename S>
   branch_id(const std::array<point<S, dimension>, 2>& range,
             const point<S, dimension>& p, size_t depth)
-  : id_(int_t(1) << depth * dimension + 1){
+  : id_(int_t(1) << (depth * dimension + 1)){
     std::array<int_t, dimension> coords;
 
     for(size_t i = 0; i < dimension; ++i){
@@ -307,7 +307,7 @@ public:
     for(size_t i = max_depth - depth; i < max_depth; ++i){
       for(size_t j = 0; j < dimension; ++j){
         int_t bit = (coords[j] & int_t(1) << i) >> i;
-        id_ |= bit << k * dimension + j;
+        id_ |= bit << (k * dimension + j);
       }
       ++k;
     }
@@ -317,7 +317,7 @@ public:
   : id_(bid.id_){}
 
   static constexpr branch_id root(){
-    return branch_id(int_t(1) << dimension - 1);
+    return branch_id(int_t(1) << (dimension - 1));
   }
 
   static constexpr branch_id null(){
@@ -2006,11 +2006,12 @@ private:
     }
   }
 
+  action action_;
+
   tree_branch* parent_;
   tree_branch* children_;
 
   branch_id_t id_;
-  action action_;
 };
 
 } // namespace topology
