@@ -133,9 +133,9 @@ cinch_add_unit(legion_with_Hypre
   LIBRARIES     ${HYPRE_LIBRARIES} )
 endif (ENABLE_HYPRE)
 
-cinch_add_unit(mpi_legion_interop
-  SOURCES test/mpi_with_legion/mpi_legion_interop.cc
-  POLICY MPILEGION)
+#cinch_add_unit(mpi_legion_interop
+#  SOURCES test/mpi_with_legion/mpi_legion_interop.cc
+#  POLICY MPILEGION)
 
 #cinch_add_unit(mpi_legion_data
 #  SOURCES test/mpi_with_legion/mpi_legion_data.cc
