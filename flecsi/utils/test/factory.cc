@@ -27,6 +27,8 @@ public:
 
   virtual int32_t read() = 0;
 
+  virtual ~io_base_t() {}
+
 protected:
 
   std::string filename_;
