@@ -24,6 +24,7 @@ set(utils_HEADERS
   dummy.h
   factory.h
   hash.h
+  humble.h
   id.h
   index_space.h
   iterator.h
