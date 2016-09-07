@@ -11,7 +11,7 @@ var searchData=
   ['_7eextlegionhandshake',['~ExtLegionHandshake',['../classflecsi_1_1mpilegion_1_1ExtLegionHandshake.html#ac2396b0575775c8eec64a52757abcaaa',1,'flecsi::mpilegion::ExtLegionHandshake']]],
   ['_7efactory_5f',['~Factory_',['../classflecsi_1_1Factory__.html#a042fca29741bb2e8bb377635a25beb41',1,'flecsi::Factory_']]],
   ['_7eindex_5fspace_5ft',['~index_space_t',['../classflecsi_1_1index__space__t.html#ad44a22e9c0a84ab83ab866a675dcd937',1,'flecsi::index_space_t']]],
-  ['_7eio_5fbase_5ft',['~io_base_t',['../classflecsi_1_1io__base__t.html#a0bcf97ab233707930633233012686449',1,'flecsi::io_base_t']]],
+  ['_7eio_5fbase_5ft',['~io_base_t',['../classflecsi_1_1io__base__t.html#a0bcf97ab233707930633233012686449',1,'flecsi::io_base_t::~io_base_t()'],['../classio__base__t.html#a82a59e894fe76da3ba0c1d5ae79a4e36',1,'io_base_t::~io_base_t()']]],
   ['_7eiterable_5fset',['~iterable_set',['../classflecsi_1_1tree_1_1tree__topology_1_1iterable__set.html#aedeef92d6594fa831d8b0dc5e1accf5d',1,'flecsi::tree::tree_topology::iterable_set']]],
   ['_7eiterator',['~iterator',['../classflecsi_1_1iterator.html#a4b960edf710de96adee34410aee54e28',1,'flecsi::iterator']]],
   ['_7elegionaccessor',['~LegionAccessor',['../classflecsi_1_1mpilegion_1_1LegionAccessor.html#a1bf6010d526a1e1afdc61fd3ecb3b355',1,'flecsi::mpilegion::LegionAccessor']]],
