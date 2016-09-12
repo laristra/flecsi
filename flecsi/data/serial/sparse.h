@@ -229,7 +229,8 @@ struct sparse_mutator_t {
     num_indices_(meta_data_.size),
     num_materials_(meta_data_.num_materials),
     indices_(new index_pair_[num_indices_]),
-    materials_(new material_value_t[num_indices_ * num_slots_])
+    materials_(new material_value_t[num_indices_ * num_slots_]),
+    erase_set_(nullptr)
   {}
 
   ///
@@ -278,6 +279,22 @@ struct sparse_mutator_t {
 
     return itr->value;
   } // operator ()
+
+  void
+  erase(
+    size_t index,
+    size_t material
+  )
+  {
+    assert(indices_ && "sparse mutator has alread been committed");
+    assert(index < num_indices_ && material < num_materials_);
+
+    if(!erase_set_){
+      erase_set_ = new erase_set_t;
+    }
+
+    erase_set_->emplace(std::make_pair(index, material));
+  }
 
   T *
   data()
@@ -379,11 +396,59 @@ struct sparse_mutator_t {
 
     delete[] materials_;
     materials_ = nullptr;
+
+    if(!erase_set_){
+      return;
+    }
+
+    constexpr size_t erased_marker = std::numeric_limits<size_t>::max();
+
+    material_value_t * start; 
+    material_value_t * end;
+
+    size_t last = std::numeric_limits<size_t>::max();
+  
+    size_t num_erased = 0;
+
+    for(auto p : *erase_set_){
+      if(p.first != last){
+        start = materials + indices[p.first];
+        end = materials + indices[p.first + 1];
+        last = p.first;
+        indices[p.first] -= num_erased;      
+      }
+
+      material_value_t * m = 
+        std::lower_bound(start, end, material_value_t(p.second),
+          [](const auto & k1, const auto & k2) -> bool {
+            return k1.material < k2.material;
+        });
+
+      m->material = erased_marker;
+      start = m + 1;
+      ++num_erased;
+    }
+
+    while(last < num_indices_){
+      indices[++last] -= num_erased;
+    }
+
+    std::remove_if(materials, materials_end,
+      [](const auto & k) -> bool {
+        return k.material == erased_marker;
+    });
+
+    s = raw_materials.size();
+    s -= num_erased * ev_bytes;
+    raw_materials.resize(s);
+
+    delete erase_set_;
+    erase_set_ = nullptr;
   } // commit
 
 private:
-
   using spare_map_t = std::multimap<size_t, material_value_<T>>;
+  using erase_set_t = std::set<std::pair<size_t, size_t>>;
 
   size_t num_slots_;
   std::string label_ = "";
@@ -396,7 +461,7 @@ private:
   index_pair_ * indices_;
   material_value_<T> * materials_;
   spare_map_t spare_map_;
-
+  erase_set_t * erase_set_;
 }; // struct sparse_accessor_t
 
 //----------------------------------------------------------------------------//

@@ -196,6 +196,32 @@ TEST(storage, sparse2) {
 
 } // TEST
 
+TEST(storage, sparse_delete) {
+  using namespace flecsi::data;
+
+// TODO: sparse data changes in progress
+  mesh_t m;
+
+  size_t num_indices = 5;
+  size_t num_materials = 3;
+
+  register_data(m, hydro, a, double, sparse, 1, num_indices, num_materials);
+
+  auto am = get_mutator(m, hydro, a, double, sparse, 0, 30);
+
+  am(2, 1) = 7;
+  am(2, 2) = 3;
+  am(1, 1) = 1;
+
+  am.erase(1, 1);
+  am.erase(2, 1);
+
+  am.commit();
+
+  auto a = get_accessor(m, hydro, a, double, sparse, 0);
+  ASSERT_EQ(a(2, 2), 3);
+} // TEST
+
 /*----------------------------------------------------------------------------*
  * Cinch test Macros
  *
