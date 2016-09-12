@@ -340,8 +340,6 @@ struct storage_type_t<dense, DS, MD>
 
     data_store[NS][h].label = key.c_str();
     // FIXME: need lookup from data_client
-    std::cout << "Setting size: " << data_client.indices(index_space) <<
-      std::endl;
     data_store[NS][h].size = data_client.indices(index_space);
     data_store[NS][h].type_size = sizeof(T);
     data_store[NS][h].versions = versions;

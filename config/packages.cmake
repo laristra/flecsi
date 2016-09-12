@@ -240,7 +240,7 @@ endif(NOT APPLE)
 #------------------------------------------------------------------------------#
 
 # Get the compiler defines that were used to build the library
-# to pass to the flecsi script
+# to pass to the flecsit script
 get_directory_property(_defines DIRECTORY ${CMAKE_SOURCE_DIR}
   COMPILE_DEFINITIONS)
 get_directory_property(_includes DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -340,13 +340,13 @@ install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.sh
 
 # This configures the script that will be installed when 'make install' is
 # executed.
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi.in
-  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsit.in
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsit-install)
 
 # Install script
-install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install
+install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsit-install
   DESTINATION bin
-  RENAME flecsi
+  RENAME flecsit
   PERMISSIONS
     OWNER_READ OWNER_WRITE OWNER_EXECUTE
     GROUP_READ GROUP_EXECUTE
@@ -392,11 +392,11 @@ install(FILES ${_runtime_path}/runtime_driver.cc
 
 # This configures a locally available script that is suitable for
 # testing within the build configuration before the project has been installed.
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi-local.in
-  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsit-local.in
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsit)
 
 # copy local script to bin directory and change permissions
-file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi
+file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsit
   DESTINATION ${CMAKE_BINARY_DIR}/bin
   FILE_PERMISSIONS
     OWNER_READ OWNER_WRITE OWNER_EXECUTE
