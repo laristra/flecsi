@@ -17,6 +17,7 @@
 
 #include <map>
 #include <algorithm>
+#include <set>
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_type.h!!!
