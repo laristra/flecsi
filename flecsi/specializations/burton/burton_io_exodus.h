@@ -84,8 +84,8 @@ int32_t io_exodus_t<burton_mesh_t>::read(
   m.init_parameters(num_nodes);
 
   // read nodes
-  real_t * xcoord = new real_t(num_nodes);
-  real_t * ycoord = new real_t(num_nodes);
+  real_t * xcoord = new real_t[num_nodes];
+  real_t * ycoord = new real_t[num_nodes];
   status = ex_get_coord(exoid, xcoord, ycoord, nullptr);
   assert(status == 0);
 
@@ -102,7 +102,7 @@ int32_t io_exodus_t<burton_mesh_t>::read(
   // 1 block for now
 
   // read blocks
-  int * blockids = new int(num_elem_blk);
+  int * blockids = new int[num_elem_blk];
   status = ex_get_elem_blk_ids(exoid, blockids);
   assert(status == 0);
   char * block_name = new char[256]();
@@ -122,7 +122,7 @@ int32_t io_exodus_t<burton_mesh_t>::read(
   assert(strcmp(elem_type, "quad") == 0);
 
   // read element definitions
-  int * elt_conn = new int(num_elem * num_nodes_per_elem);
+  int * elt_conn = new int[num_elem * num_nodes_per_elem];
   status = ex_get_elem_conn(exoid, blockids[0], elt_conn);
   assert(status == 0);
 
@@ -227,8 +227,8 @@ int32_t io_exodus_t<burton_mesh_t>::write(
   assert(status == 0);
 
   // get the coordinates from the mesh.
-  real_t * xcoord = new real_t(num_nodes);
-  real_t * ycoord = new real_t(num_nodes);
+  real_t * xcoord = new real_t[num_nodes];
+  real_t * ycoord = new real_t[num_nodes];
   auto i = 0;
   for (auto v : m.vertices()) {
     xcoord[i] = v->coordinates()[0];
@@ -259,7 +259,7 @@ int32_t io_exodus_t<burton_mesh_t>::write(
   assert(status == 0);
 
   // element definitions
-  int * elt_conn = new int(num_elem * num_nodes_per_elem);
+  int * elt_conn = new int[num_elem * num_nodes_per_elem];
   i = 0;
   for (auto c : m.cells()) {
     for (auto v : m.vertices(c)) {
@@ -332,7 +332,7 @@ int32_t io_exodus_t<burton_mesh_t>::write(
   // write nodal fields
   inum = 1;
   // node field buffer
-  real_t * nf = new real_t(num_nodes);
+  real_t * nf = new real_t[num_nodes];
   for (auto sf : rspav) {
     for (auto v : m.vertices())
       nf[v.id()] = sf[v];
@@ -416,7 +416,7 @@ int32_t io_exodus_t<burton_mesh_t>::write(
   // write element fields
   inum = 1;
   // element field buffer
-  real_t * ef = new real_t(num_elem);
+  real_t * ef = new real_t[num_elem];
   for (auto sf : rspac) {
     for (auto c : m.cells())
       ef[c.id()] = sf[c];
