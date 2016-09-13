@@ -136,7 +136,15 @@ endif(ENABLE_HYPRE)
 # Process id bits
 #------------------------------------------------------------------------------#
 
-math(EXPR FLECSI_ID_EBITS "60 - ${FLECSI_ID_PBITS} - ${FLECSI_ID_FBITS}")
+# PBITS: possible number of distributed-memory partitions
+# EBITS: possible number of entities per partition
+# GBITS: possible number of global ids
+# FBITS: flag bits
+# dimension: dimension 2 bits
+# domain: dimension 2 bits
+math(EXPR FLECSI_ID_BITS "124 - ${FLECSI_ID_FBITS}")
+math(EXPR FLECSI_ID_GBITS "${FLECSI_ID_BITS}/2")
+math(EXPR FLECSI_ID_EBITS "${FLECSI_ID_GBITS} - ${FLECSI_ID_PBITS}")
 
 add_definitions(-DFLECSI_ID_PBITS=${FLECSI_ID_PBITS})
 add_definitions(-DFLECSI_ID_EBITS=${FLECSI_ID_EBITS})
@@ -149,7 +157,7 @@ math(EXPR flecsi_entities "1 << ${FLECSI_ID_EBITS}")
 message(STATUS "${CINCH_Cyan}Set id_t bits to allow:\n"
   "   ${flecsi_partitions} partitions with 2^${FLECSI_ID_EBITS} entities each\n"
   "   ${FLECSI_ID_FBITS} flag bits\n"
-  "   ${FLECSI_ID_GBITS} global bits${CINCH_ColorReset}")
+  "   ${FLECSI_ID_GBITS} global bits (PBITS*EBITS)${CINCH_ColorReset}")
 
 #------------------------------------------------------------------------------#
 # Enable IO with exodus

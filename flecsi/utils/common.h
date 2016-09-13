@@ -32,7 +32,7 @@
 #endif
 
 #ifndef FLECSI_ID_EBITS
-#define FLECSI_ID_EBITS 36
+#define FLECSI_ID_EBITS 40
 #endif
 
 #ifndef FLECSI_ID_FBITS
@@ -40,7 +40,7 @@
 #endif
 
 #ifndef FLECSI_ID_GBITS
-#define FLECSI_ID_GBITS 64
+#define FLECSI_ID_GBITS 60
 #endif
 
 namespace flecsi
