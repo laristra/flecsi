@@ -46,16 +46,16 @@ namespace flecsi
     domain_(id.domain_),
     partition_(id.partition_),
     entity_(id.entity_),
-    global_(id.global_),
-    flags_(id.flags_) { }
+    flags_(id.flags_),
+    global_(id.global_) { }
 
     explicit id_(size_t local_id)
     : dimension_(0),
     domain_(0),
     partition_(0),
     entity_(local_id),
-    global_(0),
-    flags_(0) { }
+    flags_(0),
+    global_(0) { }
 
     template<size_t D, size_t M>
     static id_ make(size_t local_id,
