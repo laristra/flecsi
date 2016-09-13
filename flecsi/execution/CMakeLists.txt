@@ -75,7 +75,7 @@ endif()
 
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
-
+  
   cinch_add_unit(test_legion_handshake
   SOURCES test/test_legion_handshake.cc
   POLICY MPILEGION) 
