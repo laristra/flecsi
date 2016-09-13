@@ -1238,7 +1238,28 @@ public:
     dump( std::cout );
   } // dump
 
-  char* serialize(uint64_t& size){
+  template<typename A>
+  void save(A & archive) const {
+    size_t size;
+    char* data = serialize_(size);
+    archive.saveBinary(&size, sizeof(size));
+    
+    archive.saveBinary(data, size);
+    free(data);
+  } // save
+
+  template<typename A>
+  void load(A & archive) {
+    size_t size;
+    archive.loadBinary(&size, sizeof(size));
+
+    char* data = (char*)malloc(size);
+    archive.loadBinary(data, size);
+    unserialize_(data);
+    free(data);
+  } // load
+
+  char* serialize_(uint64_t& size) const {
     const size_t alloc_size = 1048576;
     size = alloc_size;
 
@@ -1268,7 +1289,7 @@ public:
 
         for(size_t from_dim = 0; from_dim <= MT::num_dimensions; ++from_dim){
           for(size_t to_dim = 0; to_dim <= MT::num_dimensions; ++to_dim){
-            connectivity_t& c = dc.get(from_dim, to_dim);
+            const connectivity_t& c = dc.get(from_dim, to_dim);
 
             auto& tv = c.to_id_vec();
             uint64_t num_to = tv.size();
@@ -1309,7 +1330,7 @@ public:
     return buf;
   }
 
-  void unserialize(char* buf){
+  void unserialize_(char* buf){
     uint64_t pos = 0;
 
     uint32_t num_domains;

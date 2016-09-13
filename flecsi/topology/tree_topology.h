@@ -1328,7 +1328,28 @@ public:
     sem.acquire();
   }
 
-  char* serialize(uint64_t& size){
+  template<typename A>
+  void save(A & archive) const {
+    size_t size;
+    char* data = serialize_(size);
+    archive.saveBinary(&size, sizeof(size));
+    
+    archive.saveBinary(data, size);
+    free(data);
+  } // save
+
+  template<typename A>
+  void load(A & archive) {
+    size_t size;
+    archive.loadBinary(&size, sizeof(size));
+
+    char* data = (char*)malloc(size);
+    archive.loadBinary(data, size);
+    unserialize_(data);
+    free(data);
+  } // load
+
+  char* serialize_(uint64_t& size){
     uint64_t num_entities = entities_.size();
 
     const size_t alloc_size =
@@ -1352,7 +1373,7 @@ public:
     return buf;
   }
 
-  void unserialize(char* buf){
+  void unserialize_(char* buf){
     uint64_t pos = 0;
 
     uint64_t num_entities;

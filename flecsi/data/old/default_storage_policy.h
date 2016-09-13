@@ -155,7 +155,7 @@ class default_data_storage_policy_t
   //! Desctructor
   virtual ~default_data_storage_policy_t() {}
 
-  char* serialize(uint64_t& size){
+  char* serialize_(uint64_t& size) const {
     const size_t alloc_size = 1048576;
     size = alloc_size;
 
@@ -177,7 +177,7 @@ class default_data_storage_policy_t
         std::memcpy(buf + pos, &rs, sizeof(rs));
         pos += sizeof(rs);
 
-        meta_data_t& md = mitr.second;
+        const meta_data_t& md = mitr.second;
         auto& data = md.data;
 
         uint64_t data_size = md.size * md.type_size;
@@ -203,7 +203,7 @@ class default_data_storage_policy_t
     return buf;
   }
 
-  void unserialize(char* buf){
+  void unserialize_(char* buf){
     uint64_t pos = 0;
 
     uint32_t num_entries;
