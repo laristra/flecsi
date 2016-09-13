@@ -40,7 +40,7 @@ protected:
     std::vector<idx_t> eind;
 
     for(auto to_id : to_index){
-      eind.push_back(to_id.local_id());
+      eind.push_back(to_id.entity());
     }
     
     idx_t num_parts = 2;
