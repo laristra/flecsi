@@ -396,14 +396,6 @@ TEST(serialize, unserialize_state) {
   state.register_state<double, flecsi_internal>("mass", N, 0);
   state.register_state<double, flecsi_internal>("density", N, 0);
 
-  FILE* fp = fopen("state.out", "rb");
-  fseek(fp, 0, SEEK_END);
-  size_t size = ftell(fp);
-  rewind(fp);
-  char* buf = (char*)malloc(size);
-  fread(buf, 1, size, fp);
-  fclose(fp);
-
   ifstream fstr("state.out", ios_base::in|ios_base::binary);
   cereal::BinaryInputArchive unarchive(fstr);
   unarchive(state);
