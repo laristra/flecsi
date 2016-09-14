@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 if [ "$1" == "VERBOSE=1" ] ; then
-	echo "${CMAKE_CXX_COMPILER} ${CMAKE_CXX_FLAGS} ${FLECSI_SCRIPT_COMPILE_DEFINES} ${FLECSI_SCRIPT_INCLUDE_DIRECTORIES} -I. -I${CMAKE_BINARY_DIR}/include -DFLECSI_DRIVER=$1 ${CMAKE_INSTALL_PREFIX}/share/flecsi/runtime_main.cc ${CMAKE_INSTALL_PREFIX}/share/flecsi/runtime_driver.cc -o $deck.${CMAKE_SYSTEM_NAME} -L${CMAKE_BINARY_DIR}/lib -lflecsi ${FLECSI_SCRIPT_RUNTIME_LIBRARIES}"
+	echo "${CMAKE_CXX_COMPILER} ${CMAKE_CXX_FLAGS} ${FLECSI_SCRIPT_COMPILE_DEFINES} ${FLECSI_SCRIPT_INCLUDE_DIRECTORIES} -I. -I${CMAKE_BINARY_DIR}/include -DFLECSI_DRIVER=$1 ${CMAKE_INSTALL_PREFIX}/share/flecsi/runtime/runtime_main.cc ${CMAKE_INSTALL_PREFIX}/share/flecsi/runtime/runtime_driver.cc -o $deck.${CMAKE_SYSTEM_NAME} -L${CMAKE_BINARY_DIR}/lib -lflecsi ${FLECSI_SCRIPT_RUNTIME_LIBRARIES}"
 	shift
 fi
 
@@ -9,4 +9,4 @@ fi
 deck=`echo $1 | sed 's,\.h,,g;s,^.*\/,,'`
 
 # compile input deck
-${CMAKE_CXX_COMPILER} ${CMAKE_CXX_FLAGS} ${FLECSI_SCRIPT_COMPILE_DEFINES} ${FLECSI_SCRIPT_INCLUDE_DIRECTORIES} -I. -I${CMAKE_BINARY_DIR}/include -DFLECSI_DRIVER=$1 ${CMAKE_INSTALL_PREFIX}/share/flecsi/runtime_main.cc ${CMAKE_INSTALL_PREFIX}/share/flecsi/runtime_driver.cc -o $deck.${CMAKE_SYSTEM_NAME} -L${CMAKE_BINARY_DIR}/lib -lflecsi ${FLECSI_SCRIPT_RUNTIME_LIBRARIES}
+${CMAKE_CXX_COMPILER} ${CMAKE_CXX_FLAGS} ${FLECSI_SCRIPT_COMPILE_DEFINES} ${FLECSI_SCRIPT_INCLUDE_DIRECTORIES} -I. -I${CMAKE_BINARY_DIR}/include -DFLECSI_DRIVER=$1 ${CMAKE_INSTALL_PREFIX}/share/flecsi/runtime/runtime_main.cc ${CMAKE_INSTALL_PREFIX}/share/flecsi/runtime/runtime_driver.cc -o $deck.${CMAKE_SYSTEM_NAME} -L${CMAKE_BINARY_DIR}/lib -lflecsi ${FLECSI_SCRIPT_RUNTIME_LIBRARIES}

@@ -307,9 +307,14 @@ string(APPEND LD_PATH_MESSAGE
   "\${LD_LIBRARY_PATH}:${CMAKE_INSTALL_PREFIX}/lib\n")
 
 string(APPEND LD_PATH_MESSAGE "\n   There are also shell configuration files "
-  "located in the bin directory to set this for you:\n"
+  "located in the bin directory to set this for you:\n\n"
+  "   bash\n"
   "   % source bin/flecsi.sh (after install)\n"
-  "   % source bin/flecsi-local.sh (for local development)")
+  "   % source bin/flecsi-local.sh (for local development)\n\n"
+  "   tcsh/csh\n"
+  "   % source bin/flecsi.csh (after install)\n"
+  "   % source bin/flecsi-local.csh (for local development)\n"
+  )
 
 string(APPEND LD_PATH_MESSAGE "${CINCH_ColorReset}")
 
@@ -324,6 +329,8 @@ string(REPLACE "${CMAKE_BINARY_DIR}/lib" "${CMAKE_INSTALL_PREFIX}/lib"
 # This configures the local shell for LD_LIBRARY_PATH
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi-local.sh.in
   ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-local.sh @ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi-local.csh.in
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-local.csh @ONLY)
 
 # Copy local script to bin directory and change permissions
 file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-local.sh
@@ -331,11 +338,22 @@ file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-local.sh
   FILE_PERMISSIONS
     OWNER_READ OWNER_WRITE
     GROUP_READ
-    WORLD_READ)
+    WORLD_READ
+  )
+file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-local.csh
+  DESTINATION ${CMAKE_BINARY_DIR}/bin
+  FILE_PERMISSIONS
+    OWNER_READ OWNER_WRITE
+    GROUP_READ
+    WORLD_READ
+  )
 
 # This configures the install shell for LD_LIBRARY_PATH
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi.sh.in
   ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.sh @ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi.csh.in
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.csh @ONLY)
+
 
 # Install LD_LIBARY_PATH shell
 install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.sh
@@ -344,7 +362,16 @@ install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.sh
   PERMISSIONS
     OWNER_READ OWNER_WRITE
     GROUP_READ
-    WORLD_READ)
+    WORLD_READ
+  )
+install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.csh
+  DESTINATION bin
+  RENAME flecsi.csh
+  PERMISSIONS
+    OWNER_READ OWNER_WRITE
+    GROUP_READ
+    WORLD_READ
+  )
 
 # This configures the script that will be installed when 'make install' is
 # executed.
@@ -374,6 +401,10 @@ else()
   message(FATAL_ERROR "Unrecognized runtime selection")
 endif()
 
+#------------------------------------------------------------------------------#
+# Handle script and source files for flecsit tool
+#------------------------------------------------------------------------------#
+
 # Copy the auxiliary files for local development
 add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/share/runtime_main.cc
   COMMAND ${CMAKE_COMMAND} -E copy
@@ -394,9 +425,9 @@ add_custom_target(runtime_driver ALL
 
 # Install the auxiliary files
 install(FILES ${CMAKE_SOURCE_DIR}/flecsi/execution/runtime_main.cc
-  DESTINATION share/flecsi)
+  DESTINATION share/flecsi/runtime)
 install(FILES ${_runtime_path}/runtime_driver.cc
-  DESTINATION share/flecsi)
+  DESTINATION share/flecsi/runtime)
 
 # This configures a locally available script that is suitable for
 # testing within the build configuration before the project has been installed.
