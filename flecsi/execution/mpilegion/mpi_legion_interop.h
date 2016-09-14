@@ -173,6 +173,9 @@ mpi_legion_interop_t::calculate_number_of_procs(void)
   this->all_processes_ =  LegionRuntime::Arrays::Rect<2>(all_procs_lo,
                                                         all_procs_hi);
   this->local_procs_ = LegionRuntime::Arrays::Rect<1>(0,num_local_procs);
+  std::cout << all_procs_lo.x[0] << "," << all_procs_lo.x[1] << ","
+            << all_procs_hi.x[0] << "," << all_procs_hi.x[1] << std::endl;
+  
 }//calculate_number_of_procs
 
 /*--------------------------------------------------------------------------*/

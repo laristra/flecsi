@@ -185,7 +185,8 @@ void driver(int argc, char ** argv) {
   
 #if 1 
   LegionRuntime::HighLevel::ArgumentMap arg_map;
-   
+
+  // this is the init partitions task 
   LegionRuntime::HighLevel::IndexLauncher init_cell_partitions_launcher(
     task_ids_t::instance().init_cell_partitions_task_id,
     LegionRuntime::HighLevel::Domain::from_rect<2>(context_.interop_helper_.all_processes_), 
@@ -205,7 +206,7 @@ void driver(int argc, char ** argv) {
 
   for (int i = 0; i < num_ranks; i++) {
     std::cout << "about to call get_results" << std::endl; 
-    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(DomainPoint::from_point<2>(make_point(i,0)));
+    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(DomainPoint::from_point<2>(make_point(0,i)));
     std::cout << "From rank " << i << " received (exclusive, shared, ghost) "
               << "(" << received.exclusive << "," << received.shared << ","
               << received.ghost << ")" << std::endl; 
