@@ -18,8 +18,10 @@
 #include <unordered_map>
 #include <functional>
 
+#include "flecsi/utils/common.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/execution/serial/runtime_driver.h"
+#include "flecsi/execution/common/task_hash.h"
 
 ///
 // \file serial/execution_policy.h
@@ -32,7 +34,6 @@ namespace execution {
 
 struct serial_context_policy_t
 {
-
   //--------------------------------------------------------------------------//
   // Initialization.
   //--------------------------------------------------------------------------//
@@ -57,6 +58,28 @@ struct serial_context_policy_t
   } // initialize
 
   //--------------------------------------------------------------------------//
+  // Task registration.
+  //--------------------------------------------------------------------------//
+
+  using task_id_t = size_t;
+  using register_function_t = std::function<void(size_t)>;
+	using unique_fid_t = unique_id_t<task_id_t>;
+
+  bool
+  register_task(
+    task_hash_key_t key,
+    const register_function_t & f
+  )
+  {
+    if(task_registry_.find(key) == task_registry_.end()) {
+      task_registry_[key] = { unique_fid_t::instance().next(), f };
+      return true;
+    } // if
+
+    return false;  
+  } // register_task
+
+  //--------------------------------------------------------------------------//
   // Function registration.
   //--------------------------------------------------------------------------//
 
@@ -75,7 +98,7 @@ struct serial_context_policy_t
     T & function
   )
   {
-    size_t h = key.hash();
+    const size_t h = key.hash();
     if(function_registry_.find(h) == function_registry_.end()) {
       function_registry_[h] =
         reinterpret_cast<std::function<void(void)> *>(&function);
@@ -102,6 +125,18 @@ struct serial_context_policy_t
   } // function
 
 private:
+
+  //--------------------------------------------------------------------------//
+  // Task registry
+  //--------------------------------------------------------------------------//
+
+  std::unordered_map<task_hash_t::key_t,
+    std::pair<task_id_t, register_function_t>,
+    task_hash_t> task_registry_;
+
+  //--------------------------------------------------------------------------//
+  // Function registry
+  //--------------------------------------------------------------------------//
 
   std::unordered_map<size_t, std::function<void(void)> *>
     function_registry_;

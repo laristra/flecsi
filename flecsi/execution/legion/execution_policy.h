@@ -58,7 +58,7 @@ struct legion_execution_policy_t
     task_hash_key_t key
   )
   {
-    switch(std::get<1>(key)) {
+    switch (std::get<1>(key)) {
       case loc:
         if (std::get<2>(key) == single)
           return context_t::instance().register_task(key,
@@ -116,14 +116,14 @@ struct legion_execution_policy_t
     // task is invoked, i.e., we have to use copies...
     task_args_t task_args(user_task, args ...);
 
-      if (std::get<2>(key)==single){
+      if (std::get<2>(key)==single) {
         TaskLauncher task_launcher(context_.task_id(key),
           TaskArgument(&task_args, sizeof(task_args_t)));
-        context_.runtime()->execute_task(context_.context(),task_launcher);
+        context_.runtime()->execute_task(context_.context(), task_launcher);
        //FIXME: return Future
        return 0;
       }
-      else{
+      else {
      //FIXME: get launch domain from partitioning of the data used in the task
        //following launch domeing calculation is temporary:
        Rect<1> launch_bounds(Point<1>(0),Point<1>(5));

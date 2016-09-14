@@ -65,14 +65,14 @@ struct legion_task_wrapper_
   // registration of the task wrapper with the Legion runtime. The structure
   // of the logic used is really just an object factory pattern.
   ///
-  static void runtime_registration(size_t fid)
+  static void runtime_registration(size_t tid)
   {
     switch(P) {
       case loc:
-        lr_runtime::register_legion_task<execute>(fid, lr_proc::LOC_PROC, S, I);
+        lr_runtime::register_legion_task<execute>(tid, lr_proc::LOC_PROC, S, I);
         break;
       case toc:
-        lr_runtime::register_legion_task<execute>(fid, lr_proc::TOC_PROC, S, I);
+        lr_runtime::register_legion_task<execute>(tid, lr_proc::TOC_PROC, S, I);
         break;
       case mpi:
         break;
