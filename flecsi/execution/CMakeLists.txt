@@ -99,7 +99,6 @@ else()
       test/task.cc
       test/task_driver.h
       serial/runtime_driver.cc
-      ../partition/init_partitions_task.cc
     DEFINES FLECSI_DRIVER=flecsi/execution/test/future.h
     LIBRARIES flecsi)
 

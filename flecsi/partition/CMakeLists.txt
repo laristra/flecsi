@@ -16,7 +16,9 @@ if(ENABLE_PARTITION)
 
 set(partition_HEADERS
   partitioner.h
+if(NOT FLECSI_RUNTIME_MODEL STREQUAL "serial")
   init_partitions_task.h
+endif()
   PARENT_SCOPE
 )
 
@@ -37,7 +39,9 @@ cinch_add_unit(partition
 )
 
 cinch_add_unit(index_partition
+if(NOT FLECSI_RUNTIME_MODEL STREQUAL "serial")
   SOURCES test/index_partition.cc
+endif()
   LIBRARIES flecsi)
 endif()
 
