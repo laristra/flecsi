@@ -30,22 +30,22 @@
 * \date Initial file creation: Jul 2016
 */
 
-/*! the main idea of the handshake is change from MPI to Legion and vice
-    versa  through locking/unlocking threads's mutex
-    the order should be like next
- 
-   handshake->legion_init();
-   .. call legion tasks 
-   handshake->ext_wait_on_legion();
-   handshake->ext_init();
-   handshake->legion_handoff_to_ext();
-   .. do some MPI staff
-   handshake.legion_wait_on_ext();
-   handshake->ext_handoff_to_legion();
-   .. do some legion execution
-   handshake->ext_wait_on_legion();
-   handshake->legion_handoff_to_ext();
-*/
+/// the main idea of the handshake is change from MPI to Legion and vice
+//    versa  through locking/unlocking threads's mutex
+//    the order should be like next
+// 
+//   handshake->legion_init();
+//   .. call legion tasks 
+//   handshake->ext_wait_on_legion();
+//   handshake->ext_init();
+//   handshake->legion_handoff_to_ext();
+//   .. do some MPI staff
+//   handshake.legion_wait_on_ext();
+//   handshake->ext_handoff_to_legion();
+//   .. do some legion execution
+//   handshake->ext_wait_on_legion();
+//   handshake->legion_handoff_to_ext();
+///
 
 #define CHECK_PTHREAD(cmd) do { \
   int ret = (cmd); \
@@ -106,15 +106,15 @@ class ext_legion_handshake_t {
 
 
 /*--------------------------------------------------------------------------*/
-/*!  this method initializes all ext_legion_handshake_t with input and default 
- *   values
- *   state - is where ext_legion_handshake_t object is originally created:
- *      IN_EXT - in MPI
- *      IN_LEGION - in Legion
- *   ext_queue_depth/ legion_queue_depth - depth of the MPI and legion queue
- *   ext_count = # of times handshake was in MPI
- *   legion_count = # of times handshake was in Legion
- */
+///  this method initializes all ext_legion_handshake_t with input and default 
+//   values
+//   state - is where ext_legion_handshake_t object is originally created:
+//      IN_EXT - in MPI
+//      IN_LEGION - in Legion
+//   ext_queue_depth/ legion_queue_depth - depth of the MPI and legion queue
+//   ext_count = # of times handshake was in MPI
+//   legion_count = # of times handshake was in Legion
+///
 
 inline 
 void 
@@ -139,11 +139,11 @@ ext_legion_handshake_t::initialize(
 }//initialize
 
 /*--------------------------------------------------------------------------*/
-/*! This method creates pthreads mutex on the MPI side and, in case handshake 
- *  is originally created in MPI, waits on when handshake (user events used for
- *  synchronization) is created on
- *  the Legion side
- */
+/// This method creates pthreads mutex on the MPI side and, in case handshake 
+//  is originally created in MPI, waits on when handshake (user events used for
+//  synchronization) is created on
+//  the Legion side
+///
 
 inline 
 void 
@@ -173,10 +173,10 @@ ext_legion_handshake_t::ext_init(void)
 }//ext_init
 
 /*--------------------------------------------------------------------------*/
-/*! This method creates Legion events/queues for both MPI and Legion runtimes
- *  for the later synchronization.
- *  Then it swithces to MPI
- */
+/// This method creates Legion events/queues for both MPI and Legion runtimes
+//  for the later synchronization.
+//  Then it swithces to MPI
+///
 
 inline 
 void 
@@ -221,8 +221,8 @@ ext_legion_handshake_t::legion_init(void)
 }//legion_init
 
 /*--------------------------------------------------------------------------*/
-/*! This method switches form MPI to Legion runtime
- */
+/// This method switches form MPI to Legion runtime
+ 
 
 inline 
 void 
@@ -243,9 +243,9 @@ ext_legion_handshake_t::ext_handoff_to_legion(void)
 } //ext_handoff_to_legion
 
 /*--------------------------------------------------------------------------*/
-/*! waiting on all Legion tasks to complete and all legion threads 
- * switch mutex to EXT
- */
+/// waiting on all Legion tasks to complete and all legion threads 
+// switch mutex to EXT
+///
 inline 
 void 
 ext_legion_handshake_t::ext_wait_on_legion(void)
@@ -255,8 +255,7 @@ ext_legion_handshake_t::ext_wait_on_legion(void)
 }//ext_wait_on_legion
 
 /*--------------------------------------------------------------------------*/
-/*!This method switches form Legion to MPI runtime
- */
+///This method switches form Legion to MPI runtime
 
 inline
 void 
@@ -277,8 +276,7 @@ ext_legion_handshake_t::legion_handoff_to_ext(void)
 }//legion_handoff_to_ext
 
 /*--------------------------------------------------------------------------*/
-/*! waiting on all mutex to be switch to Legion
- */
+/// waiting on all mutex to be switch to Legion
 
 inline 
 void 

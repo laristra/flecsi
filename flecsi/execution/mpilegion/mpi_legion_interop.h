@@ -114,7 +114,7 @@ class mpi_legion_interop_t
     LegionRuntime::HighLevel::Context ctx,
     LegionRuntime::HighLevel::HighLevelRuntime *runtime);
  
-  void 
+  LegionRuntime::HighLevel::FutureMap 
   wait_on_mpi(
     LegionRuntime::HighLevel::Context ctx,
     LegionRuntime::HighLevel::HighLevelRuntime *runtime);
@@ -260,7 +260,7 @@ wait_on_mpi_task(
 
 
 inline 
-void 
+LegionRuntime::HighLevel::FutureMap 
 mpi_legion_interop_t::wait_on_mpi(
   LegionRuntime::HighLevel::Context ctx,
   LegionRuntime::HighLevel::HighLevelRuntime *runtime)
@@ -274,6 +274,7 @@ mpi_legion_interop_t::wait_on_mpi(
    LegionRuntime::HighLevel::FutureMap fm3 =
         runtime->execute_index_space(ctx,wait_on_mpi_launcher);
   fm3.wait_all_results();
+  return fm3;
 }//wait_on_mpi
 
 /*--------------------------------------------------------------------------*/

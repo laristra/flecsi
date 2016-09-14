@@ -19,6 +19,7 @@
 
 #include "flecsi/utils/const_string.h"
 #include "flecsi/execution/context.h"
+#include "flecsi/execution/future.h"
 #include "flecsi/execution/common/processor.h"
 #include "flecsi/execution/common/task_hash.h"
 #include "flecsi/execution/mpilegion/context_policy.h"
@@ -118,17 +119,19 @@ struct mpilegion_execution_policy_t
       context_.interop_helper_.handoff_to_mpi(context_.context(),
          context_.runtime());
       //mpi task is running here
-      context_.interop_helper_.wait_on_mpi(context_.context(),
-         context_.runtime());
+      flecsi::execution::future_t future = 
+         context_.interop_helper_.wait_on_mpi(context_.context(),
+                            context_.runtime());
        context_.interop_helper_.call_mpi_=false;
-      //TOFIX:: need to return Future
-      return 0;
+      return future;
     }
     else {
       if(std::get<2>(key) == single){
         TaskLauncher task_launcher(context_.task_id(key),
           TaskArgument(&task_args, sizeof(task_args_t)));
-        context_.runtime()->execute_task(context_.context(),task_launcher);
+        flecsi::execution::future_t future=
+          context_.runtime()->execute_task(context_.context(),task_launcher);
+        return future;
       }
       else{
     //FIXME: get launch domain from partitioning of the data used in the task
@@ -141,12 +144,11 @@ struct mpilegion_execution_policy_t
                     context_.interop_helper_.all_processes_),
           TaskArgument(&task_args, sizeof(task_args_t)),
           arg_map);
-          context_.runtime()->execute_index_space(context_.context(),
+          flecsi::execution::future_t future= 
+              context_.runtime()->execute_index_space(context_.context(),
                             index_launcher);
+          return future;
        }//end if std::get<2>(key)
-
-      //TOFIX:: need to return Future
-      return 0;
     } // if
   } // execute_task
 
