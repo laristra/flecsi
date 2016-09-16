@@ -196,6 +196,7 @@ TEST(storage, sparse2) {
 
 } // TEST
 
+/*
 TEST(storage, sparse_delete) {
   using namespace flecsi::data;
 
@@ -221,6 +222,7 @@ TEST(storage, sparse_delete) {
   auto a = get_accessor(m, hydro, a, double, sparse, 0);
   ASSERT_EQ(a(2, 2), 3);
 } // TEST
+*/
 
 /*----------------------------------------------------------------------------*
  * Cinch test Macros
