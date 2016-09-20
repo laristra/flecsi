@@ -32,13 +32,6 @@ endif()
 
 set(FLECSI_RUNTIME_LIBRARIES)
 
-find_package (legion QUIET NO_MODULE)
-set (Legion_INSTALL_DIR "" CACHE PATH "Path to the Legion install directory")
-if (NOT Legion_INSTALL_DIR STREQUAL "")
-  message(WARNING "Legion_INSTALL_DIR is obsolete, use CMAKE_PREFIX_PATH instead (and rebuild the latest version third-party libraries)")
-  list(APPEND CMAKE_PREFIX_PATH "${Legion_INSTALL_DIR}")
-endif()
-
 # Serial interface
 if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
@@ -47,18 +40,14 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 # Legion interface
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
+  find_package (Legion REQUIRED)
+  
   set(FLECSI_RUNTIME_MAIN script-driver-legion.cc)
 
-  if(NOT legion_FOUND)
-      message(FATAL_ERROR "Legion is required
-                     for this build configuration")
-  endif(NOT legion_FOUND)
-  
-  include_directories(${LEGION_INCLUDE_DIRS})
+  set (LEGION_LIBRARIES Legion::Legion)
+
   if(NOT APPLE)
-    set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES} -ldl)
-  else()
-    message("Skipping -ldl because APPLE")
+    set(FLECSI_RUNTIME_LIBRARIES  -ldl)
   endif()
 
 # MPI interface
@@ -68,18 +57,15 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
 #MPI+Legion interface
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
-  if(NOT ENABLE_MPI)
-    message (FATAL_ERROR " MPI is required for the mpilegion runtime model")
-  endif ()
- 
-   set(FLECSI_RUNTIME_MAIN script-driver-mpilegion.cc)
+    find_package (Legion REQUIRED)
+  
+  set(FLECSI_RUNTIME_MAIN script-driver-legion.cc)
 
-  if(NOT legion_FOUND)
-      message(FATAL_ERROR "Legion is required
-                     for this build configuration")
-  endif(NOT legion_FOUND)
-  include_directories(${LEGION_INCLUDE_DIRS})
-  set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES} dl)
+  set (LEGION_LIBRARIES Legion::Legion)
+
+  if(NOT APPLE)
+    set(FLECSI_RUNTIME_LIBRARIES  -ldl)
+  endif()
 
 # Default
 else(FLECSI_RUNTIME_MODEL STREQUAL "serial")
