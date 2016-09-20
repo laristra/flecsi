@@ -50,6 +50,9 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     set(FLECSI_RUNTIME_LIBRARIES  -ldl)
   endif()
 
+  set(LEGION_INCLUDE_DIRS "${Legion_DIR}/../../../include" "${Legion_DIR}/../../../include/legion" "${Legion_DIR}/../../../include/realm" "${Legion_DIR}/../../../include/mappers")
+  include_directories(${LEGION_INCLUDE_DIRS})
+
 # MPI interface
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
@@ -59,13 +62,16 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
     find_package (Legion REQUIRED)
   
-  set(FLECSI_RUNTIME_MAIN script-driver-legion.cc)
+  set(FLECSI_RUNTIME_MAIN script-driver-mpilegion.cc)
 
   set (LEGION_LIBRARIES Legion::Legion)
 
   if(NOT APPLE)
-    set(FLECSI_RUNTIME_LIBRARIES  -ldl)
+    set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES}  -ldl)
   endif()
+
+  set(LEGION_INCLUDE_DIRS "${Legion_DIR}/../../../include" "${Legion_DIR}/../../../include/legion" "${Legion_DIR}/../../../include/realm" "${Legion_DIR}/../../../include/mappers")
+  include_directories(${LEGION_INCLUDE_DIRS})
 
 # Default
 else(FLECSI_RUNTIME_MODEL STREQUAL "serial")
