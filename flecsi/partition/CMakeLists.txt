@@ -38,13 +38,12 @@ cinch_add_unit(partition
   LIBRARIES ${PARTITION_LIBRARIES} flecsi
 )
 
-<<<<<<< HEAD
 cinch_add_unit(index_partition
 if(NOT FLECSI_RUNTIME_MODEL STREQUAL "serial")
   SOURCES test/index_partition.cc
 endif()
-  LIBRARIES flecsi)
-=======
+    LIBRARIES flecsi)
+
 if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
   cinch_add_unit(index_partition
     SOURCES test/index_partition.cc
@@ -54,7 +53,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
     LIBRARIES flecsi)
 endif()
 
->>>>>>> a606973830844974753ac83761d98a831c608d20
 endif()
 
 #----------------------------------------------------------------------------~-#
