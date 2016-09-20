@@ -43,7 +43,7 @@ namespace data {
  */
 template<
   typename user_meta_data_t = default_state_user_meta_data_t,
-  template <typename> typename storage_policy_t = default_data_storage_policy_t
+  template <typename> class storage_policy_t = default_data_storage_policy_t
   >
 class data_t : public storage_policy_t<user_meta_data_t>
 {
@@ -83,12 +83,33 @@ public:
     sp_t::move(from_runtime_namespace, to_runtime_namespace);
   } // reset
 
-  char* serialize(uint64_t& size){
-    return sp_t::serialize(size);
+  template<typename A>
+  void save(A & archive) const {
+    size_t size;
+    char* data = serialize_(size);
+    archive.saveBinary(&size, sizeof(size));
+    
+    archive.saveBinary(data, size);
+    free(data);
+  } // save
+
+  template<typename A>
+  void load(A & archive) {
+    size_t size;
+    archive.loadBinary(&size, sizeof(size));
+
+    char* data = (char*)malloc(size);
+    archive.loadBinary(data, size);
+    unserialize_(data);
+    free(data);
+  } // load
+
+  char* serialize_(uint64_t& size) const {
+    return sp_t::serialize_(size);
   }
 
-  void unserialize(char* buf){
-    sp_t::unserialize(buf);
+  void unserialize_(char* buf){
+    sp_t::unserialize_(buf);
   }
 
   //! Use the accessor type defined by the storage policy.

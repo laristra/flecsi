@@ -170,17 +170,17 @@ void driver(int argc, char ** argv) {
   mesh_t m;
 
   // FIXME: need this to come from get_handle
-  auto p = register_data(m, hydro, pressure, 1, double, dense, cells);
+  auto p = register_data(m, hydro, pressure, double, dense, 1, cells);
   double alpha(10.0);
 
   execute_task(task1, loc, single, alpha, 5);
   execute_task(task2, loc, single, alpha, 5.0, p);
 
-  register_data(m, hydro, materials, 1, material_t, dense, cells);
+  register_data(m, hydro, materials, material_t, dense, 1, cells);
 
   /// stuff happens...
 
-  auto mats = get_accessor(m, hydro, materials, 0, material_t, dense);
+  auto mats = get_accessor(m, hydro, materials, material_t, dense, 0);
 
   for(size_t i(0); i<4; ++i) {
     mats[i] = copper_t(2.0, 2.0);

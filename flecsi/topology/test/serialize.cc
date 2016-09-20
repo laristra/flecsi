@@ -1,5 +1,8 @@
 #include <cinchtest.h>
 #include <iostream>
+#include <sstream>
+
+#include <cereal/archives/binary.hpp>
 
 #include "flecsi/utils/common.h"
 #include "flecsi/topology/mesh_topology.h"
@@ -227,26 +230,19 @@ TEST(serialize, serialize_mesh) {
   mesh->init<0>();
   mesh->init_bindings<1>();
 
-  uint64_t size;
-  char* buf = mesh->serialize(size);
-
-  FILE* fp = fopen("mesh.out", "wb");
-  fwrite(buf, 1, size, fp);
-  fclose(fp);
+  ofstream fstr("mesh.out", ios_base::out|ios_base::binary);
+  cereal::BinaryOutputArchive archive(fstr);
+  archive(*mesh);
+  fstr.close();
 }
 
 TEST(serialize, unserialize_mesh) {
   auto mesh = new TestMesh;
 
-  FILE* fp = fopen("mesh.out", "rb");
-  fseek(fp, 0, SEEK_END);
-  size_t size = ftell(fp);
-  rewind(fp);
-  char* buf = (char*)malloc(size);
-  fread(buf, 1, size, fp);
-  fclose(fp);
-
-  mesh->unserialize(buf);
+  ifstream fstr("mesh.out", ios_base::in|ios_base::binary);
+  cereal::BinaryInputArchive unarchive(fstr);
+  unarchive(*mesh);
+  fstr.close();
 
   mesh->dump();
 
@@ -386,12 +382,10 @@ TEST(serialize, serialize_state) {
     ad[i] = i;
   }
 
-  uint64_t size;
-  char* buf = state.serialize(size);
-
-  FILE* fp = fopen("state.out", "wb");
-  fwrite(buf, 1, size, fp);
-  fclose(fp);
+  ofstream fstr("state.out", ios_base::out|ios_base::binary);
+  cereal::BinaryOutputArchive archive(fstr);
+  archive(state);
+  fstr.close();
 }
 
 TEST(serialize, unserialize_state) {
@@ -402,15 +396,10 @@ TEST(serialize, unserialize_state) {
   state.register_state<double, flecsi_internal>("mass", N, 0);
   state.register_state<double, flecsi_internal>("density", N, 0);
 
-  FILE* fp = fopen("state.out", "rb");
-  fseek(fp, 0, SEEK_END);
-  size_t size = ftell(fp);
-  rewind(fp);
-  char* buf = (char*)malloc(size);
-  fread(buf, 1, size, fp);
-  fclose(fp);
-
-  state.unserialize(buf);
+  ifstream fstr("state.out", ios_base::in|ios_base::binary);
+  cereal::BinaryInputArchive unarchive(fstr);
+  unarchive(state);
+  fstr.close();
 
   auto am = state.dense_accessor<double, flecsi_internal>("mass");
   auto ad = state.dense_accessor<double, flecsi_internal>("density");

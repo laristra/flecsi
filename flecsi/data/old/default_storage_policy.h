@@ -21,6 +21,7 @@
 #include <typeinfo>
 #include <cassert>
 
+#include "flecsi/utils/humble.h"
 #include "flecsi/utils/index_space.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/data/data_constants.h"
@@ -126,7 +127,7 @@ struct default_storage_policy_t {
 
   // Storage container instance
   storage_t storage_;
-}; // struct
+}; // struct default_storage_policy_t
 
 /*----------------------------------------------------------------------------*
  * class default_data_storage_policy_t
@@ -154,7 +155,7 @@ class default_data_storage_policy_t
   //! Desctructor
   virtual ~default_data_storage_policy_t() {}
 
-  char* serialize(uint64_t& size){
+  char* serialize_(uint64_t& size) const {
     const size_t alloc_size = 1048576;
     size = alloc_size;
 
@@ -176,7 +177,7 @@ class default_data_storage_policy_t
         std::memcpy(buf + pos, &rs, sizeof(rs));
         pos += sizeof(rs);
 
-        meta_data_t& md = mitr.second;
+        const meta_data_t& md = mitr.second;
         auto& data = md.data;
 
         uint64_t data_size = md.size * md.type_size;
@@ -202,7 +203,7 @@ class default_data_storage_policy_t
     return buf;
   }
 
-  void unserialize(char* buf){
+  void unserialize_(char* buf){
     uint64_t pos = 0;
 
     uint32_t num_entries;
@@ -963,6 +964,7 @@ class default_data_storage_policy_t
       auto & meta_data = search->second;
       return {meta_data.label, meta_data.size,
           reinterpret_cast<T *>(&meta_data.data[0]),
+          /*  */
           meta_data.user_data};
     }
   } // accessor

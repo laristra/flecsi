@@ -3,3 +3,7 @@
 #------------------------------------------------------------------------------#
 
 - Need to add generic attributes to data model, e.g., persistent...
+- Need to fix variadic macros to take at least one argument
+  (avoid compiler warnings) NOTE: This is mostly done where it can be...
+
+- Need to fix "no return statement" warnings -> add data handle returns.

@@ -35,14 +35,26 @@ cinch_add_unit(partition
           test/metis_int64.blessed 
           test/scotch_v5.blessed
           test/scotch.blessed
-  LIBRARIES     ${PARTITION_LIBRARIES} flecsi
+  LIBRARIES ${PARTITION_LIBRARIES} flecsi
 )
 
+<<<<<<< HEAD
 cinch_add_unit(index_partition
 if(NOT FLECSI_RUNTIME_MODEL STREQUAL "serial")
   SOURCES test/index_partition.cc
 endif()
   LIBRARIES flecsi)
+=======
+if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+  cinch_add_unit(index_partition
+    SOURCES test/index_partition.cc
+    INPUTS test/index_partition.blessed
+    POLICY MPILEGION
+    THREADS 2
+    LIBRARIES flecsi)
+endif()
+
+>>>>>>> a606973830844974753ac83761d98a831c608d20
 endif()
 
 #----------------------------------------------------------------------------~-#

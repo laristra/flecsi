@@ -30,10 +30,6 @@ public:
 
   using point_t = point<element_t, dimension>;
 
-  using range_t = std::pair<element_t, element_t>;
-
-  static constexpr range_t coordinate_range = P::coordinate_range;
-
   class entity : public topology::tree_entity<branch_int_t, dimension>{
   public:
     entity(const point_t& p)
@@ -89,9 +85,10 @@ public:
       return ents_.size();
     }
 
-    point_t coordinates() const{
+    point_t
+    coordinates(const std::array<point<element_t, dimension>, 2>& range) const{
       point_t p;
-      super_::id().coordinates(p);
+      super_::id().coordinates(range, p);
       return p;
     }
 

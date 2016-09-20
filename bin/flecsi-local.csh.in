@@ -1,6 +1,5 @@
 ################################################################################
-# FleCSI Bash configuration file.
+# FleCSI Csh/Tcsh configuration file.
 ################################################################################
 
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:@FLECSI_INSTALL_LD_LIBRARY_PATH@
-export PATH=${PATH}:@CMAKE_INSTALL_PREFIX@/bin
+setenv LD_LIBRARY_PATH $LD_LIBRARY_PATH:@FLECSI_LOCAL_LD_LIBRARY_PATH@

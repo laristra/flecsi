@@ -60,12 +60,12 @@ struct global_accessor_t {
   global_accessor_t(
     const std::string & label,
     T * data,
-    const user_meta_data_t & meta_data
+    const user_meta_data_t & user_meta_data
   )
   :
     label_(label),
     data_(data),
-    meta_data_(meta_data)
+    user_meta_data_(user_meta_data)
   {}
 
   ///
@@ -100,7 +100,8 @@ private:
 
   std::string label_ = "";
   T * data_ = nullptr;
-  const user_meta_data_t & meta_data_ = {};
+  const user_meta_data_t & user_meta_data_ =
+    *(std::make_unique<user_meta_data_t>());
 
 }; // struct global_accessor_t
 

@@ -20,15 +20,15 @@
 using namespace flecsi;
 
 TEST_F(A_Dolfin_Triangle, number_of_vertices_should_be_10) {
-  ASSERT_EQ(10, dolfin.num_vertices());
+  ASSERT_EQ(10u, dolfin.num_vertices());
 }
 
 TEST_F(A_Dolfin_Triangle, number_of_cells_should_be_10) {
-  ASSERT_EQ(10, dolfin.num_cells());
+  ASSERT_EQ(10u, dolfin.num_cells());
 }
 
 TEST_F(A_Dolfin_Triangle, number_of_edges_should_be_19) {
-  ASSERT_EQ(19, dolfin.num_edges());
+  ASSERT_EQ(19u, dolfin.num_edges());
 }
 
 TEST_F(A_Dolfin_Triangle, dump_should_match_the_blessed_file) {

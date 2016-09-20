@@ -93,7 +93,7 @@ struct legion_context_policy_t
 
   using task_id_t = LegionRuntime::HighLevel::TaskID;
   using register_function_t = std::function<void(size_t)>;
-  using unique_fid_t = unique_id_t<task_id_t>;
+  using unique_tid_t = unique_id_t<task_id_t>;
 
   ///
   //
@@ -105,7 +105,7 @@ struct legion_context_policy_t
   )
   {
     if(task_registry_.find(key) == task_registry_.end()) {
-      task_registry_[key] = { unique_fid_t::instance().next(), f };
+      task_registry_[key] = { unique_tid_t::instance().next(), f };
       return true;
     } // if
 

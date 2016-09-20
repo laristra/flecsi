@@ -22,7 +22,9 @@ WORKDIR /tmp
 RUN if [ ${COVERAGE}  ]; then pip install --user codecov; fi 
 RUN if [ ${WERROR} ]; then export CXXFLAGS="-Werror"; fi
 RUN git clone --recursive https://github.com/losalamos/flecsi.git
+
 WORKDIR flecsi
+RUN git fetch --tags
 RUN if [ ${TRAVIS} = true ]; then \
       if [ ${TRAVIS_PULL_REQUEST} != false ]; then \
         git fetch "git://github.com/${TRAVIS_REPO_SLUG}" +refs/pull/"${TRAVIS_PULL_REQUEST}"/merge: ;\
@@ -30,7 +32,8 @@ RUN if [ ${TRAVIS} = true ]; then \
       else \
         git fetch --depth=10 "git://github.com/${TRAVIS_REPO_SLUG}" "${TRAVIS_BRANCH}"; \
         git checkout "${TRAVIS_COMMIT}"; \
-      fi \
+      fi; \
+      git submodule update; \
     fi
 RUN mkdir build
 

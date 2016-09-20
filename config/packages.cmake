@@ -72,7 +72,11 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   endif(NOT legion_FOUND)
   
   include_directories(${LEGION_INCLUDE_DIRS})
-  set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES} -ldl)
+  if(NOT APPLE)
+    set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES} -ldl)
+  else()
+    message("Skipping -ldl because APPLE")
+  endif()
 
 #
 # MPI interface
@@ -132,7 +136,15 @@ endif(ENABLE_HYPRE)
 # Process id bits
 #------------------------------------------------------------------------------#
 
-math(EXPR FLECSI_ID_EBITS "60 - ${FLECSI_ID_PBITS} - ${FLECSI_ID_FBITS}")
+# PBITS: possible number of distributed-memory partitions
+# EBITS: possible number of entities per partition
+# GBITS: possible number of global ids
+# FBITS: flag bits
+# dimension: dimension 2 bits
+# domain: dimension 2 bits
+math(EXPR FLECSI_ID_BITS "124 - ${FLECSI_ID_FBITS}")
+math(EXPR FLECSI_ID_GBITS "${FLECSI_ID_BITS}/2")
+math(EXPR FLECSI_ID_EBITS "${FLECSI_ID_GBITS} - ${FLECSI_ID_PBITS}")
 
 add_definitions(-DFLECSI_ID_PBITS=${FLECSI_ID_PBITS})
 add_definitions(-DFLECSI_ID_EBITS=${FLECSI_ID_EBITS})
@@ -145,7 +157,7 @@ math(EXPR flecsi_entities "1 << ${FLECSI_ID_EBITS}")
 message(STATUS "${CINCH_Cyan}Set id_t bits to allow:\n"
   "   ${flecsi_partitions} partitions with 2^${FLECSI_ID_EBITS} entities each\n"
   "   ${FLECSI_ID_FBITS} flag bits\n"
-  "   ${FLECSI_ID_GBITS} global bits${CINCH_ColorReset}")
+  "   ${FLECSI_ID_GBITS} global bits (PBITS*EBITS)${CINCH_ColorReset}")
 
 #------------------------------------------------------------------------------#
 # Enable IO with exodus
@@ -236,7 +248,7 @@ endif(NOT APPLE)
 #------------------------------------------------------------------------------#
 
 # Get the compiler defines that were used to build the library
-# to pass to the flecsi script
+# to pass to the flecsit script
 get_directory_property(_defines DIRECTORY ${CMAKE_SOURCE_DIR}
   COMPILE_DEFINITIONS)
 get_directory_property(_includes DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -295,9 +307,14 @@ string(APPEND LD_PATH_MESSAGE
   "\${LD_LIBRARY_PATH}:${CMAKE_INSTALL_PREFIX}/lib\n")
 
 string(APPEND LD_PATH_MESSAGE "\n   There are also shell configuration files "
-  "located in the bin directory to set this for you:\n"
+  "located in the bin directory to set this for you:\n\n"
+  "   bash\n"
   "   % source bin/flecsi.sh (after install)\n"
-  "   % source bin/flecsi-local.sh (for local development)")
+  "   % source bin/flecsi-local.sh (for local development)\n\n"
+  "   tcsh/csh\n"
+  "   % source bin/flecsi.csh (after install)\n"
+  "   % source bin/flecsi-local.csh (for local development)\n"
+  )
 
 string(APPEND LD_PATH_MESSAGE "${CINCH_ColorReset}")
 
@@ -312,6 +329,8 @@ string(REPLACE "${CMAKE_BINARY_DIR}/lib" "${CMAKE_INSTALL_PREFIX}/lib"
 # This configures the local shell for LD_LIBRARY_PATH
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi-local.sh.in
   ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-local.sh @ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi-local.csh.in
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-local.csh @ONLY)
 
 # Copy local script to bin directory and change permissions
 file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-local.sh
@@ -319,11 +338,22 @@ file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-local.sh
   FILE_PERMISSIONS
     OWNER_READ OWNER_WRITE
     GROUP_READ
-    WORLD_READ)
+    WORLD_READ
+  )
+file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-local.csh
+  DESTINATION ${CMAKE_BINARY_DIR}/bin
+  FILE_PERMISSIONS
+    OWNER_READ OWNER_WRITE
+    GROUP_READ
+    WORLD_READ
+  )
 
 # This configures the install shell for LD_LIBRARY_PATH
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi.sh.in
   ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.sh @ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi.csh.in
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.csh @ONLY)
+
 
 # Install LD_LIBARY_PATH shell
 install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.sh
@@ -332,17 +362,26 @@ install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.sh
   PERMISSIONS
     OWNER_READ OWNER_WRITE
     GROUP_READ
-    WORLD_READ)
+    WORLD_READ
+  )
+install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.csh
+  DESTINATION bin
+  RENAME flecsi.csh
+  PERMISSIONS
+    OWNER_READ OWNER_WRITE
+    GROUP_READ
+    WORLD_READ
+  )
 
 # This configures the script that will be installed when 'make install' is
 # executed.
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi.in
-  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsit.in
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsit-install)
 
 # Install script
-install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install
+install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsit-install
   DESTINATION bin
-  RENAME flecsi
+  RENAME flecsit
   PERMISSIONS
     OWNER_READ OWNER_WRITE OWNER_EXECUTE
     GROUP_READ GROUP_EXECUTE
@@ -361,6 +400,10 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 else()
   message(FATAL_ERROR "Unrecognized runtime selection")
 endif()
+
+#------------------------------------------------------------------------------#
+# Handle script and source files for flecsit tool
+#------------------------------------------------------------------------------#
 
 # Copy the auxiliary files for local development
 add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/share/runtime_main.cc
@@ -382,17 +425,17 @@ add_custom_target(runtime_driver ALL
 
 # Install the auxiliary files
 install(FILES ${CMAKE_SOURCE_DIR}/flecsi/execution/runtime_main.cc
-  DESTINATION share/flecsi)
+  DESTINATION share/flecsi/runtime)
 install(FILES ${_runtime_path}/runtime_driver.cc
-  DESTINATION share/flecsi)
+  DESTINATION share/flecsi/runtime)
 
 # This configures a locally available script that is suitable for
 # testing within the build configuration before the project has been installed.
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi-local.in
-  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsit-local.in
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsit)
 
 # copy local script to bin directory and change permissions
-file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi
+file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsit
   DESTINATION ${CMAKE_BINARY_DIR}/bin
   FILE_PERMISSIONS
     OWNER_READ OWNER_WRITE OWNER_EXECUTE

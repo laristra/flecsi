@@ -32,9 +32,11 @@ set(execution_HEADERS
 
 
 set(execution_SOURCES
-    PARENT_SCOPE)
+  PARENT_SCOPE
+)
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+
   cinch_add_unit(task
     SOURCES
       test/task.cc
@@ -55,6 +57,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     LIBRARIES flecsi) 
 
 elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+
   cinch_add_unit(task
     SOURCES
       test/task.cc
@@ -63,7 +66,8 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
       ../partition/init_partitions_task.cc
     DEFINES FLECSI_DRIVER=flecsi/execution/test/task_driver.h
     POLICY MPILEGION
-    LIBRARIES flecsi)
+    LIBRARIES flecsi
+  )
 
   cinch_add_unit(future
     SOURCES
@@ -84,8 +88,11 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
     DEFINES SPRINT_TEST
     DEFINES FLECSI_DRIVER=flecsi/execution/test/sprint.h
     POLICY MPILEGION
-    LIBRARIES flecsi)
+    LIBRARIES flecsi
+  )
+
 else()
+
   cinch_add_unit(task
     SOURCES
       test/task.cc
@@ -108,12 +115,14 @@ endif()
 if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
   
   cinch_add_unit(test_legion_handshake
-  SOURCES test/test_legion_handshake.cc
-  POLICY MPILEGION) 
+    SOURCES test/test_legion_handshake.cc
+    POLICY MPILEGION
+  )
 
   cinch_add_unit(test_mpilegion_interop
-  SOURCES test/test_mpi_legion_interop.cc
-  POLICY MPILEGION)
+    SOURCES test/test_mpi_legion_interop.cc
+    POLICY MPILEGION
+  )
  
 endif()
 

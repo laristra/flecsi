@@ -23,7 +23,7 @@ namespace data {
 // \brief storage__ provides an interface for data registration and access.
 ///
 template<typename user_meta_data_t,
-  template<typename> typename storage_policy_t>
+  template<typename> class storage_policy_t>
 struct storage__ : public storage_policy_t<user_meta_data_t> {
 
   //--------------------------------------------------------------------------//

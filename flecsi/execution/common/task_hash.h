@@ -29,8 +29,7 @@ namespace execution {
 // \note There is some potential for this hashing strategy to not
 //       be robust. In particular, we are implicitly making the assumption
 //       that the 8 most significant bits are not the only part of the
-//       task address that uniquely identifies it from other tasks. This
-//       also assumes that function addresses are at least half-byte aligned.
+//       task address that uniquely identifies it from other tasks.
 ///
 struct task_hash_t
 {
@@ -54,6 +53,15 @@ struct task_hash_t
 
   ///
   // Custom hashing function for task registry.
+  //
+  // The key is a std::tuple<uintptr_t, processor_t, launch_t>. We assume
+  // that the task address is unique even after shifting away the 8 least
+  // significant bits. There are 4 bits for the processor type, and 4 bits
+  // for the launch type, i.e., there can be 16 unique processor types and
+  // 16 unique launch types.
+  //
+  // \param k A hash key reference. This method is required for using
+  //          this hash type for std::map and std::unordered_map.
   ///
   std::size_t
   operator () (
@@ -61,7 +69,7 @@ struct task_hash_t
   )
   const
   {
-    // FIXME: We can use a better hash strategy
+    // FIXME: We may be able to use a better hash strategy
     return (std::get<0>(k) << 8) ^ (std::get<1>(k) << 4) ^ std::get<2>(k);
   } // operator ()
 
