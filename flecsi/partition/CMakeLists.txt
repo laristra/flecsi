@@ -16,11 +16,17 @@ if(ENABLE_PARTITION)
 
 set(partition_HEADERS
   partitioner.h
-if(NOT FLECSI_RUNTIME_MODEL STREQUAL "serial")
   init_partitions_task.h
-endif()
   PARENT_SCOPE
 )
+
+if(NOT FLECSI_RUNTIME_MODEL STREQUAL "serial")
+  set(partition_HEADERS 
+  ${partition_HEADERS}
+  init_partitions_task.h
+  PARENT_SCOPE
+  )
+endif()
 
 set(partition_SOURCES
   init_partitions_task.cc
@@ -38,11 +44,6 @@ cinch_add_unit(partition
   LIBRARIES ${PARTITION_LIBRARIES} flecsi
 )
 
-cinch_add_unit(index_partition
-if(NOT FLECSI_RUNTIME_MODEL STREQUAL "serial")
-  SOURCES test/index_partition.cc
-endif()
-    LIBRARIES flecsi)
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
   cinch_add_unit(index_partition

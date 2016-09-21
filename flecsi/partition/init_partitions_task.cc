@@ -13,10 +13,9 @@
  *~--------------------------------------------------------------------------~*/
 
 #include <iostream>
+#include <vector>
 
-//#include "flecsi/utils/common.h"
 #include "flecsi/execution/context.h"
-//#include "flecsi/execution/execution.h"
 #include "flecsi/partition/index_partition.h"
 #include "flecsi/partition/init_partitions_task.h"
 

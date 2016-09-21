@@ -35,7 +35,7 @@ set(FLECSI_RUNTIME_LIBRARIES)
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion" OR
   FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
-  find_package (legion QUIET NO_MODULE)
+  find_package (Legion QUIET NO_MODULE)
 
   set(Legion_INSTALL_DIR "" CACHE PATH
     "Path to the Legion install directory")
@@ -44,7 +44,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion" OR
     message(WARNING "Legion_INSTALL_DIR is obsolete, "
       "use CMAKE_PREFIX_PATH instead (and rebuild the latest"
       " version third-party libraries)")
-    list(APPEND CMAKE_PREFIX_PATH "${Legion_INSTALL_DIR}")
+    list(APPEND CMAKE_PREFIX_PATH "${Legion_INSTALL_DIR}/lib/cmake/Legion")
   endif()
 
 endif()
@@ -65,20 +65,19 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 #
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
-  add_definitions(-DFLECSI_RUNTIME_MODEL_legion)
-
-  if(NOT legion_FOUND)
-    message(FATAL_ERROR "Legion is required for this build configuration")
-  endif(NOT legion_FOUND)
+  find_package (Legion REQUIRED)
   
-  include_directories(${LEGION_INCLUDE_DIRS})
+  set(FLECSI_RUNTIME_MAIN script-driver-legion.cc)
+
+  set (LEGION_LIBRARIES Legion::Legion)
+
   if(NOT APPLE)
-    set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES} -ldl)
-  else()
-    message("Skipping -ldl because APPLE")
+    set(FLECSI_RUNTIME_LIBRARIES  -ldl)
   endif()
 
-#
+  set(LEGION_INCLUDE_DIRS "${Legion_DIR}/../../../include" "${Legion_DIR}/../../../include/legion" "${Legion_DIR}/../../../include/realm" "${Legion_DIR}/../../../include/mappers")
+  include_directories(${LEGION_INCLUDE_DIRS})
+
 # MPI interface
 #
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
@@ -89,19 +88,18 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 #MPI+Legion interface
 #
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+    find_package (Legion REQUIRED)
+  
+  set(FLECSI_RUNTIME_MAIN script-driver-mpilegion.cc)
 
-  if(NOT ENABLE_MPI)
-    message (FATAL_ERROR "MPI is required for the mpilegion runtime model")
+  set (LEGION_LIBRARIES Legion::Legion)
+
+  if(NOT APPLE)
+    set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES}  -ldl)
   endif()
- 
-  add_definitions(-DFLECSI_RUNTIME_MODEL_mpilegion)
 
-  if(NOT legion_FOUND)
-    message(FATAL_ERROR "Legion is required for this build configuration")
-  endif(NOT legion_FOUND)
-
+  set(LEGION_INCLUDE_DIRS "${Legion_DIR}/../../../include" "${Legion_DIR}/../../../include/legion" "${Legion_DIR}/../../../include/realm" "${Legion_DIR}/../../../include/mappers")
   include_directories(${LEGION_INCLUDE_DIRS})
-  set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES} -ldl ${MPI_LIBRARIES})
 
 #
 # Default
