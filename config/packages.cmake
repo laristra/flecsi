@@ -71,12 +71,19 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
   find_package (Legion REQUIRED)
 
-  set(FLECSI_RUNTIME_MAIN script-driver-mpilegion.cc)
+  if(NOT ENABLE_MPI)
+    message (FATAL_ERROR "MPI is required for the mpilegion runtime model")
+  endif()
+ 
+  add_definitions(-DFLECSI_RUNTIME_MODEL_mpilegion)
+
+  
+  #  set(FLECSI_RUNTIME_MAIN script-driver-mpilegion.cc)
 
   set (LEGION_LIBRARIES Legion::Legion)
 
   if(NOT APPLE)
-    set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES}  -ldl)
+    set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES}  -ldl ${MPI_LIBRARIES})
   endif()
 
   set(LEGION_INCLUDE_DIRS "${Legion_DIR}/../../../include" "${Legion_DIR}/../../../include/legion" "${Legion_DIR}/../../../include/realm" "${Legion_DIR}/../../../include/mappers")
