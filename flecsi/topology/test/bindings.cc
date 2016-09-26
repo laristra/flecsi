@@ -195,7 +195,6 @@ TEST(mesh_topology, traversal) {
 
   vector<Vertex*> vs;
 
-  size_t id = 0;
   for(size_t j = 0; j < height + 1; ++j){
     for(size_t i = 0; i < width + 1; ++i){
       auto v = mesh->make<Vertex>();
@@ -204,7 +203,6 @@ TEST(mesh_topology, traversal) {
     }
   }
 
-  id = 0;
   size_t width1 = width + 1;
   for(size_t j = 0; j < height; ++j){
     for(size_t i = 0; i < width; ++i){

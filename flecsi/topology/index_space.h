@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <type_traits>
+
 namespace flecsi {
 namespace topology {
 
@@ -24,40 +26,62 @@ struct default_predicate__{
   }
 };
 
-template<class T>
-struct index_space_storage{
-  using index_t = typename T::index_t;
-
-  T* index_space_get(index_t i){
-    return items_[i];
-  }
-
-  void index_space_add(T* item){
-    items_.push_back(item);
-  }
-
-  std::vector<T*> items_;
-};
-
 template<class T,
-         bool OWNED = false,
          bool STORAGE = false,
-         class S = index_space_storage<T>,
-         class F = default_predicate__<T*>>
-class index_space_{
+         bool OWNED = true,
+         bool SORTED = false,
+         class F = default_predicate__<T>>
+class index_space{
 public:
+  using id_t = typename std::remove_pointer<T>::type::id_t;
+  
+  using id_vector_t = std::vector<id_t>;
 
+  class id_range_{
+  public:
+    id_range_(const id_vector_t& items)
+    : items_(&items){}
+
+    typename id_vector_t::const_iterator begin() const{ 
+      return items_->begin();
+    }
+
+    typename id_vector_t::const_iterator end() const{ 
+      return items_->end();
+    }
+
+  private:
+    const id_vector_t* items_;
+  };
+
+  template<class S>
+  class storage_{
+  public:
+    S& get(const id_t& i){
+      return items_[i.index_space_index()];
+    }
+
+    void push(S item){
+      items_.push_back(item);
+    }
+
+  private:
+    std::vector<S> items_;
+  };
+
+  template<class S>
   class iterator_{
    public:
-    using index_t = typename T::index_t;
-    using index_vector_t = std::vector<index_t>;
+    using MS = typename std::remove_const<S>::type;
 
     iterator_(const iterator_& itr)
-    : store_(itr.store_), items_(itr.items_), index_(itr.index_),
-    count_(items_->size()){}
+    : items_(itr.items_), index_(itr.index_), end_(itr.end_), s_(itr.s_){}
 
-    iterator_(S& store, const index_vector_t& items, size_t index)
-    : store_(&store), items_(&items), index_(index), count_(items_->size()){}
+    iterator_(storage_<MS>* s, const id_vector_t& items, size_t index, size_t end)
+    : items_(&items), index_(index), end_(end), s_(s){}
+
+    iterator_(const storage_<MS>* s, const id_vector_t& items, size_t index, size_t end)
+    : items_(&items), index_(index), end_(end), s_(const_cast<storage_<MS>*>(s)){}
 
     iterator_& operator++(){
       ++index_;
@@ -65,32 +89,35 @@ public:
     }
 
     iterator_& operator=(const iterator_ & itr){
-      store_ = itr.store_;
       index_ = itr.index_;
+      end_ = itr.end_;
       items_ = itr.items_;
+      s_ = itr.s_;
       return *this;
     }
 
-    T* operator*(){
-      while(index_ < count_){
-        auto item = store_->index_space_get((*items_)[index_]);
+    S& operator*(){
+      while(index_ < end_){
+        T& item = s_->get((*items_)[index_]);
         if(F()(item)){
           return item;
         }
         ++index_;
       }
 
-      return nullptr;
+      assert(false && "end of range");
     }
 
-    T* operator->(){
-      while(index_ < count_){
-        auto item = store_->index_space_get((*items_)[index_]);
+    S* operator->(){
+      while(index_ < end_){
+        T& item = s_->get((*items_)[index_]);
         if(F()(item)){
-          return item;
+          return &item;
         }
         ++index_;
       }
+
+      assert(false && "end of range");
     }
 
     bool operator==(const iterator_& itr) const{
@@ -102,107 +129,205 @@ public:
     }
 
    private:
-    S* store_;
-    const index_vector_t* items_;
+    const id_vector_t* items_;
     size_t index_;
-    size_t count_;
+    size_t end_;
+    storage_<MS>* s_;
   };
-
-  using index_vector_t = typename iterator_::index_vector_t;
 
   using filter_function = std::function<bool(T&)>;
 
   using apply_function = std::function<void(T&)>;
 
-  template<typename R>
-  using map_function = std::function<R(T&)>;
+  template<typename S>
+  using map_function = std::function<S(T&)>;
 
-  template<typename R>
-  using reduce_function = std::function<void(T&, R&)>;
+  template<typename S>
+  using reduce_function = std::function<void(T&, S&)>;
 
-  index_space_(S& store, const index_vector_t& v, bool sorted = false)
-  : store_(&store), v_(&v), begin_(0), end_(v_->size()),
-  owned_(false), sorted_(sorted){}
-
-  index_space_(S& store, index_vector_t&& v, bool sorted)
-  : store_(&store), v_(new index_vector_t(std::move(v))),
-  begin_(0), end_(v_->size()), owned_(true), sorted_(sorted){}
-
-  index_space_(const index_vector_t& v, bool sorted = false)
-  : store_(new S), v_(&v), begin_(0), end_(v_->size()),
-  owned_(false), sorted_(sorted){
-    assert(STORAGE && "invalid instantiation");
-  }
-
-  index_space_(index_vector_t&& v, bool sorted)
-  : store_(new S), v_(std::move(v)), begin_(0), end_(v_->size()),
-  owned_(true), sorted_(sorted){
-    assert(STORAGE && "invalid instantiation");
-  }
-
-  index_space_()
-  : store_(new S), begin_(0), end_(0),
-  owned_(true), sorted_(true){
-    assert(STORAGE && "invalid instantiation");
+  index_space(bool storage = true)
+  : v_(new id_vector_t), begin_(0), end_(0), owned_(true),
+    sorted_(SORTED), s_(storage ? new storage_<T> : nullptr){
+    assert((STORAGE || !storage) && "invalid instantiation");
     assert(OWNED && "invalid instantiation");
   }
 
-  ~index_space_(){
-    if(STORAGE){
-      delete store_;
-    }
+  template<class S, bool STORAGE2, bool OWNED2, bool SORTED2, class F2> 
+  index_space(index_space<S, STORAGE2, OWNED2, SORTED2, F2>& is,
+              size_t begin, size_t end)
+  : v_(is.v_), begin_(begin), end_(end), owned_(false),
+    sorted_(is.sorted_), s_(reinterpret_cast<storage_<T>*>(is.s_)){
 
+    static_assert(std::is_convertible<T,S>::value,
+                  "invalid index space construction");
+
+    assert(!STORAGE && "invalid instantiation");
+    assert(!OWNED && "invalid instantiation");
+  }
+
+  index_space(const index_space& is)
+  : v_(OWNED ? new id_vector_t(*is.v_) : is.v_),
+    begin_(is.begin_), end_(is.end_), owned_(OWNED), sorted_(is.sorted_), 
+    s_(is.s_){
+    assert(!STORAGE && "invalid instantiation");
+  }
+
+  ~index_space(){
     if(OWNED || owned_){
       delete v_;
     }
+
+    if(STORAGE){
+      delete s_;
+    }
+  }
+  
+  template<class S, bool STORAGE2 = STORAGE, bool OWNED2 = OWNED,
+    bool SORTED2 = SORTED, class F2 = F>
+  auto& cast(){
+    static_assert(std::is_convertible<S,T>::value,
+                  "invalid index space cast");
+
+    return *reinterpret_cast<index_space<S,STORAGE2,OWNED2,SORTED2,F2>*>(this);
   }
 
-  index_space_ & operator=(const index_space_& r) = default;
+  template<class S, bool STORAGE2 = STORAGE, bool OWNED2 = OWNED, bool SORTED2 = SORTED, class F2 = F>
+  auto& cast() const{
+    static_assert(std::is_convertible<S,T>::value,
+                  "invalid index space cast");
 
-  iterator_ begin() const { return iterator_(*store_, *v_, begin_); }
-
-  iterator_ end() const { return iterator_(*store_, *v_, end_); }
-
-  T* operator[](size_t i) const{
-    return store_->template index_space_get((*v_)[begin_ + i]);
+    return *reinterpret_cast<const index_space<S,STORAGE2,OWNED2,SORTED2,F2>*>(this);
   }
 
-  T* front() const{
-    return store_->template index_space_get((*v_)[begin_]);
+  index_space& operator=(const index_space& r){
+    assert(!STORAGE && "invalid assignment");
+    assert(!OWNED && "invalid assignment");
+    
+    v_ = r.v_;
+    begin_ = r.begin_;
+    end_ = r.end_;
+    owned_ = false;
+    sorted_ = r.sorted_;
+    s_ = r.s_;
+    
+    return *this;
   }
 
-  T* back() const{
-    return store_->template index_space_get((*v_)[end_ - 1]);
+  iterator_<T> begin(){ 
+    return iterator_<T>(s_, *v_, begin_, end_);
+  }
+
+  iterator_<const T> begin() const{ 
+    return iterator_<const T>(s_, *v_, begin_, end_);
+  }
+
+  iterator_<T> end(){
+    return iterator_<T>(s_, *v_, end_, end_); 
+  }
+
+  iterator_<const T> end() const{
+    return iterator_<const T>(s_, *v_, end_, end_); 
+  }
+
+  id_range_ indices() const{
+    return id_range_(*v_);
+  }
+
+  T operator[](size_t i){
+    return s_->get((*v_)[begin_ + i]);
+  }
+
+  const T operator[](size_t i) const{
+    return s_->get((*v_)[begin_ + i]);
+  }
+
+  const id_t& operator()(size_t i) const{
+    return (*v_)[begin_ + i];
+  }
+
+  id_t& operator()(size_t i){
+    return (*v_)[begin_ + i];
+  }
+
+  T front(){
+    return s_->get((*v_)[begin_]);
+  }
+
+  const T front() const{
+    return s_->get((*v_)[begin_]);
+  }
+
+  T back(){
+    return s_->get((*v_)[end_ - 1]);
+  }
+
+  const T back() const{
+    return s_->get((*v_)[end_ - 1]);
   }
 
   size_t size() const { return end_ - begin_; }
+  
+  bool empty() const { return begin_ == end_; }
 
-  index_space_ filter(filter_function f) const {
-    index_vector_t v;
+  void clear(){
+    begin_ = 0;
+    end_ = 0;
+
+    if(OWNED || owned_){
+      v_->clear();
+      sorted_ = SORTED;
+    }
+  }
+
+  template<bool STORAGE2, bool OWNED2, bool SORTED2, class F2>
+  void set_master(const index_space<T, STORAGE2, OWNED2, SORTED2, F2>& master){
+    set_master(const_cast<index_space<T, STORAGE2, OWNED2, SORTED2, F2>&>(master));
+  }
+
+  template<bool STORAGE2, bool OWNED2, bool SORTED2, class F2>
+  void set_master(index_space<T, STORAGE2, OWNED2, SORTED2, F2>& master){
+    s_ = reinterpret_cast<storage_<T>*>(master.s_);
+  }
+
+  std::vector<const T> to_vec() const{
+    std::vector<const T> ret;
+    size_t n = end_ - begin_;
+    ret.reserve(n);
+    for (size_t i = 0; i < n; ++i) {
+      ret.push_back((*this)[i]);
+    } // for
+    return ret;
+  }
+
+  std::vector<T> to_vec(){
+    std::vector<T> ret;
+    size_t n = end_ - begin_;
+    ret.reserve(n);
+    for (size_t i = 0; i < n; ++i) {
+      ret.push_back((*this)[i]);
+    } // for
+    return ret;
+  }
+
+  const id_vector_t& id_vec() const{
+    return *v_;
+  }
+
+  id_t* id_array() const{
+    return v_->data();
+  }
+
+  auto filter(filter_function f) const {
+    index_space<T, false, true, false> is(false);
+    is.set_master(*this);
 
     for (auto item : *this) {
-      if (f(*item)) {
-        v.push_back(item->id());
+      if (f(item)) {
+        is.push_back(item);
       }
     }
 
-    return index_space_(*store_, std::move(v), sorted_);
-  }
-
-  template<typename R>
-  std::vector<index_space_> scatter(map_function<T> f) const {
-
-    std::map<R, index_vector_t> id_map;
-    for (auto item : *this)
-      id_map[f(*item)].push_back(item->id());
-
-    std::vector<index_space_> ent_map;
-    for ( auto entry : id_map )
-      ent_map.emplace_back(
-        std::move(index_space_(*store_, std::move(entry.second), sorted_) )
-      );
-
-    return ent_map;
+    return is;
   }
 
   void apply(apply_function f) const {
@@ -211,8 +336,8 @@ public:
     }
   }
 
-  template<typename R>
-  std::vector<R> map(map_function<T> f) const {
+  template<typename S>
+  std::vector<S> map(map_function<T> f) const {
     std::vector<S> ret;
     ret.reserve(v_->size());
 
@@ -222,8 +347,8 @@ public:
     return ret;
   }
 
-  template<typename R>
-  R reduce(T start, reduce_function<T> f) const {
+  template<typename S>
+  S reduce(T start, reduce_function<T> f) const {
     T r = start;
 
     for (auto item : *this) {
@@ -235,21 +360,21 @@ public:
 
   void prepare_(){
     if(!OWNED && !owned_){
-      v_ = new index_vector_t(*v_);
+      v_ = new id_vector_t(*v_);
       owned_ = true;
     }
 
-    if(!sorted_){
-      auto vc = const_cast<index_vector_t*>(v_);
+    if(!SORTED && !sorted_){
+      auto vc = const_cast<id_vector_t*>(v_);
       std::sort(vc->begin(), vc->end());
       sorted_ = true;
     }
   }
 
-  index_space_& operator&=(const index_space_& r){
+  index_space& operator&=(const index_space& r){
     prepare_();
 
-    index_vector_t ret;
+    id_vector_t ret;
 
     if(r.sorted_){
       ret.resize(std::min(v_->size(), r.v_->size()));
@@ -260,7 +385,7 @@ public:
       ret.resize(itr - ret.begin());
     }
     else{
-      index_vector_t v2(*r.v_);
+      id_vector_t v2(*r.v_);
       std::sort(v2.begin(), v2.end());
 
       ret.resize(std::min(v_->size(), v2.size()));
@@ -271,8 +396,7 @@ public:
       ret.resize(itr - ret.begin());
     }
 
-    delete v_;
-    v_ = new index_vector_t(std::move(ret));
+    *v_ = std::move(ret);
 
     begin_ = 0;
     end_ = v_->size();
@@ -280,16 +404,16 @@ public:
     return *this;
   }
 
-  index_space_ operator&(const index_space_& r) const{
-    index_space_ ret(*this);
+  index_space operator&(const index_space& r) const{
+    index_space ret(*this);
     ret &= r;
     return ret;
   }
 
-  index_space_& operator|=(const index_space_& r){
+  index_space& operator|=(const index_space& r){
     prepare_();
 
-    index_vector_t ret;
+    id_vector_t ret;
 
     if(r.sorted_){
       ret.resize(v_->size() + r.v_->size());
@@ -300,7 +424,7 @@ public:
      ret.resize(itr - ret.begin());
     }
     else{
-      index_vector_t v2(*r.v_);
+      id_vector_t v2(*r.v_);
 
       std::sort(v2.begin(), v2.end());
 
@@ -312,8 +436,7 @@ public:
       ret.resize(itr - ret.begin());
     }
 
-    delete v_;
-    v_ = new index_vector_t(std::move(ret));
+    *v_ = std::move(ret);
 
     begin_ = 0;
     end_ = v_->size();
@@ -321,16 +444,16 @@ public:
     return *this;
   }
 
-  index_space_ operator|(const index_space_& r) const{
-    index_space_ ret(*this);
+  index_space operator|(const index_space& r) const{
+    index_space ret(*this);
     ret |= r;
     return ret;
   }
 
-  index_space_& operator-=(const index_space_& r){
+  index_space& operator-=(const index_space& r){
     prepare_();
 
-    index_vector_t ret(v_->size());
+    id_vector_t ret(v_->size());
 
     if(r.sorted_){
       auto itr = std::set_difference(v_->begin(), v_->end(),
@@ -339,7 +462,7 @@ public:
       ret.resize(itr - ret.begin());
     }
     else{
-      index_vector_t v2(*r.v_);
+      id_vector_t v2(*r.v_);
 
       std::sort(v2.begin(), v2.end());
 
@@ -349,8 +472,7 @@ public:
       ret.resize(itr - ret.begin());
     }
 
-    delete v_;
-    v_ = new index_vector_t(std::move(ret));
+    *v_ = std::move(ret);
 
     begin_ = 0;
     end_ = v_->size();
@@ -358,46 +480,128 @@ public:
     return *this;
   }
 
-  index_space_ operator-(const index_space_& r) const{
-    index_space_ ret(*this);
+  index_space operator-(const index_space& r) const{
+    index_space ret(*this);
     ret -= r;
     return ret;
   }
 
-  void add(T* item){
+  void push_back(const T& item){
     if(!OWNED && !owned_){
-      v_ = new index_vector_t(*v_);
+      v_ = new id_vector_t(*v_);
       owned_ = true;
     }
 
-    auto vc = const_cast<index_vector_t*>(v_);
-
-    if(STORAGE || store_ == this){
-      index_space_add(item);
+    if(STORAGE){
+      s_->push(item);
     }
 
-    if(sorted_){
-      auto id = item->id();
-      auto itr = std::upper_bound(vc->begin(), vc->end(), id);
-      vc->insert(itr, id);
+    if(SORTED || sorted_){
+      auto id = item.index_space_id();
+      auto itr = std::upper_bound(v_->begin(), v_->end(), id);
+      v_->insert(itr, id);
     }
     else{
-      vc->push_back(item->id());
+      v_->push_back(item.index_space_id());
     }
+
+    ++end_;
   }
 
-  index_space_& operator<<(T* item){
-    add(item);
+  void push_back(id_t index){
+    if(!OWNED && !owned_){
+      v_ = new id_vector_t(*v_);
+      owned_ = true;
+    }
+
+    if(SORTED || sorted_){
+      auto itr = std::upper_bound(v_->begin(), v_->end(), index);
+      v_->insert(itr, index);
+    }
+    else{
+      v_->push_back(index);
+    }
+
+    ++end_;
+  }
+
+  index_space& operator<<(T item){
+    push_back(item);
     return *this;
   }
-
+  
 private:
-  S* store_ = nullptr;
-  const index_vector_t* v_ = nullptr;
-  size_t begin_ = 0;
-  size_t end_ = 0;
-  bool owned_ = false;
-  bool sorted_ = true;
+  template<class, bool, bool, bool, class> 
+  friend class index_space;
+
+  friend class connectivity_t;
+  
+  template<class>
+  friend class mesh_topology;
+
+  template<class>
+  friend class tree_topology;
+
+  id_vector_t* v_;
+  size_t begin_;
+  size_t end_;
+  bool owned_;
+  bool sorted_;
+  storage_<T>* s_;
+
+  size_t begin_push_(){
+    assert(OWNED);
+    return v_->size();
+  }
+
+  void begin_push_(size_t n){
+    assert(OWNED);
+    assert(begin_ == 0);
+    size_t m = v_->size();
+    v_->reserve(m + n);
+    end_ += n;
+  }
+
+  void batch_push_(id_t index){
+    assert(OWNED);
+    v_->push_back(index);
+  }
+
+  void push_(id_t index){
+    assert(OWNED);
+    v_->push_back(index);
+    ++end_;
+  }
+
+  void end_push_(size_t n){
+    assert(OWNED);
+    assert(begin_ == 0);
+    end_ += v_->size() - n;
+  }
+
+  void resize_(size_t n){
+    assert(OWNED);
+    assert(begin_ == 0);
+    v_->resize(n);
+    end_ = v_->size();
+  }
+
+  void fill_(id_t index){
+    assert(OWNED);
+    std::fill(v_->begin(), v_->end(), index);
+  }
+
+  id_vector_t& id_vec_(){
+    return *v_;
+  }
+
+  typename id_vector_t::iterator index_begin_(){
+    return v_->begin();
+  }
+
+  typename id_vector_t::iterator index_end_(){
+    return v_->end();
+  }
 };
 
 } // namespace topology

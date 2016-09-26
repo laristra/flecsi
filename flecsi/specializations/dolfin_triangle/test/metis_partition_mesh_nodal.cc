@@ -26,7 +26,7 @@ protected:
   dolfin_triangle_mesh_t<dolfin_triangle_types_t> dolfin;
 
   virtual void SetUp() override {
-    auto conn = dolfin.get_connectivity(0, 2, 0);
+    auto& conn = dolfin.get_connectivity(0, 2, 0);
 
     idx_t num_cells = dolfin.num_cells();
     epart.resize(num_cells);
