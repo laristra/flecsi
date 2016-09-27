@@ -142,8 +142,20 @@ endif(ENABLE_HYPRE)
 # FBITS: flag bits
 # dimension: dimension 2 bits
 # domain: dimension 2 bits
+
+# Make sure that the user set FBITS to an even number
+math(EXPR FLECSI_EVEN_FBITS "${FLECSI_ID_FBITS} % 2")
+if(NOT ${FLECSI_EVEN_FBITS} EQUAL 0)
+  message(FATAL_ERROR "FLECSI_ID_FBITS must be an even number")
+endif()
+
+# Get the total number of bits left for ids
 math(EXPR FLECSI_ID_BITS "124 - ${FLECSI_ID_FBITS}")
+
+# Global ids use half of the remaining bits
 math(EXPR FLECSI_ID_GBITS "${FLECSI_ID_BITS}/2")
+
+# EBITS and PBITS must add up to GBITS
 math(EXPR FLECSI_ID_EBITS "${FLECSI_ID_GBITS} - ${FLECSI_ID_PBITS}")
 
 add_definitions(-DFLECSI_ID_PBITS=${FLECSI_ID_PBITS})
