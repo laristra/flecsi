@@ -978,6 +978,12 @@ public:
     return ms_.index_spaces[M][dim];
   } // get_entities_
 
+  template <size_t M = 0>
+  auto & get_index_space_(size_t dim)
+  {
+    return ms_.index_spaces[M][dim];
+  } // get_entities_
+
   /*!
     Get an entity in domain M of topological dimension D with specified id.
   */
@@ -1395,6 +1401,14 @@ public:
         }
       }
     }
+  }
+
+  void append_to_index_space_(size_t domain,
+    size_t dim,
+    std::vector<mesh_entity_base_*>& ents,
+    std::vector<id_t>& ids){
+    auto& is =  ms_.index_spaces[domain][dim];
+    is.append_(ents, ids);
   }
 
 private:

@@ -811,6 +811,10 @@ public:
     return entity;
   } // make
 
+  virtual void append_to_index_space_(size_t domain,
+    size_t dimension,
+    std::vector<mesh_entity_base_*>& ents,
+    std::vector<id_t>& ids) = 0;
 
 }; // mesh_topology_base_t
 
@@ -825,11 +829,10 @@ void unserialize_dimension_(mesh_topology_base_t& mesh,
   std::memcpy(&num_entities, buf + pos, sizeof(num_entities));
   pos += sizeof(num_entities);
 
-  id_vector_t iv;
-  iv.reserve(num_entities);
-
-  entity_vector_t<NM> ev;
-  ev.reserve(num_entities);
+  std::vector<mesh_entity_base_*> ents;
+  std::vector<id_t> ids;
+  ents.reserve(num_entities);
+  ids.reserve(num_entities);
 
   // TODO - fix
   size_t partition_id = 0;
@@ -839,14 +842,11 @@ void unserialize_dimension_(mesh_topology_base_t& mesh,
 
     auto ent = new entity_type_<MT, D, M>();
     ent->template set_global_id<M>(global_id);
-    ev.push_back(ent);
-    iv.push_back(global_id);
+    ents.push_back(ent);
+    ids.push_back(global_id);
   }
 
-  assert(false && "this needs to be refactored with new index space");
-
-  //mesh.set_entity_ids_(M, D, move(iv));
-  //mesh.set_entities_(M, D, &ev);
+  mesh.append_to_index_space_(M, D, ents, ids);
 }
 
 template<class MT, size_t NM, size_t ND, size_t M, size_t D>

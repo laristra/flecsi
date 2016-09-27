@@ -36,6 +36,9 @@ public:
   using id_t = typename std::remove_pointer<T>::type::id_t;
   
   using id_vector_t = std::vector<id_t>;
+  using item_vector_t = std::vector<T>;
+
+  using item_t = typename std::remove_pointer<T>::type;
 
   class id_range_{
   public:
@@ -55,21 +58,6 @@ public:
   };
 
   template<class S>
-  class storage_{
-  public:
-    S& get(const id_t& i){
-      return items_[i.index_space_index()];
-    }
-
-    void push(S item){
-      items_.push_back(item);
-    }
-
-  private:
-    std::vector<S> items_;
-  };
-
-  template<class S>
   class iterator_{
    public:
     using MS = typename std::remove_const<S>::type;
@@ -77,11 +65,11 @@ public:
     iterator_(const iterator_& itr)
     : items_(itr.items_), index_(itr.index_), end_(itr.end_), s_(itr.s_){}
 
-    iterator_(storage_<MS>* s, const id_vector_t& items, size_t index, size_t end)
+    iterator_(item_vector_t* s, const id_vector_t& items, size_t index, size_t end)
     : items_(&items), index_(index), end_(end), s_(s){}
 
-    iterator_(const storage_<MS>* s, const id_vector_t& items, size_t index, size_t end)
-    : items_(&items), index_(index), end_(end), s_(const_cast<storage_<MS>*>(s)){}
+    iterator_(const item_vector_t* s, const id_vector_t& items, size_t index, size_t end)
+    : items_(&items), index_(index), end_(end), s_(const_cast<item_vector_t*>(s)){}
 
     iterator_& operator++(){
       ++index_;
@@ -98,7 +86,7 @@ public:
 
     S& operator*(){
       while(index_ < end_){
-        T& item = s_->get((*items_)[index_]);
+        T& item = get_(index_);
         if(F()(item)){
           return item;
         }
@@ -110,7 +98,7 @@ public:
 
     S* operator->(){
       while(index_ < end_){
-        T& item = s_->get((*items_)[index_]);
+        T& item = get_(index_);
         if(F()(item)){
           return &item;
         }
@@ -128,11 +116,15 @@ public:
       return index_ != itr.index_;
     }
 
+    T& get_(size_t index){
+      return (*s_)[(*items_)[index].index_space_index()];
+    }
+
    private:
     const id_vector_t* items_;
     size_t index_;
     size_t end_;
-    storage_<MS>* s_;
+    item_vector_t* s_;
   };
 
   using filter_function = std::function<bool(T&)>;
@@ -147,7 +139,7 @@ public:
 
   index_space(bool storage = true)
   : v_(new id_vector_t), begin_(0), end_(0), owned_(true),
-    sorted_(SORTED), s_(storage ? new storage_<T> : nullptr){
+    sorted_(SORTED), s_(storage ? new item_vector_t : nullptr){
     assert((STORAGE || !storage) && "invalid instantiation");
     assert(OWNED && "invalid instantiation");
   }
@@ -156,7 +148,7 @@ public:
   index_space(index_space<S, STORAGE2, OWNED2, SORTED2, F2>& is,
               size_t begin, size_t end)
   : v_(is.v_), begin_(begin), end_(end), owned_(false),
-    sorted_(is.sorted_), s_(reinterpret_cast<storage_<T>*>(is.s_)){
+    sorted_(is.sorted_), s_(reinterpret_cast<item_vector_t*>(is.s_)){
 
     static_assert(std::is_convertible<T,S>::value,
                   "invalid index space construction");
@@ -233,12 +225,28 @@ public:
     return id_range_(*v_);
   }
 
-  T operator[](size_t i){
-    return s_->get((*v_)[begin_ + i]);
+  T& get_(size_t offset){
+    return (*s_)[(*v_)[begin_ + offset].index_space_index()];
   }
 
-  const T operator[](size_t i) const{
-    return s_->get((*v_)[begin_ + i]);
+  const T& get_(size_t offset) const{
+    return (*s_)[(*v_)[begin_ + offset].index_space_index()];
+  }
+
+  T& get_end_(size_t offset){
+    return (*s_)[(*v_)[end_ - 1 - offset].index_space_index()];
+  }
+
+  const T& get_end_(size_t offset) const{
+    return (*s_)[(*v_)[end_ - 1 - offset].index_space_index()];
+  }
+
+  T& operator[](size_t i){
+    return get_(i);
+  }
+
+  const T& operator[](size_t i) const{
+    return get_(i);
   }
 
   const id_t& operator()(size_t i) const{
@@ -249,20 +257,20 @@ public:
     return (*v_)[begin_ + i];
   }
 
-  T front(){
-    return s_->get((*v_)[begin_]);
+  T& front(){
+    return get_(0);
   }
 
-  const T front() const{
-    return s_->get((*v_)[begin_]);
+  const T& front() const{
+    return get_(0);
   }
 
-  T back(){
-    return s_->get((*v_)[end_ - 1]);
+  T& back(){
+    return get_end_(0);
   }
 
-  const T back() const{
-    return s_->get((*v_)[end_ - 1]);
+  const T& back() const{
+    return get_end_(0);
   }
 
   size_t size() const { return end_ - begin_; }
@@ -286,7 +294,7 @@ public:
 
   template<bool STORAGE2, bool OWNED2, bool SORTED2, class F2>
   void set_master(index_space<T, STORAGE2, OWNED2, SORTED2, F2>& master){
-    s_ = reinterpret_cast<storage_<T>*>(master.s_);
+    s_ = reinterpret_cast<item_vector_t*>(master.s_);
   }
 
   std::vector<const T> to_vec() const{
@@ -493,16 +501,16 @@ public:
     }
 
     if(STORAGE){
-      s_->push(item);
+      s_->push_back(item);
     }
 
     if(SORTED || sorted_){
-      auto id = item.index_space_id();
+      auto id = id_(item);
       auto itr = std::upper_bound(v_->begin(), v_->end(), id);
       v_->insert(itr, id);
     }
     else{
-      v_->push_back(item.index_space_id());
+      v_->push_back(id_(item));
     }
 
     ++end_;
@@ -529,6 +537,38 @@ public:
     push_back(item);
     return *this;
   }
+
+  void append_(std::vector<T>& ents, std::vector<id_t>& ids){
+    assert(STORAGE);
+    assert(OWNED);
+    assert(ents.size() == ids.size());
+    
+    s_->insert(s_->begin(), ents.begin(), ents.end());
+
+    size_t n = ents.size();
+    
+    if(SORTED || sorted_){
+      v_->reserve(n);
+
+      for(id_t id : ids){
+        auto itr = std::upper_bound(v_->begin(), v_->end(), id);
+        v_->insert(itr, id);
+      }
+    }
+    else{
+      v_->insert(v_->begin(), ids.begin(), ids.end());
+    }
+
+    end_ += n;
+  }
+
+  id_t id_(const item_t& item){
+    return item.index_space_id();
+  }
+
+  id_t id_(item_t* item){
+    return item->index_space_id();
+  }
   
 private:
   template<class, bool, bool, bool, class> 
@@ -537,9 +577,6 @@ private:
   friend class connectivity_t;
   
   template<class>
-  friend class mesh_topology;
-
-  template<class>
   friend class tree_topology;
 
   id_vector_t* v_;
@@ -547,7 +584,7 @@ private:
   size_t end_;
   bool owned_;
   bool sorted_;
-  storage_<T>* s_;
+  item_vector_t* s_;
 
   size_t begin_push_(){
     assert(OWNED);
