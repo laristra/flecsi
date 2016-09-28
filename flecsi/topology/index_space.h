@@ -40,6 +40,16 @@ public:
 
   using item_t = typename std::remove_pointer<T>::type;
 
+  using filter_function = std::function<bool(T&)>;
+
+  using apply_function = std::function<void(T&)>;
+
+  template<typename S>
+  using map_function = std::function<S(T&)>;
+
+  template<typename S>
+  using reduce_function = std::function<void(T&, S&)>;
+
   class id_range_{
   public:
     id_range_(const id_range_& r)
@@ -50,6 +60,12 @@ public:
 
     id_range_(const id_vector_t& items, size_t begin, size_t end)
     : items_(&items), begin_(begin), end_(end){}
+
+    id_range_& operator=(const id_range_& r){
+      items_ = r.items_;
+      begin_ = r.begin_;
+      end_ = r.end_;
+    }
 
     typename id_vector_t::const_iterator begin() const{ 
       return items_->begin() + begin_;
@@ -135,16 +151,6 @@ public:
     item_vector_t* s_;
   };
 
-  using filter_function = std::function<bool(T&)>;
-
-  using apply_function = std::function<void(T&)>;
-
-  template<typename S>
-  using map_function = std::function<S(T&)>;
-
-  template<typename S>
-  using reduce_function = std::function<void(T&, S&)>;
-
   index_space(bool storage = true)
   : v_(new id_vector_t), begin_(0), end_(0), owned_(true),
     sorted_(SORTED), s_(storage ? new item_vector_t : nullptr){
@@ -191,7 +197,8 @@ public:
     return *reinterpret_cast<index_space<S,STORAGE2,OWNED2,SORTED2,F2>*>(this);
   }
 
-  template<class S, bool STORAGE2 = STORAGE, bool OWNED2 = OWNED, bool SORTED2 = SORTED, class F2 = F>
+  template<class S, bool STORAGE2 = STORAGE, bool OWNED2 = OWNED,
+    bool SORTED2 = SORTED, class F2 = F>
   auto& cast() const{
     static_assert(std::is_convertible<S,T>::value,
                   "invalid index space cast");
@@ -244,16 +251,6 @@ public:
 
   template<class S = T>
   auto slice() const{
-    return index_space<S, false, false, SORTED>(*this, begin_, end_);
-  }
-
-  template<class S = T>
-  auto slice(size_t begin, size_t end){
-    return index_space<S, false, false, SORTED>(*this, begin, end);
-  }
-
-  template<class S = T>
-  auto slice(){
     return index_space<S, false, false, SORTED>(*this, begin_, end_);
   }
 
@@ -317,6 +314,10 @@ public:
       v_->clear();
       sorted_ = SORTED;
     }
+
+    if(STORAGE){
+      s_->clear();
+    }
   }
 
   template<bool STORAGE2, bool OWNED2, bool SORTED2, class F2>
@@ -330,17 +331,16 @@ public:
   }
 
   std::vector<const T> to_vec() const{
-    std::vector<const T> ret;
-    size_t n = end_ - begin_;
-    ret.reserve(n);
-    for (size_t i = 0; i < n; ++i) {
-      ret.push_back((*this)[i]);
-    } // for
-    return ret;
+    return to_vec_<const T>();
   }
 
   std::vector<T> to_vec(){
-    std::vector<T> ret;
+    return to_vec_<T>();
+  }
+
+  template<class S>
+  std::vector<S> to_vec_(){
+    std::vector<S> ret;
     size_t n = end_ - begin_;
     ret.reserve(n);
     for (size_t i = 0; i < n; ++i) {
@@ -570,7 +570,7 @@ public:
     return *this;
   }
 
-  void append_(std::vector<T>& ents, std::vector<id_t>& ids){
+  void append_(const std::vector<T>& ents, const std::vector<id_t>& ids){
     assert(STORAGE);
     assert(OWNED);
     assert(ents.size() == ids.size());
@@ -598,7 +598,7 @@ public:
     return item.index_space_id();
   }
 
-  id_t id_(item_t* item){
+  id_t id_(const item_t* item){
     return item->index_space_id();
   }
   
@@ -608,9 +608,6 @@ private:
 
   friend class connectivity_t;
   
-  template<class>
-  friend class tree_topology;
-
   id_vector_t* v_;
   size_t begin_;
   size_t end_;

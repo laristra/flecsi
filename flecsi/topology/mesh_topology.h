@@ -342,8 +342,8 @@ public:
    Get the connectivity of the specified from/to domain and from/to topological
    dimensions.
    */
-  const connectivity_t & get_connectivity(size_t from_domain, size_t to_domain,
-      size_t from_dim, size_t to_dim) const override
+  const connectivity_t & get_connectivity(size_t from_domain,
+    size_t to_domain, size_t from_dim, size_t to_dim) const override
   {
     return get_connectivity_(from_domain, to_domain, from_dim, to_dim);
   } // get_connectivity
@@ -399,8 +399,7 @@ public:
   auto get_entity(id_t global_id) const
   {
     using etype = typename find_entity_<MT, D, M>::type;
-    return static_cast<etype *>(
-        ms_.index_spaces[M][D][global_id.entity()]);
+    return static_cast<etype *>(ms_.index_spaces[M][D][global_id.entity()]);
   } // get_entity
 
   /*!
@@ -525,7 +524,6 @@ public:
     const index_vector_t & fv = c.get_from_index_vec();
     
     using etype = typename find_entity_<MT, D, TM>::type;
-    using dtype = domain_entity<TM, etype>;
     
     return c.get_index_space().ids(
       fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
@@ -877,11 +875,11 @@ private:
             it may never get called
   */
   template <size_t Domain, size_t DimensionToBuild, size_t UsingDimension>
-  typename std::enable_if< (UsingDimension <= 1 || UsingDimension > MT::num_dimensions) >::type
+  typename std::enable_if< (UsingDimension <= 1 ||
+    UsingDimension > MT::num_dimensions) >::type
   build_connectivity() {
     assert( false && "shouldn't be in here" );
   }
-
 
   /*!
     Build connectivity informaiton and add entities to the mesh for the
@@ -891,7 +889,8 @@ private:
             otherwise we would need create_entities in wedges and vertices
    */
   template <size_t Domain, size_t DimensionToBuild, size_t UsingDimension>
-  typename std::enable_if< (UsingDimension > 1 && UsingDimension <= MT::num_dimensions) >::type
+  typename std::enable_if< (UsingDimension > 1 && 
+    UsingDimension <= MT::num_dimensions) >::type
   build_connectivity()
   {
     // std::cerr << "build: " << DimensionToBuild << " using " << UsingDimension << std::endl;
@@ -991,7 +990,8 @@ private:
 
         // Emplace the sorted vertices into the entity map
         auto itr = entity_vertices_map.emplace(
-            std::move(ev), id_t::make<DimensionToBuild, Domain>(entity_id, cell_id.partition()));
+            std::move(ev), id_t::make<DimensionToBuild, Domain>(
+          entity_id, cell_id.partition()));
 
         // Add this id to the cell to entity connections
         conns.push_back(itr.first->second);
