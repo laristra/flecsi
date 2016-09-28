@@ -95,7 +95,6 @@ class mesh_topology_base_t;
 class mesh_entity_base_{
 public:
   using id_t = flecsi::id_t;
-  using item_t = void;
 };
 
 template <size_t N>

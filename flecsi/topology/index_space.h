@@ -151,7 +151,7 @@ public:
     item_vector_t* s_;
   };
 
-  index_space(bool storage = true)
+  index_space(bool storage = STORAGE)
   : v_(new id_vector_t), begin_(0), end_(0), owned_(true),
     sorted_(SORTED), s_(storage ? new item_vector_t : nullptr){
     assert((STORAGE || !storage) && "invalid instantiation");
@@ -175,6 +175,7 @@ public:
   : v_(OWNED ? new id_vector_t(*is.v_) : is.v_),
     begin_(is.begin_), end_(is.end_), owned_(OWNED), sorted_(is.sorted_), 
     s_(is.s_){
+    assert(s_ && "no storage");
     assert(!STORAGE && "invalid instantiation");
   }
 
@@ -187,7 +188,7 @@ public:
       delete s_;
     }
   }
-  
+
   template<class S, bool STORAGE2 = STORAGE, bool OWNED2 = OWNED,
     bool SORTED2 = SORTED, class F2 = F>
   auto& cast(){
@@ -563,6 +564,34 @@ public:
     }
 
     ++end_;
+  }
+
+  void append(const index_space& is){
+    if(!OWNED && !owned_){
+      v_ = new id_vector_t(*v_);
+      owned_ = true;
+    }
+    
+    if(STORAGE){
+      s_->insert(s_->begin(), is.s_->begin(), is.s_->end());
+    }
+
+    size_t n = is.size();
+    
+    if(SORTED || sorted_){
+      v_->reserve(n);
+
+      for(auto ent : is){
+        id_t id = id_(ent);
+        auto itr = std::upper_bound(v_->begin(), v_->end(), id);
+        v_->insert(itr, id);
+      }
+    }
+    else{
+      v_->insert(v_->begin(), is.v_->begin(), is.v_->end());
+    }
+
+    end_ += n;
   }
 
   index_space& operator<<(T item){
