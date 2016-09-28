@@ -257,7 +257,7 @@ public:
   void add_entity(mesh_entity_base_t<MT::num_domains> * ent,
                   size_t partition_id=0)
   {
-    using etype = typename find_entity_<MT, D, M>::type;
+    using etype = entity_type<D, M>;
     using dtype = domain_entity<M, etype>;
 
     auto & is = ms_.index_spaces[M][D].template cast<dtype>();
@@ -398,7 +398,7 @@ public:
   template <size_t D, size_t M = 0>
   auto get_entity(id_t global_id) const
   {
-    using etype = typename find_entity_<MT, D, M>::type;
+    using etype = entity_type<D, M>;
     return static_cast<etype *>(ms_.index_spaces[M][D][global_id.entity()]);
   } // get_entity
 
@@ -423,7 +423,7 @@ public:
     assert(!c.empty() && "empty connectivity");
     const index_vector_t & fv = c.get_from_index_vec();
 
-    using etype = typename find_entity_<MT, D, TM>::type;
+    using etype = entity_type<D, TM>;
     using dtype = domain_entity<TM, etype>;
     
     return c.get_index_space().slice<dtype>(
@@ -441,7 +441,7 @@ public:
     assert(!c.empty() && "empty connectivity");
     const index_vector_t & fv = c.get_from_index_vec();
 
-    using etype = typename find_entity_<MT, D, TM>::type;
+    using etype = entity_type<D, TM>;
     using dtype = domain_entity<TM, etype>;
     
     return c.get_index_space().slice<dtype>(
@@ -475,7 +475,7 @@ public:
   template <size_t D, size_t M = 0>
   auto entities()
   {
-    using etype = typename find_entity_<MT, D, M>::type;
+    using etype = entity_type<D, M>;
     using dtype = domain_entity<M, etype>;
     return ms_.index_spaces[M][D].template slice<dtype>();
   } // entities
@@ -487,7 +487,7 @@ public:
   template <size_t D, size_t M = 0>
   auto entities() const
   {
-    using etype = typename find_entity_<MT, D, M>::type;
+    using etype = entity_type<D, M>;
     using dtype = domain_entity<M, etype>;
     return ms_.index_spaces[M][D].template slice<dtype>();
   } // entities
@@ -522,9 +522,6 @@ public:
     const connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
     const index_vector_t & fv = c.get_from_index_vec();
-    
-    using etype = typename find_entity_<MT, D, TM>::type;
-    
     return c.get_index_space().ids(
       fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
   } // entities
