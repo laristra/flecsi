@@ -237,6 +237,26 @@ public:
     return id_range_(*v_, begin, end);
   }
 
+  template<class S = T>
+  auto slice(size_t begin, size_t end) const{
+    return index_space<S, false, false, SORTED>(*this, begin, end);
+  }
+
+  template<class S = T>
+  auto slice() const{
+    return index_space<S, false, false, SORTED>(*this, begin_, end_);
+  }
+
+  template<class S = T>
+  auto slice(size_t begin, size_t end){
+    return index_space<S, false, false, SORTED>(*this, begin, end);
+  }
+
+  template<class S = T>
+  auto slice(){
+    return index_space<S, false, false, SORTED>(*this, begin_, end_);
+  }
+
   T& get_(size_t offset){
     return (*s_)[(*v_)[begin_ + offset].index_space_index()];
   }

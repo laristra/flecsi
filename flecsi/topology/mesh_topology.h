@@ -242,8 +242,9 @@ public:
   // upon mesh destruction
   virtual ~mesh_topology_t()
   {
-    for (size_t d = 0; d < MT::num_domains; ++d) {
-      for (auto & is : ms_.index_spaces[d]) {
+    for (size_t m = 0; m < MT::num_domains; ++m) {
+      for (size_t d = 0; d <= MT::num_dimensions; ++d) {
+        auto & is = ms_.index_spaces[m][d];
         for (auto ent : is) {
           delete ent;
         }
@@ -256,16 +257,15 @@ public:
   void add_entity(mesh_entity_base_t<MT::num_domains> * ent,
                   size_t partition_id=0)
   {
-    using entity_type = typename find_entity_<MT, D, M>::type;
+    using etype = typename find_entity_<MT, D, M>::type;
+    using dtype = domain_entity<M, etype>;
 
-    using domain_entity_type = domain_entity<M, entity_type>;
-
-    auto & is = ms_.index_spaces[M][D].template cast<domain_entity_type>();
+    auto & is = ms_.index_spaces[M][D].template cast<dtype>();
 
     id_t global_id = id_t::make<D, M>(is.size(), partition_id);
 
     ent->template set_global_id<M>( global_id );
-    is.push_back(domain_entity_type(static_cast<entity_type*>(ent)));
+    is.push_back(dtype(static_cast<etype*>(ent)));
   } // add_entity
 
   // A mesh is constructed by creating cells and vertices and associating
@@ -398,8 +398,8 @@ public:
   template <size_t D, size_t M = 0>
   auto get_entity(id_t global_id) const
   {
-    using entity_type = typename find_entity_<MT, D, M>::type;
-    return static_cast<entity_type *>(
+    using etype = typename find_entity_<MT, D, M>::type;
+    return static_cast<etype *>(
         ms_.index_spaces[M][D][global_id.entity()]);
   } // get_entity
 
@@ -419,14 +419,16 @@ public:
   template <size_t D, size_t FM, size_t TM = FM, class E>
   const auto entities(const E * e) const
   {
-    using entity_type = typename find_entity_<MT, D, TM>::type;
 
     connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
     const index_vector_t & fv = c.get_from_index_vec();
-    return index_space<domain_entity<TM, entity_type>, false, false, false>(
-      c.get_index_space(), fv[e->template id<FM>()],
-      fv[e->template id<FM>() + 1]);
+
+    using etype = typename find_entity_<MT, D, TM>::type;
+    using dtype = domain_entity<TM, etype>;
+    
+    return c.get_index_space().slice<dtype>(
+      fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
   } // entities
 
   /*!
@@ -436,15 +438,15 @@ public:
   template <size_t D, size_t FM, size_t TM = FM, class E>
   auto entities(E * e)
   {
-    using entity_type = typename find_entity_<MT, D, TM>::type;
-
     connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
     const index_vector_t & fv = c.get_from_index_vec();
 
-    return index_space<domain_entity<TM, entity_type>, false, false, false>(
-      c.get_index_space(), fv[e->template id<FM>()],
-      fv[e->template id<FM>() + 1]);
+    using etype = typename find_entity_<MT, D, TM>::type;
+    using dtype = domain_entity<TM, etype>;
+    
+    return c.get_index_space().slice<dtype>(
+      fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
   } // entities
 
   /*!
@@ -472,11 +474,11 @@ public:
     domain M. e.g: cells of the mesh.
   */
   template <size_t D, size_t M = 0>
-  auto& entities()
+  auto entities()
   {
-    using entity_type = typename find_entity_<MT, D, M>::type;
-    return ms_.index_spaces[M][D].template cast<
-      domain_entity<M, entity_type>, false, false, true>();
+    using etype = typename find_entity_<MT, D, M>::type;
+    using dtype = domain_entity<M, etype>;
+    return ms_.index_spaces[M][D].template slice<dtype>();
   } // entities
 
   /*!
@@ -484,11 +486,11 @@ public:
     domain M. e.g: cells of the mesh.
   */
   template <size_t D, size_t M = 0>
-  auto& entities() const
+  auto entities() const
   {
-    using entity_type = typename find_entity_<MT, D, M>::type;
-    return ms_.index_spaces[M][D].template cast<
-      domain_entity<M, entity_type>, false, false, true>();
+    using etype = typename find_entity_<MT, D, M>::type;
+    using dtype = domain_entity<M, etype>;
+    return ms_.index_spaces[M][D].template slice<dtype>();
   } // entities
 
   /*!
@@ -518,15 +520,15 @@ public:
   template <size_t D, size_t FM = 0, size_t TM = FM, class E>
   auto entity_ids(const E * e) const
   {
-    using entity_type = typename find_entity_<MT, D, TM>::type;
-
     const connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
     const index_vector_t & fv = c.get_from_index_vec();
     
-    return index_space<domain_entity<TM, entity_type>, false, false, false>(
-      c.get_index_space(), fv[e->template id<FM>()],
-      fv[e->template id<FM>() + 1]).ids();
+    using etype = typename find_entity_<MT, D, TM>::type;
+    using dtype = domain_entity<TM, etype>;
+    
+    return c.get_index_space().ids(
+      fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
   } // entities
 
   /*!
