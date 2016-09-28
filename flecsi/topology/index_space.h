@@ -178,6 +178,19 @@ public:
     static_assert(!STORAGE, "expected !STORAGE");
   }
 
+  index_space(index_space&& is)
+  : v_(is.v_), begin_(is.begin_), end_(is.end_), owned_(OWNED || is.owned_),
+    sorted_(is.sorted_), s_(is.s_){
+
+    if(OWNED || is.owned_){
+      is.v_ = new id_vector_t;
+    }
+
+    if(STORAGE){
+      is.s_ = new item_vector_t;
+    }
+  }
+
   ~index_space(){
     if(OWNED || owned_){
       delete v_;
@@ -205,6 +218,29 @@ public:
     end_ = is.end_;
     sorted_ = is.sorted_;
     s_ = is.s_;
+    
+    return *this;
+  }
+
+  index_space& operator=(index_space&& is){
+    v_ = is.v_;
+
+    if(OWNED || is.owned_){
+      is.v_ = new id_vector_t;
+      owned_ = true;
+    }
+    else{
+      owned_ = false;
+    }
+
+    begin_ = is.begin_;
+    end_ = is.end_;
+    sorted_ = is.sorted_;
+    s_ = is.s_;
+
+    if(STORAGE){
+      is.s_ = new item_vector_t;
+    }
     
     return *this;
   }
