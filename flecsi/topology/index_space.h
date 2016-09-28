@@ -179,11 +179,15 @@ public:
   }
 
   index_space(index_space&& is)
-  : v_(is.v_), begin_(is.begin_), end_(is.end_), owned_(OWNED || is.owned_),
-    sorted_(is.sorted_), s_(is.s_){
+  : v_(is.v_), begin_(is.begin_), end_(is.end_),
+  sorted_(is.sorted_), s_(is.s_){
 
     if(OWNED || is.owned_){
       is.v_ = new id_vector_t;
+      owned_ = true;
+    }
+    else{
+      owned_ = false;
     }
 
     if(STORAGE){
@@ -419,15 +423,17 @@ public:
     }
   }
 
-  template<typename S>
-  std::vector<S> map(map_function<T> f) const {
-    std::vector<S> ret;
-    ret.reserve(v_->size());
+  template<class S>
+  auto map(map_function<S> f) const {
+    index_space<S, false, true, false> is;
+    is.set_master(*this);
+
+    is.begin_push_(v_->size());
 
     for (auto item : *this) {
-      ret.push_back(f(*item));
+      is.batch_push_(f(*item));
     }
-    return ret;
+    return is;
   }
 
   template<typename S>
