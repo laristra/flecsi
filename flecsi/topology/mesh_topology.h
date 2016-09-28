@@ -938,17 +938,17 @@ private:
     // vertices that potentially need to be created
     std::array<id_t, 4096> entity_vertices;
 
-    using cell_type = typename find_entity_<MT, UsingDimension, Domain>::type;
-    using entity_type = typename find_entity_<MT, DimensionToBuild, Domain>::type;
+    using cell_type = entity_type<UsingDimension, Domain>;
+    using entity_type = entity_type<DimensionToBuild, Domain>;
 
     auto& is = ms_.index_spaces[Domain][DimensionToBuild].template cast<
       domain_entity<Domain, entity_type>>();
+    auto& cis = ms_.index_spaces[Domain][UsingDimension];
 
     for (size_t c = 0; c < _num_cells; ++c) {
       // Get the cell object
 
-      auto cell = static_cast<cell_type*>(
-        ms_.index_spaces[Domain][UsingDimension][c]);
+      auto cell = static_cast<cell_type*>(cis[c]);
 
       id_t cell_id = cell->template global_id<Domain>();
 
@@ -1360,7 +1360,7 @@ private:
     // that potentially need to be created
     std::array<id_t, 4096> entity_ids;
 
-    using to_entity_type = typename find_entity_<MT, TD, TM>::type;
+    using to_entity_type = entity_type<TD, TM>;
 
     // Iterate over cells
     for (auto c : cells) {
