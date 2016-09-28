@@ -155,7 +155,7 @@ public:
   : v_(new id_vector_t), begin_(0), end_(0), owned_(true),
     sorted_(SORTED), s_(storage ? new item_vector_t : nullptr){
     assert((STORAGE || !storage) && "invalid instantiation");
-    assert(OWNED && "invalid instantiation");
+    static_assert(OWNED, "expected OWNED");
   }
 
   template<class S, bool STORAGE2, bool OWNED2, bool SORTED2, class F2> 
@@ -166,9 +166,8 @@ public:
 
     static_assert(std::is_convertible<T,S>::value,
                   "invalid index space construction");
-
-    assert(!STORAGE && "invalid instantiation");
-    assert(!OWNED && "invalid instantiation");
+    static_assert(!STORAGE, "expected !STORAGE");
+    static_assert(!OWNED, "expected !OWNED");
   }
 
   index_space(const index_space& is)
@@ -176,7 +175,7 @@ public:
     begin_(is.begin_), end_(is.end_), owned_(OWNED), sorted_(is.sorted_), 
     s_(is.s_){
     assert(s_ && "no storage");
-    assert(!STORAGE && "invalid instantiation");
+    static_assert(!STORAGE, "expected !STORAGE");
   }
 
   ~index_space(){
@@ -187,6 +186,27 @@ public:
     if(STORAGE){
       delete s_;
     }
+  }
+
+  index_space& operator=(const index_space& is){
+    assert(!STORAGE && "invalid assignment");
+
+    if(OWNED){
+      delete v_;
+      v_ = new id_vector_t(*is.v_);
+      owned_ = true;
+    }
+    else{
+      v_ = is.v_;
+      owned_ = false;
+    }
+
+    begin_ = is.begin_;
+    end_ = is.end_;
+    sorted_ = is.sorted_;
+    s_ = is.s_;
+    
+    return *this;
   }
 
   template<class S, bool STORAGE2 = STORAGE, bool OWNED2 = OWNED,
@@ -205,20 +225,6 @@ public:
                   "invalid index space cast");
 
     return *reinterpret_cast<const index_space<S,STORAGE2,OWNED2,SORTED2,F2>*>(this);
-  }
-
-  index_space& operator=(const index_space& r){
-    assert(!STORAGE && "invalid assignment");
-    assert(!OWNED && "invalid assignment");
-    
-    v_ = r.v_;
-    begin_ = r.begin_;
-    end_ = r.end_;
-    owned_ = false;
-    sorted_ = r.sorted_;
-    s_ = r.s_;
-    
-    return *this;
   }
 
   iterator_<T> begin(){ 
@@ -359,7 +365,7 @@ public:
   }
 
   auto filter(filter_function f) const {
-    index_space<T, false, true, false> is(false);
+    index_space<T, false, true, false> is;
     is.set_master(*this);
 
     for (auto item : *this) {
@@ -600,8 +606,9 @@ public:
   }
 
   void append_(const std::vector<T>& ents, const std::vector<id_t>& ids){
-    assert(STORAGE);
-    assert(OWNED);
+    static_assert(STORAGE, "expected STORAGE");
+    static_assert(OWNED, "expected OWNED");
+
     assert(ents.size() == ids.size());
     
     s_->insert(s_->begin(), ents.begin(), ents.end());
@@ -645,12 +652,12 @@ private:
   item_vector_t* s_;
 
   size_t begin_push_(){
-    assert(OWNED);
+    static_assert(OWNED, "expected OWNED");
     return v_->size();
   }
 
   void begin_push_(size_t n){
-    assert(OWNED);
+    static_assert(OWNED, "expected OWNED");
     assert(begin_ == 0);
     size_t m = v_->size();
     v_->reserve(m + n);
@@ -658,31 +665,31 @@ private:
   }
 
   void batch_push_(id_t index){
-    assert(OWNED);
+    static_assert(OWNED, "expected OWNED");
     v_->push_back(index);
   }
 
   void push_(id_t index){
-    assert(OWNED);
+    static_assert(OWNED, "expected OWNED");
     v_->push_back(index);
     ++end_;
   }
 
   void end_push_(size_t n){
-    assert(OWNED);
+    static_assert(OWNED, "expected OWNED");
     assert(begin_ == 0);
     end_ += v_->size() - n;
   }
 
   void resize_(size_t n){
-    assert(OWNED);
+    static_assert(OWNED, "expected OWNED");
     assert(begin_ == 0);
     v_->resize(n);
     end_ = v_->size();
   }
 
   void fill_(id_t index){
-    assert(OWNED);
+    static_assert(OWNED, "expected OWNED");
     std::fill(v_->begin(), v_->end(), index);
   }
 
