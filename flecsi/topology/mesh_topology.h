@@ -612,13 +612,17 @@ public:
     by specified connectivity from domain FM and to domain TM.
   */
   template <size_t D, size_t FM = 0, size_t TM = FM, class E>
-  id_range entity_ids(const E * e) const
+  auto entity_ids(const E * e) const
   {
+    using entity_type = typename find_entity_<MT, D, TM>::type;
+
     const connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
     const index_vector_t & fv = c.get_from_index_vec();
-    return id_range(c.get_entities(), fv[e->template id<FM>()],
-        fv[e->template id<FM>() + 1]);
+    
+    return index_space<domain_entity<TM, entity_type>, false, false, false>(
+      c.get_index_space(), fv[e->template id<FM>()],
+      fv[e->template id<FM>() + 1]).indices();
   } // entities
 
   /*!

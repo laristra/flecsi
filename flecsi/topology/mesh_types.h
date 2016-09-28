@@ -617,6 +617,10 @@ class connectivity_t
     return index_space_;
   }
 
+  auto& get_index_space() const{
+    return index_space_;
+  }
+
   index_space<mesh_entity_base_*> index_space_; 
   index_vector_t from_index_vec_;
 

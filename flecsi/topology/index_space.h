@@ -42,19 +42,27 @@ public:
 
   class id_range_{
   public:
+    id_range_(const id_range_& r)
+    : items_(r.items_), begin_(r.begin_), end_(r.end_){}
+
     id_range_(const id_vector_t& items)
-    : items_(&items){}
+    : items_(&items), begin_(0), end_(items_->size()){}
+
+    id_range_(const id_vector_t& items, size_t begin, size_t end)
+    : items_(&items), begin_(begin), end_(end){}
 
     typename id_vector_t::const_iterator begin() const{ 
-      return items_->begin();
+      return items_->begin() + begin_;
     }
 
     typename id_vector_t::const_iterator end() const{ 
-      return items_->end();
+      return items_->begin() + end_;
     }
 
   private:
     const id_vector_t* items_;
+    size_t begin_;
+    size_t end_;
   };
 
   template<class S>
@@ -145,7 +153,7 @@ public:
   }
 
   template<class S, bool STORAGE2, bool OWNED2, bool SORTED2, class F2> 
-  index_space(index_space<S, STORAGE2, OWNED2, SORTED2, F2>& is,
+  index_space(const index_space<S, STORAGE2, OWNED2, SORTED2, F2>& is,
               size_t begin, size_t end)
   : v_(is.v_), begin_(begin), end_(end), owned_(false),
     sorted_(is.sorted_), s_(reinterpret_cast<item_vector_t*>(is.s_)){
@@ -222,7 +230,7 @@ public:
   }
 
   id_range_ indices() const{
-    return id_range_(*v_);
+    return id_range_(*v_, begin_, end_);
   }
 
   T& get_(size_t offset){
