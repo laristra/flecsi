@@ -229,8 +229,12 @@ public:
     return iterator_<const T>(s_, *v_, end_, end_); 
   }
 
-  id_range_ indices() const{
+  id_range_ ids() const{
     return id_range_(*v_, begin_, end_);
+  }
+
+  id_range_ ids(size_t begin, size_t end) const{
+    return id_range_(*v_, begin, end);
   }
 
   T& get_(size_t offset){

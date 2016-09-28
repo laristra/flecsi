@@ -458,7 +458,7 @@ class connectivity_t
     }
 
     stream << "=== id_vec" << std::endl;
-    for (id_t id : index_space_.indices()) {
+    for (id_t id : index_space_.ids()) {
       stream << id.entity() << std::endl;
     } // for
 

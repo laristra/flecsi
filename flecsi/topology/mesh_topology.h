@@ -193,102 +193,6 @@ public:
   template <size_t D, size_t M = 0>
   using entity_type = typename find_entity_<MT, D, M>::type;
 
-  /*--------------------------------------------------------------------------*
-   * class iterator
-   *--------------------------------------------------------------------------*/
-
-  /*!
-   \class id_iterator mesh_topology.h
-   \brief An iterator that returns only the id's of entities
-    (not the entities themselves) for performance reasons.
-  */
-  class id_iterator
-  {
-   public:
-    id_iterator(const id_iterator & itr)
-        : entities_(itr.entities_), index_(itr.index_)
-    {
-    }
-
-    id_iterator(const id_vector_t & entities, size_t index)
-        : entities_(&entities), index_(index)
-    {
-    }
-
-    id_iterator & operator++()
-    {
-      ++index_;
-      return *this;
-    } // operator ++
-
-    id_iterator & operator=(const id_iterator & itr)
-    {
-      index_ = itr.index_;
-      entities_ = itr.entities_;
-      return *this;
-    } // oerator =
-
-    id_t operator*() { return (*entities_)[index_]; }
-    bool operator==(const id_iterator & itr) const
-    {
-      return index_ == itr.index_;
-    } // operator ==
-
-    bool operator!=(const id_iterator & itr) const
-    {
-      return index_ != itr.index_;
-    } // operator !=
-
-   private:
-    const id_vector_t * entities_;
-    size_t index_;
-
-  }; // class iterator
-
-  /*--------------------------------------------------------------------------*
-   * class id_range
-   *--------------------------------------------------------------------------*/
-
-  /*!
-    \class id_range mesh_topology.h
-    \brief Used to implement range-based for iteration for id iterators.
-   */
-
-  class id_range
-  {
-   public:
-    id_range(const id_vector_t & v) : v_(v), begin_(0), end_(v_.size()) {}
-    id_range(const id_vector_t & v, size_t begin, size_t end)
-        : v_(v), begin_(begin), end_(end)
-    {
-    }
-
-    id_range(const id_range & r) : v_(r.v_), begin_(0), end_(v_.size()) {}
-    id_iterator begin() const { return id_iterator(v_, begin_); }
-    id_iterator end() const { return id_iterator(v_, end_); }
-    // Convert this range into a vector which can then be indexed
-    id_vector_t to_vec() const
-    {
-      id_vector_t ret;
-
-      for (size_t i = begin_; i < end_; ++i) {
-        ret.push_back(v_[i]);
-      } // for
-
-      return ret;
-    } // to_vec
-
-    auto operator[](size_t i) const
-    { return v_[i]; }
-
-    size_t size() const { return end_ - begin_; } // size
-   private:
-    const id_vector_t & v_;
-    size_t begin_;
-    size_t end_;
-
-  }; // class id_range
-
   // Don't allow the mesh to be copied or copy constructed
 
   mesh_topology_t(const mesh_topology_t &) = delete;
@@ -594,7 +498,7 @@ public:
   template <size_t D, size_t M = 0>
   auto entity_ids() const
   {
-    return ms_.index_spaces[M][D].indices();
+    return ms_.index_spaces[M][D].ids();
   } // entity_ids
 
   /*!
@@ -622,7 +526,7 @@ public:
     
     return index_space<domain_entity<TM, entity_type>, false, false, false>(
       c.get_index_space(), fv[e->template id<FM>()],
-      fv[e->template id<FM>() + 1]).indices();
+      fv[e->template id<FM>() + 1]).ids();
   } // entities
 
   /*!
@@ -717,13 +621,12 @@ public:
     partition.push_back(0);
 
     for(size_t from_id = 0; from_id < n; ++from_id){
-      auto to_ids = id_range(c1.get_entities(), fv1[from_id],
-        fv1[from_id + 1]);
+      auto to_ids = c1.get_index_space().ids(fv1[from_id], fv1[from_id + 1]);
       cp.offset.push_back(offset);
       
       for(auto to_id : to_ids){
-        auto ret_ids = id_range(c2.get_entities(),
-          fv2[to_id.entity()], fv2[to_id.entity() + 1]);
+        auto ret_ids = 
+          c2.get_index_space().ids(fv2[to_id.entity()], fv2[to_id.entity() + 1]);
         
         for(auto ret_id : ret_ids){
           if(ret_id.entity() != from_id){
