@@ -76,10 +76,10 @@ public:
   static const Legion::SemanticTag SEMANTIC_TAG_FS_TYPE = 1;
   typedef int FS_TYPE_VALUE_TYPE;
 
-  static void tag_field_space(Legion::Runtime *runtime,
+  /*static void tag_field_space(Legion::Runtime *runtime,
               LegionRuntime::HighLevel::FieldSpace fs,
               FS_TYPE_VALUE_TYPE fs_type);
-
+*/
   virtual const char* get_mapper_name(void) const;
 
   virtual MapperSyncModel get_mapper_sync_model(void) const;
@@ -109,7 +109,7 @@ public:
       Legion::Mapping::Mapper::SliceTaskOutput& output
    );
                          
-  virtual
+/*  virtual
   void
   map_task(
       const Legion::Mapping::MapperContext ctx,
@@ -117,7 +117,7 @@ public:
       const Legion::Mapping::Mapper::MapTaskInput&   input,
       Legion::Mapping::Mapper::MapTaskOutput& output
    );
-
+*/
 /*  virtual void select_task_variant(const Legion::Mapping::MapperContext ctx, 
                  const Legion::Task& task,
                  const Legion::Mapping::Mapper::SelectVariantInput& input,
@@ -176,7 +176,7 @@ public:
               const Legion::InlineMapping& inline_op,
               const Legion::Mapping::Mapper::InlineProfilingInfo& input);
 */
-  virtual
+/*  virtual
   void
   map_copy(
       const Legion::Mapping::MapperContext ctx,
@@ -184,7 +184,7 @@ public:
       const Legion::Mapping::Mapper::MapCopyInput& input,
       Legion::Mapping::Mapper::MapCopyOutput& output
   );
-
+*/
 /*  virtual void select_copy_sources(const Legion::Mapping::MapperContext ctx,
                    const Legion::Copy& copy,
                    const Legion::Mapping::Mapper::SelectCopySrcInput& input,
@@ -204,7 +204,7 @@ public:
                      const Legion::Copy& copy,
                      const Legion::Mapping::Mapper::CopyProfilingInfo& input);
 */
-  virtual
+/*  virtual
   void
   map_close(
       const Legion::Mapping::MapperContext ctx,
@@ -212,7 +212,7 @@ public:
       const Legion::Mapping::Mapper::MapCloseInput& input,
       Legion::Mapping::Mapper::MapCloseOutput& output
   );
-
+*/
 /*  virtual void select_close_sources(const Legion::Mapping::MapperContext ctx,
                    const Legion::Close& close,
                    const Legion::Mapping::Mapper::SelectCloseSrcInput& input,
@@ -413,8 +413,9 @@ MPIMapper::~MPIMapper(void)
 {
 }
 
-inline 
-/*static */void
+/*inline 
+//static
+void
 MPIMapper::tag_field_space(
  Legion::Runtime *runtime,
  LegionRuntime::HighLevel::FieldSpace fs,
@@ -426,6 +427,7 @@ MPIMapper::tag_field_space(
                &fs_type,
                sizeof(FS_TYPE_VALUE_TYPE));
 }
+*/
 
 inline 
 const
@@ -603,6 +605,7 @@ MPIMapper::slice_task(
    }//end else
 }//end slice_task
 
+/*
 inline 
 void
 MPIMapper::map_task(
@@ -675,8 +678,8 @@ MPIMapper::map_task(
       // add in all the needed fields
       lcs.add_constraint(Legion::FieldConstraint(
                          task.regions[i].privilege_fields,
-                         false /*contiguous*/,
-                         false /*inorder*/));
+                         false ,
+                         false));
      {
         std::vector<Legion::DimensionKind> dimension_ordering(4);
         dimension_ordering[0] = DIM_X;
@@ -684,7 +687,7 @@ MPIMapper::map_task(
         dimension_ordering[2] = DIM_Z;
         dimension_ordering[3] = DIM_F;
         lcs.add_constraint(Legion::OrderingConstraint(dimension_ordering,
-                                              false /*!contiguous*/));
+                                              false ));
       }
 
      Legion::Mapping::PhysicalInstance inst;
@@ -729,6 +732,7 @@ MPIMapper::map_task(
 
   output.postmap_task = false;
 }
+*/
 
 inline 
 void
@@ -767,8 +771,8 @@ MPIMapper::map_inline(
   // add in all the needed fields
   lcs.add_constraint(Legion::FieldConstraint(
               inline_op.requirement.privilege_fields,
-              true /*contiguous*/,
-              true /*inorder*/));
+              true ,
+              true ));
   {
     std::vector<Legion::DimensionKind> dimension_ordering(4);
     dimension_ordering[0] = DIM_X;
@@ -790,7 +794,8 @@ MPIMapper::map_inline(
   output.chosen_instances.push_back(inst);
 }//end map_inline
 
-inline 
+
+/*inline 
 void
 MPIMapper::map_copy(
    const Legion::Mapping::MapperContext ctx,
@@ -825,7 +830,8 @@ MPIMapper::map_copy(
   }
 
 }//map_copy
-
+*/
+/*
 inline 
 void
 MPIMapper::map_close(
@@ -854,7 +860,7 @@ MPIMapper::map_close(
                                        mem);
   output.chosen_instances.push_back(inst);
 }//map_close
-
+*/
 inline 
 void
 MPIMapper::configure_context(
