@@ -95,7 +95,8 @@ struct dense_accessor_t
     const size_t size,
     T * data,
     const user_meta_data_t & user_meta_data,
-    bitset_t & user_attributes
+    bitset_t & user_attributes,
+    size_t index_space
   )
   :
     label_(label),
@@ -103,6 +104,7 @@ struct dense_accessor_t
     data_(data),
     user_meta_data_(user_meta_data),
     user_attributes_(user_attributes),
+    index_space_(index_space),
     is_(size)
   {}
 
@@ -118,6 +120,7 @@ struct dense_accessor_t
     data_(a.data_),
     user_meta_data_(a.user_meta_data_),
     user_attributes_(a.user_attributes_),
+    index_space_(a.index_space_),
     is_(a.is_)
   {}
 
@@ -162,6 +165,15 @@ struct dense_accessor_t
   {
     return user_attributes_;
   } // attributes
+
+  ///
+  //
+  ///
+  size_t
+  index_space() const
+  {
+    return index_space_;
+  } // index_space
 
   //--------------------------------------------------------------------------//
   // Iterator interface.
@@ -275,6 +287,7 @@ private:
   index_space_t is_;
   bitset_t & user_attributes_ =
     *(std::make_unique<bitset_t>());
+  size_t index_space_ = 0;
 
 }; // struct dense_accessor_t
 
@@ -363,6 +376,7 @@ struct storage_type_t<dense, DS, MD>
       new typename meta_data_t::type_info_t(typeid(T)));
 
     data_store[NS][h].versions = versions;
+    data_store[NS][h].index_space = index_space;
 
     for(size_t i=0; i<versions; ++i) {
       data_store[NS][h].attributes[i].reset();
@@ -410,7 +424,8 @@ struct storage_type_t<dense, DS, MD>
 
       return { meta_data.label, meta_data.size,
         reinterpret_cast<T *>(&meta_data.data[version][0]),
-				meta_data.user_data, meta_data.attributes[version] };
+				meta_data.user_data, meta_data.attributes[version],
+        meta_data.index_space };
     } // if
   } // get_accessor
 

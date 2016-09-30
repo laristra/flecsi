@@ -73,6 +73,8 @@ TEST(storage, dense) {
 
   p0.attributes().set(flagged);
 
+  std::cout << "index space: " << p0.index_space() << std::endl;
+
   for(size_t i(0); i<100; ++i) {
     p0[i] = i;
     p1[i] = 1000 + i;
