@@ -61,7 +61,7 @@ class bitfield__
   /*!-------------------------------------------------------------------------*
    * Set individual bit.
    *--------------------------------------------------------------------------*/
-
+#undef setbit
   field_type_t setbit(const size_t bit)
   {
     field_type_t tmp = 1 << bit;

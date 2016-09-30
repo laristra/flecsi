@@ -144,6 +144,7 @@ struct mpilegion_execution_policy_t
                     context_.interop_helper_.all_processes_),
           TaskArgument(&task_args, sizeof(task_args_t)),
           arg_map);
+          index_launcher.tag = MAPPER_ALL_PROC;
           flecsi::execution::future_t future= 
               context_.runtime()->execute_index_space(context_.context(),
                             index_launcher);

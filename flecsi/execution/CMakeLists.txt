@@ -27,6 +27,7 @@ set(execution_HEADERS
   mpilegion/execution_policy.h
   mpilegion/legion_handshake.h
   mpilegion/runtime_driver.h
+  mpilegion/mapper.h
   future.h
   PARENT_SCOPE)
 
