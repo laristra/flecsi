@@ -130,8 +130,6 @@ if(ENABLE_HYPRE)
 
 endif(ENABLE_HYPRE)
 
-
-
 #------------------------------------------------------------------------------#
 # Process id bits
 #------------------------------------------------------------------------------#
@@ -170,6 +168,12 @@ message(STATUS "${CINCH_Cyan}Set id_t bits to allow:\n"
   "   ${flecsi_partitions} partitions with 2^${FLECSI_ID_EBITS} entities each\n"
   "   ${FLECSI_ID_FBITS} flag bits\n"
   "   ${FLECSI_ID_GBITS} global bits (PBITS*EBITS)${CINCH_ColorReset}")
+
+#------------------------------------------------------------------------------#
+# Counter type
+#------------------------------------------------------------------------------#
+
+add_definitions(-DFLECSI_COUNTER_TYPE=${FLECSI_COUNTER_TYPE})
 
 #------------------------------------------------------------------------------#
 # Enable IO with exodus

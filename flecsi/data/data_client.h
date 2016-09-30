@@ -57,13 +57,14 @@ public:
   // The current virtual implementation is here to avoid
   // breaking the old data model.
   //virtual size_t indices(size_t index_space) = 0;
-  virtual size_t
+  virtual
+  size_t
   indices(
     size_t index_space
   )
   {
     return 0;
-  }
+  } // indices
 
 private:
 

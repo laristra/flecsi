@@ -50,36 +50,52 @@ namespace serial {
 
 using index_pair_ = std::pair<size_t, size_t>;
 
+///
+//
+///
 template<typename T>
-struct material_value_{
-  material_value_(size_t material)
+struct material_value__
+{
+  material_value__(size_t material)
   : material(material){}
 
-  material_value_(size_t material, T value)
+  material_value__(size_t material, T value)
   : material(material),
   value(value){}
 
-  material_value_(){}
+  material_value__(){}
 
   size_t material;
   T value;
-};
+}; // struct material_value__
 
 static constexpr size_t INDICES_KEY = 0;
 static constexpr size_t MATERIALS_KEY = 1;
 
+///
+// \brief sparse_accessor_t provides logically array-based access to data
+//        variables that have been registered in the data model.
+//
+// \tparam T The type of the data variable. If this type is not
+//           consistent with the type used to register the data, bad things
+//           can happen. However, it can be useful to reinterpret the type,
+//           e.g., when writing raw bytes. This class is part of the
+//           low-level \e flecsi interface, so it is assumed that you
+//           know what you are doing...
+// \tparam MD The meta data type.
+///
 template<typename T, typename MD>
-struct sparse_accessor_t {
-
+struct sparse_accessor_t
+{
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
-  
+
   using iterator_t = index_space_t::iterator_t;
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
-  using material_value_t = material_value_<T>;
+  using material_value_t = material_value__<T>;
 
   //--------------------------------------------------------------------------//
   // Constructors.
@@ -94,17 +110,13 @@ struct sparse_accessor_t {
   //
   ///
   sparse_accessor_t(
-    const std::string & label,
-    size_t version,
     meta_data_t & meta_data,
-    const user_meta_data_t & user_meta_data
+    size_t version
   )
   :
-  label_(label),
-  version_(version), 
   meta_data_(meta_data),
-  user_meta_data_(user_meta_data),
-  num_indices_(meta_data_.size),
+  version_(version),
+  num_indices_(meta_data.size),
   num_materials_(meta_data_.num_materials)
   {
     auto iitr = meta_data_.data.find(INDICES_KEY);
@@ -124,6 +136,26 @@ struct sparse_accessor_t {
     materials_ = reinterpret_cast<material_value_t *>(&raw_materials[0]);      
   } // sparse_accessor_t
 
+  //--------------------------------------------------------------------------//
+  // Member data interface.
+  //--------------------------------------------------------------------------//
+
+  ///
+  //
+  ///
+  bitset_t &
+  attributes()
+  {
+    return meta_data_.user_attributes_;
+  } // attributes
+
+  //--------------------------------------------------------------------------//
+  // Operators.
+  //--------------------------------------------------------------------------//
+
+  ///
+  //
+  ///
   T &
   operator () (
     size_t index,
@@ -176,12 +208,9 @@ struct sparse_accessor_t {
 
 private:
 
-  std::string label_ = "";
   size_t version_;
   const meta_data_t & meta_data_ =
     *(std::make_unique<meta_data_t>());
-  const user_meta_data_t & user_meta_data_ =
-    *(std::make_unique<user_meta_data_t>());
   size_t num_indices_;
   size_t num_materials_;
   size_t * indices_;
@@ -200,7 +229,7 @@ struct sparse_mutator_t {
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
-  using material_value_t = material_value_<T>;
+  using material_value_t = material_value__<T>;
 
   //--------------------------------------------------------------------------//
   // Constructors.
@@ -226,7 +255,6 @@ struct sparse_mutator_t {
     label_(label),
     version_(version), 
     meta_data_(meta_data),
-    user_meta_data_(user_meta_data),
     num_indices_(meta_data_.size),
     num_materials_(meta_data_.num_materials),
     indices_(new index_pair_[num_indices_]),
@@ -448,19 +476,20 @@ struct sparse_mutator_t {
   } // commit
 
 private:
-  using spare_map_t = std::multimap<size_t, material_value_<T>>;
+  using spare_map_t = std::multimap<size_t, material_value__<T>>;
   using erase_set_t = std::set<std::pair<size_t, size_t>>;
 
   size_t num_slots_;
   std::string label_ = "";
-  size_t version_;
-  const meta_data_t & meta_data_ = {}; 
-  const user_meta_data_t & user_meta_data_ = {};
+  size_t version_ = 0;
+  const meta_data_t & meta_data_ =
+    *(std::make_unique<meta_data_t>());
+    
 
   size_t num_indices_;
   size_t num_materials_;
   index_pair_ * indices_;
-  material_value_<T> * materials_;
+  material_value__<T> * materials_;
   spare_map_t spare_map_;
   erase_set_t * erase_set_;
 }; // struct sparse_accessor_t
@@ -562,7 +591,7 @@ struct storage_type_t<sparse, DS, MD> {
       // check that the requested version exists
       assert(meta_data.versions > version && "version out-of-range");
 
-      return { meta_data.label, version, meta_data, meta_data.user_data };
+      return { meta_data, version };
     } // if
   } // get_accessor
 

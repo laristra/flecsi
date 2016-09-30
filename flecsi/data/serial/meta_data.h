@@ -19,7 +19,8 @@
 #include <vector>
 #include <memory>
 #include <typeinfo>
-#include <bitset>
+
+#include "flecsi/data/common/data_types.h"
 
 ///
 // \file serial/meta_data.h
@@ -42,8 +43,8 @@ namespace data {
 // \tparam T A user-defined data type that will be carried with the meta data.
 ///
 template<typename T>
-struct serial_meta_data_t {
-
+struct serial_meta_data_t
+{
   using user_meta_data_t = T;
 
   std::string label;
@@ -52,9 +53,6 @@ struct serial_meta_data_t {
   size_t size;
   size_t type_size;
   size_t versions;
-
-  std::bitset<8> attributes;
-  std::bitset<8> user_attributes;
 
   ///
   // \brief type_info_t allows creation of reference information
@@ -73,7 +71,9 @@ struct serial_meta_data_t {
   std::shared_ptr<type_info_t> rtti;
 
   std::unordered_map<size_t, std::vector<uint8_t>> data;
+  std::unordered_map<size_t, bitset_t> attributes;
   size_t num_materials;
+
 }; // struct serial_meta_data_t
 
 } // namespace data

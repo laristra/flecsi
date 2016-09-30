@@ -18,6 +18,10 @@
 
 using namespace flecsi;
 
+enum data_attributes_t : size_t {
+  flagged
+}; // enum data_attributes_t
+
 enum mesh_index_spaces_t : size_t {
   vertices,
   edges,
@@ -52,23 +56,27 @@ struct mesh_t : public data::data_client_t {
 //----------------------------------------------------------------------------//
 
 TEST(storage, dense) {
+
   using namespace flecsi::data;
 
   mesh_t m;
 
   // Register 3 versions
-  register_data(m, hydro, pressure, double, dense, 3, cells);
+  register_data(m, hydro, pressure, double, dense, 2, cells);
+  register_data(m, hydro, density, double, dense, 1, cells);
 
   // Initialize
   {
   auto p0 = get_accessor(m, hydro, pressure, double, dense, 0);
   auto p1 = get_accessor(m, hydro, pressure, double, dense, 1);
-  auto p2 = get_accessor(m, hydro, pressure, double, dense, 2);
+  auto d = get_accessor(m, hydro, density, double, dense, 0);
+
+  p0.attributes().set(flagged);
 
   for(size_t i(0); i<100; ++i) {
     p0[i] = i;
     p1[i] = 1000 + i;
-    p2[i] = -double(i);
+    d[i] = -double(i);
   } // for
   } // scope
 
@@ -76,12 +84,16 @@ TEST(storage, dense) {
   {
   auto p0 = get_accessor(m, hydro, pressure, double, dense, 0);
   auto p1 = get_accessor(m, hydro, pressure, double, dense, 1);
-  auto p2 = get_accessor(m, hydro, pressure, double, dense, 2);
+  auto d = get_accessor(m, hydro, density, double, dense, 0);
+
+  ASSERT_TRUE(p0.attributes().test(flagged));
+  ASSERT_FALSE(p1.attributes().test(flagged));
+  ASSERT_FALSE(d.attributes().test(flagged));
 
   for(size_t i(0); i<100; ++i) {
     ASSERT_EQ(p0[i], i);
     ASSERT_EQ(p1[i], 1000+p0[i]);
-    ASSERT_EQ(p2[i], -p0[i]);
+    ASSERT_EQ(d[i], -p0[i]);
   } // for
   } // scope
 } // TEST
@@ -91,6 +103,7 @@ TEST(storage, dense) {
 //----------------------------------------------------------------------------//
 
 TEST(storage, global) {
+
   using namespace flecsi::data;
 
   mesh_t m;
@@ -106,6 +119,9 @@ TEST(storage, global) {
   {
   auto s0 = get_accessor(m, hydro, simulation_data, my_data_t, global, 0);
   auto s1 = get_accessor(m, hydro, simulation_data, my_data_t, global, 1);
+
+  s0.attributes().set(flagged);
+
   s0->t = 0.5;
   s0->n = 100;
   s1->t = 1.5;
@@ -115,6 +131,9 @@ TEST(storage, global) {
   {
   auto s0 = get_accessor(m, hydro, simulation_data, my_data_t, global, 0);
   auto s1 = get_accessor(m, hydro, simulation_data, my_data_t, global, 1);
+
+  ASSERT_TRUE(s0.attributes().test(flagged));
+  ASSERT_FALSE(s1.attributes().test(flagged));
 
   ASSERT_EQ(s0->t, 0.5);
   ASSERT_EQ(s0->n, 100);
