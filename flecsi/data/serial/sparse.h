@@ -69,8 +69,8 @@ struct material_value__
   T value;
 }; // struct material_value__
 
-static constexpr size_t INDICES_KEY = 0;
-static constexpr size_t MATERIALS_KEY = 1;
+static constexpr size_t INDICES_FLAG = 1UL << 63;
+static constexpr size_t MATERIALS_FLAG = 1UL << 62;
 
 ///
 // \brief sparse_accessor_t provides logically array-based access to data
@@ -119,7 +119,7 @@ struct sparse_accessor_t
   num_indices_(meta_data.size),
   num_materials_(meta_data_.num_materials)
   {
-    auto iitr = meta_data_.data.find(INDICES_KEY);
+    auto iitr = meta_data_.data.find(version | INDICES_FLAG);
     assert(iitr != meta_data_.data.end());
 
     std::vector<uint8_t> & raw_indices = 
@@ -127,7 +127,7 @@ struct sparse_accessor_t
 
     indices_ = reinterpret_cast<size_t *>(&raw_indices[0]);
 
-    auto mitr = meta_data_.data.find(MATERIALS_KEY);
+    auto mitr = meta_data_.data.find(version | MATERIALS_FLAG);
     assert(mitr != meta_data_.data.end());
 
     std::vector<uint8_t> & raw_materials = 
@@ -338,7 +338,7 @@ struct sparse_mutator_t {
       return;
     } // if
 
-    auto iitr = meta_data_.data.find(INDICES_KEY);
+    auto iitr = meta_data_.data.find(version_ | INDICES_FLAG);
     assert(iitr != meta_data_.data.end());
 
     std::vector<uint8_t> & raw_indices = 
@@ -347,7 +347,7 @@ struct sparse_mutator_t {
     size_t * indices = 
       reinterpret_cast<size_t *>(&raw_indices[0]);
 
-    auto mitr = meta_data_.data.find(MATERIALS_KEY);
+    auto mitr = meta_data_.data.find(version_ | MATERIALS_FLAG);
     assert(mitr != meta_data_.data.end());
 
     std::vector<uint8_t> & raw_materials = 
@@ -555,10 +555,12 @@ struct storage_type_t<sparse, DS, MD> {
 
     md.num_materials = num_materials;
 
-    auto & iv = md.data[INDICES_KEY] = std::vector<uint8_t>();
-    iv.resize((indices + 1) * sizeof(size_t));
+    for(size_t version = 0; version < versions; ++version){
+      auto & iv = md.data[version | INDICES_FLAG] = std::vector<uint8_t>();
+      iv.resize((indices + 1) * sizeof(size_t));
 
-    md.data[MATERIALS_KEY] = std::vector<uint8_t>();
+      md.data[version | MATERIALS_FLAG] = std::vector<uint8_t>();
+    }
 
     return {};
   } // register_data

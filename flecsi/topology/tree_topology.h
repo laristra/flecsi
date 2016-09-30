@@ -31,6 +31,7 @@
 #include "flecsi/geometry/point.h"
 #include "flecsi/concurrency/thread_pool.h"
 #include "flecsi/data/data_client.h"
+#include "flecsi/topology/index_space.h"
 
 #define np(X)                                                             \
  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
@@ -348,6 +349,10 @@ public:
     return id_ == bid.id_;
   }
 
+  constexpr bool operator!=(const branch_id& bid) const{
+    return id_ != bid.id_;
+  }
+
   constexpr void push(int_t bits){
     assert(bits < int_t(1) << dimension);
 
@@ -448,7 +453,6 @@ private:
 
 class entity_id_t{
 public:
-
   entity_id_t(){}
 
   entity_id_t(const entity_id_t& id)
@@ -464,6 +468,10 @@ public:
   entity_id_t& operator=(const entity_id_t& id){
     id_ = id.id_;
     return *this;
+  }
+
+  size_t index_space_index() const{
+    return id_;
   }
 
 private:
@@ -487,14 +495,6 @@ enum class action : uint8_t{
   none = 0b00,
   refine = 0b01,
   coarsen = 0b10
-};
-
-
-template<class T>
-struct default_predicate__{
-  bool operator()(const T& v) const{
-    return true;
-  }
 };
 
 template<class P>
@@ -532,347 +532,17 @@ public:
 
   using geometry_t = tree_geometry<element_t, dimension>;
 
+  using entity_space_t = index_space<entity_t*, true, true, false>;
+  
+  using branch_space_t = index_space<branch_t*, true, true, false>;
+  
+  using subentity_space_t = index_space<entity_t*, false, true, false>;
+
   struct filter_valid{
-    bool operator()(const entity_t* ent) const{
+    bool operator()(entity_t* ent) const{
       return ent->is_valid();
     }
   };  
-
-  template<class T, class F = default_predicate__<T*>>
-  class iterator{
-   public:
-    using id_t = typename T::id_t;
-    using id_vector_t = std::vector<id_t>;
-
-    iterator(const iterator& itr)
-    : tree_(itr.tree_), items_(itr.items_), index_(itr.index_),
-    count_(items_->size()){}
-
-    iterator(tree_topology& tree, const id_vector_t& items, size_t index)
-    : tree_(tree), items_(&items), index_(index), count_(items_->size()){}
-
-    iterator& operator++(){
-      ++index_;
-      return *this;
-    }
-
-    iterator& operator=(const iterator & itr){
-      tree_ = itr.tree_;
-      index_ = itr.index_;
-      items_ = itr.items_;
-      return *this;
-    }
-
-    T* operator*(){
-      while(index_ < count_){
-        auto item = tree_.get((*items_)[index_]);
-        if(F()(item)){
-          return item;
-        }
-        ++index_;
-      }
-
-      return nullptr;
-    }
-
-    T* operator->(){
-      while(index_ < count_){
-        auto item = tree_.get((*items_)[index_]);
-        if(F()(item)){
-          return item;
-        }
-        ++index_;
-      }
-    }
-
-    bool operator==(const iterator& itr) const{
-      return index_ == itr.index_;
-    }
-
-    bool operator!=(const iterator& itr) const{
-      return index_ != itr.index_;
-    }
-
-   private:
-    tree_topology& tree_;
-    const id_vector_t* items_;
-    size_t index_;
-    size_t count_;
-  };
-
-  template<class T, class F = default_predicate__<T*>>
-  class iterable_set{
-  public:
-    using iterator_t = iterator<T>;
-
-    using id_vector_t = typename iterator_t::id_vector_t;
-
-    using filter_function = std::function<bool(T&)>;
-    using apply_function = std::function<void(T&)>;
-
-    template<typename R>
-    using map_function = std::function<R(T&)>;
-
-    template<typename R>
-    using reduce_function = std::function<void(T&, R&)>;
-
-    iterable_set() = default;
-
-    iterable_set(tree_topology& tree, const id_vector_t& v, bool sorted = false)
-    : tree_(&tree), v_(&v), begin_(0), end_(v_->size()),
-    owned_(false), sorted_(sorted){}
-
-    iterable_set(tree_topology& tree, id_vector_t&& v, bool sorted)
-    : tree_(&tree), v_(new id_vector_t(std::move(v))),
-    begin_(0), end_(v_->size()), owned_(true), sorted_(sorted){}
-
-    ~iterable_set(){
-      if(owned_){
-        delete v_;
-      }
-    }
-
-    iterable_set & operator=(const iterable_set& r) = default;
-
-    iterator_t begin() const { return iterator_t(*tree_, *v_, begin_); }
-
-    iterator_t end() const { return iterator_t(*tree_, *v_, end_); }
-
-    T* operator[](size_t i) const{
-      return tree_->template get((*v_)[begin_ + i]);
-    }
-
-    T* front() const{
-      return tree_->template get((*v_)[begin_]);
-    }
-
-    T* back() const{
-      return tree_->template get((*v_)[end_ - 1]);
-    }
-
-    size_t size() const { return end_ - begin_; }
-
-    iterable_set filter(filter_function f) const {
-      id_vector_t v;
-
-      for (auto item : *this) {
-        if (f(*item)) {
-          v.push_back(item->id());
-        }
-      }
-
-      return iterable_set(*tree_, std::move(v), sorted_);
-    }
-
-    template<typename S>
-    std::vector<iterable_set> scatter(map_function<T> f) const {
-
-      std::map<S, id_vector_t> id_map;
-      for (auto item : *this)
-        id_map[f(*item)].push_back(item->id());
-
-      std::vector<iterable_set> ent_map;
-      for ( auto entry : id_map )
-        ent_map.emplace_back(
-          std::move(iterable_set(*tree_, std::move(entry.second), sorted_) )
-        );
-
-      return ent_map;
-    }
-
-    void apply(apply_function f) const {
-      for (auto ent : *this) {
-        f(ent);
-      }
-    }
-
-    template<typename S>
-    std::vector<S> map(map_function<T> f) const {
-      std::vector<S> ret;
-      ret.reserve(v_->size());
-
-      for (auto item : *this) {
-        ret.push_back(f(*item));
-      }
-      return ret;
-    }
-
-    template<typename S>
-    S reduce(T start, reduce_function<T> f) const {
-      T r = start;
-
-      for (auto item : *this) {
-        f(*item, r);
-      }
-
-      return r;
-    }
-
-    void prepare_(){
-      if(!owned_){
-        v_ = new id_vector_t(*v_);
-        owned_ = true;
-      }
-
-      if(!sorted_){
-        auto vc = const_cast<id_vector_t*>(v_);
-        std::sort(vc->begin(), vc->end());
-        sorted_ = true;
-      }
-    }
-
-    iterable_set& operator&=(const iterable_set& r){
-      prepare_();
-
-      id_vector_t ret;
-
-      if(r.sorted_){
-        ret.resize(std::min(v_->size(), r.v_->size()));
-
-        auto itr = std::set_intersection(v_->begin(), v_->end(),
-                                         r.v_->begin(), r.v_->end(), ret.begin());
-
-        ret.resize(itr - ret.begin());
-      }
-      else{
-        id_vector_t v2(*r.v_);
-        std::sort(v2.begin(), v2.end());
-
-        ret.resize(std::min(v_->size(), v2.size()));
-
-        auto itr = std::set_intersection(v_->begin(), v_->end(),
-                                         v2.begin(), v2.end(), ret.begin());
-
-        ret.resize(itr - ret.begin());
-      }
-
-      delete v_;
-      v_ = new id_vector_t(std::move(ret));
-
-      begin_ = 0;
-      end_ = v_->size();
-
-      return *this;
-    }
-
-    iterable_set operator&(const iterable_set& r) const{
-      iterable_set ret(*this);
-      ret &= r;
-      return ret;
-    }
-
-    iterable_set& operator|=(const iterable_set& r){
-      prepare_();
-
-      id_vector_t ret;
-
-      if(r.sorted_){
-        ret.resize(v_->size() + r.v_->size());
-
-        auto itr = std::set_union(v_->begin(), v_->end(),
-                                  r.v_->begin(), r.v_->end(), ret.begin());
-
-       ret.resize(itr - ret.begin());
-      }
-      else{
-        id_vector_t v2(*r.v_);
-
-        std::sort(v2.begin(), v2.end());
-
-        ret.resize(v_->size() + v2.size());
-
-        auto itr = std::set_union(v_->begin(), v_->end(),
-                                  v2.begin(), v2.end(), ret.begin());
-
-        ret.resize(itr - ret.begin());
-      }
-
-      delete v_;
-      v_ = new id_vector_t(std::move(ret));
-
-      begin_ = 0;
-      end_ = v_->size();
-
-      return *this;
-    }
-
-    iterable_set operator|(const iterable_set& r) const{
-      iterable_set ret(*this);
-      ret |= r;
-      return ret;
-    }
-
-    iterable_set& operator-=(const iterable_set& r){
-      prepare_();
-
-      id_vector_t ret(v_->size());
-
-      if(r.sorted_){
-        auto itr = std::set_difference(v_->begin(), v_->end(),
-                                       r.v_->begin(), r.v_->end(), ret.begin());
-
-        ret.resize(itr - ret.begin());
-      }
-      else{
-        id_vector_t v2(*r.v_);
-
-        std::sort(v2.begin(), v2.end());
-
-        auto itr = std::set_difference(v_->begin(), v_->end(),
-                                       v2.begin(), v2.end(), ret.begin());
-
-        ret.resize(itr - ret.begin());
-      }
-
-      delete v_;
-      v_ = new id_vector_t(std::move(ret));
-
-      begin_ = 0;
-      end_ = v_->size();
-
-      return *this;
-    }
-
-    iterable_set operator-(const iterable_set& r) const{
-      iterable_set ret(*this);
-      ret -= r;
-      return ret;
-    }
-
-    void add(T* item){
-      if(!owned_){
-        v_ = new id_vector_t(*v_);
-        owned_ = true;
-      }
-
-      auto vc = const_cast<id_vector_t*>(v_);
-
-      if(sorted_){
-        auto id = item->id();
-        auto itr = std::upper_bound(vc->begin(), vc->end(), id);
-        vc->insert(itr, id);
-      }
-      else{
-        vc->push_back(item->id());
-      }
-    }
-
-    iterable_set& operator<<(T* item){
-      add(item);
-      return *this;
-    }
-
-  private:
-    tree_topology* tree_ = nullptr;
-    const id_vector_t* v_ = nullptr;
-    size_t begin_ = 0;
-    size_t end_ = 0;
-    bool owned_ = false;
-    bool sorted_ = true;
-  };
-
-  using branch_set_t = iterable_set<branch_t>;
-  using entity_set_t = iterable_set<entity_t>;
 
   tree_topology(){
     branch_id_t bid = branch_id_t::root();
@@ -920,12 +590,13 @@ public:
     return b->template child_<branch_t>(ci);
   }
 
-  const std::vector<entity_t*>& all_entities() const{
-    return entities_;
+  auto all_entities() const{
+    return entities_.template slice<>();
   }
 
-  iterable_set<entity_t, filter_valid> entities(){
-    return iterable_set<entity_t, filter_valid>(*this, entity_ids_, true);
+  auto entities(){
+    return entities_.template cast<
+      entity_t*, false, false, false, filter_valid>();
   }
 
   void insert(entity_t* ent){
@@ -1015,8 +686,9 @@ public:
     return pn;
   }
 
-  entity_set_t find_in_radius(const point_t& center, element_t radius){
-    entity_id_vector_t ents;
+  subentity_space_t find_in_radius(const point_t& center, element_t radius){
+    subentity_space_t ents;
+    ents.set_master(entities_);
 
     auto ef =
     [&](entity_t* ent, const point_t& center, element_t radius) -> bool{
@@ -1029,17 +701,15 @@ public:
 
     find_(b, size, ents, ef, geometry_t::intersects, center, radius);
 
-    return entity_set_t(*this, std::move(ents), false);
+    return ents;
   }
 
-  entity_set_t find_in_radius(thread_pool& pool,
-                              const point_t& center,
-                              element_t radius){
+  subentity_space_t find_in_radius(thread_pool& pool,
+                                   const point_t& center,
+                                   element_t radius){
 
     size_t queue_depth = get_queue_depth(pool);
     size_t m = branch_int_t(1) << queue_depth * P::dimension;
-
-    entity_id_vector_t entity_ids;
 
     auto ef =
     [&](entity_t* ent, const point_t& center, element_t radius) -> bool{
@@ -1049,7 +719,8 @@ public:
     virtual_semaphore sem(1 - int(m));
     std::mutex mtx;
 
-    entity_id_vector_t ents;
+    subentity_space_t ents;
+    ents.set_master(entities_);
 
     size_t depth;
     element_t size;
@@ -1061,11 +732,12 @@ public:
 
     sem.acquire();
 
-    return entity_set_t(*this, std::move(ents), false);
+    return ents;
   }
 
-  entity_set_t find_in_box(const point_t& min, const point_t& max){
-    entity_id_vector_t ents;
+  subentity_space_t find_in_box(const point_t& min, const point_t& max){
+    subentity_space_t ents;
+    ents.set_master(entities_);
 
     auto ef =
     [&](entity_t* ent, const point_t& min, const point_t& max) -> bool{
@@ -1089,17 +761,15 @@ public:
 
     find_(b, size, ents, ef, geometry_t::intersects_box, min, max);
 
-    return entity_set_t(*this, std::move(ents), false);
+    return ents;
   }
 
-  entity_set_t find_in_box(thread_pool& pool,
-                           const point_t& min,
-                           const point_t& max){
+  subentity_space_t find_in_box(thread_pool& pool,
+                                const point_t& min,
+                                const point_t& max){
 
     size_t queue_depth = get_queue_depth(pool);
     size_t m = branch_int_t(1) << queue_depth * P::dimension;
-
-    entity_id_vector_t entity_ids;
 
     auto ef =
     [&](entity_t* ent, const point_t& min, const point_t& max) -> bool{
@@ -1121,7 +791,8 @@ public:
     element_t size;
     branch_t* b = find_start_(center, radius, depth, size);
 
-    entity_id_vector_t ents;
+    subentity_space_t ents;
+    ents.set_master(entities_);
 
     queue_depth += depth;
 
@@ -1133,7 +804,7 @@ public:
 
     sem.acquire();
 
-    return entity_set_t(*this, std::move(ents), false);
+    return ents;
   }
 
   template<typename EF, typename... ARGS>
@@ -1259,7 +930,6 @@ public:
     entity_id_t id = entities_.size();
     ent->set_id_(id);
     entities_.push_back(ent);
-    entity_ids_.push_back(id);
     return ent;
   }
 
@@ -1380,13 +1050,11 @@ public:
     std::memcpy(&num_entities, buf + pos, sizeof(num_entities));
     pos += sizeof(num_entities);
 
-    entities_.resize(num_entities);
-
     for(size_t entity_id = 0; entity_id < num_entities; ++entity_id){
       entity_t* ent = new entity_t;
-      entities_[entity_id] = ent;
-
       ent->set_id_(entity_id);
+
+      entities_.push_back(ent);
 
       branch_int_t bi;
       std::memcpy(&bi, buf + pos, sizeof(bi));
@@ -1665,7 +1333,7 @@ private:
     template<typename EF, typename BF, typename... ARGS>
     void find_(branch_t* b,
                element_t size,
-               entity_id_vector_t& ents,
+               subentity_space_t& ents,
                EF&& ef,
                BF&& bf,
                ARGS&&... args){
@@ -1673,7 +1341,7 @@ private:
       if(b->is_leaf()){
         for(auto ent : *b){
           if(ef(ent, std::forward<ARGS>(args)...)){
-            ents.push_back(ent->id());
+            ents.push_back(ent);
           }
         }
         return;
@@ -1701,7 +1369,7 @@ private:
                size_t depth,
                branch_t* b,
                element_t size,
-               entity_id_vector_t& ents,
+               subentity_space_t& ents,
                EF&& ef,
                BF&& bf,
                ARGS&&... args){
@@ -1710,7 +1378,7 @@ private:
         mtx.lock();
         for(auto ent : *b){
           if(ef(ent, std::forward<ARGS>(args)...)){
-            ents.push_back(ent->id());
+            ents.push_back(ent);
           }
         }
         mtx.unlock();
@@ -1734,14 +1402,14 @@ private:
           if(depth == queue_depth){
 
             auto f = [&, size, ci](){
-              entity_id_vector_t branch_ents;
+              subentity_space_t branch_ents;
 
               find_(ci, size, branch_ents,
                 std::forward<EF>(ef), std::forward<BF>(bf),
                 std::forward<ARGS>(args)...);
 
               mtx.lock();
-              ents.insert(ents.end(), branch_ents.begin(), branch_ents.end());
+              ents.append(branch_ents);
               mtx.unlock();
 
               sem.release();
@@ -1877,8 +1545,7 @@ private:
   branch_map_t branch_map_;
   size_t max_depth_;
   branch_t* root_;
-  std::vector<entity_t*> entities_;
-  entity_id_vector_t entity_ids_;
+  entity_space_t entities_;
   std::array<point<element_t, dimension>, 2> range_;
   point<element_t, dimension> scale_;
   element_t max_scale_;
@@ -1899,6 +1566,10 @@ public:
   }
 
   entity_id_t id() const{
+    return id_;
+  }
+
+  entity_id_t index_space_id() const{
     return id_;
   }
 
