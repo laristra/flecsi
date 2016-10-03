@@ -19,18 +19,11 @@
 namespace flecsi {
 namespace topology {
 
-template<class T>
-struct default_predicate__{
-  bool operator()(const T& v) const{
-    return true;
-  }
-};
-
 template<class T,
          bool STORAGE = false,
          bool OWNED = true,
          bool SORTED = false,
-         class F = default_predicate__<T>>
+         class F = void>
 class index_space{
 public:
   using id_t = typename std::remove_pointer<T>::type::id_t;
@@ -82,25 +75,25 @@ public:
   };
 
   template<class S>
-  class iterator_{
+  class iterator_base_{
    public:
     using MS = typename std::remove_const<S>::type;
 
-    iterator_(const iterator_& itr)
+    iterator_base_(const iterator_base_& itr)
     : items_(itr.items_), index_(itr.index_), end_(itr.end_), s_(itr.s_){}
 
-    iterator_(item_vector_t* s, const id_vector_t& items, size_t index, size_t end)
+    iterator_base_(item_vector_t* s, const id_vector_t& items, size_t index, size_t end)
     : items_(&items), index_(index), end_(end), s_(s){}
 
-    iterator_(const item_vector_t* s, const id_vector_t& items, size_t index, size_t end)
+    iterator_base_(const item_vector_t* s, const id_vector_t& items, size_t index, size_t end)
     : items_(&items), index_(index), end_(end), s_(const_cast<item_vector_t*>(s)){}
 
-    iterator_& operator++(){
+    iterator_base_& operator++(){
       ++index_;
       return *this;
     }
 
-    iterator_& operator=(const iterator_ & itr){
+    iterator_base_& operator=(const iterator_base_ & itr){
       index_ = itr.index_;
       end_ = itr.end_;
       items_ = itr.items_;
@@ -108,35 +101,11 @@ public:
       return *this;
     }
 
-    S& operator*(){
-      while(index_ < end_){
-        T& item = get_(index_);
-        if(F()(item)){
-          return item;
-        }
-        ++index_;
-      }
-
-      assert(false && "end of range");
-    }
-
-    S* operator->(){
-      while(index_ < end_){
-        T& item = get_(index_);
-        if(F()(item)){
-          return &item;
-        }
-        ++index_;
-      }
-
-      assert(false && "end of range");
-    }
-
-    bool operator==(const iterator_& itr) const{
+    bool operator==(const iterator_base_& itr) const{
       return index_ == itr.index_;
     }
 
-    bool operator!=(const iterator_& itr) const{
+    bool operator!=(const iterator_base_& itr) const{
       return index_ != itr.index_;
     }
 
@@ -144,11 +113,73 @@ public:
       return (*s_)[(*items_)[index].index_space_index()];
     }
 
-   private:
+   protected:
     const id_vector_t* items_;
     size_t index_;
     size_t end_;
     item_vector_t* s_;
+  };
+
+  template<class S, class P>
+  class iterator_ : public iterator_base_<S>{
+  public:
+    using B = iterator_base_<S>;
+
+    iterator_(const iterator_& itr)
+    : B(itr){}
+
+    iterator_(item_vector_t* s, const id_vector_t& items, size_t index, size_t end)
+    : B(s, items, index, end){}
+
+    iterator_(const item_vector_t* s, const id_vector_t& items, size_t index, size_t end)
+    : B(s, items, index, end){}
+
+    S& operator*(){
+      while(B::index_ < B::end_){
+        T& item = get_(B::index_);
+        if(P()(item)){
+          return item;
+        }
+        ++B::index_;
+      }
+
+      assert(false && "end of range");
+    }
+
+    S* operator->(){
+      while(B::index_ < B::end_){
+        T& item = get_(B::index_);
+        if(P()(item)){
+          return &item;
+        }
+        ++B::index_;
+      }
+
+      assert(false && "end of range");
+    }
+  };
+
+  template<class S>
+  class iterator_<S, void> : public iterator_base_<S>{
+  public:
+    using B = iterator_base_<S>;
+
+    iterator_(const iterator_& itr)
+    : B(itr){}
+
+    iterator_(item_vector_t* s, const id_vector_t& items, size_t index, size_t end)
+    : B(s, items, index, end){}
+
+    iterator_(const item_vector_t* s, const id_vector_t& items, size_t index, size_t end)
+    : B(s, items, index, end){}
+
+    S& operator*(){
+      return get_(B::index_);
+    }
+
+    S* operator->(){
+      return &get_(B::index_);
+    }
   };
 
   index_space(bool storage = STORAGE)
@@ -267,20 +298,20 @@ public:
     return *reinterpret_cast<const index_space<S,STORAGE2,OWNED2,SORTED2,F2>*>(this);
   }
 
-  iterator_<T> begin(){ 
-    return iterator_<T>(s_, *v_, begin_, end_);
+  auto begin(){ 
+    return iterator_<T, F>(s_, *v_, begin_, end_);
   }
 
-  iterator_<const T> begin() const{ 
-    return iterator_<const T>(s_, *v_, begin_, end_);
+  auto begin() const{ 
+    return iterator_<const T, F>(s_, *v_, begin_, end_);
   }
 
-  iterator_<T> end(){
-    return iterator_<T>(s_, *v_, end_, end_); 
+  auto end(){
+    return iterator_<T, F>(s_, *v_, end_, end_); 
   }
 
-  iterator_<const T> end() const{
-    return iterator_<const T>(s_, *v_, end_, end_); 
+  auto end() const{
+    return iterator_<const T, F>(s_, *v_, end_, end_); 
   }
 
   id_range_ ids() const{

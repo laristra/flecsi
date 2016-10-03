@@ -20,7 +20,9 @@ namespace execution {
 ///
 //
 ///
-template<typename execution_policy_t>
+template<
+  typename execution_policy_t
+>
 struct function__
 {
 

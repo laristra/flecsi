@@ -24,8 +24,9 @@
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
-#include "flecsi/utils/const_string.h"
 #include "flecsi/data/data_client.h"
+#include "flecsi/data/data_handle.h"
+#include "flecsi/utils/const_string.h"
 
 ///
 // \file serial/global.h
@@ -37,12 +38,29 @@ namespace flecsi {
 namespace data {
 namespace serial {
 
+//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
+// Helper type definitions.
+//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
+
 //----------------------------------------------------------------------------//
 // Scalar accessor.
 //----------------------------------------------------------------------------//
 
+///
+// \brief global_accessor_t provides logically array-based access to data
+//        variables that have been registered in the data model.
+//
+// \tparam T The type of the data variable. If this type is not
+//           consistent with the type used to register the data, bad things
+//           can happen. However, it can be useful to reinterpret the type,
+//           e.g., when writing raw bytes. This class is part of the
+//           low-level \e flecsi interface, so it is assumed that you
+//           know what you are doing...
+// \tparam MD The meta data type.
+///
 template<typename T, typename MD>
-struct global_accessor_t {
+struct global_accessor_t
+{
 
   //--------------------------------------------------------------------------//
   // Type definitions.
@@ -57,17 +75,57 @@ struct global_accessor_t {
 
   global_accessor_t() {}
 
+  ///
+  // Constructor.
+  //
+  // \param label The c_str() version of the const_string_t used for
+  //              this data variable's hash.
+  // \param size The size of the associated index space.
+  // \param data A pointer to the raw data.
+  // \param user_meta_data A reference to the user-defined meta data.
+  ///
   global_accessor_t(
     const std::string & label,
     T * data,
-    const user_meta_data_t & user_meta_data
+    const user_meta_data_t & user_meta_data,
+    bitset_t & user_attributes
   )
   :
     label_(label),
     data_(data),
-    user_meta_data_(user_meta_data)
+    user_meta_data_(user_meta_data),
+    user_attributes_(user_attributes)
   {}
 
+	///
+  // Copy constructor.
+	///
+	global_accessor_t(
+    const global_accessor_t & a
+  )
+  :
+    label_(a.label_),
+    data_(a.data_),
+    user_meta_data_(a.user_meta_data_),
+    user_attributes_(a.user_attributes_)
+  {}
+	///
+  // \brief Return the user meta data for this data variable.
+	///
+  const user_meta_data_t &
+  meta_data() const
+  {
+    return user_meta_data_;
+  } // meta_data
+
+  ///
+  //
+  ///
+  bitset_t &
+  attributes()
+  {
+    return user_attributes_;
+  } // attributes
   ///
   //
   ///
@@ -102,6 +160,8 @@ private:
   T * data_ = nullptr;
   const user_meta_data_t & user_meta_data_ =
     *(std::make_unique<user_meta_data_t>());
+  bitset_t & user_attributes_ =
+    *(std::make_unique<bitset_t>());
 
 }; // struct global_accessor_t
 
@@ -110,9 +170,14 @@ private:
 //----------------------------------------------------------------------------//
 
 template<typename T>
-struct global_handle_t {
+struct global_handle_t : public data_handle_t
+{
+  using type = T;
 }; // struct global_handle_t
 
+//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
+// Main type definition.
+//+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 //----------------------------------------------------------------------------//
 // Scalar storage type.
 //----------------------------------------------------------------------------//
@@ -225,7 +290,7 @@ struct storage_type_t<global, DS, MD> {
 
       return { meta_data.label,
         reinterpret_cast<T *>(&meta_data.data[version][0]),
-        meta_data.user_data };
+        meta_data.user_data, meta_data.attributes[version] };
     } // if
   } // get_accessor
 

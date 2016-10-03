@@ -48,11 +48,15 @@ struct serial_execution_policy_t
   // FIXME: Finish Doxygen
 
   ///
+  // Serial task registration.
   //
+  // \tparam R The return type of the task.
+  // \tparam A The arguments type of the task. This is a std::tuple of the
+  //           user task arguments.
   ///
   template<
     typename R,
-    typename ... As
+    typename A
   >
   static
   bool
@@ -63,9 +67,16 @@ struct serial_execution_policy_t
   } // register_task
 
   ///
+  // \tparam R The task return type.
+  // \tparam T The user task type.
+  // \tparam As The user task argument types.
   //
+  // \param key
+  // \param user_task
+  // \param args
   ///
   template<
+    typename R,
     typename T,
     typename ... As
   >
@@ -77,8 +88,8 @@ struct serial_execution_policy_t
     As ... args
   )
   {
-    auto t = std::make_tuple(args ...);
-    return tuple_function(user_task, t);
+    auto targs = std::make_tuple(args ...);
+    return user_task(targs);
   } // execute_task
   
   //--------------------------------------------------------------------------//

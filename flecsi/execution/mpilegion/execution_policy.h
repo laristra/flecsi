@@ -33,24 +33,21 @@
 namespace flecsi {
 namespace execution {
 
-/*!
-  \struct mpilegion_execution_policy mpilegion/execution_policy.h
-  \brief mpilegion_execution_policy provides...
- */
+///
+// \struct mpilegion_execution_policy mpilegion/execution_policy.h
+// \brief mpilegion_execution_policy provides...
+///
 struct mpilegion_execution_policy_t
 {
 
-  /*--------------------------------------------------------------------------*
-   * Task interface.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------//
+  // Task interface.
+  //--------------------------------------------------------------------------//
 
-  /*
-    To add:
-      task type (leaf, inner, etc...)
-   */
+  // FIXME: add task type (leaf, inner, etc...)
   template<
     typename R,
-    typename ... As
+    typename A
   >
   static
   bool
@@ -58,38 +55,57 @@ struct mpilegion_execution_policy_t
     task_hash_key_t key
   )
   {
-  
-    switch(std::get<1>(key)) {
+    // Get the processor and launch types
+    const processor_t processor = std::get<1>(key);
+    const launch_t launch = std::get<2>(key);
+
+    switch (processor) {
+
       case loc:
-        if (std::get<2>(key) == single)
-          return context_t::instance().register_task(key,
-            legion_task_wrapper_<loc, 1, 0, R, As ...>::runtime_registration);
-        if (std::get<2>(key) == index)
-          return context_t::instance().register_task(key,
-            legion_task_wrapper_<loc, 0, 1, R, As ...>::runtime_registration);
-        if (std::get<2>(key) == any)
-          return context_t::instance().register_task(key,
-            legion_task_wrapper_<loc, 1, 1, R, As ...>::runtime_registration);
-        break;
+        if(launch == single) {
+            return context_t::instance().register_task(key,
+              legion_task_registrar__<loc, 1, 0, R, A>::register_task);
+        }
+        else if(launch == index) {
+            return context_t::instance().register_task(key,
+              legion_task_registrar__<loc, 0, 1, R, A>::register_task);
+        }
+        else {
+            return context_t::instance().register_task(key,
+              legion_task_registrar__<loc, 1, 1, R, A>::register_task);
+        } // if
+
       case toc:
-        if (std::get<2>(key) == single)
-          return context_t::instance().register_task(key,
-            legion_task_wrapper_<toc, 1, 0, R, As ...>::runtime_registration);
-        if (std::get<2>(key) == index)
-          return context_t::instance().register_task(key,
-            legion_task_wrapper_<toc, 0, 1, R, As ...>::runtime_registration);
-        if (std::get<2>(key) == any)
-          return context_t::instance().register_task(key,
-            legion_task_wrapper_<toc, 1, 1, R, As ...>::runtime_registration);
-        break;
-      case mpi:
-       return true;
-      break;
-      default: throw std::runtime_error("unsupported processor type");
+        if(launch == single) {
+            return context_t::instance().register_task(key,
+              legion_task_registrar__<loc, 1, 0, R, A>::register_task);
+        }
+        else if(launch == index) {
+            return context_t::instance().register_task(key,
+              legion_task_registrar__<loc, 0, 1, R, A>::register_task);
+        }
+        else {
+            return context_t::instance().register_task(key,
+              legion_task_registrar__<loc, 1, 1, R, A>::register_task);
+        } // if
+
+      default:
+        throw std::runtime_error("unsupported processor type");
+
     } // switch
   } // register_task
 
+  ///
+  // \tparam R The task return type.
+  // \tparam T The user task type.
+  // \tparam As The user task argument types.
+  //
+  // \param key
+  // \param user_task
+  // \param args
+  ///
   template<
+    typename R,
     typename T,
     typename ... As
   >
@@ -97,19 +113,22 @@ struct mpilegion_execution_policy_t
   decltype(auto)
   execute_task(
     task_hash_key_t key,
-    T user_task, As ... args
+    T user_task,
+    As ... args
   )
   {
     using namespace Legion;
 
     context_t & context_ = context_t::instance();
 
-    using task_args_t = std::tuple<T, As ...>;
+    using task_args_t = legion_task_args__<R, std::tuple<As ...>>;
+
+    auto user_task_args = std::make_tuple(args ...);
 
     // We can't use std::forward or && references here because
     // the calling state is not guarunteed to exist when the
     // task is invoked, i.e., we have to use copies...
-    task_args_t task_args(user_task, args ...);
+    task_args_t task_args(user_task, user_task_args);
  
     if(std::get<1>(key) == mpi) {
      context_.interop_helper_.shared_func_=std::bind(user_task,
@@ -150,20 +169,20 @@ struct mpilegion_execution_policy_t
     } // if
   } // execute_task
 
-  /*--------------------------------------------------------------------------*
-   * Function interface.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------//
+  // Function interface.
+  //--------------------------------------------------------------------------//
 
-  /*!
-    This method registers a user function with the current
-    execution context.
-    
-    \param key The function identifier.
-    \param user_function A reference to the user function as a std::function.
-
-    \return A boolean value indicating whether or not the function was
-      successfully registered.
-   */
+  ///
+  // This method registers a user function with the current
+  // execution context.
+  //
+  // \param key The function identifier.
+  // \param user_function A reference to the user function as a std::function.
+  //
+  // \return A boolean value indicating whether or not the function was
+  //         successfully registered.
+  ///
   template<
     typename R,
     typename ... As
@@ -178,15 +197,15 @@ struct mpilegion_execution_policy_t
     context_t::instance().register_function(key, user_function);
   } // register_function
 
-  /*!
-    This method looks up a function from the \e handle argument
-    and executes the associated it with the provided \e args arguments.
-    
-    \param handle The function handle to execute.
-    \param args A variadic argument list of the function parameters.
-
-    \return The return type of the provided function handle.
-   */
+  ///
+  // This method looks up a function from the \e handle argument
+  // and executes the associated it with the provided \e args arguments.
+  //
+  // \param handle The function handle to execute.
+  // \param args A variadic argument list of the function parameters.
+  //
+  // \return The return type of the provided function handle.
+  ///
   template<
     typename T,
     typename ... As
