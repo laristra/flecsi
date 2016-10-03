@@ -100,6 +100,9 @@ struct serial_execution_policy_t
   // This method registers a user function with the current
   // execution context.
   //
+  // \tparam R Return type.
+  // \tparam A Argument type (std::tuple).
+  //
   // \param key The function identifier.
   // \param user_function A reference to the user function as a std::function.
   //
@@ -108,13 +111,13 @@ struct serial_execution_policy_t
   ///
   template<
     typename R,
-    typename ... As
+    typename A
   >
   static
   bool
   register_function(
     const const_string_t & key,
-    std::function<R(As ...)> & user_function
+    std::function<R(A)> & user_function
   )
   {
     context_t::instance().register_function(key, user_function);
@@ -140,8 +143,8 @@ struct serial_execution_policy_t
     As && ... args
   )
   {
-    auto t = std::make_tuple(args ...);
-    return handle(context_t::instance().function(handle.key), t);
+    auto targs = std::make_tuple(args ...);
+    return handle(context_t::instance().function(handle.key), targs);
   } // execute_function
 
 }; // struct serial_execution_policy_t

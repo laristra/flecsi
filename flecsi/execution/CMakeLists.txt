@@ -69,7 +69,7 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
     LIBRARIES flecsi
   )
 
-else()
+else() # serial
 
   cinch_add_unit(task
     SOURCES
@@ -80,6 +80,14 @@ else()
     LIBRARIES flecsi
   )
 
+  cinch_add_unit(simple_function
+    SOURCES
+      test/function.cc
+      test/simple_function.h
+      serial/runtime_driver.cc
+    DEFINES FLECSI_DRIVER=flecsi/execution/test/simple_function.h
+    LIBRARIES flecsi
+  )
 endif()
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")

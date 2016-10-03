@@ -29,20 +29,21 @@ struct function__
   // FIXME: Finish Doxygen
 
   ///
-  //
+  // \tparam R Return type.
+  // \tparam A Argument type (std::tuple).
   ///
   template<
     typename R,
-    typename ... As
+    typename A
   >
   static
   decltype(auto)
   register_function(
     const const_string_t & key,
-    std::function<R(As ...)> & user_function
+    std::function<R(A)> & user_function
   )
   {
-    return execution_policy_t::template register_function<R, As ...>(key,
+    return execution_policy_t::template register_function<R, A>(key,
       user_function);
   } // register_function
 

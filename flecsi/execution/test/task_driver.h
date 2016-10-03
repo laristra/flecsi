@@ -110,7 +110,7 @@ double eos_gruneisen(double r, double e) {
   return r*e;
 } // function1
 
-register_function(eos_gruneisen, double, double, double);
+register_function(eos_gruneisen);
 
 double eos_gamma(double r, double e) {
   std::cout << "Executing gamma" << std::endl;
@@ -118,7 +118,7 @@ double eos_gamma(double r, double e) {
   return 2*r*e;
 } // function1
 
-register_function(eos_gamma, double, double, double);
+register_function(eos_gamma);
 
 /*
   Templated function
@@ -138,7 +138,7 @@ double eos_other(double r, double e) {
   return eos_other__<eos_param_t>(r, e);
 } // eos_other
 
-register_function(eos_other, double, double, double);
+register_function(eos_other);
 
 //----------------------------------------------------------------------------//
 // User type.
