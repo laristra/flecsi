@@ -189,7 +189,7 @@ void driver(int argc, char ** argv) {
 //#if defined(FLECSI_RUNTIME_MODEL_mpilegion)
 //  execute_task(task1, mpi, index, alpha, 5);
 //#else
-  execute_task(task1, loc, single, alpha, 5);
+  auto task1_future = execute_task(task1, loc, single, alpha, 5);
 //#endif
 
   execute_task(task2, loc, single, alpha, 5.0, p);
