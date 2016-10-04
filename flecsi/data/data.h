@@ -223,9 +223,10 @@ public:
    */
   template <typename T, size_t NS = flecsi_user_space>
   std::vector<dense_accessor_t<T>> dense_accessors(
-    uintptr_t runtime_namespace = flecsi_runtime_user_space)
+    uintptr_t runtime_namespace = flecsi_runtime_user_space,
+    bool sorted = false )
   {
-    return sp_t::template dense_accessors<T, NS>(runtime_namespace);
+    return sp_t::template dense_accessors<T, NS>(runtime_namespace, sorted);
   } // dense_accessors
 
   /*!
@@ -251,10 +252,11 @@ public:
 
   template <typename T, typename P, size_t NS = flecsi_user_space>
   std::vector<dense_accessor_t<T>> dense_accessors(P && predicate,
-    uintptr_t runtime_namespace = flecsi_runtime_user_space)
+    uintptr_t runtime_namespace = flecsi_runtime_user_space,
+    bool sorted = false )
   {
     return sp_t::template dense_accessors<T, NS, P>(
-      std::forward<P>(predicate), runtime_namespace);
+      std::forward<P>(predicate), runtime_namespace, sorted );
   } // dense_accessors
 
   /*!
@@ -269,9 +271,10 @@ public:
 
   template <size_t NS = flecsi_user_space>
   std::vector<dense_accessor_t<uint8_t>> raw_dense_accessors(
-    uintptr_t runtime_namespace = flecsi_runtime_user_space)
+    uintptr_t runtime_namespace = flecsi_runtime_user_space,
+    bool sorted = false)
   {
-    return sp_t::template raw_dense_accessors<NS>(runtime_namespace);
+    return sp_t::template raw_dense_accessors<NS>(runtime_namespace, sorted);
   } // raw_dense_accessors
 
   /*!
