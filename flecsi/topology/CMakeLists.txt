@@ -56,6 +56,13 @@ cinch_add_unit(gravity
 cinch_add_unit(gravity-state
   SOURCES test/gravity-state.cc)
 
+#------------------------------------------------------------------------------#
+# Misc. unit tests.
+#------------------------------------------------------------------------------#
+
+cinch_add_unit(index-space
+  SOURCES test/index-space.cc)
+
 #~---------------------------------------------------------------------------~-#
 # Formatting options
 # vim: set tabstop=2 shiftwidth=2 expandtab :
