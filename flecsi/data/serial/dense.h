@@ -366,17 +366,56 @@ struct storage_type_t<dense, DS, MD>
     assert(data_store[NS].find(h) == data_store[NS].end() &&
       "key already exists");
 
+    //------------------------------------------------------------------------//
+    // Call the user meta data initialization method passing variadic
+    // user arguments
+    //------------------------------------------------------------------------//
+
     data_store[NS][h].user_data.initialize(std::forward<Args>(args) ...);
 
+    //------------------------------------------------------------------------//
+    // Set the data label
+    //------------------------------------------------------------------------//
+ 
     data_store[NS][h].label = key.c_str();
-    // FIXME: need lookup from data_client
+
+    //------------------------------------------------------------------------//
+    // Set the data size by calling the data clients indeces method.
+    // This allows the user to interpret the index space argument
+    // in whatever way they want.
+    //------------------------------------------------------------------------//
+ 
     data_store[NS][h].size = data_client.indices(index_space);
+
+    //------------------------------------------------------------------------//
+    // Store the index space.
+    //------------------------------------------------------------------------//
+
+    data_store[NS][h].index_space = index_space;
+
+    //------------------------------------------------------------------------//
+    // Store the data type size information.
+    //------------------------------------------------------------------------//
+
     data_store[NS][h].type_size = sizeof(T);
+
+    //------------------------------------------------------------------------//
+    // This allows us to set the runtime-type-information, which requires
+    // a const reference.
+    //------------------------------------------------------------------------//
+
     data_store[NS][h].rtti.reset(
       new typename meta_data_t::type_info_t(typeid(T)));
 
+    //------------------------------------------------------------------------//
+    // Store the number of versions.
+    //------------------------------------------------------------------------//
+
     data_store[NS][h].versions = versions;
-    data_store[NS][h].index_space = index_space;
+
+    //------------------------------------------------------------------------//
+    // Allocate data for each version.
+    //------------------------------------------------------------------------//
 
     for(size_t i=0; i<versions; ++i) {
       data_store[NS][h].attributes[i].reset();
@@ -384,7 +423,10 @@ struct storage_type_t<dense, DS, MD>
         data_client.indices(index_space) * sizeof(T));
     } // for
 
-    // num_materials is unused for this storage type
+    //------------------------------------------------------------------------//
+    // num_materials is unused for this storage type.
+    //------------------------------------------------------------------------//
+
     data_store[NS][h].num_materials = 0;
 
     return {};

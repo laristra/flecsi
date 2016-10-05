@@ -22,11 +22,16 @@ namespace execution {
 ///
 // \class function_handle__ function_handle.h
 // \brief function_handle__ provides...
+//
+// \tparam R Return value type.
+// \tparam A Argument type (std::tuple).
 ///
-template<typename R, typename ... As>
+template<
+  typename R,
+  typename A
+>
 struct function_handle__
 {
-  using argument_t = std::tuple<As ...>;
 
   constexpr function_handle__(const size_t key_)
     : key(key_) {}
@@ -37,12 +42,12 @@ struct function_handle__
   R
   operator () (
     std::function<void(void)> * user_function,
-    argument_t & args
+    A & args
   )
   {
-    std::function<R(As ...)> & kr =
-      *(reinterpret_cast<std::function<R(As ...)> *>(user_function));
-    return tuple_function(kr, args);
+    std::function<R(A)> & kr =
+      *(reinterpret_cast<std::function<R(A)> *>(user_function));
+    return kr(args);
   } // operator ()
 
   size_t key;

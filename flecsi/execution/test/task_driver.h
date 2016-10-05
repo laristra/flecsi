@@ -110,7 +110,7 @@ double eos_gruneisen(double r, double e) {
   return r*e;
 } // function1
 
-register_function(eos_gruneisen, double, double, double);
+register_function(eos_gruneisen);
 
 double eos_gamma(double r, double e) {
   std::cout << "Executing gamma" << std::endl;
@@ -118,7 +118,7 @@ double eos_gamma(double r, double e) {
   return 2*r*e;
 } // function1
 
-register_function(eos_gamma, double, double, double);
+register_function(eos_gamma);
 
 /*
   Templated function
@@ -138,7 +138,7 @@ double eos_other(double r, double e) {
   return eos_other__<eos_param_t>(r, e);
 } // eos_other
 
-register_function(eos_other, double, double, double);
+register_function(eos_other);
 
 //----------------------------------------------------------------------------//
 // User type.
@@ -189,10 +189,13 @@ void driver(int argc, char ** argv) {
 //#if defined(FLECSI_RUNTIME_MODEL_mpilegion)
 //  execute_task(task1, mpi, index, alpha, 5);
 //#else
-  execute_task(task1, loc, single, alpha, 5);
+  auto future1 = execute_task(task1, loc, single, alpha, 5);
 //#endif
 
-  execute_task(task2, loc, single, alpha, 5.0, p);
+  future1.wait();
+
+  auto future2 = execute_task(task2, loc, single, alpha, 5.0, p);
+  std::cout << "future2.get(): " << future2.get() << std::endl;
 
   execute_task(task3, loc, index, 5.0);
 

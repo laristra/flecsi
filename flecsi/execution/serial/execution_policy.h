@@ -20,6 +20,7 @@
 #include <unordered_map>
 
 #include "flecsi/execution/context.h"
+#include "flecsi/execution/future.h"
 #include "flecsi/execution/common/processor.h"
 #include "flecsi/execution/common/task_hash.h"
 #include "flecsi/utils/tuple_function.h"
@@ -34,6 +35,49 @@
 
 namespace flecsi {
 namespace execution {
+
+
+template<
+  typename R,
+  typename T,
+  typename A,
+  bool is_void = std::is_void<R>::value
+>
+struct executor__
+{
+
+  static
+  decltype(auto)
+  execute(
+    task_hash_key_t key,
+    T user_task,
+    A targs
+  )
+  {
+    user_task(targs);
+    return future__<R>();
+  } // execute
+
+}; // struct executor__
+
+template<
+  typename R,
+  typename T,
+  typename A
+>
+struct executor__<R, T, A, false>
+{
+  static
+  decltype(auto)
+  execute(
+    task_hash_key_t key,
+    T user_task,
+    A targs
+  )
+  {
+    return future__<R>(user_task(targs));
+  } // execute_task
+}; // struct executor__
 
 ///
 // \struct serial_execution_policy serial_execution_policy.h
@@ -88,10 +132,10 @@ struct serial_execution_policy_t
     As ... args
   )
   {
-    auto targs = std::make_tuple(args ...);
-    return user_task(targs);
+    using executor_t = executor__<R, T, std::tuple<As ...>>;
+    return executor_t::execute(key, user_task, std::make_tuple(args ...));
   } // execute_task
-  
+
   //--------------------------------------------------------------------------//
   // Function interface.
   //--------------------------------------------------------------------------//
@@ -99,6 +143,9 @@ struct serial_execution_policy_t
   ///
   // This method registers a user function with the current
   // execution context.
+  //
+  // \tparam R Return type.
+  // \tparam A Argument type (std::tuple).
   //
   // \param key The function identifier.
   // \param user_function A reference to the user function as a std::function.
@@ -108,13 +155,13 @@ struct serial_execution_policy_t
   ///
   template<
     typename R,
-    typename ... As
+    typename A
   >
   static
   bool
   register_function(
     const const_string_t & key,
-    std::function<R(As ...)> & user_function
+    std::function<R(A)> & user_function
   )
   {
     context_t::instance().register_function(key, user_function);
@@ -140,8 +187,8 @@ struct serial_execution_policy_t
     As && ... args
   )
   {
-    auto t = std::make_tuple(args ...);
-    return handle(context_t::instance().function(handle.key), t);
+    auto targs = std::make_tuple(args ...);
+    return handle(context_t::instance().function(handle.key), targs);
   } // execute_function
 
 }; // struct serial_execution_policy_t
