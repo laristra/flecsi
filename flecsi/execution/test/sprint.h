@@ -86,7 +86,7 @@ void mpi_task(double val) {
 
 } // mpi_task
 
-register_task(mpi_task, mpi, single, void, double);
+register_task(mpi_task, mpi, single);
 
 void driver(int argc, char ** argv) {
   execute_task(mpi_task, mpi, single, 1.0);

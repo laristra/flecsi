@@ -20,6 +20,7 @@
 #include <unordered_map>
 
 #include "flecsi/execution/context.h"
+#include "flecsi/execution/future.h"
 #include "flecsi/execution/common/processor.h"
 #include "flecsi/execution/common/task_hash.h"
 #include "flecsi/utils/tuple_function.h"
@@ -34,6 +35,49 @@
 
 namespace flecsi {
 namespace execution {
+
+
+template<
+  typename R,
+  typename T,
+  typename A,
+  bool is_void = std::is_void<R>::value
+>
+struct executor__
+{
+
+  static
+  decltype(auto)
+  execute(
+    task_hash_key_t key,
+    T user_task,
+    A targs
+  )
+  {
+    user_task(targs);
+    return future__<R>();
+  } // execute
+
+}; // struct executor__
+
+template<
+  typename R,
+  typename T,
+  typename A
+>
+struct executor__<R, T, A, false>
+{
+  static
+  decltype(auto)
+  execute(
+    task_hash_key_t key,
+    T user_task,
+    A targs
+  )
+  {
+    return future__<R>(user_task(targs));
+  } // execute_task
+}; // struct executor__
 
 ///
 // \struct serial_execution_policy serial_execution_policy.h
@@ -88,10 +132,10 @@ struct serial_execution_policy_t
     As ... args
   )
   {
-    auto targs = std::make_tuple(args ...);
-    return user_task(targs);
+    using executor_t = executor__<R, T, std::tuple<As ...>>;
+    return executor_t::execute(key, user_task, std::make_tuple(args ...));
   } // execute_task
-  
+
   //--------------------------------------------------------------------------//
   // Function interface.
   //--------------------------------------------------------------------------//

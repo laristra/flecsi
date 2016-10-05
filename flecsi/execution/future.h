@@ -21,20 +21,27 @@ namespace execution {
 ///
 template<
   typename R,
-  typename policy_t
+  template <typename S, bool is_void> class policy__
 >
-class future_u__
+class future_u__ : policy__<R, std::is_void<R>::value>
 {
 public:
 
-  /// Default constructor
-  template<typename ... As>
-  future_u__(As && ... args)
-    : policy_t(std::forward<As>(args ...))
-  {}
+  /// Constructor for non-void return type
+  template<typename S = R>
+  future_u__(typename std::enable_if<!std::is_void<S>::value, S>::type && arg)
+    : policy__<S, std::is_void<S>::value>(std::forward<S>(arg))
+  {
+    static_assert(std::is_trivially_copyable<S>::value,
+      "non-trivial types not supported");
+  } // future_u__
 
-  /// Copy constructor (disabled)
-  future_u__(const future_u__ &) = delete;
+  /// Constructor for void return type
+  future_u__() : policy__<R, std::is_void<R>::value>() {}
+
+  /// Copy constructor
+  future_u__(const future_u__ & f)
+    : policy__<R, std::is_void<R>::value>(f) {}
 
   /// Assignment operator (disabled)
   future_u__ & operator = (const future_u__ &) = delete;
@@ -48,7 +55,7 @@ public:
   void
   wait()
   {
-    policy_t::wait();
+    policy__<R, std::is_void<R>::value>::wait();
   } // wait
 
   ///
@@ -64,7 +71,7 @@ public:
     size_t index = 0
   )
   {
-    return policy_t::get(index);
+    return policy__<R, std::is_void<R>::value>::get(index);
   } // get
 
 }; // class future_u__
@@ -75,13 +82,13 @@ public:
 //
 // This include file defines the flecsi_future_policy_t used below.
 //
-#include "flecsi_runtime_execution_policy.h"
+#include "flecsi_runtime_context_policy.h"
 
 namespace flecsi {
 namespace execution {
 
 template<typename R>
-using future__ = future_u__<R, flecsi_future_policy_t>;
+using future__ = future_u__<R, flecsi_future_policy__>;
 
 } // namespace execution
 } // namespace flecsi
