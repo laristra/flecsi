@@ -48,7 +48,8 @@ TEST(index_space, index_space) {
     is << new object(i);
   }
 
-  for(auto oi : is){
-    cout << oi->id << endl;
-  }
+  forall(is, o, {
+    cout << o->id << endl;
+  });
+
 }

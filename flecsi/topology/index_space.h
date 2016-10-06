@@ -16,6 +16,9 @@
 
 #include <type_traits>
 
+#define forall(A, B, C) \
+foreach(A, [&](auto* B) C);
+
 namespace flecsi {
 namespace topology {
 
@@ -313,6 +316,22 @@ public:
   auto end() const{
     return iterator_<const T, F>(s_, *v_, end_, end_); 
   }
+
+  size_t begin_offset() const{
+    return begin_;
+  }
+
+  size_t end_offset() const{
+    return end_;
+  }
+
+  T& get_offset(size_t offset){
+    return (*s_)[(*v_)[offset].index_space_index()];
+  }
+
+  const T& get_offset(size_t offset) const{
+    return (*s_)[(*v_)[offset].index_space_index()];
+  }  
 
   id_range_ ids() const{
     return id_range_(*v_, begin_, end_);
@@ -778,6 +797,14 @@ private:
     return v_->end();
   }
 };
+
+template<class T, bool STORAGE, bool OWNED, bool SORTED, class P, class F>
+void foreach(index_space<T, STORAGE, OWNED, SORTED, P>& is, F&& f){
+  size_t end = is.end_offset();
+  for(size_t i = is.begin_offset(); i < end; ++i){
+    f(std::forward<T>(is.get_offset(i)));
+  }
+}
 
 } // namespace topology
 } // namespace flecsi
