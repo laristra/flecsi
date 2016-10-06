@@ -99,6 +99,8 @@ public:
         c[7] = e[0];
 
         return {2, 2, 2, 2};
+    default:      
+      return {};
     }
   }
 };

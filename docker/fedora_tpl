@@ -4,16 +4,11 @@ ARG MINIMAL
 ARG MPI
 ARG RUNTIME
 ARG WERROR
-ARG TPL
 ARG TRAVIS
 ARG TRAVIS_PULL_REQUEST
 ARG TRAVIS_REPO_SLUG
 ARG TRAVIS_BRANCH
 ARG TRAVIS_COMMIT
-ARG TRAVIS_JOB_NUMBER
-ARG TRAVIS_JOB_ID
-ARG TRAVIS_TAG
-ARG CI
 ARG COVERAGE
 
 USER root
@@ -21,7 +16,6 @@ RUN dnf install -y -q openmpi-devel python-pip
 
 USER flecsi
 
-RUN if [ ${WERROR} ]; then export CXXFLAGS="-Werror"; fi
 RUN if [ ${COVERAGE}  ]; then pip install --user codecov; fi
 ENV PATH=$PATH:/usr/lib64/openmpi/bin/
 
@@ -29,6 +23,7 @@ WORKDIR /tmp
 RUN git clone --recursive https://github.com/losalamos/flecsi.git
 
 WORKDIR flecsi
+RUN git fetch --tags
 RUN if [ ${TRAVIS} = true ]; then \
       if [ ${TRAVIS_PULL_REQUEST} != false ]; then \
         git fetch "git://github.com/${TRAVIS_REPO_SLUG}" +refs/pull/"${TRAVIS_PULL_REQUEST}"/merge: ;\
@@ -36,13 +31,15 @@ RUN if [ ${TRAVIS} = true ]; then \
       else \
         git fetch --depth=10 "git://github.com/${TRAVIS_REPO_SLUG}" "${TRAVIS_BRANCH}"; \
         git checkout "${TRAVIS_COMMIT}"; \
-      fi \
+      fi; \
+      git submodule update; \
     fi
 RUN mkdir build
 
 WORKDIR build
-RUN cmake -DENABLE_MPI=$MPI \
-          ${TPL:+-DCMAKE_PREFIX_PATH=${HOME}/tpl} \
+RUN if [ ${WERROR} ]; then export CXXFLAGS="-Werror"; fi; \
+    cmake -DENABLE_MPI=$MPI \
+          -DCMAKE_PREFIX_PATH=${HOME}/tpl \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON \
           -DCMAKE_DISABLE_FIND_PACKAGE_SCOTCH=ON \
@@ -54,4 +51,7 @@ RUN cmake -DENABLE_MPI=$MPI \
 RUN make VERBOSE=1 -j2
 RUN make test
 RUN make install DESTDIR=${PWD}
-RUN cd .. && if [ ${COVERAGE} ]; then $HOME/.local/bin/codecov; fi
+RUN cd .. && if [ ${COVERAGE} ]; then $HOME/.local/bin/codecov; fi && cd -
+USER root
+RUN make install
+

@@ -2,11 +2,11 @@
 #include <iostream>
 
 #include "flecsi/tree/tree_topology.h"
-#include "flecsi/concurrency/concurrency.h"
+#include "flecsi/concurrency/thread_pool.h"
 
 using namespace std;
 using namespace flecsi;
-using namespace tree_topology_dev;
+using namespace tree;
 
 struct Aggregate{
   Aggregate(){
@@ -119,10 +119,11 @@ public:
       return ents_.size();
     }
 
-    point_t coordinates() const{
+    point_t 
+    coordinates(const std::array<point<element_t, dimension>, 2>& range) const{
       point_t p;
       branch_id_t bid = id();
-      bid.coordinates(p);
+      bid.coordinates(range, p);
       return p;
     }
 

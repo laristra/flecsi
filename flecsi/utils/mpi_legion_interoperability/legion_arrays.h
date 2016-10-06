@@ -20,10 +20,6 @@
 #include "legion.h"
 #include "legion_config.h"
 
-using namespace LegionRuntime::HighLevel;
-using namespace LegionRuntime::HighLevel;
-using namespace LegionRuntime::Accessor;
-
 /**
  * courtesy of some other legion code.
  */
@@ -35,7 +31,7 @@ namespace mpilegion
 
 template <unsigned DIM, typename T>
 inline bool
-offsetsAreDense(const Rect<DIM> &bounds,
+offsetsAreDense(const LegionRuntime::Arrays::Rect<DIM> &bounds,
                 const LegionRuntime::Accessor::ByteOffset *offset)
 {
     off_t exp_offset = sizeof(T);
@@ -62,7 +58,7 @@ offsetsAreDense(const Rect<DIM> &bounds,
  */
 struct PVecItem {
     // a list of sub-grid bounds. provides a task ID to sub-grid bounds mapping
-    std::vector< Rect<1> > subgridBnds;
+    std::vector< LegionRuntime::Arrays::Rect<1> > subgridBnds;
     // launch domain
     LegionRuntime::HighLevel::Domain lDom;
     // logical partition
@@ -80,6 +76,21 @@ struct PVecItem {
 private:
     //
     PVecItem(void) { ; }
+};
+////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+template <typename Type>
+class LegionAccessor{
+ public:
+  LegionAccessor(){};
+  ~LegionAccessor(){};
+  LegionRuntime::HighLevel::PhysicalRegion preg;
+  LegionRuntime::Accessor::RegionAccessor
+       <LegionRuntime::Accessor::AccessorType::Generic, Type> acc;
+  Type *mData = nullptr;
+  
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -126,15 +137,17 @@ public:
         // calculate the size of the logicalRegion vec (inclusive)
         uint64_t n = length - 1;
         // vec rect
-        bounds = Rect<1>(Point<1>::ZEROES(), Point<1>(n));
+        bounds = LegionRuntime::Arrays::Rect<1>(Point<1>::ZEROES(), Point<1>(n));
         // vector domain
-        Domain dom(Domain::from_rect<1>(bounds));
+        LegionRuntime::HighLevel::Domain dom(
+              LegionRuntime::HighLevel::Domain::from_rect<1>(bounds));
         // vec index space
         mIndexSpace = lrt->create_index_space(ctx, dom);
         // vec field space
         mFS = lrt->create_field_space(ctx);
         // vec field allocator
-        FieldAllocator fa = lrt->create_field_allocator(ctx, mFS);
+        LegionRuntime::HighLevel::FieldAllocator fa = 
+                                     lrt->create_field_allocator(ctx, mFS);
         // all elements are going to be of size T
         fa.allocate_field(sizeof(T), fid);
         // now create the logical region
@@ -164,6 +177,31 @@ public:
         lrt->destroy_field_space(ctx, mFS);
         lrt->destroy_index_space(ctx, mIndexSpace);
     }
+
+   void
+    resize(
+        int64_t new_size,
+        LegionRuntime::HighLevel::Context ctx,
+        LegionRuntime::HighLevel::HighLevelRuntime *lrt
+    ) {
+       length =new_size;
+       lrt->destroy_logical_region(ctx, logicalRegion);
+       lrt->destroy_index_space(ctx, mIndexSpace);
+       // calculate the size of the logicalRegion vec (inclusive)
+        uint64_t n = length - 1;
+        // vec rect
+        bounds = Rect<1>(Point<1>::ZEROES(), Point<1>(n));
+        // vector domain
+        LegionRuntime::HighLevel::Domain dom(
+               LegionRuntime::HighLevel::Domain::from_rect<1>(bounds));
+        // vec index space
+        mIndexSpace = lrt->create_index_space(ctx, dom);
+        logicalRegion = lrt->create_logical_region(ctx, mIndexSpace, mFS);
+        // stash some info for equality checks
+        mIndexSpaceID = logicalRegion.get_index_space().get_id();
+        mFieldSpaceID = logicalRegion.get_field_space().get_id();
+        mRTreeID      = logicalRegion.get_tree_id();
+    }  
 
     /**
      * Returns whether or not two LogicalArrays are the same (as far as the
@@ -226,7 +264,6 @@ public:
         LegionRuntime::HighLevel::Context ctx,
         LegionRuntime::HighLevel::HighLevelRuntime *lrt
     ) {
-        using namespace LegionRuntime::HighLevel;
         using LegionRuntime::Arrays::Rect;
 
         // For now only allow even partitioning.
@@ -234,7 +271,8 @@ public:
         //
         uint64_t inc = length / nParts; // the increment
         Rect<1> colorBounds(Point<1>(0), Point<1>(nParts - 1));
-        Domain colorDomain = Domain::from_rect<1>(colorBounds);
+        LegionRuntime::HighLevel::Domain colorDomain =
+               LegionRuntime::HighLevel:: Domain::from_rect<1>(colorBounds);
         //          +
         //          |
         //          |
@@ -243,7 +281,7 @@ public:
         //          | m / nSubregions
         //     (x0) + |
         uint64_t x0 = 0, x1 = inc - 1;
-        DomainColoring disjointColoring;
+        LegionRuntime::HighLevel::DomainColoring disjointColoring;
         // a list of sub-grid bounds.
         // provides a task ID to sub-grid bounds mapping.
         std::vector< Rect<1> > subgridBnds;
@@ -255,7 +293,8 @@ public:
             printf("vec disjoint partition: (%d) to (%d)\n",
                     subRect.lo.x[0], subRect.hi.x[0]);
 #endif
-            disjointColoring[color] = Domain::from_rect<1>(subRect);
+            disjointColoring[color] = 
+                LegionRuntime::HighLevel::Domain::from_rect<1>(subRect);
             x0 += inc;
             x1 += inc;
         }
@@ -265,7 +304,6 @@ public:
                          true /* disjoint */
         );
         // logical partitions
-        using LegionRuntime::HighLevel::LogicalPartition;
         auto lp = lrt->get_logical_partition(ctx, logicalRegion, iPart);
         // launch domain -- one task per color
         // launch domain
@@ -284,24 +322,20 @@ public:
         LegionRuntime::HighLevel::Context ctx,
         LegionRuntime::HighLevel::HighLevelRuntime *lrt
     ) const {
-        using namespace LegionRuntime::HighLevel;
-        using namespace LegionRuntime::Accessor;
-        using LegionRuntime::Arrays::Rect;
 
-
-        RegionRequirement req(
+        LegionRuntime::HighLevel::RegionRequirement req(
             logicalRegion, READ_ONLY, EXCLUSIVE, logicalRegion
         );
         req.add_field(fid);
-        InlineLauncher dumpl(req);
-        PhysicalRegion preg=lrt->map_region(ctx, dumpl);;
+        LegionRuntime::HighLevel::InlineLauncher dumpl(req);
+        LegionRuntime::HighLevel::PhysicalRegion preg=lrt->map_region(ctx, dumpl);;
         
 //        if (req.is_mapped()) lrt->unmap_region(ctx,req);
 //         req= lrt->map_region(ctx, dumpl);
         preg.wait_until_valid();
         auto acc = preg.get_field_accessor(fid).template typeify<T>();
         typedef GenericPointInRectIterator<1> GPRI1D;
-        typedef DomainPoint DomPt;
+        typedef Legion::DomainPoint DomPt;
         std:: cout << "*** " << prefix << " ***" << std::endl;
         int i = 0;
         for (GPRI1D pi(bounds); pi; pi++, ++i) {
@@ -315,32 +349,50 @@ public:
         if (preg.is_mapped()) lrt->unmap_region(ctx,preg);
     }
    
-/*   auto get_accessor (Legion::PrivilegeMode priviledge, 
-           Legion::CoherenceProperty coherence_property,
-           LegionRuntime::HighLevel::Context ctx,
-           LegionRuntime::HighLevel::HighLevelRuntime *lrt)
-    {
-        using namespace LegionRuntime::HighLevel;
-        using namespace LegionRuntime::Accessor;
-        using LegionRuntime::Arrays::Rect;
-
-        RegionRequirement req(
-            logicalRegion, priviledge, coherence_property, logicalRegion);
-        req.add_field(fid);
-        InlineLauncher accessorl(req);
-        PhysicalRegion reg= lrt->map_region(ctx,accessorl);
-        reg.wait_until_valid();
-      //  auto acc = reg.get_field_accessor(fid).template typeify<T>();
-     
-        return reg.get_field_accessor(fid).template typeify<T>();
-    }
-  */ 
    void unmap_all_regions (
            LegionRuntime::HighLevel::Context ctx,
            LegionRuntime::HighLevel::HighLevelRuntime *lrt)
    {
       lrt->unmap_all_regions(ctx);
    } 
+
+  LegionAccessor<T> *get_legion_accessor(Legion::PrivilegeMode priviledge, 
+           Legion::CoherenceProperty coherence_property,
+           LegionRuntime::HighLevel::Context ctx,
+           LegionRuntime::HighLevel::HighLevelRuntime *lrt)
+   {  LegionAccessor<T> *LegionAcc=new LegionAccessor<T>();
+
+      LegionRuntime::HighLevel::RegionRequirement req(
+            logicalRegion, priviledge, coherence_property, logicalRegion);
+      req.add_field(fid);
+     LegionRuntime::HighLevel::InlineLauncher accessorl(req);
+     LegionAcc->preg= lrt->map_region(ctx,accessorl);
+        LegionAcc->preg.wait_until_valid();
+     LegionAcc->acc =
+                 LegionAcc->preg.get_field_accessor(fid).template typeify<T>();
+
+     LegionRuntime::Arrays::Rect<1> subrect;
+     LegionRuntime::Accessor::ByteOffset inOffsets[1];
+     
+     LegionAcc->mData = LegionAcc->acc.template raw_rect_ptr<1>(
+            bounds, subrect, inOffsets);
+        // Sanity.
+        if (!LegionAcc->mData || (subrect != bounds) ||
+            !offsetsAreDense<1, T>(bounds, inOffsets)) {
+            // Signifies that something went south.
+            LegionAcc->mData = nullptr;
+        }
+
+     return LegionAcc;
+   }
+
+  void return_legion_accessor(LegionAccessor<T> *LegionAcc, 
+     LegionRuntime::HighLevel::Context ctx,
+     LegionRuntime::HighLevel::HighLevelRuntime *lrt)
+  {
+     lrt->unmap_region(ctx, LegionAcc->preg);
+     delete LegionAcc;
+  }
 
 };
 
@@ -360,18 +412,19 @@ protected:
 public:
     //
     PhysicalScalar(
-        const PhysicalRegion &physicalRegion,
-        Context ctx,
-        HighLevelRuntime *runtime
+        const LegionRuntime::HighLevel::PhysicalRegion &physicalRegion,
+        LegionRuntime::HighLevel::Context ctx,
+        LegionRuntime::HighLevel::HighLevelRuntime *runtime
     ) {
-        typedef RegionAccessor<AccessorType::Generic, TYPE>  GRA;
+        typedef LegionRuntime::Accessor::RegionAccessor
+           <LegionRuntime::Accessor::AccessorType::Generic, TYPE>  GRA;
         GRA tAcc = physicalRegion.get_field_accessor(0).template typeify<TYPE>();
         //
-        Domain tDom = runtime->get_index_space_domain(
+        LegionRuntime::HighLevel::Domain tDom = runtime->get_index_space_domain(
             ctx, physicalRegion.get_logical_region().get_index_space()
         );
-        Rect<1> subrect;
-        ByteOffset inOffsets[1];
+        LegionRuntime::Arrays::Rect<1> subrect;
+        LegionRuntime::Accessor::ByteOffset inOffsets[1];
         auto subGridBounds = tDom.get_rect<1>();
         mLength = subGridBounds.volume();
         //
@@ -421,9 +474,9 @@ protected:
 public:
     //
     PhysicalArray(
-        const PhysicalRegion &physicalRegion,
-        Context ctx,
-        HighLevelRuntime *runtime
+        const  LegionRuntime::HighLevel::PhysicalRegion &physicalRegion,
+         LegionRuntime::HighLevel::Context ctx,
+         LegionRuntime::HighLevel::HighLevelRuntime *runtime
     ) : PhysicalScalar<TYPE>(physicalRegion, ctx, runtime) { }
 
     /**

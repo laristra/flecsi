@@ -17,7 +17,6 @@
 
 #include <iostream>
 #include <utility>
-#include <legion.h>
 #include <mpi.h>
 
 #include "flecsi/execution/legion_execution_policy.h"
@@ -33,10 +32,10 @@
 namespace flecsi
 {
 class mpilegion_execution_policy_t;
+void MPILegion_Init(void);
 
-extern void mpilegion_top_level_task(context_t<flecsi::mpilegion_execution_policy_t> &&ctx,int argc, char** argv);
-
-using namespace LegionRuntime::HighLevel;
+extern void mpilegion_top_level_task(
+   context_t<flecsi::mpilegion_execution_policy_t> &&ctx,int argc, char** argv);
 
 /*!
   \class mpilegion_execution_policy mpilegion_execution_policy.h
@@ -49,10 +48,14 @@ class mpilegion_execution_policy_t: public legion_execution_policy_t
   class context_ep
   {
   public:
-    context_ep():task(NULL),regions( std::vector<LegionRuntime::HighLevel::PhysicalRegion>()){}
-    context_ep(const Task *_task,
-                            const std::vector<PhysicalRegion> &_regions,
-                            Context ctx, HighLevelRuntime *runtime) : ctx_l(ctx),rt(runtime),task(_task),regions(_regions){}
+    context_ep():task(NULL),regions( 
+          std::vector<LegionRuntime::HighLevel::PhysicalRegion>()){}
+    context_ep(
+          const LegionRuntime::HighLevel::Task *_task,
+          const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &_regions,
+          LegionRuntime::HighLevel::Context ctx, 
+          LegionRuntime::HighLevel::HighLevelRuntime *runtime) 
+          : ctx_l(ctx),rt(runtime),task(_task),regions(_regions){}
 
 //these 2 functions might be moved to context.h 
 
@@ -74,17 +77,18 @@ class mpilegion_execution_policy_t: public legion_execution_policy_t
 
  public: // Member Functions
 	  template <typename T>
-	  static void driver_top_task(const LegionRuntime::HighLevel::Task *task,
-	                             const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
-	                             LegionRuntime::HighLevel::Context ctx, LegionRuntime::HighLevel::HighLevelRuntime *runtime)
-	  {
-		  using namespace LegionRuntime::HighLevel;
-		  const InputArgs &args = HighLevelRuntime::get_input_args();
+	  static void driver_top_task(
+        const LegionRuntime::HighLevel::Task *task,
+	      const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
+	      LegionRuntime::HighLevel::Context ctx, 
+        LegionRuntime::HighLevel::HighLevelRuntime *runtime)
+	     {
+		     const LegionRuntime::HighLevel::InputArgs &args = 
+             LegionRuntime::HighLevel::HighLevelRuntime::get_input_args();
 
-
-		  mpilegion_top_level_task(context_t<flecsi::mpilegion_execution_policy_t>(0,task,regions,ctx,runtime),args.argc,args.argv);
-
-	  }
+   		  mpilegion_top_level_task(context_t<flecsi::mpilegion_execution_policy_t>(0,
+                    task,regions,ctx,runtime),args.argc,args.argv);
+	      }
 
  public:
   typedef int32_t return_type_t;
@@ -96,27 +100,21 @@ class mpilegion_execution_policy_t: public legion_execution_policy_t
 
 
   template <typename T>
-  static return_type_t execute_driver(T && task, int argc, char** argv)
-  {
-    using namespace LegionRuntime::HighLevel;
-    HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
-    HighLevelRuntime::register_legion_task<mpilegion_execution_policy_t::driver_top_task<T>>(TOP_LEVEL_TASK_ID,
-        Processor::LOC_PROC, true/*single*/, false/*index*/);
-
-    return HighLevelRuntime::start(argc, argv);
-
-  } // execute_driver
+  static return_type_t execute_driver(T && task, int argc, char** argv);
 
 
   template <typename T, typename... Args>
   static return_type_t execute_task(T && task, Args &&... args)
   {
+    MPILegion_Init();
+
     utils::tuple_for_each(std::make_tuple(args...),
         [&](auto arg) { std::cout << "test" << std::endl; });
 
 //    context_t<mpilegion_execution_policy_t>::instance().entry();
     auto value = task(std::forward<Args>(args)...);
 //    context_t<mpilegion_execution_policy_t>::instance().exit();
+   
     return value;
   } // execute_task
 
@@ -130,7 +128,46 @@ class mpilegion_execution_policy_t: public legion_execution_policy_t
 
   }
 
+
 }; // class mpilegion_execution_policy_t
+
+} //// namespace flecsi
+
+#ifndef MPI_LEGION_INTEROP_HPP_INCLUDED_IN_EXECUTION_POLICY_H
+#define MPI_LEGION_INTEROP_HPP_INCLUDED_IN_EXECUTION_POLICY_H
+#endif
+
+#include "flecsi/utils/mpi_legion_interoperability/mpi_legion_interop.h"
+
+namespace flecsi
+{
+
+ void MPILegion_Init(void){
+   flecsi::mpilegion::MPILegionInteropHelper = new flecsi::mpilegion::MPILegionInterop();
+ }
+
+ template <typename T>
+ mpilegion_execution_policy_t::return_type_t 
+        mpilegion_execution_policy_t::execute_driver(T && task, int argc, char** argv)
+  {
+    LegionRuntime::HighLevel::HighLevelRuntime::set_top_level_task_id(
+                                                   TOP_LEVEL_TASK_ID);
+    LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
+         <mpilegion_execution_policy_t::driver_top_task<T>>(
+         TOP_LEVEL_TASK_ID,
+         LegionRuntime::HighLevel::Processor::LOC_PROC,
+         true/*single*/, false/*index*/, 
+         AUTO_GENERATE_ID, 
+         LegionRuntime::HighLevel::TaskConfigOptions(),
+         "top_level_task");
+
+    flecsi::mpilegion::MPILegionInteropHelper->register_tasks();
+
+    LegionRuntime::HighLevel::HighLevelRuntime::set_registration_callback(
+       flecsi::mpilegion::mapper_registration);
+    return LegionRuntime::HighLevel::HighLevelRuntime::start(argc, argv, true);
+
+  }
 
 } // namespace flecsi
 

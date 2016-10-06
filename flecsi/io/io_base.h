@@ -38,6 +38,10 @@ class io_base_t
  public:
   //! Default constructor
   io_base_t() {}
+
+  //! \brief Virtual destructor.
+  virtual ~io_base_t() {};
+
   /*!
     \brief Pure virtual mesh read.
 

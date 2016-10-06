@@ -12,47 +12,24 @@
 # All rights reserved
 #~----------------------------------------------------------------------------~#
 
-project(flecsi)
+#------------------------------------------------------------------------------#
+# Compile definition to include driver
+#------------------------------------------------------------------------------#
+if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+set(CMAKE_CXX_COMPILER "mpiCC")
+add_definitions(-DFLECSI_DRIVER=${CMAKE_SOURCE_DIR}/examples/agile/sprint1.h)
 
 #------------------------------------------------------------------------------#
-# Set application directory
+# Add a rule to build the executable
 #------------------------------------------------------------------------------#
 
-cinch_add_application_directory("examples")
-cinch_add_application_directory("examples/agile")
-
+add_executable(sprint1 ${CMAKE_SOURCE_DIR}/driver/${FLECSI_RUNTIME_MAIN} )
 #------------------------------------------------------------------------------#
-# Add library targets
+# Add link dependencies
 #------------------------------------------------------------------------------#
 
-cinch_add_library_target(flecsi flecsi)
-
-#------------------------------------------------------------------------------#
-# Set header suffix regular expression
-#------------------------------------------------------------------------------#
-
-set(CINCH_HEADER_SUFFIXES "\\.h")
-
-#------------------------------------------------------------------------------#
-# Add options for runtime selection
-#------------------------------------------------------------------------------#
-
-set(FLECSI_RUNTIME_MODEL "serial" CACHE STRING
-  "Select the runtime model [legion,mpi,mpilegion,serial]")
-
-#------------------------------------------------------------------------------#
-# Add option for setting id bits
-#------------------------------------------------------------------------------#
-
-set(FLECSI_ID_PBITS "20" CACHE STRING
-  "Select the number of bits to use for partition ids. There will be 60-FLECSI_ID_PBITS-FLECSI_ID_FBITS available for entity ids")
-
-set(FLECSI_ID_FBITS "4" CACHE STRING
-  "Select the number of bits to use for id flags. There will be 60-FLECSI_ID_PBITS-FLECSI_ID_FBITS available for entity ids")
-
-set(FLECSI_ID_GBITS "32" CACHE STRING
-  "Select the number of global bits in id. The # of global bits must be less than or equal to the # of entity bits")
-
+target_link_libraries(sprint1 ${FLECSI_RUNTIME_LIBRARIES})
+endif()
 #~---------------------------------------------------------------------------~-#
 # Formatting options
 # vim: set tabstop=2 shiftwidth=2 expandtab :

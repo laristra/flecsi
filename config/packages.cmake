@@ -55,8 +55,11 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   endif(NOT legion_FOUND)
   
   include_directories(${LEGION_INCLUDE_DIRS})
-  set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES} -ldl)
-  SET_SOURCE_FILES_PROPERTIES(${LEGION_INCLUDE_DIRS}/legion/legion.inl PROPERTIES HEADER_FILE_ONLY 1)
+  if(NOT APPLE)
+    set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES} -ldl)
+  else()
+    message("Skipping -ldl because APPLE")
+  endif()
 
 # MPI interface
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
@@ -111,12 +114,12 @@ math(EXPR FLECSI_ID_EBITS "60 - ${FLECSI_ID_PBITS} - ${FLECSI_ID_FBITS}")
 add_definitions(-DFLECSI_ID_PBITS=${FLECSI_ID_PBITS})
 add_definitions(-DFLECSI_ID_EBITS=${FLECSI_ID_EBITS})
 add_definitions(-DFLECSI_ID_FBITS=${FLECSI_ID_FBITS})
+add_definitions(-DFLECSI_ID_GBITS=${FLECSI_ID_GBITS})
 
 math(EXPR flecsi_partitions "1 << ${FLECSI_ID_PBITS}")
 math(EXPR flecsi_entities "1 << ${FLECSI_ID_EBITS}")
-math(EXPR flecsi_id_flags "1 << ${FLECSI_ID_FBITS}")
 
-message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with 2^${FLECSI_ID_EBITS} entities each and ${FLECSI_ID_FBITS} flag bits")
+message(STATUS "Set id_t bits to allow ${flecsi_partitions} partitions with 2^${FLECSI_ID_EBITS} entities each and ${FLECSI_ID_FBITS} flag bits and ${FLECSI_ID_GBITS} global bits")
 
 #------------------------------------------------------------------------------#
 # Enable IO with exodus
@@ -223,12 +226,17 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-legion.cc
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-mpi.cc
   DESTINATION ${CMAKE_BINARY_DIR}/share
 )
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-mpilegion.cc
+  DESTINATION ${CMAKE_BINARY_DIR}/share
+)
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-serial.cc
   DESTINATION share/flecsi)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-legion.cc
   DESTINATION share/flecsi)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-mpi.cc
+  DESTINATION share/flecsi)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/driver/script-driver-mpilegion.cc
   DESTINATION share/flecsi)
 
 # This configures a locally available script that is suitable for
@@ -244,33 +252,11 @@ file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi
     GROUP_READ GROUP_EXECUTE
     WORLD_READ WORLD_EXECUTE
 )
-#------------------------------------------------------------------------------#
-# Check the compiler version and output warnings if it is lower than 5.3.1
-#------------------------------------------------------------------------------#
-
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.3.1)
-    message(STATUS "your gcc compiler version is lower than 5.3.1, required for static meta container in FleCSi.  We recommend you to update your compiler. Otherwise static meta container will be turned off")
-   set (STATIC_CONTAINER OFF)
-  else()
-   set (STATIC_CONTAINER ON)
-  endif()
-else()
-    message(STATUS "static meta container has not been tested with your comiler so it will be disabled")
-    set (STATIC_CONTAINER OFF)
-elseif(...)
-# etc.
-endif()
 
 #------------------------------------------------------------------------------#
 # option for use of Static meta container
 #------------------------------------------------------------------------------#
-
-if (STATIC_CONTAINER)
-option(ENABLE_STATIC_CONTAINER "Enable static meta container" ON)
-else()
 option(ENABLE_STATIC_CONTAINER "Enable static meta container" OFF)
-endif (STATIC_CONTAINER)
 
 set (MAX_CONTAINER_SIZE 6 CACHE INTEGER  "Set the depth of the container")
 add_definitions( -DMAX_COUNTER_SIZE=${MAX_CONTAINER_SIZE} )

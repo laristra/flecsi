@@ -7,7 +7,7 @@
 using namespace std;
 using namespace flecsi;
 using namespace data_model;
-using namespace tree_topology_dev;
+using namespace tree;
 
 struct state_user_meta_data_t {
   void initialize(){}
@@ -162,9 +162,10 @@ public:
       return ents_.size();
     }
 
-    point_t coordinates() const{
+    point_t
+    coordinates(const std::array<point<element_t, dimension>, 2>& range) const{
       point_t p;
-      id().coordinates(p);
+      id().coordinates(range, p);
       return p;
     }
 

@@ -151,10 +151,10 @@ struct burton_cell_t
   virtual ~burton_cell_t() {}
 
   //! the centroid
-  virtual point_t centroid() const {}; // = 0; FIXME
+  virtual point_t centroid() const = 0;
 
   //! the area of the cell
-  virtual real_t area() const {}; // = 0; FIXME
+  virtual real_t area() const  = 0;
 
   /*!
     \brief create_entities is a function that creates entities
@@ -172,8 +172,12 @@ struct burton_cell_t
    */
   virtual
   std::vector<size_t>
-  create_entities(flecsi::id_t cell_id, size_t dim, domain_connectivity<2> & c, flecsi::id_t * e)
-  {}
+  create_entities(
+    flecsi::id_t cell_id, 
+    size_t dim, 
+    domain_connectivity<2> & c, 
+    flecsi::id_t * e
+  ) = 0;
 
   /*!
     \brief create_bound_entities binds mesh entities across domains.
@@ -192,7 +196,7 @@ struct burton_cell_t
       flecsi::id_t cell_id,
       domain_connectivity<2>& primal_conn,
       domain_connectivity<2>& domain_conn,
-      id_t * c){};
+      id_t * c) = 0;
 
 }; // class burton_cell_t
 
@@ -223,7 +227,13 @@ public:
     \brief create_entities function for burton_quadrilateral_cell_t.
    */
   std::vector<size_t>
-  create_entities(flecsi::id_t cell_id, size_t dim, domain_connectivity<2> & c, flecsi::id_t * e){
+  create_entities(
+    flecsi::id_t cell_id, 
+    size_t dim, 
+    domain_connectivity<2> & c, 
+    flecsi::id_t * e
+  ) override
+  {
     flecsi::id_t* v = c.get_entities(cell_id, 0);
 
     e[0] = v[0];
@@ -290,7 +300,8 @@ public:
       flecsi::id_t cell_id,
       domain_connectivity<2>& primal_conn,
       domain_connectivity<2>& domain_conn,
-      id_t * c)
+      id_t * c
+  ) override
   {
     flecsi::id_t* v = primal_conn.get_entities(cell_id, 0);
     flecsi::id_t* e = primal_conn.get_entities(cell_id, 1);

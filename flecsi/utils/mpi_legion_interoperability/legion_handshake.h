@@ -41,6 +41,14 @@
 // handshake->ext_wait_on_legion();
 // handshake->legion_handoff_to_ext();
 
+#define CHECK_PTHREAD(cmd) do { \
+  int ret = (cmd); \
+  if(ret != 0) { \
+    fprintf(stderr, "PTHREAD: %s = %d (%s)\n", #cmd, ret, strerror(ret)); \
+    exit(1); \
+  } \
+} while(0)
+
 namespace flecsi
 {
 namespace mpilegion
@@ -52,7 +60,12 @@ public:
 
   typedef Realm::UserEvent UserEvent;
 
-  ExtLegionHandshake(int init_state, int _ext_queue_depth = 1, int _legion_queue_depth = 1);
+  ExtLegionHandshake(
+       int init_state, 
+       int _ext_queue_depth = 1, 
+       int _legion_queue_depth = 1);
+
+  ~ExtLegionHandshake(void){delete ext_queue; delete legion_queue;};
 
   void ext_init(void);
 
@@ -68,14 +81,22 @@ public:
 protected:
   int state, ext_queue_depth, legion_queue_depth, ext_count, legion_count;
   UserEvent *ext_queue, *legion_queue;
-  std::mutex sync_mutex;
-  std::condition_variable sync_cond;
+  pthread_mutex_t sync_mutex;
+  pthread_cond_t sync_cond;
 };
 
-ExtLegionHandshake::ExtLegionHandshake(int init_state, int _ext_queue_depth, int _legion_queue_depth)
-  : state(init_state), ext_queue_depth(_ext_queue_depth), legion_queue_depth(_legion_queue_depth),
-    ext_count(0), legion_count(0)
+ExtLegionHandshake::ExtLegionHandshake(
+  int init_state, 
+  int _ext_queue_depth,
+  int _legion_queue_depth)
+  : state(init_state), 
+  ext_queue_depth(_ext_queue_depth),
+  legion_queue_depth(_legion_queue_depth),
+  ext_count(0),
+  legion_count(0)
 {
+  pthread_mutex_init(&sync_mutex, 0);
+  pthread_cond_init(&sync_cond, 0);
 #ifndef SHARED_LOWLEVEL
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -85,35 +106,39 @@ ExtLegionHandshake::ExtLegionHandshake(int init_state, int _ext_queue_depth, int
 
 void ExtLegionHandshake::ext_init(void)
 {
-  std::unique_lock<std::mutex> lock(sync_mutex);
+ CHECK_PTHREAD( pthread_mutex_lock(&sync_mutex) );
 
-  printf("handshake %p: ext init - counts = L=%d, E=%d\n", this, legion_count, ext_count);
-  
+  //printf("handshake %p: ext init - counts = L=%d, E=%d\n",
+  //    this, legion_count, ext_count);
+
   ext_count++;
 
   if(legion_count == 0) {
     // no legion threads have arrived, so sleep until one does
-    printf("ext sleeping...\n");
-    sync_cond.wait(lock, [this]{return legion_count != 0;});
-    printf("ext awake...\n");
+    //printf("ext sleeping...\n");
+    CHECK_PTHREAD( pthread_cond_wait(&sync_cond, &sync_mutex) );
+    //printf("ext awake...\n");
   } else {
     // if we were the first ext thread to arrive, wake the legion thread(s)
     if(ext_count == 1) {
-      printf("signalling\n");
-      sync_cond.notify_all();
+      //printf("signalling\n");
+      CHECK_PTHREAD( pthread_cond_broadcast(&sync_cond) );
     }
   }
+
+  CHECK_PTHREAD( pthread_mutex_unlock(&sync_mutex) ); 
 }
 
 void ExtLegionHandshake::legion_init(void)
 {
-  std::unique_lock<std::mutex> lock(sync_mutex);
+ CHECK_PTHREAD( pthread_mutex_lock(&sync_mutex) );
 
   if(!legion_count) {
-    // first legion thread creates the events/queues for later synchronization, then arrive at initialization barrier
+    // first legion thread creates the events/queues
+    // for later synchronization, then arrive at initialization barrier
     ext_queue = new UserEvent[ext_queue_depth];
     for(int i = 0; i < ext_queue_depth; i++)
-      ext_queue[i] = ((i || (state == IN_EXT)) ? 
+      ext_queue[i] = ((i || (state == IN_EXT)) ?
                         UserEvent::create_user_event() :
                         UserEvent());
 
@@ -123,30 +148,33 @@ void ExtLegionHandshake::legion_init(void)
                            UserEvent::create_user_event() :
                            UserEvent());
   }
-#ifdef DEBUG
-  printf("handshake %p: legion init - counts = L=%d, E=%d\n", this, legion_count, ext_count);
-#endif
+
+  //printf("handshake %p: legion init - counts = L=%d, E=%d\n",
+  // this, legion_count, ext_count);
   legion_count++;
 
   if(ext_count == 0) {
     // no external threads have arrived, so sleep until one does
     //printf("legion sleeping...\n");
-    sync_cond.wait(lock, [this]{return legion_count != 0;});
+    CHECK_PTHREAD( pthread_cond_wait(&sync_cond, &sync_mutex) );
     //printf("legion awake...\n");
   } else {
     // if we were the first legion thread to arrive, wake the ext thread(s)
     if(legion_count == 1) {
       //printf("signalling\n");
-       sync_cond.notify_all();
+      CHECK_PTHREAD( pthread_cond_broadcast(&sync_cond) );
     }
   }
+
+  CHECK_PTHREAD( pthread_mutex_unlock(&sync_mutex) );
 }
 
 void ExtLegionHandshake::ext_handoff_to_legion(void)
 {
   assert(state == IN_EXT);
 
-  // we'll trigger the first event in the ext queue, but first, create a new event for the legion queue
+  // we'll trigger the first event in the ext queue, but first, 
+  // create a new event for the legion queue
   //  and shift it onto the end
   assert(legion_queue[0].has_triggered());
   for(int i = 1; i < legion_queue_depth; i++)
@@ -167,7 +195,8 @@ void ExtLegionHandshake::legion_handoff_to_ext(void)
 {
   assert(state == IN_LEGION);
 
-  // we'll trigger the first event in the ext queue, but first, create a new event for the legion queue
+  // we'll trigger the first event in the ext queue, but first, 
+  // create a new event for the legion queue
   //  and shift it onto the end
   assert(ext_queue[0].has_triggered());
   for(int i = 1; i < ext_queue_depth; i++)
