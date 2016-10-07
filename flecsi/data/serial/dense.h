@@ -424,10 +424,10 @@ struct storage_type_t<dense, DS, MD>
     } // for
 
     //------------------------------------------------------------------------//
-    // num_materials is unused for this storage type.
+    // num_entries is unused for this storage type.
     //------------------------------------------------------------------------//
 
-    data_store[NS][h].num_materials = 0;
+    data_store[NS][h].num_entries = 0;
 
     return {};
   } // register_data

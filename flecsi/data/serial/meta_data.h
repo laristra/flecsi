@@ -72,7 +72,7 @@ struct serial_meta_data_t
 
   std::unordered_map<size_t, std::vector<uint8_t>> data;
   std::unordered_map<size_t, bitset_t> attributes;
-  size_t num_materials;
+  size_t num_entries;
 
 }; // struct serial_meta_data_t
 

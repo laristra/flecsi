@@ -255,7 +255,7 @@ struct storage_type_t<sparse, DS, MD> {
     const const_string_t & key,
     size_t versions,
     size_t indices,
-    size_t num_materials,
+    size_t num_entries,
     Args && ... args
   )
   {
