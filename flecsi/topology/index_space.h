@@ -17,10 +17,10 @@
 #include <type_traits>
 
 #define forall(is, obj, body) \
-foreach(is, [&](auto* obj) body);
+foreach(is, [&](auto* obj){ body });
 
 #define reduce_all(is, obj, reduce_to, body) \
-reduce_each(is, reduce_to, [&](auto* obj, auto& reduce_to) body);
+reduce_each(is, reduce_to, [&](auto* obj, auto& reduce_to){ body });
 
 namespace flecsi {
 namespace topology {

@@ -59,15 +59,15 @@ TEST(index_space, index_space) {
     is[i]->mass = uniform(0.0, 1.0);
   }
 
-  forall(is, o, {
+  forall(is, o,
     cout << o->id << endl;
-  });
+  );
 
   double total_mass = 0;
 
-  reduce_all(is, o, total_mass, {
+  reduce_all(is, o, total_mass,
     total_mass += o->mass;
-  });
+  );
 
   cout << "total_mass: " << total_mass << endl;
 }
