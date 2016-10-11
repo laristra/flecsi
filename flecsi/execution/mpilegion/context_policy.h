@@ -118,10 +118,16 @@ struct mpilegion_context_policy_t
     interop_helper_.wait_on_legion();
 
     //while loop to do some mpi tasks
-
-     while(interop_helper_.call_mpi_)
+     while(ext_legion_handshake_t::instance().call_mpi_)
      {
-       interop_helper_.shared_func_();
+#ifdef DEBUG
+       int rank;
+       MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+       std::cout<< "inside while loop N " << " rank = "<<rank<<
+          "rank_from_handshake = " << ext_legion_handshake_t::instance().rank_
+          <<std::endl;
+#endif
+       ext_legion_handshake_t::instance().shared_func_();
        interop_helper_.handoff_to_legion();
        interop_helper_.wait_on_legion();
       }

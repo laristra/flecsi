@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_execution_legion_task_wrapper_h
-#define flecsi_execution_legion_task_wrapper_h
+#ifndef flecsi_execution_mpilegion_task_wrapper_h
+#define flecsi_execution_mpilegion_task_wrapper_h
 
 #include "flecsi/execution/context.h"
 #include "flecsi/utils/common.h"
@@ -39,7 +39,7 @@ template<
   typename R,
   typename ... As
 >
-struct legion_task_wrapper_
+struct mpilegion_task_wrapper_
 {
   //
   // Type definition for user task.
@@ -67,6 +67,7 @@ struct legion_task_wrapper_
   ///
   static void runtime_registration(size_t tid)
   {
+std::cout<<"inside of task_wrapper, runtime_registration "<<P<< " = ? "<<mpi<<std::endl;
     switch(P) {
       case loc:
         lr_runtime::register_legion_task<execute>(tid, lr_proc::LOC_PROC, S, I);
@@ -74,6 +75,9 @@ struct legion_task_wrapper_
       case toc:
         lr_runtime::register_legion_task<execute>(tid, lr_proc::TOC_PROC, S, I);
         break;
+      case mpi:
+     std::cout <<"before registering helper task for mpi" <<std::endl;
+        lr_runtime::register_legion_task<execute_mpi>(tid, lr_proc::LOC_PROC, S, I); 
     } // switch
   } // runtime_registration
 
@@ -118,12 +122,46 @@ struct legion_task_wrapper_
     return tuple_function(user_task, user_args);
   } // execute
 
-}; // class legion_task_wrapper_
+  static void execute_mpi(const LegionRuntime::HighLevel::Task * task,
+    const std::vector<LegionRuntime::HighLevel::PhysicalRegion>& regions,
+    LegionRuntime::HighLevel::Context context,
+    LegionRuntime::HighLevel::HighLevelRuntime * runtime)
+  {
+     int rank;
+     MPI_Comm_rank( MPI_COMM_WORLD, &rank);
+     std::cout<<"MPI rank from the index task = " << rank <<std::endl;
+
+    // Define a tuple type for the task arguments
+     using task_args_t = std::tuple<user_task_t, As ...>;
+
+    // Get the arguments that were passed to Legion on the task launch
+     task_args_t & task_args = *(reinterpret_cast<task_args_t *>(task->args));
+
+    // Get the user task
+     user_task_t user_task = std::get<0>(task_args);
+
+    // Get the user task arguments
+    auto user_args = tuple_filter_index_<greater_than, task_args_t>(task_args);
+ 
+          
+     std::function<void()> shared_func_tmp =
+        tuple_function_mpi(user_task, user_args);
+
+    // std::function<void()> shared_func_tmp = std::bind(user_task,
+    //     std::forward<As>(args) ...);     
+
+     ext_legion_handshake_t::instance().rank_=rank;
+     ext_legion_handshake_t::instance().shared_func_=shared_func_tmp;
+
+     ext_legion_handshake_t::instance().call_mpi_=true;
+  }
+
+}; // class mpilegion_task_wrapper_
 
 } //namespace execution 
 } // namespace flecsi
 
-#endif // flecsi_execution_legion_task_wrapper_h
+#endif // flecsi_execution_mpilegion_task_wrapper_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

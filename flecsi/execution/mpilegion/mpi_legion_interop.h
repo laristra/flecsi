@@ -74,6 +74,12 @@ class mpi_legion_interop_t
    Ts&&... comm_data,
    LegionRuntime::HighLevel::Context ctx,
    LegionRuntime::HighLevel::HighLevelRuntime *runtime);
+
+  void
+  unset_call_mpi (
+   LegionRuntime::HighLevel::Context ctx,
+   LegionRuntime::HighLevel::HighLevelRuntime *runtime
+  );
  
   void 
   legion_configure()
@@ -280,7 +286,44 @@ mpi_legion_interop_t::wait_on_mpi(
   return fm3;
 }//wait_on_mpi
 
-/*--------------------------------------------------------------------------*/
+//---------------------------------------------------------------------------
+inline
+void
+unset_call_mpi_task(
+ const Legion::Task *legiontask,
+ const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
+ LegionRuntime::HighLevel::Context ctx,
+ LegionRuntime::HighLevel::HighLevelRuntime *runtime
+)
+{ 
+  ext_legion_handshake_t::instance().call_mpi_=false;
+}
+
+inline
+void
+mpi_legion_interop_t::unset_call_mpi (
+  LegionRuntime::HighLevel::Context ctx,
+  LegionRuntime::HighLevel::HighLevelRuntime *runtime
+)
+{
+std::cout <<"inside unset_call_mpi 1" <<std::endl; 
+  LegionRuntime::HighLevel::ArgumentMap arg_map;
+   LegionRuntime::HighLevel::IndexLauncher unset_call_mpi_launcher(
+         task_ids_t::instance().unset_call_mpi_id,
+         LegionRuntime::HighLevel::Domain::from_rect<2>(all_processes_),
+         LegionRuntime::HighLevel::TaskArgument(0, 0),
+         arg_map);
+   unset_call_mpi_launcher.tag =  MAPPER_ALL_PROC;
+std::cout <<"inside unset_call_mpi 2" <<std::endl;
+   LegionRuntime::HighLevel::FutureMap fm5 =
+        runtime->execute_index_space(ctx,unset_call_mpi_launcher);
+  fm5.wait_all_results();
+std::cout <<"inside unset_call_mpi 3" <<std::endl;
+
+}
+
+//---------------------------------------------------------------------------
+
 //#if FLECSI_DRIVER == 'flecsi/execution/test/sprint.h'
 /// register all Legion tasks used in the mpi_legion_interop_t class
  
@@ -315,6 +358,15 @@ mpi_legion_interop_t::register_tasks(void)
         AUTO_GENERATE_ID,
         LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
         "wait_on_mpi_task");
+  
+   LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
+        <unset_call_mpi_task>(
+        task_ids_t::instance().unset_call_mpi_id,
+        LegionRuntime::HighLevel::Processor::LOC_PROC,
+        false, true, AUTO_GENERATE_ID,
+        LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
+        "unset_call_mpi_task");
+
 }//register_tasks
 
 

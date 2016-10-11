@@ -96,6 +96,12 @@ class ext_legion_handshake_t {
   
   void legion_wait_on_ext(void);
 
+  public:
+   std::function<void()> shared_func_;
+   bool call_mpi_=false;
+   int rank_;
+
+ 
   protected:
 
   int state, ext_queue_depth, legion_queue_depth, ext_count, legion_count;
