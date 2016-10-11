@@ -67,7 +67,6 @@ struct mpilegion_task_wrapper_
   ///
   static void runtime_registration(size_t tid)
   {
-std::cout<<"inside of task_wrapper, runtime_registration "<<P<< " = ? "<<mpi<<std::endl;
     switch(P) {
       case loc:
         lr_runtime::register_legion_task<execute>(tid, lr_proc::LOC_PROC, S, I);
@@ -76,7 +75,6 @@ std::cout<<"inside of task_wrapper, runtime_registration "<<P<< " = ? "<<mpi<<st
         lr_runtime::register_legion_task<execute>(tid, lr_proc::TOC_PROC, S, I);
         break;
       case mpi:
-     std::cout <<"before registering helper task for mpi" <<std::endl;
         lr_runtime::register_legion_task<execute_mpi>(tid, lr_proc::LOC_PROC, S, I); 
     } // switch
   } // runtime_registration
@@ -127,9 +125,12 @@ std::cout<<"inside of task_wrapper, runtime_registration "<<P<< " = ? "<<mpi<<st
     LegionRuntime::HighLevel::Context context,
     LegionRuntime::HighLevel::HighLevelRuntime * runtime)
   {
+#ifdef LEGIONDEBUG
      int rank;
      MPI_Comm_rank( MPI_COMM_WORLD, &rank);
      std::cout<<"MPI rank from the index task = " << rank <<std::endl;
+     ext_legion_handshake_t::instance().rank_=rank;
+#endif
 
     // Define a tuple type for the task arguments
      using task_args_t = std::tuple<user_task_t, As ...>;
@@ -150,7 +151,6 @@ std::cout<<"inside of task_wrapper, runtime_registration "<<P<< " = ? "<<mpi<<st
     // std::function<void()> shared_func_tmp = std::bind(user_task,
     //     std::forward<As>(args) ...);     
 
-     ext_legion_handshake_t::instance().rank_=rank;
      ext_legion_handshake_t::instance().shared_func_=shared_func_tmp;
 
      ext_legion_handshake_t::instance().call_mpi_=true;

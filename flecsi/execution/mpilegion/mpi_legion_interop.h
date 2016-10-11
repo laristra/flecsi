@@ -196,7 +196,9 @@ mpi_legion_interop_t::calculate_number_of_procs(void)
     LegionRuntime::HighLevel::Context ctx, 
     LegionRuntime::HighLevel::HighLevelRuntime *runtime)
   {
+#ifdef LEGIONDEBUG
      std::cout <<"inside connect_to_mpi"<<std::endl;
+#endif 
      ext_legion_handshake_t::instance().legion_init();
   }//connect_to_mpi_task
 

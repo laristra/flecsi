@@ -120,7 +120,7 @@ struct mpilegion_context_policy_t
     //while loop to do some mpi tasks
      while(ext_legion_handshake_t::instance().call_mpi_)
      {
-#ifdef DEBUG
+#ifdef LEGIONDEBUG
        int rank;
        MPI_Comm_rank(MPI_COMM_WORLD,&rank);
        std::cout<< "inside while loop N " << " rank = "<<rank<<

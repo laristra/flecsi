@@ -132,16 +132,17 @@ struct mpilegion_execution_policy_t
                             index_launcher);
       fm1.wait_all_results();
 
-     // context_.interop_helper_.call_mpi_=true;
       context_.interop_helper_.handoff_to_mpi(context_.context(),
          context_.runtime());
       //mpi task is running here
       flecsi::execution::future_t future = 
          context_.interop_helper_.wait_on_mpi(context_.context(),
                             context_.runtime());
-      //context_.interop_helper_.call_mpi_=false;
-      context_.interop_helper_.unset_call_mpi(context_.context(),
-                            context_.runtime());
+    //TOFIX: these flag should be switch iside of the index task
+    //as below
+      ext_legion_handshake_t::instance().call_mpi_=false; 
+     //context_.interop_helper_.unset_call_mpi(context_.context(),
+      //                      context_.runtime());
    
       return future;
     }
