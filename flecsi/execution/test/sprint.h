@@ -206,7 +206,7 @@ void driver(int argc, char ** argv) {
 
   for (int i = 0; i < num_ranks; i++) {
     std::cout << "about to call get_results" << std::endl; 
-    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(DomainPoint::from_point<2>(make_point(0,i)));
+    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(DomainPoint::from_point<2>(make_point(i,0)));
     std::cout << "From rank " << i << " received (exclusive, shared, ghost) "
               << "(" << received.exclusive << "," << received.shared << ","
               << received.ghost << ")" << std::endl; 
