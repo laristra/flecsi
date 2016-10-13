@@ -25,20 +25,19 @@
 namespace flecsi
 {
 
+template< typename T, typename U>
+constexpr T hash__( U && str, T h, std::size_t i, std::size_t n ){
+  return i == n ? h : hash__(str, h ^ static_cast<T>( std::forward<U>(str)[i] ) <<
+    8 * (i % 8), i + 1, n); 
+}
+
 /*!
   \brief const_string provides compile-time string constants and hashing...
 */
-template< typename T, typename U >
+template< typename T, typename U>
 constexpr T hash( U && str, std::size_t n ) {
-
-  T h = 0;
-
-  for (std::size_t i = 0; i < n; ++i) 
-    h ^= static_cast<T>( std::forward<U>(str)[i] ) << 8 * (i % 8);
-
-  return h;
+  return hash__(str, 0, 0, n);
 }
-
 
 } // namespace flecsi
 
