@@ -36,7 +36,7 @@ constexpr T hash__( U && str, T h, std::size_t i, std::size_t n ){
 */
 template< typename T, typename U>
 constexpr T hash( U && str, std::size_t n ) {
-  return hash__(str, 0, 0, n);
+  return hash__<T>(str, 0, 0, n);
 }
 
 } // namespace flecsi
