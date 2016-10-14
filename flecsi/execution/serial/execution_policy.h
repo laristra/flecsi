@@ -36,7 +36,6 @@
 namespace flecsi {
 namespace execution {
 
-
 template<
   typename R,
   typename T,

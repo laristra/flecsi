@@ -1,7 +1,8 @@
 #include <cinchtest.h>
 #include <iostream>
 
-#include "flecsi/topology/index_space.h"
+//#include "flecsi/topology/index_space.h"
+#include "flecsi/execution/execution.h"
 
 using namespace std;
 using namespace flecsi;
@@ -48,8 +49,7 @@ TEST(index_space, index_space) {
     is << new object(i);
   }
 
-  forall(is, o, {
+  for_each(is, o, {
     cout << o->id << endl;
-  });
-
+  }); // foreach
 }

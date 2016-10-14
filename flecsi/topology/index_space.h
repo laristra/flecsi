@@ -14,10 +14,15 @@
 
 #pragma once
 
+#include <algorithm>
 #include <type_traits>
+#include <vector>
 
+#if 0
+MOVED TO flecsi/execution
 #define forall(A, B, C) \
 foreach(A, [&](auto* B) C);
+#endif
 
 namespace flecsi {
 namespace topology {
@@ -798,6 +803,8 @@ private:
   }
 };
 
+#if 0
+MOVED TO flecsi/execution
 template<class T, bool STORAGE, bool OWNED, bool SORTED, class P, class F>
 void foreach(index_space<T, STORAGE, OWNED, SORTED, P>& is, F&& f){
   size_t end = is.end_offset();
@@ -805,6 +812,7 @@ void foreach(index_space<T, STORAGE, OWNED, SORTED, P>& is, F&& f){
     f(std::forward<T>(is.get_offset(i)));
   }
 }
+#endif
 
 } // namespace topology
 } // namespace flecsi

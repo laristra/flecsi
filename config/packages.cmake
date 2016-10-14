@@ -35,17 +35,19 @@ set(FLECSI_RUNTIME_LIBRARIES)
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion" OR
   FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
-  find_package (legion QUIET NO_MODULE)
+  find_package(GASNet)
 
-  set(Legion_INSTALL_DIR "" CACHE PATH
-    "Path to the Legion install directory")
+#  find_package (legion QUIET NO_MODULE)
 
-  if(NOT Legion_INSTALL_DIR STREQUAL "")
-    message(WARNING "Legion_INSTALL_DIR is obsolete, "
-      "use CMAKE_PREFIX_PATH instead (and rebuild the latest"
-      " version third-party libraries)")
-    list(APPEND CMAKE_PREFIX_PATH "${Legion_INSTALL_DIR}")
-  endif()
+#  set(Legion_INSTALL_DIR "" CACHE PATH
+#    "Path to the Legion install directory")
+
+#  if(NOT Legion_INSTALL_DIR STREQUAL "")
+#    message(WARNING "Legion_INSTALL_DIR is obsolete, "
+#      "use CMAKE_PREFIX_PATH instead (and rebuild the latest"
+#      " version third-party libraries)")
+#    list(APPEND CMAKE_PREFIX_PATH "${Legion_INSTALL_DIR}")
+#  endif()
 
 endif()
 

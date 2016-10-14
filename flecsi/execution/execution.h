@@ -12,6 +12,7 @@
 #include "flecsi/execution/common/function_handle.h"
 #include "flecsi/execution/task.h"
 #include "flecsi/execution/function.h"
+#include "flecsi/execution/kernel.h"
 
 ///
 // \file execution.h
@@ -28,44 +29,54 @@
 ///
 //
 ///
-#define register_task(task, processor, mode)                                 \
-                                                                             \
-  /* Task return type (trt) */                                               \
-  using task ## _trt_t =                                                     \
-    typename flecsi::function_traits__<decltype(task)>::return_type;         \
-                                                                             \
-  /* Task arguments type (tat) */                                            \
-  using task ## _tat_t =                                                     \
-    typename flecsi::function_traits__<decltype(task)>::arguments_type;      \
-                                                                             \
-  /* Wrapper to call user task with tuple arguments */                       \
-  inline task ## _trt_t task ## _ttwrapper(task ## _tat_t && args) {         \
-    return flecsi::tuple_function(task, args);                               \
-  } /* task ## _ttwrapper */                                                 \
-                                                                             \
-  /* Define user task delegate function type */                              \
-  using user_task_delegate_ ## task ## _t =                                  \
-    std::function<task ## _trt_t(task ## _tat_t)>;                           \
-                                                                             \
-  /* Create task delegate function */                                        \
-  user_task_delegate_ ## task ## _t task ## _task_delegate =                 \
-    task ## _ttwrapper;                                                      \
-                                                                             \
-  /* Register the user task */                                               \
-  bool task ## _task_registered =                                            \
-    flecsi::execution::task_t::register_task<task ## _trt_t, task ## _tat_t> \
+#define register_task(task, processor, mode)                                   \
+                                                                               \
+  /* Task return type (trt) */                                                 \
+  using task ## _trt_t =                                                       \
+    typename flecsi::function_traits__<decltype(task)>::return_type;           \
+                                                                               \
+  /* Task arguments type (tat) */                                              \
+  using task ## _tat_t =                                                       \
+    typename flecsi::function_traits__<decltype(task)>::arguments_type;        \
+                                                                               \
+  /* Wrapper to call user task with tuple arguments */                         \
+  inline task ## _trt_t task ## _ttwrapper(task ## _tat_t && args) {           \
+    return flecsi::tuple_function(task, args);                                 \
+  } /* task ## _ttwrapper */                                                   \
+                                                                               \
+  /* Define user task delegate function type */                                \
+  using user_task_delegate_ ## task ## _t =                                    \
+    std::function<task ## _trt_t(task ## _tat_t)>;                             \
+                                                                               \
+  /* Create task delegate function */                                          \
+  user_task_delegate_ ## task ## _t task ## _task_delegate =                   \
+    task ## _ttwrapper;                                                        \
+                                                                               \
+  /* Register the user task */                                                 \
+  bool task ## _task_registered =                                              \
+    flecsi::execution::task_t::register_task<task ## _trt_t, task ## _tat_t>   \
     (reinterpret_cast<uintptr_t>(&task), processor, mode)
 
 ///
 //
 ///
-#define execute_task(task, processor, mode, ...)                           \
-                                                                           \
-  /* Execute the user task */                                              \
-  /* WARNING: This macro returns a future. Don't add terminations! */      \
-  flecsi::execution::task_t::execute_task<task ## _trt_t>                  \
-    (reinterpret_cast<uintptr_t>(&task), processor, mode,                  \
+#define execute_task(task, processor, mode, ...)                               \
+                                                                               \
+  /* Execute the user task */                                                  \
+  /* WARNING: This macro returns a future. Don't add terminations! */          \
+  flecsi::execution::task_t::execute_task<task ## _trt_t>                      \
+    (reinterpret_cast<uintptr_t>(&task), processor, mode,                      \
     task ## _task_delegate, ## __VA_ARGS__)
+
+//----------------------------------------------------------------------------//
+// Kernel Interface
+//----------------------------------------------------------------------------//
+
+///
+//
+///
+#define for_each(index_space, index, kernel)                                   \
+  flecsi::execution::for_each__(index_space, [&](auto * index) kernel)
 
 //----------------------------------------------------------------------------//
 // Function Interface
