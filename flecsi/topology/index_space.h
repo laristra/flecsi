@@ -18,17 +18,6 @@
 #include <type_traits>
 #include <vector>
 
-#if 0
-MOVED TO flecsi/execution
-#define forall(A, B, C) \
-foreach(A, [&](auto* B) C);
-#define forall(is, obj, body) \
-foreach(is, [&](auto* obj){ body });
-
-#define reduce_all(is, obj, reduce_to, body) \
-reduce_each(is, reduce_to, [&](auto* obj, auto& reduce_to){ body });
-#endif
-
 namespace flecsi {
 namespace topology {
 
@@ -884,25 +873,6 @@ private:
     return v_->end();
   }
 };
-
-#if 0
-MOVED TO flecsi/execution
-template<class T, bool STORAGE, bool OWNED, bool SORTED, class P, class F>
-void foreach(index_space<T, STORAGE, OWNED, SORTED, P>& is, F&& f){
-  size_t end = is.end_offset();
-  for(size_t i = is.begin_offset(); i < end; ++i){
-    f(std::forward<T>(is.get_offset(i)));
-  }
-}
-#endif
-
-template<class T, bool STORAGE, bool OWNED, bool SORTED, class P, class F, class S>
-void reduce_each(index_space<T, STORAGE, OWNED, SORTED, P>& is, S& reduced, F&& f){
-  size_t end = is.end_offset();
-  for(size_t i = is.begin_offset(); i < end; ++i){
-    f(std::forward<T>(is.get_offset(i)), reduced);
-  }
-}
 
 } // namespace topology
 } // namespace flecsi

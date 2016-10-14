@@ -55,6 +55,31 @@ for_each__(
   } // for
 } // foreach__
 
+///
+//
+///
+template<
+	typename T,
+  bool is_storage,
+  bool is_owned,
+  bool is_sorted,
+  typename P,
+  class F,
+  class S
+>
+void
+reduce_each__(
+  flecsi::topology::index_space<T, is_storage, is_owned, is_sorted, P>& is,
+  S & variable,
+  F && f
+)
+{
+  size_t end = is.end_offset();
+  for(size_t i(is.begin_offset()); i<end; ++i) {
+    f(std::forward<T>(is.get_offset(i)), variable);
+  } // for
+} // reduce_each__
+
 } // namespace execution
 } // namespace flecsi
 

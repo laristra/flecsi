@@ -78,6 +78,13 @@
 #define for_each(index_space, index, kernel)                                   \
   flecsi::execution::for_each__(index_space, [&](auto * index) kernel)
 
+///
+//
+///
+#define reduce_each(index_space, index, variable, kernel)                      \
+  flecsi::execution::reduce_each__(index_space, variable,                      \
+    [&](auto * index, auto & variable) kernel)
+
 //----------------------------------------------------------------------------//
 // Function Interface
 //----------------------------------------------------------------------------//

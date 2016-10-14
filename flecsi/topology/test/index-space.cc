@@ -61,8 +61,17 @@ TEST(index_space, index_space) {
   }
 
   for_each(is, o, {
-    cout << o->id << endl;
+    std::cout << o->id << endl;
   }); // foreach
+
+	double total_mass(0.0);
+
+	reduce_each(is, o, total_mass, {
+   	total_mass += o->mass;
+	});
+
+  std::cout << "total_mass: " << total_mass << std::endl;
+
 #if 0
   forall(is, o,
     cout << o->id << endl;
