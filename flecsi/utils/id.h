@@ -17,6 +17,7 @@
 
 #include <cassert>
 #include <cstdint>
+#include <iostream>
 
 /*!
  * \file id.h
@@ -143,6 +144,10 @@ namespace flecsi
     }
 
     size_t entity() const{
+      return entity_;
+    }
+
+    size_t index_space_index() const{
       return entity_;
     }
 

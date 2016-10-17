@@ -39,7 +39,7 @@ set(execution_SOURCES
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
-  cinch_add_unit(task
+ cinch_add_unit(task
     SOURCES
       test/task.cc
       test/task_driver.h
@@ -48,15 +48,15 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     POLICY LEGION
     LIBRARIES flecsi)
 
-   cinch_add_unit(future
-    SOURCES
-      test/task.cc
-      test/task_driver.h
-      legion/runtime_driver.cc
-      ../partition/init_partitions_task.cc
-    DEFINES FLECSI_DRIVER=flecsi/execution/test/future.h
-    POLICY LEGION
-    LIBRARIES flecsi) 
+#   cinch_add_unit(future
+#    SOURCES
+#      test/task.cc
+#      test/task_driver.h
+#      legion/runtime_driver.cc
+#      ../partition/init_partitions_task.cc
+#    DEFINES FLECSI_DRIVER=flecsi/execution/test/future.h
+#    POLICY LEGION
+#    LIBRARIES flecsi) 
 
 elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
@@ -71,15 +71,15 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
     LIBRARIES flecsi
   )
 
-  cinch_add_unit(future
-    SOURCES
-      test/task.cc
-      test/task_driver.h
-      mpilegion/runtime_driver.cc
-      ../partition/init_partitions_task.cc
-    DEFINES FLECSI_DRIVER=flecsi/execution/test/future.h
-    POLICY MPILEGION
-    LIBRARIES flecsi)
+#  cinch_add_unit(future
+#    SOURCES
+#      test/task.cc
+#      test/task_driver.h
+#      mpilegion/runtime_driver.cc
+#      ../partition/init_partitions_task.cc
+#    DEFINES FLECSI_DRIVER=flecsi/execution/test/future.h
+#    POLICY MPILEGION
+#    LIBRARIES flecsi)
 
   cinch_add_unit(sprint
     SOURCES
@@ -93,7 +93,7 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
     LIBRARIES flecsi
   )
 
-else()
+else() # serial
 
   cinch_add_unit(task
     SOURCES
@@ -103,14 +103,22 @@ else()
     DEFINES FLECSI_DRIVER=flecsi/execution/test/task_driver.h
     LIBRARIES flecsi)
 
-  cinch_add_unit(future
-    SOURCES
-      test/task.cc
-      test/task_driver.h
-      serial/runtime_driver.cc
-    DEFINES FLECSI_DRIVER=flecsi/execution/test/future.h
-    LIBRARIES flecsi)
+#  cinch_add_unit(future
+#    SOURCES
+#      test/task.cc
+#      test/task_driver.h
+#      serial/runtime_driver.cc
+#    DEFINES FLECSI_DRIVER=flecsi/execution/test/future.h
+#    LIBRARIES flecsi)
 
+  cinch_add_unit(simple_function
+    SOURCES
+      test/function.cc
+      test/simple_function.h
+      serial/runtime_driver.cc
+    DEFINES FLECSI_DRIVER=flecsi/execution/test/simple_function.h
+    LIBRARIES flecsi
+  )
 endif()
 
 

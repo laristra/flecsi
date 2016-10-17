@@ -56,19 +56,13 @@ class const_string_t
     return flecsi::hash<hash_type_t>( str_, size_ );
   }
 
+  constexpr bool equal_(const const_string_t & t, size_t i) const{
+    return i == size_ ? true : (*this)[i] == t[i] && equal_(t, i + 1);
+  }
+
   constexpr bool operator==(const const_string_t & t) const
   {
-    if (size_ != t.size_) {
-      return false;
-    }
-
-    for (hash_type_t i = 0; i < size_; ++i) {
-      if ((*this)[i] != t[i]) {
-        return false;
-      }
-    }
-
-    return true;
+    return size_ == t.size_ && equal_(t, 0);
   }
 
   constexpr bool operator!=(const const_string_t & t) const

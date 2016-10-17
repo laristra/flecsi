@@ -31,6 +31,7 @@
 #include "flecsi/topology/mesh_utils.h"
 #include "flecsi/utils/array_ref.h"
 #include "flecsi/utils/reorder.h"
+#include "flecsi/topology/index_space.h"
 
 namespace flecsi {
 namespace topology {
@@ -91,11 +92,15 @@ class mesh_topology_base_t;
   \tparam N The number of mesh domains.
  */
 
+class mesh_entity_base_{
+public:
+  using id_t = flecsi::id_t;
+};
+
 template <size_t N>
-class mesh_entity_base_t
+class mesh_entity_base_t : public mesh_entity_base_
 {
  public:
-
   virtual ~mesh_entity_base_t() {}
 
   /*!
@@ -214,6 +219,9 @@ template <size_t M, class E>
 class domain_entity
 {
  public:
+  using id_t = typename E::id_t;
+  using item_t = E*;
+
   domain_entity(E * entity) : entity_(entity) {}
   domain_entity & operator=(const domain_entity & e)
   {
@@ -231,6 +239,8 @@ class domain_entity
   size_t id() const { return entity_->template id<M>(); }
   bool operator==(domain_entity e) const { return entity_ == e.entity_; }
   bool operator!=(domain_entity e) const { return entity_ != e.entity_; }
+  bool operator<(domain_entity e) const { return entity_ < e.entity_; }
+  id_t index_space_id() const { return entity_->template global_id<M>(); }
  private:
   E * entity_;
 };
@@ -333,15 +343,20 @@ class connectivity_t
 {
  public:
 
+  connectivity_t(const connectivity_t&) = delete;
+
+  connectivity_t& operator=(const connectivity_t&) = delete;
+
   //! Constructor.
-  connectivity_t() {}
+  connectivity_t()
+  : index_space_(false){}
 
   /*!
     Clear the storage arrays for this instance.
    */
   void clear()
   {
-    to_id_vec_.clear();
+    index_space_.clear();
     from_index_vec_.clear();
   } // clear
 
@@ -368,17 +383,24 @@ class connectivity_t
 
     // populate the to id's and add from offsets for each connectivity group
 
+    size_t start = index_space_.begin_push_();
+
     size_t n = cv.size();
+
+    size_t from = 0;
 
     for (size_t i = 0; i < n; ++i) {
       const id_vector_t & iv = cv[i];
 
       for (id_t id : iv) {
-        to_id_vec_.push_back(id);
+        index_space_.batch_push_(id);
+        ++from;
       } // for
 
-      from_index_vec_.push_back(to_id_vec_.size());
+      from_index_vec_.push_back(from);
     } // for
+
+    index_space_.end_push_(start);
   } // init
 
   /*!
@@ -402,8 +424,8 @@ class connectivity_t
 
     from_index_vec_[n] = size;
 
-    to_id_vec_.resize(size);
-    std::fill(to_id_vec_.begin(), to_id_vec_.end(), flecsi::id_t(0));
+    index_space_.resize_(size);
+    index_space_.fill_(flecsi::id_t(0));
   } // resize
 
   /*!
@@ -411,14 +433,14 @@ class connectivity_t
     from connection vector.
    */
   void end_from() {
-    from_index_vec_.push_back(to_id_vec_.size());
+    from_index_vec_.push_back(index_space_.size());
   } // end_from
 
   /*!
     Push a single id into the current from group.
    */
   void push(id_t id) {
-    to_id_vec_.push_back(id);
+    index_space_.push_(id);
   } // push
 
   /*!
@@ -428,14 +450,14 @@ class connectivity_t
   {
     for (size_t i = 1; i < from_index_vec_.size(); ++i) {
       for (size_t j = from_index_vec_[i - 1]; j < from_index_vec_[i]; ++j) {
-        stream << to_id_vec_[j].entity() << std::endl;
+        stream << index_space_(j).entity() << std::endl;
         // stream << to_id_vec_[j] << std::endl;
       }
       stream << std::endl;
     }
 
     stream << "=== id_vec" << std::endl;
-    for (id_t id : to_id_vec_) {
+    for (id_t id : index_space_.ids()) {
       stream << id.entity() << std::endl;
     } // for
 
@@ -458,14 +480,14 @@ class connectivity_t
   /*!
     Get the to id's vector.
    */
-  const id_vector_t & get_entities() const { return to_id_vec_; }
+  const id_vector_t & get_entities() const { return index_space_.id_vec(); }
   /*!
     Get the entities of the specified from index.
    */
   id_t * get_entities(size_t index)
   {
     assert(index < from_index_vec_.size() - 1);
-    return to_id_vec_.data() + from_index_vec_[index];
+    return index_space_.id_array() + from_index_vec_[index];
   }
 
   /*!
@@ -476,7 +498,7 @@ class connectivity_t
     assert(index < from_index_vec_.size() - 1);
     uint64_t start = from_index_vec_[index];
     count = from_index_vec_[index + 1] - start;
-    return to_id_vec_.data() + start;
+    return index_space_.id_array() + start;
   }
 
 
@@ -488,7 +510,7 @@ class connectivity_t
     assert(index < from_index_vec_.size() - 1);
     auto start = from_index_vec_[index];
     auto count = from_index_vec_[index + 1] - start;
-    return utils::make_array_ref( to_id_vec_.data() + start, count );
+    return utils::make_array_ref( index_space_.id_array() + start, count );
   }
 
 
@@ -500,7 +522,8 @@ class connectivity_t
     assert(index < from_index_vec_.size() - 1);
     auto start = from_index_vec_[index];
     auto end = from_index_vec_[index + 1];
-    std::reverse( to_id_vec_.begin() + start, to_id_vec_.begin() + end );
+    std::reverse(index_space_.index_begin_() + start,
+                 index_space_.index_begin_() + end);
   }
 
 
@@ -514,19 +537,19 @@ class connectivity_t
     auto start = from_index_vec_[index];
     auto count = from_index_vec_[index + 1] - start;
     assert( order.size() == count );
-    utils::reorder( order.begin(), order.end(), to_id_vec_.data() + start );
+    utils::reorder( order.begin(), order.end(), index_space_.id_array() + start );
   }
 
   /*!
     True if the connectivity is empty (hasn't been populated).
    */
-  bool empty() const { return to_id_vec_.empty(); }
+  bool empty() const { return index_space_.empty(); }
   /*!
     Set a single connection.
    */
   void set(size_t from_local_id, id_t to_id, size_t pos)
   {
-    to_id_vec_[from_index_vec_[from_local_id] + pos] = to_id;
+    index_space_(from_index_vec_[from_local_id] + pos) = to_id;
   }
 
   /*!
@@ -536,7 +559,7 @@ class connectivity_t
   /*!
     Return the number of to entities.
    */
-  size_t to_size() const { return to_id_vec_.size(); }
+  size_t to_size() const { return index_space_.size(); }
   /*!
     Set/init the connectivity use by compute topology methods like transpose.
    */
@@ -557,21 +580,16 @@ class connectivity_t
 
     from_index_vec_[n] = size;
 
-    to_id_vec_.reserve(size);
+    index_space_.begin_push_(size);
 
     for (size_t i = 0; i < n; ++i) {
       const id_vector_t & conn = conns[i];
       uint64_t m = conn.size();
 
       for (size_t j = 0; j < m; ++j) {
-        to_id_vec_.push_back(ev[conn[j]]->template global_id<M>());
+        index_space_.batch_push_(ev[conn[j]]->template global_id<M>());
       }
     }
-  }
-
-  const id_vector_t & to_id_vec() const
-  {
-    return to_id_vec_;
   }
 
   const index_vector_t & from_index_vec() const
@@ -579,17 +597,30 @@ class connectivity_t
     return from_index_vec_;
   }
 
-  id_vector_t & to_id_vec()
-  {
-    return to_id_vec_;
-  }
-
   index_vector_t & from_index_vec()
   {
     return from_index_vec_;
   }
 
-  id_vector_t to_id_vec_;
+  const auto& to_id_vec() const
+  {
+    return index_space_.id_vec();
+  }
+
+  auto& to_id_vec()
+  {
+    return index_space_.id_vec_();
+  }
+
+  auto& get_index_space(){
+    return index_space_;
+  }
+
+  auto& get_index_space() const{
+    return index_space_;
+  }
+
+  index_space<mesh_entity_base_*> index_space_; 
   index_vector_t from_index_vec_;
 
 }; // class connectivity_t
@@ -712,18 +743,14 @@ struct mesh_storage_t {
     Defines a type for storing entity instances as an array of
     \ref entity_vector_t, which is a std::vector of \ref mesh_entity_base_t.
    */
-  using entities_t = std::array<entity_vector_t<NM>, D + 1>;
 
-  using id_vecs_t = std::array<id_vector_t, D + 1>;
-
-  // array of array of vector of mesh_entity_base_t *
-  std::array<entities_t, NM> entities;
+  using index_spaces_t = 
+    std::array<index_space<mesh_entity_base_*, true, true, true>, D + 1>;
 
   // array of array of domain_connectivity
   std::array<std::array<domain_connectivity<D>, NM>, NM> topology;
 
-  // array of array of vector of id_t
-  std::array<id_vecs_t, NM> id_vecs;
+  std::array<index_spaces_t, NM> index_spaces;
 
 }; // struct mesh_storage_t
 
@@ -776,18 +803,6 @@ public:
       size_t from_domain, size_t to_domain, size_t from_dim, size_t to_dim) = 0;
 
   /*!
-    Helper method for unserialize.
-   */
-  virtual void
-  set_entity_ids_(size_t domain, size_t dim, id_vector_t && v) = 0;
-
-  /*!
-    Helper method for unserialize.
-   */
-  virtual void
-  set_entities_(size_t domain, size_t dim, void* v) = 0;
-
-  /*!
     This method should be called to construct and entity rather than
     calling the constructor directly. This way, the ability to have
     extra initialization behavior is reserved.
@@ -799,6 +814,10 @@ public:
     return entity;
   } // make
 
+  virtual void append_to_index_space_(size_t domain,
+    size_t dimension,
+    std::vector<mesh_entity_base_*>& ents,
+    std::vector<id_t>& ids) = 0;
 
 }; // mesh_topology_base_t
 
@@ -813,11 +832,10 @@ void unserialize_dimension_(mesh_topology_base_t& mesh,
   std::memcpy(&num_entities, buf + pos, sizeof(num_entities));
   pos += sizeof(num_entities);
 
-  id_vector_t iv;
-  iv.reserve(num_entities);
-
-  entity_vector_t<NM> ev;
-  ev.reserve(num_entities);
+  std::vector<mesh_entity_base_*> ents;
+  std::vector<id_t> ids;
+  ents.reserve(num_entities);
+  ids.reserve(num_entities);
 
   // TODO - fix
   size_t partition_id = 0;
@@ -827,12 +845,11 @@ void unserialize_dimension_(mesh_topology_base_t& mesh,
 
     auto ent = new entity_type_<MT, D, M>();
     ent->template set_global_id<M>(global_id);
-    ev.push_back(ent);
-    iv.push_back(global_id);
+    ents.push_back(ent);
+    ids.push_back(global_id);
   }
 
-  mesh.set_entity_ids_(M, D, move(iv));
-  mesh.set_entities_(M, D, &ev);
+  mesh.append_to_index_space_(M, D, ents, ids);
 }
 
 template<class MT, size_t NM, size_t ND, size_t M, size_t D>

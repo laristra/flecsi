@@ -45,11 +45,15 @@ The primary requirement to build FleCSI is a C++14 capable compiler.
 Currently, this equates to G++ 5.0 or greater.
 
 * CMake >= 3.0
-* GCC >= 5.0
+* GCC >= 6.1.1
 * Doxygen >= 1.8
 * cinch-utils 1.0
 
 cinch-utils is available [here](https://github.com/losalamos/cinch-utils).
+
+## Legion
+
+FleCSI has been tested against *update hash here*.
 
 # Developer Instructions
 

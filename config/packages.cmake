@@ -29,6 +29,17 @@ endif()
 set(FLECSI_RUNTIME_LIBRARIES)
 
 #------------------------------------------------------------------------------#
+# Legion
+#------------------------------------------------------------------------------#
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion" OR
+  FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+
+  find_package(Legion REQUIRED)
+
+endif()
+
+#------------------------------------------------------------------------------#
 # Runtime models
 #------------------------------------------------------------------------------#
 
@@ -46,17 +57,12 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   add_definitions(-DFLECSI_RUNTIME_MODEL_legion)
 
-  find_package (Legion REQUIRED)
-
-  set (LEGION_LIBRARIES Legion::Legion)
-
   if(NOT APPLE)
     set(FLECSI_RUNTIME_LIBRARIES  -ldl ${LEGION_LIBRARIES} ${MPI_LIBRARIES})
   else()
     set(FLECSI_RUNTIME_LIBRARIES  ${LEGION_LIBRARIES} ${MPI_LIBRARIES})
   endif()
 
-  set(LEGION_INCLUDE_DIRS "${Legion_DIR}/../../../include" "${Legion_DIR}/../../../include/legion" "${Legion_DIR}/../../../include/realm" "${Legion_DIR}/../../../include/mappers")
   include_directories(${LEGION_INCLUDE_DIRS})
 
 #
@@ -77,23 +83,18 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 #
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
-  find_package (Legion REQUIRED)
-
   if(NOT ENABLE_MPI)
     message (FATAL_ERROR "MPI is required for the mpilegion runtime model")
   endif()
  
   add_definitions(-DFLECSI_RUNTIME_MODEL_mpilegion)
 
-  set (LEGION_LIBRARIES Legion::Legion)
-
   if(NOT APPLE)
-    set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES}  -ldl ${MPI_LIBRARIES})
+    set(FLECSI_RUNTIME_LIBRARIES  -ldl ${LEGION_LIBRARIES} ${MPI_LIBRARIES})
   else()
-    set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES} ${MPI_LIBRARIES})
+    set(FLECSI_RUNTIME_LIBRARIES  ${LEGION_LIBRARIES} ${MPI_LIBRARIES})
   endif()
 
-  set(LEGION_INCLUDE_DIRS "${Legion_DIR}/../../../include" "${Legion_DIR}/../../../include/legion" "${Legion_DIR}/../../../include/realm" "${Legion_DIR}/../../../include/mappers")
   include_directories(${LEGION_INCLUDE_DIRS})
 
 #
@@ -123,7 +124,6 @@ if(ENABLE_HYPRE)
 
 endif(ENABLE_HYPRE)
 
-
 #------------------------------------------------------------------------------#
 # Cereal
 #------------------------------------------------------------------------------#
@@ -141,8 +141,20 @@ endif(ENABLE_HYPRE)
 # FBITS: flag bits
 # dimension: dimension 2 bits
 # domain: dimension 2 bits
+
+# Make sure that the user set FBITS to an even number
+math(EXPR FLECSI_EVEN_FBITS "${FLECSI_ID_FBITS} % 2")
+if(NOT ${FLECSI_EVEN_FBITS} EQUAL 0)
+  message(FATAL_ERROR "FLECSI_ID_FBITS must be an even number")
+endif()
+
+# Get the total number of bits left for ids
 math(EXPR FLECSI_ID_BITS "124 - ${FLECSI_ID_FBITS}")
+
+# Global ids use half of the remaining bits
 math(EXPR FLECSI_ID_GBITS "${FLECSI_ID_BITS}/2")
+
+# EBITS and PBITS must add up to GBITS
 math(EXPR FLECSI_ID_EBITS "${FLECSI_ID_GBITS} - ${FLECSI_ID_PBITS}")
 
 add_definitions(-DFLECSI_ID_PBITS=${FLECSI_ID_PBITS})
@@ -157,6 +169,12 @@ message(STATUS "${CINCH_Cyan}Set id_t bits to allow:\n"
   "   ${flecsi_partitions} partitions with 2^${FLECSI_ID_EBITS} entities each\n"
   "   ${FLECSI_ID_FBITS} flag bits\n"
   "   ${FLECSI_ID_GBITS} global bits (PBITS*EBITS)${CINCH_ColorReset}")
+
+#------------------------------------------------------------------------------#
+# Counter type
+#------------------------------------------------------------------------------#
+
+add_definitions(-DFLECSI_COUNTER_TYPE=${FLECSI_COUNTER_TYPE})
 
 #------------------------------------------------------------------------------#
 # Enable IO with exodus
