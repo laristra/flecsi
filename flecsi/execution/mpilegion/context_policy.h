@@ -76,7 +76,8 @@ struct mpilegion_context_policy_t
     lr_runtime_t::register_legion_task<mpilegion_runtime_driver>(
       TOP_LEVEL_TASK_ID, lr_loc, true, false);
 
-    lr_runtime_t::register_legion_task<flecsi::dmp::parts, flecsi::dmp::init_partitions>(
+    lr_runtime_t::register_legion_task<flecsi::dmp::parts,
+      flecsi::dmp::init_partitions>(
       task_ids_t::instance().init_cell_partitions_task_id,lr_loc, true, false);
 
     lr_runtime_t::register_legion_task<connect_to_mpi_task>(

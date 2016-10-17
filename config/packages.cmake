@@ -37,6 +37,8 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion" OR
 
   find_package(Legion REQUIRED)
 
+  message(STATUS "Legion found: ${LEGION_FOUND}")
+
 endif()
 
 #------------------------------------------------------------------------------#

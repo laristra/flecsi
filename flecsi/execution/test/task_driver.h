@@ -189,13 +189,10 @@ void driver(int argc, char ** argv) {
 //#if defined(FLECSI_RUNTIME_MODEL_mpilegion)
 //  execute_task(task1, mpi, index, alpha, 5);
 //#else
-  auto future1 = execute_task(task1, loc, single, alpha, 5);
+  execute_task(task1, loc, single, alpha, 5);
 //#endif
 
-  future1.wait();
-
-  auto future2 = execute_task(task2, loc, single, alpha, 5.0, p);
-  std::cout << "future2.get(): " << future2.get() << std::endl;
+  execute_task(task2, loc, single, alpha, 5.0, p);
 
   execute_task(task3, loc, index, 5.0);
 

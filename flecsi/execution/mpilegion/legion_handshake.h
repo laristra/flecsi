@@ -97,6 +97,7 @@ class ext_legion_handshake_t {
   void legion_wait_on_ext(void);
 
   public:
+
    std::function<void()> shared_func_;
    bool call_mpi_=false;
    int rank_;
@@ -109,7 +110,6 @@ class ext_legion_handshake_t {
   pthread_mutex_t sync_mutex;
   pthread_cond_t sync_cond;
 };//ext_legion_handshake_t
-
 
 /*--------------------------------------------------------------------------*/
 ///  this method initializes all ext_legion_handshake_t with input and default 

@@ -19,8 +19,9 @@ set(partition_HEADERS
   PARENT_SCOPE
 )
 
+# Add MPI/Legion specific files
 
-if(NOT FLECSI_RUNTIME_MODEL STREQUAL "serial")
+if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 set(partition_HEADERS
   ${partition_HEADERS}
   init_partitions_task.h
@@ -28,6 +29,7 @@ set(partition_HEADERS
 )
 
 set(partition_SOURCES
+  ${partition_SOURCES}
   init_partitions_task.cc
   PARENT_SCOPE
 )

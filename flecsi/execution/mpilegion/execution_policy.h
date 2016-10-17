@@ -19,7 +19,7 @@
 
 #include "flecsi/utils/const_string.h"
 #include "flecsi/execution/context.h"
-#include "flecsi/execution/future.h"
+//#include "flecsi/execution/future.h"
 #include "flecsi/execution/common/processor.h"
 #include "flecsi/execution/common/task_hash.h"
 #include "flecsi/execution/mpilegion/context_policy.h"
@@ -51,7 +51,7 @@ struct mpilegion_execution_policy_t
    */
   template<
     typename R,
-    typename ... As
+    typename A
   >
   static
   bool
@@ -64,36 +64,37 @@ struct mpilegion_execution_policy_t
       case loc:
         if (std::get<2>(key) == single)
           return context_t::instance().register_task(key,
-            mpilegion_task_wrapper_<loc, 1, 0, R, As ...>::runtime_registration);
+            mpilegion_task_registrar__<loc, 1, 0, R, A>::register_task);
         if (std::get<2>(key) == index)
           return context_t::instance().register_task(key,
-            mpilegion_task_wrapper_<loc, 0, 1, R, As ...>::runtime_registration);
+            mpilegion_task_registrar__<loc, 0, 1, R, A>::register_task);
         if (std::get<2>(key) == any)
           return context_t::instance().register_task(key,
-            mpilegion_task_wrapper_<loc, 1, 1, R, As ...>::runtime_registration);
+            mpilegion_task_registrar__<loc, 1, 1, R, A>::register_task);
         break;
       case toc:
         if (std::get<2>(key) == single)
           return context_t::instance().register_task(key,
-            mpilegion_task_wrapper_<toc, 1, 0, R, As ...>::runtime_registration);
+            mpilegion_task_registrar__<toc, 1, 0, R, A>::register_task);
         if (std::get<2>(key) == index)
           return context_t::instance().register_task(key,
-            mpilegion_task_wrapper_<toc, 0, 1, R, As ...>::runtime_registration);
+            mpilegion_task_registrar__<toc, 0, 1, R, A>::register_task);
         if (std::get<2>(key) == any)
           return context_t::instance().register_task(key,
-            mpilegion_task_wrapper_<toc, 1, 1, R, As ...>::runtime_registration);
+            mpilegion_task_registrar__<toc, 1, 1, R, A>::register_task);
         break;
       case mpi:
        //when MPI we register task to perform Legion->MPI function 
        // pointer communication
        return context_t::instance().register_task(key,
-         mpilegion_task_wrapper_<mpi, 0, 1, R, As ...>::runtime_registration);
+         mpilegion_task_registrar__<mpi, 0, 1, R, A>::register_task);
       break;
       default: throw std::runtime_error("unsupported processor type");
     } // switch
   } // register_task
 
   template<
+    typename R,
     typename T,
     typename ... As
   >
@@ -101,7 +102,8 @@ struct mpilegion_execution_policy_t
   decltype(auto)
   execute_task(
     task_hash_key_t key,
-    T user_task, As ... args
+    T user_task,
+    As ... args
   )
   {
     using namespace Legion;
@@ -135,7 +137,7 @@ struct mpilegion_execution_policy_t
       context_.interop_helper_.handoff_to_mpi(context_.context(),
          context_.runtime());
       //mpi task is running here
-      flecsi::execution::future_t future = 
+//      flecsi::execution::future_t future = 
          context_.interop_helper_.wait_on_mpi(context_.context(),
                             context_.runtime());
     //TOFIX: these flag should be switch iside of the index task
@@ -144,15 +146,15 @@ struct mpilegion_execution_policy_t
      //context_.interop_helper_.unset_call_mpi(context_.context(),
       //                      context_.runtime());
    
-      return future;
+      return 0;
     }
     else {
       if(std::get<2>(key) == single){
         TaskLauncher task_launcher(context_.task_id(key),
           TaskArgument(&task_args, sizeof(task_args_t)));
-        flecsi::execution::future_t future=
+//        flecsi::execution::future_t future=
           context_.runtime()->execute_task(context_.context(),task_launcher);
-        return future;
+        return 0;
       }
       else{
     //FIXME: get launch domain from partitioning of the data used in the task
@@ -166,10 +168,10 @@ struct mpilegion_execution_policy_t
           TaskArgument(&task_args, sizeof(task_args_t)),
           arg_map);
           index_launcher.tag = MAPPER_ALL_PROC;
-          flecsi::execution::future_t future= 
+//          flecsi::execution::future_t future= 
               context_.runtime()->execute_index_space(context_.context(),
                             index_launcher);
-          return future;
+          return 0;
        }//end if std::get<2>(key)
     } // if
   } // execute_task

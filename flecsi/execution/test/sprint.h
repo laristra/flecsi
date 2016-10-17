@@ -104,7 +104,7 @@ void mpi_task(double val) {
 
 } // mpi_task
   
-register_task(mpi_task, mpi, single, void, double);
+register_task(mpi_task, mpi, single);
   
 void init_part_task(double val) {
   // context_t & context_ = context_t::instance();
@@ -138,7 +138,7 @@ void init_part_task(double val) {
   
 }   
 
-register_task(init_part_task, loc, index, void, double);
+register_task(init_part_task, loc, index);
 
 
 void driver(int argc, char ** argv) {
