@@ -135,10 +135,10 @@ struct mpilegion_task_wrapper_
 //  auto user_args = tuple_filter_index_<greater_than, task_args_t>(task_args);
  
           
-    // std::function<void()> shared_func_tmp = std::bind(user_task,
-    //     std::forward<As>(args) ...);     
+    std::function<void()> shared_func_tmp =
+      std::bind(user_task, user_task_args);     
 
-     ext_legion_handshake_t::instance().shared_func_ = user_task;
+     ext_legion_handshake_t::instance().shared_func_ = shared_func_tmp;
 
      ext_legion_handshake_t::instance().call_mpi_=true;
   } // execute_mpi

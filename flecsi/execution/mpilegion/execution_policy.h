@@ -110,12 +110,14 @@ struct mpilegion_execution_policy_t
 
     context_t & context_ = context_t::instance();
 
-    using task_args_t = std::tuple<T, As ...>;
+    using task_args_t = mpilegion_task_args__<R, std::tuple<As ...>>;
+
+    auto user_task_args = std::make_tuple(args ...);
 
     // We can't use std::forward or && references here because
     // the calling state is not guarunteed to exist when the
     // task is invoked, i.e., we have to use copies...
-    task_args_t task_args(user_task, args ...);
+    task_args_t task_args(user_task, user_task_args);
  
     if(std::get<1>(key) == mpi) {
 
