@@ -174,7 +174,8 @@ void driver(int argc, char ** argv) {
   
   LogicalRegion cell_parts_lr = context_.runtime()->create_logical_region(context_.context(), is, fs);
   context_.runtime()->attach_name(cell_parts_lr, "cell partitions logical region");
-  
+
+  // Use blockify to create num_rank slices of the data  
   Point<2> cell_part_color; cell_part_color.x[0] = 1; cell_part_color.x[1] = max_cells;
   Blockify<2> coloring(cell_part_color);
   
@@ -219,7 +220,34 @@ void driver(int argc, char ** argv) {
 
 #endif
 
+
+  
 #if 1
+  
+  std::cout << "Back in driver (TTL) and checking values in LR" << std::endl;
+  InlineLauncher cell_parts_launcher(req);
+  PhysicalRegion cell_parts_region = context_.runtime()->map_region(context_.context(), cell_parts_launcher);
+  cell_parts_region.wait_until_valid();
+  RegionAccessor<AccessorType::Generic, int> acc_cell_part =
+    cell_parts_region.get_field_accessor(FID_CELL_PART).typeify<int>();
+  int zeros = 0;
+  int non_zeros = 0; 
+  for (GenericPointInRectIterator<2> pir(elem_rect); pir; pir++) {
+    double value = acc_cell_part.read(DomainPoint::from_point<2>(pir.p));
+    if(value) {
+      std::cout << "partition (" << pir.p << ") value is: " << value << std::endl;
+      non_zeros ++;
+    } else {
+      zeros ++;
+    }
+  }
+  std::cout << "partition has " << zeros << " zeros " << non_zeros << " non zeros " << std::endl;
+#endif
+  
+
+
+  
+#if 0
   
   std::cout << "Back in driver (TTL) and checking values in LR" << std::endl;
   InlineLauncher cell_parts_launcher(req);
