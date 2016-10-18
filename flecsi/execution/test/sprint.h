@@ -157,7 +157,7 @@ void driver(int argc, char ** argv) {
   {
     FieldAllocator allocator = 
       context_.runtime()->create_field_allocator(context_.context(), fs);
-    allocator.allocate_field(sizeof(double), FID_CELL_PART);
+    allocator.allocate_field(sizeof(int), FID_CELL_PART);
   }
 
   int num_ranks;
@@ -184,7 +184,7 @@ void driver(int argc, char ** argv) {
     get_logical_partition(context_.context(), cell_parts_lr, ip);
   context_.runtime()->attach_name(cell_parts_lp, "cell partitions logical partition");
   
-#if 1 
+
   LegionRuntime::HighLevel::ArgumentMap arg_map;
 
   // this is the init partitions task 
@@ -218,11 +218,6 @@ void driver(int argc, char ** argv) {
   RegionRequirement req(cell_parts_lr, READ_WRITE, EXCLUSIVE, cell_parts_lr);
   req.add_field(FID_CELL_PART);
 
-#endif
-
-
-  
-#if 1
   
   std::cout << "Back in driver (TTL) and checking values in LR" << std::endl;
   InlineLauncher cell_parts_launcher(req);
@@ -232,37 +227,35 @@ void driver(int argc, char ** argv) {
     cell_parts_region.get_field_accessor(FID_CELL_PART).typeify<int>();
   int zeros = 0;
   int non_zeros = 0; 
-  for (GenericPointInRectIterator<2> pir(elem_rect); pir; pir++) {
-    double value = acc_cell_part.read(DomainPoint::from_point<2>(pir.p));
-    if(value) {
-      std::cout << "partition (" << pir.p << ") value is: " << value << std::endl;
-      non_zeros ++;
-    } else {
-      zeros ++;
+
+  for (int i = 0; i < num_ranks; i++) {
+    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(DomainPoint::from_point<2>(make_point(i,0)));
+    int j = 0; 
+    for (; j < received.exclusive; j++) {
+      double value =
+        acc_cell_part.read(DomainPoint::from_point<2>(make_point(i,j)));
+      std::cout << "partition (" << i << "," << j << ") exclusive cell id: " << value << std::endl;
     }
-  }
+    for (; j < received.exclusive+received.shared; j++) {
+      double value =
+        acc_cell_part.read(DomainPoint::from_point<2>(make_point(i,j)));
+      std::cout << "partition (" << i << "," << j << ") shared cell id: " << value << std::endl;
+    }
+    for (; j < received.exclusive+received.shared+received.ghost; j++) {
+      double value =
+        acc_cell_part.read(DomainPoint::from_point<2>(make_point(i,j)));
+      std::cout << "partition (" << i << "," << j << ") ghost cell id: " << value << std::endl;
+      
+    }
+  }    
   std::cout << "partition has " << zeros << " zeros " << non_zeros << " non zeros " << std::endl;
-#endif
   
 
 
-  
-#if 0
-  
-  std::cout << "Back in driver (TTL) and checking values in LR" << std::endl;
-  InlineLauncher cell_parts_launcher(req);
-  PhysicalRegion cell_parts_region = context_.runtime()->map_region(context_.context(), cell_parts_launcher);
-  cell_parts_region.wait_until_valid();
-  RegionAccessor<AccessorType::Generic, int> acc_cell_part =
-    cell_parts_region.get_field_accessor(FID_CELL_PART).typeify<int>();
-  for (GenericPointInRectIterator<2> pir(elem_rect); pir; pir++) {
-    double value = acc_cell_part.read(DomainPoint::from_point<2>(pir.p));
-    //std::cout << "partition value is: " << value << std::endl; 
-  }
-#endif
   
   // Now I need to create an Index space based on this data ..
 
+  
   // Then partition the cells based on the values..
 
   // etc.. 
