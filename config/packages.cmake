@@ -37,7 +37,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion" OR
 
   find_package(Legion REQUIRED)
 
-  message(STATUS "Legion found: ${LEGION_FOUND}")
+  message(STATUS "Legion found: ${Legion_FOUND}")
 
 endif()
 
@@ -60,12 +60,12 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   add_definitions(-DFLECSI_RUNTIME_MODEL_legion)
 
   if(NOT APPLE)
-    set(FLECSI_RUNTIME_LIBRARIES  -ldl ${LEGION_LIBRARIES} ${MPI_LIBRARIES})
+    set(FLECSI_RUNTIME_LIBRARIES  -ldl ${Legion_LIBRARIES} ${MPI_LIBRARIES})
   else()
-    set(FLECSI_RUNTIME_LIBRARIES  ${LEGION_LIBRARIES} ${MPI_LIBRARIES})
+    set(FLECSI_RUNTIME_LIBRARIES  ${Legion_LIBRARIES} ${MPI_LIBRARIES})
   endif()
 
-  include_directories(${LEGION_INCLUDE_DIRS})
+  include_directories(${Legion_INCLUDE_DIRS})
 
 #
 # MPI interface
@@ -92,12 +92,12 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
   add_definitions(-DFLECSI_RUNTIME_MODEL_mpilegion)
 
   if(NOT APPLE)
-    set(FLECSI_RUNTIME_LIBRARIES  -ldl ${LEGION_LIBRARIES} ${MPI_LIBRARIES})
+    set(FLECSI_RUNTIME_LIBRARIES  -ldl ${Legion_LIBRARIES} ${MPI_LIBRARIES})
   else()
-    set(FLECSI_RUNTIME_LIBRARIES  ${LEGION_LIBRARIES} ${MPI_LIBRARIES})
+    set(FLECSI_RUNTIME_LIBRARIES  ${Legion_LIBRARIES} ${MPI_LIBRARIES})
   endif()
 
-  include_directories(${LEGION_INCLUDE_DIRS})
+  include_directories(${Legion_INCLUDE_DIRS})
 
 #
 # Default
@@ -130,8 +130,8 @@ endif(ENABLE_HYPRE)
 # Cereal
 #------------------------------------------------------------------------------#
 
-  find_package (CEREAL REQUIRED)
-  include_directories(${CEREAL_INCLUDE_DIRS})
+  find_package (Cereal REQUIRED)
+  include_directories(${Cereal_INCLUDE_DIRS})
 
 #------------------------------------------------------------------------------#
 # Process id bits
