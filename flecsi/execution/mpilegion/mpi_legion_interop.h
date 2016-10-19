@@ -11,9 +11,9 @@
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
-#ifndef MPI_LEGION_INTEROP_HPP
-#define MPI_LEGION_INTEROP_HPP
 
+#ifndef mpi_legion_interop_h
+#define mpi_legion_interop_h
 
 #include <iostream>
 #include <string>
@@ -31,120 +31,165 @@
 #include "flecsi/partition/index_partition.h"
 #include "flecsi/utils/any.h"
 
-/*!
-* \file mpilegion/mpi_legion_interop.h
-* \authors demeshko
-* \date Initial file creation: Jul 2016
-*/
+///
+// \file mpilegion/mpi_legion_interop.h
+// \authors demeshko
+// \date Initial file creation: Jul 2016
+///
 
 namespace flecsi{
 namespace execution{
 
-class mpi_legion_interop_t
+///
+//
+///
+struct mpi_legion_interop_t
 {
-  public:
+  ///
+  //
+  ///
   mpi_legion_interop_t() {};
-  ~mpi_legion_interop_t(){};
 
-   void initialize(void)
-   {
-     
+  ///
+  //
+  ///
+  mpi_legion_interop_t(const mpi_legion_interop_t &) = delete;
+
+  ///
+  //
+  ///
+  mpi_legion_interop_t& operator=(const mpi_legion_interop_t &) = delete;
+
+  /// Destructor.
+  ~mpi_legion_interop_t() {};
+
+  ///
+  //
+  ///
+  void
+  initialize()
+  {
     LegionRuntime::HighLevel::HighLevelRuntime::set_registration_callback(
       mapper_registration);
-   }
+  } // initialize
  
   //TOFIX:: nex two methods don't have definition for current implementation
   //variadic arguments for data to be shared
   //Ts - common data types
+
+  ///
+  //
+  ///
   template <
-   typename... Ts
+    typename ... Ts
   >
   void 
-  copy_data_from_mpi_to_legion (
-  Ts&&... comm_data, 
-  LegionRuntime::HighLevel::Context ctx,
-  LegionRuntime::HighLevel::HighLevelRuntime *runtime
+  copy_data_from_mpi_to_legion(
+    Ts && ... comm_data, 
+    LegionRuntime::HighLevel::Context ctx,
+    LegionRuntime::HighLevel::HighLevelRuntime * runtime
   );
 
+  ///
+  //
+  ///
   template <
-   typename... Ts
+    typename... Ts
   >
   void
-  copy_data_from_legion_to_mpi (
-   Ts&&... comm_data,
-   LegionRuntime::HighLevel::Context ctx,
-   LegionRuntime::HighLevel::HighLevelRuntime *runtime);
+  copy_data_from_legion_to_mpi(
+    Ts&&... comm_data,
+    LegionRuntime::HighLevel::Context ctx,
+    LegionRuntime::HighLevel::HighLevelRuntime *runtime
+  );
 
+  ///
+  //
+  ///
   void
-  unset_call_mpi (
+  unset_call_mpi(
    LegionRuntime::HighLevel::Context ctx,
    LegionRuntime::HighLevel::HighLevelRuntime *runtime
   );
  
-  void 
+  ///
+  //
+  ///
+  void
   legion_configure()
-  { 
-     ext_legion_handshake_t::instance().ext_init();
-  }//legion_configure
+  {
+    ext_legion_handshake_t::instance().ext_init();
+  } // legion_configure
 
-/// swithches mutex to Legion runtime
- 
+  ///
+  // swithches mutex to Legion runtime
+  ///
   void 
-  handoff_to_legion(void)
+  handoff_to_legion()
   {
     ext_legion_handshake_t::instance().ext_handoff_to_legion();
-  }//handoff_to_legion
+  } // handoff_to_legion
 
-/// wait untill mutex switched to MPI runtime and run MPI
- 
+  ///
+  // wait untill mutex switched to MPI runtime and run MPI
+  ///
   void 
-  wait_on_legion(void)
+  wait_on_legion()
   {
     ext_legion_handshake_t::instance().ext_wait_on_legion();
-  }//wait_on_legion
+  } // wait_on_legion
 
-  static 
-  void 
-  register_tasks(void);
+  ///
+  //
+  ///
+  static void register_tasks();
 
-  void 
-  calculate_number_of_procs (void);
+  ///
+  //
+  ///
+  void calculate_number_of_procs ();
 
+  ///
+  //
+  ///
   void 
   connect_with_mpi(
     LegionRuntime::HighLevel::Context ctx,
-    LegionRuntime::HighLevel::HighLevelRuntime *runtime);
+    LegionRuntime::HighLevel::HighLevelRuntime *runtime
+  );
 
+  ///
+  //
+  ///
   void 
   handoff_to_mpi(
     LegionRuntime::HighLevel::Context ctx,
-    LegionRuntime::HighLevel::HighLevelRuntime *runtime);
+    LegionRuntime::HighLevel::HighLevelRuntime *runtime
+  );
  
+  ///
+  //
+  ///
   LegionRuntime::HighLevel::FutureMap 
   wait_on_mpi(
     LegionRuntime::HighLevel::Context ctx,
-    LegionRuntime::HighLevel::HighLevelRuntime *runtime);
+    LegionRuntime::HighLevel::HighLevelRuntime *runtime
+  );
  
   std::function<void()> shared_func_;
 
-  bool call_mpi_=false;
+  bool call_mpi_ = false;
 
   Rect<2> all_processes_;
   Rect<1> local_procs_;
 
-  std::vector <flecsi::utils::any_t> data_storage_;
+  std::vector<flecsi::utils::any_t> data_storage_;
 
-  private:
-  mpi_legion_interop_t(const mpi_legion_interop_t&);
-  mpi_legion_interop_t& operator=(const mpi_legion_interop_t&);
-
-};//mpi_legion_interop_t
-
-/*--------------------------------------------------------------------------*/
+}; // mpi_legion_interop_t
 
 inline 
 void 
-mpi_legion_interop_t::calculate_number_of_procs(void)
+mpi_legion_interop_t::calculate_number_of_procs()
 {
   int num_local_procs=0;
 #ifndef SHARED_LOWLEVEL
@@ -162,7 +207,7 @@ mpi_legion_interop_t::calculate_number_of_procs(void)
             if((*it).kind() == LegionRuntime::HighLevel::Processor::LOC_PROC)
                num_procs++;
             }//end for
-  }
+  } // scope
   num_local_procs=num_procs;
 #else
   int num_procs = LegionRuntime::HighLevel::Machine::get_machine()->
@@ -182,203 +227,243 @@ mpi_legion_interop_t::calculate_number_of_procs(void)
   std::cout << all_procs_lo.x[0] << "," << all_procs_lo.x[1] << ","
             << all_procs_hi.x[0] << "," << all_procs_hi.x[1] << std::endl;
   
-}//calculate_number_of_procs
+} // calculate_number_of_procs
 
-/*--------------------------------------------------------------------------*/
-/// a legion task that created User Events/Queques for synchronization 
- //  between MPI and Legion
- ///
-  inline 
-  void 
-  connect_to_mpi_task (
-    const Legion::Task *legiontask,
-    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
-    LegionRuntime::HighLevel::Context ctx, 
-    LegionRuntime::HighLevel::HighLevelRuntime *runtime)
-  {
-#ifdef LEGIONDEBUG
-     std::cout <<"inside connect_to_mpi"<<std::endl;
-#endif 
-     ext_legion_handshake_t::instance().legion_init();
-  }//connect_to_mpi_task
+//----------------------------------------------------------------------------//
+// FIXME: DOCUMENT!!!
+// a legion task that created User Events/Queques for synchronization 
+// between MPI and Legion
+//----------------------------------------------------------------------------//
+
+inline 
+void 
+connect_to_mpi_task(
+  const Legion::Task * legiontask,
+  const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
+  LegionRuntime::HighLevel::Context ctx, 
+  LegionRuntime::HighLevel::HighLevelRuntime * runtime
+)
+{
+  #ifdef LEGIONDEBUG
+  std::cout <<"inside connect_to_mpi"<<std::endl;
+  #endif 
+
+  // FIXME: Explanation
+  ext_legion_handshake_t::instance().legion_init();
+} // connect_to_mpi_task
+
+//----------------------------------------------------------------------------//
+// FIXME: DOCUMENT!!!
+//----------------------------------------------------------------------------//
 
 inline 
 void 
 mpi_legion_interop_t::connect_with_mpi(
   LegionRuntime::HighLevel::Context ctx,
-  LegionRuntime::HighLevel::HighLevelRuntime *runtime
+  LegionRuntime::HighLevel::HighLevelRuntime * runtime
 )
 {
-   calculate_number_of_procs();
-   LegionRuntime::HighLevel::ArgumentMap arg_map;
-   LegionRuntime::HighLevel::IndexLauncher connect_mpi_launcher(
-         task_ids_t::instance().connect_mpi_task_id,
-         LegionRuntime::HighLevel::Domain::from_rect<2>(all_processes_),
-         LegionRuntime::HighLevel::TaskArgument(0, 0),
-         arg_map);
+  calculate_number_of_procs();
+
+  LegionRuntime::HighLevel::ArgumentMap arg_map;
+
+  LegionRuntime::HighLevel::IndexLauncher connect_mpi_launcher(
+    task_ids_t::instance().connect_mpi_task_id,
+    LegionRuntime::HighLevel::Domain::from_rect<2>(all_processes_),
+    LegionRuntime::HighLevel::TaskArgument(0, 0),
+    arg_map);
 
   //run legion_init() from each thead
   LegionRuntime::HighLevel::FutureMap fm1 =
-     runtime->execute_index_space(ctx, connect_mpi_launcher);
+    runtime->execute_index_space(ctx, connect_mpi_launcher);
 
   //run some legion task here
   fm1.wait_all_results();
-}//connect_with_mpi
+} // connect_with_mpi
 
-/*--------------------------------------------------------------------------*/
+//----------------------------------------------------------------------------//
+// FIXME: DOCUMENT!!!
+//----------------------------------------------------------------------------//
+
 inline
 void
-handoff_to_mpi_task (
-    const Legion::Task *legiontask,
-    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
-    LegionRuntime::HighLevel::Context ctx,
-    LegionRuntime::HighLevel::HighLevelRuntime *runtime)
+handoff_to_mpi_task(
+  const Legion::Task * legiontask,
+  const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
+  LegionRuntime::HighLevel::Context ctx,
+  LegionRuntime::HighLevel::HighLevelRuntime * runtime)
 {
    ext_legion_handshake_t::instance().legion_handoff_to_ext();
-}//handoff_to_mpi_task
+} // handoff_to_mpi_task
 
+//----------------------------------------------------------------------------//
+// FIXME: DOCUMENT!!!
+//----------------------------------------------------------------------------//
 
 inline 
 void 
 mpi_legion_interop_t::handoff_to_mpi(
   LegionRuntime::HighLevel::Context ctx,
-  LegionRuntime::HighLevel::HighLevelRuntime *runtime
+  LegionRuntime::HighLevel::HighLevelRuntime * runtime
 )
 {
-   LegionRuntime::HighLevel::ArgumentMap arg_map;
-   LegionRuntime::HighLevel::IndexLauncher handoff_to_mpi_launcher(
-         task_ids_t::instance().handoff_to_mpi_task_id,
-         LegionRuntime::HighLevel::Domain::from_rect<2>(all_processes_),
-         LegionRuntime::HighLevel::TaskArgument(0, 0),
-         arg_map);
-   LegionRuntime::HighLevel::FutureMap fm2 =runtime->execute_index_space( ctx, handoff_to_mpi_launcher);
-   fm2.wait_all_results();
-}//handoff_to_mpi
+  LegionRuntime::HighLevel::ArgumentMap arg_map;
 
-/*--------------------------------------------------------------------------*/
+  LegionRuntime::HighLevel::IndexLauncher handoff_to_mpi_launcher(
+    task_ids_t::instance().handoff_to_mpi_task_id,
+    LegionRuntime::HighLevel::Domain::from_rect<2>(all_processes_),
+    LegionRuntime::HighLevel::TaskArgument(0, 0),
+    arg_map);
+
+  LegionRuntime::HighLevel::FutureMap fm2 =
+    runtime->execute_index_space(ctx, handoff_to_mpi_launcher);
+
+  fm2.wait_all_results();
+} // handoff_to_mpi
+
+//----------------------------------------------------------------------------//
+// FIXME: DOCUMENT!!!
+//----------------------------------------------------------------------------//
 
 inline
 void
 wait_on_mpi_task(
- const Legion::Task *legiontask,
- const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
- LegionRuntime::HighLevel::Context ctx,
- LegionRuntime::HighLevel::HighLevelRuntime *runtime
+  const Legion::Task * legiontask,
+  const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
+  LegionRuntime::HighLevel::Context ctx,
+  LegionRuntime::HighLevel::HighLevelRuntime * runtime
 )
 {
   ext_legion_handshake_t::instance().legion_wait_on_ext();
-}//wait_on_mpi_task
+} // wait_on_mpi_task
 
+//----------------------------------------------------------------------------//
+// FIXME: DOCUMENT!!!
+//----------------------------------------------------------------------------//
 
 inline 
 LegionRuntime::HighLevel::FutureMap 
 mpi_legion_interop_t::wait_on_mpi(
   LegionRuntime::HighLevel::Context ctx,
-  LegionRuntime::HighLevel::HighLevelRuntime *runtime)
+  LegionRuntime::HighLevel::HighLevelRuntime * runtime
+)
 {
-   LegionRuntime::HighLevel::ArgumentMap arg_map;
-   LegionRuntime::HighLevel::IndexLauncher wait_on_mpi_launcher(
-         task_ids_t::instance().wait_on_mpi_task_id,
-         LegionRuntime::HighLevel::Domain::from_rect<2>(all_processes_),
-         LegionRuntime::HighLevel::TaskArgument(0, 0),
-         arg_map);
-   LegionRuntime::HighLevel::FutureMap fm3 =
-        runtime->execute_index_space(ctx,wait_on_mpi_launcher);
-  fm3.wait_all_results();
-  return fm3;
-}//wait_on_mpi
+  LegionRuntime::HighLevel::ArgumentMap arg_map;
+  LegionRuntime::HighLevel::IndexLauncher wait_on_mpi_launcher(
+    task_ids_t::instance().wait_on_mpi_task_id,
+    LegionRuntime::HighLevel::Domain::from_rect<2>(all_processes_),
+    LegionRuntime::HighLevel::TaskArgument(0, 0),
+    arg_map);
 
-//---------------------------------------------------------------------------
+  LegionRuntime::HighLevel::FutureMap fm3 =
+    runtime->execute_index_space(ctx, wait_on_mpi_launcher);
+
+  fm3.wait_all_results();
+
+  return fm3;
+} // wait_on_mpi
+
+//----------------------------------------------------------------------------//
+// FIXME: DOCUMENT!!!
+//----------------------------------------------------------------------------//
+
 inline
 void
 unset_call_mpi_task(
- const Legion::Task *legiontask,
- const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
- LegionRuntime::HighLevel::Context ctx,
- LegionRuntime::HighLevel::HighLevelRuntime *runtime
+  const Legion::Task *legiontask,
+  const std::vector<LegionRuntime::HighLevel::PhysicalRegion> &regions,
+  LegionRuntime::HighLevel::Context ctx,
+  LegionRuntime::HighLevel::HighLevelRuntime *runtime
 )
 { 
   ext_legion_handshake_t::instance().call_mpi_=false;
-}
+} // unset_call_mpi_task
+
+//----------------------------------------------------------------------------//
+// FIXME: DOCUMENT!!!
+//----------------------------------------------------------------------------//
 
 inline
 void
 mpi_legion_interop_t::unset_call_mpi (
   LegionRuntime::HighLevel::Context ctx,
-  LegionRuntime::HighLevel::HighLevelRuntime *runtime
+  LegionRuntime::HighLevel::HighLevelRuntime * runtime
 )
 {
-std::cout <<"inside unset_call_mpi 1" <<std::endl; 
+  std::cout <<"inside unset_call_mpi 1" <<std::endl; 
+
   LegionRuntime::HighLevel::ArgumentMap arg_map;
-   LegionRuntime::HighLevel::IndexLauncher unset_call_mpi_launcher(
-         task_ids_t::instance().unset_call_mpi_id,
-         LegionRuntime::HighLevel::Domain::from_rect<2>(all_processes_),
-         LegionRuntime::HighLevel::TaskArgument(0, 0),
-         arg_map);
-   unset_call_mpi_launcher.tag =  MAPPER_ALL_PROC;
-std::cout <<"inside unset_call_mpi 2" <<std::endl;
-   LegionRuntime::HighLevel::FutureMap fm5 =
-        runtime->execute_index_space(ctx,unset_call_mpi_launcher);
+
+  LegionRuntime::HighLevel::IndexLauncher unset_call_mpi_launcher(
+    task_ids_t::instance().unset_call_mpi_id,
+    LegionRuntime::HighLevel::Domain::from_rect<2>(all_processes_),
+    LegionRuntime::HighLevel::TaskArgument(0, 0),
+    arg_map);
+
+  unset_call_mpi_launcher.tag =  MAPPER_ALL_PROC;
+
+  std::cout <<"inside unset_call_mpi 2" <<std::endl;
+
+  LegionRuntime::HighLevel::FutureMap fm5 =
+    runtime->execute_index_space(ctx,unset_call_mpi_launcher);
+
   fm5.wait_all_results();
-std::cout <<"inside unset_call_mpi 3" <<std::endl;
 
-}
+  std::cout << "inside unset_call_mpi 3" <<std::endl;
+} // unset_call_mpi
 
-//---------------------------------------------------------------------------
+//----------------------------------------------------------------------------//
 
 //#if FLECSI_DRIVER == 'flecsi/execution/test/sprint.h'
 /// register all Legion tasks used in the mpi_legion_interop_t class
  
- //static:
 inline
 void
 mpi_legion_interop_t::register_tasks(void)
 {
-    LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
-        <connect_to_mpi_task>(
-        task_ids_t::instance().connect_mpi_task_id,
-        LegionRuntime::HighLevel::Processor::LOC_PROC,
-        false/*single*/, true/*index*/,
-        AUTO_GENERATE_ID,
-        LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
-        "connect_to_mpi_task");
+  LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
+    <connect_to_mpi_task>(
+    task_ids_t::instance().connect_mpi_task_id,
+    LegionRuntime::HighLevel::Processor::LOC_PROC,
+    false/*single*/, true/*index*/,
+    AUTO_GENERATE_ID,
+    LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
+    "connect_to_mpi_task");
 
   LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
-        <handoff_to_mpi_task>(
-        task_ids_t::instance().handoff_to_mpi_task_id,
-        LegionRuntime::HighLevel::Processor::LOC_PROC,
-        false/*single*/, true/*index*/,
-        AUTO_GENERATE_ID,
-        LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
-        "handoff_to_mpi_task");
+    <handoff_to_mpi_task>(
+    task_ids_t::instance().handoff_to_mpi_task_id,
+    LegionRuntime::HighLevel::Processor::LOC_PROC,
+    false/*single*/, true/*index*/,
+    AUTO_GENERATE_ID,
+    LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
+    "handoff_to_mpi_task");
 
   LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
-        <wait_on_mpi_task>(
-        task_ids_t::instance().wait_on_mpi_task_id,
-        LegionRuntime::HighLevel::Processor::LOC_PROC,
-        false/*single*/, true/*index*/,
-        AUTO_GENERATE_ID,
-        LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
-        "wait_on_mpi_task");
+    <wait_on_mpi_task>(
+    task_ids_t::instance().wait_on_mpi_task_id,
+    LegionRuntime::HighLevel::Processor::LOC_PROC,
+    false/*single*/, true/*index*/,
+    AUTO_GENERATE_ID,
+    LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
+    "wait_on_mpi_task");
   
    LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
-        <unset_call_mpi_task>(
-        task_ids_t::instance().unset_call_mpi_id,
-        LegionRuntime::HighLevel::Processor::LOC_PROC,
-        false, true, AUTO_GENERATE_ID,
-        LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
-        "unset_call_mpi_task");
-
-}//register_tasks
-
-
-} //end namespace execution
-} //end namespace flecsi
+     <unset_call_mpi_task>(
+     task_ids_t::instance().unset_call_mpi_id,
+     LegionRuntime::HighLevel::Processor::LOC_PROC,
+     false, true, AUTO_GENERATE_ID,
+     LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
+     "unset_call_mpi_task");
+} // register_tasks
 
 
-#endif
+} // namespace execution
+} // namespace flecsi
+
+#endif // mpi_legion_interop_h
+
 /*~-------------------------------------------------------------------------~-*
  * Formatting options
  * vim: set tabstop=2 shiftwidth=2 expandtab :
  *~-------------------------------------------------------------------------~-*/
-
