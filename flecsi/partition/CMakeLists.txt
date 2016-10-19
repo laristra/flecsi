@@ -19,9 +19,21 @@ set(partition_HEADERS
   PARENT_SCOPE
 )
 
-#set(partition_SOURCES
-#  PARENT_SCOPE
-#)
+# Add MPI/Legion specific files
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+set(partition_HEADERS
+  ${partition_HEADERS}
+  init_partitions_task.h
+  PARENT_SCOPE
+)
+
+set(partition_SOURCES
+  ${partition_SOURCES}
+  init_partitions_task.cc
+  PARENT_SCOPE
+)
+endif()
 
 cinch_add_unit(partition
   SOURCES test/partition.cc
@@ -33,6 +45,7 @@ cinch_add_unit(partition
           test/scotch.blessed
   LIBRARIES ${PARTITION_LIBRARIES} flecsi
 )
+
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
   cinch_add_unit(index_partition

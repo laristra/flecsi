@@ -20,8 +20,10 @@
 
 // user includes
 
-#include "flecsi/execution/mpilegion/execution_policy.h"
+#include "flecsi/execution/execution.h"
 #include "flecsi/execution/task.h"
+#include "flecsi/utils/any.h"
+#include "flecsi/partition/index_partition.h"
 
 using namespace flecsi::execution;
 
@@ -42,6 +44,7 @@ const int nElements=10;
 using namespace LegionRuntime::HighLevel;
 using namespace LegionRuntime::Accessor;
 using namespace LegionRuntime::Arrays;
+using index_partition_t = flecsi::dmp::index_partition__<size_t>;
 
 static mpi_legion_interop_t InteropHelper;
 ext_legion_handshake_t &handshake=ext_legion_handshake_t::instance(); 
@@ -83,7 +86,14 @@ void print_task(void)
   InteropHelper.wait_on_mpi(ctx, runtime);
 
   std::cout<< "back to TLT after MPI" <<std::endl;
-  
+
+  //check array storage 
+
+   index_partition_t ip = InteropHelper.data_storage_[0];
+   double A= InteropHelper.data_storage_[1];
+   std::cout<<"storage[1] = " << A <<std::endl;
+   assert (A==3.14);
+ 
    InteropHelper.call_mpi_=false;
 
   InteropHelper.handoff_to_mpi(ctx, runtime);
@@ -116,8 +126,7 @@ void my_init_legion(){
         "hellowrld_task");
 
    handshake.initialize(ext_legion_handshake_t::IN_EXT,1,1);
- //  InteropHelper->register_tasks();
- //  HighLevelRuntime::set_registration_callback(mapper_registration);
+     InteropHelper.register_tasks();
      InteropHelper.initialize();
 
   char arguments[] = "1";
@@ -133,17 +142,18 @@ void my_init_legion(){
 
   InteropHelper.wait_on_legion();
 
+  //check data_storage_
+ index_partition_t ip;
+ double A=3.14;
+ InteropHelper.data_storage_.push_back(flecsi::utils::any_t(ip));
+ InteropHelper.data_storage_.push_back(flecsi::utils::any_t(A));
+ 
   while(InteropHelper.call_mpi_)
      {
        InteropHelper.shared_func_();
        InteropHelper.handoff_to_legion();
        InteropHelper.wait_on_legion();
      }
-
- //check data_storage_
- array__<double,5> *array=new array__<double,5>();
- InteropHelper.data_storage_.push_back(
-            std::shared_ptr<mpi_array_storage_t>(array));
 
  InteropHelper.wait_on_legion();
   std::cout<<"back to MPI to finalize"<<std::endl;

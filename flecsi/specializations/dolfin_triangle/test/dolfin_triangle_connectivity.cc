@@ -26,17 +26,17 @@ protected:
   dolfin_triangle_mesh_t<dolfin_triangle_types_t> dolfin;
 
   virtual void SetUp() override {
-    conn = dolfin.get_connectivity(0, 2, 0);
+    conn = &dolfin.get_connectivity(0, 2, 0);
   }
-  flecsi::topology::connectivity_t conn;
+  flecsi::topology::connectivity_t* conn;
 };
 
 TEST_F(Cell2VertexConnectivity, from_size_equals_to_number_of_cells) {
-  ASSERT_THAT(conn.from_size(), Eq(dolfin.num_cells()));
+  ASSERT_THAT(conn->from_size(), Eq(dolfin.num_cells()));
 }
 
 TEST_F(Cell2VertexConnectivity, to_size_euqals_to_number_of_cell_times_3) {
-  ASSERT_THAT(conn.to_size(), Eq(dolfin.num_cells()*3));
+  ASSERT_THAT(conn->to_size(), Eq(dolfin.num_cells()*3));
 }
 
 TEST_F(Cell2VertexConnectivity,
@@ -46,6 +46,6 @@ TEST_F(Cell2VertexConnectivity,
   std::partial_sum(vertices_per_cell.begin(), vertices_per_cell.end(),
                    exscan.begin()+1);
 
-  ASSERT_THAT(conn.get_from_index_vec(),
+  ASSERT_THAT(conn->get_from_index_vec(),
               ElementsAreArray(exscan));
 }

@@ -15,23 +15,54 @@
 #ifndef TASK_IDS
 #define TASK_IDS
 
-/*!
-* \file mpilegion/task_ids.h
-* \authors demeshko
-* \date Initial file creation: Jul 2016
-*
-*  HelperTaskIDs enum struct includes TASK_IDs for the legion tasks used
-*  in mpi_legion_interop_t class
-*  These needs to be global due to the fact that the same IDs are used in
-*  mapper.h to se up special rools on executing the tasks used to switch
-*  between MPI and Legion rantimes
-*/
+#include "flecsi/utils/common.h"
 
-enum HelperTaskIDs{
- CONNECT_MPI_TASK_ID    = 0x00099997,
- HANDOFF_TO_MPI_TASK_ID = 0x00099998,
- WAIT_ON_MPI_TASK_ID    = 0x00099999,
-};
+///
+//\file mpilegion/task_ids.h
+//\authors demeshko
+// \date Initial file creation: Jul 2016
+//
+//  HelperTaskIDs enum struct includes TASK_IDs for the legion tasks used
+//  in mpi_legion_interop_t class
+//  These needs to be a singleton due to the fact that the same IDs are used in
+//  mapper.h to se up special rools on executing the tasks used to switch
+//  between MPI and Legion runtimes
+///
+
+namespace flecsi
+{
+namespace execution
+{
+
+class task_ids_t 
+ {
+  private:
+  
+   task_ids_t(){}
+   ~task_ids_t(){}
+   task_ids_t (const task_ids_t&);
+   task_ids_t& operator=(const task_ids_t&);   
+   
+  public:
+
+    static task_ids_t& instance()
+   {
+     static  task_ids_t ids;
+     return ids;
+   }
+
+  using task_id_t = LegionRuntime::HighLevel::TaskID;
+  using unique_fid_t = flecsi::unique_id_t<task_id_t>;
+  size_t connect_mpi_task_id  = unique_fid_t::instance().next();
+  size_t handoff_to_mpi_task_id = unique_fid_t::instance().next();
+  size_t wait_on_mpi_task_id  = unique_fid_t::instance().next();
+  size_t init_cell_partitions_task_id= unique_fid_t::instance().next();
+  size_t update_mappers_task_id=unique_fid_t::instance().next();
+  size_t unset_call_mpi_id = unique_fid_t::instance().next();
+};//task_ids_t
+
+}//namespace execution
+}//namespace flecsi
 
 #endif
 

@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_execution_legion_task_wrapper_h
-#define flecsi_execution_legion_task_wrapper_h
+#ifndef flecsi_execution_mpilegion_task_wrapper_h
+#define flecsi_execution_mpilegion_task_wrapper_h
 
 #include "flecsi/execution/context.h"
 #include "flecsi/utils/common.h"
@@ -15,7 +15,7 @@
 #include "flecsi/data/data_handle.h"
 
 ///
-// \file legion/task_wrapper.h
+// \file mpilegion/task_wrapper.h
 // \authors bergen
 // \date Initial file creation: Jul 24, 2016
 ///
@@ -31,17 +31,17 @@ template<
   typename R,
   typename A
 >
-struct legion_task_args__
+struct mpilegion_task_args__
 {
   using user_task_t = std::function<R(A)>;
   using user_task_args_t = A;
 
-  legion_task_args__(user_task_t & user_task_, user_task_args_t & user_args_)
+  mpilegion_task_args__(user_task_t & user_task_, user_task_args_t & user_args_)
     : user_task(user_task_), user_args(user_args_) {}
 
   user_task_t user_task;
   user_task_args_t user_args;
-}; // struct legion_task_args__
+}; // struct mpilegion_task_args__
 
 ///
 // \brief
@@ -59,12 +59,12 @@ template<
   typename R,
   typename A
 >
-struct legion_task_wrapper_
+struct mpilegion_task_wrapper_
 {
   //
   // Type definition for user task.
   //
-  using task_args_t = legion_task_args__<R,A>;
+  using task_args_t = mpilegion_task_args__<R,A>;
   using user_task_t = typename task_args_t::user_task_t;
   using user_task_args_t = typename task_args_t::user_task_args_t;
 
@@ -115,7 +115,35 @@ struct legion_task_wrapper_
 #endif
   } // execute
 
-}; // class legion_task_wrapper_
+  static void execute_mpi(const LegionRuntime::HighLevel::Task * task,
+    const std::vector<LegionRuntime::HighLevel::PhysicalRegion>& regions,
+    LegionRuntime::HighLevel::Context context,
+    LegionRuntime::HighLevel::HighLevelRuntime * runtime)
+  {
+#ifdef LEGIONDEBUG
+     int rank;
+     MPI_Comm_rank( MPI_COMM_WORLD, &rank);
+     std::cout<<"MPI rank from the index task = " << rank <<std::endl;
+     ext_legion_handshake_t::instance().rank_=rank;
+#endif
+
+    task_args_t & task_args = *(reinterpret_cast<task_args_t *>(task->args));
+    user_task_t & user_task = task_args.user_task;
+    user_task_args_t & user_task_args = task_args.user_args;
+
+    // Get the user task arguments
+//  auto user_args = tuple_filter_index_<greater_than, task_args_t>(task_args);
+ 
+          
+    std::function<void()> shared_func_tmp =
+      std::bind(user_task, user_task_args);     
+
+     ext_legion_handshake_t::instance().shared_func_ = shared_func_tmp;
+
+     ext_legion_handshake_t::instance().call_mpi_=true;
+  } // execute_mpi
+
+}; // class mpilegion_task_wrapper_
 
 template<
   processor_t P,
@@ -125,7 +153,7 @@ template<
   typename A,
   bool is_void = std::is_void<R>::value
 >
-struct legion_task_registrar__
+struct mpilegion_task_registrar__
 {
   using lr_runtime = LegionRuntime::HighLevel::HighLevelRuntime;
   using lr_proc = LegionRuntime::HighLevel::Processor;
@@ -142,7 +170,7 @@ struct legion_task_registrar__
     task_id_t tid
   )
   {
-    using wrapper_t = legion_task_wrapper_<P, S, I, R, A>;
+    using wrapper_t = mpilegion_task_wrapper_<P, S, I, R, A>;
 
     switch(P) {
       case loc:
@@ -153,9 +181,12 @@ struct legion_task_registrar__
         lr_runtime::register_legion_task<wrapper_t::execute>(
           tid, lr_proc::TOC_PROC, S, I);
         break;
+      case mpi:
+        lr_runtime::register_legion_task<wrapper_t::execute_mpi>(
+          tid, lr_proc::LOC_PROC, S, I); 
     } // switch
   } // register_task
-}; // legion_task_registrar__
+}; // mpilegion_task_registrar__
 
 template<
   processor_t P,
@@ -164,7 +195,7 @@ template<
   typename R,
   typename A
 >
-struct legion_task_registrar__<P, S, I, R, A, false>
+struct mpilegion_task_registrar__<P, S, I, R, A, false>
 {
   using lr_runtime = LegionRuntime::HighLevel::HighLevelRuntime;
   using lr_proc = LegionRuntime::HighLevel::Processor;
@@ -181,7 +212,7 @@ struct legion_task_registrar__<P, S, I, R, A, false>
     task_id_t tid
   )
   {
-    using wrapper_t = legion_task_wrapper_<P, S, I, R, A>;
+    using wrapper_t = mpilegion_task_wrapper_<P, S, I, R, A>;
 
     switch(P) {
       case loc:
@@ -193,15 +224,17 @@ struct legion_task_registrar__<P, S, I, R, A, false>
           tid, lr_proc::TOC_PROC, S, I);
         break;
       case mpi:
+        lr_runtime::register_legion_task<wrapper_t::execute_mpi>(
+          tid, lr_proc::LOC_PROC, S, I); 
         break;
     } // switch
   } // register_task
-}; // legion_task_registrar__
+}; // mpilegion_task_registrar__
 
 } //namespace execution 
 } // namespace flecsi
 
-#endif // flecsi_execution_legion_task_wrapper_h
+#endif // flecsi_execution_mpilegion_task_wrapper_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

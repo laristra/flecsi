@@ -56,7 +56,7 @@ protected:
 };
 
 TEST_F(Burton, connectivity) {
-  flecsi::topology::connectivity_t c = b.get_connectivity(0, 0, 2, 2);
+  flecsi::topology::connectivity_t& c = b.get_connectivity(0, 0, 2, 2);
   c.dump();
 } // TEST
 

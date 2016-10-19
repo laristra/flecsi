@@ -1,6 +1,15 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
+ *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+ * /@@/////  /@@          @@////@@ @@////// /@@
+ * /@@       /@@  @@@@@  @@    // /@@       /@@
+ * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+ * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+ * /@@       /@@/@@//// //@@    @@       /@@/@@
+ * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+ * //       ///  //////   //////  ////////  //
+ *
+ * Copyright (c) 2016 Los Alamos National Laboratory, LLC
+ * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_mpilegion_context_policy_h
@@ -24,6 +33,7 @@
 #include "flecsi/execution/common/task_hash.h"
 #include "flecsi/execution/mpilegion/legion_handshake.h"
 #include "flecsi/execution/mpilegion/mpi_legion_interop.h"
+#include "flecsi/partition/init_partitions_task.h"
 
 namespace flecsi {
 namespace execution {
@@ -66,6 +76,29 @@ struct mpilegion_context_policy_t
     lr_runtime_t::register_legion_task<mpilegion_runtime_driver>(
       TOP_LEVEL_TASK_ID, lr_loc, true, false);
 
+    lr_runtime_t::register_legion_task<flecsi::dmp::parts,
+      flecsi::dmp::init_partitions>(
+      task_ids_t::instance().init_cell_partitions_task_id,lr_loc, true, false);
+
+    lr_runtime_t::register_legion_task<connect_to_mpi_task>(
+        task_ids_t::instance().connect_mpi_task_id, lr_loc,
+        false, true, AUTO_GENERATE_ID,
+        LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
+        "connect_to_mpi_task");
+
+     lr_runtime_t::register_legion_task<handoff_to_mpi_task>(
+        task_ids_t::instance().handoff_to_mpi_task_id, lr_loc,
+        false, true, AUTO_GENERATE_ID,
+        LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
+        "handoff_to_mpi_task");
+
+     lr_runtime_t::register_legion_task<wait_on_mpi_task>(
+        task_ids_t::instance().wait_on_mpi_task_id, lr_loc,
+        false, true, AUTO_GENERATE_ID,
+        LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
+        "wait_on_mpi_task");
+
+
     // Register user tasks
     for(auto f: task_registry_) {
       // funky logic: task_registry_ is a map of std::pair
@@ -86,10 +119,16 @@ struct mpilegion_context_policy_t
     interop_helper_.wait_on_legion();
 
     //while loop to do some mpi tasks
-
-     while(interop_helper_.call_mpi_)
+     while(ext_legion_handshake_t::instance().call_mpi_)
      {
-       interop_helper_.shared_func_();
+#ifdef LEGIONDEBUG
+       int rank;
+       MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+       std::cout<< "inside while loop N " << " rank = "<<rank<<
+          "rank_from_handshake = " << ext_legion_handshake_t::instance().rank_
+          <<std::endl;
+#endif
+       ext_legion_handshake_t::instance().shared_func_();
        interop_helper_.handoff_to_legion();
        interop_helper_.wait_on_legion();
       }
@@ -218,7 +257,7 @@ private:
 
   /*--------------------------------------------------------------------------*
    * Task registry
-   *--------------------------------------------------------------------------*/
+   *-------------------------------------------------------------------------*/
 
   // Define the map type using the task_hash_t hash function.
   std::unordered_map<task_hash_t::key_t,

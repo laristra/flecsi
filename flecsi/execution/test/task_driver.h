@@ -22,9 +22,9 @@
 namespace flecsi {
 namespace execution {
 
-/*----------------------------------------------------------------------------*
- * Fake mesh definition.
- *----------------------------------------------------------------------------*/
+//----------------------------------------------------------------------------//
+// Fake mesh definition.
+//----------------------------------------------------------------------------//
 
 enum mesh_index_spaces_t : size_t {
   vertices,
@@ -66,9 +66,9 @@ using namespace flecsi::data;
 template<typename T>
 using dense_field_t = storage_t::st_t<dense>::handle_t<double>;
 
-/*----------------------------------------------------------------------------*
- * Task registration.
- *----------------------------------------------------------------------------*/
+//----------------------------------------------------------------------------//
+// Task registration.
+//----------------------------------------------------------------------------//
 
 void task1(double dval, int ival) {
   std::cout << "Executing task1" << std::endl;
@@ -76,30 +76,33 @@ void task1(double dval, int ival) {
   std::cout << "Value(int): " << ival << std::endl;
 } // task1
 
-#if FLECSI_RUNTIME_MODEL_mpilegion
-register_task(task1, mpi, index, void, double, int);
-#else
-register_task(task1, loc, single, void, double, int);
-#endif
+//#if defined(FLECSI_RUNTIME_MODEL_mpilegion)
+//  register_task(task1, mpi, index, void, double, int);
+//#else
+  register_task(task1, loc, single);
+//#endif
 
+#if 1
 double task2(double x, double y, dense_field_t<double> p) {
   std::cout << "Executing task2" << std::endl;
   std::cout << "(x,y): (" << x << "," << y << ")" << std::endl;
   std::cout << "Return: " << x*y << std::endl;
-//  return x*y;
+  return x*y;
 } // task2
 
-register_task(task2, loc, single, void, double, double, dense_field_t<double>);
+register_task(task2, loc, single);
 
-void task3(double val) {
+double task3(double val) {
    std::cout << "Executing task3 with index launcher" << std::endl;
+   return 1.0;
 }
 
-register_task(task3, loc, index, void, double);
+register_task(task3, loc, index);
+#endif
 
-/*----------------------------------------------------------------------------*
- * Function registration.
- *----------------------------------------------------------------------------*/
+//----------------------------------------------------------------------------//
+// Function registration.
+//----------------------------------------------------------------------------//
 
 double eos_gruneisen(double r, double e) {
   std::cout << "Executing gruneisen" << std::endl;
@@ -107,7 +110,7 @@ double eos_gruneisen(double r, double e) {
   return r*e;
 } // function1
 
-register_function(eos_gruneisen, double, double, double);
+register_function(eos_gruneisen);
 
 double eos_gamma(double r, double e) {
   std::cout << "Executing gamma" << std::endl;
@@ -115,7 +118,7 @@ double eos_gamma(double r, double e) {
   return 2*r*e;
 } // function1
 
-register_function(eos_gamma, double, double, double);
+register_function(eos_gamma);
 
 /*
   Templated function
@@ -135,11 +138,11 @@ double eos_other(double r, double e) {
   return eos_other__<eos_param_t>(r, e);
 } // eos_other
 
-register_function(eos_other, double, double, double);
+register_function(eos_other);
 
-/*----------------------------------------------------------------------------*
- * User type.
- *----------------------------------------------------------------------------*/
+//----------------------------------------------------------------------------//
+// User type.
+//----------------------------------------------------------------------------//
 
 define_function_type(eos_function_t, double, double, double);
 
@@ -171,9 +174,9 @@ struct silver_t : material_t {
     : material_t(function_handle(eos_other), r_, e_) {}
 };
 
-/*----------------------------------------------------------------------------*
- * Driver.
- *----------------------------------------------------------------------------*/
+//----------------------------------------------------------------------------//
+// Driver.
+//----------------------------------------------------------------------------//
 
 void driver(int argc, char ** argv) {
 
@@ -183,12 +186,13 @@ void driver(int argc, char ** argv) {
   auto p = register_data(m, hydro, pressure, double, dense, 1, cells);
   double alpha(10.0);
 
-#if FLECSI_RUNTIME_MODEL_mpilegion
-  execute_task(task1, mpi, index, alpha, 5);
-#else
+//#if defined(FLECSI_RUNTIME_MODEL_mpilegion)
+//  execute_task(task1, mpi, index, alpha, 5);
+//#else
   execute_task(task1, loc, single, alpha, 5);
-#endif
-  execute_task(task2, loc, single,  alpha, 5.0, p);
+//#endif
+
+  execute_task(task2, loc, single, alpha, 5.0, p);
 
   execute_task(task3, loc, index, 5.0);
 

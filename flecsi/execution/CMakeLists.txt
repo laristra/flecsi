@@ -27,8 +27,10 @@ set(execution_HEADERS
   mpilegion/execution_policy.h
   mpilegion/legion_handshake.h
   mpilegion/runtime_driver.h
-  PARENT_SCOPE
-)
+  mpilegion/mapper.h
+  mpilegion/task_wrapper.h
+  future.h
+  PARENT_SCOPE)
 
 
 set(execution_SOURCES
@@ -37,15 +39,24 @@ set(execution_SOURCES
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
-  cinch_add_unit(task
+ cinch_add_unit(task
     SOURCES
       test/task.cc
       test/task_driver.h
       legion/runtime_driver.cc
     DEFINES FLECSI_DRIVER=flecsi/execution/test/task_driver.h
     POLICY LEGION
-    LIBRARIES flecsi
-  )
+    LIBRARIES flecsi)
+
+#   cinch_add_unit(future
+#    SOURCES
+#      test/task.cc
+#      test/task_driver.h
+#      legion/runtime_driver.cc
+#      ../partition/init_partitions_task.cc
+#    DEFINES FLECSI_DRIVER=flecsi/execution/test/future.h
+#    POLICY LEGION
+#    LIBRARIES flecsi) 
 
 elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
@@ -54,22 +65,35 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
       test/task.cc
       test/task_driver.h
       mpilegion/runtime_driver.cc
+      ../partition/init_partitions_task.cc
     DEFINES FLECSI_DRIVER=flecsi/execution/test/task_driver.h
     POLICY MPILEGION
     LIBRARIES flecsi
   )
+
+#  cinch_add_unit(future
+#    SOURCES
+#      test/task.cc
+#      test/task_driver.h
+#      mpilegion/runtime_driver.cc
+#      ../partition/init_partitions_task.cc
+#    DEFINES FLECSI_DRIVER=flecsi/execution/test/future.h
+#    POLICY MPILEGION
+#    LIBRARIES flecsi)
 
   cinch_add_unit(sprint
     SOURCES
       test/task.cc
       test/sprint.h
       mpilegion/runtime_driver.cc
+      ../partition/init_partitions_task.cc
+    DEFINES SPRINT_TEST
     DEFINES FLECSI_DRIVER=flecsi/execution/test/sprint.h
     POLICY MPILEGION
     LIBRARIES flecsi
   )
 
-else()
+else() # serial
 
   cinch_add_unit(task
     SOURCES
@@ -77,13 +101,29 @@ else()
       test/task_driver.h
       serial/runtime_driver.cc
     DEFINES FLECSI_DRIVER=flecsi/execution/test/task_driver.h
+    LIBRARIES flecsi)
+
+#  cinch_add_unit(future
+#    SOURCES
+#      test/task.cc
+#      test/task_driver.h
+#      serial/runtime_driver.cc
+#    DEFINES FLECSI_DRIVER=flecsi/execution/test/future.h
+#    LIBRARIES flecsi)
+
+  cinch_add_unit(simple_function
+    SOURCES
+      test/function.cc
+      test/simple_function.h
+      serial/runtime_driver.cc
+    DEFINES FLECSI_DRIVER=flecsi/execution/test/simple_function.h
     LIBRARIES flecsi
   )
-
 endif()
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
+if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+  
   cinch_add_unit(test_legion_handshake
     SOURCES test/test_legion_handshake.cc
     POLICY MPILEGION

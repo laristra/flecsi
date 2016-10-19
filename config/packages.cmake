@@ -35,17 +35,9 @@ set(FLECSI_RUNTIME_LIBRARIES)
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion" OR
   FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
-  find_package (legion QUIET NO_MODULE)
+  find_package(Legion REQUIRED)
 
-  set(Legion_INSTALL_DIR "" CACHE PATH
-    "Path to the Legion install directory")
-
-  if(NOT Legion_INSTALL_DIR STREQUAL "")
-    message(WARNING "Legion_INSTALL_DIR is obsolete, "
-      "use CMAKE_PREFIX_PATH instead (and rebuild the latest"
-      " version third-party libraries)")
-    list(APPEND CMAKE_PREFIX_PATH "${Legion_INSTALL_DIR}")
-  endif()
+  message(STATUS "Legion found: ${LEGION_FOUND}")
 
 endif()
 
@@ -67,16 +59,13 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   add_definitions(-DFLECSI_RUNTIME_MODEL_legion)
 
-  if(NOT legion_FOUND)
-    message(FATAL_ERROR "Legion is required for this build configuration")
-  endif(NOT legion_FOUND)
-  
-  include_directories(${LEGION_INCLUDE_DIRS})
   if(NOT APPLE)
-    set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES} -ldl)
+    set(FLECSI_RUNTIME_LIBRARIES  -ldl ${LEGION_LIBRARIES} ${MPI_LIBRARIES})
   else()
-    message("Skipping -ldl because APPLE")
+    set(FLECSI_RUNTIME_LIBRARIES  ${LEGION_LIBRARIES} ${MPI_LIBRARIES})
   endif()
+
+  include_directories(${LEGION_INCLUDE_DIRS})
 
 #
 # MPI interface
@@ -84,6 +73,12 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   add_definitions(-DFLECSI_RUNTIME_MODEL_mpi)
+
+  if(NOT APPLE)
+    set(FLECSI_RUNTIME_LIBRARIES  -ldl ${MPI_LIBRARIES})
+  else()
+    set(FLECSI_RUNTIME_LIBRARIES ${MPI_LIBRARIES})
+  endif()
 
 #
 #MPI+Legion interface
@@ -96,12 +91,13 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
  
   add_definitions(-DFLECSI_RUNTIME_MODEL_mpilegion)
 
-  if(NOT legion_FOUND)
-    message(FATAL_ERROR "Legion is required for this build configuration")
-  endif(NOT legion_FOUND)
+  if(NOT APPLE)
+    set(FLECSI_RUNTIME_LIBRARIES  -ldl ${LEGION_LIBRARIES} ${MPI_LIBRARIES})
+  else()
+    set(FLECSI_RUNTIME_LIBRARIES  ${LEGION_LIBRARIES} ${MPI_LIBRARIES})
+  endif()
 
   include_directories(${LEGION_INCLUDE_DIRS})
-  set(FLECSI_RUNTIME_LIBRARIES ${LEGION_LIBRARIES} -ldl ${MPI_LIBRARIES})
 
 #
 # Default
@@ -130,7 +126,12 @@ if(ENABLE_HYPRE)
 
 endif(ENABLE_HYPRE)
 
+#------------------------------------------------------------------------------#
+# Cereal
+#------------------------------------------------------------------------------#
 
+  find_package (CEREAL REQUIRED)
+  include_directories(${CEREAL_INCLUDE_DIRS})
 
 #------------------------------------------------------------------------------#
 # Process id bits
@@ -142,8 +143,20 @@ endif(ENABLE_HYPRE)
 # FBITS: flag bits
 # dimension: dimension 2 bits
 # domain: dimension 2 bits
+
+# Make sure that the user set FBITS to an even number
+math(EXPR FLECSI_EVEN_FBITS "${FLECSI_ID_FBITS} % 2")
+if(NOT ${FLECSI_EVEN_FBITS} EQUAL 0)
+  message(FATAL_ERROR "FLECSI_ID_FBITS must be an even number")
+endif()
+
+# Get the total number of bits left for ids
 math(EXPR FLECSI_ID_BITS "124 - ${FLECSI_ID_FBITS}")
+
+# Global ids use half of the remaining bits
 math(EXPR FLECSI_ID_GBITS "${FLECSI_ID_BITS}/2")
+
+# EBITS and PBITS must add up to GBITS
 math(EXPR FLECSI_ID_EBITS "${FLECSI_ID_GBITS} - ${FLECSI_ID_PBITS}")
 
 add_definitions(-DFLECSI_ID_PBITS=${FLECSI_ID_PBITS})
@@ -158,6 +171,12 @@ message(STATUS "${CINCH_Cyan}Set id_t bits to allow:\n"
   "   ${flecsi_partitions} partitions with 2^${FLECSI_ID_EBITS} entities each\n"
   "   ${FLECSI_ID_FBITS} flag bits\n"
   "   ${FLECSI_ID_GBITS} global bits (PBITS*EBITS)${CINCH_ColorReset}")
+
+#------------------------------------------------------------------------------#
+# Counter type
+#------------------------------------------------------------------------------#
+
+add_definitions(-DFLECSI_COUNTER_TYPE=${FLECSI_COUNTER_TYPE})
 
 #------------------------------------------------------------------------------#
 # Enable IO with exodus

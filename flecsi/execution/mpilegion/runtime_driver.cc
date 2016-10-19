@@ -27,8 +27,9 @@ void mpilegion_runtime_driver(const LegionRuntime::HighLevel::Task * task,
 	LegionRuntime::HighLevel::Context ctx,
 	LegionRuntime::HighLevel::HighLevelRuntime * runtime)
 	{
-		context_t::instance().set_state(ctx, runtime, task, regions);
-
+          std::cout << "mpilegion_runtime_driver started" << std::endl;
+          context_t::instance().set_state(ctx, runtime, task, regions);
+                
      context_t & context_ = context_t::instance();
 
     const LegionRuntime::HighLevel::InputArgs & args =

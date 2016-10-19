@@ -77,7 +77,7 @@ void top_level_task(const Task *task,
   Rect<1> local_procs(0,num_local_procs);
   ArgumentMap arg_map;
 
-  IndexLauncher connect_mpi_launcher(CONNECT_MPI_TASK_ID,
+  IndexLauncher connect_mpi_launcher(task_ids_t::instance().connect_mpi_task_id,
                                        Domain::from_rect<2>(all_processes),
                                        TaskArgument(0, 0),
                                        arg_map);
@@ -86,10 +86,11 @@ void top_level_task(const Task *task,
                                TaskArgument(0, 0),
                                arg_map);
 
-  IndexLauncher handoff_to_mpi_launcher(HANDOFF_TO_MPI_TASK_ID,
-                                     Domain::from_rect<2>(all_processes),
-                                     TaskArgument(0, 0),
-                                     arg_map);
+  IndexLauncher handoff_to_mpi_launcher(
+                                  task_ids_t::instance().handoff_to_mpi_task_id,
+                                  Domain::from_rect<2>(all_processes),
+                                  TaskArgument(0, 0),
+                                  arg_map);
 
   //run legion_init() from each thead
   FutureMap fm1 = runtime->execute_index_space(ctx, connect_mpi_launcher);
@@ -102,7 +103,7 @@ void top_level_task(const Task *task,
   runtime->execute_index_space(ctx, handoff_to_mpi_launcher);
  }
 
-void connect_mpi_task (const Task *task,
+void test_connect_mpi_task (const Task *task,
                       const std::vector<PhysicalRegion> &regions,
                       Context ctx, HighLevelRuntime *runtime)
 {
@@ -113,6 +114,7 @@ void connect_mpi_task (const Task *task,
 }
 
 
+
 void helloworld_mpi_task (const Task *legiontask,
                       const std::vector<PhysicalRegion> &regions,
                       Context ctx, HighLevelRuntime *runtime)
@@ -120,12 +122,14 @@ void helloworld_mpi_task (const Task *legiontask,
   printf ("helloworld \n");
 }
 
-void handoff_to_mpi_task (const Task *legiontask,
+void test_handoff_to_mpi_task (const Task *legiontask,
                       const std::vector<PhysicalRegion> &regions,
                       Context ctx, HighLevelRuntime *runtime)
 {
  handshake.legion_handoff_to_ext();
 }
+
+
 
 void complete_legion_configure(void)
 {
@@ -152,18 +156,25 @@ void my_init_legion(){
 
   HighLevelRuntime::register_legion_task<top_level_task>( TOP_LEVEL_TASK_ID,
                           Processor::LOC_PROC, true/*single*/, false/*index*/, 
-                          AUTO_GENERATE_ID, TaskConfigOptions(), "top_level_task");
-  HighLevelRuntime::register_legion_task< connect_mpi_task>( CONNECT_MPI_TASK_ID, 
+                          AUTO_GENERATE_ID, TaskConfigOptions(),
+                           "top_level_task");
+  HighLevelRuntime::register_legion_task< test_connect_mpi_task>(
+                          task_ids_t::instance().connect_mpi_task_id, 
                           Processor::LOC_PROC, false/*single*/, true/*index*/,
-                          AUTO_GENERATE_ID, TaskConfigOptions(true/*leaf*/), "connect_mpi_task");
+                          AUTO_GENERATE_ID, TaskConfigOptions(true/*leaf*/),
+                           "connect_mpi_task");
   
-  HighLevelRuntime::register_legion_task< helloworld_mpi_task >( HELLOWORLD_TASK_ID,
+  HighLevelRuntime::register_legion_task< helloworld_mpi_task >(
+                          HELLOWORLD_TASK_ID,
                           Processor::LOC_PROC, false/*single*/, true/*index*/,
-                          AUTO_GENERATE_ID, TaskConfigOptions(true/*leaf*/), "hellowrld_task");
+                          AUTO_GENERATE_ID, TaskConfigOptions(true/*leaf*/),
+                          "hellowrld_task");
 
-  HighLevelRuntime::register_legion_task<handoff_to_mpi_task>( HANDOFF_TO_MPI_TASK_ID,
-                           Processor::LOC_PROC, false/*single*/, true/*index*/,
-                          AUTO_GENERATE_ID, TaskConfigOptions(true/*leaf*/), "handoff_to_mpi_task");
+  HighLevelRuntime::register_legion_task< test_handoff_to_mpi_task>(
+                          task_ids_t::instance().handoff_to_mpi_task_id,
+                          Processor::LOC_PROC, false/*single*/, true/*index*/,
+                          AUTO_GENERATE_ID, TaskConfigOptions(true/*leaf*/),
+                           "handoff_to_mpi_task");
 
 
   HighLevelRuntime::set_registration_callback(mapper_registration);
