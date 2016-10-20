@@ -321,6 +321,7 @@ public:
 
   //! Destructor
   ~burton_mesh_t() {}
+
   /*!
     \brief Return the topological dimension of the burton mesh.
 

@@ -81,7 +81,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
   endif()
 
 #
-#MPI+Legion interface
+# MPI+Legion interface
 #
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
