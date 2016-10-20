@@ -169,7 +169,7 @@ public:
 
     S& operator*(){
       while(B::index_ < B::end_){
-        T& item = get_(B::index_);
+        T& item = B::get_(B::index_);
         if(P()(item)){
           return item;
         }
@@ -181,7 +181,7 @@ public:
 
     S* operator->(){
       while(B::index_ < B::end_){
-        T& item = get_(B::index_);
+        T& item = B::get_(B::index_);
         if(P()(item)){
           return &item;
         }
@@ -210,11 +210,11 @@ public:
     : B(s, items, index, end){}
 
     S& operator*(){
-      return get_(B::index_);
+      return B::get_(B::index_);
     }
 
     S* operator->(){
-      return &get_(B::index_);
+      return &B::get_(B::index_);
     }
   };
 
