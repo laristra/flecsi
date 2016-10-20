@@ -106,40 +106,6 @@ void mpi_task(double val) {
   
 register_task(mpi_task, mpi, single);
   
-void init_part_task(double val) {
-  // context_t & context_ = context_t::instance();
-  // assert((context_.regions()).size() == 1);
-  // assert((context_.task())->regions.size() == 1);
-
-  assert(0); 
-  int rank; 
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  std::cout << " legion task rank is " << rank << " val is: " << val << std::endl;
- 
-  flecsi::execution::context_t & context_ =
-             flecsi::execution::context_t::instance(); 
-  index_partition_t ip =
-    context_.interop_helper_.data_storage_[0];
-
-  
-  for(auto & element : ip.exclusive ) {
-    std::cout << " Found exclusive element: " << element << " on rank: " << rank << std::endl;
-  }
-  
-  for(auto & element : ip.shared) {
-    std::cout << " Found shared element: " << element << " on rank: " << rank << std::endl;
-  } 
-
-  for(auto & element : ip.ghost) {
-    std::cout << " Found ghost element: " << element << " on rank: " << rank << std::endl;
-  } 
-  
-  
-  
-}   
-
-register_task(init_part_task, loc, index);
-
 
 void driver(int argc, char ** argv) {
   context_t & context_ = context_t::instance();
@@ -147,9 +113,6 @@ void driver(int argc, char ** argv) {
   
   // first execute mpi task to setup initial partitions 
   execute_task(mpi_task, mpi, single, 1.0);
-#if 0
-  execute_task(init_part_task, loc, index, 2.0);
-#endif
   
 
   // create a field space to store my cell paritioning 
@@ -227,10 +190,11 @@ void driver(int argc, char ** argv) {
     cell_parts_region.get_field_accessor(FID_CELL_PART).typeify<int>();
   int zeros = 0;
   int non_zeros = 0; 
-
+  int num_cells = 0; 
   for (int i = 0; i < num_ranks; i++) {
     flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(DomainPoint::from_point<2>(make_point(i,0)));
-    int j = 0; 
+    int j = 0;
+    num_cells += received.exclusive+received.shared; 
     for (; j < received.exclusive; j++) {
       double value =
         acc_cell_part.read(DomainPoint::from_point<2>(make_point(i,j)));
@@ -251,9 +215,28 @@ void driver(int argc, char ** argv) {
   std::cout << "partition has " << zeros << " zeros " << non_zeros << " non zeros " << std::endl;
   
 
-
-  
   // Now I need to create an Index space based on this data ..
+
+#if 0 
+  
+  Rect<1> elem_rect_cells(Point<1>(0),Point<1>(num_cells-1));
+  IndexSpace is_cells = context_.runtime()->create_index_space(context_.context(), 
+                                              Domain::from_rect<2>(elem_rect_cells));
+  FieldSpace input_fs = runtime->create_field_space(ctx);
+  {
+    FieldAllocator allocator = 
+      runtime->create_field_allocator(ctx, input_fs);
+    allocator.allocate_field(sizeof(double),FID_PRES);
+  }
+
+  IndexPartition ip_cells_ex;
+  DomainColoring coloring_ex;
+
+  color ... 
+  
+
+#endif
+    
 
   
   // Then partition the cells based on the values..
