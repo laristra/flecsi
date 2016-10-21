@@ -20,7 +20,7 @@
 #include <unordered_map>
 
 #include "flecsi/execution/context.h"
-#include "flecsi/execution/future.h"
+//#include "flecsi/execution/future.h"
 #include "flecsi/execution/common/processor.h"
 #include "flecsi/execution/common/task_hash.h"
 #include "flecsi/utils/tuple_function.h"
@@ -35,6 +35,8 @@
 
 namespace flecsi {
 namespace execution {
+
+template<typename R> struct future__;
 
 template<
   typename R,
@@ -74,7 +76,12 @@ struct executor__<R, T, A, false>
     A targs
   )
   {
-    return future__<R>(user_task(targs));
+    // FIXME: Need to set state
+    R value = user_task(targs);
+    future__<R> f;
+    f.set(value);
+    return f;
+    //return future__<R>(user_task(targs));
   } // execute_task
 }; // struct executor__
 
@@ -191,6 +198,14 @@ struct serial_execution_policy_t
   } // execute_function
 
 }; // struct serial_execution_policy_t
+
+template<
+  typename R
+>
+struct future__
+{
+  friend serial_execution_policy_t;
+}; // struct future__
 
 } // namespace execution 
 } // namespace flecsi
