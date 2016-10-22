@@ -66,8 +66,9 @@ struct task__
     As ... args
   )
   {
+    auto targs = std::make_tuple(args ...);
     return execution_policy_t::template execute_task<R>(
-      task_hash_t::make_key(address, processor,launch), args ...);
+      task_hash_t::make_key(address, processor,launch), targs);
   } // execute
 
 }; // class task

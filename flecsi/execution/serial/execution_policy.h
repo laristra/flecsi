@@ -128,18 +128,18 @@ struct serial_execution_policy_t
   template<
     typename R,
     typename T,
-    typename ... As
+    typename A
   >
   static
   decltype(auto)
   execute_task(
     task_hash_key_t key,
     T user_task,
-    As ... args
+    A args
   )
   {
-    using executor_t = executor__<R, T, std::tuple<As ...>>;
-    return executor_t::execute(key, user_task, std::make_tuple(args ...));
+    using executor_t = executor__<R, T, A>;
+    return executor_t::execute(key, user_task, args);
   } // execute_task
 
   //--------------------------------------------------------------------------//
