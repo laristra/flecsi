@@ -135,11 +135,14 @@ struct serial_execution_policy_t
   execute_task(
     task_hash_key_t key,
     T user_task,
-    A args
+    A args,
+    typename std::enable_if<!std::is_void<R>::value> * is_void=nullptr
   )
   {
-    using executor_t = executor__<R, T, A>;
-    return executor_t::execute(key, user_task, args);
+    R value = user_task(args);
+    future__<R> f;
+    f.set(value);
+    return f;
   } // execute_task
 
   //--------------------------------------------------------------------------//
@@ -205,6 +208,16 @@ template<
 struct future__
 {
   friend serial_execution_policy_t;
+  using result_t = R;
+
+  const result_t & get() const { return result_; }
+
+private:  
+
+  void set(const result_t & result) { result_ = result; }
+
+  result_t result_;
+
 }; // struct future__
 
 } // namespace execution 

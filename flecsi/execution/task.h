@@ -55,6 +55,7 @@ struct task__
   ///
   template<
     typename R,
+    typename T,
     typename ... As
   >
   static
@@ -63,12 +64,13 @@ struct task__
     uintptr_t address,
     processor_t processor,
     launch_t launch,
+    T user_task,
     As ... args
   )
   {
     auto targs = std::make_tuple(args ...);
     return execution_policy_t::template execute_task<R>(
-      task_hash_t::make_key(address, processor,launch), targs);
+      task_hash_t::make_key(address, processor,launch), user_task, targs);
   } // execute
 
 }; // class task
