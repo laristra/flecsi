@@ -329,7 +329,7 @@ public:
     return id_ == int_t(0);
   }
 
-  constexpr size_t depth() const{
+  size_t depth() const{
     int_t id = id_;
     size_t d = 0;
 
@@ -340,7 +340,7 @@ public:
     return d;
   }
 
-  constexpr branch_id& operator=(const branch_id& bid){
+  branch_id& operator=(const branch_id& bid){
     id_ = bid.id_;
     return *this;
   }
@@ -353,19 +353,19 @@ public:
     return id_ != bid.id_;
   }
 
-  constexpr void push(int_t bits){
+  void push(int_t bits){
     assert(bits < int_t(1) << dimension);
 
     id_ <<= dimension;
     id_ |= bits;
   }
 
-  constexpr void pop(){
+  void pop(){
     assert(depth() > 0);
     id_ >>= dimension;
   }
 
-  constexpr void pop(size_t d){
+  void pop(size_t d){
     assert(d >= depth());
     id_ >>= d * dimension;
   }
@@ -374,7 +374,7 @@ public:
     return branch_id(id_ >> dimension);
   }
 
-  constexpr void truncate(size_t to_depth){
+  void truncate(size_t to_depth){
     size_t d = depth();
 
     if(d < to_depth){

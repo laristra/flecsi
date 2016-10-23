@@ -453,7 +453,7 @@ public:
     by specified connectivity from domain FM and to domain TM.
   */
   template <size_t D, size_t FM = 0, size_t TM = FM, class E>
-  const decltype(auto) entities(domain_entity<FM, E> & e) const
+  decltype(auto) entities(domain_entity<FM, E> & e) const
   {
     return entities<D, FM, TM>(e.entity());
   } // entities

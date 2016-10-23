@@ -75,14 +75,33 @@ parts  init_partitions(const Legion::Task *task,
 
   GenericPointInRectIterator<2> pir(rect);
   for(auto & element : ip.exclusive) {
-    if(pir)
+    if(pir){
+      acc_part.write(LegionRuntime::HighLevel::DomainPoint::from_point<2>(pir.p), element);
       pir++;
-    else
+    } else {
       abort();
-
-    acc_part.write(LegionRuntime::HighLevel::DomainPoint::from_point<2>(pir.p), element);
+    }
+    
   }
-  
+  for(auto & element : ip.shared) {
+    if(pir) {
+       acc_part.write(LegionRuntime::HighLevel::DomainPoint::from_point<2>(pir.p), element);
+       pir++;
+    } else {
+      abort();
+    }
+   
+  }
+
+  for(auto & element : ip.ghost) {
+    if(pir) {
+      acc_part.write(LegionRuntime::HighLevel::DomainPoint::from_point<2>(pir.p), element);
+      pir++;
+    } else {
+      abort();
+    }
+  }
+
 #endif
   partitions.exclusive = ip.exclusive.size();
   partitions.shared = ip.shared.size();
