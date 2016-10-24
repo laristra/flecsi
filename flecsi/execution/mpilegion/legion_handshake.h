@@ -48,6 +48,7 @@
 //   handshake->ext_wait_on_legion();
 //   handshake->legion_handoff_to_ext();
 ///
+
 #define CHECK_PTHREAD(cmd) do { \
   int ret = (cmd); \
   if(ret != 0) { \
@@ -64,12 +65,13 @@ class ext_legion_handshake_t
 private:
 
   ///
-  //
+  // constructor
+  // it is private since ext_legion_handshake_t is a singleton
   ///
   ext_legion_handshake_t() {}
 
   ///
-  //
+  // destructor
   ///
   ~ext_legion_handshake_t()
     {
@@ -78,12 +80,13 @@ private:
     } // ~ext_legion_handshake_t
 
   ///
-  //
+  // copy constructor
   ///
   ext_legion_handshake_t(ext_legion_handshake_t const &);     
 
   ///
-  //
+  // assign operator as well as copy constructor should be private
+  // to restric their usage
   ///
   ext_legion_handshake_t & operator=(ext_legion_handshake_t const &);
 
@@ -94,7 +97,7 @@ public:
   typedef Realm::UserEvent UserEvent;
 
   ///
-  //
+  // getting unique instance of the singleton
   ///
   static
   ext_legion_handshake_t &
@@ -104,22 +107,189 @@ public:
     return hs;
   } // instance
 
-  void initialize(
+	///
+	// this method initializes all ext_legion_handshake_t with input and default 
+	//   values
+	//   state - is where ext_legion_handshake_t object is originally created:
+	//      IN_EXT - in MPI
+	//      IN_LEGION - in Legion
+	//   ext_queue_depth/ legion_queue_depth - depth of the MPI and legion queue
+	//   ext_count = # of times handshake was in MPI
+	//   legion_count = # of times handshake was in Legion
+	///
+
+  void
+  initialize(
     int init_state, 
     int _ext_queue_depth = 1, 
-    int _legion_queue_depth = 1);
+    int _legion_queue_depth = 1
+  )
+  {
+		state=init_state;
+  	ext_queue_depth=_ext_queue_depth;
+  	legion_queue_depth=_legion_queue_depth;
+  	ext_count=0;
+  	legion_count=0;
+  	pthread_mutex_init(&sync_mutex, 0);
+  	pthread_cond_init(&sync_cond, 0);
 
-  void ext_init(void);
+  	#ifndef SHARED_LOWLEVEL
+  	int rank;
+  	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  	printf("handshake %p created on rank %d\n", this, rank);
+  	#endif
+	} // initialize
 
-  void legion_init(void);
+  /// 
+	//  This method creates pthreads mutex on the MPI side and, in case handshake 
+	//  is originally created in MPI, waits on when handshake (user events used
+	//  for synchronization) is created on
+	//  the Legion side
+	///
+  void
+	ext_init()
+  {
+		CHECK_PTHREAD( pthread_mutex_lock(&sync_mutex) );
+  	//printf("handshake %p: ext init - counts = L=%d, E=%d\n",
+  	//    this, legion_count, ext_count);
 
-  void ext_handoff_to_legion(void);
+  	ext_count++;
+	
+  	if(legion_count == 0) 
+		{
+    	// no legion threads have arrived, so sleep until one does
+    	printf("ext sleeping...\n");
+    	CHECK_PTHREAD( pthread_cond_wait(&sync_cond, &sync_mutex) );
+    	printf("ext awake...\n");
+  	}
+		else 
+		{
+    	// if we were the first ext thread to arrive, wake the legion thread(s)
+    	if(ext_count == 1) 
+			{
+      	printf("signalling\n");
+      	CHECK_PTHREAD( pthread_cond_broadcast(&sync_cond) );
+   		 }//if
+  	}//if
 
-  void ext_wait_on_legion(void);
+  	CHECK_PTHREAD( pthread_mutex_unlock(&sync_mutex) );
+	}//ext_init
 
-  void legion_handoff_to_ext(void);
-  
-  void legion_wait_on_ext(void);
+	/// 
+	//	This method creates Legion events/queues for both MPI and Legion runtimes
+	//  for the later synchronization.
+	//  Then it swithces to MPI
+	///
+  void
+	legion_init()
+  {
+		CHECK_PTHREAD( pthread_mutex_lock(&sync_mutex) );
+
+  	if(!legion_count) 
+		{
+    	// first legion thread creates the events/queues
+    	// for later synchronization, then arrive at initialization barrier
+    	ext_queue = new UserEvent[ext_queue_depth];
+    	for(int i = 0; i < ext_queue_depth; i++) 
+			{
+      	ext_queue[i] = ((i || (state == IN_EXT)) ?
+                        UserEvent::create_user_event() :
+                        UserEvent());
+    	} // for
+
+    	legion_queue = new UserEvent[legion_queue_depth];
+    	for(int i = 0; i < legion_queue_depth; i++)
+      	legion_queue[i] = ((i || (state == IN_LEGION)) ?
+                           UserEvent::create_user_event() :
+                           UserEvent());
+  	}//end if
+
+  	printf("handshake %p: legion init - counts = L=%d, E=%d\n",
+  	 this, legion_count, ext_count);
+  	legion_count++;
+
+  	if(ext_count == 0) 
+		{
+    	// no external threads have arrived, so sleep until one does
+    	printf("legion sleeping...\n");
+    	CHECK_PTHREAD( pthread_cond_wait(&sync_cond, &sync_mutex) );
+    	printf("legion awake...\n");
+  	} 
+		else 
+		{
+    	// if we were the first legion thread to arrive, wake the ext thread(s)
+    	if(legion_count == 1) 
+			{
+      	printf("signalling\n");
+      	CHECK_PTHREAD( pthread_cond_broadcast(&sync_cond) );
+   		 }//if
+  	}//end if (ext_count == 0)
+
+  	CHECK_PTHREAD( pthread_mutex_unlock(&sync_mutex) );
+	}//legion_init
+
+
+	/// 
+  //  This method switches form MPI to Legion runtime
+	///
+  void
+	ext_handoff_to_legion()
+	{
+    assert(state == IN_EXT);
+
+  	// we'll trigger the first event in the ext queue, but first, 
+  	// create a new event for the legion queue
+  	//  and shift it onto the end
+  	assert(legion_queue[0].has_triggered());
+  	for(int i = 1; i < legion_queue_depth; i++)
+    	legion_queue[i - 1] = legion_queue[i];
+  	legion_queue[legion_queue_depth - 1] = UserEvent::create_user_event();
+
+  	state = IN_LEGION;
+  	ext_queue[0].trigger();
+	} //ext_handoff_to_legion
+
+	/// 
+	//	waiting on all Legion tasks to complete and all legion threads 
+	// switch mutex to EXT
+	///
+  void
+	ext_wait_on_legion()
+  {
+		legion_queue[0].external_wait();
+	  assert(state == IN_EXT);
+	}//ext_wait_on_legion
+
+
+  ///
+  // This method switches form Legion to MPI runtime
+  ///
+  void
+	legion_handoff_to_ext()
+	{
+		 assert(state == IN_LEGION);
+
+  	// we'll trigger the first event in the ext queue, but first, 
+  	// create a new event for the legion queue
+  	//  and shift it onto the end
+  	assert(ext_queue[0].has_triggered());
+  	for(int i = 1; i < ext_queue_depth; i++)
+    	ext_queue[i - 1] = ext_queue[i];
+  	ext_queue[ext_queue_depth - 1] = UserEvent::create_user_event();
+
+  	state = IN_EXT;
+  	legion_queue[0].trigger();
+	}//legion_handoff_to_ext
+ 
+	///
+	//	waiting on all mutex to be switch to Legion
+	/// 
+  void 
+	legion_wait_on_ext()
+	{
+		ext_queue[0].wait();
+  	assert(state == IN_LEGION);
+	} // legion_wait_on_ext
 
 public:
 
@@ -136,186 +306,8 @@ protected:
 
 }; // ext_legion_handshake_t
 
-///
-// this method initializes all ext_legion_handshake_t with input and default 
-//   values
-//   state - is where ext_legion_handshake_t object is originally created:
-//      IN_EXT - in MPI
-//      IN_LEGION - in Legion
-//   ext_queue_depth/ legion_queue_depth - depth of the MPI and legion queue
-//   ext_count = # of times handshake was in MPI
-//   legion_count = # of times handshake was in Legion
-///
-inline 
-void 
-ext_legion_handshake_t::initialize(
-  int init_state, 
-  int _ext_queue_depth,
-  int _legion_queue_depth
-)
-{
-  state=init_state;
-  ext_queue_depth=_ext_queue_depth;
-  legion_queue_depth=_legion_queue_depth;
-  ext_count=0;
-  legion_count=0;
-  pthread_mutex_init(&sync_mutex, 0);
-  pthread_cond_init(&sync_cond, 0);
-
-  #ifndef SHARED_LOWLEVEL
-  int rank;
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  printf("handshake %p created on rank %d\n", this, rank);
-  #endif
-} // initialize
-
-/// This method creates pthreads mutex on the MPI side and, in case handshake 
-//  is originally created in MPI, waits on when handshake (user events used for
-//  synchronization) is created on
-//  the Legion side
-///
-
-inline 
-void 
-ext_legion_handshake_t::ext_init(void)
-{
- CHECK_PTHREAD( pthread_mutex_lock(&sync_mutex) );
-
-  //printf("handshake %p: ext init - counts = L=%d, E=%d\n",
-  //    this, legion_count, ext_count);
-
-  ext_count++;
-
-  if(legion_count == 0) {
-    // no legion threads have arrived, so sleep until one does
-    printf("ext sleeping...\n");
-    CHECK_PTHREAD( pthread_cond_wait(&sync_cond, &sync_mutex) );
-    printf("ext awake...\n");
-  } else {
-    // if we were the first ext thread to arrive, wake the legion thread(s)
-    if(ext_count == 1) {
-      printf("signalling\n");
-      CHECK_PTHREAD( pthread_cond_broadcast(&sync_cond) );
-    }
-  }//if
-
-  CHECK_PTHREAD( pthread_mutex_unlock(&sync_mutex) ); 
-}//ext_init
 
 /*--------------------------------------------------------------------------*/
-/// This method creates Legion events/queues for both MPI and Legion runtimes
-//  for the later synchronization.
-//  Then it swithces to MPI
-///
-
-inline 
-void 
-ext_legion_handshake_t::legion_init(void)
-{
- CHECK_PTHREAD( pthread_mutex_lock(&sync_mutex) );
-
-  if(!legion_count) {
-    // first legion thread creates the events/queues
-    // for later synchronization, then arrive at initialization barrier
-    ext_queue = new UserEvent[ext_queue_depth];
-    for(int i = 0; i < ext_queue_depth; i++) {
-      ext_queue[i] = ((i || (state == IN_EXT)) ?
-                        UserEvent::create_user_event() :
-                        UserEvent());
-    } // for
-
-    legion_queue = new UserEvent[legion_queue_depth];
-    for(int i = 0; i < legion_queue_depth; i++)
-      legion_queue[i] = ((i || (state == IN_LEGION)) ?
-                           UserEvent::create_user_event() :
-                           UserEvent());
-  }//end if
-
-  printf("handshake %p: legion init - counts = L=%d, E=%d\n",
-   this, legion_count, ext_count);
-  legion_count++;
-
-  if(ext_count == 0) {
-    // no external threads have arrived, so sleep until one does
-    printf("legion sleeping...\n");
-    CHECK_PTHREAD( pthread_cond_wait(&sync_cond, &sync_mutex) );
-    printf("legion awake...\n");
-  } else {
-    // if we were the first legion thread to arrive, wake the ext thread(s)
-    if(legion_count == 1) {
-      printf("signalling\n");
-      CHECK_PTHREAD( pthread_cond_broadcast(&sync_cond) );
-    }
-  }//end if (ext_count == 0)
-
-  CHECK_PTHREAD( pthread_mutex_unlock(&sync_mutex) );
-}//legion_init
-
-/*--------------------------------------------------------------------------*/
-/// This method switches form MPI to Legion runtime
- 
-
-inline 
-void 
-ext_legion_handshake_t::ext_handoff_to_legion(void)
-{
-  assert(state == IN_EXT);
-
-  // we'll trigger the first event in the ext queue, but first, 
-  // create a new event for the legion queue
-  //  and shift it onto the end
-  assert(legion_queue[0].has_triggered());
-  for(int i = 1; i < legion_queue_depth; i++)
-    legion_queue[i - 1] = legion_queue[i];
-  legion_queue[legion_queue_depth - 1] = UserEvent::create_user_event();
-
-  state = IN_LEGION;
-  ext_queue[0].trigger();
-} //ext_handoff_to_legion
-
-/*--------------------------------------------------------------------------*/
-/// waiting on all Legion tasks to complete and all legion threads 
-// switch mutex to EXT
-///
-inline 
-void 
-ext_legion_handshake_t::ext_wait_on_legion(void)
-{
-  legion_queue[0].external_wait();
-  assert(state == IN_EXT);
-}//ext_wait_on_legion
-
-/*--------------------------------------------------------------------------*/
-///This method switches form Legion to MPI runtime
-
-inline
-void 
-ext_legion_handshake_t::legion_handoff_to_ext(void)
-{
-  assert(state == IN_LEGION);
-
-  // we'll trigger the first event in the ext queue, but first, 
-  // create a new event for the legion queue
-  //  and shift it onto the end
-  assert(ext_queue[0].has_triggered());
-  for(int i = 1; i < ext_queue_depth; i++)
-    ext_queue[i - 1] = ext_queue[i];
-  ext_queue[ext_queue_depth - 1] = UserEvent::create_user_event();
-
-  state = IN_EXT;
-  legion_queue[0].trigger();
-}//legion_handoff_to_ext
-
-/*--------------------------------------------------------------------------*/
-/// waiting on all mutex to be switch to Legion
-
-inline 
-void 
-ext_legion_handshake_t::legion_wait_on_ext(void)
-{
-  ext_queue[0].wait();
-  assert(state == IN_LEGION);
-} // legion_wait_on_ext
 
 } // namespace execution
 } // namespace flecsi
