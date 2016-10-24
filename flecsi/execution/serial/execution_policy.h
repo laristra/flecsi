@@ -79,7 +79,8 @@ struct executor__<R, T, A, false>
     // FIXME: Need to set state
     R value = user_task(targs);
     future__<R> f;
-    f.set(value);
+    //FIXME
+   // f.set(value);
     return f;
     //return future__<R>(user_task(targs));
   } // execute_task
