@@ -17,7 +17,7 @@ RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test
 RUN apt-get -q update -y
 RUN apt-get -qq install -y make cmake cmake-data git g++-6 gfortran-6 libopenmpi-dev \
  openmpi-bin libscotch-dev libexodusii-dev liblapacke-dev flex python-pip doxygen \
- texlive-font-utils
+ texlive-font-utils libcereal-dev
 
 
 RUN groupadd -r flecsi && useradd -r -m -g flecsi flecsi

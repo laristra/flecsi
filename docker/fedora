@@ -12,7 +12,7 @@ ARG TRAVIS_COMMIT
 ARG COVERAGE
 
 RUN dnf install -y -q make cmake git gcc-c++ openmpi-devel lapack-devel \
-    metis-devel scotch-devel lapack-devel flex python-pip
+    metis-devel scotch-devel lapack-devel flex python-pip cereal-devel
 
 RUN groupadd -r flecsi && useradd -r -m -g flecsi flecsi
 USER flecsi
