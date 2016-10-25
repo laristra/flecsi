@@ -18,8 +18,8 @@ var searchData=
   ['tree_5fpolicy',['tree_policy',['../classtree__policy.html',1,'']]],
   ['tree_5ftopology',['tree_topology',['../classflecsi_1_1tree_1_1tree__topology.html',1,'flecsi::tree']]],
   ['tree_5ftopology_3c_20basic_5ftree_5fpolicy_3c_20p_20_3e_20_3e',['tree_topology&lt; basic_tree_policy&lt; P &gt; &gt;',['../classflecsi_1_1tree_1_1tree__topology.html',1,'flecsi::tree']]],
-  ['type_5finfo_5ft',['type_info_t',['../structflecsi_1_1data__model_1_1default__storage__policy__t_1_1meta__data__t_1_1type__info__t.html',1,'flecsi::data_model::default_storage_policy_t::meta_data_t']]],
   ['type_5finfo_5ft',['type_info_t',['../structflecsi_1_1data__model_1_1default__data__storage__policy__t_1_1meta__data__t_1_1type__info__t.html',1,'flecsi::data_model::default_data_storage_policy_t::meta_data_t']]],
+  ['type_5finfo_5ft',['type_info_t',['../structflecsi_1_1data__model_1_1default__storage__policy__t_1_1meta__data__t_1_1type__info__t.html',1,'flecsi::data_model::default_storage_policy_t::meta_data_t']]],
   ['type_5flist',['type_list',['../structflecsi_1_1utils_1_1container_1_1type__list.html',1,'flecsi::utils::container']]],
   ['typeify',['typeify',['../structflecsi_1_1typeify.html',1,'flecsi']]]
 ];

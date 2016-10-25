@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>flecsi: rand_ Class Reference</title>
+<title>flecsi: pseudo_random Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -88,28 +88,39 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
-<a href="classrand__-members.html">List of all members</a>  </div>
+<a href="classpseudo__random-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">rand_ Class Reference</div>  </div>
+<div class="title">pseudo_random Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>A simple, portable random number generator that should yield the reproduceable results accross all platforms.  
+ <a href="classpseudo__random.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="pseudo__random_8h_source.html">pseudo_random.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5c350c9b45aff2a87e0bf91b7c107b25"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classrand__.html#a5c350c9b45aff2a87e0bf91b7c107b25">rand_</a> (unsigned seed=0)</td></tr>
-<tr class="separator:a5c350c9b45aff2a87e0bf91b7c107b25"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3cbf7e2e345219771888f7ac1ef57a26"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classrand__.html#a3cbf7e2e345219771888f7ac1ef57a26">uniform</a> ()</td></tr>
-<tr class="separator:a3cbf7e2e345219771888f7ac1ef57a26"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf4074b32bb4b480c68b67944bfd825c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classrand__.html#abf4074b32bb4b480c68b67944bfd825c">uniform</a> (double a, double b)</td></tr>
-<tr class="separator:abf4074b32bb4b480c68b67944bfd825c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad53381c26b964c6845d614e5f6fe5dea"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpseudo__random.html#ad53381c26b964c6845d614e5f6fe5dea">pseudo_random</a> (unsigned seed=0)</td></tr>
+<tr class="memdesc:ad53381c26b964c6845d614e5f6fe5dea"><td class="mdescLeft">&#160;</td><td class="mdescRight">The main constructor.  <a href="#ad53381c26b964c6845d614e5f6fe5dea">More...</a><br /></td></tr>
+<tr class="separator:ad53381c26b964c6845d614e5f6fe5dea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a722555cd859d88d6bab689d8da96aae1"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpseudo__random.html#a722555cd859d88d6bab689d8da96aae1">uniform</a> ()</td></tr>
+<tr class="memdesc:a722555cd859d88d6bab689d8da96aae1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a new random number with a uniform distribution between [0, 1).  <a href="#a722555cd859d88d6bab689d8da96aae1">More...</a><br /></td></tr>
+<tr class="separator:a722555cd859d88d6bab689d8da96aae1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48edfcb10692ff597f2abf27e4985904"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpseudo__random.html#a48edfcb10692ff597f2abf27e4985904">uniform</a> (double a, double b)</td></tr>
+<tr class="memdesc:a48edfcb10692ff597f2abf27e4985904"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a new random number with a uniform distribution between [a, b).  <a href="#a48edfcb10692ff597f2abf27e4985904">More...</a><br /></td></tr>
+<tr class="separator:a48edfcb10692ff597f2abf27e4985904"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:aefabc9ba7e8d1ae2ff82dd8c17061242"><td class="memItemLeft" align="right" valign="top">std::mt19937&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classrand__.html#aefabc9ba7e8d1ae2ff82dd8c17061242">rng_</a></td></tr>
-<tr class="separator:aefabc9ba7e8d1ae2ff82dd8c17061242"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fb92231e45964c64768b714440ab710"><td class="memItemLeft" align="right" valign="top">std::mt19937&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpseudo__random.html#a6fb92231e45964c64768b714440ab710">rng_</a></td></tr>
+<tr class="memdesc:a6fb92231e45964c64768b714440ab710"><td class="mdescLeft">&#160;</td><td class="mdescRight">Use one of the build in C++11 random number generators.  <a href="#a6fb92231e45964c64768b714440ab710">More...</a><br /></td></tr>
+<tr class="separator:a6fb92231e45964c64768b714440ab710"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a5c350c9b45aff2a87e0bf91b7c107b25"></a>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A simple, portable random number generator that should yield the reproduceable results accross all platforms. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="ad53381c26b964c6845d614e5f6fe5dea"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -117,7 +128,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">rand_::rand_ </td>
+          <td class="memname">pseudo_random::pseudo_random </td>
           <td>(</td>
           <td class="paramtype">unsigned&#160;</td>
           <td class="paramname"><em>seed</em> = <code>0</code></td><td>)</td>
@@ -131,10 +142,18 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>The main constructor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">seed</td><td>The seed to use on constructon. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a3cbf7e2e345219771888f7ac1ef57a26"></a>
+<a class="anchor" id="a722555cd859d88d6bab689d8da96aae1"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -142,7 +161,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">double rand_::uniform </td>
+          <td class="memname">double pseudo_random::uniform </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -155,9 +174,11 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Generate a new random number with a uniform distribution between [0, 1). </p>
+
 </div>
 </div>
-<a class="anchor" id="abf4074b32bb4b480c68b67944bfd825c"></a>
+<a class="anchor" id="a48edfcb10692ff597f2abf27e4985904"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -165,7 +186,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">double rand_::uniform </td>
+          <td class="memname">double pseudo_random::uniform </td>
           <td>(</td>
           <td class="paramtype">double&#160;</td>
           <td class="paramname"><em>a</em>, </td>
@@ -189,10 +210,12 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Generate a new random number with a uniform distribution between [a, b). </p>
+
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a class="anchor" id="aefabc9ba7e8d1ae2ff82dd8c17061242"></a>
+<a class="anchor" id="a6fb92231e45964c64768b714440ab710"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -200,7 +223,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::mt19937 rand_::rng_</td>
+          <td class="memname">std::mt19937 pseudo_random::rng_</td>
         </tr>
       </table>
   </td>
@@ -210,10 +233,12 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Use one of the build in C++11 random number generators. </p>
+
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>/tmp/flecsi/flecsi/tree/test/<a class="el" href="tree_8cc.html">tree.cc</a></li>
+<li>/tmp/flecsi/flecsi/tree/test/<a class="el" href="pseudo__random_8h_source.html">pseudo_random.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
