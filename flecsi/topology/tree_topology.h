@@ -14,6 +14,16 @@
 
 #pragma once
 
+/*!
+  \file tree_topology.h
+  \authors nickm@lanl.gov
+  \date Initial file creation: Apr 5, 2016
+ */
+
+/*
+  Tree topology is a statically configured N-dimensional hashed tree for representing localized entities, e.g. particles. It stores entities in a configurable branch type. Inserting entities into a branch can cause that branch to be refined or coarsened correspondingly. A client of tree topology defines a policy which defines its branch and entity types and other compile-time parameters. Specializations can define a policy and default branch types which can then be specialized in a simpler fashion (see the basic_tree specialization).
+*/
+
 #include <map>
 #include <unordered_map>
 #include <vector>
