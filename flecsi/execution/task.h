@@ -11,6 +11,7 @@
 #include "flecsi/execution/common/processor.h"
 #include "flecsi/execution/common/launch.h"
 #include "flecsi/execution/common/task_hash.h"
+#include "flecsi/utils/static_verify.h"
 
 ///
 // \file task.h
@@ -87,6 +88,29 @@ namespace flecsi {
 namespace execution {
 
 using task_t = task__<flecsi_execution_policy_t>;
+
+// Use the execution policy to define the future type.
+template<typename R>
+using future__ = flecsi_execution_policy_t::future__<R>;
+
+// Static verification of future interface for type defined by
+// execution policy.
+namespace verify_future {
+
+FLECSI_MEMBER_CHECKER(wait);
+FLECSI_MEMBER_CHECKER(get);
+FLECSI_MEMBER_CHECKER(set);
+
+static_assert(verify_future::has_member_wait<future__<double>>::value,
+  "future type missing wait method");
+
+static_assert(verify_future::has_member_get<future__<double>>::value,
+  "future type missing get method");
+
+static_assert(verify_future::has_member_set<future__<double>>::value,
+  "future type missing set method");
+
+} // namespace verify_future
 
 } // namespace execution 
 } // namespace flecsi

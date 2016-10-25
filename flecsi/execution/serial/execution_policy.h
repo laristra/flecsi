@@ -20,7 +20,6 @@
 #include <unordered_map>
 
 #include "flecsi/execution/context.h"
-//#include "flecsi/execution/future.h"
 #include "flecsi/execution/common/processor.h"
 #include "flecsi/execution/common/task_hash.h"
 #include "flecsi/utils/tuple_function.h"
@@ -36,17 +35,82 @@
 namespace flecsi {
 namespace execution {
 
-template<typename R> struct future__;
+// Forward.
+template<typename R> struct serial_future__;
 
+///
+// Executor interface.
+///
 template<
-  typename R,
-  typename T,
-  typename A,
-  bool is_void = std::is_void<R>::value
+  typename R
 >
 struct executor__
 {
+  ///
+  //
+  ///
+  template<
+    typename T,
+    typename A
+  >
+  static
+  decltype(auto)
+  execute(
+    task_hash_key_t key,
+    T user_task,
+    A targs
+  )
+  {
+    R value = user_task(targs);
+    serial_future__<R> f;
+    f.set(value);
+    return f;
+  } // execute_task
+}; // struct executor__
 
+///
+// Partial specialization for reference type.
+///
+template<
+  typename R
+>
+struct executor__<R &>
+{
+  ///
+  //
+  ///
+  template<
+    typename T,
+    typename A
+  >
+  static
+  decltype(auto)
+  execute(
+    task_hash_key_t key,
+    T user_task,
+    A targs
+  )
+  {
+    R & value = user_task(targs);
+    serial_future__<R &> f;
+    f.set(value);
+    return f;
+  } // execute_task
+}; // struct executor__
+
+///
+// Explicit specialization for void
+///
+template<>
+struct executor__<void>
+{
+  ///
+  //
+  ///
+  template<
+    typename T,
+    typename A
+  >
   static
   decltype(auto)
   execute(
@@ -56,33 +120,9 @@ struct executor__
   )
   {
     user_task(targs);
-    return future__<R>();
+    return serial_future__<void>();
   } // execute
 
-}; // struct executor__
-
-template<
-  typename R,
-  typename T,
-  typename A
->
-struct executor__<R, T, A, false>
-{
-  static
-  decltype(auto)
-  execute(
-    task_hash_key_t key,
-    T user_task,
-    A targs
-  )
-  {
-    // FIXME: Need to set state
-    R value = user_task(targs);
-    future__<R> f;
-    f.set(value);
-    return f;
-    //return future__<R>(user_task(targs));
-  } // execute_task
 }; // struct executor__
 
 ///
@@ -91,6 +131,9 @@ struct executor__<R, T, A, false>
 ///
 struct serial_execution_policy_t
 {
+  template<typename R>
+  using future__ = serial_future__<R>;
+
   //--------------------------------------------------------------------------//
   // Task interface.
   //--------------------------------------------------------------------------//
@@ -135,14 +178,10 @@ struct serial_execution_policy_t
   execute_task(
     task_hash_key_t key,
     T user_task,
-    A args,
-    typename std::enable_if<!std::is_void<R>::value> * is_void=nullptr
+    A args
   )
   {
-    R value = user_task(args);
-    future__<R> f;
-    f.set(value);
-    return f;
+    return executor__<R>::execute(key, user_task, args);
   } // execute_task
 
   //--------------------------------------------------------------------------//
@@ -202,15 +241,30 @@ struct serial_execution_policy_t
 
 }; // struct serial_execution_policy_t
 
+//----------------------------------------------------------------------------//
+// Future.
+//----------------------------------------------------------------------------//
+
+///
+//
+///
 template<
   typename R
 >
-struct future__
+struct serial_future__
 {
-  friend serial_execution_policy_t;
+  friend executor__<R>;
   using result_t = R;
 
-  const result_t & get() const { return result_; }
+  ///
+  //
+  ///
+  void wait() {}
+
+  ///
+  //
+  ///
+  const result_t & get(size_t index = 0) const { return result_; }
 
 private:  
 
@@ -218,7 +272,22 @@ private:
 
   result_t result_;
 
-}; // struct future__
+}; // struct serial_future__
+
+///
+//
+///
+template<>
+struct serial_future__<void>
+{
+  friend executor__<void>;
+
+  ///
+  //
+  ///
+  void wait() {}
+
+}; // struct serial_future__
 
 } // namespace execution 
 } // namespace flecsi

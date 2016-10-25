@@ -70,11 +70,10 @@ using dense_field_t = storage_t::st_t<dense>::handle_t<double>;
 // Task registration.
 //----------------------------------------------------------------------------//
 
-double task1(double dval, int ival) {
+void task1(double dval, int ival) {
   std::cout << "Executing task1" << std::endl;
   std::cout << "Value(double): " << dval << std::endl;
   std::cout << "Value(int): " << ival << std::endl;
-  return dval*2.0;
 } // task1
 
 //#if defined(FLECSI_RUNTIME_MODEL_mpilegion)
@@ -193,9 +192,9 @@ void driver(int argc, char ** argv) {
   auto future1 = execute_task(task1, loc, single, alpha, 5);
 //#endif
 
-  std::cout << "future1: " << future1.get() << std::endl;
+  auto future2 = execute_task(task2, loc, single, alpha, 5.0, p);
 
-  execute_task(task2, loc, single, alpha, 5.0, p);
+  std::cout << "future2.get(): " << future2.get() << std::endl;
 
   execute_task(task3, loc, index, 5.0);
 
