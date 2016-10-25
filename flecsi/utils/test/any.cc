@@ -14,6 +14,7 @@
 
 // system includes
 #include <cinchtest.h>
+#include <array>
 
 // user includes
 #include "flecsi/utils/any.h"
@@ -48,8 +49,8 @@ TEST(any, simple) {
    using index_partition_t = flecsi::dmp::index_partition__<int>;
 
    double A;
-   std::array <int,5> B;
-   index_partition_t  ip;
+   std::array<int,5> B;
+   index_partition_t ip;
 
    A=3.14;
    B[0]=1;
