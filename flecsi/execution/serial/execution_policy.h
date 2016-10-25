@@ -36,7 +36,59 @@ namespace flecsi {
 namespace execution {
 
 // Forward.
-template<typename R> struct serial_future__;
+template<typename R> struct executor__;
+
+//----------------------------------------------------------------------------//
+// Future.
+//----------------------------------------------------------------------------//
+
+///
+//
+///
+template<
+  typename R
+>
+struct serial_future__
+{
+  friend executor__<R>;
+  using result_t = R;
+
+  ///
+  //
+  ///
+  void wait() {}
+
+  ///
+  //
+  ///
+  const result_t & get(size_t index = 0) const { return result_; }
+
+private:  
+
+  void set(const result_t & result) { result_ = result; }
+
+  result_t result_;
+
+}; // struct serial_future__
+
+///
+//
+///
+template<>
+struct serial_future__<void>
+{
+  friend executor__<void>;
+
+  ///
+  //
+  ///
+  void wait() {}
+
+}; // struct serial_future__
+
+//----------------------------------------------------------------------------//
+// Executor.
+//----------------------------------------------------------------------------//
 
 ///
 // Executor interface.
@@ -124,6 +176,10 @@ struct executor__<void>
   } // execute
 
 }; // struct executor__
+
+//----------------------------------------------------------------------------//
+// Execution policy.
+//----------------------------------------------------------------------------//
 
 ///
 // \struct serial_execution_policy serial_execution_policy.h
@@ -240,54 +296,6 @@ struct serial_execution_policy_t
   } // execute_function
 
 }; // struct serial_execution_policy_t
-
-//----------------------------------------------------------------------------//
-// Future.
-//----------------------------------------------------------------------------//
-
-///
-//
-///
-template<
-  typename R
->
-struct serial_future__
-{
-  friend executor__<R>;
-  using result_t = R;
-
-  ///
-  //
-  ///
-  void wait() {}
-
-  ///
-  //
-  ///
-  const result_t & get(size_t index = 0) const { return result_; }
-
-private:  
-
-  void set(const result_t & result) { result_ = result; }
-
-  result_t result_;
-
-}; // struct serial_future__
-
-///
-//
-///
-template<>
-struct serial_future__<void>
-{
-  friend executor__<void>;
-
-  ///
-  //
-  ///
-  void wait() {}
-
-}; // struct serial_future__
 
 } // namespace execution 
 } // namespace flecsi
