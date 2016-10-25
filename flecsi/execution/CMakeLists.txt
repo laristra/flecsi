@@ -24,7 +24,6 @@ set(execution_HEADERS
 	kernel.h
 	legion/context_policy.h
 	legion/execution_policy.h
-	legion/irina_future.h
 	legion/runtime_driver.h
 	legion/task_wrapper.h
 	mpilegion/context_policy.h
