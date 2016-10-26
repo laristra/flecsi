@@ -127,31 +127,39 @@ struct burton_mesh_types_t {
     size_t num_vertices
   )
   {
-    switch(M){
-      case 0:{
-        switch(D){
+    switch(M) {
+
+      case 0:
+      {
+        switch(D) {
           case 1:
             return mesh->make<burton_edge_t>(*mesh);
           default:
             assert(false && "invalid topological dimension");
-        }
+        } // switch
+
         break;
-      }
-      case 1:{
-        switch(D){
+      } // case
+
+      case 1:
+      {
+        switch(D) {
           case 0:
             return mesh->make<burton_corner_t>(*mesh);
           case 1:
             return mesh->make<burton_wedge_t>(*mesh);
           default:
             assert(false && "invalid topological dimension");
-        }
+        } // switch
+
         break;
-      }
+      } // case
+
       default:
         assert(false && "invalid domain");
-    }
-  }
+
+    } // switch
+  } // create_entity
 
 }; // struct burton_mesh_types_t
 

@@ -56,7 +56,7 @@ struct mpilegion_context_policy_t
 
   const size_t TOP_LEVEL_TASK_ID = 0;
 
-  ext_legion_handshake_t &handshake_=ext_legion_handshake_t::instance();
+  ext_legion_handshake_t & handshake_ = ext_legion_handshake_t::instance();
   mpi_legion_interop_t interop_helper_;
 
   /*--------------------------------------------------------------------------*
@@ -76,28 +76,39 @@ struct mpilegion_context_policy_t
     lr_runtime_t::register_legion_task<mpilegion_runtime_driver>(
       TOP_LEVEL_TASK_ID, lr_loc, true, false);
 
+    // FIXME
+		// This is Galen's hack to get partitioning working for the sprint
     lr_runtime_t::register_legion_task<flecsi::dmp::parts,
       flecsi::dmp::init_partitions>(
       task_ids_t::instance().init_cell_partitions_task_id,lr_loc, true, false);
 
+    // FIXME
     lr_runtime_t::register_legion_task<connect_to_mpi_task>(
-        task_ids_t::instance().connect_mpi_task_id, lr_loc,
-        false, true, AUTO_GENERATE_ID,
-        LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
-        "connect_to_mpi_task");
+      task_ids_t::instance().connect_mpi_task_id, lr_loc, false, true,
+      AUTO_GENERATE_ID,
+      LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
+      "connect_to_mpi_task");
 
-     lr_runtime_t::register_legion_task<handoff_to_mpi_task>(
-        task_ids_t::instance().handoff_to_mpi_task_id, lr_loc,
-        false, true, AUTO_GENERATE_ID,
-        LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
-        "handoff_to_mpi_task");
+    // FIXME
+    lr_runtime_t::register_legion_task<handoff_to_mpi_task>(
+      task_ids_t::instance().handoff_to_mpi_task_id, lr_loc,
+      false, true, AUTO_GENERATE_ID,
+      LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
+      "handoff_to_mpi_task");
 
-     lr_runtime_t::register_legion_task<wait_on_mpi_task>(
-        task_ids_t::instance().wait_on_mpi_task_id, lr_loc,
-        false, true, AUTO_GENERATE_ID,
-        LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
-        "wait_on_mpi_task");
+    // FIXME
+    lr_runtime_t::register_legion_task<wait_on_mpi_task>(
+      task_ids_t::instance().wait_on_mpi_task_id, lr_loc,
+      false, true, AUTO_GENERATE_ID,
+      LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
+      "wait_on_mpi_task");
 
+		// FIXME
+    lr_runtime_t::register_legion_task<unset_call_mpi_task>(
+			task_ids_t::instance().unset_call_mpi_id, lr_loc,
+			false, true, AUTO_GENERATE_ID,
+			LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
+			"unset_call_mpi_task");
 
     // Register user tasks
     for(auto f: task_registry_) {
@@ -107,6 +118,7 @@ struct mpilegion_context_policy_t
       f.second.second(f.second.first);
     } // for
   
+    // FIXME: Documentation!
     interop_helper_.initialize();  
 
     // Start the runtime
@@ -119,24 +131,23 @@ struct mpilegion_context_policy_t
     interop_helper_.wait_on_legion();
 
     //while loop to do some mpi tasks
-     while(ext_legion_handshake_t::instance().call_mpi_)
-     {
-#ifdef LEGIONDEBUG
-       int rank;
-       MPI_Comm_rank(MPI_COMM_WORLD,&rank);
-       std::cout<< "inside while loop N " << " rank = "<<rank<<
-          "rank_from_handshake = " << ext_legion_handshake_t::instance().rank_
-          <<std::endl;
-#endif
-       ext_legion_handshake_t::instance().shared_func_();
-       interop_helper_.handoff_to_legion();
-       interop_helper_.wait_on_legion();
-      }
+    while(ext_legion_handshake_t::instance().call_mpi_) {
+      #ifdef LEGIONDEBUG
+        int rank;
+        MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+        std::cout << "inside while loop N " << " rank = "<< rank <<
+          "rank_from_handshake = " <<
+          ext_legion_handshake_t::instance().rank_ << std::endl;
+      #endif
+
+      ext_legion_handshake_t::instance().shared_func_();
+      interop_helper_.handoff_to_legion();
+      interop_helper_.wait_on_legion();
+    } // while
 
     interop_helper_.wait_on_legion();
    
     return 0;
-
   } // initialize
 
   /*!
