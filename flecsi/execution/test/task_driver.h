@@ -70,10 +70,11 @@ using dense_field_t = storage_t::st_t<dense>::handle_t<double>;
 // Task registration.
 //----------------------------------------------------------------------------//
 
-void task1(double dval, int ival) {
+double task1(double dval, int ival) {
   std::cout << "Executing task1" << std::endl;
   std::cout << "Value(double): " << dval << std::endl;
   std::cout << "Value(int): " << ival << std::endl;
+  return dval;
 } // task1
 
 //#if defined(FLECSI_RUNTIME_MODEL_mpilegion)
@@ -189,14 +190,21 @@ void driver(int argc, char ** argv) {
 //#if defined(FLECSI_RUNTIME_MODEL_mpilegion)
 //  execute_task(task1, mpi, index, alpha, 5);
 //#else
-  auto future1 = execute_task(task1, loc, single, alpha, 5);
+
+  //auto future1 = execute_task(task1, loc, single, alpha, 5);
+  execute_task(task1, loc, single, alpha, 5);
+
+  //std::cout << "future1.get(): " << future1.get() << std::endl;
 //#endif
 
-  auto future2 = execute_task(task2, loc, single, alpha, 5.0, p);
+  //future1.wait();
 
-  std::cout << "future2.get(): " << future2.get() << std::endl;
+  //auto future2 = execute_task(task2, loc, single, alpha, 5.0, p);
+  execute_task(task2, loc, single, alpha, 5.0, p);
 
-  execute_task(task3, loc, index, 5.0);
+  //std::cout << "future2.get(): " << future2.get() << std::endl;
+
+  //execute_task(task3, loc, index, 5.0);
 
   register_data(m, hydro, materials, material_t, dense, 1, cells);
 

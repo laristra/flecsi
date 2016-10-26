@@ -35,8 +35,204 @@
 namespace flecsi {
 namespace execution {
 
-// Forward.
-template<typename R> struct legion_future__;
+//----------------------------------------------------------------------------//
+// Future.
+//----------------------------------------------------------------------------//
+
+///
+// Interface type for Legion futures.
+///
+template<
+  typename R
+>
+struct legion_future_concept__
+{
+  virtual ~legion_future_concept__() {}
+
+  virtual void wait() = 0;
+  virtual R get(size_t index = 0) = 0;
+}; // struct legion_future_concept__
+
+template<>
+struct legion_future_concept__<void>
+{
+  virtual ~legion_future_concept__() {}
+
+  virtual void wait() = 0;
+}; // struct legion_future_concept__
+
+
+///
+// Base future model type.
+///
+template<typename R, typename F>
+struct legion_future_model__
+  : public legion_future_concept__<R>
+{
+
+  legion_future_model__(const F & legion_future)
+    : legion_future_(legion_future) {}
+
+  ///
+  //
+  ///
+  void
+  wait()
+  {
+  } // wait
+
+  ///
+  // \param index
+  //
+  // \return R
+  ///
+  R
+  get(
+    size_t index = 0
+  )
+  {
+    return legion_future_.template get_result<R>();
+  } // get
+
+private:
+
+  F legion_future_;
+
+}; // struct legion_future_model__
+
+template<typename F>
+struct legion_future_model__<void, F>
+  : public legion_future_concept__<void>
+{
+
+  legion_future_model__(const F & legion_future)
+    : legion_future_(legion_future) {}
+
+  void
+  wait()
+  {
+    legion_future_.get_void_result();
+  } // wait
+
+private:
+
+  F legion_future_;
+
+}; // struct legion_future_model__
+
+///
+// Partial specialization for index launch FutureMap.
+///
+template<typename R>
+struct legion_future_model__<R, LegionRuntime::HighLevel::FutureMap>
+  : public legion_future_concept__<R>
+{
+
+  legion_future_model__(
+    const LegionRuntime::HighLevel::FutureMap & legion_future
+  )
+    : legion_future_(legion_future) {}
+
+  void
+  wait()
+  {
+  } // wait
+
+  R
+  get(
+    size_t index = 0
+  )
+  {
+  } // get
+
+private:
+
+  LegionRuntime::HighLevel::FutureMap legion_future_;
+
+}; // struct legion_future_model__
+
+template<>
+struct legion_future_model__<void, LegionRuntime::HighLevel::FutureMap>
+  : public legion_future_concept__<void>
+{
+
+  legion_future_model__(
+    const LegionRuntime::HighLevel::FutureMap & legion_future
+  )
+    : legion_future_(legion_future) {}
+
+  void
+  wait()
+  {
+  } // wait
+
+private:
+
+  LegionRuntime::HighLevel::FutureMap legion_future_;
+
+}; // struct legion_future_model__
+
+template<
+  typename R
+>
+struct legion_future__
+{
+  using result_t = R;
+
+  template<typename F>
+  legion_future__(const F & future)
+    : state_(new legion_future_model__<R, F>(future)) {}
+
+  ///
+  //
+  ///
+  void wait()
+  {
+    state_->wait();
+  } // wait
+
+  ///
+  //
+  ///
+  result_t
+  get(
+    size_t index = 0
+  )
+  {
+    return state_->get(index);
+  } // get
+
+private:
+
+  // Needed to satisfy static check.
+  void set() {}
+
+  std::unique_ptr<legion_future_concept__<R>> state_;
+
+}; // struct legion_future__
+
+template<>
+struct legion_future__<void>
+{
+
+  template<typename F>
+  legion_future__(const F & future)
+    : state_(new legion_future_model__<void, F>(future)) {}
+
+  ///
+  //
+  ///
+  void wait()
+  {
+  } // wait
+
+  std::unique_ptr<legion_future_concept__<void>> state_;
+
+}; // struct legion_future__
+
+//----------------------------------------------------------------------------//
+// Execution policy.
+//----------------------------------------------------------------------------//
 
 ///
 // \struct legion_execution_policy legion_execution_policy.h
@@ -138,10 +334,14 @@ struct legion_execution_policy_t
     if(std::get<2>(key)==single) {
       TaskLauncher task_launcher(context_.task_id(key),
         TaskArgument(&task_args, sizeof(task_args_t)));
-      context_.runtime()->execute_task(context_.context(), task_launcher);
+      //auto future = context_.runtime()->execute_task(context_.context(),
+      //  task_launcher);
+      context_.runtime()->execute_task(context_.context(),
+        task_launcher);
 
       //FIXME
-      return legion_future__<R>();
+      //return legion_future__<R>(future);
+      return 0;
     }
     else {
       //FIXME: get launch domain from partitioning of the data used in
@@ -154,11 +354,14 @@ struct legion_execution_policy_t
         context_.task_id(key), launch_domain, TaskArgument(&task_args,
         sizeof(task_args_t)), arg_map);
 
+      //auto future = context_.runtime()->execute_index_space(context_.context(),
+      //  index_launcher);
       context_.runtime()->execute_index_space(context_.context(),
         index_launcher);
 
       //FIXME
-      return legion_future__<R>();
+      //return legion_future__<R>(future);
+      return 0;
     } //end if
 
   } // execute_task
@@ -216,198 +419,6 @@ struct legion_execution_policy_t
   } // execute_function
 
 }; // struct legion_execution_policy_t
-
-
-//----------------------------------------------------------------------------//
-// Future.
-//----------------------------------------------------------------------------//
-
-#if 0
-struct legion_future_base_t
-{
-  virtual ~legion_future_base_t() {}
-
-  virtual void wait() = 0;
-
-  template<typename R>
-  virtual const R & get(size_t index = 0) = 0;
-
-}; // struct legion_future_base_t
-
-template<
-  typename F
->
-struct legion_future_model__
-  : public legion_future_base_t
-{
-  // Member data.
-  F future_;  
-
-  legion_future_model__(const F & future)
-    : future_(future) {}
-
-  void
-  wait()
-  {
-    future_.wait();
-  } // wait
-
-  template<typename R>
-  const
-  R &
-  get(
-    size_t index = 0
-  )
-  {
-    return future_.get();
-  }
-
-}; // struct legion_future_model__
-
-template<>
-struct legion_future_model__<LegionRuntime::HighLevel::FutureMap>
-  : public future_base_t
-{
-  // Member data.
-  F future_;  
-
-  legion_future_model__(const F & future)
-    : future_(future) {}
-
-  void
-  wait()
-  {
-    future_.wait();
-  } // wait
-
-  template<typename R>
-  const
-  R &
-  get(
-    size_t index = 0
-  )
-  {
-    // FIXME: What is a domain point?
-    return 0;
-  }
-
-}; // legion_future_model__
-#endif
-
-template<
-  typename R
->
-struct legion_future_concept__
-{
-  virtual ~legion_future_concept__() {}
-
-  virtual void wait() = 0;
-  virtual const R & get(size_t index = 0) = 0;
-}; // struct legion_future_concept__
-
-template<typename R, typename F>
-struct legion_future_model__
-  : public legion_future_concept__<R>
-{
-
-  legion_future_model__(const F & legion_future)
-    : legion_future_(legion_future) {}
-
-  void
-  wait()
-  {
-  } // wait
-
-  const
-  R &
-  get(
-    size_t index = 0
-  )
-  {
-  } // get
-
-private:
-
-  F legion_future_;
-
-}; // struct legion_future_model__
-
-template<typename R>
-struct legion_future_model__<R, LegionRuntime::HighLevel::FutureMap>
-  : public legion_future_concept__<R>
-{
-
-  legion_future_model__(
-    const LegionRuntime::HighLevel::FutureMap & legion_future
-  )
-    : legion_future_(legion_future) {}
-
-  void
-  wait()
-  {
-  } // wait
-
-  const
-  R &
-  get(
-    size_t index = 0
-  )
-  {
-  } // get
-
-private:
-
-  LegionRuntime::HighLevel::FutureMap legion_future_;
-
-};
-
-template<
-  typename R
->
-struct legion_future__
-{
-  using result_t = R;
-
-  template<typename F>
-  legion_future__(const F & future)
-
-  ///
-  //
-  ///
-  void wait()
-  {
-  } // wait
-
-  ///
-  //
-  ///
-  const result_t &
-  get(
-    size_t index = 0
-  )
-  {
-    return 0;
-  } // get
-
-private:
-
-  // Needed to satisfy static check.
-  void set() {}
-
-}; // struct legion_future__
-
-template<>
-struct legion_future__<void>
-{
-
-  ///
-  //
-  ///
-  void wait()
-  {
-  } // wait
-
-}; // struct legion_future__
 
 } // namespace execution 
 } // namespace flecsi
