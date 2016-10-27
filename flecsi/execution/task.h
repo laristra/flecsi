@@ -74,13 +74,14 @@ struct task__
     uintptr_t address,
     processor_t processor,
     launch_t launch,
-    T user_task,
+    T user_task_handle,
     As ... args
   )
   {
     auto targs = std::make_tuple(args ...);
     return execution_policy_t::template execute_task<R>(
-      task_hash_t::make_key(address, processor,launch), user_task, targs);
+      task_hash_t::make_key(address, processor,launch),
+      user_task_handle, targs);
   } // execute
 
 }; // class task
@@ -102,22 +103,18 @@ using task_t = task__<flecsi_execution_policy_t>;
 template<typename R>
 using future__ = flecsi_execution_policy_t::future__<R>;
 
-// Static verification of future interface for type defined by
+// Static verification of public future interface for type defined by
 // execution policy.
 namespace verify_future {
 
 FLECSI_MEMBER_CHECKER(wait);
 FLECSI_MEMBER_CHECKER(get);
-FLECSI_MEMBER_CHECKER(set);
 
 static_assert(verify_future::has_member_wait<future__<double>>::value,
   "future type missing wait method");
 
 static_assert(verify_future::has_member_get<future__<double>>::value,
   "future type missing get method");
-
-static_assert(verify_future::has_member_set<future__<double>>::value,
-  "future type missing set method");
 
 } // namespace verify_future
 

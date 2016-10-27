@@ -109,11 +109,13 @@ struct executor__
   decltype(auto)
   execute(
     task_hash_key_t key,
-    T user_task,
+    T user_task_handle,
     A targs
   )
   {
-    R value = user_task(targs);
+    R value =
+      user_task_handle(context_t::instance().function(user_task_handle.key),
+        targs);
     serial_future__<R> f;
     f.set(value);
     return f;
@@ -139,11 +141,13 @@ struct executor__<R &>
   decltype(auto)
   execute(
     task_hash_key_t key,
-    T user_task,
+    T user_task_handle,
     A targs
   )
   {
-    R & value = user_task(targs);
+    R & value =
+      user_task_handle(context_t::instance().function(user_task_handle.key),
+        targs);
     serial_future__<R &> f;
     f.set(value);
     return f;
@@ -167,11 +171,12 @@ struct executor__<void>
   decltype(auto)
   execute(
     task_hash_key_t key,
-    T user_task,
+    T user_task_handle,
     A targs
   )
   {
-    user_task(targs);
+    user_task_handle(context_t::instance().function(user_task_handle.key),
+      targs);
     return serial_future__<void>();
   } // execute
 
@@ -221,7 +226,7 @@ struct serial_execution_policy_t
   // \tparam As The user task argument types.
   //
   // \param key
-  // \param user_task
+  // \param user_task_handle
   // \param args
   ///
   template<
@@ -233,11 +238,11 @@ struct serial_execution_policy_t
   decltype(auto)
   execute_task(
     task_hash_key_t key,
-    T user_task,
+    T user_task_handle,
     A args
   )
   {
-    return executor__<R>::execute(key, user_task, args);
+    return executor__<R>::execute(key, user_task_handle, args);
   } // execute_task
 
   //--------------------------------------------------------------------------//

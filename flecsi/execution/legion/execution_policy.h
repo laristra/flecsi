@@ -321,7 +321,7 @@ struct legion_execution_policy_t
   // \tparam FIXME: A
   //
   // \param key
-  // \param user_task
+  // \param user_task_handle
   // \param args
   ///
   template<
@@ -333,7 +333,7 @@ struct legion_execution_policy_t
   decltype(auto)
   execute_task(
     task_hash_key_t key,
-    T user_task,
+    T user_task_handle,
     A user_task_args
   )
   {
@@ -343,12 +343,10 @@ struct legion_execution_policy_t
 
     using task_args_t = legion_task_args__<R, A>;
 
-    std::cout << "control side user task: " << &user_task << std::endl;
-
     // We can't use std::forward or && references here because
     // the calling state is not guarunteed to exist when the
     // task is invoked, i.e., we have to use copies...
-    task_args_t task_args(user_task, user_task_args);
+    task_args_t task_args(user_task_handle, user_task_args);
 
     if(std::get<2>(key)==single) {
       TaskLauncher task_launcher(context_.task_id(key),

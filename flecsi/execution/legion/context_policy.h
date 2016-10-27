@@ -84,7 +84,9 @@ struct legion_context_policy_t
     const lr_regions_t & regions
   )
   {
-    state_.reset(new legion_runtime_state_t(context, runtime, task, regions));
+    std::cout << "Setting context state for: " << pthread_self() << std::endl;
+    state_[pthread_self()].reset(
+      new legion_runtime_state_t(context, runtime, task, regions));
   } // set_state
 
   //--------------------------------------------------------------------------//
@@ -165,10 +167,16 @@ struct legion_context_policy_t
   // Legion runtime accessors.
   //--------------------------------------------------------------------------//
 
-  lr_context_t & context() { return state_->context; }
-  lr_runtime_t * runtime() { return state_->runtime; }
-  const lr_task_t * task() { return state_->task; }
-  const lr_regions_t & regions() { return state_->regions; }
+  lr_context_t &
+  context()
+  {
+    std::cout << "Retrieving context for: " << pthread_self() << std::endl;
+    return state_[pthread_self()]->context;
+  } // context
+
+  lr_runtime_t * runtime() { return state_[pthread_self()]->runtime; }
+  const lr_task_t * task() { return state_[pthread_self()]->task; }
+  const lr_regions_t & regions() { return state_[pthread_self()]->regions; }
   
 private:
 
@@ -191,7 +199,8 @@ private:
 
   }; // struct legion_runtime_state_t
 
-  std::shared_ptr<legion_runtime_state_t> state_;
+  std::unordered_map<pthread_t,
+    std::shared_ptr<legion_runtime_state_t>> state_;
 
   //--------------------------------------------------------------------------//
   // Task registry

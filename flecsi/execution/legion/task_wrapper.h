@@ -8,6 +8,7 @@
 
 #include "flecsi/execution/context.h"
 #include "flecsi/utils/common.h"
+// FIXME
 //#include "flecsi/utils/tuple_filter.h"
 //#include "flecsi/utils/tuple_for_each.h"
 //#include "flecsi/utils/tuple_function.h"
@@ -33,13 +34,14 @@ template<
 >
 struct legion_task_args__
 {
-  using user_task_t = std::function<R(A)>;
+  using user_task_handle_t = function_handle__<R, A>;
   using user_task_args_t = A;
 
-  legion_task_args__(user_task_t & user_task_, user_task_args_t & user_args_)
-    : user_task(user_task_), user_args(user_args_) {}
+  legion_task_args__(user_task_handle_t & user_task_handle_,
+    user_task_args_t & user_args_)
+    : user_task_handle(user_task_handle_), user_args(user_args_) {}
 
-  user_task_t user_task;
+  user_task_handle_t user_task_handle;
   user_task_args_t user_args;
 }; // struct legion_task_args__
 
@@ -65,7 +67,7 @@ struct legion_task_wrapper_
   // Type definition for user task.
   //
   using task_args_t = legion_task_args__<R,A>;
-  using user_task_t = typename task_args_t::user_task_t;
+  using user_task_handle_t = typename task_args_t::user_task_handle_t;
   using user_task_args_t = typename task_args_t::user_task_args_t;
 
   //
@@ -89,14 +91,15 @@ struct legion_task_wrapper_
     LegionRuntime::HighLevel::HighLevelRuntime * runtime)
   {
     // Set the context for this execution thread
-    context_t::instance().set_state(context, runtime, task, regions);
+//    context_t::instance().set_state(context, runtime, task, regions);
 
     task_args_t & task_args = *(reinterpret_cast<task_args_t *>(task->args));
-    user_task_t & user_task = task_args.user_task;
+    user_task_handle_t & user_task_handle = task_args.user_task_handle;
     user_task_args_t & user_task_args = task_args.user_args;
 
-    std::cout << "executing user task: " << &user_task << std::endl;
-    return user_task(user_task_args);
+    return user_task_handle(
+      context_t::instance().function(user_task_handle.key),
+      user_task_args);
 #if 0
     // FIXME: Working on processing data handles
     // Somehow (???) we are going to have to interleave the processed

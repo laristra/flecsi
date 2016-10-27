@@ -114,7 +114,8 @@
   /* WARNING: This macro returns a future. Don't add terminations! */          \
   flecsi::execution::task_t::execute_task<task ## _trt_t>                      \
     (reinterpret_cast<uintptr_t>(&task), processor, mode,                      \
-    task ## _function_delegate, ## __VA_ARGS__)
+    function_handle__<task ## _trt_t, task ## _tat_t>(                         \
+      const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()), ## __VA_ARGS__)
 
 //----------------------------------------------------------------------------//
 // Kernel Interface
