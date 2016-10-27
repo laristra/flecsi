@@ -82,28 +82,34 @@ struct mpilegion_context_policy_t
       flecsi::dmp::init_partitions>(
       task_ids_t::instance().init_cell_partitions_task_id,lr_loc, true, false);
 
-    // FIXME
+   // FIXME
+    // This is Galen's hack to get partitioning working for the sprint
+    lr_runtime_t::register_legion_task<flecsi::dmp::fill_cells_global_task>(
+      task_ids_t::instance().init_cells_global_task_id,lr_loc, true, false);
+ 
+
+    // register connect_to_mpi_task from mpi_legion_interop_t class
     lr_runtime_t::register_legion_task<connect_to_mpi_task>(
       task_ids_t::instance().connect_mpi_task_id, lr_loc, false, true,
       AUTO_GENERATE_ID,
       LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
       "connect_to_mpi_task");
 
-    // FIXME
+    // register handoff_to_mpi_task from mpi_legion_interop_t class
     lr_runtime_t::register_legion_task<handoff_to_mpi_task>(
       task_ids_t::instance().handoff_to_mpi_task_id, lr_loc,
       false, true, AUTO_GENERATE_ID,
       LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
       "handoff_to_mpi_task");
 
-    // FIXME
+    // register wait_on_mpi_task from mpi_legion_interop_t class
     lr_runtime_t::register_legion_task<wait_on_mpi_task>(
       task_ids_t::instance().wait_on_mpi_task_id, lr_loc,
       false, true, AUTO_GENERATE_ID,
       LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
       "wait_on_mpi_task");
 
-		// FIXME
+		// register unset_call_mpi_task from mpi_legion_interop_t class
     lr_runtime_t::register_legion_task<unset_call_mpi_task>(
 			task_ids_t::instance().unset_call_mpi_id, lr_loc,
 			false, true, AUTO_GENERATE_ID,

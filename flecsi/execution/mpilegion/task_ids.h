@@ -59,6 +59,7 @@ class task_ids_t
   size_t init_cell_partitions_task_id= unique_fid_t::instance().next();
   size_t update_mappers_task_id=unique_fid_t::instance().next();
   size_t unset_call_mpi_id = unique_fid_t::instance().next();
+  size_t init_cells_global_task_id = unique_fid_t::instance().next();
 };//task_ids_t
 
 }//namespace execution

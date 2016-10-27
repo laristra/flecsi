@@ -28,9 +28,19 @@ struct parts {
 
 
 
-parts init_partitions(const Legion::Task *task, 
-                     const std::vector<Legion::PhysicalRegion> & regions,
-                     Legion::Context ctx, Legion::HighLevelRuntime *runtime);
+parts
+init_partitions(
+  const Legion::Task *task, 
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+);
+
+void
+fill_cells_global_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+);
 
 } // namespace dmp
 } // namespace flecsi
