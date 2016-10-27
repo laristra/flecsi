@@ -52,7 +52,16 @@ struct task__
   } // register_task
 
   ///
+  // Execute a registered task.
   //
+  // \tparam R The return type of the task.
+  // \tparam T FIXME: This needs to be a handle
+  // \tparam As The task arguments.
+  //
+  // \param address A unique identifier used to lookup the task
+  //                in the task registry.
+  // \param processor The processor type on which to execute the task.
+  // \param launch The launch mode for the task.
   ///
   template<
     typename R,

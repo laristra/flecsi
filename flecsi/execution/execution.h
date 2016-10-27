@@ -7,6 +7,8 @@
 #define flecsi_execution_h
 
 #include <functional>
+// FIXME
+#include <iostream>
 
 #include "flecsi/utils/common.h"
 #include "flecsi/execution/common/function_handle.h"
@@ -21,6 +23,70 @@
 ///
 
 //----------------------------------------------------------------------------//
+// Function Interface
+//----------------------------------------------------------------------------//
+
+///
+// This macro registers a user function with the FleCSI runtime, which may
+// then be passed as state data and executed in any task address space.
+//
+// \param name The function to register. This should be the plain-text
+//              name of the function (not a string).
+// \param return_type The function return type.
+// \param ... The signature of the function (arguments).
+///
+#define register_function(name)                                                \
+                                                                               \
+  /* Function return type (trt) */                                             \
+  using name ## _trt_t =                                                       \
+    typename flecsi::function_traits__<decltype(name)>::return_type;           \
+                                                                               \
+  /* Function arguments type (tat) */                                          \
+  using name ## _tat_t =                                                       \
+    typename flecsi::function_traits__<decltype(name)>::arguments_type;        \
+                                                                               \
+  /* Wrapper to call user function with tuple arguments */                     \
+  inline name ## _trt_t name ## _tuple_wrapper(name ## _tat_t && args) {       \
+    return flecsi::tuple_function(name, args);                                 \
+  } /* task ## _tuple_wrapper */                                               \
+                                                                               \
+  /* Make std::function delegate */                                            \
+  std::function<name ## _trt_t(name ## _tat_t)>                                \
+    name ## _function_delegate = name ## _tuple_wrapper;                       \
+                                                                               \
+  /* Define name handle type */                                                \
+  using function_handle_ ## name ## _t =                                       \
+    function_handle__<name ## _trt_t, name ## _tat_t>;                         \
+                                                                               \
+  /* Register the function delegate */                                         \
+  bool name ## _function_registered =                                          \
+    flecsi::execution::function_t::register_function<                          \
+      name ## _trt_t, name ## _tat_t>(                                         \
+      EXPAND_AND_STRINGIFY(name), name ## _function_delegate)
+
+///
+// Execute a user function.
+//
+// \param handle The function handle.
+// \param ... The function arguments.
+///
+#define execute_function(handle, ...)                                          \
+  flecsi::execution::function_t::execute_function(handle, ## __VA_ARGS__)
+
+///
+// FIXME
+///
+#define function_handle(name)                                                  \
+  function_handle_ ## name ## _t(                                              \
+    const_string_t{EXPAND_AND_STRINGIFY(name)}.hash())
+
+///
+// FIXME
+///
+#define define_function_type(name, return_type, ...)                          \
+  using name = function_handle__<return_type, std::tuple<__VA_ARGS__>>
+
+//----------------------------------------------------------------------------//
 // Task Interface
 //----------------------------------------------------------------------------//
 
@@ -31,26 +97,8 @@
 ///
 #define register_task(task, processor, mode)                                   \
                                                                                \
-  /* Task return type (trt) */                                                 \
-  using task ## _trt_t =                                                       \
-    typename flecsi::function_traits__<decltype(task)>::return_type;           \
-                                                                               \
-  /* Task arguments type (tat) */                                              \
-  using task ## _tat_t =                                                       \
-    typename flecsi::function_traits__<decltype(task)>::arguments_type;        \
-                                                                               \
-  /* Wrapper to call user task with tuple arguments */                         \
-  inline task ## _trt_t task ## _ttwrapper(task ## _tat_t && args) {           \
-    return flecsi::tuple_function(task, args);                                 \
-  } /* task ## _ttwrapper */                                                   \
-                                                                               \
-  /* Define user task delegate function type */                                \
-  using user_task_delegate_ ## task ## _t =                                    \
-    std::function<task ## _trt_t(task ## _tat_t)>;                             \
-                                                                               \
-  /* Create task delegate function */                                          \
-  user_task_delegate_ ## task ## _t task ## _task_delegate =                   \
-    task ## _ttwrapper;                                                        \
+  /* Register the user task in the function table */                           \
+  register_function(task);                                                     \
                                                                                \
   /* Register the user task */                                                 \
   bool task ## _task_registered =                                              \
@@ -66,7 +114,7 @@
   /* WARNING: This macro returns a future. Don't add terminations! */          \
   flecsi::execution::task_t::execute_task<task ## _trt_t>                      \
     (reinterpret_cast<uintptr_t>(&task), processor, mode,                      \
-    task ## _task_delegate, ## __VA_ARGS__)
+    task ## _function_delegate, ## __VA_ARGS__)
 
 //----------------------------------------------------------------------------//
 // Kernel Interface
@@ -84,70 +132,6 @@
 #define reduce_each(index_space, index, variable, kernel)                      \
   flecsi::execution::reduce_each__(index_space, variable,                      \
     [&](auto * index, auto & variable) kernel)
-
-//----------------------------------------------------------------------------//
-// Function Interface
-//----------------------------------------------------------------------------//
-
-///
-// This macro registers a user function with the FleCSI runtime, which may
-// then be passed as state data and executed in any task address space.
-//
-// \param fname The function to register. This should be the plain-text
-//              name of the function (not a string).
-// \param return_type The function return type.
-// \param ... The signature of the function (arguments).
-///
-#define register_function(fname)                                               \
-                                                                               \
-  /* Function return type (trt) */                                             \
-  using fname ## _trt_t =                                                      \
-    typename flecsi::function_traits__<decltype(fname)>::return_type;          \
-                                                                               \
-  /* Function arguments type (trt) */                                          \
-  using fname ## _tat_t =                                                      \
-    typename flecsi::function_traits__<decltype(fname)>::arguments_type;       \
-                                                                               \
-  /* Wrapper to call user function with tuple arguments */                     \
-  inline fname ## _trt_t fname ## _tfwrapper(fname ## _tat_t && args) {        \
-    return flecsi::tuple_function(fname, args);                                \
-  } /* task ## _tfwrapper */                                                   \
-                                                                               \
-  /* Make std::function delegate */                                            \
-  std::function<fname ## _trt_t(fname ## _tat_t)>                              \
-    fname ## _function_delegate = fname ## _tfwrapper;                         \
-                                                                               \
-  /* Define fname handle type */                                               \
-  using function_handle_ ## fname ## _t =                                      \
-    function_handle__<fname ## _trt_t, fname ## _tat_t>;                       \
-                                                                               \
-  /* Register the function delegate */                                         \
-  bool fname ## _function_registered =                                         \
-    flecsi::execution::function_t::register_function<                          \
-      fname ## _trt_t, fname ## _tat_t>(                                       \
-      EXPAND_AND_STRINGIFY(fname), fname ## _function_delegate)
-
-///
-// Execute a user function.
-//
-// \param handle The function handle.
-// \param ... The function arguments.
-///
-#define execute_function(handle, ...)                                         \
-  flecsi::execution::function_t::execute_function(handle, ## __VA_ARGS__)
-
-///
-// FIXME
-///
-#define function_handle(fname)                                                \
-  function_handle_ ## fname ## _t(                                            \
-    const_string_t{EXPAND_AND_STRINGIFY(fname)}.hash())
-
-///
-// FIXME
-///
-#define define_function_type(name, return_type, ...)                          \
-  using name = function_handle__<return_type, std::tuple<__VA_ARGS__>>
 
 #endif // flecsi_execution_h
 

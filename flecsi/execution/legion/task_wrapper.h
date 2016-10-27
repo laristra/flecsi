@@ -95,6 +95,7 @@ struct legion_task_wrapper_
     user_task_t & user_task = task_args.user_task;
     user_task_args_t & user_task_args = task_args.user_args;
 
+    std::cout << "executing user task: " << &user_task << std::endl;
     return user_task(user_task_args);
 #if 0
     // FIXME: Working on processing data handles

@@ -151,6 +151,9 @@ private:
 
 }; // struct legion_future_model__
 
+///
+// Explicit specialization for index launch FutureMap and void.
+///
 template<>
 struct legion_future_model__<void, LegionRuntime::HighLevel::FutureMap>
   : public legion_future_concept__<void>
@@ -172,6 +175,9 @@ private:
 
 }; // struct legion_future_model__
 
+///
+//
+///
 template<
   typename R
 >
@@ -182,6 +188,17 @@ struct legion_future__
   template<typename F>
   legion_future__(const F & future)
     : state_(new legion_future_model__<R, F>(future)) {}
+
+  legion_future__(const legion_future__ & lf)
+    : state_(lf.state_) {}
+
+  legion_future__ &
+  operator = (
+    const legion_future__ & lf
+  )
+  {
+    state_ = lf.state_;
+  } // operator =
 
   ///
   //
@@ -207,7 +224,7 @@ private:
   // Needed to satisfy static check.
   void set() {}
 
-  std::unique_ptr<legion_future_concept__<R>> state_;
+  std::shared_ptr<legion_future_concept__<R>> state_;
 
 }; // struct legion_future__
 
@@ -226,7 +243,7 @@ struct legion_future__<void>
   {
   } // wait
 
-  std::unique_ptr<legion_future_concept__<void>> state_;
+  std::shared_ptr<legion_future_concept__<void>> state_;
 
 }; // struct legion_future__
 
@@ -326,6 +343,8 @@ struct legion_execution_policy_t
 
     using task_args_t = legion_task_args__<R, A>;
 
+    std::cout << "control side user task: " << &user_task << std::endl;
+
     // We can't use std::forward or && references here because
     // the calling state is not guarunteed to exist when the
     // task is invoked, i.e., we have to use copies...
@@ -334,10 +353,15 @@ struct legion_execution_policy_t
     if(std::get<2>(key)==single) {
       TaskLauncher task_launcher(context_.task_id(key),
         TaskArgument(&task_args, sizeof(task_args_t)));
-      //auto future = context_.runtime()->execute_task(context_.context(),
-      //  task_launcher);
+#if 1
+      auto future = context_.runtime()->execute_task(context_.context(),
+        task_launcher);
+#else
       context_.runtime()->execute_task(context_.context(),
         task_launcher);
+#endif
+
+      R tmp = future.get_result<R>();
 
       //FIXME
       //return legion_future__<R>(future);
@@ -354,10 +378,13 @@ struct legion_execution_policy_t
         context_.task_id(key), launch_domain, TaskArgument(&task_args,
         sizeof(task_args_t)), arg_map);
 
-      //auto future = context_.runtime()->execute_index_space(context_.context(),
-      //  index_launcher);
+#if 1
+      auto future = context_.runtime()->execute_index_space(context_.context(),
+        index_launcher);
+#else
       context_.runtime()->execute_index_space(context_.context(),
         index_launcher);
+#endif
 
       //FIXME
       //return legion_future__<R>(future);
