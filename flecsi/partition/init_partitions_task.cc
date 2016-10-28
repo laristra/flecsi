@@ -225,12 +225,14 @@ fill_cells_global_task(
   legion_domain dom_cells_part = runtime->get_index_space_domain(ctx,
       task->regions[1].region.get_index_space());
   Rect<2> rect_cells_part = dom_cells_part.get_rect<2>();
-
+ 
+  int index =0;
   for (int i = rect_cells_glob.lo.x[0]; i<= rect_cells_glob.hi.x[0];i++){
     int proc_id= rect_cells_part.lo.x[0];
     int value = acc_cells_part.read (
-         domain_point::from_point<2>(make_point(proc_id,i)));
+        domain_point::from_point<2>(make_point(proc_id,index)));
     acc_cells_glob.write(domain_point::from_point<1>(make_point(i)), value);
+    index++;
   }
 
 }//end fill_cells_global_task
