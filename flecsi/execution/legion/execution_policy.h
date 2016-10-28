@@ -333,6 +333,7 @@ struct legion_execution_policy_t
   decltype(auto)
   execute_task(
     task_hash_key_t key,
+    size_t parent,
     T user_task_handle,
     A user_task_args
   )
@@ -351,19 +352,11 @@ struct legion_execution_policy_t
     if(std::get<2>(key)==single) {
       TaskLauncher task_launcher(context_.task_id(key),
         TaskArgument(&task_args, sizeof(task_args_t)));
-#if 1
-      auto future = context_.runtime()->execute_task(context_.context(),
-        task_launcher);
-#else
-      context_.runtime()->execute_task(context_.context(),
-        task_launcher);
-#endif
 
-      R tmp = future.get_result<R>();
+      auto future = context_.runtime(parent)->execute_task(
+        context_.context(parent), task_launcher);
 
-      //FIXME
-      //return legion_future__<R>(future);
-      return 0;
+      return legion_future__<R>(future);
     }
     else {
       //FIXME: get launch domain from partitioning of the data used in
@@ -376,17 +369,10 @@ struct legion_execution_policy_t
         context_.task_id(key), launch_domain, TaskArgument(&task_args,
         sizeof(task_args_t)), arg_map);
 
-#if 1
-      auto future = context_.runtime()->execute_index_space(context_.context(),
-        index_launcher);
-#else
-      context_.runtime()->execute_index_space(context_.context(),
-        index_launcher);
-#endif
+      auto future = context_.runtime(parent)->execute_index_space(
+        context_.context(parent), index_launcher);
 
-      //FIXME
-      //return legion_future__<R>(future);
-      return 0;
+      return legion_future__<R>(future);
     } //end if
 
   } // execute_task

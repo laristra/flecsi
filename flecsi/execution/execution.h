@@ -100,7 +100,7 @@
   /* Register the user task in the function table */                           \
   register_function(task);                                                     \
                                                                                \
-  /* Register the user task */                                                 \
+  /* Register the user task with the execution policy */                       \
   bool task ## _task_registered =                                              \
     flecsi::execution::task_t::register_task<task ## _trt_t, task ## _tat_t>   \
     (reinterpret_cast<uintptr_t>(&task), processor, mode)
@@ -114,6 +114,7 @@
   /* WARNING: This macro returns a future. Don't add terminations! */          \
   flecsi::execution::task_t::execute_task<task ## _trt_t>                      \
     (reinterpret_cast<uintptr_t>(&task), processor, mode,                      \
+    const_string_t{__func__}.hash(),                                           \
     function_handle__<task ## _trt_t, task ## _tat_t>(                         \
       const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()), ## __VA_ARGS__)
 

@@ -90,12 +90,13 @@ struct legion_task_wrapper_
     LegionRuntime::HighLevel::Context context,
     LegionRuntime::HighLevel::HighLevelRuntime * runtime)
   {
-    // Set the context for this execution thread
-//    context_t::instance().set_state(context, runtime, task, regions);
-
     task_args_t & task_args = *(reinterpret_cast<task_args_t *>(task->args));
     user_task_handle_t & user_task_handle = task_args.user_task_handle;
     user_task_args_t & user_task_args = task_args.user_args;
+
+    // Set the context for this execution thread
+    context_t::instance().set_state(user_task_handle.key,
+      context, runtime, task, regions);
 
     return user_task_handle(
       context_t::instance().function(user_task_handle.key),

@@ -74,13 +74,14 @@ struct task__
     uintptr_t address,
     processor_t processor,
     launch_t launch,
+    size_t parent,
     T user_task_handle,
     As ... args
   )
   {
     auto targs = std::make_tuple(args ...);
     return execution_policy_t::template execute_task<R>(
-      task_hash_t::make_key(address, processor,launch),
+      task_hash_t::make_key(address, processor,launch), parent,
       user_task_handle, targs);
   } // execute
 

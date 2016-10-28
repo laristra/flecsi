@@ -183,8 +183,6 @@ void driver(int argc, char ** argv) {
 
   mesh_t m;
 
-  std::cout << "wrapper task: " << &task1_function_delegate << std::endl;
-
   // FIXME: need this to come from get_handle
   auto p = register_data(m, hydro, pressure, double, dense, 1, cells);
   double alpha(10.0);
@@ -193,26 +191,13 @@ void driver(int argc, char ** argv) {
 //  execute_task(task1, mpi, index, alpha, 5);
 //#else
 
-#if 1
   auto future1 = execute_task(task1, loc, single, alpha, 5);
-  //std::cout << "future1.get(): " << future1.get() << std::endl;
-#else
-  execute_task(task1, loc, single, alpha, 5);
-#endif
 
-//#endif
+  future1.wait();
 
-  //future1.wait();
-
-#if 0
   auto future2 = execute_task(task2, loc, single, alpha, 5.0, p);
-#else
-  execute_task(task2, loc, single, alpha, 5.0, p);
-#endif
 
-  //std::cout << "future2.get(): " << future2.get() << std::endl;
-
-  //execute_task(task3, loc, index, 5.0);
+  execute_task(task3, loc, index, 5.0);
 
   register_data(m, hydro, materials, material_t, dense, 1, cells);
 
@@ -233,6 +218,9 @@ void driver(int argc, char ** argv) {
   for(size_t i(0); i<10; ++i) {
     std::cout << mats1[i].eos() << std::endl;
   } // for
+
+  std::cout << "future2.get(): " << future2.get() << std::endl;
+  std::cout << "future1.get(): " << future1.get() << std::endl;
 
 } // driver
 

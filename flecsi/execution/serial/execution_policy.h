@@ -238,6 +238,7 @@ struct serial_execution_policy_t
   decltype(auto)
   execute_task(
     task_hash_key_t key,
+    size_t parent,
     T user_task_handle,
     A args
   )
