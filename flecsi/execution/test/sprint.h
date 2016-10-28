@@ -35,6 +35,7 @@ enum
 FieldIDs {
   FID_CELL_PART,
   FID_GLOBAL_CELL,
+  FID_GHOST_CELL,
 };
 
   
@@ -367,11 +368,173 @@ driver(
   
   // Partition the cells based on the values
   // Partitioning for the exclusive cells
+  IndexPartition cells_exclusive_ip;
+  DomainColoring coloring_exclusive_cells;
 
+  index=0;
+  for (int i = 0; i < num_ranks; i++) {
+    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(
+          DomainPoint::from_point<2>(make_point(i,0)));
+    int num_elmts = received.exclusive;
+    assert((index+num_elmts) <= num_cells);
+    Rect<1> subrect(Point<1>(index),Point<1>(index+num_elmts-1));
+    coloring_exclusive_cells[i] = Domain::from_rect<1>(subrect);
+    index += num_elmts+received.shared;
+  }//end for
+
+  cells_exclusive_ip = context_.runtime()->create_index_partition(
+           context_.context(),
+           cells_is,
+           color_domain,
+           coloring_exclusive_cells,
+           true/*disjoint*/);
+
+  LogicalPartition cells_exclusive_lp =
+			context_.runtime()->get_logical_partition(
+           context_.context(), cells_lr, cells_exclusive_ip);
+  context_.runtime()->attach_name(cells_exclusive_lp, "cells_exclusive_lp");
 
   //  Partitioning for the shared cells
-  //  Partitioning for the ghosts cells
+  IndexPartition cells_shared_ip;
+  DomainColoring coloring_shared_cells;
 
+  index=0;
+  for (int i = 0; i < num_ranks; i++) {
+    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(
+          DomainPoint::from_point<2>(make_point(i,0)));
+    index +=received.exclusive;
+    int num_elmts = received.shared;
+    assert((index+num_elmts) <= num_cells);
+    Rect<1> subrect(Point<1>(index),Point<1>(index+num_elmts-1));
+    coloring_shared_cells[i] = Domain::from_rect<1>(subrect);
+    index += num_elmts;
+  }//end for
+
+  cells_shared_ip = context_.runtime()->create_index_partition(
+           context_.context(),
+           cells_is,
+           color_domain,
+           coloring_shared_cells,
+           true/*disjoint*/);
+
+  LogicalPartition cells_shared_lp = context_.runtime()->get_logical_partition(
+           context_.context(), cells_lr, cells_shared_ip);
+  context_.runtime()->attach_name(cells_shared_lp, "cells_shared_lp");
+
+  //  Partitioning for the ghosts cells
+  // halo ghosts is an std::vector of unstructured logical regions
+  std::vector<LogicalRegion> halos_points;
+
+#if 0
+  Coloring ghost_pts_map;
+  index =0;
+  for (int color = 0; color < num_ranks; color++) {
+    ghost_pts_map[color].points = std::set<ptr_t>(); // empty set
+    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(
+          DomainPoint::from_point<2>(make_point(color,0)));
+    //get subspace of the temporary cells Logical region
+    IndexSpace subspace =
+      context_.runtime()->get_index_subspace(context_.context(),
+              cells_temp_ip1d, color);
+      //call index task that finds all global IDs for each ghost element in 
+      //this rank;
+#endif
+#if 0
+//    Domain dom = runtime->get_index_space_domain(ctx, subspace);
+//    Rect<1> rect = dom.get_rect<1>(); 
+    index=received.exclusive+received.shared;
+    // for each element from ghost regions of subspace, search global-local
+    // id map for the the global if of this element
+    int id_found = 0;
+    for (int i = index; i<=index+received.ghost; i++)
+    {
+         //id_found =...
+         ghost_pts_map[color].points.insert(id_found);
+    }//end for
+#endif
+
+  //create ghost cells logical region
+  int num_ghost_cells = 0;
+  for (int i = 0; i < num_ranks; i++) {
+    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(
+        DomainPoint::from_point<2>(make_point(i,0)));
+    num_ghost_cells += received.ghost;
+  }//end for
+
+  Rect<1> elem_rect_ghost(Point<1>(0),Point<1>(num_ghost_cells-1));
+  IndexSpace ghost_cells_is = context_.runtime()->create_index_space(
+             context_.context(), Domain::from_rect<1>(elem_rect_ghost));
+  context_.runtime()->attach_name(ghost_cells_is, "ghost cells index space");
+
+  FieldSpace ghost_cells_fs =
+        context_.runtime()->create_field_space(context_.context());
+  {
+    FieldAllocator allocator =
+      context_.runtime()->create_field_allocator(context_.context(),
+             ghost_cells_fs);
+    allocator.allocate_field(sizeof(int),FID_GHOST_CELL);
+  }
+  context_.runtime()->attach_name(ghost_cells_fs, "ghost cells field space");
+
+  LogicalRegion ghost_cells_lr = context_.runtime()->create_logical_region(
+      context_.context(), ghost_cells_is , ghost_cells_fs);
+  context_.runtime()->attach_name(ghost_cells_lr,
+        "ghost cellslogical region");
+
+  //partition ghost cells logical region
+
+  IndexPartition ghost_cells_ip;
+  DomainColoring ghost_coloring_cells;
+
+  index=0;
+  for (int i = 0; i < num_ranks; i++) {
+    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(
+          DomainPoint::from_point<2>(make_point(i,0)));
+    int num_elmts = received.ghost;
+    assert((index+num_elmts) <= num_cells);
+    Rect<1> subrect(Point<1>(index),Point<1>(index+num_elmts-1));
+    ghost_coloring_cells[i] = Domain::from_rect<1>(subrect);
+    index += num_elmts;
+  }//end for
+
+  ghost_cells_ip = context_.runtime()->create_index_partition(
+           context_.context(),
+           ghost_cells_is,
+           color_domain,
+           ghost_coloring_cells,
+           true/*disjoint*/);
+
+  LogicalPartition ghost_cells_lp = context_.runtime()->get_logical_partition(
+           context_.context(), ghost_cells_lr, ghost_cells_ip);
+  context_.runtime()->attach_name(ghost_cells_lp, "ghost_cells_lp");
+ 
+
+  LegionRuntime::HighLevel::IndexLauncher find_ghost_ids_launcher(
+    task_ids_t::instance().find_ghost_task_id,
+    color_domain,
+    LegionRuntime::HighLevel::TaskArgument(0, 0),
+    arg_map);
+
+  find_ghost_ids_launcher.add_region_requirement(
+  RegionRequirement(ghost_cells_lp, 0/*projection ID*/,
+                       WRITE_DISCARD, EXCLUSIVE, ghost_cells_lr));
+  find_ghost_ids_launcher.add_field(0,FID_GHOST_CELL);
+
+  find_ghost_ids_launcher.add_region_requirement(
+  RegionRequirement(cells_lr, 0/*projection ID*/,
+                       READ_ONLY, EXCLUSIVE, cells_lr));
+  find_ghost_ids_launcher.add_field(1,FID_GLOBAL_CELL);
+
+  find_ghost_ids_launcher.add_region_requirement(
+    RegionRequirement(cells_temp_lp, 0,
+                      READ_ONLY, EXCLUSIVE, cell_temp_lr));
+  find_ghost_ids_launcher.region_requirements[2].add_field(FID_CELL_PART);
+
+  FutureMap fm_ghost = context_.runtime()->execute_index_space(
+             context_.context(), fill_cells_launcher);
+
+  fm_ghost.wait_all_results();
+   
   
   
   
