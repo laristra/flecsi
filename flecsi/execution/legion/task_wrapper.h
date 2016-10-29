@@ -90,6 +90,7 @@ struct legion_task_wrapper_
     LegionRuntime::HighLevel::Context context,
     LegionRuntime::HighLevel::HighLevelRuntime * runtime)
   {
+    // Unpack task arguments
     task_args_t & task_args = *(reinterpret_cast<task_args_t *>(task->args));
     user_task_handle_t & user_task_handle = task_args.user_task_handle;
     user_task_args_t & user_task_args = task_args.user_args;
@@ -98,9 +99,6 @@ struct legion_task_wrapper_
     context_t::instance().set_state(user_task_handle.key,
       context, runtime, task, regions);
 
-    return user_task_handle(
-      context_t::instance().function(user_task_handle.key),
-      user_task_args);
 #if 0
     // FIXME: Working on processing data handles
     // Somehow (???) we are going to have to interleave the processed
@@ -118,50 +116,17 @@ struct legion_task_wrapper_
     // Execute the user task
     return tuple_function(user_task, user_args);
 #endif
+
+    return user_task_handle(
+      context_t::instance().function(user_task_handle.key),
+      user_task_args);
   } // execute
 
 }; // class legion_task_wrapper_
 
-template<
-  processor_t P,
-  bool S,
-  bool I,
-  typename R,
-  typename A,
-  bool is_void = std::is_void<R>::value
->
-struct legion_task_registrar__
-{
-  using lr_runtime = LegionRuntime::HighLevel::HighLevelRuntime;
-  using lr_proc = LegionRuntime::HighLevel::Processor;
-  using task_id_t = LegionRuntime::HighLevel::TaskID;
-
-  ///
-  // This function is called by the context singleton to do the actual
-  // registration of the task wrapper with the Legion runtime. The structure
-  // of the logic used is really just an object factory pattern.
-  ///
-  static
-  void
-  register_task(
-    task_id_t tid
-  )
-  {
-    using wrapper_t = legion_task_wrapper_<P, S, I, R, A>;
-
-    switch(P) {
-      case loc:
-        lr_runtime::register_legion_task<wrapper_t::execute>(
-          tid, lr_proc::LOC_PROC, S, I);
-        break;
-      case toc:
-        lr_runtime::register_legion_task<wrapper_t::execute>(
-          tid, lr_proc::TOC_PROC, S, I);
-        break;
-    } // switch
-  } // register_task
-}; // legion_task_registrar__
-
+///
+//
+///
 template<
   processor_t P,
   bool S,
@@ -169,7 +134,7 @@ template<
   typename R,
   typename A
 >
-struct legion_task_registrar__<P, S, I, R, A, false>
+struct legion_task_registrar__
 {
   using lr_runtime = LegionRuntime::HighLevel::HighLevelRuntime;
   using lr_proc = LegionRuntime::HighLevel::Processor;
@@ -198,6 +163,47 @@ struct legion_task_registrar__<P, S, I, R, A, false>
           tid, lr_proc::TOC_PROC, S, I);
         break;
       case mpi:
+        break;
+    } // switch
+  } // register_task
+}; // legion_task_registrar__
+
+///
+// Partial specialization for void.
+///
+template<
+  processor_t P,
+  bool S,
+  bool I,
+  typename A
+>
+struct legion_task_registrar__<P, S, I, void, A>
+{
+  using lr_runtime = LegionRuntime::HighLevel::HighLevelRuntime;
+  using lr_proc = LegionRuntime::HighLevel::Processor;
+  using task_id_t = LegionRuntime::HighLevel::TaskID;
+
+  ///
+  // This function is called by the context singleton to do the actual
+  // registration of the task wrapper with the Legion runtime. The structure
+  // of the logic used is really just an object factory pattern.
+  ///
+  static
+  void
+  register_task(
+    task_id_t tid
+  )
+  {
+    using wrapper_t = legion_task_wrapper_<P, S, I, void, A>;
+
+    switch(P) {
+      case loc:
+        lr_runtime::register_legion_task<wrapper_t::execute>(
+          tid, lr_proc::LOC_PROC, S, I);
+        break;
+      case toc:
+        lr_runtime::register_legion_task<wrapper_t::execute>(
+          tid, lr_proc::TOC_PROC, S, I);
         break;
     } // switch
   } // register_task

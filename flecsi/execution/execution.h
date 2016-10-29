@@ -7,8 +7,6 @@
 #define flecsi_execution_h
 
 #include <functional>
-// FIXME
-#include <iostream>
 
 #include "flecsi/utils/common.h"
 #include "flecsi/execution/common/function_handle.h"
@@ -90,12 +88,14 @@
 // Task Interface
 //----------------------------------------------------------------------------//
 
-// FIXME: Finish Doxygen
-
 ///
+// This macro registers a user task with the FleCSI runtime.
 //
+// \param task
+// \param processor
+// \param launch
 ///
-#define register_task(task, processor, mode)                                   \
+#define register_task(task, processor, launch)                                 \
                                                                                \
   /* Register the user task in the function table */                           \
   register_function(task);                                                     \
@@ -103,17 +103,22 @@
   /* Register the user task with the execution policy */                       \
   bool task ## _task_registered =                                              \
     flecsi::execution::task_t::register_task<task ## _trt_t, task ## _tat_t>   \
-    (reinterpret_cast<uintptr_t>(&task), processor, mode)
+    (reinterpret_cast<uintptr_t>(&task), processor, launch)
 
 ///
+// This macro executes a user task.
 //
+// \param task The user task to execute.
+// \param processor The processor type on which to execute the task.
+// \param launch The launch mode for the task.
+// \param ... The arguments to pass to the user task during execution.
 ///
-#define execute_task(task, processor, mode, ...)                               \
+#define execute_task(task, processor, launch, ...)                             \
                                                                                \
   /* Execute the user task */                                                  \
   /* WARNING: This macro returns a future. Don't add terminations! */          \
   flecsi::execution::task_t::execute_task<task ## _trt_t>                      \
-    (reinterpret_cast<uintptr_t>(&task), processor, mode,                      \
+    (reinterpret_cast<uintptr_t>(&task), processor, launch,                    \
     const_string_t{__func__}.hash(),                                           \
     function_handle__<task ## _trt_t, task ## _tat_t>(                         \
       const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()), ## __VA_ARGS__)

@@ -153,8 +153,10 @@ struct legion_context_policy_t
     task_hash_key_t key
   )
   {
+#ifndef NDEBUG
     assert(task_registry_.find(key) != task_registry_.end() &&
       "task key does not exist!");
+#endif
 
     return task_registry_[key].first;
   } // task_id

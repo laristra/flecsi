@@ -36,7 +36,7 @@ namespace flecsi {
 namespace execution {
 
 //----------------------------------------------------------------------------//
-// Future.
+// Future concept.
 //----------------------------------------------------------------------------//
 
 ///
@@ -53,6 +53,9 @@ struct legion_future_concept__
   virtual R get(size_t index = 0) = 0;
 }; // struct legion_future_concept__
 
+///
+// Explicit specialization for void.
+///
 template<>
 struct legion_future_concept__<void>
 {
@@ -61,6 +64,9 @@ struct legion_future_concept__<void>
   virtual void wait() = 0;
 }; // struct legion_future_concept__
 
+//----------------------------------------------------------------------------//
+// Future model.
+//----------------------------------------------------------------------------//
 
 ///
 // Base future model type.
@@ -100,6 +106,9 @@ private:
 
 }; // struct legion_future_model__
 
+///
+// Partial specialization for void.
+///
 template<typename F>
 struct legion_future_model__<void, F>
   : public legion_future_concept__<void>
@@ -175,6 +184,10 @@ private:
 
 }; // struct legion_future_model__
 
+//----------------------------------------------------------------------------//
+// Future.
+//----------------------------------------------------------------------------//
+
 ///
 //
 ///
@@ -228,6 +241,9 @@ private:
 
 }; // struct legion_future__
 
+///
+// Explicit specialization for void.
+///
 template<>
 struct legion_future__<void>
 {

@@ -109,6 +109,7 @@ struct executor__
   decltype(auto)
   execute(
     task_hash_key_t key,
+    size_t parent,
     T user_task_handle,
     A targs
   )
@@ -141,6 +142,7 @@ struct executor__<R &>
   decltype(auto)
   execute(
     task_hash_key_t key,
+    size_t parent,
     T user_task_handle,
     A targs
   )
@@ -171,6 +173,7 @@ struct executor__<void>
   decltype(auto)
   execute(
     task_hash_key_t key,
+    size_t parent,
     T user_task_handle,
     A targs
   )
@@ -198,8 +201,6 @@ struct serial_execution_policy_t
   //--------------------------------------------------------------------------//
   // Task interface.
   //--------------------------------------------------------------------------//
-
-  // FIXME: Finish Doxygen
 
   ///
   // Serial task registration.
@@ -243,7 +244,7 @@ struct serial_execution_policy_t
     A args
   )
   {
-    return executor__<R>::execute(key, user_task_handle, args);
+    return executor__<R>::execute(key, parent, user_task_handle, args);
   } // execute_task
 
   //--------------------------------------------------------------------------//
