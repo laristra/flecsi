@@ -96,7 +96,7 @@ struct legion_task_wrapper_
     user_task_args_t & user_task_args = task_args.user_args;
 
     // Set the context for this execution thread
-    context_t::instance().set_state(user_task_handle.key,
+    context_t::instance().push_state(user_task_handle.key,
       context, runtime, task, regions);
 
 #if 0
@@ -117,9 +117,14 @@ struct legion_task_wrapper_
     return tuple_function(user_task, user_args);
 #endif
 
-    return user_task_handle(
+    auto retval = user_task_handle(
       context_t::instance().function(user_task_handle.key),
       user_task_args);
+
+    // Set the context for this execution thread
+    context_t::instance().pop_state(user_task_handle.key);
+    
+    return retval;
   } // execute
 
 }; // class legion_task_wrapper_

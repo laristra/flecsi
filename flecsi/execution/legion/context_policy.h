@@ -12,9 +12,11 @@
 // \date Initial file creation: Jul 14, 2016
 ///
 
-#include <memory>
 #include <functional>
+#include <memory>
 #include <unordered_map>
+#include <stack>
+
 #include <legion.h>
 
 #include "flecsi/utils/common.h"
@@ -59,7 +61,7 @@ struct legion_runtime_state_t {
 // as a key. This seems like it should be safe, since multiple concurrent
 // invocations of the same task can only occur on seperate threads.
 static thread_local std::unordered_map<size_t,
-  std::shared_ptr<legion_runtime_state_t>> state_;
+  std::stack<std::shared_ptr<legion_runtime_state_t>>> state_;
 
 ///
 // \class legion_context_policy_t legion/context_policy.h
@@ -104,6 +106,34 @@ struct legion_context_policy_t
     return HighLevelRuntime::start(argc, argv);
   } // initialize
 
+  void push_state(
+    size_t key,
+    LegionRuntime::HighLevel::Context & context,
+    LegionRuntime::HighLevel::HighLevelRuntime * runtime,
+    const LegionRuntime::HighLevel::Task * task,
+    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions
+  )
+  {
+    #ifndef NDEBUG
+      std::cout << "pushing state for " << key << std::endl;
+    #endif
+
+    state_[key].push(std::shared_ptr<legion_runtime_state_t>
+      (new legion_runtime_state_t(context, runtime, task, regions)));
+  } // set_state
+
+  void pop_state(
+    size_t key
+  )
+  {
+    #ifndef NDEBUG
+      std::cout << "popping state for " << key << std::endl;
+    #endif
+
+    state_[key].pop();
+  } // set_state
+
+#if 0
   ///
   // Reset the legion runtime state.
   ///
@@ -119,6 +149,7 @@ struct legion_context_policy_t
     state_[key].reset(
       new legion_runtime_state_t(context, runtime, task, regions));
   } // set_state
+#endif
 
   //--------------------------------------------------------------------------//
   // Task registraiton.
@@ -205,7 +236,7 @@ struct legion_context_policy_t
     size_t task_key
   )
   {
-    return state_[task_key]->context;
+    return state_[task_key].top()->context;
   } // context
 
   LegionRuntime::HighLevel::HighLevelRuntime *
@@ -213,7 +244,7 @@ struct legion_context_policy_t
     size_t task_key
   )
   {
-    return state_[task_key]->runtime;
+    return state_[task_key].top()->runtime;
   } // runtime
 
   const
@@ -222,7 +253,7 @@ struct legion_context_policy_t
     size_t task_key
   )
   {
-    return state_[task_key]->task;
+    return state_[task_key].top()->task;
   } // task
 
   const
@@ -231,7 +262,7 @@ struct legion_context_policy_t
     size_t task_key
   )
   {
-    return state_[task_key]->regions;
+    return state_[task_key].top()->regions;
   } // regions
   
 private:
