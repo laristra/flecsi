@@ -35,7 +35,7 @@ enum
 FieldIDs {
   FID_CELL_PART,
   FID_GLOBAL_CELL,
-  FID_GHOST_CELL,
+  FID_GHOST_CELL_ID,
 };
 
   
@@ -349,7 +349,7 @@ driver(
     RegionRequirement req(cells_lr, READ_WRITE, EXCLUSIVE, cells_lr);
     req.add_field(FID_GLOBAL_CELL);
   
-    std::cout << "Back in driver (TTL) and checking values in Sells GlobalLR"
+    std::cout << "Back in driver (TTL) and checking values in Cells GlobalLR"
        << std::endl;
     InlineLauncher cell_launcher(req);
     PhysicalRegion cell_region =
@@ -466,20 +466,20 @@ driver(
              context_.context(), Domain::from_rect<1>(elem_rect_ghost));
   context_.runtime()->attach_name(ghost_cells_is, "ghost cells index space");
 
-  FieldSpace ghost_cells_fs =
+  FieldSpace ghost_cells_id_fs =
         context_.runtime()->create_field_space(context_.context());
   {
     FieldAllocator allocator =
       context_.runtime()->create_field_allocator(context_.context(),
-             ghost_cells_fs);
-    allocator.allocate_field(sizeof(int),FID_GHOST_CELL);
+             ghost_cells_id_fs);
+    allocator.allocate_field(sizeof(int),FID_GHOST_CELL_ID);
   }
-  context_.runtime()->attach_name(ghost_cells_fs, "ghost cells field space");
+  context_.runtime()->attach_name(ghost_cells_id_fs, "ghost cells field space");
 
-  LogicalRegion ghost_cells_lr = context_.runtime()->create_logical_region(
-      context_.context(), ghost_cells_is , ghost_cells_fs);
-  context_.runtime()->attach_name(ghost_cells_lr,
-        "ghost cellslogical region");
+  LogicalRegion ghost_cells_id_lr = context_.runtime()->create_logical_region(
+      context_.context(), ghost_cells_is , ghost_cells_id_fs);
+  context_.runtime()->attach_name(ghost_cells_id_lr,
+        "ghost cells id logical region");
 
   //partition ghost cells logical region
 
@@ -492,7 +492,7 @@ driver(
           DomainPoint::from_point<2>(make_point(i,0)));
     int num_elmts = received.ghost;
     assert((index+num_elmts) <= num_cells);
-    Rect<1> subrect(Point<1>(index),Point<1>(index+num_elmts-1));
+    Rect<1> subrect(Point<1>(index),Point<1>(index+num_elmts));
     ghost_coloring_cells[i] = Domain::from_rect<1>(subrect);
     index += num_elmts;
   }//end for
@@ -504,10 +504,39 @@ driver(
            ghost_coloring_cells,
            true/*disjoint*/);
 
-  LogicalPartition ghost_cells_lp = context_.runtime()->get_logical_partition(
-           context_.context(), ghost_cells_lr, ghost_cells_ip);
-  context_.runtime()->attach_name(ghost_cells_lp, "ghost_cells_lp");
- 
+  LogicalPartition ghost_cells_id_lp =
+			context_.runtime()->get_logical_partition(
+           context_.context(), ghost_cells_id_lr, ghost_cells_ip);
+  context_.runtime()->attach_name(ghost_cells_id_lp, "ghost_cells_id_lp");
+
+  // next we create 1d partitioning of the cells_part_lr only for the ghost 
+  // regions (by the number of MPI processes)
+
+  IndexPartition cells_temp_ghost_ip;
+  DomainColoring coloring_cells_temp_ghost;
+
+  index=0;
+  for (int i = 0; i < num_ranks; i++) {
+    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(
+          DomainPoint::from_point<2>(make_point(i,0)));
+    int num_elmts = received.ghost;
+    index=received.shared+received.exclusive;
+    Rect<2> subrect(make_point(i,index),make_point(i,index+num_elmts));
+    coloring_cells_temp_ghost[i] = Domain::from_rect<2>(subrect);
+  }//end for
+
+  cells_temp_ghost_ip = context_.runtime()->create_index_partition(
+           context_.context(),
+           cells_temp_is,
+           color_domain,
+           coloring_cells_temp_ghost,
+           true/*disjoint*/);
+
+  LogicalPartition cells_temp_ghost_lp =
+    context_.runtime()->get_logical_partition(
+           context_.context(), cell_temp_lr, cells_temp_ghost_ip);
+  context_.runtime()->attach_name(cells_temp_ghost_lp, "cells_temp_ghost_lp");
+
 
   LegionRuntime::HighLevel::IndexLauncher find_ghost_ids_launcher(
     task_ids_t::instance().find_ghost_task_id,
@@ -516,9 +545,9 @@ driver(
     arg_map);
 
   find_ghost_ids_launcher.add_region_requirement(
-  RegionRequirement(ghost_cells_lp, 0/*projection ID*/,
-                       WRITE_DISCARD, EXCLUSIVE, ghost_cells_lr));
-  find_ghost_ids_launcher.add_field(0,FID_GHOST_CELL);
+  RegionRequirement(ghost_cells_id_lp, 0/*projection ID*/,
+                       WRITE_DISCARD, EXCLUSIVE, ghost_cells_id_lr));
+  find_ghost_ids_launcher.add_field(0,FID_GHOST_CELL_ID);
 
   find_ghost_ids_launcher.add_region_requirement(
   RegionRequirement(cells_lr, 0/*projection ID*/,
@@ -526,16 +555,38 @@ driver(
   find_ghost_ids_launcher.add_field(1,FID_GLOBAL_CELL);
 
   find_ghost_ids_launcher.add_region_requirement(
-    RegionRequirement(cells_temp_lp, 0,
+    RegionRequirement(cells_temp_ghost_lp, 0,
                       READ_ONLY, EXCLUSIVE, cell_temp_lr));
   find_ghost_ids_launcher.region_requirements[2].add_field(FID_CELL_PART);
 
   FutureMap fm_ghost = context_.runtime()->execute_index_space(
-             context_.context(), fill_cells_launcher);
+             context_.context(), find_ghost_ids_launcher);
 
   fm_ghost.wait_all_results();
-   
   
+  //printing results
+  { 
+    RegionRequirement req(ghost_cells_id_lr, READ_WRITE,
+				 EXCLUSIVE,ghost_cells_id_lr);
+    req.add_field(FID_GHOST_CELL_ID);
+    
+    std::cout << "Back in driver (TTL) and checking values in GHOST ID"
+       << std::endl;
+    InlineLauncher ghost_launcher(req);
+    PhysicalRegion ghost_region =
+      context_.runtime()->map_region(context_.context(), ghost_launcher);
+    ghost_region.wait_until_valid();
+    RegionAccessor<AccessorType::Generic, int> acc_ghost =
+      ghost_region.get_field_accessor(FID_GHOST_CELL_ID).typeify<int>();
+    
+    for (int i=0; i< num_ghost_cells; i++)
+    { 
+      int value =
+          acc_ghost.read(DomainPoint::from_point<1>(make_point(i)));
+      std::cout << "ghost_id[ " <<i<<" ] = " << value <<std::endl;
+    }//end for
+  }//end scope
+ 
   
   
 } // driver

@@ -245,6 +245,63 @@ find_ghost_task(
   Legion::Context ctx, Legion::HighLevelRuntime *runtime
 )
 {
+  assert(regions.size() == 3);
+  assert(task->regions.size() == 3);
+  assert(task->regions[0].privilege_fields.size() == 1);
+  assert(task->regions[1].privilege_fields.size() == 1);
+  assert(task->regions[2].privilege_fields.size() == 1);
+  std::cout << "Inside of the fill_ghost_id_task" << std::endl;
+
+  using field_id = LegionRuntime::HighLevel::FieldID;
+  using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
+  using legion_domain = LegionRuntime::HighLevel::Domain;
+  using domain_point = LegionRuntime::HighLevel::DomainPoint;
+
+  field_id fid_ghost = *(task->regions[0].privilege_fields.begin());
+  LegionRuntime::Accessor::RegionAccessor<generic_type, int>
+    acc_ghost=
+    regions[0].get_field_accessor(fid_ghost).typeify<int>();
+  legion_domain dom_ghost = runtime->get_index_space_domain(ctx,
+      task->regions[0].region.get_index_space());
+  Rect<1> rect_ghost = dom_ghost.get_rect<1>();
+
+  field_id fid_cells_glob = *(task->regions[1].privilege_fields.begin());
+  LegionRuntime::Accessor::RegionAccessor<generic_type, int>
+    acc_cells_glob=
+    regions[1].get_field_accessor(fid_cells_glob).typeify<int>();
+  legion_domain dom_cells_glob = runtime->get_index_space_domain(ctx,
+      task->regions[1].region.get_index_space());
+  Rect<1> rect_cells_glob = dom_cells_glob.get_rect<1>();
+ 
+  field_id fid_cells_tmp = *(task->regions[2].privilege_fields.begin());
+  LegionRuntime::Accessor::RegionAccessor<generic_type, int>
+    acc_cells_tmp=
+    regions[2].get_field_accessor(fid_cells_tmp).typeify<int>();
+  legion_domain dom_cells_tmp = runtime->get_index_space_domain(ctx,
+      task->regions[2].region.get_index_space());
+  Rect<2> rect_cells_tmp = dom_cells_tmp.get_rect<2>();
+
+  int index =0;
+  assert ((rect_ghost.hi.x[0]-rect_ghost.lo.x[0])
+      ==(rect_cells_tmp.hi.x[1]-rect_cells_tmp.lo.x[1]));
+  for (int i = rect_ghost.lo.x[0]; i< rect_ghost.hi.x[0];i++){
+    int j=rect_cells_tmp.lo.x[1]+index;
+    int proc_id= rect_cells_tmp.lo.x[0];
+    //get ghost value
+    int ghost_value = acc_cells_tmp.read (
+        domain_point::from_point<2>(make_point(proc_id,j)));
+    //search in cells_global for this falue and store id in acc_ghost(i)
+    for(int k=rect_cells_glob.lo.x[0]; k<= rect_cells_glob.hi.x[0]; k++){
+      int cells_value = acc_cells_glob.read (
+        domain_point::from_point<1>(make_point(k)));
+      if ( cells_value==ghost_value)
+      {
+        acc_ghost.write(domain_point::from_point<1>(make_point(i)), k);
+        abort;
+      }//end if
+    }//end for
+    index++;     
+  }//end for
 
 }
 
