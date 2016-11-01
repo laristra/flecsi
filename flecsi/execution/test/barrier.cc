@@ -149,7 +149,8 @@ void top_level_task(const Task* task,
   auto start1 = runtime->create_phase_barrier(ctx, 1);
   auto start2 = runtime->create_phase_barrier(ctx, 1);
   
-  //runtime->advance_phase_barrier(ctx, start1);
+  //start1.arrive();
+  runtime->advance_phase_barrier(ctx, start1);
   runtime->advance_phase_barrier(ctx, start2);
 
   test_args args1;
@@ -185,8 +186,8 @@ void test1_task(const Task* task,
   test_args* args = (test_args*)task->args;
   np(args->ts);
   args->start1.wait();
-  args->start2.arrive();
   runtime->advance_phase_barrier(ctx, args->start2);
+  //args->start2.arrive();
 }
 
 void test2_task(const Task* task,
@@ -195,8 +196,8 @@ void test2_task(const Task* task,
   test_args* args = (test_args*)task->args;
   np(args->ts);
   args->start2.wait();
-  args->start1.arrive();
   runtime->advance_phase_barrier(ctx, args->start1);
+  //args->start1.arrive();
 }
 
 TEST(legion, test1) {
