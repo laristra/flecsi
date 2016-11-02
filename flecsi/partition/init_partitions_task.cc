@@ -238,7 +238,7 @@ fill_cells_global_task(
 }//end fill_cells_global_task
 
 
-void
+std::vector<ptr_t>
 find_ghost_task(
   const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,
@@ -251,6 +251,8 @@ find_ghost_task(
   assert(task->regions[1].privilege_fields.size() == 1);
   assert(task->regions[2].privilege_fields.size() == 1);
   std::cout << "Inside of the fill_ghost_id_task" << std::endl;
+
+  std::vector<ptr_t> ghost_pointers;
 
   using field_id = LegionRuntime::HighLevel::FieldID;
   using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
@@ -284,6 +286,8 @@ find_ghost_task(
   int index =0;
   assert ((rect_ghost.hi.x[0]-rect_ghost.lo.x[0])
       ==(rect_cells_tmp.hi.x[1]-rect_cells_tmp.lo.x[1]));
+
+//use index iterator instead of GenericPointIterator
   for (int i = rect_ghost.lo.x[0]; i< rect_ghost.hi.x[0];i++){
     int j=rect_cells_tmp.lo.x[1]+index;
     int proc_id= rect_cells_tmp.lo.x[0];
@@ -291,20 +295,22 @@ find_ghost_task(
     int ghost_value = acc_cells_tmp.read (
         domain_point::from_point<2>(make_point(proc_id,j)));
     //search in cells_global for this falue and store id in acc_ghost(i)
-    for(int k=rect_cells_glob.lo.x[0]; k<= rect_cells_glob.hi.x[0]; k++){
+    for(GenericPointInRectIterator<1> pir(rect_cells_glob); pir; pir++){
+//      ptr_t ghost_ptr = itr.next();
       int cells_value = acc_cells_glob.read (
-        domain_point::from_point<1>(make_point(k)));
+        domain_point::from_point<1>(pir.p));
       if ( cells_value==ghost_value)
       {
-        acc_ghost.write(domain_point::from_point<1>(make_point(i)), k);
+        acc_ghost.write(domain_point::from_point<1>(make_point(i)), pir.p);
+//        ghost_pointers.push_back(ghost_ptr);
         abort;
       }//end if
     }//end for
     index++;     
   }//end for
-
+ 
+ return ghost_pointers;
 }
-
 
 
 } // namespace dmp

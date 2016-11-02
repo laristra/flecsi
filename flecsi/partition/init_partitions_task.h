@@ -42,7 +42,7 @@ fill_cells_global_task(
   Legion::Context ctx, Legion::HighLevelRuntime *runtime
 );
 
-void
+std::vector<ptr_t>
 find_ghost_task(
   const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,

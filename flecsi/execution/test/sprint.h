@@ -240,6 +240,8 @@ driver(
   
     std::cout << "partition has " << zeros << " zeros " << non_zeros <<
                 " non zeros " << std::endl;
+
+    context_.runtime()->unmap_region(context_.context(), cell_temp_region);
   }//scope
   
   //Creating Global Cells Logical Region
@@ -344,6 +346,7 @@ driver(
 
   fm_cells.wait_all_results();
 
+#if 1
   //printing results
   {
     RegionRequirement req(cells_lr, READ_WRITE, EXCLUSIVE, cells_lr);
@@ -364,7 +367,9 @@ driver(
           acc_cell.read(DomainPoint::from_point<1>(make_point(i)));
       std::cout << "cells_global[ " <<i<<" ] = " << value <<std::endl;
     }//end for
-  }
+   context_.runtime()->unmap_region(context_.context(), cell_region);
+  }//end scope
+#endif
   
   // Partition the cells based on the values
   // Partitioning for the exclusive cells
@@ -393,6 +398,7 @@ driver(
 			context_.runtime()->get_logical_partition(
            context_.context(), cells_lr, cells_exclusive_ip);
   context_.runtime()->attach_name(cells_exclusive_lp, "cells_exclusive_lp");
+
 
   //  Partitioning for the shared cells
   IndexPartition cells_shared_ip;
@@ -423,36 +429,6 @@ driver(
 
   //  Partitioning for the ghosts cells
   // halo ghosts is an std::vector of unstructured logical regions
-  std::vector<LogicalRegion> halos_points;
-
-#if 0
-  Coloring ghost_pts_map;
-  index =0;
-  for (int color = 0; color < num_ranks; color++) {
-    ghost_pts_map[color].points = std::set<ptr_t>(); // empty set
-    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(
-          DomainPoint::from_point<2>(make_point(color,0)));
-    //get subspace of the temporary cells Logical region
-    IndexSpace subspace =
-      context_.runtime()->get_index_subspace(context_.context(),
-              cells_temp_ip1d, color);
-      //call index task that finds all global IDs for each ghost element in 
-      //this rank;
-#endif
-#if 0
-//    Domain dom = runtime->get_index_space_domain(ctx, subspace);
-//    Rect<1> rect = dom.get_rect<1>(); 
-    index=received.exclusive+received.shared;
-    // for each element from ghost regions of subspace, search global-local
-    // id map for the the global if of this element
-    int id_found = 0;
-    for (int i = index; i<=index+received.ghost; i++)
-    {
-         //id_found =...
-         ghost_pts_map[color].points.insert(id_found);
-    }//end for
-#endif
-
   //create ghost cells logical region
   int num_ghost_cells = 0;
   for (int i = 0; i < num_ranks; i++) {
@@ -537,7 +513,7 @@ driver(
            context_.context(), cell_temp_lr, cells_temp_ghost_ip);
   context_.runtime()->attach_name(cells_temp_ghost_lp, "cells_temp_ghost_lp");
 
-
+   std::vector<ptr_t>  ghost_to_cell_node_ptrs(num_ghost_cells);
   LegionRuntime::HighLevel::IndexLauncher find_ghost_ids_launcher(
     task_ids_t::instance().find_ghost_task_id,
     color_domain,
@@ -563,7 +539,18 @@ driver(
              context_.context(), find_ghost_ids_launcher);
 
   fm_ghost.wait_all_results();
-  
+
+  for (int i = 0; i < num_ranks; i++) {
+    // assempling all local std::vector<ptr_t>ghost_pts arrays into
+    // the global one
+    std::vector<Point<1>>  received = fm.get_result<std::vector<Point<1>> >(
+                           DomainPoint::from_point<1>(make_point(i)));
+//    for (int j=0; j<received.size(); j++)
+//TOFIX :: doesn't work with current IndexSpace
+//       ghost_to_cell_node_ptrs.push_back(received[j]);
+  }
+ 
+#if 1
   //printing results
   { 
     RegionRequirement req(ghost_cells_id_lr, READ_WRITE,
@@ -578,17 +565,45 @@ driver(
     ghost_region.wait_until_valid();
     RegionAccessor<AccessorType::Generic, int> acc_ghost =
       ghost_region.get_field_accessor(FID_GHOST_CELL_ID).typeify<int>();
-    
+
     for (int i=0; i< num_ghost_cells; i++)
     { 
       int value =
           acc_ghost.read(DomainPoint::from_point<1>(make_point(i)));
       std::cout << "ghost_id[ " <<i<<" ] = " << value <<std::endl;
     }//end for
+  context_.runtime()->unmap_region(context_.context(), ghost_region);
   }//end scope
- 
-  
-  
+#endif 
+
+  //creating ghost partitioning for the cells_lr logical region
+//TOFIX : these will work only with the unstructured index Space
+/*  Coloring ghost_pts_map;
+  index=0;
+  for (int color = 0; color < num_ranks; color++) {
+    ghost_pts_map[color].points = std::set<ptr_t >(); // empty set
+    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(
+          DomainPoint::from_point<2>(make_point(color,0)));
+    int num_elmts = received.ghost;
+      for (int i=index; i <index+num_elmts; i++){
+        ghost_pts_map[color].points.insert(ghost_to_cell_node_ptrs[i]);
+      } //end for
+    index=index+num_elmts;
+  }//end for
+
+  cells_ghost_ip = context_.runtime()->create_index_partition(
+           context_.context(),
+           cells_is,
+           ghost_pts_map,
+           true);
+std::cout << "DEBUG7 " <<std::endl;
+  LogicalPartition cells_ghost_lp =
+      context_.runtime()->get_logical_partition(
+           context_.context(), cells_lr, cells_ghost_ip);
+std::cout << "DEBUG8 " <<std::endl;
+  context_.runtime()->attach_name(cells_ghost_lp, "cells_ghost_lp");
+*/  
+
 } // driver
 
 } // namespace execution
