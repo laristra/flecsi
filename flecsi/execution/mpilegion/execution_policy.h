@@ -19,11 +19,11 @@
 
 #include "flecsi/utils/const_string.h"
 #include "flecsi/execution/context.h"
-//#include "flecsi/execution/future.h"
+#include "flecsi/execution/legion/future.h"
 #include "flecsi/execution/common/processor.h"
 #include "flecsi/execution/common/task_hash.h"
 #include "flecsi/execution/mpilegion/context_policy.h"
-#include "flecsi/execution/mpilegion/task_wrapper.h"
+#include "flecsi/execution/legion/task_wrapper.h"
 
 /*!
  * \file mpilegion/execution_policy.h
@@ -34,21 +34,24 @@
 namespace flecsi {
 namespace execution {
 
-/*!
-  \struct mpilegion_execution_policy mpilegion/execution_policy.h
-  \brief mpilegion_execution_policy provides...
- */
+//----------------------------------------------------------------------------//
+// Execution policy.
+//----------------------------------------------------------------------------//
+
+///
+// \struct mpilegion_execution_policy mpilegion/execution_policy.h
+// \brief mpilegion_execution_policy provides...
+///
 struct mpilegion_execution_policy_t
 {
+  template<typename R>
+  using future__ = legion_future__<R>;
 
   /*--------------------------------------------------------------------------*
    * Task interface.
    *--------------------------------------------------------------------------*/
 
-  /*
-    To add:
-      task type (leaf, inner, etc...)
-   */
+  // FIXME: add task type (leaf, inner, etc...)
   template<
     typename R,
     typename A
@@ -59,122 +62,170 @@ struct mpilegion_execution_policy_t
     task_hash_key_t key
   )
   {
- 
-    switch(std::get<1>(key)) {
+
+    switch(key.processor()) {
+
       case loc:
-        if (std::get<2>(key) == single)
+      {
+        switch(key.launch()) {
+
+          case single:
+          {
           return context_t::instance().register_task(key,
-            mpilegion_task_registrar__<loc, 1, 0, R, A>::register_task);
-        if (std::get<2>(key) == index)
+            legion_task_wrapper__<loc, 1, 0, R, A>::register_task);
+          } // case single
+
+          case index:
+          {
           return context_t::instance().register_task(key,
-            mpilegion_task_registrar__<loc, 0, 1, R, A>::register_task);
-        if (std::get<2>(key) == any)
+            legion_task_wrapper__<loc, 0, 1, R, A>::register_task);
+          } // case single
+
+          case any:
+          {
           return context_t::instance().register_task(key,
-            mpilegion_task_registrar__<loc, 1, 1, R, A>::register_task);
-        break;
+            legion_task_wrapper__<loc, 1, 1, R, A>::register_task);
+          } // case single
+
+        } // switch
+      } // case loc
+
       case toc:
-        if (std::get<2>(key) == single)
+      {
+        switch(key.launch()) {
+
+          case single:
+          {
           return context_t::instance().register_task(key,
-            mpilegion_task_registrar__<toc, 1, 0, R, A>::register_task);
-        if (std::get<2>(key) == index)
+            legion_task_wrapper__<toc, 1, 0, R, A>::register_task);
+          } // case single
+
+          case index:
+          {
           return context_t::instance().register_task(key,
-            mpilegion_task_registrar__<toc, 0, 1, R, A>::register_task);
-        if (std::get<2>(key) == any)
+            legion_task_wrapper__<toc, 0, 1, R, A>::register_task);
+          } // case single
+
+          case any:
+          {
           return context_t::instance().register_task(key,
-            mpilegion_task_registrar__<toc, 1, 1, R, A>::register_task);
-        break;
+            legion_task_wrapper__<toc, 1, 1, R, A>::register_task);
+          } // case single
+
+        } // switch
+      } // case toc
+
       case mpi:
-       //when MPI we register task to perform Legion->MPI function 
-       // pointer communication
-       return context_t::instance().register_task(key,
-         mpilegion_task_registrar__<mpi, 0, 1, R, A>::register_task);
-      break;
-      default: throw std::runtime_error("unsupported processor type");
+      {
+        return context_t::instance().register_task(key,
+          legion_task_wrapper__<mpi, 0, 1, R, A>::register_task);
+      } // case mpi
+
+      default:
+        throw std::runtime_error("unsupported processor type");
     } // switch
+ 
   } // register_task
 
   template<
     typename R,
     typename T,
-    typename ... As
+    typename A
   >
   static
   decltype(auto)
   execute_task(
     task_hash_key_t key,
-    T user_task,
-    As ... args
+    size_t parent,
+    T user_task_handle,
+    A user_task_args
   )
   {
     using namespace Legion;
 
     context_t & context_ = context_t::instance();
 
-    using task_args_t = mpilegion_task_args__<R, std::tuple<As ...>>;
-
-    auto user_task_args = std::make_tuple(args ...);
+    using task_args_t = legion_task_args__<R, A>;
 
     // We can't use std::forward or && references here because
     // the calling state is not guarunteed to exist when the
     // task is invoked, i.e., we have to use copies...
-    task_args_t task_args(user_task, user_task_args);
- 
-    if(std::get<1>(key) == mpi) {
+    task_args_t task_args(user_task_handle, user_task_args);
 
-      //executing Legion task that pass function pointer and 
-      // it's arguments to every MPI thread
+    if(key.processor() == mpi) {
+
+      // Executing Legion task that pass function pointer and 
+      // its arguments to every MPI thread
       LegionRuntime::HighLevel::ArgumentMap arg_map;
+
       LegionRuntime::HighLevel::IndexLauncher index_launcher(
-          context_.task_id(key),
+        context_.task_id(key),
+
       LegionRuntime::HighLevel::Domain::from_rect<2>(
-                    context_.interop_helper_.all_processes_),
-      TaskArgument(&task_args, sizeof(task_args_t)),
-          arg_map);
+        context_.interop_helper_.all_processes_),
+        TaskArgument(&task_args, sizeof(task_args_t)), arg_map);
+
       index_launcher.tag = MAPPER_ALL_PROC;
-      LegionRuntime::HighLevel::FutureMap fm1=
-              context_.runtime()->execute_index_space(context_.context(),
-                            index_launcher);
+
+      LegionRuntime::HighLevel::FutureMap fm1 =
+        context_.runtime(parent)->execute_index_space(context_.context(parent),
+        index_launcher);
+
       fm1.wait_all_results();
 
-      context_.interop_helper_.handoff_to_mpi(context_.context(),
-         context_.runtime());
-      //mpi task is running here
+      context_.interop_helper_.handoff_to_mpi(context_.context(parent),
+         context_.runtime(parent));
+
+// mpi task is running here
+//
 //      flecsi::execution::future_t future = 
-         context_.interop_helper_.wait_on_mpi(context_.context(),
-                            context_.runtime());
+
+      context_.interop_helper_.wait_on_mpi(context_.context(parent),
+        context_.runtime(parent));
+
     //TOFIX: these flag should be switch iside of the index task
     //as below
-      ext_legion_handshake_t::instance().call_mpi_=false; 
+
+      ext_legion_handshake_t::instance().call_mpi_ = false; 
+
      //context_.interop_helper_.unset_call_mpi(context_.context(),
       //                      context_.runtime());
    
       return 0;
     }
     else {
-      if(std::get<2>(key) == single){
-        TaskLauncher task_launcher(context_.task_id(key),
-          TaskArgument(&task_args, sizeof(task_args_t)));
-//        flecsi::execution::future_t future=
-          context_.runtime()->execute_task(context_.context(),task_launcher);
-        return 0;
-      }
-      else{
-    //FIXME: get launch domain from partitioning of the data used in the task
-    //    currently we use launch domain from interop_helper.
 
-        LegionRuntime::HighLevel::ArgumentMap arg_map;
-        LegionRuntime::HighLevel::IndexLauncher index_launcher(
-          context_.task_id(key),
-          LegionRuntime::HighLevel::Domain::from_rect<2>(
-                    context_.interop_helper_.all_processes_),
-          TaskArgument(&task_args, sizeof(task_args_t)),
-          arg_map);
-          index_launcher.tag = MAPPER_ALL_PROC;
-//          flecsi::execution::future_t future= 
-              context_.runtime()->execute_index_space(context_.context(),
-                            index_launcher);
+      switch(key.launch()) {
+
+        case single:
+        {
+          TaskLauncher task_launcher(context_.task_id(key),
+            TaskArgument(&task_args, sizeof(task_args_t)));
+
+          auto future = context_.runtime(parent)->execute_task(
+            context_.context(parent), task_launcher);
+          //return legion_future__<R>(future);
           return 0;
-       }//end if std::get<2>(key)
+        } // single
+
+        case index:
+        {
+          LegionRuntime::HighLevel::ArgumentMap arg_map;
+          LegionRuntime::HighLevel::IndexLauncher index_launcher(
+            context_.task_id(key),
+            LegionRuntime::HighLevel::Domain::from_rect<2>(
+              context_.interop_helper_.all_processes_),
+            TaskArgument(&task_args, sizeof(task_args_t)), arg_map);
+
+          index_launcher.tag = MAPPER_ALL_PROC;
+
+          auto future = context_.runtime(parent)->execute_index_space(
+            context_.context(parent), index_launcher);
+
+          return 0;
+        } // index
+
+      } // switch
     } // if
   } // execute_task
 

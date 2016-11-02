@@ -21,6 +21,62 @@ namespace flecsi {
 namespace execution {
 
 ///
+// This type extends std::tuple with human-readable names for our key type.
+//
+// The uintptr_t is the address of the task.
+// The processor_t is the processor type of the task.
+// The launch_t is the launch type of the task.
+///
+struct task_hash_key_t
+  : public std::tuple<uintptr_t, processor_t, launch_t>
+{
+  using tuple_key_t = std::tuple<uintptr_t, processor_t, launch_t>;
+
+  task_hash_key_t(const tuple_key_t & key)
+    : tuple_key_t(key) {}
+
+  ///
+  // Return the task address stored in the key.
+  //
+  // \note This is not a valid handle for executing the task and is
+  //       only used as an identifier for map lookups.
+  //
+  // \return uintptr_t & containing the address of the task.
+  ///
+  const
+  uintptr_t &
+  address() const
+  {
+    return std::get<0>(*this);
+  } // address
+
+  ///
+  // Return the task processor type.
+  //
+  // \return processor_t The processor type for this task.
+  ///
+  const
+  processor_t
+  processor() const
+  {
+    return std::get<1>(*this);
+  } // processor
+
+  ///
+  // Return the task launch type.
+  //
+  // \return launch_t The launch type for this task.
+  ///
+  const
+  launch_t
+  launch() const
+  {
+    return std::get<2>(*this);
+  } // launch
+
+}; // struct task_hash_key_t
+
+///
 // \struct task_hash_t execution/common/task_hash.h
 //
 // The task_hash_t type provides a aggregate hashing type that combines
@@ -35,7 +91,7 @@ namespace execution {
 ///
 struct task_hash_t
 {
-  using key_t = std::tuple<uintptr_t, processor_t, launch_t>;
+  using key_t = task_hash_key_t::tuple_key_t;
 
   ///
   // Make a key from a task address (uintptr_t) and a processor type.
@@ -43,7 +99,7 @@ struct task_hash_t
   // \return a std::pair<uintptr_t, processor_t>.
   ///
   static
-  key_t
+  task_hash_key_t
   make_key(
     uintptr_t address,
     processor_t processor,
@@ -67,17 +123,16 @@ struct task_hash_t
   ///
   std::size_t
   operator () (
-    const key_t & k
+    const task_hash_key_t & key
   )
   const
   {
     // FIXME: We may be able to use a better hash strategy
-    return (std::get<0>(k) << 8) ^ (std::get<1>(k) << 4) ^ std::get<2>(k);
+    //return (std::get<0>(k) << 8) ^ (std::get<1>(k) << 4) ^ std::get<2>(k);
+    return (key.address() << 8) ^ (key.processor() << 4) ^ key.launch();
   } // operator ()
 
 }; // task_hash_t
-
-using task_hash_key_t = task_hash_t::key_t;
 
 } // namespace execution
 } // namespace flecsi

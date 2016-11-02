@@ -18,13 +18,15 @@
 #include <functional>
 #include <memory>
 
-#include "flecsi/utils/const_string.h"
-#include "flecsi/execution/context.h"
+#include <legion.h>
+
 #include "flecsi/execution/common/processor.h"
 #include "flecsi/execution/common/task_hash.h"
+#include "flecsi/execution/context.h"
 #include "flecsi/execution/legion/context_policy.h"
+#include "flecsi/execution/legion/future.h"
 #include "flecsi/execution/legion/task_wrapper.h"
-#include "flecsi/utils/any.h"
+#include "flecsi/utils/const_string.h"
 
 ///
 // \file legion/execution_policy.h
@@ -34,234 +36,6 @@
 
 namespace flecsi {
 namespace execution {
-
-//----------------------------------------------------------------------------//
-// Future concept.
-//----------------------------------------------------------------------------//
-
-///
-// Interface type for Legion futures.
-///
-template<
-  typename R
->
-struct legion_future_concept__
-{
-  virtual ~legion_future_concept__() {}
-
-  virtual void wait() = 0;
-  virtual R get(size_t index = 0) = 0;
-}; // struct legion_future_concept__
-
-///
-// Explicit specialization for void.
-///
-template<>
-struct legion_future_concept__<void>
-{
-  virtual ~legion_future_concept__() {}
-
-  virtual void wait() = 0;
-}; // struct legion_future_concept__
-
-//----------------------------------------------------------------------------//
-// Future model.
-//----------------------------------------------------------------------------//
-
-///
-// Base future model type.
-///
-template<typename R, typename F>
-struct legion_future_model__
-  : public legion_future_concept__<R>
-{
-
-  legion_future_model__(const F & legion_future)
-    : legion_future_(legion_future) {}
-
-  ///
-  //
-  ///
-  void
-  wait()
-  {
-  } // wait
-
-  ///
-  // \param index
-  //
-  // \return R
-  ///
-  R
-  get(
-    size_t index = 0
-  )
-  {
-    return legion_future_.template get_result<R>();
-  } // get
-
-private:
-
-  F legion_future_;
-
-}; // struct legion_future_model__
-
-///
-// Partial specialization for void.
-///
-template<typename F>
-struct legion_future_model__<void, F>
-  : public legion_future_concept__<void>
-{
-
-  legion_future_model__(const F & legion_future)
-    : legion_future_(legion_future) {}
-
-  void
-  wait()
-  {
-    legion_future_.get_void_result();
-  } // wait
-
-private:
-
-  F legion_future_;
-
-}; // struct legion_future_model__
-
-///
-// Partial specialization for index launch FutureMap.
-///
-template<typename R>
-struct legion_future_model__<R, LegionRuntime::HighLevel::FutureMap>
-  : public legion_future_concept__<R>
-{
-
-  legion_future_model__(
-    const LegionRuntime::HighLevel::FutureMap & legion_future
-  )
-    : legion_future_(legion_future) {}
-
-  void
-  wait()
-  {
-  } // wait
-
-  R
-  get(
-    size_t index = 0
-  )
-  {
-  } // get
-
-private:
-
-  LegionRuntime::HighLevel::FutureMap legion_future_;
-
-}; // struct legion_future_model__
-
-///
-// Explicit specialization for index launch FutureMap and void.
-///
-template<>
-struct legion_future_model__<void, LegionRuntime::HighLevel::FutureMap>
-  : public legion_future_concept__<void>
-{
-
-  legion_future_model__(
-    const LegionRuntime::HighLevel::FutureMap & legion_future
-  )
-    : legion_future_(legion_future) {}
-
-  void
-  wait()
-  {
-  } // wait
-
-private:
-
-  LegionRuntime::HighLevel::FutureMap legion_future_;
-
-}; // struct legion_future_model__
-
-//----------------------------------------------------------------------------//
-// Future.
-//----------------------------------------------------------------------------//
-
-///
-//
-///
-template<
-  typename R
->
-struct legion_future__
-{
-  using result_t = R;
-
-  template<typename F>
-  legion_future__(const F & future)
-    : state_(new legion_future_model__<R, F>(future)) {}
-
-  legion_future__(const legion_future__ & lf)
-    : state_(lf.state_) {}
-
-  legion_future__ &
-  operator = (
-    const legion_future__ & lf
-  )
-  {
-    state_ = lf.state_;
-  } // operator =
-
-  ///
-  //
-  ///
-  void wait()
-  {
-    state_->wait();
-  } // wait
-
-  ///
-  //
-  ///
-  result_t
-  get(
-    size_t index = 0
-  )
-  {
-    return state_->get(index);
-  } // get
-
-private:
-
-  // Needed to satisfy static check.
-  void set() {}
-
-  std::shared_ptr<legion_future_concept__<R>> state_;
-
-}; // struct legion_future__
-
-///
-// Explicit specialization for void.
-///
-template<>
-struct legion_future__<void>
-{
-
-  template<typename F>
-  legion_future__(const F & future)
-    : state_(new legion_future_model__<void, F>(future)) {}
-
-  ///
-  //
-  ///
-  void wait()
-  {
-  } // wait
-
-  std::shared_ptr<legion_future_concept__<void>> state_;
-
-}; // struct legion_future__
 
 //----------------------------------------------------------------------------//
 // Execution policy.
@@ -291,44 +65,62 @@ struct legion_execution_policy_t
     task_hash_key_t key
   )
   {
-    // Get the processor and launch types
-    const processor_t processor = std::get<1>(key);
-    const launch_t launch = std::get<2>(key);
-
-    switch (processor) {
+    switch(key.processor()) {
 
       case loc:
-        if(launch == single) {
+      {
+        switch(key.launch()) {
+
+          case single:
+          {
             return context_t::instance().register_task(key,
-              legion_task_registrar__<loc, 1, 0, R, A>::register_task);
-        }
-        else if(launch == index) {
+              legion_task_wrapper__<loc, 1, 0, R, A>::register_task);
+          } // single
+
+          case index:
+          {
             return context_t::instance().register_task(key,
-              legion_task_registrar__<loc, 0, 1, R, A>::register_task);
-        }
-        else {
+              legion_task_wrapper__<loc, 0, 1, R, A>::register_task);
+          } // index
+
+          case any:
+          {
             return context_t::instance().register_task(key,
-              legion_task_registrar__<loc, 1, 1, R, A>::register_task);
-        } // if
+              legion_task_wrapper__<loc, 1, 1, R, A>::register_task);
+          } // any
+
+        } // switch
+      } // loc
 
       case toc:
-        if(launch == single) {
+      {
+        switch(key.launch()) {
+
+          case single:
+          {
             return context_t::instance().register_task(key,
-              legion_task_registrar__<loc, 1, 0, R, A>::register_task);
-        }
-        else if(launch == index) {
+              legion_task_wrapper__<toc, 1, 0, R, A>::register_task);
+          } // single
+
+          case index:
+          {
             return context_t::instance().register_task(key,
-              legion_task_registrar__<loc, 0, 1, R, A>::register_task);
-        }
-        else {
+              legion_task_wrapper__<toc, 0, 1, R, A>::register_task);
+          } // index
+
+          case any:
+          {
             return context_t::instance().register_task(key,
-              legion_task_registrar__<loc, 1, 1, R, A>::register_task);
-        } // if
+              legion_task_wrapper__<toc, 1, 1, R, A>::register_task);
+          } // any
+
+        } // switch
+      } // toc
 
       default:
         throw std::runtime_error("unsupported processor type");
-
     } // switch
+
   } // register_task
 
   ///
@@ -365,32 +157,39 @@ struct legion_execution_policy_t
     // task is invoked, i.e., we have to use copies...
     task_args_t task_args(user_task_handle, user_task_args);
 
-    if(std::get<2>(key)==single) {
-      TaskLauncher task_launcher(context_.task_id(key),
-        TaskArgument(&task_args, sizeof(task_args_t)));
+    // Switch on launch type: single or index.
+    switch(key.launch()) {
 
-      auto future = context_.runtime(parent)->execute_task(
-        context_.context(parent), task_launcher);
+      case single:
+      {
+        TaskLauncher task_launcher(context_.task_id(key),
+          TaskArgument(&task_args, sizeof(task_args_t)));
 
-      return legion_future__<R>(future);
-    }
-    else {
-      //FIXME: get launch domain from partitioning of the data used in
-      // the task following launch domeing calculation is temporary:
-      Rect<1> launch_bounds(Point<1>(0),Point<1>(5));
-      Domain launch_domain = Domain::from_rect<1>(launch_bounds);
+        auto future = context_.runtime(parent)->execute_task(
+          context_.context(parent), task_launcher);
 
-      LegionRuntime::HighLevel::ArgumentMap arg_map;
-      LegionRuntime::HighLevel::IndexLauncher index_launcher(
-        context_.task_id(key), launch_domain, TaskArgument(&task_args,
-        sizeof(task_args_t)), arg_map);
+        return legion_future__<R>(future);
+      } // single
 
-      auto future = context_.runtime(parent)->execute_index_space(
-        context_.context(parent), index_launcher);
+      case index:
+      {
+        //FIXME: get launch domain from partitioning of the data used in
+        // the task following launch domeing calculation is temporary:
+        Rect<1> launch_bounds(Point<1>(0),Point<1>(5));
+        Domain launch_domain = Domain::from_rect<1>(launch_bounds);
 
-      return legion_future__<R>(future);
-    } //end if
+        LegionRuntime::HighLevel::ArgumentMap arg_map;
+        LegionRuntime::HighLevel::IndexLauncher index_launcher(
+          context_.task_id(key), launch_domain, TaskArgument(&task_args,
+          sizeof(task_args_t)), arg_map);
 
+        auto future = context_.runtime(parent)->execute_index_space(
+          context_.context(parent), index_launcher);
+
+        return legion_future__<R>(future);
+      } // index
+
+    } // switch
   } // execute_task
 
   //--------------------------------------------------------------------------//

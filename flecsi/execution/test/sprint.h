@@ -109,6 +109,10 @@ register_task(mpi_task, mpi, single);
 
 void driver(int argc, char ** argv) {
   context_t & context_ = context_t::instance();
+  size_t task_key = const_string_t{"driver"}.hash();
+  auto runtime = context_.runtime(task_key);
+  auto context = context_.context(task_key);
+
   flecsi::dmp::parts partitions;
   
   // first execute mpi task to setup initial partitions 
@@ -116,10 +120,11 @@ void driver(int argc, char ** argv) {
   
 
   // create a field space to store my cell paritioning 
-  FieldSpace fs = context_.runtime()->create_field_space(context_.context());
+  FieldSpace fs =
+    runtime->create_field_space(context);
   {
     FieldAllocator allocator = 
-      context_.runtime()->create_field_allocator(context_.context(), fs);
+      runtime->create_field_allocator(context, fs);
     allocator.allocate_field(sizeof(int), FID_CELL_PART);
   }
 
@@ -132,20 +137,20 @@ void driver(int argc, char ** argv) {
   elem_rect_hi.x[1] = max_cells;
   Rect<2> elem_rect( elem_rect_lo, elem_rect_hi );
   
-  IndexSpace is = context_.runtime()->create_index_space(context_.context(), 
-                                              Domain::from_rect<2>(elem_rect));
+  IndexSpace is = runtime->create_index_space(context,
+    Domain::from_rect<2>(elem_rect));
   
-  LogicalRegion cell_parts_lr = context_.runtime()->create_logical_region(context_.context(), is, fs);
-  context_.runtime()->attach_name(cell_parts_lr, "cell partitions logical region");
+  LogicalRegion cell_parts_lr = runtime->create_logical_region(context, is, fs);
+  runtime->attach_name(cell_parts_lr, "cell partitions logical region");
 
   // Use blockify to create num_rank slices of the data  
   Point<2> cell_part_color; cell_part_color.x[0] = 1; cell_part_color.x[1] = max_cells;
   Blockify<2> coloring(cell_part_color);
   
-  IndexPartition ip = context_.runtime()->create_index_partition(context_.context(), is, coloring);
-  LogicalPartition cell_parts_lp = context_.runtime()->
-    get_logical_partition(context_.context(), cell_parts_lr, ip);
-  context_.runtime()->attach_name(cell_parts_lp, "cell partitions logical partition");
+  IndexPartition ip = runtime->create_index_partition(context, is, coloring);
+  LogicalPartition cell_parts_lp = runtime->
+    get_logical_partition(context, cell_parts_lr, ip);
+  runtime->attach_name(cell_parts_lp, "cell partitions logical partition");
   
 
   LegionRuntime::HighLevel::ArgumentMap arg_map;
@@ -162,7 +167,7 @@ void driver(int argc, char ** argv) {
     RegionRequirement(cell_parts_lp, 0/*projection ID*/,
                       WRITE_DISCARD, EXCLUSIVE, cell_parts_lr));
   init_cell_partitions_launcher.add_field(0, FID_CELL_PART);
-  FutureMap fm = context_.runtime()->execute_index_space(context_.context(), init_cell_partitions_launcher);
+  FutureMap fm = runtime->execute_index_space(context, init_cell_partitions_launcher);
   
   fm.wait_all_results();
 
@@ -184,7 +189,7 @@ void driver(int argc, char ** argv) {
   
   std::cout << "Back in driver (TTL) and checking values in LR" << std::endl;
   InlineLauncher cell_parts_launcher(req);
-  PhysicalRegion cell_parts_region = context_.runtime()->map_region(context_.context(), cell_parts_launcher);
+  PhysicalRegion cell_parts_region = runtime->map_region(context, cell_parts_launcher);
   cell_parts_region.wait_until_valid();
   RegionAccessor<AccessorType::Generic, int> acc_cell_part =
     cell_parts_region.get_field_accessor(FID_CELL_PART).typeify<int>();
@@ -220,7 +225,7 @@ void driver(int argc, char ** argv) {
 #if 0 
   
   Rect<1> elem_rect_cells(Point<1>(0),Point<1>(num_cells-1));
-  IndexSpace is_cells = context_.runtime()->create_index_space(context_.context(), 
+  IndexSpace is_cells = runtime->create_index_space(context, 
                                               Domain::from_rect<2>(elem_rect_cells));
   FieldSpace input_fs = runtime->create_field_space(ctx);
   {

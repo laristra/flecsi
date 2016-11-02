@@ -1,6 +1,15 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
+ *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+ * /@@/////  /@@          @@////@@ @@////// /@@
+ * /@@       /@@  @@@@@  @@    // /@@       /@@
+ * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+ * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+ * /@@       /@@/@@//// //@@    @@       /@@/@@
+ * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+ * //       ///  //////   //////  ////////  //
+ *
+ * Copyright (c) 2016 Los Alamos National Laboratory, LLC
+ * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_execution_legion_context_policy_h
@@ -114,9 +123,9 @@ struct legion_context_policy_t
     const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions
   )
   {
-    #ifndef NDEBUG
-      std::cout << "pushing state for " << key << std::endl;
-    #endif
+#ifndef NDEBUG
+    std::cout << "pushing state for " << key << std::endl;
+#endif
 
     state_[key].push(std::shared_ptr<legion_runtime_state_t>
       (new legion_runtime_state_t(context, runtime, task, regions)));
@@ -126,30 +135,12 @@ struct legion_context_policy_t
     size_t key
   )
   {
-    #ifndef NDEBUG
-      std::cout << "popping state for " << key << std::endl;
-    #endif
+#ifndef NDEBUG
+    std::cout << "popping state for " << key << std::endl;
+#endif
 
     state_[key].pop();
   } // set_state
-
-#if 0
-  ///
-  // Reset the legion runtime state.
-  ///
-  void
-  set_state(
-    size_t key,
-    LegionRuntime::HighLevel::Context & context,
-    LegionRuntime::HighLevel::HighLevelRuntime * runtime,
-    const LegionRuntime::HighLevel::Task * task,
-    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions
-  )
-  {
-    state_[key].reset(
-      new legion_runtime_state_t(context, runtime, task, regions));
-  } // set_state
-#endif
 
   //--------------------------------------------------------------------------//
   // Task registraiton.

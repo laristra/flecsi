@@ -23,8 +23,10 @@ set(execution_HEADERS
 	function.h
 	kernel.h
 	legion/context_policy.h
+	legion/future.h
 	legion/execution_policy.h
 	legion/runtime_driver.h
+	legion/task_args.h
 	legion/task_wrapper.h
 	mpilegion/context_policy.h
 	mpilegion/execution_policy.h
