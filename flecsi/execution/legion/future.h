@@ -158,6 +158,30 @@ private:
 }; // struct legion_future_model__
 
 ///
+// Partial specialization for mpi task
+///
+template<typename R>
+struct legion_future_model__<R, mpitask_t>
+  : public legion_future_concept__<R>
+{
+  legion_future_model__(mpitask_t task) {}
+
+  void
+  wait()
+  {
+  } // wait
+
+  R
+  get(
+    size_t index = 0
+  )
+  {
+    return 0.0;
+  } // get
+
+}; // struct legion_future_model__
+
+///
 // Explicit specialization for index launch FutureMap and void.
 ///
 template<>
@@ -189,6 +213,12 @@ struct legion_future_model__<void, mpitask_t>
   : public legion_future_concept__<void>
 {
   legion_future_model__(mpitask_t task) {}
+
+  void
+  wait()
+  {
+  } // wait
+
 }; // struct legion_future_model__
 
 //----------------------------------------------------------------------------//
