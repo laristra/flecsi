@@ -81,7 +81,6 @@ struct tree_geometry<T, 1>{
                          const point_t& scale,
                          const point_t& center,
                          element_t radius){
-
     return center[0] > origin[0] - radius &&
            center[0] < origin[0] + size * scale[0] + radius;
   }
@@ -305,7 +304,7 @@ public:
   template<typename S>
   branch_id(const std::array<point<S, dimension>, 2>& range,
             const point<S, dimension>& p, size_t depth)
-  : id_(int_t(1) << (depth * dimension + 1)){
+  : id_(int_t(1) << depth * dimension + dimension/2){
     std::array<int_t, dimension> coords;
 
     for(size_t i = 0; i < dimension; ++i){
