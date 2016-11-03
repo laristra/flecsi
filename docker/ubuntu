@@ -25,7 +25,6 @@ USER flecsi
 
 WORKDIR /tmp
 RUN if [ ${COVERAGE}  ]; then pip install --user codecov; fi 
-RUN if [ ${WERROR} ]; then export CXXFLAGS="-Werror"; fi
 RUN git clone --recursive https://github.com/losalamos/flecsi.git
 
 WORKDIR flecsi
@@ -43,7 +42,8 @@ RUN if [ ${TRAVIS} = true ]; then \
 RUN mkdir build
 
 WORKDIR build
-RUN CC=gcc-6 CXX=g++-6 cmake -DENABLE_MPI=$MPI \
+RUN if [ ${WERROR} ]; then export CXXFLAGS="-Werror"; fi; \
+    CC=gcc-6 CXX=g++-6 cmake -DENABLE_MPI=$MPI \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON \
           -DCMAKE_DISABLE_FIND_PACKAGE_SCOTCH=ON \
