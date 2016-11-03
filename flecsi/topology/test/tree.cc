@@ -1,9 +1,10 @@
 #include <cinchtest.h>
 #include <iostream>
 #include <cmath>
-#include <random>
 
 #include "flecsi/topology/tree_topology.h"
+#include "pseudo_random.h"
+
 
 using namespace std;
 using namespace flecsi;
@@ -99,23 +100,6 @@ public:
   using branch_t = branch;
 };
 
-class rand_{
-public:
-  rand_(unsigned seed = 0)
-  : rng_(seed){}
-
-  double uniform(){
-    return double(rng_())/rng_.max();
-  }
-
-  double uniform(double a, double b){
-    return a + (b - a) * uniform();
-  }
-
-private:
-  std::mt19937 rng_;
-};
-
 
 
 using tree_topology_t = topology::tree_topology<tree_policy>;
@@ -128,7 +112,7 @@ using element_t = tree_topology_t::element_t;
 TEST(tree_topology, insert_find_remove) {
   tree_topology_t t;
 
-  rand_ rng;
+  pseudo_random rng;
 
   std::vector<entity_t*> ents;
 
@@ -153,7 +137,7 @@ TEST(tree_topology, insert_find_remove) {
 TEST(tree_topology, assert_branches) {
   tree_topology_t t;
   
-  rand_ rng;
+  pseudo_random rng;
 
   std::vector<entity_t*> ents;
 
@@ -181,7 +165,7 @@ TEST(tree_topology, assert_branches) {
 TEST(tree_topology, find_radius) {
   tree_topology_t t;
 
-  rand_ rng;
+  pseudo_random rng;
 
   std::vector<entity_t*> ents;
 
@@ -233,7 +217,7 @@ TEST(tree_topology, find_radius_thread_pool) {
   thread_pool pool;
   pool.start(8);
   
-  rand_ rng;
+  pseudo_random rng;
 
   std::vector<entity_t*> ents;
 
@@ -283,7 +267,7 @@ TEST(tree_topology, find_radius_thread_pool) {
 TEST(tree_topology, neighbors) {
   tree_topology_t t;
 
-  rand_ rng;
+  pseudo_random rng;
 
   std::vector<entity_t*> ents;
 
@@ -323,7 +307,7 @@ TEST(tree_topology, neighbors_thread_pool) {
   thread_pool pool;
   pool.start(8);
 
-  rand_ rng;
+  pseudo_random rng;
 
   std::vector<entity_t*> ents;
 
@@ -361,7 +345,7 @@ TEST(tree_topology, neighbors_thread_pool) {
 TEST(tree_topology, neighbors_rectangular) {
   tree_topology_t t({0, 0}, {50, 30});
 
-  rand_ rng;
+  pseudo_random rng;
 
   std::vector<entity_t*> ents;
 
@@ -399,7 +383,7 @@ TEST(tree_topology, neighbors_rectangular) {
 TEST(tree_topology, neighbors_box) {
   tree_topology_t t;
 
-  rand_ rng;
+  pseudo_random rng;
 
   std::vector<entity_t*> ents;
 
@@ -441,7 +425,7 @@ TEST(tree_topology, neighbors_box) {
 TEST(tree_topology, iterator_update_all) {
   tree_topology_t t;
 
-  rand_ rng;
+  pseudo_random rng;
 
   size_t n = 10000;
 

@@ -3,6 +3,7 @@
 
 #include "flecsi/topology/tree_topology.h"
 #include "flecsi/data/old_data.h"
+#include "pseudo_random.h"
 
 using namespace std;
 using namespace flecsi;
@@ -179,13 +180,6 @@ public:
   using branch_t = branch;
 };
 
-double uniform(){
-  return double(rand())/RAND_MAX;
-}
-
-double uniform(double a, double b){
-  return a + (b - a) * uniform();
-}
 
 using tree_topology_t = topology::tree_topology<tree_policy>;
 using body = tree_topology_t::body;
@@ -200,6 +194,8 @@ static const size_t TS = 2;
 TEST(tree_topology, gravity) {
   tree_topology_t t;
 
+  pseudo_random rng;
+
   state_t& state = state_t::instance();
 
   state.register_state<double, flecsi_internal>("mass", N, 0);
@@ -208,9 +204,9 @@ TEST(tree_topology, gravity) {
 
   vector<body*> bodies;
   for(size_t i = 0; i < N; ++i){
-    double m = uniform(0.1, 0.5);
-    point_t p = {uniform(0.0, 1.0), uniform(0.0, 1.0)};
-    point_t v = {uniform(0.0, 0.001), uniform(0.0, 0.001)};
+    double m = rng.uniform(0.1, 0.5);
+    point_t p = {rng.uniform(0.0, 1.0), rng.uniform(0.0, 1.0)};
+    point_t v = {rng.uniform(0.0, 0.001), rng.uniform(0.0, 0.001)};
     auto bi = t.make_entity();
     bi->init(m, p, v);
     bodies.push_back(bi);
