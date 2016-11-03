@@ -85,7 +85,7 @@ protected:
 const int N = 10;
 
 // core interpolation shared by vertex and cell centered gradients
-void interpolate(const auto x[4], const auto y[4], auto b[N]) {
+void interpolate(const real_t x[4], const real_t y[4], real_t b[N]) {
   /*
     from:
 
@@ -175,7 +175,8 @@ void interpolate(const auto x[4], const auto y[4], auto b[N]) {
 }
 
 // compute cell centered average of vertex centered scalar s at cell c.
-real_t interpolate_to_cell(mesh_t & m, auto & s, auto & c) {
+template < typename T, typename U >
+real_t interpolate_to_cell(mesh_t & m, T & s, U & c) {
   // declare and initialize b, x, y for sending to interpolate.
   real_t b[N]; for (int i=0; i<N; i++) b[i] = 0.0;
   // x,y coords in x,y.
@@ -276,7 +277,8 @@ TEST_F(Burton, vertex_gradient) {
 }
 
 // compute vertex centered average of cell centered scalar s at vertex v.
-real_t interpolate_to_vertex(mesh_t & m, auto & s, auto & v) {
+template < typename T, typename U >
+real_t interpolate_to_vertex(mesh_t & m, T & s, U & v) {
   // declare and initialize b, x, y for sending to interpolate.
   real_t b[N]; for (int i=0; i<N; i++) b[i] = 0.0;
   // x,y coords in x, y.
