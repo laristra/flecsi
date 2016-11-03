@@ -12,8 +12,8 @@ env:
     - DOCKERFILE=ubuntu_tpl MPI=OFF RUNTIME=legion    WERROR=yes
     - DOCKERFILE=ubuntu_tpl MPI=ON  RUNTIME=mpilegion DOCKERHUB= rue
     - DOCKERFILE=ubuntu_tpl MPI=ON  RUNTIME=mpilegion WERROR=yes
-    - DOCKERFILE=ubuntu MPI=ON   RUNTIME=mpi          DOCKERHUB=true
-    - DOCKERFILE=ubuntu MPI=ON   RUNTIME=mpi          WERROR=yes
+#    - DOCKERFILE=ubuntu MPI=ON   RUNTIME=mpi          DOCKERHUB=true
+#    - DOCKERFILE=ubuntu MPI=ON   RUNTIME=mpi          WERROR=yes
     - DOCKERFILE=ubuntu MPI=OFF  RUNTIME=serial       DOCKERHUB=true
     - DOCKERFILE=ubuntu MPI=OFF  RUNTIME=serial       WERROR=yes
     - DOCKERFILE=ubuntu MPI=OFF  COVERAGE=ON RUNTIME=serial
@@ -23,8 +23,8 @@ env:
     - DOCKERFILE=fedora_tpl MPI=OFF RUNTIME=legion    WERROR=yes
     - DOCKERFILE=fedora_tpl MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
     - DOCKERFILE=fedora_tpl MPI=ON  RUNTIME=mpilegion WERROR=yes
-    - DOCKERFILE=fedora MPI=ON  RUNTIME=mpi           DOCKERHUB=true
-    - DOCKERFILE=fedora MPI=ON  RUNTIME=mpi           WERROR=yes
+#    - DOCKERFILE=fedora MPI=ON  RUNTIME=mpi           DOCKERHUB=true
+#    - DOCKERFILE=fedora MPI=ON  RUNTIME=mpi           WERROR=yes
     - DOCKERFILE=fedora MPI=OFF RUNTIME=serial        DOCKERHUB=true
     - DOCKERFILE=fedora MPI=OFF RUNTIME=serial        WERROR=yes
     - DOCKERFILE=fedora MPI=OFF RUNTIME=serial COVERAGE=ON
