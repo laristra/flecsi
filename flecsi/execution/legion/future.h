@@ -29,6 +29,9 @@
 namespace flecsi {
 namespace execution {
 
+// Dummy type for future specialization selection.
+struct mpitask_t {};
+
 //----------------------------------------------------------------------------//
 // Future concept.
 //----------------------------------------------------------------------------//
@@ -176,6 +179,16 @@ private:
 
   LegionRuntime::HighLevel::FutureMap legion_future_;
 
+}; // struct legion_future_model__
+
+///
+// Explicit specialization for mpi task and void
+///
+template<>
+struct legion_future_model__<void, mpitask_t>
+  : public legion_future_concept__<void>
+{
+  legion_future_model__(mpitask_t task) {}
 }; // struct legion_future_model__
 
 //----------------------------------------------------------------------------//

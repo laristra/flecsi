@@ -191,7 +191,7 @@ struct mpilegion_execution_policy_t
      //context_.interop_helper_.unset_call_mpi(context_.context(),
       //                      context_.runtime());
    
-      return 0;
+      return legion_future__<R>(mpitask_t{});
     }
     else {
 
@@ -204,8 +204,8 @@ struct mpilegion_execution_policy_t
 
           auto future = context_.runtime(parent)->execute_task(
             context_.context(parent), task_launcher);
-          //return legion_future__<R>(future);
-          return 0;
+
+          return legion_future__<R>(future);
         } // single
 
         case index:
@@ -222,7 +222,7 @@ struct mpilegion_execution_policy_t
           auto future = context_.runtime(parent)->execute_index_space(
             context_.context(parent), index_launcher);
 
-          return 0;
+          return legion_future__<R>(future);
         } // index
 
       } // switch
