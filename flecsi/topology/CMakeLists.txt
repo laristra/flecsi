@@ -53,6 +53,9 @@ cinch_add_unit(tree
 cinch_add_unit(tree1d
   SOURCES test/tree1d.cc)
 
+cinch_add_unit(tree3d
+  SOURCES test/tree3d.cc)
+
 cinch_add_unit(gravity
   SOURCES test/gravity.cc)
 
