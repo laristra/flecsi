@@ -58,30 +58,6 @@ struct serial_context_policy_t
   } // initialize
 
   //--------------------------------------------------------------------------//
-  // Task registration.
-  //--------------------------------------------------------------------------//
-
-#if 0
-  using task_id_t = size_t;
-  using register_function_t = std::function<void(size_t)>;
-	using unique_fid_t = unique_id_t<task_id_t>;
-
-  bool
-  register_task(
-    task_hash_key_t key,
-    const register_function_t & f
-  )
-  {
-    if(task_registry_.find(key) == task_registry_.end()) {
-      task_registry_[key] = { unique_fid_t::instance().next(), f };
-      return true;
-    } // if
-
-    return false;  
-  } // register_task
-#endif
-
-  //--------------------------------------------------------------------------//
   // Function registration.
   //--------------------------------------------------------------------------//
 
@@ -127,16 +103,6 @@ struct serial_context_policy_t
   } // function
 
 private:
-
-  //--------------------------------------------------------------------------//
-  // Task registry
-  //--------------------------------------------------------------------------//
-
-#if 0
-  std::unordered_map<task_hash_t::key_t,
-    std::pair<task_id_t, register_function_t>,
-    task_hash_t> task_registry_;
-#endif
 
   //--------------------------------------------------------------------------//
   // Function registry

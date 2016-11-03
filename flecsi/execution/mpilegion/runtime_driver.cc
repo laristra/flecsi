@@ -28,25 +28,26 @@ void mpilegion_runtime_driver(const LegionRuntime::HighLevel::Task * task,
 	LegionRuntime::HighLevel::HighLevelRuntime * runtime)
 	{
     std::cout << "mpilegion_runtime_driver started" << std::endl;
-    context_t::instance().set_state(ctx, runtime, task, regions);
                 
     context_t & context_ = context_t::instance();
-    context_.set_state(ctx, runtime, task, regions);
+    context_.push_state(const_string_t{"driver"}.hash(),
+      ctx, runtime, task, regions);
 
     const LegionRuntime::HighLevel::InputArgs & args =
       LegionRuntime::HighLevel::HighLevelRuntime::get_input_args();
 
     // connect legion with MPI
-    context_.interop_helper_.connect_with_mpi(context_.context(),
-      context_.runtime());
+    context_.interop_helper_.connect_with_mpi(ctx, runtime);
 
     // run default or user-defined driver 
     driver(args.argc, args.argv); 
 
     // finish up legion runtime and handoff to mpi
     context_.interop_helper_.call_mpi_=false;
-    context_.interop_helper_.handoff_to_mpi(context_.context(),
-      context_.runtime());
+    context_.interop_helper_.handoff_to_mpi(ctx, runtime);
+
+    // Set the current task context to the driver
+    context_t::instance().pop_state(const_string_t{"driver"}.hash());
   } // mpilegion_runtime_driver
 
 } // namespace execution 

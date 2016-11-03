@@ -24,98 +24,124 @@
  * \date Initial file creation: Aug 29, 2016
  */
 
-namespace flecsi
-{
-namespace utils
-{
+namespace flecsi {
+namespace utils {
 
- class any_t
- {
+class any_t
+{
+public:
+
+  any_t()
+  {
+    holder_ = nullptr;
+  } // any_t
+
+  template<
+    class T
+  >
+  any_t(const T & value)
+  {
+    holder_ = new holder_t<T>(value);
+  } // any_t
+
+  ~any_t()
+  {
+    delete holder_;
+    holder_ = nullptr;
+  } // ~any_t
+
+  any_t(const any_t & rhs)
+  {
+    holder_=rhs.holder_ ? rhs.holder_->copy() : nullptr;
+  } // any_t
+
+  any_t & operator = (const any_t & rhs)
+  {
+    delete holder_;
+    holder_ = rhs.holder_ ? rhs.holder_->copy() : nullptr;
+    return *this;
+  } // operator =
+
+  template<
+    class T
+  >
+  operator T()
+  const
+  {
+    return dynamic_cast<holder_t<T>&>(*holder_).value;
+  } // operator T()
+
+  template<class T>
+  friend const T & any_cast(any_t & rhs);
+
+  const
+  std::type_info &
+  get_type()
+  const
+  {
+    return holder_ ? holder_->get_type() : typeid(void);
+  } // get_type
+
+private:
+
+  class i_holder_t
+  {
   public:
-	 any_t()
-   {
-    holder = nullptr;
-   }
 
-	 template<class T>
-	 any_t(const T& value)
-   {
-     holder=new holder_t<T>(value);
-   }
+    virtual ~i_holder_t() {}
+    virtual i_holder_t * copy() const = 0;
+    virtual const std::type_info & get_type() const = 0;
 
-   ~any_t()
+  }; //class i_holder_t
+
+  template<
+    typename T
+  >
+  class holder_t : public i_holder_t
+  {
+  public:
+
+    holder_t(const T & value) : value(value) {}
+
+    holder_t * copy() const
     {
-      delete holder;
-      holder = nullptr;
-    }
+      return new holder_t(value);
+    } // copy
 
-	 any_t(const any_t& rhs)
-   {
-     holder=rhs.holder ? rhs.holder->copy() : nullptr;
-   }
-
-	 any_t& operator=(const any_t& rhs)
-   {
-     delete holder;
-     holder = rhs.holder ? rhs.holder->copy() : nullptr;
-      return *this;
-   }
-
-	 template<class T>
-	 operator T() const
-   {
-    return dynamic_cast<holder_t<T>&>(*holder).value;
-   }
-
-  	template<class T>
-  	friend const T& any_cast(any_t& rhs);
-
-	  const std::type_info& get_type() const
+    const
+    std::type_info &
+    get_type()
+    const
     {
-      return holder ? holder->get_type() : typeid(void);
-    }
+      return typeid(T);
+    } // get_type
 
- private:
-  	class i_holder_t
-	 {
-	  public:
-      virtual ~i_holder_t(){}
-      virtual i_holder_t* copy() const = 0;
-      virtual const std::type_info& get_type() const = 0;
-	  };//class i_holder_t
+  public:
 
-    template<class T>
-    class holder_t : public i_holder_t
-    {
-	   public:
-		   holder_t(const T& value):value(value){}
-       holder_t* copy() const{return new holder_t(value);}
-       const std::type_info& get_type() const{return typeid(T);}
-     public:
-        T value;
-     };//end class Holder
+    T value;
 
-     i_holder_t* holder; 
-     //std::shared_ptr<i_holder_t> holder;
-};//class Any
+  }; // class Holder
 
+  i_holder_t * holder_; 
 
+}; //class any_t
 
-
-template<class T>
+///
+//
+///
+template<
+  class T
+>
 inline
 const 
-T& any_cast(any_t& rhs)
+T & any_cast(
+  any_t & rhs
+)
 {
-	return dynamic_cast<any_t::holder_t<T>&>(*(rhs.holder)).value;
-}
+  return dynamic_cast<any_t::holder_t<T>&>(*(rhs.holder_)).value;
+} // any_cast
 
-
-
-
-
-}// namespace utils
-
+} // namespace utils
 } // namespace flecsi
 
 #endif // flecsi_any_h

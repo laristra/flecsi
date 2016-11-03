@@ -16,13 +16,17 @@
 #define flecsi_execution_legion_execution_policy_h
 
 #include <functional>
+#include <memory>
 
-#include "flecsi/utils/const_string.h"
-#include "flecsi/execution/context.h"
+#include <legion.h>
+
 #include "flecsi/execution/common/processor.h"
 #include "flecsi/execution/common/task_hash.h"
+#include "flecsi/execution/context.h"
 #include "flecsi/execution/legion/context_policy.h"
+#include "flecsi/execution/legion/future.h"
 #include "flecsi/execution/legion/task_wrapper.h"
+#include "flecsi/utils/const_string.h"
 
 ///
 // \file legion/execution_policy.h
@@ -33,12 +37,18 @@
 namespace flecsi {
 namespace execution {
 
+//----------------------------------------------------------------------------//
+// Execution policy.
+//----------------------------------------------------------------------------//
+
 ///
 // \struct legion_execution_policy legion_execution_policy.h
 // \brief legion_execution_policy provides...
 ///
 struct legion_execution_policy_t
 {
+  template<typename R>
+  using future__ = legion_future__<R>;
 
   //--------------------------------------------------------------------------//
   // Task interface.
@@ -55,108 +65,131 @@ struct legion_execution_policy_t
     task_hash_key_t key
   )
   {
-    // Get the processor and launch types
-    const processor_t processor = std::get<1>(key);
-    const launch_t launch = std::get<2>(key);
-
-    switch (processor) {
+    switch(key.processor()) {
 
       case loc:
-        if(launch == single) {
+      {
+        switch(key.launch()) {
+
+          case single:
+          {
             return context_t::instance().register_task(key,
-              legion_task_registrar__<loc, 1, 0, R, A>::register_task);
-        }
-        else if(launch == index) {
+              legion_task_wrapper__<loc, 1, 0, R, A>::register_task);
+          } // single
+
+          case index:
+          {
             return context_t::instance().register_task(key,
-              legion_task_registrar__<loc, 0, 1, R, A>::register_task);
-        }
-        else {
+              legion_task_wrapper__<loc, 0, 1, R, A>::register_task);
+          } // index
+
+          case any:
+          {
             return context_t::instance().register_task(key,
-              legion_task_registrar__<loc, 1, 1, R, A>::register_task);
-        } // if
+              legion_task_wrapper__<loc, 1, 1, R, A>::register_task);
+          } // any
+
+        } // switch
+      } // loc
 
       case toc:
-        if(launch == single) {
+      {
+        switch(key.launch()) {
+
+          case single:
+          {
             return context_t::instance().register_task(key,
-              legion_task_registrar__<loc, 1, 0, R, A>::register_task);
-        }
-        else if(launch == index) {
+              legion_task_wrapper__<toc, 1, 0, R, A>::register_task);
+          } // single
+
+          case index:
+          {
             return context_t::instance().register_task(key,
-              legion_task_registrar__<loc, 0, 1, R, A>::register_task);
-        }
-        else {
+              legion_task_wrapper__<toc, 0, 1, R, A>::register_task);
+          } // index
+
+          case any:
+          {
             return context_t::instance().register_task(key,
-              legion_task_registrar__<loc, 1, 1, R, A>::register_task);
-        } // if
+              legion_task_wrapper__<toc, 1, 1, R, A>::register_task);
+          } // any
+
+        } // switch
+      } // toc
 
       default:
         throw std::runtime_error("unsupported processor type");
-
     } // switch
+
   } // register_task
 
   ///
   // \tparam R The task return type.
   // \tparam T The user task type.
-  // \tparam As The user task argument types.
+  // \tparam FIXME: A
   //
   // \param key
-  // \param user_task
+  // \param user_task_handle
   // \param args
   ///
   template<
     typename R,
     typename T,
-    typename ... As
+    typename A
   >
   static
   decltype(auto)
   execute_task(
     task_hash_key_t key,
-    T user_task,
-    As ... args
+    size_t parent,
+    T user_task_handle,
+    A user_task_args
   )
   {
     using namespace Legion;
 
     context_t & context_ = context_t::instance();
 
-    using task_args_t = legion_task_args__<R, std::tuple<As ...>>;
-
-    auto user_task_args = std::make_tuple(args ...);
+    using task_args_t = legion_task_args__<R, A>;
 
     // We can't use std::forward or && references here because
     // the calling state is not guarunteed to exist when the
     // task is invoked, i.e., we have to use copies...
-    task_args_t task_args(user_task, user_task_args);
+    task_args_t task_args(user_task_handle, user_task_args);
 
-      if (std::get<2>(key)==single) {
+    // Switch on launch type: single or index.
+    switch(key.launch()) {
+
+      case single:
+      {
         TaskLauncher task_launcher(context_.task_id(key),
           TaskArgument(&task_args, sizeof(task_args_t)));
-        context_.runtime()->execute_task(context_.context(), task_launcher);
-       //FIXME: return Future
-       return 0;
-      }
-      else {
-       //FIXME: get launch domain from partitioning of the data used in
-       // the task following launch domeing calculation is temporary:
-       Rect<1> launch_bounds(Point<1>(0),Point<1>(5));
-       Domain launch_domain = Domain::from_rect<1>(launch_bounds);
+
+        auto future = context_.runtime(parent)->execute_task(
+          context_.context(parent), task_launcher);
+
+        return legion_future__<R>(future);
+      } // single
+
+      case index:
+      {
+        //FIXME: get launch domain from partitioning of the data used in
+        // the task following launch domeing calculation is temporary:
+        Rect<1> launch_bounds(Point<1>(0),Point<1>(5));
+        Domain launch_domain = Domain::from_rect<1>(launch_bounds);
 
         LegionRuntime::HighLevel::ArgumentMap arg_map;
         LegionRuntime::HighLevel::IndexLauncher index_launcher(
           context_.task_id(key), launch_domain, TaskArgument(&task_args,
           sizeof(task_args_t)), arg_map);
 
-        context_.runtime()->execute_index_space(context_.context(),
-          index_launcher);
+        auto future = context_.runtime(parent)->execute_index_space(
+          context_.context(parent), index_launcher);
 
-        //FIXME: return future_t
-        return 0;
-        } //end if
+        return legion_future__<R>(future);
+      } // index
 
-    // FIXME: Add region requirements and fields
-
+    } // switch
   } // execute_task
 
   //--------------------------------------------------------------------------//

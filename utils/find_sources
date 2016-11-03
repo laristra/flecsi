@@ -1,0 +1,19 @@
+#! /usr/bin/env bash
+
+cwd=`pwd`
+
+echo "Searching for source files in $cwd..."
+
+headers=`find . -name "*.h" | grep -v "test" | sort | sed 's,\.\/,,g'`
+
+echo
+echo "Headers:"
+echo
+echo "$headers"
+
+sources=`find . -name "*.cc" | grep -v "test" | sort | sed 's,\.\/,,g'`
+
+echo
+echo "Sources:"
+echo
+echo "$sources"

@@ -13,24 +13,35 @@
 #~----------------------------------------------------------------------------~#
 
 set(execution_HEADERS
-  context.h
-  default_driver.h
-  execution.h
-  task.h
-  serial/execution_policy.h
-  serial/runtime_driver.h
-  legion/context_policy.h
-  legion/execution_policy.h
-  legion/runtime_driver.h
-  legion/task_wrapper.h
-  mpilegion/context_policy.h
-  mpilegion/execution_policy.h
-  mpilegion/legion_handshake.h
-  mpilegion/runtime_driver.h
-  mpilegion/mapper.h
-  mpilegion/task_wrapper.h
-  future.h
-  PARENT_SCOPE)
+	common/function_handle.h
+	common/launch.h
+	common/processor.h
+	common/task_hash.h
+	context.h
+	default_driver.h
+	execution.h
+	function.h
+	kernel.h
+	legion/context_policy.h
+	legion/future.h
+	legion/execution_policy.h
+	legion/runtime_driver.h
+	legion/task_args.h
+	legion/task_wrapper.h
+	mpilegion/context_policy.h
+	mpilegion/execution_policy.h
+	mpilegion/legion_handshake.h
+	mpilegion/mapper.h
+	mpilegion/mpi_legion_interop.h
+	mpilegion/runtime_driver.h
+	mpilegion/task_ids.h
+	mpilegion/task_wrapper.h
+	serial/context_policy.h
+	serial/execution_policy.h
+	serial/runtime_driver.h
+	task.h
+  PARENT_SCOPE
+)
 
 
 set(execution_SOURCES
