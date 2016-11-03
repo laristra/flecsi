@@ -131,6 +131,7 @@ struct legion_task_wrapper__
     return retval;
   } // execute
 
+#if 0
   static R execute_mpi(const LegionRuntime::HighLevel::Task * task,
     const std::vector<LegionRuntime::HighLevel::PhysicalRegion>& regions,
     LegionRuntime::HighLevel::Context context,
@@ -151,12 +152,13 @@ struct legion_task_wrapper__
 //  auto user_args = tuple_filter_index_<greater_than, task_args_t>(task_args);
  
     auto bound_user_task = std::bind(reinterpret_cast<std::function<R(A)> *>(
-      context_t::instance().function(user_task_handle.key), user_task_args));
+      context_t::instance().function(user_task_handle.key)), user_task_args);
 
      ext_legion_handshake_t::instance().shared_func_ = bound_user_task;
 
      ext_legion_handshake_t::instance().call_mpi_=true;
   } // execute_mpi
+#endif
 
 }; // class legion_task_wrapper__
 
@@ -214,6 +216,8 @@ struct legion_task_wrapper__<P, S, I, void, A>
           tid, lr_proc::TOC_PROC, S, I);
         break;
       case mpi:
+        lr_runtime::register_legion_task<execute_mpi>(
+          tid, lr_proc::LOC_PROC, S, I);
         break;
     } // switch
   } // register_task
@@ -280,9 +284,9 @@ struct legion_task_wrapper__<P, S, I, void, A>
     // Get the user task arguments
 //  auto user_args = tuple_filter_index_<greater_than, task_args_t>(task_args);
  
-    auto bound_user_task =
-      std::bind(reinterpret_cast<std::function<void(A)> *>(
-      context_t::instance().function(user_task_handle.key), user_task_args));
+    std::function<void()> bound_user_task =
+      std::bind(*reinterpret_cast<std::function<void(A)> *>(
+      context_t::instance().function(user_task_handle.key)), user_task_args);
 
      ext_legion_handshake_t::instance().shared_func_ = bound_user_task;
 
