@@ -411,7 +411,7 @@ class default_data_storage_policy_t
       \brief Return a std::string containing the label of the data variable
         reference by this accessor.
      */
-    const std::string & label() const { return label_; }
+    const std::string & label() { return label_; }
     /*!
       \brief Return the size of the data variable referenced by this
         accessor.
@@ -587,7 +587,7 @@ class default_data_storage_policy_t
       \brief Return a std::string containing the label of the data variable
         reference by this accessor.
      */
-    const std::string & label() const { return label_; }
+    const std::string & label() { return label_; }
 
     /*!
       \brief Return the size of the data variable referenced by this
@@ -663,7 +663,6 @@ class default_data_storage_policy_t
       data_ = a.data_;
       meta_ = a.meta_;
       is_ = a.is_;
-      return *this;
     } // operator =
 
     /*!
@@ -757,7 +756,7 @@ class default_data_storage_policy_t
       \brief Return a std::string containing the label of the data variable
         reference by this accessor.
      */
-    const std::string & label() const { return label_; }
+    const std::string & label() { return label_; }
     /*!
       \brief Return the size of the data variable referenced by this
         accessor.
@@ -831,7 +830,6 @@ class default_data_storage_policy_t
       data_ = a.data_;
       meta_ = a.meta_;
       is_ = a.is_;
-      return &this;
     } // operator =
 
     /*!
@@ -1177,16 +1175,9 @@ class default_data_storage_policy_t
 
   /*!
     Return an accessor to all data for a given type.
-    \param [in] runtime_namespace  The runtime id of interest
-    \param [in] sorted  Sort the results by label lexographically. 
-                        Default is false.
    */
   template <typename T, size_t NS>
-  std::vector<dense_accessor_t<T>> 
-  dense_accessors( 
-    uintptr_t runtime_namespace,
-    bool sorted = false
-  )
+  std::vector<dense_accessor_t<T>> dense_accessors(uintptr_t runtime_namespace)
   {
     std::vector<dense_accessor_t<T>> v;
 
@@ -1197,29 +1188,15 @@ class default_data_storage_policy_t
           v.emplace_back( std::move(a) );
     } // for
 
-    if (sorted) 
-      std::sort( 
-        v.begin(), v.end(), 
-        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
-      );
-
     return v;
   } // dense_accessors
 
   /*!
     Return an accessor to all data for a given type and predicate.
-    \param [in] predicate  A predicate to filter the results.  Matches are 
-                           returned if the predicate(dense_accessor) is true.
-    \param [in] runtime_namespace  The runtime id of interest
-    \param [in] sorted  Sort the results by label lexographically. 
-                        Default is false.
    */
   template <typename T, size_t NS, typename P>
-  std::vector<dense_accessor_t<T>> dense_accessors(
-    P && predicate,
-    uintptr_t runtime_namespace,
-    bool sorted = false
-  )
+  std::vector<dense_accessor_t<T>> dense_accessors(P && predicate,
+    uintptr_t runtime_namespace)
   {
     std::vector<dense_accessor_t<T>> v;
 
@@ -1231,27 +1208,15 @@ class default_data_storage_policy_t
           v.emplace_back( std::move(a) );
     } // for
 
-    if (sorted) 
-      std::sort( 
-        v.begin(), v.end(), 
-        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
-      );
-
     return v;
   } // accessors_predicate
 
   /*!
     Return accessors to all data.
-    \param [in] runtime_namespace  The runtime id of interest
-    \param [in] sorted  Sort the results by label lexographically. 
-                        Default is false.
    */
   template <size_t NS>
-  std::vector<dense_accessor_t<uint8_t>> 
-  dense_accessors(
-    uintptr_t runtime_namespace,
-    bool sorted = false
-  ) 
+  std::vector<dense_accessor_t<uint8_t>> dense_accessors(
+    uintptr_t runtime_namespace)
   {
     std::vector<dense_accessor_t<uint8_t>> v;
 
@@ -1260,30 +1225,15 @@ class default_data_storage_policy_t
       if ( a ) v.emplace_back( std::move(a) );
     } // for
 
-    if (sorted) 
-      std::sort( 
-        v.begin(), v.end(), 
-        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
-      );
-
     return v;
   } // dense_accessors
 
   /*!
     Return an accessor to all data for a given type and predicate.
-    \param [in] predicate  A predicate to filter the results.  Matches are 
-                           returned if the predicate(dense_accessor) is true.
-    \param [in] runtime_namespace  The runtime id of interest
-    \param [in] sorted  Sort the results by label lexographically. 
-                        Default is false.
    */
   template <size_t NS, typename P>
-  std::vector<dense_accessor_t<uint8_t>> 
-  dense_accessors(
-    P && predicate,
-    uintptr_t runtime_namespace,
-    bool sorted = false
-  )
+  std::vector<dense_accessor_t<uint8_t>> dense_accessors(P && predicate,
+    uintptr_t runtime_namespace)
   {
     std::vector<dense_accessor_t<uint8_t>> v;
 
@@ -1293,12 +1243,6 @@ class default_data_storage_policy_t
       if ( a )
         if ( predicate(a) ) v.emplace_back( std::move(a) );
     } // for
-
-    if (sorted) 
-      std::sort( 
-        v.begin(), v.end(), 
-        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
-      );
 
     return v;
   } // dense_accessors_predicate
