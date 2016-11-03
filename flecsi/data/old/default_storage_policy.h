@@ -698,11 +698,7 @@ class default_data_storage_policy_t
     std::string label_ = "";
     size_t size_ = 0;
     T * data_ = nullptr;
-<<<<<<< HEAD:flecsi/data/old/default_storage_policy.h
     const user_meta_data_t & meta_ = user_meta_data_t();
-=======
-    const user_meta_data_t * meta_ = nullptr;
->>>>>>> 4e345d3e98b42547d901a8a250a595a67cb7673e:flecsi/data/default_storage_policy.h
     index_space_t is_;
 
   }; // struct dense_accessor_t
@@ -870,11 +866,7 @@ class default_data_storage_policy_t
     std::string label_ = "";
     size_t size_ = 0;
     T * data_ = nullptr;
-<<<<<<< HEAD:flecsi/data/old/default_storage_policy.h
     const user_meta_data_t & meta_ = user_meta_data_t();
-=======
-    const user_meta_data_t * meta_ = nullptr;
->>>>>>> 4e345d3e98b42547d901a8a250a595a67cb7673e:flecsi/data/default_storage_policy.h
     index_space_t is_;
 
   }; // struct sparse_accessor_t
