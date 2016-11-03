@@ -21,6 +21,10 @@ set(io_HEADERS
   PARENT_SCOPE
 )
   
+set(io_SOURCES
+  PARENT_SCOPE
+)
+
 cinch_add_unit(io
   SOURCES test/io.cc
 )

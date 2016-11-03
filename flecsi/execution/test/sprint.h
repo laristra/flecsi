@@ -31,19 +31,12 @@ using index_partition_t = dmp::index_partition__<size_t>;
 
 static const size_t N = 8;
 
-enum 
-FieldIDs {
+enum FieldIDs {
   FID_CELL_PART,
-  FID_GLOBAL_CELL,
-  FID_GHOST_CELL_ID,
 };
 
   
-void 
-mpi_task(
-  double val
-) 
-{
+void mpi_task(double val) {
   int rank = 0;
   int size = 0;
 
@@ -56,6 +49,8 @@ mpi_task(
 
   size_t start = rank*(part + (rem > 0 ? 1 : 0));
   size_t end = rank < rem ? start + part+1 : start + part;
+
+  
                       
 #if 1
   std::cout << "rank: " << rank << " start: " << start <<
@@ -105,38 +100,36 @@ mpi_task(
              flecsi::execution::context_t::instance();
   context_.interop_helper_.data_storage_.push_back(
         flecsi::utils::any_t(ip));
+  
 
 } // mpi_task
   
 register_task(mpi_task, mpi, single);
   
 
-void
-driver(
-  int argc,
-  char ** argv
-)
-{
-  using legion_domain = LegionRuntime::HighLevel::Domain;
-
+void driver(int argc, char ** argv) {
   context_t & context_ = context_t::instance();
+  size_t task_key = const_string_t{"driver"}.hash();
+  auto runtime = context_.runtime(task_key);
+  auto context = context_.context(task_key);
+
   flecsi::dmp::parts partitions;
   
-  // first execute mpi task to setup initial partitions
+  // first execute mpi task to setup initial partitions 
   execute_task(mpi_task, mpi, single, 1.0);
   
-  // create a field space to store my cell paritioning
-  FieldSpace cells_temp_fs =
-      context_.runtime()->create_field_space(context_.context());
+
+  // create a field space to store my cell paritioning 
+  FieldSpace fs =
+    runtime->create_field_space(context);
   {
-    FieldAllocator allocator =
-      context_.runtime()->create_field_allocator(context_.context(),
-                                             cells_temp_fs);
+    FieldAllocator allocator = 
+      runtime->create_field_allocator(context, fs);
     allocator.allocate_field(sizeof(int), FID_CELL_PART);
   }
 
   int num_ranks;
-  MPI_Comm_size(MPI_COMM_WORLD, &num_ranks);
+  MPI_Comm_size(MPI_COMM_WORLD, &num_ranks); 
   int max_cells = 1000;
   Point<2> elem_rect_lo; elem_rect_lo.x[0] = 0; elem_rect_lo.x[1]=0;
   Point<2> elem_rect_hi;
@@ -144,27 +137,20 @@ driver(
   elem_rect_hi.x[1] = max_cells;
   Rect<2> elem_rect( elem_rect_lo, elem_rect_hi );
   
-  IndexSpace cells_temp_is = context_.runtime()->create_index_space(
-          context_.context(), Domain::from_rect<2>(elem_rect));
+  IndexSpace is = runtime->create_index_space(context,
+    Domain::from_rect<2>(elem_rect));
   
-  LogicalRegion cell_temp_lr =
-       context_.runtime()->create_logical_region(context_.context(),
-                                      cells_temp_is, cells_temp_fs);
-  context_.runtime()->attach_name(cell_temp_lr,
-                 "cell partitions logical region");
+  LogicalRegion cell_parts_lr = runtime->create_logical_region(context, is, fs);
+  runtime->attach_name(cell_parts_lr, "cell partitions logical region");
 
-  // Use blockify to create num_rank slices of the data
-  Point<2> cell_temp_color;
-  cell_temp_color.x[0] = 1;
-  cell_temp_color.x[1] = max_cells;
-  Blockify<2> cells_temp_coloring(cell_temp_color);
+  // Use blockify to create num_rank slices of the data  
+  Point<2> cell_part_color; cell_part_color.x[0] = 1; cell_part_color.x[1] = max_cells;
+  Blockify<2> coloring(cell_part_color);
   
-  IndexPartition cells_temp_ip = context_.runtime()->create_index_partition(
-                    context_.context(), cells_temp_is, cells_temp_coloring);
-  LogicalPartition cell_temp_lp = context_.runtime()->
-       get_logical_partition(context_.context(), cell_temp_lr, cells_temp_ip);
-  context_.runtime()->attach_name(cell_temp_lp,
-            "cell partitions temporary logical partition");
+  IndexPartition ip = runtime->create_index_partition(context, is, coloring);
+  LogicalPartition cell_parts_lp = runtime->
+    get_logical_partition(context, cell_parts_lr, ip);
+  runtime->attach_name(cell_parts_lp, "cell partitions logical partition");
   
 
   LegionRuntime::HighLevel::ArgumentMap arg_map;
@@ -172,421 +158,97 @@ driver(
   // this is the init partitions task 
   LegionRuntime::HighLevel::IndexLauncher init_cell_partitions_launcher(
     task_ids_t::instance().init_cell_partitions_task_id,
-    legion_domain::from_rect<2>(context_.interop_helper_.all_processes_),
+    LegionRuntime::HighLevel::Domain::from_rect<2>(context_.interop_helper_.all_processes_), 
     LegionRuntime::HighLevel::TaskArgument(0, 0),
     arg_map);
   
   
   init_cell_partitions_launcher.add_region_requirement(
-    RegionRequirement(cell_temp_lp, 0/*projection ID*/,
-                      WRITE_DISCARD, EXCLUSIVE, cell_temp_lr));
+    RegionRequirement(cell_parts_lp, 0/*projection ID*/,
+                      WRITE_DISCARD, EXCLUSIVE, cell_parts_lr));
   init_cell_partitions_launcher.add_field(0, FID_CELL_PART);
-  FutureMap fm = context_.runtime()->execute_index_space(
-             context_.context(), init_cell_partitions_launcher);
+  FutureMap fm = runtime->execute_index_space(context, init_cell_partitions_launcher);
   
   fm.wait_all_results();
 
   std::cout << "returned from wait_all_results()" << std::endl;
 
   for (int i = 0; i < num_ranks; i++) {
-    std::cout << "about to call get_results" << std::endl;
-    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(
-                           DomainPoint::from_point<2>(make_point(i,0)));
+    std::cout << "about to call get_results" << std::endl; 
+    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(DomainPoint::from_point<2>(make_point(i,0)));
     std::cout << "From rank " << i << " received (exclusive, shared, ghost) "
               << "(" << received.exclusive << "," << received.shared << ","
               << received.ghost << ")" << std::endl; 
+      
   }
- 
-   //printing results
-  { 
-  	// GMS: back at the top level, we need to read this partitioning information
-  	RegionRequirement req(cell_temp_lr, READ_WRITE, EXCLUSIVE, cell_temp_lr);
-  	req.add_field(FID_CELL_PART);
+  
+  // GMS: back at the top level, we need to read this partitioning information
+  RegionRequirement req(cell_parts_lr, READ_WRITE, EXCLUSIVE, cell_parts_lr);
+  req.add_field(FID_CELL_PART);
 
-    std::cout << "Back in driver (TTL) and checking values in LR" << std::endl;
-    InlineLauncher cell_temp_launcher(req);
-    PhysicalRegion cell_temp_region =
-      context_.runtime()->map_region(context_.context(), cell_temp_launcher);
-    cell_temp_region.wait_until_valid();
-    RegionAccessor<AccessorType::Generic, int> acc_cell_temp =
-      cell_temp_region.get_field_accessor(FID_CELL_PART).typeify<int>();
-    int zeros = 0;
-    int non_zeros = 0; 
-    int num_cells = 0;
-    for (int i = 0; i < num_ranks; i++) {
-      flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(
-          DomainPoint::from_point<2>(make_point(i,0)));
-      int j = 0;
-      num_cells += received.exclusive+received.shared;
-      for (; j < received.exclusive; j++) {
-        double value =
-          acc_cell_temp.read(DomainPoint::from_point<2>(make_point(i,j)));
-        std::cout << "partition (" << i << "," << j << ") exclusive cell id: "
-               << value << std::endl;
-       }//end for
-       for (; j < received.exclusive+received.shared; j++) {
-         double value =
-          acc_cell_temp.read(DomainPoint::from_point<2>(make_point(i,j)));
-         std::cout << "partition (" << i << "," << j << ") shared cell id: "
-               << value << std::endl;
-        }//end for
-       for (; j < received.exclusive+received.shared+received.ghost; j++) {
-        double value =
-          acc_cell_temp.read(DomainPoint::from_point<2>(make_point(i,j)));
-        std::cout << "partition (" << i << "," << j << ") ghost cell id: "
-               << value << std::endl;
-        }//end for
-    }//end for
   
-    std::cout << "partition has " << zeros << " zeros " << non_zeros <<
-                " non zeros " << std::endl;
-  }//scope
-  
-  //Creating Global Cells Logical Region
-  int num_cells = 0;
+  std::cout << "Back in driver (TTL) and checking values in LR" << std::endl;
+  InlineLauncher cell_parts_launcher(req);
+  PhysicalRegion cell_parts_region = runtime->map_region(context, cell_parts_launcher);
+  cell_parts_region.wait_until_valid();
+  RegionAccessor<AccessorType::Generic, int> acc_cell_part =
+    cell_parts_region.get_field_accessor(FID_CELL_PART).typeify<int>();
+  int zeros = 0;
+  int non_zeros = 0; 
+  int num_cells = 0; 
   for (int i = 0; i < num_ranks; i++) {
-    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(
-        DomainPoint::from_point<2>(make_point(i,0)));
-    num_cells += received.exclusive+received.shared;
-  }//end for
+    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(DomainPoint::from_point<2>(make_point(i,0)));
+    int j = 0;
+    num_cells += received.exclusive+received.shared; 
+    for (; j < received.exclusive; j++) {
+      double value =
+        acc_cell_part.read(DomainPoint::from_point<2>(make_point(i,j)));
+      std::cout << "partition (" << i << "," << j << ") exclusive cell id: " << value << std::endl;
+    }
+    for (; j < received.exclusive+received.shared; j++) {
+      double value =
+        acc_cell_part.read(DomainPoint::from_point<2>(make_point(i,j)));
+      std::cout << "partition (" << i << "," << j << ") shared cell id: " << value << std::endl;
+    }
+    for (; j < received.exclusive+received.shared+received.ghost; j++) {
+      double value =
+        acc_cell_part.read(DomainPoint::from_point<2>(make_point(i,j)));
+      std::cout << "partition (" << i << "," << j << ") ghost cell id: " << value << std::endl;
+      
+    }
+  }    
+  std::cout << "partition has " << zeros << " zeros " << non_zeros << " non zeros " << std::endl;
+  
 
+  // Now I need to create an Index space based on this data ..
+
+#if 0 
+  
   Rect<1> elem_rect_cells(Point<1>(0),Point<1>(num_cells-1));
-  IndexSpace cells_is = context_.runtime()->create_index_space(
-             context_.context(), Domain::from_rect<1>(elem_rect_cells));
-  context_.runtime()->attach_name(cells_is, "cells global index space");
-
-  FieldSpace cells_fs =
-        context_.runtime()->create_field_space(context_.context());
+  IndexSpace is_cells = runtime->create_index_space(context, 
+                                              Domain::from_rect<2>(elem_rect_cells));
+  FieldSpace input_fs = runtime->create_field_space(ctx);
   {
-    FieldAllocator allocator =
-      context_.runtime()->create_field_allocator(context_.context(), cells_fs);
-    allocator.allocate_field(sizeof(int),FID_GLOBAL_CELL);
+    FieldAllocator allocator = 
+      runtime->create_field_allocator(ctx, input_fs);
+    allocator.allocate_field(sizeof(double),FID_PRES);
   }
-  context_.runtime()->attach_name(cells_fs, "cells global field space");
 
-  LogicalRegion cells_lr = context_.runtime()->create_logical_region(
-      context_.context(), cells_is , cells_fs);
-  context_.runtime()->attach_name(cells_lr, "cells global logical region");
+  IndexPartition ip_cells_ex;
+  DomainColoring coloring_ex;
 
-  //partitioning global cells array so each task gets as many cells as
-  //original MPI partitioning has
-  Rect<1> color_bounds(Point<1>(0),Point<1>(num_ranks-1));
-  Domain color_domain = Domain::from_rect<1>(color_bounds);
-
-  IndexPartition cells_ip;
-  DomainColoring coloring_cells;
-
-  int index=0;
-  for (int i = 0; i < num_ranks; i++) {
-    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(
-          DomainPoint::from_point<2>(make_point(i,0)));
-    int num_elmts = received.exclusive+received.shared;
-    assert((index+num_elmts) <= num_cells);
-    Rect<1> subrect(Point<1>(index),Point<1>(index+num_elmts-1));
-    coloring_cells[i] = Domain::from_rect<1>(subrect);
-    index += num_elmts;
-  }//end for
-
-  cells_ip = context_.runtime()->create_index_partition(
-           context_.context(),
-           cells_is,
-           color_domain,
-           coloring_cells,
-           true/*disjoint*/);
-
-  LogicalPartition cells_lp = context_.runtime()->get_logical_partition(
-           context_.context(), cells_lr, cells_ip);
-  context_.runtime()->attach_name(cells_lp, "cells_lp");
-
-  //next we create 1d partitioning of the cells_part_lr (by the number
-  //of MPI processes
-
-  IndexPartition cells_temp_ip1d;
-  DomainColoring coloring_cells_temp;
-
-  for (int i = 0; i < num_ranks; i++) {
-    Rect<2> subrect(make_point(i,0),make_point(i,max_cells));
-    coloring_cells_temp[i] = Domain::from_rect<2>(subrect);
-  }//end for
-
-  cells_temp_ip1d = context_.runtime()->create_index_partition(
-           context_.context(),
-           cells_temp_is,
-           color_domain,
-           coloring_cells_temp,
-           true/*disjoint*/);
-
-  LogicalPartition cells_temp_lp = context_.runtime()->get_logical_partition(
-           context_.context(), cell_temp_lr, cells_temp_ip1d);
-  context_.runtime()->attach_name(cells_temp_lp, "cells_temp_lp");
-
-
-  //index task that fills global cells array from cells_partitioning array
-  Domain launch_domain = color_domain;
-  LegionRuntime::HighLevel::IndexLauncher fill_cells_launcher(
-    task_ids_t::instance().init_cells_global_task_id,
-    color_domain,
-    LegionRuntime::HighLevel::TaskArgument(0, 0),
-    arg_map);
-   // launch_domain,
-  fill_cells_launcher.add_region_requirement(
-      RegionRequirement(cells_lp, 0/*projection ID*/,
-                        WRITE_DISCARD, EXCLUSIVE, cells_lr));
-  fill_cells_launcher.add_field(0,FID_GLOBAL_CELL);
-
-  fill_cells_launcher.add_region_requirement(
-    RegionRequirement(cells_temp_lp, 0,
-                      READ_ONLY, EXCLUSIVE, cell_temp_lr));
-  fill_cells_launcher.region_requirements[1].add_field(FID_CELL_PART);
-
-  FutureMap fm_cells = context_.runtime()->execute_index_space(
-             context_.context(), fill_cells_launcher);
-
-  fm_cells.wait_all_results();
-
-  //printing results
-  {
-    RegionRequirement req(cells_lr, READ_WRITE, EXCLUSIVE, cells_lr);
-    req.add_field(FID_GLOBAL_CELL);
+  color ... 
   
-    std::cout << "Back in driver (TTL) and checking values in Cells GlobalLR"
-       << std::endl;
-    InlineLauncher cell_launcher(req);
-    PhysicalRegion cell_region =
-      context_.runtime()->map_region(context_.context(), cell_launcher);
-    cell_region.wait_until_valid();
-    RegionAccessor<AccessorType::Generic, int> acc_cell =
-      cell_region.get_field_accessor(FID_GLOBAL_CELL).typeify<int>();
 
-    for (int i=0; i< num_cells; i++)
-    {
-      int value =
-          acc_cell.read(DomainPoint::from_point<1>(make_point(i)));
-      std::cout << "cells_global[ " <<i<<" ] = " << value <<std::endl;
-    }//end for
-  }
-  
-  // Partition the cells based on the values
-  // Partitioning for the exclusive cells
-  IndexPartition cells_exclusive_ip;
-  DomainColoring coloring_exclusive_cells;
-
-  index=0;
-  for (int i = 0; i < num_ranks; i++) {
-    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(
-          DomainPoint::from_point<2>(make_point(i,0)));
-    int num_elmts = received.exclusive;
-    assert((index+num_elmts) <= num_cells);
-    Rect<1> subrect(Point<1>(index),Point<1>(index+num_elmts-1));
-    coloring_exclusive_cells[i] = Domain::from_rect<1>(subrect);
-    index += num_elmts+received.shared;
-  }//end for
-
-  cells_exclusive_ip = context_.runtime()->create_index_partition(
-           context_.context(),
-           cells_is,
-           color_domain,
-           coloring_exclusive_cells,
-           true/*disjoint*/);
-
-  LogicalPartition cells_exclusive_lp =
-			context_.runtime()->get_logical_partition(
-           context_.context(), cells_lr, cells_exclusive_ip);
-  context_.runtime()->attach_name(cells_exclusive_lp, "cells_exclusive_lp");
-
-  //  Partitioning for the shared cells
-  IndexPartition cells_shared_ip;
-  DomainColoring coloring_shared_cells;
-
-  index=0;
-  for (int i = 0; i < num_ranks; i++) {
-    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(
-          DomainPoint::from_point<2>(make_point(i,0)));
-    index +=received.exclusive;
-    int num_elmts = received.shared;
-    assert((index+num_elmts) <= num_cells);
-    Rect<1> subrect(Point<1>(index),Point<1>(index+num_elmts-1));
-    coloring_shared_cells[i] = Domain::from_rect<1>(subrect);
-    index += num_elmts;
-  }//end for
-
-  cells_shared_ip = context_.runtime()->create_index_partition(
-           context_.context(),
-           cells_is,
-           color_domain,
-           coloring_shared_cells,
-           true/*disjoint*/);
-
-  LogicalPartition cells_shared_lp = context_.runtime()->get_logical_partition(
-           context_.context(), cells_lr, cells_shared_ip);
-  context_.runtime()->attach_name(cells_shared_lp, "cells_shared_lp");
-
-  //  Partitioning for the ghosts cells
-  // halo ghosts is an std::vector of unstructured logical regions
-  std::vector<LogicalRegion> halos_points;
-
-#if 0
-  Coloring ghost_pts_map;
-  index =0;
-  for (int color = 0; color < num_ranks; color++) {
-    ghost_pts_map[color].points = std::set<ptr_t>(); // empty set
-    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(
-          DomainPoint::from_point<2>(make_point(color,0)));
-    //get subspace of the temporary cells Logical region
-    IndexSpace subspace =
-      context_.runtime()->get_index_subspace(context_.context(),
-              cells_temp_ip1d, color);
-      //call index task that finds all global IDs for each ghost element in 
-      //this rank;
 #endif
-#if 0
-//    Domain dom = runtime->get_index_space_domain(ctx, subspace);
-//    Rect<1> rect = dom.get_rect<1>(); 
-    index=received.exclusive+received.shared;
-    // for each element from ghost regions of subspace, search global-local
-    // id map for the the global if of this element
-    int id_found = 0;
-    for (int i = index; i<=index+received.ghost; i++)
-    {
-         //id_found =...
-         ghost_pts_map[color].points.insert(id_found);
-    }//end for
-#endif
+    
 
-  //create ghost cells logical region
-  int num_ghost_cells = 0;
-  for (int i = 0; i < num_ranks; i++) {
-    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(
-        DomainPoint::from_point<2>(make_point(i,0)));
-    num_ghost_cells += received.ghost;
-  }//end for
-
-  Rect<1> elem_rect_ghost(Point<1>(0),Point<1>(num_ghost_cells-1));
-  IndexSpace ghost_cells_is = context_.runtime()->create_index_space(
-             context_.context(), Domain::from_rect<1>(elem_rect_ghost));
-  context_.runtime()->attach_name(ghost_cells_is, "ghost cells index space");
-
-  FieldSpace ghost_cells_id_fs =
-        context_.runtime()->create_field_space(context_.context());
-  {
-    FieldAllocator allocator =
-      context_.runtime()->create_field_allocator(context_.context(),
-             ghost_cells_id_fs);
-    allocator.allocate_field(sizeof(int),FID_GHOST_CELL_ID);
-  }
-  context_.runtime()->attach_name(ghost_cells_id_fs, "ghost cells field space");
-
-  LogicalRegion ghost_cells_id_lr = context_.runtime()->create_logical_region(
-      context_.context(), ghost_cells_is , ghost_cells_id_fs);
-  context_.runtime()->attach_name(ghost_cells_id_lr,
-        "ghost cells id logical region");
-
-  //partition ghost cells logical region
-
-  IndexPartition ghost_cells_ip;
-  DomainColoring ghost_coloring_cells;
-
-  index=0;
-  for (int i = 0; i < num_ranks; i++) {
-    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(
-          DomainPoint::from_point<2>(make_point(i,0)));
-    int num_elmts = received.ghost;
-    assert((index+num_elmts) <= num_cells);
-    Rect<1> subrect(Point<1>(index),Point<1>(index+num_elmts));
-    ghost_coloring_cells[i] = Domain::from_rect<1>(subrect);
-    index += num_elmts;
-  }//end for
-
-  ghost_cells_ip = context_.runtime()->create_index_partition(
-           context_.context(),
-           ghost_cells_is,
-           color_domain,
-           ghost_coloring_cells,
-           true/*disjoint*/);
-
-  LogicalPartition ghost_cells_id_lp =
-			context_.runtime()->get_logical_partition(
-           context_.context(), ghost_cells_id_lr, ghost_cells_ip);
-  context_.runtime()->attach_name(ghost_cells_id_lp, "ghost_cells_id_lp");
-
-  // next we create 1d partitioning of the cells_part_lr only for the ghost 
-  // regions (by the number of MPI processes)
-
-  IndexPartition cells_temp_ghost_ip;
-  DomainColoring coloring_cells_temp_ghost;
-
-  index=0;
-  for (int i = 0; i < num_ranks; i++) {
-    flecsi::dmp::parts received = fm.get_result<flecsi::dmp::parts>(
-          DomainPoint::from_point<2>(make_point(i,0)));
-    int num_elmts = received.ghost;
-    index=received.shared+received.exclusive;
-    Rect<2> subrect(make_point(i,index),make_point(i,index+num_elmts));
-    coloring_cells_temp_ghost[i] = Domain::from_rect<2>(subrect);
-  }//end for
-
-  cells_temp_ghost_ip = context_.runtime()->create_index_partition(
-           context_.context(),
-           cells_temp_is,
-           color_domain,
-           coloring_cells_temp_ghost,
-           true/*disjoint*/);
-
-  LogicalPartition cells_temp_ghost_lp =
-    context_.runtime()->get_logical_partition(
-           context_.context(), cell_temp_lr, cells_temp_ghost_ip);
-  context_.runtime()->attach_name(cells_temp_ghost_lp, "cells_temp_ghost_lp");
-
-
-  LegionRuntime::HighLevel::IndexLauncher find_ghost_ids_launcher(
-    task_ids_t::instance().find_ghost_task_id,
-    color_domain,
-    LegionRuntime::HighLevel::TaskArgument(0, 0),
-    arg_map);
-
-  find_ghost_ids_launcher.add_region_requirement(
-  RegionRequirement(ghost_cells_id_lp, 0/*projection ID*/,
-                       WRITE_DISCARD, EXCLUSIVE, ghost_cells_id_lr));
-  find_ghost_ids_launcher.add_field(0,FID_GHOST_CELL_ID);
-
-  find_ghost_ids_launcher.add_region_requirement(
-  RegionRequirement(cells_lr, 0/*projection ID*/,
-                       READ_ONLY, EXCLUSIVE, cells_lr));
-  find_ghost_ids_launcher.add_field(1,FID_GLOBAL_CELL);
-
-  find_ghost_ids_launcher.add_region_requirement(
-    RegionRequirement(cells_temp_ghost_lp, 0,
-                      READ_ONLY, EXCLUSIVE, cell_temp_lr));
-  find_ghost_ids_launcher.region_requirements[2].add_field(FID_CELL_PART);
-
-  FutureMap fm_ghost = context_.runtime()->execute_index_space(
-             context_.context(), find_ghost_ids_launcher);
-
-  fm_ghost.wait_all_results();
   
-  //printing results
-  { 
-    RegionRequirement req(ghost_cells_id_lr, READ_WRITE,
-				 EXCLUSIVE,ghost_cells_id_lr);
-    req.add_field(FID_GHOST_CELL_ID);
-    
-    std::cout << "Back in driver (TTL) and checking values in GHOST ID"
-       << std::endl;
-    InlineLauncher ghost_launcher(req);
-    PhysicalRegion ghost_region =
-      context_.runtime()->map_region(context_.context(), ghost_launcher);
-    ghost_region.wait_until_valid();
-    RegionAccessor<AccessorType::Generic, int> acc_ghost =
-      ghost_region.get_field_accessor(FID_GHOST_CELL_ID).typeify<int>();
-    
-    for (int i=0; i< num_ghost_cells; i++)
-    { 
-      int value =
-          acc_ghost.read(DomainPoint::from_point<1>(make_point(i)));
-      std::cout << "ghost_id[ " <<i<<" ] = " << value <<std::endl;
-    }//end for
-  }//end scope
- 
+  // Then partition the cells based on the values..
+
+  // etc.. 
+
+  
   
   
 } // driver
