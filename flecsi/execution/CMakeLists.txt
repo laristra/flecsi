@@ -39,14 +39,14 @@ set(execution_SOURCES
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
-# cinch_add_unit(task
-#    SOURCES
-#      test/task.cc
-#      test/task_driver.h
-#      legion/runtime_driver.cc
-#    DEFINES FLECSI_DRIVER=flecsi/execution/test/task_driver.h
-#    POLICY LEGION
-#    LIBRARIES flecsi)
+ cinch_add_unit(task
+    SOURCES
+      test/task.cc
+      test/task_driver.h
+      legion/runtime_driver.cc
+    DEFINES FLECSI_DRIVER=flecsi/execution/test/task_driver.h
+    POLICY LEGION
+    LIBRARIES flecsi)
 
 #   cinch_add_unit(future
 #    SOURCES
@@ -60,16 +60,16 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
 elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
-#  cinch_add_unit(task
-#    SOURCES
-#      test/task.cc
-#      test/task_driver.h
-#      mpilegion/runtime_driver.cc
-#      ../partition/init_partitions_task.cc
-#    DEFINES FLECSI_DRIVER=flecsi/execution/test/task_driver.h
-#    POLICY MPILEGION
-#    LIBRARIES flecsi
-#  )
+  cinch_add_unit(task
+    SOURCES
+      test/task.cc
+      test/task_driver.h
+      mpilegion/runtime_driver.cc
+      ../partition/init_partitions_task.cc
+    DEFINES FLECSI_DRIVER=flecsi/execution/test/task_driver.h
+    POLICY MPILEGION
+    LIBRARIES flecsi
+  )
 
 #  cinch_add_unit(future
 #    SOURCES
@@ -95,13 +95,13 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
 else() # serial
 
-# cinch_add_unit(task
-#   SOURCES
-#     test/task.cc
-#     test/task_driver.h
-#     serial/runtime_driver.cc
-#   DEFINES FLECSI_DRIVER=flecsi/execution/test/task_driver.h
-#   LIBRARIES flecsi)
+  cinch_add_unit(task
+    SOURCES
+      test/task.cc
+      test/task_driver.h
+      serial/runtime_driver.cc
+    DEFINES FLECSI_DRIVER=flecsi/execution/test/task_driver.h
+    LIBRARIES flecsi)
 
 #  cinch_add_unit(future
 #    SOURCES
