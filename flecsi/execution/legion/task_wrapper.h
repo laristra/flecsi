@@ -9,6 +9,7 @@
 #include "flecsi/data/data_handle.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/legion/task_args.h"
+#include "flecsi/execution/mpilegion/legion_handshake.h"
 #include "flecsi/utils/common.h"
 
 ///
