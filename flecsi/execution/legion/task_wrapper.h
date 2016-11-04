@@ -9,7 +9,11 @@
 #include "flecsi/data/data_handle.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/legion/task_args.h"
-#include "flecsi/execution/mpilegion/legion_handshake.h"
+
+#if defined (FLECSI_RUNTIME_MODEL_mpilegion)
+  #include "flecsi/execution/mpilegion/legion_handshake.h"
+#endif
+
 #include "flecsi/utils/common.h"
 
 ///
@@ -216,10 +220,12 @@ struct legion_task_wrapper__<P, S, I, void, A>
         lr_runtime::register_legion_task<execute>(
           tid, lr_proc::TOC_PROC, S, I);
         break;
+#if defined(FLECSI_RUNTIME_MODEL_mpilegion)
       case mpi:
         lr_runtime::register_legion_task<execute_mpi>(
           tid, lr_proc::LOC_PROC, S, I);
         break;
+#endif // FLECSI_RUNTIME_MODEL_mpilegion
     } // switch
   } // register_task
 
@@ -266,6 +272,7 @@ struct legion_task_wrapper__<P, S, I, void, A>
     context_t::instance().pop_state(user_task_handle.key);
   } // execute
 
+#if defined(FLECSI_RUNTIME_MODEL_mpilegion)
   static void execute_mpi(const LegionRuntime::HighLevel::Task * task,
     const std::vector<LegionRuntime::HighLevel::PhysicalRegion>& regions,
     LegionRuntime::HighLevel::Context context,
@@ -293,6 +300,7 @@ struct legion_task_wrapper__<P, S, I, void, A>
 
      ext_legion_handshake_t::instance().call_mpi_=true;
   } // execute_mpi
+#endif // FLECSI_RUNTIME_MODEL_mpilegion
 
 }; // class legion_task_wrapper__
 
