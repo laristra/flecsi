@@ -70,10 +70,11 @@ using dense_field_t = storage_t::st_t<dense>::handle_t<double>;
 // Task registration.
 //----------------------------------------------------------------------------//
 
-void task1(double dval, int ival) {
+double task1(double dval, int ival) {
   std::cout << "Executing task1" << std::endl;
   std::cout << "Value(double): " << dval << std::endl;
   std::cout << "Value(int): " << ival << std::endl;
+  return dval;
 } // task1
 
 //#if defined(FLECSI_RUNTIME_MODEL_mpilegion)
@@ -189,10 +190,12 @@ void driver(int argc, char ** argv) {
 //#if defined(FLECSI_RUNTIME_MODEL_mpilegion)
 //  execute_task(task1, mpi, index, alpha, 5);
 //#else
-  execute_task(task1, loc, single, alpha, 5);
-//#endif
 
-  execute_task(task2, loc, single, alpha, 5.0, p);
+  auto future1 = execute_task(task1, loc, single, alpha, 5);
+
+  future1.wait();
+
+  auto future2 = execute_task(task2, loc, single, alpha, 5.0, p);
 
   execute_task(task3, loc, index, 5.0);
 
@@ -215,6 +218,11 @@ void driver(int argc, char ** argv) {
   for(size_t i(0); i<10; ++i) {
     std::cout << mats1[i].eos() << std::endl;
   } // for
+
+#if 1
+  std::cout << "future2.get(): " << future2.get() << std::endl;
+  std::cout << "future1.get(): " << future1.get() << std::endl;
+#endif
 
 } // driver
 

@@ -15,6 +15,8 @@
 if(ENABLE_PARTITION)
 
 set(partition_HEADERS
+  index_partition.h
+  init_partitions_task.h
   partitioner.h
   PARENT_SCOPE
 )

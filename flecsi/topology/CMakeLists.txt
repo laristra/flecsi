@@ -12,15 +12,18 @@
 # All rights reserved
 #~----------------------------------------------------------------------------~#
 
-set(mesh_HEADERS
+set(topology_HEADERS
+  index_space.h
   mesh_topology.h
   mesh_types.h
   mesh_utils.h
   tree_topology.h
-  PARENT_SCOPE)
+  PARENT_SCOPE
+)
 
-set(mesh_SOURCES
-  PARENT_SCOPE)
+set(topology_SOURCES
+  PARENT_SCOPE
+)
 
 #------------------------------------------------------------------------------#
 # Mesh unit tests.

@@ -1,6 +1,15 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
- * All rights reserved.
+ *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
+ * /@@/////  /@@          @@////@@ @@////// /@@
+ * /@@       /@@  @@@@@  @@    // /@@       /@@
+ * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
+ * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
+ * /@@       /@@/@@//// //@@    @@       /@@/@@
+ * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
+ * //       ///  //////   //////  ////////  //
+ *
+ * Copyright (c) 2016 Los Alamos National Laboratory, LLC
+ * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
 #ifndef flecsi_execution_legion_context_policy_h
@@ -12,9 +21,11 @@
 // \date Initial file creation: Jul 14, 2016
 ///
 
-#include <memory>
 #include <functional>
+#include <memory>
 #include <unordered_map>
+#include <stack>
+
 #include <legion.h>
 
 #include "flecsi/utils/common.h"
@@ -27,17 +38,46 @@ namespace flecsi {
 namespace execution {
 
 ///
+// \struct legion_runtime_runtime_state_t legion/context_policy.h
+// \brief legion_runtime_state_t provides storage for Legion runtime
+//        information that can be reinitialized as needed to store const
+//        data types and references as required by the Legion runtime.
+///
+struct legion_runtime_state_t {
+
+  legion_runtime_state_t(
+    LegionRuntime::HighLevel::Context & context_,
+    LegionRuntime::HighLevel::HighLevelRuntime * runtime_,
+    const LegionRuntime::HighLevel::Task * task_,
+    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions_
+  )
+  :
+    context(context_),
+    runtime(runtime_),
+    task(task_),
+    regions(regions_)
+  {}
+    
+  LegionRuntime::HighLevel::Context & context;
+  LegionRuntime::HighLevel::HighLevelRuntime * runtime;
+  const LegionRuntime::HighLevel::Task * task;
+  const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions;
+
+}; // struct legion_runtime_state_t
+
+// Use thread local storage for legion state information. The state_
+// is set for each legion task invocation using the task name hash
+// as a key. This seems like it should be safe, since multiple concurrent
+// invocations of the same task can only occur on seperate threads.
+static thread_local std::unordered_map<size_t,
+  std::stack<std::shared_ptr<legion_runtime_state_t>>> state_;
+
+///
 // \class legion_context_policy_t legion/context_policy.h
 // \brief legion_context_policy_t provides...
 ///
 struct legion_context_policy_t
 {
-
-  using lr_context_t = LegionRuntime::HighLevel::Context;
-  using lr_runtime_t = LegionRuntime::HighLevel::HighLevelRuntime;
-  using lr_task_t = LegionRuntime::HighLevel::Task;
-  using lr_regions_t = std::vector<LegionRuntime::HighLevel::PhysicalRegion>;
-
   const static LegionRuntime::HighLevel::Processor::Kind lr_loc =
     LegionRuntime::HighLevel::Processor::LOC_PROC;
 
@@ -56,9 +96,11 @@ struct legion_context_policy_t
     char ** argv
   )
   {
+    using namespace LegionRuntime::HighLevel;
+
     // Register top-level task
-    lr_runtime_t::set_top_level_task_id(TOP_LEVEL_TASK_ID);
-    lr_runtime_t::register_legion_task<legion_runtime_driver>(
+    HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
+    HighLevelRuntime::register_legion_task<legion_runtime_driver>(
       TOP_LEVEL_TASK_ID, lr_loc, true, false);
 
     // Register user tasks
@@ -70,21 +112,34 @@ struct legion_context_policy_t
     } // for
   
     // Start the runtime
-    return lr_runtime_t::start(argc, argv);
+    return HighLevelRuntime::start(argc, argv);
   } // initialize
 
-  ///
-  // Reset the legion runtime state.
-  ///
-  void
-  set_state(
-    lr_context_t & context,
-    lr_runtime_t * runtime,
-    const lr_task_t * task,
-    const lr_regions_t & regions
+  void push_state(
+    size_t key,
+    LegionRuntime::HighLevel::Context & context,
+    LegionRuntime::HighLevel::HighLevelRuntime * runtime,
+    const LegionRuntime::HighLevel::Task * task,
+    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions
   )
   {
-    state_.reset(new legion_runtime_state_t(context, runtime, task, regions));
+#ifndef NDEBUG
+    std::cout << "pushing state for " << key << std::endl;
+#endif
+
+    state_[key].push(std::shared_ptr<legion_runtime_state_t>
+      (new legion_runtime_state_t(context, runtime, task, regions)));
+  } // set_state
+
+  void pop_state(
+    size_t key
+  )
+  {
+#ifndef NDEBUG
+    std::cout << "popping state for " << key << std::endl;
+#endif
+
+    state_[key].pop();
   } // set_state
 
   //--------------------------------------------------------------------------//
@@ -120,8 +175,10 @@ struct legion_context_policy_t
     task_hash_key_t key
   )
   {
+#ifndef NDEBUG
     assert(task_registry_.find(key) != task_registry_.end() &&
       "task key does not exist!");
+#endif
 
     return task_registry_[key].first;
   } // task_id
@@ -165,33 +222,41 @@ struct legion_context_policy_t
   // Legion runtime accessors.
   //--------------------------------------------------------------------------//
 
-  lr_context_t & context() { return state_->context; }
-  lr_runtime_t * runtime() { return state_->runtime; }
-  const lr_task_t * task() { return state_->task; }
-  const lr_regions_t & regions() { return state_->regions; }
+  LegionRuntime::HighLevel::Context &
+  context(
+    size_t task_key
+  )
+  {
+    return state_[task_key].top()->context;
+  } // context
+
+  LegionRuntime::HighLevel::HighLevelRuntime *
+  runtime(
+    size_t task_key
+  )
+  {
+    return state_[task_key].top()->runtime;
+  } // runtime
+
+  const
+  LegionRuntime::HighLevel::Task *
+  task(
+    size_t task_key
+  )
+  {
+    return state_[task_key].top()->task;
+  } // task
+
+  const
+  std::vector<LegionRuntime::HighLevel::PhysicalRegion> &
+  regions(
+    size_t task_key
+  )
+  {
+    return state_[task_key].top()->regions;
+  } // regions
   
 private:
-
-  ///
-  // \struct legion_runtime_runtime_state_t legion/context_policy.h
-  // \brief legion_runtime_state_t provides storage for Legion runtime
-  //        information that can be reinitialized as needed to store const
-  //        data types and references as required by the Legion runtime.
-  ///
-  struct legion_runtime_state_t {
-
-    legion_runtime_state_t(lr_context_t & context_, lr_runtime_t * runtime_,
-      const lr_task_t * task_, const lr_regions_t & regions_)
-      : context(context_), runtime(runtime_), task(task_), regions(regions_) {}
-      
-    lr_context_t & context;
-    lr_runtime_t * runtime;
-    const lr_task_t * task;
-    const lr_regions_t & regions;
-
-  }; // struct legion_runtime_state_t
-
-  std::shared_ptr<legion_runtime_state_t> state_;
 
   //--------------------------------------------------------------------------//
   // Task registry

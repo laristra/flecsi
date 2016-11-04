@@ -13,11 +13,19 @@
 #~----------------------------------------------------------------------------~#
 
 set(utils_HEADERS
+  any.h
   array_ref.h
+  bitfield.h
   check_sig.h
   check_types.h
   common.h
   const_string.h
+  detail/check_types.h
+  detail/static_for.h
+  detail/tuple_for_each.h
+  detail/tuple_visit.h
+  detail/tuple_zip.h
+  detail/zip.h
   dimensioned_array.h
   doxygen_main.h
   factory.h
@@ -26,21 +34,30 @@ set(utils_HEADERS
   id.h
   index_space.h
   iterator.h
+  mpi_legion_interoperability/legion_arrays.h
+  mpi_legion_interoperability/mpi_legion_data.h
   reorder.h
   set_intersection.h
-  static_for.h     detail/static_for.h
+  static_container/meta_counter.h
+  static_container/meta_list.h
+  static_container/static_for.h
+  static_container/type_list.h
+  static_for.h
   static_list.h
   static_verify.h
-  tuple_for_each.h detail/tuple_for_each.h
-  tuple_visit.h    detail/tuple_visit.h
-  tuple_zip.h      detail/tuple_zip.h
-  zip.h            detail/zip.h
-  any.h
-  )
+  tuple_filter.h
+  tuple_for_each.h
+  tuple_function.h
+  tuple_visit.h
+  tuple_wrapper.h
+  tuple_zip.h
+  zip.h
+)
 
 set(utils_SOURCES
   common.cc
-  PARENT_SCOPE)
+  PARENT_SCOPE
+)
 
 
 if (ENABLE_STATIC_CONTAINER)

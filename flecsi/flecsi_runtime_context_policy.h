@@ -26,10 +26,6 @@
   #define flecsi_context_policy_t \
     flecsi::execution::serial_context_policy_t
 
-  #include "flecsi/execution/serial/future_policy.h"
-  #define flecsi_future_policy__ \
-    flecsi::execution::serial_future_policy__
-
 // Legion Policy
 #elif defined(FLECSI_RUNTIME_MODEL_legion)
 
