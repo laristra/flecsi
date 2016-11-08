@@ -29,6 +29,7 @@
 //----------------------------------------------------------------------------//
 
 #include "flecsi/utils/const_string.h"
+#include "flecsi/topology/index_space.h"
 
 ///
 // \file serial/sparse.h
@@ -96,6 +97,9 @@ struct sparse_accessor_t
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
   using entry_value_t = entry_value__<T>;
+
+  using entry_space_t = 
+    topology::index_space<topology::simple_entry<size_t>, true>;
 
   //--------------------------------------------------------------------------//
   // Constructors.
@@ -177,6 +181,23 @@ struct sparse_accessor_t
 
     return itr->value;
   } // operator ()
+
+  entry_space_t entries(size_t index){
+    assert(index < num_indices_ && "sparse accessor: index out of bounds");
+
+    entry_value_t * itr = entries_ + indices_[index];
+    entry_value_t * end = entries_ + indices_[index + 1];
+
+    entry_space_t es;
+
+    size_t id = 0;
+    while(itr != end){
+      es.push_back({id++, itr->entry});
+      ++itr;
+    }
+
+    return es;    
+  }
 
   ///
   //
