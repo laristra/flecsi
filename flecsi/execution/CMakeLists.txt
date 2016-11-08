@@ -86,7 +86,6 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
 else() # serial
 
- cinch_add_unit(task
    SOURCES
      test/task.cc
      test/task_driver.h
@@ -107,15 +106,15 @@ endif()
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
   
-#  cinch_add_unit(test_legion_handshake
-#    SOURCES test/test_legion_handshake.cc
-#    POLICY MPILEGION
-#  )
+  cinch_add_unit(test_legion_handshake
+    SOURCES test/test_legion_handshake.cc
+    POLICY MPILEGION
+  )
 
-#  cinch_add_unit(test_mpilegion_interop
-#    SOURCES test/test_mpi_legion_interop.cc
-#    POLICY MPILEGION
-#  )
+  cinch_add_unit(test_mpilegion_interop
+    SOURCES test/test_mpi_legion_interop.cc
+    POLICY MPILEGION
+  )
  
 endif()
 
