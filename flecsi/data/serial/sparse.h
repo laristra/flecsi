@@ -31,6 +31,10 @@
 #include "flecsi/utils/const_string.h"
 #include "flecsi/topology/index_space.h"
 
+#define np(X)                                                            \
+ std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
+           << ": " << #X << " = " << (X) << std::endl
+
 ///
 // \file serial/sparse.h
 // \authors bergen
@@ -98,7 +102,7 @@ struct sparse_accessor_t
 
   using entry_value_t = entry_value__<T>;
 
-  using entry_space_t = 
+  using index_space_ = 
     topology::index_space<topology::simple_entry<size_t>, true>;
 
   //--------------------------------------------------------------------------//
@@ -182,21 +186,34 @@ struct sparse_accessor_t
     return itr->value;
   } // operator ()
 
-  entry_space_t entries(size_t index){
+  index_space_ entries(size_t index) const{
     assert(index < num_indices_ && "sparse accessor: index out of bounds");
 
     entry_value_t * itr = entries_ + indices_[index];
     entry_value_t * end = entries_ + indices_[index + 1];
 
-    entry_space_t es;
+    index_space_ is;
 
     size_t id = 0;
     while(itr != end){
-      es.push_back({id++, itr->entry});
+      is.push_back({id++, itr->entry});
       ++itr;
     }
 
-    return es;    
+    return is;    
+  }
+
+  index_space_ indices(){
+    index_space_ is;
+    size_t id = 0;
+
+    for(size_t i = 1; i < num_indices_; ++i){
+      if(indices_[i] - indices_[i - 1]){
+        is.push_back({id++, i - 1});
+      }
+    }
+
+    return is;
   }
 
   ///
