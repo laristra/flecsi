@@ -157,7 +157,7 @@ TEST(storage, sparse1) {
   size_t num_indices = 100;
   size_t num_materials = 50;
 
-  register_data(m, hydro, a, double, sparse, 1, cells, num_materials);
+  register_data(m, hydro, a, double, sparse, 1, num_indices, num_materials);
   auto am = get_mutator(m, hydro, a, double, sparse, 0, 10);
 
   for(size_t i = 0; i < num_indices; i += 2){
@@ -176,6 +176,23 @@ TEST(storage, sparse1) {
     }
   }
 
+  /*
+  // iterate through all indices with non-null entries
+  for(auto i : a.indices()){
+    std::cout << "index: " << i << std::endl;
+  }
+
+  // iterate through all materials/entries used by index 0
+  for(auto e : a.entries(0)){
+    std::cout << "entry for index 0: " << e << std::endl;
+  }
+
+  // iterate through all materials/entries used
+  for(auto e : a.entries()){
+    std::cout << "entry: " << e << std::endl;
+  }
+  */
+
 } // TEST
 
 TEST(storage, sparse2) {
@@ -184,10 +201,10 @@ TEST(storage, sparse2) {
 // TODO: sparse data changes in progress
   mesh_t m;
 
-  size_t num_indices = 100;
+  size_t num_indices = 1000;
   size_t num_materials = 50;
 
-  register_data(m, hydro, a, double, sparse, 1, cells, num_materials);
+  register_data(m, hydro, a, double, sparse, 1, num_indices, num_materials);
 
   std::vector<std::pair<size_t, size_t>> v;
 
