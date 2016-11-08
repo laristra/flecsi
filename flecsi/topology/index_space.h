@@ -874,5 +874,48 @@ private:
   }
 };
 
+class simple_id{
+public:
+  simple_id(size_t id)
+  : id_(id){}
+
+  operator size_t() const{
+    return id_;
+  }
+
+  bool operator<(const simple_id& eid) const{
+    return id_ < eid.id_;
+  }
+
+  size_t index_space_index() const{
+    return id_;
+  }
+
+private:
+  size_t id_;
+};
+
+template<typename T>
+class simple_entry{
+public:
+  using id_t = simple_id;
+
+  simple_entry(id_t id, const T& entry)
+  : id_(id),
+  entry_(entry){}
+
+  operator T() const{
+    return entry_;
+  }
+
+  id_t index_space_id() const{
+    return id_;
+  }
+
+private:
+  id_t id_;
+  T entry_;
+};
+
 } // namespace topology
 } // namespace flecsi
