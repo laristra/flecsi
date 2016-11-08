@@ -18,6 +18,7 @@
 #include <map>
 #include <algorithm>
 #include <set>
+#include <unordered_set>
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_type.h!!!
@@ -186,6 +187,28 @@ struct sparse_accessor_t
     return itr->value;
   } // operator ()
 
+  index_space_ entries() const{
+    size_t id = 0;
+    index_space_ is;
+    std::unordered_set<size_t> found;
+
+    for(size_t index = 0; index < num_indices_; ++index){
+      entry_value_t * itr = entries_ + indices_[index];
+      entry_value_t * end = entries_ + indices_[index + 1];
+
+      while(itr != end){
+        size_t entry = itr->entry;
+        if(found.find(entry) == found.end()){
+          is.push_back({id++, entry});
+          found.insert(entry);
+        }
+        ++itr;
+      }
+    }
+
+    return is;    
+  }
+
   index_space_ entries(size_t index) const{
     assert(index < num_indices_ && "sparse accessor: index out of bounds");
 
@@ -208,7 +231,7 @@ struct sparse_accessor_t
     size_t id = 0;
 
     for(size_t i = 1; i < num_indices_; ++i){
-      if(indices_[i] - indices_[i - 1]){
+      if(indices_[i] != indices_[i - 1]){
         is.push_back({id++, i - 1});
       }
     }
