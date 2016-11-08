@@ -21,6 +21,7 @@ namespace flecsi {
 namespace dmp {
 
 struct parts {
+  int primary;
   int exclusive;
   int shared;
   int ghost;
@@ -28,26 +29,20 @@ struct parts {
 
 
 
-parts
-init_partitions(
-  const Legion::Task *task, 
+parts 
+get_numbers_of_cells_task(
+  const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx, Legion::HighLevelRuntime *runtime
 );
 
 void
-fill_cells_global_task(
-  const Legion::Task *task,
+init_cells_task(
+  const Legion::Task *task, 
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx, Legion::HighLevelRuntime *runtime
 );
 
-std::vector<ptr_t>
-find_ghost_task(
-  const Legion::Task *task,
-  const std::vector<Legion::PhysicalRegion> & regions,
-  Legion::Context ctx, Legion::HighLevelRuntime *runtime
-);
 
 } // namespace dmp
 } // namespace flecsi

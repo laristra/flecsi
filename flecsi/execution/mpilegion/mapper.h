@@ -170,8 +170,6 @@ MPIMapper : public Legion::Mapping::DefaultMapper
   	size_t handoff_to_mpi_task_id = 
     		task_ids_t::instance().handoff_to_mpi_task_id;
   	size_t wait_on_mpi_task_id  = task_ids_t::instance().wait_on_mpi_task_id;
-  	size_t init_cell_partitions_task_id =
-        task_ids_t::instance().init_cell_partitions_task_id;
  		size_t update_mappers_task_id =
 				task_ids_t::instance().update_mappers_task_id;
 
@@ -179,7 +177,6 @@ MPIMapper : public Legion::Mapping::DefaultMapper
   	if (task.task_id == connect_mpi_task_id||
       task.task_id == handoff_to_mpi_task_id||
       task.task_id == wait_on_mpi_task_id ||
-      task.task_id == init_cell_partitions_task_id ||
       ((task.tag & MAPPER_ALL_PROC) != 0))
 		{
     	// expect a 2-D index domain - first component is the processor index,
