@@ -11,15 +11,7 @@ ARG TRAVIS_BRANCH
 ARG TRAVIS_COMMIT
 ARG COVERAGE
 
-USER root
-RUN dnf install -y -q openmpi-devel python-pip
-
-USER flecsi
-
-RUN if [ ${COVERAGE}  ]; then pip install --user codecov; fi
-ENV PATH=$PATH:/usr/lib64/openmpi/bin/
-
-WORKDIR /tmp
+WORKDIR /home/flecsi
 RUN git clone --recursive https://github.com/losalamos/flecsi.git
 
 WORKDIR flecsi
