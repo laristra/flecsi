@@ -58,17 +58,20 @@ init_partitions(
     
 
   
-  for(auto & element : ip.exclusive ) {
+  for(size_t i=0; i< ip.exclusive.size();i++ ) {
+    auto element = ip.exclusive[i];
     std::cout << " Found exclusive elemment: " << element << 
         " on rank: " << rank << std::endl;
   }
   
-  for(auto & element : ip.shared) {
+  for(size_t i=0; i< ip.shared.size(); i++) {
+    auto element = ip.shared_id(i);
     std::cout << " Found shared elemment: " << element << 
         " on rank: " << rank << std::endl;
   } 
 
-  for(auto & element : ip.ghost) {
+  for(size_t i=0; i<ip.ghost.size(); i++) {
+    auto element = ip.ghost_id(i);
     std::cout << " Found ghost elemment: " << element << 
         " on rank: " << rank << std::endl;
   }
@@ -94,7 +97,8 @@ init_partitions(
     }//end if
   }//end for
 
-  for(auto & element : ip.shared) {
+  for(size_t i=0; i< ip.shared.size(); i++) {
+    auto element = ip.shared_id(i); 
     if(pir) {
        acc_part.write(legion_domain_p::from_point<2>(pir.p), element);
        pir++;
@@ -103,7 +107,8 @@ init_partitions(
     }//end if
   }//end for
 
-  for(auto & element : ip.ghost) {
+  for(size_t i=0; i< ip.ghost.size(); i++) {
+    auto element = ip.ghost_id(i);
     if(pir) {
       acc_part.write(legion_domain_p::from_point<2>(pir.p), element);
       pir++;
