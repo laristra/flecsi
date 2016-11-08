@@ -86,12 +86,14 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
 else() # serial
 
-   SOURCES
-     test/task.cc
-     test/task_driver.h
-     serial/runtime_driver.cc
-   DEFINES FLECSI_DRIVER=flecsi/execution/test/task_driver.h
-   LIBRARIES flecsi)
+  cinch_add_unit(task
+    SOURCES
+      test/task.cc
+      test/task_driver.h
+      serial/runtime_driver.cc
+    DEFINES FLECSI_DRIVER=flecsi/execution/test/task_driver.h
+    LIBRARIES flecsi
+  )
 
   cinch_add_unit(simple_function
     SOURCES
