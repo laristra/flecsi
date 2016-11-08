@@ -19,7 +19,12 @@ namespace flecsi {
 // \brief data_handle_t provides an empty type for compile-time identification
 //                      of data handle objects.
 ///
-struct data_handle_t {};
+struct data_handle_t
+{
+  virtual ~data_handle_t() = 0;
+}; // struct data_handle_t
+
+data_handle_t::~data_handle_t() {}
 
 } // namespace flecsi
 

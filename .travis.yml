@@ -8,8 +8,8 @@ services:
 env:
   matrix:
     - DOCKERFILE=ubuntu MINIMAL=ON MPI=OFF RUNTIME=serial
-    - DOCKERFILE=ubuntu_tpl MPI=ON RUNTIME=legion    DOCKERHUB=true
-    - DOCKERFILE=ubuntu_tpl MPI=ON RUNTIME=legion    WERROR=yes
+    - DOCKERFILE=ubuntu_tpl MPI=OFF RUNTIME=legion    DOCKERHUB=true
+    - DOCKERFILE=ubuntu_tpl MPI=OFF RUNTIME=legion    WERROR=yes
     - DOCKERFILE=ubuntu_tpl MPI=ON  RUNTIME=mpilegion DOCKERHUB= rue
     - DOCKERFILE=ubuntu_tpl MPI=ON  RUNTIME=mpilegion WERROR=yes
 #    - DOCKERFILE=ubuntu MPI=ON   RUNTIME=mpi          DOCKERHUB=true
@@ -19,8 +19,8 @@ env:
     - DOCKERFILE=ubuntu MPI=OFF  COVERAGE=ON RUNTIME=serial
 
     - DOCKERFILE=fedora MINIMAL=ON MPI=OFF RUNTIME=serial
-    - DOCKERFILE=fedora_tpl MPI=ON RUNTIME=legion    DOCKERHUB=true
-    - DOCKERFILE=fedora_tpl MPI=ON RUNTIME=legion    WERROR=yes
+    - DOCKERFILE=fedora_tpl MPI=OFF RUNTIME=legion    DOCKERHUB=true
+    - DOCKERFILE=fedora_tpl MPI=OFF RUNTIME=legion    WERROR=yes
     - DOCKERFILE=fedora_tpl MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
     - DOCKERFILE=fedora_tpl MPI=ON  RUNTIME=mpilegion WERROR=yes
 #    - DOCKERFILE=fedora MPI=ON  RUNTIME=mpi           DOCKERHUB=true

@@ -593,11 +593,23 @@ struct storage_type_t<sparse, DS, MD> {
   // Data registration.
   //--------------------------------------------------------------------------//
 
-  template<typename T, size_t NS, typename ... Args>
-  static handle_t<T> register_data(data_client_t & data_client,
-    data_store_t & data_store, const const_string_t & key,
-    size_t versions, size_t indices, size_t num_entries, Args && ... args) {
-
+  template<
+    typename T,
+    size_t NS,
+    typename ... Args
+  >
+  static
+  handle_t<T>
+  register_data(
+    data_client_t & data_client,
+    data_store_t & data_store,
+    const const_string_t & key,
+    size_t versions,
+    size_t index_space,
+    size_t num_entries,
+    Args && ... args
+  )
+  {
     size_t h = key.hash() ^ data_client.runtime_id();
 
     // Runtime assertion that this key is unique
@@ -608,7 +620,7 @@ struct storage_type_t<sparse, DS, MD> {
 
     md.user_data.initialize(std::forward<Args>(args) ...);
     md.label = key.c_str();
-    md.size = indices;
+    md.size = data_client.indices(index_space);
     md.type_size = sizeof(T);
     md.versions = versions;
     md.rtti.reset(
@@ -618,7 +630,7 @@ struct storage_type_t<sparse, DS, MD> {
 
     for(size_t version = 0; version < versions; ++version){
       auto & iv = md.data[version | INDICES_FLAG] = std::vector<uint8_t>();
-      iv.resize((indices + 1) * sizeof(size_t));
+      iv.resize((data_client.indices(index_space) + 1) * sizeof(size_t));
 
       md.data[version | ENTRIES_FLAG] = std::vector<uint8_t>();
     }
