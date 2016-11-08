@@ -3,6 +3,8 @@
 #include <cmath>
 
 #include "flecsi/topology/tree_topology.h"
+#include "pseudo_random.h"
+
 
 using namespace std;
 using namespace flecsi;
@@ -98,13 +100,7 @@ public:
   using branch_t = branch;
 };
 
-double uniform(){
-  return double(rand())/RAND_MAX;
-}
 
-double uniform(double a, double b){
-  return a + (b - a) * uniform();
-}
 
 using tree_topology_t = topology::tree_topology<tree_policy>;
 using entity_t = tree_topology_t::entity;
@@ -116,10 +112,12 @@ using element_t = tree_topology_t::element_t;
 TEST(tree_topology, insert_find_remove) {
   tree_topology_t t;
 
+  pseudo_random rng;
+
   std::vector<entity_t*> ents;
 
   for(size_t i = 0; i < 100000; ++i){
-    point_t p = {uniform(), uniform()};
+    point_t p = {rng.uniform(), rng.uniform()};
     auto e = t.make_entity(p);
     t.insert(e);
     ents.push_back(e);
@@ -138,13 +136,15 @@ TEST(tree_topology, insert_find_remove) {
 
 TEST(tree_topology, assert_branches) {
   tree_topology_t t;
+  
+  pseudo_random rng;
 
   std::vector<entity_t*> ents;
 
   size_t n = 100000;
 
   for(size_t i = 0; i < n; ++i){
-    point_t p = {uniform(), uniform()};
+    point_t p = {rng.uniform(), rng.uniform()};
     auto e = t.make_entity(p);
     t.insert(e);
     ents.push_back(e);
@@ -165,6 +165,8 @@ TEST(tree_topology, assert_branches) {
 TEST(tree_topology, find_radius) {
   tree_topology_t t;
 
+  pseudo_random rng;
+
   std::vector<entity_t*> ents;
 
   double d = sqrt(0.03125);
@@ -172,7 +174,7 @@ TEST(tree_topology, find_radius) {
 
   for(size_t i = 0; i < n; ++i){
     point_t p = {0.25, 0.25};
-    point_t pd = {uniform(-d, d), uniform(-d, d)};
+    point_t pd = {rng.uniform(-d, d), rng.uniform(-d, d)};
     p += pd;
     auto e = t.make_entity(p);
     t.insert(e);
@@ -181,7 +183,7 @@ TEST(tree_topology, find_radius) {
 
   for(size_t i = 0; i < n; ++i){
     point_t p = {0.75, 0.25};
-    point_t pd = {uniform(-d, d), uniform(-d, d)};
+    point_t pd = {rng.uniform(-d, d), rng.uniform(-d, d)};
     p += pd;
     auto e = t.make_entity(p);
     t.insert(e);
@@ -190,7 +192,7 @@ TEST(tree_topology, find_radius) {
 
   for(size_t i = 0; i < n; ++i){
     point_t p = {0.25, 0.75};
-    point_t pd = {uniform(-d, d), uniform(-d, d)};
+    point_t pd = {rng.uniform(-d, d), rng.uniform(-d, d)};
     p += pd;
     auto e = t.make_entity(p);
     t.insert(e);
@@ -199,7 +201,7 @@ TEST(tree_topology, find_radius) {
 
   for(size_t i = 0; i < n; ++i){
     point_t p = {0.75, 0.75};
-    point_t pd = {uniform(-d, d), uniform(-d, d)};
+    point_t pd = {rng.uniform(-d, d), rng.uniform(-d, d)};
     p += pd;
     auto e = t.make_entity(p);
     t.insert(e);
@@ -214,6 +216,8 @@ TEST(tree_topology, find_radius_thread_pool) {
   tree_topology_t t;
   thread_pool pool;
   pool.start(8);
+  
+  pseudo_random rng;
 
   std::vector<entity_t*> ents;
 
@@ -222,7 +226,7 @@ TEST(tree_topology, find_radius_thread_pool) {
 
   for(size_t i = 0; i < n; ++i){
     point_t p = {0.25, 0.25};
-    point_t pd = {uniform(-d, d), uniform(-d, d)};
+    point_t pd = {rng.uniform(-d, d), rng.uniform(-d, d)};
     p += pd;
     auto e = t.make_entity(p);
     t.insert(e);
@@ -231,7 +235,7 @@ TEST(tree_topology, find_radius_thread_pool) {
 
   for(size_t i = 0; i < n; ++i){
     point_t p = {0.75, 0.25};
-    point_t pd = {uniform(-d, d), uniform(-d, d)};
+    point_t pd = {rng.uniform(-d, d), rng.uniform(-d, d)};
     p += pd;
     auto e = t.make_entity(p);
     t.insert(e);
@@ -240,7 +244,7 @@ TEST(tree_topology, find_radius_thread_pool) {
 
   for(size_t i = 0; i < n; ++i){
     point_t p = {0.25, 0.75};
-    point_t pd = {uniform(-d, d), uniform(-d, d)};
+    point_t pd = {rng.uniform(-d, d), rng.uniform(-d, d)};
     p += pd;
     auto e = t.make_entity(p);
     t.insert(e);
@@ -249,7 +253,7 @@ TEST(tree_topology, find_radius_thread_pool) {
 
   for(size_t i = 0; i < n; ++i){
     point_t p = {0.75, 0.75};
-    point_t pd = {uniform(-d, d), uniform(-d, d)};
+    point_t pd = {rng.uniform(-d, d), rng.uniform(-d, d)};
     p += pd;
     auto e = t.make_entity(p);
     t.insert(e);
@@ -263,12 +267,14 @@ TEST(tree_topology, find_radius_thread_pool) {
 TEST(tree_topology, neighbors) {
   tree_topology_t t;
 
+  pseudo_random rng;
+
   std::vector<entity_t*> ents;
 
   size_t n = 1000;
 
   for(size_t i = 0; i < n; ++i){
-    point_t p = {uniform(0, 1), uniform(0, 1)};
+    point_t p = {rng.uniform(0, 1), rng.uniform(0, 1)};
     auto e = t.make_entity(p);
     t.insert(e);
     ents.push_back(e);
@@ -301,12 +307,14 @@ TEST(tree_topology, neighbors_thread_pool) {
   thread_pool pool;
   pool.start(8);
 
+  pseudo_random rng;
+
   std::vector<entity_t*> ents;
 
   size_t n = 1000;
 
   for(size_t i = 0; i < n; ++i){
-    point_t p = {uniform(0, 1), uniform(0, 1)};
+    point_t p = {rng.uniform(0, 1), rng.uniform(0, 1)};
     auto e = t.make_entity(p);
     t.insert(e);
     ents.push_back(e);
@@ -337,12 +345,14 @@ TEST(tree_topology, neighbors_thread_pool) {
 TEST(tree_topology, neighbors_rectangular) {
   tree_topology_t t({0, 0}, {50, 30});
 
+  pseudo_random rng;
+
   std::vector<entity_t*> ents;
 
   size_t n = 1000;
 
   for(size_t i = 0; i < n; ++i){
-    point_t p = {uniform(0, 50), uniform(0, 30)};
+    point_t p = {rng.uniform(0, 50), rng.uniform(0, 30)};
     auto e = t.make_entity(p);
     t.insert(e);
     ents.push_back(e);
@@ -373,12 +383,14 @@ TEST(tree_topology, neighbors_rectangular) {
 TEST(tree_topology, neighbors_box) {
   tree_topology_t t;
 
+  pseudo_random rng;
+
   std::vector<entity_t*> ents;
 
   size_t n = 1000;
 
   for(size_t i = 0; i < n; ++i){
-    point_t p = {uniform(0, 1), uniform(0, 1)};
+    point_t p = {rng.uniform(0, 1), rng.uniform(0, 1)};
     auto e = t.make_entity(p);
     t.insert(e);
     ents.push_back(e);
@@ -413,16 +425,18 @@ TEST(tree_topology, neighbors_box) {
 TEST(tree_topology, iterator_update_all) {
   tree_topology_t t;
 
+  pseudo_random rng;
+
   size_t n = 10000;
 
   for(size_t i = 0; i < n; ++i){
-    point_t p = {uniform(0, 1), uniform(0, 1)};
+    point_t p = {rng.uniform(0, 1), rng.uniform(0, 1)};
     auto e = t.make_entity(p);
     t.insert(e);
   }
 
   for(auto ent : t.entities()){
-    point_t dp = {uniform(-0.01, 0.01), uniform(-0.01, 0.01)};
+    point_t dp = {rng.uniform(-0.01, 0.01), rng.uniform(-0.01, 0.01)};
     ent->move(dp);
   }
 

@@ -16,6 +16,7 @@
 #define flecsi_factory_h
 
 #include <map>
+#include <iostream>
 
 namespace flecsi
 {
