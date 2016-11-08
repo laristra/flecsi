@@ -459,42 +459,13 @@ file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsit
   FILE_PERMISSIONS
     OWNER_READ OWNER_WRITE OWNER_EXECUTE
     GROUP_READ GROUP_EXECUTE
-    WORLD_READ WORLD_EXECUTE)
-
-#------------------------------------------------------------------------------#
-# Check the compiler version and output warnings if it is lower than 6.1.1
-#------------------------------------------------------------------------------#
-
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 6.1.1)
-    message(STATUS "your gcc compiler version is lower than 6.1.1, "
-      "required for some of the techniques used in FleCSi.  We recommend "
-      "that you to update your compiler.")
-    set (STATIC_CONTAINER OFF)
-  else()
-    set (STATIC_CONTAINER ON)
-  endif()
-
-else()
-
-    message(STATUS "static meta container has not been tested "
-      "with your comiler so it will be disabled")
-    set (STATIC_CONTAINER OFF)
-
-elseif(...)
-# etc.
-endif()
+    WORLD_READ WORLD_EXECUTE
+)
 
 #------------------------------------------------------------------------------#
 # option for use of Static meta container
 #------------------------------------------------------------------------------#
-
-if(STATIC_CONTAINER)
-option(ENABLE_STATIC_CONTAINER "Enable static meta container" ON)
-else()
 option(ENABLE_STATIC_CONTAINER "Enable static meta container" OFF)
-endif(STATIC_CONTAINER)
 
 set (MAX_CONTAINER_SIZE 6 CACHE INTEGER  "Set the depth of the container")
 add_definitions( -DMAX_COUNTER_SIZE=${MAX_CONTAINER_SIZE} )

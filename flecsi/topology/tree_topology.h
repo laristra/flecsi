@@ -81,7 +81,6 @@ struct tree_geometry<T, 1>{
                          const point_t& scale,
                          const point_t& center,
                          element_t radius){
-
     return center[0] > origin[0] - radius &&
            center[0] < origin[0] + size * scale[0] + radius;
   }
@@ -283,29 +282,8 @@ public:
 
   template<typename S>
   branch_id(const std::array<point<S, dimension>, 2>& range,
-            const point<S, dimension>& p)
-  : id_(int_t(1) << bits - 1){
-
-    std::array<int_t, dimension> coords;
-
-    for(size_t i = 0; i < dimension; ++i){
-      assert(p[i] >= 0 && p[i] <= 1 && "invalid coordinates");
-      S min = range[0][i];
-      S scale = range[1][i] - min;
-      coords[i] = (p[i] - min)/scale * (int_t(1) << (bits - 1)/dimension);
-    }
-
-    for(size_t i = 0; i < max_depth; ++i){
-      for(size_t j = 0; j < dimension; ++j){
-        id_ |= (coords[j] & int_t(1) << i) << i + j;
-      }
-    }
-  }
-
-  template<typename S>
-  branch_id(const std::array<point<S, dimension>, 2>& range,
             const point<S, dimension>& p, size_t depth)
-  : id_(int_t(1) << (depth * dimension + 1)){
+  : id_(int_t(1) << depth * dimension + (bits - 1) % dimension){
     std::array<int_t, dimension> coords;
 
     for(size_t i = 0; i < dimension; ++i){
@@ -328,7 +306,7 @@ public:
   : id_(bid.id_){}
 
   static constexpr branch_id root(){
-    return branch_id(int_t(1) << (dimension - 1));
+    return branch_id(int_t(1) << (bits - 1) % dimension);
   }
 
   static constexpr branch_id null(){
@@ -406,7 +384,14 @@ public:
       id <<= dimension;
     }
 
-    for(size_t i = 0; i <= d; ++i){
+    if(d == 0){
+      ostr << "<root>";
+      return;
+    }
+
+    id <<= 1 + (bits - 1) % dimension;
+
+    for(size_t i = 1; i <= d; ++i){
       int_t val = (id & mask) >> (bits - dimension);
       ostr << i << ":" << std::bitset<D>(val) << " ";
       id <<= dimension;
