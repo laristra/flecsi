@@ -18,6 +18,7 @@
 #include <map>
 #include <algorithm>
 #include <set>
+#include <unordered_set>
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_type.h!!!
@@ -29,6 +30,11 @@
 //----------------------------------------------------------------------------//
 
 #include "flecsi/utils/const_string.h"
+#include "flecsi/topology/index_space.h"
+
+#define np(X)                                                            \
+ std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
+           << ": " << #X << " = " << (X) << std::endl
 
 ///
 // \file serial/sparse.h
@@ -96,6 +102,9 @@ struct sparse_accessor_t
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
   using entry_value_t = entry_value__<T>;
+
+  using index_space_ = 
+    topology::index_space<topology::simple_entry<size_t>, true>;
 
   //--------------------------------------------------------------------------//
   // Constructors.
@@ -177,6 +186,58 @@ struct sparse_accessor_t
 
     return itr->value;
   } // operator ()
+
+  index_space_ entries() const{
+    size_t id = 0;
+    index_space_ is;
+    std::unordered_set<size_t> found;
+
+    for(size_t index = 0; index < num_indices_; ++index){
+      entry_value_t * itr = entries_ + indices_[index];
+      entry_value_t * end = entries_ + indices_[index + 1];
+
+      while(itr != end){
+        size_t entry = itr->entry;
+        if(found.find(entry) == found.end()){
+          is.push_back({id++, entry});
+          found.insert(entry);
+        }
+        ++itr;
+      }
+    }
+
+    return is;    
+  }
+
+  index_space_ entries(size_t index) const{
+    assert(index < num_indices_ && "sparse accessor: index out of bounds");
+
+    entry_value_t * itr = entries_ + indices_[index];
+    entry_value_t * end = entries_ + indices_[index + 1];
+
+    index_space_ is;
+
+    size_t id = 0;
+    while(itr != end){
+      is.push_back({id++, itr->entry});
+      ++itr;
+    }
+
+    return is;    
+  }
+
+  index_space_ indices(){
+    index_space_ is;
+    size_t id = 0;
+
+    for(size_t i = 1; i < num_indices_; ++i){
+      if(indices_[i] != indices_[i - 1]){
+        is.push_back({id++, i - 1});
+      }
+    }
+
+    return is;
+  }
 
   ///
   //
