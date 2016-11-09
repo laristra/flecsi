@@ -131,7 +131,7 @@ MPIMapper : public Legion::Mapping::DefaultMapper
   	using legion_proc=LegionRuntime::HighLevel::Processor;
 
 //TOFIX
-/*
+
  		// tag-based decisions here
   	if((task.tag & MAPPER_FORCE_RANK_MATCH) != 0) {
     	// expect a 1-D index domain
@@ -141,21 +141,26 @@ MPIMapper : public Legion::Mapping::DefaultMapper
     	// each point in the domain goes to CPUs assigned to that rank
     	output.slices.resize(r.volume());
     	size_t idx = 0;
+     
+			using legion_machine=LegionRuntime::HighLevel::Machine;
+      using legion_proc=LegionRuntime::HighLevel::Processor;
+
+      // get list of all processors and make sure the count matches
+      legion_machine::ProcessorQuery pq =
+        legion_machine::ProcessorQuery(machine).only_kind(
+                            legion_proc::LOC_PROC);
+      std::vector<legion_proc> all_procs(pq.begin(), pq.end());
+      assert((r.lo[0] == 0) && (r.hi[0] == (int)(all_procs.size() - 1)));
+
     	for(GenericPointInRectIterator<1> pir(r); pir; ++pir, ++idx) {
       	output.slices[idx].domain =
 						 Legion::Domain::from_rect<1>(Rect<1>(pir.p, pir.p));
-      	if(task.target_proc.kind() == legion_proc::TOC_PROC) {
-        	assert(rank_gpus.count(pir.p) > 0);
-          output.slices[idx].proc = rank_gpus[pir.p][0];
-      	} else {
-        	assert(rank_cpus.count(pir.p) > 0);
-        	output.slices[idx].proc = rank_cpus[pir.p][0];
-      	}//end if task.target_proc.kind
+        	output.slices[idx].proc = all_procs[idx];
    	  }//end for
     	return;
 		}//endi if MAPPER_FORCE_RANK_MATCH
 
-  	if((task.tag & MAPPER_SUBRANK_LAUNCH) != 0) {
+/*  	if((task.tag & MAPPER_SUBRANK_LAUNCH) != 0) {
     	// expect a 1-D index domain
     	assert(input.domain.get_dim() == 1);
 
