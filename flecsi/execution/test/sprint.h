@@ -152,7 +152,7 @@ mpi_task(
              flecsi::execution::context_t::instance();
   context_.interop_helper_.data_storage_.push_back(
         flecsi::utils::any_t(ip));
-#if 0
+#if 0 
    //check the mpi output
 
   for (int i =0; i< ip.primary.size(); i++)
@@ -160,6 +160,7 @@ mpi_task(
    std::cout<< " rank = " << rank <<" global_id = " << start_global_id[rank]+i<< 
     " primary = " << ip.primary[i]<< std::endl;
   }
+#if 0
   for (int i =0; i< ip.shared.size(); i++)
   {
     std::cout<< " rank = " << rank << " shared_mesh_id  = " << ip.shared_id(i) 
@@ -180,6 +181,7 @@ mpi_task(
          ip.ghost[i].rank << std::endl;
   }
    
+#endif
 #endif
 
 } // mpi_task
@@ -237,7 +239,7 @@ driver(
     flecsi::dmp::parts received = fm1.get_result<flecsi::dmp::parts>(
                            DomainPoint::from_point<2>(make_point(i,0)));
 
-		primary_start_id.push_back(total_num_cells);
+    primary_start_id.push_back(total_num_cells);
     total_num_cells += received.primary;
 
 #if 1
@@ -251,6 +253,13 @@ driver(
   IndexSpace cells_is = context_.runtime()->create_index_space(
           context_.context(), total_num_cells);
 
+  IndexAllocator allocator = context_.runtime()->create_index_allocator( 
+                                          context_.context(),cells_is);
+  for(size_t i = 0; i < total_num_cells; ++i){
+    ptr_t  ptr_i= allocator.alloc(1);
+    assert(!ptr_i.is_null());
+  }
+
   LogicalRegion cells_lr=
        context_.runtime()->create_logical_region(context_.context(),
                                       cells_is, cells_fs);
@@ -258,26 +267,81 @@ driver(
                  "cells  logical region");
 
   //partition cells by number of mpi ranks
+
+  Coloring primary_coloring;
+
+  IndexIterator itr(context_.runtime(), context_.context(), cells_is);
   
+  for(size_t i = 0; i < num_ranks-1; ++i){
+    for (size_t j=primary_start_id[i]; j<primary_start_id[i+1]; j++){
+      assert(itr.has_next());
+      ptr_t ptr = itr.next();
+      primary_coloring[i].points.insert(ptr);
+    }//end for
+  }//end for
+
+  for (size_t j=primary_start_id[num_ranks-1]; j<total_num_cells; j++){
+    assert(itr.has_next());
+    ptr_t ptr = itr.next();
+    primary_coloring[num_ranks-1].points.insert(ptr);
+  }//end for
+
+  IndexPartition primary_ip = 
+    context_.runtime()->create_index_partition(context_.context(),
+          cells_is, primary_coloring, true);
+
+  LogicalPartition primary_lp =
+    context_.runtime()->get_logical_partition(context_.context(),
+           cells_lr, primary_ip);
+  Rect<1> rank_rect(Point<1>(0), Point<1>(num_ranks - 1));
+  Domain rank_domain = Domain::from_rect<1>(rank_rect);
 
   LegionRuntime::HighLevel::IndexLauncher init_cells_launcher(
     task_ids_t::instance().init_cells_task_id,
-    legion_domain::from_rect<2>(context_.interop_helper_.all_processes_),
+    rank_domain,
     LegionRuntime::HighLevel::TaskArgument(0, 0),
     arg_map);
  
-  init_cells_launcher.tag = MAPPER_ALL_PROC; 
-#if 0  
+  init_cells_launcher.tag = MAPPER_FORCE_RANK_MATCH; 
+
   init_cells_launcher.add_region_requirement(
-    RegionRequirement(cell_lp, 0/*projection ID*/,
+    RegionRequirement(primary_lp, 0/*projection ID*/,
                       WRITE_DISCARD, EXCLUSIVE, cells_lr));
   init_cells_launcher.add_field(0, FID_CELL);
-#endif
 
   FutureMap fm2 = context_.runtime()->execute_index_space(
              context_.context(), init_cells_launcher);
   
   fm2.wait_all_results();
+
+#if 0
+  //printing cell_lr results
+  {
+    RegionRequirement req(cells_lr, READ_WRITE, EXCLUSIVE, cells_lr);
+    req.add_field(FID_CELL);
+
+    std::cout << "Back in driver (TTL) and checking values in Cells GlobalLR"
+       << std::endl;
+    InlineLauncher cell_launcher(req);
+    PhysicalRegion cell_region =
+      context_.runtime()->map_region(context_.context(), cell_launcher);
+    cell_region.wait_until_valid();
+    RegionAccessor<AccessorType::Generic, int> acc_cell =
+      cell_region.get_field_accessor(FID_CELL).typeify<int>();
+
+    IndexIterator itr2(context_.runtime(), context_.context(), cells_is);
+    for (int i=0; i< total_num_cells; i++)
+    {
+      assert(itr2.has_next());
+      ptr_t ptr = itr2.next();
+      int value =
+          acc_cell.read(ptr);
+      std::cout << "cells_global[ " <<i<<" ] = " << value <<std::endl;
+    }//end for
+  }
+
+
+#endif
 
 } // driver
 

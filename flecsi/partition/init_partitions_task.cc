@@ -38,7 +38,7 @@ get_numbers_of_cells_task(
   index_partition_t ip =
     context_.interop_helper_.data_storage_[0];
   
-#if 1
+#if 0
   int rank; 
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   std::cout << "in get_numbers_of_cells native legion task rank is " <<
@@ -90,6 +90,34 @@ init_cells_task(
   Legion::Context ctx, Legion::HighLevelRuntime *runtime
 )
 {
+
+  assert(regions.size() == 1);
+  assert(task->regions.size() == 1);
+  assert(task->regions[0].privilege_fields.size() == 1);
+  std::cout << "Here I am in init_cells" << std::endl;
+
+  using index_partition_t = index_partition__<size_t>;
+
+  flecsi::execution::context_t & context_ =
+    flecsi::execution::context_t::instance();
+  index_partition_t ip =
+    context_.interop_helper_.data_storage_[0];
+
+
+  LegionRuntime::HighLevel::LogicalRegion lr = regions[0].get_logical_region();
+  LegionRuntime::HighLevel::IndexSpace is = lr.get_index_space();
+
+  LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, is);
+
+  auto ac = regions[0].get_field_accessor(0).typeify<int>();
+
+  for(size_t i = 0; i <ip.primary.size() ; ++i){
+    assert(itr.has_next());
+    size_t id = ip.primary[i];
+    ptr_t ptr = itr.next();
+    ac.write(ptr, id);
+  }//end for
+
 }//init_cells_task
 
 } // namespace dmp
