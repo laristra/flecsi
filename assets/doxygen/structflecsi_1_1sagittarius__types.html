@@ -22,6 +22,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="small-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">flecsi
    &#160;<span id="projectnumber">dummy-0.0.0</span>
@@ -98,148 +99,41 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">flecsi::sagittarius_types Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p><code>#include &lt;<a class="el" href="sagittarius__types_8h_source.html">sagittarius_types.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:add26175cbf1c602a8ee44cf7637da51b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1sagittarius__types.html#add26175cbf1c602a8ee44cf7637da51b">entity_types</a> = std::tuple&lt; std::pair&lt; <a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1sagittarius__vertex__t.html">sagittarius_vertex_t</a> &gt;, std::pair&lt; <a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1sagittarius__edge__t.html">sagittarius_edge_t</a> &gt;, std::pair&lt; <a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1sagittarius__cell__t.html">sagittarius_cell_t</a> &gt; &gt;</td></tr>
+<tr class="memitem:a4047817abcd8b6869ef7fbc64e3bfc1a"><td class="memTemplParams" colspan="2"><a class="anchor" id="a4047817abcd8b6869ef7fbc64e3bfc1a"></a>
+template&lt;size_t D&gt; </td></tr>
+<tr class="memitem:a4047817abcd8b6869ef7fbc64e3bfc1a"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>domain_</b> = <a class="el" href="structflecsi_1_1topology_1_1typeify.html">flecsi::topology::domain_</a>&lt; D &gt;</td></tr>
+<tr class="separator:a4047817abcd8b6869ef7fbc64e3bfc1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add26175cbf1c602a8ee44cf7637da51b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="add26175cbf1c602a8ee44cf7637da51b"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>entity_types</b> = std::tuple&lt; std::pair&lt; <a class="el" href="structflecsi_1_1topology_1_1typeify.html">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1sagittarius__vertex__t.html">sagittarius_vertex_t</a> &gt;, std::pair&lt; <a class="el" href="structflecsi_1_1topology_1_1typeify.html">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1sagittarius__edge__t.html">sagittarius_edge_t</a> &gt;, std::pair&lt; <a class="el" href="structflecsi_1_1topology_1_1typeify.html">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1sagittarius__cell__t.html">sagittarius_cell_t</a> &gt; &gt;</td></tr>
 <tr class="separator:add26175cbf1c602a8ee44cf7637da51b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68fbbabc01a5c55388cebfd3de6ec929"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1sagittarius__types.html#a68fbbabc01a5c55388cebfd3de6ec929">connectivities</a> = std::tuple&lt; std::tuple&lt; <a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1sagittarius__vertex__t.html">sagittarius_vertex_t</a>, <a class="el" href="classflecsi_1_1sagittarius__vertex__t.html">sagittarius_vertex_t</a> &gt;, std::tuple&lt; <a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1sagittarius__vertex__t.html">sagittarius_vertex_t</a>, <a class="el" href="classflecsi_1_1sagittarius__edge__t.html">sagittarius_edge_t</a> &gt;, std::tuple&lt; <a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1sagittarius__vertex__t.html">sagittarius_vertex_t</a>, <a class="el" href="classflecsi_1_1sagittarius__cell__t.html">sagittarius_cell_t</a> &gt;, std::tuple&lt; <a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1sagittarius__edge__t.html">sagittarius_edge_t</a>, <a class="el" href="classflecsi_1_1sagittarius__vertex__t.html">sagittarius_vertex_t</a> &gt;, std::tuple&lt; <a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1sagittarius__edge__t.html">sagittarius_edge_t</a>, <a class="el" href="classflecsi_1_1sagittarius__edge__t.html">sagittarius_edge_t</a> &gt;, std::tuple&lt; <a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1sagittarius__edge__t.html">sagittarius_edge_t</a>, <a class="el" href="classflecsi_1_1sagittarius__cell__t.html">sagittarius_cell_t</a> &gt;, std::tuple&lt; <a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1sagittarius__cell__t.html">sagittarius_cell_t</a>, <a class="el" href="classflecsi_1_1sagittarius__vertex__t.html">sagittarius_vertex_t</a> &gt;, std::tuple&lt; <a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1sagittarius__cell__t.html">sagittarius_cell_t</a>, <a class="el" href="classflecsi_1_1sagittarius__edge__t.html">sagittarius_edge_t</a> &gt;, std::tuple&lt; <a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1sagittarius__cell__t.html">sagittarius_cell_t</a>, <a class="el" href="classflecsi_1_1sagittarius__cell__t.html">sagittarius_cell_t</a> &gt; &gt;</td></tr>
+<tr class="memitem:a68fbbabc01a5c55388cebfd3de6ec929"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a68fbbabc01a5c55388cebfd3de6ec929"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>connectivities</b> = std::tuple&lt; std::tuple&lt; <a class="el" href="structflecsi_1_1topology_1_1typeify.html">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1sagittarius__vertex__t.html">sagittarius_vertex_t</a>, <a class="el" href="classflecsi_1_1sagittarius__vertex__t.html">sagittarius_vertex_t</a> &gt;, std::tuple&lt; <a class="el" href="structflecsi_1_1topology_1_1typeify.html">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1sagittarius__vertex__t.html">sagittarius_vertex_t</a>, <a class="el" href="classflecsi_1_1sagittarius__edge__t.html">sagittarius_edge_t</a> &gt;, std::tuple&lt; <a class="el" href="structflecsi_1_1topology_1_1typeify.html">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1sagittarius__vertex__t.html">sagittarius_vertex_t</a>, <a class="el" href="classflecsi_1_1sagittarius__cell__t.html">sagittarius_cell_t</a> &gt;, std::tuple&lt; <a class="el" href="structflecsi_1_1topology_1_1typeify.html">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1sagittarius__edge__t.html">sagittarius_edge_t</a>, <a class="el" href="classflecsi_1_1sagittarius__vertex__t.html">sagittarius_vertex_t</a> &gt;, std::tuple&lt; <a class="el" href="structflecsi_1_1topology_1_1typeify.html">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1sagittarius__edge__t.html">sagittarius_edge_t</a>, <a class="el" href="classflecsi_1_1sagittarius__edge__t.html">sagittarius_edge_t</a> &gt;, std::tuple&lt; <a class="el" href="structflecsi_1_1topology_1_1typeify.html">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1sagittarius__edge__t.html">sagittarius_edge_t</a>, <a class="el" href="classflecsi_1_1sagittarius__cell__t.html">sagittarius_cell_t</a> &gt;, std::tuple&lt; <a class="el" href="structflecsi_1_1topology_1_1typeify.html">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1sagittarius__cell__t.html">sagittarius_cell_t</a>, <a class="el" href="classflecsi_1_1sagittarius__vertex__t.html">sagittarius_vertex_t</a> &gt;, std::tuple&lt; <a class="el" href="structflecsi_1_1topology_1_1typeify.html">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1sagittarius__cell__t.html">sagittarius_cell_t</a>, <a class="el" href="classflecsi_1_1sagittarius__edge__t.html">sagittarius_edge_t</a> &gt;, std::tuple&lt; <a class="el" href="structflecsi_1_1topology_1_1typeify.html">domain_</a>&lt; 0 &gt;, <a class="el" href="classflecsi_1_1sagittarius__cell__t.html">sagittarius_cell_t</a>, <a class="el" href="classflecsi_1_1sagittarius__cell__t.html">sagittarius_cell_t</a> &gt; &gt;</td></tr>
 <tr class="separator:a68fbbabc01a5c55388cebfd3de6ec929"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acd1ff35e3f7134c4286e6c890004970e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1sagittarius__types.html#acd1ff35e3f7134c4286e6c890004970e">bindings</a> = std::tuple&lt;&gt;</td></tr>
+<tr class="memitem:acd1ff35e3f7134c4286e6c890004970e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acd1ff35e3f7134c4286e6c890004970e"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>bindings</b> = std::tuple&lt;&gt;</td></tr>
 <tr class="separator:acd1ff35e3f7134c4286e6c890004970e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:aed37eb35b93e2bb2ab195377b6f59f05"><td class="memTemplParams" colspan="2">template&lt;size_t M, size_t D&gt; </td></tr>
-<tr class="memitem:aed37eb35b93e2bb2ab195377b6f59f05"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="classflecsi_1_1mesh__entity__base__t.html">mesh_entity_base_t</a>&lt; <a class="el" href="structflecsi_1_1sagittarius__types.html#af8f9e7cedf589626aa9cbe7a05271485">num_domains</a> &gt; *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1sagittarius__types.html#aed37eb35b93e2bb2ab195377b6f59f05">create_entity</a> (<a class="el" href="classflecsi_1_1mesh__topology__base__t.html">mesh_topology_base_t</a> *mesh, size_t num_vertices)</td></tr>
-<tr class="separator:aed37eb35b93e2bb2ab195377b6f59f05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d72a3d26c843e9f2d8d071d97954636"><td class="memTemplParams" colspan="2"><a class="anchor" id="a9d72a3d26c843e9f2d8d071d97954636"></a>
+template&lt;size_t M, size_t D&gt; </td></tr>
+<tr class="memitem:a9d72a3d26c843e9f2d8d071d97954636"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="classflecsi_1_1topology_1_1mesh__entity__base__t.html">flecsi::topology::mesh_entity_base_t</a>&lt; num_domains &gt; *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>create_entity</b> (<a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__t.html">flecsi::topology::mesh_topology_base_t</a> *mesh, size_t num_vertices)</td></tr>
+<tr class="separator:a9d72a3d26c843e9f2d8d071d97954636"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:a6ff8273cefac5685c8b1111602049f29"><td class="memItemLeft" align="right" valign="top">static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1sagittarius__types.html#a6ff8273cefac5685c8b1111602049f29">num_dimensions</a> = 2</td></tr>
+<tr class="memitem:a6ff8273cefac5685c8b1111602049f29"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6ff8273cefac5685c8b1111602049f29"></a>
+static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>num_dimensions</b> = 2</td></tr>
 <tr class="separator:a6ff8273cefac5685c8b1111602049f29"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af8f9e7cedf589626aa9cbe7a05271485"><td class="memItemLeft" align="right" valign="top">static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1sagittarius__types.html#af8f9e7cedf589626aa9cbe7a05271485">num_domains</a> = 1</td></tr>
+<tr class="memitem:af8f9e7cedf589626aa9cbe7a05271485"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af8f9e7cedf589626aa9cbe7a05271485"></a>
+static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>num_domains</b> = 1</td></tr>
 <tr class="separator:af8f9e7cedf589626aa9cbe7a05271485"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Typedef Documentation</h2>
-<a class="anchor" id="acd1ff35e3f7134c4286e6c890004970e"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="structflecsi_1_1sagittarius__types.html#acd1ff35e3f7134c4286e6c890004970e">flecsi::sagittarius_types::bindings</a> =  std::tuple&lt;&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="a68fbbabc01a5c55388cebfd3de6ec929"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="structflecsi_1_1sagittarius__types.html#a68fbbabc01a5c55388cebfd3de6ec929">flecsi::sagittarius_types::connectivities</a> =  std::tuple&lt; std::tuple&lt;<a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt;0&gt;, <a class="el" href="classflecsi_1_1sagittarius__vertex__t.html">sagittarius_vertex_t</a>, <a class="el" href="classflecsi_1_1sagittarius__vertex__t.html">sagittarius_vertex_t</a>&gt;, std::tuple&lt;<a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt;0&gt;, <a class="el" href="classflecsi_1_1sagittarius__vertex__t.html">sagittarius_vertex_t</a>, <a class="el" href="classflecsi_1_1sagittarius__edge__t.html">sagittarius_edge_t</a>&gt;, std::tuple&lt;<a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt;0&gt;, <a class="el" href="classflecsi_1_1sagittarius__vertex__t.html">sagittarius_vertex_t</a>, <a class="el" href="classflecsi_1_1sagittarius__cell__t.html">sagittarius_cell_t</a>&gt;, std::tuple&lt;<a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt;0&gt;, <a class="el" href="classflecsi_1_1sagittarius__edge__t.html">sagittarius_edge_t</a>, <a class="el" href="classflecsi_1_1sagittarius__vertex__t.html">sagittarius_vertex_t</a>&gt;, std::tuple&lt;<a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt;0&gt;, <a class="el" href="classflecsi_1_1sagittarius__edge__t.html">sagittarius_edge_t</a>, <a class="el" href="classflecsi_1_1sagittarius__edge__t.html">sagittarius_edge_t</a>&gt;, std::tuple&lt;<a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt;0&gt;, <a class="el" href="classflecsi_1_1sagittarius__edge__t.html">sagittarius_edge_t</a>, <a class="el" href="classflecsi_1_1sagittarius__cell__t.html">sagittarius_cell_t</a>&gt;, std::tuple&lt;<a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt;0&gt;, <a class="el" href="classflecsi_1_1sagittarius__cell__t.html">sagittarius_cell_t</a>, <a class="el" href="classflecsi_1_1sagittarius__vertex__t.html">sagittarius_vertex_t</a>&gt;, std::tuple&lt;<a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt;0&gt;, <a class="el" href="classflecsi_1_1sagittarius__cell__t.html">sagittarius_cell_t</a>, <a class="el" href="classflecsi_1_1sagittarius__edge__t.html">sagittarius_edge_t</a>&gt;, std::tuple&lt;<a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt;0&gt;, <a class="el" href="classflecsi_1_1sagittarius__cell__t.html">sagittarius_cell_t</a>, <a class="el" href="classflecsi_1_1sagittarius__cell__t.html">sagittarius_cell_t</a>&gt; &gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="add26175cbf1c602a8ee44cf7637da51b"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="structflecsi_1_1sagittarius__types.html#add26175cbf1c602a8ee44cf7637da51b">flecsi::sagittarius_types::entity_types</a> =  std::tuple&lt; std::pair&lt;<a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt;0&gt;, <a class="el" href="classflecsi_1_1sagittarius__vertex__t.html">sagittarius_vertex_t</a>&gt;, std::pair&lt;<a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt;0&gt;, <a class="el" href="classflecsi_1_1sagittarius__edge__t.html">sagittarius_edge_t</a>&gt;, std::pair&lt;<a class="el" href="namespaceflecsi.html#a831b3c6f962149202407149952cdeb71">domain_</a>&lt;0&gt;, <a class="el" href="classflecsi_1_1sagittarius__cell__t.html">sagittarius_cell_t</a>&gt; &gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="aed37eb35b93e2bb2ab195377b6f59f05"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;size_t M, size_t D&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static <a class="el" href="classflecsi_1_1mesh__entity__base__t.html">mesh_entity_base_t</a>&lt;<a class="el" href="structflecsi_1_1sagittarius__types.html#af8f9e7cedf589626aa9cbe7a05271485">num_domains</a>&gt;* flecsi::sagittarius_types::create_entity </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classflecsi_1_1mesh__topology__base__t.html">mesh_topology_base_t</a> *&#160;</td>
-          <td class="paramname"><em>mesh</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>num_vertices</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<h2 class="groupheader">Member Data Documentation</h2>
-<a class="anchor" id="a6ff8273cefac5685c8b1111602049f29"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr size_t flecsi::sagittarius_types::num_dimensions = 2</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="af8f9e7cedf589626aa9cbe7a05271485"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr size_t flecsi::sagittarius_types::num_domains = 1</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/tmp/flecsi/flecsi/mesh/test/sagittarius/<a class="el" href="sagittarius__types_8h_source.html">sagittarius_types.h</a></li>
+<li>/home/flecsi/flecsi/flecsi/specializations/sagittarius/<a class="el" href="sagittarius__types_8h_source.html">sagittarius_types.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

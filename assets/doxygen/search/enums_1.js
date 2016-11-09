@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['call_5fstate_5ft',['call_state_t',['../classflecsi_1_1context__t.html#a652d01c141c73d1cebdae3acf3787f77',1,'flecsi::context_t::call_state_t()'],['../classflecsi_1_1context__t_3_01flecsi_1_1legion__execution__policy__t_01_4.html#adddd42c12c9f15a569aa9b2328898c10',1,'flecsi::context_t&lt; flecsi::legion_execution_policy_t &gt;::call_state_t()']]]
+  ['state_5fattribute_5ft',['state_attribute_t',['../structflecsi_1_1burton__mesh__traits__t.html#a0a0d1d90bbfe8f8c5ca6780753b08cb2',1,'flecsi::burton_mesh_traits_t']]]
 ];

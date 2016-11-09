@@ -22,6 +22,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="small-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">flecsi
    &#160;<span id="projectnumber">dummy-0.0.0</span>
@@ -85,7 +86,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><a class="el" href="namespaceflecsi_1_1utils.html">utils</a></li><li class="navelem"><a class="el" href="namespaceflecsi_1_1utils_1_1container.html">container</a></li><li class="navelem"><a class="el" href="structflecsi_1_1utils_1_1container_1_1type__list.html">type_list</a></li><li class="navelem"><a class="el" href="structflecsi_1_1utils_1_1container_1_1type__list_1_1init.html">init</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>utils</b></li><li class="navelem"><b>container</b></li><li class="navelem"><a class="el" href="structflecsi_1_1utils_1_1container_1_1type__list.html">type_list</a></li><li class="navelem"><a class="el" href="structflecsi_1_1utils_1_1container_1_1type__list_1_1init.html">init</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -97,66 +98,22 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">flecsi::utils::container::type_list&lt; Ts &gt;::init Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p><code>#include &lt;<a class="el" href="type__list_8h_source.html">type_list.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a588c901709e275e7dfa933a1289b6455"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1utils_1_1container_1_1type__list_1_1init.html#a588c901709e275e7dfa933a1289b6455">result</a> = decltype(<a class="el" href="structflecsi_1_1utils_1_1container_1_1type__list_1_1init.html#af505edc926f9c69fa0fe5ceb798197d4">helper</a>(<a class="el" href="namespaceflecsi_1_1utils_1_1container.html#a242bfd37553cd47901dff953dcd3ed82">make_iseq</a>&lt; <a class="el" href="structflecsi_1_1utils_1_1container_1_1type__list.html#ab632f06a96f3f46a799d56e429fb6b61">size</a>()-1 &gt;{}))</td></tr>
+<tr class="memitem:a588c901709e275e7dfa933a1289b6455"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a588c901709e275e7dfa933a1289b6455"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>result</b> = decltype(helper(make_iseq&lt; size()-1 &gt;{}))</td></tr>
 <tr class="separator:a588c901709e275e7dfa933a1289b6455"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:af505edc926f9c69fa0fe5ceb798197d4"><td class="memTemplParams" colspan="2">template&lt;size_type... Ns&gt; </td></tr>
-<tr class="memitem:af505edc926f9c69fa0fe5ceb798197d4"><td class="memTemplItemLeft" align="right" valign="top">static auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1utils_1_1container_1_1type__list_1_1init.html#af505edc926f9c69fa0fe5ceb798197d4">helper</a> (<a class="el" href="namespaceflecsi_1_1utils_1_1container.html#a7ae06f18783420ea93375bfdfb578087">iseq</a>&lt; Ns... &gt;) -&gt; <a class="el" href="structflecsi_1_1utils_1_1container_1_1type__list.html">type_list</a>&lt; typename <a class="el" href="structflecsi_1_1utils_1_1container_1_1type__list_1_1at.html">at</a>&lt; Ns &gt;::result... &gt;</td></tr>
+<tr class="memitem:af505edc926f9c69fa0fe5ceb798197d4"><td class="memTemplParams" colspan="2"><a class="anchor" id="af505edc926f9c69fa0fe5ceb798197d4"></a>
+template&lt;size_type... Ns&gt; </td></tr>
+<tr class="memitem:af505edc926f9c69fa0fe5ceb798197d4"><td class="memTemplItemLeft" align="right" valign="top">static auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>helper</b> (iseq&lt; Ns... &gt;) -&gt; <a class="el" href="structflecsi_1_1utils_1_1container_1_1type__list.html">type_list</a>&lt; typename <a class="el" href="structflecsi_1_1utils_1_1container_1_1type__list_1_1at.html">at</a>&lt; Ns &gt;::result... &gt;</td></tr>
 <tr class="separator:af505edc926f9c69fa0fe5ceb798197d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Typedef Documentation</h2>
-<a class="anchor" id="a588c901709e275e7dfa933a1289b6455"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class... Ts&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="structflecsi_1_1utils_1_1container_1_1type__list.html">flecsi::utils::container::type_list</a>&lt; Ts &gt;::<a class="el" href="structflecsi_1_1utils_1_1container_1_1type__list_1_1init.html#a588c901709e275e7dfa933a1289b6455">init::result</a> =  decltype (<a class="el" href="structflecsi_1_1utils_1_1container_1_1type__list_1_1init.html#af505edc926f9c69fa0fe5ceb798197d4">helper</a> (<a class="el" href="namespaceflecsi_1_1utils_1_1container.html#a242bfd37553cd47901dff953dcd3ed82">make_iseq</a>&lt;<a class="el" href="structflecsi_1_1utils_1_1container_1_1type__list.html#ab632f06a96f3f46a799d56e429fb6b61">size</a> () -1&gt; {} ))</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="af505edc926f9c69fa0fe5ceb798197d4"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;class... Ts&gt; </div>
-<div class="memtemplate">
-template&lt;size_type... Ns&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static auto <a class="el" href="structflecsi_1_1utils_1_1container_1_1type__list.html">flecsi::utils::container::type_list</a>&lt; Ts &gt;::init::helper </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespaceflecsi_1_1utils_1_1container.html#a7ae06f18783420ea93375bfdfb578087">iseq</a>&lt; Ns... &gt;&#160;</td>
-          <td class="paramname"></td><td>)</td>
-          <td> -&gt;  <a class="el" href="structflecsi_1_1utils_1_1container_1_1type__list.html">type_list</a>&lt; typename <a class="el" href="structflecsi_1_1utils_1_1container_1_1type__list_1_1at.html">at</a>&lt; Ns &gt;::result... &gt;</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/tmp/flecsi/flecsi/utils/static_container/<a class="el" href="type__list_8h_source.html">type_list.h</a></li>
+<li>/home/flecsi/flecsi/flecsi/utils/static_container/<a class="el" href="type__list_8h_source.html">type_list.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
