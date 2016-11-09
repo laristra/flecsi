@@ -230,7 +230,7 @@ struct sparse_accessor_t
     index_space_ is;
     size_t id = 0;
 
-    for(size_t i = 1; i < num_indices_; ++i){
+    for(size_t i = 1; i < num_indices_ + 1; ++i){
       if(indices_[i] != indices_[i - 1]){
         is.push_back({id++, i - 1});
       }
