@@ -87,7 +87,7 @@ mpi_task(
       else if(rank == 0 && i==start) {
         ip.exclusive.push_back(id);
         //std::cout << "rank: " << rank << " exclusive: " << id << std::endl;
-       }
+      }
       else if(rank == size-1 && i==end-1) {
         ip.exclusive.push_back(id);
         //std::cout << "rank: " << rank << " exclusive: " << id << std::endl;
@@ -191,24 +191,26 @@ register_task(mpi_task, mpi, single);
 
 void
 driver(
-  int argc,
+  int argc, 
   char ** argv
 )
 {
+  context_t & context_ = context_t::instance();
+  size_t task_key = const_string_t{"driver"}.hash();
+  auto runtime = context_.runtime(task_key);
+  auto context = context_.context(task_key);
+
   using legion_domain = LegionRuntime::HighLevel::Domain;
 
-  context_t & context_ = context_t::instance();
   flecsi::dmp::parts partitions;
   
-  // first execute mpi task to setup initial partitions
+  // first execute mpi task to setup initial partitions 
   execute_task(mpi_task, mpi, single, 1.0);
   
   // create a field space to store cells id
-  FieldSpace cells_fs =
-      context_.runtime()->create_field_space(context_.context());
+  FieldSpace cells_fs = runtime->create_field_space(context);
   {
-    FieldAllocator allocator =
-      context_.runtime()->create_field_allocator(context_.context(),
+    FieldAllocator allocator = runtime->create_field_allocator(context,
                                              cells_fs);
     allocator.allocate_field(sizeof(int), FID_CELL);
   }
@@ -229,8 +231,8 @@ driver(
 
   get_numbers_of_cells_launcher.tag = MAPPER_ALL_PROC;
 
-  FutureMap fm1 = context_.runtime()->execute_index_space(
-             context_.context(), get_numbers_of_cells_launcher);
+  FutureMap fm1 = runtime->execute_index_space(context, 
+      get_numbers_of_cells_launcher);
 
   size_t total_num_cells=0;
   std::vector<size_t> primary_start_id;
@@ -250,27 +252,23 @@ driver(
   }//end for
 
   
-  IndexSpace cells_is = context_.runtime()->create_index_space(
-          context_.context(), total_num_cells);
+  IndexSpace cells_is = runtime->create_index_space(context, total_num_cells);
 
-  IndexAllocator allocator = context_.runtime()->create_index_allocator( 
-                                          context_.context(),cells_is);
+  IndexAllocator allocator = runtime->create_index_allocator(context,cells_is);
   for(size_t i = 0; i < total_num_cells; ++i){
     ptr_t  ptr_i= allocator.alloc(1);
     assert(!ptr_i.is_null());
   }
 
   LogicalRegion cells_lr=
-       context_.runtime()->create_logical_region(context_.context(),
-                                      cells_is, cells_fs);
-  context_.runtime()->attach_name(cells_lr,
-                 "cells  logical region");
+       runtime->create_logical_region(context,cells_is, cells_fs);
+  runtime->attach_name(cells_lr, "cells  logical region");
 
   //partition cells by number of mpi ranks
 
   Coloring primary_coloring;
 
-  IndexIterator itr(context_.runtime(), context_.context(), cells_is);
+  IndexIterator itr(runtime, context, cells_is);
   
   for(size_t i = 0; i < num_ranks-1; ++i){
     for (size_t j=primary_start_id[i]; j<primary_start_id[i+1]; j++){
@@ -287,11 +285,9 @@ driver(
   }//end for
 
   IndexPartition primary_ip = 
-    context_.runtime()->create_index_partition(context_.context(),
-          cells_is, primary_coloring, true);
+    runtime->create_index_partition(context, cells_is, primary_coloring, true);
 
-  LogicalPartition primary_lp =
-    context_.runtime()->get_logical_partition(context_.context(),
+  LogicalPartition primary_lp = runtime->get_logical_partition(context,
            cells_lr, primary_ip);
   Rect<1> rank_rect(Point<1>(0), Point<1>(num_ranks - 1));
   Domain rank_domain = Domain::from_rect<1>(rank_rect);
@@ -309,12 +305,11 @@ driver(
                       WRITE_DISCARD, EXCLUSIVE, cells_lr));
   init_cells_launcher.add_field(0, FID_CELL);
 
-  FutureMap fm2 = context_.runtime()->execute_index_space(
-             context_.context(), init_cells_launcher);
+  FutureMap fm2 = runtime->execute_index_space( context, init_cells_launcher);
   
   fm2.wait_all_results();
 
-#if 0
+#if 0 
   //printing cell_lr results
   {
     RegionRequirement req(cells_lr, READ_WRITE, EXCLUSIVE, cells_lr);
@@ -323,13 +318,12 @@ driver(
     std::cout << "Back in driver (TTL) and checking values in Cells GlobalLR"
        << std::endl;
     InlineLauncher cell_launcher(req);
-    PhysicalRegion cell_region =
-      context_.runtime()->map_region(context_.context(), cell_launcher);
+    PhysicalRegion cell_region = runtime->map_region(context, cell_launcher);
     cell_region.wait_until_valid();
     RegionAccessor<AccessorType::Generic, int> acc_cell =
       cell_region.get_field_accessor(FID_CELL).typeify<int>();
 
-    IndexIterator itr2(context_.runtime(), context_.context(), cells_is);
+    IndexIterator itr2(runtime, context, cells_is);
     for (int i=0; i< total_num_cells; i++)
     {
       assert(itr2.has_next());
@@ -342,6 +336,7 @@ driver(
 
 
 #endif
+    
 
 } // driver
 

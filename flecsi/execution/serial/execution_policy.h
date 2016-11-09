@@ -20,7 +20,6 @@
 #include <unordered_map>
 
 #include "flecsi/execution/context.h"
-//#include "flecsi/execution/future.h"
 #include "flecsi/execution/common/processor.h"
 #include "flecsi/execution/common/task_hash.h"
 #include "flecsi/utils/tuple_function.h"
@@ -36,55 +35,159 @@
 namespace flecsi {
 namespace execution {
 
-template<typename R> struct future__;
+// Forward.
+template<typename R> struct executor__;
 
+//----------------------------------------------------------------------------//
+// Future.
+//----------------------------------------------------------------------------//
+
+///
+//
+///
 template<
-  typename R,
-  typename T,
-  typename A,
-  bool is_void = std::is_void<R>::value
+  typename R
+>
+struct serial_future__
+{
+  friend executor__<R>;
+  using result_t = R;
+
+  ///
+  //
+  ///
+  void wait() {}
+
+  ///
+  //
+  ///
+  const result_t & get(size_t index = 0) const { return result_; }
+
+private:  
+
+  void set(const result_t & result) { result_ = result; }
+
+  result_t result_;
+
+}; // struct serial_future__
+
+///
+//
+///
+template<>
+struct serial_future__<void>
+{
+  friend executor__<void>;
+
+  ///
+  //
+  ///
+  void wait() {}
+
+}; // struct serial_future__
+
+//----------------------------------------------------------------------------//
+// Executor.
+//----------------------------------------------------------------------------//
+
+///
+// Executor interface.
+///
+template<
+  typename R
 >
 struct executor__
 {
-
+  ///
+  //
+  ///
+  template<
+    typename T,
+    typename A
+  >
   static
   decltype(auto)
   execute(
     task_hash_key_t key,
-    T user_task,
+    size_t parent,
+    T user_task_handle,
     A targs
   )
   {
-    user_task(targs);
-    return future__<R>();
+    R value =
+      user_task_handle(context_t::instance().function(user_task_handle.key),
+        targs);
+    serial_future__<R> f;
+    f.set(value);
+    return f;
+  } // execute_task
+}; // struct executor__
+
+///
+// Partial specialization for reference type.
+///
+template<
+  typename R
+>
+struct executor__<R &>
+{
+  ///
+  //
+  ///
+  template<
+    typename T,
+    typename A
+  >
+  static
+  decltype(auto)
+  execute(
+    task_hash_key_t key,
+    size_t parent,
+    T user_task_handle,
+    A targs
+  )
+  {
+    R & value =
+      user_task_handle(context_t::instance().function(user_task_handle.key),
+        targs);
+    serial_future__<R &> f;
+    f.set(value);
+    return f;
+  } // execute_task
+}; // struct executor__
+
+///
+// Explicit specialization for void
+///
+template<>
+struct executor__<void>
+{
+  ///
+  //
+  ///
+  template<
+    typename T,
+    typename A
+  >
+  static
+  decltype(auto)
+  execute(
+    task_hash_key_t key,
+    size_t parent,
+    T user_task_handle,
+    A targs
+  )
+  {
+    user_task_handle(context_t::instance().function(user_task_handle.key),
+      targs);
+    return serial_future__<void>();
   } // execute
 
 }; // struct executor__
 
-template<
-  typename R,
-  typename T,
-  typename A
->
-struct executor__<R, T, A, false>
-{
-  static
-  decltype(auto)
-  execute(
-    task_hash_key_t key,
-    T user_task,
-    A targs
-  )
-  {
-    // FIXME: Need to set state
-    R value = user_task(targs);
-    future__<R> f;
-    //FIXME
-   // f.set(value);
-    return f;
-    //return future__<R>(user_task(targs));
-  } // execute_task
-}; // struct executor__
+//----------------------------------------------------------------------------//
+// Execution policy.
+//----------------------------------------------------------------------------//
 
 ///
 // \struct serial_execution_policy serial_execution_policy.h
@@ -92,11 +195,12 @@ struct executor__<R, T, A, false>
 ///
 struct serial_execution_policy_t
 {
+  template<typename R>
+  using future__ = serial_future__<R>;
+
   //--------------------------------------------------------------------------//
   // Task interface.
   //--------------------------------------------------------------------------//
-
-  // FIXME: Finish Doxygen
 
   ///
   // Serial task registration.
@@ -123,24 +227,24 @@ struct serial_execution_policy_t
   // \tparam As The user task argument types.
   //
   // \param key
-  // \param user_task
+  // \param user_task_handle
   // \param args
   ///
   template<
     typename R,
     typename T,
-    typename ... As
+    typename A
   >
   static
   decltype(auto)
   execute_task(
     task_hash_key_t key,
-    T user_task,
-    As ... args
+    size_t parent,
+    T user_task_handle,
+    A args
   )
   {
-    using executor_t = executor__<R, T, std::tuple<As ...>>;
-    return executor_t::execute(key, user_task, std::make_tuple(args ...));
+    return executor__<R>::execute(key, parent, user_task_handle, args);
   } // execute_task
 
   //--------------------------------------------------------------------------//
@@ -199,14 +303,6 @@ struct serial_execution_policy_t
   } // execute_function
 
 }; // struct serial_execution_policy_t
-
-template<
-  typename R
->
-struct future__
-{
-  friend serial_execution_policy_t;
-}; // struct future__
 
 } // namespace execution 
 } // namespace flecsi

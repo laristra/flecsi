@@ -28,12 +28,18 @@ void legion_runtime_driver(const LegionRuntime::HighLevel::Task * task,
 	LegionRuntime::HighLevel::Context ctx,
 	LegionRuntime::HighLevel::HighLevelRuntime * runtime)
 	{
-		context_t::instance().set_state(ctx, runtime, task, regions);
-
     const LegionRuntime::HighLevel::InputArgs & args =
       LegionRuntime::HighLevel::HighLevelRuntime::get_input_args();
 
+    // Set the current task context to the driver
+		context_t::instance().push_state(const_string_t{"driver"}.hash(),
+      ctx, runtime, task, regions);
+
     driver(args.argc, args.argv); 
+
+    // Set the current task context to the driver
+		context_t::instance().pop_state(const_string_t{"driver"}.hash());
+
 	} // legion_runtime_driver
 
 } // namespace execution 
