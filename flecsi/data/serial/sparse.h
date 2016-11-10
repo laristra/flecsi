@@ -230,9 +230,28 @@ struct sparse_accessor_t
     index_space_ is;
     size_t id = 0;
 
-    for(size_t i = 1; i < num_indices_ + 1; ++i){
-      if(indices_[i] != indices_[i - 1]){
-        is.push_back({id++, i - 1});
+    for(size_t i = 0; i < num_indices_; ++i){
+      if(indices_[i] != indices_[i + 1]){
+        is.push_back({id++, i});
+      }
+    }
+
+    return is;
+  }
+
+  index_space_ indices(size_t entry){
+    index_space_ is;
+    size_t id = 0;
+
+    for(size_t index = 0; index < num_indices_; ++index){
+      entry_value_t * start = entries_ + indices_[index];
+      entry_value_t * end = entries_ + indices_[index + 1];
+
+      if(std::binary_search(start, end, entry_value_t(entry),
+          [](const auto & k1, const auto & k2) -> bool {
+            return k1.entry < k2.entry;
+          })){
+        is.push_back({id++, index});
       }
     }
 
