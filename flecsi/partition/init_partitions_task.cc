@@ -196,7 +196,68 @@ exclusive_part_task(
   Legion::Context ctx, Legion::HighLevelRuntime *runtime
 )
 {
+  assert(regions.size() == 1);
+  assert(task->regions.size() == 1);
+  assert(task->regions[0].privilege_fields.size() == 1);
+  std::cout << "Here I am in exclusive_partitioning task" << std::endl;
+  
+  using index_partition_t = index_partition__<size_t>;
+  using legion_domain = LegionRuntime::HighLevel::Domain;
+  
+  flecsi::execution::context_t & context_ =
+    flecsi::execution::context_t::instance();
+  index_partition_t ip =
+    context_.interop_helper_.data_storage_[0];
+  
+  LegionRuntime::HighLevel::LogicalRegion lr = regions[0].get_logical_region();
+  LegionRuntime::HighLevel::IndexSpace is = lr.get_index_space();
+  
+  Rect<1> exclusive_rect(Point<1>(0), Point<1>(ip.exclusive.size()-1));
+  LegionRuntime::HighLevel::IndexSpace exclusive_is =
+	runtime->create_index_space(ctx, legion_domain::from_rect<1>(exclusive_rect));
+  
+  LegionRuntime::HighLevel::FieldSpace exclusive_fs =
+          runtime->create_field_space(ctx);
+  { 
+    LegionRuntime::HighLevel::FieldAllocator allocator =
+        runtime->create_field_allocator(ctx,exclusive_fs);
+    allocator.allocate_field(sizeof(ptr_t), FID_SHARED);
+  }
+  
+  LegionRuntime::HighLevel::LogicalRegion exclusive_lr= 
+       runtime->create_logical_region(ctx,exclusive_is, exclusive_fs);
+  runtime->attach_name(exclusive_lr, "exclusive temp  logical region");
+  
+  LegionRuntime::HighLevel::RegionRequirement req(exclusive_lr,
+                      READ_WRITE, EXCLUSIVE, exclusive_lr);
+  req.add_field(FID_SHARED);
+  LegionRuntime::HighLevel::InlineLauncher exclusive_launcher(req);
+  LegionRuntime::HighLevel::PhysicalRegion exclusive_region =
+              runtime->map_region(ctx, exclusive_launcher);
+  exclusive_region.wait_until_valid();
+  LegionRuntime::Accessor::RegionAccessor<
+    LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
+    exclusive_region.get_field_accessor(FID_SHARED).typeify<ptr_t>();
+  
+  size_t indx=0; 
+  for(size_t i = 0; i <ip.exclusive.size() ; i++){
+    LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, is);
+    size_t id_s = ip.exclusive[i];
+    for(size_t j = 0; j <ip.primary.size() ; j++){
+      assert(itr.has_next());
+      ptr_t ptr = itr.next();
+      size_t id_p = ip.primary[j];
+      if (id_p == id_s){
+         j=ip.primary.size()+1;
+         acc.write(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
+            make_point(indx)),ptr);
+         indx++;
+      }//end if
+    }//end for
+  }//end for
 
+  runtime->unmap_region(ctx, exclusive_region);
+  return exclusive_lr; 
 }//exclusive_part_task
 
 } // namespace dmp

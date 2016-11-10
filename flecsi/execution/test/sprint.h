@@ -398,6 +398,56 @@ driver(
 
   Coloring exclusive_coloring;   
  
+  LegionRuntime::HighLevel::IndexLauncher exclusive_part_launcher(
+    task_ids_t::instance().exclusive_part_task_id,
+    rank_domain,
+    LegionRuntime::HighLevel::TaskArgument(0, 0),
+    arg_map);
+
+  exclusive_part_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+
+  exclusive_part_launcher.add_region_requirement(
+    RegionRequirement(primary_lp, 0/*projection ID*/,
+                      WRITE_DISCARD, EXCLUSIVE, cells_lr));
+  exclusive_part_launcher.add_field(0, FID_CELL);
+
+  FutureMap fm4 = runtime->execute_index_space(context,exclusive_part_launcher);
+  fm3.wait_all_results();
+
+   indx=0;
+   for (GenericPointInRectIterator<1> pir(rank_rect); pir; pir++)
+  {
+    LogicalRegion exclusive_pts_lr= fm4.get_result< LogicalRegion >(
+                           DomainPoint::from_point<1>(pir.p));
+    LegionRuntime::HighLevel::IndexSpace is =
+        exclusive_pts_lr.get_index_space();
+    LegionRuntime::HighLevel::RegionRequirement req(exclusive_pts_lr,
+                      READ_ONLY, EXCLUSIVE, exclusive_pts_lr);
+    req.add_field(FID_SHARED);
+    LegionRuntime::HighLevel::InlineLauncher exclusive_launcher(req);
+    LegionRuntime::HighLevel::PhysicalRegion exclusive_region =
+              runtime->map_region(context, exclusive_launcher);
+    exclusive_region.wait_until_valid();
+    LegionRuntime::Accessor::RegionAccessor<
+      LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
+    exclusive_region.get_field_accessor(FID_SHARED).typeify<ptr_t>();
+    for (int j=0; j<num_exclusive[indx]; j++)
+    {
+
+      ptr_t ptr=
+        acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
+        make_point(j)));
+      exclusive_coloring[indx].points.insert(ptr);
+    }//end for
+    runtime->unmap_region(context, exclusive_region);
+    indx++;
+  }//end for
+
+  IndexPartition exclusive_ip =
+    runtime->create_index_partition(context, cells_is,exclusive_coloring, true);
+
+  LogicalPartition exclusive_lp = runtime->get_logical_partition(context,
+           cells_lr, exclusive_ip);
 
 } // driver
 
