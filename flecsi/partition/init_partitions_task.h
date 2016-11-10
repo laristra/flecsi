@@ -17,6 +17,11 @@
 
 
 
+enum
+FieldIDs2 {
+  FID_SHARED,
+};
+
 namespace flecsi {
 namespace dmp {
 
@@ -43,6 +48,19 @@ init_cells_task(
   Legion::Context ctx, Legion::HighLevelRuntime *runtime
 );
 
+Legion::LogicalRegion
+shared_part_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+);
+
+Legion::LogicalRegion
+exclusive_part_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+);
 
 } // namespace dmp
 } // namespace flecsi

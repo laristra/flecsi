@@ -236,6 +236,10 @@ driver(
 
   size_t total_num_cells=0;
   std::vector<size_t> primary_start_id;
+  std::vector<size_t> num_shared;
+  std::vector<size_t> num_ghosts;
+  std::vector<size_t> num_exclusive;
+
   for (int i = 0; i < num_ranks; i++) {
     std::cout << "about to call get_results" << std::endl;
     flecsi::dmp::parts received = fm1.get_result<flecsi::dmp::parts>(
@@ -243,6 +247,9 @@ driver(
 
     primary_start_id.push_back(total_num_cells);
     total_num_cells += received.primary;
+    num_shared.push_back(received.shared);
+    num_ghosts.push_back(received.ghost);
+    num_exclusive.push_back(received.exclusive);
 
 #if 1
     std::cout << "From rank " << i << " received (exclusive, shared, ghost) "
@@ -333,10 +340,64 @@ driver(
       std::cout << "cells_global[ " <<i<<" ] = " << value <<std::endl;
     }//end for
   }
-
-
 #endif
-    
+
+  //creating partiotioning for shared and exclusive elements:
+  Coloring shared_coloring;
+  
+  LegionRuntime::HighLevel::IndexLauncher shared_part_launcher(
+    task_ids_t::instance().shared_part_task_id,
+    rank_domain,
+    LegionRuntime::HighLevel::TaskArgument(0, 0),
+    arg_map);
+
+  shared_part_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+
+  shared_part_launcher.add_region_requirement(
+    RegionRequirement(primary_lp, 0/*projection ID*/,
+                      WRITE_DISCARD, EXCLUSIVE, cells_lr));
+  shared_part_launcher.add_field(0, FID_CELL);
+
+  FutureMap fm3 = runtime->execute_index_space( context, shared_part_launcher);
+  fm3.wait_all_results();
+ 
+  int indx=0;
+   for (GenericPointInRectIterator<1> pir(rank_rect); pir; pir++)
+  {
+    LogicalRegion shared_pts_lr= fm3.get_result< LogicalRegion >(
+                           DomainPoint::from_point<1>(pir.p));
+    LegionRuntime::HighLevel::IndexSpace is = shared_pts_lr.get_index_space();
+    LegionRuntime::HighLevel::RegionRequirement req(shared_pts_lr,
+                      READ_ONLY, EXCLUSIVE, shared_pts_lr);
+    req.add_field(FID_SHARED);
+    LegionRuntime::HighLevel::InlineLauncher shared_launcher(req);
+    LegionRuntime::HighLevel::PhysicalRegion shared_region =
+              runtime->map_region(context, shared_launcher);
+    shared_region.wait_until_valid();
+    LegionRuntime::Accessor::RegionAccessor<
+      LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
+    shared_region.get_field_accessor(FID_SHARED).typeify<ptr_t>();
+    for (int j=0; j<num_shared[indx]; j++)
+    {
+      
+      ptr_t ptr=
+        acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
+        make_point(j)));
+      shared_coloring[indx].points.insert(ptr);
+    }//end for
+    runtime->unmap_region(context, shared_region);
+    indx++;
+  }//end for
+
+  IndexPartition shared_ip =
+    runtime->create_index_partition(context, cells_is, shared_coloring, true);
+
+  LogicalPartition shared_lp = runtime->get_logical_partition(context,
+           cells_lr, shared_ip);
+
+
+  Coloring exclusive_coloring;   
+ 
 
 } // driver
 
