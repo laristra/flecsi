@@ -62,6 +62,13 @@ exclusive_part_task(
   Legion::Context ctx, Legion::HighLevelRuntime *runtime
 );
 
+Legion::LogicalRegion
+ghost_part_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+);
+
 } // namespace dmp
 } // namespace flecsi
 

@@ -260,6 +260,84 @@ exclusive_part_task(
   return exclusive_lr; 
 }//exclusive_part_task
 
+Legion::LogicalRegion
+ghost_part_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+)
+{
+  assert(regions.size() == 1);
+  assert(task->regions.size() == 1);
+  assert(task->regions[0].privilege_fields.size() == 1);
+  std::cout << "Here I am in ghost_partitioning task" << std::endl;
+  
+  using index_partition_t = index_partition__<size_t>;
+  using legion_domain = LegionRuntime::HighLevel::Domain;
+  using generic_type = LegionRuntime::Accessor::AccessorType::Generic; 
+  using field_id = LegionRuntime::HighLevel::FieldID;
+ 
+  flecsi::execution::context_t & context_ =
+    flecsi::execution::context_t::instance();
+  index_partition_t ip =
+    context_.interop_helper_.data_storage_[0];
+ 
+  field_id fid_global = *(task->regions[0].privilege_fields.begin());
+  LegionRuntime::HighLevel::LogicalRegion lr = regions[0].get_logical_region();
+  LegionRuntime::HighLevel::IndexSpace is = lr.get_index_space();
+  LegionRuntime::Accessor::RegionAccessor<generic_type, int>
+    acc_global= regions[0].get_field_accessor(fid_global).typeify<int>();
+//  legion_domain dom_global = runtime->get_index_space_domain(ctx,
+//      task->regions[0].region.get_index_space());
+//  Rect<1> rect_global = dom_global.get_rect<1>();
+ 
+  Rect<1> ghost_rect(Point<1>(0), Point<1>(ip.ghost.size()-1));
+  LegionRuntime::HighLevel::IndexSpace ghost_is =
+  runtime->create_index_space(ctx, legion_domain::from_rect<1>(ghost_rect));
+  
+  LegionRuntime::HighLevel::FieldSpace ghost_fs =
+          runtime->create_field_space(ctx);
+  { 
+    LegionRuntime::HighLevel::FieldAllocator allocator =
+        runtime->create_field_allocator(ctx,ghost_fs);
+    allocator.allocate_field(sizeof(ptr_t), FID_SHARED);
+  }
+  
+  LegionRuntime::HighLevel::LogicalRegion ghost_lr= 
+       runtime->create_logical_region(ctx,ghost_is, ghost_fs);
+  runtime->attach_name(ghost_lr, "ghost temp  logical region");
+  
+  LegionRuntime::HighLevel::RegionRequirement req(ghost_lr,
+                      READ_WRITE, EXCLUSIVE, ghost_lr);
+  req.add_field(FID_SHARED);
+  LegionRuntime::HighLevel::InlineLauncher ghost_launcher(req);
+  LegionRuntime::HighLevel::PhysicalRegion ghost_region =
+              runtime->map_region(ctx, ghost_launcher);
+  ghost_region.wait_until_valid();
+  LegionRuntime::Accessor::RegionAccessor<generic_type, ptr_t> acc =
+    ghost_region.get_field_accessor(FID_SHARED).typeify<ptr_t>();
+  
+  size_t indx=0;
+  for(size_t i = 0; i <ip.ghost.size() ; i++){
+    LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, is);
+    size_t id_ghost = ip.ghost[i].mesh_id;
+    while(itr.has_next()){
+      ptr_t ptr = itr.next();
+      size_t id_global = acc_global.read(ptr);
+      if (id_global == id_ghost){
+         acc.write(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
+            make_point(indx)),ptr);
+         indx++;
+      }//end while
+    }//end for
+  }//end for
+
+  runtime->unmap_region(ctx, ghost_region);
+  return ghost_lr;
+
+
+}
+
 } // namespace dmp
 } // namespace flecsi
 
