@@ -37,11 +37,13 @@ RUN if [ ${WERROR} ]; then export CXXFLAGS="-Werror"; fi; \
           -DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON  \
           -DCMAKE_DISABLE_FIND_PACKAGE_LAPACKE=ON} \
           -DENABLE_UNIT_TESTS=ON \
+          -DENABLE_DOXYGEN=ON \
           ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} ..
 
 RUN make VERBOSE=1 -j2
 RUN make test
 RUN make install DESTDIR=${PWD}
+RUN make doxygen
 RUN cd .. && if [ ${COVERAGE} ]; then $HOME/.local/bin/codecov; fi && cd -
 USER root
 RUN make install

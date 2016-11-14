@@ -48,18 +48,19 @@ after_success:
       git fetch origin gh-pages && git checkout -b gh-pages FETCH_HEAD;
       mkdir -p assets;
       rm -rf assets/doxygen html;
-      CON=$(docker run -d flecsi/flecsi:${DOCKERFILE}_${RUNTIME}) && docker cp ${CON}:/tmp/flecsi/build/doc/doxygen/html . ;
+      CON=$(docker run -d flecsi/flecsi:${DOCKERFILE}_${RUNTIME}) && docker cp ${CON}:/home/flecsi/flecsi/build/doc/doxygen/html . ;
       mv html assets/doxygen;
+      git add --all assets/doxygen;
       if [[ ${TRAVIS_BRANCH} = master && ${encrypted_5669a181ba27_key} && ${encrypted_5669a181ba27_iv} && ${TRAVIS_PULL_REQUEST} == false ]]; then
         git config --global user.name "Automatic Deployment (Travis CI)";
         git config --global user.email "flecsi-commit@lanl.gov";
-        git add --all assets/doxygen && git commit -m "Documentation Update";
+        git commit -m "Documentation Update";
         openssl aes-256-cbc -K $encrypted_5669a181ba27_key -iv $encrypted_5669a181ba27_iv -in deploy.enc -out ~/.ssh/id_rsa -d;
         chmod 600 ~/.ssh/id_rsa;
         git push git@github.com:${TRAVIS_REPO_SLUG} gh-pages:gh-pages;
       else
         git status;
-        git diff --no-color | head -n 500;
+        git diff --cached --no-color | head -n 500;
       fi;
     fi
 
