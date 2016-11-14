@@ -37,7 +37,8 @@ RUN if [ ${WERROR} ]; then export CXXFLAGS="-Werror"; fi; \
           -DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON  \
           -DCMAKE_DISABLE_FIND_PACKAGE_LAPACKE=ON} \
           -DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON \
-          -DENABLE_UNIT_TESTS=ON .. \
+          -DENABLE_UNIT_TESTS=ON \
+          -DLIBDIR=lib64 \
           ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} ..
 
 RUN make VERBOSE=1 -j2
