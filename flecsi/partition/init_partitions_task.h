@@ -69,6 +69,13 @@ ghost_part_task(
   Legion::Context ctx, Legion::HighLevelRuntime *runtime
 );
 
+void
+check_partitioning_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+);
+
 } // namespace dmp
 } // namespace flecsi
 

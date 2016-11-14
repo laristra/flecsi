@@ -123,27 +123,38 @@ mpi_task(
 
   //creating primary partitioning and filling global_id's for shared elements:
   int start_indx=0;
+  size_t previous_indx = 0;
+std::cout << ip.exclusive.size()<< "  "<< ip.shared.size()<<std::endl;
   for (int i=0; i<ip.exclusive.size(); i++){
     for (int j=start_indx; j<ip.shared.size(); j++){
         if (ip.exclusive[i]<ip.shared_id(j))
         {
           ip.primary.push_back(ip.exclusive[i]);
+          previous_indx=ip.exclusive[i];
+          start_indx=ip.primary.size()-i-1;
           j=ip.shared.size()+1;
         }//end if
         else 
         {
-          ip.primary.push_back(ip.shared_id(j));
-          ip.shared[j].global_id = start_global_id[rank]+ip.primary.size()-1;
+            ip.primary.push_back(ip.shared_id(j));
+            previous_indx=ip.shared_id(j);
+            ip.shared[j].global_id = start_global_id[rank]+ip.primary.size()-1;
+            //start_indx=ip.primary.size()-i-1;
+            start_indx++;
         }//end else
-        start_indx=ip.primary.size()-i-1;
+        //start_indx=ip.primary.size()-i-1;
       }//end for
+      if (start_indx>(ip.shared.size()-1))
+			{
+        if (ip.exclusive[i]>previous_indx)
+          ip.primary.push_back(ip.exclusive[i]);
+			}
   }//end_for
   for (int i = start_indx; i< ip.shared.size(); i++)
-  { 
+  {    
       ip.primary.push_back(ip.shared_id(i));
       ip.shared[i].global_id = start_global_id[rank]+ip.primary.size()-1;
   }//end for
-
 
   if (size>1)
     assert (ip.primary.size() == (ip.exclusive.size()+ip.shared.size()));   
@@ -160,7 +171,13 @@ mpi_task(
    std::cout<< " rank = " << rank <<" global_id = " << start_global_id[rank]+i<< 
     " primary = " << ip.primary[i]<< std::endl;
   }
-#if 0
+   for (int i =0; i< ip.exclusive.size(); i++)
+  {
+    std::cout<< " rank = " << rank << " exclusive_mesh_id  = " << ip.exclusive[i] 
+          << std::endl;
+  }
+
+
   for (int i =0; i< ip.shared.size(); i++)
   {
     std::cout<< " rank = " << rank << " shared_mesh_id  = " << ip.shared_id(i) 
@@ -170,7 +187,7 @@ mpi_task(
     std::cout<< " rank = " << rank << "dependent_ranks" << 
          ip.shared[i].dependent_ranks[0] << std::endl;
   }
-
+#if 0
   for (int i =0; i< ip.ghost.size(); i++)
   {
     std::cout<< " rank = " << rank << " gost_mesh_id  = " << ip.ghost_id(i)
@@ -504,6 +521,34 @@ driver(
 
   LogicalPartition ghost_lp = runtime->get_logical_partition(context,
            cells_lr, ghost_ip);
+
+
+  //call a legion task that checks our partitions
+  LegionRuntime::HighLevel::IndexLauncher check_part_launcher(
+    task_ids_t::instance().check_partitioning_task_id,
+    rank_domain,
+    LegionRuntime::HighLevel::TaskArgument(0, 0),
+    arg_map);
+
+  check_part_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+
+  check_part_launcher.add_region_requirement(
+    RegionRequirement(shared_lp, 0/*projection ID*/,
+                      READ_ONLY, EXCLUSIVE, cells_lr));
+  check_part_launcher.add_field(0, FID_CELL);
+
+  check_part_launcher.add_region_requirement(
+    RegionRequirement(exclusive_lp, 0/*projection ID*/,
+                      READ_ONLY, EXCLUSIVE, cells_lr));
+  check_part_launcher.add_field(1, FID_CELL);
+
+  check_part_launcher.add_region_requirement(
+    RegionRequirement(ghost_lp, 0/*projection ID*/,
+                      READ_ONLY, EXCLUSIVE, cells_lr));
+  check_part_launcher.add_field(2, FID_CELL);
+
+  FutureMap fm6 = runtime->execute_index_space(context,check_part_launcher);
+  fm6.wait_all_results();
 
 
 

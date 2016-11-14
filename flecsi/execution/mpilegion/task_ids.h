@@ -63,6 +63,7 @@ class task_ids_t
   size_t shared_part_task_id = unique_fid_t::instance().next();
   size_t exclusive_part_task_id = unique_fid_t::instance().next();
   size_t ghost_part_task_id = unique_fid_t::instance().next();
+  size_t check_partitioning_task_id = unique_fid_t::instance().next();
 };//task_ids_t
 
 }//namespace execution
