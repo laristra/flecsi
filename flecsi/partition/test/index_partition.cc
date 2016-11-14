@@ -105,20 +105,31 @@ protected:
 
 	//creating primary partitioning and filling global_id's for shared elements:
   int start_indx=0;
+  size_t previous_indx=0;
   for (int i=0; i<ip_.exclusive.size(); i++){
     for (int j=start_indx; j<ip_.shared.size(); j++){
         if (ip_.exclusive[i]<ip_.shared_id(j))
         {
           ip_.primary.push_back(ip_.exclusive[i]);
+          previous_indx=ip_.exclusive[i];
           j=ip_.shared.size()+1;
+          start_indx=ip_.primary.size()-i-1;
         }//end if
         else
         {
           ip_.primary.push_back(ip_.shared_id(j));
+          previous_indx=ip_.shared_id(j);
           ip_.shared[j].global_id = start_global_id[rank]+ip_.primary.size()-1;
+          start_indx++;
         }//end else
-        start_indx=ip_.primary.size()-i-1;
       }//end for
+
+      if (start_indx>(ip_.shared.size()-1))
+      {
+        if (ip_.exclusive[i]>previous_indx)
+          ip_.primary.push_back(ip_.exclusive[i]);
+      }
+
   }//end_for
   for (int i = start_indx; i< ip_.shared.size(); i++)
   {
