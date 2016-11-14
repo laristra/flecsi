@@ -47,4 +47,5 @@ RUN make doxygen
 RUN cd .. && if [ ${COVERAGE} ]; then $HOME/.local/bin/codecov; fi && cd -
 USER root
 RUN make install
-
+USER flecsi
+WORKDIR /home/flecsi
