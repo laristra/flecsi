@@ -1,4 +1,4 @@
-from ubuntu:latest
+FROM flecsi/flecsi-buildenv:ubuntu
 
 ARG MINIMAL
 ARG MPI
@@ -11,21 +11,7 @@ ARG TRAVIS_BRANCH
 ARG TRAVIS_COMMIT
 ARG COVERAGE
 
-RUN apt-get -q update -y
-RUN apt-get install -y software-properties-common
-RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test
-RUN apt-get -q update -y
-RUN apt-get -qq install -y make cmake cmake-data git g++-6 gfortran-6 libopenmpi-dev \
- openmpi-bin libscotch-dev libexodusii-dev liblapacke-dev flex python-pip \
- texlive-font-utils libcereal-dev
-
-
-RUN groupadd -r flecsi && useradd -r -m -g flecsi flecsi
-USER flecsi
-
-WORKDIR /tmp
-RUN if [ ${COVERAGE}  ]; then pip install --user codecov; fi 
-RUN if [ ${WERROR} ]; then export CXXFLAGS="-Werror"; fi
+WORKDIR /home/flecsi
 RUN git clone --recursive https://github.com/losalamos/flecsi.git
 
 WORKDIR flecsi
@@ -43,19 +29,23 @@ RUN if [ ${TRAVIS} = true ]; then \
 RUN mkdir build
 
 WORKDIR build
-RUN CC=gcc-6 CXX=g++-6 cmake -DENABLE_MPI=$MPI \
+RUN if [ ${WERROR} ]; then export CXXFLAGS="-Werror"; fi; \
+    CC=gcc-6 CXX=g++-6 cmake -DENABLE_MPI=$MPI \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON \
           -DCMAKE_DISABLE_FIND_PACKAGE_SCOTCH=ON \
           -DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON  \
           -DCMAKE_DISABLE_FIND_PACKAGE_LAPACKE=ON} \
           -DENABLE_UNIT_TESTS=ON \
+          -DENABLE_DOXYGEN=ON \
           ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} ..
 
 RUN make VERBOSE=1 -j2
 RUN make test
 RUN make install DESTDIR=${PWD}
+RUN make doxygen
 RUN cd .. && if [ ${COVERAGE} ]; then $HOME/.local/bin/codecov; fi && cd -
 USER root
 RUN make install
-
+USER flecsi
+WORKDIR /home/flecsi

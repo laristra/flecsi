@@ -191,11 +191,11 @@ void driver(int argc, char ** argv) {
 //  execute_task(task1, mpi, index, alpha, 5);
 //#else
 
-  auto future1 = execute_task(task1, loc, single, alpha, 5);
+  auto f1 = execute_task(task1, loc, single, alpha, 5);
 
-  future1.wait();
+  f1.wait();
 
-  auto future2 = execute_task(task2, loc, single, alpha, 5.0, p);
+  auto f2 = execute_task(task2, loc, single, alpha, 5.0, p);
 
   execute_task(task3, loc, index, 5.0);
 
@@ -204,24 +204,24 @@ void driver(int argc, char ** argv) {
   auto mats1 = get_accessor(m, hydro, materials, material_t, dense, 0);
 
   for(size_t i(0); i<4; ++i) {
-    mats1[i] = copper_t(2.0, 2.0);
+    mats1(i) = copper_t(2.0, 2.0);
   } // for
 
   for(size_t i(4); i<8; ++i) {
-    mats1[i] = steel_t(2.0, 2.0);
+    mats1(i) = steel_t(2.0, 2.0);
   } // for
 
   for(size_t i(8); i<10; ++i) {
-    mats1[i] = silver_t(2.0, 2.0);
+    mats1(i) = silver_t(2.0, 2.0);
   } // for
 
   for(size_t i(0); i<10; ++i) {
-    std::cout << mats1[i].eos() << std::endl;
+    std::cout << mats1(i).eos() << std::endl;
   } // for
 
 #if 1
-  std::cout << "future2.get(): " << future2.get() << std::endl;
-  std::cout << "future1.get(): " << future1.get() << std::endl;
+  std::cout << "f2.get(): " << f2.get() << std::endl;
+  std::cout << "f1.get(): " << f1.get() << std::endl;
 #endif
 
 } // driver

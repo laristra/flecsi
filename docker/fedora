@@ -1,4 +1,4 @@
-from fedora:latest
+FROM flecsi/flecsi-buildenv:fedora
 
 ARG MINIMAL
 ARG MPI
@@ -11,16 +11,7 @@ ARG TRAVIS_BRANCH
 ARG TRAVIS_COMMIT
 ARG COVERAGE
 
-RUN dnf install -y -q make cmake git gcc-c++ openmpi-devel lapack-devel \
-    metis-devel scotch-devel lapack-devel flex python-pip cereal-devel
-
-RUN groupadd -r flecsi && useradd -r -m -g flecsi flecsi
-USER flecsi
-ENV PATH=$PATH:/usr/lib64/openmpi/bin/
-
-WORKDIR /tmp
-RUN if [ ${COVERAGE}  ]; then pip install --user codecov; fi 
-RUN if [ ${WERROR} ]; then export CXXFLAGS="-Werror"; fi
+WORKDIR /home/flecsi
 RUN git clone --recursive https://github.com/losalamos/flecsi.git
 
 WORKDIR flecsi
@@ -38,12 +29,14 @@ RUN if [ ${TRAVIS} = true ]; then \
 RUN mkdir build
 
 WORKDIR build
-RUN cmake -DENABLE_MPI=$MPI \
+RUN if [ ${WERROR} ]; then export CXXFLAGS="-Werror"; fi; \
+    cmake -DENABLE_MPI=$MPI \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON \
           -DCMAKE_DISABLE_FIND_PACKAGE_SCOTCH=ON \
           -DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON  \
           -DCMAKE_DISABLE_FIND_PACKAGE_LAPACKE=ON} \
+          -DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON \
           -DENABLE_UNIT_TESTS=ON .. \
           ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} ..
 
@@ -53,4 +46,5 @@ RUN make install DESTDIR=${PWD}
 RUN cd .. && if [ ${COVERAGE} ]; then $HOME/.local/bin/codecov; fi && cd -
 USER root
 RUN make install
-
+USER flecsi
+WORKDIR /home/flecsi

@@ -50,7 +50,6 @@ cinch_add_unit(partition
 
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
-
 #  cinch_add_unit(index_partition
 #    SOURCES test/index_partition.cc
 #    INPUTS test/index_partition.blessed

@@ -29,8 +29,10 @@
 namespace flecsi {
 namespace execution {
 
+#if defined(FLECSI_RUNTIME_MODEL_mpilegion)
 // Dummy type for future specialization selection.
 struct mpitask_t {};
+#endif // FLECSI_RUNTIME_MODEL_mpilegion
 
 //----------------------------------------------------------------------------//
 // Future concept.
@@ -157,6 +159,7 @@ private:
 
 }; // struct legion_future_model__
 
+#if defined(FLECSI_RUNTIME_MODEL_mpilegion)
 ///
 // Partial specialization for mpi task
 ///
@@ -180,6 +183,7 @@ struct legion_future_model__<R, mpitask_t>
   } // get
 
 }; // struct legion_future_model__
+#endif // FLECSI_RUNTIME_MODEL_mpilegion
 
 ///
 // Explicit specialization for index launch FutureMap and void.
@@ -205,6 +209,7 @@ private:
 
 }; // struct legion_future_model__
 
+#if defined(FLECSI_RUNTIME_MODEL_mpilegion)
 ///
 // Explicit specialization for mpi task and void
 ///
@@ -220,6 +225,7 @@ struct legion_future_model__<void, mpitask_t>
   } // wait
 
 }; // struct legion_future_model__
+#endif // FLECSI_RUNTIME_MODEL_mpilegion
 
 //----------------------------------------------------------------------------//
 // Future.

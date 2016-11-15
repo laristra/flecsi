@@ -50,14 +50,20 @@ cinch_add_unit(bindings
 #------------------------------------------------------------------------------#
 
 cinch_add_unit(tree
-  SOURCES test/tree.cc
+  SOURCES test/tree.cc test/pseudo_random.h
   INPUTS test/tree.blessed)
 
+cinch_add_unit(tree1d
+  SOURCES test/tree1d.cc)
+
+cinch_add_unit(tree3d
+  SOURCES test/tree3d.cc)
+
 cinch_add_unit(gravity
-  SOURCES test/gravity.cc)
+  SOURCES test/gravity.cc test/pseudo_random.h)
 
 cinch_add_unit(gravity-state
-  SOURCES test/gravity-state.cc)
+  SOURCES test/gravity-state.cc test/pseudo_random.h)
 
 #------------------------------------------------------------------------------#
 # Misc. unit tests.

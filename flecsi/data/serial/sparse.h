@@ -18,6 +18,7 @@
 #include <map>
 #include <algorithm>
 #include <set>
+#include <unordered_set>
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_type.h!!!
@@ -29,6 +30,11 @@
 //----------------------------------------------------------------------------//
 
 #include "flecsi/utils/const_string.h"
+#include "flecsi/topology/index_space.h"
+
+#define np(X)                                                            \
+ std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
+           << ": " << #X << " = " << (X) << std::endl
 
 ///
 // \file serial/sparse.h
@@ -96,6 +102,9 @@ struct sparse_accessor_t
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
   using entry_value_t = entry_value__<T>;
+
+  using index_space_ = 
+    topology::index_space<topology::simple_entry<size_t>, true>;
 
   //--------------------------------------------------------------------------//
   // Constructors.
@@ -177,6 +186,77 @@ struct sparse_accessor_t
 
     return itr->value;
   } // operator ()
+
+  index_space_ entries() const{
+    size_t id = 0;
+    index_space_ is;
+    std::unordered_set<size_t> found;
+
+    for(size_t index = 0; index < num_indices_; ++index){
+      entry_value_t * itr = entries_ + indices_[index];
+      entry_value_t * end = entries_ + indices_[index + 1];
+
+      while(itr != end){
+        size_t entry = itr->entry;
+        if(found.find(entry) == found.end()){
+          is.push_back({id++, entry});
+          found.insert(entry);
+        }
+        ++itr;
+      }
+    }
+
+    return is;    
+  }
+
+  index_space_ entries(size_t index) const{
+    assert(index < num_indices_ && "sparse accessor: index out of bounds");
+
+    entry_value_t * itr = entries_ + indices_[index];
+    entry_value_t * end = entries_ + indices_[index + 1];
+
+    index_space_ is;
+
+    size_t id = 0;
+    while(itr != end){
+      is.push_back({id++, itr->entry});
+      ++itr;
+    }
+
+    return is;    
+  }
+
+  index_space_ indices(){
+    index_space_ is;
+    size_t id = 0;
+
+    for(size_t i = 0; i < num_indices_; ++i){
+      if(indices_[i] != indices_[i + 1]){
+        is.push_back({id++, i});
+      }
+    }
+
+    return is;
+  }
+
+  index_space_ indices(size_t entry){
+    index_space_ is;
+    size_t id = 0;
+
+    for(size_t index = 0; index < num_indices_; ++index){
+      entry_value_t * start = entries_ + indices_[index];
+      entry_value_t * end = entries_ + indices_[index + 1];
+
+      if(std::binary_search(start, end, entry_value_t(entry),
+          [](const auto & k1, const auto & k2) -> bool {
+            return k1.entry < k2.entry;
+          })){
+        is.push_back({id++, index});
+      }
+    }
+
+    return is;
+  }
 
   ///
   //
@@ -532,11 +612,23 @@ struct storage_type_t<sparse, DS, MD> {
   // Data registration.
   //--------------------------------------------------------------------------//
 
-  template<typename T, size_t NS, typename ... Args>
-  static handle_t<T> register_data(data_client_t & data_client,
-    data_store_t & data_store, const const_string_t & key,
-    size_t versions, size_t indices, size_t num_entries, Args && ... args) {
-
+  template<
+    typename T,
+    size_t NS,
+    typename ... Args
+  >
+  static
+  handle_t<T>
+  register_data(
+    data_client_t & data_client,
+    data_store_t & data_store,
+    const const_string_t & key,
+    size_t versions,
+    size_t index_space,
+    size_t num_entries,
+    Args && ... args
+  )
+  {
     size_t h = key.hash() ^ data_client.runtime_id();
 
     // Runtime assertion that this key is unique
@@ -547,7 +639,7 @@ struct storage_type_t<sparse, DS, MD> {
 
     md.user_data.initialize(std::forward<Args>(args) ...);
     md.label = key.c_str();
-    md.size = indices;
+    md.size = data_client.indices(index_space);
     md.type_size = sizeof(T);
     md.versions = versions;
     md.rtti.reset(
@@ -557,7 +649,7 @@ struct storage_type_t<sparse, DS, MD> {
 
     for(size_t version = 0; version < versions; ++version){
       auto & iv = md.data[version | INDICES_FLAG] = std::vector<uint8_t>();
-      iv.resize((indices + 1) * sizeof(size_t));
+      iv.resize((data_client.indices(index_space) + 1) * sizeof(size_t));
 
       md.data[version | ENTRIES_FLAG] = std::vector<uint8_t>();
     }

@@ -241,6 +241,42 @@ struct dense_accessor_t
   // \brief Provide logical array-based access to the data for this
   //        data variable.  This is the const operator version.
   //
+  // \tparam E A complex index type.
+  //
+  // This version of the operator is provided to support use with
+  // \e flecsi mesh entity types \ref mesh_entity_base_t.
+	///
+  template<typename E>
+  const T &
+  operator () (
+    E * e
+  ) const
+  {
+    return this->operator[](e->template id<0>());
+  } // operator []
+
+	///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \tparam E A complex index type.
+  //
+  // This version of the operator is provided to support use with
+  // \e flecsi mesh entity types \ref mesh_entity_base_t.
+	///
+  template<typename E>
+  T &
+  operator () (
+    E * e
+  )
+  {
+    return this->operator[](e->template id<0>());
+  } // operator []
+
+	///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
   // \param index The index of the data variable to return.
 	///
   const T &
@@ -262,6 +298,36 @@ struct dense_accessor_t
   operator [] (
     size_t index
   )
+  {
+    assert(index < size_ && "index out of range");
+    return data_[index];
+  } // operator []
+
+	///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+	///
+  T &
+  operator () (
+    size_t index
+  )
+  {
+    assert(index < size_ && "index out of range");
+    return data_[index];
+  } // operator []
+
+	///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+	///
+  const T &
+  operator () (
+    size_t index
+  ) const
   {
     assert(index < size_ && "index out of range");
     return data_[index];

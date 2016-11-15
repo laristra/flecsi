@@ -11,19 +11,7 @@ ARG TRAVIS_BRANCH
 ARG TRAVIS_COMMIT
 ARG COVERAGE
 
-USER root
-RUN apt-get -q update -y
-RUN apt-get install -y software-properties-common
-RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test
-RUN apt-get -q update -y
-RUN apt-get -qq install -y libopenmpi-dev openmpi-bin  python-pip g++-6 gfortran-6
-
-USER flecsi
-
-RUN if [ ${COVERAGE}  ]; then pip install --user codecov; fi
-RUN if [ ${WERROR} ]; then export CXXFLAGS="-Werror"; fi
-
-WORKDIR /tmp
+WORKDIR /home/flecsi
 RUN git clone --recursive https://github.com/losalamos/flecsi.git
 
 WORKDIR flecsi
@@ -41,7 +29,8 @@ RUN if [ ${TRAVIS} = true ]; then \
 RUN mkdir build
 
 WORKDIR build
-RUN CC=gcc-6 CXX=g++-6 cmake -DENABLE_MPI=$MPI \
+RUN if [ ${WERROR} ]; then export CXXFLAGS="-Werror"; fi; \
+    CC=gcc-6 CXX=g++-6 cmake -DENABLE_MPI=$MPI \
           -DCMAKE_PREFIX_PATH=${HOME}/tpl \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON \
@@ -57,4 +46,5 @@ RUN make install DESTDIR=${PWD}
 RUN cd .. && if [ ${COVERAGE} ]; then $HOME/.local/bin/codecov; fi && cd -
 USER root
 RUN make install
-
+USER flecsi
+WORKDIR /home/flecsi
