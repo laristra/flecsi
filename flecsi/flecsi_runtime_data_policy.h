@@ -24,8 +24,17 @@
 
   #include "flecsi/data/default_user_meta_data.h"
   #include "flecsi/data/serial/storage_policy.h"
-  #define flecsi_user_meta_data_policy_t default_user_meta_data_t
-  #define flecsi_storage_policy_t serial_storage_policy_t
+
+  namespace flecsi {
+  namespace data {
+
+  using flecsi_user_meta_data_policy_t = default_user_meta_data_t;
+  template<typename T>
+
+  using flecsi_storage_policy_t = serial_storage_policy_t<T>;
+
+  }
+  }
 
 // Legion Policy
 //#elif defined(FLECSI_RUNTIME_MODEL_legion) || \
