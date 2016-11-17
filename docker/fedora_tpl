@@ -3,6 +3,7 @@ from flecsi/flecsi_tpl:fedora
 ARG MINIMAL
 ARG MPI
 ARG RUNTIME
+ARG COVERAGE
 ARG CC
 ARG CXX
 ARG CXXFLAGS
