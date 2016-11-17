@@ -1,4 +1,4 @@
-language: generic
+language: c
 
 sudo: required
 
@@ -30,13 +30,17 @@ env:
     - DOCKERFILE=fedora MPI=OFF RUNTIME=serial COVERAGE=ON
 
 script:
- - docker build --build-arg MPI=${MPI} --build-arg RUNTIME=${RUNTIME} --build-arg WERROR=${WERROR}
+  - cp -vr docker ${HOME}/docker
+  - ln -s ${DOCKERFILE} ${HOME}/docker/Dockerfile
+  - cd ../../
+  - mv -v ${TRAVIS_REPO_SLUG} $HOME/docker
+  - cp -r $HOME/.ccache ${HOME}/docker/ccache
+  - docker build --build-arg MPI=${MPI} --build-arg RUNTIME=${RUNTIME} --build-arg WERROR=${WERROR}
                 --build-arg COVERAGE=${COVERAGE} --build-arg MINIMAL=${MINIMAL}
-                --build-arg TRAVIS=${TRAVIS} --build-arg TRAVIS_BRANCH=${TRAVIS_BRANCH}
-                --build-arg TRAVIS_COMMIT=${TRAVIS_COMMIT}
-                --build-arg TRAVIS_PULL_REQUEST=${TRAVIS_PULL_REQUEST}
-                --build-arg TRAVIS_REPO_SLUG=${TRAVIS_REPO_SLUG}
-                -t flecsi/flecsi:${DOCKERFILE}_${RUNTIME} -f docker/${DOCKERFILE} docker/
+                -t flecsi/flecsi:${DOCKERFILE}_${RUNTIME} ${HOME}/docker/ &&
+    rm -rf ${HOME}/.ccache &&
+    CON=$(docker run -d flecsi/flecsi:${DOCKERFILE}_${RUNTIME} /bin/bash) &&
+    docker cp ${CON}:/home/flecsi/.ccache ${HOME}/
 
 after_success:
   - if [[ ${DOCKERHUB} = true && ${DOCKER_EMAIL} && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_PULL_REQUEST} == false && ${TRAVIS_BRANCH} == master ]]; then
@@ -44,6 +48,7 @@ after_success:
       docker push "flecsi/flecsi:${DOCKERFILE}_${RUNTIME}";
     fi
   - if [[ ${TRAVIS_JOB_NUMBER} = *.1 ]]; then
+      cd $HOME/docker/flecsi;
       rm -rf cinch;
       git fetch origin gh-pages && git checkout -b gh-pages FETCH_HEAD;
       mkdir -p assets;
@@ -63,6 +68,9 @@ after_success:
         git diff --cached --no-color | head -n 500;
       fi;
     fi
+
+cache:
+  - ccache
 
 notifications:
   branches:
