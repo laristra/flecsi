@@ -1,0 +1,37 @@
+#!@PYTHON_EXECUTABLE@
+#------------------------------------------------------------------------------#
+# Copyright (c) 2014 Los Alamos National Security, LLC
+# All rights reserved.
+#------------------------------------------------------------------------------#
+
+import sys
+import flecsit.driver
+
+#------------------------------------------------------------------------------#
+# This script doesn't really do anything except to execute the command-line
+# driver, which is located in flecsit/driver.py.  Look there for more
+# information on the functionality of this script.
+#------------------------------------------------------------------------------#
+
+def main():
+
+    """
+    Main calling routine for cinch script.  For a more detailed explanation,
+    run:
+
+    % ./flecsit help
+    """
+
+    return flecsit.driver.main()
+
+# main
+
+# Call the main routine
+if __name__ == '__main__':
+    main()
+# if
+
+#------------------------------------------------------------------------------#
+# Formatting options for emacs and vim.
+# vim: set tabstop=4 shiftwidth=4 expandtab :
+#------------------------------------------------------------------------------#
