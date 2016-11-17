@@ -3,8 +3,9 @@ from flecsi/flecsi_tpl:fedora
 ARG MINIMAL
 ARG MPI
 ARG RUNTIME
-ARG WERROR
-ARG COVERAGE
+ARG CC
+ARG CXX
+ARG CXXFLAGS
 
 RUN rm -rf /home/flecsi/.ccache
 COPY flecsi /home/flecsi/flecsi
@@ -18,8 +19,7 @@ RUN mkdir build
 
 WORKDIR build
 RUN ccache -z
-RUN if [ ${WERROR} ]; then export CXXFLAGS="-Werror"; fi; \
-    cmake -DENABLE_MPI=$MPI \
+RUN cmake -DENABLE_MPI=$MPI \
           -DCMAKE_PREFIX_PATH=${HOME}/tpl \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON \
