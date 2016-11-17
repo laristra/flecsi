@@ -10,7 +10,7 @@ env:
     - DOCKERBASE=flecsi-buildenv:ubuntu MINIMAL=ON MPI=OFF RUNTIME=serial
     - DOCKERBASE=flecsi_tpl:ubuntu MPI=OFF RUNTIME=legion    DOCKERHUB=true
     - DOCKERBASE=flecsi_tpl:ubuntu MPI=OFF RUNTIME=legion    WERROR=yes
-    - DOCKERBASE=flecsi_tpl:ubuntu MPI=ON  RUNTIME=mpilegion DOCKERHUB= rue
+    - DOCKERBASE=flecsi_tpl:ubuntu MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
     - DOCKERBASE=flecsi_tpl:ubuntu MPI=ON  RUNTIME=mpilegion WERROR=yes
     - DOCKERBASE=flecsi-buildenv:ubuntu MPI=OFF  RUNTIME=serial       DOCKERHUB=true
     - DOCKERBASE=flecsi-buildenv:ubuntu MPI=OFF  RUNTIME=serial       WERROR=yes
