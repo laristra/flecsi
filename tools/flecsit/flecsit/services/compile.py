@@ -30,15 +30,16 @@ class FleCSIT_Analysis(Service):
         )
 
         # add command-line options
-        self.parser.add_argument('-I', '--include', action="append",
+        self.parser.add_argument('-I', '--include', action='append',
             help='Specify an include path. This argument may be given' +
                  ' multiple times. Arguments may be of the form' +
                  ' -I/path/to/include, -I /path/to/include, or' +
                  ' --include /path/to/include.'
         )
 
-        self.parser.add_argument('-v', '--verbose', action="store_true",
-            help='Turn on verbose output.')
+        self.parser.add_argument('-v', '--verbose', action='store_true',
+            help='Turn on verbose output.'
+        )
 
         self.parser.add_argument('driver',
             help='The file containing the user driver definition.'

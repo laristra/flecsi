@@ -28,22 +28,17 @@ class FleCSIT_Analysis(Service):
             help='Service for static analysis.' +
                  ' With no flags, this command takes a list of' +
                  ' source files to process. The form should be' +
-                 ' source:defines string:include paths string, e.g.,' +
+                 ' source:\"defines string\":\"include paths string\", e.g.,' +
                  ' foo.cc:\"-I/path/one -I/path/two\":\"-DDEF1 -DDEF2\"'
         )
 
         # add command-line options
-#        self.parser.add_argument('-b', '--brand', action="store",
-#            help='branding information.' +
-#                '  Load the branding information' +
-#                ' from python module BRAND.')
+        self.parser.add_argument('-v', '--verbose', action='store_true',
+            help='Turn on verbose output.')
 
-#        self.parser.add_argument('syntax',
-#            choices=['cc', 'cmake', 'python'],
-#            help='Input syntax for search and replacement.')
-
-#        self.parser.add_argument('directory',
-#            help='Top-level source directory at which to begin parsing.')
+		self.parser.add_argument('files', nargs='*', action='append',
+			help='The files to anaylze.'
+		)
 
         # set the callback for this sub-command
         self.parser.set_defaults(func=self.main)
@@ -58,6 +53,12 @@ class FleCSIT_Analysis(Service):
 
         """
         """
+
+		#----------------------------------------------------------------------#
+		# Process command-line arguments
+		#----------------------------------------------------------------------#
+
+		execute()
 
     # main
 
