@@ -321,79 +321,14 @@ list(REMOVE_DUPLICATES FLECSIT_LD_LIBRARY_PATH)
 
 string(STRIP "${FLECSIT_LD_LIBRARY_PATH}" FLECSIT_LD_LIBRARY_PATH)
 
-# Create strings for shell files
-#string(REPLACE ";" ":" FLECSI_LOCAL_LD_LIBRARY_PATH
-#  "${FLECSIT_DIRECTORIES}")
-#string(REPLACE "${CMAKE_BINARY_DIR}/lib" "${CMAKE_INSTALL_PREFIX}/lib"
-#  FLECSI_INSTALL_LD_LIBRARY_PATH "${FLECSI_LOCAL_LD_LIBRARY_PATH}")
-
-# This configures the local shell for LD_LIBRARY_PATH
-#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi-local.sh.in
-#  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-local.sh @ONLY)
-#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi-local.csh.in
-#  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-local.csh @ONLY)
-
-# Copy local script to bin directory and change permissions
-#file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-local.sh
-#  DESTINATION ${CMAKE_BINARY_DIR}/bin
-#  FILE_PERMISSIONS
-#    OWNER_READ OWNER_WRITE
-#    GROUP_READ
-#    WORLD_READ
-#  )
-#file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-local.csh
-#  DESTINATION ${CMAKE_BINARY_DIR}/bin
-#  FILE_PERMISSIONS
-#    OWNER_READ OWNER_WRITE
-#    GROUP_READ
-#    WORLD_READ
-#  )
-
-# This configures the install shell for LD_LIBRARY_PATH
-#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi.sh.in
-#  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.sh @ONLY)
-#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi.csh.in
-#  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.csh @ONLY)
-
-
-# Install LD_LIBARY_PATH shell
-#install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.sh
-#  DESTINATION bin
-#  RENAME flecsi.sh
-#  PERMISSIONS
-#    OWNER_READ OWNER_WRITE
-#    GROUP_READ
-#    WORLD_READ
-#  )
-#install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.csh
-#  DESTINATION bin
-#  RENAME flecsi.csh
-#  PERMISSIONS
-#    OWNER_READ OWNER_WRITE
-#    GROUP_READ
-#    WORLD_READ
-#  )
-
-# This configures the script that will be installed when 'make install' is
-# executed.
-#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsit.in
-#  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsit-install)
-
-# Install script
-#install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsit-install
-#  DESTINATION bin
-#  RENAME flecsit
-#  PERMISSIONS
-#    OWNER_READ OWNER_WRITE OWNER_EXECUTE
-#    GROUP_READ GROUP_EXECUTE
-#    WORLD_READ WORLD_EXECUTE)
-
 #------------------------------------------------------------------------------#
 # FleCSIT
 #------------------------------------------------------------------------------#
 
 option(ENABLE_FLECSIT "Enable FleCSIT Command-Line Tool" OFF)
-set(FLECSI_PYTHON_PREPEND_PATH)
+set(FLECSI_PYTHON_PATH_MODULE)
+set(FLECSI_PYTHON_PATH_BASH)
+set(FLECSI_PYTHON_PATH_CSH)
 
 if(ENABLE_FLECSIT)
 
@@ -416,7 +351,11 @@ if(ENABLE_FLECSIT)
 			WORLD_READ WORLD_EXECUTE
 	)
 
-  set(FLECSI_PYTHON_PREPEND_PATH "prepend-path PYTHONPATH ${PYTHON_INSTDIR}")
+  set(FLECSI_PYTHON_PATH_MODULE "prepend-path PYTHONPATH ${PYTHON_INSTDIR}")
+  set(FLECSI_PYTHON_PATH_BASH
+    "export PYTHONPATH=\${PYTHONPATH}:${PYTHON_INSTDIR}")
+  set(FLECSI_PYTHON_PATH_CSH
+    "setenv PYTHONPATH $PYTHONPATH:${PYTHON_INSTDIR}")
 
 endif()
 
@@ -459,19 +398,34 @@ install(FILES ${CMAKE_SOURCE_DIR}/flecsi/execution/runtime_main.cc
 install(FILES ${_runtime_path}/runtime_driver.cc
   DESTINATION share/flecsi/runtime)
 
-# This configures a locally available script that is suitable for
-# testing within the build configuration before the project has been installed.
-#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsit-local.in
-#  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsit)
+#------------------------------------------------------------------------------#
+# Helper shell environment setup
+#------------------------------------------------------------------------------#
 
-# copy local script to bin directory and change permissions
-#file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsit
-#  DESTINATION ${CMAKE_BINARY_DIR}/bin
-#  FILE_PERMISSIONS
-#    OWNER_READ OWNER_WRITE OWNER_EXECUTE
-#    GROUP_READ GROUP_EXECUTE
-#    WORLD_READ WORLD_EXECUTE
-#)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi.sh.in
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.sh @ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi.csh.in
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.csh @ONLY)
+
+
+# Install shell helpers
+install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.sh
+  DESTINATION bin
+  RENAME flecsi.sh
+  PERMISSIONS
+    OWNER_READ OWNER_WRITE
+    GROUP_READ
+    WORLD_READ
+)
+
+install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.csh
+  DESTINATION bin
+  RENAME flecsi.csh
+  PERMISSIONS
+    OWNER_READ OWNER_WRITE
+    GROUP_READ
+    WORLD_READ
+)
 
 #------------------------------------------------------------------------------#
 # Static container

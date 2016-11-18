@@ -16,4 +16,4 @@ module-whatis "\tModifies: PATH, PYTHONPATH"
 #------------------------------------------------------------------------------#
 
 prepend-path PATH @CMAKE_INSTALL_PREFIX@/bin
-@FLECSI_PYTHON_PREPEND_PATH@
+@FLECSI_PYTHON_PATH_MODULE@
