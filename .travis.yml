@@ -7,23 +7,23 @@ services:
 
 env:
   matrix:
-    - DOCKERBASE=flecsi-buildenv:ubuntu MINIMAL=ON MPI=OFF RUNTIME=serial
+    - DOCKERBASE=flecsi_tpl:ubuntu MINIMAL=ON MPI=OFF RUNTIME=serial
     - DOCKERBASE=flecsi_tpl:ubuntu MPI=OFF RUNTIME=legion    DOCKERHUB=true
     - DOCKERBASE=flecsi_tpl:ubuntu MPI=OFF RUNTIME=legion    WERROR=yes
     - DOCKERBASE=flecsi_tpl:ubuntu MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
     - DOCKERBASE=flecsi_tpl:ubuntu MPI=ON  RUNTIME=mpilegion WERROR=yes
-    - DOCKERBASE=flecsi-buildenv:ubuntu MPI=OFF  RUNTIME=serial       DOCKERHUB=true
-    - DOCKERBASE=flecsi-buildenv:ubuntu MPI=OFF  RUNTIME=serial       WERROR=yes
-    - DOCKERBASE=flecsi-buildenv:ubuntu MPI=OFF  COVERAGE=ON RUNTIME=serial
+    - DOCKERBASE=flecsi_tpl:ubuntu MPI=OFF  RUNTIME=serial       DOCKERHUB=true
+    - DOCKERBASE=flecsi_tpl:ubuntu MPI=OFF  RUNTIME=serial       WERROR=yes
+    - DOCKERBASE=flecsi_tpl:ubuntu MPI=OFF  COVERAGE=ON RUNTIME=serial
 
-    - DOCKERBASE=flecsi-buildenv:fedora MINIMAL=ON MPI=OFF RUNTIME=serial
+    - DOCKERBASE=flecsi_tpl:fedora MINIMAL=ON MPI=OFF RUNTIME=serial
     - DOCKERBASE=flecsi_tpl:fedora MPI=OFF RUNTIME=legion    DOCKERHUB=true
     - DOCKERBASE=flecsi_tpl:fedora MPI=OFF RUNTIME=legion    WERROR=yes
     - DOCKERBASE=flecsi_tpl:fedora MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
     - DOCKERBASE=flecsi_tpl:fedora MPI=ON  RUNTIME=mpilegion WERROR=yes
-    - DOCKERBASE=flecsi-buildenv:fedora MPI=OFF RUNTIME=serial        DOCKERHUB=true
-    - DOCKERBASE=flecsi-buildenv:fedora MPI=OFF RUNTIME=serial        WERROR=yes
-    - DOCKERBASE=flecsi-buildenv:fedora MPI=OFF RUNTIME=serial COVERAGE=ON
+    - DOCKERBASE=flecsi_tpl:fedora MPI=OFF RUNTIME=serial        DOCKERHUB=true
+    - DOCKERBASE=flecsi_tpl:fedora MPI=OFF RUNTIME=serial        WERROR=yes
+    - DOCKERBASE=flecsi_tpl:fedora MPI=OFF RUNTIME=serial COVERAGE=ON
 
 script:
   - cp -vr docker ${HOME}/docker
@@ -53,7 +53,9 @@ after_success:
       rm -rf assets/doxygen html;
       CON=$(docker run -d flecsi/flecsi:${DOCKERBASE#*:}_${RUNTIME}${TAG}) && docker cp ${CON}:/home/flecsi/flecsi/build/doc/doxygen/html . ;
       mv html assets/doxygen;
-      git add --all assets/doxygen;
+      docker cp ${CON}:/home/flecsi/flecsi/build/doc/*.pdf . ;
+      mv *.pdf assets
+      git add --all assets/doxygen assets/*.pdf;
       if [[ ${TRAVIS_BRANCH} = master && ${encrypted_5669a181ba27_key} && ${encrypted_5669a181ba27_iv} && ${TRAVIS_PULL_REQUEST} == false ]]; then
         git config --global user.name "Automatic Deployment (Travis CI)";
         git config --global user.email "flecsi-commit@lanl.gov";
