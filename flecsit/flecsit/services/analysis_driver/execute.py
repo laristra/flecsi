@@ -3,12 +3,12 @@
 # All rights reserved.
 #------------------------------------------------------------------------------#
 
-def anaylsis_driver(args):
+def execute(args):
 
     """
     """
 
-# analysis_driver
+# execute
 
 #------------------------------------------------------------------------------#
 # Formatting options for vim.

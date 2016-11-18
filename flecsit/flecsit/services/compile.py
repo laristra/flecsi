@@ -6,7 +6,7 @@
 import sys
 
 from flecsit.base import Service
-from flecsit.services.analysis_driver.execute import *
+from flecsit.services.compile_driver.execute import *
 
 #------------------------------------------------------------------------------#
 # Documentation handler.
@@ -24,26 +24,23 @@ class FleCSIT_Analysis(Service):
         """
 
         # get a command-line parser
-        self.parser = subparsers.add_parser('analyze',
-            help='Service for static analysis.' +
-                 ' With no flags, this command takes a list of' +
-                 ' source files to process. The form should be' +
-                 ' source:defines string:include paths string, e.g.,' +
-                 ' foo.cc:\"-I/path/one -I/path/two\":\"-DDEF1 -DDEF2\"'
+        self.parser = subparsers.add_parser('compile',
+            help='Service for compiling user driver files.'
         )
 
         # add command-line options
-#        self.parser.add_argument('-b', '--brand', action="store",
-#            help='branding information.' +
-#                '  Load the branding information' +
-#                ' from python module BRAND.')
+        self.parser.add_argument('-I', '--include', action="append",
+            help='Specify an include path. This argument may be given' +
+                 ' multiple times. It should be of the form' +
+                 ' -I/path/to/include.'
+        )
 
-#        self.parser.add_argument('syntax',
-#            choices=['cc', 'cmake', 'python'],
-#            help='Input syntax for search and replacement.')
+        self.parser.add_argument('-v', '--verbose', action="store_true",
+            help='Turn on verbose output.')
 
-#        self.parser.add_argument('directory',
-#            help='Top-level source directory at which to begin parsing.')
+        self.parser.add_argument('driver',
+            help='The file containing the user driver definition.'
+        )
 
         # set the callback for this sub-command
         self.parser.set_defaults(func=self.main)
@@ -54,11 +51,32 @@ class FleCSIT_Analysis(Service):
     # Main.
     #--------------------------------------------------------------------------#
 
-    def main(self, args=None):
+    def main(self, build, args=None):
 
         """
         """
 
+        #----------------------------------------------------------------------#
+        # Process command-line arguments
+        #----------------------------------------------------------------------#
+
+        # Add any user-provided include paths to build
+        for include in args.include or []:
+            build['includes'] += ' -I' + include
+
+        # Add FleCSI include
+        build['includes'] += ' -I' + build['prefix'] + '/include'
+
+        # Add current directory to includes
+        build['includes'] += ' -I./'
+
+        # Add driver to build defines
+        build['defines'] += ' -DFLECSI_DRIVER=' + args.driver
+
+        build['deck'] = args.driver.split('.')[0]
+
+        # execute build
+        execute(args.verbose, build)
     # main
 
     #--------------------------------------------------------------------------#

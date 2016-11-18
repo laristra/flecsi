@@ -8,6 +8,7 @@ import sys
 import flecsit.driver
 
 #------------------------------------------------------------------------------#
+# !!!WARNING!!! DO NOT EDIT! THIS IS A GENERATED SCRIPT!
 # This script doesn't really do anything except to execute the command-line
 # driver, which is located in flecsit/driver.py.  Look there for more
 # information on the functionality of this script.
@@ -22,7 +23,39 @@ def main():
     % ./flecsit help
     """
 
-    return flecsit.driver.main()
+    build = dict(
+        # C++ compiler
+        compiler = '@CMAKE_CXX_COMPILER@',
+
+        # C++ compiler flags
+        flags = '@CMAKE_CXX_FLAGS@',
+
+        # Preprocessor defines
+        defines = '@FLECSIT_COMPILE_DEFINES@',
+
+        # Include paths
+        includes = '@FLECSIT_INCLUDE_DIRECTORIES@',
+
+        # Link libraries
+        libraries = '@FLECSIT_RUNTIME_LIBRARIES@',
+
+        # LD_LIBRARY_PATH hint
+        ldpath = '@FLECSIT_LD_LIBRARY_PATH@',
+
+        # CMake source directory
+        source = '@CMAKE_SOURCE_DIR@',
+
+        # CMake binary directory
+        binary = '@CMAKE_BINARY_DIR@',
+
+        # CMake install prefix
+        prefix = '@CMAKE_INSTALL_PREFIX@',
+
+        # CMake build system
+        system = '@CMAKE_SYSTEM_NAME@'
+    )
+
+    return flecsit.driver.main(build)
 
 # main
 
@@ -33,5 +66,5 @@ if __name__ == '__main__':
 
 #------------------------------------------------------------------------------#
 # Formatting options for emacs and vim.
-# vim: set tabstop=4 shiftwidth=4 expandtab :
+# vim: set syntax=python tabstop=4 shiftwidth=4 expandtab :
 #------------------------------------------------------------------------------#

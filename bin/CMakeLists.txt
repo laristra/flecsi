@@ -25,7 +25,6 @@ endif()
 # Add a rule to build the executable.
 #------------------------------------------------------------------------------#
 
-message(STATUS "example source: ${example_src}")
 add_executable(example_app ${example_src})
 
 #------------------------------------------------------------------------------#

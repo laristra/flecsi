@@ -15,16 +15,16 @@ from flecsit.services import *
 
 #------------------------------------------------------------------------------#
 # Internal main routine.  This is the top-level once we are inside of the
-# cinch module.
+# flecsit module.
 #------------------------------------------------------------------------------#
 
-def main():
+def main(build):
 
     """
     """
 
     driver = create_driver()
-    return driver.main()
+    return driver.main(build)
 
 # main
 
@@ -74,7 +74,7 @@ class FleCSITDriver():
 
     # __init__
 
-    def main(self, args=None):
+    def main(self, build, args=None):
 
         """
         """
@@ -82,7 +82,7 @@ class FleCSITDriver():
         # parse arguments and call the appropriate function
         # as set by the Service subclass.
         args = self.parser.parse_args()
-        args.func(args)
+        args.func(build, args)
 
     # main
 
