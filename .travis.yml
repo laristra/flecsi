@@ -25,6 +25,9 @@ env:
     - DOCKERBASE=flecsi-buildenv:fedora MPI=OFF RUNTIME=serial        WERROR=yes
     - DOCKERBASE=flecsi-buildenv:fedora MPI=OFF RUNTIME=serial COVERAGE=ON
 
+before_install:
+ - git fetch --unshallow && git fetch --tags #for versioning
+
 script:
   - cp -vr docker ${HOME}/docker
   - sed -i "1s/flecsi-buildenv:fedora/${DOCKERBASE}/" ${HOME}/docker/Dockerfile
