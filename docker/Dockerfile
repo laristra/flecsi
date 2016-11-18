@@ -1,4 +1,4 @@
-from flecsi/flecsi_tpl:fedora
+FROM flecsi/flecsi-buildenv:fedora
 
 ARG MINIMAL
 ARG MPI
@@ -7,6 +7,17 @@ ARG COVERAGE
 ARG CC
 ARG CXX
 ARG CXXFLAGS
+
+#for coverage
+ENV CI true
+ENV TRAVIS true
+ARG TRAVIS_BRANCH
+ARG TRAVIS_JOB_NUMBER
+ARG TRAVIS_PULL_REQUEST 
+ARG TRAVIS_JOB_ID
+ARG TRAVIS_TAG
+ARG TRAVIS_REPO_SLUG
+ARG TRAVIS_COMMIT
 
 RUN rm -rf /home/flecsi/.ccache
 COPY flecsi /home/flecsi/flecsi
@@ -21,20 +32,20 @@ RUN mkdir build
 WORKDIR build
 RUN ccache -z
 RUN cmake -DENABLE_MPI=$MPI \
-          -DCMAKE_PREFIX_PATH=${HOME}/tpl \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON \
           -DCMAKE_DISABLE_FIND_PACKAGE_SCOTCH=ON \
           -DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON  \
           -DCMAKE_DISABLE_FIND_PACKAGE_LAPACKE=ON} \
           -DENABLE_UNIT_TESTS=ON \
-          -DLIBDIR=lib64 \
+          -DENABLE_DOXYGEN=ON \
           ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} ..
 
 RUN make VERBOSE=1 -j2
 RUN ccache -s
 RUN make test
 RUN make install DESTDIR=${PWD}
+RUN make doxygen
 RUN cd .. && if [ ${COVERAGE} ]; then $HOME/.local/bin/codecov; fi && cd -
 USER root
 RUN make install
