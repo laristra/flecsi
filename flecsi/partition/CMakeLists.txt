@@ -29,7 +29,7 @@ list(APPEND partition_HEADERS
   init_partitions_task.h
 )
 
-list(APPEND partition_SOURCES
+set(partition_SOURCES
   init_partitions_task.cc
   PARENT_SCOPE
 )
