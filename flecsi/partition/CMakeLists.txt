@@ -36,25 +36,25 @@ set(partition_SOURCES
 
 endif()
 
-cinch_add_unit(partition
-  SOURCES test/partition.cc
-  INPUTS  test/metis_mesh.blessed 
-          test/metis_mesh_int64.blessed 
-          test/metis.blessed 
-          test/metis_int64.blessed 
-          test/scotch_v5.blessed
-          test/scotch.blessed
-  LIBRARIES ${PARTITION_LIBRARIES} flecsi
-)
+#cinch_add_unit(partition
+#  SOURCES test/partition.cc
+#  INPUTS  test/metis_mesh.blessed 
+#          test/metis_mesh_int64.blessed 
+#          test/metis.blessed 
+#          test/metis_int64.blessed 
+#          test/scotch_v5.blessed
+#          test/scotch.blessed
+#  LIBRARIES ${PARTITION_LIBRARIES} flecsi
+#)
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+#if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 #  cinch_add_unit(index_partition
 #    SOURCES test/index_partition.cc
 #    INPUTS test/index_partition.blessed
 #    POLICY MPILEGION
 #    THREADS 2
 #    LIBRARIES flecsi)
-endif()
+#endif()
 
 endif()
 
