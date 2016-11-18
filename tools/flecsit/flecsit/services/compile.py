@@ -4,6 +4,7 @@
 #------------------------------------------------------------------------------#
 
 import sys
+from os.path import basename, splitext
 
 from flecsit.base import Service
 from flecsit.services.compile_driver.execute import *
@@ -73,10 +74,12 @@ class FleCSIT_Analysis(Service):
         # Add driver to build defines
         build['defines'] += ' -DFLECSI_DRIVER=' + args.driver
 
-        build['deck'] = args.driver.split('.')[0]
+        # Get the base inptut deck name
+        build['deck'] = splitext(basename(args.driver))[0]
 
-        # execute build
+        # Execute build
         execute(args.verbose, build)
+
     # main
 
     #--------------------------------------------------------------------------#

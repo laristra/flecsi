@@ -18,7 +18,8 @@ def execute(verbose, build):
               build['prefix'] + '/share/flecsi/runtime/runtime_main.cc ' + \
               build['prefix'] + '/share/flecsi/runtime/runtime_driver.cc ' + \
               '-o ' + build['deck'] + '.' + build['system'] + ' ' + \
-              '-L' + build['prefix'] + '/lib' + ' -lflecsi ' + \
+              '-L' + build['prefix'] + '/' + build['libprefix'] + \
+              ' -lflecsi ' + \
               build['libraries']
 
     if verbose:

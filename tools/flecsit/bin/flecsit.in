@@ -51,6 +51,9 @@ def main():
         # CMake install prefix
         prefix = '@CMAKE_INSTALL_PREFIX@',
 
+        # Library install prefix
+        libprefix = '@CMAKE_INSTALL_LIBDIR@',
+
         # CMake build system
         system = '@CMAKE_SYSTEM_NAME@'
     )
