@@ -57,11 +57,11 @@ after_success:
       rm -rf cinch;
       git fetch origin gh-pages && git checkout -b gh-pages FETCH_HEAD;
       mkdir -p assets;
-      rm -rf assets/doxygen html;
-      CON=$(docker run -d flecsi/flecsi:${DOCKERBASE#*:}_${RUNTIME}${TAG}) && docker cp ${CON}:/home/flecsi/flecsi/build/doc/doxygen/html . ;
-      mv html assets/doxygen;
-      docker cp ${CON}:/home/flecsi/flecsi/build/doc/*.pdf . ;
-      mv *.pdf assets
+      rm -rf assets/doxygen doc;
+      CON=$(docker run -d flecsi/flecsi:${DOCKERBASE#*:}_${RUNTIME}${TAG}) && docker cp ${CON}:/home/flecsi/flecsi/build/doc . ;
+      mv doc/doxygen/html assets/doxygen;
+      mv doc/*.pdf assets;
+      rm -rf doc;
       git add --all assets/doxygen assets/*.pdf;
       if [[ ${TRAVIS_BRANCH} = master && ${encrypted_5669a181ba27_key} && ${encrypted_5669a181ba27_iv} && ${TRAVIS_PULL_REQUEST} == false ]]; then
         git config --global user.name "Automatic Deployment (Travis CI)";
