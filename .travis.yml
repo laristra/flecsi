@@ -7,30 +7,30 @@ services:
 
 env:
   matrix:
-    - DOCKERBASE=flecsi_tpl:ubuntu MINIMAL=ON MPI=OFF RUNTIME=serial
-    - DOCKERBASE=flecsi_tpl:ubuntu MPI=OFF RUNTIME=legion    DOCKERHUB=true
-    - DOCKERBASE=flecsi_tpl:ubuntu MPI=OFF RUNTIME=legion    WERROR=yes
-    - DOCKERBASE=flecsi_tpl:ubuntu MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
-    - DOCKERBASE=flecsi_tpl:ubuntu MPI=ON  RUNTIME=mpilegion WERROR=yes
-    - DOCKERBASE=flecsi_tpl:ubuntu MPI=OFF  RUNTIME=serial       DOCKERHUB=true
-    - DOCKERBASE=flecsi_tpl:ubuntu MPI=OFF  RUNTIME=serial       WERROR=yes
-    - DOCKERBASE=flecsi_tpl:ubuntu MPI=OFF  COVERAGE=ON RUNTIME=serial
+    - DISTRO=ubuntu MINIMAL=ON MPI=OFF RUNTIME=serial
+    - DISTRO=ubuntu MPI=OFF RUNTIME=legion    DOCKERHUB=true
+    - DISTRO=ubuntu MPI=OFF RUNTIME=legion    WERROR=yes
+    - DISTRO=ubuntu MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
+    - DISTRO=ubuntu MPI=ON  RUNTIME=mpilegion WERROR=yes
+    - DISTRO=ubuntu MPI=OFF  RUNTIME=serial       DOCKERHUB=true
+    - DISTRO=ubuntu MPI=OFF  RUNTIME=serial       WERROR=yes
+    - DISTRO=ubuntu MPI=OFF  COVERAGE=ON RUNTIME=serial
 
-    - DOCKERBASE=flecsi_tpl:fedora MINIMAL=ON MPI=OFF RUNTIME=serial
-    - DOCKERBASE=flecsi_tpl:fedora MPI=OFF RUNTIME=legion    DOCKERHUB=true
-    - DOCKERBASE=flecsi_tpl:fedora MPI=OFF RUNTIME=legion    WERROR=yes
-    - DOCKERBASE=flecsi_tpl:fedora MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
-    - DOCKERBASE=flecsi_tpl:fedora MPI=ON  RUNTIME=mpilegion WERROR=yes
-    - DOCKERBASE=flecsi_tpl:fedora MPI=OFF RUNTIME=serial        DOCKERHUB=true
-    - DOCKERBASE=flecsi_tpl:fedora MPI=OFF RUNTIME=serial        WERROR=yes
-    - DOCKERBASE=flecsi_tpl:fedora MPI=OFF RUNTIME=serial COVERAGE=ON
+    - DISTRO=fedora MINIMAL=ON MPI=OFF RUNTIME=serial
+    - DISTRO=fedora MPI=OFF RUNTIME=legion    DOCKERHUB=true
+    - DISTRO=fedora MPI=OFF RUNTIME=legion    WERROR=yes
+    - DISTRO=fedora MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
+    - DISTRO=fedora MPI=ON  RUNTIME=mpilegion WERROR=yes
+    - DISTRO=fedora MPI=OFF RUNTIME=serial        DOCKERHUB=true
+    - DISTRO=fedora MPI=OFF RUNTIME=serial        WERROR=yes
+    - DISTRO=fedora MPI=OFF RUNTIME=serial COVERAGE=ON
 
 before_install:
  - git fetch --unshallow && git fetch --tags #for versioning
 
 script:
   - cp -vr docker ${HOME}/docker
-  - sed -i "1s/flecsi-buildenv:fedora/${DOCKERBASE}/" ${HOME}/docker/Dockerfile
+  - sed -i "1s/fedora/${DISTRO}/" ${HOME}/docker/Dockerfile
   - cd ../../
   - mv -v ${TRAVIS_REPO_SLUG} $HOME/docker
   - cp -r $HOME/.ccache ${HOME}/docker/ccache
@@ -42,15 +42,15 @@ script:
                 --build-arg TRAVIS_PULL_REQUEST=${TRAVIS_PULL_REQUEST} --build-arg TRAVIS_JOB_ID=${TRAVIS_JOB_ID}
                 --build-arg TRAVIS_TAG=${TRAVIS_TAG} --build-arg TRAVIS_REPO_SLUG=${TRAVIS_REPO_SLUG}
                 --build-arg TRAVIS_COMMIT=${TRAVIS_COMMIT}
-                -t flecsi/flecsi:${DOCKERBASE#*:}_${RUNTIME}${TAG} ${HOME}/docker/ &&
+                -t flecsi/flecsi:${DISTRO}_${RUNTIME}${TAG} ${HOME}/docker/ &&
     rm -rf ${HOME}/.ccache &&
-    CON=$(docker run -d flecsi/flecsi:${DOCKERBASE#*:}_${RUNTIME}${TAG} /bin/bash) &&
+    CON=$(docker run -d flecsi/flecsi:${DISTRO}_${RUNTIME}${TAG} /bin/bash) &&
     docker cp ${CON}:/home/flecsi/.ccache ${HOME}/
 
 after_success:
   - if [[ ${DOCKERHUB} = true && ${DOCKER_EMAIL} && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_PULL_REQUEST} == false && ${TRAVIS_BRANCH} == master ]]; then
       docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-      docker push "flecsi/flecsi:${DOCKERBASE#*:}_${RUNTIME}${TAG}";
+      docker push "flecsi/flecsi:${DISTRO}_${RUNTIME}${TAG}";
     fi
   - if [[ ${TRAVIS_JOB_NUMBER} = *.1 ]]; then
       cd $HOME/docker/flecsi;
@@ -58,7 +58,7 @@ after_success:
       git fetch origin gh-pages && git checkout -b gh-pages FETCH_HEAD;
       mkdir -p assets;
       rm -rf assets/doxygen doc;
-      CON=$(docker run -d flecsi/flecsi:${DOCKERBASE#*:}_${RUNTIME}${TAG}) && docker cp ${CON}:/home/flecsi/flecsi/build/doc . ;
+      CON=$(docker run -d flecsi/flecsi:${DISTRO}_${RUNTIME}${TAG}) && docker cp ${CON}:/home/flecsi/flecsi/build/doc . ;
       mv doc/doxygen/html assets/doxygen;
       mv doc/*.pdf assets;
       rm -rf doc;

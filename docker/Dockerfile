@@ -1,4 +1,4 @@
-FROM flecsi/flecsi-buildenv:fedora
+FROM flecsi/flecsi_tpl:fedora
 
 ARG MINIMAL
 ARG MPI
