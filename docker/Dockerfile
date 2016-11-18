@@ -8,6 +8,17 @@ ARG CC
 ARG CXX
 ARG CXXFLAGS
 
+#for coverage
+ENV CI true
+ENV TRAVIS true
+ARG TRAVIS_BRANCH
+ARG TRAVIS_JOB_NUMBER
+ARG TRAVIS_PULL_REQUEST 
+ARG TRAVIS_JOB_ID
+ARG TRAVIS_TAG
+ARG TRAVIS_REPO_SLUG
+ARG TRAVIS_COMMIT
+
 RUN rm -rf /home/flecsi/.ccache
 COPY flecsi /home/flecsi/flecsi
 COPY ccache/ /home/flecsi/.ccache
