@@ -260,6 +260,9 @@ endif()
 # the build will fail.
 if(NOT APPLE)
   find_package(LAPACKE)
+  if(LAPACKE_FOUND)
+      include_directories( ${LAPACKE_INCLUDE_DIRS} )
+  endif(LAPACKE_FOUND)
 endif(NOT APPLE)
 
 #------------------------------------------------------------------------------#

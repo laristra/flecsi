@@ -176,6 +176,23 @@ TEST(storage, sparse1) {
     }
   }
 
+  /*
+  // iterate through all indices with non-null entries
+  for(auto i : a.indices()){
+    std::cout << "index: " << i << std::endl;
+  }
+
+  // iterate through all materials/entries used by index 0
+  for(auto e : a.entries(0)){
+    std::cout << "entry for index 0: " << e << std::endl;
+  }
+
+  // iterate through all materials/entries used
+  for(auto e : a.entries()){
+    std::cout << "entry: " << e << std::endl;
+  }
+  */
+
 } // TEST
 
 TEST(storage, sparse2) {

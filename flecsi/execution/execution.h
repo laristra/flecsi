@@ -130,13 +130,13 @@
 ///
 //
 ///
-#define for_each(index_space, index, kernel)                                   \
+#define for_each(index, index_space, kernel)                                   \
   flecsi::execution::for_each__(index_space, [&](auto * index) kernel)
 
 ///
 //
 ///
-#define reduce_each(index_space, index, variable, kernel)                      \
+#define reduce_each(index, index_space, variable, kernel)                      \
   flecsi::execution::reduce_each__(index_space, variable,                      \
     [&](auto * index, auto & variable) kernel)
 

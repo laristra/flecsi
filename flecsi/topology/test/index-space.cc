@@ -60,13 +60,13 @@ TEST(index_space, index_space) {
     is[i]->mass = uniform(0.0, 1.0);
   }
 
-  for_each(is, o, {
+  for_each(o, is, {
     std::cout << o->id << endl;
   }); // foreach
 
 	double total_mass(0.0);
 
-	reduce_each(is, o, total_mass, {
+	reduce_each(o, is, total_mass, {
    	total_mass += o->mass;
 	});
 

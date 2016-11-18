@@ -1,4 +1,4 @@
-language: generic
+language: cpp
 
 sudo: required
 
@@ -7,61 +7,78 @@ services:
 
 env:
   matrix:
-    - DOCKERFILE=ubuntu MINIMAL=ON MPI=OFF RUNTIME=serial
-    - DOCKERFILE=ubuntu_tpl MPI=OFF RUNTIME=legion    DOCKERHUB=true
-    - DOCKERFILE=ubuntu_tpl MPI=OFF RUNTIME=legion    WERROR=yes
-    - DOCKERFILE=ubuntu_tpl MPI=ON  RUNTIME=mpilegion DOCKERHUB= rue
-    - DOCKERFILE=ubuntu_tpl MPI=ON  RUNTIME=mpilegion WERROR=yes
-#    - DOCKERFILE=ubuntu MPI=ON   RUNTIME=mpi          DOCKERHUB=true
-#    - DOCKERFILE=ubuntu MPI=ON   RUNTIME=mpi          WERROR=yes
-    - DOCKERFILE=ubuntu MPI=OFF  RUNTIME=serial       DOCKERHUB=true
-    - DOCKERFILE=ubuntu MPI=OFF  RUNTIME=serial       WERROR=yes
-    - DOCKERFILE=ubuntu MPI=OFF  COVERAGE=ON RUNTIME=serial
+    - DOCKERBASE=flecsi-buildenv:ubuntu MINIMAL=ON MPI=OFF RUNTIME=serial
+    - DOCKERBASE=flecsi_tpl:ubuntu MPI=OFF RUNTIME=legion    DOCKERHUB=true
+    - DOCKERBASE=flecsi_tpl:ubuntu MPI=OFF RUNTIME=legion    WERROR=yes
+    - DOCKERBASE=flecsi_tpl:ubuntu MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
+    - DOCKERBASE=flecsi_tpl:ubuntu MPI=ON  RUNTIME=mpilegion WERROR=yes
+    - DOCKERBASE=flecsi-buildenv:ubuntu MPI=OFF  RUNTIME=serial       DOCKERHUB=true
+    - DOCKERBASE=flecsi-buildenv:ubuntu MPI=OFF  RUNTIME=serial       WERROR=yes
+    - DOCKERBASE=flecsi-buildenv:ubuntu MPI=OFF  COVERAGE=ON RUNTIME=serial
 
-    - DOCKERFILE=fedora MINIMAL=ON MPI=OFF RUNTIME=serial
-    - DOCKERFILE=fedora_tpl MPI=OFF RUNTIME=legion    DOCKERHUB=true
-    - DOCKERFILE=fedora_tpl MPI=OFF RUNTIME=legion    WERROR=yes
-    - DOCKERFILE=fedora_tpl MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
-    - DOCKERFILE=fedora_tpl MPI=ON  RUNTIME=mpilegion WERROR=yes
-#    - DOCKERFILE=fedora MPI=ON  RUNTIME=mpi           DOCKERHUB=true
-#    - DOCKERFILE=fedora MPI=ON  RUNTIME=mpi           WERROR=yes
-    - DOCKERFILE=fedora MPI=OFF RUNTIME=serial        DOCKERHUB=true
-    - DOCKERFILE=fedora MPI=OFF RUNTIME=serial        WERROR=yes
-    - DOCKERFILE=fedora MPI=OFF RUNTIME=serial COVERAGE=ON
+    - DOCKERBASE=flecsi-buildenv:fedora MINIMAL=ON MPI=OFF RUNTIME=serial
+    - DOCKERBASE=flecsi_tpl:fedora MPI=OFF RUNTIME=legion    DOCKERHUB=true
+    - DOCKERBASE=flecsi_tpl:fedora MPI=OFF RUNTIME=legion    WERROR=yes
+    - DOCKERBASE=flecsi_tpl:fedora MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
+    - DOCKERBASE=flecsi_tpl:fedora MPI=ON  RUNTIME=mpilegion WERROR=yes
+    - DOCKERBASE=flecsi-buildenv:fedora MPI=OFF RUNTIME=serial        DOCKERHUB=true
+    - DOCKERBASE=flecsi-buildenv:fedora MPI=OFF RUNTIME=serial        WERROR=yes
+    - DOCKERBASE=flecsi-buildenv:fedora MPI=OFF RUNTIME=serial COVERAGE=ON
+
+before_install:
+ - git fetch --unshallow && git fetch --tags #for versioning
 
 script:
- - docker build --build-arg MPI=${MPI} --build-arg RUNTIME=${RUNTIME} --build-arg WERROR=${WERROR}
+  - cp -vr docker ${HOME}/docker
+  - sed -i "1s/flecsi-buildenv:fedora/${DOCKERBASE}/" ${HOME}/docker/Dockerfile
+  - cd ../../
+  - mv -v ${TRAVIS_REPO_SLUG} $HOME/docker
+  - cp -r $HOME/.ccache ${HOME}/docker/ccache
+  - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
+  - docker build --build-arg MPI=${MPI} --build-arg RUNTIME=${RUNTIME} --build-arg CXXFLAGS=${WERROR:+-Werror}
                 --build-arg COVERAGE=${COVERAGE} --build-arg MINIMAL=${MINIMAL}
-                --build-arg TRAVIS=${TRAVIS} --build-arg TRAVIS_BRANCH=${TRAVIS_BRANCH}
+                --build-arg CC=${CC} --build-arg CXX=${CXX}
+                --build-arg TRAVIS_BRANCH=${TRAVIS_BRANCH} --build-arg TRAVIS_JOB_NUMBER=${TRAVIS_JOB_NUMBER}
+                --build-arg TRAVIS_PULL_REQUEST=${TRAVIS_PULL_REQUEST} --build-arg TRAVIS_JOB_ID=${TRAVIS_JOB_ID}
+                --build-arg TRAVIS_TAG=${TRAVIS_TAG} --build-arg TRAVIS_REPO_SLUG=${TRAVIS_REPO_SLUG}
                 --build-arg TRAVIS_COMMIT=${TRAVIS_COMMIT}
-                --build-arg TRAVIS_PULL_REQUEST=${TRAVIS_PULL_REQUEST}
-                --build-arg TRAVIS_REPO_SLUG=${TRAVIS_REPO_SLUG}
-                -t flecsi/flecsi:${DOCKERFILE}_${RUNTIME} -f docker/${DOCKERFILE} docker/
+                -t flecsi/flecsi:${DOCKERBASE#*:}_${RUNTIME}${TAG} ${HOME}/docker/ &&
+    rm -rf ${HOME}/.ccache &&
+    CON=$(docker run -d flecsi/flecsi:${DOCKERBASE#*:}_${RUNTIME}${TAG} /bin/bash) &&
+    docker cp ${CON}:/home/flecsi/.ccache ${HOME}/
 
 after_success:
   - if [[ ${DOCKERHUB} = true && ${DOCKER_EMAIL} && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_PULL_REQUEST} == false && ${TRAVIS_BRANCH} == master ]]; then
       docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-      docker push "flecsi/flecsi:${DOCKERFILE}_${RUNTIME}";
+      docker push "flecsi/flecsi:${DOCKERBASE#*:}_${RUNTIME}${TAG}";
     fi
   - if [[ ${TRAVIS_JOB_NUMBER} = *.1 ]]; then
+      cd $HOME/docker/flecsi;
       rm -rf cinch;
       git fetch origin gh-pages && git checkout -b gh-pages FETCH_HEAD;
       mkdir -p assets;
       rm -rf assets/doxygen html;
-      CON=$(docker run -d flecsi/flecsi:${DOCKERFILE}_${RUNTIME}) && docker cp ${CON}:/tmp/flecsi/build/doc/doxygen/html . ;
+      CON=$(docker run -d flecsi/flecsi:${DOCKERBASE#*:}_${RUNTIME}${TAG}) && docker cp ${CON}:/home/flecsi/flecsi/build/doc/doxygen/html . ;
       mv html assets/doxygen;
+      git add --all assets/doxygen;
       if [[ ${TRAVIS_BRANCH} = master && ${encrypted_5669a181ba27_key} && ${encrypted_5669a181ba27_iv} && ${TRAVIS_PULL_REQUEST} == false ]]; then
         git config --global user.name "Automatic Deployment (Travis CI)";
         git config --global user.email "flecsi-commit@lanl.gov";
-        git add --all assets/doxygen && git commit -m "Documentation Update";
+        git commit -m "Documentation Update";
         openssl aes-256-cbc -K $encrypted_5669a181ba27_key -iv $encrypted_5669a181ba27_iv -in deploy.enc -out ~/.ssh/id_rsa -d;
         chmod 600 ~/.ssh/id_rsa;
         git push git@github.com:${TRAVIS_REPO_SLUG} gh-pages:gh-pages;
       else
         git status;
-        git diff --no-color | head -n 500;
+        git diff --cached --no-color | head -n 500;
       fi;
     fi
+
+cache:
+  - ccache
+
+compiler:
+  - gcc
 
 notifications:
   branches:
