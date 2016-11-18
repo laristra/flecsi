@@ -409,11 +409,11 @@ if(ENABLE_FLECSIT)
 
 	execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import distutils.sysconfig as cg; print cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}')" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-	install(DIRECTORY ${CMAKE_SOURCE_DIR}/flecsit/flecsit
+	install(DIRECTORY ${CMAKE_SOURCE_DIR}/tools/flecsit/flecsit
 		DESTINATION ${PYTHON_INSTDIR}
 		FILES_MATCHING PATTERN "*.py")
 
-	configure_file(${CMAKE_SOURCE_DIR}/flecsit/bin/flecsit.in
+	configure_file(${CMAKE_SOURCE_DIR}/tools/flecsit/bin/flecsit.in
 		${CMAKE_BINARY_DIR}/flecsit/bin/flecsit @ONLY)
 
 	install(PROGRAMS ${CMAKE_BINARY_DIR}/flecsit/bin/flecsit
