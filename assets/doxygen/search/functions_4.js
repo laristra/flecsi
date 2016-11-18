@@ -1,10 +1,5 @@
 var searchData=
 [
-  ['edge',['edge',['../classflecsi_1_1burton__wedge__t.html#aab035a4520552731652c3beaf0c8702c',1,'flecsi::burton_wedge_t']]],
-  ['edge1',['edge1',['../classflecsi_1_1burton__corner__t.html#abc392fd4ff7fb95b74b2064fffd2cdbe',1,'flecsi::burton_corner_t']]],
-  ['edge2',['edge2',['../classflecsi_1_1burton__corner__t.html#abe8b622c25f1d5dbbeb02296fe3ea07b',1,'flecsi::burton_corner_t']]],
-  ['edge_5fids',['edge_ids',['../classflecsi_1_1burton__mesh__t.html#aba16d7302973cb8fd5b32fa111685e32',1,'flecsi::burton_mesh_t::edge_ids()'],['../classflecsi_1_1burton__mesh__t.html#a98d118b6e9ea93aac063f37af2a843b5',1,'flecsi::burton_mesh_t::edge_ids(E *e)']]],
-  ['edges',['edges',['../classflecsi_1_1burton__mesh__t.html#a77e6018dc227dc2daea1024c525923fc',1,'flecsi::burton_mesh_t::edges()'],['../classflecsi_1_1burton__mesh__t.html#a7353c6cbe20e50c6222b0f4a989aecbd',1,'flecsi::burton_mesh_t::edges(flecsi::topology::domain_entity&lt; M, E &gt; &amp;e)']]],
   ['empty',['empty',['../classflecsi_1_1topology_1_1connectivity__t.html#a3ca1066399af979c3de645134f89ab15',1,'flecsi::topology::connectivity_t']]],
   ['end',['end',['../classflecsi_1_1data_1_1default__data__storage__policy__t_1_1dense__accessor__t.html#af175c5e4ba2eff8fb1c6b0ae05a9e466',1,'flecsi::data::default_data_storage_policy_t::dense_accessor_t::end()'],['../classflecsi_1_1data_1_1default__data__storage__policy__t_1_1sparse__accessor__t.html#a95331000c16b78a4415e186f03a33be4',1,'flecsi::data::default_data_storage_policy_t::sparse_accessor_t::end()']]],
   ['end_5ffrom',['end_from',['../classflecsi_1_1topology_1_1connectivity__t.html#a05fc194564cfa5a558d19a5bea4b9acb',1,'flecsi::topology::connectivity_t']]],

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['edge_5ft',['edge_t',['../classflecsi_1_1burton__mesh__t.html#a1f84ed07f2b506ab709b93d8bc38f70d',1,'flecsi::burton_mesh_t::edge_t()'],['../structflecsi_1_1burton__mesh__types__t.html#a5fc8d3583d39ffe937b69b0ebe93100e',1,'flecsi::burton_mesh_types_t::edge_t()']]],
-  ['entity_5ftypes',['entity_types',['../structflecsi_1_1burton__mesh__types__t.html#a643132e43e61aa0f1184fc77e83bad8e',1,'flecsi::burton_mesh_types_t']]],
-  ['entity_5fvector_5ft',['entity_vector_t',['../mesh__types_8h.html#ad4de101b07c0bf57ae1a06fdd59462ba',1,'flecsi::topology']]]
+  ['index_5fspaces_5ft',['index_spaces_t',['../structflecsi_1_1topology_1_1mesh__storage__t.html#af6f9cde4793b2b1de5014f201fee08ae',1,'flecsi::topology::mesh_storage_t']]],
+  ['io_5ffactory_5ft',['io_factory_t',['../namespaceflecsi.html#a2de73bf6840f69aaede970c8eeca407f',1,'flecsi']]],
+  ['iterator',['iterator',['../classflecsi_1_1utils_1_1array__ref.html#a2c42b6cbac23cafb40ab40ff60a5c9d0',1,'flecsi::utils::array_ref']]]
 ];

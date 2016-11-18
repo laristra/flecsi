@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['bindings',['bindings',['../structflecsi_1_1burton__mesh__types__t.html#a2e1e4f7fa8651b37223f36121e6f1225',1,'flecsi::burton_mesh_types_t']]]
+  ['dense_5faccessor_5ft',['dense_accessor_t',['../classflecsi_1_1data_1_1data__t.html#ad5c79f7189ee8535cd994e72711e15d6',1,'flecsi::data::data_t']]]
 ];

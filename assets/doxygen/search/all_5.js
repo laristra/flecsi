@@ -11,7 +11,6 @@ var searchData=
   ['find_5fentity_5f_5f',['find_entity__',['../structflecsi_1_1topology_1_1find__entity____.html',1,'flecsi::topology']]],
   ['find_5fentity_5f_5f_3c_200_2c_20t_2c_20d_2c_20m_20_3e',['find_entity__&lt; 0, T, D, M &gt;',['../structflecsi_1_1topology_1_1find__entity_____3_010_00_01T_00_01D_00_01M_01_4.html',1,'flecsi::topology']]],
   ['flecsi',['flecsi',['../namespaceflecsi.html',1,'']]],
-  ['flecsi_5fmesh_5fdimension',['FLECSI_MESH_DIMENSION',['../burton__mesh__traits_8h.html#a1ab8aac50283bce0f57a6885f789a9d2',1,'burton_mesh_traits.h']]],
   ['from_5fsize',['from_size',['../classflecsi_1_1topology_1_1connectivity__t.html#a69040fd97248aebb8c8005664e77437f',1,'flecsi::topology::connectivity_t']]],
   ['function_5f_5f',['function__',['../structflecsi_1_1execution_1_1function____.html',1,'flecsi::execution']]],
   ['function_5fhandle_5f_5f',['function_handle__',['../structflecsi_1_1execution_1_1function__handle____.html',1,'flecsi::execution']]],

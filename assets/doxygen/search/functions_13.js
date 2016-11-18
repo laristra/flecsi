@@ -1,7 +1,10 @@
 var searchData=
 [
-  ['wedge_5fids',['wedge_ids',['../classflecsi_1_1burton__mesh__t.html#acabb5cf14120de981fdd459a6b8b492a',1,'flecsi::burton_mesh_t::wedge_ids()'],['../classflecsi_1_1burton__mesh__t.html#a76cc788a90d93bcf059baf62983b0026',1,'flecsi::burton_mesh_t::wedge_ids(E *e)']]],
-  ['wedges',['wedges',['../classflecsi_1_1burton__corner__t.html#a7b38740b916d608220400e256328be53',1,'flecsi::burton_corner_t::wedges()'],['../classflecsi_1_1burton__mesh__t.html#a61d4bb084bbe0c8b043c231905356450',1,'flecsi::burton_mesh_t::wedges()'],['../classflecsi_1_1burton__mesh__t.html#a6f1b2bbef7e80d35667358317ac925fd',1,'flecsi::burton_mesh_t::wedges(E *e)'],['../classflecsi_1_1burton__mesh__t.html#a34e1419e409e7fd8373dd16290ca3f2f',1,'flecsi::burton_mesh_t::wedges(flecsi::topology::domain_entity&lt; M, E &gt; &amp;e)']]],
-  ['write',['write',['../classflecsi_1_1io__base__t.html#a0e7bae70c60c3b1d79df31713d915e17',1,'flecsi::io_base_t::write(const std::string &amp;name, mesh_t &amp;m)=0'],['../classflecsi_1_1io__base__t.html#aabf4a646eabeeefa228ef3cbaed00ebc',1,'flecsi::io_base_t::write(const std::string &amp;name, mesh_t &amp;m, bool)'],['../structflecsi_1_1io__exodus__t.html#a96c7b094a76ba4cebf7aeef1692d843b',1,'flecsi::io_exodus_t::write(const std::string &amp;name, mesh_t &amp;m)'],['../structflecsi_1_1io__exodus__t.html#ad9a0bf12caa31cb0205e0226fd87192f',1,'flecsi::io_exodus_t::write(const std::string &amp;name, burton_mesh_t &amp;m)']]],
-  ['write_5fmesh',['write_mesh',['../namespaceflecsi.html#aab161a9166ab366149e43aa6324aa50d',1,'flecsi::write_mesh(const std::string &amp;name, mesh_t &amp;m)'],['../namespaceflecsi.html#a6c10a5cdd3d14eddc69fdfe09f2af1f3',1,'flecsi::write_mesh(const std::string &amp;name, mesh_t &amp;m, bool binary)']]]
+  ['_7ebitfield_5f_5f',['~bitfield__',['../classflecsi_1_1bitfield____.html#abd8f8a6e4eeeef3a70d8bb7afadb2f99',1,'flecsi::bitfield__']]],
+  ['_7edata_5fclient_5ft',['~data_client_t',['../classflecsi_1_1data_1_1data__client__t.html#ac221e49a1327cbbccc394365e66a760a',1,'flecsi::data::data_client_t']]],
+  ['_7edata_5ft',['~data_t',['../classflecsi_1_1data_1_1data__t.html#a690d7959faa0cdd21b66dc1cc6a352e8',1,'flecsi::data::data_t']]],
+  ['_7edefault_5fdata_5fstorage_5fpolicy_5ft',['~default_data_storage_policy_t',['../classflecsi_1_1data_1_1default__data__storage__policy__t.html#af16156094f9c66c5320ff82da4245bd4',1,'flecsi::data::default_data_storage_policy_t']]],
+  ['_7eindex_5fspace_5ft',['~index_space_t',['../classflecsi_1_1index__space__t.html#ad44a22e9c0a84ab83ab866a675dcd937',1,'flecsi::index_space_t']]],
+  ['_7eiterator',['~iterator',['../classflecsi_1_1iterator.html#ad85abe3b6d1c7f726808981b10cf5a28',1,'flecsi::iterator']]],
+  ['_7emesh_5fdefinition_5ft',['~mesh_definition_t',['../classflecsi_1_1io_1_1mesh__definition__t.html#aaa2cc47273de41a1b1ee6e6398b18e75',1,'flecsi::io::mesh_definition_t']]]
 ];

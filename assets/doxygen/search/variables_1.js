@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['dimension',['dimension',['../classflecsi_1_1dimensioned__array.html#a227051c9127591564d25702099fa3b84',1,'flecsi::dimensioned_array']]]
+  ['height',['height',['../classpartition.html#ad07eabfb050392b4ff7d84b15e849dc0',1,'partition']]]
 ];

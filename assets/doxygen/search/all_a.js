@@ -21,7 +21,6 @@ var searchData=
   ['legion_5ftask_5fwrapper_5f_5f',['legion_task_wrapper__',['../structflecsi_1_1execution_1_1legion__task__wrapper____.html',1,'flecsi::execution']]],
   ['legion_5ftask_5fwrapper_5f_5f_3c_20p_2c_20s_2c_20i_2c_20void_2c_20a_20_3e',['legion_task_wrapper__&lt; P, S, I, void, A &gt;',['../structflecsi_1_1execution_1_1legion__task__wrapper_____3_01P_00_01S_00_01I_00_01void_00_01A_01_4.html',1,'flecsi::execution']]],
   ['legionaccessor',['LegionAccessor',['../classflecsi_1_1mpilegion_1_1LegionAccessor.html',1,'flecsi::mpilegion']]],
-  ['length',['length',['../structflecsi_1_1burton__edge__t.html#a9960384452f5142b0953c67fc3c4ffe6',1,'flecsi::burton_edge_t']]],
   ['list',['List',['../structflecsi_1_1utils_1_1List.html',1,'flecsi::utils']]],
   ['listconcat',['ListConcat',['../structflecsi_1_1utils_1_1ListConcat.html',1,'flecsi::utils']]],
   ['listconcat_3c_20nil_2c_20l2_20_3e',['ListConcat&lt; Nil, L2 &gt;',['../structflecsi_1_1utils_1_1ListConcat_3_01Nil_00_01L2_01_4.html',1,'flecsi::utils']]],

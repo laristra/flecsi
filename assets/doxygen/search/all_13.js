@@ -1,10 +1,14 @@
 var searchData=
 [
-  ['uniform',['uniform',['../classpseudo__random.html#a722555cd859d88d6bab689d8da96aae1',1,'pseudo_random::uniform()'],['../classpseudo__random.html#a48edfcb10692ff597f2abf27e4985904',1,'pseudo_random::uniform(double a, double b)']]],
-  ['unique_5fid_5ft',['unique_id_t',['../structflecsi_1_1unique__id__t.html',1,'flecsi']]],
-  ['unique_5fname',['unique_name',['../namespaceflecsi.html#a9d1a4b8fad235d6c6bec7af98c76bbcc',1,'flecsi']]],
-  ['unserialize_5fdimensions_5f',['unserialize_dimensions_',['../structflecsi_1_1topology_1_1unserialize__dimensions__.html',1,'flecsi::topology']]],
-  ['unserialize_5fdimensions_5f_3c_20mt_2c_20nm_2c_20nd_2c_20m_2c_20nd_20_3e',['unserialize_dimensions_&lt; MT, NM, ND, M, ND &gt;',['../structflecsi_1_1topology_1_1unserialize__dimensions___3_01MT_00_01NM_00_01ND_00_01M_00_01ND_01_4.html',1,'flecsi::topology']]],
-  ['unserialize_5fdomains_5f',['unserialize_domains_',['../structflecsi_1_1topology_1_1unserialize__domains__.html',1,'flecsi::topology']]],
-  ['unserialize_5fdomains_5f_3c_20mt_2c_20nm_2c_20nd_2c_20nm_20_3e',['unserialize_domains_&lt; MT, NM, ND, NM &gt;',['../structflecsi_1_1topology_1_1unserialize__domains___3_01MT_00_01NM_00_01ND_00_01NM_01_4.html',1,'flecsi::topology']]]
+  ['value_5ftype',['value_type',['../structflecsi_1_1utils_1_1detail_1_1value__type.html',1,'flecsi::utils::detail']]],
+  ['value_5ftype',['value_type',['../classflecsi_1_1dimensioned__array.html#a9aceb7b3dd83b39c30ad10c052c3e479',1,'flecsi::dimensioned_array']]],
+  ['value_5ftype_3c_20t_2c_20typename_20std_3a_3aenable_5fif_3c_20std_3a_3ais_5freference_3c_20t_20_3e_3a_3avalue_20_3e_3a_3atype_20_3e',['value_type&lt; T, typename std::enable_if&lt; std::is_reference&lt; T &gt;::value &gt;::type &gt;',['../structflecsi_1_1utils_1_1detail_1_1value__type_3_01T_00_01typename_01std_1_1enable__if_3_01std_18026e1f26cf003671b7daca4b09bc0d3.html',1,'flecsi::utils::detail']]],
+  ['value_5ftype_3c_20t_2c_20typename_20std_3a_3aenable_5fif_3c_21std_3a_3ais_5freference_3c_20t_20_3e_3a_3avalue_20_3e_3a_3atype_20_3e',['value_type&lt; T, typename std::enable_if&lt;!std::is_reference&lt; T &gt;::value &gt;::type &gt;',['../structflecsi_1_1utils_1_1detail_1_1value__type_3_01T_00_01typename_01std_1_1enable__if_3_9std_1_42305b68c9c1aac4b59177e1d385ba37.html',1,'flecsi::utils::detail']]],
+  ['vertex',['Vertex',['../classVertex.html',1,'']]],
+  ['vertex_5ft',['vertex_t',['../classpartition.html#a68d28a53821afbee443b3ea8f4bfa18f',1,'partition']]],
+  ['virtual_5fsemaphore',['virtual_semaphore',['../classflecsi_1_1virtual__semaphore.html',1,'flecsi']]],
+  ['virtual_5fsemaphore_2eh',['virtual_semaphore.h',['../virtual__semaphore_8h.html',1,'']]],
+  ['visit_5ftuple_5fws',['visit_tuple_ws',['../structflecsi_1_1utils_1_1detail_1_1visit__tuple__ws.html',1,'flecsi::utils::detail']]],
+  ['visit_5ftuple_5fws_3c_200u_20_3e',['visit_tuple_ws&lt; 0u &gt;',['../structflecsi_1_1utils_1_1detail_1_1visit__tuple__ws_3_010u_01_4.html',1,'flecsi::utils::detail']]],
+  ['void_5fdouble',['void_double',['../classvoid__double.html',1,'']]]
 ];

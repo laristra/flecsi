@@ -1,7 +1,6 @@
 var searchData=
 [
   ['cell',['Cell',['../classCell.html',1,'']]],
-  ['cell2vertexconnectivity',['Cell2VertexConnectivity',['../classCell2VertexConnectivity.html',1,'']]],
   ['check_5fsig',['check_sig',['../structflecsi_1_1check__sig.html',1,'flecsi']]],
   ['check_5fsig_3c_20t_2c_20rval_28_2a_29_28args_2e_2e_2e_29_3e',['check_sig&lt; T, rVal(*)(Args...)&gt;',['../structflecsi_1_1check__sig_3_01T_00_01rVal_07_5_08_07Args_8_8_8_08_4.html',1,'flecsi']]],
   ['compute_5fbindings_5f',['compute_bindings_',['../structflecsi_1_1topology_1_1compute__bindings__.html',1,'flecsi::topology']]],

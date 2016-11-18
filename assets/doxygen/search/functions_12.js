@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['vertex',['vertex',['../classflecsi_1_1burton__wedge__t.html#ad359fc967143430687cd20195800ba06',1,'flecsi::burton_wedge_t::vertex()'],['../classflecsi_1_1burton__corner__t.html#a29134a175fa4dac852270f13c9d67922',1,'flecsi::burton_corner_t::vertex()']]],
-  ['vertex_5fids',['vertex_ids',['../classflecsi_1_1burton__mesh__t.html#a53da10daf3b6d3795e672e5527be2dbf',1,'flecsi::burton_mesh_t::vertex_ids()'],['../classflecsi_1_1burton__mesh__t.html#a32bc9ef11a42fa107fbd7adb77a1d935',1,'flecsi::burton_mesh_t::vertex_ids(E *e)']]],
-  ['vertices',['vertices',['../classflecsi_1_1burton__mesh__t.html#a4ad4bf45a45d58859c4882ee76a3ccc2',1,'flecsi::burton_mesh_t::vertices()'],['../classflecsi_1_1burton__mesh__t.html#a1c7836d53c2aba8644ab1778aae4454d',1,'flecsi::burton_mesh_t::vertices(E *e)'],['../classflecsi_1_1burton__mesh__t.html#a313eb637f8d5efba012e1115d1865794',1,'flecsi::burton_mesh_t::vertices(flecsi::topology::domain_entity&lt; M, E &gt; &amp;e)']]]
+  ['write',['write',['../classflecsi_1_1io__base__t.html#a0e7bae70c60c3b1d79df31713d915e17',1,'flecsi::io_base_t::write(const std::string &amp;name, mesh_t &amp;m)=0'],['../classflecsi_1_1io__base__t.html#aabf4a646eabeeefa228ef3cbaed00ebc',1,'flecsi::io_base_t::write(const std::string &amp;name, mesh_t &amp;m, bool)'],['../structflecsi_1_1io__exodus__t.html#a96c7b094a76ba4cebf7aeef1692d843b',1,'flecsi::io_exodus_t::write()']]],
+  ['write_5fmesh',['write_mesh',['../namespaceflecsi.html#aab161a9166ab366149e43aa6324aa50d',1,'flecsi::write_mesh(const std::string &amp;name, mesh_t &amp;m)'],['../namespaceflecsi.html#a6c10a5cdd3d14eddc69fdfe09f2af1f3',1,'flecsi::write_mesh(const std::string &amp;name, mesh_t &amp;m, bool binary)']]]
 ];
