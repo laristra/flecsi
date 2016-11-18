@@ -19,32 +19,56 @@
 // the same convention, e.g., -DFLECSI_RUNTIME_MODEL_new_runtime.
 ///
 
-// Serial Policy */
+// Serial Policy
 #if defined(FLECSI_RUNTIME_MODEL_serial)
 
   #include "flecsi/execution/serial/context_policy.h"
-  #define flecsi_context_policy_t \
-    flecsi::execution::serial_context_policy_t
+
+  namespace flecsi {
+  namespace execution {
+
+  using flecsi_context_policy_t = serial_context_policy_t;
+
+  }
+  }
 
 // Legion Policy
 #elif defined(FLECSI_RUNTIME_MODEL_legion)
 
   #include "flecsi/execution/legion/context_policy.h"
-  #define flecsi_context_policy_t \
-    flecsi::execution::legion_context_policy_t
+
+  namespace flecsi {
+  namespace execution {
+
+  using flecsi_context_policy_t = legion_context_policy_t;
+
+  }
+  }
 
 // MPI+Legion Policy
 #elif defined(FLECSI_RUNTIME_MODEL_mpilegion)
   #include "flecsi/execution/mpilegion/context_policy.h"
-  #define flecsi_context_policy_t \
-    flecsi::execution::mpilegion_context_policy_t
+
+  namespace flecsi {
+  namespace execution {
+
+  using flecsi_context_policy_t = mpilegion_context_policy_t;
+
+  }
+  }
 
 // MPI Policy
 #elif defined(FLECSI_RUNTIME_MODEL_mpi)
 
   #include "flecsi/execution/mpi/context_policy.h"
-  #define flecsi_context_policy_t \
-    flecsi::execution::mpi_context_policy_t
+
+  namespace flecsi {
+  namespace execution {
+
+  using flecsi_context_policy_t = mpi_context_policy_t;
+
+  }
+  }
 
 #endif // FLECSI_RUNTIME_MODEL
 

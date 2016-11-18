@@ -29,7 +29,7 @@ endif()
 set(FLECSI_RUNTIME_LIBRARIES)
 
 #------------------------------------------------------------------------------#
-# Legion
+# Find Legion
 #------------------------------------------------------------------------------#
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion" OR
@@ -51,6 +51,7 @@ endif()
 if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
   add_definitions(-DFLECSI_RUNTIME_MODEL_serial)
+  set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/serial)
 
 #
 # Legion interface
@@ -58,6 +59,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   add_definitions(-DFLECSI_RUNTIME_MODEL_legion)
+  set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/legion)
 
   if(NOT APPLE)
     set(FLECSI_RUNTIME_LIBRARIES  -ldl ${Legion_LIBRARIES} ${MPI_LIBRARIES})
@@ -73,6 +75,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   add_definitions(-DFLECSI_RUNTIME_MODEL_mpi)
+  set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/mpi)
 
   if(NOT APPLE)
     set(FLECSI_RUNTIME_LIBRARIES  -ldl ${MPI_LIBRARIES})
@@ -90,6 +93,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
   endif()
  
   add_definitions(-DFLECSI_RUNTIME_MODEL_mpilegion)
+  set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/mpilegion)
 
   if(NOT APPLE)
     set(FLECSI_RUNTIME_LIBRARIES  -ldl ${Legion_LIBRARIES} ${MPI_LIBRARIES})
@@ -167,7 +171,7 @@ add_definitions(-DFLECSI_ID_GBITS=${FLECSI_ID_GBITS})
 math(EXPR flecsi_partitions "1 << ${FLECSI_ID_PBITS}")
 math(EXPR flecsi_entities "1 << ${FLECSI_ID_EBITS}")
 
-message(STATUS "${CINCH_Cyan}Set id_t bits to allow:\n"
+message(STATUS "${CINCH_Yellow}Set id_t bits to allow:\n"
   "   ${flecsi_partitions} partitions with 2^${FLECSI_ID_EBITS} entities each\n"
   "   ${FLECSI_ID_FBITS} flag bits\n"
   "   ${FLECSI_ID_GBITS} global bits (PBITS*EBITS)${CINCH_ColorReset}")
@@ -260,13 +264,14 @@ endif()
 # the build will fail.
 if(NOT APPLE)
   find_package(LAPACKE)
+
   if(LAPACKE_FOUND)
       include_directories( ${LAPACKE_INCLUDE_DIRS} )
   endif(LAPACKE_FOUND)
 endif(NOT APPLE)
 
 #------------------------------------------------------------------------------#
-# Create compile scripts
+# Collect information for FleCSIT
 #------------------------------------------------------------------------------#
 
 # Get the compiler defines that were used to build the library
@@ -277,154 +282,96 @@ get_directory_property(_includes DIRECTORY ${CMAKE_SOURCE_DIR}
   INCLUDE_DIRECTORIES)
 
 # Create string of compiler definitions for script
-set(FLECSI_SCRIPT_COMPILE_DEFINES)
+set(FLECSIT_COMPILE_DEFINES)
 foreach(def ${_defines})
-  set(FLECSI_SCRIPT_COMPILE_DEFINES
-    "${FLECSI_SCRIPT_COMPILE_DEFINES} -D${def}")
+  set(FLECSIT_COMPILE_DEFINES
+    "${FLECSIT_COMPILE_DEFINES} -D${def}")
 endforeach()
 
+string(STRIP "${FLECSIT_COMPILE_DEFINES}" FLECSIT_COMPILE_DEFINES)
+
 # Create string of include directories for script
-set(FLECSI_SCRIPT_INCLUDE_DIRECTORIES)
+set(FLECSIT_INCLUDE_DIRECTORIES)
 foreach(inc ${_includes})
-  set(FLECSI_SCRIPT_INCLUDE_DIRECTORIES
-    "${FLECSI_SCRIPT_INCLUDE_DIRECTORIES} -I${inc}")
+  set(FLECSIT_INCLUDE_DIRECTORIES
+    "${FLECSIT_INCLUDE_DIRECTORIES} -I${inc}")
 endforeach()
+
+string(STRIP "${FLECSIT_INCLUDE_DIRECTORIES}" FLECSIT_INCLUDE_DIRECTORIES)
 
 # Create string of runtime link libraries for script
 # Create list of link directories for LD_LIBRARY_PATH hint
-set(FLECSI_SCRIPT_RUNTIME_LIBRARIES)
-set(FLECSI_SCRIPT_DIRECTORIES)
+set(FLECSIT_RUNTIME_LIBRARIES)
+set(FLECSIT_LD_LIBRARY_PATH)
 foreach(lib ${FLECSI_RUNTIME_LIBRARIES})
   # Runtime link libraries
-  set(FLECSI_SCRIPT_RUNTIME_LIBRARIES
-    "${FLECSI_SCRIPT_RUNTIME_LIBRARIES} ${lib}")
+  set(FLECSIT_RUNTIME_LIBRARIES
+    "${FLECSIT_RUNTIME_LIBRARIES} ${lib}")
 
   # LD_LIBRARY_PATH hint
   get_filename_component(_path ${lib} DIRECTORY)
-  list(APPEND FLECSI_SCRIPT_DIRECTORIES ${_path})
+  list(APPEND FLECSIT_LD_LIBRARY_PATH ${_path})
 endforeach()
+
+string(STRIP "${FLECSI_RUNTIME_LIBRARIES}" FLECSI_RUNTIME_LIBRARIES)
 
 # Append local build and remove duplicates
-list(APPEND FLECSI_SCRIPT_DIRECTORIES ${CMAKE_BINARY_DIR}/lib)
-list(REMOVE_DUPLICATES FLECSI_SCRIPT_DIRECTORIES)
+list(APPEND FLECSIT_LD_LIBRARY_PATH ${CMAKE_BINARY_DIR}/lib)
+list(REMOVE_DUPLICATES FLECSIT_LD_LIBRARY_PATH)
 
-# Create hint message
-set(LD_PATH_MESSAGE
-  "${CINCH_Cyan}Linked Directories and library installation prefix:")
-foreach(_dir ${FLECSI_SCRIPT_DIRECTORIES})
-  string(APPEND LD_PATH_MESSAGE "\n   ${_dir}")
-endforeach()
-string(APPEND LD_PATH_MESSAGE "\n   ${CMAKE_INSTALL_PREFIX}/lib")
+string(STRIP "${FLECSIT_LD_LIBRARY_PATH}" FLECSIT_LD_LIBRARY_PATH)
 
-string(APPEND LD_PATH_MESSAGE
-  "\n\n   You may want to set your LD_LIBARARY_PATH to include these, e.g.,\n")
+#------------------------------------------------------------------------------#
+# FleCSIT
+#------------------------------------------------------------------------------#
 
-foreach(_dir ${FLECSI_SCRIPT_DIRECTORIES})
-  string(APPEND LD_PATH_MESSAGE
-    "   % export LD_LIBRARY_PATH=\${LD_LIBRARY_PATH}:${_dir}\n")
-endforeach()
+option(ENABLE_FLECSIT "Enable FleCSIT Command-Line Tool" OFF)
+set(FLECSI_PYTHON_PATH_MODULE)
+set(FLECSI_PYTHON_PATH_BASH)
+set(FLECSI_PYTHON_PATH_CSH)
 
-string(APPEND LD_PATH_MESSAGE
-  "   % export LD_LIBRARY_PATH="
-  "\${LD_LIBRARY_PATH}:${CMAKE_INSTALL_PREFIX}/lib\n")
+if(ENABLE_FLECSIT)
 
-string(APPEND LD_PATH_MESSAGE "\n   There are also shell configuration files "
-  "located in the bin directory to set this for you:\n\n"
-  "   bash\n"
-  "   % source bin/flecsi.sh (after install)\n"
-  "   % source bin/flecsi-local.sh (for local development)\n\n"
-  "   tcsh/csh\n"
-  "   % source bin/flecsi.csh (after install)\n"
-  "   % source bin/flecsi-local.csh (for local development)\n"
-  )
+	find_package(PythonInterp 2.7 REQUIRED)
 
-string(APPEND LD_PATH_MESSAGE "${CINCH_ColorReset}")
+	execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import distutils.sysconfig as cg; print cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}')" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-message(STATUS "${LD_PATH_MESSAGE}")
+	install(DIRECTORY ${CMAKE_SOURCE_DIR}/tools/flecsit/flecsit
+		DESTINATION ${PYTHON_INSTDIR}
+		FILES_MATCHING PATTERN "*.py")
 
-# Create strings for shell files
-string(REPLACE ";" ":" FLECSI_LOCAL_LD_LIBRARY_PATH
-  "${FLECSI_SCRIPT_DIRECTORIES}")
-string(REPLACE "${CMAKE_BINARY_DIR}/lib" "${CMAKE_INSTALL_PREFIX}/lib"
-  FLECSI_INSTALL_LD_LIBRARY_PATH "${FLECSI_LOCAL_LD_LIBRARY_PATH}")
+	configure_file(${CMAKE_SOURCE_DIR}/tools/flecsit/bin/flecsit.in
+		${CMAKE_BINARY_DIR}/flecsit/bin/flecsit @ONLY)
 
-# This configures the local shell for LD_LIBRARY_PATH
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi-local.sh.in
-  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-local.sh @ONLY)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi-local.csh.in
-  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-local.csh @ONLY)
+	install(PROGRAMS ${CMAKE_BINARY_DIR}/flecsit/bin/flecsit
+		DESTINATION bin
+		PERMISSIONS
+			OWNER_READ OWNER_WRITE OWNER_EXECUTE
+			GROUP_READ GROUP_EXECUTE
+			WORLD_READ WORLD_EXECUTE
+	)
 
-# Copy local script to bin directory and change permissions
-file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-local.sh
-  DESTINATION ${CMAKE_BINARY_DIR}/bin
-  FILE_PERMISSIONS
-    OWNER_READ OWNER_WRITE
-    GROUP_READ
-    WORLD_READ
-  )
-file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-local.csh
-  DESTINATION ${CMAKE_BINARY_DIR}/bin
-  FILE_PERMISSIONS
-    OWNER_READ OWNER_WRITE
-    GROUP_READ
-    WORLD_READ
-  )
+  set(FLECSI_PYTHON_PATH_MODULE "prepend-path PYTHONPATH ${PYTHON_INSTDIR}")
+  set(FLECSI_PYTHON_PATH_BASH
+    "export PYTHONPATH=\${PYTHONPATH}:${PYTHON_INSTDIR}")
+  set(FLECSI_PYTHON_PATH_CSH
+    "setenv PYTHONPATH $PYTHONPATH:${PYTHON_INSTDIR}")
 
-# This configures the install shell for LD_LIBRARY_PATH
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi.sh.in
-  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.sh @ONLY)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi.csh.in
-  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.csh @ONLY)
-
-
-# Install LD_LIBARY_PATH shell
-install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.sh
-  DESTINATION bin
-  RENAME flecsi.sh
-  PERMISSIONS
-    OWNER_READ OWNER_WRITE
-    GROUP_READ
-    WORLD_READ
-  )
-install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.csh
-  DESTINATION bin
-  RENAME flecsi.csh
-  PERMISSIONS
-    OWNER_READ OWNER_WRITE
-    GROUP_READ
-    WORLD_READ
-  )
-
-# This configures the script that will be installed when 'make install' is
-# executed.
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsit.in
-  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsit-install)
-
-# Install script
-install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsit-install
-  DESTINATION bin
-  RENAME flecsit
-  PERMISSIONS
-    OWNER_READ OWNER_WRITE OWNER_EXECUTE
-    GROUP_READ GROUP_EXECUTE
-    WORLD_READ WORLD_EXECUTE)
-
-# Create the install path for auxiliary files
-# FIXME: MERGE THIS WITH THE STUFF ABOVE
-if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
-  set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/serial)
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
-  set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/legion)
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
-  set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/mpi)
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
-  set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/mpilegion)
-else()
-  message(FATAL_ERROR "Unrecognized runtime selection")
 endif()
 
 #------------------------------------------------------------------------------#
-# Handle script and source files for flecsit tool
+# FleCSI environment module
+#------------------------------------------------------------------------------#
+
+configure_file(${CMAKE_SOURCE_DIR}/bin/flecsi.in
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi @ONLY)
+
+install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi
+  DESTINATION bin
+  )
+
+#------------------------------------------------------------------------------#
+# Handle script and source files for FleCSIT tool
 #------------------------------------------------------------------------------#
 
 # Copy the auxiliary files for local development
@@ -451,23 +398,39 @@ install(FILES ${CMAKE_SOURCE_DIR}/flecsi/execution/runtime_main.cc
 install(FILES ${_runtime_path}/runtime_driver.cc
   DESTINATION share/flecsi/runtime)
 
-# This configures a locally available script that is suitable for
-# testing within the build configuration before the project has been installed.
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsit-local.in
-  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsit)
+#------------------------------------------------------------------------------#
+# Helper shell environment setup
+#------------------------------------------------------------------------------#
 
-# copy local script to bin directory and change permissions
-file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsit
-  DESTINATION ${CMAKE_BINARY_DIR}/bin
-  FILE_PERMISSIONS
-    OWNER_READ OWNER_WRITE OWNER_EXECUTE
-    GROUP_READ GROUP_EXECUTE
-    WORLD_READ WORLD_EXECUTE
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi.sh.in
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.sh @ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi.csh.in
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.csh @ONLY)
+
+
+# Install shell helpers
+install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.sh
+  DESTINATION bin
+  RENAME flecsi.sh
+  PERMISSIONS
+    OWNER_READ OWNER_WRITE
+    GROUP_READ
+    WORLD_READ
+)
+
+install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.csh
+  DESTINATION bin
+  RENAME flecsi.csh
+  PERMISSIONS
+    OWNER_READ OWNER_WRITE
+    GROUP_READ
+    WORLD_READ
 )
 
 #------------------------------------------------------------------------------#
-# option for use of Static meta container
+# Static container
 #------------------------------------------------------------------------------#
+
 option(ENABLE_STATIC_CONTAINER "Enable static meta container" OFF)
 
 set (MAX_CONTAINER_SIZE 6 CACHE INTEGER  "Set the depth of the container")
