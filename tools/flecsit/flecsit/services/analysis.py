@@ -34,11 +34,12 @@ class FleCSIT_Analysis(Service):
 
         # add command-line options
         self.parser.add_argument('-v', '--verbose', action='store_true',
-            help='Turn on verbose output.')
+            help='Turn on verbose output.'
+        )
 
-		self.parser.add_argument('files', nargs='*', action='append',
-			help='The files to anaylze.'
-		)
+        self.parser.add_argument('files', nargs='*', action='append',
+            help='The files to anaylze.'
+        )
 
         # set the callback for this sub-command
         self.parser.set_defaults(func=self.main)
@@ -54,11 +55,11 @@ class FleCSIT_Analysis(Service):
         """
         """
 
-		#----------------------------------------------------------------------#
-		# Process command-line arguments
-		#----------------------------------------------------------------------#
+        #----------------------------------------------------------------------#
+        # Process command-line arguments
+        #----------------------------------------------------------------------#
 
-		execute()
+        execute()
 
     # main
 
