@@ -1,4 +1,4 @@
-FROM flecsi/flecsi-buildenv:fedora
+FROM flecsi/flecsi_tpl:fedora
 
 ARG MINIMAL
 ARG MPI
@@ -39,6 +39,7 @@ RUN cmake -DENABLE_MPI=$MPI \
           -DCMAKE_DISABLE_FIND_PACKAGE_LAPACKE=ON} \
           -DENABLE_UNIT_TESTS=ON \
           -DENABLE_DOXYGEN=ON \
+          -DENABLE_DOCUMENTATION=ON \
           ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} ..
 
 RUN make VERBOSE=1 -j2
