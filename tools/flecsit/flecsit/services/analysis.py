@@ -60,6 +60,20 @@ class FleCSIT_Analysis(Service):
         # Process command-line arguments
         #----------------------------------------------------------------------#
 
+        # Add any user-provided include paths to build
+        for include in args.include or []:
+            build['includes'] += ' -I' + include
+
+        # Add FleCSI include
+        build['includes'] += ' -I' + build['prefix'] + '/include'
+
+        # Add current directory to includes
+        build['includes'] += ' -I./'
+
+        # Add driver to build defines
+        build['defines'] += ' -DFLECSI_DRIVER=' + args.driver        
+
+        # Execute analysis
         execute(args.verbose, args.pack, build)
 
     # main
