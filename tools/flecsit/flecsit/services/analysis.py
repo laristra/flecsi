@@ -37,8 +37,9 @@ class FleCSIT_Analysis(Service):
             help='Turn on verbose output.'
         )
 
-        self.parser.add_argument('files', nargs='*', action='append',
-            help='The files to anaylze.'
+        self.parser.add_argument('pack', nargs='*', action='append',
+            help='The files to anaylze. Each file pack should be' +
+            ' of the form: source:\"defines string\":\"include paths string\"'
         )
 
         # set the callback for this sub-command
@@ -50,7 +51,7 @@ class FleCSIT_Analysis(Service):
     # Main.
     #--------------------------------------------------------------------------#
 
-    def main(self, args=None):
+    def main(self, build, args=None):
 
         """
         """
@@ -59,7 +60,7 @@ class FleCSIT_Analysis(Service):
         # Process command-line arguments
         #----------------------------------------------------------------------#
 
-        execute()
+        execute(args.verbose, args.pack, build)
 
     # main
 
