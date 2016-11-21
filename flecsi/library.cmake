@@ -9,6 +9,9 @@
 
 set(flecsi_PUBLIC_HEADERS
     flecsi.h
+    flecsi_runtime_context_policy.h
+    flecsi_runtime_data_policy.h
+    flecsi_runtime_execution_policy.h
     PARENT_SCOPE
 )
 

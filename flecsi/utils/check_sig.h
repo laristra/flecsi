@@ -81,8 +81,17 @@ struct check_sig<T,rVal(*)(Args...)>
 };
 
 // Dummy function for generating specific function sigs.
-template<class rT,class ...Args>
-rT DummyFoo(Args... args){return rT();};
+template<
+  class rT,
+  class ... Args
+>
+rT
+DummyFoo(
+  Args ... args
+)
+{
+  return rT();
+} // DummyFoo
 
 } // namespace flecsi
 

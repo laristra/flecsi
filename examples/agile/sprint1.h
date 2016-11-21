@@ -13,7 +13,7 @@
  *~-------------------------------------------------------------------------~~*/
 #include <iostream>
 //#include "flecsi.h" 
-#include "flecsi/execution/mpilegion_execution_policy.h"
+/*#include "flecsi/execution/mpilegion_execution_policy.h"
 
 //using execution_type = flecsi::execution_t<flecsi::mpilegion_execution_policy_t>;
 using return_type_t = 
@@ -58,7 +58,7 @@ int driver(int argc, char ** argv) {
 
   return 0;
 } 
-
+*/
 /*~------------------------------------------------------------------------~--*
  * Formatting options
  * vim: set tabstop=2 shiftwidth=2 expandtab :

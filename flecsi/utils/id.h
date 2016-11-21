@@ -17,6 +17,7 @@
 
 #include <cassert>
 #include <cstdint>
+#include <iostream>
 
 /*!
  * \file id.h
@@ -27,6 +28,8 @@
 namespace flecsi
 {
 
+  using local_id_t = __uint128_t;
+
   template<size_t PBITS, size_t EBITS, size_t FBITS, size_t GBITS>
   class id_
   {
@@ -34,10 +37,8 @@ namespace flecsi
     static constexpr size_t FLAGS_UNMASK = 
       ~(((size_t(1) << FBITS) - size_t(1)) << 59); 
 
-    static_assert(PBITS + EBITS + FBITS <= sizeof(size_t) * 8 - 4, 
-                  "invalid id bit configuration");
-
-    static_assert(GBITS <= EBITS, "invalid global bit configuration");
+    static_assert(PBITS + EBITS + FBITS + GBITS + 4 == 128, 
+      "invalid id bit configuration");
 
     id_() { }
 
@@ -46,16 +47,16 @@ namespace flecsi
     domain_(id.domain_),
     partition_(id.partition_),
     entity_(id.entity_),
-    global_(id.global_),
-    flags_(id.flags_) { }
+    flags_(id.flags_),
+    global_(id.global_) { }
 
     explicit id_(size_t local_id)
     : dimension_(0),
     domain_(0),
     partition_(0),
     entity_(local_id),
-    global_(0),
-    flags_(0) { }
+    flags_(0),
+    global_(0) { }
 
     template<size_t D, size_t M>
     static id_ make(size_t local_id,
@@ -92,9 +93,9 @@ namespace flecsi
       return global_id;
     }
 
-    size_t local_id() const
+    local_id_t local_id() const
     {
-      return *reinterpret_cast<const size_t*>(this);
+      return *reinterpret_cast<const local_id_t*>(this);
     }
 
     size_t global_id() const
@@ -106,6 +107,11 @@ namespace flecsi
     void set_global(size_t global) const
     {
       global_ = global;
+    }
+
+    size_t global() const
+    {
+      return global_;
     }
 
     void set_partition(size_t partition) const
@@ -141,6 +147,10 @@ namespace flecsi
       return entity_;
     }
 
+    size_t index_space_index() const{
+      return entity_;
+    }
+
     size_t flags() const{
       return flags_;
     }
@@ -163,13 +173,19 @@ namespace flecsi
     }
 
   private:
-    size_t entity_ : EBITS;
-    size_t partition_ : PBITS;
-    size_t flags_ : FBITS;
-    size_t domain_ : 2;
+
     size_t dimension_ : 2;
+    size_t domain_ : 2;
+    size_t partition_ : PBITS;
+    size_t entity_ : EBITS;
+    size_t flags_ : FBITS;
     size_t global_ : GBITS;
-  };
+  }; // id_
+
+  inline std::ostream& operator<<(std::ostream& ostr, local_id_t x){
+    ostr << uint64_t(x >> 64) << ":" << uint64_t(x);
+    return ostr;
+  }
 
 } // namespace flecsi
 

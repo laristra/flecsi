@@ -1,4 +1,4 @@
-![logo](config/flecsi.png)
+![logo](doc/flecsi.png)
 [![Build Status](https://travis-ci.org/losalamos/flecsi.svg?branch=master)](https://travis-ci.org/losalamos/flecsi)
 
 # FleCSI Project
@@ -45,11 +45,15 @@ The primary requirement to build FleCSI is a C++14 capable compiler.
 Currently, this equates to G++ 5.0 or greater.
 
 * CMake >= 3.0
-* GCC >= 5.0
+* GCC >= 6.1.1
 * Doxygen >= 1.8
 * cinch-utils 1.0
 
 cinch-utils is available [here](https://github.com/losalamos/cinch-utils).
+
+## Legion
+
+FleCSI has been tested against *update hash here*.
 
 # Developer Instructions
 
@@ -59,8 +63,8 @@ To begin, you will need to build the third-party library dependencies:
     
 or build them yourself:
 
-    % git clone git@github.com:losalamos/flecsi-third-party.git flecsi-thirdparty
-    % cd flecsi-thirdparty
+    % git clone git@github.com:losalamos/flecsi-third-party.git
+    % cd flecsi-third-party
     % mkdir build
     % cd build
     % ccmake ..
@@ -96,6 +100,19 @@ On Darwin, you can simplify some of the build requirements by using the
     % module load ngc (devel-gnu is the default)
 
 This will load up-to-date compiler and documentation tools.
+
+## Workflow
+
+FleCSI uses the [GitHub Flow](https://guides.github.com/introduction/flow)
+workflow pattern.
+
+When you check-out FleCSI, you will be on the master branch. This is the
+FleCSI development branch, which is protected to insure that it is always
+deployable. New work should be done on a separate feature branch. When
+you have finished making updates to your branch, you should submit a pull
+request. Your changes will be tested for compliance and reviewed by the
+maintainers of the project. If your changes are accepted, they will be
+merged into the master branch.
 
 # Release
 

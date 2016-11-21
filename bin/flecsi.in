@@ -1,10 +1,20 @@
-#! /usr/bin/env bash
+#%Module1.0
+#------------------------------------------------------------------------------#
+# FleCSI Modulefile
+#------------------------------------------------------------------------------#
 
-if [ "$1" == "VERBOSE=1" ] ; then
-	echo "${CMAKE_CXX_COMPILER} ${CMAKE_CXX_FLAGS} -I. -I${CMAKE_INSTALL_PREFIX}/include -DFLEXI_DRIVER=$1 ${CMAKE_INSTALL_PREFIX}/share/${FLECSI_RUNTIME_MAIN} -o $deck.${CMAKE_SYSTEM_NAME} -L${CMAKE_INSTALL_PREFIX}/lib -lflecsi"
-	shift
-fi
+proc ModesHelp {} {
+    puts stderr "\tThis loads the FleCSI environment."
+    puts stderr "\tModifies: PATH, PYTHONPATH"
+}
 
-deck=`echo $1 | sed 's,\.cc,,g'`
+module-whatis "\tThis loads the FleCSI environment."
+module-whatis "\tModifies: PATH, PYTHONPATH"
 
-${CMAKE_CXX_COMPILER} ${CMAKE_CXX_FLAGS} -I. -I${CMAKE_INSTALL_PREFIX}/include -DFLEXI_DRIVER=$1 ${CMAKE_INSTALL_PREFIX}/share/${FLECSI_RUNTIME_MAIN} -o $deck.${CMAKE_SYSTEM_NAME} -L${CMAKE_INSTALL_PREFIX}/lib -lflecsi
+#------------------------------------------------------------------------------#
+# Path Udates
+#------------------------------------------------------------------------------#
+
+prepend-path PATH @CMAKE_INSTALL_PREFIX@/bin
+prepend-path LD_LIBRARY_PATH @CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@
+@FLECSI_PYTHON_PATH_MODULE@

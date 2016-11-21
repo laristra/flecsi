@@ -4,13 +4,16 @@
 %~---------------------------------------------------------------------------~%
 
 \usepackage{fancyhdr}
+\usepackage{multicol}
 \pagestyle{fancy}
 
 \lhead{${${PROJECT_NAME}_VERSION}}
-\chead{Flexi Developer Guide}
+\chead{FleCSI Developer Guide}
 \rhead{\today}
 
 \newcommand{\flecsi}{\emph{FleCSI}}
+\newcommand{\contributor}[2]{{\Large \textbf{#1}\\}{\large #2}\\}
+\newcommand{\mention}[1]{{\large \textbf{#1}}\\}
 
 %~---------------------------------------------------------------------------~%
 % Formatting for vim.

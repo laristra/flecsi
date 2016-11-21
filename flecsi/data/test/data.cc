@@ -14,14 +14,14 @@
 
 #include <cinchtest.h>
 
-#include "flecsi/data/data.h"
+#include "flecsi/data/old_data.h"
 #include "flecsi/utils/bitfield.h"
 
-using data_t = flecsi::data_model::data_t<
-  flecsi::data_model::default_state_user_meta_data_t,
-  flecsi::data_model::default_data_storage_policy_t>;
+using data_t = flecsi::data::data_t<
+  flecsi::data::default_state_user_meta_data_t,
+  flecsi::data::default_data_storage_policy_t>;
 
-using flecsi::persistent;
+using flecsi::data::persistent;
 
 TEST(state, sanity) {
   data_t & state = data_t::instance();

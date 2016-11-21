@@ -26,40 +26,20 @@
 // user includes
 #include "flecsi/utils/detail/tuple_for_each.h"
 
-namespace flecsi
-{
-namespace utils
-{
-#ifdef USE_BENS_VERSION
+namespace flecsi {
+namespace utils {
 
-////////////////////////////////////////////////////////////////////////////////
-//! \brief Exectute something for each element of a tuple
-//! \remark this is ben's version
-////////////////////////////////////////////////////////////////////////////////
-template <typename TupleType, typename FunctionType>
-void tuple_for_each(TupleType && t, FunctionType f)
-{
-  detail::tuple_for_each(
-      std::forward<TupleType>(t), f, std::integral_constant<size_t, 0>());
-}
-
-// delete from scope
-#undef USE_BENS_VERSION
-
-#else
-
-////////////////////////////////////////////////////////////////////////////////
-//! \brief Exectute something for each element of a tuple
-//! \remark this is my version
-////////////////////////////////////////////////////////////////////////////////
+/*!
+  \brief Exectute something for each element of a tuple
+  \remark this is my version
+ */
 template <class Tuple, class F>
 void tuple_for_each(Tuple && tup, F && f)
 {
   auto indexes = detail::get_indexes(tup);
-  detail::tuple_for_each(indexes, std::forward<Tuple>(tup), std::forward<F>(f));
-}
-
-#endif
+  detail::tuple_for_each(indexes, std::forward<Tuple>(tup),
+    std::forward<F>(f));
+} // tuple_for_each
 
 } // namespace
 } // namespace

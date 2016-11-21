@@ -39,8 +39,7 @@ class io_base_t
   //! Default constructor
   io_base_t() {}
 
-  //! \brief Virtual destructor.
-  virtual ~io_base_t() {};
+  virtual ~io_base_t() {}
 
   /*!
     \brief Pure virtual mesh read.
