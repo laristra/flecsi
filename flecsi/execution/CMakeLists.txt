@@ -69,7 +69,6 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
         ../partition/init_partitions_task.cc
       DEFINES FLECSI_DRIVER=flecsi/execution/test/task_driver.h
       POLICY MPILEGION
-      LIBRARIES flecsi
     )
 
     cinch_add_unit(sprint
@@ -81,7 +80,7 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
       DEFINES SPRINT_TEST
       DEFINES FLECSI_DRIVER=flecsi/execution/test/sprint.h
       POLICY MPILEGION
-      LIBRARIES flecsi
+      THREADS 2
     )
 
 else() # serial
