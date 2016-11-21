@@ -61,29 +61,30 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
 elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
-  cinch_add_unit(task
-    SOURCES
-      test/task.cc
-      test/task_driver.h
-      mpilegion/runtime_driver.cc
-      ../partition/init_partitions_task.cc
-    DEFINES FLECSI_DRIVER=flecsi/execution/test/task_driver.h
-    POLICY MPILEGION
-    LIBRARIES flecsi
-  )
+  if(NOT DEFINED ENV{TRAVIS})
+    cinch_add_unit(task
+      SOURCES
+        test/task.cc
+        test/task_driver.h
+        mpilegion/runtime_driver.cc
+        ../partition/init_partitions_task.cc
+      DEFINES FLECSI_DRIVER=flecsi/execution/test/task_driver.h
+      POLICY MPILEGION
+      LIBRARIES flecsi
+    )
 
-  cinch_add_unit(sprint
-    SOURCES
-      test/task.cc
-      test/sprint.h
-      mpilegion/runtime_driver.cc
-      ../partition/init_partitions_task.cc
-    DEFINES SPRINT_TEST
-    DEFINES FLECSI_DRIVER=flecsi/execution/test/sprint.h
-    POLICY MPILEGION
-    LIBRARIES flecsi
-    THREADS 2
-  )
+    cinch_add_unit(sprint
+      SOURCES
+        test/task.cc
+        test/sprint.h
+        mpilegion/runtime_driver.cc
+        ../partition/init_partitions_task.cc
+      DEFINES SPRINT_TEST
+      DEFINES FLECSI_DRIVER=flecsi/execution/test/sprint.h
+      POLICY MPILEGION
+      LIBRARIES flecsi
+    )
+  endif(NOT DEFINED ENV{TRAVIS})
 
 else() # serial
 
@@ -109,15 +110,17 @@ endif()
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
   
-#  cinch_add_unit(test_legion_handshake
-#    SOURCES test/test_legion_handshake.cc
-#    POLICY MPILEGION
-#  )
-#
-#  cinch_add_unit(test_mpilegion_interop
-#    SOURCES test/test_mpi_legion_interop.cc
-#    POLICY MPILEGION
-#  )
+  if(NOT DEFINED ENV{TRAVIS})
+    cinch_add_unit(test_legion_handshake
+      SOURCES test/test_legion_handshake.cc
+      POLICY MPILEGION
+    )
+
+    cinch_add_unit(test_mpilegion_interop
+      SOURCES test/test_mpi_legion_interop.cc
+      POLICY MPILEGION
+    )
+  endif(NOT DEFINED ENV{TRAVIS})
  
 endif()
 

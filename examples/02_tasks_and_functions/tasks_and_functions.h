@@ -76,7 +76,7 @@ void task1(double dval, int ival) {
   std::cout << "Value(int): " << ival << std::endl;
 } // task1
 
-register_task(task1, loc, single, void, double, int);
+register_task(task1, loc, single);
 
 double task2(double x, double y, dense_field_t<double> p) {
   std::cout << "Executing task2" << std::endl;
@@ -85,7 +85,7 @@ double task2(double x, double y, dense_field_t<double> p) {
 //  return x*y;
 } // task2
 
-register_task(task2, loc, single, void, double, double, dense_field_t<double>);
+register_task(task2, loc, single);
 
 /*----------------------------------------------------------------------------*
  * Function registration.
@@ -97,7 +97,7 @@ double eos_gruneisen(double r, double e) {
   return r*e;
 } // function1
 
-register_function(eos_gruneisen, double, double, double);
+register_function(eos_gruneisen);
 
 double eos_gamma(double r, double e) {
   std::cout << "Executing gamma" << std::endl;
@@ -105,7 +105,7 @@ double eos_gamma(double r, double e) {
   return 2*r*e;
 } // function1
 
-register_function(eos_gamma, double, double, double);
+register_function(eos_gamma);
 
 /*
   Templated function
@@ -125,7 +125,7 @@ double eos_other(double r, double e) {
   return eos_other__<eos_param_t>(r, e);
 } // eos_other
 
-register_function(eos_other, double, double, double);
+register_function(eos_other);
 
 /*----------------------------------------------------------------------------*
  * User type.

@@ -117,7 +117,9 @@ private:
 
 namespace flecsi {
 namespace execution {
+
 using context_t = context__<flecsi_context_policy_t>;
+
 } //namespace execution 
 } // namespace flecsi
 

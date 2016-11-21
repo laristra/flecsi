@@ -1,0 +1,20 @@
+#%Module1.0
+#------------------------------------------------------------------------------#
+# FleCSI Modulefile
+#------------------------------------------------------------------------------#
+
+proc ModesHelp {} {
+    puts stderr "\tThis loads the FleCSI environment."
+    puts stderr "\tModifies: PATH, PYTHONPATH"
+}
+
+module-whatis "\tThis loads the FleCSI environment."
+module-whatis "\tModifies: PATH, PYTHONPATH"
+
+#------------------------------------------------------------------------------#
+# Path Udates
+#------------------------------------------------------------------------------#
+
+prepend-path PATH @CMAKE_INSTALL_PREFIX@/bin
+prepend-path LD_LIBRARY_PATH @CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@
+@FLECSI_PYTHON_PATH_MODULE@
