@@ -33,7 +33,7 @@ public:
   mesh_definition_t & operator = (const mesh_definition_t &) = delete;
 
   /// Destructor
-   ~mesh_definition_t() {}
+  virtual ~mesh_definition_t() {}
 
   virtual std::vector<size_t> vertices(size_t cell_id) = 0;
 

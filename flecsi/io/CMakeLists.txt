@@ -29,6 +29,10 @@ cinch_add_unit(io
   SOURCES test/io.cc
 )
 
+cinch_add_unit(definition
+  SOURCES test/definition.cc
+)
+
 endif(ENABLE_IO)
 
 #~---------------------------------------------------------------------------~-#
