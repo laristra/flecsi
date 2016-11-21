@@ -31,6 +31,7 @@ cinch_add_unit(io
 
 cinch_add_unit(definition
   SOURCES test/definition.cc
+  INPUTS test/simple2d-8x8.msh
 )
 
 endif(ENABLE_IO)

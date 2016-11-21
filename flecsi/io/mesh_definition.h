@@ -6,6 +6,8 @@
 #ifndef flecsi_io_mesh_definition_h
 #define flecsi_io_mesh_definition_h
 
+#include "flecsi/geometry/point.h"
+
 ///
 // \file mesh_definition.h
 // \authors bergen
@@ -23,6 +25,8 @@ class mesh_definition_t
 {
 public:
 
+  using point_t = point<double, 2>;
+
   /// Default constructor
   mesh_definition_t() {}
 
@@ -35,9 +39,12 @@ public:
   /// Destructor
   virtual ~mesh_definition_t() {}
 
+  virtual size_t num_vertices() = 0;
+  virtual size_t num_cells() = 0;
+
   virtual std::vector<size_t> vertices(size_t cell_id) = 0;
 
-  virtual std::tuple<double, double, double> vertex(size_t vertex_id) = 0;
+  virtual point_t vertex(size_t vertex_id) = 0;
 
 private:
 

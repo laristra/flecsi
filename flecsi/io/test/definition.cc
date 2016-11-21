@@ -6,9 +6,80 @@
 #include <cinchtest.h>
 
 #include "flecsi/io/simple_definition.h"
+#include "flecsi/io/set_utils.h"
 
 TEST(definition, simple) {
 
+  flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
+
+  // All values are hard-coded for the test and depend on the
+  // input file being correct
+  const size_t M = 8; // rows
+  const size_t N = 8; // columns
+
+  // 8x8 = 64 cells
+  CINCH_ASSERT(TRUE, sd.num_vertices() == 81);
+  CINCH_ASSERT(TRUE, sd.num_cells() == 64);
+
+  for(size_t c(0); c<sd.num_cells(); ++c) {
+    size_t row = c/M;
+    size_t col = c%M;
+
+    size_t r0 = col + row*(M+1);
+    size_t r1 = r0 + M+1;
+
+    auto ids = sd.vertices(c);
+
+    CINCH_ASSERT(EQ, ids[0], r0);
+    CINCH_ASSERT(EQ, ids[1], (r0+1));
+    CINCH_ASSERT(EQ, ids[2], (r1+1));
+    CINCH_ASSERT(EQ, ids[3], r1);
+  } // for
+
+  double xinc = 1.0/N;
+  double yinc = 1.0/M;
+
+  for(size_t v(0); v<sd.num_vertices(); ++v) {
+    size_t row = v/(M+1);
+    size_t col = v%(M+1);
+
+    auto coords = sd.vertex(v);
+
+    CINCH_ASSERT(EQ, coords[0], col*xinc);
+    CINCH_ASSERT(EQ, coords[1], row*yinc);
+  } // for
+
+} // TEST
+
+TEST(definition, neighbors) {
+  flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
+
+  // Primary partititon
+  std::vector<size_t> partition = { 0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19 };
+
+  std::vector<size_t> cvec;
+
+  // Gather all neighbors
+  for(auto i: partition) {
+    auto ncurr = flecsi::io::cell_neighbors(sd, i);
+
+    std::vector<size_t> tmp(cvec.begin(), cvec.end());
+    std::set_union(tmp.begin(), tmp.end(), ncurr.begin(), ncurr.end(),
+      std::back_inserter(cvec));
+  } // for
+
+  // Create a set (unique + ordered)
+  std::set<size_t> closure(cvec.begin(), cvec.end());
+  std::vector<size_t> ghosts;
+
+  // Subtract the primary partition from the closure to get ghosts
+  std::set_difference(closure.begin(), closure.end(),
+    partition.begin(), partition.end(),
+    std::inserter(ghosts, ghosts.begin()));
+
+  for(auto g: ghosts) {
+    std::cout << "ghost: " << g << std::endl;
+  } // for
 } // TEST
 
 /*----------------------------------------------------------------------------*
