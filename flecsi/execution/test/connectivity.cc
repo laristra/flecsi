@@ -229,7 +229,8 @@ void top_level_task(const Task* task,
 
     pr.wait_until_valid();
 
-    vector<entity_id> cell_ids(num_cells);
+    vector<entity_id> cell_ids;
+    cell_ids.reserve(num_cells);
     for(entity_id id = 0; id < num_cells; ++id){
       cell_ids.push_back(id);
     }
@@ -284,7 +285,8 @@ void top_level_task(const Task* task,
 
     pr.wait_until_valid();
 
-    vector<entity_id> vertex_ids(num_vertices);
+    vector<entity_id> vertex_ids;
+    vertex_ids.reserve(num_vertices);
     for(entity_id id = 0; id < num_vertices; ++id){
       vertex_ids.push_back(id);
     }
@@ -444,8 +446,8 @@ void top_level_task(const Task* task,
       ptr_t ptr;
 
       do{
-        ptr_t ptr = itr.next();
         assert(itr.has_next());
+        ptr = itr.next();
         ptr_t vertex_ptr = ac.read(ptr);
         entity_id vertex_id = ac2.read(vertex_ptr);
 
