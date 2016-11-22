@@ -52,40 +52,21 @@ TEST(definition, simple) {
 } // TEST
 
 TEST(definition, neighbors) {
+
   flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
 
   // Primary partititon
-  std::vector<size_t> partition = { 0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19 };
+  std::set<size_t> partition = { 0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19 };
 
-  std::vector<size_t> cvec;
+  auto closure = flecsi::io::cell_closure(sd, partition);
 
-  // Gather all neighbors
-  for(auto i: partition) {
-    auto ncurr = flecsi::io::cell_neighbors(sd, i);
+  auto ghosts = flecsi::io::set_difference(closure, partition);
 
-    //std::vector<size_t> tmp(cvec.begin(), cvec.end());
-    std::vector<size_t> tmp = std::move(cvec);
-    std::set_union(tmp.begin(), tmp.end(), ncurr.begin(), ncurr.end(),
-      std::back_inserter(cvec));
+  auto nnn = flecsi::io::set_difference(flecsi::io::cell_closure(sd, ghosts),
+    closure);
 
-    for (auto i : cvec) {
-      std::cout << i << " ";
-    }
-    std::cout << std::endl;
-  } // for
-
-
-  // Create a set (unique + ordered)
-  std::set<size_t> closure(cvec.begin(), cvec.end());
-  std::vector<size_t> ghosts;
-
-  // Subtract the primary partition from the closure to get ghosts
-  std::set_difference(closure.begin(), closure.end(),
-    partition.begin(), partition.end(),
-    std::inserter(ghosts, ghosts.begin()));
-
-  for(auto g: ghosts) {
-    std::cout << "ghost: " << g << std::endl;
+  for(auto i: nnn) {
+    std::cout << i << std::endl;
   } // for
 } // TEST
 
