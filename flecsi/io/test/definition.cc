@@ -63,10 +63,17 @@ TEST(definition, neighbors) {
   for(auto i: partition) {
     auto ncurr = flecsi::io::cell_neighbors(sd, i);
 
-    std::vector<size_t> tmp(cvec.begin(), cvec.end());
+    //std::vector<size_t> tmp(cvec.begin(), cvec.end());
+    std::vector<size_t> tmp = std::move(cvec);
     std::set_union(tmp.begin(), tmp.end(), ncurr.begin(), ncurr.end(),
       std::back_inserter(cvec));
+
+    for (auto i : cvec) {
+      std::cout << i << " ";
+    }
+    std::cout << std::endl;
   } // for
+
 
   // Create a set (unique + ordered)
   std::set<size_t> closure(cvec.begin(), cvec.end());
