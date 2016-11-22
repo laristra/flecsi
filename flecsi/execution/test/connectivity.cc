@@ -446,7 +446,10 @@ void top_level_task(const Task* task,
       ptr_t ptr;
 
       do{
-        assert(itr.has_next());
+        if(!itr.has_next()){
+          break;
+        }
+
         ptr = itr.next();
         ptr_t vertex_ptr = ac.read(ptr);
         entity_id vertex_id = ac2.read(vertex_ptr);
