@@ -61,6 +61,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
 elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
+ if(NOT DEFINED ENV{TRAVIS})
     cinch_add_unit(task
       SOURCES
         test/task.cc
@@ -82,6 +83,7 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
       POLICY MPILEGION
       THREADS 2
     )
+ endif(NOT DEFINED ENV{TRAVIS})
 
 else() # serial
 
@@ -106,7 +108,8 @@ endif()
 
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
-  
+
+  if(NOT DEFINED ENV{TRAVIS})
     cinch_add_unit(test_legion_handshake
       SOURCES test/test_legion_handshake.cc
       POLICY MPILEGION
@@ -116,6 +119,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
       SOURCES test/test_mpi_legion_interop.cc
       POLICY MPILEGION
     )
+  endif(NOT DEFINED ENV{TRAVIS})
  
 endif()
 
