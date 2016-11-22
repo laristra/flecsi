@@ -116,18 +116,37 @@ struct mpilegion_context_policy_t
     // FIXME
 		// This is Galen's hack to get partitioning working for the sprint
     lr_runtime_t::register_legion_task<flecsi::dmp::parts,
-      flecsi::dmp::init_partitions>(
-      task_ids_t::instance().init_cell_partitions_task_id,lr_loc, true, false);
+      flecsi::dmp::get_numbers_of_cells_task>(
+      task_ids_t::instance().get_numbers_of_cells_task_id,lr_loc, true, false);
 
    // FIXME
     // This is Galen's hack to get partitioning working for the sprint
-    lr_runtime_t::register_legion_task<flecsi::dmp::fill_cells_global_task>(
-      task_ids_t::instance().init_cells_global_task_id,lr_loc, true, false);
+    lr_runtime_t::register_legion_task<flecsi::dmp::init_cells_task>(
+      task_ids_t::instance().init_cells_task_id,lr_loc, true, false);
+
+   // FIXME
+    // This is Galen's hack to get partitioning working for the sprint
+//    lr_runtime_t::register_legion_task<std::vector<int>,
+    lr_runtime_t::register_legion_task<Legion::LogicalRegion,
+      flecsi::dmp::shared_part_task>(
+      task_ids_t::instance().shared_part_task_id,lr_loc, true, false); 
  
    // FIXME
     // This is Galen's hack to get partitioning working for the sprint
-    lr_runtime_t::register_legion_task<flecsi::dmp::find_ghost_task>(
-      task_ids_t::instance().find_ghost_task_id,lr_loc, true, false);
+    lr_runtime_t::register_legion_task< Legion::LogicalRegion,
+      flecsi::dmp::exclusive_part_task>(
+      task_ids_t::instance().exclusive_part_task_id,lr_loc, true, false);
+
+		// FIXME
+    // This is Galen's hack to get partitioning working for the sprint
+    lr_runtime_t::register_legion_task< Legion::LogicalRegion,
+      flecsi::dmp::ghost_part_task>(
+      task_ids_t::instance().ghost_part_task_id,lr_loc, true, false);
+ 
+   // FIXME
+    // This is Galen's hack to get partitioning working for the sprint
+    lr_runtime_t::register_legion_task<flecsi::dmp::check_partitioning_task>(
+      task_ids_t::instance().check_partitioning_task_id,lr_loc, true, false); 
 
     // register connect_to_mpi_task from mpi_legion_interop_t class
     lr_runtime_t::register_legion_task<connect_to_mpi_task>(

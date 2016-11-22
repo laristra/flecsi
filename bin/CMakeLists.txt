@@ -38,7 +38,7 @@ target_compile_definitions(example_app PRIVATE
 # Add link dependencies.
 #------------------------------------------------------------------------------#
 
-target_link_libraries(example_app flecsi ${FLECSI_RUNTIME_LIBRARIES})
+target_link_libraries(example_app  ${FLECSI_RUNTIME_LIBRARIES})
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options for vim.

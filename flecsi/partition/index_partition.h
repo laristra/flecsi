@@ -7,6 +7,7 @@
 #define flecsi_dmp_index_partition_h
 
 #include <vector>
+#include <cassert>
 #include <cereal/types/vector.hpp>
 
 ///
@@ -27,13 +28,67 @@ struct index_partition__
 {
   using identifier_t = T;
 
+  struct ghost_info_t
+  {
+    identifier_t mesh_id;
+    identifier_t global_id;
+    identifier_t rank;   
+ 
+    bool 
+    operator==(
+      const ghost_info_t& a
+    ) 
+    const
+    {
+      return (rank == a.rank &&
+              mesh_id == a.mesh_id &&
+              global_id == a.global_id);
+    }
+    
+    template<typename A>
+    void serialize(A & archive) {
+       archive(rank, mesh_id, global_id);
+    } // serialize
+
+  }; // struct ghost_info_t
+
+  struct shared_info_t
+  {
+    identifier_t mesh_id;
+    identifier_t global_id;
+    std::vector<identifier_t> dependent_ranks;
+
+    bool 
+    operator==(
+      const shared_info_t& a
+    ) 
+    const
+    {
+      return (dependent_ranks == a.dependent_ranks && 
+              mesh_id == a.mesh_id &&
+              global_id == a.global_id);
+    }
+
+    template<typename A>
+    void serialize(A & archive) {
+       archive(mesh_id, global_id, dependent_ranks);
+    } 
+
+  }; // struct shared_info
+
   //--------------------------------------------------------------------------//
   // Data members.
   //--------------------------------------------------------------------------//
 
+  // Vector of mesh ids of the primary partition
+  std::vector<identifier_t> primary;
+
+  // Vector of mesh ids of the exclusive indices
   std::vector<identifier_t> exclusive;
-  std::vector<identifier_t> shared;
-  std::vector<identifier_t> ghost;
+
+  std::vector<shared_info_t> shared;
+
+  std::vector<ghost_info_t> ghost;
 
   ///
   // Equality operator.
@@ -59,6 +114,27 @@ struct index_partition__
   void serialize(A & archive) {
     archive(exclusive, shared, ghost);
   } // serialize
+
+  template <typename Indx_t>
+  identifier_t 
+  shared_id(
+    Indx_t &indx
+  )
+  {
+    assert (indx<=shared.size());
+    return shared[indx].mesh_id;
+  } 
+
+  template <typename Indx_t>
+  identifier_t 
+  ghost_id(
+    Indx_t &indx 
+  )
+  {
+    assert (indx<=shared.size());
+    return ghost[indx].mesh_id;
+  }
+
 
 }; // class partition__
 
