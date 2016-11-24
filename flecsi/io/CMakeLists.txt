@@ -31,7 +31,15 @@ cinch_add_unit(io
 
 cinch_add_unit(definition
   SOURCES test/definition.cc
-  INPUTS test/simple2d-8x8.msh
+  INPUTS test/simple2d-8x8.msh test/simple2d-4x4.msh
+)
+
+cinch_add_unit(dCRS
+  SOURCES test/dCRS.cc
+  INPUTS test/simple2d-8x8.msh test/simple2d-4x4.msh
+  LIBRARIES ${PARTITION_LIBRARIES}
+  POLICY MPI
+  THREADS 5
 )
 
 endif(ENABLE_IO)

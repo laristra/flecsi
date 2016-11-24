@@ -58,11 +58,41 @@ TEST(definition, neighbors) {
   // Primary partititon
   std::set<size_t> partition = { 0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19 };
 
-  auto closure = flecsi::io::cell_closure(sd, partition);
+  // The closure captures any cell that is adjacent to a cell in the
+  // set of indices passed to the method. The closure includes the
+  // initial set of indices.
+  auto closure = flecsi::io::cell_closure(sd, partition, 2);
 
-  auto ghosts = flecsi::io::set_difference(closure, partition);
+  std::cout << "closure" << std::endl;
+  for(auto i: closure) {
+    std::cout << i << std::endl;
+  } // for
 
-  auto nnn = flecsi::io::set_difference(flecsi::io::cell_closure(sd, ghosts),
+  // Subtracting out the initial set leaves just the nearest
+  // neighbors. This is similar to the image of the adjacency
+  // graph of the initial indices.
+  auto nn = flecsi::io::set_difference(closure, partition);
+
+  std::cout << "nearest neighbors" << std::endl;
+  for(auto i: nn) {
+    std::cout << i << std::endl;
+  } // for
+
+  // The closure of the nearest neighbors intersected with
+  // the initial indeces gives the shared indices. This is similar to
+  // the preimage of the nearest neighbors.
+  auto nnclosure = flecsi::io::cell_closure(sd, nn, 2);
+  auto shared = flecsi::io::set_intersection(nnclosure, partition);
+
+  std::cout << "shared" << std::endl;
+  for(auto i: shared) {
+    std::cout << i << std::endl;
+  } // for
+
+  // One can iteratively add halos of nearest neighbors, e.g.,
+  // here we add the next nearest neighbors.
+  std::cout << "next nearest neighbors" << std::endl;
+  auto nnn = flecsi::io::set_difference(flecsi::io::cell_closure(sd, nn, 2),
     closure);
 
   for(auto i: nnn) {
