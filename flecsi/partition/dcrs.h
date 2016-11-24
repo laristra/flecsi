@@ -27,7 +27,8 @@ namespace dmp {
   std::vector<T>                                                               \
   member ## _as()                                                              \
   {                                                                            \
-    std::vector<T> tmp(member.begin(), member.end());                  \
+    std::vector<T> asvec(member.begin(), member.end());                        \
+    return asvec;                                                              \
   } // member ## _as
 
 struct dcrs_t
@@ -35,6 +36,12 @@ struct dcrs_t
   define_dcrs_as(offsets)
   define_dcrs_as(indices)
   define_dcrs_as(distribution)
+
+  size_t
+  size()
+  {
+    return offsets.size()-1;
+  } // size
 
   std::vector<size_t> offsets;
   std::vector<size_t> indices;

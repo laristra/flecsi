@@ -8,7 +8,7 @@
 #include <parmetis.h>
 
 // Need to figure out where to put this...
-#include "flecsi/io/mpi_utils.h"
+#include "flecsi/partition/mpi_utils.h"
 
 #include "flecsi/io/simple_definition.h"
 #include "flecsi/io/set_utils.h"
@@ -178,8 +178,8 @@ TEST(dCRS, init) {
 
   std::vector<idx_t> recv_cnts(size);
   result = MPI_Alltoall(&send_cnts[0], 1,
-    flecsi::mpi_typetraits<idx_t>::type(), &recv_cnts[0], 1,
-    flecsi::mpi_typetraits<idx_t>::type(), MPI_COMM_WORLD);
+    flecsi::dmp::mpi_typetraits<idx_t>::type(), &recv_cnts[0], 1,
+    flecsi::dmp::mpi_typetraits<idx_t>::type(), MPI_COMM_WORLD);
 
   if(rank == 0) {
     std::cout << "rank " << rank << " receives: ";
@@ -199,7 +199,7 @@ TEST(dCRS, init) {
       // Add a new request
       requests.push_back({});
       MPI_Irecv(&rbuffers[r][0], recv_cnts[r],
-        flecsi::mpi_typetraits<idx_t>::type(),
+        flecsi::dmp::mpi_typetraits<idx_t>::type(),
         r, 0, MPI_COMM_WORLD, &requests[requests.size()-1]);
     } // if
   } // for
@@ -209,7 +209,7 @@ TEST(dCRS, init) {
     if(send_cnts[r]) {
       sbuffers[r].resize(send_cnts[r]);
       MPI_Send(&sbuffers[r][0], send_cnts[r],
-        flecsi::mpi_typetraits<idx_t>::type(),
+        flecsi::dmp::mpi_typetraits<idx_t>::type(),
         r, 0, MPI_COMM_WORLD);
     } // if
   } // for
@@ -307,7 +307,7 @@ TEST(dCRS, init) {
     request_indices_size << std::endl;
 
   result = MPI_Allreduce(&request_indices_size, &max_request_indices, 1,
-    flecsi::mpi_typetraits<size_t>::type(), MPI_MAX, MPI_COMM_WORLD);
+    flecsi::dmp::mpi_typetraits<size_t>::type(), MPI_MAX, MPI_COMM_WORLD);
     
   if(rank == 0) {
     std::cout << "max indices: " << max_request_indices << std::endl;
@@ -355,9 +355,9 @@ TEST(dCRS, init) {
 
 
   result = MPI_Alltoall(&input_indices[0], max_request_indices,
-    flecsi::mpi_typetraits<size_t>::type(),
+    flecsi::dmp::mpi_typetraits<size_t>::type(),
     &info_indices[0], max_request_indices,
-    flecsi::mpi_typetraits<size_t>::type(), MPI_COMM_WORLD);
+    flecsi::dmp::mpi_typetraits<size_t>::type(), MPI_COMM_WORLD);
 
   // Reset input indices to use to send back information
   std::fill(input_indices.begin(), input_indices.end(),
@@ -381,14 +381,14 @@ TEST(dCRS, init) {
   } // for
 
   result = MPI_Alltoall(&input_indices[0], max_request_indices,
-    flecsi::mpi_typetraits<size_t>::type(),
+    flecsi::dmp::mpi_typetraits<size_t>::type(),
     &info_indices[0], max_request_indices,
-    flecsi::mpi_typetraits<size_t>::type(), MPI_COMM_WORLD);
+    flecsi::dmp::mpi_typetraits<size_t>::type(), MPI_COMM_WORLD);
 
   result = MPI_Alltoall(&input_offsets[0], max_request_indices,
-    flecsi::mpi_typetraits<size_t>::type(),
+    flecsi::dmp::mpi_typetraits<size_t>::type(),
     &info_offsets[0], max_request_indices,
-    flecsi::mpi_typetraits<size_t>::type(), MPI_COMM_WORLD);
+    flecsi::dmp::mpi_typetraits<size_t>::type(), MPI_COMM_WORLD);
 
   // This needs a real constructor (probably)
   struct neighbor_t {

@@ -16,6 +16,7 @@
 ///
 
 namespace flecsi {
+namespace dmp {
 
 template<typename T> struct mpi_typetraits {};
 
@@ -51,6 +52,7 @@ struct mpi_typetraits<size_t>
   }
 }; // mpi_typetraits
 
+} // namespace dmp
 } // namespace flecsi
 
 #endif // flecsi_mpi_utils_h

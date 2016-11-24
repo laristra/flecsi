@@ -6,6 +6,8 @@
 #ifndef flecsi_dmp_partitioner_h
 #define flecsi_dmp_partitioner_h
 
+#include "flecsi/partition/dcrs.h"
+
 ///
 // \file partitioner.h
 // \authors bergen

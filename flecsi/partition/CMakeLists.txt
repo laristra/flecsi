@@ -21,8 +21,16 @@ set(partition_HEADERS
   PARENT_SCOPE
 )
 
-cinch_add_unit(dcrs,
+cinch_add_unit(dcrs
   SOURCES test/dcrs.cc
+  INPUTS test/simple2d-8x8.msh
+  LIBRARIES ${PARTITION_LIBRARIES}
+  POLICY MPI
+  THREADS 5
+)
+
+cinch_add_unit(partition
+  SOURCES test/partition.cc
   INPUTS test/simple2d-8x8.msh
   LIBRARIES ${PARTITION_LIBRARIES}
   POLICY MPI
