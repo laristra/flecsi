@@ -74,6 +74,7 @@ public:
   /// Destructor
    ~simple_definition_t() {}
 
+  size_t dimension() { return 2; }
   size_t num_vertices() { return num_vertices_; }
   size_t num_cells() { return num_cells_; }
 

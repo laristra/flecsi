@@ -1,70 +1,52 @@
 /*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
+ * Copyright (c) 2015 Los Alamos National Security, LLC
+ * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_partitioner_h
-#define flecsi_partitioner_h
+#ifndef flecsi_dmp_partitioner_h
+#define flecsi_dmp_partitioner_h
 
-#if 0
-/*!
- * \file partitioner.h
- * \authors bergen
- * \date Initial file creation: Oct 26, 2015
- */
+///
+// \file partitioner.h
+// \authors bergen
+// \date Initial file creation: Nov 24, 2016
+///
 
 namespace flecsi {
+namespace dmp {
 
-#if 0
-struct partition_info_t {
-  cell_ids
-  vertex_ids
-  cell_closure
-  vertex_closure
-}; // struct partition_info_t
-#endif
-
-/*!
-  \class partitioner partitioner.h
-  \brief partitioner provides...
- */
-class partitioner
+///
+// \class partitioner_t partitioner.h
+// \brief partitioner_t provides...
+///
+class partitioner_t
 {
 public:
 
-  //! Default constructor
-  partitioner() {}
+  /// Default constructor
+  partitioner_t() {}
 
-  //! Copy constructor (disabled)
-  partitioner(const partitioner &) = delete;
+  /// Copy constructor (disabled)
+  partitioner_t(const partitioner_t &) = delete;
 
-  //! Assignment operator (disabled)
-  partitioner & operator = (const partitioner &) = delete;
+  /// Assignment operator (disabled)
+  partitioner_t & operator = (const partitioner_t &) = delete;
 
-  //! Destructor
-  virtual ~partitioner() {}
+  /// Destructor
+   virtual ~partitioner_t() {}
 
-protected:
+  virtual std::set<size_t> partition(dcrs_t & mesh) = 0;
 
 private:
 
-}; // class partitioner
+}; // class partitioner_t
 
+} // namespace dmp
 } // namespace flecsi
 
-#endif
-#endif // flecsi_partitioner_h
+#endif // flecsi_dmp_partitioner_h
 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options
+ * Formatting options for vim.
  * vim: set tabstop=2 shiftwidth=2 expandtab :
  *~-------------------------------------------------------------------------~-*/

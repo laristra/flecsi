@@ -13,6 +13,7 @@
 #include "flecsi/io/simple_definition.h"
 #include "flecsi/io/set_utils.h"
 
+
 TEST(dCRS, init) {
 
   int size;

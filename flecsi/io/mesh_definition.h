@@ -39,6 +39,7 @@ public:
   /// Destructor
   virtual ~mesh_definition_t() {}
 
+  virtual size_t dimension() = 0;
   virtual size_t num_vertices() = 0;
   virtual size_t num_cells() = 0;
 
