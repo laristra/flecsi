@@ -17,6 +17,23 @@
 namespace flecsi {
 namespace dmp {
 
+// This needs to be somewhere else!
+struct cell_info_t {
+  size_t id;
+  size_t rank;
+  size_t offset;
+
+  // Sort cell info by id.
+  bool
+  operator < (
+    const cell_info_t & c
+  ) const
+  {
+    return id < c.id;
+  } // operator <
+
+}; // struct cell_info_t
+
 ///
 // \class partitioner_t partitioner.h
 // \brief partitioner_t provides...
@@ -39,6 +56,22 @@ public:
 
   virtual std::set<size_t> partition(dcrs_t & mesh) = 0;
 
+  // I don't know where this belongs yet, but I want to work on the
+  // interface so I'm putting here for now. It probably doesn't really
+  // belong in this interface definition. For one thing, the specialization
+  // should have a shot at defining how this type of operation happens. We
+  // will also most likely use Legion to arbitrate this type of communication
+  // as soon as possible.
+  //
+  // The point of this method is to get cell ownership information
+  // from adjacent ranks.
+  virtual
+  std::set<cell_info_t>
+  get_cell_info(
+    std::set<size_t> & primary,
+    std::set<size_t> & request_indices
+  ) = 0;
+
 private:
 
 }; // class partitioner_t
@@ -47,7 +80,7 @@ private:
 } // namespace flecsi
 
 #endif // flecsi_dmp_partitioner_h
-
+ 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.
  * vim: set tabstop=2 shiftwidth=2 expandtab :

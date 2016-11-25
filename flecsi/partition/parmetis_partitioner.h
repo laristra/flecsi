@@ -216,6 +216,161 @@ public:
     return primary;
   } // partition
 
+  ///
+  //
+  ///
+  std::set<cell_info_t>
+  get_cell_info(
+    std::set<size_t> & primary,
+    std::set<size_t> & request_indices
+  )
+  {
+    int size;
+    int rank;
+
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    // Store the request in a vector for indexed access below.
+    std::vector<size_t> request_indices_vector(request_indices.begin(),
+      request_indices.end());
+
+    size_t request_indices_size = request_indices.size();
+    size_t max_request_indices(0);
+
+#if 0
+    std::cout << "rank " << rank << " indices set: " <<
+      request_indices_size << std::endl;
+#endif
+
+    // This may be inefficient, but this call is doing a reduction
+    // to determine the maximum number of indices requested by any rank
+    // so that we can pad out the all-to-all communication below.
+    int result = MPI_Allreduce(&request_indices_size, &max_request_indices, 1,
+      flecsi::dmp::mpi_typetraits<size_t>::type(), MPI_MAX, MPI_COMM_WORLD);
+
+#if 0
+    if(rank == 0) {
+      std::cout << "max indices: " << max_request_indices << std::endl;
+    } // if
+#endif
+
+    // Pad the request indices with size_t max. We will then set
+    // the indices of the actual request. Each rank that receives
+    // the request will try to provide information about the
+    // non size_t max values in the request. The others will
+    // be ignored.
+    std::vector<size_t> input_indices(size*max_request_indices,
+      std::numeric_limits<size_t>::max());
+    std::vector<size_t> info_indices(size*max_request_indices);
+
+    // For now, we need two arrays for each all-to-all communication:
+    // One for rank ownership of the request indices, and one
+    // for the offsets. We could probably combine these. However,
+    // we would probably have to define a custom MPI type. It
+    // will only be worth the effort if this appraoch is slow.
+    // The input offsets do not need to be initialized because
+    // the information is available in the input_indices array.
+    std::vector<size_t> input_offsets(size*max_request_indices);
+    std::vector<size_t> info_offsets(size*max_request_indices);
+
+    // Populate the request vectors for each rank.
+    for(size_t r(0); r<size; ++r) {
+
+      size_t off(0);
+      const size_t roff = r*max_request_indices;
+
+      // Set the actual indices of the request
+      for(auto i: request_indices) {
+        input_indices[roff + off++] = i;
+      } // for
+
+#if 0
+      if(rank == 0) {
+        std::cout << "rank " << rank << " requests: ";
+        for(size_t i(0); i<max_request_indices; ++i) {
+          std::cout << input_indices[roff + i] << " ";
+        } // for
+        std::cout << std::endl;
+      } // if
+#endif
+    } // for
+
+    // Send the request indices to all other ranks.
+    result = MPI_Alltoall(&input_indices[0], max_request_indices,
+      flecsi::dmp::mpi_typetraits<size_t>::type(),
+      &info_indices[0], max_request_indices,
+      flecsi::dmp::mpi_typetraits<size_t>::type(), MPI_COMM_WORLD);
+
+    // Reset input indices to use to send back information
+    std::fill(input_indices.begin(), input_indices.end(),
+      std::numeric_limits<size_t>::max());
+
+    // See if we can fill any requests...
+    for(size_t r(0); r<size; ++r) {
+
+      // Ignore our rank
+      if(r == rank) {
+        continue;
+      } // if
+
+      // These array slices are just for convenience.
+      size_t * info = &info_indices[r*max_request_indices];
+      size_t * offset = &input_offsets[r*max_request_indices];
+      size_t * input = &input_indices[r*max_request_indices];
+
+      // See which requests we can fulfill.
+      for(size_t i(0); i<max_request_indices; ++i) {
+
+        auto match = primary.find(info[i]);
+
+        if(match != primary.end()) {
+          // This is a match, i.e., we own this cell, so we can
+          // set the rank (ownership) and offset.
+          input[i] = rank;
+          offset[i] = std::distance(primary.begin(), match);
+        } // if
+      } // for
+    } // for
+
+    // Send the indices information back to all ranks.
+    result = MPI_Alltoall(&input_indices[0], max_request_indices,
+      flecsi::dmp::mpi_typetraits<size_t>::type(),
+      &info_indices[0], max_request_indices,
+      flecsi::dmp::mpi_typetraits<size_t>::type(), MPI_COMM_WORLD);
+
+    // Send the offsets information back to all ranks.
+    result = MPI_Alltoall(&input_offsets[0], max_request_indices,
+      flecsi::dmp::mpi_typetraits<size_t>::type(),
+      &info_offsets[0], max_request_indices,
+      flecsi::dmp::mpi_typetraits<size_t>::type(), MPI_COMM_WORLD);
+
+    std::set<cell_info_t> answer;
+
+    // Collect all of the information for the answer.
+    for(size_t r(0); r<size; ++r) {
+      // Skip these (we already know them!)
+      if(r == rank) {
+        continue;
+      } // if
+
+      // Another slice for convenience.
+      size_t * ranks = &info_indices[r*max_request_indices];
+      size_t * offsets = &info_offsets[r*max_request_indices];
+
+      for(size_t i(0); i<max_request_indices; ++i) {
+
+        if(ranks[i] != std::numeric_limits<size_t>::max()) {
+          // If this is not size_t max, this rank answered our request
+          // and we can set the information.
+          answer.insert({ request_indices_vector[i], ranks[i], offsets[i] });
+        } // if
+      } // for
+    } // for
+
+    return answer;
+  } // get_info
+
 private:
 
 }; // class parmetis_partitioner_t
