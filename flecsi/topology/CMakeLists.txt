@@ -51,7 +51,8 @@ cinch_add_unit(bindings
 
 cinch_add_unit(tree
   SOURCES test/tree.cc test/pseudo_random.h
-  INPUTS test/tree.blessed)
+  INPUTS test/tree.blessed
+  LIBRARIES pthread)
 
 cinch_add_unit(tree1d
   SOURCES test/tree1d.cc)
@@ -60,7 +61,8 @@ cinch_add_unit(tree3d
   SOURCES test/tree3d.cc)
 
 cinch_add_unit(gravity
-  SOURCES test/gravity.cc test/pseudo_random.h)
+  SOURCES test/gravity.cc test/pseudo_random.h
+  LIBRARIES pthread)
 
 cinch_add_unit(gravity-state
   SOURCES test/gravity-state.cc test/pseudo_random.h)
