@@ -219,7 +219,7 @@ public:
   ///
   //
   ///
-  std::set<cell_info_t>
+  std::pair<std::vector<std::set<size_t>>, std::set<entry_info_t>>
   get_cell_info(
     std::set<size_t> & primary,
     std::set<size_t> & request_indices
@@ -306,6 +306,10 @@ public:
     std::fill(input_indices.begin(), input_indices.end(),
       std::numeric_limits<size_t>::max());
 
+    // For the primary partition, provide rank and cell information
+    // on indices that are shared with other processes.
+    std::vector<std::set<size_t>> local(primary.size());
+
     // See if we can fill any requests...
     for(size_t r(0); r<size; ++r) {
 
@@ -329,9 +333,24 @@ public:
           // set the rank (ownership) and offset.
           input[i] = rank;
           offset[i] = std::distance(primary.begin(), match);
+
+          // We also need to register that this index is shared
+          // with other ranks
+          local[offset[i]].insert(r);
         } // if
       } // for
     } // for
+
+#if 0
+    size_t cnt(0);
+    for(auto i: local) {
+      std::cout << "index: " << cnt++ << " shares ";
+      for(auto r: i) {
+        std::cout << r << " ";
+      } // for
+      std::cout << std::endl;
+    } // for
+#endif
 
     // Send the indices information back to all ranks.
     result = MPI_Alltoall(&input_indices[0], max_request_indices,
@@ -345,9 +364,9 @@ public:
       &info_offsets[0], max_request_indices,
       flecsi::dmp::mpi_typetraits<size_t>::type(), MPI_COMM_WORLD);
 
-    std::set<cell_info_t> answer;
+    std::set<entry_info_t> remote;
 
-    // Collect all of the information for the answer.
+    // Collect all of the information for the remote cells.
     for(size_t r(0); r<size; ++r) {
       // Skip these (we already know them!)
       if(r == rank) {
@@ -363,12 +382,13 @@ public:
         if(ranks[i] != std::numeric_limits<size_t>::max()) {
           // If this is not size_t max, this rank answered our request
           // and we can set the information.
-          answer.insert({ request_indices_vector[i], ranks[i], offsets[i] });
+          remote.insert(entry_info_t(request_indices_vector[i], ranks[i],
+            offsets[i], {}));
         } // if
       } // for
     } // for
 
-    return answer;
+    return std::make_pair(local , remote);
   } // get_info
 
 private:
