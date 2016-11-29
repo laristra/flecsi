@@ -1,70 +1,87 @@
 /*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
+ * Copyright (c) 2015 Los Alamos National Security, LLC
+ * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_partitioner_h
-#define flecsi_partitioner_h
+#ifndef flecsi_dmp_partitioner_h
+#define flecsi_dmp_partitioner_h
 
-#if 0
-/*!
- * \file partitioner.h
- * \authors bergen
- * \date Initial file creation: Oct 26, 2015
- */
+#include "flecsi/partition/dcrs.h"
+
+///
+// \file partitioner.h
+// \authors bergen
+// \date Initial file creation: Nov 24, 2016
+///
 
 namespace flecsi {
+namespace dmp {
 
-#if 0
-struct partition_info_t {
-  cell_ids
-  vertex_ids
-  cell_closure
-  vertex_closure
-}; // struct partition_info_t
-#endif
+// This needs to be somewhere else!
+struct cell_info_t {
+  size_t id;
+  size_t rank;
+  size_t offset;
 
-/*!
-  \class partitioner partitioner.h
-  \brief partitioner provides...
- */
-class partitioner
+  // Sort cell info by id.
+  bool
+  operator < (
+    const cell_info_t & c
+  ) const
+  {
+    return id < c.id;
+  } // operator <
+
+}; // struct cell_info_t
+
+///
+// \class partitioner_t partitioner.h
+// \brief partitioner_t provides...
+///
+class partitioner_t
 {
 public:
 
-  //! Default constructor
-  partitioner() {}
+  /// Default constructor
+  partitioner_t() {}
 
-  //! Copy constructor (disabled)
-  partitioner(const partitioner &) = delete;
+  /// Copy constructor (disabled)
+  partitioner_t(const partitioner_t &) = delete;
 
-  //! Assignment operator (disabled)
-  partitioner & operator = (const partitioner &) = delete;
+  /// Assignment operator (disabled)
+  partitioner_t & operator = (const partitioner_t &) = delete;
 
-  //! Destructor
-  virtual ~partitioner() {}
+  /// Destructor
+   virtual ~partitioner_t() {}
 
-protected:
+  virtual std::set<size_t> partition(dcrs_t & mesh) = 0;
+
+  // I don't know where this belongs yet, but I want to work on the
+  // interface so I'm putting here for now. It probably doesn't really
+  // belong in this interface definition. For one thing, the specialization
+  // should have a shot at defining how this type of operation happens. We
+  // will also most likely use Legion to arbitrate this type of communication
+  // as soon as possible.
+  //
+  // The point of this method is to get cell ownership information
+  // from adjacent ranks.
+  virtual
+  std::set<cell_info_t>
+  get_cell_info(
+    std::set<size_t> & primary,
+    std::set<size_t> & request_indices
+  ) = 0;
 
 private:
 
-}; // class partitioner
+}; // class partitioner_t
 
+} // namespace dmp
 } // namespace flecsi
 
-#endif
-#endif // flecsi_partitioner_h
-
+#endif // flecsi_dmp_partitioner_h
+ 
 /*~-------------------------------------------------------------------------~-*
- * Formatting options
+ * Formatting options for vim.
  * vim: set tabstop=2 shiftwidth=2 expandtab :
  *~-------------------------------------------------------------------------~-*/

@@ -210,10 +210,12 @@ find_package(METIS 5.1)
 find_package(SCOTCH)
 
 if(ENABLE_MPI)
-  find_package(ParMETIS)
+  # Counter-intuitive variable: set to TRUE to disable test
+  set(PARMETIS_TEST_RUNS TRUE)
+  find_package(ParMETIS 4.0)
 endif()
 
-if(METIS_FOUND OR SCOTCH_FOUND OR PARMETIS_FOUND)
+if(PARMETIS_FOUND OR SCOTCH_FOUND)
   option(ENABLE_PARTITION
     "Enable partitioning (uses metis/parmetis or scotch)." ON)
 else()
@@ -232,9 +234,10 @@ if(ENABLE_PARTITION)
   endif()
 
   if(PARMETIS_FOUND)
-     list( APPEND PARTITION_LIBRARIES ${PARMETIS_LIBRARIES} )
-     include_directories( ${PARMETIS_INCLUDE_DIRS} )
-     add_definitions( -DHAVE_PARMETIS )
+    message(STATUS "Adding parmetis ${PARMETIS_INCLUDE_DIRS}")
+    list( APPEND PARTITION_LIBRARIES ${PARMETIS_LIBRARIES} )
+    include_directories( ${PARMETIS_INCLUDE_DIRS} )
+    add_definitions( -DHAVE_PARMETIS )
   endif()
 
   if(SCOTCH_FOUND)

@@ -4,100 +4,32 @@
  *~-------------------------------------------------------------------------~~*/
 
 #include <cinchtest.h>
+#include <mpi.h>
 
 #include "flecsi/io/simple_definition.h"
-#include "flecsi/io/set_utils.h"
+#include "flecsi/partition/dcrs_utils.h"
 
-TEST(definition, simple) {
-
-  flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
-
-  // All values are hard-coded for the test and depend on the
-  // input file being correct
-  const size_t M = 8; // rows
-  const size_t N = 8; // columns
-
-  // 8x8 = 64 cells
-  CINCH_ASSERT(TRUE, sd.num_vertices() == 81);
-  CINCH_ASSERT(TRUE, sd.num_cells() == 64);
-
-  for(size_t c(0); c<sd.num_cells(); ++c) {
-    size_t row = c/M;
-    size_t col = c%M;
-
-    size_t r0 = col + row*(M+1);
-    size_t r1 = r0 + M+1;
-
-    auto ids = sd.vertices(c);
-
-    CINCH_ASSERT(EQ, ids[0], r0);
-    CINCH_ASSERT(EQ, ids[1], (r0+1));
-    CINCH_ASSERT(EQ, ids[2], (r1+1));
-    CINCH_ASSERT(EQ, ids[3], r1);
-  } // for
-
-  double xinc = 1.0/N;
-  double yinc = 1.0/M;
-
-  for(size_t v(0); v<sd.num_vertices(); ++v) {
-    size_t row = v/(M+1);
-    size_t col = v%(M+1);
-
-    auto coords = sd.vertex(v);
-
-    CINCH_ASSERT(EQ, coords[0], col*xinc);
-    CINCH_ASSERT(EQ, coords[1], row*yinc);
-  } // for
-
-} // TEST
-
-TEST(definition, neighbors) {
+TEST(dcrs, simple2d_8x8) {
 
   flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
+  auto dcrs = flecsi::dmp::make_dcrs(sd);
 
-  // Primary partititon
-  std::set<size_t> partition = { 0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19 };
+  int rank;
+  MPI_Comm_size(MPI_COMM_WORLD, &rank);
 
-  // The closure captures any cell that is adjacent to a cell in the
-  // set of indices passed to the method. The closure includes the
-  // initial set of indices.
-  auto closure = flecsi::io::cell_closure(sd, partition, 2);
+  if(rank == 0) {
+    // Note: These assume that this test is run with 5 ranks.
+    const std::vector<size_t> offsets =
+      { 0, 2, 5, 8, 11, 14, 17, 20, 22, 25, 29, 33, 37 };
 
-  std::cout << "closure" << std::endl;
-  for(auto i: closure) {
-    std::cout << i << std::endl;
-  } // for
+    const std::vector<size_t> indices =
+      { 1, 8, 0, 2, 9, 1, 3, 10, 2, 4, 11, 3, 5, 12, 4, 6, 13, 5, 7, 14, 6,
+        15, 0, 9, 16, 1, 8, 10, 17, 2, 9, 11, 18, 3, 10, 12, 19 };
 
-  // Subtracting out the initial set leaves just the nearest
-  // neighbors. This is similar to the image of the adjacency
-  // graph of the initial indices.
-  auto nn = flecsi::io::set_difference(closure, partition);
+    CINCH_ASSERT(EQ, dcrs.offsets, offsets);
+    CINCH_ASSERT(EQ, dcrs.indices, indices);
+  } // if
 
-  std::cout << "nearest neighbors" << std::endl;
-  for(auto i: nn) {
-    std::cout << i << std::endl;
-  } // for
-
-  // The closure of the nearest neighbors intersected with
-  // the initial indeces gives the shared indices. This is similar to
-  // the preimage of the nearest neighbors.
-  auto nnclosure = flecsi::io::cell_closure(sd, nn, 2);
-  auto shared = flecsi::io::set_intersection(nnclosure, partition);
-
-  std::cout << "shared" << std::endl;
-  for(auto i: shared) {
-    std::cout << i << std::endl;
-  } // for
-
-  // One can iteratively add halos of nearest neighbors, e.g.,
-  // here we add the next nearest neighbors.
-  std::cout << "next nearest neighbors" << std::endl;
-  auto nnn = flecsi::io::set_difference(flecsi::io::cell_closure(sd, nn, 2),
-    closure);
-
-  for(auto i: nnn) {
-    std::cout << i << std::endl;
-  } // for
 } // TEST
 
 /*----------------------------------------------------------------------------*
