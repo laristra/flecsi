@@ -43,7 +43,7 @@ public:
   virtual size_t num_vertices() = 0;
   virtual size_t num_cells() = 0;
 
-  virtual std::vector<size_t> vertices(size_t cell_id) = 0;
+  virtual std::set<size_t> vertices(size_t cell_id) = 0;
 
   virtual point_t vertex(size_t vertex_id) = 0;
 

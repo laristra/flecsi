@@ -81,13 +81,15 @@ public:
   ///
   //
   ///
-  std::vector<size_t>
+  //std::vector<size_t>
+  std::set<size_t>
   vertices( 
     size_t cell_id
   )
   {
     std::string line;
-    std::vector<size_t> ids;
+    //std::vector<size_t> ids;
+    std::set<size_t> ids;
     size_t v0, v1, v2, v3;
 
     file_.seekg(cell_start_ +
@@ -97,10 +99,10 @@ public:
 
     iss >> v0 >> v1 >> v2 >> v3;
 
-    ids.push_back(v0);
-    ids.push_back(v1);
-    ids.push_back(v2);
-    ids.push_back(v3);
+    ids.insert(v0);
+    ids.insert(v0);
+    ids.insert(v0);
+    ids.insert(v0);
 
     return ids;
   } // vertices

@@ -31,7 +31,7 @@ set_intersection(
 {
   std::set<size_t> intersection;
   std::set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(),
-  std::inserter(intersection, intersection.begin()));
+    std::inserter(intersection, intersection.begin()));
   return intersection;
 } // set_intersection
 
@@ -87,12 +87,10 @@ cell_neighbors(
 )
 {
   // Get the vertex of the input cell
-  auto vvec = md.vertices(id);
+  auto vertices = md.vertices(id);
 
-  // Intersection needs sorted inputs
-  std::sort(vvec.begin(), vvec.end());
-
-  std::vector<size_t> nvec;
+  // Put the results into set form
+  std::set<size_t> neighbors;
 
   // Iterate over cells computing vertex intersections
   // to create neighbor list
@@ -104,24 +102,16 @@ cell_neighbors(
     } // if
 
     // Get the vertex ids of current cell
-    auto cvec = md.vertices(cell);
+    auto other = md.vertices(cell);
 
-    // Intersection needs sorted inputs
-    std::sort(cvec.begin(), cvec.end());
-
-    std::vector<size_t> vint;
-    std::set_intersection(vvec.begin(), vvec.end(),
-      cvec.begin(), cvec.end(), std::back_inserter(vint));
+    auto intersect = flecsi::io::set_intersection(vertices, other);
 
     // Add this cell id if the intersection shares at least
     // intersections vertices
-    if(vint.size() >= intersections) {
-      nvec.push_back(cell);
+    if(intersect.size() >= intersections) {
+      neighbors.insert(cell);
     } // if
   } // for
-  
-  // Put the results into set form
-  std::set<size_t> neighbors(nvec.begin(), nvec.end());
 
   return neighbors;
 } // cell_neighbors
@@ -141,8 +131,6 @@ cell_closure(
   size_t intersections
 )
 {
-  std::vector<size_t> cvec;
-
   // Closure should include the initial set
   std::set<size_t> closure = indices;
 
@@ -175,8 +163,7 @@ vertex_referencers(
   for(size_t cell(0); cell<md.num_cells(); ++cell) {
 
     // Get the vertex ids of current cell
-    auto cvec = md.vertices(cell);
-    std::set<size_t> cset(cvec.begin(), cvec.end());
+    auto cset = md.vertices(cell);
 
     // If the cell references this vertex add it
     if(cset.find(id) != cset.end()) {
@@ -204,8 +191,7 @@ vertex_closure(
   // Iterate over the cells in indices and add any vertices that are
   // referenced by one of the cell indices
   for(auto i: indices) {
-    auto vvec = md.vertices(i);
-    std::set<size_t> vset(vvec.begin(), vvec.end());
+    auto vset = md.vertices(i);
 
     closure = flecsi::io::set_union(closure, vset);
   } // for
