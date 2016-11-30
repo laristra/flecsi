@@ -61,7 +61,7 @@ public:
       std::getline(file_, line);
 
       cell_size_ = file_.tellg() - cell_start_;
-  } // if
+    } // if
 
   }
 
