@@ -83,7 +83,7 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
       POLICY MPILEGION
       THREADS 2
     )
- endif(NOT DEFINED ENV{TRAVIS})
+  endif(NOT DEFINED ENV{TRAVIS})
 
 else() # serial
 
