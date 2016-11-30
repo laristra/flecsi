@@ -29,13 +29,9 @@ set_intersection(
   std::set<size_t> s2
 )
 {
-  std::vector<size_t> ivec;
-
-  std::set_intersection(s1.begin(), s1.end(),
-    s2.begin(), s2.end(), std::back_inserter(ivec));
-
-  std::set<size_t> intersection(ivec.begin(), ivec.end());
-
+  std::set<size_t> intersection;
+  std::set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(),
+  std::inserter(intersection, intersection.begin()));
   return intersection;
 } // set_intersection
 
@@ -49,12 +45,10 @@ set_union(
   std::set<size_t> s2
 )
 {
-  std::vector<size_t> uvec;
+  std::set<size_t> sunion;
 
   std::set_union(s1.begin(), s1.end(), s2.begin(), s2.end(),
-    std::back_inserter(uvec));
-
-  std::set<size_t> sunion(uvec.begin(), uvec.end());
+    std::inserter(sunion, sunion.begin()));
 
   return sunion;
 } // set_union
@@ -69,12 +63,10 @@ set_difference(
   std::set<size_t> s2
 )
 {
-  std::vector<size_t> vdiff;
+  std::set<size_t> difference;
 
   std::set_difference(s1.begin(), s1.end(), s2.begin(), s2.end(),
-    std::inserter(vdiff, vdiff.begin()));
-
-  std::set<size_t> difference(vdiff.begin(), vdiff.end());
+    std::inserter(difference, difference.begin()));
 
   return difference;
 } // set_difference
