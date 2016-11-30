@@ -50,7 +50,7 @@ public:
   ///
   std::set<size_t>
   partition(
-    dcrs_t & dcrs
+    const dcrs_t & dcrs
   ) override
   {
     int size;
@@ -221,8 +221,8 @@ public:
   ///
   std::pair<std::vector<std::set<size_t>>, std::set<entry_info_t>>
   get_cell_info(
-    std::set<size_t> & primary,
-    std::set<size_t> & request_indices
+    const std::set<size_t> & primary,
+    const std::set<size_t> & request_indices
   )
   {
     int size;
@@ -390,6 +390,163 @@ public:
 
     return std::make_pair(local , remote);
   } // get_info
+
+  std::vector<std::set<size_t>>
+  get_vertex_info(
+    const std::set<entry_info_t> & vertex_info,
+    const std::vector<std::set<size_t>> & request_indices
+  )
+  {
+    int size;
+    int rank;
+
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    // Collect the size of each rank request to send.
+    std::vector<size_t> send_cnts(size, 0);
+    for(size_t r(0); r<size; ++r) {
+      send_cnts[r] = request_indices[r].size();
+    } // for
+
+    // Send the request size (in indices) to each rank.
+    std::vector<size_t> recv_cnts(size);
+    int result = MPI_Alltoall(&send_cnts[0], 1, mpi_typetraits<size_t>::type(),
+    &recv_cnts[0], 1, mpi_typetraits<size_t>::type(), MPI_COMM_WORLD);
+
+#if 0
+//    if(rank == 0) {
+      std::cout << "rank " << rank << " recieves:" << std::endl;
+      for(auto i: recv_cnts) {
+        std::cout << i << " ";
+      } // for
+      std::cout << std::endl;
+//    } // if
+#endif
+
+    // Start receive operations (non-blocking).
+    std::vector<std::vector<size_t>> rbuffers(size);
+    std::vector<MPI_Request> requests;
+    for(size_t r(0); r<size; ++r) {
+      if(recv_cnts[r]) {
+        rbuffers[r].resize(recv_cnts[r]);
+        requests.push_back({});
+        MPI_Irecv(&rbuffers[r][0], recv_cnts[r], mpi_typetraits<size_t>::type(),
+          r, 0, MPI_COMM_WORLD, &requests[requests.size()-1]);
+      } // if
+    } // for
+
+    // Start send operations (blocking is ok here).
+    std::vector<std::vector<size_t>> sbuffers(size);
+    for(size_t r(0); r<size; ++r) {
+      if(send_cnts[r]) {
+        std::copy(request_indices[r].begin(), request_indices[r].end(),
+          std::back_inserter(sbuffers[r]));
+
+#if 0
+        std::cout << "rank " << rank << " sends " << r << ": ";
+        for(auto i: sbuffers[r]) {
+          std::cout << i << " ";
+        } // for
+        std::cout << std::endl;
+#endif
+
+        MPI_Send(&sbuffers[r][0], send_cnts[r], mpi_typetraits<size_t>::type(),
+          r, 0, MPI_COMM_WORLD);
+      } // if
+    } // for
+
+    // Create a map version of the vertex info for lookups below.
+    std::unordered_map<size_t, entry_info_t> vertex_info_map;
+    for(auto i: vertex_info) {
+      vertex_info_map[i.id] = i;
+    } // for
+
+    // Wait on the receive operations
+    std::vector<MPI_Status> status(requests.size());
+    MPI_Waitall(requests.size(), &requests[0], &status[0]);
+
+#if 0
+if(rank == 0) {
+    std::cout << "rank " << rank << " received:" << std::endl;
+    for(size_t r(0); r<size; ++r) {
+      for(auto i: rbuffers[r]) {
+        std::cout << i << " ";
+      } // for
+      std::cout << std::endl;
+    } // for
+} // if
+#endif
+
+    // Set the offsets for each requested index in the send buffer.
+    for(size_t r(0); r<size; ++r) {
+      sbuffers[r].resize(rbuffers[r].size());
+
+      size_t offset(0);
+      for(auto i: rbuffers[r]) {
+        sbuffers[r][offset++] = vertex_info_map[i].offset;
+      } // for
+    } // for
+
+#if 0
+if(rank == 0) {
+    std::cout << "rank " << rank << " provides:" << std::endl;
+    for(size_t r(0); r<size; ++r) {
+      for(auto i: sbuffers[r]) {
+        std::cout << i << " ";
+      } // for
+      std::cout << std::endl;
+    } // for
+} // if
+#endif
+
+    // Start receive operations (non-blocking) to get back the
+    // offsets we requested.
+    for(size_t r(0); r<size; ++r) {
+      // If we sent a request, prepare to receive an answer.
+      if(send_cnts[r]) {
+        // We're done with our receive buffers, so we can re-use them.
+        rbuffers[r].resize(send_cnts[r], 0);
+        MPI_Irecv(&rbuffers[r][0], send_cnts[r], mpi_typetraits<size_t>::type(),
+          r, 0, MPI_COMM_WORLD, &requests[requests.size()-1]);
+      } // if
+    } // for
+
+    // Start send operations (blocking is probably ok here).
+    for(size_t r(0); r<size; ++r) {
+      // If we received a request, prepare to send an answer.
+      if(recv_cnts[r]) {
+        MPI_Send(&sbuffers[r][0], recv_cnts[r], mpi_typetraits<size_t>::type(),
+          r, 0, MPI_COMM_WORLD);
+      } // if
+    } // for
+
+    // Wait on the receive operations
+    MPI_Waitall(requests.size(), &requests[0], &status[0]);
+
+    std::vector<std::set<size_t>> remote(size);
+    for(size_t r(0); r<size; ++r) {
+      for(size_t i(0); i<send_cnts[r]; ++i) {
+        remote[r].insert(rbuffers[r][i]);
+      } // for
+    } // for
+
+#if 0
+if(rank == 1) {
+    std::cout << "remote: " << std::endl;
+    size_t r(0);
+    for(auto i: remote) {
+      std::cout << "rank " << r++ << ": ";
+      for(auto s: i) {
+        std::cout << s << " ";
+      } // for
+      std::cout << std::endl;
+    } // for
+} // if
+#endif
+
+    return remote;
+  } // get_vertex_info
 
 private:
 

@@ -25,7 +25,7 @@ namespace dmp {
     typename T                                                                 \
   >                                                                            \
   std::vector<T>                                                               \
-  member ## _as()                                                              \
+  member ## _as() const                                                        \
   {                                                                            \
     std::vector<T> asvec(member.begin(), member.end());                        \
     return asvec;                                                              \
@@ -38,7 +38,7 @@ struct dcrs_t
   define_dcrs_as(distribution)
 
   size_t
-  size()
+  size() const
   {
     return offsets.size()-1;
   } // size

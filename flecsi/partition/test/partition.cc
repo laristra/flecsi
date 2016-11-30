@@ -21,6 +21,8 @@
 #include "flecsi/partition/dcrs_utils.h"
 #include "flecsi/partition/parmetis_partitioner.h"
 
+const size_t output_rank = 0;
+
 TEST(partition, simple) {
 
   using entry_info_t = flecsi::dmp::entry_info_t;
@@ -51,7 +53,7 @@ TEST(partition, simple) {
   auto closure = flecsi::io::cell_closure(sd, primary, 1);
 
 #if 0
-  if(rank == 0 ) {
+  if(rank == output_rank) {
     std::cout << "closure:" << std::endl;
     for(auto i: closure) {
       std::cout << i << " ";
@@ -93,6 +95,9 @@ TEST(partition, simple) {
   // that access our shared cells.
   auto cell_nn_info = partitioner->get_cell_info(primary, nearest_neighbors);
 
+  //
+  auto cell_all_info = partitioner->get_cell_info(primary, all_neighbors);
+
   // Create a map version of the local info for lookups below.
   std::unordered_map<size_t, size_t> primary_indices_map;
   {
@@ -101,6 +106,12 @@ TEST(partition, simple) {
     primary_indices_map[offset++] = i;
   } // for
   } // scope
+
+  // Create a map version of the remote info for lookups below.
+  std::unordered_map<size_t, entry_info_t> remote_info_map;
+  for(auto i: std::get<1>(cell_all_info)) {
+    remote_info_map[i.id] = i;
+  } // for
 
   std::set<entry_info_t> exclusive_cells;
   std::set<entry_info_t> shared_cells;
@@ -130,8 +141,8 @@ TEST(partition, simple) {
   } // for
   } // scope
 
-#if 0
-  if(rank == 1) {
+#if 1
+  if(rank == output_rank) {
     std::cout << "exclusive cells: " << std::endl;
     for(auto i: exclusive_cells) {
       std::cout << i << std::endl;
@@ -147,243 +158,130 @@ TEST(partition, simple) {
   } // if
 #endif
 
-#if 0
-  // Populate the shared and exclusive cell sets.
-  for(size_t i(0); i<local_info.size(); ++i) {
-      for(auto s: local_info[i]) {
-        std::cout << s << " ";
-      } // for
-    if(local_info[i].size()) {
-      shared_cells.insert(entry_info_t(primary_map[i], rank, i, local_info[i]));
-    }
-    else {
-      exclusive_cells.insert(entry_info_t(primary_map[i], rank, i, {}));
-    } // if
-  } // for
-#endif
-
-#if 0
-if(rank == 0) {
-  std::cout << " cell_nn_info:" << std::endl;
-  offset = 0;
-  for(auto i: std::get<0>(cell_nn_info)) {
-    std::cout << "index " << primary_indices_map[offset++] << ": ";
-    for(auto v: i) {
-      std::cout << v << " ";
-    }
-    std::cout << std::endl;
-  } // for
-} // if
-
-  auto cell_all_info = partitioner->get_cell_info(primary, all_neighbors);
-
-if(rank == 0) {
-  std::cout << " cell_all_info:" << std::endl;
-  offset = 0;
-  for(auto i: std::get<0>(cell_all_info)) {
-    std::cout << "index " << primary_indices_map[offset++] << ": ";
-    for(auto v: i) {
-      std::cout << v << " ";
-    }
-    std::cout << std::endl;
-  } // for
-} // if
-#endif
-
-#if 0
-  // The union of the nearest and next-nearest neighbors gives us all
-  // of the cells that might reference a vertex that we need.
-  auto request_indices_set = flecsi::io::set_union(nearest_neighbors, nnn);
-
-  // Get the rank and offset information for our cell dependencies.
-  // This also gives back information about the ranks that access
-  // our shared cells.
-  auto cell_info = partitioner->get_cell_info(primary, request_indices_set);
-
-  // This set contains information about shared indices for local cells.
-  auto local_info = std::get<0>(cell_info);
-
-  // This set contains entry info for remote cells.
-  auto remote_info = std::get<1>(cell_info);
-
-  if(rank == 0) {
-  std::cout << "remote info: " << std::endl;
-  for(auto i: remote_info) {
-    std::cout << i << std::endl;
-  } // for
-  } // if
-
-  // Create a map version of the remote info for lookups below.
-  std::unordered_map<size_t, entry_info_t> remote_info_map;
-  for(auto i: remote_info) {
-    remote_info_map[i.id] = i;
-  } // for
-
-  if(rank == 0) {
-    std::cout << " local_info:" << std::endl;
-    offset = 0;
-    for(auto i: local_info) {
-      std::cout << "index: " << primary_indices_map[offset++] << " ";
-      for(auto v: i) {
-        std::cout << v << " ";
-      }
-      std::cout << std::endl;
-    } // for
-  } // if
-
-  std::unordered_map<size_t, std::set<size_t>> local_info_map;
-  offset = 0;
-  if(rank == 0) {
-  std::cout << "local_info_map: " << std::endl;
-  for(auto i: local_info) {
-    local_info_map[primary_indices_map[offset++]] = i;
-    for(auto v: i) {
-      std::cout << v << " ";
-    } // for
-    std::cout << std::endl;
-  } // for
-  } // if
-
-  if(rank == 0) {
-    std::cout << " local_info_map:" << std::endl;
-    for(auto i: local_info_map) {
-      for(auto v: i.second) {
-      std::cout << v << " ";
-      }
-      std::cout << std::endl;
-    } // for
-  } // for
-
-  std::set<size_t> shared_indices;
-  if(rank == 0) {
-  std::cout << "shared indices: " << std::endl;
-  for(auto i: shared_indices) {
-    std::cout << i << std::endl;
-  } // for
-  } // if
-
-  std::set<entry_info_t> exclusive_cells;
-  std::set<entry_info_t> shared_cells;
-  std::set<entry_info_t> ghost_cells;
-
-  std::unordered_map<size_t, entry_info_t> primary_map;
-
-  // Create an index map for the primary cells set.
-  size_t index(0);
-  for(auto i: primary) {
-    if(rank == 0) {
-      std::cout << "adding map entry: " << i << " " << rank <<
-        " " << index << std::endl;
-    } // if
-    primary_map[i] = entry_info_t(i, rank, index++, {});
-  } // for
-
-if(rank ==0) {
-  for(auto i: primary) {
-//#if 0
-    auto match = local_info.insert(i);
-    if(match.first) {
-      std::cout << "primary " << i << " matched" << std::endl;
-      for(auto v: match.second) {
-        std::cout << v << " ";
-      } // for
-      std::cout << std::endl;
-    } // if
-//#endif
-  } // for
-} // if
-
-//
-// FIXME: Wrong...
-//
-  // Populate the shared and exclusive cell sets.
-  for(size_t i(0); i<local_info.size(); ++i) {
-      for(auto s: local_info[i]) {
-        std::cout << s << " ";
-      } // for
-    if(local_info[i].size()) {
-      shared_cells.insert(entry_info_t(primary_map[i], rank, i, local_info[i]));
-    }
-    else {
-      exclusive_cells.insert(entry_info_t(primary_map[i], rank, i, {}));
-    } // if
-  } // for
-
-  // Propulate the ghost cells set.
-  for(auto n: nearest_neighbors) {
-    ghost_cells.insert(remote_info_map[n]);
-  } // for
-
-if(rank == 0) {
-  std::cout << "exclusive cells: " << std::endl;
-  for(auto i: exclusive_cells) {
-    std::cout << i << std::endl;
-  } // for
-
-  std::cout << "shared cells: " << std::endl;
-  for(auto i: shared_cells) {
-    std::cout << i << std::endl;
-  } // for
-
-  std::cout << "ghost cells: " << std::endl;
-  for(auto i: ghost_cells) {
-    std::cout << i << std::endl;
-  } // for
-} // if
-
-  if(rank == 0) {
-    for(auto i: remote_info) {
-      std::cout << "cell " << i.id << " has rank " << i.rank <<
-        " and offset " << i.offset << std::endl;
-    } // for
-  } // if
-
   // Form the vertex closure
   auto vertex_closure = flecsi::io::vertex_closure(sd, closure);
 
+#if 0
+  std::cout << "rank " << rank << " vertex closure: " << std::endl;
+  for(auto i: vertex_closure) {
+    std::cout << i << " ";
+  } // for
+  std::cout << std::endl;
+#endif
+
   // Assign vertex ownership
-  std::vector<std::vector<size_t>> vertex_requests(size);
+  std::vector<std::set<size_t>> vertex_requests(size);
   std::set<entry_info_t> vertex_info;
+
+  size_t vertex(0);
   for(auto i: vertex_closure) {
 
     // Get the set of cells that reference this vertex.
     auto referencers = flecsi::io::vertex_referencers(sd, i);
 
-//#if 0
+#if 0
+if(rank == output_rank) {
     std::cout << "vertex " << i << " is referenced by cells: ";
     for(auto c: referencers) {
       std::cout << c << " ";
     } // for
     std::cout << std::endl;
-//#endif
+} // if
+#endif
 
     size_t min_rank(std::numeric_limits<size_t>::max());
-    std::vector<size_t> shared_vertices;
+    std::set<size_t> shared_vertices;
 
     for(auto c: referencers) {
-      min_rank = std::min(min_rank, remote_info_map[c].rank);
 
-      if(remote_info_map[c].rank != rank) {
-        vertex_requests[min_rank].push_back(i);
-        shared_vertices.push_back(rank);
+      // If the referencing cell isn't in the remote info map
+      // it is a local cell.
+      if(remote_info_map.find(c) != remote_info_map.end()) {
+        min_rank = std::min(min_rank, remote_info_map[c].rank);
+        shared_vertices.insert(remote_info_map[c].rank);
+      }
+      else {
+        min_rank = std::min(min_rank, size_t(rank));
       } // if
     } // for
 
-//#if 0
     if(min_rank == rank) {
-      vertex_info.insert({ i, rank, i, shared_vertices });
+      // This is a vertex that belongs to our rank.
+      vertex_info.insert(entry_info_t(i, rank, vertex++, shared_vertices));
     }
     else {
-      vertex_requests[min_rank].push_back(i);
+      // Add remote vertex to the request for offset information.
+      vertex_requests[min_rank].insert(i);
     } // fi
-//#endif
-
-//#if 0
-    std::cout << "vertex " << i << " belongs to rank " <<
-      min_rank << std::endl;
-//#endif
   } // for
+
+#if 0
+  if(rank == output_rank) {
+    std::cout << "vertex info" << std::endl;
+    for(auto i: vertex_info) {
+      std::cout << i << std::endl;
+    } // for
+  } // if
+
+  if(rank == output_rank) {
+    std::cout << "rank " << rank << " vertex requests" << std::endl;
+    size_t r(0);
+    for(auto i: vertex_requests) {
+      std::cout << "rank " << r++ << std::endl;
+      for(auto s: i) {
+        std::cout << s << " ";
+      } // for
+      std::cout << std::endl;
+    } // for
+  } // if
 #endif
+
+  auto vertex_offset_info =
+    partitioner->get_vertex_info(vertex_info, vertex_requests);
+
+  std::set<entry_info_t> exclusive_vertices;
+  std::set<entry_info_t> shared_vertices;
+  std::set<entry_info_t> ghost_vertices;
+
+  for(auto i: vertex_info) {
+    if(i.shared.size()) {
+      shared_vertices.insert(i);
+    }
+    else {
+      exclusive_vertices.insert(i);
+    } // if
+  } // for
+
+  {
+  size_t r(0);
+  for(auto i: vertex_requests) {
+
+    auto offset(vertex_offset_info[r].begin());
+    for(auto s: i) {
+      ghost_vertices.insert(entry_info_t(s, r, *offset));
+      ++offset;
+    } // for
+
+    ++r;
+  } // for
+  } // scope
+
+if(rank == output_rank) {
+  std::cout << "exclusive vertices:" << std::endl;
+  for(auto i: exclusive_vertices) {
+    std::cout << i << std::endl;
+  } // for
+
+  std::cout << "shared vertices:" << std::endl;
+  for(auto i: shared_vertices) {
+    std::cout << i << std::endl;
+  } // for
+
+  std::cout << "ghost vertices:" << std::endl;
+  for(auto i: ghost_vertices) {
+    std::cout << i << std::endl;
+  } // for
+} // if
 
 // Still need to perform set operations to get shared vertices. Then,
 // we need to exchange information with owner ranks to get the vertex
