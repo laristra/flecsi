@@ -76,7 +76,11 @@ public:
   /// Destructor
    virtual ~partitioner_t() {}
 
-  virtual std::set<size_t> partition(dcrs_t & mesh) = 0;
+  virtual
+  std::set<size_t>
+  partition(
+    const dcrs_t & dcrs
+  ) = 0;
 
   // I don't know where this belongs yet, but I want to work on the
   // interface so I'm putting it here for now. It probably doesn't really
@@ -90,8 +94,19 @@ public:
   virtual
   std::pair<std::vector<std::set<size_t>>, std::set<entry_info_t>>
   get_cell_info(
-    std::set<size_t> & primary,
-    std::set<size_t> & request_indices
+    const std::set<size_t> & primary,
+    const std::set<size_t> & request_indices
+  ) = 0;
+
+  // Same admonishment as for get_cell_info...
+  //
+  // The point of this method is to get vertex offsets from the
+  // owning ranks.
+  virtual
+  std::vector<std::set<size_t>>
+  get_vertex_info(
+    const std::set<entry_info_t> & vertex_info,
+    const std::vector<std::set<size_t>> & request_indices
   ) = 0;
 
 private:

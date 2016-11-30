@@ -396,6 +396,13 @@ TEST(dCRS, init) {
     size_t rank;
     size_t offset;
 
+    neighbor_t(
+      size_t id_ = 0,
+      size_t rank_ = 0,
+      size_t offset_ = 0
+    )
+      : id(id_), rank(rank_), offset(offset_) {}
+
     bool
     operator < (
       const neighbor_t & n
@@ -410,7 +417,7 @@ TEST(dCRS, init) {
   std::unordered_map<size_t, size_t> full_neighbor_map;
 
   for(auto i: primary) {
-    full_neighbor_set.insert({ i, rank });
+    full_neighbor_set.insert(neighbor_t(i, rank));
     full_neighbor_map[i] = rank;
   } // for
 
