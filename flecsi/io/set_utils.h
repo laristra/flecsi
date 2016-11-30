@@ -86,8 +86,8 @@ cell_neighbors(
   size_t intersections
 )
 {
-  // Get the vertex of the input cell
-  auto vertices = md.vertices(id);
+  // Get the set of vertex ids of the input cell
+  auto vertices = md.vertices_set(id);
 
   // Put the results into set form
   std::set<size_t> neighbors;
@@ -101,8 +101,8 @@ cell_neighbors(
       continue;
     } // if
 
-    // Get the vertex ids of current cell
-    auto other = md.vertices(cell);
+    // Get the set of vertex ids of current cell
+    auto other = md.vertices_set(cell);
 
     auto intersect = flecsi::io::set_intersection(vertices, other);
 
@@ -163,7 +163,7 @@ vertex_referencers(
   for(size_t cell(0); cell<md.num_cells(); ++cell) {
 
     // Get the vertex ids of current cell
-    auto cset = md.vertices(cell);
+    auto cset = md.vertices_set(cell);
 
     // If the cell references this vertex add it
     if(cset.find(id) != cset.end()) {
@@ -191,7 +191,7 @@ vertex_closure(
   // Iterate over the cells in indices and add any vertices that are
   // referenced by one of the cell indices
   for(auto i: indices) {
-    auto vset = md.vertices(i);
+    auto vset = md.vertices_set(i);
 
     closure = flecsi::io::set_union(closure, vset);
   } // for
