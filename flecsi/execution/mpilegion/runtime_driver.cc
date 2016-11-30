@@ -38,12 +38,12 @@ void mpilegion_runtime_driver(const LegionRuntime::HighLevel::Task * task,
 
     // connect legion with MPI
     context_.interop_helper_.connect_with_mpi(ctx, runtime);
-
+    context_.interop_helper_.wait_on_mpi(ctx, runtime);
     // run default or user-defined driver 
     driver(args.argc, args.argv); 
 
     // finish up legion runtime and handoff to mpi
-    context_.interop_helper_.call_mpi_=false;
+    context_.interop_helper_.unset_call_mpi(ctx, runtime);
     context_.interop_helper_.handoff_to_mpi(ctx, runtime);
 
     // Set the current task context to the driver

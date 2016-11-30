@@ -40,33 +40,6 @@
 namespace flecsi{
 namespace execution{
 
-
-//----------------------------------------------------------------------------//
-///
-// a legion task that created User Events/Queques for synchronization 
-// between MPI and Legion. This task is an index task that will be executed on
-// as many processes as MPI has been called from.
-///
-//----------------------------------------------------------------------------//
-
-inline
-void
-connect_to_mpi_task(
-  const Legion::Task * legiontask,
-  const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
-  LegionRuntime::HighLevel::Context ctx,
-  LegionRuntime::HighLevel::HighLevelRuntime * runtime
-)
-{
-  #ifdef LEGIONDEBUG
-  std::cout <<"inside connect_to_mpi"<<std::endl;
-  #endif
-  
-  // this call creates Legion events/queues for both MPI and Legion runtimes
-  // for the later synchronization and then swithces runtime MPI
-  ext_legion_handshake_t::instance().legion_init();
-} // connect_to_mpi_task
-
 //----------------------------------------------------------------------------//
 ///
 // a legion task that calls legion_handoff_to_ext function from handshake
@@ -84,7 +57,8 @@ handoff_to_mpi_task(
   LegionRuntime::HighLevel::Context ctx,
   LegionRuntime::HighLevel::HighLevelRuntime * runtime)
 {
-   ext_legion_handshake_t::instance().legion_handoff_to_ext();
+std::cout <<"inside handoff_to_mpi task" <<std::endl;
+    ext_legion_handshake_t::instance().legion_handoff_to_mpi();
 } // handoff_to_mpi_task
 
 //----------------------------------------------------------------------------//
@@ -102,7 +76,7 @@ wait_on_mpi_task(
   LegionRuntime::HighLevel::HighLevelRuntime * runtime
 )
 {
-  ext_legion_handshake_t::instance().legion_wait_on_ext();
+  ext_legion_handshake_t::instance().legion_wait_on_mpi();
 } // wait_on_mpi_task
 
 //----------------------------------------------------------------------------//
@@ -164,6 +138,7 @@ struct mpi_legion_interop_t
   void
   initialize()
   {
+    ext_legion_handshake_t::instance().initialize();
     LegionRuntime::HighLevel::HighLevelRuntime::set_registration_callback(
       mapper_registration);
   } // initialize
@@ -204,7 +179,9 @@ struct mpi_legion_interop_t
   void
   legion_configure()
   {
-    ext_legion_handshake_t::instance().ext_init();
+    int rank = -1, size = -1;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    Legion::Runtime::configure_MPI_interoperability(rank);
   } // legion_configure
 
   ///
@@ -213,7 +190,7 @@ struct mpi_legion_interop_t
   void 
   handoff_to_legion()
   {
-    ext_legion_handshake_t::instance().ext_handoff_to_legion();
+    ext_legion_handshake_t::instance().mpi_handoff_to_legion();
   } // handoff_to_legion
 
   ///
@@ -222,7 +199,7 @@ struct mpi_legion_interop_t
   void 
   wait_on_legion()
   {
-    ext_legion_handshake_t::instance().ext_wait_on_legion();
+    ext_legion_handshake_t::instance().mpi_wait_on_legion();
   } // wait_on_legion
 
   ///
@@ -232,15 +209,6 @@ struct mpi_legion_interop_t
 	void 
 	register_tasks()
 	{
-  	LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
-	    <connect_to_mpi_task>(
-	    task_ids_t::instance().connect_mpi_task_id,
-	    LegionRuntime::HighLevel::Processor::LOC_PROC,
-	    false/*single*/, true/*index*/,
-	    AUTO_GENERATE_ID,
-	    LegionRuntime::HighLevel::TaskConfigOptions(true/*leaf*/),
-	    "connect_to_mpi_task");
-
   	LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
     	<handoff_to_mpi_task>(
 	    task_ids_t::instance().handoff_to_mpi_task_id,
@@ -327,21 +295,16 @@ struct mpi_legion_interop_t
 	{
 		calculate_number_of_procs();
 
-  	LegionRuntime::HighLevel::ArgumentMap arg_map;
-
-  	LegionRuntime::HighLevel::IndexLauncher connect_mpi_launcher(
-    	task_ids_t::instance().connect_mpi_task_id,
-    	LegionRuntime::HighLevel::Domain::from_rect<2>(all_processes_),
-    	LegionRuntime::HighLevel::TaskArgument(0, 0),
-   	  arg_map);
-
-  	//run legion_init() from each thead
-  	LegionRuntime::HighLevel::FutureMap fm1 =
-    	runtime->execute_index_space(ctx, connect_mpi_launcher);
-
-  	//run some legion task here
-  	fm1.wait_all_results();
-	} // connect_with_mpi
+	// Both the application and Legion mappers have access to
+  // the mappings between MPI Ranks and Legion address spaces
+  // The reverse mapping goes the other way
+  const std::map<int,Legion::AddressSpace> &forward_mapping =
+    runtime->find_forward_MPI_mapping();
+  for (std::map<int,Legion::AddressSpace>::const_iterator it =
+        forward_mapping.begin(); it != forward_mapping.end(); it++)
+      printf("MPI Rank %d maps to Legion Address Space %d\n",
+            it->first, it->second);
+  } // connect_with_mpi/  
 
 
   ///
@@ -392,10 +355,6 @@ struct mpi_legion_interop_t
   	return fm3;
 	}//wait_on_mpi
  
-  std::function<void()> shared_func_;
-
-  bool call_mpi_ = false;
-
   Rect<2> all_processes_;
   Rect<1> local_procs_;
 
