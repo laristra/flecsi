@@ -61,7 +61,9 @@ public:
       std::getline(file_, line);
 
       cell_size_ = file_.tellg() - cell_start_;
-    } // if
+    } else {
+      std::cout << "file open error" << std::endl;
+    }// if
 
   }
 
