@@ -499,7 +499,10 @@ if(rank == 0) {
     } // for
 } // if
 #endif
-    std::vector<MPI_Request> requests1;
+    // we are reusing requests in the following code, need to clear the content
+    // first.
+    requests.clear();
+
     // Start receive operations (non-blocking) to get back the
     // offsets we requested.
     for(size_t r(0); r<size; ++r) {
@@ -507,9 +510,9 @@ if(rank == 0) {
       if(send_cnts[r]) {
         // We're done with our receive buffers, so we can re-use them.
         rbuffers[r].resize(send_cnts[r], 0);
-        requests1.push_back({});
+        requests.push_back({});
         MPI_Irecv(&rbuffers[r][0], send_cnts[r], mpi_typetraits<size_t>::type(),
-          r, 0, MPI_COMM_WORLD, &requests1[requests1.size()-1]);
+          r, 0, MPI_COMM_WORLD, &requests[requests.size()-1]);
       } // if
     } // for
 
@@ -523,8 +526,8 @@ if(rank == 0) {
     } // for
 
     // Wait on the receive operations
-    std::vector<MPI_Status> status1(requests1.size());
-    MPI_Waitall(requests1.size(), &requests1[0], &status1[0]);
+    status.resize(requests.size());
+    MPI_Waitall(requests.size(), &requests[0], &status[0]);
 
     std::vector<std::set<size_t>> remote(size);
     for(size_t r(0); r<size; ++r) {
