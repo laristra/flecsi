@@ -78,11 +78,11 @@ public:
         sum += tpwgts[i];
       } // if
 
-      #if 0
+#if 0
       if(rank == 0) {
         std::cout << tpwgts[i] << std::endl;
       } // if
-      #endif
+#endif
     } // for
 
     // We may need to expose some of the ParMETIS configuration options.
@@ -90,7 +90,19 @@ public:
     idx_t options = 0;
     idx_t edgecut;
     MPI_Comm comm = MPI_COMM_WORLD;
-    std::vector<idx_t> part(dcrs.size());
+    std::vector<idx_t> part(dcrs.size(), std::numeric_limits<idx_t>::max());
+
+    const size_t output_rank(1);
+#if 1
+    if(rank == output_rank) {
+      std::cout << "rank " << rank << " dcrs: " << std::endl;
+      std::cout << "size: " << dcrs.size() << std::endl;
+      std::cout << dcrs << std::endl;
+    } // if
+#endif
+
+//    std::set<size_t> ret;
+//    return ret;
 
     // Get the dCRS information using ParMETIS types.
     std::vector<idx_t> vtxdist = dcrs.distribution_as<idx_t>();
@@ -102,13 +114,13 @@ public:
       &adjncy[0], nullptr, nullptr, &wgtflag, &numflag, &ncon, &size,
       &tpwgts[0], &ubvec, &options, &edgecut, &part[0], &comm);
 
-    #if 0
+#if 0
     std::cout << "rank " << rank << ": ";
     for(size_t i(0); i<dcrs.size(); ++i) {
       std::cout << "[" << part[i] << ", " << vtxdist[rank]+i << "] ";
     } // for
     std::cout << std::endl;
-    #endif
+#endif
 
     //------------------------------------------------------------------------//
     // Exchange information with other ranks.
@@ -138,17 +150,17 @@ public:
     } // for
 
 #if 0
-//  if(rank == 0) {
-    size_t rcnt(0);
-    for(auto r: sbuffers) {
-      std::cout << "rank " << rank << " sends " << rcnt++ <<
-        " " << send_cnts[rcnt] << ": ";
-      for(auto i: r) {
-        std::cout << i << " ";
+    if(rank == 0) {
+      size_t rcnt(0);
+      for(auto r: sbuffers) {
+        std::cout << "rank " << rank << " sends " << rcnt++ <<
+          " " << send_cnts[rcnt] << ": ";
+        for(auto i: r) {
+          std::cout << i << " ";
+        } // for
+        std::cout << std::endl;
       } // for
-      std::cout << std::endl;
-    } // for
- // } // if
+    } // if
 #endif
 
     // Do all-to-all to find out where everything belongs.
@@ -204,13 +216,13 @@ public:
     } // for
 
   #if 0
-  //  if(rank == 0) {
-      std::cout << "rank " << rank << " primary partition:" << std::endl;
-      for(auto i: primary) {
-        std::cout << i << " ";
-      } // for
-      std::cout << std::endl;
-  //  } // if
+      if(rank == 0) {
+        std::cout << "rank " << rank << " primary partition:" << std::endl;
+        for(auto i: primary) {
+          std::cout << i << " ";
+        } // for
+        std::cout << std::endl;
+      } // if
   #endif
 
     return primary;

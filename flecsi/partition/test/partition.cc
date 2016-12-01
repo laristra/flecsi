@@ -21,7 +21,7 @@
 #include "flecsi/partition/dcrs_utils.h"
 #include "flecsi/partition/parmetis_partitioner.h"
 
-const size_t output_rank = 0;
+const size_t output_rank = 2;
 
 TEST(partition, simple) {
 
@@ -34,7 +34,13 @@ TEST(partition, simple) {
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   // Create a mesh definition from file.
-  flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
+  //flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
+  //flecsi::io::simple_definition_t sd("simple2d-1024x1024.msh");
+  //flecsi::io::simple_definition_t sd("simple2d-100x100.msh");
+  //flecsi::io::simple_definition_t sd("simple2d-21x21.msh");
+  flecsi::io::simple_definition_t sd("simple2d-32x32.msh");
+  //flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
+  //flecsi::io::simple_definition_t sd("simple2d-10x10.msh");
 
   // Create the dCRS representation for the distributed
   // partitioner.
@@ -45,6 +51,16 @@ TEST(partition, simple) {
 
   // Create the primary partition.
   auto primary = partitioner->partition(dcrs);
+
+#if 0
+  if(rank == output_rank) {
+    std::cout << "primary: ";
+    for(auto i: primary) {
+      std::cout << i << " ";
+    } // for
+    std::cout << std::endl;
+  } // if
+#endif
 
   // Compute the dependency closure of the primary cell partition
   // through vertex intersections (specified by last argument "1").
@@ -180,13 +196,13 @@ TEST(partition, simple) {
     auto referencers = flecsi::io::vertex_referencers(sd, i);
 
 #if 0
-if(rank == output_rank) {
+  if(rank == output_rank) {
     std::cout << "vertex " << i << " is referenced by cells: ";
     for(auto c: referencers) {
       std::cout << c << " ";
     } // for
     std::cout << std::endl;
-} // if
+  } // if
 #endif
 
     size_t min_rank(std::numeric_limits<size_t>::max());

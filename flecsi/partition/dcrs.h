@@ -48,6 +48,33 @@ struct dcrs_t
   std::vector<size_t> distribution;
 }; // struct dcrs_t
 
+std::ostream &
+operator <<
+(
+  std::ostream & stream,
+  const dcrs_t & dcrs
+)
+{
+  stream << "offsets: ";
+  for(auto i: dcrs.offsets) {
+    stream << i << " ";
+  } // for
+  stream << std::endl;
+
+  stream << "indices: ";
+  for(auto i: dcrs.indices) {
+    stream << i << " ";
+  } // for
+  stream << std::endl;
+
+  stream << "distribution: ";
+  for(auto i: dcrs.distribution) {
+    stream << i << " ";
+  } // for
+
+  return stream;
+} // operator <<
+
 } // namespace dmp
 } // namespace flecsi
 

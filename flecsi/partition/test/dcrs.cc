@@ -15,7 +15,7 @@ TEST(dcrs, simple2d_8x8) {
   auto dcrs = flecsi::dmp::make_dcrs(sd);
 
   int rank;
-  MPI_Comm_size(MPI_COMM_WORLD, &rank);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   if(rank == 0) {
     // Note: These assume that this test is run with 5 ranks.
@@ -28,6 +28,22 @@ TEST(dcrs, simple2d_8x8) {
 
     CINCH_ASSERT(EQ, dcrs.offsets, offsets);
     CINCH_ASSERT(EQ, dcrs.indices, indices);
+  } // if
+
+} // TEST
+
+const size_t output_rank(0);
+
+TEST(dcrs, simple2d_16x16) {
+
+  flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
+  auto dcrs = flecsi::dmp::make_dcrs(sd);
+
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+  if(rank == output_rank) {
+    std::cout << dcrs << std::endl;
   } // if
 
 } // TEST

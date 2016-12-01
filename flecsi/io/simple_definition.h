@@ -48,22 +48,13 @@ public:
       // Get the offset to the beginning of the vertices
       vertex_start_ = file_.tellg();
 
-      std::getline(file_, line);
-
-      vertex_size_ = file_.tellg() - vertex_start_;
-
-      for(size_t i(0); i<num_vertices_-1; ++i) {
+      for(size_t i(0); i<num_vertices_; ++i) {
         std::getline(file_, line);
       } // for
 
       cell_start_ = file_.tellg();
-
-      std::getline(file_, line);
-
-      cell_size_ = file_.tellg() - cell_start_;
-  } // if
-
-  }
+    } // if
+  } // simple_definition_t
 
   /// Copy constructor (disabled)
   simple_definition_t(const simple_definition_t &) = delete;
@@ -87,15 +78,22 @@ public:
   )
   {
     std::string line;
-    //std::vector<size_t> ids;
     std::vector<size_t> ids;
     size_t v0, v1, v2, v3;
 
-    file_.seekg(cell_start_ +
-      static_cast<std::iostream::pos_type>(cell_id)*cell_size_);
+    // Go to the start of the cells.
+    file_.seekg(cell_start_);
+
+    // Walk to the line with the requested id.
+    for(size_t l(0); l<cell_id; ++l) {
+      std::getline(file_, line);
+    } // for
+
+    // Get the line with the information for the requested id.
     std::getline(file_, line);
     std::istringstream iss(line);
 
+    // Read the cell definition.
     iss >> v0 >> v1 >> v2 >> v3;
 
     ids.push_back(v0);
@@ -126,11 +124,19 @@ public:
     std::string line;
     point_t v;
 
-    file_.seekg(vertex_start_ +
-      static_cast<std::iostream::pos_type>(vertex_id)*vertex_size_);
+    // Go to the start of the vertices.
+    file_.seekg(vertex_start_);
+
+    // Walk to the line with the requested id.
+    for(size_t l(0); l<vertex_id; ++l) {
+      std::getline(file_, line);
+    } // for
+
+    // Get the line with the information for the requested id.
     std::getline(file_, line);
     std::istringstream iss(line);
 
+    // Read the vertex coordinates.
     iss >> v[0] >> v[1];
 
     return v;
@@ -145,9 +151,6 @@ private:
 
   std::iostream::pos_type vertex_start_;
   std::iostream::pos_type cell_start_;
-
-  std::iostream::pos_type vertex_size_;
-  std::iostream::pos_type cell_size_;
 
 }; // class simple_definition_t
 

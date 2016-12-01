@@ -84,6 +84,16 @@ make_dcrs(
     auto neighbors =
       io::cell_neighbors(md, dcrs.distribution[rank] + i, md.dimension());
 
+#if 0
+      if(rank == 1) {
+        std::cout << "neighbors: ";
+        for(auto i: neighbors) {
+          std::cout << i << " ";
+        } // for
+        std::cout << std::endl;
+      } // if
+#endif
+
       for(auto n: neighbors) {
         dcrs.indices.push_back(n);
       } // for
@@ -92,7 +102,7 @@ make_dcrs(
   } // for
 
 #if 0
-  if(rank == 0) {
+  if(rank == 1) {
     std::cout << "offsets: ";
     for(auto i: dcrs.offsets) {
       std::cout << i << " ";
