@@ -38,8 +38,8 @@ TEST(partition, simple) {
   //flecsi::io::simple_definition_t sd("simple2d-1024x1024.msh");
   //flecsi::io::simple_definition_t sd("simple2d-100x100.msh");
   //flecsi::io::simple_definition_t sd("simple2d-21x21.msh");
-  flecsi::io::simple_definition_t sd("simple2d-32x32.msh");
-  //flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
+  //flecsi::io::simple_definition_t sd("simple2d-32x32.msh");
+  flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
   //flecsi::io::simple_definition_t sd("simple2d-10x10.msh");
 
   // Create the dCRS representation for the distributed

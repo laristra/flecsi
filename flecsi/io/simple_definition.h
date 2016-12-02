@@ -53,7 +53,10 @@ public:
       } // for
 
       cell_start_ = file_.tellg();
-    } // if
+    }
+    else {
+      std::cout << "file open error" << std::endl;
+    }// if
   } // simple_definition_t
 
   /// Copy constructor (disabled)
