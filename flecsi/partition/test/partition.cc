@@ -299,11 +299,6 @@ if(rank == output_rank) {
   } // for
 } // if
 
-// Still need to perform set operations to get shared vertices. Then,
-// we need to exchange information with owner ranks to get the vertex
-// offsets. All of this information should be collected into a
-// vertex_info_t instance, similar to the entry_info_t type.
-
 // We will need to discuss how to expose customization to user
 // specializations. The particular configuration of ParMETIS is
 // likley to need tweaks. There are also likely other closure
