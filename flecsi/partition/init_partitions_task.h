@@ -20,6 +20,8 @@
 enum
 FieldIDs2 {
   FID_SHARED,
+  FID_EXCLUSIVE,
+  FID_GHOST,
 };
 
 namespace flecsi {

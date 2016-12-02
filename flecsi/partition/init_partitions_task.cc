@@ -219,7 +219,7 @@ exclusive_part_task(
   { 
     LegionRuntime::HighLevel::FieldAllocator allocator =
         runtime->create_field_allocator(ctx,exclusive_fs);
-    allocator.allocate_field(sizeof(ptr_t), FID_SHARED);
+    allocator.allocate_field(sizeof(ptr_t), FID_EXCLUSIVE);
   }
   
   LegionRuntime::HighLevel::LogicalRegion exclusive_lr= 
@@ -228,14 +228,14 @@ exclusive_part_task(
   
   LegionRuntime::HighLevel::RegionRequirement req(exclusive_lr,
                       READ_WRITE, EXCLUSIVE, exclusive_lr);
-  req.add_field(FID_SHARED);
+  req.add_field(FID_EXCLUSIVE);
   LegionRuntime::HighLevel::InlineLauncher exclusive_launcher(req);
   LegionRuntime::HighLevel::PhysicalRegion exclusive_region =
               runtime->map_region(ctx, exclusive_launcher);
   exclusive_region.wait_until_valid();
   LegionRuntime::Accessor::RegionAccessor<
     LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
-    exclusive_region.get_field_accessor(FID_SHARED).typeify<ptr_t>();
+    exclusive_region.get_field_accessor(FID_EXCLUSIVE).typeify<ptr_t>();
   
   size_t indx=0; 
   for(size_t i = 0; i <ip.exclusive.size() ; i++){
@@ -294,7 +294,7 @@ ghost_part_task(
   { 
     LegionRuntime::HighLevel::FieldAllocator allocator =
         runtime->create_field_allocator(ctx,ghost_fs);
-    allocator.allocate_field(sizeof(ptr_t), FID_SHARED);
+    allocator.allocate_field(sizeof(ptr_t), FID_GHOST);
   }
   
   LegionRuntime::HighLevel::LogicalRegion ghost_lr= 
@@ -303,13 +303,13 @@ ghost_part_task(
   
   LegionRuntime::HighLevel::RegionRequirement req(ghost_lr,
                       READ_WRITE, EXCLUSIVE, ghost_lr);
-  req.add_field(FID_SHARED);
+  req.add_field(FID_GHOST);
   LegionRuntime::HighLevel::InlineLauncher ghost_launcher(req);
   LegionRuntime::HighLevel::PhysicalRegion ghost_region =
               runtime->map_region(ctx, ghost_launcher);
   ghost_region.wait_until_valid();
   LegionRuntime::Accessor::RegionAccessor<generic_type, ptr_t> acc =
-    ghost_region.get_field_accessor(FID_SHARED).typeify<ptr_t>();
+    ghost_region.get_field_accessor(FID_GHOST).typeify<ptr_t>();
   
   size_t indx=0;
   for(size_t i = 0; i <ip.ghost.size() ; i++){

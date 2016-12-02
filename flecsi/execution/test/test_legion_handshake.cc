@@ -31,7 +31,7 @@ enum TaskIDs{
  HELLOWORLD_TASK_ID        =0x00000200,
 };
 
-static ext_legion_handshake_t &handshake=ext_legion_handshake_t::instance();
+Legion::MPILegionHandshake handshake;
 
 using namespace LegionRuntime::HighLevel;
 using namespace LegionRuntime::Accessor;
@@ -41,77 +41,37 @@ void top_level_task(const Task *task,
                     const std::vector<PhysicalRegion> &regions,
                     Context ctx, HighLevelRuntime *runtime)
 {
-  int num_local_procs=0;
-#ifdef DEBUG
-  printf ("inside top_level_task function \n");
-#endif
 
-#ifndef SHARED_LOWLEVEL
-  // Only the shared lowlevel runtime needs to iterate over all points
-  // on each processor.
-  int num_points = 1;
-  int num_procs = 0;
-  {
-   std::set<Processor> all_procs;
-   Realm::Machine::get_machine().get_all_processors(all_procs);
-   for(std::set<Processor>::const_iterator it = all_procs.begin();
-      it != all_procs.end();
-      it++){
-    if((*it).kind() == Processor::LOC_PROC)
-      num_procs++;
-   }
-  }
-  num_local_procs=num_procs;  
-#else
-  int num_procs = Machine::get_machine()->get_all_processors().size();
-  int num_points = rank->proc_grid_size.x[0] * rank->proc_grid_size.x[1] * rank->proc_grid_size.x[2];
-#endif
-  printf("Attempting to connect %d processors with %d points per processor\n",
-         num_procs, num_points);
-  Point<2> all_procs_lo, all_procs_hi;
-  all_procs_lo.x[0] = all_procs_lo.x[1] = 0;
-  all_procs_hi.x[0] = num_procs - 1;
-  all_procs_hi.x[1] = num_points - 1;
-  Rect<2> all_processes = Rect<2>(all_procs_lo, all_procs_hi); 
+  printf("Hello from Legion Top-Level Task\n");
+  // Both the application and Legion mappers have access to
+  // the mappings between MPI Ranks and Legion address spaces
+  // The reverse mapping goes the other way
+  const std::map<int,AddressSpace> &forward_mapping =
+    runtime->find_forward_MPI_mapping();
+  for (std::map<int,AddressSpace>::const_iterator it =
+        forward_mapping.begin(); it != forward_mapping.end(); it++)
+      printf("MPI Rank %d maps to Legion Address Space %d\n",
+            it->first, it->second);
+ 
 
-  Rect<1> local_procs(0,num_local_procs);
+  int rank = -1, size = -1;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  Rect<1> local_procs(Point<1>(0),Point<1>(size - 1));
   ArgumentMap arg_map;
 
-  IndexLauncher connect_mpi_launcher(task_ids_t::instance().connect_mpi_task_id,
-                                       Domain::from_rect<2>(all_processes),
-                                       TaskArgument(0, 0),
-                                       arg_map);
+  MustEpochLauncher must_epoch_launcher;
+
   IndexLauncher helloworld_launcher(HELLOWORLD_TASK_ID,
                                Domain::from_rect<1>(local_procs),
                                TaskArgument(0, 0),
                                arg_map);
 
-  IndexLauncher handoff_to_mpi_launcher(
-                                  task_ids_t::instance().handoff_to_mpi_task_id,
-                                  Domain::from_rect<2>(all_processes),
-                                  TaskArgument(0, 0),
-                                  arg_map);
-
-  //run legion_init() from each thead
-  FutureMap fm1 = runtime->execute_index_space(ctx, connect_mpi_launcher);
-   printf("connect_mpi finished \n");
-  //run some legion task here
-  fm1.wait_all_results();
-  FutureMap fm2 = runtime->execute_index_space(ctx, helloworld_launcher);
-  fm2.wait_all_results();
-  //handoff to MPI
-  runtime->execute_index_space(ctx, handoff_to_mpi_launcher);
- }
-
-void test_connect_mpi_task (const Task *task,
-                      const std::vector<PhysicalRegion> &regions,
-                      Context ctx, HighLevelRuntime *runtime)
-{
-#ifdef DEBUG
-  printf ("inside connect_mpi_task \n");
-#endif
-    handshake.legion_init();
+  handshake.legion_wait_on_mpi();
+  must_epoch_launcher.add_index_task(helloworld_launcher);
+  FutureMap f = runtime->execute_must_epoch(ctx, must_epoch_launcher);
 }
+
 
 
 
@@ -120,76 +80,61 @@ void helloworld_mpi_task (const Task *legiontask,
                       Context ctx, HighLevelRuntime *runtime)
 {
   printf ("helloworld \n");
+   handshake.legion_handoff_to_mpi();
 }
-
-void test_handoff_to_mpi_task (const Task *legiontask,
-                      const std::vector<PhysicalRegion> &regions,
-                      Context ctx, HighLevelRuntime *runtime)
-{
- handshake.legion_handoff_to_ext();
-}
-
-
-
-void complete_legion_configure(void)
-{
-#ifdef DEBUG
-  printf ("inside complete_legion_configure function \n");
-#endif
-   handshake.ext_init();
-}
-
-void run_legion_task(void)
-{
-#ifdef DEBUG
-  printf ("inside run_legion_task function \n");
-#endif
-   handshake.ext_handoff_to_legion();
-}
-
 
 void my_init_legion(){
 
-  handshake.initialize(ext_legion_handshake_t::IN_EXT, 1, 1);
+  int rank = -1, size = -1;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  printf("Hello from MPI process %d of %d\n", rank, size);
 
-  HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
+  // Configure the Legion runtime with the rank of this process
+  Legion::Runtime::configure_MPI_interoperability(rank);
+  // Register our task variants
+  {
+    TaskVariantRegistrar top_level_registrar(TOP_LEVEL_TASK_ID);
+    top_level_registrar.add_constraint(ProcessorConstraint(Processor::LOC_PROC));
+    Runtime::preregister_task_variant<top_level_task>(top_level_registrar,
+                                                      "Top Level Task");
+    Runtime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
+  }
+  {
+    TaskVariantRegistrar helloworld_registrar(HELLOWORLD_TASK_ID);
+    helloworld_registrar.add_constraint(ProcessorConstraint(Processor::LOC_PROC));
+    Runtime::preregister_task_variant<helloworld_mpi_task>(helloworld_registrar,
+                                                        "MPI Interop Task");
+  }
 
-  HighLevelRuntime::register_legion_task<top_level_task>( TOP_LEVEL_TASK_ID,
-                          Processor::LOC_PROC, true/*single*/, false/*index*/, 
-                          AUTO_GENERATE_ID, TaskConfigOptions(),
-                           "top_level_task");
-  HighLevelRuntime::register_legion_task< test_connect_mpi_task>(
-                          task_ids_t::instance().connect_mpi_task_id, 
-                          Processor::LOC_PROC, false/*single*/, true/*index*/,
-                          AUTO_GENERATE_ID, TaskConfigOptions(true/*leaf*/),
-                           "connect_mpi_task");
-  
-  HighLevelRuntime::register_legion_task< helloworld_mpi_task >(
-                          HELLOWORLD_TASK_ID,
-                          Processor::LOC_PROC, false/*single*/, true/*index*/,
-                          AUTO_GENERATE_ID, TaskConfigOptions(true/*leaf*/),
-                          "hellowrld_task");
-
-  HighLevelRuntime::register_legion_task< test_handoff_to_mpi_task>(
-                          task_ids_t::instance().handoff_to_mpi_task_id,
-                          Processor::LOC_PROC, false/*single*/, true/*index*/,
-                          AUTO_GENERATE_ID, TaskConfigOptions(true/*leaf*/),
-                           "handoff_to_mpi_task");
-
-
-  HighLevelRuntime::set_registration_callback(mapper_registration);
+  // Create a handshake for passing control between Legion and MPI
+  // Indicate that MPI has initial control and that there is one
+  // participant on each side
+  handshake = Runtime::create_handshake(true/*MPI initial control*/,
+                                        1/*MPI participants*/,
+                                        1/*Legion participants*/);
 
   char arguments[] = "1";
   char * argv = &arguments[0];
 
-  HighLevelRuntime::start(1, &argv, true);
+  // Start the Legion runtime in background mode
+  // This call will return immediately
+  HighLevelRuntime::start(1, &argv, true/*background*/);
+   
+  // Perform a handoff to Legion, this call is
+  // asynchronous and will return immediately
+  handshake.mpi_handoff_to_legion();
+  // You can put additional work in here if you like
+  // but it may interfere with Legion work
 
-  complete_legion_configure();
+  // Wait for Legion to hand control back,
+  // This call will block until a Legion task
+  // running in this same process hands control back
+  handshake.mpi_wait_on_legion(); 
 
-  run_legion_task();  
-
-  handshake.ext_wait_on_legion(); 
-
+  // When you're done wait for the Legion runtime to shutdown
+  //Runtime::wait_for_shutdown();
+  // Then finalize MPI like normal
 }
 
 #define execute(task, ...) \

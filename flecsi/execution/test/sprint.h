@@ -440,14 +440,14 @@ driver(
         exclusive_pts_lr.get_index_space();
     LegionRuntime::HighLevel::RegionRequirement req(exclusive_pts_lr,
                       READ_ONLY, EXCLUSIVE, exclusive_pts_lr);
-    req.add_field(FID_SHARED);
+    req.add_field(FID_EXCLUSIVE);
     LegionRuntime::HighLevel::InlineLauncher exclusive_launcher(req);
     LegionRuntime::HighLevel::PhysicalRegion exclusive_region =
               runtime->map_region(context, exclusive_launcher);
     exclusive_region.wait_until_valid();
     LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
-    exclusive_region.get_field_accessor(FID_SHARED).typeify<ptr_t>();
+    exclusive_region.get_field_accessor(FID_EXCLUSIVE).typeify<ptr_t>();
     for (int j=0; j<num_exclusive[indx]; j++)
     {
 
@@ -496,14 +496,14 @@ driver(
         ghost_pts_lr.get_index_space();
     LegionRuntime::HighLevel::RegionRequirement req(ghost_pts_lr,
                       READ_ONLY, EXCLUSIVE, ghost_pts_lr);
-    req.add_field(FID_SHARED);
+    req.add_field(FID_GHOST);
     LegionRuntime::HighLevel::InlineLauncher ghost_launcher(req);
     LegionRuntime::HighLevel::PhysicalRegion ghost_region =
               runtime->map_region(context, ghost_launcher);
     ghost_region.wait_until_valid();
     LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
-    ghost_region.get_field_accessor(FID_SHARED).typeify<ptr_t>();
+    ghost_region.get_field_accessor(FID_GHOST).typeify<ptr_t>();
     for (int j=0; j<num_ghosts[indx]; j++)
     {
 
