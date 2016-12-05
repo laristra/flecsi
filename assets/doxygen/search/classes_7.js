@@ -8,8 +8,8 @@ var searchData=
   ['ident',['ident',['../structflecsi_1_1utils_1_1container_1_1meta__counter_1_1ident.html',1,'flecsi::utils::container::meta_counter']]],
   ['index_5fpartition_5f_5f',['index_partition__',['../structflecsi_1_1dmp_1_1index__partition____.html',1,'flecsi::dmp']]],
   ['index_5fpartition_5f_5f_3c_20size_5ft_20_3e',['index_partition__&lt; size_t &gt;',['../structflecsi_1_1dmp_1_1index__partition____.html',1,'flecsi::dmp']]],
-  ['index_5fspace',['index_space',['../classindex__space.html',1,'']]],
   ['index_5fspace',['index_space',['../classflecsi_1_1topology_1_1index__space.html',1,'flecsi::topology']]],
+  ['index_5fspace',['index_space',['../classindex__space.html',1,'']]],
   ['index_5fspace_3c_20entity_5ft_20_2a_2c_20true_2c_20true_2c_20false_20_3e',['index_space&lt; entity_t *, true, true, false &gt;',['../classflecsi_1_1topology_1_1index__space.html',1,'flecsi::topology']]],
   ['index_5fspace_3c_20flecsi_3a_3atopology_3a_3amesh_5fentity_5fbase_5f_20_2a_20_3e',['index_space&lt; flecsi::topology::mesh_entity_base_ * &gt;',['../classflecsi_1_1topology_1_1index__space.html',1,'flecsi::topology']]],
   ['index_5fspace_5ft',['index_space_t',['../classflecsi_1_1index__space__t.html',1,'flecsi']]],
@@ -24,8 +24,8 @@ var searchData=
   ['iterateimpl',['IterateImpl',['../structflecsi_1_1utils_1_1Iterate_1_1IterateImpl.html',1,'flecsi::utils::Iterate']]],
   ['iterator',['iterator',['../classflecsi_1_1utils_1_1detail_1_1zipper_1_1iterator.html',1,'flecsi::utils::detail::zipper']]],
   ['iterator',['iterator',['../classflecsi_1_1iterator.html',1,'flecsi']]],
-  ['iterator_5f',['iterator_',['../classflecsi_1_1topology_1_1index__space_1_1iterator__.html',1,'flecsi::topology::index_space']]],
   ['iterator_5f',['iterator_',['../classflecsi_1_1topology_1_1entity__group_1_1iterator__.html',1,'flecsi::topology::entity_group']]],
+  ['iterator_5f',['iterator_',['../classflecsi_1_1topology_1_1index__space_1_1iterator__.html',1,'flecsi::topology::index_space']]],
   ['iterator_5f_3c_20s_2c_20void_20_3e',['iterator_&lt; S, void &gt;',['../classflecsi_1_1topology_1_1index__space_1_1iterator___3_01S_00_01void_01_4.html',1,'flecsi::topology::index_space']]],
   ['iterator_5fbase_5f',['iterator_base_',['../classflecsi_1_1topology_1_1index__space_1_1iterator__base__.html',1,'flecsi::topology::index_space']]]
 ];

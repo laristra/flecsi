@@ -25,7 +25,7 @@
   <td id="projectlogo"><img alt="Logo" src="small-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">flecsi
-   &#160;<span id="projectnumber">0.0-1537-gecbb56c</span>
+   &#160;<span id="projectnumber">0.0-1571-gcd6be53</span>
    </div>
   </td>
  </tr>
@@ -91,6 +91,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
@@ -100,6 +101,13 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1dmp_1_1index__partition_____1_1ghost__info__t.html">ghost_info_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1dmp_1_1index__partition_____1_1shared__info__t.html">shared_info_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:aafbe92e216dbc8e74470c5dbb2169165"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aafbe92e216dbc8e74470c5dbb2169165"></a>
@@ -115,18 +123,29 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const
 template&lt;typename A &gt; </td></tr>
 <tr class="memitem:aaaffdbe938171ec829f8057b085abc95"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>serialize</b> (A &amp;archive)</td></tr>
 <tr class="separator:aaaffdbe938171ec829f8057b085abc95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac88c9b1398d736b0c1739177b6002b3"><td class="memTemplParams" colspan="2"><a class="anchor" id="aac88c9b1398d736b0c1739177b6002b3"></a>
+template&lt;typename Indx_t &gt; </td></tr>
+<tr class="memitem:aac88c9b1398d736b0c1739177b6002b3"><td class="memTemplItemLeft" align="right" valign="top">identifier_t&#160;</td><td class="memTemplItemRight" valign="bottom"><b>shared_id</b> (Indx_t &amp;indx)</td></tr>
+<tr class="separator:aac88c9b1398d736b0c1739177b6002b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94da99f273b29a78cf77bf38df413ea2"><td class="memTemplParams" colspan="2"><a class="anchor" id="a94da99f273b29a78cf77bf38df413ea2"></a>
+template&lt;typename Indx_t &gt; </td></tr>
+<tr class="memitem:a94da99f273b29a78cf77bf38df413ea2"><td class="memTemplItemLeft" align="right" valign="top">identifier_t&#160;</td><td class="memTemplItemRight" valign="bottom"><b>ghost_id</b> (Indx_t &amp;indx)</td></tr>
+<tr class="separator:a94da99f273b29a78cf77bf38df413ea2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
+<tr class="memitem:a86bec7f831d42f588ab9ff44fa3a11b6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a86bec7f831d42f588ab9ff44fa3a11b6"></a>
+std::vector&lt; identifier_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>primary</b></td></tr>
+<tr class="separator:a86bec7f831d42f588ab9ff44fa3a11b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a289c803ede3d44e8c6e4641e24a94693"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a289c803ede3d44e8c6e4641e24a94693"></a>
 std::vector&lt; identifier_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>exclusive</b></td></tr>
 <tr class="separator:a289c803ede3d44e8c6e4641e24a94693"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acdff1436e799e02b581a0d5e71d400a4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acdff1436e799e02b581a0d5e71d400a4"></a>
-std::vector&lt; identifier_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>shared</b></td></tr>
-<tr class="separator:acdff1436e799e02b581a0d5e71d400a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba6e60f40c96db5f5c0ce13e206a9568"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aba6e60f40c96db5f5c0ce13e206a9568"></a>
-std::vector&lt; identifier_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ghost</b></td></tr>
-<tr class="separator:aba6e60f40c96db5f5c0ce13e206a9568"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c5573053ae076fb893d7cb05fbfc47a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5c5573053ae076fb893d7cb05fbfc47a"></a>
+std::vector&lt; <a class="el" href="structflecsi_1_1dmp_1_1index__partition_____1_1shared__info__t.html">shared_info_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>shared</b></td></tr>
+<tr class="separator:a5c5573053ae076fb893d7cb05fbfc47a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1999aa818156955ceb8d12330045c544"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1999aa818156955ceb8d12330045c544"></a>
+std::vector&lt; <a class="el" href="structflecsi_1_1dmp_1_1index__partition_____1_1ghost__info__t.html">ghost_info_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ghost</b></td></tr>
+<tr class="separator:a1999aa818156955ceb8d12330045c544"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/partition/<a class="el" href="index__partition_8h_source.html">index_partition.h</a></li>
