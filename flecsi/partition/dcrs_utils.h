@@ -8,8 +8,8 @@
 
 #include <mpi.h>
 
+#include "flecsi/io/definition_utils.h"
 #include "flecsi/io/mesh_definition.h"
-#include "flecsi/io/set_utils.h"
 #include "flecsi/partition/dcrs.h"
 
 ///

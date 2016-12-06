@@ -5,8 +5,9 @@
 
 #include <cinchtest.h>
 
+#include "flecsi/io/definition_utils.h"
 #include "flecsi/io/simple_definition.h"
-#include "flecsi/io/set_utils.h"
+#include "flecsi/utils/set_utils.h"
 
 TEST(definition, simple) {
 
@@ -70,7 +71,7 @@ TEST(definition, neighbors) {
   // Subtracting out the initial set leaves just the nearest
   // neighbors. This is similar to the image of the adjacency
   // graph of the initial indices.
-  auto nn = flecsi::io::set_difference(closure, partition);
+  auto nn = flecsi::utils::set_difference(closure, partition);
 
   CINCH_ASSERT(EQ, nn, std::set<size_t>({4, 12, 20, 24, 25, 26, 27}));
 
@@ -78,13 +79,13 @@ TEST(definition, neighbors) {
   // the initial indeces gives the shared indices. This is similar to
   // the preimage of the nearest neighbors.
   auto nnclosure = flecsi::io::cell_closure(sd, nn, 2);
-  auto shared = flecsi::io::set_intersection(nnclosure, partition);
+  auto shared = flecsi::utils::set_intersection(nnclosure, partition);
 
   CINCH_ASSERT(EQ, shared, std::set<size_t>({3, 11, 16, 17, 18, 19}));
 
   // One can iteratively add halos of nearest neighbors, e.g.,
   // here we add the next nearest neighbors.
-  auto nnn = flecsi::io::set_difference(nnclosure, closure);
+  auto nnn = flecsi::utils::set_difference(nnclosure, closure);
   CINCH_ASSERT(EQ, nnn, std::set<size_t>({5, 13, 21, 28, 32, 33, 34, 35}));
 
 } // TEST

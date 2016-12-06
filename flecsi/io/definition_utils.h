@@ -3,75 +3,20 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_io_set_utils_h
-#define flecsi_io_set_utils_h
-
-#include <vector>
+#ifndef flecsi_io_definition_utils_h
+#define flecsi_io_definition_utils_h
 
 #include "flecsi/io/mesh_definition.h"
+#include "flecsi/utils/set_utils.h"
 
 ///
-// \file set_utils.h
+// \file definition_utils.h
 // \authors bergen
 // \date Initial file creation: Nov 21, 2016
 ///
 
 namespace flecsi {
 namespace io {
-
-///
-//
-///
-inline
-std::set<size_t>
-set_intersection(
-  std::set<size_t> s1,
-  std::set<size_t> s2
-)
-{
-  std::set<size_t> intersection;
-
-  std::set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(),
-    std::inserter(intersection, intersection.begin()));
-
-  return intersection;
-} // set_intersection
-
-///
-//
-///
-inline
-std::set<size_t>
-set_union(
-  std::set<size_t> s1,
-  std::set<size_t> s2
-)
-{
-  std::set<size_t> sunion;
-
-  std::set_union(s1.begin(), s1.end(), s2.begin(), s2.end(),
-    std::inserter(sunion, sunion.begin()));
-
-  return sunion;
-} // set_union
-
-///
-//
-///
-inline
-std::set<size_t>
-set_difference(
-  std::set<size_t> s1,
-  std::set<size_t> s2
-)
-{
-  std::set<size_t> difference;
-
-  std::set_difference(s1.begin(), s1.end(), s2.begin(), s2.end(),
-    std::inserter(difference, difference.begin()));
-
-  return difference;
-} // set_difference
 
 ///
 // Return the neighboring cells for the given cell id.
@@ -106,7 +51,7 @@ cell_neighbors(
     // Get the set of vertex ids of current cell
     auto other = md.vertices_set(cell);
 
-    auto intersect = flecsi::io::set_intersection(vertices, other);
+    auto intersect = flecsi::utils::set_intersection(vertices, other);
 
     // Add this cell id if the intersection shares at least
     // intersections vertices
@@ -140,7 +85,7 @@ cell_closure(
   for(auto i: indices) {
     auto ncurr = cell_neighbors(md, i, intersections);
 
-    closure = flecsi::io::set_union(ncurr, closure);
+    closure = flecsi::utils::set_union(ncurr, closure);
   } // for
 
   return closure;
@@ -195,7 +140,7 @@ vertex_closure(
   for(auto i: indices) {
     auto vset = md.vertices_set(i);
 
-    closure = flecsi::io::set_union(closure, vset);
+    closure = flecsi::utils::set_union(closure, vset);
   } // for
 
   return closure;
@@ -204,7 +149,7 @@ vertex_closure(
 } // namespace io
 } // namespace flecsi
 
-#endif // flecsi_io_set_utils_h
+#endif // flecsi_io_definition_utils_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

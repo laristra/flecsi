@@ -16,10 +16,11 @@
 
 #include <mpi.h>
 
-#include "flecsi/io/set_utils.h"
 #include "flecsi/io/simple_definition.h"
 #include "flecsi/partition/dcrs_utils.h"
 #include "flecsi/partition/parmetis_partitioner.h"
+#include "flecsi/partition/mpi_communicator.h"
+#include "flecsi/utils/set_utils.h"
 
 const size_t output_rank = 1;
 
@@ -81,7 +82,7 @@ TEST(partition, simple) {
   // Subtracting out the initial set leaves just the nearest
   // neighbors. This is similar to the image of the adjacency
   // graph of the initial indices.
-  auto nearest_neighbors = flecsi::io::set_difference(closure, primary);
+  auto nearest_neighbors = flecsi::utils::set_difference(closure, primary);
 
   // The closure of the nearest neighbors intersected with
   // the initial indeces gives the shared indices. This is similar to
@@ -90,8 +91,9 @@ TEST(partition, simple) {
     flecsi::io::cell_closure(sd, nearest_neighbors, 1);
 
 #if 0
-  auto shared = flecsi::io::set_intersection(nearest_neighbor_closure, primary);
-  auto exclusive = flecsi::io::set_difference(primary, shared);
+  auto shared = flecsi::utils::set_intersection(nearest_neighbor_closure,
+    primary);
+  auto exclusive = flecsi::utils::set_difference(primary, shared);
 #endif
 
   // We can iteratively add halos of nearest neighbors, e.g.,
@@ -99,20 +101,23 @@ TEST(partition, simple) {
   // we actually need information about the ownership of these indices
   // so that we can deterministically assign rank ownership to vertices.
   auto next_nearest_neighbors =
-    flecsi::io::set_difference(nearest_neighbor_closure, closure);
+    flecsi::utils::set_difference(nearest_neighbor_closure, closure);
 
   // The union of the nearest and next-nearest neighbors gives us all
   // of the cells that might reference a vertex that we need.
-  auto all_neighbors = flecsi::io::set_union(nearest_neighbors,
+  auto all_neighbors = flecsi::utils::set_union(nearest_neighbors,
     next_nearest_neighbors);
+
+  // Create a communicator instance to get neighbor information.
+  auto communicator = std::make_shared<flecsi::dmp::mpi_communicator_t>();
 
   // Get the rank and offset information for our nearest neighbor
   // dependencies. This also gives information about the ranks
   // that access our shared cells.
-  auto cell_nn_info = partitioner->get_cell_info(primary, nearest_neighbors);
+  auto cell_nn_info = communicator->get_cell_info(primary, nearest_neighbors);
 
   //
-  auto cell_all_info = partitioner->get_cell_info(primary, all_neighbors);
+  auto cell_all_info = communicator->get_cell_info(primary, all_neighbors);
 
   // Create a map version of the local info for lookups below.
   std::unordered_map<size_t, size_t> primary_indices_map;
@@ -272,7 +277,7 @@ TEST(partition, simple) {
 #endif
 
   auto vertex_offset_info =
-    partitioner->get_vertex_info(vertex_info, vertex_requests);
+    communicator->get_vertex_info(vertex_info, vertex_requests);
 
   std::set<entry_info_t> exclusive_vertices;
   std::set<entry_info_t> shared_vertices;
