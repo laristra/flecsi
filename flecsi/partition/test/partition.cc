@@ -21,7 +21,7 @@
 #include "flecsi/partition/dcrs_utils.h"
 #include "flecsi/partition/parmetis_partitioner.h"
 
-const size_t output_rank = 2;
+const size_t output_rank = 1;
 
 TEST(partition, simple) {
 
@@ -174,6 +174,17 @@ TEST(partition, simple) {
   } // if
 #endif
 
+// FIXME
+#if 1
+  // Create a map version for lookups below.
+  std::unordered_map<size_t, entry_info_t> shared_cells_map;
+  {
+  for(auto i: shared_cells) {
+    shared_cells_map[i.id] = i;
+  } // for
+  } // scope
+#endif
+
   // Form the vertex closure
   auto vertex_closure = flecsi::io::vertex_closure(sd, closure);
 
@@ -189,7 +200,7 @@ TEST(partition, simple) {
   std::vector<std::set<size_t>> vertex_requests(size);
   std::set<entry_info_t> vertex_info;
 
-  size_t vertex(0);
+  size_t offset(0);
   for(auto i: vertex_closure) {
 
     // Get the set of cells that reference this vertex.
@@ -218,12 +229,20 @@ TEST(partition, simple) {
       }
       else {
         min_rank = std::min(min_rank, size_t(rank));
+
+        // If the local cell is shared, we need to add all of
+        // the ranks that reference it.
+        if(shared_cells_map.find(c) != shared_cells_map.end()) {
+          shared_vertices.insert(shared_cells_map[c].shared.begin(),
+            shared_cells_map[c].shared.end());
+        } // if
       } // if
     } // for
 
     if(min_rank == rank) {
       // This is a vertex that belongs to our rank.
-      vertex_info.insert(entry_info_t(i, rank, vertex++, shared_vertices));
+      auto entry = entry_info_t(i, rank, offset, shared_vertices);
+      vertex_info.insert(entry_info_t(i, rank, offset++, shared_vertices));
     }
     else {
       // Add remote vertex to the request for offset information.

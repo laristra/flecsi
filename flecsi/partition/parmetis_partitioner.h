@@ -92,8 +92,8 @@ public:
     MPI_Comm comm = MPI_COMM_WORLD;
     std::vector<idx_t> part(dcrs.size(), std::numeric_limits<idx_t>::max());
 
+#if 0
     const size_t output_rank(1);
-#if 1
     if(rank == output_rank) {
       std::cout << "rank " << rank << " dcrs: " << std::endl;
       std::cout << "size: " << dcrs.size() << std::endl;
