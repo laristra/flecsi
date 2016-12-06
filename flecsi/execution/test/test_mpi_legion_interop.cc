@@ -47,12 +47,6 @@ using namespace LegionRuntime::Arrays;
 using index_partition_t = flecsi::dmp::index_partition__<size_t>;
 
 static mpi_legion_interop_t InteropHelper;
-ext_legion_handshake_t &handshake=ext_legion_handshake_t::instance(); 
-
-void print_task(void)
-{
-  std::cout<<"print_task from MPI"<<std::endl;
-}
 
 /* ------------------------------------------------------------------------- */
  void top_level_task(const Task *task,
@@ -63,6 +57,7 @@ void print_task(void)
 
   std::cout<<"inside TLT:after connect_with_mpi"<<std::endl;
 
+  InteropHelper.wait_on_mpi(ctx, runtime);
   ArgumentMap arg_map;
   IndexLauncher helloworld_launcher(
        HELLOWORLD_TASK_ID,
@@ -70,17 +65,12 @@ void print_task(void)
               InteropHelper.local_procs_),
        TaskArgument(0, 0),
        arg_map);
-  //TOFIX:: add checkfor compy data functions
-  // + for passing function pointer between MPI and Legion
 
   FutureMap fm2 =
      runtime->execute_index_space(ctx, helloworld_launcher);
   fm2.wait_all_results();
+
   //handoff to MPI
-
-  InteropHelper.shared_func_=std::bind(print_task);  
-  InteropHelper.call_mpi_=true;
-
   InteropHelper.handoff_to_mpi(ctx, runtime);
 
   InteropHelper.wait_on_mpi(ctx, runtime);
@@ -94,8 +84,6 @@ void print_task(void)
    std::cout<<"storage[1] = " << A <<std::endl;
    assert (A==3.14);
  
-   InteropHelper.call_mpi_=false;
-
   InteropHelper.handoff_to_mpi(ctx, runtime);
 
    
@@ -112,6 +100,8 @@ void helloworld_mpi_task (const Task *legiontask,
 
 /* ------------------------------------------------------------------------- */
 void my_init_legion(){
+  
+  InteropHelper.legion_configure();
 
   HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
   HighLevelRuntime::register_legion_task<top_level_task>(TOP_LEVEL_TASK_ID,
@@ -125,41 +115,28 @@ void my_init_legion(){
         TaskConfigOptions(true/*leaf*/),
         "hellowrld_task");
 
-   handshake.initialize(ext_legion_handshake_t::IN_EXT,1,1);
      InteropHelper.register_tasks();
      InteropHelper.initialize();
 
   char arguments[] = "1";
   char * argv = &arguments[0];
-
   HighLevelRuntime::start(1, &argv, true);
 
-  std::cout<<"before legion_configure" <<std::endl;
-  InteropHelper.legion_configure();
 
-  std::cout<<"before handoff_to_legion" <<std::endl;
   InteropHelper.handoff_to_legion();
 
   InteropHelper.wait_on_legion();
 
   //check data_storage_
- index_partition_t ip;
- double A=3.14;
- InteropHelper.data_storage_.push_back(flecsi::utils::any_t(ip));
- InteropHelper.data_storage_.push_back(flecsi::utils::any_t(A));
+  index_partition_t ip;
+  double A=3.14;
+  InteropHelper.data_storage_.push_back(flecsi::utils::any_t(ip));
+  InteropHelper.data_storage_.push_back(flecsi::utils::any_t(A));
+
+  InteropHelper.handoff_to_legion();
  
-  while(InteropHelper.call_mpi_)
-     {
-       InteropHelper.shared_func_();
-       InteropHelper.handoff_to_legion();
-       InteropHelper.wait_on_legion();
-     }
-
- InteropHelper.wait_on_legion();
+  InteropHelper.wait_on_legion();
   std::cout<<"back to MPI to finalize"<<std::endl;
-
-
-
 }
 
 /* ------------------------------------------------------------------------- */

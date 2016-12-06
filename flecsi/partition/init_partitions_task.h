@@ -17,10 +17,18 @@
 
 
 
+enum
+FieldIDs2 {
+  FID_SHARED,
+  FID_EXCLUSIVE,
+  FID_GHOST,
+};
+
 namespace flecsi {
 namespace dmp {
 
 struct parts {
+  int primary;
   int exclusive;
   int shared;
   int ghost;
@@ -28,22 +36,43 @@ struct parts {
 
 
 
-parts
-init_partitions(
-  const Legion::Task *task, 
-  const std::vector<Legion::PhysicalRegion> & regions,
-  Legion::Context ctx, Legion::HighLevelRuntime *runtime
-);
-
-void
-fill_cells_global_task(
+parts 
+get_numbers_of_cells_task(
   const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx, Legion::HighLevelRuntime *runtime
 );
 
 void
-find_ghost_task(
+init_cells_task(
+  const Legion::Task *task, 
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+);
+
+Legion::LogicalRegion
+shared_part_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+);
+
+Legion::LogicalRegion
+exclusive_part_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+);
+
+Legion::LogicalRegion
+ghost_part_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+);
+
+void
+check_partitioning_task(
   const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx, Legion::HighLevelRuntime *runtime

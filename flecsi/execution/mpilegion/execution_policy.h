@@ -153,7 +153,6 @@ struct mpilegion_execution_policy_t
     task_args_t task_args(user_task_handle, user_task_args);
 
     if(key.processor() == mpi) {
-
       // Executing Legion task that pass function pointer and 
       // its arguments to every MPI thread
       LegionRuntime::HighLevel::ArgumentMap arg_map;
@@ -176,9 +175,9 @@ struct mpilegion_execution_policy_t
       context_.interop_helper_.handoff_to_mpi(context_.context(parent),
          context_.runtime(parent));
 
-// mpi task is running here
-//
-//      flecsi::execution::future_t future = 
+      // mpi task is running here
+      //TOFIX:: need to return future
+      //      flecsi::execution::future_t future = 
          context_.interop_helper_.wait_on_mpi(context_.context(parent),
                             context_.runtime(parent));
      context_.interop_helper_.unset_call_mpi(context_.context(parent),
