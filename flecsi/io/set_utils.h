@@ -30,8 +30,10 @@ set_intersection(
 )
 {
   std::set<size_t> intersection;
+
   std::set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(),
     std::inserter(intersection, intersection.begin()));
+
   return intersection;
 } // set_intersection
 
