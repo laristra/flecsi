@@ -242,11 +242,11 @@ driver(
 
   LegionRuntime::HighLevel::IndexLauncher get_numbers_of_cells_launcher(
     task_ids_t::instance().get_numbers_of_cells_task_id,
-    legion_domain::from_rect<2>(context_.interop_helper_.all_processes_),
+    legion_domain::from_rect<1>(context_.interop_helper_.all_processes_),
     LegionRuntime::HighLevel::TaskArgument(0, 0),
     arg_map);
 
-  get_numbers_of_cells_launcher.tag = MAPPER_ALL_PROC;
+  get_numbers_of_cells_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
   FutureMap fm1 = runtime->execute_index_space(context, 
       get_numbers_of_cells_launcher);
@@ -260,7 +260,7 @@ driver(
   for (int i = 0; i < num_ranks; i++) {
     std::cout << "about to call get_results" << std::endl;
     flecsi::dmp::parts received = fm1.get_result<flecsi::dmp::parts>(
-                           DomainPoint::from_point<2>(make_point(i,0)));
+                           DomainPoint::from_point<1>(make_point(i)));
 
     primary_start_id.push_back(total_num_cells);
     total_num_cells += received.primary;

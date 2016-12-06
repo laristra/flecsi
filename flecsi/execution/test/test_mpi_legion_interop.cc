@@ -62,7 +62,7 @@ static mpi_legion_interop_t InteropHelper;
   IndexLauncher helloworld_launcher(
        HELLOWORLD_TASK_ID,
        Domain::from_rect<1>(
-              InteropHelper.local_procs_),
+              InteropHelper.all_processes_),
        TaskArgument(0, 0),
        arg_map);
 

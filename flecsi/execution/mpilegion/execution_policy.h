@@ -160,11 +160,11 @@ struct mpilegion_execution_policy_t
       LegionRuntime::HighLevel::IndexLauncher index_launcher(
         context_.task_id(key),
 
-      LegionRuntime::HighLevel::Domain::from_rect<2>(
+      LegionRuntime::HighLevel::Domain::from_rect<1>(
         context_.interop_helper_.all_processes_),
         TaskArgument(&task_args, sizeof(task_args_t)), arg_map);
 
-      index_launcher.tag = MAPPER_ALL_PROC;
+      index_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
       LegionRuntime::HighLevel::FutureMap fm1 =
         context_.runtime(parent)->execute_index_space(context_.context(parent),
@@ -205,11 +205,11 @@ struct mpilegion_execution_policy_t
           LegionRuntime::HighLevel::ArgumentMap arg_map;
           LegionRuntime::HighLevel::IndexLauncher index_launcher(
             context_.task_id(key),
-            LegionRuntime::HighLevel::Domain::from_rect<2>(
+            LegionRuntime::HighLevel::Domain::from_rect<1>(
               context_.interop_helper_.all_processes_),
             TaskArgument(&task_args, sizeof(task_args_t)), arg_map);
 
-          index_launcher.tag = MAPPER_ALL_PROC;
+          index_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
           auto future = context_.runtime(parent)->execute_index_space(
             context_.context(parent), index_launcher);
