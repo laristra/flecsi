@@ -31,6 +31,7 @@ endforeach()
 string(STRIP "${FLECSIT_COMPILE_DEFINES}" FLECSIT_COMPILE_DEFINES)
 
 # Create string of include directories for script
+list(REMOVE_DUPLICATES _includes)
 set(FLECSIT_INCLUDE_DIRECTORIES)
 foreach(inc ${_includes})
   set(FLECSIT_INCLUDE_DIRECTORIES

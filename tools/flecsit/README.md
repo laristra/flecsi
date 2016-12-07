@@ -1,3 +1,5 @@
-<!-- CINCHDOC DOCUMENT(User Guide) SECTION(CLI) -->
+<!-- CINCHDOC DOCUMENT(User Guide) SECTION(FleCSIT) -->
+
+# FleCSIT Tool
 
 <!-- vim: set tabstop=4 shiftwidth=4 expandtab : -->

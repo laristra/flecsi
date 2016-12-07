@@ -4,6 +4,7 @@
 #------------------------------------------------------------------------------#
 
 import sys
+import os
 from os.path import basename, splitext
 
 from flecsit.base import Service
@@ -63,9 +64,15 @@ class FleCSIT_Analysis(Service):
         # Process command-line arguments
         #----------------------------------------------------------------------#
 
+        env_include_path = os.getenv('FLECSIT_INCLUDE_PATH')
+
         # Add any user-provided include paths to build
-        for include in args.include or []:
-            build['includes'] += ' -I' + include
+        if env_include_path is not None:
+            for include in env_include_path.split(':') or []:
+                build['includes'] += ' -I' + include
+        else:
+            for include in args.include or []:
+                build['includes'] += ' -I' + include
 
         # Add FleCSI include
         build['includes'] += ' -I' + build['prefix'] + '/include'
