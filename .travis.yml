@@ -12,6 +12,8 @@ env:
     - DISTRO=ubuntu MPI=OFF RUNTIME=legion    WERROR=yes
     - DISTRO=ubuntu MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
     - DISTRO=ubuntu MPI=ON  RUNTIME=mpilegion WERROR=yes
+    - DISTRO=ubuntu_mpich MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
+    - DISTRO=ubuntu_mpich MPI=ON  RUNTIME=mpilegion WERROR=yes
     - DISTRO=ubuntu MPI=OFF  RUNTIME=serial       DOCKERHUB=true
     - DISTRO=ubuntu MPI=OFF  RUNTIME=serial       WERROR=yes
     - DISTRO=ubuntu MPI=OFF  COVERAGE=ON RUNTIME=serial
@@ -21,6 +23,8 @@ env:
     - DISTRO=fedora MPI=OFF RUNTIME=legion    WERROR=yes
     - DISTRO=fedora MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
     - DISTRO=fedora MPI=ON  RUNTIME=mpilegion WERROR=yes
+    - DISTRO=fedora_mpich MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
+    - DISTRO=fedora_mpich MPI=ON  RUNTIME=mpilegion WERROR=yes
     - DISTRO=fedora MPI=OFF RUNTIME=serial        DOCKERHUB=true
     - DISTRO=fedora MPI=OFF RUNTIME=serial        WERROR=yes
     - DISTRO=fedora MPI=OFF RUNTIME=serial COVERAGE=ON
