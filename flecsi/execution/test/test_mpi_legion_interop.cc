@@ -136,6 +136,7 @@ void my_init_legion(){
   InteropHelper.handoff_to_legion();
  
   InteropHelper.wait_on_legion();
+  Legion::Runtime::wait_for_shutdown();
   std::cout<<"back to MPI to finalize"<<std::endl;
 }
 
