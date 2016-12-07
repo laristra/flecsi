@@ -101,6 +101,8 @@ public:
 
         return {2, 2, 2, 2};
     }
+
+    return index_vector_t();
   }
 };
 
