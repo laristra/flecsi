@@ -8,7 +8,7 @@
 
 #include "flecsi/utils/common.h"
 #include "flecsi/data/data_constants.h"
-
+  
 ///
 // \file data_client.h
 // \authors bergen
@@ -40,7 +40,7 @@ public:
   data_client_t & operator=(data_client_t && o) = default;
 
   /// Destructor
-  virtual ~data_client_t() {}
+  virtual ~data_client_t();
 
   ///
   // Return a unique runtime identifier for namespace access to the
@@ -61,7 +61,7 @@ public:
   size_t
   indices(
     size_t index_space
-  )
+  ) const
   {
     return 0;
   } // indices

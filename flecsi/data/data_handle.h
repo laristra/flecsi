@@ -21,10 +21,8 @@ namespace flecsi {
 ///
 struct data_handle_t
 {
-  virtual ~data_handle_t() = 0;
+  virtual ~data_handle_t() {};
 }; // struct data_handle_t
-
-data_handle_t::~data_handle_t() {}
 
 } // namespace flecsi
 

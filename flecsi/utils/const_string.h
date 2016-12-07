@@ -21,10 +21,11 @@
  * \date Initial file creation: Oct 15, 2015
  */
 
-#include <limits>
-#include <cstring>
-
 #include "hash.h"
+
+#include <cstring>
+#include <limits>
+#include <stdexcept>
 
 namespace flecsi
 {

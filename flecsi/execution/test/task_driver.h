@@ -46,7 +46,7 @@ enum class privileges : size_t {
 
 struct mesh_t : public data::data_client_t {
 
-  size_t indices(size_t index_space_id) override {
+  size_t indices(size_t index_space_id) const override {
 
     switch(index_space_id) {
       case cells:
