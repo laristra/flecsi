@@ -13,6 +13,7 @@
 #include "flecsi/execution/execution.h"
 #include "flecsi/partition/index_partition.h"
 #include "flecsi/partition/init_partitions_task.h"
+#include "flecsi/partition/weaver.h"
 
 ///
 // \file sprint.h
@@ -33,13 +34,33 @@ using shared_info_t = index_partition_t::shared_info_t;
 
 static const size_t N = 8;
 
-enum 
+enum
 FieldIDs {
   FID_CELL,
   FID_GHOST_CELL_ID,
 };
 
-  
+void
+mpi_task2(
+  double d
+)
+{
+  flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
+  flecsi::dmp::weaver weaver(sd);
+
+  using entry_info_t = flecsi::dmp::entry_info_t;
+
+
+  std::set<entry_info_t> exclusive_cells = weaver.get_exclusive_cells();
+  std::set<entry_info_t> shared_cells = weaver.get_shared_cells();
+  std::set<entry_info_t> ghost_cells  = weaver.get_ghost_cells();
+
+  for (auto i : exclusive_cells) {
+    std::cout << i << " ";
+  }
+  std::cout << std::endl;
+}
+
 void 
 mpi_task(
   double val
@@ -50,7 +71,7 @@ mpi_task(
 
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
-  //std::cout << "My rank: " << rank << std::endl;
+  std::cout << "My rank: " << rank << std::endl;
 
   size_t part = N/size;
   size_t rem = N%size;
@@ -205,6 +226,7 @@ std::cout << ip.exclusive.size()<< "  "<< ip.shared.size()<<std::endl;
   
 register_task(mpi_task, mpi, single);
   
+register_task(mpi_task2, mpi, single);
 
 void
 driver(
@@ -223,7 +245,7 @@ driver(
   
   // first execute mpi task to setup initial partitions 
   execute_task(mpi_task, mpi, single, 1.0);
-  
+  execute_task(mpi_task2, mpi, single, 1.0);
   // create a field space to store cells id
   FieldSpace cells_fs = runtime->create_field_space(context);
   {

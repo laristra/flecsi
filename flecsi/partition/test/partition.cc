@@ -22,7 +22,7 @@
 #include "flecsi/partition/mpi_communicator.h"
 #include "flecsi/utils/set_utils.h"
 
-const size_t output_rank = 1;
+const size_t output_rank = 0;
 
 TEST(partition, simple) {
 
@@ -35,12 +35,13 @@ TEST(partition, simple) {
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   // Create a mesh definition from file.
-  //flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
+  //flecsi::io::simple_definition_t sd("simple2d-4x4.msh");
+  flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
   //flecsi::io::simple_definition_t sd("simple2d-1024x1024.msh");
   //flecsi::io::simple_definition_t sd("simple2d-100x100.msh");
   //flecsi::io::simple_definition_t sd("simple2d-21x21.msh");
   //flecsi::io::simple_definition_t sd("simple2d-32x32.msh");
-  flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
+  //flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
   //flecsi::io::simple_definition_t sd("simple2d-10x10.msh");
 
   // Create the dCRS representation for the distributed

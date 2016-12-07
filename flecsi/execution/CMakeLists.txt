@@ -80,6 +80,7 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
         ../partition/init_partitions_task.cc
       DEFINES SPRINT_TEST
       DEFINES FLECSI_DRIVER=flecsi/execution/test/sprint.h
+            LIBRARIES ${PARTITION_LIBRARIES}
       POLICY MPILEGION
       THREADS 2
     )

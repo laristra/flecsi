@@ -41,6 +41,18 @@ cinch_add_unit(partition
   THREADS 5
 )
 
+cinch_add_unit(weaver
+  SOURCES test/weaver.cc
+  INPUTS
+    test/simple2d-8x8.msh
+    test/simple2d-16x16.msh
+    test/simple2d-32x32.msh
+    test/simple2d-48x48.msh
+  LIBRARIES ${PARTITION_LIBRARIES}
+  POLICY MPI
+  THREADS 5
+)
+
 # Add MPI/Legion specific files
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
