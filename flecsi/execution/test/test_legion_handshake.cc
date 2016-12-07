@@ -133,7 +133,7 @@ void my_init_legion(){
   handshake.mpi_wait_on_legion(); 
 
   // When you're done wait for the Legion runtime to shutdown
-  //Runtime::wait_for_shutdown();
+  Runtime::wait_for_shutdown();
   // Then finalize MPI like normal
 }
 

@@ -159,11 +159,11 @@ struct mpi_legion_interop_t
 
   	LegionRuntime::HighLevel::IndexLauncher unset_call_mpi_launcher(
     	task_ids_t::instance().unset_call_mpi_id,
-    	LegionRuntime::HighLevel::Domain::from_rect<2>(all_processes_),
+    	LegionRuntime::HighLevel::Domain::from_rect<1>(all_processes_),
     	LegionRuntime::HighLevel::TaskArgument(0, 0),
     	arg_map);
 
-  	unset_call_mpi_launcher.tag =  MAPPER_ALL_PROC;
+  	unset_call_mpi_launcher.tag =  MAPPER_FORCE_RANK_MATCH;
 
   	LegionRuntime::HighLevel::FutureMap fm5 =
     runtime->execute_index_space(ctx,unset_call_mpi_launcher);
@@ -244,43 +244,9 @@ struct mpi_legion_interop_t
   void 
   calculate_number_of_procs ()
   {
-		int num_local_procs=0;
-		#ifndef SHARED_LOWLEVEL
-		// Only the shared lowlevel runtime needs to iterate over all points
-		// on each processor.
-		int num_points = 1;
-		int num_procs = 0;
-		{
-			std::set<LegionRuntime::HighLevel::Processor> all_procs;
-			Realm::Machine::get_machine().get_all_processors(all_procs);
-   		for(std::set<LegionRuntime::HighLevel::Processor>::const_iterator
-      	it = all_procs.begin();
-      	it != all_procs.end();
-     		it++)
-			{
-          if((*it).kind() == LegionRuntime::HighLevel::Processor::LOC_PROC)
-               num_procs++;
-      }//end for
-  	} // scope
-  	num_local_procs=num_procs;
-#else
-  	int num_procs = LegionRuntime::HighLevel::Machine::get_machine()->
-                                            get_all_processors().size();
-  	int num_points = rank->proc_grid_size.x[0] * rank->proc_grid_size.x[1]
-                                            * rank->proc_grid_size.x[2];
-#endif
-  	printf("Attempting to connect %d processors with %d points per processor\n",
-         num_procs, num_points);
-  	LegionRuntime::Arrays::Point<2> all_procs_lo, all_procs_hi;
-  	all_procs_lo.x[0] = all_procs_lo.x[1] = 0;
-  	all_procs_hi.x[0] = num_procs - 1;
-  	all_procs_hi.x[1] = num_points - 1;
-  	this->all_processes_ =  LegionRuntime::Arrays::Rect<2>(all_procs_lo,
-                                                        all_procs_hi);
-  	this->local_procs_ = LegionRuntime::Arrays::Rect<1>(0,num_local_procs);
-  	std::cout << all_procs_lo.x[0] << "," << all_procs_lo.x[1] << ","
-            << all_procs_hi.x[0] << "," << all_procs_hi.x[1] << std::endl;
-
+    int num_ranks;
+    MPI_Comm_size(MPI_COMM_WORLD, &num_ranks);
+  	this->all_processes_ =  LegionRuntime::Arrays::Rect<1>(0, num_ranks-1);
 	}//calculate_number_of_procs
 
   ///
@@ -320,7 +286,7 @@ struct mpi_legion_interop_t
 
   	LegionRuntime::HighLevel::IndexLauncher handoff_to_mpi_launcher(
     	task_ids_t::instance().handoff_to_mpi_task_id,
-    	LegionRuntime::HighLevel::Domain::from_rect<2>(all_processes_),
+    	LegionRuntime::HighLevel::Domain::from_rect<1>(all_processes_),
     	LegionRuntime::HighLevel::TaskArgument(0, 0),
   	  arg_map);
 
@@ -343,7 +309,7 @@ struct mpi_legion_interop_t
    	LegionRuntime::HighLevel::ArgumentMap arg_map;
   	LegionRuntime::HighLevel::IndexLauncher wait_on_mpi_launcher(
     	task_ids_t::instance().wait_on_mpi_task_id,
-    	LegionRuntime::HighLevel::Domain::from_rect<2>(all_processes_),
+    	LegionRuntime::HighLevel::Domain::from_rect<1>(all_processes_),
     	LegionRuntime::HighLevel::TaskArgument(0, 0),
     	arg_map);
 
@@ -355,8 +321,7 @@ struct mpi_legion_interop_t
   	return fm3;
 	}//wait_on_mpi
  
-  Rect<2> all_processes_;
-  Rect<1> local_procs_;
+  Rect<1> all_processes_;
 
   std::vector<flecsi::utils::any_t> data_storage_;
 

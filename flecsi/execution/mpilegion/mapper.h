@@ -129,11 +129,19 @@ MPIMapper : public Legion::Mapping::DefaultMapper
   )
   {
   	using legion_proc=LegionRuntime::HighLevel::Processor;
+    size_t connect_mpi_task_id = task_ids_t::instance().connect_mpi_task_id;
+    size_t handoff_to_mpi_task_id =
+        task_ids_t::instance().handoff_to_mpi_task_id;
+    size_t wait_on_mpi_task_id = task_ids_t::instance().wait_on_mpi_task_id;
+    size_t update_mappers_task_id =
+        task_ids_t::instance().update_mappers_task_id;
 
-//TOFIX
 
  		// tag-based decisions here
-  	if((task.tag & MAPPER_FORCE_RANK_MATCH) != 0) {
+  	if(task.task_id == connect_mpi_task_id||
+      task.task_id == handoff_to_mpi_task_id||
+      task.task_id == wait_on_mpi_task_id ||
+      (task.tag & MAPPER_FORCE_RANK_MATCH) != 0) {
     	// expect a 1-D index domain
     	assert(input.domain.get_dim() == 1);
     	Rect<1> r = input.domain.get_rect<1>();
@@ -171,18 +179,9 @@ MPIMapper : public Legion::Mapping::DefaultMapper
     	return;
   	} //end if MAPPER_SUBRANK_LAUNCH
 */
-  	size_t connect_mpi_task_id  = task_ids_t::instance().connect_mpi_task_id;
-  	size_t handoff_to_mpi_task_id = 
-    		task_ids_t::instance().handoff_to_mpi_task_id;
-  	size_t wait_on_mpi_task_id  = task_ids_t::instance().wait_on_mpi_task_id;
- 		size_t update_mappers_task_id =
-				task_ids_t::instance().update_mappers_task_id;
 
   	// task-specific cases below
-  	if (task.task_id == connect_mpi_task_id||
-      task.task_id == handoff_to_mpi_task_id||
-      task.task_id == wait_on_mpi_task_id ||
-      ((task.tag & MAPPER_ALL_PROC) != 0))
+      if((task.tag & MAPPER_ALL_PROC) != 0)
 		{
     	// expect a 2-D index domain - first component is the processor index,
     	//  and second is the MPI rank
