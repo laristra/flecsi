@@ -449,15 +449,16 @@ public:
   const auto entities(const E * e) const
   {
 
-    connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
+    const connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
     const index_vector_t & fv = c.get_from_index_vec();
 
     using etype = entity_type<D, TM>;
     using dtype = domain_entity<TM, etype>;
     
-    return c.get_index_space().slice<dtype>(
+    auto ents = c.get_index_space().slice<dtype>(
       fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
+    return ents;
   } // entities
 
   /*!

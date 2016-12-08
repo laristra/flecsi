@@ -118,11 +118,6 @@ public:
     iterator_base_(const item_vector_t* s, const id_vector_t& items, size_t index, size_t end)
     : items_(&items), index_(index), end_(end), s_(const_cast<item_vector_t*>(s)){}
 
-    iterator_base_& operator++(){
-      ++index_;
-      return *this;
-    }
-
     iterator_base_& operator=(const iterator_base_ & itr){
       index_ = itr.index_;
       end_ = itr.end_;
@@ -167,6 +162,11 @@ public:
     iterator_(const item_vector_t* s, const id_vector_t& items, size_t index, size_t end)
     : B(s, items, index, end){}
 
+    iterator_& operator++(){
+      ++B::index_;
+      return *this;
+    }
+
     S& operator*(){
       while(B::index_ < B::end_){
         T& item = B::get_(B::index_);
@@ -208,6 +208,11 @@ public:
 
     iterator_(const item_vector_t* s, const id_vector_t& items, size_t index, size_t end)
     : B(s, items, index, end){}
+
+    iterator_& operator++(){
+      ++B::index_;
+      return *this;
+    }
 
     S& operator*(){
       return B::get_(B::index_);

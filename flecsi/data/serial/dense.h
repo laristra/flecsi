@@ -31,6 +31,8 @@
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/index_space.h"
 
+#include <algorithm>
+
 ///
 // \file serial/dense.h
 // \authors bergen
@@ -79,7 +81,7 @@ struct dense_accessor_t
   ///
   // Default constructor.
   ///
-  dense_accessor_t() {}
+  dense_accessor_t() = default;
 
   ///
   // Constructor.
@@ -102,8 +104,8 @@ struct dense_accessor_t
     label_(label),
     size_(size),
     data_(data),
-    user_meta_data_(user_meta_data),
-    user_attributes_(user_attributes),
+    user_meta_data_(&user_meta_data),
+    user_attributes_(&user_attributes),
     index_space_(index_space),
     is_(size)
   {}
@@ -154,7 +156,7 @@ struct dense_accessor_t
   const user_meta_data_t &
   meta_data() const
   {
-    return user_meta_data_;
+    return *user_meta_data_;
   } // meta_data
 
   ///
@@ -163,7 +165,13 @@ struct dense_accessor_t
   bitset_t &
   attributes()
   {
-    return user_attributes_;
+    return *user_attributes_;
+  } // attributes
+
+  const bitset_t &
+  attributes() const
+  {
+    return *user_attributes_;
   } // attributes
 
   ///
@@ -200,6 +208,18 @@ struct dense_accessor_t
   //--------------------------------------------------------------------------//
   // Operators.
   //--------------------------------------------------------------------------//
+
+  dense_accessor_t & operator=(const dense_accessor_t & a)
+  {
+    label_ = a.label_;
+    size_ = a.size_;
+    data_ = a.data_;
+    user_meta_data_ = a.user_meta_data_;
+    user_attributes_ = a.user_attributes_;
+    index_space_ = a.index_space_;
+    is_ = a.is_;
+    return *this;
+  } // operator =
 
 	///
   // \brief Provide logical array-based access to the data for this
@@ -348,11 +368,9 @@ private:
   std::string label_ = "";
   size_t size_ = 0;
   T * data_ = nullptr;
-  const user_meta_data_t & user_meta_data_ =
-    *(std::make_unique<user_meta_data_t>());
+  const user_meta_data_t * user_meta_data_ = nullptr;
+  bitset_t * user_attributes_ = nullptr;
   index_space_t is_;
-  bitset_t & user_attributes_ =
-    *(std::make_unique<bitset_t>());
   size_t index_space_ = 0;
 
 }; // struct dense_accessor_t
@@ -502,9 +520,65 @@ struct storage_type_t<dense, DS, MD>
   // Data accessors.
   //--------------------------------------------------------------------------//
 
+  /// \brief Return a dense_accessor_t.
   ///
-  //
+  /// \param [in] meta_data  The meta data to use to build the accessor.
+  /// \param [in] version   The version to select.
+  template< typename T >
+  static
+  accessor_t<T>
+  get_accessor(
+    meta_data_t & meta_data,
+    size_t version
+  )
+  {
+
+    // check that the requested version exists
+    if ( version >= meta_data.versions ) {
+      std::cerr << "version out of range" << std::endl;
+      std::abort();
+    }
+
+    // construct an accessor from the meta data
+    return { meta_data.label, meta_data.size,
+      reinterpret_cast<T *>(&meta_data.data[version][0]),
+      meta_data.user_data, meta_data.attributes[version],
+      meta_data.index_space };
+  }
+
+  /// \brief Return a dense_accessor_t.
   ///
+  /// \param [in] data_store   The data store to search.
+  /// \param [in] hash   The hash to search for.
+  /// \param [in] version   The version to select.
+  template<
+    typename T,
+    size_t NS
+  >
+  static
+  accessor_t<T>
+  get_accessor(
+    data_store_t & data_store,
+    const const_string_t::hash_type_t & hash,
+    size_t version
+  )
+  {
+    auto search = data_store[NS].find(hash);
+
+    if(search == data_store[NS].end()) {
+      return {};
+    }
+    else {
+      return get_accessor<T>( search->second, version );
+    } // if
+  } // get_accessor
+
+  /// \brief Return a dense_accessor_t.
+  ///
+  /// \param [in] data_client  The data client to restrict our search to.
+  /// \param [in] data_store   The data store to search.
+  /// \param [in] key   The key to search for.
+  /// \param [in] version   The version to select.
   template<
     typename T,
     size_t NS
@@ -518,42 +592,137 @@ struct storage_type_t<dense, DS, MD>
     size_t version
   )
   {
-    const size_t h = key.hash() ^ data_client.runtime_id();
-    auto search = data_store[NS].find(h);
-
-    if(search == data_store[NS].end()) {
-      return {};
-    }
-    else {
-      auto & meta_data = search->second;
-
-      // check that the requested version exists
-      assert(meta_data.versions > version && "version out-of-range");
-
-      return { meta_data.label, meta_data.size,
-        reinterpret_cast<T *>(&meta_data.data[version][0]),
-				meta_data.user_data, meta_data.attributes[version],
-        meta_data.index_space };
-    } // if
+    auto hash = key.hash() ^ data_client.runtime_id();
+    return get_accessor<T,NS>(data_store, hash, version);
   } // get_accessor
 
+
+  /// \brief Return a list of all dense_accessor_t's filtered by a predicate.
   ///
-  //
+  /// \param [in] data_client  The data client to restrict our search to.
+  /// \param [in] data_store   The data store to search.
+  /// \param [in] version   The version to select.
+  /// \param [in] predicate   If \e predicate(a) returns true, add the accessor
+  ///                         to the list.
+  /// \param [in] sorted  If true, sort the results by label lexographically.
   ///
+  /// \remark This version is confined to search within a single namespace
   template<
     typename T,
     size_t NS,
-    typename P
+    typename Predicate
   >
   static
-  std::vector<accessor_t<T>>
+  decltype(auto)
   get_accessors(
     data_client_t & data_client,
-    P && preficate
+    data_store_t & data_store,
+    size_t version,
+    Predicate && predicate,
+    bool sorted
   )
   {
-    return {};
-  } // get_accessors
+
+    std::vector< accessor_t<T> > as;
+
+    // the runtime id
+    auto runtime_id = data_client.runtime_id();
+
+    // loop over each key pair
+    for (auto & entry_pair : data_store[NS]) {
+      // get the meta data key and label
+      const auto & meta_data_key = entry_pair.first;
+      auto & meta_data = entry_pair.second;
+      // now build the hash for this label
+      const auto & label = meta_data.label;
+      auto key_hash = hash<const_string_t::hash_type_t>(label, label.size());
+      auto hash = key_hash ^ runtime_id;
+      // if the reconstructed hash matches the meta data key,
+      // then we may want this one
+      auto a = get_accessor<T>( meta_data, version );
+      if ( a )
+        if (meta_data.rtti->type_info == typeid(T) && predicate(a))
+          as.emplace_back( std::move(a) );
+    } // for
+
+    // if sorting is requested
+    if (sorted) 
+      std::sort( 
+        as.begin(), as.end(), 
+        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
+      );
+
+    return as;
+  
+  } // get_accessor
+
+
+  /// \brief Return a list of all dense_accessor_t's filtered by a predicate.
+  ///
+  /// \param [in] data_client  The data client to restrict our search to.
+  /// \param [in] data_store   The data store to search.
+  /// \param [in] version   The version to select.
+  /// \param [in] predicate   If \e predicate(a) returns true, add the accessor
+  ///                         to the list.
+  /// \param [in] sorted  If true, sort the results by label lexographically.
+  ///
+  /// \remark This version searches all namespaces.
+  template<
+    typename T,
+    typename Predicate
+  >
+  static
+  decltype(auto)
+  get_accessors(
+    data_client_t & data_client,
+    data_store_t & data_store,
+    size_t version,
+    Predicate && predicate,
+    bool sorted
+  )
+  {
+
+    std::vector< accessor_t<T> > as;
+
+    // the runtime id
+    auto runtime_id = data_client.runtime_id();
+
+    // check each namespace
+    for (auto & namespace_map : data_store) {
+
+      // the namespace data
+      auto & namespace_key = namespace_map.first;
+      auto & namespace_data = namespace_map.second;
+      
+      // loop over each key pair
+      for (auto & entry_pair : namespace_data) {
+        // get the meta data key and label
+        const auto & meta_data_key = entry_pair.first;
+        auto & meta_data = entry_pair.second;
+        // now build the hash for this label
+        const auto & label = meta_data.label;
+        auto key_hash = hash<const_string_t::hash_type_t>(label, label.size());
+        auto hash = key_hash ^ runtime_id;
+        // if the reconstructed hash matches the meta data key,
+        // then we may want this one
+        auto a = get_accessor<T>( meta_data, version );
+        if ( a )
+          if (meta_data.rtti->type_info == typeid(T) && predicate(a))
+            as.emplace_back( std::move(a) );
+      } // for each key pair
+    } // for each namespace
+
+    // if sorting is requested
+    if (sorted) 
+      std::sort( 
+        as.begin(), as.end(), 
+        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
+      );
+
+    return as;
+  
+  } // get_accessor
+
 
   //--------------------------------------------------------------------------//
   // Data handles.

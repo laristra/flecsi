@@ -37,11 +37,14 @@ enum class privileges : size_t {
 
 struct mesh_t : public data::data_client_t {
 
-  size_t indices(size_t index_space_id) override {
+  size_t indices(size_t index_space_id) const override {
 
     switch(index_space_id) {
       case cells:
         return 100;
+        break;
+      case vertices:
+        return 50;
         break;
       default:
         // FIXME: lookup user-defined index space
@@ -261,6 +264,73 @@ TEST(storage, sparse_delete) {
   ASSERT_EQ(a(2, 2), 3);
 } // TEST
 */
+
+TEST(storage, attributes) {
+
+  using namespace flecsi::data;
+
+  mesh_t m;
+
+  // Register 3 versions
+  register_data(m, hydro, pressure, double, dense, 2, cells);
+  register_data(m, hydro, density, double, dense, 1, cells);
+  register_data(m, hydro, speed, double, dense, 1, vertices);
+  register_data(m, radiation, temperature, double, dense, 1, cells);
+
+  // Initialize
+  {
+    auto p = get_accessor(m, hydro, pressure, double, dense, 0);
+    auto d = get_accessor(m, hydro, density, double, dense, 0);
+    auto t = get_accessor(m, radiation, temperature, double, dense, 0);
+    p.attributes().set(flagged);
+    t.attributes().set(flagged);
+  }
+
+  // Test
+  {
+    auto p0 = get_accessor(m, hydro, pressure, double, dense, 0);
+    auto p1 = get_accessor(m, hydro, pressure, double, dense, 1);
+    auto d = get_accessor(m, hydro, density, double, dense, 0);
+    auto t = get_accessor(m, radiation, temperature, double, dense, 0);
+
+    ASSERT_TRUE(p0.attributes().test(flagged));
+    ASSERT_FALSE(p1.attributes().test(flagged));
+    ASSERT_FALSE(d.attributes().test(flagged));
+    ASSERT_TRUE(t.attributes().test(flagged));
+
+    auto cell_vars = get_accessors(
+      m, hydro, double, dense, 0, is_at(cells), /* sorted */ true
+    );
+
+    ASSERT_EQ( cell_vars[0].label(), "density" );
+    ASSERT_EQ( cell_vars[1].label(), "pressure" );
+
+    auto all_cell_vars = get_all_accessors(
+      m, double, dense, 0, is_at(cells), /* sorted */ true 
+    );
+
+    ASSERT_EQ( all_cell_vars[0].label(), "density" );
+    ASSERT_EQ( all_cell_vars[1].label(), "pressure" );
+    ASSERT_EQ( all_cell_vars[2].label(), "temperature" );
+
+
+    auto flagged_vars = get_accessors(
+      m, hydro, double, dense, 0, has_attribute_at(flagged, cells), 
+      /* sorted */ true
+    );
+
+    ASSERT_EQ( flagged_vars[0].label(), "pressure" );
+
+    auto all_flagged_vars = get_all_accessors(
+      m, double, dense, 0, has_attribute_at(flagged, cells), /* sorted */ true 
+    );
+
+    ASSERT_EQ( all_flagged_vars[0].label(), "pressure" );
+    ASSERT_EQ( all_flagged_vars[1].label(), "temperature" );
+
+
+  } // scope
+} // TEST
 
 /*----------------------------------------------------------------------------*
  * Cinch test Macros

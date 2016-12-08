@@ -363,7 +363,7 @@ endif()
 # FleCSI environment module
 #------------------------------------------------------------------------------#
 
-configure_file(${CMAKE_SOURCE_DIR}/bin/flecsi.in
+configure_file(${PROJECT_SOURCE_DIR}/bin/flecsi.in
   ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi @ONLY)
 
 install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi
