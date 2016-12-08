@@ -42,6 +42,9 @@ void top_level_task(const Task* task,
 
   size_t num_cells = WIDTH * HEIGHT;
 
+  size_t from_dim = 2;
+  size_t to_dim = 0;
+
   set<entity_id> vertex_set;
 
   size_t total_conns = 0;
@@ -135,6 +138,9 @@ void top_level_task(const Task* task,
     FieldAllocator fa = h.create_field_allocator(fs);
 
     fa.allocate_field(sizeof(entity_id), legion_dpd::ENTITY_FID);
+    
+    fa.allocate_field(sizeof(legion_dpd::ptr_count),
+                      legion_dpd::connectivity_field_id(from_dim, to_dim));
 
     cells_part.lr = h.create_logical_region(is, fs);
 
@@ -282,8 +288,9 @@ void top_level_task(const Task* task,
   }
 
   legion_dpd dpd(ctx, runtime);
-  dpd.create_connectivity(cells_part, vertices_part, raw_connectivity_part);
-  dpd.dump();
+  dpd.create_connectivity(from_dim, cells_part, to_dim, vertices_part, 
+    raw_connectivity_part);
+  dpd.dump(from_dim, to_dim);
 }
 
 TEST(legion, test1) {

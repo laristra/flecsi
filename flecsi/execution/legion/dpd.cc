@@ -19,9 +19,10 @@ using namespace LegionRuntime;
 
 namespace{
 
-  struct ptr_count{
-    ptr_t ptr;
-    size_t count;
+  template<class T>
+  struct entry_value{
+    size_t entry;
+    T value;
   };
 
 } // namespace
@@ -36,9 +37,10 @@ namespace execution {
     LogicalRegion ent_from_lr = regions[0].get_logical_region();
     IndexSpace ent_from_is = ent_from_lr.get_index_space();
 
-    LogicalRegion from_lr = regions[1].get_logical_region();
-    IndexSpace from_is = from_lr.get_index_space();
-    
+    LogicalRegion ent_from_lr_write = regions[1].get_logical_region();
+    IndexSpace ent_from_is_write = ent_from_lr_write.get_index_space();
+    size_t connectivity_field_id = task->regions[1].instance_fields[0];
+
     LogicalRegion to_lr = regions[2].get_logical_region();
     IndexSpace to_is = to_lr.get_index_space();
 
@@ -49,7 +51,8 @@ namespace execution {
     IndexSpace ent_to_is = ent_to_lr.get_index_space();    
 
     auto from_ac = 
-      regions[1].get_field_accessor(PTR_COUNT_FID).typeify<ptr_count>();
+      regions[1].get_field_accessor(
+      connectivity_field_id).typeify<ptr_count>();
 
     auto to_ac = 
       regions[2].get_field_accessor(PTR_FID).typeify<ptr_t>();
@@ -74,7 +77,7 @@ namespace execution {
       return;
     }
 
-    IndexIterator from_itr(runtime, ctx, from_is);
+    IndexIterator from_itr(runtime, ctx, ent_from_is);
     IndexIterator to_itr(runtime, ctx, to_is);
 
     size_t count = 0;
@@ -107,13 +110,68 @@ namespace execution {
     from_ac.write(from_itr.next(), pc);
   }
 
-  void legion_dpd::create_data(partitioned_unstructured& le){
+  void legion_dpd::create_data(partitioned_unstructured& indices,
+                               size_t max_entries_per_index,
+                               size_t init_reserve,
+                               size_t value_size){
+#if 0
+    from_ = indices;
 
+    Domain cd = 
+      runtime_->get_index_partition_color_space(context_, from.ip);
+    Rect<1> rect = cd.get_rect<1>();
+    size_t num_partitions = rect.hi[0] + 1;
+
+    {
+      IndexSpace is = 
+        h.create_index_space(from_.size * max_entries_per_index);
+      
+      FieldSpace fs = h.create_field_space();
+
+      FieldAllocator fa = h.create_field_allocator(fs);
+
+      fa.allocate_field(sizeof(size_t) + value_size, ENTRY_VALUE_FID);
+
+      to_lr_ = h.create_logical_region(is, fs);
+
+      IndexAllocator ia = 
+        runtime_->create_index_allocator(context_, is);
+
+      Coloring coloring;
+
+      for(size_t p = 0; p < num_partitions; ++p){
+        size_t count = itr.second;
+
+        // is there a more efficient way to do this?
+        for(size_t i = 0; i < reserve; ++i){
+          ptr_t ptr = ia.alloc(1);
+          coloring[p].points.insert(ptr);
+        }        
+      }
+
+      for(auto& itr : raw_connectivity.count_map){
+        size_t p = itr.first;
+        size_t count = itr.second;
+
+        // is there a more efficient way to do this?
+        for(size_t i = 0; i < count; ++i){
+          ptr_t ptr = ia.alloc(1);
+          coloring[p].points.insert(ptr);
+        }
+      }
+
+      to_ip_ = 
+        runtime_->create_index_partition(context_, is, coloring, true);
+
+    }
+#endif
   }
 
   void
   legion_dpd::create_connectivity(
+    size_t from_dim,
     partitioned_unstructured& from,
+    size_t to_dim,
     partitioned_unstructured& to,
     partitioned_unstructured& raw_connectivity){
     
@@ -157,44 +215,11 @@ namespace execution {
 
     }
 
-    {
-      IndexSpace is = h.create_index_space(from_.size);
-      
-      FieldSpace fs = h.create_field_space();
-
-      FieldAllocator fa = h.create_field_allocator(fs);
-
-      fa.allocate_field(sizeof(ptr_count), PTR_COUNT_FID);
-
-      from_lr_ = h.create_logical_region(is, fs);
-
-      IndexAllocator ia = 
-        runtime_->create_index_allocator(context_, is);
-
-      Coloring coloring;
-
-      for(auto& itr : from_.count_map){
-        size_t p = itr.first;
-        size_t count = itr.second;
-
-        // is there a more efficient way to do this?
-        for(size_t i = 0; i < count; ++i){
-          ptr_t ptr = ia.alloc(1);
-          coloring[p].points.insert(ptr);
-        }
-      }
-
-      from_ip_ = 
-        runtime_->create_index_partition(context_, is, coloring, true);
-
-    }
-
     ArgumentMap arg_map;
 
     Domain d = h.domain_from_rect(0, num_partitions - 1);
 
     IndexLauncher il(INIT_TID, d, TaskArgument(nullptr, 0), arg_map);
-
 
 
     LogicalPartition ent_from_lp =
@@ -206,18 +231,12 @@ namespace execution {
 
     il.region_requirements[0].add_field(ENTITY_FID);
 
-
-
-    LogicalPartition from_lp =
-      runtime_->get_logical_partition(context_, from_lr_, from_ip_);
-
     il.add_region_requirement(
-          RegionRequirement(from_lp, 0, 
-                            WRITE_DISCARD, EXCLUSIVE, from_lr_));
+          RegionRequirement(ent_from_lp, 0, 
+                            WRITE_DISCARD, EXCLUSIVE, from_.lr));
 
-    il.region_requirements[1].add_field(PTR_COUNT_FID);
-
-
+    il.region_requirements[1].add_field(connectivity_field_id(from_dim,
+      to_dim));
 
     LogicalPartition to_lp =
       runtime_->get_logical_partition(context_, to_lr_, to_ip_);
@@ -253,9 +272,12 @@ namespace execution {
     fm.wait_all_results();
   }
 
-  void legion_dpd::dump(){
-    RegionRequirement rr1(from_lr_, READ_ONLY, EXCLUSIVE, from_lr_);
-    rr1.add_field(PTR_COUNT_FID);
+  void legion_dpd::dump(size_t from_dim, size_t to_dim){
+    RegionRequirement rr1(from_.lr, READ_ONLY, EXCLUSIVE, from_.lr);
+    
+    size_t cfid = connectivity_field_id(from_dim, to_dim);
+
+    rr1.add_field(cfid);
     InlineLauncher il1(rr1);
 
     PhysicalRegion from_pr = runtime_->map_region(context_, il1);
@@ -278,9 +300,9 @@ namespace execution {
 
     to_ent_pr.wait_until_valid();
 
-    IndexIterator from_itr(runtime_, context_, from_lr_.get_index_space());
+    IndexIterator from_itr(runtime_, context_, from_.lr.get_index_space());
     auto from_ac = 
-      from_pr.get_field_accessor(PTR_COUNT_FID).typeify<ptr_count>();
+      from_pr.get_field_accessor(cfid).typeify<ptr_count>();
 
     for(size_t i = 0; i < from_.size; ++i){
       cout << "-------- from: " << i << endl; 

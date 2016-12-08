@@ -40,7 +40,8 @@ public:
     ENTITY_FID = 10000,
     ENTITY_PAIR_FID,
     PTR_FID,
-    PTR_COUNT_FID
+    PTR_COUNT_FID,
+    ENTRY_VALUE_FID
   };
 
   using partition_count_map = std::map<size_t, size_t>;
@@ -57,6 +58,11 @@ public:
     size_t e2;
   };
 
+  struct ptr_count{
+    ptr_t ptr;
+    size_t count;
+  };
+
   using connectivity_vec = std::vector<std::vector<size_t>>;
 
   legion_dpd(Legion::Context context,
@@ -65,9 +71,14 @@ public:
   runtime_(runtime),
   h(runtime, context){}
 
-  void create_data(partitioned_unstructured& le);
+  void create_data(partitioned_unstructured& indices,
+                   size_t max_entries_per_index,
+                   size_t init_reserve,
+                   size_t value_size);
 
-  void create_connectivity(partitioned_unstructured& from,
+  void create_connectivity(size_t from_dim,
+                           partitioned_unstructured& from,
+                           size_t to_dim,
                            partitioned_unstructured& to,
                            partitioned_unstructured& raw_connectivity);
 
@@ -76,7 +87,11 @@ public:
                         const std::vector<Legion::PhysicalRegion>& regions,
                         Legion::Context ctx, Legion::Runtime* runtime);
 
-  void dump();
+  void dump(size_t from_dim, size_t to_dim);
+
+  static size_t connectivity_field_id(size_t from_dim, size_t to_dim){
+    return 1000 + from_dim * 10 + to_dim;
+  }
 
 private:
   Legion::Context context_;
@@ -86,8 +101,6 @@ private:
   partitioned_unstructured from_;
   partitioned_unstructured to_;
 
-  Legion::LogicalRegion from_lr_;
-  Legion::IndexPartition from_ip_;
   Legion::LogicalRegion to_lr_;
   Legion::IndexPartition to_ip_;
 };
