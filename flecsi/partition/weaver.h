@@ -239,8 +239,7 @@ public:
     } // scope
   }
 
-  // FIXME: should I return const & of the data member instead of
-  // copy?
+  // FIXME: should I return const & of the data member instead of copy?
   std::set<size_t> get_primary_cells() {
     return primary_cells;
   }
