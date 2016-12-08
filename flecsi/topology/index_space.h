@@ -163,14 +163,8 @@ public:
     : B(s, items, index, end){}
 
     iterator_& operator++(){
-      while(B::index_ < B::end_){
-        T& item = B::get_(B::index_);
-        if(P()(item)){
-          return *this;
-        }
-        ++B::index_;
-      }
-      assert(false && "end of range");
+      ++B::index_;
+      return *this;
     }
 
     S& operator*(){
