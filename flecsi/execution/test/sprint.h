@@ -550,8 +550,6 @@ driver(
   FutureMap fm6 = runtime->execute_index_space(context,check_part_launcher);
   fm6.wait_all_results();
 
-
-
 } // driver
 
 } // namespace execution
