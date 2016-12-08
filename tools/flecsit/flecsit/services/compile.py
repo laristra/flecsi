@@ -35,7 +35,11 @@ class FleCSIT_Analysis(Service):
             help='Specify an include path. This argument may be given' +
                  ' multiple times. Arguments may be of the form' +
                  ' -I/path/to/include, -I /path/to/include, or' +
-                 ' --include /path/to/include.'
+                 ' --include /path/to/include. Include paths may' +
+                 ' also be specified by setting the FLECSIT_INCLUDE_PATH' +
+                 ' environment variable. If FLECSIT_INCLUDE_PATH is set,' +
+                 ' it will override any include paths passed as' +
+                 ' command line arguements.'
         )
 
         self.parser.add_argument('-v', '--verbose', action='store_true',
@@ -64,9 +68,9 @@ class FleCSIT_Analysis(Service):
         # Process command-line arguments
         #----------------------------------------------------------------------#
 
+        # Add any user-provided include paths to build
         env_include_path = os.getenv('FLECSIT_INCLUDE_PATH')
 
-        # Add any user-provided include paths to build
         if env_include_path is not None:
             for include in env_include_path.split(':') or []:
                 build['includes'] += ' -I' + include
