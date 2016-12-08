@@ -845,7 +845,7 @@ public:
   void append_to_index_space_(size_t domain,
     size_t dim,
     std::vector<mesh_entity_base_*>& ents,
-    std::vector<id_t>& ids){
+    std::vector<id_t>& ids) override{
     auto& is =  ms_.index_spaces[domain][dim];
     is.append_(ents, ids);
   }
