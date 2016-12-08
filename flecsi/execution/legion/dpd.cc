@@ -201,12 +201,11 @@ namespace execution {
 
       for(auto& itr : raw_connectivity.count_map){
         size_t p = itr.first;
-        size_t count = itr.second;
+        int count = itr.second;
+        ptr_t start = ia.alloc(count);
 
-        // is there a more efficient way to do this?
-        for(size_t i = 0; i < count; ++i){
-          ptr_t ptr = ia.alloc(1);
-          coloring[p].points.insert(ptr);
+        for(int i = 0; i < count; ++i){
+          coloring[p].points.insert(start + i);
         }
       }
 
@@ -312,8 +311,7 @@ namespace execution {
 
       const ptr_count& pc = from_ac.read(from_ptr);
 
-      IndexIterator 
-        to_itr(runtime_, context_, to_lr_.get_index_space(), pc.ptr);
+      ptr_t to_ptr = pc.ptr; 
 
       auto to_ac = to_pr.get_field_accessor(PTR_FID).typeify<ptr_t>();
       auto to_ent_ac = 
@@ -323,14 +321,10 @@ namespace execution {
       size_t n = pc.count;
 
       while(j < n){
-        assert(to_itr.has_next());
-
-        ptr_t to_ptr = to_ac.read(to_itr.next());
-        size_t to_id = to_ent_ac.read(to_ptr);
-
+        size_t to_id = to_ent_ac.read(to_ac.read(to_ptr));
         cout << "-- to: " << to_id << endl;
-        
         ++j;
+        to_ptr = to_ptr + 1;
       }
     }
   }
