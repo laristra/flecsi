@@ -1,6 +1,7 @@
 var searchData=
 [
   ['data_2eh',['data.h',['../data_8h.html',1,'']]],
+  ['data_5fclient_2ecc',['data_client.cc',['../data__client_8cc.html',1,'']]],
   ['default_5fdriver_2eh',['default_driver.h',['../default__driver_8h.html',1,'']]],
   ['default_5fmeta_5fdata_2eh',['default_meta_data.h',['../default__meta__data_8h.html',1,'']]],
   ['default_5fstorage_5fpolicy_2eh',['default_storage_policy.h',['../default__storage__policy_8h.html',1,'']]],
