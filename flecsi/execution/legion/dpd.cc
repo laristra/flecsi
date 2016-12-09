@@ -19,10 +19,34 @@ using namespace LegionRuntime;
 
 namespace{
 
+  struct partition_metadata{
+    size_t reserve;
+  };
+
 } // namespace
 
 namespace flecsi {
 namespace execution {
+
+  void legion_dpd::init_partition_metadata_task(
+    const Task* task,
+    const std::vector<PhysicalRegion>& regions,
+    Context ctx, Runtime* runtime){
+
+    size_t reserve = *(size_t*)task->args;
+
+    legion_helper h(runtime, ctx);
+
+    size_t p = task->index_point.point_data[0];
+
+    auto ac = regions[0].get_field_accessor(PARTITION_METADATA_FID).
+      typeify<partition_metadata>();
+    
+    partition_metadata md;
+    md.reserve = reserve;
+
+    ac.write(DomainPoint::from_point<1>(p), md);
+  }
 
   void legion_dpd::init_connectivity_task(
     const Task* task,
@@ -110,7 +134,7 @@ namespace execution {
     const std::vector<PhysicalRegion>& regions,
     Context ctx, Runtime* runtime){
 
-    int reserve = *(size_t*)task->args;
+    size_t reserve = *(size_t*)task->args;
 
     LogicalRegion ent_from_lr = regions[0].get_logical_region();
     IndexSpace ent_from_is = ent_from_lr.get_index_space();
@@ -133,7 +157,7 @@ namespace execution {
       ptr_t from_ptr = from_itr.next();
       di.ptr = to_ptr;
       from_ac.write(from_ptr, di);
-      to_ptr = to_ptr + reserve;
+      to_ptr = to_ptr + int(reserve);
     }
   }
 
@@ -147,6 +171,40 @@ namespace execution {
       runtime_->get_index_partition_color_space(context_, from_.ip);
     Rect<1> rect = cd.get_rect<1>();
     size_t num_partitions = rect.hi[0] + 1;
+
+    {
+      IndexSpace is = h.create_index_space(0, num_partitions - 1);
+      
+      FieldSpace fs = h.create_field_space();
+      
+      FieldAllocator a = h.create_field_allocator(fs);
+      a.allocate_field(sizeof(partition_metadata), PARTITION_METADATA_FID);
+      partition_metadata_lr_ = h.create_logical_region(is, fs);
+
+      Blockify<1> coloring(1);
+
+      IndexPartition ip = 
+        runtime_->create_index_partition(context_, is, coloring);
+
+      LogicalPartition lp = runtime_->get_logical_partition(context_,
+        partition_metadata_lr_, ip);
+
+      Domain d = h.domain_from_rect(0, num_partitions - 1);
+
+      ArgumentMap arg_map;
+
+      IndexLauncher 
+        il(INIT_PARTITION_METADATA_TID, d,
+           TaskArgument(&init_reserve, sizeof(size_t)), arg_map);
+
+      il.add_region_requirement(
+        RegionRequirement(lp, 0, WRITE_DISCARD, EXCLUSIVE, 
+                          partition_metadata_lr_));
+      il.region_requirements[0].add_field(PARTITION_METADATA_FID);
+
+      FutureMap fm = h.execute_index_space(il);
+      fm.wait_all_results();
+    }
 
     {
       IndexSpace is = 
@@ -188,7 +246,6 @@ namespace execution {
       FieldAllocator fa = h.create_field_allocator(fs);
 
       fa.allocate_field(sizeof(data_info), DATA_INFO_FID);
-
     }
 
     ArgumentMap arg_map;

@@ -122,7 +122,12 @@ TEST(legion, test1) {
   Runtime::register_legion_task<top_level_task>(TOP_LEVEL_TID,
     Processor::LOC_PROC, true, false);
 
-  Runtime::register_legion_task<legion_dpd::init_data_task>(legion_dpd::INIT_DATA_TID,
+  Runtime::register_legion_task<legion_dpd::init_data_task>(
+    legion_dpd::INIT_DATA_TID,
+    Processor::LOC_PROC, false, true);
+
+  Runtime::register_legion_task<legion_dpd::init_partition_metadata_task>(
+    legion_dpd::INIT_PARTITION_METADATA_TID,
     Processor::LOC_PROC, false, true);
 
   int argc = 1;

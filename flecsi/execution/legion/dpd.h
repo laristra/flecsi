@@ -39,7 +39,8 @@ class legion_dpd{
 public:
   enum task_ids{
     INIT_CONNECTIVITY_TID = 10000,
-    INIT_DATA_TID
+    INIT_DATA_TID,
+    INIT_PARTITION_METADATA_TID
   };
 
   enum fields_ids{
@@ -49,6 +50,7 @@ public:
     PTR_COUNT_FID,
     ENTRY_FID,
     VALUE_FID,
+    PARTITION_METADATA_FID,
     DATA_INFO_FID
   };
 
@@ -77,6 +79,28 @@ public:
     size_t reserve;
   };
 
+  template<typename T>
+  struct entry_value{
+    size_t entry;
+    T value;
+  };
+
+  using index_pair = std::pair<size_t, size_t>;
+
+  template<class T>
+  struct commit_data{
+    using spare_map_t = std::multimap<size_t, entry_value<T>>;
+    using erase_set_t = std::set<std::pair<size_t, size_t>>;
+
+    size_t slot_size;
+    size_t num_slots;
+    size_t num_indices;
+    index_pair* indices;
+    entry_value<T>* entries;
+    spare_map_t spare_map;
+    erase_set_t* erase_set;
+  };
+
   using connectivity_vec = std::vector<std::vector<size_t>>;
 
   legion_dpd(Legion::Context context,
@@ -90,6 +114,11 @@ public:
                    size_t max_entries_per_index,
                    size_t init_reserve){
     create_data_(indices, max_entries_per_index, init_reserve, sizeof(T));
+  }
+
+  template<class T>
+  void commit(commit_data<T>& cd){
+
   }  
 
   void create_data_(partitioned_unstructured& indices,
@@ -112,6 +141,10 @@ public:
     const std::vector<Legion::PhysicalRegion>& regions,
     Legion::Context ctx, Legion::Runtime* runtime);
 
+  static void init_partition_metadata_task(const Legion::Task* task,
+    const std::vector<Legion::PhysicalRegion>& regions,
+    Legion::Context ctx, Legion::Runtime* runtime);
+
   void dump(size_t from_dim, size_t to_dim);
 
   static size_t connectivity_field_id(size_t from_dim, size_t to_dim){
@@ -128,6 +161,9 @@ private:
 
   Legion::LogicalRegion to_lr_;
   Legion::IndexPartition to_ip_;
+
+  Legion::LogicalRegion partition_metadata_lr_;
+  Legion::IndexPartition partition_metadata_ip_;  
 };
 
 } // namespace execution 
