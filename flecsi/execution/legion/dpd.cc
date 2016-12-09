@@ -19,20 +19,15 @@ using namespace LegionRuntime;
 
 namespace{
 
-  template<class T>
-  struct entry_value{
-    size_t entry;
-    T value;
-  };
-
 } // namespace
 
 namespace flecsi {
 namespace execution {
 
-  void legion_dpd::init_task(const Task* task,
-                             const std::vector<PhysicalRegion>& regions,
-                             Context ctx, Runtime* runtime){
+  void legion_dpd::init_connectivity_task(
+    const Task* task,
+    const std::vector<PhysicalRegion>& regions,
+    Context ctx, Runtime* runtime){
 
     LogicalRegion ent_from_lr = regions[0].get_logical_region();
     IndexSpace ent_from_is = ent_from_lr.get_index_space();
@@ -110,15 +105,46 @@ namespace execution {
     from_ac.write(from_itr.next(), pc);
   }
 
-  void legion_dpd::create_data(partitioned_unstructured& indices,
-                               size_t max_entries_per_index,
-                               size_t init_reserve,
-                               size_t value_size){
-#if 0
+  void legion_dpd::init_data_task(
+    const Task* task,
+    const std::vector<PhysicalRegion>& regions,
+    Context ctx, Runtime* runtime){
+
+    int reserve = *(size_t*)task->args;
+
+    LogicalRegion ent_from_lr = regions[0].get_logical_region();
+    IndexSpace ent_from_is = ent_from_lr.get_index_space();
+
+    auto from_ac = 
+      regions[0].get_field_accessor(DATA_INFO_FID).typeify<data_info>();
+
+    LogicalRegion to_lr = regions[1].get_logical_region();
+    IndexSpace to_is = to_lr.get_index_space();
+
+    data_info di;
+    di.size = 0;
+    di.reserve = reserve;
+
+    IndexIterator from_itr(runtime, ctx, ent_from_is);
+    IndexIterator to_itr(runtime, ctx, to_is);
+    ptr_t to_ptr = to_itr.next();
+
+    while(from_itr.has_next()){
+      ptr_t from_ptr = from_itr.next();
+      di.ptr = to_ptr;
+      from_ac.write(from_ptr, di);
+      to_ptr = to_ptr + reserve;
+    }
+  }
+
+  void legion_dpd::create_data_(partitioned_unstructured& indices,
+                                size_t max_entries_per_index,
+                                size_t init_reserve,
+                                size_t value_size){
     from_ = indices;
 
     Domain cd = 
-      runtime_->get_index_partition_color_space(context_, from.ip);
+      runtime_->get_index_partition_color_space(context_, from_.ip);
     Rect<1> rect = cd.get_rect<1>();
     size_t num_partitions = rect.hi[0] + 1;
 
@@ -130,7 +156,8 @@ namespace execution {
 
       FieldAllocator fa = h.create_field_allocator(fs);
 
-      fa.allocate_field(sizeof(size_t) + value_size, ENTRY_VALUE_FID);
+      fa.allocate_field(sizeof(size_t), ENTRY_FID);
+      fa.allocate_field(value_size, VALUE_FID);
 
       to_lr_ = h.create_logical_region(is, fs);
 
@@ -139,32 +166,59 @@ namespace execution {
 
       Coloring coloring;
 
-      for(size_t p = 0; p < num_partitions; ++p){
-        size_t count = itr.second;
-
-        // is there a more efficient way to do this?
-        for(size_t i = 0; i < reserve; ++i){
-          ptr_t ptr = ia.alloc(1);
-          coloring[p].points.insert(ptr);
-        }        
-      }
-
-      for(auto& itr : raw_connectivity.count_map){
+      for(auto& itr : indices.count_map){
         size_t p = itr.first;
         size_t count = itr.second;
+        size_t n = count * init_reserve;
+        ptr_t start = ia.alloc(n);
 
-        // is there a more efficient way to do this?
-        for(size_t i = 0; i < count; ++i){
-          ptr_t ptr = ia.alloc(1);
-          coloring[p].points.insert(ptr);
-        }
+        for(int i = 0; i < n; ++i){
+          coloring[p].points.insert(start + i);
+        }        
       }
 
       to_ip_ = 
         runtime_->create_index_partition(context_, is, coloring, true);
 
     }
-#endif
+
+    {
+      FieldSpace fs = from_.lr.get_field_space();
+
+      FieldAllocator fa = h.create_field_allocator(fs);
+
+      fa.allocate_field(sizeof(data_info), DATA_INFO_FID);
+
+    }
+
+    ArgumentMap arg_map;
+
+    Domain d = h.domain_from_rect(0, num_partitions - 1);
+
+    IndexLauncher
+      il(INIT_DATA_TID, d,
+         TaskArgument(&init_reserve, sizeof(init_reserve)), arg_map);
+
+    LogicalPartition ent_from_lp =
+      runtime_->get_logical_partition(context_, from_.lr, from_.ip);
+
+    il.add_region_requirement(
+          RegionRequirement(ent_from_lp, 0, 
+                            WRITE_DISCARD, EXCLUSIVE, from_.lr));
+
+    il.region_requirements[0].add_field(DATA_INFO_FID);
+
+    LogicalPartition to_lp =
+      runtime_->get_logical_partition(context_, to_lr_, to_ip_);
+
+    il.add_region_requirement(
+          RegionRequirement(to_lp, 0, 
+                            WRITE_DISCARD, EXCLUSIVE, to_lr_));
+
+    il.region_requirements[1].add_field(ENTRY_FID);
+
+    FutureMap fm = h.execute_index_space(il);
+    fm.wait_all_results();
   }
 
   void
@@ -218,8 +272,8 @@ namespace execution {
 
     Domain d = h.domain_from_rect(0, num_partitions - 1);
 
-    IndexLauncher il(INIT_TID, d, TaskArgument(nullptr, 0), arg_map);
-
+    IndexLauncher
+      il(INIT_CONNECTIVITY_TID, d, TaskArgument(nullptr, 0), arg_map);
 
     LogicalPartition ent_from_lp =
       runtime_->get_logical_partition(context_, from_.lr, from_.ip);
@@ -323,8 +377,8 @@ namespace execution {
       while(j < n){
         size_t to_id = to_ent_ac.read(to_ac.read(to_ptr));
         cout << "-- to: " << to_id << endl;
+        to_ptr++;
         ++j;
-        to_ptr = to_ptr + 1;
       }
     }
   }

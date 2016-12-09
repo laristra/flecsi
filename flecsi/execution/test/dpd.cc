@@ -299,7 +299,7 @@ TEST(legion, test1) {
   Runtime::register_legion_task<top_level_task>(TOP_LEVEL_TID,
     Processor::LOC_PROC, true, false);
 
-  Runtime::register_legion_task<legion_dpd::init_task>(legion_dpd::INIT_TID,
+  Runtime::register_legion_task<legion_dpd::init_connectivity_task>(legion_dpd::INIT_CONNECTIVITY_TID,
     Processor::LOC_PROC, false, true);
 
   int argc = 1;

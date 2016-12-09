@@ -21,6 +21,11 @@
 
 #include "flecsi/execution/legion/helper.h"
 
+
+#define np(X)                                                            \
+ std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
+           << ": " << #X << " = " << (X) << std::endl
+
 ///
 // \file legion/dpd.h
 // \authors nickm
@@ -33,7 +38,8 @@ namespace execution {
 class legion_dpd{
 public:
   enum task_ids{
-    INIT_TID = 10000
+    INIT_CONNECTIVITY_TID = 10000,
+    INIT_DATA_TID
   };
 
   enum fields_ids{
@@ -41,7 +47,9 @@ public:
     ENTITY_PAIR_FID,
     PTR_FID,
     PTR_COUNT_FID,
-    ENTRY_VALUE_FID
+    ENTRY_FID,
+    VALUE_FID,
+    DATA_INFO_FID
   };
 
   using partition_count_map = std::map<size_t, size_t>;
@@ -63,6 +71,12 @@ public:
     size_t count;
   };
 
+  struct data_info{
+    ptr_t ptr;
+    size_t size;
+    size_t reserve;
+  };
+
   using connectivity_vec = std::vector<std::vector<size_t>>;
 
   legion_dpd(Legion::Context context,
@@ -71,10 +85,17 @@ public:
   runtime_(runtime),
   h(runtime, context){}
 
+  template<class T>
   void create_data(partitioned_unstructured& indices,
                    size_t max_entries_per_index,
-                   size_t init_reserve,
-                   size_t value_size);
+                   size_t init_reserve){
+    create_data_(indices, max_entries_per_index, init_reserve, sizeof(T));
+  }  
+
+  void create_data_(partitioned_unstructured& indices,
+                    size_t max_entries_per_index,
+                    size_t init_reserve,
+                    size_t value_size);
 
   void create_connectivity(size_t from_dim,
                            partitioned_unstructured& from,
@@ -83,9 +104,13 @@ public:
                            partitioned_unstructured& raw_connectivity);
 
 
-  static void init_task(const Legion::Task* task,
-                        const std::vector<Legion::PhysicalRegion>& regions,
-                        Legion::Context ctx, Legion::Runtime* runtime);
+  static void init_connectivity_task(const Legion::Task* task,
+    const std::vector<Legion::PhysicalRegion>& regions,
+    Legion::Context ctx, Legion::Runtime* runtime);
+
+  static void init_data_task(const Legion::Task* task,
+    const std::vector<Legion::PhysicalRegion>& regions,
+    Legion::Context ctx, Legion::Runtime* runtime);
 
   void dump(size_t from_dim, size_t to_dim);
 
