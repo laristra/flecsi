@@ -28,11 +28,9 @@ using namespace LegionRuntime::Arrays;
 namespace flecsi {
 namespace execution {
 
-using index_partition_t = dmp::index_partition__<size_t>;
-using ghost_info_t = index_partition_t::ghost_info_t;
-using shared_info_t = index_partition_t::shared_info_t;
-
 static const size_t N = 8;
+
+using index_partition_t = dmp::index_partition__<size_t>;
 
 enum
 FieldIDs {
@@ -41,105 +39,11 @@ FieldIDs {
 };
 
 void
-mpi_task2(
+mpi_task(
   double d
 )
 {
-  flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
-  flecsi::dmp::weaver weaver(sd);
 
-  using entry_info_t = flecsi::dmp::entry_info_t;
-
-  std::set<size_t> primary_cells = weaver.get_primary_cells();
-  std::set<entry_info_t> exclusive_cells = weaver.get_exclusive_cells();
-  std::set<entry_info_t> shared_cells = weaver.get_shared_cells();
-  std::set<entry_info_t> ghost_cells  = weaver.get_ghost_cells();
-
-//  for (auto i : exclusive_cells) {
-//    std::cout << i << " ";
-//    std::cout << std::endl;
-//  }
-
-  index_partition_t ip;
-
-  for (auto primary_cell : primary_cells) {
-    ip.primary.push_back(primary_cell);
-  }
-
-  for (auto exclusive_cell : exclusive_cells) {
-    ip.exclusive.push_back(exclusive_cell.id);
-  }
-
-  for (auto shared_cell : shared_cells) {
-    // TODO: used entry_info_t
-    shared_info_t shared;
-    shared.mesh_id = shared_cell.offset;
-    shared.global_id = shared_cell.id;
-    //shared.dependent_ranks.push_back(rank - 1);
-    std::copy(shared_cell.shared.begin(), shared_cell.shared.end(),
-      std::back_inserter(shared.dependent_ranks));
-    ip.shared.push_back(shared);
-  }
-
-  for (auto ghost_cell : ghost_cells) {
-    // TODO: used entry_info_t
-    ghost_info_t ghost;
-    ghost.mesh_id = ghost_cell.offset;
-    ghost.global_id = ghost_cell.id;
-    ghost.rank = ghost_cell.rank;
-    ip.ghost.push_back(ghost);
-  }
-
-  flecsi::execution::context_t & context_ =
-    flecsi::execution::context_t::instance();
-  context_.interop_helper_.data_storage_.push_back(
-    flecsi::utils::any_t(ip));
-
-#if 0
-  int rank = 0;
-  int size = 0;
-
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
-  for (int i =0; i< ip.primary.size(); i++)
-  {
-    std::cout << " rank = " << rank
-              << " primary = " << ip.primary[i]<< std::endl;
-  }
-  for (int i =0; i< ip.exclusive.size(); i++)
-  {
-    std::cout<< " rank = " << rank << " exclusive_mesh_id  = " << ip.exclusive[i]
-             << std::endl;
-  }
-
-
-  for (int i =0; i< ip.shared.size(); i++)
-  {
-    std::cout<< " rank = " << rank << " shared_mesh_id  = " << ip.shared_id(i)
-             << std::endl;
-    std::cout<< " rank = " << rank << " shared_global_id  = "
-             << ip.shared[i].global_id << std::endl;
-    std::cout<< " rank = " << rank << "dependent_ranks" <<
-             ip.shared[i].dependent_ranks[0] << std::endl;
-  }
-
-  for (int i =0; i< ip.ghost.size(); i++)
-  {
-    std::cout<< " rank = " << rank << " gost_mesh_id  = " << ip.ghost_id(i)
-             << std::endl;
-    std::cout<< " rank = " << rank << " ghost_global_id  = "
-             << ip.ghost[i].global_id << std::endl;
-    std::cout<< " rank = " << rank << "ghost rank" <<
-             ip.ghost[i].rank << std::endl;
-  }
-#endif
-}
-
-void 
-mpi_task(
-  double val
-) 
-{
   int rank = 0;
   int size = 0;
 
@@ -147,160 +51,41 @@ mpi_task(
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   std::cout << "My rank: " << rank << std::endl;
 
-  size_t part = N/size;
-  size_t rem = N%size;
+  flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
+  flecsi::dmp::weaver weaver(sd);
 
-  size_t start = rank*(part + (rem > 0 ? 1 : 0));
-  size_t end = rank < rem ? start + part+1 : start + part;
-
-  std::vector<size_t> start_global_id;
-  size_t global_end=0;
-  for (int i=0; i<size; i++)
-  {
-    size_t start_i = rank*(part + (rem > 0 ? 1 : 0));
-    size_t end_i = rank < rem ? start_i + part+1 : start + part;
-    start_global_id.push_back(global_end);
-    global_end +=N*(end_i-start_i);
-  }//end for
-
-#if 1
-  std::cout << "rank: " << rank << " start: " << start <<
-    " end: " << end << std::endl;
-#endif
+  using entry_info_t = flecsi::dmp::entry_info_t;
 
   index_partition_t ip;
 
-  for(size_t j=0; j<N; ++j) {
-    for(size_t i(start); i<end; ++i) {
-      ghost_info_t ghost;
-      const size_t id = j*N+i;
-      // exclusive
-      if(i>start && i<end-1) {
-        ip.exclusive.push_back(id);
-        //std::cout << "rank: " << rank << " exclusive: " << id << std::endl;
-      }
-      else if(rank == 0 && i==start) {
-        ip.exclusive.push_back(id);
-        //std::cout << "rank: " << rank << " exclusive: " << id << std::endl;
-      }
-      else if(rank == size-1 && i==end-1) {
-        ip.exclusive.push_back(id);
-        //std::cout << "rank: " << rank << " exclusive: " << id << std::endl;
-      }
-      else if(i==start) {
-          shared_info_t shared;
-          shared.mesh_id = id;
-          shared.global_id =0;
-          shared.dependent_ranks.push_back(rank - 1);
-          ip.shared.push_back(shared);
+  ip.primary = weaver.get_primary_cells();
+  ip.exclusive = weaver.get_exclusive_cells();
+  ip.shared = weaver.get_shared_cells();
+  ip.ghost  = weaver.get_ghost_cells();
 
-          const size_t ghost_id = j*N+i-1;
-          ghost.mesh_id =ghost_id ;
-          ghost.global_id = start_global_id[rank-1]+(end-start)*j+1;
-          ghost.rank =rank -1;
-          ip.ghost.push_back(ghost);
-      }
-      else if(i==end-1) {
-          shared_info_t shared;
-          shared.mesh_id = id;
-          shared.global_id = 0; 
-          shared.dependent_ranks.push_back(rank + 1);
-          ip.shared.push_back(shared);
+#if 0
+std::cout<<"print primary cells"<<std::endl;
+for (std::set<size_t>::iterator it=ip.primary.begin();
+        it!=ip.primary.end(); ++it)
+      std::cout << ' ' << *it;
+std::cout<<"\n";
 
-          const size_t ghost_id = j*N+i+1;
-          ghost.mesh_id =ghost_id ;
-          ghost.rank = rank+1 ;
-          ghost.global_id = start_global_id[rank+1]+(end-start)*j;
-          ip.ghost.push_back(ghost);
-      } // if
-    } // for
-  } // for
-
-  //creating primary partitioning and filling global_id's for shared elements:
-  int start_indx=0;
-  size_t previous_indx = 0;
-  std::cout << ip.exclusive.size()<< "  "<< ip.shared.size()<<std::endl;
-  for (int i=0; i<ip.exclusive.size(); i++){
-    for (int j=start_indx; j<ip.shared.size(); j++){
-      if (ip.exclusive[i]<ip.shared_id(j))
-      {
-        ip.primary.push_back(ip.exclusive[i]);
-        previous_indx=ip.exclusive[i];
-        start_indx=ip.primary.size()-i-1;
-        j=ip.shared.size()+1;
-      }//end if
-      else
-      {
-        ip.primary.push_back(ip.shared_id(j));
-        previous_indx=ip.shared_id(j);
-        ip.shared[j].global_id = start_global_id[rank]+ip.primary.size()-1;
-        //start_indx=ip.primary.size()-i-1;
-        start_indx++;
-      }//end else
-      //start_indx=ip.primary.size()-i-1;
-    }//end for
-    if (start_indx>(ip.shared.size()-1))
-    {
-      if (ip.exclusive[i]>previous_indx)
-        ip.primary.push_back(ip.exclusive[i]);
-    }
-  }//end_for
-  for (int i = start_indx; i< ip.shared.size(); i++)
-  {
-    ip.primary.push_back(ip.shared_id(i));
-    ip.shared[i].global_id = start_global_id[rank]+ip.primary.size()-1;
-  }//end for
-
-  if (size>1)
-    assert (ip.primary.size() == (ip.exclusive.size()+ip.shared.size()));   
+std::cout<<"shared primary cells"<<std::endl;
+for (std::set<entry_info_t>::iterator it=ip.shared.begin(); 
+        it!=ip.shared.end(); ++it)
+      std::cout << ' ' << *it<<std::endl;
+std::cout<<"\n";
+#endif
 
   flecsi::execution::context_t & context_ =
-             flecsi::execution::context_t::instance();
+    flecsi::execution::context_t::instance();
   context_.interop_helper_.data_storage_.push_back(
-        flecsi::utils::any_t(ip));
-#if 0
-   //check the mpi output
+    flecsi::utils::any_t(ip));
 
-  for (int i =0; i< ip.primary.size(); i++)
-  {
-   std::cout<< " rank = " << rank <<" global_id = " << start_global_id[rank]+i<< 
-    " primary = " << ip.primary[i]<< std::endl;
-  }
-   for (int i =0; i< ip.exclusive.size(); i++)
-  {
-    std::cout<< " rank = " << rank << " exclusive_mesh_id  = " << ip.exclusive[i] 
-          << std::endl;
-  }
+}
 
-
-  for (int i =0; i< ip.shared.size(); i++)
-  {
-    std::cout<< " rank = " << rank << " shared_mesh_id  = " << ip.shared_id(i) 
-          << std::endl;
-    std::cout<< " rank = " << rank << " shared_global_id  = " 
-        << ip.shared[i].global_id << std::endl;
-    std::cout<< " rank = " << rank << "dependent_ranks" << 
-         ip.shared[i].dependent_ranks[0] << std::endl;
-  }
-#if 0
-  for (int i =0; i< ip.ghost.size(); i++)
-  {
-    std::cout<< " rank = " << rank << " gost_mesh_id  = " << ip.ghost_id(i)
-          << std::endl;
-    std::cout<< " rank = " << rank << " ghost_global_id  = " 
-        << ip.ghost[i].global_id << std::endl;
-    std::cout<< " rank = " << rank << "ghost rank" <<
-         ip.ghost[i].rank << std::endl;
-  }
-   
-#endif
-#endif
-
-} // mpi_task
   
 register_task(mpi_task, mpi, single);
-  
-register_task(mpi_task2, mpi, single);
 
 void
 driver(
@@ -318,8 +103,7 @@ driver(
   flecsi::dmp::parts partitions;
   
   // first execute mpi task to setup initial partitions 
-  //execute_task(mpi_task, mpi, single, 1.0);
-  execute_task(mpi_task2, mpi, single, 1.0);
+  execute_task(mpi_task, mpi, single, 1.0);
   // create a field space to store cells id
   FieldSpace cells_fs = runtime->create_field_space(context);
   {
@@ -375,10 +159,7 @@ driver(
   IndexSpace cells_is = runtime->create_index_space(context, total_num_cells);
 
   IndexAllocator allocator = runtime->create_index_allocator(context,cells_is);
-  for(size_t i = 0; i < total_num_cells; ++i){
-    ptr_t  ptr_i= allocator.alloc(1);
-    assert(!ptr_i.is_null());
-  }
+  allocator.alloc(total_num_cells);
 
   LogicalRegion cells_lr=
     runtime->create_logical_region(context,cells_is, cells_fs);

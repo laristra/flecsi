@@ -108,12 +108,12 @@ init_cells_task(
 
   auto ac = regions[0].get_field_accessor(0).typeify<int>();
 
-  for(size_t i = 0; i <ip.primary.size() ; ++i){
+  for (auto primary_cell : ip.primary) {
     assert(itr.has_next());
-    size_t id = ip.primary[i];
+    size_t id =primary_cell;
     ptr_t ptr = itr.next();
     ac.write(ptr, id);
-  }//end for
+  }
 
 }//init_cells_task
 
@@ -167,21 +167,14 @@ shared_part_task(
     LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
     shared_region.get_field_accessor(FID_SHARED).typeify<ptr_t>();
 
-  size_t indx=0;
-  for(size_t i = 0; i <ip.shared.size() ; i++){
-    LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, is);
-    size_t id_s = ip.shared[i].mesh_id;
-    for(size_t j = 0; j <ip.primary.size() ; j++){
-      assert(itr.has_next());
-      ptr_t ptr = itr.next();
-      size_t id_p = ip.primary[j];
-      if (id_p == id_s){
-         j=ip.primary.size()+1; 
-         acc.write(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
-            make_point(indx)),ptr);
-         indx++;
-      }//end if
-    }//end for
+  int indx=0;
+  LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, is);
+  ptr_t start=itr.next();
+  for (auto shared_cell : ip.shared) {
+    ptr_t ptr = (start.value+shared_cell.offset);
+    acc.write(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
+    make_point(indx)),ptr);
+    indx++;
   }//end for
 
   runtime->unmap_region(ctx, shared_region);
@@ -236,22 +229,15 @@ exclusive_part_task(
   LegionRuntime::Accessor::RegionAccessor<
     LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
     exclusive_region.get_field_accessor(FID_EXCLUSIVE).typeify<ptr_t>();
-  
-  size_t indx=0; 
-  for(size_t i = 0; i <ip.exclusive.size() ; i++){
-    LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, is);
-    size_t id_e = ip.exclusive[i];
-    for(size_t j = 0; j <ip.primary.size() ; j++){
-      assert(itr.has_next());
-      ptr_t ptr = itr.next();
-      size_t id_p = ip.primary[j];
-      if (id_p == id_e){
-         j=ip.primary.size()+1;
-         acc.write(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
-            make_point(indx)),ptr);
-         indx++;
-      }//end if
-    }//end for
+
+  int indx=0;
+  LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, is);
+  ptr_t start=itr.next();
+  for (auto exclusive_cell : ip.exclusive) {
+    ptr_t ptr = (start.value+exclusive_cell.offset);
+    acc.write(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
+    make_point(indx)),ptr);
+    indx++;
   }//end for
 
   runtime->unmap_region(ctx, exclusive_region);
@@ -310,11 +296,11 @@ ghost_part_task(
   ghost_region.wait_until_valid();
   LegionRuntime::Accessor::RegionAccessor<generic_type, ptr_t> acc =
     ghost_region.get_field_accessor(FID_GHOST).typeify<ptr_t>();
-  
-  size_t indx=0;
-  for(size_t i = 0; i <ip.ghost.size() ; i++){
+
+  int indx=0;
+  for (auto ghost_cell : ip.ghost) {
     LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, is);
-    size_t id_ghost = ip.ghost[i].mesh_id;
+    size_t id_ghost = ghost_cell.id;
     while(itr.has_next()){
       ptr_t ptr = itr.next();
       size_t id_global = acc_global.read(ptr);
@@ -381,34 +367,35 @@ check_partitioning_task(
     context_.interop_helper_.data_storage_[0];
 
   size_t indx = 0;
-  while(itr_shared.has_next()){
-    ptr_t ptr = itr_shared.next();
-    assert(ip.shared[indx].mesh_id == acc_shared.read(ptr));
-    indx++;
+  for (auto shared_cell : ip.shared) {
+   assert(itr_shared.has_next());
+   ptr_t ptr=itr_shared.next();
+   assert(shared_cell.id == acc_shared.read(ptr));
+   indx++;
   }
   assert (indx == ip.shared.size());
 
   indx = 0;
-  while(itr_exclusive.has_next()){
-    ptr_t ptr = itr_exclusive.next();
-    assert(ip.exclusive[indx] == acc_exclusive.read(ptr));
-    indx++;
+  for (auto exclusive_cell : ip.exclusive) {
+   assert(itr_exclusive.has_next());
+   ptr_t ptr=itr_exclusive.next();
+   assert(exclusive_cell.id == acc_exclusive.read(ptr));
+   indx++;
   }
  assert (indx == ip.exclusive.size());
+
 
   indx = 0;
   while(itr_ghost.has_next()){
     ptr_t ptr = itr_ghost.next();
     bool found=false;
     int ghost_id = acc_ghost.read(ptr);
-    for (int i=0; i< ip.ghost.size(); i++)
-    {
-      if (ip.ghost[i].mesh_id = ghost_id){
+    for (auto ghost_cell : ip.ghost) {
+      if (ghost_cell.id = ghost_id){
         found=true;
-        i=ip.ghost.size();
       }
     }
-   assert(found);
+    assert(found);
     indx++;
   }
   assert (indx == ip.ghost.size());
