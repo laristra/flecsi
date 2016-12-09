@@ -7,7 +7,6 @@
 #define flecsi_mpi_utils_h
 
 #include <mpi.h>
-#include <parmetis.h>
 
 ///
 // \file mpi_utils.h
