@@ -40,6 +40,7 @@ struct entry_info_t {
 
 }; // struct entry_info_t
 
+inline
 std::ostream &
 operator << (
   std::ostream & stream,
