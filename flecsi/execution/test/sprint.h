@@ -56,12 +56,19 @@ mpi_task(
 
   using entry_info_t = flecsi::dmp::entry_info_t;
 
-  index_partition_t ip;
+  index_partition_t ip_cells;
 
-  ip.primary = weaver.get_primary_cells();
-  ip.exclusive = weaver.get_exclusive_cells();
-  ip.shared = weaver.get_shared_cells();
-  ip.ghost  = weaver.get_ghost_cells();
+  ip_cells.primary = weaver.get_primary_cells();
+  ip_cells.exclusive = weaver.get_exclusive_cells();
+  ip_cells.shared = weaver.get_shared_cells();
+  ip_cells.ghost  = weaver.get_ghost_cells();
+
+  index_partition_t ip_vertices;
+
+  ip_vertices.primary = weaver.get_primary_vertices();
+  ip_vertices.exclusive = weaver.get_exclusive_vertices();
+  ip_vertices.shared = weaver.get_shared_vertices();
+  ip_vertices.ghost  = weaver.get_ghost_vertices();
 
 #if 0
 std::cout<<"print primary cells"<<std::endl;
@@ -80,8 +87,10 @@ std::cout<<"\n";
   flecsi::execution::context_t & context_ =
     flecsi::execution::context_t::instance();
   context_.interop_helper_.data_storage_.push_back(
-    flecsi::utils::any_t(ip));
+    flecsi::utils::any_t(ip_cells));
 
+  context_.interop_helper_.data_storage_.push_back(
+    flecsi::utils::any_t(ip_vertices));
 }
 
   
