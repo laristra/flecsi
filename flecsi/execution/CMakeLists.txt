@@ -71,19 +71,27 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
       DEFINES FLECSI_DRIVER=flecsi/execution/test/task_driver.h
       POLICY MPILEGION
     )
+  
+   #FIXME: remove the check for Parmetis when there are other kinds of 
+   #partitioner implemented
 
+  if(PARMETIS_FOUND)
     cinch_add_unit(sprint
       SOURCES
         test/task.cc
         test/sprint.h
         mpilegion/runtime_driver.cc
         ../partition/init_partitions_task.cc
+      INPUTS
+        test/simple2d-8x8.msh
       DEFINES SPRINT_TEST
       DEFINES FLECSI_DRIVER=flecsi/execution/test/sprint.h
             LIBRARIES ${PARTITION_LIBRARIES}
       POLICY MPILEGION
       THREADS 2
     )
+   endif(PARMETIS_FOUND)
+
   endif(NOT DEFINED ENV{TRAVIS})
 
 else() # serial

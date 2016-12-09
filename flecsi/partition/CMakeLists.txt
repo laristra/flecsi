@@ -23,12 +23,18 @@ set(partition_HEADERS
 
 cinch_add_unit(dcrs
   SOURCES test/dcrs.cc
-  INPUTS test/simple2d-8x8.msh
+  INPUTS
+    test/simple2d-8x8.msh
+    test/simple2d-16x16.msh
   LIBRARIES ${PARTITION_LIBRARIES}
   POLICY MPI
   THREADS 5
 )
 
+#FIXME: remove the check for Parmetis when there are other kinds of partitioner
+#implemented
+
+if(PARMETIS_FOUND)
 cinch_add_unit(partition
   SOURCES test/partition.cc
   INPUTS
@@ -52,6 +58,7 @@ cinch_add_unit(weaver
   POLICY MPI
   THREADS 5
 )
+endif(PARMETIS_FOUND)
 
 # Add MPI/Legion specific files
 
