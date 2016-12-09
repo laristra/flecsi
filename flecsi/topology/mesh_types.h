@@ -233,7 +233,9 @@ class domain_entity
   const E * entity() const { return entity_; }
   operator E *() { return entity_; }
   E * operator->() { return entity_; }
+  const E * operator->() const { return entity_; }
   E * operator*() { return entity_; }
+  const E * operator*() const { return entity_; }
   operator size_t() const { return entity_->template id<M>(); }
   id_t global_id() const { return entity_->template global_id<M>(); }
   size_t id() const { return entity_->template id<M>(); }
@@ -767,6 +769,24 @@ struct mesh_storage_t {
 class mesh_topology_base_t : public data::data_client_t
 {
 public:
+
+  // Default constructor
+  mesh_topology_base_t() = default;
+
+  // Don't allow the mesh to be copied or copy constructed
+  mesh_topology_base_t(const mesh_topology_base_t &) = delete;
+  mesh_topology_base_t & operator=(const mesh_topology_base_t &) = delete;
+
+  /// Allow move operations
+  mesh_topology_base_t(mesh_topology_base_t &&) = default;
+
+  //! override default move assignement
+  mesh_topology_base_t & operator=(mesh_topology_base_t && o)
+  {
+    // call base_t move operator
+    data::data_client_t::operator=(std::move(o));
+  };
+
 
   /*!
     Return the number of entities in for a specific domain and topology dim.

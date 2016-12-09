@@ -87,7 +87,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   >
   decltype(auto)
   register_data(
-    data_client_t & data_client,
+    const data_client_t & data_client,
     const const_string_t & key,
     size_t versions,
     Args && ... args
@@ -120,7 +120,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   >
   decltype(auto)
   get_accessor(
-    data_client_t & data_client,
+    const data_client_t & data_client,
     const const_string_t & key,
     size_t version=0
   )
@@ -147,7 +147,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   >
   decltype(auto)
   get_mutator(
-    data_client_t & data_client,
+    const data_client_t & data_client,
     const const_string_t & key,
     size_t slots, size_t version=0
   )
@@ -188,7 +188,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   >
   decltype(auto)
   get_accessors(
-    data_client_t & data_client,
+    const data_client_t & data_client,
     size_t version,    
     P && predicate,
     bool sorted = true
@@ -227,7 +227,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   >
   decltype(auto)
   get_accessors(
-    data_client_t & data_client,
+    const data_client_t & data_client,
     size_t version,    
     P && predicate,
     bool sorted = true
@@ -235,6 +235,63 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   {
     return st_t<ST>::template get_accessors<T, P>(data_client,
       sp_t::data_store_, version, std::forward<P>(predicate), sorted);
+  } // get_accessors
+
+  ///
+  /// \brief Return a std::vector of accessors to the stored states with
+  ///        type \e T in namespace \e NS.
+  ///
+  /// \tparam ST
+  /// \tparam T All state variables of this type will be returned.
+  /// \tparam NS Namespace to use.
+  /// \tparam P Predicate function type.
+  ///
+  /// \param [in]  sorted  Sort the returned list by label lexographically.
+  /// 
+  /// \return A std::vector of accessors to the state variables that
+  ///         match the namespace and predicate criteria.
+  ///
+  template<
+    size_t ST,
+    typename T,
+    size_t NS
+  >
+  decltype(auto)
+  get_accessors(
+    const data_client_t & data_client,
+    size_t version,    
+    bool sorted = true
+  )
+  {
+    return st_t<ST>::template get_accessors<T, NS>(data_client,
+      sp_t::data_store_, version, sorted);
+  } // get_accessors
+
+  /// \brief Return a std::vector of accessors to the stored states with
+  ///        type \e T.
+  ///
+  /// \tparam ST
+  /// \tparam T All state variables of this type will be returned.
+  /// \tparam P Predicate function type.
+  ///
+  /// \param [in]  sorted  Sort the returned list by label lexographically.
+  /// 
+  /// \return A std::vector of accessors to the state variables that
+  ///         match the namespace and predicate criteria.
+  ///
+  template<
+    size_t ST,
+    typename T
+  >
+  decltype(auto)
+  get_accessors(
+    const data_client_t & data_client,
+    size_t version,    
+    bool sorted = true
+  )
+  {
+    return st_t<ST>::template get_accessors<T>(data_client,
+      sp_t::data_store_, version, sorted);
   } // get_accessors
 
   //--------------------------------------------------------------------------//
@@ -259,7 +316,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   >
   decltype(auto)
   get_handle(
-    data_client_t & data_client,
+    const data_client_t & data_client,
     const const_string_t & key,
     size_t version=0
   )

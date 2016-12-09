@@ -51,7 +51,7 @@ endif()
 if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
   add_definitions(-DFLECSI_RUNTIME_MODEL_serial)
-  set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/serial)
+  set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/serial)
 
 #
 # Legion interface
@@ -59,7 +59,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   add_definitions(-DFLECSI_RUNTIME_MODEL_legion)
-  set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/legion)
+  set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/legion)
 
   if(NOT APPLE)
     set(FLECSI_RUNTIME_LIBRARIES  -ldl ${Legion_LIBRARIES} ${MPI_LIBRARIES})
@@ -75,7 +75,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   add_definitions(-DFLECSI_RUNTIME_MODEL_mpi)
-  set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/mpi)
+  set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/mpi)
 
   if(NOT APPLE)
     set(FLECSI_RUNTIME_LIBRARIES  -ldl ${MPI_LIBRARIES})
@@ -93,7 +93,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
   endif()
  
   add_definitions(-DFLECSI_RUNTIME_MODEL_mpilegion)
-  set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/mpilegion)
+  set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/mpilegion)
 
   if(NOT APPLE)
     set(FLECSI_RUNTIME_LIBRARIES  -ldl ${Legion_LIBRARIES} ${MPI_LIBRARIES})
@@ -377,9 +377,9 @@ install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi
 # Copy the auxiliary files for local development
 add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/share/runtime_main.cc
   COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_SOURCE_DIR}/flecsi/execution/runtime_main.cc
+    ${PROJECT_SOURCE_DIR}/flecsi/execution/runtime_main.cc
     ${CMAKE_BINARY_DIR}/share/runtime_main.cc
-    DEPENDS ${CMAKE_SOURCE_DIR}/flecsi/execution/runtime_main.cc
+    DEPENDS ${PROJECT_SOURCE_DIR}/flecsi/execution/runtime_main.cc
     COMMENT "Copying runtime main file")
 add_custom_target(runtime_main ALL
   DEPENDS ${CMAKE_BINARY_DIR}/share/runtime_main.cc)
@@ -393,7 +393,7 @@ add_custom_target(runtime_driver ALL
   DEPENDS ${CMAKE_BINARY_DIR}/share/runtime_driver.cc)
 
 # Install the auxiliary files
-install(FILES ${CMAKE_SOURCE_DIR}/flecsi/execution/runtime_main.cc
+install(FILES ${PROJECT_SOURCE_DIR}/flecsi/execution/runtime_main.cc
   DESTINATION share/flecsi/runtime)
 install(FILES ${_runtime_path}/runtime_driver.cc
   DESTINATION share/flecsi/runtime)

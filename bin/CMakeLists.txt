@@ -32,7 +32,7 @@ add_executable(example_app ${example_src})
 #------------------------------------------------------------------------------#
 
 target_compile_definitions(example_app PRIVATE
-    -DFLECSI_DRIVER=${CMAKE_SOURCE_DIR}/bin/example_driver.h)
+  -DFLECSI_DRIVER=${PROJECT_SOURCE_DIR}/bin/example_driver.h)
 
 #------------------------------------------------------------------------------#
 # Add link dependencies.

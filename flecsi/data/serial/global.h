@@ -28,6 +28,8 @@
 #include "flecsi/data/data_handle.h"
 #include "flecsi/utils/const_string.h"
 
+#include <algorithm>
+
 ///
 // \file serial/global.h
 // \authors bergen
@@ -73,7 +75,8 @@ struct global_accessor_t
   // Constructors.
   //--------------------------------------------------------------------------//
 
-  global_accessor_t() {}
+  /// Default constructor.
+  global_accessor_t() = default;
 
   ///
   // Constructor.
@@ -93,8 +96,8 @@ struct global_accessor_t
   :
     label_(label),
     data_(data),
-    user_meta_data_(user_meta_data),
-    user_attributes_(user_attributes)
+    user_meta_data_(&user_meta_data),
+    user_attributes_(&user_attributes)
   {}
 
 	///
@@ -109,25 +112,63 @@ struct global_accessor_t
     user_meta_data_(a.user_meta_data_),
     user_attributes_(a.user_attributes_)
   {}
+
+  //--------------------------------------------------------------------------//
+  // Member data interface.
+  //--------------------------------------------------------------------------//
+
+  ///
+  /// \brief Return a std::string containing the label of the data variable
+  ///       reference by this accessor.
+  ///
+  const std::string &
+  label() const
+  {
+    return label_;
+  } // label
+
 	///
-  // \brief Return the user meta data for this data variable.
+  /// \brief Return the user meta data for this data variable.
 	///
   const user_meta_data_t &
   meta_data() const
   {
-    return user_meta_data_;
+    return *user_meta_data_;
   } // meta_data
 
   ///
-  //
+  ///
   ///
   bitset_t &
   attributes()
   {
-    return user_attributes_;
+    return *user_attributes_;
   } // attributes
+
+  const bitset_t &
+  attributes() const
+  {
+    return *user_attributes_;
+  } // attributes
+
+  //--------------------------------------------------------------------------//
+  // Operators.
+  //--------------------------------------------------------------------------//
+
+  //! \brief copy operator.
+  //! \param [in] a  The accessor to copy.
+  //! \return A reference to the new copy.
+  global_accessor_t & operator=(const global_accessor_t & a)
+  {
+    label_ = a.label_;
+    data_ = a.data_;
+    user_meta_data_ = a.user_meta_data_;
+    user_attributes_ = a.user_attributes_;
+    return *this;
+  } // operator =
+
   ///
-  //
+  ///
   ///
   const T *
   operator -> () const
@@ -136,7 +177,7 @@ struct global_accessor_t
   } // operator ->
 
   ///
-  //
+  ///
   ///
   T *
   operator -> ()
@@ -144,10 +185,23 @@ struct global_accessor_t
     return data_;
   } // operator ->
 
+  //!  \brief Provide access to the data for this data variable.  
+  //!  \remark This is the const operator version.
+  const T & operator*() const
+  {
+    return *data_;
+  }
+
+  //!  \brief Provide access to the data for this data variable.
+  T & operator*()
+  {
+    return *data_;
+  }
+
   ///
-  // \brief Test to see if this accessor is empty.
-  //
-  // \return true if registered.
+  /// \brief Test to see if this accessor is empty.
+  ///
+  /// \return true if registered.
   ///
   operator bool() const
   {
@@ -158,10 +212,8 @@ private:
 
   std::string label_ = "";
   T * data_ = nullptr;
-  const user_meta_data_t & user_meta_data_ =
-    *(std::make_unique<user_meta_data_t>());
-  bitset_t & user_attributes_ =
-    *(std::make_unique<bitset_t>());
+  const user_meta_data_t * user_meta_data_ = nullptr;
+  bitset_t * user_attributes_ = nullptr;
 
 }; // struct global_accessor_t
 
@@ -224,7 +276,7 @@ struct storage_type_t<global, DS, MD> {
   static
   handle_t<T>
   register_data(
-    data_client_t & data_client,
+    const data_client_t & data_client,
     data_store_t & data_store,
     const const_string_t & key,
     size_t versions,
@@ -260,9 +312,41 @@ struct storage_type_t<global, DS, MD> {
   // Data accessors.
   //--------------------------------------------------------------------------//
 
+  /// \brief Return a global_accessor_t.
   ///
-  //
+  /// \param [in] meta_data  The meta data to use to build the accessor.
+  /// \param [in] version   The version to select.
   ///
+  /// \remark In this version, the search for meta data was already done.
+  template< typename T >
+  static
+  accessor_t<T>
+  get_accessor(
+    meta_data_t & meta_data,
+    size_t version
+  )
+  {
+
+    // check that the requested version exists
+    if ( version >= meta_data.versions ) {
+      std::cerr << "version out of range" << std::endl;
+      std::abort();
+    }
+
+    // construct an accessor from the meta data
+    return { meta_data.label,
+      reinterpret_cast<T *>(&meta_data.data[version][0]),
+      meta_data.user_data, meta_data.attributes[version] };  
+  }
+
+  /// \brief Return a global_accessor_t.
+  ///
+  /// \param [in] data_store   The data store to search.
+  /// \param [in] hash   The hash to search for.
+  /// \param [in] version   The version to select.
+  ///
+  /// \remark In this version, the search for meta data has not been done,
+  ///   but the key has already been hashed.
   template<
     typename T,
     size_t NS
@@ -270,29 +354,299 @@ struct storage_type_t<global, DS, MD> {
   static
   accessor_t<T>
   get_accessor(
-    data_client_t & data_client,
     data_store_t & data_store,
-    const const_string_t & key,
+    const const_string_t::hash_type_t & hash,
     size_t version
   )
   {
-    const size_t h = key.hash() ^ data_client.runtime_id();
-    auto search = data_store[NS].find(h);
+    auto search = data_store[NS].find(hash);
 
     if(search == data_store[NS].end()) {
       return {};
     }
     else {
-      auto & meta_data = search->second;
-          
-      // check that the requested version exists.
-      assert(meta_data.versions > version && "version out-of-range");
-
-      return { meta_data.label,
-        reinterpret_cast<T *>(&meta_data.data[version][0]),
-        meta_data.user_data, meta_data.attributes[version] };
+      return get_accessor<T>( search->second, version );
     } // if
   } // get_accessor
+
+  /// \brief Return a global_accessor_t.
+  ///
+  /// \param [in] data_client  The data client to restrict our search to.
+  /// \param [in] data_store   The data store to search.
+  /// \param [in] key   The key to search for.
+  /// \param [in] version   The version to select.
+  ///
+  /// \remark In this version, the search for meta data has not been done,
+  ///   and the key is still a string.
+  template<
+    typename T,
+    size_t NS
+  >
+  static
+  accessor_t<T>
+  get_accessor(
+    const data_client_t & data_client,
+    data_store_t & data_store,
+    const const_string_t & key,
+    size_t version
+  )
+  {
+    const size_t hash = key.hash() ^ data_client.runtime_id();
+    return get_accessor<T,NS>(data_store, hash, version);
+  } // get_accessor
+
+  /// \brief Return a list of all accessor_t's filtered by a predicate.
+  ///
+  /// \param [in] data_client  The data client to restrict our search to.
+  /// \param [in] data_store   The data store to search.
+  /// \param [in] version   The version to select.
+  /// \param [in] predicate   If \e predicate(a) returns true, add the accessor
+  ///                         to the list.
+  /// \param [in] sorted  If true, sort the results by label lexographically.
+  ///
+  /// \remark This version is confined to search within a single namespace
+  template<
+    typename T,
+    size_t NS,
+    typename Predicate
+  >
+  static
+  decltype(auto)
+  get_accessors(
+    const data_client_t & data_client,
+    data_store_t & data_store,
+    size_t version,
+    Predicate && predicate,
+    bool sorted
+  )
+  {
+
+    std::vector< accessor_t<T> > as;
+
+    // the runtime id
+    auto runtime_id = data_client.runtime_id();
+
+    // loop over each key pair
+    for (auto & entry_pair : data_store[NS]) {
+      // get the meta data key and label
+      const auto & meta_data_key = entry_pair.first;
+      auto & meta_data = entry_pair.second;
+      // now build the hash for this label
+      const auto & label = meta_data.label;
+      auto key_hash = hash<const_string_t::hash_type_t>(label, label.size());
+      auto hash = key_hash ^ runtime_id;
+      // filter out the accessors for different data_clients
+      if ( meta_data_key != hash ) continue;
+      // if the reconstructed hash matches the meta data key,
+      // then we may want this one
+      auto a = get_accessor<T>( meta_data, version );
+      if ( a )
+        if (meta_data.rtti->type_info == typeid(T) && predicate(a))
+          as.emplace_back( std::move(a) );
+    } // for
+
+    // if sorting is requested
+    if (sorted) 
+      std::sort( 
+        as.begin(), as.end(), 
+        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
+      );
+
+    return as;
+  
+  } // get_accessor
+
+
+  /// \brief Return a list of all accessor_t's filtered by a predicate.
+  ///
+  /// \param [in] data_client  The data client to restrict our search to.
+  /// \param [in] data_store   The data store to search.
+  /// \param [in] version   The version to select.
+  /// \param [in] predicate   If \e predicate(a) returns true, add the accessor
+  ///                         to the list.
+  /// \param [in] sorted  If true, sort the results by label lexographically.
+  ///
+  /// \remark This version searches all namespaces.
+  template<
+    typename T,
+    typename Predicate
+  >
+  static
+  decltype(auto)
+  get_accessors(
+    const data_client_t & data_client,
+    data_store_t & data_store,
+    size_t version,
+    Predicate && predicate,
+    bool sorted
+  )
+  {
+
+    std::vector< accessor_t<T> > as;
+
+    // the runtime id
+    auto runtime_id = data_client.runtime_id();
+
+    // check each namespace
+    for (auto & namespace_map : data_store) {
+
+      // the namespace data
+      auto & namespace_key = namespace_map.first;
+      auto & namespace_data = namespace_map.second;
+      
+      // loop over each key pair
+      for (auto & entry_pair : namespace_data) {
+        // get the meta data key and label
+        const auto & meta_data_key = entry_pair.first;
+        auto & meta_data = entry_pair.second;
+        // now build the hash for this label
+        const auto & label = meta_data.label;
+        auto key_hash = hash<const_string_t::hash_type_t>(label, label.size());
+        auto hash = key_hash ^ runtime_id;
+        // filter out the accessors for different data_clients
+        if ( meta_data_key != hash ) continue;
+        // if the reconstructed hash matches the meta data key,
+        // then we may want this one
+        auto a = get_accessor<T>( meta_data, version );
+        if ( a )
+          if (meta_data.rtti->type_info == typeid(T) && predicate(a))
+            as.emplace_back( std::move(a) );
+      } // for each key pair
+    } // for each namespace
+
+    // if sorting is requested
+    if (sorted) 
+      std::sort( 
+        as.begin(), as.end(), 
+        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
+      );
+
+    return as;
+  
+  } // get_accessor
+
+  /// \brief Return a list of all accessor_t's.
+  ///
+  /// \param [in] data_client  The data client to restrict our search to.
+  /// \param [in] data_store   The data store to search.
+  /// \param [in] version   The version to select.
+  /// \param [in] sorted  If true, sort the results by label lexographically.
+  ///
+  /// \remark This version is confined to search within a single namespace
+  template<
+    typename T,
+    size_t NS
+  >
+  static
+  decltype(auto)
+  get_accessors(
+    const data_client_t & data_client,
+    data_store_t & data_store,
+    size_t version,
+    bool sorted
+  )
+  {
+
+    std::vector< accessor_t<T> > as;
+
+    // the runtime id
+    auto runtime_id = data_client.runtime_id();
+
+    // loop over each key pair
+    for (auto & entry_pair : data_store[NS]) {
+      // get the meta data key and label
+      const auto & meta_data_key = entry_pair.first;
+      auto & meta_data = entry_pair.second;
+      // now build the hash for this label
+      const auto & label = meta_data.label;
+      auto key_hash = hash<const_string_t::hash_type_t>(label, label.size());
+      auto hash = key_hash ^ runtime_id;
+      // filter out the accessors for different data_clients
+      if ( meta_data_key != hash ) continue;
+      // if the reconstructed hash matches the meta data key,
+      // then we may want this one
+      auto a = get_accessor<T>( meta_data, version );
+      if ( a )
+        if (meta_data.rtti->type_info == typeid(T))
+          as.emplace_back( std::move(a) );
+    } // for
+
+    // if sorting is requested
+    if (sorted) 
+      std::sort( 
+        as.begin(), as.end(), 
+        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
+      );
+
+    return as;
+  
+  } // get_accessor
+
+
+  /// \brief Return a list of all accessor_t's.
+  ///
+  /// \param [in] data_client  The data client to restrict our search to.
+  /// \param [in] data_store   The data store to search.
+  /// \param [in] version   The version to select.
+  /// \param [in] sorted  If true, sort the results by label lexographically.
+  ///
+  /// \remark This version searches all namespaces.
+  template<
+    typename T
+  >
+  static
+  decltype(auto)
+  get_accessors(
+    const data_client_t & data_client,
+    data_store_t & data_store,
+    size_t version,
+    bool sorted
+  )
+  {
+
+    std::vector< accessor_t<T> > as;
+
+    // the runtime id
+    auto runtime_id = data_client.runtime_id();
+
+    // check each namespace
+    for (auto & namespace_map : data_store) {
+
+      // the namespace data
+      auto & namespace_key = namespace_map.first;
+      auto & namespace_data = namespace_map.second;
+      
+      // loop over each key pair
+      for (auto & entry_pair : namespace_data) {
+        // get the meta data key and label
+        const auto & meta_data_key = entry_pair.first;
+        auto & meta_data = entry_pair.second;
+        // now build the hash for this label
+        const auto & label = meta_data.label;
+        auto key_hash = hash<const_string_t::hash_type_t>(label, label.size());
+        auto hash = key_hash ^ runtime_id;
+        // filter out the accessors for different data_clients
+        if ( meta_data_key != hash ) continue;
+        // if the reconstructed hash matches the meta data key,
+        // then we may want this one
+        auto a = get_accessor<T>( meta_data, version );
+        if ( a )
+          if (meta_data.rtti->type_info == typeid(T))
+            as.emplace_back( std::move(a) );
+      } // for each key pair
+    } // for each namespace
+
+    // if sorting is requested
+    if (sorted) 
+      std::sort( 
+        as.begin(), as.end(), 
+        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
+      );
+
+    return as;
+  
+  } // get_accessor
+
 
   //--------------------------------------------------------------------------//
   // Data handles.
@@ -308,7 +662,7 @@ struct storage_type_t<global, DS, MD> {
   static
   handle_t<T>
   get_handle(
-    data_client_t & data_client,
+    const data_client_t & data_client,
     data_store_t & data_store,
     const const_string_t & key
   )

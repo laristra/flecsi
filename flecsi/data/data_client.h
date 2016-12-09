@@ -35,9 +35,11 @@ public:
   /// Assignment operator (disabled)
   data_client_t & operator = (const data_client_t &) = delete;
 
-  /// Allow move operations
+  /// Allow move construction
   data_client_t(data_client_t && o) = default;
-  data_client_t & operator=(data_client_t && o) = default;
+
+  /// Allow move construction
+  data_client_t & operator=(data_client_t && o);
 
   /// Destructor
   virtual ~data_client_t();
@@ -47,8 +49,7 @@ public:
   // data manager.
   ///
   uintptr_t
-  runtime_id(
-  ) const
+  runtime_id() const
   {
     return (reinterpret_cast<uintptr_t>(this) << 4) ^ id_;
   } // runtime_id

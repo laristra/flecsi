@@ -233,7 +233,11 @@ public:
   mesh_topology_t(mesh_topology_t &&) = default;
 
   //! override default move assignement
-  mesh_topology_t & operator=(mesh_topology_t && o) = default;
+  mesh_topology_t & operator=(mesh_topology_t && o)
+  {
+    // call base_t move operator
+    mesh_topology_base_t::operator=(std::move(o));
+  };
 
   //! Constructor
   mesh_topology_t()
