@@ -225,7 +225,7 @@ TEST(mesh_topology, traversal) {
   mesh->init<0>();
   mesh->init_bindings<1>();
 
-  mesh->dump();
+  //mesh->dump();
 
   for(auto cell : mesh->entities<2>()) {
     CINCH_CAPTURE() << "------- cell id: " << cell.id() << endl;
