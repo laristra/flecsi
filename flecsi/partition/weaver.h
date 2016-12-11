@@ -26,6 +26,7 @@ private:
   std::set<entry_info_t> shared_cells;
   std::set<entry_info_t> ghost_cells;
 
+  std::set<size_t> primary_vertices;
   std::set<entry_info_t> exclusive_vertices;
   std::set<entry_info_t> shared_vertices;
   std::set<entry_info_t> ghost_vertices;
@@ -224,6 +225,14 @@ public:
       } // if
     } // for
 
+   //filling out primary partition for vertices
+   {
+    for (auto i:shared_vertices)
+      primary_vertices.insert(i.id);
+    for (auto i:exclusive_vertices)
+      primary_vertices.insert(i.id);
+   }
+
     {
       size_t r(0);
       for (auto i: vertex_requests) {
@@ -254,6 +263,10 @@ public:
 
   std::set<entry_info_t> get_ghost_cells() {
     return ghost_cells;
+  }
+
+  std::set<size_t> get_primary_vertices() {
+    return primary_vertices;
   }
 
   std::set<entry_info_t> get_exclusive_vertices() {

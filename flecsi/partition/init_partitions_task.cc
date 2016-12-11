@@ -32,6 +32,7 @@ get_numbers_of_cells_task(
 
   flecsi::execution::context_t & context_ =
     flecsi::execution::context_t::instance();
+  //getting cells partitioning info from MPI
   index_partition_t ip =
     context_.interop_helper_.data_storage_[0];
   
