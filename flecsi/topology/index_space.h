@@ -258,11 +258,13 @@ public:
   }
 
   index_space(index_space&& is)
-  : v_(is.v_), begin_(is.begin_), end_(is.end_),
-  sorted_(is.sorted_), s_(is.s_){
+  : v_(std::move(is.v_)), begin_(std::move(is.begin_)), 
+    end_(std::move(is.end_)), sorted_(std::move(is.sorted_)), 
+    s_(std::move(is.s_))
+  {
 
     if(OWNED || is.owned_){
-      is.v_ = new id_vector_t;
+      is.v_ = nullptr;
       owned_ = true;
     }
     else{
@@ -270,8 +272,11 @@ public:
     }
 
     if(STORAGE){
-      is.s_ = new item_vector_t;
+      is.s_ = nullptr;
     }
+
+    is.begin_ = 0;
+    is.end_ = 0;
   }
 
   ~index_space(){
@@ -309,25 +314,28 @@ public:
   }
 
   index_space& operator=(index_space&& is){
-    v_ = is.v_;
+    v_ = std::move(is.v_);
 
     if(OWNED || is.owned_){
-      is.v_ = new id_vector_t;
+      is.v_ = nullptr;
       owned_ = true;
     }
     else{
       owned_ = false;
     }
 
-    begin_ = is.begin_;
-    end_ = is.end_;
-    sorted_ = is.sorted_;
-    s_ = is.s_;
+    begin_ = std::move(is.begin_);
+    end_ = std::move(is.end_);
+    sorted_ = std::move(is.sorted_);
+    s_ = std::move(is.s_);
 
     if(STORAGE){
-      is.s_ = new item_vector_t;
+      is.s_ = nullptr;
     }
     
+    is.begin_ = 0;
+    is.end_ = 0;
+
     return *this;
   }
 
@@ -505,12 +513,13 @@ public:
     return v_->data();
   }
 
-  auto filter(filter_function f) const {
+  template<typename Predicate>
+  auto filter(Predicate && f) const {
     index_space<T, false, true, false> is;
     is.set_master(*this);
 
     for (auto item : *this) {
-      if (f(item)) {
+      if (std::forward<Predicate>(f)(item)) {
         is.push_back(item);
       }
     }

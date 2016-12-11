@@ -208,6 +208,27 @@ struct global_accessor_t
     return data_ != nullptr;
   } // operator bool
 
+  /// \brief Implicit conversion operator.
+  /// Using explicit keyword forces users to use static_cast<T>().  But
+  /// if you dont use this, then it is ambiguous
+  ///   accessor<int> a, b;
+  ///   int c = 2;
+  ///   a = c; // ok, uses assignment
+  ///   b = 3; // ok, uses assignement
+  ///   c = a; // ok for non-explicit cases, uses conversion operator
+  ///   c = static_cast<int>(a); // works for both explicit and implicit cases
+  ///   // which one do you want? accessor/accessor assignement operator or
+  ///   // do you want to convert b to int, then assign int to a?
+  ///   a = b;
+  /// Making this explicit forces you to have to static cast for all cases,
+  /// which I think is less ambiguous
+  ///   a = static_cast<int>(b);
+  ///   a = static_cast<int>(c);
+  explicit operator T() const
+  {
+    return *data_;
+  }
+
 private:
 
   std::string label_ = "";

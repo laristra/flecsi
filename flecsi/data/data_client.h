@@ -36,7 +36,7 @@ public:
   data_client_t & operator = (const data_client_t &) = delete;
 
   /// Allow move construction
-  data_client_t(data_client_t && o) = default;
+  data_client_t(data_client_t && o);
 
   /// Allow move construction
   data_client_t & operator=(data_client_t && o);

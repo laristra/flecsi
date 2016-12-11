@@ -349,6 +349,10 @@ class connectivity_t
 
   connectivity_t& operator=(const connectivity_t&) = delete;
 
+  // allow move operations
+  connectivity_t(connectivity_t&&) = default;
+  connectivity_t& operator=(connectivity_t&&) = default;
+
   //! Constructor.
   connectivity_t()
   : index_space_(false){}
