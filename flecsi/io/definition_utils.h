@@ -46,7 +46,7 @@ entity_neighbors(
 
     // Add this cell id if the intersection shares at least
     // intersections vertices
-    if(intersect.size() >= (thru_dim + 1)) {
+    if(intersect.size() > thru_dim) {
       neighbors.insert(e);
     } // if
   } // for

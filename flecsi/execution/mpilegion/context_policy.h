@@ -81,7 +81,6 @@ static thread_local std::unordered_map<size_t,
 ///
 struct mpilegion_context_policy_t
 {
-
   using lr_context_t = LegionRuntime::HighLevel::Context;
   using lr_runtime_t = LegionRuntime::HighLevel::HighLevelRuntime;
   using lr_task_t = LegionRuntime::HighLevel::Task;
