@@ -24,14 +24,13 @@
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
-#include <memory>
-
 #include "flecsi/data/data_client.h"
 #include "flecsi/data/data_handle.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/index_space.h"
 
 #include <algorithm>
+#include <memory>
 
 ///
 // \file serial/dense.h
@@ -79,7 +78,7 @@ struct dense_accessor_t
   //--------------------------------------------------------------------------//
 
   ///
-  // Default constructor.
+  /// Default constructor.
   ///
   dense_accessor_t() = default;
 
@@ -131,8 +130,8 @@ struct dense_accessor_t
   //--------------------------------------------------------------------------//
 
 	///
-  // \brief Return a std::string containing the label of the data variable
-  //        reference by this accessor.
+  /// \brief Return a std::string containing the label of the data variable
+  ///       reference by this accessor.
 	///
   const std::string &
   label() const
@@ -141,8 +140,8 @@ struct dense_accessor_t
   } // label
 
 	///
-  // \brief Return the index space size of the data variable
-  //        referenced by this accessor.
+  /// \brief Return the index space size of the data variable
+  ///        referenced by this accessor.
 	///
   size_t
   size() const
@@ -151,7 +150,7 @@ struct dense_accessor_t
   } // size
 
 	///
-  // \brief Return the user meta data for this data variable.
+  /// \brief Return the user meta data for this data variable.
 	///
   const user_meta_data_t &
   meta_data() const
@@ -160,7 +159,7 @@ struct dense_accessor_t
   } // meta_data
 
   ///
-  //
+  ///
   ///
   bitset_t &
   attributes()
@@ -175,7 +174,7 @@ struct dense_accessor_t
   } // attributes
 
   ///
-  //
+  ///
   ///
   size_t
   index_space() const
@@ -188,7 +187,7 @@ struct dense_accessor_t
   //--------------------------------------------------------------------------//
 
   ///
-  //
+  ///
   ///
   iterator_t
   begin()
@@ -197,7 +196,7 @@ struct dense_accessor_t
   } // begin
 
   ///
-  //
+  ///
   ///
   iterator_t
   end()
@@ -209,6 +208,9 @@ struct dense_accessor_t
   // Operators.
   //--------------------------------------------------------------------------//
 
+  //! \brief copy operator.
+  //! \param [in] a  The accessor to copy.
+  //! \return A reference to the new copy.
   dense_accessor_t & operator=(const dense_accessor_t & a)
   {
     label_ = a.label_;
@@ -222,13 +224,13 @@ struct dense_accessor_t
   } // operator =
 
 	///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \tparam E A complex index type.
-  //
-  // This version of the operator is provided to support use with
-  // \e flecsi mesh entity types \ref mesh_entity_base_t.
+  /// \brief Provide logical array-based access to the data for this
+  ///        data variable.  This is the const operator version.
+  ///
+  /// \tparam E A complex index type.
+  ///
+  /// This version of the operator is provided to support use with
+  /// \e flecsi mesh entity types \ref mesh_entity_base_t.
 	///
   template<typename E>
   const T &
@@ -240,13 +242,13 @@ struct dense_accessor_t
   } // operator []
 
 	///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \tparam E A complex index type.
-  //
-  // This version of the operator is provided to support use with
-  // \e flecsi mesh entity types \ref mesh_entity_base_t.
+  /// \brief Provide logical array-based access to the data for this
+  ///        data variable.  This is the const operator version.
+  ///
+  /// \tparam E A complex index type.
+  ///
+  /// This version of the operator is provided to support use with
+  /// \e flecsi mesh entity types \ref mesh_entity_base_t.
 	///
   template<typename E>
   T &
@@ -258,13 +260,13 @@ struct dense_accessor_t
   } // operator []
 
 	///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \tparam E A complex index type.
-  //
-  // This version of the operator is provided to support use with
-  // \e flecsi mesh entity types \ref mesh_entity_base_t.
+  /// \brief Provide logical array-based access to the data for this
+  ///        data variable.  This is the const operator version.
+  ///
+  /// \tparam E A complex index type.
+  ///
+  /// This version of the operator is provided to support use with
+  /// \e flecsi mesh entity types \ref mesh_entity_base_t.
 	///
   template<typename E>
   const T &
@@ -276,13 +278,13 @@ struct dense_accessor_t
   } // operator []
 
 	///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \tparam E A complex index type.
-  //
-  // This version of the operator is provided to support use with
-  // \e flecsi mesh entity types \ref mesh_entity_base_t.
+  /// \brief Provide logical array-based access to the data for this
+  ///        data variable.  This is the const operator version.
+  ///
+  /// \tparam E A complex index type.
+  ///
+  /// This version of the operator is provided to support use with
+  /// \e flecsi mesh entity types \ref mesh_entity_base_t.
 	///
   template<typename E>
   T &
@@ -294,10 +296,10 @@ struct dense_accessor_t
   } // operator []
 
 	///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
+  /// \brief Provide logical array-based access to the data for this
+  ///        data variable.  This is the const operator version.
+  ///
+  /// \param index The index of the data variable to return.
 	///
   const T &
   operator [] (
@@ -309,10 +311,10 @@ struct dense_accessor_t
   } // operator []
 
 	///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
+  /// \brief Provide logical array-based access to the data for this
+  ///        data variable.  This is the const operator version.
+  ///
+  /// \param index The index of the data variable to return.
 	///
   T &
   operator [] (
@@ -324,10 +326,10 @@ struct dense_accessor_t
   } // operator []
 
 	///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
+  /// \brief Provide logical array-based access to the data for this
+  ///        data variable.  This is the const operator version.
+  ///
+  /// \param index The index of the data variable to return.
 	///
   T &
   operator () (
@@ -339,10 +341,10 @@ struct dense_accessor_t
   } // operator []
 
 	///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
+  /// \brief Provide logical array-based access to the data for this
+  ///        data variable.  This is the const operator version.
+  ///
+  /// \param index The index of the data variable to return.
 	///
   const T &
   operator () (
@@ -354,9 +356,9 @@ struct dense_accessor_t
   } // operator []
 
 	///
-  // \brief Test to see if this accessor is empty
-  //
-  // \return true if registered.
+  /// \brief Test to see if this accessor is empty
+  ///
+  /// \return true if registered.
   ///
   operator bool() const
   {
@@ -436,7 +438,7 @@ struct storage_type_t<dense, DS, MD>
   static
   handle_t<T>
   register_data(
-    data_client_t & data_client,
+    const data_client_t & data_client,
     data_store_t & data_store,
     const const_string_t & key,
     size_t versions,
@@ -524,6 +526,8 @@ struct storage_type_t<dense, DS, MD>
   ///
   /// \param [in] meta_data  The meta data to use to build the accessor.
   /// \param [in] version   The version to select.
+  ///
+  /// \remark In this version, the search for meta data was already done.
   template< typename T >
   static
   accessor_t<T>
@@ -551,6 +555,9 @@ struct storage_type_t<dense, DS, MD>
   /// \param [in] data_store   The data store to search.
   /// \param [in] hash   The hash to search for.
   /// \param [in] version   The version to select.
+  ///
+  /// \remark In this version, the search for meta data has not been done,
+  ///   but the key has already been hashed.
   template<
     typename T,
     size_t NS
@@ -579,6 +586,9 @@ struct storage_type_t<dense, DS, MD>
   /// \param [in] data_store   The data store to search.
   /// \param [in] key   The key to search for.
   /// \param [in] version   The version to select.
+  ///
+  /// \remark In this version, the search for meta data has not been done,
+  ///   and the key is still a string.
   template<
     typename T,
     size_t NS
@@ -586,7 +596,7 @@ struct storage_type_t<dense, DS, MD>
   static
   accessor_t<T>
   get_accessor(
-    data_client_t & data_client,
+    const data_client_t & data_client,
     data_store_t & data_store,
     const const_string_t & key,
     size_t version
@@ -615,7 +625,7 @@ struct storage_type_t<dense, DS, MD>
   static
   decltype(auto)
   get_accessors(
-    data_client_t & data_client,
+    const data_client_t & data_client,
     data_store_t & data_store,
     size_t version,
     Predicate && predicate,
@@ -637,6 +647,8 @@ struct storage_type_t<dense, DS, MD>
       const auto & label = meta_data.label;
       auto key_hash = hash<const_string_t::hash_type_t>(label, label.size());
       auto hash = key_hash ^ runtime_id;
+      // filter out the accessors for different data_clients
+      if ( meta_data_key != hash ) continue;
       // if the reconstructed hash matches the meta data key,
       // then we may want this one
       auto a = get_accessor<T>( meta_data, version );
@@ -674,7 +686,7 @@ struct storage_type_t<dense, DS, MD>
   static
   decltype(auto)
   get_accessors(
-    data_client_t & data_client,
+    const data_client_t & data_client,
     data_store_t & data_store,
     size_t version,
     Predicate && predicate,
@@ -703,11 +715,135 @@ struct storage_type_t<dense, DS, MD>
         const auto & label = meta_data.label;
         auto key_hash = hash<const_string_t::hash_type_t>(label, label.size());
         auto hash = key_hash ^ runtime_id;
+        // filter out the accessors for different data_clients
+        if ( meta_data_key != hash ) continue;
         // if the reconstructed hash matches the meta data key,
         // then we may want this one
         auto a = get_accessor<T>( meta_data, version );
         if ( a )
           if (meta_data.rtti->type_info == typeid(T) && predicate(a))
+            as.emplace_back( std::move(a) );
+      } // for each key pair
+    } // for each namespace
+
+    // if sorting is requested
+    if (sorted) 
+      std::sort( 
+        as.begin(), as.end(), 
+        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
+      );
+
+    return as;
+  
+  } // get_accessor
+
+  /// \brief Return a list of all dense_accessor_t's.
+  ///
+  /// \param [in] data_client  The data client to restrict our search to.
+  /// \param [in] data_store   The data store to search.
+  /// \param [in] version   The version to select.
+  /// \param [in] sorted  If true, sort the results by label lexographically.
+  ///
+  /// \remark This version is confined to search within a single namespace
+  template<
+    typename T,
+    size_t NS
+  >
+  static
+  decltype(auto)
+  get_accessors(
+    const data_client_t & data_client,
+    data_store_t & data_store,
+    size_t version,
+    bool sorted
+  )
+  {
+
+    std::vector< accessor_t<T> > as;
+
+    // the runtime id
+    auto runtime_id = data_client.runtime_id();
+
+    // loop over each key pair
+    for (auto & entry_pair : data_store[NS]) {
+      // get the meta data key and label
+      const auto & meta_data_key = entry_pair.first;
+      auto & meta_data = entry_pair.second;
+      // now build the hash for this label
+      const auto & label = meta_data.label;
+      auto key_hash = hash<const_string_t::hash_type_t>(label, label.size());
+      auto hash = key_hash ^ runtime_id;
+      // filter out the accessors for different data_clients
+      if ( meta_data_key != hash ) continue;
+      // if the reconstructed hash matches the meta data key,
+      // then we may want this one
+      auto a = get_accessor<T>( meta_data, version );
+      if ( a )
+        if (meta_data.rtti->type_info == typeid(T))
+          as.emplace_back( std::move(a) );
+    } // for
+
+    // if sorting is requested
+    if (sorted) 
+      std::sort( 
+        as.begin(), as.end(), 
+        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
+      );
+
+    return as;
+  
+  } // get_accessor
+
+
+  /// \brief Return a list of all dense_accessor_t's.
+  ///
+  /// \param [in] data_client  The data client to restrict our search to.
+  /// \param [in] data_store   The data store to search.
+  /// \param [in] version   The version to select.
+  /// \param [in] sorted  If true, sort the results by label lexographically.
+  ///
+  /// \remark This version searches all namespaces.
+  template<
+    typename T
+  >
+  static
+  decltype(auto)
+  get_accessors(
+    const data_client_t & data_client,
+    data_store_t & data_store,
+    size_t version,
+    bool sorted
+  )
+  {
+
+    std::vector< accessor_t<T> > as;
+
+    // the runtime id
+    auto runtime_id = data_client.runtime_id();
+
+    // check each namespace
+    for (auto & namespace_map : data_store) {
+
+      // the namespace data
+      auto & namespace_key = namespace_map.first;
+      auto & namespace_data = namespace_map.second;
+      
+      // loop over each key pair
+      for (auto & entry_pair : namespace_data) {
+        // get the meta data key and label
+        const auto & meta_data_key = entry_pair.first;
+        auto & meta_data = entry_pair.second;
+        // now build the hash for this label
+        const auto & label = meta_data.label;
+        auto key_hash = hash<const_string_t::hash_type_t>(label, label.size());
+        auto hash = key_hash ^ runtime_id;
+        // filter out the accessors for different data_clients
+        if ( meta_data_key != hash ) continue;
+        // if the reconstructed hash matches the meta data key,
+        // then we may want this one
+        auto a = get_accessor<T>( meta_data, version );
+        if ( a )
+          if (meta_data.rtti->type_info == typeid(T))
             as.emplace_back( std::move(a) );
       } // for each key pair
     } // for each namespace
@@ -738,7 +874,7 @@ struct storage_type_t<dense, DS, MD>
   static
   handle_t<T>
   get_handle(
-    data_client_t & data_client,
+    const data_client_t & data_client,
     data_store_t & data_store,
     const const_string_t & key,
     size_t version

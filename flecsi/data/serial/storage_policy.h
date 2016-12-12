@@ -64,8 +64,8 @@ struct serial_storage_policy_t {
   } // reset
 
   ///
-  // \brief delete ALL data associated with this runtime namespace.
-  // \param [in] runtime_namespace the namespace to search.
+  /// \brief delete ALL data associated with this runtime namespace.
+  /// \param [in] runtime_namespace the namespace to search.
   ///
   void
   reset(
@@ -96,6 +96,94 @@ struct serial_storage_policy_t {
       } // while
     } // for
   } // reset
+
+  /// \brief Count all data associated with this runtime namespace.
+  /// \param [in] runtime_namespace the namespace to search.
+  /// \return The number of hits for this namespace.
+  size_t
+  count(
+    uintptr_t runtime_namespace
+  )
+  {
+    size_t cnt(0);
+
+    // check each namespace
+    for (auto & sub_map : data_store_) {
+
+      // the namespace data
+      auto & namespace_key = sub_map.first;
+      auto & namespace_data = sub_map.second;
+      
+      // loop over each element in the namespace
+      for ( const auto & entry_pair : namespace_data ) {
+        // get the meta data key and label
+        const auto & meta_data_key = entry_pair.first;
+        const auto & meta_data = entry_pair.first;
+        // get the label
+        auto & label = entry_pair.second.label;
+        // now build the hash for this label
+        auto key_hash = hash<const_string_t::hash_type_t>(label, label.size());
+        auto hash = key_hash ^ runtime_namespace;
+        // test if it should be deleted
+        if (meta_data_key == hash) cnt++;
+      } // while
+    } // for
+
+    return cnt;
+  } // count
+
+  /// \brief move ALL data associated with this runtime namespace
+  /// \param [in] from,to the namespaces to move data from and to.
+  void move( uintptr_t from, uintptr_t to ) {
+
+    // check each namespace
+    for ( auto & sub_map : data_store_ ) {
+
+      // the namespace data
+      auto & namespace_key = sub_map.first;
+      auto & meta_data = sub_map.second;
+
+      // create a temporary map
+      using map_type = typename std::decay< decltype( meta_data ) >::type;
+      map_type tmp_map;
+
+      // loop over each element in the namespace and move
+      // matching ones into the temp map
+      auto itr = meta_data.begin();
+      while ( itr != meta_data.end() ) {
+        // get the meta data key and label
+        auto & meta_data_key = itr->first;
+        auto & label = itr->second.label;
+        // now build the hash for this label
+        auto key_hash = hash<const_string_t::hash_type_t>( label, label.size() );
+        auto from_hash = key_hash ^ from;
+        // test if it should be moved, and move it
+        if ( meta_data_key == from_hash ) {
+          auto to_hash = key_hash ^ to;                // new hash
+          tmp_map[to_hash] = std::move( itr->second ); // move data
+          itr = meta_data.erase(itr);                  // delete old instance
+        }
+        // otherwise just go to next instance
+        else {
+          ++itr;
+        }
+      } // while
+
+
+      // get move iterators
+      using iterator = typename map_type::iterator;
+      using move_iterator = std::move_iterator<iterator>;
+
+      // move the data back into the meta data map with the new key
+      meta_data.insert(
+        move_iterator( tmp_map.begin() ),
+        move_iterator( tmp_map.end() )
+      );
+
+    } // for
+
+  } // move
+
 
 protected:
 

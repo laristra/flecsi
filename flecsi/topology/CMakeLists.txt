@@ -77,7 +77,7 @@ cinch_add_unit(gravity-state
 #------------------------------------------------------------------------------#
 
 cinch_add_unit(index-space
-  SOURCES test/index-space.cc)
+  SOURCES test/index-space.cc test/pseudo_random.h)
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options

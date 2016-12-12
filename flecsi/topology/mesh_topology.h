@@ -230,7 +230,8 @@ public:
   mesh_topology_t & operator=(const mesh_topology_t &) = delete;
 
   // Allow move operations
-  mesh_topology_t(mesh_topology_t &&) = default;
+  mesh_topology_t(mesh_topology_t && o) = default;
+
 
   //! override default move assignement
   mesh_topology_t & operator=(mesh_topology_t && o) = default;
