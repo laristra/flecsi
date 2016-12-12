@@ -25,7 +25,7 @@
   <td id="projectlogo"><img alt="Logo" src="small-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">flecsi
-   &#160;<span id="projectnumber">0.0-1583-g7860c0b</span>
+   &#160;<span id="projectnumber">0.0-1587-g9825f55</span>
    </div>
   </td>
  </tr>
@@ -118,19 +118,471 @@ template&lt;typename T &gt; </td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a63c932614c90c9adbec62520a4e87cd4"><td class="memTemplParams" colspan="2"><a class="anchor" id="a63c932614c90c9adbec62520a4e87cd4"></a>
+<tr class="memitem:a97ccc6fada7f02207899154ae0ffcc70"><td class="memTemplParams" colspan="2"><a class="anchor" id="a97ccc6fada7f02207899154ae0ffcc70"></a>
 template&lt;typename T , size_t NS, typename... Args&gt; </td></tr>
-<tr class="memitem:a63c932614c90c9adbec62520a4e87cd4"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__handle__t.html">handle_t</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>register_data</b> (<a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, const <a class="el" href="classflecsi_1_1const__string__t.html">const_string_t</a> &amp;key, size_t versions, Args &amp;&amp;...args)</td></tr>
-<tr class="separator:a63c932614c90c9adbec62520a4e87cd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c09fa461f31ef853c963ab4e206fd2f"><td class="memTemplParams" colspan="2"><a class="anchor" id="a1c09fa461f31ef853c963ab4e206fd2f"></a>
+<tr class="memitem:a97ccc6fada7f02207899154ae0ffcc70"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__handle__t.html">handle_t</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>register_data</b> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, const <a class="el" href="classflecsi_1_1const__string__t.html">const_string_t</a> &amp;key, size_t versions, Args &amp;&amp;...args)</td></tr>
+<tr class="separator:a97ccc6fada7f02207899154ae0ffcc70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af12c89bd9401bbd22fb9962364427833"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:af12c89bd9401bbd22fb9962364427833"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__accessor__t.html">accessor_t</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01global_00_01DS_00_01MD_01_4.html#af12c89bd9401bbd22fb9962364427833">get_accessor</a> (meta_data_t &amp;meta_data, size_t version)</td></tr>
+<tr class="memdesc:af12c89bd9401bbd22fb9962364427833"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__accessor__t.html">global_accessor_t</a>.  <a href="#af12c89bd9401bbd22fb9962364427833">More...</a><br /></td></tr>
+<tr class="separator:af12c89bd9401bbd22fb9962364427833"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25afcf2bcab7fc5f6851bb829c1156ca"><td class="memTemplParams" colspan="2">template&lt;typename T , size_t NS&gt; </td></tr>
+<tr class="memitem:a25afcf2bcab7fc5f6851bb829c1156ca"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__accessor__t.html">accessor_t</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01global_00_01DS_00_01MD_01_4.html#a25afcf2bcab7fc5f6851bb829c1156ca">get_accessor</a> (data_store_t &amp;data_store, const const_string_t::hash_type_t &amp;<a class="el" href="namespaceflecsi.html#ae74ec8cb6d45298109175c503a009d36">hash</a>, size_t version)</td></tr>
+<tr class="memdesc:a25afcf2bcab7fc5f6851bb829c1156ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__accessor__t.html">global_accessor_t</a>.  <a href="#a25afcf2bcab7fc5f6851bb829c1156ca">More...</a><br /></td></tr>
+<tr class="separator:a25afcf2bcab7fc5f6851bb829c1156ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fc7e91364c7712172d6a63921da2a8a"><td class="memTemplParams" colspan="2">template&lt;typename T , size_t NS&gt; </td></tr>
+<tr class="memitem:a8fc7e91364c7712172d6a63921da2a8a"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__accessor__t.html">accessor_t</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01global_00_01DS_00_01MD_01_4.html#a8fc7e91364c7712172d6a63921da2a8a">get_accessor</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, const <a class="el" href="classflecsi_1_1const__string__t.html">const_string_t</a> &amp;key, size_t version)</td></tr>
+<tr class="memdesc:a8fc7e91364c7712172d6a63921da2a8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__accessor__t.html">global_accessor_t</a>.  <a href="#a8fc7e91364c7712172d6a63921da2a8a">More...</a><br /></td></tr>
+<tr class="separator:a8fc7e91364c7712172d6a63921da2a8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e1dea25ec98607ed86eaa4656960c9b"><td class="memTemplParams" colspan="2">template&lt;typename T , size_t NS, typename Predicate &gt; </td></tr>
+<tr class="memitem:a5e1dea25ec98607ed86eaa4656960c9b"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01global_00_01DS_00_01MD_01_4.html#a5e1dea25ec98607ed86eaa4656960c9b">get_accessors</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, size_t version, Predicate &amp;&amp;predicate, bool sorted)</td></tr>
+<tr class="memdesc:a5e1dea25ec98607ed86eaa4656960c9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a list of all accessor_t's filtered by a predicate.  <a href="#a5e1dea25ec98607ed86eaa4656960c9b">More...</a><br /></td></tr>
+<tr class="separator:a5e1dea25ec98607ed86eaa4656960c9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff086c5e46dbd7cddb2037cdf18f75f5"><td class="memTemplParams" colspan="2">template&lt;typename T , typename Predicate &gt; </td></tr>
+<tr class="memitem:aff086c5e46dbd7cddb2037cdf18f75f5"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01global_00_01DS_00_01MD_01_4.html#aff086c5e46dbd7cddb2037cdf18f75f5">get_accessors</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, size_t version, Predicate &amp;&amp;predicate, bool sorted)</td></tr>
+<tr class="memdesc:aff086c5e46dbd7cddb2037cdf18f75f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a list of all accessor_t's filtered by a predicate.  <a href="#aff086c5e46dbd7cddb2037cdf18f75f5">More...</a><br /></td></tr>
+<tr class="separator:aff086c5e46dbd7cddb2037cdf18f75f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a208e38536be34f26e2012d219b430f8a"><td class="memTemplParams" colspan="2">template&lt;typename T , size_t NS&gt; </td></tr>
+<tr class="memitem:a208e38536be34f26e2012d219b430f8a"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01global_00_01DS_00_01MD_01_4.html#a208e38536be34f26e2012d219b430f8a">get_accessors</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, size_t version, bool sorted)</td></tr>
+<tr class="memdesc:a208e38536be34f26e2012d219b430f8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a list of all accessor_t's.  <a href="#a208e38536be34f26e2012d219b430f8a">More...</a><br /></td></tr>
+<tr class="separator:a208e38536be34f26e2012d219b430f8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a408bb65f1630446ee9bfa049d25af38d"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a408bb65f1630446ee9bfa049d25af38d"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01global_00_01DS_00_01MD_01_4.html#a408bb65f1630446ee9bfa049d25af38d">get_accessors</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, size_t version, bool sorted)</td></tr>
+<tr class="memdesc:a408bb65f1630446ee9bfa049d25af38d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a list of all accessor_t's.  <a href="#a408bb65f1630446ee9bfa049d25af38d">More...</a><br /></td></tr>
+<tr class="separator:a408bb65f1630446ee9bfa049d25af38d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c89abf6f01db380d9e52eb37898a099"><td class="memTemplParams" colspan="2"><a class="anchor" id="a0c89abf6f01db380d9e52eb37898a099"></a>
 template&lt;typename T , size_t NS&gt; </td></tr>
-<tr class="memitem:a1c09fa461f31ef853c963ab4e206fd2f"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__accessor__t.html">accessor_t</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_accessor</b> (<a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, const <a class="el" href="classflecsi_1_1const__string__t.html">const_string_t</a> &amp;key, size_t version)</td></tr>
-<tr class="separator:a1c09fa461f31ef853c963ab4e206fd2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7cd5cf2ddd5e4d061953e8fa5e548b9a"><td class="memTemplParams" colspan="2"><a class="anchor" id="a7cd5cf2ddd5e4d061953e8fa5e548b9a"></a>
-template&lt;typename T , size_t NS&gt; </td></tr>
-<tr class="memitem:a7cd5cf2ddd5e4d061953e8fa5e548b9a"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__handle__t.html">handle_t</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_handle</b> (<a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, const <a class="el" href="classflecsi_1_1const__string__t.html">const_string_t</a> &amp;key)</td></tr>
-<tr class="separator:a7cd5cf2ddd5e4d061953e8fa5e548b9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c89abf6f01db380d9e52eb37898a099"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__handle__t.html">handle_t</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_handle</b> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, const <a class="el" href="classflecsi_1_1const__string__t.html">const_string_t</a> &amp;key)</td></tr>
+<tr class="separator:a0c89abf6f01db380d9e52eb37898a099"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="af12c89bd9401bbd22fb9962364427833"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename DS , typename MD &gt; </div>
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__accessor__t.html">accessor_t</a>&lt;T&gt; flecsi::data::serial::storage_type_t&lt; global, DS, MD &gt;::get_accessor </td>
+          <td>(</td>
+          <td class="paramtype">meta_data_t &amp;&#160;</td>
+          <td class="paramname"><em>meta_data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>version</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__accessor__t.html">global_accessor_t</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meta_data</td><td>The meta data to use to build the accessor. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">version</td><td>The version to select.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section remark"><dt>Remarks</dt><dd>In this version, the search for meta data was already done. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a25afcf2bcab7fc5f6851bb829c1156ca"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename DS , typename MD &gt; </div>
+<div class="memtemplate">
+template&lt;typename T , size_t NS&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__accessor__t.html">accessor_t</a>&lt;T&gt; flecsi::data::serial::storage_type_t&lt; global, DS, MD &gt;::get_accessor </td>
+          <td>(</td>
+          <td class="paramtype">data_store_t &amp;&#160;</td>
+          <td class="paramname"><em>data_store</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const const_string_t::hash_type_t &amp;&#160;</td>
+          <td class="paramname"><em>hash</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>version</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__accessor__t.html">global_accessor_t</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">data_store</td><td>The data store to search. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">hash</td><td>The hash to search for. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">version</td><td>The version to select.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section remark"><dt>Remarks</dt><dd>In this version, the search for meta data has not been done, but the key has already been hashed. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a8fc7e91364c7712172d6a63921da2a8a"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename DS , typename MD &gt; </div>
+<div class="memtemplate">
+template&lt;typename T , size_t NS&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__accessor__t.html">accessor_t</a>&lt;T&gt; flecsi::data::serial::storage_type_t&lt; global, DS, MD &gt;::get_accessor </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>data_client</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">data_store_t &amp;&#160;</td>
+          <td class="paramname"><em>data_store</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1const__string__t.html">const_string_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>version</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__accessor__t.html">global_accessor_t</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">data_client</td><td>The data client to restrict our search to. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">data_store</td><td>The data store to search. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">key</td><td>The key to search for. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">version</td><td>The version to select.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section remark"><dt>Remarks</dt><dd>In this version, the search for meta data has not been done, and the key is still a string. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a5e1dea25ec98607ed86eaa4656960c9b"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename DS , typename MD &gt; </div>
+<div class="memtemplate">
+template&lt;typename T , size_t NS, typename Predicate &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static decltype(auto) flecsi::data::serial::storage_type_t&lt; global, DS, MD &gt;::get_accessors </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>data_client</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">data_store_t &amp;&#160;</td>
+          <td class="paramname"><em>data_store</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>version</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Predicate &amp;&amp;&#160;</td>
+          <td class="paramname"><em>predicate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>sorted</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a list of all accessor_t's filtered by a predicate. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">data_client</td><td>The data client to restrict our search to. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">data_store</td><td>The data store to search. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">version</td><td>The version to select. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">predicate</td><td>If <em>predicate(a)</em> returns true, add the accessor to the list. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sorted</td><td>If true, sort the results by label lexographically.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section remark"><dt>Remarks</dt><dd>This version is confined to search within a single namespace </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aff086c5e46dbd7cddb2037cdf18f75f5"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename DS , typename MD &gt; </div>
+<div class="memtemplate">
+template&lt;typename T , typename Predicate &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static decltype(auto) flecsi::data::serial::storage_type_t&lt; global, DS, MD &gt;::get_accessors </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>data_client</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">data_store_t &amp;&#160;</td>
+          <td class="paramname"><em>data_store</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>version</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Predicate &amp;&amp;&#160;</td>
+          <td class="paramname"><em>predicate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>sorted</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a list of all accessor_t's filtered by a predicate. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">data_client</td><td>The data client to restrict our search to. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">data_store</td><td>The data store to search. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">version</td><td>The version to select. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">predicate</td><td>If <em>predicate(a)</em> returns true, add the accessor to the list. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sorted</td><td>If true, sort the results by label lexographically.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section remark"><dt>Remarks</dt><dd>This version searches all namespaces. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a208e38536be34f26e2012d219b430f8a"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename DS , typename MD &gt; </div>
+<div class="memtemplate">
+template&lt;typename T , size_t NS&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static decltype(auto) flecsi::data::serial::storage_type_t&lt; global, DS, MD &gt;::get_accessors </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>data_client</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">data_store_t &amp;&#160;</td>
+          <td class="paramname"><em>data_store</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>version</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>sorted</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a list of all accessor_t's. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">data_client</td><td>The data client to restrict our search to. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">data_store</td><td>The data store to search. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">version</td><td>The version to select. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sorted</td><td>If true, sort the results by label lexographically.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section remark"><dt>Remarks</dt><dd>This version is confined to search within a single namespace </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a408bb65f1630446ee9bfa049d25af38d"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename DS , typename MD &gt; </div>
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static decltype(auto) flecsi::data::serial::storage_type_t&lt; global, DS, MD &gt;::get_accessors </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>data_client</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">data_store_t &amp;&#160;</td>
+          <td class="paramname"><em>data_store</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>version</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>sorted</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a list of all accessor_t's. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">data_client</td><td>The data client to restrict our search to. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">data_store</td><td>The data store to search. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">version</td><td>The version to select. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sorted</td><td>If true, sort the results by label lexographically.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section remark"><dt>Remarks</dt><dd>This version searches all namespaces. </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/data/serial/<a class="el" href="serial_2global_8h_source.html">global.h</a></li>
 </ul>

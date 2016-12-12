@@ -31,6 +31,7 @@ var searchData=
   ['context_5fpolicy_2eh',['context_policy.h',['../mpilegion_2context__policy_8h.html',1,'']]],
   ['copper_5ft',['copper_t',['../structflecsi_1_1execution_1_1copper__t.html',1,'flecsi::execution']]],
   ['corner',['Corner',['../classCorner.html',1,'']]],
+  ['count',['count',['../structflecsi_1_1data_1_1serial__storage__policy__t.html#a75b2ee097505c0775ddb312d6eeebce7',1,'flecsi::data::serial_storage_policy_t']]],
   ['create',['create',['../classflecsi_1_1Factory__.html#a125654c433b801fd16a65ede4a2d18ee',1,'flecsi::Factory_']]],
   ['create_5fcell_5fadjacency',['create_cell_adjacency',['../classpartition.html#a309b5bad54eec702395e4e4f8c74e3db',1,'partition']]],
   ['create_5fio_5fexodus',['create_io_exodus',['../namespaceflecsi.html#a17b055e9f2fd8cb9c8556361c1fc2c2d',1,'flecsi']]],
