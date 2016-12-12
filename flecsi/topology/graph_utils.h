@@ -153,14 +153,14 @@ vertex_referencers(
 
 ///
 // Return the union of all vertices that are referenced by at least
-// one of the entities in indices.
+// one of the entities in the given set of indices.
 //
 // \tparam by_dim The topological dimension of the entities that
 //                reference the vertex.
 //
 // \param gd The graph definition containing the topological connectivity
 //           information.
-// \param indices The cell indeces.
+// \param indices The entity indeces.
 ///
 template<
   size_t by_dim
