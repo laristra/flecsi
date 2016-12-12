@@ -33,9 +33,12 @@ get_numbers_of_cells_task(
   flecsi::execution::context_t & context_ =
     flecsi::execution::context_t::instance();
   //getting cells partitioning info from MPI
-  index_partition_t ip =
+  index_partition_t ip_cells =
     context_.interop_helper_.data_storage_[0];
   
+  //getting vertices partitioning info from MPI
+  index_partition_t ip_vertices =
+    context_.interop_helper_.data_storage_[1]; 
 #if 0
   int rank; 
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -68,117 +71,200 @@ get_numbers_of_cells_task(
 
 #endif
   
-  partitions.primary = ip.primary.size();
-  partitions.exclusive = ip.exclusive.size();
-  partitions.shared = ip.shared.size();
-  partitions.ghost = ip.ghost.size();
+  partitions.primary_cells = ip_cells.primary.size();
+  partitions.exclusive_cells = ip_cells.exclusive.size();
+  partitions.shared_cells = ip_cells.shared.size();
+  partitions.ghost_cells = ip_cells.ghost.size();
+
+  partitions.primary_vertices = ip_vertices.primary.size();
+  partitions.exclusive_vertices = ip_vertices.exclusive.size();
+  partitions.shared_vertices = ip_vertices.shared.size();
+  partitions.ghost_vertices = ip_vertices.ghost.size();
 
   std::cout << "about to return partitions (primary,exclusive,shared,ghost) ("
-            << partitions.primary << "," 
-            <<partitions.exclusive << "," << partitions.shared << "," 
-            << partitions.ghost << ")" << std::endl;
+            << partitions.primary_cells << "," 
+            <<partitions.exclusive_cells << "," << partitions.shared_cells <<
+             "," << partitions.ghost_cells << ")" << std::endl;
 
   return partitions; 
 }//get_numbers_of_cells_task
 
 void
-init_cells_task(
+initialization_task(
   const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx, Legion::HighLevelRuntime *runtime
 )
 {
 
-  assert(regions.size() == 1);
-  assert(task->regions.size() == 1);
+  assert(regions.size() == 2);
+  assert(task->regions.size() == 2);
   assert(task->regions[0].privilege_fields.size() == 1);
+  assert(task->regions[1].privilege_fields.size() == 1);
   std::cout << "Here I am in init_cells" << std::endl;
 
   using index_partition_t = index_partition__<size_t>;
 
   flecsi::execution::context_t & context_ =
     flecsi::execution::context_t::instance();
-  index_partition_t ip =
+  index_partition_t ip_cells =
     context_.interop_helper_.data_storage_[0];
+  index_partition_t ip_vert =
+    context_.interop_helper_.data_storage_[1];
 
+  //cells:
+  LegionRuntime::HighLevel::LogicalRegion lr_cells =
+      regions[0].get_logical_region();
+  LegionRuntime::HighLevel::IndexSpace is_cells = lr_cells.get_index_space();
 
-  LegionRuntime::HighLevel::LogicalRegion lr = regions[0].get_logical_region();
-  LegionRuntime::HighLevel::IndexSpace is = lr.get_index_space();
+  LegionRuntime::HighLevel::IndexIterator itr_cells(runtime, ctx, is_cells);
 
-  LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, is);
+  auto acc_cells = regions[0].get_field_accessor(0).typeify<int>();
 
-  auto ac = regions[0].get_field_accessor(0).typeify<int>();
-
-  for (auto primary_cell : ip.primary) {
-    assert(itr.has_next());
+  for (auto primary_cell : ip_cells.primary) {
+    assert(itr_cells.has_next());
     size_t id =primary_cell;
-    ptr_t ptr = itr.next();
-    ac.write(ptr, id);
+    ptr_t ptr = itr_cells.next();
+    acc_cells.write(ptr, id);
   }
 
-}//init_cells_task
+  //vertices
+  LegionRuntime::HighLevel::LogicalRegion lr_vert =
+      regions[1].get_logical_region();
+  LegionRuntime::HighLevel::IndexSpace is_vert = lr_vert.get_index_space();
+
+  LegionRuntime::HighLevel::IndexIterator itr_vert(runtime, ctx, is_vert);
+
+  auto acc_vert = regions[1].get_field_accessor(0).typeify<int>();
+
+  for (auto primary_vert : ip_vert.primary) {
+    assert(itr_vert.has_next());
+    size_t id =primary_vert;
+    ptr_t ptr = itr_vert.next();
+    acc_vert.write(ptr, id);
+  }
+
+}//initialization_task
 
 
-Legion::LogicalRegion
+partition_lr
 shared_part_task(
   const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx, Legion::HighLevelRuntime *runtime
 )
 {
-  assert(regions.size() == 1);
-  assert(task->regions.size() == 1);
+  assert(regions.size() == 2);
+  assert(task->regions.size() == 2);
   assert(task->regions[0].privilege_fields.size() == 1);
+  assert(task->regions[1].privilege_fields.size() == 1);
 
   using index_partition_t = index_partition__<size_t>;
   using legion_domain = LegionRuntime::HighLevel::Domain;
 
   flecsi::execution::context_t & context_ =
     flecsi::execution::context_t::instance();
-  index_partition_t ip =
+  index_partition_t ip_cells =
     context_.interop_helper_.data_storage_[0];
+  index_partition_t ip_vert =
+    context_.interop_helper_.data_storage_[1];
 
-  LegionRuntime::HighLevel::LogicalRegion lr = regions[0].get_logical_region();
-  LegionRuntime::HighLevel::IndexSpace is = lr.get_index_space();
+  partition_lr shared_lr;
 
-  Rect<1> shared_rect(Point<1>(0), Point<1>(ip.shared.size()-1));
-  LegionRuntime::HighLevel::IndexSpace shared_is =runtime->create_index_space(
-          ctx, legion_domain::from_rect<1>(shared_rect));
+  LegionRuntime::HighLevel::LogicalRegion cells_lr =
+    regions[0].get_logical_region();
+  LegionRuntime::HighLevel::IndexSpace cells_is = cells_lr.get_index_space();
 
-  LegionRuntime::HighLevel::FieldSpace shared_fs =
+  Rect<1> cells_shared_rect(Point<1>(0), Point<1>(ip_cells.shared.size()-1));
+  LegionRuntime::HighLevel::IndexSpace cells_shared_is =
+          runtime->create_index_space(
+          ctx, legion_domain::from_rect<1>(cells_shared_rect));
+
+  LegionRuntime::HighLevel::FieldSpace cells_shared_fs =
           runtime->create_field_space(ctx);
   {
     LegionRuntime::HighLevel::FieldAllocator allocator =
-        runtime->create_field_allocator(ctx,shared_fs);
+        runtime->create_field_allocator(ctx,cells_shared_fs);
     allocator.allocate_field(sizeof(ptr_t), FID_SHARED);
   }
 
-  LegionRuntime::HighLevel::LogicalRegion shared_lr=
-       runtime->create_logical_region(ctx,shared_is, shared_fs);
-  runtime->attach_name(shared_lr, "shared temp  logical region");
+  shared_lr.cells=
+       runtime->create_logical_region(ctx,cells_shared_is, cells_shared_fs);
+  runtime->attach_name(shared_lr.cells, "shared temp  logical region");
 
-  LegionRuntime::HighLevel::RegionRequirement req(shared_lr,
-                      READ_WRITE, EXCLUSIVE, shared_lr);
-  req.add_field(FID_SHARED);
-  LegionRuntime::HighLevel::InlineLauncher shared_launcher(req);
-  LegionRuntime::HighLevel::PhysicalRegion shared_region =
+  {
+    LegionRuntime::HighLevel::RegionRequirement req(shared_lr.cells,
+                      READ_WRITE, EXCLUSIVE, shared_lr.cells);
+    req.add_field(FID_SHARED);
+    LegionRuntime::HighLevel::InlineLauncher shared_launcher(req);
+    LegionRuntime::HighLevel::PhysicalRegion shared_region =
               runtime->map_region(ctx, shared_launcher);
-  shared_region.wait_until_valid();
-  LegionRuntime::Accessor::RegionAccessor<
-    LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
-    shared_region.get_field_accessor(FID_SHARED).typeify<ptr_t>();
+    shared_region.wait_until_valid();
+    LegionRuntime::Accessor::RegionAccessor<
+      LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
+      shared_region.get_field_accessor(FID_SHARED).typeify<ptr_t>();
 
-  int indx=0;
-  LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, is);
-  ptr_t start=itr.next();
-  for (auto shared_cell : ip.shared) {
-    ptr_t ptr = (start.value+shared_cell.offset);
-    acc.write(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
-    make_point(indx)),ptr);
-    indx++;
-  }//end for
+    int indx=0;
+    LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, cells_is);
+    ptr_t start=itr.next();
+    for (auto shared_cell : ip_cells.shared) {
+      ptr_t ptr = (start.value+shared_cell.offset);
+      acc.write(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
+      make_point(indx)),ptr);
+      indx++;
+    }//end for
 
-  runtime->unmap_region(ctx, shared_region);
+    runtime->unmap_region(ctx, shared_region);
+  }//scope
+
+
+  LegionRuntime::HighLevel::LogicalRegion vert_lr =
+    regions[0].get_logical_region();
+  LegionRuntime::HighLevel::IndexSpace vert_is = vert_lr.get_index_space();
+
+  Rect<1> vert_shared_rect(Point<1>(0), Point<1>(ip_vert.shared.size()-1));
+  LegionRuntime::HighLevel::IndexSpace vert_shared_is =
+          runtime->create_index_space(
+          ctx, legion_domain::from_rect<1>(vert_shared_rect));
+
+  LegionRuntime::HighLevel::FieldSpace vert_shared_fs =
+          runtime->create_field_space(ctx);
+  {
+    LegionRuntime::HighLevel::FieldAllocator allocator =
+        runtime->create_field_allocator(ctx,vert_shared_fs);
+    allocator.allocate_field(sizeof(ptr_t), FID_SHARED);
+  }
+
+  shared_lr.vert=
+       runtime->create_logical_region(ctx,vert_shared_is, vert_shared_fs);
+  runtime->attach_name(shared_lr.vert, "shared temp  logical region");
+
+  {
+    LegionRuntime::HighLevel::RegionRequirement req(shared_lr.vert,
+                      READ_WRITE, EXCLUSIVE, shared_lr.vert);
+    req.add_field(FID_SHARED);
+    LegionRuntime::HighLevel::InlineLauncher shared_launcher(req);
+    LegionRuntime::HighLevel::PhysicalRegion shared_region =
+              runtime->map_region(ctx, shared_launcher);
+    shared_region.wait_until_valid();
+    LegionRuntime::Accessor::RegionAccessor<
+      LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
+      shared_region.get_field_accessor(FID_SHARED).typeify<ptr_t>();
+
+    int indx=0;
+    LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, vert_is);
+    ptr_t start=itr.next();
+    for (auto shared_vert : ip_vert.shared) {
+      ptr_t ptr = (start.value+shared_vert.offset);
+      acc.write(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
+      make_point(indx)),ptr);
+      indx++;
+    }//end for
+
+    runtime->unmap_region(ctx, shared_region);
+  }//scope
+ 
+
   return shared_lr;
 }//shared_part_task
 

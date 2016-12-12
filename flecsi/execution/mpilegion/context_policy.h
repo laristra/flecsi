@@ -119,13 +119,12 @@ struct mpilegion_context_policy_t
 
    // FIXME
     // This is Galen's hack to get partitioning working for the sprint
-    lr_runtime_t::register_legion_task<flecsi::dmp::init_cells_task>(
-      task_ids_t::instance().init_cells_task_id,lr_loc, false, true);
+    lr_runtime_t::register_legion_task<flecsi::dmp::initialization_task>(
+      task_ids_t::instance().init_task_id,lr_loc, false, true);
 
    // FIXME
     // This is Galen's hack to get partitioning working for the sprint
-//    lr_runtime_t::register_legion_task<std::vector<int>,
-    lr_runtime_t::register_legion_task<Legion::LogicalRegion,
+    lr_runtime_t::register_legion_task<flecsi::dmp::partition_lr,
       flecsi::dmp::shared_part_task>(
       task_ids_t::instance().shared_part_task_id,lr_loc, false, true); 
  

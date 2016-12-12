@@ -226,12 +226,7 @@ public:
     } // for
 
    //filling out primary partition for vertices
-   {
-    for (auto i:shared_vertices)
-      primary_vertices.insert(i.id);
-    for (auto i:exclusive_vertices)
-      primary_vertices.insert(i.id);
-   }
+   primary_vertices = flecsi::io::vertex_closure(sd, primary_cells);   
 
     {
       size_t r(0);
