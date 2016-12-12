@@ -268,66 +268,125 @@ shared_part_task(
   return shared_lr;
 }//shared_part_task
 
-Legion::LogicalRegion
+partition_lr
 exclusive_part_task(
   const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx, Legion::HighLevelRuntime *runtime
 )
 {
-  assert(regions.size() == 1);
-  assert(task->regions.size() == 1);
+  assert(regions.size() == 2);
+  assert(task->regions.size() == 2);
   assert(task->regions[0].privilege_fields.size() == 1);
+  assert(task->regions[1].privilege_fields.size() == 1);
   
   using index_partition_t = index_partition__<size_t>;
   using legion_domain = LegionRuntime::HighLevel::Domain;
   
   flecsi::execution::context_t & context_ =
     flecsi::execution::context_t::instance();
-  index_partition_t ip =
+  index_partition_t ip_cells =
     context_.interop_helper_.data_storage_[0];
+  index_partition_t ip_vert =
+    context_.interop_helper_.data_storage_[1];
+ 
+  partition_lr exclusive_lr;
+ 
+  LegionRuntime::HighLevel::LogicalRegion cells_lr =
+      regions[0].get_logical_region();
+  LegionRuntime::HighLevel::IndexSpace cells_is = cells_lr.get_index_space();
+  LegionRuntime::HighLevel::LogicalRegion vert_lr =
+      regions[1].get_logical_region();
+  LegionRuntime::HighLevel::IndexSpace vert_is = vert_lr.get_index_space();
   
-  LegionRuntime::HighLevel::LogicalRegion lr = regions[0].get_logical_region();
-  LegionRuntime::HighLevel::IndexSpace is = lr.get_index_space();
+  Rect<1> cells_exclusive_rect(Point<1>(0), Point<1>(
+      ip_cells.exclusive.size()-1));
+  LegionRuntime::HighLevel::IndexSpace cells_exclusive_is =
+	runtime->create_index_space(ctx, legion_domain::from_rect<1>(
+      cells_exclusive_rect));
   
-  Rect<1> exclusive_rect(Point<1>(0), Point<1>(ip.exclusive.size()-1));
-  LegionRuntime::HighLevel::IndexSpace exclusive_is =
-	runtime->create_index_space(ctx, legion_domain::from_rect<1>(exclusive_rect));
-  
-  LegionRuntime::HighLevel::FieldSpace exclusive_fs =
+  LegionRuntime::HighLevel::FieldSpace cells_exclusive_fs =
           runtime->create_field_space(ctx);
   { 
     LegionRuntime::HighLevel::FieldAllocator allocator =
-        runtime->create_field_allocator(ctx,exclusive_fs);
+        runtime->create_field_allocator(ctx,cells_exclusive_fs);
     allocator.allocate_field(sizeof(ptr_t), FID_EXCLUSIVE);
   }
   
-  LegionRuntime::HighLevel::LogicalRegion exclusive_lr= 
-       runtime->create_logical_region(ctx,exclusive_is, exclusive_fs);
-  runtime->attach_name(exclusive_lr, "exclusive temp  logical region");
-  
-  LegionRuntime::HighLevel::RegionRequirement req(exclusive_lr,
-                      READ_WRITE, EXCLUSIVE, exclusive_lr);
-  req.add_field(FID_EXCLUSIVE);
-  LegionRuntime::HighLevel::InlineLauncher exclusive_launcher(req);
-  LegionRuntime::HighLevel::PhysicalRegion exclusive_region =
+  exclusive_lr.cells=runtime->create_logical_region(ctx,cells_exclusive_is, 
+       cells_exclusive_fs);
+  runtime->attach_name(exclusive_lr.cells, 
+          "exclusive temp  logical region");
+  {
+    LegionRuntime::HighLevel::RegionRequirement req(exclusive_lr.cells,
+                      READ_WRITE, EXCLUSIVE, exclusive_lr.cells);
+    req.add_field(FID_EXCLUSIVE);
+    LegionRuntime::HighLevel::InlineLauncher exclusive_launcher(req);
+    LegionRuntime::HighLevel::PhysicalRegion exclusive_region =
               runtime->map_region(ctx, exclusive_launcher);
-  exclusive_region.wait_until_valid();
-  LegionRuntime::Accessor::RegionAccessor<
-    LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
-    exclusive_region.get_field_accessor(FID_EXCLUSIVE).typeify<ptr_t>();
+    exclusive_region.wait_until_valid();
+    LegionRuntime::Accessor::RegionAccessor<
+      LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
+      exclusive_region.get_field_accessor(FID_EXCLUSIVE).typeify<ptr_t>();
 
-  int indx=0;
-  LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, is);
-  ptr_t start=itr.next();
-  for (auto exclusive_cell : ip.exclusive) {
-    ptr_t ptr = (start.value+exclusive_cell.offset);
-    acc.write(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
-    make_point(indx)),ptr);
-    indx++;
-  }//end for
+    int indx=0;
+    LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, cells_is);
+    ptr_t start=itr.next();
+    for (auto exclusive_cell : ip_cells.exclusive) {
+      ptr_t ptr = (start.value+exclusive_cell.offset);
+      acc.write(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
+      make_point(indx)),ptr);
+      indx++;
+    }//end for
 
-  runtime->unmap_region(ctx, exclusive_region);
+    runtime->unmap_region(ctx, exclusive_region);
+  }//end scope
+
+
+  Rect<1> vert_exclusive_rect(Point<1>(0), Point<1>(
+      ip_vert.exclusive.size()-1));
+  LegionRuntime::HighLevel::IndexSpace vert_exclusive_is =
+  runtime->create_index_space(ctx, legion_domain::from_rect<1>(
+      vert_exclusive_rect));
+
+  LegionRuntime::HighLevel::FieldSpace vert_exclusive_fs =
+          runtime->create_field_space(ctx);
+  {
+    LegionRuntime::HighLevel::FieldAllocator allocator =
+        runtime->create_field_allocator(ctx, vert_exclusive_fs);
+    allocator.allocate_field(sizeof(ptr_t), FID_EXCLUSIVE);
+  }
+
+  exclusive_lr.vert=runtime->create_logical_region(ctx, vert_exclusive_is,
+       vert_exclusive_fs);
+  runtime->attach_name(exclusive_lr.vert,
+          "exclusive temp  logical region");
+  {
+    LegionRuntime::HighLevel::RegionRequirement req(exclusive_lr.vert,
+                      READ_WRITE, EXCLUSIVE, exclusive_lr.vert);
+    req.add_field(FID_EXCLUSIVE);
+    LegionRuntime::HighLevel::InlineLauncher exclusive_launcher(req);
+    LegionRuntime::HighLevel::PhysicalRegion exclusive_region =
+              runtime->map_region(ctx, exclusive_launcher);
+    exclusive_region.wait_until_valid();
+    LegionRuntime::Accessor::RegionAccessor<
+      LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
+      exclusive_region.get_field_accessor(FID_EXCLUSIVE).typeify<ptr_t>();
+
+    int indx=0;
+    LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, vert_is);
+    ptr_t start=itr.next();
+    for (auto exclusive_vert : ip_vert.exclusive) {
+      ptr_t ptr = (start.value+exclusive_vert.offset);
+      acc.write(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
+      make_point(indx)),ptr);
+      indx++;
+    }//end for
+
+    runtime->unmap_region(ctx, exclusive_region);
+  }//end scope
+
+
   return exclusive_lr; 
 }//exclusive_part_task
 

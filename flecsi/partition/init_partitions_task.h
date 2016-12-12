@@ -64,7 +64,7 @@ shared_part_task(
   Legion::Context ctx, Legion::HighLevelRuntime *runtime
 );
 
-Legion::LogicalRegion
+partition_lr
 exclusive_part_task(
   const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,
