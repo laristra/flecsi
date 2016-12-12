@@ -81,8 +81,8 @@ void top_level_task(const Task* task,
 
     fa.allocate_field(sizeof(entity_id), legion_dpd::ENTITY_FID);
     
-    fa.allocate_field(sizeof(legion_dpd::data_info),
-                      legion_dpd::DATA_INFO_FID);
+    fa.allocate_field(sizeof(legion_dpd::ptr_count),
+                      legion_dpd::DATA_PTR_COUNT_FID);
 
     cells_part.lr = h.create_logical_region(is, fs);
 
@@ -124,10 +124,6 @@ TEST(legion, test1) {
 
   Runtime::register_legion_task<legion_dpd::init_data_task>(
     legion_dpd::INIT_DATA_TID,
-    Processor::LOC_PROC, false, true);
-
-  Runtime::register_legion_task<legion_dpd::init_partition_metadata_task>(
-    legion_dpd::INIT_PARTITION_METADATA_TID,
     Processor::LOC_PROC, false, true);
 
   int argc = 1;

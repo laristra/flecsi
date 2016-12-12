@@ -28,26 +28,6 @@ namespace{
 namespace flecsi {
 namespace execution {
 
-  void legion_dpd::init_partition_metadata_task(
-    const Task* task,
-    const std::vector<PhysicalRegion>& regions,
-    Context ctx, Runtime* runtime){
-
-    size_t reserve = *(size_t*)task->args;
-
-    legion_helper h(runtime, ctx);
-
-    size_t p = task->index_point.point_data[0];
-
-    auto ac = regions[0].get_field_accessor(PARTITION_METADATA_FID).
-      typeify<partition_metadata>();
-    
-    partition_metadata md;
-    md.reserve = reserve;
-
-    ac.write(DomainPoint::from_point<1>(p), md);
-  }
-
   void legion_dpd::init_connectivity_task(
     const Task* task,
     const std::vector<PhysicalRegion>& regions,
@@ -136,28 +116,37 @@ namespace execution {
 
     size_t reserve = *(size_t*)task->args;
 
+    size_t p = task->index_point.point_data[0];
+
     LogicalRegion ent_from_lr = regions[0].get_logical_region();
     IndexSpace ent_from_is = ent_from_lr.get_index_space();
 
     auto from_ac = 
-      regions[0].get_field_accessor(DATA_INFO_FID).typeify<data_info>();
+      regions[0].get_field_accessor(DATA_PTR_COUNT_FID).typeify<ptr_count>();
 
     LogicalRegion to_lr = regions[1].get_logical_region();
     IndexSpace to_is = to_lr.get_index_space();
 
-    data_info di;
-    di.size = 0;
-    di.reserve = reserve;
+    auto meta_ac = regions[2].get_field_accessor(PARTITION_METADATA_FID).
+      typeify<partition_metadata>();
+    
+    partition_metadata md;
+    md.reserve = reserve;
 
-    IndexIterator from_itr(runtime, ctx, ent_from_is);
+    meta_ac.write(DomainPoint::from_point<1>(p), md);
+
     IndexIterator to_itr(runtime, ctx, to_is);
     ptr_t to_ptr = to_itr.next();
 
+    ptr_count pc;
+    pc.count = 0;
+    pc.ptr = to_ptr;
+
+    IndexIterator from_itr(runtime, ctx, ent_from_is);
+
     while(from_itr.has_next()){
       ptr_t from_ptr = from_itr.next();
-      di.ptr = to_ptr;
-      from_ac.write(from_ptr, di);
-      to_ptr = to_ptr + int(reserve);
+      from_ac.write(from_ptr, pc);
     }
   }
 
@@ -183,27 +172,8 @@ namespace execution {
 
       Blockify<1> coloring(1);
 
-      IndexPartition ip = 
+      partition_metadata_ip_ = 
         runtime_->create_index_partition(context_, is, coloring);
-
-      LogicalPartition lp = runtime_->get_logical_partition(context_,
-        partition_metadata_lr_, ip);
-
-      Domain d = h.domain_from_rect(0, num_partitions - 1);
-
-      ArgumentMap arg_map;
-
-      IndexLauncher 
-        il(INIT_PARTITION_METADATA_TID, d,
-           TaskArgument(&init_reserve, sizeof(size_t)), arg_map);
-
-      il.add_region_requirement(
-        RegionRequirement(lp, 0, WRITE_DISCARD, EXCLUSIVE, 
-                          partition_metadata_lr_));
-      il.region_requirements[0].add_field(PARTITION_METADATA_FID);
-
-      FutureMap fm = h.execute_index_space(il);
-      fm.wait_all_results();
     }
 
     {
@@ -240,14 +210,6 @@ namespace execution {
 
     }
 
-    {
-      FieldSpace fs = from_.lr.get_field_space();
-
-      FieldAllocator fa = h.create_field_allocator(fs);
-
-      fa.allocate_field(sizeof(data_info), DATA_INFO_FID);
-    }
-
     ArgumentMap arg_map;
 
     Domain d = h.domain_from_rect(0, num_partitions - 1);
@@ -263,7 +225,7 @@ namespace execution {
           RegionRequirement(ent_from_lp, 0, 
                             WRITE_DISCARD, EXCLUSIVE, from_.lr));
 
-    il.region_requirements[0].add_field(DATA_INFO_FID);
+    il.region_requirements[0].add_field(DATA_PTR_COUNT_FID);
 
     LogicalPartition to_lp =
       runtime_->get_logical_partition(context_, to_lr_, to_ip_);
@@ -273,6 +235,14 @@ namespace execution {
                             WRITE_DISCARD, EXCLUSIVE, to_lr_));
 
     il.region_requirements[1].add_field(ENTRY_FID);
+
+    LogicalPartition meta_lp = runtime_->get_logical_partition(context_,
+      partition_metadata_lr_, partition_metadata_ip_);
+
+    il.add_region_requirement(
+      RegionRequirement(meta_lp, 0, WRITE_DISCARD, EXCLUSIVE, 
+                        partition_metadata_lr_));
+    il.region_requirements[2].add_field(PARTITION_METADATA_FID);
 
     FutureMap fm = h.execute_index_space(il);
     fm.wait_all_results();

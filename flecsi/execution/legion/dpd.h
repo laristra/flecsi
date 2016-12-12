@@ -40,7 +40,6 @@ public:
   enum task_ids{
     INIT_CONNECTIVITY_TID = 10000,
     INIT_DATA_TID,
-    INIT_PARTITION_METADATA_TID
   };
 
   enum fields_ids{
@@ -48,10 +47,10 @@ public:
     ENTITY_PAIR_FID,
     PTR_FID,
     PTR_COUNT_FID,
+    DATA_PTR_COUNT_FID,
     ENTRY_FID,
     VALUE_FID,
-    PARTITION_METADATA_FID,
-    DATA_INFO_FID
+    PARTITION_METADATA_FID
   };
 
   using partition_count_map = std::map<size_t, size_t>;
@@ -71,12 +70,6 @@ public:
   struct ptr_count{
     ptr_t ptr;
     size_t count;
-  };
-
-  struct data_info{
-    ptr_t ptr;
-    size_t size;
-    size_t reserve;
   };
 
   template<typename T>
@@ -138,10 +131,6 @@ public:
     Legion::Context ctx, Legion::Runtime* runtime);
 
   static void init_data_task(const Legion::Task* task,
-    const std::vector<Legion::PhysicalRegion>& regions,
-    Legion::Context ctx, Legion::Runtime* runtime);
-
-  static void init_partition_metadata_task(const Legion::Task* task,
     const std::vector<Legion::PhysicalRegion>& regions,
     Legion::Context ctx, Legion::Runtime* runtime);
 
