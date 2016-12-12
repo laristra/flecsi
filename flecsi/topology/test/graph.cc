@@ -151,14 +151,12 @@ TEST(graph, vertex_closure) {
 
   flecsi::topology::test_definition_t td;
 
-  std::set<size_t> primary = { 0, 1, 2, 5 };
+  std::set<size_t> primary = { 0, 1, 4, 5 };
+  auto closure = flecsi::topology::vertex_closure<2>(td, primary);
 
-  auto referencers = flecsi::topology::vertex_closure<2>(td, primary);
+  std::set<size_t> compare = { 0, 1, 2, 5, 6, 7, 10, 11, 12 };
+  CINCH_ASSERT(EQ, compare, closure);
 
-  for(auto r: referencers) {
-    std::cout << r << " ";
-  } // for
-  std::cout << std::endl;
 } // TEST
 
 /*----------------------------------------------------------------------------*
