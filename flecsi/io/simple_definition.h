@@ -11,6 +11,7 @@
 #include <string>
 
 #include "flecsi/io/mesh_definition.h"
+#include "flecsi/utils/reporting.h"
 
 ///
 // \file simple_definition.h
@@ -55,7 +56,7 @@ public:
       cell_start_ = file_.tellg();
     }
     else {
-      std::cout << "file open error" << std::endl;
+      flecsi_error("failed opening " << filename);
     }// if
   } // simple_definition_t
 
