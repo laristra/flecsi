@@ -64,7 +64,7 @@ after_success:
       rm -rf assets/doxygen doc;
       CON=$(docker run -d flecsi/flecsi:${DISTRO}_${RUNTIME}${TAG}) && docker cp ${CON}:/home/flecsi/flecsi/build/doc . ;
       mv doc/doxygen/html assets/doxygen;
-      mv doc/*.pdf assets;
+      for i in doc/*.pdf; do mv ${i} assets/${i%-0.0*}.pdf;
       rm -rf doc;
       git add --all assets/doxygen assets/*.pdf;
       if [[ ${TRAVIS_BRANCH} = master && ${encrypted_5669a181ba27_key} && ${encrypted_5669a181ba27_iv} && ${TRAVIS_PULL_REQUEST} == false ]]; then
