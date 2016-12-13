@@ -524,7 +524,8 @@ driver(
 
   //creating partitioning for ghost elements in cells_is
 
-  Coloring ghost_coloring;
+  Coloring cells_ghost_coloring;
+  Coloring vert_ghost_coloring;
 
   LegionRuntime::HighLevel::IndexLauncher ghost_part_launcher(
     task_ids_t::instance().ghost_part_task_id,
@@ -539,6 +540,11 @@ driver(
       READ_ONLY, EXCLUSIVE, cells_lr));
   ghost_part_launcher.add_field(0, FID_CELL);
 
+  ghost_part_launcher.add_region_requirement(
+    RegionRequirement(vertices_lr, 0/*projection ID*/,
+      READ_ONLY, EXCLUSIVE, vertices_lr));
+  ghost_part_launcher.add_field(1, FID_VERT);
+
   FutureMap fm5 = runtime->execute_index_space(context,ghost_part_launcher);
   fm5.wait_all_results();
 
@@ -546,37 +552,72 @@ driver(
   indx=0;
   for (GenericPointInRectIterator<1> pir(rank_rect); pir; pir++)
   {
-    LogicalRegion ghost_pts_lr= fm5.get_result< LogicalRegion >(
+    flecsi::dmp::partition_lr  ghost_lr=
+      fm5.get_result<flecsi::dmp::partition_lr >(
       DomainPoint::from_point<1>(pir.p));
-    LegionRuntime::HighLevel::IndexSpace is =
-      ghost_pts_lr.get_index_space();
-    LegionRuntime::HighLevel::RegionRequirement req(ghost_pts_lr,
-      READ_ONLY, EXCLUSIVE, ghost_pts_lr);
-    req.add_field(FID_GHOST);
-    LegionRuntime::HighLevel::InlineLauncher ghost_launcher(req);
-    LegionRuntime::HighLevel::PhysicalRegion ghost_region =
-      runtime->map_region(context, ghost_launcher);
-    ghost_region.wait_until_valid();
-    LegionRuntime::Accessor::RegionAccessor<
-    LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
-      ghost_region.get_field_accessor(FID_GHOST).typeify<ptr_t>();
-    for (int j=0; j<cells_num_ghosts[indx]; j++)
     {
+      LogicalRegion ghost_pts_lr=ghost_lr.cells;
+      LegionRuntime::HighLevel::IndexSpace is =
+        ghost_pts_lr.get_index_space();
+      LegionRuntime::HighLevel::RegionRequirement req(ghost_pts_lr,
+        READ_ONLY, EXCLUSIVE, ghost_pts_lr);
+      req.add_field(FID_GHOST);
+      LegionRuntime::HighLevel::InlineLauncher ghost_launcher(req);
+      LegionRuntime::HighLevel::PhysicalRegion ghost_region =
+        runtime->map_region(context, ghost_launcher);
+      ghost_region.wait_until_valid();
+      LegionRuntime::Accessor::RegionAccessor<
+      LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
+        ghost_region.get_field_accessor(FID_GHOST).typeify<ptr_t>();
+      for (int j=0; j<cells_num_ghosts[indx]; j++)
+      {
+        ptr_t ptr=
+          acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
+            make_point(j)));
+        cells_ghost_coloring[indx].points.insert(ptr);
+      }//end for
+      runtime->unmap_region(context, ghost_region);
+    }//end scope
 
-      ptr_t ptr=
-        acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
-          make_point(j)));
-      ghost_coloring[indx].points.insert(ptr);
-    }//end for
-    runtime->unmap_region(context, ghost_region);
+    {
+      LogicalRegion ghost_pts_lr=ghost_lr.vert;
+      LegionRuntime::HighLevel::IndexSpace is =
+        ghost_pts_lr.get_index_space();
+      LegionRuntime::HighLevel::RegionRequirement req(ghost_pts_lr,
+        READ_ONLY, EXCLUSIVE, ghost_pts_lr);
+      req.add_field(FID_GHOST);
+      LegionRuntime::HighLevel::InlineLauncher ghost_launcher(req);
+      LegionRuntime::HighLevel::PhysicalRegion ghost_region =
+        runtime->map_region(context, ghost_launcher);
+      ghost_region.wait_until_valid();
+      LegionRuntime::Accessor::RegionAccessor<
+      LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
+        ghost_region.get_field_accessor(FID_GHOST).typeify<ptr_t>();
+      for (int j=0; j<vert_num_ghosts[indx]; j++)
+      {
+        ptr_t ptr=
+          acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
+            make_point(j)));
+        vert_ghost_coloring[indx].points.insert(ptr);
+      }//end for
+      runtime->unmap_region(context, ghost_region);
+    }//end scope
+
+
     indx++;
   }//end for
 
-  IndexPartition ghost_ip =
-    runtime->create_index_partition(context, cells_is,ghost_coloring, true);
+  IndexPartition cells_ghost_ip = runtime->create_index_partition(context,
+        cells_is,cells_ghost_coloring, true);
 
-  LogicalPartition ghost_lp = runtime->get_logical_partition(context,
-    cells_lr, ghost_ip);
+  LogicalPartition cells_ghost_lp = runtime->get_logical_partition(context,
+    cells_lr, cells_ghost_ip);
+
+  IndexPartition vert_ghost_ip = runtime->create_index_partition(context,
+        vertices_is,vert_ghost_coloring, true);
+
+  LogicalPartition vert_ghost_lp = runtime->get_logical_partition(context,
+    vertices_lr, vert_ghost_ip);
 
 
   //call a legion task that checks our partitions
@@ -599,7 +640,7 @@ driver(
   check_part_launcher.add_field(1, FID_CELL);
 
   check_part_launcher.add_region_requirement(
-    RegionRequirement(ghost_lp, 0/*projection ID*/,
+    RegionRequirement(cells_ghost_lp, 0/*projection ID*/,
       READ_ONLY, EXCLUSIVE, cells_lr));
   check_part_launcher.add_field(2, FID_CELL);
 
