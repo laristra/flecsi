@@ -9,7 +9,7 @@
 #include "flecsi/io/simple_definition.h"
 #include "flecsi/utils/set_utils.h"
 
-TEST(definition, simple) {
+TEST(simple_definition, simple) {
 
   flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
 
@@ -52,7 +52,7 @@ TEST(definition, simple) {
 
 } // TEST
 
-TEST(definition, neighbors) {
+TEST(simple_definition, neighbors) {
 
   flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
 

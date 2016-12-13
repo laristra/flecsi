@@ -14,9 +14,12 @@ TEST(graph, cell_to_cell_thru_vertices) {
 
   flecsi::topology::test_definition_t td;
 
+  auto neighbors = flecsi::topology::entity_neighbors<2,2,0>(td, 0);
+
 #define neighbor_test(id, set)                                                 \
   {                                                                            \
   auto neighbors = flecsi::topology::entity_neighbors<2,2,0>(td, id);          \
+  cinch_loop_info("neighbors " << id, neighbors);                              \
   CINCH_ASSERT(EQ, set, neighbors);                                            \
   } // scope
 
@@ -50,6 +53,7 @@ TEST(graph, cell_to_cell_thru_edges) {
 #define neighbor_test(id, set)                                                 \
   {                                                                            \
   auto neighbors = flecsi::topology::entity_neighbors<2,2,1>(td, id);          \
+  cinch_loop_info("neighbors " << id, neighbors);                              \
   CINCH_ASSERT(EQ, set, neighbors);                                            \
   } // scope
 
@@ -83,6 +87,8 @@ TEST(graph, cell_closure_thru_vertices) {
   std::set<size_t> primary = { 0, 1, 4, 5 };
   auto closure = flecsi::topology::entity_closure<2,2,0>(td, primary);
 
+  cinch_loop_info("closure ", closure);
+
   std::set<size_t> compare = { 0, 1, 2, 4, 5, 6, 8, 9, 10 };
   CINCH_ASSERT(EQ, compare, closure);
 
@@ -96,6 +102,8 @@ TEST(graph, cell_closure_thru_edges) {
 
   std::set<size_t> primary = { 0, 1, 4, 5 };
   auto closure = flecsi::topology::entity_closure<2,2,1>(td, primary);
+
+  cinch_loop_info("closure ", closure);
 
   std::set<size_t> compare = { 0, 1, 2, 4, 5, 6, 8, 9 };
   CINCH_ASSERT(EQ, compare, closure);
@@ -111,6 +119,7 @@ TEST(graph, vertex_referencers) {
 #define referencers_test(id, set)                                              \
   {                                                                            \
   auto referencers = flecsi::topology::vertex_referencers<2>(td, id);          \
+  cinch_loop_info("referencers " << id, referencers);                          \
   CINCH_ASSERT(EQ, set, referencers);                                          \
   } // scope
 
@@ -153,6 +162,8 @@ TEST(graph, vertex_closure) {
 
   std::set<size_t> primary = { 0, 1, 4, 5 };
   auto closure = flecsi::topology::vertex_closure<2>(td, primary);
+
+  cinch_loop_info("closure ", closure);
 
   std::set<size_t> compare = { 0, 1, 2, 5, 6, 7, 10, 11, 12 };
   CINCH_ASSERT(EQ, compare, closure);

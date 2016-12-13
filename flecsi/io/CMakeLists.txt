@@ -29,8 +29,8 @@ cinch_add_unit(io
   SOURCES test/io.cc
 )
 
-cinch_add_unit(definition
-  SOURCES test/definition.cc
+cinch_add_unit(simple_definition
+  SOURCES test/simple_definition.cc
   INPUTS test/simple2d-8x8.msh test/simple2d-4x4.msh
 )
 

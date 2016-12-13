@@ -18,28 +18,38 @@ namespace flecsi {
 namespace topology {
 
 ///
-// \class graph_definition_t graph_definition.h
-// \brief graph_definition_t provides...
+// \class graph_definition__ graph_definition.h
+// \brief graph_definition__ provides...
 ///
-class graph_definition_t
+template<size_t D>
+class graph_definition__
 {
 public:
 
-  using point_t = point<double, 3>;
+  using point_t = point<double, D>;
 
   /// Default constructor
-  graph_definition_t() {}
+  graph_definition__() {}
 
   /// Copy constructor (disabled)
-  graph_definition_t(const graph_definition_t &) = delete;
+  graph_definition__(const graph_definition__ &) = delete;
 
   /// Assignment operator (disabled)
-  graph_definition_t & operator = (const graph_definition_t &) = delete;
+  graph_definition__ & operator = (const graph_definition__ &) = delete;
 
   /// Destructor
-  virtual ~graph_definition_t() {}
-
-  virtual size_t dimension() = 0;
+  virtual ~graph_definition__() {}
+  
+  ///
+  // Return the dimension of the graph.
+  ///
+  constexpr
+  size_t
+  dimension()
+  const
+  {
+    return D;
+  } // dimension
 
   virtual size_t num_entities(size_t dimension) = 0;
 
@@ -50,7 +60,9 @@ public:
 
 private:
 
-}; // class graph_definition_t
+}; // class graph_definition__
+
+using graph_definition_t = graph_definition__<2>;
 
 } // namespace topology
 } // namespace flecsi
