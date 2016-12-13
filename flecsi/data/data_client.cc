@@ -28,6 +28,8 @@ data_client_t & data_client_t::operator=(data_client_t && o)
   auto rid = o.runtime_id();
   // move the data now
   flecsi::data::storage_t::instance().move( rid, runtime_id() );
+  // return a reference to the new object
+  return *this;
 }
 
 data_client_t::~data_client_t() 

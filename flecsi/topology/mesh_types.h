@@ -789,6 +789,8 @@ public:
   {
     // call base_t move operator
     data::data_client_t::operator=(std::move(o));
+    // return a reference to the object
+    return *this;
   };
 
 
