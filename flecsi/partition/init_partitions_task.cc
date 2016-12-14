@@ -669,19 +669,16 @@ check_partitioning_task(
     for (auto shared_cell : ip.shared) {
     assert(itr_shared.has_next());
      ptr_t ptr=itr_shared.next();
-std::cout <<"checking shared, MPI= "<< shared_cell.id <<" , legion= "<<
-acc_shared.read(ptr)<<std::endl;
-
-  //   assert(shared_cell.id == acc_shared.read(ptr));
+     assert(shared_cell.id == acc_shared.read(ptr));
      indx++;
     }
-  //  assert (indx == ip.shared.size());
+    assert (indx == ip.shared.size());
 
     indx = 0;
     for (auto exclusive_cell : ip.exclusive) {
      assert(itr_exclusive.has_next());
      ptr_t ptr=itr_exclusive.next();
-    // assert(exclusive_cell.id == acc_exclusive.read(ptr));
+     assert(exclusive_cell.id == acc_exclusive.read(ptr));
     indx++;
     }
     assert (indx == ip.exclusive.size());
