@@ -39,9 +39,6 @@ public:
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    // Create a mesh definition from file.
-    //flecsi::io::simple_definition_t sd("simple2d-4x4.msh");
-
     // Create the dCRS representation for the distributed
     // partitioner.
     auto dcrs = flecsi::dmp::make_dcrs(sd);
@@ -52,10 +49,8 @@ public:
     // Create the primary partition.
     //auto primary = partitioner->partition(dcrs);
     primary_cells = partitioner->partition(dcrs);
-//    std::cout << "rank: " << rank << ", primary cells: ";
-//    for(auto i: primary_cells) {
-//      std::cout << i << " ";
-//    } // for
+    //filling out primary partition for vertices
+    primary_vertices = flecsi::io::vertex_closure(sd, primary_cells);
 
     // Compute the dependency closure of the primary cell partition
     // through vertex intersections (specified by last argument "1").
@@ -163,23 +158,12 @@ public:
       auto referencers = flecsi::io::vertex_referencers(sd, i);
       size_t min_rank(std::numeric_limits<size_t>::max());
       std::set <size_t> shared_vertices;
-//      if (i == 31) {
-//        std::cout << "rank: " << rank << ", vertex 31, referencers: ";
-//        for (auto i : referencers) {
-//          std::cout << i << " ";
-//        }
-//        std::cout << std::endl;
-//      }
+
       for (auto c: referencers) {
 
         // If the referencing cell isn't in the remote info map
         // it is a local cell.
         if (remote_info_map.find(c) != remote_info_map.end()) {
-//          if (i == 31) {
-//            std::cout << "rank: " << rank
-//                      << ", vertex 31 is reference by remote cell: "
-//                      << c << "\n";
-//          }
           min_rank = std::min(min_rank, remote_info_map[c].rank);
           shared_vertices.insert(remote_info_map[c].rank);
         } else {
@@ -190,20 +174,10 @@ public:
           if (shared_cells_map.find(c) != shared_cells_map.end()) {
             shared_vertices.insert(shared_cells_map[c].shared.begin(),
               shared_cells_map[c].shared.end());
-//            if (i == 31) {
-//              std::cout << "rank: " << rank
-//                        << ", vertex 31 is reference by local cell: "
-//                        << c << "\n";
-//            }
           } // if
         } // if
       } // for
 
-//      std::cout << "rank: " << rank << ", vertex: " << i << ", shared by ranks: ";
-//      for (auto i : shared_vertices) {
-//        std::cout << i << " ";
-//      }
-//      std::cout << std::endl;
       if (min_rank == rank) {
         // This is a vertex that belongs to our rank.
         //auto entry = entry_info_t(i, rank, offset, shared_vertices);

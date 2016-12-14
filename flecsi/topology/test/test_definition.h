@@ -87,13 +87,6 @@ public:
   ~test_definition_t() {}
 
   size_t
-  dimension()
-  override
-  {
-    return 2;
-  } // dimension
-
-  size_t
   num_entities(
     size_t topological_dimension
   ) override
@@ -133,8 +126,7 @@ public:
     size_t vertex_id
   ) override
   {
-    return point_t(vertices_[vertex_id][0], vertices_[vertex_id][1],
-      vertices_[vertex_id][2]);
+    return point_t(vertices_[vertex_id][0], vertices_[vertex_id][1]);
   } // vertex
 
 private:
