@@ -219,7 +219,7 @@ shared_part_task(
 
 
   LegionRuntime::HighLevel::LogicalRegion vert_lr =
-    regions[0].get_logical_region();
+    regions[1].get_logical_region();
   LegionRuntime::HighLevel::IndexSpace vert_is = vert_lr.get_index_space();
 
   Rect<1> vert_shared_rect(Point<1>(0), Point<1>(ip_vert.shared.size()-1));
@@ -254,10 +254,25 @@ shared_part_task(
     int indx=0;
     LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, vert_is);
     ptr_t start=itr.next();
+#if 0
+//debug
+int i=0;
+for (auto shared_vert : ip_vert.primary) {
+std::cout<<"primary["<<i<<"] = "<<shared_vert<< std::endl;
+i++;
+}
+#endif
+
+//debug
+
     for (auto shared_vert : ip_vert.shared) {
       ptr_t ptr = (start.value+shared_vert.offset);
       acc.write(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
       make_point(indx)),ptr);
+#if 0
+std::cout <<"DEBUG inside shared create= " <<shared_vert.id<< " , offset= "
+<<shared_vert.offset<<std::endl;
+#endif
       indx++;
     }//end for
 
@@ -534,82 +549,159 @@ check_partitioning_task(
   Legion::Context ctx, Legion::HighLevelRuntime *runtime
 )
 {
-  assert(regions.size() == 3);
-  assert(task->regions.size() == 3);
+  assert(regions.size() == 6);
+  assert(task->regions.size() == 6);
   assert(task->regions[0].privilege_fields.size() == 1);
   assert(task->regions[1].privilege_fields.size() == 1);
   assert(task->regions[2].privilege_fields.size() == 1);
+  assert(task->regions[3].privilege_fields.size() == 1);
+  assert(task->regions[4].privilege_fields.size() == 1);
+  assert(task->regions[5].privilege_fields.size() == 1);
 
   using index_partition_t = index_partition__<size_t>;
   using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
   using field_id = LegionRuntime::HighLevel::FieldID;
 
+  //checking cells:
+  {
+    LegionRuntime::HighLevel::LogicalRegion lr_shared =
+       regions[0].get_logical_region();
+   LegionRuntime::HighLevel::IndexSpace is_shared = lr_shared.get_index_space();
+    LegionRuntime::HighLevel::IndexIterator itr_shared(runtime, ctx, is_shared);
+    field_id fid_shared = *(task->regions[0].privilege_fields.begin());
+    LegionRuntime::Accessor::RegionAccessor<generic_type, int>
+      acc_shared= regions[0].get_field_accessor(fid_shared).typeify<int>();
 
-  LegionRuntime::HighLevel::LogicalRegion lr_shared =
-      regions[0].get_logical_region();
-  LegionRuntime::HighLevel::IndexSpace is_shared = lr_shared.get_index_space();
-  LegionRuntime::HighLevel::IndexIterator itr_shared(runtime, ctx, is_shared);
-  field_id fid_shared = *(task->regions[0].privilege_fields.begin());
-  LegionRuntime::Accessor::RegionAccessor<generic_type, int>
-    acc_shared= regions[0].get_field_accessor(fid_shared).typeify<int>();
-
-  LegionRuntime::HighLevel::LogicalRegion lr_exclusive = 
-      regions[1].get_logical_region();
-  LegionRuntime::HighLevel::IndexSpace is_exclusive =
-      lr_exclusive.get_index_space();
-  LegionRuntime::HighLevel::IndexIterator itr_exclusive(runtime,
-      ctx, is_exclusive);
-  field_id fid_exclusive = *(task->regions[1].privilege_fields.begin());
-  LegionRuntime::Accessor::RegionAccessor<generic_type, int>
-    acc_exclusive= regions[1].get_field_accessor(fid_exclusive).typeify<int>();
-
-
-  LegionRuntime::HighLevel::LogicalRegion lr_ghost = 
-      regions[2].get_logical_region();
-  LegionRuntime::HighLevel::IndexSpace is_ghost = lr_ghost.get_index_space();
-  LegionRuntime::HighLevel::IndexIterator itr_ghost(runtime, ctx, is_ghost);
-  field_id fid_ghost = *(task->regions[2].privilege_fields.begin());
-  LegionRuntime::Accessor::RegionAccessor<generic_type, int>
-    acc_ghost= regions[2].get_field_accessor(fid_ghost).typeify<int>();  
-
-  flecsi::execution::context_t & context_ =
-    flecsi::execution::context_t::instance();
-  index_partition_t ip =
-    context_.interop_helper_.data_storage_[0];
-
-  size_t indx = 0;
-  for (auto shared_cell : ip.shared) {
-   assert(itr_shared.has_next());
-   ptr_t ptr=itr_shared.next();
-   assert(shared_cell.id == acc_shared.read(ptr));
-   indx++;
-  }
-  assert (indx == ip.shared.size());
-
-  indx = 0;
-  for (auto exclusive_cell : ip.exclusive) {
-   assert(itr_exclusive.has_next());
-   ptr_t ptr=itr_exclusive.next();
-   assert(exclusive_cell.id == acc_exclusive.read(ptr));
-   indx++;
-  }
- assert (indx == ip.exclusive.size());
+    LegionRuntime::HighLevel::LogicalRegion lr_exclusive = 
+        regions[1].get_logical_region();
+    LegionRuntime::HighLevel::IndexSpace is_exclusive =
+        lr_exclusive.get_index_space();
+    LegionRuntime::HighLevel::IndexIterator itr_exclusive(runtime,
+        ctx, is_exclusive);
+    field_id fid_exclusive = *(task->regions[1].privilege_fields.begin());
+    LegionRuntime::Accessor::RegionAccessor<generic_type, int>
+      acc_exclusive=regions[1].get_field_accessor(fid_exclusive).typeify<int>();
 
 
-  indx = 0;
-  while(itr_ghost.has_next()){
-    ptr_t ptr = itr_ghost.next();
-    bool found=false;
-    int ghost_id = acc_ghost.read(ptr);
-    for (auto ghost_cell : ip.ghost) {
-      if (ghost_cell.id = ghost_id){
-        found=true;
-      }
+    LegionRuntime::HighLevel::LogicalRegion lr_ghost = 
+        regions[2].get_logical_region();
+    LegionRuntime::HighLevel::IndexSpace is_ghost = lr_ghost.get_index_space();
+    LegionRuntime::HighLevel::IndexIterator itr_ghost(runtime, ctx, is_ghost);
+    field_id fid_ghost = *(task->regions[2].privilege_fields.begin());
+    LegionRuntime::Accessor::RegionAccessor<generic_type, int>
+      acc_ghost= regions[2].get_field_accessor(fid_ghost).typeify<int>();  
+
+    flecsi::execution::context_t & context_ =
+      flecsi::execution::context_t::instance();
+    index_partition_t ip =
+      context_.interop_helper_.data_storage_[0];
+
+    size_t indx = 0;
+    for (auto shared_cell : ip.shared) {
+    assert(itr_shared.has_next());
+     ptr_t ptr=itr_shared.next();
+     assert(shared_cell.id == acc_shared.read(ptr));
+     indx++;
     }
-    assert(found);
+    assert (indx == ip.shared.size());
+
+    indx = 0;
+    for (auto exclusive_cell : ip.exclusive) {
+     assert(itr_exclusive.has_next());
+     ptr_t ptr=itr_exclusive.next();
+     assert(exclusive_cell.id == acc_exclusive.read(ptr));
     indx++;
-  }
-  assert (indx == ip.ghost.size());
+    }
+    assert (indx == ip.exclusive.size());
+
+
+    indx = 0;
+    while(itr_ghost.has_next()){
+      ptr_t ptr = itr_ghost.next();
+      bool found=false;
+      int ghost_id = acc_ghost.read(ptr);
+      for (auto ghost_cell : ip.ghost) {
+        if (ghost_cell.id = ghost_id){
+          found=true;
+        }
+      }
+      assert(found);
+      indx++;
+     }
+     assert (indx == ip.ghost.size());
+    }//scope
+
+    //checking vertices
+    {
+     LegionRuntime::HighLevel::LogicalRegion lr_shared =
+       regions[3].get_logical_region();
+    LegionRuntime::HighLevel::IndexSpace is_shared=lr_shared.get_index_space();
+    LegionRuntime::HighLevel::IndexIterator itr_shared(runtime, ctx, is_shared);
+    field_id fid_shared = *(task->regions[3].privilege_fields.begin());
+    LegionRuntime::Accessor::RegionAccessor<generic_type, int>
+      acc_shared= regions[3].get_field_accessor(fid_shared).typeify<int>();
+
+    LegionRuntime::HighLevel::LogicalRegion lr_exclusive =
+        regions[4].get_logical_region();
+    LegionRuntime::HighLevel::IndexSpace is_exclusive =
+        lr_exclusive.get_index_space();
+    LegionRuntime::HighLevel::IndexIterator itr_exclusive(runtime,
+        ctx, is_exclusive);
+    field_id fid_exclusive = *(task->regions[4].privilege_fields.begin());
+    LegionRuntime::Accessor::RegionAccessor<generic_type, int>
+      acc_exclusive=regions[4].get_field_accessor(fid_exclusive).typeify<int>();
+
+
+    LegionRuntime::HighLevel::LogicalRegion lr_ghost =
+        regions[5].get_logical_region();
+    LegionRuntime::HighLevel::IndexSpace is_ghost = lr_ghost.get_index_space();
+    LegionRuntime::HighLevel::IndexIterator itr_ghost(runtime, ctx, is_ghost);
+    field_id fid_ghost = *(task->regions[5].privilege_fields.begin());
+    LegionRuntime::Accessor::RegionAccessor<generic_type, int>
+      acc_ghost= regions[5].get_field_accessor(fid_ghost).typeify<int>();
+
+    flecsi::execution::context_t & context_ =
+      flecsi::execution::context_t::instance();
+    index_partition_t ip =
+      context_.interop_helper_.data_storage_[1];
+
+    size_t indx = 0;
+    for (auto shared_cell : ip.shared) {
+    assert(itr_shared.has_next());
+     ptr_t ptr=itr_shared.next();
+std::cout <<"checking shared, MPI= "<< shared_cell.id <<" , legion= "<<
+acc_shared.read(ptr)<<std::endl;
+
+  //   assert(shared_cell.id == acc_shared.read(ptr));
+     indx++;
+    }
+  //  assert (indx == ip.shared.size());
+
+    indx = 0;
+    for (auto exclusive_cell : ip.exclusive) {
+     assert(itr_exclusive.has_next());
+     ptr_t ptr=itr_exclusive.next();
+    // assert(exclusive_cell.id == acc_exclusive.read(ptr));
+    indx++;
+    }
+    assert (indx == ip.exclusive.size());
+    
+    indx = 0;
+    while(itr_ghost.has_next()){
+      ptr_t ptr = itr_ghost.next();
+      bool found=false;
+      int ghost_id = acc_ghost.read(ptr);
+      for (auto ghost_cell : ip.ghost) {
+        if (ghost_cell.id = ghost_id){
+          found=true;
+        }
+      }
+      assert(found);
+      indx++;
+     }
+     assert (indx == ip.ghost.size());
+
+    }
 
   std::cout << "test for shared/ghost/exclusive partitions ... passed" 
   << std::endl;

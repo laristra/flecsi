@@ -71,18 +71,38 @@ mpi_task(
   ip_vertices.shared = weaver.get_shared_vertices();
   ip_vertices.ghost  = weaver.get_ghost_vertices();
 
-#if 0
-std::cout<<"print primary cells"<<std::endl;
-for (std::set<size_t>::iterator it=ip.primary.begin();
-        it!=ip.primary.end(); ++it)
-      std::cout << ' ' << *it;
-std::cout<<"\n";
+#if 1
+   std::cout <<"DEBUG CELLS"<<std::endl;
+   int i=0;
+   for (auto cells_p : ip_cells.primary)
+   {
+    std::cout<<"primary["<<i<<"] = " <<cells_p<<std::endl;
+    i++;
+   }
+   i=0;
+   for (auto cells_s : ip_cells.shared)
+   {
+    std::cout<<"shared["<<i<<"] = " <<cells_s.id<< ", offset = "<< 
+       cells_s.offset<<std::endl;
+    i++;
+   }
 
-std::cout<<"shared primary cells"<<std::endl;
-for (std::set<entry_info_t>::iterator it=ip.shared.begin(); 
-        it!=ip.shared.end(); ++it)
-      std::cout << ' ' << *it<<std::endl;
-std::cout<<"\n";
+
+   std::cout <<"DEBUG VERTICES"<<std::endl;
+   i=0;
+   for (auto vert_p : ip_vertices.primary)
+   {
+    std::cout<<"primary["<<i<<"] = " <<vert_p<<std::endl;
+    i++;
+   }
+   i=0;
+   for (auto vert_s : ip_vertices.shared)
+   {
+    std::cout<<"shared["<<i<<"] = " <<vert_s.id<< ", offset = "<<
+       vert_s.offset<<std::endl;
+    i++;
+   }
+
 #endif
 
   flecsi::execution::context_t & context_ =
@@ -267,7 +287,7 @@ driver(
       ptr_t ptr = itr.next();
       vert_primary_coloring[num_ranks-1].points.insert(ptr);
     }//end for
-  }
+  }//end scope
 
   IndexPartition vert_primary_ip =
     runtime->create_index_partition(context, vertices_is,
@@ -643,6 +663,21 @@ driver(
     RegionRequirement(cells_ghost_lp, 0/*projection ID*/,
       READ_ONLY, EXCLUSIVE, cells_lr));
   check_part_launcher.add_field(2, FID_CELL);
+
+   check_part_launcher.add_region_requirement(
+    RegionRequirement(vert_shared_lp, 0/*projection ID*/,
+      READ_ONLY, EXCLUSIVE, vertices_lr));
+  check_part_launcher.add_field(3, FID_VERT);
+
+  check_part_launcher.add_region_requirement(
+    RegionRequirement(vert_exclusive_lp, 0/*projection ID*/,
+      READ_ONLY, EXCLUSIVE, vertices_lr));
+  check_part_launcher.add_field(4, FID_VERT);
+
+  check_part_launcher.add_region_requirement(
+    RegionRequirement(vert_ghost_lp, 0/*projection ID*/,
+      READ_ONLY, EXCLUSIVE, vertices_lr));
+  check_part_launcher.add_field(5, FID_VERT);
 
   FutureMap fm6 = runtime->execute_index_space(context,check_part_launcher);
   fm6.wait_all_results();
