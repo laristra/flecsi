@@ -87,6 +87,7 @@ public:
   };
 
   struct partition_metadata{
+    size_t partition;
     Legion::LogicalRegion lr;
     Legion::IndexPartition ip;
     size_t size;
@@ -152,10 +153,14 @@ public:
     const std::vector<Legion::PhysicalRegion>& regions,
     Legion::Context ctx, Legion::Runtime* runtime);
 
+  partition_metadata get_partition_metadata(size_t partition);
+
   static partition_metadata get_partition_metadata_task(
     const Legion::Task* task,
     const std::vector<Legion::PhysicalRegion>& regions,
     Legion::Context context, Legion::Runtime* runtime);
+
+  void put_partition_metadata(const partition_metadata& md);
 
   static void put_partition_metadata_task(const Legion::Task* task,
     const std::vector<Legion::PhysicalRegion>& regions,
