@@ -82,7 +82,7 @@ void top_level_task(const Task* task,
     fa.allocate_field(sizeof(entity_id), legion_dpd::ENTITY_FID);
     
     fa.allocate_field(sizeof(legion_dpd::ptr_count),
-                      legion_dpd::DATA_PTR_COUNT_FID);
+                      legion_dpd::OFFSET_COUNT_FID);
 
     cells_part.lr = h.create_logical_region(is, fs);
 
@@ -113,7 +113,34 @@ void top_level_task(const Task* task,
   }
 
   legion_dpd dpd(ctx, runtime);
-  dpd.create_data<double>(cells_part, 1024, 16);
+  dpd.create_data<double>(cells_part, 1024);
+
+  size_t num_values = 5;
+  size_t partition = 0;
+
+  legion_dpd::commit_data<double> cd;
+  cd.partition = 0;
+  cd.slot_size = 5;
+  cd.num_slots = partition_size * 5;
+  cd.num_indices = partition_size;
+  cd.indices = new legion_dpd::index_pair[cd.num_indices];
+  cd.entries = 
+    new legion_dpd::entry_value<double>[cd.num_indices * cd.num_slots];
+
+  cd.entries[0].entry = 5;
+  cd.entries[0].value = 555.5;
+  cd.entries[1].entry = 3;
+  cd.entries[1].value = 333.3;
+  cd.entries[2].entry = 8;
+  cd.entries[2].value = 888.8;
+  
+  cd.indices[0] = make_pair(0, 3);
+  
+  for(size_t i = 1; i < cd.num_indices; ++i){
+    cd.indices[i] = make_pair(3, 0);
+  }
+
+  dpd.commit(cd);
 }
 
 TEST(legion, test1) {
@@ -124,6 +151,10 @@ TEST(legion, test1) {
 
   Runtime::register_legion_task<legion_dpd::init_data_task>(
     legion_dpd::INIT_DATA_TID,
+    Processor::LOC_PROC, false, true);
+
+  Runtime::register_legion_task<legion_dpd::commit_data_task>(
+    legion_dpd::COMMIT_DATA_TID,
     Processor::LOC_PROC, false, true);
 
   int argc = 1;

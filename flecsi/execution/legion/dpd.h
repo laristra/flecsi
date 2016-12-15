@@ -40,6 +40,9 @@ public:
   enum task_ids{
     INIT_CONNECTIVITY_TID = 10000,
     INIT_DATA_TID,
+    GET_PARTITION_METADATA_TID,
+    PUT_PARTITION_METADATA_TID,
+    COMMIT_DATA_TID
   };
 
   enum fields_ids{
@@ -47,9 +50,9 @@ public:
     ENTITY_PAIR_FID,
     PTR_FID,
     PTR_COUNT_FID,
-    DATA_PTR_COUNT_FID,
-    ENTRY_FID,
-    VALUE_FID,
+    OFFSET_COUNT_FID,
+    INDEX_FID,
+    ENTRY_VALUE_FID,
     PARTITION_METADATA_FID
   };
 
@@ -72,10 +75,22 @@ public:
     size_t count;
   };
 
+  struct offset_count{
+    size_t offset;
+    size_t count;
+  };
+
   template<typename T>
   struct entry_value{
     size_t entry;
     T value;
+  };
+
+  struct partition_metadata{
+    Legion::LogicalRegion lr;
+    Legion::IndexPartition ip;
+    size_t size;
+    size_t reserve;
   };
 
   using index_pair = std::pair<size_t, size_t>;
@@ -85,13 +100,14 @@ public:
     using spare_map_t = std::multimap<size_t, entry_value<T>>;
     using erase_set_t = std::set<std::pair<size_t, size_t>>;
 
+    size_t partition;
     size_t slot_size;
     size_t num_slots;
     size_t num_indices;
     index_pair* indices;
     entry_value<T>* entries;
     spare_map_t spare_map;
-    erase_set_t* erase_set;
+    erase_set_t* erase_set = nullptr;
   };
 
   using connectivity_vec = std::vector<std::vector<size_t>>;
@@ -104,19 +120,21 @@ public:
 
   template<class T>
   void create_data(partitioned_unstructured& indices,
-                   size_t max_entries_per_index,
-                   size_t init_reserve){
-    create_data_(indices, max_entries_per_index, init_reserve, sizeof(T));
+                   size_t start_reserve){
+    create_data_(indices, start_reserve, sizeof(T));
   }
 
   template<class T>
   void commit(commit_data<T>& cd){
+    commit_(reinterpret_cast<commit_data<char>&>(cd), sizeof(T));
+  }
 
-  }  
+  void commit_(commit_data<char>& cd, size_t value_size);
+
+  void update_partition_metadata(size_t partition);  
 
   void create_data_(partitioned_unstructured& indices,
-                    size_t max_entries_per_index,
-                    size_t init_reserve,
+                    size_t start_reserve,
                     size_t value_size);
 
   void create_connectivity(size_t from_dim,
@@ -133,6 +151,19 @@ public:
   static void init_data_task(const Legion::Task* task,
     const std::vector<Legion::PhysicalRegion>& regions,
     Legion::Context ctx, Legion::Runtime* runtime);
+
+  static partition_metadata get_partition_metadata_task(
+    const Legion::Task* task,
+    const std::vector<Legion::PhysicalRegion>& regions,
+    Legion::Context context, Legion::Runtime* runtime);
+
+  static void put_partition_metadata_task(const Legion::Task* task,
+    const std::vector<Legion::PhysicalRegion>& regions,
+    Legion::Context context, Legion::Runtime* runtime);
+
+  static void commit_data_task(const Legion::Task* task,
+    const std::vector<Legion::PhysicalRegion>& regions,
+    Legion::Context context, Legion::Runtime* runtime);
 
   void dump(size_t from_dim, size_t to_dim);
 

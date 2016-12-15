@@ -17,16 +17,24 @@ using namespace std;
 using namespace Legion;
 using namespace LegionRuntime;
 
-namespace{
-
-  struct partition_metadata{
-    size_t reserve;
-  };
-
-} // namespace
-
 namespace flecsi {
 namespace execution {
+
+  namespace{
+
+    const size_t MAX_INDICES = 1024;
+
+    struct init_data_args{
+      size_t reserve;
+      size_t value_size;
+    };
+
+    struct commit_data_args{
+      size_t value_size;
+      legion_dpd::index_pair indices[MAX_INDICES];
+    };
+
+  } // namespace
 
   void legion_dpd::init_connectivity_task(
     const Task* task,
@@ -114,7 +122,9 @@ namespace execution {
     const std::vector<PhysicalRegion>& regions,
     Context ctx, Runtime* runtime){
 
-    size_t reserve = *(size_t*)task->args;
+    legion_helper h(runtime, ctx);
+
+    const init_data_args& args = *(init_data_args*)task->args;
 
     size_t p = task->index_point.point_data[0];
 
@@ -122,37 +132,43 @@ namespace execution {
     IndexSpace ent_from_is = ent_from_lr.get_index_space();
 
     auto from_ac = 
-      regions[0].get_field_accessor(DATA_PTR_COUNT_FID).typeify<ptr_count>();
+      regions[0].get_field_accessor(OFFSET_COUNT_FID).
+      typeify<offset_count>();
 
-    LogicalRegion to_lr = regions[1].get_logical_region();
-    IndexSpace to_is = to_lr.get_index_space();
-
-    auto meta_ac = regions[2].get_field_accessor(PARTITION_METADATA_FID).
+    auto meta_ac = regions[1].get_field_accessor(PARTITION_METADATA_FID).
       typeify<partition_metadata>();
     
     partition_metadata md;
-    md.reserve = reserve;
+    md.reserve = args.reserve;
+    md.size = 0;
+
+    {
+      IndexSpace is = h.create_index_space(0, args.reserve - 1);
+      FieldSpace fs = h.create_field_space();
+      FieldAllocator a = h.create_field_allocator(fs);
+      a.allocate_field(sizeof(size_t) + args.value_size, ENTRY_VALUE_FID);
+      md.lr = h.create_logical_region(is, fs);
+      
+      Domain cd = h.domain_from_rect(0, 1);
+      DomainPointColoring coloring;
+      md.ip = runtime->create_index_partition(ctx, is, cd, coloring);
+    }
 
     meta_ac.write(DomainPoint::from_point<1>(p), md);
 
-    IndexIterator to_itr(runtime, ctx, to_is);
-    ptr_t to_ptr = to_itr.next();
-
-    ptr_count pc;
-    pc.count = 0;
-    pc.ptr = to_ptr;
+    offset_count oc;
+    oc.offset = 0;
+    oc.count = 0;
 
     IndexIterator from_itr(runtime, ctx, ent_from_is);
-
     while(from_itr.has_next()){
       ptr_t from_ptr = from_itr.next();
-      from_ac.write(from_ptr, pc);
+      from_ac.write(from_ptr, oc);
     }
   }
 
   void legion_dpd::create_data_(partitioned_unstructured& indices,
-                                size_t max_entries_per_index,
-                                size_t init_reserve,
+                                size_t start_reserve,
                                 size_t value_size){
     from_ = indices;
 
@@ -176,47 +192,17 @@ namespace execution {
         runtime_->create_index_partition(context_, is, coloring);
     }
 
-    {
-      IndexSpace is = 
-        h.create_index_space(from_.size * max_entries_per_index);
-      
-      FieldSpace fs = h.create_field_space();
-
-      FieldAllocator fa = h.create_field_allocator(fs);
-
-      fa.allocate_field(sizeof(size_t), ENTRY_FID);
-      fa.allocate_field(value_size, VALUE_FID);
-
-      to_lr_ = h.create_logical_region(is, fs);
-
-      IndexAllocator ia = 
-        runtime_->create_index_allocator(context_, is);
-
-      Coloring coloring;
-
-      for(auto& itr : indices.count_map){
-        size_t p = itr.first;
-        size_t count = itr.second;
-        size_t n = count * init_reserve;
-        ptr_t start = ia.alloc(n);
-
-        for(int i = 0; i < n; ++i){
-          coloring[p].points.insert(start + i);
-        }        
-      }
-
-      to_ip_ = 
-        runtime_->create_index_partition(context_, is, coloring, true);
-
-    }
-
     ArgumentMap arg_map;
 
     Domain d = h.domain_from_rect(0, num_partitions - 1);
 
+    init_data_args args;
+    args.reserve = start_reserve;
+    args.value_size = value_size;
+
     IndexLauncher
       il(INIT_DATA_TID, d,
-         TaskArgument(&init_reserve, sizeof(init_reserve)), arg_map);
+         TaskArgument(&args, sizeof(args)), arg_map);
 
     LogicalPartition ent_from_lp =
       runtime_->get_logical_partition(context_, from_.lr, from_.ip);
@@ -225,16 +211,7 @@ namespace execution {
           RegionRequirement(ent_from_lp, 0, 
                             WRITE_DISCARD, EXCLUSIVE, from_.lr));
 
-    il.region_requirements[0].add_field(DATA_PTR_COUNT_FID);
-
-    LogicalPartition to_lp =
-      runtime_->get_logical_partition(context_, to_lr_, to_ip_);
-
-    il.add_region_requirement(
-          RegionRequirement(to_lp, 0, 
-                            WRITE_DISCARD, EXCLUSIVE, to_lr_));
-
-    il.region_requirements[1].add_field(ENTRY_FID);
+    il.region_requirements[0].add_field(OFFSET_COUNT_FID);
 
     LogicalPartition meta_lp = runtime_->get_logical_partition(context_,
       partition_metadata_lr_, partition_metadata_ip_);
@@ -242,11 +219,165 @@ namespace execution {
     il.add_region_requirement(
       RegionRequirement(meta_lp, 0, WRITE_DISCARD, EXCLUSIVE, 
                         partition_metadata_lr_));
-    il.region_requirements[2].add_field(PARTITION_METADATA_FID);
+    il.region_requirements[1].add_field(PARTITION_METADATA_FID);
 
     FutureMap fm = h.execute_index_space(il);
     fm.wait_all_results();
   }
+
+  void legion_dpd::update_partition_metadata(size_t partition){
+    partition_metadata md;
+
+    Domain partition_domain = h.domain_from_point(partition);
+
+    LogicalPartition lp =
+      runtime_->get_logical_partition(context_, partition_metadata_lr_, 
+                                      partition_metadata_ip_);
+
+    {
+      ArgumentMap arg_map;
+
+      IndexLauncher il(GET_PARTITION_METADATA_TID, partition_domain,
+        TaskArgument(nullptr, 0), arg_map);
+
+      il.add_region_requirement(
+            RegionRequirement(lp, 0, 
+                              READ_ONLY, EXCLUSIVE, partition_metadata_lr_));
+      il.region_requirements[0].add_field(PARTITION_METADATA_FID);
+
+      FutureMap fm = h.execute_index_space(il);
+      fm.wait_all_results();
+      DomainPoint dp = DomainPoint::from_point<1>(make_point(partition));
+      md = fm.get_result<partition_metadata>(dp);
+    }
+
+
+    {
+      ArgumentMap arg_map;
+
+      IndexLauncher il(PUT_PARTITION_METADATA_TID, partition_domain,
+        TaskArgument(&md, sizeof(md)), arg_map);
+
+      il.add_region_requirement(
+            RegionRequirement(lp, 0, 
+                              WRITE_DISCARD, EXCLUSIVE,
+                              partition_metadata_lr_));
+      
+      il.region_requirements[0].add_field(PARTITION_METADATA_FID);
+
+      FutureMap fm = h.execute_index_space(il);
+      fm.wait_all_results();
+    }
+
+  }
+
+  void legion_dpd::commit_(commit_data<char>& cd, size_t value_size){
+    ArgumentMap arg_map;
+
+    Domain d = h.domain_from_point(cd.partition);
+
+    size_t size = (sizeof(size_t) + value_size) * cd.num_slots;
+
+    arg_map.set_point(h.domain_point(cd.partition),
+      TaskArgument(cd.entries, size));
+
+    commit_data_args args;
+    args.value_size = value_size;
+    copy(cd.indices, cd.indices + cd.num_indices, args.indices);
+
+    size_t args_size = 
+      sizeof(commit_data_args) - ((MAX_INDICES - cd.num_indices) * sizeof(size_t) * 2);
+
+    IndexLauncher il(COMMIT_DATA_TID, d,
+      TaskArgument(cd.indices, args_size), arg_map);
+
+    LogicalPartition lp1 =
+      runtime_->get_logical_partition(context_, partition_metadata_lr_, 
+                                      partition_metadata_ip_);
+    il.add_region_requirement(
+          RegionRequirement(lp1, 0, 
+                            READ_WRITE, EXCLUSIVE, partition_metadata_lr_));
+    il.region_requirements[0].add_field(PARTITION_METADATA_FID);
+
+
+
+    LogicalPartition lp2 =
+      runtime_->get_logical_partition(context_, from_.lr, from_.ip);
+    il.add_region_requirement(
+          RegionRequirement(lp2, 0, 
+                            READ_WRITE, EXCLUSIVE, from_.lr));
+    il.region_requirements[1].add_field(OFFSET_COUNT_FID);
+
+    FutureMap fm = h.execute_index_space(il);
+    fm.wait_all_results();
+  }
+
+  legion_dpd::partition_metadata
+  legion_dpd::get_partition_metadata_task(
+    const Task* task,
+    const std::vector<PhysicalRegion>& regions,
+    Context context, Runtime* runtime){
+
+    legion_helper h(runtime, context);
+
+    size_t p = task->index_point.point_data[0];
+
+    auto ac = regions[0].get_field_accessor(PARTITION_METADATA_FID).
+      typeify<partition_metadata>();
+    partition_metadata md = ac.read(DomainPoint::from_point<1>(p));
+    return md;
+  }
+
+  void legion_dpd::put_partition_metadata_task(
+    const Task* task,
+    const std::vector<PhysicalRegion>& regions,
+    Context context, Runtime* runtime){
+
+    legion_helper h(runtime, context);
+
+    size_t p = task->index_point.point_data[0];
+    const partition_metadata& md = *(partition_metadata*)task->args;
+
+    auto ac = regions[0].get_field_accessor(PARTITION_METADATA_FID).
+      typeify<partition_metadata>();
+    ac.write(DomainPoint::from_point<1>(p), md);
+  }
+
+  void legion_dpd::commit_data_task(
+    const Task* task,
+    const std::vector<PhysicalRegion>& regions,
+    Context context, Runtime* runtime){
+
+    legion_helper h(runtime, context);
+
+    const commit_data_args& args = *(commit_data_args*)task->args;
+
+    size_t p = task->index_point.point_data[0];
+
+    auto partition_metadata_ac = 
+      regions[0].get_field_accessor(PARTITION_METADATA_FID).
+      typeify<partition_metadata>();
+
+    DomainPoint dp = DomainPoint::from_point<1>(p);
+
+    partition_metadata md = partition_metadata_ac.read(dp);
+
+    RegionRequirement rr(md.lr, READ_WRITE, EXCLUSIVE, md.lr);
+    
+    rr.add_field(ENTRY_VALUE_FID);
+
+    InlineLauncher il(rr);
+
+    PhysicalRegion pr = runtime->map_region(context, il);
+
+    pr.wait_until_valid();
+
+    char* buf = h.get_raw_buffer(pr, ENTRY_VALUE_FID);
+
+    h.unmap_region(pr);
+
+    partition_metadata_ac.write(dp, md);
+  }  
 
   void
   legion_dpd::create_connectivity(
