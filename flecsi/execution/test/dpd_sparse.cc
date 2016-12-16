@@ -153,8 +153,8 @@ TEST(legion, test1) {
     legion_dpd::INIT_DATA_TID,
     Processor::LOC_PROC, false, true);
 
-  Runtime::register_legion_task<legion_dpd::commit_data_task>(
-    legion_dpd::COMMIT_DATA_TID,
+  Runtime::register_legion_task<legion_dpd::partition_metadata,
+    legion_dpd::commit_data_task>(legion_dpd::COMMIT_DATA_TID,
     Processor::LOC_PROC, false, true);
 
   int argc = 1;

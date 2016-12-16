@@ -166,7 +166,7 @@ public:
     const std::vector<Legion::PhysicalRegion>& regions,
     Legion::Context context, Legion::Runtime* runtime);
 
-  static void commit_data_task(const Legion::Task* task,
+  static partition_metadata commit_data_task(const Legion::Task* task,
     const std::vector<Legion::PhysicalRegion>& regions,
     Legion::Context context, Legion::Runtime* runtime);
 

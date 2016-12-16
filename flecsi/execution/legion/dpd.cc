@@ -33,6 +33,7 @@ namespace execution {
       LogicalRegion entry_values_lr;
       size_t value_size;
       legion_dpd::index_pair indices[MAX_INDICES];
+      legion_dpd::partition_metadata md;
     };
 
   } // namespace
@@ -280,27 +281,28 @@ namespace execution {
 
     size_t size = (sizeof(size_t) + value_size) * cd.num_slots;
 
-    arg_map.set_point(h.domain_point(cd.partition),
+    size_t partition = cd.partition;
+
+    arg_map.set_point(h.domain_point(partition),
       TaskArgument(cd.entries, size));
 
     commit_data_args args;
     args.value_size = value_size;
     copy(cd.indices, cd.indices + cd.num_indices, args.indices);
 
-    size_t args_size = 
-      sizeof(commit_data_args) - ((MAX_INDICES - cd.num_indices) * sizeof(size_t) * 2);
+    partition_metadata md = get_partition_metadata(partition);
+
+    size_t args_size = sizeof(commit_data_args) - 
+      ((MAX_INDICES - cd.num_indices) * sizeof(size_t) * 2);
 
     IndexLauncher il(COMMIT_DATA_TID, d,
-      TaskArgument(cd.indices, args_size), arg_map);
+      TaskArgument(&args, args_size), arg_map);
 
     LogicalPartition lp1 =
-      runtime_->get_logical_partition(context_, partition_metadata_lr_, 
-                                      partition_metadata_ip_);
+      runtime_->get_logical_partition(context_, md.lr, md.ip);
     il.add_region_requirement(
-          RegionRequirement(lp1, 0, 
-                            READ_WRITE, EXCLUSIVE, partition_metadata_lr_));
-    il.region_requirements[0].add_field(PARTITION_METADATA_FID);
-
+          RegionRequirement(lp1, 0, READ_WRITE, EXCLUSIVE, md.lr));
+    il.region_requirements[0].add_field(ENTRY_VALUE_FID);
 
 
     LogicalPartition lp2 =
@@ -312,6 +314,10 @@ namespace execution {
 
     FutureMap fm = h.execute_index_space(il);
     fm.wait_all_results();
+
+    DomainPoint dp = DomainPoint::from_point<1>(make_point(partition));
+    md = fm.get_result<partition_metadata>(dp);
+    put_partition_metadata(md);
   }
 
   legion_dpd::partition_metadata
@@ -398,23 +404,22 @@ namespace execution {
     ac.write(DomainPoint::from_point<1>(p), md);
   }
 
-  void legion_dpd::commit_data_task(
+  legion_dpd::partition_metadata legion_dpd::commit_data_task(
     const Task* task,
     const std::vector<PhysicalRegion>& regions,
     Context context, Runtime* runtime){
 
     legion_helper h(runtime, context);
 
-    const commit_data_args& args = *(commit_data_args*)task->args;
+    commit_data_args& args = *(commit_data_args*)task->args;
+    partition_metadata& md = args.md;
 
     entry_value<char>* commit_entry_values = 
       *(entry_value<char>**)task->local_args;
 
     size_t p = task->index_point.point_data[0];
 
-    auto partition_metadata_ac = 
-      regions[0].get_field_accessor(PARTITION_METADATA_FID).
-      typeify<partition_metadata>();
+    char* entry_values = h.get_raw_buffer(regions[0], ENTRY_VALUE_FID);
 
     LogicalRegion ent_lr = regions[1].get_logical_region();
     IndexSpace ent_is = ent_lr.get_index_space();
@@ -431,25 +436,7 @@ namespace execution {
       np(oc.count);
     }
 
-    DomainPoint dp = DomainPoint::from_point<1>(p);
-
-    partition_metadata md = partition_metadata_ac.read(dp);
-
-    RegionRequirement rr(md.lr, READ_WRITE, EXCLUSIVE, md.lr);
-    
-    rr.add_field(ENTRY_VALUE_FID);
-
-    InlineLauncher il(rr);
-
-    PhysicalRegion pr = runtime->map_region(context, il);
-
-    pr.wait_until_valid();
-
-    char* entry_values = h.get_raw_buffer(pr, ENTRY_VALUE_FID);
-
-    h.unmap_region(pr);
-
-    partition_metadata_ac.write(dp, md);
+    return md;
   }  
 
   void
