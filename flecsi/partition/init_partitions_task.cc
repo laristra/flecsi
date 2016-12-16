@@ -40,7 +40,7 @@ get_numbers_of_cells_task(
   index_partition_t ip_vertices =
     context_.interop_helper_.data_storage_[1]; 
 #if 0
-  int rank; 
+  size_t rank; 
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   std::cout << "in get_numbers_of_cells native legion task rank is " <<
        rank <<  std::endl;
@@ -119,7 +119,7 @@ initialization_task(
 
   LegionRuntime::HighLevel::IndexIterator itr_cells(runtime, ctx, is_cells);
 
-  auto acc_cells = regions[0].get_field_accessor(0).typeify<int>();
+  auto acc_cells = regions[0].get_field_accessor(0).typeify<size_t>();
 
   for (auto primary_cell : ip_cells.primary) {
     assert(itr_cells.has_next());
@@ -135,7 +135,7 @@ initialization_task(
 
   LegionRuntime::HighLevel::IndexIterator itr_vert(runtime, ctx, is_vert);
 
-  auto acc_vert = regions[1].get_field_accessor(0).typeify<int>();
+  auto acc_vert = regions[1].get_field_accessor(0).typeify<size_t>();
 
   for (auto primary_vert : ip_vert.primary) {
     assert(itr_vert.has_next());
@@ -251,12 +251,12 @@ shared_part_task(
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
       shared_region.get_field_accessor(FID_SHARED).typeify<ptr_t>();
 
-    int indx=0;
+    size_t indx=0;
     LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, vert_is);
     ptr_t start=itr.next();
 #if 0
 //debug
-int i=0;
+size_t i=0;
 for (auto shared_vert : ip_vert.primary) {
 std::cout<<"primary["<<i<<"] = "<<shared_vert<< std::endl;
 i++;
@@ -344,7 +344,7 @@ exclusive_part_task(
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
       exclusive_region.get_field_accessor(FID_EXCLUSIVE).typeify<ptr_t>();
 
-    int indx=0;
+    size_t indx=0;
     LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, cells_is);
     ptr_t start=itr.next();
     for (auto exclusive_cell : ip_cells.exclusive) {
@@ -388,7 +388,7 @@ exclusive_part_task(
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
       exclusive_region.get_field_accessor(FID_EXCLUSIVE).typeify<ptr_t>();
 
-    int indx=0;
+    size_t indx=0;
     LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, vert_is);
     ptr_t start=itr.next();
     for (auto exclusive_vert : ip_vert.exclusive) {
@@ -435,17 +435,17 @@ ghost_part_task(
   LegionRuntime::HighLevel::LogicalRegion cells_lr =
       regions[0].get_logical_region();
   LegionRuntime::HighLevel::IndexSpace cells_is = cells_lr.get_index_space();
-  LegionRuntime::Accessor::RegionAccessor<generic_type, int>
+  LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
     acc_cells_global= regions[0].get_field_accessor(
-      fid_cells_global).typeify<int>();
+      fid_cells_global).typeify<size_t>();
 
   field_id fid_vert_global = *(task->regions[1].privilege_fields.begin());
   LegionRuntime::HighLevel::LogicalRegion vert_lr =
       regions[0].get_logical_region();
   LegionRuntime::HighLevel::IndexSpace vert_is = vert_lr.get_index_space();
-  LegionRuntime::Accessor::RegionAccessor<generic_type, int>
+  LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
     acc_vert_global= regions[1].get_field_accessor(
-      fid_vert_global).typeify<int>();
+      fid_vert_global).typeify<size_t>();
  
   Rect<1> ghost_cells_rect(Point<1>(0), Point<1>(ip_cells.ghost.size()-1));
   LegionRuntime::HighLevel::IndexSpace ghost_cells_is =
@@ -475,7 +475,7 @@ ghost_part_task(
     LegionRuntime::Accessor::RegionAccessor<generic_type, ptr_t> acc =
       ghost_region.get_field_accessor(FID_GHOST).typeify<ptr_t>();
 
-    int indx=0;
+    size_t indx=0;
     for (auto ghost_cell : ip_cells.ghost) {
       LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, cells_is);
       size_t id_ghost = ghost_cell.id;
@@ -521,7 +521,7 @@ ghost_part_task(
     LegionRuntime::Accessor::RegionAccessor<generic_type, ptr_t> acc =
       ghost_region.get_field_accessor(FID_GHOST).typeify<ptr_t>();
 
-    int indx=0;
+    size_t indx=0;
     for (auto ghost_cell : ip_vert.ghost) {
       LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, vert_is);
       size_t id_ghost = ghost_cell.id;
@@ -569,8 +569,8 @@ check_partitioning_task(
    LegionRuntime::HighLevel::IndexSpace is_shared = lr_shared.get_index_space();
     LegionRuntime::HighLevel::IndexIterator itr_shared(runtime, ctx, is_shared);
     field_id fid_shared = *(task->regions[0].privilege_fields.begin());
-    LegionRuntime::Accessor::RegionAccessor<generic_type, int>
-      acc_shared= regions[0].get_field_accessor(fid_shared).typeify<int>();
+    LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
+      acc_shared= regions[0].get_field_accessor(fid_shared).typeify<size_t>();
 
     LegionRuntime::HighLevel::LogicalRegion lr_exclusive = 
         regions[1].get_logical_region();
@@ -579,8 +579,9 @@ check_partitioning_task(
     LegionRuntime::HighLevel::IndexIterator itr_exclusive(runtime,
         ctx, is_exclusive);
     field_id fid_exclusive = *(task->regions[1].privilege_fields.begin());
-    LegionRuntime::Accessor::RegionAccessor<generic_type, int>
-      acc_exclusive=regions[1].get_field_accessor(fid_exclusive).typeify<int>();
+    LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
+      acc_exclusive=regions[1].get_field_accessor(
+          fid_exclusive).typeify<size_t>();
 
 
     LegionRuntime::HighLevel::LogicalRegion lr_ghost = 
@@ -588,8 +589,8 @@ check_partitioning_task(
     LegionRuntime::HighLevel::IndexSpace is_ghost = lr_ghost.get_index_space();
     LegionRuntime::HighLevel::IndexIterator itr_ghost(runtime, ctx, is_ghost);
     field_id fid_ghost = *(task->regions[2].privilege_fields.begin());
-    LegionRuntime::Accessor::RegionAccessor<generic_type, int>
-      acc_ghost= regions[2].get_field_accessor(fid_ghost).typeify<int>();  
+    LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
+      acc_ghost= regions[2].get_field_accessor(fid_ghost).typeify<size_t>();  
 
     flecsi::execution::context_t & context_ =
       flecsi::execution::context_t::instance();
@@ -619,7 +620,7 @@ check_partitioning_task(
     while(itr_ghost.has_next()){
       ptr_t ptr = itr_ghost.next();
       bool found=false;
-      int ghost_id = acc_ghost.read(ptr);
+      size_t ghost_id = acc_ghost.read(ptr);
       for (auto ghost_cell : ip.ghost) {
         if (ghost_cell.id = ghost_id){
           found=true;
@@ -638,8 +639,8 @@ check_partitioning_task(
     LegionRuntime::HighLevel::IndexSpace is_shared=lr_shared.get_index_space();
     LegionRuntime::HighLevel::IndexIterator itr_shared(runtime, ctx, is_shared);
     field_id fid_shared = *(task->regions[3].privilege_fields.begin());
-    LegionRuntime::Accessor::RegionAccessor<generic_type, int>
-      acc_shared= regions[3].get_field_accessor(fid_shared).typeify<int>();
+    LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
+      acc_shared= regions[3].get_field_accessor(fid_shared).typeify<size_t>();
 
     LegionRuntime::HighLevel::LogicalRegion lr_exclusive =
         regions[4].get_logical_region();
@@ -648,8 +649,9 @@ check_partitioning_task(
     LegionRuntime::HighLevel::IndexIterator itr_exclusive(runtime,
         ctx, is_exclusive);
     field_id fid_exclusive = *(task->regions[4].privilege_fields.begin());
-    LegionRuntime::Accessor::RegionAccessor<generic_type, int>
-      acc_exclusive=regions[4].get_field_accessor(fid_exclusive).typeify<int>();
+    LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
+      acc_exclusive=regions[4].get_field_accessor(
+      fid_exclusive).typeify<size_t>();
 
 
     LegionRuntime::HighLevel::LogicalRegion lr_ghost =
@@ -657,8 +659,8 @@ check_partitioning_task(
     LegionRuntime::HighLevel::IndexSpace is_ghost = lr_ghost.get_index_space();
     LegionRuntime::HighLevel::IndexIterator itr_ghost(runtime, ctx, is_ghost);
     field_id fid_ghost = *(task->regions[5].privilege_fields.begin());
-    LegionRuntime::Accessor::RegionAccessor<generic_type, int>
-      acc_ghost= regions[5].get_field_accessor(fid_ghost).typeify<int>();
+    LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
+      acc_ghost= regions[5].get_field_accessor(fid_ghost).typeify<size_t>();
 
     flecsi::execution::context_t & context_ =
       flecsi::execution::context_t::instance();
@@ -687,7 +689,7 @@ check_partitioning_task(
     while(itr_ghost.has_next()){
       ptr_t ptr = itr_ghost.next();
       bool found=false;
-      int ghost_id = acc_ghost.read(ptr);
+      size_t ghost_id = acc_ghost.read(ptr);
       for (auto ghost_cell : ip.ghost) {
         if (ghost_cell.id = ghost_id){
           found=true;

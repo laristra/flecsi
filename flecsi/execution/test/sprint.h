@@ -82,7 +82,7 @@ mpi_task(
 
 #if 0
    std::cout <<"DEBUG CELLS"<<std::endl;
-   int i=0;
+   size_t i=0;
    for (auto cells_p : ip_cells.primary)
    {
     std::cout<<"primary["<<i<<"] = " <<cells_p<<std::endl;
@@ -155,7 +155,7 @@ driver(
   {
     FieldAllocator allocator = runtime->create_field_allocator(context,
                                              cells_fs);
-    allocator.allocate_field(sizeof(int), FID_CELL);
+    allocator.allocate_field(sizeof(size_t), FID_CELL);
   }
 
   int num_ranks;
@@ -190,7 +190,7 @@ driver(
   std::vector<size_t> vert_num_exclusive;
 
   //read dimension information from  get_numbers_of_cells task
-  for (int i = 0; i < num_ranks; i++) {
+  for (size_t i = 0; i < num_ranks; i++) {
     std::cout << "about to call get_results" << std::endl;
     flecsi::dmp::parts received = fm1.get_result<flecsi::dmp::parts>(
       DomainPoint::from_point<1>(make_point(i)));
@@ -235,7 +235,7 @@ driver(
   {
     FieldAllocator allocator = runtime->create_field_allocator(context,
                                              vertices_fs);
-    allocator.allocate_field(sizeof(int), FID_VERT);
+    allocator.allocate_field(sizeof(size_t), FID_VERT);
   } 
 
   IndexSpace vertices_is = runtime->create_index_space(context,
@@ -350,15 +350,15 @@ driver(
     InlineLauncher cell_launcher(req);
     PhysicalRegion cell_region = runtime->map_region(context, cell_launcher);
     cell_region.wait_until_valid();
-    RegionAccessor<AccessorType::Generic, int> acc_cell =
-      cell_region.get_field_accessor(FID_CELL).typeify<int>();
+    RegionAccessor<AccessorType::Generic, size_t> acc_cell =
+      cell_region.get_field_accessor(FID_CELL).typeify<size_t>();
 
     IndexIterator itr2(runtime, context, cells_is);
-    for (int i=0; i< total_num_cells; i++)
+    for (size_t i=0; i< total_num_cells; i++)
     {
       assert(itr2.has_next());
       ptr_t ptr = itr2.next();
-      int value =
+      size_t value =
           acc_cell.read(ptr);
       std::cout << "cells_global[ " <<i<<" ] = " << value <<std::endl;
     }//end for
@@ -390,7 +390,7 @@ driver(
   FutureMap fm3 = runtime->execute_index_space( context, shared_part_launcher);
   fm3.wait_all_results();
 
-  int indx=0;
+  size_t indx=0;
   for (GenericPointInRectIterator<1> pir(rank_rect); pir; pir++)
   {
     flecsi::dmp::partition_lr sared_lr=
@@ -410,7 +410,7 @@ driver(
       LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
         shared_region.get_field_accessor(FID_SHARED).typeify<ptr_t>();
-      for (int j=0; j<cells_num_shared[indx]; j++)
+      for (size_t j=0; j<cells_num_shared[indx]; j++)
       {
         ptr_t ptr=
           acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
@@ -434,7 +434,7 @@ driver(
       LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
         shared_region.get_field_accessor(FID_SHARED).typeify<ptr_t>();
-      for (int j=0; j<vert_num_shared[indx]; j++)
+      for (size_t j=0; j<vert_num_shared[indx]; j++)
       {
         ptr_t ptr=
           acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
@@ -506,7 +506,7 @@ driver(
       LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
         exclusive_region.get_field_accessor(FID_EXCLUSIVE).typeify<ptr_t>();
-      for (int j=0; j<cells_num_exclusive[indx]; j++)
+      for (size_t j=0; j<cells_num_exclusive[indx]; j++)
       {
         ptr_t ptr=
           acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
@@ -530,7 +530,7 @@ driver(
       LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
         exclusive_region.get_field_accessor(FID_EXCLUSIVE).typeify<ptr_t>();
-      for (int j=0; j<vert_num_exclusive[indx]; j++)
+      for (size_t j=0; j<vert_num_exclusive[indx]; j++)
       {
         ptr_t ptr=
           acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
@@ -605,7 +605,7 @@ driver(
       LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
         ghost_region.get_field_accessor(FID_GHOST).typeify<ptr_t>();
-      for (int j=0; j<cells_num_ghosts[indx]; j++)
+      for (size_t j=0; j<cells_num_ghosts[indx]; j++)
       {
         ptr_t ptr=
           acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
@@ -629,7 +629,7 @@ driver(
       LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
         ghost_region.get_field_accessor(FID_GHOST).typeify<ptr_t>();
-      for (int j=0; j<vert_num_ghosts[indx]; j++)
+      for (size_t j=0; j<vert_num_ghosts[indx]; j++)
       {
         ptr_t ptr=
           acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
