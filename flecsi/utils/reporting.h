@@ -23,30 +23,6 @@
  * \date Initial file creation: Dec 10, 2016
  */
 
-#if 0
-#if defined(FLECSI_RUNTIME_MODEL_mpilegion)
-
-#include <mpi.h>
-
-namespace utils {
-
-template<size_t R>
-bool is_part() {
-  int part;
-  MPI_Comm_rank(MPI_COMM_WORLD, &part);
-  return part == R;
-} // is_part
-
-} // namespace utils
-
-#endif
-
-#define flecsi_info_one(message, part)                                         \
-  std::stringstream ss;                                                        \
-  ss << message;                                                               \
-  cinch::info_impl(ss.str(), cinch::is_part<part>)
-#endif
-
 // These macro definitions just rename the cinch reporting macros for
 // use in FleCSI.
 
@@ -57,9 +33,51 @@ bool is_part() {
 // The test argument 't' is normal and is therefore wrapped.
 
 #define flecsi_info(s) cinch_info(s)
+#define flecsi_container_info(b, c, d) cinch_container_info(b, c, d)
 #define flecsi_warn(s) cinch_warn(s)
 #define flecsi_error(s) cinch_error(s)
 #define flecsi_assert(s) cinch_assert((t), s)
+
+// MPI reporting utilities
+#if defined(HAVE_MPI)
+
+#include <mpi.h>
+
+namespace flecsi {
+namespace utils {
+
+///
+//
+///
+template<
+  size_t R
+>
+inline
+bool
+is_rank()
+{
+  int part;
+  MPI_Comm_rank(MPI_COMM_WORLD, &part);
+  return part == R;
+} // is_rank
+
+} // namespace utils
+} // namespace flecsi
+
+// Output modes limited to a specified MPI rank
+#define flecsi_info_rank(s, r)                                                 \
+  cinch_info_impl(s, flecsi::utils::is_rank<(r)>)
+#define flecsi_warn_rank(s, r)                                                 \
+  cinch_warn_impl(s, flecsi::utils::is_rank<(r)>)
+#define flecsi_error_rank(s, r)                                                \
+  cinch_error_impl(s, flecsi::utils::is_rank<(r)>)
+
+// Print container on the specified rank
+#define flecsi_container_info_rank(b, c, r, d)                                 \
+  cinch_container_info_impl(b, c, d, cinch::index_bool<true>,                  \
+    flecsi::utils::is_rank<(r)>)
+
+#endif // HAVE_MPI
 
 #endif // flecsi_utils_reporting_h
 

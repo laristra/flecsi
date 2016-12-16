@@ -21,6 +21,41 @@
 namespace flecsi {
 namespace dmp {
 
+std::set<size_t>
+naive_partitioning(
+  io::mesh_definition_t & md
+)
+{
+	int size;
+	int rank;
+
+	MPI_Comm_size(MPI_COMM_WORLD, &size);
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+  //--------------------------------------------------------------------------//
+  // Create a naive initial distribution of the indices
+  //--------------------------------------------------------------------------//
+
+	size_t quot = md.num_cells()/size;
+	size_t rem = md.num_cells()%size;
+
+  // Each rank gets the average number of indices, with higher ranks
+  // getting an additional index for non-zero remainders.
+	size_t init_indices = quot + ((rank >= (size - rem)) ? 1 : 0);
+
+  size_t offset(0);
+	for(size_t r(0); r<rank; ++r) {
+		offset += quot + ((r >= (size - rem)) ? 1 : 0);
+	} // for
+
+  std::set<size_t> indices;
+  for(size_t i(0); i<init_indices; ++i) {
+    indices.insert(offset+i);
+  } // for
+
+  return indices;
+} // naive_partitioning
+
 ///
 // \param md The mesh definition.
 ///

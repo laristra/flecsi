@@ -21,6 +21,7 @@
 #include "flecsi/partition/parmetis_partitioner.h"
 #include "flecsi/partition/mpi_communicator.h"
 #include "flecsi/utils/set_utils.h"
+#include "flecsi/utils/reporting.h"
 
 const size_t output_rank = 0;
 
@@ -44,70 +45,64 @@ TEST(partition, simple) {
   //flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
   //flecsi::io::simple_definition_t sd("simple2d-10x10.msh");
 
-  // Create the dCRS representation for the distributed
-  // partitioner.
+  // Create the dCRS representation for the distributed partitioner.
   auto dcrs = flecsi::dmp::make_dcrs(sd);
+
+  //if(rank == output_rank) {
+    flecsi_info_rank("dCRS" << std::endl << dcrs, output_rank);
+  //} // if
 
   // Create a partitioner instance to generate the primary partition.
   auto partitioner = std::make_shared<flecsi::dmp::parmetis_partitioner_t>();
 
   // Create the primary partition.
   auto primary = partitioner->partition(dcrs);
-
-#if 0
-  if(rank == output_rank) {
-    std::cout << "primary: ";
-    for(auto i: primary) {
-      std::cout << i << " ";
-    } // for
-    std::cout << std::endl;
-  } // if
-#endif
+  flecsi_container_info_rank("primary partition", primary, output_rank, " ");
 
   // Compute the dependency closure of the primary cell partition
   // through vertex intersections (specified by last argument "1").
   // To specify edge or face intersections, use 2 (edges) or 3 (faces).
   // FIXME: We may need to replace this with a predicate function.
   auto closure = flecsi::io::cell_closure(sd, primary, 1);
-
-#if 0
-  if(rank == output_rank) {
-    std::cout << "closure:" << std::endl;
-    for(auto i: closure) {
-      std::cout << i << " ";
-    } // for
-    std::cout << std::endl;
-  } // if
-#endif
+  flecsi_container_info_rank("closure", closure, output_rank, " ");
 
   // Subtracting out the initial set leaves just the nearest
   // neighbors. This is similar to the image of the adjacency
   // graph of the initial indices.
   auto nearest_neighbors = flecsi::utils::set_difference(closure, primary);
-
-  // The closure of the nearest neighbors intersected with
-  // the initial indeces gives the shared indices. This is similar to
-  // the preimage of the nearest neighbors.
-  auto nearest_neighbor_closure =
-    flecsi::io::cell_closure(sd, nearest_neighbors, 1);
-
-#if 0
-  auto shared = flecsi::utils::set_intersection(nearest_neighbor_closure,
-    primary);
-  auto exclusive = flecsi::utils::set_difference(primary, shared);
-#endif
+  flecsi_container_info_rank("nearest neighbors", nearest_neighbors,
+    output_rank, " ");
 
   // We can iteratively add halos of nearest neighbors, e.g.,
   // here we add the next nearest neighbors. For most mesh types
   // we actually need information about the ownership of these indices
   // so that we can deterministically assign rank ownership to vertices.
+  auto nearest_neighbor_closure =
+    flecsi::io::cell_closure(sd, nearest_neighbors, 1);
+  flecsi_container_info_rank("nearest neighbor closure",
+    nearest_neighbor_closure, output_rank, " ");
+
+#if 0
+  // The closure of the nearest neighbors intersected with
+  // the initial indeces gives the shared indices. This is similar to
+  // the preimage of the nearest neighbors.
+  auto shared = flecsi::utils::set_intersection(nearest_neighbor_closure,
+    primary);
+  auto exclusive = flecsi::utils::set_difference(primary, shared);
+#endif
+
+  // Subtracting out the closure leaves just the
+  // next nearest neighbors.
   auto next_nearest_neighbors =
     flecsi::utils::set_difference(nearest_neighbor_closure, closure);
+  flecsi_container_info_rank("next nearest neighbor",
+    next_nearest_neighbors, output_rank, " ");
 
   // The union of the nearest and next-nearest neighbors gives us all
   // of the cells that might reference a vertex that we need.
   auto all_neighbors = flecsi::utils::set_union(nearest_neighbors,
     next_nearest_neighbors);
+  flecsi_container_info_rank("all neighbors", all_neighbors, output_rank, " ");
 
   // Create a communicator instance to get neighbor information.
   auto communicator = std::make_shared<flecsi::dmp::mpi_communicator_t>();
@@ -163,22 +158,11 @@ TEST(partition, simple) {
   } // for
   } // scope
 
-#if 1
   if(rank == output_rank) {
-    std::cout << "exclusive cells: " << std::endl;
-    for(auto i: exclusive_cells) {
-      std::cout << i << std::endl;
-    } // for
-    std::cout << "shared cells: " << std::endl;
-    for(auto i: shared_cells) {
-      std::cout << i << std::endl;
-    } // for
-    std::cout << "ghost cells: " << std::endl;
-    for(auto i: ghost_cells) {
-      std::cout << i << std::endl;
-    } // for
+    flecsi_container_info("exclusive cells ", exclusive_cells, "\n");
+    flecsi_container_info("shared cells ", shared_cells, "\n");
+    flecsi_container_info("ghost cells ", ghost_cells, "\n");
   } // if
-#endif
 
 // FIXME
 #if 1
@@ -307,22 +291,11 @@ TEST(partition, simple) {
   } // for
   } // scope
 
-if(rank == output_rank) {
-  std::cout << "exclusive vertices:" << std::endl;
-  for(auto i: exclusive_vertices) {
-    std::cout << i << std::endl;
-  } // for
-
-  std::cout << "shared vertices:" << std::endl;
-  for(auto i: shared_vertices) {
-    std::cout << i << std::endl;
-  } // for
-
-  std::cout << "ghost vertices:" << std::endl;
-  for(auto i: ghost_vertices) {
-    std::cout << i << std::endl;
-  } // for
-} // if
+  if(rank == output_rank) {
+    flecsi_container_info("exclusive vertices ", exclusive_vertices, "\n");
+    flecsi_container_info("shared vertices ", shared_vertices, "\n");
+    flecsi_container_info("ghost vertices ", ghost_vertices, "\n");
+  } // if
 
 // We will need to discuss how to expose customization to user
 // specializations. The particular configuration of ParMETIS is
