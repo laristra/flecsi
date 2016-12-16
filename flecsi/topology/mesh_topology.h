@@ -230,7 +230,8 @@ public:
   mesh_topology_t & operator=(const mesh_topology_t &) = delete;
 
   // Allow move operations
-  mesh_topology_t(mesh_topology_t &&) = default;
+  mesh_topology_t(mesh_topology_t && o) = default;
+
 
   //! override default move assignement
   mesh_topology_t & operator=(mesh_topology_t && o) = default;
@@ -449,15 +450,16 @@ public:
   const auto entities(const E * e) const
   {
 
-    connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
+    const connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
     const index_vector_t & fv = c.get_from_index_vec();
 
     using etype = entity_type<D, TM>;
     using dtype = domain_entity<TM, etype>;
     
-    return c.get_index_space().slice<dtype>(
+    auto ents = c.get_index_space().slice<dtype>(
       fv[e->template id<FM>()], fv[e->template id<FM>() + 1]);
+    return ents;
   } // entities
 
   /*!
@@ -844,7 +846,7 @@ public:
   void append_to_index_space_(size_t domain,
     size_t dim,
     std::vector<mesh_entity_base_*>& ents,
-    std::vector<id_t>& ids){
+    std::vector<id_t>& ids) override{
     auto& is =  ms_.index_spaces[domain][dim];
     is.append_(ents, ids);
   }

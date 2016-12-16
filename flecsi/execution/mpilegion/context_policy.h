@@ -118,25 +118,24 @@ struct mpilegion_context_policy_t
 
    // FIXME
     // This is Galen's hack to get partitioning working for the sprint
-    lr_runtime_t::register_legion_task<flecsi::dmp::init_cells_task>(
-      task_ids_t::instance().init_cells_task_id,lr_loc, false, true);
+    lr_runtime_t::register_legion_task<flecsi::dmp::initialization_task>(
+      task_ids_t::instance().init_task_id,lr_loc, false, true);
 
    // FIXME
     // This is Galen's hack to get partitioning working for the sprint
-//    lr_runtime_t::register_legion_task<std::vector<int>,
-    lr_runtime_t::register_legion_task<Legion::LogicalRegion,
+    lr_runtime_t::register_legion_task<flecsi::dmp::partition_lr,
       flecsi::dmp::shared_part_task>(
       task_ids_t::instance().shared_part_task_id,lr_loc, false, true); 
  
    // FIXME
     // This is Galen's hack to get partitioning working for the sprint
-    lr_runtime_t::register_legion_task< Legion::LogicalRegion,
+    lr_runtime_t::register_legion_task<flecsi::dmp::partition_lr,
       flecsi::dmp::exclusive_part_task>(
       task_ids_t::instance().exclusive_part_task_id,lr_loc, false, true);
 
 		// FIXME
     // This is Galen's hack to get partitioning working for the sprint
-    lr_runtime_t::register_legion_task< Legion::LogicalRegion,
+    lr_runtime_t::register_legion_task<flecsi::dmp::partition_lr,
       flecsi::dmp::ghost_part_task>(
       task_ids_t::instance().ghost_part_task_id,lr_loc, false, true);
  
@@ -200,6 +199,11 @@ struct mpilegion_context_policy_t
       interop_helper_.handoff_to_legion();
       interop_helper_.wait_on_legion();
     } // while
+
+    int version, subversion;
+    MPI_Get_version(&version, &subversion);
+    if(version==3 && subversion>0)
+        Legion::Runtime::wait_for_shutdown();
 
     return 0;
   } // initialize

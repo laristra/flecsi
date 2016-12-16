@@ -4,17 +4,12 @@
 //#include "flecsi/topology/index_space.h"
 #include "flecsi/execution/execution.h"
 
+#include "pseudo_random.h"
+
 using namespace std;
 using namespace flecsi;
 using namespace topology;
 
-double uniform(){
-  return double(rand())/RAND_MAX;
-}
-
-double uniform(double a, double b){
-  return a + (b - a) * uniform();
-}
 
 struct object_id{
   size_t id;
@@ -47,21 +42,26 @@ struct object{
 
   object_id id;
 
-  double mass;
+  double mass = 0.0;
+  int tag = 0;
 };
 
 TEST(index_space, index_space) {
-  using index_space_t = index_space<object*, true, true, false>;
 
+  pseudo_random rng;
+
+  using index_space_t = index_space<object*, true, true, false>;
   index_space_t is;
 
   for(size_t i = 0; i < 10000; ++i){
     is << new object(i);
-    is[i]->mass = uniform(0.0, 1.0);
+    is[i]->mass = rng.uniform(0.0, 1.0);
   }
 
+  size_t cnt = 0;
   for_each(o, is, {
-    std::cout << o->id << endl;
+    // std::cout << o->id << endl;
+    ASSERT_EQ( o->index_space_id().index_space_index(), cnt++ );
   }); // foreach
 
 	double total_mass(0.0);
@@ -71,6 +71,8 @@ TEST(index_space, index_space) {
 	});
 
   std::cout << "total_mass: " << total_mass << std::endl;
+  int mass_check = total_mass * 100;
+  ASSERT_EQ( mass_check, 500342 );
 
 #if 0
   forall(is, o,
@@ -85,4 +87,42 @@ TEST(index_space, index_space) {
 
   cout << "total_mass: " << total_mass << endl;
 #endif
+}
+
+
+TEST(index_space, bin) {
+
+  // create an index space object for testing
+  using index_space_t = index_space<object, true, true, false>;
+  index_space_t is;
+
+  constexpr size_t num_objects = 10;
+
+  // initialize it
+  for(size_t i = 0; i < num_objects; ++i){
+    is.push_back( object(i) );
+    is[i].tag = (i<num_objects/2) ? 0 : 1;
+  }
+
+  // bin the index space into two seperate bins based on the
+  // tag
+  auto bins = is.bin_as_vector( [](const auto & o) { return o.tag; } );
+ 
+  // there should be two bins with 500 elements each.
+  ASSERT_EQ( bins.size(), 2 );
+  ASSERT_EQ( bins.at(0).size(), num_objects/2 );
+  ASSERT_EQ( bins.at(1).size(), num_objects/2 );
+
+  // make sure what is in the bins is correct.
+  for(size_t i = 0; i < num_objects; ++i){
+    if ( i < num_objects/2 ) {
+      ASSERT_EQ( bins.at(0)[i].id.index_space_index(), i );
+      ASSERT_EQ( bins.at(0)[i].tag, 0 );
+    }
+    else {
+      auto j = i - num_objects/2;
+      ASSERT_EQ( bins.at(1)[j].id.index_space_index(), i );
+      ASSERT_EQ( bins.at(1)[j].tag, 1 );
+    }
+  }
 }

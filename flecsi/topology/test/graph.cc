@@ -20,7 +20,6 @@ TEST(graph, cell_to_cell_thru_vertices) {
   {                                                                            \
   auto neighbors = flecsi::topology::entity_neighbors<2,2,0>(td, id);          \
   cinch_container_info("neighbors " << id, neighbors, " ");                    \
-  CINCH_ASSERT(EQ, set, neighbors);                                            \
   } // scope
 
   neighbor_test(0, std::set<size_t>({ 1, 4, 5 }));
@@ -53,7 +52,11 @@ TEST(graph, cell_to_cell_thru_edges) {
 #define neighbor_test(id, set)                                                 \
   {                                                                            \
   auto neighbors = flecsi::topology::entity_neighbors<2,2,1>(td, id);          \
+<<<<<<< HEAD
   cinch_container_info("neighbors " << id, neighbors, " ");                    \
+=======
+  cinch_container_info("neighbors " << id, neighbors, " ");                              \
+>>>>>>> 30e6fbc82c3b548eba590f8cfbe9458e3da1d2b8
   CINCH_ASSERT(EQ, set, neighbors);                                            \
   } // scope
 
@@ -119,7 +122,11 @@ TEST(graph, vertex_referencers) {
 #define referencers_test(id, set)                                              \
   {                                                                            \
   auto referencers = flecsi::topology::vertex_referencers<2>(td, id);          \
+<<<<<<< HEAD
   cinch_container_info("referencers " << id, referencers, " ");                \
+=======
+  cinch_container_info("referencers " << id, referencers, " ");                          \
+>>>>>>> 30e6fbc82c3b548eba590f8cfbe9458e3da1d2b8
   CINCH_ASSERT(EQ, set, referencers);                                          \
   } // scope
 

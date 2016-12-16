@@ -37,11 +37,14 @@ enum class privileges : size_t {
 
 struct mesh_t : public data::data_client_t {
 
-  size_t indices(size_t index_space_id) override {
+  size_t indices(size_t index_space_id) const override {
 
     switch(index_space_id) {
       case cells:
         return 100;
+        break;
+      case vertices:
+        return 50;
         break;
       default:
         // FIXME: lookup user-defined index space
@@ -261,6 +264,178 @@ TEST(storage, sparse_delete) {
   ASSERT_EQ(a(2, 2), 3);
 } // TEST
 */
+
+//! \brief This tests the various ways to access data via attributes.
+//! \remark Tests the dense accessor.
+TEST(storage, dense_attributes) {
+
+  using namespace flecsi::data;
+
+  mesh_t m;
+
+  // Register 3 versions
+  register_data(m, hydro, pressure, double, dense, 2, cells);
+  register_data(m, hydro, density, double, dense, 1, cells);
+  register_data(m, hydro, speed, double, dense, 1, vertices);
+  register_data(m, radiation, temperature, double, dense, 1, cells);
+
+  // Initialize
+  {
+    auto p = get_accessor(m, hydro, pressure, double, dense, 0);
+    auto d = get_accessor(m, hydro, density, double, dense, 0);
+    auto t = get_accessor(m, radiation, temperature, double, dense, 0);
+    p.attributes().set(flagged);
+    t.attributes().set(flagged);
+  }
+
+  // Test
+  {
+    auto p0 = get_accessor(m, hydro, pressure, double, dense, 0);
+    auto p1 = get_accessor(m, hydro, pressure, double, dense, 1);
+    auto d = get_accessor(m, hydro, density, double, dense, 0);
+    auto t = get_accessor(m, radiation, temperature, double, dense, 0);
+
+    ASSERT_TRUE(p0.attributes().test(flagged));
+    ASSERT_FALSE(p1.attributes().test(flagged));
+    ASSERT_FALSE(d.attributes().test(flagged));
+    ASSERT_TRUE(t.attributes().test(flagged));
+
+    // test is_at(cells)
+    auto cell_vars = get_accessors(
+      m, hydro, double, dense, 0, is_at(cells), /* sorted */ true
+    );
+
+    ASSERT_EQ( cell_vars.size(), 2 );
+    ASSERT_EQ( cell_vars[0].label(), "density" );
+    ASSERT_EQ( cell_vars[1].label(), "pressure" );
+
+    auto all_cell_vars = get_accessors_all(
+      m, double, dense, 0, is_at(cells), /* sorted */ true 
+    );
+
+    ASSERT_EQ( all_cell_vars.size(), 3 );
+    ASSERT_EQ( all_cell_vars[0].label(), "density" );
+    ASSERT_EQ( all_cell_vars[1].label(), "pressure" );
+    ASSERT_EQ( all_cell_vars[2].label(), "temperature" );
+
+
+    // test has_attribute_at(flagge,cells)
+    auto flagged_vars = get_accessors(
+      m, hydro, double, dense, 0, has_attribute_at(flagged, cells), 
+      /* sorted */ true
+    );
+
+    ASSERT_EQ( flagged_vars.size(), 1 );
+    ASSERT_EQ( flagged_vars[0].label(), "pressure" );
+
+    auto all_flagged_vars = get_accessors_all(
+      m, double, dense, 0, has_attribute_at(flagged, cells), /* sorted */ true 
+    );
+
+    ASSERT_EQ( all_flagged_vars.size(), 2 );
+    ASSERT_EQ( all_flagged_vars[0].label(), "pressure" );
+    ASSERT_EQ( all_flagged_vars[1].label(), "temperature" );
+
+    // test get by type=double
+    auto typed_vars = get_accessors(
+      m, hydro, double, dense, 0, /* sorted */ true
+    );
+
+    ASSERT_EQ( typed_vars.size(), 3 );
+    ASSERT_EQ( typed_vars[0].label(), "density" );
+    ASSERT_EQ( typed_vars[1].label(), "pressure" );
+    ASSERT_EQ( typed_vars[2].label(), "speed" );
+
+    auto all_typed_vars = get_accessors_all(
+      m, double, dense, 0, /* sorted */ true 
+    );
+
+    ASSERT_EQ( all_typed_vars.size(), 4 );
+    ASSERT_EQ( all_typed_vars[0].label(), "density" );
+    ASSERT_EQ( all_typed_vars[1].label(), "pressure" );
+    ASSERT_EQ( all_typed_vars[2].label(), "speed" );
+    ASSERT_EQ( all_typed_vars[3].label(), "temperature" );
+
+
+  } // scope
+} // TEST
+
+//! \brief This tests the various ways to access data via attributes.
+//! \remark Tests the global accessor.
+TEST(storage, global_attributes) {
+
+  using namespace flecsi::data;
+
+  mesh_t m;
+
+  // Register 3 versions
+  register_data(m, hydro, pressure, double, global, 2);
+  register_data(m, hydro, density, double, global, 1);
+  register_data(m, hydro, speed, double, global, 1);
+  register_data(m, radiation, temperature, double, global, 1);
+
+  // Initialize
+  {
+    auto p = get_accessor(m, hydro, pressure, double, global, 0);
+    auto d = get_accessor(m, hydro, density, double, global, 0);
+    auto t = get_accessor(m, radiation, temperature, double, global, 0);
+    p.attributes().set(flagged);
+    t.attributes().set(flagged);
+  }
+
+  // Test
+  {
+    auto p0 = get_accessor(m, hydro, pressure, double, global, 0);
+    auto p1 = get_accessor(m, hydro, pressure, double, global, 1);
+    auto d = get_accessor(m, hydro, density, double, global, 0);
+    auto t = get_accessor(m, radiation, temperature, double, global, 0);
+
+    ASSERT_TRUE(p0.attributes().test(flagged));
+    ASSERT_FALSE(p1.attributes().test(flagged));
+    ASSERT_FALSE(d.attributes().test(flagged));
+    ASSERT_TRUE(t.attributes().test(flagged));
+
+
+    // test has_attribute(flagge)
+    auto flagged_vars = get_accessors(
+      m, hydro, double, global, 0, has_attribute(flagged), 
+      /* sorted */ true
+    );
+
+    ASSERT_EQ( flagged_vars.size(), 1 );
+    ASSERT_EQ( flagged_vars[0].label(), "pressure" );
+
+    auto all_flagged_vars = get_accessors_all(
+      m, double, global, 0, has_attribute(flagged), /* sorted */ true 
+    );
+
+    ASSERT_EQ( all_flagged_vars.size(), 2 );
+    ASSERT_EQ( all_flagged_vars[0].label(), "pressure" );
+    ASSERT_EQ( all_flagged_vars[1].label(), "temperature" );
+
+    // test get by type=double
+    auto typed_vars = get_accessors(
+      m, hydro, double, global, 0, /* sorted */ true
+    );
+
+    ASSERT_EQ( typed_vars.size(), 3 );
+    ASSERT_EQ( typed_vars[0].label(), "density" );
+    ASSERT_EQ( typed_vars[1].label(), "pressure" );
+    ASSERT_EQ( typed_vars[2].label(), "speed" );
+
+    auto all_typed_vars = get_accessors_all(
+      m, double, global, 0, /* sorted */ true 
+    );
+
+    ASSERT_EQ( all_typed_vars.size(), 4 );
+    ASSERT_EQ( all_typed_vars[0].label(), "density" );
+    ASSERT_EQ( all_typed_vars[1].label(), "pressure" );
+    ASSERT_EQ( all_typed_vars[2].label(), "speed" );
+    ASSERT_EQ( all_typed_vars[3].label(), "temperature" );
+
+
+  } // scope
+} // TEST
 
 /*----------------------------------------------------------------------------*
  * Cinch test Macros

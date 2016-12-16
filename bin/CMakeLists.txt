@@ -8,7 +8,7 @@
 #------------------------------------------------------------------------------#
 
 set(example_src example_app.cc)
-set(exec_path ${CMAKE_SOURCE_DIR}/flecsi/execution)
+set(exec_path ${PROJECT_SOURCE_DIR}/flecsi/execution)
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
     list(APPEND example_src ${exec_path}/serial/runtime_driver.cc)
@@ -32,7 +32,7 @@ add_executable(example_app ${example_src})
 #------------------------------------------------------------------------------#
 
 target_compile_definitions(example_app PRIVATE
-    -DFLECSI_DRIVER=${CMAKE_SOURCE_DIR}/bin/example_driver.h)
+  -DFLECSI_DRIVER=${PROJECT_SOURCE_DIR}/bin/example_driver.h)
 
 #------------------------------------------------------------------------------#
 # Add link dependencies.

@@ -40,7 +40,8 @@ namespace flecsi
     static_assert(PBITS + EBITS + FBITS + GBITS + 4 == 128, 
       "invalid id bit configuration");
 
-    id_() { }
+    id_() = default;
+    id_(id_&&) = default;
 
     id_(const id_& id)
     : dimension_(id.dimension_),
@@ -95,7 +96,11 @@ namespace flecsi
 
     local_id_t local_id() const
     {
-      return *reinterpret_cast<const local_id_t*>(this);
+      local_id_t r = dimension_;
+      r |= local_id_t(domain_) << 2; 
+      r |= local_id_t(partition_) << 4; 
+      r |= local_id_t(entity_) << (4 + PBITS);
+      return r;
     }
 
     size_t global_id() const
@@ -118,6 +123,8 @@ namespace flecsi
     {
       partition_ = partition;
     }
+
+    id_& operator=(id_ &&) = default;
 
     id_& operator=(const id_ &id)
     {
