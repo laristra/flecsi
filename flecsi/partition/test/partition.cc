@@ -49,7 +49,7 @@ TEST(partition, simple) {
   auto dcrs = flecsi::dmp::make_dcrs(sd);
 
   //if(rank == output_rank) {
-    flecsi_info_rank("dCRS" << std::endl << dcrs, output_rank);
+//    flecsi_info_rank("dCRS" << std::endl << dcrs, output_rank);
   //} // if
 
   // Create a partitioner instance to generate the primary partition.
