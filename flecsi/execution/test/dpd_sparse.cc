@@ -157,6 +157,15 @@ TEST(legion, test1) {
     legion_dpd::commit_data_task>(legion_dpd::COMMIT_DATA_TID,
     Processor::LOC_PROC, false, true);
 
+  Runtime::register_legion_task<legion_dpd::partition_metadata,
+    legion_dpd::get_partition_metadata_task>(
+    legion_dpd::GET_PARTITION_METADATA_TID,
+    Processor::LOC_PROC, false, true);
+
+  Runtime::register_legion_task<legion_dpd::put_partition_metadata_task>(
+    legion_dpd::PUT_PARTITION_METADATA_TID,
+    Processor::LOC_PROC, false, true);
+
   int argc = 1;
   char** argv = (char**)malloc(sizeof(char*));
   argv[0] = strdup("-test");

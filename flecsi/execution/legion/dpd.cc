@@ -151,10 +151,6 @@ namespace execution {
       FieldAllocator a = h.create_field_allocator(fs);
       a.allocate_field(sizeof(size_t) + args.value_size, ENTRY_VALUE_FID);
       md.lr = h.create_logical_region(is, fs);
-      
-      Domain cd = h.domain_from_rect(0, 1);
-      DomainPointColoring coloring;
-      md.ip = runtime->create_index_partition(ctx, is, cd, coloring);
     }
 
     meta_ac.write(DomainPoint::from_point<1>(p), md);
@@ -298,10 +294,8 @@ namespace execution {
     IndexLauncher il(COMMIT_DATA_TID, d,
       TaskArgument(&args, args_size), arg_map);
 
-    LogicalPartition lp1 =
-      runtime_->get_logical_partition(context_, md.lr, md.ip);
     il.add_region_requirement(
-          RegionRequirement(lp1, 0, READ_WRITE, EXCLUSIVE, md.lr));
+          RegionRequirement(md.lr, 0, READ_WRITE, EXCLUSIVE, md.lr));
     il.region_requirements[0].add_field(ENTRY_VALUE_FID);
 
 
@@ -349,18 +343,16 @@ namespace execution {
   }
 
   void legion_dpd::put_partition_metadata(const partition_metadata& md){
-    IndexSpace is = partition_metadata_lr_.get_index_space();
-
-    LogicalPartition lp =
-      runtime_->get_logical_partition(context_,
-      partition_metadata_lr_, partition_metadata_ip_);
-
     Domain d = h.domain_from_point(md.partition);
 
     ArgumentMap arg_map;
 
     IndexLauncher il(PUT_PARTITION_METADATA_TID, d,
                      TaskArgument(&md, sizeof(md)), arg_map);
+
+    LogicalPartition lp =
+      runtime_->get_logical_partition(context_,
+      partition_metadata_lr_, partition_metadata_ip_);
 
     il.add_region_requirement(
           RegionRequirement(lp, 0, 
@@ -397,7 +389,7 @@ namespace execution {
     legion_helper h(runtime, context);
 
     size_t p = task->index_point.point_data[0];
-    const partition_metadata& md = *(partition_metadata*)task->args;
+    partition_metadata md = *(partition_metadata*)task->args;
 
     auto ac = regions[0].get_field_accessor(PARTITION_METADATA_FID).
       typeify<partition_metadata>();

@@ -89,7 +89,6 @@ public:
   struct partition_metadata{
     size_t partition;
     Legion::LogicalRegion lr;
-    Legion::IndexPartition ip;
     size_t size;
     size_t reserve;
   };
