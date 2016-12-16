@@ -32,6 +32,9 @@ namespace execution {
     struct commit_data_args{
       LogicalRegion entry_values_lr;
       size_t value_size;
+      size_t slot_size;
+      size_t num_slots;
+      size_t num_indices;
       legion_dpd::partition_metadata md;
       legion_dpd::index_pair indices[MAX_INDICES];
     };
@@ -285,6 +288,10 @@ namespace execution {
 
     commit_data_args args;
     args.value_size = value_size;
+    args.slot_size = cd.slot_size;
+    args.num_slots = cd.num_slots;
+    args.num_indices = cd.num_indices;
+
     copy(cd.indices, cd.indices + cd.num_indices, args.indices);
 
     partition_metadata md = get_partition_metadata(partition);
@@ -406,10 +413,15 @@ namespace execution {
     legion_helper h(runtime, context);
 
     commit_data_args& args = *(commit_data_args*)task->args;
+    size_t value_size = args.value_size;
+    size_t slot_size = args.slot_size;
+    size_t num_slots = args.num_slots;
+    size_t num_indices = args.num_indices;
+    size_t entry_value_size = value_size + sizeof(size_t);
+
     partition_metadata& md = args.md;
 
-    entry_value<char>* commit_entry_values = 
-      *(entry_value<char>**)task->local_args;
+    char* commit_entry_values = *(char**)task->local_args;
 
     size_t p = task->index_point.point_data[0];
 
@@ -425,6 +437,70 @@ namespace execution {
       regions[1].get_field_accessor(OFFSET_COUNT_FID).
       typeify<offset_count>();
 
+    size_t s = md.size;
+    size_t c = md.reserve;
+    size_t d = num_indices * num_slots;
+
+    if(c - s < d){
+      md.reserve *= 2;
+
+      IndexSpace is = h.create_index_space(0, md.reserve - 1);
+      FieldSpace fs = h.create_field_space();
+      FieldAllocator a = h.create_field_allocator(fs);
+      a.allocate_field(sizeof(entry_offset), ENTRY_OFFSET_FID);
+      a.allocate_field(value_size, VALUE_FID);
+      LogicalRegion lr2 = h.create_logical_region(is, fs);
+
+      RegionRequirement rr(lr2, WRITE_DISCARD, EXCLUSIVE, lr2);
+      rr.add_field(ENTRY_OFFSET_FID);
+      rr.add_field(VALUE_FID);
+      InlineLauncher il(rr);
+
+      PhysicalRegion pr = runtime->map_region(context, il);
+      pr.wait_until_valid();
+
+      entry_offset* entry_offsets2;
+      h.get_buffer(pr, entry_offsets2, ENTRY_OFFSET_FID);
+      char* values2 = h.get_raw_buffer(pr, VALUE_FID);
+
+      copy(entry_offsets, entry_offsets + md.size, entry_offsets2);
+      copy(values, values + md.size * value_size, values2);
+
+      runtime->unmap_region(context, pr);
+      md.lr = lr2;
+    }
+
+    entry_offset* entry_offsets_end = entry_offsets + md.size;
+
+    IndexIterator ent_itr(runtime, context, ent_is);
+
+    for(size_t i = 0; i < num_indices; ++i){
+      assert(ent_itr.has_next());
+      ptr_t ptr = ent_itr.next();
+
+      offset_count oc = ent_ac.read(ptr);
+
+      const index_pair& ip = args.indices[i];
+
+      size_t n = ip.second - ip.first;
+
+      size_t pos = oc.offset;
+
+      if(n == 0){
+        oc.count = 0;
+        ent_ac.write(ptr, oc);
+        continue;
+      }
+
+      char* start = commit_entry_values + i * num_slots * entry_value_size;
+      char* end = start + n * entry_value_size; 
+
+
+      ent_ac.write(ptr, oc);
+    }
+
+
+/*
     IndexIterator ent_itr(runtime, context, ent_is);
     while(ent_itr.has_next()){
       ptr_t ptr = ent_itr.next();
@@ -432,6 +508,7 @@ namespace execution {
       //np(oc.offset);
       //np(oc.count);
     }
+    */
 
     return md;
   }  
