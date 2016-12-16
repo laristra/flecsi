@@ -1,6 +1,7 @@
 #include <cinchtest.h>
 #include <iostream>
 
+#include "flecsi/data/data.h"
 #include "flecsi/utils/common.h"
 #include "flecsi/topology/mesh_topology.h"
 
@@ -216,3 +217,72 @@ TEST(mesh_topology, traversal) {
 
   ASSERT_TRUE(CINCH_EQUAL_BLESSED("traversal.blessed"));
 }
+
+
+
+//! \brief Tests the mesh_topology's destructor
+TEST(mesh_topology, destructor) {
+
+  // create a new data_client
+  auto mesh = new TestMesh;
+
+  // Register data
+  register_data(*mesh, hydro, pressure, double, global, 1);
+  register_data(*mesh, hydro, density, double, global, 1);
+
+  // get all accessors to the data
+  auto accs = get_accessors(*mesh, hydro, double, global, 0);
+  
+  ASSERT_EQ( accs.size(), 2 );
+  ASSERT_EQ( accs[0].label(), "density" );
+  ASSERT_EQ( accs[1].label(), "pressure" );
+
+  // store the runtime id
+  auto rid = mesh->runtime_id();
+
+  // delete the data_client
+  delete mesh;
+
+  // make sure the data is gone
+  ASSERT_EQ( flecsi::data::storage_t::instance().count(rid), 0 );
+
+}
+
+//! \brief Tests the mesh_topology's move operator
+TEST(mesh_topology, move) {
+
+  // create new data_clients
+  TestMesh mesh1, mesh2;
+  auto rid1 = mesh1.runtime_id();
+
+  // Register data
+  register_data(mesh1, hydro, pressure, double, global, 1);
+  register_data(mesh1, hydro, density, double, global, 1);
+
+  // get all accessors to the data
+  {
+    auto accs = get_accessors(mesh1, hydro, double, global, 0);
+  
+    ASSERT_EQ( accs.size(), 2 );
+    ASSERT_EQ( accs[0].label(), "density" );
+    ASSERT_EQ( accs[1].label(), "pressure" );
+  }
+
+  // create a new data client
+  mesh2 = std::move(mesh1);
+  auto rid2 = mesh1.runtime_id();
+
+  // make sure the data is gone from data client 1
+  ASSERT_EQ( flecsi::data::storage_t::instance().count(rid1), 0 );
+
+  // it should show up in the new data client though
+  {
+    auto accs = get_accessors(mesh2, hydro, double, global, 0);
+  
+    ASSERT_EQ( accs.size(), 2 );
+    ASSERT_EQ( accs[0].label(), "density" );
+    ASSERT_EQ( accs[1].label(), "pressure" );
+  }
+
+}
+

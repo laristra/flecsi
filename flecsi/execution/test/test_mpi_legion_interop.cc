@@ -62,7 +62,7 @@ static mpi_legion_interop_t InteropHelper;
   IndexLauncher helloworld_launcher(
        HELLOWORLD_TASK_ID,
        Domain::from_rect<1>(
-              InteropHelper.local_procs_),
+              InteropHelper.all_processes_),
        TaskArgument(0, 0),
        arg_map);
 
@@ -136,6 +136,7 @@ void my_init_legion(){
   InteropHelper.handoff_to_legion();
  
   InteropHelper.wait_on_legion();
+  Legion::Runtime::wait_for_shutdown();
   std::cout<<"back to MPI to finalize"<<std::endl;
 }
 

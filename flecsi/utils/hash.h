@@ -21,6 +21,7 @@
  */
 
 #include <limits>
+#include <utility>
 
 namespace flecsi
 {

@@ -12,6 +12,8 @@ env:
     - DISTRO=ubuntu MPI=OFF RUNTIME=legion    WERROR=yes
     - DISTRO=ubuntu MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
     - DISTRO=ubuntu MPI=ON  RUNTIME=mpilegion WERROR=yes
+    - DISTRO=ubuntu_mpich MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
+    - DISTRO=ubuntu_mpich MPI=ON  RUNTIME=mpilegion WERROR=yes
     - DISTRO=ubuntu MPI=OFF  RUNTIME=serial       DOCKERHUB=true
     - DISTRO=ubuntu MPI=OFF  RUNTIME=serial       WERROR=yes
     - DISTRO=ubuntu MPI=OFF  COVERAGE=ON RUNTIME=serial
@@ -21,6 +23,8 @@ env:
     - DISTRO=fedora MPI=OFF RUNTIME=legion    WERROR=yes
     - DISTRO=fedora MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
     - DISTRO=fedora MPI=ON  RUNTIME=mpilegion WERROR=yes
+    - DISTRO=fedora_mpich MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
+    - DISTRO=fedora_mpich MPI=ON  RUNTIME=mpilegion WERROR=yes
     - DISTRO=fedora MPI=OFF RUNTIME=serial        DOCKERHUB=true
     - DISTRO=fedora MPI=OFF RUNTIME=serial        WERROR=yes
     - DISTRO=fedora MPI=OFF RUNTIME=serial COVERAGE=ON
@@ -60,6 +64,7 @@ after_success:
       rm -rf assets/doxygen doc;
       CON=$(docker run -d flecsi/flecsi:${DISTRO}_${RUNTIME}${TAG}) && docker cp ${CON}:/home/flecsi/flecsi/build/doc . ;
       mv doc/doxygen/html assets/doxygen;
+      for i in doc/*.pdf; do mv ${i} ${i%-0.0*}.pdf; done;
       mv doc/*.pdf assets;
       rm -rf doc;
       git add --all assets/doxygen assets/*.pdf;

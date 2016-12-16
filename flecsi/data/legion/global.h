@@ -158,7 +158,7 @@ struct storage_type_t<global, DS, MD> {
   static
   handle_t<T>
   register_data(
-    data_client_t & data_client,
+    const data_client_t & data_client,
     data_store_t & data_store,
     const const_string_t & key,
     size_t versions,
@@ -182,7 +182,7 @@ struct storage_type_t<global, DS, MD> {
   static
   accessor_t<T>
   get_accessor(
-    data_client_t & data_client,
+    const data_client_t & data_client,
     data_store_t & data_store,
     const const_string_t & key,
     size_t version
@@ -205,7 +205,7 @@ struct storage_type_t<global, DS, MD> {
   static
   handle_t<T>
   get_handle(
-    data_client_t & data_client,
+    const data_client_t & data_client,
     data_store_t & data_store,
     const const_string_t & key
   )

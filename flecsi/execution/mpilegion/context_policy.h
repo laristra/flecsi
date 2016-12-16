@@ -200,6 +200,11 @@ struct mpilegion_context_policy_t
       interop_helper_.wait_on_legion();
     } // while
 
+    int version, subversion;
+    MPI_Get_version(&version, &subversion);
+    if(version==3 && subversion>0)
+        Legion::Runtime::wait_for_shutdown();
+
     return 0;
   } // initialize
 

@@ -15,6 +15,7 @@
 #pragma once
 
 #include <algorithm>
+#include <map>
 #include <type_traits>
 #include <vector>
 
@@ -118,11 +119,6 @@ public:
     iterator_base_(const item_vector_t* s, const id_vector_t& items, size_t index, size_t end)
     : items_(&items), index_(index), end_(end), s_(const_cast<item_vector_t*>(s)){}
 
-    iterator_base_& operator++(){
-      ++index_;
-      return *this;
-    }
-
     iterator_base_& operator=(const iterator_base_ & itr){
       index_ = itr.index_;
       end_ = itr.end_;
@@ -167,6 +163,11 @@ public:
     iterator_(const item_vector_t* s, const id_vector_t& items, size_t index, size_t end)
     : B(s, items, index, end){}
 
+    iterator_& operator++(){
+      ++B::index_;
+      return *this;
+    }
+
     S& operator*(){
       while(B::index_ < B::end_){
         T& item = B::get_(B::index_);
@@ -208,6 +209,11 @@ public:
 
     iterator_(const item_vector_t* s, const id_vector_t& items, size_t index, size_t end)
     : B(s, items, index, end){}
+
+    iterator_& operator++(){
+      ++B::index_;
+      return *this;
+    }
 
     S& operator*(){
       return B::get_(B::index_);
@@ -252,11 +258,13 @@ public:
   }
 
   index_space(index_space&& is)
-  : v_(is.v_), begin_(is.begin_), end_(is.end_),
-  sorted_(is.sorted_), s_(is.s_){
+  : v_(std::move(is.v_)), begin_(std::move(is.begin_)), 
+    end_(std::move(is.end_)), sorted_(std::move(is.sorted_)), 
+    s_(std::move(is.s_))
+  {
 
     if(OWNED || is.owned_){
-      is.v_ = new id_vector_t;
+      is.v_ = nullptr;
       owned_ = true;
     }
     else{
@@ -264,8 +272,11 @@ public:
     }
 
     if(STORAGE){
-      is.s_ = new item_vector_t;
+      is.s_ = nullptr;
     }
+
+    is.begin_ = 0;
+    is.end_ = 0;
   }
 
   ~index_space(){
@@ -303,25 +314,28 @@ public:
   }
 
   index_space& operator=(index_space&& is){
-    v_ = is.v_;
+    v_ = std::move(is.v_);
 
     if(OWNED || is.owned_){
-      is.v_ = new id_vector_t;
+      is.v_ = nullptr;
       owned_ = true;
     }
     else{
       owned_ = false;
     }
 
-    begin_ = is.begin_;
-    end_ = is.end_;
-    sorted_ = is.sorted_;
-    s_ = is.s_;
+    begin_ = std::move(is.begin_);
+    end_ = std::move(is.end_);
+    sorted_ = std::move(is.sorted_);
+    s_ = std::move(is.s_);
 
     if(STORAGE){
-      is.s_ = new item_vector_t;
+      is.s_ = nullptr;
     }
     
+    is.begin_ = 0;
+    is.end_ = 0;
+
     return *this;
   }
 
@@ -499,12 +513,13 @@ public:
     return v_->data();
   }
 
-  auto filter(filter_function f) const {
+  template<typename Predicate>
+  auto filter(Predicate && f) const {
     index_space<T, false, true, false> is;
     is.set_master(*this);
 
     for (auto item : *this) {
-      if (f(item)) {
+      if (std::forward<Predicate>(f)(item)) {
         is.push_back(item);
       }
     }
@@ -541,6 +556,97 @@ public:
 
     return r;
   }
+
+  //! \brief Bin entities using a predicate function.
+  //! 
+  //! The predicate function returns some sortable key that is
+  //! used to bin entities.
+  //!
+  //! \taram Predicate  The type of the predicate function.
+  //!
+  //! \param f  The predicate function.  Should return a sortable
+  //!   bin key that determines the order of the result.
+  //! \return a vector of index_space's, with each element corresponding
+  //!   to a specific bin.
+  //!
+  //! \remark This version returns a map
+  template<typename Predicate>
+  auto bin(Predicate && f) const {
+    return bin_as_map( std::forward<Predicate>(f) );
+  }
+
+  //! \brief Bin entities using a predicate function.
+  //! 
+  //! The predicate function returns some sortable key that is
+  //! used to bin entities.
+  //!
+  //! \taram Predicate  The type of the predicate function.
+  //!
+  //! \param f  The predicate function.  Should return a sortable
+  //!   bin key that determines the order of the result.
+  //! \return a vector of index_space's, with each element corresponding
+  //!   to a specific bin.
+  //!
+  //! \remark This version returns a map, and is less costly to bin,
+  //!   but more costly to access.
+  template<typename Predicate>
+  auto bin_as_map(Predicate && f) const {
+
+    // If the list was sorted beforehand, the result will also be
+    // sorted.  Own the index_vector_t (i.e., create storage for it)
+    using new_index_space_t = index_space<T, false, true, SORTED>;
+
+    // get the predicate result type
+    using result_t = 
+      std::decay_t< decltype( std::forward<Predicate>(f)(operator[](0))) >;
+
+    // bin the data, and use a map to sort the keys
+    std::map<result_t, new_index_space_t> bins;
+    for (auto ent : *this)
+      bins[std::forward<Predicate>(f)(ent)].push_back(ent);
+
+    // now go and set the master
+    for ( auto & entry : bins )
+      entry.second.set_master(*this);
+
+    return bins;
+  }
+
+  //! \brief Bin entities using a predicate function.
+  //! 
+  //! The predicate function returns some sortable key that is
+  //! used to bin entities.
+  //!
+  //! \taram Predicate  The type of the predicate function.
+  //!
+  //! \param f  The predicate function.  Should return a sortable
+  //!   bin key that determines the order of the result.
+  //! \return a vector of index_space's, with each element corresponding
+  //!   to a specific bin.
+  //!
+  //! \remark This version returns a vector.
+  template<typename Predicate>
+  auto bin_as_vector(Predicate && f) const {
+
+    // get the bins as a map
+    auto bins_map = bin_as_map( std::forward<Predicate>(f) );
+
+    // If the list was sorted beforehand, the result will also be
+    // sorted.  Own the index_vector_t (i.e., create storage for it)
+    using new_index_space_t = 
+      typename std::decay_t<decltype(bins_map)>::mapped_type;
+
+    // now extract the results and store them in a vector.
+    // should be faster for access.
+    std::vector< new_index_space_t > bins_vec;
+    bins_vec.reserve( bins_map.size() );
+
+    for ( auto && entry : bins_map )
+      bins_vec.emplace_back( std::move(entry.second) );
+
+    return bins_vec;
+  }
+
 
   void prepare_(){
     if(!OWNED && !owned_){
@@ -794,6 +900,14 @@ private:
   size_t begin_push_(){
     static_assert(OWNED, "expected OWNED");
     return v_->size();
+  }
+
+  /*!
+    Private methods for efficiently populating an index space.
+   */
+  void reserve_(size_t n){
+    static_assert(OWNED, "expected OWNED");
+    return v_->reserve(n);
   }
 
   /*!

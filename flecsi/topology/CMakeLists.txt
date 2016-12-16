@@ -34,7 +34,7 @@ set(topology_SOURCES
 cinch_add_unit(traversal
   SOURCES test/traversal.cc
   INPUTS test/traversal.blessed
-)
+  LIBRARIES flecsi)
 
 cinch_add_unit(dual
   SOURCES test/dual.cc
@@ -44,7 +44,7 @@ cinch_add_unit(dual
 cinch_add_unit(bindings
   SOURCES test/bindings.cc
   INPUTS test/bindings.blessed
-)
+  LIBRARIES flecsi)
 
 #cinch_add_unit(serialize
 #  SOURCES test/serialize.cc
@@ -58,36 +58,35 @@ cinch_add_unit(bindings
 cinch_add_unit(tree
   SOURCES test/tree.cc test/pseudo_random.h
   INPUTS test/tree.blessed
-  LIBRARIES pthread
-)
+  LIBRARIES flecsi)
 
 cinch_add_unit(tree1d
   SOURCES test/tree1d.cc
-)
+  LIBRARIES flecsi)
 
 cinch_add_unit(tree3d
   SOURCES test/tree3d.cc
-)
+  LIBRARIES flecsi)
 
 cinch_add_unit(gravity
   SOURCES test/gravity.cc test/pseudo_random.h
-  LIBRARIES pthread
-)
+  LIBRARIES flecsi)
 
 cinch_add_unit(gravity-state
   SOURCES test/gravity-state.cc test/pseudo_random.h
-)
+  LIBRARIES flecsi)
 
 #------------------------------------------------------------------------------#
 # Misc. unit tests.
 #------------------------------------------------------------------------------#
 
-cinch_add_unit(index-space
-  SOURCES test/index-space.cc
-)
 
 cinch_add_unit(graph
   SOURCES test/graph.cc
+)
+
+cinch_add_unit(index-space
+  SOURCES test/index-space.cc test/pseudo_random.h
 )
 
 #~---------------------------------------------------------------------------~-#

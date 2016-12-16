@@ -70,6 +70,7 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
         ../partition/init_partitions_task.cc
       DEFINES FLECSI_DRIVER=flecsi/execution/test/task_driver.h
       POLICY MPILEGION
+      LIBRARIES flecsi
     )
   
    #FIXME: remove the check for Parmetis when there are other kinds of 
