@@ -32,8 +32,8 @@ namespace execution {
     struct commit_data_args{
       LogicalRegion entry_values_lr;
       size_t value_size;
-      legion_dpd::index_pair indices[MAX_INDICES];
       legion_dpd::partition_metadata md;
+      legion_dpd::index_pair indices[MAX_INDICES];
     };
 
   } // namespace
@@ -149,7 +149,8 @@ namespace execution {
       IndexSpace is = h.create_index_space(0, args.reserve - 1);
       FieldSpace fs = h.create_field_space();
       FieldAllocator a = h.create_field_allocator(fs);
-      a.allocate_field(sizeof(size_t) + args.value_size, ENTRY_VALUE_FID);
+      a.allocate_field(sizeof(entry_offset), ENTRY_OFFSET_FID);
+      a.allocate_field(args.value_size, VALUE_FID);
       md.lr = h.create_logical_region(is, fs);
     }
 
@@ -296,7 +297,8 @@ namespace execution {
 
     il.add_region_requirement(
           RegionRequirement(md.lr, 0, READ_WRITE, EXCLUSIVE, md.lr));
-    il.region_requirements[0].add_field(ENTRY_VALUE_FID);
+    il.region_requirements[0].add_field(ENTRY_OFFSET_FID);
+    il.region_requirements[0].add_field(VALUE_FID);
 
 
     LogicalPartition lp2 =
@@ -411,7 +413,10 @@ namespace execution {
 
     size_t p = task->index_point.point_data[0];
 
-    char* entry_values = h.get_raw_buffer(regions[0], ENTRY_VALUE_FID);
+    entry_offset* entry_offsets;
+    h.get_buffer(regions[0], entry_offsets, ENTRY_OFFSET_FID);
+
+    char* values = h.get_raw_buffer(regions[0], VALUE_FID);
 
     LogicalRegion ent_lr = regions[1].get_logical_region();
     IndexSpace ent_is = ent_lr.get_index_space();
@@ -424,8 +429,8 @@ namespace execution {
     while(ent_itr.has_next()){
       ptr_t ptr = ent_itr.next();
       const offset_count& oc = ent_ac.read(ptr);
-      np(oc.offset);
-      np(oc.count);
+      //np(oc.offset);
+      //np(oc.count);
     }
 
     return md;

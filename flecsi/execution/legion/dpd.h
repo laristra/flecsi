@@ -52,7 +52,8 @@ public:
     PTR_COUNT_FID,
     OFFSET_COUNT_FID,
     INDEX_FID,
-    ENTRY_VALUE_FID,
+    ENTRY_OFFSET_FID,
+    VALUE_FID,
     PARTITION_METADATA_FID
   };
 
@@ -84,6 +85,11 @@ public:
   struct entry_value{
     size_t entry;
     T value;
+  };
+
+  struct entry_offset{
+    size_t entry;
+    size_t offset;
   };
 
   struct partition_metadata{
