@@ -13,6 +13,8 @@
 
 #include <iostream>
 
+#include "legion_utilities.h"
+
 using namespace std;
 using namespace Legion;
 using namespace LegionRuntime;
@@ -35,8 +37,10 @@ namespace execution {
       size_t slot_size;
       size_t num_slots;
       size_t num_indices;
+      size_t buf_size;
+      size_t indices_buf_size;
+      size_t entries_buf_size;
       legion_dpd::partition_metadata md;
-      legion_dpd::index_pair indices[MAX_INDICES];
     };
 
   } // namespace
@@ -279,34 +283,37 @@ namespace execution {
 
     Domain d = h.domain_from_point(cd.partition);
 
-    size_t size = (sizeof(size_t) + value_size) * cd.num_slots;
-
     size_t partition = cd.partition;
-
-    arg_map.set_point(h.domain_point(partition),
-      TaskArgument(cd.entries, size));
 
     commit_data_args args;
     args.value_size = value_size;
     args.slot_size = cd.slot_size;
     args.num_slots = cd.num_slots;
     args.num_indices = cd.num_indices;
+    args.indices_buf_size = 2 * sizeof(size_t) * cd.num_indices;
+    args.entries_buf_size = cd.slot_size * cd.num_slots * value_size;
 
-    copy(cd.indices, cd.indices + cd.num_indices, args.indices);
+    Serializer serializer;
+    serializer.serialize(cd.indices, args.indices_buf_size); 
+    serializer.serialize(cd.entries, args.entries_buf_size);
+    
+    const void* args_buf = serializer.get_buffer();
+    args.buf_size = serializer.get_used_bytes();
 
-    partition_metadata md = get_partition_metadata(partition);
+    args.md = get_partition_metadata(partition);
 
-    size_t args_size = sizeof(commit_data_args) - 
-      ((MAX_INDICES - cd.num_indices) * sizeof(size_t) * 2);
+    arg_map.set_point(h.domain_point(partition),
+                      TaskArgument(args_buf, args.buf_size));
 
     IndexLauncher il(COMMIT_DATA_TID, d,
-      TaskArgument(&args, args_size), arg_map);
+      TaskArgument(&args, sizeof(args)), arg_map);
 
     il.add_region_requirement(
-          RegionRequirement(md.lr, 0, READ_WRITE, EXCLUSIVE, md.lr));
+          RegionRequirement(args.md.lr, 0, READ_WRITE,
+                            EXCLUSIVE, args.md.lr));
+    
     il.region_requirements[0].add_field(ENTRY_OFFSET_FID);
     il.region_requirements[0].add_field(VALUE_FID);
-
 
     LogicalPartition lp2 =
       runtime_->get_logical_partition(context_, from_.lr, from_.ip);
@@ -319,7 +326,7 @@ namespace execution {
     fm.wait_all_results();
 
     DomainPoint dp = DomainPoint::from_point<1>(make_point(partition));
-    md = fm.get_result<partition_metadata>(dp);
+    partition_metadata md = fm.get_result<partition_metadata>(dp);
     put_partition_metadata(md);
   }
 
@@ -421,7 +428,13 @@ namespace execution {
 
     partition_metadata& md = args.md;
 
-    char* commit_entry_values = *(char**)task->local_args;
+    void* args_buf = *(char**)task->local_args;
+    Deserializer deserializer(args_buf, args.buf_size);
+    void* indices_buf = malloc(args.indices_buf_size);
+    deserializer.deserialize(indices_buf, args.indices_buf_size);
+
+    void* entries_buf = malloc(args.entries_buf_size);
+    deserializer.deserialize(entries_buf, args.entries_buf_size);
 
     size_t p = task->index_point.point_data[0];
 
@@ -473,7 +486,7 @@ namespace execution {
     entry_offset* entry_offsets_end = entry_offsets + md.size;
 
     IndexIterator ent_itr(runtime, context, ent_is);
-
+/*
     for(size_t i = 0; i < num_indices; ++i){
       assert(ent_itr.has_next());
       ptr_t ptr = ent_itr.next();
@@ -498,7 +511,7 @@ namespace execution {
 
       ent_ac.write(ptr, oc);
     }
-
+*/
 
 /*
     IndexIterator ent_itr(runtime, context, ent_is);
