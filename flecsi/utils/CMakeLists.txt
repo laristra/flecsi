@@ -34,8 +34,8 @@ set(utils_HEADERS
   id.h
   index_space.h
   iterator.h
+  logging.h
   reorder.h
-  reporting.h
   set_intersection.h
   static_container/meta_counter.h
   static_container/meta_list.h

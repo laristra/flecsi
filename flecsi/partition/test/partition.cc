@@ -21,7 +21,6 @@
 #include "flecsi/partition/parmetis_partitioner.h"
 #include "flecsi/partition/mpi_communicator.h"
 #include "flecsi/utils/set_utils.h"
-#include "flecsi/utils/reporting.h"
 
 const size_t output_rank = 0;
 

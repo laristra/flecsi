@@ -7,7 +7,7 @@
 #define flecsi_topology_graph_utils_h
 
 #include "flecsi/topology/graph_definition.h"
-#include "flecsi/utils/reporting.h"
+#include "flecsi/utils/logging.h"
 #include "flecsi/utils/set_utils.h"
 
 ///

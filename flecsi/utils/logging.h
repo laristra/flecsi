@@ -12,13 +12,13 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_utils_reporting_h
-#define flecsi_utils_reporting_h
+#ifndef flecsi_utils_logging_h
+#define flecsi_utils_logging_h
 
 #include <cinchlog.h>
 
 /*!
- * \file reporting.h
+ * \file logging.h
  * \authors bergen
  * \date Initial file creation: Dec 10, 2016
  */
@@ -26,7 +26,7 @@
 // For the time being, we are just going to directly use the cinch clog
 // interface.
 
-#endif // flecsi_utils_reporting_h
+#endif // flecsi_utils_logging_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

@@ -7,7 +7,7 @@
 #define flecsi_topology_test_definition_h
 
 #include "flecsi/geometry/point.h"
-#include "flecsi/utils/reporting.h"
+#include "flecsi/utils/logging.h"
 
 ///
 // \file test_definition.h

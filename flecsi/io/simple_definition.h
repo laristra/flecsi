@@ -11,7 +11,7 @@
 #include <string>
 
 #include "flecsi/io/mesh_definition.h"
-#include "flecsi/utils/reporting.h"
+#include "flecsi/utils/logging.h"
 
 ///
 // \file simple_definition.h
