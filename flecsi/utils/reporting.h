@@ -16,6 +16,7 @@
 #define flecsi_utils_reporting_h
 
 #include <cinchreporting.h>
+#include <cinchlog.h>
 
 /*!
  * \file reporting.h
@@ -32,11 +33,11 @@
 // don't want it to be evaluated before it is passed into the cinch macro.
 // The test argument 't' is normal and is therefore wrapped.
 
-#define flecsi_info(s) cinch_info(s)
+#define flecsi_info(s) clog_info(s)
 #define flecsi_container_info(b, c, d) cinch_container_info(b, c, d)
-#define flecsi_warn(s) cinch_warn(s)
-#define flecsi_error(s) cinch_error(s)
-#define flecsi_assert(s) cinch_assert((t), s)
+#define flecsi_warn(s) clog_warn(s)
+#define flecsi_error(s) clog_error(s)
+#define flecsi_assert(t, s) clog_assert((t), s)
 
 // MPI reporting utilities
 #if defined(HAVE_MPI)
@@ -71,6 +72,17 @@ is_rank()
   cinch_warn_impl(s, flecsi::utils::is_rank<(r)>)
 #define flecsi_error_rank(s, r)                                                \
   cinch_error_impl(s, flecsi::utils::is_rank<(r)>)
+
+// Need to remove this to move to the new reporting model
+#define flecsi_container_info_impl(banner, container, delimiter,               \
+  index_predicate, output_predicate, ...)                                      \
+  if(output_predicate(__VA_ARGS__)) {                                          \
+    std::cout << OUTPUT_GREEN("Info ") << OUTPUT_LTGRAY(banner) << std::endl;  \
+    for(auto c: container) {                                                   \
+      index_predicate(c) && std::cout << OUTPUT_LTGRAY(c) << delimiter;        \
+    }                                                                          \
+    std::cout << std::endl;                                                    \
+  }
 
 // Print container on the specified rank
 #define flecsi_container_info_rank(b, c, r, d)                                 \
