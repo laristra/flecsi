@@ -57,21 +57,22 @@ TEST(partition, simple) {
 
   // Create the primary partition.
   auto primary = partitioner->partition(dcrs);
-  flecsi_container_info_rank("primary partition", primary, output_rank, " ");
+  clog_container_rank(info, "primary partition", primary,
+    clog::sp, output_rank);
 
   // Compute the dependency closure of the primary cell partition
   // through vertex intersections (specified by last argument "1").
   // To specify edge or face intersections, use 2 (edges) or 3 (faces).
   // FIXME: We may need to replace this with a predicate function.
   auto closure = flecsi::io::cell_closure(sd, primary, 1);
-  flecsi_container_info_rank("closure", closure, output_rank, " ");
+  clog_container_rank(info, "closure", closure, clog::sp, output_rank);
 
   // Subtracting out the initial set leaves just the nearest
   // neighbors. This is similar to the image of the adjacency
   // graph of the initial indices.
   auto nearest_neighbors = flecsi::utils::set_difference(closure, primary);
-  flecsi_container_info_rank("nearest neighbors", nearest_neighbors,
-    output_rank, " ");
+  clog_container_rank(info, "nearest neighbors", nearest_neighbors,
+    clog::sp, output_rank);
 
   // We can iteratively add halos of nearest neighbors, e.g.,
   // here we add the next nearest neighbors. For most mesh types
@@ -79,8 +80,8 @@ TEST(partition, simple) {
   // so that we can deterministically assign rank ownership to vertices.
   auto nearest_neighbor_closure =
     flecsi::io::cell_closure(sd, nearest_neighbors, 1);
-  flecsi_container_info_rank("nearest neighbor closure",
-    nearest_neighbor_closure, output_rank, " ");
+  clog_container_rank(info, "nearest neighbor closure",
+    nearest_neighbor_closure, clog::sp, output_rank);
 
 #if 0
   // The closure of the nearest neighbors intersected with
@@ -95,14 +96,15 @@ TEST(partition, simple) {
   // next nearest neighbors.
   auto next_nearest_neighbors =
     flecsi::utils::set_difference(nearest_neighbor_closure, closure);
-  flecsi_container_info_rank("next nearest neighbor",
-    next_nearest_neighbors, output_rank, " ");
+  clog_container_rank(info, "next nearest neighbor", next_nearest_neighbors,
+    clog::sp, output_rank);
 
   // The union of the nearest and next-nearest neighbors gives us all
   // of the cells that might reference a vertex that we need.
   auto all_neighbors = flecsi::utils::set_union(nearest_neighbors,
     next_nearest_neighbors);
-  flecsi_container_info_rank("all neighbors", all_neighbors, output_rank, " ");
+  clog_container_rank(info, "all neighbors", all_neighbors,
+    clog::sp, output_rank);
 
   // Create a communicator instance to get neighbor information.
   auto communicator = std::make_shared<flecsi::dmp::mpi_communicator_t>();
@@ -158,11 +160,12 @@ TEST(partition, simple) {
   } // for
   } // scope
 
-  if(rank == output_rank) {
-    flecsi_container_info("exclusive cells ", exclusive_cells, "\n");
-    flecsi_container_info("shared cells ", shared_cells, "\n");
-    flecsi_container_info("ghost cells ", ghost_cells, "\n");
-  } // if
+  clog_container_rank(info, "exclusive cells ", exclusive_cells,
+    clog::nl, output_rank);
+  clog_container_rank(info, "shared cells ", shared_cells,
+    clog::nl, output_rank);
+  clog_container_rank(info, "ghost cells ", ghost_cells,
+    clog::nl, output_rank);
 
 // FIXME
 #if 1
@@ -291,11 +294,12 @@ TEST(partition, simple) {
   } // for
   } // scope
 
-  if(rank == output_rank) {
-    flecsi_container_info("exclusive vertices ", exclusive_vertices, "\n");
-    flecsi_container_info("shared vertices ", shared_vertices, "\n");
-    flecsi_container_info("ghost vertices ", ghost_vertices, "\n");
-  } // if
+  clog_container_rank(info, "exclusive vertices ", exclusive_vertices,
+    clog::nl, output_rank);
+  clog_container_rank(info, "shared vertices ", shared_vertices,
+    clog::nl, output_rank);
+  clog_container_rank(info, "ghost vertices ", ghost_vertices,
+    clog::nl, output_rank);
 
 // We will need to discuss how to expose customization to user
 // specializations. The particular configuration of ParMETIS is

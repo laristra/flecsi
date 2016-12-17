@@ -15,7 +15,6 @@
 #ifndef flecsi_utils_reporting_h
 #define flecsi_utils_reporting_h
 
-#include <cinchreporting.h>
 #include <cinchlog.h>
 
 /*!
@@ -24,72 +23,8 @@
  * \date Initial file creation: Dec 10, 2016
  */
 
-// These macro definitions just rename the cinch reporting macros for
-// use in FleCSI.
-
-// Normally, you should wrap macro arguments in parenthesis so that
-// compound arguments are expanded before they get evaluated. In this
-// set of defines, we can't do this for the message string because we
-// don't want it to be evaluated before it is passed into the cinch macro.
-// The test argument 't' is normal and is therefore wrapped.
-
-#define flecsi_info(s) clog_info(s)
-#define flecsi_container_info(b, c, d) cinch_container_info(b, c, d)
-#define flecsi_warn(s) clog_warn(s)
-#define flecsi_error(s) clog_error(s)
-#define flecsi_assert(t, s) clog_assert((t), s)
-
-// MPI reporting utilities
-#if defined(HAVE_MPI)
-
-#include <mpi.h>
-
-namespace flecsi {
-namespace utils {
-
-///
-//
-///
-template<
-  size_t R
->
-inline
-bool
-is_rank()
-{
-  int part;
-  MPI_Comm_rank(MPI_COMM_WORLD, &part);
-  return part == R;
-} // is_rank
-
-} // namespace utils
-} // namespace flecsi
-
-// Output modes limited to a specified MPI rank
-#define flecsi_info_rank(s, r)                                                 \
-  cinch_info_impl(s, flecsi::utils::is_rank<(r)>)
-#define flecsi_warn_rank(s, r)                                                 \
-  cinch_warn_impl(s, flecsi::utils::is_rank<(r)>)
-#define flecsi_error_rank(s, r)                                                \
-  cinch_error_impl(s, flecsi::utils::is_rank<(r)>)
-
-// Need to remove this to move to the new reporting model
-#define flecsi_container_info_impl(banner, container, delimiter,               \
-  index_predicate, output_predicate, ...)                                      \
-  if(output_predicate(__VA_ARGS__)) {                                          \
-    std::cout << OUTPUT_GREEN("Info ") << OUTPUT_LTGRAY(banner) << std::endl;  \
-    for(auto c: container) {                                                   \
-      index_predicate(c) && std::cout << OUTPUT_LTGRAY(c) << delimiter;        \
-    }                                                                          \
-    std::cout << std::endl;                                                    \
-  }
-
-// Print container on the specified rank
-#define flecsi_container_info_rank(b, c, r, d)                                 \
-  cinch_container_info_impl(b, c, d, cinch::index_bool<true>,                  \
-    flecsi::utils::is_rank<(r)>)
-
-#endif // HAVE_MPI
+// For the time being, we are just going to directly use the cinch clog
+// interface.
 
 #endif // flecsi_utils_reporting_h
 

@@ -56,7 +56,7 @@ public:
       cell_start_ = file_.tellg();
     }
     else {
-      flecsi_error("failed opening " << filename);
+      clog_error("failed opening " << filename);
     }// if
   } // simple_definition_t
 

@@ -93,7 +93,7 @@ public:
   {
     return topological_dimension == dimension() ? 16 :
       topological_dimension == 0 ? 25 :
-      flecsi_error("invalid topological dimension");
+      clog_fatal("invalid topological dimension");
   } // num_entities
 
   std::vector<size_t>

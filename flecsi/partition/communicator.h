@@ -49,9 +49,9 @@ operator << (
 {
   stream << e.id << " " << e.rank << " " << e.offset << " [ ";
   for(auto i: e.shared) {
-    std::cout << i << " "; 
+    stream << i << " "; 
   } // for
-  std::cout << "]";
+  stream << "]";
 } // operator <<
 
 ///
