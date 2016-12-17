@@ -48,7 +48,13 @@ RUN ccache -s
 RUN make test
 RUN make install DESTDIR=${PWD}
 RUN make doxygen
-RUN cd .. && if [ ${COVERAGE} ]; then $HOME/.local/bin/codecov; fi && cd -
+RUN cd .. && if [ ${COVERAGE} ]; then \
+  if [ ${CC} = clang ]; then \
+    $HOME/.local/bin/codecov --gcov-exec "llvm-cov gcov"; \
+  else \
+    $HOME/.local/bin/codecov; \
+  fi; \
+fi && cd -
 USER root
 RUN make install
 USER flecsi
