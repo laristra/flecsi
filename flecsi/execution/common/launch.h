@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_launch_h
-#define flecsi_launch_h
+#ifndef flecsi_execution_common_launch_h
+#define flecsi_execution_common_launch_h
 
 ///
 // \file launch.h
@@ -32,7 +32,7 @@ enum launch_t : size_t {
 } //namespace execution 
 } // namespace flecsi
 
-#endif // flecsi_processor_h
+#endif // flecsi_execution_common_processor_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

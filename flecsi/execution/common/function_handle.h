@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_function_handle_h
-#define flecsi_function_handle_h
+#ifndef flecsi_execution_common_function_handle_h
+#define flecsi_execution_common_function_handle_h
 
 #include <functional>
 
@@ -57,7 +57,7 @@ struct function_handle__
 } // namespace execution
 } // namespace flecsi
 
-#endif // flecsi_function_handle_h
+#endif // flecsi_execution_common_function_handle_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.
