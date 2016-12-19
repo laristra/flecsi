@@ -3,12 +3,11 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_dmp_communicator_h
-#define flecsi_dmp_communicator_h
+#ifndef flecsi_partition_communicator_h
+#define flecsi_partition_communicator_h
 
 ///
-// \file communicator.h
-// \authors bergen
+// \file
 // \date Initial file creation: Dec 06, 2016
 ///
 
@@ -108,7 +107,7 @@ private:
 } // namespace dmp
 } // namespace flecsi
 
-#endif // flecsi_dmp_communicator_h
+#endif // flecsi_partition_communicator_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

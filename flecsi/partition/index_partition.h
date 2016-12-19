@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_dmp_index_partition_h
-#define flecsi_dmp_index_partition_h
+#ifndef flecsi_partition_index_partition_h
+#define flecsi_partition_index_partition_h
 
 #include <vector>
 #include <cassert>
@@ -13,8 +13,7 @@
 #include <flecsi/partition/communicator.h>
 
 ///
-// \file index_partition.h
-// \authors bergen
+// \file
 // \date Initial file creation: Aug 17, 2016
 ///
 
@@ -76,7 +75,7 @@ struct index_partition__
 } // namespace dmp
 } // namespace flecsi
 
-#endif // flecsi_dmp_index_partition_h
+#endif // flecsi_partition_index_partition_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

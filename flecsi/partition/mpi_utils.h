@@ -9,8 +9,7 @@
 #include <mpi.h>
 
 ///
-// \file mpi_utils.h
-// \authors bergen
+// \file
 // \date Initial file creation: Nov 23, 2016
 ///
 

@@ -1,21 +1,18 @@
 /*~--------------------------------------------------------------------------~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  //
- *
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
+ * Copyright (c) 2015 Los Alamos National Security, LLC
+ * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef init_partitions_task_h
-#define init_partitions_task_h
+#ifndef flecsi_partition_init_partitions_task_h
+#define flecsi_partition_init_partitions_task_h
 
+///
+// \file
+// \date Initial file creation: Dec 19, 2016
+///
 
+namespace flecsi {
+namespace partition {
 
 enum
 FieldIDs2 {
@@ -85,7 +82,12 @@ check_partitioning_task(
   Legion::Context ctx, Legion::HighLevelRuntime *runtime
 );
 
-} // namespace dmp
+} // namespace partition
 } // namespace flecsi
 
-#endif //init_partitions_task
+#endif // flecsi_partition_init_partitions_task_h
+
+/*~-------------------------------------------------------------------------~-*
+ * Formatting options for vim.
+ * vim: set tabstop=2 shiftwidth=2 expandtab :
+ *~-------------------------------------------------------------------------~-*/
