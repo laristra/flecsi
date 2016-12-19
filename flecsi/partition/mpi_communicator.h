@@ -11,16 +11,16 @@
 #include <mpi.h>
 
 ///
-// \file
-// \date Initial file creation: Dec 06, 2016
+/// \file
+/// \date Initial file creation: Dec 06, 2016
 ///
 
 namespace flecsi {
 namespace dmp {
 
 ///
-// \class mpi_communicator_t mpi_communicator.h
-// \brief mpi_communicator_t provides...
+/// \class mpi_communicator_t mpi_communicator.h
+/// \brief mpi_communicator_t provides...
 ///
 class mpi_communicator_t
   : public communicator_t
@@ -40,7 +40,7 @@ public:
    ~mpi_communicator_t() {}
 
   ///
-  //
+  ///
   ///
   std::pair<std::vector<std::set<size_t>>, std::set<entry_info_t>>
   get_cell_info(

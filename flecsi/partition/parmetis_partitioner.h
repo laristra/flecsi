@@ -16,16 +16,16 @@
 #include "flecsi/partition/mpi_utils.h"
 
 ///
-// \file
-// \date Initial file creation: Nov 24, 2016
+/// \file
+/// \date Initial file creation: Nov 24, 2016
 ///
 
 namespace flecsi {
 namespace dmp {
 
 ///
-// \class parmetis_partitioner_t parmetis_partitioner.h
-// \brief parmetis_partitioner_t provides...
+/// \class parmetis_partitioner_t parmetis_partitioner.h
+/// \brief parmetis_partitioner_t provides...
 ///
 struct parmetis_partitioner_t
   : public partitioner_t
@@ -43,7 +43,7 @@ struct parmetis_partitioner_t
   ~parmetis_partitioner_t() {}
 
   ///
-  // Generate a primary partition using the ParMETIS library.
+  /// Generate a primary partition using the ParMETIS library.
   ///
   std::set<size_t>
   partition(

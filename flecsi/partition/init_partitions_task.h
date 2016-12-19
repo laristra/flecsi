@@ -7,8 +7,8 @@
 #define flecsi_partition_init_partitions_task_h
 
 ///
-// \file
-// \date Initial file creation: Dec 19, 2016
+/// \file
+/// \date Initial file creation: Dec 19, 2016
 ///
 
 namespace flecsi {

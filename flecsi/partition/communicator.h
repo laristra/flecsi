@@ -7,8 +7,8 @@
 #define flecsi_partition_communicator_h
 
 ///
-// \file
-// \date Initial file creation: Dec 06, 2016
+/// \file
+/// \date Initial file creation: Dec 06, 2016
 ///
 
 namespace flecsi {
@@ -54,8 +54,8 @@ operator << (
 } // operator <<
 
 ///
-// \class communicator_t communicator.h
-// \brief communicator_t provides...
+/// \class communicator_t communicator.h
+/// \brief communicator_t provides...
 ///
 class communicator_t
 {

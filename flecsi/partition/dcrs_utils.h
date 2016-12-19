@@ -13,8 +13,8 @@
 #include "flecsi/partition/dcrs.h"
 
 ///
-// \file
-// \date Initial file creation: Nov 24, 2016
+/// \file
+/// \date Initial file creation: Nov 24, 2016
 ///
 
 namespace flecsi {
@@ -56,7 +56,7 @@ naive_partitioning(
 } // naive_partitioning
 
 ///
-// \param md The mesh definition.
+/// \param md The mesh definition.
 ///
 dcrs_t
 make_dcrs(

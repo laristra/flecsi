@@ -9,16 +9,16 @@
 #include "flecsi/partition/dcrs.h"
 
 ///
-// \file
-// \date Initial file creation: Nov 24, 2016
+/// \file
+/// \date Initial file creation: Nov 24, 2016
 ///
 
 namespace flecsi {
 namespace dmp {
 
 ///
-// \class partitioner_t partitioner.h
-// \brief partitioner_t provides...
+/// \class partitioner_t partitioner.h
+/// \brief partitioner_t provides...
 ///
 class partitioner_t
 {

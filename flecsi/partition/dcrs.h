@@ -17,7 +17,7 @@ namespace flecsi {
 namespace dmp {
 
 ///
-// Convenience macro to avoid having to reimplement this for each member.
+/// Convenience macro to avoid having to reimplement this for each member.
 ///
 #define define_dcrs_as(member)                                                 \
   template<                                                                    \

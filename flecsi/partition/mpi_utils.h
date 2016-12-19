@@ -9,8 +9,8 @@
 #include <mpi.h>
 
 ///
-// \file
-// \date Initial file creation: Nov 23, 2016
+/// \file
+/// \date Initial file creation: Nov 23, 2016
 ///
 
 namespace flecsi {

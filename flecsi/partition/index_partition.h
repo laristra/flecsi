@@ -13,16 +13,16 @@
 #include <flecsi/partition/communicator.h>
 
 ///
-// \file
-// \date Initial file creation: Aug 17, 2016
+/// \file
+/// \date Initial file creation: Aug 17, 2016
 ///
 
 namespace flecsi {
 namespace dmp {
 
 ///
-// \class partition__ index_partition.h
-// \brief partition__ provides...
+/// \class partition__ index_partition.h
+/// \brief partition__ provides...
 ///
 template<typename T>
 struct index_partition__
@@ -33,7 +33,7 @@ struct index_partition__
   //------------------------------------------------------------------------//
   // Data members.
   //------------------------------------------------------------------------//
-  //
+
   // Vector of mesh ids of the primary partition
   std::set<size_t> primary;
   // Vector of entry_info_t type of the exclusive partition
@@ -44,11 +44,11 @@ struct index_partition__
   std::set<entry_info_t> ghost;
 
   ///
-  // Equality operator.
-  //
-  // \param ip The index_partition_t to compare with \e this.
-  //
-  // \return True if \e ip is equivalent to \e this, false otherwise.
+  /// Equality operator.
+  ///
+  /// \param ip The index_partition_t to compare with \e this.
+  ///
+  /// \return True if \e ip is equivalent to \e this, false otherwise.
   ///
   bool
   operator == (
@@ -63,7 +63,7 @@ struct index_partition__
   } // operator ==
 
   ///
-  // Cereal serialization method.
+  /// Cereal serialization method.
   ///
   template<typename A>
   void serialize(A & archive) {
