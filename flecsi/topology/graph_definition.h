@@ -18,8 +18,8 @@ namespace flecsi {
 namespace topology {
 
 ///
-// \class graph_definition__ graph_definition.h
-// \brief graph_definition__ provides...
+/// \class graph_definition__ graph_definition.h
+/// \brief graph_definition__ provides...
 ///
 template<size_t D>
 class graph_definition__
@@ -41,7 +41,7 @@ public:
   virtual ~graph_definition__() {}
   
   ///
-  // Return the dimension of the graph.
+  /// Return the dimension of the graph.
   ///
   constexpr
   size_t

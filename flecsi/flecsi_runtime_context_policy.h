@@ -20,7 +20,7 @@
 ///
 
 // Serial Policy
-#if defined(FLECSI_RUNTIME_MODEL_serial)
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_serial
 
   #include "flecsi/execution/serial/context_policy.h"
 
@@ -33,7 +33,7 @@
   }
 
 // Legion Policy
-#elif defined(FLECSI_RUNTIME_MODEL_legion)
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
   #include "flecsi/execution/legion/context_policy.h"
 
@@ -46,7 +46,7 @@
   }
 
 // MPI+Legion Policy
-#elif defined(FLECSI_RUNTIME_MODEL_mpilegion)
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
   #include "flecsi/execution/mpilegion/context_policy.h"
 
   namespace flecsi {
@@ -58,7 +58,7 @@
   }
 
 // MPI Policy
-#elif defined(FLECSI_RUNTIME_MODEL_mpi)
+#elif FLECSI_RUNTIME_MODEL FLECSI_RUNTIME_MODEL_mpi
 
   #include "flecsi/execution/mpi/context_policy.h"
 

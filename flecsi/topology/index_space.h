@@ -44,12 +44,15 @@ namespace topology {
   if true then id's are definitely stored and shall remain in sorted order.
 */
 
-template<class T,
-         bool STORAGE = false,
-         bool OWNED = true,
-         bool SORTED = false,
-         class F = void>
-class index_space{
+template<
+  class T,
+  bool STORAGE = false,
+  bool OWNED = true,
+  bool SORTED = false,
+  class F = void
+>
+class index_space
+{
 public:
   using id_t = typename std::remove_pointer<T>::type::id_t;
   
@@ -73,26 +76,45 @@ public:
    */
   class id_range_{
   public:
-    id_range_(const id_range_& r)
-    : items_(r.items_), begin_(r.begin_), end_(r.end_){}
+    id_range_(
+      const id_range_& r
+    )
+    : items_(r.items_), begin_(r.begin_), end_(r.end_)
+    {}
 
-    id_range_(const id_vector_t& items)
-    : items_(&items), begin_(0), end_(items_->size()){}
+    id_range_(
+      const id_vector_t& items
+    )
+    : items_(&items), begin_(0), end_(items_->size())
+    {}
 
-    id_range_(const id_vector_t& items, size_t begin, size_t end)
-    : items_(&items), begin_(begin), end_(end){}
+    id_range_(
+      const id_vector_t& items,
+      size_t begin,
+      size_t end
+      )
+    : items_(&items), begin_(begin), end_(end)
+    {}
 
-    id_range_& operator=(const id_range_& r){
+    id_range_&
+    operator=(
+      const id_range_& r
+    )
+    {
       items_ = r.items_;
       begin_ = r.begin_;
       end_ = r.end_;
     }
 
-    typename id_vector_t::const_iterator begin() const{ 
+    typename id_vector_t::const_iterator
+    begin() const
+    { 
       return items_->begin() + begin_;
     }
 
-    typename id_vector_t::const_iterator end() const{ 
+    typename id_vector_t::const_iterator
+    end() const
+    { 
       return items_->begin() + end_;
     }
 
@@ -105,21 +127,42 @@ public:
   /*!
     Iterator base, const be parameterized with 'T' or 'const T'.
    */
-  template<class S>
-  class iterator_base_{
+  template<
+    class S
+    >
+  class iterator_base_
+  {
    public:
     using MS = typename std::remove_const<S>::type;
 
-    iterator_base_(const iterator_base_& itr)
-    : items_(itr.items_), index_(itr.index_), end_(itr.end_), s_(itr.s_){}
+    iterator_base_(
+      const iterator_base_& itr
+    )
+    : items_(itr.items_), index_(itr.index_), end_(itr.end_), s_(itr.s_)
+    {}
 
-    iterator_base_(item_vector_t* s, const id_vector_t& items, size_t index, size_t end)
+    iterator_base_(
+      item_vector_t* s,
+      const id_vector_t& items,
+      size_t index,
+      size_t end
+    )
     : items_(&items), index_(index), end_(end), s_(s){}
 
-    iterator_base_(const item_vector_t* s, const id_vector_t& items, size_t index, size_t end)
-    : items_(&items), index_(index), end_(end), s_(const_cast<item_vector_t*>(s)){}
+    iterator_base_(
+      const item_vector_t* s,
+      const id_vector_t& items,
+      size_t index,
+      size_t end
+    )
+    : items_(&items), index_(index), end_(end), s_(const_cast<item_vector_t*>(s))
+    {}
 
-    iterator_base_& operator=(const iterator_base_ & itr){
+    iterator_base_&
+    operator=(
+      const iterator_base_ & itr
+    )
+    {
       index_ = itr.index_;
       end_ = itr.end_;
       items_ = itr.items_;
@@ -127,15 +170,27 @@ public:
       return *this;
     }
 
-    bool operator==(const iterator_base_& itr) const{
+    bool
+    operator==(
+      const iterator_base_& itr
+      ) const
+    {
       return index_ == itr.index_;
     }
 
-    bool operator!=(const iterator_base_& itr) const{
+    bool
+    operator!=(
+      const iterator_base_& itr
+    ) const
+    {
       return index_ != itr.index_;
     }
 
-    T& get_(size_t index){
+    T&
+    get_(
+      size_t index
+    )
+    {
       return (*s_)[(*items_)[index].index_space_index()];
     }
 
@@ -149,8 +204,12 @@ public:
   /*!
     Predicated iterator.
    */
-  template<class S, class P>
-  class iterator_ : public iterator_base_<S>{
+  template<
+    class S,
+    class P
+  >
+  class iterator_ : public iterator_base_<S>
+  {
   public:
     using B = iterator_base_<S>;
 

@@ -8,6 +8,7 @@
 
 #include <functional>
 
+#include "flecsi.h"
 #include "flecsi/utils/common.h"
 #include "flecsi/execution/common/function_handle.h"
 #include "flecsi/execution/task.h"

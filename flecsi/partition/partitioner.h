@@ -18,7 +18,9 @@ namespace dmp {
 
 ///
 /// \class partitioner_t partitioner.h
-/// \brief partitioner_t provides...
+/// \brief partitioner_t provides an interface for creating distributed-memory
+///                      partitions from a distributed, compressed-row-storage
+///                      graph representation.
 ///
 class partitioner_t
 {
@@ -36,6 +38,17 @@ public:
   /// Destructor
   virtual ~partitioner_t() {}
 
+  ///
+  /// This method takes a distributed, compressed-row-storage representation
+  /// of a graph and returns the indepdentent partitioning on a per
+  /// execution instance basis, e.g., for each rank or task.
+  ///
+  /// \param dcrs A distributed, compressed-row-storage representation
+  ///             of the graph to partition.
+  ///
+  /// \return The set of indices that belong to the current execution
+  ///         instance.
+  ///
   virtual
   std::set<size_t>
   partition(
