@@ -24,8 +24,9 @@ namespace flecsi {
 namespace dmp {
 
 ///
-/// \class parmetis_partitioner_t parmetis_partitioner.h
-/// \brief parmetis_partitioner_t provides...
+/// \class partitioner_t parmetis_partitioner.h
+/// \brief partitioner_t provides a ParMETIS implementation of the
+///        partitioner_t interface.
 ///
 struct parmetis_partitioner_t
   : public partitioner_t
@@ -43,7 +44,7 @@ struct parmetis_partitioner_t
   ~parmetis_partitioner_t() {}
 
   ///
-  /// Generate a primary partition using the ParMETIS library.
+  /// Implementation of partition method. See \ref partitioner_t::partition.
   ///
   std::set<size_t>
   partition(

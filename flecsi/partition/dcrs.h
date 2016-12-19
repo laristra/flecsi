@@ -30,12 +30,22 @@ namespace dmp {
     return asvec;                                                              \
   } // member ## _as
 
+///
+/// \struct dcrs_t
+/// \brief This type is a container for distributed, compressed-row-storage
+///        information about a graph object. It can be passed to certain
+///        partitioning libraries to generate partitioned data regions.
+///
 struct dcrs_t
 {
   define_dcrs_as(offsets)
   define_dcrs_as(indices)
   define_dcrs_as(distribution)
 
+  ///
+  /// Return the number of entities for which this onject contains
+  /// adjacency information.
+  ///
   size_t
   size() const
   {
@@ -47,6 +57,9 @@ struct dcrs_t
   std::vector<size_t> distribution;
 }; // struct dcrs_t
 
+///
+/// Helper function to print a dcrs_t instance.
+///
 std::ostream &
 operator <<
 (

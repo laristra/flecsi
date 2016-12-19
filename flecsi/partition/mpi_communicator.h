@@ -20,7 +20,8 @@ namespace dmp {
 
 ///
 /// \class mpi_communicator_t mpi_communicator.h
-/// \brief mpi_communicator_t provides...
+/// \brief mpi_communicator_t provides an implementation of the
+///        communicator_t interface using MPI.
 ///
 class mpi_communicator_t
   : public communicator_t
@@ -40,7 +41,9 @@ public:
    ~mpi_communicator_t() {}
 
   ///
-  ///
+  /// Rerturn a set containing the entry_info_t information for each
+  /// member of the input set request_indices (from other ranks) and
+  /// the information for the local indices in primary.
   ///
   std::pair<std::vector<std::set<size_t>>, std::set<entry_info_t>>
   get_cell_info(
@@ -214,6 +217,16 @@ public:
     return std::make_pair(local , remote);
   } // get_info
 
+  ///
+  /// Rerturn a set containing the entry_info_t information for each
+  /// member of the input set request_indices (from other ranks).
+  ///
+  /// \param vertex_info FIXME...
+  /// \param request_indices A set of vertex ids for which to return
+  ///                        information.
+  /// \return A std::vector<std::set<size_t>> containing the offset
+  ///         information for the requested indices.
+  ///
   std::vector<std::set<size_t>>
   get_vertex_info(
     const std::set<entry_info_t> & vertex_info,
