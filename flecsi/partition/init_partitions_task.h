@@ -11,9 +11,6 @@
 /// \date Initial file creation: Dec 19, 2016
 ///
 
-namespace flecsi {
-namespace partition {
-
 enum
 FieldIDs2 {
   FID_SHARED,
@@ -82,7 +79,7 @@ check_partitioning_task(
   Legion::Context ctx, Legion::HighLevelRuntime *runtime
 );
 
-} // namespace partition
+} // namespace dmp
 } // namespace flecsi
 
 #endif // flecsi_partition_init_partitions_task_h
