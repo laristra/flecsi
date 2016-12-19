@@ -980,7 +980,7 @@ public:
   /*!
     Effectively re-insert all entities into the tree. Called when all entity
     coordinates are assumed to have changed. Additionally expands or contracts
-    the coordinate ranges of each dimesion to [start, end].
+    the coordinate ranges of each dimension to [start, end].
    */
   void
   update_all(
@@ -1222,6 +1222,10 @@ public:
     return ents;
   }
 
+  /*!
+    For all entities within the specified spheroid, apply the given callable
+    object ef with args.
+   */
   template<
     typename EF,
     typename... ARGS
@@ -1249,6 +1253,10 @@ public:
     apply_(b, size, f, geometry_t::intersects, center, radius);
   }
 
+  /*!
+    For all entities within the specified spheroid, apply the given callable
+    object ef with args. (Concurrent version.)
+   */
   template<
     typename EF,
     typename... ARGS
@@ -1286,6 +1294,10 @@ public:
     sem.acquire();
   }
 
+  /*!
+    For all entities within the specified box, apply the given callable
+    object ef with args.
+   */
   template<
     typename EF,
     typename... ARGS
@@ -1336,6 +1348,10 @@ public:
     sem.acquire();
   }
 
+  /*!
+    For all entities within the specified spheroid, apply the given callable
+    object ef with args. (Concurrent version.)
+   */
   template<
     typename EF,
     typename... ARGS
@@ -1375,6 +1391,10 @@ public:
     apply_(b, size, f, geometry_t::intersects_box, min, max);
   }
 
+  /*!
+    Construct a new entity. The entity's constructor should not be called
+    directly.
+   */
   template<
     class... Args
   >
@@ -1390,12 +1410,18 @@ public:
     return ent;
   }
 
+  /*!
+    Return the tree's current max depth.
+   */
   size_t
   max_depth() const
   {
     return max_depth_;
   }
 
+  /*!
+    Get an entity by entity id.
+   */
   entity_t*
   get(
     entity_id_t id
@@ -1415,12 +1441,18 @@ public:
     return itr->second;
   }
 
+  /*!
+    Get the root branch (depth 0).
+   */
   branch_t*
   root()
   {
     return root_;
   }
 
+  /*!
+    Visit and apply callable object f and args on all sub-branches of branch b.
+   */
   template<
     typename F,
     typename... ARGS
@@ -1435,6 +1467,10 @@ public:
     visit_(b, 0, std::forward<F>(f), std::forward<ARGS>(args)...);
   }
 
+  /*!
+    Visit and apply callable object f and args on all sub-branches of branch b. 
+    (Concurrent version.) 
+   */
   template<
     typename F,
     typename... ARGS
@@ -1458,6 +1494,9 @@ public:
     sem.acquire();
   }
 
+  /*!
+    Visit and apply callable object f and args on all sub-entities of branch b. 
+   */
   template<
   typename F,
   typename... ARGS
@@ -1485,6 +1524,10 @@ public:
     }
   }
 
+  /*!
+    Visit and apply callable object f and args on all sub-entities of branch b.
+    (Concurrent version.) 
+   */
   template<
     typename F,
     typename... ARGS
@@ -1508,6 +1551,9 @@ public:
     sem.acquire();
   }
 
+  /*!
+    Save (serialize) the tree to an archive.
+   */
   template<
     typename A
   >
@@ -1524,6 +1570,9 @@ public:
     free(data);
   } // save
 
+  /*!
+    Load (de-serialize) the tree from an archive.
+   */
   template<
     typename A
   >
@@ -2253,6 +2302,10 @@ private:
   element_t max_scale_;
 };
 
+
+/*!
+  Tree entity base class.
+ */
 template<
   typename T,
   size_t D
@@ -2285,6 +2338,9 @@ public:
     return id_;
   }
 
+  /*!
+    Return whether the entity is current inserted in a tree.
+   */
   bool
   is_valid() const
   {
@@ -2315,6 +2371,9 @@ private:
   entity_id_t id_;
 };
 
+/*!
+  Tree branch base class.
+ */
 template<
   typename T,
   size_t D
@@ -2344,16 +2403,25 @@ public:
     return id_;
   }
 
+  /*!
+    Called to trigger a refinement at this branch.
+   */
   void refine()
   {
     action_ = action::refine;
   }
 
+  /*!
+    Called to trigger a coarsening at this branch.
+   */
   void coarsen()
   {
     action_ = action::coarsen;
   }
 
+  /*!
+    Clear refine/coarsen actions.
+   */
   void reset()
   {
     action_ = action::none;
