@@ -254,15 +254,6 @@ if(NOT APPLE)
   endif(LAPACKE_FOUND)
 endif(NOT APPLE)
 
-#------------------------------------------------------------------------------#
-# Static container
-#------------------------------------------------------------------------------#
-
-option(ENABLE_STATIC_CONTAINER "Enable static meta container" OFF)
-
-set (MAX_CONTAINER_SIZE 6 CACHE INTEGER  "Set the depth of the container")
-add_definitions( -DMAX_COUNTER_SIZE=${MAX_CONTAINER_SIZE} )
-
 #~---------------------------------------------------------------------------~-#
 # Formatting options
 # vim: set tabstop=2 shiftwidth=2 expandtab :
