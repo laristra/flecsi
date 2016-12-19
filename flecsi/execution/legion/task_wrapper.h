@@ -10,7 +10,7 @@
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/legion/task_args.h"
 
-#if defined (FLECSI_RUNTIME_MODEL_mpilegion)
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
   #include "flecsi/execution/mpilegion/legion_handshake.h"
 #endif
 
@@ -220,7 +220,7 @@ struct legion_task_wrapper__<P, S, I, void, A>
         lr_runtime::register_legion_task<execute>(
           tid, lr_proc::TOC_PROC, S, I);
         break;
-#if defined(FLECSI_RUNTIME_MODEL_mpilegion)
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
       case mpi:
         lr_runtime::register_legion_task<execute_mpi>(
           tid, lr_proc::LOC_PROC, S, I);
@@ -272,7 +272,7 @@ struct legion_task_wrapper__<P, S, I, void, A>
     context_t::instance().pop_state(user_task_handle.key);
   } // execute
 
-#if defined(FLECSI_RUNTIME_MODEL_mpilegion)
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
   static void execute_mpi(const LegionRuntime::HighLevel::Task * task,
     const std::vector<LegionRuntime::HighLevel::PhysicalRegion>& regions,
     LegionRuntime::HighLevel::Context context,

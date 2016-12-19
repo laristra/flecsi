@@ -50,7 +50,6 @@ endif()
 #
 if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
-  add_definitions(-DFLECSI_RUNTIME_MODEL_serial)
   set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/serial)
 
 #
@@ -58,7 +57,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 #
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
-  add_definitions(-DFLECSI_RUNTIME_MODEL_legion)
   set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/legion)
 
   if(NOT APPLE)
@@ -74,7 +72,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 #
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
-  add_definitions(-DFLECSI_RUNTIME_MODEL_mpi)
   set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/mpi)
 
   if(NOT APPLE)
@@ -92,7 +89,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
     message (FATAL_ERROR "MPI is required for the mpilegion runtime model")
   endif()
  
-  add_definitions(-DFLECSI_RUNTIME_MODEL_mpilegion)
   set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/mpilegion)
 
   if(NOT APPLE)
@@ -145,11 +141,6 @@ math(EXPR FLECSI_ID_GBITS "${FLECSI_ID_BITS}/2")
 # EBITS and PBITS must add up to GBITS
 math(EXPR FLECSI_ID_EBITS "${FLECSI_ID_GBITS} - ${FLECSI_ID_PBITS}")
 
-add_definitions(-DFLECSI_ID_PBITS=${FLECSI_ID_PBITS})
-add_definitions(-DFLECSI_ID_EBITS=${FLECSI_ID_EBITS})
-add_definitions(-DFLECSI_ID_FBITS=${FLECSI_ID_FBITS})
-add_definitions(-DFLECSI_ID_GBITS=${FLECSI_ID_GBITS})
-
 math(EXPR flecsi_partitions "1 << ${FLECSI_ID_PBITS}")
 math(EXPR flecsi_entities "1 << ${FLECSI_ID_EBITS}")
 
@@ -157,12 +148,6 @@ message(STATUS "${CINCH_Yellow}Set id_t bits to allow:\n"
   "   ${flecsi_partitions} partitions with 2^${FLECSI_ID_EBITS} entities each\n"
   "   ${FLECSI_ID_FBITS} flag bits\n"
   "   ${FLECSI_ID_GBITS} global bits (PBITS*EBITS)${CINCH_ColorReset}")
-
-#------------------------------------------------------------------------------#
-# Counter type
-#------------------------------------------------------------------------------#
-
-add_definitions(-DFLECSI_COUNTER_TYPE=${FLECSI_COUNTER_TYPE})
 
 #------------------------------------------------------------------------------#
 # Enable IO with exodus
@@ -180,7 +165,6 @@ if(ENABLE_IO)
     MESSAGE(FATAL_ERROR "You need libexodus either from TPL "
       "or system to enable I/O")
   endif()
-  add_definitions( -DHAVE_EXODUS )
 
 endif(ENABLE_IO)
 
@@ -212,22 +196,19 @@ if(ENABLE_PARTITION)
   if(METIS_FOUND)
      list(APPEND PARTITION_LIBRARIES ${METIS_LIBRARIES})
      include_directories(${METIS_INCLUDE_DIRS})
-     add_definitions(-DHAVE_METIS)
   endif()
 
   if(PARMETIS_FOUND)
     list(APPEND PARTITION_LIBRARIES ${PARMETIS_LIBRARIES})
     include_directories(${PARMETIS_INCLUDE_DIRS})
-    add_definitions(-DHAVE_PARMETIS)
   endif()
 
   if(SCOTCH_FOUND)
      list(APPEND PARTITION_LIBRARIES ${SCOTCH_LIBRARIES})
      include_directories(${SCOTCH_INCLUDE_DIRS})
-     add_definitions(-DHAVE_SCOTCH)
      if(SCOTCH_VERSION MATCHES ^5)
        #SCOTCH_VERSION from scotch.h is broken in scotch-5
-       add_definitions(-DHAVE_SCOTCH_V5)
+       set(HAVE_SCOTCH_V5 ON)
      endif(SCOTCH_VERSION MATCHES ^5)
   endif()
 
@@ -261,7 +242,14 @@ endif(NOT APPLE)
 option(ENABLE_STATIC_CONTAINER "Enable static meta container" OFF)
 
 set (MAX_CONTAINER_SIZE 6 CACHE INTEGER  "Set the depth of the container")
-add_definitions( -DMAX_COUNTER_SIZE=${MAX_CONTAINER_SIZE} )
+
+#------------------------------------------------------------------------------#
+# configure header
+#------------------------------------------------------------------------------#
+
+configure_file(${PROJECT_SOURCE_DIR}/config/flecsi.h.in ${CMAKE_BINARY_DIR}/flecsi.h @ONLY)
+include_directories(${CMAKE_BINARY_DIR})
+install(FILES ${CMAKE_BINARY_DIR}/flecsi.h DESTINATION include)
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options
