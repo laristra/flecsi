@@ -36,6 +36,7 @@ set(execution_HEADERS
 	mpilegion/runtime_driver.h
 	mpilegion/task_ids.h
 	mpilegion/task_wrapper.h
+  mpilegion/init_partitions_task.h 
 	serial/context_policy.h
 	serial/execution_policy.h
 	serial/runtime_driver.h
@@ -44,9 +45,14 @@ set(execution_HEADERS
 )
 
 
+if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+
 set(execution_SOURCES
+  mpilegion/init_partitions_task.cc
   PARENT_SCOPE
 )
+endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
@@ -67,7 +73,7 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
         test/task.cc
         test/task_driver.h
         mpilegion/runtime_driver.cc
-        ../partition/init_partitions_task.cc
+        mpilegion/init_partitions_task.cc
       DEFINES FLECSI_DRIVER=flecsi/execution/test/task_driver.h
       POLICY MPILEGION
       LIBRARIES flecsi
@@ -82,7 +88,7 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
         test/task.cc
         test/sprint.h
         mpilegion/runtime_driver.cc
-        ../partition/init_partitions_task.cc
+        mpilegion/init_partitions_task.cc
       INPUTS
         test/simple2d-8x8.msh
       DEFINES SPRINT_TEST

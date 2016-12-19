@@ -3,9 +3,10 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_partition_init_partitions_task_h
-#define flecsi_partition_init_partitions_task_h
+#ifndef flecsi_execution_mpilegion_init_partitions_task_h
+#define flecsi_execution_mpilegion_init_partitions_task_h
 
+#include <legion.h>
 ///
 /// \file
 /// \date Initial file creation: Dec 19, 2016
@@ -82,7 +83,7 @@ check_partitioning_task(
 } // namespace dmp
 } // namespace flecsi
 
-#endif // flecsi_partition_init_partitions_task_h
+#endif // flecsi_execution_mpilegion_init_partitions_task_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.
