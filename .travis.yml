@@ -86,6 +86,7 @@ cache:
 
 compiler:
   - gcc
+  - clang
 
 notifications:
   branches:
