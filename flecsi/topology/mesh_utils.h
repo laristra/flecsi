@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_mesh_utils_h
-#define flecsi_mesh_utils_h
+#ifndef flecsi_topology_mesh_utils_h
+#define flecsi_topology_mesh_utils_h
 
 #include "flecsi/utils/common.h"
 
@@ -247,7 +247,7 @@ public:
 } // namespace topology
 } // namespace flecsi
 
-#endif // flecsi_mesh_utils_h
+#endif // flecsi_topology_mesh_utils_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options
