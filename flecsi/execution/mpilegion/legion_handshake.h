@@ -15,83 +15,61 @@
 #ifndef flecsi_execution_mpilegion_legion_handshake_h
 #define flecsi_execution_mpilegion_legion_handshake_h
 
-#include <iostream>
-#include <string>
-#include <cstdio>
-#include <mutex>
 #include <condition_variable>
+#include <cstdio>
+#include <iostream>
+#include <mutex>
+#include <string>
 
-#include <mpi.h>
 #include <legion.h>
+#include <mpi.h>
 #include <realm.h>
 
 ///
-// \file mpilegion/legion_handshake.h
-// \authors demeshko
-// \date Initial file creation: Jul 2016
+/// \file
+/// \date Initial file creation: Jul 2016
 ///
-
-///
-// the main idea of the handshake is change from MPI to Legion and vice
-//    versa  through locking/unlocking threads's mutex
-//    the order should be like next
-// 
-//   handshake->legion_init();
-//   .. call legion tasks 
-//   handshake->mpi_wait_on_legion();
-//   handshake->mpi_init();
-//   handshake->legion_handoff_to_mpi();
-//   .. do some MPI staff
-//   handshake.legion_wait_on_mpi();
-//   handshake->mpi_handoff_to_legion();
-//   .. do some legion execution
-//   handshake->mpi_wait_on_legion();
-//   handshake->legion_handoff_to_mpi();
-///
-
-#define CHECK_PTHREAD(cmd) do { \
-  int ret = (cmd); \
-  if(ret != 0) { \
-    fprintf(stderr, "PTHREAD: %s = %d (%s)\n", #cmd, ret, strerror(ret)); \
-    exit(1); \
-  } \
-} while(0)
 
 namespace flecsi{
 namespace execution{
 
+///
+/// \class ext_legion_handshake_t
+/// \brief a class that is used to switch between MPI and Legion runtimes
+/// the main idea of the ext_legion_handshake is to switch from MPI to 
+/// Legion and vice  versa  through using legion's phase barriers
+/// 
 class ext_legion_handshake_t
 {
 private:
   ///
-  // constructor
-  // it is private since ext_legion_handshake_t is a singleton
+  /// constructor
+  /// it is private since ext_legion_handshake_t is a singleton
   ///
   ext_legion_handshake_t() {}
 
   ///
-  // destructor
+  /// destructor
   ///
   ~ext_legion_handshake_t()
     {
     } // ~ext_legion_handshake_t
 
   ///
-  // copy constructor
+  /// copy constructor
   ///
   ext_legion_handshake_t(ext_legion_handshake_t const &);     
 
   ///
-  // assign operator as well as copy constructor should be private
-  // to restric their usage
+  /// assign operator as well as copy constructor should be private
+  /// to restric their usage
   ///
   ext_legion_handshake_t & operator=(ext_legion_handshake_t const &);
 
 public:
 
-
   ///
-  // getting unique instance of the singleton
+  /// return unique instance of the singleton
   ///
   static
   ext_legion_handshake_t &
@@ -102,11 +80,7 @@ public:
   } // instance
 
 	///
-	// this method initializes all ext_legion_handshake_t with input and default 
-	//   values
-	//   state - is where ext_legion_handshake_t object is originally created:
-	//      true - in MPI
-	//      with 1 MPi and 1 Legion participant
+	/// initialize all ext_legion_handshake_t with input and default 
   ///
   void
   initialize(
@@ -119,7 +93,7 @@ public:
 	} // initialize
 
 	/// 
-  //  This method switches form MPI to Legion runtime
+  ///  switch form MPI to Legion runtime
 	///
   void
 	mpi_handoff_to_legion()
@@ -128,8 +102,8 @@ public:
 	} //ext_handoff_to_legion
 
 	/// 
-	//	waiting on all Legion tasks to complete and all legion threads 
-	// switch mutex to EXT
+	///	wait on all Legion tasks to complete and all legion threads 
+	/// switch mutex to EXT
 	///
   void
 	mpi_wait_on_legion()
@@ -138,7 +112,7 @@ public:
   }
 
   /// 
-  //This method switches form Legion to MPI runtime
+  ///switch form Legion to MPI runtime
   ///
   void
 	legion_handoff_to_mpi()
@@ -147,7 +121,7 @@ public:
 	}//legion_handoff_to_ext
  
 	///
-	//	waiting on all mutex to be switch to Legion
+	///	wait on all mutex to be switch to Legion
 	/// 
   void 
 	legion_wait_on_mpi()
