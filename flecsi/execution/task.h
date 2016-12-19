@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_task_h
-#define flecsi_task_h
+#ifndef flecsi_execution_task_h
+#define flecsi_execution_task_h
 
 #include <iostream>
 
@@ -133,7 +133,7 @@ static_assert(verify_future::has_member_get<future__<double>>::value,
 } // namespace execution 
 } // namespace flecsi
 
-#endif // flecsi_task_h
+#endif // flecsi_execution_task_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.
