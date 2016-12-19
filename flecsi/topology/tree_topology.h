@@ -22,7 +22,14 @@
  */
 
 /*
-  Tree topology is a statically configured N-dimensional hashed tree for representing localized entities, e.g. particles. It stores entities in a configurable branch type. Inserting entities into a branch can cause that branch to be refined or coarsened correspondingly. A client of tree topology defines a policy which defines its branch and entity types and other compile-time parameters. Specializations can define a policy and default branch types which can then be specialized in a simpler fashion (see the basic_tree specialization).
+  Tree topology is a statically configured N-dimensional hashed tree for 
+  representing localized entities, e.g. particles. It stores entities in a 
+  configurable branch type. Inserting entities into a branch can cause that 
+  branch to be refined or coarsened correspondingly. A client of tree topology 
+  defines a policy which defines its branch and entity types and other 
+  compile-time parameters. Specializations can define a policy and default 
+  branch types which can then be specialized in a simpler fashion 
+  (see the basic_tree specialization).
 */
 
 #include <map>
@@ -45,11 +52,11 @@
 #include "flecsi/topology/index_space.h"
 
 /*
-#define np(X)                                                             \
+#define np(X)                                                            \
  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
            << ": " << #X << " = " << (X) << std::endl
 
-#define hp(X)                                                             \
+#define hp(X)                                                            \
  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
            << ": " << #X << " = " << std::hex << (X) << std::endl
 */
