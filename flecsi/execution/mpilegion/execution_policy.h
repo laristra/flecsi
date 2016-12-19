@@ -87,6 +87,10 @@ struct mpilegion_execution_policy_t
             legion_task_wrapper__<loc, 1, 1, R, A>::register_task);
           } // case single
 
+          default:
+            throw std::runtime_error("task type is not specified or incorrect,\
+                   please chose one from single, index, any");
+
         } // switch
       } // case loc
 
@@ -104,13 +108,16 @@ struct mpilegion_execution_policy_t
           {
           return context_t::instance().register_task(key,
             legion_task_wrapper__<toc, 0, 1, R, A>::register_task);
-          } // case single
+          }
 
           case any:
           {
           return context_t::instance().register_task(key,
             legion_task_wrapper__<toc, 1, 1, R, A>::register_task);
-          } // case single
+          } // case any
+  
+          throw std::runtime_error("task type is not specified or incorrect,\
+                please chose one from single, index, any");
 
         } // switch
       } // case toc
@@ -216,6 +223,12 @@ struct mpilegion_execution_policy_t
 
           return legion_future__<R>(future);
         } // index
+
+        default:
+        {
+          throw std::runtime_error("the task can be executed \
+                      only as singel or index task");
+        }
 
       } // switch
     } // if

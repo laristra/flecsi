@@ -48,15 +48,20 @@ set(data_SOURCES
 )
 
 cinch_add_unit(data
-  SOURCES test/data.cc)
+  SOURCES test/data.cc
+  LIBRARIES flecsi
+)
 
 cinch_add_unit(data_client
   SOURCES test/data_client.cc
-  LIBRARIES flecsi)
+  LIBRARIES flecsi
+)
 
 cinch_add_unit(storage_type
   SOURCES test/storage_type.cc
-  LIBRARIES flecsi)
+  LIBRARIES flecsi
+)
+
 
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.

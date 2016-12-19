@@ -13,6 +13,8 @@
 #~----------------------------------------------------------------------------~#
 
 set(topology_HEADERS
+  graph_definition.h
+  graph_utils.h
   index_space.h
   mesh_topology.h
   mesh_types.h
@@ -36,7 +38,8 @@ cinch_add_unit(traversal
 
 cinch_add_unit(dual
   SOURCES test/dual.cc
-  INPUTS test/dual.blessed)
+  INPUTS test/dual.blessed
+)
 
 cinch_add_unit(bindings
   SOURCES test/bindings.cc
@@ -45,7 +48,8 @@ cinch_add_unit(bindings
 
 #cinch_add_unit(serialize
 #  SOURCES test/serialize.cc
-#  INPUTS test/serialize.blessed)
+#  INPUTS test/serialize.blessed
+#)
 
 #------------------------------------------------------------------------------#
 # N-Tree unit tests.
@@ -76,8 +80,14 @@ cinch_add_unit(gravity-state
 # Misc. unit tests.
 #------------------------------------------------------------------------------#
 
+
+cinch_add_unit(graph
+  SOURCES test/graph.cc
+)
+
 cinch_add_unit(index-space
-  SOURCES test/index-space.cc test/pseudo_random.h)
+  SOURCES test/index-space.cc test/pseudo_random.h
+)
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options

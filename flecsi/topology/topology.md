@@ -1,5 +1,40 @@
 <!-- CINCHDOC DOCUMENT(Developer Guide) SECTION(Topology Types) -->
 
+# FIXME: Working notes for structured mesh interface
+
+Neighbor information can be specified with from_dim, to_dim, and
+thru_dim where:
+
+* from_dim: The topological dimension of the entity for which neighbors
+  should be found.
+
+* to_dim: The topological dimension of the neighbors.
+
+* thru_dim: The intermediate dimension across which the neighbor must be
+  found, e.g.:
+
+  -------------
+  | 6 | 7 | 8 |
+  -------------
+  | 3 | 4 | 5 |
+  -------------
+  | 0 | 1 | 2 |
+  -------------
+
+  The neighbors of cell 0 thru dimension 0 are: 1, 3, 4
+  The neighbors of cell 0 thru dimension 1 are: 1, 3
+
+The interface for the structured mesh should provide a connectivities
+interface that uses this information, e.g.:
+
+    template<size_t from_dim, size_t to_dim, size_t thru_dim>
+    iterator_type (to be defined)
+    connectivities(
+      size_t id
+    )
+    {
+    } // connectivities
+
 # Topology Types
 
 FleCSI provides data structures and algorithms for several mesh and tree

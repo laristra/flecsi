@@ -21,6 +21,45 @@ set(partition_HEADERS
   PARENT_SCOPE
 )
 
+cinch_add_unit(dcrs
+  SOURCES test/dcrs.cc
+  INPUTS
+    test/simple2d-8x8.msh
+    test/simple2d-16x16.msh
+  LIBRARIES ${PARTITION_LIBRARIES}
+  POLICY MPI
+  THREADS 5
+)
+
+#FIXME: remove the check for Parmetis when there are other kinds of partitioner
+#implemented
+
+if(PARMETIS_FOUND)
+cinch_add_unit(partition
+  SOURCES test/partition.cc
+  INPUTS
+    test/simple2d-8x8.msh
+    test/simple2d-16x16.msh
+    test/simple2d-32x32.msh
+    test/simple2d-48x48.msh
+  LIBRARIES ${PARTITION_LIBRARIES}
+  POLICY MPI
+  THREADS 5
+)
+
+cinch_add_unit(weaver
+  SOURCES test/weaver.cc
+  INPUTS
+    test/simple2d-8x8.msh
+    test/simple2d-16x16.msh
+    test/simple2d-32x32.msh
+    test/simple2d-48x48.msh
+  LIBRARIES ${PARTITION_LIBRARIES}
+  POLICY MPI
+  THREADS 5
+)
+endif(PARMETIS_FOUND)
+
 # Add MPI/Legion specific files
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")

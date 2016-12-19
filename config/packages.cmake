@@ -51,7 +51,7 @@ endif()
 if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
   add_definitions(-DFLECSI_RUNTIME_MODEL_serial)
-  set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/serial)
+  set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/serial)
 
 #
 # Legion interface
@@ -59,7 +59,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   add_definitions(-DFLECSI_RUNTIME_MODEL_legion)
-  set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/legion)
+  set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/legion)
 
   if(NOT APPLE)
     set(FLECSI_RUNTIME_LIBRARIES  -ldl ${Legion_LIBRARIES} ${MPI_LIBRARIES})
@@ -75,7 +75,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   add_definitions(-DFLECSI_RUNTIME_MODEL_mpi)
-  set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/mpi)
+  set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/mpi)
 
   if(NOT APPLE)
     set(FLECSI_RUNTIME_LIBRARIES  -ldl ${MPI_LIBRARIES})
@@ -93,7 +93,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
   endif()
  
   add_definitions(-DFLECSI_RUNTIME_MODEL_mpilegion)
-  set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/mpilegion)
+  set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/mpilegion)
 
   if(NOT APPLE)
     set(FLECSI_RUNTIME_LIBRARIES  -ldl ${Legion_LIBRARIES} ${MPI_LIBRARIES})
@@ -111,24 +111,6 @@ else(FLECSI_RUNTIME_MODEL STREQUAL "serial")
   message(FATAL_ERROR "Unrecognized runtime selection")  
 
 endif(FLECSI_RUNTIME_MODEL STREQUAL "serial")
-
-#------------------------------------------------------------------------------#
-# Hypre
-#------------------------------------------------------------------------------#
-
-set(ENABLE_HYPRE OFF CACHE BOOL " do you want to enable HYPRE?")
-
-if(ENABLE_HYPRE)
-  find_package (HYPRE)
-
- if(HYPRE_FOUND)
-   include_directories(${HYPRE_INCLUDE_DIRS})
-   set(HYPRE_LIBRARY ${HYPRE_LIBRARIES})
- else()
-   message (ERROR "HYPRE required for this build is not found")
-  endif()
-
-endif(ENABLE_HYPRE)
 
 #------------------------------------------------------------------------------#
 # Cereal
@@ -210,10 +192,12 @@ find_package(METIS 5.1)
 find_package(SCOTCH)
 
 if(ENABLE_MPI)
-  find_package(ParMETIS)
+  # Counter-intuitive variable: set to TRUE to disable test
+  set(PARMETIS_TEST_RUNS TRUE)
+  find_package(ParMETIS 4.0)
 endif()
 
-if(METIS_FOUND OR SCOTCH_FOUND OR PARMETIS_FOUND)
+if(PARMETIS_FOUND OR SCOTCH_FOUND)
   option(ENABLE_PARTITION
     "Enable partitioning (uses metis/parmetis or scotch)." ON)
 else()
@@ -223,27 +207,27 @@ endif()
 
 if(ENABLE_PARTITION)
 
-  set( PARTITION_LIBRARIES )
+  set(PARTITION_LIBRARIES)
 
   if(METIS_FOUND)
-     list( APPEND PARTITION_LIBRARIES ${METIS_LIBRARIES} )
-     include_directories( ${METIS_INCLUDE_DIRS} )
-     add_definitions( -DHAVE_METIS )
+     list(APPEND PARTITION_LIBRARIES ${METIS_LIBRARIES})
+     include_directories(${METIS_INCLUDE_DIRS})
+     add_definitions(-DHAVE_METIS)
   endif()
 
   if(PARMETIS_FOUND)
-     list( APPEND PARTITION_LIBRARIES ${PARMETIS_LIBRARIES} )
-     include_directories( ${PARMETIS_INCLUDE_DIRS} )
-     add_definitions( -DHAVE_PARMETIS )
+    list(APPEND PARTITION_LIBRARIES ${PARMETIS_LIBRARIES})
+    include_directories(${PARMETIS_INCLUDE_DIRS})
+    add_definitions(-DHAVE_PARMETIS)
   endif()
 
   if(SCOTCH_FOUND)
-     list( APPEND PARTITION_LIBRARIES ${SCOTCH_LIBRARIES} )
-     include_directories( ${SCOTCH_INCLUDE_DIRS} )
-     add_definitions( -DHAVE_SCOTCH )
+     list(APPEND PARTITION_LIBRARIES ${SCOTCH_LIBRARIES})
+     include_directories(${SCOTCH_INCLUDE_DIRS})
+     add_definitions(-DHAVE_SCOTCH)
      if(SCOTCH_VERSION MATCHES ^5)
        #SCOTCH_VERSION from scotch.h is broken in scotch-5
-       add_definitions( -DHAVE_SCOTCH_V5 )
+       add_definitions(-DHAVE_SCOTCH_V5)
      endif(SCOTCH_VERSION MATCHES ^5)
   endif()
 
@@ -269,163 +253,6 @@ if(NOT APPLE)
       include_directories( ${LAPACKE_INCLUDE_DIRS} )
   endif(LAPACKE_FOUND)
 endif(NOT APPLE)
-
-#------------------------------------------------------------------------------#
-# Collect information for FleCSIT
-#------------------------------------------------------------------------------#
-
-# Get the compiler defines that were used to build the library
-# to pass to the flecsit script
-get_directory_property(_defines DIRECTORY ${CMAKE_SOURCE_DIR}
-  COMPILE_DEFINITIONS)
-get_directory_property(_includes DIRECTORY ${CMAKE_SOURCE_DIR}
-  INCLUDE_DIRECTORIES)
-
-# Create string of compiler definitions for script
-set(FLECSIT_COMPILE_DEFINES)
-foreach(def ${_defines})
-  set(FLECSIT_COMPILE_DEFINES
-    "${FLECSIT_COMPILE_DEFINES} -D${def}")
-endforeach()
-
-string(STRIP "${FLECSIT_COMPILE_DEFINES}" FLECSIT_COMPILE_DEFINES)
-
-# Create string of include directories for script
-set(FLECSIT_INCLUDE_DIRECTORIES)
-foreach(inc ${_includes})
-  set(FLECSIT_INCLUDE_DIRECTORIES
-    "${FLECSIT_INCLUDE_DIRECTORIES} -I${inc}")
-endforeach()
-
-string(STRIP "${FLECSIT_INCLUDE_DIRECTORIES}" FLECSIT_INCLUDE_DIRECTORIES)
-
-# Create string of runtime link libraries for script
-# Create list of link directories for LD_LIBRARY_PATH hint
-set(FLECSIT_RUNTIME_LIBRARIES)
-set(FLECSIT_LD_LIBRARY_PATH)
-foreach(lib ${FLECSI_RUNTIME_LIBRARIES})
-  # Runtime link libraries
-  set(FLECSIT_RUNTIME_LIBRARIES
-    "${FLECSIT_RUNTIME_LIBRARIES} ${lib}")
-
-  # LD_LIBRARY_PATH hint
-  get_filename_component(_path ${lib} DIRECTORY)
-  list(APPEND FLECSIT_LD_LIBRARY_PATH ${_path})
-endforeach()
-
-string(STRIP "${FLECSI_RUNTIME_LIBRARIES}" FLECSI_RUNTIME_LIBRARIES)
-
-# Append local build and remove duplicates
-list(APPEND FLECSIT_LD_LIBRARY_PATH ${CMAKE_BINARY_DIR}/lib)
-list(REMOVE_DUPLICATES FLECSIT_LD_LIBRARY_PATH)
-
-string(STRIP "${FLECSIT_LD_LIBRARY_PATH}" FLECSIT_LD_LIBRARY_PATH)
-
-#------------------------------------------------------------------------------#
-# FleCSIT
-#------------------------------------------------------------------------------#
-
-option(ENABLE_FLECSIT "Enable FleCSIT Command-Line Tool" OFF)
-set(FLECSI_PYTHON_PATH_MODULE)
-set(FLECSI_PYTHON_PATH_BASH)
-set(FLECSI_PYTHON_PATH_CSH)
-
-if(ENABLE_FLECSIT)
-
-	find_package(PythonInterp 2.7 REQUIRED)
-
-	execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import distutils.sysconfig as cg; print cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}')" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-	install(DIRECTORY ${CMAKE_SOURCE_DIR}/tools/flecsit/flecsit
-		DESTINATION ${PYTHON_INSTDIR}
-		FILES_MATCHING PATTERN "*.py")
-
-	configure_file(${CMAKE_SOURCE_DIR}/tools/flecsit/bin/flecsit.in
-		${CMAKE_BINARY_DIR}/flecsit/bin/flecsit @ONLY)
-
-	install(PROGRAMS ${CMAKE_BINARY_DIR}/flecsit/bin/flecsit
-		DESTINATION bin
-		PERMISSIONS
-			OWNER_READ OWNER_WRITE OWNER_EXECUTE
-			GROUP_READ GROUP_EXECUTE
-			WORLD_READ WORLD_EXECUTE
-	)
-
-  set(FLECSI_PYTHON_PATH_MODULE "prepend-path PYTHONPATH ${PYTHON_INSTDIR}")
-  set(FLECSI_PYTHON_PATH_BASH
-    "export PYTHONPATH=\${PYTHONPATH}:${PYTHON_INSTDIR}")
-  set(FLECSI_PYTHON_PATH_CSH
-    "setenv PYTHONPATH $PYTHONPATH:${PYTHON_INSTDIR}")
-
-endif()
-
-#------------------------------------------------------------------------------#
-# FleCSI environment module
-#------------------------------------------------------------------------------#
-
-configure_file(${PROJECT_SOURCE_DIR}/bin/flecsi.in
-  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi @ONLY)
-
-install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi
-  DESTINATION bin
-  )
-
-#------------------------------------------------------------------------------#
-# Handle script and source files for FleCSIT tool
-#------------------------------------------------------------------------------#
-
-# Copy the auxiliary files for local development
-add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/share/runtime_main.cc
-  COMMAND ${CMAKE_COMMAND} -E copy
-    ${PROJECT_SOURCE_DIR}/flecsi/execution/runtime_main.cc
-    ${CMAKE_BINARY_DIR}/share/runtime_main.cc
-    DEPENDS ${PROJECT_SOURCE_DIR}/flecsi/execution/runtime_main.cc
-    COMMENT "Copying runtime main file")
-add_custom_target(runtime_main ALL
-  DEPENDS ${CMAKE_BINARY_DIR}/share/runtime_main.cc)
-add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/share/runtime_driver.cc
-  COMMAND ${CMAKE_COMMAND} -E copy
-    ${_runtime_path}/runtime_driver.cc
-    ${CMAKE_BINARY_DIR}/share/runtime_driver.cc
-    DEPENDS ${_runtime_path}/runtime_driver.cc
-    COMMENT "Copying runtime driver file")
-add_custom_target(runtime_driver ALL
-  DEPENDS ${CMAKE_BINARY_DIR}/share/runtime_driver.cc)
-
-# Install the auxiliary files
-install(FILES ${PROJECT_SOURCE_DIR}/flecsi/execution/runtime_main.cc
-  DESTINATION share/flecsi/runtime)
-install(FILES ${_runtime_path}/runtime_driver.cc
-  DESTINATION share/flecsi/runtime)
-
-#------------------------------------------------------------------------------#
-# Helper shell environment setup
-#------------------------------------------------------------------------------#
-
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi.sh.in
-  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.sh @ONLY)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi.csh.in
-  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.csh @ONLY)
-
-
-# Install shell helpers
-install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.sh
-  DESTINATION bin
-  RENAME flecsi.sh
-  PERMISSIONS
-    OWNER_READ OWNER_WRITE
-    GROUP_READ
-    WORLD_READ
-)
-
-install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi-install.csh
-  DESTINATION bin
-  RENAME flecsi.csh
-  PERMISSIONS
-    OWNER_READ OWNER_WRITE
-    GROUP_READ
-    WORLD_READ
-)
 
 #------------------------------------------------------------------------------#
 # Static container

@@ -34,8 +34,7 @@ set(utils_HEADERS
   id.h
   index_space.h
   iterator.h
-  mpi_legion_interoperability/legion_arrays.h
-  mpi_legion_interoperability/mpi_legion_data.h
+  logging.h
   reorder.h
   set_intersection.h
   static_container/meta_counter.h
@@ -69,20 +68,6 @@ set(utils_HEADERS
    static_container/static_for.h
    )
 endif (ENABLE_STATIC_CONTAINER)
-
-if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
-set(utils_HEADERS 
-   ${utils_HEADERS}
-   mpi_legion_interoperability/mpi_legion_data.h
-   mpi_legion_interoperability/legion_arrays.h
-   )
-
-set(utils_SOURCES
-  ${utils_SOURCES}
-  #mpi_legion_interoperability/mpi_legion_interop.cc
-  PARENT_SCOPE)
-
-endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
 set(utils_HEADERS ${utils_HEADERS} PARENT_SCOPE)
 
@@ -124,27 +109,6 @@ cinch_add_unit(meta_container
   SOURCES test/meta_container.cc)
 endif (ENABLE_STATIC_CONTAINER)
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
-#cinch_add_unit(mpi_with_legion
-#  SOURCES test/mpi_with_legion/mpi_with_legion.cc
-#  POLICY MPILEGION)
-
-#cinch_add_unit(more_complex_mpi_with_legion
-#  SOURCES test/mpi_with_legion/more_complex_mpi_with_legion.cc
-#  POLICY MPILEGION)
-
-if (ENABLE_HYPRE)
-cinch_add_unit(legion_with_Hypre
-  SOURCES test/mpi_with_legion/legion_with_Hypre.cc
-  POLICY MPILEGION
-  LIBRARIES     ${HYPRE_LIBRARIES} )
-endif (ENABLE_HYPRE)
-
-#cinch_add_unit(mpi_legion_data
-#  SOURCES test/mpi_with_legion/mpi_legion_data.cc
-#  POLICY MPILEGION)
-
-endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 #~---------------------------------------------------------------------------~-#
 # Formatting options
 # vim: set tabstop=2 shiftwidth=2 expandtab :
