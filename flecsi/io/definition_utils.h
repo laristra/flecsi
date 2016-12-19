@@ -10,56 +10,20 @@
 #include "flecsi/utils/set_utils.h"
 
 ///
-// \file definition_utils.h
-// \authors bergen
-// \date Initial file creation: Nov 21, 2016
+/// \file
+/// \date Initial file creation: Nov 21, 2016
 ///
 
 namespace flecsi {
 namespace io {
 
-#if 0
 ///
-//
+/// Return the neighboring cells for the given cell id.
 ///
-template<size_t from_dim, size_t to_dim, size_t thru_dim>
-std::set<size_t>
-entity_neighbors(
-  graph_definition_t & gd,
-  size_t id
-)
-{
-  auto vertices = gd.vertex_set<from_dim>(id);
-
-  // Put the results into set form
-  std::set<size_t> neighbors;
-
-  for(size_t e(0); e<gd.size<to_dim>(); ++e) {
-
-    if(from_dim == to_dim && e == id) {
-      continue;
-    } // if
-
-    auto other = gd.vertex_set<to_dim>(e);
-
-    auto intersect = flecsi::utils::set_intersection(vertices, other);
-
-    // Add this cell id if the intersection shares at least
-    // intersections vertices
-    if(intersect.size() > thru_dim) {
-      neighbors.insert(e);
-    } // if
-  } // for
-} // entity_neighbors
-#endif
-
-///
-// Return the neighboring cells for the given cell id.
-//
-// \param md The mesh_definition_t object to query for mesh information.
-// \param id The id of the cell.
-// \param intersections The number of intersections that constitute a
-//                      neighboring cell.
+/// \param md The mesh_definition_t object to query for mesh information.
+/// \param id The id of the cell.
+/// \param intersections The number of intersections that constitute a
+///                      neighboring cell.
 ///
 std::set<size_t>
 cell_neighbors(
@@ -99,12 +63,12 @@ cell_neighbors(
 } // cell_neighbors
 
 ///
-// Return the dependency closure of the given set.
-//
-// \param md The mesh_definition_t object to query for mesh information.
-// \param indices The cell indeces of the initial set.
-// \param intersections The number of intersections that constitute a
-//                      neighboring cell.
+/// Return the dependency closure of the given set.
+///
+/// \param md The mesh_definition_t object to query for mesh information.
+/// \param indices The cell indeces of the initial set.
+/// \param intersections The number of intersections that constitute a
+///                      neighboring cell.
 ///
 std::set<size_t>
 cell_closure(
@@ -127,10 +91,10 @@ cell_closure(
 } // cell_closure
 
 ///
-// Return the cells that reference the given vertex id.
-//
-// \param md The mesh_definition_t object to query for mesh information.
-// \param id The id of the vertex.
+/// Return the cells that reference the given vertex id.
+///
+/// \param md The mesh_definition_t object to query for mesh information.
+/// \param id The id of the vertex.
 ///
 std::set<size_t>
 vertex_referencers(
@@ -157,10 +121,10 @@ vertex_referencers(
 } // vertex_referencers
 
 ///
-// Return the set of vertices that are referenced by the cells in indices.
-//
-// \param md The mesh_definition_t object to query for mesh information.
-// \param indices The cell indeces.
+/// Return the set of vertices that are referenced by the cells in indices.
+///
+/// \param md The mesh_definition_t object to query for mesh information.
+/// \param indices The cell indeces.
 ///
 std::set<size_t>
 vertex_closure(

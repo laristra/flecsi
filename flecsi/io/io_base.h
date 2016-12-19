@@ -64,7 +64,6 @@ class io_base_t
   //  const std::string &name, const mesh_t &m) = 0;
   virtual int32_t write(const std::string & name, mesh_t & m) = 0;
 
-
   /*!
     \brief Pure virtual mesh write.
 
