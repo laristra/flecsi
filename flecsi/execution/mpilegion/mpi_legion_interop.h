@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef mpi_legion_interop_h
-#define mpi_legion_interop_h
+#ifndef flecsi_execution_mpilegion_mpi_legion_interop_h
+#define flecsi_execution_mpilegion_mpi_legion_interop_h
 
 #include <iostream>
 #include <string>
@@ -330,7 +330,7 @@ struct mpi_legion_interop_t
 } // namespace execution
 } // namespace flecsi
 
-#endif // mpi_legion_interop_h
+#endif // flecsi_execution_mpilegion_mpi_legion_interop_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

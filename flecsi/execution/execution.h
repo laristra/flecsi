@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_execution_h
-#define flecsi_execution_h
+#ifndef flecsi_execution_execution_h
+#define flecsi_execution_execution_h
 
 #include <functional>
 
@@ -140,7 +140,7 @@
   flecsi::execution::reduce_each__(index_space, variable,                      \
     [&](auto * index, auto & variable) kernel)
 
-#endif // flecsi_execution_h
+#endif // flecsi_execution_execution_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

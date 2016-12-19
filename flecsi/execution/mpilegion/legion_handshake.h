@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef legion_handshake_h
-#define legion_handshake_h
+#ifndef flecsi_execution_mpilegion_legion_handshake_h
+#define flecsi_execution_mpilegion_legion_handshake_h
 
 #include <iostream>
 #include <string>
@@ -173,7 +173,7 @@ protected:
 } // namespace execution
 } // namespace flecsi
 
-#endif // legion_handshake_h
+#endif // flecsi_execution_mpilegion_legion_handshake_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options
