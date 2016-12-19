@@ -615,8 +615,16 @@ public:
     Get the entities of topological dimension D connected to another entity
     by specified connectivity from domain FM and to domain TM.
   */
-  template<size_t D, size_t FM = 0, size_t TM = FM, class E>
-  decltype(auto) entities(domain_entity<FM, E> & e)
+  template<
+    size_t D,
+    size_t FM = 0,
+    size_t TM = FM,
+    class E
+  >
+  decltype(auto)
+  entities(
+    domain_entity<FM, E> & e
+  )
   {
     return entities<D, FM, TM>(e.entity());
   } // entities
@@ -625,8 +633,12 @@ public:
     Get the top-level entities of topological dimension D of the specified
     domain M. e.g: cells of the mesh.
   */
-  template<size_t D, size_t M = 0>
-  auto entities()
+  template<
+    size_t D,
+    size_t M = 0
+  >
+  auto
+  entities()
   {
     using etype = entity_type<D, M>;
     using dtype = domain_entity<M, etype>;
@@ -637,8 +649,12 @@ public:
     Get the top-level entities of topological dimension D of the specified
     domain M. e.g: cells of the mesh.
   */
-  template<size_t D, size_t M = 0>
-  auto entities() const
+  template<
+    size_t D,
+    size_t M = 0
+  >
+  auto
+  entities() const
   {
     using etype = entity_type<D, M>;
     using dtype = domain_entity<M, etype>;
@@ -649,8 +665,12 @@ public:
     Get the top-level entity id's of topological dimension D of the specified
     domain M. e.g: cells of the mesh.
   */
-  template<size_t D, size_t M = 0>
-  auto entity_ids() const
+  template<
+    size_t D,
+    size_t M = 0
+  >
+  auto
+  entity_ids() const
   {
     return ms_.index_spaces[M][D].ids();
   } // entity_ids
@@ -659,8 +679,16 @@ public:
     Get the entity id's of topological dimension D connected to another entity
     by specified connectivity from domain FM and to domain TM.
   */
-  template<size_t D, size_t FM = 0, size_t TM = FM, class E>
-  decltype(auto) entity_ids(domain_entity<FM, E> & e)
+  template<
+    size_t D,
+    size_t FM = 0,
+    size_t TM = FM,
+    class E
+  >
+  decltype(auto)
+  entity_ids(
+    domain_entity<FM, E> & e
+  )
   {
     return entity_ids<D, FM, TM>(e.entity());
   } // entities
@@ -669,8 +697,16 @@ public:
     Get the entity id's of topological dimension D connected to another entity
     by specified connectivity from domain FM and to domain TM.
   */
-  template<size_t D, size_t FM = 0, size_t TM = FM, class E>
-  auto entity_ids(const E * e) const
+  template<
+    size_t D,
+    size_t FM = 0,
+    size_t TM = FM,
+    class E
+  >
+  auto
+  entity_ids(
+    const E * e
+  ) const
   {
     const connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
@@ -683,8 +719,16 @@ public:
     Get the entities of topological dimension D connected to another entity
     by specified connectivity from domain FM and to domain TM.
   */
-  template<size_t D, size_t FM, size_t TM = FM, class E>
-  void reverse_entities(E * e)
+  template<
+    size_t D,
+    size_t FM,
+    size_t TM = FM,
+    class E
+  >
+  void
+  reverse_entities(
+    E * e
+  )
   {
     auto & c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
@@ -695,8 +739,16 @@ public:
     Get the entities of topological dimension D connected to another entity
     by specified connectivity from domain FM and to domain TM.
   */
-  template<size_t D, size_t FM = 0, size_t TM = FM, class E>
-  void reverse_entities(domain_entity<FM, E> & e)
+  template<
+    size_t D,
+    size_t FM = 0,
+    size_t TM = FM,
+    class E
+  >
+  void
+  reverse_entities(
+    domain_entity<FM, E> & e
+  )
   {
     return reverse_entities<D, FM, TM>(e.entity());
   } // entities
@@ -706,8 +758,18 @@ public:
     Get the entities of topological dimension D connected to another entity
     by specified connectivity from domain FM and to domain TM.
   */
-  template<size_t D, size_t FM, size_t TM = FM, class E, class U>
-  void reorder_entities(E * e, U && order)
+  template<
+    size_t D,
+    size_t FM,
+    size_t TM = FM,
+    class E, 
+    class U
+  >
+  void
+  reorder_entities(
+    E * e,
+    U && order
+  )
   {
     auto & c = get_connectivity(FM, TM, E::dimension, D);
     assert(!c.empty() && "empty connectivity");
@@ -718,18 +780,32 @@ public:
     Get the entities of topological dimension D connected to another entity
     by specified connectivity from domain FM and to domain TM.
   */
-  template<size_t D, size_t FM = 0, size_t TM = FM, class E, class U>
-  void reverse_entities(domain_entity<FM, E> & e, U && order)
+  template<
+    size_t D,
+    size_t FM = 0,
+    size_t TM = FM,
+    class E, 
+    class U
+  >
+  void
+  reverse_entities(
+    domain_entity<FM, E> & e,
+    U && order
+  )
   {
     return reorder_entities<D, FM, TM>(e.entity(), std::forward<U>(order));
   } // entities
 
-  template<typename I>
-  void compute_graph_partition(
+  template<
+    typename I
+  >
+  void
+  compute_graph_partition(
     size_t domain,
     size_t dim,
     const std::vector<I>& partition_sizes,
-    std::vector<mesh_graph_partition<I>>& partitions){
+    std::vector<mesh_graph_partition<I>>& partitions
+  ){
 
     using int_t = I;
 
@@ -806,7 +882,10 @@ public:
     topological dimensions.
   */
 
-  std::ostream & dump(std::ostream & stream)
+  std::ostream &
+  dump(
+    std::ostream & stream
+  )
   {
     for (size_t from_domain = 0; from_domain < MT::num_domains; ++from_domain) {
       stream << "=================== from domain: " << from_domain
@@ -824,8 +903,13 @@ public:
     dump(std::cout);
   } // dump
 
-  template<typename A>
-  void save(A & archive) const {
+  template<
+    typename A
+  >
+  void
+  save(
+    A & archive
+  ) const {
     size_t size;
     char* data = serialize_(size);
     archive.saveBinary(&size, sizeof(size));
@@ -834,8 +918,12 @@ public:
     free(data);
   } // save
 
-  template<typename A>
-  void load(A & archive) {
+  template<
+    typename A>
+  void
+  load(
+    A & archive
+  ){
     size_t size;
     archive.loadBinary(&size, sizeof(size));
 
@@ -845,7 +933,11 @@ public:
     free(data);
   } // load
 
-  char* serialize_(uint64_t& size) const {
+  char*
+  serialize_(
+    uint64_t& size
+  ) const 
+  {
     const size_t alloc_size = 1048576;
     size = alloc_size;
 
@@ -916,7 +1008,11 @@ public:
     return buf;
   }
 
-  void unserialize_(char* buf){
+  void
+  unserialize_(
+    char* buf
+  )
+  {
     uint64_t pos = 0;
 
     uint32_t num_domains;
@@ -964,10 +1060,13 @@ public:
     }
   }
 
-  void append_to_index_space_(size_t domain,
+  void
+  append_to_index_space_(
+    size_t domain,
     size_t dim,
     std::vector<mesh_entity_base_*>& ents,
-    std::vector<id_t>& ids) override{
+    std::vector<id_t>& ids) override
+  {
     auto& is =  ms_.index_spaces[domain][dim];
     is.append_(ents, ids);
   }
@@ -982,8 +1081,14 @@ private:
   template<size_t DM, size_t I, class TS>
   friend class compute_bindings_;
 
-  template< size_t M, typename V >
-  void init_cell_(entity_type<MT::num_dimensions, M> * cell, V && verts)
+  template<
+    size_t M,
+    typename V>
+  void
+  init_cell_(
+    entity_type<MT::num_dimensions, M> * cell,
+    V && verts
+  )
   {
     auto & c = get_connectivity_(M, MT::num_dimensions, 0);
 
@@ -996,9 +1101,17 @@ private:
     c.end_from();
   } // init_cell
 
-  template< size_t M, size_t D1, size_t D2, class E2 >
-  void init_entity_(
-    entity_type<D1, M> * super, E2 && subs)
+  template<
+    size_t M,
+    size_t D1,
+    size_t D2,
+    class E2
+  >
+  void
+  init_entity_(
+    entity_type<D1, M> * super,
+    E2 && subs
+  )
   {
     auto & c = get_connectivity_(M, D1, D2);
 
@@ -1012,7 +1125,11 @@ private:
   } // init_entity
 
   // Get the number of entities in a given domain and topological dimension
-  size_t num_entities_(size_t dim, size_t domain=0) const
+  size_t
+  num_entities_(
+    size_t dim,
+    size_t domain=0
+  ) const
   {
     return ms_.index_spaces[domain][dim].size();
   } // num_entities_
@@ -1024,10 +1141,14 @@ private:
     \remark this is the general one that gets instantiated even though
             it may never get called
   */
-  template<size_t Domain, size_t DimensionToBuild, size_t UsingDimension>
-  typename std::enable_if< (UsingDimension <= 1 ||
-    UsingDimension > MT::num_dimensions) >::type
-  build_connectivity() {
+  template<
+    size_t Domain,
+    size_t DimensionToBuild,
+    size_t UsingDimension>
+    typename std::enable_if< (UsingDimension <= 1 ||
+      UsingDimension > MT::num_dimensions) >::type
+  build_connectivity()
+  {
     assert(false && "shouldn't be in here");
   }
 
@@ -1038,9 +1159,12 @@ private:
     \remark This one is enable_if'd so it never gets instantiated in certain cases,
             otherwise we would need create_entities in wedges and vertices
    */
-  template<size_t Domain, size_t DimensionToBuild, size_t UsingDimension>
-  typename std::enable_if< (UsingDimension > 1 && 
-    UsingDimension <= MT::num_dimensions) >::type
+  template<
+    size_t Domain,
+    size_t DimensionToBuild,
+    size_t UsingDimension>
+    typename std::enable_if< (UsingDimension > 1 && 
+      UsingDimension <= MT::num_dimensions) >::type
   build_connectivity()
   {
     // std::cerr << "build: " << DimensionToBuild << " using " << UsingDimension << std::endl;
@@ -1181,8 +1305,14 @@ private:
      topological dimension
        FD -> TD where FD < TD
    */
-  template<size_t FM, size_t TM, size_t FD, size_t TD>
-  void transpose()
+  template<
+    size_t FM,
+    size_t TM,
+    size_t FD,
+    size_t TD
+  >
+  void
+  transpose()
   {
     //std::cerr << "transpose: " << FD << " -> " << TD << std::endl;
 
@@ -1218,8 +1348,15 @@ private:
      topological dimension
        FD -> TD using FD -> D' and D' -> TD
    */
-  template<size_t FM, size_t TM, size_t FD, size_t TD, size_t D>
-  void intersect()
+  template<
+    size_t FM,
+    size_t TM,
+    size_t FD,
+    size_t TD,
+    size_t D
+  >
+  void
+  intersect()
   {
     // std::cerr << "intersect: " << FD << " -> " << TD << std::endl;
 
@@ -1326,8 +1463,13 @@ private:
      Used to compute connectivity information for topological dimension
        D1 -> D2
    */
-  template<size_t M, size_t FD, size_t TD>
-  void compute_connectivity()
+  template<
+    size_t M,
+    size_t FD,
+    size_t TD
+  >
+  void
+  compute_connectivity()
   {
     // std::cerr << "compute: " << FD << " -> " << TD << std::endl;
 
@@ -1400,10 +1542,14 @@ private:
     using the create_bound_entities functionality
   */
   template<
-    size_t FM, size_t TM, size_t FD, size_t TD,
+    size_t FM,
+    size_t TM,
+    size_t FD,
+    size_t TD,
     typename std::enable_if< (FM < TM) >::type* = nullptr
   >
-  void _compute_bindings()
+  void
+  _compute_bindings()
   {
 
     // if the connectivity for a transpose exists, do it
@@ -1421,10 +1567,14 @@ private:
     to transpose.  So make sure the opposite connectivity exists first
   */
   template<
-    size_t FM, size_t TM, size_t FD, size_t TD,
+    size_t FM,
+    size_t TM,
+    size_t FD,
+    size_t TD,
     typename = typename std::enable_if< (FM > TM) >::type
   >
-  void _compute_bindings()
+  void
+  _compute_bindings()
   {
 
     // build the opposite connectivity first
@@ -1439,7 +1589,12 @@ private:
     in the odd case the from-dimension matches the to-dimension, try and 
     build the connectivity between the two
   */
-  template< size_t FM, size_t TM, size_t FD, size_t TD >
+  template<
+    size_t FM,
+    size_t TM,
+    size_t FD,
+    size_t TD
+  >
   typename std::enable_if< (FM == TM) >::type
   _compute_bindings()
   {
@@ -1460,8 +1615,13 @@ private:
   /*!
     Main driver for computing bindings
   */
-  template< size_t FM, size_t TM, size_t FD, size_t TD >
-  void compute_bindings() 
+  template<
+    size_t FM,
+    size_t TM,
+    size_t FD,
+    size_t TD>
+  void
+  compute_bindings() 
   {
     // std::cerr << "compute: , dom " << FM << " -> " << TM 
     //           <<  ", dim " << FD << " -> " << TD << std::endl;
@@ -1480,8 +1640,13 @@ private:
     compute_bindings will call this on each binding found in the tuple of
     bindings specified in the mesh type/traits mesh specialization.
    */
-  template<size_t FM, size_t TM, size_t TD>
-  void build_bindings()
+  template<
+    size_t FM,
+    size_t TM,
+    size_t TD
+  >
+  void
+  build_bindings()
   {
 
     // std::cerr << "build bindings: dom " << FM << " -> " << TM 
@@ -1609,8 +1774,12 @@ private:
    Implementation of get_connectivity for various get_connectivity convenience
    methods.
    */
-  const connectivity_t & get_connectivity_(size_t from_domain, size_t to_domain,
-      size_t from_dim, size_t to_dim) const
+  const connectivity_t &
+  get_connectivity_(
+    size_t from_domain,
+    size_t to_domain,
+    size_t from_dim,
+    size_t to_dim) const
   {
     assert(from_domain < MT::num_domains && "invalid from domain");
     assert(to_domain < MT::num_domains && "invalid to domain");
@@ -1621,8 +1790,12 @@ private:
    Implementation of get_connectivity for various get_connectivity convenience
    methods.
    */
-  connectivity_t & get_connectivity_(
-      size_t from_domain, size_t to_domain, size_t from_dim, size_t to_dim)
+  connectivity_t &
+  get_connectivity_(
+    size_t from_domain,
+    size_t to_domain,
+    size_t from_dim,
+    size_t to_dim)
   {
     assert(from_domain < MT::num_domains && "invalid from domain");
     assert(to_domain < MT::num_domains && "invalid to domain");
@@ -1633,8 +1806,15 @@ private:
    Implementation of get_connectivity for various get_connectivity convenience
    methods.
    */
-  template<size_t FM, size_t TM, size_t FD>
-  connectivity_t & get_connectivity_(size_t to_dim)
+  template<
+    size_t FM,
+    size_t TM,
+    size_t FD
+  >
+  connectivity_t &
+  get_connectivity_(
+    size_t to_dim
+  )
   {
     return ms_.topology[FM][TM].template get<FD>(to_dim);
   } // get_connectivity
@@ -1643,8 +1823,14 @@ private:
    Implementation of get_connectivity for various get_connectivity convenience
    methods.
    */
-  template<size_t FM, size_t TM, size_t FD, size_t TD>
-  connectivity_t & get_connectivity_()
+  template<
+    size_t FM,
+    size_t TM,
+    size_t FD,
+    size_t TD
+  >
+  connectivity_t &
+  get_connectivity_()
   {
     return ms_.topology[FM][TM].template get<FD, TD>();
   } // get_connectivity
@@ -1653,14 +1839,20 @@ private:
    Implementation of get_connectivity for various get_connectivity convenience
    methods.
    */
-  const connectivity_t & get_connectivity_(
-      size_t domain, size_t from_dim, size_t to_dim) const
+  const connectivity_t &
+  get_connectivity_(
+    size_t domain,
+    size_t from_dim,
+    size_t to_dim) const
   {
     return get_connectivity_(domain, domain, from_dim, to_dim);
   } // get_connectivity
 
-  connectivity_t & get_connectivity_(
-      size_t domain, size_t from_dim, size_t to_dim)
+  connectivity_t &
+  get_connectivity_(
+    size_t domain,
+    size_t from_dim,
+    size_t to_dim)
   {
     return get_connectivity_(domain, domain, from_dim, to_dim);
   } // get_connectivity
