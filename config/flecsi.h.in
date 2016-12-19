@@ -30,8 +30,6 @@
 #cmakedefine EXODUSII_FOUND
 #cmakedefine METIS_FOUND
 #cmakedefine PARMETIS_FOUND
-#cmakedefine SCOTCH_FOUND
-#cmakedefine HAVE_SCOTCH_V5
 
 //------------------------------------------------------------------------------#
 // Static container

@@ -169,11 +169,10 @@ if(ENABLE_IO)
 endif(ENABLE_IO)
 
 #------------------------------------------------------------------------------#
-# Enable partitioning with METIS or SCOTCH
+# Enable partitioning with METIS
 #------------------------------------------------------------------------------#
 
 find_package(METIS 5.1)
-find_package(SCOTCH)
 
 if(ENABLE_MPI)
   # Counter-intuitive variable: set to TRUE to disable test
@@ -181,7 +180,7 @@ if(ENABLE_MPI)
   find_package(ParMETIS 4.0)
 endif()
 
-if(PARMETIS_FOUND OR SCOTCH_FOUND)
+if(PARMETIS_FOUND)
   option(ENABLE_PARTITION
     "Enable partitioning (uses metis/parmetis or scotch)." ON)
 else()
@@ -201,15 +200,6 @@ if(ENABLE_PARTITION)
   if(PARMETIS_FOUND)
     list(APPEND PARTITION_LIBRARIES ${PARMETIS_LIBRARIES})
     include_directories(${PARMETIS_INCLUDE_DIRS})
-  endif()
-
-  if(SCOTCH_FOUND)
-     list(APPEND PARTITION_LIBRARIES ${SCOTCH_LIBRARIES})
-     include_directories(${SCOTCH_INCLUDE_DIRS})
-     if(SCOTCH_VERSION MATCHES ^5)
-       #SCOTCH_VERSION from scotch.h is broken in scotch-5
-       set(HAVE_SCOTCH_V5 ON)
-     endif(SCOTCH_VERSION MATCHES ^5)
   endif()
 
   if(NOT PARTITION_LIBRARIES)
