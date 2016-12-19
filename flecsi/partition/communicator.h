@@ -6,6 +6,7 @@
 #ifndef flecsi_partition_communicator_h
 #define flecsi_partition_communicator_h
 
+#include <set>
 ///
 /// \file
 /// \date Initial file creation: Dec 06, 2016

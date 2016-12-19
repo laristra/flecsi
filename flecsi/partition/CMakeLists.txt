@@ -16,7 +16,6 @@ if(ENABLE_PARTITION)
 
 set(partition_HEADERS
   index_partition.h
-  init_partitions_task.h
   partitioner.h
   PARENT_SCOPE
 )
@@ -60,20 +59,6 @@ cinch_add_unit(weaver
 )
 endif(PARMETIS_FOUND)
 
-# Add MPI/Legion specific files
-
-if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
-
-list(APPEND partition_HEADERS
-  init_partitions_task.h
-)
-
-set(partition_SOURCES
-  init_partitions_task.cc
-  PARENT_SCOPE
-)
-
-endif()
 
 #cinch_add_unit(partition
 #  SOURCES test/partition.cc
