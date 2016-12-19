@@ -63,6 +63,9 @@ template<
 >
 struct tree_geometry{};
 
+/*!
+  \brief 1d geometry class for computing intersections and distances.
+ */
 template<
   typename T
 >
@@ -71,6 +74,10 @@ struct tree_geometry<T, 1>
   using point_t = point<T, 1>;
   using element_t = T;
 
+  /*!
+    Return true if point origin lies within the spheroid centered at center 
+    with radius. 
+   */
   static
   bool
   within(
@@ -81,6 +88,9 @@ struct tree_geometry<T, 1>
     return distance(origin, center) <= radius;
   }
 
+  /*!
+    Return true if point origin lies within the box specified by min/max point. 
+   */
   static
   bool
   within_box(
@@ -154,6 +164,10 @@ struct tree_geometry<T, 1>
   }
 };
 
+
+/*!
+  \brief 2d geometry class for computing intersections and distances.
+ */
 template<
   typename T
 >
@@ -162,6 +176,10 @@ struct tree_geometry<T, 2>
   using point_t = point<T, 2>;
   using element_t = T;
 
+  /*!
+    Return true if point origin lies within the spheroid centered at center 
+    with radius. 
+   */
   static
   bool
   within(
@@ -172,6 +190,9 @@ struct tree_geometry<T, 2>
     return distance(origin, center) <= radius;
   }
 
+  /*!
+    Return true if point origin lies within the box specified by min/max point. 
+   */
   static
   bool
   within_box(
@@ -185,6 +206,9 @@ struct tree_geometry<T, 2>
 
   // initial attempt to get this working, needs to be optimized
 
+  /*!
+    Spheroid/box intersection test. 
+   */
   static
   bool
   intersects(
@@ -257,6 +281,10 @@ struct tree_geometry<T, 2>
   }
 };
 
+
+/*!
+  \brief 1d geometry class for computing intersections and distances.
+ */
 template<
   typename T
 >
@@ -265,6 +293,10 @@ struct tree_geometry<T, 3>
   using point_t = point<T, 3>;
   using element_t = T;
 
+  /*!
+    Return true if point origin lies within the spheroid centered at center 
+    with radius. 
+   */
   static
   bool
   within(
@@ -275,6 +307,9 @@ struct tree_geometry<T, 3>
     return distance(origin, center) < radius;
   }
 
+  /*!
+    Return true if point origin lies within the box specified by min/max point. 
+   */
   static
   bool
   within_box(
@@ -287,6 +322,9 @@ struct tree_geometry<T, 3>
            origin[2] <= max[2] && origin[2] > min[2];
   }
 
+  /*!
+    Spheroid/box intersection test. 
+   */
   static
   bool
   intersects(
@@ -361,6 +399,10 @@ struct tree_geometry<T, 3>
   }
 };
 
+/*!
+  This class implements a hashed/Morton-style branch id that can be
+  parameterized on arbitrary dimension D and integer type T.
+ */
 template<
   typename T,
   size_t D
@@ -380,6 +422,11 @@ public:
   : id_(0)
   {}
 
+  /*!
+    Construct a branch id from an array of dimensions and range for each
+    dimension. The specified depth may be less than the max allowed depth for
+    the branch id.
+   */
   template<
     typename S
   >
@@ -414,6 +461,9 @@ public:
   : id_(bid.id_)
   {}
 
+  /*!
+    Get the root branch id (depth 0).
+   */
   static
   constexpr
   branch_id
@@ -422,6 +472,9 @@ public:
     return branch_id(int_t(1) << (bits - 1) % dimension);
   }
 
+  /*!
+    Get the null branch id.
+   */
   static
   constexpr
   branch_id
@@ -430,6 +483,9 @@ public:
     return branch_id(0);
   }
 
+  /*!
+    Check if branch id is null.
+   */
   constexpr
   bool
   is_null() const
@@ -437,6 +493,9 @@ public:
     return id_ == int_t(0);
   }
 
+  /*!
+    Find the depth of this branch id.
+   */
   size_t
   depth() const
   {
@@ -478,6 +537,9 @@ public:
     return id_ != bid.id_;
   }
 
+  /*!
+    Push bits onto the end of this branch id.
+   */
   void push(int_t bits)
   {
     assert(bits < int_t(1) << dimension);
@@ -486,12 +548,18 @@ public:
     id_ |= bits;
   }
 
+  /*!
+    Pop the bits of greatest depth off this branch id.
+   */
   void pop()
   {
     assert(depth() > 0);
     id_ >>= dimension;
   }
 
+  /*!
+    Pop the depth d bits from the end of this this branch id.
+   */
   void pop(
     size_t d
   )
@@ -500,6 +568,9 @@ public:
     id_ >>= d * dimension;
   }
 
+  /*!
+    Return the parent of this branch id (depth - 1)
+   */
   constexpr
   branch_id
   parent() const
@@ -507,6 +578,9 @@ public:
     return branch_id(id_ >> dimension);
   }
 
+  /*!
+    Truncate (repeatedly pop) this branch id until it of depth to_depth.
+   */
   void
   truncate(
     size_t to_depth
@@ -577,6 +651,9 @@ public:
     return id_ < bid.id_;
   }
 
+  /*!
+    Convert this branch id to coordinates in range.
+   */
   template<
     typename S
   >
@@ -625,6 +702,10 @@ private:
   {}
 };
 
+/*!
+  All tree entities have an associated entity id of this type which is needed
+  to interface with the index space.
+ */
 class entity_id_t{
 public:
   entity_id_t()
@@ -694,12 +775,20 @@ struct branch_id_hasher__{
   }
 };
 
+/*!
+  When an entity is added or removed from a branch, the user-level tree may
+  trigger one of these actions.
+ */
 enum class action : uint8_t{
   none = 0b00,
   refine = 0b01,
   coarsen = 0b10
 };
 
+/*!
+  The tree topology is parameterized on a policy P which defines its branch and
+  entity types.
+ */
 template<
   class P
 >
@@ -750,6 +839,10 @@ public:
     }
   };  
 
+  /*!
+    Constuct a tree topology with unit coordinates, i.e. each coordinate
+    dimension is in range [0, 1].
+   */
   tree_topology()
   {
     branch_id_t bid = branch_id_t::root();
@@ -768,6 +861,10 @@ public:
     }
   }
 
+  /*!
+    Construct a tree topology with specified ranges [end, start] for each
+    dimension.
+   */
   tree_topology(
     const point<element_t, dimension>& start,
     const point<element_t, dimension>& end
@@ -800,6 +897,9 @@ public:
     delete root_;
   }
 
+  /*!
+     Get the ci-th child of the given branch.
+   */
   branch_t*
   child(
     branch_t* b,
@@ -809,12 +909,18 @@ public:
     return b->template child_<branch_t>(ci);
   }
 
+  /*!
+    Return an index space containing all entities (including those removed).
+   */
   auto
   all_entities() const
   {
     return entities_.template slice<>();
   }
 
+  /*!
+    Return an index space containing all non-removed entities.
+   */
   auto
   entities()
   {
@@ -822,6 +928,9 @@ public:
       entity_t*, false, false, false, filter_valid>();
   }
 
+  /*!
+    Insert an entity into the lowest possible branch division.
+   */
   void
   insert(
     entity_t* ent
@@ -830,6 +939,10 @@ public:
     insert(ent, max_depth_);
   }
 
+  /*!
+    Update is called when an entity's coordinates have changed and may trigger
+    a reinsertion.
+   */
   void
   update(entity_t* ent)
   {
@@ -845,6 +958,10 @@ public:
     insert(ent, max_depth_);
   }
 
+  /*!
+    Effectively re-insert all entities into the tree. Called when all entity
+    coordinates are assumed to have changed.
+   */
   void
   update_all()
   {
@@ -860,6 +977,11 @@ public:
     }
   }
 
+  /*!
+    Effectively re-insert all entities into the tree. Called when all entity
+    coordinates are assumed to have changed. Additionally expands or contracts
+    the coordinate ranges of each dimension to [start, end].
+   */
   void
   update_all(
     const point<element_t, dimension>& start,
@@ -887,6 +1009,11 @@ public:
     }
   }
 
+  /*!
+    Remove an entity from the tree. Note this method does not actually
+    delete it. This can trigger coarsening and refinements as determined
+    by the tree topology policy. 
+   */
   void
   remove(
     entity_t* ent
@@ -921,6 +1048,9 @@ public:
     }
   }
 
+  /*!
+    Convert a point to unit coordinates.
+   */
   point_t
   unit_coordinates(
     const point_t& p
@@ -936,6 +1066,10 @@ public:
     return pn;
   }
 
+  /*!
+    Return an index space containing all entities within the specified
+    spheroid.
+   */
   subentity_space_t
   find_in_radius(
     const point_t& center,
@@ -959,6 +1093,10 @@ public:
     return ents;
   }
 
+  /*!
+    Return an index space containing all entities within the specified
+    spheroid. (Concurrent version.)
+   */
   subentity_space_t
   find_in_radius(
     thread_pool& pool,
@@ -994,6 +1132,10 @@ public:
     return ents;
   }
 
+  /*!
+    Return an index space containing all entities within the specified
+    box.
+   */
   subentity_space_t
   find_in_box(
     const point_t& min,
@@ -1029,6 +1171,10 @@ public:
     return ents;
   }
 
+  /*!
+    Return an index space containing all entities within the specified
+    box. (Concurrent version.)
+   */
   subentity_space_t
   find_in_box(
     thread_pool& pool,
@@ -1076,6 +1222,10 @@ public:
     return ents;
   }
 
+  /*!
+    For all entities within the specified spheroid, apply the given callable
+    object ef with args.
+   */
   template<
     typename EF,
     typename... ARGS
@@ -1103,6 +1253,10 @@ public:
     apply_(b, size, f, geometry_t::intersects, center, radius);
   }
 
+  /*!
+    For all entities within the specified spheroid, apply the given callable
+    object ef with args. (Concurrent version.)
+   */
   template<
     typename EF,
     typename... ARGS
@@ -1140,6 +1294,10 @@ public:
     sem.acquire();
   }
 
+  /*!
+    For all entities within the specified box, apply the given callable
+    object ef with args.
+   */
   template<
     typename EF,
     typename... ARGS
@@ -1190,6 +1348,10 @@ public:
     sem.acquire();
   }
 
+  /*!
+    For all entities within the specified spheroid, apply the given callable
+    object ef with args. (Concurrent version.)
+   */
   template<
     typename EF,
     typename... ARGS
@@ -1229,6 +1391,10 @@ public:
     apply_(b, size, f, geometry_t::intersects_box, min, max);
   }
 
+  /*!
+    Construct a new entity. The entity's constructor should not be called
+    directly.
+   */
   template<
     class... Args
   >
@@ -1244,12 +1410,18 @@ public:
     return ent;
   }
 
+  /*!
+    Return the tree's current max depth.
+   */
   size_t
   max_depth() const
   {
     return max_depth_;
   }
 
+  /*!
+    Get an entity by entity id.
+   */
   entity_t*
   get(
     entity_id_t id
@@ -1269,12 +1441,18 @@ public:
     return itr->second;
   }
 
+  /*!
+    Get the root branch (depth 0).
+   */
   branch_t*
   root()
   {
     return root_;
   }
 
+  /*!
+    Visit and apply callable object f and args on all sub-branches of branch b.
+   */
   template<
     typename F,
     typename... ARGS
@@ -1289,6 +1467,10 @@ public:
     visit_(b, 0, std::forward<F>(f), std::forward<ARGS>(args)...);
   }
 
+  /*!
+    Visit and apply callable object f and args on all sub-branches of branch b. 
+    (Concurrent version.) 
+   */
   template<
     typename F,
     typename... ARGS
@@ -1312,6 +1494,9 @@ public:
     sem.acquire();
   }
 
+  /*!
+    Visit and apply callable object f and args on all sub-entities of branch b. 
+   */
   template<
   typename F,
   typename... ARGS
@@ -1339,6 +1524,10 @@ public:
     }
   }
 
+  /*!
+    Visit and apply callable object f and args on all sub-entities of branch b.
+    (Concurrent version.) 
+   */
   template<
     typename F,
     typename... ARGS
@@ -1362,6 +1551,9 @@ public:
     sem.acquire();
   }
 
+  /*!
+    Save (serialize) the tree to an archive.
+   */
   template<
     typename A
   >
@@ -1378,6 +1570,9 @@ public:
     free(data);
   } // save
 
+  /*!
+    Load (de-serialize) the tree from an archive.
+   */
   template<
     typename A
   >
@@ -2107,6 +2302,10 @@ private:
   element_t max_scale_;
 };
 
+
+/*!
+  Tree entity base class.
+ */
 template<
   typename T,
   size_t D
@@ -2139,6 +2338,9 @@ public:
     return id_;
   }
 
+  /*!
+    Return whether the entity is current inserted in a tree.
+   */
   bool
   is_valid() const
   {
@@ -2169,6 +2371,9 @@ private:
   entity_id_t id_;
 };
 
+/*!
+  Tree branch base class.
+ */
 template<
   typename T,
   size_t D
@@ -2198,16 +2403,25 @@ public:
     return id_;
   }
 
+  /*!
+    Called to trigger a refinement at this branch.
+   */
   void refine()
   {
     action_ = action::refine;
   }
 
+  /*!
+    Called to trigger a coarsening at this branch.
+   */
   void coarsen()
   {
     action_ = action::coarsen;
   }
 
+  /*!
+    Clear refine/coarsen actions.
+   */
   void reset()
   {
     action_ = action::none;
