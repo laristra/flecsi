@@ -839,6 +839,10 @@ public:
     }
   };  
 
+  /*!
+    Constuct a tree topology with unit coordinates, i.e. each coordinate
+    dimension is in range [0, 1].
+   */
   tree_topology()
   {
     branch_id_t bid = branch_id_t::root();
@@ -857,6 +861,10 @@ public:
     }
   }
 
+  /*!
+    Construct a tree topology with specified ranges [end, start] for each
+    dimension.
+   */
   tree_topology(
     const point<element_t, dimension>& start,
     const point<element_t, dimension>& end
@@ -889,6 +897,9 @@ public:
     delete root_;
   }
 
+  /*!
+     Get the ci-th child of the given branch.
+   */
   branch_t*
   child(
     branch_t* b,
@@ -898,12 +909,18 @@ public:
     return b->template child_<branch_t>(ci);
   }
 
+  /*!
+    Return an index space containing all entities (including those removed).
+   */
   auto
   all_entities() const
   {
     return entities_.template slice<>();
   }
 
+  /*!
+    Return an index space containing all non-removed entities.
+   */
   auto
   entities()
   {
@@ -911,6 +928,9 @@ public:
       entity_t*, false, false, false, filter_valid>();
   }
 
+  /*!
+    Insert an entity into the lowest possible branch division.
+   */
   void
   insert(
     entity_t* ent
@@ -919,6 +939,10 @@ public:
     insert(ent, max_depth_);
   }
 
+  /*!
+    Update is called when an entity's coordinates have changed and may trigger
+    a reinsertion.
+   */
   void
   update(entity_t* ent)
   {
@@ -934,6 +958,10 @@ public:
     insert(ent, max_depth_);
   }
 
+  /*!
+    Effectively re-insert all entities into the tree. Called when all entity
+    coordinates are assumed to have changed.
+   */
   void
   update_all()
   {
@@ -949,6 +977,11 @@ public:
     }
   }
 
+  /*!
+    Effectively re-insert all entities into the tree. Called when all entity
+    coordinates are assumed to have changed. Additionally expands or contracts
+    the coordinate ranges of each dimesion to [start, end].
+   */
   void
   update_all(
     const point<element_t, dimension>& start,
@@ -976,6 +1009,11 @@ public:
     }
   }
 
+  /*!
+    Remove an entity from the tree. Note this method does not actually
+    delete it. This can trigger coarsening and refinements as determined
+    by the tree topology policy. 
+   */
   void
   remove(
     entity_t* ent
@@ -1010,6 +1048,9 @@ public:
     }
   }
 
+  /*!
+    Convert a point to unit coordinates.
+   */
   point_t
   unit_coordinates(
     const point_t& p
@@ -1025,6 +1066,10 @@ public:
     return pn;
   }
 
+  /*!
+    Return an index space containing all entities within the specified
+    spheroid.
+   */
   subentity_space_t
   find_in_radius(
     const point_t& center,
@@ -1048,6 +1093,10 @@ public:
     return ents;
   }
 
+  /*!
+    Return an index space containing all entities within the specified
+    spheroid. (Concurrent version.)
+   */
   subentity_space_t
   find_in_radius(
     thread_pool& pool,
@@ -1083,6 +1132,10 @@ public:
     return ents;
   }
 
+  /*!
+    Return an index space containing all entities within the specified
+    box.
+   */
   subentity_space_t
   find_in_box(
     const point_t& min,
@@ -1118,6 +1171,10 @@ public:
     return ents;
   }
 
+  /*!
+    Return an index space containing all entities within the specified
+    box. (Concurrent version.)
+   */
   subentity_space_t
   find_in_box(
     thread_pool& pool,
