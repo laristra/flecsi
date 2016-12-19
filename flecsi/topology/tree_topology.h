@@ -63,6 +63,9 @@ template<
 >
 struct tree_geometry{};
 
+/*!
+  \brief 1d geometry class for computing intersections and distances.
+ */
 template<
   typename T
 >
@@ -71,6 +74,10 @@ struct tree_geometry<T, 1>
   using point_t = point<T, 1>;
   using element_t = T;
 
+  /*!
+    Return true if point origin lies within the spheroid centered at center 
+    with radius. 
+   */
   static
   bool
   within(
@@ -81,6 +88,9 @@ struct tree_geometry<T, 1>
     return distance(origin, center) <= radius;
   }
 
+  /*!
+    Return true if point origin lies within the box specified by min/max point. 
+   */
   static
   bool
   within_box(
@@ -154,6 +164,10 @@ struct tree_geometry<T, 1>
   }
 };
 
+
+/*!
+  \brief 2d geometry class for computing intersections and distances.
+ */
 template<
   typename T
 >
@@ -162,6 +176,10 @@ struct tree_geometry<T, 2>
   using point_t = point<T, 2>;
   using element_t = T;
 
+  /*!
+    Return true if point origin lies within the spheroid centered at center 
+    with radius. 
+   */
   static
   bool
   within(
@@ -172,6 +190,9 @@ struct tree_geometry<T, 2>
     return distance(origin, center) <= radius;
   }
 
+  /*!
+    Return true if point origin lies within the box specified by min/max point. 
+   */
   static
   bool
   within_box(
@@ -185,6 +206,9 @@ struct tree_geometry<T, 2>
 
   // initial attempt to get this working, needs to be optimized
 
+  /*!
+    Spheroid/box intersection test. 
+   */
   static
   bool
   intersects(
@@ -257,6 +281,10 @@ struct tree_geometry<T, 2>
   }
 };
 
+
+/*!
+  \brief 1d geometry class for computing intersections and distances.
+ */
 template<
   typename T
 >
@@ -265,6 +293,10 @@ struct tree_geometry<T, 3>
   using point_t = point<T, 3>;
   using element_t = T;
 
+  /*!
+    Return true if point origin lies within the spheroid centered at center 
+    with radius. 
+   */
   static
   bool
   within(
@@ -275,6 +307,9 @@ struct tree_geometry<T, 3>
     return distance(origin, center) < radius;
   }
 
+  /*!
+    Return true if point origin lies within the box specified by min/max point. 
+   */
   static
   bool
   within_box(
@@ -287,6 +322,9 @@ struct tree_geometry<T, 3>
            origin[2] <= max[2] && origin[2] > min[2];
   }
 
+  /*!
+    Spheroid/box intersection test. 
+   */
   static
   bool
   intersects(
@@ -361,6 +399,10 @@ struct tree_geometry<T, 3>
   }
 };
 
+/*!
+  This class implements a hashed/Morton-style branch id that can be
+  parameterized on arbitrary dimension D and integer type T.
+ */
 template<
   typename T,
   size_t D
@@ -380,6 +422,11 @@ public:
   : id_(0)
   {}
 
+  /*!
+    Construct a branch id from an array of dimensions and range for each
+    dimension. The specified depth may be less than the max allowed depth for
+    the branch id.
+   */
   template<
     typename S
   >
@@ -414,6 +461,9 @@ public:
   : id_(bid.id_)
   {}
 
+  /*!
+    Get the root branch id (depth 0).
+   */
   static
   constexpr
   branch_id
@@ -422,6 +472,9 @@ public:
     return branch_id(int_t(1) << (bits - 1) % dimension);
   }
 
+  /*!
+    Get the null branch id.
+   */
   static
   constexpr
   branch_id
@@ -430,6 +483,9 @@ public:
     return branch_id(0);
   }
 
+  /*!
+    Check if branch id is null.
+   */
   constexpr
   bool
   is_null() const
@@ -437,6 +493,9 @@ public:
     return id_ == int_t(0);
   }
 
+  /*!
+    Find the depth of this branch id.
+   */
   size_t
   depth() const
   {
@@ -478,6 +537,9 @@ public:
     return id_ != bid.id_;
   }
 
+  /*!
+    Push bits onto the end of this branch id.
+   */
   void push(int_t bits)
   {
     assert(bits < int_t(1) << dimension);
@@ -486,12 +548,18 @@ public:
     id_ |= bits;
   }
 
+  /*!
+    Pop the bits of greatest depth off this branch id.
+   */
   void pop()
   {
     assert(depth() > 0);
     id_ >>= dimension;
   }
 
+  /*!
+    Pop the depth d bits from the end of this this branch id.
+   */
   void pop(
     size_t d
   )
@@ -500,6 +568,9 @@ public:
     id_ >>= d * dimension;
   }
 
+  /*!
+    Return the parent of this branch id (depth - 1)
+   */
   constexpr
   branch_id
   parent() const
@@ -507,6 +578,9 @@ public:
     return branch_id(id_ >> dimension);
   }
 
+  /*!
+    Truncate (repeatedly pop) this branch id until it of depth to_depth.
+   */
   void
   truncate(
     size_t to_depth
@@ -577,6 +651,9 @@ public:
     return id_ < bid.id_;
   }
 
+  /*!
+    Convert this branch id to coordinates in range.
+   */
   template<
     typename S
   >
@@ -625,6 +702,10 @@ private:
   {}
 };
 
+/*!
+  All tree entities have an associated entity id of this type which is needed
+  to interface with the index space.
+ */
 class entity_id_t{
 public:
   entity_id_t()
@@ -694,12 +775,20 @@ struct branch_id_hasher__{
   }
 };
 
+/*!
+  When an entity is added or removed from a branch, the user-level tree may
+  trigger one of these actions.
+ */
 enum class action : uint8_t{
   none = 0b00,
   refine = 0b01,
   coarsen = 0b10
 };
 
+/*!
+  The tree topology is parameterized on a policy P which defines its branch and
+  entity types.
+ */
 template<
   class P
 >
