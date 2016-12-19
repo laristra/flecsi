@@ -11,27 +11,26 @@
 #include "flecsi/utils/set_utils.h"
 
 ///
-// \file definition_utils.h
-// \authors bergen
-// \date Initial file creation: Nov 21, 2016
+/// \file
+/// \date Initial file creation: Nov 21, 2016
 ///
 
 namespace flecsi {
 namespace topology {
 
 ///
-// Find the neighbors of the given entity id.
-//
-// \tparam from_dim The topological dimension of the entity for which
-//                  the neighbor information is being requested.
-// \tparam to_dim The topological dimension to search for neighbors.
-// \tparam thru_dim The topological dimension through which the neighbor
-//                  connection exists.
-//
-// \param gd The graph definition containing the topological connectivity
-//           information.
-// \param entity_id The id of the entity in from_dim for which the neighbors
-//           are to be found.
+/// Find the neighbors of the given entity id.
+///
+/// \tparam from_dim The topological dimension of the entity for which
+///                  the neighbor information is being requested.
+/// \tparam to_dim The topological dimension to search for neighbors.
+/// \tparam thru_dim The topological dimension through which the neighbor
+///                  connection exists.
+///
+/// \param gd The graph definition containing the topological connectivity
+///           information.
+/// \param entity_id The id of the entity in from_dim for which the neighbors
+///           are to be found.
 ///
 template<
   size_t from_dim,
@@ -75,19 +74,19 @@ entity_neighbors(
 } // entity_neighbors
 
 ///
-// Return the dependency closure of the given set.
-//
-// \tparam from_dim The topological dimension of the entity for which
-//                  the neighbor information is being requested.
-// \tparam to_dim The topological dimension to search for neighbors.
-// \tparam thru_dim The topological dimension through which the neighbor
-//                  connection exists.
-//
-// \param gd The graph definition containing the topological connectivity
-//           information.
-// \param indices The entity indeces of the initial set.
-// \param intersections The number of intersections that constitute a
-//                      neighboring entity.
+/// Return the dependency closure of the given set.
+///
+/// \tparam from_dim The topological dimension of the entity for which
+///                  the neighbor information is being requested.
+/// \tparam to_dim The topological dimension to search for neighbors.
+/// \tparam thru_dim The topological dimension through which the neighbor
+///                  connection exists.
+///
+/// \param gd The graph definition containing the topological connectivity
+///           information.
+/// \param indices The entity indeces of the initial set.
+/// \param intersections The number of intersections that constitute a
+///                      neighboring entity.
 ///
 template<
   size_t from_dim,
@@ -115,14 +114,14 @@ entity_closure(
 } // cell_closure
 
 ///
-// Return the cells that reference the given vertex id.
-//
-// \tparam by_dim The topological dimension of the entities that
-//                reference the vertex.
-//
-// \param gd The graph definition containing the topological connectivity
-//           information.
-// \param id The id of the vertex.
+/// Return the cells that reference the given vertex id.
+///
+/// \tparam by_dim The topological dimension of the entities that
+///                reference the vertex.
+///
+/// \param gd The graph definition containing the topological connectivity
+///           information.
+/// \param id The id of the vertex.
 ///
 template<
   size_t by_dim
@@ -152,15 +151,15 @@ vertex_referencers(
 } // vertex_referencers
 
 ///
-// Return the union of all vertices that are referenced by at least
-// one of the entities in the given set of indices.
-//
-// \tparam by_dim The topological dimension of the entities that
-//                reference the vertex.
-//
-// \param gd The graph definition containing the topological connectivity
-//           information.
-// \param indices The entity indeces.
+/// Return the union of all vertices that are referenced by at least
+/// one of the entities in the given set of indices.
+///
+/// \tparam by_dim The topological dimension of the entities that
+///                reference the vertex.
+///
+/// \param gd The graph definition containing the topological connectivity
+///           information.
+/// \param indices The entity indeces.
 ///
 template<
   size_t by_dim
