@@ -3,13 +3,12 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_dmp_communicator_h
-#define flecsi_dmp_communicator_h
+#ifndef flecsi_partition_communicator_h
+#define flecsi_partition_communicator_h
 
 ///
-// \file communicator.h
-// \authors bergen
-// \date Initial file creation: Dec 06, 2016
+/// \file
+/// \date Initial file creation: Dec 06, 2016
 ///
 
 namespace flecsi {
@@ -55,8 +54,8 @@ operator << (
 } // operator <<
 
 ///
-// \class communicator_t communicator.h
-// \brief communicator_t provides...
+/// \class communicator_t communicator.h
+/// \brief communicator_t provides...
 ///
 class communicator_t
 {
@@ -108,7 +107,7 @@ private:
 } // namespace dmp
 } // namespace flecsi
 
-#endif // flecsi_dmp_communicator_h
+#endif // flecsi_partition_communicator_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

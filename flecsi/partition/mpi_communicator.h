@@ -3,25 +3,24 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_dmp_mpi_communicator_h
-#define flecsi_dmp_mpi_communicator_h
+#ifndef flecsi_partition_mpi_communicator_h
+#define flecsi_partition_mpi_communicator_h
 
 #include "flecsi/partition/communicator.h"
 
 #include <mpi.h>
 
 ///
-// \file mpi_communicator.h
-// \authors bergen
-// \date Initial file creation: Dec 06, 2016
+/// \file
+/// \date Initial file creation: Dec 06, 2016
 ///
 
 namespace flecsi {
 namespace dmp {
 
 ///
-// \class mpi_communicator_t mpi_communicator.h
-// \brief mpi_communicator_t provides...
+/// \class mpi_communicator_t mpi_communicator.h
+/// \brief mpi_communicator_t provides...
 ///
 class mpi_communicator_t
   : public communicator_t
@@ -41,7 +40,7 @@ public:
    ~mpi_communicator_t() {}
 
   ///
-  //
+  ///
   ///
   std::pair<std::vector<std::set<size_t>>, std::set<entry_info_t>>
   get_cell_info(
@@ -384,7 +383,7 @@ private:
 } // namespace dmp
 } // namespace flecsi
 
-#endif // flecsi_dmp_mpi_communicator_h
+#endif // flecsi_partition_mpi_communicator_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

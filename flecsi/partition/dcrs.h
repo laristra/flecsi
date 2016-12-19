@@ -3,22 +3,21 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_dmp_dcrs_h
-#define flecsi_dmp_dcrs_h
+#ifndef flecsi_partition_dcrs_h
+#define flecsi_partition_dcrs_h
 
 #include <vector>
 
 ///
-// \file dcrs.h
-// \authors bergen
-// \date Initial file creation: Nov 24, 2016
+/// \file
+/// \date Initial file creation: Nov 24, 2016
 ///
 
 namespace flecsi {
 namespace dmp {
 
 ///
-// Convenience macro to avoid having to reimplement this for each member.
+/// Convenience macro to avoid having to reimplement this for each member.
 ///
 #define define_dcrs_as(member)                                                 \
   template<                                                                    \
@@ -78,7 +77,7 @@ operator <<
 } // namespace dmp
 } // namespace flecsi
 
-#endif // flecsi_dmp_dcrs_h
+#endif // flecsi_partition_dcrs_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

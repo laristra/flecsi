@@ -3,23 +3,22 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_dmp_partitioner_h
-#define flecsi_dmp_partitioner_h
+#ifndef flecsi_partition_partitioner_h
+#define flecsi_partition_partitioner_h
 
 #include "flecsi/partition/dcrs.h"
 
 ///
-// \file partitioner.h
-// \authors bergen
-// \date Initial file creation: Nov 24, 2016
+/// \file
+/// \date Initial file creation: Nov 24, 2016
 ///
 
 namespace flecsi {
 namespace dmp {
 
 ///
-// \class partitioner_t partitioner.h
-// \brief partitioner_t provides...
+/// \class partitioner_t partitioner.h
+/// \brief partitioner_t provides...
 ///
 class partitioner_t
 {
@@ -50,7 +49,7 @@ private:
 } // namespace dmp
 } // namespace flecsi
 
-#endif // flecsi_dmp_partitioner_h
+#endif // flecsi_partition_partitioner_h
  
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.
