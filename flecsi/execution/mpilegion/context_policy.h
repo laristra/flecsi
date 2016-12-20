@@ -257,7 +257,7 @@ struct mpilegion_context_policy_t
 
   using task_id_t = LegionRuntime::HighLevel::TaskID;
   using register_function_t = std::function<void(size_t)>;
-  using unique_fid_t = unique_id_t<task_id_t>;
+  using unique_fid_t = utils::unique_id_t<task_id_t>;
 
   /*!
    */
@@ -297,7 +297,7 @@ struct mpilegion_context_policy_t
   template<typename T>
   bool
   register_function(
-    const utils::utils:const_string_t & key,
+    const utils::const_string_t & key,
     T & function
   )
   {
