@@ -193,7 +193,7 @@ struct legion_context_policy_t
   template<typename T>
   bool
   register_function(
-    const utils::const_string_t & key,
+    const utils::utils:const_string_t & key,
     T & function
   )
   {
