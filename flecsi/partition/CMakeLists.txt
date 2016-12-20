@@ -20,6 +20,10 @@ set(partition_HEADERS
   PARENT_SCOPE
 )
 
+#FIXME: remove the check for Parmetis when there are other kinds of partitioner
+#implemented
+
+if(PARMETIS_FOUND)
 cinch_add_unit(dcrs
   SOURCES test/dcrs.cc
   INPUTS
@@ -30,10 +34,6 @@ cinch_add_unit(dcrs
   THREADS 5
 )
 
-#FIXME: remove the check for Parmetis when there are other kinds of partitioner
-#implemented
-
-if(PARMETIS_FOUND)
 cinch_add_unit(partition
   SOURCES test/partition.cc
   INPUTS

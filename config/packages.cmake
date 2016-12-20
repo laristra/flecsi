@@ -180,13 +180,8 @@ if(ENABLE_MPI)
   find_package(ParMETIS 4.0)
 endif()
 
-if(PARMETIS_FOUND)
-  option(ENABLE_PARTITION
-    "Enable partitioning (uses metis/parmetis or scotch)." ON)
-else()
-  option(ENABLE_PARTITION
-    "Enable partitioning (uses metis/parmetis or scotch)." OFF)
-endif()
+option(ENABLE_PARTITION
+  "Enable partitioning (uses metis/parmetis or scotch)." OFF)
 
 if(ENABLE_PARTITION)
 
@@ -204,7 +199,7 @@ if(ENABLE_PARTITION)
 
   if(NOT PARTITION_LIBRARIES)
     MESSAGE(FATAL_ERROR
-      "You need scotch, metis or parmetis to enable partitioning" )
+      "You need parmetis to enable partitioning" )
   endif()
 
 endif()

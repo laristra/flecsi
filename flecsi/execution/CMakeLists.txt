@@ -82,7 +82,7 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
    #FIXME: remove the check for Parmetis when there are other kinds of 
    #partitioner implemented
 
-  if(PARMETIS_FOUND)
+  if(ENABLE_PARTITION)
     cinch_add_unit(sprint
       SOURCES
         test/task.cc
@@ -97,7 +97,7 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
       POLICY MPILEGION
       THREADS 2
     )
-   endif(PARMETIS_FOUND)
+   endif()
 
   endif(NOT DEFINED ENV{TRAVIS})
 
