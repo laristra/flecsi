@@ -88,7 +88,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   decltype(auto)
   register_data(
     const data_client_t & data_client,
-    const const_string_t & key,
+    const utils::const_string_t & key,
     size_t versions,
     Args && ... args
   )
@@ -121,7 +121,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   decltype(auto)
   get_accessor(
     const data_client_t & data_client,
-    const const_string_t & key,
+    const utils::const_string_t & key,
     size_t version=0
   )
   {
@@ -148,7 +148,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   decltype(auto)
   get_mutator(
     const data_client_t & data_client,
-    const const_string_t & key,
+    const utils::const_string_t & key,
     size_t slots, size_t version=0
   )
   {
@@ -317,7 +317,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   decltype(auto)
   get_handle(
     const data_client_t & data_client,
-    const const_string_t & key,
+    const utils::const_string_t & key,
     size_t version=0
   )
   {

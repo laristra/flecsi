@@ -12,20 +12,18 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_reorder_h
-#define flecsi_reorder_h
+#ifndef flecsi_utils_reorder_h
+#define flecsi_utils_reorder_h
 
 #include<iterator>
 #include<utility>
 
 /*!
- * \file reorder.h
+ * \file
  */
 
-namespace flecsi
-{
-namespace utils
-{
+namespace flecsi {
+namespace utils {
 
 /*!
   \brief Reorders an array in place
@@ -86,7 +84,7 @@ void reorder_destructive( order_iterator order_begin, order_iterator order_end, 
 } // namespace utils
 } // namespace flecsi
 
-#endif // flecsi_reorder_h
+#endif // flecsi_utils_reorder_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

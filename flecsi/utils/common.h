@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_common_h
-#define flecsi_common_h
+#ifndef flecsi_utils_common_h
+#define flecsi_utils_common_h
 
 #include <cstdint>
 #include <sstream>
@@ -22,8 +22,7 @@
 #include "flecsi/utils/id.h"
 
 /*!
- * \file common.h
- * \authors bergen
+ * \file
  * \date Initial file creation: Sep 23, 2015
  */
 
@@ -43,8 +42,8 @@
 #define FLECSI_ID_GBITS 60
 #endif
 
-namespace flecsi
-{
+namespace flecsi {
+namespace utils {
 
 //----------------------------------------------------------------------------//
 // Entity id type.
@@ -133,6 +132,7 @@ struct function_traits__<R(As ...)> {
   using arguments_type = std::tuple<As ...>;
 }; // struct function_traits__
 
+} // namespace utils
 } // namespace flecsi
 
 //----------------------------------------------------------------------------//
@@ -142,7 +142,7 @@ struct function_traits__<R(As ...)> {
 #define _UTIL_STRINGIFY(s) #s
 #define EXPAND_AND_STRINGIFY(s) _UTIL_STRINGIFY(s)
 
-#endif // flecsi_common_h
+#endif // flecsi_utils_common_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options
