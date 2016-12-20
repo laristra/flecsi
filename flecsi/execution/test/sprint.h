@@ -37,6 +37,7 @@ FieldIDs {
   FID_CELL,
   FID_VERT,
   FID_GHOST_CELL_ID,
+  FID_DATA,
 };
 
 void
@@ -146,6 +147,7 @@ driver(
     FieldAllocator allocator = runtime->create_field_allocator(context,
                                              cells_fs);
     allocator.allocate_field(sizeof(size_t), FID_CELL);
+    allocator.allocate_field(sizeof(size_t), FID_DATA);
   }
 
   int num_ranks;
@@ -734,19 +736,17 @@ driver(
   ghost_access_launcher.add_region_requirement(
   RegionRequirement(cells_shared_lp, 0/*projection ID*/,
                     READ_ONLY, SIMULTANEOUS, cells_lr));
-  ghost_access_launcher.add_field(0, FID_CELL);
-
-  ghost_access_launcher.add_region_requirement(
-  RegionRequirement(cells_exclusive_lp, 0/*projection ID*/,
-                    READ_ONLY, EXCLUSIVE, cells_lr));
-  ghost_access_launcher.add_field(1, FID_CELL);
+  ghost_access_launcher.add_field(0, FID_DATA);
 
   ghost_access_launcher.add_region_requirement(
   RegionRequirement(cells_ghost_lp, 0/*projection ID*/,
                     READ_ONLY, SIMULTANEOUS, cells_lr));
-  ghost_access_launcher.add_field(2, FID_CELL);
+  ghost_access_launcher.add_field(1, FID_DATA);
 
-  FutureMap fm7 = runtime->execute_index_space(context,ghost_access_launcher);
+  MustEpochLauncher must_epoch_launcher;
+  must_epoch_launcher.add_index_task(ghost_access_launcher);
+
+  FutureMap fm7 = runtime->execute_must_epoch(context,must_epoch_launcher);
   fm7.wait_all_results();
 
   for (unsigned idx = 0; idx < phase_barriers.size(); idx++)
