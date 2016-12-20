@@ -19,6 +19,8 @@
 // the same convention, e.g., -DFLECSI_RUNTIME_MODEL_new_runtime.
 ///
 
+#include "flecsi.h"
+
 // Serial Policy
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_serial
 
