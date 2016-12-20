@@ -66,20 +66,10 @@ mpi_task(
 
   index_partition_t ip_vertices;
 
-//  ip_vertices.primary = weaver.get_primary_vertices();
+  ip_vertices.primary = weaver.get_primary_vertices();
   ip_vertices.exclusive = weaver.get_exclusive_vertices();
   ip_vertices.shared = weaver.get_shared_vertices();
   ip_vertices.ghost  = weaver.get_ghost_vertices();
-
-  for (auto vert_s : ip_vertices.shared)
-   {
-     ip_vertices.primary.insert(vert_s.id);
-   }
-  for (auto vert_e : ip_vertices.exclusive)
-   {
-     ip_vertices.primary.insert(vert_e.id);
-   }
-
 #if 0
    std::cout <<"DEBUG CELLS"<<std::endl;
    size_t i=0;
