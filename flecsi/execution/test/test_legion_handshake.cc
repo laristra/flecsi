@@ -26,6 +26,9 @@
 
 using namespace flecsi::execution;
 
+extern int gtest_mpilegion_argc;
+extern char** gtest_mpilegion_argv;
+
 enum TaskIDs{
  TOP_LEVEL_TASK_ID         =0x00000100,
  HELLOWORLD_TASK_ID        =0x00000200,
@@ -67,7 +70,7 @@ void top_level_task(const Task *task,
                                TaskArgument(0, 0),
                                arg_map);
 
-  handshake.legion_wait_on_mpi();
+  
   must_epoch_launcher.add_index_task(helloworld_launcher);
   FutureMap f = runtime->execute_must_epoch(ctx, must_epoch_launcher);
 }
@@ -79,8 +82,9 @@ void helloworld_mpi_task (const Task *legiontask,
                       const std::vector<PhysicalRegion> &regions,
                       Context ctx, HighLevelRuntime *runtime)
 {
+  handshake.legion_wait_on_mpi();
   printf ("helloworld \n");
-   handshake.legion_handoff_to_mpi();
+  handshake.legion_handoff_to_mpi();
 }
 
 void my_init_legion(){
@@ -117,9 +121,13 @@ void my_init_legion(){
   char arguments[] = "1";
   char * argv = &arguments[0];
 
+  const bool strict_bulk_synchronous_execution = true;
+  if(strict_bulk_synchronous_execution)
+    MPI_Barrier(MPI_COMM_WORLD);
   // Start the Legion runtime in background mode
   // This call will return immediately
-  HighLevelRuntime::start(1, &argv, true/*background*/);
+  //HighLevelRuntime::start(1, &argv, true/*background*/);
+  HighLevelRuntime::start(gtest_mpilegion_argc, gtest_mpilegion_argv, true/*background*/);
    
   // Perform a handoff to Legion, this call is
   // asynchronous and will return immediately
@@ -131,6 +139,8 @@ void my_init_legion(){
   // This call will block until a Legion task
   // running in this same process hands control back
   handshake.mpi_wait_on_legion(); 
+  if(strict_bulk_synchronous_execution)
+    MPI_Barrier(MPI_COMM_WORLD);
 
   // When you're done wait for the Legion runtime to shutdown
   Runtime::wait_for_shutdown();
