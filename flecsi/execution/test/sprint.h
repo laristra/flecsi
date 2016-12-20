@@ -130,7 +130,7 @@ driver(
 )
 {
   context_t & context_ = context_t::instance();
-  size_t task_key = const_string_t{"driver"}.hash();
+  size_t task_key = utils::const_string_t{"driver"}.hash();
   auto runtime = context_.runtime(task_key);
   auto context = context_.context(task_key);
 
