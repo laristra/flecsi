@@ -254,25 +254,11 @@ shared_part_task(
     size_t indx=0;
     LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, vert_is);
     ptr_t start=itr.next();
-#if 0
-//debug
-size_t i=0;
-for (auto shared_vert : ip_vert.primary) {
-std::cout<<"primary["<<i<<"] = "<<shared_vert<< std::endl;
-i++;
-}
-#endif
-
-//debug
 
     for (auto shared_vert : ip_vert.shared) {
       ptr_t ptr = (start.value+shared_vert.offset);
       acc.write(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
       make_point(indx)),ptr);
-#if 0
-std::cout <<"DEBUG inside shared create= " <<shared_vert.id<< " , offset= "
-<<shared_vert.offset<<std::endl;
-#endif
       indx++;
     }//end for
 
@@ -441,7 +427,7 @@ ghost_part_task(
 
   field_id fid_vert_global = *(task->regions[1].privilege_fields.begin());
   LegionRuntime::HighLevel::LogicalRegion vert_lr =
-      regions[0].get_logical_region();
+      regions[1].get_logical_region();
   LegionRuntime::HighLevel::IndexSpace vert_is = vert_lr.get_index_space();
   LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
     acc_vert_global= regions[1].get_field_accessor(
