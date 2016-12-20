@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef TASK_IDS
-#define TASK_IDS
+#ifndef flecsi_execution_mpilegion_task_ids_h
+#define flecsi_execution_mpilegion_task_ids_h
 
 #include "flecsi/utils/common.h"
 
@@ -69,7 +69,7 @@ class task_ids_t
 }//namespace execution
 }//namespace flecsi
 
-#endif
+#endif //flecsi_execution_mpilegion_task_ids_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

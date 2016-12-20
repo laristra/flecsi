@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_dmp_parmetis_partitioner_h
-#define flecsi_dmp_parmetis_partitioner_h
+#ifndef flecsi_partition_parmetis_partitioner_h
+#define flecsi_partition_parmetis_partitioner_h
 
 #include "flecsi/partition/partitioner.h"
 
@@ -16,17 +16,17 @@
 #include "flecsi/partition/mpi_utils.h"
 
 ///
-// \file parmetis_partitioner.h
-// \authors bergen
-// \date Initial file creation: Nov 24, 2016
+/// \file
+/// \date Initial file creation: Nov 24, 2016
 ///
 
 namespace flecsi {
 namespace dmp {
 
 ///
-// \class parmetis_partitioner_t parmetis_partitioner.h
-// \brief parmetis_partitioner_t provides...
+/// \class partitioner_t parmetis_partitioner.h
+/// \brief partitioner_t provides a ParMETIS implementation of the
+///        partitioner_t interface.
 ///
 struct parmetis_partitioner_t
   : public partitioner_t
@@ -44,7 +44,7 @@ struct parmetis_partitioner_t
   ~parmetis_partitioner_t() {}
 
   ///
-  // Generate a primary partition using the ParMETIS library.
+  /// Implementation of partition method. See \ref partitioner_t::partition.
   ///
   std::set<size_t>
   partition(
@@ -231,7 +231,7 @@ struct parmetis_partitioner_t
 } // namespace dmp
 } // namespace flecsi
 
-#endif // flecsi_dmp_parmetis_partitioner_h
+#endif // flecsi_partition_parmetis_partitioner_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

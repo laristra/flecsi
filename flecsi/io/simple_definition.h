@@ -6,25 +6,26 @@
 #ifndef flecsi_io_simple_definition_h
 #define flecsi_io_simple_definition_h
 
+#include "flecsi/io/mesh_definition.h"
+
 #include <fstream>
 #include <unordered_map>
 #include <string>
 
-#include "flecsi/io/mesh_definition.h"
 #include "flecsi/utils/logging.h"
 
 ///
-// \file simple_definition.h
-// \authors bergen
-// \date Initial file creation: Nov 21, 2016
+/// \file
+/// \date Initial file creation: Nov 21, 2016
 ///
 
 namespace flecsi {
 namespace io {
 
 ///
-// \class simple_definition_t simple_definition.h
-// \brief simple_definition_t provides...
+/// \class simple_definition_t simple_definition.h
+/// \brief simple_definition_t provides a very basic implementation of
+///        the mesh_definition_t interface.
 ///
 class simple_definition_t
   : public mesh_definition_t
@@ -74,7 +75,7 @@ public:
   size_t num_cells() { return num_cells_; }
 
   ///
-  //
+  ///
   ///
   std::vector<size_t>
   vertices( 
@@ -108,6 +109,9 @@ public:
     return ids;
   } // vertices
 
+  ///
+  ///
+  ///
   std::set<size_t>
   vertices_set(
     size_t cell_id
@@ -118,7 +122,7 @@ public:
   }
 
   ///
-  //
+  ///
   ///
   point_t
   vertex(

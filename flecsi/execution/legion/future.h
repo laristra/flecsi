@@ -29,7 +29,7 @@
 namespace flecsi {
 namespace execution {
 
-#if defined(FLECSI_RUNTIME_MODEL_mpilegion)
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
 // Dummy type for future specialization selection.
 struct mpitask_t {};
 #endif // FLECSI_RUNTIME_MODEL_mpilegion
@@ -159,7 +159,7 @@ private:
 
 }; // struct legion_future_model__
 
-#if defined(FLECSI_RUNTIME_MODEL_mpilegion)
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
 ///
 // Partial specialization for mpi task
 ///
@@ -209,7 +209,7 @@ private:
 
 }; // struct legion_future_model__
 
-#if defined(FLECSI_RUNTIME_MODEL_mpilegion)
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
 ///
 // Explicit specialization for mpi task and void
 ///

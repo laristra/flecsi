@@ -609,14 +609,14 @@ struct storage_type_t<dense, DS, MD>
 
   /// \brief Return a list of all dense_accessor_t's filtered by a predicate.
   ///
-  /// \param [in] data_client  The data client to restrict our search to.
-  /// \param [in] data_store   The data store to search.
-  /// \param [in] version   The version to select.
-  /// \param [in] predicate   If \e predicate(a) returns true, add the accessor
-  ///                         to the list.
-  /// \param [in] sorted  If true, sort the results by label lexographically.
+  /// \param [in] data_client The data client to restrict our search to.
+  /// \param [in] data_store The data store to search.
+  /// \param [in] version The version to select.
+  /// \param [in] predicate If \e predicate(a) returns true, add the accessor
+  ///                       to the list.
+  /// \param [in] sorted If true, sort the results by label lexographically.
   ///
-  /// \remark This version is confined to search within a single namespace
+  /// \remark This version is confined to search within a single namespace.
   template<
     typename T,
     size_t NS,

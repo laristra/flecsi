@@ -53,7 +53,6 @@ void top_level_task(const Task *task,
       printf("MPI Rank %d maps to Legion Address Space %d\n",
             it->first, it->second);
  
-
   int rank = -1, size = -1;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -67,7 +66,6 @@ void top_level_task(const Task *task,
                                TaskArgument(0, 0),
                                arg_map);
 
-  handshake.legion_wait_on_mpi();
   must_epoch_launcher.add_index_task(helloworld_launcher);
   FutureMap f = runtime->execute_must_epoch(ctx, must_epoch_launcher);
 }
@@ -79,6 +77,7 @@ void helloworld_mpi_task (const Task *legiontask,
                       const std::vector<PhysicalRegion> &regions,
                       Context ctx, HighLevelRuntime *runtime)
 {
+   handshake.legion_wait_on_mpi();
   printf ("helloworld \n");
    handshake.legion_handoff_to_mpi();
 }

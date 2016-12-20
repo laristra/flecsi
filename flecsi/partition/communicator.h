@@ -3,24 +3,35 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_dmp_communicator_h
-#define flecsi_dmp_communicator_h
+#ifndef flecsi_partition_communicator_h
+#define flecsi_partition_communicator_h
 
+#include <set>
 ///
-// \file communicator.h
-// \authors bergen
-// \date Initial file creation: Dec 06, 2016
+/// \file
+/// \date Initial file creation: Dec 06, 2016
 ///
 
 namespace flecsi {
 namespace dmp {
 
+///
+/// Type for passing partition information about a single entity.
+///
 struct entry_info_t {
   size_t id;
   size_t rank;
   size_t offset;
   std::set<size_t> shared;
   
+  ///
+  /// Constructor.
+  ///
+  /// \param id_ The entity id. This is generally specified by the
+  ///            graph definition.
+  /// \param rank_ The rank that owns this entity.
+  /// \param offset_ The local id or offset of the entity.
+  ///
   entry_info_t(
     size_t id_ = 0,
     size_t rank_ = 0,
@@ -29,7 +40,10 @@ struct entry_info_t {
   )
     : id(id_), rank(rank_), offset(offset_), shared(shared_) {}
 
-  // Sort cell info by id.
+  ///
+  /// Comparision operator for container insertion. This sorts by the
+  /// entity id, e.g., as set by the id_ parameter to the constructor.
+  ///
   bool
   operator < (
     const entry_info_t & c
@@ -40,6 +54,9 @@ struct entry_info_t {
 
 }; // struct entry_info_t
 
+///
+/// Helper function to output an entry_info_t.
+///
 inline
 std::ostream &
 operator << (
@@ -55,8 +72,10 @@ operator << (
 } // operator <<
 
 ///
-// \class communicator_t communicator.h
-// \brief communicator_t provides...
+/// \class communicator_t communicator.h
+/// \brief communicator_t provides an interface for communicating
+///        graph information between different distributed-memory
+///        execution instances.
 ///
 class communicator_t
 {
@@ -108,7 +127,7 @@ private:
 } // namespace dmp
 } // namespace flecsi
 
-#endif // flecsi_dmp_communicator_h
+#endif // flecsi_partition_communicator_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

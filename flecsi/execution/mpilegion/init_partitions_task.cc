@@ -16,7 +16,7 @@
 
 #include "flecsi/execution/context.h"
 #include "flecsi/partition/index_partition.h"
-#include "flecsi/partition/init_partitions_task.h"
+#include "flecsi/execution/mpilegion/init_partitions_task.h"
 
 namespace flecsi {
 namespace dmp {
@@ -622,7 +622,7 @@ check_partitioning_task(
       bool found=false;
       size_t ghost_id = acc_ghost.read(ptr);
       for (auto ghost_cell : ip.ghost) {
-        if (ghost_cell.id = ghost_id){
+        if (ghost_cell.id == ghost_id){
           found=true;
         }
       }
@@ -691,7 +691,7 @@ check_partitioning_task(
       bool found=false;
       size_t ghost_id = acc_ghost.read(ptr);
       for (auto ghost_cell : ip.ghost) {
-        if (ghost_cell.id = ghost_id){
+        if (ghost_cell.id == ghost_id){
           found=true;
         }
       }

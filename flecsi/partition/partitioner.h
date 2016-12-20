@@ -3,23 +3,24 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_dmp_partitioner_h
-#define flecsi_dmp_partitioner_h
+#ifndef flecsi_partition_partitioner_h
+#define flecsi_partition_partitioner_h
 
 #include "flecsi/partition/dcrs.h"
 
 ///
-// \file partitioner.h
-// \authors bergen
-// \date Initial file creation: Nov 24, 2016
+/// \file
+/// \date Initial file creation: Nov 24, 2016
 ///
 
 namespace flecsi {
 namespace dmp {
 
 ///
-// \class partitioner_t partitioner.h
-// \brief partitioner_t provides...
+/// \class partitioner_t partitioner.h
+/// \brief partitioner_t provides an interface for creating distributed-memory
+///                      partitions from a distributed, compressed-row-storage
+///                      graph representation.
 ///
 class partitioner_t
 {
@@ -37,6 +38,17 @@ public:
   /// Destructor
   virtual ~partitioner_t() {}
 
+  ///
+  /// This method takes a distributed, compressed-row-storage representation
+  /// of a graph and returns the indepdentent partitioning on a per
+  /// execution instance basis, e.g., for each rank or task.
+  ///
+  /// \param dcrs A distributed, compressed-row-storage representation
+  ///             of the graph to partition.
+  ///
+  /// \return The set of indices that belong to the current execution
+  ///         instance.
+  ///
   virtual
   std::set<size_t>
   partition(
@@ -50,7 +62,7 @@ private:
 } // namespace dmp
 } // namespace flecsi
 
-#endif // flecsi_dmp_partitioner_h
+#endif // flecsi_partition_partitioner_h
  
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

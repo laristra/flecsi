@@ -35,7 +35,7 @@
 #include "flecsi/execution/common/task_hash.h"
 #include "flecsi/execution/mpilegion/legion_handshake.h"
 #include "flecsi/execution/mpilegion/mpi_legion_interop.h"
-#include "flecsi/partition/init_partitions_task.h"
+#include "flecsi/execution/mpilegion/init_partitions_task.h"
 
 namespace flecsi {
 namespace execution {

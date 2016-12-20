@@ -16,11 +16,14 @@ if(ENABLE_PARTITION)
 
 set(partition_HEADERS
   index_partition.h
-  init_partitions_task.h
   partitioner.h
   PARENT_SCOPE
 )
 
+#FIXME: remove the check for Parmetis when there are other kinds of partitioner
+#implemented
+
+if(PARMETIS_FOUND)
 cinch_add_unit(dcrs
   SOURCES test/dcrs.cc
   INPUTS
@@ -31,10 +34,6 @@ cinch_add_unit(dcrs
   THREADS 5
 )
 
-#FIXME: remove the check for Parmetis when there are other kinds of partitioner
-#implemented
-
-if(PARMETIS_FOUND)
 cinch_add_unit(partition
   SOURCES test/partition.cc
   INPUTS
@@ -60,20 +59,6 @@ cinch_add_unit(weaver
 )
 endif(PARMETIS_FOUND)
 
-# Add MPI/Legion specific files
-
-if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
-
-list(APPEND partition_HEADERS
-  init_partitions_task.h
-)
-
-set(partition_SOURCES
-  init_partitions_task.cc
-  PARENT_SCOPE
-)
-
-endif()
 
 #cinch_add_unit(partition
 #  SOURCES test/partition.cc

@@ -3,22 +3,21 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_dmp_dcrs_h
-#define flecsi_dmp_dcrs_h
+#ifndef flecsi_partition_dcrs_h
+#define flecsi_partition_dcrs_h
 
 #include <vector>
 
 ///
-// \file dcrs.h
-// \authors bergen
-// \date Initial file creation: Nov 24, 2016
+/// \file
+/// \date Initial file creation: Nov 24, 2016
 ///
 
 namespace flecsi {
 namespace dmp {
 
 ///
-// Convenience macro to avoid having to reimplement this for each member.
+/// Convenience macro to avoid having to reimplement this for each member.
 ///
 #define define_dcrs_as(member)                                                 \
   template<                                                                    \
@@ -31,12 +30,22 @@ namespace dmp {
     return asvec;                                                              \
   } // member ## _as
 
+///
+/// \struct dcrs_t
+/// \brief This type is a container for distributed, compressed-row-storage
+///        information about a graph object. It can be passed to certain
+///        partitioning libraries to generate partitioned data regions.
+///
 struct dcrs_t
 {
   define_dcrs_as(offsets)
   define_dcrs_as(indices)
   define_dcrs_as(distribution)
 
+  ///
+  /// Return the number of entities for which this onject contains
+  /// adjacency information.
+  ///
   size_t
   size() const
   {
@@ -48,6 +57,9 @@ struct dcrs_t
   std::vector<size_t> distribution;
 }; // struct dcrs_t
 
+///
+/// Helper function to print a dcrs_t instance.
+///
 std::ostream &
 operator <<
 (
@@ -78,7 +90,7 @@ operator <<
 } // namespace dmp
 } // namespace flecsi
 
-#endif // flecsi_dmp_dcrs_h
+#endif // flecsi_partition_dcrs_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

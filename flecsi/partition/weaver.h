@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_dmp_weaver_h
-#define flecsi_dmp_weaver_h
+#ifndef flecsi_partition_weaver_h
+#define flecsi_partition_weaver_h
 
 #include "flecsi/io/simple_definition.h"
 #include "flecsi/partition/dcrs_utils.h"
@@ -254,4 +254,4 @@ public:
 } // namespace dmp
 } // namespace flecsi
 
-#endif // flecsi_dmp_weaver_h
+#endif // flecsi_partition_weaver_h

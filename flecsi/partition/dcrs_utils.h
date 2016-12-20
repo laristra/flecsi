@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_dmp_dcrs_utils_h
-#define flecsi_dmp_dcrs_utils_h
+#ifndef flecsi_partition_dcrs_utils_h
+#define flecsi_partition_dcrs_utils_h
 
 #include <mpi.h>
 
@@ -13,9 +13,8 @@
 #include "flecsi/partition/dcrs.h"
 
 ///
-// \file dcrs_utils.h
-// \authors bergen
-// \date Initial file creation: Nov 24, 2016
+/// \file
+/// \date Initial file creation: Nov 24, 2016
 ///
 
 namespace flecsi {
@@ -57,7 +56,7 @@ naive_partitioning(
 } // naive_partitioning
 
 ///
-// \param md The mesh definition.
+/// \param md The mesh definition.
 ///
 dcrs_t
 make_dcrs(
@@ -158,7 +157,7 @@ make_dcrs(
 } // namespace dmp
 } // namespace flecsi
 
-#endif // flecsi_dmp_dcrs_utils_h
+#endif // flecsi_partition_dcrs_utils_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_context_h
-#define flecsi_context_h
+#ifndef flecsi_execution_context_h
+#define flecsi_execution_context_h
 
 #include <cstddef>
 
@@ -123,7 +123,7 @@ using context_t = context__<flecsi_context_policy_t>;
 } //namespace execution 
 } // namespace flecsi
 
-#endif // flecsi_context_h
+#endif // flecsi_execution_context_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

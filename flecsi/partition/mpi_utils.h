@@ -9,9 +9,8 @@
 #include <mpi.h>
 
 ///
-// \file mpi_utils.h
-// \authors bergen
-// \date Initial file creation: Nov 23, 2016
+/// \file
+/// \date Initial file creation: Nov 23, 2016
 ///
 
 namespace flecsi {
