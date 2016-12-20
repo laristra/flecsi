@@ -9,17 +9,16 @@
 #include "flecsi/geometry/point.h"
 
 ///
-// \file mesh_definition.h
-// \authors bergen
-// \date Initial file creation: Nov 17, 2016
+/// \file
+/// \date Initial file creation: Nov 17, 2016
 ///
 
 namespace flecsi {
 namespace io {
 
 ///
-// \class mesh_definition_t mesh_definition.h
-// \brief mesh_definition_t provides...
+/// \class mesh_definition_t mesh_definition.h
+/// \brief mesh_definition_t provides...
 ///
 class mesh_definition_t
 {

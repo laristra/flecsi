@@ -97,7 +97,7 @@ struct sparse_accessor_t
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using iterator_t = index_space_t::iterator_t;
+  using iterator_t = utils::index_space_t::iterator_t;
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
@@ -305,7 +305,7 @@ struct sparse_mutator_t {
   // Type definitions.
   //--------------------------------------------------------------------------//
   
-  using iterator_t = index_space_t::iterator_t;
+  using iterator_t = utils::index_space_t::iterator_t;
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
@@ -622,7 +622,7 @@ struct storage_type_t<sparse, DS, MD> {
   register_data(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const const_string_t & key,
+    const utils::const_string_t & key,
     size_t versions,
     size_t index_space,
     size_t num_entries,
@@ -669,7 +669,7 @@ struct storage_type_t<sparse, DS, MD> {
   get_accessor(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const const_string_t & key,
+    const utils::const_string_t & key,
     size_t version
   )
   {
@@ -701,7 +701,7 @@ struct storage_type_t<sparse, DS, MD> {
   get_mutator(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const const_string_t & key,
+    const utils::const_string_t & key,
     size_t slots,
     size_t version
   )
@@ -735,7 +735,7 @@ struct storage_type_t<sparse, DS, MD> {
   get_handle(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const const_string_t & key,
+    const utils::const_string_t & key,
     size_t version
   )
   {

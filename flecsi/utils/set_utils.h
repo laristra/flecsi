@@ -9,23 +9,23 @@
 #include <set>
 
 ///
-// \file set_utils.h
-// \authors bergen
-// \date Initial file creation: Nov 21, 2016
+/// \file set_utils.h
+/// \authors bergen
+/// \date Initial file creation: Nov 21, 2016
 ///
 
 namespace flecsi {
 namespace utils {
 
 ///
-// Convenience function wrapper around std::set_intersection function. This
-// version computes the intersection of two sets and returns the result
-// as a set.
-//
-// \param s1 The first set of the intersection.
-// \param s2 The second set of the intersection.
-//
-// \return A set containing the intersection of s1 with s2.
+/// Convenience function wrapper around std::set_intersection function. This
+/// version computes the intersection of two sets and returns the result
+/// as a set.
+///
+/// \param s1 The first set of the intersection.
+/// \param s2 The second set of the intersection.
+///
+/// \return A set containing the intersection of s1 with s2.
 ///
 inline
 std::set<size_t>
@@ -43,14 +43,14 @@ set_intersection(
 } // set_intersection
 
 ///
-// Convenience function wrapper around std::set_union function. This
-// version computes the union of two sets and returns the result
-// as a set.
-//
-// \param s1 The first set of the union.
-// \param s2 The second set of the union.
-//
-// \return A set containing the union of s1 with s2.
+/// Convenience function wrapper around std::set_union function. This
+/// version computes the union of two sets and returns the result
+/// as a set.
+///
+/// \param s1 The first set of the union.
+/// \param s2 The second set of the union.
+///
+/// \return A set containing the union of s1 with s2.
 ///
 inline
 std::set<size_t>
@@ -68,14 +68,14 @@ set_union(
 } // set_union
 
 ///
-// Convenience function wrapper around std::set_difference function. This
-// version computes the difference of two sets and returns the result
-// as a set.
-//
-// \param s1 The first set of the difference.
-// \param s2 The second set of the difference.
-//
-// \return A set containing the difference of s1 with s2.
+/// Convenience function wrapper around std::set_difference function. This
+/// version computes the difference of two sets and returns the result
+/// as a set.
+///
+/// \param s1 The first set of the difference.
+/// \param s2 The second set of the difference.
+///
+/// \return A set containing the difference of s1 with s2.
 ///
 inline
 std::set<size_t>

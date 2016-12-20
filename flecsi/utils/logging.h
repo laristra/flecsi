@@ -18,13 +18,18 @@
 #include <cinchlog.h>
 
 /*!
- * \file logging.h
- * \authors bergen
+ * \file
  * \date Initial file creation: Dec 10, 2016
  */
 
+namespace flecsi {
+namespace utils {
+
 // For the time being, we are just going to directly use the cinch clog
 // interface.
+
+} // namespace utils
+} // namespace flecsi
 
 #endif // flecsi_utils_logging_h
 

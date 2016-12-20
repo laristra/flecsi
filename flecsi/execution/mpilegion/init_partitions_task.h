@@ -3,9 +3,12 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_partition_init_partitions_task_h
-#define flecsi_partition_init_partitions_task_h
+#ifndef flecsi_execution_mpilegion_init_partitions_task_h
+#define flecsi_execution_mpilegion_init_partitions_task_h
 
+using namespace LegionRuntime::HighLevel;
+
+#include <legion.h>
 ///
 /// \file
 /// \date Initial file creation: Dec 19, 2016
@@ -35,6 +38,30 @@ struct parts {
 struct partition_lr{
   Legion::LogicalRegion cells;
   Legion::LogicalRegion vert;
+};
+
+struct SPMDArgs {
+    PhaseBarrier pbarrier_as_master;
+    std::vector<PhaseBarrier> masters_pbarriers;
+};
+
+class ArgsSerializer {
+public:
+    ArgsSerializer() {bit_stream = nullptr; bit_stream_size = 0; free_bit_stream = false;}
+    ~ArgsSerializer() {if (free_bit_stream) free(bit_stream);}
+    void* getBitStream();
+    size_t getBitStreamSize();
+    void setBitStream(void* bit_stream);
+protected:
+    void* bit_stream;
+    size_t bit_stream_size;
+    bool free_bit_stream;
+};
+
+class SPMDArgsSerializer : public ArgsSerializer {
+public:
+    void archive(SPMDArgs* spmd_args);
+    void restore(SPMDArgs* spmd_args);
 };
 
 parts 
@@ -79,10 +106,17 @@ check_partitioning_task(
   Legion::Context ctx, Legion::HighLevelRuntime *runtime
 );
 
+void
+ghost_access_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+);
+
 } // namespace dmp
 } // namespace flecsi
 
-#endif // flecsi_partition_init_partitions_task_h
+#endif // flecsi_execution_mpilegion_init_partitions_task_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

@@ -56,7 +56,6 @@ void top_level_task(const Task *task,
       printf("MPI Rank %d maps to Legion Address Space %d\n",
             it->first, it->second);
  
-
   int rank = -1, size = -1;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -70,7 +69,6 @@ void top_level_task(const Task *task,
                                TaskArgument(0, 0),
                                arg_map);
 
-  
   must_epoch_launcher.add_index_task(helloworld_launcher);
   FutureMap f = runtime->execute_must_epoch(ctx, must_epoch_launcher);
 }

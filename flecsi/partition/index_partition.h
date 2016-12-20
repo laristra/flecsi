@@ -36,10 +36,13 @@ struct index_partition__
 
   // Vector of mesh ids of the primary partition
   std::set<size_t> primary;
+
   // Vector of entry_info_t type of the exclusive partition
   std::set<entry_info_t > exclusive;
+
   // Vector of entry_info_t type of the shared partition
   std::set<entry_info_t> shared;
+
   // Vector of entry_info_t type of the ghost partition
   std::set<entry_info_t> ghost;
 

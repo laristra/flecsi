@@ -255,7 +255,7 @@ struct mpilegion_execution_policy_t
   static
   bool
   register_function(
-    const const_string_t & key,
+    const utils::const_string_t & key,
     std::function<R(As ...)> & user_function
   )
   {

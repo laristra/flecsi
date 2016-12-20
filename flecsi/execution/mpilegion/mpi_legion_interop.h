@@ -12,17 +12,17 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef mpi_legion_interop_h
-#define mpi_legion_interop_h
+#ifndef flecsi_execution_mpilegion_mpi_legion_interop_h
+#define flecsi_execution_mpilegion_mpi_legion_interop_h
 
+#include <cstdio>
+#include <condition_variable>
+#include <mutex>
 #include <iostream>
 #include <string>
-#include <cstdio>
-#include <mutex>
-#include <condition_variable>
 
-#include <mpi.h>
 #include <legion.h>
+#include <mpi.h>
 #include <realm.h>
 
 #include "flecsi/execution/mpilegion/legion_handshake.h"
@@ -32,20 +32,18 @@
 #include "flecsi/utils/any.h"
 
 ///
-// \file mpilegion/mpi_legion_interop.h
-// \authors demeshko
-// \date Initial file creation: Jul 2016
+/// \file 
+/// \date Initial file creation: Jul 2016
 ///
 
 namespace flecsi{
 namespace execution{
 
 //----------------------------------------------------------------------------//
-///
-// a legion task that calls legion_handoff_to_ext function from handshake
-// class that switches form Legion to MPI runtime. This task is an 
-// index task that will be executed on as many processes as MPI 
-// has been called from.
+/// A legion task that calls legion_handoff_to_ext function from
+/// the handshake class that switches form Legion to MPI runtime. 
+/// This task is an index task that will be executed on as 
+/// many processes as MPI has been called from.
 ///
 //----------------------------------------------------------------------------//
 
@@ -63,7 +61,7 @@ std::cout <<"inside handoff_to_mpi task" <<std::endl;
 
 //----------------------------------------------------------------------------//
 ///
-// a legion task that waits for every MPI thread to finish
+/// A legion task that waits for every MPI thread to finish
 ///
 //----------------------------------------------------------------------------//
 
@@ -81,10 +79,10 @@ wait_on_mpi_task(
 
 //----------------------------------------------------------------------------//
 ///
-// In purpose to tell MPI runtime that there is an MPI task that has to be 
-// executed, we have to switch call_mpi boolian variable on every MPI thread.
-// his task is an index task that will be executed on as many processes as MPI 
-// has been called from.
+/// In purpose to tell MPI runtime that there is an MPI task that has to be 
+/// executed, we have to switch call_mpi boolian variable on every MPI thread.
+/// his task is an index task that will be executed on as many processes as MPI 
+/// has been called from.
 ///
 //----------------------------------------------------------------------------//
 
@@ -103,37 +101,38 @@ unset_call_mpi_task(
 
 //----------------------------------------------------------------------------//
 ///
-// mpi_legion_interop class is used to wrap legion-mpi handshaking routines 
-// in a FLeCSI-friendly interface
+/// \class mpi_legion_interop
+/// mpi_legion_interop class is used to wrap legion-mpi handshaking routines 
+/// in a FLeCSI-friendly interface
 ///
 //----------------------------------------------------------------------------//
 
 struct mpi_legion_interop_t
 {
   ///
-  // Constructor.
+  /// Constructor.
   ///
   mpi_legion_interop_t() {};
 
   ///
-  // Copy constructor.
+  /// Copy constructor.
   ///
   mpi_legion_interop_t(const mpi_legion_interop_t &) = delete;
 
   ///
-  // Assign operator.
+  /// Assign operator.
   ///
   mpi_legion_interop_t& operator=(const mpi_legion_interop_t &) = delete;
 
   /// 
-  // Destructor.
-  //
+  /// Destructor.
+  ///
   ~mpi_legion_interop_t() {};
 
   ///
-  // Initialze() method needs to be called before we start Legion runtime. 
-  // The method load a customized mapper that is tuned for MPI-Legion 
-  // interoperability.
+  /// Initialze() method needs to be called before we start Legion runtime. 
+  /// The method load a customized mapper that is tuned for MPI-Legion 
+  /// interoperability.
   ///
   void
   initialize()
@@ -144,10 +143,10 @@ struct mpi_legion_interop_t
   } // initialize
  
   ///
-  // This method is used to communicate to  MPI runtime that there is an
-  // MPI task that has to be executed after we switches from Legion to 
-  // MPI. It launches legion Index task that switches call_mpi variable
-  // to true for every MPI process
+  /// This method is used to communicate to  MPI runtime that there is an
+  /// MPI task that has to be executed after we switches from Legion to 
+  /// MPI. It launches legion Index task that switches call_mpi variable
+  /// to true for every MPI process
   ///
   void
   unset_call_mpi(
@@ -172,9 +171,9 @@ struct mpi_legion_interop_t
 	}//unset_call_mpi
  
   ///
-  // This method creates pthreads mutex on the MPI side and, in case handshake 
-  // is originally created in MPI, waits on when handshake is created on
-  // the Legion side.
+  /// This method creates pthreads mutex on the MPI side and, in case handshake 
+  /// is originally created in MPI, waits on when handshake is created on
+  /// the Legion side.
   ///
   void
   legion_configure()
@@ -185,7 +184,7 @@ struct mpi_legion_interop_t
   } // legion_configure
 
   ///
-  // Swithches mutex to Legion runtime.
+  /// This method swithches mutex to Legion runtime.
   ///
   void 
   handoff_to_legion()
@@ -194,7 +193,7 @@ struct mpi_legion_interop_t
   } // handoff_to_legion
 
   ///
-  // Wait untill mutex switched to MPI runtime and run MPI.
+  /// This method waits untill mutex switched to MPI runtime and run MPI.
   ///
   void 
   wait_on_legion()
@@ -203,7 +202,8 @@ struct mpi_legion_interop_t
   } // wait_on_legion
 
   ///
-  // Register all Legion tasks used in the mpi_legion_interop_t class.
+  /// This method registers all Legion tasks used in the mpi_legion_interop_t 
+  ///class.
   ///
   static
 	void 
@@ -238,8 +238,8 @@ struct mpi_legion_interop_t
 	}//register_tasks
 
   ///
-  // Helper function that calculates number of availabe processes (the number
-  // of processes that MPI has been called from).
+  /// Helper function that calculates number of availabe processes (the number
+  /// of processes that MPI has been called from).
   ///
   void 
   calculate_number_of_procs ()
@@ -250,8 +250,8 @@ struct mpi_legion_interop_t
 	}//calculate_number_of_procs
 
   ///
-  // Calls a legion's index task that created User Events/Queques for 
-  // synchronization between MPI and Legion. 
+  /// This method calls a legion's set-up handhsking between mpi and legion
+  /// on the legion side
   ///
   void 
   connect_with_mpi(
@@ -274,7 +274,7 @@ struct mpi_legion_interop_t
 
 
   ///
-  // This method calls an Index task that switches form Legion to MPI runtime.
+  /// This method calls an Index task that switches form Legion to MPI runtime.
   ///
   void 
   handoff_to_mpi(
@@ -297,8 +297,8 @@ struct mpi_legion_interop_t
 	} // handoff_to_mpi
  
   ///
-  // This method waits on all MPI processes to finish all tasks and
-  // switch to Legion runtime
+  /// This method waits on all MPI processes to finish all tasks and
+  /// switch to Legion runtime
   ///
   LegionRuntime::HighLevel::FutureMap 
   wait_on_mpi(
@@ -330,7 +330,7 @@ struct mpi_legion_interop_t
 } // namespace execution
 } // namespace flecsi
 
-#endif // mpi_legion_interop_h
+#endif // flecsi_execution_mpilegion_mpi_legion_interop_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

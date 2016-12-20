@@ -11,8 +11,8 @@
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
-#ifndef _MPI_MAPPERS_H_
-#define _MPI_MAPPERS_H_
+#ifndef flecsi_execution_mpilegion_mapper_h
+#define flecsi_execution_mpilegion_mapper_h
 
 #include <legion.h>
 #include "task_ids.h"
@@ -287,7 +287,7 @@ mapper_registration(
 }//namespace flecsi
 
 
-#endif
+#endif //flecsi_execution_mpilegion_maper_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

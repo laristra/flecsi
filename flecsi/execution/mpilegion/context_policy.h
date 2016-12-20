@@ -15,16 +15,15 @@
 #ifndef flecsi_execution_mpilegion_context_policy_h
 #define flecsi_execution_mpilegion_context_policy_h
 
-/*!
- * \file mpilegion/context_policy.h
- * \authors bergen
- * \date Initial file creation: Jul 14, 2016
- */
+///
+/// \file mpilegion/context_policy.h
+/// \date Initial file creation: Jul 14, 2016
+///
 
-#include <memory>
 #include <functional>
-#include <unordered_map>
+#include <memory>
 #include <stack>
+#include <unordered_map>
 
 #include <legion.h>
 
@@ -35,16 +34,16 @@
 #include "flecsi/execution/common/task_hash.h"
 #include "flecsi/execution/mpilegion/legion_handshake.h"
 #include "flecsi/execution/mpilegion/mpi_legion_interop.h"
-#include "flecsi/partition/init_partitions_task.h"
+#include "flecsi/execution/mpilegion/init_partitions_task.h"
 
 namespace flecsi {
 namespace execution {
 
 ///
-// \struct legion_runtime_runtime_state_t legion/context_policy.h
-// \brief legion_runtime_state_t provides storage for Legion runtime
-//        information that can be reinitialized as needed to store const
-//        data types and references as required by the Legion runtime.
+/// \struct legion_runtime_runtime_state_t legion/context_policy.h
+/// \brief legion_runtime_state_t provides storage for Legion runtime
+///        information that can be reinitialized as needed to store const
+///        data types and references as required by the Legion runtime.
 ///
 struct legion_runtime_state_t {
 
@@ -76,8 +75,8 @@ static thread_local std::unordered_map<size_t,
   std::stack<std::shared_ptr<legion_runtime_state_t>>> state_;
 
 ///
-// \class mpilegion_context_policy_t mpilegion/context_policy.h
-// \brief mpilegion_context_policy_t provides...
+/// \class mpilegion_context_policy_t mpilegion/context_policy.h
+/// \brief mpilegion_context_policy_t provides...
 ///
 struct mpilegion_context_policy_t
 {
@@ -94,9 +93,9 @@ struct mpilegion_context_policy_t
 
   mpi_legion_interop_t interop_helper_;
 
-  /*--------------------------------------------------------------------------*
-   * Initialization.
-   *--------------------------------------------------------------------------*/
+  //-------------------------------------------------------------------------*
+  /// Initialization.
+  //-------------------------------------------------------------------------*/
 
   int
   initialize(
@@ -144,6 +143,9 @@ struct mpilegion_context_policy_t
     lr_runtime_t::register_legion_task<flecsi::dmp::check_partitioning_task>(
       task_ids_t::instance().check_partitioning_task_id,lr_loc, false, true); 
 
+    lr_runtime_t::register_legion_task<flecsi::dmp::ghost_access_task>(
+      task_ids_t::instance().ghost_access_task_id,lr_loc, false, true);
+
     // register handoff_to_mpi_task from mpi_legion_interop_t class
     lr_runtime_t::register_legion_task<handoff_to_mpi_task>(
       task_ids_t::instance().handoff_to_mpi_task_id, lr_loc,
@@ -173,7 +175,7 @@ struct mpilegion_context_policy_t
       f.second.second(f.second.first);
     } // for
   
-    // FIXME: Documentation!
+    //initialize a helper class for mpi-legion interoperability
     interop_helper_.initialize();  
 
     interop_helper_.legion_configure();
@@ -251,16 +253,17 @@ struct mpilegion_context_policy_t
   } // set_state
 #endif
 
-  /*--------------------------------------------------------------------------*
-   * Task registraiton.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------*
+  // Task registraiton.
+  //--------------------------------------------------------------------------*/
 
   using task_id_t = LegionRuntime::HighLevel::TaskID;
   using register_function_t = std::function<void(size_t)>;
-  using unique_fid_t = unique_id_t<task_id_t>;
+  using unique_fid_t = utils::unique_id_t<task_id_t>;
 
-  /*!
-   */
+  ///
+  /// FIXME documentation
+  ///
   bool
   register_task(
     task_hash_key_t key,
@@ -275,8 +278,9 @@ struct mpilegion_context_policy_t
     return false;
   } // register_task
 
-  /*!
-   */
+  ///
+  /// FIXME documentation
+  ///
   task_id_t
   task_id(
     task_hash_key_t key
@@ -288,16 +292,17 @@ struct mpilegion_context_policy_t
     return task_registry_[key].first;
   } // task_id
 
-  /*--------------------------------------------------------------------------*
-   * Function registraiton.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------*
+  // Function registraiton.
+  //--------------------------------------------------------------------------*/
 
-  /*!
-   */
+  ///
+  /// FIXME documentation
+  /// 
   template<typename T>
   bool
   register_function(
-    const const_string_t & key,
+    const utils::const_string_t & key,
     T & function
   )
   {
@@ -311,8 +316,9 @@ struct mpilegion_context_policy_t
     return false;
   } // register_function
   
-  /*!
-   */
+  ///
+  /// FIXME documentation
+  ///
   std::function<void(void)> *
   function(
     size_t key
@@ -321,9 +327,9 @@ struct mpilegion_context_policy_t
     return function_registry_[key];
   } // function
 
-  /*--------------------------------------------------------------------------*
-   * Legion runtime accessors.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------*
+  // Legion runtime accessors.
+  //--------------------------------------------------------------------------*/
 
   LegionRuntime::HighLevel::Context &
   context(
@@ -361,18 +367,18 @@ struct mpilegion_context_policy_t
   
 private:
 
-  /*--------------------------------------------------------------------------*
-   * Task registry
-   *-------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------*
+  // Task registry
+  //-------------------------------------------------------------------------*/
 
   // Define the map type using the task_hash_t hash function.
   std::unordered_map<task_hash_t::key_t,
     std::pair<task_id_t, register_function_t>,
     task_hash_t> task_registry_;
 
-  /*--------------------------------------------------------------------------*
-   * Function registry
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------*
+  // Function registry
+  //--------------------------------------------------------------------------*/
 
   std::unordered_map<size_t, std::function<void(void)> *>
     function_registry_;

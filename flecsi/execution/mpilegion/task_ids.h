@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef TASK_IDS
-#define TASK_IDS
+#ifndef flecsi_execution_mpilegion_task_ids_h
+#define flecsi_execution_mpilegion_task_ids_h
 
 #include "flecsi/utils/common.h"
 
@@ -52,7 +52,7 @@ class task_ids_t
    }
 
   using task_id_t = LegionRuntime::HighLevel::TaskID;
-  using unique_fid_t = flecsi::unique_id_t<task_id_t>;
+  using unique_fid_t = flecsi::utils::unique_id_t<task_id_t>;
   size_t connect_mpi_task_id  = unique_fid_t::instance().next();
   size_t handoff_to_mpi_task_id = unique_fid_t::instance().next();
   size_t wait_on_mpi_task_id  = unique_fid_t::instance().next();
@@ -64,12 +64,13 @@ class task_ids_t
   size_t exclusive_part_task_id = unique_fid_t::instance().next();
   size_t ghost_part_task_id = unique_fid_t::instance().next();
   size_t check_partitioning_task_id = unique_fid_t::instance().next();
+  size_t ghost_access_task_id = unique_fid_t::instance().next();
 };//task_ids_t
 
 }//namespace execution
 }//namespace flecsi
 
-#endif
+#endif //flecsi_execution_mpilegion_task_ids_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

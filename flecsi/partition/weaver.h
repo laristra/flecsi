@@ -49,8 +49,6 @@ public:
     // Create the primary partition.
     //auto primary = partitioner->partition(dcrs);
     primary_cells = partitioner->partition(dcrs);
-    //filling out primary partition for vertices
-    primary_vertices = flecsi::io::vertex_closure(sd, primary_cells);
 
     // Compute the dependency closure of the primary cell partition
     // through vertex intersections (specified by last argument "1").
@@ -199,8 +197,12 @@ public:
       } // if
     } // for
 
-   //filling out primary partition for vertices
-   primary_vertices = flecsi::io::vertex_closure(sd, primary_cells);   
+    for (auto i: shared_vertices) {
+      primary_vertices.insert(i.id);
+    }
+    for (auto i: exclusive_vertices) {
+      primary_vertices.insert(i.id);
+    }
 
     {
       size_t r(0);

@@ -1,21 +1,14 @@
 /*~-------------------------------------------------------------------------~~*
- *     _   ______________     ___    __    ______
- *    / | / / ____/ ____/    /   |  / /   / ____/
- *   /  |/ / / __/ /  ______/ /| | / /   / __/   
- *  / /|  / /_/ / /__/_____/ ___ |/ /___/ /___   
- * /_/ |_/\____/\____/    /_/  |_/_____/_____/   
- * 
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
 /*!
- *
- * \file array_ref.h
- * 
+ * \file 
  * \brief A reference array to avoid a million overloads.
- *
  ******************************************************************************/
-#pragma once
+#ifndef flecsi_utils_array_ref_h
+#define flecsi_utils_array_ref_h
+
 
 #include <assert.h>
 #include <array>
@@ -280,5 +273,7 @@ array_ref<T> make_array_ref(const std::array<T,N>& a) {
     
 /// @}
     
-}      // End namespace
-}      // End namespace
+}      // End namespace utils
+}      // End namespace flecsi
+
+#endif // flecsi_utils_array_ref_h
