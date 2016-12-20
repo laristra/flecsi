@@ -87,7 +87,7 @@ class io_base_t
 /// \tparam mesh_t Mesh to template io factory on.
 ///
 template <typename mesh_t>
-using io_factory_t = flecsi::Factory_<io_base_t<mesh_t>, std::string>;
+using io_factory_t = flecsi::utils::Factory_<io_base_t<mesh_t>, std::string>;
 
 } // namespace io
 } // namespace flecsi

@@ -148,7 +148,7 @@ struct legion_context_policy_t
 
   using task_id_t = LegionRuntime::HighLevel::TaskID;
   using register_function_t = std::function<void(size_t)>;
-  using unique_tid_t = unique_id_t<task_id_t>;
+  using unique_tid_t = utils::unique_id_t<task_id_t>;
 
   ///
   //
