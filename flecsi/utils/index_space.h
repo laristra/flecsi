@@ -12,19 +12,19 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_index_space_h
-#define flecsi_index_space_h
+#ifndef flecsi_utils_index_space_h
+#define flecsi_utils_index_space_h
 
 #include "flecsi/utils/iterator.h"
 
 /*!
- * \file index_space.h
- * \authors bergen
+ * \file 
  * \date Initial file creation: Oct 09, 2015
  */
 
-namespace flecsi
-{
+namespace flecsi {
+namespace utils {
+
 /*!
   \class index_space index_space.h
   \brief index_space provides...
@@ -76,9 +76,10 @@ class index_space_t
 
 }; // class index_space_t
 
+} // namespace utils
 } // namespace flecsi
 
-#endif // flecsi_index_space_h
+#endif // flecsi_utils_index_space_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

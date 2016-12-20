@@ -297,7 +297,7 @@ struct mpilegion_context_policy_t
   template<typename T>
   bool
   register_function(
-    const const_string_t & key,
+    const utils::const_string_t & key,
     T & function
   )
   {

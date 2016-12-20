@@ -3,18 +3,18 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef tuple_wrapper_h
-#define tuple_wrapper_h
+#ifndef flecsi_utils_tuple_wrapper_h
+#define flecsi_utils_tuple_wrapper_h
 
 #include <tuple>
 
 /*!
- * \file legion_argument_wrapper.h
- * \authors bergen
+ * \file
  * \date Initial file creation: Jul 28, 2016
  */
 
 namespace flecsi {
+namespace utils {
 
 struct generic_tuple_t {};
 
@@ -38,9 +38,10 @@ private:
 
 }; // class tuple_wrapper_
 
+} // namespace utils
 } // namespace flecsi
 
-#endif // tuple_wrapper_h
+#endif // flecsi_utils_tuple_wrapper_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

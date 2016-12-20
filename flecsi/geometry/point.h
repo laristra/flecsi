@@ -38,7 +38,7 @@ namespace flecsi
   for more information on the point interface.
  */
 template <typename T, size_t D>
-using point = dimensioned_array<T, D, 1>;
+using point = utils::dimensioned_array<T, D, 1>;
 
 template <typename T, size_t D>
 point<T, D> operator*(const T val, const point<T, D> & p)
@@ -59,7 +59,7 @@ T distance(const point<T, D> & a, const point<T, D> & b)
 {
   T sum(0);
   for (size_t d(0); d < D; ++d) {
-    sum += square(a[d] - b[d]);
+    sum += utils::square(a[d] - b[d]);
   } // for
 
   return std::sqrt(sum);

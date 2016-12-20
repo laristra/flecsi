@@ -46,7 +46,7 @@ enum storage_label_type_t : size_t {
 // FIXME: This needs to be removed.
 ///
 static constexpr size_t flecsi_internal =
-  const_string_t{"__flecsi_internal__"}.hash();
+  utils::const_string_t{"__flecsi_internal__"}.hash();
 
 /*!
   \brief data_attribute_old_t defines different data attributes.
@@ -54,7 +54,7 @@ static constexpr size_t flecsi_internal =
   This type should probably be pushed up in the interface so that users
   can define their own attributes.
  */
-enum class data_attribute_old_t : bitfield_t::field_type_t {
+enum class data_attribute_old_t : utils::bitfield_t::field_type_t {
   persistent = 0x0001,
   temporary = 0x0002
 }; // enum class data_attribute_old_t
@@ -68,15 +68,19 @@ enum data_attribute_t : size_t {
   \brief This exposes the persistent attribute so that it can be used
   without specifying the full type information.
  */
-static constexpr bitfield_t::field_type_t old_persistent =
-  static_cast<bitfield_t::field_type_t>(data_attribute_old_t::persistent);
+static constexpr utils::bitfield_t::field_type_t old_persistent =
+  static_cast<utils::bitfield_t::field_type_t>(
+    data_attribute_old_t::persistent
+  );
 
 /*!
   \brief This exposes the temporary attribute so that it can be used
   without specifying the full type information.
  */
-static constexpr bitfield_t::field_type_t old_temporary =
-  static_cast<bitfield_t::field_type_t>(data_attribute_old_t::temporary);
+static constexpr utils::bitfield_t::field_type_t old_temporary =
+  static_cast<utils::bitfield_t::field_type_t>(
+    data_attribute_old_t::temporary
+  );
 
 /*!
   FIXME

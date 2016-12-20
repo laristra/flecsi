@@ -69,7 +69,7 @@ struct dense_accessor_t
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using iterator_t = index_space_t::iterator_t;
+  using iterator_t = utils::index_space_t::iterator_t;
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
@@ -372,7 +372,7 @@ private:
   T * data_ = nullptr;
   const user_meta_data_t * user_meta_data_ = nullptr;
   bitset_t * user_attributes_ = nullptr;
-  index_space_t is_;
+  utils::index_space_t is_;
   size_t index_space_ = 0;
 
 }; // struct dense_accessor_t
@@ -440,7 +440,7 @@ struct storage_type_t<dense, DS, MD>
   register_data(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const const_string_t & key,
+    const utils::const_string_t & key,
     size_t versions,
     size_t index_space,
     Args && ... args
@@ -566,7 +566,7 @@ struct storage_type_t<dense, DS, MD>
   accessor_t<T>
   get_accessor(
     data_store_t & data_store,
-    const const_string_t::hash_type_t & hash,
+    const utils::const_string_t::hash_type_t & hash,
     size_t version
   )
   {
@@ -598,7 +598,7 @@ struct storage_type_t<dense, DS, MD>
   get_accessor(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const const_string_t & key,
+    const utils::const_string_t & key,
     size_t version
   )
   {
@@ -645,7 +645,8 @@ struct storage_type_t<dense, DS, MD>
       auto & meta_data = entry_pair.second;
       // now build the hash for this label
       const auto & label = meta_data.label;
-      auto key_hash = hash<const_string_t::hash_type_t>(label, label.size());
+      auto key_hash = 
+        utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
       auto hash = key_hash ^ runtime_id;
       // filter out the accessors for different data_clients
       if ( meta_data_key != hash ) continue;
@@ -713,7 +714,8 @@ struct storage_type_t<dense, DS, MD>
         auto & meta_data = entry_pair.second;
         // now build the hash for this label
         const auto & label = meta_data.label;
-        auto key_hash = hash<const_string_t::hash_type_t>(label, label.size());
+        auto key_hash = 
+          utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
         auto hash = key_hash ^ runtime_id;
         // filter out the accessors for different data_clients
         if ( meta_data_key != hash ) continue;
@@ -771,7 +773,8 @@ struct storage_type_t<dense, DS, MD>
       auto & meta_data = entry_pair.second;
       // now build the hash for this label
       const auto & label = meta_data.label;
-      auto key_hash = hash<const_string_t::hash_type_t>(label, label.size());
+      auto key_hash = 
+        utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
       auto hash = key_hash ^ runtime_id;
       // filter out the accessors for different data_clients
       if ( meta_data_key != hash ) continue;
@@ -835,7 +838,8 @@ struct storage_type_t<dense, DS, MD>
         auto & meta_data = entry_pair.second;
         // now build the hash for this label
         const auto & label = meta_data.label;
-        auto key_hash = hash<const_string_t::hash_type_t>(label, label.size());
+        auto key_hash = 
+          utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
         auto hash = key_hash ^ runtime_id;
         // filter out the accessors for different data_clients
         if ( meta_data_key != hash ) continue;
@@ -876,7 +880,7 @@ struct storage_type_t<dense, DS, MD>
   get_handle(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const const_string_t & key,
+    const utils::const_string_t & key,
     size_t version
   )
   {

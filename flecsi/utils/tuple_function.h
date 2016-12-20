@@ -3,18 +3,18 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_tuple_function_h
-#define flecsi_tuple_function_h
+#ifndef flecsi_utils_tuple_function_h
+#define flecsi_utils_tuple_function_h
 
 #include <utility>
 
 /*!
- * \file tuple_function.h
- * \authors bergen
+ * \file
  * \date Initial file creation: Aug 01, 2016
  */
 
 namespace flecsi {
+namespace utils {
 
 template<typename T, typename ... As, size_t ... Is>
 decltype(auto) tuple_function(T & f, std::tuple<As ...> & t,
@@ -45,9 +45,10 @@ std::function<void()> tuple_function_mpi(T & f, std::tuple<As ...> & t) {
 } // tuple_function
 
 
+} // namespace utils
 } // namespace flecsi
 
-#endif // flecsi_tuple_function_h
+#endif // flecsi_utils_tuple_function_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

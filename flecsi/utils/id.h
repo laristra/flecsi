@@ -12,21 +12,20 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_id_h
-#define flecsi_id_h
+#ifndef flecsi_utils_id_h
+#define flecsi_utils_id_h
 
 #include <cassert>
 #include <cstdint>
 #include <iostream>
 
 /*!
- * \file id.h
- * \authors nickm, bergen
+ * \file
  * \date Initial file creation: Feb 12, 2016
  */
 
-namespace flecsi
-{
+namespace flecsi {
+namespace utils {
 
   using local_id_t = __uint128_t;
 
@@ -194,9 +193,10 @@ namespace flecsi
     return ostr;
   }
 
+} // namespace utils
 } // namespace flecsi
 
-#endif // flecsi_id_h
+#endif // flecsi_utils_id_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

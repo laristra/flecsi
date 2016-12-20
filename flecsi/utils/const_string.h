@@ -12,12 +12,11 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_const_string_h
-#define flecsi_const_string_h
+#ifndef flecsi_utils_const_string_h
+#define flecsi_utils_const_string_h
 
 /*!
- * \file const_string.h
- * \authors nickm
+ * \file 
  * \date Initial file creation: Oct 15, 2015
  */
 
@@ -27,8 +26,9 @@
 #include <limits>
 #include <stdexcept>
 
-namespace flecsi
-{
+namespace flecsi {
+namespace utils {
+
 /*!
   \class const_string const_string.h
   \brief const_string provides compile-time string constants and hashing...
@@ -54,7 +54,7 @@ class const_string_t
 
   constexpr hash_type_t hash() const
   {
-    return flecsi::hash<hash_type_t>( str_, size_ );
+    return flecsi::utils::hash<hash_type_t>( str_, size_ );
   }
 
   constexpr bool equal_(const const_string_t & t, size_t i) const{
@@ -76,9 +76,10 @@ class const_string_t
   const hash_type_t size_;
 };
 
+} // namespace utils
 } // namespace flecsi
 
-#endif // flecsi_const_string
+#endif // flecsi_utils_const_string
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

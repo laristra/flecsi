@@ -122,10 +122,10 @@ public:
 
   std::vector<size_t>
   create_entities(
-    flecsi::id_t cell_id,
+    flecsi::utils::id_t cell_id,
     size_t dim,
     domain_connectivity<N> & c,
-    flecsi::id_t * e
+    flecsi::utils::id_t * e
   )
   {
     return std::vector<size_t>();
@@ -136,10 +136,10 @@ public:
     size_t from_domain,
     size_t to_domain,
     size_t create_dim,
-    flecsi::id_t cell_id,
+    flecsi::utils::id_t cell_id,
     domain_connectivity<N>& primal_conn,
     domain_connectivity<N>& domain_conn, 
-    flecsi::id_t *c
+    flecsi::utils::id_t *c
   )
   {
     return index_vector_t();
@@ -193,7 +193,7 @@ class mesh_topology_t : public mesh_topology_base_t
   static_assert(verify_mesh::has_member_entity_types<MT>::value,
                 "mesh policy missing entity_types tuple");
   
-  static_assert(is_tuple<typename MT::entity_types>::value,
+  static_assert(utils::is_tuple<typename MT::entity_types>::value,
                 "mesh policy entity_types is not a tuple");
 
 
@@ -201,7 +201,7 @@ class mesh_topology_t : public mesh_topology_base_t
   static_assert(verify_mesh::has_member_connectivities<MT>::value,
                 "mesh policy missing connectivities tuple");
 
-  static_assert(is_tuple<typename MT::connectivities>::value,
+  static_assert(utils::is_tuple<typename MT::connectivities>::value,
                 "mesh policy connectivities is not a tuple");
 
 
@@ -209,7 +209,7 @@ class mesh_topology_t : public mesh_topology_base_t
   static_assert(verify_mesh::has_member_bindings<MT>::value,
                 "mesh policy missing bindings tuple");
 
-  static_assert(is_tuple<typename MT::bindings>::value,
+  static_assert(utils::is_tuple<typename MT::bindings>::value,
                 "mesh policy bindings is not a tuple");
 
 
@@ -219,6 +219,8 @@ class mesh_topology_t : public mesh_topology_base_t
 
 public:
 
+  using id_t = utils::id_t;
+  
   // used to find the entity type of topological dimension D and domain M
   template <size_t D, size_t M = 0>
   using entity_type = typename find_entity_<MT, D, M>::type;
