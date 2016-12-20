@@ -143,6 +143,9 @@ struct mpilegion_context_policy_t
     lr_runtime_t::register_legion_task<flecsi::dmp::check_partitioning_task>(
       task_ids_t::instance().check_partitioning_task_id,lr_loc, false, true); 
 
+    lr_runtime_t::register_legion_task<flecsi::dmp::ghost_access_task>(
+      task_ids_t::instance().ghost_access_task_id,lr_loc, false, true);
+
     // register handoff_to_mpi_task from mpi_legion_interop_t class
     lr_runtime_t::register_legion_task<handoff_to_mpi_task>(
       task_ids_t::instance().handoff_to_mpi_task_id, lr_loc,
