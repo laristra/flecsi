@@ -789,12 +789,14 @@ ghost_access_task(
   Legion::Context ctx, Legion::HighLevelRuntime *runtime
 )
 {
+  using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
+  using field_id = LegionRuntime::HighLevel::FieldID;
+
   assert(task->local_arglen >= sizeof(SPMDArgs));
-  assert(regions.size() == 3);
-  assert(task->regions.size() == 3);
+  assert(regions.size() == 2);
+  assert(task->regions.size() == 2);
   assert(task->regions[0].privilege_fields.size() == 1);
   assert(task->regions[1].privilege_fields.size() == 1);
-  assert(task->regions[2].privilege_fields.size() == 1);
   assert(task->index_point.get_dim() == 1);
   const int my_rank = task->index_point.point_data[0];
 
@@ -803,16 +805,43 @@ ghost_access_task(
   args_serializer.setBitStream(task->local_args);
   args_serializer.restore(&args);
 
+  LegionRuntime::HighLevel::LogicalRegion lr_shared =
+     regions[0].get_logical_region();
+  LegionRuntime::HighLevel::IndexSpace is_shared = lr_shared.get_index_space();
+  LegionRuntime::HighLevel::IndexIterator itr_shared(runtime, ctx, is_shared);
+  field_id fid_shared = *(task->regions[0].privilege_fields.begin());
+
+  LegionRuntime::HighLevel::LogicalRegion lr_ghost =
+      regions[1].get_logical_region();
+  LegionRuntime::HighLevel::IndexSpace is_ghost = lr_ghost.get_index_space();
+  LegionRuntime::HighLevel::IndexIterator itr_ghost(runtime, ctx, is_ghost);
+  field_id fid_ghost = *(task->regions[1].privilege_fields.begin());
+
   for (int cycle = 0; cycle < 2; cycle++) {
+
     // phase 1 masters update their halo regions; slaves may not access data
+
     // as master
-    args.pbarrier_as_master.wait();                                                   // phase 1
-    // master writes to data
-    std::cout << my_rank << " as master writes data; phase 1 of cycle " << cycle << std::endl;
-    args.pbarrier_as_master.arrive(1);                                                // phase 2
-    args.pbarrier_as_master =
+
+    {
+      AcquireLauncher acquire_launcher(lr_shared, lr_shared, regions[0]);
+      acquire_launcher.add_field(fid_shared);
+      acquire_launcher.add_wait_barrier(args.pbarrier_as_master);                     // phase 1
+      runtime->issue_acquire(ctx, acquire_launcher);
+
+      // master writes to data
+      std::cout << my_rank << " as master writes data; phase 1 of cycle " << cycle << std::endl;
+
+      ReleaseLauncher release_launcher(lr_shared, lr_shared, regions[0]);
+      release_launcher.add_field(fid_shared);
+      release_launcher.add_arrival_barrier(args.pbarrier_as_master);                  // phase 2
+      runtime->issue_release(ctx, release_launcher);
+      args.pbarrier_as_master =
             runtime->advance_phase_barrier(ctx, args.pbarrier_as_master);             // phase 2
+    }
+
     // as slave
+
     for (int master=0; master < args.masters_pbarriers.size(); master++) {
         args.masters_pbarriers[master].arrive(1);                                     // phase 2
         args.masters_pbarriers[master] =
@@ -820,97 +849,54 @@ ghost_access_task(
     }
 
     // phase 2 slaves can read data; masters may not write to data
+
     // as master
+
     args.pbarrier_as_master.arrive(1);                                                // phase cycle + 1
     args.pbarrier_as_master =
             runtime->advance_phase_barrier(ctx, args.pbarrier_as_master);             // phase cycle + 1
+
     // as slave
-    for (int master=0; master < args.masters_pbarriers.size(); master++) {
-        args.masters_pbarriers[master].wait();                                        // phase 2
-    } // no knowledge of which master has which point in ghost: so, wait for all
-    // slave reads data
-    std::cout << my_rank << " as slave reads data; phase 2 of cycle " << cycle << std::endl;
-    for (int master=0; master < args.masters_pbarriers.size(); master++) {
-        args.masters_pbarriers[master].arrive(1);                                     // phase cycle + 1
-        args.masters_pbarriers[master] =
-                runtime->advance_phase_barrier(ctx, args.masters_pbarriers[master]);  // phase cycle + 1
+
+    {
+      AcquireLauncher acquire_launcher(lr_ghost, lr_ghost, regions[1]);
+      acquire_launcher.add_field(fid_ghost);
+      for (int master=0; master < args.masters_pbarriers.size(); master++) {
+          acquire_launcher.add_wait_barrier(args.masters_pbarriers[master]);            // phase 2
+      } // no knowledge of which master has which point in ghost: so, wait for all
+      runtime->issue_acquire(ctx, acquire_launcher);
+
+      // slave reads data
+      std::cout << my_rank << " as slave reads data; phase 2 of cycle " << cycle << std::endl;
+      RegionRequirement ghost_req(lr_ghost, READ_ONLY, EXCLUSIVE, lr_ghost);
+      ghost_req.add_field(fid_ghost);
+      InlineLauncher ghost_launcher(ghost_req);
+      PhysicalRegion pregion_ghost = runtime->map_region(ctx, ghost_launcher);
+      LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
+        acc_ghost= regions[1].get_field_accessor(fid_ghost).typeify<size_t>();
+      while(itr_ghost.has_next()){
+        ptr_t ptr = itr_ghost.next();
+        std::cout << my_rank << " reads " << acc_ghost.read(ptr) << " at " << ptr.value << std::endl;
+       }
+
+      ReleaseLauncher release_launcher(lr_ghost, lr_ghost, regions[1]);
+      release_launcher.add_field(fid_ghost);
+      for (int master=0; master < args.masters_pbarriers.size(); master++) {
+          release_launcher.add_arrival_barrier(args.masters_pbarriers[master]);         // phase cycle + 1
+          args.masters_pbarriers[master] =
+                  runtime->advance_phase_barrier(ctx, args.masters_pbarriers[master]);  // phase cycle + 1
+      }
+      runtime->issue_release(ctx, release_launcher);
     }
-  }
-
-  using index_partition_t = index_partition__<size_t>;
-  using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
-  using field_id = LegionRuntime::HighLevel::FieldID;
+  } // cycle
 
 
-  //checking cells:
-  {
-    LegionRuntime::HighLevel::LogicalRegion lr_shared =
-       regions[0].get_logical_region();
-   LegionRuntime::HighLevel::IndexSpace is_shared = lr_shared.get_index_space();
-    LegionRuntime::HighLevel::IndexIterator itr_shared(runtime, ctx, is_shared);
-    field_id fid_shared = *(task->regions[0].privilege_fields.begin());
+/*
     LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
       acc_shared= regions[0].get_field_accessor(fid_shared).typeify<size_t>();
 
-    LegionRuntime::HighLevel::LogicalRegion lr_exclusive =
-        regions[1].get_logical_region();
-    LegionRuntime::HighLevel::IndexSpace is_exclusive =
-        lr_exclusive.get_index_space();
-    LegionRuntime::HighLevel::IndexIterator itr_exclusive(runtime,
-        ctx, is_exclusive);
-    field_id fid_exclusive = *(task->regions[1].privilege_fields.begin());
-    LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
-      acc_exclusive=regions[1].get_field_accessor(
-          fid_exclusive).typeify<size_t>();
 
-
-    LegionRuntime::HighLevel::LogicalRegion lr_ghost =
-        regions[2].get_logical_region();
-    LegionRuntime::HighLevel::IndexSpace is_ghost = lr_ghost.get_index_space();
-    LegionRuntime::HighLevel::IndexIterator itr_ghost(runtime, ctx, is_ghost);
-    field_id fid_ghost = *(task->regions[2].privilege_fields.begin());
-    LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
-      acc_ghost= regions[2].get_field_accessor(fid_ghost).typeify<size_t>();
-
-    flecsi::execution::context_t & context_ =
-      flecsi::execution::context_t::instance();
-    index_partition_t ip =
-      context_.interop_helper_.data_storage_[0];
-
-    size_t indx = 0;
-    for (auto shared_cell : ip.shared) {
-    assert(itr_shared.has_next());
-     ptr_t ptr=itr_shared.next();
-     assert(shared_cell.id == acc_shared.read(ptr));
-     indx++;
-    }
-    assert (indx == ip.shared.size());
-
-    indx = 0;
-    for (auto exclusive_cell : ip.exclusive) {
-     assert(itr_exclusive.has_next());
-     ptr_t ptr=itr_exclusive.next();
-     assert(exclusive_cell.id == acc_exclusive.read(ptr));
-    indx++;
-    }
-    assert (indx == ip.exclusive.size());
-
-    indx = 0;
-    while(itr_ghost.has_next()){
-      ptr_t ptr = itr_ghost.next();
-      bool found=false;
-      size_t ghost_id = acc_ghost.read(ptr);
-      for (auto ghost_cell : ip.ghost) {
-        if (ghost_cell.id == ghost_id){
-          found=true;
-        }
-      }
-      assert(found);
-      indx++;
-     }
-     assert (indx == ip.ghost.size());
-    }//scope
-
+*/
 
 
   std::cout << "test ghost access ... passed"

@@ -76,7 +76,8 @@ static thread_local std::unordered_map<size_t,
 
 ///
 /// \class mpilegion_context_policy_t mpilegion/context_policy.h
-/// \brief mpilegion_context_policy_t provides...
+/// \brief mpilegion_context_policy_t provides an interface for passing 
+///  legion's context to the FLeCSI tasks
 ///
 struct mpilegion_context_policy_t
 {
@@ -94,9 +95,13 @@ struct mpilegion_context_policy_t
   mpi_legion_interop_t interop_helper_;
 
   //-------------------------------------------------------------------------*
-  /// Initialization.
+  // Initialization.
   //-------------------------------------------------------------------------*/
 
+  ///
+  /// Initialization of the legion runtime. Icludes task registration,
+  /// legion runtime start and logic for mpi-legion interoperability 
+  ///
   int
   initialize(
     int argc,
@@ -210,6 +215,13 @@ struct mpilegion_context_policy_t
     return 0;
   } // initialize
 
+  ///
+  /// push_state is used to control the state of the legion task with id==key.
+  /// Task is considered being completed when it's state is
+  /// removed from the state_ object;
+  /// Key - is a task-id.
+  ///
+
   void push_state(
     size_t key,
     LegionRuntime::HighLevel::Context & context,
@@ -226,6 +238,12 @@ struct mpilegion_context_policy_t
       (new legion_runtime_state_t(context, runtime, task, regions)));
   } // set_state
 
+  ///
+  /// pops_state(key) is used to control the state of the legion task with
+  ///  id=key. It removes the task state from the state_pbject when
+  /// the task is completed.
+  ///
+  
   void pop_state(
     size_t key
   )
@@ -262,7 +280,8 @@ struct mpilegion_context_policy_t
   using unique_fid_t = utils::unique_id_t<task_id_t>;
 
   ///
-  /// FIXME documentation
+  /// register_task method generates unique ID for the task and add this ID
+  /// to the task_registry_ container 
   ///
   bool
   register_task(
@@ -279,7 +298,7 @@ struct mpilegion_context_policy_t
   } // register_task
 
   ///
-  /// FIXME documentation
+  /// this method return tak_id from the task's key
   ///
   task_id_t
   task_id(
@@ -297,7 +316,8 @@ struct mpilegion_context_policy_t
   //--------------------------------------------------------------------------*/
 
   ///
-  /// FIXME documentation
+  /// register_function method add fuction pointer and the key to the 
+  /// function_registry_ object.
   /// 
   template<typename T>
   bool
@@ -317,7 +337,8 @@ struct mpilegion_context_policy_t
   } // register_function
   
   ///
-  /// FIXME documentation
+  /// function(key) method return a pointer to the function with the 
+  /// function key=key
   ///
   std::function<void(void)> *
   function(
@@ -331,6 +352,9 @@ struct mpilegion_context_policy_t
   // Legion runtime accessors.
   //--------------------------------------------------------------------------*/
 
+  ///
+  /// return a context that corresponds to the task with the key=task_key
+  ///
   LegionRuntime::HighLevel::Context &
   context(
     size_t task_key
@@ -339,6 +363,9 @@ struct mpilegion_context_policy_t
     return state_[task_key].top()->context;
   } // context
 
+  ///
+  /// return runtime that corresponds to the task with the key=task_key
+  ///    
   LegionRuntime::HighLevel::HighLevelRuntime *
   runtime(
     size_t task_key
@@ -347,6 +374,9 @@ struct mpilegion_context_policy_t
     return state_[task_key].top()->runtime;
   } // runtime
 
+  ///
+  /// return Task object  that corresponds to the task with the key=task_key
+  ///  
   const
   LegionRuntime::HighLevel::Task *
   task(
@@ -356,6 +386,9 @@ struct mpilegion_context_policy_t
     return state_[task_key].top()->task;
   } // task
 
+  ///
+  /// return a vector of the PhysicalRegions for the task with the key=task_key
+  ///  
   const
   std::vector<LegionRuntime::HighLevel::PhysicalRegion> &
   regions(
