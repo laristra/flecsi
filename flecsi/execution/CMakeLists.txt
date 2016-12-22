@@ -76,6 +76,7 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
         test/task_driver.h
         mpilegion/runtime_driver.cc
         mpilegion/init_partitions_task.cc
+        legion/dpd.cc
       DEFINES
         FLECSI_DRIVER=flecsi/execution/test/task_driver.h
         GTEST_INIT=flecsi/execution/test/task_init.h
@@ -90,6 +91,7 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
         test/sprint.h
         mpilegion/runtime_driver.cc
         mpilegion/init_partitions_task.cc
+        legion/dpd.cc
       INPUTS
         test/simple2d-8x8.msh
       DEFINES SPRINT_TEST
@@ -101,6 +103,14 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
       THREADS 2
     )
    endif()
+
+   cinch_add_unit(dpd_sparse
+     SOURCES
+       test/dpd_sparse.cc
+       legion/dpd.cc
+     POLICY MPILEGION
+     THREADS 2
+   )
 
   endif(NOT DEFINED ENV{TRAVIS})
 

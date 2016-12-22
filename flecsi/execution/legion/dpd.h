@@ -21,7 +21,6 @@
 
 #include "flecsi/execution/legion/helper.h"
 
-
 #define np(X)                                                            \
  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
            << ": " << #X << " = " << (X) << std::endl
