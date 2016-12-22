@@ -126,7 +126,9 @@ namespace execution {
       to_ac.write(to_ptr, itr.second);
       ++count;
 
-      to_ptr = to_itr.next();
+      if(to_itr.has_next()) {
+        to_ptr = to_itr.next();
+      }
     }
 
     ptr_count pc;
