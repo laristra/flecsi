@@ -31,6 +31,8 @@ private:
   std::set<entry_info_t> shared_vertices;
   std::set<entry_info_t> ghost_vertices;
 
+  std::vector<std::pair<size_t, size_t>> raw_cell_vertex_conns;
+
 public:
   weaver(flecsi::io::mesh_definition_t &mesh) : sd(mesh) {
     int size;
@@ -166,7 +168,7 @@ public:
           shared_vertices.insert(remote_info_map[c].rank);
         } else {
           min_rank = std::min(min_rank, size_t(rank));
-
+          raw_cell_vertex_conns.emplace_back(std::make_pair(c, i));
           // If the local cell is shared, we need to add all of
           // the ranks that reference it.
           if (shared_cells_map.find(c) != shared_cells_map.end()) {
@@ -250,6 +252,12 @@ public:
 
   std::set<entry_info_t> get_ghost_vertices() {
     return ghost_vertices;
+  }
+
+  std::vector<std::pair<size_t, size_t>>&
+  get_raw_cell_vertex_conns()
+  {
+    return raw_cell_vertex_conns;
   }
 
 }; // class weaver

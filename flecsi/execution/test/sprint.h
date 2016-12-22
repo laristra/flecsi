@@ -14,6 +14,7 @@
 #include "flecsi/partition/index_partition.h"
 #include "flecsi/execution/mpilegion/init_partitions_task.h"
 #include "flecsi/partition/weaver.h"
+#include "flecsi/execution/legion/dpd.h"
 
 ///
 // \file sprint.h
@@ -38,6 +39,7 @@ FieldIDs {
   FID_VERT,
   FID_GHOST_CELL_ID,
   FID_DATA,
+  FID_ENTITY_PAIR
 };
 
 void
@@ -71,6 +73,10 @@ mpi_task(
   ip_vertices.exclusive = weaver.get_exclusive_vertices();
   ip_vertices.shared = weaver.get_shared_vertices();
   ip_vertices.ghost  = weaver.get_ghost_vertices();
+
+  std::vector<std::pair<size_t, size_t>> raw_conns = 
+    weaver.get_raw_cell_vertex_conns();
+
 #if 0
    std::cout <<"DEBUG CELLS"<<std::endl;
    size_t i=0;
@@ -119,6 +125,9 @@ mpi_task(
 
   context_.interop_helper_.data_storage_.push_back(
     flecsi::utils::any_t(ip_vertices));
+
+  context_.interop_helper_.data_storage_.push_back(
+    flecsi::utils::any_t(raw_conns));
 }
 
   
@@ -135,6 +144,8 @@ driver(
   auto runtime = context_.runtime(task_key);
   auto context = context_.context(task_key);
 
+  legion_helper h(runtime, context);
+
   using legion_domain = LegionRuntime::HighLevel::Domain;
 
   flecsi::dmp::parts partitions;
@@ -148,6 +159,8 @@ driver(
                                              cells_fs);
     allocator.allocate_field(sizeof(size_t), FID_CELL);
     allocator.allocate_field(sizeof(size_t), FID_DATA);
+    allocator.allocate_field(sizeof(legion_dpd::ptr_count),
+                      legion_dpd::connectivity_field_id(2, 0));
   }
 
   int num_ranks;
@@ -169,11 +182,15 @@ driver(
   FutureMap fm1 = runtime->execute_index_space(context, 
       get_numbers_of_cells_launcher);
 
+  legion_dpd::partitioned_unstructured cells_part;
+  legion_dpd::partitioned_unstructured vertices_part;
+
   size_t total_num_cells=0;
   std::vector<size_t> cells_primary_start_id;
   std::vector<size_t> cells_num_shared;
   std::vector<size_t> cells_num_ghosts;
   std::vector<size_t> cells_num_exclusive;
+  std::vector<size_t> num_vertex_conns;
 
   size_t total_num_vertices=0;
   std::vector<size_t> vert_primary_start_id;
@@ -193,11 +210,16 @@ driver(
     cells_num_ghosts.push_back(received.ghost_cells);
     cells_num_exclusive.push_back(received.exclusive_cells);
 
+    cells_part.count_map[i] = received.primary_cells;
+
     vert_primary_start_id.push_back(total_num_vertices);
     total_num_vertices += received.primary_vertices;
     vert_num_shared.push_back(received.shared_vertices);
     vert_num_ghosts.push_back(received.ghost_vertices);
     vert_num_exclusive.push_back(received.exclusive_vertices);
+    num_vertex_conns.push_back(received.vertex_conns);
+
+    vertices_part.count_map[i] = received.primary_vertices;
 
 #if 0
     std::cout << "From rank " << i 
@@ -356,6 +378,86 @@ driver(
     }//end for
   }
 #endif
+
+  legion_dpd::partitioned_unstructured raw_connectivity_part;
+
+  {
+    size_t np = num_vertex_conns.size();
+
+    size_t total_conns = 0;
+    for(size_t p = 0; p < np; ++p){
+      size_t count = num_vertex_conns[p];
+      total_conns += count;
+    }
+
+    Legion::IndexSpace is = h.create_index_space(total_conns);
+   
+    raw_connectivity_part.size = total_conns;
+
+    Legion::IndexAllocator ia = runtime->create_index_allocator(context, is);
+
+    Legion::FieldSpace fs = h.create_field_space();
+
+    Legion::FieldAllocator fa = h.create_field_allocator(fs);
+
+    fa.allocate_field(sizeof(std::pair<size_t, size_t>),
+                      legion_dpd::ENTITY_PAIR_FID);
+
+    raw_connectivity_part.lr = h.create_logical_region(is, fs);
+
+    Coloring coloring;
+
+    for(size_t p = 0; p < np; ++p){
+      size_t count = num_vertex_conns[p];
+      raw_connectivity_part.count_map[p] = count;
+
+      for(size_t j = 0; j < count; ++j){
+        ptr_t ptr = ia.alloc(1);
+        coloring[p].points.insert(ptr);    
+      }
+    }
+
+    raw_connectivity_part.ip = 
+      runtime->create_index_partition(context, is, coloring, true);
+  }
+
+  LegionRuntime::HighLevel::ArgumentMap arg_map2;
+
+  LegionRuntime::HighLevel::IndexLauncher init_raw_conn_launcher(
+    task_ids_t::instance().init_raw_conn_task_id,
+    rank_domain,
+    LegionRuntime::HighLevel::TaskArgument(0, 0),
+    arg_map2);  
+
+  init_raw_conn_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+
+  LogicalPartition raw_connectivity_part_lp =
+    runtime->get_logical_partition(context,
+    raw_connectivity_part.lr, raw_connectivity_part.ip);
+
+  init_raw_conn_launcher.add_region_requirement(
+    RegionRequirement(raw_connectivity_part_lp, 0,
+      WRITE_DISCARD, EXCLUSIVE, raw_connectivity_part.lr));
+  init_raw_conn_launcher.add_field(0, legion_dpd::ENTITY_PAIR_FID);
+  
+  FutureMap raw_conn_fm = 
+    runtime->execute_index_space(context, init_raw_conn_launcher);
+  raw_conn_fm.wait_all_results();
+
+  cells_part.lr = cells_lr;
+  cells_part.ip = cells_primary_ip;
+  cells_part.size = total_num_cells;
+
+
+  vertices_part.lr = vertices_lr;
+  vertices_part.size = total_num_vertices;
+
+  legion_dpd cells_to_vertices(context, runtime);
+  //cells_to_vertices.create_connectivity(2, cells_part, 0, vertices_part,
+  //  raw_connectivity_part);
+
+  runtime->destroy_index_partition(context, raw_connectivity_part.ip);
+  runtime->destroy_logical_region(context, raw_connectivity_part.lr);
 
   //creating partiotioning for shared and exclusive elements:
   Coloring cells_shared_coloring;
@@ -735,7 +837,7 @@ driver(
 
   ghost_access_launcher.add_region_requirement(
   RegionRequirement(cells_shared_lp, 0/*projection ID*/,
-                    READ_ONLY, SIMULTANEOUS, cells_lr));
+                    READ_WRITE, SIMULTANEOUS, cells_lr));
   ghost_access_launcher.add_field(0, FID_DATA);
 
   ghost_access_launcher.add_region_requirement(

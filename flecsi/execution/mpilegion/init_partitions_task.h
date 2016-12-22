@@ -19,6 +19,7 @@ FieldIDs2 {
   FID_SHARED,
   FID_EXCLUSIVE,
   FID_GHOST,
+  FID_ENTITY_PAIR
 };
 
 namespace flecsi {
@@ -33,6 +34,7 @@ struct parts {
   int exclusive_vertices;
   int shared_vertices;
   int ghost_vertices;
+  int vertex_conns;
 };
 
 struct partition_lr{
@@ -108,6 +110,13 @@ check_partitioning_task(
 
 void
 ghost_access_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+);
+
+void
+init_raw_conn_task(
   const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx, Legion::HighLevelRuntime *runtime

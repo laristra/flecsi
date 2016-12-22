@@ -35,6 +35,7 @@
 #include "flecsi/execution/mpilegion/legion_handshake.h"
 #include "flecsi/execution/mpilegion/mpi_legion_interop.h"
 #include "flecsi/execution/mpilegion/init_partitions_task.h"
+#include "flecsi/execution/legion/dpd.h"
 
 namespace flecsi {
 namespace execution {
@@ -146,7 +147,14 @@ struct mpilegion_context_policy_t
    // FIXME
     // This is Galen's hack to get partitioning working for the sprint
     lr_runtime_t::register_legion_task<flecsi::dmp::check_partitioning_task>(
-      task_ids_t::instance().check_partitioning_task_id,lr_loc, false, true); 
+      task_ids_t::instance().check_partitioning_task_id,lr_loc, false, true);
+
+    lr_runtime_t::register_legion_task<flecsi::dmp::init_raw_conn_task>(
+      task_ids_t::instance().init_raw_conn_task_id,lr_loc, false, true); 
+
+    lr_runtime_t::register_legion_task<
+      flecsi::execution::legion_dpd::init_connectivity_task>(
+      task_ids_t::instance().dpd_init_connectivity_task_id,lr_loc, false, true); 
 
     lr_runtime_t::register_legion_task<flecsi::dmp::ghost_access_task>(
       task_ids_t::instance().ghost_access_task_id,lr_loc, false, true);

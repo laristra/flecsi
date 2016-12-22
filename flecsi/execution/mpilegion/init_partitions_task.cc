@@ -18,6 +18,8 @@
 #include "flecsi/partition/index_partition.h"
 #include "flecsi/execution/mpilegion/init_partitions_task.h"
 
+#include "flecsi/execution/legion/dpd.h"
+
 namespace flecsi {
 namespace dmp {
 
@@ -29,6 +31,7 @@ get_numbers_of_cells_task(
 {
   struct parts partitions; 
   using index_partition_t = index_partition__<size_t>;
+  using field_id = LegionRuntime::HighLevel::FieldID;
 
   flecsi::execution::context_t & context_ =
     flecsi::execution::context_t::instance();
@@ -38,7 +41,10 @@ get_numbers_of_cells_task(
   
   //getting vertices partitioning info from MPI
   index_partition_t ip_vertices =
-    context_.interop_helper_.data_storage_[1]; 
+    context_.interop_helper_.data_storage_[1];
+
+  std::vector<std::pair<size_t, size_t>> raw_cell_vertex_conns =
+      context_.interop_helper_.data_storage_[2];  
 #if 0
   size_t rank; 
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -81,6 +87,8 @@ get_numbers_of_cells_task(
   partitions.shared_vertices = ip_vertices.shared.size();
   partitions.ghost_vertices = ip_vertices.ghost.size();
 
+  partitions.vertex_conns = raw_cell_vertex_conns.size();
+
   std::cout << "about to return partitions (primary,exclusive,shared,ghost) ("
             << partitions.primary_cells << "," 
             <<partitions.exclusive_cells << "," << partitions.shared_cells <<
@@ -104,6 +112,7 @@ initialization_task(
   std::cout << "Here I am in init_cells" << std::endl;
 
   using index_partition_t = index_partition__<size_t>;
+  using field_id = LegionRuntime::HighLevel::FieldID;
 
   flecsi::execution::context_t & context_ =
     flecsi::execution::context_t::instance();
@@ -119,8 +128,12 @@ initialization_task(
 
   LegionRuntime::HighLevel::IndexIterator itr_cells(runtime, ctx, is_cells);
 
-  auto acc_cells = regions[0].get_field_accessor(0).typeify<size_t>();
+//  auto acc_cells = regions[0].get_field_accessor(0).typeify<size_t>();
 
+  field_id fid_cell = *(task->regions[0].privilege_fields.begin());
+  LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic, size_t>  acc_cells = regions[0].get_field_accessor(fid_cell).typeify<size_t>();
+
+  
   for (auto primary_cell : ip_cells.primary) {
     assert(itr_cells.has_next());
     size_t id =primary_cell;
@@ -135,7 +148,12 @@ initialization_task(
 
   LegionRuntime::HighLevel::IndexIterator itr_vert(runtime, ctx, is_vert);
 
-  auto acc_vert = regions[1].get_field_accessor(0).typeify<size_t>();
+  //auto acc_vert = regions[1].get_field_accessor(0).typeify<size_t>();
+  
+  field_id fid_vert = *(task->regions[1].privilege_fields.begin());
+  LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic, size_t>  acc_vert = regions[1].get_field_accessor(fid_vert).typeify<size_t>();
+
+  
 
   for (auto primary_vert : ip_vert.primary) {
     assert(itr_vert.has_next());
@@ -692,6 +710,33 @@ check_partitioning_task(
   << std::endl;
 }//check_partitioning_task
 
+void
+init_raw_conn_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+)
+{
+  flecsi::execution::context_t & context_ =
+    flecsi::execution::context_t::instance();
+
+  std::vector<std::pair<size_t, size_t>> raw_cell_vertex_conns =
+      context_.interop_helper_.data_storage_[2];
+
+  LogicalRegion raw_conn_lr = regions[0].get_logical_region();
+  IndexSpace raw_conn_is = raw_conn_lr.get_index_space();
+
+  auto raw_conn_ac = 
+    regions[0].get_field_accessor(flecsi::execution::legion_dpd::ENTITY_PAIR_FID).
+    typeify<std::pair<size_t, size_t>>();
+
+  size_t i = 0;
+  IndexIterator raw_conn_itr(runtime, ctx, raw_conn_is);
+  while(raw_conn_itr.has_next()){
+    ptr_t ptr = raw_conn_itr.next();
+    raw_conn_ac.write(ptr, raw_cell_vertex_conns[i++]);
+  }
+}
 
 template<class Type>
 static size_t archiveScalar(Type scalar, void* bit_stream)
