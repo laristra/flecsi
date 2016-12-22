@@ -49,6 +49,7 @@ struct mesh_t : public data::data_client_t {
       default:
         // FIXME: lookup user-defined index space
         clog_fatal("unknown index space");
+        return 0;
     } // switch
   }
 
