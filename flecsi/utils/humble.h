@@ -1,18 +1,19 @@
-// humble.h
-// T. M. Kelley
-// Aug 16, 2016
-// (c) Copyright 2016 LANSLLC, all rights reserved
+/*~--------------------------------------------------------------------------~*
+ * Copyright (c) 2016 Los Alamos National Laboratory, LLC
+ * All rights reserved
+ *~--------------------------------------------------------------------------~*/
+
+/// \file
 
 
-#ifndef HUMBLE_H
-#define HUMBLE_H
+#ifndef flecsi_utils_humble_h
+#define flecsi_utils_humble_h
 
 #include <iostream>
 #include <string>
 
-// namespace flecsi{
-//
-// namespace utils {
+namespace flecsi {
+namespace utils {
 
 #define HERE(message) here_func(__FILE__,__FUNCTION__, __LINE__,message)
 
@@ -24,11 +25,8 @@ void here_func(const char *filename, const char * fname, int line,
 }
 
 
-// } // utils::
-//
-// } // flecsi::
+} // namespace utils
+} // namespace flecsi
 
-#endif // include guard
+#endif // flecsi_utils_humble_h
 
-
-// End of file

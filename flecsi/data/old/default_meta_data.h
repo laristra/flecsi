@@ -39,14 +39,16 @@ namespace data {
  */
 struct default_state_user_meta_data_t {
 
-  void initialize(const size_t & site_id_, bitfield_t::field_type_t attributes_)
-  {
+  void initialize(
+    const size_t & site_id_, 
+    utils::bitfield_t::field_type_t attributes_
+  ) {
     site_id = site_id_;
     attributes = attributes_;
   } // initialize
 
   size_t site_id;
-  bitfield_t::field_type_t attributes;
+  utils::bitfield_t::field_type_t attributes;
 
 }; // struct default_state_user_meta_data_t
 

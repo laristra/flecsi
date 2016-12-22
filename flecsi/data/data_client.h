@@ -27,7 +27,7 @@ class data_client_t
 public:
 
   /// Default constructor
-  data_client_t() : id_(unique_id_t<size_t>::instance().next()) {}
+  data_client_t() : id_(utils::unique_id_t<size_t>::instance().next()) {}
 
   /// Copy constructor (disabled)
   data_client_t(const data_client_t &) = delete;

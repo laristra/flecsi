@@ -39,7 +39,7 @@ struct function__
   static
   decltype(auto)
   register_function(
-    const const_string_t & key,
+    const utils::const_string_t & key,
     std::function<R(A)> & user_function
   )
   {

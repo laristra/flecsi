@@ -12,19 +12,19 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#pragma once
+#ifndef flecsi_utils_hash_h
+#define flecsi_utils_hash_h
 
 /*!
- * \file const_string.h
- * \authors nickm
+ * \file 
  * \date Initial file creation: Oct 15, 2015
  */
 
 #include <limits>
 #include <utility>
 
-namespace flecsi
-{
+namespace flecsi {
+namespace utils {
 
 template< typename T, typename U>
 constexpr T hash__( U && str, T h, std::size_t i, std::size_t n ){
@@ -40,7 +40,10 @@ constexpr T hash( U && str, std::size_t n ) {
   return hash__<T>(str, 0, 0, n);
 }
 
+} // namespace utils
 } // namespace flecsi
+
+#endif // flecsi_utils_hash_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

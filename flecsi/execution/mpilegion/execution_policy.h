@@ -227,7 +227,7 @@ struct mpilegion_execution_policy_t
         default:
         {
           throw std::runtime_error("the task can be executed \
-                      only as singel or index task");
+                      only as single or index task");
         }
 
       } // switch
@@ -255,7 +255,7 @@ struct mpilegion_execution_policy_t
   static
   bool
   register_function(
-    const const_string_t & key,
+    const utils::const_string_t & key,
     std::function<R(As ...)> & user_function
   )
   {

@@ -12,15 +12,14 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_any_h
-#define flecsi_any_h
+#ifndef flecsi_utils_any_h
+#define flecsi_utils_any_h
 
 #include <iostream>
 #include <typeinfo>
 
 /*!
- * \file any.h
- * \authors demeshko
+ * \file 
  * \date Initial file creation: Aug 29, 2016
  */
 
@@ -127,7 +126,7 @@ private:
 }; //class any_t
 
 ///
-//
+///
 ///
 template<
   class T
@@ -144,7 +143,7 @@ T & any_cast(
 } // namespace utils
 } // namespace flecsi
 
-#endif // flecsi_any_h
+#endif // flecsi_utils_any_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

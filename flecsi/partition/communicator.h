@@ -69,6 +69,7 @@ operator << (
     stream << i << " "; 
   } // for
   stream << "]";
+  return stream;
 } // operator <<
 
 ///

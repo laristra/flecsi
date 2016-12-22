@@ -254,25 +254,11 @@ shared_part_task(
     size_t indx=0;
     LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, vert_is);
     ptr_t start=itr.next();
-#if 0
-//debug
-size_t i=0;
-for (auto shared_vert : ip_vert.primary) {
-std::cout<<"primary["<<i<<"] = "<<shared_vert<< std::endl;
-i++;
-}
-#endif
-
-//debug
 
     for (auto shared_vert : ip_vert.shared) {
       ptr_t ptr = (start.value+shared_vert.offset);
       acc.write(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
       make_point(indx)),ptr);
-#if 0
-std::cout <<"DEBUG inside shared create= " <<shared_vert.id<< " , offset= "
-<<shared_vert.offset<<std::endl;
-#endif
       indx++;
     }//end for
 
@@ -441,7 +427,7 @@ ghost_part_task(
 
   field_id fid_vert_global = *(task->regions[1].privilege_fields.begin());
   LegionRuntime::HighLevel::LogicalRegion vert_lr =
-      regions[0].get_logical_region();
+      regions[1].get_logical_region();
   LegionRuntime::HighLevel::IndexSpace vert_is = vert_lr.get_index_space();
   LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
     acc_vert_global= regions[1].get_field_accessor(
@@ -705,6 +691,218 @@ check_partitioning_task(
   std::cout << "test for shared/ghost/exclusive partitions ... passed" 
   << std::endl;
 }//check_partitioning_task
+
+
+template<class Type>
+static size_t archiveScalar(Type scalar, void* bit_stream)
+{
+    memcpy(bit_stream, (void*)(&scalar), sizeof(Type));
+    return sizeof(Type);
+}
+
+template<class Type>
+static size_t archiveVector(std::vector<Type> vec, void* bit_stream)
+{
+    unsigned char *serialized = (unsigned char*)(bit_stream) ;
+
+    size_t size_size = archiveScalar(vec.size(), (void*)serialized);
+    serialized += size_size;
+
+    size_t vec_size = vec.size() * sizeof(Type);
+    memcpy((void*)serialized, (void*)vec.data(), vec_size);
+
+    return size_size + vec_size;
+}
+
+void SPMDArgsSerializer::archive(SPMDArgs* spmd_args)
+{
+    assert(spmd_args != nullptr);
+
+    bit_stream_size = sizeof(PhaseBarrier) + sizeof(size_t)
+            + spmd_args->masters_pbarriers.size() * sizeof(PhaseBarrier);
+    bit_stream = malloc(bit_stream_size);
+    free_bit_stream = true;
+
+    unsigned char *serialized = (unsigned char*)(bit_stream);
+
+    size_t stream_size = 0;
+    stream_size += archiveScalar(spmd_args->pbarrier_as_master, (void*)(serialized+stream_size));
+    stream_size += archiveVector(spmd_args->masters_pbarriers, (void*)(serialized+stream_size));
+
+    assert(stream_size == bit_stream_size);
+}
+
+template<class Type>
+static size_t restoreScalar(Type* scalar, void* bit_stream)
+{
+    memcpy((void*)scalar, bit_stream, sizeof(Type));
+    return sizeof(Type);
+}
+
+template<class Type>
+static size_t restoreVector(std::vector<Type>* vec, void* bit_stream)
+{
+    unsigned char *serialized = (unsigned char*)(bit_stream) ;
+
+    size_t n_entries;
+    size_t size_size = restoreScalar(&n_entries, (void*)serialized);
+    serialized += size_size;
+
+    vec->resize(n_entries);
+    size_t vec_size = n_entries * sizeof(Type);
+    memcpy((void*)vec->data(), (void*)serialized, vec_size);
+
+    return size_size + vec_size;
+}
+
+void SPMDArgsSerializer::restore(SPMDArgs* spmd_args)
+{
+    assert(spmd_args != nullptr);
+    assert(bit_stream != nullptr);
+
+    unsigned char *serialized_args = (unsigned char *) bit_stream;
+
+    bit_stream_size = 0;
+    bit_stream_size += restoreScalar(&(spmd_args->pbarrier_as_master), (void*)(serialized_args + bit_stream_size));
+    bit_stream_size += restoreVector(&(spmd_args->masters_pbarriers), (void*)(serialized_args + bit_stream_size));
+}
+
+void* ArgsSerializer::getBitStream()
+{
+    return bit_stream;
+}
+
+size_t ArgsSerializer::getBitStreamSize()
+{
+    return bit_stream_size;
+}
+
+void ArgsSerializer::setBitStream(void* stream)
+{
+    bit_stream = stream;
+};
+
+void
+ghost_access_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+)
+{
+  using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
+  using field_id = LegionRuntime::HighLevel::FieldID;
+
+  assert(task->local_arglen >= sizeof(SPMDArgs));
+  assert(regions.size() == 2);
+  assert(task->regions.size() == 2);
+  assert(task->regions[0].privilege_fields.size() == 1);
+  assert(task->regions[1].privilege_fields.size() == 1);
+  assert(task->index_point.get_dim() == 1);
+  const int my_rank = task->index_point.point_data[0];
+
+  SPMDArgs args;
+  SPMDArgsSerializer args_serializer;
+  args_serializer.setBitStream(task->local_args);
+  args_serializer.restore(&args);
+
+  LegionRuntime::HighLevel::LogicalRegion lr_shared =
+     regions[0].get_logical_region();
+  LegionRuntime::HighLevel::IndexSpace is_shared = lr_shared.get_index_space();
+  LegionRuntime::HighLevel::IndexIterator itr_shared(runtime, ctx, is_shared);
+  field_id fid_shared = *(task->regions[0].privilege_fields.begin());
+
+  LegionRuntime::HighLevel::LogicalRegion lr_ghost =
+      regions[1].get_logical_region();
+  LegionRuntime::HighLevel::IndexSpace is_ghost = lr_ghost.get_index_space();
+  LegionRuntime::HighLevel::IndexIterator itr_ghost(runtime, ctx, is_ghost);
+  field_id fid_ghost = *(task->regions[1].privilege_fields.begin());
+
+  for (int cycle = 0; cycle < 2; cycle++) {
+
+    // phase 1 masters update their halo regions; slaves may not access data
+
+    // as master
+
+    {
+      AcquireLauncher acquire_launcher(lr_shared, lr_shared, regions[0]);
+      acquire_launcher.add_field(fid_shared);
+      acquire_launcher.add_wait_barrier(args.pbarrier_as_master);                     // phase 1
+      runtime->issue_acquire(ctx, acquire_launcher);
+
+      // master writes to data
+      std::cout << my_rank << " as master writes data; phase 1 of cycle " << cycle << std::endl;
+
+      ReleaseLauncher release_launcher(lr_shared, lr_shared, regions[0]);
+      release_launcher.add_field(fid_shared);
+      release_launcher.add_arrival_barrier(args.pbarrier_as_master);                  // phase 2
+      runtime->issue_release(ctx, release_launcher);
+      args.pbarrier_as_master =
+            runtime->advance_phase_barrier(ctx, args.pbarrier_as_master);             // phase 2
+    }
+
+    // as slave
+
+    for (int master=0; master < args.masters_pbarriers.size(); master++) {
+        args.masters_pbarriers[master].arrive(1);                                     // phase 2
+        args.masters_pbarriers[master] =
+                runtime->advance_phase_barrier(ctx, args.masters_pbarriers[master]);  // phase 2
+    }
+
+    // phase 2 slaves can read data; masters may not write to data
+
+    // as master
+
+    args.pbarrier_as_master.arrive(1);                                                // phase cycle + 1
+    args.pbarrier_as_master =
+            runtime->advance_phase_barrier(ctx, args.pbarrier_as_master);             // phase cycle + 1
+
+    // as slave
+
+    {
+      AcquireLauncher acquire_launcher(lr_ghost, lr_ghost, regions[1]);
+      acquire_launcher.add_field(fid_ghost);
+      for (int master=0; master < args.masters_pbarriers.size(); master++) {
+          acquire_launcher.add_wait_barrier(args.masters_pbarriers[master]);            // phase 2
+      } // no knowledge of which master has which point in ghost: so, wait for all
+      runtime->issue_acquire(ctx, acquire_launcher);
+
+      // slave reads data
+      std::cout << my_rank << " as slave reads data; phase 2 of cycle " << cycle << std::endl;
+      RegionRequirement ghost_req(lr_ghost, READ_ONLY, EXCLUSIVE, lr_ghost);
+      ghost_req.add_field(fid_ghost);
+      InlineLauncher ghost_launcher(ghost_req);
+      PhysicalRegion pregion_ghost = runtime->map_region(ctx, ghost_launcher);
+      LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
+        acc_ghost= regions[1].get_field_accessor(fid_ghost).typeify<size_t>();
+      while(itr_ghost.has_next()){
+        ptr_t ptr = itr_ghost.next();
+        std::cout << my_rank << " reads " << acc_ghost.read(ptr) << " at " << ptr.value << std::endl;
+       }
+
+      ReleaseLauncher release_launcher(lr_ghost, lr_ghost, regions[1]);
+      release_launcher.add_field(fid_ghost);
+      for (int master=0; master < args.masters_pbarriers.size(); master++) {
+          release_launcher.add_arrival_barrier(args.masters_pbarriers[master]);         // phase cycle + 1
+          args.masters_pbarriers[master] =
+                  runtime->advance_phase_barrier(ctx, args.masters_pbarriers[master]);  // phase cycle + 1
+      }
+      runtime->issue_release(ctx, release_launcher);
+    }
+  } // cycle
+
+
+/*
+    LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
+      acc_shared= regions[0].get_field_accessor(fid_shared).typeify<size_t>();
+
+
+*/
+
+
+  std::cout << "test ghost access ... passed"
+  << std::endl;
+}//ghost_access_task
+
 
 } // namespace dmp
 } // namespace flecsi

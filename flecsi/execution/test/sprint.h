@@ -37,6 +37,7 @@ FieldIDs {
   FID_CELL,
   FID_VERT,
   FID_GHOST_CELL_ID,
+  FID_DATA,
 };
 
 void
@@ -66,20 +67,10 @@ mpi_task(
 
   index_partition_t ip_vertices;
 
-//  ip_vertices.primary = weaver.get_primary_vertices();
+  ip_vertices.primary = weaver.get_primary_vertices();
   ip_vertices.exclusive = weaver.get_exclusive_vertices();
   ip_vertices.shared = weaver.get_shared_vertices();
   ip_vertices.ghost  = weaver.get_ghost_vertices();
-
-  for (auto vert_s : ip_vertices.shared)
-   {
-     ip_vertices.primary.insert(vert_s.id);
-   }
-  for (auto vert_e : ip_vertices.exclusive)
-   {
-     ip_vertices.primary.insert(vert_e.id);
-   }
-
 #if 0
    std::cout <<"DEBUG CELLS"<<std::endl;
    size_t i=0;
@@ -140,7 +131,7 @@ driver(
 )
 {
   context_t & context_ = context_t::instance();
-  size_t task_key = const_string_t{"driver"}.hash();
+  size_t task_key = utils::const_string_t{"driver"}.hash();
   auto runtime = context_.runtime(task_key);
   auto context = context_.context(task_key);
 
@@ -156,6 +147,7 @@ driver(
     FieldAllocator allocator = runtime->create_field_allocator(context,
                                              cells_fs);
     allocator.allocate_field(sizeof(size_t), FID_CELL);
+    allocator.allocate_field(sizeof(size_t), FID_DATA);
   }
 
   int num_ranks;
@@ -700,6 +692,66 @@ driver(
 
 
 
+  //call a legion task that tests ghost cell access
+
+  std::vector<PhaseBarrier> phase_barriers;
+  std::vector<std::set<int>> master_colors(num_ranks);
+  for (int master_color=0; master_color < num_ranks; ++master_color) {
+      std::set<int> slave_colors;
+      for (std::set<ptr_t>::iterator it=cells_shared_coloring[master_color].points.begin();
+              it!=cells_shared_coloring[master_color].points.end(); ++it) {
+          const ptr_t ptr = *it;
+          for (int slave_color = 0; slave_color < num_ranks; ++slave_color)
+              if (cells_ghost_coloring[slave_color].points.count(ptr)) {
+                  slave_colors.insert(slave_color);
+                  master_colors[slave_color].insert(master_color);
+              }
+      }
+
+      phase_barriers.push_back(runtime->create_phase_barrier(context, 1 + slave_colors.size()));
+  }
+
+  std::vector<dmp::SPMDArgs> spmd_args(num_ranks);
+  std::vector<dmp::SPMDArgsSerializer> args_seriliazed(num_ranks);
+  for (int color=0; color < num_ranks; ++color) {
+      spmd_args[color].pbarrier_as_master = phase_barriers[color];
+
+      for (std::set<int>::iterator master=master_colors[color].begin();
+              master!=master_colors[color].end(); ++master)
+          spmd_args[color].masters_pbarriers.push_back(phase_barriers[*master]);
+
+      args_seriliazed[color].archive(&(spmd_args[color]));
+      arg_map.set_point(DomainPoint::from_point<1>(Point<1>(color)),
+              TaskArgument(args_seriliazed[color].getBitStream(), args_seriliazed[color].getBitStreamSize()));
+  }
+
+  LegionRuntime::HighLevel::IndexLauncher ghost_access_launcher(
+  task_ids_t::instance().ghost_access_task_id,
+  rank_domain,
+  LegionRuntime::HighLevel::TaskArgument(0, 0),
+  arg_map);
+
+  ghost_access_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+
+  ghost_access_launcher.add_region_requirement(
+  RegionRequirement(cells_shared_lp, 0/*projection ID*/,
+                    READ_ONLY, SIMULTANEOUS, cells_lr));
+  ghost_access_launcher.add_field(0, FID_DATA);
+
+  ghost_access_launcher.add_region_requirement(
+  RegionRequirement(cells_ghost_lp, 0/*projection ID*/,
+                    READ_ONLY, SIMULTANEOUS, cells_lr));
+  ghost_access_launcher.add_field(1, FID_DATA);
+
+  MustEpochLauncher must_epoch_launcher;
+  must_epoch_launcher.add_index_task(ghost_access_launcher);
+
+  FutureMap fm7 = runtime->execute_must_epoch(context,must_epoch_launcher);
+  fm7.wait_all_results();
+
+  for (unsigned idx = 0; idx < phase_barriers.size(); idx++)
+    runtime->destroy_phase_barrier(context, phase_barriers[idx]);
+  phase_barriers.clear();
 } // driver
 
 } // namespace execution

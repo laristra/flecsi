@@ -12,17 +12,16 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_iterator_h
-#define flecsi_iterator_h
+#ifndef flecsi_utils_iterator_h
+#define flecsi_utils_iterator_h
 
 /*!
- * \file iterator.h
- * \authors bergen
+ * \file
  * \date Initial file creation: Oct 09, 2015
  */
 
-namespace flecsi
-{
+namespace flecsi {
+namespace utils {
 
 /*!
   \class iterator iterator.h
@@ -86,9 +85,10 @@ class iterator
 
 }; // class iterator
 
+} // namespace utils
 } // namespace flecsi
 
-#endif // flecsi_iterator_h
+#endif // flecsi_utils_iterator_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

@@ -12,13 +12,11 @@
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
 /*!
- *
- * \file static_verify.h
- *
+ * \file
  * \brief Utilities for performing static verification.
- *
  ******************************************************************************/
-#pragma once
+#ifndef flecsi_utils_static_verify_h
+#define flecsi_utils_static_verify_h
 
 #ifndef FLECSI_MEMBER_CHECKER
 #define FLECSI_MEMBER_CHECKER(X) template<typename T> \
@@ -32,7 +30,8 @@ struct has_member_##X{ \
 }
 #endif
 
-namespace flecsi{
+namespace flecsi {
+namespace utils {
 
   template<typename T>
   struct is_tuple{
@@ -44,7 +43,10 @@ namespace flecsi{
     static const bool value = true;
   };
 
+} // namespace utils
 } // namespace flecsi
+
+#endif // flecsi_utils_static_verify_h
 
 /*~------------------------------------------------------------------------~--*
  * Formatting options

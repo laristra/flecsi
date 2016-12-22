@@ -37,15 +37,15 @@
                                                                                \
   /* Function return type (trt) */                                             \
   using name ## _trt_t =                                                       \
-    typename flecsi::function_traits__<decltype(name)>::return_type;           \
+    typename flecsi::utils::function_traits__<decltype(name)>::return_type;    \
                                                                                \
   /* Function arguments type (tat) */                                          \
   using name ## _tat_t =                                                       \
-    typename flecsi::function_traits__<decltype(name)>::arguments_type;        \
+    typename flecsi::utils::function_traits__<decltype(name)>::arguments_type; \
                                                                                \
   /* Wrapper to call user function with tuple arguments */                     \
   inline name ## _trt_t name ## _tuple_wrapper(name ## _tat_t && args) {       \
-    return flecsi::tuple_function(name, args);                                 \
+    return flecsi::utils::tuple_function(name, args);                          \
   } /* task ## _tuple_wrapper */                                               \
                                                                                \
   /* Make std::function delegate */                                            \
@@ -76,7 +76,7 @@
 ///
 #define function_handle(name)                                                  \
   function_handle_ ## name ## _t(                                              \
-    const_string_t{EXPAND_AND_STRINGIFY(name)}.hash())
+    utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash())
 
 ///
 // FIXME
@@ -119,9 +119,9 @@
   /* WARNING: This macro returns a future. Don't add terminations! */          \
   flecsi::execution::task_t::execute_task<task ## _trt_t>                      \
     (reinterpret_cast<uintptr_t>(&task), processor, launch,                    \
-    const_string_t{__func__}.hash(),                                           \
+    utils::const_string_t{__func__}.hash(),                                    \
     function_handle__<task ## _trt_t, task ## _tat_t>(                         \
-      const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()), ## __VA_ARGS__)
+      utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()), ## __VA_ARGS__)
 
 //----------------------------------------------------------------------------//
 // Kernel Interface

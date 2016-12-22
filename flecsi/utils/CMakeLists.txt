@@ -16,18 +16,9 @@ set(utils_HEADERS
   any.h
   array_ref.h
   bitfield.h
-  check_sig.h
-  check_types.h
   common.h
   const_string.h
-  detail/check_types.h
-  detail/static_for.h
-  detail/tuple_for_each.h
-  detail/tuple_visit.h
-  detail/tuple_zip.h
-  detail/zip.h
   dimensioned_array.h
-  doxygen_main.h
   factory.h
   hash.h
   humble.h
@@ -37,20 +28,9 @@ set(utils_HEADERS
   logging.h
   reorder.h
   set_intersection.h
-  static_container/meta_counter.h
-  static_container/meta_list.h
-  static_container/static_for.h
-  static_container/type_list.h
-  static_for.h
-  static_list.h
   static_verify.h
-  tuple_filter.h
-  tuple_for_each.h
   tuple_function.h
-  tuple_visit.h
   tuple_wrapper.h
-  tuple_zip.h
-  zip.h
 )
 
 set(utils_SOURCES
@@ -59,20 +39,8 @@ set(utils_SOURCES
 )
 
 
-if (ENABLE_STATIC_CONTAINER)
-set(utils_HEADERS 
-   ${utils_HEADERS} 
-   static_container/type_list.h
-   static_container/meta_counter.h
-   static_container/meta_list.h
-   static_container/static_for.h
-   )
-endif (ENABLE_STATIC_CONTAINER)
 
 set(utils_HEADERS ${utils_HEADERS} PARENT_SCOPE)
-
-cinch_add_unit(check_sig
-  SOURCES test/check_sig.cc)
 
 cinch_add_unit(const_string
   SOURCES test/const_string.cc)
@@ -83,31 +51,8 @@ cinch_add_unit(factory
 cinch_add_unit(reorder
   SOURCES test/reorder.cc)
 
-cinch_add_unit(zip
-  SOURCES test/zip.cc)
-
-cinch_add_unit(static_for
-  SOURCES test/static_for.cc)
-
-#cinch_add_unit(static_list
-#  SOURCES test/static_list.cc)
-
-cinch_add_unit(tuple_for_each
-  SOURCES test/tuple_for_each.cc)
-
-cinch_add_unit(tuple_visit
-  SOURCES test/tuple_visit.cc)
-
-cinch_add_unit(tuple_zip
-  SOURCES test/tuple_zip.cc)
-
 cinch_add_unit(any
   SOURCES test/any.cc)
- 
-if (ENABLE_STATIC_CONTAINER)
-cinch_add_unit(meta_container
-  SOURCES test/meta_container.cc)
-endif (ENABLE_STATIC_CONTAINER)
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options
