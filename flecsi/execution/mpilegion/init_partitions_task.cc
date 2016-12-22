@@ -31,6 +31,7 @@ get_numbers_of_cells_task(
 {
   struct parts partitions; 
   using index_partition_t = index_partition__<size_t>;
+  using field_id = LegionRuntime::HighLevel::FieldID;
 
   flecsi::execution::context_t & context_ =
     flecsi::execution::context_t::instance();
@@ -111,6 +112,7 @@ initialization_task(
   std::cout << "Here I am in init_cells" << std::endl;
 
   using index_partition_t = index_partition__<size_t>;
+  using field_id = LegionRuntime::HighLevel::FieldID;
 
   flecsi::execution::context_t & context_ =
     flecsi::execution::context_t::instance();
@@ -126,8 +128,12 @@ initialization_task(
 
   LegionRuntime::HighLevel::IndexIterator itr_cells(runtime, ctx, is_cells);
 
-  auto acc_cells = regions[0].get_field_accessor(0).typeify<size_t>();
+//  auto acc_cells = regions[0].get_field_accessor(0).typeify<size_t>();
 
+  field_id fid_cell = *(task->regions[0].privilege_fields.begin());
+  LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic, size_t>  acc_cells = regions[0].get_field_accessor(fid_cell).typeify<size_t>();
+
+  
   for (auto primary_cell : ip_cells.primary) {
     assert(itr_cells.has_next());
     size_t id =primary_cell;
@@ -142,7 +148,12 @@ initialization_task(
 
   LegionRuntime::HighLevel::IndexIterator itr_vert(runtime, ctx, is_vert);
 
-  auto acc_vert = regions[1].get_field_accessor(0).typeify<size_t>();
+  //auto acc_vert = regions[1].get_field_accessor(0).typeify<size_t>();
+  
+  field_id fid_vert = *(task->regions[1].privilege_fields.begin());
+  LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic, size_t>  acc_vert = regions[1].get_field_accessor(fid_vert).typeify<size_t>();
+
+  
 
   for (auto primary_vert : ip_vert.primary) {
     assert(itr_vert.has_next());
