@@ -18,7 +18,7 @@
 
 TEST(task, execute) {
 
-  // This translation doesn't do anything, but it is currently
+  // This translation unit doesn't do anything, but it is currently
   // required to complete compilation. The actual test logic is
   // in 'task_driver.h'.
 
