@@ -453,8 +453,8 @@ driver(
   vertices_part.size = total_num_vertices;
 
   legion_dpd cells_to_vertices(context, runtime);
-  cells_to_vertices.create_connectivity(2, cells_part, 0, vertices_part,
-    raw_connectivity_part);
+  //cells_to_vertices.create_connectivity(2, cells_part, 0, vertices_part,
+  //  raw_connectivity_part);
 
   runtime->destroy_index_partition(context, raw_connectivity_part.ip);
   runtime->destroy_logical_region(context, raw_connectivity_part.lr);
