@@ -79,9 +79,11 @@ namespace execution {
       return runtime_->create_logical_region(context_, is, fs);
     }
 
+/*
     Legion::Future execute_task(Legion::TaskLauncher l) const{
       return runtime_->execute_task(context_, l);
     }
+*/
 
     Legion::Domain get_index_space_domain(Legion::IndexSpace is) const{
       return runtime_->get_index_space_domain(context_, is);

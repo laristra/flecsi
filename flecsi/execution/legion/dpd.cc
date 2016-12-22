@@ -14,6 +14,7 @@
 #include <iostream>
 
 #include "legion_utilities.h"
+#include "flecsi/execution/mpilegion/task_ids.h"
 
 using namespace std;
 using namespace Legion;
@@ -23,6 +24,15 @@ namespace flecsi {
 namespace execution {
 
   namespace{
+
+    // from sprint.h
+    enum
+    FieldIDs {
+      FID_CELL,
+      FID_VERT,
+      FID_GHOST_CELL_ID,
+      FID_ENTITY_PAIR
+    };
 
     const size_t MAX_INDICES = 1024;
 
@@ -315,12 +325,14 @@ namespace execution {
     il.region_requirements[0].add_field(ENTRY_OFFSET_FID);
     il.region_requirements[0].add_field(VALUE_FID);
 
+    /*
     LogicalPartition lp2 =
       runtime_->get_logical_partition(context_, from_.lr, from_.ip);
     il.add_region_requirement(
           RegionRequirement(lp2, 0, 
                             READ_WRITE, EXCLUSIVE, from_.lr));
     il.region_requirements[1].add_field(OFFSET_COUNT_FID);
+    */
 
     FutureMap fm = h.execute_index_space(il);
     fm.wait_all_results();
@@ -578,7 +590,8 @@ namespace execution {
     Domain d = h.domain_from_rect(0, num_partitions - 1);
 
     IndexLauncher
-      il(INIT_CONNECTIVITY_TID, d, TaskArgument(nullptr, 0), arg_map);
+      il(task_ids_t::instance().dpd_init_connectivity_task_id,
+        d, TaskArgument(nullptr, 0), arg_map);
 
     LogicalPartition ent_from_lp =
       runtime_->get_logical_partition(context_, from_.lr, from_.ip);
@@ -587,7 +600,7 @@ namespace execution {
           RegionRequirement(ent_from_lp, 0, 
                             READ_ONLY, EXCLUSIVE, from_.lr));
 
-    il.region_requirements[0].add_field(ENTITY_FID);
+    il.region_requirements[0].add_field(FID_CELL);
 
     il.add_region_requirement(
           RegionRequirement(ent_from_lp, 0, 
@@ -622,7 +635,7 @@ namespace execution {
           RegionRequirement(to_.lr, 0, 
                             READ_ONLY, EXCLUSIVE, to_.lr));
 
-    il.region_requirements[4].add_field(ENTITY_FID);
+    il.region_requirements[4].add_field(FID_VERT);
 
 
 
@@ -651,7 +664,7 @@ namespace execution {
     to_pr.wait_until_valid();
 
     RegionRequirement rr3(to_.lr, READ_ONLY, EXCLUSIVE, to_.lr);
-    rr3.add_field(ENTITY_FID);
+    rr3.add_field(FID_VERT);
     InlineLauncher il3(rr3);
 
     PhysicalRegion to_ent_pr = runtime_->map_region(context_, il3);
@@ -674,7 +687,7 @@ namespace execution {
 
       auto to_ac = to_pr.get_field_accessor(PTR_FID).typeify<ptr_t>();
       auto to_ent_ac = 
-        to_ent_pr.get_field_accessor(ENTITY_FID).typeify<size_t>();
+        to_ent_pr.get_field_accessor(FID_VERT).typeify<size_t>();
 
       size_t j = 0;
       size_t n = pc.count;

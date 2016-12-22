@@ -18,6 +18,8 @@
 #include "flecsi/partition/index_partition.h"
 #include "flecsi/execution/mpilegion/init_partitions_task.h"
 
+#include "flecsi/execution/legion/dpd.h"
+
 namespace flecsi {
 namespace dmp {
 
@@ -38,7 +40,10 @@ get_numbers_of_cells_task(
   
   //getting vertices partitioning info from MPI
   index_partition_t ip_vertices =
-    context_.interop_helper_.data_storage_[1]; 
+    context_.interop_helper_.data_storage_[1];
+
+  std::vector<std::pair<size_t, size_t>> raw_cell_vertex_conns =
+      context_.interop_helper_.data_storage_[2];  
 #if 0
   size_t rank; 
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -80,6 +85,8 @@ get_numbers_of_cells_task(
   partitions.exclusive_vertices = ip_vertices.exclusive.size();
   partitions.shared_vertices = ip_vertices.shared.size();
   partitions.ghost_vertices = ip_vertices.ghost.size();
+
+  partitions.vertex_conns = raw_cell_vertex_conns.size();
 
   std::cout << "about to return partitions (primary,exclusive,shared,ghost) ("
             << partitions.primary_cells << "," 
@@ -692,6 +699,33 @@ check_partitioning_task(
   << std::endl;
 }//check_partitioning_task
 
+void
+init_raw_conn_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+)
+{
+  flecsi::execution::context_t & context_ =
+    flecsi::execution::context_t::instance();
+
+  std::vector<std::pair<size_t, size_t>> raw_cell_vertex_conns =
+      context_.interop_helper_.data_storage_[2];
+
+  LogicalRegion raw_conn_lr = regions[0].get_logical_region();
+  IndexSpace raw_conn_is = raw_conn_lr.get_index_space();
+
+  auto raw_conn_ac = 
+    regions[0].get_field_accessor(flecsi::execution::legion_dpd::ENTITY_PAIR_FID).
+    typeify<std::pair<size_t, size_t>>();
+
+  size_t i = 0;
+  IndexIterator raw_conn_itr(runtime, ctx, raw_conn_is);
+  while(raw_conn_itr.has_next()){
+    ptr_t ptr = raw_conn_itr.next();
+    raw_conn_ac.write(ptr, raw_cell_vertex_conns[i++]);
+  }
+}
 
 template<class Type>
 static size_t archiveScalar(Type scalar, void* bit_stream)
