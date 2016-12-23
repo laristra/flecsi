@@ -95,9 +95,9 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
       INPUTS
         test/simple2d-8x8.msh
       DEFINES SPRINT_TEST
-      DEFINES 
-         FLECSI_DRIVER=flecsi/execution/test/sprint.h
-         GTEST_INIT=flecsi/execution/test/task_init.h
+      DEFINES
+	FLECSI_DRIVER=flecsi/execution/test/sprint.h
+        GTEST_INIT=flecsi/execution/test/task_init.h
       LIBRARIES ${PARTITION_LIBRARIES}
       POLICY MPILEGION
       THREADS 2
