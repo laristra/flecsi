@@ -137,7 +137,7 @@ void top_level_task(const Task* task,
   cd.indices[0] = make_pair(0, 3);
   
   for(size_t i = 1; i < cd.num_indices; ++i){
-    cd.indices[i] = make_pair(3, 0);
+    cd.indices[i] = make_pair(3, 3);
   }
 
   dpd.commit(cd);

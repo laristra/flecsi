@@ -126,7 +126,7 @@ namespace execution {
       to_ac.write(to_ptr, itr.second);
       ++count;
 
-      if(to_itr.has_next()) {
+      if(to_itr.has_next()){
         to_ptr = to_itr.next();
       }
     }
@@ -171,6 +171,12 @@ namespace execution {
       a.allocate_field(sizeof(entry_offset), ENTRY_OFFSET_FID);
       a.allocate_field(args.value_size, VALUE_FID);
       md.lr = h.create_logical_region(is, fs);
+
+      DomainPointColoring coloring;
+      DomainPoint dp = DomainPoint::from_point<1>(make_point(p));
+      coloring.emplace(dp, h.domain_from_rect(0, args.reserve - 1));
+      Domain cd = h.domain_from_point(p);
+      md.ip = runtime->create_index_partition(ctx, is, cd, coloring);
     }
 
     meta_ac.write(DomainPoint::from_point<1>(p), md);
@@ -244,52 +250,6 @@ namespace execution {
     fm.wait_all_results();
   }
 
-  void legion_dpd::update_partition_metadata(size_t partition){
-    partition_metadata md;
-
-    Domain partition_domain = h.domain_from_point(partition);
-
-    LogicalPartition lp =
-      runtime_->get_logical_partition(context_, partition_metadata_lr_, 
-                                      partition_metadata_ip_);
-
-    {
-      ArgumentMap arg_map;
-
-      IndexLauncher il(GET_PARTITION_METADATA_TID, partition_domain,
-        TaskArgument(nullptr, 0), arg_map);
-
-      il.add_region_requirement(
-            RegionRequirement(lp, 0, 
-                              READ_ONLY, EXCLUSIVE, partition_metadata_lr_));
-      il.region_requirements[0].add_field(PARTITION_METADATA_FID);
-
-      FutureMap fm = h.execute_index_space(il);
-      fm.wait_all_results();
-      DomainPoint dp = DomainPoint::from_point<1>(make_point(partition));
-      md = fm.get_result<partition_metadata>(dp);
-    }
-
-
-    {
-      ArgumentMap arg_map;
-
-      IndexLauncher il(PUT_PARTITION_METADATA_TID, partition_domain,
-        TaskArgument(&md, sizeof(md)), arg_map);
-
-      il.add_region_requirement(
-            RegionRequirement(lp, 0, 
-                              WRITE_DISCARD, EXCLUSIVE,
-                              partition_metadata_lr_));
-      
-      il.region_requirements[0].add_field(PARTITION_METADATA_FID);
-
-      FutureMap fm = h.execute_index_space(il);
-      fm.wait_all_results();
-    }
-
-  }
-
   void legion_dpd::commit_(commit_data<char>& cd, size_t value_size){
     ArgumentMap arg_map;
 
@@ -320,21 +280,24 @@ namespace execution {
     IndexLauncher il(COMMIT_DATA_TID, d,
       TaskArgument(&args, sizeof(args)), arg_map);
 
+    LogicalPartition lp =
+      runtime_->get_logical_partition(context_, args.md.lr, args.md.ip);
+
     il.add_region_requirement(
-          RegionRequirement(args.md.lr, 0, READ_WRITE,
+          RegionRequirement(lp, 0, READ_WRITE,
                             EXCLUSIVE, args.md.lr));
     
     il.region_requirements[0].add_field(ENTRY_OFFSET_FID);
     il.region_requirements[0].add_field(VALUE_FID);
 
-    /*
     LogicalPartition lp2 =
       runtime_->get_logical_partition(context_, from_.lr, from_.ip);
+    
     il.add_region_requirement(
           RegionRequirement(lp2, 0, 
                             READ_WRITE, EXCLUSIVE, from_.lr));
+    
     il.region_requirements[1].add_field(OFFSET_COUNT_FID);
-    */
 
     FutureMap fm = h.execute_index_space(il);
     fm.wait_all_results();
@@ -433,6 +396,8 @@ namespace execution {
 
     legion_helper h(runtime, context);
 
+    size_t p = task->index_point.point_data[0];
+
     commit_data_args& args = *(commit_data_args*)task->args;
     size_t value_size = args.value_size;
     size_t slot_size = args.slot_size;
@@ -442,7 +407,8 @@ namespace execution {
 
     partition_metadata& md = args.md;
 
-    void* args_buf = *(char**)task->local_args;
+    void* args_buf = task->local_args;
+
     Deserializer deserializer(args_buf, args.buf_size);
     void* indices_buf = malloc(args.indices_buf_size);
     deserializer.deserialize(indices_buf, args.indices_buf_size);
@@ -450,7 +416,9 @@ namespace execution {
     void* entries_buf = malloc(args.entries_buf_size);
     deserializer.deserialize(entries_buf, args.entries_buf_size);
 
-    size_t p = task->index_point.point_data[0];
+    char* commit_entry_values = (char*)entries_buf;
+
+    index_pair* commit_indices = (index_pair*)indices_buf;
 
     entry_offset* entry_offsets;
     h.get_buffer(regions[0], entry_offsets, ENTRY_OFFSET_FID);
@@ -468,7 +436,12 @@ namespace execution {
     size_t c = md.reserve;
     size_t d = num_indices * num_slots;
 
+    PhysicalRegion pr;
+    bool resized = false;
+
     if(c - s < d){
+      resized = true;
+
       md.reserve *= 2;
 
       IndexSpace is = h.create_index_space(0, md.reserve - 1);
@@ -483,7 +456,7 @@ namespace execution {
       rr.add_field(VALUE_FID);
       InlineLauncher il(rr);
 
-      PhysicalRegion pr = runtime->map_region(context, il);
+      pr = runtime->map_region(context, il);
       pr.wait_until_valid();
 
       entry_offset* entry_offsets2;
@@ -493,21 +466,32 @@ namespace execution {
       copy(entry_offsets, entry_offsets + md.size, entry_offsets2);
       copy(values, values + md.size * value_size, values2);
 
-      runtime->unmap_region(context, pr);
+      runtime->unmap_region(context, regions[0]);
+
+      runtime->destroy_logical_region(context, md.lr);
+      runtime->destroy_index_partition(context, md.ip);
+      
       md.lr = lr2;
+
+      DomainPointColoring coloring;
+      DomainPoint dp = DomainPoint::from_point<1>(make_point(p));
+      coloring.emplace(dp, h.domain_from_rect(0, md.reserve - 1));
+      Domain cd = h.domain_from_point(p);
+      
+      md.ip = runtime->create_index_partition(context, is, cd, coloring);
     }
 
     entry_offset* entry_offsets_end = entry_offsets + md.size;
 
     IndexIterator ent_itr(runtime, context, ent_is);
-/*
+
     for(size_t i = 0; i < num_indices; ++i){
       assert(ent_itr.has_next());
       ptr_t ptr = ent_itr.next();
 
       offset_count oc = ent_ac.read(ptr);
 
-      const index_pair& ip = args.indices[i];
+      const index_pair& ip = commit_indices[i];
 
       size_t n = ip.second - ip.first;
 
@@ -519,13 +503,15 @@ namespace execution {
         continue;
       }
 
+      for(int j = 0; j < n; ++j){
+
+      }
+
       char* start = commit_entry_values + i * num_slots * entry_value_size;
       char* end = start + n * entry_value_size; 
 
-
-      ent_ac.write(ptr, oc);
+      //ent_ac.write(ptr, oc);
     }
-*/
 
 /*
     IndexIterator ent_itr(runtime, context, ent_is);
@@ -536,6 +522,10 @@ namespace execution {
       //np(oc.count);
     }
     */
+
+    if(resized){
+      runtime->unmap_region(context, pr);
+    }
 
     return md;
   }  

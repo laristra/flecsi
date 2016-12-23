@@ -94,6 +94,7 @@ public:
   struct partition_metadata{
     size_t partition;
     Legion::LogicalRegion lr;
+    Legion::IndexPartition ip;
     size_t size;
     size_t reserve;
   };
@@ -135,8 +136,6 @@ public:
   }
 
   void commit_(commit_data<char>& cd, size_t value_size);
-
-  void update_partition_metadata(size_t partition);  
 
   void create_data_(partitioned_unstructured& indices,
                     size_t start_reserve,
