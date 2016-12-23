@@ -54,7 +54,7 @@
                                                                                \
   /* Define name handle type */                                                \
   using function_handle_ ## name ## _t =                                       \
-    function_handle__<name ## _trt_t, name ## _tat_t>;                         \
+    flecsi::execution::function_handle__<name ## _trt_t, name ## _tat_t>;      \
                                                                                \
   /* Register the function delegate */                                         \
   bool name ## _function_registered =                                          \
