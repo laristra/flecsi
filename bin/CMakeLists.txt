@@ -13,7 +13,7 @@ set(exec_path ${PROJECT_SOURCE_DIR}/flecsi/execution)
 if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
     list(APPEND example_src ${exec_path}/serial/runtime_driver.cc)
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
-    list(APPEND example_src ${exec_path}/legion/runtime_driver.cc $
+    list(APPEND example_src ${exec_path}/legion/runtime_driver.cc
                             ${exec_path}/legion/dpd.cc)
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
     list(APPEND example_src ${exec_path}/mpilegion/runtime_driver.cc

@@ -838,7 +838,7 @@ driver(
 
   ghost_access_launcher.add_region_requirement(
   RegionRequirement(cells_shared_lp, 0/*projection ID*/,
-                    READ_ONLY, SIMULTANEOUS, cells_lr));
+                    READ_WRITE, SIMULTANEOUS, cells_lr));
   ghost_access_launcher.add_field(0, FID_DATA);
 
   ghost_access_launcher.add_region_requirement(
