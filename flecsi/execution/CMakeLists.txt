@@ -140,7 +140,9 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
   if(NOT DEFINED ENV{TRAVIS})
     cinch_add_unit(test_legion_handshake
-      SOURCES test/test_legion_handshake.cc
+      SOURCES test/handshake_init.h test/test_legion_handshake.cc
+      DEFINES
+         GTEST_INIT=flecsi/execution/test/handshake_init.h
       POLICY MPILEGION
     )
 
