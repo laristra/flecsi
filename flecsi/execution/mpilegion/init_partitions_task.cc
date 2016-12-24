@@ -21,7 +21,8 @@
 #include "flecsi/execution/legion/dpd.h"
 
 namespace flecsi {
-namespace dmp {
+namespace execution {
+namespace sprint {
 
 parts
 get_numbers_of_cells_task(
@@ -30,7 +31,7 @@ get_numbers_of_cells_task(
   Legion::Context ctx, Legion::HighLevelRuntime *runtime) 
 {
   struct parts partitions; 
-  using index_partition_t = index_partition__<size_t>;
+  using index_partition_t = flecsi::dmp::index_partition__<size_t>;
   using field_id = LegionRuntime::HighLevel::FieldID;
 
   flecsi::execution::context_t & context_ =
@@ -111,7 +112,7 @@ initialization_task(
   assert(task->regions[1].privilege_fields.size() == 1);
   std::cout << "Here I am in init_cells" << std::endl;
 
-  using index_partition_t = index_partition__<size_t>;
+  using index_partition_t = flecsi::dmp::index_partition__<size_t>;
   using field_id = LegionRuntime::HighLevel::FieldID;
 
   flecsi::execution::context_t & context_ =
@@ -177,8 +178,9 @@ shared_part_task(
   assert(task->regions[0].privilege_fields.size() == 1);
   assert(task->regions[1].privilege_fields.size() == 1);
 
-  using index_partition_t = index_partition__<size_t>;
+  using index_partition_t = flecsi::dmp::index_partition__<size_t>;
   using legion_domain = LegionRuntime::HighLevel::Domain;
+  field_ids_t & fid_t =field_ids_t::instance();
 
   flecsi::execution::context_t & context_ =
     flecsi::execution::context_t::instance();
@@ -203,7 +205,7 @@ shared_part_task(
   {
     LegionRuntime::HighLevel::FieldAllocator allocator =
         runtime->create_field_allocator(ctx,cells_shared_fs);
-    allocator.allocate_field(sizeof(ptr_t), FID_SHARED);
+    allocator.allocate_field(sizeof(ptr_t), fid_t.fid_ptr_t);
   }
 
   shared_lr.cells=
@@ -213,14 +215,14 @@ shared_part_task(
   {
     LegionRuntime::HighLevel::RegionRequirement req(shared_lr.cells,
                       READ_WRITE, EXCLUSIVE, shared_lr.cells);
-    req.add_field(FID_SHARED);
+    req.add_field(fid_t.fid_ptr_t);
     LegionRuntime::HighLevel::InlineLauncher shared_launcher(req);
     LegionRuntime::HighLevel::PhysicalRegion shared_region =
               runtime->map_region(ctx, shared_launcher);
     shared_region.wait_until_valid();
     LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
-      shared_region.get_field_accessor(FID_SHARED).typeify<ptr_t>();
+      shared_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
 
     int indx=0;
     LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, cells_is);
@@ -250,7 +252,7 @@ shared_part_task(
   {
     LegionRuntime::HighLevel::FieldAllocator allocator =
         runtime->create_field_allocator(ctx,vert_shared_fs);
-    allocator.allocate_field(sizeof(ptr_t), FID_SHARED);
+    allocator.allocate_field(sizeof(ptr_t), fid_t.fid_ptr_t);
   }
 
   shared_lr.vert=
@@ -260,14 +262,14 @@ shared_part_task(
   {
     LegionRuntime::HighLevel::RegionRequirement req(shared_lr.vert,
                       READ_WRITE, EXCLUSIVE, shared_lr.vert);
-    req.add_field(FID_SHARED);
+    req.add_field(fid_t.fid_ptr_t);
     LegionRuntime::HighLevel::InlineLauncher shared_launcher(req);
     LegionRuntime::HighLevel::PhysicalRegion shared_region =
               runtime->map_region(ctx, shared_launcher);
     shared_region.wait_until_valid();
     LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
-      shared_region.get_field_accessor(FID_SHARED).typeify<ptr_t>();
+      shared_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
 
     size_t indx=0;
     LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, vert_is);
@@ -299,8 +301,9 @@ exclusive_part_task(
   assert(task->regions[0].privilege_fields.size() == 1);
   assert(task->regions[1].privilege_fields.size() == 1);
   
-  using index_partition_t = index_partition__<size_t>;
+  using index_partition_t = flecsi::dmp::index_partition__<size_t>;
   using legion_domain = LegionRuntime::HighLevel::Domain;
+  field_ids_t & fid_t =field_ids_t::instance();
   
   flecsi::execution::context_t & context_ =
     flecsi::execution::context_t::instance();
@@ -329,7 +332,7 @@ exclusive_part_task(
   { 
     LegionRuntime::HighLevel::FieldAllocator allocator =
         runtime->create_field_allocator(ctx,cells_exclusive_fs);
-    allocator.allocate_field(sizeof(ptr_t), FID_EXCLUSIVE);
+    allocator.allocate_field(sizeof(ptr_t), fid_t.fid_ptr_t);
   }
   
   exclusive_lr.cells=runtime->create_logical_region(ctx,cells_exclusive_is, 
@@ -339,14 +342,14 @@ exclusive_part_task(
   {
     LegionRuntime::HighLevel::RegionRequirement req(exclusive_lr.cells,
                       READ_WRITE, EXCLUSIVE, exclusive_lr.cells);
-    req.add_field(FID_EXCLUSIVE);
+    req.add_field(fid_t.fid_ptr_t);
     LegionRuntime::HighLevel::InlineLauncher exclusive_launcher(req);
     LegionRuntime::HighLevel::PhysicalRegion exclusive_region =
               runtime->map_region(ctx, exclusive_launcher);
     exclusive_region.wait_until_valid();
     LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
-      exclusive_region.get_field_accessor(FID_EXCLUSIVE).typeify<ptr_t>();
+      exclusive_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
 
     size_t indx=0;
     LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, cells_is);
@@ -373,7 +376,7 @@ exclusive_part_task(
   {
     LegionRuntime::HighLevel::FieldAllocator allocator =
         runtime->create_field_allocator(ctx, vert_exclusive_fs);
-    allocator.allocate_field(sizeof(ptr_t), FID_EXCLUSIVE);
+    allocator.allocate_field(sizeof(ptr_t), fid_t.fid_ptr_t);
   }
 
   exclusive_lr.vert=runtime->create_logical_region(ctx, vert_exclusive_is,
@@ -383,14 +386,14 @@ exclusive_part_task(
   {
     LegionRuntime::HighLevel::RegionRequirement req(exclusive_lr.vert,
                       READ_WRITE, EXCLUSIVE, exclusive_lr.vert);
-    req.add_field(FID_EXCLUSIVE);
+    req.add_field(fid_t.fid_ptr_t);
     LegionRuntime::HighLevel::InlineLauncher exclusive_launcher(req);
     LegionRuntime::HighLevel::PhysicalRegion exclusive_region =
               runtime->map_region(ctx, exclusive_launcher);
     exclusive_region.wait_until_valid();
     LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
-      exclusive_region.get_field_accessor(FID_EXCLUSIVE).typeify<ptr_t>();
+      exclusive_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
 
     size_t indx=0;
     LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, vert_is);
@@ -421,11 +424,12 @@ ghost_part_task(
   assert(task->regions[0].privilege_fields.size() == 1);
   assert(task->regions[1].privilege_fields.size() == 1);
   
-  using index_partition_t = index_partition__<size_t>;
+  using index_partition_t = flecsi::dmp::index_partition__<size_t>;
   using legion_domain = LegionRuntime::HighLevel::Domain;
   using generic_type = LegionRuntime::Accessor::AccessorType::Generic; 
   using field_id = LegionRuntime::HighLevel::FieldID;
- 
+  field_ids_t & fid_t =field_ids_t::instance(); 
+
   flecsi::execution::context_t & context_ =
     flecsi::execution::context_t::instance();
   index_partition_t ip_cells =
@@ -461,7 +465,7 @@ ghost_part_task(
   { 
     LegionRuntime::HighLevel::FieldAllocator allocator =
         runtime->create_field_allocator(ctx,ghost_cells_fs);
-    allocator.allocate_field(sizeof(ptr_t), FID_GHOST);
+    allocator.allocate_field(sizeof(ptr_t), fid_t.fid_ptr_t);
   }
   
   ghost_lr.cells= runtime->create_logical_region(ctx,ghost_cells_is,
@@ -471,13 +475,13 @@ ghost_part_task(
   {
     LegionRuntime::HighLevel::RegionRequirement req(ghost_lr.cells,
                         READ_WRITE, EXCLUSIVE, ghost_lr.cells);
-    req.add_field(FID_GHOST);
+    req.add_field(fid_t.fid_ptr_t);
     LegionRuntime::HighLevel::InlineLauncher ghost_launcher(req);
     LegionRuntime::HighLevel::PhysicalRegion ghost_region =
                 runtime->map_region(ctx, ghost_launcher);
     ghost_region.wait_until_valid();
     LegionRuntime::Accessor::RegionAccessor<generic_type, ptr_t> acc =
-      ghost_region.get_field_accessor(FID_GHOST).typeify<ptr_t>();
+      ghost_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
 
     size_t indx=0;
     for (auto ghost_cell : ip_cells.ghost) {
@@ -507,7 +511,7 @@ ghost_part_task(
   {
     LegionRuntime::HighLevel::FieldAllocator allocator =
         runtime->create_field_allocator(ctx,ghost_vert_fs);
-    allocator.allocate_field(sizeof(ptr_t), FID_GHOST);
+    allocator.allocate_field(sizeof(ptr_t), fid_t.fid_ptr_t);
   }
 
   ghost_lr.vert= runtime->create_logical_region(ctx,ghost_vert_is,
@@ -517,13 +521,13 @@ ghost_part_task(
   {
     LegionRuntime::HighLevel::RegionRequirement req(ghost_lr.vert,
                         READ_WRITE, EXCLUSIVE, ghost_lr.vert);
-    req.add_field(FID_GHOST);
+    req.add_field(fid_t.fid_ptr_t);
     LegionRuntime::HighLevel::InlineLauncher ghost_launcher(req);
     LegionRuntime::HighLevel::PhysicalRegion ghost_region =
                 runtime->map_region(ctx, ghost_launcher);
     ghost_region.wait_until_valid();
     LegionRuntime::Accessor::RegionAccessor<generic_type, ptr_t> acc =
-      ghost_region.get_field_accessor(FID_GHOST).typeify<ptr_t>();
+      ghost_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
 
     size_t indx=0;
     for (auto ghost_cell : ip_vert.ghost) {
@@ -562,7 +566,7 @@ check_partitioning_task(
   assert(task->regions[4].privilege_fields.size() == 1);
   assert(task->regions[5].privilege_fields.size() == 1);
 
-  using index_partition_t = index_partition__<size_t>;
+  using index_partition_t = flecsi::dmp::index_partition__<size_t>;
   using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
   using field_id = LegionRuntime::HighLevel::FieldID;
 
@@ -720,6 +724,8 @@ init_raw_conn_task(
   flecsi::execution::context_t & context_ =
     flecsi::execution::context_t::instance();
 
+  field_ids_t & fid_t = field_ids_t::instance();
+
   std::vector<std::pair<size_t, size_t>> raw_cell_vertex_conns =
       context_.interop_helper_.data_storage_[2];
 
@@ -727,7 +733,7 @@ init_raw_conn_task(
   IndexSpace raw_conn_is = raw_conn_lr.get_index_space();
 
   auto raw_conn_ac = 
-    regions[0].get_field_accessor(flecsi::execution::legion_dpd::ENTITY_PAIR_FID).
+    regions[0].get_field_accessor(fid_t.fid_entity_pair).
     typeify<std::pair<size_t, size_t>>();
 
   size_t i = 0;
@@ -948,8 +954,8 @@ ghost_access_task(
   << std::endl;
 }//ghost_access_task
 
-
-} // namespace dmp
+} // namespace sprint
+} // namespace execution
 } // namespace flecsi
 
 /*~-------------------------------------------------------------------------~-*

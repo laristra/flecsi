@@ -14,16 +14,10 @@ using namespace LegionRuntime::HighLevel;
 /// \date Initial file creation: Dec 19, 2016
 ///
 
-enum
-FieldIDs2 {
-  FID_SHARED,
-  FID_EXCLUSIVE,
-  FID_GHOST,
-  FID_ENTITY_PAIR
-};
 
 namespace flecsi {
-namespace dmp {
+namespace execution {
+namespace sprint{
 
 struct parts {
   int primary_cells;
@@ -122,7 +116,8 @@ init_raw_conn_task(
   Legion::Context ctx, Legion::HighLevelRuntime *runtime
 );
 
-} // namespace dmp
+}  //namespace temporary
+} // namespace execution
 } // namespace flecsi
 
 #endif // flecsi_execution_mpilegion_init_partitions_task_h

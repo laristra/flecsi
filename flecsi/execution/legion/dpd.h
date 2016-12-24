@@ -44,18 +44,6 @@ public:
     COMMIT_DATA_TID
   };
 
-  enum fields_ids{
-    ENTITY_FID = 10000,
-    ENTITY_PAIR_FID,
-    PTR_FID,
-    PTR_COUNT_FID,
-    OFFSET_COUNT_FID,
-    INDEX_FID,
-    ENTRY_OFFSET_FID,
-    VALUE_FID,
-    PARTITION_METADATA_FID
-  };
-
   using partition_count_map = std::map<size_t, size_t>;
 
   struct partitioned_unstructured{
