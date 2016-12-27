@@ -6,11 +6,12 @@
 #ifndef flecsi_partition_index_partition_h
 #define flecsi_partition_index_partition_h
 
-#include <vector>
 #include <cassert>
+
+#include <vector>
 #include <cereal/types/vector.hpp>
 
-#include <flecsi/partition/communicator.h>
+#include "flecsi/partition/communicator.h"
 
 ///
 /// \file

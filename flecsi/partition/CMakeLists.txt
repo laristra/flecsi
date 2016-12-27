@@ -12,18 +12,37 @@
 # All rights reserved
 #~----------------------------------------------------------------------------~#
 
-if(ENABLE_PARTITION)
-
 set(partition_HEADERS
+  communicator.h
+  dcrs.h
   index_partition.h
   partitioner.h
   PARENT_SCOPE
 )
 
-#FIXME: remove the check for Parmetis when there are other kinds of partitioner
-#implemented
+if(ENABLE_MPI)
+  set(partition_HEADERS
+    ${partition_HEADERS}
+    dcrs_utils.h
+    mpi_communicator.h
+    mpi_utils.h
+    PARENT_SCOPE
+  )
+endif()
 
-if(PARMETIS_FOUND)
+if(ENABLE_PARMETIS)
+  set(partition_HEADERS
+    ${partition_HEADERS}
+    parmetis_partitioner.h
+    weaver.h
+    PARENT_SCOPE
+  )
+endif()
+
+#------------------------------------------------------------------------------#
+# Unit tests.
+#------------------------------------------------------------------------------#
+
 cinch_add_unit(dcrs
   SOURCES test/dcrs.cc
   INPUTS
@@ -33,6 +52,10 @@ cinch_add_unit(dcrs
   POLICY MPI
   THREADS 5
 )
+
+# Both of these tests depend on ParMETIS.
+# This could change if we add more partitioner types.
+if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
 
 cinch_add_unit(partition
   SOURCES test/partition.cc
@@ -57,28 +80,6 @@ cinch_add_unit(weaver
   POLICY MPI
   THREADS 5
 )
-endif(PARMETIS_FOUND)
-
-
-#cinch_add_unit(partition
-#  SOURCES test/partition.cc
-#  INPUTS  test/metis_mesh.blessed 
-#          test/metis_mesh_int64.blessed 
-#          test/metis.blessed 
-#          test/metis_int64.blessed 
-#          test/scotch_v5.blessed
-#          test/scotch.blessed
-#  LIBRARIES ${PARTITION_LIBRARIES} flecsi
-#)
-
-#if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
-#  cinch_add_unit(index_partition
-#    SOURCES test/index_partition.cc
-#    INPUTS test/index_partition.blessed
-#    POLICY MPILEGION
-#    THREADS 2
-#    LIBRARIES flecsi)
-#endif()
 
 endif()
 

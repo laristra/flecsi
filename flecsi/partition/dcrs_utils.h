@@ -6,6 +6,10 @@
 #ifndef flecsi_partition_dcrs_utils_h
 #define flecsi_partition_dcrs_utils_h
 
+#if !defined(ENABLE_MPI)
+  #error "ENABLE_MPI not defined! This file depends on MPI!"
+#endif
+
 #include <mpi.h>
 
 #include "flecsi/io/definition_utils.h"
@@ -38,6 +42,8 @@ naive_partitioning(
 	size_t quot = md.num_cells()/size;
 	size_t rem = md.num_cells()%size;
 
+  clog_one(info) << "quot: " << quot << " rem: " << rem << std::endl;
+
   // Each rank gets the average number of indices, with higher ranks
   // getting an additional index for non-zero remainders.
 	size_t init_indices = quot + ((rank >= (size - rem)) ? 1 : 0);
@@ -47,9 +53,12 @@ naive_partitioning(
 		offset += quot + ((r >= (size - rem)) ? 1 : 0);
 	} // for
 
+  clog_one(info) << "offset: " << offset << std::endl;
+
   std::set<size_t> indices;
   for(size_t i(0); i<init_indices; ++i) {
     indices.insert(offset+i);
+  clog_one(info) << "inserting: " << offset+i << std::endl;
   } // for
 
   return indices;
