@@ -24,16 +24,23 @@
 namespace flecsi {
 namespace dmp {
 
+clog_register_tag(dcrs_utils);
+
 std::set<size_t>
 naive_partitioning(
   io::mesh_definition_t & md
 )
 {
+  std::set<size_t> indices;
+
+  {
+  clog_tag_scope(dcrs_utils);
 	int size;
 	int rank;
 
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
 
   //--------------------------------------------------------------------------//
   // Create a naive initial distribution of the indices
@@ -55,11 +62,11 @@ naive_partitioning(
 
   clog_one(info) << "offset: " << offset << std::endl;
 
-  std::set<size_t> indices;
   for(size_t i(0); i<init_indices; ++i) {
     indices.insert(offset+i);
   clog_one(info) << "inserting: " << offset+i << std::endl;
   } // for
+  } // scope
 
   return indices;
 } // naive_partitioning

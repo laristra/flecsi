@@ -1,0 +1,9 @@
+#! /usr/bin/env bash
+
+cwd=`pwd`
+
+guard="flecsi_"`echo $cwd | sed 's,^.*\/flecsi,,g'"_"`$1"_h"
+echo $guard
+guard=`echo $guard | sed 's,\/,_,g'`
+
+echo $guard

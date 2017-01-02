@@ -109,10 +109,16 @@ cinch_add_unit(gravity-state
 # Misc. unit tests.
 #------------------------------------------------------------------------------#
 
-
 cinch_add_unit(graph
   SOURCES
     test/graph.cc
+)
+
+cinch_add_unit(devel-graph
+  SOURCES
+    test/devel-graph.cc
+  POLICY
+    SERIAL_DEVEL
 )
 
 cinch_add_unit(index-space

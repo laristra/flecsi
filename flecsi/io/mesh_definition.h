@@ -6,6 +6,9 @@
 #ifndef flecsi_io_mesh_definition_h
 #define flecsi_io_mesh_definition_h
 
+#include <set>
+#include <vector>
+
 #include "flecsi/geometry/point.h"
 
 ///

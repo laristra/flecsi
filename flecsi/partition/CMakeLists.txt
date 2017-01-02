@@ -53,6 +53,16 @@ cinch_add_unit(dcrs
   THREADS 5
 )
 
+cinch_add_unit(devel-dcrs
+  SOURCES test/devel-dcrs.cc
+  INPUTS
+    test/simple2d-8x8.msh
+    test/simple2d-16x16.msh
+  LIBRARIES ${PARTITION_LIBRARIES}
+  POLICY MPI_DEVEL
+  THREADS 5
+)
+
 # Both of these tests depend on ParMETIS.
 # This could change if we add more partitioner types.
 if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)

@@ -57,7 +57,7 @@ public:
       cell_start_ = file_.tellg();
     }
     else {
-      clog_error("failed opening " << filename);
+      clog_fatal("failed opening " << filename);
     }// if
   } // simple_definition_t
 
