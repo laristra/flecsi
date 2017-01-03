@@ -4,6 +4,7 @@
 #include <cereal/archives/binary.hpp>
 
 #include "flecsi/execution/legion/dpd.h"
+#include "flecsi/execution/mpilegion/task_ids.h"
 
 #include "legion.h"
 #include "legion_config.h"
@@ -36,6 +37,8 @@ const size_t NUM_PARTITIONS = 4;
 void top_level_task(const Task* task,
                     const std::vector<PhysicalRegion>& regions,
                     Context ctx, Runtime* runtime){
+
+  field_ids_t & fid_t = field_ids_t::instance();
 
   legion_helper h(runtime, ctx);
 
@@ -79,17 +82,17 @@ void top_level_task(const Task* task,
 
     FieldAllocator fa = h.create_field_allocator(fs);
 
-    fa.allocate_field(sizeof(entity_id), legion_dpd::ENTITY_FID);
+    fa.allocate_field(sizeof(entity_id), fid_t.fid_entity);
     
     fa.allocate_field(sizeof(legion_dpd::ptr_count),
-                      legion_dpd::OFFSET_COUNT_FID);
+                      fid_t.fid_offset_count);
 
     cells_part.lr = h.create_logical_region(is, fs);
 
     RegionRequirement rr(cells_part.lr, WRITE_DISCARD, 
       EXCLUSIVE, cells_part.lr);
     
-    rr.add_field(legion_dpd::ENTITY_FID);
+    rr.add_field(fid_t.fid_entity);
     InlineLauncher il(rr);
 
     PhysicalRegion pr = runtime->map_region(ctx, il);
@@ -97,7 +100,7 @@ void top_level_task(const Task* task,
     pr.wait_until_valid();
 
     auto ac = 
-      pr.get_field_accessor(legion_dpd::ENTITY_FID).typeify<entity_id>();
+      pr.get_field_accessor(fid_t.fid_entity).typeify<entity_id>();
 
     IndexIterator itr(runtime, ctx, is);
     ptr_t ptr = itr.next();
@@ -137,7 +140,7 @@ void top_level_task(const Task* task,
   cd.indices[0] = make_pair(0, 3);
   
   for(size_t i = 1; i < cd.num_indices; ++i){
-    cd.indices[i] = make_pair(3, 0);
+    cd.indices[i] = make_pair(3, 3);
   }
 
   dpd.commit(cd);

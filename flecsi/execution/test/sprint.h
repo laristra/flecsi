@@ -33,21 +33,11 @@ static const size_t N = 8;
 
 using index_partition_t = dmp::index_partition__<size_t>;
 
-enum
-FieldIDs {
-  FID_CELL,
-  FID_VERT,
-  FID_GHOST_CELL_ID,
-  FID_DATA,
-  FID_ENTITY_PAIR
-};
-
 void
 mpi_task(
   double d
 )
 {
-
   int rank = 0;
   int size = 0;
 
@@ -147,21 +137,13 @@ driver(
   legion_helper h(runtime, context);
 
   using legion_domain = LegionRuntime::HighLevel::Domain;
+  field_ids_t & fid_t =field_ids_t::instance();
 
-  flecsi::dmp::parts partitions;
+  flecsi::execution::sprint::parts partitions;
   
   // first execute mpi task to setup initial partitions 
   execute_task(mpi_task, mpi, single, 1.0);
   // create a field space to store cells id
-  FieldSpace cells_fs = runtime->create_field_space(context);
-  {
-    FieldAllocator allocator = runtime->create_field_allocator(context,
-                                             cells_fs);
-    allocator.allocate_field(sizeof(size_t), FID_CELL);
-    allocator.allocate_field(sizeof(size_t), FID_DATA);
-    allocator.allocate_field(sizeof(legion_dpd::ptr_count),
-                      legion_dpd::connectivity_field_id(2, 0));
-  }
 
   int num_ranks;
   MPI_Comm_size(MPI_COMM_WORLD, &num_ranks);
@@ -201,7 +183,8 @@ driver(
   //read dimension information from  get_numbers_of_cells task
   for (size_t i = 0; i < num_ranks; i++) {
     std::cout << "about to call get_results" << std::endl;
-    flecsi::dmp::parts received = fm1.get_result<flecsi::dmp::parts>(
+    flecsi::execution::sprint::parts received =
+      fm1.get_result<flecsi::execution::sprint::parts>(
       DomainPoint::from_point<1>(make_point(i)));
 
     cells_primary_start_id.push_back(total_num_cells);
@@ -230,6 +213,19 @@ driver(
 #endif
   }//end for
 
+  // create a field space to store cells id
+  FieldSpace cells_fs = runtime->create_field_space(context);
+  { 
+    FieldAllocator allocator = runtime->create_field_allocator(context,
+                                             cells_fs);
+    allocator.allocate_field(sizeof(size_t), fid_t.fid_cell);
+    allocator.allocate_field(sizeof(size_t), fid_t.fid_data);
+//TOFIX
+    allocator.allocate_field(sizeof(legion_dpd::ptr_count),
+                      legion_dpd::connectivity_field_id(2, 0));
+    allocator.allocate_field(sizeof(ptr_t), fid_t.fid_ptr_t);
+  }
+
 
   //create global IS fnd LR for Cells
   IndexSpace cells_is = runtime->create_index_space(context, total_num_cells);
@@ -249,7 +245,8 @@ driver(
   {
     FieldAllocator allocator = runtime->create_field_allocator(context,
                                              vertices_fs);
-    allocator.allocate_field(sizeof(size_t), FID_VERT);
+    allocator.allocate_field(sizeof(size_t), fid_t.fid_vert);
+    allocator.allocate_field(sizeof(ptr_t), fid_t.fid_ptr_t);
   } 
 
   IndexSpace vertices_is = runtime->create_index_space(context,
@@ -341,12 +338,12 @@ driver(
   initialization_launcher.add_region_requirement(
     RegionRequirement(cells_primary_lp, 0/*projection ID*/,
                       WRITE_DISCARD, EXCLUSIVE, cells_lr));
-  initialization_launcher.add_field(0, FID_CELL);
+  initialization_launcher.add_field(0, fid_t.fid_cell);
 
   initialization_launcher.add_region_requirement(
     RegionRequirement(vert_primary_lp, 0/*projection ID*/,
                       WRITE_DISCARD, EXCLUSIVE, vertices_lr));
-  initialization_launcher.add_field(1, FID_VERT);
+  initialization_launcher.add_field(1, fid_t.fid_vert);
 
   FutureMap fm2 = runtime->execute_index_space( context,
         initialization_launcher);
@@ -357,7 +354,7 @@ driver(
   //printing cell_lr results
   {
     RegionRequirement req(cells_lr, READ_WRITE, EXCLUSIVE, cells_lr);
-    req.add_field(FID_CELL);
+    req.add_field(fid_t.fid_cell);
 
     std::cout << "Back in driver (TTL) and checking values in Cells GlobalLR"
        << std::endl;
@@ -365,7 +362,7 @@ driver(
     PhysicalRegion cell_region = runtime->map_region(context, cell_launcher);
     cell_region.wait_until_valid();
     RegionAccessor<AccessorType::Generic, size_t> acc_cell =
-      cell_region.get_field_accessor(FID_CELL).typeify<size_t>();
+      cell_region.get_field_accessor(fid_t.fid_cell).typeify<size_t>();
 
     IndexIterator itr2(runtime, context, cells_is);
     for (size_t i=0; i< total_num_cells; i++)
@@ -399,9 +396,9 @@ driver(
     Legion::FieldSpace fs = h.create_field_space();
 
     Legion::FieldAllocator fa = h.create_field_allocator(fs);
-
+//TOFIX
     fa.allocate_field(sizeof(std::pair<size_t, size_t>),
-                      legion_dpd::ENTITY_PAIR_FID);
+                      fid_t.fid_entity_pair);
 
     raw_connectivity_part.lr = h.create_logical_region(is, fs);
 
@@ -420,7 +417,6 @@ driver(
     raw_connectivity_part.ip = 
       runtime->create_index_partition(context, is, coloring, true);
   }
-
   LegionRuntime::HighLevel::ArgumentMap arg_map2;
 
   LegionRuntime::HighLevel::IndexLauncher init_raw_conn_launcher(
@@ -438,7 +434,8 @@ driver(
   init_raw_conn_launcher.add_region_requirement(
     RegionRequirement(raw_connectivity_part_lp, 0,
       WRITE_DISCARD, EXCLUSIVE, raw_connectivity_part.lr));
-  init_raw_conn_launcher.add_field(0, legion_dpd::ENTITY_PAIR_FID);
+
+  init_raw_conn_launcher.add_field(0, fid_t.fid_entity_pair);
   
   FutureMap raw_conn_fm = 
     runtime->execute_index_space(context, init_raw_conn_launcher);
@@ -453,9 +450,9 @@ driver(
   vertices_part.size = total_num_vertices;
 
   legion_dpd cells_to_vertices(context, runtime);
-  //cells_to_vertices.create_connectivity(2, cells_part, 0, vertices_part,
-  //  raw_connectivity_part);
-
+  cells_to_vertices.create_connectivity(2, cells_part, 0, vertices_part,
+    raw_connectivity_part);
+  //cells_to_vertices.dump(2, 0);
   runtime->destroy_index_partition(context, raw_connectivity_part.ip);
   runtime->destroy_logical_region(context, raw_connectivity_part.lr);
 
@@ -474,12 +471,12 @@ driver(
   shared_part_launcher.add_region_requirement(
     RegionRequirement(cells_primary_lp, 0/*projection ID*/,
       READ_ONLY, EXCLUSIVE, cells_lr));
-  shared_part_launcher.add_field(0, FID_CELL);
+  shared_part_launcher.add_field(0, fid_t.fid_cell);
 
   shared_part_launcher.add_region_requirement(
     RegionRequirement(vert_primary_lp, 0/*projection ID*/,
       READ_ONLY, EXCLUSIVE, vertices_lr));
-  shared_part_launcher.add_field(1, FID_VERT);
+  shared_part_launcher.add_field(1, fid_t.fid_vert);
 
   FutureMap fm3 = runtime->execute_index_space( context, shared_part_launcher);
   fm3.wait_all_results();
@@ -487,8 +484,8 @@ driver(
   size_t indx=0;
   for (GenericPointInRectIterator<1> pir(rank_rect); pir; pir++)
   {
-    flecsi::dmp::partition_lr sared_lr=
-      fm3.get_result<flecsi::dmp::partition_lr>(
+    flecsi::execution::sprint::partition_lr sared_lr=
+      fm3.get_result<flecsi::execution::sprint::partition_lr>(
       DomainPoint::from_point<1>(pir.p));
     //gett shared partition info for Cells
     {
@@ -496,14 +493,14 @@ driver(
       LegionRuntime::HighLevel::IndexSpace is = shared_pts_lr.get_index_space();
       LegionRuntime::HighLevel::RegionRequirement req(shared_pts_lr,
         READ_ONLY, EXCLUSIVE, shared_pts_lr);
-      req.add_field(FID_SHARED);
+      req.add_field(fid_t.fid_ptr_t);
       LegionRuntime::HighLevel::InlineLauncher shared_launcher(req);
       LegionRuntime::HighLevel::PhysicalRegion shared_region =
         runtime->map_region(context, shared_launcher);
       shared_region.wait_until_valid();
       LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
-        shared_region.get_field_accessor(FID_SHARED).typeify<ptr_t>();
+        shared_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
       for (size_t j=0; j<cells_num_shared[indx]; j++)
       {
         ptr_t ptr=
@@ -520,14 +517,14 @@ driver(
       LegionRuntime::HighLevel::IndexSpace is = shared_pts_lr.get_index_space();
       LegionRuntime::HighLevel::RegionRequirement req(shared_pts_lr,
         READ_ONLY, EXCLUSIVE, shared_pts_lr);
-      req.add_field(FID_SHARED);
+      req.add_field(fid_t.fid_ptr_t);
       LegionRuntime::HighLevel::InlineLauncher shared_launcher(req);
       LegionRuntime::HighLevel::PhysicalRegion shared_region =
         runtime->map_region(context, shared_launcher);
       shared_region.wait_until_valid();
       LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
-        shared_region.get_field_accessor(FID_SHARED).typeify<ptr_t>();
+        shared_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
       for (size_t j=0; j<vert_num_shared[indx]; j++)
       {
         ptr_t ptr=
@@ -570,12 +567,12 @@ driver(
   exclusive_part_launcher.add_region_requirement(
     RegionRequirement(cells_primary_lp, 0/*projection ID*/,
       READ_ONLY, EXCLUSIVE, cells_lr));
-  exclusive_part_launcher.add_field(0, FID_CELL);
+  exclusive_part_launcher.add_field(0, fid_t.fid_cell);
 
   exclusive_part_launcher.add_region_requirement(
     RegionRequirement(vert_primary_lp, 0/*projection ID*/,
       READ_ONLY, EXCLUSIVE, vertices_lr));
-  exclusive_part_launcher.add_field(1, FID_VERT);
+  exclusive_part_launcher.add_field(1, fid_t.fid_vert);
 
   FutureMap fm4 = runtime->execute_index_space(context,exclusive_part_launcher);
   fm4.wait_all_results();
@@ -583,8 +580,8 @@ driver(
   indx=0;
   for (GenericPointInRectIterator<1> pir(rank_rect); pir; pir++)
   {
-    flecsi::dmp::partition_lr exclusive_lr =
-      fm4.get_result<flecsi::dmp::partition_lr>(
+    flecsi::execution::sprint::partition_lr exclusive_lr =
+      fm4.get_result<flecsi::execution::sprint::partition_lr>(
       DomainPoint::from_point<1>(pir.p)); 
     {
       LogicalRegion exclusive_pts_lr= exclusive_lr.cells;
@@ -592,14 +589,14 @@ driver(
         exclusive_pts_lr.get_index_space();
       LegionRuntime::HighLevel::RegionRequirement req(exclusive_pts_lr,
         READ_ONLY, EXCLUSIVE, exclusive_pts_lr);
-      req.add_field(FID_EXCLUSIVE);
+      req.add_field(fid_t.fid_ptr_t);
       LegionRuntime::HighLevel::InlineLauncher exclusive_launcher(req);
       LegionRuntime::HighLevel::PhysicalRegion exclusive_region =
         runtime->map_region(context, exclusive_launcher);
       exclusive_region.wait_until_valid();
       LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
-        exclusive_region.get_field_accessor(FID_EXCLUSIVE).typeify<ptr_t>();
+        exclusive_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
       for (size_t j=0; j<cells_num_exclusive[indx]; j++)
       {
         ptr_t ptr=
@@ -616,14 +613,14 @@ driver(
         exclusive_pts_lr.get_index_space();
       LegionRuntime::HighLevel::RegionRequirement req(exclusive_pts_lr,
         READ_ONLY, EXCLUSIVE, exclusive_pts_lr);
-      req.add_field(FID_EXCLUSIVE);
+      req.add_field(fid_t.fid_ptr_t);
       LegionRuntime::HighLevel::InlineLauncher exclusive_launcher(req);
       LegionRuntime::HighLevel::PhysicalRegion exclusive_region =
         runtime->map_region(context, exclusive_launcher);
       exclusive_region.wait_until_valid();
       LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
-        exclusive_region.get_field_accessor(FID_EXCLUSIVE).typeify<ptr_t>();
+        exclusive_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
       for (size_t j=0; j<vert_num_exclusive[indx]; j++)
       {
         ptr_t ptr=
@@ -668,12 +665,12 @@ driver(
   ghost_part_launcher.add_region_requirement(
     RegionRequirement(cells_lr, 0/*projection ID*/,
       READ_ONLY, EXCLUSIVE, cells_lr));
-  ghost_part_launcher.add_field(0, FID_CELL);
+  ghost_part_launcher.add_field(0, fid_t.fid_cell);
 
   ghost_part_launcher.add_region_requirement(
     RegionRequirement(vertices_lr, 0/*projection ID*/,
       READ_ONLY, EXCLUSIVE, vertices_lr));
-  ghost_part_launcher.add_field(1, FID_VERT);
+  ghost_part_launcher.add_field(1, fid_t.fid_vert);
 
   FutureMap fm5 = runtime->execute_index_space(context,ghost_part_launcher);
   fm5.wait_all_results();
@@ -682,8 +679,8 @@ driver(
   indx=0;
   for (GenericPointInRectIterator<1> pir(rank_rect); pir; pir++)
   {
-    flecsi::dmp::partition_lr  ghost_lr=
-      fm5.get_result<flecsi::dmp::partition_lr >(
+    flecsi::execution::sprint::partition_lr  ghost_lr=
+      fm5.get_result<flecsi::execution::sprint::partition_lr >(
       DomainPoint::from_point<1>(pir.p));
     {
       LogicalRegion ghost_pts_lr=ghost_lr.cells;
@@ -691,14 +688,14 @@ driver(
         ghost_pts_lr.get_index_space();
       LegionRuntime::HighLevel::RegionRequirement req(ghost_pts_lr,
         READ_ONLY, EXCLUSIVE, ghost_pts_lr);
-      req.add_field(FID_GHOST);
+      req.add_field(fid_t.fid_ptr_t);
       LegionRuntime::HighLevel::InlineLauncher ghost_launcher(req);
       LegionRuntime::HighLevel::PhysicalRegion ghost_region =
         runtime->map_region(context, ghost_launcher);
       ghost_region.wait_until_valid();
       LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
-        ghost_region.get_field_accessor(FID_GHOST).typeify<ptr_t>();
+        ghost_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
       for (size_t j=0; j<cells_num_ghosts[indx]; j++)
       {
         ptr_t ptr=
@@ -715,14 +712,14 @@ driver(
         ghost_pts_lr.get_index_space();
       LegionRuntime::HighLevel::RegionRequirement req(ghost_pts_lr,
         READ_ONLY, EXCLUSIVE, ghost_pts_lr);
-      req.add_field(FID_GHOST);
+      req.add_field(fid_t.fid_ptr_t);
       LegionRuntime::HighLevel::InlineLauncher ghost_launcher(req);
       LegionRuntime::HighLevel::PhysicalRegion ghost_region =
         runtime->map_region(context, ghost_launcher);
       ghost_region.wait_until_valid();
       LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
-        ghost_region.get_field_accessor(FID_GHOST).typeify<ptr_t>();
+        ghost_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
       for (size_t j=0; j<vert_num_ghosts[indx]; j++)
       {
         ptr_t ptr=
@@ -762,32 +759,32 @@ driver(
   check_part_launcher.add_region_requirement(
     RegionRequirement(cells_shared_lp, 0/*projection ID*/,
       READ_ONLY, EXCLUSIVE, cells_lr));
-  check_part_launcher.add_field(0, FID_CELL);
+  check_part_launcher.add_field(0, fid_t.fid_cell);
 
   check_part_launcher.add_region_requirement(
     RegionRequirement(cells_exclusive_lp, 0/*projection ID*/,
       READ_ONLY, EXCLUSIVE, cells_lr));
-  check_part_launcher.add_field(1, FID_CELL);
+  check_part_launcher.add_field(1, fid_t.fid_cell);
 
   check_part_launcher.add_region_requirement(
     RegionRequirement(cells_ghost_lp, 0/*projection ID*/,
       READ_ONLY, EXCLUSIVE, cells_lr));
-  check_part_launcher.add_field(2, FID_CELL);
+  check_part_launcher.add_field(2, fid_t.fid_cell);
 
    check_part_launcher.add_region_requirement(
     RegionRequirement(vert_shared_lp, 0/*projection ID*/,
       READ_ONLY, EXCLUSIVE, vertices_lr));
-  check_part_launcher.add_field(3, FID_VERT);
+  check_part_launcher.add_field(3, fid_t.fid_vert);
 
   check_part_launcher.add_region_requirement(
     RegionRequirement(vert_exclusive_lp, 0/*projection ID*/,
       READ_ONLY, EXCLUSIVE, vertices_lr));
-  check_part_launcher.add_field(4, FID_VERT);
+  check_part_launcher.add_field(4, fid_t.fid_vert);
 
   check_part_launcher.add_region_requirement(
     RegionRequirement(vert_ghost_lp, 0/*projection ID*/,
       READ_ONLY, EXCLUSIVE, vertices_lr));
-  check_part_launcher.add_field(5, FID_VERT);
+  check_part_launcher.add_field(5, fid_t.fid_vert);
 
   FutureMap fm6 = runtime->execute_index_space(context,check_part_launcher);
   fm6.wait_all_results();
@@ -813,8 +810,8 @@ driver(
       phase_barriers.push_back(runtime->create_phase_barrier(context, 1 + slave_colors.size()));
   }
 
-  std::vector<dmp::SPMDArgs> spmd_args(num_ranks);
-  std::vector<dmp::SPMDArgsSerializer> args_seriliazed(num_ranks);
+  std::vector<execution::sprint::SPMDArgs> spmd_args(num_ranks);
+  std::vector<execution::sprint::SPMDArgsSerializer> args_seriliazed(num_ranks);
   for (int color=0; color < num_ranks; ++color) {
       spmd_args[color].pbarrier_as_master = phase_barriers[color];
 
@@ -837,13 +834,13 @@ driver(
 
   ghost_access_launcher.add_region_requirement(
   RegionRequirement(cells_shared_lp, 0/*projection ID*/,
-                    READ_WRITE, SIMULTANEOUS, cells_lr));
-  ghost_access_launcher.add_field(0, FID_DATA);
+                    READ_ONLY, SIMULTANEOUS, cells_lr));
+  ghost_access_launcher.add_field(0, fid_t.fid_data);
 
   ghost_access_launcher.add_region_requirement(
   RegionRequirement(cells_ghost_lp, 0/*projection ID*/,
                     READ_ONLY, SIMULTANEOUS, cells_lr));
-  ghost_access_launcher.add_field(1, FID_DATA);
+  ghost_access_launcher.add_field(1, fid_t.fid_data);
 
   MustEpochLauncher must_epoch_launcher;
   must_epoch_launcher.add_index_task(ghost_access_launcher);

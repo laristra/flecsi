@@ -29,13 +29,6 @@ namespace execution {
   namespace{
 
     // from sprint.h
-    enum
-    FieldIDs {
-      FID_CELL,
-      FID_VERT,
-      FID_GHOST_CELL_ID,
-      FID_ENTITY_PAIR
-    };
 
     const size_t MAX_INDICES = 1024;
 
@@ -62,6 +55,8 @@ namespace execution {
     const Task* task,
     const std::vector<PhysicalRegion>& regions,
     Context ctx, Runtime* runtime){
+ 
+    field_ids_t & fid_t = field_ids_t::instance(); 
 
     LogicalRegion ent_from_lr = regions[0].get_logical_region();
     IndexSpace ent_from_is = ent_from_lr.get_index_space();
@@ -84,10 +79,11 @@ namespace execution {
       connectivity_field_id).typeify<ptr_count>();
 
     auto to_ac = 
-      regions[2].get_field_accessor(PTR_FID).typeify<ptr_t>();
+      regions[2].get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
 
     auto raw_connectivity_ac = 
-      regions[3].get_field_accessor(ENTITY_PAIR_FID).typeify<entity_pair>();
+      regions[3].get_field_accessor(fid_t.fid_entity_pair).
+        typeify<entity_pair>();
 
     multimap<size_t, ptr_t> connection_map;
 
@@ -129,7 +125,7 @@ namespace execution {
       to_ac.write(to_ptr, itr.second);
       ++count;
 
-      if(to_itr.has_next()) {
+      if(to_itr.has_next()){
         to_ptr = to_itr.next();
       }
     }
@@ -146,6 +142,8 @@ namespace execution {
     const std::vector<PhysicalRegion>& regions,
     Context ctx, Runtime* runtime){
 
+    field_ids_t & fid_t = field_ids_t::instance();
+
     legion_helper h(runtime, ctx);
 
     const init_data_args& args = *(init_data_args*)task->args;
@@ -156,10 +154,10 @@ namespace execution {
     IndexSpace ent_from_is = ent_from_lr.get_index_space();
 
     auto from_ac = 
-      regions[0].get_field_accessor(OFFSET_COUNT_FID).
+      regions[0].get_field_accessor(fid_t.fid_offset_count).
       typeify<offset_count>();
 
-    auto meta_ac = regions[1].get_field_accessor(PARTITION_METADATA_FID).
+    auto meta_ac = regions[1].get_field_accessor(fid_t.fid_partition_metadata).
       typeify<partition_metadata>();
     
     partition_metadata md;
@@ -171,9 +169,15 @@ namespace execution {
       IndexSpace is = h.create_index_space(0, args.reserve - 1);
       FieldSpace fs = h.create_field_space();
       FieldAllocator a = h.create_field_allocator(fs);
-      a.allocate_field(sizeof(entry_offset), ENTRY_OFFSET_FID);
-      a.allocate_field(args.value_size, VALUE_FID);
+      a.allocate_field(sizeof(entry_offset), fid_t.fid_entry_offset);
+      a.allocate_field(args.value_size, fid_t.fid_value);
       md.lr = h.create_logical_region(is, fs);
+
+      DomainPointColoring coloring;
+      DomainPoint dp = DomainPoint::from_point<1>(make_point(p));
+      coloring.emplace(dp, h.domain_from_rect(0, args.reserve - 1));
+      Domain cd = h.domain_from_point(p);
+      md.ip = runtime->create_index_partition(ctx, is, cd, coloring);
     }
 
     meta_ac.write(DomainPoint::from_point<1>(p), md);
@@ -192,6 +196,8 @@ namespace execution {
   void legion_dpd::create_data_(partitioned_unstructured& indices,
                                 size_t start_reserve,
                                 size_t value_size){
+    field_ids_t & fid_t = field_ids_t::instance();
+
     from_ = indices;
 
     Domain cd = 
@@ -205,7 +211,7 @@ namespace execution {
       FieldSpace fs = h.create_field_space();
       
       FieldAllocator a = h.create_field_allocator(fs);
-      a.allocate_field(sizeof(partition_metadata), PARTITION_METADATA_FID);
+      a.allocate_field(sizeof(partition_metadata),fid_t.fid_partition_metadata);
       partition_metadata_lr_ = h.create_logical_region(is, fs);
 
       Blockify<1> coloring(1);
@@ -233,7 +239,7 @@ namespace execution {
           RegionRequirement(ent_from_lp, 0, 
                             WRITE_DISCARD, EXCLUSIVE, from_.lr));
 
-    il.region_requirements[0].add_field(OFFSET_COUNT_FID);
+    il.region_requirements[0].add_field(fid_t.fid_offset_count);
 
     LogicalPartition meta_lp = runtime_->get_logical_partition(context_,
       partition_metadata_lr_, partition_metadata_ip_);
@@ -241,59 +247,15 @@ namespace execution {
     il.add_region_requirement(
       RegionRequirement(meta_lp, 0, WRITE_DISCARD, EXCLUSIVE, 
                         partition_metadata_lr_));
-    il.region_requirements[1].add_field(PARTITION_METADATA_FID);
+    il.region_requirements[1].add_field(fid_t.fid_partition_metadata);
 
     FutureMap fm = h.execute_index_space(il);
     fm.wait_all_results();
   }
 
-  void legion_dpd::update_partition_metadata(size_t partition){
-    partition_metadata md;
-
-    Domain partition_domain = h.domain_from_point(partition);
-
-    LogicalPartition lp =
-      runtime_->get_logical_partition(context_, partition_metadata_lr_, 
-                                      partition_metadata_ip_);
-
-    {
-      ArgumentMap arg_map;
-
-      IndexLauncher il(GET_PARTITION_METADATA_TID, partition_domain,
-        TaskArgument(nullptr, 0), arg_map);
-
-      il.add_region_requirement(
-            RegionRequirement(lp, 0, 
-                              READ_ONLY, EXCLUSIVE, partition_metadata_lr_));
-      il.region_requirements[0].add_field(PARTITION_METADATA_FID);
-
-      FutureMap fm = h.execute_index_space(il);
-      fm.wait_all_results();
-      DomainPoint dp = DomainPoint::from_point<1>(make_point(partition));
-      md = fm.get_result<partition_metadata>(dp);
-    }
-
-
-    {
-      ArgumentMap arg_map;
-
-      IndexLauncher il(PUT_PARTITION_METADATA_TID, partition_domain,
-        TaskArgument(&md, sizeof(md)), arg_map);
-
-      il.add_region_requirement(
-            RegionRequirement(lp, 0, 
-                              WRITE_DISCARD, EXCLUSIVE,
-                              partition_metadata_lr_));
-      
-      il.region_requirements[0].add_field(PARTITION_METADATA_FID);
-
-      FutureMap fm = h.execute_index_space(il);
-      fm.wait_all_results();
-    }
-
-  }
-
   void legion_dpd::commit_(commit_data<char>& cd, size_t value_size){
+    field_ids_t & fid_t = field_ids_t::instance();
+
     ArgumentMap arg_map;
 
     Domain d = h.domain_from_point(cd.partition);
@@ -323,21 +285,24 @@ namespace execution {
     IndexLauncher il(COMMIT_DATA_TID, d,
       TaskArgument(&args, sizeof(args)), arg_map);
 
+    LogicalPartition lp =
+      runtime_->get_logical_partition(context_, args.md.lr, args.md.ip);
+
     il.add_region_requirement(
-          RegionRequirement(args.md.lr, 0, READ_WRITE,
+          RegionRequirement(lp, 0, READ_WRITE,
                             EXCLUSIVE, args.md.lr));
     
-    il.region_requirements[0].add_field(ENTRY_OFFSET_FID);
-    il.region_requirements[0].add_field(VALUE_FID);
+    il.region_requirements[0].add_field(fid_t.fid_entry_offset);
+    il.region_requirements[0].add_field(fid_t.fid_value);
 
-    /*
     LogicalPartition lp2 =
       runtime_->get_logical_partition(context_, from_.lr, from_.ip);
+    
     il.add_region_requirement(
           RegionRequirement(lp2, 0, 
                             READ_WRITE, EXCLUSIVE, from_.lr));
-    il.region_requirements[1].add_field(OFFSET_COUNT_FID);
-    */
+    
+    il.region_requirements[1].add_field(fid_t.fid_offset_count);
 
     FutureMap fm = h.execute_index_space(il);
     fm.wait_all_results();
@@ -349,6 +314,9 @@ namespace execution {
 
   legion_dpd::partition_metadata
   legion_dpd::get_partition_metadata(size_t partition){
+
+    field_ids_t & fid_t = field_ids_t::instance();  
+ 
     IndexSpace is = partition_metadata_lr_.get_index_space();
 
     LogicalPartition lp =
@@ -366,7 +334,7 @@ namespace execution {
           RegionRequirement(lp, 0, 
                             READ_ONLY, EXCLUSIVE, partition_metadata_lr_));
     
-    il.region_requirements[0].add_field(PARTITION_METADATA_FID);
+    il.region_requirements[0].add_field(fid_t.fid_partition_metadata);
 
     FutureMap fm = h.execute_index_space(il);
     fm.wait_all_results();
@@ -376,6 +344,8 @@ namespace execution {
   }
 
   void legion_dpd::put_partition_metadata(const partition_metadata& md){
+    field_ids_t & fid_t = field_ids_t::instance();
+
     Domain d = h.domain_from_point(md.partition);
 
     ArgumentMap arg_map;
@@ -392,7 +362,7 @@ namespace execution {
                             WRITE_DISCARD, EXCLUSIVE,
                             partition_metadata_lr_));
     
-    il.region_requirements[0].add_field(PARTITION_METADATA_FID);
+    il.region_requirements[0].add_field(fid_t.fid_partition_metadata);
 
     FutureMap fm = h.execute_index_space(il);
     fm.wait_all_results();
@@ -404,11 +374,13 @@ namespace execution {
     const std::vector<PhysicalRegion>& regions,
     Context context, Runtime* runtime){
 
+    field_ids_t & fid_t = field_ids_t::instance();
+  
     legion_helper h(runtime, context);
 
     size_t p = task->index_point.point_data[0];
 
-    auto ac = regions[0].get_field_accessor(PARTITION_METADATA_FID).
+    auto ac = regions[0].get_field_accessor(fid_t.fid_partition_metadata).
       typeify<partition_metadata>();
     partition_metadata md = ac.read(DomainPoint::from_point<1>(p));
     return md;
@@ -419,12 +391,14 @@ namespace execution {
     const std::vector<PhysicalRegion>& regions,
     Context context, Runtime* runtime){
 
+    field_ids_t & fid_t = field_ids_t::instance();
+
     legion_helper h(runtime, context);
 
     size_t p = task->index_point.point_data[0];
     partition_metadata md = *(partition_metadata*)task->args;
 
-    auto ac = regions[0].get_field_accessor(PARTITION_METADATA_FID).
+    auto ac = regions[0].get_field_accessor(fid_t.fid_partition_metadata).
       typeify<partition_metadata>();
     ac.write(DomainPoint::from_point<1>(p), md);
   }
@@ -434,7 +408,11 @@ namespace execution {
     const std::vector<PhysicalRegion>& regions,
     Context context, Runtime* runtime){
 
+    field_ids_t & fid_t = field_ids_t::instance();
+
     legion_helper h(runtime, context);
+
+    size_t p = task->index_point.point_data[0];
 
     commit_data_args& args = *(commit_data_args*)task->args;
     size_t value_size = args.value_size;
@@ -445,7 +423,8 @@ namespace execution {
 
     partition_metadata& md = args.md;
 
-    void* args_buf = *(char**)task->local_args;
+    void* args_buf = task->local_args;
+
     Deserializer deserializer(args_buf, args.buf_size);
     void* indices_buf = malloc(args.indices_buf_size);
     deserializer.deserialize(indices_buf, args.indices_buf_size);
@@ -453,64 +432,82 @@ namespace execution {
     void* entries_buf = malloc(args.entries_buf_size);
     deserializer.deserialize(entries_buf, args.entries_buf_size);
 
-    size_t p = task->index_point.point_data[0];
+    char* commit_entry_values = (char*)entries_buf;
+
+    index_pair* commit_indices = (index_pair*)indices_buf;
 
     entry_offset* entry_offsets;
-    h.get_buffer(regions[0], entry_offsets, ENTRY_OFFSET_FID);
+    h.get_buffer(regions[0], entry_offsets, fid_t.fid_entry_offset);
 
-    char* values = h.get_raw_buffer(regions[0], VALUE_FID);
+    char* values = h.get_raw_buffer(regions[0], fid_t.fid_value);
 
     LogicalRegion ent_lr = regions[1].get_logical_region();
     IndexSpace ent_is = ent_lr.get_index_space();
 
     auto ent_ac = 
-      regions[1].get_field_accessor(OFFSET_COUNT_FID).
+      regions[1].get_field_accessor(fid_t.fid_offset_count).
       typeify<offset_count>();
 
     size_t s = md.size;
     size_t c = md.reserve;
     size_t d = num_indices * num_slots;
 
+    PhysicalRegion pr;
+    bool resized = false;
+
     if(c - s < d){
+      resized = true;
+
       md.reserve *= 2;
 
       IndexSpace is = h.create_index_space(0, md.reserve - 1);
       FieldSpace fs = h.create_field_space();
       FieldAllocator a = h.create_field_allocator(fs);
-      a.allocate_field(sizeof(entry_offset), ENTRY_OFFSET_FID);
-      a.allocate_field(value_size, VALUE_FID);
+      a.allocate_field(sizeof(entry_offset), fid_t.fid_entry_offset);
+      a.allocate_field(value_size, fid_t.fid_value);
       LogicalRegion lr2 = h.create_logical_region(is, fs);
 
       RegionRequirement rr(lr2, WRITE_DISCARD, EXCLUSIVE, lr2);
-      rr.add_field(ENTRY_OFFSET_FID);
-      rr.add_field(VALUE_FID);
+      rr.add_field(fid_t.fid_entry_offset);
+      rr.add_field(fid_t.fid_value);
       InlineLauncher il(rr);
 
-      PhysicalRegion pr = runtime->map_region(context, il);
+      pr = runtime->map_region(context, il);
       pr.wait_until_valid();
 
       entry_offset* entry_offsets2;
-      h.get_buffer(pr, entry_offsets2, ENTRY_OFFSET_FID);
-      char* values2 = h.get_raw_buffer(pr, VALUE_FID);
+      h.get_buffer(pr, entry_offsets2, fid_t.fid_entry_offset);
+      char* values2 = h.get_raw_buffer(pr, fid_t.fid_value);
 
       copy(entry_offsets, entry_offsets + md.size, entry_offsets2);
       copy(values, values + md.size * value_size, values2);
 
-      runtime->unmap_region(context, pr);
+      runtime->unmap_region(context, regions[0]);
+
+      runtime->destroy_logical_region(context, md.lr);
+      runtime->destroy_index_partition(context, md.ip);
+      
       md.lr = lr2;
+
+      DomainPointColoring coloring;
+      DomainPoint dp = DomainPoint::from_point<1>(make_point(p));
+      coloring.emplace(dp, h.domain_from_rect(0, md.reserve - 1));
+      Domain cd = h.domain_from_point(p);
+      
+      md.ip = runtime->create_index_partition(context, is, cd, coloring);
     }
 
     entry_offset* entry_offsets_end = entry_offsets + md.size;
 
     IndexIterator ent_itr(runtime, context, ent_is);
-/*
+
     for(size_t i = 0; i < num_indices; ++i){
       assert(ent_itr.has_next());
       ptr_t ptr = ent_itr.next();
 
       offset_count oc = ent_ac.read(ptr);
 
-      const index_pair& ip = args.indices[i];
+      const index_pair& ip = commit_indices[i];
 
       size_t n = ip.second - ip.first;
 
@@ -522,13 +519,15 @@ namespace execution {
         continue;
       }
 
+      for(int j = 0; j < n; ++j){
+
+      }
+
       char* start = commit_entry_values + i * num_slots * entry_value_size;
       char* end = start + n * entry_value_size; 
 
-
-      ent_ac.write(ptr, oc);
+      //ent_ac.write(ptr, oc);
     }
-*/
 
 /*
     IndexIterator ent_itr(runtime, context, ent_is);
@@ -539,6 +538,10 @@ namespace execution {
       //np(oc.count);
     }
     */
+
+    if(resized){
+      runtime->unmap_region(context, pr);
+    }
 
     return md;
   }  
@@ -551,6 +554,8 @@ namespace execution {
     partitioned_unstructured& to,
     partitioned_unstructured& raw_connectivity){
     
+    field_ids_t & fid_t = field_ids_t::instance();
+
     from_ = from;
     to_ = to;
 
@@ -566,7 +571,7 @@ namespace execution {
 
       FieldAllocator fa = h.create_field_allocator(fs);
 
-      fa.allocate_field(sizeof(ptr_t), PTR_FID);
+      fa.allocate_field(sizeof(ptr_t), fid_t.fid_ptr_t);
 
       to_lr_ = h.create_logical_region(is, fs);
 
@@ -605,7 +610,7 @@ namespace execution {
           RegionRequirement(ent_from_lp, 0, 
                             READ_ONLY, EXCLUSIVE, from_.lr));
 
-    il.region_requirements[0].add_field(FID_CELL);
+    il.region_requirements[0].add_field(fid_t.fid_cell);
 
     il.add_region_requirement(
           RegionRequirement(ent_from_lp, 0, 
@@ -621,7 +626,7 @@ namespace execution {
           RegionRequirement(to_lp, 0, 
                             WRITE_DISCARD, EXCLUSIVE, to_lr_));
 
-    il.region_requirements[2].add_field(PTR_FID);
+    il.region_requirements[2].add_field(fid_t.fid_ptr_t);
 
 
 
@@ -633,14 +638,14 @@ namespace execution {
           RegionRequirement(raw_connectivity_lp, 0, 
                             WRITE_DISCARD, EXCLUSIVE, raw_connectivity.lr));
 
-    il.region_requirements[3].add_field(ENTITY_PAIR_FID);
+    il.region_requirements[3].add_field(fid_t.fid_entity_pair);
 
 
     il.add_region_requirement(
           RegionRequirement(to_.lr, 0, 
                             READ_ONLY, EXCLUSIVE, to_.lr));
 
-    il.region_requirements[4].add_field(FID_VERT);
+    il.region_requirements[4].add_field(fid_t.fid_vert);
 
 
 
@@ -650,7 +655,9 @@ namespace execution {
 
   void legion_dpd::dump(size_t from_dim, size_t to_dim){
     RegionRequirement rr1(from_.lr, READ_ONLY, EXCLUSIVE, from_.lr);
-    
+
+    field_ids_t & fid_t = field_ids_t::instance();    
+
     size_t cfid = connectivity_field_id(from_dim, to_dim);
 
     rr1.add_field(cfid);
@@ -661,7 +668,7 @@ namespace execution {
     from_pr.wait_until_valid();
 
     RegionRequirement rr2(to_lr_, READ_ONLY, EXCLUSIVE, to_lr_);
-    rr2.add_field(PTR_FID);
+    rr2.add_field(fid_t.fid_ptr_t);
     InlineLauncher il2(rr2);
 
     PhysicalRegion to_pr = runtime_->map_region(context_, il2);
@@ -669,7 +676,7 @@ namespace execution {
     to_pr.wait_until_valid();
 
     RegionRequirement rr3(to_.lr, READ_ONLY, EXCLUSIVE, to_.lr);
-    rr3.add_field(FID_VERT);
+    rr3.add_field(fid_t.fid_vert);
     InlineLauncher il3(rr3);
 
     PhysicalRegion to_ent_pr = runtime_->map_region(context_, il3);
@@ -690,9 +697,9 @@ namespace execution {
 
       ptr_t to_ptr = pc.ptr; 
 
-      auto to_ac = to_pr.get_field_accessor(PTR_FID).typeify<ptr_t>();
+      auto to_ac = to_pr.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
       auto to_ent_ac = 
-        to_ent_pr.get_field_accessor(FID_VERT).typeify<size_t>();
+        to_ent_pr.get_field_accessor(fid_t.fid_vert).typeify<size_t>();
 
       size_t j = 0;
       size_t n = pc.count;
