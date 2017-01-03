@@ -13,7 +13,7 @@
 
 #include <iostream>
 
-#include <legion_utilities.h>
+//#include <legion_utilities.h>
 
 // FIXME: This is broken. This file should not include headers from
 //        another runtime.
@@ -256,6 +256,7 @@ namespace execution {
   void legion_dpd::commit_(commit_data<char>& cd, size_t value_size){
     field_ids_t & fid_t = field_ids_t::instance();
 
+#if 0
     ArgumentMap arg_map;
 
     Domain d = h.domain_from_point(cd.partition);
@@ -310,6 +311,7 @@ namespace execution {
     DomainPoint dp = DomainPoint::from_point<1>(make_point(partition));
     partition_metadata md = fm.get_result<partition_metadata>(dp);
     put_partition_metadata(md);
+#endif
   }
 
   legion_dpd::partition_metadata
@@ -407,7 +409,7 @@ namespace execution {
     const Task* task,
     const std::vector<PhysicalRegion>& regions,
     Context context, Runtime* runtime){
-
+#if 0
     field_ids_t & fid_t = field_ids_t::instance();
 
     legion_helper h(runtime, context);
@@ -544,6 +546,7 @@ namespace execution {
     }
 
     return md;
+#endif
   }  
 
   void
