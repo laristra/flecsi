@@ -23,6 +23,7 @@ set(execution_HEADERS
 	function.h
 	kernel.h
 	legion/context_policy.h
+  legion/dpd.h
 	legion/future.h
 	legion/execution_policy.h
 	legion/runtime_driver.h
@@ -48,6 +49,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
 set(execution_SOURCES
   mpilegion/init_partitions_task.cc
+  legion/dpd.cc
   PARENT_SCOPE
 )
 endif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
@@ -75,7 +77,6 @@ elseif (FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
         test/task_driver.h
         mpilegion/runtime_driver.cc
         mpilegion/init_partitions_task.cc
-        legion/dpd.cc
       DEFINES
         FLECSI_DRIVER=flecsi/execution/test/task_driver.h
         GTEST_INIT=flecsi/execution/test/task_init.h
