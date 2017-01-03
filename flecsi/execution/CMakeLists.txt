@@ -35,7 +35,6 @@ set(execution_HEADERS
 	mpilegion/mpi_legion_interop.h
 	mpilegion/runtime_driver.h
 	mpilegion/task_ids.h
-	mpilegion/task_wrapper.h
   mpilegion/init_partitions_task.h 
 	serial/context_policy.h
 	serial/execution_policy.h
