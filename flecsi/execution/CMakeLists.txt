@@ -28,8 +28,7 @@ set(execution_HEADERS
 
 #------------------------------------------------------------------------------#
 # UNIT_POLICY and RUNTIME_DRIVER are set for unit tests that are not
-# runtime specific, and that can be configured for whichever runtime
-# is active.
+# runtime specific and can be configured for whichever runtime is active.
 #------------------------------------------------------------------------------#
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "serial")

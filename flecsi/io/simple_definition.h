@@ -6,7 +6,7 @@
 #ifndef flecsi_io_simple_definition_h
 #define flecsi_io_simple_definition_h
 
-#include "flecsi/io/mesh_definition.h"
+#include "flecsi/topology/graph_definition.h"
 
 #include <fstream>
 #include <unordered_map>
@@ -28,7 +28,7 @@ namespace io {
 ///        the mesh_definition_t interface.
 ///
 class simple_definition_t
-  : public mesh_definition_t
+  : public topology::graph_definition__<2>
 {
 public:
 
@@ -68,20 +68,32 @@ public:
   simple_definition_t & operator = (const simple_definition_t &) = delete;
 
   /// Destructor
-   ~simple_definition_t() {}
+  ~simple_definition_t() {}
 
-  size_t dimension() { return 2; }
-  size_t num_vertices() { return num_vertices_; }
-  size_t num_cells() { return num_cells_; }
+  ///
+  ///
+  ///
+  size_t
+  num_entities(
+    size_t dimension
+  )
+  override
+  {
+    return dimension == 0 ? num_vertices_ : num_cells_;
+  } // num_entities
 
   ///
   ///
   ///
   std::vector<size_t>
   vertices( 
-    size_t cell_id
+    size_t dimension,
+    size_t entity_id
   )
+  override
   {
+    clog_assert(dimension == 2, "invalid dimension " << dimension);
+
     std::string line;
     std::vector<size_t> ids;
     size_t v0, v1, v2, v3;
@@ -90,7 +102,7 @@ public:
     file_.seekg(cell_start_);
 
     // Walk to the line with the requested id.
-    for(size_t l(0); l<cell_id; ++l) {
+    for(size_t l(0); l<entity_id; ++l) {
       std::getline(file_, line);
     } // for
 
@@ -113,11 +125,13 @@ public:
   ///
   ///
   std::set<size_t>
-  vertices_set(
-    size_t cell_id
+  vertex_set(
+    size_t dimension,
+    size_t entity_id
   )
+  override
   {
-    auto vvec = vertices(cell_id);
+    auto vvec = vertices(dimension, entity_id);
     return std::set<size_t>(vvec.begin(), vvec.end());
   }
 

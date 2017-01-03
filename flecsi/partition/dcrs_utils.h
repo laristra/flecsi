@@ -12,8 +12,8 @@
 
 #include <mpi.h>
 
-#include "flecsi/io/definition_utils.h"
-#include "flecsi/io/mesh_definition.h"
+#include "flecsi/topology/graph_definition.h"
+#include "flecsi/topology/graph_utils.h"
 #include "flecsi/partition/dcrs.h"
 
 ///
@@ -28,7 +28,7 @@ clog_register_tag(dcrs_utils);
 
 std::set<size_t>
 naive_partitioning(
-  io::mesh_definition_t & md
+  topology::graph_definition_t & gd
 )
 {
   std::set<size_t> indices;
@@ -46,8 +46,8 @@ naive_partitioning(
   // Create a naive initial distribution of the indices
   //--------------------------------------------------------------------------//
 
-	size_t quot = md.num_cells()/size;
-	size_t rem = md.num_cells()%size;
+	size_t quot = gd.num_entities(2)/size;
+	size_t rem = gd.num_entities(2)%size;
 
   clog_one(info) << "quot: " << quot << " rem: " << rem << std::endl;
 
@@ -72,11 +72,11 @@ naive_partitioning(
 } // naive_partitioning
 
 ///
-/// \param md The mesh definition.
+/// \param gd The mesh definition.
 ///
 dcrs_t
 make_dcrs(
-  io::mesh_definition_t & md
+  topology::graph_definition_t & gd
 )
 {
 	int size;
@@ -89,8 +89,8 @@ make_dcrs(
   // Create a naive initial distribution of the indices
   //--------------------------------------------------------------------------//
 
-	size_t quot = md.num_cells()/size;
-	size_t rem = md.num_cells()%size;
+	size_t quot = gd.num_entities(2)/size;
+	size_t rem = gd.num_entities(2)%size;
 
   // Each rank gets the average number of indices, with higher ranks
   // getting an additional index for non-zero remainders.
@@ -131,8 +131,10 @@ make_dcrs(
     // a matching criteria of "md.dimension()" vertices. The dimension
     // argument will pick neighbors that are adjacent across facets, e.g.,
     // across edges in two dimension, or across faces in three dimensions.
+//    auto neighbors =
+//      io::cell_neighbors(md, dcrs.distribution[rank] + i, md.dimension());
     auto neighbors =
-      io::cell_neighbors(md, dcrs.distribution[rank] + i, md.dimension());
+      topology::entity_neighbors<2,2,1>(gd, dcrs.distribution[rank] + i);
 
 #if 0
       if(rank == 1) {

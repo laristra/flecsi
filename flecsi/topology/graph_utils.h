@@ -111,7 +111,7 @@ entity_closure(
   } // for
 
   return closure;
-} // cell_closure
+} // entity_closure
 
 ///
 /// Return the cells that reference the given vertex id.

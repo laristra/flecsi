@@ -24,6 +24,7 @@
 #include "flecsi/partition/dcrs_utils.h"
 #include "flecsi/partition/parmetis_partitioner.h"
 #include "flecsi/partition/mpi_communicator.h"
+#include "flecsi/topology/graph_utils.h"
 #include "flecsi/utils/set_utils.h"
 
 const size_t output_rank = 0;
@@ -39,21 +40,10 @@ TEST(partition, simple) {
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   // Create a mesh definition from file.
-  //flecsi::io::simple_definition_t sd("simple2d-4x4.msh");
   flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
-  //flecsi::io::simple_definition_t sd("simple2d-1024x1024.msh");
-  //flecsi::io::simple_definition_t sd("simple2d-100x100.msh");
-  //flecsi::io::simple_definition_t sd("simple2d-21x21.msh");
-  //flecsi::io::simple_definition_t sd("simple2d-32x32.msh");
-  //flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
-  //flecsi::io::simple_definition_t sd("simple2d-10x10.msh");
 
   // Create the dCRS representation for the distributed partitioner.
   auto dcrs = flecsi::dmp::make_dcrs(sd);
-
-  //if(rank == output_rank) {
-//    flecsi_info_rank("dCRS" << std::endl << dcrs, output_rank);
-  //} // if
 
   // Create a partitioner instance to generate the primary partition.
   auto partitioner = std::make_shared<flecsi::dmp::parmetis_partitioner_t>();
@@ -66,8 +56,7 @@ TEST(partition, simple) {
   // Compute the dependency closure of the primary cell partition
   // through vertex intersections (specified by last argument "1").
   // To specify edge or face intersections, use 2 (edges) or 3 (faces).
-  // FIXME: We may need to replace this with a predicate function.
-  auto closure = flecsi::io::cell_closure(sd, primary, 1);
+  auto closure = flecsi::topology::entity_closure<2,2,0>(sd, primary);
   clog_container_rank(info, "closure", closure, clog::space, output_rank);
 
   // Subtracting out the initial set leaves just the nearest
@@ -82,7 +71,7 @@ TEST(partition, simple) {
   // we actually need information about the ownership of these indices
   // so that we can deterministically assign rank ownership to vertices.
   auto nearest_neighbor_closure =
-    flecsi::io::cell_closure(sd, nearest_neighbors, 1);
+    flecsi::topology::entity_closure<2,2,0>(sd, nearest_neighbors);
   clog_container_rank(info, "nearest neighbor closure",
     nearest_neighbor_closure, clog::space, output_rank);
 
@@ -182,7 +171,7 @@ TEST(partition, simple) {
 #endif
 
   // Form the vertex closure
-  auto vertex_closure = flecsi::io::vertex_closure(sd, closure);
+  auto vertex_closure = flecsi::topology::vertex_closure<2>(sd, closure);
 
 #if 0
   std::cout << "rank " << rank << " vertex closure: " << std::endl;
@@ -200,7 +189,7 @@ TEST(partition, simple) {
   for(auto i: vertex_closure) {
 
     // Get the set of cells that reference this vertex.
-    auto referencers = flecsi::io::vertex_referencers(sd, i);
+    auto referencers = flecsi::topology::vertex_referencers<2>(sd, i);
 
 #if 0
   if(rank == output_rank) {

@@ -10,16 +10,19 @@
 #include "flecsi/partition/dcrs_utils.h"
 #include "flecsi/partition/parmetis_partitioner.h"
 #include "flecsi/partition/mpi_communicator.h"
+#include "flecsi/topology/graph_utils.h"
 #include "flecsi/utils/set_utils.h"
 
 namespace flecsi {
 namespace dmp {
 
-class weaver {
+class weaver
+{
 private:
+
   using entry_info_t = flecsi::dmp::entry_info_t;
 
-  flecsi::io::mesh_definition_t &sd;
+  flecsi::topology::graph_definition_t & gd_;
 
   std::set<size_t> primary_cells;
   std::set<entry_info_t> exclusive_cells;
@@ -34,7 +37,12 @@ private:
   std::vector<std::pair<size_t, size_t>> raw_cell_vertex_conns;
 
 public:
-  weaver(flecsi::io::mesh_definition_t &mesh) : sd(mesh) {
+
+  //weaver(flecsi::topology::graph_definition_t & mesh)
+  weaver(flecsi::topology::graph_definition_t & gd)
+  :
+    gd_(gd)
+  {
     int size;
     int rank;
 
@@ -43,7 +51,7 @@ public:
 
     // Create the dCRS representation for the distributed
     // partitioner.
-    auto dcrs = flecsi::dmp::make_dcrs(sd);
+    auto dcrs = flecsi::dmp::make_dcrs(gd_);
 
     // Create a partitioner instance to generate the primary partition.
     auto partitioner = std::make_shared<flecsi::dmp::parmetis_partitioner_t>();
@@ -56,18 +64,19 @@ public:
     // through vertex intersections (specified by last argument "1").
     // To specify edge or face intersections, use 2 (edges) or 3 (faces).
     // FIXME: We may need to replace this with a predicate function.
-    auto closure = flecsi::io::cell_closure(sd, primary_cells, 1);
+    auto closure = flecsi::topology::entity_closure<2,2,0>(gd_, primary_cells);
 
     // Subtracting out the initial set leaves just the nearest
     // neighbors. This is similar to the image of the adjacency
     // graph of the initial indices.
-    auto nearest_neighbors = flecsi::utils::set_difference(closure, primary_cells);
+    auto nearest_neighbors =
+      flecsi::utils::set_difference(closure, primary_cells);
 
     // The closure of the nearest neighbors intersected with
     // the initial indeces gives the shared indices. This is similar to
     // the preimage of the nearest neighbors.
     auto nearest_neighbor_closure =
-      flecsi::io::cell_closure(sd, nearest_neighbors, 1);
+      flecsi::topology::entity_closure<2,2,0>(gd_, nearest_neighbors);
 
     // We can iteratively add halos of nearest neighbors, e.g.,
     // here we add the next nearest neighbors. For most mesh types
@@ -145,7 +154,7 @@ public:
     } // scope
 
     // Form the vertex closure
-    auto vertex_closure = flecsi::io::vertex_closure(sd, closure);
+    auto vertex_closure = flecsi::topology::vertex_closure<2>(gd_, closure);
 
     // Assign vertex ownership
     std::vector <std::set<size_t>> vertex_requests(size);
@@ -155,7 +164,7 @@ public:
     for (auto i: vertex_closure) {
 
       // Get the set of cells that reference this vertex.
-      auto referencers = flecsi::io::vertex_referencers(sd, i);
+      auto referencers = flecsi::topology::vertex_referencers<2>(gd_, i);
       size_t min_rank(std::numeric_limits<size_t>::max());
       std::set <size_t> shared_vertices;
 
@@ -261,7 +270,13 @@ public:
   }
 
 }; // class weaver
+
 } // namespace dmp
 } // namespace flecsi
 
 #endif // flecsi_partition_weaver_h
+
+/*~------------------------------------------------------------------------~--*
+ * Formatting options
+ * vim: set tabstop=2 shiftwidth=2 expandtab :
+ *~------------------------------------------------------------------------~--*/
