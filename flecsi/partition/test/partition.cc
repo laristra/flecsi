@@ -12,7 +12,7 @@
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
 
-#include <cinchtest.h>
+#include <cinchdevel.h>
 
 #if !defined(ENABLE_MPI)
   #error "ENABLE_MPI not defined! This file depends on MPI!"
@@ -29,7 +29,9 @@
 
 const size_t output_rank = 0;
 
-TEST(partition, simple) {
+clog_register_tag(partition);
+
+DEVEL(partition) {
 
   using entry_info_t = flecsi::dmp::entry_info_t;
 
@@ -50,21 +52,33 @@ TEST(partition, simple) {
 
   // Create the primary partition.
   auto primary = partitioner->partition(dcrs);
+
+  {
+  clog_tag_scope(partition);
   clog_container_rank(info, "primary partition", primary,
     clog::space, output_rank);
+  } // scope
 
   // Compute the dependency closure of the primary cell partition
   // through vertex intersections (specified by last argument "1").
   // To specify edge or face intersections, use 2 (edges) or 3 (faces).
   auto closure = flecsi::topology::entity_closure<2,2,0>(sd, primary);
+
+  {
+  clog_tag_scope(partition);
   clog_container_rank(info, "closure", closure, clog::space, output_rank);
+  } // scope
 
   // Subtracting out the initial set leaves just the nearest
   // neighbors. This is similar to the image of the adjacency
   // graph of the initial indices.
   auto nearest_neighbors = flecsi::utils::set_difference(closure, primary);
+
+  {
+  clog_tag_scope(partition);
   clog_container_rank(info, "nearest neighbors", nearest_neighbors,
     clog::space, output_rank);
+  } // scope
 
   // We can iteratively add halos of nearest neighbors, e.g.,
   // here we add the next nearest neighbors. For most mesh types
@@ -72,8 +86,12 @@ TEST(partition, simple) {
   // so that we can deterministically assign rank ownership to vertices.
   auto nearest_neighbor_closure =
     flecsi::topology::entity_closure<2,2,0>(sd, nearest_neighbors);
+
+  {
+  clog_tag_scope(partition);
   clog_container_rank(info, "nearest neighbor closure",
     nearest_neighbor_closure, clog::space, output_rank);
+  } // scope
 
 #if 0
   // The closure of the nearest neighbors intersected with
@@ -88,15 +106,23 @@ TEST(partition, simple) {
   // next nearest neighbors.
   auto next_nearest_neighbors =
     flecsi::utils::set_difference(nearest_neighbor_closure, closure);
+
+  {
+  clog_tag_scope(partition);
   clog_container_rank(info, "next nearest neighbor", next_nearest_neighbors,
     clog::space, output_rank);
+  } // scope
 
   // The union of the nearest and next-nearest neighbors gives us all
   // of the cells that might reference a vertex that we need.
   auto all_neighbors = flecsi::utils::set_union(nearest_neighbors,
     next_nearest_neighbors);
+
+  {
+  clog_tag_scope(partition);
   clog_container_rank(info, "all neighbors", all_neighbors,
     clog::space, output_rank);
+  } // scope
 
   // Create a communicator instance to get neighbor information.
   auto communicator = std::make_shared<flecsi::dmp::mpi_communicator_t>();
@@ -152,12 +178,15 @@ TEST(partition, simple) {
   } // for
   } // scope
 
+  {
+  clog_tag_scope(partition);
   clog_container_rank(info, "exclusive cells ", exclusive_cells,
     clog::newline, output_rank);
   clog_container_rank(info, "shared cells ", shared_cells,
     clog::newline, output_rank);
   clog_container_rank(info, "ghost cells ", ghost_cells,
     clog::newline, output_rank);
+  } // scope
 
 // FIXME
 #if 1
@@ -286,12 +315,15 @@ TEST(partition, simple) {
   } // for
   } // scope
 
+  {
+  clog_tag_scope(partition);
   clog_container_rank(info, "exclusive vertices ", exclusive_vertices,
     clog::newline, output_rank);
   clog_container_rank(info, "shared vertices ", shared_vertices,
     clog::newline, output_rank);
   clog_container_rank(info, "ghost vertices ", ghost_vertices,
     clog::newline, output_rank);
+  } // scope
 
 // We will need to discuss how to expose customization to user
 // specializations. The particular configuration of ParMETIS is

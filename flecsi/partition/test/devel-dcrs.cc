@@ -12,7 +12,7 @@
 clog_register_tag(dcrs);
 
 DEVEL(dcrs) {
-  clog_set_output_rank(3);
+  clog_set_output_rank(0);
 
   flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
   std::set<size_t> naive = flecsi::dmp::naive_partitioning(sd);

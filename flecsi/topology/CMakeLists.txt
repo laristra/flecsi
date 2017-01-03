@@ -38,6 +38,7 @@ cinch_add_unit(traversal
     test/traversal.blessed
   LIBRARIES
     flecsi
+    ${CINCH_RUNTIME_LIBRARIES}
 )
 
 cinch_add_unit(dual

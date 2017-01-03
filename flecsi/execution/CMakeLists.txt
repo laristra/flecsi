@@ -49,11 +49,17 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(execution_HEADERS
     ${execution_HEADERS}
     legion/context_policy.h
+    legion/dpd.h
     legion/future.h
     legion/execution_policy.h
     legion/runtime_driver.h
     legion/task_args.h
     legion/task_wrapper.h
+    PARENT_SCOPE
+  )
+
+  set(execution_SOURCES
+    legion/dpd.cc
     PARENT_SCOPE
   )
 
@@ -64,6 +70,9 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
   set(execution_HEADERS
     ${execution_HEADERS}
+    legion/dpd.h
+    legion/task_args.h
+    legion/task_wrapper.h
     mpilegion/context_policy.h
     mpilegion/execution_policy.h
     mpilegion/legion_handshake.h
@@ -71,12 +80,12 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
     mpilegion/mpi_legion_interop.h
     mpilegion/runtime_driver.h
     mpilegion/task_ids.h
-    mpilegion/task_wrapper.h
     mpilegion/init_partitions_task.h 
     PARENT_SCOPE
   )
 
   set(execution_SOURCES
+    legion/dpd.cc
     mpilegion/init_partitions_task.cc
     PARENT_SCOPE
   )

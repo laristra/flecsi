@@ -75,7 +75,7 @@ cinch_add_unit(partition
     test/simple2d-32x32.msh
     test/simple2d-48x48.msh
   LIBRARIES ${PARTITION_LIBRARIES}
-  POLICY MPI
+  POLICY MPI_DEVEL
   THREADS 5
 )
 
