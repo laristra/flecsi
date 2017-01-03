@@ -121,6 +121,8 @@ cinch_add_unit(simple_function
     ${RUNTIME_DRIVER}
   DEFINES
     FLECSI_DRIVER=flecsi/execution/test/simple_function.h
+  POLICY
+    ${UNIT_POLICY}
   LIBRARIES
     flecsi
     ${CINCH_RUNTIME_LIBRARIES}
