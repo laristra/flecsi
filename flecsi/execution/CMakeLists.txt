@@ -128,57 +128,59 @@ cinch_add_unit(simple_function
 
 if(NOT DEFINED ENV{TRAVIS})
 # FIXME: Need to talk to Irina and Galen about this
-#  cinch_add_unit(mpilegion_task
-#    SOURCES
-#      test/task.cc
-#      test/task_driver.h
-#      mpilegion/runtime_driver.cc
-#      mpilegion/init_partitions_task.cc
-#      legion/dpd.cc
-#    DEFINES
-#      FLECSI_DRIVER=flecsi/execution/test/task_driver.h
-#      GTEST_INIT=flecsi/execution/test/task_init.h
-#    POLICY MPILEGION
-#    LIBRARIES flecsi
-#  )
-#
-#  cinch_add_unit(dpd_sparse
-#    SOURCES
-#      test/dpd_sparse.cc
-#      legion/dpd.cc
-#    POLICY MPILEGION
-#    THREADS 2
-#  )
-#
+  cinch_add_unit(mpilegion_task
+    SOURCES
+      test/task.cc
+      test/task_driver.h
+      mpilegion/runtime_driver.cc
+      mpilegion/init_partitions_task.cc
+      legion/dpd.cc
+    DEFINES
+      FLECSI_DRIVER=flecsi/execution/test/task_driver.h
+      GTEST_INIT=flecsi/execution/test/task_init.h
+    POLICY MPILEGION
+    LIBRARIES flecsi
+  )
+
+  cinch_add_unit(dpd_sparse
+    SOURCES
+      test/dpd_sparse.cc
+      legion/dpd.cc
+    POLICY
+      MPILEGION
+   THREADS 2
+  )
+
 # FIXME: Need to talk about this with Irina and Galen.
-#  cinch_add_unit(test_legion_handshake
-#    SOURCES test/test_legion_handshake.cc
-#    POLICY MPILEGION
-#  )
+  cinch_add_unit(test_legion_handshake
+    SOURCES test/test_legion_handshake.cc
+    POLICY MPILEGION
+  )
 
-#  cinch_add_unit(test_mpilegion_interop
-#    SOURCES test/test_mpi_legion_interop.cc
-#    POLICY MPILEGION
-#  )
+  cinch_add_unit(test_mpilegion_interop
+    SOURCES test/test_mpi_legion_interop.cc
+    POLICY MPILEGION
+  )
 
-#  if(ENABLE_PARTITIONING)
-#    cinch_add_unit(mpilegion_sprint
-#      SOURCES
-#        test/task.cc
-#        test/sprint.h
-#        mpilegion/runtime_driver.cc
-#        mpilegion/init_partitions_task.cc
-#        legion/dpd.cc
-#      INPUTS
-#        test/simple2d-8x8.msh
-#      DEFINES SPRINT_TEST
-#        FLECSI_DRIVER=flecsi/execution/test/sprint.h
-#        GTEST_INIT=flecsi/execution/test/task_init.h
-#      LIBRARIES ${PARTITION_LIBRARIES}
-#      POLICY MPILEGION
-#      THREADS 2
-#    )
-#  endif() # ENABLE_PARTITIONING
+  if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
+    cinch_add_unit(mpilegion_sprint
+      SOURCES
+        test/task.cc
+        test/sprint.h
+        mpilegion/runtime_driver.cc
+        mpilegion/init_partitions_task.cc
+        legion/dpd.cc
+      INPUTS
+        test/simple2d-8x8.msh
+      DEFINES SPRINT_TEST
+        FLECSI_DRIVER=flecsi/execution/test/sprint.h
+        GTEST_INIT=flecsi/execution/test/task_init.h
+      LIBRARIES ${PARTITION_LIBRARIES}
+      POLICY MPILEGION
+      THREADS 2
+    )
+  endif()
+
 endif() # TRAVIS
 
 #----------------------------------------------------------------------------~-#
