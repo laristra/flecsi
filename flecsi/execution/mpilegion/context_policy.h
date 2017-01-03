@@ -195,7 +195,7 @@ struct mpilegion_context_policy_t
     interop_helper_.legion_configure();
 
     // Start the runtime
-    lr_runtime_t::start(argc, argv,true);
+    lr_runtime_t::start(argc, argv, true);
 
     interop_helper_.handoff_to_legion();
 

@@ -142,14 +142,14 @@ if(NOT DEFINED ENV{TRAVIS})
     LIBRARIES flecsi
   )
 
-  cinch_add_unit(dpd_sparse
-    SOURCES
-      test/dpd_sparse.cc
-      legion/dpd.cc
-    POLICY
-      MPILEGION
-   THREADS 2
-  )
+#  cinch_add_unit(dpd_sparse
+#    SOURCES
+#      test/dpd_sparse.cc
+#      legion/dpd.cc
+#    POLICY
+#      MPILEGION
+#   THREADS 2
+#  )
 
 # FIXME: Need to talk about this with Irina and Galen.
   cinch_add_unit(test_legion_handshake
