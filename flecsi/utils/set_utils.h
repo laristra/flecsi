@@ -6,6 +6,7 @@
 #ifndef flecsi_utils_set_utils_h
 #define flecsi_utils_set_utils_h
 
+#include <algorithm>
 #include <set>
 
 ///

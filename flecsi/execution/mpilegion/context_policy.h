@@ -31,6 +31,7 @@
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/tuple_wrapper.h"
 #include "flecsi/execution/mpilegion/runtime_driver.h"
+
 #include "flecsi/execution/common/task_hash.h"
 #include "flecsi/execution/mpilegion/legion_handshake.h"
 #include "flecsi/execution/mpilegion/mpi_legion_interop.h"
@@ -194,7 +195,7 @@ struct mpilegion_context_policy_t
     interop_helper_.legion_configure();
 
     // Start the runtime
-    lr_runtime_t::start(argc, argv,true);
+    lr_runtime_t::start(argc, argv, true);
 
     interop_helper_.handoff_to_legion();
 

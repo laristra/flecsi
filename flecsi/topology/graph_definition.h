@@ -6,12 +6,14 @@
 #ifndef flecsi_topology_graph_definition_h
 #define flecsi_topology_graph_definition_h
 
+#include <set>
+#include <vector>
+
 #include "flecsi/geometry/point.h"
 
 ///
-// \file graph_definition.h
-// \authors bergen
-// \date Initial file creation: Nov 17, 2016
+/// \file
+/// \date Initial file creation: Nov 17, 2016
 ///
 
 namespace flecsi {

@@ -9,6 +9,17 @@
 #include "flecsi/io/simple_definition.h"
 #include "flecsi/partition/dcrs_utils.h"
 
+const size_t output_rank(0);
+
+TEST(dcrs, naive_partitioning) {
+  flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
+  auto naive = flecsi::dmp::naive_partitioning(sd);
+
+  clog_set_output_rank(0);
+
+  clog_container_one(info, "naive partitioning", naive, clog::space);
+} // TEST
+
 TEST(dcrs, simple2d_8x8) {
 
   flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
@@ -32,8 +43,6 @@ TEST(dcrs, simple2d_8x8) {
 
 } // TEST
 
-const size_t output_rank(0);
-
 TEST(dcrs, simple2d_16x16) {
 
   flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
@@ -42,9 +51,11 @@ TEST(dcrs, simple2d_16x16) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+#if 0
   if(rank == output_rank) {
     std::cout << dcrs << std::endl;
   } // if
+#endif
 
 } // TEST
 

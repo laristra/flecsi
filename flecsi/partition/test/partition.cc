@@ -12,7 +12,11 @@
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
 
-#include <cinchtest.h>
+#include <cinchdevel.h>
+
+#if !defined(ENABLE_MPI)
+  #error "ENABLE_MPI not defined! This file depends on MPI!"
+#endif
 
 #include <mpi.h>
 
@@ -20,11 +24,14 @@
 #include "flecsi/partition/dcrs_utils.h"
 #include "flecsi/partition/parmetis_partitioner.h"
 #include "flecsi/partition/mpi_communicator.h"
+#include "flecsi/topology/graph_utils.h"
 #include "flecsi/utils/set_utils.h"
 
 const size_t output_rank = 0;
 
-TEST(partition, simple) {
+clog_register_tag(partition);
+
+DEVEL(partition) {
 
   using entry_info_t = flecsi::dmp::entry_info_t;
 
@@ -35,52 +42,56 @@ TEST(partition, simple) {
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   // Create a mesh definition from file.
-  //flecsi::io::simple_definition_t sd("simple2d-4x4.msh");
   flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
-  //flecsi::io::simple_definition_t sd("simple2d-1024x1024.msh");
-  //flecsi::io::simple_definition_t sd("simple2d-100x100.msh");
-  //flecsi::io::simple_definition_t sd("simple2d-21x21.msh");
-  //flecsi::io::simple_definition_t sd("simple2d-32x32.msh");
-  //flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
-  //flecsi::io::simple_definition_t sd("simple2d-10x10.msh");
 
   // Create the dCRS representation for the distributed partitioner.
   auto dcrs = flecsi::dmp::make_dcrs(sd);
-
-  //if(rank == output_rank) {
-//    flecsi_info_rank("dCRS" << std::endl << dcrs, output_rank);
-  //} // if
 
   // Create a partitioner instance to generate the primary partition.
   auto partitioner = std::make_shared<flecsi::dmp::parmetis_partitioner_t>();
 
   // Create the primary partition.
   auto primary = partitioner->partition(dcrs);
+
+  {
+  clog_tag_scope(partition);
   clog_container_rank(info, "primary partition", primary,
     clog::space, output_rank);
+  } // scope
 
   // Compute the dependency closure of the primary cell partition
   // through vertex intersections (specified by last argument "1").
   // To specify edge or face intersections, use 2 (edges) or 3 (faces).
-  // FIXME: We may need to replace this with a predicate function.
-  auto closure = flecsi::io::cell_closure(sd, primary, 1);
+  auto closure = flecsi::topology::entity_closure<2,2,0>(sd, primary);
+
+  {
+  clog_tag_scope(partition);
   clog_container_rank(info, "closure", closure, clog::space, output_rank);
+  } // scope
 
   // Subtracting out the initial set leaves just the nearest
   // neighbors. This is similar to the image of the adjacency
   // graph of the initial indices.
   auto nearest_neighbors = flecsi::utils::set_difference(closure, primary);
+
+  {
+  clog_tag_scope(partition);
   clog_container_rank(info, "nearest neighbors", nearest_neighbors,
     clog::space, output_rank);
+  } // scope
 
   // We can iteratively add halos of nearest neighbors, e.g.,
   // here we add the next nearest neighbors. For most mesh types
   // we actually need information about the ownership of these indices
   // so that we can deterministically assign rank ownership to vertices.
   auto nearest_neighbor_closure =
-    flecsi::io::cell_closure(sd, nearest_neighbors, 1);
+    flecsi::topology::entity_closure<2,2,0>(sd, nearest_neighbors);
+
+  {
+  clog_tag_scope(partition);
   clog_container_rank(info, "nearest neighbor closure",
     nearest_neighbor_closure, clog::space, output_rank);
+  } // scope
 
 #if 0
   // The closure of the nearest neighbors intersected with
@@ -95,15 +106,23 @@ TEST(partition, simple) {
   // next nearest neighbors.
   auto next_nearest_neighbors =
     flecsi::utils::set_difference(nearest_neighbor_closure, closure);
+
+  {
+  clog_tag_scope(partition);
   clog_container_rank(info, "next nearest neighbor", next_nearest_neighbors,
     clog::space, output_rank);
+  } // scope
 
   // The union of the nearest and next-nearest neighbors gives us all
   // of the cells that might reference a vertex that we need.
   auto all_neighbors = flecsi::utils::set_union(nearest_neighbors,
     next_nearest_neighbors);
+
+  {
+  clog_tag_scope(partition);
   clog_container_rank(info, "all neighbors", all_neighbors,
     clog::space, output_rank);
+  } // scope
 
   // Create a communicator instance to get neighbor information.
   auto communicator = std::make_shared<flecsi::dmp::mpi_communicator_t>();
@@ -159,12 +178,15 @@ TEST(partition, simple) {
   } // for
   } // scope
 
+  {
+  clog_tag_scope(partition);
   clog_container_rank(info, "exclusive cells ", exclusive_cells,
     clog::newline, output_rank);
   clog_container_rank(info, "shared cells ", shared_cells,
     clog::newline, output_rank);
   clog_container_rank(info, "ghost cells ", ghost_cells,
     clog::newline, output_rank);
+  } // scope
 
 // FIXME
 #if 1
@@ -178,7 +200,7 @@ TEST(partition, simple) {
 #endif
 
   // Form the vertex closure
-  auto vertex_closure = flecsi::io::vertex_closure(sd, closure);
+  auto vertex_closure = flecsi::topology::vertex_closure<2>(sd, closure);
 
 #if 0
   std::cout << "rank " << rank << " vertex closure: " << std::endl;
@@ -196,7 +218,7 @@ TEST(partition, simple) {
   for(auto i: vertex_closure) {
 
     // Get the set of cells that reference this vertex.
-    auto referencers = flecsi::io::vertex_referencers(sd, i);
+    auto referencers = flecsi::topology::vertex_referencers<2>(sd, i);
 
 #if 0
   if(rank == output_rank) {
@@ -293,12 +315,15 @@ TEST(partition, simple) {
   } // for
   } // scope
 
+  {
+  clog_tag_scope(partition);
   clog_container_rank(info, "exclusive vertices ", exclusive_vertices,
     clog::newline, output_rank);
   clog_container_rank(info, "shared vertices ", shared_vertices,
     clog::newline, output_rank);
   clog_container_rank(info, "ghost vertices ", ghost_vertices,
     clog::newline, output_rank);
+  } // scope
 
 // We will need to discuss how to expose customization to user
 // specializations. The particular configuration of ParMETIS is

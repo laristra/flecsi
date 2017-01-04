@@ -13,7 +13,10 @@
 
 #include <iostream>
 
-//#include "legion_utilities.h"
+//#include <legion_utilities.h>
+
+// FIXME: This is broken. This file should not include headers from
+//        another runtime.
 #include "flecsi/execution/mpilegion/task_ids.h"
 
 using namespace std;
@@ -252,6 +255,7 @@ namespace execution {
 
   void legion_dpd::commit_(commit_data<char>& cd, size_t value_size){
     field_ids_t & fid_t = field_ids_t::instance();
+
 #if 0
     ArgumentMap arg_map;
 

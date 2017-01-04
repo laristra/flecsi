@@ -28,6 +28,7 @@ set(utils_HEADERS
   logging.h
   reorder.h
   set_intersection.h
+  set_utils.h
   static_verify.h
   tuple_function.h
   tuple_wrapper.h
@@ -37,8 +38,6 @@ set(utils_SOURCES
   common.cc
   PARENT_SCOPE
 )
-
-
 
 set(utils_HEADERS ${utils_HEADERS} PARENT_SCOPE)
 

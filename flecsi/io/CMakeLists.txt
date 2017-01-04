@@ -18,6 +18,7 @@ set(io_HEADERS
   io.h
   io_base.h
   io_exodus.h
+  simple_definition.h
   PARENT_SCOPE
 )
   

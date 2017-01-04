@@ -8,14 +8,12 @@
 
 #include <legion.h>
 
-/*!
- * \file mpilegion/runtime_driver.h
- * \authors bergen, demeshko
- * \date Initial file creation: Jul 26, 2016
- *
- *  mpilegion_runtime_driver- an implementation of the legion top level task
- *  that manages swithching between mpi and legion 
- */
+///
+/// \file
+/// \date Initial file creation: Jul 26, 2016
+///  mpilegion_runtime_driver- an implementation of the legion top level task
+///  that manages swithching between mpi and legion 
+///
 
 namespace flecsi {
 namespace execution {

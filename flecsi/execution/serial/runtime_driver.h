@@ -7,9 +7,8 @@
 #define flecsi_execution_serial_runtime_driver_h
 
 ///
-// \file serial/runtime_driver.h
-// \authors bergen
-// \date Initial file creation: Aug 01, 2016
+/// \file
+/// \date Initial file creation: Aug 01, 2016
 ///
 
 namespace flecsi {
