@@ -15,11 +15,10 @@
 #define flecsi_execution_mpilegion_mapper_h
 
 #include <legion.h>
-#include "task_ids.h"
 #include <legion_mapping.h>
 #include <default_mapper.h>
 
-#include "flecsi/execution/mpilegion/task_ids.h"
+#include "flecsi/execution/task_ids.h"
 
 
 enum {
@@ -37,7 +36,7 @@ namespace flecsi {
 namespace execution {
 
 ///
-//TOFIX: Documentation
+// STLComparator struct compare two Points with dimension=DIM
 ///
 template <
 unsigned DIM
@@ -57,7 +56,7 @@ STLComparator
 };
 
 ///
-//TOFIX: Documentation
+// Custom mapper that handles mpi-legion interoperability in FLeCSI
 ///
 class
 MPIMapper : public Legion::Mapping::DefaultMapper 
@@ -65,7 +64,7 @@ MPIMapper : public Legion::Mapping::DefaultMapper
   public:
 
   ///
-  //TOFIX: Documentation
+  // Contructor. Currently supports only LOC_PROC and TOC_PROC
 	///
   MPIMapper(
   	LegionRuntime::HighLevel::Machine machine,
@@ -114,10 +113,21 @@ MPIMapper : public Legion::Mapping::DefaultMapper
           " sysmem=" << local_sysmem<<std::endl;
   }// end MPIMapper
 
+  ///
+  // Destructor
+  ///
   virtual ~MPIMapper(){};
 
   ///
-  //TOFIX: Documentation
+  //  The slice_task call is used by the runtime
+  //  to query the mapper about the best way to distribute
+  //  the points in an index space task launch throughout
+  //  the machine.
+  //  To ensure that legion tasks are executed in the same memory space
+  //  as MPI tasks, one need to specify tag = MAPPER_FORCE_RANK_MATCH
+  //  for the index launch int the code.
+  //  By default, slice-task will perform the didtribution the same way 
+  //  it is done in the DefaultMapper. 
   ///
   virtual
   void
@@ -262,7 +272,8 @@ MPIMapper : public Legion::Mapping::DefaultMapper
 };
 
 ///
-//TOFIX: Documentation
+// mapper_registration is used to replace DefaultMapper with MPIMapper in
+// FLeCSI
 ///
 inline
 void

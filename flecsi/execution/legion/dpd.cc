@@ -15,9 +15,7 @@
 
 //#include <legion_utilities.h>
 
-// FIXME: This is broken. This file should not include headers from
-//        another runtime.
-#include "flecsi/execution/mpilegion/task_ids.h"
+#include "flecsi/execution/task_ids.h"
 
 using namespace std;
 using namespace Legion;

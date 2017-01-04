@@ -27,7 +27,7 @@
 
 #include "flecsi/execution/mpilegion/legion_handshake.h"
 #include "flecsi/execution/mpilegion/mapper.h"
-#include "flecsi/execution/mpilegion/task_ids.h"
+#include "flecsi/execution/task_ids.h"
 #include "flecsi/partition/index_partition.h"
 #include "flecsi/utils/any.h"
 
