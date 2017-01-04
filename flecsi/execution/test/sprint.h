@@ -336,12 +336,12 @@ driver(
   initialization_launcher.tag = MAPPER_FORCE_RANK_MATCH; 
 
   initialization_launcher.add_region_requirement(
-    RegionRequirement(cells_primary_lp, 0/*projection ID*/,
+    RegionRequirement(cells_lr/*projection ID*/,
                       WRITE_DISCARD, EXCLUSIVE, cells_lr));
   initialization_launcher.add_field(0, fid_t.fid_cell);
 
   initialization_launcher.add_region_requirement(
-    RegionRequirement(vert_primary_lp, 0/*projection ID*/,
+    RegionRequirement(vertices_lr/*projection ID*/,
                       WRITE_DISCARD, EXCLUSIVE, vertices_lr));
   initialization_launcher.add_field(1, fid_t.fid_vert);
 
@@ -350,6 +350,7 @@ driver(
   
   fm2.wait_all_results();
 
+#if 0
 #if 0 
   //printing cell_lr results
   {
@@ -851,6 +852,16 @@ driver(
   for (unsigned idx = 0; idx < phase_barriers.size(); idx++)
     runtime->destroy_phase_barrier(context, phase_barriers[idx]);
   phase_barriers.clear();
+
+#endif
+  //TOFIX: free all lr physical regions is
+  runtime->destroy_logical_region(context, vertices_lr);
+  runtime->destroy_logical_region(context, cells_lr);
+  runtime->destroy_field_space(context, vertices_fs);
+  runtime->destroy_field_space(context, cells_fs);
+  runtime->destroy_index_space(context,cells_is);
+  runtime->destroy_index_space(context,vertices_is);
+
 } // driver
 
 } // namespace execution
