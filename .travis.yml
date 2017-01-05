@@ -29,6 +29,15 @@ env:
     - DISTRO=fedora MPI=OFF RUNTIME=serial        WERROR=yes
     - DISTRO=fedora MPI=OFF RUNTIME=serial COVERAGE=ON
 
+matrix:
+  allow_failures:
+    - compiler: clang #wrong warning in older clang, fix in newer (fedora)
+      env: DISTRO=ubuntu MPI=OFF RUNTIME=legion    WERROR=yes 
+    - compiler: clang
+      env: DISTRO=ubuntu MPI=ON  RUNTIME=mpilegion WERROR=yes 
+    - compiler: clang
+      env: DISTRO=ubuntu_mpich MPI=ON  RUNTIME=mpilegion WERROR=yes 
+
 before_install:
  - git fetch --unshallow && git fetch --tags #for versioning
 
