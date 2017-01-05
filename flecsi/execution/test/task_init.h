@@ -15,7 +15,7 @@
 
 void
 inline
-gtest_init(
+test_init(
   int argc,
   char ** argv
 )
@@ -25,7 +25,7 @@ gtest_init(
   // This will initialize the legion runtime, so you need to
   // do anything else before you get here.
   flecsi::execution::context_t::instance().initialize(argc, argv);
-} // gtest_init
+} // test_init
 
 #endif // flecsi_execution_task_init_h
 

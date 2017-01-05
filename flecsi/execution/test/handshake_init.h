@@ -47,7 +47,7 @@ void helloworld_mpi_task (const Task *legiontask,
 
 void
 inline
-gtest_init(
+test_init(
   int argc,
   char ** argv
 )
@@ -110,7 +110,7 @@ gtest_init(
   Runtime::wait_for_shutdown();
   // Then finalize MPI like normal 
 
-} // gtest_init
+} // test_init
 
 #endif // flecsi_execution_task_init_h
 
