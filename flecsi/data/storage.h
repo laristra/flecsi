@@ -10,17 +10,16 @@
 #include "flecsi/data/data_client.h"
 
 ///
-// \file storage.h
-// \authors bergen
-// \date Initial file creation: Apr 17, 2016
+/// \file
+/// \date Initial file creation: Apr 17, 2016
 ///
 
 namespace flecsi {
 namespace data {
 
 ///
-// \class storage__ storage.h
-// \brief storage__ provides an interface for data registration and access.
+/// \class storage__ storage.h
+/// \brief storage__ provides an interface for data registration and access.
 ///
 template<typename user_meta_data_t,
   template<typename> class storage_policy_t>
@@ -51,7 +50,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   storage__ & operator = (storage__ &&) = default;
 
 	///
-  // \brief Return a static instance of the data manager.
+  /// \brief Return a static instance of the data manager.
 	///
   static storage__ &
   instance()
@@ -65,19 +64,19 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   //--------------------------------------------------------------------------//
 
   ///
-  // \brief Register data with the data manager.
-  //
-  // \tparam ST Storage type...
-  // \tparam T Type...
-  // \tparam NS Namespace...
-  // \tparam Args Variadic arguments...
-  //
-  // \param[in] runtime_namespace
-  // \param[in] key
-  // \param[in] versions
-  // \param[in] args
-  //
-  // \return Returns a handle to the newly registered data.
+  /// \brief Register data with the data manager.
+  ///
+  /// \tparam ST Storage type...
+  /// \tparam T Type...
+  /// \tparam NS Namespace...
+  /// \tparam Args Variadic arguments...
+  ///
+  /// \param[in] runtime_namespace
+  /// \param[in] key
+  /// \param[in] versions
+  /// \param[in] args
+  ///
+  /// \return Returns a handle to the newly registered data.
   ///
   template<
     size_t ST,
@@ -103,15 +102,15 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   //--------------------------------------------------------------------------//
 
   ///
-  // \brief get an accessor to registered data.
-  //
-  // \tparam ST
-  // \tparam T
-  // \tparam NS
-  //
-  // \param[in] runtime_namespace
-  // \param[in] key
-  // \param[in] version
+  /// \brief get an accessor to registered data.
+  ///
+  /// \tparam ST
+  /// \tparam T
+  /// \tparam NS
+  ///
+  /// \param[in] runtime_namespace
+  /// \param[in] key
+  /// \param[in] version
   ///
   template<
     size_t ST,
@@ -130,15 +129,15 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   } // get_accessor
 
   ///
-  // \brief get an accessor to registered data.
-  //
-  // \tparam ST
-  // \tparam T
-  // \tparam NS
-  //
-  // \param[in] runtime_namespace
-  // \param[in] key
-  // \param[in] version
+  /// \brief get an accessor to registered data.
+  ///
+  /// \tparam ST
+  /// \tparam T
+  /// \tparam NS
+  ///
+  /// \param[in] runtime_namespace
+  /// \param[in] key
+  /// \param[in] version
   ///
   template<
     size_t ST,
@@ -299,15 +298,15 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   //--------------------------------------------------------------------------//
 
   ///
-  // \brief get a handle to registered data.
-  //
-  // \tparam ST
-  // \tparam T
-  // \tparam NS
-  //
-  // \param[in] runtime_namespace
-  // \param[in] key
-  // \param[in] version
+  /// \brief get a handle to registered data.
+  ///
+  /// \tparam ST
+  /// \tparam T
+  /// \tparam NS
+  ///
+  /// \param[in] runtime_namespace
+  /// \param[in] key
+  /// \param[in] version
   ///
   template<
     size_t ST,
@@ -330,7 +329,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   //--------------------------------------------------------------------------//
 
   ///
-  //
+  ///
   ///
   void
   reset()
@@ -339,7 +338,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   } // reset
 
   ///
-  //
+  ///
   ///
   void
   reset(
@@ -350,7 +349,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   } // reset
 
   ///
-  //
+  ///
   ///
   template<typename T>
   void
@@ -363,7 +362,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   } // release
 
   ///
-  //
+  ///
   ///
   void
   move(

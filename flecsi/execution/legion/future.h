@@ -151,6 +151,8 @@ struct legion_future_model__<R, LegionRuntime::HighLevel::FutureMap>
     size_t index = 0
   )
   {
+    // FIXME: Need implementation
+    return 0;
   } // get
 
 private:

@@ -18,9 +18,9 @@ DEVEL(dcrs) {
   std::set<size_t> naive = flecsi::dmp::naive_partitioning(sd);
 
   {
-  clog_tag_scope(dcrs);
+  clog_tag_guard(dcrs);
   clog_container_one(info, "naive partitioning", naive, clog::space);
-  } // scope
+  } // guard
 
 } // DEVEL
 

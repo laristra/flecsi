@@ -33,9 +33,8 @@
 #include <memory>
 
 ///
-// \file serial/dense.h
-// \authors bergen
-// \date Initial file creation: Apr 7, 2016
+/// \file
+/// \date Initial file creation: Apr 7, 2016
 ///
 
 namespace flecsi {
@@ -51,16 +50,16 @@ namespace serial {
 //----------------------------------------------------------------------------//
 
 ///
-// \brief dense_accessor_t provides logically array-based access to data
-//        variables that have been registered in the data model.
-//
-// \tparam T The type of the data variable. If this type is not
-//           consistent with the type used to register the data, bad things
-//           can happen. However, it can be useful to reinterpret the type,
-//           e.g., when writing raw bytes. This class is part of the
-//           low-level \e flecsi interface, so it is assumed that you
-//           know what you are doing...
-// \tparam MD The meta data type.
+/// \brief dense_accessor_t provides logically array-based access to data
+///        variables that have been registered in the data model.
+///
+/// \tparam T The type of the data variable. If this type is not
+///           consistent with the type used to register the data, bad things
+///           can happen. However, it can be useful to reinterpret the type,
+///           e.g., when writing raw bytes. This class is part of the
+///           low-level \e flecsi interface, so it is assumed that you
+///           know what you are doing...
+/// \tparam MD The meta data type.
 ///
 template<typename T, typename MD>
 struct dense_accessor_t
@@ -83,13 +82,13 @@ struct dense_accessor_t
   dense_accessor_t() = default;
 
   ///
-  // Constructor.
-  //
-  // \param label The c_str() version of the const_string_t used for
-  //              this data variable's hash.
-  // \param size The size of the associated index space.
-  // \param data A pointer to the raw data.
-  // \param user_meta_data A reference to the user-defined meta data.
+  /// Constructor.
+  ///
+  /// \param label The c_str() version of the const_string_t used for
+  ///              this data variable's hash.
+  /// \param size The size of the associated index space.
+  /// \param data A pointer to the raw data.
+  /// \param user_meta_data A reference to the user-defined meta data.
   ///
   dense_accessor_t(
     const std::string & label,
@@ -110,7 +109,7 @@ struct dense_accessor_t
   {}
 
 	///
-  // Copy constructor.
+  /// Copy constructor.
 	///
 	dense_accessor_t(
     const dense_accessor_t & a
@@ -208,9 +207,9 @@ struct dense_accessor_t
   // Operators.
   //--------------------------------------------------------------------------//
 
-  //! \brief copy operator.
-  //! \param [in] a  The accessor to copy.
-  //! \return A reference to the new copy.
+  /// \brief copy operator.
+  /// \param [in] a  The accessor to copy.
+  /// \return A reference to the new copy.
   dense_accessor_t & operator=(const dense_accessor_t & a)
   {
     label_ = a.label_;
@@ -396,7 +395,7 @@ struct dense_handle_t : public data_handle_t
 //----------------------------------------------------------------------------//
 
 ///
-// FIXME: Dense storage type.
+/// FIXME: Dense storage type.
 ///
 template<typename DS, typename MD>
 struct storage_type_t<dense, DS, MD>
@@ -419,16 +418,16 @@ struct storage_type_t<dense, DS, MD>
   //--------------------------------------------------------------------------//
 
   ///
-  // \tparam T Data type to register.
-  // \tparam NS Namespace
-  // \tparam Args Variadic arguments that are passed to
-  //              metadata initialization.
-  //
-  // \param data_client Base class reference to client.
-  // \param data_store A reference for accessing the low-level data.
-  // \param key A const string instance containing the variable name.
-  // \param versions The number of variable versions for this datum.
-  // \param indices The number of indices in the index space.
+  /// \tparam T Data type to register.
+  /// \tparam NS Namespace
+  /// \tparam Args Variadic arguments that are passed to
+  ///              metadata initialization.
+  ///
+  /// \param data_client Base class reference to client.
+  /// \param data_store A reference for accessing the low-level data.
+  /// \param key A const string instance containing the variable name.
+  /// \param versions The number of variable versions for this datum.
+  /// \param indices The number of indices in the index space.
   ///
   template<
     typename T,
@@ -869,7 +868,7 @@ struct storage_type_t<dense, DS, MD>
   //--------------------------------------------------------------------------//
 
   ///
-  //
+  ///
   ///
   template<
     typename T,

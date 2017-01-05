@@ -23,9 +23,8 @@
 #include "flecsi/data/common/data_types.h"
 
 ///
-// \file serial/meta_data.h
-// \authors bergen
-// \date Initial file creation: Apr 15, 2016
+/// \file
+/// \date Initial file creation: Apr 15, 2016
 ///
 
 namespace flecsi {
@@ -36,11 +35,11 @@ namespace data {
 //----------------------------------------------------------------------------//
 
 ///
-// \brief serial_meta_data_t provides storage for extra information that is
-//        used to interpret data variable information at different points
-//        in the low-level runtime.
-// 
-// \tparam T A user-defined data type that will be carried with the meta data.
+/// \brief serial_meta_data_t provides storage for extra information that is
+///        used to interpret data variable information at different points
+///        in the low-level runtime.
+/// 
+/// \tparam T A user-defined data type that will be carried with the meta data.
 ///
 template<typename T>
 struct serial_meta_data_t
@@ -55,13 +54,13 @@ struct serial_meta_data_t
   size_t versions;
 
   ///
-  // \brief type_info_t allows creation of reference information
-  //        to the user-specified type of the data data.
-  //
-  // The std::type_info type requires dynamic initialization.  The
-  // type_info_t type is designed to allow construction without
-  // needing a non-trivial default constructor for the
-  // serial_meta_data_t type.
+  /// \brief type_info_t allows creation of reference information
+  ///        to the user-specified type of the data data.
+  ///
+  /// The std::type_info type requires dynamic initialization.  The
+  /// type_info_t type is designed to allow construction without
+  /// needing a non-trivial default constructor for the
+  /// serial_meta_data_t type.
   ///
   struct type_info_t {
     type_info_t(const std::type_info & type_info_) : type_info(type_info_) {}

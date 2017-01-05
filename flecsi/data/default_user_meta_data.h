@@ -8,11 +8,10 @@
 
 #include "flecsi/data/data_client.h"
 
-/*!
- * \file default_user_meta_data.h
- * \authors bergen
- * \date Initial file creation: Apr 17, 2016
- */
+///
+/// \file
+/// \date Initial file creation: Apr 17, 2016
+///
 
 namespace flecsi {
 

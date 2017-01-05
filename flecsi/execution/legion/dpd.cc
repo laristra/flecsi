@@ -547,6 +547,8 @@ namespace execution {
 
     return md;
 #endif
+    partition_metadata md;
+    return md;
   }  
 
   void

@@ -34,7 +34,8 @@ naive_partitioning(
   std::set<size_t> indices;
 
   {
-  clog_tag_scope(dcrs_utils);
+  clog_tag_guard(dcrs_utils);
+
 	int size;
 	int rank;
 
@@ -66,7 +67,7 @@ naive_partitioning(
     indices.insert(offset+i);
   clog_one(info) << "inserting: " << offset+i << std::endl;
   } // for
-  } // scope
+  } // guard
 
   return indices;
 } // naive_partitioning

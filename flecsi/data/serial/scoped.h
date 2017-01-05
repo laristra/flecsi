@@ -27,9 +27,8 @@
 #include "flecsi/utils/const_string.h"
 
 ///
-// \file serial/scoped.h
-// \authors bergen
-// \date Initial file creation: Apr 17, 2016
+/// \file
+/// \date Initial file creation: Apr 17, 2016
 ///
 
 namespace flecsi {
@@ -37,7 +36,7 @@ namespace data {
 namespace serial {
 
   ///
-  // FIXME: Scoped storage type.
+  /// FIXME: Scoped storage type.
   ///
   template<typename data_store_t, typename meta_data_t>
   struct storage_type_t<scoped, data_store_t, meta_data_t> {
@@ -66,7 +65,7 @@ namespace serial {
     } // register_data
 
     ///
-    //
+    ///
     ///
     template<
       typename T,
@@ -84,7 +83,7 @@ namespace serial {
     } // get_accessor
 
     ///
-    //
+    ///
     ///
     template<
       typename T,
