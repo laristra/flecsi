@@ -54,10 +54,10 @@ DEVEL(partition) {
   auto primary = partitioner->partition(dcrs);
 
   {
-  clog_tag_scope(partition);
+  clog_tag_guard(partition);
   clog_container_rank(info, "primary partition", primary,
     clog::space, output_rank);
-  } // scope
+  } // guard
 
   // Compute the dependency closure of the primary cell partition
   // through vertex intersections (specified by last argument "1").
@@ -65,9 +65,9 @@ DEVEL(partition) {
   auto closure = flecsi::topology::entity_closure<2,2,0>(sd, primary);
 
   {
-  clog_tag_scope(partition);
+  clog_tag_guard(partition);
   clog_container_rank(info, "closure", closure, clog::space, output_rank);
-  } // scope
+  } // guard
 
   // Subtracting out the initial set leaves just the nearest
   // neighbors. This is similar to the image of the adjacency
@@ -75,10 +75,10 @@ DEVEL(partition) {
   auto nearest_neighbors = flecsi::utils::set_difference(closure, primary);
 
   {
-  clog_tag_scope(partition);
+  clog_tag_guard(partition);
   clog_container_rank(info, "nearest neighbors", nearest_neighbors,
     clog::space, output_rank);
-  } // scope
+  } // guard
 
   // We can iteratively add halos of nearest neighbors, e.g.,
   // here we add the next nearest neighbors. For most mesh types
@@ -88,10 +88,10 @@ DEVEL(partition) {
     flecsi::topology::entity_closure<2,2,0>(sd, nearest_neighbors);
 
   {
-  clog_tag_scope(partition);
+  clog_tag_guard(partition);
   clog_container_rank(info, "nearest neighbor closure",
     nearest_neighbor_closure, clog::space, output_rank);
-  } // scope
+  } // guard
 
 #if 0
   // The closure of the nearest neighbors intersected with
@@ -108,10 +108,10 @@ DEVEL(partition) {
     flecsi::utils::set_difference(nearest_neighbor_closure, closure);
 
   {
-  clog_tag_scope(partition);
+  clog_tag_guard(partition);
   clog_container_rank(info, "next nearest neighbor", next_nearest_neighbors,
     clog::space, output_rank);
-  } // scope
+  } // guard
 
   // The union of the nearest and next-nearest neighbors gives us all
   // of the cells that might reference a vertex that we need.
@@ -119,10 +119,10 @@ DEVEL(partition) {
     next_nearest_neighbors);
 
   {
-  clog_tag_scope(partition);
+  clog_tag_guard(partition);
   clog_container_rank(info, "all neighbors", all_neighbors,
     clog::space, output_rank);
-  } // scope
+  } // guard
 
   // Create a communicator instance to get neighbor information.
   auto communicator = std::make_shared<flecsi::dmp::mpi_communicator_t>();
@@ -179,14 +179,14 @@ DEVEL(partition) {
   } // scope
 
   {
-  clog_tag_scope(partition);
+  clog_tag_guard(partition);
   clog_container_rank(info, "exclusive cells ", exclusive_cells,
     clog::newline, output_rank);
   clog_container_rank(info, "shared cells ", shared_cells,
     clog::newline, output_rank);
   clog_container_rank(info, "ghost cells ", ghost_cells,
     clog::newline, output_rank);
-  } // scope
+  } // guard
 
 // FIXME
 #if 1
@@ -316,14 +316,14 @@ DEVEL(partition) {
   } // scope
 
   {
-  clog_tag_scope(partition);
+  clog_tag_guard(partition);
   clog_container_rank(info, "exclusive vertices ", exclusive_vertices,
     clog::newline, output_rank);
   clog_container_rank(info, "shared vertices ", shared_vertices,
     clog::newline, output_rank);
   clog_container_rank(info, "ghost vertices ", ghost_vertices,
     clog::newline, output_rank);
-  } // scope
+  } // guard
 
 // We will need to discuss how to expose customization to user
 // specializations. The particular configuration of ParMETIS is

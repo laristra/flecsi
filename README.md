@@ -1,5 +1,5 @@
 ![logo](doc/flecsi.png)
-[![Build Status](https://travis-ci.org/losalamos/flecsi.svg?branch=master)](https://travis-ci.org/losalamos/flecsi)
+[![Build Status](https://travis-ci.org/laristra/flecsi.svg?branch=master)](https://travis-ci.org/laristra/flecsi)
 
 # FleCSI Project
 
@@ -33,11 +33,11 @@ option for many application projects.
 
 FleCSI uses git submodules, so it must be checked out recursively:
 
-    % git clone --recursive git@github.com:losalamos/flecsi.git
+    % git clone --recursive git@github.com:laristra/flecsi.git
 
 https:  
 
-    % git clone --recursive https://github.com/losalamos/flecsi.git
+    % git clone --recursive https://github.com/laristra/flecsi.git
 
 # Requirements
 
@@ -48,7 +48,7 @@ Currently, this equates to G++ 5.0 or greater.
 * GCC >= 6.1.1
 * Doxygen >= 1.8
 * [Cereal](https://github.com/USCiLab/cereal) >= 1.2.1
-* [cinch-utils](https://github.com/losalamos/cinch-utils) >= 1.0
+* [cinch-utils](https://github.com/laristra/cinch-utils) >= 1.0
 
 ## Legion
 
@@ -62,7 +62,7 @@ To begin, you will need to build the third-party library dependencies:
     
 or build them yourself:
 
-    % git clone git@github.com:losalamos/flecsi-third-party.git
+    % git clone git@github.com:laristra/flecsi-third-party.git
     % cd flecsi-third-party
     % mkdir build
     % cd build

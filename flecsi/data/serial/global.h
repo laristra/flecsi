@@ -31,9 +31,8 @@
 #include <algorithm>
 
 ///
-// \file serial/global.h
-// \authors bergen
-// \date Initial file creation: Apr 17, 2016
+/// \file
+/// \date Initial file creation: Apr 17, 2016
 ///
 
 namespace flecsi {
@@ -49,16 +48,16 @@ namespace serial {
 //----------------------------------------------------------------------------//
 
 ///
-// \brief global_accessor_t provides logically array-based access to data
-//        variables that have been registered in the data model.
-//
-// \tparam T The type of the data variable. If this type is not
-//           consistent with the type used to register the data, bad things
-//           can happen. However, it can be useful to reinterpret the type,
-//           e.g., when writing raw bytes. This class is part of the
-//           low-level \e flecsi interface, so it is assumed that you
-//           know what you are doing...
-// \tparam MD The meta data type.
+/// \brief global_accessor_t provides logically array-based access to data
+///        variables that have been registered in the data model.
+///
+/// \tparam T The type of the data variable. If this type is not
+///           consistent with the type used to register the data, bad things
+///           can happen. However, it can be useful to reinterpret the type,
+///           e.g., when writing raw bytes. This class is part of the
+///           low-level \e flecsi interface, so it is assumed that you
+///           know what you are doing...
+/// \tparam MD The meta data type.
 ///
 template<typename T, typename MD>
 struct global_accessor_t
@@ -79,13 +78,13 @@ struct global_accessor_t
   global_accessor_t() = default;
 
   ///
-  // Constructor.
-  //
-  // \param label The c_str() version of the const_string_t used for
-  //              this data variable's hash.
-  // \param size The size of the associated index space.
-  // \param data A pointer to the raw data.
-  // \param user_meta_data A reference to the user-defined meta data.
+  /// Constructor.
+  ///
+  /// \param label The c_str() version of the const_string_t used for
+  ///              this data variable's hash.
+  /// \param size The size of the associated index space.
+  /// \param data A pointer to the raw data.
+  /// \param user_meta_data A reference to the user-defined meta data.
   ///
   global_accessor_t(
     const std::string & label,
@@ -101,7 +100,7 @@ struct global_accessor_t
   {}
 
 	///
-  // Copy constructor.
+  /// Copy constructor.
 	///
 	global_accessor_t(
     const global_accessor_t & a
@@ -155,9 +154,9 @@ struct global_accessor_t
   // Operators.
   //--------------------------------------------------------------------------//
 
-  //! \brief copy operator.
-  //! \param [in] a  The accessor to copy.
-  //! \return A reference to the new copy.
+  /// \brief copy operator.
+  /// \param [in] a  The accessor to copy.
+  /// \return A reference to the new copy.
   global_accessor_t & operator=(const global_accessor_t & a)
   {
     label_ = a.label_;
@@ -185,14 +184,14 @@ struct global_accessor_t
     return data_;
   } // operator ->
 
-  //!  \brief Provide access to the data for this data variable.  
-  //!  \remark This is the const operator version.
+  ///  \brief Provide access to the data for this data variable.  
+  ///  \remark This is the const operator version.
   const T & operator*() const
   {
     return *data_;
   }
 
-  //!  \brief Provide access to the data for this data variable.
+  ///  \brief Provide access to the data for this data variable.
   T & operator*()
   {
     return *data_;
@@ -251,6 +250,7 @@ struct global_handle_t : public data_handle_t
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Main type definition.
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
+
 //----------------------------------------------------------------------------//
 // Scalar storage type.
 //----------------------------------------------------------------------------//
@@ -279,15 +279,15 @@ struct storage_type_t<global, DS, MD> {
   //--------------------------------------------------------------------------//
 
   ///
-  // \tparam T Data type to register.
-  // \tparam NS Namespace.
-  // \tparam Args Variadic arguments that are passed to
-  //              metadata initialization.
-  //
-  // \param data_store A reference for accessing the low-level data.
-  // \param key A const string instance containing the variable name.
-  // \param runtime_namespace The runtime namespace to be used.
-  // \param The number of variable versions for this datum.
+  /// \tparam T Data type to register.
+  /// \tparam NS Namespace.
+  /// \tparam Args Variadic arguments that are passed to
+  ///              metadata initialization.
+  ///
+  /// \param data_store A reference for accessing the low-level data.
+  /// \param key A const string instance containing the variable name.
+  /// \param runtime_namespace The runtime namespace to be used.
+  /// \param The number of variable versions for this datum.
   ///
   template< 
     typename T,
@@ -678,7 +678,7 @@ struct storage_type_t<global, DS, MD> {
   //--------------------------------------------------------------------------//
 
   ///
-  //
+  ///
   ///
   template<
     typename T,

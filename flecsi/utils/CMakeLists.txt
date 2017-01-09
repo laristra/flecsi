@@ -42,16 +42,29 @@ set(utils_SOURCES
 set(utils_HEADERS ${utils_HEADERS} PARENT_SCOPE)
 
 cinch_add_unit(const_string
-  SOURCES test/const_string.cc)
+  SOURCES test/const_string.cc
+)
 
 cinch_add_unit(factory
-  SOURCES test/factory.cc)
+  SOURCES test/factory.cc
+)
 
 cinch_add_unit(reorder
-  SOURCES test/reorder.cc)
+  SOURCES test/reorder.cc
+)
 
 cinch_add_unit(any
-  SOURCES test/any.cc)
+  SOURCES test/any.cc
+)
+
+if(ENABLE_OPENSSL)
+  cinch_add_unit(checksum
+    SOURCES
+      test/checksum.cc
+    LIBRARIES
+      ${OPENSSL_LIBRARIES}
+  )
+endif()
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options

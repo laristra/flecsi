@@ -142,6 +142,7 @@ public:
   vertex(
     size_t vertex_id
   )
+  override
   {
     std::string line;
     point_t v;
