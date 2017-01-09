@@ -13,8 +13,7 @@
 
 #include <iostream>
 
-//#include <legion_utilities.h>
-
+#include <legion_utilities.h>
 #include "flecsi/execution/task_ids.h"
 
 using namespace std;
@@ -254,7 +253,6 @@ namespace execution {
   void legion_dpd::commit_(commit_data<char>& cd, size_t value_size){
     field_ids_t & fid_t = field_ids_t::instance();
 
-#if 0
     ArgumentMap arg_map;
 
     Domain d = h.domain_from_point(cd.partition);
@@ -309,7 +307,6 @@ namespace execution {
     DomainPoint dp = DomainPoint::from_point<1>(make_point(partition));
     partition_metadata md = fm.get_result<partition_metadata>(dp);
     put_partition_metadata(md);
-#endif
   }
 
   legion_dpd::partition_metadata
@@ -407,7 +404,7 @@ namespace execution {
     const Task* task,
     const std::vector<PhysicalRegion>& regions,
     Context context, Runtime* runtime){
-#if 0
+
     field_ids_t & fid_t = field_ids_t::instance();
 
     legion_helper h(runtime, context);
@@ -501,51 +498,105 @@ namespace execution {
 
     IndexIterator ent_itr(runtime, context, ent_is);
 
+    size_t offset = 0;
+
+    char* value_ptr = values + md.size * value_size;
+    size_t value_offset = md.size;
+
+    vector<size_t> offsets(md.size);
+
     for(size_t i = 0; i < num_indices; ++i){
       assert(ent_itr.has_next());
       ptr_t ptr = ent_itr.next();
-
-      offset_count oc = ent_ac.read(ptr);
 
       const index_pair& ip = commit_indices[i];
 
       size_t n = ip.second - ip.first;
 
-      size_t pos = oc.offset;
+      offset_count oc = ent_ac.read(ptr);
+      oc.offset = offset;
 
       if(n == 0){
-        oc.count = 0;
         ent_ac.write(ptr, oc);
         continue;
       }
 
-      for(int j = 0; j < n; ++j){
-
+      for(int j = md.size + offset; j >= 0; --j){
+        entry_offsets[j + n] = entry_offsets[j];
       }
 
-      char* start = commit_entry_values + i * num_slots * entry_value_size;
-      char* end = start + n * entry_value_size; 
+      for(size_t j = 0; j < n; ++j){
+        entry_offset& ej = entry_offsets[offset + j];
+        
+        size_t pos = (i * num_slots + j) * entry_value_size;
 
-      //ent_ac.write(ptr, oc);
+        ej.entry = 
+          ((entry_offset*)(commit_entry_values + pos))->entry;
+
+        offsets.push_back(value_offset);
+        ej.offset = value_offset++;
+
+        char* value = commit_entry_values + pos + sizeof(size_t);
+        memcpy(value_ptr, value, value_size);
+        value_ptr += value_size;
+      }
+
+      auto cmp = [](const auto & k1, const auto & k2) -> bool{
+        return k1.entry < k2.entry;
+      };
+
+      inplace_merge(entry_offsets + offset,
+                    entry_offsets + offset + n,
+                    entry_offsets + offset + oc.count + n, cmp);
+
+      oc.count += n;
+      offset += oc.count;
+      
+      ent_ac.write(ptr, oc);
     }
 
-/*
-    IndexIterator ent_itr(runtime, context, ent_is);
-    while(ent_itr.has_next()){
-      ptr_t ptr = ent_itr.next();
-      const offset_count& oc = ent_ac.read(ptr);
-      //np(oc.offset);
-      //np(oc.count);
+    for(size_t i = 0; i < md.size; ++i){
+      offsets[entry_offsets[i].offset] = i;
+    }
+
+    md.size = offset;
+
+    char* temp = new char[value_size];
+
+    for(size_t i = 0; i < md.size; ++i){
+      size_t j = offsets[i];
+
+      if(j != i){
+        memcpy(temp, values + i * value_size, value_size);
+        
+        memcpy(values + i * value_size,
+               values + j * value_size,
+               value_size);
+        
+        memcpy(values + j * value_size, temp, value_size);
+
+        offsets[i] = i;
+        offsets[j] = j;
+        entry_offsets[i].offset = i;
+        entry_offsets[j].offset = j;
+      }
+    }
+
+    delete[] temp;        
+
+    /*
+    for(size_t i = 0; i < md.size; ++i){
+      np(entry_offsets[i].entry);
+      np(entry_offsets[i].offset);
+    }
+
+    char* value_ptr2 = values;
+    for(size_t i = 0; i < md.size; ++i){
+      np(*((double*)value_ptr2));
+      value_ptr2 += value_size;
     }
     */
 
-    if(resized){
-      runtime->unmap_region(context, pr);
-    }
-
-    return md;
-#endif
-    partition_metadata md;
     return md;
   }  
 

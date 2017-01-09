@@ -130,10 +130,10 @@ void top_level_task(const Task* task,
   cd.entries = 
     new legion_dpd::entry_value<double>[cd.num_indices * cd.num_slots];
 
-  cd.entries[0].entry = 5;
-  cd.entries[0].value = 555.5;
-  cd.entries[1].entry = 3;
-  cd.entries[1].value = 333.3;
+  cd.entries[0].entry = 3;
+  cd.entries[0].value = 333.3;
+  cd.entries[1].entry = 5;
+  cd.entries[1].value = 555.5;
   cd.entries[2].entry = 8;
   cd.entries[2].value = 888.8;
   
@@ -141,6 +141,21 @@ void top_level_task(const Task* task,
   
   for(size_t i = 1; i < cd.num_indices; ++i){
     cd.indices[i] = make_pair(3, 3);
+  }
+
+  dpd.commit(cd);
+
+  np("------------------");
+
+  cd.entries[0].entry = 4;
+  cd.entries[0].value = 444.4;
+  cd.entries[1].entry = 9;
+  cd.entries[1].value = 999.9;
+  
+  cd.indices[0] = make_pair(0, 2);
+  
+  for(size_t i = 1; i < cd.num_indices; ++i){
+    cd.indices[i] = make_pair(2, 2);
   }
 
   dpd.commit(cd);
