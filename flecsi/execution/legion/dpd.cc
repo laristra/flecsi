@@ -48,10 +48,12 @@ namespace execution {
 
   } // namespace
 
-  void legion_dpd::init_connectivity_task(
+  void
+  legion_dpd::init_connectivity_task(
     const Task* task,
     const std::vector<PhysicalRegion>& regions,
-    Context ctx, Runtime* runtime){
+    Context ctx, Runtime* runtime)
+  {
  
     field_ids_t & fid_t = field_ids_t::instance(); 
 
@@ -134,10 +136,12 @@ namespace execution {
     from_ac.write(from_itr.next(), pc);
   }
 
-  void legion_dpd::init_data_task(
+  void
+  legion_dpd::init_data_task(
     const Task* task,
     const std::vector<PhysicalRegion>& regions,
-    Context ctx, Runtime* runtime){
+    Context ctx, Runtime* runtime)
+  {
 
     field_ids_t & fid_t = field_ids_t::instance();
 
@@ -190,9 +194,12 @@ namespace execution {
     }
   }
 
-  void legion_dpd::create_data_(partitioned_unstructured& indices,
-                                size_t start_reserve,
-                                size_t value_size){
+  void
+  legion_dpd::create_data_(
+    partitioned_unstructured& indices,
+    size_t start_reserve,
+    size_t value_size)
+  {
     field_ids_t & fid_t = field_ids_t::instance();
 
     from_ = indices;
@@ -250,7 +257,11 @@ namespace execution {
     fm.wait_all_results();
   }
 
-  void legion_dpd::commit_(commit_data<char>& cd, size_t value_size){
+  void
+  legion_dpd::commit_(
+    commit_data<char>& cd,
+    size_t value_size)
+  {
     field_ids_t & fid_t = field_ids_t::instance();
 
     ArgumentMap arg_map;
@@ -310,7 +321,9 @@ namespace execution {
   }
 
   legion_dpd::partition_metadata
-  legion_dpd::get_partition_metadata(size_t partition){
+  legion_dpd::get_partition_metadata(
+    size_t partition)
+  {
 
     field_ids_t & fid_t = field_ids_t::instance();  
  
@@ -369,7 +382,8 @@ namespace execution {
   legion_dpd::get_partition_metadata_task(
     const Task* task,
     const std::vector<PhysicalRegion>& regions,
-    Context context, Runtime* runtime){
+    Context context, Runtime* runtime)
+  {
 
     field_ids_t & fid_t = field_ids_t::instance();
   
@@ -383,10 +397,12 @@ namespace execution {
     return md;
   }
 
-  void legion_dpd::put_partition_metadata_task(
+  void
+  legion_dpd::put_partition_metadata_task(
     const Task* task,
     const std::vector<PhysicalRegion>& regions,
-    Context context, Runtime* runtime){
+    Context context, Runtime* runtime)
+  {
 
     field_ids_t & fid_t = field_ids_t::instance();
 
@@ -400,10 +416,12 @@ namespace execution {
     ac.write(DomainPoint::from_point<1>(p), md);
   }
 
-  legion_dpd::partition_metadata legion_dpd::commit_data_task(
+  legion_dpd::partition_metadata
+  legion_dpd::commit_data_task(
     const Task* task,
     const std::vector<PhysicalRegion>& regions,
-    Context context, Runtime* runtime){
+    Context context, Runtime* runtime)
+  {
 
     field_ids_t & fid_t = field_ids_t::instance();
 
@@ -606,7 +624,8 @@ namespace execution {
     partitioned_unstructured& from,
     size_t to_dim,
     partitioned_unstructured& to,
-    partitioned_unstructured& raw_connectivity){
+    partitioned_unstructured& raw_connectivity)
+  {
     
     field_ids_t & fid_t = field_ids_t::instance();
 
@@ -707,7 +726,11 @@ namespace execution {
     fm.wait_all_results();
   }
 
-  void legion_dpd::dump(size_t from_dim, size_t to_dim){
+  void
+  legion_dpd::dump(
+    size_t from_dim,
+    size_t to_dim)
+  {
     RegionRequirement rr1(from_.lr, READ_ONLY, EXCLUSIVE, from_.lr);
 
     field_ids_t & fid_t = field_ids_t::instance();    
