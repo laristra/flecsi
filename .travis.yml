@@ -57,15 +57,15 @@ script:
                 --build-arg TRAVIS_PULL_REQUEST=${TRAVIS_PULL_REQUEST} --build-arg TRAVIS_JOB_ID=${TRAVIS_JOB_ID}
                 --build-arg TRAVIS_TAG=${TRAVIS_TAG} --build-arg TRAVIS_REPO_SLUG=${TRAVIS_REPO_SLUG}
                 --build-arg TRAVIS_COMMIT=${TRAVIS_COMMIT}
-                -t flecsi/flecsi:${DISTRO}_${RUNTIME}${TAG} ${HOME}/docker/ &&
+                -t ${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG} ${HOME}/docker/ &&
     rm -rf ${HOME}/.ccache &&
-    CON=$(docker run -d flecsi/flecsi:${DISTRO}_${RUNTIME}${TAG} /bin/bash) &&
+    CON=$(docker run -d ${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG} /bin/bash) &&
     docker cp ${CON}:/home/flecsi/.ccache ${HOME}/
 
 after_success:
   - if [[ ${DOCKERHUB} = true && ${DOCKER_EMAIL} && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_PULL_REQUEST} == false && ${TRAVIS_BRANCH} == master ]]; then
       docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-      docker push "flecsi/flecsi:${DISTRO}_${RUNTIME}${TAG}";
+      docker push "${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG}";
     fi
   - if [[ ${TRAVIS_JOB_NUMBER} = *.1 ]]; then
       cd $HOME/docker/flecsi;
@@ -73,7 +73,7 @@ after_success:
       git fetch origin gh-pages && git checkout -b gh-pages FETCH_HEAD;
       mkdir -p assets;
       rm -rf assets/doxygen doc;
-      CON=$(docker run -d flecsi/flecsi:${DISTRO}_${RUNTIME}${TAG}) && docker cp ${CON}:/home/flecsi/flecsi/build/doc . ;
+      CON=$(docker run -d ${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG}) && docker cp ${CON}:/home/${TRAVIS_REPO_SLUG}/build/doc . ;
       mv doc/doxygen/html assets/doxygen;
       for i in doc/*.pdf; do mv ${i} ${i%-0.0*}.pdf; done;
       mv doc/*.pdf assets;

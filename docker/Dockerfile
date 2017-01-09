@@ -1,4 +1,4 @@
-FROM flecsi/flecsi_tpl:fedora
+FROM laristra/flecsi-third-party:fedora
 
 ARG MINIMAL
 ARG MPI
