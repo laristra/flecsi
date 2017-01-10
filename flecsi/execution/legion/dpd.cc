@@ -524,7 +524,10 @@ namespace execution {
     vector<size_t> offsets(md.size);
 
     for(size_t i = 0; i < num_indices; ++i){
+      np(i);
+
       assert(ent_itr.has_next());
+      
       ptr_t ptr = ent_itr.next();
 
       const index_pair& ip = commit_indices[i];
@@ -595,6 +598,7 @@ namespace execution {
 
         offsets[i] = i;
         offsets[j] = j;
+
         entry_offsets[i].offset = i;
         entry_offsets[j].offset = j;
       }
@@ -602,18 +606,12 @@ namespace execution {
 
     delete[] temp;        
 
-    /*
-    for(size_t i = 0; i < md.size; ++i){
-      np(entry_offsets[i].entry);
-      np(entry_offsets[i].offset);
-    }
-
     char* value_ptr2 = values;
     for(size_t i = 0; i < md.size; ++i){
-      np(*((double*)value_ptr2));
+      cout << "entry: " << entry_offsets[i].entry << 
+        " value: " << *((double*)value_ptr2) << endl;
       value_ptr2 += value_size;
     }
-    */
 
     return md;
   }  

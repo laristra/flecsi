@@ -100,7 +100,12 @@ public:
   num_entries_(data_.num_entries()),
   indices_(new index_pair_[num_indices_]),
   entries_(new entry_value_t[num_indices_ * num_slots_]),
-  erase_set_(nullptr){}
+  erase_set_(nullptr){
+    for(size_t i = 0; i < num_indices_; ++i){
+      indices_[i].first = 0;
+      indices_[i].second = 0;
+    }
+  }
 
   ~sparse_mutator()
   {
@@ -145,8 +150,7 @@ public:
     size_t n = ip.second - ip.first;
     
     if(n >= num_slots_) {
-      return spare_map_.emplace(index,
-        entry_value_t(entry))->second.value;
+      return spare_map_.emplace(index, entry_value_t(entry))->second.value;
     } // if
 
     entry_value_t * start = entries_ + index * num_slots_;     
@@ -285,17 +289,35 @@ void top_level_task(const Task* task,
   dpd.create_data<double>(cells_part, 1024);
 
   size_t partition = 0;
-  size_t num_indices = 5;
-  size_t num_entries = 3;
+  size_t num_indices = 4;
+  size_t num_entries = 100;
 
   sparse_data data(dpd, partition, num_indices, num_entries);
 
-  sparse_mutator<double> m(data, 5);
+  {
 
-  m(1, 2) = 1.2;
-  m(3, 1) = 3.1;
+    sparse_mutator<double> m(data, 5);
 
-  m.commit();
+    m(0, 2) = 1.2;
+    m(0, 1) = 3.1;
+
+  }
+
+  {
+
+    sparse_mutator<double> m(data, 5);
+
+    m(0, 9) = 9.9;
+    m(0, 5) = 5.5;
+  }
+
+  {
+
+    sparse_mutator<double> m(data, 5);
+
+    m(0, 1) = 1.1;
+    m(0, 0) = 0.1;
+  }
 }
 
 TEST(legion, test1) {

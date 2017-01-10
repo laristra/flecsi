@@ -4,7 +4,7 @@
 #include <cereal/archives/binary.hpp>
 
 #include "flecsi/execution/legion/dpd.h"
-#include "flecsi/execution/mpilegion/task_ids.h"
+#include "flecsi/execution/task_ids.h"
 
 #include "legion.h"
 #include "legion_config.h"
