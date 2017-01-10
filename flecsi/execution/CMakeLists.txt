@@ -55,6 +55,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/runtime_driver.h
     legion/task_args.h
     legion/task_wrapper.h
+    task_ids.h
     PARENT_SCOPE
   )
 
@@ -79,7 +80,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
     mpilegion/mapper.h
     mpilegion/mpi_legion_interop.h
     mpilegion/runtime_driver.h
-    mpilegion/task_ids.h
+    task_ids.h
     mpilegion/init_partitions_task.h 
     PARENT_SCOPE
   )

@@ -15,7 +15,7 @@
 // user includes
 #include "flecsi/execution/mpilegion/legion_handshake.h"
 #include "flecsi/execution/mpilegion/mapper.h"
-#include "flecsi/execution/mpilegion/task_ids.h"
+#include "flecsi/execution/task_ids.h"
 #include "flecsi/execution/task.h"
 
 using namespace flecsi::execution;

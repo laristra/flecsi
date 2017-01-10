@@ -1,6 +1,7 @@
 #include <cinchtest.h>
 #include <iostream>
 #include <sstream>
+#include <map>
 #include <cereal/archives/binary.hpp>
 
 #include "flecsi/execution/legion/dpd.h"
@@ -33,6 +34,175 @@ using connectivity_vec = legion_dpd::connectivity_vec;
 
 const size_t NUM_CELLS = 16;
 const size_t NUM_PARTITIONS = 4;
+
+template<typename T>
+struct entry_value__
+{
+  entry_value__(size_t entry)
+  : entry(entry){}
+
+  entry_value__(size_t entry, T value)
+  : entry(entry),
+  value(value){}
+
+  entry_value__(){}
+
+  size_t entry;
+  T value;
+}; // struct entry_value__
+
+using index_pair_ = std::pair<size_t, size_t>;
+
+class sparse_data{
+public:
+  sparse_data(legion_dpd& dpd,
+              size_t partition,
+              size_t num_indices,
+              size_t num_entries)
+  : dpd_(dpd),
+  partition_(partition),
+  num_indices_(num_indices),
+  num_entries_(num_entries){}
+
+  legion_dpd& dpd(){
+    return dpd_;
+  }
+
+  size_t partition() const{
+    return partition_;
+  }
+
+  size_t num_indices() const{
+    return num_indices_;
+  }
+
+  size_t num_entries() const{
+    return num_entries_;
+  }
+
+private:
+  legion_dpd& dpd_;
+  size_t num_entries_;  
+  size_t num_indices_;  
+  size_t partition_;  
+};
+
+template<typename T>
+class sparse_mutator{
+public:
+  using entry_value_t = entry_value__<T>;
+
+  sparse_mutator(sparse_data& data,
+                 size_t num_slots)
+  : data_(data),
+  num_slots_(num_slots),
+  num_indices_(data_.num_indices()),
+  num_entries_(data_.num_entries()),
+  indices_(new index_pair_[num_indices_]),
+  entries_(new entry_value_t[num_indices_ * num_slots_]),
+  erase_set_(nullptr){
+    for(size_t i = 0; i < num_indices_; ++i){
+      indices_[i].first = 0;
+      indices_[i].second = 0;
+    }
+  }
+
+  ~sparse_mutator()
+  {
+    commit();
+  } // ~sparse_mutator_t
+
+  void commit(){
+    if(!indices_) {
+      return;
+    } // if
+
+    legion_dpd& dpd = data_.dpd();
+
+    legion_dpd::commit_data<T> cd;
+    cd.partition = data_.partition();
+    cd.slot_size = num_slots_;
+    cd.num_slots = num_indices_ * num_slots_;
+    cd.num_indices = num_indices_;
+    cd.indices = indices_;
+    cd.entries = (legion_dpd::entry_value<T>*)entries_;
+
+    dpd.commit(cd);
+
+    delete[] indices_;
+    indices_ = nullptr;
+
+    delete[] entries_;
+    entries_ = nullptr;
+  }
+
+  T &
+  operator () (
+    size_t index,
+    size_t entry
+  )
+  {
+    assert(indices_ && "sparse mutator has alread been committed");
+    assert(index < num_indices_ && entry < num_entries_);
+
+    index_pair_ & ip = indices_[index];
+    
+    size_t n = ip.second - ip.first;
+    
+    if(n >= num_slots_) {
+      return spare_map_.emplace(index, entry_value_t(entry))->second.value;
+    } // if
+
+    entry_value_t * start = entries_ + index * num_slots_;     
+    entry_value_t * end = start + n;
+
+    entry_value_t * itr = 
+      std::lower_bound(start, end, entry_value_t(entry),
+        [](const auto & k1, const auto & k2) -> bool{
+          return k1.entry < k2.entry;
+        });
+
+    while(end != itr) {
+      *(end) = *(end - 1);
+      --end;
+    } // while
+
+    itr->entry = entry;
+
+    ++ip.second;
+
+    return itr->value;
+  } // operator ()
+
+  void
+  erase(
+    size_t index,
+    size_t entry
+  )
+  {
+    assert(indices_ && "sparse mutator has alread been committed");
+    assert(index < num_indices_ && entry < num_entries_);
+
+    if(!erase_set_){
+      erase_set_ = new erase_set_t;
+    }
+
+    erase_set_->emplace(std::make_pair(index, entry));
+  }
+
+private:
+  using spare_map_t = std::multimap<size_t, entry_value__<T>>;
+  using erase_set_t = std::set<std::pair<size_t, size_t>>;
+
+  sparse_data& data_;
+  size_t num_slots_;
+  size_t num_indices_;
+  size_t num_entries_;
+  index_pair_ * indices_;
+  entry_value__<T> * entries_;
+  spare_map_t spare_map_;
+  erase_set_t * erase_set_;
+};
 
 void top_level_task(const Task* task,
                     const std::vector<PhysicalRegion>& regions,
@@ -118,47 +288,36 @@ void top_level_task(const Task* task,
   legion_dpd dpd(ctx, runtime);
   dpd.create_data<double>(cells_part, 1024);
 
-  size_t num_values = 5;
   size_t partition = 0;
+  size_t num_indices = 4;
+  size_t num_entries = 100;
 
-  legion_dpd::commit_data<double> cd;
-  cd.partition = 0;
-  cd.slot_size = 5;
-  cd.num_slots = partition_size * 5;
-  cd.num_indices = partition_size;
-  cd.indices = new legion_dpd::index_pair[cd.num_indices];
-  cd.entries = 
-    new legion_dpd::entry_value<double>[cd.num_indices * cd.num_slots];
+  sparse_data data(dpd, partition, num_indices, num_entries);
 
-  cd.entries[0].entry = 3;
-  cd.entries[0].value = 333.3;
-  cd.entries[1].entry = 5;
-  cd.entries[1].value = 555.5;
-  cd.entries[2].entry = 8;
-  cd.entries[2].value = 888.8;
-  
-  cd.indices[0] = make_pair(0, 3);
-  
-  for(size_t i = 1; i < cd.num_indices; ++i){
-    cd.indices[i] = make_pair(3, 3);
+  {
+
+    sparse_mutator<double> m(data, 5);
+
+    m(0, 2) = 1.2;
+    m(0, 1) = 3.1;
+
   }
 
-  dpd.commit(cd);
+  {
 
-  np("------------------");
+    sparse_mutator<double> m(data, 5);
 
-  cd.entries[0].entry = 4;
-  cd.entries[0].value = 444.4;
-  cd.entries[1].entry = 9;
-  cd.entries[1].value = 999.9;
-  
-  cd.indices[0] = make_pair(0, 2);
-  
-  for(size_t i = 1; i < cd.num_indices; ++i){
-    cd.indices[i] = make_pair(2, 2);
+    m(0, 9) = 9.9;
+    m(0, 5) = 5.5;
   }
 
-  dpd.commit(cd);
+  {
+
+    sparse_mutator<double> m(data, 5);
+
+    m(0, 1) = 1.1;
+    m(0, 0) = 0.1;
+  }
 }
 
 TEST(legion, test1) {
