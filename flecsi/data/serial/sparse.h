@@ -37,9 +37,8 @@
            << ": " << #X << " = " << (X) << std::endl
 
 ///
-// \file serial/sparse.h
-// \authors bergen
-// \date Initial file creation: Apr 17, 2016
+/// \file
+/// \date Initial file creation: Apr 17, 2016
 ///
 
 namespace flecsi {
@@ -57,7 +56,7 @@ namespace serial {
 using index_pair_ = std::pair<size_t, size_t>;
 
 ///
-//
+///
 ///
 template<typename T>
 struct entry_value__
@@ -79,16 +78,16 @@ static constexpr size_t INDICES_FLAG = 1UL << 63;
 static constexpr size_t ENTRIES_FLAG = 1UL << 62;
 
 ///
-// \brief sparse_accessor_t provides logically array-based access to data
-//        variables that have been registered in the data model.
-//
-// \tparam T The type of the data variable. If this type is not
-//           consistent with the type used to register the data, bad things
-//           can happen. However, it can be useful to reinterpret the type,
-//           e.g., when writing raw bytes. This class is part of the
-//           low-level \e flecsi interface, so it is assumed that you
-//           know what you are doing...
-// \tparam MD The meta data type.
+/// \brief sparse_accessor_t provides logically array-based access to data
+///        variables that have been registered in the data model.
+///
+/// \tparam T The type of the data variable. If this type is not
+///           consistent with the type used to register the data, bad things
+///           can happen. However, it can be useful to reinterpret the type,
+///           e.g., when writing raw bytes. This class is part of the
+///           low-level \e flecsi interface, so it is assumed that you
+///           know what you are doing...
+/// \tparam MD The meta data type.
 ///
 template<typename T, typename MD>
 struct sparse_accessor_t
@@ -97,7 +96,7 @@ struct sparse_accessor_t
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using iterator_t = index_space_t::iterator_t;
+  using iterator_t = utils::index_space_t::iterator_t;
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
@@ -111,12 +110,12 @@ struct sparse_accessor_t
   //--------------------------------------------------------------------------//
 
   ///
-  //
+  ///
   ///
   sparse_accessor_t() {}
 
   ///
-  //
+  ///
   ///
   sparse_accessor_t(
     meta_data_t & meta_data,
@@ -150,7 +149,7 @@ struct sparse_accessor_t
   //--------------------------------------------------------------------------//
 
   ///
-  //
+  ///
   ///
   bitset_t &
   attributes()
@@ -163,7 +162,7 @@ struct sparse_accessor_t
   //--------------------------------------------------------------------------//
 
   ///
-  //
+  ///
   ///
   T &
   operator () (
@@ -259,7 +258,7 @@ struct sparse_accessor_t
   }
 
   ///
-  //
+  ///
   ///
   void dump()
   {
@@ -278,7 +277,7 @@ struct sparse_accessor_t
   } // dump
 
   ///
-  //
+  ///
   ///
   T *
   data()
@@ -305,7 +304,7 @@ struct sparse_mutator_t {
   // Type definitions.
   //--------------------------------------------------------------------------//
   
-  using iterator_t = index_space_t::iterator_t;
+  using iterator_t = utils::index_space_t::iterator_t;
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
@@ -316,12 +315,12 @@ struct sparse_mutator_t {
   //--------------------------------------------------------------------------//
 
   ///
-  //
+  ///
   ///
   sparse_mutator_t() {}
 
   ///
-  //
+  ///
   ///
   sparse_mutator_t(
     size_t num_slots,
@@ -343,7 +342,7 @@ struct sparse_mutator_t {
   {}
 
   ///
-  //
+  ///
   ///
   ~sparse_mutator_t()
   {
@@ -622,7 +621,7 @@ struct storage_type_t<sparse, DS, MD> {
   register_data(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const const_string_t & key,
+    const utils::const_string_t & key,
     size_t versions,
     size_t index_space,
     size_t num_entries,
@@ -658,7 +657,7 @@ struct storage_type_t<sparse, DS, MD> {
   } // register_data
 
   ///
-  //
+  ///
   ///
   template<
     typename T,
@@ -669,7 +668,7 @@ struct storage_type_t<sparse, DS, MD> {
   get_accessor(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const const_string_t & key,
+    const utils::const_string_t & key,
     size_t version
   )
   {
@@ -690,7 +689,7 @@ struct storage_type_t<sparse, DS, MD> {
   } // get_accessor
 
   ///
-  //
+  ///
   ///
   template<
     typename T,
@@ -701,7 +700,7 @@ struct storage_type_t<sparse, DS, MD> {
   get_mutator(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const const_string_t & key,
+    const utils::const_string_t & key,
     size_t slots,
     size_t version
   )
@@ -724,7 +723,7 @@ struct storage_type_t<sparse, DS, MD> {
   } // get_accessor
 
   ///
-  //
+  ///
   ///
   template<
     typename T,
@@ -735,7 +734,7 @@ struct storage_type_t<sparse, DS, MD> {
   get_handle(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const const_string_t & key,
+    const utils::const_string_t & key,
     size_t version
   )
   {

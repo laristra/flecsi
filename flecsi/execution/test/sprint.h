@@ -12,7 +12,9 @@
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/execution.h"
 #include "flecsi/partition/index_partition.h"
-#include "flecsi/partition/init_partitions_task.h"
+#include "flecsi/execution/mpilegion/init_partitions_task.h"
+#include "flecsi/partition/weaver.h"
+#include "flecsi/execution/legion/dpd.h"
 
 ///
 // \file sprint.h
@@ -27,184 +29,99 @@ using namespace LegionRuntime::Arrays;
 namespace flecsi {
 namespace execution {
 
-using index_partition_t = dmp::index_partition__<size_t>;
-using ghost_info_t = index_partition_t::ghost_info_t;
-using shared_info_t = index_partition_t::shared_info_t;
-
 static const size_t N = 8;
 
-enum 
-FieldIDs {
-  FID_CELL,
-  FID_GHOST_CELL_ID,
-};
+using index_partition_t = dmp::index_partition__<size_t>;
 
-  
-void 
+void
 mpi_task(
-  double val
-) 
+  double d
+)
 {
   int rank = 0;
   int size = 0;
 
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
-  //std::cout << "My rank: " << rank << std::endl;
+  std::cout << "My rank: " << rank << std::endl;
 
-  size_t part = N/size;
-  size_t rem = N%size;
+  flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
+  flecsi::dmp::weaver weaver(sd);
 
-  size_t start = rank*(part + (rem > 0 ? 1 : 0));
-  size_t end = rank < rem ? start + part+1 : start + part;
+  using entry_info_t = flecsi::dmp::entry_info_t;
 
-  std::vector<size_t> start_global_id;
-  size_t global_end=0;
-  for (int i=0; i<size; i++)
-  {
-    size_t start_i = rank*(part + (rem > 0 ? 1 : 0));
-    size_t end_i = rank < rem ? start_i + part+1 : start + part;
-    start_global_id.push_back(global_end);
-    global_end +=N*(end_i-start_i);
-  }//end for
+  index_partition_t ip_cells;
 
-#if 1
-  std::cout << "rank: " << rank << " start: " << start <<
-    " end: " << end << std::endl;
+  ip_cells.primary = weaver.get_primary_cells();
+  ip_cells.exclusive = weaver.get_exclusive_cells();
+  ip_cells.shared = weaver.get_shared_cells();
+  ip_cells.ghost  = weaver.get_ghost_cells();
+
+  index_partition_t ip_vertices;
+
+  ip_vertices.primary = weaver.get_primary_vertices();
+  ip_vertices.exclusive = weaver.get_exclusive_vertices();
+  ip_vertices.shared = weaver.get_shared_vertices();
+  ip_vertices.ghost  = weaver.get_ghost_vertices();
+
+  std::vector<std::pair<size_t, size_t>> raw_conns = 
+    weaver.get_raw_cell_vertex_conns();
+
+#if 0
+   std::cout <<"DEBUG CELLS"<<std::endl;
+   size_t i=0;
+   for (auto cells_p : ip_cells.primary)
+   {
+    std::cout<<"primary["<<i<<"] = " <<cells_p<<std::endl;
+    i++;
+   }
+   i=0;
+   for (auto cells_s : ip_cells.shared)
+   {
+    std::cout<<"shared["<<i<<"] = " <<cells_s.id<< ", offset = "<< 
+       cells_s.offset<<std::endl;
+    i++;
+   }
+
+
+   std::cout <<"DEBUG VERTICES"<<std::endl;
+   i=0;
+   for (auto vert_p : ip_vertices.primary)
+   {
+    std::cout<<"primary["<<i<<"] = " <<vert_p<<std::endl;
+    i++;
+   }
+   i=0;
+   for (auto vert_s : ip_vertices.shared)
+   {
+    std::cout<<"shared["<<i<<"] = " <<vert_s.id<< ", offset = "<<
+       vert_s.offset<<std::endl;
+    i++;
+   }
+   i=0;
+   for (auto vert_e : ip_vertices.exclusive)
+   {
+    std::cout<<"exclusive["<<i<<"] = " <<vert_e.id<< ", offset = "<<
+       vert_e.offset<<std::endl;
+    i++;
+   }
+
 #endif
-
-  index_partition_t ip;
-
-  for(size_t j=0; j<N; ++j) {
-    for(size_t i(start); i<end; ++i) {
-      ghost_info_t ghost;
-      const size_t id = j*N+i;
-      // exclusive
-      if(i>start && i<end-1) {
-        ip.exclusive.push_back(id);
-        //std::cout << "rank: " << rank << " exclusive: " << id << std::endl;
-      }
-      else if(rank == 0 && i==start) {
-        ip.exclusive.push_back(id);
-        //std::cout << "rank: " << rank << " exclusive: " << id << std::endl;
-      }
-      else if(rank == size-1 && i==end-1) {
-        ip.exclusive.push_back(id);
-        //std::cout << "rank: " << rank << " exclusive: " << id << std::endl;
-      }
-      else if(i==start) {
-          shared_info_t shared;
-          shared.mesh_id = id;
-          shared.global_id =0;
-          shared.dependent_ranks.push_back(rank - 1);
-          ip.shared.push_back(shared);
-
-          const size_t ghost_id = j*N+i-1;
-          ghost.mesh_id =ghost_id ;
-          ghost.global_id = start_global_id[rank-1]+(end-start)*j+1;
-          ghost.rank =rank -1;
-          ip.ghost.push_back(ghost);
-      }
-      else if(i==end-1) {
-          shared_info_t shared;
-          shared.mesh_id = id;
-          shared.global_id = 0; 
-          shared.dependent_ranks.push_back(rank + 1);
-          ip.shared.push_back(shared);
-
-          const size_t ghost_id = j*N+i+1;
-          ghost.mesh_id =ghost_id ;
-          ghost.rank = rank+1 ;
-          ghost.global_id = start_global_id[rank+1]+(end-start)*j;
-          ip.ghost.push_back(ghost);
-      } // if
-    } // for
-  } // for
-
-  //creating primary partitioning and filling global_id's for shared elements:
-  int start_indx=0;
-  size_t previous_indx = 0;
-std::cout << ip.exclusive.size()<< "  "<< ip.shared.size()<<std::endl;
-  for (int i=0; i<ip.exclusive.size(); i++){
-    for (int j=start_indx; j<ip.shared.size(); j++){
-        if (ip.exclusive[i]<ip.shared_id(j))
-        {
-          ip.primary.push_back(ip.exclusive[i]);
-          previous_indx=ip.exclusive[i];
-          start_indx=ip.primary.size()-i-1;
-          j=ip.shared.size()+1;
-        }//end if
-        else 
-        {
-            ip.primary.push_back(ip.shared_id(j));
-            previous_indx=ip.shared_id(j);
-            ip.shared[j].global_id = start_global_id[rank]+ip.primary.size()-1;
-            //start_indx=ip.primary.size()-i-1;
-            start_indx++;
-        }//end else
-        //start_indx=ip.primary.size()-i-1;
-      }//end for
-      if (start_indx>(ip.shared.size()-1))
-			{
-        if (ip.exclusive[i]>previous_indx)
-          ip.primary.push_back(ip.exclusive[i]);
-			}
-  }//end_for
-  for (int i = start_indx; i< ip.shared.size(); i++)
-  {    
-      ip.primary.push_back(ip.shared_id(i));
-      ip.shared[i].global_id = start_global_id[rank]+ip.primary.size()-1;
-  }//end for
-
-  if (size>1)
-    assert (ip.primary.size() == (ip.exclusive.size()+ip.shared.size()));   
 
   flecsi::execution::context_t & context_ =
-             flecsi::execution::context_t::instance();
+    flecsi::execution::context_t::instance();
   context_.interop_helper_.data_storage_.push_back(
-        flecsi::utils::any_t(ip));
-#if 0 
-   //check the mpi output
+    flecsi::utils::any_t(ip_cells));
 
-  for (int i =0; i< ip.primary.size(); i++)
-  {
-   std::cout<< " rank = " << rank <<" global_id = " << start_global_id[rank]+i<< 
-    " primary = " << ip.primary[i]<< std::endl;
-  }
-   for (int i =0; i< ip.exclusive.size(); i++)
-  {
-    std::cout<< " rank = " << rank << " exclusive_mesh_id  = " << ip.exclusive[i] 
-          << std::endl;
-  }
+  context_.interop_helper_.data_storage_.push_back(
+    flecsi::utils::any_t(ip_vertices));
 
+  context_.interop_helper_.data_storage_.push_back(
+    flecsi::utils::any_t(raw_conns));
+}
 
-  for (int i =0; i< ip.shared.size(); i++)
-  {
-    std::cout<< " rank = " << rank << " shared_mesh_id  = " << ip.shared_id(i) 
-          << std::endl;
-    std::cout<< " rank = " << rank << " shared_global_id  = " 
-        << ip.shared[i].global_id << std::endl;
-    std::cout<< " rank = " << rank << "dependent_ranks" << 
-         ip.shared[i].dependent_ranks[0] << std::endl;
-  }
-#if 0
-  for (int i =0; i< ip.ghost.size(); i++)
-  {
-    std::cout<< " rank = " << rank << " gost_mesh_id  = " << ip.ghost_id(i)
-          << std::endl;
-    std::cout<< " rank = " << rank << " ghost_global_id  = " 
-        << ip.ghost[i].global_id << std::endl;
-    std::cout<< " rank = " << rank << "ghost rank" <<
-         ip.ghost[i].rank << std::endl;
-  }
-   
-#endif
-#endif
-
-} // mpi_task
   
 register_task(mpi_task, mpi, single);
-  
 
 void
 driver(
@@ -213,24 +130,20 @@ driver(
 )
 {
   context_t & context_ = context_t::instance();
-  size_t task_key = const_string_t{"driver"}.hash();
+  size_t task_key = utils::const_string_t{"driver"}.hash();
   auto runtime = context_.runtime(task_key);
   auto context = context_.context(task_key);
 
-  using legion_domain = LegionRuntime::HighLevel::Domain;
+  legion_helper h(runtime, context);
 
-  flecsi::dmp::parts partitions;
+  using legion_domain = LegionRuntime::HighLevel::Domain;
+  field_ids_t & fid_t =field_ids_t::instance();
+
+  flecsi::execution::sprint::parts partitions;
   
   // first execute mpi task to setup initial partitions 
   execute_task(mpi_task, mpi, single, 1.0);
-  
   // create a field space to store cells id
-  FieldSpace cells_fs = runtime->create_field_space(context);
-  {
-    FieldAllocator allocator = runtime->create_field_allocator(context,
-                                             cells_fs);
-    allocator.allocate_field(sizeof(int), FID_CELL);
-  }
 
   int num_ranks;
   MPI_Comm_size(MPI_COMM_WORLD, &num_ranks);
@@ -251,85 +164,189 @@ driver(
   FutureMap fm1 = runtime->execute_index_space(context, 
       get_numbers_of_cells_launcher);
 
+  legion_dpd::partitioned_unstructured cells_part;
+  legion_dpd::partitioned_unstructured vertices_part;
+
   size_t total_num_cells=0;
-  std::vector<size_t> primary_start_id;
-  std::vector<size_t> num_shared;
-  std::vector<size_t> num_ghosts;
-  std::vector<size_t> num_exclusive;
+  std::vector<size_t> cells_primary_start_id;
+  std::vector<size_t> cells_num_shared;
+  std::vector<size_t> cells_num_ghosts;
+  std::vector<size_t> cells_num_exclusive;
+  std::vector<size_t> num_vertex_conns;
 
-  for (int i = 0; i < num_ranks; i++) {
+  size_t total_num_vertices=0;
+  std::vector<size_t> vert_primary_start_id;
+  std::vector<size_t> vert_num_shared;
+  std::vector<size_t> vert_num_ghosts;
+  std::vector<size_t> vert_num_exclusive;
+
+  //read dimension information from  get_numbers_of_cells task
+  for (size_t i = 0; i < num_ranks; i++) {
     std::cout << "about to call get_results" << std::endl;
-    flecsi::dmp::parts received = fm1.get_result<flecsi::dmp::parts>(
-                           DomainPoint::from_point<1>(make_point(i)));
+    flecsi::execution::sprint::parts received =
+      fm1.get_result<flecsi::execution::sprint::parts>(
+      DomainPoint::from_point<1>(make_point(i)));
 
-    primary_start_id.push_back(total_num_cells);
-    total_num_cells += received.primary;
-    num_shared.push_back(received.shared);
-    num_ghosts.push_back(received.ghost);
-    num_exclusive.push_back(received.exclusive);
+    cells_primary_start_id.push_back(total_num_cells);
+    total_num_cells += received.primary_cells;
+    cells_num_shared.push_back(received.shared_cells);
+    cells_num_ghosts.push_back(received.ghost_cells);
+    cells_num_exclusive.push_back(received.exclusive_cells);
 
-#if 1
-    std::cout << "From rank " << i << " received (exclusive, shared, ghost) "
-              << "(" << received.exclusive << "," << received.shared << ","
-              << received.ghost << ")" << std::endl;
+    cells_part.count_map[i] = received.primary_cells;
+
+    vert_primary_start_id.push_back(total_num_vertices);
+    total_num_vertices += received.primary_vertices;
+    vert_num_shared.push_back(received.shared_vertices);
+    vert_num_ghosts.push_back(received.ghost_vertices);
+    vert_num_exclusive.push_back(received.exclusive_vertices);
+    num_vertex_conns.push_back(received.vertex_conns);
+
+    vertices_part.count_map[i] = received.primary_vertices;
+
+#if 0
+    std::cout << "From rank " << i 
+              << " received cells (exclusive, shared, ghost) "
+              << "(" << received.exclusive_cells << "," 
+              << received.shared_cells << ","
+              << received.ghost_cells << ")" << std::endl;
 #endif
   }//end for
 
-  
-  IndexSpace cells_is = runtime->create_index_space(context, total_num_cells);
+  // create a field space to store cells id
+  FieldSpace cells_fs = runtime->create_field_space(context);
+  { 
+    FieldAllocator allocator = runtime->create_field_allocator(context,
+                                             cells_fs);
+    allocator.allocate_field(sizeof(size_t), fid_t.fid_cell);
+    allocator.allocate_field(sizeof(size_t), fid_t.fid_data);
+//TOFIX
+    allocator.allocate_field(sizeof(legion_dpd::ptr_count),
+                      legion_dpd::connectivity_field_id(2, 0));
+    allocator.allocate_field(sizeof(ptr_t), fid_t.fid_ptr_t);
+  }
 
-  IndexAllocator allocator = runtime->create_index_allocator(context,cells_is);
-  for(size_t i = 0; i < total_num_cells; ++i){
-    ptr_t  ptr_i= allocator.alloc(1);
-    assert(!ptr_i.is_null());
+
+  //create global IS fnd LR for Cells
+  IndexSpace cells_is = runtime->create_index_space(context, total_num_cells);
+  {
+    IndexAllocator allocator = runtime->create_index_allocator(context,
+          cells_is);
+    allocator.alloc(total_num_cells);
   }
 
   LogicalRegion cells_lr=
-       runtime->create_logical_region(context,cells_is, cells_fs);
+    runtime->create_logical_region(context,cells_is, cells_fs);
   runtime->attach_name(cells_lr, "cells  logical region");
+
+   //create global IS fnd LR for Vertices
+
+  FieldSpace vertices_fs = runtime->create_field_space(context);
+  {
+    FieldAllocator allocator = runtime->create_field_allocator(context,
+                                             vertices_fs);
+    allocator.allocate_field(sizeof(size_t), fid_t.fid_vert);
+    allocator.allocate_field(sizeof(ptr_t), fid_t.fid_ptr_t);
+  } 
+
+  IndexSpace vertices_is = runtime->create_index_space(context,
+          total_num_vertices);
+  {
+    IndexAllocator allocator = runtime->create_index_allocator(context,
+            vertices_is);
+    allocator.alloc(total_num_vertices);
+  }
+
+  LogicalRegion vertices_lr=
+    runtime->create_logical_region(context,vertices_is, vertices_fs);
+  runtime->attach_name(vertices_lr, "vertices  logical region");
+
+
 
   //partition cells by number of mpi ranks
 
-  Coloring primary_coloring;
+  Coloring cells_primary_coloring;
+  {
+    IndexIterator itr(runtime, context, cells_is);
 
-  IndexIterator itr(runtime, context, cells_is);
-  
-  for(size_t i = 0; i < num_ranks-1; ++i){
-    for (size_t j=primary_start_id[i]; j<primary_start_id[i+1]; j++){
+    for(size_t i = 0; i < num_ranks-1; ++i){
+      for (size_t j=cells_primary_start_id[i]; 
+          j<cells_primary_start_id[i+1]; j++){
+        assert(itr.has_next());
+        ptr_t ptr = itr.next();
+        cells_primary_coloring[i].points.insert(ptr);
+      }//end for
+    }//end for
+
+    for (size_t j=cells_primary_start_id[num_ranks-1]; j<total_num_cells; j++){
       assert(itr.has_next());
       ptr_t ptr = itr.next();
-      primary_coloring[i].points.insert(ptr);
+      cells_primary_coloring[num_ranks-1].points.insert(ptr);
     }//end for
-  }//end for
+  }
 
-  for (size_t j=primary_start_id[num_ranks-1]; j<total_num_cells; j++){
-    assert(itr.has_next());
-    ptr_t ptr = itr.next();
-    primary_coloring[num_ranks-1].points.insert(ptr);
-  }//end for
+  IndexPartition cells_primary_ip = 
+    runtime->create_index_partition(context, cells_is,
+    cells_primary_coloring, true);
 
-  IndexPartition primary_ip = 
-    runtime->create_index_partition(context, cells_is, primary_coloring, true);
+  LogicalPartition cells_primary_lp = runtime->get_logical_partition(context,
+           cells_lr, cells_primary_ip);
 
-  LogicalPartition primary_lp = runtime->get_logical_partition(context,
-           cells_lr, primary_ip);
+
+	//partition vertices by number of mpi ranks
+
+  Coloring vert_primary_coloring;
+  {
+    IndexIterator itr(runtime, context, vertices_is);
+
+    for(size_t i = 0; i < num_ranks-1; ++i){
+      for (size_t j=vert_primary_start_id[i];
+          j<vert_primary_start_id[i+1]; j++){
+        assert(itr.has_next());
+        ptr_t ptr = itr.next();
+        vert_primary_coloring[i].points.insert(ptr);
+      }//end for
+    }//end for
+
+    for (size_t j=vert_primary_start_id[num_ranks-1];
+				j<total_num_vertices; j++){
+      assert(itr.has_next());
+      ptr_t ptr = itr.next();
+      vert_primary_coloring[num_ranks-1].points.insert(ptr);
+    }//end for
+  }//end scope
+
+  IndexPartition vert_primary_ip =
+    runtime->create_index_partition(context, vertices_is,
+    vert_primary_coloring, true);
+
+  LogicalPartition vert_primary_lp = runtime->get_logical_partition(context,
+           vertices_lr, vert_primary_ip);
+ 
+
   Rect<1> rank_rect(Point<1>(0), Point<1>(num_ranks - 1));
   Domain rank_domain = Domain::from_rect<1>(rank_rect);
 
-  LegionRuntime::HighLevel::IndexLauncher init_cells_launcher(
-    task_ids_t::instance().init_cells_task_id,
+  LegionRuntime::HighLevel::IndexLauncher initialization_launcher(
+    task_ids_t::instance().init_task_id,
     rank_domain,
     LegionRuntime::HighLevel::TaskArgument(0, 0),
     arg_map);
  
-  init_cells_launcher.tag = MAPPER_FORCE_RANK_MATCH; 
+  initialization_launcher.tag = MAPPER_FORCE_RANK_MATCH; 
 
-  init_cells_launcher.add_region_requirement(
-    RegionRequirement(primary_lp, 0/*projection ID*/,
+  initialization_launcher.add_region_requirement(
+    RegionRequirement(cells_primary_lp, 0/*projection ID*/,
                       WRITE_DISCARD, EXCLUSIVE, cells_lr));
-  init_cells_launcher.add_field(0, FID_CELL);
+  initialization_launcher.add_field(0, fid_t.fid_cell);
 
-  FutureMap fm2 = runtime->execute_index_space( context, init_cells_launcher);
+  initialization_launcher.add_region_requirement(
+    RegionRequirement(vert_primary_lp, 0/*projection ID*/,
+                      WRITE_DISCARD, EXCLUSIVE, vertices_lr));
+  initialization_launcher.add_field(1, fid_t.fid_vert);
+
+  FutureMap fm2 = runtime->execute_index_space( context,
+        initialization_launcher);
   
   fm2.wait_all_results();
 
@@ -337,31 +354,112 @@ driver(
   //printing cell_lr results
   {
     RegionRequirement req(cells_lr, READ_WRITE, EXCLUSIVE, cells_lr);
-    req.add_field(FID_CELL);
+    req.add_field(fid_t.fid_cell);
 
     std::cout << "Back in driver (TTL) and checking values in Cells GlobalLR"
        << std::endl;
     InlineLauncher cell_launcher(req);
     PhysicalRegion cell_region = runtime->map_region(context, cell_launcher);
     cell_region.wait_until_valid();
-    RegionAccessor<AccessorType::Generic, int> acc_cell =
-      cell_region.get_field_accessor(FID_CELL).typeify<int>();
+    RegionAccessor<AccessorType::Generic, size_t> acc_cell =
+      cell_region.get_field_accessor(fid_t.fid_cell).typeify<size_t>();
 
     IndexIterator itr2(runtime, context, cells_is);
-    for (int i=0; i< total_num_cells; i++)
+    for (size_t i=0; i< total_num_cells; i++)
     {
       assert(itr2.has_next());
       ptr_t ptr = itr2.next();
-      int value =
+      size_t value =
           acc_cell.read(ptr);
       std::cout << "cells_global[ " <<i<<" ] = " << value <<std::endl;
     }//end for
   }
 #endif
 
-  //creating partiotioning for shared and exclusive elements:
-  Coloring shared_coloring;
+  legion_dpd::partitioned_unstructured raw_connectivity_part;
+
+  {
+    size_t np = num_vertex_conns.size();
+
+    size_t total_conns = 0;
+    for(size_t p = 0; p < np; ++p){
+      size_t count = num_vertex_conns[p];
+      total_conns += count;
+    }
+
+    Legion::IndexSpace is = h.create_index_space(total_conns);
+   
+    raw_connectivity_part.size = total_conns;
+
+    Legion::IndexAllocator ia = runtime->create_index_allocator(context, is);
+
+    Legion::FieldSpace fs = h.create_field_space();
+
+    Legion::FieldAllocator fa = h.create_field_allocator(fs);
+//TOFIX
+    fa.allocate_field(sizeof(std::pair<size_t, size_t>),
+                      fid_t.fid_entity_pair);
+
+    raw_connectivity_part.lr = h.create_logical_region(is, fs);
+
+    Coloring coloring;
+
+    for(size_t p = 0; p < np; ++p){
+      size_t count = num_vertex_conns[p];
+      raw_connectivity_part.count_map[p] = count;
+
+      for(size_t j = 0; j < count; ++j){
+        ptr_t ptr = ia.alloc(1);
+        coloring[p].points.insert(ptr);    
+      }
+    }
+
+    raw_connectivity_part.ip = 
+      runtime->create_index_partition(context, is, coloring, true);
+  }
+  LegionRuntime::HighLevel::ArgumentMap arg_map2;
+
+  LegionRuntime::HighLevel::IndexLauncher init_raw_conn_launcher(
+    task_ids_t::instance().init_raw_conn_task_id,
+    rank_domain,
+    LegionRuntime::HighLevel::TaskArgument(0, 0),
+    arg_map2);  
+
+  init_raw_conn_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+
+  LogicalPartition raw_connectivity_part_lp =
+    runtime->get_logical_partition(context,
+    raw_connectivity_part.lr, raw_connectivity_part.ip);
+
+  init_raw_conn_launcher.add_region_requirement(
+    RegionRequirement(raw_connectivity_part_lp, 0,
+      WRITE_DISCARD, EXCLUSIVE, raw_connectivity_part.lr));
+
+  init_raw_conn_launcher.add_field(0, fid_t.fid_entity_pair);
   
+  FutureMap raw_conn_fm = 
+    runtime->execute_index_space(context, init_raw_conn_launcher);
+  raw_conn_fm.wait_all_results();
+
+  cells_part.lr = cells_lr;
+  cells_part.ip = cells_primary_ip;
+  cells_part.size = total_num_cells;
+
+
+  vertices_part.lr = vertices_lr;
+  vertices_part.size = total_num_vertices;
+
+  legion_dpd cells_to_vertices(context, runtime);
+  cells_to_vertices.create_connectivity(2, cells_part, 0, vertices_part,
+    raw_connectivity_part);
+  //cells_to_vertices.dump(2, 0);
+  runtime->destroy_index_partition(context, raw_connectivity_part.ip);
+  runtime->destroy_logical_region(context, raw_connectivity_part.lr);
+
+  //creating partiotioning for shared and exclusive elements:
+  Coloring cells_shared_coloring;
+  Coloring vert_shared_coloring;
+
   LegionRuntime::HighLevel::IndexLauncher shared_part_launcher(
     task_ids_t::instance().shared_part_task_id,
     rank_domain,
@@ -371,50 +469,93 @@ driver(
   shared_part_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
   shared_part_launcher.add_region_requirement(
-    RegionRequirement(primary_lp, 0/*projection ID*/,
-                      READ_ONLY, EXCLUSIVE, cells_lr));
-  shared_part_launcher.add_field(0, FID_CELL);
+    RegionRequirement(cells_primary_lp, 0/*projection ID*/,
+      READ_ONLY, EXCLUSIVE, cells_lr));
+  shared_part_launcher.add_field(0, fid_t.fid_cell);
+
+  shared_part_launcher.add_region_requirement(
+    RegionRequirement(vert_primary_lp, 0/*projection ID*/,
+      READ_ONLY, EXCLUSIVE, vertices_lr));
+  shared_part_launcher.add_field(1, fid_t.fid_vert);
 
   FutureMap fm3 = runtime->execute_index_space( context, shared_part_launcher);
   fm3.wait_all_results();
- 
-  int indx=0;
-   for (GenericPointInRectIterator<1> pir(rank_rect); pir; pir++)
+
+  size_t indx=0;
+  for (GenericPointInRectIterator<1> pir(rank_rect); pir; pir++)
   {
-    LogicalRegion shared_pts_lr= fm3.get_result< LogicalRegion >(
-                           DomainPoint::from_point<1>(pir.p));
-    LegionRuntime::HighLevel::IndexSpace is = shared_pts_lr.get_index_space();
-    LegionRuntime::HighLevel::RegionRequirement req(shared_pts_lr,
-                      READ_ONLY, EXCLUSIVE, shared_pts_lr);
-    req.add_field(FID_SHARED);
-    LegionRuntime::HighLevel::InlineLauncher shared_launcher(req);
-    LegionRuntime::HighLevel::PhysicalRegion shared_region =
-              runtime->map_region(context, shared_launcher);
-    shared_region.wait_until_valid();
-    LegionRuntime::Accessor::RegionAccessor<
-      LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
-    shared_region.get_field_accessor(FID_SHARED).typeify<ptr_t>();
-    for (int j=0; j<num_shared[indx]; j++)
+    flecsi::execution::sprint::partition_lr sared_lr=
+      fm3.get_result<flecsi::execution::sprint::partition_lr>(
+      DomainPoint::from_point<1>(pir.p));
+    //gett shared partition info for Cells
     {
-      
-      ptr_t ptr=
-        acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
-        make_point(j)));
-      shared_coloring[indx].points.insert(ptr);
-    }//end for
-    runtime->unmap_region(context, shared_region);
+      LogicalRegion shared_pts_lr = sared_lr.cells;
+      LegionRuntime::HighLevel::IndexSpace is = shared_pts_lr.get_index_space();
+      LegionRuntime::HighLevel::RegionRequirement req(shared_pts_lr,
+        READ_ONLY, EXCLUSIVE, shared_pts_lr);
+      req.add_field(fid_t.fid_ptr_t);
+      LegionRuntime::HighLevel::InlineLauncher shared_launcher(req);
+      LegionRuntime::HighLevel::PhysicalRegion shared_region =
+        runtime->map_region(context, shared_launcher);
+      shared_region.wait_until_valid();
+      LegionRuntime::Accessor::RegionAccessor<
+      LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
+        shared_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
+      for (size_t j=0; j<cells_num_shared[indx]; j++)
+      {
+        ptr_t ptr=
+          acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
+            make_point(j)));
+        cells_shared_coloring[indx].points.insert(ptr);
+      }//end for
+      runtime->unmap_region(context, shared_region);
+    }//scope
+
+   //gett shared partition info for Vertices
+    {
+      LogicalRegion shared_pts_lr = sared_lr.vert;
+      LegionRuntime::HighLevel::IndexSpace is = shared_pts_lr.get_index_space();
+      LegionRuntime::HighLevel::RegionRequirement req(shared_pts_lr,
+        READ_ONLY, EXCLUSIVE, shared_pts_lr);
+      req.add_field(fid_t.fid_ptr_t);
+      LegionRuntime::HighLevel::InlineLauncher shared_launcher(req);
+      LegionRuntime::HighLevel::PhysicalRegion shared_region =
+        runtime->map_region(context, shared_launcher);
+      shared_region.wait_until_valid();
+      LegionRuntime::Accessor::RegionAccessor<
+      LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
+        shared_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
+      for (size_t j=0; j<vert_num_shared[indx]; j++)
+      {
+        ptr_t ptr=
+          acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
+            make_point(j)));
+        vert_shared_coloring[indx].points.insert(ptr);
+      }//end for
+      runtime->unmap_region(context, shared_region);
+    }//scope
+
     indx++;
   }//end for
 
-  IndexPartition shared_ip =
-    runtime->create_index_partition(context, cells_is, shared_coloring, true);
+  IndexPartition cells_shared_ip =
+    runtime->create_index_partition(context, cells_is, 
+      cells_shared_coloring, true);
 
-  LogicalPartition shared_lp = runtime->get_logical_partition(context,
-           cells_lr, shared_ip);
+  LogicalPartition cells_shared_lp = runtime->get_logical_partition(context,
+    cells_lr, cells_shared_ip);
+
+  IndexPartition vert_shared_ip =
+    runtime->create_index_partition(context, vertices_is,
+      vert_shared_coloring, true);
+
+  LogicalPartition vert_shared_lp = runtime->get_logical_partition(context,
+    vertices_lr, vert_shared_ip);
 
   //creating partitioning for exclusive elements in cells_is
-  Coloring exclusive_coloring;   
- 
+  Coloring cells_exclusive_coloring;
+  Coloring vert_exclusive_coloring;
+
   LegionRuntime::HighLevel::IndexLauncher exclusive_part_launcher(
     task_ids_t::instance().exclusive_part_task_id,
     rank_domain,
@@ -424,51 +565,94 @@ driver(
   exclusive_part_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
   exclusive_part_launcher.add_region_requirement(
-    RegionRequirement(primary_lp, 0/*projection ID*/,
-                      READ_ONLY, EXCLUSIVE, cells_lr));
-  exclusive_part_launcher.add_field(0, FID_CELL);
+    RegionRequirement(cells_primary_lp, 0/*projection ID*/,
+      READ_ONLY, EXCLUSIVE, cells_lr));
+  exclusive_part_launcher.add_field(0, fid_t.fid_cell);
+
+  exclusive_part_launcher.add_region_requirement(
+    RegionRequirement(vert_primary_lp, 0/*projection ID*/,
+      READ_ONLY, EXCLUSIVE, vertices_lr));
+  exclusive_part_launcher.add_field(1, fid_t.fid_vert);
 
   FutureMap fm4 = runtime->execute_index_space(context,exclusive_part_launcher);
   fm4.wait_all_results();
 
-   indx=0;
-   for (GenericPointInRectIterator<1> pir(rank_rect); pir; pir++)
+  indx=0;
+  for (GenericPointInRectIterator<1> pir(rank_rect); pir; pir++)
   {
-    LogicalRegion exclusive_pts_lr= fm4.get_result< LogicalRegion >(
-                           DomainPoint::from_point<1>(pir.p));
-    LegionRuntime::HighLevel::IndexSpace is =
-        exclusive_pts_lr.get_index_space();
-    LegionRuntime::HighLevel::RegionRequirement req(exclusive_pts_lr,
-                      READ_ONLY, EXCLUSIVE, exclusive_pts_lr);
-    req.add_field(FID_EXCLUSIVE);
-    LegionRuntime::HighLevel::InlineLauncher exclusive_launcher(req);
-    LegionRuntime::HighLevel::PhysicalRegion exclusive_region =
-              runtime->map_region(context, exclusive_launcher);
-    exclusive_region.wait_until_valid();
-    LegionRuntime::Accessor::RegionAccessor<
-      LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
-    exclusive_region.get_field_accessor(FID_EXCLUSIVE).typeify<ptr_t>();
-    for (int j=0; j<num_exclusive[indx]; j++)
+    flecsi::execution::sprint::partition_lr exclusive_lr =
+      fm4.get_result<flecsi::execution::sprint::partition_lr>(
+      DomainPoint::from_point<1>(pir.p)); 
     {
+      LogicalRegion exclusive_pts_lr= exclusive_lr.cells;
+      LegionRuntime::HighLevel::IndexSpace is =
+        exclusive_pts_lr.get_index_space();
+      LegionRuntime::HighLevel::RegionRequirement req(exclusive_pts_lr,
+        READ_ONLY, EXCLUSIVE, exclusive_pts_lr);
+      req.add_field(fid_t.fid_ptr_t);
+      LegionRuntime::HighLevel::InlineLauncher exclusive_launcher(req);
+      LegionRuntime::HighLevel::PhysicalRegion exclusive_region =
+        runtime->map_region(context, exclusive_launcher);
+      exclusive_region.wait_until_valid();
+      LegionRuntime::Accessor::RegionAccessor<
+      LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
+        exclusive_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
+      for (size_t j=0; j<cells_num_exclusive[indx]; j++)
+      {
+        ptr_t ptr=
+          acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
+            make_point(j)));
+        cells_exclusive_coloring[indx].points.insert(ptr);
+      }//end for
+      runtime->unmap_region(context, exclusive_region);
+    }//scope
+ 
+    {
+      LogicalRegion exclusive_pts_lr= exclusive_lr.vert;
+      LegionRuntime::HighLevel::IndexSpace is =
+        exclusive_pts_lr.get_index_space();
+      LegionRuntime::HighLevel::RegionRequirement req(exclusive_pts_lr,
+        READ_ONLY, EXCLUSIVE, exclusive_pts_lr);
+      req.add_field(fid_t.fid_ptr_t);
+      LegionRuntime::HighLevel::InlineLauncher exclusive_launcher(req);
+      LegionRuntime::HighLevel::PhysicalRegion exclusive_region =
+        runtime->map_region(context, exclusive_launcher);
+      exclusive_region.wait_until_valid();
+      LegionRuntime::Accessor::RegionAccessor<
+      LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
+        exclusive_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
+      for (size_t j=0; j<vert_num_exclusive[indx]; j++)
+      {
+        ptr_t ptr=
+          acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
+            make_point(j)));
+        vert_exclusive_coloring[indx].points.insert(ptr);
+      }//end for
+      runtime->unmap_region(context, exclusive_region);
+    }//scope
 
-      ptr_t ptr=
-        acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
-        make_point(j)));
-      exclusive_coloring[indx].points.insert(ptr);
-    }//end for
-    runtime->unmap_region(context, exclusive_region);
     indx++;
   }//end for
 
-  IndexPartition exclusive_ip =
-    runtime->create_index_partition(context, cells_is,exclusive_coloring, true);
+  IndexPartition cells_exclusive_ip =
+    runtime->create_index_partition(context, cells_is,
+      cells_exclusive_coloring, true);
 
-  LogicalPartition exclusive_lp = runtime->get_logical_partition(context,
-           cells_lr, exclusive_ip);
+  LogicalPartition cells_exclusive_lp = runtime->get_logical_partition(context,
+    cells_lr, cells_exclusive_ip);
 
-   //creating partitioning for ghost elements in cells_is
+  IndexPartition vert_exclusive_ip =
+    runtime->create_index_partition(context, vertices_is,
+      vert_exclusive_coloring, true);
 
-  Coloring ghost_coloring;
+  LogicalPartition vert_exclusive_lp = runtime->get_logical_partition(context,
+    vertices_lr, vert_exclusive_ip);
+
+
+  //creating partitioning for ghost elements in cells_is
+
+  Coloring cells_ghost_coloring;
+  Coloring vert_ghost_coloring;
 
   LegionRuntime::HighLevel::IndexLauncher ghost_part_launcher(
     task_ids_t::instance().ghost_part_task_id,
@@ -480,47 +664,87 @@ driver(
 
   ghost_part_launcher.add_region_requirement(
     RegionRequirement(cells_lr, 0/*projection ID*/,
-                      READ_ONLY, EXCLUSIVE, cells_lr));
-  ghost_part_launcher.add_field(0, FID_CELL);
+      READ_ONLY, EXCLUSIVE, cells_lr));
+  ghost_part_launcher.add_field(0, fid_t.fid_cell);
+
+  ghost_part_launcher.add_region_requirement(
+    RegionRequirement(vertices_lr, 0/*projection ID*/,
+      READ_ONLY, EXCLUSIVE, vertices_lr));
+  ghost_part_launcher.add_field(1, fid_t.fid_vert);
 
   FutureMap fm5 = runtime->execute_index_space(context,ghost_part_launcher);
   fm5.wait_all_results();
 
 
   indx=0;
-   for (GenericPointInRectIterator<1> pir(rank_rect); pir; pir++)
+  for (GenericPointInRectIterator<1> pir(rank_rect); pir; pir++)
   {
-    LogicalRegion ghost_pts_lr= fm5.get_result< LogicalRegion >(
-                           DomainPoint::from_point<1>(pir.p));
-    LegionRuntime::HighLevel::IndexSpace is =
-        ghost_pts_lr.get_index_space();
-    LegionRuntime::HighLevel::RegionRequirement req(ghost_pts_lr,
-                      READ_ONLY, EXCLUSIVE, ghost_pts_lr);
-    req.add_field(FID_GHOST);
-    LegionRuntime::HighLevel::InlineLauncher ghost_launcher(req);
-    LegionRuntime::HighLevel::PhysicalRegion ghost_region =
-              runtime->map_region(context, ghost_launcher);
-    ghost_region.wait_until_valid();
-    LegionRuntime::Accessor::RegionAccessor<
-      LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
-    ghost_region.get_field_accessor(FID_GHOST).typeify<ptr_t>();
-    for (int j=0; j<num_ghosts[indx]; j++)
+    flecsi::execution::sprint::partition_lr  ghost_lr=
+      fm5.get_result<flecsi::execution::sprint::partition_lr >(
+      DomainPoint::from_point<1>(pir.p));
     {
+      LogicalRegion ghost_pts_lr=ghost_lr.cells;
+      LegionRuntime::HighLevel::IndexSpace is =
+        ghost_pts_lr.get_index_space();
+      LegionRuntime::HighLevel::RegionRequirement req(ghost_pts_lr,
+        READ_ONLY, EXCLUSIVE, ghost_pts_lr);
+      req.add_field(fid_t.fid_ptr_t);
+      LegionRuntime::HighLevel::InlineLauncher ghost_launcher(req);
+      LegionRuntime::HighLevel::PhysicalRegion ghost_region =
+        runtime->map_region(context, ghost_launcher);
+      ghost_region.wait_until_valid();
+      LegionRuntime::Accessor::RegionAccessor<
+      LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
+        ghost_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
+      for (size_t j=0; j<cells_num_ghosts[indx]; j++)
+      {
+        ptr_t ptr=
+          acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
+            make_point(j)));
+        cells_ghost_coloring[indx].points.insert(ptr);
+      }//end for
+      runtime->unmap_region(context, ghost_region);
+    }//end scope
 
-      ptr_t ptr=
-        acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
-        make_point(j)));
-      ghost_coloring[indx].points.insert(ptr);
-    }//end for
-    runtime->unmap_region(context, ghost_region);
+    {
+      LogicalRegion ghost_pts_lr=ghost_lr.vert;
+      LegionRuntime::HighLevel::IndexSpace is =
+        ghost_pts_lr.get_index_space();
+      LegionRuntime::HighLevel::RegionRequirement req(ghost_pts_lr,
+        READ_ONLY, EXCLUSIVE, ghost_pts_lr);
+      req.add_field(fid_t.fid_ptr_t);
+      LegionRuntime::HighLevel::InlineLauncher ghost_launcher(req);
+      LegionRuntime::HighLevel::PhysicalRegion ghost_region =
+        runtime->map_region(context, ghost_launcher);
+      ghost_region.wait_until_valid();
+      LegionRuntime::Accessor::RegionAccessor<
+      LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
+        ghost_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
+      for (size_t j=0; j<vert_num_ghosts[indx]; j++)
+      {
+        ptr_t ptr=
+          acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
+            make_point(j)));
+        vert_ghost_coloring[indx].points.insert(ptr);
+      }//end for
+      runtime->unmap_region(context, ghost_region);
+    }//end scope
+
+
     indx++;
   }//end for
 
-  IndexPartition ghost_ip =
-    runtime->create_index_partition(context, cells_is,ghost_coloring, true);
+  IndexPartition cells_ghost_ip = runtime->create_index_partition(context,
+        cells_is,cells_ghost_coloring, true);
 
-  LogicalPartition ghost_lp = runtime->get_logical_partition(context,
-           cells_lr, ghost_ip);
+  LogicalPartition cells_ghost_lp = runtime->get_logical_partition(context,
+    cells_lr, cells_ghost_ip);
+
+  IndexPartition vert_ghost_ip = runtime->create_index_partition(context,
+        vertices_is,vert_ghost_coloring, true);
+
+  LogicalPartition vert_ghost_lp = runtime->get_logical_partition(context,
+    vertices_lr, vert_ghost_ip);
 
 
   //call a legion task that checks our partitions
@@ -533,23 +757,100 @@ driver(
   check_part_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
   check_part_launcher.add_region_requirement(
-    RegionRequirement(shared_lp, 0/*projection ID*/,
-                      READ_ONLY, EXCLUSIVE, cells_lr));
-  check_part_launcher.add_field(0, FID_CELL);
+    RegionRequirement(cells_shared_lp, 0/*projection ID*/,
+      READ_ONLY, EXCLUSIVE, cells_lr));
+  check_part_launcher.add_field(0, fid_t.fid_cell);
 
   check_part_launcher.add_region_requirement(
-    RegionRequirement(exclusive_lp, 0/*projection ID*/,
-                      READ_ONLY, EXCLUSIVE, cells_lr));
-  check_part_launcher.add_field(1, FID_CELL);
+    RegionRequirement(cells_exclusive_lp, 0/*projection ID*/,
+      READ_ONLY, EXCLUSIVE, cells_lr));
+  check_part_launcher.add_field(1, fid_t.fid_cell);
 
   check_part_launcher.add_region_requirement(
-    RegionRequirement(ghost_lp, 0/*projection ID*/,
-                      READ_ONLY, EXCLUSIVE, cells_lr));
-  check_part_launcher.add_field(2, FID_CELL);
+    RegionRequirement(cells_ghost_lp, 0/*projection ID*/,
+      READ_ONLY, EXCLUSIVE, cells_lr));
+  check_part_launcher.add_field(2, fid_t.fid_cell);
+
+   check_part_launcher.add_region_requirement(
+    RegionRequirement(vert_shared_lp, 0/*projection ID*/,
+      READ_ONLY, EXCLUSIVE, vertices_lr));
+  check_part_launcher.add_field(3, fid_t.fid_vert);
+
+  check_part_launcher.add_region_requirement(
+    RegionRequirement(vert_exclusive_lp, 0/*projection ID*/,
+      READ_ONLY, EXCLUSIVE, vertices_lr));
+  check_part_launcher.add_field(4, fid_t.fid_vert);
+
+  check_part_launcher.add_region_requirement(
+    RegionRequirement(vert_ghost_lp, 0/*projection ID*/,
+      READ_ONLY, EXCLUSIVE, vertices_lr));
+  check_part_launcher.add_field(5, fid_t.fid_vert);
 
   FutureMap fm6 = runtime->execute_index_space(context,check_part_launcher);
   fm6.wait_all_results();
 
+
+
+  //call a legion task that tests ghost cell access
+
+  std::vector<PhaseBarrier> phase_barriers;
+  std::vector<std::set<int>> master_colors(num_ranks);
+  for (int master_color=0; master_color < num_ranks; ++master_color) {
+      std::set<int> slave_colors;
+      for (std::set<ptr_t>::iterator it=cells_shared_coloring[master_color].points.begin();
+              it!=cells_shared_coloring[master_color].points.end(); ++it) {
+          const ptr_t ptr = *it;
+          for (int slave_color = 0; slave_color < num_ranks; ++slave_color)
+              if (cells_ghost_coloring[slave_color].points.count(ptr)) {
+                  slave_colors.insert(slave_color);
+                  master_colors[slave_color].insert(master_color);
+              }
+      }
+
+      phase_barriers.push_back(runtime->create_phase_barrier(context, 1 + slave_colors.size()));
+  }
+
+  std::vector<execution::sprint::SPMDArgs> spmd_args(num_ranks);
+  std::vector<execution::sprint::SPMDArgsSerializer> args_seriliazed(num_ranks);
+  for (int color=0; color < num_ranks; ++color) {
+      spmd_args[color].pbarrier_as_master = phase_barriers[color];
+
+      for (std::set<int>::iterator master=master_colors[color].begin();
+              master!=master_colors[color].end(); ++master)
+          spmd_args[color].masters_pbarriers.push_back(phase_barriers[*master]);
+
+      args_seriliazed[color].archive(&(spmd_args[color]));
+      arg_map.set_point(DomainPoint::from_point<1>(Point<1>(color)),
+              TaskArgument(args_seriliazed[color].getBitStream(), args_seriliazed[color].getBitStreamSize()));
+  }
+
+  LegionRuntime::HighLevel::IndexLauncher ghost_access_launcher(
+  task_ids_t::instance().ghost_access_task_id,
+  rank_domain,
+  LegionRuntime::HighLevel::TaskArgument(0, 0),
+  arg_map);
+
+  ghost_access_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+
+  ghost_access_launcher.add_region_requirement(
+  RegionRequirement(cells_shared_lp, 0/*projection ID*/,
+                    READ_ONLY, SIMULTANEOUS, cells_lr));
+  ghost_access_launcher.add_field(0, fid_t.fid_data);
+
+  ghost_access_launcher.add_region_requirement(
+  RegionRequirement(cells_ghost_lp, 0/*projection ID*/,
+                    READ_ONLY, SIMULTANEOUS, cells_lr));
+  ghost_access_launcher.add_field(1, fid_t.fid_data);
+
+  MustEpochLauncher must_epoch_launcher;
+  must_epoch_launcher.add_index_task(ghost_access_launcher);
+
+  FutureMap fm7 = runtime->execute_must_epoch(context,must_epoch_launcher);
+  fm7.wait_all_results();
+
+  for (unsigned idx = 0; idx < phase_barriers.size(); idx++)
+    runtime->destroy_phase_barrier(context, phase_barriers[idx]);
+  phase_barriers.clear();
 } // driver
 
 } // namespace execution

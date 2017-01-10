@@ -36,7 +36,7 @@ protected:
 }; // struct io_base_t
 
 // create factory type
-using io_factory_t = flecsi::Factory_<io_base_t, std::string, std::string &>;
+using io_factory_t = flecsi::utils::Factory_<io_base_t, std::string, std::string &>;
 
 struct test_io_t : public io_base_t {
 

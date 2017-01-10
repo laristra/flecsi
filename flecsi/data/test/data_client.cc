@@ -66,7 +66,7 @@ TEST(data_client, destructor) {
   // make sure the data is gone
   ASSERT_EQ( flecsi::data::storage_t::instance().count(rid), 0 );
 
-}
+} // TEST
 
 //! \brief Tests the data_client's move operator
 TEST(data_client, move) {
@@ -86,7 +86,7 @@ TEST(data_client, move) {
     ASSERT_EQ( accs.size(), 2 );
     ASSERT_EQ( accs[0].label(), "density" );
     ASSERT_EQ( accs[1].label(), "pressure" );
-  }
+  } // scope
 
   // create a new data client
   dc2 = std::move(dc1);
@@ -102,9 +102,9 @@ TEST(data_client, move) {
     ASSERT_EQ( accs.size(), 2 );
     ASSERT_EQ( accs[0].label(), "density" );
     ASSERT_EQ( accs[1].label(), "pressure" );
-  }
+  } // scope
 
-}
+} // TEST
 
 
 /*----------------------------------------------------------------------------*

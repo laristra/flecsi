@@ -26,7 +26,7 @@ violates our style guide. If it does, fix it!
 * For the most part, all names are lowercase and follow the conventions
 of the C++ Standard Template Library.
 
-* All delimiters should be terminated with a C-style comment:
+* All delimiters should be terminated with a C++-style comment:
 
 >     struct trivial_t {
 >       double value;
@@ -50,6 +50,23 @@ top-level FleCSI source directory, e.g.:
 > Correct way:
 
 >     #include "flecsi/topology/mesh_topology.h"
+
+* FleCSI header guard names should use the partial relative path. They
+  should be lower case, and they should be appended with an underscore
+  h (\_h). The endif statement should be appended with a C++-style
+  comment repeating the guard name. As an example, if the header file is
+  in **'flecsi/partition/dcrs.h'**, its guard entry should look like:
+
+>     #ifndef HEADER_HH // WRONG!
+
+> Correct way:
+
+>     #ifndef partition_dcrs_h
+>     #define partition_dcrs_h
+>
+>     // Code...
+>
+>     #endif // partition_dcrs_h
 
 ## Directory Structure 
 

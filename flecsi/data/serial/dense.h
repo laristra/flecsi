@@ -33,9 +33,8 @@
 #include <memory>
 
 ///
-// \file serial/dense.h
-// \authors bergen
-// \date Initial file creation: Apr 7, 2016
+/// \file
+/// \date Initial file creation: Apr 7, 2016
 ///
 
 namespace flecsi {
@@ -51,16 +50,16 @@ namespace serial {
 //----------------------------------------------------------------------------//
 
 ///
-// \brief dense_accessor_t provides logically array-based access to data
-//        variables that have been registered in the data model.
-//
-// \tparam T The type of the data variable. If this type is not
-//           consistent with the type used to register the data, bad things
-//           can happen. However, it can be useful to reinterpret the type,
-//           e.g., when writing raw bytes. This class is part of the
-//           low-level \e flecsi interface, so it is assumed that you
-//           know what you are doing...
-// \tparam MD The meta data type.
+/// \brief dense_accessor_t provides logically array-based access to data
+///        variables that have been registered in the data model.
+///
+/// \tparam T The type of the data variable. If this type is not
+///           consistent with the type used to register the data, bad things
+///           can happen. However, it can be useful to reinterpret the type,
+///           e.g., when writing raw bytes. This class is part of the
+///           low-level \e flecsi interface, so it is assumed that you
+///           know what you are doing...
+/// \tparam MD The meta data type.
 ///
 template<typename T, typename MD>
 struct dense_accessor_t
@@ -69,7 +68,7 @@ struct dense_accessor_t
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using iterator_t = index_space_t::iterator_t;
+  using iterator_t = utils::index_space_t::iterator_t;
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
@@ -83,13 +82,13 @@ struct dense_accessor_t
   dense_accessor_t() = default;
 
   ///
-  // Constructor.
-  //
-  // \param label The c_str() version of the const_string_t used for
-  //              this data variable's hash.
-  // \param size The size of the associated index space.
-  // \param data A pointer to the raw data.
-  // \param user_meta_data A reference to the user-defined meta data.
+  /// Constructor.
+  ///
+  /// \param label The c_str() version of the const_string_t used for
+  ///              this data variable's hash.
+  /// \param size The size of the associated index space.
+  /// \param data A pointer to the raw data.
+  /// \param user_meta_data A reference to the user-defined meta data.
   ///
   dense_accessor_t(
     const std::string & label,
@@ -110,7 +109,7 @@ struct dense_accessor_t
   {}
 
 	///
-  // Copy constructor.
+  /// Copy constructor.
 	///
 	dense_accessor_t(
     const dense_accessor_t & a
@@ -208,9 +207,9 @@ struct dense_accessor_t
   // Operators.
   //--------------------------------------------------------------------------//
 
-  //! \brief copy operator.
-  //! \param [in] a  The accessor to copy.
-  //! \return A reference to the new copy.
+  /// \brief copy operator.
+  /// \param [in] a  The accessor to copy.
+  /// \return A reference to the new copy.
   dense_accessor_t & operator=(const dense_accessor_t & a)
   {
     label_ = a.label_;
@@ -372,7 +371,7 @@ private:
   T * data_ = nullptr;
   const user_meta_data_t * user_meta_data_ = nullptr;
   bitset_t * user_attributes_ = nullptr;
-  index_space_t is_;
+  utils::index_space_t is_;
   size_t index_space_ = 0;
 
 }; // struct dense_accessor_t
@@ -396,7 +395,7 @@ struct dense_handle_t : public data_handle_t
 //----------------------------------------------------------------------------//
 
 ///
-// FIXME: Dense storage type.
+/// FIXME: Dense storage type.
 ///
 template<typename DS, typename MD>
 struct storage_type_t<dense, DS, MD>
@@ -419,16 +418,16 @@ struct storage_type_t<dense, DS, MD>
   //--------------------------------------------------------------------------//
 
   ///
-  // \tparam T Data type to register.
-  // \tparam NS Namespace
-  // \tparam Args Variadic arguments that are passed to
-  //              metadata initialization.
-  //
-  // \param data_client Base class reference to client.
-  // \param data_store A reference for accessing the low-level data.
-  // \param key A const string instance containing the variable name.
-  // \param versions The number of variable versions for this datum.
-  // \param indices The number of indices in the index space.
+  /// \tparam T Data type to register.
+  /// \tparam NS Namespace
+  /// \tparam Args Variadic arguments that are passed to
+  ///              metadata initialization.
+  ///
+  /// \param data_client Base class reference to client.
+  /// \param data_store A reference for accessing the low-level data.
+  /// \param key A const string instance containing the variable name.
+  /// \param versions The number of variable versions for this datum.
+  /// \param indices The number of indices in the index space.
   ///
   template<
     typename T,
@@ -440,7 +439,7 @@ struct storage_type_t<dense, DS, MD>
   register_data(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const const_string_t & key,
+    const utils::const_string_t & key,
     size_t versions,
     size_t index_space,
     Args && ... args
@@ -566,7 +565,7 @@ struct storage_type_t<dense, DS, MD>
   accessor_t<T>
   get_accessor(
     data_store_t & data_store,
-    const const_string_t::hash_type_t & hash,
+    const utils::const_string_t::hash_type_t & hash,
     size_t version
   )
   {
@@ -598,7 +597,7 @@ struct storage_type_t<dense, DS, MD>
   get_accessor(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const const_string_t & key,
+    const utils::const_string_t & key,
     size_t version
   )
   {
@@ -609,14 +608,14 @@ struct storage_type_t<dense, DS, MD>
 
   /// \brief Return a list of all dense_accessor_t's filtered by a predicate.
   ///
-  /// \param [in] data_client  The data client to restrict our search to.
-  /// \param [in] data_store   The data store to search.
-  /// \param [in] version   The version to select.
-  /// \param [in] predicate   If \e predicate(a) returns true, add the accessor
-  ///                         to the list.
-  /// \param [in] sorted  If true, sort the results by label lexographically.
+  /// \param [in] data_client The data client to restrict our search to.
+  /// \param [in] data_store The data store to search.
+  /// \param [in] version The version to select.
+  /// \param [in] predicate If \e predicate(a) returns true, add the accessor
+  ///                       to the list.
+  /// \param [in] sorted If true, sort the results by label lexographically.
   ///
-  /// \remark This version is confined to search within a single namespace
+  /// \remark This version is confined to search within a single namespace.
   template<
     typename T,
     size_t NS,
@@ -645,7 +644,8 @@ struct storage_type_t<dense, DS, MD>
       auto & meta_data = entry_pair.second;
       // now build the hash for this label
       const auto & label = meta_data.label;
-      auto key_hash = hash<const_string_t::hash_type_t>(label, label.size());
+      auto key_hash = 
+        utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
       auto hash = key_hash ^ runtime_id;
       // filter out the accessors for different data_clients
       if ( meta_data_key != hash ) continue;
@@ -713,7 +713,8 @@ struct storage_type_t<dense, DS, MD>
         auto & meta_data = entry_pair.second;
         // now build the hash for this label
         const auto & label = meta_data.label;
-        auto key_hash = hash<const_string_t::hash_type_t>(label, label.size());
+        auto key_hash = 
+          utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
         auto hash = key_hash ^ runtime_id;
         // filter out the accessors for different data_clients
         if ( meta_data_key != hash ) continue;
@@ -771,7 +772,8 @@ struct storage_type_t<dense, DS, MD>
       auto & meta_data = entry_pair.second;
       // now build the hash for this label
       const auto & label = meta_data.label;
-      auto key_hash = hash<const_string_t::hash_type_t>(label, label.size());
+      auto key_hash = 
+        utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
       auto hash = key_hash ^ runtime_id;
       // filter out the accessors for different data_clients
       if ( meta_data_key != hash ) continue;
@@ -835,7 +837,8 @@ struct storage_type_t<dense, DS, MD>
         auto & meta_data = entry_pair.second;
         // now build the hash for this label
         const auto & label = meta_data.label;
-        auto key_hash = hash<const_string_t::hash_type_t>(label, label.size());
+        auto key_hash = 
+          utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
         auto hash = key_hash ^ runtime_id;
         // filter out the accessors for different data_clients
         if ( meta_data_key != hash ) continue;
@@ -865,7 +868,7 @@ struct storage_type_t<dense, DS, MD>
   //--------------------------------------------------------------------------//
 
   ///
-  //
+  ///
   ///
   template<
     typename T,
@@ -876,7 +879,7 @@ struct storage_type_t<dense, DS, MD>
   get_handle(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const const_string_t & key,
+    const utils::const_string_t & key,
     size_t version
   )
   {

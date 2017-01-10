@@ -12,49 +12,84 @@
 # All rights reserved
 #~----------------------------------------------------------------------------~#
 
-if(ENABLE_PARTITION)
-
 set(partition_HEADERS
+  communicator.h
+  dcrs.h
   index_partition.h
-  init_partitions_task.h
   partitioner.h
   PARENT_SCOPE
 )
 
-# Add MPI/Legion specific files
-
-if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
-
-list(APPEND partition_HEADERS
-  init_partitions_task.h
-)
-
-set(partition_SOURCES
-  init_partitions_task.cc
-  PARENT_SCOPE
-)
-
+if(ENABLE_MPI)
+  set(partition_HEADERS
+    ${partition_HEADERS}
+    dcrs_utils.h
+    mpi_communicator.h
+    mpi_utils.h
+    PARENT_SCOPE
+  )
 endif()
 
-#cinch_add_unit(partition
-#  SOURCES test/partition.cc
-#  INPUTS  test/metis_mesh.blessed 
-#          test/metis_mesh_int64.blessed 
-#          test/metis.blessed 
-#          test/metis_int64.blessed 
-#          test/scotch_v5.blessed
-#          test/scotch.blessed
-#  LIBRARIES ${PARTITION_LIBRARIES} flecsi
-#)
+if(ENABLE_PARMETIS)
+  set(partition_HEADERS
+    ${partition_HEADERS}
+    parmetis_partitioner.h
+    weaver.h
+    PARENT_SCOPE
+  )
+endif()
 
-#if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
-#  cinch_add_unit(index_partition
-#    SOURCES test/index_partition.cc
-#    INPUTS test/index_partition.blessed
-#    POLICY MPILEGION
-#    THREADS 2
-#    LIBRARIES flecsi)
-#endif()
+#------------------------------------------------------------------------------#
+# Unit tests.
+#------------------------------------------------------------------------------#
+
+cinch_add_unit(dcrs
+  SOURCES test/dcrs.cc
+  INPUTS
+    test/simple2d-8x8.msh
+    test/simple2d-16x16.msh
+  LIBRARIES ${PARTITION_LIBRARIES}
+  POLICY MPI
+  THREADS 5
+)
+
+cinch_add_unit(devel-dcrs
+  SOURCES test/devel-dcrs.cc
+  INPUTS
+    test/simple2d-8x8.msh
+    test/simple2d-16x16.msh
+  LIBRARIES ${PARTITION_LIBRARIES}
+  POLICY MPI_DEVEL
+  THREADS 5
+)
+
+# Both of these tests depend on ParMETIS.
+# This could change if we add more partitioner types.
+if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
+
+cinch_add_unit(partition
+  SOURCES test/partition.cc
+  INPUTS
+    test/simple2d-8x8.msh
+    test/simple2d-16x16.msh
+    test/simple2d-32x32.msh
+    test/simple2d-48x48.msh
+  LIBRARIES ${PARTITION_LIBRARIES}
+  POLICY MPI_DEVEL
+  THREADS 5
+)
+
+cinch_add_unit(weaver
+  SOURCES test/weaver.cc
+  INPUTS
+    test/simple2d-8x8.msh
+    test/simple2d-16x16.msh
+    test/simple2d-32x32.msh
+    test/simple2d-48x48.msh
+  LIBRARIES ${PARTITION_LIBRARIES}
+  POLICY MPI
+  THREADS 5
+)
 
 endif()
 

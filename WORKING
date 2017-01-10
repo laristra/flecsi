@@ -2,8 +2,6 @@
 # Working issues
 #------------------------------------------------------------------------------#
 
-- Need to add generic attributes to data model, e.g., persistent...
-- Need to fix variadic macros to take at least one argument
-  (avoid compiler warnings) NOTE: This is mostly done where it can be...
+- Update copyrights with standard header.
 
-- Need to fix "no return statement" warnings -> add data handle returns.
+- Check compile modes with each runtime for merge.

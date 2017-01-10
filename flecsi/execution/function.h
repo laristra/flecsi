@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_function_h
-#define flecsi_function_h
+#ifndef flecsi_execution_function_h
+#define flecsi_execution_function_h
 
 #include "flecsi/utils/const_string.h"
 
@@ -39,7 +39,7 @@ struct function__
   static
   decltype(auto)
   register_function(
-    const const_string_t & key,
+    const utils::const_string_t & key,
     std::function<R(A)> & user_function
   )
   {
@@ -83,7 +83,7 @@ using function_t = function__<flecsi_execution_policy_t>;
 } // namespace function
 } // namespace flecsi
 
-#endif // flecsi_function_h
+#endif // flecsi_execution_function_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

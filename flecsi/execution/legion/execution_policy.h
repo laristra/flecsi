@@ -188,6 +188,12 @@ struct legion_execution_policy_t
 
         return legion_future__<R>(future);
       } // index
+        
+      default:
+      {
+        throw std::runtime_error("the task can be executed \
+                    only as single or index task");
+      }
 
     } // switch
   } // execute_task
@@ -213,11 +219,11 @@ struct legion_execution_policy_t
   static
   bool
   register_function(
-    const const_string_t & key,
+    const utils::const_string_t & key,
     std::function<R(As ...)> & user_function
   )
   {
-    context_t::instance().register_function(key, user_function);
+    return context_t::instance().register_function(key, user_function);
   } // register_function
 
   ///

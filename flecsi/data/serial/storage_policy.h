@@ -33,9 +33,8 @@
 #include "flecsi/data/serial/tuple.h"
 
 ///
-// \file serial/storage_policy.h
-// \authors bergen
-// \date Initial file creation: Apr 17, 2016
+/// \file
+/// \date Initial file creation: Apr 17, 2016
 ///
 
 namespace flecsi {
@@ -49,7 +48,7 @@ struct serial_storage_policy_t {
   // Define the data store type
   // This will likely be much more complicated in a real policy
   using data_store_t = std::unordered_map<size_t,
-    std::unordered_map<const_string_t::hash_type_t, meta_data_t>>;
+    std::unordered_map<utils::const_string_t::hash_type_t, meta_data_t>>;
 
   // Define the storage type
   template<size_t data_type_t>
@@ -76,7 +75,6 @@ struct serial_storage_policy_t {
     for (auto & sub_map : data_store_) {
 
       // the namespace data
-      auto & namespace_key = sub_map.first;
       auto & meta_data = sub_map.second;
       
       // loop over each element in the namespace
@@ -86,7 +84,8 @@ struct serial_storage_policy_t {
         auto & meta_data_key = itr->first;
         auto & label = itr->second.label;
         // now build the hash for this label
-        auto key_hash = hash<const_string_t::hash_type_t>(label, label.size());
+        auto key_hash = 
+          utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
         auto hash = key_hash ^ runtime_namespace;
         // test if it should be deleted
         if (meta_data_key == hash)
@@ -111,7 +110,6 @@ struct serial_storage_policy_t {
     for (auto & sub_map : data_store_) {
 
       // the namespace data
-      auto & namespace_key = sub_map.first;
       auto & namespace_data = sub_map.second;
       
       // loop over each element in the namespace
@@ -122,7 +120,8 @@ struct serial_storage_policy_t {
         // get the label
         auto & label = entry_pair.second.label;
         // now build the hash for this label
-        auto key_hash = hash<const_string_t::hash_type_t>(label, label.size());
+        auto key_hash = 
+          utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
         auto hash = key_hash ^ runtime_namespace;
         // test if it should be deleted
         if (meta_data_key == hash) cnt++;
@@ -140,7 +139,6 @@ struct serial_storage_policy_t {
     for ( auto & sub_map : data_store_ ) {
 
       // the namespace data
-      auto & namespace_key = sub_map.first;
       auto & meta_data = sub_map.second;
 
       // create a temporary map
@@ -155,7 +153,8 @@ struct serial_storage_policy_t {
         auto & meta_data_key = itr->first;
         auto & label = itr->second.label;
         // now build the hash for this label
-        auto key_hash = hash<const_string_t::hash_type_t>( label, label.size() );
+        auto key_hash = 
+          utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
         auto from_hash = key_hash ^ from;
         // test if it should be moved, and move it
         if ( meta_data_key == from_hash ) {

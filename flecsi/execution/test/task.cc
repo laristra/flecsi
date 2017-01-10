@@ -18,10 +18,9 @@
 
 TEST(task, execute) {
 
-  char dummy[] = "1";
-  char * argv = &dummy[0];
-
-  flecsi::execution::context_t::instance().initialize(1, &argv);
+  // This translation unit doesn't do anything, but it is currently
+  // required to complete compilation. The actual test logic is
+  // in 'task_driver.h'.
 
 } // TEST
 

@@ -71,4 +71,31 @@ FleCSI uses several different namespaces:
 
 --------------------------------------------------------------------------------
 
+<!-- CINCHDOC DOCUMENT(Developer Guide) SECTION(Code Structure) -->
+
+# Unit Tests
+
+Unit tests should only be used to test specific components of FleCSI,
+e.g., types or algorithms. **They shall not be used to develop new
+applications!**. Sometimes, it *is* necessary to write a unit test that
+depends on the FleCSI library itself. Developers should try to avoid
+this dependence! However, when it is necessary, it is likely that such
+a unit test will have unresolved symbols from the various runtime
+libraries to which the FleCSI library links. To resolve these, the
+developer should add ${CINCH_RUNTIME_LIBRARIES} to the LIBRARIES
+argument to the cinch_add_unit() function:
+```cmake
+cinch_add_unit(mytest,
+  SOURCES
+    test/mytest.cc
+  LIBRARIES
+    flecsi ${CINCH_RUNTIME_LIBRARIES}
+)
+```
+
+In addition to ${CINCH_RUNTIME_LIBRARIES}, ${CINCH_RUNTIME_INCLUDES},
+and ${CINCH_RUNTIME_FLAGS} are also included.
+
+--------------------------------------------------------------------------------
+
 <!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->

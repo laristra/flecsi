@@ -39,14 +39,16 @@ set(ug_pandoc_options
 
 cinch_add_doc(user-guide flecsi_ug.py flecsi
     flecsi-user-guide-${${PROJECT_NAME}_VERSION}.pdf
-    PANDOC_OPTIONS ${ug_pandoc_options} IMAGE_GLOB "*.pdf")
+    PANDOC_OPTIONS ${ug_pandoc_options} IMAGE_GLOB "*.pdf"
+)
 
 #------------------------------------------------------------------------------#
 # Create developer guide header with version information
 #------------------------------------------------------------------------------#
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/flecsi_dg_header.tex.in
-    ${CMAKE_BINARY_DIR}/doc/flecsi_dg_header.tex)
+    ${CMAKE_BINARY_DIR}/doc/flecsi_dg_header.tex
+)
 
 #------------------------------------------------------------------------------#
 # Pandoc options for developer guide
@@ -72,23 +74,8 @@ set(dg_image_list
 cinch_add_doc(developer-guide flecsi_dg.py flecsi
     flecsi-developer-guide-${${PROJECT_NAME}_VERSION}.pdf
     PANDOC_OPTIONS ${dg_pandoc_options} IMAGE_GLOB "*.pdf"
-    IMAGE_LIST ${dg_image_list})
-
-#------------------------------------------------------------------------------#
-# Pandoc options for charter
-#------------------------------------------------------------------------------#
-
-set(charter_pandoc_options
-    "--include-in-header=${CMAKE_SOURCE_DIR}/cinch/tex/addtolength.tex"
+    IMAGE_LIST ${dg_image_list}
 )
-
-#------------------------------------------------------------------------------#
-# Add charter target
-#------------------------------------------------------------------------------#
-
-cinch_add_doc(charter flecsi_charter.py src
-  flecsi-charter-${${PROJECT_NAME}_VERSION}.pdf
-  PANDOC_OPTIONS ${charter_pandoc_options})
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options

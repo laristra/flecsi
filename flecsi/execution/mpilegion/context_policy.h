@@ -15,16 +15,15 @@
 #ifndef flecsi_execution_mpilegion_context_policy_h
 #define flecsi_execution_mpilegion_context_policy_h
 
-/*!
- * \file mpilegion/context_policy.h
- * \authors bergen
- * \date Initial file creation: Jul 14, 2016
- */
+///
+/// \file mpilegion/context_policy.h
+/// \date Initial file creation: Jul 14, 2016
+///
 
-#include <memory>
 #include <functional>
-#include <unordered_map>
+#include <memory>
 #include <stack>
+#include <unordered_map>
 
 #include <legion.h>
 
@@ -32,19 +31,21 @@
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/tuple_wrapper.h"
 #include "flecsi/execution/mpilegion/runtime_driver.h"
+
 #include "flecsi/execution/common/task_hash.h"
 #include "flecsi/execution/mpilegion/legion_handshake.h"
 #include "flecsi/execution/mpilegion/mpi_legion_interop.h"
-#include "flecsi/partition/init_partitions_task.h"
+#include "flecsi/execution/mpilegion/init_partitions_task.h"
+#include "flecsi/execution/legion/dpd.h"
 
 namespace flecsi {
 namespace execution {
 
 ///
-// \struct legion_runtime_runtime_state_t legion/context_policy.h
-// \brief legion_runtime_state_t provides storage for Legion runtime
-//        information that can be reinitialized as needed to store const
-//        data types and references as required by the Legion runtime.
+/// \struct legion_runtime_runtime_state_t legion/context_policy.h
+/// \brief legion_runtime_state_t provides storage for Legion runtime
+///        information that can be reinitialized as needed to store const
+///        data types and references as required by the Legion runtime.
 ///
 struct legion_runtime_state_t {
 
@@ -76,12 +77,12 @@ static thread_local std::unordered_map<size_t,
   std::stack<std::shared_ptr<legion_runtime_state_t>>> state_;
 
 ///
-// \class mpilegion_context_policy_t mpilegion/context_policy.h
-// \brief mpilegion_context_policy_t provides...
+/// \class mpilegion_context_policy_t mpilegion/context_policy.h
+/// \brief mpilegion_context_policy_t provides an interface for passing 
+///  legion's context to the FLeCSI tasks
 ///
 struct mpilegion_context_policy_t
 {
-
   using lr_context_t = LegionRuntime::HighLevel::Context;
   using lr_runtime_t = LegionRuntime::HighLevel::HighLevelRuntime;
   using lr_task_t = LegionRuntime::HighLevel::Task;
@@ -95,17 +96,20 @@ struct mpilegion_context_policy_t
 
   mpi_legion_interop_t interop_helper_;
 
-  /*--------------------------------------------------------------------------*
-   * Initialization.
-   *--------------------------------------------------------------------------*/
+  //-------------------------------------------------------------------------*
+  // Initialization.
+  //-------------------------------------------------------------------------*/
 
+  ///
+  /// Initialization of the legion runtime. Icludes task registration,
+  /// legion runtime start and logic for mpi-legion interoperability 
+  ///
   int
   initialize(
     int argc,
     char ** argv
   )
   {
-
     // Register top-level task
     lr_runtime_t::set_top_level_task_id(TOP_LEVEL_TASK_ID);
     lr_runtime_t::register_legion_task<mpilegion_runtime_driver>(
@@ -113,38 +117,48 @@ struct mpilegion_context_policy_t
 
     // FIXME
 		// This is Galen's hack to get partitioning working for the sprint
-    lr_runtime_t::register_legion_task<flecsi::dmp::parts,
-      flecsi::dmp::get_numbers_of_cells_task>(
+    lr_runtime_t::register_legion_task<sprint::parts,
+      sprint::get_numbers_of_cells_task>(
       task_ids_t::instance().get_numbers_of_cells_task_id,lr_loc, false, true);
 
    // FIXME
     // This is Galen's hack to get partitioning working for the sprint
-    lr_runtime_t::register_legion_task<flecsi::dmp::init_cells_task>(
-      task_ids_t::instance().init_cells_task_id,lr_loc, false, true);
+    lr_runtime_t::register_legion_task<sprint::initialization_task>(
+      task_ids_t::instance().init_task_id,lr_loc, false, true);
 
    // FIXME
     // This is Galen's hack to get partitioning working for the sprint
-//    lr_runtime_t::register_legion_task<std::vector<int>,
-    lr_runtime_t::register_legion_task<Legion::LogicalRegion,
-      flecsi::dmp::shared_part_task>(
+    lr_runtime_t::register_legion_task<sprint::partition_lr,
+      sprint::shared_part_task>(
       task_ids_t::instance().shared_part_task_id,lr_loc, false, true); 
  
    // FIXME
     // This is Galen's hack to get partitioning working for the sprint
-    lr_runtime_t::register_legion_task< Legion::LogicalRegion,
-      flecsi::dmp::exclusive_part_task>(
+    lr_runtime_t::register_legion_task<sprint::partition_lr,
+      sprint::exclusive_part_task>(
       task_ids_t::instance().exclusive_part_task_id,lr_loc, false, true);
 
 		// FIXME
     // This is Galen's hack to get partitioning working for the sprint
-    lr_runtime_t::register_legion_task< Legion::LogicalRegion,
-      flecsi::dmp::ghost_part_task>(
+    lr_runtime_t::register_legion_task<sprint::partition_lr,
+      sprint::ghost_part_task>(
       task_ids_t::instance().ghost_part_task_id,lr_loc, false, true);
  
    // FIXME
     // This is Galen's hack to get partitioning working for the sprint
-    lr_runtime_t::register_legion_task<flecsi::dmp::check_partitioning_task>(
-      task_ids_t::instance().check_partitioning_task_id,lr_loc, false, true); 
+    lr_runtime_t::register_legion_task<sprint::check_partitioning_task>(
+      task_ids_t::instance().check_partitioning_task_id,lr_loc, false, true);
+
+    lr_runtime_t::register_legion_task<sprint::init_raw_conn_task>(
+      task_ids_t::instance().init_raw_conn_task_id,lr_loc, false, true); 
+
+    lr_runtime_t::register_legion_task<
+      flecsi::execution::legion_dpd::init_connectivity_task>(
+      task_ids_t::instance().dpd_init_connectivity_task_id,lr_loc, false, true); 
+
+    lr_runtime_t::register_legion_task<
+      flecsi::execution::sprint::ghost_access_task>(
+      task_ids_t::instance().ghost_access_task_id,lr_loc, false, true);
 
     // register handoff_to_mpi_task from mpi_legion_interop_t class
     lr_runtime_t::register_legion_task<handoff_to_mpi_task>(
@@ -174,14 +188,14 @@ struct mpilegion_context_policy_t
       // f.second is the pair of unique task id and the registration function
       f.second.second(f.second.first);
     } // for
-  
-    // FIXME: Documentation!
+
+    //initialize a helper class for mpi-legion interoperability
     interop_helper_.initialize();  
 
     interop_helper_.legion_configure();
 
     // Start the runtime
-    lr_runtime_t::start(argc, argv,true);
+    lr_runtime_t::start(argc, argv, true);
 
     interop_helper_.handoff_to_legion();
 
@@ -210,6 +224,13 @@ struct mpilegion_context_policy_t
     return 0;
   } // initialize
 
+  ///
+  /// push_state is used to control the state of the legion task with id==key.
+  /// Task is considered being completed when it's state is
+  /// removed from the state_ object;
+  /// Key - is a task-id.
+  ///
+
   void push_state(
     size_t key,
     LegionRuntime::HighLevel::Context & context,
@@ -226,6 +247,12 @@ struct mpilegion_context_policy_t
       (new legion_runtime_state_t(context, runtime, task, regions)));
   } // set_state
 
+  ///
+  /// pops_state(key) is used to control the state of the legion task with
+  ///  id=key. It removes the task state from the state_pbject when
+  /// the task is completed.
+  ///
+  
   void pop_state(
     size_t key
   )
@@ -253,16 +280,18 @@ struct mpilegion_context_policy_t
   } // set_state
 #endif
 
-  /*--------------------------------------------------------------------------*
-   * Task registraiton.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------*
+  // Task registraiton.
+  //--------------------------------------------------------------------------*/
 
   using task_id_t = LegionRuntime::HighLevel::TaskID;
   using register_function_t = std::function<void(size_t)>;
-  using unique_fid_t = unique_id_t<task_id_t>;
+  using unique_task_id_t = utils::unique_id_t<task_id_t>;
 
-  /*!
-   */
+  ///
+  /// register_task method generates unique ID for the task and add this ID
+  /// to the task_registry_ container 
+  ///
   bool
   register_task(
     task_hash_key_t key,
@@ -270,15 +299,16 @@ struct mpilegion_context_policy_t
   )
   {
     if(task_registry_.find(key) == task_registry_.end()) {
-      task_registry_[key] = { unique_fid_t::instance().next(), f };
+      task_registry_[key] = { unique_task_id_t::instance().next(), f };
       return true;
     } // if
 
     return false;
   } // register_task
 
-  /*!
-   */
+  ///
+  /// this method return tak_id from the task's key
+  ///
   task_id_t
   task_id(
     task_hash_key_t key
@@ -290,16 +320,18 @@ struct mpilegion_context_policy_t
     return task_registry_[key].first;
   } // task_id
 
-  /*--------------------------------------------------------------------------*
-   * Function registraiton.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------*
+  // Function registraiton.
+  //--------------------------------------------------------------------------*/
 
-  /*!
-   */
+  ///
+  /// register_function method add fuction pointer and the key to the 
+  /// function_registry_ object.
+  /// 
   template<typename T>
   bool
   register_function(
-    const const_string_t & key,
+    const utils::const_string_t & key,
     T & function
   )
   {
@@ -313,8 +345,10 @@ struct mpilegion_context_policy_t
     return false;
   } // register_function
   
-  /*!
-   */
+  ///
+  /// function(key) method return a pointer to the function with the 
+  /// function key=key
+  ///
   std::function<void(void)> *
   function(
     size_t key
@@ -323,10 +357,13 @@ struct mpilegion_context_policy_t
     return function_registry_[key];
   } // function
 
-  /*--------------------------------------------------------------------------*
-   * Legion runtime accessors.
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------*
+  // Legion runtime accessors.
+  //--------------------------------------------------------------------------*/
 
+  ///
+  /// return a context that corresponds to the task with the key=task_key
+  ///
   LegionRuntime::HighLevel::Context &
   context(
     size_t task_key
@@ -335,6 +372,9 @@ struct mpilegion_context_policy_t
     return state_[task_key].top()->context;
   } // context
 
+  ///
+  /// return runtime that corresponds to the task with the key=task_key
+  ///    
   LegionRuntime::HighLevel::HighLevelRuntime *
   runtime(
     size_t task_key
@@ -343,6 +383,9 @@ struct mpilegion_context_policy_t
     return state_[task_key].top()->runtime;
   } // runtime
 
+  ///
+  /// return Task object  that corresponds to the task with the key=task_key
+  ///  
   const
   LegionRuntime::HighLevel::Task *
   task(
@@ -352,6 +395,9 @@ struct mpilegion_context_policy_t
     return state_[task_key].top()->task;
   } // task
 
+  ///
+  /// return a vector of the PhysicalRegions for the task with the key=task_key
+  ///  
   const
   std::vector<LegionRuntime::HighLevel::PhysicalRegion> &
   regions(
@@ -363,18 +409,18 @@ struct mpilegion_context_policy_t
   
 private:
 
-  /*--------------------------------------------------------------------------*
-   * Task registry
-   *-------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------*
+  // Task registry
+  //-------------------------------------------------------------------------*/
 
   // Define the map type using the task_hash_t hash function.
   std::unordered_map<task_hash_t::key_t,
     std::pair<task_id_t, register_function_t>,
     task_hash_t> task_registry_;
 
-  /*--------------------------------------------------------------------------*
-   * Function registry
-   *--------------------------------------------------------------------------*/
+  //--------------------------------------------------------------------------*
+  // Function registry
+  //--------------------------------------------------------------------------*/
 
   std::unordered_map<size_t, std::function<void(void)> *>
     function_registry_;

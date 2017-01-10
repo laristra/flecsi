@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_execution_task_hash_h
-#define flecsi_execution_task_hash_h
+#ifndef flecsi_execution_common_task_hash_h
+#define flecsi_execution_common_task_hash_h
 
 #include <tuple>
 
@@ -137,7 +137,7 @@ struct task_hash_t
 } // namespace execution
 } // namespace flecsi
 
-#endif // flecsi_execution_task_hash_h
+#endif // flecsi_execution_common_task_hash_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

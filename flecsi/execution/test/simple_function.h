@@ -13,11 +13,10 @@
 #include "flecsi/execution/execution.h"
 #include "flecsi/data/data.h"
 
-/*!
- * \file default_driver.h
- * \authors bergen
- * \date Initial file creation: Jul 24, 2016
- */
+///
+/// \file
+/// \date Initial file creation: Jul 24, 2016
+///
 
 namespace flecsi {
 namespace execution {

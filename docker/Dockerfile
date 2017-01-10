@@ -1,4 +1,4 @@
-FROM flecsi/flecsi_tpl:fedora
+FROM laristra/flecsi-third-party:fedora
 
 ARG MINIMAL
 ARG MPI
@@ -34,7 +34,6 @@ RUN ccache -z
 RUN cmake -DENABLE_MPI=$MPI \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON \
-          -DCMAKE_DISABLE_FIND_PACKAGE_SCOTCH=ON \
           -DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON  \
           -DCMAKE_DISABLE_FIND_PACKAGE_LAPACKE=ON} \
           -DENABLE_UNIT_TESTS=ON \

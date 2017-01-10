@@ -48,7 +48,8 @@ struct mesh_t : public data::data_client_t {
         break;
       default:
         // FIXME: lookup user-defined index space
-        assert(false && "unknown index space");
+        clog_fatal("unknown index space");
+        return 0;
     } // switch
   }
 

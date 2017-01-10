@@ -6,8 +6,8 @@
  * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
  * /@@       /@@/@@//// //@@    @@       /@@/@@
  * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
- * 
+ * //       ///  //////   //////  ////////  //
+ *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
@@ -19,6 +19,8 @@
 // user includes
 #include "flecsi/utils/any.h"
 #include "flecsi/partition/index_partition.h"
+
+#include <array>
 
 using flecsi::utils::any_t;
 using std::cout;
@@ -72,11 +74,11 @@ TEST(any, simple) {
    std::cout <<"storage[0] = "<< Ad<<std::endl;
 
    any_t val;
-  
+
    val = 10;
    int i = val;
    cout << i << endl;
-  
+
    val = 3.14;
    cout << flecsi::utils::any_cast<double>(val) << endl;
 
@@ -88,13 +90,13 @@ TEST(any, simple) {
    cout << flecsi::utils::any_cast<std::string>(val) << endl;
 
 //  std::shared_ptr<any_t> original_ptr = std::make_shared<any_t>(ip);
-  
-  void* void_ptr = reinterpret_cast<void*>(&A);
 
-  any_t* new_ptr = reinterpret_cast<any_t*>(void_ptr);
+  //void* void_ptr = reinterpret_cast<void*>(&A);
+
+  //any_t* new_ptr = reinterpret_cast<any_t*>(void_ptr);
 
     //assert(typeid(new_ptr->type())==typeid(index_partition_t));
-  //double* a=flecsi::utils::any_cast<double>(new_ptr); 
+  //double* a=flecsi::utils::any_cast<double>(new_ptr);
 
   ASSERT_EQ( 3, storage.size() )  << "iterator count mismatch";
 

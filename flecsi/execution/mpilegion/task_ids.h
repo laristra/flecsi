@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef TASK_IDS
-#define TASK_IDS
+#ifndef flecsi_execution_mpilegion_task_ids_h
+#define flecsi_execution_mpilegion_task_ids_h
 
 #include "flecsi/utils/common.h"
 
@@ -52,24 +52,62 @@ class task_ids_t
    }
 
   using task_id_t = LegionRuntime::HighLevel::TaskID;
-  using unique_fid_t = flecsi::unique_id_t<task_id_t>;
-  size_t connect_mpi_task_id  = unique_fid_t::instance().next();
-  size_t handoff_to_mpi_task_id = unique_fid_t::instance().next();
-  size_t wait_on_mpi_task_id  = unique_fid_t::instance().next();
-  size_t update_mappers_task_id=unique_fid_t::instance().next();
-  size_t unset_call_mpi_id = unique_fid_t::instance().next();
-  size_t get_numbers_of_cells_task_id = unique_fid_t::instance().next();
-  size_t init_cells_task_id = unique_fid_t::instance().next();
-  size_t shared_part_task_id = unique_fid_t::instance().next();
-  size_t exclusive_part_task_id = unique_fid_t::instance().next();
-  size_t ghost_part_task_id = unique_fid_t::instance().next();
-  size_t check_partitioning_task_id = unique_fid_t::instance().next();
+  using unique_task_id_t = flecsi::utils::unique_id_t<task_id_t>;
+  size_t connect_mpi_task_id  = unique_task_id_t::instance().next();
+  size_t handoff_to_mpi_task_id = unique_task_id_t::instance().next();
+  size_t wait_on_mpi_task_id  = unique_task_id_t::instance().next();
+  size_t update_mappers_task_id=unique_task_id_t::instance().next();
+  size_t unset_call_mpi_id = unique_task_id_t::instance().next();
+  size_t get_numbers_of_cells_task_id = unique_task_id_t::instance().next();
+  size_t init_task_id = unique_task_id_t::instance().next();
+  size_t shared_part_task_id = unique_task_id_t::instance().next();
+  size_t exclusive_part_task_id = unique_task_id_t::instance().next();
+  size_t ghost_part_task_id = unique_task_id_t::instance().next();
+  size_t check_partitioning_task_id = unique_task_id_t::instance().next();
+  size_t ghost_access_task_id = unique_task_id_t::instance().next();
+  size_t init_raw_conn_task_id = unique_task_id_t::instance().next();
+  size_t dpd_init_connectivity_task_id = unique_task_id_t::instance().next();
 };//task_ids_t
+
+class field_ids_t
+ {
+  private:
+
+   field_ids_t(){}
+   ~field_ids_t(){}
+   field_ids_t (const field_ids_t&);
+   field_ids_t& operator=(const field_ids_t&);
+
+  public:
+
+    static field_ids_t& instance()
+   {
+     static  field_ids_t ids;
+     return ids;
+   }
+
+  using task_id_t = LegionRuntime::HighLevel::TaskID;
+  using unique_fid_t = flecsi::utils::unique_id_t<task_id_t>;
+  size_t fid_cell  = unique_fid_t::instance().next();
+  size_t fid_vert  = unique_fid_t::instance().next();
+  size_t fid_entity_pair  = unique_fid_t::instance().next();
+  size_t fid_data  = unique_fid_t::instance().next();
+  size_t fid_ptr_t = unique_fid_t::instance().next();
+  size_t fid_entity = unique_fid_t::instance().next();
+  size_t fid_ptr_count = unique_fid_t::instance().next();
+  size_t fid_offset_count = unique_fid_t::instance().next();
+  size_t fid_index = unique_fid_t::instance().next();
+  size_t fid_entity_offset = unique_fid_t::instance().next();
+  size_t fid_entry_offset = unique_fid_t::instance().next();
+  size_t fid_value = unique_fid_t::instance().next();
+  size_t fid_partition_metadata = unique_fid_t::instance().next();
+//  size_t fid_connectivity = unique_fid_t::instance().next(); 
+};
 
 }//namespace execution
 }//namespace flecsi
 
-#endif
+#endif //flecsi_execution_mpilegion_task_ids_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

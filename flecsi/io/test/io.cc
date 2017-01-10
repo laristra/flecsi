@@ -21,6 +21,7 @@ class fake_mesh_t {};
 #include "flecsi/io/io_exodus.h"
 
 namespace flecsi {
+namespace io {
 
 // Register file extensions with factory.
 bool exodus_g_registered =
@@ -50,6 +51,7 @@ TEST(io, readwrite) {
   ASSERT_FALSE(write_mesh("test.exo", m));
 } // TEST
 
+} // namespace io
 } // namespace flecsi
 
 /*----------------------------------------------------------------------------*

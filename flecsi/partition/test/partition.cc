@@ -12,581 +12,407 @@
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
 
-// system includes
-#include <cinchtest.h>
-#include <iostream>
+#include <cinchdevel.h>
 
-#ifdef HAVE_METIS
-#  include <metis.h>
+#if !defined(ENABLE_MPI)
+  #error "ENABLE_MPI not defined! This file depends on MPI!"
 #endif
 
-#ifdef HAVE_SCOTCH
-#  include <scotch.h>
+#include <mpi.h>
+
+#include "flecsi/io/simple_definition.h"
+#include "flecsi/partition/dcrs_utils.h"
+#include "flecsi/partition/parmetis_partitioner.h"
+#include "flecsi/partition/mpi_communicator.h"
+#include "flecsi/topology/graph_utils.h"
+#include "flecsi/utils/set_utils.h"
+
+clog_register_tag(partition);
+
+DEVEL(partition) {
+
+  // Set the output rank
+  clog_set_output_rank(2);
+
+  using entry_info_t = flecsi::dmp::entry_info_t;
+
+  int size;
+  int rank;
+
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+  // Create a mesh definition from file.
+#if 0
+  const size_t M(8), N(8);
+  flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
+#endif
+  const size_t M(16), N(16);
+  flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
+#if 0
+  const size_t M(32), N(32);
+  flecsi::io::simple_definition_t sd("simple2d-32x32.msh");
 #endif
 
-#include <vector>
+  // Create the dCRS representation for the distributed partitioner.
+  auto dcrs = flecsi::dmp::make_dcrs(sd);
 
-// user includes
-#include "flecsi/specializations/burton/burton.h"
+  // Create a partitioner instance to generate the primary partition.
+  auto partitioner = std::make_shared<flecsi::dmp::parmetis_partitioner_t>();
 
-// put the flecsi namespace up front
-using namespace flecsi;
+  // Create the primary partition.
+  auto primary = partitioner->partition(dcrs);
 
-// explicitly use some stuff
-using std::cout;
-using std::endl;
-using std::vector;
+  {
+  clog_tag_guard(partition);
+  clog_container_one(info, "primary partition", primary, clog::space);
+  } // guard
 
-//=============================================================================
-//! \brief Fixture for testing the partitioner.
-//=============================================================================
-class partition : public ::testing::Test {
+  // Compute the dependency closure of the primary cell partition
+  // through vertex intersections (specified by last argument "1").
+  // To specify edge or face intersections, use 2 (edges) or 3 (faces).
+  auto closure = flecsi::topology::entity_closure<2,2,0>(sd, primary);
 
-protected:
+  {
+  clog_tag_guard(partition);
+  clog_container_one(info, "closure", closure, clog::space);
+  } // guard
 
-  //---------------------------------------------------------------------------
-  // Types
-  //---------------------------------------------------------------------------
+  // Subtracting out the initial set leaves just the nearest
+  // neighbors. This is similar to the image of the adjacency
+  // graph of the initial indices.
+  auto nearest_neighbors = flecsi::utils::set_difference(closure, primary);
+
+  {
+  clog_tag_guard(partition);
+  clog_container_one(info, "nearest neighbors", nearest_neighbors, clog::space);
+  } // guard
+
+  // We can iteratively add halos of nearest neighbors, e.g.,
+  // here we add the next nearest neighbors. For most mesh types
+  // we actually need information about the ownership of these indices
+  // so that we can deterministically assign rank ownership to vertices.
+  auto nearest_neighbor_closure =
+    flecsi::topology::entity_closure<2,2,0>(sd, nearest_neighbors);
+
+  {
+  clog_tag_guard(partition);
+  clog_container_one(info, "nearest neighbor closure",
+    nearest_neighbor_closure, clog::space);
+  } // guard
+
+  // Subtracting out the closure leaves just the
+  // next nearest neighbors.
+  auto next_nearest_neighbors =
+    flecsi::utils::set_difference(nearest_neighbor_closure, closure);
+
+  {
+  clog_tag_guard(partition);
+  clog_container_one(info, "next nearest neighbor", next_nearest_neighbors,
+    clog::space);
+  } // guard
+
+  // The union of the nearest and next-nearest neighbors gives us all
+  // of the cells that might reference a vertex that we need.
+  auto all_neighbors = flecsi::utils::set_union(nearest_neighbors,
+    next_nearest_neighbors);
+
+  {
+  clog_tag_guard(partition);
+  clog_container_one(info, "all neighbors", all_neighbors, clog::space);
+  } // guard
+
+  // Create a communicator instance to get neighbor information.
+  auto communicator = std::make_shared<flecsi::dmp::mpi_communicator_t>();
+
+  // Get the rank and offset information for our nearest neighbor
+  // dependencies. This also gives information about the ranks
+  // that access our shared cells.
+  auto cell_nn_info = communicator->get_cell_info(primary, nearest_neighbors);
+
+  //
+  auto cell_all_info = communicator->get_cell_info(primary, all_neighbors);
+
+  // Create a map version of the local info for lookups below.
+  std::unordered_map<size_t, size_t> primary_indices_map;
+  {
+  size_t offset(0);
+  for(auto i: primary) {
+    primary_indices_map[offset++] = i;
+  } // for
+  } // scope
+
+  // Create a map version of the remote info for lookups below.
+  std::unordered_map<size_t, entry_info_t> remote_info_map;
+  for(auto i: std::get<1>(cell_all_info)) {
+    remote_info_map[i.id] = i;
+  } // for
+
+  std::set<entry_info_t> exclusive_cells;
+  std::set<entry_info_t> shared_cells;
+  std::set<entry_info_t> ghost_cells;
+
+  // Populate exclusive and shared cell information.
+  {
+  size_t offset(0);
+  for(auto i: std::get<0>(cell_nn_info)) {
+    if(i.size()) {
+      shared_cells.insert(entry_info_t(primary_indices_map[offset],
+        rank, offset, i));
+    }
+    else {
+      exclusive_cells.insert(entry_info_t(primary_indices_map[offset],
+        rank, offset, i));
+    } // if
+    ++offset;
+  } // for
+  } // scope
   
-  //! \brief the mesh type
-  using mesh_t = burton_mesh_t;
+  // Populate ghost cell information.
+  {
+  size_t offset(0);
+  for(auto i: std::get<1>(cell_nn_info)) {
+    ghost_cells.insert(i);
+  } // for
+  } // scope
 
-  //! \brief the vertex type
-  using vertex_t = mesh_t::vertex_t;
+  {
+  clog_tag_guard(partition);
+  clog_container_one(info, "exclusive cells ", exclusive_cells, clog::newline);
+  clog_container_one(info, "shared cells ", shared_cells, clog::newline);
+  clog_container_one(info, "ghost cells ", ghost_cells, clog::newline);
+  } // guard
 
-  //! \brief the cell type
-  using cell_t = mesh_t::cell_t;
+  // Create a map version for lookups below.
+  std::unordered_map<size_t, entry_info_t> shared_cells_map;
+  {
+  for(auto i: shared_cells) {
+    shared_cells_map[i.id] = i;
+  } // for
+  } // scope
 
+  // Form the vertex closure
+  auto vertex_closure = flecsi::topology::vertex_closure<2>(sd, closure);
 
-  //---------------------------------------------------------------------------
-  //! \brief the test setup function
-  //---------------------------------------------------------------------------
-  virtual void SetUp() {
+  // Assign vertex ownership
+  std::vector<std::set<size_t>> vertex_requests(size);
+  std::set<entry_info_t> vertex_info;
 
-    // reserve storage for the mesh
-    mesh_.init_parameters((height+1)*(width+1));
+  size_t offset(0);
+  for(auto i: vertex_closure) {
 
-    auto max_rank = (height+1)*(width+1) - 1;
+    // Get the set of cells that reference this vertex.
+    auto referencers = flecsi::topology::vertex_referencers<2>(sd, i);
 
-    // create the individual vertices
-    vector<vertex_t*> vs;
-    
-    for(size_t j = 0; j < height + 1; ++j){
-      for(size_t i = 0; i < width + 1; ++i){
-	auto v =
-	  mesh_.create_vertex({double(i)+ 0.1*pow(double(j),1.8), 1.5*double(j)});
-	vs.push_back(v);
+    size_t min_rank(std::numeric_limits<size_t>::max());
+    std::set<size_t> shared_vertices;
+
+    for(auto c: referencers) {
+
+      // If the referencing cell isn't in the remote info map
+      // it is a local cell.
+      if(remote_info_map.find(c) != remote_info_map.end()) {
+        min_rank = std::min(min_rank, remote_info_map[c].rank);
+        shared_vertices.insert(remote_info_map[c].rank);
       }
+      else {
+        min_rank = std::min(min_rank, size_t(rank));
 
+        // If the local cell is shared, we need to add all of
+        // the ranks that reference it.
+        if(shared_cells_map.find(c) != shared_cells_map.end()) {
+          shared_vertices.insert(shared_cells_map[c].shared.begin(),
+            shared_cells_map[c].shared.end());
+        } // if
+      } // if
+    } // for
+
+    if(min_rank == rank) {
+      // This is a vertex that belongs to our rank.
+      auto entry = entry_info_t(i, rank, offset, shared_vertices);
+      vertex_info.insert(entry_info_t(i, rank, offset++, shared_vertices));
     }
+    else {
+      // Add remote vertex to the request for offset information.
+      vertex_requests[min_rank].insert(i);
+    } // fi
+  } // for
 
-    // define each cell
-    size_t width1 = width + 1;
+  auto vertex_offset_info =
+    communicator->get_vertex_info(vertex_info, vertex_requests);
 
-    for(size_t j = 0; j < height; ++j){
-      for(size_t i = 0; i < width; ++i){
-	auto c = 
-	  mesh_.create_cell({vs[i + j * width1],
-		vs[i + 1 + j * width1],
-		vs[i + 1 + (j + 1) * width1],
-		vs[i + (j + 1) * width1]});
-      }
+  std::set<entry_info_t> exclusive_vertices;
+  std::set<entry_info_t> shared_vertices;
+  std::set<entry_info_t> ghost_vertices;
+
+  for(auto i: vertex_info) {
+    if(i.shared.size()) {
+      shared_vertices.insert(i);
     }
+    else {
+      exclusive_vertices.insert(i);
+    } // if
+  } // for
 
-    // now finalize the mesh setup
-    mesh_.init();
-  }
+  {
+  size_t r(0);
+  for(auto i: vertex_requests) {
 
-  //---------------------------------------------------------------------------
-  //! \brief the test teardown function 
-  //---------------------------------------------------------------------------
-  virtual void TearDown() { }
+    auto offset(vertex_offset_info[r].begin());
+    for(auto s: i) {
+      ghost_vertices.insert(entry_info_t(s, r, *offset));
+      ++offset;
+    } // for
 
+    ++r;
+  } // for
+  } // scope
 
-  //---------------------------------------------------------------------------
-  //! \brief run a final check on the results
-  //!
-  //! This function basically just dumps the output
-  //!  
-  //! \param[in] cell_part The new cell partitioning
-  //! \param[in] vert_part The new vertex partitioning
-  //---------------------------------------------------------------------------
+  {
+  clog_tag_guard(partition);
+  clog_container_one(info, "exclusive vertices ", exclusive_vertices,
+    clog::newline);
+  clog_container_one(info, "shared vertices ", shared_vertices, clog::newline);
+  clog_container_one(info, "ghost vertices ", ghost_vertices, clog::newline);
+  } // guard
 
-  template < typename index_t >
-  void check( const index_t * cell_part, const index_t * vert_part ) {
-
-    // check stuff on a cell basis
-    vector<index_t> cells_per_part( nparts_, 0 );
-
-    for ( auto c : mesh_.cells() ) {
-      CINCH_CAPTURE() << "----   cell: " << std::setw(4) << c.id() 
-                      << ", partition: " << std::setw(2) << cell_part[ c.id() ] 
-                      << endl;
-      for ( auto v : mesh_.vertices(c) ) {
-        CINCH_CAPTURE() << "++++ vertex: " << std::setw(4) << v.id() 
-                        << ", partition: " << std::setw(2) << vert_part[ v.id() ] 
-                        << endl;
-      }
-      cells_per_part[ cell_part[ c.id() ] ] ++;
-      CINCH_CAPTURE() << endl;
-    }
-    
-    
-    // check stuff on a node basis
-    vector<index_t> verts_per_part( nparts_, 0 );
-    
-    for ( auto v : mesh_.vertices() )
-      verts_per_part[ vert_part[ v.id() ] ] ++;
-    
-    // print partition info
-    for ( index_t i=0; i<nparts_; i++ ) {
-      CINCH_CAPTURE() << "partition: " << i+1 << endl;
-      CINCH_CAPTURE() << "++++ number of cells: " << cells_per_part[i] << endl;
-      CINCH_CAPTURE() << "++++ number of verts: " << verts_per_part[i] << endl;
-      CINCH_CAPTURE() << endl;
-    }
-    
-  }
-    
-  //---------------------------------------------------------------------------
-  //! \brief Determine the cell-cell adjacency information
-  //!  
-  //! \param[out] cell_idx   The cell-cell adjacency starting index for each cell
-  //! \param[out] cell_neigh The cell-cell adjacency information
-  //---------------------------------------------------------------------------
-  
-  template < typename index_t >
-  void create_cell_adjacency( vector<index_t> &cell_idx, vector<index_t> &cell_neigh ) {
-
-    index_t neigh_cnt( 0 );
-    cell_idx[0] = 0;
-    
 #if 1
-    
-    for ( auto c : mesh_.cells() ) {
-      for ( auto e : mesh_.edges(c) ) {
-        // get the cells on each side of the edge
-        auto neigh =  mesh_.cells(e).to_vec();
-        // make sure there are neighbors
-        if ( neigh.size() < 2 ) continue;
-        // figure out which neighbor to add
-        index_t neigh_id;
-        if ( neigh[1] == c ) 
-          neigh_id = neigh[0].id();
-        else if ( neigh[0] == c )
-          neigh_id = neigh[1].id();
-        else
-          FAIL();
-        // add the neighbor to the list
-        cell_neigh.push_back( neigh_id );
-        neigh_cnt++;
+  std::vector<std::pair<std::string, std::string>> colors = {
+    { "blue", "blue!40!white" },
+    { "green!60!black", "green!60!white" },
+    { "black", "black!40!white" },
+    { "red", "red!40!white" },
+    { "violet", "violet!40!white" }
+  };
+
+  std::stringstream texname;
+  texname << "simple2d-" << rank << "-" << M << "x" << N << ".tex";
+  std::ofstream tex(texname.str(), std::ofstream::out);
+
+  tex << "% Mesh visualization" << std::endl;
+  tex << "\\documentclass[tikz,border=7mm]{standalone}" << std::endl;
+  tex << std::endl;
+
+  tex << "\\begin{document}" << std::endl;
+  tex << std::endl;
+
+  tex << "\\begin{tikzpicture}" << std::endl;
+  tex << std::endl;
+
+  tex << "\\draw[step=1cm,black] (0, 0) grid (" <<
+    M << ", " << N << ");" << std::endl;
+
+  // maps
+  std::unordered_map<size_t, entry_info_t> exclusive_cells_map;
+  for(auto i: exclusive_cells) {
+    exclusive_cells_map[i.id] = i;
+  } // for
+
+#if 0
+  std::unordered_map<size_t, entry_info_t> shared_cells_map;
+  for(auto i: shared_cells) {
+    shared_cells_map[i.id] = i;
+  } // for
+#endif
+
+  std::unordered_map<size_t, entry_info_t> ghost_cells_map;
+  for(auto i: ghost_cells) {
+    ghost_cells_map[i.id] = i;
+  } // for
+
+  size_t cell(0);
+  for(size_t j(0); j<M; ++j) {
+    double yoff(0.5+j);
+    for(size_t i(0); i<M; ++i) {
+      double xoff(0.5+i);
+
+      // Cells
+      auto ecell = exclusive_cells_map.find(cell);
+      auto scell = shared_cells_map.find(cell);
+      auto gcell = ghost_cells_map.find(cell);
+
+      if(ecell != exclusive_cells_map.end()) {
+        tex << "\\node[" << std::get<0>(colors[rank]) <<
+          "] at (" << xoff << ", " << yoff <<
+          ") {" << cell++ << "};" << std::endl;
       }
-      // set the offset
-      cell_idx[ c.id() + 1 ] = neigh_cnt;
-    }
-    
-#else
-    
-    for ( auto c : mesh_.cells() ) {
-      cout << c.id();
-      for ( auto neigh : mesh_.cells(c) ) {
-        cout << " " << neigh.id();
-        cell_neigh.push_back( neigh.id() );
-        neigh_cnt++;
+      else if(scell != shared_cells_map.end()) {
+        tex << "\\node[" << std::get<1>(colors[rank]) <<
+          "] at (" << xoff << ", " << yoff <<
+          ") {" << cell++ << "};" << std::endl;
       }
-      cout << endl;
-      cell_idx[ c.id() + 1 ] = neigh_cnt;
-    }
-    
+      else if(gcell != ghost_cells_map.end()) {
+        tex << "\\node[" << std::get<1>(colors[gcell->second.rank]) <<
+          "] at (" << xoff << ", " << yoff <<
+          ") {" << cell++ << "};" << std::endl;
+      }
+      else {
+        tex << "\\node[white] at (" << xoff << ", " << yoff <<
+          ") {" << cell++ << "};" << std::endl;
+      } // if
+    } // for
+  } // for
+
+  std::unordered_map<size_t, entry_info_t> exclusive_vertices_map;
+  for(auto i: exclusive_vertices) {
+    exclusive_vertices_map[i.id] = i;
+  } // for
+
+  std::unordered_map<size_t, entry_info_t> shared_vertices_map;
+  for(auto i: shared_vertices) {
+    shared_vertices_map[i.id] = i;
+  } // for
+
+  std::unordered_map<size_t, entry_info_t> ghost_vertices_map;
+  for(auto i: ghost_vertices) {
+    ghost_vertices_map[i.id] = i;
+  } // for
+
+  size_t vertex(0);
+  for(size_t j(0); j<M+1; ++j) {
+    double yoff(j-0.15);
+    for(size_t i(0); i<N+1; ++i) {
+      double xoff(i-0.2);
+
+      auto evertex = exclusive_vertices_map.find(vertex);
+      auto svertex = shared_vertices_map.find(vertex);
+      auto gvertex = ghost_vertices_map.find(vertex);
+
+      if(evertex != exclusive_vertices_map.end()) {
+        tex << "\\node[" << std::get<0>(colors[rank]) <<
+          "] at (" << xoff << ", " << yoff <<
+          ") { \\scriptsize " << vertex++ << "};" << std::endl;
+      }
+      else if(svertex != shared_vertices_map.end()) {
+        tex << "\\node[" << std::get<1>(colors[rank]) <<
+          "] at (" << xoff << ", " << yoff <<
+          ") { \\scriptsize " << vertex++ << "};" << std::endl;
+      }
+      else if(gvertex != ghost_vertices_map.end()) {
+        tex << "\\node[" << std::get<1>(colors[gvertex->second.rank]) <<
+          "] at (" << xoff << ", " << yoff <<
+          ") { \\scriptsize " << vertex++ << "};" << std::endl;
+      }
+      else {
+        tex << "\\node[white] at (" << xoff << ", " << yoff <<
+          ") { \\scriptsize " << vertex++ << "};" << std::endl;
+      } // if
+    } // for
+  } // for
+
+  tex << "\\end{tikzpicture}" << std::endl;
+  tex << std::endl;
+
+  tex << "\\end{document}" << std::endl;
 #endif
 
-  }
-  
-  //---------------------------------------------------------------------------
-  //! \brief Partition the vertices based on the cell partitioning
-  //!  
-  //! \param[in]  cell_part  The cell partitioning
-  //! \param[out] vert_part  The vertex partitionion
-  //---------------------------------------------------------------------------
-  template < typename index_t >
-  void partition_vertices( const index_t * cell_part, index_t * vert_part ) {
-
-    for ( auto v : mesh_.vertices() ) {
-      auto cells = mesh_.cells(v);
-      index_t owner_id( (*cells.begin()).id() );
-      for ( auto c : cells ) 
-        owner_id = std::min( (index_t)c.id(), owner_id );
-      vert_part[ v.id() ] = cell_part[ owner_id ];
-    }
-
-  }
-
-  
-  //---------------------------------------------------------------------------
-  // Data members
-  //---------------------------------------------------------------------------
-
-  //! \brief the mesh object used for testing
-  mesh_t mesh_;
-
-  //! \brief number of vertices in width of domain
-  const size_t width = 10;
-  //! \brief number of vertices in height of domain
-  const size_t height = 20;
-
-  //! \brief The number of parts to partition the mesh.
-  const size_t nparts_ = 4;
-
-};
-
-
-#ifdef HAVE_METIS
-
-//=============================================================================
-//! \brief A simple partion test using metis mesh partitioning
-//!
-//! In this version, you give METIS an actual mesh, i.e., the vertex indices
-//! that comprise each cell, and METIS creates teh graph for you and partitions.
-//=============================================================================
-TEST_F(partition, metis_mesh) {
-
-  // get metis' index/real type ( metis has no namespace, so all
-  // defines provided by metis.h are in the default namespace.
-  using index_t = ::idx_t;
-
-  //---------------------------------------------------------------------------
-  // Extract the cell / vertex information
-  //---------------------------------------------------------------------------
-
-  // get the number of cells in the mesh
-  index_t num_cells = mesh_.num_cells();
-  index_t num_verts = mesh_.num_vertices();
-
-  // now count the total number of vertices in each cell
-  index_t tot_vert( 0 );
-  for (auto c : mesh_.cells()) 
-    tot_vert += mesh_.vertices(c).size();
-
-  // create storage for element info
-  vector<index_t> eptr( num_cells+1 );
-  vector<index_t> eind( tot_vert );
-
-  // now create the adjacency list
-  index_t vert_cnt( 0 );
-  eptr[0] = 0;
-  for ( auto c : mesh_.cells() ) {
-    for ( auto v : mesh_.vertices(c) ) {
-      eind[ vert_cnt++ ] = v.id();
-    }
-    eptr[ c.id() + 1 ] = vert_cnt;
-  }
-
-  //---------------------------------------------------------------------------
-  // Partition with Metis
-  //---------------------------------------------------------------------------
-
-  // prepare metis input / output
-  
-  index_t nparts = nparts_;  // The number of parts to partition the mesh.
-
-  index_t ncommon = 2; // Specifies the number of common nodes that
-                       // two elements must have in order to put an
-                       // edge between them in the dual graph
-
-  index_t objval;
-  vector<index_t> cell_part( num_cells );
-  vector<index_t> vert_part( num_verts );
-
-  CINCH_CAPTURE() << "Partitioning...";
-
-
-#if 1  
-  // subdivide based on the cells
-  auto ret =  METIS_PartMeshDual( &num_cells, 
-                                  &num_verts, 
-                                  eptr.data(), 
-                                  eind.data(), 
-                                  nullptr, 
-                                  nullptr,
-                                  &ncommon, 
-                                  &nparts, 
-                                  nullptr, 
-                                  nullptr, 
-                                  &objval,
-                                  cell_part.data(), 
-                                  vert_part.data() );
-
-#else
-  // subdivide based on the nodes
-  auto ret =  METIS_PartMeshNodal( &num_cells, 
-                                   &num_verts, 
-                                   eptr.data(), 
-                                   eind.data(), 
-                                   nullptr, 
-                                   nullptr,
-                                   &nparts, 
-                                   nullptr, 
-                                   nullptr, 
-                                   &objval,
-                                   cell_part.data(), 
-                                   vert_part.data() );
-#endif
-
-  ASSERT_EQ( ret, METIS_OK );
-
-  CINCH_CAPTURE() << "done." << endl;
-
-
-  //---------------------------------------------------------------------------
-  // Final Checks
-  //---------------------------------------------------------------------------
-
-  check( cell_part.data(), vert_part.data() );
-
-
-#if IDXTYPEWIDTH == 64
-  ASSERT_TRUE(CINCH_EQUAL_BLESSED("metis_mesh_int64.blessed"));
-#else
-  ASSERT_TRUE(CINCH_EQUAL_BLESSED("metis_mesh.blessed"));
-#endif
-    
-} // TEST_F
-
-
-
-//=============================================================================
-//! \brief A simple partion test using standard metis graph partitioning
-//!
-//! This version is more basic, and similar to SCOTCH.  You just give it the 
-//! graph of what you want to partition, and METIS partitions the graph vertices 
-//! for you.  So in this case, each vertex is a cell, and the graph is the 
-//! connectivity between cells (i.e., neighbors ).
-//=============================================================================
-TEST_F(partition, metis) {
-
-  // get metis' index/real type ( metis has no namespace, so all
-  // defines provided by metis.h are in the default namespace.
-  using index_t = ::idx_t;
-
-  //---------------------------------------------------------------------------
-  // Extract the cell / vertex information
-  //---------------------------------------------------------------------------
-
-  // get the number of cells in the mesh
-  index_t num_cells = mesh_.num_cells();
-  index_t num_verts = mesh_.num_vertices();
-
-  // create storage for element info
-  vector<index_t> cell_idx( num_cells+1 );
-  vector<index_t> cell_neigh;
-
-  // now create the adjacency list
-  create_cell_adjacency( cell_idx, cell_neigh );
-  index_t neigh_cnt = cell_neigh.size();
-
-  //---------------------------------------------------------------------------
-  // Partition with Metis
-  //---------------------------------------------------------------------------
-
-  // prepare metis input / output
-  
-  index_t nparts = nparts_;  // The number of parts to partition the mesh.
-
-  index_t ncon = 1; // The number of balancing constraints. It should
-                    // be at least 1.
-
-  index_t objval;
-  vector<index_t> cell_part( num_cells );
-
-  CINCH_CAPTURE() << "Partitioning...";
-
-
-  // subdivide based on the cells
-  auto ret =  METIS_PartGraphKway( &num_cells, 
-                                   &ncon, 
-                                   cell_idx.data(), 
-                                   cell_neigh.data(), 
-                                   nullptr, 
-                                   nullptr,
-                                   nullptr,
-                                   &nparts, 
-                                   nullptr, 
-                                   nullptr, 
-                                   nullptr,
-                                   &objval,
-                                   cell_part.data() );
-
-  ASSERT_EQ( ret, METIS_OK );
-
-  // decide on who owns the vertices
-  vector<index_t> vert_part( num_verts );
-  partition_vertices( cell_part.data(), vert_part.data() );
-
-  CINCH_CAPTURE() << "done." << endl;
-
-
-  //---------------------------------------------------------------------------
-  // Final Checks
-  //---------------------------------------------------------------------------
-
-  check( cell_part.data(), vert_part.data() );
-#if IDXTYPEWIDTH == 64
-  ASSERT_TRUE(CINCH_EQUAL_BLESSED("metis_int64.blessed"));
-#else
-  ASSERT_TRUE(CINCH_EQUAL_BLESSED("metis.blessed"));
-#endif
-    
-} // TEST_F
-
-
-#endif
-
-#ifdef HAVE_SCOTCH
-
-//=============================================================================
-//! \brief A simple partion test using scotch
-//=============================================================================
-TEST_F(partition, scotch) {
-
-
-
-  // get scotch' index/real type ( metis has no namespace, so all
-  // defines provided by scotch.h are in the default namespace.
-  using index_t = ::SCOTCH_Num;
-
-
-  //---------------------------------------------------------------------------
-  // create cell adjacency list
-  //---------------------------------------------------------------------------
-
-  // get the number of cells in the mesh
-  index_t num_cells = mesh_.num_cells();
-  index_t num_verts = mesh_.num_vertices();
-
-
-  // create storage for element info
-  vector<index_t> cell_idx( num_cells+1 );
-  vector<index_t> cell_neigh;
-
-  // now create the adjacency list
-  create_cell_adjacency( cell_idx, cell_neigh );
-  index_t neigh_cnt = cell_idx[ num_cells ];
-
-  //---------------------------------------------------------------------------
-  // Partition with Scotch
-  //---------------------------------------------------------------------------
-
-  index_t nparts = nparts_;  // The number of parts to partition the mesh.
-
-  // build a scotch graph
-  CINCH_CAPTURE() << "Partitioning...";
-
-  SCOTCH_Graph  graph_data;
-  SCOTCH_graphInit(&graph_data);
-
-  auto ret =
-    SCOTCH_graphBuild( &graph_data,
-                       0,                  /* baseval; 0 to n -1 numbering */
-                       num_cells,          /* vertnbr */
-                       cell_idx.data(),    /* verttab */
-                       NULL,               /* vendtab: verttab + 1 or NULL */
-                       NULL,               /* velotab: vertex weights */
-                       NULL,               /* vlbltab; vertex labels */
-                       neigh_cnt,          /* edgenbr */
-                       cell_neigh.data(),  /* edgetab */
-                       NULL );             /* edlotab */
-  
-  ASSERT_EQ( ret, 0 );
-
-  // check it
-  ret = SCOTCH_graphCheck(&graph_data);
-  ASSERT_EQ( ret, 0 );
-  
-  // now partition
-
-  vector<index_t> cell_part( num_cells );
-
-  SCOTCH_Strat  strat_data;
-  SCOTCH_stratInit(&strat_data);
-
-  ret = SCOTCH_graphPart(&graph_data, nparts, &strat_data, cell_part.data());
-  ASSERT_EQ( ret, 0 );
-
-  // clean up
-  SCOTCH_stratExit(&strat_data);
-  SCOTCH_graphExit(&graph_data);
-
-
-  // decide on who owns the vertices
-  vector<index_t> vert_part( num_verts );
-  partition_vertices( cell_part.data(), vert_part.data() );
-
-  CINCH_CAPTURE() << "done." << endl;
-
-
-  //---------------------------------------------------------------------------
-  // Final Checks
-  //---------------------------------------------------------------------------
-
-  check( cell_part.data(), vert_part.data() );
-  
-
-#ifdef HAVE_SCOTCH_V5
-  ASSERT_TRUE(CINCH_EQUAL_BLESSED("scotch_v5.blessed"));
-#else 
-  ASSERT_TRUE(CINCH_EQUAL_BLESSED("scotch.blessed"));
-#endif
-  
-    
-} // TEST_F
-
-#endif
-
-
-
-
-/*----------------------------------------------------------------------------*
- * Cinch test Macros
- *
- *  ==== I/O ====
- *  CINCH_CAPTURE()              : Insertion stream for capturing output.
- *                                 Captured output can be written or
- *                                 compared using the macros below.
- *
- *    EXAMPLE:
- *      CINCH_CAPTURE() << "My value equals: " << myvalue << std::endl;
- *
- *  CINCH_COMPARE_BLESSED(file); : Compare captured output with
- *                                 contents of a blessed file.
- *
- *  CINCH_WRITE(file);           : Write captured output to file.
- *
- * Google Test Macros
- *
- * Basic Assertions:
- *
- *  ==== Fatal ====             ==== Non-Fatal ====
- *  ASSERT_TRUE(condition);     EXPECT_TRUE(condition)
- *  ASSERT_FALSE(condition);    EXPECT_FALSE(condition)
- *
- * Binary Comparison:
- *
- *  ==== Fatal ====             ==== Non-Fatal ====
- *  ASSERT_EQ(val1, val2);      EXPECT_EQ(val1, val2)
- *  ASSERT_NE(val1, val2);      EXPECT_NE(val1, val2)
- *  ASSERT_LT(val1, val2);      EXPECT_LT(val1, val2)
- *  ASSERT_LE(val1, val2);      EXPECT_LE(val1, val2)
- *  ASSERT_GT(val1, val2);      EXPECT_GT(val1, val2)
- *  ASSERT_GE(val1, val2);      EXPECT_GE(val1, val2)
- *
- * String Comparison:
- *
- *  ==== Fatal ====                     ==== Non-Fatal ====
- *  ASSERT_STREQ(expected, actual);     EXPECT_STREQ(expected, actual)
- *  ASSERT_STRNE(expected, actual);     EXPECT_STRNE(expected, actual)
- *  ASSERT_STRCASEEQ(expected, actual); EXPECT_STRCASEEQ(expected, actual)
- *  ASSERT_STRCASENE(expected, actual); EXPECT_STRCASENE(expected, actual)
- *----------------------------------------------------------------------------*/
+// We will need to discuss how to expose customization to user
+// specializations. The particular configuration of ParMETIS is
+// likley to need tweaks. There are also likely other closure
+// definitions than the one that was chosen here.
+
+// So far, I am happy that this is relatively concise.
+} // TEST
 
 /*~------------------------------------------------------------------------~--*
  * Formatting options

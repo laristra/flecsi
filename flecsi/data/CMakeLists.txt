@@ -19,24 +19,10 @@ set(data_HEADERS
 	data.h
 	data_handle.h
 	default_user_meta_data.h
-	legion/dense.h
-	legion/global.h
-	legion/meta_data.h
-	legion/scoped.h
-	legion/sparse.h
-	legion/storage_policy.h
-	legion/tuple.h
 	old_data.h
 	old/default_meta_data.h
 	old/default_storage_policy.h
 	permissions.h
-	serial/dense.h
-	serial/global.h
-	serial/meta_data.h
-	serial/scoped.h
-	serial/sparse.h
-	serial/storage_policy.h
-	serial/tuple.h
 	storage.h
 	storage_type.h
   PARENT_SCOPE
@@ -47,16 +33,57 @@ set(data_SOURCES
   PARENT_SCOPE
 )
 
+if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
+
+  set(data_HEADERS
+    ${data_HEADERS}
+    serial/dense.h
+    serial/global.h
+    serial/meta_data.h
+    serial/scoped.h
+    serial/sparse.h
+    serial/storage_policy.h
+    serial/tuple.h
+    PARENT_SCOPE
+  )
+
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+
+  set(data_HEADERS
+    ${data_HEADERS}
+    legion/dense.h
+    legion/global.h
+    legion/meta_data.h
+    legion/scoped.h
+    legion/sparse.h
+    legion/storage_policy.h
+    legion/tuple.h
+    PARENT_SCOPE
+  )
+
+endif()
+
+#------------------------------------------------------------------------------#
+# Unit tests.
+#------------------------------------------------------------------------------#
+
 cinch_add_unit(data
-  SOURCES test/data.cc)
+  SOURCES test/data.cc
+)
 
 cinch_add_unit(data_client
   SOURCES test/data_client.cc
-  LIBRARIES flecsi)
+  LIBRARIES
+    flecsi
+    ${CINCH_RUNTIME_LIBRARIES}
+)
 
 cinch_add_unit(storage_type
   SOURCES test/storage_type.cc
-  LIBRARIES flecsi)
+  LIBRARIES
+    flecsi
+    ${CINCH_RUNTIME_LIBRARIES}
+)
 
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.

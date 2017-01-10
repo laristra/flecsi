@@ -55,7 +55,7 @@ using domain_ = typeify<size_t, M>;
  * Simple types
  *----------------------------------------------------------------------------*/
 
-using id_vector_t = std::vector<id_t>;
+using id_vector_t = std::vector<utils::id_t>;
 using connection_vector_t = std::vector<id_vector_t>;
 
 // hash use for mapping in building topology connectivity
@@ -63,7 +63,7 @@ struct id_vector_hash_t {
   size_t operator()(const id_vector_t & v) const
   {
     size_t h = 0;
-    for (id_t id : v) {
+    for (utils::id_t id : v) {
       h |= id.local_id();
     } // for
 
@@ -73,7 +73,8 @@ struct id_vector_hash_t {
 }; // struct id_vector_hash_t
 
 // used when building the topology connectivities
-using id_vector_map_t = std::unordered_map<id_vector_t, id_t, id_vector_hash_t>;
+using id_vector_map_t = 
+  std::unordered_map<id_vector_t, utils::id_t, id_vector_hash_t>;
 
 // the second topology vector holds the offsets into to from dimension
 using index_vector_t = std::vector<size_t>;
@@ -94,7 +95,7 @@ class mesh_topology_base_t;
 
 class mesh_entity_base_{
 public:
-  using id_t = flecsi::id_t;
+  using id_t = flecsi::utils::id_t;
 };
 
 template <size_t N>
@@ -344,6 +345,8 @@ class entity_group
 class connectivity_t
 {
  public:
+  
+  using id_t = flecsi::utils::id_t;
 
   connectivity_t(const connectivity_t&) = delete;
 
@@ -431,7 +434,7 @@ class connectivity_t
     from_index_vec_[n] = size;
 
     index_space_.resize_(size);
-    index_space_.fill_(flecsi::id_t(0));
+    index_space_.fill_(id_t(0));
   } // resize
 
   /*!
@@ -638,6 +641,8 @@ template<size_t D>
 class domain_connectivity{
 public:
 
+  using id_t = flecsi::utils::id_t;
+
   void init_(size_t from_domain, size_t to_domain){
     from_domain_ = from_domain;
     to_domain_ = to_domain;
@@ -774,6 +779,8 @@ class mesh_topology_base_t : public data::data_client_t
 {
 public:
 
+  using id_t = utils::id_t;
+
   // Default constructor
   mesh_topology_base_t() = default;
 
@@ -857,6 +864,8 @@ void unserialize_dimension_(mesh_topology_base_t& mesh,
   uint64_t num_entities;
   std::memcpy(&num_entities, buf + pos, sizeof(num_entities));
   pos += sizeof(num_entities);
+  
+  using id_t = utils::id_t;
 
   std::vector<mesh_entity_base_*> ents;
   std::vector<id_t> ids;
