@@ -100,37 +100,36 @@ endif()
 # Unit tests.
 #------------------------------------------------------------------------------#
 
+cinch_add_unit(task
+  SOURCES
+    test/task.cc
+    test/task_driver.h
+    ${RUNTIME_DRIVER}
+  DEFINES
+    FLECSI_DRIVER=flecsi/execution/test/task_driver.h
+    TEST_INIT=flecsi/execution/test/task_init.h
+  POLICY
+    ${UNIT_POLICY}
+  LIBRARIES
+    flecsi
+    ${CINCH_RUNTIME_LIBRARIES}
+)
+
+cinch_add_unit(simple_function
+  SOURCES
+    test/function.cc
+    test/simple_function.h
+    ${RUNTIME_DRIVER}
+  DEFINES
+    FLECSI_DRIVER=flecsi/execution/test/simple_function.h
+  POLICY
+    ${UNIT_POLICY}
+  LIBRARIES
+    flecsi
+    ${CINCH_RUNTIME_LIBRARIES}
+)
+
 if(NOT DEFINED ENV{TRAVIS})
-
-  cinch_add_unit(task
-    SOURCES
-      test/task.cc
-      test/task_driver.h
-      ${RUNTIME_DRIVER}
-    DEFINES
-      FLECSI_DRIVER=flecsi/execution/test/task_driver.h
-      TEST_INIT=flecsi/execution/test/task_init.h
-    POLICY
-      ${UNIT_POLICY}
-    LIBRARIES
-      flecsi
-      ${CINCH_RUNTIME_LIBRARIES}
-  )
-  
-  cinch_add_unit(simple_function
-    SOURCES
-      test/function.cc
-      test/simple_function.h
-      ${RUNTIME_DRIVER}
-    DEFINES
-      FLECSI_DRIVER=flecsi/execution/test/simple_function.h
-    POLICY
-      ${UNIT_POLICY}
-    LIBRARIES
-      flecsi
-      ${CINCH_RUNTIME_LIBRARIES}
-  )
-
 
   if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
