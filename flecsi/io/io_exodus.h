@@ -23,8 +23,9 @@
  * \date Initial file creation: Oct 07, 2015
  */
 
-namespace flecsi
-{
+namespace flecsi {
+namespace io {
+
 /*!
   \class io_exodus_t io_exodus.h
   \brief io_exodus_t provides a derived type of io_base.h and registrations
@@ -75,6 +76,7 @@ io_base_t<mesh_t> * create_io_exodus()
   return new io_exodus_t<mesh_t>;
 } // create_io_exodus
 
+} // namespace io
 } // namespace flecsi
 
 #endif // flecsi_io_exodus_h

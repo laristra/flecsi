@@ -1,5 +1,5 @@
 ![logo](doc/flecsi.png)
-[![Build Status](https://travis-ci.org/losalamos/flecsi.svg?branch=master)](https://travis-ci.org/losalamos/flecsi)
+[![Build Status](https://travis-ci.org/laristra/flecsi.svg?branch=master)](https://travis-ci.org/laristra/flecsi)
 
 # FleCSI Project
 
@@ -33,11 +33,11 @@ option for many application projects.
 
 FleCSI uses git submodules, so it must be checked out recursively:
 
-    % git clone --recursive git@github.com:losalamos/flecsi.git
+    % git clone --recursive git@github.com:laristra/flecsi.git
 
 https:  
 
-    % git clone --recursive https://github.com/losalamos/flecsi.git
+    % git clone --recursive https://github.com/laristra/flecsi.git
 
 # Requirements
 
@@ -47,9 +47,8 @@ Currently, this equates to G++ 5.0 or greater.
 * CMake >= 3.0
 * GCC >= 6.1.1
 * Doxygen >= 1.8
-* cinch-utils 1.0
-
-cinch-utils is available [here](https://github.com/losalamos/cinch-utils).
+* [Cereal](https://github.com/USCiLab/cereal) >= 1.2.1
+* [cinch-utils](https://github.com/laristra/cinch-utils) >= 1.0
 
 ## Legion
 
@@ -63,7 +62,7 @@ To begin, you will need to build the third-party library dependencies:
     
 or build them yourself:
 
-    % git clone git@github.com:losalamos/flecsi-third-party.git
+    % git clone git@github.com:laristra/flecsi-third-party.git
     % cd flecsi-third-party
     % mkdir build
     % cd build
@@ -136,4 +135,4 @@ Additionally, redistribution and use in source and binary forms, with or without
 
 THIS SOFTWARE IS PROVIDED BY LOS ALAMOS NATIONAL SECURITY, LLC AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL LOS ALAMOS NATIONAL SECURITY, LLC OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-<!-- vim: set tabstop=4 shiftwidth=4 expandtab : -->
+<!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->

@@ -11,8 +11,8 @@
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
-#ifndef _MPI_MAPPERS_H_
-#define _MPI_MAPPERS_H_
+#ifndef flecsi_execution_mpilegion_mapper_h
+#define flecsi_execution_mpilegion_mapper_h
 
 #include <legion.h>
 #include "task_ids.h"
@@ -129,11 +129,19 @@ MPIMapper : public Legion::Mapping::DefaultMapper
   )
   {
   	using legion_proc=LegionRuntime::HighLevel::Processor;
+    size_t connect_mpi_task_id = task_ids_t::instance().connect_mpi_task_id;
+    size_t handoff_to_mpi_task_id =
+        task_ids_t::instance().handoff_to_mpi_task_id;
+    size_t wait_on_mpi_task_id = task_ids_t::instance().wait_on_mpi_task_id;
+    size_t update_mappers_task_id =
+        task_ids_t::instance().update_mappers_task_id;
 
-//TOFIX
-/*
+
  		// tag-based decisions here
-  	if((task.tag & MAPPER_FORCE_RANK_MATCH) != 0) {
+  	if(task.task_id == connect_mpi_task_id||
+      task.task_id == handoff_to_mpi_task_id||
+      task.task_id == wait_on_mpi_task_id ||
+      (task.tag & MAPPER_FORCE_RANK_MATCH) != 0) {
     	// expect a 1-D index domain
     	assert(input.domain.get_dim() == 1);
     	Rect<1> r = input.domain.get_rect<1>();
@@ -141,21 +149,26 @@ MPIMapper : public Legion::Mapping::DefaultMapper
     	// each point in the domain goes to CPUs assigned to that rank
     	output.slices.resize(r.volume());
     	size_t idx = 0;
+     
+			using legion_machine=LegionRuntime::HighLevel::Machine;
+      using legion_proc=LegionRuntime::HighLevel::Processor;
+
+      // get list of all processors and make sure the count matches
+      legion_machine::ProcessorQuery pq =
+        legion_machine::ProcessorQuery(machine).only_kind(
+                            legion_proc::LOC_PROC);
+      std::vector<legion_proc> all_procs(pq.begin(), pq.end());
+      assert((r.lo[0] == 0) && (r.hi[0] == (int)(all_procs.size() - 1)));
+
     	for(GenericPointInRectIterator<1> pir(r); pir; ++pir, ++idx) {
       	output.slices[idx].domain =
 						 Legion::Domain::from_rect<1>(Rect<1>(pir.p, pir.p));
-      	if(task.target_proc.kind() == legion_proc::TOC_PROC) {
-        	assert(rank_gpus.count(pir.p) > 0);
-          output.slices[idx].proc = rank_gpus[pir.p][0];
-      	} else {
-        	assert(rank_cpus.count(pir.p) > 0);
-        	output.slices[idx].proc = rank_cpus[pir.p][0];
-      	}//end if task.target_proc.kind
+        	output.slices[idx].proc = all_procs[idx];
    	  }//end for
     	return;
 		}//endi if MAPPER_FORCE_RANK_MATCH
 
-  	if((task.tag & MAPPER_SUBRANK_LAUNCH) != 0) {
+/*  	if((task.tag & MAPPER_SUBRANK_LAUNCH) != 0) {
     	// expect a 1-D index domain
     	assert(input.domain.get_dim() == 1);
 
@@ -166,21 +179,9 @@ MPIMapper : public Legion::Mapping::DefaultMapper
     	return;
   	} //end if MAPPER_SUBRANK_LAUNCH
 */
-  	size_t connect_mpi_task_id  = task_ids_t::instance().connect_mpi_task_id;
-  	size_t handoff_to_mpi_task_id = 
-    		task_ids_t::instance().handoff_to_mpi_task_id;
-  	size_t wait_on_mpi_task_id  = task_ids_t::instance().wait_on_mpi_task_id;
-  	size_t init_cell_partitions_task_id =
-        task_ids_t::instance().init_cell_partitions_task_id;
- 		size_t update_mappers_task_id =
-				task_ids_t::instance().update_mappers_task_id;
 
   	// task-specific cases below
-  	if (task.task_id == connect_mpi_task_id||
-      task.task_id == handoff_to_mpi_task_id||
-      task.task_id == wait_on_mpi_task_id ||
-      task.task_id == init_cell_partitions_task_id ||
-      ((task.tag & MAPPER_ALL_PROC) != 0))
+      if((task.tag & MAPPER_ALL_PROC) != 0)
 		{
     	// expect a 2-D index domain - first component is the processor index,
     	//  and second is the MPI rank
@@ -286,7 +287,7 @@ mapper_registration(
 }//namespace flecsi
 
 
-#endif
+#endif //flecsi_execution_mpilegion_maper_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

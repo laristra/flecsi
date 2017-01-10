@@ -219,6 +219,7 @@ struct serial_execution_policy_t
     task_hash_key_t key
   )
   {
+    return false;
   } // register_task
 
   ///
@@ -271,11 +272,11 @@ struct serial_execution_policy_t
   static
   bool
   register_function(
-    const const_string_t & key,
+    const utils::const_string_t & key,
     std::function<R(A)> & user_function
   )
   {
-    context_t::instance().register_function(key, user_function);
+    return context_t::instance().register_function(key, user_function);
   } // register_function
 
   ///

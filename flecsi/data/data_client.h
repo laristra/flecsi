@@ -8,26 +8,25 @@
 
 #include "flecsi/utils/common.h"
 #include "flecsi/data/data_constants.h"
-
+  
 ///
-// \file data_client.h
-// \authors bergen
-// \date Initial file creation: Mar 23, 2016
+/// \file
+/// \date Initial file creation: Mar 23, 2016
 ///
 
 namespace flecsi {
 namespace data {
 
 ///
-// \class data_client_t data_client.h
-// \brief data_client_t provides...
+/// \class data_client_t data_client.h
+/// \brief data_client_t provides...
 ///
 class data_client_t
 {
 public:
 
   /// Default constructor
-  data_client_t() : id_(unique_id_t<size_t>::instance().next()) {}
+  data_client_t() : id_(utils::unique_id_t<size_t>::instance().next()) {}
 
   /// Copy constructor (disabled)
   data_client_t(const data_client_t &) = delete;
@@ -35,20 +34,21 @@ public:
   /// Assignment operator (disabled)
   data_client_t & operator = (const data_client_t &) = delete;
 
-  /// Allow move operations
-  data_client_t(data_client_t && o) = default;
-  data_client_t & operator=(data_client_t && o) = default;
+  /// Allow move construction
+  data_client_t(data_client_t && o);
+
+  /// Allow move construction
+  data_client_t & operator=(data_client_t && o);
 
   /// Destructor
-  virtual ~data_client_t() {}
+  virtual ~data_client_t();
 
   ///
-  // Return a unique runtime identifier for namespace access to the
-  // data manager.
+  /// Return a unique runtime identifier for namespace access to the
+  /// data manager.
   ///
   uintptr_t
-  runtime_id(
-  ) const
+  runtime_id() const
   {
     return (reinterpret_cast<uintptr_t>(this) << 4) ^ id_;
   } // runtime_id
@@ -61,7 +61,7 @@ public:
   size_t
   indices(
     size_t index_space
-  )
+  ) const
   {
     return 0;
   } // indices

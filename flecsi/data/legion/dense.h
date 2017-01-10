@@ -66,7 +66,7 @@ struct dense_accessor_t
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using iterator_t = index_space_t::iterator_t;
+  using iterator_t = utils:index_space_t::iterator_t;
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
@@ -79,7 +79,7 @@ struct dense_accessor_t
   ///
   // Constructor.
   //
-  // \param label The c_str() version of the const_string_t used for
+  // \param label The c_str() version of the utils:const_string_t used for
   //              this data variable's hash.
   // \param size The size of the associated index space.
   // \param data A pointer to the raw data.
@@ -238,7 +238,7 @@ private:
   size_t size_ = 0;
   T * data_ = nullptr;
   const user_meta_data_t & meta_data_ = {};
-  index_space_t is_;
+  utils:index_space_t is_;
 
 }; // struct dense_accessor_t
 
@@ -303,9 +303,9 @@ struct storage_type_t<dense, DS, MD>
   static
   handle_t<T>
   register_data(
-    data_client_t & data_client,
+    const data_client_t & data_client,
     data_store_t & data_store,
-    const const_string_t & key,
+    const utils:const_string_t & key,
     size_t versions,
     size_t index_space,
     Args && ... args
@@ -328,9 +328,9 @@ struct storage_type_t<dense, DS, MD>
   static
   accessor_t<T>
   get_accessor(
-    data_client_t & data_client,
+    const data_client_t & data_client,
     data_store_t & data_store,
-    const const_string_t & key,
+    const utils:const_string_t & key,
     size_t version
   )
   {
@@ -348,7 +348,7 @@ struct storage_type_t<dense, DS, MD>
   static
   std::vector<accessor_t<T>>
   get_accessors(
-    data_client_t & data_client,
+    const data_client_t & data_client,
     P && preficate
   )
   {
@@ -369,9 +369,9 @@ struct storage_type_t<dense, DS, MD>
   static
   handle_t<T>
   get_handle(
-    data_client_t & data_client,
+    const data_client_t & data_client,
     data_store_t & data_store,
-    const const_string_t & key,
+    const utils:const_string_t & key,
     size_t version
   )
   {

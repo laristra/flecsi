@@ -7,16 +7,15 @@
 #define flecsi_data_permissions_h
 
 ///
-// \file permissions.h
-// \authors bergen
-// \date Initial file creation: Sep 07, 2016
+/// \file
+/// \date Initial file creation: Sep 07, 2016
 ///
 
 namespace flecsi {
 namespace data {
 
 ///
-// \enum permissions_t
+/// \enum permissions_t
 ///
 enum permissions_t : size_t
 {

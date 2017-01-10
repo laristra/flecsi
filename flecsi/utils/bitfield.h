@@ -12,12 +12,11 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_bitfield_h
-#define flecsi_bitfield_h
+#ifndef flecsi_utils_bitfield_h
+#define flecsi_utils_bitfield_h
 
 /*!
- * \file bitfield.h
- * \authors bergen
+ * \file 
  * \date Initial file creation: Oct 05, 2015
  */
 
@@ -26,8 +25,9 @@
 #include <cstdint>
 #include <climits>
 
-namespace flecsi
-{
+namespace flecsi {
+namespace utils {
+  
 /*!
   \class bitfield__ bitfield.h
   \brief bitfield__ provides...
@@ -138,9 +138,10 @@ class bitfield__
 
 using bitfield_t = bitfield__<uint32_t>;
 
+} // namespace utils
 } // namespace flecsi
 
-#endif // flecsi_bitfield_h
+#endif // flecsi_utils_bitfield_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

@@ -30,6 +30,8 @@ public:
 
 class Cell : public mesh_entity_t<2, 2>{
 public:
+  using id_t = flecsi::utils::id_t;
+
   Cell(){}
 
   Cell(mesh_topology_base_t &){}
@@ -37,8 +39,8 @@ public:
   void set_precedence(size_t dim, uint64_t precedence) {}
 
   std::vector<size_t>
-  create_entities(flecsi::id_t cell_id, size_t dim, domain_connectivity<2> & c, flecsi::id_t * e){
-    flecsi::id_t* v = c.get_entities(cell_id, 0);
+  create_entities(id_t cell_id, size_t dim, domain_connectivity<2> & c, id_t * e){
+    id_t* v = c.get_entities(cell_id, 0);
 
     e[0] = v[0];
     e[1] = v[2];
@@ -59,13 +61,13 @@ public:
   create_bound_entities(size_t from_domain,
                         size_t to_domain,
                         size_t create_dim,
-                        flecsi::id_t cell_id,
+                        id_t cell_id,
                         domain_connectivity<2>& primal_conn,
                         domain_connectivity<2>& domain_conn, 
-                        flecsi::id_t *c) {
+                        id_t *c) {
     
-    flecsi::id_t* v = primal_conn.get_entities(cell_id, 0);
-    flecsi::id_t* e = primal_conn.get_entities(cell_id, 1);
+    id_t* v = primal_conn.get_entities(cell_id, 0);
+    id_t* e = primal_conn.get_entities(cell_id, 1);
 
     switch(create_dim) {
       case 0:
@@ -101,6 +103,8 @@ public:
 
         return {2, 2, 2, 2};
     }
+
+    return index_vector_t();
   }
 };
 
@@ -223,7 +227,7 @@ TEST(mesh_topology, traversal) {
   mesh->init<0>();
   mesh->init_bindings<1>();
 
-  mesh->dump();
+  //mesh->dump();
 
   for(auto cell : mesh->entities<2>()) {
     CINCH_CAPTURE() << "------- cell id: " << cell.id() << endl;

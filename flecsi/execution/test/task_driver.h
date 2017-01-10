@@ -46,7 +46,7 @@ enum class privileges : size_t {
 
 struct mesh_t : public data::data_client_t {
 
-  size_t indices(size_t index_space_id) override {
+  size_t indices(size_t index_space_id) const override {
 
     switch(index_space_id) {
       case cells:
@@ -77,7 +77,7 @@ double task1(double dval, int ival) {
   return dval;
 } // task1
 
-//#if defined(FLECSI_RUNTIME_MODEL_mpilegion)
+//#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
 //  register_task(task1, mpi, index, void, double, int);
 //#else
   register_task(task1, loc, single);
@@ -187,7 +187,7 @@ void driver(int argc, char ** argv) {
   auto p = register_data(m, hydro, pressure, double, dense, 1, cells);
   double alpha(10.0);
 
-//#if defined(FLECSI_RUNTIME_MODEL_mpilegion)
+//#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
 //  execute_task(task1, mpi, index, alpha, 5);
 //#else
 

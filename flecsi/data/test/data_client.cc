@@ -8,6 +8,8 @@
 #include <unordered_map>
 
 #include "flecsi/data/data_client.h"
+#include "flecsi/data/data.h"
+
 
 using namespace flecsi::data;
 
@@ -36,6 +38,74 @@ TEST(data_client, sanity) {
   } // for
 
 } // TEST
+
+
+//! \brief Tests the data_client's destructor
+TEST(data_client, destructor) {
+
+  // create a new data_client
+  auto dc = new data_client_t;
+
+  // Register data
+  register_data(*dc, hydro, pressure, double, global, 1);
+  register_data(*dc, hydro, density, double, global, 1);
+
+  // get all accessors to the data
+  auto accs = get_accessors(*dc, hydro, double, global, 0);
+  
+  ASSERT_EQ( accs.size(), 2 );
+  ASSERT_EQ( accs[0].label(), "density" );
+  ASSERT_EQ( accs[1].label(), "pressure" );
+
+  // store the runtime id
+  auto rid = dc->runtime_id();
+
+  // delete the data_client
+  delete dc;
+
+  // make sure the data is gone
+  ASSERT_EQ( flecsi::data::storage_t::instance().count(rid), 0 );
+
+} // TEST
+
+//! \brief Tests the data_client's move operator
+TEST(data_client, move) {
+
+  // create new data_clients
+  data_client_t dc1, dc2;
+  auto rid1 = dc1.runtime_id();
+
+  // Register data
+  register_data(dc1, hydro, pressure, double, global, 1);
+  register_data(dc1, hydro, density, double, global, 1);
+
+  // get all accessors to the data
+  {
+    auto accs = get_accessors(dc1, hydro, double, global, 0);
+  
+    ASSERT_EQ( accs.size(), 2 );
+    ASSERT_EQ( accs[0].label(), "density" );
+    ASSERT_EQ( accs[1].label(), "pressure" );
+  } // scope
+
+  // create a new data client
+  dc2 = std::move(dc1);
+  auto rid2 = dc1.runtime_id();
+
+  // make sure the data is gone from data client 1
+  ASSERT_EQ( flecsi::data::storage_t::instance().count(rid1), 0 );
+
+  // it should show up in the new data client though
+  {
+    auto accs = get_accessors(dc2, hydro, double, global, 0);
+  
+    ASSERT_EQ( accs.size(), 2 );
+    ASSERT_EQ( accs[0].label(), "density" );
+    ASSERT_EQ( accs[1].label(), "pressure" );
+  } // scope
+
+} // TEST
+
 
 /*----------------------------------------------------------------------------*
  * Cinch test Macros

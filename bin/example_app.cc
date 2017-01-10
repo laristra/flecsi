@@ -3,8 +3,9 @@
  * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
 
-#if defined(FLECSI_RUNTIME_MODEL_mpilegion) || \
-  defined(FLECSI_RUNTIME_MODEL_mpi)
+#include <flecsi.h>
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion || \
+  FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
   #include <mpi.h>
 #endif
 
@@ -18,16 +19,16 @@
 
 int main(int argc, char ** argv) {
 
-#if defined(FLECSI_RUNTIME_MODEL_mpilegion) || \
-  defined(FLECSI_RUNTIME_MODEL_mpi)
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion || \
+  FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
   MPI_Init(&argc, &argv);
 #endif
 
   // Call FleCSI runtime initialization
   auto retval = flecsi::execution::context_t::instance().initialize(argc, argv);
 
-#if defined(FLECSI_RUNTIME_MODEL_mpilegion) || \
-  defined(FLECSI_RUNTIME_MODEL_mpi)
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion || \
+  FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
   MPI_Finalize();
 #endif
 

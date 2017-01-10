@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_dimensioned_array_h
-#define flecsi_dimensioned_array_h
+#ifndef flecsi_utils_dimensioned_array_h
+#define flecsi_utils_dimensioned_array_h
 
 #include <array>
 #include <cmath>
@@ -39,8 +39,9 @@ using areTypeT = and_<std::is_same<Ts, Target>...>;
  * \date Initial file creation: Sep 23, 2015
  */
 
-namespace flecsi
-{
+namespace flecsi {
+namespace utils {
+
 enum class axis : size_t { x = 0, y = 1, z = 2 };
 
 /*!
@@ -82,12 +83,15 @@ class dimensioned_array
 
   //! \brief Constructor with initializer list
   //! \param[in] list the initializer list of values
-  template <typename... Args,
-      typename = typename std::enable_if<sizeof...(Args) == D &&
+  template<
+    typename... Args,
+    typename = typename std::enable_if<sizeof...(Args) == D &&
           areTypeT<T, Args...>::value>::type>
-  dimensioned_array(Args... args)
+  dimensioned_array(
+    Args ... args
+  )
   {
-    data_ = {args...};
+    data_ = { args ...};
   }
 
   //! \brief Constructor with one value.
@@ -291,9 +295,10 @@ std::ostream & operator<<(
   return os;
 }
 
+} // namespace utils
 } // namespace flecsi
 
-#endif // flecsi_dimensioned_array_h
+#endif // flecsi_utils_dimensioned_array_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

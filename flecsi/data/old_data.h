@@ -132,7 +132,7 @@ public:
 
   template<typename T, size_t NS, typename ... Args>
   decltype(auto) register_data(uintptr_t runtime_namespace,
-    const const_string_t & key, Args && ... args) {
+    const utils::const_string_t & key, Args && ... args) {
 //      return sp_t::register_data(data_store_, runtime_namespace, key,
 //        std::forward<Args>(args)...);
   } // register_data
@@ -167,9 +167,11 @@ public:
    */
   template <typename T, size_t NS = 0, typename... Args>
   decltype(auto) register_state(
-      const const_string_t & key, size_t indices, uintptr_t runtime_namespace,
-      Args &&... args)
-  {
+    const utils::const_string_t & key, 
+    size_t indices, 
+    uintptr_t runtime_namespace,
+    Args &&... args
+  ) {
     return sp_t::template register_state<T, NS>(
         key, indices, runtime_namespace, std::forward<Args>(args)...);
   } // register_state
@@ -185,7 +187,7 @@ public:
     typename... Args
   >
   decltype(auto) register_data(uintptr_t runtime_namespace,
-    const const_string_t & key, Args &&... args)
+    const utils::const_string_t & key, Args &&... args)
   {
     return sp_t::template register_state<DT, T, NS>(runtime_namespace,
       key, std::forward<Args>(args)...);
@@ -197,7 +199,7 @@ public:
     size_t NS = 0
   >
   decltype(auto) access_data(uintptr_t runtime_namespace,
-    const const_string_t & key)
+    const utils::const_string_t & key)
   {
     return sp_t::template access_data<DT, T, NS>(runtime_namespace, key);
   } // access_data
@@ -206,7 +208,7 @@ public:
     size_t NS = 0
   >
   user_meta_data_t & meta_data(uintptr_t runtime_namespace,
-    const const_string_t & key)
+    const utils::const_string_t & key)
   {
     return sp_t::template meta_data<NS>(runtime_namespace, key);
   } // user_meta_data
@@ -234,7 +236,7 @@ public:
    */
 
   template <typename T, size_t NS = 0>
-  dense_accessor_t<T> dense_accessor(const const_string_t & key,
+  dense_accessor_t<T> dense_accessor(const utils::const_string_t & key,
     uintptr_t runtime_namespace = 0)
   {
     return sp_t::template dense_accessor<T, NS>(key, runtime_namespace);
@@ -358,7 +360,7 @@ public:
    */
   template <typename T, size_t NS = 0, typename... Args>
   decltype(auto) register_global_state(
-    const const_string_t & key, uintptr_t runtime_namespace, Args &&... args)
+    const utils::const_string_t & key, uintptr_t runtime_namespace, Args &&... args)
   {
     return sp_t::template register_global_state<T, NS>(
         key, runtime_namespace, std::forward<Args>(args)...);
@@ -383,7 +385,7 @@ public:
    */
 
   template <typename T, size_t NS = 0>
-  global_accessor_t<T> global_accessor(const const_string_t & key,
+  global_accessor_t<T> global_accessor(const utils::const_string_t & key,
     uintptr_t runtime_namespace = 0)
   {
     return sp_t::template global_accessor<T, NS>(key, runtime_namespace);
@@ -492,7 +494,7 @@ public:
     \return The meta data corresponding to the key and namespace.
    */
   template <size_t NS = 0>
-  user_meta_data_t & meta_data(const const_string_t & key,
+  user_meta_data_t & meta_data(const utils::const_string_t & key,
     uintptr_t runtime_namespace = 0)
   {
     return sp_t::template meta_data<NS>(key, runtime_namespace);
@@ -514,7 +516,7 @@ public:
     \return A std::shared_ptr<T> with a copy of the state data.
    */
   template <typename T, size_t NS = 0>
-  std::shared_ptr<T> & data(const const_string_t & key,
+  std::shared_ptr<T> & data(const utils::const_string_t & key,
     uintptr_t runtime_namespace = 0)
   {
     return sp_t::template data<T, NS>(key, runtime_namespace);

@@ -1,4 +1,4 @@
-FROM flecsi/flecsi_tpl:fedora
+FROM laristra/flecsi-third-party:fedora
 
 ARG MINIMAL
 ARG MPI
@@ -34,10 +34,10 @@ RUN ccache -z
 RUN cmake -DENABLE_MPI=$MPI \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON \
-          -DCMAKE_DISABLE_FIND_PACKAGE_SCOTCH=ON \
           -DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON  \
           -DCMAKE_DISABLE_FIND_PACKAGE_LAPACKE=ON} \
           -DENABLE_UNIT_TESTS=ON \
+          -DENABLE_FLECSIT=ON \
           -DENABLE_DOXYGEN=ON \
           -DENABLE_DOCUMENTATION=ON \
           ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} ..
@@ -47,7 +47,13 @@ RUN ccache -s
 RUN make test
 RUN make install DESTDIR=${PWD}
 RUN make doxygen
-RUN cd .. && if [ ${COVERAGE} ]; then $HOME/.local/bin/codecov; fi && cd -
+RUN cd .. && if [ ${COVERAGE} ]; then \
+  if [ ${CC} = clang ]; then \
+    $HOME/.local/bin/codecov --gcov-exec "llvm-cov gcov"; \
+  else \
+    $HOME/.local/bin/codecov; \
+  fi; \
+fi && cd -
 USER root
 RUN make install
 USER flecsi

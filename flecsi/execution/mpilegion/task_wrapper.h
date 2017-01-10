@@ -13,22 +13,21 @@
 #include "flecsi/utils/common.h"
 
 ///
-// \file mpilegion/task_wrapper.h
-// \authors bergen
-// \date Initial file creation: Jul 24, 2016
+/// \file mpilegion/task_wrapper.h
+/// \date Initial file creation: Jul 24, 2016
 ///
 
 namespace flecsi {
 namespace execution {
 
+/// \struct mpilegion_task_wrapper_
+/// \brief ..
 ///
-// \brief
-//
-// \tparam P ...
-// \tparam S ...
-// \tparam I ...
-// \tparam R ...
-// \tparam As ...
+/// \tparam P - processor type  
+/// \tparam S  - is this a single task?
+/// \tparam I  - is this an index task?
+/// \tparam R  - return type
+/// \tparam As - arguments
 ///
 template<
   processor_t P,
@@ -46,10 +45,10 @@ struct mpilegion_task_wrapper_
   using user_task_handle_t = typename task_args_t::user_task_handle_t;
   using user_task_args_t = typename task_args_t::user_task_args_t;
 
-  //
-  // This defines a predicate function to pass to tuple_filter that
-  // will select all tuple elements after the first index, i.e., 0.
-  //
+  ///
+  /// This defines a predicate function to pass to tuple_filter that
+  /// will select all tuple elements after the first index, i.e., 0.
+  ///
   template<typename T>
   using greater_than = std::conditional_t<(T()>0), std::true_type,
     std::false_type>;
@@ -58,8 +57,8 @@ struct mpilegion_task_wrapper_
   using is_data_handle = std::is_base_of<data_handle_t,T>;
 
   ///
-  // This method executes the user's task after processing the arguments
-  // from the Legion runtime.
+  /// This method executes the user's task after processing the arguments
+  /// from the Legion runtime.
   ///
   static R execute(const LegionRuntime::HighLevel::Task * task,
     const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
@@ -102,6 +101,10 @@ struct mpilegion_task_wrapper_
     return retval;
   } // execute
 
+  ///
+  /// This method executes the user's task after processing the arguments
+  /// from the MPI runtime.
+  ///
   static R execute_mpi(const LegionRuntime::HighLevel::Task * task,
     const std::vector<LegionRuntime::HighLevel::PhysicalRegion>& regions,
     LegionRuntime::HighLevel::Context context,
@@ -134,7 +137,7 @@ struct mpilegion_task_wrapper_
 }; // class mpilegion_task_wrapper_
 
 ///
-//
+/// FIXME documentation
 ///
 template<
   processor_t P,
@@ -150,9 +153,9 @@ struct mpilegion_task_registrar__
   using task_id_t = LegionRuntime::HighLevel::TaskID;
 
   ///
-  // This function is called by the context singleton to do the actual
-  // registration of the task wrapper with the Legion runtime. The structure
-  // of the logic used is really just an object factory pattern.
+  /// This function is called by the context singleton to do the actual
+  /// registration of the task wrapper with the Legion runtime. The structure
+  /// of the logic used is really just an object factory pattern.
   ///
   static
   void
@@ -180,7 +183,7 @@ struct mpilegion_task_registrar__
 }; // mpilegion_task_registrar__
 
 ///
-// Partial specialization for void.
+/// Partial specialization for void.
 ///
 template<
   processor_t P,
@@ -196,8 +199,8 @@ struct mpilegion_task_registrar__<P, S, I, void, A>
 
   ///
   // This function is called by the context singleton to do the actual
-  // registration of the task wrapper with the Legion runtime. The structure
-  // of the logic used is really just an object factory pattern.
+  /// registration of the task wrapper with the Legion runtime. The structure
+  /// of the logic used is really just an object factory pattern.
   ///
   static
   void

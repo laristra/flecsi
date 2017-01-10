@@ -118,7 +118,7 @@ struct default_storage_policy_t {
 
   // Define the data storage container
   using storage_t = std::unordered_map<size_t,
-    std::unordered_map<const_string_t::hash_type_t, meta_data_t>>;
+    std::unordered_map<utils::const_string_t::hash_type_t, meta_data_t>>;
 
   // Define the storage type
   template<size_t data_type_t>
@@ -267,7 +267,8 @@ class default_data_storage_policy_t
         auto & meta_data_key = itr->first;
         auto & label = itr->second.label;
         // now build the hash for this label
-        auto key_hash = hash<const_string_t::hash_type_t>( label, label.size() );
+        auto key_hash = 
+          utils::hash<utils::const_string_t::hash_type_t>( label, label.size() );
         auto hash = key_hash ^ runtime_namespace;
         // test if it should be deleted
         if ( meta_data_key == hash )
@@ -284,7 +285,10 @@ class default_data_storage_policy_t
    * \param [in] key the key to delete
    * \param [in] runtime_namespace the namespace to search
    */
-  void release( const const_string_t & key, uintptr_t runtime_namespace ) {
+  void release( 
+    const utils::const_string_t & key,
+    uintptr_t runtime_namespace 
+  ) {
 
     auto hash = key.hash() ^ runtime_namespace;
 
@@ -329,7 +333,8 @@ class default_data_storage_policy_t
         auto & meta_data_key = itr->first;
         auto & label = itr->second.label;
         // now build the hash for this label
-        auto key_hash = hash<const_string_t::hash_type_t>( label, label.size() );
+        auto key_hash = 
+          utils::hash<utils::const_string_t::hash_type_t>( label, label.size() );
         auto from_hash = key_hash ^ from;
         // test if it should be moved, and move it
         if ( meta_data_key == from_hash ) {
@@ -376,7 +381,7 @@ class default_data_storage_policy_t
   class global_accessor_t
   {
    public:
-    using iterator_t = index_space_t::iterator_t;
+    using iterator_t = utils::index_space_t::iterator_t;
 
     //! default constructor
     global_accessor_t() = default;
@@ -391,7 +396,7 @@ class default_data_storage_policy_t
      */
     global_accessor_t(const std::string & label, const size_t size, T * data,
         const user_meta_data_t & meta)
-        : label_(label), size_(1), data_(data), meta_(meta), is_(1)
+        : label_(label), size_(1), data_(data), meta_(&meta), is_(1)
     {
     }
 
@@ -520,15 +525,15 @@ class default_data_storage_policy_t
 
       \return The user meta data.
      */
-    const user_meta_data_t & meta() const { return meta_; }
+    const user_meta_data_t & meta() const { return *meta_; }
 
    private:
 
     std::string label_ = "";
     size_t size_ = 0;
     T * data_ = nullptr;
-    const user_meta_data_t & meta_ = user_meta_data_t();
-    index_space_t is_;
+    const user_meta_data_t * meta_ = nullptr;
+    utils::index_space_t is_;
 
   }; // struct global_accessor_t
 
@@ -551,7 +556,7 @@ class default_data_storage_policy_t
   class dense_accessor_t
   {
    public:
-    using iterator_t = index_space_t::iterator_t;
+    using iterator_t = utils::index_space_t::iterator_t;
 
     //! default constructor
     dense_accessor_t() = default;
@@ -567,7 +572,7 @@ class default_data_storage_policy_t
      */
     dense_accessor_t(const std::string & label, const size_t size, T * data,
         const user_meta_data_t & meta)
-        : label_(label), size_(size), data_(data), meta_(meta), is_(size_)
+        : label_(label), size_(size), data_(data), meta_(&meta), is_(size_)
     {
     }
 
@@ -670,7 +675,7 @@ class default_data_storage_policy_t
 
       \return The user meta data.
      */
-    const user_meta_data_t & meta() const { return meta_; }
+    const user_meta_data_t & meta() const { return *meta_; }
 
     /*!
       \brief Return an iterator to the beginning of this data data.
@@ -697,8 +702,8 @@ class default_data_storage_policy_t
     std::string label_ = "";
     size_t size_ = 0;
     T * data_ = nullptr;
-    const user_meta_data_t & meta_ = user_meta_data_t();
-    index_space_t is_;
+    const user_meta_data_t * meta_ = nullptr;
+    utils::index_space_t is_;
 
   }; // struct dense_accessor_t
 
@@ -720,7 +725,7 @@ class default_data_storage_policy_t
   class sparse_accessor_t
   {
    public:
-    using iterator_t = index_space_t::iterator_t;
+    using iterator_t = utils::index_space_t::iterator_t;
 
     //! default constructor
     sparse_accessor_t() = default;
@@ -865,7 +870,7 @@ class default_data_storage_policy_t
     size_t size_ = 0;
     T * data_ = nullptr;
     const user_meta_data_t & meta_ = user_meta_data_t();
-    index_space_t is_;
+    utils::index_space_t is_;
 
   }; // struct sparse_accessor_t
 
@@ -913,9 +918,11 @@ class default_data_storage_policy_t
     \param key The name of the data to return.
    */
   template <typename T, size_t NS>
-  global_accessor_t<T> global_accessor(const const_string_t & key,
-    uintptr_t runtime_namespace)
-  {
+  global_accessor_t<T> 
+  global_accessor(
+    const utils::const_string_t & key,
+    uintptr_t runtime_namespace
+  ) {
     size_t h = key.hash() ^ runtime_namespace;
     auto search = meta_[NS].find(h);
     if ( search == meta_[NS].end() )
@@ -934,9 +941,11 @@ class default_data_storage_policy_t
     \param hash A hash key for the data to return.
    */
   template <typename T, size_t NS>
-  global_accessor_t<T> global_accessor(const_string_t::hash_type_t hash,
-    uintptr_t runtime_namespace)
-  {
+  global_accessor_t<T> 
+  global_accessor(
+    utils::const_string_t::hash_type_t hash,
+    uintptr_t runtime_namespace
+  ) {
     size_t h = hash ^ runtime_namespace;
     auto search = meta_[NS].find(h);
     if ( search == meta_[NS].end() )
@@ -955,8 +964,10 @@ class default_data_storage_policy_t
     \param hash A hash key for the data to return.
    */
   template <typename T, size_t NS>
-  global_accessor_t<T> global_accessor(const_string_t::hash_type_t hash)
-  {
+  global_accessor_t<T>
+  global_accessor(
+    utils::const_string_t::hash_type_t hash
+  ) {
     auto search = meta_[NS].find(hash);
     if ( search == meta_[NS].end() )
       return global_accessor_t<T>();
@@ -976,9 +987,12 @@ class default_data_storage_policy_t
     \param indices The number of indices that parameterize the state.
    */
   template <typename T, size_t NS, typename... Args>
-  decltype(auto) register_global_state(
-      const const_string_t & key, uintptr_t runtime_namespace, Args &&... args)
-  {
+  decltype(auto) 
+  register_global_state(
+    const utils::const_string_t & key, 
+    uintptr_t runtime_namespace, 
+    Args &&... args
+  ) {
     size_t h = key.hash() ^ runtime_namespace;
 
     // keys must be unique within a given namespace
@@ -1087,9 +1101,11 @@ class default_data_storage_policy_t
     \param key The name of the data to return.
    */
   template <typename T, size_t NS>
-  dense_accessor_t<T> dense_accessor(const const_string_t & key,
-    uintptr_t runtime_namespace)
-  {
+  dense_accessor_t<T> 
+  dense_accessor(
+    const utils::const_string_t & key,
+    uintptr_t runtime_namespace
+  ) {
     size_t h = key.hash() ^ runtime_namespace;
     auto search = meta_[NS].find(h);
     if ( search == meta_[NS].end() )
@@ -1108,9 +1124,11 @@ class default_data_storage_policy_t
     \param hash A hash key for the data to return.
    */
   template <typename T, size_t NS>
-  dense_accessor_t<T> dense_accessor(const_string_t::hash_type_t hash,
-    uintptr_t runtime_namespace)
-  {
+  dense_accessor_t<T>
+  dense_accessor(
+    utils::const_string_t::hash_type_t hash,
+    uintptr_t runtime_namespace
+  ) {
     size_t h = hash ^ runtime_namespace;
     auto search = meta_[NS].find(h);
     if ( search == meta_[NS].end() )
@@ -1129,8 +1147,10 @@ class default_data_storage_policy_t
     \param hash A hash key for the data to return.
    */
   template <typename T, size_t NS>
-  dense_accessor_t<T> dense_accessor(const_string_t::hash_type_t hash)
-  {
+  dense_accessor_t<T> 
+  dense_accessor(
+    utils::const_string_t::hash_type_t hash
+  ) {
     auto search = meta_[NS].find(hash);
     if ( search == meta_[NS].end() )
       return dense_accessor_t<T>();
@@ -1149,10 +1169,13 @@ class default_data_storage_policy_t
     \param indices The number of indices that parameterize the state.
    */
   template <typename T, size_t NS, typename... Args>
-  decltype(auto) register_state(
-      const const_string_t & key, size_t indices, uintptr_t runtime_namespace,
-      Args &&... args)
-  {
+  decltype(auto)
+  register_state(
+    const utils::const_string_t & key, 
+    size_t indices, 
+    uintptr_t runtime_namespace,
+    Args &&... args
+  ) {
     size_t h = key.hash() ^ runtime_namespace;
 
     // keys must be unique within a given namespace
@@ -1257,9 +1280,11 @@ class default_data_storage_policy_t
     \param key The name of the data to return.
    */
   template <size_t NS>
-  user_meta_data_t & meta_data(const const_string_t & key,
-    uintptr_t runtime_namespace)
-  {
+  user_meta_data_t & 
+  meta_data(
+    const utils::const_string_t & key,
+    uintptr_t runtime_namespace
+  ) {
     size_t h = key.hash() ^ runtime_namespace;
     return meta_[NS].at(h).user_data;
   } // meta_data
@@ -1270,8 +1295,10 @@ class default_data_storage_policy_t
     \param name The name of the data to return.
    */
   template <typename T, size_t NS>
-  std::shared_ptr<T> & data(const const_string_t & key)
-  {
+  std::shared_ptr<T> & 
+  data(const 
+    utils::const_string_t & key
+  ) {
     std::shared_ptr<T> sp{new T[meta_[NS][key.hash()].size]};
     memcpy(
         *sp, &meta_[NS][key.hash()].data[0], meta_[NS][key.hash()].data.size());
@@ -1281,7 +1308,10 @@ class default_data_storage_policy_t
 private:
 
   std::unordered_map<size_t,
-    std::unordered_map<const_string_t::hash_type_t, meta_data_t>> meta_;
+    std::unordered_map<
+      utils::const_string_t::hash_type_t, meta_data_t
+    >
+  > meta_;
 
 }; // class default_data_storage_policy_t
 

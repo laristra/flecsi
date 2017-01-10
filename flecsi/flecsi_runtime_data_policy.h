@@ -19,8 +19,10 @@
 // the same convention, e.g., -DFLECSI_RUNTIME_MODEL_new_runtime.
 ///
 
+#include "flecsi.h"
+
 // Serial Policy
-//#if defined(FLECSI_RUNTIME_MODEL_serial)
+//#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_serial
 
   #include "flecsi/data/default_user_meta_data.h"
   #include "flecsi/data/serial/storage_policy.h"
@@ -37,8 +39,8 @@
   }
 
 // Legion Policy
-//#elif defined(FLECSI_RUNTIME_MODEL_legion) || \
-//      defined(FLECSI_RUNTIME_MODEL_mpilegion)
+//#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion || \
+//      FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
 
 //  #include "flecsi/data/default_user_meta_data.h"
 //  #include "flecsi/data/legion/storage_policy.h"
@@ -46,7 +48,7 @@
 //  #define flecsi_storage_policy_t legion_storage_policy_t
 
 // MPI+Legion Policy
-//#elif defined(FLECSI_RUNTIME_MODEL_mpi)
+//#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 //  #error "This policy is not yet implemented!"
 //#endif // FLECSI_RUNTIME_MODEL
 

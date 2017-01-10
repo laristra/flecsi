@@ -87,6 +87,10 @@ struct mpilegion_execution_policy_t
             legion_task_wrapper__<loc, 1, 1, R, A>::register_task);
           } // case single
 
+          default:
+            throw std::runtime_error("task type is not specified or incorrect,\
+                   please chose one from single, index, any");
+
         } // switch
       } // case loc
 
@@ -104,13 +108,16 @@ struct mpilegion_execution_policy_t
           {
           return context_t::instance().register_task(key,
             legion_task_wrapper__<toc, 0, 1, R, A>::register_task);
-          } // case single
+          }
 
           case any:
           {
           return context_t::instance().register_task(key,
             legion_task_wrapper__<toc, 1, 1, R, A>::register_task);
-          } // case single
+          } // case any
+  
+          throw std::runtime_error("task type is not specified or incorrect,\
+                please chose one from single, index, any");
 
         } // switch
       } // case toc
@@ -153,7 +160,6 @@ struct mpilegion_execution_policy_t
     task_args_t task_args(user_task_handle, user_task_args);
 
     if(key.processor() == mpi) {
-
       // Executing Legion task that pass function pointer and 
       // its arguments to every MPI thread
       LegionRuntime::HighLevel::ArgumentMap arg_map;
@@ -161,11 +167,11 @@ struct mpilegion_execution_policy_t
       LegionRuntime::HighLevel::IndexLauncher index_launcher(
         context_.task_id(key),
 
-      LegionRuntime::HighLevel::Domain::from_rect<2>(
+      LegionRuntime::HighLevel::Domain::from_rect<1>(
         context_.interop_helper_.all_processes_),
         TaskArgument(&task_args, sizeof(task_args_t)), arg_map);
 
-      index_launcher.tag = MAPPER_ALL_PROC;
+      index_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
       LegionRuntime::HighLevel::FutureMap fm1 =
         context_.runtime(parent)->execute_index_space(context_.context(parent),
@@ -176,9 +182,9 @@ struct mpilegion_execution_policy_t
       context_.interop_helper_.handoff_to_mpi(context_.context(parent),
          context_.runtime(parent));
 
-// mpi task is running here
-//
-//      flecsi::execution::future_t future = 
+      // mpi task is running here
+      //TOFIX:: need to return future
+      //      flecsi::execution::future_t future = 
          context_.interop_helper_.wait_on_mpi(context_.context(parent),
                             context_.runtime(parent));
      context_.interop_helper_.unset_call_mpi(context_.context(parent),
@@ -206,17 +212,23 @@ struct mpilegion_execution_policy_t
           LegionRuntime::HighLevel::ArgumentMap arg_map;
           LegionRuntime::HighLevel::IndexLauncher index_launcher(
             context_.task_id(key),
-            LegionRuntime::HighLevel::Domain::from_rect<2>(
+            LegionRuntime::HighLevel::Domain::from_rect<1>(
               context_.interop_helper_.all_processes_),
             TaskArgument(&task_args, sizeof(task_args_t)), arg_map);
 
-          index_launcher.tag = MAPPER_ALL_PROC;
+          index_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
           auto future = context_.runtime(parent)->execute_index_space(
             context_.context(parent), index_launcher);
 
           return legion_future__<R>(future);
         } // index
+
+        default:
+        {
+          throw std::runtime_error("the task can be executed \
+                      only as single or index task");
+        }
 
       } // switch
     } // if
@@ -243,11 +255,11 @@ struct mpilegion_execution_policy_t
   static
   bool
   register_function(
-    const const_string_t & key,
+    const utils::const_string_t & key,
     std::function<R(As ...)> & user_function
   )
   {
-    context_t::instance().register_function(key, user_function);
+    return context_t::instance().register_function(key, user_function);
   } // register_function
 
   /*!

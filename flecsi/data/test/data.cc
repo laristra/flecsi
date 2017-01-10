@@ -43,7 +43,7 @@ TEST(state, sanity) {
 
   // define a predicate to test for persistent state
   auto pred = [](const auto & a) -> bool {
-    flecsi::bitfield_t bf(a.meta().attributes);
+    flecsi::utils::bitfield_t bf(a.meta().attributes);
     return a.meta().site_id == 0 && bf.bitsset(persistent);
   };
 
@@ -57,6 +57,7 @@ TEST(state, sanity) {
   c = 1.0;
   ASSERT_EQ( 1.0,  *c );
 } // TEST
+
 
 /*----------------------------------------------------------------------------*
  * Cinch test Macros

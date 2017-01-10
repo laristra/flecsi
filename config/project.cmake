@@ -21,6 +21,7 @@ project(flecsi)
 cinch_add_application_directory("examples")
 cinch_add_application_directory("examples/agile")
 cinch_add_application_directory("bin")
+cinch_add_application_directory("tools")
 
 #------------------------------------------------------------------------------#
 # Add library targets
@@ -65,6 +66,12 @@ set(FLECSI_ID_FBITS "4" CACHE STRING
 
 set(FLECSI_COUNTER_TYPE "int32_t" CACHE STRING
   "Select the type that will be used for loop and iterator values")
+
+#------------------------------------------------------------------------------#
+# Add option for FleCSIT command-line tool.
+#------------------------------------------------------------------------------#
+
+option(ENABLE_FLECSIT "Enable FleCSIT Command-Line Tool" OFF)
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options

@@ -12,14 +12,15 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_factory_h
-#define flecsi_factory_h
+#ifndef flecsi_utils_factory_h
+#define flecsi_utils_factory_h
 
 #include <map>
 #include <iostream>
 
-namespace flecsi
-{
+namespace flecsi {
+namespace utils {
+
 /*!
   \class Factory_ Factory.h
   \brief Factory_ provides a generic object factory class.
@@ -119,9 +120,10 @@ private:
 
 }; // class Factory_
 
+} // namespace utils
 } // namespace flecsi
 
-#endif // flecsi_factory_h
+#endif // flecsi_utils_factory_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options
