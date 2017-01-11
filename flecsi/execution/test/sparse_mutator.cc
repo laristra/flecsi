@@ -126,6 +126,49 @@ public:
 
     dpd.commit(cd);
 
+    while(!spare_map_.empty()){
+      for(size_t i = 0; i < num_indices_; ++i){
+        indices_[i] = 0;
+      }
+
+      auto mitr = spare_map_.begin();
+
+      while(mitr != spare_map_.end()){
+        size_t index = mitr->first;
+
+        size_t n = indices_[index];
+        
+        if(n >= num_slots_){
+          ++mitr;
+          continue;
+        }
+
+        entry_value__<T>& ev = mitr->second;
+
+        entry_value_t * start = entries_ + index * num_slots_;     
+        entry_value_t * end = start + n;
+
+        entry_value_t * itr = 
+          std::lower_bound(start, end, entry_value_t(ev.entry),
+            [](const auto & k1, const auto & k2) -> bool{
+              return k1.entry < k2.entry;
+            });
+
+        while(end != itr) {
+          *(end) = *(end - 1);
+          --end;
+        } // while
+
+        itr->entry = ev.entry;
+
+        ++indices_[index];
+
+        spare_map_.erase(mitr++);
+      }
+
+      dpd.commit(cd);
+    }
+
     delete[] indices_;
     indices_ = nullptr;
 
