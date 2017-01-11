@@ -32,7 +32,7 @@ clog_register_tag(partition);
 DEVEL(partition) {
 
   // Set the output rank
-  clog_set_output_rank(2);
+  clog_set_output_rank(1);
 
   using entry_info_t = flecsi::dmp::entry_info_t;
 
@@ -43,12 +43,14 @@ DEVEL(partition) {
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   // Create a mesh definition from file.
-#if 0
+#if 1
   const size_t M(8), N(8);
   flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
 #endif
+#if 0
   const size_t M(16), N(16);
   flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
+#endif
 #if 0
   const size_t M(32), N(32);
   flecsi::io::simple_definition_t sd("simple2d-32x32.msh");
