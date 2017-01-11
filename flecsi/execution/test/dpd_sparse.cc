@@ -126,7 +126,7 @@ void top_level_task(const Task* task,
   cd.slot_size = 5;
   cd.num_slots = partition_size * 5;
   cd.num_indices = partition_size;
-  cd.indices = new legion_dpd::index_pair[cd.num_indices];
+  cd.indices = new size_t[cd.num_indices];
   cd.entries = 
     new legion_dpd::entry_value<double>[cd.num_indices * cd.num_slots];
 
@@ -137,10 +137,10 @@ void top_level_task(const Task* task,
   cd.entries[2].entry = 8;
   cd.entries[2].value = 888.8;
   
-  cd.indices[0] = make_pair(0, 3);
+  cd.indices[0] = 3;
   
   for(size_t i = 1; i < cd.num_indices; ++i){
-    cd.indices[i] = make_pair(3, 3);
+    cd.indices[i] = 0;
   }
 
   dpd.commit(cd);
@@ -152,10 +152,10 @@ void top_level_task(const Task* task,
   cd.entries[1].entry = 9;
   cd.entries[1].value = 999.9;
   
-  cd.indices[0] = make_pair(0, 2);
+  cd.indices[0] = 2;
   
   for(size_t i = 1; i < cd.num_indices; ++i){
-    cd.indices[i] = make_pair(2, 2);
+    cd.indices[i] = 0;
   }
 
   dpd.commit(cd);

@@ -275,8 +275,8 @@ namespace execution {
     args.slot_size = cd.slot_size;
     args.num_slots = cd.num_slots;
     args.num_indices = cd.num_indices;
-    args.indices_buf_size = 2 * sizeof(size_t) * cd.num_indices;
-    args.entries_buf_size = cd.slot_size * cd.num_slots * value_size;
+    args.indices_buf_size = sizeof(size_t) * cd.num_indices;
+    args.entries_buf_size = cd.num_slots * (sizeof(size_t) + value_size);
 
     Serializer serializer;
     serializer.serialize(cd.indices, args.indices_buf_size); 
@@ -449,7 +449,7 @@ namespace execution {
 
     char* commit_entry_values = (char*)entries_buf;
 
-    index_pair* commit_indices = (index_pair*)indices_buf;
+    size_t* commit_indices = (size_t*)indices_buf;
 
     entry_offset* entry_offsets;
     h.get_buffer(regions[0], entry_offsets, fid_t.fid_entry_offset);
@@ -523,33 +523,34 @@ namespace execution {
 
     vector<size_t> offsets(md.size);
 
-    for(size_t i = 0; i < num_indices; ++i){
-      np(i);
+    size_t added = 0;
 
+    for(size_t i = 0; i < num_indices; ++i){
       assert(ent_itr.has_next());
-      
+
       ptr_t ptr = ent_itr.next();
 
-      const index_pair& ip = commit_indices[i];
-
-      size_t n = ip.second - ip.first;
+      size_t n = commit_indices[i];
 
       offset_count oc = ent_ac.read(ptr);
       oc.offset = offset;
 
       if(n == 0){
+        offset += oc.count;
         ent_ac.write(ptr, oc);
         continue;
       }
 
-      for(int j = md.size + offset; j >= 0; --j){
+      for(int j = md.size + added; j > offset; --j){
         entry_offsets[j + n] = entry_offsets[j];
       }
+
+      added += n;
 
       for(size_t j = 0; j < n; ++j){
         entry_offset& ej = entry_offsets[offset + j];
         
-        size_t pos = (i * num_slots + j) * entry_value_size;
+        size_t pos = (i * slot_size + j) * entry_value_size;
 
         ej.entry = 
           ((entry_offset*)(commit_entry_values + pos))->entry;
@@ -572,7 +573,7 @@ namespace execution {
 
       oc.count += n;
       offset += oc.count;
-      
+
       ent_ac.write(ptr, oc);
     }
 
@@ -606,12 +607,16 @@ namespace execution {
 
     delete[] temp;        
 
+    /*
+    np("************");
+
     char* value_ptr2 = values;
     for(size_t i = 0; i < md.size; ++i){
       cout << "entry: " << entry_offsets[i].entry << 
         " value: " << *((double*)value_ptr2) << endl;
       value_ptr2 += value_size;
     }
+    */
 
     return md;
   }  

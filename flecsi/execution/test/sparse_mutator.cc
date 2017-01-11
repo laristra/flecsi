@@ -51,8 +51,6 @@ struct entry_value__
   T value;
 }; // struct entry_value__
 
-using index_pair_ = std::pair<size_t, size_t>;
-
 class sparse_data{
 public:
   sparse_data(legion_dpd& dpd,
@@ -98,12 +96,11 @@ public:
   num_slots_(num_slots),
   num_indices_(data_.num_indices()),
   num_entries_(data_.num_entries()),
-  indices_(new index_pair_[num_indices_]),
+  indices_(new size_t[num_indices_]),
   entries_(new entry_value_t[num_indices_ * num_slots_]),
   erase_set_(nullptr){
     for(size_t i = 0; i < num_indices_; ++i){
-      indices_[i].first = 0;
-      indices_[i].second = 0;
+      indices_[i] = 0;
     }
   }
 
@@ -145,9 +142,7 @@ public:
     assert(indices_ && "sparse mutator has alread been committed");
     assert(index < num_indices_ && entry < num_entries_);
 
-    index_pair_ & ip = indices_[index];
-    
-    size_t n = ip.second - ip.first;
+    size_t n = indices_[index];
     
     if(n >= num_slots_) {
       return spare_map_.emplace(index, entry_value_t(entry))->second.value;
@@ -169,7 +164,7 @@ public:
 
     itr->entry = entry;
 
-    ++ip.second;
+    ++indices_[index];
 
     return itr->value;
   } // operator ()
@@ -198,7 +193,7 @@ private:
   size_t num_slots_;
   size_t num_indices_;
   size_t num_entries_;
-  index_pair_ * indices_;
+  size_t * indices_;
   entry_value__<T> * entries_;
   spare_map_t spare_map_;
   erase_set_t * erase_set_;
@@ -297,26 +292,24 @@ void top_level_task(const Task* task,
   {
 
     sparse_mutator<double> m(data, 5);
-
-    m(0, 2) = 1.2;
-    m(0, 1) = 3.1;
-
-  }
-
-  {
-
-    sparse_mutator<double> m(data, 5);
-
+    
     m(0, 9) = 9.9;
-    m(0, 5) = 5.5;
+    m(1, 1) = 1.1;
+    m(2, 2) = 2.2;
+    m(1, 5) = 5.5;
+    m(3, 3) = 3.3;
+    m(0, 8) = 8.8;
+
   }
 
   {
 
     sparse_mutator<double> m(data, 5);
 
-    m(0, 1) = 1.1;
-    m(0, 0) = 0.1;
+    m(1, 11) = 11.1;
+    m(0, 4) = 4.4;
+    m(3, 6) = 6.6;
+
   }
 }
 

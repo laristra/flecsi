@@ -87,8 +87,6 @@ public:
     size_t reserve;
   };
 
-  using index_pair = std::pair<size_t, size_t>;
-
   template<class T>
   struct commit_data{
     using spare_map_t = std::multimap<size_t, entry_value<T>>;
@@ -98,7 +96,7 @@ public:
     size_t slot_size;
     size_t num_slots;
     size_t num_indices;
-    index_pair* indices;
+    size_t* indices;
     entry_value<T>* entries;
     spare_map_t spare_map;
     erase_set_t* erase_set = nullptr;
