@@ -242,6 +242,71 @@ private:
   erase_set_t * erase_set_;
 };
 
+template<typename T>
+class sparse_accessor{
+public:
+  using offset_count = legion_dpd::offset_count;
+  using entry_offset = legion_dpd::entry_offset;
+
+  sparse_accessor(sparse_data& data)
+  : data_(data),
+  num_indices_(data_.num_indices()),
+  num_entries_(data_.num_entries()){
+    void* raw_values;
+    data_.dpd().map_data(data_.partition(), indices_, entries_, raw_values);
+    values_ = static_cast<T*>(raw_values);
+  }
+
+  ~sparse_accessor()
+  {
+    commit();
+  }
+
+  void commit(){
+    if(!indices_){
+      return;
+    }
+
+    data_.dpd().unmap_data();
+
+    indices_ = nullptr;
+    entries_ = nullptr;
+    values_ = nullptr;
+  }
+
+  T &
+  operator () (
+    size_t index,
+    size_t entry
+  )
+  {
+    assert(index < num_indices_ && "sparse accessor: index out of bounds");
+
+    offset_count& oc = indices_[index];
+
+    entry_offset * start = entries_ + oc.offset;
+    entry_offset * end = start + oc.count;
+
+    entry_offset * itr = 
+      std::lower_bound(start, end, entry_offset({entry, 0}),
+        [](const auto & k1, const auto & k2) -> bool {
+          return k1.entry < k2.entry;
+        });
+
+    assert(itr != end && "sparse accessor: unmapped entry");
+
+    return values_[itr->offset];
+  }
+
+private:
+  sparse_data& data_;
+  size_t num_indices_;
+  size_t num_entries_;
+  offset_count * indices_;
+  entry_offset * entries_;
+  T * values_;
+};
+
 void top_level_task(const Task* task,
                     const std::vector<PhysicalRegion>& regions,
                     Context ctx, Runtime* runtime){
@@ -354,6 +419,9 @@ void top_level_task(const Task* task,
     m(3, 6) = 6.6;
 
   }
+
+  sparse_accessor<double> ac(data);
+  np(ac(3, 6));
 }
 
 TEST(legion, test1) {

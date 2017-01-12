@@ -793,6 +793,57 @@ namespace execution {
     }
   }
 
+  void
+  legion_dpd::map_data(
+    size_t partition,
+    offset_count*& indices,
+    entry_offset*& entries,
+    void*& values)
+  {
+    field_ids_t & fid_t = field_ids_t::instance();    
+
+    partition_metadata md = get_partition_metadata(partition);
+
+    LogicalPartition ent_from_lp =
+      runtime_->get_logical_partition(context_, from_.lr, from_.ip);
+
+    RegionRequirement rr(ent_from_lp, 0, READ_ONLY, EXCLUSIVE, from_.lr);
+    rr.add_field(fid_t.fid_offset_count);
+    
+    InlineLauncher il(rr);
+
+    data_from_pr_ = runtime_->map_region(context_, il);
+
+    h.get_buffer(data_from_pr_, indices, fid_t.fid_offset_count);
+
+    LogicalPartition data_lp =
+      runtime_->get_logical_partition(context_, md.lr, md.ip);
+
+    RegionRequirement rr2(data_lp, 0, READ_ONLY, EXCLUSIVE, md.lr);
+    rr2.add_field(fid_t.fid_entry_offset);
+
+    RegionRequirement rr3(data_lp, 0, READ_WRITE, EXCLUSIVE, md.lr);
+    
+    rr3.add_field(fid_t.fid_value);
+
+    InlineLauncher il2(rr2);
+
+    InlineLauncher il3(rr3);
+    data_pr_ = runtime_->map_region(context_, il2);
+    data_values_pr_ = runtime_->map_region(context_, il3);
+
+    h.get_buffer(data_pr_, indices, fid_t.fid_entry_offset);
+    values = h.get_raw_buffer(data_values_pr_, fid_t.fid_value);
+  }
+
+  void
+  legion_dpd::unmap_data()
+  {
+    runtime_->unmap_region(context_, data_from_pr_);
+    runtime_->unmap_region(context_, data_pr_);
+    runtime_->unmap_region(context_, data_values_pr_);
+  }
+
 } // namespace execution 
 } // namespace flecsi
 
