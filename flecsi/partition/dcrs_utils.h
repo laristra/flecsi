@@ -7,7 +7,7 @@
 #define flecsi_partition_dcrs_utils_h
 
 #if !defined(ENABLE_MPI)
-  #error "ENABLE_MPI not defined! This file depends on MPI!"
+  #error ENABLE_MPI not defined! This file depends on MPI!
 #endif
 
 #include <mpi.h>

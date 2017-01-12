@@ -14,7 +14,7 @@
 #include "flecsi/utils/logging.h"
 
 #if !defined(ENABLE_OPENSSL)
-  #error "ENABLE_OPENSSL not defined! This file depends on OpenSSL!"
+  #error ENABLE_OPENSSL not defined! This file depends on OpenSSL!
 #endif
 
 #include <openssl/evp.h>

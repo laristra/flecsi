@@ -11,11 +11,11 @@
 #include <set>
 
 #if !defined(ENABLE_MPI)
-  #error "ENABLE_MPI not defined! This file depends on MPI!"
+  #error ENABLE_MPI not defined! This file depends on MPI!
 #endif
 
 #if !defined(ENABLE_PARMETIS)
-  #error "ENABLE_PARMETIS not defined! This file depends on ParMETIS!"
+  #error ENABLE_PARMETIS not defined! This file depends on ParMETIS!
 #endif
 
 #include <mpi.h>
