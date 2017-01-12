@@ -5,7 +5,6 @@
 
 #include <cinchdevel.h>
 
-#if 0
 #include "flecsi/utils/reflection.h"
 
 struct test_type_t
@@ -15,9 +14,21 @@ struct test_type_t
     (int) r2
   )
 }; // struct test_type_t
-#endif
+
+using namespace flecsi::utils;
 
 DEVEL(reflection) {
+  test_type_t t;
+
+  t.r1 = 1.0;
+
+  clog(info) << t.r1 << std::endl;
+
+  clog(info) << reflection::num_variables<test_type_t>::value << std::endl;
+
+  t.r1 = 2.0;
+
+  clog(info) << reflection::get_variable<0>(t).get() << std::endl;
 } // DEVEL
 
 /*~------------------------------------------------------------------------~--*

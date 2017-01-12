@@ -7,10 +7,9 @@
 #define flecsi_utils_reflection_h
 
 #include <type_traits>
-
-#include <utility.h>
-
 #include <boost/preprocessor.hpp>
+
+#include "flecsi/utils/utility.h"
 
 ///
 /// \file
@@ -35,7 +34,7 @@
 #define __typeof(x) __detail_typeof(__detail_typeof_probe x,)
 #define __detail_typeof(...) __detail_typeof_head(__VA_ARGS__)
 #define __detail_typeof_head(x, ...) __remove x
-#define __detail_typeof_probe(...) (__VA_ARGS__)
+#define __detail_typeof_probe(...) (__VA_ARGS__),
 
 //
 // Strip the type from the reflection declaration, i.e., if 'x' is:
@@ -111,7 +110,6 @@
                                                                                \
   }; /* struct reflection_variable__<i,S> */
 
-#if 0
 namespace flecsi {
 namespace utils {
 
@@ -147,7 +145,6 @@ struct reflection
 
 } // namespace utils
 } // namespace flecsi
-#endif
 
 #endif // flecsi_utils_reflection_h
 
