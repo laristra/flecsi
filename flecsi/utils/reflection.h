@@ -65,6 +65,8 @@
                                                                                \
   static const size_t num_reflected_ = BOOST_PP_VARIADIC_SIZE(__VA_ARGS__);    \
                                                                                \
+  friend struct reflection;                                                    \
+                                                                               \
   /* Unspecialized type declaration. */                                        \
   template<                                                                    \
     size_t N,                                                                  \
