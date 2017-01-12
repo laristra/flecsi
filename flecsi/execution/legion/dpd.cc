@@ -175,7 +175,8 @@ namespace execution {
       md.lr = h.create_logical_region(is, fs);
 
       DomainPointColoring coloring;
-      DomainPoint dp = DomainPoint::from_point<1>(make_point(p));
+      DomainPoint dp = DomainPoint::from_point<1>(
+        LegionRuntime::Arrays::make_point(p));
       coloring.emplace(dp, h.domain_from_rect(0, args.reserve - 1));
       Domain cd = h.domain_from_point(p);
       md.ip = runtime->create_index_partition(ctx, is, cd, coloring);
@@ -206,7 +207,7 @@ namespace execution {
 
     Domain cd = 
       runtime_->get_index_partition_color_space(context_, from_.ip);
-    Rect<1> rect = cd.get_rect<1>();
+    LegionRuntime::Arrays::Rect<1> rect = cd.get_rect<1>();
     size_t num_partitions = rect.hi[0] + 1;
 
     {
@@ -218,7 +219,7 @@ namespace execution {
       a.allocate_field(sizeof(partition_metadata),fid_t.fid_partition_metadata);
       partition_metadata_lr_ = h.create_logical_region(is, fs);
 
-      Blockify<1> coloring(1);
+      LegionRuntime::Arrays::Blockify<1> coloring(1);
 
       partition_metadata_ip_ = 
         runtime_->create_index_partition(context_, is, coloring);
@@ -315,7 +316,8 @@ namespace execution {
     FutureMap fm = h.execute_index_space(il);
     fm.wait_all_results();
 
-    DomainPoint dp = DomainPoint::from_point<1>(make_point(partition));
+    DomainPoint dp = DomainPoint::from_point<1>(
+      LegionRuntime::Arrays::make_point(partition));
     partition_metadata md = fm.get_result<partition_metadata>(dp);
     put_partition_metadata(md);
   }
@@ -348,7 +350,8 @@ namespace execution {
 
     FutureMap fm = h.execute_index_space(il);
     fm.wait_all_results();
-    DomainPoint dp = DomainPoint::from_point<1>(make_point(partition));
+    DomainPoint dp = DomainPoint::from_point<1>(
+      LegionRuntime::Arrays::make_point(partition));
     partition_metadata md = fm.get_result<partition_metadata>(dp);
     return md;
   }
@@ -505,7 +508,8 @@ namespace execution {
       md.lr = lr2;
 
       DomainPointColoring coloring;
-      DomainPoint dp = DomainPoint::from_point<1>(make_point(p));
+      DomainPoint dp = DomainPoint::from_point<1>(
+        LegionRuntime::Arrays::make_point(p));
       coloring.emplace(dp, h.domain_from_rect(0, md.reserve - 1));
       Domain cd = h.domain_from_point(p);
       
@@ -637,7 +641,7 @@ namespace execution {
 
     Domain cd = 
       runtime_->get_index_partition_color_space(context_, from.ip);
-    Rect<1> rect = cd.get_rect<1>();
+    LegionRuntime::Arrays::Rect<1> rect = cd.get_rect<1>();
     size_t num_partitions = rect.hi[0] + 1;
 
     {

@@ -51,6 +51,14 @@ set_property(CACHE FLECSI_RUNTIME_MODEL
   PROPERTY STRINGS ${FLECSI_RUNTIME_MODELS})
 
 #------------------------------------------------------------------------------#
+# Enable Boost.Preprocessor
+#------------------------------------------------------------------------------#
+
+# This changes the Cinch default
+set(ENABLE_BOOST_PREPROCESSOR ON CACHE BOOL
+  "Enable Boost.Preprocessor")
+
+#------------------------------------------------------------------------------#
 # Add option for setting id bits
 #------------------------------------------------------------------------------#
 

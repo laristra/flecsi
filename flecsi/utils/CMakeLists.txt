@@ -57,6 +57,13 @@ cinch_add_unit(any
   SOURCES test/any.cc
 )
 
+cinch_add_unit(reflection
+  SOURCES
+    test/reflection.cc
+  POLICY
+    SERIAL_DEVEL
+)
+
 if(ENABLE_OPENSSL)
   cinch_add_unit(checksum
     SOURCES
