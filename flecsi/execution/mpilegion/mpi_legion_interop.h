@@ -321,7 +321,7 @@ struct mpi_legion_interop_t
   	return fm3;
 	}//wait_on_mpi
  
-  Rect<1> all_processes_;
+  LegionRuntime::Arrays::Rect<1> all_processes_;
 
   std::vector<flecsi::utils::any_t> data_storage_;
 

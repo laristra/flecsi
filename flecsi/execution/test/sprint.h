@@ -185,7 +185,7 @@ driver(
     std::cout << "about to call get_results" << std::endl;
     flecsi::execution::sprint::parts received =
       fm1.get_result<flecsi::execution::sprint::parts>(
-      DomainPoint::from_point<1>(make_point(i)));
+      DomainPoint::from_point<1>(LegionRuntime::Arrays::make_point(i)));
 
     cells_primary_start_id.push_back(total_num_cells);
     total_num_cells += received.primary_cells;
@@ -324,7 +324,8 @@ driver(
            vertices_lr, vert_primary_ip);
  
 
-  Rect<1> rank_rect(Point<1>(0), Point<1>(num_ranks - 1));
+  LegionRuntime::Arrays::Rect<1> rank_rect(LegionRuntime::Arrays::Point<1>(0),
+    LegionRuntime::Arrays::Point<1>(num_ranks - 1));
   Domain rank_domain = Domain::from_rect<1>(rank_rect);
 
   LegionRuntime::HighLevel::IndexLauncher initialization_launcher(
@@ -506,7 +507,7 @@ driver(
       {
         ptr_t ptr=
           acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
-            make_point(j)));
+            LegionRuntime::Arrays::make_point(j)));
         cells_shared_coloring[indx].points.insert(ptr);
       }//end for
       runtime->unmap_region(context, shared_region);
@@ -530,7 +531,7 @@ driver(
       {
         ptr_t ptr=
           acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
-            make_point(j)));
+            LegionRuntime::Arrays::make_point(j)));
         vert_shared_coloring[indx].points.insert(ptr);
       }//end for
       runtime->unmap_region(context, shared_region);
@@ -602,7 +603,7 @@ driver(
       {
         ptr_t ptr=
           acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
-            make_point(j)));
+            LegionRuntime::Arrays::make_point(j)));
         cells_exclusive_coloring[indx].points.insert(ptr);
       }//end for
       runtime->unmap_region(context, exclusive_region);
@@ -626,7 +627,7 @@ driver(
       {
         ptr_t ptr=
           acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
-            make_point(j)));
+            LegionRuntime::Arrays::make_point(j)));
         vert_exclusive_coloring[indx].points.insert(ptr);
       }//end for
       runtime->unmap_region(context, exclusive_region);
@@ -701,7 +702,7 @@ driver(
       {
         ptr_t ptr=
           acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
-            make_point(j)));
+            LegionRuntime::Arrays::make_point(j)));
         cells_ghost_coloring[indx].points.insert(ptr);
       }//end for
       runtime->unmap_region(context, ghost_region);
@@ -725,7 +726,7 @@ driver(
       {
         ptr_t ptr=
           acc.read(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
-            make_point(j)));
+            LegionRuntime::Arrays::make_point(j)));
         vert_ghost_coloring[indx].points.insert(ptr);
       }//end for
       runtime->unmap_region(context, ghost_region);
@@ -797,18 +798,20 @@ driver(
   std::vector<PhaseBarrier> phase_barriers;
   std::vector<std::set<int>> master_colors(num_ranks);
   for (int master_color=0; master_color < num_ranks; ++master_color) {
-      std::set<int> slave_colors;
-      for (std::set<ptr_t>::iterator it=cells_shared_coloring[master_color].points.begin();
-              it!=cells_shared_coloring[master_color].points.end(); ++it) {
-          const ptr_t ptr = *it;
-          for (int slave_color = 0; slave_color < num_ranks; ++slave_color)
-              if (cells_ghost_coloring[slave_color].points.count(ptr)) {
-                  slave_colors.insert(slave_color);
-                  master_colors[slave_color].insert(master_color);
-              }
-      }
+    std::set<int> slave_colors;
+    for (std::set<ptr_t>::iterator it=
+      cells_shared_coloring[master_color].points.begin();
+      it!=cells_shared_coloring[master_color].points.end(); ++it) {
+       const ptr_t ptr = *it;
+       for (int slave_color = 0; slave_color < num_ranks; ++slave_color)
+         if (cells_ghost_coloring[slave_color].points.count(ptr)) {
+           slave_colors.insert(slave_color);
+           master_colors[slave_color].insert(master_color);
+         }
+       }//end for
 
-      phase_barriers.push_back(runtime->create_phase_barrier(context, 1 + slave_colors.size()));
+    phase_barriers.push_back(runtime->create_phase_barrier(context,
+        1 + slave_colors.size()));
   }
 
   std::vector<execution::sprint::SPMDArgs> spmd_args(num_ranks);
@@ -821,8 +824,10 @@ driver(
           spmd_args[color].masters_pbarriers.push_back(phase_barriers[*master]);
 
       args_seriliazed[color].archive(&(spmd_args[color]));
-      arg_map.set_point(DomainPoint::from_point<1>(Point<1>(color)),
-              TaskArgument(args_seriliazed[color].getBitStream(), args_seriliazed[color].getBitStreamSize()));
+      arg_map.set_point(DomainPoint::from_point<1>(
+         LegionRuntime::Arrays::Point<1>(color)),
+         TaskArgument(args_seriliazed[color].getBitStream(),
+          args_seriliazed[color].getBitStreamSize()));
   }
 
   LegionRuntime::HighLevel::IndexLauncher ghost_access_launcher(
