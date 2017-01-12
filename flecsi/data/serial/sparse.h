@@ -37,9 +37,8 @@
            << ": " << #X << " = " << (X) << std::endl
 
 ///
-// \file serial/sparse.h
-// \authors bergen
-// \date Initial file creation: Apr 17, 2016
+/// \file
+/// \date Initial file creation: Apr 17, 2016
 ///
 
 namespace flecsi {
@@ -54,10 +53,8 @@ namespace serial {
 // Sparse accessor.
 //----------------------------------------------------------------------------//
 
-using index_pair_ = std::pair<size_t, size_t>;
-
 ///
-//
+///
 ///
 template<typename T>
 struct entry_value__
@@ -79,16 +76,16 @@ static constexpr size_t INDICES_FLAG = 1UL << 63;
 static constexpr size_t ENTRIES_FLAG = 1UL << 62;
 
 ///
-// \brief sparse_accessor_t provides logically array-based access to data
-//        variables that have been registered in the data model.
-//
-// \tparam T The type of the data variable. If this type is not
-//           consistent with the type used to register the data, bad things
-//           can happen. However, it can be useful to reinterpret the type,
-//           e.g., when writing raw bytes. This class is part of the
-//           low-level \e flecsi interface, so it is assumed that you
-//           know what you are doing...
-// \tparam MD The meta data type.
+/// \brief sparse_accessor_t provides logically array-based access to data
+///        variables that have been registered in the data model.
+///
+/// \tparam T The type of the data variable. If this type is not
+///           consistent with the type used to register the data, bad things
+///           can happen. However, it can be useful to reinterpret the type,
+///           e.g., when writing raw bytes. This class is part of the
+///           low-level \e flecsi interface, so it is assumed that you
+///           know what you are doing...
+/// \tparam MD The meta data type.
 ///
 template<typename T, typename MD>
 struct sparse_accessor_t
@@ -111,12 +108,12 @@ struct sparse_accessor_t
   //--------------------------------------------------------------------------//
 
   ///
-  //
+  ///
   ///
   sparse_accessor_t() {}
 
   ///
-  //
+  ///
   ///
   sparse_accessor_t(
     meta_data_t & meta_data,
@@ -150,7 +147,7 @@ struct sparse_accessor_t
   //--------------------------------------------------------------------------//
 
   ///
-  //
+  ///
   ///
   bitset_t &
   attributes()
@@ -163,7 +160,7 @@ struct sparse_accessor_t
   //--------------------------------------------------------------------------//
 
   ///
-  //
+  ///
   ///
   T &
   operator () (
@@ -259,7 +256,7 @@ struct sparse_accessor_t
   }
 
   ///
-  //
+  ///
   ///
   void dump()
   {
@@ -278,7 +275,7 @@ struct sparse_accessor_t
   } // dump
 
   ///
-  //
+  ///
   ///
   T *
   data()
@@ -316,12 +313,12 @@ struct sparse_mutator_t {
   //--------------------------------------------------------------------------//
 
   ///
-  //
+  ///
   ///
   sparse_mutator_t() {}
 
   ///
-  //
+  ///
   ///
   sparse_mutator_t(
     size_t num_slots,
@@ -337,13 +334,17 @@ struct sparse_mutator_t {
     meta_data_(meta_data),
     num_indices_(meta_data_.size),
     num_entries_(meta_data_.num_entries),
-    indices_(new index_pair_[num_indices_]),
+    indices_(new size_t[num_indices_]),
     entries_(new entry_value_t[num_indices_ * num_slots_]),
     erase_set_(nullptr)
-  {}
+  {
+    for(size_t i = 0; i < num_indices_; ++i){
+      indices_[i] = 0;
+    }
+  }
 
   ///
-  //
+  ///
   ///
   ~sparse_mutator_t()
   {
@@ -359,10 +360,8 @@ struct sparse_mutator_t {
     assert(indices_ && "sparse mutator has alread been committed");
     assert(index < num_indices_ && entry < num_entries_);
 
-    index_pair_ & ip = indices_[index];
-    
-    size_t n = ip.second - ip.first;
-    
+    size_t n = indices_[index];
+
     if(n >= num_slots_) {
       return spare_map_.emplace(index,
         entry_value_t(entry))->second.value;
@@ -384,7 +383,7 @@ struct sparse_mutator_t {
 
     itr->entry = entry;
 
-    ++ip.second;
+    ++indices_[index];
 
     return itr->value;
   } // operator ()
@@ -450,10 +449,8 @@ struct sparse_mutator_t {
     entry_value_t * entries_end = entries + s / ev_bytes;
 
     for(size_t i = 0; i < num_indices_; ++i) {
-      index_pair_ & ip = indices_[i];
+      size_t n = indices_[i];
       
-      size_t n = ip.second - ip.first;
-
       size_t pos = indices[i];
 
       if(n == 0) {
@@ -568,7 +565,7 @@ private:
 
   size_t num_indices_;
   size_t num_entries_;
-  index_pair_ * indices_;
+  size_t * indices_;
   entry_value__<T> * entries_;
   spare_map_t spare_map_;
   erase_set_t * erase_set_;
@@ -658,7 +655,7 @@ struct storage_type_t<sparse, DS, MD> {
   } // register_data
 
   ///
-  //
+  ///
   ///
   template<
     typename T,
@@ -690,7 +687,7 @@ struct storage_type_t<sparse, DS, MD> {
   } // get_accessor
 
   ///
-  //
+  ///
   ///
   template<
     typename T,
@@ -724,7 +721,7 @@ struct storage_type_t<sparse, DS, MD> {
   } // get_accessor
 
   ///
-  //
+  ///
   ///
   template<
     typename T,

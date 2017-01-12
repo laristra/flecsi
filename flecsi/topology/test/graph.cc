@@ -26,7 +26,7 @@ TEST(graph, cell_to_cell_thru_vertices) {
   } // scope
 
   {
-  clog_tag_scope(neighbors);
+  clog_tag_guard(neighbors);
 
   neighbor_test(0, std::set<size_t>({ 1, 4, 5 }));
   neighbor_test(1, std::set<size_t>({ 0, 2, 4, 5, 6 }));
@@ -44,7 +44,7 @@ TEST(graph, cell_to_cell_thru_vertices) {
   neighbor_test(13, std::set<size_t>({ 8, 9, 10, 12, 14 }));
   neighbor_test(14, std::set<size_t>({ 9, 10, 11, 13, 15 }));
   neighbor_test(15, std::set<size_t>({ 10, 11, 14 }));
-  } // scope
+  } // guard
 
 #undef neighbor_test
 
@@ -64,7 +64,7 @@ TEST(graph, cell_to_cell_thru_edges) {
   } // scope
 
   {
-  clog_tag_scope(neighbors);
+  clog_tag_guard(neighbors);
 
   neighbor_test(0, std::set<size_t>({ 1, 4 }));
   neighbor_test(1, std::set<size_t>({ 0, 2, 5 }));
@@ -82,7 +82,7 @@ TEST(graph, cell_to_cell_thru_edges) {
   neighbor_test(13, std::set<size_t>({ 9, 12, 14 }));
   neighbor_test(14, std::set<size_t>({ 10, 13, 15 }));
   neighbor_test(15, std::set<size_t>({ 11, 14 }));
-  } // scope
+  } // guard
 
 #undef neighbor_test
 
@@ -134,7 +134,7 @@ TEST(graph, vertex_referencers) {
   } // scope
 
   {
-  clog_tag_scope(referencers);
+  clog_tag_guard(referencers);
 
   referencers_test(0, std::set<size_t>({ 0 }));
   referencers_test(1, std::set<size_t>({ 0, 1 }));
@@ -161,7 +161,7 @@ TEST(graph, vertex_referencers) {
   referencers_test(22, std::set<size_t>({ 13, 14 }));
   referencers_test(23, std::set<size_t>({ 14, 15 }));
   referencers_test(24, std::set<size_t>({ 15 }));
-  } // scope
+  } // guard
 
 #undef referencers_test
 

@@ -29,6 +29,21 @@ endif()
 set(FLECSI_RUNTIME_LIBRARIES)
 
 #------------------------------------------------------------------------------#
+# OpenSSL
+#------------------------------------------------------------------------------#
+
+option(ENABLE_OPENSSL "Enable OpenSSL Support" OFF)
+
+if(ENABLE_OPENSSL)
+  find_package(OpenSSL REQUIRED)
+
+  if(OPENSSL_FOUND)
+    include_directories(${OPENSSL_INCLUDE_DIR})
+    add_definitions(-DENABLE_OPENSSL)
+  endif()
+endif()
+
+#------------------------------------------------------------------------------#
 # Find Legion
 #------------------------------------------------------------------------------#
 

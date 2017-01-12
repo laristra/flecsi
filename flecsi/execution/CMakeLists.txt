@@ -107,7 +107,7 @@ cinch_add_unit(task
     ${RUNTIME_DRIVER}
   DEFINES
     FLECSI_DRIVER=flecsi/execution/test/task_driver.h
-    GTEST_INIT=flecsi/execution/test/task_init.h
+    TEST_INIT=flecsi/execution/test/task_init.h
   POLICY
     ${UNIT_POLICY}
   LIBRARIES
@@ -142,7 +142,7 @@ if(NOT DEFINED ENV{TRAVIS})
         legion/dpd.cc
       DEFINES
         FLECSI_DRIVER=flecsi/execution/test/task_driver.h
-        GTEST_INIT=flecsi/execution/test/task_init.h
+        TEST_INIT=flecsi/execution/test/task_init.h
       POLICY MPILEGION
       LIBRARIES
       flecsi
@@ -181,7 +181,7 @@ if(NOT DEFINED ENV{TRAVIS})
           test/simple2d-8x8.msh
         DEFINES SPRINT_TEST
           FLECSI_DRIVER=flecsi/execution/test/sprint.h
-          GTEST_INIT=flecsi/execution/test/task_init.h
+          TEST_INIT=flecsi/execution/test/task_init.h
         LIBRARIES ${PARTITION_LIBRARIES}
         POLICY MPILEGION
         THREADS 2

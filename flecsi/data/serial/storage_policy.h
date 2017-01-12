@@ -33,9 +33,8 @@
 #include "flecsi/data/serial/tuple.h"
 
 ///
-// \file serial/storage_policy.h
-// \authors bergen
-// \date Initial file creation: Apr 17, 2016
+/// \file
+/// \date Initial file creation: Apr 17, 2016
 ///
 
 namespace flecsi {
@@ -76,7 +75,6 @@ struct serial_storage_policy_t {
     for (auto & sub_map : data_store_) {
 
       // the namespace data
-      auto & namespace_key = sub_map.first;
       auto & meta_data = sub_map.second;
       
       // loop over each element in the namespace
@@ -112,7 +110,6 @@ struct serial_storage_policy_t {
     for (auto & sub_map : data_store_) {
 
       // the namespace data
-      auto & namespace_key = sub_map.first;
       auto & namespace_data = sub_map.second;
       
       // loop over each element in the namespace
@@ -142,7 +139,6 @@ struct serial_storage_policy_t {
     for ( auto & sub_map : data_store_ ) {
 
       // the namespace data
-      auto & namespace_key = sub_map.first;
       auto & meta_data = sub_map.second;
 
       // create a temporary map
@@ -158,7 +154,7 @@ struct serial_storage_policy_t {
         auto & label = itr->second.label;
         // now build the hash for this label
         auto key_hash = 
-          utils::hash<utils::const_string_t::hash_type_t>( label, label.size() );
+          utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
         auto from_hash = key_hash ^ from;
         // test if it should be moved, and move it
         if ( meta_data_key == from_hash ) {

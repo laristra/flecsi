@@ -83,12 +83,15 @@ class dimensioned_array
 
   //! \brief Constructor with initializer list
   //! \param[in] list the initializer list of values
-  template <typename... Args,
-      typename = typename std::enable_if<sizeof...(Args) == D &&
+  template<
+    typename... Args,
+    typename = typename std::enable_if<sizeof...(Args) == D &&
           areTypeT<T, Args...>::value>::type>
-  dimensioned_array(Args... args)
+  dimensioned_array(
+    Args ... args
+  )
   {
-    data_ = {args...};
+    data_ = { args ...};
   }
 
   //! \brief Constructor with one value.

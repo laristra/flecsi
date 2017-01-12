@@ -9,9 +9,8 @@
 #include "flecsi/data/storage.h"
 
 ///
-// \file data.h
-// \authors bergen
-// \date Initial file creation: Aug 01, 2016
+/// \file
+/// \date Initial file creation: Aug 01, 2016
 ///
 
 ///
@@ -166,21 +165,22 @@
 
 
 ///
-//
 ///
-#define get_mutator(client, nspace, name, data_type, storage_type, \
-  version, slots)                                                  \
-  flecsi::data::storage_t::instance().get_mutator<flecsi::data::storage_type, data_type, \
+///
+#define get_mutator(client, nspace, name, data_type, storage_type,             \
+  version, slots)                                                              \
+  flecsi::data::storage_t::instance().get_mutator<flecsi::data::storage_type,  \
+    data_type,                                                                 \
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>(       \
     client, EXPAND_AND_STRINGIFY(name), slots, version)
 
 ///
-//
 ///
-#define get_handle(client, nspace, name, data_type, storage_type,     \
-  version, privileges)                                                \
-  flecsi::data::storage_t::instance().get_handle<flecsi::data::storage_type, data_type, \
-    privileges,                                                                \
+///
+#define get_handle(client, nspace, name, data_type, storage_type,              \
+  version, privileges)                                                         \
+  flecsi::data::storage_t::instance().get_handle<flecsi::data::storage_type,   \
+    data_type, privileges,                                                     \
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>(       \
       client, EXPAND_AND_STRINGIFY(name), version)
 

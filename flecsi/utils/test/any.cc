@@ -91,9 +91,9 @@ TEST(any, simple) {
 
 //  std::shared_ptr<any_t> original_ptr = std::make_shared<any_t>(ip);
 
-  void* void_ptr = reinterpret_cast<void*>(&A);
+  //void* void_ptr = reinterpret_cast<void*>(&A);
 
-  any_t* new_ptr = reinterpret_cast<any_t*>(void_ptr);
+  //any_t* new_ptr = reinterpret_cast<any_t*>(void_ptr);
 
     //assert(typeid(new_ptr->type())==typeid(index_partition_t));
   //double* a=flecsi::utils::any_cast<double>(new_ptr);

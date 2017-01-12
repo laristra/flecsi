@@ -259,7 +259,7 @@ struct mpilegion_execution_policy_t
     std::function<R(As ...)> & user_function
   )
   {
-    context_t::instance().register_function(key, user_function);
+    return context_t::instance().register_function(key, user_function);
   } // register_function
 
   /*!

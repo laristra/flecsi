@@ -74,9 +74,9 @@ public:
     }
 
   private:
+    double mass_;
     point_t position_;
     point_t velocity_;
-    double mass_;
   };
 
   using entity_t = body;
@@ -166,6 +166,8 @@ TEST(tree_topology, gravity) {
     t.insert(bi);
   }
 
+#if 0
+	// These are unused.
   size_t ix = 0;
 
   auto f = [&](body* b, body* b0){
@@ -176,6 +178,7 @@ TEST(tree_topology, gravity) {
     b0->interact(b);
     ++ix;
   };
+#endif
 
   std::mutex mtx;
 

@@ -13,8 +13,7 @@
 
 #include <iostream>
 
-//#include <legion_utilities.h>
-
+#include <legion_utilities.h>
 #include "flecsi/execution/task_ids.h"
 
 using namespace std;
@@ -49,10 +48,12 @@ namespace execution {
 
   } // namespace
 
-  void legion_dpd::init_connectivity_task(
+  void
+  legion_dpd::init_connectivity_task(
     const Task* task,
     const std::vector<PhysicalRegion>& regions,
-    Context ctx, Runtime* runtime){
+    Context ctx, Runtime* runtime)
+  {
  
     field_ids_t & fid_t = field_ids_t::instance(); 
 
@@ -135,10 +136,12 @@ namespace execution {
     from_ac.write(from_itr.next(), pc);
   }
 
-  void legion_dpd::init_data_task(
+  void
+  legion_dpd::init_data_task(
     const Task* task,
     const std::vector<PhysicalRegion>& regions,
-    Context ctx, Runtime* runtime){
+    Context ctx, Runtime* runtime)
+  {
 
     field_ids_t & fid_t = field_ids_t::instance();
 
@@ -191,9 +194,12 @@ namespace execution {
     }
   }
 
-  void legion_dpd::create_data_(partitioned_unstructured& indices,
-                                size_t start_reserve,
-                                size_t value_size){
+  void
+  legion_dpd::create_data_(
+    partitioned_unstructured& indices,
+    size_t start_reserve,
+    size_t value_size)
+  {
     field_ids_t & fid_t = field_ids_t::instance();
 
     from_ = indices;
@@ -251,10 +257,13 @@ namespace execution {
     fm.wait_all_results();
   }
 
-  void legion_dpd::commit_(commit_data<char>& cd, size_t value_size){
+  void
+  legion_dpd::commit_(
+    commit_data<char>& cd,
+    size_t value_size)
+  {
     field_ids_t & fid_t = field_ids_t::instance();
 
-#if 0
     ArgumentMap arg_map;
 
     Domain d = h.domain_from_point(cd.partition);
@@ -266,8 +275,8 @@ namespace execution {
     args.slot_size = cd.slot_size;
     args.num_slots = cd.num_slots;
     args.num_indices = cd.num_indices;
-    args.indices_buf_size = 2 * sizeof(size_t) * cd.num_indices;
-    args.entries_buf_size = cd.slot_size * cd.num_slots * value_size;
+    args.indices_buf_size = sizeof(size_t) * cd.num_indices;
+    args.entries_buf_size = cd.num_slots * (sizeof(size_t) + value_size);
 
     Serializer serializer;
     serializer.serialize(cd.indices, args.indices_buf_size); 
@@ -309,11 +318,12 @@ namespace execution {
     DomainPoint dp = DomainPoint::from_point<1>(make_point(partition));
     partition_metadata md = fm.get_result<partition_metadata>(dp);
     put_partition_metadata(md);
-#endif
   }
 
   legion_dpd::partition_metadata
-  legion_dpd::get_partition_metadata(size_t partition){
+  legion_dpd::get_partition_metadata(
+    size_t partition)
+  {
 
     field_ids_t & fid_t = field_ids_t::instance();  
  
@@ -372,7 +382,8 @@ namespace execution {
   legion_dpd::get_partition_metadata_task(
     const Task* task,
     const std::vector<PhysicalRegion>& regions,
-    Context context, Runtime* runtime){
+    Context context, Runtime* runtime)
+  {
 
     field_ids_t & fid_t = field_ids_t::instance();
   
@@ -386,10 +397,12 @@ namespace execution {
     return md;
   }
 
-  void legion_dpd::put_partition_metadata_task(
+  void
+  legion_dpd::put_partition_metadata_task(
     const Task* task,
     const std::vector<PhysicalRegion>& regions,
-    Context context, Runtime* runtime){
+    Context context, Runtime* runtime)
+  {
 
     field_ids_t & fid_t = field_ids_t::instance();
 
@@ -403,11 +416,13 @@ namespace execution {
     ac.write(DomainPoint::from_point<1>(p), md);
   }
 
-  legion_dpd::partition_metadata legion_dpd::commit_data_task(
+  legion_dpd::partition_metadata
+  legion_dpd::commit_data_task(
     const Task* task,
     const std::vector<PhysicalRegion>& regions,
-    Context context, Runtime* runtime){
-#if 0
+    Context context, Runtime* runtime)
+  {
+
     field_ids_t & fid_t = field_ids_t::instance();
 
     legion_helper h(runtime, context);
@@ -434,7 +449,7 @@ namespace execution {
 
     char* commit_entry_values = (char*)entries_buf;
 
-    index_pair* commit_indices = (index_pair*)indices_buf;
+    size_t* commit_indices = (size_t*)indices_buf;
 
     entry_offset* entry_offsets;
     h.get_buffer(regions[0], entry_offsets, fid_t.fid_entry_offset);
@@ -501,50 +516,109 @@ namespace execution {
 
     IndexIterator ent_itr(runtime, context, ent_is);
 
+    size_t offset = 0;
+
+    char* value_ptr = values + md.size * value_size;
+    size_t value_offset = md.size;
+
+    vector<size_t> offsets(md.size);
+
+    size_t added = 0;
+
     for(size_t i = 0; i < num_indices; ++i){
       assert(ent_itr.has_next());
+
       ptr_t ptr = ent_itr.next();
 
+      size_t n = commit_indices[i];
+
       offset_count oc = ent_ac.read(ptr);
-
-      const index_pair& ip = commit_indices[i];
-
-      size_t n = ip.second - ip.first;
-
-      size_t pos = oc.offset;
+      oc.offset = offset;
 
       if(n == 0){
-        oc.count = 0;
+        offset += oc.count;
         ent_ac.write(ptr, oc);
         continue;
       }
 
-      for(int j = 0; j < n; ++j){
-
+      for(int j = md.size + added; j > offset; --j){
+        entry_offsets[j + n] = entry_offsets[j];
       }
 
-      char* start = commit_entry_values + i * num_slots * entry_value_size;
-      char* end = start + n * entry_value_size; 
+      added += n;
 
-      //ent_ac.write(ptr, oc);
+      for(size_t j = 0; j < n; ++j){
+        entry_offset& ej = entry_offsets[offset + j];
+        
+        size_t pos = (i * slot_size + j) * entry_value_size;
+
+        ej.entry = 
+          ((entry_offset*)(commit_entry_values + pos))->entry;
+
+        offsets.push_back(value_offset);
+        ej.offset = value_offset++;
+
+        char* value = commit_entry_values + pos + sizeof(size_t);
+        memcpy(value_ptr, value, value_size);
+        value_ptr += value_size;
+      }
+
+      auto cmp = [](const auto & k1, const auto & k2) -> bool{
+        return k1.entry < k2.entry;
+      };
+
+      inplace_merge(entry_offsets + offset,
+                    entry_offsets + offset + n,
+                    entry_offsets + offset + oc.count + n, cmp);
+
+      oc.count += n;
+      offset += oc.count;
+
+      ent_ac.write(ptr, oc);
     }
 
-/*
-    IndexIterator ent_itr(runtime, context, ent_is);
-    while(ent_itr.has_next()){
-      ptr_t ptr = ent_itr.next();
-      const offset_count& oc = ent_ac.read(ptr);
-      //np(oc.offset);
-      //np(oc.count);
+    for(size_t i = 0; i < md.size; ++i){
+      offsets[entry_offsets[i].offset] = i;
+    }
+
+    md.size = offset;
+
+    char* temp = new char[value_size];
+
+    for(size_t i = 0; i < md.size; ++i){
+      size_t j = offsets[i];
+
+      if(j != i){
+        memcpy(temp, values + i * value_size, value_size);
+        
+        memcpy(values + i * value_size,
+               values + j * value_size,
+               value_size);
+        
+        memcpy(values + j * value_size, temp, value_size);
+
+        offsets[i] = i;
+        offsets[j] = j;
+
+        entry_offsets[i].offset = i;
+        entry_offsets[j].offset = j;
+      }
+    }
+
+    delete[] temp;        
+
+    /*
+    np("************");
+
+    char* value_ptr2 = values;
+    for(size_t i = 0; i < md.size; ++i){
+      cout << "entry: " << entry_offsets[i].entry << 
+        " value: " << *((double*)value_ptr2) << endl;
+      value_ptr2 += value_size;
     }
     */
 
-    if(resized){
-      runtime->unmap_region(context, pr);
-    }
-
     return md;
-#endif
   }  
 
   void
@@ -553,7 +627,8 @@ namespace execution {
     partitioned_unstructured& from,
     size_t to_dim,
     partitioned_unstructured& to,
-    partitioned_unstructured& raw_connectivity){
+    partitioned_unstructured& raw_connectivity)
+  {
     
     field_ids_t & fid_t = field_ids_t::instance();
 
@@ -654,7 +729,11 @@ namespace execution {
     fm.wait_all_results();
   }
 
-  void legion_dpd::dump(size_t from_dim, size_t to_dim){
+  void
+  legion_dpd::dump(
+    size_t from_dim,
+    size_t to_dim)
+  {
     RegionRequirement rr1(from_.lr, READ_ONLY, EXCLUSIVE, from_.lr);
 
     field_ids_t & fid_t = field_ids_t::instance();    

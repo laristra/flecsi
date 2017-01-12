@@ -27,11 +27,12 @@
 #include "flecsi/topology/graph_utils.h"
 #include "flecsi/utils/set_utils.h"
 
-const size_t output_rank = 0;
-
 clog_register_tag(partition);
 
 DEVEL(partition) {
+
+  // Set the output rank
+  clog_set_output_rank(2);
 
   using entry_info_t = flecsi::dmp::entry_info_t;
 
@@ -42,7 +43,16 @@ DEVEL(partition) {
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   // Create a mesh definition from file.
+#if 0
+  const size_t M(8), N(8);
   flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
+#endif
+  const size_t M(16), N(16);
+  flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
+#if 0
+  const size_t M(32), N(32);
+  flecsi::io::simple_definition_t sd("simple2d-32x32.msh");
+#endif
 
   // Create the dCRS representation for the distributed partitioner.
   auto dcrs = flecsi::dmp::make_dcrs(sd);
@@ -54,10 +64,9 @@ DEVEL(partition) {
   auto primary = partitioner->partition(dcrs);
 
   {
-  clog_tag_scope(partition);
-  clog_container_rank(info, "primary partition", primary,
-    clog::space, output_rank);
-  } // scope
+  clog_tag_guard(partition);
+  clog_container_one(info, "primary partition", primary, clog::space);
+  } // guard
 
   // Compute the dependency closure of the primary cell partition
   // through vertex intersections (specified by last argument "1").
@@ -65,9 +74,9 @@ DEVEL(partition) {
   auto closure = flecsi::topology::entity_closure<2,2,0>(sd, primary);
 
   {
-  clog_tag_scope(partition);
-  clog_container_rank(info, "closure", closure, clog::space, output_rank);
-  } // scope
+  clog_tag_guard(partition);
+  clog_container_one(info, "closure", closure, clog::space);
+  } // guard
 
   // Subtracting out the initial set leaves just the nearest
   // neighbors. This is similar to the image of the adjacency
@@ -75,10 +84,9 @@ DEVEL(partition) {
   auto nearest_neighbors = flecsi::utils::set_difference(closure, primary);
 
   {
-  clog_tag_scope(partition);
-  clog_container_rank(info, "nearest neighbors", nearest_neighbors,
-    clog::space, output_rank);
-  } // scope
+  clog_tag_guard(partition);
+  clog_container_one(info, "nearest neighbors", nearest_neighbors, clog::space);
+  } // guard
 
   // We can iteratively add halos of nearest neighbors, e.g.,
   // here we add the next nearest neighbors. For most mesh types
@@ -88,19 +96,10 @@ DEVEL(partition) {
     flecsi::topology::entity_closure<2,2,0>(sd, nearest_neighbors);
 
   {
-  clog_tag_scope(partition);
-  clog_container_rank(info, "nearest neighbor closure",
-    nearest_neighbor_closure, clog::space, output_rank);
-  } // scope
-
-#if 0
-  // The closure of the nearest neighbors intersected with
-  // the initial indeces gives the shared indices. This is similar to
-  // the preimage of the nearest neighbors.
-  auto shared = flecsi::utils::set_intersection(nearest_neighbor_closure,
-    primary);
-  auto exclusive = flecsi::utils::set_difference(primary, shared);
-#endif
+  clog_tag_guard(partition);
+  clog_container_one(info, "nearest neighbor closure",
+    nearest_neighbor_closure, clog::space);
+  } // guard
 
   // Subtracting out the closure leaves just the
   // next nearest neighbors.
@@ -108,10 +107,10 @@ DEVEL(partition) {
     flecsi::utils::set_difference(nearest_neighbor_closure, closure);
 
   {
-  clog_tag_scope(partition);
-  clog_container_rank(info, "next nearest neighbor", next_nearest_neighbors,
-    clog::space, output_rank);
-  } // scope
+  clog_tag_guard(partition);
+  clog_container_one(info, "next nearest neighbor", next_nearest_neighbors,
+    clog::space);
+  } // guard
 
   // The union of the nearest and next-nearest neighbors gives us all
   // of the cells that might reference a vertex that we need.
@@ -119,10 +118,9 @@ DEVEL(partition) {
     next_nearest_neighbors);
 
   {
-  clog_tag_scope(partition);
-  clog_container_rank(info, "all neighbors", all_neighbors,
-    clog::space, output_rank);
-  } // scope
+  clog_tag_guard(partition);
+  clog_container_one(info, "all neighbors", all_neighbors, clog::space);
+  } // guard
 
   // Create a communicator instance to get neighbor information.
   auto communicator = std::make_shared<flecsi::dmp::mpi_communicator_t>();
@@ -179,17 +177,12 @@ DEVEL(partition) {
   } // scope
 
   {
-  clog_tag_scope(partition);
-  clog_container_rank(info, "exclusive cells ", exclusive_cells,
-    clog::newline, output_rank);
-  clog_container_rank(info, "shared cells ", shared_cells,
-    clog::newline, output_rank);
-  clog_container_rank(info, "ghost cells ", ghost_cells,
-    clog::newline, output_rank);
-  } // scope
+  clog_tag_guard(partition);
+  clog_container_one(info, "exclusive cells ", exclusive_cells, clog::newline);
+  clog_container_one(info, "shared cells ", shared_cells, clog::newline);
+  clog_container_one(info, "ghost cells ", ghost_cells, clog::newline);
+  } // guard
 
-// FIXME
-#if 1
   // Create a map version for lookups below.
   std::unordered_map<size_t, entry_info_t> shared_cells_map;
   {
@@ -197,18 +190,9 @@ DEVEL(partition) {
     shared_cells_map[i.id] = i;
   } // for
   } // scope
-#endif
 
   // Form the vertex closure
   auto vertex_closure = flecsi::topology::vertex_closure<2>(sd, closure);
-
-#if 0
-  std::cout << "rank " << rank << " vertex closure: " << std::endl;
-  for(auto i: vertex_closure) {
-    std::cout << i << " ";
-  } // for
-  std::cout << std::endl;
-#endif
 
   // Assign vertex ownership
   std::vector<std::set<size_t>> vertex_requests(size);
@@ -219,16 +203,6 @@ DEVEL(partition) {
 
     // Get the set of cells that reference this vertex.
     auto referencers = flecsi::topology::vertex_referencers<2>(sd, i);
-
-#if 0
-  if(rank == output_rank) {
-    std::cout << "vertex " << i << " is referenced by cells: ";
-    for(auto c: referencers) {
-      std::cout << c << " ";
-    } // for
-    std::cout << std::endl;
-  } // if
-#endif
 
     size_t min_rank(std::numeric_limits<size_t>::max());
     std::set<size_t> shared_vertices;
@@ -264,27 +238,6 @@ DEVEL(partition) {
     } // fi
   } // for
 
-#if 0
-  if(rank == output_rank) {
-    std::cout << "vertex info" << std::endl;
-    for(auto i: vertex_info) {
-      std::cout << i << std::endl;
-    } // for
-  } // if
-
-  if(rank == output_rank) {
-    std::cout << "rank " << rank << " vertex requests" << std::endl;
-    size_t r(0);
-    for(auto i: vertex_requests) {
-      std::cout << "rank " << r++ << std::endl;
-      for(auto s: i) {
-        std::cout << s << " ";
-      } // for
-      std::cout << std::endl;
-    } // for
-  } // if
-#endif
-
   auto vertex_offset_info =
     communicator->get_vertex_info(vertex_info, vertex_requests);
 
@@ -316,14 +269,142 @@ DEVEL(partition) {
   } // scope
 
   {
-  clog_tag_scope(partition);
-  clog_container_rank(info, "exclusive vertices ", exclusive_vertices,
-    clog::newline, output_rank);
-  clog_container_rank(info, "shared vertices ", shared_vertices,
-    clog::newline, output_rank);
-  clog_container_rank(info, "ghost vertices ", ghost_vertices,
-    clog::newline, output_rank);
-  } // scope
+  clog_tag_guard(partition);
+  clog_container_one(info, "exclusive vertices ", exclusive_vertices,
+    clog::newline);
+  clog_container_one(info, "shared vertices ", shared_vertices, clog::newline);
+  clog_container_one(info, "ghost vertices ", ghost_vertices, clog::newline);
+  } // guard
+
+#if 1
+  std::vector<std::pair<std::string, std::string>> colors = {
+    { "blue", "blue!40!white" },
+    { "green!60!black", "green!60!white" },
+    { "black", "black!40!white" },
+    { "red", "red!40!white" },
+    { "violet", "violet!40!white" }
+  };
+
+  std::stringstream texname;
+  texname << "simple2d-" << rank << "-" << M << "x" << N << ".tex";
+  std::ofstream tex(texname.str(), std::ofstream::out);
+
+  tex << "% Mesh visualization" << std::endl;
+  tex << "\\documentclass[tikz,border=7mm]{standalone}" << std::endl;
+  tex << std::endl;
+
+  tex << "\\begin{document}" << std::endl;
+  tex << std::endl;
+
+  tex << "\\begin{tikzpicture}" << std::endl;
+  tex << std::endl;
+
+  tex << "\\draw[step=1cm,black] (0, 0) grid (" <<
+    M << ", " << N << ");" << std::endl;
+
+  // maps
+  std::unordered_map<size_t, entry_info_t> exclusive_cells_map;
+  for(auto i: exclusive_cells) {
+    exclusive_cells_map[i.id] = i;
+  } // for
+
+#if 0
+  std::unordered_map<size_t, entry_info_t> shared_cells_map;
+  for(auto i: shared_cells) {
+    shared_cells_map[i.id] = i;
+  } // for
+#endif
+
+  std::unordered_map<size_t, entry_info_t> ghost_cells_map;
+  for(auto i: ghost_cells) {
+    ghost_cells_map[i.id] = i;
+  } // for
+
+  size_t cell(0);
+  for(size_t j(0); j<M; ++j) {
+    double yoff(0.5+j);
+    for(size_t i(0); i<M; ++i) {
+      double xoff(0.5+i);
+
+      // Cells
+      auto ecell = exclusive_cells_map.find(cell);
+      auto scell = shared_cells_map.find(cell);
+      auto gcell = ghost_cells_map.find(cell);
+
+      if(ecell != exclusive_cells_map.end()) {
+        tex << "\\node[" << std::get<0>(colors[rank]) <<
+          "] at (" << xoff << ", " << yoff <<
+          ") {" << cell++ << "};" << std::endl;
+      }
+      else if(scell != shared_cells_map.end()) {
+        tex << "\\node[" << std::get<1>(colors[rank]) <<
+          "] at (" << xoff << ", " << yoff <<
+          ") {" << cell++ << "};" << std::endl;
+      }
+      else if(gcell != ghost_cells_map.end()) {
+        tex << "\\node[" << std::get<1>(colors[gcell->second.rank]) <<
+          "] at (" << xoff << ", " << yoff <<
+          ") {" << cell++ << "};" << std::endl;
+      }
+      else {
+        tex << "\\node[white] at (" << xoff << ", " << yoff <<
+          ") {" << cell++ << "};" << std::endl;
+      } // if
+    } // for
+  } // for
+
+  std::unordered_map<size_t, entry_info_t> exclusive_vertices_map;
+  for(auto i: exclusive_vertices) {
+    exclusive_vertices_map[i.id] = i;
+  } // for
+
+  std::unordered_map<size_t, entry_info_t> shared_vertices_map;
+  for(auto i: shared_vertices) {
+    shared_vertices_map[i.id] = i;
+  } // for
+
+  std::unordered_map<size_t, entry_info_t> ghost_vertices_map;
+  for(auto i: ghost_vertices) {
+    ghost_vertices_map[i.id] = i;
+  } // for
+
+  size_t vertex(0);
+  for(size_t j(0); j<M+1; ++j) {
+    double yoff(j-0.15);
+    for(size_t i(0); i<N+1; ++i) {
+      double xoff(i-0.2);
+
+      auto evertex = exclusive_vertices_map.find(vertex);
+      auto svertex = shared_vertices_map.find(vertex);
+      auto gvertex = ghost_vertices_map.find(vertex);
+
+      if(evertex != exclusive_vertices_map.end()) {
+        tex << "\\node[" << std::get<0>(colors[rank]) <<
+          "] at (" << xoff << ", " << yoff <<
+          ") { \\scriptsize " << vertex++ << "};" << std::endl;
+      }
+      else if(svertex != shared_vertices_map.end()) {
+        tex << "\\node[" << std::get<1>(colors[rank]) <<
+          "] at (" << xoff << ", " << yoff <<
+          ") { \\scriptsize " << vertex++ << "};" << std::endl;
+      }
+      else if(gvertex != ghost_vertices_map.end()) {
+        tex << "\\node[" << std::get<1>(colors[gvertex->second.rank]) <<
+          "] at (" << xoff << ", " << yoff <<
+          ") { \\scriptsize " << vertex++ << "};" << std::endl;
+      }
+      else {
+        tex << "\\node[white] at (" << xoff << ", " << yoff <<
+          ") { \\scriptsize " << vertex++ << "};" << std::endl;
+      } // if
+    } // for
+  } // for
+
+  tex << "\\end{tikzpicture}" << std::endl;
+  tex << std::endl;
+
+  tex << "\\end{document}" << std::endl;
+#endif
 
 // We will need to discuss how to expose customization to user
 // specializations. The particular configuration of ParMETIS is
