@@ -87,10 +87,10 @@
 //
 //
 //
-#define reflection_variable(r, data, i, x)                                     \
+#define reflection_variable(r, data, i, t)                                     \
                                                                                \
   /* This line adds the member data. */                                        \
-  __snip(x);                                                                   \
+  __snip(t);                                                                   \
                                                                                \
   /* Interface for each data member. */                                        \
   template<                                                                    \
@@ -109,11 +109,11 @@
     {}                                                                         \
                                                                                \
     /* Return a const reference to the variable instance. */                   \
-    typename std::add_const<__typeof(x)>::type &                               \
+    typename std::add_const<__typeof(t)>::type &                               \
     get()                                                                      \
     const                                                                      \
     {                                                                          \
-      return self_.__strip(x);                                                 \
+      return self_.__strip(t);                                                 \
     }                                                                          \
                                                                                \
   }; /* struct reflection_variable__<i,S> */
@@ -131,7 +131,7 @@ struct reflection
   >
   struct num_variables
   {
-    static const size_t value = T::num_reflected_;
+    static constexpr size_t value = T::num_reflected_;
   }; // struct num_variables
 
   ///
