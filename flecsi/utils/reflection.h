@@ -7,6 +7,12 @@
 #define flecsi_utils_reflection_h
 
 #include <type_traits>
+
+#if !defined(ENABLE_BOOST_PREPROCESSOR)
+  #error ENABLE_BOOST_PREPROCESSOR not defined! \
+    This file depends on Boost.Preprocessor!
+#endif
+
 #include <boost/preprocessor.hpp>
 
 #include "flecsi/utils/utility.h"
@@ -137,7 +143,7 @@ struct reflection
   >
   static
   typename T::template reflection_variable__<N,T>
-  get_variable(
+  variable(
     T & t
   )
   {

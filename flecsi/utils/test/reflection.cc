@@ -28,7 +28,7 @@ DEVEL(reflection) {
 
   t.r1 = 2.0;
 
-  clog(info) << reflection::get_variable<0>(t).get() << std::endl;
+  clog(info) << reflection::variable<0>(t).get() << std::endl;
 } // DEVEL
 
 /*~------------------------------------------------------------------------~--*
