@@ -28,11 +28,11 @@ namespace execution {
 ///
 // \brief
 //
-// \tparam P ...
-// \tparam S ...
-// \tparam I ...
-// \tparam R ...
-// \tparam As ...
+// \tparam P processor type
+// \tparam S single type task
+// \tparam I index type task
+// \tparam R task return type
+// \tparam As arguments
 ///
 template<
   processor_t P,
