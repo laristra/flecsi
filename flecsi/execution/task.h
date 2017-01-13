@@ -92,7 +92,7 @@ struct task__
   {
     auto targs = std::make_tuple(args ...);
     return execution_policy_t::template execute_task<R>(
-      task_hash_t::make_key(address, processor,launch), parent,
+      task_hash_t::make_key(address, processor, launch), parent,
       user_task_handle, targs);
   } // execute
 

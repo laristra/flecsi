@@ -23,7 +23,6 @@ set(execution_HEADERS
 	function.h
 	kernel.h
 	task.h
-  PARENT_SCOPE
 )
 
 #------------------------------------------------------------------------------#
@@ -38,7 +37,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
     serial/context_policy.h
     serial/execution_policy.h
     serial/runtime_driver.h
-    PARENT_SCOPE
   )
 
   set(UNIT_POLICY SERIAL)
@@ -55,12 +53,10 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/runtime_driver.h
     legion/task_args.h
     legion/task_wrapper.h
-    PARENT_SCOPE
   )
 
   set(execution_SOURCES
     legion/dpd.cc
-    PARENT_SCOPE
   )
 
   set(UNIT_POLICY LEGION)
@@ -81,19 +77,27 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
     mpilegion/runtime_driver.h
     mpilegion/task_ids.h
     mpilegion/init_partitions_task.h 
-    PARENT_SCOPE
   )
 
   set(execution_SOURCES
     legion/dpd.cc
     mpilegion/init_partitions_task.cc
-    PARENT_SCOPE
   )
 
   set(UNIT_POLICY MPILEGION)
   set(RUNTIME_DRIVER mpilegion/runtime_driver.cc)
 
 endif()
+
+set(execution_HEADERS
+  ${execution_HEADERS}
+  PARENT_SCOPE
+)
+
+set(execution_SOURCES
+  ${execution_SOURCES}
+  PARENT_SCOPE
+)
 
 #------------------------------------------------------------------------------#
 # Unit tests.
