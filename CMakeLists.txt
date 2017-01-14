@@ -29,10 +29,10 @@ cmake_minimum_required(VERSION 2.8)
 # Include project-level CMake configuration file
 #------------------------------------------------------------------------------#
 
-if(EXISTS ${CMAKE_SOURCE_DIR}/cinch)
-    set(CINCH_SOURCE_DIR ${CMAKE_SOURCE_DIR}/cinch)
-elseif(NOT "$ENV{CINCH_SOURCE_DIR}" STREQUAL "")
+if(NOT "$ENV{CINCH_SOURCE_DIR}" STREQUAL "")
     set(CINCH_SOURCE_DIR $ENV{CINCH_SOURCE_DIR})
+elseif(EXISTS ${CMAKE_SOURCE_DIR}/cinch)
+    set(CINCH_SOURCE_DIR ${CMAKE_SOURCE_DIR}/cinch)
 endif()
 
 include(${CINCH_SOURCE_DIR}/cmake/ProjectLists.txt)
