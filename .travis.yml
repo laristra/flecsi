@@ -73,7 +73,7 @@ after_success:
       git fetch origin gh-pages && git checkout -b gh-pages FETCH_HEAD;
       mkdir -p assets;
       rm -rf assets/doxygen doc;
-      CON=$(docker run -d ${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG}) && docker cp ${CON}:/home/${TRAVIS_REPO_SLUG}/build/doc . ;
+      CON=$(docker run -d ${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG}) && docker cp ${CON}:/home/flecsi/flecsi/build/doc . ;
       mv doc/doxygen/html assets/doxygen;
       for i in doc/*.pdf; do mv ${i} ${i%-0.0*}.pdf; done;
       mv doc/*.pdf assets;
