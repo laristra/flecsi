@@ -41,7 +41,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -94,7 +93,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">data.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;flecsi/data/storage.h&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="storage_8h_source.html">flecsi/data/storage.h</a>&quot;</code><br />
 </div>
 <p><a href="data_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -121,13 +120,14 @@ Macros</h2></td></tr>
 <tr class="memitem:ab9a5a2bc2cbcd636f89f5513aa0a98a0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="data_8h.html#ab9a5a2bc2cbcd636f89f5513aa0a98a0">has_attribute</a>(_attribute_)</td></tr>
 <tr class="memdesc:ab9a5a2bc2cbcd636f89f5513aa0a98a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select specific variables with a particular attribute.  <a href="#ab9a5a2bc2cbcd636f89f5513aa0a98a0">More...</a><br /></td></tr>
 <tr class="separator:ab9a5a2bc2cbcd636f89f5513aa0a98a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8cd73a0a16c976d5f03c71e69a716022"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>get_mutator</b>(client,  nspace,  name,  data_type,  storage_type,  version,  slots)</td></tr>
-<tr class="separator:a8cd73a0a16c976d5f03c71e69a716022"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a685c1d517fcbd24daa6f538231b53897"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>get_mutator</b>(client,  nspace,  name,  data_type,  storage_type, version,  slots)</td></tr>
+<tr class="separator:a685c1d517fcbd24daa6f538231b53897"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa6dd42a6b83c958320240336b9e309b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>get_handle</b>(client,  nspace,  name,  data_type,  storage_type, version,  privileges)</td></tr>
 <tr class="separator:aaa6dd42a6b83c958320240336b9e309b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><dl class="section author"><dt>Authors</dt><dd>bergen </dd></dl>
+<div class="textblock"><dl class="section date"><dt>Date</dt><dd>Initial file creation: Aug 01, 2016</dd></dl>
+<dl class="section author"><dt>Authors</dt><dd>bergen </dd></dl>
 <dl class="section date"><dt>Date</dt><dd>Initial file creation: Oct 09, 2015 </dd></dl>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>
 <a class="anchor" id="acc5a579ddb5c8eee3053100dff51f6ca"></a>
@@ -177,7 +177,8 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">flecsi::data::storage_t::instance().get_accessor&lt;flecsi::data::storage_type, \</div><div class="line">    data_type, <a class="code" href="classflecsi_1_1const__string__t.html">flecsi::const_string_t</a>{EXPAND_AND_STRINGIFY(nspace)}.hash()&gt;(   \</div><div class="line">    client, EXPAND_AND_STRINGIFY(name), version)</div><div class="ttc" id="classflecsi_1_1const__string__t_html"><div class="ttname"><a href="classflecsi_1_1const__string__t.html">flecsi::const_string_t</a></div><div class="ttdef"><b>Definition:</b> const_string.h:37</div></div>
+<b>Value:</b><div class="fragment"><div class="line"><a class="code" href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">flecsi::data::storage_t::instance</a>().<a class="code" href="structflecsi_1_1data_1_1storage____.html#a7e38b78240da588d604f068d27fff80f">get_accessor</a>&lt;flecsi::data::storage_type, \</div><div class="line">    data_type,                                                                 \</div><div class="line">    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()&gt;(       \</div><div class="line">      client, EXPAND_AND_STRINGIFY(name), version)</div><div class="ttc" id="structflecsi_1_1data_1_1storage_____html_a7e38b78240da588d604f068d27fff80f"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#a7e38b78240da588d604f068d27fff80f">flecsi::data::storage__::get_accessor</a></div><div class="ttdeci">decltype(auto) get_accessor(const data_client_t &amp;data_client, const utils::const_string_t &amp;key, size_t version=0)</div><div class="ttdoc">get an accessor to registered data. </div><div class="ttdef"><b>Definition:</b> storage.h:121</div></div>
+<div class="ttc" id="structflecsi_1_1data_1_1storage_____html_a224613d41d8a70736637aedad289a132"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">flecsi::data::storage__::instance</a></div><div class="ttdeci">static storage__ &amp; instance()</div><div class="ttdoc">Return a static instance of the data manager. </div><div class="ttdef"><b>Definition:</b> storage.h:56</div></div>
 </div><!-- fragment -->
 <p>Access data with a data_client_t. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -241,7 +242,8 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">flecsi::data::storage_t::instance().get_accessors&lt;flecsi::data::storage_type,\</div><div class="line">    data_type, <a class="code" href="classflecsi_1_1const__string__t.html">flecsi::const_string_t</a>{EXPAND_AND_STRINGIFY(nspace)}.hash()&gt;(   \</div><div class="line">    client, version, ## __VA_ARGS__ )</div><div class="ttc" id="classflecsi_1_1const__string__t_html"><div class="ttname"><a href="classflecsi_1_1const__string__t.html">flecsi::const_string_t</a></div><div class="ttdef"><b>Definition:</b> const_string.h:37</div></div>
+<b>Value:</b><div class="fragment"><div class="line"><a class="code" href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">flecsi::data::storage_t::instance</a>().<a class="code" href="structflecsi_1_1data_1_1storage____.html#add205d5483e0e251363ccd5d4a8d8a37">get_accessors</a>&lt;flecsi::data::storage_type,\</div><div class="line">    data_type,                                                                 \</div><div class="line">    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()&gt;(       \</div><div class="line">      client, version, ## __VA_ARGS__ )</div><div class="ttc" id="structflecsi_1_1data_1_1storage_____html_add205d5483e0e251363ccd5d4a8d8a37"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#add205d5483e0e251363ccd5d4a8d8a37">flecsi::data::storage__::get_accessors</a></div><div class="ttdeci">decltype(auto) get_accessors(const data_client_t &amp;data_client, size_t version, P &amp;&amp;predicate, bool sorted=true)</div><div class="ttdoc">Return a std::vector of accessors to the stored states with type T in namespace NS satisfying the pre...</div><div class="ttdef"><b>Definition:</b> storage.h:189</div></div>
+<div class="ttc" id="structflecsi_1_1data_1_1storage_____html_a224613d41d8a70736637aedad289a132"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">flecsi::data::storage__::instance</a></div><div class="ttdeci">static storage__ &amp; instance()</div><div class="ttdoc">Return a static instance of the data manager. </div><div class="ttdef"><b>Definition:</b> storage.h:56</div></div>
 </div><!-- fragment -->
 <p>Get a list of all accessors in the namespace of a certain type. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -300,7 +302,9 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">flecsi::data::storage_t::instance().get_accessors&lt;flecsi::data::storage_type,\</div><div class="line">    data_type&gt;( client, version, ## __VA_ARGS__ )</div></div><!-- fragment -->
+<b>Value:</b><div class="fragment"><div class="line"><a class="code" href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">flecsi::data::storage_t::instance</a>().<a class="code" href="structflecsi_1_1data_1_1storage____.html#add205d5483e0e251363ccd5d4a8d8a37">get_accessors</a>&lt;flecsi::data::storage_type,\</div><div class="line">    data_type&gt;( client, version, ## __VA_ARGS__ )</div><div class="ttc" id="structflecsi_1_1data_1_1storage_____html_add205d5483e0e251363ccd5d4a8d8a37"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#add205d5483e0e251363ccd5d4a8d8a37">flecsi::data::storage__::get_accessors</a></div><div class="ttdeci">decltype(auto) get_accessors(const data_client_t &amp;data_client, size_t version, P &amp;&amp;predicate, bool sorted=true)</div><div class="ttdoc">Return a std::vector of accessors to the stored states with type T in namespace NS satisfying the pre...</div><div class="ttdef"><b>Definition:</b> storage.h:189</div></div>
+<div class="ttc" id="structflecsi_1_1data_1_1storage_____html_a224613d41d8a70736637aedad289a132"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">flecsi::data::storage__::instance</a></div><div class="ttdeci">static storage__ &amp; instance()</div><div class="ttdoc">Return a static instance of the data manager. </div><div class="ttdef"><b>Definition:</b> storage.h:56</div></div>
+</div><!-- fragment -->
 <p>Get a list of all accessors in the namespace of a certain type. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -369,11 +373,12 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">flecsi::data::storage_t::instance().get_handle&lt;flecsi::data::storage_type, data_type, \</div><div class="line">    privileges, <a class="code" href="classflecsi_1_1const__string__t.html">flecsi::const_string_t</a>{EXPAND_AND_STRINGIFY(nspace)}.hash()&gt;( \</div><div class="line">      client, EXPAND_AND_STRINGIFY(name), version)</div><div class="ttc" id="classflecsi_1_1const__string__t_html"><div class="ttname"><a href="classflecsi_1_1const__string__t.html">flecsi::const_string_t</a></div><div class="ttdef"><b>Definition:</b> const_string.h:37</div></div>
+<b>Value:</b><div class="fragment"><div class="line"><a class="code" href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">flecsi::data::storage_t::instance</a>().<a class="code" href="structflecsi_1_1data_1_1storage____.html#af9047f498b4d344cb6e80f56a66969bd">get_handle</a>&lt;flecsi::data::storage_type,   \</div><div class="line">    data_type, privileges,                                                     \</div><div class="line">    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()&gt;(       \</div><div class="line">      client, EXPAND_AND_STRINGIFY(name), version)</div><div class="ttc" id="structflecsi_1_1data_1_1storage_____html_af9047f498b4d344cb6e80f56a66969bd"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#af9047f498b4d344cb6e80f56a66969bd">flecsi::data::storage__::get_handle</a></div><div class="ttdeci">decltype(auto) get_handle(const data_client_t &amp;data_client, const utils::const_string_t &amp;key, size_t version=0)</div><div class="ttdoc">get a handle to registered data. </div><div class="ttdef"><b>Definition:</b> storage.h:317</div></div>
+<div class="ttc" id="structflecsi_1_1data_1_1storage_____html_a224613d41d8a70736637aedad289a132"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">flecsi::data::storage__::instance</a></div><div class="ttdeci">static storage__ &amp; instance()</div><div class="ttdoc">Return a static instance of the data manager. </div><div class="ttdef"><b>Definition:</b> storage.h:56</div></div>
 </div><!-- fragment -->
 </div>
 </div>
-<a class="anchor" id="a8cd73a0a16c976d5f03c71e69a716022"></a>
+<a class="anchor" id="a685c1d517fcbd24daa6f538231b53897"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -426,7 +431,9 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">flecsi::data::storage_t::instance().get_mutator&lt;flecsi::data::storage_type, data_type, \</div><div class="line">    flecsi::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()&gt;(          \</div><div class="line">    client, EXPAND_AND_STRINGIFY(name), slots, version)</div></div><!-- fragment -->
+<b>Value:</b><div class="fragment"><div class="line"><a class="code" href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">flecsi::data::storage_t::instance</a>().<a class="code" href="structflecsi_1_1data_1_1storage____.html#a6cd78bdef75e9b76302ceef7756777f0">get_mutator</a>&lt;flecsi::data::storage_type,  \</div><div class="line">    data_type,                                                                 \</div><div class="line">    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()&gt;(       \</div><div class="line">    client, EXPAND_AND_STRINGIFY(name), slots, version)</div><div class="ttc" id="structflecsi_1_1data_1_1storage_____html_a6cd78bdef75e9b76302ceef7756777f0"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#a6cd78bdef75e9b76302ceef7756777f0">flecsi::data::storage__::get_mutator</a></div><div class="ttdeci">decltype(auto) get_mutator(const data_client_t &amp;data_client, const utils::const_string_t &amp;key, size_t slots, size_t version=0)</div><div class="ttdoc">get an accessor to registered data. </div><div class="ttdef"><b>Definition:</b> storage.h:148</div></div>
+<div class="ttc" id="structflecsi_1_1data_1_1storage_____html_a224613d41d8a70736637aedad289a132"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">flecsi::data::storage__::instance</a></div><div class="ttdeci">static storage__ &amp; instance()</div><div class="ttdoc">Return a static instance of the data manager. </div><div class="ttdef"><b>Definition:</b> storage.h:56</div></div>
+</div><!-- fragment -->
 </div>
 </div>
 <a class="anchor" id="ab9a5a2bc2cbcd636f89f5513aa0a98a0"></a>
@@ -568,7 +575,9 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">flecsi::data::storage_t::instance().register_data&lt;                           \</div><div class="line">    flecsi::data::storage_type, data_type,                                     \</div><div class="line">        flecsi::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()&gt;(              \</div><div class="line">      client, EXPAND_AND_STRINGIFY(name), ##__VA_ARGS__)</div></div><!-- fragment -->
+<b>Value:</b><div class="fragment"><div class="line"><a class="code" href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">flecsi::data::storage_t::instance</a>().<a class="code" href="structflecsi_1_1data_1_1storage____.html#ab84e7e5f5c9defc92268a0be4d8c88d0">register_data</a>&lt;                           \</div><div class="line">    flecsi::data::storage_type, data_type,                                     \</div><div class="line">        flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()&gt;(       \</div><div class="line">      client, EXPAND_AND_STRINGIFY(name), ##__VA_ARGS__)</div><div class="ttc" id="structflecsi_1_1data_1_1storage_____html_ab84e7e5f5c9defc92268a0be4d8c88d0"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#ab84e7e5f5c9defc92268a0be4d8c88d0">flecsi::data::storage__::register_data</a></div><div class="ttdeci">decltype(auto) register_data(const data_client_t &amp;data_client, const utils::const_string_t &amp;key, size_t versions, Args &amp;&amp;...args)</div><div class="ttdoc">Register data with the data manager. </div><div class="ttdef"><b>Definition:</b> storage.h:88</div></div>
+<div class="ttc" id="structflecsi_1_1data_1_1storage_____html_a224613d41d8a70736637aedad289a132"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">flecsi::data::storage__::instance</a></div><div class="ttdeci">static storage__ &amp; instance()</div><div class="ttdoc">Return a static instance of the data manager. </div><div class="ttdef"><b>Definition:</b> storage.h:56</div></div>
+</div><!-- fragment -->
 <p>Register data with a data_client_t. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">

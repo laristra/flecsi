@@ -41,7 +41,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -86,7 +85,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>topology</b></li><li class="navelem"><a class="el" href="classflecsi_1_1topology_1_1branch__id.html">branch_id</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>topology</b></li><li class="navelem"><a class="el" href="classflecsi_1_1topology_1_1branch__id.html">branch_id</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -100,6 +99,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">flecsi::topology::branch_id&lt; T, D &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="tree__topology_8h_source.html">tree_topology.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
@@ -109,18 +110,15 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>int_t</b> = T</td></
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab7c3d9bf1d70ad5382aa36eb61049b37"><td class="memTemplParams" colspan="2"><a class="anchor" id="ab7c3d9bf1d70ad5382aa36eb61049b37"></a>
-template&lt;typename S &gt; </td></tr>
-<tr class="memitem:ab7c3d9bf1d70ad5382aa36eb61049b37"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>branch_id</b> (const std::array&lt; <a class="el" href="classflecsi_1_1dimensioned__array.html">point</a>&lt; S, dimension &gt;, 2 &gt; &amp;range, const <a class="el" href="classflecsi_1_1dimensioned__array.html">point</a>&lt; S, dimension &gt; &amp;p, size_t depth)</td></tr>
+<tr class="memitem:ab7c3d9bf1d70ad5382aa36eb61049b37"><td class="memTemplParams" colspan="2">template&lt;typename S &gt; </td></tr>
+<tr class="memitem:ab7c3d9bf1d70ad5382aa36eb61049b37"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1branch__id.html#ab7c3d9bf1d70ad5382aa36eb61049b37">branch_id</a> (const std::array&lt; <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">point</a>&lt; S, dimension &gt;, 2 &gt; &amp;range, const <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">point</a>&lt; S, dimension &gt; &amp;p, size_t <a class="el" href="classflecsi_1_1topology_1_1branch__id.html#aaffc38db7dc727752bacd9f23e27d4f6">depth</a>)</td></tr>
 <tr class="separator:ab7c3d9bf1d70ad5382aa36eb61049b37"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3b19e53409f51239bfe84063d96577d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa3b19e53409f51239bfe84063d96577d"></a>
 constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>branch_id</b> (const <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">branch_id</a> &amp;bid)</td></tr>
 <tr class="separator:aa3b19e53409f51239bfe84063d96577d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7506fa86fbe987d1d42adadfcc7f0ff6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7506fa86fbe987d1d42adadfcc7f0ff6"></a>
-constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_null</b> () const </td></tr>
+<tr class="memitem:a7506fa86fbe987d1d42adadfcc7f0ff6"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1branch__id.html#a7506fa86fbe987d1d42adadfcc7f0ff6">is_null</a> () const </td></tr>
 <tr class="separator:a7506fa86fbe987d1d42adadfcc7f0ff6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaffc38db7dc727752bacd9f23e27d4f6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaffc38db7dc727752bacd9f23e27d4f6"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>depth</b> () const </td></tr>
+<tr class="memitem:aaffc38db7dc727752bacd9f23e27d4f6"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1branch__id.html#aaffc38db7dc727752bacd9f23e27d4f6">depth</a> () const </td></tr>
 <tr class="separator:aaffc38db7dc727752bacd9f23e27d4f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af744d9f1656772fdd9f49a8cd089c6d4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af744d9f1656772fdd9f49a8cd089c6d4"></a>
 <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">branch_id</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">branch_id</a> &amp;bid)</td></tr>
@@ -131,20 +129,15 @@ constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==<
 <tr class="memitem:ac6634b4aa6adb29cb3166002884db806"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac6634b4aa6adb29cb3166002884db806"></a>
 constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">branch_id</a> &amp;bid) const </td></tr>
 <tr class="separator:ac6634b4aa6adb29cb3166002884db806"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a90c9803cb8003837f74d98604a3ce2a5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a90c9803cb8003837f74d98604a3ce2a5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>push</b> (int_t bits)</td></tr>
+<tr class="memitem:a90c9803cb8003837f74d98604a3ce2a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1branch__id.html#a90c9803cb8003837f74d98604a3ce2a5">push</a> (int_t bits)</td></tr>
 <tr class="separator:a90c9803cb8003837f74d98604a3ce2a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad7f994684d2f6ff510b87b1707d8fc9e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad7f994684d2f6ff510b87b1707d8fc9e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>pop</b> ()</td></tr>
+<tr class="memitem:ad7f994684d2f6ff510b87b1707d8fc9e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1branch__id.html#ad7f994684d2f6ff510b87b1707d8fc9e">pop</a> ()</td></tr>
 <tr class="separator:ad7f994684d2f6ff510b87b1707d8fc9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa93b2418a862f4bba2cd8e88ca7b53de"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa93b2418a862f4bba2cd8e88ca7b53de"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>pop</b> (size_t d)</td></tr>
+<tr class="memitem:aa93b2418a862f4bba2cd8e88ca7b53de"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1branch__id.html#aa93b2418a862f4bba2cd8e88ca7b53de">pop</a> (size_t d)</td></tr>
 <tr class="separator:aa93b2418a862f4bba2cd8e88ca7b53de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2e37161182a0f6ab490be3faf868a353"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2e37161182a0f6ab490be3faf868a353"></a>
-constexpr <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">branch_id</a>&#160;</td><td class="memItemRight" valign="bottom"><b>parent</b> () const </td></tr>
+<tr class="memitem:a2e37161182a0f6ab490be3faf868a353"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">branch_id</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1branch__id.html#a2e37161182a0f6ab490be3faf868a353">parent</a> () const </td></tr>
 <tr class="separator:a2e37161182a0f6ab490be3faf868a353"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad797b101bdb97a188ce7478ab3405844"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad797b101bdb97a188ce7478ab3405844"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>truncate</b> (size_t to_depth)</td></tr>
+<tr class="memitem:ad797b101bdb97a188ce7478ab3405844"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1branch__id.html#ad797b101bdb97a188ce7478ab3405844">truncate</a> (size_t to_depth)</td></tr>
 <tr class="separator:ad797b101bdb97a188ce7478ab3405844"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad11683940079d7057c7b588084a1be54"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad11683940079d7057c7b588084a1be54"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>output_</b> (std::ostream &amp;ostr) const </td></tr>
@@ -158,18 +151,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_value_</b> (int_t
 <tr class="memitem:a3c110843cf53b2476052f5b089f55269"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3c110843cf53b2476052f5b089f55269"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;</b> (const <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">branch_id</a> &amp;bid) const </td></tr>
 <tr class="separator:a3c110843cf53b2476052f5b089f55269"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace7a1115d657abeafaf2b021a3e63540"><td class="memTemplParams" colspan="2"><a class="anchor" id="ace7a1115d657abeafaf2b021a3e63540"></a>
-template&lt;typename S &gt; </td></tr>
-<tr class="memitem:ace7a1115d657abeafaf2b021a3e63540"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>coordinates</b> (const std::array&lt; <a class="el" href="classflecsi_1_1dimensioned__array.html">point</a>&lt; S, dimension &gt;, 2 &gt; &amp;range, <a class="el" href="classflecsi_1_1dimensioned__array.html">point</a>&lt; S, dimension &gt; &amp;p) const </td></tr>
+<tr class="memitem:ace7a1115d657abeafaf2b021a3e63540"><td class="memTemplParams" colspan="2">template&lt;typename S &gt; </td></tr>
+<tr class="memitem:ace7a1115d657abeafaf2b021a3e63540"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1branch__id.html#ace7a1115d657abeafaf2b021a3e63540">coordinates</a> (const std::array&lt; <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">point</a>&lt; S, dimension &gt;, 2 &gt; &amp;range, <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">point</a>&lt; S, dimension &gt; &amp;p) const </td></tr>
 <tr class="separator:ace7a1115d657abeafaf2b021a3e63540"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:abe7dc613a6d2d89e9d384e076ee70235"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abe7dc613a6d2d89e9d384e076ee70235"></a>
-static constexpr <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">branch_id</a>&#160;</td><td class="memItemRight" valign="bottom"><b>root</b> ()</td></tr>
+<tr class="memitem:abe7dc613a6d2d89e9d384e076ee70235"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">branch_id</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1branch__id.html#abe7dc613a6d2d89e9d384e076ee70235">root</a> ()</td></tr>
 <tr class="separator:abe7dc613a6d2d89e9d384e076ee70235"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6202591ea58802c1fa47caaaa1f318d9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6202591ea58802c1fa47caaaa1f318d9"></a>
-static constexpr <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">branch_id</a>&#160;</td><td class="memItemRight" valign="bottom"><b>null</b> ()</td></tr>
+<tr class="memitem:a6202591ea58802c1fa47caaaa1f318d9"><td class="memItemLeft" align="right" valign="top">static constexpr <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">branch_id</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1branch__id.html#a6202591ea58802c1fa47caaaa1f318d9">null</a> ()</td></tr>
 <tr class="separator:a6202591ea58802c1fa47caaaa1f318d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
@@ -184,6 +174,334 @@ static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>bi
 static constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>max_depth</b> = (bits - 1)/dimension</td></tr>
 <tr class="separator:a1a5adbd79536bd971c4d28151a7a971c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename T, size_t D&gt;<br />
+class flecsi::topology::branch_id&lt; T, D &gt;</h3>
+
+<p>This class implements a hashed/Morton-style branch id that can be parameterized on arbitrary dimension D and integer type T. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="ab7c3d9bf1d70ad5382aa36eb61049b37"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, size_t D&gt; </div>
+<div class="memtemplate">
+template&lt;typename S &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1topology_1_1branch__id.html">flecsi::topology::branch_id</a>&lt; T, D &gt;::<a class="el" href="classflecsi_1_1topology_1_1branch__id.html">branch_id</a> </td>
+          <td>(</td>
+          <td class="paramtype">const std::array&lt; <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">point</a>&lt; S, dimension &gt;, 2 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>range</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">point</a>&lt; S, dimension &gt; &amp;&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>depth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Construct a branch id from an array of dimensions and range for each dimension. The specified depth may be less than the max allowed depth for the branch id. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="ace7a1115d657abeafaf2b021a3e63540"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, size_t D&gt; </div>
+<div class="memtemplate">
+template&lt;typename S &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">flecsi::topology::branch_id</a>&lt; T, D &gt;::coordinates </td>
+          <td>(</td>
+          <td class="paramtype">const std::array&lt; <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">point</a>&lt; S, dimension &gt;, 2 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>range</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">point</a>&lt; S, dimension &gt; &amp;&#160;</td>
+          <td class="paramname"><em>p</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Convert this branch id to coordinates in range. </p>
+
+</div>
+</div>
+<a class="anchor" id="aaffc38db7dc727752bacd9f23e27d4f6"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, size_t D&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">flecsi::topology::branch_id</a>&lt; T, D &gt;::depth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Find the depth of this branch id. </p>
+
+</div>
+</div>
+<a class="anchor" id="a7506fa86fbe987d1d42adadfcc7f0ff6"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, size_t D&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">flecsi::topology::branch_id</a>&lt; T, D &gt;::is_null </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Check if branch id is null. </p>
+
+</div>
+</div>
+<a class="anchor" id="a6202591ea58802c1fa47caaaa1f318d9"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, size_t D&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">branch_id</a> <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">flecsi::topology::branch_id</a>&lt; T, D &gt;::null </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Get the null branch id. </p>
+
+</div>
+</div>
+<a class="anchor" id="a2e37161182a0f6ab490be3faf868a353"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, size_t D&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">branch_id</a> <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">flecsi::topology::branch_id</a>&lt; T, D &gt;::parent </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the parent of this branch id (depth - 1) </p>
+
+</div>
+</div>
+<a class="anchor" id="ad7f994684d2f6ff510b87b1707d8fc9e"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, size_t D&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">flecsi::topology::branch_id</a>&lt; T, D &gt;::pop </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Pop the bits of greatest depth off this branch id. </p>
+
+</div>
+</div>
+<a class="anchor" id="aa93b2418a862f4bba2cd8e88ca7b53de"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, size_t D&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">flecsi::topology::branch_id</a>&lt; T, D &gt;::pop </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>d</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Pop the depth d bits from the end of this this branch id. </p>
+
+</div>
+</div>
+<a class="anchor" id="a90c9803cb8003837f74d98604a3ce2a5"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, size_t D&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">flecsi::topology::branch_id</a>&lt; T, D &gt;::push </td>
+          <td>(</td>
+          <td class="paramtype">int_t&#160;</td>
+          <td class="paramname"><em>bits</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Push bits onto the end of this branch id. </p>
+
+</div>
+</div>
+<a class="anchor" id="abe7dc613a6d2d89e9d384e076ee70235"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, size_t D&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">branch_id</a> <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">flecsi::topology::branch_id</a>&lt; T, D &gt;::root </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Get the root branch id (depth 0). </p>
+
+</div>
+</div>
+<a class="anchor" id="ad797b101bdb97a188ce7478ab3405844"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, size_t D&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classflecsi_1_1topology_1_1branch__id.html">flecsi::topology::branch_id</a>&lt; T, D &gt;::truncate </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>to_depth</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Truncate (repeatedly pop) this branch id until it of depth to_depth. </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/topology/<a class="el" href="tree__topology_8h_source.html">tree_topology.h</a></li>
 </ul>

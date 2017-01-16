@@ -41,7 +41,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -86,7 +85,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html">legion_context_policy_t</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html">legion_context_policy_t</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -109,9 +108,9 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>task_id_t</b> = Legi
 <tr class="memitem:a03b8e24dfe1c9177df61b69f8e9a6273"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a03b8e24dfe1c9177df61b69f8e9a6273"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>register_function_t</b> = std::function&lt; void(size_t)&gt;</td></tr>
 <tr class="separator:a03b8e24dfe1c9177df61b69f8e9a6273"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2094748f2fc822058d20ecdf4b492ad9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2094748f2fc822058d20ecdf4b492ad9"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>unique_tid_t</b> = <a class="el" href="structflecsi_1_1unique__id__t.html">unique_id_t</a>&lt; task_id_t &gt;</td></tr>
-<tr class="separator:a2094748f2fc822058d20ecdf4b492ad9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada455165e10ca05231e52d23035ff2d3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ada455165e10ca05231e52d23035ff2d3"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>unique_tid_t</b> = <a class="el" href="structflecsi_1_1utils_1_1unique__id__t.html">utils::unique_id_t</a>&lt; task_id_t &gt;</td></tr>
+<tr class="separator:ada455165e10ca05231e52d23035ff2d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -130,10 +129,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>register_task</b> (<a
 <tr class="memitem:a7669457c80729cfe6ce9c2f04e2865f3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7669457c80729cfe6ce9c2f04e2865f3"></a>
 task_id_t&#160;</td><td class="memItemRight" valign="bottom"><b>task_id</b> (<a class="el" href="structflecsi_1_1execution_1_1task__hash__key__t.html">task_hash_key_t</a> key)</td></tr>
 <tr class="separator:a7669457c80729cfe6ce9c2f04e2865f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac3e2d7b2ee39361a258ac31420356414"><td class="memTemplParams" colspan="2"><a class="anchor" id="ac3e2d7b2ee39361a258ac31420356414"></a>
+<tr class="memitem:a320f12a5e3433e7ad38a87769aa1c5a6"><td class="memTemplParams" colspan="2"><a class="anchor" id="a320f12a5e3433e7ad38a87769aa1c5a6"></a>
 template&lt;typename T &gt; </td></tr>
-<tr class="memitem:ac3e2d7b2ee39361a258ac31420356414"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>register_function</b> (const <a class="el" href="classflecsi_1_1const__string__t.html">const_string_t</a> &amp;key, T &amp;function)</td></tr>
-<tr class="separator:ac3e2d7b2ee39361a258ac31420356414"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a320f12a5e3433e7ad38a87769aa1c5a6"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>register_function</b> (const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;key, T &amp;function)</td></tr>
+<tr class="separator:a320f12a5e3433e7ad38a87769aa1c5a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d77a64600f2c8cb6a27bed8d8a8323e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0d77a64600f2c8cb6a27bed8d8a8323e"></a>
 std::function&lt; void(void)&gt; *&#160;</td><td class="memItemRight" valign="bottom"><b>function</b> (size_t key)</td></tr>
 <tr class="separator:a0d77a64600f2c8cb6a27bed8d8a8323e"><td class="memSeparator" colspan="2">&#160;</td></tr>

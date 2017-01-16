@@ -41,7 +41,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -90,7 +89,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
 <a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
@@ -107,18 +105,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1unique__id__t.html">flecsi::unique_id_t&lt; T &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate unique ids.  <a href="structflecsi_1_1unique__id__t.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1utils_1_1unique__id__t.html">flecsi::utils::unique_id_t&lt; T &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate unique ids.  <a href="structflecsi_1_1utils_1_1unique__id__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1function__traits____.html">flecsi::function_traits__&lt; T &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1utils_1_1function__traits____.html">flecsi::utils::function_traits__&lt; T &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1function__traits_____3_01R_07As_8_8_8_08_4.html">flecsi::function_traits__&lt; R(As...)&gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespaceflecsi"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html">flecsi</a></td></tr>
-<tr class="memdesc:namespaceflecsi"><td class="mdescLeft">&#160;</td><td class="mdescRight">user includes <br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1utils_1_1function__traits_____3_01R_07As_8_8_8_08_4.html">flecsi::utils::function_traits__&lt; R(As...)&gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
@@ -147,36 +139,35 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:ae1e21d44c7ac4e80959e26a22bfc769d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae1e21d44c7ac4e80959e26a22bfc769d"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::id_t</b> = id_&lt; FLECSI_ID_PBITS, FLECSI_ID_EBITS, FLECSI_ID_FBITS, FLECSI_ID_GBITS &gt;</td></tr>
-<tr class="separator:ae1e21d44c7ac4e80959e26a22bfc769d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a2bc59194346f25945d1740efc56710"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1a2bc59194346f25945d1740efc56710"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::counter_t</b> = FLECSI_COUNTER_TYPE</td></tr>
-<tr class="separator:a1a2bc59194346f25945d1740efc56710"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac331ba4c6843684f63020b990d820e73"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac331ba4c6843684f63020b990d820e73"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::utils::id_t</b> = id_&lt; FLECSI_ID_PBITS, FLECSI_ID_EBITS, FLECSI_ID_FBITS, FLECSI_ID_GBITS &gt;</td></tr>
+<tr class="separator:ac331ba4c6843684f63020b990d820e73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2c4615037f136c553f5f046180319f1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab2c4615037f136c553f5f046180319f1"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::utils::counter_t</b> = FLECSI_COUNTER_TYPE</td></tr>
+<tr class="separator:ab2c4615037f136c553f5f046180319f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:aaf22be81cbd756cb01d2ef16088f075f"><td class="memTemplParams" colspan="2"><a class="anchor" id="aaf22be81cbd756cb01d2ef16088f075f"></a>
+<tr class="memitem:a70d0409e04be713d6b4c1c561805c300"><td class="memTemplParams" colspan="2"><a class="anchor" id="a70d0409e04be713d6b4c1c561805c300"></a>
 template&lt;typename T &gt; </td></tr>
-<tr class="memitem:aaf22be81cbd756cb01d2ef16088f075f"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html#aaf22be81cbd756cb01d2ef16088f075f">flecsi::square</a> (const T &amp;a)</td></tr>
-<tr class="memdesc:aaf22be81cbd756cb01d2ef16088f075f"><td class="mdescLeft">&#160;</td><td class="mdescRight">P.O.D. <br /></td></tr>
-<tr class="separator:aaf22be81cbd756cb01d2ef16088f075f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a798cb7384ab814540c931631b64b40c7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a798cb7384ab814540c931631b64b40c7"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::demangle</b> (const char *name)</td></tr>
-<tr class="separator:a798cb7384ab814540c931631b64b40c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1979359b1757ce945549f299edb88d73"><td class="memTemplParams" colspan="2"><a class="anchor" id="a1979359b1757ce945549f299edb88d73"></a>
+<tr class="memitem:a70d0409e04be713d6b4c1c561805c300"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="common_8h.html#a70d0409e04be713d6b4c1c561805c300">flecsi::utils::square</a> (const T &amp;a)</td></tr>
+<tr class="memdesc:a70d0409e04be713d6b4c1c561805c300"><td class="mdescLeft">&#160;</td><td class="mdescRight">P.O.D. <br /></td></tr>
+<tr class="separator:a70d0409e04be713d6b4c1c561805c300"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af74d9954c4d6cd8fc6433ac46cbdd503"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af74d9954c4d6cd8fc6433ac46cbdd503"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::utils::demangle</b> (const char *name)</td></tr>
+<tr class="separator:af74d9954c4d6cd8fc6433ac46cbdd503"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a772d97c8cb5af2fc0f815a1b2449c6e6"><td class="memTemplParams" colspan="2"><a class="anchor" id="a772d97c8cb5af2fc0f815a1b2449c6e6"></a>
 template&lt;class T &gt; </td></tr>
-<tr class="memitem:a1979359b1757ce945549f299edb88d73"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><b>flecsi::type</b> ()</td></tr>
-<tr class="separator:a1979359b1757ce945549f299edb88d73"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9d1a4b8fad235d6c6bec7af98c76bbcc"><td class="memTemplParams" colspan="2"><a class="anchor" id="a9d1a4b8fad235d6c6bec7af98c76bbcc"></a>
+<tr class="memitem:a772d97c8cb5af2fc0f815a1b2449c6e6"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><b>flecsi::utils::type</b> ()</td></tr>
+<tr class="separator:a772d97c8cb5af2fc0f815a1b2449c6e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a272cf500fac1c80035bd66d65fbf1319"><td class="memTemplParams" colspan="2"><a class="anchor" id="a272cf500fac1c80035bd66d65fbf1319"></a>
 template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a9d1a4b8fad235d6c6bec7af98c76bbcc"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html#a9d1a4b8fad235d6c6bec7af98c76bbcc">flecsi::unique_name</a> (const T *t)</td></tr>
-<tr class="memdesc:a9d1a4b8fad235d6c6bec7af98c76bbcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a unique name from the type, address, and unique id. <br /></td></tr>
-<tr class="separator:a9d1a4b8fad235d6c6bec7af98c76bbcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a272cf500fac1c80035bd66d65fbf1319"><td class="memTemplItemLeft" align="right" valign="top">std::string&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="common_8h.html#a272cf500fac1c80035bd66d65fbf1319">flecsi::utils::unique_name</a> (const T *t)</td></tr>
+<tr class="memdesc:a272cf500fac1c80035bd66d65fbf1319"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a unique name from the type, address, and unique id. <br /></td></tr>
+<tr class="separator:a272cf500fac1c80035bd66d65fbf1319"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><dl class="section author"><dt>Authors</dt><dd>bergen </dd></dl>
-<dl class="section date"><dt>Date</dt><dd>Initial file creation: Sep 23, 2015 </dd></dl>
+<div class="textblock"><dl class="section date"><dt>Date</dt><dd>Initial file creation: Sep 23, 2015 </dd></dl>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

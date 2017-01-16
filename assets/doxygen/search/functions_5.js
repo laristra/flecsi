@@ -1,7 +1,9 @@
 var searchData=
 [
-  ['factory_5f',['Factory_',['../classflecsi_1_1Factory__.html#a47a7504090a9ea26ba9c0ca9644eefc4',1,'flecsi::Factory_']]],
-  ['filter_5fimpl_5f',['filter_impl_',['../namespaceflecsi.html#ad632478a9ad09abb8d2e03ae17f07df5',1,'flecsi']]],
+  ['factory_5f',['Factory_',['../classflecsi_1_1utils_1_1Factory__.html#ac964d9c366090865ef8b637f0393a211',1,'flecsi::utils::Factory_']]],
   ['find',['find',['../structflecsi_1_1topology_1_1find__entity____.html#a3112e736ade43d6feb26bbcb7d8934ce',1,'flecsi::topology::find_entity__::find()'],['../structflecsi_1_1topology_1_1find__entity_____3_010_00_01T_00_01D_00_01M_01_4.html#a0726a2dc5aa259a5a51132296fcedacc',1,'flecsi::topology::find_entity__&lt; 0, T, D, M &gt;::find()']]],
-  ['from_5fsize',['from_size',['../classflecsi_1_1topology_1_1connectivity__t.html#a69040fd97248aebb8c8005664e77437f',1,'flecsi::topology::connectivity_t']]]
+  ['find_5fin_5fbox',['find_in_box',['../classflecsi_1_1topology_1_1tree__topology.html#a383f0c7b4592cbb43bcbce00561badb6',1,'flecsi::topology::tree_topology::find_in_box(const point_t &amp;min, const point_t &amp;max)'],['../classflecsi_1_1topology_1_1tree__topology.html#a31bf5af06b119de642f12d57d38e4058',1,'flecsi::topology::tree_topology::find_in_box(thread_pool &amp;pool, const point_t &amp;min, const point_t &amp;max)']]],
+  ['find_5fin_5fradius',['find_in_radius',['../classflecsi_1_1topology_1_1tree__topology.html#a49c7ad5943803c70417cbf5bc262319d',1,'flecsi::topology::tree_topology::find_in_radius(const point_t &amp;center, element_t radius)'],['../classflecsi_1_1topology_1_1tree__topology.html#a414bfa674af59b96d36177d39eb1741f',1,'flecsi::topology::tree_topology::find_in_radius(thread_pool &amp;pool, const point_t &amp;center, element_t radius)']]],
+  ['from_5fsize',['from_size',['../classflecsi_1_1topology_1_1connectivity__t.html#a69040fd97248aebb8c8005664e77437f',1,'flecsi::topology::connectivity_t']]],
+  ['function',['function',['../structflecsi_1_1execution_1_1mpilegion__context__policy__t.html#a750ae677e4d84a50beaf38bece8c4658',1,'flecsi::execution::mpilegion_context_policy_t']]]
 ];

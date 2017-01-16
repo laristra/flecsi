@@ -41,7 +41,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -86,7 +85,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>topology</b></li><li class="navelem"><a class="el" href="classflecsi_1_1topology_1_1tree__entity.html">tree_entity</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>topology</b></li><li class="navelem"><a class="el" href="classflecsi_1_1topology_1_1tree__entity.html">tree_entity</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -99,6 +98,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">flecsi::topology::tree_entity&lt; T, D &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="tree__topology_8h_source.html">tree_topology.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
@@ -120,8 +121,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a08ce2741dd918242e5a4c298c1e7d8cf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a08ce2741dd918242e5a4c298c1e7d8cf"></a>
 <a class="el" href="classflecsi_1_1topology_1_1entity__id__t.html">entity_id_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>index_space_id</b> () const </td></tr>
 <tr class="separator:a08ce2741dd918242e5a4c298c1e7d8cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aadff3ea63fa4867a404674f84c6769b3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aadff3ea63fa4867a404674f84c6769b3"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_valid</b> () const </td></tr>
+<tr class="memitem:aadff3ea63fa4867a404674f84c6769b3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__entity.html#aadff3ea63fa4867a404674f84c6769b3">is_valid</a> () const </td></tr>
 <tr class="separator:aadff3ea63fa4867a404674f84c6769b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
@@ -131,6 +131,38 @@ template&lt;class P &gt; </td></tr>
 <tr class="memitem:a137b1f459875157219a5209a48bb3bc9"><td class="memTemplItemLeft" align="right" valign="top">class&#160;</td><td class="memTemplItemRight" valign="bottom"><b>tree_topology</b></td></tr>
 <tr class="separator:a137b1f459875157219a5209a48bb3bc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename T, size_t D&gt;<br />
+class flecsi::topology::tree_entity&lt; T, D &gt;</h3>
+
+<p>Tree entity base class. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="aadff3ea63fa4867a404674f84c6769b3"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T, size_t D&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classflecsi_1_1topology_1_1tree__entity.html">flecsi::topology::tree_entity</a>&lt; T, D &gt;::is_valid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return whether the entity is current inserted in a tree. </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/topology/<a class="el" href="tree__topology_8h_source.html">tree_topology.h</a></li>
 </ul>

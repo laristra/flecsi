@@ -41,7 +41,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -90,7 +89,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
@@ -102,7 +100,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <code>#include &lt;cassert&gt;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
-<code>#include &quot;flecsi/data/data_client.h&quot;</code><br />
+<code>#include &quot;<a class="el" href="data__client_8h_source.html">flecsi/data/data_client.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="mesh__utils_8h_source.html">flecsi/topology/mesh_utils.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="array__ref_8h_source.html">flecsi/utils/array_ref.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="reorder_8h_source.html">flecsi/utils/reorder.h</a>&quot;</code><br />
@@ -151,12 +149,6 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1unserialize__domains___3_01MT_00_01NM_00_01ND_00_01NM_01_4.html">flecsi::topology::unserialize_domains_&lt; MT, NM, ND, NM &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespaceflecsi"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html">flecsi</a></td></tr>
-<tr class="memdesc:namespaceflecsi"><td class="mdescLeft">&#160;</td><td class="mdescRight">user includes <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:a6a328cafa57112d3d0482761130395bb"><td class="memTemplParams" colspan="2"><a class="anchor" id="a6a328cafa57112d3d0482761130395bb"></a>
@@ -167,15 +159,15 @@ template&lt;size_t M&gt; </td></tr>
 template&lt;size_t M&gt; </td></tr>
 <tr class="memitem:a10afce6116aab3b59dee8219fdefa968"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>flecsi::topology::domain_</b> = typeify&lt; size_t, M &gt;</td></tr>
 <tr class="separator:a10afce6116aab3b59dee8219fdefa968"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2181b7023adbc76654c12707806bddef"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2181b7023adbc76654c12707806bddef"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::topology::id_vector_t</b> = std::vector&lt; id_t &gt;</td></tr>
-<tr class="separator:a2181b7023adbc76654c12707806bddef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b00def1e1ade044bd3759826f91e990"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0b00def1e1ade044bd3759826f91e990"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::topology::id_vector_t</b> = std::vector&lt; utils::id_t &gt;</td></tr>
+<tr class="separator:a0b00def1e1ade044bd3759826f91e990"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a717a54d9d6f4505cd89d6cd34c6307a5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a717a54d9d6f4505cd89d6cd34c6307a5"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::topology::connection_vector_t</b> = std::vector&lt; id_vector_t &gt;</td></tr>
 <tr class="separator:a717a54d9d6f4505cd89d6cd34c6307a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f949a968af939c85f0d72aa25966746"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0f949a968af939c85f0d72aa25966746"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::topology::id_vector_map_t</b> = std::unordered_map&lt; id_vector_t, id_t, id_vector_hash_t &gt;</td></tr>
-<tr class="separator:a0f949a968af939c85f0d72aa25966746"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a168f337fd5bbe56e6a83f648f106d20c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a168f337fd5bbe56e6a83f648f106d20c"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::topology::id_vector_map_t</b> = std::unordered_map&lt; id_vector_t, utils::id_t, id_vector_hash_t &gt;</td></tr>
+<tr class="separator:a168f337fd5bbe56e6a83f648f106d20c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ed16abb457a43ba8639ef55fd632176"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2ed16abb457a43ba8639ef55fd632176"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::topology::index_vector_t</b> = std::vector&lt; size_t &gt;</td></tr>
 <tr class="separator:a2ed16abb457a43ba8639ef55fd632176"><td class="memSeparator" colspan="2">&#160;</td></tr>

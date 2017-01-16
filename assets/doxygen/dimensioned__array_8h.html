@@ -41,7 +41,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -90,7 +89,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
@@ -111,14 +109,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structand___3_01Cond_00_01Conds_8_8_8_01_4.html">and_&lt; Cond, Conds... &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1dimensioned__array.html">flecsi::dimensioned_array&lt; T, D, TS &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="classflecsi_1_1dimensioned__array.html" title="The dimensioned_array type provides a general base for defining contiguous array types that have a sp...">dimensioned_array</a> type provides a general base for defining contiguous array types that have a specific dimension. Please look at the <a class="el" href="classpoint.html">point</a> and vector types for an example of its use.  <a href="classflecsi_1_1dimensioned__array.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespaceflecsi"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html">flecsi</a></td></tr>
-<tr class="memdesc:namespaceflecsi"><td class="mdescLeft">&#160;</td><td class="mdescRight">user includes <br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">flecsi::utils::dimensioned_array&lt; T, D, TS &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html" title="The dimensioned_array type provides a general base for defining contiguous array types that have a sp...">dimensioned_array</a> type provides a general base for defining contiguous array types that have a specific dimension. Please look at the <a class="el" href="classpoint.html">point</a> and vector types for an example of its use.  <a href="classflecsi_1_1utils_1_1dimensioned__array.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
@@ -130,31 +122,170 @@ template&lt;typename Target , typename... Ts&gt; </td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:a225a4da1ec871f797f4e66e086cb471c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a225a4da1ec871f797f4e66e086cb471c"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>axis</b> : size_t { <b>x</b> = 0, 
+<tr class="memitem:a95371a68573ff7ee30033e12cea640fb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a95371a68573ff7ee30033e12cea640fb"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>axis</b> : size_t { <b>x</b> = 0, 
 <b>y</b> = 1, 
 <b>z</b> = 2
  }</td></tr>
-<tr class="separator:a225a4da1ec871f797f4e66e086cb471c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a95371a68573ff7ee30033e12cea640fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ac90571855bcc6e564029d77944a2d8da"><td class="memTemplParams" colspan="2">template&lt;typename T , size_t D, size_t TS&gt; </td></tr>
-<tr class="memitem:ac90571855bcc6e564029d77944a2d8da"><td class="memTemplItemLeft" align="right" valign="top">dimensioned_array&lt; T, D, TS &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html#ac90571855bcc6e564029d77944a2d8da">flecsi::operator+</a> (const dimensioned_array&lt; T, D, TS &gt; &amp;lhs, const dimensioned_array&lt; T, D, TS &gt; &amp;rhs)</td></tr>
-<tr class="memdesc:ac90571855bcc6e564029d77944a2d8da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Addition operator involving two dimensioned_arrays.  <a href="namespaceflecsi.html#ac90571855bcc6e564029d77944a2d8da">More...</a><br /></td></tr>
-<tr class="separator:ac90571855bcc6e564029d77944a2d8da"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af26f3bc2962eedb1bc41565d2769b5d0"><td class="memTemplParams" colspan="2">template&lt;typename T , size_t D, size_t TS&gt; </td></tr>
-<tr class="memitem:af26f3bc2962eedb1bc41565d2769b5d0"><td class="memTemplItemLeft" align="right" valign="top">dimensioned_array&lt; T, D, TS &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html#af26f3bc2962eedb1bc41565d2769b5d0">flecsi::operator-</a> (const dimensioned_array&lt; T, D, TS &gt; &amp;lhs, const dimensioned_array&lt; T, D, TS &gt; &amp;rhs)</td></tr>
-<tr class="memdesc:af26f3bc2962eedb1bc41565d2769b5d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Subtraction operator involving two dimensioned_arrays.  <a href="namespaceflecsi.html#af26f3bc2962eedb1bc41565d2769b5d0">More...</a><br /></td></tr>
-<tr class="separator:af26f3bc2962eedb1bc41565d2769b5d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a97e11ad0e04d2d90c6467c284c70ecf8"><td class="memTemplParams" colspan="2">template&lt;typename T , size_t D, size_t TS&gt; </td></tr>
-<tr class="memitem:a97e11ad0e04d2d90c6467c284c70ecf8"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html#a97e11ad0e04d2d90c6467c284c70ecf8">flecsi::operator&lt;&lt;</a> (std::ostream &amp;os, const dimensioned_array&lt; T, D, TS &gt; &amp;a)</td></tr>
-<tr class="memdesc:a97e11ad0e04d2d90c6467c284c70ecf8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output operator for <a class="el" href="classflecsi_1_1dimensioned__array.html" title="The dimensioned_array type provides a general base for defining contiguous array types that have a sp...">dimensioned_array</a>.  <a href="namespaceflecsi.html#a97e11ad0e04d2d90c6467c284c70ecf8">More...</a><br /></td></tr>
-<tr class="separator:a97e11ad0e04d2d90c6467c284c70ecf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5fb6e97e3c3a26bb12f83495fc8ec186"><td class="memTemplParams" colspan="2">template&lt;typename T , size_t D, size_t TS&gt; </td></tr>
+<tr class="memitem:a5fb6e97e3c3a26bb12f83495fc8ec186"><td class="memTemplItemLeft" align="right" valign="top">dimensioned_array&lt; T, D, TS &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dimensioned__array_8h.html#a5fb6e97e3c3a26bb12f83495fc8ec186">flecsi::utils::operator+</a> (const dimensioned_array&lt; T, D, TS &gt; &amp;lhs, const dimensioned_array&lt; T, D, TS &gt; &amp;rhs)</td></tr>
+<tr class="memdesc:a5fb6e97e3c3a26bb12f83495fc8ec186"><td class="mdescLeft">&#160;</td><td class="mdescRight">Addition operator involving two dimensioned_arrays.  <a href="dimensioned__array_8h.html#a5fb6e97e3c3a26bb12f83495fc8ec186">More...</a><br /></td></tr>
+<tr class="separator:a5fb6e97e3c3a26bb12f83495fc8ec186"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a2e6c4c68042ea116f4693afd52502e"><td class="memTemplParams" colspan="2">template&lt;typename T , size_t D, size_t TS&gt; </td></tr>
+<tr class="memitem:a7a2e6c4c68042ea116f4693afd52502e"><td class="memTemplItemLeft" align="right" valign="top">dimensioned_array&lt; T, D, TS &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dimensioned__array_8h.html#a7a2e6c4c68042ea116f4693afd52502e">flecsi::utils::operator-</a> (const dimensioned_array&lt; T, D, TS &gt; &amp;lhs, const dimensioned_array&lt; T, D, TS &gt; &amp;rhs)</td></tr>
+<tr class="memdesc:a7a2e6c4c68042ea116f4693afd52502e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Subtraction operator involving two dimensioned_arrays.  <a href="dimensioned__array_8h.html#a7a2e6c4c68042ea116f4693afd52502e">More...</a><br /></td></tr>
+<tr class="separator:a7a2e6c4c68042ea116f4693afd52502e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3986907d231f342a4fb17905cb4f4be8"><td class="memTemplParams" colspan="2">template&lt;typename T , size_t D, size_t TS&gt; </td></tr>
+<tr class="memitem:a3986907d231f342a4fb17905cb4f4be8"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="dimensioned__array_8h.html#a3986907d231f342a4fb17905cb4f4be8">flecsi::utils::operator&lt;&lt;</a> (std::ostream &amp;os, const dimensioned_array&lt; T, D, TS &gt; &amp;a)</td></tr>
+<tr class="memdesc:a3986907d231f342a4fb17905cb4f4be8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Output operator for <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html" title="The dimensioned_array type provides a general base for defining contiguous array types that have a sp...">dimensioned_array</a>.  <a href="dimensioned__array_8h.html#a3986907d231f342a4fb17905cb4f4be8">More...</a><br /></td></tr>
+<tr class="separator:a3986907d231f342a4fb17905cb4f4be8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><dl class="section author"><dt>Authors</dt><dd>bergen </dd></dl>
 <dl class="section date"><dt>Date</dt><dd>Initial file creation: Sep 23, 2015 </dd></dl>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="file_a5fb6e97e3c3a26bb12f83495fc8ec186"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , size_t D, size_t TS&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">dimensioned_array&lt;T, D, TS&gt; flecsi::utils::operator+ </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">dimensioned_array</a>&lt; T, D, TS &gt; &amp;&#160;</td>
+          <td class="paramname"><em>lhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">dimensioned_array</a>&lt; T, D, TS &gt; &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Addition operator involving two dimensioned_arrays. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The array base value type. </td></tr>
+    <tr><td class="paramname">D</td><td>The array dimension. </td></tr>
+    <tr><td class="paramname">TS</td><td>The <em>type</em> <em>space</em>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">lhs</td><td>The <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html" title="The dimensioned_array type provides a general base for defining contiguous array types that have a sp...">dimensioned_array</a> on the left hand side of the operator. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rhs</td><td>The <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html" title="The dimensioned_array type provides a general base for defining contiguous array types that have a sp...">dimensioned_array</a> on the right hand side of the operator. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A reference to the current object. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="file_a7a2e6c4c68042ea116f4693afd52502e"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , size_t D, size_t TS&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">dimensioned_array&lt;T, D, TS&gt; flecsi::utils::operator- </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">dimensioned_array</a>&lt; T, D, TS &gt; &amp;&#160;</td>
+          <td class="paramname"><em>lhs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">dimensioned_array</a>&lt; T, D, TS &gt; &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Subtraction operator involving two dimensioned_arrays. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The array base value type. </td></tr>
+    <tr><td class="paramname">D</td><td>The array dimension. </td></tr>
+    <tr><td class="paramname">TS</td><td>The <em>type</em> <em>space</em>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">lhs</td><td>The <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html" title="The dimensioned_array type provides a general base for defining contiguous array types that have a sp...">dimensioned_array</a> on the left hand side of the operator. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rhs</td><td>The <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html" title="The dimensioned_array type provides a general base for defining contiguous array types that have a sp...">dimensioned_array</a> on the right hand side of the operator. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A reference to the current object. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="file_a3986907d231f342a4fb17905cb4f4be8"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , size_t D, size_t TS&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::ostream&amp; flecsi::utils::operator&lt;&lt; </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>os</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">dimensioned_array</a>&lt; T, D, TS &gt; &amp;&#160;</td>
+          <td class="paramname"><em>a</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Output operator for <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html" title="The dimensioned_array type provides a general base for defining contiguous array types that have a sp...">dimensioned_array</a>. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The array base value type. </td></tr>
+    <tr><td class="paramname">D</td><td>The array dimension. </td></tr>
+    <tr><td class="paramname">TS</td><td>The <em>type</em> <em>space</em>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">os</td><td>The ostream to dump output to. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rhs</td><td>The <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html" title="The dimensioned_array type provides a general base for defining contiguous array types that have a sp...">dimensioned_array</a> on the right hand side of the operator. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A reference to the current ostream. </dd></dl>
+
+</div>
+</div>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

@@ -41,7 +41,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -86,7 +85,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>data</b></li><li class="navelem"><b>serial</b></li><li class="navelem"><a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">dense_accessor_t</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>data</b></li><li class="navelem"><b>serial</b></li><li class="navelem"><a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">dense_accessor_t</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -98,12 +97,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">flecsi::data::serial::dense_accessor_t&lt; T, MD &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html" title="dense_accessor_t provides logically array-based access to data variables that have been registered in...">dense_accessor_t</a> provides logically array-based access to data variables that have been registered in the data model.  
+ <a href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="serial_2dense_8h_source.html">dense.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a09c57b90b93a980ae55503441aafc3b0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a09c57b90b93a980ae55503441aafc3b0"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>iterator_t</b> = <a class="el" href="classflecsi_1_1iterator.html">index_space_t::iterator_t</a></td></tr>
-<tr class="separator:a09c57b90b93a980ae55503441aafc3b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa553cd4785f254a0d04a3c77b444609"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaa553cd4785f254a0d04a3c77b444609"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>iterator_t</b> = <a class="el" href="classflecsi_1_1utils_1_1iterator.html">utils::index_space_t::iterator_t</a></td></tr>
+<tr class="separator:aaa553cd4785f254a0d04a3c77b444609"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a972697eb9ccb48323cd2f470bea87657"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a972697eb9ccb48323cd2f470bea87657"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>meta_data_t</b> = MD</td></tr>
 <tr class="separator:a972697eb9ccb48323cd2f470bea87657"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -115,11 +119,9 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>user_meta_data_t</b>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a066f80e73018e7b372255ab1a5a9f015"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html#a066f80e73018e7b372255ab1a5a9f015">dense_accessor_t</a> ()=default</td></tr>
 <tr class="separator:a066f80e73018e7b372255ab1a5a9f015"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae1104131f5632bcdf7fdbf16397fa4c4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae1104131f5632bcdf7fdbf16397fa4c4"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>dense_accessor_t</b> (const std::string &amp;<a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html#a5c8c1fcc5258c89bdfbd6dcfd618dc28">label</a>, const size_t <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html#a6174366a140dafe781d9905bc8f723e2">size</a>, T *data, const user_meta_data_t &amp;user_meta_data, bitset_t &amp;user_attributes, size_t <a class="el" href="classindex__space.html">index_space</a>)</td></tr>
+<tr class="memitem:ae1104131f5632bcdf7fdbf16397fa4c4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html#ae1104131f5632bcdf7fdbf16397fa4c4">dense_accessor_t</a> (const std::string &amp;<a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html#a5c8c1fcc5258c89bdfbd6dcfd618dc28">label</a>, const size_t <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html#a6174366a140dafe781d9905bc8f723e2">size</a>, T *data, const user_meta_data_t &amp;user_meta_data, bitset_t &amp;user_attributes, size_t <a class="el" href="classindex__space.html">index_space</a>)</td></tr>
 <tr class="separator:ae1104131f5632bcdf7fdbf16397fa4c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a34b825f9e29f1dbb6f62cad7f06fe1f8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a34b825f9e29f1dbb6f62cad7f06fe1f8"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>dense_accessor_t</b> (const <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">dense_accessor_t</a> &amp;a)</td></tr>
+<tr class="memitem:a34b825f9e29f1dbb6f62cad7f06fe1f8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html#a34b825f9e29f1dbb6f62cad7f06fe1f8">dense_accessor_t</a> (const <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">dense_accessor_t</a> &amp;a)</td></tr>
 <tr class="separator:a34b825f9e29f1dbb6f62cad7f06fe1f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5c8c1fcc5258c89bdfbd6dcfd618dc28"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5c8c1fcc5258c89bdfbd6dcfd618dc28"></a>
 const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html#a5c8c1fcc5258c89bdfbd6dcfd618dc28">label</a> () const </td></tr>
@@ -143,10 +145,10 @@ const bitset_t &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>attri
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>index_space</b> () const </td></tr>
 <tr class="separator:a6f8b44572cf7a232b71cea2619e919fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7e780db9466d125fdcd864c0c4fef503"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7e780db9466d125fdcd864c0c4fef503"></a>
-<a class="el" href="classflecsi_1_1iterator.html">iterator_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> ()</td></tr>
+<a class="el" href="classflecsi_1_1utils_1_1iterator.html">iterator_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> ()</td></tr>
 <tr class="separator:a7e780db9466d125fdcd864c0c4fef503"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aedb3c2f1b955506f20858a39b6039686"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aedb3c2f1b955506f20858a39b6039686"></a>
-<a class="el" href="classflecsi_1_1iterator.html">iterator_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>end</b> ()</td></tr>
+<a class="el" href="classflecsi_1_1utils_1_1iterator.html">iterator_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>end</b> ()</td></tr>
 <tr class="separator:aedb3c2f1b955506f20858a39b6039686"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb987f1a615c68aaef8d1773dad77659"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">dense_accessor_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html#afb987f1a615c68aaef8d1773dad77659">operator=</a> (const <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">dense_accessor_t</a> &amp;a)</td></tr>
 <tr class="memdesc:afb987f1a615c68aaef8d1773dad77659"><td class="mdescLeft">&#160;</td><td class="mdescRight">copy operator.  <a href="#afb987f1a615c68aaef8d1773dad77659">More...</a><br /></td></tr>
@@ -183,7 +185,19 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>index_space</b> () 
 <tr class="memdesc:a9e1a1203f850bc6b9b9297982e19b54c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test to see if this accessor is empty.  <a href="#a9e1a1203f850bc6b9b9297982e19b54c">More...</a><br /></td></tr>
 <tr class="separator:a9e1a1203f850bc6b9b9297982e19b54c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename T, typename MD&gt;<br />
+struct flecsi::data::serial::dense_accessor_t&lt; T, MD &gt;</h3>
+
+<p><a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html" title="dense_accessor_t provides logically array-based access to data variables that have been registered in...">dense_accessor_t</a> provides logically array-based access to data variables that have been registered in the data model. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The type of the data variable. If this type is not consistent with the type used to register the data, bad things can happen. However, it can be useful to reinterpret the type, e.g., when writing raw bytes. This class is part of the low-level <em>flecsi</em> interface, so it is assumed that you know what you are doing... </td></tr>
+    <tr><td class="paramname">MD</td><td>The meta data type. </td></tr>
+  </table>
+  </dd>
+</dl>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a066f80e73018e7b372255ab1a5a9f015"></a>
 <div class="memitem">
 <div class="memproto">
@@ -207,6 +221,103 @@ template&lt;typename T , typename MD &gt; </div>
 </table>
 </div><div class="memdoc">
 <p>Default constructor. </p>
+
+</div>
+</div>
+<a class="anchor" id="ae1104131f5632bcdf7fdbf16397fa4c4"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename MD &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">flecsi::data::serial::dense_accessor_t</a>&lt; T, MD &gt;::<a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">dense_accessor_t</a> </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>label</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const user_meta_data_t &amp;&#160;</td>
+          <td class="paramname"><em>user_meta_data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bitset_t &amp;&#160;</td>
+          <td class="paramname"><em>user_attributes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>index_space</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Constructor.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">label</td><td>The c_str() version of the const_string_t used for this data variable's hash. </td></tr>
+    <tr><td class="paramname">size</td><td>The size of the associated index space. </td></tr>
+    <tr><td class="paramname">data</td><td>A pointer to the raw data. </td></tr>
+    <tr><td class="paramname">user_meta_data</td><td>A reference to the user-defined meta data. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a34b825f9e29f1dbb6f62cad7f06fe1f8"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename MD &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">flecsi::data::serial::dense_accessor_t</a>&lt; T, MD &gt;::<a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">dense_accessor_t</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">dense_accessor_t</a>&lt; T, MD &gt; &amp;&#160;</td>
+          <td class="paramname"><em>a</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Copy constructor. </p>
 
 </div>
 </div>

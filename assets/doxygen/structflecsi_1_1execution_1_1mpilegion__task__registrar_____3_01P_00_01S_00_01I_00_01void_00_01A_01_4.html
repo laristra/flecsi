@@ -41,7 +41,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -86,7 +85,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1mpilegion__task__registrar_____3_01P_00_01S_00_01I_00_01void_00_01A_01_4.html">mpilegion_task_registrar__&lt; P, S, I, void, A &gt;</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1mpilegion__task__registrar_____3_01P_00_01S_00_01I_00_01void_00_01A_01_4.html">mpilegion_task_registrar__&lt; P, S, I, void, A &gt;</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -98,6 +97,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">flecsi::execution::mpilegion_task_registrar__&lt; P, S, I, void, A &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="mpilegion_2task__wrapper_8h_source.html">task_wrapper.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
@@ -113,10 +114,42 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>task_id_t</b> = Legi
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a5bd7c7f36f6e039712b667dac3e79ec3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5bd7c7f36f6e039712b667dac3e79ec3"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>register_task</b> (task_id_t tid)</td></tr>
+<tr class="memitem:a5bd7c7f36f6e039712b667dac3e79ec3"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1mpilegion__task__registrar_____3_01P_00_01S_00_01I_00_01void_00_01A_01_4.html#a5bd7c7f36f6e039712b667dac3e79ec3">register_task</a> (task_id_t tid)</td></tr>
 <tr class="separator:a5bd7c7f36f6e039712b667dac3e79ec3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;processor_t P, bool S, bool I, typename A&gt;<br />
+struct flecsi::execution::mpilegion_task_registrar__&lt; P, S, I, void, A &gt;</h3>
+
+<p>Partial specialization for void. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a5bd7c7f36f6e039712b667dac3e79ec3"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;processor_t P, bool S, bool I, typename A &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void <a class="el" href="structflecsi_1_1execution_1_1mpilegion__task__registrar____.html">flecsi::execution::mpilegion_task_registrar__</a>&lt; P, S, I, void, A &gt;::register_task </td>
+          <td>(</td>
+          <td class="paramtype">task_id_t&#160;</td>
+          <td class="paramname"><em>tid</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>registration of the task wrapper with the Legion runtime. The structure of the logic used is really just an object factory pattern. </p>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/execution/mpilegion/<a class="el" href="mpilegion_2task__wrapper_8h_source.html">task_wrapper.h</a></li>
 </ul>

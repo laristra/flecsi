@@ -1,5 +1,8 @@
 var searchData=
 [
-  ['write',['write',['../classflecsi_1_1io__base__t.html#a0e7bae70c60c3b1d79df31713d915e17',1,'flecsi::io_base_t::write(const std::string &amp;name, mesh_t &amp;m)=0'],['../classflecsi_1_1io__base__t.html#aabf4a646eabeeefa228ef3cbaed00ebc',1,'flecsi::io_base_t::write(const std::string &amp;name, mesh_t &amp;m, bool)'],['../structflecsi_1_1io__exodus__t.html#a96c7b094a76ba4cebf7aeef1692d843b',1,'flecsi::io_exodus_t::write()']]],
-  ['write_5fmesh',['write_mesh',['../namespaceflecsi.html#aab161a9166ab366149e43aa6324aa50d',1,'flecsi::write_mesh(const std::string &amp;name, mesh_t &amp;m)'],['../namespaceflecsi.html#a6c10a5cdd3d14eddc69fdfe09f2af1f3',1,'flecsi::write_mesh(const std::string &amp;name, mesh_t &amp;m, bool binary)']]]
+  ['variable',['variable',['../structflecsi_1_1utils_1_1reflection.html#a77a1dc0b473542def5e79de603d4ca6c',1,'flecsi::utils::reflection']]],
+  ['vertex_5fclosure',['vertex_closure',['../graph__utils_8h.html#a926f35f96eee506960be56f11328a608',1,'flecsi::topology']]],
+  ['vertex_5freferencers',['vertex_referencers',['../graph__utils_8h.html#a32f3f5005172c18aad645454b42c3b09',1,'flecsi::topology']]],
+  ['visit',['visit',['../classflecsi_1_1topology_1_1tree__topology.html#a281488e1fea88533f7798fba479e0511',1,'flecsi::topology::tree_topology::visit(branch_t *b, F &amp;&amp;f, ARGS &amp;&amp;...args)'],['../classflecsi_1_1topology_1_1tree__topology.html#a18575afc57da4cbfd64099a54f1fa42e',1,'flecsi::topology::tree_topology::visit(thread_pool &amp;pool, branch_t *b, F &amp;&amp;f, ARGS &amp;&amp;...args)']]],
+  ['visit_5fchildren',['visit_children',['../classflecsi_1_1topology_1_1tree__topology.html#a6085a978e1720d2ded74ca27e6f9806a',1,'flecsi::topology::tree_topology::visit_children(branch_t *b, F &amp;&amp;f, ARGS &amp;&amp;...args)'],['../classflecsi_1_1topology_1_1tree__topology.html#a9a3b572c57e1039e59bab4da571f73c1',1,'flecsi::topology::tree_topology::visit_children(thread_pool &amp;pool, branch_t *b, F &amp;&amp;f, ARGS &amp;&amp;...args)']]]
 ];

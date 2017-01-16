@@ -41,7 +41,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -86,7 +85,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>data</b></li><li class="navelem"><b>serial</b></li><li class="navelem"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01dense_00_01DS_00_01MD_01_4.html">storage_type_t&lt; dense, DS, MD &gt;</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>data</b></li><li class="navelem"><b>serial</b></li><li class="navelem"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01dense_00_01DS_00_01MD_01_4.html">storage_type_t&lt; dense, DS, MD &gt;</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -98,6 +97,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">flecsi::data::serial::storage_type_t&lt; dense, DS, MD &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="serial_2dense_8h_source.html">dense.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
@@ -118,44 +119,48 @@ template&lt;typename T &gt; </td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a6177150aa9afdf83421706ea9be11036"><td class="memTemplParams" colspan="2"><a class="anchor" id="a6177150aa9afdf83421706ea9be11036"></a>
-template&lt;typename T , size_t NS, typename... Args&gt; </td></tr>
-<tr class="memitem:a6177150aa9afdf83421706ea9be11036"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__handle__t.html">handle_t</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>register_data</b> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, const <a class="el" href="classflecsi_1_1const__string__t.html">const_string_t</a> &amp;key, size_t versions, size_t <a class="el" href="classindex__space.html">index_space</a>, Args &amp;&amp;...args)</td></tr>
-<tr class="separator:a6177150aa9afdf83421706ea9be11036"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47496c0d32542db5de58cfe7b285c5c8"><td class="memTemplParams" colspan="2">template&lt;typename T , size_t NS, typename... Args&gt; </td></tr>
+<tr class="memitem:a47496c0d32542db5de58cfe7b285c5c8"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__handle__t.html">handle_t</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01dense_00_01DS_00_01MD_01_4.html#a47496c0d32542db5de58cfe7b285c5c8">register_data</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;key, size_t versions, size_t <a class="el" href="classindex__space.html">index_space</a>, Args &amp;&amp;...args)</td></tr>
+<tr class="separator:a47496c0d32542db5de58cfe7b285c5c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a8aad53060fa8923565dda5e50e09c9"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a5a8aad53060fa8923565dda5e50e09c9"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">accessor_t</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01dense_00_01DS_00_01MD_01_4.html#a5a8aad53060fa8923565dda5e50e09c9">get_accessor</a> (meta_data_t &amp;meta_data, size_t version)</td></tr>
-<tr class="memdesc:a5a8aad53060fa8923565dda5e50e09c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">dense_accessor_t</a>.  <a href="#a5a8aad53060fa8923565dda5e50e09c9">More...</a><br /></td></tr>
+<tr class="memdesc:a5a8aad53060fa8923565dda5e50e09c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html" title="dense_accessor_t provides logically array-based access to data variables that have been registered in...">dense_accessor_t</a>.  <a href="#a5a8aad53060fa8923565dda5e50e09c9">More...</a><br /></td></tr>
 <tr class="separator:a5a8aad53060fa8923565dda5e50e09c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a358394d871217f912c2246a0a071797f"><td class="memTemplParams" colspan="2">template&lt;typename T , size_t NS&gt; </td></tr>
-<tr class="memitem:a358394d871217f912c2246a0a071797f"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">accessor_t</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01dense_00_01DS_00_01MD_01_4.html#a358394d871217f912c2246a0a071797f">get_accessor</a> (data_store_t &amp;data_store, const const_string_t::hash_type_t &amp;<a class="el" href="namespaceflecsi.html#ae74ec8cb6d45298109175c503a009d36">hash</a>, size_t version)</td></tr>
-<tr class="memdesc:a358394d871217f912c2246a0a071797f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">dense_accessor_t</a>.  <a href="#a358394d871217f912c2246a0a071797f">More...</a><br /></td></tr>
-<tr class="separator:a358394d871217f912c2246a0a071797f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a97abb339ba389be66b83c8aadcf9d532"><td class="memTemplParams" colspan="2">template&lt;typename T , size_t NS&gt; </td></tr>
-<tr class="memitem:a97abb339ba389be66b83c8aadcf9d532"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">accessor_t</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01dense_00_01DS_00_01MD_01_4.html#a97abb339ba389be66b83c8aadcf9d532">get_accessor</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, const <a class="el" href="classflecsi_1_1const__string__t.html">const_string_t</a> &amp;key, size_t version)</td></tr>
-<tr class="memdesc:a97abb339ba389be66b83c8aadcf9d532"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">dense_accessor_t</a>.  <a href="#a97abb339ba389be66b83c8aadcf9d532">More...</a><br /></td></tr>
-<tr class="separator:a97abb339ba389be66b83c8aadcf9d532"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a293e75d2a3ff7e3cc2b85139ffd950e5"><td class="memTemplParams" colspan="2">template&lt;typename T , size_t NS&gt; </td></tr>
+<tr class="memitem:a293e75d2a3ff7e3cc2b85139ffd950e5"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">accessor_t</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01dense_00_01DS_00_01MD_01_4.html#a293e75d2a3ff7e3cc2b85139ffd950e5">get_accessor</a> (data_store_t &amp;data_store, const utils::const_string_t::hash_type_t &amp;hash, size_t version)</td></tr>
+<tr class="memdesc:a293e75d2a3ff7e3cc2b85139ffd950e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html" title="dense_accessor_t provides logically array-based access to data variables that have been registered in...">dense_accessor_t</a>.  <a href="#a293e75d2a3ff7e3cc2b85139ffd950e5">More...</a><br /></td></tr>
+<tr class="separator:a293e75d2a3ff7e3cc2b85139ffd950e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72c8ff0fabb49ae282a64ccc168f2953"><td class="memTemplParams" colspan="2">template&lt;typename T , size_t NS&gt; </td></tr>
+<tr class="memitem:a72c8ff0fabb49ae282a64ccc168f2953"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">accessor_t</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01dense_00_01DS_00_01MD_01_4.html#a72c8ff0fabb49ae282a64ccc168f2953">get_accessor</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;key, size_t version)</td></tr>
+<tr class="memdesc:a72c8ff0fabb49ae282a64ccc168f2953"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html" title="dense_accessor_t provides logically array-based access to data variables that have been registered in...">dense_accessor_t</a>.  <a href="#a72c8ff0fabb49ae282a64ccc168f2953">More...</a><br /></td></tr>
+<tr class="separator:a72c8ff0fabb49ae282a64ccc168f2953"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2232d858dccc003642208f4b973af8e5"><td class="memTemplParams" colspan="2">template&lt;typename T , size_t NS, typename Predicate &gt; </td></tr>
 <tr class="memitem:a2232d858dccc003642208f4b973af8e5"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01dense_00_01DS_00_01MD_01_4.html#a2232d858dccc003642208f4b973af8e5">get_accessors</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, size_t version, Predicate &amp;&amp;predicate, bool sorted)</td></tr>
-<tr class="memdesc:a2232d858dccc003642208f4b973af8e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a list of all <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">dense_accessor_t</a>'s filtered by a predicate.  <a href="#a2232d858dccc003642208f4b973af8e5">More...</a><br /></td></tr>
+<tr class="memdesc:a2232d858dccc003642208f4b973af8e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a list of all <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html" title="dense_accessor_t provides logically array-based access to data variables that have been registered in...">dense_accessor_t</a>'s filtered by a predicate.  <a href="#a2232d858dccc003642208f4b973af8e5">More...</a><br /></td></tr>
 <tr class="separator:a2232d858dccc003642208f4b973af8e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6cf001c63bf7626c7f9d309951e6b97f"><td class="memTemplParams" colspan="2">template&lt;typename T , typename Predicate &gt; </td></tr>
 <tr class="memitem:a6cf001c63bf7626c7f9d309951e6b97f"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01dense_00_01DS_00_01MD_01_4.html#a6cf001c63bf7626c7f9d309951e6b97f">get_accessors</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, size_t version, Predicate &amp;&amp;predicate, bool sorted)</td></tr>
-<tr class="memdesc:a6cf001c63bf7626c7f9d309951e6b97f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a list of all <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">dense_accessor_t</a>'s filtered by a predicate.  <a href="#a6cf001c63bf7626c7f9d309951e6b97f">More...</a><br /></td></tr>
+<tr class="memdesc:a6cf001c63bf7626c7f9d309951e6b97f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a list of all <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html" title="dense_accessor_t provides logically array-based access to data variables that have been registered in...">dense_accessor_t</a>'s filtered by a predicate.  <a href="#a6cf001c63bf7626c7f9d309951e6b97f">More...</a><br /></td></tr>
 <tr class="separator:a6cf001c63bf7626c7f9d309951e6b97f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a31c7e777a96c384c68e24baf6d309527"><td class="memTemplParams" colspan="2">template&lt;typename T , size_t NS&gt; </td></tr>
 <tr class="memitem:a31c7e777a96c384c68e24baf6d309527"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01dense_00_01DS_00_01MD_01_4.html#a31c7e777a96c384c68e24baf6d309527">get_accessors</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, size_t version, bool sorted)</td></tr>
-<tr class="memdesc:a31c7e777a96c384c68e24baf6d309527"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a list of all <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">dense_accessor_t</a>'s.  <a href="#a31c7e777a96c384c68e24baf6d309527">More...</a><br /></td></tr>
+<tr class="memdesc:a31c7e777a96c384c68e24baf6d309527"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a list of all <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html" title="dense_accessor_t provides logically array-based access to data variables that have been registered in...">dense_accessor_t</a>'s.  <a href="#a31c7e777a96c384c68e24baf6d309527">More...</a><br /></td></tr>
 <tr class="separator:a31c7e777a96c384c68e24baf6d309527"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a519f886d34ddd47dc81a8d06bcb10c6c"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a519f886d34ddd47dc81a8d06bcb10c6c"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01dense_00_01DS_00_01MD_01_4.html#a519f886d34ddd47dc81a8d06bcb10c6c">get_accessors</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, size_t version, bool sorted)</td></tr>
-<tr class="memdesc:a519f886d34ddd47dc81a8d06bcb10c6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a list of all <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">dense_accessor_t</a>'s.  <a href="#a519f886d34ddd47dc81a8d06bcb10c6c">More...</a><br /></td></tr>
+<tr class="memdesc:a519f886d34ddd47dc81a8d06bcb10c6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a list of all <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html" title="dense_accessor_t provides logically array-based access to data variables that have been registered in...">dense_accessor_t</a>'s.  <a href="#a519f886d34ddd47dc81a8d06bcb10c6c">More...</a><br /></td></tr>
 <tr class="separator:a519f886d34ddd47dc81a8d06bcb10c6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b07c21622e6a137a289d18ac6ddf9c7"><td class="memTemplParams" colspan="2"><a class="anchor" id="a7b07c21622e6a137a289d18ac6ddf9c7"></a>
+<tr class="memitem:a75513eb920007d694d0f78e2e476f8ba"><td class="memTemplParams" colspan="2"><a class="anchor" id="a75513eb920007d694d0f78e2e476f8ba"></a>
 template&lt;typename T , size_t NS&gt; </td></tr>
-<tr class="memitem:a7b07c21622e6a137a289d18ac6ddf9c7"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__handle__t.html">handle_t</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_handle</b> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, const <a class="el" href="classflecsi_1_1const__string__t.html">const_string_t</a> &amp;key, size_t version)</td></tr>
-<tr class="separator:a7b07c21622e6a137a289d18ac6ddf9c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75513eb920007d694d0f78e2e476f8ba"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__handle__t.html">handle_t</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_handle</b> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;key, size_t version)</td></tr>
+<tr class="separator:a75513eb920007d694d0f78e2e476f8ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename DS, typename MD&gt;<br />
+struct flecsi::data::serial::storage_type_t&lt; dense, DS, MD &gt;</h3>
+
+<p>FIXME: Dense storage type. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a5a8aad53060fa8923565dda5e50e09c9"></a>
 <div class="memitem">
 <div class="memproto">
@@ -192,7 +197,7 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Return a <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">dense_accessor_t</a>. </p>
+<p>Return a <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html" title="dense_accessor_t provides logically array-based access to data variables that have been registered in...">dense_accessor_t</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meta_data</td><td>The meta data to use to build the accessor. </td></tr>
@@ -204,7 +209,7 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a358394d871217f912c2246a0a071797f"></a>
+<a class="anchor" id="a293e75d2a3ff7e3cc2b85139ffd950e5"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -224,7 +229,7 @@ template&lt;typename T , size_t NS&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const const_string_t::hash_type_t &amp;&#160;</td>
+          <td class="paramtype">const utils::const_string_t::hash_type_t &amp;&#160;</td>
           <td class="paramname"><em>hash</em>, </td>
         </tr>
         <tr>
@@ -246,7 +251,7 @@ template&lt;typename T , size_t NS&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Return a <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">dense_accessor_t</a>. </p>
+<p>Return a <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html" title="dense_accessor_t provides logically array-based access to data variables that have been registered in...">dense_accessor_t</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">data_store</td><td>The data store to search. </td></tr>
@@ -259,7 +264,7 @@ template&lt;typename T , size_t NS&gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a97abb339ba389be66b83c8aadcf9d532"></a>
+<a class="anchor" id="a72c8ff0fabb49ae282a64ccc168f2953"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -285,7 +290,7 @@ template&lt;typename T , size_t NS&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classflecsi_1_1const__string__t.html">const_string_t</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;&#160;</td>
           <td class="paramname"><em>key</em>, </td>
         </tr>
         <tr>
@@ -307,7 +312,7 @@ template&lt;typename T , size_t NS&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Return a <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">dense_accessor_t</a>. </p>
+<p>Return a <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html" title="dense_accessor_t provides logically array-based access to data variables that have been registered in...">dense_accessor_t</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">data_client</td><td>The data client to restrict our search to. </td></tr>
@@ -375,7 +380,7 @@ template&lt;typename T , size_t NS, typename Predicate &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Return a list of all <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">dense_accessor_t</a>'s filtered by a predicate. </p>
+<p>Return a list of all <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html" title="dense_accessor_t provides logically array-based access to data variables that have been registered in...">dense_accessor_t</a>'s filtered by a predicate. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">data_client</td><td>The data client to restrict our search to. </td></tr>
@@ -386,7 +391,7 @@ template&lt;typename T , size_t NS, typename Predicate &gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="section remark"><dt>Remarks</dt><dd>This version is confined to search within a single namespace </dd></dl>
+<dl class="section remark"><dt>Remarks</dt><dd>This version is confined to search within a single namespace. </dd></dl>
 
 </div>
 </div>
@@ -444,7 +449,7 @@ template&lt;typename T , typename Predicate &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Return a list of all <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">dense_accessor_t</a>'s filtered by a predicate. </p>
+<p>Return a list of all <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html" title="dense_accessor_t provides logically array-based access to data variables that have been registered in...">dense_accessor_t</a>'s filtered by a predicate. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">data_client</td><td>The data client to restrict our search to. </td></tr>
@@ -507,7 +512,7 @@ template&lt;typename T , size_t NS&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Return a list of all <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">dense_accessor_t</a>'s. </p>
+<p>Return a list of all <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html" title="dense_accessor_t provides logically array-based access to data variables that have been registered in...">dense_accessor_t</a>'s. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">data_client</td><td>The data client to restrict our search to. </td></tr>
@@ -569,7 +574,7 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Return a list of all <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">dense_accessor_t</a>'s. </p>
+<p>Return a list of all <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html" title="dense_accessor_t provides logically array-based access to data variables that have been registered in...">dense_accessor_t</a>'s. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">data_client</td><td>The data client to restrict our search to. </td></tr>
@@ -580,6 +585,86 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 <dl class="section remark"><dt>Remarks</dt><dd>This version searches all namespaces. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a47496c0d32542db5de58cfe7b285c5c8"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename DS , typename MD &gt; </div>
+<div class="memtemplate">
+template&lt;typename T , size_t NS, typename... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__handle__t.html">handle_t</a>&lt;T&gt; flecsi::data::serial::storage_type_t&lt; dense, DS, MD &gt;::register_data </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>data_client</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">data_store_t &amp;&#160;</td>
+          <td class="paramname"><em>data_store</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>versions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>index_space</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Args &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>Data type to register. </td></tr>
+    <tr><td class="paramname">NS</td><td>Namespace </td></tr>
+    <tr><td class="paramname">Args</td><td>Variadic arguments that are passed to metadata initialization.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data_client</td><td>Base class reference to client. </td></tr>
+    <tr><td class="paramname">data_store</td><td>A reference for accessing the low-level data. </td></tr>
+    <tr><td class="paramname">key</td><td>A const string instance containing the variable name. </td></tr>
+    <tr><td class="paramname">versions</td><td>The number of variable versions for this datum. </td></tr>
+    <tr><td class="paramname">indices</td><td>The number of indices in the index space. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

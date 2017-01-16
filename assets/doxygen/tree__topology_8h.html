@@ -41,7 +41,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -90,8 +89,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#define-members">Macros</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
@@ -112,7 +109,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <code>#include &lt;mutex&gt;</code><br />
 <code>#include &quot;<a class="el" href="point_8h_source.html">flecsi/geometry/point.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="thread__pool_8h_source.html">flecsi/concurrency/thread_pool.h</a>&quot;</code><br />
-<code>#include &quot;flecsi/data/data_client.h&quot;</code><br />
+<code>#include &quot;<a class="el" href="data__client_8h_source.html">flecsi/data/data_client.h</a>&quot;</code><br />
 <code>#include &quot;flecsi/topology/index_space.h&quot;</code><br />
 </div>
 <p><a href="tree__topology_8h_source.html">Go to the source code of this file.</a></p>
@@ -122,10 +119,13 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1tree__geometry.html">flecsi::topology::tree_geometry&lt; T, D &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1tree__geometry_3_01T_00_011_01_4.html">flecsi::topology::tree_geometry&lt; T, 1 &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">1d geometry class for computing intersections and distances.  <a href="structflecsi_1_1topology_1_1tree__geometry_3_01T_00_011_01_4.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1tree__geometry_3_01T_00_012_01_4.html">flecsi::topology::tree_geometry&lt; T, 2 &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">2d geometry class for computing intersections and distances.  <a href="structflecsi_1_1topology_1_1tree__geometry_3_01T_00_012_01_4.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1tree__geometry_3_01T_00_013_01_4.html">flecsi::topology::tree_geometry&lt; T, 3 &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">1d geometry class for computing intersections and distances.  <a href="structflecsi_1_1topology_1_1tree__geometry_3_01T_00_013_01_4.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1branch__id.html">flecsi::topology::branch_id&lt; T, D &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -142,22 +142,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__branch.html">flecsi::topology::tree_branch&lt; T, D &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespaceflecsi"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html">flecsi</a></td></tr>
-<tr class="memdesc:namespaceflecsi"><td class="mdescLeft">&#160;</td><td class="mdescRight">user includes <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:ac16c020b8d5674d5499084ed7ff16e88"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>np</b>(X)</td></tr>
-<tr class="separator:ac16c020b8d5674d5499084ed7ff16e88"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aca5b0e7bf2358788d91f1b4fd97e0021"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>hp</b>(X)</td></tr>
-<tr class="separator:aca5b0e7bf2358788d91f1b4fd97e0021"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:a8f7b319d3e182892a584424d77f95c51"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8f7b319d3e182892a584424d77f95c51"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>action</b> : uint8_t { <b>none</b> = 0b00, 
+<tr class="memitem:a8f7b319d3e182892a584424d77f95c51"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tree__topology_8h.html#a8f7b319d3e182892a584424d77f95c51">flecsi::topology::action</a> : uint8_t { <b>none</b> = 0b00, 
 <b>refine</b> = 0b01, 
 <b>coarsen</b> = 0b10
  }</td></tr>
@@ -173,37 +160,26 @@ template&lt;typename T , size_t D&gt; </td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><dl class="section author"><dt>Authors</dt><dd><a href="#" onclick="location.href='mai'+'lto:'+'nic'+'km'+'@la'+'nl'+'.go'+'v'; return false;">nickm<span style="display: none;">.nosp@m.</span>@lan<span style="display: none;">.nosp@m.</span>l.gov</a> </dd></dl>
 <dl class="section date"><dt>Date</dt><dd>Initial file creation: Apr 5, 2016 </dd></dl>
-</div><h2 class="groupheader">Macro Definition Documentation</h2>
-<a class="anchor" id="aca5b0e7bf2358788d91f1b4fd97e0021"></a>
+</div><h2 class="groupheader">Enumeration Type Documentation</h2>
+<a class="anchor" id="file_a8f7b319d3e182892a584424d77f95c51"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">#define hp</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">X</td><td>)</td>
-          <td></td>
+          <td class="memname">enum <a class="el" href="tree__topology_8h.html#a8f7b319d3e182892a584424d77f95c51">flecsi::topology::action</a> : uint8_t</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">std::cout &lt;&lt; __FILE__ &lt;&lt; <span class="stringliteral">&quot;:&quot;</span> &lt;&lt; __LINE__ &lt;&lt; <span class="stringliteral">&quot;: &quot;</span> &lt;&lt; __PRETTY_FUNCTION__ \</div><div class="line">           &lt;&lt; <span class="stringliteral">&quot;: &quot;</span> &lt;&lt; #X &lt;&lt; <span class="stringliteral">&quot; = &quot;</span> &lt;&lt; std::hex &lt;&lt; (X) &lt;&lt; std::endl</div></div><!-- fragment -->
-</div>
-</div>
-<a class="anchor" id="ac16c020b8d5674d5499084ed7ff16e88"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define np</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">X</td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">std::cout &lt;&lt; __FILE__ &lt;&lt; <span class="stringliteral">&quot;:&quot;</span> &lt;&lt; __LINE__ &lt;&lt; <span class="stringliteral">&quot;: &quot;</span> &lt;&lt; __PRETTY_FUNCTION__ \</div><div class="line">           &lt;&lt; <span class="stringliteral">&quot;: &quot;</span> &lt;&lt; #X &lt;&lt; <span class="stringliteral">&quot; = &quot;</span> &lt;&lt; (X) &lt;&lt; std::endl</div></div><!-- fragment -->
+<p>When an entity is added or removed from a branch, the user-level tree may trigger one of these actions. </p>
+
 </div>
 </div>
 </div><!-- contents -->

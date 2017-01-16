@@ -41,7 +41,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -86,7 +85,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>topology</b></li><li class="navelem"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">tree_topology</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>topology</b></li><li class="navelem"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">tree_topology</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -100,13 +99,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">flecsi::topology::tree_topology&lt; P &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="tree__topology_8h_source.html">tree_topology.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for flecsi::topology::tree_topology&lt; P &gt;:</div>
 <div class="dyncontent">
  <div class="center">
   <img src="classflecsi_1_1topology_1_1tree__topology.png" usemap="#flecsi::topology::tree_5Ftopology_3C_20P_20_3E_map" alt=""/>
   <map id="flecsi::topology::tree_5Ftopology_3C_20P_20_3E_map" name="flecsi::topology::tree_topology&lt; P &gt;_map">
-<area href="classflecsi_1_1data_1_1data__client__t.html" alt="flecsi::data::data_client_t" shape="rect" coords="221,0,432,24"/>
+<area href="classflecsi_1_1data_1_1data__client__t.html" title="data_client_t provides... " alt="flecsi::data::data_client_t" shape="rect" coords="221,0,432,24"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -124,7 +125,7 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>Policy</b> = P</td><
 using&#160;</td><td class="memItemRight" valign="bottom"><b>element_t</b> = typename Policy::element_t</td></tr>
 <tr class="separator:a2bada5e72550770a61e481f0816ce800"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c324e9542dddd095cc0a6eb57439b73"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9c324e9542dddd095cc0a6eb57439b73"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>point_t</b> = <a class="el" href="classflecsi_1_1dimensioned__array.html">point</a>&lt; element_t, dimension &gt;</td></tr>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>point_t</b> = <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">point</a>&lt; element_t, dimension &gt;</td></tr>
 <tr class="separator:a9c324e9542dddd095cc0a6eb57439b73"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa1f4571fdc80487448dc0dd6670972cd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa1f4571fdc80487448dc0dd6670972cd"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>range_t</b> = std::pair&lt; element_t, element_t &gt;</td></tr>
@@ -171,103 +172,77 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>subentity_space_t</b
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a27300106fcb860f11d0d123138453182"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a27300106fcb860f11d0d123138453182"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>tree_topology</b> (const <a class="el" href="classflecsi_1_1dimensioned__array.html">point</a>&lt; element_t, dimension &gt; &amp;start, const <a class="el" href="classflecsi_1_1dimensioned__array.html">point</a>&lt; element_t, dimension &gt; &amp;end)</td></tr>
+<tr class="memitem:af34fc2ed970c04e2cb97194c19fe8c98"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#af34fc2ed970c04e2cb97194c19fe8c98">tree_topology</a> ()</td></tr>
+<tr class="separator:af34fc2ed970c04e2cb97194c19fe8c98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27300106fcb860f11d0d123138453182"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a27300106fcb860f11d0d123138453182">tree_topology</a> (const <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">point</a>&lt; element_t, dimension &gt; &amp;start, const <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">point</a>&lt; element_t, dimension &gt; &amp;end)</td></tr>
 <tr class="separator:a27300106fcb860f11d0d123138453182"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5ca7793dfe53ab05aae59ca6a6a435eb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5ca7793dfe53ab05aae59ca6a6a435eb"></a>
-branch_t *&#160;</td><td class="memItemRight" valign="bottom"><b>child</b> (branch_t *b, size_t ci)</td></tr>
+<tr class="memitem:a5ca7793dfe53ab05aae59ca6a6a435eb"><td class="memItemLeft" align="right" valign="top">branch_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a5ca7793dfe53ab05aae59ca6a6a435eb">child</a> (branch_t *b, size_t ci)</td></tr>
 <tr class="separator:a5ca7793dfe53ab05aae59ca6a6a435eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a95a2f57aa9d2201d7546aef806808bf9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a95a2f57aa9d2201d7546aef806808bf9"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>all_entities</b> () const </td></tr>
+<tr class="memitem:a95a2f57aa9d2201d7546aef806808bf9"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a95a2f57aa9d2201d7546aef806808bf9">all_entities</a> () const </td></tr>
 <tr class="separator:a95a2f57aa9d2201d7546aef806808bf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa21e02539c2f7e289c8cf3155e4fe363"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa21e02539c2f7e289c8cf3155e4fe363"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>entities</b> ()</td></tr>
+<tr class="memitem:aa21e02539c2f7e289c8cf3155e4fe363"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#aa21e02539c2f7e289c8cf3155e4fe363">entities</a> ()</td></tr>
 <tr class="separator:aa21e02539c2f7e289c8cf3155e4fe363"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab402493a5dd88a20a68c0c4e4a4b420b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab402493a5dd88a20a68c0c4e4a4b420b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>insert</b> (entity_t *ent)</td></tr>
+<tr class="memitem:ab402493a5dd88a20a68c0c4e4a4b420b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#ab402493a5dd88a20a68c0c4e4a4b420b">insert</a> (entity_t *ent)</td></tr>
 <tr class="separator:ab402493a5dd88a20a68c0c4e4a4b420b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac81349bb11f2ff9feaab7003ba8b8da7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac81349bb11f2ff9feaab7003ba8b8da7"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>update</b> (entity_t *ent)</td></tr>
+<tr class="memitem:ac81349bb11f2ff9feaab7003ba8b8da7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#ac81349bb11f2ff9feaab7003ba8b8da7">update</a> (entity_t *ent)</td></tr>
 <tr class="separator:ac81349bb11f2ff9feaab7003ba8b8da7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2610fbbe4828de53ce8fcdc051b4cd86"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2610fbbe4828de53ce8fcdc051b4cd86"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>update_all</b> ()</td></tr>
+<tr class="memitem:a2610fbbe4828de53ce8fcdc051b4cd86"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a2610fbbe4828de53ce8fcdc051b4cd86">update_all</a> ()</td></tr>
 <tr class="separator:a2610fbbe4828de53ce8fcdc051b4cd86"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a48b319abc3a1b27d2485ce2303b4a4d1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a48b319abc3a1b27d2485ce2303b4a4d1"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>update_all</b> (const <a class="el" href="classflecsi_1_1dimensioned__array.html">point</a>&lt; element_t, dimension &gt; &amp;start, const <a class="el" href="classflecsi_1_1dimensioned__array.html">point</a>&lt; element_t, dimension &gt; &amp;end)</td></tr>
+<tr class="memitem:a48b319abc3a1b27d2485ce2303b4a4d1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a48b319abc3a1b27d2485ce2303b4a4d1">update_all</a> (const <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">point</a>&lt; element_t, dimension &gt; &amp;start, const <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">point</a>&lt; element_t, dimension &gt; &amp;end)</td></tr>
 <tr class="separator:a48b319abc3a1b27d2485ce2303b4a4d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a856f8d09bd9458dd15daa7a2e9d0d9e5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a856f8d09bd9458dd15daa7a2e9d0d9e5"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>remove</b> (entity_t *ent)</td></tr>
+<tr class="memitem:a856f8d09bd9458dd15daa7a2e9d0d9e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a856f8d09bd9458dd15daa7a2e9d0d9e5">remove</a> (entity_t *ent)</td></tr>
 <tr class="separator:a856f8d09bd9458dd15daa7a2e9d0d9e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a14e0705cf2f25116f02b4d338748c79e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a14e0705cf2f25116f02b4d338748c79e"></a>
-<a class="el" href="classpoint.html">point_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>unit_coordinates</b> (const <a class="el" href="classpoint.html">point_t</a> &amp;p)</td></tr>
+<tr class="memitem:a14e0705cf2f25116f02b4d338748c79e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpoint.html">point_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a14e0705cf2f25116f02b4d338748c79e">unit_coordinates</a> (const <a class="el" href="classpoint.html">point_t</a> &amp;p)</td></tr>
 <tr class="separator:a14e0705cf2f25116f02b4d338748c79e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a49c7ad5943803c70417cbf5bc262319d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a49c7ad5943803c70417cbf5bc262319d"></a>
-<a class="el" href="classflecsi_1_1topology_1_1index__space.html">subentity_space_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>find_in_radius</b> (const <a class="el" href="classpoint.html">point_t</a> &amp;center, element_t radius)</td></tr>
+<tr class="memitem:a49c7ad5943803c70417cbf5bc262319d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1topology_1_1index__space.html">subentity_space_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a49c7ad5943803c70417cbf5bc262319d">find_in_radius</a> (const <a class="el" href="classpoint.html">point_t</a> &amp;center, element_t radius)</td></tr>
 <tr class="separator:a49c7ad5943803c70417cbf5bc262319d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a414bfa674af59b96d36177d39eb1741f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a414bfa674af59b96d36177d39eb1741f"></a>
-<a class="el" href="classflecsi_1_1topology_1_1index__space.html">subentity_space_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>find_in_radius</b> (<a class="el" href="classflecsi_1_1thread__pool.html">thread_pool</a> &amp;pool, const <a class="el" href="classpoint.html">point_t</a> &amp;center, element_t radius)</td></tr>
+<tr class="memitem:a414bfa674af59b96d36177d39eb1741f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1topology_1_1index__space.html">subentity_space_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a414bfa674af59b96d36177d39eb1741f">find_in_radius</a> (<a class="el" href="classflecsi_1_1thread__pool.html">thread_pool</a> &amp;pool, const <a class="el" href="classpoint.html">point_t</a> &amp;center, element_t radius)</td></tr>
 <tr class="separator:a414bfa674af59b96d36177d39eb1741f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a383f0c7b4592cbb43bcbce00561badb6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a383f0c7b4592cbb43bcbce00561badb6"></a>
-<a class="el" href="classflecsi_1_1topology_1_1index__space.html">subentity_space_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>find_in_box</b> (const <a class="el" href="classpoint.html">point_t</a> &amp;min, const <a class="el" href="classpoint.html">point_t</a> &amp;max)</td></tr>
+<tr class="memitem:a383f0c7b4592cbb43bcbce00561badb6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1topology_1_1index__space.html">subentity_space_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a383f0c7b4592cbb43bcbce00561badb6">find_in_box</a> (const <a class="el" href="classpoint.html">point_t</a> &amp;min, const <a class="el" href="classpoint.html">point_t</a> &amp;max)</td></tr>
 <tr class="separator:a383f0c7b4592cbb43bcbce00561badb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a31bf5af06b119de642f12d57d38e4058"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a31bf5af06b119de642f12d57d38e4058"></a>
-<a class="el" href="classflecsi_1_1topology_1_1index__space.html">subentity_space_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>find_in_box</b> (<a class="el" href="classflecsi_1_1thread__pool.html">thread_pool</a> &amp;pool, const <a class="el" href="classpoint.html">point_t</a> &amp;min, const <a class="el" href="classpoint.html">point_t</a> &amp;max)</td></tr>
+<tr class="memitem:a31bf5af06b119de642f12d57d38e4058"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1topology_1_1index__space.html">subentity_space_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a31bf5af06b119de642f12d57d38e4058">find_in_box</a> (<a class="el" href="classflecsi_1_1thread__pool.html">thread_pool</a> &amp;pool, const <a class="el" href="classpoint.html">point_t</a> &amp;min, const <a class="el" href="classpoint.html">point_t</a> &amp;max)</td></tr>
 <tr class="separator:a31bf5af06b119de642f12d57d38e4058"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a81a52e8635f8c92d2941830378cc99cd"><td class="memTemplParams" colspan="2"><a class="anchor" id="a81a52e8635f8c92d2941830378cc99cd"></a>
-template&lt;typename EF , typename... ARGS&gt; </td></tr>
-<tr class="memitem:a81a52e8635f8c92d2941830378cc99cd"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>apply_in_radius</b> (const <a class="el" href="classpoint.html">point_t</a> &amp;center, element_t radius, EF &amp;&amp;ef, ARGS &amp;&amp;...args)</td></tr>
+<tr class="memitem:a81a52e8635f8c92d2941830378cc99cd"><td class="memTemplParams" colspan="2">template&lt;typename EF , typename... ARGS&gt; </td></tr>
+<tr class="memitem:a81a52e8635f8c92d2941830378cc99cd"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a81a52e8635f8c92d2941830378cc99cd">apply_in_radius</a> (const <a class="el" href="classpoint.html">point_t</a> &amp;center, element_t radius, EF &amp;&amp;ef, ARGS &amp;&amp;...args)</td></tr>
 <tr class="separator:a81a52e8635f8c92d2941830378cc99cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeca1dbf9575da5037277a3873102ea19"><td class="memTemplParams" colspan="2"><a class="anchor" id="aeca1dbf9575da5037277a3873102ea19"></a>
-template&lt;typename EF , typename... ARGS&gt; </td></tr>
-<tr class="memitem:aeca1dbf9575da5037277a3873102ea19"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>apply_in_radius</b> (<a class="el" href="classflecsi_1_1thread__pool.html">thread_pool</a> &amp;pool, const <a class="el" href="classpoint.html">point_t</a> &amp;center, element_t radius, EF &amp;&amp;ef, ARGS &amp;&amp;...args)</td></tr>
+<tr class="memitem:aeca1dbf9575da5037277a3873102ea19"><td class="memTemplParams" colspan="2">template&lt;typename EF , typename... ARGS&gt; </td></tr>
+<tr class="memitem:aeca1dbf9575da5037277a3873102ea19"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#aeca1dbf9575da5037277a3873102ea19">apply_in_radius</a> (<a class="el" href="classflecsi_1_1thread__pool.html">thread_pool</a> &amp;pool, const <a class="el" href="classpoint.html">point_t</a> &amp;center, element_t radius, EF &amp;&amp;ef, ARGS &amp;&amp;...args)</td></tr>
 <tr class="separator:aeca1dbf9575da5037277a3873102ea19"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f37e534fcc07f710dde02ed48fb33f1"><td class="memTemplParams" colspan="2"><a class="anchor" id="a0f37e534fcc07f710dde02ed48fb33f1"></a>
-template&lt;typename EF , typename... ARGS&gt; </td></tr>
-<tr class="memitem:a0f37e534fcc07f710dde02ed48fb33f1"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>apply_in_box</b> (<a class="el" href="classflecsi_1_1thread__pool.html">thread_pool</a> &amp;pool, const <a class="el" href="classpoint.html">point_t</a> &amp;min, const <a class="el" href="classpoint.html">point_t</a> &amp;max, EF &amp;&amp;ef, ARGS &amp;&amp;...args)</td></tr>
+<tr class="memitem:a0f37e534fcc07f710dde02ed48fb33f1"><td class="memTemplParams" colspan="2">template&lt;typename EF , typename... ARGS&gt; </td></tr>
+<tr class="memitem:a0f37e534fcc07f710dde02ed48fb33f1"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a0f37e534fcc07f710dde02ed48fb33f1">apply_in_box</a> (<a class="el" href="classflecsi_1_1thread__pool.html">thread_pool</a> &amp;pool, const <a class="el" href="classpoint.html">point_t</a> &amp;min, const <a class="el" href="classpoint.html">point_t</a> &amp;max, EF &amp;&amp;ef, ARGS &amp;&amp;...args)</td></tr>
 <tr class="separator:a0f37e534fcc07f710dde02ed48fb33f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aea3c9b9c79c5be7adf062cba1e2eb76b"><td class="memTemplParams" colspan="2"><a class="anchor" id="aea3c9b9c79c5be7adf062cba1e2eb76b"></a>
-template&lt;typename EF , typename... ARGS&gt; </td></tr>
-<tr class="memitem:aea3c9b9c79c5be7adf062cba1e2eb76b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>apply_in_box</b> (const <a class="el" href="classpoint.html">point_t</a> &amp;min, const <a class="el" href="classpoint.html">point_t</a> &amp;max, EF &amp;&amp;ef, ARGS &amp;&amp;...args)</td></tr>
+<tr class="memitem:aea3c9b9c79c5be7adf062cba1e2eb76b"><td class="memTemplParams" colspan="2">template&lt;typename EF , typename... ARGS&gt; </td></tr>
+<tr class="memitem:aea3c9b9c79c5be7adf062cba1e2eb76b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#aea3c9b9c79c5be7adf062cba1e2eb76b">apply_in_box</a> (const <a class="el" href="classpoint.html">point_t</a> &amp;min, const <a class="el" href="classpoint.html">point_t</a> &amp;max, EF &amp;&amp;ef, ARGS &amp;&amp;...args)</td></tr>
 <tr class="separator:aea3c9b9c79c5be7adf062cba1e2eb76b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25c86377708ddc94c72ba8bd2e977d30"><td class="memTemplParams" colspan="2"><a class="anchor" id="a25c86377708ddc94c72ba8bd2e977d30"></a>
-template&lt;class... Args&gt; </td></tr>
-<tr class="memitem:a25c86377708ddc94c72ba8bd2e977d30"><td class="memTemplItemLeft" align="right" valign="top">entity_t *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>make_entity</b> (Args &amp;&amp;...args)</td></tr>
+<tr class="memitem:a25c86377708ddc94c72ba8bd2e977d30"><td class="memTemplParams" colspan="2">template&lt;class... Args&gt; </td></tr>
+<tr class="memitem:a25c86377708ddc94c72ba8bd2e977d30"><td class="memTemplItemLeft" align="right" valign="top">entity_t *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a25c86377708ddc94c72ba8bd2e977d30">make_entity</a> (Args &amp;&amp;...args)</td></tr>
 <tr class="separator:a25c86377708ddc94c72ba8bd2e977d30"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af596e170f07acf09d5e07397263f8853"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af596e170f07acf09d5e07397263f8853"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>max_depth</b> () const </td></tr>
+<tr class="memitem:af596e170f07acf09d5e07397263f8853"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#af596e170f07acf09d5e07397263f8853">max_depth</a> () const </td></tr>
 <tr class="separator:af596e170f07acf09d5e07397263f8853"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f5a1a2ff0404416c911de3ada70f35c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8f5a1a2ff0404416c911de3ada70f35c"></a>
-entity_t *&#160;</td><td class="memItemRight" valign="bottom"><b>get</b> (<a class="el" href="classflecsi_1_1topology_1_1entity__id__t.html">entity_id_t</a> id)</td></tr>
+<tr class="memitem:a8f5a1a2ff0404416c911de3ada70f35c"><td class="memItemLeft" align="right" valign="top">entity_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a8f5a1a2ff0404416c911de3ada70f35c">get</a> (<a class="el" href="classflecsi_1_1topology_1_1entity__id__t.html">entity_id_t</a> id)</td></tr>
 <tr class="separator:a8f5a1a2ff0404416c911de3ada70f35c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa71bb93b61f3d09d434a312439609ca1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa71bb93b61f3d09d434a312439609ca1"></a>
 branch_t *&#160;</td><td class="memItemRight" valign="bottom"><b>get</b> (<a class="el" href="classflecsi_1_1topology_1_1branch__id.html">branch_id_t</a> id)</td></tr>
 <tr class="separator:aa71bb93b61f3d09d434a312439609ca1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c69ad2a71b510859e4c3508c2a5f422"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1c69ad2a71b510859e4c3508c2a5f422"></a>
-branch_t *&#160;</td><td class="memItemRight" valign="bottom"><b>root</b> ()</td></tr>
+<tr class="memitem:a1c69ad2a71b510859e4c3508c2a5f422"><td class="memItemLeft" align="right" valign="top">branch_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a1c69ad2a71b510859e4c3508c2a5f422">root</a> ()</td></tr>
 <tr class="separator:a1c69ad2a71b510859e4c3508c2a5f422"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a281488e1fea88533f7798fba479e0511"><td class="memTemplParams" colspan="2"><a class="anchor" id="a281488e1fea88533f7798fba479e0511"></a>
-template&lt;typename F , typename... ARGS&gt; </td></tr>
-<tr class="memitem:a281488e1fea88533f7798fba479e0511"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>visit</b> (branch_t *b, F &amp;&amp;f, ARGS &amp;&amp;...args)</td></tr>
+<tr class="memitem:a281488e1fea88533f7798fba479e0511"><td class="memTemplParams" colspan="2">template&lt;typename F , typename... ARGS&gt; </td></tr>
+<tr class="memitem:a281488e1fea88533f7798fba479e0511"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a281488e1fea88533f7798fba479e0511">visit</a> (branch_t *b, F &amp;&amp;f, ARGS &amp;&amp;...args)</td></tr>
 <tr class="separator:a281488e1fea88533f7798fba479e0511"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a18575afc57da4cbfd64099a54f1fa42e"><td class="memTemplParams" colspan="2"><a class="anchor" id="a18575afc57da4cbfd64099a54f1fa42e"></a>
-template&lt;typename F , typename... ARGS&gt; </td></tr>
-<tr class="memitem:a18575afc57da4cbfd64099a54f1fa42e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>visit</b> (<a class="el" href="classflecsi_1_1thread__pool.html">thread_pool</a> &amp;pool, branch_t *b, F &amp;&amp;f, ARGS &amp;&amp;...args)</td></tr>
+<tr class="memitem:a18575afc57da4cbfd64099a54f1fa42e"><td class="memTemplParams" colspan="2">template&lt;typename F , typename... ARGS&gt; </td></tr>
+<tr class="memitem:a18575afc57da4cbfd64099a54f1fa42e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a18575afc57da4cbfd64099a54f1fa42e">visit</a> (<a class="el" href="classflecsi_1_1thread__pool.html">thread_pool</a> &amp;pool, branch_t *b, F &amp;&amp;f, ARGS &amp;&amp;...args)</td></tr>
 <tr class="separator:a18575afc57da4cbfd64099a54f1fa42e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6085a978e1720d2ded74ca27e6f9806a"><td class="memTemplParams" colspan="2"><a class="anchor" id="a6085a978e1720d2ded74ca27e6f9806a"></a>
-template&lt;typename F , typename... ARGS&gt; </td></tr>
-<tr class="memitem:a6085a978e1720d2ded74ca27e6f9806a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>visit_children</b> (branch_t *b, F &amp;&amp;f, ARGS &amp;&amp;...args)</td></tr>
+<tr class="memitem:a6085a978e1720d2ded74ca27e6f9806a"><td class="memTemplParams" colspan="2">template&lt;typename F , typename... ARGS&gt; </td></tr>
+<tr class="memitem:a6085a978e1720d2ded74ca27e6f9806a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a6085a978e1720d2ded74ca27e6f9806a">visit_children</a> (branch_t *b, F &amp;&amp;f, ARGS &amp;&amp;...args)</td></tr>
 <tr class="separator:a6085a978e1720d2ded74ca27e6f9806a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9a3b572c57e1039e59bab4da571f73c1"><td class="memTemplParams" colspan="2"><a class="anchor" id="a9a3b572c57e1039e59bab4da571f73c1"></a>
-template&lt;typename F , typename... ARGS&gt; </td></tr>
-<tr class="memitem:a9a3b572c57e1039e59bab4da571f73c1"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>visit_children</b> (<a class="el" href="classflecsi_1_1thread__pool.html">thread_pool</a> &amp;pool, branch_t *b, F &amp;&amp;f, ARGS &amp;&amp;...args)</td></tr>
+<tr class="memitem:a9a3b572c57e1039e59bab4da571f73c1"><td class="memTemplParams" colspan="2">template&lt;typename F , typename... ARGS&gt; </td></tr>
+<tr class="memitem:a9a3b572c57e1039e59bab4da571f73c1"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a9a3b572c57e1039e59bab4da571f73c1">visit_children</a> (<a class="el" href="classflecsi_1_1thread__pool.html">thread_pool</a> &amp;pool, branch_t *b, F &amp;&amp;f, ARGS &amp;&amp;...args)</td></tr>
 <tr class="separator:a9a3b572c57e1039e59bab4da571f73c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc1eb4b599fd581c9ecb66d724dc781d"><td class="memTemplParams" colspan="2"><a class="anchor" id="afc1eb4b599fd581c9ecb66d724dc781d"></a>
-template&lt;typename A &gt; </td></tr>
-<tr class="memitem:afc1eb4b599fd581c9ecb66d724dc781d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>save</b> (A &amp;archive) const </td></tr>
+<tr class="memitem:afc1eb4b599fd581c9ecb66d724dc781d"><td class="memTemplParams" colspan="2">template&lt;typename A &gt; </td></tr>
+<tr class="memitem:afc1eb4b599fd581c9ecb66d724dc781d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#afc1eb4b599fd581c9ecb66d724dc781d">save</a> (A &amp;archive) const </td></tr>
 <tr class="separator:afc1eb4b599fd581c9ecb66d724dc781d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab03ccf790ef960b52ecc0ca95a851c57"><td class="memTemplParams" colspan="2"><a class="anchor" id="ab03ccf790ef960b52ecc0ca95a851c57"></a>
-template&lt;typename A &gt; </td></tr>
-<tr class="memitem:ab03ccf790ef960b52ecc0ca95a851c57"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>load</b> (A &amp;archive)</td></tr>
+<tr class="memitem:ab03ccf790ef960b52ecc0ca95a851c57"><td class="memTemplParams" colspan="2">template&lt;typename A &gt; </td></tr>
+<tr class="memitem:ab03ccf790ef960b52ecc0ca95a851c57"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#ab03ccf790ef960b52ecc0ca95a851c57">load</a> (A &amp;archive)</td></tr>
 <tr class="separator:ab03ccf790ef960b52ecc0ca95a851c57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae8ee32021911b2b5bbc999940a7c6247"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae8ee32021911b2b5bbc999940a7c6247"></a>
 char *&#160;</td><td class="memItemRight" valign="bottom"><b>serialize_</b> (uint64_t &amp;size)</td></tr>
@@ -300,8 +275,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>unserialize_</b> (cha
 virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1data_1_1data__client__t.html#a4de3c6c6c194cae97e04ab9e625948ee">~data_client_t</a> ()</td></tr>
 <tr class="memdesc:a4de3c6c6c194cae97e04ab9e625948ee inherit pub_methods_classflecsi_1_1data_1_1data__client__t"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor. <br /></td></tr>
 <tr class="separator:a4de3c6c6c194cae97e04ab9e625948ee inherit pub_methods_classflecsi_1_1data_1_1data__client__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a69e2d5af6d27a1cc1e0cf224d3181612 inherit pub_methods_classflecsi_1_1data_1_1data__client__t"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a69e2d5af6d27a1cc1e0cf224d3181612"></a>
-uintptr_t&#160;</td><td class="memItemRight" valign="bottom"><b>runtime_id</b> () const </td></tr>
+<tr class="memitem:a69e2d5af6d27a1cc1e0cf224d3181612 inherit pub_methods_classflecsi_1_1data_1_1data__client__t"><td class="memItemLeft" align="right" valign="top">uintptr_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1data_1_1data__client__t.html#a69e2d5af6d27a1cc1e0cf224d3181612">runtime_id</a> () const </td></tr>
 <tr class="separator:a69e2d5af6d27a1cc1e0cf224d3181612 inherit pub_methods_classflecsi_1_1data_1_1data__client__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c3c4f0419a098469e10e09589cf5797 inherit pub_methods_classflecsi_1_1data_1_1data__client__t"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8c3c4f0419a098469e10e09589cf5797"></a>
 virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>indices</b> (size_t <a class="el" href="classindex__space.html">index_space</a>) const </td></tr>
@@ -313,6 +287,1070 @@ Static Public Attributes</h2></td></tr>
 static const size_t&#160;</td><td class="memItemRight" valign="bottom"><b>dimension</b> = Policy::dimension</td></tr>
 <tr class="separator:a60afda9661f1a80a1fe18c4e758ac34f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;class P&gt;<br />
+class flecsi::topology::tree_topology&lt; P &gt;</h3>
+
+<p>The tree topology is parameterized on a policy P which defines its branch and entity types. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="af34fc2ed970c04e2cb97194c19fe8c98"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">tree_topology</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Constuct a tree topology with unit coordinates, i.e. each coordinate dimension is in range [0, 1]. </p>
+
+</div>
+</div>
+<a class="anchor" id="a27300106fcb860f11d0d123138453182"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::<a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">tree_topology</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">point</a>&lt; element_t, dimension &gt; &amp;&#160;</td>
+          <td class="paramname"><em>start</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">point</a>&lt; element_t, dimension &gt; &amp;&#160;</td>
+          <td class="paramname"><em>end</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Construct a tree topology with specified ranges [end, start] for each dimension. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a95a2f57aa9d2201d7546aef806808bf9"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::all_entities </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return an index space containing all entities (including those removed). </p>
+
+</div>
+</div>
+<a class="anchor" id="a0f37e534fcc07f710dde02ed48fb33f1"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<div class="memtemplate">
+template&lt;typename EF , typename... ARGS&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::apply_in_box </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1thread__pool.html">thread_pool</a> &amp;&#160;</td>
+          <td class="paramname"><em>pool</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpoint.html">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>min</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpoint.html">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>max</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">EF &amp;&amp;&#160;</td>
+          <td class="paramname"><em>ef</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ARGS &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>For all entities within the specified box, apply the given callable object ef with args. </p>
+
+</div>
+</div>
+<a class="anchor" id="aea3c9b9c79c5be7adf062cba1e2eb76b"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<div class="memtemplate">
+template&lt;typename EF , typename... ARGS&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::apply_in_box </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpoint.html">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>min</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpoint.html">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>max</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">EF &amp;&amp;&#160;</td>
+          <td class="paramname"><em>ef</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ARGS &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>For all entities within the specified spheroid, apply the given callable object ef with args. (Concurrent version.) </p>
+
+</div>
+</div>
+<a class="anchor" id="a81a52e8635f8c92d2941830378cc99cd"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<div class="memtemplate">
+template&lt;typename EF , typename... ARGS&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::apply_in_radius </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpoint.html">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>center</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">element_t&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">EF &amp;&amp;&#160;</td>
+          <td class="paramname"><em>ef</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ARGS &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>For all entities within the specified spheroid, apply the given callable object ef with args. </p>
+
+</div>
+</div>
+<a class="anchor" id="aeca1dbf9575da5037277a3873102ea19"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<div class="memtemplate">
+template&lt;typename EF , typename... ARGS&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::apply_in_radius </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1thread__pool.html">thread_pool</a> &amp;&#160;</td>
+          <td class="paramname"><em>pool</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpoint.html">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>center</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">element_t&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">EF &amp;&amp;&#160;</td>
+          <td class="paramname"><em>ef</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ARGS &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>For all entities within the specified spheroid, apply the given callable object ef with args. (Concurrent version.) </p>
+
+</div>
+</div>
+<a class="anchor" id="a5ca7793dfe53ab05aae59ca6a6a435eb"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">branch_t* <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::child </td>
+          <td>(</td>
+          <td class="paramtype">branch_t *&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>ci</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Get the ci-th child of the given branch. </p>
+
+</div>
+</div>
+<a class="anchor" id="aa21e02539c2f7e289c8cf3155e4fe363"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::entities </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return an index space containing all non-removed entities. </p>
+
+</div>
+</div>
+<a class="anchor" id="a383f0c7b4592cbb43bcbce00561badb6"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1topology_1_1index__space.html">subentity_space_t</a> <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::find_in_box </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpoint.html">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>min</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpoint.html">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>max</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return an index space containing all entities within the specified box. </p>
+
+</div>
+</div>
+<a class="anchor" id="a31bf5af06b119de642f12d57d38e4058"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1topology_1_1index__space.html">subentity_space_t</a> <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::find_in_box </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1thread__pool.html">thread_pool</a> &amp;&#160;</td>
+          <td class="paramname"><em>pool</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpoint.html">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>min</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpoint.html">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>max</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return an index space containing all entities within the specified box. (Concurrent version.) </p>
+
+</div>
+</div>
+<a class="anchor" id="a49c7ad5943803c70417cbf5bc262319d"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1topology_1_1index__space.html">subentity_space_t</a> <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::find_in_radius </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpoint.html">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>center</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">element_t&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return an index space containing all entities within the specified spheroid. </p>
+
+</div>
+</div>
+<a class="anchor" id="a414bfa674af59b96d36177d39eb1741f"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classflecsi_1_1topology_1_1index__space.html">subentity_space_t</a> <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::find_in_radius </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1thread__pool.html">thread_pool</a> &amp;&#160;</td>
+          <td class="paramname"><em>pool</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpoint.html">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>center</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">element_t&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return an index space containing all entities within the specified spheroid. (Concurrent version.) </p>
+
+</div>
+</div>
+<a class="anchor" id="a8f5a1a2ff0404416c911de3ada70f35c"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">entity_t* <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::get </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1topology_1_1entity__id__t.html">entity_id_t</a>&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Get an entity by entity id. </p>
+
+</div>
+</div>
+<a class="anchor" id="ab402493a5dd88a20a68c0c4e4a4b420b"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::insert </td>
+          <td>(</td>
+          <td class="paramtype">entity_t *&#160;</td>
+          <td class="paramname"><em>ent</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Insert an entity into the lowest possible branch division. </p>
+
+</div>
+</div>
+<a class="anchor" id="ab03ccf790ef960b52ecc0ca95a851c57"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<div class="memtemplate">
+template&lt;typename A &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::load </td>
+          <td>(</td>
+          <td class="paramtype">A &amp;&#160;</td>
+          <td class="paramname"><em>archive</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Load (de-serialize) the tree from an archive. </p>
+
+</div>
+</div>
+<a class="anchor" id="a25c86377708ddc94c72ba8bd2e977d30"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<div class="memtemplate">
+template&lt;class... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">entity_t* <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::make_entity </td>
+          <td>(</td>
+          <td class="paramtype">Args &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Construct a new entity. The entity's constructor should not be called directly. </p>
+
+</div>
+</div>
+<a class="anchor" id="af596e170f07acf09d5e07397263f8853"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::max_depth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the tree's current max depth. </p>
+
+</div>
+</div>
+<a class="anchor" id="a856f8d09bd9458dd15daa7a2e9d0d9e5"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::remove </td>
+          <td>(</td>
+          <td class="paramtype">entity_t *&#160;</td>
+          <td class="paramname"><em>ent</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Remove an entity from the tree. Note this method does not actually delete it. This can trigger coarsening and refinements as determined by the tree topology policy. </p>
+
+</div>
+</div>
+<a class="anchor" id="a1c69ad2a71b510859e4c3508c2a5f422"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">branch_t* <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::root </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Get the root branch (depth 0). </p>
+
+</div>
+</div>
+<a class="anchor" id="afc1eb4b599fd581c9ecb66d724dc781d"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<div class="memtemplate">
+template&lt;typename A &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::save </td>
+          <td>(</td>
+          <td class="paramtype">A &amp;&#160;</td>
+          <td class="paramname"><em>archive</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Save (serialize) the tree to an archive. </p>
+
+</div>
+</div>
+<a class="anchor" id="a14e0705cf2f25116f02b4d338748c79e"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classpoint.html">point_t</a> <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::unit_coordinates </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classpoint.html">point_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>p</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Convert a point to unit coordinates. </p>
+
+</div>
+</div>
+<a class="anchor" id="ac81349bb11f2ff9feaab7003ba8b8da7"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::update </td>
+          <td>(</td>
+          <td class="paramtype">entity_t *&#160;</td>
+          <td class="paramname"><em>ent</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Update is called when an entity's coordinates have changed and may trigger a reinsertion. </p>
+
+</div>
+</div>
+<a class="anchor" id="a2610fbbe4828de53ce8fcdc051b4cd86"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::update_all </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Effectively re-insert all entities into the tree. Called when all entity coordinates are assumed to have changed. </p>
+
+</div>
+</div>
+<a class="anchor" id="a48b319abc3a1b27d2485ce2303b4a4d1"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::update_all </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">point</a>&lt; element_t, dimension &gt; &amp;&#160;</td>
+          <td class="paramname"><em>start</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html">point</a>&lt; element_t, dimension &gt; &amp;&#160;</td>
+          <td class="paramname"><em>end</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Effectively re-insert all entities into the tree. Called when all entity coordinates are assumed to have changed. Additionally expands or contracts the coordinate ranges of each dimension to [start, end]. </p>
+
+</div>
+</div>
+<a class="anchor" id="a281488e1fea88533f7798fba479e0511"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<div class="memtemplate">
+template&lt;typename F , typename... ARGS&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::visit </td>
+          <td>(</td>
+          <td class="paramtype">branch_t *&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">F &amp;&amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ARGS &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Visit and apply callable object f and args on all sub-branches of branch b. </p>
+
+</div>
+</div>
+<a class="anchor" id="a18575afc57da4cbfd64099a54f1fa42e"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<div class="memtemplate">
+template&lt;typename F , typename... ARGS&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::visit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1thread__pool.html">thread_pool</a> &amp;&#160;</td>
+          <td class="paramname"><em>pool</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">branch_t *&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">F &amp;&amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ARGS &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Visit and apply callable object f and args on all sub-branches of branch b. (Concurrent version.) </p>
+
+</div>
+</div>
+<a class="anchor" id="a6085a978e1720d2ded74ca27e6f9806a"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<div class="memtemplate">
+template&lt;typename F , typename... ARGS&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::visit_children </td>
+          <td>(</td>
+          <td class="paramtype">branch_t *&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">F &amp;&amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ARGS &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Visit and apply callable object f and args on all sub-entities of branch b. </p>
+
+</div>
+</div>
+<a class="anchor" id="a9a3b572c57e1039e59bab4da571f73c1"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class P &gt; </div>
+<div class="memtemplate">
+template&lt;typename F , typename... ARGS&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html">flecsi::topology::tree_topology</a>&lt; P &gt;::visit_children </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1thread__pool.html">thread_pool</a> &amp;&#160;</td>
+          <td class="paramname"><em>pool</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">branch_t *&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">F &amp;&amp;&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ARGS &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Visit and apply callable object f and args on all sub-entities of branch b. (Concurrent version.) </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/topology/<a class="el" href="tree__topology_8h_source.html">tree_topology.h</a></li>
 </ul>

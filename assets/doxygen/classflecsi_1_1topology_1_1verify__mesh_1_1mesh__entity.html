@@ -41,7 +41,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -86,7 +85,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>topology</b></li><li class="navelem"><b>verify_mesh</b></li><li class="navelem"><a class="el" href="classflecsi_1_1topology_1_1verify__mesh_1_1mesh__entity.html">mesh_entity</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>topology</b></li><li class="navelem"><b>verify_mesh</b></li><li class="navelem"><a class="el" href="classflecsi_1_1topology_1_1verify__mesh_1_1mesh__entity.html">mesh_entity</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -103,12 +102,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a292f263481ddbc4f8d43c5d95a340e33"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a292f263481ddbc4f8d43c5d95a340e33"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>mesh_entity</b> (<a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__t.html">mesh_topology_base_t</a> &amp;)</td></tr>
 <tr class="separator:a292f263481ddbc4f8d43c5d95a340e33"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7a498814cc109774dde0b06fb67400aa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7a498814cc109774dde0b06fb67400aa"></a>
-std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create_entities</b> (<a class="el" href="classflecsi_1_1id__.html">flecsi::id_t</a> cell_id, size_t dim, <a class="el" href="classflecsi_1_1topology_1_1domain__connectivity.html">domain_connectivity</a>&lt; N &gt; &amp;c, <a class="el" href="classflecsi_1_1id__.html">flecsi::id_t</a> *e)</td></tr>
-<tr class="separator:a7a498814cc109774dde0b06fb67400aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac74e7320a13d5df76fc272d26f30977a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac74e7320a13d5df76fc272d26f30977a"></a>
-index_vector_t&#160;</td><td class="memItemRight" valign="bottom"><b>create_bound_entities</b> (size_t from_domain, size_t to_domain, size_t create_dim, <a class="el" href="classflecsi_1_1id__.html">flecsi::id_t</a> cell_id, <a class="el" href="classflecsi_1_1topology_1_1domain__connectivity.html">domain_connectivity</a>&lt; N &gt; &amp;primal_conn, <a class="el" href="classflecsi_1_1topology_1_1domain__connectivity.html">domain_connectivity</a>&lt; N &gt; &amp;domain_conn, <a class="el" href="classflecsi_1_1id__.html">flecsi::id_t</a> *c)</td></tr>
-<tr class="separator:ac74e7320a13d5df76fc272d26f30977a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3512b4d0ff2b373d7b1e6944b0901d6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af3512b4d0ff2b373d7b1e6944b0901d6"></a>
+std::vector&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>create_entities</b> (<a class="el" href="classflecsi_1_1utils_1_1id__.html">flecsi::utils::id_t</a> cell_id, size_t dim, <a class="el" href="classflecsi_1_1topology_1_1domain__connectivity.html">domain_connectivity</a>&lt; N &gt; &amp;c, <a class="el" href="classflecsi_1_1utils_1_1id__.html">flecsi::utils::id_t</a> *e)</td></tr>
+<tr class="separator:af3512b4d0ff2b373d7b1e6944b0901d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a949c54c8875b5e213fb9f6414141dc84"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a949c54c8875b5e213fb9f6414141dc84"></a>
+index_vector_t&#160;</td><td class="memItemRight" valign="bottom"><b>create_bound_entities</b> (size_t from_domain, size_t to_domain, size_t create_dim, <a class="el" href="classflecsi_1_1utils_1_1id__.html">flecsi::utils::id_t</a> cell_id, <a class="el" href="classflecsi_1_1topology_1_1domain__connectivity.html">domain_connectivity</a>&lt; N &gt; &amp;primal_conn, <a class="el" href="classflecsi_1_1topology_1_1domain__connectivity.html">domain_connectivity</a>&lt; N &gt; &amp;domain_conn, <a class="el" href="classflecsi_1_1utils_1_1id__.html">flecsi::utils::id_t</a> *c)</td></tr>
+<tr class="separator:a949c54c8875b5e213fb9f6414141dc84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/topology/<a class="el" href="mesh__topology_8h_source.html">mesh_topology.h</a></li>

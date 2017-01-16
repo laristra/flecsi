@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['bitfield_5f_5f',['bitfield__',['../classflecsi_1_1bitfield____.html',1,'flecsi']]],
+  ['bitfield_5f_5f',['bitfield__',['../classflecsi_1_1utils_1_1bitfield____.html',1,'flecsi::utils']]],
   ['body',['body',['../classtree__policy_1_1body.html',1,'tree_policy']]],
   ['branch',['branch',['../classtree__policy_1_1branch.html',1,'tree_policy']]],
   ['branch_5fid',['branch_id',['../classflecsi_1_1topology_1_1branch__id.html',1,'flecsi::topology']]],

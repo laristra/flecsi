@@ -41,7 +41,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -86,7 +85,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>data</b></li><li class="navelem"><a class="el" href="structflecsi_1_1data_1_1serial__storage__policy__t.html">serial_storage_policy_t</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>data</b></li><li class="navelem"><a class="el" href="structflecsi_1_1data_1_1serial__storage__policy__t.html">serial_storage_policy_t</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -105,9 +104,9 @@ Public Types</h2></td></tr>
 <tr class="memitem:a610fc3573e78ad5f749fc25280ad9ed9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a610fc3573e78ad5f749fc25280ad9ed9"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>meta_data_t</b> = <a class="el" href="structflecsi_1_1data_1_1serial__meta__data__t.html">serial_meta_data_t</a>&lt; user_meta_data_t &gt;</td></tr>
 <tr class="separator:a610fc3573e78ad5f749fc25280ad9ed9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a90d5c1df373b6ffab2b8f461969ac07d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a90d5c1df373b6ffab2b8f461969ac07d"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>data_store_t</b> = std::unordered_map&lt; size_t, std::unordered_map&lt; const_string_t::hash_type_t, <a class="el" href="structflecsi_1_1data_1_1serial__meta__data__t.html">meta_data_t</a> &gt;&gt;</td></tr>
-<tr class="separator:a90d5c1df373b6ffab2b8f461969ac07d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e05d7a5d75c4f9254c4db821efbd877"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0e05d7a5d75c4f9254c4db821efbd877"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>data_store_t</b> = std::unordered_map&lt; size_t, std::unordered_map&lt; utils::const_string_t::hash_type_t, <a class="el" href="structflecsi_1_1data_1_1serial__meta__data__t.html">meta_data_t</a> &gt;&gt;</td></tr>
+<tr class="separator:a0e05d7a5d75c4f9254c4db821efbd877"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a26359495b9736a46b2098c93ffb8a7d0"><td class="memTemplParams" colspan="2"><a class="anchor" id="a26359495b9736a46b2098c93ffb8a7d0"></a>
 template&lt;size_t data_type_t&gt; </td></tr>
 <tr class="memitem:a26359495b9736a46b2098c93ffb8a7d0"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>storage_type_t</b> = serial::storage_type_t&lt; data_type_t, data_store_t, <a class="el" href="structflecsi_1_1data_1_1serial__meta__data__t.html">meta_data_t</a> &gt;</td></tr>

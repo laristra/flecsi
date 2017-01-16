@@ -41,7 +41,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -86,7 +85,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="classflecsi_1_1execution_1_1ext__legion__handshake__t.html">ext_legion_handshake_t</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="classflecsi_1_1execution_1_1ext__legion__handshake__t.html">ext_legion_handshake_t</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -100,29 +99,28 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">flecsi::execution::ext_legion_handshake_t Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>a class that is used to switch between MPI and Legion runtimes the main idea of the ext_legion_handshake is to switch from MPI to Legion and vice versa through using legion's phase barriers  
+ <a href="classflecsi_1_1execution_1_1ext__legion__handshake__t.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="legion__handshake_8h_source.html">legion_handshake.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a238f16104926524dd73edb1bfd32db0a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a238f16104926524dd73edb1bfd32db0a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>initialize</b> ()</td></tr>
+<tr class="memitem:a238f16104926524dd73edb1bfd32db0a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1ext__legion__handshake__t.html#a238f16104926524dd73edb1bfd32db0a">initialize</a> ()</td></tr>
 <tr class="separator:a238f16104926524dd73edb1bfd32db0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab39c39e3d2acecd2a78981c0e3b1975d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab39c39e3d2acecd2a78981c0e3b1975d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>mpi_handoff_to_legion</b> ()</td></tr>
+<tr class="memitem:ab39c39e3d2acecd2a78981c0e3b1975d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1ext__legion__handshake__t.html#ab39c39e3d2acecd2a78981c0e3b1975d">mpi_handoff_to_legion</a> ()</td></tr>
 <tr class="separator:ab39c39e3d2acecd2a78981c0e3b1975d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a245cd961b23226f23b8030d8290e8b82"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a245cd961b23226f23b8030d8290e8b82"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>mpi_wait_on_legion</b> ()</td></tr>
+<tr class="memitem:a245cd961b23226f23b8030d8290e8b82"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1ext__legion__handshake__t.html#a245cd961b23226f23b8030d8290e8b82">mpi_wait_on_legion</a> ()</td></tr>
 <tr class="separator:a245cd961b23226f23b8030d8290e8b82"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a16e85b8a25806885d9bbe77aa0e25f74"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a16e85b8a25806885d9bbe77aa0e25f74"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>legion_handoff_to_mpi</b> ()</td></tr>
+<tr class="memitem:a16e85b8a25806885d9bbe77aa0e25f74"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1ext__legion__handshake__t.html#a16e85b8a25806885d9bbe77aa0e25f74">legion_handoff_to_mpi</a> ()</td></tr>
 <tr class="separator:a16e85b8a25806885d9bbe77aa0e25f74"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4e536f705a6115cab8de9b02ce64fe89"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4e536f705a6115cab8de9b02ce64fe89"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>legion_wait_on_mpi</b> ()</td></tr>
+<tr class="memitem:a4e536f705a6115cab8de9b02ce64fe89"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1ext__legion__handshake__t.html#a4e536f705a6115cab8de9b02ce64fe89">legion_wait_on_mpi</a> ()</td></tr>
 <tr class="separator:a4e536f705a6115cab8de9b02ce64fe89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:ae91e3536668de03895f9ba332035b62d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae91e3536668de03895f9ba332035b62d"></a>
-static <a class="el" href="classflecsi_1_1execution_1_1ext__legion__handshake__t.html">ext_legion_handshake_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>instance</b> ()</td></tr>
+<tr class="memitem:ae91e3536668de03895f9ba332035b62d"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classflecsi_1_1execution_1_1ext__legion__handshake__t.html">ext_legion_handshake_t</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1ext__legion__handshake__t.html#ae91e3536668de03895f9ba332035b62d">instance</a> ()</td></tr>
 <tr class="separator:ae91e3536668de03895f9ba332035b62d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
@@ -143,6 +141,153 @@ Protected Attributes</h2></td></tr>
 Legion::MPILegionHandshake&#160;</td><td class="memItemRight" valign="bottom"><b>handshake_</b></td></tr>
 <tr class="separator:a5deadae99334c95425d922d04f6cf577"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>a class that is used to switch between MPI and Legion runtimes the main idea of the ext_legion_handshake is to switch from MPI to Legion and vice versa through using legion's phase barriers </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a238f16104926524dd73edb1bfd32db0a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::ext_legion_handshake_t::initialize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>initialize all <a class="el" href="classflecsi_1_1execution_1_1ext__legion__handshake__t.html" title="a class that is used to switch between MPI and Legion runtimes the main idea of the ext_legion_handsh...">ext_legion_handshake_t</a> with input and default </p>
+
+</div>
+</div>
+<a class="anchor" id="ae91e3536668de03895f9ba332035b62d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classflecsi_1_1execution_1_1ext__legion__handshake__t.html">ext_legion_handshake_t</a>&amp; flecsi::execution::ext_legion_handshake_t::instance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>return unique instance of the singleton </p>
+
+</div>
+</div>
+<a class="anchor" id="a16e85b8a25806885d9bbe77aa0e25f74"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::ext_legion_handshake_t::legion_handoff_to_mpi </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>switch form Legion to MPI runtime </p>
+
+</div>
+</div>
+<a class="anchor" id="a4e536f705a6115cab8de9b02ce64fe89"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::ext_legion_handshake_t::legion_wait_on_mpi </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>wait on all mutex to be switch to Legion </p>
+
+</div>
+</div>
+<a class="anchor" id="ab39c39e3d2acecd2a78981c0e3b1975d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::ext_legion_handshake_t::mpi_handoff_to_legion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>switch form MPI to Legion runtime </p>
+
+</div>
+</div>
+<a class="anchor" id="a245cd961b23226f23b8030d8290e8b82"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::ext_legion_handshake_t::mpi_wait_on_legion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>wait on all Legion tasks to complete and all legion threads switch mutex to EXT </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/execution/mpilegion/<a class="el" href="legion__handshake_8h_source.html">legion_handshake.h</a></li>
 </ul>

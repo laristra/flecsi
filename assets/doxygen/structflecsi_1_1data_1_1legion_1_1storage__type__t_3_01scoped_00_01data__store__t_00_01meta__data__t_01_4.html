@@ -41,7 +41,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -86,7 +85,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>data</b></li><li class="navelem"><b>legion</b></li><li class="navelem"><a class="el" href="structflecsi_1_1data_1_1legion_1_1storage__type__t_3_01scoped_00_01data__store__t_00_01meta__data__t_01_4.html">storage_type_t&lt; scoped, data_store_t, meta_data_t &gt;</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>data</b></li><li class="navelem"><b>legion</b></li><li class="navelem"><a class="el" href="structflecsi_1_1data_1_1legion_1_1storage__type__t_3_01scoped_00_01data__store__t_00_01meta__data__t_01_4.html">storage_type_t&lt; scoped, data_store_t, meta_data_t &gt;</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -108,18 +107,18 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:afd08bff40caa464db42147721e9065be"><td class="memTemplParams" colspan="2"><a class="anchor" id="afd08bff40caa464db42147721e9065be"></a>
+<tr class="memitem:a9c87bda7d61fa0c1ef9cf0c4a260080e"><td class="memTemplParams" colspan="2"><a class="anchor" id="a9c87bda7d61fa0c1ef9cf0c4a260080e"></a>
 template&lt;typename T , size_t NS, typename... Args&gt; </td></tr>
-<tr class="memitem:afd08bff40caa464db42147721e9065be"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><b>register_data</b> (data_store_t &amp;data_store, uintptr_t runtime_namespace, const <a class="el" href="classflecsi_1_1const__string__t.html">const_string_t</a> &amp;key, size_t indices, Args &amp;&amp;...args)</td></tr>
-<tr class="separator:afd08bff40caa464db42147721e9065be"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ede9aac7c37f086c0c3f6a1cba52347"><td class="memTemplParams" colspan="2"><a class="anchor" id="a3ede9aac7c37f086c0c3f6a1cba52347"></a>
+<tr class="memitem:a9c87bda7d61fa0c1ef9cf0c4a260080e"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><b>register_data</b> (data_store_t &amp;data_store, uintptr_t runtime_namespace, const utils:const_string_t &amp;key, size_t indices, Args &amp;&amp;...args)</td></tr>
+<tr class="separator:a9c87bda7d61fa0c1ef9cf0c4a260080e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0750f5160541c9aa2c2f042b4898e4e"><td class="memTemplParams" colspan="2"><a class="anchor" id="aa0750f5160541c9aa2c2f042b4898e4e"></a>
 template&lt;typename T , size_t NS&gt; </td></tr>
-<tr class="memitem:a3ede9aac7c37f086c0c3f6a1cba52347"><td class="memTemplItemLeft" align="right" valign="top">static scoped_accessor_t&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_accessor</b> (data_store_t &amp;data_store, uintptr_t runtime_namespace, const <a class="el" href="classflecsi_1_1const__string__t.html">const_string_t</a> &amp;key)</td></tr>
-<tr class="separator:a3ede9aac7c37f086c0c3f6a1cba52347"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adb82a3ae8f989fbb24d3c983321d3a9a"><td class="memTemplParams" colspan="2"><a class="anchor" id="adb82a3ae8f989fbb24d3c983321d3a9a"></a>
+<tr class="memitem:aa0750f5160541c9aa2c2f042b4898e4e"><td class="memTemplItemLeft" align="right" valign="top">static scoped_accessor_t&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_accessor</b> (data_store_t &amp;data_store, uintptr_t runtime_namespace, const utils:const_string_t &amp;key)</td></tr>
+<tr class="separator:aa0750f5160541c9aa2c2f042b4898e4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a549f17df6453e17aa956b77834e961dd"><td class="memTemplParams" colspan="2"><a class="anchor" id="a549f17df6453e17aa956b77834e961dd"></a>
 template&lt;typename T , size_t NS&gt; </td></tr>
-<tr class="memitem:adb82a3ae8f989fbb24d3c983321d3a9a"><td class="memTemplItemLeft" align="right" valign="top">static scoped_handle_t&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_handle</b> (data_store_t &amp;data_store, uintptr_t runtime_namespace, const <a class="el" href="classflecsi_1_1const__string__t.html">const_string_t</a> &amp;key)</td></tr>
-<tr class="separator:adb82a3ae8f989fbb24d3c983321d3a9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a549f17df6453e17aa956b77834e961dd"><td class="memTemplItemLeft" align="right" valign="top">static scoped_handle_t&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_handle</b> (data_store_t &amp;data_store, uintptr_t runtime_namespace, const utils:const_string_t &amp;key)</td></tr>
+<tr class="separator:a549f17df6453e17aa956b77834e961dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/data/legion/<a class="el" href="legion_2scoped_8h_source.html">scoped.h</a></li>

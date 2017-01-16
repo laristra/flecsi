@@ -1,10 +1,10 @@
 var searchData=
 [
-  ['_7ebitfield_5f_5f',['~bitfield__',['../classflecsi_1_1bitfield____.html#abd8f8a6e4eeeef3a70d8bb7afadb2f99',1,'flecsi::bitfield__']]],
-  ['_7edata_5fclient_5ft',['~data_client_t',['../classflecsi_1_1data_1_1data__client__t.html#a4de3c6c6c194cae97e04ab9e625948ee',1,'flecsi::data::data_client_t']]],
-  ['_7edata_5ft',['~data_t',['../classflecsi_1_1data_1_1data__t.html#a690d7959faa0cdd21b66dc1cc6a352e8',1,'flecsi::data::data_t']]],
-  ['_7edefault_5fdata_5fstorage_5fpolicy_5ft',['~default_data_storage_policy_t',['../classflecsi_1_1data_1_1default__data__storage__policy__t.html#af16156094f9c66c5320ff82da4245bd4',1,'flecsi::data::default_data_storage_policy_t']]],
-  ['_7eindex_5fspace_5ft',['~index_space_t',['../classflecsi_1_1index__space__t.html#ad44a22e9c0a84ab83ab866a675dcd937',1,'flecsi::index_space_t']]],
-  ['_7eiterator',['~iterator',['../classflecsi_1_1iterator.html#ad85abe3b6d1c7f726808981b10cf5a28',1,'flecsi::iterator']]],
-  ['_7emesh_5fdefinition_5ft',['~mesh_definition_t',['../classflecsi_1_1io_1_1mesh__definition__t.html#aaa2cc47273de41a1b1ee6e6398b18e75',1,'flecsi::io::mesh_definition_t']]]
+  ['wait_5fon_5flegion',['wait_on_legion',['../structflecsi_1_1execution_1_1mpi__legion__interop__t.html#a3523fc8d5f786710094ce33080016e3a',1,'flecsi::execution::mpi_legion_interop_t']]],
+  ['wait_5fon_5fmpi',['wait_on_mpi',['../structflecsi_1_1execution_1_1mpi__legion__interop__t.html#a9accc7a049db62c28d45d13bc7b7a045',1,'flecsi::execution::mpi_legion_interop_t']]],
+  ['wait_5fon_5fmpi_5ftask',['wait_on_mpi_task',['../mpi__legion__interop_8h.html#a197dae782a40b23c084ef7827dc159fe',1,'flecsi::execution']]],
+  ['within',['within',['../structflecsi_1_1topology_1_1tree__geometry_3_01T_00_011_01_4.html#a55ce81724cadd79c0ee10cb4a8ccae7d',1,'flecsi::topology::tree_geometry&lt; T, 1 &gt;::within()'],['../structflecsi_1_1topology_1_1tree__geometry_3_01T_00_012_01_4.html#a131afe2130689009b0270e4151b65f04',1,'flecsi::topology::tree_geometry&lt; T, 2 &gt;::within()'],['../structflecsi_1_1topology_1_1tree__geometry_3_01T_00_013_01_4.html#ad0bd0ed803e9f0dfee98aa99bc236d5e',1,'flecsi::topology::tree_geometry&lt; T, 3 &gt;::within()']]],
+  ['within_5fbox',['within_box',['../structflecsi_1_1topology_1_1tree__geometry_3_01T_00_011_01_4.html#aeb756c83085af2f4225f96bfc33305cc',1,'flecsi::topology::tree_geometry&lt; T, 1 &gt;::within_box()'],['../structflecsi_1_1topology_1_1tree__geometry_3_01T_00_012_01_4.html#ab0942e697a2c7624e77d21fb7f179e6c',1,'flecsi::topology::tree_geometry&lt; T, 2 &gt;::within_box()'],['../structflecsi_1_1topology_1_1tree__geometry_3_01T_00_013_01_4.html#addc64ee62bc917dfb5bc88d83ea794f1',1,'flecsi::topology::tree_geometry&lt; T, 3 &gt;::within_box()']]],
+  ['write',['write',['../classflecsi_1_1io_1_1io__base__t.html#a94c91d98840940c327b1207faf81ef42',1,'flecsi::io::io_base_t::write(const std::string &amp;name, mesh_t &amp;m)=0'],['../classflecsi_1_1io_1_1io__base__t.html#abd50848a744829bdc23e134980e1a65e',1,'flecsi::io::io_base_t::write(const std::string &amp;name, mesh_t &amp;m, bool)'],['../structflecsi_1_1io_1_1io__exodus__t.html#a1bcffa8d92d2723e7015e67420275b5c',1,'flecsi::io::io_exodus_t::write()']]],
+  ['write_5fmesh',['write_mesh',['../io_8h.html#a775d8742c3b43395bb5f0fc780b52675',1,'flecsi::io::write_mesh(const std::string &amp;name, mesh_t &amp;m)'],['../io_8h.html#af830f8dd0139b976e4511cc97cb1dab5',1,'flecsi::io::write_mesh(const std::string &amp;name, mesh_t &amp;m, bool binary)']]]
 ];

@@ -41,7 +41,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -86,7 +85,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>data</b></li><li class="navelem"><b>serial</b></li><li class="navelem"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01tuple_00_01data__store__t_00_01meta__data__t_01_4.html">storage_type_t&lt; tuple, data_store_t, meta_data_t &gt;</a></li>  </ul>
+<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>data</b></li><li class="navelem"><b>serial</b></li><li class="navelem"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01tuple_00_01data__store__t_00_01meta__data__t_01_4.html">storage_type_t&lt; tuple, data_store_t, meta_data_t &gt;</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -108,18 +107,18 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a082b69c42f85519809affdb6fb2fee91"><td class="memTemplParams" colspan="2"><a class="anchor" id="a082b69c42f85519809affdb6fb2fee91"></a>
+<tr class="memitem:a3092761afc8dee62bb7abc4fcc6e249f"><td class="memTemplParams" colspan="2"><a class="anchor" id="a3092761afc8dee62bb7abc4fcc6e249f"></a>
 template&lt;typename T , size_t NS, typename... Args&gt; </td></tr>
-<tr class="memitem:a082b69c42f85519809affdb6fb2fee91"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><b>register_data</b> (data_store_t &amp;data_store, uintptr_t runtime_namespace, const <a class="el" href="classflecsi_1_1const__string__t.html">const_string_t</a> &amp;key, size_t indices, Args &amp;&amp;...args)</td></tr>
-<tr class="separator:a082b69c42f85519809affdb6fb2fee91"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afead98d1672a0b926bb58476eb2c96ae"><td class="memTemplParams" colspan="2"><a class="anchor" id="afead98d1672a0b926bb58476eb2c96ae"></a>
+<tr class="memitem:a3092761afc8dee62bb7abc4fcc6e249f"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><b>register_data</b> (data_store_t &amp;data_store, uintptr_t runtime_namespace, const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;key, size_t indices, Args &amp;&amp;...args)</td></tr>
+<tr class="separator:a3092761afc8dee62bb7abc4fcc6e249f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ae3f8f82616904ae4f3da80d5db79e0"><td class="memTemplParams" colspan="2"><a class="anchor" id="a7ae3f8f82616904ae4f3da80d5db79e0"></a>
 template&lt;typename T , size_t NS&gt; </td></tr>
-<tr class="memitem:afead98d1672a0b926bb58476eb2c96ae"><td class="memTemplItemLeft" align="right" valign="top">static tuple_accessor_t&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_accessor</b> (data_store_t &amp;data_store, uintptr_t runtime_namespace, const <a class="el" href="classflecsi_1_1const__string__t.html">const_string_t</a> &amp;key)</td></tr>
-<tr class="separator:afead98d1672a0b926bb58476eb2c96ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a576d94774bed237b33d16f05bc381245"><td class="memTemplParams" colspan="2"><a class="anchor" id="a576d94774bed237b33d16f05bc381245"></a>
+<tr class="memitem:a7ae3f8f82616904ae4f3da80d5db79e0"><td class="memTemplItemLeft" align="right" valign="top">static tuple_accessor_t&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_accessor</b> (data_store_t &amp;data_store, uintptr_t runtime_namespace, const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;key)</td></tr>
+<tr class="separator:a7ae3f8f82616904ae4f3da80d5db79e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7e4b50aa6e0bbef8f8665245a6e82a5"><td class="memTemplParams" colspan="2"><a class="anchor" id="ab7e4b50aa6e0bbef8f8665245a6e82a5"></a>
 template&lt;typename T , size_t NS&gt; </td></tr>
-<tr class="memitem:a576d94774bed237b33d16f05bc381245"><td class="memTemplItemLeft" align="right" valign="top">static tuple_handle_t&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_handle</b> (data_store_t &amp;data_store, uintptr_t runtime_namespace, const <a class="el" href="classflecsi_1_1const__string__t.html">const_string_t</a> &amp;key)</td></tr>
-<tr class="separator:a576d94774bed237b33d16f05bc381245"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7e4b50aa6e0bbef8f8665245a6e82a5"><td class="memTemplItemLeft" align="right" valign="top">static tuple_handle_t&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_handle</b> (data_store_t &amp;data_store, uintptr_t runtime_namespace, const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;key)</td></tr>
+<tr class="separator:ab7e4b50aa6e0bbef8f8665245a6e82a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/data/serial/<a class="el" href="serial_2tuple_8h_source.html">tuple.h</a></li>
