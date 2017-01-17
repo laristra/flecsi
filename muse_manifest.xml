@@ -1,16 +1,16 @@
-<manifest alg="2" build="2017.0.1.363" opt="true" iceEnabled="true" iceMarkupVersion="2" iceEnabledOptions="link,responsive,cachebuster" exportTarget="other" domain="https://laristra.github.io/flecsi" resolutions="1x" timestamp="1484633218163">
+<manifest alg="2" build="2017.0.1.363" opt="true" iceEnabled="true" iceMarkupVersion="2" iceEnabledOptions="link,responsive,cachebuster" exportTarget="other" domain="https://laristra.github.io/flecsi" resolutions="1x" timestamp="1484686488094">
   <folder name="assets">
-    <file name="flecsi-user-guide.pdf" crc="3768657720" seo="true" mt="1484631139000"/>
-    <file name="flecsi-developer-guide.pdf" crc="3975936734" seo="true" mt="1484631139000"/>
+    <file name="flecsi-user-guide.pdf" crc="3768657720" seo="true" mt="1484633218000"/>
+    <file name="flecsi-developer-guide.pdf" crc="3975936734" seo="true" mt="1484633218000"/>
     <file name="index.html" crc="207792728" seo="true" mt="1484631139000"/>
   </folder>
   <folder name="css">
     <file name="site_global.css" crc="397018975"/>
-    <file name="master_main.css" crc="4018019220" ref="documentation:download:index:people"/>
-    <file name="documentation.css" crc="358310855" ref="documentation"/>
-    <file name="download.css" crc="3845518086" ref="download"/>
-    <file name="index.css" crc="3988338235" ref="index"/>
-    <file name="people.css" crc="3845518086" ref="people"/>
+    <file name="master_main.css" crc="3835415731" ref="documentation:download:index:people"/>
+    <file name="documentation.css" crc="8984682" ref="documentation"/>
+    <file name="download.css" crc="188871099" ref="download"/>
+    <file name="index.css" crc="4102144235" ref="index"/>
+    <file name="people.css" crc="188871099" ref="people"/>
   </folder>
   <folder name="scripts">
     <file name="jquery-1.8.3.min.js" crc="209076791" ref="index:people:documentation:download"/>
@@ -26,8 +26,8 @@
     <file name="flecsi.png" crc="142940395" seo="true" ref="index:people:documentation:download"/>
     <file name="logo.gif" crc="379197196" seo="true" ref="index:people:documentation:download"/>
   </folder>
-  <file name="index.html" crc="3879913086" seo="true" mt="1484632689009" redirect="true"/>
-  <file name="people.html" crc="400444224" seo="true" mt="1484632688991" redirect="true"/>
-  <file name="documentation.html" crc="152863957" seo="true" mt="1484633167477" redirect="true"/>
-  <file name="download.html" crc="217690334" seo="true" mt="1484632688991" redirect="true"/>
+  <file name="index.html" crc="3841567287" seo="true" mt="1484686477352" redirect="true"/>
+  <file name="people.html" crc="3835132467" seo="true" mt="1484686477352" redirect="true"/>
+  <file name="documentation.html" crc="4006410783" seo="true" mt="1484686477352" redirect="true"/>
+  <file name="download.html" crc="3863476989" seo="true" mt="1484686477352" redirect="true"/>
 </manifest>
