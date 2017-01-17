@@ -1,37 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://flecsi.lanl.gov/index.html</loc>
+    <loc>https://laristra.github.io/flecsi/index.html</loc>
     <lastmod>2017-01-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>http://flecsi.lanl.gov/people.html</loc>
+    <loc>https://laristra.github.io/flecsi/documentation.html</loc>
     <lastmod>2017-01-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>http://flecsi.lanl.gov/documentation.html</loc>
+    <loc>https://laristra.github.io/flecsi/download.html</loc>
     <lastmod>2017-01-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>http://flecsi.lanl.gov/download.html</loc>
+    <loc>https://laristra.github.io/flecsi/people.html</loc>
     <lastmod>2017-01-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>http://flecsi.lanl.gov/images/flecsi.png</loc>
+    <loc>https://laristra.github.io/flecsi/assets/index.html</loc>
     <lastmod>2017-01-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>http://flecsi.lanl.gov/images/logo.gif</loc>
+    <loc>https://laristra.github.io/flecsi/assets/flecsi-developer-guide.pdf</loc>
+    <lastmod>2017-01-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://laristra.github.io/flecsi/images/flecsi.png</loc>
+    <lastmod>2017-01-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://laristra.github.io/flecsi/assets/flecsi-user-guide.pdf</loc>
+    <lastmod>2017-01-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://laristra.github.io/flecsi/images/logo.gif</loc>
     <lastmod>2017-01-16</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
