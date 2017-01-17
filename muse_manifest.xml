@@ -1,8 +1,8 @@
-<manifest alg="2" build="2017.0.1.363" opt="true" iceEnabled="true" iceMarkupVersion="2" iceEnabledOptions="link,responsive,cachebuster" exportTarget="other" domain="https://laristra.github.io/flecsi" resolutions="1x" timestamp="1484686488094">
+<manifest alg="2" build="2017.0.1.363" opt="true" iceEnabled="true" iceMarkupVersion="2" iceEnabledOptions="link,responsive,cachebuster" exportTarget="other" domain="https://laristra.github.io/flecsi" resolutions="1x" timestamp="1484686868024">
   <folder name="assets">
-    <file name="flecsi-user-guide.pdf" crc="3768657720" seo="true" mt="1484633218000"/>
-    <file name="flecsi-developer-guide.pdf" crc="3975936734" seo="true" mt="1484633218000"/>
-    <file name="index.html" crc="207792728" seo="true" mt="1484631139000"/>
+    <file name="flecsi-user-guide.pdf" crc="3768657720" seo="true" mt="1484686676000"/>
+    <file name="flecsi-developer-guide.pdf" crc="3975936734" seo="true" mt="1484686676000"/>
+    <file name="index.html" crc="207792728" seo="true" mt="1484686676000"/>
   </folder>
   <folder name="css">
     <file name="site_global.css" crc="397018975"/>
@@ -28,6 +28,6 @@
   </folder>
   <file name="index.html" crc="3841567287" seo="true" mt="1484686477352" redirect="true"/>
   <file name="people.html" crc="3835132467" seo="true" mt="1484686477352" redirect="true"/>
-  <file name="documentation.html" crc="4006410783" seo="true" mt="1484686477352" redirect="true"/>
+  <file name="documentation.html" crc="180863967" seo="true" mt="1484686836425" redirect="true"/>
   <file name="download.html" crc="3863476989" seo="true" mt="1484686477352" redirect="true"/>
 </manifest>
