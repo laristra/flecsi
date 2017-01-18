@@ -42,12 +42,12 @@ struct function_handle__
   R
   operator () (
     std::function<void(void)> * user_function,
-    A & args
+    A && args
   )
   {
     std::function<R(A)> & kr =
       *(reinterpret_cast<std::function<R(A)> *>(user_function));
-    return kr(args);
+    return kr( std::forward<A>(args));
   } // operator ()
 
   size_t key;

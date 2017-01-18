@@ -110,9 +110,9 @@ endif()
 # Copy the auxiliary files for local development
 add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/share/runtime_main.cc
   COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_SOURCE_DIR}/flecsi/execution/runtime_main.cc
+    ${PROJECT_SOURCE_DIR}/flecsi/execution/runtime_main.cc
     ${CMAKE_BINARY_DIR}/share/runtime_main.cc
-    DEPENDS ${CMAKE_SOURCE_DIR}/flecsi/execution/runtime_main.cc
+    DEPENDS ${CMAKE_SOURCE_DIR}/flecsi/flecsi/execution/runtime_main.cc
     COMMENT "Copying runtime main file")
 
 add_custom_target(runtime_main ALL
@@ -138,7 +138,7 @@ install(FILES ${_runtime_path}/runtime_driver.cc
 # FleCSI environment module
 #------------------------------------------------------------------------------#
 
-configure_file(${CMAKE_SOURCE_DIR}/tools/bin/flecsi.in
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bin/flecsi.in
   ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi @ONLY)
 
 install(FILES ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/flecsi

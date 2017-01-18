@@ -65,6 +65,8 @@ set_property(CACHE FLECSI_RUNTIME_MODEL
 #------------------------------------------------------------------------------#
 
 # This changes the Cinch default
+# Note: This has to be added in projects that include flecsi too because it
+# doesn't persist.
 set(ENABLE_BOOST_PREPROCESSOR ON CACHE BOOL
   "Enable Boost.Preprocessor")
 

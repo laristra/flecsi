@@ -54,7 +54,7 @@
                                                                                \
   /* Define name handle type */                                                \
   using function_handle_ ## name ## _t =                                       \
-    function_handle__<name ## _trt_t, name ## _tat_t>;                         \
+    flecsi::execution::function_handle__<name ## _trt_t, name ## _tat_t>;      \
                                                                                \
   /* Register the function delegate */                                         \
   bool name ## _function_registered =                                          \
@@ -76,13 +76,14 @@
 ///
 #define function_handle(name)                                                  \
   function_handle_ ## name ## _t(                                              \
-    utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash())
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash())
 
 ///
 // FIXME
 ///
 #define define_function_type(name, return_type, ...)                          \
-  using name = function_handle__<return_type, std::tuple<__VA_ARGS__>>
+  using name = flecsi::execution::function_handle__<return_type,              \
+    std::tuple<__VA_ARGS__>>
 
 //----------------------------------------------------------------------------//
 // Task Interface
@@ -103,14 +104,15 @@
   /* Register the user task with the execution policy */                       \
   bool task ## _task_registered =                                              \
     flecsi::execution::task_t::register_task<task ## _trt_t, task ## _tat_t>   \
-    (reinterpret_cast<uintptr_t>(&task), processor, launch)
+    (reinterpret_cast<uintptr_t>(&task), flecsi::execution::processor,         \
+     flecsi::execution::launch)
 
 ///
 // This macro executes a user task.
 //
 // \param task The user task to execute.
 // \param processor The processor type on which to execute the task.
-// \param launch The launch mode for the task.
+// \param launch The launch  mode for the task.
 // \param ... The arguments to pass to the user task during execution.
 ///
 #define execute_task(task, processor, launch, ...)                             \
@@ -118,10 +120,12 @@
   /* Execute the user task */                                                  \
   /* WARNING: This macro returns a future. Don't add terminations! */          \
   flecsi::execution::task_t::execute_task<task ## _trt_t>                      \
-    (reinterpret_cast<uintptr_t>(&task), processor, launch,                    \
-    utils::const_string_t{__func__}.hash(),                                    \
-    function_handle__<task ## _trt_t, task ## _tat_t>(                         \
-      utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()), ## __VA_ARGS__)
+    (reinterpret_cast<uintptr_t>(&task), flecsi::execution::processor,         \
+    flecsi::execution::launch,                                                 \
+    flecsi::utils::const_string_t{__func__}.hash(),                            \
+    flecsi::execution::function_handle__<task ## _trt_t, task ## _tat_t>(      \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()),       \
+      ## __VA_ARGS__)
 
 //----------------------------------------------------------------------------//
 // Kernel Interface
