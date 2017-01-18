@@ -112,7 +112,7 @@ add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/share/runtime_main.cc
   COMMAND ${CMAKE_COMMAND} -E copy
     ${PROJECT_SOURCE_DIR}/flecsi/execution/runtime_main.cc
     ${CMAKE_BINARY_DIR}/share/runtime_main.cc
-    DEPENDS ${CMAKE_SOURCE_DIR}/flecsi/flecsi/execution/runtime_main.cc
+    DEPENDS ${PROJECT_SOURCE_DIR}/flecsi/execution/runtime_main.cc
     COMMENT "Copying runtime main file")
 
 add_custom_target(runtime_main ALL
