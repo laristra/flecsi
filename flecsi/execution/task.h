@@ -87,13 +87,13 @@ struct task__
     launch_t launch,
     size_t parent,
     T user_task_handle,
-    As ... args
+    As &&... args
   )
   {
-    auto targs = std::make_tuple(args ...);
+    auto targs = std::forward_as_tuple(std::forward<As>(args) ...);
     return execution_policy_t::template execute_task<R>(
       task_hash_t::make_key(address, processor, launch), parent,
-      user_task_handle, targs);
+      user_task_handle, std::move(targs));
   } // execute
 
 }; // class task
