@@ -129,7 +129,7 @@ add_custom_target(runtime_driver ALL
   DEPENDS ${CMAKE_BINARY_DIR}/share/runtime_driver.cc)
 
 # Install the auxiliary files
-install(FILES ${CMAKE_SOURCE_DIR}/flecsi/execution/runtime_main.cc
+install(FILES ${PROJECT_SOURCE_DIR}/flecsi/execution/runtime_main.cc
   DESTINATION share/flecsi/runtime)
 install(FILES ${_runtime_path}/runtime_driver.cc
   DESTINATION share/flecsi/runtime)
