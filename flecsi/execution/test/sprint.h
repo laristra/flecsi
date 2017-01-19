@@ -323,10 +323,10 @@ driver(
   LogicalPartition vert_primary_lp = runtime->get_logical_partition(context,
            vertices_lr, vert_primary_ip);
  
-
   LegionRuntime::Arrays::Rect<1> rank_rect(LegionRuntime::Arrays::Point<1>(0),
     LegionRuntime::Arrays::Point<1>(num_ranks - 1));
   Domain rank_domain = Domain::from_rect<1>(rank_rect);
+
 
   LegionRuntime::HighLevel::IndexLauncher initialization_launcher(
     task_ids_t::instance().init_task_id,
@@ -337,12 +337,12 @@ driver(
   initialization_launcher.tag = MAPPER_FORCE_RANK_MATCH; 
 
   initialization_launcher.add_region_requirement(
-    RegionRequirement(cells_lr/*projection ID*/,
+    RegionRequirement(cells_primary_lp, 0/*projection ID*/,
                       WRITE_DISCARD, EXCLUSIVE, cells_lr));
   initialization_launcher.add_field(0, fid_t.fid_cell);
 
   initialization_launcher.add_region_requirement(
-    RegionRequirement(vertices_lr/*projection ID*/,
+    RegionRequirement(vert_primary_lp, 0/*projection ID*/,
                       WRITE_DISCARD, EXCLUSIVE, vertices_lr));
   initialization_launcher.add_field(1, fid_t.fid_vert);
 
