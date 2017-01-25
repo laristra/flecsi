@@ -44,7 +44,7 @@ RUN cmake -DENABLE_MPI=$MPI \
 
 RUN make VERBOSE=1 -j2
 RUN ccache -s
-RUN ctest VERBOSE=1
+RUN ctest --verbose
 RUN make install DESTDIR=${PWD}
 RUN make doxygen
 RUN cd .. && if [ ${COVERAGE} ]; then \
