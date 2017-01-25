@@ -39,15 +39,16 @@ struct function_handle__
   ///
   //
   ///
+  template< typename T >
   R
   operator () (
     std::function<void(void)> * user_function,
-    A & args
+    T && args
   )
   {
-    std::function<R(A)> & kr =
+    auto & kr =
       *(reinterpret_cast<std::function<R(A)> *>(user_function));
-    return kr(args);
+    return kr( std::forward<T>(args));
   } // operator ()
 
   size_t key;

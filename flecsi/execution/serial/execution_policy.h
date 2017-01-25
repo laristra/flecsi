@@ -111,12 +111,12 @@ struct executor__
     task_hash_key_t key,
     size_t parent,
     T user_task_handle,
-    A targs
+    A && targs
   )
   {
     R value =
       user_task_handle(context_t::instance().function(user_task_handle.key),
-        targs);
+        std::forward<A>(targs));
     serial_future__<R> f;
     f.set(value);
     return f;
@@ -144,12 +144,12 @@ struct executor__<R &>
     task_hash_key_t key,
     size_t parent,
     T user_task_handle,
-    A targs
+    A && targs
   )
   {
     R & value =
       user_task_handle(context_t::instance().function(user_task_handle.key),
-        targs);
+        std::forward<A>(targs));
     serial_future__<R &> f;
     f.set(value);
     return f;
@@ -234,7 +234,7 @@ struct serial_execution_policy_t
   template<
     typename R,
     typename T,
-    typename A
+    typename...As
   >
   static
   decltype(auto)
@@ -242,10 +242,12 @@ struct serial_execution_policy_t
     task_hash_key_t key,
     size_t parent,
     T user_task_handle,
-    A args
+    As && ... args
   )
   {
-    return executor__<R>::execute(key, parent, user_task_handle, args);
+    return executor__<R>::execute(
+      key, parent, user_task_handle, std::forward_as_tuple(args...)
+    );
   } // execute_task
 
   //--------------------------------------------------------------------------//
@@ -299,7 +301,7 @@ struct serial_execution_policy_t
     As && ... args
   )
   {
-    auto targs = std::make_tuple(args ...);
+    auto targs = std::forward_as_tuple( std::forward<As>(args) ...);
     return handle(context_t::instance().function(handle.key), targs);
   } // execute_function
 

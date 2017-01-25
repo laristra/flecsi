@@ -26,12 +26,14 @@ set(utils_HEADERS
   index_space.h
   iterator.h
   logging.h
+  reflection.h
   reorder.h
   set_intersection.h
   set_utils.h
   static_verify.h
   tuple_function.h
   tuple_wrapper.h
+  utility.h
 )
 
 set(utils_SOURCES

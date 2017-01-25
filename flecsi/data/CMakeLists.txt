@@ -25,12 +25,10 @@ set(data_HEADERS
 	permissions.h
 	storage.h
 	storage_type.h
-  PARENT_SCOPE
 )
 
 set(data_SOURCES
   data_client.cc
-  PARENT_SCOPE
 )
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
@@ -44,7 +42,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
     serial/sparse.h
     serial/storage_policy.h
     serial/tuple.h
-    PARENT_SCOPE
   )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
@@ -58,11 +55,19 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/sparse.h
     legion/storage_policy.h
     legion/tuple.h
-    PARENT_SCOPE
   )
 
 endif()
 
+set(data_HEADERS
+    ${data_HEADERS}
+    PARENT_SCOPE
+)
+
+set(data_SOURCES
+    ${data_SOURCES}
+    PARENT_SCOPE
+)
 #------------------------------------------------------------------------------#
 # Unit tests.
 #------------------------------------------------------------------------------#

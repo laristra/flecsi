@@ -101,6 +101,21 @@ double task3(double val) {
 register_task(task3, loc, index);
 #endif
 
+
+// This is here to make sure that references can be used in the serial version
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_serial
+
+double task4(double x, double & y, dense_field_t<double> p) {
+  std::cout << "Executing task4" << std::endl;
+  std::cout << "(x,y): (" << x << "," << y << ")" << std::endl;
+  std::cout << "Return: " << x*y << std::endl;
+  return x*y;
+} // task4
+
+register_task(task4, loc, single);
+
+#endif
+
 //----------------------------------------------------------------------------//
 // Function registration.
 //----------------------------------------------------------------------------//
@@ -198,6 +213,10 @@ void driver(int argc, char ** argv) {
   auto f2 = execute_task(task2, loc, single, alpha, 5.0, p);
 
   execute_task(task3, loc, index, 5.0);
+
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_serial
+  auto f4 = execute_task(task4, loc, single, alpha, 5.0, p);
+#endif
 
   register_data(m, hydro, materials, material_t, dense, 1, cells);
 

@@ -23,7 +23,7 @@
 # Include source-level CMake configuration file
 #------------------------------------------------------------------------------#
 
-include(${CMAKE_SOURCE_DIR}/cinch/cmake/SourceLists.txt)
+include(${CINCH_SOURCE_DIR}/cmake/SourceLists.txt)
 
 #------------------------------------------------------------------------------#
 # Formatting options for emacs and vim.
