@@ -90,10 +90,9 @@ struct task__
     As &&... args
   )
   {
-    auto targs = std::forward_as_tuple(std::forward<As>(args) ...);
     return execution_policy_t::template execute_task<R>(
       task_hash_t::make_key(address, processor, launch), parent,
-      user_task_handle, std::move(targs));
+      user_task_handle, std::forward<As>(args)...);
   } // execute
 
 }; // class task
