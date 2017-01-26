@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>flecsi: flecsi::execution::function_handle__&lt; R, A &gt; Struct Template Reference</title>
+<title>flecsi: sparse_accessor&lt; T &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -83,39 +83,40 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1function__handle____.html">function_handle__</a></li>  </ul>
-</div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-attribs">Public Attributes</a> &#124;
-<a href="structflecsi_1_1execution_1_1function__handle____-members.html">List of all members</a>  </div>
+<a href="classsparse__accessor-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">flecsi::execution::function_handle__&lt; R, A &gt; Struct Template Reference</div>  </div>
+<div class="title">sparse_accessor&lt; T &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a02c0a2350961cb405bb567f371693a4d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a02c0a2350961cb405bb567f371693a4d"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>offset_count</b> = <a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1offset__count.html">legion_dpd::offset_count</a></td></tr>
+<tr class="separator:a02c0a2350961cb405bb567f371693a4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb11174afd8a2533dc4fa22099bc2108"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acb11174afd8a2533dc4fa22099bc2108"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>entry_offset</b> = <a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1entry__offset.html">legion_dpd::entry_offset</a></td></tr>
+<tr class="separator:acb11174afd8a2533dc4fa22099bc2108"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:addff06853070309981171c57af8cb479"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="addff06853070309981171c57af8cb479"></a>
-constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>function_handle__</b> (const size_t key_)</td></tr>
-<tr class="separator:addff06853070309981171c57af8cb479"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aab1ba325cfde71e0949364532d3c2519"><td class="memTemplParams" colspan="2"><a class="anchor" id="aab1ba325cfde71e0949364532d3c2519"></a>
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:aab1ba325cfde71e0949364532d3c2519"><td class="memTemplItemLeft" align="right" valign="top">R&#160;</td><td class="memTemplItemRight" valign="bottom"><b>operator()</b> (std::function&lt; void(void)&gt; *user_function, T &amp;&amp;args)</td></tr>
-<tr class="separator:aab1ba325cfde71e0949364532d3c2519"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
-<tr class="memitem:ad614d95b366a14b1a607d5cea7b84572"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad614d95b366a14b1a607d5cea7b84572"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>key</b></td></tr>
-<tr class="separator:ad614d95b366a14b1a607d5cea7b84572"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35a23489b3cd6bdc3c067db96ab13239"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a35a23489b3cd6bdc3c067db96ab13239"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>sparse_accessor</b> (<a class="el" href="classsparse__data.html">sparse_data</a> &amp;data)</td></tr>
+<tr class="separator:a35a23489b3cd6bdc3c067db96ab13239"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac741a2ac36cc31784183d47d810c7bf9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac741a2ac36cc31784183d47d810c7bf9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>commit</b> ()</td></tr>
+<tr class="separator:ac741a2ac36cc31784183d47d810c7bf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2456d657b9dfa61a4ae8d65260c583c7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2456d657b9dfa61a4ae8d65260c583c7"></a>
+T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (size_t index, size_t entry)</td></tr>
+<tr class="separator:a2456d657b9dfa61a4ae8d65260c583c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/home/flecsi/flecsi/flecsi/execution/common/<a class="el" href="function__handle_8h_source.html">function_handle.h</a></li>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>/home/flecsi/flecsi/flecsi/execution/test/sparse_mutator.cc</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

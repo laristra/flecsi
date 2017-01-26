@@ -26,8 +26,8 @@ var searchData=
   ['pop_5fstate',['pop_state',['../structflecsi_1_1execution_1_1mpilegion__context__policy__t.html#a844695baaa5fcbe521ab4bfb4631e225',1,'flecsi::execution::mpilegion_context_policy_t']]],
   ['pseudo_5frandom',['pseudo_random',['../classpseudo__random.html',1,'pseudo_random'],['../classpseudo__random.html#ad53381c26b964c6845d614e5f6fe5dea',1,'pseudo_random::pseudo_random()']]],
   ['pseudo_5frandom_2eh',['pseudo_random.h',['../pseudo__random_8h.html',1,'']]],
-  ['ptr_5fcount',['ptr_count',['../structflecsi_1_1execution_1_1legion__dpd_1_1ptr__count.html',1,'flecsi::execution::legion_dpd']]],
   ['ptr_5fcount',['ptr_count',['../structptr__count.html',1,'']]],
+  ['ptr_5fcount',['ptr_count',['../structflecsi_1_1execution_1_1legion__dpd_1_1ptr__count.html',1,'flecsi::execution::legion_dpd']]],
   ['push',['push',['../classflecsi_1_1topology_1_1connectivity__t.html#a2c879c7c0202e5444c242ddecfc393a4',1,'flecsi::topology::connectivity_t::push()'],['../classflecsi_1_1topology_1_1branch__id.html#a90c9803cb8003837f74d98604a3ce2a5',1,'flecsi::topology::branch_id::push()']]],
   ['push_5fstate',['push_state',['../structflecsi_1_1execution_1_1mpilegion__context__policy__t.html#ac5806a551db07e8821f3832415286fb5',1,'flecsi::execution::mpilegion_context_policy_t']]]
 ];

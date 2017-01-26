@@ -7,7 +7,6 @@ var searchData=
   ['task_5fid',['task_id',['../structflecsi_1_1execution_1_1mpilegion__context__policy__t.html#a76e3812caa221b16dfda9b836dcd3751',1,'flecsi::execution::mpilegion_context_policy_t']]],
   ['task_5fids_5ft',['task_ids_t',['../classflecsi_1_1execution_1_1task__ids__t.html',1,'flecsi::execution']]],
   ['task_5finit_2eh',['task_init.h',['../task__init_8h.html',1,'']]],
-  ['task_5fwrapper_2eh',['task_wrapper.h',['../mpilegion_2task__wrapper_8h.html',1,'']]],
   ['temp_5fclass_5ft',['temp_class_t',['../classtemp__class__t.html',1,'']]],
   ['test_5fdefinition_5ft',['test_definition_t',['../classflecsi_1_1topology_1_1test__definition__t.html#abe3105ad5927b212afd1e9d796603e5e',1,'flecsi::topology::test_definition_t::test_definition_t()'],['../classflecsi_1_1topology_1_1test__definition__t.html#a1f690c8022cd386f5ce24659f3cd5caf',1,'flecsi::topology::test_definition_t::test_definition_t(const test_definition_t &amp;)=delete']]],
   ['test_5fdefinition_5ft',['test_definition_t',['../classflecsi_1_1topology_1_1test__definition__t.html',1,'flecsi::topology']]],
@@ -40,8 +39,8 @@ var searchData=
   ['tuple_5fwrapper_2eh',['tuple_wrapper.h',['../tuple__wrapper_8h.html',1,'']]],
   ['tuple_5fwrapper_5f',['tuple_wrapper_',['../structflecsi_1_1utils_1_1tuple__wrapper__.html',1,'flecsi::utils']]],
   ['type',['type',['../structflecsi_1_1topology_1_1find__entity__.html#a2fd97d8ae40a5d5d03e0c43815acb550',1,'flecsi::topology::find_entity_']]],
+  ['type_5finfo_5ft',['type_info_t',['../structflecsi_1_1data_1_1default__storage__policy__t_1_1meta__data__t_1_1type__info__t.html',1,'flecsi::data::default_storage_policy_t::meta_data_t']]],
   ['type_5finfo_5ft',['type_info_t',['../structflecsi_1_1data_1_1default__data__storage__policy__t_1_1meta__data__t_1_1type__info__t.html',1,'flecsi::data::default_data_storage_policy_t::meta_data_t']]],
   ['type_5finfo_5ft',['type_info_t',['../structflecsi_1_1data_1_1serial__meta__data__t_1_1type__info__t.html',1,'flecsi::data::serial_meta_data_t']]],
-  ['type_5finfo_5ft',['type_info_t',['../structflecsi_1_1data_1_1default__storage__policy__t_1_1meta__data__t_1_1type__info__t.html',1,'flecsi::data::default_storage_policy_t::meta_data_t']]],
   ['typeify',['typeify',['../structflecsi_1_1topology_1_1typeify.html',1,'flecsi::topology']]]
 ];

@@ -134,9 +134,6 @@ Public Types</h2></td></tr>
 <tr class="memitem:ae6b856f84b92b4d42a61dc65a64b2f01"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae6b856f84b92b4d42a61dc65a64b2f01"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>partition_count_map</b> = std::map&lt; size_t, size_t &gt;</td></tr>
 <tr class="separator:ae6b856f84b92b4d42a61dc65a64b2f01"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac6b8a293a922777def6ff9cfcc99c071"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac6b8a293a922777def6ff9cfcc99c071"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>index_pair</b> = std::pair&lt; size_t, size_t &gt;</td></tr>
-<tr class="separator:ac6b8a293a922777def6ff9cfcc99c071"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adcb7af92d11e8370d0482d8165dbedda"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adcb7af92d11e8370d0482d8165dbedda"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>connectivity_vec</b> = std::vector&lt; std::vector&lt; size_t &gt;&gt;</td></tr>
 <tr class="separator:adcb7af92d11e8370d0482d8165dbedda"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -172,6 +169,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>put_partition_metadat
 <tr class="memitem:ac08269868a448b26ccb3d73b6e539a50"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac08269868a448b26ccb3d73b6e539a50"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>dump</b> (size_t from_dim, size_t to_dim)</td></tr>
 <tr class="separator:ac08269868a448b26ccb3d73b6e539a50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2f8860cfbb26d998d3492ece62890ba"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab2f8860cfbb26d998d3492ece62890ba"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>map_data</b> (size_t partition, <a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1offset__count.html">offset_count</a> *&amp;indices, <a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1entry__offset.html">entry_offset</a> *&amp;entries, void *&amp;values)</td></tr>
+<tr class="separator:ab2f8860cfbb26d998d3492ece62890ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39e362b6a50352542cce8e9924615d67"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a39e362b6a50352542cce8e9924615d67"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>unmap_data</b> ()</td></tr>
+<tr class="separator:a39e362b6a50352542cce8e9924615d67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>

@@ -111,10 +111,10 @@ Static Public Member Functions</h2></td></tr>
 template&lt;typename R , typename A &gt; </td></tr>
 <tr class="memitem:a0a4e6dc2f5ebd2d84c4eb2dc14e7df9c"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>register_task</b> (<a class="el" href="structflecsi_1_1execution_1_1task__hash__key__t.html">task_hash_key_t</a> key)</td></tr>
 <tr class="separator:a0a4e6dc2f5ebd2d84c4eb2dc14e7df9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa4fb11211fcc825246fd21331fbcad5d"><td class="memTemplParams" colspan="2"><a class="anchor" id="aa4fb11211fcc825246fd21331fbcad5d"></a>
-template&lt;typename R , typename T , typename A &gt; </td></tr>
-<tr class="memitem:aa4fb11211fcc825246fd21331fbcad5d"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><b>execute_task</b> (<a class="el" href="structflecsi_1_1execution_1_1task__hash__key__t.html">task_hash_key_t</a> key, size_t parent, T user_task_handle, A user_task_args)</td></tr>
-<tr class="separator:aa4fb11211fcc825246fd21331fbcad5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a202214e346b26f29d8f921d3aece8da7"><td class="memTemplParams" colspan="2"><a class="anchor" id="a202214e346b26f29d8f921d3aece8da7"></a>
+template&lt;typename R , typename T , typename... As&gt; </td></tr>
+<tr class="memitem:a202214e346b26f29d8f921d3aece8da7"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><b>execute_task</b> (<a class="el" href="structflecsi_1_1execution_1_1task__hash__key__t.html">task_hash_key_t</a> key, size_t parent, T user_task_handle, As &amp;&amp;...user_task_args)</td></tr>
+<tr class="separator:a202214e346b26f29d8f921d3aece8da7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3fade3d9a744bd552818663193d9a051"><td class="memTemplParams" colspan="2"><a class="anchor" id="a3fade3d9a744bd552818663193d9a051"></a>
 template&lt;typename R , typename... As&gt; </td></tr>
 <tr class="memitem:a3fade3d9a744bd552818663193d9a051"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>register_function</b> (const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;key, std::function&lt; R(As...)&gt; &amp;user_function)</td></tr>

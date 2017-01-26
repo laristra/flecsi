@@ -9,7 +9,5 @@ var searchData=
   ['entity_5fids',['entity_ids',['../classflecsi_1_1topology_1_1mesh__topology__t.html#a9a8711c337837f7d790dd679a432ac8f',1,'flecsi::topology::mesh_topology_t::entity_ids() const '],['../classflecsi_1_1topology_1_1mesh__topology__t.html#a05f607f1200d8082015f5de325c2fbd1',1,'flecsi::topology::mesh_topology_t::entity_ids(domain_entity&lt; FM, E &gt; &amp;e)'],['../classflecsi_1_1topology_1_1mesh__topology__t.html#adfc056e5c5dcb913dbb8518bca4ef00b',1,'flecsi::topology::mesh_topology_t::entity_ids(const E *e) const ']]],
   ['entity_5fneighbors',['entity_neighbors',['../graph__utils_8h.html#a5cd2afa1638e4097addb6fe12add7acb',1,'flecsi::topology']]],
   ['entry_5finfo_5ft',['entry_info_t',['../structflecsi_1_1dmp_1_1entry__info__t.html#a68a61b60fbe9a9b3951f01dd2b31ab79',1,'flecsi::dmp::entry_info_t']]],
-  ['execute',['execute',['../structflecsi_1_1execution_1_1mpilegion__task__wrapper__.html#a715dde35cdddc542febab691292971a0',1,'flecsi::execution::mpilegion_task_wrapper_']]],
-  ['execute_5ffunction',['execute_function',['../structflecsi_1_1execution_1_1mpilegion__execution__policy__t.html#a2be42d3f73bafdfb7f33d18527779e9f',1,'flecsi::execution::mpilegion_execution_policy_t']]],
-  ['execute_5fmpi',['execute_mpi',['../structflecsi_1_1execution_1_1mpilegion__task__wrapper__.html#ae6be04b392a5b51e267ecc90d9beab4b',1,'flecsi::execution::mpilegion_task_wrapper_']]]
+  ['execute_5ffunction',['execute_function',['../structflecsi_1_1execution_1_1mpilegion__execution__policy__t.html#a2be42d3f73bafdfb7f33d18527779e9f',1,'flecsi::execution::mpilegion_execution_policy_t']]]
 ];
