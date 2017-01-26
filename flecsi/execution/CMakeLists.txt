@@ -104,7 +104,8 @@ set(execution_SOURCES
 #------------------------------------------------------------------------------#
 # Unit tests.
 #------------------------------------------------------------------------------#
-
+if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
+    OR (FLECSI_RUNTIME_MODEL STREQUAL "legion") )
 cinch_add_unit(task
   SOURCES
     test/task.cc
@@ -133,9 +134,9 @@ cinch_add_unit(simple_function
     flecsi
     ${CINCH_RUNTIME_LIBRARIES}
 )
+endif()
 
 if(NOT DEFINED ENV{TRAVIS})
-
   if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
     cinch_add_unit(mpilegion_task
