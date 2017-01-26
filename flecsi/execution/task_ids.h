@@ -12,18 +12,19 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_execution_mpilegion_task_ids_h
-#define flecsi_execution_mpilegion_task_ids_h
+#ifndef flecsi_execution_task_ids_h
+#define flecsi_execution_task_ids_h
 
 #include "flecsi/utils/common.h"
 
 ///
-//\file mpilegion/task_ids.h
-//\authors demeshko
-// \date Initial file creation: Jul 2016
-//
-//  HelperTaskIDs enum struct includes TASK_IDs for the legion tasks used
-//  in mpi_legion_interop_t class
+//\file task_ids.h
+///
+
+///
+//  HelperTaskIDs enum struct includes TASK_IDs and Field_IDs for the legion 
+//  tasks used in mpi_legion_interop_t class, in dpd class and some 
+//  temporary legion tasks used in sprint.h
 //  These needs to be a singleton due to the fact that the same IDs are used in
 //  mapper.h to se up special rools on executing the tasks used to switch
 //  between MPI and Legion runtimes
@@ -107,7 +108,7 @@ class field_ids_t
 }//namespace execution
 }//namespace flecsi
 
-#endif //flecsi_execution_mpilegion_task_ids_h
+#endif //flecsi_execution_task_ids_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

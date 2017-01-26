@@ -195,7 +195,9 @@ shared_part_task(
     regions[0].get_logical_region();
   LegionRuntime::HighLevel::IndexSpace cells_is = cells_lr.get_index_space();
 
-  Rect<1> cells_shared_rect(Point<1>(0), Point<1>(ip_cells.shared.size()-1));
+  LegionRuntime::Arrays::Rect<1> cells_shared_rect(
+    LegionRuntime::Arrays::Point<1>(0),
+    LegionRuntime::Arrays::Point<1>(ip_cells.shared.size()-1));
   LegionRuntime::HighLevel::IndexSpace cells_shared_is =
           runtime->create_index_space(
           ctx, legion_domain::from_rect<1>(cells_shared_rect));
@@ -230,7 +232,7 @@ shared_part_task(
     for (auto shared_cell : ip_cells.shared) {
       ptr_t ptr = (start.value+shared_cell.offset);
       acc.write(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
-      make_point(indx)),ptr);
+      LegionRuntime::Arrays::make_point(indx)),ptr);
       indx++;
     }//end for
 
@@ -242,7 +244,9 @@ shared_part_task(
     regions[1].get_logical_region();
   LegionRuntime::HighLevel::IndexSpace vert_is = vert_lr.get_index_space();
 
-  Rect<1> vert_shared_rect(Point<1>(0), Point<1>(ip_vert.shared.size()-1));
+  LegionRuntime::Arrays::Rect<1> vert_shared_rect(
+    LegionRuntime::Arrays::Point<1>(0),
+    LegionRuntime::Arrays::Point<1>(ip_vert.shared.size()-1));
   LegionRuntime::HighLevel::IndexSpace vert_shared_is =
           runtime->create_index_space(
           ctx, legion_domain::from_rect<1>(vert_shared_rect));
@@ -278,7 +282,7 @@ shared_part_task(
     for (auto shared_vert : ip_vert.shared) {
       ptr_t ptr = (start.value+shared_vert.offset);
       acc.write(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
-      make_point(indx)),ptr);
+      LegionRuntime::Arrays::make_point(indx)),ptr);
       indx++;
     }//end for
 
@@ -321,7 +325,9 @@ exclusive_part_task(
       regions[1].get_logical_region();
   LegionRuntime::HighLevel::IndexSpace vert_is = vert_lr.get_index_space();
   
-  Rect<1> cells_exclusive_rect(Point<1>(0), Point<1>(
+  LegionRuntime::Arrays::Rect<1> cells_exclusive_rect(
+    LegionRuntime::Arrays::Point<1>(0),
+    LegionRuntime::Arrays::Point<1>(
       ip_cells.exclusive.size()-1));
   LegionRuntime::HighLevel::IndexSpace cells_exclusive_is =
 	runtime->create_index_space(ctx, legion_domain::from_rect<1>(
@@ -357,7 +363,7 @@ exclusive_part_task(
     for (auto exclusive_cell : ip_cells.exclusive) {
       ptr_t ptr = (start.value+exclusive_cell.offset);
       acc.write(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
-      make_point(indx)),ptr);
+      LegionRuntime::Arrays::make_point(indx)),ptr);
       indx++;
     }//end for
 
@@ -365,7 +371,8 @@ exclusive_part_task(
   }//end scope
 
 
-  Rect<1> vert_exclusive_rect(Point<1>(0), Point<1>(
+  LegionRuntime::Arrays::Rect<1> vert_exclusive_rect(
+    LegionRuntime::Arrays::Point<1>(0), LegionRuntime::Arrays::Point<1>(
       ip_vert.exclusive.size()-1));
   LegionRuntime::HighLevel::IndexSpace vert_exclusive_is =
   runtime->create_index_space(ctx, legion_domain::from_rect<1>(
@@ -401,7 +408,7 @@ exclusive_part_task(
     for (auto exclusive_vert : ip_vert.exclusive) {
       ptr_t ptr = (start.value+exclusive_vert.offset);
       acc.write(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
-      make_point(indx)),ptr);
+      LegionRuntime::Arrays::make_point(indx)),ptr);
       indx++;
     }//end for
 
@@ -455,7 +462,9 @@ ghost_part_task(
     acc_vert_global= regions[1].get_field_accessor(
       fid_vert_global).typeify<size_t>();
  
-  Rect<1> ghost_cells_rect(Point<1>(0), Point<1>(ip_cells.ghost.size()-1));
+  LegionRuntime::Arrays::Rect<1> ghost_cells_rect(
+    LegionRuntime::Arrays::Point<1>(0),
+    LegionRuntime::Arrays::Point<1>(ip_cells.ghost.size()-1));
   LegionRuntime::HighLevel::IndexSpace ghost_cells_is =
   runtime->create_index_space(
     ctx, legion_domain::from_rect<1>(ghost_cells_rect));
@@ -492,7 +501,7 @@ ghost_part_task(
         size_t id_global = acc_cells_global.read(ptr);
         if (id_global == id_ghost){
            acc.write(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
-              make_point(indx)),ptr);
+              LegionRuntime::Arrays::make_point(indx)),ptr);
            indx++;
         }//end while
       }//end for
@@ -501,7 +510,9 @@ ghost_part_task(
     runtime->unmap_region(ctx, ghost_region);
   }//end scope
 
-  Rect<1> ghost_vert_rect(Point<1>(0), Point<1>(ip_vert.ghost.size()-1));
+  LegionRuntime::Arrays::Rect<1> ghost_vert_rect(
+    LegionRuntime::Arrays::Point<1>(0),
+    LegionRuntime::Arrays::Point<1>(ip_vert.ghost.size()-1));
   LegionRuntime::HighLevel::IndexSpace ghost_vert_is =
   runtime->create_index_space(
     ctx, legion_domain::from_rect<1>(ghost_vert_rect));
@@ -538,7 +549,7 @@ ghost_part_task(
         size_t id_global = acc_vert_global.read(ptr);
         if (id_global == id_ghost){
            acc.write(LegionRuntime::HighLevel::DomainPoint::from_point<1>(
-              make_point(indx)),ptr);
+              LegionRuntime::Arrays::make_point(indx)),ptr);
            indx++;
         }//end while
       }//end for
@@ -881,7 +892,8 @@ ghost_access_task(
       runtime->issue_acquire(ctx, acquire_launcher);
 
       // master writes to data
-      std::cout << my_rank << " as master writes data; phase 1 of cycle " << cycle << std::endl;
+      std::cout << my_rank << " as master writes data; phase 1 of cycle " <<
+        cycle << std::endl;
 
       ReleaseLauncher release_launcher(lr_shared, lr_shared, regions[0]);
       release_launcher.add_field(fid_shared);
@@ -896,7 +908,7 @@ ghost_access_task(
     for (int master=0; master < args.masters_pbarriers.size(); master++) {
         args.masters_pbarriers[master].arrive(1);                                     // phase 2
         args.masters_pbarriers[master] =
-                runtime->advance_phase_barrier(ctx, args.masters_pbarriers[master]);  // phase 2
+          runtime->advance_phase_barrier(ctx, args.masters_pbarriers[master]);  // phase 2
     }
 
     // phase 2 slaves can read data; masters may not write to data
@@ -914,11 +926,13 @@ ghost_access_task(
       acquire_launcher.add_field(fid_ghost);
       for (int master=0; master < args.masters_pbarriers.size(); master++) {
           acquire_launcher.add_wait_barrier(args.masters_pbarriers[master]);            // phase 2
-      } // no knowledge of which master has which point in ghost: so, wait for all
+      } // no knowledge of which master has which point in ghost: 
+        //so, wait for all
       runtime->issue_acquire(ctx, acquire_launcher);
 
       // slave reads data
-      std::cout << my_rank << " as slave reads data; phase 2 of cycle " << cycle << std::endl;
+      std::cout << my_rank << " as slave reads data; phase 2 of cycle " <<
+        cycle << std::endl;
       RegionRequirement ghost_req(lr_ghost, READ_ONLY, EXCLUSIVE, lr_ghost);
       ghost_req.add_field(fid_ghost);
       InlineLauncher ghost_launcher(ghost_req);
@@ -927,7 +941,8 @@ ghost_access_task(
         acc_ghost= regions[1].get_field_accessor(fid_ghost).typeify<size_t>();
       while(itr_ghost.has_next()){
         ptr_t ptr = itr_ghost.next();
-        std::cout << my_rank << " reads " << acc_ghost.read(ptr) << " at " << ptr.value << std::endl;
+        std::cout << my_rank << " reads " << acc_ghost.read(ptr) << " at " <<
+          ptr.value << std::endl;
        }
 
       ReleaseLauncher release_launcher(lr_ghost, lr_ghost, regions[1]);
@@ -935,7 +950,7 @@ ghost_access_task(
       for (int master=0; master < args.masters_pbarriers.size(); master++) {
           release_launcher.add_arrival_barrier(args.masters_pbarriers[master]);         // phase cycle + 1
           args.masters_pbarriers[master] =
-                  runtime->advance_phase_barrier(ctx, args.masters_pbarriers[master]);  // phase cycle + 1
+            runtime->advance_phase_barrier(ctx, args.masters_pbarriers[master]);  // phase cycle + 1
       }
       runtime->issue_release(ctx, release_launcher);
     }
