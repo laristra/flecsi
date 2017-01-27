@@ -459,6 +459,7 @@ driver(
   //cells_to_vertices.dump(2, 0);
   runtime->destroy_index_partition(context, raw_connectivity_part.ip);
   runtime->destroy_logical_region(context, raw_connectivity_part.lr);
+#endif
 
   //creating partiotioning for shared and exclusive elements:
   Coloring cells_shared_coloring;
@@ -860,7 +861,6 @@ driver(
     runtime->destroy_phase_barrier(context, phase_barriers[idx]);
   phase_barriers.clear();
 
-#endif
   //TOFIX: free all lr physical regions is
   runtime->destroy_logical_region(context, vertices_lr);
   runtime->destroy_logical_region(context, cells_lr);
