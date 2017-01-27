@@ -393,6 +393,33 @@ if(rank == 1) {
     return remote;
   } // get_vertex_info
 
+  ///
+  /// Rerturn a map containing RankID and number of entities corresponding 
+  /// to this RankID
+  ///     
+  std::unordered_map<size_t,size_t>
+  get_number_of_entities_per_rank_map(
+    const std::set<size_t> & primary
+  )
+  {
+    int size;
+    int rank;
+
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank); 
+
+    int num_elements = primary.size();
+    std::unordered_map<size_t,size_t> map;
+    int buff[size];
+
+    MPI_Allgather(&num_elements, 1, MPI_INT, &buff, 1, MPI_INT, MPI_COMM_WORLD);
+
+   for (size_t i=0; i<size; i++)
+     map[i]=buff[i];
+
+    return map;
+  }//get_number_of_entities_per_rank_map
+
 private:
 
 }; // class mpi_communicator_t
