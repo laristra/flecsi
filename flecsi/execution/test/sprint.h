@@ -740,7 +740,7 @@ driver(
   }//end for
 
   IndexPartition cells_ghost_ip = runtime->create_index_partition(context,
-        cells_is,cells_ghost_coloring, true);
+        cells_is,cells_ghost_coloring, false);
 
   LogicalPartition cells_ghost_lp = runtime->get_logical_partition(context,
     cells_lr, cells_ghost_ip);
@@ -797,62 +797,87 @@ driver(
 
 
   //call a legion task that tests ghost cell access
+	std::set<Processor> all_procs;
+	Realm::Machine::get_machine().get_all_processors(all_procs);
+	int num_procs = 0;
+	for(std::set<Processor>::const_iterator it = all_procs.begin();
+	      it != all_procs.end();
+	      it++)
+	    if((*it).kind() == Processor::LOC_PROC)
+	      num_procs++;
+	assert(num_procs == num_ranks);
+
+  // figure out communication pattern
 
   std::vector<PhaseBarrier> phase_barriers;
   std::vector<std::set<int>> master_colors(num_ranks);
   for (int master_color=0; master_color < num_ranks; ++master_color) {
     std::set<int> slave_colors;
-    for (std::set<ptr_t>::iterator it=
-      cells_shared_coloring[master_color].points.begin();
+    for (std::set<ptr_t>::iterator it=cells_shared_coloring[master_color].points.begin();
       it!=cells_shared_coloring[master_color].points.end(); ++it) {
-       const ptr_t ptr = *it;
-       for (int slave_color = 0; slave_color < num_ranks; ++slave_color)
-         if (cells_ghost_coloring[slave_color].points.count(ptr)) {
-           slave_colors.insert(slave_color);
-           master_colors[slave_color].insert(master_color);
-         }
-       }//end for
-
-    phase_barriers.push_back(runtime->create_phase_barrier(context,
-        1 + slave_colors.size()));
+      const ptr_t ptr = *it;
+      for (int slave_color = 0; slave_color < num_ranks; ++slave_color)
+        if (cells_ghost_coloring[slave_color].points.count(ptr)) {
+          slave_colors.insert(slave_color);
+          master_colors[slave_color].insert(master_color);
+        }
+    }
+    phase_barriers.push_back(runtime->create_phase_barrier(context, 1 + slave_colors.size()));
   }
 
-  std::vector<execution::sprint::SPMDArgs> spmd_args(num_ranks);
-  std::vector<execution::sprint::SPMDArgsSerializer> args_seriliazed(num_ranks);
-  for (int color=0; color < num_ranks; ++color) {
-      spmd_args[color].pbarrier_as_master = phase_barriers[color];
-
-      for (std::set<int>::iterator master=master_colors[color].begin();
-              master!=master_colors[color].end(); ++master)
-          spmd_args[color].masters_pbarriers.push_back(phase_barriers[*master]);
-
-      args_seriliazed[color].archive(&(spmd_args[color]));
-      arg_map.set_point(DomainPoint::from_point<1>(
-         LegionRuntime::Arrays::Point<1>(color)),
-         TaskArgument(args_seriliazed[color].getBitStream(),
-          args_seriliazed[color].getBitStreamSize()));
-  }
-
-  LegionRuntime::HighLevel::IndexLauncher ghost_access_launcher(
-  task_ids_t::instance().ghost_access_task_id,
-  rank_domain,
-  LegionRuntime::HighLevel::TaskArgument(0, 0),
-  arg_map);
-
-  ghost_access_launcher.tag = MAPPER_FORCE_RANK_MATCH;
-
-  ghost_access_launcher.add_region_requirement(
-  RegionRequirement(cells_shared_lp, 0/*projection ID*/,
-                    READ_ONLY, SIMULTANEOUS, cells_lr));
-  ghost_access_launcher.add_field(0, fid_t.fid_data);
-
-  ghost_access_launcher.add_region_requirement(
-  RegionRequirement(cells_ghost_lp, 0/*projection ID*/,
-                    READ_ONLY, SIMULTANEOUS, cells_lr));
-  ghost_access_launcher.add_field(1, fid_t.fid_data);
-
+  // Launch SPMD tasks
   MustEpochLauncher must_epoch_launcher;
-  must_epoch_launcher.add_index_task(ghost_access_launcher);
+  std::vector<execution::sprint::SPMDArgs> spmd_args(num_ranks);
+  std::vector<execution::sprint::SPMDArgsSerializer> args_serialized(num_ranks);
+  for (int color=0; color < num_ranks; ++color) {
+    spmd_args[color].pbarrier_as_master = phase_barriers[color];
+
+    for (std::set<int>::iterator master=master_colors[color].begin();
+    		master!=master_colors[color].end(); ++master) {
+      spmd_args[color].masters_pbarriers.push_back(phase_barriers[*master]);
+    }
+
+    args_serialized[color].archive(&(spmd_args[color]));
+
+    TaskLauncher ghost_access_launcher(task_ids_t::instance().ghost_access_task_id,
+    		TaskArgument(args_serialized[color].getBitStream(), args_serialized[color].getBitStreamSize()));
+
+    ghost_access_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+
+    LogicalRegion lregion_shared = runtime->get_logical_subregion_by_color(context,
+    		cells_shared_lp,color);
+    ghost_access_launcher.add_region_requirement(
+    		RegionRequirement(lregion_shared,
+    				READ_WRITE, SIMULTANEOUS, cells_lr));
+    ghost_access_launcher.add_field(0, fid_t.fid_data);
+
+    LogicalRegion lregion_exclusive = runtime->get_logical_subregion_by_color(context,
+    		cells_exclusive_lp,color);
+    ghost_access_launcher.add_region_requirement(
+    		RegionRequirement(lregion_exclusive,
+    				READ_WRITE, EXCLUSIVE, cells_lr));
+    ghost_access_launcher.add_field(1, fid_t.fid_data);
+
+    int req_index = 2;
+    for (std::set<int>::iterator master=master_colors[color].begin();
+    		master!=master_colors[color].end(); ++master) {
+      LogicalRegion lregion_ghost = runtime->get_logical_subregion_by_color(context,
+    		  cells_shared_lp,*master);
+    ghost_access_launcher.add_region_requirement(
+    		RegionRequirement(lregion_ghost,
+    				READ_ONLY, SIMULTANEOUS, cells_lr));
+      ghost_access_launcher.region_requirements[req_index].add_flags(NO_ACCESS_FLAG);
+      ghost_access_launcher.add_field(req_index, fid_t.fid_data);
+      req_index++;
+    }
+
+    IndexSpace ispace_ghost = runtime->get_index_subspace(context, cells_ghost_ip, color);
+    ghost_access_launcher.add_index_requirement(IndexSpaceRequirement(ispace_ghost,
+    		NO_MEMORY,cells_is));
+
+    DomainPoint point(color);
+    must_epoch_launcher.add_single_task(point,ghost_access_launcher);
+  }
 
   FutureMap fm7 = runtime->execute_must_epoch(context,must_epoch_launcher);
   fm7.wait_all_results();

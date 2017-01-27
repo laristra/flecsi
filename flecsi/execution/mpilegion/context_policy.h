@@ -160,6 +160,10 @@ struct mpilegion_context_policy_t
       flecsi::execution::sprint::ghost_access_task>(
       task_ids_t::instance().ghost_access_task_id,lr_loc, false, true);
 
+    lr_runtime_t::register_legion_task<
+      flecsi::execution::sprint::halo_copy_task>(
+      task_ids_t::instance().halo_copy_task_id,lr_loc, true, false);
+
     // register handoff_to_mpi_task from mpi_legion_interop_t class
     lr_runtime_t::register_legion_task<handoff_to_mpi_task>(
       task_ids_t::instance().handoff_to_mpi_task_id, lr_loc,

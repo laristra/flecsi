@@ -110,6 +110,13 @@ ghost_access_task(
 );
 
 void
+halo_copy_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+);
+
+void
 init_raw_conn_task(
   const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,
