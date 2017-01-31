@@ -115,7 +115,7 @@
 // \param launch The launch  mode for the task.
 // \param ... The arguments to pass to the user task during execution.
 ///
-#define execute_task(task, processor, launch, ...)                             \
+#define EXECUTE_TASK(task, processor, launch, ...)                             \
                                                                                \
   /* Execute the user task */                                                  \
   /* WARNING: This macro returns a future. Don't add terminations! */          \

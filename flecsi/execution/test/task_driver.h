@@ -203,19 +203,19 @@ void driver(int argc, char ** argv) {
   double alpha(10.0);
 
 //#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
-//  execute_task(task1, mpi, index, alpha, 5);
+//  EXECUTE_TASK(task1, mpi, index, alpha, 5);
 //#else
 
-  auto f1 = execute_task(task1, loc, single, alpha, 5);
+  auto f1 = EXECUTE_TASK(task1, loc, single, alpha, 5);
 
   f1.wait();
 
-  auto f2 = execute_task(task2, loc, single, alpha, 5.0, p);
+  auto f2 = EXECUTE_TASK(task2, loc, single, alpha, 5.0, p);
 
-  execute_task(task3, loc, index, 5.0);
+  EXECUTE_TASK(task3, loc, index, 5.0);
 
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_serial
-  auto f4 = execute_task(task4, loc, single, alpha, 5.0, p);
+  auto f4 = EXECUTE_TASK(task4, loc, single, alpha, 5.0, p);
 #endif
 
   register_data(m, hydro, materials, material_t, dense, 1, cells);
