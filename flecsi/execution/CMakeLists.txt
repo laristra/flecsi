@@ -23,7 +23,6 @@ set(execution_HEADERS
 	function.h
 	kernel.h
 	task.h
-  PARENT_SCOPE
 )
 
 #------------------------------------------------------------------------------#
@@ -38,7 +37,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
     serial/context_policy.h
     serial/execution_policy.h
     serial/runtime_driver.h
-    PARENT_SCOPE
   )
 
   set(UNIT_POLICY SERIAL)
@@ -55,12 +53,12 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/runtime_driver.h
     legion/task_args.h
     legion/task_wrapper.h
+    task_ids.h
     PARENT_SCOPE
   )
 
   set(execution_SOURCES
     legion/dpd.cc
-    PARENT_SCOPE
   )
 
   set(UNIT_POLICY LEGION)
@@ -79,15 +77,13 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
     mpilegion/mapper.h
     mpilegion/mpi_legion_interop.h
     mpilegion/runtime_driver.h
-    mpilegion/task_ids.h
+    task_ids.h
     mpilegion/init_partitions_task.h 
-    PARENT_SCOPE
   )
 
   set(execution_SOURCES
     legion/dpd.cc
     mpilegion/init_partitions_task.cc
-    PARENT_SCOPE
   )
 
   set(UNIT_POLICY MPILEGION)
@@ -95,42 +91,52 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
 endif()
 
+set(execution_HEADERS
+  ${execution_HEADERS}
+  PARENT_SCOPE
+)
+
+set(execution_SOURCES
+  ${execution_SOURCES}
+  PARENT_SCOPE
+)
+
 #------------------------------------------------------------------------------#
 # Unit tests.
 #------------------------------------------------------------------------------#
+if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
+    OR (FLECSI_RUNTIME_MODEL STREQUAL "legion") )
+cinch_add_unit(task
+  SOURCES
+    test/task.cc
+    test/task_driver.h
+    ${RUNTIME_DRIVER}
+  DEFINES
+    FLECSI_DRIVER=flecsi/execution/test/task_driver.h
+    TEST_INIT=flecsi/execution/test/task_init.h
+  POLICY
+    ${UNIT_POLICY}
+  LIBRARIES
+    flecsi
+    ${CINCH_RUNTIME_LIBRARIES}
+)
+
+cinch_add_unit(simple_function
+  SOURCES
+    test/function.cc
+    test/simple_function.h
+    ${RUNTIME_DRIVER}
+  DEFINES
+    FLECSI_DRIVER=flecsi/execution/test/simple_function.h
+  POLICY
+    ${UNIT_POLICY}
+  LIBRARIES
+    flecsi
+    ${CINCH_RUNTIME_LIBRARIES}
+)
+endif()
 
 if(NOT DEFINED ENV{TRAVIS})
-
-  cinch_add_unit(task
-    SOURCES
-      test/task.cc
-      test/task_driver.h
-      ${RUNTIME_DRIVER}
-    DEFINES
-      FLECSI_DRIVER=flecsi/execution/test/task_driver.h
-      TEST_INIT=flecsi/execution/test/task_init.h
-    POLICY
-      ${UNIT_POLICY}
-    LIBRARIES
-      flecsi
-      ${CINCH_RUNTIME_LIBRARIES}
-  )
-  
-  cinch_add_unit(simple_function
-    SOURCES
-      test/function.cc
-      test/simple_function.h
-      ${RUNTIME_DRIVER}
-    DEFINES
-      FLECSI_DRIVER=flecsi/execution/test/simple_function.h
-    POLICY
-      ${UNIT_POLICY}
-    LIBRARIES
-      flecsi
-      ${CINCH_RUNTIME_LIBRARIES}
-  )
-
-
   if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
     cinch_add_unit(mpilegion_task

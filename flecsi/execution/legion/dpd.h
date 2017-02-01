@@ -87,8 +87,6 @@ public:
     size_t reserve;
   };
 
-  using index_pair = std::pair<size_t, size_t>;
-
   template<class T>
   struct commit_data{
     using spare_map_t = std::multimap<size_t, entry_value<T>>;
@@ -98,7 +96,7 @@ public:
     size_t slot_size;
     size_t num_slots;
     size_t num_indices;
-    index_pair* indices;
+    size_t* indices;
     entry_value<T>* entries;
     spare_map_t spare_map;
     erase_set_t* erase_set = nullptr;
@@ -167,6 +165,13 @@ public:
     return 1000 + from_dim * 10 + to_dim;
   }
 
+  void map_data(size_t partition,
+                offset_count*& indices,
+                entry_offset*& entries,
+                void*& values);
+
+  void unmap_data();
+
 private:
   Legion::Context context_;
   Legion::Runtime* runtime_;
@@ -179,7 +184,10 @@ private:
   Legion::IndexPartition to_ip_;
 
   Legion::LogicalRegion partition_metadata_lr_;
-  Legion::IndexPartition partition_metadata_ip_;  
+  Legion::IndexPartition partition_metadata_ip_;
+  Legion::PhysicalRegion data_from_pr_;  
+  Legion::PhysicalRegion data_pr_;  
+  Legion::PhysicalRegion data_values_pr_;  
 };
 
 } // namespace execution 

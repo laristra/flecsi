@@ -29,7 +29,13 @@ cmake_minimum_required(VERSION 2.8)
 # Include project-level CMake configuration file
 #------------------------------------------------------------------------------#
 
-include(${CMAKE_SOURCE_DIR}/cinch/cmake/ProjectLists.txt)
+if(NOT "$ENV{CINCH_SOURCE_DIR}" STREQUAL "")
+    set(CINCH_SOURCE_DIR $ENV{CINCH_SOURCE_DIR})
+elseif(EXISTS ${CMAKE_SOURCE_DIR}/cinch)
+    set(CINCH_SOURCE_DIR ${CMAKE_SOURCE_DIR}/cinch)
+endif()
+
+include(${CINCH_SOURCE_DIR}/cmake/ProjectLists.txt)
 
 #------------------------------------------------------------------------------#
 # Formatting options for emacs and vim.

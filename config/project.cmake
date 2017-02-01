@@ -12,6 +12,16 @@
 # All rights reserved
 #~----------------------------------------------------------------------------~#
 
+#------------------------------------------------------------------------------#
+# Set the minimum Cinch version
+#------------------------------------------------------------------------------#
+
+cinch_minimum_required(1.0)
+
+#------------------------------------------------------------------------------#
+# Set the project name
+#------------------------------------------------------------------------------#
+
 project(flecsi)
 
 #------------------------------------------------------------------------------#
@@ -49,6 +59,14 @@ set(FLECSI_RUNTIME_MODEL "${FLECSI_RUNTIME_MODEL}" CACHE STRING
   "Select the runtime model")
 set_property(CACHE FLECSI_RUNTIME_MODEL
   PROPERTY STRINGS ${FLECSI_RUNTIME_MODELS})
+
+#------------------------------------------------------------------------------#
+# Enable Boost.Preprocessor
+#------------------------------------------------------------------------------#
+
+# This changes the Cinch default
+set(ENABLE_BOOST_PREPROCESSOR ON CACHE BOOL
+  "Enable Boost.Preprocessor")
 
 #------------------------------------------------------------------------------#
 # Add option for setting id bits

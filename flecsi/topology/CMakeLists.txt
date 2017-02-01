@@ -106,6 +106,11 @@ cinch_add_unit(gravity-state
     ${CINCH_RUNTIME_LIBRARIES}
 )
 
+cinch_add_unit(structured
+  SOURCES
+    test/structured.cc
+)
+
 #------------------------------------------------------------------------------#
 # Misc. unit tests.
 #------------------------------------------------------------------------------#

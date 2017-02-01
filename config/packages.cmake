@@ -65,14 +65,14 @@ endif()
 #
 if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
-  set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/serial)
+  set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/serial)
 
 #
 # Legion interface
 #
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
-  set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/legion)
+  set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/legion)
 
   if(NOT APPLE)
     set(FLECSI_RUNTIME_LIBRARIES  -ldl ${Legion_LIBRARIES} ${MPI_LIBRARIES})
@@ -87,7 +87,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 #
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
-  set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/mpi)
+  set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/mpi)
 
   if(NOT APPLE)
     set(FLECSI_RUNTIME_LIBRARIES  -ldl ${MPI_LIBRARIES})
@@ -104,7 +104,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
     message (FATAL_ERROR "MPI is required for the mpilegion runtime model")
   endif()
  
-  set(_runtime_path ${CMAKE_SOURCE_DIR}/flecsi/execution/mpilegion)
+  set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/mpilegion)
 
   if(NOT APPLE)
     set(FLECSI_RUNTIME_LIBRARIES  -ldl ${Legion_LIBRARIES} ${MPI_LIBRARIES})
