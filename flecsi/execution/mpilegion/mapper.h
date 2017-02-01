@@ -15,11 +15,10 @@
 #define flecsi_execution_mpilegion_mapper_h
 
 #include <legion.h>
-#include "task_ids.h"
 #include <legion_mapping.h>
 #include <default_mapper.h>
 
-#include "flecsi/execution/mpilegion/task_ids.h"
+#include "flecsi/execution/task_ids.h"
 
 
 enum {
@@ -37,7 +36,7 @@ namespace flecsi {
 namespace execution {
 
 ///
-//TOFIX: Documentation
+// STLComparator struct compare two Points with dimension=DIM
 ///
 template <
 unsigned DIM
@@ -45,7 +44,8 @@ unsigned DIM
 struct 
 STLComparator 
 {
-  bool operator()(const Point<DIM>& a, const Point<DIM>& b) const
+  bool operator()(const LegionRuntime::Arrays::Point<DIM>& a,
+    const LegionRuntime::Arrays::Point<DIM>& b) const
   {
     for(unsigned i = 0; i < DIM; i++)  {
       int d = a.x[i] - b.x[i];
@@ -57,7 +57,7 @@ STLComparator
 };
 
 ///
-//TOFIX: Documentation
+// Custom mapper that handles mpi-legion interoperability in FLeCSI
 ///
 class
 MPIMapper : public Legion::Mapping::DefaultMapper 
@@ -65,7 +65,7 @@ MPIMapper : public Legion::Mapping::DefaultMapper
   public:
 
   ///
-  //TOFIX: Documentation
+  // Contructor. Currently supports only LOC_PROC and TOC_PROC
 	///
   MPIMapper(
   	LegionRuntime::HighLevel::Machine machine,
@@ -114,10 +114,21 @@ MPIMapper : public Legion::Mapping::DefaultMapper
           " sysmem=" << local_sysmem<<std::endl;
   }// end MPIMapper
 
+  ///
+  // Destructor
+  ///
   virtual ~MPIMapper(){};
 
   ///
-  //TOFIX: Documentation
+  //  The slice_task call is used by the runtime
+  //  to query the mapper about the best way to distribute
+  //  the points in an index space task launch throughout
+  //  the machine.
+  //  To ensure that legion tasks are executed in the same memory space
+  //  as MPI tasks, one need to specify tag = MAPPER_FORCE_RANK_MATCH
+  //  for the index launch int the code.
+  //  By default, slice-task will perform the didtribution the same way 
+  //  it is done in the DefaultMapper. 
   ///
   virtual
   void
@@ -144,7 +155,7 @@ MPIMapper : public Legion::Mapping::DefaultMapper
       (task.tag & MAPPER_FORCE_RANK_MATCH) != 0) {
     	// expect a 1-D index domain
     	assert(input.domain.get_dim() == 1);
-    	Rect<1> r = input.domain.get_rect<1>();
+    	LegionRuntime::Arrays::Rect<1> r = input.domain.get_rect<1>();
 
     	// each point in the domain goes to CPUs assigned to that rank
     	output.slices.resize(r.volume());
@@ -160,9 +171,10 @@ MPIMapper : public Legion::Mapping::DefaultMapper
       std::vector<legion_proc> all_procs(pq.begin(), pq.end());
       assert((r.lo[0] == 0) && (r.hi[0] == (int)(all_procs.size() - 1)));
 
-    	for(GenericPointInRectIterator<1> pir(r); pir; ++pir, ++idx) {
-      	output.slices[idx].domain =
-						 Legion::Domain::from_rect<1>(Rect<1>(pir.p, pir.p));
+    	for(LegionRuntime::Arrays::GenericPointInRectIterator<1> pir(r);
+         pir; ++pir, ++idx) {
+      	output.slices[idx].domain =Legion::Domain::from_rect<1>(
+              LegionRuntime::Arrays::Rect<1>(pir.p, pir.p));
         	output.slices[idx].proc = all_procs[idx];
    	  }//end for
     	return;
@@ -186,7 +198,7 @@ MPIMapper : public Legion::Mapping::DefaultMapper
     	// expect a 2-D index domain - first component is the processor index,
     	//  and second is the MPI rank
     	assert(input.domain.get_dim() == 2);
-    	Rect<2> r = input.domain.get_rect<2>();
+    	LegionRuntime::Arrays::Rect<2> r = input.domain.get_rect<2>();
 
     	using legion_machine=LegionRuntime::HighLevel::Machine;
     	using legion_proc=LegionRuntime::HighLevel::Processor;
@@ -202,7 +214,7 @@ MPIMapper : public Legion::Mapping::DefaultMapper
     	//  each MPI rank
     	output.slices.resize(all_procs.size());
     	for(size_t i = 0; i < all_procs.size(); i++) {
-      	Rect<2> subrect = r;
+      	LegionRuntime::Arrays::Rect<2> subrect = r;
       	subrect.lo.x[0] = subrect.hi.x[0] = i;
       	output.slices[i].domain = Legion::Domain::from_rect<2>(subrect);
       	output.slices[i].proc = all_procs[i];
@@ -253,8 +265,9 @@ MPIMapper : public Legion::Mapping::DefaultMapper
                          
   protected:
 
-  std::map<Point<1>, std::vector<LegionRuntime::HighLevel::Processor>, 
-     STLComparator<1> > rank_cpus, rank_gpus;
+  std::map<LegionRuntime::Arrays::Point<1>,
+      std::vector<LegionRuntime::HighLevel::Processor>, 
+      STLComparator<1> > rank_cpus, rank_gpus;
   std::map<LegionRuntime::HighLevel::Processor,
        std::map<Realm::Memory::Kind, Realm::Memory> > proc_mem_map;
   Realm::Memory local_sysmem;
@@ -262,7 +275,8 @@ MPIMapper : public Legion::Mapping::DefaultMapper
 };
 
 ///
-//TOFIX: Documentation
+// mapper_registration is used to replace DefaultMapper with MPIMapper in
+// FLeCSI
 ///
 inline
 void

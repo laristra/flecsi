@@ -4,7 +4,7 @@
 #include <cereal/archives/binary.hpp>
 
 #include "flecsi/execution/legion/dpd.h"
-#include "flecsi/execution/mpilegion/task_ids.h"
+#include "flecsi/execution/task_ids.h"
 
 #include "legion.h"
 #include "legion_config.h"
@@ -126,21 +126,36 @@ void top_level_task(const Task* task,
   cd.slot_size = 5;
   cd.num_slots = partition_size * 5;
   cd.num_indices = partition_size;
-  cd.indices = new legion_dpd::index_pair[cd.num_indices];
+  cd.indices = new size_t[cd.num_indices];
   cd.entries = 
     new legion_dpd::entry_value<double>[cd.num_indices * cd.num_slots];
 
-  cd.entries[0].entry = 5;
-  cd.entries[0].value = 555.5;
-  cd.entries[1].entry = 3;
-  cd.entries[1].value = 333.3;
+  cd.entries[0].entry = 3;
+  cd.entries[0].value = 333.3;
+  cd.entries[1].entry = 5;
+  cd.entries[1].value = 555.5;
   cd.entries[2].entry = 8;
   cd.entries[2].value = 888.8;
   
-  cd.indices[0] = make_pair(0, 3);
+  cd.indices[0] = 3;
   
   for(size_t i = 1; i < cd.num_indices; ++i){
-    cd.indices[i] = make_pair(3, 3);
+    cd.indices[i] = 0;
+  }
+
+  dpd.commit(cd);
+
+  np("------------------");
+
+  cd.entries[0].entry = 4;
+  cd.entries[0].value = 444.4;
+  cd.entries[1].entry = 9;
+  cd.entries[1].value = 999.9;
+  
+  cd.indices[0] = 2;
+  
+  for(size_t i = 1; i < cd.num_indices; ++i){
+    cd.indices[i] = 0;
   }
 
   dpd.commit(cd);

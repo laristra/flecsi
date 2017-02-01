@@ -37,12 +37,14 @@ namespace execution {
     Legion::IndexSpace create_index_space(unsigned start, unsigned end){
       assert(end >= start);
       LegionRuntime::Arrays::Rect<1> 
-        rect(Point<1>(start), Point<1>(end - 0));
+        rect(LegionRuntime::Arrays::Point<1>(start),
+             LegionRuntime::Arrays::Point<1>(end - 0));
       return runtime_->create_index_space(context_, Legion::Domain::from_rect<1>(rect));  
     }
 
     Legion::DomainPoint domain_point(size_t p){
-      return Legion::DomainPoint::from_point<1>(make_point(p));
+      return Legion::DomainPoint::from_point<1>(
+        LegionRuntime::Arrays::make_point(p));
     }
 
     Legion::Domain domain_from_point(size_t p){
@@ -90,7 +92,8 @@ namespace execution {
     }
 
     Legion::DomainPoint domain_point(size_t i) const{
-      return Legion::DomainPoint::from_point<1>(Point<1>(i)); 
+      return Legion::DomainPoint::from_point<1>(
+        LegionRuntime::Arrays::Point<1>(i)); 
     }
 
     Legion::FutureMap execute_index_space(Legion::IndexLauncher l) const{

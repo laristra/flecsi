@@ -234,7 +234,7 @@ struct serial_execution_policy_t
   template<
     typename R,
     typename T,
-    typename A
+    typename...As
   >
   static
   decltype(auto)
@@ -242,11 +242,11 @@ struct serial_execution_policy_t
     task_hash_key_t key,
     size_t parent,
     T user_task_handle,
-    A && args
+    As && ... args
   )
   {
     return executor__<R>::execute(
-      key, parent, user_task_handle, std::forward<A>(args)
+      key, parent, user_task_handle, std::forward_as_tuple(args...)
     );
   } // execute_task
 
