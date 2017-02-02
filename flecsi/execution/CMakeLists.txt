@@ -198,7 +198,7 @@ if(NOT DEFINED ENV{TRAVIS})
           mpilegion/runtime_driver.cc
           ${execution_SOURCES}
         INPUTS
-          test/simple2d-16x16.msh
+          test/simple2d-64x64.msh
         DEFINES LAX_WENDROFF_TEST
           FLECSI_DRIVER=flecsi/execution/test/lax_wendroff.h
           TEST_INIT=flecsi/execution/test/task_init.h

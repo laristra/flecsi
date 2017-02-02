@@ -38,7 +38,7 @@ mpi_task(
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   std::cout << "My rank: " << rank << std::endl;
 
-  flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
+  flecsi::io::simple_definition_t sd("simple2d-64x64.msh");
   flecsi::dmp::weaver weaver(sd);
 
   using entry_info_t = flecsi::dmp::entry_info_t;
@@ -167,7 +167,7 @@ driver(
     FieldAllocator allocator = runtime->create_field_allocator(context,
                                              cells_fs);
     allocator.allocate_field(sizeof(size_t), fid_t.fid_cell);
-    allocator.allocate_field(sizeof(size_t), fid_t.fid_data);
+    allocator.allocate_field(sizeof(double), fid_t.fid_data);
 //TOFIX
     allocator.allocate_field(sizeof(legion_dpd::ptr_count),
                       legion_dpd::connectivity_field_id(2, 0));
@@ -186,6 +186,10 @@ driver(
   LogicalRegion cells_lr=
     runtime->create_logical_region(context,cells_is, cells_fs);
   runtime->attach_name(cells_lr, "cells  logical region");
+
+  LogicalRegion ghost_lr=
+    runtime->create_logical_region(context,cells_is, cells_fs);
+  runtime->attach_name(ghost_lr, "ghost  logical region");
 
    //create global IS fnd LR for Vertices
 
@@ -239,6 +243,9 @@ driver(
 
   LogicalPartition cells_primary_lp = runtime->get_logical_partition(context,
            cells_lr, cells_primary_ip);
+
+  LogicalPartition ghost_primary_lp = runtime->get_logical_partition(context,
+           ghost_lr, cells_primary_ip);
 
 
 	//partition vertices by number of mpi ranks
@@ -298,6 +305,31 @@ driver(
         initialization_launcher);
   
   fm2.wait_all_results();
+
+  {
+	  LegionRuntime::HighLevel::IndexLauncher initialization_launcher(
+	    task_ids_t::instance().init_task_id,
+	    rank_domain,
+	    LegionRuntime::HighLevel::TaskArgument(0, 0),
+	    arg_map);
+
+	  initialization_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+
+	  initialization_launcher.add_region_requirement(
+	    RegionRequirement(ghost_primary_lp, 0/*projection ID*/,
+	                      WRITE_DISCARD, EXCLUSIVE, ghost_lr));
+	  initialization_launcher.add_field(0, fid_t.fid_cell);
+
+	  initialization_launcher.add_region_requirement(
+	    RegionRequirement(vert_primary_lp, 0/*projection ID*/,
+	                      WRITE_DISCARD, EXCLUSIVE, vertices_lr));
+	  initialization_launcher.add_field(1, fid_t.fid_vert);
+
+	  FutureMap fm2 = runtime->execute_index_space( context,
+	        initialization_launcher);
+
+	  fm2.wait_all_results();
+  }
 
 
   //creating partiotioning for shared and exclusive elements:
@@ -490,6 +522,9 @@ driver(
   IndexPartition cells_ghost_ip = runtime->create_index_partition(context,
         cells_is,cells_ghost_coloring, false);
 
+  LogicalPartition cells_ghost_lp = runtime->get_logical_partition(context,
+    ghost_lr, cells_ghost_ip);
+
   //call a legion task that tests ghost cell access
 	std::set<Processor> all_procs;
 	Realm::Machine::get_machine().get_all_processors(all_procs);
@@ -544,6 +579,7 @@ driver(
     		RegionRequirement(lregion_shared,
     				READ_WRITE, SIMULTANEOUS, cells_lr));
     ghost_access_launcher.add_field(0, fid_t.fid_data);
+    ghost_access_launcher.add_field(0, fid_t.fid_cell);
 
     LogicalRegion lregion_exclusive = runtime->get_logical_subregion_by_color(context,
     		cells_exclusive_lp,color);
@@ -551,8 +587,15 @@ driver(
     		RegionRequirement(lregion_exclusive,
     				READ_WRITE, EXCLUSIVE, cells_lr));
     ghost_access_launcher.add_field(1, fid_t.fid_data);
+    ghost_access_launcher.add_field(1, fid_t.fid_cell);
 
-    int req_index = 2;
+    LogicalRegion lregion_ghost = runtime->get_logical_subregion_by_color(context,
+    		cells_ghost_lp,color);
+    ghost_access_launcher.add_region_requirement(
+    		RegionRequirement(lregion_ghost,
+    				READ_ONLY, EXCLUSIVE, ghost_lr).add_field(fid_t.fid_cell));
+
+    int req_index = 3;
     for (std::set<int>::iterator master=master_colors[color].begin();
     		master!=master_colors[color].end(); ++master) {
       LogicalRegion lregion_ghost = runtime->get_logical_subregion_by_color(context,
@@ -579,6 +622,14 @@ driver(
   for (unsigned idx = 0; idx < phase_barriers.size(); idx++)
     runtime->destroy_phase_barrier(context, phase_barriers[idx]);
   phase_barriers.clear();
+
+  TaskLauncher write_launcher(task_ids_t::instance().lax_write_task_id,
+  		TaskArgument(nullptr, 0));
+  write_launcher.add_region_requirement(
+		  RegionRequirement(cells_lr, READ_ONLY, EXCLUSIVE, cells_lr)
+		  .add_field(fid_t.fid_data).add_field(fid_t.fid_cell));
+  Future future = runtime->execute_task(context, write_launcher);
+  future.get_void_result();
 
   //TOFIX: free all lr physical regions is
   runtime->destroy_logical_region(context, vertices_lr);
