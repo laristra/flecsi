@@ -79,6 +79,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
     mpilegion/runtime_driver.h
     task_ids.h
     mpilegion/init_partitions_task.h 
+    mpilegion/lax_wendroff_task.h 
   )
 
   set(execution_SOURCES
@@ -187,6 +188,23 @@ if(NOT DEFINED ENV{TRAVIS})
           test/simple2d-16x16.msh
         DEFINES SPRINT_TEST
           FLECSI_DRIVER=flecsi/execution/test/sprint.h
+          TEST_INIT=flecsi/execution/test/task_init.h
+        LIBRARIES ${PARTITION_LIBRARIES}
+        POLICY MPILEGION_DEVEL
+        THREADS 2
+      )
+      cinch_add_unit(mpilegion_lax_wendroff
+        SOURCES
+          test/sprint_devel.cc
+          test/lax_wendroff.h
+          mpilegion/runtime_driver.cc
+          mpilegion/lax_wendroff_task.cc
+          mpilegion/init_partitions_task.cc
+          legion/dpd.cc
+        INPUTS
+          test/simple2d-16x16.msh
+        DEFINES LAX_WENDROFF_TEST
+          FLECSI_DRIVER=flecsi/execution/test/lax_wendroff.h
           TEST_INIT=flecsi/execution/test/task_init.h
         LIBRARIES ${PARTITION_LIBRARIES}
         POLICY MPILEGION_DEVEL

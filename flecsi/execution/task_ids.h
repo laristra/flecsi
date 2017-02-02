@@ -69,6 +69,8 @@ class task_ids_t
   size_t halo_copy_task_id = unique_task_id_t::instance().next();
   size_t init_raw_conn_task_id = unique_task_id_t::instance().next();
   size_t dpd_init_connectivity_task_id = unique_task_id_t::instance().next();
+  size_t lax_wendroff_task_id = unique_task_id_t::instance().next();
+  size_t lax_halo_task_id = unique_task_id_t::instance().next();
 };//task_ids_t
 
 class field_ids_t

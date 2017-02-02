@@ -36,6 +36,7 @@
 #include "flecsi/execution/mpilegion/legion_handshake.h"
 #include "flecsi/execution/mpilegion/mpi_legion_interop.h"
 #include "flecsi/execution/mpilegion/init_partitions_task.h"
+#include "flecsi/execution/mpilegion/lax_wendroff_task.h"
 #include "flecsi/execution/legion/dpd.h"
 
 namespace flecsi {
@@ -163,6 +164,14 @@ struct mpilegion_context_policy_t
     lr_runtime_t::register_legion_task<
       flecsi::execution::sprint::halo_copy_task>(
       task_ids_t::instance().halo_copy_task_id,lr_loc, true, false);
+
+    lr_runtime_t::register_legion_task<
+      flecsi::execution::lax_wendroff::lax_wendroff_task>(
+      task_ids_t::instance().lax_wendroff_task_id,lr_loc, false, true);
+
+    lr_runtime_t::register_legion_task<
+      flecsi::execution::lax_wendroff::lax_halo_task>(
+      task_ids_t::instance().lax_halo_task_id,lr_loc, true, false);
 
     // register handoff_to_mpi_task from mpi_legion_interop_t class
     lr_runtime_t::register_legion_task<handoff_to_mpi_task>(
