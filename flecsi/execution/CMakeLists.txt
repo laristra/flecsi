@@ -85,6 +85,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
   set(execution_SOURCES
     legion/dpd.cc
     mpilegion/init_partitions_task.cc
+    mpilegion/lax_wendroff_task.cc
   )
 
   set(UNIT_POLICY MPILEGION)
@@ -180,10 +181,8 @@ if(NOT DEFINED ENV{TRAVIS})
       cinch_add_unit(mpilegion_sprint
         SOURCES
           test/sprint_devel.cc
-          test/sprint.h
           mpilegion/runtime_driver.cc
-          mpilegion/init_partitions_task.cc
-          legion/dpd.cc
+          ${execution_SOURCES}
         INPUTS
           test/simple2d-16x16.msh
         DEFINES SPRINT_TEST
@@ -196,11 +195,8 @@ if(NOT DEFINED ENV{TRAVIS})
       cinch_add_unit(mpilegion_lax_wendroff
         SOURCES
           test/sprint_devel.cc
-          test/lax_wendroff.h
           mpilegion/runtime_driver.cc
-          mpilegion/lax_wendroff_task.cc
-          mpilegion/init_partitions_task.cc
-          legion/dpd.cc
+          ${execution_SOURCES}
         INPUTS
           test/simple2d-16x16.msh
         DEFINES LAX_WENDROFF_TEST
