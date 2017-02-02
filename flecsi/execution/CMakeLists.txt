@@ -178,7 +178,7 @@ if(NOT DEFINED ENV{TRAVIS})
     if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
       cinch_add_unit(mpilegion_sprint
         SOURCES
-          test/task.cc
+          test/sprint_devel.cc
           test/sprint.h
           mpilegion/runtime_driver.cc
           mpilegion/init_partitions_task.cc
@@ -189,7 +189,7 @@ if(NOT DEFINED ENV{TRAVIS})
           FLECSI_DRIVER=flecsi/execution/test/sprint.h
           TEST_INIT=flecsi/execution/test/task_init.h
         LIBRARIES ${PARTITION_LIBRARIES}
-        POLICY MPILEGION
+        POLICY MPILEGION_DEVEL
         THREADS 2
       )
     endif()
