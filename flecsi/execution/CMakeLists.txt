@@ -184,7 +184,7 @@ if(NOT DEFINED ENV{TRAVIS})
           mpilegion/init_partitions_task.cc
           legion/dpd.cc
         INPUTS
-          test/simple2d-8x8.msh
+          test/simple2d-16x16.msh
         DEFINES SPRINT_TEST
           FLECSI_DRIVER=flecsi/execution/test/sprint.h
           TEST_INIT=flecsi/execution/test/task_init.h

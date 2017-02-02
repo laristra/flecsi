@@ -29,7 +29,7 @@ using namespace LegionRuntime::Arrays;
 namespace flecsi {
 namespace execution {
 
-static const size_t N = 8;
+static const size_t N = 16;
 
 using index_partition_t = dmp::index_partition__<size_t>;
 
@@ -45,7 +45,7 @@ mpi_task(
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   std::cout << "My rank: " << rank << std::endl;
 
-  flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
+  flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
   flecsi::dmp::weaver weaver(sd);
 
   using entry_info_t = flecsi::dmp::entry_info_t;
