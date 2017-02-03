@@ -72,8 +72,8 @@ set(data_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-cinch_add_unit(data
-  SOURCES test/data.cc
+cinch_add_unit(old_data
+  SOURCES test/old_data.cc
 )
 
 cinch_add_unit(data_client
