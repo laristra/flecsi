@@ -19,7 +19,7 @@ set(data_HEADERS
 	data.h
 	data_handle.h
 	default_user_meta_data.h
-	old_data.h
+		old/old_data.h
 	old/default_meta_data.h
 	old/default_storage_policy.h
 	permissions.h
