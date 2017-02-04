@@ -166,12 +166,12 @@ if(NOT DEFINED ENV{TRAVIS})
 
   # FIXME: Need to talk about this with Irina and Galen.
     cinch_add_unit(test_legion_handshake
-      SOURCES test/test_legion_handshake.cc
+      SOURCES test/mpilegion/test_legion_handshake.cc
       POLICY MPILEGION
     )
 
     cinch_add_unit(test_mpilegion_interop
-      SOURCES test/test_mpi_legion_interop.cc
+      SOURCES test/mpilegion/test_mpi_legion_interop.cc
       POLICY MPILEGION
     )
 
@@ -179,12 +179,12 @@ if(NOT DEFINED ENV{TRAVIS})
       cinch_add_unit(mpilegion_sprint
         SOURCES
           test/task.cc
-          test/sprint.h
+              test/mpilegion/sprint.h
           mpilegion/runtime_driver.cc
           mpilegion/init_partitions_task.cc
           legion/dpd.cc
         INPUTS
-          test/simple2d-8x8.msh
+              test/mpilegion/simple2d-8x8.msh
         DEFINES SPRINT_TEST
           FLECSI_DRIVER=flecsi/execution/test/sprint.h
           TEST_INIT=flecsi/execution/test/task_init.h
