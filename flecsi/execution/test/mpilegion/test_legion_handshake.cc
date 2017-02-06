@@ -11,7 +11,7 @@
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
-#include "flecsi/execution/test/handshake_init.h"
+#include "flecsi/execution/test/mpilegion/handshake_init.h"
 
 using namespace flecsi::execution;
 

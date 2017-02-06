@@ -19,7 +19,7 @@ set(data_HEADERS
 	data.h
 	data_handle.h
 	default_user_meta_data.h
-	old_data.h
+		old/old_data.h
 	old/default_meta_data.h
 	old/default_storage_policy.h
 	permissions.h
@@ -72,8 +72,8 @@ set(data_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-cinch_add_unit(data
-  SOURCES test/data.cc
+cinch_add_unit(old_data
+  SOURCES test/old_data.cc
 )
 
 cinch_add_unit(data_client

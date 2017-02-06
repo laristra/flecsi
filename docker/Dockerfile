@@ -47,6 +47,9 @@ RUN ccache -s
 RUN ctest --verbose
 RUN make install DESTDIR=${PWD}
 RUN make doxygen
+RUN if [ ${COVERAGE} ]; then \
+      doxy-coverage --threshold 21 doc/doxygen/xml/; \
+    fi
 RUN cd .. && if [ ${COVERAGE} ]; then \
   if [ ${CC} = clang ]; then \
     $HOME/.local/bin/codecov --gcov-exec "llvm-cov gcov"; \
