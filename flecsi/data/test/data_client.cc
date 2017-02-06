@@ -60,6 +60,8 @@ TEST(data_client, destructor) {
   // store the runtime id
   auto rid = dc->runtime_id();
 
+  ASSERT_EQ( flecsi::data::storage_t::instance().count(rid), 2);
+
   // delete the data_client
   delete dc;
 
