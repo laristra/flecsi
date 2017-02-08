@@ -169,9 +169,9 @@ message(STATUS "${CINCH_Yellow}Set id_t bits to allow:\n"
 #------------------------------------------------------------------------------#
 
 find_package(EXODUSII)
-option(ENABLE_IO "Enable I/O (uses libexodus)" ${EXODUSII_FOUND})
+option(ENABLE_EXODUS "Enable I/O (uses libexodus)" ${EXODUSII_FOUND})
 
-if(ENABLE_IO)
+if(ENABLE_EXODUS)
 
   if(EXODUSII_FOUND)
     set(IO_LIBRARIES ${EXODUSII_LIBRARIES})
@@ -181,7 +181,7 @@ if(ENABLE_IO)
       "or system to enable I/O")
   endif()
 
-endif(ENABLE_IO)
+endif(ENABLE_EXODUS)
 
 #------------------------------------------------------------------------------#
 # Enable partitioning with METIS
