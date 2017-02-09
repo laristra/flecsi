@@ -180,7 +180,7 @@
 #define get_handle(client, nspace, name, data_type, storage_type,              \
   version, privileges)                                                         \
   flecsi::data::storage_t::instance().get_handle<flecsi::data::storage_type,   \
-    data_type, privileges,                                                     \
+    data_type, size_t(flecsi::data::privilege::privileges),                                                     \
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>(       \
       client, EXPAND_AND_STRINGIFY(name), version)
 

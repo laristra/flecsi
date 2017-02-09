@@ -17,6 +17,13 @@
 namespace flecsi {
 namespace data {
 
+enum class privilege : size_t {
+  none = 0b00,
+  ro =   0b01,
+  wd =   0b10,
+  rw =   0b11
+};
+
 ///
 /// \class storage__ storage.h
 /// \brief storage__ provides an interface for data registration and access.
@@ -300,9 +307,10 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   ///
   /// \brief get a handle to registered data.
   ///
-  /// \tparam ST
-  /// \tparam T
-  /// \tparam NS
+  /// \tparam ST storage type
+  /// \tparam T data type
+  /// \tparam NS namespace
+  /// \tparam PS privileges
   ///
   /// \param[in] runtime_namespace
   /// \param[in] key
@@ -311,7 +319,8 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   template<
     size_t ST,
     typename T,
-    size_t NS
+    size_t NS,
+    size_t PS
   >
   decltype(auto)
   get_handle(
@@ -320,7 +329,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     size_t version=0
   )
   {
-    return st_t<ST>::template get_handle<T, NS>(data_client,
+    return st_t<ST>::template get_handle<T, NS, PS>(data_client,
       sp_t::data_store_, key, version);
   } // get_accessor
 

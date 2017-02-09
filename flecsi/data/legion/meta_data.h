@@ -41,6 +41,15 @@ struct legion_meta_data_t
 
   using user_meta_data_t = T;
 
+  user_meta_data_t user_data;
+
+  size_t index_space;
+  size_t size;
+  size_t type_size;
+  size_t versions;
+
+  std::unordered_map<size_t, std::vector<uint8_t>> data;
+
 }; // struct legion_meta_data_t
 
 } // namespace data

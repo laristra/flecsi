@@ -380,8 +380,8 @@ private:
 // Dense handle.
 //----------------------------------------------------------------------------//
 
-template<typename T>
-struct dense_handle_t : public data_handle_t
+template<typename T, size_t PS>
+struct dense_handle_t : public data_handle__<T, PS>
 {
   using type = T;
 }; // struct dense_handle_t
@@ -410,8 +410,8 @@ struct storage_type_t<dense, DS, MD>
   template<typename T>
   using accessor_t = dense_accessor_t<T, MD>;
 
-  template<typename T>
-  using handle_t = dense_handle_t<T>;
+  template<typename T, size_t PS>
+  using handle_t = dense_handle_t<T, PS>;
 
   //--------------------------------------------------------------------------//
   // Data registration.
@@ -435,7 +435,7 @@ struct storage_type_t<dense, DS, MD>
     typename ... Args
   >
   static
-  handle_t<T>
+  handle_t<T, 0>
   register_data(
     const data_client_t & data_client,
     data_store_t & data_store,
@@ -872,10 +872,11 @@ struct storage_type_t<dense, DS, MD>
   ///
   template<
     typename T,
-    size_t NS
+    size_t NS,
+    size_t PS
   >
   static
-  handle_t<T>
+  handle_t<T, PS>
   get_handle(
     const data_client_t & data_client,
     data_store_t & data_store,

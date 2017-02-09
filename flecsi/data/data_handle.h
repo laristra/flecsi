@@ -18,10 +18,19 @@ namespace flecsi {
 /// \brief data_handle_t provides an empty type for compile-time identification
 ///                      of data handle objects.
 ///
-struct data_handle_t
+struct data_handle_base
 {
-  virtual ~data_handle_t() {};
+
 }; // struct data_handle_t
+
+template<
+  typename T,
+  size_t PS
+>
+struct data_handle__ : public data_handle_base
+{
+  
+};
 
 } // namespace flecsi
 
