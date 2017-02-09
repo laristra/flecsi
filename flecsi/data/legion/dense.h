@@ -66,7 +66,7 @@ struct dense_accessor_t
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using iterator_t = utils:index_space_t::iterator_t;
+  using iterator_t = utils::index_space_t::iterator_t;
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
@@ -79,7 +79,7 @@ struct dense_accessor_t
   ///
   // Constructor.
   //
-  // \param label The c_str() version of the utils:const_string_t used for
+  // \param label The c_str() version of the utils::const_string_t used for
   //              this data variable's hash.
   // \param size The size of the associated index space.
   // \param data A pointer to the raw data.
@@ -121,6 +121,15 @@ struct dense_accessor_t
     return size_;
   } // size
 
+  ///
+  ///
+  ///
+  size_t
+  index_space() const
+  {
+
+  } // index_space
+
 	///
   // \brief Return the user meta data for this data variable.
 	///
@@ -129,6 +138,19 @@ struct dense_accessor_t
   {
     return meta_data_;
   } // meta_data
+
+  ///
+  ///
+  ///
+  bitset_t &
+  attributes()
+  {
+  } // attributes
+
+  const bitset_t &
+  attributes() const
+  {
+  } // attributes
 
   //--------------------------------------------------------------------------//
   // Iterator interface.
@@ -238,7 +260,7 @@ private:
   size_t size_ = 0;
   T * data_ = nullptr;
   const user_meta_data_t & meta_data_ = {};
-  utils:index_space_t is_;
+  utils::index_space_t is_;
 
 }; // struct dense_accessor_t
 
@@ -305,18 +327,19 @@ struct storage_type_t<dense, DS, MD>
   register_data(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const utils:const_string_t & key,
+    const utils::const_string_t & key,
     size_t versions,
     size_t index_space,
     Args && ... args
   )
   {
+    /*
     size_t h = key.hash() ^ data_client.runtime_id();
     
     // Runtime assertion that this key is unique
     assert(data_store[NS].find(h) == data_store[NS].end() &&
-      "key already exists")
-
+      "key already exists");
+*/
     return {};
   } // register_data
 
@@ -336,7 +359,7 @@ struct storage_type_t<dense, DS, MD>
   get_accessor(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const utils:const_string_t & key,
+    const utils::const_string_t & key,
     size_t version
   )
   {
@@ -349,17 +372,68 @@ struct storage_type_t<dense, DS, MD>
   template<
     typename T,
     size_t NS,
-    typename P
+    typename Predicate
   >
   static
   std::vector<accessor_t<T>>
   get_accessors(
     const data_client_t & data_client,
-    P && preficate
+    data_store_t & data_store,
+    size_t version,
+    Predicate && predicate,
+    bool sorted
   )
   {
-    return {};
-  } // get_accessors
+
+  }
+
+  template<
+    typename T,
+    typename Predicate
+  >
+  static
+  std::vector<accessor_t<T>>
+  get_accessors(
+    const data_client_t & data_client,
+    data_store_t & data_store,
+    size_t version,
+    Predicate && predicate,
+    bool sorted
+  )
+  {
+
+  }
+
+  template<
+    typename T,
+    size_t NS
+  >
+  static
+  std::vector<accessor_t<T>>
+  get_accessors(
+    const data_client_t & data_client,
+    data_store_t & data_store,
+    size_t version,
+    bool sorted
+  )
+  {
+
+  }
+
+  template<
+    typename T
+  >
+  static
+  std::vector<accessor_t<T>>
+  get_accessors(
+    const data_client_t & data_client,
+    data_store_t & data_store,
+    size_t version,
+    bool sorted
+  )
+  {
+
+  }
 
   //--------------------------------------------------------------------------//
   // Data handles.
@@ -378,7 +452,7 @@ struct storage_type_t<dense, DS, MD>
   get_handle(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const utils:const_string_t & key,
+    const utils::const_string_t & key,
     size_t version
   )
   {

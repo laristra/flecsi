@@ -252,7 +252,7 @@ struct storage_type_t<sparse, DS, MD> {
   register_data(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const utils:const_string_t & key,
+    const utils::const_string_t & key,
     size_t versions,
     size_t indices,
     size_t num_entries,
@@ -274,7 +274,7 @@ struct storage_type_t<sparse, DS, MD> {
   get_accessor(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const utils:const_string_t & key,
+    const utils::const_string_t & key,
     size_t version
   )
   {
@@ -293,7 +293,7 @@ struct storage_type_t<sparse, DS, MD> {
   get_mutator(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const utils:const_string_t & key,
+    const utils::const_string_t & key,
     size_t slots,
     size_t version
   )
@@ -313,7 +313,7 @@ struct storage_type_t<sparse, DS, MD> {
   get_handle(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const utils:const_string_t & key,
+    const utils::const_string_t & key,
     size_t version
   )
   {

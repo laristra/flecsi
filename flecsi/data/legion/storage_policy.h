@@ -74,6 +74,18 @@ struct legion_storage_policy_t {
   {
   } // reset
 
+  void move( uintptr_t from, uintptr_t to ) {
+    assert(false && "unimplemented");
+  }
+
+  size_t
+  count(
+    uintptr_t runtime_namespace
+  )
+  {
+
+  }
+
 protected:
 
   // Storage container instance
