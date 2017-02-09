@@ -29,7 +29,7 @@ using namespace LegionRuntime::Accessor;
 using namespace LegionRuntime::Arrays;
 
 template<typename T>
-using accessor_t = flecsi::data::serial::dense_accessor_t<T, flecsi::data::serial_meta_data_t<flecsi::default_user_meta_data_t> >;
+using accessor_t = flecsi::data::legion::dense_accessor_t<T, flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t> >;
 
 namespace flecsi {
 namespace execution {

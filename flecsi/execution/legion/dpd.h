@@ -112,8 +112,9 @@ public:
 
   template<class T>
   void create_data(partitioned_unstructured& indices,
-                   size_t start_reserve){
-    create_data_(indices, start_reserve, sizeof(T));
+                   size_t start_reserve,
+                   size_t start_size = 0){
+    create_data_(indices, start_reserve, start_size, sizeof(T));
   }
 
   template<class T>
@@ -125,6 +126,7 @@ public:
 
   void create_data_(partitioned_unstructured& indices,
                     size_t start_reserve,
+                    size_t start_size,
                     size_t value_size);
 
   void create_connectivity(size_t from_dim,

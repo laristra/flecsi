@@ -28,6 +28,11 @@
 #include "flecsi/data/data_handle.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/index_space.h"
+#include "flecsi/execution/context.h"
+
+#define np(X)                                                            \
+ std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
+           << ": " << #X << " = " << (X) << std::endl
 
 ///
 // \file legion/dense.h
@@ -244,6 +249,21 @@ struct dense_accessor_t
     return data_[index];
   } // operator []
 
+  ///
+  /// \brief Provide logical array-based access to the data for this
+  ///        data variable.  This is the const operator version.
+  ///
+  /// \param index The index of the data variable to return.
+  ///
+  T &
+  operator () (
+    size_t index
+  )
+  {
+    assert(index < size_ && "index out of range");
+    return data_[index];
+  } // operator []
+
 	///
   // \brief Test to see if this accessor is empty
   //
@@ -333,13 +353,92 @@ struct storage_type_t<dense, DS, MD>
     Args && ... args
   )
   {
-    /*
+
     size_t h = key.hash() ^ data_client.runtime_id();
     
     // Runtime assertion that this key is unique
     assert(data_store[NS].find(h) == data_store[NS].end() &&
       "key already exists");
-*/
+
+    //------------------------------------------------------------------------//
+    // Call the user meta data initialization method passing variadic
+    // user arguments
+    //------------------------------------------------------------------------//
+
+    data_store[NS][h].user_data.initialize(std::forward<Args>(args) ...);
+
+    //------------------------------------------------------------------------//
+    // Set the data label
+    //------------------------------------------------------------------------//
+    
+    data_store[NS][h].label = key.c_str();
+
+    //------------------------------------------------------------------------//
+    // Set the data size by calling the data clients indeces method.
+    // This allows the user to interpret the index space argument
+    // in whatever way they want.
+    //------------------------------------------------------------------------//
+    
+    size_t size = data_client.indices(index_space);
+
+    data_store[NS][h].size = size;
+
+    //------------------------------------------------------------------------//
+    // Store the index space.
+    //------------------------------------------------------------------------//
+
+    data_store[NS][h].index_space = index_space;
+
+    //------------------------------------------------------------------------//
+    // Store the data type size information.
+    //------------------------------------------------------------------------//
+
+    data_store[NS][h].type_size = sizeof(T);
+
+    //------------------------------------------------------------------------//
+    // This allows us to set the runtime-type-information, which requires
+    // a const reference.
+    //------------------------------------------------------------------------//
+
+    data_store[NS][h].rtti.reset(
+      new typename meta_data_t::type_info_t(typeid(T)));
+
+    //------------------------------------------------------------------------//
+    // Store the number of versions.
+    //------------------------------------------------------------------------//
+
+    data_store[NS][h].versions = versions;
+
+    //------------------------------------------------------------------------//
+    // Allocate data for each version.
+    //------------------------------------------------------------------------//
+
+    flecsi::execution::context_t & context =
+      flecsi::execution::context_t::instance();
+
+    size_t task_key = utils::const_string_t{"driver"}.hash();
+    auto runtime = context.runtime(task_key);
+    auto ctx = context.context(task_key);
+
+    for(size_t i=0; i<versions; ++i) {
+      data_store[NS][h].attributes[i].reset();
+      auto dpd = new execution::legion_dpd(ctx, runtime);
+
+      // ndm - set indices
+      execution::legion_dpd::partitioned_unstructured indices;
+
+      dpd->create_data<T>(indices, size, size);
+
+      data_store[NS][h].data[i] = dpd;
+
+    } // for
+
+    //------------------------------------------------------------------------//
+    // num_entries is unused for this storage type.
+    //------------------------------------------------------------------------//
+
+    data_store[NS][h].num_entries = 0;
+
     return {};
   } // register_data
 
