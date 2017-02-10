@@ -127,6 +127,25 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
 endif()
 
+if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
+
+  if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
+    cinch_add_unit(serial_data_handle
+      SOURCES
+        ../execution/test/task.cc
+        ../execution/test/task_driver.h
+        test/data-handle-serial.h
+        data_client.cc
+      DEFINES DATA_HANDLE_TEST
+        FLECSI_DRIVER=flecsi/data/test/data-handle-serial.h
+      LIBRARIES ${PARTITION_LIBRARIES}
+      POLICY SERIAL
+      THREADS 2
+    )
+  endif()
+
+endif()
+
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.
 # vim: set tabstop=2 shiftwidth=2 expandtab :
