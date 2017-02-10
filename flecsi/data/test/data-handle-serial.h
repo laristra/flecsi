@@ -24,18 +24,19 @@
 // \date Initial file creation: Jan 25, 2017
 ///
 
-using namespace LegionRuntime::HighLevel;
-using namespace LegionRuntime::Accessor;
-using namespace LegionRuntime::Arrays;
-
 template<typename T>
-using accessor_t = flecsi::data::legion::dense_accessor_t<T, flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t> >;
+using accessor_t = flecsi::data::serial::dense_accessor_t<T, flecsi::data::serial_meta_data_t<flecsi::default_user_meta_data_t> >;
 
 namespace flecsi {
 namespace execution {
   
 void task1(accessor_t<double> x) {
-  //std::cout << "Executing task1" << std::endl;
+  std::cout << "Executing task1" << std::endl;
+  
+  np(x[0]);
+  np(x[1]);
+
+  //np(x);
   //std::cout << "val = " << val << std::endl;
 } // task1
 
@@ -58,8 +59,6 @@ driver(
 
   context_t & context_ = context_t::instance();
   size_t task_key = utils::const_string_t{"driver"}.hash();
-  auto runtime = context_.runtime(task_key);
-  auto context = context_.context(task_key);
 
   data_client dc;
 

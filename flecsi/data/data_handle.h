@@ -25,11 +25,13 @@ struct data_handle_base
 
 template<
   typename T,
-  size_t PS
+  size_t PS,
+  typename MD,
+  typename ST
 >
 struct data_handle__ : public data_handle_base
 {
-  
+  MD metadata;
 };
 
 } // namespace flecsi
