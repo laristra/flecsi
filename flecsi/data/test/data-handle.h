@@ -33,13 +33,22 @@ using accessor_t = flecsi::data::legion::dense_accessor_t<T, flecsi::data::legio
 
 namespace flecsi {
 namespace execution {
-  
+
+/*  
 void task1(accessor_t<double> x) {
   //std::cout << "Executing task1" << std::endl;
   //std::cout << "val = " << val << std::endl;
 } // task1
+*/
 
-register_task(task1, loc, single);
+void task2(double x) {
+  //std::cout << "Executing task1" << std::endl;
+  //std::cout << "val = " << val << std::endl;
+} // task1
+
+//register_task(task1, loc, single);
+
+register_task(task2, loc, single);
 
 class data_client : public data::data_client_t{
 public:
@@ -81,7 +90,8 @@ driver(
   ac[0] = 100.0;
   ac[1] = 200.0;
 
-  EXECUTE_TASK(task1, loc, single, h1);
+  //EXECUTE_TASK(task1, loc, single, h1);
+  EXECUTE_TASK(task2, loc, single, 9);
 
 } // driver
 
