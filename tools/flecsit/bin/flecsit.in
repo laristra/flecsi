@@ -30,6 +30,9 @@ def main():
         # C++ compiler flags
         flags = '@CMAKE_CXX_FLAGS@',
 
+        # C++ debug compiler flags
+        debug_flags = '@CMAKE_CXX_FLAGS_DEBUG@',
+
         # Preprocessor defines
         defines = '@FLECSIT_COMPILE_DEFINES@',
 
