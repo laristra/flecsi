@@ -123,7 +123,7 @@ mpi_task(
 }
 
   
-register_task(mpi_task, mpi, single);
+flecsi_register_task(mpi_task, mpi, single);
 
 void
 driver(
@@ -144,7 +144,7 @@ driver(
   flecsi::execution::sprint::parts partitions;
   
   // first execute mpi task to setup initial partitions 
-  EXECUTE_TASK(mpi_task, mpi, single, 1.0);
+  flecsi_execute_task(mpi_task, mpi, single, 1.0);
   // create a field space to store cells id
 
   int num_ranks;

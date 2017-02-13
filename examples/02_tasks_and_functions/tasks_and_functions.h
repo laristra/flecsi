@@ -76,7 +76,7 @@ void task1(double dval, int ival) {
   std::cout << "Value(int): " << ival << std::endl;
 } // task1
 
-register_task(task1, loc, single);
+flecsi_register_task(task1, loc, single);
 
 double task2(double x, double y, dense_field_t<double> p) {
   std::cout << "Executing task2" << std::endl;
@@ -85,7 +85,7 @@ double task2(double x, double y, dense_field_t<double> p) {
 //  return x*y;
 } // task2
 
-register_task(task2, loc, single);
+flecsi_register_task(task2, loc, single);
 
 /*----------------------------------------------------------------------------*
  * Function registration.
