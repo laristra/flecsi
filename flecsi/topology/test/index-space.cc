@@ -59,14 +59,14 @@ TEST(index_space, index_space) {
   }
 
   size_t cnt = 0;
-  for_each(o, is, {
+  flecsi_for_each(o, is, {
     // std::cout << o->id << endl;
     ASSERT_EQ( o->index_space_id().index_space_index(), cnt++ );
   }); // foreach
 
 	double total_mass(0.0);
 
-	reduce_each(o, is, total_mass, {
+	flecsi_reduce_each(o, is, total_mass, {
    	total_mass += o->mass;
 	});
 

@@ -33,7 +33,7 @@
 // \param return_type The function return type.
 // \param ... The signature of the function (arguments).
 ///
-#define register_function(name)                                                \
+#define flecsi_register_function(name)                                         \
                                                                                \
   /* Function return type (trt) */                                             \
   using name ## _trt_t =                                                       \
@@ -68,21 +68,21 @@
 // \param handle The function handle.
 // \param ... The function arguments.
 ///
-#define execute_function(handle, ...)                                          \
+#define flecsi_execute_function(handle, ...)                                   \
   flecsi::execution::function_t::execute_function(handle, ## __VA_ARGS__)
 
 ///
 // FIXME
 ///
-#define function_handle(name)                                                  \
+#define flecsi_function_handle(name)                                           \
   function_handle_ ## name ## _t(                                              \
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash())
 
 ///
 // FIXME
 ///
-#define define_function_type(name, return_type, ...)                          \
-  using name = flecsi::execution::function_handle__<return_type,              \
+#define flecsi_define_function_type(name, return_type, ...)                    \
+  using name = flecsi::execution::function_handle__<return_type,               \
     std::tuple<__VA_ARGS__>>
 
 //----------------------------------------------------------------------------//
@@ -96,10 +96,10 @@
 // \param processor
 // \param launch
 ///
-#define register_task(task, processor, launch)                                 \
+#define flecsi_register_task(task, processor, launch)                          \
                                                                                \
   /* Register the user task in the function table */                           \
-  register_function(task);                                                     \
+  flecsi_register_function(task);                                              \
                                                                                \
   /* Register the user task with the execution policy */                       \
   bool task ## _task_registered =                                              \
@@ -115,7 +115,7 @@
 // \param launch The launch  mode for the task.
 // \param ... The arguments to pass to the user task during execution.
 ///
-#define EXECUTE_TASK(task, processor, launch, ...)                             \
+#define flecsi_execute_task(task, processor, launch, ...)                      \
                                                                                \
   /* Execute the user task */                                                  \
   /* WARNING: This macro returns a future. Don't add terminations! */          \
@@ -134,13 +134,13 @@
 ///
 //
 ///
-#define for_each(index, index_space, kernel)                                   \
+#define flecsi_for_each(index, index_space, kernel)                            \
   flecsi::execution::for_each__(index_space, [&](auto * index) kernel)
 
 ///
 //
 ///
-#define reduce_each(index, index_space, variable, kernel)                      \
+#define flecsi_reduce_each(index, index_space, variable, kernel)               \
   flecsi::execution::reduce_each__(index_space, variable,                      \
     [&](auto * index, auto & variable) kernel)
 

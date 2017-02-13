@@ -31,16 +31,16 @@ double test_function(double r, double e) {
   return r*e;
 } // function1
 
-register_function(test_function);
+flecsi_register_function(test_function);
 
 //----------------------------------------------------------------------------//
 // Driver.
 //----------------------------------------------------------------------------//
 
 void driver(int argc, char ** argv) {
-  auto handle = function_handle(test_function);
+  auto handle = flecsi_function_handle(test_function);
 
-  double result = execute_function(handle, 2.0, 10.0);
+  double result = flecsi_execute_function(handle, 2.0, 10.0);
 
   std::cout << "test_function returned: " << result << std::endl;
 } // driver
