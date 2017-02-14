@@ -26,6 +26,8 @@
 
 #include "flecsi/utils/const_string.h"
 #include "flecsi/data/data_client.h"
+#include "flecsi/data/data_handle.h"
+#include "flecsi/data/common/data_types.h"
 
 ///
 // \file legion/global.h
@@ -96,12 +98,31 @@ struct global_accessor_t {
     return data_ != nullptr;
   } // operator bool
 
+  const std::string &
+  label() const
+  {
+    return label_;
+  } // label
+
+  ///
+  ///
+  ///
+  bitset_t &
+  attributes()
+  {
+  } // attributes
+
+  const bitset_t &
+  attributes() const
+  {
+  } // attributes
+
 private:
 
   std::string label_ = "";
   T * data_ = nullptr;
   const user_meta_data_t & meta_data_ = {};
-
+  bitset_t * user_attributes_ = nullptr;
 }; // struct global_accessor_t
 
 //----------------------------------------------------------------------------//
@@ -160,7 +181,7 @@ struct storage_type_t<global, DS, MD> {
   register_data(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const utils:const_string_t & key,
+    const utils::const_string_t & key,
     size_t versions,
     Args && ... args
   )
@@ -184,7 +205,7 @@ struct storage_type_t<global, DS, MD> {
   get_accessor(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const utils:const_string_t & key,
+    const utils::const_string_t & key,
     size_t version
   )
   {
@@ -207,11 +228,77 @@ struct storage_type_t<global, DS, MD> {
   get_handle(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const utils:const_string_t & key
+    const utils::const_string_t & key
   )
   {
     return {};
   } // get_handle
+
+  template<
+    typename T,
+    size_t NS,
+    typename Predicate
+  >
+  static
+  std::vector<accessor_t<T>>
+  get_accessors(
+    const data_client_t & data_client,
+    data_store_t & data_store,
+    size_t version,
+    Predicate && predicate,
+    bool sorted
+  )
+  {
+
+  }
+
+  template<
+    typename T,
+    typename Predicate
+  >
+  static
+  std::vector<accessor_t<T>>
+  get_accessors(
+    const data_client_t & data_client,
+    data_store_t & data_store,
+    size_t version,
+    Predicate && predicate,
+    bool sorted
+  )
+  {
+
+  }
+
+  template<
+    typename T,
+    size_t NS
+  >
+  static
+  std::vector<accessor_t<T>>
+  get_accessors(
+    const data_client_t & data_client,
+    data_store_t & data_store,
+    size_t version,
+    bool sorted
+  )
+  {
+
+  }
+
+  template<
+    typename T
+  >
+  static
+  std::vector<accessor_t<T>>
+  get_accessors(
+    const data_client_t & data_client,
+    data_store_t & data_store,
+    size_t version,
+    bool sorted
+  )
+  {
+
+  }
 
 }; // struct storage_type_t
 

@@ -63,7 +63,7 @@ struct legion_task_wrapper__
     std::false_type>;
 
   template<typename T>
-  using is_data_handle = std::is_base_of<data_handle_t,T>;
+  using is_data_handle = std::is_base_of<data_handle_base,T>;
 
   ///
   // This function is called by the context singleton to do the actual
@@ -198,7 +198,7 @@ struct legion_task_wrapper__<P, S, I, void, A>
     std::false_type>;
 
   template<typename T>
-  using is_data_handle = std::is_base_of<data_handle_t,T>;
+  using is_data_handle = std::is_base_of<data_handle_base, T>;
 
   ///
   // This function is called by the context singleton to do the actual

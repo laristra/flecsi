@@ -64,7 +64,8 @@ struct mesh_t : public data::data_client_t {
 // FIXME: Need to try to hide this
 using namespace flecsi::data;
 template<typename T>
-using dense_field_t = storage_t::st_t<dense>::handle_t<double>;
+using dense_field_t = 
+  storage_t::st_t<dense>::handle_t<double, 0, storage_t::st_t<dense>>;
 
 //----------------------------------------------------------------------------//
 // Task registration.

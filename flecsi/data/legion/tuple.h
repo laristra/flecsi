@@ -58,7 +58,7 @@ namespace legion {
     register_data(
       data_store_t & data_store,
       uintptr_t runtime_namespace,
-      const utils:const_string_t & key,
+      const utils::const_string_t & key,
       size_t indices,
       Args && ... args
     )
@@ -77,7 +77,7 @@ namespace legion {
     get_accessor(
       data_store_t & data_store,
       uintptr_t runtime_namespace,
-      const utils:const_string_t & key
+      const utils::const_string_t & key
     )
     {
       return {};
@@ -95,7 +95,7 @@ namespace legion {
     get_handle(
       data_store_t & data_store,
       uintptr_t runtime_namespace,
-      const utils:const_string_t & key
+      const utils::const_string_t & key
     )
     {
       return {};

@@ -28,6 +28,11 @@
 #include "flecsi/data/data_handle.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/index_space.h"
+#include "flecsi/execution/context.h"
+
+#define np(X)                                                            \
+ std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
+           << ": " << #X << " = " << (X) << std::endl
 
 ///
 // \file legion/dense.h
@@ -42,6 +47,22 @@ namespace legion {
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Helper type definitions.
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
+
+  template<typename ST>
+  struct dense_handle_metadata_t{
+    using storage_type_t = ST;
+  };
+
+//----------------------------------------------------------------------------//
+// Dense handle.
+//----------------------------------------------------------------------------//
+
+template<typename T, size_t PS, typename ST>
+struct dense_handle_t :
+  public data_handle__<T, PS, dense_handle_metadata_t<ST>, ST>
+{
+  using type = T;
+}; // struct dense_handle_t
 
 //----------------------------------------------------------------------------//
 // Dense accessor.
@@ -66,7 +87,7 @@ struct dense_accessor_t
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using iterator_t = utils:index_space_t::iterator_t;
+  using iterator_t = utils::index_space_t::iterator_t;
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
@@ -79,7 +100,7 @@ struct dense_accessor_t
   ///
   // Constructor.
   //
-  // \param label The c_str() version of the utils:const_string_t used for
+  // \param label The c_str() version of the utils::const_string_t used for
   //              this data variable's hash.
   // \param size The size of the associated index space.
   // \param data A pointer to the raw data.
@@ -96,6 +117,11 @@ struct dense_accessor_t
 	dense_accessor_t(const dense_accessor_t & a)
 		: label_(a.label_), size_(a.size_), data_(a.data_),
 			meta_data_(a.meta_data_), is_(a.is_) {}
+
+  template<size_t PS, typename ST>
+  dense_accessor_t(dense_handle_t<T, PS, ST>& h){
+
+  }
 
   //--------------------------------------------------------------------------//
   // Member data interface.
@@ -121,6 +147,15 @@ struct dense_accessor_t
     return size_;
   } // size
 
+  ///
+  ///
+  ///
+  size_t
+  index_space() const
+  {
+
+  } // index_space
+
 	///
   // \brief Return the user meta data for this data variable.
 	///
@@ -129,6 +164,19 @@ struct dense_accessor_t
   {
     return meta_data_;
   } // meta_data
+
+  ///
+  ///
+  ///
+  bitset_t &
+  attributes()
+  {
+  } // attributes
+
+  const bitset_t &
+  attributes() const
+  {
+  } // attributes
 
   //--------------------------------------------------------------------------//
   // Iterator interface.
@@ -222,6 +270,21 @@ struct dense_accessor_t
     return data_[index];
   } // operator []
 
+  ///
+  /// \brief Provide logical array-based access to the data for this
+  ///        data variable.  This is the const operator version.
+  ///
+  /// \param index The index of the data variable to return.
+  ///
+  T &
+  operator () (
+    size_t index
+  )
+  {
+    assert(index < size_ && "index out of range");
+    return data_[index];
+  } // operator []
+
 	///
   // \brief Test to see if this accessor is empty
   //
@@ -238,19 +301,9 @@ private:
   size_t size_ = 0;
   T * data_ = nullptr;
   const user_meta_data_t & meta_data_ = {};
-  utils:index_space_t is_;
+  utils::index_space_t is_;
 
 }; // struct dense_accessor_t
-
-//----------------------------------------------------------------------------//
-// Dense handle.
-//----------------------------------------------------------------------------//
-
-template<typename T>
-struct dense_handle_t : public data_handle_t
-{
-  using type = T;
-}; // struct dense_handle_t
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Main type definition.
@@ -276,8 +329,10 @@ struct storage_type_t<dense, DS, MD>
   template<typename T>
   using accessor_t = dense_accessor_t<T, MD>;
 
-  template<typename T>
-  using handle_t = dense_handle_t<T>;
+  template<typename T, size_t PS, typename ST>
+  using handle_t = dense_handle_t<T, PS, ST>;
+
+  using st_t = storage_type_t<dense, DS, MD>;
 
   //--------------------------------------------------------------------------//
   // Data registration.
@@ -301,16 +356,102 @@ struct storage_type_t<dense, DS, MD>
     typename ... Args
   >
   static
-  handle_t<T>
+  handle_t<T, 0, st_t>
   register_data(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const utils:const_string_t & key,
+    const utils::const_string_t & key,
     size_t versions,
     size_t index_space,
     Args && ... args
   )
   {
+
+    size_t h = key.hash() ^ data_client.runtime_id();
+    
+    // Runtime assertion that this key is unique
+    assert(data_store[NS].find(h) == data_store[NS].end() &&
+      "key already exists");
+
+    //------------------------------------------------------------------------//
+    // Call the user meta data initialization method passing variadic
+    // user arguments
+    //------------------------------------------------------------------------//
+
+    data_store[NS][h].user_data.initialize(std::forward<Args>(args) ...);
+
+    //------------------------------------------------------------------------//
+    // Set the data label
+    //------------------------------------------------------------------------//
+    
+    data_store[NS][h].label = key.c_str();
+
+    //------------------------------------------------------------------------//
+    // Set the data size by calling the data clients indeces method.
+    // This allows the user to interpret the index space argument
+    // in whatever way they want.
+    //------------------------------------------------------------------------//
+    
+    size_t size = data_client.indices(index_space);
+
+    data_store[NS][h].size = size;
+
+    //------------------------------------------------------------------------//
+    // Store the index space.
+    //------------------------------------------------------------------------//
+
+    data_store[NS][h].index_space = index_space;
+
+    //------------------------------------------------------------------------//
+    // Store the data type size information.
+    //------------------------------------------------------------------------//
+
+    data_store[NS][h].type_size = sizeof(T);
+
+    //------------------------------------------------------------------------//
+    // This allows us to set the runtime-type-information, which requires
+    // a const reference.
+    //------------------------------------------------------------------------//
+
+    data_store[NS][h].rtti.reset(
+      new typename meta_data_t::type_info_t(typeid(T)));
+
+    //------------------------------------------------------------------------//
+    // Store the number of versions.
+    //------------------------------------------------------------------------//
+
+    data_store[NS][h].versions = versions;
+
+    //------------------------------------------------------------------------//
+    // Allocate data for each version.
+    //------------------------------------------------------------------------//
+
+    flecsi::execution::context_t & context =
+      flecsi::execution::context_t::instance();
+
+    size_t task_key = utils::const_string_t{"driver"}.hash();
+    auto runtime = context.runtime(task_key);
+    auto ctx = context.context(task_key);
+
+    for(size_t i=0; i<versions; ++i) {
+      data_store[NS][h].attributes[i].reset();
+      auto dpd = new execution::legion_dpd(ctx, runtime);
+
+      // ndm - set indices
+      execution::legion_dpd::partitioned_unstructured indices;
+
+      dpd->create_data<T>(indices, size, size);
+
+      data_store[NS][h].data[i] = dpd;
+
+    } // for
+
+    //------------------------------------------------------------------------//
+    // num_entries is unused for this storage type.
+    //------------------------------------------------------------------------//
+
+    data_store[NS][h].num_entries = 0;
+
     return {};
   } // register_data
 
@@ -330,7 +471,7 @@ struct storage_type_t<dense, DS, MD>
   get_accessor(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const utils:const_string_t & key,
+    const utils::const_string_t & key,
     size_t version
   )
   {
@@ -343,17 +484,68 @@ struct storage_type_t<dense, DS, MD>
   template<
     typename T,
     size_t NS,
-    typename P
+    typename Predicate
   >
   static
   std::vector<accessor_t<T>>
   get_accessors(
     const data_client_t & data_client,
-    P && preficate
+    data_store_t & data_store,
+    size_t version,
+    Predicate && predicate,
+    bool sorted
   )
   {
-    return {};
-  } // get_accessors
+
+  }
+
+  template<
+    typename T,
+    typename Predicate
+  >
+  static
+  std::vector<accessor_t<T>>
+  get_accessors(
+    const data_client_t & data_client,
+    data_store_t & data_store,
+    size_t version,
+    Predicate && predicate,
+    bool sorted
+  )
+  {
+
+  }
+
+  template<
+    typename T,
+    size_t NS
+  >
+  static
+  std::vector<accessor_t<T>>
+  get_accessors(
+    const data_client_t & data_client,
+    data_store_t & data_store,
+    size_t version,
+    bool sorted
+  )
+  {
+
+  }
+
+  template<
+    typename T
+  >
+  static
+  std::vector<accessor_t<T>>
+  get_accessors(
+    const data_client_t & data_client,
+    data_store_t & data_store,
+    size_t version,
+    bool sorted
+  )
+  {
+
+  }
 
   //--------------------------------------------------------------------------//
   // Data handles.
@@ -364,14 +556,15 @@ struct storage_type_t<dense, DS, MD>
   ///
   template<
     typename T,
-    size_t NS
+    size_t NS,
+    size_t PS
   >
   static
-  handle_t<T>
+  handle_t<T, PS, st_t>
   get_handle(
     const data_client_t & data_client,
     data_store_t & data_store,
-    const utils:const_string_t & key,
+    const utils::const_string_t & key,
     size_t version
   )
   {

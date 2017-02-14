@@ -57,6 +57,19 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/tuple.h
   )
 
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+
+  set(data_HEADERS
+    ${data_HEADERS}
+    legion/dense.h
+    legion/global.h
+    legion/meta_data.h
+    legion/scoped.h
+    legion/sparse.h
+    legion/storage_policy.h
+    legion/tuple.h
+  )
+
 endif()
 
 set(data_HEADERS
@@ -89,6 +102,51 @@ cinch_add_unit(storage_type
     flecsi
     ${CINCH_RUNTIME_LIBRARIES}
 )
+
+# if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+
+#   if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
+#     cinch_add_unit(mpilegion_data_handle
+#       SOURCES
+#         ../execution/test/task.cc
+#         ../execution/test/task_driver.h
+#         test/data-handle.h
+#         ../execution/mpilegion/runtime_driver.cc
+#         ../execution/mpilegion/init_partitions_task.cc
+#         data_client.cc
+#         ../execution/legion/dpd.cc
+#         ../execution/mpilegion/lax_wendroff_task.cc
+#       DEFINES DATA_HANDLE_TEST
+#         FLECSI_DRIVER=flecsi/data/test/data-handle.h
+#         TEST_INIT=flecsi/execution/test/task_init.h
+#       LIBRARIES ${PARTITION_LIBRARIES}
+#       POLICY MPILEGION
+#       THREADS 2
+#     )
+#   endif()
+
+# endif()
+
+# if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
+
+#   if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
+#     cinch_add_unit(serial_data_handle
+#       SOURCES
+#         ../execution/test/task.cc
+#         ../execution/test/task_driver.h
+#         ../execution/serial/runtime_driver.cc
+#         test/data-handle-serial.h
+#         data_client.cc
+#       DEFINES DATA_HANDLE_TEST
+#         FLECSI_DRIVER=flecsi/data/test/data-handle-serial.h
+#         TEST_INIT=flecsi/execution/test/task_init.h
+#       LIBRARIES ${PARTITION_LIBRARIES}
+#       POLICY SERIAL
+#       THREADS 2
+#     )
+#   endif()
+
+# endif()
 
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.

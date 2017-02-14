@@ -47,8 +47,9 @@ struct legion_storage_policy_t {
   using meta_data_t = legion_meta_data_t<user_meta_data_t>;
 
   // Define the data store type
-  // FIXME: THIS NEEDS TO BE IMPLEMENTED!!!
-  using data_store_t = size_t;
+  // This will likely be much more complicated in a real policy
+  using data_store_t = std::unordered_map<size_t,
+    std::unordered_map<utils::const_string_t::hash_type_t, meta_data_t>>;
 
   // Define the storage type
   template<size_t data_type_t>
@@ -73,6 +74,18 @@ struct legion_storage_policy_t {
   )
   {
   } // reset
+
+  void move( uintptr_t from, uintptr_t to ) {
+    assert(false && "unimplemented");
+  }
+
+  size_t
+  count(
+    uintptr_t runtime_namespace
+  )
+  {
+
+  }
 
 protected:
 
