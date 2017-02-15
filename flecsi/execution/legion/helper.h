@@ -27,6 +27,9 @@
 namespace flecsi {
 namespace execution {
 
+  ///
+  /// FIXME documentation
+  ///
   class legion_helper{
   public:
     legion_helper(Legion::Runtime* runtime, Legion::Context context)

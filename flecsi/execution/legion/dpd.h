@@ -34,6 +34,9 @@
 namespace flecsi {
 namespace execution {
 
+///
+/// FIXME documentation
+///
 class legion_dpd{
 public:
   enum task_ids{

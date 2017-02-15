@@ -267,7 +267,7 @@ struct legion_future__
   } // wait
 
   ///
-  //
+  // get operator
   ///
   result_t
   get(

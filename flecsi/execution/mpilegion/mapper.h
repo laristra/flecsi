@@ -36,7 +36,7 @@ namespace flecsi {
 namespace execution {
 
 ///
-// STLComparator struct compare two Points with dimension=DIM
+/// STLComparator struct compare two Points with dimension=DIM
 ///
 template <
 unsigned DIM
@@ -57,7 +57,7 @@ STLComparator
 };
 
 ///
-// Custom mapper that handles mpi-legion interoperability in FLeCSI
+/// Custom mapper that handles mpi-legion interoperability in FLeCSI
 ///
 class
 MPIMapper : public Legion::Mapping::DefaultMapper 
@@ -65,7 +65,7 @@ MPIMapper : public Legion::Mapping::DefaultMapper
   public:
 
   ///
-  // Contructor. Currently supports only LOC_PROC and TOC_PROC
+  /// Contructor. Currently supports only LOC_PROC and TOC_PROC
 	///
   MPIMapper(
   	LegionRuntime::HighLevel::Machine machine,
@@ -115,20 +115,20 @@ MPIMapper : public Legion::Mapping::DefaultMapper
   }// end MPIMapper
 
   ///
-  // Destructor
+  /// Destructor
   ///
   virtual ~MPIMapper(){};
 
   ///
-  //  The slice_task call is used by the runtime
-  //  to query the mapper about the best way to distribute
-  //  the points in an index space task launch throughout
-  //  the machine.
-  //  To ensure that legion tasks are executed in the same memory space
-  //  as MPI tasks, one need to specify tag = MAPPER_FORCE_RANK_MATCH
-  //  for the index launch int the code.
-  //  By default, slice-task will perform the didtribution the same way 
-  //  it is done in the DefaultMapper. 
+  ///  The slice_task call is used by the runtime
+  ///  to query the mapper about the best way to distribute
+  ///  the points in an index space task launch throughout
+  ///  the machine.
+  ///  To ensure that legion tasks are executed in the same memory space
+  ///  as MPI tasks, one need to specify tag = MAPPER_FORCE_RANK_MATCH
+  ///  for the index launch int the code.
+  ///  By default, slice-task will perform the didtribution the same way 
+  ///  it is done in the DefaultMapper. 
   ///
   virtual
   void
@@ -275,8 +275,8 @@ MPIMapper : public Legion::Mapping::DefaultMapper
 };
 
 ///
-// mapper_registration is used to replace DefaultMapper with MPIMapper in
-// FLeCSI
+/// mapper_registration is used to replace DefaultMapper with MPIMapper in
+/// FLeCSI
 ///
 inline
 void

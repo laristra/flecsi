@@ -25,11 +25,11 @@
 #include "flecsi/execution/mpilegion/context_policy.h"
 #include "flecsi/execution/legion/task_wrapper.h"
 
-/*!
- * \file mpilegion/execution_policy.h
- * \authors bergen, demeshko
- * \date Initial file creation: Nov 15, 2015
- */
+///
+/// \file mpilegion/execution_policy.h
+/// \authors bergen, demeshko
+/// \date Initial file creation: Nov 15, 2015
+///
 
 namespace flecsi {
 namespace execution {
@@ -39,8 +39,8 @@ namespace execution {
 //----------------------------------------------------------------------------//
 
 ///
-// \struct mpilegion_execution_policy mpilegion/execution_policy.h
-// \brief mpilegion_execution_policy provides...
+/// \struct mpilegion_execution_policy mpilegion/execution_policy.h
+/// \brief mpilegion_execution_policy provides...
 ///
 struct mpilegion_execution_policy_t
 {
@@ -52,6 +52,9 @@ struct mpilegion_execution_policy_t
    *--------------------------------------------------------------------------*/
 
   // FIXME: add task type (leaf, inner, etc...)
+  ///
+  /// register FLeCSI task depending on the tasks's processor and launch types
+  ///
   template<
     typename R,
     typename A
@@ -133,6 +136,17 @@ struct mpilegion_execution_policy_t
     } // switch
  
   } // register_task
+
+  ///
+  /// Execute FLeCSI task. Depending on runtime specified for task to be 
+  /// executed at (part of the processor_type) 
+  /// In case processor_type is "mpi" we first need to execute 
+  /// index_launch task that will switch from Legion to MPI runtime and 
+  /// pass a function pointer to every MPI thread. Then, on the MPI side, we
+  /// execute the function and come back to Legion runtime.
+  /// In case of processoe_type != "mpi" we launch the task through
+  /// the TaskLauncher or IndexLauncher depending on the launch_type
+  ///
 
   template<
     typename R,
@@ -241,16 +255,16 @@ struct mpilegion_execution_policy_t
    * Function interface.
    *--------------------------------------------------------------------------*/
 
-  /*!
-    This method registers a user function with the current
-    execution context.
-    
-    \param key The function identifier.
-    \param user_function A reference to the user function as a std::function.
-
-    \return A boolean value indicating whether or not the function was
-      successfully registered.
-   */
+  ///
+  /// This method registers a user function with the current
+  ///  execution context.
+  ///  
+  ///  \param key The function identifier.
+  ///  \param user_function A reference to the user function as a std::function.
+  ///
+  ///  \return A boolean value indicating whether or not the function was
+  ///    successfully registered.
+  ///
   template<
     typename R,
     typename ... As
@@ -265,15 +279,15 @@ struct mpilegion_execution_policy_t
     return context_t::instance().register_function(key, user_function);
   } // register_function
 
-  /*!
-    This method looks up a function from the \e handle argument
-    and executes the associated it with the provided \e args arguments.
-    
-    \param handle The function handle to execute.
-    \param args A variadic argument list of the function parameters.
-
-    \return The return type of the provided function handle.
-   */
+  ///
+  ///  This method looks up a function from the \e handle argument
+  ///  and executes the associated it with the provided \e args arguments.
+  ///  
+  ///  \param handle The function handle to execute.
+  ///  \param args A variadic argument list of the function parameters.
+  ///
+  ///  \return The return type of the provided function handle.
+  ///
   template<
     typename T,
     typename ... As
