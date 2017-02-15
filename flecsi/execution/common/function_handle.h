@@ -32,6 +32,7 @@ template<
 >
 struct function_handle__
 {
+  using args_t = A;
 
   constexpr function_handle__(const size_t key_)
     : key(key_) {}

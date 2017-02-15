@@ -46,7 +46,7 @@ struct legion_task_wrapper__
   //
   // Type definition for user task.
   //
-  using task_args_t = legion_task_args__<R,A>;
+  using task_args_t = legion_task_args__<R,A,A>;
   using user_task_handle_t = typename task_args_t::user_task_handle_t;
   using user_task_args_t = typename task_args_t::user_task_args_t;
 
@@ -181,7 +181,7 @@ struct legion_task_wrapper__<P, S, I, void, A>
   //
   // Type definition for user task.
   //
-  using task_args_t = legion_task_args__<void,A>;
+  using task_args_t = legion_task_args__<void,A,A>;
   using user_task_handle_t = typename task_args_t::user_task_handle_t;
   using user_task_args_t = typename task_args_t::user_task_args_t;
 

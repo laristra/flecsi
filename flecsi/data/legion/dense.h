@@ -118,8 +118,9 @@ struct dense_accessor_t
 		: label_(a.label_), size_(a.size_), data_(a.data_),
 			meta_data_(a.meta_data_), is_(a.is_) {}
 
+
   template<size_t PS, typename ST>
-  dense_accessor_t(dense_handle_t<T, PS, ST>& h){
+  dense_accessor_t(const dense_handle_t<T, PS, ST>& h){
 
   }
 

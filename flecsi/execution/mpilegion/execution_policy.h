@@ -155,7 +155,8 @@ struct mpilegion_execution_policy_t
     auto user_task_args_tuple = std::make_tuple(user_task_args...);
     using user_task_args_tuple_t = decltype( user_task_args_tuple );
 
-    using task_args_t = legion_task_args__<R, user_task_args_tuple_t>;
+    using task_args_t = 
+      legion_task_args__<R, typename T::args_t, user_task_args_tuple_t>;
 
     // We can't use std::forward or && references here because
     // the calling state is not guarunteed to exist when the

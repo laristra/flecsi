@@ -103,29 +103,29 @@ cinch_add_unit(storage_type
     ${CINCH_RUNTIME_LIBRARIES}
 )
 
-# if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
-#   if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
-#     cinch_add_unit(mpilegion_data_handle
-#       SOURCES
-#         ../execution/test/task.cc
-#         ../execution/test/task_driver.h
-#         test/data-handle.h
-#         ../execution/mpilegion/runtime_driver.cc
-#         ../execution/mpilegion/init_partitions_task.cc
-#         data_client.cc
-#         ../execution/legion/dpd.cc
-#         ../execution/mpilegion/lax_wendroff_task.cc
-#       DEFINES DATA_HANDLE_TEST
-#         FLECSI_DRIVER=flecsi/data/test/data-handle.h
-#         TEST_INIT=flecsi/execution/test/task_init.h
-#       LIBRARIES ${PARTITION_LIBRARIES}
-#       POLICY MPILEGION
-#       THREADS 2
-#     )
-#   endif()
+  if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
+    cinch_add_unit(mpilegion_data_handle
+      SOURCES
+        ../execution/test/task.cc
+        ../execution/test/task_driver.h
+        test/data-handle.h
+        ../execution/mpilegion/runtime_driver.cc
+        ../execution/mpilegion/init_partitions_task.cc
+        data_client.cc
+        ../execution/legion/dpd.cc
+        ../execution/mpilegion/lax_wendroff_task.cc
+      DEFINES DATA_HANDLE_TEST
+        FLECSI_DRIVER=flecsi/data/test/data-handle.h
+        TEST_INIT=flecsi/execution/test/task_init.h
+      LIBRARIES ${PARTITION_LIBRARIES}
+      POLICY MPILEGION
+      THREADS 2
+    )
+  endif()
 
-# endif()
+endif()
 
 # if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
