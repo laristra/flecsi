@@ -18,6 +18,8 @@
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
+if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
+
 #  set(CMAKE_CXX_COMPILER "mpiCC")
 
   add_definitions(
@@ -47,6 +49,8 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
   configure_file(simple2d-64x64.msh
     ${CMAKE_CURRENT_BINARY_DIR}/../../bin/simple2d-64x64.msh COPYONLY) 
  
+endif()
+
 endif()
 #~---------------------------------------------------------------------------~-#
 # Formatting options
