@@ -13,7 +13,8 @@
 namespace flecsi {
 namespace data {
 
-data_client_t::data_client_t(data_client_t && o) : data_client_t()
+template<>
+data_client__<flecsi_data_policy_t>::data_client__(data_client__ && o) : data_client__()
 {
   // store old runtime id
   auto rid = o.runtime_id();
@@ -21,8 +22,9 @@ data_client_t::data_client_t(data_client_t && o) : data_client_t()
   flecsi::data::storage_t::instance().move( rid, runtime_id() );
 }
 
-
-data_client_t & data_client_t::operator=(data_client_t && o)
+template<>
+data_client__<flecsi_data_policy_t> &
+data_client__<flecsi_data_policy_t>::operator=(data_client__ && o)
 {
   // store old runtime id
   auto rid = o.runtime_id();
@@ -32,7 +34,8 @@ data_client_t & data_client_t::operator=(data_client_t && o)
   return *this;
 }
 
-data_client_t::~data_client_t() 
+template<>
+void data_client__<flecsi_data_policy_t>::fini() 
 {
   flecsi::data::storage_t::instance().reset( runtime_id() );
 }

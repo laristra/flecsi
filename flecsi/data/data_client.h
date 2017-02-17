@@ -6,6 +6,15 @@
 #ifndef flecsi_data_client_h
 #define flecsi_data_client_h
 
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion || \
+      FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
+#include "flecsi/data/legion/data_policy.h"
+#define flecsi_data_policy_t legion_data_policy_t
+#else
+#include "flecsi/data/serial/data_policy.h"
+#define flecsi_data_policy_t serial_data_policy_t
+#endif
+
 #include "flecsi/utils/common.h"
 #include "flecsi/data/data_constants.h"
 #include "flecsi/partition/index_partition.h"
@@ -20,30 +29,35 @@ namespace flecsi {
 namespace data {
 
 ///
-/// \class data_client_t data_client.h
-/// \brief data_client_t provides...
+/// \class data_client__ data_client.h
+/// \brief data_client__ provides...
 ///
-class data_client_t
+template<class P>
+class data_client__ : public P
 {
 public:
 
   /// Default constructor
-  data_client_t() : id_(utils::unique_id_t<size_t>::instance().next()) {}
+  data_client__() : id_(utils::unique_id_t<size_t>::instance().next()) {}
 
   /// Copy constructor (disabled)
-  data_client_t(const data_client_t &) = delete;
+  data_client__(const data_client__ &) = delete;
 
   /// Assignment operator (disabled)
-  data_client_t & operator = (const data_client_t &) = delete;
+  data_client__ & operator = (const data_client__ &) = delete;
 
   /// Allow move construction
-  data_client_t(data_client_t && o);
+  data_client__(data_client__ && o);
 
   /// Allow move construction
-  data_client_t & operator=(data_client_t && o);
+  data_client__ & operator=(data_client__ && o);
 
   /// Destructor
-  virtual ~data_client_t();
+  virtual ~data_client__(){
+    fini();
+  }
+
+  void fini();
 
   ///
   /// Return a unique runtime identifier for namespace access to the
@@ -83,7 +97,9 @@ private:
 
   size_t id_;
 
-}; // class data_client_t
+}; // class data_client__
+
+using data_client_t = data_client__<flecsi_data_policy_t>;
 
 } // namespace data
 } // namespace flecsi
