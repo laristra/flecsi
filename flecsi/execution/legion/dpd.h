@@ -50,6 +50,7 @@ public:
     Legion::LogicalRegion lr;
     Legion::IndexPartition ip;
     size_t size;
+    // ndm - this needs to be a pointer
     partition_count_map count_map;
   };
 

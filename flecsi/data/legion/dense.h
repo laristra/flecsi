@@ -29,6 +29,7 @@
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/index_space.h"
 #include "flecsi/execution/context.h"
+#include "flecsi/data/legion/data_policy.h"
 
 #define np(X)                                                            \
  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
@@ -436,12 +437,19 @@ struct storage_type_t<dense, DS, MD>
 
     for(size_t i=0; i<versions; ++i) {
       data_store[NS][h].attributes[i].reset();
+
+      legion_data_policy_t::part_index_space& is = 
+        data_client.get_index_space(index_space);
+
+      execution::legion_dpd::partitioned_unstructured isp;
+      isp.lr = is.lr;
+      isp.ip = is.ip;
+      isp.size = is.size;
+      isp.count_map = is.pcmap;
+
       auto dpd = new execution::legion_dpd(ctx, runtime);
 
-      // ndm - set indices
-      execution::legion_dpd::partitioned_unstructured indices;
-
-      dpd->create_data<T>(indices, size, size);
+      dpd->create_data<T>(isp, size, size);
 
       data_store[NS][h].data[i] = dpd;
 
