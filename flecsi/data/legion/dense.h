@@ -438,7 +438,7 @@ struct storage_type_t<dense, DS, MD>
     for(size_t i=0; i<versions; ++i) {
       data_store[NS][h].attributes[i].reset();
 
-      legion_data_policy_t::part_index_space& is = 
+      legion_data_policy_t::partitioned_index_space& is = 
         data_client.get_index_space(index_space);
 
       execution::legion_dpd::partitioned_unstructured isp;

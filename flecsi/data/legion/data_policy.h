@@ -26,7 +26,7 @@ public:
 
   using partition_count_map = std::map<size_t, size_t>;
 
-  struct part_index_space
+  struct partitioned_index_space
   {
     Legion::LogicalRegion lr;
     Legion::IndexPartition ip;
@@ -38,15 +38,16 @@ public:
     partition_count_map pcmap;
   };
 
-  using index_space_map = std::unordered_map<size_t, part_index_space>;
+  using index_space_map = 
+    std::unordered_map<size_t, partitioned_index_space>;
 
-  part_index_space& get_index_space(size_t is) const{
+  partitioned_index_space& get_index_space(size_t is) const{
     auto itr = index_space_map_.find(is);
     assert(itr != index_space_map_.end() && "invalid index space");
-    return const_cast<part_index_space&>(itr->second);
+    return const_cast<partitioned_index_space&>(itr->second);
   }
 
-  void put_index_space(size_t i, part_index_space& is){
+  void put_index_space(size_t i, partitioned_index_space& is){
     index_space_map_.emplace(i, std::move(is));
   }
 
