@@ -155,7 +155,25 @@ struct mpilegion_context_policy_t
 
     lr_runtime_t::register_legion_task<
       flecsi::execution::legion_dpd::init_connectivity_task>(
-      task_ids_t::instance().dpd_init_connectivity_task_id,lr_loc, false, true); 
+      task_ids_t::instance().dpd_init_connectivity_task_id,lr_loc, false, true);
+
+    lr_runtime_t::register_legion_task<
+      flecsi::execution::legion_dpd::init_data_task>(
+      task_ids_t::instance().dpd_init_data_task_id,lr_loc, false, true);
+
+    lr_runtime_t::register_legion_task<
+      flecsi::execution::legion_dpd::partition_metadata,
+      flecsi::execution::legion_dpd::get_partition_metadata_task>(
+      task_ids_t::instance().dpd_get_partition_metadata_task_id,lr_loc, false, true);
+
+    lr_runtime_t::register_legion_task<
+      flecsi::execution::legion_dpd::put_partition_metadata_task>(
+      task_ids_t::instance().dpd_put_partition_metadata_task_id,lr_loc, false, true);
+
+    lr_runtime_t::register_legion_task<
+      flecsi::execution::legion_dpd::partition_metadata,
+      flecsi::execution::legion_dpd::commit_data_task>(
+      task_ids_t::instance().dpd_commit_data_task_id,lr_loc, false, true);   
 
     lr_runtime_t::register_legion_task<
       flecsi::execution::sprint::ghost_access_task>(

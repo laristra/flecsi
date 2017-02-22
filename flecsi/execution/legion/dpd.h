@@ -36,14 +36,6 @@ namespace execution {
 
 class legion_dpd{
 public:
-  enum task_ids{
-    INIT_CONNECTIVITY_TID = 10000,
-    INIT_DATA_TID,
-    GET_PARTITION_METADATA_TID,
-    PUT_PARTITION_METADATA_TID,
-    COMMIT_DATA_TID
-  };
-
   using partition_count_map = std::map<size_t, size_t>;
 
   struct partitioned_unstructured{

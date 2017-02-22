@@ -237,7 +237,7 @@ namespace execution {
     args.value_size = value_size;
 
     IndexLauncher
-      il(INIT_DATA_TID, d,
+      il(task_ids_t::instance().dpd_init_data_task_id, d,
          TaskArgument(&args, sizeof(args)), arg_map);
 
     LogicalPartition ent_from_lp =
@@ -294,7 +294,7 @@ namespace execution {
     arg_map.set_point(h.domain_point(partition),
                       TaskArgument(args_buf, args.buf_size));
 
-    IndexLauncher il(COMMIT_DATA_TID, d,
+    IndexLauncher il(task_ids_t::instance().dpd_commit_data_task_id, d,
       TaskArgument(&args, sizeof(args)), arg_map);
 
     LogicalPartition lp =
@@ -342,7 +342,8 @@ namespace execution {
 
     ArgumentMap arg_map;
 
-    IndexLauncher il(GET_PARTITION_METADATA_TID, d,
+    IndexLauncher il(task_ids_t::instance().
+                       dpd_get_partition_metadata_task_id, d,
                      TaskArgument(nullptr, 0), arg_map);
 
     il.add_region_requirement(
@@ -366,7 +367,8 @@ namespace execution {
 
     ArgumentMap arg_map;
 
-    IndexLauncher il(PUT_PARTITION_METADATA_TID, d,
+    IndexLauncher il(task_ids_t::instance().
+                       dpd_put_partition_metadata_task_id, d,
                      TaskArgument(&md, sizeof(md)), arg_map);
 
     LogicalPartition lp =

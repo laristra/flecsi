@@ -52,6 +52,7 @@ namespace legion {
   template<typename ST>
   struct dense_handle_metadata_t{
     using storage_type_t = ST;
+    int dtest;
   };
 
 //----------------------------------------------------------------------------//
@@ -122,7 +123,7 @@ struct dense_accessor_t
 
   template<size_t PS, typename ST>
   dense_accessor_t(const dense_handle_t<T, PS, ST>& h){
-
+    np(h.dtest);
   }
 
   //--------------------------------------------------------------------------//
@@ -577,7 +578,9 @@ struct storage_type_t<dense, DS, MD>
     size_t version
   )
   {
-    return {};
+    handle_t<T, PS, st_t> h;
+    h.metadata.dtest = 7;
+    return h;
   } // get_handle
 
 }; // struct storage_type_t

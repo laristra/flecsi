@@ -43,8 +43,7 @@ namespace flecsi {
 namespace execution {
   
 void task1(accessor_t<double> x) {
-  //std::cout << "Executing task1" << std::endl;
-  //std::cout << "val = " << val << std::endl;
+  
 } // task1
 
 register_task(task1, loc, single);

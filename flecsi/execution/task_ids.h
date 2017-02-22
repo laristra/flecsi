@@ -69,6 +69,12 @@ class task_ids_t
   size_t halo_copy_task_id = unique_task_id_t::instance().next();
   size_t init_raw_conn_task_id = unique_task_id_t::instance().next();
   size_t dpd_init_connectivity_task_id = unique_task_id_t::instance().next();
+  size_t dpd_init_data_task_id = unique_task_id_t::instance().next();
+  size_t dpd_get_partition_metadata_task_id = 
+    unique_task_id_t::instance().next();
+  size_t dpd_put_partition_metadata_task_id = 
+    unique_task_id_t::instance().next();
+  size_t dpd_commit_data_task_id = unique_task_id_t::instance().next();
   size_t lax_wendroff_task_id = unique_task_id_t::instance().next();
   size_t lax_halo_task_id = unique_task_id_t::instance().next();
   size_t lax_init_task_id = unique_task_id_t::instance().next();
