@@ -175,7 +175,7 @@ driver(
   ac[0] = 100.0;
   ac[1] = 200.0;
 
-  EXECUTE_TASK(task1, loc, single, h1);
+  //EXECUTE_TASK(task1, loc, single, h1);
 
 } // driver
 

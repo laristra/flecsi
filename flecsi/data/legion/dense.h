@@ -29,6 +29,7 @@
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/index_space.h"
 #include "flecsi/execution/context.h"
+#include "flecsi/execution/legion/dpd.h"
 #include "flecsi/data/legion/data_policy.h"
 
 #define np(X)                                                            \
@@ -97,7 +98,8 @@ struct dense_accessor_t
   // Constructors.
   //--------------------------------------------------------------------------//
 
-  dense_accessor_t() {}
+  dense_accessor_t() {
+  }
   
   ///
   // Constructor.
@@ -109,17 +111,19 @@ struct dense_accessor_t
   // \param meta_data A reference to the user-defined meta data.
   ///
   dense_accessor_t(const std::string & label, const size_t size,
-    T * data, const user_meta_data_t & meta_data)
+    execution::legion_dpd * data, const user_meta_data_t & meta_data,
+    bitset_t & user_attributes, size_t index_space)
     : label_(label), size_(size), data_(data), meta_data_(meta_data),
-    is_(size) {}
+    is_(size) {
+    }
 
 	///
   // Copy constructor.
 	///
 	dense_accessor_t(const dense_accessor_t & a)
 		: label_(a.label_), size_(a.size_), data_(a.data_),
-			meta_data_(a.meta_data_), is_(a.is_) {}
-
+			meta_data_(a.meta_data_), is_(a.is_) {
+  }
 
   template<size_t PS, typename ST>
   dense_accessor_t(const dense_handle_t<T, PS, ST>& h){
@@ -270,7 +274,7 @@ struct dense_accessor_t
   )
   {
     assert(index < size_ && "index out of range");
-    return data_[index];
+    //return data_[index];
   } // operator []
 
   ///
@@ -285,7 +289,7 @@ struct dense_accessor_t
   )
   {
     assert(index < size_ && "index out of range");
-    return data_[index];
+    //return data_[index];
   } // operator []
 
 	///
@@ -302,7 +306,7 @@ private:
 
   std::string label_ = "";
   size_t size_ = 0;
-  T * data_ = nullptr;
+  execution::legion_dpd * data_ = nullptr;
   const user_meta_data_t & meta_data_ = {};
   utils::index_space_t is_;
 
@@ -469,6 +473,61 @@ struct storage_type_t<dense, DS, MD>
   // Data accessors.
   //--------------------------------------------------------------------------//
 
+  /// \brief Return a dense_accessor_t.
+  ///
+  /// \param [in] meta_data  The meta data to use to build the accessor.
+  /// \param [in] version   The version to select.
+  ///
+  /// \remark In this version, the search for meta data was already done.
+  template< typename T >
+  static
+  accessor_t<T>
+  get_accessor(
+    meta_data_t & meta_data,
+    size_t version
+  )
+  {
+
+    // check that the requested version exists
+    if ( version >= meta_data.versions ) {
+      std::cerr << "version out of range" << std::endl;
+      std::abort();
+    }
+
+    // construct an accessor from the meta data
+    return { meta_data.label, meta_data.size,
+      meta_data.data[version],
+      meta_data.user_data, meta_data.attributes[version],
+      meta_data.index_space };
+  }
+
+  /// \brief Return a dense_accessor_t.
+  ///
+  /// \param [in] data_store   The data store to search.
+  /// \param [in] hash   The hash to search for.
+  /// \param [in] version   The version to select.
+  ///
+  /// \remark In this version, the search for meta data has not been done,
+  ///   but the key has already been hashed.
+  template<
+    typename T,
+    size_t NS
+  >
+  static
+  accessor_t<T>
+  get_accessor(
+    data_store_t & data_store,
+    const utils::const_string_t::hash_type_t & hash,
+    size_t version
+  )
+  {
+    auto search = data_store[NS].find(hash);
+
+    assert(search != data_store[NS].end() && "invalid key");
+    
+    return get_accessor<T>( search->second, version );
+  } // get_accessor
+
   ///
   //
   ///
@@ -485,7 +544,8 @@ struct storage_type_t<dense, DS, MD>
     size_t version
   )
   {
-    return {};
+    auto hash = key.hash() ^ data_client.runtime_id();
+    return get_accessor<T,NS>(data_store, hash, version);
   } // get_accessor
 
   ///
