@@ -162,6 +162,14 @@ struct mpilegion_context_policy_t
       task_ids_t::instance().ghost_access_task_id,lr_loc, false, true);
 
     lr_runtime_t::register_legion_task<
+      flecsi::execution::sprint::ghost_check_task>(
+      task_ids_t::instance().ghost_check_task_id,lr_loc, false, true);
+
+    lr_runtime_t::register_legion_task<
+      flecsi::execution::sprint::ghost_init_task>(
+      task_ids_t::instance().ghost_init_task_id,lr_loc, false, true);
+
+    lr_runtime_t::register_legion_task<
       flecsi::execution::sprint::halo_copy_task>(
       task_ids_t::instance().halo_copy_task_id,lr_loc, true, false);
 
