@@ -48,10 +48,13 @@ void task1(accessor_t<double> x) {
 
 register_task(task1, loc, single);
 
+const size_t NUM_CELLS = 16;
+const size_t NUM_PARTITIONS = 4;
+
 class data_client : public data::data_client_t{
 public:
   size_t indices(size_t index_space) const override{
-    return 10;
+    return NUM_CELLS;
   }
 };
 
@@ -59,9 +62,6 @@ using entity_id = size_t;
 using partition_id = size_t;
 
 using partition_vec = vector<entity_id>;
-
-const size_t NUM_CELLS = 10;
-const size_t NUM_PARTITIONS = 4;
 
 void
 driver(
@@ -122,7 +122,7 @@ driver(
 
     fa.allocate_field(sizeof(entity_id), fid_t.fid_entity);
     
-    fa.allocate_field(sizeof(legion_dpd::ptr_count),
+    fa.allocate_field(sizeof(legion_dpd::offset_count),
                       fid_t.fid_offset_count);
 
     cells_part.lr = h.create_logical_region(is, fs);
@@ -131,6 +131,7 @@ driver(
       EXCLUSIVE, cells_part.lr);
     
     rr.add_field(fid_t.fid_entity);
+    rr.add_field(fid_t.fid_offset_count);
     InlineLauncher il(rr);
 
     PhysicalRegion pr = runtime->map_region(context, il);
@@ -148,7 +149,8 @@ driver(
       ++ptr;
     }
 
-    cells_part.ip = runtime->create_index_partition(context, is, coloring, true);
+    cells_part.ip = 
+      runtime->create_index_partition(context, is, coloring, true);
 
     runtime->unmap_region(context, pr);
   }
@@ -169,11 +171,12 @@ driver(
 
   auto ac = 
     get_accessor(dc, hydro, pressure, double, dense, /* version */ 0);
+  ac.map_partition(0);
+
+  //ac[0] = 100.0;
+  //ac[1] = 200.0;
 
   auto h1 = get_handle(dc, hydro, pressure, double, dense, 0, ro);
-
-  ac[0] = 100.0;
-  ac[1] = 200.0;
 
   //EXECUTE_TASK(task1, loc, single, h1);
 

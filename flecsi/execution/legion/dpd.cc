@@ -846,10 +846,37 @@ namespace execution {
   }
 
   void
+  legion_dpd::map_data_values(
+    size_t partition,
+    void*& values)
+  {
+    field_ids_t & fid_t = field_ids_t::instance();    
+
+    partition_metadata md = get_partition_metadata(partition);
+
+    LogicalPartition data_lp =
+      runtime_->get_logical_partition(context_, md.lr, md.ip);
+
+    RegionRequirement rr(data_lp, 0, READ_WRITE, EXCLUSIVE, md.lr);
+    rr.add_field(fid_t.fid_value);
+
+    InlineLauncher il(rr);
+    data_values_pr_ = runtime_->map_region(context_, il);
+
+    values = h.get_raw_buffer(data_values_pr_, fid_t.fid_value);
+  }
+
+  void
   legion_dpd::unmap_data()
   {
     runtime_->unmap_region(context_, data_from_pr_);
     runtime_->unmap_region(context_, data_pr_);
+    runtime_->unmap_region(context_, data_values_pr_);
+  }
+
+  void
+  legion_dpd::unmap_data_values()
+  {
     runtime_->unmap_region(context_, data_values_pr_);
   }
 

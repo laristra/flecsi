@@ -111,17 +111,19 @@ struct dense_accessor_t
   // \param meta_data A reference to the user-defined meta data.
   ///
   dense_accessor_t(const std::string & label, const size_t size,
-    execution::legion_dpd * data, const user_meta_data_t & meta_data,
+    execution::legion_dpd * dpd, const user_meta_data_t & meta_data,
     bitset_t & user_attributes, size_t index_space)
-    : label_(label), size_(size), data_(data), meta_data_(meta_data),
-    is_(size) {
-    }
+    : label_(label), size_(size), dpd_(dpd), 
+    meta_data_(&meta_data), user_attributes_(&user_attributes),
+    index_space_(index_space), is_(size) {
+    //data->map_data()
+  }
 
 	///
   // Copy constructor.
 	///
 	dense_accessor_t(const dense_accessor_t & a)
-		: label_(a.label_), size_(a.size_), data_(a.data_),
+		: label_(a.label_), size_(a.size_), dpd_(a.dpd_),
 			meta_data_(a.meta_data_), is_(a.is_) {
   }
 
@@ -130,9 +132,21 @@ struct dense_accessor_t
     np(h.dtest);
   }
 
+  ~dense_accessor_t(){
+    if(values_){
+      dpd_->unmap_data();
+    }
+  }
+
   //--------------------------------------------------------------------------//
   // Member data interface.
   //--------------------------------------------------------------------------//
+
+  void map_partition(size_t partition){
+    void* raw_values;
+    dpd_->map_data(partition, indices_, entries_, raw_values);
+    values_ = static_cast<T*>(raw_values);
+  }
 
 	///
   // \brief Return a std::string containing the label of the data variable
@@ -259,7 +273,8 @@ struct dense_accessor_t
   ) const
   {
     assert(index < size_ && "index out of range");
-    return data_[index];
+    assert(values_ && "data has not been mapped");
+    return values_[index];
   } // operator []
 
 	///
@@ -274,7 +289,8 @@ struct dense_accessor_t
   )
   {
     assert(index < size_ && "index out of range");
-    //return data_[index];
+    assert(values_ && "data has not been mapped");
+    return values_[index];
   } // operator []
 
   ///
@@ -289,6 +305,8 @@ struct dense_accessor_t
   )
   {
     assert(index < size_ && "index out of range");
+    assert(values_ && "data has not been mapped");
+
     //return data_[index];
   } // operator []
 
@@ -299,16 +317,21 @@ struct dense_accessor_t
 	///
   operator bool() const
   {
-    return data_ != nullptr;
+    return dpd_ != nullptr;
   } // operator bool
 
 private:
 
   std::string label_ = "";
   size_t size_ = 0;
-  execution::legion_dpd * data_ = nullptr;
-  const user_meta_data_t & meta_data_ = {};
+  execution::legion_dpd * dpd_ = nullptr;
+  const user_meta_data_t * meta_data_ = nullptr;
+  bitset_t * user_attributes_ = nullptr;
   utils::index_space_t is_;
+  size_t index_space_ = 0;
+  execution::legion_dpd::offset_count* indices_ = nullptr;
+  execution::legion_dpd::entry_offset* entries_ = nullptr;
+  T* values_ = nullptr;
 
 }; // struct dense_accessor_t
 

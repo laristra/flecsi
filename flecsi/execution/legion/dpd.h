@@ -165,7 +165,11 @@ public:
                 entry_offset*& entries,
                 void*& values);
 
+  void map_data_values(size_t partition, void*& values);
+
   void unmap_data();
+  
+  void unmap_data_values();
 
 private:
   Legion::Context context_;
