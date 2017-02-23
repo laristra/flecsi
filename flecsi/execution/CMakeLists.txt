@@ -19,6 +19,7 @@ set(execution_HEADERS
 	common/task_hash.h
 	context.h
 	default_driver.h
+  default_specialization_driver.h
 	execution.h
 	function.h
 	kernel.h
@@ -186,7 +187,7 @@ if(NOT DEFINED ENV{TRAVIS})
         INPUTS
           test/mpilegion/simple2d-16x16.msh
         DEFINES SPRINT_TEST
-          FLECSI_DRIVER=flecsi/execution/test/mpilegion/sprint.h
+          FLECSI_SPECIALIZATION_DRIVER=flecsi/execution/test/mpilegion/sprint.h
           TEST_INIT=flecsi/execution/test/task_init.h
         LIBRARIES ${PARTITION_LIBRARIES}
         POLICY MPILEGION_DEVEL

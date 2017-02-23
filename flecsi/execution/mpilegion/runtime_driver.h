@@ -18,10 +18,22 @@
 namespace flecsi {
 namespace execution {
 
-void mpilegion_runtime_driver(const LegionRuntime::HighLevel::Task * task,
+void 
+mpilegion_runtime_driver(
+  const LegionRuntime::HighLevel::Task * task,
   const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
   LegionRuntime::HighLevel::Context ctx,
-  LegionRuntime::HighLevel::HighLevelRuntime * runtime);
+  LegionRuntime::HighLevel::HighLevelRuntime * runtime
+);
+
+void
+spmd_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+);
+
+
 
 } // namespace execution 
 } // namespace flecsi

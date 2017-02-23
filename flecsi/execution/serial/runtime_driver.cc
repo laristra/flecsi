@@ -18,11 +18,22 @@
   #include EXPAND_AND_STRINGIFY(FLECSI_DRIVER)
 #endif
 
+#ifndef FLECSI_SPECIALIZATION_DRIVER
+  #include "flecsi/execution/default_specialization_driver.h"
+#else
+  #include EXPAND_AND_STRINGIFY(FLECSI_SPECIALIZATION_DRIVER)
+#endif
+
 namespace flecsi {
 namespace execution {
 
 void serial_runtime_driver(int argc, char ** argv) {
+
+  // run default or user-defined specialization driver  
+  specialization_driver(argc, argv);
+  // run default or user-defined driver
   driver(argc, argv);
+
 } // serial_runtime_driver
 
 } // namespace execution 

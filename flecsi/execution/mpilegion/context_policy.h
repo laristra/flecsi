@@ -197,6 +197,11 @@ struct mpilegion_context_policy_t
       flecsi::execution::lax_wendroff::lax_calc_excl_y_task>(
       task_ids_t::instance().lax_calc_excl_y_task_id,lr_loc, true, false);
 
+    //register spmd task, that call user's driver
+    lr_runtime_t::register_legion_task<
+      flecsi::execution::spmd_task>(
+      task_ids_t::instance().spmd_task_id,lr_loc, false, true);
+
     // register handoff_to_mpi_task from mpi_legion_interop_t class
     lr_runtime_t::register_legion_task<handoff_to_mpi_task>(
       task_ids_t::instance().handoff_to_mpi_task_id, lr_loc,

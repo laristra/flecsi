@@ -126,7 +126,7 @@ mpi_task(
 flecsi_register_task(mpi_task, mpi, single);
 
 void
-driver(
+specialization_driver(
   int argc, 
   char ** argv
 )
