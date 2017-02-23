@@ -29,9 +29,9 @@
 #include "flecsi/utils/const_string.h"
 
 ///
-// \file legion/execution_policy.h
-// \authors bergen
-// \date Initial file creation: Nov 15, 2015
+/// \file legion/execution_policy.h
+/// \authors bergen
+/// \date Initial file creation: Nov 15, 2015
 ///
 
 namespace flecsi {
@@ -48,6 +48,7 @@ namespace execution {
 struct legion_execution_policy_t
 {
   template<typename R>
+  /// future
   using future__ = legion_future__<R>;
 
   //--------------------------------------------------------------------------//

@@ -16,6 +16,9 @@
 
 using namespace flecsi::execution;
 
+///
+/// FLeCSI main function
+///
 int main(int argc, char ** argv) {
   return context_t::instance().initialize(argc, argv);
 } // main

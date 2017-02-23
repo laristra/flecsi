@@ -20,11 +20,12 @@
 
 #include "flecsi/execution/task_ids.h"
 
-
+/// mapper ID
 enum {
   MPI_MAPPER_ID       = 1,
 };
 
+///mapper tag's IDs
 enum {
   // Use the first 8 bits for storing the rhsf index
   MAPPER_FORCE_RANK_MATCH = 0x00001000,
@@ -57,17 +58,19 @@ STLComparator
 };
 
 ///
-/// Custom mapper that handles mpi-legion interoperability in FLeCSI
+/// \class mpi_mapper_t mapper.h
+/// \brief  mpi_mapper_t - is a custom mapper that handles mpi-legion
+///                      interoperability in FLeCSI
 ///
 class
-MPIMapper : public Legion::Mapping::DefaultMapper 
+mpi_mapper_t : public Legion::Mapping::DefaultMapper 
 {
   public:
 
   ///
   /// Contructor. Currently supports only LOC_PROC and TOC_PROC
 	///
-  MPIMapper(
+  mpi_mapper_t(
   	LegionRuntime::HighLevel::Machine machine,
     Legion::Runtime *_runtime,
     LegionRuntime::HighLevel::Processor local
@@ -112,12 +115,12 @@ MPIMapper : public Legion::Mapping::DefaultMapper
    	std::cout << "Mapper constuctor: local=" << local << " cpus=" <<
          local_cpus.size() << " gpus=" << local_gpus.size() <<
           " sysmem=" << local_sysmem<<std::endl;
-  }// end MPIMapper
+  }// end mpi_mapper_t
 
   ///
   /// Destructor
   ///
-  virtual ~MPIMapper(){};
+  virtual ~mpi_mapper_t(){};
 
   ///
   ///  The slice_task call is used by the runtime
@@ -275,7 +278,7 @@ MPIMapper : public Legion::Mapping::DefaultMapper
 };
 
 ///
-/// mapper_registration is used to replace DefaultMapper with MPIMapper in
+/// mapper_registration is used to replace DefaultMapper with mpi_mapper_t in
 /// FLeCSI
 ///
 inline
@@ -290,7 +293,7 @@ mapper_registration(
         it = local_procs.begin();
         it != local_procs.end(); it++)
   {
-    MPIMapper *mapper = new MPIMapper(machine, rt, *it);
+    mpi_mapper_t *mapper = new mpi_mapper_t(machine, rt, *it);
     rt->replace_default_mapper(mapper, *it);
   }
 }//mapper registration

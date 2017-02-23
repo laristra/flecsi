@@ -15,9 +15,9 @@
 #include "flecsi/execution/kernel.h"
 
 ///
-// \file execution.h
-// \authors bergen
-// \date Initial file creation: Aug 01, 2016
+/// \file execution.h
+/// \authors bergen
+/// \date Initial file creation: Aug 01, 2016
 ///
 
 //----------------------------------------------------------------------------//
@@ -25,13 +25,13 @@
 //----------------------------------------------------------------------------//
 
 ///
-// This macro registers a user function with the FleCSI runtime, which may
-// then be passed as state data and executed in any task address space.
-//
-// \param name The function to register. This should be the plain-text
-//              name of the function (not a string).
-// \param return_type The function return type.
-// \param ... The signature of the function (arguments).
+/// This macro registers a user function with the FleCSI runtime, which may
+/// then be passed as state data and executed in any task address space.
+///
+/// \param name The function to register. This should be the plain-text
+///              name of the function (not a string).
+/// \param return_type The function return type.
+/// \param ... The signature of the function (arguments).
 ///
 #define flecsi_register_function(name)                                         \
                                                                                \
@@ -63,23 +63,23 @@
       EXPAND_AND_STRINGIFY(name), name ## _function_delegate)
 
 ///
-// Execute a user function.
-//
-// \param handle The function handle.
-// \param ... The function arguments.
+/// Execute a user function.
+///
+/// \param handle The function handle.
+/// \param ... The function arguments.
 ///
 #define flecsi_execute_function(handle, ...)                                   \
   flecsi::execution::function_t::execute_function(handle, ## __VA_ARGS__)
 
 ///
-// FIXME
+/// FIXME
 ///
 #define flecsi_function_handle(name)                                           \
   function_handle_ ## name ## _t(                                              \
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash())
 
 ///
-// FIXME
+/// FIXME
 ///
 #define flecsi_define_function_type(name, return_type, ...)                    \
   using name = flecsi::execution::function_handle__<return_type,               \
@@ -90,11 +90,11 @@
 //----------------------------------------------------------------------------//
 
 ///
-// This macro registers a user task with the FleCSI runtime.
-//
-// \param task
-// \param processor
-// \param launch
+/// This macro registers a user task with the FleCSI runtime.
+///
+/// \param task
+/// \param processor
+/// \param launch
 ///
 #define flecsi_register_task(task, processor, launch)                          \
                                                                                \
@@ -108,12 +108,12 @@
      flecsi::execution::launch)
 
 ///
-// This macro executes a user task.
-//
-// \param task The user task to execute.
-// \param processor The processor type on which to execute the task.
-// \param launch The launch  mode for the task.
-// \param ... The arguments to pass to the user task during execution.
+/// This macro executes a user task.
+///
+/// \param task The user task to execute.
+/// \param processor The processor type on which to execute the task.
+/// \param launch The launch  mode for the task.
+/// \param ... The arguments to pass to the user task during execution.
 ///
 #define flecsi_execute_task(task, processor, launch, ...)                      \
                                                                                \
@@ -132,13 +132,13 @@
 //----------------------------------------------------------------------------//
 
 ///
-//
+///
 ///
 #define flecsi_for_each(index, index_space, kernel)                            \
   flecsi::execution::for_each__(index_space, [&](auto * index) kernel)
 
 ///
-//
+///
 ///
 #define flecsi_reduce_each(index, index_space, variable, kernel)               \
   flecsi::execution::reduce_each__(index_space, variable,                      \
