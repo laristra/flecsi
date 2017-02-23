@@ -18,6 +18,7 @@
 #include <functional>
 
 #include "flecsi/utils/const_string.h"
+#include "flecsi/utils/logging.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/legion/future.h"
 #include "flecsi/execution/common/processor.h"
@@ -187,8 +188,12 @@ struct mpilegion_execution_policy_t
       LegionRuntime::HighLevel::Domain::from_rect<1>(
         context_.interop_helper_.all_processes_),
         TaskArgument(&task_args, sizeof(task_args_t)), arg_map);
-
-      index_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+      if (parent == utils::const_string_t{"specialization_driver"}.hash())
+         index_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+      else{
+        clog_fatal("calling MPI task from sub-task or driver is not currently supported");
+        // index_launcher.tag = MAPPER_SUBRANK_MATCH;
+      }
 
       LegionRuntime::HighLevel::FutureMap fm1 =
         context_.runtime(parent)->execute_index_space(context_.context(parent),
@@ -233,7 +238,9 @@ struct mpilegion_execution_policy_t
               context_.interop_helper_.all_processes_),
             TaskArgument(&task_args, sizeof(task_args_t)), arg_map);
 
-          index_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+          if (parent == utils::const_string_t{"specialization_driver"}.hash())
+            index_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+          else{}
 
           auto future = context_.runtime(parent)->execute_index_space(
             context_.context(parent), index_launcher);
