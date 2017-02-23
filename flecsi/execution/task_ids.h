@@ -54,6 +54,7 @@ class task_ids_t
 
   using task_id_t = LegionRuntime::HighLevel::TaskID;
   using unique_task_id_t = flecsi::utils::unique_id_t<task_id_t>;
+  size_t spmd_task_id = unique_task_id_t::instance().next();
   size_t connect_mpi_task_id  = unique_task_id_t::instance().next();
   size_t handoff_to_mpi_task_id = unique_task_id_t::instance().next();
   size_t wait_on_mpi_task_id  = unique_task_id_t::instance().next();

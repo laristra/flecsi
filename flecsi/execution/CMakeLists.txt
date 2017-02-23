@@ -19,6 +19,7 @@ set(execution_HEADERS
 	common/task_hash.h
 	context.h
 	default_driver.h
+  default_specialization_driver.h
 	execution.h
 	function.h
 	kernel.h
@@ -180,14 +181,14 @@ if(NOT DEFINED ENV{TRAVIS})
     if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
       cinch_add_unit(mpilegion_sprint
         SOURCES
-          test/mpilegion/sprint_devel.cc
-          mpilegion/runtime_driver.cc
-          ${execution_SOURCES}
+         test/mpilegion/sprint_devel.cc
+         mpilegion/runtime_driver.cc
+         ${execution_SOURCES}
         INPUTS
-          test/mpilegion/simple2d-16x16.msh
+         test/mpilegion/simple2d-16x16.msh
         DEFINES SPRINT_TEST
-          FLECSI_DRIVER=flecsi/execution/test/mpilegion/sprint.h
-          TEST_INIT=flecsi/execution/test/task_init.h
+         FLECSI_SPECIALIZATION_DRIVER=flecsi/execution/test/mpilegion/sprint.h
+         TEST_INIT=flecsi/execution/test/task_init.h
         LIBRARIES ${PARTITION_LIBRARIES}
         POLICY MPILEGION_DEVEL
         THREADS 2
