@@ -174,8 +174,8 @@ namespace execution {
       a.allocate_field(sizeof(entry_offset), fid_t.fid_entry_offset);
       a.allocate_field(args.value_size, fid_t.fid_value);
       md.lr = h.create_logical_region(is, fs);
-
       DomainPointColoring coloring;
+
       DomainPoint dp = DomainPoint::from_point<1>(
         LegionRuntime::Arrays::make_point(p));
       coloring.emplace(dp, h.domain_from_rect(0, args.reserve - 1));
@@ -786,7 +786,9 @@ namespace execution {
 
       ptr_t to_ptr = pc.ptr; 
 
-      auto to_ac = to_pr.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
+      auto to_ac = 
+        to_pr.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
+      
       auto to_ent_ac = 
         to_ent_pr.get_field_accessor(fid_t.fid_vert).typeify<size_t>();
 
@@ -854,14 +856,13 @@ namespace execution {
 
     partition_metadata md = get_partition_metadata(partition);
 
-    LogicalPartition data_lp =
-      runtime_->get_logical_partition(context_, md.lr, md.ip);
-
-    RegionRequirement rr(data_lp, 0, READ_WRITE, EXCLUSIVE, md.lr);
+    RegionRequirement rr(md.lr, READ_WRITE, EXCLUSIVE, md.lr);
     rr.add_field(fid_t.fid_value);
 
     InlineLauncher il(rr);
     data_values_pr_ = runtime_->map_region(context_, il);
+
+    data_values_pr_.wait_until_valid();
 
     values = h.get_raw_buffer(data_values_pr_, fid_t.fid_value);
   }

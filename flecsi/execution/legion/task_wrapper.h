@@ -7,14 +7,19 @@
 #define flecsi_execution_legion_task_wrapper_h
 
 #include "flecsi/data/data_handle.h"
+#include "flecsi/data/accessor.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/legion/task_args.h"
 
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
   #include "flecsi/execution/mpilegion/legion_handshake.h"
+  #include "flecsi/data/legion/dense.h"
+#else
+  #include "flecsi/data/serial/dense.h"
 #endif
 
 #include "flecsi/utils/common.h"
+#include "flecsi/utils/tuple_type_converter.h"
 
 ///
 // \file legion/task_wrapper.h
@@ -53,6 +58,14 @@ struct legion_task_wrapper__
   using lr_runtime = LegionRuntime::HighLevel::HighLevelRuntime;
   using lr_proc = LegionRuntime::HighLevel::Processor;
   using task_id_t = LegionRuntime::HighLevel::TaskID;
+
+  using user_args_t = 
+    typename utils::base_convert_tuple_type<data::accessor_base, 
+    flecsi::data_handle_base, A>::type;
+
+#ifdef DH1
+    typename user_args_t::a x;
+#endif
 
   //
   // This defines a predicate function to pass to tuple_filter that
@@ -99,6 +112,7 @@ struct legion_task_wrapper__
     LegionRuntime::HighLevel::Context context,
     LegionRuntime::HighLevel::HighLevelRuntime * runtime)
   {
+
     // Unpack task arguments
     task_args_t & task_args = *(reinterpret_cast<task_args_t *>(task->args));
     user_task_handle_t & user_task_handle = task_args.user_task_handle;
@@ -107,6 +121,10 @@ struct legion_task_wrapper__
     // Push the Legion state
     context_t::instance().push_state(user_task_handle.key,
       context, runtime, task, regions);
+
+    #ifdef DH1
+        typename user_args_t::a x;
+    #endif
 
 #if 0
     // FIXME: Working on processing data handles
@@ -181,9 +199,12 @@ struct legion_task_wrapper__<P, S, I, void, A>
   //
   // Type definition for user task.
   //
-  using task_args_t = legion_task_args__<void,A,A>;
+  using user_task_args_t = 
+    typename utils::base_convert_tuple_type<data::accessor_base, 
+    flecsi::data_handle_base, A>::type;
+
+  using task_args_t = legion_task_args__<void,A,user_task_args_t>;
   using user_task_handle_t = typename task_args_t::user_task_handle_t;
-  using user_task_args_t = typename task_args_t::user_task_args_t;
 
   using lr_runtime = LegionRuntime::HighLevel::HighLevelRuntime;
   using lr_proc = LegionRuntime::HighLevel::Processor;
@@ -239,7 +260,9 @@ struct legion_task_wrapper__<P, S, I, void, A>
     LegionRuntime::HighLevel::HighLevelRuntime * runtime)
   {
     // Unpack task arguments
-    task_args_t & task_args = *(reinterpret_cast<task_args_t *>(task->args));
+    task_args_t & task_args = 
+      *(reinterpret_cast<task_args_t *>(task->args));
+    
     user_task_handle_t & user_task_handle = task_args.user_task_handle;
     user_task_args_t & user_task_args = task_args.user_args;
 
@@ -293,7 +316,7 @@ struct legion_task_wrapper__<P, S, I, void, A>
 //  auto user_args = tuple_filter_index_<greater_than, task_args_t>(task_args);
  
     std::function<void()> bound_user_task =
-      std::bind(*reinterpret_cast<std::function<void(A)> *>(
+      std::bind(*reinterpret_cast<std::function<void(user_task_args_t)> *>(
       context_t::instance().function(user_task_handle.key)), user_task_args);
 
      ext_legion_handshake_t::instance().shared_func_ = bound_user_task;

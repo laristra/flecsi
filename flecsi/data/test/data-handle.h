@@ -6,6 +6,10 @@
 #ifndef flecsi_data_handle_test_h
 #define flecsi_data_handle_test_h
 
+#define DH1 1
+#undef flecsi_execution_legion_task_wrapper_h
+#include "flecsi/execution/legion/task_wrapper.h"
+
 #include <iostream>
 #include <vector>
 
@@ -169,21 +173,25 @@ driver(
 
   register_data(dc, hydro, pressure, double, dense, 1, 0);
 
-  auto ac = 
-    get_accessor(dc, hydro, pressure, double, dense, /* version */ 0);
-  ac.map_partition(0);
+  {
+    auto ac = 
+      get_accessor(dc, hydro, pressure, double, dense, /* version */ 0);
+    ac.map_partition(0);
 
-  //ac[0] = 100.0;
-  //ac[1] = 200.0;
+    ac[0] = 100.0;
+    ac[1] = 200.0;
+  }
 
   auto h1 = get_handle(dc, hydro, pressure, double, dense, 0, ro);
 
-  //EXECUTE_TASK(task1, loc, single, h1);
+  EXECUTE_TASK(task1, loc, single, h1);
 
 } // driver
 
 } // namespace execution
 } // namespace flecsi
+
+//#undef DH1
 
 #endif // flecsi_data_handle_test_h
 

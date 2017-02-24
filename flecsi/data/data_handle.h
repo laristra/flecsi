@@ -20,7 +20,7 @@ namespace flecsi {
 ///
 struct data_handle_base
 {
-
+  int y;
 }; // struct data_handle_t
 
 template<

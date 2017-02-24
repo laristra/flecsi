@@ -30,8 +30,10 @@ namespace utils {
     using type = std::tuple<typename convert_tuple_type_<Args>::type...>;
   };
 
-  template<typename T, typename TO, bool B>
-  struct base_convert_tuple_type_;
+  template<typename T, typename TO, bool E>
+  struct base_convert_tuple_type_{
+    using type = T;
+  };
 
   template<typename T, typename TO>
   struct base_convert_tuple_type_<T, TO, true>{
@@ -43,10 +45,10 @@ namespace utils {
     using type = T;
   };
 
-  template<typename... Args>
+  template<class B, typename TO, typename... Args>
   struct base_convert_tuple_type;
 
-  template<typename B, typename TO, typename... Args>
+  template<class B, typename TO, typename... Args>
   struct base_convert_tuple_type<B, TO, std::tuple<Args...>>{
     using type = std::tuple<typename base_convert_tuple_type_<Args, TO, 
       std::is_base_of<B, Args>::value>::type...>;

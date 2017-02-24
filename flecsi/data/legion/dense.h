@@ -25,7 +25,9 @@
 //----------------------------------------------------------------------------//
 
 #include "flecsi/data/data_client.h"
+#include "flecsi/data/accessor.h"
 #include "flecsi/data/data_handle.h"
+#include "flecsi/data/common/data_types.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/index_space.h"
 #include "flecsi/execution/context.h"
@@ -84,7 +86,7 @@ struct dense_handle_t :
 // \tparam MD The meta data type.
 ///
 template<typename T, typename MD>
-struct dense_accessor_t
+struct dense_accessor_t : public dense_accessor_base
 {
   //--------------------------------------------------------------------------//
   // Type definitions.
@@ -93,6 +95,7 @@ struct dense_accessor_t
   using iterator_t = utils::index_space_t::iterator_t;
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
+  using handle_metadata_t = dense_handle_metadata_t<int>;
 
   //--------------------------------------------------------------------------//
   // Constructors.
@@ -122,14 +125,29 @@ struct dense_accessor_t
 	///
   // Copy constructor.
 	///
-	dense_accessor_t(const dense_accessor_t & a)
-		: label_(a.label_), size_(a.size_), dpd_(a.dpd_),
-			meta_data_(a.meta_data_), is_(a.is_) {
-  }
+  //dense_accessor_t(const dense_accessor_t & a) = delete;
 
+  /*dense_accessor_t(const dense_accessor_t & a)
+		: label_(a.label_), size_(a.size_), dpd_(a.dpd_),
+			meta_data_(a.meta_data_), is_(a.is_),
+      index_space_(a.index_space_), values_(a.values_) {
+  }
+  */
+
+  dense_accessor_t(const dense_accessor_t & a){
+    np(98);
+  }
+/*
   template<size_t PS, typename ST>
   dense_accessor_t(const dense_handle_t<T, PS, ST>& h){
-    np(h.dtest);
+    np(99);
+    //np(h.dtest);
+  }
+  */
+
+  dense_accessor_t(const data_handle_base& h){
+    np(199);
+    //np(h.dtest);
   }
 
   ~dense_accessor_t(){
@@ -144,7 +162,7 @@ struct dense_accessor_t
 
   void map_partition(size_t partition){
     void* raw_values;
-    dpd_->map_data(partition, indices_, entries_, raw_values);
+    dpd_->map_data_values(partition, raw_values);
     values_ = static_cast<T*>(raw_values);
   }
 
@@ -329,8 +347,6 @@ private:
   bitset_t * user_attributes_ = nullptr;
   utils::index_space_t is_;
   size_t index_space_ = 0;
-  execution::legion_dpd::offset_count* indices_ = nullptr;
-  execution::legion_dpd::entry_offset* entries_ = nullptr;
   T* values_ = nullptr;
 
 }; // struct dense_accessor_t
