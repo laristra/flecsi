@@ -52,19 +52,13 @@ namespace legion {
 // Helper type definitions.
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 
-  template<typename ST>
-  struct dense_handle_metadata_t{
-    using storage_type_t = ST;
-    int dtest;
-  };
-
 //----------------------------------------------------------------------------//
 // Dense handle.
 //----------------------------------------------------------------------------//
 
-template<typename T, size_t PS, typename ST>
+template<typename T, size_t PS>
 struct dense_handle_t :
-  public data_handle__<T, PS, dense_handle_metadata_t<ST>, ST>
+  public data_handle_t<T, PS>
 {
   using type = T;
 }; // struct dense_handle_t
@@ -95,7 +89,6 @@ struct dense_accessor_t : public dense_accessor_base
   using iterator_t = utils::index_space_t::iterator_t;
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
-  using handle_metadata_t = dense_handle_metadata_t<int>;
 
   //--------------------------------------------------------------------------//
   // Constructors.
@@ -137,17 +130,9 @@ struct dense_accessor_t : public dense_accessor_base
   dense_accessor_t(const dense_accessor_t & a){
     np(98);
   }
-/*
-  template<size_t PS, typename ST>
-  dense_accessor_t(const dense_handle_t<T, PS, ST>& h){
-    np(99);
-    //np(h.dtest);
-  }
-  */
 
   dense_accessor_t(const data_handle_base& h){
     np(199);
-    //np(h.dtest);
   }
 
   ~dense_accessor_t(){
@@ -375,8 +360,8 @@ struct storage_type_t<dense, DS, MD>
   template<typename T>
   using accessor_t = dense_accessor_t<T, MD>;
 
-  template<typename T, size_t PS, typename ST>
-  using handle_t = dense_handle_t<T, PS, ST>;
+  template<typename T, size_t PS>
+  using handle_t = dense_handle_t<T, PS>;
 
   using st_t = storage_type_t<dense, DS, MD>;
 
@@ -402,7 +387,7 @@ struct storage_type_t<dense, DS, MD>
     typename ... Args
   >
   static
-  handle_t<T, 0, st_t>
+  handle_t<T, 0>
   register_data(
     const data_client_t & data_client,
     data_store_t & data_store,
@@ -669,7 +654,7 @@ struct storage_type_t<dense, DS, MD>
     size_t PS
   >
   static
-  handle_t<T, PS, st_t>
+  handle_t<T, PS>
   get_handle(
     const data_client_t & data_client,
     data_store_t & data_store,
@@ -677,8 +662,20 @@ struct storage_type_t<dense, DS, MD>
     size_t version
   )
   {
-    handle_t<T, PS, st_t> h;
-    h.metadata.dtest = 7;
+    using namespace execution;
+
+    auto hash = key.hash() ^ data_client.runtime_id();
+    auto itr = data_store[NS].find(hash);
+    assert(itr != data_store[NS].end() && "invalid key");
+    auto& md = itr->second;
+
+    legion_dpd* dpd = md.data[version];
+    legion_dpd::partition_metadata pmd = 
+      dpd->get_partition_metadata(0 /* fix partition */);
+
+    handle_t<T, PS> h;
+    h.lr = pmd.lr;
+    
     return h;
   } // get_handle
 

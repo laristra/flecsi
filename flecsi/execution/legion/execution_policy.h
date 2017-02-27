@@ -168,6 +168,10 @@ struct legion_execution_policy_t
         TaskLauncher task_launcher(context_.task_id(key),
           TaskArgument(&task_args, sizeof(task_args_t)));
 
+        // ndm - walk user_task_args_tuple_t tuple - look for data_handle types to generate RR's
+
+        np(123);
+
         auto future = context_.runtime(parent)->execute_task(
           context_.context(parent), task_launcher);
 
@@ -183,10 +187,14 @@ struct legion_execution_policy_t
           LegionRuntime::Arrays::Point<1>(5));
         Domain launch_domain = Domain::from_rect<1>(launch_bounds);
 
+        np(156);
+
         LegionRuntime::HighLevel::ArgumentMap arg_map;
         LegionRuntime::HighLevel::IndexLauncher index_launcher(
           context_.task_id(key), launch_domain, TaskArgument(&task_args,
           sizeof(task_args_t)), arg_map);
+
+        // ndm - walk user_task_args_tuple_t tuple - look for data_handle types to generate RR's
 
         auto future = context_.runtime(parent)->execute_index_space(
           context_.context(parent), index_launcher);

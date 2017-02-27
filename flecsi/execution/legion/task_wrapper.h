@@ -48,10 +48,14 @@ template<
 >
 struct legion_task_wrapper__
 {
+  using user_task_args_t = 
+    typename utils::base_convert_tuple_type<data::accessor_base, 
+    flecsi::data_handle_base, A>::type;
+
   //
   // Type definition for user task.
   //
-  using task_args_t = legion_task_args__<R,A,A>;
+  using task_args_t = legion_task_args__<R,A,user_task_args_t>;
   using user_task_handle_t = typename task_args_t::user_task_handle_t;
   using user_task_args_t = typename task_args_t::user_task_args_t;
 
@@ -64,7 +68,7 @@ struct legion_task_wrapper__
     flecsi::data_handle_base, A>::type;
 
 #ifdef DH1
-    typename user_args_t::a x;
+    //typename user_args_t::a x;
 #endif
 
   //
@@ -118,12 +122,14 @@ struct legion_task_wrapper__
     user_task_handle_t & user_task_handle = task_args.user_task_handle;
     user_task_args_t & user_task_args = task_args.user_args;
 
+    // ndm - the accessor ctor will be called with data handle
+
     // Push the Legion state
     context_t::instance().push_state(user_task_handle.key,
       context, runtime, task, regions);
 
     #ifdef DH1
-        typename user_args_t::a x;
+        //typename user_args_t::a x;
     #endif
 
 #if 0

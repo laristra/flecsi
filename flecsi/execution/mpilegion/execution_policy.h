@@ -16,6 +16,7 @@
 #define flecsi_mpilegion_execution_policy_h
 
 #include <functional>
+#include <tuple>
 
 #include "flecsi/utils/const_string.h"
 #include "flecsi/execution/context.h"
@@ -24,12 +25,72 @@
 #include "flecsi/execution/common/task_hash.h"
 #include "flecsi/execution/mpilegion/context_policy.h"
 #include "flecsi/execution/legion/task_wrapper.h"
+#include "flecsi/execution/task_ids.h"
+#include "flecsi/data/data_handle.h"
 
 /*!
  * \file mpilegion/execution_policy.h
  * \authors bergen, demeshko
  * \date Initial file creation: Nov 15, 2015
  */
+
+// ndm - move to proper location
+enum class privilege : size_t {
+  none = 0b00,
+  ro =   0b01,
+  wd =   0b10,
+  rw =   0b11
+};
+
+template<size_t I, typename T>
+struct walk_task_args__{
+  static size_t walk(T& t, Legion::TaskLauncher& l){
+    handle_(std::get<std::tuple_size<T>::value - I>(t), l);
+    return walk_task_args__<I - 1, T>::walk(t, l);
+  }
+
+  template<typename S, size_t PS>
+  void handle_(flecsi::data_handle_t<S, PS>& h, Legion::TaskLauncher& l){
+    flecsi::execution::field_ids_t & fid_t = 
+      flecsi::execution::field_ids_t::instance();
+
+    switch(PS){
+      case privilege::none:
+        assert(false && 
+               "no privileges found on task arg while generating "
+               "region requirements");
+        break;
+      case privilege::ro:{
+        RegionRequirement rr(h.lr, READ_ONLY, EXCLUSIVE, h.lr);
+        rr.add_field(fid_t.fid_value);
+        l.add_region_requirement(rr);
+        break;
+      }
+      case privilege::wd:{
+        RegionRequirement rr(h.lr, WRITE_DISCARD, EXCLUSIVE, h.lr);
+        rr.add_field(fid_t.fid_value);
+        l.add_region_requirement(rr);
+        break;
+      }
+      case privilege::rw:{
+        RegionRequirement rr(h.lr, READ_WRITE, EXCLUSIVE, h.lr);
+        rr.add_field(fid_t.fid_value);
+        l.add_region_requirement(rr);
+        break;
+      }
+    }
+  }
+
+  template<typename R>
+  void handle_(R&, TaskLauncher&){}
+};
+
+template<typename T>
+struct walk_task_args__<0, T>{
+  static size_t walk(T& t, TaskLauncher& l){
+    return 0;
+  }
+};
 
 namespace flecsi {
 namespace execution {
@@ -205,6 +266,11 @@ struct mpilegion_execution_policy_t
           TaskLauncher task_launcher(context_.task_id(key),
             TaskArgument(&task_args, sizeof(task_args_t)));
 
+          // ndm - walk user_task_args_tuple_t tuple - look for data_handle types to generate RR's
+
+          walk_task_args__<std::tuple_size<T>::value, user_task_args_tuple_t>
+            (user_task_args_tuple, task_launcher);
+
           auto future = context_.runtime(parent)->execute_task(
             context_.context(parent), task_launcher);
 
@@ -221,6 +287,8 @@ struct mpilegion_execution_policy_t
             TaskArgument(&task_args, sizeof(task_args_t)), arg_map);
 
           index_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+
+          // ndm - walk user_task_args_tuple_t tuple - look for data_handle types to generate RR's
 
           auto future = context_.runtime(parent)->execute_index_space(
             context_.context(parent), index_launcher);
