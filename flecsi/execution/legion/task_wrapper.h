@@ -131,10 +131,6 @@ struct legion_task_wrapper__
     typename utils::base_convert_tuple_type<accessor_base, 
     data_handle_t<void, 0>, A>::type;
 
-#ifdef DH1
-    //typename user_args_t::a x;
-#endif
-
   //
   // This defines a predicate function to pass to tuple_filter that
   // will select all tuple elements after the first index, i.e., 0.
@@ -186,33 +182,9 @@ struct legion_task_wrapper__
     user_task_handle_t & user_task_handle = task_args.user_task_handle;
     user_task_args_t & user_task_args = task_args.user_args;
 
-    // ndm - the accessor ctor will be called with data handle
-
     // Push the Legion state
     context_t::instance().push_state(user_task_handle.key,
       context, runtime, task, regions);
-
-    #ifdef DH1
-        //typename user_args_t::a x;
-    #endif
-
-#if 0
-    // FIXME: Working on processing data handles
-    // Somehow (???) we are going to have to interleave the processed
-    // data handle arguments back into the original slots...
-
-    // Get the data handle task arguments
-    auto data_args = tuple_filter_<is_data_handle, task_args_t>(task_args);
-    std::cout << "data_args size: " <<
-      std::tuple_size<decltype(data_args)>::value << std::endl;
-
-    utils::tuple_for_each(data_args, [&](auto & element) {
-      std::cout << "hello" << std::endl;
-    });
-
-    // Execute the user task
-    return tuple_function(user_task, user_args);
-#endif
 
     auto retval = user_task_handle(
       context_t::instance().function(user_task_handle.key),

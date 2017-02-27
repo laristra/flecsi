@@ -38,16 +38,16 @@
 namespace flecsi {
 namespace execution {
 
-  template<size_t I, typename T>
+  template<size_t I, typename T, typename L>
   struct handle_task_args__{
-    static size_t walk(T& t, Legion::TaskLauncher& l, size_t& region){
+    static size_t walk(T& t, L& l, size_t& region){
       handle_(std::get<std::tuple_size<T>::value - I>(t), l, region);
-      return handle_task_args__<I - 1, T>::walk(t, l, region);
+      return handle_task_args__<I - 1, T, L>::walk(t, l, region);
     }
 
     template<typename S, size_t PS>
     static void handle_(flecsi::data_handle_t<S, PS>& h,
-                        Legion::TaskLauncher& l,
+                        L& l,
                         size_t& region){
 
       flecsi::execution::field_ids_t & fid_t = 
@@ -86,12 +86,12 @@ namespace execution {
     static
     typename std::enable_if_t<!std::is_base_of<flecsi::data_handle_base, R>::
       value>
-    handle_(R&, Legion::TaskLauncher&, size_t&){}
+    handle_(R&, L&, size_t&){}
   };
 
-  template<typename T>
-  struct handle_task_args__<0, T>{
-    static size_t walk(T& t, Legion::TaskLauncher& l, size_t& region){
+  template<typename T, typename L>
+  struct handle_task_args__<0, T, L>{
+    static size_t walk(T& t, L& l, size_t& region){
       return 0;
     }
   };
@@ -269,7 +269,7 @@ struct mpilegion_execution_policy_t
 
           size_t region = 0;
 
-          handle_task_args__<std::tuple_size<user_task_args_tuple_t>::value, user_task_args_tuple_t>::walk(
+          handle_task_args__<std::tuple_size<user_task_args_tuple_t>::value, user_task_args_tuple_t, Legion::TaskLauncher>::walk(
             user_task_args_tuple, task_launcher, region);
 
           auto future = context_.runtime(parent)->execute_task(
@@ -289,7 +289,11 @@ struct mpilegion_execution_policy_t
 
           index_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
-          // ndm - walk user_task_args_tuple_t tuple - look for data_handle types to generate RR's
+          size_t region = 0;
+
+          // !!! we may need to do something different here for index launch
+          handle_task_args__<std::tuple_size<user_task_args_tuple_t>::value, user_task_args_tuple_t, Legion::IndexLauncher>::walk(
+            user_task_args_tuple, index_launcher, region);
 
           auto future = context_.runtime(parent)->execute_index_space(
             context_.context(parent), index_launcher);
