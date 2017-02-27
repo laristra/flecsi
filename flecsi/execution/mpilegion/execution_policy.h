@@ -17,6 +17,7 @@
 
 #include <functional>
 #include <tuple>
+#include <type_traits>
 
 #include "flecsi/utils/const_string.h"
 #include "flecsi/execution/context.h"
@@ -52,28 +53,29 @@ struct walk_task_args__{
   template<typename S, size_t PS>
   static void handle_(flecsi::data_handle_t<S, PS>& h,
                       Legion::TaskLauncher& l){
+
     flecsi::execution::field_ids_t & fid_t = 
       flecsi::execution::field_ids_t::instance();
 
     switch(PS){
-      case privilege::none:
+      case size_t(privilege::none):
         assert(false && 
                "no privileges found on task arg while generating "
                "region requirements");
         break;
-      case privilege::ro:{
+      case size_t(privilege::ro):{
         RegionRequirement rr(h.lr, READ_ONLY, EXCLUSIVE, h.lr);
         rr.add_field(fid_t.fid_value);
         l.add_region_requirement(rr);
         break;
       }
-      case privilege::wd:{
+      case size_t(privilege::wd):{
         RegionRequirement rr(h.lr, WRITE_DISCARD, EXCLUSIVE, h.lr);
         rr.add_field(fid_t.fid_value);
         l.add_region_requirement(rr);
         break;
       }
-      case privilege::rw:{
+      case size_t(privilege::rw):{
         RegionRequirement rr(h.lr, READ_WRITE, EXCLUSIVE, h.lr);
         rr.add_field(fid_t.fid_value);
         l.add_region_requirement(rr);
@@ -83,7 +85,10 @@ struct walk_task_args__{
   }
 
   template<typename R>
-  static void handle_(R&, Legion::TaskLauncher&){}
+  static
+  typename std::enable_if_t<!std::is_base_of<flecsi::data_handle_base, R>::
+    value>
+  handle_(R&, Legion::TaskLauncher&){}
 };
 
 template<typename T>
