@@ -15,6 +15,8 @@ class legion_handle_policy_t
 {
 public:
   Legion::LogicalRegion lr;
+  size_t region;
+  void* data;
 private:
 
 };

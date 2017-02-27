@@ -45,17 +45,20 @@ enum class privilege : size_t {
 
 template<size_t I, typename T>
 struct walk_task_args__{
-  static size_t walk(T& t, Legion::TaskLauncher& l){
-    handle_(std::get<std::tuple_size<T>::value - I>(t), l);
-    return walk_task_args__<I - 1, T>::walk(t, l);
+  static size_t walk(T& t, Legion::TaskLauncher& l, size_t& region){
+    handle_(std::get<std::tuple_size<T>::value - I>(t), l, region);
+    return walk_task_args__<I - 1, T>::walk(t, l, region);
   }
 
   template<typename S, size_t PS>
   static void handle_(flecsi::data_handle_t<S, PS>& h,
-                      Legion::TaskLauncher& l){
+                      Legion::TaskLauncher& l,
+                      size_t& region){
 
     flecsi::execution::field_ids_t & fid_t = 
       flecsi::execution::field_ids_t::instance();
+
+    h.region = region++;
 
     switch(PS){
       case size_t(privilege::none):
@@ -88,12 +91,12 @@ struct walk_task_args__{
   static
   typename std::enable_if_t<!std::is_base_of<flecsi::data_handle_base, R>::
     value>
-  handle_(R&, Legion::TaskLauncher&){}
+  handle_(R&, Legion::TaskLauncher&, size_t&){}
 };
 
 template<typename T>
 struct walk_task_args__<0, T>{
-  static size_t walk(T& t, Legion::TaskLauncher& l){
+  static size_t walk(T& t, Legion::TaskLauncher& l, size_t& region){
     return 0;
   }
 };
@@ -272,10 +275,10 @@ struct mpilegion_execution_policy_t
           TaskLauncher task_launcher(context_.task_id(key),
             TaskArgument(&task_args, sizeof(task_args_t)));
 
-          // ndm - walk user_task_args_tuple_t tuple - look for data_handle types to generate RR's
+          size_t region = 0;
 
           walk_task_args__<std::tuple_size<user_task_args_tuple_t>::value, user_task_args_tuple_t>::walk(
-            user_task_args_tuple, task_launcher);
+            user_task_args_tuple, task_launcher, region);
 
           auto future = context_.runtime(parent)->execute_task(
             context_.context(parent), task_launcher);

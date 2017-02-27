@@ -29,31 +29,65 @@
 
 template<size_t I, typename AS, typename PS>
 struct create_task_args__{
-  static size_t create(AS& args){
+  static size_t
+  create(LegionRuntime::HighLevel::Context context,
+         LegionRuntime::HighLevel::HighLevelRuntime * runtime,
+         const std::vector<
+           LegionRuntime::HighLevel::PhysicalRegion>& regions, AS& args){
+    
     using type = 
       typename std::tuple_element<std::tuple_size<AS>::value - I,
         PS>::type;
-        
-    handle_<type>(std::get<std::tuple_size<AS>::value - I>(args));
 
-    return create_task_args__<I - 1, AS, PS>::create(args);
+    handle_<type>(context, runtime, regions,
+                  std::get<std::tuple_size<AS>::value - I>(args));
+
+    return create_task_args__<I - 1, AS, PS>::
+      create(context, runtime, regions, args);
   }
 
-  template<typename PT, typename S>
-  static void handle_(flecsi::data_handle_t<void, 0>& handle){
-    using T = typename PT::type;
+  template<typename PT>
+  static void
+  handle_(LegionRuntime::HighLevel::Context context,
+          LegionRuntime::HighLevel::HighLevelRuntime* runtime,
+          const std::vector<
+           LegionRuntime::HighLevel::PhysicalRegion>& regions,
+                      flecsi::data_handle_t<void, 0>& h){
+    flecsi::execution::field_ids_t & fid_t = 
+      flecsi::execution::field_ids_t::instance();
+
+    using type = typename PT::type;
+
+    auto pr = regions[h.region];
+
+    auto ac = pr.get_field_accessor(fid_t.fid_value).typeify<type>();
+    
+    Legion::LogicalRegion lr = pr.get_logical_region();
+    Legion::IndexSpace is = lr.get_index_space();
+    Legion::Domain domain = runtime->get_index_space_domain(context, is);
+    LegionRuntime::Arrays::Rect<1> r = domain.get_rect<1>();
+    LegionRuntime::Arrays::Rect<1> sr;
+    LegionRuntime::Accessor::ByteOffset bo[1];
+    h.data = ac.template raw_rect_ptr<1>(r, sr, bo);
   }
 
   template<typename PT, typename R>
   static
   typename std::enable_if_t<!std::is_base_of<flecsi::data_handle_base, R>::
     value>
-  handle_(R&, Legion::TaskLauncher&){}
+  handle_(LegionRuntime::HighLevel::Context,
+         LegionRuntime::HighLevel::HighLevelRuntime*,
+          const std::vector<
+           LegionRuntime::HighLevel::PhysicalRegion>&, R&){}
 };
 
 template<typename AS, typename PS>
 struct create_task_args__<0, AS, PS>{
-  static size_t create(AS& args){
+  static size_t
+  create(LegionRuntime::HighLevel::Context context,
+        LegionRuntime::HighLevel::HighLevelRuntime* runtime,
+         const std::vector<
+           LegionRuntime::HighLevel::PhysicalRegion>&, AS& args){
     return 0;
   }
 };
@@ -308,7 +342,8 @@ struct legion_task_wrapper__<P, S, I, void, A>
       context, runtime, task, regions);
 
     create_task_args__<std::tuple_size<user_task_args_t>::value,
-      user_task_args_t, args_t>::create(user_task_args);
+      user_task_args_t, args_t>::create(
+        context, runtime, regions, user_task_args);
 
     user_task_handle(context_t::instance().function(user_task_handle.key),
       user_task_args);

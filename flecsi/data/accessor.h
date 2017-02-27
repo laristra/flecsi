@@ -14,12 +14,12 @@
 
 namespace flecsi {
 
-class accessor_base{
+struct accessor_base{
 
 };
 
 template<typename T>
-class accessor__ : public accessor_base{
+struct accessor__ : public accessor_base{
   using type = T;
 };
 
