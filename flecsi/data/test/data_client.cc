@@ -47,11 +47,11 @@ TEST(data_client, destructor) {
   auto dc = new data_client_t;
 
   // Register data
-  register_data(*dc, hydro, pressure, double, global, 1);
-  register_data(*dc, hydro, density, double, global, 1);
+  flecsi_register_data(*dc, hydro, pressure, double, global, 1);
+  flecsi_register_data(*dc, hydro, density, double, global, 1);
 
   // get all accessors to the data
-  auto accs = get_accessors(*dc, hydro, double, global, 0);
+  auto accs = flecsi_get_accessors(*dc, hydro, double, global, 0);
   
   ASSERT_EQ( accs.size(), 2 );
   ASSERT_EQ( accs[0].label(), "density" );
@@ -76,12 +76,12 @@ TEST(data_client, move) {
   auto rid1 = dc1.runtime_id();
 
   // Register data
-  register_data(dc1, hydro, pressure, double, global, 1);
-  register_data(dc1, hydro, density, double, global, 1);
+  flecsi_register_data(dc1, hydro, pressure, double, global, 1);
+  flecsi_register_data(dc1, hydro, density, double, global, 1);
 
   // get all accessors to the data
   {
-    auto accs = get_accessors(dc1, hydro, double, global, 0);
+    auto accs = flecsi_get_accessors(dc1, hydro, double, global, 0);
   
     ASSERT_EQ( accs.size(), 2 );
     ASSERT_EQ( accs[0].label(), "density" );
@@ -97,7 +97,7 @@ TEST(data_client, move) {
 
   // it should show up in the new data client though
   {
-    auto accs = get_accessors(dc2, hydro, double, global, 0);
+    auto accs = flecsi_get_accessors(dc2, hydro, double, global, 0);
   
     ASSERT_EQ( accs.size(), 2 );
     ASSERT_EQ( accs[0].label(), "density" );

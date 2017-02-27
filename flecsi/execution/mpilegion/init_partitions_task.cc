@@ -20,6 +20,9 @@
 
 #include "flecsi/execution/legion/dpd.h"
 
+using namespace LegionRuntime::HighLevel;
+using namespace LegionRuntime::Accessor;
+
 namespace flecsi {
 namespace execution {
 namespace sprint {
@@ -845,6 +848,184 @@ void ArgsSerializer::setBitStream(void* stream)
 };
 
 void
+halo_copy_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+)
+{
+    using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
+    using field_id = LegionRuntime::HighLevel::FieldID;
+
+    assert(regions.size() == 2);
+    assert(task->regions.size() == 2);
+    assert(task->regions[0].privilege_fields.size() == 1);
+    assert(task->regions[1].privilege_fields.size() == 1);
+
+    field_id fid = *(task->regions[0].privilege_fields.begin());
+
+    LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
+    acc_shared= regions[0].get_field_accessor(fid).typeify<size_t>();
+    IndexIterator itr_shared(runtime, ctx, regions[0].get_logical_region());
+    std::set<ptr_t> shared_pts;  // TODO profile this or switch to dense storage
+    while(itr_shared.has_next())
+    	shared_pts.insert(itr_shared.next());
+
+    LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
+    acc_ghost= regions[1].get_field_accessor(fid).typeify<size_t>();
+    IndexIterator itr_ghost(runtime, ctx, regions[1].get_logical_region());
+    while(itr_ghost.has_next()){
+      ptr_t ptr = itr_ghost.next();
+      if (shared_pts.count(ptr))
+    	  acc_ghost.write(ptr, acc_shared.read(ptr));
+    }
+}
+
+void
+ghost_init_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+)
+{
+    using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
+    using field_id = LegionRuntime::HighLevel::FieldID;
+
+    assert(regions.size() == 1);
+    assert(task->regions.size() == 1);
+    assert(task->regions[0].privilege_fields.size() == 1);
+    assert(task->arglen == sizeof(int));
+    int cycle = *(const int*)task->args;
+    field_id fid = *(task->regions[0].privilege_fields.begin());
+
+    LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
+    acc_shared= regions[0].get_field_accessor(fid).typeify<size_t>();
+    IndexIterator itr_shared(runtime, ctx, regions[0].get_logical_region());
+    while(itr_shared.has_next()) {
+        ptr_t ptr = itr_shared.next();
+        acc_shared.write(ptr, static_cast<size_t>(ptr.value + cycle));
+    }
+}
+
+void
+ghost_check_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+)
+{
+    using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
+    using field_id = LegionRuntime::HighLevel::FieldID;
+
+    assert(regions.size() == 1);
+    assert(task->regions.size() == 1);
+    assert(task->regions[0].privilege_fields.size() == 1);
+    assert(task->arglen == sizeof(int));
+    int cycle = *(const int*)task->args;
+    field_id fid = *(task->regions[0].privilege_fields.begin());
+
+    LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
+    acc_halo= regions[0].get_field_accessor(fid).typeify<size_t>();
+    IndexIterator itr_halo(runtime, ctx, regions[0].get_logical_region());
+    while(itr_halo.has_next()) {
+        ptr_t ptr = itr_halo.next();
+        assert(acc_halo.read(ptr) == static_cast<size_t>(ptr.value + cycle));
+    }
+}
+
+TaskWrapper::TaskWrapper(
+		SPMDArgs* args,
+		std::vector<LogicalRegion> lrs_shared,
+		std::vector<PhysicalRegion> prs_shared,
+		LogicalRegion lr_ghost,
+		size_t copy_task_id,
+		FieldID fid) :
+	spmd_args(args),
+	lregions_neighbors_shared(lrs_shared),
+	pregions_neighbors_shared(prs_shared),
+	lregion_ghost(lr_ghost),
+	ghost_copy_task_id(copy_task_id),
+	ghost_fid(fid),
+	is_readable(true) {
+}
+
+void TaskWrapper::write_prologue(TaskLauncher& task_launcher) {
+	// as master
+	task_launcher.add_wait_barrier(spmd_args->pbarrier_as_master);                     // phase WRITE
+	task_launcher.add_arrival_barrier(spmd_args->pbarrier_as_master);                  // phase READ
+}
+
+void TaskWrapper::write_epilogue(Legion::Context ctx, Legion::HighLevelRuntime *runtime) {
+	// as master
+	spmd_args->pbarrier_as_master = runtime->advance_phase_barrier(ctx, spmd_args->pbarrier_as_master);   // phase READ
+
+	// as slave
+    for (int master=0; master < spmd_args->masters_pbarriers.size(); master++) {
+    	spmd_args->masters_pbarriers[master].arrive(1);                                     // phase READ
+    	spmd_args->masters_pbarriers[master] =
+                runtime->advance_phase_barrier(ctx, spmd_args->masters_pbarriers[master]);  // phase READ
+    }
+
+    is_readable = false;
+}
+
+void TaskWrapper::read_prologue(Legion::Context ctx, Legion::HighLevelRuntime *runtime) {
+
+	if (!is_readable) {
+		// as master
+		spmd_args->pbarrier_as_master.arrive(1);                                                // phase WRITE
+		spmd_args->pbarrier_as_master =
+            runtime->advance_phase_barrier(ctx, spmd_args->pbarrier_as_master);             	// phase WRITE
+
+		// as slave
+
+		for (int master=0; master < spmd_args->masters_pbarriers.size(); master++) {
+			AcquireLauncher acquire_launcher(lregions_neighbors_shared[master], lregions_neighbors_shared[master],
+        		  pregions_neighbors_shared[master]);
+			acquire_launcher.add_field(ghost_fid);
+			acquire_launcher.add_wait_barrier(spmd_args->masters_pbarriers[master]);            // phase READ
+			runtime->issue_acquire(ctx, acquire_launcher);
+
+			TaskLauncher launcher(ghost_copy_task_id, TaskArgument(nullptr, 0));
+			launcher.add_region_requirement(RegionRequirement(lregions_neighbors_shared[master], READ_ONLY, EXCLUSIVE,
+    			  lregions_neighbors_shared[master]));
+			launcher.add_field(0, ghost_fid);
+			launcher.add_region_requirement(RegionRequirement(lregion_ghost, READ_WRITE, EXCLUSIVE, lregion_ghost));
+			launcher.add_field(1, ghost_fid);
+			runtime->execute_task(ctx, launcher);
+
+			ReleaseLauncher release_launcher(lregions_neighbors_shared[master], lregions_neighbors_shared[master],
+				pregions_neighbors_shared[master]);
+			release_launcher.add_field(ghost_fid);
+			release_launcher.add_arrival_barrier(spmd_args->masters_pbarriers[master]);     // phase WRITE
+			runtime->issue_release(ctx, release_launcher);
+
+			spmd_args->masters_pbarriers[master] =
+          		runtime->advance_phase_barrier(ctx, spmd_args->masters_pbarriers[master]);  // phase WRITE
+		} // for master as slave
+
+		is_readable = true;
+	} // if !is_readable
+}
+
+Future TaskWrapper::execute_task(Legion::Context ctx, Legion::HighLevelRuntime *runtime,
+		TaskLauncher& task_launcher, bool read_phase, bool write_phase) {
+
+	if (read_phase)
+		read_prologue(ctx, runtime);
+
+	if (write_phase)
+		write_prologue(task_launcher);
+
+	Future value = runtime->execute_task(ctx, task_launcher);
+
+	if (write_phase)
+		write_epilogue(ctx, runtime);
+
+	return value;
+}
+
+void
 ghost_access_task(
   const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,
@@ -854,115 +1035,78 @@ ghost_access_task(
   using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
   using field_id = LegionRuntime::HighLevel::FieldID;
 
-  assert(task->local_arglen >= sizeof(SPMDArgs));
-  assert(regions.size() == 2);
-  assert(task->regions.size() == 2);
+  assert(task->indexes.size() == 1);
+  assert(regions.size() >= 2);
+  assert(task->regions.size() >= 2);
   assert(task->regions[0].privilege_fields.size() == 1);
   assert(task->regions[1].privilege_fields.size() == 1);
-  assert(task->index_point.get_dim() == 1);
-  const int my_rank = task->index_point.point_data[0];
+
+  field_id fid = *(task->regions[0].privilege_fields.begin());
+
+  const int my_rank = task->index_point.get_index();
 
   SPMDArgs args;
   SPMDArgsSerializer args_serializer;
-  args_serializer.setBitStream(task->local_args);
+  args_serializer.setBitStream(task->args);
   args_serializer.restore(&args);
 
-  LegionRuntime::HighLevel::LogicalRegion lr_shared =
-     regions[0].get_logical_region();
-  LegionRuntime::HighLevel::IndexSpace is_shared = lr_shared.get_index_space();
-  LegionRuntime::HighLevel::IndexIterator itr_shared(runtime, ctx, is_shared);
-  field_id fid_shared = *(task->regions[0].privilege_fields.begin());
+  LogicalRegion lr_shared = regions[0].get_logical_region();
+  runtime->unmap_region(ctx, regions[0]);
 
-  LegionRuntime::HighLevel::LogicalRegion lr_ghost =
-      regions[1].get_logical_region();
-  LegionRuntime::HighLevel::IndexSpace is_ghost = lr_ghost.get_index_space();
-  LegionRuntime::HighLevel::IndexIterator itr_ghost(runtime, ctx, is_ghost);
-  field_id fid_ghost = *(task->regions[1].privilege_fields.begin());
+  //LegionRuntime::HighLevel::LogicalRegion lr_exclusive = regions[1].get_logical_region();
+
+  std::vector<LogicalRegion> lregions_ghost;
+  std::vector<PhysicalRegion> pregions_ghost;
+  for (int index = 2; index < regions.size(); index++) {
+	  LogicalRegion lr_ghost = regions[index].get_logical_region();
+	  lregions_ghost.push_back(lr_ghost);
+	  pregions_ghost.push_back(regions[index]);
+	  runtime->unmap_region(ctx, regions[index]);
+  }
+
+  FieldSpace fspace_halo = runtime->create_field_space(ctx);
+  {
+  	char buf[40];
+  	sprintf(buf,"spmd fspace_halo %d",my_rank);
+  	runtime->attach_name(fspace_halo, buf);
+  	FieldAllocator allocator = runtime->create_field_allocator(ctx, fspace_halo);
+  	allocator.allocate_field(sizeof(size_t), fid);
+  }
+  IndexSpace ispace_halo = task->indexes[0].handle;
+  LogicalRegion lregion_halo = runtime->create_logical_region(ctx, ispace_halo, fspace_halo);
+  {
+  	char buf[40];
+  	sprintf(buf,"spmd lregion_halo %d",my_rank);
+  	runtime->attach_name(lregion_halo, buf);
+  }
+
+  TaskWrapper task_wrapper(&args, lregions_ghost, pregions_ghost, lregion_halo, task_ids_t::instance().halo_copy_task_id, fid);
 
   for (int cycle = 0; cycle < 2; cycle++) {
 
-    // phase 1 masters update their halo regions; slaves may not access data
-
-    // as master
+    // phase WRITE: masters update their halo regions; slaves may not access data
 
     {
-      AcquireLauncher acquire_launcher(lr_shared, lr_shared, regions[0]);
-      acquire_launcher.add_field(fid_shared);
-      acquire_launcher.add_wait_barrier(args.pbarrier_as_master);                     // phase 1
-      runtime->issue_acquire(ctx, acquire_launcher);
-
-      // master writes to data
-      std::cout << my_rank << " as master writes data; phase 1 of cycle " <<
-        cycle << std::endl;
-
-      ReleaseLauncher release_launcher(lr_shared, lr_shared, regions[0]);
-      release_launcher.add_field(fid_shared);
-      release_launcher.add_arrival_barrier(args.pbarrier_as_master);                  // phase 2
-      runtime->issue_release(ctx, release_launcher);
-      args.pbarrier_as_master =
-            runtime->advance_phase_barrier(ctx, args.pbarrier_as_master);             // phase 2
+      TaskLauncher shared_launcher(task_ids_t::instance().ghost_init_task_id, TaskArgument(&cycle, sizeof(int)));
+      shared_launcher.add_region_requirement(RegionRequirement(lr_shared, READ_WRITE, EXCLUSIVE, lr_shared));
+      shared_launcher.add_field(0, fid);
+      bool read_phase = false;
+      bool write_phase = true;
+      task_wrapper.execute_task(ctx, runtime, shared_launcher, read_phase, write_phase);
+      std::cout << my_rank << " as master writes data; phase 1 of cycle " << cycle << std::endl;
     }
 
-    // as slave
-
-    for (int master=0; master < args.masters_pbarriers.size(); master++) {
-        args.masters_pbarriers[master].arrive(1);                                     // phase 2
-        args.masters_pbarriers[master] =
-          runtime->advance_phase_barrier(ctx, args.masters_pbarriers[master]);  // phase 2
-    }
-
-    // phase 2 slaves can read data; masters may not write to data
-
-    // as master
-
-    args.pbarrier_as_master.arrive(1);                                                // phase cycle + 1
-    args.pbarrier_as_master =
-            runtime->advance_phase_barrier(ctx, args.pbarrier_as_master);             // phase cycle + 1
-
-    // as slave
+    // phase READ: slaves can read data; masters may not write to data
 
     {
-      AcquireLauncher acquire_launcher(lr_ghost, lr_ghost, regions[1]);
-      acquire_launcher.add_field(fid_ghost);
-      for (int master=0; master < args.masters_pbarriers.size(); master++) {
-          acquire_launcher.add_wait_barrier(args.masters_pbarriers[master]);            // phase 2
-      } // no knowledge of which master has which point in ghost: 
-        //so, wait for all
-      runtime->issue_acquire(ctx, acquire_launcher);
-
-      // slave reads data
-      std::cout << my_rank << " as slave reads data; phase 2 of cycle " <<
-        cycle << std::endl;
-      RegionRequirement ghost_req(lr_ghost, READ_ONLY, EXCLUSIVE, lr_ghost);
-      ghost_req.add_field(fid_ghost);
-      InlineLauncher ghost_launcher(ghost_req);
-      PhysicalRegion pregion_ghost = runtime->map_region(ctx, ghost_launcher);
-      LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
-        acc_ghost= regions[1].get_field_accessor(fid_ghost).typeify<size_t>();
-      while(itr_ghost.has_next()){
-        ptr_t ptr = itr_ghost.next();
-        std::cout << my_rank << " reads " << acc_ghost.read(ptr) << " at " <<
-          ptr.value << std::endl;
-       }
-
-      ReleaseLauncher release_launcher(lr_ghost, lr_ghost, regions[1]);
-      release_launcher.add_field(fid_ghost);
-      for (int master=0; master < args.masters_pbarriers.size(); master++) {
-          release_launcher.add_arrival_barrier(args.masters_pbarriers[master]);         // phase cycle + 1
-          args.masters_pbarriers[master] =
-            runtime->advance_phase_barrier(ctx, args.masters_pbarriers[master]);  // phase cycle + 1
-      }
-      runtime->issue_release(ctx, release_launcher);
+      TaskLauncher check_launcher(task_ids_t::instance().ghost_check_task_id, TaskArgument(&cycle, sizeof(int)));
+      check_launcher.add_region_requirement(RegionRequirement(lregion_halo, READ_ONLY, EXCLUSIVE, lregion_halo));
+      check_launcher.add_field(0, fid);
+      bool read_phase = true;
+      bool write_phase = false;
+      task_wrapper.execute_task(ctx, runtime, check_launcher, read_phase, write_phase);
     }
   } // cycle
-
-
-/*
-    LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
-      acc_shared= regions[0].get_field_accessor(fid_shared).typeify<size_t>();
-
-
-*/
 
 
   std::cout << "test ghost access ... passed"

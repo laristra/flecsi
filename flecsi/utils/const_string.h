@@ -76,6 +76,14 @@ class const_string_t
   const hash_type_t size_;
 };
 
+struct const_string_hasher_t
+{
+  size_t operator()(const const_string_t& str) const
+  {
+    return str.hash();
+  }
+};//const_string_hasher_t
+
 } // namespace utils
 } // namespace flecsi
 

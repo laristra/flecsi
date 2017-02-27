@@ -26,14 +26,17 @@
            << ": " << #X << " = " << (X) << std::endl
 
 ///
-// \file legion/dpd.h
-// \authors nickm
+/// \file legion/dpd.h
+/// \authors nickm
 // \date Initial file creation: Nov 29, 2016
 ///
 
 namespace flecsi {
 namespace execution {
 
+///
+/// FIXME documentation
+///
 class legion_dpd{
 public:
   enum task_ids{
@@ -46,6 +49,9 @@ public:
 
   using partition_count_map = std::map<size_t, size_t>;
 
+  ///
+  /// FIXME documentation
+  ///
   struct partitioned_unstructured{
     Legion::LogicalRegion lr;
     Legion::IndexPartition ip;
@@ -53,32 +59,50 @@ public:
     partition_count_map count_map;
   };
 
+  ///
+  /// FIXME documentation
+  ///
   struct entity_pair{
     size_t e1;
     size_t e2;
   };
 
+  ///
+  /// FIXME documentation
+  ///
   struct ptr_count{
     ptr_t ptr;
     size_t count;
   };
 
+  ///
+  /// FIXME documentation
+  ///
   struct offset_count{
     size_t offset;
     size_t count;
   };
 
+  ///
+  /// FIXME documentation
+  ///
   template<typename T>
   struct entry_value{
     size_t entry;
     T value;
   };
 
+  ///
+  /// FIXME documentation
+  ///
   struct entry_offset{
     size_t entry;
     size_t offset;
   };
 
+  ///
+  /// FIXME documentation
+  ///
   struct partition_metadata{
     size_t partition;
     Legion::LogicalRegion lr;
@@ -87,6 +111,9 @@ public:
     size_t reserve;
   };
 
+  ///
+  /// FIXME documentation
+  ///
   template<class T>
   struct commit_data{
     using spare_map_t = std::multimap<size_t, entry_value<T>>;
@@ -104,72 +131,123 @@ public:
 
   using connectivity_vec = std::vector<std::vector<size_t>>;
 
+  ///
+  /// Default constructor
+  ///
   legion_dpd(Legion::Context context,
              Legion::Runtime* runtime)
   : context_(context),
   runtime_(runtime),
   h(runtime, context){}
 
+  ///
+  /// FIXME documentation
+  ///
   template<class T>
   void create_data(partitioned_unstructured& indices,
-                   size_t start_reserve){
-    create_data_(indices, start_reserve, sizeof(T));
+                   size_t start_reserve,
+                   size_t start_size = 0){
+    create_data_(indices, start_reserve, start_size, sizeof(T));
   }
 
+  ///
+  /// FIXME documentation
+  ///
   template<class T>
   void commit(commit_data<T>& cd){
     commit_(reinterpret_cast<commit_data<char>&>(cd), sizeof(T));
   }
 
+  ///
+  /// FIXME documentation
+  ///
   void commit_(commit_data<char>& cd, size_t value_size);
 
+  ///
+  /// FIXME documentation
+  ///
   void create_data_(partitioned_unstructured& indices,
                     size_t start_reserve,
+                    size_t start_size,
                     size_t value_size);
 
+  ///
+  /// FIXME documentation
+  ///
   void create_connectivity(size_t from_dim,
                            partitioned_unstructured& from,
                            size_t to_dim,
                            partitioned_unstructured& to,
                            partitioned_unstructured& raw_connectivity);
 
-
+  ///
+  /// FIXME documentation
+  ///
   static void init_connectivity_task(const Legion::Task* task,
     const std::vector<Legion::PhysicalRegion>& regions,
     Legion::Context ctx, Legion::Runtime* runtime);
 
+  ///
+  /// FIXME documentation
+  ///
   static void init_data_task(const Legion::Task* task,
     const std::vector<Legion::PhysicalRegion>& regions,
     Legion::Context ctx, Legion::Runtime* runtime);
 
+  ///
+  /// FIXME documentation
+  ///
   partition_metadata get_partition_metadata(size_t partition);
 
+  ///
+  /// FIXME documentation
+  ///
   static partition_metadata get_partition_metadata_task(
     const Legion::Task* task,
     const std::vector<Legion::PhysicalRegion>& regions,
     Legion::Context context, Legion::Runtime* runtime);
 
+  ///
+  /// FIXME documentation
+  ///
   void put_partition_metadata(const partition_metadata& md);
 
+  ///
+  /// FIXME documentation
+  ///
   static void put_partition_metadata_task(const Legion::Task* task,
     const std::vector<Legion::PhysicalRegion>& regions,
     Legion::Context context, Legion::Runtime* runtime);
 
+  ///
+  /// FIXME documentation
+  ///
   static partition_metadata commit_data_task(const Legion::Task* task,
     const std::vector<Legion::PhysicalRegion>& regions,
     Legion::Context context, Legion::Runtime* runtime);
 
+  ///
+  /// FIXME documentation
+  ///
   void dump(size_t from_dim, size_t to_dim);
 
+  ///
+  /// FIXME documentation
+  ///
   static size_t connectivity_field_id(size_t from_dim, size_t to_dim){
     return 1000 + from_dim * 10 + to_dim;
   }
 
+  ///
+  /// FIXME documentation
+  ///
   void map_data(size_t partition,
                 offset_count*& indices,
                 entry_offset*& entries,
                 void*& values);
-
+  ///
+  /// FIXME documentation
+  ///
   void unmap_data();
 
 private:

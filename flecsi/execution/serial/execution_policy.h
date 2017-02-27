@@ -43,7 +43,7 @@ template<typename R> struct executor__;
 //----------------------------------------------------------------------------//
 
 ///
-//
+/// implementation of the future_t for serial runtime
 ///
 template<
   typename R
@@ -54,17 +54,20 @@ struct serial_future__
   using result_t = R;
 
   ///
-  //
+  /// wait() method 
   ///
   void wait() {}
 
   ///
-  //
+  /// get() mothod
   ///
   const result_t & get(size_t index = 0) const { return result_; }
 
 private:  
 
+  ///
+  /// set method
+  /// 
   void set(const result_t & result) { result_ = result; }
 
   result_t result_;
@@ -72,7 +75,7 @@ private:
 }; // struct serial_future__
 
 ///
-//
+///
 ///
 template<>
 struct serial_future__<void>
@@ -80,7 +83,7 @@ struct serial_future__<void>
   friend executor__<void>;
 
   ///
-  //
+  ///
   ///
   void wait() {}
 
@@ -91,7 +94,7 @@ struct serial_future__<void>
 //----------------------------------------------------------------------------//
 
 ///
-// Executor interface.
+/// Executor interface.
 ///
 template<
   typename R
@@ -99,7 +102,7 @@ template<
 struct executor__
 {
   ///
-  //
+  ///
   ///
   template<
     typename T,
@@ -124,7 +127,7 @@ struct executor__
 }; // struct executor__
 
 ///
-// Partial specialization for reference type.
+/// Partial specialization for reference type.
 ///
 template<
   typename R
@@ -132,7 +135,7 @@ template<
 struct executor__<R &>
 {
   ///
-  //
+  ///
   ///
   template<
     typename T,
@@ -157,13 +160,13 @@ struct executor__<R &>
 }; // struct executor__
 
 ///
-// Explicit specialization for void
+/// Explicit specialization for void
 ///
 template<>
 struct executor__<void>
 {
   ///
-  //
+  ///
   ///
   template<
     typename T,
@@ -190,8 +193,8 @@ struct executor__<void>
 //----------------------------------------------------------------------------//
 
 ///
-// \struct serial_execution_policy serial_execution_policy.h
-// \brief serial_execution_policy provides...
+/// \struct serial_execution_policy serial_execution_policy.h
+/// \brief serial_execution_policy provides...
 ///
 struct serial_execution_policy_t
 {
@@ -203,11 +206,11 @@ struct serial_execution_policy_t
   //--------------------------------------------------------------------------//
 
   ///
-  // Serial task registration.
-  //
-  // \tparam R The return type of the task.
-  // \tparam A The arguments type of the task. This is a std::tuple of the
-  //           user task arguments.
+  /// Serial task registration.
+  ///
+  /// \tparam R The return type of the task.
+  /// \tparam A The arguments type of the task. This is a std::tuple of the
+  ///           user task arguments.
   ///
   template<
     typename R,
@@ -223,13 +226,13 @@ struct serial_execution_policy_t
   } // register_task
 
   ///
-  // \tparam R The task return type.
-  // \tparam T The user task type.
-  // \tparam As The user task argument types.
-  //
-  // \param key
-  // \param user_task_handle
-  // \param args
+  /// \tparam R The task return type.
+  /// \tparam T The user task type.
+  /// \tparam As The user task argument types.
+  ///
+  /// \param key
+  /// \param user_task_handle
+  /// \param args
   ///
   template<
     typename R,
@@ -255,17 +258,17 @@ struct serial_execution_policy_t
   //--------------------------------------------------------------------------//
 
   ///
-  // This method registers a user function with the current
-  // execution context.
-  //
-  // \tparam R Return type.
-  // \tparam A Argument type (std::tuple).
-  //
-  // \param key The function identifier.
-  // \param user_function A reference to the user function as a std::function.
-  //
-  // \return A boolean value indicating whether or not the function was
-  //         successfully registered.
+  /// This method registers a user function with the current
+  /// execution context.
+  ///
+  /// \tparam R Return type.
+  /// \tparam A Argument type (std::tuple).
+  ///
+  /// \param key The function identifier.
+  /// \param user_function A reference to the user function as a std::function.
+  ///
+  /// \return A boolean value indicating whether or not the function was
+  ///         successfully registered.
   ///
   template<
     typename R,
@@ -282,13 +285,13 @@ struct serial_execution_policy_t
   } // register_function
 
   ///
-  // This method looks up a function from the \e handle argument
-  // and executes the associated it with the provided \e args arguments.
-  //
+  /// This method looks up a function from the \e handle argument
+  /// and executes the associated it with the provided \e args arguments.
+  ///
   // \param handle The function handle to execute.
-  // \param args A variadic argument list of the function parameters.
-  //
-  // \return The return type of the provided function handle.
+  /// \param args A variadic argument list of the function parameters.
+  ///
+  /// \return The return type of the provided function handle.
   ///
   template<
     typename T,

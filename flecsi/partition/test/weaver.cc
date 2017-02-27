@@ -23,6 +23,9 @@ TEST(weaver, construct) {
   std::set<entry_info_t> shared_cells = weaver.get_shared_cells();
   std::set<entry_info_t> ghost_cells  = weaver.get_ghost_cells();
 
+  std::unordered_map<size_t, size_t> num_cells_per_rank=
+		weaver.get_n_cells_per_rank();
+
   if (rank == output_rank) {
     std::cout << "exclusive cells: " << std::endl;
     for(auto i: exclusive_cells) {
@@ -44,6 +47,9 @@ TEST(weaver, construct) {
   std::set<entry_info_t> exclusive_vertices = weaver.get_exclusive_vertices();
   std::set<entry_info_t> shared_vertices = weaver.get_shared_vertices();
   std::set<entry_info_t> ghost_vertices  = weaver.get_ghost_vertices();
+
+  std::unordered_map<size_t, size_t> num_vertices_per_rank=
+                weaver.get_n_vertices_per_rank();
 
   if (rank == output_rank) {
     std::cout << "exclusive vertices: " << std::endl;

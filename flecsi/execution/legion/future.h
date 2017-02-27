@@ -21,9 +21,9 @@
 #include <legion.h>
 
 ///
-// \file legion/future.h
-// \authors bergen
-// \date Initial file creation: Nov 15, 2015
+/// \file legion/future.h
+/// \authors bergen
+/// \date Initial file creation: Nov 15, 2015
 ///
 
 namespace flecsi {
@@ -39,7 +39,7 @@ struct mpitask_t {};
 //----------------------------------------------------------------------------//
 
 ///
-// Interface type for Legion futures.
+/// Interface type for Legion futures.
 ///
 template<
   typename R
@@ -53,7 +53,7 @@ struct legion_future_concept__
 }; // struct legion_future_concept__
 
 ///
-// Explicit specialization for void.
+/// Explicit specialization for void.
 ///
 template<>
 struct legion_future_concept__<void>
@@ -68,7 +68,7 @@ struct legion_future_concept__<void>
 //----------------------------------------------------------------------------//
 
 ///
-// Base future model type.
+/// Base future model type.
 ///
 template<typename R, typename F>
 struct legion_future_model__
@@ -79,7 +79,7 @@ struct legion_future_model__
     : legion_future_(legion_future) {}
 
   ///
-  //
+  ///
   ///
   void
   wait()
@@ -87,9 +87,9 @@ struct legion_future_model__
   } // wait
 
   ///
-  // \param index
-  //
-  // \return R
+  /// \param index
+  ///
+  /// \return R
   ///
   R
   get(
@@ -106,7 +106,7 @@ private:
 }; // struct legion_future_model__
 
 ///
-// Partial specialization for void.
+/// Partial specialization for void.
 ///
 template<typename F>
 struct legion_future_model__<void, F>
@@ -163,7 +163,7 @@ private:
 
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
 ///
-// Partial specialization for mpi task
+/// Partial specialization for mpi task
 ///
 template<typename R>
 struct legion_future_model__<R, mpitask_t>
@@ -188,7 +188,7 @@ struct legion_future_model__<R, mpitask_t>
 #endif // FLECSI_RUNTIME_MODEL_mpilegion
 
 ///
-// Explicit specialization for index launch FutureMap and void.
+/// Explicit specialization for index launch FutureMap and void.
 ///
 template<>
 struct legion_future_model__<void, LegionRuntime::HighLevel::FutureMap>
@@ -213,7 +213,7 @@ private:
 
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
 ///
-// Explicit specialization for mpi task and void
+/// Explicit specialization for mpi task and void
 ///
 template<>
 struct legion_future_model__<void, mpitask_t>
@@ -234,7 +234,7 @@ struct legion_future_model__<void, mpitask_t>
 //----------------------------------------------------------------------------//
 
 ///
-//
+///
 ///
 template<
   typename R
@@ -259,7 +259,7 @@ struct legion_future__
   } // operator =
 
   ///
-  //
+  ///
   ///
   void wait()
   {
@@ -267,7 +267,7 @@ struct legion_future__
   } // wait
 
   ///
-  //
+  /// get operator
   ///
   result_t
   get(
@@ -287,7 +287,7 @@ private:
 }; // struct legion_future__
 
 ///
-// Explicit specialization for void.
+/// Explicit specialization for void.
 ///
 template<>
 struct legion_future__<void>
@@ -298,7 +298,7 @@ struct legion_future__<void>
     : state_(new legion_future_model__<void, F>(future)) {}
 
   ///
-  //
+  ///
   ///
   void wait()
   {

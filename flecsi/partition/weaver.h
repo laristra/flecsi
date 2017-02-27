@@ -34,6 +34,9 @@ private:
   std::set<entry_info_t> shared_vertices;
   std::set<entry_info_t> ghost_vertices;
 
+  std::unordered_map<size_t, size_t> cells_per_rank;
+  std::unordered_map<size_t, size_t> vertices_per_rank;
+
   std::vector<std::pair<size_t, size_t>> raw_cell_vertex_conns;
 
 public:
@@ -102,6 +105,9 @@ public:
     //
     auto cell_all_info = communicator->get_cell_info(primary_cells,
       all_neighbors);
+
+    auto cells_per_rank =
+        communicator->get_number_of_entities_per_rank_map(primary_cells);
 
     // TODO: seperate this part into its own function.
     // Create a map version of the local info for lookups below.
@@ -215,6 +221,9 @@ public:
       primary_vertices.insert(i.id);
     }
 
+    auto vertices_per_rank =
+        communicator->get_number_of_entities_per_rank_map(primary_vertices);
+
     {
       size_t r(0);
       for (auto i: vertex_requests) {
@@ -267,6 +276,18 @@ public:
   get_raw_cell_vertex_conns()
   {
     return raw_cell_vertex_conns;
+  }
+
+  std::unordered_map<size_t, size_t> &
+  get_n_cells_per_rank()
+  {
+    return cells_per_rank;
+  }
+  
+  std::unordered_map<size_t, size_t> &
+  get_n_vertices_per_rank()
+  {
+    return vertices_per_rank;
   }
 
 }; // class weaver
