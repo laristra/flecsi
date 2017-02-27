@@ -40,7 +40,7 @@
 
 ///
 // \file legion/dense.h
-// \authors bergen
+// \authors bergen, nickm
 // \date Initial file creation: Apr 7, 2016
 ///
 
@@ -127,16 +127,22 @@ struct dense_accessor_t : public accessor__<T>
   }
   */
 
-  dense_accessor_t(const dense_accessor_t & a){
-    np(98);
+  dense_accessor_t(const dense_accessor_t & a)
+  : size_(a.size_),
+  values_(a.values_){
+    np(size_);
   }
 
-  dense_accessor_t(const data_handle_t<void, 0>& h){
-    np(201);
+  dense_accessor_t(const data_handle_t<void, 0>& h)
+  : size_(h.size),
+  values_(static_cast<T*>(h.data)),
+  dpd_(nullptr),
+  pr_(h.pr){
+
   }
 
   ~dense_accessor_t(){
-    if(values_){
+    if(dpd_){
       dpd_->unmap_data();
     }
   }
@@ -333,6 +339,7 @@ private:
   utils::index_space_t is_;
   size_t index_space_ = 0;
   T* values_ = nullptr;
+  Legion::PhysicalRegion pr_;
 
 }; // struct dense_accessor_t
 
@@ -675,6 +682,7 @@ struct storage_type_t<dense, DS, MD>
 
     handle_t<T, PS> h;
     h.lr = pmd.lr;
+    h.size = pmd.size;
     
     return h;
   } // get_handle

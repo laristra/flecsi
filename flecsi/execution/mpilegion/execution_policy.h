@@ -31,78 +31,78 @@
 
 /*!
  * \file mpilegion/execution_policy.h
- * \authors bergen, demeshko
+ * \authors bergen, demeshko, nickm
  * \date Initial file creation: Nov 15, 2015
  */
 
-// ndm - move to proper location
-enum class privilege : size_t {
-  none = 0b00,
-  ro =   0b01,
-  wd =   0b10,
-  rw =   0b11
-};
-
-template<size_t I, typename T>
-struct walk_task_args__{
-  static size_t walk(T& t, Legion::TaskLauncher& l, size_t& region){
-    handle_(std::get<std::tuple_size<T>::value - I>(t), l, region);
-    return walk_task_args__<I - 1, T>::walk(t, l, region);
-  }
-
-  template<typename S, size_t PS>
-  static void handle_(flecsi::data_handle_t<S, PS>& h,
-                      Legion::TaskLauncher& l,
-                      size_t& region){
-
-    flecsi::execution::field_ids_t & fid_t = 
-      flecsi::execution::field_ids_t::instance();
-
-    h.region = region++;
-
-    switch(PS){
-      case size_t(privilege::none):
-        assert(false && 
-               "no privileges found on task arg while generating "
-               "region requirements");
-        break;
-      case size_t(privilege::ro):{
-        RegionRequirement rr(h.lr, READ_ONLY, EXCLUSIVE, h.lr);
-        rr.add_field(fid_t.fid_value);
-        l.add_region_requirement(rr);
-        break;
-      }
-      case size_t(privilege::wd):{
-        RegionRequirement rr(h.lr, WRITE_DISCARD, EXCLUSIVE, h.lr);
-        rr.add_field(fid_t.fid_value);
-        l.add_region_requirement(rr);
-        break;
-      }
-      case size_t(privilege::rw):{
-        RegionRequirement rr(h.lr, READ_WRITE, EXCLUSIVE, h.lr);
-        rr.add_field(fid_t.fid_value);
-        l.add_region_requirement(rr);
-        break;
-      }
-    }
-  }
-
-  template<typename R>
-  static
-  typename std::enable_if_t<!std::is_base_of<flecsi::data_handle_base, R>::
-    value>
-  handle_(R&, Legion::TaskLauncher&, size_t&){}
-};
-
-template<typename T>
-struct walk_task_args__<0, T>{
-  static size_t walk(T& t, Legion::TaskLauncher& l, size_t& region){
-    return 0;
-  }
-};
-
 namespace flecsi {
 namespace execution {
+
+  // ndm - move to proper location
+  enum class privilege : size_t {
+    none = 0b00,
+    ro =   0b01,
+    wd =   0b10,
+    rw =   0b11
+  };
+
+  template<size_t I, typename T>
+  struct handle_task_args__{
+    static size_t walk(T& t, Legion::TaskLauncher& l, size_t& region){
+      handle_(std::get<std::tuple_size<T>::value - I>(t), l, region);
+      return handle_task_args__<I - 1, T>::walk(t, l, region);
+    }
+
+    template<typename S, size_t PS>
+    static void handle_(flecsi::data_handle_t<S, PS>& h,
+                        Legion::TaskLauncher& l,
+                        size_t& region){
+
+      flecsi::execution::field_ids_t & fid_t = 
+        flecsi::execution::field_ids_t::instance();
+
+      h.region = region++;
+
+      switch(PS){
+        case size_t(privilege::none):
+          assert(false && 
+                 "no privileges found on task arg while generating "
+                 "region requirements");
+          break;
+        case size_t(privilege::ro):{
+          RegionRequirement rr(h.lr, READ_ONLY, EXCLUSIVE, h.lr);
+          rr.add_field(fid_t.fid_value);
+          l.add_region_requirement(rr);
+          break;
+        }
+        case size_t(privilege::wd):{
+          RegionRequirement rr(h.lr, WRITE_DISCARD, EXCLUSIVE, h.lr);
+          rr.add_field(fid_t.fid_value);
+          l.add_region_requirement(rr);
+          break;
+        }
+        case size_t(privilege::rw):{
+          RegionRequirement rr(h.lr, READ_WRITE, EXCLUSIVE, h.lr);
+          rr.add_field(fid_t.fid_value);
+          l.add_region_requirement(rr);
+          break;
+        }
+      }
+    }
+
+    template<typename R>
+    static
+    typename std::enable_if_t<!std::is_base_of<flecsi::data_handle_base, R>::
+      value>
+    handle_(R&, Legion::TaskLauncher&, size_t&){}
+  };
+
+  template<typename T>
+  struct handle_task_args__<0, T>{
+    static size_t walk(T& t, Legion::TaskLauncher& l, size_t& region){
+      return 0;
+    }
+  };
 
 //----------------------------------------------------------------------------//
 // Execution policy.
@@ -277,7 +277,7 @@ struct mpilegion_execution_policy_t
 
           size_t region = 0;
 
-          walk_task_args__<std::tuple_size<user_task_args_tuple_t>::value, user_task_args_tuple_t>::walk(
+          handle_task_args__<std::tuple_size<user_task_args_tuple_t>::value, user_task_args_tuple_t>::walk(
             user_task_args_tuple, task_launcher, region);
 
           auto future = context_.runtime(parent)->execute_task(

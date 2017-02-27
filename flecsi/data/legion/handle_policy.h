@@ -3,6 +3,12 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
+///
+// \file legion/handle_policy.h
+// \authors nickm
+// \date Initial file creation: Feb 27, 2017
+///
+
 #ifndef flecsi_legion_handle_policy_h
 #define flecsi_legion_handle_policy_h
 
@@ -17,6 +23,8 @@ public:
   Legion::LogicalRegion lr;
   size_t region;
   void* data;
+  size_t size;
+  Legion::PhysicalRegion pr;
 private:
 
 };

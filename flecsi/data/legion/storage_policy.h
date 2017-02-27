@@ -34,7 +34,7 @@
 
 ///
 // \file legion/storage_policy.h
-// \authors bergen
+// \authors bergen, nickm
 // \date Initial file creation: Apr 17, 2016
 ///
 

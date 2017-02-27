@@ -47,7 +47,8 @@ namespace flecsi {
 namespace execution {
   
 void task1(accessor_t<double> x) {
-  
+  np(x[0]);
+  np(x[1]);
 } // task1
 
 register_task(task1, loc, single);

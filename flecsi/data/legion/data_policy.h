@@ -3,6 +3,12 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
+///
+// \file legion/data_policy.h
+// \authors nickm
+// \date Initial file creation: Feb 24, 2017
+///
+
 #ifndef flecsi_legion_data_policy_h
 #define flecsi_legion_data_policy_h
 

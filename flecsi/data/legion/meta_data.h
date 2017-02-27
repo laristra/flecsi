@@ -21,7 +21,7 @@
 
 ///
 // \file legion/meta_data.h
-// \authors bergen
+// \authors bergen, nickm
 // \date Initial file creation: Apr 15, 2016
 ///
 

@@ -18,7 +18,7 @@
 ///
 /// \file
 /// \date Initial file creation: Aug 01, 2016
-///
+/// \authors bergen, nickm
 
 namespace flecsi {
 

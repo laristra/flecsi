@@ -4,7 +4,8 @@
  *~--------------------------------------------------------------------------~*/
 
 ///
-/// \file
+// \file data/data_client.cc
+// \authors bergen, nickm
 ///
 
 #include "flecsi/data/storage.h"
