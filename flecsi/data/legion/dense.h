@@ -80,7 +80,7 @@ struct dense_handle_t :
 // \tparam MD The meta data type.
 ///
 template<typename T, typename MD>
-struct dense_accessor_t : public dense_accessor_base
+struct dense_accessor_t : public accessor__<T>
 {
   //--------------------------------------------------------------------------//
   // Type definitions.
@@ -131,8 +131,8 @@ struct dense_accessor_t : public dense_accessor_base
     np(98);
   }
 
-  dense_accessor_t(const data_handle_base& h){
-    np(199);
+  dense_accessor_t(const data_handle_t<void, 0>& h){
+    np(201);
   }
 
   ~dense_accessor_t(){

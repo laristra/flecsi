@@ -27,6 +27,37 @@
 // \date Initial file creation: Jul 24, 2016
 ///
 
+template<size_t I, typename AS, typename PS>
+struct create_task_args__{
+  static size_t create(AS& args){
+    using type = 
+      typename std::tuple_element<std::tuple_size<AS>::value - I,
+        PS>::type;
+        
+    handle_<type>(std::get<std::tuple_size<AS>::value - I>(args));
+
+    return create_task_args__<I - 1, AS, PS>::create(args);
+  }
+
+  template<typename PT, typename S>
+  static void handle_(flecsi::data_handle_t<void, 0>& handle){
+    using T = typename PT::type;
+  }
+
+  template<typename PT, typename R>
+  static
+  typename std::enable_if_t<!std::is_base_of<flecsi::data_handle_base, R>::
+    value>
+  handle_(R&, Legion::TaskLauncher&){}
+};
+
+template<typename AS, typename PS>
+struct create_task_args__<0, AS, PS>{
+  static size_t create(AS& args){
+    return 0;
+  }
+};
+
 namespace flecsi {
 namespace execution {
 
@@ -49,8 +80,8 @@ template<
 struct legion_task_wrapper__
 {
   using user_task_args_t = 
-    typename utils::base_convert_tuple_type<data::accessor_base, 
-    flecsi::data_handle_base, A>::type;
+    typename utils::base_convert_tuple_type<accessor_base, 
+    data_handle_t<void, 0>, A>::type;
 
   //
   // Type definition for user task.
@@ -63,8 +94,8 @@ struct legion_task_wrapper__
   using task_id_t = LegionRuntime::HighLevel::TaskID;
 
   using user_args_t = 
-    typename utils::base_convert_tuple_type<data::accessor_base, 
-    flecsi::data_handle_base, A>::type;
+    typename utils::base_convert_tuple_type<accessor_base, 
+    data_handle_t<void, 0>, A>::type;
 
 #ifdef DH1
     //typename user_args_t::a x;
@@ -205,8 +236,9 @@ struct legion_task_wrapper__<P, S, I, void, A>
   // Type definition for user task.
   //
   using user_task_args_t = 
-    typename utils::base_convert_tuple_type<data::accessor_base, 
-    flecsi::data_handle_base, A>::type;
+    typename utils::base_convert_tuple_type<accessor_base, 
+    data_handle_t<void, 0>, A>::type;
+  using args_t = A;
 
   using task_args_t = legion_task_args__<void,A,user_task_args_t>;
   using user_task_handle_t = typename task_args_t::user_task_handle_t;
@@ -275,23 +307,8 @@ struct legion_task_wrapper__<P, S, I, void, A>
     context_t::instance().push_state(user_task_handle.key,
       context, runtime, task, regions);
 
-#if 0
-    // FIXME: Working on processing data handles
-    // Somehow (???) we are going to have to interleave the processed
-    // data handle arguments back into the original slots...
-
-    // Get the data handle task arguments
-    auto data_args = tuple_filter_<is_data_handle, task_args_t>(task_args);
-    std::cout << "data_args size: " <<
-      std::tuple_size<decltype(data_args)>::value << std::endl;
-
-    utils::tuple_for_each(data_args, [&](auto & element) {
-      std::cout << "hello" << std::endl;
-    });
-
-    // Execute the user task
-    return tuple_function(user_task, user_args);
-#endif
+    create_task_args__<std::tuple_size<user_task_args_t>::value,
+      user_task_args_t, args_t>::create(user_task_args);
 
     user_task_handle(context_t::instance().function(user_task_handle.key),
       user_task_args);

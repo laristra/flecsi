@@ -13,17 +13,16 @@
 ///
 
 namespace flecsi {
-namespace data {
 
 class accessor_base{
 
 };
 
-class dense_accessor_base : public accessor_base{
-
+template<typename T>
+class accessor__ : public accessor_base{
+  using type = T;
 };
 
-} // namespace data
 } // namespace flecsi
 
 #endif // flecsi_data_accessor_h
