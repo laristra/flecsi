@@ -50,7 +50,8 @@ struct walk_task_args__{
   }
 
   template<typename S, size_t PS>
-  void handle_(flecsi::data_handle_t<S, PS>& h, Legion::TaskLauncher& l){
+  static void handle_(flecsi::data_handle_t<S, PS>& h,
+                      Legion::TaskLauncher& l){
     flecsi::execution::field_ids_t & fid_t = 
       flecsi::execution::field_ids_t::instance();
 
@@ -82,12 +83,12 @@ struct walk_task_args__{
   }
 
   template<typename R>
-  void handle_(R&, TaskLauncher&){}
+  static void handle_(R&, Legion::TaskLauncher&){}
 };
 
 template<typename T>
 struct walk_task_args__<0, T>{
-  static size_t walk(T& t, TaskLauncher& l){
+  static size_t walk(T& t, Legion::TaskLauncher& l){
     return 0;
   }
 };
@@ -215,7 +216,7 @@ struct mpilegion_execution_policy_t
 
     auto user_task_args_tuple = std::make_tuple(user_task_args...);
     using user_task_args_tuple_t = decltype( user_task_args_tuple );
-
+    
     using task_args_t = 
       legion_task_args__<R, typename T::args_t, user_task_args_tuple_t>;
 
@@ -268,8 +269,8 @@ struct mpilegion_execution_policy_t
 
           // ndm - walk user_task_args_tuple_t tuple - look for data_handle types to generate RR's
 
-          walk_task_args__<std::tuple_size<T>::value, user_task_args_tuple_t>
-            (user_task_args_tuple, task_launcher);
+          walk_task_args__<std::tuple_size<user_task_args_tuple_t>::value, user_task_args_tuple_t>::walk(
+            user_task_args_tuple, task_launcher);
 
           auto future = context_.runtime(parent)->execute_task(
             context_.context(parent), task_launcher);

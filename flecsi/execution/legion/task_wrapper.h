@@ -57,7 +57,6 @@ struct legion_task_wrapper__
   //
   using task_args_t = legion_task_args__<R,A,user_task_args_t>;
   using user_task_handle_t = typename task_args_t::user_task_handle_t;
-  using user_task_args_t = typename task_args_t::user_task_args_t;
 
   using lr_runtime = LegionRuntime::HighLevel::HighLevelRuntime;
   using lr_proc = LegionRuntime::HighLevel::Processor;
