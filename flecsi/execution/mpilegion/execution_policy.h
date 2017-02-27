@@ -38,14 +38,6 @@
 namespace flecsi {
 namespace execution {
 
-  // ndm - move to proper location
-  enum class privilege : size_t {
-    none = 0b00,
-    ro =   0b01,
-    wd =   0b10,
-    rw =   0b11
-  };
-
   template<size_t I, typename T>
   struct handle_task_args__{
     static size_t walk(T& t, Legion::TaskLauncher& l, size_t& region){
@@ -64,24 +56,24 @@ namespace execution {
       h.region = region++;
 
       switch(PS){
-        case size_t(privilege::none):
+        case size_t(data::privilege::none):
           assert(false && 
                  "no privileges found on task arg while generating "
                  "region requirements");
           break;
-        case size_t(privilege::ro):{
+        case size_t(data::privilege::ro):{
           RegionRequirement rr(h.lr, READ_ONLY, EXCLUSIVE, h.lr);
           rr.add_field(fid_t.fid_value);
           l.add_region_requirement(rr);
           break;
         }
-        case size_t(privilege::wd):{
+        case size_t(data::privilege::wd):{
           RegionRequirement rr(h.lr, WRITE_DISCARD, EXCLUSIVE, h.lr);
           rr.add_field(fid_t.fid_value);
           l.add_region_requirement(rr);
           break;
         }
-        case size_t(privilege::rw):{
+        case size_t(data::privilege::rw):{
           RegionRequirement rr(h.lr, READ_WRITE, EXCLUSIVE, h.lr);
           rr.add_field(fid_t.fid_value);
           l.add_region_requirement(rr);

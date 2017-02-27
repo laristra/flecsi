@@ -17,16 +17,12 @@
 namespace flecsi {
 namespace data {
 
-class legion_handle_policy_t
+struct legion_handle_policy_t
 {
-public:
   Legion::LogicalRegion lr;
   size_t region;
   void* data;
   size_t size;
-  Legion::PhysicalRegion pr;
-private:
-
 };
 
 } // namespace data

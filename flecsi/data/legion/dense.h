@@ -129,17 +129,13 @@ struct dense_accessor_t : public accessor__<T>
 
   dense_accessor_t(const dense_accessor_t & a)
   : size_(a.size_),
-  values_(a.values_){
-    np(size_);
-  }
+  values_(a.values_),
+  dpd_(a.dpd_){}
 
   dense_accessor_t(const data_handle_t<void, 0>& h)
   : size_(h.size),
   values_(static_cast<T*>(h.data)),
-  dpd_(nullptr),
-  pr_(h.pr){
-
-  }
+  dpd_(nullptr){}
 
   ~dense_accessor_t(){
     if(dpd_){
@@ -339,8 +335,6 @@ private:
   utils::index_space_t is_;
   size_t index_space_ = 0;
   T* values_ = nullptr;
-  Legion::PhysicalRegion pr_;
-
 }; // struct dense_accessor_t
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//

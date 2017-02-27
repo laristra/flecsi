@@ -17,13 +17,6 @@
 namespace flecsi {
 namespace data {
 
-enum class privilege : size_t {
-  none = 0b00,
-  ro =   0b01,
-  wd =   0b10,
-  rw =   0b11
-};
-
 ///
 /// \class storage__ storage.h
 /// \brief storage__ provides an interface for data registration and access.

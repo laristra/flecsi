@@ -22,6 +22,17 @@
 
 namespace flecsi {
 
+  namespace data {
+
+    enum class privilege : size_t {
+      none = 0b00,
+      ro =   0b01,
+      wd =   0b10,
+      rw =   0b11
+    };
+
+  } // namespace data
+
 ///
 /// \struct data_handle_t data_handle.h
 /// \brief data_handle_t provides an empty type for compile-time identification
