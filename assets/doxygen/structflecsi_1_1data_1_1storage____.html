@@ -41,6 +41,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -85,7 +86,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>data</b></li><li class="navelem"><a class="el" href="structflecsi_1_1data_1_1storage____.html">storage__</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>data</b></li><li class="navelem"><a class="el" href="structflecsi_1_1data_1_1storage____.html">storage__</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -170,10 +171,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:abbbada1ce87d3667180bccc11051d5ee"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#abbbada1ce87d3667180bccc11051d5ee">get_accessors</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, size_t version, bool sorted=true)</td></tr>
 <tr class="memdesc:abbbada1ce87d3667180bccc11051d5ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a std::vector of accessors to the stored states with type <em>T</em>.  <a href="#abbbada1ce87d3667180bccc11051d5ee">More...</a><br /></td></tr>
 <tr class="separator:abbbada1ce87d3667180bccc11051d5ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af9047f498b4d344cb6e80f56a66969bd"><td class="memTemplParams" colspan="2">template&lt;size_t ST, typename T , size_t NS&gt; </td></tr>
-<tr class="memitem:af9047f498b4d344cb6e80f56a66969bd"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#af9047f498b4d344cb6e80f56a66969bd">get_handle</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;key, size_t version=0)</td></tr>
-<tr class="memdesc:af9047f498b4d344cb6e80f56a66969bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">get a handle to registered data.  <a href="#af9047f498b4d344cb6e80f56a66969bd">More...</a><br /></td></tr>
-<tr class="separator:af9047f498b4d344cb6e80f56a66969bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb4456f5fd68da4ba4def263aee1b933"><td class="memTemplParams" colspan="2">template&lt;size_t ST, typename T , size_t NS, size_t PS&gt; </td></tr>
+<tr class="memitem:adb4456f5fd68da4ba4def263aee1b933"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#adb4456f5fd68da4ba4def263aee1b933">get_handle</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;key, size_t version=0)</td></tr>
+<tr class="memdesc:adb4456f5fd68da4ba4def263aee1b933"><td class="mdescLeft">&#160;</td><td class="mdescRight">get a handle to registered data.  <a href="#adb4456f5fd68da4ba4def263aee1b933">More...</a><br /></td></tr>
+<tr class="separator:adb4456f5fd68da4ba4def263aee1b933"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7ba4c1ba8bcffc9331715c01f4d1f78"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa7ba4c1ba8bcffc9331715c01f4d1f78"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> ()</td></tr>
 <tr class="separator:aa7ba4c1ba8bcffc9331715c01f4d1f78"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -523,13 +524,13 @@ template&lt;size_t ST, typename T &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="af9047f498b4d344cb6e80f56a66969bd"></a>
+<a class="anchor" id="adb4456f5fd68da4ba4def263aee1b933"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename user_meta_data_t , template&lt; typename &gt; class storage_policy_t&gt; </div>
 <div class="memtemplate">
-template&lt;size_t ST, typename T , size_t NS&gt; </div>
+template&lt;size_t ST, typename T , size_t NS, size_t PS&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -568,9 +569,10 @@ template&lt;size_t ST, typename T , size_t NS&gt; </div>
 <p>get a handle to registered data. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">ST</td><td></td></tr>
-    <tr><td class="paramname">T</td><td></td></tr>
-    <tr><td class="paramname">NS</td><td></td></tr>
+    <tr><td class="paramname">ST</td><td>storage type </td></tr>
+    <tr><td class="paramname">T</td><td>data type </td></tr>
+    <tr><td class="paramname">NS</td><td>namespace </td></tr>
+    <tr><td class="paramname">PS</td><td>privileges</td></tr>
   </table>
   </dd>
 </dl>

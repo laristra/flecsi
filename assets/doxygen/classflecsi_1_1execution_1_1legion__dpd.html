@@ -41,6 +41,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -85,7 +86,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="classflecsi_1_1execution_1_1legion__dpd.html">legion_dpd</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="classflecsi_1_1execution_1_1legion__dpd.html">legion_dpd</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -99,6 +100,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">flecsi::execution::legion_dpd Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="dpd_8h_source.html">dpd.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
@@ -140,63 +143,652 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>connectivity_vec</b>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aa8e2d5c05dd99ad86971fcd5454262e0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa8e2d5c05dd99ad86971fcd5454262e0"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>legion_dpd</b> (Legion::Context context, Legion::Runtime *runtime)</td></tr>
+<tr class="memitem:aa8e2d5c05dd99ad86971fcd5454262e0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__dpd.html#aa8e2d5c05dd99ad86971fcd5454262e0">legion_dpd</a> (Legion::Context context, Legion::Runtime *runtime)</td></tr>
 <tr class="separator:aa8e2d5c05dd99ad86971fcd5454262e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abaf5951e0b7dad216683f72e31b1e038"><td class="memTemplParams" colspan="2"><a class="anchor" id="abaf5951e0b7dad216683f72e31b1e038"></a>
-template&lt;class T &gt; </td></tr>
-<tr class="memitem:abaf5951e0b7dad216683f72e31b1e038"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>create_data</b> (<a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partitioned__unstructured.html">partitioned_unstructured</a> &amp;indices, size_t start_reserve)</td></tr>
-<tr class="separator:abaf5951e0b7dad216683f72e31b1e038"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6f08f1a1abc49e2991548706ff316cad"><td class="memTemplParams" colspan="2"><a class="anchor" id="a6f08f1a1abc49e2991548706ff316cad"></a>
-template&lt;class T &gt; </td></tr>
-<tr class="memitem:a6f08f1a1abc49e2991548706ff316cad"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>commit</b> (<a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1commit__data.html">commit_data</a>&lt; T &gt; &amp;cd)</td></tr>
+<tr class="memitem:aacfa772ea8a2850c74c1fff8f7d194d6"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:aacfa772ea8a2850c74c1fff8f7d194d6"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__dpd.html#aacfa772ea8a2850c74c1fff8f7d194d6">create_data</a> (<a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partitioned__unstructured.html">partitioned_unstructured</a> &amp;indices, size_t start_reserve, size_t start_size=0)</td></tr>
+<tr class="separator:aacfa772ea8a2850c74c1fff8f7d194d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f08f1a1abc49e2991548706ff316cad"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a6f08f1a1abc49e2991548706ff316cad"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__dpd.html#a6f08f1a1abc49e2991548706ff316cad">commit</a> (<a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1commit__data.html">commit_data</a>&lt; T &gt; &amp;cd)</td></tr>
 <tr class="separator:a6f08f1a1abc49e2991548706ff316cad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed2aff8aea5f7bbc3a2d24df7f52ed7a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aed2aff8aea5f7bbc3a2d24df7f52ed7a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>commit_</b> (<a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1commit__data.html">commit_data</a>&lt; char &gt; &amp;cd, size_t value_size)</td></tr>
+<tr class="memitem:aed2aff8aea5f7bbc3a2d24df7f52ed7a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__dpd.html#aed2aff8aea5f7bbc3a2d24df7f52ed7a">commit_</a> (<a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1commit__data.html">commit_data</a>&lt; char &gt; &amp;cd, size_t value_size)</td></tr>
 <tr class="separator:aed2aff8aea5f7bbc3a2d24df7f52ed7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a56b8c9ffa6266bcf4df367b7270d01af"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a56b8c9ffa6266bcf4df367b7270d01af"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>create_data_</b> (<a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partitioned__unstructured.html">partitioned_unstructured</a> &amp;indices, size_t start_reserve, size_t value_size)</td></tr>
-<tr class="separator:a56b8c9ffa6266bcf4df367b7270d01af"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af7b4e0018372bdecad575e47d63e71a7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af7b4e0018372bdecad575e47d63e71a7"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>create_connectivity</b> (size_t from_dim, <a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partitioned__unstructured.html">partitioned_unstructured</a> &amp;from, size_t to_dim, <a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partitioned__unstructured.html">partitioned_unstructured</a> &amp;to, <a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partitioned__unstructured.html">partitioned_unstructured</a> &amp;raw_connectivity)</td></tr>
+<tr class="memitem:a7f33cf7b095aa10c634d5447da2ab672"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__dpd.html#a7f33cf7b095aa10c634d5447da2ab672">create_data_</a> (<a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partitioned__unstructured.html">partitioned_unstructured</a> &amp;indices, size_t start_reserve, size_t start_size, size_t value_size)</td></tr>
+<tr class="separator:a7f33cf7b095aa10c634d5447da2ab672"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7b4e0018372bdecad575e47d63e71a7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__dpd.html#af7b4e0018372bdecad575e47d63e71a7">create_connectivity</a> (size_t from_dim, <a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partitioned__unstructured.html">partitioned_unstructured</a> &amp;from, size_t to_dim, <a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partitioned__unstructured.html">partitioned_unstructured</a> &amp;to, <a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partitioned__unstructured.html">partitioned_unstructured</a> &amp;raw_connectivity)</td></tr>
 <tr class="separator:af7b4e0018372bdecad575e47d63e71a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a80381e5dfe7e91688511e801397e3e60"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a80381e5dfe7e91688511e801397e3e60"></a>
-<a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partition__metadata.html">partition_metadata</a>&#160;</td><td class="memItemRight" valign="bottom"><b>get_partition_metadata</b> (size_t partition)</td></tr>
+<tr class="memitem:a80381e5dfe7e91688511e801397e3e60"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partition__metadata.html">partition_metadata</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__dpd.html#a80381e5dfe7e91688511e801397e3e60">get_partition_metadata</a> (size_t partition)</td></tr>
 <tr class="separator:a80381e5dfe7e91688511e801397e3e60"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aea124ce815ec583a47822e565e93893f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aea124ce815ec583a47822e565e93893f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>put_partition_metadata</b> (const <a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partition__metadata.html">partition_metadata</a> &amp;md)</td></tr>
+<tr class="memitem:aea124ce815ec583a47822e565e93893f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__dpd.html#aea124ce815ec583a47822e565e93893f">put_partition_metadata</a> (const <a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partition__metadata.html">partition_metadata</a> &amp;md)</td></tr>
 <tr class="separator:aea124ce815ec583a47822e565e93893f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac08269868a448b26ccb3d73b6e539a50"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac08269868a448b26ccb3d73b6e539a50"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>dump</b> (size_t from_dim, size_t to_dim)</td></tr>
+<tr class="memitem:ac08269868a448b26ccb3d73b6e539a50"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__dpd.html#ac08269868a448b26ccb3d73b6e539a50">dump</a> (size_t from_dim, size_t to_dim)</td></tr>
 <tr class="separator:ac08269868a448b26ccb3d73b6e539a50"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2f8860cfbb26d998d3492ece62890ba"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab2f8860cfbb26d998d3492ece62890ba"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>map_data</b> (size_t partition, <a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1offset__count.html">offset_count</a> *&amp;indices, <a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1entry__offset.html">entry_offset</a> *&amp;entries, void *&amp;values)</td></tr>
+<tr class="memitem:ab2f8860cfbb26d998d3492ece62890ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__dpd.html#ab2f8860cfbb26d998d3492ece62890ba">map_data</a> (size_t partition, <a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1offset__count.html">offset_count</a> *&amp;indices, <a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1entry__offset.html">entry_offset</a> *&amp;entries, void *&amp;values)</td></tr>
 <tr class="separator:ab2f8860cfbb26d998d3492ece62890ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a39e362b6a50352542cce8e9924615d67"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a39e362b6a50352542cce8e9924615d67"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>unmap_data</b> ()</td></tr>
+<tr class="memitem:a39e362b6a50352542cce8e9924615d67"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__dpd.html#a39e362b6a50352542cce8e9924615d67">unmap_data</a> ()</td></tr>
 <tr class="separator:a39e362b6a50352542cce8e9924615d67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:aa3a9974d4bb230d200d41ea9ccae1fb4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa3a9974d4bb230d200d41ea9ccae1fb4"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>init_connectivity_task</b> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context ctx, Legion::Runtime *runtime)</td></tr>
+<tr class="memitem:aa3a9974d4bb230d200d41ea9ccae1fb4"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__dpd.html#aa3a9974d4bb230d200d41ea9ccae1fb4">init_connectivity_task</a> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context ctx, Legion::Runtime *runtime)</td></tr>
 <tr class="separator:aa3a9974d4bb230d200d41ea9ccae1fb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a870627e76184693e0afde7fc0273409f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a870627e76184693e0afde7fc0273409f"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>init_data_task</b> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context ctx, Legion::Runtime *runtime)</td></tr>
+<tr class="memitem:a870627e76184693e0afde7fc0273409f"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__dpd.html#a870627e76184693e0afde7fc0273409f">init_data_task</a> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context ctx, Legion::Runtime *runtime)</td></tr>
 <tr class="separator:a870627e76184693e0afde7fc0273409f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a48de8b14a49d56be0a09dcd77342a5b2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a48de8b14a49d56be0a09dcd77342a5b2"></a>
-static <a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partition__metadata.html">partition_metadata</a>&#160;</td><td class="memItemRight" valign="bottom"><b>get_partition_metadata_task</b> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context context, Legion::Runtime *runtime)</td></tr>
+<tr class="memitem:a48de8b14a49d56be0a09dcd77342a5b2"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partition__metadata.html">partition_metadata</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__dpd.html#a48de8b14a49d56be0a09dcd77342a5b2">get_partition_metadata_task</a> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context context, Legion::Runtime *runtime)</td></tr>
 <tr class="separator:a48de8b14a49d56be0a09dcd77342a5b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a236678cf6fe223c1f2856ab9d6b1fcbc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a236678cf6fe223c1f2856ab9d6b1fcbc"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>put_partition_metadata_task</b> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context context, Legion::Runtime *runtime)</td></tr>
+<tr class="memitem:a236678cf6fe223c1f2856ab9d6b1fcbc"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__dpd.html#a236678cf6fe223c1f2856ab9d6b1fcbc">put_partition_metadata_task</a> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context context, Legion::Runtime *runtime)</td></tr>
 <tr class="separator:a236678cf6fe223c1f2856ab9d6b1fcbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0287ded63abba53928eb2951aa87ae8c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0287ded63abba53928eb2951aa87ae8c"></a>
-static <a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partition__metadata.html">partition_metadata</a>&#160;</td><td class="memItemRight" valign="bottom"><b>commit_data_task</b> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context context, Legion::Runtime *runtime)</td></tr>
+<tr class="memitem:a0287ded63abba53928eb2951aa87ae8c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partition__metadata.html">partition_metadata</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__dpd.html#a0287ded63abba53928eb2951aa87ae8c">commit_data_task</a> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context context, Legion::Runtime *runtime)</td></tr>
 <tr class="separator:a0287ded63abba53928eb2951aa87ae8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a73ecc3fb353dc4b6f91dc45fb6855cd2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a73ecc3fb353dc4b6f91dc45fb6855cd2"></a>
-static size_t&#160;</td><td class="memItemRight" valign="bottom"><b>connectivity_field_id</b> (size_t from_dim, size_t to_dim)</td></tr>
+<tr class="memitem:a73ecc3fb353dc4b6f91dc45fb6855cd2"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__dpd.html#a73ecc3fb353dc4b6f91dc45fb6855cd2">connectivity_field_id</a> (size_t from_dim, size_t to_dim)</td></tr>
 <tr class="separator:a73ecc3fb353dc4b6f91dc45fb6855cd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>FIXME documentation </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="aa8e2d5c05dd99ad86971fcd5454262e0"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">flecsi::execution::legion_dpd::legion_dpd </td>
+          <td>(</td>
+          <td class="paramtype">Legion::Context&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Runtime *&#160;</td>
+          <td class="paramname"><em>runtime</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Default constructor </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a6f08f1a1abc49e2991548706ff316cad"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::legion_dpd::commit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1commit__data.html">commit_data</a>&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>cd</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>FIXME documentation </p>
+
+</div>
+</div>
+<a class="anchor" id="aed2aff8aea5f7bbc3a2d24df7f52ed7a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::legion_dpd::commit_ </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1commit__data.html">commit_data</a>&lt; char &gt; &amp;&#160;</td>
+          <td class="paramname"><em>cd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>value_size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>FIXME documentation </p>
+
+</div>
+</div>
+<a class="anchor" id="a0287ded63abba53928eb2951aa87ae8c"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partition__metadata.html">legion_dpd::partition_metadata</a> flecsi::execution::legion_dpd::commit_data_task </td>
+          <td>(</td>
+          <td class="paramtype">const Legion::Task *&#160;</td>
+          <td class="paramname"><em>task</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; Legion::PhysicalRegion &gt; &amp;&#160;</td>
+          <td class="paramname"><em>regions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Context&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Runtime *&#160;</td>
+          <td class="paramname"><em>runtime</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>FIXME documentation </p>
+
+</div>
+</div>
+<a class="anchor" id="a73ecc3fb353dc4b6f91dc45fb6855cd2"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static size_t flecsi::execution::legion_dpd::connectivity_field_id </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>from_dim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>to_dim</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>FIXME documentation </p>
+
+</div>
+</div>
+<a class="anchor" id="af7b4e0018372bdecad575e47d63e71a7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::legion_dpd::create_connectivity </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>from_dim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partitioned__unstructured.html">partitioned_unstructured</a> &amp;&#160;</td>
+          <td class="paramname"><em>from</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>to_dim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partitioned__unstructured.html">partitioned_unstructured</a> &amp;&#160;</td>
+          <td class="paramname"><em>to</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partitioned__unstructured.html">partitioned_unstructured</a> &amp;&#160;</td>
+          <td class="paramname"><em>raw_connectivity</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>FIXME documentation </p>
+
+</div>
+</div>
+<a class="anchor" id="aacfa772ea8a2850c74c1fff8f7d194d6"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::legion_dpd::create_data </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partitioned__unstructured.html">partitioned_unstructured</a> &amp;&#160;</td>
+          <td class="paramname"><em>indices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>start_reserve</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>start_size</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>FIXME documentation </p>
+
+</div>
+</div>
+<a class="anchor" id="a7f33cf7b095aa10c634d5447da2ab672"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::legion_dpd::create_data_ </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partitioned__unstructured.html">partitioned_unstructured</a> &amp;&#160;</td>
+          <td class="paramname"><em>indices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>start_reserve</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>start_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>value_size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>FIXME documentation </p>
+
+</div>
+</div>
+<a class="anchor" id="ac08269868a448b26ccb3d73b6e539a50"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::legion_dpd::dump </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>from_dim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>to_dim</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>FIXME documentation </p>
+
+</div>
+</div>
+<a class="anchor" id="a80381e5dfe7e91688511e801397e3e60"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partition__metadata.html">legion_dpd::partition_metadata</a> flecsi::execution::legion_dpd::get_partition_metadata </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>partition</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>FIXME documentation </p>
+
+</div>
+</div>
+<a class="anchor" id="a48de8b14a49d56be0a09dcd77342a5b2"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partition__metadata.html">legion_dpd::partition_metadata</a> flecsi::execution::legion_dpd::get_partition_metadata_task </td>
+          <td>(</td>
+          <td class="paramtype">const Legion::Task *&#160;</td>
+          <td class="paramname"><em>task</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; Legion::PhysicalRegion &gt; &amp;&#160;</td>
+          <td class="paramname"><em>regions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Context&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Runtime *&#160;</td>
+          <td class="paramname"><em>runtime</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>FIXME documentation </p>
+
+</div>
+</div>
+<a class="anchor" id="aa3a9974d4bb230d200d41ea9ccae1fb4"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::legion_dpd::init_connectivity_task </td>
+          <td>(</td>
+          <td class="paramtype">const Legion::Task *&#160;</td>
+          <td class="paramname"><em>task</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; Legion::PhysicalRegion &gt; &amp;&#160;</td>
+          <td class="paramname"><em>regions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Context&#160;</td>
+          <td class="paramname"><em>ctx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Runtime *&#160;</td>
+          <td class="paramname"><em>runtime</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>FIXME documentation </p>
+
+</div>
+</div>
+<a class="anchor" id="a870627e76184693e0afde7fc0273409f"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::legion_dpd::init_data_task </td>
+          <td>(</td>
+          <td class="paramtype">const Legion::Task *&#160;</td>
+          <td class="paramname"><em>task</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; Legion::PhysicalRegion &gt; &amp;&#160;</td>
+          <td class="paramname"><em>regions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Context&#160;</td>
+          <td class="paramname"><em>ctx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Runtime *&#160;</td>
+          <td class="paramname"><em>runtime</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>FIXME documentation </p>
+
+</div>
+</div>
+<a class="anchor" id="ab2f8860cfbb26d998d3492ece62890ba"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::legion_dpd::map_data </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>partition</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1offset__count.html">offset_count</a> *&amp;&#160;</td>
+          <td class="paramname"><em>indices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1entry__offset.html">entry_offset</a> *&amp;&#160;</td>
+          <td class="paramname"><em>entries</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&amp;&#160;</td>
+          <td class="paramname"><em>values</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>FIXME documentation </p>
+
+</div>
+</div>
+<a class="anchor" id="aea124ce815ec583a47822e565e93893f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::legion_dpd::put_partition_metadata </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structflecsi_1_1execution_1_1legion__dpd_1_1partition__metadata.html">partition_metadata</a> &amp;&#160;</td>
+          <td class="paramname"><em>md</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>FIXME documentation </p>
+
+</div>
+</div>
+<a class="anchor" id="a236678cf6fe223c1f2856ab9d6b1fcbc"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::legion_dpd::put_partition_metadata_task </td>
+          <td>(</td>
+          <td class="paramtype">const Legion::Task *&#160;</td>
+          <td class="paramname"><em>task</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; Legion::PhysicalRegion &gt; &amp;&#160;</td>
+          <td class="paramname"><em>regions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Context&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Legion::Runtime *&#160;</td>
+          <td class="paramname"><em>runtime</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>FIXME documentation </p>
+
+</div>
+</div>
+<a class="anchor" id="a39e362b6a50352542cce8e9924615d67"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::legion_dpd::unmap_data </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>FIXME documentation </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>/home/flecsi/flecsi/flecsi/execution/legion/<a class="el" href="dpd_8h_source.html">dpd.h</a></li>
 <li>/home/flecsi/flecsi/flecsi/execution/legion/dpd.cc</li>

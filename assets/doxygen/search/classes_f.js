@@ -4,6 +4,7 @@ var searchData=
   ['task_5fhash_5fkey_5ft',['task_hash_key_t',['../structflecsi_1_1execution_1_1task__hash__key__t.html',1,'flecsi::execution']]],
   ['task_5fhash_5ft',['task_hash_t',['../structflecsi_1_1execution_1_1task__hash__t.html',1,'flecsi::execution']]],
   ['task_5fids_5ft',['task_ids_t',['../classflecsi_1_1execution_1_1task__ids__t.html',1,'flecsi::execution']]],
+  ['taskwrapper',['TaskWrapper',['../classflecsi_1_1execution_1_1sprint_1_1TaskWrapper.html',1,'flecsi::execution::sprint']]],
   ['temp_5fclass_5ft',['temp_class_t',['../classtemp__class__t.html',1,'']]],
   ['test_5fdefinition_5ft',['test_definition_t',['../classflecsi_1_1topology_1_1test__definition__t.html',1,'flecsi::topology']]],
   ['test_5fio_5ft',['test_io_t',['../structtest__io__t.html',1,'']]],
@@ -25,8 +26,9 @@ var searchData=
   ['tuple_5fhandle_5ft',['tuple_handle_t',['../structflecsi_1_1data_1_1legion_1_1storage__type__t_3_01tuple_00_01data__store__t_00_01meta__data__t_01_4_1_1tuple__handle__t.html',1,'flecsi::data::legion::storage_type_t&lt; tuple, data_store_t, meta_data_t &gt;']]],
   ['tuple_5fhandle_5ft',['tuple_handle_t',['../structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01tuple_00_01data__store__t_00_01meta__data__t_01_4_1_1tuple__handle__t.html',1,'flecsi::data::serial::storage_type_t&lt; tuple, data_store_t, meta_data_t &gt;']]],
   ['tuple_5fwrapper_5f',['tuple_wrapper_',['../structflecsi_1_1utils_1_1tuple__wrapper__.html',1,'flecsi::utils']]],
+  ['type_5finfo_5ft',['type_info_t',['../structflecsi_1_1data_1_1legion__meta__data__t_1_1type__info__t.html',1,'flecsi::data::legion_meta_data_t']]],
+  ['type_5finfo_5ft',['type_info_t',['../structflecsi_1_1data_1_1serial__meta__data__t_1_1type__info__t.html',1,'flecsi::data::serial_meta_data_t']]],
   ['type_5finfo_5ft',['type_info_t',['../structflecsi_1_1data_1_1default__data__storage__policy__t_1_1meta__data__t_1_1type__info__t.html',1,'flecsi::data::default_data_storage_policy_t::meta_data_t']]],
   ['type_5finfo_5ft',['type_info_t',['../structflecsi_1_1data_1_1default__storage__policy__t_1_1meta__data__t_1_1type__info__t.html',1,'flecsi::data::default_storage_policy_t::meta_data_t']]],
-  ['type_5finfo_5ft',['type_info_t',['../structflecsi_1_1data_1_1serial__meta__data__t_1_1type__info__t.html',1,'flecsi::data::serial_meta_data_t']]],
   ['typeify',['typeify',['../structflecsi_1_1topology_1_1typeify.html',1,'flecsi::topology']]]
 ];

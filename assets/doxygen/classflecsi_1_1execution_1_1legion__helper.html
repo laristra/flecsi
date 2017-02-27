@@ -41,6 +41,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -85,7 +86,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="classflecsi_1_1execution_1_1legion__helper.html">legion_helper</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="classflecsi_1_1execution_1_1legion__helper.html">legion_helper</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -96,6 +97,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">flecsi::execution::legion_helper Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="helper_8h_source.html">helper.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -141,17 +144,64 @@ Legion::IndexAllocator&#160;</td><td class="memItemRight" valign="bottom"><b>cre
 <tr class="memitem:a24f80c7fafaad18181284b0f286b8e4a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a24f80c7fafaad18181284b0f286b8e4a"></a>
 Legion::Domain&#160;</td><td class="memItemRight" valign="bottom"><b>get_domain</b> (Legion::PhysicalRegion pr) const </td></tr>
 <tr class="separator:a24f80c7fafaad18181284b0f286b8e4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ade8ba336fe5d82e488cd82e0c927f902"><td class="memTemplParams" colspan="2"><a class="anchor" id="ade8ba336fe5d82e488cd82e0c927f902"></a>
-template&lt;class T &gt; </td></tr>
-<tr class="memitem:ade8ba336fe5d82e488cd82e0c927f902"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_buffer</b> (Legion::PhysicalRegion pr, T *&amp;buf, size_t field=0) const </td></tr>
+<tr class="memitem:ade8ba336fe5d82e488cd82e0c927f902"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:ade8ba336fe5d82e488cd82e0c927f902"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__helper.html#ade8ba336fe5d82e488cd82e0c927f902">get_buffer</a> (Legion::PhysicalRegion pr, T *&amp;buf, size_t field=0) const </td></tr>
 <tr class="separator:ade8ba336fe5d82e488cd82e0c927f902"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a187a9227a2c1a72fe229ddd2fbf4b8b2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a187a9227a2c1a72fe229ddd2fbf4b8b2"></a>
-char *&#160;</td><td class="memItemRight" valign="bottom"><b>get_raw_buffer</b> (Legion::PhysicalRegion pr, size_t field=0) const </td></tr>
+char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__helper.html#a187a9227a2c1a72fe229ddd2fbf4b8b2">get_raw_buffer</a> (Legion::PhysicalRegion pr, size_t field=0) const </td></tr>
+<tr class="memdesc:a187a9227a2c1a72fe229ddd2fbf4b8b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">FIXME documentation. <br /></td></tr>
 <tr class="separator:a187a9227a2c1a72fe229ddd2fbf4b8b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c079310a533dd26cbd740dc9a7876de"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2c079310a533dd26cbd740dc9a7876de"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>unmap_region</b> (Legion::PhysicalRegion pr) const </td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1legion__helper.html#a2c079310a533dd26cbd740dc9a7876de">unmap_region</a> (Legion::PhysicalRegion pr) const </td></tr>
+<tr class="memdesc:a2c079310a533dd26cbd740dc9a7876de"><td class="mdescLeft">&#160;</td><td class="mdescRight">FIXME documentation. <br /></td></tr>
 <tr class="separator:a2c079310a533dd26cbd740dc9a7876de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>FIXME documentation </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="ade8ba336fe5d82e488cd82e0c927f902"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void flecsi::execution::legion_helper::get_buffer </td>
+          <td>(</td>
+          <td class="paramtype">Legion::PhysicalRegion&#160;</td>
+          <td class="paramname"><em>pr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T *&amp;&#160;</td>
+          <td class="paramname"><em>buf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>field</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>FIXME documentation </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/execution/legion/<a class="el" href="helper_8h_source.html">helper.h</a></li>
 </ul>

@@ -41,6 +41,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -85,7 +86,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1mpilegion__execution__policy__t.html">mpilegion_execution_policy_t</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1mpilegion__execution__policy__t.html">mpilegion_execution_policy_t</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -107,13 +108,11 @@ template&lt;typename R &gt; </td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a17b2bbacd641afdf71659dc6e187538f"><td class="memTemplParams" colspan="2"><a class="anchor" id="a17b2bbacd641afdf71659dc6e187538f"></a>
-template&lt;typename R , typename A &gt; </td></tr>
-<tr class="memitem:a17b2bbacd641afdf71659dc6e187538f"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>register_task</b> (<a class="el" href="structflecsi_1_1execution_1_1task__hash__key__t.html">task_hash_key_t</a> key)</td></tr>
+<tr class="memitem:a17b2bbacd641afdf71659dc6e187538f"><td class="memTemplParams" colspan="2">template&lt;typename R , typename A &gt; </td></tr>
+<tr class="memitem:a17b2bbacd641afdf71659dc6e187538f"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1mpilegion__execution__policy__t.html#a17b2bbacd641afdf71659dc6e187538f">register_task</a> (<a class="el" href="structflecsi_1_1execution_1_1task__hash__key__t.html">task_hash_key_t</a> key)</td></tr>
 <tr class="separator:a17b2bbacd641afdf71659dc6e187538f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a824960ddc663eccd9f1e245e219d5b2e"><td class="memTemplParams" colspan="2"><a class="anchor" id="a824960ddc663eccd9f1e245e219d5b2e"></a>
-template&lt;typename R , typename T , typename... As&gt; </td></tr>
-<tr class="memitem:a824960ddc663eccd9f1e245e219d5b2e"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><b>execute_task</b> (<a class="el" href="structflecsi_1_1execution_1_1task__hash__key__t.html">task_hash_key_t</a> key, size_t parent, T user_task_handle, As &amp;&amp;...user_task_args)</td></tr>
+<tr class="memitem:a824960ddc663eccd9f1e245e219d5b2e"><td class="memTemplParams" colspan="2">template&lt;typename R , typename T , typename... As&gt; </td></tr>
+<tr class="memitem:a824960ddc663eccd9f1e245e219d5b2e"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1mpilegion__execution__policy__t.html#a824960ddc663eccd9f1e245e219d5b2e">execute_task</a> (<a class="el" href="structflecsi_1_1execution_1_1task__hash__key__t.html">task_hash_key_t</a> key, size_t parent, T user_task_handle, As &amp;&amp;...user_task_args)</td></tr>
 <tr class="separator:a824960ddc663eccd9f1e245e219d5b2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1de6e61770673e4ae3feb2ce9f691556"><td class="memTemplParams" colspan="2">template&lt;typename R , typename... As&gt; </td></tr>
 <tr class="memitem:a1de6e61770673e4ae3feb2ce9f691556"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1mpilegion__execution__policy__t.html#a1de6e61770673e4ae3feb2ce9f691556">register_function</a> (const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;key, std::function&lt; R(As...)&gt; &amp;user_function)</td></tr>
@@ -168,6 +167,55 @@ template&lt;typename T , typename... As&gt; </div>
 
 </div>
 </div>
+<a class="anchor" id="a824960ddc663eccd9f1e245e219d5b2e"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename R , typename T , typename... As&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static decltype(auto) flecsi::execution::mpilegion_execution_policy_t::execute_task </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1execution_1_1task__hash__key__t.html">task_hash_key_t</a>&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>parent</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>user_task_handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">As &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>user_task_args</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Execute FLeCSI task. Depending on runtime specified for task to be executed at (part of the processor_type) In case processor_type is "mpi" we first need to execute index_launch task that will switch from Legion to MPI runtime and pass a function pointer to every MPI thread. Then, on the MPI side, we execute the function and come back to Legion runtime. In case of processoe_type != "mpi" we launch the task through the TaskLauncher or IndexLauncher depending on the launch_type </p>
+
+</div>
+</div>
 <a class="anchor" id="a1de6e61770673e4ae3feb2ce9f691556"></a>
 <div class="memitem">
 <div class="memproto">
@@ -210,6 +258,33 @@ template&lt;typename R , typename... As&gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A boolean value indicating whether or not the function was successfully registered. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a17b2bbacd641afdf71659dc6e187538f"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename R , typename A &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool flecsi::execution::mpilegion_execution_policy_t::register_task </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structflecsi_1_1execution_1_1task__hash__key__t.html">task_hash_key_t</a>&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>register FLeCSI task depending on the tasks's processor and launch types </p>
 
 </div>
 </div>

@@ -18,16 +18,18 @@ var searchData=
   ['point_2eh',['point.h',['../point_8h.html',1,'']]],
   ['point_3c_20double_2c_202_20_3e',['point&lt; double, 2 &gt;',['../classpoint.html',1,'']]],
   ['point_3c_20element_5ft_2c_20dimension_20_3e',['point&lt; element_t, dimension &gt;',['../classpoint.html',1,'']]],
-  ['point_5fto_5fvector',['point_to_vector',['../space__vector_8h.html#ad50ffae3f2ba9b3a3d548cd0a4910998',1,'flecsi']]],
+  ['point_5fto_5fvector',['point_to_vector',['../namespaceflecsi.html#ad50ffae3f2ba9b3a3d548cd0a4910998',1,'flecsi']]],
   ['pointer',['pointer',['../classflecsi_1_1utils_1_1array__ref.html#a3f1d32653d18ac149cf013b467ba367b',1,'flecsi::utils::array_ref']]],
   ['pop',['pop',['../classflecsi_1_1topology_1_1branch__id.html#ad7f994684d2f6ff510b87b1707d8fc9e',1,'flecsi::topology::branch_id::pop()'],['../classflecsi_1_1topology_1_1branch__id.html#aa93b2418a862f4bba2cd8e88ca7b53de',1,'flecsi::topology::branch_id::pop(size_t d)']]],
   ['pop_5fback',['pop_back',['../classflecsi_1_1utils_1_1array__ref.html#ace90eb562cc15c0cd62330c9a6351c36',1,'flecsi::utils::array_ref']]],
   ['pop_5ffront',['pop_front',['../classflecsi_1_1utils_1_1array__ref.html#a69ec8afeb61c6f26efe16eaa3fe83583',1,'flecsi::utils::array_ref']]],
-  ['pop_5fstate',['pop_state',['../structflecsi_1_1execution_1_1mpilegion__context__policy__t.html#a844695baaa5fcbe521ab4bfb4631e225',1,'flecsi::execution::mpilegion_context_policy_t']]],
+  ['pop_5fstate',['pop_state',['../structflecsi_1_1execution_1_1legion__context__policy__t.html#a45f5d07b1c8209ed6b0173f52cc0448d',1,'flecsi::execution::legion_context_policy_t::pop_state()'],['../structflecsi_1_1execution_1_1mpilegion__context__policy__t.html#a844695baaa5fcbe521ab4bfb4631e225',1,'flecsi::execution::mpilegion_context_policy_t::pop_state()']]],
   ['pseudo_5frandom',['pseudo_random',['../classpseudo__random.html',1,'pseudo_random'],['../classpseudo__random.html#ad53381c26b964c6845d614e5f6fe5dea',1,'pseudo_random::pseudo_random()']]],
   ['pseudo_5frandom_2eh',['pseudo_random.h',['../pseudo__random_8h.html',1,'']]],
   ['ptr_5fcount',['ptr_count',['../structptr__count.html',1,'']]],
   ['ptr_5fcount',['ptr_count',['../structflecsi_1_1execution_1_1legion__dpd_1_1ptr__count.html',1,'flecsi::execution::legion_dpd']]],
   ['push',['push',['../classflecsi_1_1topology_1_1connectivity__t.html#a2c879c7c0202e5444c242ddecfc393a4',1,'flecsi::topology::connectivity_t::push()'],['../classflecsi_1_1topology_1_1branch__id.html#a90c9803cb8003837f74d98604a3ce2a5',1,'flecsi::topology::branch_id::push()']]],
-  ['push_5fstate',['push_state',['../structflecsi_1_1execution_1_1mpilegion__context__policy__t.html#ac5806a551db07e8821f3832415286fb5',1,'flecsi::execution::mpilegion_context_policy_t']]]
+  ['push_5fstate',['push_state',['../structflecsi_1_1execution_1_1legion__context__policy__t.html#a243a4125de123ee18d42a80a84f202eb',1,'flecsi::execution::legion_context_policy_t::push_state()'],['../structflecsi_1_1execution_1_1mpilegion__context__policy__t.html#ac5806a551db07e8821f3832415286fb5',1,'flecsi::execution::mpilegion_context_policy_t::push_state()']]],
+  ['put_5fpartition_5fmetadata',['put_partition_metadata',['../classflecsi_1_1execution_1_1legion__dpd.html#aea124ce815ec583a47822e565e93893f',1,'flecsi::execution::legion_dpd']]],
+  ['put_5fpartition_5fmetadata_5ftask',['put_partition_metadata_task',['../classflecsi_1_1execution_1_1legion__dpd.html#a236678cf6fe223c1f2856ab9d6b1fcbc',1,'flecsi::execution::legion_dpd']]]
 ];

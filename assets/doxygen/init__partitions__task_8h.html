@@ -41,6 +41,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -89,6 +90,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">init_partitions_task.h File Reference</div>  </div>
@@ -106,9 +108,16 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1sprint_1_1SPMDArgs.html">flecsi::execution::sprint::SPMDArgs</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1sprint_1_1TaskWrapper.html">flecsi::execution::sprint::TaskWrapper</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1sprint_1_1ArgsSerializer.html">flecsi::execution::sprint::ArgsSerializer</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1execution_1_1sprint_1_1SPMDArgsSerializer.html">flecsi::execution::sprint::SPMDArgsSerializer</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespaceflecsi"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html">flecsi</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -134,6 +143,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::execution::sp
 <tr class="memitem:aa01af358a205e04066ca52c37b365378"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa01af358a205e04066ca52c37b365378"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::execution::sprint::ghost_access_task</b> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context ctx, Legion::HighLevelRuntime *runtime)</td></tr>
 <tr class="separator:aa01af358a205e04066ca52c37b365378"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fbaf969eba33d1aa94adaf04d1240af"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8fbaf969eba33d1aa94adaf04d1240af"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::execution::sprint::ghost_check_task</b> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context ctx, Legion::HighLevelRuntime *runtime)</td></tr>
+<tr class="separator:a8fbaf969eba33d1aa94adaf04d1240af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe067f6bdc195ec664c2530683e68c9d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afe067f6bdc195ec664c2530683e68c9d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::execution::sprint::ghost_init_task</b> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context ctx, Legion::HighLevelRuntime *runtime)</td></tr>
+<tr class="separator:afe067f6bdc195ec664c2530683e68c9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdf3418707298a25a22014d73df0319c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acdf3418707298a25a22014d73df0319c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::execution::sprint::halo_copy_task</b> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context ctx, Legion::HighLevelRuntime *runtime)</td></tr>
+<tr class="separator:acdf3418707298a25a22014d73df0319c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4fea3d48303aea976bcf35367a0f1d10"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4fea3d48303aea976bcf35367a0f1d10"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::execution::sprint::init_raw_conn_task</b> (const Legion::Task *task, const std::vector&lt; Legion::PhysicalRegion &gt; &amp;regions, Legion::Context ctx, Legion::HighLevelRuntime *runtime)</td></tr>
 <tr class="separator:a4fea3d48303aea976bcf35367a0f1d10"><td class="memSeparator" colspan="2">&#160;</td></tr>

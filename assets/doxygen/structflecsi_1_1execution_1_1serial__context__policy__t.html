@@ -41,6 +41,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -85,7 +86,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1serial__context__policy__t.html">serial_context_policy_t</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1serial__context__policy__t.html">serial_context_policy_t</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -99,17 +100,139 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac6e7470ffeba89e09c5bf497f3247879"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac6e7470ffeba89e09c5bf497f3247879"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>initialize</b> (int argc, char **argv)</td></tr>
+<tr class="memitem:ac6e7470ffeba89e09c5bf497f3247879"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1serial__context__policy__t.html#ac6e7470ffeba89e09c5bf497f3247879">initialize</a> (int argc, char **argv)</td></tr>
 <tr class="separator:ac6e7470ffeba89e09c5bf497f3247879"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e9786883fb468b24d81e88a6acee1f1"><td class="memTemplParams" colspan="2"><a class="anchor" id="a0e9786883fb468b24d81e88a6acee1f1"></a>
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a0e9786883fb468b24d81e88a6acee1f1"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>register_function</b> (const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;key, T &amp;function)</td></tr>
+<tr class="memitem:a0e9786883fb468b24d81e88a6acee1f1"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a0e9786883fb468b24d81e88a6acee1f1"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1serial__context__policy__t.html#a0e9786883fb468b24d81e88a6acee1f1">register_function</a> (const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;key, T &amp;<a class="el" href="structflecsi_1_1execution_1_1serial__context__policy__t.html#a737053e6ceabe0d8be8cb8e76f55e0b7">function</a>)</td></tr>
 <tr class="separator:a0e9786883fb468b24d81e88a6acee1f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a737053e6ceabe0d8be8cb8e76f55e0b7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a737053e6ceabe0d8be8cb8e76f55e0b7"></a>
-std::function&lt; void(void)&gt; *&#160;</td><td class="memItemRight" valign="bottom"><b>function</b> (size_t key)</td></tr>
+<tr class="memitem:a737053e6ceabe0d8be8cb8e76f55e0b7"><td class="memItemLeft" align="right" valign="top">std::function&lt; void(void)&gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1serial__context__policy__t.html#a737053e6ceabe0d8be8cb8e76f55e0b7">function</a> (size_t key)</td></tr>
 <tr class="separator:a737053e6ceabe0d8be8cb8e76f55e0b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a737053e6ceabe0d8be8cb8e76f55e0b7"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::function&lt;void(void)&gt;* flecsi::execution::serial_context_policy_t::function </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return the function assocaited with <em>key</em>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>The unique function identifier.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to a std::function&lt;void(void)&gt; that may be cast back to the oringinal function type using reinterpret_cast. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ac6e7470ffeba89e09c5bf497f3247879"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int flecsi::execution::serial_context_policy_t::initialize </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>argc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char **&#160;</td>
+          <td class="paramname"><em>argv</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Initialize the context runtime. The arguments to this method should be passed from the main function.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">argc</td><td>The number of command-line arguments. </td></tr>
+    <tr><td class="paramname">argv</td><td>The array of command-line arguments.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Zero upon clean initialization, non-zero otherwise. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a0e9786883fb468b24d81e88a6acee1f1"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool flecsi::execution::serial_context_policy_t::register_function </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T &amp;&#160;</td>
+          <td class="paramname"><em>function</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The type of the function being registered.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key</td><td>A unique function identifier.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A boolean value that is true if the registration succeeded, false otherwise. </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/execution/serial/<a class="el" href="serial_2context__policy_8h_source.html">context_policy.h</a></li>
 </ul>

@@ -41,6 +41,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -75,6 +76,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="functions_func.html"><span>Functions</span></a></li>
       <li><a href="functions_vars.html"><span>Variables</span></a></li>
       <li><a href="functions_type.html"><span>Typedefs</span></a></li>
+      <li><a href="functions_rela.html"><span>Related&#160;Functions</span></a></li>
     </ul>
   </div>
   <div id="navrow4" class="tabs3">
@@ -136,16 +138,25 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="classflecsi_1_1topology_1_1tree__branch.html#ae477bc523e35b9026a0a46c707f8d0a3">flecsi::topology::tree_branch&lt; T, D &gt;</a>
 </li>
 <li>regions()
-: <a class="el" href="structflecsi_1_1execution_1_1mpilegion__context__policy__t.html#a27dcc8a8ec7da51beb711563e89ad3fb">flecsi::execution::mpilegion_context_policy_t</a>
+: <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a427d05c8bfe349502e539c4083d8aa40">flecsi::execution::legion_context_policy_t</a>
+, <a class="el" href="structflecsi_1_1execution_1_1mpilegion__context__policy__t.html#a27dcc8a8ec7da51beb711563e89ad3fb">flecsi::execution::mpilegion_context_policy_t</a>
 </li>
 <li>register_data()
-: <a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01dense_00_01DS_00_01MD_01_4.html#a47496c0d32542db5de58cfe7b285c5c8">flecsi::data::serial::storage_type_t&lt; dense, DS, MD &gt;</a>
-, <a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01global_00_01DS_00_01MD_01_4.html#a638e603c8bd5979d1a9d9a8ce4ed912f">flecsi::data::serial::storage_type_t&lt; global, DS, MD &gt;</a>
+: <a class="el" href="structflecsi_1_1data_1_1legion_1_1storage__type__t_3_01dense_00_01DS_00_01MD_01_4.html#a61f4edde32054e987ccc3d22c7bffdfb">flecsi::data::legion::storage_type_t&lt; dense, DS, MD &gt;</a>
+, <a class="el" href="structflecsi_1_1data_1_1legion_1_1storage__type__t_3_01global_00_01DS_00_01MD_01_4.html#a583a62afe43357dea3b6c46aaac49676">flecsi::data::legion::storage_type_t&lt; global, DS, MD &gt;</a>
+, <a class="el" href="structflecsi_1_1data_1_1legion_1_1storage__type__t_3_01scoped_00_01data__store__t_00_01meta__data__t_01_4.html#a9a81f6c2f55d4dbc2f2522e420878b11">flecsi::data::legion::storage_type_t&lt; scoped, data_store_t, meta_data_t &gt;</a>
+, <a class="el" href="structflecsi_1_1data_1_1legion_1_1storage__type__t_3_01sparse_00_01DS_00_01MD_01_4.html#a1f2e69c9a27bba8f819b66375a5e75eb">flecsi::data::legion::storage_type_t&lt; sparse, DS, MD &gt;</a>
+, <a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01dense_00_01DS_00_01MD_01_4.html#a17fc73207c6e725b7d7cd6a15b6e6745">flecsi::data::serial::storage_type_t&lt; dense, DS, MD &gt;</a>
+, <a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01global_00_01DS_00_01MD_01_4.html#a84b72ba4645a349bd01b6a9f4c1eff0f">flecsi::data::serial::storage_type_t&lt; global, DS, MD &gt;</a>
 , <a class="el" href="structflecsi_1_1data_1_1storage____.html#ab84e7e5f5c9defc92268a0be4d8c88d0">flecsi::data::storage__&lt; user_meta_data_t, storage_policy_t &gt;</a>
 </li>
 <li>register_function()
-: <a class="el" href="structflecsi_1_1execution_1_1mpilegion__context__policy__t.html#a4e235190a95236aa118b6a571bca5843">flecsi::execution::mpilegion_context_policy_t</a>
+: <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a320f12a5e3433e7ad38a87769aa1c5a6">flecsi::execution::legion_context_policy_t</a>
+, <a class="el" href="structflecsi_1_1execution_1_1legion__execution__policy__t.html#a3fade3d9a744bd552818663193d9a051">flecsi::execution::legion_execution_policy_t</a>
+, <a class="el" href="structflecsi_1_1execution_1_1mpilegion__context__policy__t.html#a4e235190a95236aa118b6a571bca5843">flecsi::execution::mpilegion_context_policy_t</a>
 , <a class="el" href="structflecsi_1_1execution_1_1mpilegion__execution__policy__t.html#a1de6e61770673e4ae3feb2ce9f691556">flecsi::execution::mpilegion_execution_policy_t</a>
+, <a class="el" href="structflecsi_1_1execution_1_1serial__context__policy__t.html#a0e9786883fb468b24d81e88a6acee1f1">flecsi::execution::serial_context_policy_t</a>
+, <a class="el" href="structflecsi_1_1execution_1_1serial__execution__policy__t.html#ae8d2dbdde5fe05f2758936e95c58728e">flecsi::execution::serial_execution_policy_t</a>
 </li>
 <li>register_global_state()
 : <a class="el" href="classflecsi_1_1data_1_1data__t.html#a2652eb138d4c84998fa18d3181d67c2b">flecsi::data::data_t&lt; user_meta_data_t, storage_policy_t &gt;</a>
@@ -156,7 +167,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 , <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t.html#a908b601f9aba8f0121734b8d0a7a59c4">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;</a>
 </li>
 <li>register_task()
-: <a class="el" href="structflecsi_1_1execution_1_1mpilegion__context__policy__t.html#ae2c4a2bf666e1c004164f80676a9d2b1">flecsi::execution::mpilegion_context_policy_t</a>
+: <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#a2feb28c6e9e380b5a3d37110a291fd9e">flecsi::execution::legion_context_policy_t</a>
+, <a class="el" href="structflecsi_1_1execution_1_1legion__execution__policy__t.html#a0a4e6dc2f5ebd2d84c4eb2dc14e7df9c">flecsi::execution::legion_execution_policy_t</a>
+, <a class="el" href="structflecsi_1_1execution_1_1legion__task__wrapper____.html#a2db0d60269c3a7edc16a098b0e5d1149">flecsi::execution::legion_task_wrapper__&lt; P, S, I, R, A &gt;</a>
+, <a class="el" href="structflecsi_1_1execution_1_1legion__task__wrapper_____3_01P_00_01S_00_01I_00_01void_00_01A_01_4.html#afa9e22fb24eb6c0a268b766c653d5887">flecsi::execution::legion_task_wrapper__&lt; P, S, I, void, A &gt;</a>
+, <a class="el" href="structflecsi_1_1execution_1_1mpilegion__context__policy__t.html#ae2c4a2bf666e1c004164f80676a9d2b1">flecsi::execution::mpilegion_context_policy_t</a>
+, <a class="el" href="structflecsi_1_1execution_1_1mpilegion__execution__policy__t.html#a17b2bbacd641afdf71659dc6e187538f">flecsi::execution::mpilegion_execution_policy_t</a>
+, <a class="el" href="structflecsi_1_1execution_1_1serial__execution__policy__t.html#a4e3469514f0b191e0cff9cf4784941ca">flecsi::execution::serial_execution_policy_t</a>
+, <a class="el" href="structflecsi_1_1execution_1_1task____.html#a5150f88b4a44919325a94ce276156f06">flecsi::execution::task__&lt; execution_policy_t &gt;</a>
 </li>
 <li>register_tasks()
 : <a class="el" href="structflecsi_1_1execution_1_1mpi__legion__interop__t.html#a91de2b39233c34f7eddf40e0f146acc0">flecsi::execution::mpi_legion_interop_t</a>
@@ -190,14 +208,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>reverse_entities()
 : <a class="el" href="classflecsi_1_1topology_1_1connectivity__t.html#ae8f8cfa808c8edc6a612b6e5e5ebc059">flecsi::topology::connectivity_t</a>
-, <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__t.html#a69a2d54b1562600c98efe574ab0ec644">flecsi::topology::mesh_topology_t&lt; MT &gt;</a>
+, <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__t.html#ada45268029cbeaaad9c6c4330cc1daa8">flecsi::topology::mesh_topology_t&lt; MT &gt;</a>
 </li>
 <li>root()
 : <a class="el" href="classflecsi_1_1topology_1_1branch__id.html#abe7dc613a6d2d89e9d384e076ee70235">flecsi::topology::branch_id&lt; T, D &gt;</a>
 , <a class="el" href="classflecsi_1_1topology_1_1tree__topology.html#a1c69ad2a71b510859e4c3508c2a5f422">flecsi::topology::tree_topology&lt; P &gt;</a>
 </li>
 <li>runtime()
-: <a class="el" href="structflecsi_1_1execution_1_1mpilegion__context__policy__t.html#ae6ebf28ff9d3731408408b63c38937d1">flecsi::execution::mpilegion_context_policy_t</a>
+: <a class="el" href="structflecsi_1_1execution_1_1legion__context__policy__t.html#ad16286e4c05746615ab84434a5662bce">flecsi::execution::legion_context_policy_t</a>
+, <a class="el" href="structflecsi_1_1execution_1_1mpilegion__context__policy__t.html#ae6ebf28ff9d3731408408b63c38937d1">flecsi::execution::mpilegion_context_policy_t</a>
 </li>
 <li>runtime_id()
 : <a class="el" href="classflecsi_1_1data_1_1data__client__t.html#a69e2d5af6d27a1cc1e0cf224d3181612">flecsi::data::data_client_t</a>

@@ -41,6 +41,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -85,7 +86,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>data</b></li><li class="navelem"><a class="el" href="structflecsi_1_1data_1_1legion__storage__policy__t.html">legion_storage_policy_t</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>data</b></li><li class="navelem"><a class="el" href="structflecsi_1_1data_1_1legion__storage__policy__t.html">legion_storage_policy_t</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -104,9 +105,9 @@ Public Types</h2></td></tr>
 <tr class="memitem:a003f16ca77eafc5547f759ca3ec740f9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a003f16ca77eafc5547f759ca3ec740f9"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>meta_data_t</b> = <a class="el" href="structflecsi_1_1data_1_1legion__meta__data__t.html">legion_meta_data_t</a>&lt; user_meta_data_t &gt;</td></tr>
 <tr class="separator:a003f16ca77eafc5547f759ca3ec740f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a514cde5c46f6e3586da1a01a090d1c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0a514cde5c46f6e3586da1a01a090d1c"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>data_store_t</b> = size_t</td></tr>
-<tr class="separator:a0a514cde5c46f6e3586da1a01a090d1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7985a508e92846b50ded286a776cfb9c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7985a508e92846b50ded286a776cfb9c"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>data_store_t</b> = std::unordered_map&lt; size_t, std::unordered_map&lt; utils::const_string_t::hash_type_t, <a class="el" href="structflecsi_1_1data_1_1legion__meta__data__t.html">meta_data_t</a> &gt;&gt;</td></tr>
+<tr class="separator:a7985a508e92846b50ded286a776cfb9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae36892845de9aa7f3b9178096b3a1812"><td class="memTemplParams" colspan="2"><a class="anchor" id="ae36892845de9aa7f3b9178096b3a1812"></a>
 template&lt;size_t data_type_t&gt; </td></tr>
 <tr class="memitem:ae36892845de9aa7f3b9178096b3a1812"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>storage_type_t</b> = legion::storage_type_t&lt; data_type_t, data_store_t, <a class="el" href="structflecsi_1_1data_1_1legion__meta__data__t.html">meta_data_t</a> &gt;</td></tr>
@@ -120,6 +121,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> ()</td></tr
 <tr class="memitem:aeee22fd7d6690b009a1cb1a5b1f4af7a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aeee22fd7d6690b009a1cb1a5b1f4af7a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> (uintptr_t runtime_namespace)</td></tr>
 <tr class="separator:aeee22fd7d6690b009a1cb1a5b1f4af7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3c80fc51fcfcb78e4aeb8b8cf6c216d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af3c80fc51fcfcb78e4aeb8b8cf6c216d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>move</b> (uintptr_t from, uintptr_t to)</td></tr>
+<tr class="separator:af3c80fc51fcfcb78e4aeb8b8cf6c216d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36e2b8fec651c7a106c63b5f5c239809"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a36e2b8fec651c7a106c63b5f5c239809"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>count</b> (uintptr_t runtime_namespace)</td></tr>
+<tr class="separator:a36e2b8fec651c7a106c63b5f5c239809"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>

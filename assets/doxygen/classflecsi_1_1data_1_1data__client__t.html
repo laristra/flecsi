@@ -41,6 +41,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -85,12 +86,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>data</b></li><li class="navelem"><a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>data</b></li><li class="navelem"><a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="classflecsi_1_1data_1_1data__client__t-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">flecsi::data::data_client_t Class Reference</div>  </div>
@@ -107,14 +110,22 @@ Inheritance diagram for flecsi::data::data_client_t:</div>
  <div class="center">
   <img src="classflecsi_1_1data_1_1data__client__t.png" usemap="#flecsi::data::data_5Fclient_5Ft_map" alt=""/>
   <map id="flecsi::data::data_5Fclient_5Ft_map" name="flecsi::data::data_client_t_map">
-<area href="structflecsi_1_1execution_1_1mesh__t.html" alt="flecsi::execution::mesh_t" shape="rect" coords="0,56,238,80"/>
-<area href="classflecsi_1_1topology_1_1mesh__topology__base__t.html" title="contains methods and data about the mesh topology that do not depend on type parameterization, e.g: entity types, domains, etc. " alt="flecsi::topology::mesh_topology_base_t" shape="rect" coords="248,56,486,80"/>
-<area href="classflecsi_1_1topology_1_1tree__topology.html" alt="flecsi::topology::tree_topology&lt; P &gt;" shape="rect" coords="496,56,734,80"/>
-<area href="structmesh__t.html" alt="mesh_t" shape="rect" coords="744,56,982,80"/>
-<area href="classflecsi_1_1topology_1_1mesh__topology__t.html" title="mesh_topology_t is parameterized on a class (MT) which gives information about its entity types..." alt="flecsi::topology::mesh_topology_t&lt; MT &gt;" shape="rect" coords="248,112,486,136"/>
+<area href="classflecsi_1_1execution_1_1data__client.html" alt="flecsi::execution::data_client" shape="rect" coords="0,56,238,80"/>
+<area href="classflecsi_1_1execution_1_1data__client.html" alt="flecsi::execution::data_client" shape="rect" coords="248,56,486,80"/>
+<area href="structflecsi_1_1execution_1_1mesh__t.html" alt="flecsi::execution::mesh_t" shape="rect" coords="496,56,734,80"/>
+<area href="classflecsi_1_1topology_1_1mesh__topology__base__t.html" title="contains methods and data about the mesh topology that do not depend on type parameterization, e.g: entity types, domains, etc. " alt="flecsi::topology::mesh_topology_base_t" shape="rect" coords="744,56,982,80"/>
+<area href="classflecsi_1_1topology_1_1tree__topology.html" alt="flecsi::topology::tree_topology&lt; P &gt;" shape="rect" coords="992,56,1230,80"/>
+<area href="structmesh__t.html" alt="mesh_t" shape="rect" coords="1240,56,1478,80"/>
+<area href="classflecsi_1_1topology_1_1mesh__topology__t.html" title="mesh_topology_t is parameterized on a class (MT) which gives information about its entity types..." alt="flecsi::topology::mesh_topology_t&lt; MT &gt;" shape="rect" coords="744,112,982,136"/>
 </map>
  </div></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a679f3f980b47a3c180c65332eed44b83"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a679f3f980b47a3c180c65332eed44b83"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>index_partition_t</b> = <a class="el" href="structflecsi_1_1dmp_1_1index__partition____.html">dmp::index_partition__</a>&lt; size_t &gt;</td></tr>
+<tr class="separator:a679f3f980b47a3c180c65332eed44b83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a1bb6319cbba2c5f70504bf721406a81d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1bb6319cbba2c5f70504bf721406a81d"></a>
@@ -146,6 +157,12 @@ virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
 <tr class="memitem:a8c3c4f0419a098469e10e09589cf5797"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8c3c4f0419a098469e10e09589cf5797"></a>
 virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>indices</b> (size_t <a class="el" href="classindex__space.html">index_space</a>) const </td></tr>
 <tr class="separator:a8c3c4f0419a098469e10e09589cf5797"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:afd8b9a404b21aba22befd28c90b1ffff"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afd8b9a404b21aba22befd28c90b1ffff"></a>
+std::unordered_map&lt; <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a>, std::unordered_map&lt; <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a>, <a class="el" href="structflecsi_1_1dmp_1_1index__partition____.html">index_partition_t</a>, <a class="el" href="structflecsi_1_1utils_1_1const__string__hasher__t.html">utils::const_string_hasher_t</a> &gt;, <a class="el" href="structflecsi_1_1utils_1_1const__string__hasher__t.html">utils::const_string_hasher_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>partitions</b></td></tr>
+<tr class="separator:afd8b9a404b21aba22befd28c90b1ffff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="classflecsi_1_1data_1_1data__client__t.html" title="data_client_t provides... ">data_client_t</a> provides... </p>

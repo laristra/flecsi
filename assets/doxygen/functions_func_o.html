@@ -41,6 +41,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -75,6 +76,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li class="current"><a href="functions_func.html"><span>Functions</span></a></li>
       <li><a href="functions_vars.html"><span>Variables</span></a></li>
       <li><a href="functions_type.html"><span>Typedefs</span></a></li>
+      <li><a href="functions_rela.html"><span>Related&#160;Functions</span></a></li>
     </ul>
   </div>
   <div id="navrow4" class="tabs3">
@@ -125,6 +127,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1dense__accessor__t.html#a7d7cc04d062543bb158c9070165a2ae4">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::dense_accessor_t&lt; T &gt;</a>
 , <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1global__accessor__t.html#a053813cd8d7dde6b88e903a33a8dc213">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::global_accessor_t&lt; T &gt;</a>
 , <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1sparse__accessor__t.html#a1c82738310e3fd19c6d56bebbddca026">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::sparse_accessor_t&lt; T &gt;</a>
+, <a class="el" href="structflecsi_1_1data_1_1legion_1_1dense__accessor__t.html#afcfc7be3981f87bc8dfb69b2f4882a08">flecsi::data::legion::dense_accessor_t&lt; T, MD &gt;</a>
+, <a class="el" href="structflecsi_1_1data_1_1legion_1_1global__accessor__t.html#a35dfda65a4496d858d0c122f0353a45a">flecsi::data::legion::global_accessor_t&lt; T, MD &gt;</a>
 , <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html#a9e1a1203f850bc6b9b9297982e19b54c">flecsi::data::serial::dense_accessor_t&lt; T, MD &gt;</a>
 , <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__accessor__t.html#a17d412676652dc93c4a2117abc13a3e3">flecsi::data::serial::global_accessor_t&lt; T, MD &gt;</a>
 </li>
@@ -137,15 +141,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>operator T()
 : <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1global__accessor__t.html#aff6df4250a8b448c427204439632190a">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::global_accessor_t&lt; T &gt;</a>
 , <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__accessor__t.html#a65c52d1767753e9aa484f3979ef89838">flecsi::data::serial::global_accessor_t&lt; T, MD &gt;</a>
+, <a class="el" href="classflecsi_1_1utils_1_1any__t.html#ab5e5022cff56f98e76b0f9f0e6a022d3">flecsi::utils::any_t</a>
 </li>
 <li>operator!=()
 : <a class="el" href="classflecsi_1_1utils_1_1iterator.html#a3a3c0beb381da2a253e2c74cc45070c5">flecsi::utils::iterator&lt; C, T &gt;</a>
 </li>
 <li>operator()()
-: <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html#a0b2e791782b4854e75993155c1149494">flecsi::data::serial::dense_accessor_t&lt; T, MD &gt;</a>
+: <a class="el" href="structflecsi_1_1data_1_1legion_1_1dense__accessor__t.html#a85038709ed51348dc6c7faed33395314">flecsi::data::legion::dense_accessor_t&lt; T, MD &gt;</a>
+, <a class="el" href="structflecsi_1_1data_1_1legion_1_1sparse__accessor__t.html#aaabe016970df5478f66430be5d928a89">flecsi::data::legion::sparse_accessor_t&lt; T, MD &gt;</a>
+, <a class="el" href="structflecsi_1_1data_1_1legion_1_1sparse__mutator__t.html#a21bc24dea2c9d86f07b459b5a86cf8d3">flecsi::data::legion::sparse_mutator_t&lt; T, MD &gt;</a>
+, <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html#a0b2e791782b4854e75993155c1149494">flecsi::data::serial::dense_accessor_t&lt; T, MD &gt;</a>
+, <a class="el" href="structflecsi_1_1execution_1_1function__handle____.html#aab1ba325cfde71e0949364532d3c2519">flecsi::execution::function_handle__&lt; R, A &gt;</a>
 </li>
 <li>operator*()
-: <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1global__accessor__t.html#ad1377d36eed1e1447d3af287a8e01a4f">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::global_accessor_t&lt; T &gt;</a>
+: <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1global__accessor__t.html#ad710af56895ebe3de19a9043418ea359">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::global_accessor_t&lt; T &gt;</a>
 , <a class="el" href="structflecsi_1_1data_1_1serial_1_1global__accessor__t.html#a3ae3701d9fdeb6bcdee069309eb8bb5f">flecsi::data::serial::global_accessor_t&lt; T, MD &gt;</a>
 , <a class="el" href="classflecsi_1_1utils_1_1iterator.html#a381ed7181dfb0b2b46b1fbce3980e040">flecsi::utils::iterator&lt; C, T &gt;</a>
 </li>
@@ -163,13 +172,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>operator-&gt;()
 : <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1global__accessor__t.html#a71a544fe35edcf5271e3a39c920eb5ed">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::global_accessor_t&lt; T &gt;</a>
+, <a class="el" href="structflecsi_1_1data_1_1legion_1_1global__accessor__t.html#abd15e02d311538244e492a1fd79a1d33">flecsi::data::legion::global_accessor_t&lt; T, MD &gt;</a>
 , <a class="el" href="classflecsi_1_1utils_1_1iterator.html#a76b638fa18f234f2edf1f05ce86830b0">flecsi::utils::iterator&lt; C, T &gt;</a>
 </li>
 <li>operator/()
 : <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html#a78c98f9481a4193f87958fee184f4a96">flecsi::utils::dimensioned_array&lt; T, D, TS &gt;</a>
 </li>
 <li>operator/=()
-: <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html#a8e00b960aab68c5faa12bd69e63237c7">flecsi::utils::dimensioned_array&lt; T, D, TS &gt;</a>
+: <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html#af88e85fc529993d9d2de6a1b56b2789c">flecsi::utils::dimensioned_array&lt; T, D, TS &gt;</a>
 </li>
 <li>operator&lt;()
 : <a class="el" href="structflecsi_1_1dmp_1_1entry__info__t.html#a9db378ddcb5867c44b74a45746cdd2a9">flecsi::dmp::entry_info_t</a>
@@ -195,6 +205,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 , <a class="el" href="classflecsi_1_1topology_1_1mesh__topology__t.html#a132062799b874bd856749d321542588f">flecsi::topology::mesh_topology_t&lt; MT &gt;</a>
 , <a class="el" href="classflecsi_1_1topology_1_1structured__mesh__topology__t.html#a35ad39a8272b5b6bb688db7aef914a43">flecsi::topology::structured_mesh_topology_t&lt; MT &gt;</a>
 , <a class="el" href="classflecsi_1_1topology_1_1test__definition__t.html#a28440e93727d4fca0d3293b68a38c43e">flecsi::topology::test_definition_t</a>
+, <a class="el" href="classflecsi_1_1utils_1_1any__t.html#aa4011202e69d86b4d6d91c12146ded41">flecsi::utils::any_t</a>
 , <a class="el" href="classflecsi_1_1utils_1_1bitfield____.html#a3c6ef51dc41013f932e92ba1c55d7240">flecsi::utils::bitfield__&lt; T &gt;</a>
 , <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html#a81158ffc778d0e5bec50aa638abf0118">flecsi::utils::dimensioned_array&lt; T, D, TS &gt;</a>
 , <a class="el" href="classflecsi_1_1utils_1_1Factory__.html#ad193caaac18eb9263157940e3201e9a2">flecsi::utils::Factory_&lt; T, K, Args &gt;</a>
@@ -207,7 +218,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>operator[]()
 : <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1dense__accessor__t.html#aeb9b261224aac0a2bc2ac4c79bdf042f">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::dense_accessor_t&lt; T &gt;</a>
-, <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1sparse__accessor__t.html#a93d78f3c4507fd52e6fac08d863735f0">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::sparse_accessor_t&lt; T &gt;</a>
+, <a class="el" href="classflecsi_1_1data_1_1default__data__storage__policy__t_1_1sparse__accessor__t.html#af9343519de634d3df6a1a6c93eb30a32">flecsi::data::default_data_storage_policy_t&lt; user_meta_data_t &gt;::sparse_accessor_t&lt; T &gt;</a>
+, <a class="el" href="structflecsi_1_1data_1_1legion_1_1dense__accessor__t.html#aa1228a1d27b8948f0c9a6bde9ef807ca">flecsi::data::legion::dense_accessor_t&lt; T, MD &gt;</a>
 , <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html#a0d0d2cd8fb2c0f8eb38615aa237df269">flecsi::data::serial::dense_accessor_t&lt; T, MD &gt;</a>
 , <a class="el" href="classflecsi_1_1utils_1_1dimensioned__array.html#ac37554f931cd80bd73062fb7d347810e">flecsi::utils::dimensioned_array&lt; T, D, TS &gt;</a>
 </li>

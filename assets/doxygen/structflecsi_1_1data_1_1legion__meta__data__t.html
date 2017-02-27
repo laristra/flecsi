@@ -41,6 +41,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -85,25 +86,82 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>data</b></li><li class="navelem"><a class="el" href="structflecsi_1_1data_1_1legion__meta__data__t.html">legion_meta_data_t</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>data</b></li><li class="navelem"><a class="el" href="structflecsi_1_1data_1_1legion__meta__data__t.html">legion_meta_data_t</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-types">Public Types</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structflecsi_1_1data_1_1legion__meta__data__t-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">flecsi::data::legion_meta_data_t&lt; T &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><a class="el" href="structflecsi_1_1data_1_1legion__meta__data__t.html" title="legion_meta_data_t provides storage for extra information that is used to interpret data variable inf...">legion_meta_data_t</a> provides storage for extra information that is used to interpret data variable information at different points in the low-level runtime.  
+ <a href="structflecsi_1_1data_1_1legion__meta__data__t.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="legion_2meta__data_8h_source.html">meta_data.h</a>&gt;</code></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1legion__meta__data__t_1_1type__info__t.html">type_info_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structflecsi_1_1data_1_1legion__meta__data__t_1_1type__info__t.html" title="type_info_t allows creation of reference information to the user-specified type of the data data...">type_info_t</a> allows creation of reference information to the user-specified type of the data data.  <a href="structflecsi_1_1data_1_1legion__meta__data__t_1_1type__info__t.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:a66ed88ec34086d4c71b12359c46a70cc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a66ed88ec34086d4c71b12359c46a70cc"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>user_meta_data_t</b> = T</td></tr>
 <tr class="separator:a66ed88ec34086d4c71b12359c46a70cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:abd51673814c2eea89f2cc66c86b5e987"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abd51673814c2eea89f2cc66c86b5e987"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>label</b></td></tr>
+<tr class="separator:abd51673814c2eea89f2cc66c86b5e987"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42da7a85c86c885463184d6e73a69ea9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a42da7a85c86c885463184d6e73a69ea9"></a>
+user_meta_data_t&#160;</td><td class="memItemRight" valign="bottom"><b>user_data</b></td></tr>
+<tr class="separator:a42da7a85c86c885463184d6e73a69ea9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8077771724fb9aedccf0487c56acac4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae8077771724fb9aedccf0487c56acac4"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>index_space</b></td></tr>
+<tr class="separator:ae8077771724fb9aedccf0487c56acac4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a443d05c3e17117cdb2d900a7cfb53d6a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a443d05c3e17117cdb2d900a7cfb53d6a"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>size</b></td></tr>
+<tr class="separator:a443d05c3e17117cdb2d900a7cfb53d6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02b99173cc5a3be4894940e2feb86ae5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a02b99173cc5a3be4894940e2feb86ae5"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>type_size</b></td></tr>
+<tr class="separator:a02b99173cc5a3be4894940e2feb86ae5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a256d890c90228a92ca8d61390b951b55"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a256d890c90228a92ca8d61390b951b55"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>versions</b></td></tr>
+<tr class="separator:a256d890c90228a92ca8d61390b951b55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09c89229f00ab5a61a5a1e60aa351d41"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a09c89229f00ab5a61a5a1e60aa351d41"></a>
+std::shared_ptr&lt; <a class="el" href="structflecsi_1_1data_1_1legion__meta__data__t_1_1type__info__t.html">type_info_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>rtti</b></td></tr>
+<tr class="separator:a09c89229f00ab5a61a5a1e60aa351d41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ee4679b8bf36aa5a92cdf3588d383d8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9ee4679b8bf36aa5a92cdf3588d383d8"></a>
+std::unordered_map&lt; size_t, <a class="el" href="classflecsi_1_1execution_1_1legion__dpd.html">execution::legion_dpd</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>data</b></td></tr>
+<tr class="separator:a9ee4679b8bf36aa5a92cdf3588d383d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30e856f07d01d8296bfd0f5eda84479b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a30e856f07d01d8296bfd0f5eda84479b"></a>
+std::unordered_map&lt; size_t, bitset_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>attributes</b></td></tr>
+<tr class="separator:a30e856f07d01d8296bfd0f5eda84479b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92218e0f9d5dccaa489b9e13fac188f9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a92218e0f9d5dccaa489b9e13fac188f9"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>num_entries</b></td></tr>
+<tr class="separator:a92218e0f9d5dccaa489b9e13fac188f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this struct was generated from the following file:<ul>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename T&gt;<br />
+struct flecsi::data::legion_meta_data_t&lt; T &gt;</h3>
+
+<p><a class="el" href="structflecsi_1_1data_1_1legion__meta__data__t.html" title="legion_meta_data_t provides storage for extra information that is used to interpret data variable inf...">legion_meta_data_t</a> provides storage for extra information that is used to interpret data variable information at different points in the low-level runtime. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>A user-defined data type that will be carried with the meta data. </td></tr>
+  </table>
+  </dd>
+</dl>
+</div><hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/data/legion/<a class="el" href="legion_2meta__data_8h_source.html">meta_data.h</a></li>
 </ul>
 </div><!-- contents -->

@@ -41,6 +41,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -85,7 +86,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>data</b></li><li class="navelem"><b>serial</b></li><li class="navelem"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01dense_00_01DS_00_01MD_01_4.html">storage_type_t&lt; dense, DS, MD &gt;</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>data</b></li><li class="navelem"><b>serial</b></li><li class="navelem"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01dense_00_01DS_00_01MD_01_4.html">storage_type_t&lt; dense, DS, MD &gt;</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -112,16 +113,19 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>meta_data_t</b> = MD
 template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a6c70e51d77bf72f89ac9b9f1fa019595"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>accessor_t</b> = <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">dense_accessor_t</a>&lt; T, MD &gt;</td></tr>
 <tr class="separator:a6c70e51d77bf72f89ac9b9f1fa019595"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab4f59dcd38d4fb7ec75f61933e57a252"><td class="memTemplParams" colspan="2"><a class="anchor" id="ab4f59dcd38d4fb7ec75f61933e57a252"></a>
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:ab4f59dcd38d4fb7ec75f61933e57a252"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>handle_t</b> = <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__handle__t.html">dense_handle_t</a>&lt; T &gt;</td></tr>
-<tr class="separator:ab4f59dcd38d4fb7ec75f61933e57a252"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b646799609afef29e97a2cb72e09dfb"><td class="memTemplParams" colspan="2"><a class="anchor" id="a5b646799609afef29e97a2cb72e09dfb"></a>
+template&lt;typename T , size_t PS, typename ST &gt; </td></tr>
+<tr class="memitem:a5b646799609afef29e97a2cb72e09dfb"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>handle_t</b> = <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__handle__t.html">dense_handle_t</a>&lt; T, PS, ST &gt;</td></tr>
+<tr class="separator:a5b646799609afef29e97a2cb72e09dfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca519f3f31159ca7694d53dc7c4ac13f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aca519f3f31159ca7694d53dc7c4ac13f"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>st_t</b> = storage_type_t&lt; dense, DS, MD &gt;</td></tr>
+<tr class="separator:aca519f3f31159ca7694d53dc7c4ac13f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a47496c0d32542db5de58cfe7b285c5c8"><td class="memTemplParams" colspan="2">template&lt;typename T , size_t NS, typename... Args&gt; </td></tr>
-<tr class="memitem:a47496c0d32542db5de58cfe7b285c5c8"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__handle__t.html">handle_t</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01dense_00_01DS_00_01MD_01_4.html#a47496c0d32542db5de58cfe7b285c5c8">register_data</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;key, size_t versions, size_t <a class="el" href="classindex__space.html">index_space</a>, Args &amp;&amp;...args)</td></tr>
-<tr class="separator:a47496c0d32542db5de58cfe7b285c5c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17fc73207c6e725b7d7cd6a15b6e6745"><td class="memTemplParams" colspan="2">template&lt;typename T , size_t NS, typename... Args&gt; </td></tr>
+<tr class="memitem:a17fc73207c6e725b7d7cd6a15b6e6745"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__handle__t.html">handle_t</a>&lt; T, 0, <a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01dense_00_01DS_00_01MD_01_4.html">st_t</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01dense_00_01DS_00_01MD_01_4.html#a17fc73207c6e725b7d7cd6a15b6e6745">register_data</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;key, size_t versions, size_t <a class="el" href="classindex__space.html">index_space</a>, Args &amp;&amp;...args)</td></tr>
+<tr class="separator:a17fc73207c6e725b7d7cd6a15b6e6745"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a8aad53060fa8923565dda5e50e09c9"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a5a8aad53060fa8923565dda5e50e09c9"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html">accessor_t</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01dense_00_01DS_00_01MD_01_4.html#a5a8aad53060fa8923565dda5e50e09c9">get_accessor</a> (meta_data_t &amp;meta_data, size_t version)</td></tr>
 <tr class="memdesc:a5a8aad53060fa8923565dda5e50e09c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html" title="dense_accessor_t provides logically array-based access to data variables that have been registered in...">dense_accessor_t</a>.  <a href="#a5a8aad53060fa8923565dda5e50e09c9">More...</a><br /></td></tr>
@@ -150,10 +154,10 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a519f886d34ddd47dc81a8d06bcb10c6c"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01dense_00_01DS_00_01MD_01_4.html#a519f886d34ddd47dc81a8d06bcb10c6c">get_accessors</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, size_t version, bool sorted)</td></tr>
 <tr class="memdesc:a519f886d34ddd47dc81a8d06bcb10c6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a list of all <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__accessor__t.html" title="dense_accessor_t provides logically array-based access to data variables that have been registered in...">dense_accessor_t</a>'s.  <a href="#a519f886d34ddd47dc81a8d06bcb10c6c">More...</a><br /></td></tr>
 <tr class="separator:a519f886d34ddd47dc81a8d06bcb10c6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a75513eb920007d694d0f78e2e476f8ba"><td class="memTemplParams" colspan="2"><a class="anchor" id="a75513eb920007d694d0f78e2e476f8ba"></a>
-template&lt;typename T , size_t NS&gt; </td></tr>
-<tr class="memitem:a75513eb920007d694d0f78e2e476f8ba"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__handle__t.html">handle_t</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_handle</b> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;key, size_t version)</td></tr>
-<tr class="separator:a75513eb920007d694d0f78e2e476f8ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab89c94d48e1cfd732a44f8fa81f5cb9f"><td class="memTemplParams" colspan="2"><a class="anchor" id="ab89c94d48e1cfd732a44f8fa81f5cb9f"></a>
+template&lt;typename T , size_t NS, size_t PS&gt; </td></tr>
+<tr class="memitem:ab89c94d48e1cfd732a44f8fa81f5cb9f"><td class="memTemplItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__handle__t.html">handle_t</a>&lt; T, PS, <a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01dense_00_01DS_00_01MD_01_4.html">st_t</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_handle</b> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, data_store_t &amp;data_store, const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;key, size_t version)</td></tr>
+<tr class="separator:ab89c94d48e1cfd732a44f8fa81f5cb9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;typename DS, typename MD&gt;<br />
@@ -588,7 +592,7 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="a47496c0d32542db5de58cfe7b285c5c8"></a>
+<a class="anchor" id="a17fc73207c6e725b7d7cd6a15b6e6745"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -600,7 +604,7 @@ template&lt;typename T , size_t NS, typename... Args&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__handle__t.html">handle_t</a>&lt;T&gt; flecsi::data::serial::storage_type_t&lt; dense, DS, MD &gt;::register_data </td>
+          <td class="memname">static <a class="el" href="structflecsi_1_1data_1_1serial_1_1dense__handle__t.html">handle_t</a>&lt;T, 0, <a class="el" href="structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01dense_00_01DS_00_01MD_01_4.html">st_t</a>&gt; flecsi::data::serial::storage_type_t&lt; dense, DS, MD &gt;::register_data </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;&#160;</td>
           <td class="paramname"><em>data_client</em>, </td>

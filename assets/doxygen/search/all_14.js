@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['wait',['wait',['../structflecsi_1_1execution_1_1serial__future____.html#aabcd03fd1314e9f0c3cfddb3a4993ff9',1,'flecsi::execution::serial_future__']]],
   ['wait_5fon_5flegion',['wait_on_legion',['../structflecsi_1_1execution_1_1mpi__legion__interop__t.html#a3523fc8d5f786710094ce33080016e3a',1,'flecsi::execution::mpi_legion_interop_t']]],
   ['wait_5fon_5fmpi',['wait_on_mpi',['../structflecsi_1_1execution_1_1mpi__legion__interop__t.html#a9accc7a049db62c28d45d13bc7b7a045',1,'flecsi::execution::mpi_legion_interop_t']]],
   ['wait_5fon_5fmpi_5ftask',['wait_on_mpi_task',['../mpi__legion__interop_8h.html#a197dae782a40b23c084ef7827dc159fe',1,'flecsi::execution']]],

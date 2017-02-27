@@ -41,6 +41,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -85,7 +86,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1task____.html">task__</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1task____.html">task__</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -96,18 +97,170 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">flecsi::execution::task__&lt; execution_policy_t &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><a class="el" href="structflecsi_1_1execution_1_1task____.html" title="task__ provides... ">task__</a> provides...  
+ <a href="structflecsi_1_1execution_1_1task____.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="task_8h_source.html">task.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a5150f88b4a44919325a94ce276156f06"><td class="memTemplParams" colspan="2"><a class="anchor" id="a5150f88b4a44919325a94ce276156f06"></a>
-template&lt;typename R , typename A &gt; </td></tr>
-<tr class="memitem:a5150f88b4a44919325a94ce276156f06"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><b>register_task</b> (uintptr_t address, processor_t processor, launch_t launch)</td></tr>
+<tr class="memitem:a5150f88b4a44919325a94ce276156f06"><td class="memTemplParams" colspan="2">template&lt;typename R , typename A &gt; </td></tr>
+<tr class="memitem:a5150f88b4a44919325a94ce276156f06"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1task____.html#a5150f88b4a44919325a94ce276156f06">register_task</a> (uintptr_t address, processor_t processor, launch_t launch)</td></tr>
 <tr class="separator:a5150f88b4a44919325a94ce276156f06"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac8b538151dff9bae6ad949ced93ddff3"><td class="memTemplParams" colspan="2"><a class="anchor" id="ac8b538151dff9bae6ad949ced93ddff3"></a>
-template&lt;typename R , typename T , typename... As&gt; </td></tr>
-<tr class="memitem:ac8b538151dff9bae6ad949ced93ddff3"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><b>execute_task</b> (uintptr_t address, processor_t processor, launch_t launch, size_t parent, T user_task_handle, As &amp;&amp;...args)</td></tr>
+<tr class="memitem:ac8b538151dff9bae6ad949ced93ddff3"><td class="memTemplParams" colspan="2">template&lt;typename R , typename T , typename... As&gt; </td></tr>
+<tr class="memitem:ac8b538151dff9bae6ad949ced93ddff3"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1task____.html#ac8b538151dff9bae6ad949ced93ddff3">execute_task</a> (uintptr_t address, processor_t processor, launch_t launch, size_t parent, T user_task_handle, As &amp;&amp;...args)</td></tr>
 <tr class="separator:ac8b538151dff9bae6ad949ced93ddff3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename execution_policy_t&gt;<br />
+struct flecsi::execution::task__&lt; execution_policy_t &gt;</h3>
+
+<p><a class="el" href="structflecsi_1_1execution_1_1task____.html" title="task__ provides... ">task__</a> provides... </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="ac8b538151dff9bae6ad949ced93ddff3"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename execution_policy_t &gt; </div>
+<div class="memtemplate">
+template&lt;typename R , typename T , typename... As&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static decltype(auto) <a class="el" href="structflecsi_1_1execution_1_1task____.html">flecsi::execution::task__</a>&lt; execution_policy_t &gt;::execute_task </td>
+          <td>(</td>
+          <td class="paramtype">uintptr_t&#160;</td>
+          <td class="paramname"><em>address</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">processor_t&#160;</td>
+          <td class="paramname"><em>processor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">launch_t&#160;</td>
+          <td class="paramname"><em>launch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>parent</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>user_task_handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">As &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Execute a registered task.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">R</td><td>The return type of the task. </td></tr>
+    <tr><td class="paramname">T</td><td>The user task handle type. </td></tr>
+    <tr><td class="paramname">As</td><td>The task arguments.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">address</td><td>A unique identifier used to lookup the task in the task registry. </td></tr>
+    <tr><td class="paramname">processor</td><td>The processor type on which to execute the task. </td></tr>
+    <tr><td class="paramname">launch</td><td>The launch mode for the task. </td></tr>
+    <tr><td class="paramname">parent</td><td>A hash key that uniquely identifies the calling task. </td></tr>
+    <tr><td class="paramname">user_task_handle</td><td>The user task handle. </td></tr>
+    <tr><td class="paramname">args</td><td>The arguments to pass to the user task during execution. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a5150f88b4a44919325a94ce276156f06"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename execution_policy_t &gt; </div>
+<div class="memtemplate">
+template&lt;typename R , typename A &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static decltype(auto) <a class="el" href="structflecsi_1_1execution_1_1task____.html">flecsi::execution::task__</a>&lt; execution_policy_t &gt;::register_task </td>
+          <td>(</td>
+          <td class="paramtype">uintptr_t&#160;</td>
+          <td class="paramname"><em>address</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">processor_t&#160;</td>
+          <td class="paramname"><em>processor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">launch_t&#160;</td>
+          <td class="paramname"><em>launch</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Register a user task with the FleCSI runtime.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">R</td><td>The return type of the user task. </td></tr>
+    <tr><td class="paramname">A</td><td>A std::tuple of the user task arguments.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">address</td><td>The address of the user task. </td></tr>
+    <tr><td class="paramname">processor</td><td>The processor type for task execution. </td></tr>
+    <tr><td class="paramname">launch</td><td>The launch mode for task execution.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The return type for task registration is determined by the specific backend runtime being used. </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/execution/<a class="el" href="task_8h_source.html">task.h</a></li>
 </ul>

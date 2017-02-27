@@ -41,6 +41,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -85,7 +86,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1serial__future____.html">serial_future__</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>execution</b></li><li class="navelem"><a class="el" href="structflecsi_1_1execution_1_1serial__future____.html">serial_future__</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -98,6 +99,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">flecsi::execution::serial_future__&lt; R &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="serial_2execution__policy_8h_source.html">execution_policy.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
@@ -107,11 +110,9 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>result_t</b> = R</td
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aabcd03fd1314e9f0c3cfddb3a4993ff9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aabcd03fd1314e9f0c3cfddb3a4993ff9"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>wait</b> ()</td></tr>
+<tr class="memitem:aabcd03fd1314e9f0c3cfddb3a4993ff9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1serial__future____.html#aabcd03fd1314e9f0c3cfddb3a4993ff9">wait</a> ()</td></tr>
 <tr class="separator:aabcd03fd1314e9f0c3cfddb3a4993ff9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a19dc31fded449e80c2621d4ffc1e896f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a19dc31fded449e80c2621d4ffc1e896f"></a>
-const result_t &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get</b> (size_t index=0) const </td></tr>
+<tr class="memitem:a19dc31fded449e80c2621d4ffc1e896f"><td class="memItemLeft" align="right" valign="top">const result_t &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1serial__future____.html#a19dc31fded449e80c2621d4ffc1e896f">get</a> (size_t index=0) const </td></tr>
 <tr class="separator:a19dc31fded449e80c2621d4ffc1e896f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
@@ -120,6 +121,65 @@ Public Attributes</h2></td></tr>
 friend&#160;</td><td class="memItemRight" valign="bottom"><b>executor__&lt; R &gt;</b></td></tr>
 <tr class="separator:a7eaa5eccaa4ed7dcb0c4f71332ce20f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename R&gt;<br />
+struct flecsi::execution::serial_future__&lt; R &gt;</h3>
+
+<p>implementation of the future_t for serial runtime </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a19dc31fded449e80c2621d4ffc1e896f"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename R&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const result_t&amp; <a class="el" href="structflecsi_1_1execution_1_1serial__future____.html">flecsi::execution::serial_future__</a>&lt; R &gt;::get </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>index</em> = <code>0</code></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p><a class="el" href="structflecsi_1_1execution_1_1serial__future____.html#a19dc31fded449e80c2621d4ffc1e896f">get()</a> mothod </p>
+
+</div>
+</div>
+<a class="anchor" id="aabcd03fd1314e9f0c3cfddb3a4993ff9"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename R&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="structflecsi_1_1execution_1_1serial__future____.html">flecsi::execution::serial_future__</a>&lt; R &gt;::wait </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p><a class="el" href="structflecsi_1_1execution_1_1serial__future____.html#aabcd03fd1314e9f0c3cfddb3a4993ff9">wait()</a> method </p>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/execution/serial/<a class="el" href="serial_2execution__policy_8h_source.html">execution_policy.h</a></li>
 </ul>

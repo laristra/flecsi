@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['begin',['begin',['../classflecsi_1_1data_1_1default__data__storage__policy__t_1_1dense__accessor__t.html#aa319e2fa2f3578d46f2a59a136824fe6',1,'flecsi::data::default_data_storage_policy_t::dense_accessor_t::begin()'],['../classflecsi_1_1data_1_1default__data__storage__policy__t_1_1sparse__accessor__t.html#adb29d8e254ecc878d121b430ca36fa4e',1,'flecsi::data::default_data_storage_policy_t::sparse_accessor_t::begin()']]],
+  ['begin',['begin',['../structflecsi_1_1data_1_1legion_1_1dense__accessor__t.html#abf0400ff12fdbe16d3b0d438d60b3ef9',1,'flecsi::data::legion::dense_accessor_t::begin()'],['../classflecsi_1_1data_1_1default__data__storage__policy__t_1_1dense__accessor__t.html#aa319e2fa2f3578d46f2a59a136824fe6',1,'flecsi::data::default_data_storage_policy_t::dense_accessor_t::begin()'],['../classflecsi_1_1data_1_1default__data__storage__policy__t_1_1sparse__accessor__t.html#adb29d8e254ecc878d121b430ca36fa4e',1,'flecsi::data::default_data_storage_policy_t::sparse_accessor_t::begin()']]],
   ['bin',['bin',['../classflecsi_1_1topology_1_1index__space.html#acdc58a224530ac8a47b72b3dc2484d13',1,'flecsi::topology::index_space']]],
   ['bin_5fas_5fmap',['bin_as_map',['../classflecsi_1_1topology_1_1index__space.html#a8df29bac3cd09bfdf64026be6eb12229',1,'flecsi::topology::index_space']]],
   ['bin_5fas_5fvector',['bin_as_vector',['../classflecsi_1_1topology_1_1index__space.html#ad0f94c01becfef9e9bc7490d85082ed2',1,'flecsi::topology::index_space']]],

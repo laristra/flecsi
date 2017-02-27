@@ -4,6 +4,8 @@ var searchData=
   ['unique_5fid_5ft',['unique_id_t',['../structflecsi_1_1utils_1_1unique__id__t.html',1,'flecsi::utils']]],
   ['unique_5fname',['unique_name',['../common_8h.html#a272cf500fac1c80035bd66d65fbf1319',1,'flecsi::utils']]],
   ['unit_5fcoordinates',['unit_coordinates',['../classflecsi_1_1topology_1_1tree__topology.html#a14e0705cf2f25116f02b4d338748c79e',1,'flecsi::topology::tree_topology']]],
+  ['unmap_5fdata',['unmap_data',['../classflecsi_1_1execution_1_1legion__dpd.html#a39e362b6a50352542cce8e9924615d67',1,'flecsi::execution::legion_dpd']]],
+  ['unmap_5fregion',['unmap_region',['../classflecsi_1_1execution_1_1legion__helper.html#a2c079310a533dd26cbd740dc9a7876de',1,'flecsi::execution::legion_helper']]],
   ['unserialize_5fdimensions_5f',['unserialize_dimensions_',['../structflecsi_1_1topology_1_1unserialize__dimensions__.html',1,'flecsi::topology']]],
   ['unserialize_5fdimensions_5f_3c_20mt_2c_20nm_2c_20nd_2c_20m_2c_20nd_20_3e',['unserialize_dimensions_&lt; MT, NM, ND, M, ND &gt;',['../structflecsi_1_1topology_1_1unserialize__dimensions___3_01MT_00_01NM_00_01ND_00_01M_00_01ND_01_4.html',1,'flecsi::topology']]],
   ['unserialize_5fdomains_5f',['unserialize_domains_',['../structflecsi_1_1topology_1_1unserialize__domains__.html',1,'flecsi::topology']]],

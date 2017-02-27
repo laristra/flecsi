@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['global_5faccessor_5ft',['global_accessor_t',['../classflecsi_1_1data_1_1data__t.html#a38ab5feb0d726f825400d56f55af699b',1,'flecsi::data::data_t']]]
+  ['future_5f_5f',['future__',['../structflecsi_1_1execution_1_1legion__execution__policy__t.html#a8324f53ece01a85b7c86006c656f168d',1,'flecsi::execution::legion_execution_policy_t']]]
 ];
