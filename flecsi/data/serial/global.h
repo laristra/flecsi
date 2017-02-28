@@ -39,10 +39,6 @@ namespace flecsi {
 namespace data {
 namespace serial {
 
-  struct global_handle_metadata_t{
-    
-  };
-
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Helper type definitions.
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
@@ -245,11 +241,8 @@ private:
 // Scalar handle.
 //----------------------------------------------------------------------------//
 
-template<typename T, size_t PS, typename ST>
-struct global_handle_t : 
-  public data_handle__<T, PS, ST, global_handle_metadata_t>
-{
-  using type = T;
+template<typename T, size_t PS>
+struct global_handle_t{
 }; // struct global_handle_t
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
@@ -276,8 +269,8 @@ struct storage_type_t<global, DS, MD> {
   template<typename T>
   using accessor_t = global_accessor_t<T, MD>;
 
-  template<typename T, size_t PS, typename ST>
-  using handle_t = global_handle_t<T, PS, ST>;
+  template<typename T, size_t PS>
+  using handle_t = global_handle_t<T, PS>;
 
   using st_t = storage_type_t<global, DS, MD>;
 
@@ -302,7 +295,7 @@ struct storage_type_t<global, DS, MD> {
     typename ... Args
   >
   static
-  handle_t<T, 0, st_t>
+  handle_t<T, 0>
   register_data(
     const data_client_t & data_client,
     data_store_t & data_store,
@@ -693,7 +686,7 @@ struct storage_type_t<global, DS, MD> {
     size_t PS
   >
   static
-  handle_t<T, PS, st_t>
+  handle_t<T, PS>
   get_handle(
     const data_client_t & data_client,
     data_store_t & data_store,

@@ -42,6 +42,8 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
     serial/sparse.h
     serial/storage_policy.h
     serial/tuple.h
+    serial/data_policy.h
+    serial/handle_policy.h
   )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
@@ -55,6 +57,8 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/sparse.h
     legion/storage_policy.h
     legion/tuple.h
+    legion/data_policy.h
+    legion/handle_policy.h
   )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
@@ -68,6 +72,8 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
     legion/sparse.h
     legion/storage_policy.h
     legion/tuple.h
+    legion/data_policy.h
+    legion/handle_policy.h
   )
 
 endif()
@@ -127,26 +133,26 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
 endif()
 
-# if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
+if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
-#   if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
-#     cinch_add_unit(serial_data_handle
-#       SOURCES
-#         ../execution/test/task.cc
-#         ../execution/test/task_driver.h
-#         ../execution/serial/runtime_driver.cc
-#         test/data-handle-serial.h
-#         data_client.cc
-#       DEFINES DATA_HANDLE_TEST
-#         FLECSI_DRIVER=flecsi/data/test/data-handle-serial.h
-#         TEST_INIT=flecsi/execution/test/task_init.h
-#       LIBRARIES ${PARTITION_LIBRARIES}
-#       POLICY SERIAL
-#       THREADS 2
-#     )
-#   endif()
+  if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
+    cinch_add_unit(serial_data_handle
+      SOURCES
+        ../execution/test/task.cc
+        ../execution/test/task_driver.h
+        ../execution/serial/runtime_driver.cc
+        test/data-handle-serial.h
+        data_client.cc
+      DEFINES DATA_HANDLE_TEST
+        FLECSI_DRIVER=flecsi/data/test/data-handle-serial.h
+        TEST_INIT=flecsi/execution/test/task_init.h
+      LIBRARIES ${PARTITION_LIBRARIES}
+      POLICY SERIAL
+      THREADS 2
+    )
+  endif()
 
-# endif()
+endif()
 
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.

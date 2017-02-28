@@ -49,24 +49,13 @@ namespace serial {
 // Helper type definitions.
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 
-  template<typename ST>
-  struct dense_handle_metadata_t{
-    using storage_type_t = ST;
-
-    const data_client_t* data_client;
-    typename storage_type_t::data_store_t* data_store;
-    size_t hash;
-    size_t version;
-    size_t ns;
-  };
-
   //----------------------------------------------------------------------------//
   // Dense handle.
   //----------------------------------------------------------------------------//
 
-  template<typename T, size_t PS, typename ST>
+  template<typename T, size_t PS>
   struct dense_handle_t : 
-    public data_handle__<T, PS, dense_handle_metadata_t<ST>, ST>
+    public data_handle_t<T, PS>
   {
     using type = T;
   }; // struct dense_handle_t
@@ -150,8 +139,9 @@ struct dense_accessor_t
     is_(a.is_)
   {}
 
-  template<size_t PS, typename ST>
-  dense_accessor_t(dense_handle_t<T, PS, ST>& h){
+  template<size_t PS>
+  dense_accessor_t(dense_handle_t<T, PS>& h){
+    /*
     auto& m = (*h.metadata.data_store)[h.metadata.ns];
     auto search = m.find(h.metadata.hash);
     assert(search != m.end() && "invalid hash");
@@ -171,7 +161,8 @@ struct dense_accessor_t
     user_meta_data_ = &meta_data.user_data;
     user_attributes_ = &meta_data.attributes[version];
     index_space_ = meta_data.index_space;
-    is_ = size_; 
+    is_ = size_;
+    */ 
   }
 
   //--------------------------------------------------------------------------//
@@ -450,8 +441,8 @@ struct storage_type_t<dense, DS, MD>
   template<typename T>
   using accessor_t = dense_accessor_t<T, MD>;
 
-  template<typename T, size_t PS, typename ST>
-  using handle_t = dense_handle_t<T, PS, ST>;
+  template<typename T, size_t PS>
+  using handle_t = dense_handle_t<T, PS>;
 
   using st_t = storage_type_t<dense, DS, MD>;
 
@@ -477,7 +468,7 @@ struct storage_type_t<dense, DS, MD>
     typename ... Args
   >
   static
-  handle_t<T, 0, st_t>
+  handle_t<T, 0>
   register_data(
     const data_client_t & data_client,
     data_store_t & data_store,
@@ -556,7 +547,7 @@ struct storage_type_t<dense, DS, MD>
 
     data_store[NS][h].num_entries = 0;
 
-    handle_t<T, 0, st_t> handle;
+    handle_t<T, 0> handle;
     return handle;
   } // register_data
 
@@ -919,7 +910,7 @@ struct storage_type_t<dense, DS, MD>
     size_t PS
   >
   static
-  handle_t<T, PS, st_t>
+  handle_t<T, PS>
   get_handle(
     const data_client_t & data_client,
     data_store_t & data_store,
@@ -927,6 +918,7 @@ struct storage_type_t<dense, DS, MD>
     size_t version
   )
   {
+    /*
     handle_t<T, PS, st_t> h;
     h.metadata.data_client = &data_client;
     h.metadata.data_store = &data_store;
@@ -934,6 +926,7 @@ struct storage_type_t<dense, DS, MD>
     h.metadata.version = version;
     h.metadata.ns = NS;
     return h;
+    */
   } // get_handle
 
 }; // struct storage_type_t
