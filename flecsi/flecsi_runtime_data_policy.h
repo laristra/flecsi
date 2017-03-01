@@ -26,17 +26,8 @@
 
   #include "flecsi/data/default_user_meta_data.h"
   #include "flecsi/data/serial/storage_policy.h"
-
-  namespace flecsi {
-  namespace data {
-
-  using flecsi_user_meta_data_policy_t = default_user_meta_data_t;
-  template<typename T>
-
-  using flecsi_storage_policy_t = serial_storage_policy_t<T>;
-
-  }
-  }
+  #define flecsi_user_meta_data_policy_t default_user_meta_data_t
+  #define flecsi_storage_policy_t serial_storage_policy_t
 
 //Legion Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion || \
@@ -44,14 +35,12 @@
 
   #include "flecsi/data/default_user_meta_data.h"
   #include "flecsi/data/legion/storage_policy.h"
-  #include "flecsi/data/legion/data_policy.h"
   #define flecsi_user_meta_data_policy_t default_user_meta_data_t
   #define flecsi_storage_policy_t legion_storage_policy_t
-  #define flecsi_data_policy_t legion_data_policy_t
 
-// MPI+Legion Policy
-//#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
-//  #error "This policy is not yet implemented!"
+// MPI Policy
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
+  #error "This policy is not yet implemented!"
 #endif // FLECSI_RUNTIME_MODEL
 
 #endif // flecsi_runtime_data_policy_h

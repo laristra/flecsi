@@ -6,15 +6,7 @@
 #ifndef flecsi_data_client_h
 #define flecsi_data_client_h
 
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion || \
-      FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
-#include "flecsi/data/legion/data_policy.h"
-#define flecsi_data_policy_t legion_data_policy_t
-#else
-#include "flecsi/data/serial/data_policy.h"
-#define flecsi_data_policy_t serial_data_policy_t
-#endif
-
+#include "flecsi_runtime_data_client_policy.h"
 #include "flecsi/utils/common.h"
 #include "flecsi/data/data_constants.h"
 #include "flecsi/partition/index_partition.h"
