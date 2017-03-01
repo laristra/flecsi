@@ -143,7 +143,6 @@ struct dense_accessor_t
   dense_accessor_t(const dense_handle_t<T, PS>& h)
   : data_(reinterpret_cast<T*>(h.data)),
     size_(h.size){
-    np(35);
   }
 
   //--------------------------------------------------------------------------//
