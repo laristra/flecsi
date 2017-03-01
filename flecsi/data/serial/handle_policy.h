@@ -19,11 +19,8 @@ namespace data {
 
 struct serial_handle_policy_t
 {
-//  const data_client_t* data_client;
- // void* data_store;
- // size_t hash;
- // size_t version;
- // size_t ns;
+  void* data;
+  size_t size;
 };
 
 } // namespace data
