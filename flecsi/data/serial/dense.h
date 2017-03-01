@@ -140,29 +140,10 @@ struct dense_accessor_t
   {}
 
   template<size_t PS>
-  dense_accessor_t(dense_handle_t<T, PS>& h){
-    /*
-    auto& m = (*h.metadata.data_store)[h.metadata.ns];
-    auto search = m.find(h.metadata.hash);
-    assert(search != m.end() && "invalid hash");
-
-    auto& meta_data = search->second;
-
-    size_t version = h.metadata.version;
-
-    if(version >= meta_data.versions){
-      std::cerr << "version out of range" << std::endl;
-      std::abort();
-    }
-
-    label_ = meta_data.label;
-    size_ = meta_data.size;
-    data_ = reinterpret_cast<T*>(&meta_data.data[version][0]);
-    user_meta_data_ = &meta_data.user_data;
-    user_attributes_ = &meta_data.attributes[version];
-    index_space_ = meta_data.index_space;
-    is_ = size_;
-    */ 
+  dense_accessor_t(const dense_handle_t<T, PS>& h)
+  : data_(reinterpret_cast<T*>(h.data)),
+    size_(h.size){
+    np(35);
   }
 
   //--------------------------------------------------------------------------//
@@ -918,15 +899,19 @@ struct storage_type_t<dense, DS, MD>
     size_t version
   )
   {
-    /*
-    handle_t<T, PS, st_t> h;
-    h.metadata.data_client = &data_client;
-    h.metadata.data_store = &data_store;
-    h.metadata.hash = key.hash() ^ data_client.runtime_id();
-    h.metadata.version = version;
-    h.metadata.ns = NS;
+    auto hash = key.hash() ^ data_client.runtime_id();
+    auto& m = data_store[NS];
+    auto search = m.find(hash);
+    assert(search != m.end() && "invalid hash");
+    auto& md = search->second;
+
+    assert(version < md.versions && "version out of range");
+
+    handle_t<T, PS> h;
+    h.data = &md.data[version][0];
+    h.size = md.size;
+
     return h;
-    */
   } // get_handle
 
 }; // struct storage_type_t
