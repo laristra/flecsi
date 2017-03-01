@@ -51,7 +51,7 @@ void task1(accessor_t<double> x) {
   np(x[1]);
 } // task1
 
-register_task(task1, loc, single);
+flecsi_register_task(task1, loc, single);
 
 const size_t NUM_CELLS = 16;
 const size_t NUM_PARTITIONS = 4;
@@ -172,20 +172,20 @@ driver(
   // versions
   // index space
 
-  register_data(dc, hydro, pressure, double, dense, 1, 0);
+  flecsi_register_data(dc, hydro, pressure, double, dense, 1, 0);
 
   {
     auto ac = 
-      get_accessor(dc, hydro, pressure, double, dense, /* version */ 0);
+      flecsi_get_accessor(dc, hydro, pressure, double, dense, /* version */ 0);
     ac.map_partition(0);
 
     ac[0] = 100.0;
     ac[1] = 200.0;
   }
 
-  auto h1 = get_handle(dc, hydro, pressure, double, dense, 0, ro);
+  auto h1 = flecsi_get_handle(dc, hydro, pressure, double, dense, 0, ro);
 
-  EXECUTE_TASK(task1, loc, single, h1);
+  flecsi_execute_task(task1, loc, single, h1);
 
 } // driver
 
