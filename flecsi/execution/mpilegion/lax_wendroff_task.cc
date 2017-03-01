@@ -522,9 +522,11 @@ lax_wendroff_task(
   runtime->unmap_region(ctx, regions[2]);
 
   std::vector<LogicalRegion> lregions_ghost;
+  std::vector<PhysicalRegion> pregions_ghost;
   for (int index = 3; index < regions.size(); index++) {
 	  LogicalRegion lr_ghost = regions[index].get_logical_region();
 	  lregions_ghost.push_back(lr_ghost);
+	  pregions_ghost.push_back(regions[index]);
 	  runtime->unmap_region(ctx, regions[index]);
   }
 
@@ -543,25 +545,16 @@ lax_wendroff_task(
   exclusive_launcher.add_field(0, fid_gid);
   Future init_exclusive_future = runtime->execute_task(ctx, exclusive_launcher);
 
-  // phase 1 masters update their halo regions; slaves may not access data
+  sprint::TaskWrapper task_wrapper(&args, lregions_ghost, pregions_ghost, lregion_halo, task_ids_t::instance().lax_halo_task_id, fid_phi);
 
-  // as master
-  // master writes to data
+  // phase WRITE: masters update their halo regions; slaves may not access data
   TaskLauncher shared_launcher(task_ids_t::instance().lax_init_task_id, TaskArgument(nullptr, 0));
   shared_launcher.add_region_requirement(RegionRequirement(lr_shared, WRITE_DISCARD, EXCLUSIVE, lr_shared));
   shared_launcher.add_field(0, fid_phi);
   shared_launcher.add_field(0, fid_gid);
-  shared_launcher.add_wait_barrier(args.pbarrier_as_master);                     // phase 1
-  shared_launcher.add_arrival_barrier(args.pbarrier_as_master);                  // phase 2
-  args.pbarrier_as_master = runtime->advance_phase_barrier(ctx, args.pbarrier_as_master);             // phase 2
-  runtime->execute_task(ctx, shared_launcher);
-
-  // as slave
-
-  for (int master=0; master < args.masters_pbarriers.size(); master++) {
-    args.masters_pbarriers[master].arrive(1);                                     // phase 2
-    args.masters_pbarriers[master] = runtime->advance_phase_barrier(ctx, args.masters_pbarriers[master]);  // phase 2
-  }
+  bool read_phase = false;
+  bool write_phase = true;
+  task_wrapper.execute_task(ctx, runtime, shared_launcher, read_phase, write_phase);
 
   const double dx = 1.0  / static_cast<double>(NX - 1);
   const double dy = 1.0  / static_cast<double>(NY - 1);
@@ -570,10 +563,6 @@ lax_wendroff_task(
   while (time < 0.33) {
     time += dt;
     for (int split = 0; split < 2; split ++) {
-
-      // phase 2 slaves can read data; masters may not write to data
-
-      // as master
 
 	  Processor::TaskFuncID split_task = task_ids_t::instance().lax_calc_excl_x_task_id;
       if (split)
@@ -585,48 +574,10 @@ lax_wendroff_task(
               lr_exclusive).add_field(fid_t.fid_data).add_field(fid_t.fid_cell) );
       exclusive_launcher.add_region_requirement(RegionRequirement(lr_excl_tmp, WRITE_DISCARD, EXCLUSIVE,
               lr_excl_tmp).add_field(fid_t.fid_data) );
-      exclusive_launcher.add_wait_barrier(args.pbarrier_as_master);                   // phase 2
-      exclusive_launcher.add_arrival_barrier(args.pbarrier_as_master);                // phase cycle + 1
       runtime->execute_task(ctx, exclusive_launcher);
-      args.pbarrier_as_master =
-            runtime->advance_phase_barrier(ctx, args.pbarrier_as_master);             // phase cycle + 1
 
-    // as slave
+      // phase READ immediately followed by phase WRITE
 
-      for (int master=0; master < args.masters_pbarriers.size(); master++) {
-          AcquireLauncher acquire_launcher(lregions_ghost[master], lregions_ghost[master],
-        		  regions[3+master]);
-          acquire_launcher.add_field(fid_phi);
-          acquire_launcher.add_wait_barrier(args.masters_pbarriers[master]);            // phase 2
-          runtime->issue_acquire(ctx, acquire_launcher);
-
-
-    	  TaskLauncher launcher(task_ids_t::instance().lax_halo_task_id, TaskArgument(nullptr, 0));
-    	  launcher.add_region_requirement(RegionRequirement(lregions_ghost[master], READ_ONLY, EXCLUSIVE,
-    			  lregions_ghost[master]));
-    	  launcher.add_field(0, fid_phi);
-    	  launcher.add_region_requirement(RegionRequirement(lregion_halo, READ_WRITE,
-                  EXCLUSIVE, lregion_halo));
-    	  launcher.add_field(1, fid_phi);
-          runtime->execute_task(ctx, launcher);
-
-          // slave reads data
-
-          ReleaseLauncher release_launcher(lregions_ghost[master], lregions_ghost[master],
-        		  regions[3+master]);
-          release_launcher.add_field(fid_phi);
-    	  release_launcher.add_arrival_barrier(args.masters_pbarriers[master]);         // phase cycle + 1
-    	  runtime->issue_release(ctx, release_launcher);
-
-          args.masters_pbarriers[master] =
-          		runtime->advance_phase_barrier(ctx, args.masters_pbarriers[master]);  // phase cycle + 1
-      } // for master as slave
-
-    init_exclusive_future.get_void_result();
-    // phase 1 masters update their halo regions; slaves may not access data
-
-    // as master
-    // master writes to data
 	  split_task = task_ids_t::instance().lax_adv_x_task_id;
       if (split)
         split_task = task_ids_t::instance().lax_adv_y_task_id;
@@ -643,17 +594,10 @@ lax_wendroff_task(
     		  .add_field(fid_phi));
       shared_launcher.add_region_requirement(RegionRequirement(lr_ghost, READ_ONLY, EXCLUSIVE, lr_ghost)
     		  .add_field(fid_gid));
-      shared_launcher.add_wait_barrier(args.pbarrier_as_master);                     // phase 1
-      shared_launcher.add_arrival_barrier(args.pbarrier_as_master);                  // phase 2
-      args.pbarrier_as_master = runtime->advance_phase_barrier(ctx, args.pbarrier_as_master);             // phase 2
-      runtime->execute_task(ctx, shared_launcher);
+      bool read_phase = true;
+      bool write_phase = true;
+      task_wrapper.execute_task(ctx, runtime, shared_launcher, read_phase, write_phase);
 
-    // as slave
-    for (int master=0; master < args.masters_pbarriers.size(); master++) {
-      args.masters_pbarriers[master].arrive(1);                                     // phase 2
-      args.masters_pbarriers[master] =
-            runtime->advance_phase_barrier(ctx, args.masters_pbarriers[master]);  // phase 2
-    }
 
     } // split
   } // cycle

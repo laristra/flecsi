@@ -96,13 +96,13 @@ namespace execution {
   };
 
 ///
-// \brief
-//
-// \tparam P processor type
-// \tparam S single type task
-// \tparam I index type task
-// \tparam R task return type
-// \tparam As arguments
+/// \brief
+///
+/// \tparam P processor type
+/// \tparam S single type task
+/// \tparam I index type task
+/// \tparam R task return type
+/// \tparam As arguments
 ///
 template<
   processor_t P,
@@ -143,9 +143,9 @@ struct legion_task_wrapper__
   using is_data_handle = std::is_base_of<data_handle_base,T>;
 
   ///
-  // This function is called by the context singleton to do the actual
-  // registration of the task wrapper with the Legion runtime. The structure
-  // of the logic used is really just an object factory pattern.
+  /// This function is called by the context singleton to do the actual
+  /// registration of the task wrapper with the Legion runtime. The structure
+  /// of the logic used is really just an object factory pattern.
   ///
   static
   void
@@ -168,8 +168,8 @@ struct legion_task_wrapper__
   } // register_task
 
   ///
-  // This method executes the user's task after processing the arguments
-  // from the Legion runtime.
+  /// This method executes the user's task after processing the arguments
+  /// from the Legion runtime.
   ///
   static R execute(const LegionRuntime::HighLevel::Task * task,
     const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
@@ -228,7 +228,7 @@ struct legion_task_wrapper__
 }; // class legion_task_wrapper__
 
 ///
-// Partial specialization for void.
+/// Partial specialization for void.
 ///
 template<
   processor_t P,
@@ -265,9 +265,9 @@ struct legion_task_wrapper__<P, S, I, void, A>
   using is_data_handle = std::is_base_of<data_handle_base, T>;
 
   ///
-  // This function is called by the context singleton to do the actual
-  // registration of the task wrapper with the Legion runtime. The structure
-  // of the logic used is really just an object factory pattern.
+  /// This function is called by the context singleton to do the actual
+  /// registration of the task wrapper with the Legion runtime. The structure
+  /// of the logic used is really just an object factory pattern.
   ///
   static
   void
@@ -294,8 +294,8 @@ struct legion_task_wrapper__<P, S, I, void, A>
   } // register_task
 
   ///
-  // This method executes the user's task after processing the arguments
-  // from the Legion runtime.
+  /// This method executes the user's task after processing the arguments
+  /// from the Legion runtime.
   ///
   static void execute(const LegionRuntime::HighLevel::Task * task,
     const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,

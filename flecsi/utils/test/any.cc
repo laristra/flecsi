@@ -30,6 +30,9 @@ using std::endl;
 //! \brief Test the "zip-like" iterator.
 //=============================================================================
 
+///
+/// some temporary class
+///
 class temp_class_t
 {
   int value;
@@ -42,6 +45,9 @@ public:
   }
 };
 
+///
+/// test body
+///
 TEST(any, simple) {
 
    typedef std::vector<any_t> storage_t;

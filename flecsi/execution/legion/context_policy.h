@@ -38,10 +38,10 @@ namespace flecsi {
 namespace execution {
 
 ///
-// \struct legion_runtime_runtime_state_t legion/context_policy.h
-// \brief legion_runtime_state_t provides storage for Legion runtime
-//        information that can be reinitialized as needed to store const
-//        data types and references as required by the Legion runtime.
+/// \struct legion_runtime_runtime_state_t legion/context_policy.h
+/// \brief legion_runtime_state_t provides storage for Legion runtime
+///        information that can be reinitialized as needed to store const
+///        data types and references as required by the Legion runtime.
 ///
 struct legion_runtime_state_t {
 
@@ -73,8 +73,8 @@ static thread_local std::unordered_map<size_t,
   std::stack<std::shared_ptr<legion_runtime_state_t>>> state_;
 
 ///
-// \class legion_context_policy_t legion/context_policy.h
-// \brief legion_context_policy_t provides...
+/// \class legion_context_policy_t legion/context_policy.h
+/// \brief legion_context_policy_t provides...
 ///
 struct legion_context_policy_t
 {
@@ -88,7 +88,8 @@ struct legion_context_policy_t
   //--------------------------------------------------------------------------//
 
   ///
-  //
+  /// FleCSI context initialization: registering all tasks and start Legion
+  /// runtime
   ///
   int
   initialize(
@@ -115,6 +116,13 @@ struct legion_context_policy_t
     return HighLevelRuntime::start(argc, argv);
   } // initialize
 
+  ///
+  /// push_state is used to control the state of the legion task with id==key.
+  /// Task is considered being completed when it's state is
+  /// removed from the state_ object;
+  /// Key - is a task-id.
+  ///
+
   void push_state(
     size_t key,
     LegionRuntime::HighLevel::Context & context,
@@ -131,6 +139,11 @@ struct legion_context_policy_t
       (new legion_runtime_state_t(context, runtime, task, regions)));
   } // set_state
 
+  ///
+  /// pops_state(key) is used to control the state of the legion task with
+  ///  id=key. It removes the task state from the state_pbject when
+  /// the task is completed.
+  ///
   void pop_state(
     size_t key
   )
@@ -151,7 +164,7 @@ struct legion_context_policy_t
   using unique_tid_t = utils::unique_id_t<task_id_t>;
 
   ///
-  //
+  /// registering FLeCSI task by using task_key and function pointer
   ///
   bool
   register_task(
@@ -168,7 +181,7 @@ struct legion_context_policy_t
   } // register_task
 
   ///
-  //
+  /// return task_id for the task with task_key = key
   ///
   task_id_t
   task_id(
@@ -188,7 +201,7 @@ struct legion_context_policy_t
   //--------------------------------------------------------------------------//
 
   ///
-  //
+  /// register FLeCSI function
   ///
   template<typename T>
   bool
@@ -208,7 +221,7 @@ struct legion_context_policy_t
   } // register_function
   
   ///
-  //
+  /// return function by it's key
   ///
   std::function<void(void)> *
   function(
@@ -222,6 +235,9 @@ struct legion_context_policy_t
   // Legion runtime accessors.
   //--------------------------------------------------------------------------//
 
+  ///
+  /// return context corresponding to the taks_key
+  ///
   LegionRuntime::HighLevel::Context &
   context(
     size_t task_key
@@ -230,6 +246,9 @@ struct legion_context_policy_t
     return state_[task_key].top()->context;
   } // context
 
+  ///
+  /// return runtime corresponding to the taks_key
+  ///
   LegionRuntime::HighLevel::HighLevelRuntime *
   runtime(
     size_t task_key
@@ -238,6 +257,9 @@ struct legion_context_policy_t
     return state_[task_key].top()->runtime;
   } // runtime
 
+  ///
+  /// return taks pointer by the  taks_key
+  ///
   const
   LegionRuntime::HighLevel::Task *
   task(
@@ -247,6 +269,9 @@ struct legion_context_policy_t
     return state_[task_key].top()->task;
   } // task
 
+  ///
+  /// return PhysicalRegions for the task with the key=task_key
+  ///
   const
   std::vector<LegionRuntime::HighLevel::PhysicalRegion> &
   regions(

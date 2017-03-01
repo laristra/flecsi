@@ -30,9 +30,9 @@
 #include "flecsi/utils/const_string.h"
 
 ///
-// \file legion/sparse.h
-// \authors bergen
-// \date Initial file creation: Apr 17, 2016
+/// \file legion/sparse.h
+/// \authors bergen
+/// \date Initial file creation: Apr 17, 2016
 ///
 
 namespace flecsi {
@@ -69,6 +69,9 @@ static constexpr size_t INDICES_KEY = 0;
 static constexpr size_t MATERIALS_KEY = 1;
 #endif
 
+///
+/// FIXME documentation
+///
 template<typename T, typename MD>
 struct sparse_accessor_t {
 
@@ -84,12 +87,12 @@ struct sparse_accessor_t {
   //--------------------------------------------------------------------------//
 
   ///
-  //
+  /// FIXME documentation
   ///
   sparse_accessor_t() {}
 
   ///
-  //
+  /// FIXME documentation
   ///
   sparse_accessor_t(
     const std::string & label,
@@ -101,7 +104,7 @@ struct sparse_accessor_t {
   } // sparse_accessor_t
 
   ///
-  //
+  /// FIXME documentation
   ///
   T &
   operator () (
@@ -112,14 +115,14 @@ struct sparse_accessor_t {
   } // operator ()
 
   ///
-  //
+  /// FIXME documentation
   ///
   void dump()
   {
   } // dump
 
   ///
-  //
+  /// FIXME documentation
   ///
   T *
   data()
@@ -131,6 +134,9 @@ private:
 
 }; // struct sparse_accessor_t
 
+///
+/// FIXME documentation
+///
 template<typename T, typename MD>
 struct sparse_mutator_t {
 
@@ -146,12 +152,12 @@ struct sparse_mutator_t {
   //--------------------------------------------------------------------------//
 
   ///
-  //
+  /// FIXME documentation
   ///
   sparse_mutator_t() {}
 
   ///
-  //
+  /// FIXME documentation
   ///
   sparse_mutator_t(
     size_t num_slots,
@@ -163,14 +169,14 @@ struct sparse_mutator_t {
   {}
 
   ///
-  //
+  /// FIXME documentation
   ///
   ~sparse_mutator_t()
   {
   } // ~sparse_mutator_t
 
   ///
-  //
+  /// FIXME documentation
   ///
   T &
   operator () (
@@ -181,7 +187,7 @@ struct sparse_mutator_t {
   } // operator ()
 
   ///
-  //
+  /// FIXME documentation
   ///
   T *
   data()
@@ -190,7 +196,7 @@ struct sparse_mutator_t {
   } // data
 
   ///
-  //
+  /// FIXME documentation
   ///
   void
   commit()
@@ -205,6 +211,9 @@ private:
 // Sparse handle.
 //----------------------------------------------------------------------------//
 
+///
+/// FIXME documentation
+///
 template<typename T>
 struct sparse_handle_t {
 }; // struct sparse_handle_t
@@ -240,7 +249,7 @@ struct storage_type_t<sparse, DS, MD> {
   //--------------------------------------------------------------------------//
 
   ///
-  //
+  /// FIXME documentation
   ///
   template<
     typename T,
@@ -263,7 +272,7 @@ struct storage_type_t<sparse, DS, MD> {
   } // register_data
 
   ///
-  //
+  /// FIXME documentation
   ///
   template<
     typename T,
@@ -282,7 +291,7 @@ struct storage_type_t<sparse, DS, MD> {
   } // get_accessor
 
   ///
-  //
+  /// FIXME documentation
   ///
   template<
     typename T,
@@ -302,7 +311,7 @@ struct storage_type_t<sparse, DS, MD> {
   } // get_accessor
 
   ///
-  //
+  /// FIXME documentation
   ///
   template<
     typename T,

@@ -20,6 +20,12 @@
   #include EXPAND_AND_STRINGIFY(FLECSI_DRIVER)
 #endif
 
+#ifndef FLECSI_SPECIALIZATION_DRIVER
+  #include "flecsi/execution/default_specialization_driver.h"
+#else
+  #include EXPAND_AND_STRINGIFY(FLECSI_SPECIALIZATION_DRIVER)
+#endif
+
 namespace flecsi {
 namespace execution {
 
@@ -35,6 +41,10 @@ void legion_runtime_driver(const LegionRuntime::HighLevel::Task * task,
 		context_t::instance().push_state(utils::const_string_t{"driver"}.hash(),
       ctx, runtime, task, regions);
 
+    // run default or user-defined specialization driver 
+    specialization_driver(args.argc, args.argv);
+
+    // run default or user-defined driver 
     driver(args.argc, args.argv); 
 
     // Set the current task context to the driver

@@ -11,20 +11,20 @@
 #include "flecsi/utils/tuple_function.h"
 
 ///
-// \file function_handle.h
-// \authors bergen
-// \date Initial file creation: Aug 04, 2016
+/// \file function_handle.h
+/// \authors bergen
+/// \date Initial file creation: Aug 04, 2016
 ///
 
 namespace flecsi {
 namespace execution {
 
 ///
-// \class function_handle__ function_handle.h
-// \brief function_handle__ provides...
-//
-// \tparam R Return value type.
-// \tparam A Argument type (std::tuple).
+/// \class function_handle__ function_handle.h
+/// \brief function_handle__ provides...
+///
+/// \tparam R Return value type.
+/// \tparam A Argument type (std::tuple).
 ///
 template<
   typename R,
@@ -34,11 +34,14 @@ struct function_handle__
 {
   using args_t = A;
 
+  ///
+  /// default constructor
+  /// 
   constexpr function_handle__(const size_t key_)
     : key(key_) {}
 
   ///
-  //
+  /// operator()
   ///
   template< typename T >
   R

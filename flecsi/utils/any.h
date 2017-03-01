@@ -18,23 +18,33 @@
 #include <iostream>
 #include <typeinfo>
 
-/*!
- * \file 
- * \date Initial file creation: Aug 29, 2016
- */
+///
+/// \file any.h
+/// \date Initial file creation: Aug 29, 2016
+///
 
 namespace flecsi {
 namespace utils {
 
+/// 
+/// \class any_t any.h
+/// \brief any_t class can store arbitrary types of information.
+///
 class any_t
 {
 public:
-
+  
+  ///
+  /// default constructor
+  ///
   any_t()
   {
     holder_ = nullptr;
   } // any_t
 
+  ///
+  /// copy constructor
+  ///
   template<
     class T
   >
@@ -43,17 +53,26 @@ public:
     holder_ = new holder_t<T>(value);
   } // any_t
 
+  ///
+  /// destructor
+  ///
   ~any_t()
   {
     delete holder_;
     holder_ = nullptr;
   } // ~any_t
 
+  ///
+  /// copy operator
+  ///
   any_t(const any_t & rhs)
   {
     holder_=rhs.holder_ ? rhs.holder_->copy() : nullptr;
   } // any_t
 
+  ///
+  /// assignment operator
+  ///
   any_t & operator = (const any_t & rhs)
   {
     delete holder_;
@@ -61,6 +80,9 @@ public:
     return *this;
   } // operator =
 
+  ///
+  /// cast to the type T
+  ///
   template<
     class T
   >
@@ -73,6 +95,9 @@ public:
   template<class T>
   friend const T & any_cast(any_t & rhs);
 
+  ///
+  /// returns Type of the element
+  ///
   const
   std::type_info &
   get_type()
@@ -83,6 +108,9 @@ public:
 
 private:
 
+  ///
+  /// helper class 
+  ///
   class i_holder_t
   {
   public:
@@ -93,6 +121,10 @@ private:
 
   }; //class i_holder_t
 
+
+  ///
+  /// helper class
+  ///
   template<
     typename T
   >
@@ -126,7 +158,7 @@ private:
 }; //class any_t
 
 ///
-///
+/// cast to the type
 ///
 template<
   class T
