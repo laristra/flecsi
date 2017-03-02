@@ -461,7 +461,7 @@ struct storage_type_t<dense, DS, MD>
     flecsi::execution::context_t & context =
       flecsi::execution::context_t::instance();
 
-    size_t task_key = utils::const_string_t{"driver"}.hash();
+    size_t task_key = utils::const_string_t{"specialization_driver"}.hash();
     auto runtime = context.runtime(task_key);
     auto ctx = context.context(task_key);
 
