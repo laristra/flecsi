@@ -69,7 +69,7 @@ using partition_id = size_t;
 using partition_vec = vector<entity_id>;
 
 void
-driver(
+specialization_driver(
   int argc, 
   char ** argv
 )
@@ -77,7 +77,7 @@ driver(
   std::cout << "driver start" << std::endl;
 
   context_t & context_ = context_t::instance();
-  size_t task_key = utils::const_string_t{"driver"}.hash();
+  size_t task_key = utils::const_string_t{"specialization_driver"}.hash();
   auto runtime = context_.runtime(task_key);
   auto context = context_.context(task_key);
 
@@ -164,6 +164,15 @@ driver(
 
   dc.put_index_space(0, cells_part);
 
+ //FIXME: uncomment when the test is fixed
+/*
+   std::unordered_map<utils::const_string_t,
+     data::legion_data_policy_t::partitioned_index_space,
+     utils::const_string_hasher_t> map;
+   map.insert({"cells",cells_part});
+
+   dc.partitions.insert ({"partition1", map});
+*/
   // data client
   // "hydro" namespace
   // "pressure" name

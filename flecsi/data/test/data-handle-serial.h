@@ -50,7 +50,7 @@ public:
 };
 
 void
-driver(
+specialization_driver(
   int argc, 
   char ** argv
 )
@@ -58,7 +58,7 @@ driver(
   std::cout << "driver start" << std::endl;
 
   context_t & context_ = context_t::instance();
-  size_t task_key = utils::const_string_t{"driver"}.hash();
+  size_t task_key = utils::const_string_t{"specialization_driver"}.hash();
 
   data_client dc;
 

@@ -123,7 +123,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
         ../execution/legion/dpd.cc
         ../execution/mpilegion/lax_wendroff_task.cc
       DEFINES DATA_HANDLE_TEST
-        FLECSI_DRIVER=flecsi/data/test/data-handle.h
+        FLECSI_SPECIALIZATION_DRIVER=flecsi/data/test/data-handle.h
         TEST_INIT=flecsi/execution/test/task_init.h
       LIBRARIES ${PARTITION_LIBRARIES}
       POLICY MPILEGION
@@ -144,7 +144,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
         test/data-handle-serial.h
         data_client.cc
       DEFINES DATA_HANDLE_TEST
-        FLECSI_DRIVER=flecsi/data/test/data-handle-serial.h
+        FLECSI_SPECIALIZATION_DRIVER=flecsi/data/test/data-handle-serial.h
         TEST_INIT=flecsi/execution/test/task_init.h
       LIBRARIES ${PARTITION_LIBRARIES}
       POLICY SERIAL
