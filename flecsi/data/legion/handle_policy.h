@@ -24,7 +24,6 @@ struct legion_handle_policy_t
   Legion::IndexPartition shared;
   Legion::IndexPartition ghost;
   Legion::PhysicalRegion pr;
-  size_t region;
   void* data;
   size_t size;
 };

@@ -54,8 +54,6 @@ namespace execution {
       flecsi::execution::field_ids_t & fid_t = 
         flecsi::execution::field_ids_t::instance();
 
-      h.region = region++;
-
       switch(PS){
         case size_t(data::privilege::none):
           assert(false && 
@@ -117,7 +115,7 @@ namespace execution {
       flecsi::execution::field_ids_t & fid_t = 
         flecsi::execution::field_ids_t::instance();
 
-      h.region = region++;
+      //h.region = region++;
 
       LogicalPartition lp =
         runtime->get_logical_partition(ctx, h.lr, h.exclusive);

@@ -40,16 +40,17 @@ namespace execution {
     static size_t
     create(context_t context,
            runtime_t* runtime,
-           regions_t& regions, AS& args){
+           regions_t& regions, AS& args,
+           size_t& region){
       
       using type = 
         typename std::tuple_element<std::tuple_size<AS>::value - I,PS>::type;
 
       handle_<type>(context, runtime, regions,
-                    std::get<std::tuple_size<AS>::value - I>(args));
+                    std::get<std::tuple_size<AS>::value - I>(args), region);
 
       return create_task_args__<I - 1, AS, PS>::
-        create(context, runtime, regions, args);
+        create(context, runtime, regions, args, region);
     }
 
     template<typename PT>
@@ -57,17 +58,15 @@ namespace execution {
     handle_(context_t context,
            runtime_t* runtime,
            regions_t& regions,
-           flecsi::data_handle_t<void, 0>& h){
+           flecsi::data_handle_t<void, 0>& h,
+           size_t& region){
       
       flecsi::execution::field_ids_t & fid_t = 
         flecsi::execution::field_ids_t::instance();
 
       using type = typename PT::type;
 
-      np(h.region);
-      np(regions.size());
-
-      h.pr = regions[h.region];
+      h.pr = regions[region++];
       auto ac = h.pr.get_field_accessor(fid_t.fid_value).typeify<type>();
       Legion::LogicalRegion lr = h.pr.get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
@@ -76,9 +75,7 @@ namespace execution {
       LegionRuntime::Arrays::Rect<1> sr;
       LegionRuntime::Accessor::ByteOffset bo[1];
       h.data = ac.template raw_rect_ptr<1>(r, sr, bo);
-      //np(bo[0]);
-      // ndm - fix
-      h.size = 9999999;
+      h.size = r.hi;
     }
 
     template<
@@ -87,7 +84,7 @@ namespace execution {
     >
     static typename
     std::enable_if_t<!std::is_base_of<flecsi::data_handle_base, R>::value>
-    handle_(context_t, runtime_t*, regions_t&, R&){}
+    handle_(context_t, runtime_t*, regions_t&, R&, size_t&){}
   };
 
   template<typename AS, typename PS>
@@ -96,7 +93,8 @@ namespace execution {
     create(LegionRuntime::HighLevel::Context context,
           LegionRuntime::HighLevel::HighLevelRuntime* runtime,
            const std::vector<
-             LegionRuntime::HighLevel::PhysicalRegion>&, AS& args){
+             LegionRuntime::HighLevel::PhysicalRegion>&, AS& args,
+             size_t& region){
       return 0;
     }
   };
@@ -311,7 +309,7 @@ struct legion_task_wrapper__<P, S, I, void, A>
     // Unpack task arguments
     task_args_t & task_args = 
       *(reinterpret_cast<task_args_t *>(task->args));
-    
+
     user_task_handle_t & user_task_handle = task_args.user_task_handle;
     user_task_args_t & user_task_args = task_args.user_args;
 
@@ -319,9 +317,10 @@ struct legion_task_wrapper__<P, S, I, void, A>
     context_t::instance().push_state(user_task_handle.key,
       context, runtime, task, regions);
 
+    size_t region = 0;
     create_task_args__<std::tuple_size<user_task_args_t>::value,
       user_task_args_t, args_t>::create(
-        context, runtime, regions, user_task_args);
+        context, runtime, regions, user_task_args, region);
 
     user_task_handle(context_t::instance().function(user_task_handle.key),
       user_task_args);
