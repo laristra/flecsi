@@ -33,6 +33,8 @@
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/legion/dpd.h"
 #include "flecsi/data/legion/data_policy.h"
+#include "flecsi/execution/legion/helper.h"
+#include "flecsi/execution/task_ids.h"
 
 #define np(X)                                                            \
  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
@@ -107,9 +109,9 @@ struct dense_accessor_t : public accessor__<T>
   // \param meta_data A reference to the user-defined meta data.
   ///
   dense_accessor_t(const std::string & label, const size_t size,
-    execution::legion_dpd * dpd, const user_meta_data_t & meta_data,
+    T* data, Legion::PhysicalRegion pr, const user_meta_data_t & meta_data,
     bitset_t & user_attributes, size_t index_space)
-    : label_(label), size_(size), dpd_(dpd), 
+    : label_(label), size_(size), values_(data), pr_(pr), 
     meta_data_(&meta_data), user_attributes_(&user_attributes),
     index_space_(index_space), is_(size) {
     //data->map_data()
@@ -129,29 +131,28 @@ struct dense_accessor_t : public accessor__<T>
 
   dense_accessor_t(const dense_accessor_t & a)
   : size_(a.size_),
-  values_(a.values_),
-  dpd_(a.dpd_){}
+  values_(a.values_){}
 
   dense_accessor_t(const data_handle_t<void, 0>& h)
   : size_(h.size),
-  values_(static_cast<T*>(h.data)),
-  dpd_(nullptr){}
+  values_(static_cast<T*>(h.data)){}
 
   ~dense_accessor_t(){
-    if(dpd_){
-      dpd_->unmap_data();
+    if(values_){
+      flecsi::execution::context_t & context =
+        flecsi::execution::context_t::instance();
+
+      size_t task_key = 
+        utils::const_string_t{"specialization_driver"}.hash();
+      auto runtime = context.runtime(task_key);
+      auto ctx = context.context(task_key);
+      runtime->unmap_region(ctx, pr_);
     }
   }
 
   //--------------------------------------------------------------------------//
   // Member data interface.
   //--------------------------------------------------------------------------//
-
-  void map_partition(size_t partition){
-    void* raw_values;
-    dpd_->map_data_values(partition, raw_values);
-    values_ = static_cast<T*>(raw_values);
-  }
 
 	///
   // \brief Return a std::string containing the label of the data variable
@@ -322,19 +323,19 @@ struct dense_accessor_t : public accessor__<T>
 	///
   operator bool() const
   {
-    return dpd_ != nullptr;
+    return values_ != nullptr;
   } // operator bool
 
 private:
 
   std::string label_ = "";
   size_t size_ = 0;
-  execution::legion_dpd * dpd_ = nullptr;
   const user_meta_data_t * meta_data_ = nullptr;
   bitset_t * user_attributes_ = nullptr;
   utils::index_space_t is_;
   size_t index_space_ = 0;
   T* values_ = nullptr;
+  Legion::PhysicalRegion pr_;
 }; // struct dense_accessor_t
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
@@ -438,7 +439,9 @@ struct storage_type_t<dense, DS, MD>
     // Store the data type size information.
     //------------------------------------------------------------------------//
 
-    data_store[NS][h].type_size = sizeof(T);
+    size_t type_size = sizeof(T);
+
+    data_store[NS][h].type_size = type_size;
 
     //------------------------------------------------------------------------//
     // This allows us to set the runtime-type-information, which requires
@@ -465,23 +468,42 @@ struct storage_type_t<dense, DS, MD>
     auto runtime = context.runtime(task_key);
     auto ctx = context.context(task_key);
 
+    execution::legion_helper helper(runtime, ctx);
+
+    execution::field_ids_t & fid_t = execution::field_ids_t::instance(); 
+
     for(size_t i=0; i<versions; ++i) {
       data_store[NS][h].attributes[i].reset();
 
-      legion_data_policy_t::partitioned_index_space& is = 
+      legion_data_policy_t::partitioned_index_space& isp = 
         data_client.get_index_space(index_space);
 
-      execution::legion_dpd::partitioned_unstructured isp;
-      isp.lr = is.lr;
-      isp.ip = is.ip;
-      isp.size = is.size;
-      isp.count_map = is.pcmap;
+      auto data = data_store[NS][h].create_legion_data();
 
-      auto dpd = new execution::legion_dpd(ctx, runtime);
+      IndexSpace is = helper.create_index_space(0, size);
+      FieldSpace fs = helper.create_field_space();
+      FieldAllocator a = helper.create_field_allocator(fs);
+      a.allocate_field(type_size, fid_t.fid_value);
+      data.lr = helper.create_logical_region(is, fs);
 
-      dpd->create_data<T>(isp, size, size);
+      DomainColoring dc;
 
-      data_store[NS][h].data[i] = dpd;
+      size_t p = 0;
+      size_t idx = 0;
+      for(auto& itr : isp.pcmap){
+        size_t start = idx;
+        idx += itr.second;
+        Domain d = helper.domain_from_rect(start, idx - 1);
+        dc[p] = d;
+        ++p;
+      }
+
+      Domain cd = helper.domain_from_rect(0, p - 1);
+
+      data.exclusive = 
+        runtime->create_index_partition(ctx, is, cd, dc, true);
+
+      data_store[NS][h].put_legion_data(i, data);
 
     } // for
 
@@ -519,9 +541,32 @@ struct storage_type_t<dense, DS, MD>
       std::abort();
     }
 
+    flecsi::execution::context_t & context =
+      flecsi::execution::context_t::instance();
+
+    size_t task_key = utils::const_string_t{"specialization_driver"}.hash();
+    auto runtime = context.runtime(task_key);
+    auto ctx = context.context(task_key);
+
+    execution::legion_helper helper(runtime, ctx);
+
+    auto& data = meta_data.get_legion_data(version);
+
+    execution::field_ids_t & fid_t = execution::field_ids_t::instance(); 
+
+    RegionRequirement rr(data.lr, READ_WRITE, EXCLUSIVE, data.lr);
+    rr.add_field(fid_t.fid_value);
+    InlineLauncher il(rr);
+
+    auto pr = runtime->map_region(ctx, il);
+    pr.wait_until_valid();
+
+    T* buf;
+    helper.get_buffer(pr, buf, fid_t.fid_value);
+
     // construct an accessor from the meta data
     return { meta_data.label, meta_data.size,
-      meta_data.data[version],
+      buf, pr,
       meta_data.user_data, meta_data.attributes[version],
       meta_data.index_space };
   }
@@ -670,13 +715,11 @@ struct storage_type_t<dense, DS, MD>
     assert(itr != data_store[NS].end() && "invalid key");
     auto& md = itr->second;
 
-    legion_dpd* dpd = md.data[version];
-    legion_dpd::partition_metadata pmd = 
-      dpd->get_partition_metadata(0 /* fix partition */);
+    auto& data = md.get_legion_data(version);
 
     handle_t<T, PS> h;
-    h.lr = pmd.lr;
-    h.size = pmd.size;
+    h.lr = data.lr;
+    h.exclusive = data.exclusive;
     
     return h;
   } // get_handle

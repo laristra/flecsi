@@ -17,8 +17,6 @@
 
 #include "flecsi/data/common/data_types.h"
 
-#include "flecsi/execution/legion/dpd.h"
-
 ///
 // \file legion/meta_data.h
 // \authors bergen, nickm
@@ -66,12 +64,31 @@ struct legion_meta_data_t
     const std::type_info & type_info;
   }; // struct type_info_t
 
-  std::shared_ptr<type_info_t> rtti;
+  struct legion_data{
+    Legion::LogicalRegion lr;
+    Legion::IndexPartition exclusive;
+  };
 
-  std::unordered_map<size_t, execution::legion_dpd*> data;
+  legion_data& get_legion_data(size_t version) const{
+    auto itr = data.find(version);
+    assert(itr != data.end() && "invalid data version");
+    return const_cast<legion_data&>(itr->second);
+  }
+
+  legion_data create_legion_data() const{
+    return legion_data();
+  }
+
+  void put_legion_data(size_t version, legion_data& d){
+    data.emplace(version, std::move(d));
+  }
+
+  std::shared_ptr<type_info_t> rtti;
   std::unordered_map<size_t, bitset_t> attributes;
   size_t num_entries;
 
+private:
+  std::unordered_map<size_t, legion_data> data;
 }; // struct legion_meta_data_t
 
 } // namespace data

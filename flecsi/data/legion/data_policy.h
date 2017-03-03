@@ -34,10 +34,9 @@ public:
 
   struct partitioned_index_space
   {
-    Legion::LogicalRegion lr;
-    Legion::IndexPartition ip;
-    Legion::IndexPartition shared;
+    Legion::LogicalRegion entities_lr;
     Legion::IndexPartition exclusive;
+    Legion::IndexPartition shared;
     Legion::IndexPartition ghost;
     size_t size;
     partition_data_map pmap;

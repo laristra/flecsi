@@ -130,10 +130,10 @@ specialization_driver(
     fa.allocate_field(sizeof(legion_dpd::offset_count),
                       fid_t.fid_offset_count);
 
-    cells_part.lr = h.create_logical_region(is, fs);
+    cells_part.entities_lr = h.create_logical_region(is, fs);
 
-    RegionRequirement rr(cells_part.lr, WRITE_DISCARD, 
-      EXCLUSIVE, cells_part.lr);
+    RegionRequirement rr(cells_part.entities_lr, WRITE_DISCARD, 
+      EXCLUSIVE, cells_part.entities_lr);
     
     rr.add_field(fid_t.fid_entity);
     rr.add_field(fid_t.fid_offset_count);
@@ -154,7 +154,7 @@ specialization_driver(
       ++ptr;
     }
 
-    cells_part.ip = 
+    cells_part.exclusive = 
       runtime->create_index_partition(context, is, coloring, true);
 
     runtime->unmap_region(context, pr);
@@ -186,7 +186,6 @@ specialization_driver(
   {
     auto ac = 
       flecsi_get_accessor(dc, hydro, pressure, double, dense, /* version */ 0);
-    ac.map_partition(0);
 
     ac[0] = 100.0;
     ac[1] = 200.0;

@@ -64,15 +64,21 @@ namespace execution {
 
       using type = typename PT::type;
 
-      auto pr = regions[h.region];
-      auto ac = pr.get_field_accessor(fid_t.fid_value).typeify<type>();
-      Legion::LogicalRegion lr = pr.get_logical_region();
+      np(h.region);
+      np(regions.size());
+
+      h.pr = regions[h.region];
+      auto ac = h.pr.get_field_accessor(fid_t.fid_value).typeify<type>();
+      Legion::LogicalRegion lr = h.pr.get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
       Legion::Domain domain = runtime->get_index_space_domain(context, is);
       LegionRuntime::Arrays::Rect<1> r = domain.get_rect<1>();
       LegionRuntime::Arrays::Rect<1> sr;
       LegionRuntime::Accessor::ByteOffset bo[1];
       h.data = ac.template raw_rect_ptr<1>(r, sr, bo);
+      //np(bo[0]);
+      // ndm - fix
+      h.size = 9999999;
     }
 
     template<
