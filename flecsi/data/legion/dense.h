@@ -95,8 +95,7 @@ struct dense_accessor_t : public accessor__<T>
   // Constructors.
   //--------------------------------------------------------------------------//
 
-  dense_accessor_t() {
-  }
+  dense_accessor_t() = default;
   
   ///
   // Constructor.
@@ -107,14 +106,22 @@ struct dense_accessor_t : public accessor__<T>
   // \param data A pointer to the raw data.
   // \param meta_data A reference to the user-defined meta data.
   ///
-  dense_accessor_t(const std::string & label, const size_t size,
-    T* data, Legion::PhysicalRegion pr, const user_meta_data_t & meta_data,
-    bitset_t & user_attributes, size_t index_space)
-    : label_(label), size_(size), values_(data), pr_(pr), 
-    meta_data_(&meta_data), user_attributes_(&user_attributes),
-    index_space_(index_space), is_(size) {
-    //data->map_data()
-  }
+  dense_accessor_t(
+    const std::string & label,
+    const size_t size,
+    T* data,
+    Legion::PhysicalRegion pr,
+    const user_meta_data_t & meta_data,
+    bitset_t & user_attributes,
+    size_t index_space)
+    : label_(label),
+    size_(size),
+    data_(data),
+    pr_(pr), 
+    meta_data_(&meta_data),
+    user_attributes_(&user_attributes),
+    index_space_(index_space),
+    is_(size) {}
 
 	///
   // Copy constructor.
@@ -122,15 +129,20 @@ struct dense_accessor_t : public accessor__<T>
   //dense_accessor_t(const dense_accessor_t & a) = delete;
 
   dense_accessor_t(const dense_accessor_t & a)
-  : size_(a.size_),
-  values_(a.values_){}
+  : label_(a.label_),
+    size_(a.size_),
+    data_(a.data_),
+    meta_data_(a.meta_data_),
+    user_attributes_(a.user_attributes_),
+    index_space_(a.index_space_),
+    is_(a.is_){}
 
   dense_accessor_t(const data_handle_t<void, 0>& h)
   : size_(h.size),
-  values_(static_cast<T*>(h.data)){}
+  data_(static_cast<T*>(h.data)){}
 
   ~dense_accessor_t(){
-    if(values_){
+    if(data_){
       flecsi::execution::context_t & context =
         flecsi::execution::context_t::instance();
 
@@ -172,7 +184,7 @@ struct dense_accessor_t : public accessor__<T>
   size_t
   index_space() const
   {
-
+    return index_space_;
   } // index_space
 
 	///
@@ -190,11 +202,13 @@ struct dense_accessor_t : public accessor__<T>
   bitset_t &
   attributes()
   {
+    return *user_attributes_;
   } // attributes
 
   const bitset_t &
   attributes() const
   {
+    return *user_attributes_;
   } // attributes
 
   //--------------------------------------------------------------------------//
@@ -223,6 +237,22 @@ struct dense_accessor_t : public accessor__<T>
   // Operators.
   //--------------------------------------------------------------------------//
 
+  /// \brief copy operator.
+  /// \param [in] a  The accessor to copy.
+  /// \return A reference to the new copy.
+  dense_accessor_t & operator=(const dense_accessor_t & a)
+  {
+    label_ = a.label_;
+    size_ = a.size_;
+    data_ = a.data_;
+    pr_ = a.pr_;
+    meta_data_ = a.meta_data_;
+    user_attributes_ = a.user_attributes_;
+    index_space_ = a.index_space_;
+    is_ = a.is_;
+    return *this;
+  } // operator =
+
 	///
   // \brief Provide logical array-based access to the data for this
   //        data variable.  This is the const operator version.
@@ -271,8 +301,8 @@ struct dense_accessor_t : public accessor__<T>
   ) const
   {
     assert(index < size_ && "index out of range");
-    assert(values_ && "data has not been mapped");
-    return values_[index];
+    assert(data_ && "data has not been mapped");
+    return data_[index];
   } // operator []
 
 	///
@@ -287,8 +317,8 @@ struct dense_accessor_t : public accessor__<T>
   )
   {
     assert(index < size_ && "index out of range");
-    assert(values_ && "data has not been mapped");
-    return values_[index];
+    assert(data_ && "data has not been mapped");
+    return data_[index];
   } // operator []
 
   ///
@@ -303,7 +333,7 @@ struct dense_accessor_t : public accessor__<T>
   )
   {
     assert(index < size_ && "index out of range");
-    assert(values_ && "data has not been mapped");
+    assert(data_ && "data has not been mapped");
 
     //return data_[index];
   } // operator []
@@ -315,7 +345,7 @@ struct dense_accessor_t : public accessor__<T>
 	///
   operator bool() const
   {
-    return values_ != nullptr;
+    return data_ != nullptr;
   } // operator bool
 
 private:
@@ -326,7 +356,7 @@ private:
   bitset_t * user_attributes_ = nullptr;
   utils::index_space_t is_;
   size_t index_space_ = 0;
-  T* values_ = nullptr;
+  T* data_ = nullptr;
   Legion::PhysicalRegion pr_;
 }; // struct dense_accessor_t
 
@@ -619,7 +649,7 @@ struct storage_type_t<dense, DS, MD>
     typename Predicate
   >
   static
-  std::vector<accessor_t<T>>
+  decltype(auto)
   get_accessors(
     const data_client_t & data_client,
     data_store_t & data_store,
@@ -629,6 +659,39 @@ struct storage_type_t<dense, DS, MD>
   )
   {
 
+    std::vector< accessor_t<T> > as;
+
+    // the runtime id
+    auto runtime_id = data_client.runtime_id();
+
+    // loop over each key pair
+    for (auto & entry_pair : data_store[NS]) {
+      // get the meta data key and label
+      const auto & meta_data_key = entry_pair.first;
+      auto & meta_data = entry_pair.second;
+      // now build the hash for this label
+      const auto & label = meta_data.label;
+      auto key_hash = 
+        utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
+      auto hash = key_hash ^ runtime_id;
+      // filter out the accessors for different data_clients
+      if ( meta_data_key != hash ) continue;
+      // if the reconstructed hash matches the meta data key,
+      // then we may want this one
+      auto a = get_accessor<T>( meta_data, version );
+      if ( a )
+        if (meta_data.rtti->type_info == typeid(T) && predicate(a))
+          as.emplace_back( std::move(a) );
+    } // for
+
+    // if sorting is requested
+    if (sorted) 
+      std::sort( 
+        as.begin(), as.end(), 
+        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
+      );
+
+    return as;
   }
 
   template<
@@ -636,7 +699,7 @@ struct storage_type_t<dense, DS, MD>
     typename Predicate
   >
   static
-  std::vector<accessor_t<T>>
+  decltype(auto)
   get_accessors(
     const data_client_t & data_client,
     data_store_t & data_store,
@@ -645,7 +708,47 @@ struct storage_type_t<dense, DS, MD>
     bool sorted
   )
   {
+    std::vector< accessor_t<T> > as;
 
+    // the runtime id
+    auto runtime_id = data_client.runtime_id();
+
+    // check each namespace
+    for (auto & namespace_map : data_store) {
+
+      // the namespace data
+      auto & namespace_key = namespace_map.first;
+      auto & namespace_data = namespace_map.second;
+      
+      // loop over each key pair
+      for (auto & entry_pair : namespace_data) {
+        // get the meta data key and label
+        const auto & meta_data_key = entry_pair.first;
+        auto & meta_data = entry_pair.second;
+        // now build the hash for this label
+        const auto & label = meta_data.label;
+        auto key_hash = 
+          utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
+        auto hash = key_hash ^ runtime_id;
+        // filter out the accessors for different data_clients
+        if ( meta_data_key != hash ) continue;
+        // if the reconstructed hash matches the meta data key,
+        // then we may want this one
+        auto a = get_accessor<T>( meta_data, version );
+        if ( a )
+          if (meta_data.rtti->type_info == typeid(T) && predicate(a))
+            as.emplace_back( std::move(a) );
+      } // for each key pair
+    } // for each namespace
+
+    // if sorting is requested
+    if (sorted) 
+      std::sort( 
+        as.begin(), as.end(), 
+        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
+      );
+
+    return as;
   }
 
   template<
@@ -653,7 +756,7 @@ struct storage_type_t<dense, DS, MD>
     size_t NS
   >
   static
-  std::vector<accessor_t<T>>
+  decltype(auto)
   get_accessors(
     const data_client_t & data_client,
     data_store_t & data_store,
@@ -661,14 +764,46 @@ struct storage_type_t<dense, DS, MD>
     bool sorted
   )
   {
+    std::vector< accessor_t<T> > as;
 
+    // the runtime id
+    auto runtime_id = data_client.runtime_id();
+
+    // loop over each key pair
+    for (auto & entry_pair : data_store[NS]) {
+      // get the meta data key and label
+      const auto & meta_data_key = entry_pair.first;
+      auto & meta_data = entry_pair.second;
+      // now build the hash for this label
+      const auto & label = meta_data.label;
+      auto key_hash = 
+        utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
+      auto hash = key_hash ^ runtime_id;
+      // filter out the accessors for different data_clients
+      if ( meta_data_key != hash ) continue;
+      // if the reconstructed hash matches the meta data key,
+      // then we may want this one
+      auto a = get_accessor<T>( meta_data, version );
+      if ( a )
+        if (meta_data.rtti->type_info == typeid(T))
+          as.emplace_back( std::move(a) );
+    } // for
+
+    // if sorting is requested
+    if (sorted) 
+      std::sort( 
+        as.begin(), as.end(), 
+        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
+      );
+
+    return as;
   }
 
   template<
     typename T
   >
   static
-  std::vector<accessor_t<T>>
+  decltype(auto)
   get_accessors(
     const data_client_t & data_client,
     data_store_t & data_store,
@@ -676,7 +811,47 @@ struct storage_type_t<dense, DS, MD>
     bool sorted
   )
   {
+    std::vector< accessor_t<T> > as;
 
+    // the runtime id
+    auto runtime_id = data_client.runtime_id();
+
+    // check each namespace
+    for (auto & namespace_map : data_store) {
+
+      // the namespace data
+      auto & namespace_key = namespace_map.first;
+      auto & namespace_data = namespace_map.second;
+      
+      // loop over each key pair
+      for (auto & entry_pair : namespace_data) {
+        // get the meta data key and label
+        const auto & meta_data_key = entry_pair.first;
+        auto & meta_data = entry_pair.second;
+        // now build the hash for this label
+        const auto & label = meta_data.label;
+        auto key_hash = 
+          utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
+        auto hash = key_hash ^ runtime_id;
+        // filter out the accessors for different data_clients
+        if ( meta_data_key != hash ) continue;
+        // if the reconstructed hash matches the meta data key,
+        // then we may want this one
+        auto a = get_accessor<T>( meta_data, version );
+        if ( a )
+          if (meta_data.rtti->type_info == typeid(T))
+            as.emplace_back( std::move(a) );
+      } // for each key pair
+    } // for each namespace
+
+    // if sorting is requested
+    if (sorted) 
+      std::sort( 
+        as.begin(), as.end(), 
+        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
+      );
+
+    return as;
   }
 
   //--------------------------------------------------------------------------//

@@ -24,6 +24,11 @@ namespace flecsi {
       rw =   0b11
     };
 
+    enum class ghost_privilege : size_t {
+      none = 0b00,
+      ro =   0b01
+    };
+
   } // namespace data
 
 ///
