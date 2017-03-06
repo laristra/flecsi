@@ -31,7 +31,6 @@
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/index_space.h"
 #include "flecsi/execution/context.h"
-#include "flecsi/execution/legion/dpd.h"
 #include "flecsi/data/legion/data_policy.h"
 #include "flecsi/execution/legion/helper.h"
 #include "flecsi/execution/task_ids.h"
@@ -121,13 +120,6 @@ struct dense_accessor_t : public accessor__<T>
   // Copy constructor.
 	///
   //dense_accessor_t(const dense_accessor_t & a) = delete;
-
-  /*dense_accessor_t(const dense_accessor_t & a)
-		: label_(a.label_), size_(a.size_), dpd_(a.dpd_),
-			meta_data_(a.meta_data_), is_(a.is_),
-      index_space_(a.index_space_), values_(a.values_) {
-  }
-  */
 
   dense_accessor_t(const dense_accessor_t & a)
   : size_(a.size_),

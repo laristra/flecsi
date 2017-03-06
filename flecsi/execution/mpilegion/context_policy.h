@@ -37,7 +37,8 @@
 #include "flecsi/execution/mpilegion/mpi_legion_interop.h"
 #include "flecsi/execution/mpilegion/init_partitions_task.h"
 #include "flecsi/execution/mpilegion/lax_wendroff_task.h"
-#include "flecsi/execution/legion/dpd.h"
+
+#include "flecsi/data/legion/dpd.h"
 
 namespace flecsi {
 namespace execution {

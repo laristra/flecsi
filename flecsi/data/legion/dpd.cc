@@ -9,7 +9,7 @@
 // \date Initial file creation: Dec 1, 2016
 ///
 
-#include "flecsi/execution/legion/dpd.h"
+#include "flecsi/data/legion/dpd.h"
 
 #include <iostream>
 

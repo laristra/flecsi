@@ -18,8 +18,6 @@
 #include "flecsi/partition/index_partition.h"
 #include "flecsi/execution/mpilegion/init_partitions_task.h"
 
-#include "flecsi/execution/legion/dpd.h"
-
 using namespace LegionRuntime::HighLevel;
 using namespace LegionRuntime::Accessor;
 

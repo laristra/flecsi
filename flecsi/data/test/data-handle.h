@@ -127,9 +127,6 @@ specialization_driver(
 
     fa.allocate_field(sizeof(entity_id), fid_t.fid_entity);
     
-    fa.allocate_field(sizeof(legion_dpd::offset_count),
-                      fid_t.fid_offset_count);
-
     cells_part.entities_lr = h.create_logical_region(is, fs);
 
     RegionRequirement rr(cells_part.entities_lr, WRITE_DISCARD, 

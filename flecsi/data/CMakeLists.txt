@@ -120,7 +120,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
         ../execution/mpilegion/runtime_driver.cc
         ../execution/mpilegion/init_partitions_task.cc
         data_client.cc
-        ../execution/legion/dpd.cc
+        legion/dpd.cc
         ../execution/mpilegion/lax_wendroff_task.cc
       DEFINES DATA_HANDLE_TEST
         FLECSI_SPECIALIZATION_DRIVER=flecsi/data/test/data-handle.h
