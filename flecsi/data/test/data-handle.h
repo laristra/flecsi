@@ -133,7 +133,6 @@ specialization_driver(
       EXCLUSIVE, cells_part.entities_lr);
     
     rr.add_field(fid_t.fid_entity);
-    rr.add_field(fid_t.fid_offset_count);
     InlineLauncher il(rr);
 
     PhysicalRegion pr = runtime->map_region(context, il);
