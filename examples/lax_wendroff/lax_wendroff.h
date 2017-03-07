@@ -283,7 +283,7 @@ specialization_driver(
   Domain rank_domain = Domain::from_rect<1>(rank_rect);
 
 
-  LegionRuntime::HighLevel::IndexLauncher initialization_launcher(
+/*  LegionRuntime::HighLevel::IndexLauncher initialization_launcher(
     task_ids_t::instance().init_task_id,
     rank_domain,
     LegionRuntime::HighLevel::TaskArgument(0, 0),
@@ -292,12 +292,12 @@ specialization_driver(
   initialization_launcher.tag = MAPPER_FORCE_RANK_MATCH; 
 
   initialization_launcher.add_region_requirement(
-    RegionRequirement(cells_primary_lp, 0/*projection ID*/,
+    RegionRequirement(cells_primary_lp, 0,
                       WRITE_DISCARD, EXCLUSIVE, cells_lr));
   initialization_launcher.add_field(0, fid_t.fid_cell);
 
   initialization_launcher.add_region_requirement(
-    RegionRequirement(vert_primary_lp, 0/*projection ID*/,
+    RegionRequirement(vert_primary_lp, 0,
                       WRITE_DISCARD, EXCLUSIVE, vertices_lr));
   initialization_launcher.add_field(1, fid_t.fid_vert);
 
@@ -316,12 +316,12 @@ specialization_driver(
 	  initialization_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
 	  initialization_launcher.add_region_requirement(
-	    RegionRequirement(ghost_primary_lp, 0/*projection ID*/,
+	    RegionRequirement(ghost_primary_lp, 0,
 	                      WRITE_DISCARD, EXCLUSIVE, ghost_lr));
 	  initialization_launcher.add_field(0, fid_t.fid_cell);
 
 	  initialization_launcher.add_region_requirement(
-	    RegionRequirement(vert_primary_lp, 0/*projection ID*/,
+	    RegionRequirement(vert_primary_lp, 0,
 	                      WRITE_DISCARD, EXCLUSIVE, vertices_lr));
 	  initialization_launcher.add_field(1, fid_t.fid_vert);
 
@@ -330,7 +330,7 @@ specialization_driver(
 
 	  fm2.wait_all_results();
   }
-
+*/
 
   //creating partiotioning for shared and exclusive elements:
   Coloring cells_shared_coloring;

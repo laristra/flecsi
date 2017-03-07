@@ -15,6 +15,15 @@
 #include "flecsi/execution/mpilegion/init_partitions_task.h"
 #include "flecsi/partition/weaver.h"
 #include "flecsi/data/legion/dpd.h"
+#include "flecsi/execution/legion/task_wrapper.h"
+
+#include <vector>
+
+#include "flecsi/data/data.h"
+#include "flecsi/data/data_client.h"
+#include "flecsi/data/legion/data_policy.h"
+#include "flecsi/execution/legion/helper.h"
+#include "flecsi/execution/task_ids.h"
 
 ///
 // \file sprint.h
@@ -25,6 +34,9 @@
 using namespace LegionRuntime::HighLevel;
 using namespace LegionRuntime::Accessor;
 using namespace LegionRuntime::Arrays;
+
+template<typename T>
+using accessor_t = flecsi::data::legion::dense_accessor_t<T, flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t> >;
 
 namespace flecsi {
 namespace execution {
@@ -69,47 +81,6 @@ mpi_task(
   std::vector<std::pair<size_t, size_t>> raw_conns = 
     weaver.get_raw_cell_vertex_conns();
 
-#if 0
-   std::cout <<"DEBUG CELLS"<<std::endl;
-   size_t i=0;
-   for (auto cells_p : ip_cells.primary)
-   {
-    std::cout<<"primary["<<i<<"] = " <<cells_p<<std::endl;
-    i++;
-   }
-   i=0;
-   for (auto cells_s : ip_cells.shared)
-   {
-    std::cout<<"shared["<<i<<"] = " <<cells_s.id<< ", offset = "<< 
-       cells_s.offset<<std::endl;
-    i++;
-   }
-
-
-   std::cout <<"DEBUG VERTICES"<<std::endl;
-   i=0;
-   for (auto vert_p : ip_vertices.primary)
-   {
-    std::cout<<"primary["<<i<<"] = " <<vert_p<<std::endl;
-    i++;
-   }
-   i=0;
-   for (auto vert_s : ip_vertices.shared)
-   {
-    std::cout<<"shared["<<i<<"] = " <<vert_s.id<< ", offset = "<<
-       vert_s.offset<<std::endl;
-    i++;
-   }
-   i=0;
-   for (auto vert_e : ip_vertices.exclusive)
-   {
-    std::cout<<"exclusive["<<i<<"] = " <<vert_e.id<< ", offset = "<<
-       vert_e.offset<<std::endl;
-    i++;
-   }
-
-#endif
-
   flecsi::execution::context_t & context_ =
     flecsi::execution::context_t::instance();
   context_.interop_helper_.data_storage_.push_back(
@@ -122,8 +93,71 @@ mpi_task(
     flecsi::utils::any_t(raw_conns));
 }
 
-  
 flecsi_register_task(mpi_task, mpi, single);
+
+void
+initialization_task(
+		accessor_t<size_t> acc_cells,
+		accessor_t<size_t> acc_vert
+)
+{
+  std::cout << "Here I am in init_cells" << std::endl;
+
+  using index_partition_t = flecsi::dmp::index_partition__<size_t>;
+  using field_id = LegionRuntime::HighLevel::FieldID;
+
+  flecsi::execution::context_t & context_ =
+    flecsi::execution::context_t::instance();
+  index_partition_t ip_cells =
+    context_.interop_helper_.data_storage_[0];
+  index_partition_t ip_vert =
+    context_.interop_helper_.data_storage_[1];
+
+  //cells:
+  //LegionRuntime::HighLevel::LogicalRegion lr_cells =
+  //    regions[0].get_logical_region();
+  //LegionRuntime::HighLevel::IndexSpace is_cells = lr_cells.get_index_space();
+
+  //LegionRuntime::HighLevel::IndexIterator itr_cells(runtime, ctx, is_cells);
+
+//  auto acc_cells = regions[0].get_field_accessor(0).typeify<size_t>();
+
+  //field_id fid_cell = *(task->regions[0].privilege_fields.begin());
+  //LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic, size_t>  acc_cells = regions[0].get_field_accessor(fid_cell).typeify<size_t>();
+
+  
+  for (auto primary_cell : ip_cells.primary) {
+    //assert(itr_cells.has_next());
+    size_t id =primary_cell;
+    //ptr_t ptr = itr_cells.next();
+    //acc_cells.write(ptr, id);
+  }
+
+  //vertices
+  //LegionRuntime::HighLevel::LogicalRegion lr_vert =
+  //    regions[1].get_logical_region();
+  //LegionRuntime::HighLevel::IndexSpace is_vert = lr_vert.get_index_space();
+
+  //LegionRuntime::HighLevel::IndexIterator itr_vert(runtime, ctx, is_vert);
+
+  //auto acc_vert = regions[1].get_field_accessor(0).typeify<size_t>();
+
+  //field_id fid_vert = *(task->regions[1].privilege_fields.begin());
+  //LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic, size_t>  acc_vert = regions[1].get_field_accessor(fid_vert).typeify<size_t>();
+
+
+
+  for (auto primary_vert : ip_vert.primary) {
+    //assert(itr_vert.has_next());
+    size_t id =primary_vert;
+    //ptr_t ptr = itr_vert.next();
+    //acc_vert.write(ptr, id);
+  }
+
+}//initialization_task
+
+flecsi_register_task(initialization_task, loc, index);
+
 
 void
 specialization_driver(
@@ -335,8 +369,8 @@ specialization_driver(
     rank_domain,
     LegionRuntime::HighLevel::TaskArgument(0, 0),
     arg_map);
- 
-  initialization_launcher.tag = MAPPER_FORCE_RANK_MATCH; 
+
+  initialization_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
   initialization_launcher.add_region_requirement(
     RegionRequirement(cells_primary_lp, 0/*projection ID*/,
@@ -350,117 +384,38 @@ specialization_driver(
 
   FutureMap fm2 = runtime->execute_index_space( context,
         initialization_launcher);
-  
+
   fm2.wait_all_results();
 
-#if 0
-#if 0 
-  //printing cell_lr results
-  {
-    RegionRequirement req(cells_lr, READ_WRITE, EXCLUSIVE, cells_lr);
-    req.add_field(fid_t.fid_cell);
+  // This is the first index launch we want to FleCSI wrap
+/*  std::cout << "about to invoke FleCSI wrapper" << std::endl;
+  data::legion_data_policy_t::partitioned_index_space cell_part;
+  cell_part.size = total_num_cells;
+  cell_part.lr = cells_lr;
+  cell_part.ip = cells_primary_ip;
 
-    std::cout << "Back in driver (TTL) and checking values in Cells GlobalLR"
-       << std::endl;
-    InlineLauncher cell_launcher(req);
-    PhysicalRegion cell_region = runtime->map_region(context, cell_launcher);
-    cell_region.wait_until_valid();
-    RegionAccessor<AccessorType::Generic, size_t> acc_cell =
-      cell_region.get_field_accessor(fid_t.fid_cell).typeify<size_t>();
+  data::legion_data_policy_t::partitioned_index_space vert_part;
+  vert_part.lr = vertices_lr;
+  vert_part.size = total_num_vertices;
+  vert_part.ip = vert_primary_ip;
 
-    IndexIterator itr2(runtime, context, cells_is);
-    for (size_t i=0; i< total_num_cells; i++)
-    {
-      assert(itr2.has_next());
-      ptr_t ptr = itr2.next();
-      size_t value =
-          acc_cell.read(ptr);
-      std::cout << "cells_global[ " <<i<<" ] = " << value <<std::endl;
-    }//end for
-  }
-#endif
+  data::data_client_t dc;
 
-  legion_dpd::partitioned_unstructured raw_connectivity_part;
+  dc.put_index_space(0, cell_part);
+  dc.put_index_space(1, vert_part);
 
-  {
-    size_t np = num_vertex_conns.size();
+  const int versions = 1;
+  const int cell_ispace = 0;
+  const int vert_ispace = 1;
+  flecsi_register_data(dc, mesh, cell_gid, size_t, dense, versions, cell_ispace);
+  flecsi_register_data(dc, mesh, vert_gid, size_t, dense, versions, vert_ispace);
 
-    size_t total_conns = 0;
-    for(size_t p = 0; p < np; ++p){
-      size_t count = num_vertex_conns[p];
-      total_conns += count;
-    }
+  const int version = 0;
+  auto cell_handle = flecsi_get_handle(dc, mesh, cell_gid, size_t, dense, version, rw);
+  auto vert_handle = flecsi_get_handle(dc, mesh, vert_gid, size_t, dense, version, rw);
 
-    Legion::IndexSpace is = h.create_index_space(total_conns);
-   
-    raw_connectivity_part.size = total_conns;
-
-    Legion::IndexAllocator ia = runtime->create_index_allocator(context, is);
-
-    Legion::FieldSpace fs = h.create_field_space();
-
-    Legion::FieldAllocator fa = h.create_field_allocator(fs);
-//TOFIX
-    fa.allocate_field(sizeof(std::pair<size_t, size_t>),
-                      fid_t.fid_entity_pair);
-
-    raw_connectivity_part.lr = h.create_logical_region(is, fs);
-
-    Coloring coloring;
-
-    for(size_t p = 0; p < np; ++p){
-      size_t count = num_vertex_conns[p];
-      raw_connectivity_part.count_map[p] = count;
-
-      for(size_t j = 0; j < count; ++j){
-        ptr_t ptr = ia.alloc(1);
-        coloring[p].points.insert(ptr);    
-      }
-    }
-
-    raw_connectivity_part.ip = 
-      runtime->create_index_partition(context, is, coloring, true);
-  }
-  LegionRuntime::HighLevel::ArgumentMap arg_map2;
-
-  LegionRuntime::HighLevel::IndexLauncher init_raw_conn_launcher(
-    task_ids_t::instance().init_raw_conn_task_id,
-    rank_domain,
-    LegionRuntime::HighLevel::TaskArgument(0, 0),
-    arg_map2);  
-
-  init_raw_conn_launcher.tag = MAPPER_FORCE_RANK_MATCH;
-
-  LogicalPartition raw_connectivity_part_lp =
-    runtime->get_logical_partition(context,
-    raw_connectivity_part.lr, raw_connectivity_part.ip);
-
-  init_raw_conn_launcher.add_region_requirement(
-    RegionRequirement(raw_connectivity_part_lp, 0,
-      WRITE_DISCARD, EXCLUSIVE, raw_connectivity_part.lr));
-
-  init_raw_conn_launcher.add_field(0, fid_t.fid_entity_pair);
-  
-  FutureMap raw_conn_fm = 
-    runtime->execute_index_space(context, init_raw_conn_launcher);
-  raw_conn_fm.wait_all_results();
-
-  cells_part.lr = cells_lr;
-  cells_part.ip = cells_primary_ip;
-  cells_part.size = total_num_cells;
-
-
-  vertices_part.lr = vertices_lr;
-  vertices_part.size = total_num_vertices;
-
-  legion_dpd cells_to_vertices(context, runtime);
-  cells_to_vertices.create_connectivity(2, cells_part, 0, vertices_part,
-    raw_connectivity_part);
-  //cells_to_vertices.dump(2, 0);
-  runtime->destroy_index_partition(context, raw_connectivity_part.ip);
-  runtime->destroy_logical_region(context, raw_connectivity_part.lr);
-#endif
-
+  //flecsi_execute_task(initialization_task, loc, index, cell_handle, vert_handle);
+*/
   //creating partiotioning for shared and exclusive elements:
   Coloring cells_shared_coloring;
   Coloring vert_shared_coloring;

@@ -132,7 +132,7 @@ struct mpilegion_context_policy_t
     // This is Galen's hack to get partitioning working for the sprint
     lr_runtime_t::register_legion_task<sprint::partition_lr,
       sprint::shared_part_task>(
-      task_ids_t::instance().shared_part_task_id,lr_loc, false, true); 
+      task_ids_t::instance().shared_part_task_id,lr_loc, false, true);
  
    // FIXME
     // This is Galen's hack to get partitioning working for the sprint

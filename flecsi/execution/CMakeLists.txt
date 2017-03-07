@@ -183,11 +183,30 @@ if(NOT DEFINED ENV{TRAVIS})
         SOURCES
          test/mpilegion/sprint_devel.cc
          mpilegion/runtime_driver.cc
+         ../data/data_client.cc
          ${execution_SOURCES}
         INPUTS
          test/mpilegion/simple2d-16x16.msh
         DEFINES SPRINT_TEST
          FLECSI_SPECIALIZATION_DRIVER=flecsi/execution/test/mpilegion/sprint.h
+         FLECSI_DRIVER=flecsi/execution/test/check_partitions.h
+         TEST_INIT=flecsi/execution/test/task_init.h
+        LIBRARIES ${PARTITION_LIBRARIES}
+        POLICY MPILEGION_DEVEL
+        THREADS 2
+      )
+
+      cinch_add_unit(mpilegion_ghost
+        SOURCES
+         test/mpilegion/sprint_devel.cc
+         mpilegion/runtime_driver.cc
+         ../data/data_client.cc
+         ${execution_SOURCES}
+        INPUTS
+         test/mpilegion/simple2d-16x16.msh
+        DEFINES SPRINT_TEST
+         FLECSI_SPECIALIZATION_DRIVER=flecsi/execution/test/mpilegion/sprint.h
+         FLECSI_DRIVER=flecsi/execution/test/check_ghost_access.h
          TEST_INIT=flecsi/execution/test/task_init.h
         LIBRARIES ${PARTITION_LIBRARIES}
         POLICY MPILEGION_DEVEL

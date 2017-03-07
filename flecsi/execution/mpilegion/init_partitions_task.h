@@ -97,7 +97,7 @@ get_numbers_of_cells_task(
 
 void
 initialization_task(
-  const Legion::Task *task, 
+  const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx, Legion::HighLevelRuntime *runtime
 );
