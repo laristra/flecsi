@@ -102,6 +102,17 @@ cinch_add_unit(data_client
     ${CINCH_RUNTIME_LIBRARIES}
 )
 
+if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
+cinch_add_unit(storage_type
+  SOURCES test/storage_type.cc
+  LIBRARIES
+    flecsi
+    ${CINCH_RUNTIME_LIBRARIES}
+)
+
+endif()
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 cinch_add_unit(storage_type
   SOURCES test/storage_type.h
           ../execution/mpilegion/runtime_driver.cc
@@ -115,7 +126,6 @@ cinch_add_unit(storage_type
   POLICY MPILEGION
 )
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
   if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
     cinch_add_unit(mpilegion_data_handle

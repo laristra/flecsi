@@ -11,7 +11,7 @@
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/legion/task_args.h"
 
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
+#if ( FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion ||  FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion)
   #include "flecsi/execution/mpilegion/legion_handshake.h"
   #include "flecsi/data/legion/dense.h"
 #else
