@@ -103,10 +103,16 @@ cinch_add_unit(data_client
 )
 
 cinch_add_unit(storage_type
-  SOURCES test/storage_type.cc
+  SOURCES test/storage_type.h
+          ../execution/mpilegion/runtime_driver.cc
+          ${RUNTIME_DRIVER}
+  DEFINES STORAGE_TYPE_TEST
+        FLECSI_SPECIALIZATION_DRIVER=flecsi/data/test/storage_type.h
+        TEST_INIT=flecsi/execution/test/task_init.h
   LIBRARIES
     flecsi
     ${CINCH_RUNTIME_LIBRARIES}
+  POLICY MPILEGION
 )
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")

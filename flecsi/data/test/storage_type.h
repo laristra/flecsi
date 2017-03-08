@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "flecsi/data/data.h"
+#include "flecsi/execution/mpilegion/runtime_driver.h"
 
 /*
 #define np(X)                                                            \
@@ -59,8 +60,17 @@ struct mesh_t : public data::data_client_t {
 // Dense storage type.
 //----------------------------------------------------------------------------//
 
-TEST(storage, dense) {
 
+void
+specialization_driver(
+  int argc,
+  char ** argv
+)
+{
+  std::cout << "specialization driver start" << std::endl;
+
+  clog(info) << "test Dense storage type" << std::endl;
+  {
   using namespace flecsi::data;
 
   mesh_t m;
@@ -91,25 +101,21 @@ TEST(storage, dense) {
   auto p0 = flecsi_get_accessor(m, hydro, pressure, double, dense, 0);
   auto p1 = flecsi_get_accessor(m, hydro, pressure, double, dense, 1);
   auto d = flecsi_get_accessor(m, hydro, density, double, dense, 0);
-
-  ASSERT_TRUE(p0.attributes().test(flagged));
-  ASSERT_FALSE(p1.attributes().test(flagged));
-  ASSERT_FALSE(d.attributes().test(flagged));
+  clog_assert(p0.attributes().test(flagged),"");
+  clog_assert(!p1.attributes().test(flagged),"");
+  clog_assert(!d.attributes().test(flagged),"");
 
   for(size_t i(0); i<100; ++i) {
-    ASSERT_EQ(p0[i], i);
-    ASSERT_EQ(p1[i], 1000+p0[i]);
-    ASSERT_EQ(d[i], -p0[i]);
+    clog_assert(p0[i]==i,"");
+    clog_assert(p1[i]==(1000+p0[i]),"");
+    clog_assert(d[i]==(-p0[i]),"");
   } // for
   } // scope
-} // TEST
+  }//end scope
 
-//----------------------------------------------------------------------------//
-// Scalar storage type.
-//----------------------------------------------------------------------------//
 
-TEST(storage, global) {
-
+ // Scalar storage type.
+ {
   using namespace flecsi::data;
 
   mesh_t m;
@@ -137,22 +143,17 @@ TEST(storage, global) {
   {
   auto s0 = flecsi_get_accessor(m, hydro, simulation_data, my_data_t, global, 0);
   auto s1 = flecsi_get_accessor(m, hydro, simulation_data, my_data_t, global, 1);
+  clog_assert((s0.attributes().test(flagged)),"");
+  clog_assert(!(s1.attributes().test(flagged)),"");
 
-  ASSERT_TRUE(s0.attributes().test(flagged));
-  ASSERT_FALSE(s1.attributes().test(flagged));
-
-  ASSERT_EQ(s0->t, 0.5);
-  ASSERT_EQ(s0->n, 100);
-  ASSERT_EQ(s1->t, 1.0 + s0->t);
-  ASSERT_EQ(s1->n, 100 + s0->n);
+  clog_assert((s0->t==0.5),"");
+  clog_assert((s0->n==100),"");
+  clog_assert((s1->t==(1.0 + s0->t)),"");
+  clog_assert((s1->n==(100 + s0->n)),"");
   } // scope
-} // TEST
-
-//----------------------------------------------------------------------------//
-// Sparse storage type.
-//----------------------------------------------------------------------------//
-
-TEST(storage, sparse1) {
+  }//end scope for scalar storage type
+  // Sparse storage type.
+  {
   using namespace flecsi::data;
 
 // TODO: sparse data changes in progress
@@ -176,7 +177,7 @@ TEST(storage, sparse1) {
 
   for(size_t i = 0; i < num_indices ; i += 2){
     for(size_t j = 0; j < num_materials; j += 2){
-      ASSERT_EQ(a(i, j), i * 100 + j);
+      clog_assert((a(i, j)==( i * 100 + j)),"");
     }
   }
 
@@ -197,9 +198,11 @@ TEST(storage, sparse1) {
   }
   */
 
-} // TEST
+  }//end scope
 
-TEST(storage, sparse2) {
+
+  //sparse2
+  {
   using namespace flecsi::data;
 
 // TODO: sparse data changes in progress
@@ -232,11 +235,11 @@ TEST(storage, sparse2) {
 
   for(size_t i = 0; i < num_indices ; i += 2){
     for(size_t j = 0; j < num_materials; j += 2){
-      ASSERT_EQ(a(i, j), i * 1000 + j);
+      clog_assert((a(i, j)==(i * 1000 + j)),"");
     }
   }
+  }//end scope
 
-} // TEST
 
 /*
 TEST(storage, sparse_delete) {
@@ -267,10 +270,9 @@ TEST(storage, sparse_delete) {
 } // TEST
 */
 
-//! \brief This tests the various ways to access data via attributes.
-//! \remark Tests the dense accessor.
-TEST(storage, dense_attributes) {
-
+  //! \brief This tests the various ways to access data via attributes.
+  //! \remark Tests the dense accessor.
+  {
   using namespace flecsi::data;
 
   mesh_t m;
@@ -297,28 +299,28 @@ TEST(storage, dense_attributes) {
     auto d = flecsi_get_accessor(m, hydro, density, double, dense, 0);
     auto t = flecsi_get_accessor(m, radiation, temperature, double, dense, 0);
 
-    ASSERT_TRUE(p0.attributes().test(flagged));
-    ASSERT_FALSE(p1.attributes().test(flagged));
-    ASSERT_FALSE(d.attributes().test(flagged));
-    ASSERT_TRUE(t.attributes().test(flagged));
+    clog_assert((p0.attributes().test(flagged)),"");
+    clog_assert(!(p1.attributes().test(flagged)),"");
+    clog_assert(!(d.attributes().test(flagged)),"");
+    clog_assert((t.attributes().test(flagged)),"");
 
     // test is_at(cells)
     auto cell_vars = flecsi_get_accessors(
       m, hydro, double, dense, 0, flecsi_is_at(cells), /* sorted */ true
     );
 
-    ASSERT_EQ( cell_vars.size(), 2 );
-    ASSERT_EQ( cell_vars[0].label(), "density" );
-    ASSERT_EQ( cell_vars[1].label(), "pressure" );
+    clog_assert( cell_vars.size()==2,"" );
+    clog_assert(( cell_vars[0].label()=="density"),"" );
+    clog_assert(( cell_vars[1].label()=="pressure"),"" );
 
     auto all_cell_vars = flecsi_get_accessors_all(
       m, double, dense, 0, flecsi_is_at(cells), /* sorted */ true 
     );
 
-    ASSERT_EQ( all_cell_vars.size(), 3 );
-    ASSERT_EQ( all_cell_vars[0].label(), "density" );
-    ASSERT_EQ( all_cell_vars[1].label(), "pressure" );
-    ASSERT_EQ( all_cell_vars[2].label(), "temperature" );
+    clog_assert(( all_cell_vars.size()==3), "" );
+    clog_assert(( all_cell_vars[0].label()=="density"),"" );
+    clog_assert(( all_cell_vars[1].label()=="pressure"),"" );
+    clog_assert(( all_cell_vars[2].label()=="temperature"),"" );
 
 
     // test has_attribute_at(flagge,cells)
@@ -327,45 +329,44 @@ TEST(storage, dense_attributes) {
       /* sorted */ true
     );
 
-    ASSERT_EQ( flagged_vars.size(), 1 );
-    ASSERT_EQ( flagged_vars[0].label(), "pressure" );
+    clog_assert(( flagged_vars.size()==1),"" );
+    clog_assert(( flagged_vars[0].label()== "pressure"),"" );
 
     auto all_flagged_vars = flecsi_get_accessors_all(
       m, double, dense, 0, flecsi_has_attribute_at(flagged, cells), /* sorted */ true 
     );
 
-    ASSERT_EQ( all_flagged_vars.size(), 2 );
-    ASSERT_EQ( all_flagged_vars[0].label(), "pressure" );
-    ASSERT_EQ( all_flagged_vars[1].label(), "temperature" );
+    clog_assert(( all_flagged_vars.size()==2),"" );
+    clog_assert(( all_flagged_vars[0].label()=="pressure"),"" );
+    clog_assert(( all_flagged_vars[1].label()=="temperature"),"" );
 
     // test get by type=double
     auto typed_vars = flecsi_get_accessors(
       m, hydro, double, dense, 0, /* sorted */ true
     );
 
-    ASSERT_EQ( typed_vars.size(), 3 );
-    ASSERT_EQ( typed_vars[0].label(), "density" );
-    ASSERT_EQ( typed_vars[1].label(), "pressure" );
-    ASSERT_EQ( typed_vars[2].label(), "speed" );
+    clog_assert(( typed_vars.size()==3),"" );
+    clog_assert(( typed_vars[0].label()=="density"),"" );
+    clog_assert(( typed_vars[1].label()=="pressure"),"" );
+    clog_assert(( typed_vars[2].label()=="speed"),"" );
 
     auto all_typed_vars = flecsi_get_accessors_all(
       m, double, dense, 0, /* sorted */ true 
     );
 
-    ASSERT_EQ( all_typed_vars.size(), 4 );
-    ASSERT_EQ( all_typed_vars[0].label(), "density" );
-    ASSERT_EQ( all_typed_vars[1].label(), "pressure" );
-    ASSERT_EQ( all_typed_vars[2].label(), "speed" );
-    ASSERT_EQ( all_typed_vars[3].label(), "temperature" );
+    clog_assert(( all_typed_vars.size()==4),"" );
+    clog_assert(( all_typed_vars[0].label()=="density"),"" );
+    clog_assert(( all_typed_vars[1].label()=="pressure"),"" );
+    clog_assert(( all_typed_vars[2].label()=="speed"),"" );
+    clog_assert(( all_typed_vars[3].label()=="temperature"),"" );
 
 
   } // scope
-} // TEST
+  }//scope
 
-//! \brief This tests the various ways to access data via attributes.
-//! \remark Tests the global accessor.
-TEST(storage, global_attributes) {
-
+  //! \brief This tests the various ways to access data via attributes.
+  //! \remark Tests the global accessor.
+  {
   using namespace flecsi::data;
 
   mesh_t m;
@@ -392,10 +393,10 @@ TEST(storage, global_attributes) {
     auto d = flecsi_get_accessor(m, hydro, density, double, global, 0);
     auto t = flecsi_get_accessor(m, radiation, temperature, double, global, 0);
 
-    ASSERT_TRUE(p0.attributes().test(flagged));
-    ASSERT_FALSE(p1.attributes().test(flagged));
-    ASSERT_FALSE(d.attributes().test(flagged));
-    ASSERT_TRUE(t.attributes().test(flagged));
+    clog_assert((p0.attributes().test(flagged)),"");
+    clog_assert((p1.attributes().test(flagged)),"");
+    clog_assert((d.attributes().test(flagged)),"");
+    clog_assert((t.attributes().test(flagged)),"");
 
 
     // test has_attribute(flagge)
@@ -404,41 +405,40 @@ TEST(storage, global_attributes) {
       /* sorted */ true
     );
 
-    ASSERT_EQ( flagged_vars.size(), 1 );
-    ASSERT_EQ( flagged_vars[0].label(), "pressure" );
+    clog_assert(( flagged_vars.size()==1),"" );
+    clog_assert(( flagged_vars[0].label()=="pressure"),"" );
 
     auto all_flagged_vars = flecsi_get_accessors_all(
       m, double, global, 0, flecsi_has_attribute(flagged), /* sorted */ true 
     );
 
-    ASSERT_EQ( all_flagged_vars.size(), 2 );
-    ASSERT_EQ( all_flagged_vars[0].label(), "pressure" );
-    ASSERT_EQ( all_flagged_vars[1].label(), "temperature" );
+    clog_assert(( all_flagged_vars.size()==2),"" );
+    clog_assert(( all_flagged_vars[0].label()=="pressure"),"" );
+    clog_assert(( all_flagged_vars[1].label()=="temperature"),"" );
 
     // test get by type=double
     auto typed_vars = flecsi_get_accessors(
       m, hydro, double, global, 0, /* sorted */ true
     );
 
-    ASSERT_EQ( typed_vars.size(), 3 );
-    ASSERT_EQ( typed_vars[0].label(), "density" );
-    ASSERT_EQ( typed_vars[1].label(), "pressure" );
-    ASSERT_EQ( typed_vars[2].label(), "speed" );
+    clog_assert(( typed_vars.size()==3),"" );
+    clog_assert(( typed_vars[0].label()== "density"),"" );
+    clog_assert(( typed_vars[1].label()=="pressure"),"" );
+    clog_assert(( typed_vars[2].label()== "speed"),"" );
 
     auto all_typed_vars = flecsi_get_accessors_all(
       m, double, global, 0, /* sorted */ true 
     );
 
-    ASSERT_EQ( all_typed_vars.size(), 4 );
-    ASSERT_EQ( all_typed_vars[0].label(), "density" );
-    ASSERT_EQ( all_typed_vars[1].label(), "pressure" );
-    ASSERT_EQ( all_typed_vars[2].label(), "speed" );
-    ASSERT_EQ( all_typed_vars[3].label(), "temperature" );
+    clog_assert(( all_typed_vars.size()== 4),"" );
+    clog_assert(( all_typed_vars[0].label()=="density"),"" );
+    clog_assert(( all_typed_vars[1].label()=="pressure"),"" );
+    clog_assert(( all_typed_vars[2].label()=="speed"),"" );
+    clog_assert(( all_typed_vars[3].label()=="temperature"),"" );
 
-
+  }//scope
   } // scope
-} // TEST
-
+} // specialization_driver
 /*----------------------------------------------------------------------------*
  * Cinch test Macros
  *
