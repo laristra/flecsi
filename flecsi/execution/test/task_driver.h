@@ -195,7 +195,7 @@ struct silver_t : material_t {
 // Driver.
 //----------------------------------------------------------------------------//
 
-void driver(int argc, char ** argv) {
+void specialization_driver(int argc, char ** argv) {
 
   mesh_t m;
 

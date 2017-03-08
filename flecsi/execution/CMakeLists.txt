@@ -112,7 +112,7 @@ cinch_add_unit(task
     test/task_driver.h
     ${RUNTIME_DRIVER}
   DEFINES
-    FLECSI_DRIVER=flecsi/execution/test/task_driver.h
+    FLECSI_SPECIALIZATION_DRIVER=flecsi/execution/test/task_driver.h
     TEST_INIT=flecsi/execution/test/task_init.h
   POLICY
     ${UNIT_POLICY}
@@ -146,7 +146,7 @@ if(NOT DEFINED ENV{TRAVIS})
         mpilegion/runtime_driver.cc
         mpilegion/init_partitions_task.cc
       DEFINES
-        FLECSI_DRIVER=flecsi/execution/test/task_driver.h
+        FLECSI_SPECIALIZATION_DRIVER=flecsi/execution/test/task_driver.h
         TEST_INIT=flecsi/execution/test/task_init.h
       POLICY MPILEGION
       LIBRARIES
