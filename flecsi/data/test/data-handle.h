@@ -206,15 +206,23 @@ specialization_driver(
 
   dc.put_index_space(0, cells_part);
 
- //FIXME: uncomment when the test is fixed
-/*
-   std::unordered_map<utils::const_string_t,
-     data::legion_data_policy_t::partitioned_index_space,
-     utils::const_string_hasher_t> map;
-   map.insert({"cells",cells_part});
+  //adding partitioned_index_space to the context
+  execution::mpilegion_context_policy_t::partitioned_index_space is2;
+  is2.size = cells_part.size;
+  is2.exclusive_count_map = cells_part.exclusive_count_map;
+  is2.shared_count_map = cells_part.shared_count_map;
+  is2.ghost_count_map = cells_part.ghost_count_map;
+  is2.entities_lr = cells_part.entities_lr;
+  is2.exclusive_ip = cells_part.exclusive_ip;
+  is2.shared_ip = cells_part.shared_ip;
+  is2.ghost_ip = cells_part.ghost_ip;
 
-   dc.partitions.insert ({"partition1", map});
-*/
+  context_.add_index_space("partition1","cells", is2);
+
+  execution::mpilegion_context_policy_t::partitioned_index_space& is3=
+      context_.get_index_space("partition1","cells");
+
+  
   // data client
   // "hydro" namespace
   // "pressure" name

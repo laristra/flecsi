@@ -290,15 +290,19 @@ struct legion_context_policy_t
   struct partitioned_index_space
   {
     Legion::LogicalRegion entities_lr;
-    Legion::IndexPartition primary;
-    Legion::IndexPartition exclusive;
-    Legion::IndexPartition shared;
-    Legion::IndexPartition ghost;
+    Legion::IndexPartition primary_ip;
+    Legion::IndexPartition exclusive_ip;
+    Legion::IndexPartition shared_ip;
+    Legion::IndexPartition ghost_ip;
     size_t size;
-    partition_count_map pcmap;
+    size_t exclusive_size;
+    size_t shared_size;
+    size_t ghost_size;
+    partition_count_map exclusive_count_map;
+    partition_count_map shared_count_map;
+    partition_count_map ghost_count_map;
     std::vector<Legion::PhaseBarrier> pbs;
   };
-
   
 private:
 
