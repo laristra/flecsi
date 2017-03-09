@@ -59,8 +59,6 @@ public:
   }
 private:
   InteropS() {}
-  //InteropS(InteropS const&);
-  //void operator=(InteropS const&);
   
 public:
   InteropS(InteropS const &) = delete;
