@@ -91,7 +91,7 @@ specialization_driver(
 
   size_t partition_size = NUM_CELLS / NUM_PARTITIONS;
 
-  data::legion_data_policy_t::partitioned_index_space cells_part;
+  context_t::partitioned_index_space cells_part;
 
   for(size_t c = 0; c < NUM_CELLS; ++c){
     size_t p = c / partition_size;
@@ -206,18 +206,7 @@ specialization_driver(
 
   dc.put_index_space(0, cells_part);
 
-  //adding partitioned_index_space to the context
-  execution::mpilegion_context_policy_t::partitioned_index_space is2;
-  is2.size = cells_part.size;
-  is2.exclusive_count_map = cells_part.exclusive_count_map;
-  is2.shared_count_map = cells_part.shared_count_map;
-  is2.ghost_count_map = cells_part.ghost_count_map;
-  is2.entities_lr = cells_part.entities_lr;
-  is2.exclusive_ip = cells_part.exclusive_ip;
-  is2.shared_ip = cells_part.shared_ip;
-  is2.ghost_ip = cells_part.ghost_ip;
-
-  context_.add_index_space("partition1","cells", is2);
+  context_.add_index_space("partition1","cells", cells_part);
 
   execution::mpilegion_context_policy_t::partitioned_index_space& is3=
       context_.get_index_space("partition1","cells");

@@ -16,6 +16,7 @@
 #include <map>
 
 #include "legion.h"
+#include "flecsi/execution/context.h"
 
 namespace flecsi {
 namespace data {
@@ -23,30 +24,9 @@ namespace data {
 class legion_data_policy_t
 {
 public:
-  struct partition
-  {
-    Legion::PhaseBarrier pb;
-  };
 
-  using partition_data_map = std::unordered_map<size_t, partition>;
-
-  using partition_count_map = std::map<size_t, size_t>;
-
-  struct partitioned_index_space
-  {
-    Legion::LogicalRegion entities_lr;
-    Legion::IndexPartition exclusive_ip;
-    Legion::IndexPartition shared_ip;
-    Legion::IndexPartition ghost_ip;
-    size_t size;
-    size_t exclusive_size;
-    size_t shared_size;
-    size_t ghost_size;
-    partition_data_map pmap;
-    partition_count_map exclusive_count_map;
-    partition_count_map shared_count_map;
-    partition_count_map ghost_count_map;
-  };
+  using partitioned_index_space =
+    typename flecsi::execution::context_t::partitioned_index_space;
 
   using index_space_map = 
     std::unordered_map<size_t, partitioned_index_space>;

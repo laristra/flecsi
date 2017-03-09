@@ -74,19 +74,6 @@ public:
     return 0;
   } // indices
 
-//data instances
-public:
-//  using index_partition_t = dmp::index_partition__<size_t>;
-/*  
-  //map of the all partitions used in the code
-  //std::map <name of the partition<entiry, index partition for entity>
- 
-  std::unordered_map<utils::const_string_t,
-    std::unordered_map<utils::const_string_t,
-    typename P::partitioned_index_space,
-    utils::const_string_hasher_t>,
-    utils::const_string_hasher_t > partitions;
-*/
 private:
 
   size_t id_;

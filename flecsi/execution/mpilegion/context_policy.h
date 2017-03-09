@@ -479,23 +479,32 @@ struct mpilegion_context_policy_t
   //------------------------------------------------------------------------//
   // Data registration
   //------------------------------------------------------------------------//
-  using partition_count_map = std::map<size_t, size_t>;
+  using partition_count_map_t = std::map<size_t, size_t>;
+
+  using  copy_task_map_t = std::unordered_map<size_t, task_hash_key_t>;
 
   struct partitioned_index_space
   {
+    // logical region for the entity
     Legion::LogicalRegion entities_lr;
+    // index partitions:
     Legion::IndexPartition primary_ip;
     Legion::IndexPartition exclusive_ip;
     Legion::IndexPartition shared_ip;
     Legion::IndexPartition ghost_ip;
+    // sizes
     size_t size;
     size_t exclusive_size;
     size_t shared_size;
     size_t ghost_size;
-    partition_count_map exclusive_count_map;
-    partition_count_map shared_count_map;
-    partition_count_map ghost_count_map;
+    //number of elements per each part of the partition
+    partition_count_map_t exclusive_count_map;
+    partition_count_map_t shared_count_map;
+    partition_count_map_t ghost_count_map;
+    // vector of the PhaseBarrires
     std::vector<Legion::PhaseBarrier> pbs;
+    //map for the copy_task ids
+    copy_task_map_t copy_task_map;
   };
  
   

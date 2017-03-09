@@ -98,6 +98,10 @@ struct context__ : public context_policy_t
   context__(context__ &&) = default;
   context__ & operator = (context__ &&) = default;
 
+
+  using partitioned_index_space = 
+      typename context_policy_t::partitioned_index_space;
+
   //map of the all partitioned_index_spaces used in the code
   //std::map <name of the partitioned IS <entiry, index partition for entity
   std::unordered_map<utils::const_string_t,

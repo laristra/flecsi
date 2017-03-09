@@ -14,7 +14,6 @@ namespace data {
 class serial_data_policy_t
 {
 public:
- using partitioned_index_space = dmp::index_partition__<size_t>;
 
 };
 
