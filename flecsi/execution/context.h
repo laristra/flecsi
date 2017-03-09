@@ -104,7 +104,7 @@ struct context__ : public context_policy_t
      std::unordered_map<utils::const_string_t,
      typename context_policy_t::partitioned_index_space,
       utils::const_string_hasher_t>,
-      utils::const_string_hasher_t > partitioned_index_spases_;
+      utils::const_string_hasher_t > partitioned_index_spaces_;
 
   ///
   /// getting partitioned index space by name of the partition and entity
@@ -114,8 +114,8 @@ struct context__ : public context_policy_t
     utils::const_string_t entity
   ) const
   {
-    auto itr = partitioned_index_spases_.find(part_name);
-    assert(itr != partitioned_index_spases_.end() && "invalid index space");
+    auto itr = partitioned_index_spaces_.find(part_name);
+    assert(itr != partitioned_index_spaces_.end() && "invalid index space");
 
     auto inner_itr=itr->second.find(entity);
     assert(inner_itr != itr->second.end() && "invalid index space");
@@ -125,7 +125,7 @@ struct context__ : public context_policy_t
 
   ///
   /// Adding partitioned ondex space to the context's 
-  /// partitioned_index_spases_ 
+  /// partitioned_index_spaces_ 
   ///
   void add_index_space(
     utils::const_string_t part_name,
@@ -137,7 +137,7 @@ struct context__ : public context_policy_t
       typename context_policy_t::partitioned_index_space,
       utils::const_string_hasher_t> map;
     map.insert({entity,is});
-    partitioned_index_spases_.emplace(part_name, std::move(map));
+    partitioned_index_spaces_.emplace(part_name, std::move(map));
   }
 
 
