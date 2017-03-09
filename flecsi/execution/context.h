@@ -16,20 +16,23 @@
 #define flecsi_execution_context_h
 
 #include <cstddef>
+#include <unordered_map>
+
+#include "flecsi/utils/const_string.h"
 
 ///
-// \file context.h
-// \authors bergen
-// \date Initial file creation: Oct 19, 2015
+/// \file context.h
+/// \authors bergen
+/// \date Initial file creation: Oct 19, 2015
 ///
 
 namespace flecsi {
 namespace execution {
 
 ///
-// \class context__ context.h
-// \brief context__ is a dummy class that must have a specialization
-//        for a specific execution policy.
+/// \class context__ context.h
+/// \brief context__ is a dummy class that must have a specialization
+///        for a specific execution policy.
 ///
 template<class context_policy_t>
 struct context__ : public context_policy_t
@@ -37,8 +40,8 @@ struct context__ : public context_policy_t
   using cp_t = context_policy_t;
 
   ///
-  // Identify the calling state of the context, i.e., this method
-  // returns the current execution level within the FleCSI model.
+  /// Identify the calling state of the context, i.e., this method
+  /// returns the current execution level within the FleCSI model.
   ///
   enum class call_state_t : size_t {
     driver = 0,
@@ -48,7 +51,7 @@ struct context__ : public context_policy_t
   }; // enum class call_state_t
 
   ///
-  //
+  ///
   ///
   static
   context__ &
@@ -59,7 +62,7 @@ struct context__ : public context_policy_t
   } // instance
 
   ///
-  //
+  ///
   ///
   call_state_t
   current()
@@ -68,7 +71,7 @@ struct context__ : public context_policy_t
   } // current
 
   ///
-  //
+  ///
   ///
   call_state_t
   entry()
@@ -77,7 +80,7 @@ struct context__ : public context_policy_t
   } // entry
 
   ///
-  //
+  ///
   ///
   call_state_t
   exit()
@@ -94,6 +97,14 @@ struct context__ : public context_policy_t
   /// Move operators
   context__(context__ &&) = default;
   context__ & operator = (context__ &&) = default;
+
+  //map of the all partitioned_index_spaces used in the code
+  //std::map <name of the partitioned IS <entiry, index partition for entity>
+  std::unordered_map<utils::const_string_t,
+     std::unordered_map<utils::const_string_t,
+     typename context_policy_t::partitioned_index_space,
+      utils::const_string_hasher_t>,
+      utils::const_string_hasher_t > partitioned_index_spases;
 
 private:
 

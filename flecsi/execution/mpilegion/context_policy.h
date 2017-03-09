@@ -475,6 +475,34 @@ struct mpilegion_context_policy_t
   {
     return state_[task_key].top()->regions;
   } // regions
+
+  //------------------------------------------------------------------------//
+  // Data registration
+  //------------------------------------------------------------------------//
+  using partition_count_map = std::map<size_t, size_t>;
+
+  struct partitioned_index_space
+  {
+    Legion::LogicalRegion entities_lr;
+    Legion::IndexPartition primary;
+    Legion::IndexPartition exclusive;
+    Legion::IndexPartition shared;
+    Legion::IndexPartition ghost;
+    size_t size;
+    partition_count_map pcmap;
+    std::vector<Legion::PhaseBarrier> pbs;
+  };
+
+  //FIXME 
+  partitioned_index_space& get_index_space(size_t is) const{
+
+  }
+
+  //FIXME
+  void put_index_space(size_t i, partitioned_index_space& is){
+//    index_space_map_.emplace(i, std::move(is));
+  }
+ 
   
 private:
 
