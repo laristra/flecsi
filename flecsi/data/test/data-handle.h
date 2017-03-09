@@ -86,16 +86,26 @@ specialization_driver(
   legion_helper h(runtime, context);
 
   partition_vec cells(NUM_CELLS);
+  partition_vec cells_shared(NUM_CELLS, 999);
+  partition_vec cells_ghost(NUM_CELLS, 999);
 
   size_t partition_size = NUM_CELLS / NUM_PARTITIONS;
+
+  data::legion_data_policy_t::partitioned_index_space cells_part;
 
   for(size_t c = 0; c < NUM_CELLS; ++c){
     size_t p = c / partition_size;
 
     cells[c] = p;
-  }
 
-  data::legion_data_policy_t::partitioned_index_space cells_part;
+    if(c % partition_size == partition_size - 1 && c < NUM_CELLS - 1){
+      cells_shared[c] = p;
+      ++cells_part.shared_count_map[p];
+
+      cells_ghost[c + 1] = p + 1;
+      ++cells_part.shared_count_map[p + 1];
+    }
+  }
 
   {
     cells_part.size = NUM_CELLS;
@@ -105,19 +115,49 @@ specialization_driver(
     IndexAllocator ia = runtime->create_index_allocator(context, is);
     
     Coloring coloring;
+    Coloring shared_coloring;
+    Coloring ghost_coloring;
 
     for(size_t c = 0; c < cells.size(); ++c){
       size_t p = cells[c]; 
-      ++cells_part.pcmap[p];
+      ++cells_part.exclusive_count_map[p];
+      
+      if(cells_shared[c] < NUM_PARTITIONS){
+        ++cells_part.shared_count_map[p];
+      }
+
+      if(cells_ghost[c] < NUM_PARTITIONS){
+        ++cells_part.ghost_count_map[p];
+      }
     }
 
-    for(auto& itr : cells_part.pcmap){
+    for(auto& itr : cells_part.exclusive_count_map){
       size_t p = itr.first;
       int count = itr.second;
       ptr_t start = ia.alloc(count);
 
       for(int i = 0; i < count; ++i){
         coloring[p].points.insert(start + i);
+      }
+    }
+
+    for(auto& itr : cells_part.shared_count_map){
+      size_t p = itr.first;
+      int count = itr.second;
+      ptr_t start = ia.alloc(count);
+
+      for(int i = 0; i < count; ++i){
+        shared_coloring[p].points.insert(start + i);
+      }
+    }
+
+    for(auto& itr : cells_part.ghost_count_map){
+      size_t p = itr.first;
+      int count = itr.second;
+      ptr_t start = ia.alloc(count);
+
+      for(int i = 0; i < count; ++i){
+        ghost_coloring[p].points.insert(start + i);
       }
     }
 
@@ -150,8 +190,14 @@ specialization_driver(
       ++ptr;
     }
 
-    cells_part.exclusive = 
+    cells_part.exclusive_ip = 
       runtime->create_index_partition(context, is, coloring, true);
+
+    cells_part.shared_ip = 
+      runtime->create_index_partition(context, is, shared_coloring, true);
+
+    cells_part.ghost_ip = 
+      runtime->create_index_partition(context, is, ghost_coloring, false);
 
     runtime->unmap_region(context, pr);
   }

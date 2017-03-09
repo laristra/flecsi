@@ -20,9 +20,9 @@ namespace data {
 struct legion_handle_policy_t
 {
   Legion::LogicalRegion lr;
-  Legion::IndexPartition exclusive;
-  Legion::IndexPartition shared;
-  Legion::IndexPartition ghost;
+  Legion::IndexPartition exclusive_ip;
+  Legion::IndexPartition shared_ip;
+  Legion::IndexPartition ghost_ip;
   Legion::PhysicalRegion pr;
   void* data;
   size_t size;

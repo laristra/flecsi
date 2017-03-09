@@ -510,23 +510,54 @@ struct storage_type_t<dense, DS, MD>
       a.allocate_field(type_size, fid_t.fid_value);
       data.lr = helper.create_logical_region(is, fs);
 
-      Legion::DomainColoring dc;
+      Legion::DomainColoring exclusive_dc;
+      Legion::DomainColoring shared_dc;
+      Legion::DomainColoring ghost_dc;
 
       size_t p = 0;
       size_t idx = 0;
-      for(auto& itr : isp.pcmap){
+      for(auto& itr : isp.exclusive_count_map){
         size_t start = idx;
         idx += itr.second;
         LegionRuntime::HighLevel::Domain d =
           helper.domain_from_rect(start, idx - 1);
-        dc[p] = d;
+        exclusive_dc[p] = d;
         ++p;
       }
 
-      LegionRuntime::HighLevel::Domain cd = helper.domain_from_rect(0, p - 1);
+      LegionRuntime::HighLevel::Domain cd = 
+        helper.domain_from_rect(0, p - 1);
 
-      data.exclusive = 
-        runtime->create_index_partition(ctx, is, cd, dc, true);
+      p = 0;
+      idx = 0;
+      for(auto& itr : isp.shared_count_map){
+        size_t start = idx;
+        idx += itr.second;
+        LegionRuntime::HighLevel::Domain d =
+          helper.domain_from_rect(start, idx - 1);
+        shared_dc[p] = d;
+        ++p;
+      }
+
+      p = 0;
+      idx = 0;
+      for(auto& itr : isp.ghost_count_map){
+        size_t start = idx;
+        idx += itr.second;
+        LegionRuntime::HighLevel::Domain d =
+          helper.domain_from_rect(start, idx - 1);
+        ghost_dc[p] = d;
+        ++p;
+      }
+
+      data.exclusive_ip = 
+        runtime->create_index_partition(ctx, is, cd, exclusive_dc, true);
+
+      data.shared_ip = 
+        runtime->create_index_partition(ctx, is, cd, shared_dc, true);
+
+      data.ghost_ip = 
+        runtime->create_index_partition(ctx, is, cd, ghost_dc, false);
 
       data_store[NS][h].put_legion_data(i, data);
 
@@ -891,7 +922,9 @@ struct storage_type_t<dense, DS, MD>
 
     handle_t<T, EP, SP, GP> h;
     h.lr = data.lr;
-    h.exclusive = data.exclusive;
+    h.exclusive_ip = data.exclusive_ip;
+    h.shared_ip = data.shared_ip;
+    h.ghost_ip = data.ghost_ip;
     
     return h;
   } // get_handle

@@ -116,7 +116,7 @@ namespace execution {
       //h.region = region++;
 
       LogicalPartition lp =
-        runtime->get_logical_partition(ctx, h.lr, h.exclusive);
+        runtime->get_logical_partition(ctx, h.lr, h.exclusive_ip);
 
       switch(EP){
         case size_t(data::privilege::none):

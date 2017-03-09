@@ -35,12 +35,17 @@ public:
   struct partitioned_index_space
   {
     Legion::LogicalRegion entities_lr;
-    Legion::IndexPartition exclusive;
-    Legion::IndexPartition shared;
-    Legion::IndexPartition ghost;
+    Legion::IndexPartition exclusive_ip;
+    Legion::IndexPartition shared_ip;
+    Legion::IndexPartition ghost_ip;
     size_t size;
+    size_t exclusive_size;
+    size_t shared_size;
+    size_t ghost_size;
     partition_data_map pmap;
-    partition_count_map pcmap;
+    partition_count_map exclusive_count_map;
+    partition_count_map shared_count_map;
+    partition_count_map ghost_count_map;
   };
 
   using index_space_map = 
