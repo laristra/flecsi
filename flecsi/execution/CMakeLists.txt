@@ -166,11 +166,15 @@ if(NOT DEFINED ENV{TRAVIS})
   # FIXME: Need to talk about this with Irina and Galen.
     cinch_add_unit(test_legion_handshake
       SOURCES test/mpilegion/test_legion_handshake.cc
+      DEFINES HANDSHAKE_TEST
+        TEST_INIT=flecsi/execution/test/mpilegion/handshake_init.h
       POLICY MPILEGION
     )
 
     cinch_add_unit(test_mpilegion_interop
       SOURCES test/mpilegion/test_mpi_legion_interop.cc
+      DEFINES INTEROP_TEST
+        TEST_INIT=flecsi/execution/test/mpilegion/interop_init.h
       POLICY MPILEGION
     )
 
