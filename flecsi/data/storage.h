@@ -313,7 +313,9 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     size_t ST,
     typename T,
     size_t NS,
-    size_t PS
+    size_t EP,
+    size_t SP,
+    size_t GP
   >
   decltype(auto)
   get_handle(
@@ -322,7 +324,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     size_t version=0
   )
   {
-    return st_t<ST>::template get_handle<T, NS, PS>(data_client,
+    return st_t<ST>::template get_handle<T, NS, EP, SP, GP>(data_client,
       sp_t::data_store_, key, version);
   } // get_accessor
 

@@ -75,7 +75,7 @@ specialization_driver(
   auto ac = 
     get_accessor(dc, hydro, pressure, double, dense, /* version */ 0);
 
-  auto h1 = get_handle(dc, hydro, pressure, double, dense, 0, ro);
+  auto h1 = get_handle(dc, hydro, pressure, double, dense, 0, rw, rw, ro);
 
   ac[0] = 100.0;
   ac[1] = 200.0;

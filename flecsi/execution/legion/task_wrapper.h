@@ -58,7 +58,7 @@ namespace execution {
     handle_(context_t context,
            runtime_t* runtime,
            regions_t& regions,
-           flecsi::data_handle_t<void, 0>& h,
+           flecsi::data_handle_t<void, 0, 0, 0>& h,
            size_t& region){
       
       flecsi::execution::field_ids_t & fid_t = 
@@ -119,7 +119,7 @@ struct legion_task_wrapper__
 {
   using user_task_args_t = 
     typename utils::base_convert_tuple_type<accessor_base, 
-    data_handle_t<void, 0>, A>::type;
+    data_handle_t<void, 0, 0, 0>, A>::type;
 
   //
   // Type definition for user task.
@@ -133,7 +133,7 @@ struct legion_task_wrapper__
 
   using user_args_t = 
     typename utils::base_convert_tuple_type<accessor_base, 
-    data_handle_t<void, 0>, A>::type;
+    data_handle_t<void, 0, 0, 0>, A>::type;
 
   //
   // This defines a predicate function to pass to tuple_filter that
@@ -247,7 +247,7 @@ struct legion_task_wrapper__<P, S, I, void, A>
   //
   using user_task_args_t = 
     typename utils::base_convert_tuple_type<accessor_base, 
-    data_handle_t<void, 0>, A>::type;
+    data_handle_t<void, 0, 0, 0>, A>::type;
   using args_t = A;
 
   using task_args_t = legion_task_args__<void,A,user_task_args_t>;

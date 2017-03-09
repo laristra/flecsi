@@ -57,9 +57,9 @@ namespace legion {
 // Dense handle.
 //----------------------------------------------------------------------------//
 
-template<typename T, size_t PS>
+template<typename T, size_t EP, size_t SP, size_t GP>
 struct dense_handle_t :
-  public data_handle_t<T, PS>
+  public data_handle_t<T, EP, SP, GP>
 {
   using type = T;
 }; // struct dense_handle_t
@@ -137,7 +137,7 @@ struct dense_accessor_t : public accessor__<T>
     index_space_(a.index_space_),
     is_(a.is_){}
 
-  dense_accessor_t(const data_handle_t<void, 0>& h)
+  dense_accessor_t(const data_handle_t<void, 0, 0, 0>& h)
   : size_(h.size),
   data_(static_cast<T*>(h.data)){}
 
@@ -384,8 +384,8 @@ struct storage_type_t<dense, DS, MD>
   template<typename T>
   using accessor_t = dense_accessor_t<T, MD>;
 
-  template<typename T, size_t PS>
-  using handle_t = dense_handle_t<T, PS>;
+  template<typename T,  size_t EP, size_t SP, size_t GP>
+  using handle_t = dense_handle_t<T, EP, SP, GP>;
 
   using st_t = storage_type_t<dense, DS, MD>;
 
@@ -411,7 +411,7 @@ struct storage_type_t<dense, DS, MD>
     typename ... Args
   >
   static
-  handle_t<T, 0>
+  handle_t<T, 0, 0, 0>
   register_data(
     const data_client_t & data_client,
     data_store_t & data_store,
@@ -864,10 +864,12 @@ struct storage_type_t<dense, DS, MD>
   template<
     typename T,
     size_t NS,
-    size_t PS
+    size_t EP,
+    size_t SP,
+    size_t GP
   >
   static
-  handle_t<T, PS>
+  handle_t<T, EP, SP, GP>
   get_handle(
     const data_client_t & data_client,
     data_store_t & data_store,
@@ -884,7 +886,7 @@ struct storage_type_t<dense, DS, MD>
 
     auto& data = md.get_legion_data(version);
 
-    handle_t<T, PS> h;
+    handle_t<T, EP, SP, GP> h;
     h.lr = data.lr;
     h.exclusive = data.exclusive;
     

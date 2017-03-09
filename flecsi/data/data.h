@@ -178,11 +178,13 @@
 ///
 ///
 #define flecsi_get_handle(client, nspace, name, data_type, storage_type,       \
-  version, privileges)                                                         \
+  version, exclusive_privileges, shared_privileges, ghost_privileges)                                                         \
   flecsi::data::storage_t::instance().get_handle<flecsi::data::storage_type,   \
     data_type,                                                     \
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(), \
-    size_t(flecsi::data::privilege::privileges)>(       \
+    size_t(flecsi::data::privilege::exclusive_privileges),    \
+    size_t(flecsi::data::privilege::shared_privileges),       \
+    size_t(flecsi::data::ghost_privilege::ghost_privileges)>(       \
       client, EXPAND_AND_STRINGIFY(name), version)
 
 #endif // flecsi_data_data_h
