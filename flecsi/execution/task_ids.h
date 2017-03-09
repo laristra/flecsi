@@ -54,6 +54,7 @@ class task_ids_t
 
   using task_id_t = LegionRuntime::HighLevel::TaskID;
   using unique_task_id_t = flecsi::utils::unique_id_t<task_id_t>;
+  size_t spmd_task_id = unique_task_id_t::instance().next();
   size_t connect_mpi_task_id  = unique_task_id_t::instance().next();
   size_t handoff_to_mpi_task_id = unique_task_id_t::instance().next();
   size_t wait_on_mpi_task_id  = unique_task_id_t::instance().next();
@@ -66,8 +67,19 @@ class task_ids_t
   size_t ghost_part_task_id = unique_task_id_t::instance().next();
   size_t check_partitioning_task_id = unique_task_id_t::instance().next();
   size_t ghost_access_task_id = unique_task_id_t::instance().next();
+  size_t ghost_init_task_id = unique_task_id_t::instance().next();
+  size_t ghost_check_task_id = unique_task_id_t::instance().next();
+  size_t halo_copy_task_id = unique_task_id_t::instance().next();
   size_t init_raw_conn_task_id = unique_task_id_t::instance().next();
   size_t dpd_init_connectivity_task_id = unique_task_id_t::instance().next();
+  size_t lax_wendroff_task_id = unique_task_id_t::instance().next();
+  size_t lax_halo_task_id = unique_task_id_t::instance().next();
+  size_t lax_init_task_id = unique_task_id_t::instance().next();
+  size_t lax_write_task_id = unique_task_id_t::instance().next();
+  size_t lax_adv_x_task_id = unique_task_id_t::instance().next();
+  size_t lax_adv_y_task_id = unique_task_id_t::instance().next();
+  size_t lax_calc_excl_x_task_id = unique_task_id_t::instance().next();
+  size_t lax_calc_excl_y_task_id = unique_task_id_t::instance().next();
 };//task_ids_t
 
 class field_ids_t

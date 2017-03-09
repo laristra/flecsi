@@ -29,7 +29,7 @@ project(flecsi)
 #------------------------------------------------------------------------------#
 
 cinch_add_application_directory("examples")
-cinch_add_application_directory("examples/agile")
+cinch_add_application_directory("examples/lax_wendroff")
 cinch_add_application_directory("bin")
 cinch_add_application_directory("tools")
 

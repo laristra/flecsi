@@ -27,9 +27,9 @@
 #include "flecsi/utils/const_string.h"
 
 ///
-// \file legion/scoped.h
-// \authors bergen
-// \date Initial file creation: Apr 17, 2016
+/// \file legion/scoped.h
+/// \authors bergen
+/// \date Initial file creation: Apr 17, 2016
 ///
 
 namespace flecsi {
@@ -37,25 +37,25 @@ namespace data {
 namespace legion {
 
   ///
-  // FIXME: Scoped storage type.
+  /// FIXME: Scoped storage type.
   ///
   template<typename data_store_t, typename meta_data_t>
   struct storage_type_t<scoped, data_store_t, meta_data_t> {
 
     ///
-    //
+    /// FIXME documentation
     ///
     struct scoped_accessor_t {
     }; // struct scoped_accessor_t
 
     ///
-    //
+    /// FIXME documentation
     ///
     struct scoped_handle_t {
     }; // struct scoped_handle_t
 
     ///
-    //
+    /// FIXME documentation
     ///
     template<
       typename T,
@@ -67,7 +67,7 @@ namespace legion {
     register_data(
       data_store_t & data_store,
       uintptr_t runtime_namespace,
-      const utils:const_string_t & key,
+      const utils::const_string_t & key,
       size_t indices,
       Args && ... args
     )
@@ -75,7 +75,7 @@ namespace legion {
     } // register_data
 
     ///
-    //
+    /// FIXME documentation
     ///
     template<
       typename T,
@@ -86,14 +86,14 @@ namespace legion {
     get_accessor(
       data_store_t & data_store,
       uintptr_t runtime_namespace,
-      const utils:const_string_t & key
+      const utils::const_string_t & key
     )
     {
       return {};
     } // get_accessor
 
     ///
-    //
+    /// FIXME documentation
     ///
     template<
       typename T,
@@ -104,7 +104,7 @@ namespace legion {
     get_handle(
       data_store_t & data_store,
       uintptr_t runtime_namespace,
-      const utils:const_string_t & key
+      const utils::const_string_t & key
     )
     {
       return {};

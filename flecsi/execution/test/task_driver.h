@@ -64,7 +64,8 @@ struct mesh_t : public data::data_client_t {
 // FIXME: Need to try to hide this
 using namespace flecsi::data;
 template<typename T>
-using dense_field_t = storage_t::st_t<dense>::handle_t<double>;
+using dense_field_t = 
+  storage_t::st_t<dense>::handle_t<double, 0, storage_t::st_t<dense>>;
 
 //----------------------------------------------------------------------------//
 // Task registration.
@@ -78,9 +79,9 @@ double task1(double dval, int ival) {
 } // task1
 
 //#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
-//  register_task(task1, mpi, index, void, double, int);
+//  flecsi_register_task(task1, mpi, index, void, double, int);
 //#else
-  register_task(task1, loc, single);
+  flecsi_register_task(task1, loc, single);
 //#endif
 
 #if 1
@@ -91,14 +92,14 @@ double task2(double x, double y, dense_field_t<double> p) {
   return x*y;
 } // task2
 
-register_task(task2, loc, single);
+flecsi_register_task(task2, loc, single);
 
 double task3(double val) {
    std::cout << "Executing task3 with index launcher" << std::endl;
    return 1.0;
 }
 
-register_task(task3, loc, index);
+flecsi_register_task(task3, loc, index);
 #endif
 
 
@@ -112,7 +113,7 @@ double task4(double x, double & y, dense_field_t<double> p) {
   return x*y;
 } // task4
 
-register_task(task4, loc, single);
+flecsi_register_task(task4, loc, single);
 
 #endif
 
@@ -126,7 +127,7 @@ double eos_gruneisen(double r, double e) {
   return r*e;
 } // function1
 
-register_function(eos_gruneisen);
+flecsi_register_function(eos_gruneisen);
 
 double eos_gamma(double r, double e) {
   std::cout << "Executing gamma" << std::endl;
@@ -134,7 +135,7 @@ double eos_gamma(double r, double e) {
   return 2*r*e;
 } // function1
 
-register_function(eos_gamma);
+flecsi_register_function(eos_gamma);
 
 /*
   Templated function
@@ -154,13 +155,13 @@ double eos_other(double r, double e) {
   return eos_other__<eos_param_t>(r, e);
 } // eos_other
 
-register_function(eos_other);
+flecsi_register_function(eos_other);
 
 //----------------------------------------------------------------------------//
 // User type.
 //----------------------------------------------------------------------------//
 
-define_function_type(eos_function_t, double, double, double);
+flecsi_define_function_type(eos_function_t, double, double, double);
 
 struct material_t {
   eos_function_t eos_function;
@@ -168,7 +169,7 @@ struct material_t {
   double e;
 
   double eos() {
-    return execute_function(eos_function, r, e);
+    return flecsi_execute_function(eos_function, r, e);
   } // eos
 
   material_t(eos_function_t eos_function_, double r_, double e_)
@@ -177,17 +178,17 @@ struct material_t {
 
 struct copper_t : material_t {
   copper_t(double r_, double e_)
-    : material_t(function_handle(eos_gruneisen), r_, e_) {}
+    : material_t(flecsi_function_handle(eos_gruneisen), r_, e_) {}
 };
 
 struct steel_t : material_t {
   steel_t(double r_, double e_)
-    : material_t(function_handle(eos_gamma), r_, e_) {}
+    : material_t(flecsi_function_handle(eos_gamma), r_, e_) {}
 };
 
 struct silver_t : material_t {
   silver_t(double r_, double e_)
-    : material_t(function_handle(eos_other), r_, e_) {}
+    : material_t(flecsi_function_handle(eos_other), r_, e_) {}
 };
 
 //----------------------------------------------------------------------------//
@@ -199,28 +200,28 @@ void driver(int argc, char ** argv) {
   mesh_t m;
 
   // FIXME: need this to come from get_handle
-  auto p = register_data(m, hydro, pressure, double, dense, 1, cells);
+  auto p = flecsi_register_data(m, hydro, pressure, double, dense, 1, cells);
   double alpha(10.0);
 
 //#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
-//  execute_task(task1, mpi, index, alpha, 5);
+//  flecsi_execute_task(task1, mpi, index, alpha, 5);
 //#else
 
-  auto f1 = execute_task(task1, loc, single, alpha, 5);
+  auto f1 = flecsi_execute_task(task1, loc, single, alpha, 5);
 
   f1.wait();
 
-  auto f2 = execute_task(task2, loc, single, alpha, 5.0, p);
+  auto f2 = flecsi_execute_task(task2, loc, single, alpha, 5.0, p);
 
-  execute_task(task3, loc, index, 5.0);
+  flecsi_execute_task(task3, loc, index, 5.0);
 
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_serial
-  auto f4 = execute_task(task4, loc, single, alpha, 5.0, p);
+  auto f4 = flecsi_execute_task(task4, loc, single, alpha, 5.0, p);
 #endif
 
-  register_data(m, hydro, materials, material_t, dense, 1, cells);
+  flecsi_register_data(m, hydro, materials, material_t, dense, 1, cells);
 
-  auto mats1 = get_accessor(m, hydro, materials, material_t, dense, 0);
+  auto mats1 = flecsi_get_accessor(m, hydro, materials, material_t, dense, 0);
 
   for(size_t i(0); i<4; ++i) {
     mats1(i) = copper_t(2.0, 2.0);

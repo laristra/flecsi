@@ -41,6 +41,34 @@ struct SPMDArgs {
     std::vector<PhaseBarrier> masters_pbarriers;
 };
 
+class TaskWrapper {
+public:
+	TaskWrapper(
+			SPMDArgs* args,
+			std::vector<LogicalRegion> lrs_shared,
+			std::vector<PhysicalRegion> prs_shared,
+			LogicalRegion lregion_ghost,
+			size_t ghost_copy_task_id,
+			FieldID ghost_copy_fid);
+	Future execute_task(
+			Legion::Context ctx,
+			Legion::HighLevelRuntime *runtime,
+			TaskLauncher& launcher,
+			bool read_phase,
+			bool write_phase);
+private:
+	void write_prologue(TaskLauncher& launcher);
+	void write_epilogue(Legion::Context ctx, Legion::HighLevelRuntime *runtime);
+	void read_prologue(Legion::Context ctx, Legion::HighLevelRuntime *runtime);
+	SPMDArgs* spmd_args;
+	std::vector<LogicalRegion> lregions_neighbors_shared;
+	std::vector<PhysicalRegion> pregions_neighbors_shared;
+	LogicalRegion lregion_ghost;
+	size_t ghost_copy_task_id;
+	FieldID ghost_fid;
+	bool is_readable;
+};
+
 class ArgsSerializer {
 public:
     ArgsSerializer() {bit_stream = nullptr; bit_stream_size = 0; free_bit_stream = false;}
@@ -104,6 +132,29 @@ check_partitioning_task(
 
 void
 ghost_access_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+);
+
+
+void
+ghost_check_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+);
+
+
+void
+ghost_init_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+);
+
+void
+halo_copy_task(
   const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx, Legion::HighLevelRuntime *runtime

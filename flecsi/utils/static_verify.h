@@ -18,6 +18,7 @@
 #ifndef flecsi_utils_static_verify_h
 #define flecsi_utils_static_verify_h
 
+///macro to check if the object has a member _*
 #ifndef FLECSI_MEMBER_CHECKER
 #define FLECSI_MEMBER_CHECKER(X) template<typename T> \
 struct has_member_##X{ \
@@ -33,11 +34,13 @@ struct has_member_##X{ \
 namespace flecsi {
 namespace utils {
 
+///checking if the object is a tuple
   template<typename T>
   struct is_tuple{
     static const bool value = false;
   };
 
+///checking if the object is a tuple
   template<typename... T>
   struct is_tuple<std::tuple<T...>>{
     static const bool value = true;

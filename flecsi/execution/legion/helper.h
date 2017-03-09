@@ -19,14 +19,17 @@
 #include "arrays.h"
 
 ///
-// \file legion/helper.h
-// \authors nickm
-// \date Initial file creation: Nov 29, 2016
+/// \file legion/helper.h
+/// \authors nickm
+/// \date Initial file creation: Nov 29, 2016
 ///
 
 namespace flecsi {
 namespace execution {
 
+  ///
+  /// FIXME documentation
+  ///
   class legion_helper{
   public:
     legion_helper(Legion::Runtime* runtime, Legion::Context context)
@@ -110,7 +113,10 @@ namespace execution {
       Legion::IndexSpace is = lr.get_index_space();
       return runtime_->get_index_space_domain(context_, is);     
     }
-
+    
+     ///
+     /// FIXME documentation
+     ///
     template<class T>
     void get_buffer(Legion::PhysicalRegion pr,
                     T*& buf,
@@ -123,6 +129,9 @@ namespace execution {
       buf = ac.template raw_rect_ptr<1>(r, sr, bo);
     }
 
+     ///
+     /// FIXME documentation
+     //
     char* get_raw_buffer(Legion::PhysicalRegion pr, size_t field = 0) const{
       auto ac = pr.get_field_accessor(field).typeify<char>();
       Legion::Domain domain = get_domain(pr); 
@@ -132,6 +141,9 @@ namespace execution {
       return ac.template raw_rect_ptr<1>(r, sr, bo);
     }
 
+     ///
+     /// FIXME documentation
+     //
     void unmap_region(Legion::PhysicalRegion pr) const{
       runtime_->unmap_region(context_, pr);
     }

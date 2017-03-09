@@ -31,6 +31,7 @@ namespace execution {
 
     struct init_data_args{
       size_t reserve;
+      size_t size;
       size_t value_size;
     };
 
@@ -164,7 +165,7 @@ namespace execution {
     partition_metadata md;
     md.partition = p;
     md.reserve = args.reserve;
-    md.size = 0;
+    md.size = args.size;
 
     {
       IndexSpace is = h.create_index_space(0, args.reserve - 1);
@@ -199,6 +200,7 @@ namespace execution {
   legion_dpd::create_data_(
     partitioned_unstructured& indices,
     size_t start_reserve,
+    size_t start_size,
     size_t value_size)
   {
     field_ids_t & fid_t = field_ids_t::instance();
@@ -231,6 +233,7 @@ namespace execution {
 
     init_data_args args;
     args.reserve = start_reserve;
+    args.size = start_size;
     args.value_size = value_size;
 
     IndexLauncher

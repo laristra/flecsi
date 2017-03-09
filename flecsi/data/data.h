@@ -29,7 +29,7 @@
 /// Each storage type may have additional parameters that need to be passed
 /// to this macro.
 ///
-#define register_data(client, nspace, name, data_type, storage_type, ...)      \
+#define flecsi_register_data(client, nspace, name, data_type, storage_type, ...)\
 	flecsi::data::storage_t::instance().register_data<                           \
     flecsi::data::storage_type, data_type,                                     \
 		flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>(       \
@@ -48,7 +48,7 @@
 ///                 parameter can be used to manage multiple data versions,
 ///                 e.g., for new and old state.
 ///
-#define get_accessor(client, nspace, name, data_type, storage_type,            \
+#define flecsi_get_accessor(client, nspace, name, data_type, storage_type,     \
   version)                                                                     \
 	flecsi::data::storage_t::instance().get_accessor<flecsi::data::storage_type, \
     data_type,                                                                 \
@@ -78,7 +78,7 @@
 ///                  figure out whether it get added to the returned list.
 ///
 /// \remark  This version is confined to search within a namespace only.
-#define get_accessors(                                                         \
+#define flecsi_get_accessors(                                                  \
     client, nspace, data_type, storage_type, version, ...)                     \
   flecsi::data::storage_t::instance().get_accessors<flecsi::data::storage_type,\
     data_type,                                                                 \
@@ -99,7 +99,7 @@
 ///                  figure out whether it get added to the returned list.
 ///
 /// \remark  This version searches all namespaces.
-#define get_accessors_all(                                                     \
+#define flecsi_get_accessors_all(                                              \
     client, data_type, storage_type, version, ...)                             \
   flecsi::data::storage_t::instance().get_accessors<flecsi::data::storage_type,\
     data_type>( client, version, ## __VA_ARGS__ )
@@ -119,7 +119,7 @@
 ///
 /// \remark The variable name _index_space_ can't match anything in the
 ///   underlying storage container or else things will get messy.
-#define is_at(_index_space_)                                                   \
+#define flecsi_is_at(_index_space_)                                            \
   [](const auto & a) {                                                         \
     return a.index_space() == _index_space_;                                   \
   }
@@ -140,7 +140,7 @@
 ///
 /// \remark The variable name _index_space_ can't match anything in the
 ///   underlying storage container or else things will get messy.
-#define has_attribute_at(_attribute_, _index_space_)                           \
+#define flecsi_has_attribute_at(_attribute_, _index_space_)                    \
   [](const auto & a) {                                                         \
     return a.attributes().test(_attribute_) &&                                 \
            a.index_space() == _index_space_;                                   \
@@ -158,7 +158,7 @@
 ///
 /// \remark The variable name _index_space_ can't match anything in the
 ///   underlying storage container or else things will get messy.
-#define has_attribute(_attribute_)                                             \
+#define flecsi_has_attribute(_attribute_)                                      \
   [](const auto & a) {                                                         \
     return a.attributes().test(_attribute_);                                   \
   }
@@ -167,7 +167,7 @@
 ///
 ///
 ///
-#define get_mutator(client, nspace, name, data_type, storage_type,             \
+#define flecsi_get_mutator(client, nspace, name, data_type, storage_type,      \
   version, slots)                                                              \
   flecsi::data::storage_t::instance().get_mutator<flecsi::data::storage_type,  \
     data_type,                                                                 \
@@ -177,11 +177,12 @@
 ///
 ///
 ///
-#define get_handle(client, nspace, name, data_type, storage_type,              \
+#define flecsi_get_handle(client, nspace, name, data_type, storage_type,       \
   version, privileges)                                                         \
   flecsi::data::storage_t::instance().get_handle<flecsi::data::storage_type,   \
-    data_type, privileges,                                                     \
-    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>(       \
+    data_type,                                                     \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(), \
+    size_t(flecsi::data::privilege::privileges)>(       \
       client, EXPAND_AND_STRINGIFY(name), version)
 
 #endif // flecsi_data_data_h

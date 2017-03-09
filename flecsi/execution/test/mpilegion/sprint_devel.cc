@@ -1,4 +1,4 @@
-/*~--------------------------------------------------------------------------~*
+/*~-------------------------------------------------------------------------~~*
  *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
  * /@@/////  /@@          @@////@@ @@////// /@@
  * /@@       /@@  @@@@@  @@    // /@@       /@@
@@ -10,18 +10,20 @@
  * 
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
- *~--------------------------------------------------------------------------~*/
+ *~-------------------------------------------------------------------------~~*/
+
+#include <cinchdevel.h>
 
 #include "flecsi/execution/context.h"
-
-using namespace flecsi::execution;
-
 ///
-/// FLeCSI main function
+///DEVEL function wrapper
+///This translation unit doesn't do anything, but it is currently
+///required to complete compilation. The actual test logic is
+///in 'task_driver.h' 
 ///
-int main(int argc, char ** argv) {
-  return context_t::instance().initialize(argc, argv);
-} // main
+DEVEL(sprint) {
+
+} // TEST
 
 /*~------------------------------------------------------------------------~--*
  * Formatting options

@@ -66,14 +66,14 @@ TEST(storage, dense) {
   mesh_t m;
 
   // Register 3 versions
-  register_data(m, hydro, pressure, double, dense, 2, cells);
-  register_data(m, hydro, density, double, dense, 1, cells);
+  flecsi_register_data(m, hydro, pressure, double, dense, 2, cells);
+  flecsi_register_data(m, hydro, density, double, dense, 1, cells);
 
   // Initialize
   {
-  auto p0 = get_accessor(m, hydro, pressure, double, dense, 0);
-  auto p1 = get_accessor(m, hydro, pressure, double, dense, 1);
-  auto d = get_accessor(m, hydro, density, double, dense, 0);
+  auto p0 = flecsi_get_accessor(m, hydro, pressure, double, dense, 0);
+  auto p1 = flecsi_get_accessor(m, hydro, pressure, double, dense, 1);
+  auto d = flecsi_get_accessor(m, hydro, density, double, dense, 0);
 
   p0.attributes().set(flagged);
 
@@ -88,9 +88,9 @@ TEST(storage, dense) {
 
   // Test
   {
-  auto p0 = get_accessor(m, hydro, pressure, double, dense, 0);
-  auto p1 = get_accessor(m, hydro, pressure, double, dense, 1);
-  auto d = get_accessor(m, hydro, density, double, dense, 0);
+  auto p0 = flecsi_get_accessor(m, hydro, pressure, double, dense, 0);
+  auto p1 = flecsi_get_accessor(m, hydro, pressure, double, dense, 1);
+  auto d = flecsi_get_accessor(m, hydro, density, double, dense, 0);
 
   ASSERT_TRUE(p0.attributes().test(flagged));
   ASSERT_FALSE(p1.attributes().test(flagged));
@@ -119,12 +119,12 @@ TEST(storage, global) {
     size_t n;
   }; // struct my_data_t
 
-  register_data(m, hydro, simulation_data, my_data_t, global, 2);
+  flecsi_register_data(m, hydro, simulation_data, my_data_t, global, 2);
 
   // initialize simulation data
   {
-  auto s0 = get_accessor(m, hydro, simulation_data, my_data_t, global, 0);
-  auto s1 = get_accessor(m, hydro, simulation_data, my_data_t, global, 1);
+  auto s0 = flecsi_get_accessor(m, hydro, simulation_data, my_data_t, global, 0);
+  auto s1 = flecsi_get_accessor(m, hydro, simulation_data, my_data_t, global, 1);
 
   s0.attributes().set(flagged);
 
@@ -135,8 +135,8 @@ TEST(storage, global) {
   } // scope
 
   {
-  auto s0 = get_accessor(m, hydro, simulation_data, my_data_t, global, 0);
-  auto s1 = get_accessor(m, hydro, simulation_data, my_data_t, global, 1);
+  auto s0 = flecsi_get_accessor(m, hydro, simulation_data, my_data_t, global, 0);
+  auto s1 = flecsi_get_accessor(m, hydro, simulation_data, my_data_t, global, 1);
 
   ASSERT_TRUE(s0.attributes().test(flagged));
   ASSERT_FALSE(s1.attributes().test(flagged));
@@ -161,8 +161,8 @@ TEST(storage, sparse1) {
   size_t num_indices = 100;
   size_t num_materials = 50;
 
-  register_data(m, hydro, a, double, sparse, 1, cells, num_materials);
-  auto am = get_mutator(m, hydro, a, double, sparse, 0, 10);
+  flecsi_register_data(m, hydro, a, double, sparse, 1, cells, num_materials);
+  auto am = flecsi_get_mutator(m, hydro, a, double, sparse, 0, 10);
 
   for(size_t i = 0; i < num_indices; i += 2){
     for(size_t j = 0; j < num_materials; j += 2){
@@ -172,7 +172,7 @@ TEST(storage, sparse1) {
 
   am.commit();
 
-  auto a = get_accessor(m, hydro, a, double, sparse, 0);
+  auto a = flecsi_get_accessor(m, hydro, a, double, sparse, 0);
 
   for(size_t i = 0; i < num_indices ; i += 2){
     for(size_t j = 0; j < num_materials; j += 2){
@@ -208,7 +208,7 @@ TEST(storage, sparse2) {
   size_t num_indices = 100;
   size_t num_materials = 50;
 
-  register_data(m, hydro, a, double, sparse, 1, cells, num_materials);
+  flecsi_register_data(m, hydro, a, double, sparse, 1, cells, num_materials);
 
   std::vector<std::pair<size_t, size_t>> v;
 
@@ -220,7 +220,7 @@ TEST(storage, sparse2) {
 
   std::random_shuffle(v.begin(), v.end());
 
-  auto am = get_mutator(m, hydro, a, double, sparse, 0, 30);
+  auto am = flecsi_get_mutator(m, hydro, a, double, sparse, 0, 30);
 
   for(auto p : v){
     am(p.first, p.second) = p.first * 1000 + p.second;
@@ -228,7 +228,7 @@ TEST(storage, sparse2) {
 
   am.commit();
 
-  auto a = get_accessor(m, hydro, a, double, sparse, 0);
+  auto a = flecsi_get_accessor(m, hydro, a, double, sparse, 0);
 
   for(size_t i = 0; i < num_indices ; i += 2){
     for(size_t j = 0; j < num_materials; j += 2){
@@ -248,9 +248,10 @@ TEST(storage, sparse_delete) {
   size_t num_indices = 5;
   size_t num_materials = 3;
 
-  register_data(m, hydro, a, double, sparse, 1, num_indices, num_materials);
+  flecsi_register_data(m, hydro, a, double, sparse, 1, num_indices, num_materials);
 
-  auto am = get_mutator(m, hydro, a, double, sparse, 0, 30);
+  auto am = flecsi_get_mutator(m, hydro, a, double, sparse, 0, 30);
+
 
   am(2, 1) = 7;
   am(2, 2) = 3;
@@ -275,26 +276,26 @@ TEST(storage, dense_attributes) {
   mesh_t m;
 
   // Register 3 versions
-  register_data(m, hydro, pressure, double, dense, 2, cells);
-  register_data(m, hydro, density, double, dense, 1, cells);
-  register_data(m, hydro, speed, double, dense, 1, vertices);
-  register_data(m, radiation, temperature, double, dense, 1, cells);
+  flecsi_register_data(m, hydro, pressure, double, dense, 2, cells);
+  flecsi_register_data(m, hydro, density, double, dense, 1, cells);
+  flecsi_register_data(m, hydro, speed, double, dense, 1, vertices);
+  flecsi_register_data(m, radiation, temperature, double, dense, 1, cells);
 
   // Initialize
   {
-    auto p = get_accessor(m, hydro, pressure, double, dense, 0);
-    auto d = get_accessor(m, hydro, density, double, dense, 0);
-    auto t = get_accessor(m, radiation, temperature, double, dense, 0);
+    auto p = flecsi_get_accessor(m, hydro, pressure, double, dense, 0);
+    auto d = flecsi_get_accessor(m, hydro, density, double, dense, 0);
+    auto t = flecsi_get_accessor(m, radiation, temperature, double, dense, 0);
     p.attributes().set(flagged);
     t.attributes().set(flagged);
   }
 
   // Test
   {
-    auto p0 = get_accessor(m, hydro, pressure, double, dense, 0);
-    auto p1 = get_accessor(m, hydro, pressure, double, dense, 1);
-    auto d = get_accessor(m, hydro, density, double, dense, 0);
-    auto t = get_accessor(m, radiation, temperature, double, dense, 0);
+    auto p0 = flecsi_get_accessor(m, hydro, pressure, double, dense, 0);
+    auto p1 = flecsi_get_accessor(m, hydro, pressure, double, dense, 1);
+    auto d = flecsi_get_accessor(m, hydro, density, double, dense, 0);
+    auto t = flecsi_get_accessor(m, radiation, temperature, double, dense, 0);
 
     ASSERT_TRUE(p0.attributes().test(flagged));
     ASSERT_FALSE(p1.attributes().test(flagged));
@@ -302,16 +303,16 @@ TEST(storage, dense_attributes) {
     ASSERT_TRUE(t.attributes().test(flagged));
 
     // test is_at(cells)
-    auto cell_vars = get_accessors(
-      m, hydro, double, dense, 0, is_at(cells), /* sorted */ true
+    auto cell_vars = flecsi_get_accessors(
+      m, hydro, double, dense, 0, flecsi_is_at(cells), /* sorted */ true
     );
 
     ASSERT_EQ( cell_vars.size(), 2 );
     ASSERT_EQ( cell_vars[0].label(), "density" );
     ASSERT_EQ( cell_vars[1].label(), "pressure" );
 
-    auto all_cell_vars = get_accessors_all(
-      m, double, dense, 0, is_at(cells), /* sorted */ true 
+    auto all_cell_vars = flecsi_get_accessors_all(
+      m, double, dense, 0, flecsi_is_at(cells), /* sorted */ true 
     );
 
     ASSERT_EQ( all_cell_vars.size(), 3 );
@@ -321,16 +322,16 @@ TEST(storage, dense_attributes) {
 
 
     // test has_attribute_at(flagge,cells)
-    auto flagged_vars = get_accessors(
-      m, hydro, double, dense, 0, has_attribute_at(flagged, cells), 
+    auto flagged_vars = flecsi_get_accessors(
+      m, hydro, double, dense, 0, flecsi_has_attribute_at(flagged, cells), 
       /* sorted */ true
     );
 
     ASSERT_EQ( flagged_vars.size(), 1 );
     ASSERT_EQ( flagged_vars[0].label(), "pressure" );
 
-    auto all_flagged_vars = get_accessors_all(
-      m, double, dense, 0, has_attribute_at(flagged, cells), /* sorted */ true 
+    auto all_flagged_vars = flecsi_get_accessors_all(
+      m, double, dense, 0, flecsi_has_attribute_at(flagged, cells), /* sorted */ true 
     );
 
     ASSERT_EQ( all_flagged_vars.size(), 2 );
@@ -338,7 +339,7 @@ TEST(storage, dense_attributes) {
     ASSERT_EQ( all_flagged_vars[1].label(), "temperature" );
 
     // test get by type=double
-    auto typed_vars = get_accessors(
+    auto typed_vars = flecsi_get_accessors(
       m, hydro, double, dense, 0, /* sorted */ true
     );
 
@@ -347,7 +348,7 @@ TEST(storage, dense_attributes) {
     ASSERT_EQ( typed_vars[1].label(), "pressure" );
     ASSERT_EQ( typed_vars[2].label(), "speed" );
 
-    auto all_typed_vars = get_accessors_all(
+    auto all_typed_vars = flecsi_get_accessors_all(
       m, double, dense, 0, /* sorted */ true 
     );
 
@@ -370,26 +371,26 @@ TEST(storage, global_attributes) {
   mesh_t m;
 
   // Register 3 versions
-  register_data(m, hydro, pressure, double, global, 2);
-  register_data(m, hydro, density, double, global, 1);
-  register_data(m, hydro, speed, double, global, 1);
-  register_data(m, radiation, temperature, double, global, 1);
+  flecsi_register_data(m, hydro, pressure, double, global, 2);
+  flecsi_register_data(m, hydro, density, double, global, 1);
+  flecsi_register_data(m, hydro, speed, double, global, 1);
+  flecsi_register_data(m, radiation, temperature, double, global, 1);
 
   // Initialize
   {
-    auto p = get_accessor(m, hydro, pressure, double, global, 0);
-    auto d = get_accessor(m, hydro, density, double, global, 0);
-    auto t = get_accessor(m, radiation, temperature, double, global, 0);
+    auto p = flecsi_get_accessor(m, hydro, pressure, double, global, 0);
+    auto d = flecsi_get_accessor(m, hydro, density, double, global, 0);
+    auto t = flecsi_get_accessor(m, radiation, temperature, double, global, 0);
     p.attributes().set(flagged);
     t.attributes().set(flagged);
   }
 
   // Test
   {
-    auto p0 = get_accessor(m, hydro, pressure, double, global, 0);
-    auto p1 = get_accessor(m, hydro, pressure, double, global, 1);
-    auto d = get_accessor(m, hydro, density, double, global, 0);
-    auto t = get_accessor(m, radiation, temperature, double, global, 0);
+    auto p0 = flecsi_get_accessor(m, hydro, pressure, double, global, 0);
+    auto p1 = flecsi_get_accessor(m, hydro, pressure, double, global, 1);
+    auto d = flecsi_get_accessor(m, hydro, density, double, global, 0);
+    auto t = flecsi_get_accessor(m, radiation, temperature, double, global, 0);
 
     ASSERT_TRUE(p0.attributes().test(flagged));
     ASSERT_FALSE(p1.attributes().test(flagged));
@@ -398,16 +399,16 @@ TEST(storage, global_attributes) {
 
 
     // test has_attribute(flagge)
-    auto flagged_vars = get_accessors(
-      m, hydro, double, global, 0, has_attribute(flagged), 
+    auto flagged_vars = flecsi_get_accessors(
+      m, hydro, double, global, 0, flecsi_has_attribute(flagged), 
       /* sorted */ true
     );
 
     ASSERT_EQ( flagged_vars.size(), 1 );
     ASSERT_EQ( flagged_vars[0].label(), "pressure" );
 
-    auto all_flagged_vars = get_accessors_all(
-      m, double, global, 0, has_attribute(flagged), /* sorted */ true 
+    auto all_flagged_vars = flecsi_get_accessors_all(
+      m, double, global, 0, flecsi_has_attribute(flagged), /* sorted */ true 
     );
 
     ASSERT_EQ( all_flagged_vars.size(), 2 );
@@ -415,7 +416,7 @@ TEST(storage, global_attributes) {
     ASSERT_EQ( all_flagged_vars[1].label(), "temperature" );
 
     // test get by type=double
-    auto typed_vars = get_accessors(
+    auto typed_vars = flecsi_get_accessors(
       m, hydro, double, global, 0, /* sorted */ true
     );
 
@@ -424,7 +425,7 @@ TEST(storage, global_attributes) {
     ASSERT_EQ( typed_vars[1].label(), "pressure" );
     ASSERT_EQ( typed_vars[2].label(), "speed" );
 
-    auto all_typed_vars = get_accessors_all(
+    auto all_typed_vars = flecsi_get_accessors_all(
       m, double, global, 0, /* sorted */ true 
     );
 
