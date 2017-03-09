@@ -77,7 +77,7 @@ public:
 //data instances
 public:
 //  using index_partition_t = dmp::index_partition__<size_t>;
-  
+/*  
   //map of the all partitions used in the code
   //std::map <name of the partition<entiry, index partition for entity>
  
@@ -86,7 +86,7 @@ public:
     typename P::partitioned_index_space,
     utils::const_string_hasher_t>,
     utils::const_string_hasher_t > partitions;
-
+*/
 private:
 
   size_t id_;
