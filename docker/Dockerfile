@@ -18,6 +18,7 @@ ARG TRAVIS_JOB_ID
 ARG TRAVIS_TAG
 ARG TRAVIS_REPO_SLUG
 ARG TRAVIS_COMMIT
+ENV TRAVIS_OS_NAME linux
 
 RUN rm -rf /home/flecsi/.ccache
 COPY flecsi /home/flecsi/flecsi
@@ -44,17 +45,20 @@ RUN cmake -DENABLE_MPI=$MPI \
 
 RUN make VERBOSE=1 -j2
 RUN ccache -s
-RUN ctest --verbose
-RUN make install DESTDIR=${PWD}
 RUN make doxygen
 RUN if [ ${COVERAGE} ]; then \
+      python -m coverxygen --xml-dir doc/doxygen/xml/ --src-dir .. --output doxygen.coverage.info; \
+      wget -O codecov.sh https://codecov.io/bash; \
+      bash codecov.sh -X gcov -f doxygen.coverage.info -F documentation; \
       doxy-coverage --threshold 21 doc/doxygen/xml/; \
     fi
+RUN ctest --verbose
+RUN make install DESTDIR=${PWD}
 RUN cd .. && if [ ${COVERAGE} ]; then \
   if [ ${CC} = clang ]; then \
-    $HOME/.local/bin/codecov --gcov-exec "llvm-cov gcov"; \
+    $HOME/.local/bin/codecov -F "${CC}" --gcov-exec "llvm-cov gcov"; \
   else \
-    $HOME/.local/bin/codecov; \
+    $HOME/.local/bin/codecov -F "${CC}"; \
   fi; \
 fi && cd -
 USER root
