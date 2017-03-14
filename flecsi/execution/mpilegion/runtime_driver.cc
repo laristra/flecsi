@@ -96,7 +96,7 @@ mpilegion_runtime_driver(
     //execute SPMD launch that execute user-defined driver
 
 
-#if 1
+
     MustEpochLauncher must_epoch_launcher; 
     LegionRuntime::HighLevel::ArgumentMap arg_map;
     LegionRuntime::HighLevel::IndexLauncher spmd_launcher(
@@ -106,6 +106,12 @@ mpilegion_runtime_driver(
       TaskArgument(0,0), arg_map);
 
     spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+
+    // PAIR_PROGRAMMING
+    // This is where we iterate over data and spaces from specialization_driver().
+    // We create RegionRequirements here
+    // We serialize a map (if it is not in MPI-context)
+    // We serialize phase barriers
     must_epoch_launcher.add_index_task(spmd_launcher);
  
     FutureMap fm = runtime->execute_must_epoch(ctx,must_epoch_launcher);
@@ -123,7 +129,6 @@ mpilegion_runtime_driver(
     spmd_launcher.add_field(1, fid_t.fid_data);
 #endif
 
-#endif
 
     //remove phase barriers:
 
@@ -154,6 +159,11 @@ spmd_task(
   context_t & context_ = context_t::instance();
   context_.push_state(utils::const_string_t{"driver"}.hash(),
       ctx, runtime, task, regions);
+
+  // PAIR_PROGRAMMING
+  // We obtain map of hashes to regions[n] here
+  // We create halo LogicalRegions here
+  // We might put all of this in the context_ for driver()
 
   using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
   using field_id = LegionRuntime::HighLevel::FieldID;

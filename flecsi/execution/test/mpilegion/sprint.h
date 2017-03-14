@@ -753,6 +753,15 @@ specialization_driver(
 
 
   //call a legion task that checks our partitions
+
+  // PAIR_PROGRAMING: this is where we register "data" on "cells"
+  // needs to contain:
+  //    global LogicalRegion
+  //    IndexPartitions: Exclusive, Shared, Ghost
+  // Need the same for "data" on "verts"
+  //
+  // The next two IndexLaunches will be removed from this method:
+
   LegionRuntime::HighLevel::IndexLauncher check_part_launcher(
     task_ids_t::instance().check_partitioning_task_id,
     rank_domain,
