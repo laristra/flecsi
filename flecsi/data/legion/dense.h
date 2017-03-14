@@ -929,6 +929,26 @@ struct storage_type_t<dense, DS, MD>
     return h;
   } // get_handle
 
+  void get_all_handles(const data_client_t & data_client,
+                       data_store_t & data_store,
+                       std::vector<void, 0, 0, 0>& handles){
+    for(auto& itr : data_store){
+      for(auto& itr2 : itr.second){
+        auto& md = itr2.second;
+        
+        for(auto& itr3 : md){
+          auto& ld = itr3.second;
+          handle_t<void, 0, 0, 0> h;
+          h.lr = ld.lr;
+          h.exclusive_ip = ld.exclusive_ip;
+          h.shared_ip = ld.shared_ip;
+          h.ghost_ip = ld.ghost_ip;
+          handles.emplace(std::move(h)); 
+        }
+      }
+    }
+  }
+
 }; // struct storage_type_t
 
 } // namespace legion

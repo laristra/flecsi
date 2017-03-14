@@ -89,7 +89,6 @@ struct legion_meta_data_t
   std::unordered_map<size_t, bitset_t> attributes;
   size_t num_entries;
 
-private:
   std::unordered_map<size_t, legion_data> data;
 }; // struct legion_meta_data_t
 

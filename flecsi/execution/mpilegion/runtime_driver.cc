@@ -14,6 +14,8 @@
 #include "flecsi/utils/logging.h"
 #include "flecsi/execution/context.h"
 
+#include "sprint_common.h"
+
 #ifndef FLECSI_DRIVER
   #include "flecsi/execution/default_driver.h"
 #else
@@ -50,8 +52,11 @@ mpilegion_runtime_driver(
     context_.interop_helper_.connect_with_mpi(ctx, runtime);
     context_.interop_helper_.wait_on_mpi(ctx, runtime);
 
+    // ndm - create data client here
+    data_client_t data_client;
+
     // run default or user-defined specialization driver 
-    specialization_driver(args.argc, args.argv);
+    specialization_driver(args.argc, args.argv, data_client);
 
     //creating phace barriers for SPMD launch from partitions created and 
     //registered to the data Client at the specialization_driver 
@@ -106,6 +111,31 @@ mpilegion_runtime_driver(
       TaskArgument(0,0), arg_map);
 
     spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+
+    // ndm - need to be able to get data handle here
+    fields_ids_t & fid_t = field_ids_t::instance();
+
+    std::vector<handle_t<void,0,0,0>> handles;
+    std::vector<size_t> hashes;
+    std::vector<size_t> namespaces;
+    std::vector<size_t> versions;
+    get_all_handles(data_client, handles, hashes, namespace, versions);
+    for (int idx = 0; idx < handles.size(); idx++) {
+      handle_t<void,0,0,0> h = handles[idx];
+      LogicalPartition lp_excl = runtime->get_logical_partition(ctx,
+                                                  h.lr, h.exclusive_lp);
+      spmd_launcher.add_region_requirement(
+        RegionRequirement(lp_excl, 0 /*proj*/,
+          READ_WRITE, EXCLUSIVE, h.lr));
+      spmd_launcher.add_field(0,fid_t.fid_value);
+
+      // jpg - do shared and phase barriers here
+      // jpg - serialize the map data
+      size_t hash, namespace, version;
+    }
+      LogicalRegion lr = h.lr;
+      IndexPartition excl = h.excl;
+      LogicalPartion excl_lp = runtime->get_logical_part(lr, excl, ctx);
 
     // PAIR_PROGRAMMING
     // This is where we iterate over data and spaces from specialization_driver().

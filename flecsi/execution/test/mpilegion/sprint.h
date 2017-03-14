@@ -25,6 +25,8 @@
 #include "flecsi/execution/legion/helper.h"
 #include "flecsi/execution/task_ids.h"
 
+#include "sprint_common.h"
+
 ///
 // \file sprint.h
 // \authors bergen
@@ -162,7 +164,8 @@ flecsi_register_task(initialization_task, loc, index);
 void
 specialization_driver(
   int argc, 
-  char ** argv
+  char ** argv,
+  data_client_t& dc
 )
 {
   context_t & context_ = context_t::instance();
@@ -716,6 +719,26 @@ specialization_driver(
   // Need the same for "data" on "verts"
   //
   // The next two IndexLaunches will be removed from this method:
+
+  // ndm - register data here
+  execution::mpilegion_context_policy_t::partitioned_index_space cells_parts;
+  cells_parts.size = total_num_cells;
+  cells_parts.lr = cells_lr;
+  cells_parts.exclusive_ip = cells_exclusive_ip;
+  cells_parts.shared_ip = cells_shared_ip;
+  cells_parts.ghost_ip = cells_ghost_ip;
+
+  dc.set_size(total_num_cells);
+
+  dc.put_index_space(0, cells_parts);
+
+  flecsi_register_data(dc, sprint, pressure, double, dense, 1, 0);
+
+  // ndm - look into copying data
+  // jpg - for now put test data in a flecsi launch and get it out in spmd
+
+  //auto h1 =
+  //flecsi_get_handle();
 
   LegionRuntime::HighLevel::IndexLauncher check_part_launcher(
     task_ids_t::instance().check_partitioning_task_id,
