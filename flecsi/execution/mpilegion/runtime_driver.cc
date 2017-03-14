@@ -13,7 +13,8 @@
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/logging.h"
 #include "flecsi/execution/context.h"
-
+#include "flecsi/execution/task_ids.h"
+#include "flecsi/data/legion/dense.h"
 #include "sprint_common.h"
 
 #ifndef FLECSI_DRIVER
@@ -27,6 +28,8 @@
 #else
   #include EXPAND_AND_STRINGIFY(FLECSI_SPECIALIZATION_DRIVER)
 #endif
+
+#include<vector>
 
 namespace flecsi {
 namespace execution {
@@ -114,6 +117,8 @@ mpilegion_runtime_driver(
 
     // ndm - need to be able to get data handle here
     fields_ids_t & fid_t = field_ids_t::instance();
+
+    using handle_t = dense_handle_t<T, EP, SP, GP>;
 
     std::vector<handle_t<void,0,0,0>> handles;
     std::vector<size_t> hashes;
