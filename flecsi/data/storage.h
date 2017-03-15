@@ -8,6 +8,7 @@
 
 #include "flecsi/utils/const_string.h"
 #include "flecsi/data/data_client.h"
+#include "flecsi/data/data_handle.h"
 
 ///
 /// \file
@@ -328,15 +329,17 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
       sp_t::data_store_, key, version);
   } // get_accessor
 
+  template<
+    size_t ST>
   void
   get_all_handles(
     const data_client_t & data_client,
-    std::vector<void, 0, 0, 0>& handles,
+    std::vector<data_handle_t<void, 0, 0, 0>>& handles,
     std::vector<size_t>& hashes,
     std::vector<size_t>& namespaces,
     std::vector<size_t>& versions)
   {
-    return st_t<ST>::template get_all_handles(data_client,
+    return st_t<ST>::get_all_handles(data_client,
       sp_t::data_store_, handles, hashes, namespaces, versions);
   } // get_accessor
 

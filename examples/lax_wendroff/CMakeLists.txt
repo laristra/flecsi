@@ -32,7 +32,6 @@ if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
   set(exec_path ${PROJECT_SOURCE_DIR}/flecsi/execution)
   set (exmaple_src      lax_wendroff.cc
                         ${exec_path}/mpilegion/runtime_driver.cc
-                        ${exec_path}/legion/dpd.cc
                         ${exec_path}/../data/data_client.cc
                         ${exec_path}/mpilegion/init_partitions_task.cc
                         ${exec_path}/mpilegion/lax_wendroff_task.cc

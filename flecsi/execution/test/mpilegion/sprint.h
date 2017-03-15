@@ -97,18 +97,17 @@ mpi_task(
 
 flecsi_register_task(mpi_task, mpi, single);
 
-void dummy_task(accessor_t<double> x) {
+void dummy_cells(accessor_t<double> x) {
   np(x[0]);
   np(x[1]);
 } // task1
 
-flecsi_register_task(dummy_task, loc, single);
+flecsi_register_task(dummy_cells, loc, single);
 
 void
 specialization_driver(
   int argc, 
-  char ** argv,
-  data_client_t& dc
+  char ** argv
 )
 {
   context_t & context_ = context_t::instance();
@@ -117,6 +116,9 @@ specialization_driver(
   auto context = context_.context(task_key);
 
   legion_helper h(runtime, context);
+
+  data_client& dc = *((data_client*)argv[argc - 1]);
+
 
   using legion_domain = LegionRuntime::HighLevel::Domain;
   field_ids_t & fid_t =field_ids_t::instance();
@@ -694,7 +696,7 @@ specialization_driver(
 
   dc.put_index_space(1, verts_parts);
 
-  // FIXME - how do I specify index space 1? flecsi_register_data(dc, sprint, pressure, double, dense, 1, 0);
+  flecsi_register_data(dc, sprint, pressure, double, dense, 1, 1);
 
   LegionRuntime::HighLevel::IndexLauncher check_part_launcher(
     task_ids_t::instance().check_partitioning_task_id,

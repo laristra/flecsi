@@ -26,4 +26,4 @@ private:
 
 } // namespace flecsi
 
-#endif flecsi_sprint_common_h
+#endif //flecsi_sprint_common_h

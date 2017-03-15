@@ -15,6 +15,7 @@
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/task_ids.h"
 #include "flecsi/data/legion/dense.h"
+#include "flecsi/data/data.h"
 #include "flecsi/execution/test/mpilegion/sprint_common.h"
 
 #ifndef FLECSI_DRIVER
@@ -56,10 +57,15 @@ mpilegion_runtime_driver(
     context_.interop_helper_.wait_on_mpi(ctx, runtime);
 
     // ndm - create data client here
-    data_client_t data_client;
+    data_client dc;
+    int argc = args.argc + 1;
+    char **argv;
+    argv = (char**)std::malloc(sizeof(char*)*argc);
+    std::memcpy(argv, args.argv, args.argc);
+    argv[argc - 1] = (char*)&dc;
 
     // run default or user-defined specialization driver 
-    specialization_driver(args.argc, args.argv, data_client);
+    specialization_driver(args.argc, args.argv);
 
     //creating phace barriers for SPMD launch from partitions created and 
     //registered to the data Client at the specialization_driver 
@@ -108,18 +114,14 @@ mpilegion_runtime_driver(
     MustEpochLauncher must_epoch_launcher; 
     LegionRuntime::HighLevel::ArgumentMap arg_map;
 
-    spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
-
     // ndm - need to be able to get data handle here
-    fields_ids_t & fid_t = field_ids_t::instance();
+    field_ids_t & fid_t =field_ids_t::instance();
 
-    using handle_t = dense_handle_t<T, EP, SP, GP>;
-
-    std::vector<handle_t<void,0,0,0>> handles;
+    std::vector<data_handle_t<void,0,0,0>> handles;
     std::vector<size_t> hashes;
     std::vector<size_t> namespaces;
     std::vector<size_t> versions;
-    get_all_handles(data_client, handles, hashes, namespaces, versions);
+    flecsi_get_all_handles(dc, dense, handles, hashes, namespaces, versions);
     std::vector<size_t> task_argument;
     task_argument.push_back(handles.size());
 
@@ -134,9 +136,11 @@ mpilegion_runtime_driver(
       LegionRuntime::HighLevel::Domain::from_rect<1>(
          context_.interop_helper_.all_processes_),
       TaskArgument(&task_argument.front(),sizeof(size_t)*task_argument.size()), arg_map);
+    spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+
 
     for (int idx = 0; idx < handles.size(); idx++) {
-      handle_t<void,0,0,0> h = handles[idx];
+      data_handle_t<void,0,0,0> h = handles[idx];
 
       LogicalPartition lp_excl = runtime->get_logical_partition(ctx, h.lr, h.exclusive_ip);
       spmd_launcher.add_region_requirement(
@@ -157,9 +161,6 @@ mpilegion_runtime_driver(
 
       // jpg - do neighbors shared and phase barriers here
     }
-      LogicalRegion lr = h.lr;
-      IndexPartition excl = h.excl;
-      LogicalPartion excl_lp = runtime->get_logical_part(lr, excl, ctx);
 
     // PAIR_PROGRAMMING
     // This is where we iterate over data and spaces from specialization_driver().

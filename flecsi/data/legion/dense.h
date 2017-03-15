@@ -929,30 +929,30 @@ struct storage_type_t<dense, DS, MD>
     return h;
   } // get_handle
 
-  void get_all_handles(const data_client_t & data_client,
+  static void get_all_handles(const data_client_t & data_client,
                        data_store_t & data_store,
-                       std::vector<void, 0, 0, 0>& handles,
+                       std::vector<data_handle_t<void, 0, 0, 0>>& handles,
                        std::vector<size_t>& hashes,
                        std::vector<size_t>& namespaces,
                        std::vector<size_t>& versions){
     
     for(auto& itr : data_store){
-      hashes.emplace(itr.first);
+      hashes.emplace_back(itr.first);
       for(auto& itr2 : itr.second){
-        namespaces.emplace(itr2.first);
+        namespaces.emplace_back(itr2.first);
 
         auto& md = itr2.second;
-        
-        for(auto& itr3 : md){
-          versions.emplace(itr3.first);
+
+        for(auto& itr3 : md.data){
+          versions.emplace_back(itr3.first);
 
           auto& ld = itr3.second;
-          handle_t<void, 0, 0, 0> h;
+          data_handle_t<void, 0, 0, 0> h;
           h.lr = ld.lr;
           h.exclusive_ip = ld.exclusive_ip;
           h.shared_ip = ld.shared_ip;
           h.ghost_ip = ld.ghost_ip;
-          handles.emplace(std::move(h)); 
+          handles.emplace_back(std::move(h));
         }
       }
     }

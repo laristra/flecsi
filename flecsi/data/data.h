@@ -190,8 +190,8 @@
 ///
 ///
 ///
-#define flecsi_get_all_handles(client, handles, hashes, namespaces, versions) \                                                         \
-  flecsi::data::storage_t::instance().get_all_handles(client, handles, \ 
+#define flecsi_get_all_handles(client, storage_type, handles, hashes, namespaces, versions) \
+  flecsi::data::storage_t::instance().get_all_handles<flecsi::data::storage_type>(client, handles, \
       hashes, namespaces, versions)
 
 #endif // flecsi_data_data_h
