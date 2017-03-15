@@ -13,15 +13,10 @@ namespace flecsi {
 class data_client : public data::data_client_t{
 public:
   size_t indices(size_t index_space) const override{
-    return size_;
+    flecsi::execution::context_t::partitioned_index_space& space = data::data_client_t::get_index_space(index_space);
+    return space.size;
   }
 
-  void set_size(size_t size){
-    size_ = size;
-  }
-
-private:
-  size_t size_;
 };
 
 } // namespace flecsi

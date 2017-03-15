@@ -99,8 +99,10 @@ flecsi_register_task(mpi_task, mpi, single);
 
 void dummy_cells(accessor_t<size_t> x) {
 
-  for (size_t i=0; i < x.size(); i++)
+  for (size_t i=0; i < x.size(); i++) {
     x[i] = i;
+    std::cout << "dummy_cells " << i << std::endl;
+  }
 }
 
 flecsi_register_task(dummy_cells, loc, single);
@@ -368,6 +370,7 @@ specialization_driver(
   execution::mpilegion_context_policy_t::partitioned_index_space cells_parts;
   cells_parts.size = total_num_cells;
   cells_parts.entities_lr = cells_lr;
+
   execution::mpilegion_context_policy_t::partitioned_index_space verts_parts;
   verts_parts.size = total_num_vertices;
 
@@ -682,8 +685,6 @@ specialization_driver(
   cells_parts.shared_ip = cells_shared_ip;
   cells_parts.ghost_ip = cells_ghost_ip;
   cells_parts.exclusive_ip = cells_exclusive_ip;
-
-  dc.set_size(total_num_cells + total_num_vertices);
 
   const int versions = 1;
   int index_id = 0;
