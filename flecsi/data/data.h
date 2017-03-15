@@ -187,6 +187,13 @@
     size_t(flecsi::data::ghost_privilege::ghost_privileges)>(       \
       client, EXPAND_AND_STRINGIFY(name), version)
 
+///
+///
+///
+#define flecsi_get_all_handles(client, handles, hashes, namespaces, versions) \                                                         \
+  flecsi::data::storage_t::instance().get_all_handles(client, handles, \ 
+      hashes, namespaces, versions)
+
 #endif // flecsi_data_data_h
 
 /*~-------------------------------------------------------------------------~-*

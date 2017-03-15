@@ -328,6 +328,18 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
       sp_t::data_store_, key, version);
   } // get_accessor
 
+  void
+  get_all_handles(
+    const data_client_t & data_client,
+    std::vector<void, 0, 0, 0>& handles,
+    std::vector<size_t>& hashes,
+    std::vector<size_t>& namespaces,
+    std::vector<size_t>& versions)
+  {
+    return st_t<ST>::template get_all_handles(data_client,
+      sp_t::data_store_, handles, hashes, versions);
+  } // get_accessor
+
   //--------------------------------------------------------------------------//
   // Data management.
   //--------------------------------------------------------------------------//
