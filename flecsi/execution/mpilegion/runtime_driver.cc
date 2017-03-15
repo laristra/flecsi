@@ -107,11 +107,6 @@ mpilegion_runtime_driver(
 
     MustEpochLauncher must_epoch_launcher; 
     LegionRuntime::HighLevel::ArgumentMap arg_map;
-    LegionRuntime::HighLevel::IndexLauncher spmd_launcher(
-      task_ids_t::instance().spmd_task_id,
-      LegionRuntime::HighLevel::Domain::from_rect<1>(
-         context_.interop_helper_.all_processes_),
-      TaskArgument(0,0), arg_map);
 
     spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
@@ -124,7 +119,22 @@ mpilegion_runtime_driver(
     std::vector<size_t> hashes;
     std::vector<size_t> namespaces;
     std::vector<size_t> versions;
-    get_all_handles(data_client, handles, hashes, namespace, versions);
+    get_all_handles(data_client, handles, hashes, namespaces, versions);
+    std::vector<size_t> task_argument;
+    task_argument.push_back(handles.size());
+
+    for (int idx = 0; idx < handles.size(); idx++) {
+      task_argument.push_back(hashes[idx]);
+      task_argument.push_back(namespaces[idx]);
+      task_argument.push_back(versions[idx]);
+    }
+
+    LegionRuntime::HighLevel::IndexLauncher spmd_launcher(
+      task_ids_t::instance().spmd_task_id,
+      LegionRuntime::HighLevel::Domain::from_rect<1>(
+         context_.interop_helper_.all_processes_),
+      TaskArgument(&task_argument.front(),sizeof(size_t)*task_argument.size()), arg_map);
+
     for (int idx = 0; idx < handles.size(); idx++) {
       handle_t<void,0,0,0> h = handles[idx];
       LogicalPartition lp_excl = runtime->get_logical_partition(ctx,
