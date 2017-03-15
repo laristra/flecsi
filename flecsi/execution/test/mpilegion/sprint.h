@@ -99,10 +99,10 @@ flecsi_register_task(mpi_task, mpi, single);
 
 void dummy_cells(accessor_t<size_t> x) {
 
-  for (size_t i=0; i < x.size(); i++) {
+  // FIXME : this should only access the primary partition from an index launch and put the MPI partition data here
+  for (size_t i=0; i < x.size(); i++)
     x[i] = i;
-    std::cout << "dummy_cells " << i << std::endl;
-  }
+
 }
 
 flecsi_register_task(dummy_cells, loc, single);

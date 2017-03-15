@@ -261,6 +261,21 @@ spmd_task(
     void* versions_buf = malloc(sizeof(size_t) * num_handles);
     deserializer.deserialize(versions_buf, sizeof(size_t) * num_handles);
 
+    Legion::LogicalRegion empty_lr;
+    Legion::IndexPartition empty_ip;
+
+    // fix handles on spmd side
+    handle_t* fix_handles = (handle_t*)handles_buf;
+    for (size_t idx = 0; idx < num_handles; idx++) {
+      fix_handles[idx].lr = empty_lr;
+      fix_handles[idx].exclusive_ip = empty_ip;
+      fix_handles[idx].shared_ip = empty_ip;
+      fix_handles[idx].ghost_ip = empty_ip;
+      fix_handles[idx].exclusive_pr = regions[3*idx];
+      fix_handles[idx].shared_pr = regions[3*idx+1];
+      fix_handles[idx].ghost_pr = regions[3*idx+2];
+    }
+
     flecsi_put_all_handles(dc, dense, num_handles,
       (handle_t*)handles_buf,
       (size_t*)hashes_buf,
