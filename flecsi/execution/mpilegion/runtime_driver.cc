@@ -273,7 +273,7 @@ spmd_task(
       fix_handles[idx].ghost_ip = empty_ip;
       fix_handles[idx].exclusive_pr = regions[3*idx];
       fix_handles[idx].shared_pr = regions[3*idx+1];
-      fix_handles[idx].ghost_pr = regions[3*idx+2];
+      fix_handles[idx].ghost_pr = regions[3*idx+2];  // Temporary for step 1
     }
 
     flecsi_put_all_handles(dc, dense, num_handles,

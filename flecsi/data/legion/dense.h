@@ -937,13 +937,13 @@ struct storage_type_t<dense, DS, MD>
                        std::vector<size_t>& versions){
     
     for(auto& itr : data_store){
-      hashes.emplace_back(itr.first);
       for(auto& itr2 : itr.second){
-        namespaces.emplace_back(itr2.first);
 
         auto& md = itr2.second;
 
         for(auto& itr3 : md.data){
+          hashes.emplace_back(itr.first);
+          namespaces.emplace_back(itr2.first);
           versions.emplace_back(itr3.first);
 
           auto& ld = itr3.second;
