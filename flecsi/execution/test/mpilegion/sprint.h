@@ -97,69 +97,12 @@ mpi_task(
 
 flecsi_register_task(mpi_task, mpi, single);
 
-void
-initialization_task(
-		accessor_t<size_t> acc_cells,
-		accessor_t<size_t> acc_vert
-)
-{
-  std::cout << "Here I am in init_cells" << std::endl;
+void dummy_task(accessor_t<double> x) {
+  np(x[0]);
+  np(x[1]);
+} // task1
 
-  using index_partition_t = flecsi::dmp::index_partition__<size_t>;
-  using field_id = LegionRuntime::HighLevel::FieldID;
-
-  flecsi::execution::context_t & context_ =
-    flecsi::execution::context_t::instance();
-  index_partition_t ip_cells =
-    context_.interop_helper_.data_storage_[0];
-  index_partition_t ip_vert =
-    context_.interop_helper_.data_storage_[1];
-
-  //cells:
-  //LegionRuntime::HighLevel::LogicalRegion lr_cells =
-  //    regions[0].get_logical_region();
-  //LegionRuntime::HighLevel::IndexSpace is_cells = lr_cells.get_index_space();
-
-  //LegionRuntime::HighLevel::IndexIterator itr_cells(runtime, ctx, is_cells);
-
-//  auto acc_cells = regions[0].get_field_accessor(0).typeify<size_t>();
-
-  //field_id fid_cell = *(task->regions[0].privilege_fields.begin());
-  //LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic, size_t>  acc_cells = regions[0].get_field_accessor(fid_cell).typeify<size_t>();
-
-  
-  for (auto primary_cell : ip_cells.primary) {
-    //assert(itr_cells.has_next());
-    size_t id =primary_cell;
-    //ptr_t ptr = itr_cells.next();
-    //acc_cells.write(ptr, id);
-  }
-
-  //vertices
-  //LegionRuntime::HighLevel::LogicalRegion lr_vert =
-  //    regions[1].get_logical_region();
-  //LegionRuntime::HighLevel::IndexSpace is_vert = lr_vert.get_index_space();
-
-  //LegionRuntime::HighLevel::IndexIterator itr_vert(runtime, ctx, is_vert);
-
-  //auto acc_vert = regions[1].get_field_accessor(0).typeify<size_t>();
-
-  //field_id fid_vert = *(task->regions[1].privilege_fields.begin());
-  //LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic, size_t>  acc_vert = regions[1].get_field_accessor(fid_vert).typeify<size_t>();
-
-
-
-  for (auto primary_vert : ip_vert.primary) {
-    //assert(itr_vert.has_next());
-    size_t id =primary_vert;
-    //ptr_t ptr = itr_vert.next();
-    //acc_vert.write(ptr, id);
-  }
-
-}//initialization_task
-
-flecsi_register_task(initialization_task, loc, index);
-
+flecsi_register_task(dummy_task, loc, single);
 
 void
 specialization_driver(
@@ -737,8 +680,10 @@ specialization_driver(
   // ndm - look into copying data
   // jpg - for now put test data in a flecsi launch and get it out in spmd
 
-  //auto h1 =
-  //flecsi_get_handle();
+  auto h1 =
+    flecsi_get_handle(dc, hydro, pressure, double, dense, 0, rw, rw, ro);
+
+  flecsi_execute_task(dummy_cells, loc, single, h1);
 
   execution::mpilegion_context_policy_t::partitioned_index_space verts_parts;
   verts_parts.size = total_num_vertices;

@@ -15,7 +15,7 @@
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/task_ids.h"
 #include "flecsi/data/legion/dense.h"
-#include "sprint_common.h"
+#include "flecsi/execution/test/mpilegion/sprint_common.h"
 
 #ifndef FLECSI_DRIVER
   #include "flecsi/execution/default_driver.h"
