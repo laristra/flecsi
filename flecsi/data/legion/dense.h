@@ -422,7 +422,7 @@ struct storage_type_t<dense, DS, MD>
   )
   {
 
-    size_t h = key.hash() ^ data_client.runtime_id();
+    size_t h = key.hash()/* ^ data_client.runtime_id()*/;
     
     // Runtime assertion that this key is unique
     assert(data_store[NS].find(h) == data_store[NS].end() &&
@@ -670,7 +670,7 @@ struct storage_type_t<dense, DS, MD>
     size_t version
   )
   {
-    auto hash = key.hash() ^ data_client.runtime_id();
+    auto hash = key.hash()/* ^ data_client.runtime_id()*/;
     return get_accessor<T,NS>(data_store, hash, version);
   } // get_accessor
 
@@ -913,7 +913,7 @@ struct storage_type_t<dense, DS, MD>
   {
     using namespace execution;
 
-    auto hash = key.hash() ^ data_client.runtime_id();
+    auto hash = key.hash()/* ^ data_client.runtime_id()*/;
     auto itr = data_store[NS].find(hash);
     assert(itr != data_store[NS].end() && "invalid key");
     auto& md = itr->second;
