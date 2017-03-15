@@ -18,6 +18,8 @@
 #include "flecsi/data/data.h"
 #include "flecsi/execution/test/mpilegion/sprint_common.h"
 
+#include <legion_utilities.h>
+
 #ifndef FLECSI_DRIVER
   #include "flecsi/execution/default_driver.h"
 #else
@@ -30,7 +32,7 @@
   #include EXPAND_AND_STRINGIFY(FLECSI_SPECIALIZATION_DRIVER)
 #endif
 
-#include<vector>
+#include <vector>
 
 namespace flecsi {
 namespace execution {
@@ -43,6 +45,8 @@ mpilegion_runtime_driver(
 	LegionRuntime::HighLevel::HighLevelRuntime * runtime
 )
 {
+    using handle_t = data_handle_t<void, 0, 0, 0>;
+
     std::cout << "mpilegion_runtime_driver started" << std::endl;
                 
     context_t & context_ = context_t::instance();
@@ -117,27 +121,28 @@ mpilegion_runtime_driver(
     // ndm - need to be able to get data handle here
     field_ids_t & fid_t =field_ids_t::instance();
 
-    std::vector<data_handle_t<void,0,0,0>> handles;
+    std::vector<handle_t> handles;
     std::vector<size_t> hashes;
     std::vector<size_t> namespaces;
     std::vector<size_t> versions;
     flecsi_get_all_handles(dc, dense, handles, hashes, namespaces, versions);
-    std::vector<size_t> task_argument;
-    task_argument.push_back(handles.size());
+    
+    Serializer serializer;
+    serializer.serialize(&handles[0], handles.size() * sizeof(handle_t)); 
+    serializer.serialize(&hashes[0], hashes.size() * sizeof(size_t)); 
+    serializer.serialize(&namespaces[0], namespaces.size() * sizeof(size_t)); 
+    serializer.serialize(&versions[0], versions.size() * sizeof(size_t)); 
 
-    for (int idx = 0; idx < handles.size(); idx++) {
-      task_argument.push_back(hashes[idx]);
-      task_argument.push_back(namespaces[idx]);
-      task_argument.push_back(versions[idx]);
-    }
+    const void* args_buf = serializer.get_buffer();
+    size_t args_size = serializer.get_used_bytes();
 
     LegionRuntime::HighLevel::IndexLauncher spmd_launcher(
       task_ids_t::instance().spmd_task_id,
       LegionRuntime::HighLevel::Domain::from_rect<1>(
          context_.interop_helper_.all_processes_),
-      TaskArgument(&task_argument.front(),sizeof(size_t)*task_argument.size()), arg_map);
+      TaskArgument(args_buf, args_size), arg_map);
+   
     spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
-
 
     for (int idx = 0; idx < handles.size(); idx++) {
       data_handle_t<void,0,0,0> h = handles[idx];
