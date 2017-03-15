@@ -723,12 +723,12 @@ specialization_driver(
   // ndm - register data here
   execution::mpilegion_context_policy_t::partitioned_index_space cells_parts;
   cells_parts.size = total_num_cells;
-  cells_parts.lr = cells_lr;
+  cells_parts.entities_lr = cells_lr;
   cells_parts.exclusive_ip = cells_exclusive_ip;
   cells_parts.shared_ip = cells_shared_ip;
   cells_parts.ghost_ip = cells_ghost_ip;
 
-  dc.set_size(total_num_cells);
+  dc.set_size(total_num_cells + total_num_vertices);
 
   dc.put_index_space(0, cells_parts);
 
@@ -739,6 +739,17 @@ specialization_driver(
 
   //auto h1 =
   //flecsi_get_handle();
+
+  execution::mpilegion_context_policy_t::partitioned_index_space verts_parts;
+  verts_parts.size = total_num_vertices;
+  verts_parts.entities_lr = vertices_lr;
+  verts_parts.exclusive_ip = vert_exclusive_ip;
+  verts_parts.shared_ip = vert_shared_ip;
+  verts_parts.ghost_ip = vert_ghost_ip;
+
+  dc.put_index_space(1, verts_parts);
+
+  // FIXME - how do I specify index space 1? flecsi_register_data(dc, sprint, pressure, double, dense, 1, 0);
 
   LegionRuntime::HighLevel::IndexLauncher check_part_launcher(
     task_ids_t::instance().check_partitioning_task_id,
