@@ -149,7 +149,9 @@ mpilegion_runtime_driver(
     sargs.num_handles = handles.size();
 
     for(size_t i = 0; i < num_ranks; ++i){
-      arg_map.set_point(i, TaskArgument(&sargs, sizeof(sargs)));
+      arg_map.set_point(Legion::DomainPoint::from_point<1>(
+        LegionRuntime::Arrays::make_point(i)),
+        TaskArgument(&sargs, sizeof(sargs)));
     }
 
     LegionRuntime::HighLevel::IndexLauncher spmd_launcher(
