@@ -97,15 +97,6 @@ mpi_task(
 
 flecsi_register_task(mpi_task, mpi, single);
 
-void dummy_cells(accessor_t<size_t> x) {
-
-  // FIXME : this should only access the primary partition from an index launch and put the MPI partition data here
-  for (size_t i=0; i < x.size(); i++)
-    x[i] = i;
-
-}
-
-flecsi_register_task(dummy_cells, loc, single);
 
 void
 specialization_driver(
@@ -700,7 +691,15 @@ specialization_driver(
   auto h1 =
     flecsi_get_handle(dc, sprint, cell_ID, size_t, dense, 0, rw, rw, ro);
 
-  flecsi_execute_task(dummy_cells, loc, single, h1);
+    // FIXME : this should only access the primary partition from an index launch and put the MPI partition data here
+  {
+    int version = 0;
+    auto ac =
+      flecsi_get_accessor(dc, sprint, cell_ID, size_t, dense, version);
+
+    for (size_t i=0; i < ac.size(); i++)
+      ac[i] = i;
+  }
 
   verts_parts.entities_lr = vertices_lr;
   verts_parts.exclusive_ip = vert_exclusive_ip;
