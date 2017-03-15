@@ -206,6 +206,17 @@ spmd_task(
       ctx, runtime, task, regions);
 
   // PAIR_PROGRAMMING
+  if (task->arglen > 0) {
+    const size_t* handles_data = (const size_t*)task->args;
+    const size_t num_handles = handles_data[0];
+    for (size_t idx = 0; idx < num_handles; idx++) {
+      const size_t hash = handles_data[idx*3 + 1];
+      const size_t name_space = handles_data[idx*3 + 2];
+      const size_t version = handles_data[idx*3 + 3];
+
+      std::cout << "found hash:" << hash << " namespace:" << name_space << " version:" << version << std::endl;
+    }
+  }
   // We obtain map of hashes to regions[n] here
   // We create halo LogicalRegions here
   // We might put all of this in the context_ for driver()
