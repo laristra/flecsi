@@ -693,12 +693,27 @@ specialization_driver(
 
     // FIXME : this should only access the primary partition from an index launch and put the MPI partition data here
   {
+    RegionRequirement req(cells_lr, READ_ONLY, EXCLUSIVE, cells_lr);
+      req.add_field(fid_t.fid_cell);
+
+      InlineLauncher input_launcher(req);
+      PhysicalRegion input_region = runtime->map_region(context, input_launcher);
+      input_region.wait_until_valid();
+
+      RegionAccessor<AccessorType::Generic,size_t> acc_legion =
+        input_region.get_field_accessor(fid_t.fid_cell).typeify<size_t>();
+
+      IndexIterator itr_legion(runtime,context, input_region.get_logical_region().get_index_space());
+
+
     int version = 0;
     auto ac =
       flecsi_get_accessor(dc, sprint, cell_ID, size_t, dense, version);
 
-    for (size_t i=0; i < ac.size(); i++)
-      ac[i] = i;
+    for (size_t i=0; i < ac.size(); i++) {
+      ptr_t legion_ptr = itr_legion.next();
+      ac[i] = acc_legion.read(legion_ptr);
+    }
   }
 
   verts_parts.entities_lr = vertices_lr;
