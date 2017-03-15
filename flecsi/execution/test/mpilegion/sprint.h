@@ -97,10 +97,11 @@ mpi_task(
 
 flecsi_register_task(mpi_task, mpi, single);
 
-void dummy_cells(accessor_t<double> x) {
-  np(x[0]);
-  np(x[1]);
-} // task1
+void dummy_cells(accessor_t<size_t> x) {
+
+  for (size_t i=0; i < x.size(); i++)
+    x[i] = i;
+}
 
 flecsi_register_task(dummy_cells, loc, single);
 
@@ -684,15 +685,19 @@ specialization_driver(
 
   dc.set_size(total_num_cells + total_num_vertices);
 
-  dc.put_index_space(0, cells_parts);
+  const int versions = 1;
+  int index_id = 0;
 
-  flecsi_register_data(dc, sprint, pressure, double, dense, 1, 0);
+  dc.put_index_space(index_id, cells_parts);
+
+  flecsi_register_data(dc, sprint, cell_ID, size_t, dense, versions, index_id);
+  //flecsi_register_data(dc, sprint, pressure, double, dense, versions, index_id);
 
   // ndm - look into copying data
   // jpg - for now put test data in a flecsi launch and get it out in spmd
 
   auto h1 =
-    flecsi_get_handle(dc, hydro, pressure, double, dense, 0, rw, rw, ro);
+    flecsi_get_handle(dc, sprint, cell_ID, size_t, dense, 0, rw, rw, ro);
 
   flecsi_execute_task(dummy_cells, loc, single, h1);
 
@@ -701,10 +706,12 @@ specialization_driver(
   verts_parts.shared_ip = vert_shared_ip;
   verts_parts.ghost_ip = vert_ghost_ip;
 
-  dc.put_index_space(1, verts_parts);
+  index_id = 1;
+  dc.put_index_space(index_id, verts_parts);
 
-  flecsi_register_data(dc, sprint, pressure, double, dense, 1, 1);
+  flecsi_register_data(dc, sprint, vert_ID, size_t, dense, versions, index_id);
 
+#if 0
   LegionRuntime::HighLevel::IndexLauncher check_part_launcher(
     task_ids_t::instance().check_partitioning_task_id,
     rank_domain,
@@ -837,7 +844,7 @@ specialization_driver(
   for (unsigned idx = 0; idx < phase_barriers.size(); idx++)
     runtime->destroy_phase_barrier(context, phase_barriers[idx]);
   phase_barriers.clear();
-
+#endif
   //TOFIX: free all lr physical regions is
   runtime->destroy_logical_region(context, vertices_lr);
   runtime->destroy_logical_region(context, cells_lr);
