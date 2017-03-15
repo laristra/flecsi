@@ -17,7 +17,6 @@ set(partition_HEADERS
   dcrs.h
   index_partition.h
   partitioner.h
-  PARENT_SCOPE
 )
 
 if(ENABLE_MPI)
@@ -26,7 +25,6 @@ if(ENABLE_MPI)
     dcrs_utils.h
     mpi_communicator.h
     mpi_utils.h
-    PARENT_SCOPE
   )
 endif()
 
@@ -35,9 +33,12 @@ if(ENABLE_PARMETIS)
     ${partition_HEADERS}
     parmetis_partitioner.h
     weaver.h
-    PARENT_SCOPE
   )
 endif()
+
+set(partition_HEADERS
+  ${partition_HEADERS}
+  PARENT_SCOPE)
 
 #------------------------------------------------------------------------------#
 # Unit tests.
