@@ -143,13 +143,13 @@ mpilegion_runtime_driver(
         RegionRequirement(lp_excl, 0 /*proj*/, READ_WRITE, EXCLUSIVE, h.lr));
       spmd_launcher.add_field(0,fid_t.fid_value);
 
-      // FIXME - this will be RW, SIMUL
+      // FIXME  this is temporary for verifying 1st data movement - this will be RW, SIMUL
       LogicalPartition lp_shared = runtime->get_logical_partition(ctx, h.lr, h.shared_ip);
       spmd_launcher.add_region_requirement(
         RegionRequirement(lp_shared, 0 /*proj*/, READ_ONLY, EXCLUSIVE, h.lr));
       spmd_launcher.add_field(0,fid_t.fid_value);
 
-      // FIXME - this will be RO, SIMUL for each neighbors' shared and pass ghost_ip as IndexSpace
+      // FIXME  this is temporary for verifying 1st data movement - this will be RO, SIMUL for each neighbors' shared and pass ghost_ip as IndexSpace
       LogicalPartition lp_ghost = runtime->get_logical_partition(ctx, h.lr, h.ghost_ip);
       spmd_launcher.add_region_requirement(
         RegionRequirement(lp_ghost, 0 /*proj*/, READ_ONLY, EXCLUSIVE, h.lr));
@@ -224,6 +224,10 @@ spmd_task(
       const size_t version = handles_data[idx*3 + 3];
 
       std::cout << "found hash:" << hash << " namespace:" << name_space << " version:" << version << std::endl;
+
+      // regions[3 * idx] is exclusive PhysicalRegion
+      // regions[3 * idx + 1] is shared PhysicalRegion
+      // regions[3 * idx + 2] is ghost PhysicalRegion  // FIXME this is temporary for verifying 1st data movement
     }
   }
   // We obtain map of hashes to regions[n] here
