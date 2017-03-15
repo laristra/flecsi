@@ -236,6 +236,8 @@ spmd_task(
   context_.push_state(utils::const_string_t{"driver"}.hash(),
       ctx, runtime, task, regions);
 
+  data_client dc;
+
   // PAIR_PROGRAMMING
   if (task->arglen > 0) {
     void* args_buf = task->args;
@@ -256,6 +258,12 @@ spmd_task(
 
     void* versions_buf = malloc(sizeof(size_t) * num_handles);
     deserializer.deserialize(versions_buf, sizeof(size_t) * num_handles);
+
+    flecsi_put_all_handles(dc, dense, num_handles,
+      (handle_t*)handles_buf,
+      (size_t*)hashes_buf,
+      (size_t*)namespaces_buf,
+      (size_t*)versions_buf);
   }
   // We obtain map of hashes to regions[n] here
   // We create halo LogicalRegions here
@@ -269,7 +277,13 @@ spmd_task(
   const LegionRuntime::HighLevel::InputArgs & args =
       LegionRuntime::HighLevel::HighLevelRuntime::get_input_args();
 
-  driver(args.argc, args.argv);
+  int argc = args.argc + 1;
+  char **argv;
+  argv = (char**)std::malloc(sizeof(char*)*argc);
+  std::memcpy(argv, args.argv, args.argc*sizeof(char*));
+  argv[argc - 1] = (char*)&dc;
+
+  driver(argc, argv);
 
   context_.pop_state(utils::const_string_t{"driver"}.hash());
 }

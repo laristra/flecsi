@@ -341,7 +341,22 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   {
     return st_t<ST>::get_all_handles(data_client,
       sp_t::data_store_, handles, hashes, namespaces, versions);
-  } // get_accessor
+  }
+
+  template<
+    size_t ST>
+  void
+  put_all_handles(
+    const data_client_t & data_client,
+    size_t num_handles,
+    data_handle_t<void, 0, 0, 0>* handles,
+    size_t* hashes,
+    size_t* namespaces,
+    size_t* versions)
+  {
+    return st_t<ST>::put_all_handles(data_client,
+      sp_t::data_store_, num_handles, handles, hashes, namespaces, versions);
+  }
 
   //--------------------------------------------------------------------------//
   // Data management.

@@ -958,6 +958,29 @@ struct storage_type_t<dense, DS, MD>
     }
   }
 
+  static
+  void
+  put_all_handles(
+     const data_client_t & data_client,
+     data_store_t & data_store,
+     size_t num_handles,
+     data_handle_t<void, 0, 0, 0>* handles,
+     size_t* hashes,
+     size_t* namespaces,
+     size_t* versions
+    )
+  {
+    for(size_t i = 0; i < num_handles; ++i){
+      auto& ld = data_store[hashes[i]][namespaces[i]].data[versions[i]];
+      auto& hi = handles[i];
+      ld.lr = hi.lr;
+      ld.exclusive_ip = hi.exclusive_ip;
+      ld.shared_ip = hi.shared_ip;
+      ld.ghost_ip = hi.ghost_ip;
+    }
+  }
+
+
 }; // struct storage_type_t
 
 } // namespace legion
