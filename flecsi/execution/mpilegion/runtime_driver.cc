@@ -37,6 +37,17 @@
 namespace flecsi {
 namespace execution {
 
+  namespace{
+
+    struct spmd_task_args{
+      size_t buf_size;
+      size_t num_handles;
+    };
+
+    using handle_t = data_handle_t<void, 0, 0, 0>;
+
+  } // namespace
+
 void
 mpilegion_runtime_driver(
   const LegionRuntime::HighLevel::Task * task,
@@ -45,8 +56,6 @@ mpilegion_runtime_driver(
 	LegionRuntime::HighLevel::HighLevelRuntime * runtime
 )
 {
-    using handle_t = data_handle_t<void, 0, 0, 0>;
-
     std::cout << "mpilegion_runtime_driver started" << std::endl;
                 
     context_t & context_ = context_t::instance();
@@ -134,18 +143,25 @@ mpilegion_runtime_driver(
     serializer.serialize(&versions[0], versions.size() * sizeof(size_t)); 
 
     const void* args_buf = serializer.get_buffer();
-    size_t args_size = serializer.get_used_bytes();
+
+    spmd_task_args sargs;
+    sargs.buf_size = serializer.get_used_bytes();
+    sargs.num_handles = handles.size();
+
+    for(size_t i = 0; i < num_ranks; ++i){
+      arg_map.set_point(i, TaskArgument(&sargs, sizeof(sargs)));
+    }
 
     LegionRuntime::HighLevel::IndexLauncher spmd_launcher(
       task_ids_t::instance().spmd_task_id,
       LegionRuntime::HighLevel::Domain::from_rect<1>(
          context_.interop_helper_.all_processes_),
-      TaskArgument(args_buf, args_size), arg_map);
+      TaskArgument(args_buf, sargs.buf_size), arg_map);
    
     spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
     for (int idx = 0; idx < handles.size(); idx++) {
-      data_handle_t<void,0,0,0> h = handles[idx];
+      handle_t h = handles[idx];
 
       LogicalPartition lp_excl = runtime->get_logical_partition(ctx, h.lr, h.exclusive_ip);
       spmd_launcher.add_region_requirement(
@@ -222,19 +238,24 @@ spmd_task(
 
   // PAIR_PROGRAMMING
   if (task->arglen > 0) {
-    const size_t* handles_data = (const size_t*)task->args;
-    const size_t num_handles = handles_data[0];
-    for (size_t idx = 0; idx < num_handles; idx++) {
-      const size_t hash = handles_data[idx*3 + 1];
-      const size_t name_space = handles_data[idx*3 + 2];
-      const size_t version = handles_data[idx*3 + 3];
+    void* args_buf = task->args;
+    auto args = (spmd_task_args*)task->local_args;
 
-      std::cout << "found hash:" << hash << " namespace:" << name_space << " version:" << version << std::endl;
+    size_t num_handles = args->num_handles;
 
-      // regions[3 * idx] is exclusive PhysicalRegion
-      // regions[3 * idx + 1] is shared PhysicalRegion
-      // regions[3 * idx + 2] is ghost PhysicalRegion  // FIXME this is temporary for verifying 1st data movement
-    }
+    Deserializer deserializer(args_buf, args->buf_size);
+
+    void* handles_buf = malloc(sizeof(handle_t) * num_handles);
+    deserializer.deserialize(handles_buf, sizeof(handle_t) * num_handles);
+
+    void* hashes_buf = malloc(sizeof(size_t) * num_handles);
+    deserializer.deserialize(hashes_buf, sizeof(size_t) * num_handles);
+
+    void* namespaces_buf = malloc(sizeof(size_t) * num_handles);
+    deserializer.deserialize(namespaces_buf, sizeof(size_t) * num_handles);
+
+    void* versions_buf = malloc(sizeof(size_t) * num_handles);
+    deserializer.deserialize(versions_buf, sizeof(size_t) * num_handles);
   }
   // We obtain map of hashes to regions[n] here
   // We create halo LogicalRegions here
