@@ -61,11 +61,11 @@ mpilegion_runtime_driver(
     int argc = args.argc + 1;
     char **argv;
     argv = (char**)std::malloc(sizeof(char*)*argc);
-    std::memcpy(argv, args.argv, args.argc);
+    std::memcpy(argv, args.argv, args.argc*sizeof(char*));
     argv[argc - 1] = (char*)&dc;
 
     // run default or user-defined specialization driver 
-    specialization_driver(args.argc, args.argv);
+    specialization_driver(argc, argv);
 
     //creating phace barriers for SPMD launch from partitions created and 
     //registered to the data Client at the specialization_driver 

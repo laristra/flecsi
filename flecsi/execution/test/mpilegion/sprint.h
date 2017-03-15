@@ -364,6 +364,12 @@ specialization_driver(
 
   //flecsi_execute_task(initialization_task, loc, index, cell_handle, vert_handle);
 */
+  execution::mpilegion_context_policy_t::partitioned_index_space cells_parts;
+  cells_parts.size = total_num_cells;
+  cells_parts.entities_lr = cells_lr;
+  execution::mpilegion_context_policy_t::partitioned_index_space verts_parts;
+  verts_parts.size = total_num_vertices;
+
   //creating partiotioning for shared and exclusive elements:
   Coloring cells_shared_coloring;
   Coloring vert_shared_coloring;
@@ -409,6 +415,7 @@ specialization_driver(
       LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
         shared_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
+      cells_parts.shared_count_map[indx] =  cells_num_shared[indx];
       for (size_t j=0; j<cells_num_shared[indx]; j++)
       {
         ptr_t ptr=
@@ -433,6 +440,7 @@ specialization_driver(
       LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
         shared_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
+      verts_parts.shared_count_map[indx] =  vert_num_shared[indx];
       for (size_t j=0; j<vert_num_shared[indx]; j++)
       {
         ptr_t ptr=
@@ -505,6 +513,7 @@ specialization_driver(
       LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
         exclusive_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
+      cells_parts.exclusive_count_map[indx] =  cells_num_exclusive[indx];
       for (size_t j=0; j<cells_num_exclusive[indx]; j++)
       {
         ptr_t ptr=
@@ -529,6 +538,7 @@ specialization_driver(
       LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
         exclusive_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
+      verts_parts.exclusive_count_map[indx] =  vert_num_exclusive[indx];
       for (size_t j=0; j<vert_num_exclusive[indx]; j++)
       {
         ptr_t ptr=
@@ -604,6 +614,7 @@ specialization_driver(
       LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
         ghost_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
+      cells_parts.ghost_count_map[indx] =  cells_num_ghosts[indx];
       for (size_t j=0; j<cells_num_ghosts[indx]; j++)
       {
         ptr_t ptr=
@@ -628,6 +639,7 @@ specialization_driver(
       LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
         ghost_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
+      verts_parts.ghost_count_map[indx] =  vert_num_ghosts[indx];
       for (size_t j=0; j<vert_num_ghosts[indx]; j++)
       {
         ptr_t ptr=
@@ -666,12 +678,9 @@ specialization_driver(
   // The next two IndexLaunches will be removed from this method:
 
   // ndm - register data here
-  execution::mpilegion_context_policy_t::partitioned_index_space cells_parts;
-  cells_parts.size = total_num_cells;
-  cells_parts.entities_lr = cells_lr;
-  cells_parts.exclusive_ip = cells_exclusive_ip;
   cells_parts.shared_ip = cells_shared_ip;
   cells_parts.ghost_ip = cells_ghost_ip;
+  cells_parts.exclusive_ip = cells_exclusive_ip;
 
   dc.set_size(total_num_cells + total_num_vertices);
 
@@ -687,8 +696,6 @@ specialization_driver(
 
   flecsi_execute_task(dummy_cells, loc, single, h1);
 
-  execution::mpilegion_context_policy_t::partitioned_index_space verts_parts;
-  verts_parts.size = total_num_vertices;
   verts_parts.entities_lr = vertices_lr;
   verts_parts.exclusive_ip = vert_exclusive_ip;
   verts_parts.shared_ip = vert_shared_ip;
