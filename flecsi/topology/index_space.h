@@ -1457,6 +1457,11 @@ public:
     return entry_;
   }
 
+  auto entry_id() const
+  {
+    return entry_;
+  }
+
   id_t
   index_space_id() const
   {

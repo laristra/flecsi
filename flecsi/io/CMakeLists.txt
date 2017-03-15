@@ -12,22 +12,10 @@
 # All rights reserved
 #~----------------------------------------------------------------------------~#
 
-if(ENABLE_IO)
-
 set(io_HEADERS
   io.h
   io_base.h
-  io_exodus.h
   simple_definition.h
-  PARENT_SCOPE
-)
-  
-set(io_SOURCES
-  PARENT_SCOPE
-)
-
-cinch_add_unit(io
-  SOURCES test/io.cc
 )
 
 cinch_add_unit(simple_definition
@@ -35,7 +23,25 @@ cinch_add_unit(simple_definition
   INPUTS test/simple2d-8x8.msh test/simple2d-4x4.msh
 )
 
-endif(ENABLE_IO)
+# enable IO really means enable exodus
+if(ENABLE_EXODUS)
+
+  set(io_HEADERS
+    ${io_HEADERS}
+    io_exodus.h
+    PARENT_SCOPE
+  )
+
+  cinch_add_unit(io
+    SOURCES test/io.cc
+  )
+
+endif(ENABLE_EXODUS)
+
+set(io_SOURCES
+  ${io_HEADERS}
+  PARENT_SCOPE
+  )
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options

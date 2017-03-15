@@ -36,6 +36,7 @@
 #include "flecsi/execution/mpilegion/legion_handshake.h"
 #include "flecsi/execution/mpilegion/mpi_legion_interop.h"
 #include "flecsi/execution/mpilegion/init_partitions_task.h"
+#include "flecsi/execution/mpilegion/lax_wendroff_task.h"
 #include "flecsi/execution/legion/dpd.h"
 
 namespace flecsi {
@@ -159,6 +160,55 @@ struct mpilegion_context_policy_t
     lr_runtime_t::register_legion_task<
       flecsi::execution::sprint::ghost_access_task>(
       task_ids_t::instance().ghost_access_task_id,lr_loc, false, true);
+
+    lr_runtime_t::register_legion_task<
+      flecsi::execution::sprint::ghost_check_task>(
+      task_ids_t::instance().ghost_check_task_id,lr_loc, false, true);
+
+    lr_runtime_t::register_legion_task<
+      flecsi::execution::sprint::ghost_init_task>(
+      task_ids_t::instance().ghost_init_task_id,lr_loc, false, true);
+
+    lr_runtime_t::register_legion_task<
+      flecsi::execution::sprint::halo_copy_task>(
+      task_ids_t::instance().halo_copy_task_id,lr_loc, true, false);
+
+    lr_runtime_t::register_legion_task<
+      flecsi::execution::lax_wendroff::lax_wendroff_task>(
+      task_ids_t::instance().lax_wendroff_task_id,lr_loc, false, true);
+
+    lr_runtime_t::register_legion_task<
+      flecsi::execution::lax_wendroff::lax_halo_task>(
+      task_ids_t::instance().lax_halo_task_id,lr_loc, true, false);
+
+    lr_runtime_t::register_legion_task<
+      flecsi::execution::lax_wendroff::lax_init_task>(
+      task_ids_t::instance().lax_init_task_id,lr_loc, true, false);
+
+    lr_runtime_t::register_legion_task<
+      flecsi::execution::lax_wendroff::lax_write_task>(
+      task_ids_t::instance().lax_write_task_id,lr_loc, true, false);
+
+    lr_runtime_t::register_legion_task<
+      flecsi::execution::lax_wendroff::lax_adv_x_task>(
+      task_ids_t::instance().lax_adv_x_task_id,lr_loc, true, false);
+
+    lr_runtime_t::register_legion_task<
+      flecsi::execution::lax_wendroff::lax_adv_y_task>(
+      task_ids_t::instance().lax_adv_y_task_id,lr_loc, true, false);
+
+    lr_runtime_t::register_legion_task<
+      flecsi::execution::lax_wendroff::lax_calc_excl_x_task>(
+      task_ids_t::instance().lax_calc_excl_x_task_id,lr_loc, true, false);
+
+    lr_runtime_t::register_legion_task<
+      flecsi::execution::lax_wendroff::lax_calc_excl_y_task>(
+      task_ids_t::instance().lax_calc_excl_y_task_id,lr_loc, true, false);
+
+    //register spmd task, that call user's driver
+    lr_runtime_t::register_legion_task<
+      flecsi::execution::spmd_task>(
+      task_ids_t::instance().spmd_task_id,lr_loc, false, true);
 
     // register handoff_to_mpi_task from mpi_legion_interop_t class
     lr_runtime_t::register_legion_task<handoff_to_mpi_task>(

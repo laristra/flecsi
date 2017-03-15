@@ -29,9 +29,9 @@
 #include "flecsi/utils/const_string.h"
 
 ///
-// \file legion/execution_policy.h
-// \authors bergen
-// \date Initial file creation: Nov 15, 2015
+/// \file legion/execution_policy.h
+/// \authors bergen
+/// \date Initial file creation: Nov 15, 2015
 ///
 
 namespace flecsi {
@@ -42,12 +42,13 @@ namespace execution {
 //----------------------------------------------------------------------------//
 
 ///
-// \struct legion_execution_policy legion_execution_policy.h
-// \brief legion_execution_policy provides...
+/// \struct legion_execution_policy legion_execution_policy.h
+/// \brief legion_execution_policy provides...
 ///
 struct legion_execution_policy_t
 {
   template<typename R>
+  /// future
   using future__ = legion_future__<R>;
 
   //--------------------------------------------------------------------------//
@@ -55,6 +56,9 @@ struct legion_execution_policy_t
   //--------------------------------------------------------------------------//
 
   // FIXME: add task type (leaf, inner, etc...)
+  ///
+  /// register FLeCSI task depending on the tasks's processor and launch types
+  ///
   template<
     typename R,
     typename A
@@ -124,13 +128,14 @@ struct legion_execution_policy_t
   } // register_task
 
   ///
-  // \tparam R The task return type.
-  // \tparam T The user task type.
-  // \tparam FIXME: A
-  //
-  // \param key
-  // \param user_task_handle
-  // \param args
+  /// Execute FLeCSI task.
+  /// \tparam R The task return type.
+  /// \tparam T The user task type.
+  /// \tparam FIXME: A
+  ///
+  /// \param key
+  /// \param user_task_handle
+  /// \param args
   ///
   template<
     typename R,
@@ -208,14 +213,14 @@ struct legion_execution_policy_t
   //--------------------------------------------------------------------------//
 
   ///
-  // This method registers a user function with the current
-  // execution context.
-  //
-  // \param key The function identifier.
-  // \param user_function A reference to the user function as a std::function.
-  //
-  // \return A boolean value indicating whether or not the function was
-  //         successfully registered.
+  /// This method registers a user function with the current
+  /// execution context.
+  ///
+  /// \param key The function identifier.
+  /// \param user_function A reference to the user function as a std::function.
+  ///
+  /// \return A boolean value indicating whether or not the function was
+  ///         successfully registered.
   ///
   template<
     typename R,
@@ -232,13 +237,13 @@ struct legion_execution_policy_t
   } // register_function
 
   ///
-  // This method looks up a function from the \e handle argument
-  // and executes the associated it with the provided \e args arguments.
-  //
-  // \param handle The function handle to execute.
-  // \param args A variadic argument list of the function parameters.
-  //
-  // \return The return type of the provided function handle.
+  /// This method looks up a function from the \e handle argument
+  /// and executes the associated it with the provided \e args arguments.
+  ///
+  /// \param handle The function handle to execute.
+  /// \param args A variadic argument list of the function parameters.
+  ///
+  /// \return The return type of the provided function handle.
   ///
   template<
     typename T,

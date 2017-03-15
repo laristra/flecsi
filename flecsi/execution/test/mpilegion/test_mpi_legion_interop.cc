@@ -26,7 +26,7 @@
 #include "flecsi/partition/index_partition.h"
 
 using namespace flecsi::execution;
-
+/// Task IDs
 enum TaskIDs{
  TOP_LEVEL_TASK_ID         =0x00000010,
  HELLOWORLD_TASK_ID        =0x00000100,
@@ -48,7 +48,10 @@ using index_partition_t = flecsi::dmp::index_partition__<size_t>;
 
 static mpi_legion_interop_t InteropHelper;
 
-/* ------------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------ */
+ ///
+ /// Legion's top-level-task
+ ///
  void top_level_task(const Task *task,
                     const std::vector<PhysicalRegion> &regions,
                     Context ctx, Runtime *runtime)
@@ -89,7 +92,10 @@ static mpi_legion_interop_t InteropHelper;
    
  }
 
-/* ------------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------ */
+///
+/// hallowork task
+///
 void helloworld_mpi_task (const Task *legiontask,
                       const std::vector<PhysicalRegion> &regions,
                       Context ctx, HighLevelRuntime *runtime)
@@ -98,7 +104,10 @@ void helloworld_mpi_task (const Task *legiontask,
 }
 
 
-/* ------------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------ */
+///
+/// legion initialization function
+///
 void my_init_legion(){
   
   InteropHelper.legion_configure();
@@ -140,7 +149,10 @@ void my_init_legion(){
   std::cout<<"back to MPI to finalize"<<std::endl;
 }
 
-/* ------------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------ */
+///
+/// test body
+///
 TEST(mpi_legion_interop, simple) {
    my_init_legion(); 
  

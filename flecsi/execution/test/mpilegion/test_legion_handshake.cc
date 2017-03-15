@@ -11,10 +11,14 @@
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
-#include "flecsi/execution/test/handshake_init.h"
+#include "flecsi/execution/test/mpilegion/handshake_init.h"
 
 using namespace flecsi::execution;
 
+
+///
+/// Legion's top level task
+///
 void top_level_task(const Task *task,
                     const std::vector<PhysicalRegion> &regions,
                     Context ctx, HighLevelRuntime *runtime)
@@ -50,7 +54,7 @@ void top_level_task(const Task *task,
 
 
 
-
+/// helloworld_mpi_task
 void helloworld_mpi_task (const Task *legiontask,
                       const std::vector<PhysicalRegion> &regions,
                       Context ctx, HighLevelRuntime *runtime)
@@ -66,6 +70,7 @@ void helloworld_mpi_task (const Task *legiontask,
 #define execute(task, ...) \
   execution_t::execute_task(task, ##__VA_ARGS__)
 
+///test body
 TEST(legion_handshake, simple) {
 
  

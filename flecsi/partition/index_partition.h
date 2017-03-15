@@ -47,6 +47,9 @@ struct index_partition__
   // Vector of entry_info_t type of the ghost partition
   std::set<entry_info_t> ghost;
 
+  //map of rank id to #of entities per rank
+  std::unordered_map<size_t, size_t> entities_per_rank;
+
   ///
   /// Equality operator.
   ///

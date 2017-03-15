@@ -14,34 +14,34 @@
 #include "flecsi/utils/static_verify.h"
 
 ///
-// \file task.h
-// \authors bergen
-// \date Initial file creation: Jul 26, 2016
+/// \file task.h
+/// \authors bergen
+/// \date Initial file creation: Jul 26, 2016
 ///
 
 namespace flecsi {
 namespace execution {
 
 ///
-// \struct task__ task.h
-// \brief task__ provides...
+/// \struct task__ task.h
+/// \brief task__ provides...
 ///
 template<typename execution_policy_t>
 struct task__
 {
 
   ///
-  // Register a user task with the FleCSI runtime.
-  //
-  // \tparam R The return type of the user task.
-  // \tparam A A std::tuple of the user task arguments.
-  //
-  // \param address The address of the user task.
-  // \param processor The processor type for task execution.
-  // \param launch The launch mode for task execution.
-  //
-  // \return The return type for task registration is determined by
-  //         the specific backend runtime being used.
+  /// Register a user task with the FleCSI runtime.
+  ///
+  /// \tparam R The return type of the user task.
+  /// \tparam A A std::tuple of the user task arguments.
+  ///
+  /// \param address The address of the user task.
+  /// \param processor The processor type for task execution.
+  /// \param launch The launch mode for task execution.
+  ///
+  /// \return The return type for task registration is determined by
+  ///         the specific backend runtime being used.
   ///
   template<
     typename R,
@@ -60,19 +60,19 @@ struct task__
   } // register_task
 
   ///
-  // Execute a registered task.
-  //
-  // \tparam R The return type of the task.
-  // \tparam T The user task handle type.
-  // \tparam As The task arguments.
-  //
-  // \param address A unique identifier used to lookup the task
-  //                in the task registry.
-  // \param processor The processor type on which to execute the task.
-  // \param launch The launch mode for the task.
-  // \param parent A hash key that uniquely identifies the calling task.
-  // \param user_task_handle The user task handle.
-  // \param args The arguments to pass to the user task during execution.
+  /// Execute a registered task.
+  ///
+  /// \tparam R The return type of the task.
+  /// \tparam T The user task handle type.
+  /// \tparam As The task arguments.
+  ///
+  /// \param address A unique identifier used to lookup the task
+  ///                in the task registry.
+  /// \param processor The processor type on which to execute the task.
+  /// \param launch The launch mode for the task.
+  /// \param parent A hash key that uniquely identifies the calling task.
+  /// \param user_task_handle The user task handle.
+  /// \param args The arguments to pass to the user task during execution.
   ///
   template<
     typename R,
@@ -114,8 +114,8 @@ using task_t = task__<flecsi_execution_policy_t>;
 template<typename R>
 using future__ = flecsi_execution_policy_t::future__<R>;
 
-// Static verification of public future interface for type defined by
-// execution policy.
+/// Static verification of public future interface for type defined by
+/// execution policy.
 namespace verify_future {
 
 FLECSI_MEMBER_CHECKER(wait);
