@@ -137,16 +137,25 @@ mpilegion_runtime_driver(
 
     for (int idx = 0; idx < handles.size(); idx++) {
       handle_t<void,0,0,0> h = handles[idx];
-      LogicalPartition lp_excl = runtime->get_logical_partition(ctx,
-                                                  h.lr, h.exclusive_lp);
+
+      LogicalPartition lp_excl = runtime->get_logical_partition(ctx, h.lr, h.exclusive_ip);
       spmd_launcher.add_region_requirement(
-        RegionRequirement(lp_excl, 0 /*proj*/,
-          READ_WRITE, EXCLUSIVE, h.lr));
+        RegionRequirement(lp_excl, 0 /*proj*/, READ_WRITE, EXCLUSIVE, h.lr));
       spmd_launcher.add_field(0,fid_t.fid_value);
 
-      // jpg - do shared and phase barriers here
-      // jpg - serialize the map data
-      size_t hash, namespace, version;
+      // FIXME - this will be RW, SIMUL
+      LogicalPartition lp_shared = runtime->get_logical_partition(ctx, h.lr, h.shared_ip);
+      spmd_launcher.add_region_requirement(
+        RegionRequirement(lp_shared, 0 /*proj*/, READ_ONLY, EXCLUSIVE, h.lr));
+      spmd_launcher.add_field(0,fid_t.fid_value);
+
+      // FIXME - this will be RO, SIMUL for each neighbors' shared and pass ghost_ip as IndexSpace
+      LogicalPartition lp_ghost = runtime->get_logical_partition(ctx, h.lr, h.ghost_ip);
+      spmd_launcher.add_region_requirement(
+        RegionRequirement(lp_ghost, 0 /*proj*/, READ_ONLY, EXCLUSIVE, h.lr));
+      spmd_launcher.add_field(0,fid_t.fid_value);
+
+      // jpg - do neighbors shared and phase barriers here
     }
       LogicalRegion lr = h.lr;
       IndexPartition excl = h.excl;
