@@ -14,6 +14,24 @@ using namespace LegionRuntime::HighLevel;
 /// \date Initial file creation: Mar 14, 2017
 ///
 
+#define DH1 1
+#undef flecsi_execution_legion_task_wrapper_h
+#include "flecsi/execution/legion/task_wrapper.h"
+
+#include <iostream>
+#include <vector>
+
+#include "flecsi/utils/common.h"
+#include "flecsi/execution/context.h"
+#include "flecsi/execution/execution.h"
+#include "flecsi/data/data.h"
+#include "flecsi/data/data_client.h"
+#include "flecsi/data/legion/data_policy.h"
+#include "flecsi/execution/legion/helper.h"
+#include "flecsi/execution/task_ids.h"
+
+#include "flecsi/execution/test/mpilegion/sprint_common.h"
+
 // FIXME remove duplicate task for init_partitions_task.cc
 void
 check_partitioning_task(
@@ -172,20 +190,29 @@ check_partitioning_task(
   }//check_partitioning_task
 
 
+flecsi_register_task(check_partitioning_task, loc, single);
+
 void
 driver(
   int argc,
   char ** argv
 )
 {
-	std::cout << "check PARTITION" << std::endl;
+
+
+  flecsi::data_client& dc = *((flecsi::data_client*)argv[argc - 1]);
+
+  std::cout << "check PARTITION" << std::endl;
 
   // PAIR_PROGRAMMING
   // This is where the check partitions code does
   // we need a data handle to be able to pass cell_ids and vert_ids to a flecsi task
 
-  // flecsi_execute_task(check_partitions, cell_handle_, vert_handle);
+  int index_space = 0;
+  auto h1 =
+    flecsi_get_handle(dc, sprint, cell_ID, size_t, dense, index_space, ro, ro, ro);
 
+  flecsi_execute_task(check_partitioning_task, loc, single); // h1);
 } //driver
 
 
