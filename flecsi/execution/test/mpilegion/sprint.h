@@ -713,6 +713,7 @@ specialization_driver(
     for (size_t i=0; i < ac.size(); i++) {
       ptr_t legion_ptr = itr_legion.next();
       ac[i] = acc_legion.read(legion_ptr);
+      std::cout << i << " = " << ac[i] << std::endl;
     }
   }
 
