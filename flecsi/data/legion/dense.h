@@ -925,7 +925,10 @@ struct storage_type_t<dense, DS, MD>
     h.exclusive_ip = data.exclusive_ip;
     h.shared_ip = data.shared_ip;
     h.ghost_ip = data.ghost_ip;
-    
+    h.exclusive_pr = data.exclusive_pr;
+    h.shared_pr = data.shared_pr;
+    h.ghost_pr = data.ghost_pr;
+
     return h;
   } // get_handle
 
@@ -977,6 +980,9 @@ struct storage_type_t<dense, DS, MD>
       ld.exclusive_ip = hi.exclusive_ip;
       ld.shared_ip = hi.shared_ip;
       ld.ghost_ip = hi.ghost_ip;
+      ld.exclusive_pr = hi.exclusive_pr;
+      ld.shared_pr = hi.shared_pr;
+      ld.ghost_pr = hi.ghost_pr;
     }
   }
 

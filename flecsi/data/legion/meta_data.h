@@ -69,6 +69,9 @@ struct legion_meta_data_t
     Legion::IndexPartition exclusive_ip;
     Legion::IndexPartition shared_ip;
     Legion::IndexPartition ghost_ip;
+    Legion::PhysicalRegion exclusive_pr;
+    Legion::PhysicalRegion shared_pr;
+    Legion::PhysicalRegion ghost_pr;
   };
 
   legion_data& get_legion_data(size_t version) const{
