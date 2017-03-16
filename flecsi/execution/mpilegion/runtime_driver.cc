@@ -264,16 +264,58 @@ spmd_task(
     Legion::LogicalRegion empty_lr;
     Legion::IndexPartition empty_ip;
 
+    field_ids_t & fid_t =field_ids_t::instance();
+
     // fix handles on spmd side
     handle_t* fix_handles = (handle_t*)handles_buf;
     for (size_t idx = 0; idx < num_handles; idx++) {
+
+      {
+        LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic,size_t> acc_legion =
+        regions[3*idx].get_field_accessor(fid_t.fid_value).typeify<size_t>();
+
+        IndexIterator itr_legion(runtime,ctx, regions[3*idx].get_logical_region().get_index_space());
+
+        while(itr_legion.has_next()) {
+          ptr_t ptr_legion = itr_legion.next();
+          std::cout << "exclusive " << ptr_legion.value << " = " << acc_legion.read(ptr_legion) << std::endl;
+        }
+      }
+
+      {
+        LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic,size_t> acc_legion =
+        regions[3*idx+1].get_field_accessor(fid_t.fid_value).typeify<size_t>();
+
+        IndexIterator itr_legion(runtime,ctx, regions[3*idx+1].get_logical_region().get_index_space());
+
+        while(itr_legion.has_next()) {
+          ptr_t ptr_legion = itr_legion.next();
+          std::cout << "shared " << ptr_legion.value << " = " << acc_legion.read(ptr_legion) << std::endl;
+        }
+      }
+
+      {
+        LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic,size_t> acc_legion =
+        regions[3*idx+2].get_field_accessor(fid_t.fid_value).typeify<size_t>();
+
+        IndexIterator itr_legion(runtime,ctx, regions[3*idx+2].get_logical_region().get_index_space());
+
+        while(itr_legion.has_next()) {
+          ptr_t ptr_legion = itr_legion.next();
+          std::cout << "ghost " << ptr_legion.value << " = " << acc_legion.read(ptr_legion) << std::endl;
+        }
+      }
+
       fix_handles[idx].lr = empty_lr;
       fix_handles[idx].exclusive_ip = empty_ip;
       fix_handles[idx].shared_ip = empty_ip;
       fix_handles[idx].ghost_ip = empty_ip;
       fix_handles[idx].exclusive_lr = regions[3*idx].get_logical_region();
+      runtime->unmap_region(ctx, regions[3*idx]);
       fix_handles[idx].shared_lr = regions[3*idx+1].get_logical_region();
+      runtime->unmap_region(ctx, regions[3*idx+1]);
       fix_handles[idx].ghost_lr = regions[3*idx+2].get_logical_region();  
+      runtime->unmap_region(ctx, regions[3*idx+2]);
     }
 
     flecsi_put_all_handles(dc, dense, num_handles,
