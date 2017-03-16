@@ -66,6 +66,8 @@ struct legion_meta_data_t
 
   struct legion_data{
     Legion::LogicalRegion lr;
+    Legion::FieldSpace fs;
+    Legion::IndexSpace is;
     Legion::IndexPartition exclusive_ip;
     Legion::IndexPartition shared_ip;
     Legion::IndexPartition ghost_ip;

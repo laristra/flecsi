@@ -502,13 +502,13 @@ struct storage_type_t<dense, DS, MD>
 
       auto data = data_store[NS][h].create_legion_data();
 
-      LegionRuntime::HighLevel::IndexSpace is =
+      data.is =
         helper.create_index_space(0, size);
-      LegionRuntime::HighLevel::FieldSpace fs = helper.create_field_space();
+      data.fs = helper.create_field_space();
       LegionRuntime::HighLevel::FieldAllocator a =
-          helper.create_field_allocator(fs);
+          helper.create_field_allocator(data.fs);
       a.allocate_field(type_size, fid_t.fid_value);
-      data.lr = helper.create_logical_region(is, fs);
+      data.lr = helper.create_logical_region(data.is, data.fs);
 
       Legion::DomainColoring exclusive_dc;
       Legion::DomainColoring shared_dc;
@@ -551,13 +551,13 @@ struct storage_type_t<dense, DS, MD>
       }
 
       data.exclusive_ip = 
-        runtime->create_index_partition(ctx, is, cd, exclusive_dc, true);
+        runtime->create_index_partition(ctx, data.is, cd, exclusive_dc, true);
 
       data.shared_ip = 
-        runtime->create_index_partition(ctx, is, cd, shared_dc, true);
+        runtime->create_index_partition(ctx, data.is, cd, shared_dc, true);
 
       data.ghost_ip = 
-        runtime->create_index_partition(ctx, is, cd, ghost_dc, false);
+        runtime->create_index_partition(ctx, data.is, cd, ghost_dc, false);
 
       data_store[NS][h].put_legion_data(i, data);
 
