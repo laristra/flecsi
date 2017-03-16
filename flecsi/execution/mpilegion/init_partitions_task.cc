@@ -582,6 +582,7 @@ check_partitioning_task(
   using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
   using field_id = LegionRuntime::HighLevel::FieldID;
 
+  const int my_color = task->index_point.point_data[0];
   //checking cells:
   {
     LegionRuntime::HighLevel::LogicalRegion lr_shared =
@@ -622,6 +623,7 @@ check_partitioning_task(
     assert(itr_shared.has_next());
      ptr_t ptr=itr_shared.next();
      assert(shared_cell.id == acc_shared.read(ptr));
+     std::cout << my_color << " shared " << indx << " = " << shared_cell.id << std::endl;
      indx++;
     }
     assert (indx == ip.shared.size());
@@ -631,6 +633,7 @@ check_partitioning_task(
      assert(itr_exclusive.has_next());
      ptr_t ptr=itr_exclusive.next();
      assert(exclusive_cell.id == acc_exclusive.read(ptr));
+     std::cout << my_color << " exclusive " << indx << " = " << exclusive_cell.id << std::endl;
     indx++;
     }
     assert (indx == ip.exclusive.size());

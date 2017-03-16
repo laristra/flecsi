@@ -233,13 +233,8 @@ spmd_task(
   Legion::Context ctx, Legion::HighLevelRuntime *runtime
 )
 {
-  assert(regions.size() == 6);
-  assert(task->regions.size() == 6);
-  assert(task->regions[0].privilege_fields.size() == 1);
-  assert(task->regions[1].privilege_fields.size() == 1);
-  assert(task->regions[2].privilege_fields.size() == 1);
 
-  const int my_shard= task->index_point.point_data[0];
+  const int my_color = task->index_point.point_data[0];
   context_t & context_ = context_t::instance();
   context_.push_state(utils::const_string_t{"driver"}.hash(),
       ctx, runtime, task, regions);
@@ -252,6 +247,9 @@ spmd_task(
     auto args = (spmd_task_args*)task->local_args;
 
     size_t num_handles = args->num_handles;
+
+    assert(regions.size() == 3*num_handles);
+    assert(task->regions.size() == 3*num_handles);
 
     Deserializer deserializer(args_buf, args->buf_size);
 
@@ -284,7 +282,7 @@ spmd_task(
               task->regions[3*idx].region.get_index_space());
           Rect<1> rect = dom.get_rect<1>();
           for (GenericPointInRectIterator<1> pir(rect); pir; pir++) {
-            std::cout << "exclusive " << DomainPoint::from_point<1>(pir.p)
+            std::cout << my_color <<"exclusive " << DomainPoint::from_point<1>(pir.p)
                 << " = " << acc_legion.read(DomainPoint::from_point<1>(pir.p)) << std::endl;
           }
       }
@@ -297,7 +295,7 @@ spmd_task(
               task->regions[3*idx+1].region.get_index_space());
           Rect<1> rect = dom.get_rect<1>();
           for (GenericPointInRectIterator<1> pir(rect); pir; pir++) {
-            std::cout << "exclusive " << DomainPoint::from_point<1>(pir.p)
+            std::cout << my_color <<"shared " << DomainPoint::from_point<1>(pir.p)
                 << " = " << acc_legion.read(DomainPoint::from_point<1>(pir.p)) << std::endl;
           }
       }
@@ -310,7 +308,7 @@ spmd_task(
               task->regions[3*idx+2].region.get_index_space());
           Rect<1> rect = dom.get_rect<1>();
           for (GenericPointInRectIterator<1> pir(rect); pir; pir++) {
-            std::cout << "exclusive " << DomainPoint::from_point<1>(pir.p)
+            std::cout << my_color <<"ghost " << DomainPoint::from_point<1>(pir.p)
                 << " = " << acc_legion.read(DomainPoint::from_point<1>(pir.p)) << std::endl;
           }
       }
@@ -342,7 +340,7 @@ spmd_task(
   using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
   using field_id = LegionRuntime::HighLevel::FieldID;
 
-  clog(info) << "inside SPMD task, shard# = " << my_shard << std::endl;
+  clog(info) << "inside SPMD task, shard# = " << my_color  << std::endl;
 
   const LegionRuntime::HighLevel::InputArgs & args =
       LegionRuntime::HighLevel::HighLevelRuntime::get_input_args();

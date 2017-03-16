@@ -663,71 +663,6 @@ specialization_driver(
 
 
   //call a legion task that checks our partitions
-
-  // PAIR_PROGRAMING: this is where we register "data" on "cells"
-  // needs to contain:
-  //    global LogicalRegion
-  //    IndexPartitions: Exclusive, Shared, Ghost
-  // Need the same for "data" on "verts"
-  //
-  // The next two IndexLaunches will be removed from this method:
-
-  // ndm - register data here
-  cells_parts.shared_ip = cells_shared_ip;
-  cells_parts.ghost_ip = cells_ghost_ip;
-  cells_parts.exclusive_ip = cells_exclusive_ip;
-
-  const int versions = 1;
-  int index_id = 0;
-
-  dc.put_index_space(index_id, cells_parts);
-
-  flecsi_register_data(dc, sprint, cell_ID, size_t, dense, versions, index_id);
-  //flecsi_register_data(dc, sprint, pressure, double, dense, versions, index_id);
-
-  // ndm - look into copying data
-  // jpg - for now put test data in a flecsi launch and get it out in spmd
-
-  auto h1 =
-    flecsi_get_handle(dc, sprint, cell_ID, size_t, dense, 0, rw, rw, ro);
-
-    // FIXME : this should only access the primary partition from an index launch and put the MPI partition data here
-  {
-    RegionRequirement req(cells_lr, READ_ONLY, EXCLUSIVE, cells_lr);
-      req.add_field(fid_t.fid_cell);
-
-      InlineLauncher input_launcher(req);
-      PhysicalRegion input_region = runtime->map_region(context, input_launcher);
-      input_region.wait_until_valid();
-
-      RegionAccessor<AccessorType::Generic,size_t> acc_legion =
-        input_region.get_field_accessor(fid_t.fid_cell).typeify<size_t>();
-
-      IndexIterator itr_legion(runtime,context, input_region.get_logical_region().get_index_space());
-
-
-    int version = 0;
-    auto ac =
-      flecsi_get_accessor(dc, sprint, cell_ID, size_t, dense, version);
-
-    for (size_t i=0; i < ac.size(); i++) {
-      ptr_t legion_ptr = itr_legion.next();
-      ac[i] = acc_legion.read(legion_ptr);
-      std::cout << i << " = " << ac[i] << std::endl;
-    }
-  }
-
-  verts_parts.entities_lr = vertices_lr;
-  verts_parts.exclusive_ip = vert_exclusive_ip;
-  verts_parts.shared_ip = vert_shared_ip;
-  verts_parts.ghost_ip = vert_ghost_ip;
-
-  index_id = 1;
-  dc.put_index_space(index_id, verts_parts);
-
-  flecsi_register_data(dc, sprint, vert_ID, size_t, dense, versions, index_id);
-
-#if 0
   LegionRuntime::HighLevel::IndexLauncher check_part_launcher(
     task_ids_t::instance().check_partitioning_task_id,
     rank_domain,
@@ -769,6 +704,100 @@ specialization_driver(
   FutureMap fm6 = runtime->execute_index_space(context,check_part_launcher);
   fm6.wait_all_results();
 
+
+  // PAIR_PROGRAMING: this is where we register "data" on "cells"
+  // needs to contain:
+  //    global LogicalRegion
+  //    IndexPartitions: Exclusive, Shared, Ghost
+  // Need the same for "data" on "verts"
+  //
+  // The next two IndexLaunches will be removed from this method:
+
+  // ndm - register data here
+  cells_parts.shared_ip = cells_shared_ip;
+  cells_parts.ghost_ip = cells_ghost_ip;
+  cells_parts.exclusive_ip = cells_exclusive_ip;
+
+  const int versions = 1;
+  int index_id = 0;
+
+  dc.put_index_space(index_id, cells_parts);
+
+  flecsi_register_data(dc, sprint, cell_ID, size_t, dense, versions, index_id);
+  //flecsi_register_data(dc, sprint, pressure, double, dense, versions, index_id);
+
+  // ndm - look into copying data
+  // jpg - for now put test data in a flecsi launch and get it out in spmd
+
+  auto h1 =
+    flecsi_get_handle(dc, sprint, cell_ID, size_t, dense, 0, rw, rw, ro);
+
+    // FIXME : this should only access the primary partition from an index launch and put the MPI partition data here
+  {
+    RegionRequirement legion_req(cells_lr, READ_ONLY, EXCLUSIVE, cells_lr);
+    legion_req.add_field(fid_t.fid_cell);
+    InlineLauncher legion_launcher(legion_req);
+    PhysicalRegion legion_region = runtime->map_region(context, legion_launcher);
+    legion_region.wait_until_valid();
+    RegionAccessor<AccessorType::Generic,size_t> legion_acc =
+        legion_region.get_field_accessor(fid_t.fid_cell).typeify<size_t>();
+
+    RegionRequirement flecsi_req(h1.lr, READ_WRITE, EXCLUSIVE, h1.lr);
+    flecsi_req.add_field(fid_t.fid_value);
+    InlineLauncher flecsi_launcher(flecsi_req);
+    PhysicalRegion flecsi_region = runtime->map_region(context, flecsi_launcher);
+    flecsi_region.wait_until_valid();
+    RegionAccessor<AccessorType::Generic,size_t> flecsi_acc =
+        flecsi_region.get_field_accessor(fid_t.fid_value).typeify<size_t>();
+
+    for (size_t color=0; color < num_ranks; color++) {
+      IndexSpace legion_exclusive_subspace = runtime->get_index_subspace(context, cells_exclusive_ip, color);
+      IndexSpace legion_shared_subspace = runtime->get_index_subspace(context, cells_shared_ip, color);
+
+      IndexIterator legion_exclusive_iterator(runtime, context, legion_exclusive_subspace);
+      IndexIterator legion_shared_iterator(runtime, context, legion_shared_subspace);
+
+      IndexSpace flecsi_exclusive_subspace = runtime->get_index_subspace(context, h1.exclusive_ip, color);
+      IndexSpace flecsi_shared_subspace = runtime->get_index_subspace(context, h1.shared_ip, color);
+
+      Domain flecsi_exclusive_dom = runtime->get_index_space_domain(context, flecsi_exclusive_subspace);
+      Rect<1> flecsi_exclusive_rect = flecsi_exclusive_dom.get_rect<1>();
+      Point<1> end_excl;
+      for (GenericPointInRectIterator<1> flecsi_pir(flecsi_exclusive_rect); flecsi_pir; flecsi_pir++) {
+        ptr_t legion_ptr = legion_exclusive_iterator.next();
+        flecsi_acc.write(DomainPoint::from_point<1>(flecsi_pir.p), legion_acc.read(legion_ptr));
+        end_excl = flecsi_pir.p;
+      }
+
+      Domain flecsi_shared_dom = runtime->get_index_space_domain(context, flecsi_shared_subspace);
+      Rect<1> flecsi_shared_rect = flecsi_shared_dom.get_rect<1>();
+      for (GenericPointInRectIterator<1> flecsi_pir(flecsi_shared_rect); flecsi_pir; flecsi_pir++) {
+        ptr_t legion_ptr = legion_shared_iterator.next();
+        flecsi_acc.write(DomainPoint::from_point<1>(flecsi_pir.p + end_excl), legion_acc.read(legion_ptr));
+      }
+
+      runtime->unmap_region(context, legion_region);
+      runtime->unmap_region(context, flecsi_region);
+    }
+
+    //for (size_t i=0; i < ac.size(); i++) {
+    //  ptr_t legion_ptr = itr_legion.next();
+    //  ac[i] = acc_legion.read(legion_ptr);
+      //std::cout << i << " = " << ac[i] << std::endl;
+    //}
+  }
+
+  verts_parts.entities_lr = vertices_lr;
+  verts_parts.exclusive_ip = vert_exclusive_ip;
+  verts_parts.shared_ip = vert_shared_ip;
+  verts_parts.ghost_ip = vert_ghost_ip;
+
+  index_id = 1;
+  dc.put_index_space(index_id, verts_parts);
+
+  flecsi_register_data(dc, sprint, vert_ID, size_t, dense, versions, index_id);
+
+#if 0
 
 
   //call a legion task that tests ghost cell access
