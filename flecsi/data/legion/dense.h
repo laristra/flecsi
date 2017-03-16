@@ -138,8 +138,8 @@ struct dense_accessor_t : public accessor__<T>
     is_(a.is_){}
 
   dense_accessor_t(const data_handle_t<void, 0, 0, 0>& h)
-  : size_(h.size),
-  data_(static_cast<T*>(h.data)){}
+  : size_(h.exclusive_size),
+  data_(static_cast<T*>(h.exclusive_data)){}
 
   ~dense_accessor_t(){
     if(data_){
@@ -976,7 +976,7 @@ struct storage_type_t<dense, DS, MD>
     for(size_t i = 0; i < num_handles; ++i){
       auto& ld = data_store[hashes[i]][namespaces[i]].data[versions[i]];
       auto& hi = handles[i];
-      ld.lr = hi.lr;
+      ld.lr = hi.exclusive_pr.get_logical_region();
       ld.exclusive_ip = hi.exclusive_ip;
       ld.shared_ip = hi.shared_ip;
       ld.ghost_ip = hi.ghost_ip;
