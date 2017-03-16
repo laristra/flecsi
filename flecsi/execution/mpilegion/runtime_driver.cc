@@ -233,6 +233,12 @@ spmd_task(
   Legion::Context ctx, Legion::HighLevelRuntime *runtime
 )
 {
+  assert(regions.size() == 6);
+  assert(task->regions.size() == 6);
+  assert(task->regions[0].privilege_fields.size() == 1);
+  assert(task->regions[1].privilege_fields.size() == 1);
+  assert(task->regions[2].privilege_fields.size() == 1);
+
   const int my_shard= task->index_point.point_data[0];
   context_t & context_ = context_t::instance();
   context_.push_state(utils::const_string_t{"driver"}.hash(),
@@ -274,37 +280,42 @@ spmd_task(
         LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic,size_t> acc_legion =
         regions[3*idx].get_field_accessor(fid_t.fid_value).typeify<size_t>();
 
-        IndexIterator itr_legion(runtime,ctx, regions[3*idx].get_logical_region().get_index_space());
-
-        while(itr_legion.has_next()) {
-          ptr_t ptr_legion = itr_legion.next();
-          std::cout << "exclusive " << ptr_legion.value << " = " << acc_legion.read(ptr_legion) << std::endl;
-        }
+        Domain dom = runtime->get_index_space_domain(ctx,
+              task->regions[3*idx].region.get_index_space());
+          Rect<1> rect = dom.get_rect<1>();
+          for (GenericPointInRectIterator<1> pir(rect); pir; pir++) {
+            std::cout << "exclusive " << DomainPoint::from_point<1>(pir.p)
+                << " = " << acc_legion.read(DomainPoint::from_point<1>(pir.p)) << std::endl;
+          }
       }
 
       {
         LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic,size_t> acc_legion =
         regions[3*idx+1].get_field_accessor(fid_t.fid_value).typeify<size_t>();
 
-        IndexIterator itr_legion(runtime,ctx, regions[3*idx+1].get_logical_region().get_index_space());
-
-        while(itr_legion.has_next()) {
-          ptr_t ptr_legion = itr_legion.next();
-          std::cout << "shared " << ptr_legion.value << " = " << acc_legion.read(ptr_legion) << std::endl;
-        }
+        Domain dom = runtime->get_index_space_domain(ctx,
+              task->regions[3*idx+1].region.get_index_space());
+          Rect<1> rect = dom.get_rect<1>();
+          for (GenericPointInRectIterator<1> pir(rect); pir; pir++) {
+            std::cout << "exclusive " << DomainPoint::from_point<1>(pir.p)
+                << " = " << acc_legion.read(DomainPoint::from_point<1>(pir.p)) << std::endl;
+          }
       }
 
       {
         LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic,size_t> acc_legion =
         regions[3*idx+2].get_field_accessor(fid_t.fid_value).typeify<size_t>();
 
-        IndexIterator itr_legion(runtime,ctx, regions[3*idx+2].get_logical_region().get_index_space());
-
-        while(itr_legion.has_next()) {
-          ptr_t ptr_legion = itr_legion.next();
-          std::cout << "ghost " << ptr_legion.value << " = " << acc_legion.read(ptr_legion) << std::endl;
-        }
+        Domain dom = runtime->get_index_space_domain(ctx,
+              task->regions[3*idx+2].region.get_index_space());
+          Rect<1> rect = dom.get_rect<1>();
+          for (GenericPointInRectIterator<1> pir(rect); pir; pir++) {
+            std::cout << "exclusive " << DomainPoint::from_point<1>(pir.p)
+                << " = " << acc_legion.read(DomainPoint::from_point<1>(pir.p)) << std::endl;
+          }
       }
+
+
 
       fix_handles[idx].lr = empty_lr;
       fix_handles[idx].exclusive_ip = empty_ip;
