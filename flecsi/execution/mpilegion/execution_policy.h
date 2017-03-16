@@ -77,21 +77,15 @@ namespace execution {
           break;
       }
 
-      LogicalPartition lp1 =
-        runtime->get_logical_partition(ctx, h.lr, h.exclusive_ip);
-      RegionRequirement rr1(lp1, 0, priv, EXCLUSIVE, h.lr);
+      RegionRequirement rr1(h.exclusive_lr, priv, EXCLUSIVE, h.exclusive_lr);
       rr1.add_field(fid_t.fid_value);
       l.add_region_requirement(rr1);
 
-      LogicalPartition lp2 =
-        runtime->get_logical_partition(ctx, h.lr, h.shared_ip);
-      RegionRequirement rr2(lp2, 0, priv, EXCLUSIVE, h.lr);
+      RegionRequirement rr2(h.shared_lr, priv, EXCLUSIVE, h.shared_lr);
       rr2.add_field(fid_t.fid_value);
       l.add_region_requirement(rr2);
 
-      LogicalPartition lp3 =
-        runtime->get_logical_partition(ctx, h.lr, h.ghost_ip);
-      RegionRequirement rr3(lp3, 0, priv, EXCLUSIVE, h.lr);
+      RegionRequirement rr3(h.ghost_lr, priv, EXCLUSIVE, h.ghost_lr);
       rr3.add_field(fid_t.fid_value);
       l.add_region_requirement(rr3);
     }

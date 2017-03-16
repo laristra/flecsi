@@ -925,9 +925,9 @@ struct storage_type_t<dense, DS, MD>
     h.exclusive_ip = data.exclusive_ip;
     h.shared_ip = data.shared_ip;
     h.ghost_ip = data.ghost_ip;
-    h.exclusive_pr = data.exclusive_pr;
-    h.shared_pr = data.shared_pr;
-    h.ghost_pr = data.ghost_pr;
+    h.exclusive_lr = data.exclusive_lr;
+    h.shared_lr = data.shared_lr;
+    h.ghost_lr = data.ghost_lr;
 
     return h;
   } // get_handle
@@ -976,13 +976,12 @@ struct storage_type_t<dense, DS, MD>
     for(size_t i = 0; i < num_handles; ++i){
       auto& ld = data_store[hashes[i]][namespaces[i]].data[versions[i]];
       auto& hi = handles[i];
-      ld.lr = hi.exclusive_pr.get_logical_region();
       ld.exclusive_ip = hi.exclusive_ip;
       ld.shared_ip = hi.shared_ip;
       ld.ghost_ip = hi.ghost_ip;
-      ld.exclusive_pr = hi.exclusive_pr;
-      ld.shared_pr = hi.shared_pr;
-      ld.ghost_pr = hi.ghost_pr;
+      ld.exclusive_lr = hi.exclusive_lr;
+      ld.shared_lr = hi.shared_lr;
+      ld.ghost_lr = hi.ghost_lr;
     }
   }
 

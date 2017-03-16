@@ -23,9 +23,9 @@ struct legion_handle_policy_t
   Legion::IndexPartition exclusive_ip;
   Legion::IndexPartition shared_ip;
   Legion::IndexPartition ghost_ip;
-  Legion::PhysicalRegion exclusive_pr;
-  Legion::PhysicalRegion shared_pr;
-  Legion::PhysicalRegion ghost_pr;
+  Legion::LogicalRegion exclusive_lr;
+  Legion::LogicalRegion shared_lr;
+  Legion::LogicalRegion ghost_lr;
   void* exclusive_data;
   size_t exclusive_size;
   void* shared_data;

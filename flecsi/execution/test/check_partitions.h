@@ -32,10 +32,13 @@ using namespace LegionRuntime::HighLevel;
 
 #include "flecsi/execution/test/mpilegion/sprint_common.h"
 
+template<typename T>
+using accessor_t = flecsi::data::legion::dense_accessor_t<T, flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t> >;
+
 // FIXME remove duplicate task for init_partitions_task.cc
 void
 check_partitioning_task(
-// accessor_t<size_t> acc_cells,
+  accessor_t<size_t> acc_cells
 // accessor_t<size_t> acc_cells,
 )
 {
@@ -212,7 +215,7 @@ driver(
   auto h1 =
     flecsi_get_handle(dc, sprint, cell_ID, size_t, dense, index_space, ro, ro, ro);
 
-  flecsi_execute_task(check_partitioning_task, loc, single); // h1);
+  flecsi_execute_task(check_partitioning_task, loc, single, h1);
 } //driver
 
 

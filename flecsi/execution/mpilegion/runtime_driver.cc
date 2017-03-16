@@ -271,9 +271,9 @@ spmd_task(
       fix_handles[idx].exclusive_ip = empty_ip;
       fix_handles[idx].shared_ip = empty_ip;
       fix_handles[idx].ghost_ip = empty_ip;
-      fix_handles[idx].exclusive_pr = regions[3*idx];
-      fix_handles[idx].shared_pr = regions[3*idx+1];
-      fix_handles[idx].ghost_pr = regions[3*idx+2];  // Temporary for step 1
+      fix_handles[idx].exclusive_lr = regions[3*idx].get_logical_region();
+      fix_handles[idx].shared_lr = regions[3*idx+1].get_logical_region();
+      fix_handles[idx].ghost_lr = regions[3*idx+2].get_logical_region();  
     }
 
     flecsi_put_all_handles(dc, dense, num_handles,
@@ -289,7 +289,7 @@ spmd_task(
   using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
   using field_id = LegionRuntime::HighLevel::FieldID;
 
-  clog(info) << "insude SPMD task, shard# = " << my_shard << std::endl;
+  clog(info) << "inside SPMD task, shard# = " << my_shard << std::endl;
 
   const LegionRuntime::HighLevel::InputArgs & args =
       LegionRuntime::HighLevel::HighLevelRuntime::get_input_args();

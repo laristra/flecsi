@@ -66,13 +66,13 @@ namespace execution {
 
       using type = typename PT::type;
 
-      h.exclusive_pr = regions[region++];
-      h.shared_pr = regions[region++];
-      h.ghost_pr = regions[region++];
+      Legion::PhysicalRegion exclusive_pr = regions[region++];
+      Legion::PhysicalRegion shared_pr = regions[region++];
+      Legion::PhysicalRegion ghost_pr = regions[region++];
 
       auto ac = 
-        h.exclusive_pr.get_field_accessor(fid_t.fid_value).typeify<type>();
-      Legion::LogicalRegion lr = h.exclusive_pr.get_logical_region();
+        exclusive_pr.get_field_accessor(fid_t.fid_value).typeify<type>();
+      Legion::LogicalRegion lr = exclusive_pr.get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
       Legion::Domain domain = runtime->get_index_space_domain(context, is);
       LegionRuntime::Arrays::Rect<1> r = domain.get_rect<1>();
@@ -81,11 +81,16 @@ namespace execution {
       h.exclusive_data = ac.template raw_rect_ptr<1>(r, sr, bo);
       h.exclusive_size = r.hi;
 
-      ac = h.shared_pr.get_field_accessor(fid_t.fid_value).typeify<type>();
+      ac = shared_pr.get_field_accessor(fid_t.fid_value).typeify<type>();
+      lr = shared_pr.get_logical_region();
+      is = lr.get_index_space();
+      domain = runtime->get_index_space_domain(context, is);
+      r = domain.get_rect<1>();
       h.shared_data = ac.template raw_rect_ptr<1>(r, sr, bo);
       h.shared_size = r.hi;
 
-      ac = h.ghost_pr.get_field_accessor(fid_t.fid_value).typeify<type>();
+      ac = ghost_pr.get_field_accessor(fid_t.fid_value).typeify<type>();
+      lr = ghost_pr.get_logical_region();
       h.ghost_data = ac.template raw_rect_ptr<1>(r, sr, bo);
       h.ghost_size = r.hi;
     }
