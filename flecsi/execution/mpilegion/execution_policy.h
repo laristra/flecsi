@@ -58,7 +58,7 @@ namespace execution {
       flecsi::execution::field_ids_t & fid_t = 
         flecsi::execution::field_ids_t::instance();
 
-      size_t priv;
+      size_t exclusive_priv;
 
       switch(EP){
         case size_t(data::privilege::none):
@@ -67,25 +67,63 @@ namespace execution {
                  "region requirements");
           break;
         case size_t(data::privilege::ro):
-          priv = READ_ONLY;    
+          exclusive_priv = READ_ONLY;    
           break;
         case size_t(data::privilege::wd):
-          priv = WRITE_DISCARD;    
+          exclusive_priv = WRITE_DISCARD;    
           break;
         case size_t(data::privilege::rw):
-          priv = READ_WRITE;    
+          exclusive_priv = READ_WRITE;    
           break;
       }
 
-      RegionRequirement rr1(h.exclusive_lr, priv, EXCLUSIVE, h.exclusive_lr);
+      RegionRequirement rr1(h.exclusive_lr, exclusive_priv, EXCLUSIVE, h.exclusive_lr);
       rr1.add_field(fid_t.fid_value);
       l.add_region_requirement(rr1);
 
-      RegionRequirement rr2(h.shared_lr, priv, EXCLUSIVE, h.shared_lr);
+      size_t shared_priv;
+
+      switch(SP){
+        case size_t(data::privilege::none):
+          assert(false && 
+                 "no privileges found on task arg while generating "
+                 "region requirements");
+          break;
+        case size_t(data::privilege::ro):
+          shared_priv = READ_ONLY;    
+          break;
+        case size_t(data::privilege::wd):
+          shared_priv = WRITE_DISCARD;    
+          break;
+        case size_t(data::privilege::rw):
+          shared_priv = READ_WRITE;    
+          break;
+      }
+
+      RegionRequirement rr2(h.shared_lr, shared_priv, EXCLUSIVE, h.shared_lr);
       rr2.add_field(fid_t.fid_value);
       l.add_region_requirement(rr2);
 
-      RegionRequirement rr3(h.ghost_lr, priv, EXCLUSIVE, h.ghost_lr);
+      size_t ghost_priv;
+
+      switch(GP){
+        case size_t(data::privilege::none):
+          assert(false && 
+                 "no privileges found on task arg while generating "
+                 "region requirements");
+          break;
+        case size_t(data::privilege::ro):
+          ghost_priv = READ_ONLY;    
+          break;
+        case size_t(data::privilege::wd):
+          ghost_priv = WRITE_DISCARD;    
+          break;
+        case size_t(data::privilege::rw):
+          ghost_priv = READ_WRITE;    
+          break;
+      }
+
+      RegionRequirement rr3(h.ghost_lr, ghost_priv, EXCLUSIVE, h.ghost_lr);
       rr3.add_field(fid_t.fid_value);
       l.add_region_requirement(rr3);
     }
