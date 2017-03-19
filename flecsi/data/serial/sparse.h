@@ -379,7 +379,7 @@ struct sparse_mutator_t {
     // if we are creating an that has already been created, just 
     // over-write the value and exit.  No need to increment the 
     // counters or move data.
-    if ( n > 0 && itr->entry == entry) {
+    if ( itr != end && itr->entry == entry) {
       return itr->value;
     }
 
