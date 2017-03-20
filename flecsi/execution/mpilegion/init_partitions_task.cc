@@ -563,6 +563,56 @@ ghost_part_task(
 }//ghost_part_task
 
 void
+debug_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+)
+{
+  assert(regions.size() == 3);
+  assert(task->regions.size() == 3);
+  assert(task->regions[0].privilege_fields.size() == 1);
+  assert(task->regions[1].privilege_fields.size() == 1);
+  assert(task->regions[2].privilege_fields.size() == 1);
+
+  using field_id = LegionRuntime::HighLevel::FieldID;
+  using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
+
+  std::cout << "DEBUG TASK" << std::endl;
+
+  field_id fid_legion_ghost = *(task->regions[2].privilege_fields.begin());
+  LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
+    acc_legion_ghost = regions[2].get_field_accessor(fid_legion_ghost).typeify<size_t>();
+  LegionRuntime::HighLevel::IndexIterator itr_legion_ghost(runtime, ctx, regions[2].get_logical_region().get_index_space());
+
+  field_id fid_legion_shared = *(task->regions[1].privilege_fields.begin());
+  LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
+    acc_legion_shared = regions[1].get_field_accessor(fid_legion_shared).typeify<size_t>();
+  LegionRuntime::HighLevel::IndexIterator itr_legion_shared(runtime, ctx, regions[1].get_logical_region().get_index_space());
+
+  field_id fid_legion_exclusive = *(task->regions[0].privilege_fields.begin());
+  LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
+    acc_legion_exclusive = regions[0].get_field_accessor(fid_legion_exclusive).typeify<size_t>();
+  LegionRuntime::HighLevel::IndexIterator itr_legion_exclusive(runtime, ctx, regions[0].get_logical_region().get_index_space());
+
+  while (itr_legion_exclusive.has_next()) {
+    ptr_t legion_ptr = itr_legion_exclusive.next();
+    std::cout << "excl " << legion_ptr.value << " = " << acc_legion_exclusive.read(legion_ptr) << std::endl;
+  }
+
+  while (itr_legion_shared.has_next()) {
+    ptr_t legion_ptr = itr_legion_shared.next();
+    std::cout << "shrd " << legion_ptr.value << " = " << acc_legion_shared.read(legion_ptr) << std::endl;
+  }
+
+  while (itr_legion_ghost.has_next()) {
+    ptr_t legion_ptr = itr_legion_ghost.next();
+    std::cout << "ghst " << legion_ptr.value << " = " << acc_legion_ghost.read(legion_ptr) << std::endl;
+  }
+
+}
+
+void
 copy_legion_to_flecsi_task(
   const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,

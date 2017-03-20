@@ -281,8 +281,8 @@ spmd_task(
         LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, task->regions[3*idx].region.get_index_space());
         while (itr.has_next()) {
           ptr_t ptr = itr.next();
-          std::cout << my_color <<"exclusive " << ptr.value
-                << " = " << acc_legion.read(ptr) << std::endl;
+          //std::cout << my_color <<"exclusive " << ptr.value
+          //      << " = " << acc_legion.read(ptr) << std::endl;
           }
       }
 
@@ -293,8 +293,8 @@ spmd_task(
         LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, task->regions[3*idx+1].region.get_index_space());
         while (itr.has_next()) {
           ptr_t ptr = itr.next();
-          std::cout << my_color <<"shared " << ptr.value
-                << " = " << acc_legion.read(ptr) << std::endl;
+          //std::cout << my_color <<"shared " << ptr.value
+          //      << " = " << acc_legion.read(ptr) << std::endl;
           }
       }
 
@@ -305,8 +305,8 @@ spmd_task(
         LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, task->regions[3*idx+2].region.get_index_space());
         while (itr.has_next()) {
           ptr_t ptr = itr.next();
-          std::cout << my_color <<"ghost " << ptr.value
-                << " = " << acc_legion.read(ptr) << std::endl;
+          //std::cout << my_color <<"ghost " << ptr.value
+          //      << " = " << acc_legion.read(ptr) << std::endl;
           }
       }
 
@@ -330,6 +330,19 @@ spmd_task(
       (size_t*)namespaces_buf,
       (size_t*)versions_buf);
   }
+
+  field_ids_t & fid_t =field_ids_t::instance();
+  // Verify that I can launch a single Task and receive the permission of my parent
+  TaskLauncher test_launcher(task_ids_t::instance().debug_task_id, TaskArgument(nullptr, 0));
+  test_launcher.add_region_requirement(RegionRequirement(regions[3].get_logical_region(), READ_WRITE, EXCLUSIVE,
+      regions[3].get_logical_region()).add_field(fid_t.fid_value) );
+  test_launcher.add_region_requirement(RegionRequirement(regions[4].get_logical_region(), READ_ONLY, EXCLUSIVE,
+      regions[4].get_logical_region()).add_field(fid_t.fid_value) );
+  test_launcher.add_region_requirement(RegionRequirement(regions[5].get_logical_region(), READ_ONLY, EXCLUSIVE,
+      regions[5].get_logical_region()).add_field(fid_t.fid_value) );
+  runtime->execute_task(ctx, test_launcher);
+
+
   // We obtain map of hashes to regions[n] here
   // We create halo LogicalRegions here
   // We might put all of this in the context_ for driver()

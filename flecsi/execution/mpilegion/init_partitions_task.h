@@ -124,6 +124,13 @@ ghost_part_task(
 );
 
 void
+debug_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+);
+
+void
 copy_legion_to_flecsi_task(
   const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,
