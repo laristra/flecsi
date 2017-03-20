@@ -283,7 +283,7 @@ specialization_driver(
   Domain rank_domain = Domain::from_rect<1>(rank_rect);
 
 
-/*  LegionRuntime::HighLevel::IndexLauncher initialization_launcher(
+  LegionRuntime::HighLevel::IndexLauncher initialization_launcher(
     task_ids_t::instance().init_task_id,
     rank_domain,
     LegionRuntime::HighLevel::TaskArgument(0, 0),
@@ -330,7 +330,7 @@ specialization_driver(
 
 	  fm2.wait_all_results();
   }
-*/
+
 
   //creating partiotioning for shared and exclusive elements:
   Coloring cells_shared_coloring;
@@ -639,7 +639,7 @@ specialization_driver(
   runtime->destroy_index_space(context,cells_is);
   runtime->destroy_index_space(context,vertices_is);
 
-} // driver
+} // specialization_driver
 
 } // namespace execution
 } // namespace flecsi
