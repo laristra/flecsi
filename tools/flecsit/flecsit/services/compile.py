@@ -55,64 +55,32 @@ class FleCSIT_Analysis(Service):
         """
         """
 
-        includes = generate_compiler_options(config['includes'],
-            args.include, 'FLECSIT_INCLUDES', '-I')
-        ldflags = generate_compiler_options(config['ldpath'],
-            args.ldflags, 'FLECSIT_LDFLAGS', '-L')
-        libraries = generate_compiler_options(config['libraries'],
-            args.libraries, 'FLECSIT_LIBRARIES', '-l')
-
-        print "INCLUDES: ", includes
-        print "LDFLAGS: ", ldflags
-        print "LIBRARIES: ", ldflags
-
         #----------------------------------------------------------------------#
         # Process command-line arguments
         #----------------------------------------------------------------------#
 
-        # Read environment variables
-        env_includes = os.getenv('FLECSIT_INCLUDES')
-        env_ldflags = os.getenv('FLECSIT_LDFLAGS')
-        env_libraries = os.getenv('FLECSIT_LIBRARIES')
+        includes = generate_compiler_options(config['includes'],
+            args.include, 'FLECSIT_INCLUDES', '-I')
+        ldflags = generate_compiler_options(config['ldflags'],
+            args.ldflag, 'FLECSIT_LDFLAGS', '-L')
+        libraries = generate_compiler_options(config['libraries'],
+            args.library, 'FLECSIT_LIBRARIES', '-l')
 
-        # Add any user-provided include paths to build
-        if env_includes is not None:
-            for include in env_includes.split(':') or []:
-                config['includes'] += ' -I' + include
-        else:
-            for include in args.include or []:
-                config['includes'] += ' -I' + include
+        # Copy cmake config to initialize build dict
+        build = config
 
-        # Add FleCSI include
-        config['includes'] += ' -I' + config['prefix'] + '/include'
-
-        # Add current directory to includes
-        config['includes'] += ' -I./'
-
-        # Add any user-provided ldflags to config
-        if env_ldflags is not None:
-            for path in env_ldflags.split(':') or []:
-                config['libraries'] += ' -L' + path
-        else:
-            for path in args.ldflags or []:
-                config['libraries'] += ' -L' + path
-
-        # Add any user-provided libraries to build
-        if env_libraries is not None:
-            for lib in env_libraries.split(':') or []:
-                config['libraries'] += ' -l' + lib
-        else:
-            for lib in args.library or []:
-                config['libraries'] += ' -l' + lib
+        # Set command-line arguments
+        build['includes'] = includes
+        build['libraries'] = ldflags + libraries
 
         # Add driver to build defines
-        config['defines'] += ' -DFLECSI_DRIVER=' + args.driver
+        build['defines'] += ' -DFLECSI_DRIVER=' + args.driver
 
         # Get the base inptut deck name
-        config['deck'] = splitext(basename(args.driver))[0]
+        build['deck'] = splitext(basename(args.driver))[0]
 
         # Execute build
-        execute(args.verbose, config)
+        execute(args.verbose, build)
 
     # main
 

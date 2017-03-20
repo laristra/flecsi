@@ -59,14 +59,14 @@ def add_command_line_compiler_options(parser):
              ' command line arguements.'
     )
 
-    parser.add_argument('-L', '--ldflags', action='append',
+    parser.add_argument('-L', '--ldflag', action='append',
         help='Specify a linker path. This argument may be given' +
              ' multiple times. Arguments may be of the form' +
              ' -L/path/to/link, -L /path/to/link, or' +
-             ' --ldflags /path/to/include. Linker paths may' +
+             ' --ldflag /path/to/include. Linker paths may' +
              ' also be specified by setting the FLECSIT_LDFLAGS' +
              ' environment variable. If FLECSIT_LDFLAGS is set,' +
-             ' it will override any ldflags passed as' +
+             ' it will override any ldflag passed as' +
              ' command line arguements.'
     )
 
@@ -91,13 +91,16 @@ def add_command_line_compiler_options(parser):
 def generate_compiler_options(config, paths, environment, option):
 
     """
+    General function to process compiler flags for include, ldflags,
+    and libraries.
     """
 
     options = ""
 
     # Add paths from cmake config
-    for path in config.split(' ') or []:
-        options += option + path + ' '
+    if config:
+        for path in config.split(' ') or []:
+            options += option + path + ' '
 
     # Read the environment variable
     envflags = os.getenv(environment)
@@ -108,10 +111,11 @@ def generate_compiler_options(config, paths, environment, option):
         for flag in envflags.split(':') or []:
             options += option + flag + ' '
     else:
-        for path in paths or []:
-            options += option + path + ''
+        if paths:
+            for path in paths or []:
+                options += option + path + ''
 
-    return options
+    return options.strip()
 
 # generate_compiler_options
 
