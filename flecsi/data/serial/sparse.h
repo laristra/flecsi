@@ -17,6 +17,7 @@
 
 #include <map>
 #include <algorithm>
+#include <memory>
 #include <set>
 #include <unordered_set>
 
