@@ -604,6 +604,11 @@ copy_legion_to_flecsi_task(
     acc_flecsi_shared.write(legion_ptr, acc_legion_shared.read(legion_ptr));
   }
 
+  while (itr_legion_exclusive.has_next()) {
+    ptr_t legion_ptr = itr_legion_exclusive.next();
+    acc_flecsi_exclusive.write(legion_ptr, acc_legion_exclusive.read(legion_ptr));
+  }
+
 }
 
 void
@@ -667,7 +672,6 @@ check_partitioning_task(
     assert(itr_shared.has_next());
      ptr_t ptr=itr_shared.next();
      assert(shared_cell.id == acc_shared.read(ptr));
-     std::cout << my_color << " shared " << indx << " = " << shared_cell.id << std::endl;
      indx++;
     }
     assert (indx == ip.shared.size());
@@ -677,7 +681,6 @@ check_partitioning_task(
      assert(itr_exclusive.has_next());
      ptr_t ptr=itr_exclusive.next();
      assert(exclusive_cell.id == acc_exclusive.read(ptr));
-     std::cout << my_color << " exclusive " << indx << " = " << exclusive_cell.id << std::endl;
     indx++;
     }
     assert (indx == ip.exclusive.size());
