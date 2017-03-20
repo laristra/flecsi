@@ -32,35 +32,35 @@ string(STRIP "${FLECSIT_COMPILE_DEFINES}" FLECSIT_COMPILE_DEFINES)
 
 # Create string of include directories for script
 list(REMOVE_DUPLICATES _includes)
-set(FLECSIT_INCLUDE_DIRECTORIES)
+set(FLECSIT_INCLUDES)
 foreach(inc ${_includes})
-  set(FLECSIT_INCLUDE_DIRECTORIES
-    "${FLECSIT_INCLUDE_DIRECTORIES} -I${inc}")
+  set(FLECSIT_INCLUDES
+    "${FLECSIT_INCLUDES} ${inc}")
 endforeach()
 
-string(STRIP "${FLECSIT_INCLUDE_DIRECTORIES}" FLECSIT_INCLUDE_DIRECTORIES)
+string(STRIP "${FLECSIT_INCLUDES}" FLECSIT_INCLUDES)
 
 # Create string of runtime link libraries for script
 # Create list of link directories for LD_LIBRARY_PATH hint
-set(FLECSIT_RUNTIME_LIBRARIES)
-set(FLECSIT_LD_LIBRARY_PATH)
+set(FLECSIT_LIBRARIES)
+set(FLECSIT_LDFLAGS)
 foreach(lib ${FLECSI_RUNTIME_LIBRARIES})
   # Runtime link libraries
-  set(FLECSIT_RUNTIME_LIBRARIES
-    "${FLECSIT_RUNTIME_LIBRARIES} ${lib}")
+  set(FLECSIT_LIBRARIES
+    "${FLECSIT_LIBRARIES} ${lib}")
 
   # LD_LIBRARY_PATH hint
   get_filename_component(_path ${lib} DIRECTORY)
-  list(APPEND FLECSIT_LD_LIBRARY_PATH ${_path})
+  list(APPEND FLECSIT_LDFLAGS ${_path})
 endforeach()
 
 string(STRIP "${FLECSI_RUNTIME_LIBRARIES}" FLECSI_RUNTIME_LIBRARIES)
 
 # Append local build and remove duplicates
-list(APPEND FLECSIT_LD_LIBRARY_PATH ${CMAKE_BINARY_DIR}/lib)
-list(REMOVE_DUPLICATES FLECSIT_LD_LIBRARY_PATH)
+list(APPEND FLECSIT_LDFLAGS ${CMAKE_BINARY_DIR}/lib)
+list(REMOVE_DUPLICATES FLECSIT_LDFLAGS)
 
-string(STRIP "${FLECSIT_LD_LIBRARY_PATH}" FLECSIT_LD_LIBRARY_PATH)
+string(STRIP "${FLECSIT_LDFLAGS}" FLECSIT_LDFLAGS)
 
 #------------------------------------------------------------------------------#
 # FleCSIT
