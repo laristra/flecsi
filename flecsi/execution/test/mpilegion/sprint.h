@@ -777,44 +777,6 @@ specialization_driver(
   FutureMap fm_compaction_1 = runtime->execute_index_space(context,first_compaction_launcher);
   fm_compaction_1.wait_all_results();
 
-#if 0
-  // FIXME : this should only access the primary partition from an index launch and put the MPI partition data here
-  {
-
-    RegionRequirement flecsi_req(d_handle.lr, READ_WRITE, EXCLUSIVE, d_handle.lr);
-    flecsi_req.add_field(fid_t.fid_value);
-    InlineLauncher flecsi_launcher(flecsi_req);
-    PhysicalRegion flecsi_region = runtime->map_region(context, flecsi_launcher);
-    flecsi_region.wait_until_valid();
-    RegionAccessor<AccessorType::Generic,size_t> flecsi_acc =
-        flecsi_region.get_field_accessor(fid_t.fid_value).typeify<size_t>();
-
-    for (size_t color=0; color < num_ranks; color++) {
-
-      IndexSpace flecsi_exclusive_subspace = runtime->get_index_subspace(context, d_handle.exclusive_ip, color);
-      IndexSpace flecsi_shared_subspace = runtime->get_index_subspace(context, d_handle.shared_ip, color);
-
-      Point<1> end_excl;
-      for (GenericPointInRectIterator<1> flecsi_pir(flecsi_exclusive_rect); flecsi_pir; flecsi_pir++) {
-        ptr_t legion_ptr = legion_exclusive_iterator.next();
-        flecsi_acc.write(DomainPoint::from_point<1>(flecsi_pir.p), legion_acc.read(legion_ptr));
-        end_excl = flecsi_pir.p;
-      }
-
-      Domain flecsi_shared_dom = runtime->get_index_space_domain(context, flecsi_shared_subspace);
-      Rect<1> flecsi_shared_rect = flecsi_shared_dom.get_rect<1>();
-    } // for color
-
-    runtime->unmap_region(context, legion_region);
-    runtime->unmap_region(context, flecsi_region);
-
-    //for (size_t i=0; i < ac.size(); i++) {
-    //  ptr_t legion_ptr = itr_legion.next();
-    //  ac[i] = acc_legion.read(legion_ptr);
-      //std::cout << i << " = " << ac[i] << std::endl;
-    //}
-  } // FIXME
-#endif
   verts_parts.entities_lr = vertices_lr;
   verts_parts.exclusive_ip = vert_exclusive_ip;
   verts_parts.shared_ip = vert_shared_ip;

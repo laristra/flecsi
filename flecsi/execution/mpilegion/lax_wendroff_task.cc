@@ -560,8 +560,9 @@ lax_wendroff_task(
   const double dy = 1.0  / static_cast<double>(NY - 1);
   const double dt = std::min(CFL * dx / U, CFL * dy / V);
   double time = 0.0;
-  while (time < 0.33) {
+  while (time < 0.165) {
     time += dt;
+    std::cout << "t=" << time << std::endl;
     for (int split = 0; split < 2; split ++) {
 
 	  Processor::TaskFuncID split_task = task_ids_t::instance().lax_calc_excl_x_task_id;
