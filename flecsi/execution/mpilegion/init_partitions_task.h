@@ -124,6 +124,13 @@ ghost_part_task(
 );
 
 void
+first_compaction_task(
+  const Legion::Task *task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx, Legion::HighLevelRuntime *runtime
+);
+
+void
 check_partitioning_task(
   const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,

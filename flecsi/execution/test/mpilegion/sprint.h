@@ -729,20 +729,59 @@ specialization_driver(
   // ndm - look into copying data
   // jpg - for now put test data in a flecsi launch and get it out in spmd
 
-  auto h1 =
+  auto d_handle =
     flecsi_get_handle(dc, sprint, cell_ID, size_t, dense, 0, rw, rw, ro);
 
-    // FIXME : this should only access the primary partition from an index launch and put the MPI partition data here
-  {
-    RegionRequirement legion_req(cells_lr, READ_ONLY, EXCLUSIVE, cells_lr);
-    legion_req.add_field(fid_t.fid_cell);
-    InlineLauncher legion_launcher(legion_req);
-    PhysicalRegion legion_region = runtime->map_region(context, legion_launcher);
-    legion_region.wait_until_valid();
-    RegionAccessor<AccessorType::Generic,size_t> legion_acc =
-        legion_region.get_field_accessor(fid_t.fid_cell).typeify<size_t>();
+  // call a legion task that executes the first compaction
+  // from unstructured/sparse index space to structured/dense index space
+  // this will be compacted again and copied in/out of a continuous array
+  LegionRuntime::HighLevel::IndexLauncher first_compaction_launcher(
+    task_ids_t::instance().first_compaction_task_id,
+    rank_domain,
+    LegionRuntime::HighLevel::TaskArgument(0, 0),
+    arg_map);
 
-    RegionRequirement flecsi_req(h1.lr, READ_WRITE, EXCLUSIVE, h1.lr);
+  first_compaction_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+
+  first_compaction_launcher.add_region_requirement(
+    RegionRequirement(cells_shared_lp, 0/*projection ID*/,
+      READ_ONLY, EXCLUSIVE, cells_lr));
+  first_compaction_launcher.add_field(0, fid_t.fid_cell);
+
+  first_compaction_launcher.add_region_requirement(
+    RegionRequirement(cells_exclusive_lp, 0/*projection ID*/,
+      READ_ONLY, EXCLUSIVE, cells_lr));
+  first_compaction_launcher.add_field(1, fid_t.fid_cell);
+
+  LogicalPartition flecsi_exclusive_lp = runtime->get_logical_partition(context,
+           d_handle.lr, d_handle.exclusive_ip);
+  first_compaction_launcher.add_region_requirement(
+    RegionRequirement(flecsi_exclusive_lp, 0/*projection ID*/,
+      READ_WRITE, EXCLUSIVE, d_handle.lr));
+  first_compaction_launcher.add_field(2, fid_t.fid_value);
+
+  LogicalPartition flecsi_shared_lp = runtime->get_logical_partition(context,
+           d_handle.lr, d_handle.shared_ip);
+  first_compaction_launcher.add_region_requirement(
+    RegionRequirement(flecsi_shared_lp, 0/*projection ID*/,
+      READ_WRITE, EXCLUSIVE, d_handle.lr));
+  first_compaction_launcher.add_field(3, fid_t.fid_value);
+
+//  LogicalPartition flecsi_ghost_lp = runtime->get_logical_partition(context,
+//           d_handle.lr, d_handle.ghost_ip);
+//  first_compaction_launcher.add_region_requirement(
+//    RegionRequirement(flecsi_ghost_lp, 0/*projection ID*/,
+//      READ_WRITE, EXCLUSIVE, d_handle.lr));
+//  first_compaction_launcher.add_field(4, fid_t.fid_value);
+
+  FutureMap fm_compaction_1 = runtime->execute_index_space(context,first_compaction_launcher);
+  fm_compaction_1.wait_all_results();
+
+#if 0
+  // FIXME : this should only access the primary partition from an index launch and put the MPI partition data here
+  {
+
+    RegionRequirement flecsi_req(d_handle.lr, READ_WRITE, EXCLUSIVE, d_handle.lr);
     flecsi_req.add_field(fid_t.fid_value);
     InlineLauncher flecsi_launcher(flecsi_req);
     PhysicalRegion flecsi_region = runtime->map_region(context, flecsi_launcher);
@@ -751,17 +790,10 @@ specialization_driver(
         flecsi_region.get_field_accessor(fid_t.fid_value).typeify<size_t>();
 
     for (size_t color=0; color < num_ranks; color++) {
-      IndexSpace legion_exclusive_subspace = runtime->get_index_subspace(context, cells_exclusive_ip, color);
-      IndexSpace legion_shared_subspace = runtime->get_index_subspace(context, cells_shared_ip, color);
 
-      IndexIterator legion_exclusive_iterator(runtime, context, legion_exclusive_subspace);
-      IndexIterator legion_shared_iterator(runtime, context, legion_shared_subspace);
+      IndexSpace flecsi_exclusive_subspace = runtime->get_index_subspace(context, d_handle.exclusive_ip, color);
+      IndexSpace flecsi_shared_subspace = runtime->get_index_subspace(context, d_handle.shared_ip, color);
 
-      IndexSpace flecsi_exclusive_subspace = runtime->get_index_subspace(context, h1.exclusive_ip, color);
-      IndexSpace flecsi_shared_subspace = runtime->get_index_subspace(context, h1.shared_ip, color);
-
-      Domain flecsi_exclusive_dom = runtime->get_index_space_domain(context, flecsi_exclusive_subspace);
-      Rect<1> flecsi_exclusive_rect = flecsi_exclusive_dom.get_rect<1>();
       Point<1> end_excl;
       for (GenericPointInRectIterator<1> flecsi_pir(flecsi_exclusive_rect); flecsi_pir; flecsi_pir++) {
         ptr_t legion_ptr = legion_exclusive_iterator.next();
@@ -771,22 +803,18 @@ specialization_driver(
 
       Domain flecsi_shared_dom = runtime->get_index_space_domain(context, flecsi_shared_subspace);
       Rect<1> flecsi_shared_rect = flecsi_shared_dom.get_rect<1>();
-      for (GenericPointInRectIterator<1> flecsi_pir(flecsi_shared_rect); flecsi_pir; flecsi_pir++) {
-        ptr_t legion_ptr = legion_shared_iterator.next();
-        flecsi_acc.write(DomainPoint::from_point<1>(flecsi_pir.p + end_excl), legion_acc.read(legion_ptr));
-      }
+    } // for color
 
-      runtime->unmap_region(context, legion_region);
-      runtime->unmap_region(context, flecsi_region);
-    }
+    runtime->unmap_region(context, legion_region);
+    runtime->unmap_region(context, flecsi_region);
 
     //for (size_t i=0; i < ac.size(); i++) {
     //  ptr_t legion_ptr = itr_legion.next();
     //  ac[i] = acc_legion.read(legion_ptr);
       //std::cout << i << " = " << ac[i] << std::endl;
     //}
-  }
-
+  } // FIXME
+#endif
   verts_parts.entities_lr = vertices_lr;
   verts_parts.exclusive_ip = vert_exclusive_ip;
   verts_parts.shared_ip = vert_shared_ip;

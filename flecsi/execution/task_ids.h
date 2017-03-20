@@ -65,6 +65,7 @@ class task_ids_t
   size_t shared_part_task_id = unique_task_id_t::instance().next();
   size_t exclusive_part_task_id = unique_task_id_t::instance().next();
   size_t ghost_part_task_id = unique_task_id_t::instance().next();
+  size_t first_compaction_task_id = unique_task_id_t::instance().next();
   size_t check_partitioning_task_id = unique_task_id_t::instance().next();
   size_t ghost_access_task_id = unique_task_id_t::instance().next();
   size_t ghost_init_task_id = unique_task_id_t::instance().next();
