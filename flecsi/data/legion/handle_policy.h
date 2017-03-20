@@ -26,9 +26,15 @@ struct legion_handle_policy_t
   Legion::LogicalRegion exclusive_lr;
   Legion::LogicalRegion shared_lr;
   Legion::LogicalRegion ghost_lr;
+  Legion::PhysicalRegion exclusive_pr;
   void* exclusive_data;
+  size_t exclusive_priv;
+  Legion::PhysicalRegion shared_pr;
   void* shared_data;
+  size_t shared_priv;
+  Legion::PhysicalRegion ghost_pr;
   void* ghost_data;
+  size_t ghost_priv;
 };
 
 } // namespace data

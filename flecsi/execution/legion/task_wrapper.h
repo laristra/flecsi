@@ -84,12 +84,15 @@ namespace execution {
 
         switch(p){
           case 0:
+            h.exclusive_pr = pr;
             h.exclusive_data = values;
             break;
           case 1:
+            h.shared_pr = pr;
             h.shared_data = values;
             break;
           case 2:
+            h.ghost_pr = pr;
             h.ghost_data = values;
             break;
           default:

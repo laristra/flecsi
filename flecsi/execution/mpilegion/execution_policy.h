@@ -58,17 +58,21 @@ namespace execution {
       flecsi::execution::field_ids_t & fid_t = 
         flecsi::execution::field_ids_t::instance();
 
+      // JPG - REDUCTION OPERATOR ERROR l.add_region_requirement(rr1 - 3);
       RegionRequirement rr1(h.exclusive_lr, EP, EXCLUSIVE, h.exclusive_lr);
       rr1.add_field(fid_t.fid_value);
-      // JPG - REDUCTION OPERATOR ERROR l.add_region_requirement(rr1);
+      l.add_region_requirement(rr1);
+      h.exclusive_priv = EP;
 
       RegionRequirement rr2(h.shared_lr, SP, EXCLUSIVE, h.shared_lr);
       rr2.add_field(fid_t.fid_value);
-      // JPG - NOT SUBSET OF PARENT l.add_region_requirement(rr2);
+      l.add_region_requirement(rr2);
+      h.shared_priv = SP;
 
       RegionRequirement rr3(h.ghost_lr, GP, EXCLUSIVE, h.ghost_lr);
       rr3.add_field(fid_t.fid_value);
-      // JPG - NOT SUBSET OF PARENT l.add_region_requirement(rr3);
+      l.add_region_requirement(rr3);
+      h.ghost_priv = GP;
     }
 
     template<typename R>

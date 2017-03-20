@@ -117,7 +117,7 @@ struct dense_accessor_t : public accessor__<T>
     : label_(label),
     size_(size),
     data_(data),
-    pr_(pr), 
+    exclusive_pr_(pr), 
     meta_data_(&meta_data),
     user_attributes_(&user_attributes),
     index_space_(index_space),
@@ -140,19 +140,70 @@ struct dense_accessor_t : public accessor__<T>
   dense_accessor_t(const data_handle_t<void, 0, 0, 0>& h)
   : data_(static_cast<std::vector<T>*>(h.exclusive_data)),
   shared_data_(static_cast<std::vector<T>*>(h.shared_data)),
-  ghost_data_(static_cast<std::vector<T>*>(h.ghost_data)){}
+  ghost_data_(static_cast<std::vector<T>*>(h.ghost_data)),
+  exclusive_priv_(h.exclusive_priv),
+  shared_priv_(h.shared_priv),
+  ghost_priv_(h.ghost_priv),
+  exclusive_pr_(h.exclusive_pr),
+  shared_pr_(h.shared_pr),
+  ghost_pr_(h.ghost_pr){}
 
   ~dense_accessor_t(){
     if(data_){
       flecsi::execution::context_t & context =
         flecsi::execution::context_t::instance();
 
+      flecsi::execution::field_ids_t & fid_t = 
+        flecsi::execution::field_ids_t::instance();
+
       size_t task_key = 
         utils::const_string_t{"specialization_driver"}.hash();
       auto runtime = context.runtime(task_key);
       auto ctx = context.context(task_key);
-      runtime->unmap_region(ctx, pr_);
+      
+      if(exclusive_priv_ > size_t(privilege::ro)){
+        Legion::LogicalRegion lr = exclusive_pr_.get_logical_region();
+        Legion::IndexSpace is = lr.get_index_space();
+
+        auto ac = 
+          exclusive_pr_.get_field_accessor(fid_t.fid_value).typeify<T>();
+        
+        IndexIterator itr(runtime, ctx, is);
+        
+        size_t i = 0;
+        while(itr.has_next()){
+          ac.write(itr.next(), (*data_)[i++]);
+        }
+      }
+
+      runtime->unmap_region(ctx, exclusive_pr_);
+
       delete data_;
+
+      if(shared_data_){
+        if(shared_priv_ > size_t(privilege::ro)){
+          Legion::LogicalRegion lr = shared_pr_.get_logical_region();
+          Legion::IndexSpace is = lr.get_index_space();
+
+          auto ac = 
+            shared_pr_.get_field_accessor(fid_t.fid_value).typeify<T>();
+          
+          IndexIterator itr(runtime, ctx, is);
+          
+          size_t i = 0;
+          while(itr.has_next()){
+            ac.write(itr.next(), (*shared_data_)[i++]);
+          }
+        }
+
+        runtime->unmap_region(ctx, shared_pr_);
+        delete shared_data_;
+      }
+
+      if(ghost_data_){
+        runtime->unmap_region(ctx, ghost_pr_);
+        delete ghost_data_;
+      }
     }
   }
 
@@ -247,7 +298,9 @@ struct dense_accessor_t : public accessor__<T>
     label_ = a.label_;
     size_ = a.size_;
     data_ = a.data_;
-    pr_ = a.pr_;
+    exclusive_pr_ = a.exclusive_pr_;
+    shared_pr_ = a.shared_pr_;
+    ghost_pr_ = a.ghost_pr_;
     meta_data_ = a.meta_data_;
     user_attributes_ = a.user_attributes_;
     index_space_ = a.index_space_;
@@ -391,7 +444,12 @@ private:
   std::vector<T>* data_ = nullptr;
   std::vector<T>* shared_data_ = nullptr;
   std::vector<T>* ghost_data_ = nullptr;
-  Legion::PhysicalRegion pr_;
+  Legion::PhysicalRegion exclusive_pr_;
+  Legion::PhysicalRegion shared_pr_;
+  Legion::PhysicalRegion ghost_pr_;
+  size_t exclusive_priv_;
+  size_t shared_priv_;
+  size_t ghost_priv_;
 }; // struct dense_accessor_t
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
