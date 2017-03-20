@@ -138,7 +138,9 @@ struct dense_accessor_t : public accessor__<T>
     is_(a.is_){}
 
   dense_accessor_t(const data_handle_t<void, 0, 0, 0>& h)
-  : data_(static_cast<std::vector<T>*>(h.exclusive_data)){}
+  : data_(static_cast<std::vector<T>*>(h.exclusive_data)),
+  shared_data_(static_cast<std::vector<T>*>(h.shared_data)),
+  ghost_data_(static_cast<std::vector<T>*>(h.ghost_data)){}
 
   ~dense_accessor_t(){
     if(data_){
@@ -300,8 +302,8 @@ struct dense_accessor_t : public accessor__<T>
     size_t index
   ) const
   {
-    assert(index < size_ && "index out of range");
     assert(data_ && "data has not been mapped");
+    assert(index < data_->size() && "index out of range");
     return (*data_)[index];
   } // operator []
 
@@ -316,8 +318,8 @@ struct dense_accessor_t : public accessor__<T>
     size_t index
   )
   {
-    assert(index < size_ && "index out of range");
     assert(data_ && "data has not been mapped");
+    assert(index < data_->size() && "index out of range");
     return (*data_)[index];
   } // operator []
 
@@ -332,11 +334,41 @@ struct dense_accessor_t : public accessor__<T>
     size_t index
   )
   {
-    assert(index < size_ && "index out of range");
     assert(data_ && "data has not been mapped");
+    assert(index < data_->size() && "index out of range");
 
     //return data_[index];
   } // operator []
+
+  const T &
+  ghost (
+    size_t index
+  ) const
+  {
+    assert(ghost_data_ && "data has not been mapped");
+    assert(index < ghost_data_->size() && "index out of range");
+    return (*ghost_data_)[index];
+  }
+
+  const T &
+  shared (
+    size_t index
+  ) const
+  {
+    assert(shared_data_ && "data has not been mapped");
+    assert(index < shared_data_->size() && "index out of range");
+    return (*shared_data_)[index];
+  }
+
+  T &
+  shared (
+    size_t index
+  )
+  {
+    assert(shared_data_ && "data has not been mapped");
+    assert(index < shared_data_->size() && "index out of range");
+    return (*shared_data_)[index];
+  }
 
 	///
   // \brief Test to see if this accessor is empty
@@ -357,6 +389,8 @@ private:
   utils::index_space_t is_;
   size_t index_space_ = 0;
   std::vector<T>* data_ = nullptr;
+  std::vector<T>* shared_data_ = nullptr;
+  std::vector<T>* ghost_data_ = nullptr;
   Legion::PhysicalRegion pr_;
 }; // struct dense_accessor_t
 
