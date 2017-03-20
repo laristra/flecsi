@@ -7,6 +7,7 @@ import sys
 import os
 from os.path import basename, splitext
 
+from flecsit.services.service_utils import *
 from flecsit.base import Service
 from flecsit.services.compile_driver.execute import *
 
@@ -30,40 +31,7 @@ class FleCSIT_Analysis(Service):
             help='Service for compiling user driver files.'
         )
 
-        # add command-line options
-        self.parser.add_argument('-I', '--include', action='append',
-            help='Specify an include path. This argument may be given' +
-                 ' multiple times. Arguments may be of the form' +
-                 ' -I/path/to/include, -I /path/to/include, or' +
-                 ' --include /path/to/include. Include paths may' +
-                 ' also be specified by setting the FLECSIT_INCLUDES' +
-                 ' environment variable. If FLECSIT_INCLUDES is set,' +
-                 ' it will override any include paths passed as' +
-                 ' command line arguements.'
-        )
-
-        self.parser.add_argument('-L', '--ldflags', action='append',
-            help='Specify a linker path. This argument may be given' +
-                 ' multiple times. Arguments may be of the form' +
-                 ' -L/path/to/link, -L /path/to/link, or' +
-                 ' --ldflags /path/to/include. Linker paths may' +
-                 ' also be specified by setting the FLECSIT_LDFLAGS' +
-                 ' environment variable. If FLECSIT_LDFLAGS is set,' +
-                 ' it will override any ldflags passed as' +
-                 ' command line arguements.'
-        )
-
-        self.parser.add_argument('-l', '--library', action='append',
-            help='Specify a link library. This argument may be given' +
-                 ' multiple times. Arguments may be of the form' +
-                 ' -lname, -l name, --library name, or' +
-                 ' -l/full/path/libname.{a,so}, -l /full/path/libname.{a,so},' +
-                 ' , or --library /full/path/libname.{a,so}. Libraries may' +
-                 ' also be specified by setting the FLECSIT_LIBRARIES' +
-                 ' environment variable. If FLECSIT_LIBRARIES is set,' +
-                 ' it will override any libraries passed as' +
-                 ' command line arguements.'
-        )
+        add_command_line_compiler_options(self.parser)
 
         self.parser.add_argument('-v', '--verbose', action='store_true',
             help='Turn on verbose output.'
@@ -82,10 +50,21 @@ class FleCSIT_Analysis(Service):
     # Main.
     #--------------------------------------------------------------------------#
 
-    def main(self, build, args=None):
+    def main(self, config, args=None):
 
         """
         """
+
+        includes = generate_compiler_options(config['includes'],
+            args.include, 'FLECSIT_INCLUDES', '-I')
+        ldflags = generate_compiler_options(config['ldpath'],
+            args.ldflags, 'FLECSIT_LDFLAGS', '-L')
+        libraries = generate_compiler_options(config['libraries'],
+            args.libraries, 'FLECSIT_LIBRARIES', '-l')
+
+        print "INCLUDES: ", includes
+        print "LDFLAGS: ", ldflags
+        print "LIBRARIES: ", ldflags
 
         #----------------------------------------------------------------------#
         # Process command-line arguments
@@ -99,41 +78,41 @@ class FleCSIT_Analysis(Service):
         # Add any user-provided include paths to build
         if env_includes is not None:
             for include in env_includes.split(':') or []:
-                build['includes'] += ' -I' + include
+                config['includes'] += ' -I' + include
         else:
             for include in args.include or []:
-                build['includes'] += ' -I' + include
+                config['includes'] += ' -I' + include
 
         # Add FleCSI include
-        build['includes'] += ' -I' + build['prefix'] + '/include'
+        config['includes'] += ' -I' + config['prefix'] + '/include'
 
         # Add current directory to includes
-        build['includes'] += ' -I./'
+        config['includes'] += ' -I./'
 
-        # Add any user-provided ldflags to build
+        # Add any user-provided ldflags to config
         if env_ldflags is not None:
             for path in env_ldflags.split(':') or []:
-                build['libraries'] += ' -L' + path
+                config['libraries'] += ' -L' + path
         else:
             for path in args.ldflags or []:
-                build['libraries'] += ' -L' + path
+                config['libraries'] += ' -L' + path
 
         # Add any user-provided libraries to build
         if env_libraries is not None:
             for lib in env_libraries.split(':') or []:
-                build['libraries'] += ' -l' + lib
+                config['libraries'] += ' -l' + lib
         else:
             for lib in args.library or []:
-                build['libraries'] += ' -l' + lib
+                config['libraries'] += ' -l' + lib
 
         # Add driver to build defines
-        build['defines'] += ' -DFLECSI_DRIVER=' + args.driver
+        config['defines'] += ' -DFLECSI_DRIVER=' + args.driver
 
         # Get the base inptut deck name
-        build['deck'] = splitext(basename(args.driver))[0]
+        config['deck'] = splitext(basename(args.driver))[0]
 
         # Execute build
-        execute(args.verbose, build)
+        execute(args.verbose, config)
 
     # main
 
