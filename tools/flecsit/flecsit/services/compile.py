@@ -26,22 +26,24 @@ class FleCSIT_Analysis(Service):
         """
         """
 
-        # get a command-line parser
+        # Get a command-line parser
         self.parser = subparsers.add_parser('compile',
             help='Service for compiling user driver files.'
         )
 
+        # Add general compiler options -I, -L, and -l
         add_command_line_compiler_options(self.parser)
 
         self.parser.add_argument('-v', '--verbose', action='store_true',
             help='Turn on verbose output.'
         )
 
+        # Required driver argument
         self.parser.add_argument('driver',
             help='The file containing the user driver definition.'
         )
 
-        # set the callback for this sub-command
+        # Set the callback for this sub-command
         self.parser.set_defaults(func=self.main)
 
     # __init__
