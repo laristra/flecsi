@@ -37,13 +37,13 @@ def main():
         defines = '@FLECSIT_COMPILE_DEFINES@',
 
         # Include paths
-        includes = '@FLECSIT_INCLUDE_DIRECTORIES@',
-
-        # Link libraries
-        libraries = '@FLECSIT_RUNTIME_LIBRARIES@',
+        includes = '@FLECSIT_INCLUDES@',
 
         # LD_LIBRARY_PATH hint
-        ldpath = '@FLECSIT_LD_LIBRARY_PATH@',
+        ldflags = '@FLECSIT_LDFLAGS@',
+
+        # Link libraries
+        libraries = '@FLECSIT_LIBRARIES@',
 
         # CMake source directory
         source = '@CMAKE_SOURCE_DIR@',
