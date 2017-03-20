@@ -27,11 +27,8 @@ struct legion_handle_policy_t
   Legion::LogicalRegion shared_lr;
   Legion::LogicalRegion ghost_lr;
   void* exclusive_data;
-  size_t exclusive_size;
   void* shared_data;
-  size_t shared_size;
   void* ghost_data;
-  size_t ghost_size;
 };
 
 } // namespace data

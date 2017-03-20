@@ -66,33 +66,36 @@ namespace execution {
 
       using type = typename PT::type;
 
-      Legion::PhysicalRegion exclusive_pr = regions[region++];
-      Legion::PhysicalRegion shared_pr = regions[region++];
-      Legion::PhysicalRegion ghost_pr = regions[region++];
+      for(size_t p = 0; p < 3; ++p){
+        Legion::PhysicalRegion pr = regions[region++];
+        Legion::LogicalRegion lr = pr.get_logical_region();
+        Legion::IndexSpace is = lr.get_index_space();
 
-      auto ac = 
-        exclusive_pr.get_field_accessor(fid_t.fid_value).typeify<type>();
-      Legion::LogicalRegion lr = exclusive_pr.get_logical_region();
-      Legion::IndexSpace is = lr.get_index_space();
-      Legion::Domain domain = runtime->get_index_space_domain(context, is);
-      LegionRuntime::Arrays::Rect<1> r = domain.get_rect<1>();
-      LegionRuntime::Arrays::Rect<1> sr;
-      LegionRuntime::Accessor::ByteOffset bo[1];
-      h.exclusive_data = ac.template raw_rect_ptr<1>(r, sr, bo);
-      h.exclusive_size = r.hi;
+        auto ac = 
+          pr.get_field_accessor(fid_t.fid_value).typeify<type>();
+        
+        IndexIterator itr(runtime, context, is);
+        
+        auto values = new std::vector<type>; 
 
-      ac = shared_pr.get_field_accessor(fid_t.fid_value).typeify<type>();
-      lr = shared_pr.get_logical_region();
-      is = lr.get_index_space();
-      domain = runtime->get_index_space_domain(context, is);
-      r = domain.get_rect<1>();
-      h.shared_data = ac.template raw_rect_ptr<1>(r, sr, bo);
-      h.shared_size = r.hi;
+        while(itr.has_next()){
+          values->push_back(ac.read(itr.next()));
+        }
 
-      ac = ghost_pr.get_field_accessor(fid_t.fid_value).typeify<type>();
-      lr = ghost_pr.get_logical_region();
-      h.ghost_data = ac.template raw_rect_ptr<1>(r, sr, bo);
-      h.ghost_size = r.hi;
+        switch(p){
+          case 0:
+            h.exclusive_data = values;
+            break;
+          case 1:
+            h.shared_data = values;
+            break;
+          case 2:
+            h.ghost_data = values;
+            break;
+          default:
+            assert(false);
+        }
+      }
     }
 
     template<

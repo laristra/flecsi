@@ -109,7 +109,7 @@ struct dense_accessor_t : public accessor__<T>
   dense_accessor_t(
     const std::string & label,
     const size_t size,
-    T* data,
+    std::vector<T>* data,
     Legion::PhysicalRegion pr,
     const user_meta_data_t & meta_data,
     bitset_t & user_attributes,
@@ -138,8 +138,7 @@ struct dense_accessor_t : public accessor__<T>
     is_(a.is_){}
 
   dense_accessor_t(const data_handle_t<void, 0, 0, 0>& h)
-  : size_(h.exclusive_size),
-  data_(static_cast<T*>(h.exclusive_data)){}
+  : data_(static_cast<std::vector<T>*>(h.exclusive_data)){}
 
   ~dense_accessor_t(){
     if(data_){
@@ -151,6 +150,7 @@ struct dense_accessor_t : public accessor__<T>
       auto runtime = context.runtime(task_key);
       auto ctx = context.context(task_key);
       runtime->unmap_region(ctx, pr_);
+      delete data_;
     }
   }
 
@@ -302,7 +302,7 @@ struct dense_accessor_t : public accessor__<T>
   {
     assert(index < size_ && "index out of range");
     assert(data_ && "data has not been mapped");
-    return data_[index];
+    return (*data_)[index];
   } // operator []
 
 	///
@@ -318,7 +318,7 @@ struct dense_accessor_t : public accessor__<T>
   {
     assert(index < size_ && "index out of range");
     assert(data_ && "data has not been mapped");
-    return data_[index];
+    return (*data_)[index];
   } // operator []
 
   ///
@@ -356,7 +356,7 @@ private:
   bitset_t * user_attributes_ = nullptr;
   utils::index_space_t is_;
   size_t index_space_ = 0;
-  T* data_ = nullptr;
+  std::vector<T>* data_ = nullptr;
   Legion::PhysicalRegion pr_;
 }; // struct dense_accessor_t
 
@@ -572,12 +572,20 @@ struct storage_type_t<dense, DS, MD>
     auto pr = runtime->map_region(ctx, il);
     pr.wait_until_valid();
 
-    T* buf;
-    helper.get_buffer(pr, buf, fid_t.fid_value);
+    auto ac = 
+      pr.get_field_accessor(fid_t.fid_value).typeify<T>();
+    
+    IndexIterator itr(runtime, ctx, data.lr.get_index_space());
+    
+    auto values = new std::vector<T>; 
+
+    while(itr.has_next()){
+      values->push_back(ac.read(itr.next()));
+    }
 
     // construct an accessor from the meta data
     return { meta_data.label, meta_data.size,
-      buf, pr,
+      values, pr,
       meta_data.user_data, meta_data.attributes[version],
       meta_data.index_space };
   }
