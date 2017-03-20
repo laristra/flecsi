@@ -338,15 +338,15 @@ struct legion_task_wrapper__<P, S, I, void, A>
       context, runtime, task, regions);
 
     size_t region = 0;
-    create_task_args__<std::tuple_size<user_task_args_t>::value,
-      user_task_args_t, args_t>::create(
-        context, runtime, regions, user_task_args, region);
+    // JPG - SEG FAULTS create_task_args__<std::tuple_size<user_task_args_t>::value,
+    //  user_task_args_t, args_t>::create(
+    //    context, runtime, regions, user_task_args, region);
 
-    user_task_handle(context_t::instance().function(user_task_handle.key),
-      user_task_args);
+    //user_task_handle(context_t::instance().function(user_task_handle.key),
+    //  user_task_args);
 
     // Pop the Legion state
-    context_t::instance().pop_state(user_task_handle.key);
+    //context_t::instance().pop_state(user_task_handle.key);
   } // execute
 
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion

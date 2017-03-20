@@ -60,15 +60,15 @@ namespace execution {
 
       RegionRequirement rr1(h.exclusive_lr, EP, EXCLUSIVE, h.exclusive_lr);
       rr1.add_field(fid_t.fid_value);
-      l.add_region_requirement(rr1);
+      // JPG - REDUCTION OPERATOR ERROR l.add_region_requirement(rr1);
 
       RegionRequirement rr2(h.shared_lr, SP, EXCLUSIVE, h.shared_lr);
       rr2.add_field(fid_t.fid_value);
-      l.add_region_requirement(rr2);
+      // JPG - NOT SUBSET OF PARENT l.add_region_requirement(rr2);
 
       RegionRequirement rr3(h.ghost_lr, GP, EXCLUSIVE, h.ghost_lr);
       rr3.add_field(fid_t.fid_value);
-      l.add_region_requirement(rr3);
+      // JPG - NOT SUBSET OF PARENT l.add_region_requirement(rr3);
     }
 
     template<typename R>
