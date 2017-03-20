@@ -329,43 +329,15 @@ specialization_driver(
 
   fm2.wait_all_results();
 
-  // This is the first index launch we want to FleCSI wrap
-/*  std::cout << "about to invoke FleCSI wrapper" << std::endl;
-  data::legion_data_policy_t::partitioned_index_space cell_part;
-  cell_part.size = total_num_cells;
-  cell_part.lr = cells_lr;
-  cell_part.ip = cells_primary_ip;
-
-  data::legion_data_policy_t::partitioned_index_space vert_part;
-  vert_part.lr = vertices_lr;
-  vert_part.size = total_num_vertices;
-  vert_part.ip = vert_primary_ip;
-
-  data::data_client_t dc;
-
-  dc.put_index_space(0, cell_part);
-  dc.put_index_space(1, vert_part);
-
-  const int versions = 1;
-  const int cell_ispace = 0;
-  const int vert_ispace = 1;
-  flecsi_register_data(dc, mesh, cell_gid, size_t, dense, versions, cell_ispace);
-  flecsi_register_data(dc, mesh, vert_gid, size_t, dense, versions, vert_ispace);
-
-  const int version = 0;
-  auto cell_handle = flecsi_get_handle(dc, mesh, cell_gid, size_t, dense, version, rw);
-  auto vert_handle = flecsi_get_handle(dc, mesh, vert_gid, size_t, dense, version, rw);
-
-  //flecsi_execute_task(initialization_task, loc, index, cell_handle, vert_handle);
-*/
   execution::mpilegion_context_policy_t::partitioned_index_space cells_parts;
   cells_parts.size = total_num_cells;
-  cells_parts.entities_lr = cells_lr;
+  cells_parts.entities_lr = cells_lr;  // JPG - I think this might be wrong
 
   execution::mpilegion_context_policy_t::partitioned_index_space verts_parts;
   verts_parts.size = total_num_vertices;
+  verts_parts.entities_lr = vertices_lr;  // JPG - I think this might be wrong
 
-  //creating partiotioning for shared and exclusive elements:
+  //creating partitioning for shared and exclusive elements:
   Coloring cells_shared_coloring;
   Coloring vert_shared_coloring;
 
@@ -705,15 +677,10 @@ specialization_driver(
   fm6.wait_all_results();
 
 
-  // PAIR_PROGRAMING: this is where we register "data" on "cells"
-  // needs to contain:
-  //    global LogicalRegion
-  //    IndexPartitions: Exclusive, Shared, Ghost
-  // Need the same for "data" on "verts"
+  // JPG can't I do the check partition launch with the new flecsi.entities_lr?
   //
-  // The next two IndexLaunches will be removed from this method:
+  // The next IndexLaunch will be removed from this method:
 
-  // ndm - register data here
   cells_parts.shared_ip = cells_shared_ip;
   cells_parts.ghost_ip = cells_ghost_ip;
   cells_parts.exclusive_ip = cells_exclusive_ip;
@@ -726,58 +693,9 @@ specialization_driver(
   flecsi_register_data(dc, sprint, cell_ID, size_t, dense, versions, index_id);
   //flecsi_register_data(dc, sprint, pressure, double, dense, versions, index_id);
 
-  // ndm - look into copying data
-  // jpg - for now put test data in a flecsi launch and get it out in spmd
+  auto cell_handle =
+    flecsi_get_handle(dc, sprint, cell_ID, size_t, dense, index_id, rw, rw, ro);
 
-  auto d_handle =
-    flecsi_get_handle(dc, sprint, cell_ID, size_t, dense, 0, rw, rw, ro);
-
-  // call a legion task that executes the first compaction
-  // from unstructured/sparse index space to structured/dense index space
-  // this will be compacted again and copied in/out of a continuous array
-  LegionRuntime::HighLevel::IndexLauncher first_compaction_launcher(
-    task_ids_t::instance().first_compaction_task_id,
-    rank_domain,
-    LegionRuntime::HighLevel::TaskArgument(0, 0),
-    arg_map);
-
-  first_compaction_launcher.tag = MAPPER_FORCE_RANK_MATCH;
-
-  first_compaction_launcher.add_region_requirement(
-    RegionRequirement(cells_shared_lp, 0/*projection ID*/,
-      READ_ONLY, EXCLUSIVE, cells_lr));
-  first_compaction_launcher.add_field(0, fid_t.fid_cell);
-
-  first_compaction_launcher.add_region_requirement(
-    RegionRequirement(cells_exclusive_lp, 0/*projection ID*/,
-      READ_ONLY, EXCLUSIVE, cells_lr));
-  first_compaction_launcher.add_field(1, fid_t.fid_cell);
-
-  LogicalPartition flecsi_exclusive_lp = runtime->get_logical_partition(context,
-           d_handle.lr, d_handle.exclusive_ip);
-  first_compaction_launcher.add_region_requirement(
-    RegionRequirement(flecsi_exclusive_lp, 0/*projection ID*/,
-      READ_WRITE, EXCLUSIVE, d_handle.lr));
-  first_compaction_launcher.add_field(2, fid_t.fid_value);
-
-  LogicalPartition flecsi_shared_lp = runtime->get_logical_partition(context,
-           d_handle.lr, d_handle.shared_ip);
-  first_compaction_launcher.add_region_requirement(
-    RegionRequirement(flecsi_shared_lp, 0/*projection ID*/,
-      READ_WRITE, EXCLUSIVE, d_handle.lr));
-  first_compaction_launcher.add_field(3, fid_t.fid_value);
-
-//  LogicalPartition flecsi_ghost_lp = runtime->get_logical_partition(context,
-//           d_handle.lr, d_handle.ghost_ip);
-//  first_compaction_launcher.add_region_requirement(
-//    RegionRequirement(flecsi_ghost_lp, 0/*projection ID*/,
-//      READ_WRITE, EXCLUSIVE, d_handle.lr));
-//  first_compaction_launcher.add_field(4, fid_t.fid_value);
-
-  FutureMap fm_compaction_1 = runtime->execute_index_space(context,first_compaction_launcher);
-  fm_compaction_1.wait_all_results();
-
-  verts_parts.entities_lr = vertices_lr;
   verts_parts.exclusive_ip = vert_exclusive_ip;
   verts_parts.shared_ip = vert_shared_ip;
   verts_parts.ghost_ip = vert_ghost_ip;
@@ -786,6 +704,45 @@ specialization_driver(
   dc.put_index_space(index_id, verts_parts);
 
   flecsi_register_data(dc, sprint, vert_ID, size_t, dense, versions, index_id);
+
+  //auto vert_handle =
+  //  flecsi_get_handle(dc, sprint, vert_ID, size_t, dense, index_id, rw, rw, ro);
+
+
+  LegionRuntime::HighLevel::IndexLauncher copy_legion_to_flecsi_launcher(
+    task_ids_t::instance().copy_legion_to_flecsi_task_id,
+    rank_domain,
+    LegionRuntime::HighLevel::TaskArgument(0, 0),
+    arg_map);
+
+  copy_legion_to_flecsi_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+
+  copy_legion_to_flecsi_launcher.add_region_requirement(
+    RegionRequirement(cells_shared_lp, 0/*projection ID*/,
+      READ_ONLY, EXCLUSIVE, cells_lr));
+  copy_legion_to_flecsi_launcher.add_field(0, fid_t.fid_cell);
+
+  copy_legion_to_flecsi_launcher.add_region_requirement(
+    RegionRequirement(cells_exclusive_lp, 0/*projection ID*/,
+      READ_ONLY, EXCLUSIVE, cells_lr));
+  copy_legion_to_flecsi_launcher.add_field(1, fid_t.fid_cell);
+
+  LogicalPartition flecsi_exclusive_lp = runtime->get_logical_partition(context,
+           cell_handle.lr, cell_handle.exclusive_ip);
+  copy_legion_to_flecsi_launcher.add_region_requirement(
+    RegionRequirement(flecsi_exclusive_lp, 0/*projection ID*/,
+      READ_WRITE, EXCLUSIVE, cell_handle.lr));
+  copy_legion_to_flecsi_launcher.add_field(2, fid_t.fid_value);
+
+  LogicalPartition flecsi_shared_lp = runtime->get_logical_partition(context,
+           cell_handle.lr, cell_handle.shared_ip);
+  copy_legion_to_flecsi_launcher.add_region_requirement(
+    RegionRequirement(flecsi_shared_lp, 0/*projection ID*/,
+      READ_WRITE, EXCLUSIVE, cell_handle.lr));
+  copy_legion_to_flecsi_launcher.add_field(3, fid_t.fid_value);
+
+  FutureMap fm_copy = runtime->execute_index_space(context,copy_legion_to_flecsi_launcher);
+  fm_copy.wait_all_results();
 
 #if 0
 
@@ -885,8 +842,8 @@ specialization_driver(
   runtime->destroy_logical_region(context, cells_lr);
   runtime->destroy_field_space(context, vertices_fs);
   runtime->destroy_field_space(context, cells_fs);
-  runtime->destroy_index_space(context,cells_is);
-  runtime->destroy_index_space(context,vertices_is);
+  //?runtime->destroy_index_space(context,cells_is);
+  //?runtime->destroy_index_space(context,vertices_is);
 
 } // driver
 

@@ -124,7 +124,7 @@ ghost_part_task(
 );
 
 void
-first_compaction_task(
+copy_legion_to_flecsi_task(
   const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx, Legion::HighLevelRuntime *runtime

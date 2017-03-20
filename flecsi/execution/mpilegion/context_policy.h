@@ -146,8 +146,8 @@ struct mpilegion_context_policy_t
       sprint::ghost_part_task>(
       task_ids_t::instance().ghost_part_task_id,lr_loc, false, true);
  
-    lr_runtime_t::register_legion_task<sprint::first_compaction_task>(
-      task_ids_t::instance().first_compaction_task_id,lr_loc, false, true);
+    lr_runtime_t::register_legion_task<sprint::copy_legion_to_flecsi_task>(
+      task_ids_t::instance().copy_legion_to_flecsi_task_id,lr_loc, false, true);
 
     // FIXME
     // This is Galen's hack to get partitioning working for the sprint
