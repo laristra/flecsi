@@ -99,6 +99,12 @@ compiler:
   - gcc
   - clang
 
+branches:
+  only:
+  - master
+  - travis
+  - stable
+
 notifications:
   branches:
     only:
