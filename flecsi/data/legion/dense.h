@@ -502,62 +502,17 @@ struct storage_type_t<dense, DS, MD>
 
       auto data = data_store[NS][h].create_legion_data();
 
-      data.is =
-        helper.create_index_space(0, size);
+      data.is = isp.entities_lr.get_index_space();
+      
       data.fs = helper.create_field_space();
       LegionRuntime::HighLevel::FieldAllocator a =
           helper.create_field_allocator(data.fs);
       a.allocate_field(type_size, fid_t.fid_value);
       data.lr = helper.create_logical_region(data.is, data.fs);
 
-      Legion::DomainColoring exclusive_dc;
-      Legion::DomainColoring shared_dc;
-      Legion::DomainColoring ghost_dc;
-
-      size_t p = 0;
-      size_t idx = 0;
-      for(auto& itr : isp.exclusive_count_map){
-        size_t start = idx;
-        idx += itr.second;
-        LegionRuntime::HighLevel::Domain d =
-          helper.domain_from_rect(start, idx - 1);
-        exclusive_dc[p] = d;
-        ++p;
-      }
-
-      LegionRuntime::HighLevel::Domain cd = 
-        helper.domain_from_rect(0, p - 1);
-
-      p = 0;
-      idx = 0;
-      for(auto& itr : isp.shared_count_map){
-        size_t start = idx;
-        idx += itr.second;
-        LegionRuntime::HighLevel::Domain d =
-          helper.domain_from_rect(start, idx - 1);
-        shared_dc[p] = d;
-        ++p;
-      }
-
-      p = 0;
-      idx = 0;
-      for(auto& itr : isp.ghost_count_map){
-        size_t start = idx;
-        idx += itr.second;
-        LegionRuntime::HighLevel::Domain d =
-          helper.domain_from_rect(start, idx - 1);
-        ghost_dc[p] = d;
-        ++p;
-      }
-
-      data.exclusive_ip = 
-        runtime->create_index_partition(ctx, data.is, cd, exclusive_dc, true);
-
-      data.shared_ip = 
-        runtime->create_index_partition(ctx, data.is, cd, shared_dc, true);
-
-      data.ghost_ip = 
-        runtime->create_index_partition(ctx, data.is, cd, ghost_dc, false);
+      data.exclusive_ip = isp.exclusive_ip;
+      data.shared_ip = isp.shared_ip;
+      data.ghost_ip = isp.ghost_ip;
 
       data_store[NS][h].put_legion_data(i, data);
 
