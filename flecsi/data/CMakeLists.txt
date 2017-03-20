@@ -102,6 +102,13 @@ cinch_add_unit(data_client
     ${CINCH_RUNTIME_LIBRARIES}
 )
 
+cinch_add_unit(compaction
+  SOURCES test/legion/compaction.cc
+  LIBRARIES
+    flecsi
+    ${CINCH_RUNTIME_LIBRARIES}
+)
+
 if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 cinch_add_unit(storage_type
   SOURCES test/storage_type.cc

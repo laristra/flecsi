@@ -147,22 +147,23 @@ void top_level_task(const Task* task,
   FieldAllocator a = h.create_field_allocator(fs);
   a.allocate_field(sizeof(double), 0);
 
-  IndexSpace is = h.create_index_space(0, 10);
+  const size_t size = 10;
+
+  IndexSpace is = h.create_index_space(size);
+
+  IndexAllocator ia = runtime->create_index_allocator(context, is);
+
+  Coloring coloring;
+
+  for(size_t i = 0; i < size; ++i){
+    ptr_t ptr = ia.alloc(1);
+    coloring[i % 2].points.insert(ptr);
+  }
 
   LogicalRegion lr = h.create_logical_region(is, fs);
 
-  DomainColoring dc;
-
-  Domain d1 = h.domain_from_rect(0, 4);
-  Domain d2 = h.domain_from_rect(5, 9);
-  
-  dc[0] = d1;
-  dc[1] = d2;
-
-  Domain cd = h.domain_from_rect(0, 1);
-
   IndexPartition ip = 
-    runtime->create_index_partition(context, is, cd, dc, true);
+    runtime->create_index_partition(context, is, coloring, true);
 
   RegionRequirement rr(lr, WRITE_DISCARD, EXCLUSIVE, lr);
   
@@ -172,11 +173,15 @@ void top_level_task(const Task* task,
 
   PhysicalRegion pr = runtime->map_region(context, il);
 
-  double* buf;
-  h.get_buffer(pr, buf, 0);
+  auto ac = pr.get_field_accessor(0).typeify<double>();
 
-  for(size_t i = 0; i < 10; ++i){
-    buf[i] = i * 10;
+  IndexIterator itr(runtime, context, is);
+  
+  for(size_t i = 0; i < size; ++i){
+    assert(itr.has_next());
+    ptr_t ptr = itr.next();
+    double v = i * 10;
+    ac.write(ptr, v);
   }
 
   runtime->unmap_region(context, pr);
@@ -185,6 +190,8 @@ void top_level_task(const Task* task,
     runtime->get_logical_partition(context, lr, ip);
 
   ArgumentMap arg_map;
+
+  Domain cd = h.domain_from_rect(0, 1);
 
   IndexLauncher il2(INDEX_TASK_ID, cd, TaskArgument(nullptr, 0), arg_map);
 
@@ -201,22 +208,21 @@ void top_level_task(const Task* task,
 void index_task(const Task* task,
                 const std::vector<PhysicalRegion>& regions,
                 Context context, Runtime* runtime){
-  auto ac = 
-    regions[0].get_field_accessor(0).typeify<double>();
+  
   LogicalRegion lr = regions[0].get_logical_region();
   IndexSpace is = lr.get_index_space();
-  Domain domain = runtime->get_index_space_domain(context, is);
-  LegionRuntime::Arrays::Rect<1> r = domain.get_rect<1>();
-  LegionRuntime::Arrays::Rect<1> sr;
-  LegionRuntime::Accessor::ByteOffset bo[1];
-  double* data = ac.template raw_rect_ptr<1>(r, sr, bo);
-  size_t size = r.hi;
 
-  for(size_t i = 0; i < size; ++i){
-    np(i);
-    np(data[i]);
-  }  
+  auto ac = regions[0].get_field_accessor(0).typeify<double>();
+
+  IndexIterator itr(runtime, context, is);
+  
+  while(itr.has_next()){
+    ptr_t ptr = itr.next();
+    double v = ac.read(ptr);
+    np(v);
+  }
 }
+
 
 TEST(legion, compaction) {
   Runtime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
