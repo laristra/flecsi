@@ -1,7 +1,6 @@
 #include <cinchtest.h>
 #include <iostream>
 #include <sstream>
-#include <cereal/archives/binary.hpp>
 
 #include "flecsi/topology/mesh_topology.h"
 

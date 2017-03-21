@@ -1,7 +1,6 @@
 #include <cinchtest.h>
 #include <iostream>
 #include <sstream>
-#include <cereal/archives/binary.hpp>
 
 #include "flecsi/execution/legion/dpd.h"
 #include "flecsi/execution/task_ids.h"
