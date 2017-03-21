@@ -772,7 +772,7 @@ check_partitioning_task(
 
     }
 
-  std::cout << "test for shared/ghost/exclusive partitions ... passed" 
+  std::cout << "legion test for shared/ghost/exclusive partitions ... passed"
   << std::endl;
 }//check_partitioning_task
 
