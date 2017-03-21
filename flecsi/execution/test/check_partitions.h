@@ -32,6 +32,8 @@ using namespace LegionRuntime::HighLevel;
 
 #include "flecsi/execution/test/mpilegion/sprint_common.h"
 
+#include <legion_utilities.h>
+
 template<typename T>
 using accessor_t = flecsi::data::legion::dense_accessor_t<T, flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t> >;
 
@@ -213,7 +215,23 @@ driver(
 
   int index_space = 0;
   auto h1 =
-    flecsi_get_handle(dc, sprint, cell_ID, size_t, dense, index_space, ro, ro, ro);
+    flecsi_get_handle(dc, sprint, cell_ID, size_t, dense, index_space, rw, ro, ro);
+
+  flecsi::execution::context_t & context_ = flecsi::execution::context_t::instance();
+  LegionRuntime::HighLevel::Context ctx = context_.context(flecsi::utils::const_string_t{"driver"}.hash());
+  LegionRuntime::HighLevel::HighLevelRuntime *runtime =  context_.runtime(flecsi::utils::const_string_t{"driver"}.hash());
+
+  flecsi::execution::field_ids_t & fid_t = flecsi::execution::field_ids_t::instance();
+  // Verify that I can launch a single Task and receive the permission of my parent
+  TaskLauncher test_launcher(flecsi::execution::task_ids_t::instance().debug_task_id, TaskArgument(nullptr, 0));
+  test_launcher.add_region_requirement(RegionRequirement(h1.exclusive_lr, READ_WRITE, EXCLUSIVE,
+      h1.exclusive_lr).add_field(fid_t.fid_value) );
+  test_launcher.add_region_requirement(RegionRequirement(h1.shared_lr, READ_ONLY, EXCLUSIVE,
+      h1.shared_lr).add_field(fid_t.fid_value) );
+  test_launcher.add_region_requirement(RegionRequirement(h1.ghost_lr, READ_ONLY, EXCLUSIVE,
+      h1.ghost_lr).add_field(fid_t.fid_value) );
+  runtime->execute_task(ctx, test_launcher);
+
 
   flecsi_execute_task(check_partitioning_task, loc, single, h1);
 } //driver

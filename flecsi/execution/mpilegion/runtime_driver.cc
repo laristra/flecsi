@@ -187,8 +187,6 @@ mpilegion_runtime_driver(
 
     // PAIR_PROGRAMMING
     // This is where we iterate over data and spaces from specialization_driver().
-    // We create RegionRequirements here
-    // We serialize a map (if it is not in MPI-context)
     // We serialize phase barriers
     must_epoch_launcher.add_index_task(spmd_launcher);
  
@@ -310,8 +308,6 @@ spmd_task(
           }
       }
 
-
-
       fix_handles[idx].lr = empty_lr;
       fix_handles[idx].exclusive_ip = empty_ip;
       fix_handles[idx].shared_ip = empty_ip;
@@ -330,17 +326,6 @@ spmd_task(
       (size_t*)namespaces_buf,
       (size_t*)versions_buf);
   }
-
-  field_ids_t & fid_t =field_ids_t::instance();
-  // Verify that I can launch a single Task and receive the permission of my parent
-  TaskLauncher test_launcher(task_ids_t::instance().debug_task_id, TaskArgument(nullptr, 0));
-  test_launcher.add_region_requirement(RegionRequirement(regions[3].get_logical_region(), READ_WRITE, EXCLUSIVE,
-      regions[3].get_logical_region()).add_field(fid_t.fid_value) );
-  test_launcher.add_region_requirement(RegionRequirement(regions[4].get_logical_region(), READ_ONLY, EXCLUSIVE,
-      regions[4].get_logical_region()).add_field(fid_t.fid_value) );
-  test_launcher.add_region_requirement(RegionRequirement(regions[5].get_logical_region(), READ_ONLY, EXCLUSIVE,
-      regions[5].get_logical_region()).add_field(fid_t.fid_value) );
-  runtime->execute_task(ctx, test_launcher);
 
 
   // We obtain map of hashes to regions[n] here
