@@ -44,6 +44,8 @@ check_partitioning_task(
 // accessor_t<size_t> acc_cells,
 )
 {
+
+  std::cout << "CHECK " << acc_cells.size() << std::endl;
 #if 0
   using index_partition_t = flecsi::dmp::index_partition__<size_t>;
   using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
