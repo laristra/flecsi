@@ -157,7 +157,7 @@ struct dense_accessor_t : public accessor__<T>
         flecsi::execution::field_ids_t::instance();
 
       size_t task_key = 
-        utils::const_string_t{"specialization_driver"}.hash();
+        utils::const_string_t{"driver"}.hash();
       auto runtime = context.runtime(task_key);
       auto ctx = context.context(task_key);
       
