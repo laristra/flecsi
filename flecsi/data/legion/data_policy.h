@@ -31,6 +31,11 @@ public:
   using index_space_map = 
     std::unordered_map<size_t, partitioned_index_space>;
 
+  std::vector<size_t> get_keys() const{
+    std::vector<size_t> keys;
+    return keys;
+  }
+
   partitioned_index_space& get_index_space(size_t is) const{
     auto itr = index_space_map_.find(is);
     assert(itr != index_space_map_.end() && "invalid index space");

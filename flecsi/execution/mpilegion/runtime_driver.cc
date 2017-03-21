@@ -69,7 +69,6 @@ mpilegion_runtime_driver(
     context_.interop_helper_.connect_with_mpi(ctx, runtime);
     context_.interop_helper_.wait_on_mpi(ctx, runtime);
 
-    // ndm - create data client here
     data_client dc;
     int argc = args.argc + 1;
     char **argv;
@@ -80,54 +79,11 @@ mpilegion_runtime_driver(
     // run default or user-defined specialization driver 
     specialization_driver(argc, argv);
 
-    //creating phace barriers for SPMD launch from partitions created and 
-    //registered to the data Client at the specialization_driver 
-    int num_ranks;
-    MPI_Comm_size(MPI_COMM_WORLD, &num_ranks);
-    std::vector<PhaseBarrier> phase_barriers;
-    std::vector<std::set<int>> master_colors(num_ranks);
-/*    for (int master_color=0; master_color < num_ranks; ++master_color) {
-      std::set<int> slave_colors;
-      for (std::set<ptr_t>::iterator
-         it = cells_shared_coloring[master_color].points.begin();
-         it != cells_shared_coloring[master_color].points.end(); ++it) {
-         
-         const ptr_t ptr = *it;
-         for (int slave_color = 0; slave_color < num_ranks; ++slave_color)
-           if (cells_ghost_coloring[slave_color].points.count(ptr)) {
-             slave_colors.insert(slave_color);
-             master_colors[slave_color].insert(master_color);
-          }
-       }
-    phase_barriers.push_back(runtime->create_phase_barrier(ctx,
-      1 + slave_colors.size()));
-   }
-*/
-   //FIXME use Legion's serialized instead SPMDArgsSerializer
-/*
-   std::vector<execution::sprint::SPMDArgs> spmd_args(num_ranks);
-   std::vector<execution::sprint::SPMDArgsSerializer>
-           args_seriliazed(num_ranks);
-   for (int color=0; color < num_ranks; ++color) {
-      spmd_args[color].pbarrier_as_master = phase_barriers[color];
-      for (std::set<int>::iterator master=master_colors[color].begin();
-              master!=master_colors[color].end(); ++master)
-        spmd_args[color].masters_pbarriers.push_back(phase_barriers[*master]);
-        args_seriliazed[color].archive(&(spmd_args[color]));
-        arg_map.set_point(DomainPoint::from_point<1>(
-            LegionRuntime::Arrays::Point<1>(color)),
-            TaskArgument(args_seriliazed[color].getBitStream(),
-            args_seriliazed[color].getBitStreamSize()));
-  }
-*/
-    //execute SPMD launch that execute user-defined driver
-
-
+    //execute SPMD launch that executes user-defined driver
 
     MustEpochLauncher must_epoch_launcher; 
     LegionRuntime::HighLevel::ArgumentMap arg_map;
 
-    // ndm - need to be able to get data handle here
     field_ids_t & fid_t =field_ids_t::instance();
 
     std::vector<handle_t> handles;
@@ -141,6 +97,39 @@ mpilegion_runtime_driver(
     serializer.serialize(&hashes[0], hashes.size() * sizeof(size_t)); 
     serializer.serialize(&namespaces[0], namespaces.size() * sizeof(size_t)); 
     serializer.serialize(&versions[0], versions.size() * sizeof(size_t)); 
+
+    //create phase barriers per handle for SPMD launch from partitions created and
+    //registered to the data Client at the specialization_driver
+    int num_ranks;
+    MPI_Comm_size(MPI_COMM_WORLD, &num_ranks);
+/*
+      for (std::set<ptr_t>::iterator
+         it = cells_shared_coloring[master_color].points.begin();
+         it != cells_shared_coloring[master_color].points.end(); ++it) {
+
+         const ptr_t ptr = *it;
+         for (int slave_color = 0; slave_color < num_ranks; ++slave_color)
+           if (cells_ghost_coloring[slave_color].points.count(ptr)) {
+             slave_colors.insert(slave_color);
+             master_colors[slave_color].insert(master_color);
+          }
+       }
+*/
+    // FIXME need to nest this structure
+    std::vector<PhaseBarrier> phase_barriers;
+
+    std::vector<size_t> flecsi_ispace_key = dc.get_keys();
+    for (int idx = 0; idx < flecsi_ispace_key.size(); idx++) {
+      flecsi::execution::context_t::partitioned_index_space parted_space = dc.get_index_space(flecsi_ispace_key[idx]);
+      std::vector<std::set<int>> master_colors(num_ranks);
+      for (int master_color=0; master_color < num_ranks; ++master_color) {
+        std::set<int> slave_colors;
+        phase_barriers.push_back(runtime->create_phase_barrier(ctx,
+          1 + slave_colors.size()));
+       }
+
+    }
+    flecsi_ispace_key.clear();
 
     const void* args_buf = serializer.get_buffer();
 
