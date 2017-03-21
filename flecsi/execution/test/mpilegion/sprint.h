@@ -331,11 +331,11 @@ specialization_driver(
 
   execution::mpilegion_context_policy_t::partitioned_index_space cells_parts;
   cells_parts.size = total_num_cells;
-  cells_parts.entities_lr = cells_lr;  // JPG - I think this might be wrong
+  cells_parts.entities_lr = cells_lr;
 
   execution::mpilegion_context_policy_t::partitioned_index_space verts_parts;
   verts_parts.size = total_num_vertices;
-  verts_parts.entities_lr = vertices_lr;  // JPG - I think this might be wrong
+  verts_parts.entities_lr = vertices_lr;
 
   //creating partitioning for shared and exclusive elements:
   Coloring cells_shared_coloring;
@@ -676,10 +676,7 @@ specialization_driver(
   FutureMap fm6 = runtime->execute_index_space(context,check_part_launcher);
   fm6.wait_all_results();
 
-
-  // JPG can't I do the check partition launch with the new flecsi.entities_lr?
-  //
-  // The next IndexLaunch will be removed from this method:
+  // copy cell_id to flecsi data structures
 
   cells_parts.shared_ip = cells_shared_ip;
   cells_parts.ghost_ip = cells_ghost_ip;
@@ -705,9 +702,9 @@ specialization_driver(
 
   flecsi_register_data(dc, sprint, vert_ID, size_t, dense, versions, index_id);
 
+  // FIXME we should do vertices too here.  What is wrong with following handle?
   //auto vert_handle =
   //  flecsi_get_handle(dc, sprint, vert_ID, size_t, dense, index_id, rw, rw, ro);
-
 
   LegionRuntime::HighLevel::IndexLauncher copy_legion_to_flecsi_launcher(
     task_ids_t::instance().copy_legion_to_flecsi_task_id,
@@ -744,8 +741,8 @@ specialization_driver(
   FutureMap fm_copy = runtime->execute_index_space(context,copy_legion_to_flecsi_launcher);
   fm_copy.wait_all_results();
 
-#if 0
 
+  // FIXME do this only through flecsi
 
   //call a legion task that tests ghost cell access
 	std::set<Processor> all_procs;
@@ -836,7 +833,7 @@ specialization_driver(
   for (unsigned idx = 0; idx < phase_barriers.size(); idx++)
     runtime->destroy_phase_barrier(context, phase_barriers[idx]);
   phase_barriers.clear();
-#endif
+
   //TOFIX: free all lr physical regions is
   runtime->destroy_logical_region(context, vertices_lr);
   runtime->destroy_logical_region(context, cells_lr);

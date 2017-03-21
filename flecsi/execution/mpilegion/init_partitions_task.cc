@@ -1073,6 +1073,7 @@ Future TaskWrapper::execute_task(Legion::Context ctx, Legion::HighLevelRuntime *
 	return value;
 }
 
+// FIXME do only through flecsi
 void
 ghost_access_task(
   const Legion::Task *task,
