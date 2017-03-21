@@ -239,7 +239,6 @@ spmd_task(
 
   data_client dc;
 
-  // PAIR_PROGRAMMING
   if (task->arglen > 0) {
     void* args_buf = task->args;
     auto args = (spmd_task_args*)task->local_args;
@@ -271,43 +270,6 @@ spmd_task(
     // fix handles on spmd side
     handle_t* fix_handles = (handle_t*)handles_buf;
     for (size_t idx = 0; idx < num_handles; idx++) {
-
-      {
-        LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic,size_t> acc_legion =
-        regions[3*idx].get_field_accessor(fid_t.fid_value).typeify<size_t>();
-
-        LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, task->regions[3*idx].region.get_index_space());
-        while (itr.has_next()) {
-          ptr_t ptr = itr.next();
-          //std::cout << my_color <<"exclusive " << ptr.value
-          //      << " = " << acc_legion.read(ptr) << std::endl;
-          }
-      }
-
-      {
-        LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic,size_t> acc_legion =
-        regions[3*idx+1].get_field_accessor(fid_t.fid_value).typeify<size_t>();
-
-        LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, task->regions[3*idx+1].region.get_index_space());
-        while (itr.has_next()) {
-          ptr_t ptr = itr.next();
-          //std::cout << my_color <<"shared " << ptr.value
-          //      << " = " << acc_legion.read(ptr) << std::endl;
-          }
-      }
-
-      {
-        LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic,size_t> acc_legion =
-        regions[3*idx+2].get_field_accessor(fid_t.fid_value).typeify<size_t>();
-
-        LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx, task->regions[3*idx+2].region.get_index_space());
-        while (itr.has_next()) {
-          ptr_t ptr = itr.next();
-          //std::cout << my_color <<"ghost " << ptr.value
-          //      << " = " << acc_legion.read(ptr) << std::endl;
-          }
-      }
-
       fix_handles[idx].lr = empty_lr;
       fix_handles[idx].exclusive_ip = empty_ip;
       fix_handles[idx].shared_ip = empty_ip;

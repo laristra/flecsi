@@ -28,11 +28,9 @@ using namespace LegionRuntime::HighLevel;
 #include "flecsi/data/data_client.h"
 #include "flecsi/data/legion/data_policy.h"
 #include "flecsi/execution/legion/helper.h"
-#include "flecsi/execution/task_ids.h"
 
 #include "flecsi/execution/test/mpilegion/sprint_common.h"
 
-#include <legion_utilities.h>
 
 template<typename T>
 using accessor_t = flecsi::data::legion::dense_accessor_t<T, flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t> >;
@@ -45,7 +43,12 @@ check_partitioning_task(
 )
 {
 
-  std::cout << "CHECK " << acc_cells.size() << std::endl;
+  for(size_t idx=0; idx < acc_cells.size(); idx++)
+    std::cout << "exclusive " << idx << " = "<< acc_cells[idx] << std::endl;
+  for(size_t idx=0; idx < acc_cells.shared_size(); idx++)
+    std::cout << "shared " << idx << " = " << acc_cells.shared(idx) << std::endl;
+  for(size_t idx=0; idx < acc_cells.ghost_size(); idx++)
+    std::cout << "ghost " << idx << " = " << acc_cells.ghost(idx) << std::endl;
 #if 0
   using index_partition_t = flecsi::dmp::index_partition__<size_t>;
   using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
@@ -205,34 +208,11 @@ driver(
   char ** argv
 )
 {
-
-
   flecsi::data_client& dc = *((flecsi::data_client*)argv[argc - 1]);
-
-  std::cout << "check PARTITION" << std::endl;
-
-  // PAIR_PROGRAMMING
-  // This is where the check partitions code does
-  // we need a data handle to be able to pass cell_ids and vert_ids to a flecsi task
 
   int index_space = 0;
   auto h1 =
     flecsi_get_handle(dc, sprint, cell_ID, size_t, dense, index_space, rw, ro, ro);
-
-  flecsi::execution::context_t & context_ = flecsi::execution::context_t::instance();
-  LegionRuntime::HighLevel::Context ctx = context_.context(flecsi::utils::const_string_t{"driver"}.hash());
-  LegionRuntime::HighLevel::HighLevelRuntime *runtime =  context_.runtime(flecsi::utils::const_string_t{"driver"}.hash());
-
-  flecsi::execution::field_ids_t & fid_t = flecsi::execution::field_ids_t::instance();
-  // Verify that I can launch a single Task and receive the permission of my parent
-  TaskLauncher test_launcher(flecsi::execution::task_ids_t::instance().debug_task_id, TaskArgument(nullptr, 0));
-  test_launcher.add_region_requirement(RegionRequirement(h1.exclusive_lr, READ_WRITE, EXCLUSIVE,
-      h1.exclusive_lr).add_field(fid_t.fid_value) );
-  test_launcher.add_region_requirement(RegionRequirement(h1.shared_lr, READ_ONLY, EXCLUSIVE,
-      h1.shared_lr).add_field(fid_t.fid_value) );
-  test_launcher.add_region_requirement(RegionRequirement(h1.ghost_lr, READ_ONLY, EXCLUSIVE,
-      h1.ghost_lr).add_field(fid_t.fid_value) );
-  runtime->execute_task(ctx, test_launcher);
 
 
   flecsi_execute_task(check_partitioning_task, loc, single, h1);
