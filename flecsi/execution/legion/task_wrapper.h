@@ -64,6 +64,9 @@ namespace execution {
       flecsi::execution::field_ids_t & fid_t = 
         flecsi::execution::field_ids_t::instance();
 
+      h.context = context;
+      h.runtime = runtime;
+
       using type = typename PT::type;
 
       for(size_t p = 0; p < 3; ++p){
