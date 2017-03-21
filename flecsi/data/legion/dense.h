@@ -108,14 +108,12 @@ struct dense_accessor_t : public accessor__<T>
   ///
   dense_accessor_t(
     const std::string & label,
-    const size_t size,
     std::vector<T>* data,
     Legion::PhysicalRegion pr,
     const user_meta_data_t & meta_data,
     bitset_t & user_attributes,
     size_t index_space)
     : label_(label),
-    size_(size),
     data_(data),
     shared_data_(nullptr),
     ghost_data_(nullptr),
@@ -123,7 +121,7 @@ struct dense_accessor_t : public accessor__<T>
     meta_data_(&meta_data),
     user_attributes_(&user_attributes),
     index_space_(index_space),
-    is_(size) {}
+    is_(data->size()) {}
 
 	///
   // Copy constructor.
@@ -132,7 +130,6 @@ struct dense_accessor_t : public accessor__<T>
 
   dense_accessor_t(const dense_accessor_t & a)
   : label_(a.label_),
-    size_(a.size_),
     data_(a.data_),
     shared_data_(a.shared_data_),
     ghost_data_(a.ghost_data_),
@@ -306,7 +303,7 @@ struct dense_accessor_t : public accessor__<T>
   iterator_t
   end()
   {
-    return {is_, size_};
+    return {is_, data_->size()};
   } // end
 
   //--------------------------------------------------------------------------//
@@ -319,7 +316,6 @@ struct dense_accessor_t : public accessor__<T>
   dense_accessor_t & operator=(const dense_accessor_t & a)
   {
     label_ = a.label_;
-    size_ = a.size_;
     data_ = a.data_;
     exclusive_pr_ = a.exclusive_pr_;
     shared_pr_ = a.shared_pr_;
@@ -459,7 +455,6 @@ struct dense_accessor_t : public accessor__<T>
 private:
 
   std::string label_ = "";
-  size_t size_ = 0;
   const user_meta_data_t * meta_data_ = nullptr;
   bitset_t * user_attributes_ = nullptr;
   utils::index_space_t is_;
@@ -702,8 +697,7 @@ struct storage_type_t<dense, DS, MD>
     }
 
     // construct an accessor from the meta data
-    return { meta_data.label, meta_data.size,
-      values, pr,
+    return { meta_data.label, values, pr,
       meta_data.user_data, meta_data.attributes[version],
       meta_data.index_space };
   }
