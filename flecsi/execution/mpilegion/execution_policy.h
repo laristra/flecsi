@@ -49,6 +49,21 @@ namespace execution {
                                                    t, l, region);
     }
 
+    static Legion::PrivilegeMode mode(size_t p){
+      switch(p){
+        case 0:
+          return NO_ACCESS;
+        case 1:
+          return READ_ONLY;
+        case 2:
+          return WRITE_DISCARD;
+        case 3:
+          return READ_WRITE;
+        default:
+          assert(false);
+      }
+    }
+
     template<typename S, size_t EP, size_t SP, size_t GP>
     static void handle_(Legion::Runtime* runtime, Legion::Context ctx,
                         flecsi::data_handle_t<S, EP, SP, GP>& h,
@@ -58,17 +73,17 @@ namespace execution {
       flecsi::execution::field_ids_t & fid_t = 
         flecsi::execution::field_ids_t::instance();
 
-      RegionRequirement rr1(h.exclusive_lr, Legion::PrivilegeMode(EP), EXCLUSIVE, h.exclusive_lr);
+      RegionRequirement rr1(h.exclusive_lr, mode(EP), EXCLUSIVE, h.exclusive_lr);
       rr1.add_field(fid_t.fid_value);
       l.add_region_requirement(rr1);
       h.exclusive_priv = EP;
 
-      RegionRequirement rr2(h.shared_lr, Legion::PrivilegeMode(SP), EXCLUSIVE, h.shared_lr);
+      RegionRequirement rr2(h.shared_lr, mode(SP), EXCLUSIVE, h.shared_lr);
       rr2.add_field(fid_t.fid_value);
       l.add_region_requirement(rr2);
       h.shared_priv = SP;
 
-      RegionRequirement rr3(h.ghost_lr, Legion::PrivilegeMode(GP), EXCLUSIVE, h.ghost_lr);
+      RegionRequirement rr3(h.ghost_lr, mode(GP), EXCLUSIVE, h.ghost_lr);
       rr3.add_field(fid_t.fid_value);
       l.add_region_requirement(rr3);
       h.ghost_priv = GP;
