@@ -132,6 +132,11 @@ struct dense_accessor_t : public accessor__<T>
   : label_(a.label_),
     size_(a.size_),
     data_(a.data_),
+    shared_data_(a.shared_data_),
+    ghost_data_(a.ghost_data_),
+    exclusive_priv_(a.exclusive_priv_),
+    shared_priv_(a.shared_priv_),
+    ghost_priv_(a.ghost_priv_),
     meta_data_(a.meta_data_),
     user_attributes_(a.user_attributes_),
     index_space_(a.index_space_),
@@ -157,7 +162,7 @@ struct dense_accessor_t : public accessor__<T>
         flecsi::execution::field_ids_t::instance();
 
       size_t task_key = 
-        utils::const_string_t{"specialization_driver"}.hash();
+        utils::const_string_t{"driver"}.hash();
       auto runtime = context.runtime(task_key);
       auto ctx = context.context(task_key);
       

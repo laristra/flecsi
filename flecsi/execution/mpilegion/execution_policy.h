@@ -303,8 +303,10 @@ struct mpilegion_execution_policy_t
           handle_task_args__<std::tuple_size<user_task_args_tuple_t>::value, user_task_args_tuple_t>::walk(
             runtime, ctx, user_task_args_tuple, region, rrs);
 
+          task_args_t task_args2(user_task_handle, user_task_args_tuple);
+
           TaskLauncher task_launcher(context_.task_id(key),
-            TaskArgument(&task_args, sizeof(task_args_t)));
+            TaskArgument(&task_args2, sizeof(task_args_t)));
 
           for(RegionRequirement& rr : rrs){
             task_launcher.add_region_requirement(rr);
