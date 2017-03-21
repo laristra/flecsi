@@ -115,21 +115,16 @@ mpilegion_runtime_driver(
           }
        }
 */
-    // FIXME need to nest this structure
-    std::vector<PhaseBarrier> phase_barriers;
-
-    std::vector<size_t> flecsi_ispace_key = dc.get_keys();
-    for (int idx = 0; idx < flecsi_ispace_key.size(); idx++) {
-      flecsi::execution::context_t::partitioned_index_space parted_space = dc.get_index_space(flecsi_ispace_key[idx]);
+    std::vector<std::vector<PhaseBarrier>> phase_barriers(handles.size(),std::vector<PhaseBarrier>());
+    for (int idx = 0; idx < handles.size(); idx++) {
+      handle_t h = handles[idx];
       std::vector<std::set<int>> master_colors(num_ranks);
       for (int master_color=0; master_color < num_ranks; ++master_color) {
         std::set<int> slave_colors;
-        phase_barriers.push_back(runtime->create_phase_barrier(ctx,
-          1 + slave_colors.size()));
+        phase_barriers[idx].push_back(runtime->create_phase_barrier(ctx, 1 + slave_colors.size()));
        }
 
     }
-    flecsi_ispace_key.clear();
 
     const void* args_buf = serializer.get_buffer();
 
@@ -174,31 +169,18 @@ mpilegion_runtime_driver(
       // jpg - do neighbors shared and phase barriers here
     }
 
-    // PAIR_PROGRAMMING
-    // This is where we iterate over data and spaces from specialization_driver().
-    // We serialize phase barriers
     must_epoch_launcher.add_index_task(spmd_launcher);
  
     FutureMap fm = runtime->execute_must_epoch(ctx,must_epoch_launcher);
     fm.wait_all_results();
 
-//FIXME add region requirements for logical partitions from data client
-#if 0
-    spmd_launcher.add_region_requirement(
-      RegionRequirement(cells_shared_lp, 0/*projection ID*/,
-                    READ_ONLY, SIMULTANEOUS, cells_lr));
-    spmd_launcher.add_field(0, fid_t.fid_data);
-    spmd_launcher.add_region_requirement(
-       RegionRequirement(cells_ghost_lp, 0/*projection ID*/,
-                    READ_ONLY, SIMULTANEOUS, cells_lr));
-    spmd_launcher.add_field(1, fid_t.fid_data);
-#endif
-
 
     //remove phase barriers:
-
-    for (unsigned idx = 0; idx < phase_barriers.size(); idx++)
-       runtime->destroy_phase_barrier(ctx, phase_barriers[idx]);
+    for (unsigned idx = 0; idx < phase_barriers.size(); idx++) {
+      for (unsigned j = 0; j < phase_barriers[idx].size(); j++)
+        runtime->destroy_phase_barrier(ctx, phase_barriers[idx][j]);
+      phase_barriers[idx].clear();
+    }
     phase_barriers.clear();
 
 
