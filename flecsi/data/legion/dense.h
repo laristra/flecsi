@@ -239,7 +239,19 @@ struct dense_accessor_t : public accessor__<T>
   size_t
   size() const
   {
-    return size_;
+    return data_->size();
+  } // size
+
+  size_t
+  shared_size() const
+  {
+    return shared_data_->size();
+  } // size
+
+  size_t
+  ghost_size() const
+  {
+    return ghost_data_->size();
   } // size
 
   ///
