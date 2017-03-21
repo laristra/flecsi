@@ -152,6 +152,7 @@ struct legion_task_wrapper__
   //
   using task_args_t = legion_task_args__<R,A,user_task_args_t>;
   using user_task_handle_t = typename task_args_t::user_task_handle_t;
+  using args_t = A;
 
   using lr_runtime = LegionRuntime::HighLevel::HighLevelRuntime;
   using lr_proc = LegionRuntime::HighLevel::Processor;
@@ -215,6 +216,11 @@ struct legion_task_wrapper__
     // Push the Legion state
     context_t::instance().push_state(user_task_handle.key,
       context, runtime, task, regions);
+
+    size_t region = 0;
+    create_task_args__<std::tuple_size<user_task_args_t>::value,
+      user_task_args_t, args_t>::create(
+        context, runtime, regions, user_task_args, region);
 
     auto retval = user_task_handle(
       context_t::instance().function(user_task_handle.key),
