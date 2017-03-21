@@ -117,6 +117,8 @@ struct dense_accessor_t : public accessor__<T>
     : label_(label),
     size_(size),
     data_(data),
+    shared_data_(nullptr),
+    ghost_data_(nullptr),
     exclusive_pr_(pr), 
     meta_data_(&meta_data),
     user_attributes_(&user_attributes),
@@ -145,7 +147,8 @@ struct dense_accessor_t : public accessor__<T>
     index_space_(a.index_space_),
     is_(a.is_),
     context_(a.context_),
-    runtime_(a.runtime_){}
+    runtime_(a.runtime_),
+    owned_(false){}
 
   dense_accessor_t(const data_handle_t<void, 0, 0, 0>& h)
   : data_(static_cast<std::vector<T>*>(h.exclusive_data)),
@@ -161,6 +164,10 @@ struct dense_accessor_t : public accessor__<T>
   runtime_(h.runtime){}
 
   ~dense_accessor_t(){
+    if(!owned_){
+      return;
+    }
+
     flecsi::execution::field_ids_t & fid_t = 
       flecsi::execution::field_ids_t::instance();
 
@@ -456,6 +463,7 @@ private:
   size_t ghost_priv_;
   Legion::Context context_;
   Legion::Runtime* runtime_;
+  bool owned_ = true;
 }; // struct dense_accessor_t
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
