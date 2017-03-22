@@ -122,7 +122,23 @@ namespace execution {
                         flecsi::data_handle_t<S, EP, SP, GP>& h,
                         size_t& region){
 
-      //l.add_wait_barrier(h->pbarrier_as_master);
+      bool read_phase = false;
+      bool write_phase = false;
+
+      if (GP != size_t(data::privilege::none))
+        read_phase = true;
+
+      if ( (SP == size_t(data::privilege::wd)) || (SP == size_t(data::privilege::rw)))
+        write_phase = true;
+
+      if (read_phase) {
+        ;
+      }
+
+      if (write_phase) {
+        l.add_wait_barrier(h.pbarrier_as_master);                     // phase WRITE
+        l.add_arrival_barrier(h.pbarrier_as_master);                  // phase READ
+      }
     }
 
     template<typename R>
@@ -156,7 +172,21 @@ namespace execution {
                         flecsi::data_handle_t<S, EP, SP, GP>& h,
                         size_t& region){
 
-      for(int master=0; master < h.masters_pbarriers.size(); master++) {
+      bool write_phase = false;
+      if ( (SP == size_t(data::privilege::wd)) || (SP == size_t(data::privilege::rw)))
+        write_phase = true;
+
+      if (write_phase) {
+         h.pbarrier_as_master = runtime->advance_phase_barrier(ctx, h.pbarrier_as_master);   // phase READ
+
+        // as slave
+        for (int master=0; master < h.masters_pbarriers.size(); master++) {
+          h.masters_pbarriers[master].arrive(1);                                     // phase READ
+          h.masters_pbarriers[master] =
+                    runtime->advance_phase_barrier(ctx, h.masters_pbarriers[master]);  // phase READ
+        }
+
+        h. is_readable = false;
 
       }
     }
@@ -392,9 +422,7 @@ struct mpilegion_execution_policy_t
           task_epilog__<std::tuple_size<user_task_args_tuple_t>::value, user_task_args_tuple_t>::walk(
             runtime, ctx, task_launcher, user_task_args_tuple, region);
 
-          // single write epilog
-
-          return legion_future__<R>(future);
+                    return legion_future__<R>(future);
         } // single
 
         case index:
