@@ -497,7 +497,7 @@ struct storage_type_t<dense, DS, MD>
   template<typename T>
   using accessor_t = dense_accessor_t<T, MD>;
 
-  template<typename T,  size_t EP, size_t SP, size_t GP>
+  template<typename T, size_t EP, size_t SP, size_t GP>
   using handle_t = dense_handle_t<T, EP, SP, GP>;
 
   using st_t = storage_type_t<dense, DS, MD>;

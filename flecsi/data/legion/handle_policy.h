@@ -37,6 +37,15 @@ struct legion_handle_policy_t
   void* ghost_data;
   Legion::Context context;
   Legion::Runtime* runtime;
+  
+  Legion::PhaseBarrier pbarrier_as_master;
+  std::vector<Legion::PhaseBarrier> masters_pbarriers;
+  std::vector<Legion::LogicalRegion> lregions_neighbors_shared;
+  std::vector<Legion::PhysicalRegion> pregions_neighbors_shared;
+  Legion::LogicalRegion lregion_ghost;
+  size_t ghost_copy_task_id;
+  Legion::FieldID ghost_fid;
+  bool is_readable;
 };
 
 } // namespace data
