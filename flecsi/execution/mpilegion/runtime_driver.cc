@@ -37,15 +37,10 @@
 namespace flecsi {
 namespace execution {
 
-  const size_t MAX_PHASE_BARRIERS = 1024; 
-
   namespace{
 
     struct spmd_task_args{
-      size_t buf_size;
       size_t num_handles;
-      PhaseBarrier phase_barriers[MAX_PHASE_BARRIERS];
-      size_t num_phase_barriers;
     };
 
     using handle_t = data_handle_t<void, 0, 0, 0>;
@@ -96,11 +91,11 @@ mpilegion_runtime_driver(
     std::vector<size_t> versions;
     flecsi_get_all_handles(dc, dense, handles, hashes, namespaces, versions);
     
-    Serializer serializer;
-    serializer.serialize(&handles[0], handles.size() * sizeof(handle_t)); 
-    serializer.serialize(&hashes[0], hashes.size() * sizeof(size_t)); 
-    serializer.serialize(&namespaces[0], namespaces.size() * sizeof(size_t)); 
-    serializer.serialize(&versions[0], versions.size() * sizeof(size_t)); 
+    Serializer task_args_serializer;
+    task_args_serializer.serialize(&handles[0], handles.size() * sizeof(handle_t));
+    task_args_serializer.serialize(&hashes[0], hashes.size() * sizeof(size_t));
+    task_args_serializer.serialize(&namespaces[0], namespaces.size() * sizeof(size_t));
+    task_args_serializer.serialize(&versions[0], versions.size() * sizeof(size_t));
 
     //create phase barriers per handle for SPMD launch from partitions created and
     //registered to the data Client at the specialization_driver
@@ -108,11 +103,10 @@ mpilegion_runtime_driver(
     MPI_Comm_size(MPI_COMM_WORLD, &num_ranks);
 
     // FIXME Will not scale. Coloring in serialization_driver is a set.  Does that scale better?
-    // or should we just wait for automatic control replication?
+    // Or, should we just wait for automatic control replication?
     std::vector<std::vector<PhaseBarrier>> phase_barriers(handles.size());
     std::vector<std::vector<std::set<int>>> master_colors(handles.size(), std::vector<std::set<int>>(num_ranks));
     for (int idx = 0; idx < handles.size(); idx++) {
-
       handle_t h = handles[idx];
       for (int master_color=0; master_color < num_ranks; ++master_color) {
         std::set<int> slave_colors;
@@ -134,30 +128,42 @@ mpilegion_runtime_driver(
         } // while shared_it
         phase_barriers[idx].push_back(runtime->create_phase_barrier(ctx, 1 + slave_colors.size()));
        } // for master_color
-    } // for idx
+    } // for idx < handles.size()
 
-    const void* args_buf = serializer.get_buffer();
+    std::vector<Serializer> arg_map_serializer(num_ranks);
 
     spmd_task_args sargs;
-    sargs.buf_size = serializer.get_used_bytes();
     sargs.num_handles = handles.size();
 
-    for(size_t i = 0; i < num_ranks; ++i){
-      auto& pbs = phase_barriers[i];
-      assert(pbs.size() < MAX_PHASE_BARRIERS);
-      sargs.num_phase_barriers = pbs.size();
-      std::copy(pbs.begin(), pbs.end(), sargs.phase_barriers);
+    for(size_t rank = 0; rank < num_ranks; ++rank){
+      std::vector<PhaseBarrier> pbarriers_as_master;
+      std::vector<size_t> num_masters;
+      std::vector<std::vector<PhaseBarrier>> masters_pbarriers;
+      for (int idx = 0; idx < handles.size(); idx++) {
+        pbarriers_as_master.push_back(phase_barriers[idx][rank]);
+        num_masters.push_back(master_colors[idx][rank].size());
+        std::vector<PhaseBarrier> masters_pbs;
+        for (std::set<int>::iterator master=master_colors[idx][rank].begin();
+            master!=master_colors[idx][rank].end(); ++master)
+          masters_pbs.push_back(phase_barriers[idx][*master]);
+        masters_pbarriers.push_back(masters_pbs);
+      } // for idx handles.size
+      arg_map_serializer[rank].serialize(&sargs, sizeof(spmd_task_args));
+      arg_map_serializer[rank].serialize(&pbarriers_as_master[0], handles.size() * sizeof(PhaseBarrier));
+      arg_map_serializer[rank].serialize(&num_masters[0], handles.size() * sizeof(size_t));
+      for (int idx = 0; idx < handles.size(); idx++)
+        arg_map_serializer[rank].serialize(&masters_pbarriers[idx][0], num_masters[idx] * sizeof(PhaseBarrier));
 
       arg_map.set_point(Legion::DomainPoint::from_point<1>(
-        LegionRuntime::Arrays::make_point(i)),
-        TaskArgument(&sargs, sizeof(sargs)));
-    }
+        LegionRuntime::Arrays::make_point(rank)),
+        TaskArgument(arg_map_serializer[rank].get_buffer(), arg_map_serializer[rank].get_used_bytes()));
+    } // for rank
 
     LegionRuntime::HighLevel::IndexLauncher spmd_launcher(
       task_ids_t::instance().spmd_task_id,
       LegionRuntime::HighLevel::Domain::from_rect<1>(
          context_.interop_helper_.all_processes_),
-      TaskArgument(args_buf, sargs.buf_size), arg_map);
+      TaskArgument(task_args_serializer.get_buffer(), task_args_serializer.get_used_bytes()), arg_map);
    
     spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
@@ -225,28 +231,41 @@ spmd_task(
 
   data_client dc;
 
-  if (task->arglen > 0) {
-    void* args_buf = task->args;
-    auto args = (spmd_task_args*)task->local_args;
+  assert(task->arglen > 0);
+  assert(task->local_arglen > 0);
 
-    size_t num_handles = args->num_handles;
+  void* args_buf = task->args;
+  void* local_args_buf = task->local_args;
+
+  Deserializer args_deserializer(task->args, task->arglen);
+  Deserializer local_args_deserializer(task->local_args,task->local_arglen);
+
+  void* spmd_args_buf = malloc(sizeof(spmd_task_args));
+  local_args_deserializer.deserialize(spmd_args_buf, sizeof(spmd_task_args));
+  auto spmd_args = (spmd_task_args*)spmd_args_buf;
+
+  size_t num_handles = spmd_args->num_handles;
 
     assert(regions.size() == 3*num_handles);
     assert(task->regions.size() == 3*num_handles);
 
-    Deserializer deserializer(args_buf, args->buf_size);
-
     void* handles_buf = malloc(sizeof(handle_t) * num_handles);
-    deserializer.deserialize(handles_buf, sizeof(handle_t) * num_handles);
+    args_deserializer.deserialize(handles_buf, sizeof(handle_t) * num_handles);
 
     void* hashes_buf = malloc(sizeof(size_t) * num_handles);
-    deserializer.deserialize(hashes_buf, sizeof(size_t) * num_handles);
+    args_deserializer.deserialize(hashes_buf, sizeof(size_t) * num_handles);
 
     void* namespaces_buf = malloc(sizeof(size_t) * num_handles);
-    deserializer.deserialize(namespaces_buf, sizeof(size_t) * num_handles);
+    args_deserializer.deserialize(namespaces_buf, sizeof(size_t) * num_handles);
 
     void* versions_buf = malloc(sizeof(size_t) * num_handles);
-    deserializer.deserialize(versions_buf, sizeof(size_t) * num_handles);
+    args_deserializer.deserialize(versions_buf, sizeof(size_t) * num_handles);
+
+    PhaseBarrier* pbarriers_as_master = (PhaseBarrier*)malloc(sizeof(PhaseBarrier) * num_handles);
+    local_args_deserializer.deserialize((void*)pbarriers_as_master, sizeof(PhaseBarrier) * num_handles);
+
+    size_t* num_masters = (size_t*)malloc(sizeof(size_t) * num_handles);
+    local_args_deserializer.deserialize((void*)num_masters, sizeof(size_t) * num_handles);
 
     Legion::LogicalRegion empty_lr;
     Legion::IndexPartition empty_ip;
@@ -256,6 +275,14 @@ spmd_task(
     // fix handles on spmd side
     handle_t* fix_handles = (handle_t*)handles_buf;
     for (size_t idx = 0; idx < num_handles; idx++) {
+      fix_handles[idx].pbarrier_as_master = pbarriers_as_master[idx];
+
+      PhaseBarrier* masters_pbarriers_buf = (PhaseBarrier*)malloc(sizeof(PhaseBarrier) * num_masters[idx]);
+      local_args_deserializer.deserialize((void*)masters_pbarriers_buf, sizeof(PhaseBarrier) * num_masters[idx]);
+      std::vector<PhaseBarrier> masters_pbarriers(masters_pbarriers_buf, masters_pbarriers_buf+num_handles);
+      assert(masters_pbarriers.size() == num_handles);
+      fix_handles[idx].masters_pbarriers = masters_pbarriers;
+
       fix_handles[idx].lr = empty_lr;
       fix_handles[idx].exclusive_ip = empty_ip;
       fix_handles[idx].shared_ip = empty_ip;
@@ -273,7 +300,7 @@ spmd_task(
       (size_t*)hashes_buf,
       (size_t*)namespaces_buf,
       (size_t*)versions_buf);
-  }
+
 
 
   // We obtain map of hashes to regions[n] here
