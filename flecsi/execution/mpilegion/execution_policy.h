@@ -121,7 +121,8 @@ namespace execution {
                         Legion::TaskLauncher& l,
                         flecsi::data_handle_t<S, EP, SP, GP>& h,
                         size_t& region){
-      
+
+      //l.add_wait_barrier(h->pbarrier_as_master);
     }
 
     template<typename R>
@@ -154,7 +155,10 @@ namespace execution {
                         Legion::TaskLauncher& l,
                         flecsi::data_handle_t<S, EP, SP, GP>& h,
                         size_t& region){
-      
+
+      for(int master=0; master < h.masters_pbarriers.size(); master++) {
+
+      }
     }
 
     template<typename R>
