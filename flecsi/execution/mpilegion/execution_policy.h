@@ -128,12 +128,25 @@ namespace execution {
       if (GP != size_t(data::privilege::none))
         read_phase = true;
 
-      if ( (SP == size_t(data::privilege::wd)) || (SP == size_t(data::privilege::rw)))
+      if ( (SP == size_t(data::privilege::wd)) || (SP == size_t(data::privilege::ro)))  // FIXME rw
         write_phase = true;
 
       if (read_phase) {
-        ;
-      }
+        if (!h.is_readable) {
+          // as master
+          h.pbarrier_as_master.arrive(1);                                                // phase WRITE
+          h.pbarrier_as_master = runtime->advance_phase_barrier(ctx, h.pbarrier_as_master);               // phase WRITE
+
+          // as slave
+          for (int master=0; master < h.masters_pbarriers.size(); master++) {
+            l.add_wait_barrier(h.masters_pbarriers[master]);
+            l.add_arrival_barrier(h.masters_pbarriers[master]);
+            h.masters_pbarriers[master] = runtime->advance_phase_barrier(ctx, h.masters_pbarriers[master]);  // phase WRITE
+          } // for master as slave
+
+          h.is_readable = true;
+        } // if !is_readable
+      } // if read_phase
 
       if (write_phase) {
         l.add_wait_barrier(h.pbarrier_as_master);                     // phase WRITE

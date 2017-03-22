@@ -75,7 +75,7 @@ driver(
 
   int index_space = 0;
   auto shared_write_handle =
-    flecsi_get_handle(dc, sprint, cell_ID, size_t, dense, index_space, none, rw, none);
+    flecsi_get_handle(dc, sprint, cell_ID, size_t, dense, index_space, none, ro, none);  // FIXME rw
   auto ghost_read_handle =
     flecsi_get_handle(dc, sprint, cell_ID, size_t, dense, index_space, none, none, ro);
 
@@ -87,35 +87,8 @@ driver(
 
     // phase READ: slaves can read data; masters may not write to data
 
-    //bool read_phase = true;
-    //bool write_phase = false;
-    /*if (read_phase) {
-        if (!is_readable) {
-    // as master
-    spmd_args->pbarrier_as_master.arrive(1);                                                // phase WRITE
-    spmd_args->pbarrier_as_master =
-            runtime->advance_phase_barrier(ctx, spmd_args->pbarrier_as_master);               // phase WRITE
-
-    // as slave
-
-    for (int master=0; master < spmd_args->masters_pbarriers.size(); master++) {
-      .add_wait_barrier(spmd_args->masters_pbarriers[master]);
-      .add_arrival_barrier(spmd_args->masters_pbarriers[master]);
-            spmd_args->masters_pbarriers[master] =
-              runtime->advance_phase_barrier(ctx, spmd_args->masters_pbarriers[master]);  // phase WRITE
-    } // for master as slave
-
-    is_readable = true;
-  } // if !is_readable
-
-    */
-    //if (write_phase)
-    //  write_prologue(task_launcher);
-
     flecsi_execute_task(ghost_read_task, loc, single, ghost_read_handle); // ndm - how do I pass int cycle?
 
-    //if (write_phase)
-    //  write_epilogue(ctx, runtime);
   }
 
 } //driver

@@ -279,8 +279,8 @@ spmd_task(
 
       PhaseBarrier* masters_pbarriers_buf = (PhaseBarrier*)malloc(sizeof(PhaseBarrier) * num_masters[idx]);
       local_args_deserializer.deserialize((void*)masters_pbarriers_buf, sizeof(PhaseBarrier) * num_masters[idx]);
-      std::vector<PhaseBarrier> masters_pbarriers(masters_pbarriers_buf, masters_pbarriers_buf+num_handles);
-      assert(masters_pbarriers.size() == num_handles);
+      std::vector<PhaseBarrier> masters_pbarriers(masters_pbarriers_buf, masters_pbarriers_buf+num_masters[idx]);
+      assert(masters_pbarriers.size() == num_masters[idx]);
       fix_handles[idx].masters_pbarriers = masters_pbarriers;
 
       fix_handles[idx].lr = empty_lr;
