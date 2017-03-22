@@ -1,7 +1,6 @@
 var searchData=
 [
   ['save',['save',['../classflecsi_1_1topology_1_1tree__topology.html#afc1eb4b599fd581c9ecb66d724dc781d',1,'flecsi::topology::tree_topology']]],
-  ['serialize',['serialize',['../structflecsi_1_1dmp_1_1index__partition____.html#aaaffdbe938171ec829f8057b085abc95',1,'flecsi::dmp::index_partition__']]],
   ['set',['set',['../classflecsi_1_1topology_1_1connectivity__t.html#a783ee46feaec11bd8690f295618d372c',1,'flecsi::topology::connectivity_t::set(size_t from_local_id, id_t to_id, size_t pos)'],['../classflecsi_1_1topology_1_1connectivity__t.html#ad1bfa33237bfe27237a76b068692e62b',1,'flecsi::topology::connectivity_t::set(entity_vector_t&lt; N &gt; &amp;ev, connection_vector_t &amp;conns)'],['../classflecsi_1_1utils_1_1bitfield____.html#a2b736a1d7dfed3fd375d01430fa0ad00',1,'flecsi::utils::bitfield__::set()']]],
   ['set_5fdifference',['set_difference',['../set__utils_8h.html#a7352101c0bfa9bb02087001ca2e2766c',1,'flecsi::utils']]],
   ['set_5fglobal_5fid',['set_global_id',['../classflecsi_1_1topology_1_1mesh__entity__base__t.html#aad835b9a69c45801fd82319c9462ba50',1,'flecsi::topology::mesh_entity_base_t']]],
