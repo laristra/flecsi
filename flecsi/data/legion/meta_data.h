@@ -75,8 +75,8 @@ struct legion_meta_data_t
     Legion::LogicalRegion shared_lr;
     Legion::LogicalRegion ghost_lr;
 
-    Legion::PhaseBarrier pbarrier_as_master;
-    std::vector<Legion::PhaseBarrier> masters_pbarriers;
+    Legion::PhaseBarrier* pbarrier_as_master_ptr;
+    std::vector<Legion::PhaseBarrier>* masters_pbarriers_ptr;
     std::vector<Legion::LogicalRegion> lregions_neighbors_shared;
     std::vector<Legion::PhysicalRegion> pregions_neighbors_shared;
     Legion::LogicalRegion lregion_ghost;
