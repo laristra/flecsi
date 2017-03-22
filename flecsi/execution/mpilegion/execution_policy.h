@@ -131,7 +131,14 @@ namespace execution {
       if ( (SP == size_t(data::privilege::wd)) || (SP == size_t(data::privilege::rw)))
         write_phase = true;
 
-      //l.add_wait_barrier(h->pbarrier_as_master);
+      if (read_phase) {
+        ;
+      }
+
+      if (write_phase) {
+        l.add_wait_barrier(h.pbarrier_as_master);                     // phase WRITE
+        l.add_arrival_barrier(h.pbarrier_as_master);                  // phase READ
+      }
     }
 
     template<typename R>
@@ -169,7 +176,17 @@ namespace execution {
       if ( (SP == size_t(data::privilege::wd)) || (SP == size_t(data::privilege::rw)))
         write_phase = true;
 
-      for(int master=0; master < h.masters_pbarriers.size(); master++) {
+      if (write_phase) {
+         h.pbarrier_as_master = runtime->advance_phase_barrier(ctx, h.pbarrier_as_master);   // phase READ
+
+        // as slave
+        for (int master=0; master < h.masters_pbarriers.size(); master++) {
+          h.masters_pbarriers[master].arrive(1);                                     // phase READ
+          h.masters_pbarriers[master] =
+                    runtime->advance_phase_barrier(ctx, h.masters_pbarriers[master]);  // phase READ
+        }
+
+        h. is_readable = false;
 
       }
     }

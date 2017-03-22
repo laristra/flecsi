@@ -83,29 +83,7 @@ driver(
 
     // phase WRITE: masters update their halo regions; slaves may not access data
 
-    //bool read_phase = false;
-    //bool write_phase = true;
-    //if (read_phase)
-    //  read_prologue(ctx, runtime);
-    //if (write_phase)
-    //task_launcher.add_wait_barrier(spmd_args->pbarrier_as_master);                     // phase WRITE
-    //task_launcher.add_arrival_barrier(spmd_args->pbarrier_as_master);                  // phase READ
-
     flecsi_execute_task(shared_write_task, loc, single, shared_write_handle); // ndm - how do I pass int cycle?
-
-    //if (write_phase)
-    /*
-       spmd_args->pbarrier_as_master = runtime->advance_phase_barrier(ctx, spmd_args->pbarrier_as_master);   // phase READ
-
-    // as slave
-      for (int master=0; master < spmd_args->masters_pbarriers.size(); master++) {
-        spmd_args->masters_pbarriers[master].arrive(1);                                     // phase READ
-        spmd_args->masters_pbarriers[master] =
-                  runtime->advance_phase_barrier(ctx, spmd_args->masters_pbarriers[master]);  // phase READ
-      }
-
-      is_readable = false;
-*/
 
     // phase READ: slaves can read data; masters may not write to data
 
