@@ -52,13 +52,13 @@ namespace execution {
 
     static Legion::PrivilegeMode mode(size_t p){
       switch(p){
-        case 0:
+        case size_t(data::privilege::none):
           return NO_ACCESS;
-        case 1:
+        case size_t(data::privilege::ro):
           return READ_ONLY;
-        case 2:
+        case size_t(data::privilege::wd):
           return WRITE_DISCARD;
-        case 3:
+        case size_t(data::privilege::rw):
           return READ_WRITE;
         default:
           assert(false);
