@@ -1003,6 +1003,8 @@ struct storage_type_t<dense, DS, MD>
     h.exclusive_lr = data.exclusive_lr;
     h.shared_lr = data.shared_lr;
     h.ghost_lr = data.ghost_lr;
+    h.pbarrier_as_master = data.pbarrier_as_master;
+    h.masters_pbarriers = data.masters_pbarriers;
 
     return h;
   } // get_handle
@@ -1057,6 +1059,8 @@ struct storage_type_t<dense, DS, MD>
       ld.exclusive_lr = hi.exclusive_lr;
       ld.shared_lr = hi.shared_lr;
       ld.ghost_lr = hi.ghost_lr;
+      ld.pbarrier_as_master = hi.pbarrier_as_master;
+      ld.masters_pbarriers = hi.masters_pbarriers;
     }
   }
 

@@ -74,6 +74,9 @@ struct legion_meta_data_t
     Legion::LogicalRegion exclusive_lr;
     Legion::LogicalRegion shared_lr;
     Legion::LogicalRegion ghost_lr;
+
+    Legion::PhaseBarrier pbarrier_as_master;
+    std::vector<Legion::PhaseBarrier> masters_pbarriers;
   };
 
   legion_data& get_legion_data(size_t version) const{

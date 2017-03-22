@@ -107,6 +107,73 @@ namespace execution {
     }
   };
 
+  template<size_t I, typename T>
+  struct task_prolog__{
+    static size_t walk(Legion::Runtime* runtime, Legion::Context ctx,
+                       Legion::TaskLauncher& l, T& t, size_t& region){
+      handle_(runtime, ctx, l,
+              std::get<std::tuple_size<T>::value - I>(t), region);
+      return task_prolog__<I - 1, T>::walk(runtime, ctx, l, t, region);
+    }
+
+    template<typename S, size_t EP, size_t SP, size_t GP>
+    static void handle_(Legion::Runtime* runtime, Legion::Context ctx,
+                        Legion::TaskLauncher& l,
+                        flecsi::data_handle_t<S, EP, SP, GP>& h,
+                        size_t& region){
+      
+    }
+
+    template<typename R>
+    static
+    typename std::enable_if_t<!std::is_base_of<flecsi::data_handle_base, R>::
+      value>
+    handle_(Legion::Runtime*, Legion::Context, Legion::TaskLauncher& l, R&, size_t&){}
+  };
+
+  template<typename T>
+  struct task_prolog__<0, T>{
+    static size_t walk(Legion::Runtime*, Legion::Context,
+                       Legion::TaskLauncher& l,
+                       T& t, size_t& region){
+      return 0;
+    }
+  };
+
+  template<size_t I, typename T>
+  struct task_epilog__{
+    static size_t walk(Legion::Runtime* runtime, Legion::Context ctx,
+                       Legion::TaskLauncher& l, T& t, size_t& region){
+      handle_(runtime, ctx, l,
+              std::get<std::tuple_size<T>::value - I>(t), region);
+      return task_epilog__<I - 1, T>::walk(runtime, ctx, l, t, region);
+    }
+
+    template<typename S, size_t EP, size_t SP, size_t GP>
+    static void handle_(Legion::Runtime* runtime, Legion::Context ctx,
+                        Legion::TaskLauncher& l,
+                        flecsi::data_handle_t<S, EP, SP, GP>& h,
+                        size_t& region){
+      
+    }
+
+    template<typename R>
+    static
+    typename std::enable_if_t<!std::is_base_of<flecsi::data_handle_base, R>::
+      value>
+    handle_(Legion::Runtime*, Legion::Context, Legion::TaskLauncher& l, R&, size_t&){}
+  };
+
+  template<typename T>
+  struct task_epilog__<0, T>{
+    static size_t walk(Legion::Runtime*, Legion::Context,
+                       Legion::TaskLauncher& l,
+                       T& t, size_t& region){
+      return 0;
+    }
+  };
+
+
 //----------------------------------------------------------------------------//
 // Execution policy.
 //----------------------------------------------------------------------------//
@@ -312,8 +379,16 @@ struct mpilegion_execution_policy_t
             task_launcher.add_region_requirement(rr);
           }
 
+          task_prolog__<std::tuple_size<user_task_args_tuple_t>::value, user_task_args_tuple_t>::walk(
+            runtime, ctx, task_launcher, user_task_args_tuple, region);
+
           auto future = context_.runtime(parent)->execute_task(
             context_.context(parent), task_launcher);
+
+          task_epilog__<std::tuple_size<user_task_args_tuple_t>::value, user_task_args_tuple_t>::walk(
+            runtime, ctx, task_launcher, user_task_args_tuple, region);
+
+          // single write epilog
 
           return legion_future__<R>(future);
         } // single
