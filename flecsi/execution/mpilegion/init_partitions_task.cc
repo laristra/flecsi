@@ -1158,7 +1158,7 @@ ghost_access_task(
   } // cycle
 
 
-  std::cout << "test ghost access ... passed"
+  std::cout << "legion test ghost access ... passed"
   << std::endl;
 }//ghost_access_task
 
