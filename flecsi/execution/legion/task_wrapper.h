@@ -93,7 +93,7 @@ namespace execution {
           values = nullptr;
         }
         else{
-          pr = regions[region++];
+          pr = regions[region];
           Legion::LogicalRegion lr = pr.get_logical_region();
           Legion::IndexSpace is = lr.get_index_space();
 
@@ -108,6 +108,8 @@ namespace execution {
             values->push_back(ac.read(itr.next()));
           }
         }
+
+        region++;
 
         switch(p){
           case 0:
