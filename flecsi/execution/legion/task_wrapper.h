@@ -70,19 +70,43 @@ namespace execution {
       using type = typename PT::type;
 
       for(size_t p = 0; p < 3; ++p){
-        Legion::PhysicalRegion pr = regions[region++];
-        Legion::LogicalRegion lr = pr.get_logical_region();
-        Legion::IndexSpace is = lr.get_index_space();
+        bool skip = false;
 
-        auto ac = 
-          pr.get_field_accessor(fid_t.fid_value).typeify<type>();
-        
-        IndexIterator itr(runtime, context, is);
-        
-        auto values = new std::vector<type>; 
+        switch(p){
+          case 0:
+            skip = h.exclusive_priv == 0;
+            break;
+          case 1:
+            skip = h.shared_priv == 0;
+            break;
+          case 2:
+            skip = h.ghost_priv == 0;
+            break;
+          default:
+            assert(false);
+        }
 
-        while(itr.has_next()){
-          values->push_back(ac.read(itr.next()));
+        std::vector<type>* values;
+        Legion::PhysicalRegion pr;
+
+        if(skip){
+          values = nullptr;
+        }
+        else{
+          pr = regions[region++];
+          Legion::LogicalRegion lr = pr.get_logical_region();
+          Legion::IndexSpace is = lr.get_index_space();
+
+          auto ac = 
+            pr.get_field_accessor(fid_t.fid_value).typeify<type>();
+          
+          IndexIterator itr(runtime, context, is);
+          
+          values = new std::vector<type>; 
+
+          while(itr.has_next()){
+            values->push_back(ac.read(itr.next()));
+          }
         }
 
         switch(p){
