@@ -1004,7 +1004,7 @@ struct storage_type_t<dense, DS, MD>
     h.shared_lr = data.shared_lr;
     h.ghost_lr = data.ghost_lr;
     h.pbarrier_as_master_ptr = data.pbarrier_as_master_ptr;
-    h.masters_pbarriers_ptr = data.masters_pbarriers_ptr;
+    h.masters_pbarriers_ptrs = data.masters_pbarriers_ptrs;
     h.lregions_neighbors_shared = data.lregions_neighbors_shared;
     h.pregions_neighbors_shared = data.pregions_neighbors_shared;
     h.lregion_ghost = data.lregion_ghost;
@@ -1066,11 +1066,9 @@ struct storage_type_t<dense, DS, MD>
       ld.shared_lr = hi.shared_lr;
       ld.ghost_lr = hi.ghost_lr;
       
-      ld.pbarrier_as_master_ptr = 
-        new PhaseBarrier(hi.pbarrier_as_master);
+      ld.pbarrier_as_master_ptr = hi.pbarrier_as_master_ptr;
       
-      ld.masters_pbarriers_ptr = 
-        new std::vector<PhaseBarrier>(hi.masters_pbarriers);
+      ld.masters_pbarriers_ptrs = hi.masters_pbarriers_ptrs;
       
       ld.lregions_neighbors_shared = hi.lregions_neighbors_shared;
       ld.pregions_neighbors_shared = hi.pregions_neighbors_shared;

@@ -38,11 +38,11 @@ struct legion_handle_policy_t
   Legion::Context context;
   Legion::Runtime* runtime;
   
-  Legion::PhaseBarrier pbarrier_as_master;
-  std::vector<Legion::PhaseBarrier> masters_pbarriers;
+  //Legion::PhaseBarrier pbarrier_as_master;
+  //std::vector<Legion::PhaseBarrier> masters_pbarriers;
 
   Legion::PhaseBarrier* pbarrier_as_master_ptr;
-  std::vector<Legion::PhaseBarrier>* masters_pbarriers_ptr;
+  std::vector<Legion::PhaseBarrier*> masters_pbarriers_ptrs;
 
   std::vector<Legion::LogicalRegion> lregions_neighbors_shared;
   std::vector<Legion::PhysicalRegion> pregions_neighbors_shared;

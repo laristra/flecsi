@@ -134,14 +134,14 @@ namespace execution {
       if (read_phase) {
         if (!h.is_readable) {
           // as master
-          h.pbarrier_as_master.arrive(1);                                                // phase WRITE
-          h.pbarrier_as_master = runtime->advance_phase_barrier(ctx, h.pbarrier_as_master);               // phase WRITE
+          h.pbarrier_as_master_ptr->arrive(1);                                                // phase WRITE
+          *(h.pbarrier_as_master_ptr) = runtime->advance_phase_barrier(ctx, *(h.pbarrier_as_master_ptr));               // phase WRITE
 
           // as slave
-          for (int master=0; master < h.masters_pbarriers.size(); master++) {
-            l.add_wait_barrier(h.masters_pbarriers[master]);
-            l.add_arrival_barrier(h.masters_pbarriers[master]);
-            h.masters_pbarriers[master] = runtime->advance_phase_barrier(ctx, h.masters_pbarriers[master]);  // phase WRITE
+          for (int master=0; master < h.masters_pbarriers_ptrs.size(); master++) {
+            l.add_wait_barrier(*(h.masters_pbarriers_ptrs[master]));
+            l.add_arrival_barrier(*(h.masters_pbarriers_ptrs[master]));
+            *(h.masters_pbarriers_ptrs[master]) = runtime->advance_phase_barrier(ctx, *(h.masters_pbarriers_ptrs[master]));  // phase WRITE
           } // for master as slave
 
           h.is_readable = true;
@@ -149,8 +149,8 @@ namespace execution {
       } // if read_phase
 
       if (write_phase) {
-        l.add_wait_barrier(h.pbarrier_as_master);                     // phase WRITE
-        l.add_arrival_barrier(h.pbarrier_as_master);                  // phase READ
+        l.add_wait_barrier(*(h.pbarrier_as_master_ptr));                     // phase WRITE
+        l.add_arrival_barrier(*(h.pbarrier_as_master_ptr));                  // phase READ
       }
     }
 
@@ -186,17 +186,17 @@ namespace execution {
                         size_t& region){
 
       bool write_phase = false;
-      if ( (SP == size_t(data::privilege::wd)) || (SP == size_t(data::privilege::rw)))
+      if ( (SP == size_t(data::privilege::wd)) || (SP == size_t(data::privilege::ro))) // FIXME: should be rw
         write_phase = true;
 
       if (write_phase) {
-         h.pbarrier_as_master = runtime->advance_phase_barrier(ctx, h.pbarrier_as_master);   // phase READ
+         *(h.pbarrier_as_master_ptr) = runtime->advance_phase_barrier(ctx, *(h.pbarrier_as_master_ptr));   // phase READ
 
         // as slave
-        for (int master=0; master < h.masters_pbarriers.size(); master++) {
-          h.masters_pbarriers[master].arrive(1);                                     // phase READ
-          h.masters_pbarriers[master] =
-                    runtime->advance_phase_barrier(ctx, h.masters_pbarriers[master]);  // phase READ
+        for (int master=0; master < h.masters_pbarriers_ptrs.size(); master++) {
+          h.masters_pbarriers_ptrs[master]->arrive(1);                                     // phase READ
+          *(h.masters_pbarriers_ptrs[master]) =
+                    runtime->advance_phase_barrier(ctx, *(h.masters_pbarriers_ptrs[master]));  // phase READ
         }
 
         h. is_readable = false;

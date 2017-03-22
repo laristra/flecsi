@@ -40,9 +40,12 @@ using accessor_t = flecsi::data::legion::dense_accessor_t<T, flecsi::data::legio
 
 void
 shared_write_task(
-  accessor_t<size_t> acc_cells
+  accessor_t<size_t> acc_cells,
+  int my_color,
+  int cycle
 )
 {
+  std::cout << my_color << " as master writes data; phase 1 of cycle " << cycle << std::endl;
   // ndm - how do I pass int cycle?
 }
 
@@ -51,9 +54,12 @@ flecsi_register_task(shared_write_task, loc, single);
 
 void
 ghost_read_task(
-  accessor_t<size_t> acc_cells
+  accessor_t<size_t> acc_cells,
+  int my_color,
+  int cycle
 )
 {
+  std::cout << my_color << " as slave reads data; phase 2 of cycle " << cycle <<  std::endl;
   // ndm - how do I pass int cycle?
 }
 
@@ -69,7 +75,6 @@ driver(
   flecsi::execution::context_t & context_ = flecsi::execution::context_t::instance();
   const LegionRuntime::HighLevel::Task *task = context_.task(flecsi::utils::const_string_t{"driver"}.hash());
   const int my_color = task->index_point.point_data[0];
-	std::cout << my_color << " check GHOST" << std::endl;
 
 	flecsi::data_client& dc = *((flecsi::data_client*)argv[argc - 1]);
 
@@ -83,11 +88,11 @@ driver(
 
     // phase WRITE: masters update their halo regions; slaves may not access data
 
-    flecsi_execute_task(shared_write_task, loc, single, shared_write_handle); // ndm - how do I pass int cycle?
+    flecsi_execute_task(shared_write_task, loc, single, shared_write_handle, my_color, cycle);
 
     // phase READ: slaves can read data; masters may not write to data
 
-    flecsi_execute_task(ghost_read_task, loc, single, ghost_read_handle); // ndm - how do I pass int cycle?
+    flecsi_execute_task(ghost_read_task, loc, single, ghost_read_handle, my_color, cycle);
 
   }
 

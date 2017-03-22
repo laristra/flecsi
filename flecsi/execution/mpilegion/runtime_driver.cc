@@ -275,13 +275,14 @@ spmd_task(
     // fix handles on spmd side
     handle_t* fix_handles = (handle_t*)handles_buf;
     for (size_t idx = 0; idx < num_handles; idx++) {
-      fix_handles[idx].pbarrier_as_master = pbarriers_as_master[idx];
+      fix_handles[idx].pbarrier_as_master_ptr = &(pbarriers_as_master[idx]);
 
       PhaseBarrier* masters_pbarriers_buf = (PhaseBarrier*)malloc(sizeof(PhaseBarrier) * num_masters[idx]);
       local_args_deserializer.deserialize((void*)masters_pbarriers_buf, sizeof(PhaseBarrier) * num_masters[idx]);
-      std::vector<PhaseBarrier> masters_pbarriers(masters_pbarriers_buf, masters_pbarriers_buf+num_masters[idx]);
-      assert(masters_pbarriers.size() == num_masters[idx]);
-      fix_handles[idx].masters_pbarriers = masters_pbarriers;
+      std::vector<PhaseBarrier> masters_pbarriers;
+      for (size_t master = 0; master < num_masters[idx]; master++)
+        fix_handles[idx].masters_pbarriers_ptrs.push_back(&(masters_pbarriers_buf[master]));
+      assert(fix_handles[idx].masters_pbarriers_ptrs.size() == num_masters[idx]);
 
       fix_handles[idx].lr = empty_lr;
       fix_handles[idx].exclusive_ip = empty_ip;
