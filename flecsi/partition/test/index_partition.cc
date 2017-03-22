@@ -10,7 +10,6 @@
 #include <cmath>
 #include <cassert>
 #include <mpi.h>
-#include <cereal/archives/binary.hpp>
 #include <sstream>
 
 using index_partition_t = flecsi::dmp::index_partition__<size_t>;
@@ -172,27 +171,6 @@ TEST_F(ip_fixture_t, basic) {
   } // if
 
 } // basic
-//FIXME
-
-TEST_F(ip_fixture_t, cereal) {
-  std::stringstream ss;
-
-  // serialize the index partition
-  {
-  cereal::BinaryOutputArchive oarchive(ss);
-  oarchive(ip_);
-  } // scope
-
-  // deserialize the index partition
-  index_partition_t ip_in;
-  {
-  cereal::BinaryInputArchive iarchive(ss);
-  iarchive(ip_in);
-  } // scope
-
-  CINCH_ASSERT(EQ, ip_, ip_in);
-} // cereal
-
 
 TEST(index_partition, compare_output) {
   int rank;
