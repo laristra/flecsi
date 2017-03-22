@@ -37,11 +37,15 @@
 namespace flecsi {
 namespace execution {
 
+  const size_t MAX_PHASE_BARRIERS = 1024; 
+
   namespace{
 
     struct spmd_task_args{
       size_t buf_size;
       size_t num_handles;
+      PhaseBarrier phase_barriers[MAX_PHASE_BARRIERS];
+      size_t num_phase_barriers;
     };
 
     using handle_t = data_handle_t<void, 0, 0, 0>;
@@ -139,6 +143,11 @@ mpilegion_runtime_driver(
     sargs.num_handles = handles.size();
 
     for(size_t i = 0; i < num_ranks; ++i){
+      auto& pbs = phase_barriers[i];
+      assert(pbs.size() < MAX_PHASE_BARRIERS);
+      sargs.num_phase_barriers = pbs.size();
+      std::copy(pbs.begin(), pbs.end(), sargs.phase_barriers);
+
       arg_map.set_point(Legion::DomainPoint::from_point<1>(
         LegionRuntime::Arrays::make_point(i)),
         TaskArgument(&sargs, sizeof(sargs)));
