@@ -102,29 +102,35 @@ mpilegion_runtime_driver(
     //registered to the data Client at the specialization_driver
     int num_ranks;
     MPI_Comm_size(MPI_COMM_WORLD, &num_ranks);
-/*
-      for (std::set<ptr_t>::iterator
-         it = cells_shared_coloring[master_color].points.begin();
-         it != cells_shared_coloring[master_color].points.end(); ++it) {
 
-         const ptr_t ptr = *it;
-         for (int slave_color = 0; slave_color < num_ranks; ++slave_color)
-           if (cells_ghost_coloring[slave_color].points.count(ptr)) {
-             slave_colors.insert(slave_color);
-             master_colors[slave_color].insert(master_color);
-          }
-       }
-*/
-    std::vector<std::vector<PhaseBarrier>> phase_barriers(handles.size(),std::vector<PhaseBarrier>());
+    // FIXME Will not scale. Coloring in serialization_driver is a set.  Does that scale better?
+    // or should we just wait for automatic control replication?
+    std::vector<std::vector<PhaseBarrier>> phase_barriers(handles.size());
+    std::vector<std::vector<std::set<int>>> master_colors(handles.size(), std::vector<std::set<int>>(num_ranks));
     for (int idx = 0; idx < handles.size(); idx++) {
+
       handle_t h = handles[idx];
-      std::vector<std::set<int>> master_colors(num_ranks);
       for (int master_color=0; master_color < num_ranks; ++master_color) {
         std::set<int> slave_colors;
+        LegionRuntime::HighLevel::IndexSpace shared_subspace = runtime->get_index_subspace(ctx, h.shared_ip, master_color);
+        LegionRuntime::HighLevel::IndexIterator shared_it(runtime, ctx, shared_subspace);
+        while (shared_it.has_next()) {
+          const ptr_t shared_ptr = shared_it.next();
+          for (int slave_color = 0; slave_color < num_ranks; ++slave_color) {
+            LegionRuntime::HighLevel::IndexSpace ghost_subspace = runtime->get_index_subspace(ctx, h.ghost_ip, slave_color);
+            LegionRuntime::HighLevel::IndexIterator ghost_it(runtime, ctx, ghost_subspace);
+            while (ghost_it.has_next()) {
+              const ptr_t ghost_ptr = ghost_it.next();
+              if (ghost_ptr == shared_ptr) {
+                slave_colors.insert(slave_color);
+                master_colors[idx][slave_color].insert(master_color);
+              }
+            } // while ghost_it
+          } // for slave_color
+        } // while shared_it
         phase_barriers[idx].push_back(runtime->create_phase_barrier(ctx, 1 + slave_colors.size()));
-       }
-
-    }
+       } // for master_color
+    } // for idx
 
     const void* args_buf = serializer.get_buffer();
 
