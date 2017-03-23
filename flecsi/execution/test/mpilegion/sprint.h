@@ -742,8 +742,6 @@ specialization_driver(
   fm_copy.wait_all_results();
 
 
-  // FIXME do this only through flecsi
-
   //call a legion task that tests ghost cell access
 	std::set<Processor> all_procs;
 	Realm::Machine::get_machine().get_all_processors(all_procs);

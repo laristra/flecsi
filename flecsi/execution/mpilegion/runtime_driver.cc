@@ -82,7 +82,6 @@ mpilegion_runtime_driver(
     //execute SPMD launch that executes user-defined driver
 
     MustEpochLauncher must_epoch_launcher; 
-    LegionRuntime::HighLevel::ArgumentMap arg_map;
 
     field_ids_t & fid_t =field_ids_t::instance();
 
@@ -92,30 +91,24 @@ mpilegion_runtime_driver(
     std::vector<size_t> versions;
     flecsi_get_all_handles(dc, dense, handles, hashes, namespaces, versions);
     
-    Serializer task_args_serializer;
-    task_args_serializer.serialize(&handles[0], handles.size() * sizeof(handle_t));
-    task_args_serializer.serialize(&hashes[0], hashes.size() * sizeof(size_t));
-    task_args_serializer.serialize(&namespaces[0], namespaces.size() * sizeof(size_t));
-    task_args_serializer.serialize(&versions[0], versions.size() * sizeof(size_t));
-
     //create phase barriers per handle for SPMD launch from partitions created and
     //registered to the data Client at the specialization_driver
-    int num_ranks;
-    MPI_Comm_size(MPI_COMM_WORLD, &num_ranks);
+    int num_colors;
+    MPI_Comm_size(MPI_COMM_WORLD, &num_colors);
 
     // FIXME Will not scale. Coloring in serialization_driver is a set.  Does that scale better?
     // Or, should we just wait for automatic control replication?
     std::vector<std::vector<PhaseBarrier>> phase_barriers(handles.size());
-    std::vector<std::vector<std::set<int>>> master_colors(handles.size(), std::vector<std::set<int>>(num_ranks));
+    std::vector<std::vector<std::set<int>>> master_colors(handles.size(), std::vector<std::set<int>>(num_colors));
     for (int idx = 0; idx < handles.size(); idx++) {
       handle_t h = handles[idx];
-      for (int master_color=0; master_color < num_ranks; ++master_color) {
+      for (int master_color=0; master_color < num_colors; ++master_color) {
         std::set<int> slave_colors;
         LegionRuntime::HighLevel::IndexSpace shared_subspace = runtime->get_index_subspace(ctx, h.shared_ip, master_color);
         LegionRuntime::HighLevel::IndexIterator shared_it(runtime, ctx, shared_subspace);
         while (shared_it.has_next()) {
           const ptr_t shared_ptr = shared_it.next();
-          for (int slave_color = 0; slave_color < num_ranks; ++slave_color) {
+          for (int slave_color = 0; slave_color < num_colors; ++slave_color) {
             LegionRuntime::HighLevel::IndexSpace ghost_subspace = runtime->get_index_subspace(ctx, h.ghost_ip, slave_color);
             LegionRuntime::HighLevel::IndexIterator ghost_it(runtime, ctx, ghost_subspace);
             while (ghost_it.has_next()) {
@@ -131,75 +124,73 @@ mpilegion_runtime_driver(
        } // for master_color
     } // for idx < handles.size()
 
-    std::vector<Serializer> arg_map_serializer(num_ranks);
+    std::vector<Serializer> args_serializers(num_colors);
 
     spmd_task_args sargs;
     sargs.num_handles = handles.size();
-    sargs.num_colors = num_ranks;
+    sargs.num_colors = num_colors;
 
-    for(size_t rank = 0; rank < num_ranks; ++rank){
+    for(size_t color= 0; color < num_colors; ++color){
       std::vector<PhaseBarrier> pbarriers_as_master;
       std::vector<size_t> num_masters;
       std::vector<std::vector<PhaseBarrier>> masters_pbarriers;
-      std::vector<std::vector<size_t>> masters;
       for (int idx = 0; idx < handles.size(); idx++) {
-        pbarriers_as_master.push_back(phase_barriers[idx][rank]);
-        num_masters.push_back(master_colors[idx][rank].size());
+        pbarriers_as_master.push_back(phase_barriers[idx][color]);
+        num_masters.push_back(master_colors[idx][color].size());
         std::vector<PhaseBarrier> masters_pbs;
-        std::vector<size_t> masters_colors;
-        for (std::set<int>::iterator master=master_colors[idx][rank].begin();
-            master!=master_colors[idx][rank].end(); ++master) {
+        for (std::set<int>::iterator master=master_colors[idx][color].begin();
+            master!=master_colors[idx][color].end(); ++master)
           masters_pbs.push_back(phase_barriers[idx][*master]);
-          masters_colors.push_back(*master);
-        }
         masters_pbarriers.push_back(masters_pbs);
-        masters.push_back(masters_colors);
       } // for idx handles.size
-      arg_map_serializer[rank].serialize(&sargs, sizeof(spmd_task_args));
-      arg_map_serializer[rank].serialize(&pbarriers_as_master[0], handles.size() * sizeof(PhaseBarrier));
-      arg_map_serializer[rank].serialize(&num_masters[0], handles.size() * sizeof(size_t));
-      for (int idx = 0; idx < handles.size(); idx++) {
-        arg_map_serializer[rank].serialize(&masters_pbarriers[idx][0], num_masters[idx] * sizeof(PhaseBarrier));
-        arg_map_serializer[rank].serialize(&masters[idx][0], num_masters[idx] * sizeof(size_t));
-      }
+      args_serializers[color].serialize(&sargs, sizeof(spmd_task_args));
+      args_serializers[color].serialize(&handles[0], handles.size() * sizeof(handle_t));
+      args_serializers[color].serialize(&hashes[0], hashes.size() * sizeof(size_t));
+      args_serializers[color].serialize(&namespaces[0], namespaces.size() * sizeof(size_t));
+      args_serializers[color].serialize(&versions[0], versions.size() * sizeof(size_t));
+      args_serializers[color].serialize(&pbarriers_as_master[0], handles.size() * sizeof(PhaseBarrier));
+      args_serializers[color].serialize(&num_masters[0], handles.size() * sizeof(size_t));
+      for (int idx = 0; idx < handles.size(); idx++)
+        args_serializers[color].serialize(&masters_pbarriers[idx][0], num_masters[idx] * sizeof(PhaseBarrier));
 
-      arg_map.set_point(Legion::DomainPoint::from_point<1>(
-        LegionRuntime::Arrays::make_point(rank)),
-        TaskArgument(arg_map_serializer[rank].get_buffer(), arg_map_serializer[rank].get_used_bytes()));
-    } // for rank
+      TaskLauncher spmd_launcher(task_ids_t::instance().spmd_task_id,
+          TaskArgument(args_serializers[color].get_buffer(), args_serializers[color].get_used_bytes()));
 
-    LegionRuntime::HighLevel::IndexLauncher spmd_launcher(
-      task_ids_t::instance().spmd_task_id,
-      LegionRuntime::HighLevel::Domain::from_rect<1>(
-         context_.interop_helper_.all_processes_),
-      TaskArgument(task_args_serializer.get_buffer(), task_args_serializer.get_used_bytes()), arg_map);
+      spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
    
-    spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
-    for (int idx = 0; idx < handles.size(); idx++) {
-      handle_t h = handles[idx];
+      for (int idx = 0; idx < handles.size(); idx++) {
+        handle_t h = handles[idx];
 
-      LogicalPartition lp_excl = runtime->get_logical_partition(ctx, h.lr, h.exclusive_ip);
-      spmd_launcher.add_region_requirement(
-        RegionRequirement(lp_excl, 0 /*proj*/, READ_WRITE, EXCLUSIVE, h.lr));
-      spmd_launcher.add_field((1 + num_ranks)*idx,fid_t.fid_value);
-
-      LogicalPartition lp_shared = runtime->get_logical_partition(ctx, h.lr, h.shared_ip);
-
-      IndexSpace is_parent = runtime->get_parent_index_space(ctx, h.ghost_ip);
-      for (size_t color = 0; color < num_ranks; color++) {
-        LogicalRegion lr_potential_neighbor = runtime->get_logical_subregion_by_color(ctx, lp_shared, color);
+        LogicalPartition lp_excl = runtime->get_logical_partition(ctx, h.lr, h.exclusive_ip);
+        LogicalRegion lr_excl = runtime->get_logical_subregion_by_color(ctx, lp_excl, color);
         spmd_launcher.add_region_requirement(
-          RegionRequirement(lr_potential_neighbor, READ_WRITE, SIMULTANEOUS, h.lr)
-          .add_flags(NO_ACCESS_FLAG).add_field(fid_t.fid_value));
+          RegionRequirement(lr_excl, READ_WRITE, EXCLUSIVE, h.lr).add_field(fid_t.fid_value));
 
+        LogicalPartition lp_shared = runtime->get_logical_partition(ctx, h.lr, h.shared_ip);
+        LogicalRegion lr_shared = runtime->get_logical_subregion_by_color(ctx, lp_shared, color);
+        spmd_launcher.add_region_requirement(
+          RegionRequirement(lr_shared, READ_WRITE, SIMULTANEOUS, h.lr).add_field(fid_t.fid_value));
+
+        for (std::set<int>::iterator master=master_colors[idx][color].begin();
+            master!=master_colors[idx][color].end(); ++master) {
+          LogicalRegion lregion_ghost = runtime->get_logical_subregion_by_color(ctx,
+              lp_shared,*master);
+          spmd_launcher.add_region_requirement(
+            RegionRequirement(lregion_ghost, READ_ONLY, SIMULTANEOUS, h.lr)
+            .add_flags(NO_ACCESS_FLAG).add_field(fid_t.fid_value));
+        }
+
+        IndexSpace is_parent = runtime->get_parent_index_space(ctx, h.ghost_ip);
         IndexSpace ispace_ghost = runtime->get_index_subspace(ctx, h.ghost_ip, color);
         spmd_launcher.add_index_requirement(IndexSpaceRequirement(ispace_ghost, NO_MEMORY, is_parent));
-      }
+      } // for handles.size()
 
-    }
+      DomainPoint point(color);
+      must_epoch_launcher.add_single_task(point,spmd_launcher);
 
-    must_epoch_launcher.add_index_task(spmd_launcher);
+    } // for rank
+
  
     FutureMap fm = runtime->execute_must_epoch(ctx,must_epoch_launcher);
     fm.wait_all_results();
@@ -242,6 +233,9 @@ spmd_task(
 
   data_client dc;
 
+  std::cout << "arglen " << task->arglen << std::endl;
+  std::cout << "local_arglen " << task->local_arglen << std::endl;
+/*
   assert(task->arglen > 0);
   assert(task->local_arglen > 0);
 
@@ -353,7 +347,7 @@ spmd_task(
     runtime->destroy_logical_region(ctx, lregions_ghost[idx]);
   lregions_ghost.clear();
 
-
+*/
   context_.pop_state(utils::const_string_t{"driver"}.hash());
 
 }
