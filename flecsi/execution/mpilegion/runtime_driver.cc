@@ -41,6 +41,7 @@ namespace execution {
 
     struct spmd_task_args{
       size_t num_handles;
+      size_t num_colors;
     };
 
     using handle_t = data_handle_t<void, 0, 0, 0>;
@@ -134,6 +135,7 @@ mpilegion_runtime_driver(
 
     spmd_task_args sargs;
     sargs.num_handles = handles.size();
+    sargs.num_colors = num_ranks;
 
     for(size_t rank = 0; rank < num_ranks; ++rank){
       std::vector<PhaseBarrier> pbarriers_as_master;
@@ -173,21 +175,24 @@ mpilegion_runtime_driver(
       LogicalPartition lp_excl = runtime->get_logical_partition(ctx, h.lr, h.exclusive_ip);
       spmd_launcher.add_region_requirement(
         RegionRequirement(lp_excl, 0 /*proj*/, READ_WRITE, EXCLUSIVE, h.lr));
-      spmd_launcher.add_field(3*idx,fid_t.fid_value);
+      spmd_launcher.add_field((1 + num_ranks)*idx,fid_t.fid_value);
 
-      // FIXME  this is temporary for verifying 1st data movement - this will be RW, SIMUL
       LogicalPartition lp_shared = runtime->get_logical_partition(ctx, h.lr, h.shared_ip);
-      spmd_launcher.add_region_requirement(
-        RegionRequirement(lp_shared, 0 /*proj*/, READ_ONLY, EXCLUSIVE, h.lr));
-      spmd_launcher.add_field(3*idx + 1,fid_t.fid_value);
+      //spmd_launcher.add_region_requirement(
+      //  RegionRequirement(lp_shared, 0 /*proj*/, READ_WRITE, SIMULTANEOUS, h.lr));
+      //spmd_launcher.add_field((2+num_ranks)*idx + 1,fid_t.fid_value);
 
-      // FIXME  this is temporary for verifying 1st data movement - this will be RO, SIMUL for each neighbors' shared and pass ghost_ip as IndexSpace
-      LogicalPartition lp_ghost = runtime->get_logical_partition(ctx, h.lr, h.ghost_ip);
-      spmd_launcher.add_region_requirement(
-        RegionRequirement(lp_ghost, 0 /*proj*/, READ_ONLY, EXCLUSIVE, h.lr));
-      spmd_launcher.add_field(3*idx +2,fid_t.fid_value);
+      IndexSpace is_parent = runtime->get_parent_index_space(ctx, h.ghost_ip);
+      for (size_t color = 0; color < num_ranks; color++) {
+        LogicalRegion lr_potential_neighbor = runtime->get_logical_subregion_by_color(ctx, lp_shared, color);
+        spmd_launcher.add_region_requirement(
+          RegionRequirement(lr_potential_neighbor, READ_WRITE, SIMULTANEOUS, h.lr)
+          .add_flags(NO_ACCESS_FLAG).add_field(fid_t.fid_value));
 
-      // jpg - do neighbors shared and phase barriers here
+        IndexSpace ispace_ghost = runtime->get_index_subspace(ctx, h.ghost_ip, color);
+        spmd_launcher.add_index_requirement(IndexSpaceRequirement(ispace_ghost, NO_MEMORY, is_parent));
+      }
+
     }
 
     must_epoch_launcher.add_index_task(spmd_launcher);
@@ -225,7 +230,8 @@ spmd_task(
 {
 
   const int my_color = task->index_point.point_data[0];
-  context_t & context_ = context_t::instance();
+  std::cout << "spmd " << my_color << std::endl;
+  /*  context_t & context_ = context_t::instance();
   context_.push_state(utils::const_string_t{"driver"}.hash(),
       ctx, runtime, task, regions);
 
@@ -244,10 +250,11 @@ spmd_task(
   local_args_deserializer.deserialize(spmd_args_buf, sizeof(spmd_task_args));
   auto spmd_args = (spmd_task_args*)spmd_args_buf;
 
-  size_t num_handles = spmd_args->num_handles;
+  const size_t num_handles = spmd_args->num_handles;
+  const size_t num_colors = spmd_args->num_colors;
 
-    assert(regions.size() == 3*num_handles);
-    assert(task->regions.size() == 3*num_handles);
+  assert(regions.size() == ((2 + num_colors) * num_handles));
+  assert(task->regions.size() == ((2 + num_colors) * num_handles));
 
     void* handles_buf = malloc(sizeof(handle_t) * num_handles);
     args_deserializer.deserialize(handles_buf, sizeof(handle_t) * num_handles);
@@ -288,13 +295,12 @@ spmd_task(
       fix_handles[idx].exclusive_ip = empty_ip;
       fix_handles[idx].shared_ip = empty_ip;
       fix_handles[idx].ghost_ip = empty_ip;
-      fix_handles[idx].exclusive_lr = regions[3*idx].get_logical_region();
-      runtime->unmap_region(ctx, regions[3*idx]);
-      fix_handles[idx].shared_lr = regions[3*idx+1].get_logical_region();
-      runtime->unmap_region(ctx, regions[3*idx+1]);
-      fix_handles[idx].ghost_lr = regions[3*idx+2].get_logical_region();  
-      runtime->unmap_region(ctx, regions[3*idx+2]);
+      fix_handles[idx].exclusive_lr = regions[(2 + num_colors)*idx].get_logical_region();
+      fix_handles[idx].shared_lr = regions[(2 + num_colors)*idx+1].get_logical_region();
+      fix_handles[idx].ghost_lr = regions[(2 + num_colors)*idx+1].get_logical_region(); // FIXME make a halo region from index space
     }
+
+    runtime->unmap_all_regions(ctx);
 
     flecsi_put_all_handles(dc, dense, num_handles,
       (handle_t*)handles_buf,
@@ -325,6 +331,7 @@ spmd_task(
   driver(argc, argv);
 
   context_.pop_state(utils::const_string_t{"driver"}.hash());
+*/
 }
 
 

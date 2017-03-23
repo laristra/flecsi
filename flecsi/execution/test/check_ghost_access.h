@@ -75,6 +75,7 @@ driver(
   flecsi::execution::context_t & context_ = flecsi::execution::context_t::instance();
   const LegionRuntime::HighLevel::Task *task = context_.task(flecsi::utils::const_string_t{"driver"}.hash());
   const int my_color = task->index_point.point_data[0];
+	std::cout << my_color << " check GHOST" << std::endl;
 
 	flecsi::data_client& dc = *((flecsi::data_client*)argv[argc - 1]);
 
@@ -88,10 +89,12 @@ driver(
 
     // phase WRITE: masters update their halo regions; slaves may not access data
 
+    std::cout << my_color << " write phase " << cycle << std::endl;
     flecsi_execute_task(shared_write_task, loc, single, shared_write_handle, my_color, cycle);
 
     // phase READ: slaves can read data; masters may not write to data
 
+    std::cout << my_color << " read phase " << cycle << std::endl;
     flecsi_execute_task(ghost_read_task, loc, single, ghost_read_handle, my_color, cycle);
 
   }
