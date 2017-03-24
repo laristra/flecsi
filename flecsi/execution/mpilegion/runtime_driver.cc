@@ -284,8 +284,6 @@ spmd_task(
   Legion::LogicalRegion empty_lr;
   Legion::IndexPartition empty_ip;
 
-  //field_ids_t & fid_t =field_ids_t::instance();
-
   std::vector<LogicalRegion>  lregions_ghost(num_handles);
 
   // fix handles on spmd side
@@ -347,7 +345,7 @@ spmd_task(
   std::memcpy(argv, args.argv, args.argc*sizeof(char*));
   argv[argc - 1] = (char*)&dc;
 
-//  driver(argc, argv);
+  driver(argc, argv);
 
   //remove ghost logical regions
   for (unsigned idx = 0; idx < num_handles; idx++)
