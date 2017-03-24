@@ -296,8 +296,8 @@ spmd_task(
         fix_handles[idx].masters_pbarriers_ptrs.push_back(&(masters_pbarriers_buf[master]));
       assert(fix_handles[idx].masters_pbarriers_ptrs.size() == num_masters[idx]);
 
-      size_t* masters = (size_t*)malloc(sizeof(size_t) * num_masters[idx]);
-      local_args_deserializer.deserialize((void*)masters, sizeof(size_t) * num_masters[idx]);
+      size_t* master_colors = (size_t*)malloc(sizeof(size_t) * num_masters[idx]);
+      local_args_deserializer.deserialize((void*)master_colors, sizeof(size_t) * num_masters[idx]);
 
       fix_handles[idx].lr = empty_lr;
       fix_handles[idx].exclusive_ip = empty_ip;
@@ -305,6 +305,11 @@ spmd_task(
       fix_handles[idx].ghost_ip = empty_ip;
       fix_handles[idx].exclusive_lr = regions[(1 + num_colors)*idx].get_logical_region();
       fix_handles[idx].shared_lr = regions[(1 + num_colors)*idx+1+my_color].get_logical_region();
+
+      for (size_t master = 0; master < num_masters[idx]; master++)
+        fix_handles[idx].pregions_neighbors_shared.push_back(regions[(1 + num_colors)*idx+1+master_colors[master]]);
+
+
       fix_handles[idx].ghost_lr = regions[(1 + num_colors)*idx+1].get_logical_region(); // FIXME make a halo region from index space
     }
 

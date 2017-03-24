@@ -77,7 +77,6 @@ struct legion_meta_data_t
 
     Legion::PhaseBarrier* pbarrier_as_master_ptr;
     std::vector<Legion::PhaseBarrier*> masters_pbarriers_ptrs;
-    std::vector<Legion::LogicalRegion> lregions_neighbors_shared;
     std::vector<Legion::PhysicalRegion> pregions_neighbors_shared;
     Legion::LogicalRegion lregion_ghost;
     size_t ghost_copy_task_id;
