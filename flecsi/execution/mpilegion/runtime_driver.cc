@@ -317,6 +317,7 @@ spmd_task(
     runtime->attach_name(lregions_ghost[idx], buf);
 
     fix_handles[idx].ghost_lr = lregions_ghost[idx];
+    fix_handles[idx].ghost_copy_task_id = task_ids_t::instance().halo_copy_task_id;
   }
 
   runtime->unmap_all_regions(ctx);

@@ -148,6 +148,13 @@ namespace execution {
             acquire_launcher.add_wait_barrier(*(h.masters_pbarriers_ptrs[master]));  // phase READ
             runtime->issue_acquire(ctx, acquire_launcher);
 
+            TaskLauncher copy_launcher(h.ghost_copy_task_id, TaskArgument(nullptr, 0));
+            copy_launcher.add_region_requirement(RegionRequirement(lregion_neighbor, READ_ONLY,
+                EXCLUSIVE, lregion_neighbor).add_field(fid_t.fid_value));
+            copy_launcher.add_region_requirement(RegionRequirement(h.ghost_lr, READ_WRITE,
+                EXCLUSIVE, h.ghost_lr).add_field(fid_t.fid_value));
+            runtime->execute_task(ctx, copy_launcher);
+
             ReleaseLauncher release_launcher(lregion_neighbor, lregion_neighbor,
                 h.pregions_neighbors_shared[master]);
             release_launcher.add_field(fid_t.fid_value);
