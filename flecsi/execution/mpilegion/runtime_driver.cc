@@ -260,68 +260,74 @@ spmd_task(
 
   assert(regions.size() == ((1 + num_colors) * num_handles));
   assert(task->regions.size() == ((1 + num_colors) * num_handles));
-
-    void* handles_buf = malloc(sizeof(handle_t) * num_handles);
-    args_deserializer.deserialize(handles_buf, sizeof(handle_t) * num_handles);
-
-    void* hashes_buf = malloc(sizeof(size_t) * num_handles);
-    args_deserializer.deserialize(hashes_buf, sizeof(size_t) * num_handles);
-
-    void* namespaces_buf = malloc(sizeof(size_t) * num_handles);
-    args_deserializer.deserialize(namespaces_buf, sizeof(size_t) * num_handles);
-
-    void* versions_buf = malloc(sizeof(size_t) * num_handles);
-    args_deserializer.deserialize(versions_buf, sizeof(size_t) * num_handles);
-
-    PhaseBarrier* pbarriers_as_master = (PhaseBarrier*)malloc(sizeof(PhaseBarrier) * num_handles);
-    local_args_deserializer.deserialize((void*)pbarriers_as_master, sizeof(PhaseBarrier) * num_handles);
-
-    size_t* num_masters = (size_t*)malloc(sizeof(size_t) * num_handles);
-    local_args_deserializer.deserialize((void*)num_masters, sizeof(size_t) * num_handles);
-
-    Legion::LogicalRegion empty_lr;
-    Legion::IndexPartition empty_ip;
-
-    field_ids_t & fid_t =field_ids_t::instance();
-
-    // fix handles on spmd side
-    handle_t* fix_handles = (handle_t*)handles_buf;
-    for (size_t idx = 0; idx < num_handles; idx++) {
-      fix_handles[idx].pbarrier_as_master_ptr = &(pbarriers_as_master[idx]);
-
-      PhaseBarrier* masters_pbarriers_buf = (PhaseBarrier*)malloc(sizeof(PhaseBarrier) * num_masters[idx]);
-      local_args_deserializer.deserialize((void*)masters_pbarriers_buf, sizeof(PhaseBarrier) * num_masters[idx]);
-      std::vector<PhaseBarrier> masters_pbarriers;
-      for (size_t master = 0; master < num_masters[idx]; master++)
-        fix_handles[idx].masters_pbarriers_ptrs.push_back(&(masters_pbarriers_buf[master]));
-      assert(fix_handles[idx].masters_pbarriers_ptrs.size() == num_masters[idx]);
-
-      size_t* master_colors = (size_t*)malloc(sizeof(size_t) * num_masters[idx]);
-      local_args_deserializer.deserialize((void*)master_colors, sizeof(size_t) * num_masters[idx]);
-
-      fix_handles[idx].lr = empty_lr;
-      fix_handles[idx].exclusive_ip = empty_ip;
-      fix_handles[idx].shared_ip = empty_ip;
-      fix_handles[idx].ghost_ip = empty_ip;
-      fix_handles[idx].exclusive_lr = regions[(1 + num_colors)*idx].get_logical_region();
-      fix_handles[idx].shared_lr = regions[(1 + num_colors)*idx+1+my_color].get_logical_region();
-
-      for (size_t master = 0; master < num_masters[idx]; master++)
-        fix_handles[idx].pregions_neighbors_shared.push_back(regions[(1 + num_colors)*idx+1+master_colors[master]]);
+  assert(task->indexes.size() == (num_colors * num_handles));
 
 
-      fix_handles[idx].ghost_lr = regions[(1 + num_colors)*idx+1].get_logical_region(); // FIXME make a halo region from index space
-    }
+  void* handles_buf = malloc(sizeof(handle_t) * num_handles);
+  args_deserializer.deserialize(handles_buf, sizeof(handle_t) * num_handles);
 
-    runtime->unmap_all_regions(ctx);
+  void* hashes_buf = malloc(sizeof(size_t) * num_handles);
+  args_deserializer.deserialize(hashes_buf, sizeof(size_t) * num_handles);
 
-    flecsi_put_all_handles(dc, dense, num_handles,
-      (handle_t*)handles_buf,
-      (size_t*)hashes_buf,
-      (size_t*)namespaces_buf,
-      (size_t*)versions_buf);
+  void* namespaces_buf = malloc(sizeof(size_t) * num_handles);
+  args_deserializer.deserialize(namespaces_buf, sizeof(size_t) * num_handles);
 
+  void* versions_buf = malloc(sizeof(size_t) * num_handles);
+  args_deserializer.deserialize(versions_buf, sizeof(size_t) * num_handles);
 
+  PhaseBarrier* pbarriers_as_master = (PhaseBarrier*)malloc(sizeof(PhaseBarrier) * num_handles);
+  local_args_deserializer.deserialize((void*)pbarriers_as_master, sizeof(PhaseBarrier) * num_handles);
+
+  size_t* num_masters = (size_t*)malloc(sizeof(size_t) * num_handles);
+  local_args_deserializer.deserialize((void*)num_masters, sizeof(size_t) * num_handles);
+
+  Legion::LogicalRegion empty_lr;
+  Legion::IndexPartition empty_ip;
+
+  //field_ids_t & fid_t =field_ids_t::instance();
+
+  std::vector<LogicalRegion>  lregions_ghost(num_handles);
+
+  // fix handles on spmd side
+  handle_t* fix_handles = (handle_t*)handles_buf;
+  for (size_t idx = 0; idx < num_handles; idx++) {
+    fix_handles[idx].pbarrier_as_master_ptr = &(pbarriers_as_master[idx]);
+
+    PhaseBarrier* masters_pbarriers_buf = (PhaseBarrier*)malloc(sizeof(PhaseBarrier) * num_masters[idx]);
+    local_args_deserializer.deserialize((void*)masters_pbarriers_buf, sizeof(PhaseBarrier) * num_masters[idx]);
+    std::vector<PhaseBarrier> masters_pbarriers;
+    for (size_t master = 0; master < num_masters[idx]; master++)
+      fix_handles[idx].masters_pbarriers_ptrs.push_back(&(masters_pbarriers_buf[master]));
+    assert(fix_handles[idx].masters_pbarriers_ptrs.size() == num_masters[idx]);
+    size_t* master_colors = (size_t*)malloc(sizeof(size_t) * num_masters[idx]);
+    local_args_deserializer.deserialize((void*)master_colors, sizeof(size_t) * num_masters[idx]);
+
+    fix_handles[idx].lr = empty_lr;
+    fix_handles[idx].exclusive_ip = empty_ip;
+    fix_handles[idx].shared_ip = empty_ip;
+    fix_handles[idx].ghost_ip = empty_ip;
+    fix_handles[idx].exclusive_lr = regions[(1 + num_colors)*idx].get_logical_region();
+    fix_handles[idx].shared_lr = regions[(1 + num_colors)*idx+1+my_color].get_logical_region();
+    for (size_t master = 0; master < num_masters[idx]; master++)
+      fix_handles[idx].pregions_neighbors_shared.push_back(regions[(1 + num_colors)*idx+1+master_colors[master]]);
+
+    FieldSpace fspace_ghost = fix_handles[idx].shared_lr.get_field_space();
+    IndexSpace ispace_ghost = task->indexes[num_colors * idx + my_color].handle;
+    lregions_ghost[idx] = runtime->create_logical_region(ctx, ispace_ghost, fspace_ghost);
+    char buf[40];
+    sprintf(buf,"spmd %d lregion_ghost %d", my_color, idx);
+    runtime->attach_name(lregions_ghost[idx], buf);
+
+    fix_handles[idx].ghost_lr = lregions_ghost[idx];
+  }
+
+  runtime->unmap_all_regions(ctx);
+
+  flecsi_put_all_handles(dc, dense, num_handles,
+    (handle_t*)handles_buf,
+    (size_t*)hashes_buf,
+    (size_t*)namespaces_buf,
+    (size_t*)versions_buf);
 
   // We obtain map of hashes to regions[n] here
   // We create halo LogicalRegions here
@@ -342,6 +348,12 @@ spmd_task(
   argv[argc - 1] = (char*)&dc;
 
 //  driver(argc, argv);
+
+  //remove ghost logical regions
+  for (unsigned idx = 0; idx < num_handles; idx++)
+    runtime->destroy_logical_region(ctx, lregions_ghost[idx]);
+  lregions_ghost.clear();
+
 
   context_.pop_state(utils::const_string_t{"driver"}.hash());
 
