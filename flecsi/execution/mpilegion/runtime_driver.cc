@@ -234,27 +234,23 @@ spmd_task(
   data_client dc;
 
   std::cout << "arglen " << task->arglen << std::endl;
-  std::cout << "local_arglen " << task->local_arglen << std::endl;
-/*
+
   assert(task->arglen > 0);
-  assert(task->local_arglen > 0);
 
   void* args_buf = task->args;
-  void* local_args_buf = task->local_args;
 
   Deserializer args_deserializer(task->args, task->arglen);
-  Deserializer local_args_deserializer(task->local_args,task->local_arglen);
 
   void* spmd_args_buf = malloc(sizeof(spmd_task_args));
-  local_args_deserializer.deserialize(spmd_args_buf, sizeof(spmd_task_args));
+  args_deserializer.deserialize(spmd_args_buf, sizeof(spmd_task_args));
   auto spmd_args = (spmd_task_args*)spmd_args_buf;
 
   const size_t num_handles = spmd_args->num_handles;
-  const size_t num_colors = spmd_args->num_colors;
+  //FIXME remove const size_t num_colors = spmd_args->num_colors;
 
-  assert(regions.size() == ((1 + num_colors) * num_handles));
-  assert(task->regions.size() == ((1 + num_colors) * num_handles));
-  assert(task->indexes.size() == (num_colors * num_handles));
+  assert(regions.size() > (2 * num_handles));
+  assert(task->regions.size() > (2 * num_handles));
+  assert(task->indexes.size() == num_handles);
 
 
   void* handles_buf = malloc(sizeof(handle_t) * num_handles);
@@ -270,10 +266,10 @@ spmd_task(
   args_deserializer.deserialize(versions_buf, sizeof(size_t) * num_handles);
 
   PhaseBarrier* pbarriers_as_master = (PhaseBarrier*)malloc(sizeof(PhaseBarrier) * num_handles);
-  local_args_deserializer.deserialize((void*)pbarriers_as_master, sizeof(PhaseBarrier) * num_handles);
+  args_deserializer.deserialize((void*)pbarriers_as_master, sizeof(PhaseBarrier) * num_handles);
 
   size_t* num_masters = (size_t*)malloc(sizeof(size_t) * num_handles);
-  local_args_deserializer.deserialize((void*)num_masters, sizeof(size_t) * num_handles);
+  args_deserializer.deserialize((void*)num_masters, sizeof(size_t) * num_handles);
 
   Legion::LogicalRegion empty_lr;
   Legion::IndexPartition empty_ip;
@@ -282,29 +278,28 @@ spmd_task(
 
   // fix handles on spmd side
   handle_t* fix_handles = (handle_t*)handles_buf;
+  int region_index = 0;
   for (size_t idx = 0; idx < num_handles; idx++) {
     fix_handles[idx].pbarrier_as_master_ptr = &(pbarriers_as_master[idx]);
 
     PhaseBarrier* masters_pbarriers_buf = (PhaseBarrier*)malloc(sizeof(PhaseBarrier) * num_masters[idx]);
-    local_args_deserializer.deserialize((void*)masters_pbarriers_buf, sizeof(PhaseBarrier) * num_masters[idx]);
+    args_deserializer.deserialize((void*)masters_pbarriers_buf, sizeof(PhaseBarrier) * num_masters[idx]);
     std::vector<PhaseBarrier> masters_pbarriers;
     for (size_t master = 0; master < num_masters[idx]; master++)
       fix_handles[idx].masters_pbarriers_ptrs.push_back(&(masters_pbarriers_buf[master]));
     assert(fix_handles[idx].masters_pbarriers_ptrs.size() == num_masters[idx]);
-    size_t* master_colors = (size_t*)malloc(sizeof(size_t) * num_masters[idx]);
-    local_args_deserializer.deserialize((void*)master_colors, sizeof(size_t) * num_masters[idx]);
 
     fix_handles[idx].lr = empty_lr;
     fix_handles[idx].exclusive_ip = empty_ip;
     fix_handles[idx].shared_ip = empty_ip;
     fix_handles[idx].ghost_ip = empty_ip;
-    fix_handles[idx].exclusive_lr = regions[(1 + num_colors)*idx].get_logical_region();
-    fix_handles[idx].shared_lr = regions[(1 + num_colors)*idx+1+my_color].get_logical_region();
+    fix_handles[idx].exclusive_lr = regions[region_index++].get_logical_region();
+    fix_handles[idx].shared_lr = regions[region_index++].get_logical_region();
     for (size_t master = 0; master < num_masters[idx]; master++)
-      fix_handles[idx].pregions_neighbors_shared.push_back(regions[(1 + num_colors)*idx+1+master_colors[master]]);
+      fix_handles[idx].pregions_neighbors_shared.push_back(regions[region_index++]);
 
     FieldSpace fspace_ghost = fix_handles[idx].shared_lr.get_field_space();
-    IndexSpace ispace_ghost = task->indexes[num_colors * idx + my_color].handle;
+    IndexSpace ispace_ghost = task->indexes[idx].handle;
     lregions_ghost[idx] = runtime->create_logical_region(ctx, ispace_ghost, fspace_ghost);
     char buf[40];
     sprintf(buf,"spmd %d lregion_ghost %d", my_color, idx);
@@ -347,7 +342,6 @@ spmd_task(
     runtime->destroy_logical_region(ctx, lregions_ghost[idx]);
   lregions_ghost.clear();
 
-*/
   context_.pop_state(utils::const_string_t{"driver"}.hash());
 
 }
