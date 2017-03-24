@@ -40,13 +40,25 @@ using accessor_t = flecsi::data::legion::dense_accessor_t<T, flecsi::data::legio
 
 void
 shared_write_task(
+  accessor_t<size_t> global_IDs,
   accessor_t<size_t> acc_cells,
   int my_color,
   int cycle
 )
 {
   std::cout << my_color << " as master writes data; phase 1 of cycle " << cycle << std::endl;
-  // ndm - how do I pass int cycle?
+
+  for (size_t i = 0; i < acc_cells.shared_size(); i++) {
+    acc_cells.shared(i) = static_cast<size_t>(global_IDs.shared(i) + cycle);
+    std::cout << my_color << " wrote "
+        << static_cast<size_t>(global_IDs.shared(i) + cycle) << " to " << i << std::endl;
+  }
+
+  for (size_t i = 0; i < acc_cells.shared_size(); i++) {
+    acc_cells.shared(i) = static_cast<size_t>(global_IDs.shared(i) + cycle);
+    std::cout << my_color << " read "
+        << acc_cells.shared(i) << " from " << i << std::endl;
+  }
 }
 
 flecsi_register_task(shared_write_task, loc, single);
@@ -54,13 +66,24 @@ flecsi_register_task(shared_write_task, loc, single);
 
 void
 ghost_read_task(
+  accessor_t<size_t> global_IDs,
   accessor_t<size_t> acc_cells,
   int my_color,
   int cycle
 )
 {
   std::cout << my_color << " as slave reads data; phase 2 of cycle " << cycle <<  std::endl;
-  // ndm - how do I pass int cycle?
+
+/*  for (size_t i = 0; i < acc_cells.ghost_size(); i++) {
+    std::cout << acc_cells.ghost(i) << " vs "
+        << static_cast<size_t>(global_IDs.ghost(i) + cycle) << std::endl;
+//    assert(acc_cells.ghost(i) == static_cast<size_t>(global_IDs.ghost(i) + cycle));
+  }
+*/
+  for (size_t i = 0; i < acc_cells.shared_size(); i++)
+    std::cout << my_color << " REread "
+        << acc_cells.shared(i) << " from " << i << std::endl;
+//    assert(acc_cells.shared(i) == static_cast<size_t>(global_IDs.shared(i) + cycle));
 }
 
 flecsi_register_task(ghost_read_task, loc, single);
@@ -81,21 +104,23 @@ driver(
 
   int index_space = 0;
   auto shared_write_handle =
-    flecsi_get_handle(dc, sprint, cell_ID, size_t, dense, index_space, none, ro, none);  // FIXME rw
+    flecsi_get_handle(dc, sprint, data, size_t, dense, index_space, none, rw, none);
   auto ghost_read_handle =
-    flecsi_get_handle(dc, sprint, cell_ID, size_t, dense, index_space, none, none, ro);
+    flecsi_get_handle(dc, sprint, data, size_t, dense, index_space, none, ro, ro);
+  auto cell_ID_handle =
+    flecsi_get_handle(dc, sprint, cell_ID, size_t, dense, index_space, none, ro, ro);
 
-  for (int cycle = 0; cycle < 2; cycle++) {
+  for (int cycle = 0; cycle < 1; cycle++) {
 
     // phase WRITE: masters update their halo regions; slaves may not access data
 
     std::cout << my_color << " write phase " << cycle << std::endl;
-    flecsi_execute_task(shared_write_task, loc, single, shared_write_handle, my_color, cycle);
+    flecsi_execute_task(shared_write_task, loc, single, cell_ID_handle, shared_write_handle, my_color, cycle);
 
     // phase READ: slaves can read data; masters may not write to data
 
     std::cout << my_color << " read phase " << cycle << std::endl;
-    flecsi_execute_task(ghost_read_task, loc, single, ghost_read_handle, my_color, cycle);
+    flecsi_execute_task(ghost_read_task, loc, single, cell_ID_handle, ghost_read_handle, my_color, cycle);
 
   }
 

@@ -688,7 +688,7 @@ specialization_driver(
   dc.put_index_space(index_id, cells_parts);
 
   flecsi_register_data(dc, sprint, cell_ID, size_t, dense, versions, index_id);
-  //flecsi_register_data(dc, sprint, pressure, double, dense, versions, index_id);
+  flecsi_register_data(dc, sprint, data, size_t, dense, versions, index_id);
 
   auto cell_handle =
     flecsi_get_handle(dc, sprint, cell_ID, size_t, dense, index_id, rw, rw, ro);
