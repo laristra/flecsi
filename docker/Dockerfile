@@ -4,6 +4,8 @@ ARG MINIMAL
 ARG MPI
 ARG RUNTIME
 ARG COVERAGE
+ARG SONARQUBE
+ARG SONARQUBE_TOKEN
 ARG CC
 ARG CXX
 ARG CXXFLAGS
@@ -23,8 +25,9 @@ ENV TRAVIS_OS_NAME linux
 RUN rm -rf /home/flecsi/.ccache
 COPY flecsi /home/flecsi/flecsi
 COPY ccache/ /home/flecsi/.ccache
+COPY sonar/ /home/flecsi/.sonar
 USER root
-RUN chown -R flecsi:flecsi /home/flecsi/flecsi /home/flecsi/.ccache
+RUN chown -R flecsi:flecsi /home/flecsi/flecsi /home/flecsi/.ccache /home/flecsi/.sonar
 USER flecsi
 
 WORKDIR /home/flecsi/flecsi
@@ -43,7 +46,7 @@ RUN cmake -DENABLE_MPI=$MPI \
           -DENABLE_DOCUMENTATION=ON \
           ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} ..
 
-RUN make VERBOSE=1 -j2
+RUN ${SONARQUBE:+build-wrapper-linux-x86-64 --out-dir bw-output} make VERBOSE=1 -j2
 RUN ccache -s
 RUN make doxygen
 RUN if [ ${COVERAGE} ]; then \
@@ -61,6 +64,17 @@ RUN cd .. && if [ ${COVERAGE} ]; then \
     $HOME/.local/bin/codecov -F "${CC}"; \
   fi; \
 fi && cd -
+RUN cd .. && if [ ${TRAVIS_BRANCH} == master ] && [ ${TRAVIS_PULL_REQUEST} == false ] && [ ${SONARQUBE} ]; then \
+  sonar-scanner \
+    -Dsonar.projectKey=${TRAVIS_REPO_SLUG##*/} \
+    -Dsonar.sources=. \
+    -Dsonar.exclusions=build/CMakeFiles/**,cinch/** \
+    -Dsonar.cfamily.build-wrapper-output=build/bw-output \
+    -Dsonar.host.url=https://sonarqube.com \
+    -Dsonar.organization=${TRAVIS_REPO_SLUG%%/*} \
+    -Dsonar.login=${SONARQUBE_TOKEN}; \ 
+fi && cd -
+ENV SONARQUBE_TOKEN ""
 USER root
 RUN make install
 USER flecsi
