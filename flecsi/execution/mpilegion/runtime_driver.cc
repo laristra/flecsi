@@ -141,20 +141,27 @@ mpilegion_runtime_driver(
       std::vector<PhaseBarrier> pbarriers_as_master;
       std::vector<size_t> num_masters;
       std::vector<std::vector<PhaseBarrier>> masters_pbarriers;
+      std::vector<std::vector<size_t>> masters;
       for (int idx = 0; idx < handles.size(); idx++) {
         pbarriers_as_master.push_back(phase_barriers[idx][rank]);
         num_masters.push_back(master_colors[idx][rank].size());
         std::vector<PhaseBarrier> masters_pbs;
+        std::vector<size_t> masters_colors;
         for (std::set<int>::iterator master=master_colors[idx][rank].begin();
-            master!=master_colors[idx][rank].end(); ++master)
+            master!=master_colors[idx][rank].end(); ++master) {
           masters_pbs.push_back(phase_barriers[idx][*master]);
+          masters_colors.push_back(*master);
+        }
         masters_pbarriers.push_back(masters_pbs);
+        masters.push_back(masters_colors);
       } // for idx handles.size
       arg_map_serializer[rank].serialize(&sargs, sizeof(spmd_task_args));
       arg_map_serializer[rank].serialize(&pbarriers_as_master[0], handles.size() * sizeof(PhaseBarrier));
       arg_map_serializer[rank].serialize(&num_masters[0], handles.size() * sizeof(size_t));
-      for (int idx = 0; idx < handles.size(); idx++)
+      for (int idx = 0; idx < handles.size(); idx++) {
         arg_map_serializer[rank].serialize(&masters_pbarriers[idx][0], num_masters[idx] * sizeof(PhaseBarrier));
+        arg_map_serializer[rank].serialize(&masters[idx][0], num_masters[idx] * sizeof(size_t));
+      }
 
       arg_map.set_point(Legion::DomainPoint::from_point<1>(
         LegionRuntime::Arrays::make_point(rank)),
@@ -178,9 +185,6 @@ mpilegion_runtime_driver(
       spmd_launcher.add_field((1 + num_ranks)*idx,fid_t.fid_value);
 
       LogicalPartition lp_shared = runtime->get_logical_partition(ctx, h.lr, h.shared_ip);
-      //spmd_launcher.add_region_requirement(
-      //  RegionRequirement(lp_shared, 0 /*proj*/, READ_WRITE, SIMULTANEOUS, h.lr));
-      //spmd_launcher.add_field((2+num_ranks)*idx + 1,fid_t.fid_value);
 
       IndexSpace is_parent = runtime->get_parent_index_space(ctx, h.ghost_ip);
       for (size_t color = 0; color < num_ranks; color++) {
@@ -231,7 +235,8 @@ spmd_task(
 
   const int my_color = task->index_point.point_data[0];
   std::cout << "spmd " << my_color << std::endl;
-  /*  context_t & context_ = context_t::instance();
+
+  context_t & context_ = context_t::instance();
   context_.push_state(utils::const_string_t{"driver"}.hash(),
       ctx, runtime, task, regions);
 
@@ -253,8 +258,8 @@ spmd_task(
   const size_t num_handles = spmd_args->num_handles;
   const size_t num_colors = spmd_args->num_colors;
 
-  assert(regions.size() == ((2 + num_colors) * num_handles));
-  assert(task->regions.size() == ((2 + num_colors) * num_handles));
+  assert(regions.size() == ((1 + num_colors) * num_handles));
+  assert(task->regions.size() == ((1 + num_colors) * num_handles));
 
     void* handles_buf = malloc(sizeof(handle_t) * num_handles);
     args_deserializer.deserialize(handles_buf, sizeof(handle_t) * num_handles);
@@ -291,13 +296,16 @@ spmd_task(
         fix_handles[idx].masters_pbarriers_ptrs.push_back(&(masters_pbarriers_buf[master]));
       assert(fix_handles[idx].masters_pbarriers_ptrs.size() == num_masters[idx]);
 
+      size_t* masters = (size_t*)malloc(sizeof(size_t) * num_masters[idx]);
+      local_args_deserializer.deserialize((void*)masters, sizeof(size_t) * num_masters[idx]);
+
       fix_handles[idx].lr = empty_lr;
       fix_handles[idx].exclusive_ip = empty_ip;
       fix_handles[idx].shared_ip = empty_ip;
       fix_handles[idx].ghost_ip = empty_ip;
-      fix_handles[idx].exclusive_lr = regions[(2 + num_colors)*idx].get_logical_region();
-      fix_handles[idx].shared_lr = regions[(2 + num_colors)*idx+1].get_logical_region();
-      fix_handles[idx].ghost_lr = regions[(2 + num_colors)*idx+1].get_logical_region(); // FIXME make a halo region from index space
+      fix_handles[idx].exclusive_lr = regions[(1 + num_colors)*idx].get_logical_region();
+      fix_handles[idx].shared_lr = regions[(1 + num_colors)*idx+1+my_color].get_logical_region();
+      fix_handles[idx].ghost_lr = regions[(1 + num_colors)*idx+1].get_logical_region(); // FIXME make a halo region from index space
     }
 
     runtime->unmap_all_regions(ctx);
@@ -328,10 +336,10 @@ spmd_task(
   std::memcpy(argv, args.argv, args.argc*sizeof(char*));
   argv[argc - 1] = (char*)&dc;
 
-  driver(argc, argv);
+//  driver(argc, argv);
 
   context_.pop_state(utils::const_string_t{"driver"}.hash());
-*/
+
 }
 
 
