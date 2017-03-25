@@ -16,7 +16,7 @@ env:
     - DISTRO=ubuntu_mpich MPI=ON  RUNTIME=mpilegion WERROR=yes
     - DISTRO=ubuntu MPI=OFF  RUNTIME=serial       DOCKERHUB=true
     - DISTRO=ubuntu MPI=OFF  RUNTIME=serial       WERROR=yes
-    - DISTRO=ubuntu MPI=OFF  COVERAGE=ON RUNTIME=serial
+    - DISTRO=ubuntu MPI=OFF  COVERAGE=ON RUNTIME=serial SONARQUBE=ON
 
     - DISTRO=fedora MINIMAL=ON MPI=OFF RUNTIME=serial
     - DISTRO=fedora MPI=OFF RUNTIME=legion    DOCKERHUB=true
@@ -49,10 +49,12 @@ script:
   - cd ../../
   - mv -v ${TRAVIS_REPO_SLUG} $HOME/docker
   - cp -r $HOME/.ccache ${HOME}/docker/ccache
+  - cp -r $HOME/.sonar ${HOME}/docker/sonar
   - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
   - docker build --build-arg MPI=${MPI} --build-arg RUNTIME=${RUNTIME} --build-arg CXXFLAGS=${WERROR:+-Werror}
                 --build-arg COVERAGE=${COVERAGE} --build-arg MINIMAL=${MINIMAL}
                 --build-arg CC=${CC} --build-arg CXX=${CXX}
+                --build-arg SONARQUBE=${SONARQUBE} --build-arg SONARQUBE_TOKEN=${SONARQUBE_TOKEN}
                 --build-arg TRAVIS_BRANCH=${TRAVIS_BRANCH} --build-arg TRAVIS_JOB_NUMBER=${TRAVIS_JOB_NUMBER}
                 --build-arg TRAVIS_PULL_REQUEST=${TRAVIS_PULL_REQUEST} --build-arg TRAVIS_JOB_ID=${TRAVIS_JOB_ID}
                 --build-arg TRAVIS_TAG=${TRAVIS_TAG} --build-arg TRAVIS_REPO_SLUG=${TRAVIS_REPO_SLUG}
@@ -60,7 +62,8 @@ script:
                 -t ${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG} ${HOME}/docker/ &&
     rm -rf ${HOME}/.ccache &&
     CON=$(docker run -d ${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG} /bin/bash) &&
-    docker cp ${CON}:/home/flecsi/.ccache ${HOME}/
+    docker cp ${CON}:/home/flecsi/.ccache ${HOME}/ &&
+    docker cp ${CON}:/home/flecsi/.sonar ${HOME}/
 
 after_success:
   - if [[ ${DOCKERHUB} = true && ${DOCKER_EMAIL} && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_PULL_REQUEST} == false && ${TRAVIS_BRANCH} == master ]]; then
@@ -93,11 +96,19 @@ after_success:
     fi
 
 cache:
-  - ccache
+  ccache: true
+  directories:
+    - $HOME/.sonar
 
 compiler:
   - gcc
   - clang
+
+branches:
+  only:
+  - master
+  - travis
+  - stable
 
 notifications:
   branches:

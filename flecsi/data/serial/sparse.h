@@ -17,6 +17,7 @@
 
 #include <map>
 #include <algorithm>
+#include <memory>
 #include <set>
 #include <unordered_set>
 
@@ -375,6 +376,13 @@ struct sparse_mutator_t {
         [](const auto & k1, const auto & k2) -> bool{
           return k1.entry < k2.entry;
         });
+
+    // if we are creating an that has already been created, just 
+    // over-write the value and exit.  No need to increment the 
+    // counters or move data.
+    if ( itr != end && itr->entry == entry) {
+      return itr->value;
+    }
 
     while(end != itr) {
       *(end) = *(end - 1);

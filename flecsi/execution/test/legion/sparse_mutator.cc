@@ -2,7 +2,6 @@
 #include <iostream>
 #include <sstream>
 #include <map>
-#include <cereal/archives/binary.hpp>
 
 #include "flecsi/execution/legion/dpd.h"
 #include "flecsi/execution/task_ids.h"
