@@ -56,7 +56,7 @@ RUN if [ ${COVERAGE} ]; then \
       doxy-coverage --threshold 21 doc/doxygen/xml/; \
     fi
 RUN ctest --verbose
-RUN make install DESTDIR=${PWD}
+RUN make install DESTDIR=${PWD}/install && rm -rf ${PWD}/install
 RUN cd .. && if [ ${COVERAGE} ]; then \
   if [ ${CC} = clang ]; then \
     $HOME/.local/bin/codecov -F "${CC}" --gcov-exec "llvm-cov gcov"; \
@@ -68,7 +68,7 @@ RUN cd .. && if [ ${TRAVIS_BRANCH} == master ] && [ ${TRAVIS_PULL_REQUEST} == fa
   sonar-scanner \
     -Dsonar.projectKey=${TRAVIS_REPO_SLUG##*/} \
     -Dsonar.sources=. \
-    -Dsonar.exclusions=build/CMakeFiles/**,cinch/** \
+    -Dsonar.exclusions=build/CMakeFiles/**,cinch/**,build/doc/doxygen/**,build/include/** \
     -Dsonar.cfamily.build-wrapper-output=build/bw-output \
     -Dsonar.host.url=https://sonarqube.com \
     -Dsonar.organization=${TRAVIS_REPO_SLUG%%/*} \
