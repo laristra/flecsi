@@ -11,8 +11,8 @@ ARG CXX
 ARG CXXFLAGS
 
 #for coverage
-ENV CI true
-ENV TRAVIS true
+ARG CI
+ARG TRAVIS
 ARG TRAVIS_BRANCH
 ARG TRAVIS_JOB_NUMBER
 ARG TRAVIS_PULL_REQUEST 
@@ -20,7 +20,7 @@ ARG TRAVIS_JOB_ID
 ARG TRAVIS_TAG
 ARG TRAVIS_REPO_SLUG
 ARG TRAVIS_COMMIT
-ENV TRAVIS_OS_NAME linux
+ARG TRAVIS_OS_NAME
 
 RUN rm -rf /home/flecsi/.ccache
 COPY flecsi /home/flecsi/flecsi
@@ -74,7 +74,6 @@ RUN cd .. && if [ ${TRAVIS_BRANCH} = master ] && [ ${TRAVIS_PULL_REQUEST} = fals
     -Dsonar.organization=${TRAVIS_REPO_SLUG%%/*} \
     -Dsonar.login=${SONARQUBE_TOKEN}; \ 
 fi && cd -
-ENV SONARQUBE_TOKEN ""
 USER root
 RUN make install
 USER flecsi
