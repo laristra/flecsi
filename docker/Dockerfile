@@ -64,7 +64,7 @@ RUN cd .. && if [ ${COVERAGE} ]; then \
     $HOME/.local/bin/codecov -F "${CC}"; \
   fi; \
 fi && cd -
-RUN cd .. && if [ ${TRAVIS_BRANCH} == master ] && [ ${TRAVIS_PULL_REQUEST} == false ] && [ ${SONARQUBE} ]; then \
+RUN cd .. && if [ ${TRAVIS_BRANCH} = master ] && [ ${TRAVIS_PULL_REQUEST} = false ] && [ ${SONARQUBE} ]; then \
   sonar-scanner \
     -Dsonar.projectKey=${TRAVIS_REPO_SLUG##*/} \
     -Dsonar.sources=. \
