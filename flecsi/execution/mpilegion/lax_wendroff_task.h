@@ -35,13 +35,6 @@ lax_init_task(
 );
 
 void
-lax_write_task(
-  const Legion::Task *task,
-  const std::vector<Legion::PhysicalRegion> & regions,
-  Legion::Context ctx, Legion::HighLevelRuntime *runtime
-);
-
-void
 lax_adv_x_task(
   const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,

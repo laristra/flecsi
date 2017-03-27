@@ -51,8 +51,6 @@ shared_write_task(
   for (size_t i = 0; i < acc_cells.shared_size(); i++)
     acc_cells.shared(i) = static_cast<size_t>(global_IDs.shared(i) + cycle);
 
-  for (size_t i = 0; i < acc_cells.shared_size(); i++)
-    acc_cells.shared(i) = static_cast<size_t>(global_IDs.shared(i) + cycle);
 }
 
 flecsi_register_task(shared_write_task, loc, single);

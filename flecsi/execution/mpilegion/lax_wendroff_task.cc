@@ -359,42 +359,6 @@ lax_calc_excl_x_task(
 }
 
 void
-lax_write_task(
-  const Legion::Task *task,
-  const std::vector<Legion::PhysicalRegion> & regions,
-  Legion::Context ctx, Legion::HighLevelRuntime *runtime
-)
-{
-  using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
-  using field_id = LegionRuntime::HighLevel::FieldID;
-
-  assert(regions.size() == 1);
-  assert(task->regions.size() == 1);
-  assert(task->regions[0].privilege_fields.size() == 2);
-
-  field_ids_t & fid_t =field_ids_t::instance();
-  field_id fid_phi = fid_t.fid_data;
-  field_id fid_gid = fid_t.fid_cell;
-
-  std::ofstream myfile;
-  myfile.open("lax.out");
-
-  LegionRuntime::Accessor::RegionAccessor<generic_type, double>
-     acc_phi = regions[0].get_field_accessor(fid_phi).typeify<double>();
-  LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
-     acc_gid = regions[0].get_field_accessor(fid_gid).typeify<size_t>();
-  IndexIterator itr(runtime, ctx, regions[0].get_logical_region());
-    while(itr.has_next()) {
-    	const ptr_t ptr = itr.next();
-    	const int pt = acc_gid.read(ptr);
-    	const int y_index = pt / NX;
-    	const int x_index = pt % NX;
-    	myfile << x_index << " " << y_index << " " << acc_phi.read(ptr) << std::endl;
-    }
-    myfile.close();
-}
-
-void
 lax_init_task(
   const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,
