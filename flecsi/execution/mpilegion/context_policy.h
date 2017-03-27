@@ -192,16 +192,16 @@ struct mpilegion_context_policy_t
       task_ids_t::instance().ghost_init_task_id,lr_loc, false, true);
 
     lr_runtime_t::register_legion_task<
-      flecsi::execution::sprint::halo_copy_task>(
-      task_ids_t::instance().halo_copy_task_id,lr_loc, true, false);
+      flecsi::execution::sprint::size_t_copy_task>(
+      task_ids_t::instance().size_t_copy_task_id,lr_loc, true, false);
 
     lr_runtime_t::register_legion_task<
       flecsi::execution::lax_wendroff::lax_wendroff_task>(
       task_ids_t::instance().lax_wendroff_task_id,lr_loc, false, true);
 
     lr_runtime_t::register_legion_task<
-      flecsi::execution::lax_wendroff::lax_halo_task>(
-      task_ids_t::instance().lax_halo_task_id,lr_loc, true, false);
+      flecsi::execution::sprint::double_copy_task>(
+      task_ids_t::instance().double_copy_task_id,lr_loc, true, false);
 
     lr_runtime_t::register_legion_task<
       flecsi::execution::lax_wendroff::lax_init_task>(
