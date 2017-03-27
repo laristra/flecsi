@@ -38,7 +38,7 @@ mpi_task(
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   std::cout << "My rank: " << rank << std::endl;
 
-  flecsi::io::simple_definition_t sd("simple2d-64x64.msh");
+  flecsi::io::simple_definition_t sd("simple2d-32x32.msh");
   flecsi::dmp::weaver weaver(sd);
 
   using entry_info_t = flecsi::dmp::entry_info_t;
@@ -525,111 +525,6 @@ specialization_driver(
   LogicalPartition cells_ghost_lp = runtime->get_logical_partition(context,
     ghost_lr, cells_ghost_ip);
 
-  //call a legion task that tests ghost cell access
-	std::set<Processor> all_procs;
-	Realm::Machine::get_machine().get_all_processors(all_procs);
-	int num_procs = 0;
-	for(std::set<Processor>::const_iterator it = all_procs.begin();
-	      it != all_procs.end();
-	      it++)
-	    if((*it).kind() == Processor::LOC_PROC)
-	      num_procs++;
-	assert(num_procs == num_ranks);
-
-  // figure out communication pattern
-
-  std::vector<PhaseBarrier> phase_barriers;
-  std::vector<std::set<int>> master_colors(num_ranks);
-  for (int master_color=0; master_color < num_ranks; ++master_color) {
-    std::set<int> slave_colors;
-    for (std::set<ptr_t>::iterator it=cells_shared_coloring[master_color].points.begin();
-      it!=cells_shared_coloring[master_color].points.end(); ++it) {
-      const ptr_t ptr = *it;
-      for (int slave_color = 0; slave_color < num_ranks; ++slave_color)
-        if (cells_ghost_coloring[slave_color].points.count(ptr)) {
-          slave_colors.insert(slave_color);
-          master_colors[slave_color].insert(master_color);
-        }
-    }
-    phase_barriers.push_back(runtime->create_phase_barrier(context, 1 + slave_colors.size()));
-  }
-
-  // Launch SPMD tasks
-  MustEpochLauncher must_epoch_launcher;
-  std::vector<execution::sprint::SPMDArgs> spmd_args(num_ranks);
-  std::vector<execution::sprint::SPMDArgsSerializer> args_serialized(num_ranks);
-  for (int color=0; color < num_ranks; ++color) {
-    spmd_args[color].pbarrier_as_master = phase_barriers[color];
-
-    for (std::set<int>::iterator master=master_colors[color].begin();
-    		master!=master_colors[color].end(); ++master) {
-      spmd_args[color].masters_pbarriers.push_back(phase_barriers[*master]);
-    }
-
-    args_serialized[color].archive(&(spmd_args[color]));
-
-    TaskLauncher ghost_access_launcher(task_ids_t::instance().lax_wendroff_task_id,
-    		TaskArgument(args_serialized[color].getBitStream(), args_serialized[color].getBitStreamSize()));
-
-    ghost_access_launcher.tag = MAPPER_FORCE_RANK_MATCH;
-
-    LogicalRegion lregion_shared = runtime->get_logical_subregion_by_color(context,
-    		cells_shared_lp,color);
-    ghost_access_launcher.add_region_requirement(
-    		RegionRequirement(lregion_shared,
-    				READ_WRITE, SIMULTANEOUS, cells_lr));
-    ghost_access_launcher.add_field(0, fid_t.fid_data);
-    ghost_access_launcher.add_field(0, fid_t.fid_cell);
-
-    LogicalRegion lregion_exclusive = runtime->get_logical_subregion_by_color(context,
-    		cells_exclusive_lp,color);
-    ghost_access_launcher.add_region_requirement(
-    		RegionRequirement(lregion_exclusive,
-    				READ_WRITE, EXCLUSIVE, cells_lr));
-    ghost_access_launcher.add_field(1, fid_t.fid_data);
-    ghost_access_launcher.add_field(1, fid_t.fid_cell);
-
-    LogicalRegion lregion_ghost = runtime->get_logical_subregion_by_color(context,
-    		cells_ghost_lp,color);
-    ghost_access_launcher.add_region_requirement(
-    		RegionRequirement(lregion_ghost,
-    				READ_ONLY, EXCLUSIVE, ghost_lr).add_field(fid_t.fid_cell));
-
-    int req_index = 3;
-    for (std::set<int>::iterator master=master_colors[color].begin();
-    		master!=master_colors[color].end(); ++master) {
-      LogicalRegion lregion_ghost = runtime->get_logical_subregion_by_color(context,
-    		  cells_shared_lp,*master);
-    ghost_access_launcher.add_region_requirement(
-    		RegionRequirement(lregion_ghost,
-    				READ_ONLY, SIMULTANEOUS, cells_lr));
-      ghost_access_launcher.region_requirements[req_index].add_flags(NO_ACCESS_FLAG);
-      ghost_access_launcher.add_field(req_index, fid_t.fid_data);
-      req_index++;
-    }
-
-    IndexSpace ispace_ghost = runtime->get_index_subspace(context, cells_ghost_ip, color);
-    ghost_access_launcher.add_index_requirement(IndexSpaceRequirement(ispace_ghost,
-    		NO_MEMORY,cells_is));
-
-    DomainPoint point(color);
-    must_epoch_launcher.add_single_task(point,ghost_access_launcher);
-  }
-
-  FutureMap fm7 = runtime->execute_must_epoch(context,must_epoch_launcher);
-  fm7.wait_all_results();
-
-  for (unsigned idx = 0; idx < phase_barriers.size(); idx++)
-    runtime->destroy_phase_barrier(context, phase_barriers[idx]);
-  phase_barriers.clear();
-
-  TaskLauncher write_launcher(task_ids_t::instance().lax_write_task_id,
-  		TaskArgument(nullptr, 0));
-  write_launcher.add_region_requirement(
-		  RegionRequirement(cells_lr, READ_ONLY, EXCLUSIVE, cells_lr)
-		  .add_field(fid_t.fid_data).add_field(fid_t.fid_cell));
-  Future future = runtime->execute_task(context, write_launcher);
-  future.get_void_result();
 
   //TOFIX: free all lr physical regions is
   runtime->destroy_logical_region(context, vertices_lr);
@@ -640,6 +535,45 @@ specialization_driver(
   runtime->destroy_index_space(context,vertices_is);
 
 } // specialization_driver
+
+
+void
+driver(
+  int argc,
+  char ** argv
+)
+{
+  flecsi::execution::context_t & context_ = flecsi::execution::context_t::instance();
+  const LegionRuntime::HighLevel::Task *task = context_.task(flecsi::utils::const_string_t{"driver"}.hash());
+  const int my_color = task->index_point.point_data[0];
+
+  flecsi::data_client& dc = *((flecsi::data_client*)argv[argc - 1]);
+
+  std::cout << my_color << " driver " << std::endl;
+  /*
+  int index_space = 0;
+  auto shared_write_handle =
+    flecsi_get_handle(dc, sprint, data, size_t, dense, index_space, none, rw, none);
+  auto ghost_read_handle =
+    flecsi_get_handle(dc, sprint, data, size_t, dense, index_space, none, ro, ro);
+  auto cell_ID_handle =
+   flecsi_get_handle(dc, sprint, cell_ID, size_t, dense, index_space, none, ro, ro);
+  for (int cycle = 0; cycle < 3; cycle++) {
+
+    // phase WRITE: masters update their halo regions; slaves may not access data
+
+    flecsi_execute_task(shared_write_task, loc, single, cell_ID_handle, shared_write_handle, my_color, cycle);
+
+    // phase READ: slaves can read data; masters may not write to data
+
+    flecsi_execute_task(ghost_read_task, loc, single, cell_ID_handle, ghost_read_handle, my_color, cycle);
+
+  }
+*/
+  std::cout << "lax wendroff ... all tasks issued"
+  << std::endl;
+
+} //driver
 
 } // namespace execution
 } // namespace flecsi

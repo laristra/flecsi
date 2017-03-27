@@ -23,7 +23,8 @@ if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
 #  set(CMAKE_CXX_COMPILER "mpiCC")
 
   add_definitions(
-    -DFLECSI_SPECIALIZATION_DRIVER=${CMAKE_SOURCE_DIR}/examples/lax_wendroff/lax_wendroff.h)
+    -DFLECSI_SPECIALIZATION_DRIVER=${CMAKE_SOURCE_DIR}/examples/lax_wendroff/lax_wendroff.h
+    -DFLECSI_DRIVER=${CMAKE_SOURCE_DIR}/examples/lax_wendroff/lax_wendroff.h)
 
   #----------------------------------------------------------------------------#
   # Add a rule to build the executable
@@ -47,8 +48,8 @@ if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
   target_link_libraries(lax_wendroff ${FLECSI_RUNTIME_LIBRARIES}
                                      ${PARTITION_LIBRARIES})
 
-  configure_file(simple2d-64x64.msh
-    ${CMAKE_CURRENT_BINARY_DIR}/../../bin/simple2d-64x64.msh COPYONLY) 
+  configure_file(simple2d-32x32.msh
+    ${CMAKE_CURRENT_BINARY_DIR}/../../bin/simple2d-32x32.msh COPYONLY) 
  
 endif()
 

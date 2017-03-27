@@ -245,8 +245,8 @@ spmd_task(
   const size_t num_handles = spmd_args->num_handles;
   //FIXME remove const size_t num_colors = spmd_args->num_colors;
 
-  assert(regions.size() > (2 * num_handles));
-  assert(task->regions.size() > (2 * num_handles));
+  assert(regions.size() >= (2 * num_handles));
+  assert(task->regions.size() >= (2 * num_handles));
   assert(task->indexes.size() == num_handles);
 
 

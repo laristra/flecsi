@@ -29,7 +29,7 @@
 
 ///
 // \file sprint.h
-// \authors bergen
+// \authors bergen, irina, jgraham
 // \date Initial file creation: Aug 23, 2016
 ///
 
