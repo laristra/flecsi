@@ -225,15 +225,12 @@ spmd_task(
 {
 
   const int my_color = task->index_point.point_data[0];
-  std::cout << "spmd " << my_color << std::endl;
 
   context_t & context_ = context_t::instance();
   context_.push_state(utils::const_string_t{"driver"}.hash(),
       ctx, runtime, task, regions);
 
   data_client dc;
-
-  std::cout << "arglen " << task->arglen << std::endl;
 
   assert(task->arglen > 0);
 
@@ -306,7 +303,6 @@ spmd_task(
     runtime->attach_name(lregions_ghost[idx], buf);
 
     fix_handles[idx].ghost_lr = lregions_ghost[idx];
-    fix_handles[idx].ghost_copy_task_id = task_ids_t::instance().halo_copy_task_id;
   }
 
   runtime->unmap_all_regions(ctx);

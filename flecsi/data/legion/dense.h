@@ -1011,6 +1011,9 @@ struct storage_type_t<dense, DS, MD>
     h.ghost_fid = data.ghost_fid;
     h.is_readable = data.is_readable;
 
+    if (md.type_size == sizeof(size_t))
+      h.ghost_copy_task_id = flecsi::execution::task_ids_t::instance().halo_copy_task_id;
+
     return h;
   } // get_handle
 
@@ -1037,6 +1040,9 @@ struct storage_type_t<dense, DS, MD>
           h.exclusive_ip = ld.exclusive_ip;
           h.shared_ip = ld.shared_ip;
           h.ghost_ip = ld.ghost_ip;
+          if (md.type_size == sizeof(size_t))
+            h.ghost_copy_task_id = flecsi::execution::task_ids_t::instance().halo_copy_task_id;
+
           handles.emplace_back(std::move(h));
         }
       }
