@@ -81,7 +81,6 @@ class task_ids_t
   size_t dpd_commit_data_task_id = unique_task_id_t::instance().next();
   size_t lax_wendroff_task_id = unique_task_id_t::instance().next();
   size_t double_copy_task_id = unique_task_id_t::instance().next();
-  size_t lax_init_task_id = unique_task_id_t::instance().next();
   size_t lax_adv_x_task_id = unique_task_id_t::instance().next();
   size_t lax_adv_y_task_id = unique_task_id_t::instance().next();
   size_t lax_calc_excl_x_task_id = unique_task_id_t::instance().next();

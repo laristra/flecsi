@@ -581,25 +581,33 @@ template<typename T>
 using accessor_t = flecsi::data::legion::dense_accessor_t<T, flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t> >;
 
 
+static double calc_init_point(const int pt) {
+    double value = 0.0;
+    const int y_index = pt / NX;
+    const int x_index = pt % NX;
+    double x = static_cast<double>(x_index) / static_cast<double>(NX - 1);
+    double y = static_cast<double>(y_index) / static_cast<double>(NY - 1);
+    if ( (x <= 0.5) && (y <= 0.5) )
+        value = 1.0;
+    return value;
+}
+
 void
-shared_write_task(
-  accessor_t<size_t> global_IDs,
-  accessor_t<double> acc_cells,
-  int my_color,
-  int cycle
+lax_init_task(
+        accessor_t<size_t> global_IDs,
+        accessor_t<double> acc_cells
 )
 {
-  std::cout << my_color << " as master writes data; phase 1 of cycle " << cycle << std::endl;
 
-  for (size_t i = 0; i < acc_cells.size(); i++)
-    acc_cells[i] = static_cast<double>(global_IDs[i] + cycle);
+    for (size_t i = 0; i < acc_cells.size(); i++)
+        acc_cells[i] = calc_init_point(global_IDs[i]);
 
-  for (size_t i = 0; i < acc_cells.shared_size(); i++)
-    acc_cells.shared(i) = static_cast<double>(global_IDs.shared(i) + cycle);
+    for (size_t i = 0; i < acc_cells.shared_size(); i++)
+        acc_cells.shared(i) = calc_init_point(global_IDs.shared(i));
 
 }
 
-flecsi_register_task(shared_write_task, loc, single);
+flecsi_register_task(lax_init_task, loc, single);
 
 void
 lax_write_task(
@@ -634,27 +642,6 @@ flecsi_register_task(lax_write_task, loc, single);
 
 
 void
-ghost_read_task(
-  accessor_t<size_t> global_IDs,
-  accessor_t<double> acc_cells,
-  int my_color,
-  int cycle
-)
-{
-  std::cout << my_color << " as slave reads data; phase 2 of cycle " << cycle <<  std::endl;
-
-  // If shared data was lost ghost will not be available
-  for (size_t i = 0; i < acc_cells.shared_size(); i++)
-    assert(acc_cells.shared(i) == static_cast<double>(global_IDs.shared(i) + cycle));
-
-  for (size_t i = 0; i < acc_cells.ghost_size(); i++)
-    assert(acc_cells.ghost(i) == static_cast<double>(global_IDs.ghost(i) + cycle));
-
-}
-
-flecsi_register_task(ghost_read_task, loc, single);
-
-void
 driver(
   int argc,
   char ** argv
@@ -670,24 +657,13 @@ driver(
 
 
   int index_space = 0;
-  auto shared_write_handle =
+
+  auto write_handle =
     flecsi_get_handle(dc, lax, phi, double, dense, index_space, rw, rw, none);
-  auto ghost_read_handle =
-    flecsi_get_handle(dc, lax, phi, double, dense, index_space, none, ro, ro);
   auto cell_ID_handle =
    flecsi_get_handle(dc, lax, cell_ID, size_t, dense, index_space, ro, ro, ro);
 
-  for (int cycle = 0; cycle < 3; cycle++) {
-
-    // phase WRITE: masters update their halo regions; slaves may not access data
-
-    flecsi_execute_task(shared_write_task, loc, single, cell_ID_handle, shared_write_handle, my_color, cycle);
-
-    // phase READ: slaves can read data; masters may not write to data
-
-    flecsi_execute_task(ghost_read_task, loc, single, cell_ID_handle, ghost_read_handle, my_color, cycle);
-
-  }
+  flecsi_execute_task(lax_init_task, loc, single, cell_ID_handle, write_handle);
 
   auto read_handle =
    flecsi_get_handle(dc, lax, phi, double, dense, index_space, ro, ro, none);

@@ -359,43 +359,6 @@ lax_calc_excl_x_task(
 }
 
 void
-lax_init_task(
-  const Legion::Task *task,
-  const std::vector<Legion::PhysicalRegion> & regions,
-  Legion::Context ctx, Legion::HighLevelRuntime *runtime
-)
-{
-  using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
-  using field_id = LegionRuntime::HighLevel::FieldID;
-
-  assert(regions.size() == 1);
-  assert(task->regions.size() == 1);
-  assert(task->regions[0].privilege_fields.size() == 2);
-
-  field_ids_t & fid_t =field_ids_t::instance();
-  field_id fid_phi = fid_t.fid_data;
-  field_id fid_gid = fid_t.fid_cell;
-
-  LegionRuntime::Accessor::RegionAccessor<generic_type, double>
-     acc_phi = regions[0].get_field_accessor(fid_phi).typeify<double>();
-  LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
-     acc_gid = regions[0].get_field_accessor(fid_gid).typeify<size_t>();
-  IndexIterator itr(runtime, ctx, regions[0].get_logical_region());
-  while(itr.has_next()) {
-    const ptr_t ptr = itr.next();
-    const size_t pt = acc_gid.read(ptr);
-    const size_t y_index = pt / NX;
-    const size_t x_index = pt % NX;
-    double x = static_cast<double>(x_index) / static_cast<double>(NX - 1);
-    double y = static_cast<double>(y_index) / static_cast<double>(NY - 1);
-    if ( (x <= 0.5) && (y <= 0.5) )
-      acc_phi.write(ptr,1.0);
-    else
-      acc_phi.write(ptr,0.0);
-  }
-}
-
-void
 lax_wendroff_task(
   const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,
@@ -469,22 +432,11 @@ lax_wendroff_task(
   }
 
   // Initialize data
-  TaskLauncher exclusive_launcher(task_ids_t::instance().lax_init_task_id, TaskArgument(nullptr, 0));
-  exclusive_launcher.add_region_requirement(RegionRequirement(lr_exclusive, WRITE_DISCARD, EXCLUSIVE, lr_exclusive));
-  exclusive_launcher.add_field(0, fid_phi);
-  exclusive_launcher.add_field(0, fid_gid);
-  Future init_exclusive_future = runtime->execute_task(ctx, exclusive_launcher);
 
   sprint::TaskWrapper task_wrapper(&args, lregions_ghost, pregions_ghost, lregion_halo, task_ids_t::instance().double_copy_task_id, fid_phi);
 
-  // phase WRITE: masters update their halo regions; slaves may not access data
-  TaskLauncher shared_launcher(task_ids_t::instance().lax_init_task_id, TaskArgument(nullptr, 0));
-  shared_launcher.add_region_requirement(RegionRequirement(lr_shared, WRITE_DISCARD, EXCLUSIVE, lr_shared));
-  shared_launcher.add_field(0, fid_phi);
-  shared_launcher.add_field(0, fid_gid);
   bool read_phase = false;
   bool write_phase = true;
-  task_wrapper.execute_task(ctx, runtime, shared_launcher, read_phase, write_phase);
 
   const double dx = 1.0  / static_cast<double>(NX - 1);
   const double dy = 1.0  / static_cast<double>(NY - 1);
