@@ -75,7 +75,6 @@ mpi_task(
     flecsi::utils::any_t(raw_conns));
 }
 
-  
 flecsi_register_task(mpi_task, mpi, single);
 
 void
@@ -90,6 +89,9 @@ specialization_driver(
   auto context = context_.context(task_key);
 
   legion_helper h(runtime, context);
+
+  data_client& dc = *((data_client*)argv[argc - 1]);
+
 
   using legion_domain = LegionRuntime::HighLevel::Domain;
   field_ids_t & fid_t =field_ids_t::instance();
@@ -167,7 +169,6 @@ specialization_driver(
     FieldAllocator allocator = runtime->create_field_allocator(context,
                                              cells_fs);
     allocator.allocate_field(sizeof(size_t), fid_t.fid_cell);
-    allocator.allocate_field(sizeof(double), fid_t.fid_data);
 //TOFIX
     allocator.allocate_field(sizeof(legion_dpd::ptr_count),
                       legion_dpd::connectivity_field_id(2, 0));
@@ -186,10 +187,6 @@ specialization_driver(
   LogicalRegion cells_lr=
     runtime->create_logical_region(context,cells_is, cells_fs);
   runtime->attach_name(cells_lr, "cells  logical region");
-
-  LogicalRegion ghost_lr=
-    runtime->create_logical_region(context,cells_is, cells_fs);
-  runtime->attach_name(ghost_lr, "ghost  logical region");
 
    //create global IS fnd LR for Vertices
 
@@ -243,9 +240,6 @@ specialization_driver(
 
   LogicalPartition cells_primary_lp = runtime->get_logical_partition(context,
            cells_lr, cells_primary_ip);
-
-  LogicalPartition ghost_primary_lp = runtime->get_logical_partition(context,
-           ghost_lr, cells_primary_ip);
 
 
 	//partition vertices by number of mpi ranks
@@ -306,34 +300,17 @@ specialization_driver(
   
   fm2.wait_all_results();
 
-  {
-	  LegionRuntime::HighLevel::IndexLauncher initialization_launcher(
-	    task_ids_t::instance().init_task_id,
-	    rank_domain,
-	    LegionRuntime::HighLevel::TaskArgument(0, 0),
-	    arg_map);
+  execution::mpilegion_context_policy_t::partitioned_index_space cells_parts;
+  cells_parts.size = total_num_cells;
+  cells_parts.entities_lr = cells_lr;
 
-	  initialization_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+  execution::mpilegion_context_policy_t::partitioned_index_space verts_parts;
+  verts_parts.size = total_num_vertices;
+  verts_parts.entities_lr = vertices_lr;
 
-	  initialization_launcher.add_region_requirement(
-	    RegionRequirement(ghost_primary_lp, 0,
-	                      WRITE_DISCARD, EXCLUSIVE, ghost_lr));
-	  initialization_launcher.add_field(0, fid_t.fid_cell);
-
-	  initialization_launcher.add_region_requirement(
-	    RegionRequirement(vert_primary_lp, 0,
-	                      WRITE_DISCARD, EXCLUSIVE, vertices_lr));
-	  initialization_launcher.add_field(1, fid_t.fid_vert);
-
-	  FutureMap fm2 = runtime->execute_index_space( context,
-	        initialization_launcher);
-
-	  fm2.wait_all_results();
-  }
-
-
-  //creating partiotioning for shared and exclusive elements:
+  //creating partitioning for shared and exclusive elements:
   Coloring cells_shared_coloring;
+  Coloring vert_shared_coloring;
 
   LegionRuntime::HighLevel::IndexLauncher shared_part_launcher(
     task_ids_t::instance().shared_part_task_id,
@@ -376,6 +353,7 @@ specialization_driver(
       LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
         shared_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
+      cells_parts.shared_count_map[indx] =  cells_num_shared[indx];
       for (size_t j=0; j<cells_num_shared[indx]; j++)
       {
         ptr_t ptr=
@@ -440,6 +418,7 @@ specialization_driver(
       LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
         exclusive_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
+      cells_parts.exclusive_count_map[indx] =  cells_num_exclusive[indx];
       for (size_t j=0; j<cells_num_exclusive[indx]; j++)
       {
         ptr_t ptr=
@@ -506,6 +485,7 @@ specialization_driver(
       LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
         ghost_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
+      cells_parts.ghost_count_map[indx] =  cells_num_ghosts[indx];
       for (size_t j=0; j<cells_num_ghosts[indx]; j++)
       {
         ptr_t ptr=
@@ -523,9 +503,63 @@ specialization_driver(
         cells_is,cells_ghost_coloring, false);
 
   LogicalPartition cells_ghost_lp = runtime->get_logical_partition(context,
-    ghost_lr, cells_ghost_ip);
+    cells_lr, cells_ghost_ip);
+
+// copy cell_id to flecsi data structures
+
+  cells_parts.shared_ip = cells_shared_ip;
+  cells_parts.ghost_ip = cells_ghost_ip;
+  cells_parts.exclusive_ip = cells_exclusive_ip;
+
+  const int versions = 1;
+  int index_id = 0;
+
+  dc.put_index_space(index_id, cells_parts);
+
+  flecsi_register_data(dc, lax, cell_ID, size_t, dense, versions, index_id);
+  flecsi_register_data(dc, lax, phi, double, dense, versions, index_id);
+
+  auto cell_handle =
+    flecsi_get_handle(dc, lax, cell_ID, size_t, dense, index_id, rw, rw, ro);
 
 
+  LegionRuntime::HighLevel::IndexLauncher copy_legion_to_flecsi_launcher(
+    task_ids_t::instance().copy_legion_to_flecsi_task_id,
+    rank_domain,
+    LegionRuntime::HighLevel::TaskArgument(0, 0),
+    arg_map);
+
+  copy_legion_to_flecsi_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+
+  copy_legion_to_flecsi_launcher.add_region_requirement(
+    RegionRequirement(cells_shared_lp, 0/*projection ID*/,
+      READ_ONLY, EXCLUSIVE, cells_lr));
+  copy_legion_to_flecsi_launcher.add_field(0, fid_t.fid_cell);
+
+  copy_legion_to_flecsi_launcher.add_region_requirement(
+    RegionRequirement(cells_exclusive_lp, 0/*projection ID*/,
+      READ_ONLY, EXCLUSIVE, cells_lr));
+  copy_legion_to_flecsi_launcher.add_field(1, fid_t.fid_cell);
+
+  LogicalPartition flecsi_exclusive_lp = runtime->get_logical_partition(context,
+           cell_handle.lr, cell_handle.exclusive_ip);
+  copy_legion_to_flecsi_launcher.add_region_requirement(
+    RegionRequirement(flecsi_exclusive_lp, 0/*projection ID*/,
+      READ_WRITE, EXCLUSIVE, cell_handle.lr));
+  copy_legion_to_flecsi_launcher.add_field(2, fid_t.fid_value);
+
+  LogicalPartition flecsi_shared_lp = runtime->get_logical_partition(context,
+           cell_handle.lr, cell_handle.shared_ip);
+  copy_legion_to_flecsi_launcher.add_region_requirement(
+    RegionRequirement(flecsi_shared_lp, 0/*projection ID*/,
+      READ_WRITE, EXCLUSIVE, cell_handle.lr));
+  copy_legion_to_flecsi_launcher.add_field(3, fid_t.fid_value);
+
+  FutureMap fm_copy = runtime->execute_index_space(context,copy_legion_to_flecsi_launcher);
+  fm_copy.wait_all_results();
+
+
+  //call a legion task that tests ghost cell access
   //TOFIX: free all lr physical regions is
   runtime->destroy_logical_region(context, vertices_lr);
   runtime->destroy_logical_region(context, cells_lr);
