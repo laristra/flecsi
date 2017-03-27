@@ -70,6 +70,7 @@ RUN cd .. && if [ ${TRAVIS_BRANCH} = master ] && [ ${TRAVIS_PULL_REQUEST} = fals
     -Dsonar.sources=. \
     -Dsonar.exclusions=build/CMakeFiles/**,cinch/**,build/doc/doxygen/**,build/include/** \
     -Dsonar.cfamily.build-wrapper-output=build/bw-output \
+    -Dsonar.cfamily.gcov.reportsPath=. \
     -Dsonar.host.url=https://sonarqube.com \
     -Dsonar.organization=${TRAVIS_REPO_SLUG%%/*} \
     -Dsonar.login=${SONARQUBE_TOKEN}; \ 
