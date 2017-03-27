@@ -187,31 +187,31 @@ struct dense_accessor_t : public accessor__<T>
       runtime_->unmap_region(context_, exclusive_pr_);
 
       delete data_;
+    }
 
-      if(shared_data_){
-        if(shared_priv_ > size_t(privilege::ro)){
-          Legion::LogicalRegion lr = shared_pr_.get_logical_region();
-          Legion::IndexSpace is = lr.get_index_space();
+    if(shared_data_){
+      if(shared_priv_ > size_t(privilege::ro)){
+        Legion::LogicalRegion lr = shared_pr_.get_logical_region();
+        Legion::IndexSpace is = lr.get_index_space();
 
-          auto ac = 
-            shared_pr_.get_field_accessor(fid_t.fid_value).typeify<T>();
-          
-          IndexIterator itr(runtime_, context_, is);
-          
-          size_t i = 0;
-          while(itr.has_next()){
-            ac.write(itr.next(), (*shared_data_)[i++]);
-          }
+        auto ac = 
+          shared_pr_.get_field_accessor(fid_t.fid_value).typeify<T>();
+        
+        IndexIterator itr(runtime_, context_, is);
+        
+        size_t i = 0;
+        while(itr.has_next()){
+          ac.write(itr.next(), (*shared_data_)[i++]);
         }
-
-        runtime_->unmap_region(context_, shared_pr_);
-        delete shared_data_;
       }
 
-      if(ghost_data_){
-        runtime_->unmap_region(context_, ghost_pr_);
-        delete ghost_data_;
-      }
+      runtime_->unmap_region(context_, shared_pr_);
+      delete shared_data_;
+    }
+
+    if(ghost_data_){
+      runtime_->unmap_region(context_, ghost_pr_);
+      delete ghost_data_;
     }
   }
 
