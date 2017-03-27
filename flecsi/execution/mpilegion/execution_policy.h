@@ -122,13 +122,15 @@ namespace execution {
                         flecsi::data_handle_t<S, EP, SP, GP>& h,
                         size_t& region){
 
+      field_ids_t & fid_t =field_ids_t::instance();
+
       bool read_phase = false;
       bool write_phase = false;
 
       if (GP != size_t(data::privilege::none))
         read_phase = true;
 
-      if ( (SP == size_t(data::privilege::wd)) || (SP == size_t(data::privilege::ro)))  // FIXME rw
+      if ( (SP == size_t(data::privilege::wd)) || (SP == size_t(data::privilege::rw)))
         write_phase = true;
 
       if (read_phase) {
@@ -139,8 +141,26 @@ namespace execution {
 
           // as slave
           for (int master=0; master < h.masters_pbarriers_ptrs.size(); master++) {
-            l.add_wait_barrier(*(h.masters_pbarriers_ptrs[master]));
-            l.add_arrival_barrier(*(h.masters_pbarriers_ptrs[master]));
+            LogicalRegion lregion_neighbor = h.pregions_neighbors_shared[master].get_logical_region();
+            AcquireLauncher acquire_launcher(lregion_neighbor, lregion_neighbor,
+                h.pregions_neighbors_shared[master]);
+            acquire_launcher.add_field(fid_t.fid_value);
+            acquire_launcher.add_wait_barrier(*(h.masters_pbarriers_ptrs[master]));  // phase READ
+            runtime->issue_acquire(ctx, acquire_launcher);
+
+            TaskLauncher copy_launcher(h.ghost_copy_task_id, TaskArgument(nullptr, 0));
+            copy_launcher.add_region_requirement(RegionRequirement(lregion_neighbor, READ_ONLY,
+                EXCLUSIVE, lregion_neighbor).add_field(fid_t.fid_value));
+            copy_launcher.add_region_requirement(RegionRequirement(h.ghost_lr, READ_WRITE,
+                EXCLUSIVE, h.ghost_lr).add_field(fid_t.fid_value));
+            runtime->execute_task(ctx, copy_launcher);
+
+            ReleaseLauncher release_launcher(lregion_neighbor, lregion_neighbor,
+                h.pregions_neighbors_shared[master]);
+            release_launcher.add_field(fid_t.fid_value);
+            release_launcher.add_arrival_barrier(*(h.masters_pbarriers_ptrs[master]));  // phase WRITE
+            runtime->issue_release(ctx, release_launcher);
+
             *(h.masters_pbarriers_ptrs[master]) = runtime->advance_phase_barrier(ctx, *(h.masters_pbarriers_ptrs[master]));  // phase WRITE
           } // for master as slave
 
@@ -186,7 +206,7 @@ namespace execution {
                         size_t& region){
 
       bool write_phase = false;
-      if ( (SP == size_t(data::privilege::wd)) || (SP == size_t(data::privilege::ro))) // FIXME: should be rw
+      if ( (SP == size_t(data::privilege::wd)) || (SP == size_t(data::privilege::rw)))
         write_phase = true;
 
       if (write_phase) {

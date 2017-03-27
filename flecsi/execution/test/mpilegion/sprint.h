@@ -688,7 +688,7 @@ specialization_driver(
   dc.put_index_space(index_id, cells_parts);
 
   flecsi_register_data(dc, sprint, cell_ID, size_t, dense, versions, index_id);
-  //flecsi_register_data(dc, sprint, pressure, double, dense, versions, index_id);
+  flecsi_register_data(dc, sprint, data, size_t, dense, versions, index_id);
 
   auto cell_handle =
     flecsi_get_handle(dc, sprint, cell_ID, size_t, dense, index_id, rw, rw, ro);
@@ -741,8 +741,6 @@ specialization_driver(
   FutureMap fm_copy = runtime->execute_index_space(context,copy_legion_to_flecsi_launcher);
   fm_copy.wait_all_results();
 
-
-  // FIXME do this only through flecsi
 
   //call a legion task that tests ghost cell access
 	std::set<Processor> all_procs;

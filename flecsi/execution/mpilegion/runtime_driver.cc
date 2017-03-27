@@ -41,6 +41,7 @@ namespace execution {
 
     struct spmd_task_args{
       size_t num_handles;
+      size_t num_colors;
     };
 
     using handle_t = data_handle_t<void, 0, 0, 0>;
@@ -81,7 +82,6 @@ mpilegion_runtime_driver(
     //execute SPMD launch that executes user-defined driver
 
     MustEpochLauncher must_epoch_launcher; 
-    LegionRuntime::HighLevel::ArgumentMap arg_map;
 
     field_ids_t & fid_t =field_ids_t::instance();
 
@@ -91,30 +91,24 @@ mpilegion_runtime_driver(
     std::vector<size_t> versions;
     flecsi_get_all_handles(dc, dense, handles, hashes, namespaces, versions);
     
-    Serializer task_args_serializer;
-    task_args_serializer.serialize(&handles[0], handles.size() * sizeof(handle_t));
-    task_args_serializer.serialize(&hashes[0], hashes.size() * sizeof(size_t));
-    task_args_serializer.serialize(&namespaces[0], namespaces.size() * sizeof(size_t));
-    task_args_serializer.serialize(&versions[0], versions.size() * sizeof(size_t));
-
     //create phase barriers per handle for SPMD launch from partitions created and
     //registered to the data Client at the specialization_driver
-    int num_ranks;
-    MPI_Comm_size(MPI_COMM_WORLD, &num_ranks);
+    int num_colors;
+    MPI_Comm_size(MPI_COMM_WORLD, &num_colors);
 
     // FIXME Will not scale. Coloring in serialization_driver is a set.  Does that scale better?
     // Or, should we just wait for automatic control replication?
     std::vector<std::vector<PhaseBarrier>> phase_barriers(handles.size());
-    std::vector<std::vector<std::set<int>>> master_colors(handles.size(), std::vector<std::set<int>>(num_ranks));
+    std::vector<std::vector<std::set<int>>> master_colors(handles.size(), std::vector<std::set<int>>(num_colors));
     for (int idx = 0; idx < handles.size(); idx++) {
       handle_t h = handles[idx];
-      for (int master_color=0; master_color < num_ranks; ++master_color) {
+      for (int master_color=0; master_color < num_colors; ++master_color) {
         std::set<int> slave_colors;
         LegionRuntime::HighLevel::IndexSpace shared_subspace = runtime->get_index_subspace(ctx, h.shared_ip, master_color);
         LegionRuntime::HighLevel::IndexIterator shared_it(runtime, ctx, shared_subspace);
         while (shared_it.has_next()) {
           const ptr_t shared_ptr = shared_it.next();
-          for (int slave_color = 0; slave_color < num_ranks; ++slave_color) {
+          for (int slave_color = 0; slave_color < num_colors; ++slave_color) {
             LegionRuntime::HighLevel::IndexSpace ghost_subspace = runtime->get_index_subspace(ctx, h.ghost_ip, slave_color);
             LegionRuntime::HighLevel::IndexIterator ghost_it(runtime, ctx, ghost_subspace);
             while (ghost_it.has_next()) {
@@ -130,67 +124,73 @@ mpilegion_runtime_driver(
        } // for master_color
     } // for idx < handles.size()
 
-    std::vector<Serializer> arg_map_serializer(num_ranks);
+    std::vector<Serializer> args_serializers(num_colors);
 
     spmd_task_args sargs;
     sargs.num_handles = handles.size();
+    sargs.num_colors = num_colors;
 
-    for(size_t rank = 0; rank < num_ranks; ++rank){
+    for(size_t color= 0; color < num_colors; ++color){
       std::vector<PhaseBarrier> pbarriers_as_master;
       std::vector<size_t> num_masters;
       std::vector<std::vector<PhaseBarrier>> masters_pbarriers;
       for (int idx = 0; idx < handles.size(); idx++) {
-        pbarriers_as_master.push_back(phase_barriers[idx][rank]);
-        num_masters.push_back(master_colors[idx][rank].size());
+        pbarriers_as_master.push_back(phase_barriers[idx][color]);
+        num_masters.push_back(master_colors[idx][color].size());
         std::vector<PhaseBarrier> masters_pbs;
-        for (std::set<int>::iterator master=master_colors[idx][rank].begin();
-            master!=master_colors[idx][rank].end(); ++master)
+        for (std::set<int>::iterator master=master_colors[idx][color].begin();
+            master!=master_colors[idx][color].end(); ++master)
           masters_pbs.push_back(phase_barriers[idx][*master]);
         masters_pbarriers.push_back(masters_pbs);
       } // for idx handles.size
-      arg_map_serializer[rank].serialize(&sargs, sizeof(spmd_task_args));
-      arg_map_serializer[rank].serialize(&pbarriers_as_master[0], handles.size() * sizeof(PhaseBarrier));
-      arg_map_serializer[rank].serialize(&num_masters[0], handles.size() * sizeof(size_t));
+      args_serializers[color].serialize(&sargs, sizeof(spmd_task_args));
+      args_serializers[color].serialize(&handles[0], handles.size() * sizeof(handle_t));
+      args_serializers[color].serialize(&hashes[0], hashes.size() * sizeof(size_t));
+      args_serializers[color].serialize(&namespaces[0], namespaces.size() * sizeof(size_t));
+      args_serializers[color].serialize(&versions[0], versions.size() * sizeof(size_t));
+      args_serializers[color].serialize(&pbarriers_as_master[0], handles.size() * sizeof(PhaseBarrier));
+      args_serializers[color].serialize(&num_masters[0], handles.size() * sizeof(size_t));
       for (int idx = 0; idx < handles.size(); idx++)
-        arg_map_serializer[rank].serialize(&masters_pbarriers[idx][0], num_masters[idx] * sizeof(PhaseBarrier));
+        args_serializers[color].serialize(&masters_pbarriers[idx][0], num_masters[idx] * sizeof(PhaseBarrier));
 
-      arg_map.set_point(Legion::DomainPoint::from_point<1>(
-        LegionRuntime::Arrays::make_point(rank)),
-        TaskArgument(arg_map_serializer[rank].get_buffer(), arg_map_serializer[rank].get_used_bytes()));
+      TaskLauncher spmd_launcher(task_ids_t::instance().spmd_task_id,
+          TaskArgument(args_serializers[color].get_buffer(), args_serializers[color].get_used_bytes()));
+
+      spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+   
+
+      for (int idx = 0; idx < handles.size(); idx++) {
+        handle_t h = handles[idx];
+
+        LogicalPartition lp_excl = runtime->get_logical_partition(ctx, h.lr, h.exclusive_ip);
+        LogicalRegion lr_excl = runtime->get_logical_subregion_by_color(ctx, lp_excl, color);
+        spmd_launcher.add_region_requirement(
+          RegionRequirement(lr_excl, READ_WRITE, EXCLUSIVE, h.lr).add_field(fid_t.fid_value));
+
+        LogicalPartition lp_shared = runtime->get_logical_partition(ctx, h.lr, h.shared_ip);
+        LogicalRegion lr_shared = runtime->get_logical_subregion_by_color(ctx, lp_shared, color);
+        spmd_launcher.add_region_requirement(
+          RegionRequirement(lr_shared, READ_WRITE, SIMULTANEOUS, h.lr).add_field(fid_t.fid_value));
+
+        for (std::set<int>::iterator master=master_colors[idx][color].begin();
+            master!=master_colors[idx][color].end(); ++master) {
+          LogicalRegion lregion_ghost = runtime->get_logical_subregion_by_color(ctx,
+              lp_shared,*master);
+          spmd_launcher.add_region_requirement(
+            RegionRequirement(lregion_ghost, READ_ONLY, SIMULTANEOUS, h.lr)
+            .add_flags(NO_ACCESS_FLAG).add_field(fid_t.fid_value));
+        }
+
+        IndexSpace is_parent = runtime->get_parent_index_space(ctx, h.ghost_ip);
+        IndexSpace ispace_ghost = runtime->get_index_subspace(ctx, h.ghost_ip, color);
+        spmd_launcher.add_index_requirement(IndexSpaceRequirement(ispace_ghost, NO_MEMORY, is_parent));
+      } // for handles.size()
+
+      DomainPoint point(color);
+      must_epoch_launcher.add_single_task(point,spmd_launcher);
+
     } // for rank
 
-    LegionRuntime::HighLevel::IndexLauncher spmd_launcher(
-      task_ids_t::instance().spmd_task_id,
-      LegionRuntime::HighLevel::Domain::from_rect<1>(
-         context_.interop_helper_.all_processes_),
-      TaskArgument(task_args_serializer.get_buffer(), task_args_serializer.get_used_bytes()), arg_map);
-   
-    spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
-
-    for (int idx = 0; idx < handles.size(); idx++) {
-      handle_t h = handles[idx];
-
-      LogicalPartition lp_excl = runtime->get_logical_partition(ctx, h.lr, h.exclusive_ip);
-      spmd_launcher.add_region_requirement(
-        RegionRequirement(lp_excl, 0 /*proj*/, READ_WRITE, EXCLUSIVE, h.lr));
-      spmd_launcher.add_field(3*idx,fid_t.fid_value);
-
-      // FIXME  this is temporary for verifying 1st data movement - this will be RW, SIMUL
-      LogicalPartition lp_shared = runtime->get_logical_partition(ctx, h.lr, h.shared_ip);
-      spmd_launcher.add_region_requirement(
-        RegionRequirement(lp_shared, 0 /*proj*/, READ_ONLY, EXCLUSIVE, h.lr));
-      spmd_launcher.add_field(3*idx + 1,fid_t.fid_value);
-
-      // FIXME  this is temporary for verifying 1st data movement - this will be RO, SIMUL for each neighbors' shared and pass ghost_ip as IndexSpace
-      LogicalPartition lp_ghost = runtime->get_logical_partition(ctx, h.lr, h.ghost_ip);
-      spmd_launcher.add_region_requirement(
-        RegionRequirement(lp_ghost, 0 /*proj*/, READ_ONLY, EXCLUSIVE, h.lr));
-      spmd_launcher.add_field(3*idx +2,fid_t.fid_value);
-
-      // jpg - do neighbors shared and phase barriers here
-    }
-
-    must_epoch_launcher.add_index_task(spmd_launcher);
  
     FutureMap fm = runtime->execute_must_epoch(ctx,must_epoch_launcher);
     fm.wait_all_results();
@@ -225,84 +225,97 @@ spmd_task(
 {
 
   const int my_color = task->index_point.point_data[0];
+  std::cout << "spmd " << my_color << std::endl;
+
   context_t & context_ = context_t::instance();
   context_.push_state(utils::const_string_t{"driver"}.hash(),
       ctx, runtime, task, regions);
 
   data_client dc;
 
+  std::cout << "arglen " << task->arglen << std::endl;
+
   assert(task->arglen > 0);
-  assert(task->local_arglen > 0);
 
   void* args_buf = task->args;
-  void* local_args_buf = task->local_args;
 
   Deserializer args_deserializer(task->args, task->arglen);
-  Deserializer local_args_deserializer(task->local_args,task->local_arglen);
 
   void* spmd_args_buf = malloc(sizeof(spmd_task_args));
-  local_args_deserializer.deserialize(spmd_args_buf, sizeof(spmd_task_args));
+  args_deserializer.deserialize(spmd_args_buf, sizeof(spmd_task_args));
   auto spmd_args = (spmd_task_args*)spmd_args_buf;
 
-  size_t num_handles = spmd_args->num_handles;
+  const size_t num_handles = spmd_args->num_handles;
+  //FIXME remove const size_t num_colors = spmd_args->num_colors;
 
-    assert(regions.size() == 3*num_handles);
-    assert(task->regions.size() == 3*num_handles);
-
-    void* handles_buf = malloc(sizeof(handle_t) * num_handles);
-    args_deserializer.deserialize(handles_buf, sizeof(handle_t) * num_handles);
-
-    void* hashes_buf = malloc(sizeof(size_t) * num_handles);
-    args_deserializer.deserialize(hashes_buf, sizeof(size_t) * num_handles);
-
-    void* namespaces_buf = malloc(sizeof(size_t) * num_handles);
-    args_deserializer.deserialize(namespaces_buf, sizeof(size_t) * num_handles);
-
-    void* versions_buf = malloc(sizeof(size_t) * num_handles);
-    args_deserializer.deserialize(versions_buf, sizeof(size_t) * num_handles);
-
-    PhaseBarrier* pbarriers_as_master = (PhaseBarrier*)malloc(sizeof(PhaseBarrier) * num_handles);
-    local_args_deserializer.deserialize((void*)pbarriers_as_master, sizeof(PhaseBarrier) * num_handles);
-
-    size_t* num_masters = (size_t*)malloc(sizeof(size_t) * num_handles);
-    local_args_deserializer.deserialize((void*)num_masters, sizeof(size_t) * num_handles);
-
-    Legion::LogicalRegion empty_lr;
-    Legion::IndexPartition empty_ip;
-
-    field_ids_t & fid_t =field_ids_t::instance();
-
-    // fix handles on spmd side
-    handle_t* fix_handles = (handle_t*)handles_buf;
-    for (size_t idx = 0; idx < num_handles; idx++) {
-      fix_handles[idx].pbarrier_as_master_ptr = &(pbarriers_as_master[idx]);
-
-      PhaseBarrier* masters_pbarriers_buf = (PhaseBarrier*)malloc(sizeof(PhaseBarrier) * num_masters[idx]);
-      local_args_deserializer.deserialize((void*)masters_pbarriers_buf, sizeof(PhaseBarrier) * num_masters[idx]);
-      std::vector<PhaseBarrier> masters_pbarriers;
-      for (size_t master = 0; master < num_masters[idx]; master++)
-        fix_handles[idx].masters_pbarriers_ptrs.push_back(&(masters_pbarriers_buf[master]));
-      assert(fix_handles[idx].masters_pbarriers_ptrs.size() == num_masters[idx]);
-
-      fix_handles[idx].lr = empty_lr;
-      fix_handles[idx].exclusive_ip = empty_ip;
-      fix_handles[idx].shared_ip = empty_ip;
-      fix_handles[idx].ghost_ip = empty_ip;
-      fix_handles[idx].exclusive_lr = regions[3*idx].get_logical_region();
-      runtime->unmap_region(ctx, regions[3*idx]);
-      fix_handles[idx].shared_lr = regions[3*idx+1].get_logical_region();
-      runtime->unmap_region(ctx, regions[3*idx+1]);
-      fix_handles[idx].ghost_lr = regions[3*idx+2].get_logical_region();  
-      runtime->unmap_region(ctx, regions[3*idx+2]);
-    }
-
-    flecsi_put_all_handles(dc, dense, num_handles,
-      (handle_t*)handles_buf,
-      (size_t*)hashes_buf,
-      (size_t*)namespaces_buf,
-      (size_t*)versions_buf);
+  assert(regions.size() > (2 * num_handles));
+  assert(task->regions.size() > (2 * num_handles));
+  assert(task->indexes.size() == num_handles);
 
 
+  void* handles_buf = malloc(sizeof(handle_t) * num_handles);
+  args_deserializer.deserialize(handles_buf, sizeof(handle_t) * num_handles);
+
+  void* hashes_buf = malloc(sizeof(size_t) * num_handles);
+  args_deserializer.deserialize(hashes_buf, sizeof(size_t) * num_handles);
+
+  void* namespaces_buf = malloc(sizeof(size_t) * num_handles);
+  args_deserializer.deserialize(namespaces_buf, sizeof(size_t) * num_handles);
+
+  void* versions_buf = malloc(sizeof(size_t) * num_handles);
+  args_deserializer.deserialize(versions_buf, sizeof(size_t) * num_handles);
+
+  PhaseBarrier* pbarriers_as_master = (PhaseBarrier*)malloc(sizeof(PhaseBarrier) * num_handles);
+  args_deserializer.deserialize((void*)pbarriers_as_master, sizeof(PhaseBarrier) * num_handles);
+
+  size_t* num_masters = (size_t*)malloc(sizeof(size_t) * num_handles);
+  args_deserializer.deserialize((void*)num_masters, sizeof(size_t) * num_handles);
+
+  Legion::LogicalRegion empty_lr;
+  Legion::IndexPartition empty_ip;
+
+  std::vector<LogicalRegion>  lregions_ghost(num_handles);
+
+  // fix handles on spmd side
+  handle_t* fix_handles = (handle_t*)handles_buf;
+  int region_index = 0;
+  for (size_t idx = 0; idx < num_handles; idx++) {
+    fix_handles[idx].pbarrier_as_master_ptr = &(pbarriers_as_master[idx]);
+
+    PhaseBarrier* masters_pbarriers_buf = (PhaseBarrier*)malloc(sizeof(PhaseBarrier) * num_masters[idx]);
+    args_deserializer.deserialize((void*)masters_pbarriers_buf, sizeof(PhaseBarrier) * num_masters[idx]);
+    std::vector<PhaseBarrier> masters_pbarriers;
+    for (size_t master = 0; master < num_masters[idx]; master++)
+      fix_handles[idx].masters_pbarriers_ptrs.push_back(&(masters_pbarriers_buf[master]));
+    assert(fix_handles[idx].masters_pbarriers_ptrs.size() == num_masters[idx]);
+
+    fix_handles[idx].lr = empty_lr;
+    fix_handles[idx].exclusive_ip = empty_ip;
+    fix_handles[idx].shared_ip = empty_ip;
+    fix_handles[idx].ghost_ip = empty_ip;
+    fix_handles[idx].exclusive_lr = regions[region_index++].get_logical_region();
+    fix_handles[idx].shared_lr = regions[region_index++].get_logical_region();
+    for (size_t master = 0; master < num_masters[idx]; master++)
+      fix_handles[idx].pregions_neighbors_shared.push_back(regions[region_index++]);
+
+    FieldSpace fspace_ghost = fix_handles[idx].shared_lr.get_field_space();
+    IndexSpace ispace_ghost = task->indexes[idx].handle;
+    lregions_ghost[idx] = runtime->create_logical_region(ctx, ispace_ghost, fspace_ghost);
+    char buf[40];
+    sprintf(buf,"spmd %d lregion_ghost %d", my_color, idx);
+    runtime->attach_name(lregions_ghost[idx], buf);
+
+    fix_handles[idx].ghost_lr = lregions_ghost[idx];
+    fix_handles[idx].ghost_copy_task_id = task_ids_t::instance().halo_copy_task_id;
+  }
+
+  runtime->unmap_all_regions(ctx);
+
+  flecsi_put_all_handles(dc, dense, num_handles,
+    (handle_t*)handles_buf,
+    (size_t*)hashes_buf,
+    (size_t*)namespaces_buf,
+    (size_t*)versions_buf);
 
   // We obtain map of hashes to regions[n] here
   // We create halo LogicalRegions here
@@ -324,7 +337,13 @@ spmd_task(
 
   driver(argc, argv);
 
+  //remove ghost logical regions
+  for (unsigned idx = 0; idx < num_handles; idx++)
+    runtime->destroy_logical_region(ctx, lregions_ghost[idx]);
+  lregions_ghost.clear();
+
   context_.pop_state(utils::const_string_t{"driver"}.hash());
+
 }
 
 
