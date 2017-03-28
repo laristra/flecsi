@@ -36,7 +36,6 @@
 #include "flecsi/execution/mpilegion/legion_handshake.h"
 #include "flecsi/execution/mpilegion/mpi_legion_interop.h"
 #include "flecsi/execution/mpilegion/init_partitions_task.h"
-#include "flecsi/execution/mpilegion/lax_wendroff_task.h"
 
 #include "flecsi/data/legion/dpd.h"
 
@@ -194,10 +193,6 @@ struct mpilegion_context_policy_t
     lr_runtime_t::register_legion_task<
       flecsi::execution::sprint::size_t_copy_task>(
       task_ids_t::instance().size_t_copy_task_id,lr_loc, true, false);
-
-    lr_runtime_t::register_legion_task<
-      flecsi::execution::lax_wendroff::lax_wendroff_task>(
-      task_ids_t::instance().lax_wendroff_task_id,lr_loc, false, true);
 
     lr_runtime_t::register_legion_task<
       flecsi::execution::sprint::double_copy_task>(

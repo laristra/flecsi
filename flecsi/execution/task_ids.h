@@ -79,7 +79,6 @@ class task_ids_t
   size_t dpd_put_partition_metadata_task_id = 
     unique_task_id_t::instance().next();
   size_t dpd_commit_data_task_id = unique_task_id_t::instance().next();
-  size_t lax_wendroff_task_id = unique_task_id_t::instance().next();
   size_t double_copy_task_id = unique_task_id_t::instance().next();
 };//task_ids_t
 

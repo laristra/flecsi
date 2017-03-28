@@ -23,8 +23,8 @@ if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
 #  set(CMAKE_CXX_COMPILER "mpiCC")
 
   add_definitions(
-    -DFLECSI_SPECIALIZATION_DRIVER=${CMAKE_SOURCE_DIR}/examples/lax_wendroff/lax_wendroff.h
-    -DFLECSI_DRIVER=${CMAKE_SOURCE_DIR}/examples/lax_wendroff/lax_wendroff.h)
+    -DFLECSI_SPECIALIZATION_DRIVER=${CMAKE_SOURCE_DIR}/examples/lax_wendroff/lax_wendroff_specialization.h
+    -DFLECSI_DRIVER=${CMAKE_SOURCE_DIR}/examples/lax_wendroff/lax_wendroff_driver.h)
 
   #----------------------------------------------------------------------------#
   # Add a rule to build the executable
@@ -35,7 +35,6 @@ if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
                         ${exec_path}/mpilegion/runtime_driver.cc
                         ${exec_path}/../data/data_client.cc
                         ${exec_path}/mpilegion/init_partitions_task.cc
-                        ${exec_path}/mpilegion/lax_wendroff_task.cc
                         ${exec_path}/../data/legion/dpd.cc)
 
   add_executable(lax_wendroff ${exmaple_src})
@@ -50,6 +49,9 @@ if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
 
   configure_file(simple2d-32x32.msh
     ${CMAKE_CURRENT_BINARY_DIR}/../../bin/simple2d-32x32.msh COPYONLY) 
+
+  configure_file(plot_lax.py
+    ${CMAKE_CURRENT_BINARY_DIR}/../../bin/plot_lax.py COPYONLY) 
  
 endif()
 
