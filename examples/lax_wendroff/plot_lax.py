@@ -21,8 +21,7 @@ def plot_snapshot(x, y, phi, time):
     anal_phi = np.zeros((len(x), len(y)))
     for i in range(len(x)):
         for j in range(len(y)):
-            #if ((x[i]-time)<=0.5) & ((y[j]-vel*time)<=0.5) & ((x[i]-time)>=0.0) & ((y[j]-vel*time)>=0.0):
-            if ((x[i]-time)<=0.5) & ((y[j])<=0.5) & ((x[i]-time)>=0.0) & ((y[j])>=0.0):
+            if ((x[i]-time)<=0.5) & ((y[j]-vel*time)<=0.5) & ((x[i]-time)>=0.0) & ((y[j]-vel*time)>=0.0):
                 anal_phi[i,j] = 1.0
 
     plt.figure()

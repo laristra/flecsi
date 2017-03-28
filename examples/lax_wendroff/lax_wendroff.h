@@ -582,7 +582,7 @@ template<typename T>
 using accessor_t = flecsi::data::legion::dense_accessor_t<T, flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t> >;
 
 
-static double calc_init_point(const size_t pt) {
+static double initial_value(const size_t pt) {
     double value = 0.0;
     const size_t y_index = pt / NX;
     const size_t x_index = pt % NX;
@@ -600,7 +600,7 @@ static double get_x_velocity() {
   return U * dt / dx;
 }
 
-static double get_y_vel() {
+static double get_y_velocity() {
   const double dx = 1.0  / static_cast<double>(NX - 1);
   const double dy = 1.0  / static_cast<double>(NY - 1);
   const double dt = std::min(CFL * dx / U, CFL * dy / V);
@@ -615,10 +615,10 @@ initialize_data(
 {
 
     for (size_t i = 0; i < acc_cells.size(); i++)
-        acc_cells[i] = calc_init_point(global_IDs[i]);
+        acc_cells[i] = initial_value(global_IDs[i]);
 
     for (size_t i = 0; i < acc_cells.shared_size(); i++)
-        acc_cells.shared(i) = calc_init_point(global_IDs.shared(i));
+        acc_cells.shared(i) = initial_value(global_IDs.shared(i));
 
 }
 
@@ -633,21 +633,30 @@ static void calc_x_indices(const size_t gid_pt,
   *gid_minus_i = gid_x_index != 0 ? gid_x_index - 1 + gid_y_index * NX: -1;
 }
 
+static void calc_y_indices(const size_t gid_pt,
+          size_t* gid_plus_j, size_t* gid_minus_j)
+{
+  const size_t gid_y_index = gid_pt / NX;
+  const size_t gid_x_index = gid_pt % NX;
+  *gid_plus_j = (gid_y_index + 1) != NY ? gid_x_index + (1 + gid_y_index) * NX: -1;
+  *gid_minus_j = gid_y_index != 0 ? gid_x_index + (gid_y_index - 1) * NX: -1;
+}
+
 static void create_maps (accessor_t<size_t>& global_IDs,
-        std::map<size_t, size_t>& exclusive_map,
-        std::map<size_t, size_t>& shared_map,
-        std::map<size_t, size_t>& ghost_map)
+        std::map<size_t, size_t>* exclusive_map,
+        std::map<size_t, size_t>* shared_map,
+        std::map<size_t, size_t>* ghost_map)
 {
     // TODO profile effects of this indirection
 
     for (size_t i = 0; i < global_IDs.size(); i++)
-        exclusive_map[global_IDs[i]] = i;
+        (*exclusive_map)[global_IDs[i]] = i;
 
     for (size_t i = 0; i < global_IDs.shared_size(); i++)
-        shared_map[global_IDs.shared(i)] = i;
+        (*shared_map)[global_IDs.shared(i)] = i;
 
     for (size_t i = 0; i < global_IDs.ghost_size(); i++)
-        ghost_map[global_IDs.ghost(i)] = i;
+        (*ghost_map)[global_IDs.ghost(i)] = i;
 
 }
 
@@ -664,7 +673,7 @@ calculate_exclusive_x (
     std::map<size_t, size_t> shared_map;
     std::map<size_t, size_t> ghost_map;
 
-    create_maps(global_IDs, excl_map, shared_map, ghost_map);
+    create_maps(global_IDs, &excl_map, &shared_map, &ghost_map);
 
     for (size_t index = 0; index < phi.size(); index++) {
         size_t gid_plus_i, gid_minus_i;
@@ -690,6 +699,43 @@ calculate_exclusive_x (
 flecsi_register_task(calculate_exclusive_x, loc, single);
 
 void
+calculate_exclusive_y (
+        accessor_t<size_t> global_IDs,
+        accessor_t<double> phi,
+        accessor_t<double> phi_update
+)
+{
+    const double b = get_y_velocity();
+
+    std::map<size_t, size_t> excl_map;
+    std::map<size_t, size_t> shared_map;
+    std::map<size_t, size_t> ghost_map;
+
+    create_maps(global_IDs, &excl_map, &shared_map, &ghost_map);
+
+    for (size_t index = 0; index < phi.size(); index++) {
+        size_t gid_plus_j, gid_minus_j;
+        calc_y_indices(global_IDs[index], &gid_plus_j, &gid_minus_j);
+
+        double value = -b * b * phi[index];
+
+        if (excl_map.find(gid_plus_j) != excl_map.end())
+                value += 0.5 * (b * b - b) * phi[excl_map.find(gid_plus_j)->second];
+        else if (shared_map.find(gid_plus_j) != shared_map.end())
+            value += 0.5 * (b * b - b) * phi.shared(shared_map.find(gid_plus_j)->second);
+
+        if (excl_map.find(gid_minus_j) != excl_map.end())
+            value += 0.5 * (b * b + b) * phi[excl_map.find(gid_minus_j)->second];
+        else if (shared_map.find(gid_minus_j) != shared_map.end())
+            value += 0.5 * (b * b + b) * phi.shared(shared_map.find(gid_minus_j)->second);
+
+        phi_update[index] = value;
+    }
+}
+
+flecsi_register_task(calculate_exclusive_y, loc, single);
+
+void
 advect_own_x (
         accessor_t<size_t> global_IDs,
         accessor_t<double> phi,
@@ -702,7 +748,7 @@ advect_own_x (
     std::map<size_t, size_t> shared_map;
     std::map<size_t, size_t> ghost_map;
 
-    create_maps(global_IDs, excl_map, shared_map, ghost_map);
+    create_maps(global_IDs, &excl_map, &shared_map, &ghost_map);
 
     for (size_t index = 0; index < phi.shared_size(); index++) {
         size_t gid_plus_i, gid_minus_i;
@@ -736,6 +782,54 @@ advect_own_x (
 }
 
 flecsi_register_task(advect_own_x, loc, single);
+
+void
+advect_own_y (
+        accessor_t<size_t> global_IDs,
+        accessor_t<double> phi,
+        accessor_t<double> phi_update
+)
+{
+    const double b = get_y_velocity();
+
+    std::map<size_t, size_t> excl_map;
+    std::map<size_t, size_t> shared_map;
+    std::map<size_t, size_t> ghost_map;
+
+    create_maps(global_IDs, &excl_map, &shared_map, &ghost_map);
+
+    for (size_t index = 0; index < phi.shared_size(); index++) {
+        size_t gid_plus_j, gid_minus_j;
+        calc_y_indices(global_IDs.shared(index), &gid_plus_j, &gid_minus_j);
+
+        double value = -b * b * phi.shared(index);
+
+        if (shared_map.find(gid_plus_j) != shared_map.end())
+            value += 0.5 * (b * b - b) * phi.shared(shared_map.find(gid_plus_j)->second);
+        else if (ghost_map.find(gid_plus_j) != ghost_map.end())
+            value += 0.5 * (b * b - b) * phi.ghost(ghost_map.find(gid_plus_j)->second);
+        else if (excl_map.find(gid_plus_j) != excl_map.end())
+            value += 0.5 * (b * b - b) * phi[excl_map.find(gid_plus_j)->second];
+
+        if (shared_map.find(gid_minus_j) != shared_map.end())
+            value += 0.5 * (b * b + b) * phi.shared(shared_map.find(gid_minus_j)->second);
+        else if (ghost_map.find(gid_minus_j) != ghost_map.end())
+            value += 0.5 * (b * b + b) * phi.ghost(ghost_map.find(gid_minus_j)->second);
+        else if (excl_map.find(gid_minus_j) != excl_map.end())
+            value += 0.5 * (b * b + b) * phi[excl_map.find(gid_minus_j)->second];
+
+        phi_update.shared(index) = value;
+    }
+
+    for (size_t index = 0; index < phi.size(); index++)
+        phi[index] += phi_update[index];
+
+    for (size_t index = 0; index < phi.shared_size(); index++)
+        phi.shared(index) += phi_update.shared(index);
+
+}
+
+flecsi_register_task(advect_own_y, loc, single);
 
 void
 write_to_disk (
@@ -799,8 +893,6 @@ driver(
   auto write_shared_update =
    flecsi_get_handle(dc, lax, phi_update, double, dense, index_space, ro, rw, none);
 
-  size_t versions = 1;
-
   flecsi_execute_task(initialize_data, loc, single, cell_IDs, write_exclusive_shared);
 
   const double dx = 1.0  / static_cast<double>(NX - 1);
@@ -815,6 +907,12 @@ driver(
             write_exclusive_update);
 
     flecsi_execute_task(advect_own_x, loc, single, cell_IDs, rw_excl_shrd_ro_ghost,
+            write_shared_update);
+
+    flecsi_execute_task(calculate_exclusive_y, loc, single, cell_IDs, read_exclusive_shared,
+            write_exclusive_update);
+
+    flecsi_execute_task(advect_own_y, loc, single, cell_IDs, rw_excl_shrd_ro_ghost,
             write_shared_update);
 
   }
