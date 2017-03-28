@@ -431,8 +431,6 @@ lax_wendroff_task(
   	runtime->attach_name(lregion_halo, buf);
   }
 
-  // Initialize data
-
   sprint::TaskWrapper task_wrapper(&args, lregions_ghost, pregions_ghost, lregion_halo, task_ids_t::instance().double_copy_task_id, fid_phi);
 
   bool read_phase = false;

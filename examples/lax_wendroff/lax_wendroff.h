@@ -663,7 +663,26 @@ driver(
   auto cell_ID_handle =
    flecsi_get_handle(dc, lax, cell_ID, size_t, dense, index_space, ro, ro, ro);
 
+  int versions = 1;
+
+  // flecsi_register_data(dc, lax, phi_temp, double, local, versions, index_space);
+
+  // Initialize data
   flecsi_execute_task(lax_init_task, loc, single, cell_ID_handle, write_handle);
+
+  const double dx = 1.0  / static_cast<double>(NX - 1);
+  const double dy = 1.0  / static_cast<double>(NY - 1);
+  const double dt = std::min(CFL * dx / U, CFL * dy / V);
+  double time = 0.0;
+  while (time < 0.165) {
+    time += dt;
+    std::cout << "t=" << time << std::endl;
+    for (int split = 0; split < 2; split ++) {
+
+    } // split
+  } // cycle
+
+  std::cout << "time " << time << std::endl;
 
   auto read_handle =
    flecsi_get_handle(dc, lax, phi, double, dense, index_space, ro, ro, none);
