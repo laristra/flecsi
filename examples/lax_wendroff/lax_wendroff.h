@@ -21,6 +21,12 @@ using namespace LegionRuntime::HighLevel;
 using namespace LegionRuntime::Accessor;
 using namespace LegionRuntime::Arrays;
 
+#define NX 32
+#define NY 32
+#define CFL 0.5
+#define U 1.0
+#define V 1.0
+
 namespace flecsi {
 namespace execution {
 
@@ -38,7 +44,7 @@ mpi_task(
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   std::cout << "My rank: " << rank << std::endl;
 
-  flecsi::io::simple_definition_t sd("simple2d-64x64.msh");
+  flecsi::io::simple_definition_t sd("simple2d-32x32.msh");
   flecsi::dmp::weaver weaver(sd);
 
   using entry_info_t = flecsi::dmp::entry_info_t;
@@ -75,7 +81,6 @@ mpi_task(
     flecsi::utils::any_t(raw_conns));
 }
 
-  
 flecsi_register_task(mpi_task, mpi, single);
 
 void
@@ -90,6 +95,9 @@ specialization_driver(
   auto context = context_.context(task_key);
 
   legion_helper h(runtime, context);
+
+  data_client& dc = *((data_client*)argv[argc - 1]);
+
 
   using legion_domain = LegionRuntime::HighLevel::Domain;
   field_ids_t & fid_t =field_ids_t::instance();
@@ -167,7 +175,6 @@ specialization_driver(
     FieldAllocator allocator = runtime->create_field_allocator(context,
                                              cells_fs);
     allocator.allocate_field(sizeof(size_t), fid_t.fid_cell);
-    allocator.allocate_field(sizeof(double), fid_t.fid_data);
 //TOFIX
     allocator.allocate_field(sizeof(legion_dpd::ptr_count),
                       legion_dpd::connectivity_field_id(2, 0));
@@ -186,10 +193,6 @@ specialization_driver(
   LogicalRegion cells_lr=
     runtime->create_logical_region(context,cells_is, cells_fs);
   runtime->attach_name(cells_lr, "cells  logical region");
-
-  LogicalRegion ghost_lr=
-    runtime->create_logical_region(context,cells_is, cells_fs);
-  runtime->attach_name(ghost_lr, "ghost  logical region");
 
    //create global IS fnd LR for Vertices
 
@@ -243,9 +246,6 @@ specialization_driver(
 
   LogicalPartition cells_primary_lp = runtime->get_logical_partition(context,
            cells_lr, cells_primary_ip);
-
-  LogicalPartition ghost_primary_lp = runtime->get_logical_partition(context,
-           ghost_lr, cells_primary_ip);
 
 
 	//partition vertices by number of mpi ranks
@@ -306,34 +306,17 @@ specialization_driver(
   
   fm2.wait_all_results();
 
-  {
-	  LegionRuntime::HighLevel::IndexLauncher initialization_launcher(
-	    task_ids_t::instance().init_task_id,
-	    rank_domain,
-	    LegionRuntime::HighLevel::TaskArgument(0, 0),
-	    arg_map);
+  execution::mpilegion_context_policy_t::partitioned_index_space cells_parts;
+  cells_parts.size = total_num_cells;
+  cells_parts.entities_lr = cells_lr;
 
-	  initialization_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+  execution::mpilegion_context_policy_t::partitioned_index_space verts_parts;
+  verts_parts.size = total_num_vertices;
+  verts_parts.entities_lr = vertices_lr;
 
-	  initialization_launcher.add_region_requirement(
-	    RegionRequirement(ghost_primary_lp, 0,
-	                      WRITE_DISCARD, EXCLUSIVE, ghost_lr));
-	  initialization_launcher.add_field(0, fid_t.fid_cell);
-
-	  initialization_launcher.add_region_requirement(
-	    RegionRequirement(vert_primary_lp, 0,
-	                      WRITE_DISCARD, EXCLUSIVE, vertices_lr));
-	  initialization_launcher.add_field(1, fid_t.fid_vert);
-
-	  FutureMap fm2 = runtime->execute_index_space( context,
-	        initialization_launcher);
-
-	  fm2.wait_all_results();
-  }
-
-
-  //creating partiotioning for shared and exclusive elements:
+  //creating partitioning for shared and exclusive elements:
   Coloring cells_shared_coloring;
+  Coloring vert_shared_coloring;
 
   LegionRuntime::HighLevel::IndexLauncher shared_part_launcher(
     task_ids_t::instance().shared_part_task_id,
@@ -376,6 +359,7 @@ specialization_driver(
       LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
         shared_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
+      cells_parts.shared_count_map[indx] =  cells_num_shared[indx];
       for (size_t j=0; j<cells_num_shared[indx]; j++)
       {
         ptr_t ptr=
@@ -440,6 +424,7 @@ specialization_driver(
       LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
         exclusive_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
+      cells_parts.exclusive_count_map[indx] =  cells_num_exclusive[indx];
       for (size_t j=0; j<cells_num_exclusive[indx]; j++)
       {
         ptr_t ptr=
@@ -506,6 +491,7 @@ specialization_driver(
       LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, ptr_t> acc =
         ghost_region.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
+      cells_parts.ghost_count_map[indx] =  cells_num_ghosts[indx];
       for (size_t j=0; j<cells_num_ghosts[indx]; j++)
       {
         ptr_t ptr=
@@ -523,114 +509,64 @@ specialization_driver(
         cells_is,cells_ghost_coloring, false);
 
   LogicalPartition cells_ghost_lp = runtime->get_logical_partition(context,
-    ghost_lr, cells_ghost_ip);
+    cells_lr, cells_ghost_ip);
+
+// copy cell_id to flecsi data structures
+
+  cells_parts.shared_ip = cells_shared_ip;
+  cells_parts.ghost_ip = cells_ghost_ip;
+  cells_parts.exclusive_ip = cells_exclusive_ip;
+
+  const size_t versions = 1;
+  size_t index_id = 0;
+
+  dc.put_index_space(index_id, cells_parts);
+
+  flecsi_register_data(dc, lax, cell_ID, size_t, dense, versions, index_id);
+  flecsi_register_data(dc, lax, phi, double, dense, versions, index_id);
+  flecsi_register_data(dc, lax, phi_temp, double, dense, versions, index_id);
+
+  auto cell_handle =
+    flecsi_get_handle(dc, lax, cell_ID, size_t, dense, index_id, rw, rw, ro);
+
+
+  LegionRuntime::HighLevel::IndexLauncher copy_legion_to_flecsi_launcher(
+    task_ids_t::instance().copy_legion_to_flecsi_task_id,
+    rank_domain,
+    LegionRuntime::HighLevel::TaskArgument(0, 0),
+    arg_map);
+
+  copy_legion_to_flecsi_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+
+  copy_legion_to_flecsi_launcher.add_region_requirement(
+    RegionRequirement(cells_shared_lp, 0/*projection ID*/,
+      READ_ONLY, EXCLUSIVE, cells_lr));
+  copy_legion_to_flecsi_launcher.add_field(0, fid_t.fid_cell);
+
+  copy_legion_to_flecsi_launcher.add_region_requirement(
+    RegionRequirement(cells_exclusive_lp, 0/*projection ID*/,
+      READ_ONLY, EXCLUSIVE, cells_lr));
+  copy_legion_to_flecsi_launcher.add_field(1, fid_t.fid_cell);
+
+  LogicalPartition flecsi_exclusive_lp = runtime->get_logical_partition(context,
+           cell_handle.lr, cell_handle.exclusive_ip);
+  copy_legion_to_flecsi_launcher.add_region_requirement(
+    RegionRequirement(flecsi_exclusive_lp, 0/*projection ID*/,
+      READ_WRITE, EXCLUSIVE, cell_handle.lr));
+  copy_legion_to_flecsi_launcher.add_field(2, fid_t.fid_value);
+
+  LogicalPartition flecsi_shared_lp = runtime->get_logical_partition(context,
+           cell_handle.lr, cell_handle.shared_ip);
+  copy_legion_to_flecsi_launcher.add_region_requirement(
+    RegionRequirement(flecsi_shared_lp, 0/*projection ID*/,
+      READ_WRITE, EXCLUSIVE, cell_handle.lr));
+  copy_legion_to_flecsi_launcher.add_field(3, fid_t.fid_value);
+
+  FutureMap fm_copy = runtime->execute_index_space(context,copy_legion_to_flecsi_launcher);
+  fm_copy.wait_all_results();
+
 
   //call a legion task that tests ghost cell access
-	std::set<Processor> all_procs;
-	Realm::Machine::get_machine().get_all_processors(all_procs);
-	int num_procs = 0;
-	for(std::set<Processor>::const_iterator it = all_procs.begin();
-	      it != all_procs.end();
-	      it++)
-	    if((*it).kind() == Processor::LOC_PROC)
-	      num_procs++;
-	assert(num_procs == num_ranks);
-
-  // figure out communication pattern
-
-  std::vector<PhaseBarrier> phase_barriers;
-  std::vector<std::set<int>> master_colors(num_ranks);
-  for (int master_color=0; master_color < num_ranks; ++master_color) {
-    std::set<int> slave_colors;
-    for (std::set<ptr_t>::iterator it=cells_shared_coloring[master_color].points.begin();
-      it!=cells_shared_coloring[master_color].points.end(); ++it) {
-      const ptr_t ptr = *it;
-      for (int slave_color = 0; slave_color < num_ranks; ++slave_color)
-        if (cells_ghost_coloring[slave_color].points.count(ptr)) {
-          slave_colors.insert(slave_color);
-          master_colors[slave_color].insert(master_color);
-        }
-    }
-    phase_barriers.push_back(runtime->create_phase_barrier(context, 1 + slave_colors.size()));
-  }
-
-  // Launch SPMD tasks
-  MustEpochLauncher must_epoch_launcher;
-  std::vector<execution::sprint::SPMDArgs> spmd_args(num_ranks);
-  std::vector<execution::sprint::SPMDArgsSerializer> args_serialized(num_ranks);
-  for (int color=0; color < num_ranks; ++color) {
-    spmd_args[color].pbarrier_as_master = phase_barriers[color];
-
-    for (std::set<int>::iterator master=master_colors[color].begin();
-    		master!=master_colors[color].end(); ++master) {
-      spmd_args[color].masters_pbarriers.push_back(phase_barriers[*master]);
-    }
-
-    args_serialized[color].archive(&(spmd_args[color]));
-
-    TaskLauncher ghost_access_launcher(task_ids_t::instance().lax_wendroff_task_id,
-    		TaskArgument(args_serialized[color].getBitStream(), args_serialized[color].getBitStreamSize()));
-
-    ghost_access_launcher.tag = MAPPER_FORCE_RANK_MATCH;
-
-    LogicalRegion lregion_shared = runtime->get_logical_subregion_by_color(context,
-    		cells_shared_lp,color);
-    ghost_access_launcher.add_region_requirement(
-    		RegionRequirement(lregion_shared,
-    				READ_WRITE, SIMULTANEOUS, cells_lr));
-    ghost_access_launcher.add_field(0, fid_t.fid_data);
-    ghost_access_launcher.add_field(0, fid_t.fid_cell);
-
-    LogicalRegion lregion_exclusive = runtime->get_logical_subregion_by_color(context,
-    		cells_exclusive_lp,color);
-    ghost_access_launcher.add_region_requirement(
-    		RegionRequirement(lregion_exclusive,
-    				READ_WRITE, EXCLUSIVE, cells_lr));
-    ghost_access_launcher.add_field(1, fid_t.fid_data);
-    ghost_access_launcher.add_field(1, fid_t.fid_cell);
-
-    LogicalRegion lregion_ghost = runtime->get_logical_subregion_by_color(context,
-    		cells_ghost_lp,color);
-    ghost_access_launcher.add_region_requirement(
-    		RegionRequirement(lregion_ghost,
-    				READ_ONLY, EXCLUSIVE, ghost_lr).add_field(fid_t.fid_cell));
-
-    int req_index = 3;
-    for (std::set<int>::iterator master=master_colors[color].begin();
-    		master!=master_colors[color].end(); ++master) {
-      LogicalRegion lregion_ghost = runtime->get_logical_subregion_by_color(context,
-    		  cells_shared_lp,*master);
-    ghost_access_launcher.add_region_requirement(
-    		RegionRequirement(lregion_ghost,
-    				READ_ONLY, SIMULTANEOUS, cells_lr));
-      ghost_access_launcher.region_requirements[req_index].add_flags(NO_ACCESS_FLAG);
-      ghost_access_launcher.add_field(req_index, fid_t.fid_data);
-      req_index++;
-    }
-
-    IndexSpace ispace_ghost = runtime->get_index_subspace(context, cells_ghost_ip, color);
-    ghost_access_launcher.add_index_requirement(IndexSpaceRequirement(ispace_ghost,
-    		NO_MEMORY,cells_is));
-
-    DomainPoint point(color);
-    must_epoch_launcher.add_single_task(point,ghost_access_launcher);
-  }
-
-  FutureMap fm7 = runtime->execute_must_epoch(context,must_epoch_launcher);
-  fm7.wait_all_results();
-
-  for (unsigned idx = 0; idx < phase_barriers.size(); idx++)
-    runtime->destroy_phase_barrier(context, phase_barriers[idx]);
-  phase_barriers.clear();
-
-  TaskLauncher write_launcher(task_ids_t::instance().lax_write_task_id,
-  		TaskArgument(nullptr, 0));
-  write_launcher.add_region_requirement(
-		  RegionRequirement(cells_lr, READ_ONLY, EXCLUSIVE, cells_lr)
-		  .add_field(fid_t.fid_data).add_field(fid_t.fid_cell));
-  Future future = runtime->execute_task(context, write_launcher);
-  future.get_void_result();
-
   //TOFIX: free all lr physical regions is
   runtime->destroy_logical_region(context, vertices_lr);
   runtime->destroy_logical_region(context, cells_lr);
@@ -640,6 +576,202 @@ specialization_driver(
   runtime->destroy_index_space(context,vertices_is);
 
 } // specialization_driver
+
+
+template<typename T>
+using accessor_t = flecsi::data::legion::dense_accessor_t<T, flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t> >;
+
+
+static double calc_init_point(const size_t pt) {
+    double value = 0.0;
+    const size_t y_index = pt / NX;
+    const size_t x_index = pt % NX;
+    double x = static_cast<double>(x_index) / static_cast<double>(NX - 1);
+    double y = static_cast<double>(y_index) / static_cast<double>(NY - 1);
+    if ( (x <= 0.5) && (y <= 0.5) )
+        value = 1.0;
+    return value;
+}
+
+static double get_x_vel() {
+  const double dx = 1.0  / static_cast<double>(NX - 1);
+  const double dy = 1.0  / static_cast<double>(NY - 1);
+  const double dt = std::min(CFL * dx / U, CFL * dy / V);
+  return U * dt / dx;
+}
+
+static double get_y_vel() {
+  const double dx = 1.0  / static_cast<double>(NX - 1);
+  const double dy = 1.0  / static_cast<double>(NY - 1);
+  const double dt = std::min(CFL * dx / U, CFL * dy / V);
+  return V * dt / dy;
+}
+
+void
+initialize_data(
+        accessor_t<size_t> global_IDs,
+        accessor_t<double> acc_cells
+)
+{
+
+    for (size_t i = 0; i < acc_cells.size(); i++)
+        acc_cells[i] = calc_init_point(global_IDs[i]);
+
+    for (size_t i = 0; i < acc_cells.shared_size(); i++)
+        acc_cells.shared(i) = calc_init_point(global_IDs.shared(i));
+
+}
+
+flecsi_register_task(initialize_data, loc, single);
+
+static void calc_x_indices(const size_t gid_pt,
+          size_t* gid_plus_i, size_t* gid_minus_i)
+{
+  const size_t gid_y_index = gid_pt / NX;
+  const size_t gid_x_index = gid_pt % NX;
+  *gid_plus_i = (gid_x_index + 1) != NX ? gid_x_index + 1 + gid_y_index * NX: -1;
+  *gid_minus_i = gid_x_index != 0 ? gid_x_index - 1 + gid_y_index * NX: -1;
+}
+
+static void create_maps (accessor_t<size_t>& global_IDs,
+        std::map<size_t, size_t>& exclusive_map,
+        std::map<size_t, size_t>& shared_map,
+        std::map<size_t, size_t>& ghost_map)
+{
+    // TODO profile effects of this indirection
+
+    for (size_t i = 0; i < global_IDs.size(); i++)
+        exclusive_map[global_IDs[i]] = i;
+
+    for (size_t i = 0; i < global_IDs.shared_size(); i++)
+        shared_map[global_IDs.shared(i)] = i;
+
+    for (size_t i = 0; i < global_IDs.ghost_size(); i++)
+        ghost_map[global_IDs.ghost(i)] = i;
+
+}
+
+void
+calculate_exclusive_x (
+        accessor_t<size_t> global_IDs,
+        accessor_t<double> old_phi,
+        accessor_t<double> new_phi
+)
+{
+    const double a = get_x_vel();
+
+    std::map<size_t, size_t> excl_map;
+    std::map<size_t, size_t> shared_map;
+    std::map<size_t, size_t> ghost_map;
+
+    create_maps(global_IDs, excl_map, shared_map, ghost_map);
+
+    for (size_t index = 0; index < old_phi.size(); index++) {
+        size_t gid_plus_i, gid_minus_i;
+        calc_x_indices(global_IDs[index], &gid_plus_i, &gid_minus_i);
+
+        double value = -a * a * old_phi[index];
+
+        if (excl_map.find(gid_plus_i) != excl_map.end())
+                value += 0.5 * (a * a - a) * old_phi[excl_map.find(gid_plus_i)->second];
+        else if (shared_map.find(gid_plus_i) != shared_map.end())
+            value += 0.5 * (a * a - a) * old_phi.shared(shared_map.find(gid_plus_i)->second);
+
+        if (excl_map.find(gid_minus_i) != excl_map.end())
+            value += 0.5 * (a * a + a) * old_phi[excl_map.find(gid_minus_i)->second];
+        else if (shared_map.find(gid_minus_i) != shared_map.end())
+            value += 0.5 * (a * a + a) * old_phi.shared(shared_map.find(gid_minus_i)->second);
+
+        new_phi[index] = value;
+    }
+
+}
+
+flecsi_register_task(calculate_exclusive_x, loc, single);
+
+void
+write_to_disk (
+        accessor_t<size_t> global_IDs,
+        accessor_t<double> phi,
+        size_t my_color
+)
+{
+  char buf[40];
+  sprintf(buf,"lax%d.part", my_color);
+  std::ofstream myfile;
+  myfile.open(buf);
+
+  for (size_t i = 0; i < phi.size(); i++) {
+      const size_t pt = global_IDs[i];
+      const size_t y_index = pt / NX;
+      const size_t x_index = pt % NX;
+      myfile << x_index << " " << y_index << " " << phi[i] << std::endl;
+  }
+
+  for (size_t i = 0; i < phi.shared_size(); i++) {
+      const size_t pt = global_IDs.shared(i);
+      const size_t y_index = pt / NX;
+      const size_t x_index = pt % NX;
+      myfile << x_index << " " << y_index << " " << phi.shared(i) << std::endl;
+  }
+
+    myfile.close();
+}
+
+flecsi_register_task(write_to_disk , loc, single);
+
+
+void
+driver(
+  int argc,
+  char ** argv
+)
+{
+  flecsi::execution::context_t & context_ = flecsi::execution::context_t::instance();
+  const LegionRuntime::HighLevel::Task *task = context_.task(flecsi::utils::const_string_t{"driver"}.hash());
+  const size_t my_color = task->index_point.point_data[0];
+
+  flecsi::data_client& dc = *((flecsi::data_client*)argv[argc - 1]);
+
+  std::cout << my_color << " driver " << std::endl;
+
+
+  size_t index_space = 0;
+
+  auto write_exclusive_shared =
+    flecsi_get_handle(dc, lax, phi, double, dense, index_space, rw, rw, none);
+  auto cell_IDs =
+   flecsi_get_handle(dc, lax, cell_ID, size_t, dense, index_space, ro, ro, ro);
+  auto read_exclusive_shared =
+   flecsi_get_handle(dc, lax, phi, double, dense, index_space, ro, ro, none);
+  auto write_exclusive_temp =
+   flecsi_get_handle(dc, lax, phi_temp, double, dense, index_space, rw, none, none);
+
+  size_t versions = 1;
+
+  flecsi_execute_task(initialize_data, loc, single, cell_IDs, write_exclusive_shared);
+
+  const double dx = 1.0  / static_cast<double>(NX - 1);
+  const double dy = 1.0  / static_cast<double>(NY - 1);
+  const double dt = std::min(CFL * dx / U, CFL * dy / V);
+  double time = 0.0;
+  while (time < 0.165) {
+    time += dt;
+    std::cout << "t=" << time << std::endl;
+
+    flecsi_execute_task(calculate_exclusive_x, loc, single, cell_IDs, read_exclusive_shared,
+            write_exclusive_temp);
+
+  }
+
+  std::cout << "time " << time << std::endl;
+
+  flecsi_execute_task(write_to_disk, loc, single, cell_IDs, read_exclusive_shared, my_color);
+
+  std::cout << "lax wendroff ... all tasks issued"
+  << std::endl;
+
+} //driver
 
 } // namespace execution
 } // namespace flecsi

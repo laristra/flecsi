@@ -302,136 +302,6 @@ lax_adv_x_task(
 }
 
 void
-lax_calc_excl_x_task(
-  const Legion::Task *task,
-  const std::vector<Legion::PhysicalRegion> & regions,
-  Legion::Context ctx, Legion::HighLevelRuntime *runtime
-)
-{
-  using double_acc_t = LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic, double>;
-  using size_t_acc_t = LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic, size_t>;
-  using field_id = LegionRuntime::HighLevel::FieldID;
-
-  assert(regions.size() == 3);
-  assert(task->regions.size() == 3);
-  assert(task->regions[0].privilege_fields.size() == 2);
-  assert(task->regions[1].privilege_fields.size() == 2);
-  assert(task->regions[2].privilege_fields.size() == 1);
-
-  field_ids_t & fid_t =field_ids_t::instance();
-  field_id fid_phi = fid_t.fid_data;
-  field_id fid_gid = fid_t.fid_cell;
-
-  const double a = get_x_vel();
-
-  double_acc_t acc_shared_phi = regions[0].get_field_accessor(fid_phi).typeify<double>();
-
-  double_acc_t acc_exclsv_phi = regions[1].get_field_accessor(fid_phi).typeify<double>();
-  size_t_acc_t acc_exclsv_gid = regions[1].get_field_accessor(fid_gid).typeify<size_t>();
-  IndexIterator exclsv_itr(runtime, ctx, regions[1].get_logical_region());
-
-  double_acc_t acc_tmp_phi = regions[2].get_field_accessor(fid_phi).typeify<double>();
-  IndexIterator tmp_itr(runtime, ctx, regions[2].get_logical_region());
-
-  std::map<size_t, ptr_t> shared_map = create_map(runtime, ctx, regions[0]);
-  std::map<size_t, ptr_t> excl_map = create_map(runtime, ctx, regions[1]);
-
-  while(exclsv_itr.has_next()) {
-    const ptr_t ptr = exclsv_itr.next();
-    int gid_plus_i, gid_minus_i;
-    calc_x_indices(ptr, acc_exclsv_gid, &gid_plus_i, &gid_minus_i);
-
-    double value = -a * a * acc_exclsv_phi.read(ptr);
-
-    if (excl_map.find(gid_plus_i) != excl_map.end())
-            value += 0.5 * (a * a - a) * acc_exclsv_phi.read(excl_map.find(gid_plus_i)->second);
-    else if (shared_map.find(gid_plus_i) != shared_map.end())
-        value += 0.5 * (a * a - a) * acc_shared_phi.read(shared_map.find(gid_plus_i)->second);
-
-    if (excl_map.find(gid_minus_i) != excl_map.end())
-        value += 0.5 * (a * a + a) * acc_exclsv_phi.read(excl_map.find(gid_minus_i)->second);
-    else if (shared_map.find(gid_minus_i) != shared_map.end())
-        value += 0.5 * (a * a + a) * acc_shared_phi.read(shared_map.find(gid_minus_i)->second);
-
-    acc_tmp_phi.write(ptr, value);
-  }
-
-}
-
-void
-lax_write_task(
-  const Legion::Task *task,
-  const std::vector<Legion::PhysicalRegion> & regions,
-  Legion::Context ctx, Legion::HighLevelRuntime *runtime
-)
-{
-  using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
-  using field_id = LegionRuntime::HighLevel::FieldID;
-
-  assert(regions.size() == 1);
-  assert(task->regions.size() == 1);
-  assert(task->regions[0].privilege_fields.size() == 2);
-
-  field_ids_t & fid_t =field_ids_t::instance();
-  field_id fid_phi = fid_t.fid_data;
-  field_id fid_gid = fid_t.fid_cell;
-
-  std::ofstream myfile;
-  myfile.open("lax.out");
-
-  LegionRuntime::Accessor::RegionAccessor<generic_type, double>
-     acc_phi = regions[0].get_field_accessor(fid_phi).typeify<double>();
-  LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
-     acc_gid = regions[0].get_field_accessor(fid_gid).typeify<size_t>();
-  IndexIterator itr(runtime, ctx, regions[0].get_logical_region());
-    while(itr.has_next()) {
-    	const ptr_t ptr = itr.next();
-    	const int pt = acc_gid.read(ptr);
-    	const int y_index = pt / NX;
-    	const int x_index = pt % NX;
-    	myfile << x_index << " " << y_index << " " << acc_phi.read(ptr) << std::endl;
-    }
-    myfile.close();
-}
-
-void
-lax_init_task(
-  const Legion::Task *task,
-  const std::vector<Legion::PhysicalRegion> & regions,
-  Legion::Context ctx, Legion::HighLevelRuntime *runtime
-)
-{
-  using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
-  using field_id = LegionRuntime::HighLevel::FieldID;
-
-  assert(regions.size() == 1);
-  assert(task->regions.size() == 1);
-  assert(task->regions[0].privilege_fields.size() == 2);
-
-  field_ids_t & fid_t =field_ids_t::instance();
-  field_id fid_phi = fid_t.fid_data;
-  field_id fid_gid = fid_t.fid_cell;
-
-  LegionRuntime::Accessor::RegionAccessor<generic_type, double>
-     acc_phi = regions[0].get_field_accessor(fid_phi).typeify<double>();
-  LegionRuntime::Accessor::RegionAccessor<generic_type, size_t>
-     acc_gid = regions[0].get_field_accessor(fid_gid).typeify<size_t>();
-  IndexIterator itr(runtime, ctx, regions[0].get_logical_region());
-  while(itr.has_next()) {
-    const ptr_t ptr = itr.next();
-    const size_t pt = acc_gid.read(ptr);
-    const size_t y_index = pt / NX;
-    const size_t x_index = pt % NX;
-    double x = static_cast<double>(x_index) / static_cast<double>(NX - 1);
-    double y = static_cast<double>(y_index) / static_cast<double>(NY - 1);
-    if ( (x <= 0.5) && (y <= 0.5) )
-      acc_phi.write(ptr,1.0);
-    else
-      acc_phi.write(ptr,0.0);
-  }
-}
-
-void
 lax_wendroff_task(
   const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,
@@ -504,23 +374,10 @@ lax_wendroff_task(
   	runtime->attach_name(lregion_halo, buf);
   }
 
-  // Initialize data
-  TaskLauncher exclusive_launcher(task_ids_t::instance().lax_init_task_id, TaskArgument(nullptr, 0));
-  exclusive_launcher.add_region_requirement(RegionRequirement(lr_exclusive, WRITE_DISCARD, EXCLUSIVE, lr_exclusive));
-  exclusive_launcher.add_field(0, fid_phi);
-  exclusive_launcher.add_field(0, fid_gid);
-  Future init_exclusive_future = runtime->execute_task(ctx, exclusive_launcher);
-
   sprint::TaskWrapper task_wrapper(&args, lregions_ghost, pregions_ghost, lregion_halo, task_ids_t::instance().double_copy_task_id, fid_phi);
 
-  // phase WRITE: masters update their halo regions; slaves may not access data
-  TaskLauncher shared_launcher(task_ids_t::instance().lax_init_task_id, TaskArgument(nullptr, 0));
-  shared_launcher.add_region_requirement(RegionRequirement(lr_shared, WRITE_DISCARD, EXCLUSIVE, lr_shared));
-  shared_launcher.add_field(0, fid_phi);
-  shared_launcher.add_field(0, fid_gid);
   bool read_phase = false;
   bool write_phase = true;
-  task_wrapper.execute_task(ctx, runtime, shared_launcher, read_phase, write_phase);
 
   const double dx = 1.0  / static_cast<double>(NX - 1);
   const double dy = 1.0  / static_cast<double>(NY - 1);
@@ -531,7 +388,7 @@ lax_wendroff_task(
     std::cout << "t=" << time << std::endl;
     for (int split = 0; split < 2; split ++) {
 
-	  Processor::TaskFuncID split_task = task_ids_t::instance().lax_calc_excl_x_task_id;
+	  Processor::TaskFuncID split_task = task_ids_t::instance().lax_calc_excl_y_task_id;
       if (split)
         split_task = task_ids_t::instance().lax_calc_excl_y_task_id;
       TaskLauncher exclusive_launcher(split_task, TaskArgument(nullptr, 0));

@@ -29,7 +29,7 @@
 
 ///
 // \file sprint.h
-// \authors bergen
+// \authors bergen, irina, jgraham
 // \date Initial file creation: Aug 23, 2016
 ///
 
@@ -182,13 +182,6 @@ specialization_driver(
 
     vertices_part.count_map[i] = received.primary_vertices;
 
-#if 0
-    std::cout << "From rank " << i 
-              << " received cells (exclusive, shared, ghost) "
-              << "(" << received.exclusive_cells << "," 
-              << received.shared_cells << ","
-              << received.ghost_cells << ")" << std::endl;
-#endif
   }//end for
 
   // create a field space to store cells id
