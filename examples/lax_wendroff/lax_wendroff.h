@@ -517,13 +517,14 @@ specialization_driver(
   cells_parts.ghost_ip = cells_ghost_ip;
   cells_parts.exclusive_ip = cells_exclusive_ip;
 
-  const int versions = 1;
-  int index_id = 0;
+  const size_t versions = 1;
+  size_t index_id = 0;
 
   dc.put_index_space(index_id, cells_parts);
 
   flecsi_register_data(dc, lax, cell_ID, size_t, dense, versions, index_id);
   flecsi_register_data(dc, lax, phi, double, dense, versions, index_id);
+  flecsi_register_data(dc, lax, phi_temp, double, dense, versions, index_id);
 
   auto cell_handle =
     flecsi_get_handle(dc, lax, cell_ID, size_t, dense, index_id, rw, rw, ro);
@@ -581,10 +582,10 @@ template<typename T>
 using accessor_t = flecsi::data::legion::dense_accessor_t<T, flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t> >;
 
 
-static double calc_init_point(const int pt) {
+static double calc_init_point(const size_t pt) {
     double value = 0.0;
-    const int y_index = pt / NX;
-    const int x_index = pt % NX;
+    const size_t y_index = pt / NX;
+    const size_t x_index = pt % NX;
     double x = static_cast<double>(x_index) / static_cast<double>(NX - 1);
     double y = static_cast<double>(y_index) / static_cast<double>(NY - 1);
     if ( (x <= 0.5) && (y <= 0.5) )
@@ -592,8 +593,22 @@ static double calc_init_point(const int pt) {
     return value;
 }
 
+static double get_x_vel() {
+  const double dx = 1.0  / static_cast<double>(NX - 1);
+  const double dy = 1.0  / static_cast<double>(NY - 1);
+  const double dt = std::min(CFL * dx / U, CFL * dy / V);
+  return U * dt / dx;
+}
+
+static double get_y_vel() {
+  const double dx = 1.0  / static_cast<double>(NX - 1);
+  const double dy = 1.0  / static_cast<double>(NY - 1);
+  const double dt = std::min(CFL * dx / U, CFL * dy / V);
+  return V * dt / dy;
+}
+
 void
-lax_init_task(
+initialize_data(
         accessor_t<size_t> global_IDs,
         accessor_t<double> acc_cells
 )
@@ -607,13 +622,78 @@ lax_init_task(
 
 }
 
-flecsi_register_task(lax_init_task, loc, single);
+flecsi_register_task(initialize_data, loc, single);
+
+static void calc_x_indices(const size_t gid_pt,
+          size_t* gid_plus_i, size_t* gid_minus_i)
+{
+  const size_t gid_y_index = gid_pt / NX;
+  const size_t gid_x_index = gid_pt % NX;
+  *gid_plus_i = (gid_x_index + 1) != NX ? gid_x_index + 1 + gid_y_index * NX: -1;
+  *gid_minus_i = gid_x_index != 0 ? gid_x_index - 1 + gid_y_index * NX: -1;
+}
+
+static void create_maps (accessor_t<size_t>& global_IDs,
+        std::map<size_t, size_t>& exclusive_map,
+        std::map<size_t, size_t>& shared_map,
+        std::map<size_t, size_t>& ghost_map)
+{
+    // TODO profile effects of this indirection
+
+    for (size_t i = 0; i < global_IDs.size(); i++)
+        exclusive_map[global_IDs[i]] = i;
+
+    for (size_t i = 0; i < global_IDs.shared_size(); i++)
+        shared_map[global_IDs.shared(i)] = i;
+
+    for (size_t i = 0; i < global_IDs.ghost_size(); i++)
+        ghost_map[global_IDs.ghost(i)] = i;
+
+}
 
 void
-lax_write_task(
+calculate_exclusive_x (
         accessor_t<size_t> global_IDs,
-        accessor_t<double> acc_cells,
-        int my_color
+        accessor_t<double> old_phi,
+        accessor_t<double> new_phi
+)
+{
+    const double a = get_x_vel();
+
+    std::map<size_t, size_t> excl_map;
+    std::map<size_t, size_t> shared_map;
+    std::map<size_t, size_t> ghost_map;
+
+    create_maps(global_IDs, excl_map, shared_map, ghost_map);
+
+    for (size_t index = 0; index < old_phi.size(); index++) {
+        size_t gid_plus_i, gid_minus_i;
+        calc_x_indices(global_IDs[index], &gid_plus_i, &gid_minus_i);
+
+        double value = -a * a * old_phi[index];
+
+        if (excl_map.find(gid_plus_i) != excl_map.end())
+                value += 0.5 * (a * a - a) * old_phi[excl_map.find(gid_plus_i)->second];
+        else if (shared_map.find(gid_plus_i) != shared_map.end())
+            value += 0.5 * (a * a - a) * old_phi.shared(shared_map.find(gid_plus_i)->second);
+
+        if (excl_map.find(gid_minus_i) != excl_map.end())
+            value += 0.5 * (a * a + a) * old_phi[excl_map.find(gid_minus_i)->second];
+        else if (shared_map.find(gid_minus_i) != shared_map.end())
+            value += 0.5 * (a * a + a) * old_phi.shared(shared_map.find(gid_minus_i)->second);
+
+        new_phi[index] = value;
+    }
+
+}
+
+flecsi_register_task(calculate_exclusive_x, loc, single);
+
+void
+write_to_disk (
+        accessor_t<size_t> global_IDs,
+        accessor_t<double> phi,
+        size_t my_color
 )
 {
   char buf[40];
@@ -621,24 +701,24 @@ lax_write_task(
   std::ofstream myfile;
   myfile.open(buf);
 
-  for (size_t i = 0; i < acc_cells.size(); i++) {
-      const int pt = global_IDs[i];
-      const int y_index = pt / NX;
-      const int x_index = pt % NX;
-      myfile << x_index << " " << y_index << " " << acc_cells[i] << std::endl;
+  for (size_t i = 0; i < phi.size(); i++) {
+      const size_t pt = global_IDs[i];
+      const size_t y_index = pt / NX;
+      const size_t x_index = pt % NX;
+      myfile << x_index << " " << y_index << " " << phi[i] << std::endl;
   }
 
-  for (size_t i = 0; i < acc_cells.shared_size(); i++) {
-      const int pt = global_IDs.shared(i);
-      const int y_index = pt / NX;
-      const int x_index = pt % NX;
-      myfile << x_index << " " << y_index << " " << acc_cells.shared(i) << std::endl;
+  for (size_t i = 0; i < phi.shared_size(); i++) {
+      const size_t pt = global_IDs.shared(i);
+      const size_t y_index = pt / NX;
+      const size_t x_index = pt % NX;
+      myfile << x_index << " " << y_index << " " << phi.shared(i) << std::endl;
   }
 
     myfile.close();
 }
 
-flecsi_register_task(lax_write_task, loc, single);
+flecsi_register_task(write_to_disk , loc, single);
 
 
 void
@@ -649,26 +729,27 @@ driver(
 {
   flecsi::execution::context_t & context_ = flecsi::execution::context_t::instance();
   const LegionRuntime::HighLevel::Task *task = context_.task(flecsi::utils::const_string_t{"driver"}.hash());
-  const int my_color = task->index_point.point_data[0];
+  const size_t my_color = task->index_point.point_data[0];
 
   flecsi::data_client& dc = *((flecsi::data_client*)argv[argc - 1]);
 
   std::cout << my_color << " driver " << std::endl;
 
 
-  int index_space = 0;
+  size_t index_space = 0;
 
-  auto write_handle =
+  auto write_exclusive_shared =
     flecsi_get_handle(dc, lax, phi, double, dense, index_space, rw, rw, none);
-  auto cell_ID_handle =
+  auto cell_IDs =
    flecsi_get_handle(dc, lax, cell_ID, size_t, dense, index_space, ro, ro, ro);
+  auto read_exclusive_shared =
+   flecsi_get_handle(dc, lax, phi, double, dense, index_space, ro, ro, none);
+  auto write_exclusive_temp =
+   flecsi_get_handle(dc, lax, phi_temp, double, dense, index_space, rw, none, none);
 
-  int versions = 1;
+  size_t versions = 1;
 
-  // flecsi_register_data(dc, lax, phi_temp, double, local, versions, index_space);
-
-  // Initialize data
-  flecsi_execute_task(lax_init_task, loc, single, cell_ID_handle, write_handle);
+  flecsi_execute_task(initialize_data, loc, single, cell_IDs, write_exclusive_shared);
 
   const double dx = 1.0  / static_cast<double>(NX - 1);
   const double dy = 1.0  / static_cast<double>(NY - 1);
@@ -677,17 +758,15 @@ driver(
   while (time < 0.165) {
     time += dt;
     std::cout << "t=" << time << std::endl;
-    for (int split = 0; split < 2; split ++) {
 
-    } // split
-  } // cycle
+    flecsi_execute_task(calculate_exclusive_x, loc, single, cell_IDs, read_exclusive_shared,
+            write_exclusive_temp);
+
+  }
 
   std::cout << "time " << time << std::endl;
 
-  auto read_handle =
-   flecsi_get_handle(dc, lax, phi, double, dense, index_space, ro, ro, none);
-
-  flecsi_execute_task(lax_write_task, loc, single, cell_ID_handle, read_handle, my_color);
+  flecsi_execute_task(write_to_disk, loc, single, cell_IDs, read_exclusive_shared, my_color);
 
   std::cout << "lax wendroff ... all tasks issued"
   << std::endl;

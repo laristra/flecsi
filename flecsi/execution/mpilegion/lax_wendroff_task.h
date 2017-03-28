@@ -42,13 +42,6 @@ lax_adv_y_task(
 );
 
 void
-lax_calc_excl_x_task(
-  const Legion::Task *task,
-  const std::vector<Legion::PhysicalRegion> & regions,
-  Legion::Context ctx, Legion::HighLevelRuntime *runtime
-);
-
-void
 lax_calc_excl_y_task(
   const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,
