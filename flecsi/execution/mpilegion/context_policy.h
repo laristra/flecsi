@@ -115,110 +115,134 @@ struct mpilegion_context_policy_t
     // Register top-level task
     lr_runtime_t::set_top_level_task_id(TOP_LEVEL_TASK_ID);
     lr_runtime_t::register_legion_task<mpilegion_runtime_driver>(
-      TOP_LEVEL_TASK_ID, lr_loc, true, false);
+      TOP_LEVEL_TASK_ID, lr_loc, true, false, AUTO_GENERATE_ID,
+      TaskConfigOptions(), "mpilegion_runtime_driver");
 
     // FIXME
 		// This is Galen's hack to get partitioning working for the sprint
     lr_runtime_t::register_legion_task<sprint::parts,
       sprint::get_numbers_of_cells_task>(
-      task_ids_t::instance().get_numbers_of_cells_task_id,lr_loc, false, true);
+          task_ids_t::instance().get_numbers_of_cells_task_id,lr_loc, false, true,
+          AUTO_GENERATE_ID, TaskConfigOptions(), "get_number_of_cells_task");
 
    // FIXME
     // This is Galen's hack to get partitioning working for the sprint
     lr_runtime_t::register_legion_task<sprint::initialization_task>(
-      task_ids_t::instance().init_task_id,lr_loc, false, true);
+      task_ids_t::instance().init_task_id,lr_loc, false, true,
+      AUTO_GENERATE_ID, TaskConfigOptions(), "initialization_task");
 
    // FIXME
     // This is Galen's hack to get partitioning working for the sprint
     lr_runtime_t::register_legion_task<sprint::partition_lr,
       sprint::shared_part_task>(
-      task_ids_t::instance().shared_part_task_id,lr_loc, false, true);
+      task_ids_t::instance().shared_part_task_id,lr_loc, false, true,
+      AUTO_GENERATE_ID, TaskConfigOptions(), "shared_part_task");
  
    // FIXME
     // This is Galen's hack to get partitioning working for the sprint
     lr_runtime_t::register_legion_task<sprint::partition_lr,
       sprint::exclusive_part_task>(
-      task_ids_t::instance().exclusive_part_task_id,lr_loc, false, true);
+      task_ids_t::instance().exclusive_part_task_id,lr_loc, false, true,
+      AUTO_GENERATE_ID, TaskConfigOptions(), "exclusive_part_task");
 
 		// FIXME
     // This is Galen's hack to get partitioning working for the sprint
     lr_runtime_t::register_legion_task<sprint::partition_lr,
       sprint::ghost_part_task>(
-      task_ids_t::instance().ghost_part_task_id,lr_loc, false, true);
+      task_ids_t::instance().ghost_part_task_id,lr_loc, false, true,
+      AUTO_GENERATE_ID, TaskConfigOptions(), "ghost_part_task");
  
     lr_runtime_t::register_legion_task<sprint::copy_legion_to_flecsi_task>(
-      task_ids_t::instance().copy_legion_to_flecsi_task_id,lr_loc, false, true);
-
+      task_ids_t::instance().copy_legion_to_flecsi_task_id,lr_loc, false, true,
+      AUTO_GENERATE_ID, TaskConfigOptions(), "copy_legion_to_flecsi_task");
+    
     // FIXME
     // This is Galen's hack to get partitioning working for the sprint
     lr_runtime_t::register_legion_task<sprint::check_partitioning_task>(
-      task_ids_t::instance().check_partitioning_task_id,lr_loc, false, true);
+      task_ids_t::instance().check_partitioning_task_id,lr_loc, false, true,
+      AUTO_GENERATE_ID, TaskConfigOptions(), "check_partitioning_task");
 
     lr_runtime_t::register_legion_task<sprint::init_raw_conn_task>(
-      task_ids_t::instance().init_raw_conn_task_id,lr_loc, false, true); 
+      task_ids_t::instance().init_raw_conn_task_id,lr_loc, false, true,
+      AUTO_GENERATE_ID, TaskConfigOptions(), "init_raw_conn_task"); 
 
     lr_runtime_t::register_legion_task<
       flecsi::execution::legion_dpd::init_connectivity_task>(
-      task_ids_t::instance().dpd_init_connectivity_task_id,lr_loc, false, true);
+      task_ids_t::instance().dpd_init_connectivity_task_id,lr_loc, false, true,
+      AUTO_GENERATE_ID, TaskConfigOptions(), "init_connectivity_task");
 
     lr_runtime_t::register_legion_task<
       flecsi::execution::legion_dpd::init_data_task>(
-      task_ids_t::instance().dpd_init_data_task_id,lr_loc, false, true);
+      task_ids_t::instance().dpd_init_data_task_id,lr_loc, false, true,
+      AUTO_GENERATE_ID, TaskConfigOptions(), "init_data_task");
 
     lr_runtime_t::register_legion_task<
       flecsi::execution::legion_dpd::partition_metadata,
       flecsi::execution::legion_dpd::get_partition_metadata_task>(
-      task_ids_t::instance().dpd_get_partition_metadata_task_id,lr_loc, false, true);
+      task_ids_t::instance().dpd_get_partition_metadata_task_id,lr_loc, false, true,
+      AUTO_GENERATE_ID, TaskConfigOptions(), "get_partition_metadata_task");
 
     lr_runtime_t::register_legion_task<
       flecsi::execution::legion_dpd::put_partition_metadata_task>(
-      task_ids_t::instance().dpd_put_partition_metadata_task_id,lr_loc, false, true);
+      task_ids_t::instance().dpd_put_partition_metadata_task_id,lr_loc, false, true,
+      AUTO_GENERATE_ID, TaskConfigOptions(), "put_partition_metadata_task");
 
     lr_runtime_t::register_legion_task<
       flecsi::execution::legion_dpd::partition_metadata,
       flecsi::execution::legion_dpd::commit_data_task>(
-      task_ids_t::instance().dpd_commit_data_task_id,lr_loc, false, true);   
+      task_ids_t::instance().dpd_commit_data_task_id,lr_loc, false, true,
+      AUTO_GENERATE_ID, TaskConfigOptions(), "commit_data_task");   
 
     lr_runtime_t::register_legion_task<
       flecsi::execution::sprint::ghost_access_task>(
-      task_ids_t::instance().ghost_access_task_id,lr_loc, false, true);
+      task_ids_t::instance().ghost_access_task_id,lr_loc, false, true,
+      AUTO_GENERATE_ID, TaskConfigOptions(), "ghost_access_task");
 
     lr_runtime_t::register_legion_task<
       flecsi::execution::sprint::ghost_check_task>(
-      task_ids_t::instance().ghost_check_task_id,lr_loc, false, true);
+      task_ids_t::instance().ghost_check_task_id,lr_loc, false, true,
+      AUTO_GENERATE_ID, TaskConfigOptions(), "ghost_check_task");
 
     lr_runtime_t::register_legion_task<
       flecsi::execution::sprint::ghost_init_task>(
-      task_ids_t::instance().ghost_init_task_id,lr_loc, false, true);
+      task_ids_t::instance().ghost_init_task_id,lr_loc, false, true,
+      AUTO_GENERATE_ID, TaskConfigOptions(), "ghost_init_task");
 
     lr_runtime_t::register_legion_task<
       flecsi::execution::sprint::size_t_copy_task>(
-      task_ids_t::instance().size_t_copy_task_id,lr_loc, true, false);
+      task_ids_t::instance().size_t_copy_task_id,lr_loc, true, false,
+      AUTO_GENERATE_ID, TaskConfigOptions(), "size_t_copy_task");
 
     lr_runtime_t::register_legion_task<
       flecsi::execution::lax_wendroff::lax_wendroff_task>(
-      task_ids_t::instance().lax_wendroff_task_id,lr_loc, false, true);
+      task_ids_t::instance().lax_wendroff_task_id,lr_loc, false, true,
+      AUTO_GENERATE_ID, TaskConfigOptions(), "lax_wendroff_task");
 
     lr_runtime_t::register_legion_task<
       flecsi::execution::sprint::double_copy_task>(
-      task_ids_t::instance().double_copy_task_id,lr_loc, true, false);
+      task_ids_t::instance().double_copy_task_id,lr_loc, true, false,
+      AUTO_GENERATE_ID, TaskConfigOptions(), "double_copy_task");
 
     lr_runtime_t::register_legion_task<
       flecsi::execution::lax_wendroff::lax_adv_x_task>(
-      task_ids_t::instance().lax_adv_x_task_id,lr_loc, true, false);
+      task_ids_t::instance().lax_adv_x_task_id,lr_loc, true, false,
+      AUTO_GENERATE_ID, TaskConfigOptions(), "lax_adv_x_task");
 
     lr_runtime_t::register_legion_task<
       flecsi::execution::lax_wendroff::lax_adv_y_task>(
-      task_ids_t::instance().lax_adv_y_task_id,lr_loc, true, false);
+      task_ids_t::instance().lax_adv_y_task_id,lr_loc, true, false,
+      AUTO_GENERATE_ID, TaskConfigOptions(), "lax_adv_y_task");
 
     lr_runtime_t::register_legion_task<
       flecsi::execution::lax_wendroff::lax_calc_excl_y_task>(
-      task_ids_t::instance().lax_calc_excl_y_task_id,lr_loc, true, false);
+      task_ids_t::instance().lax_calc_excl_y_task_id,lr_loc, true, false,
+      AUTO_GENERATE_ID, TaskConfigOptions(), "lax_calc_excl_y_task");
 
     //register spmd task, that call user's driver
     lr_runtime_t::register_legion_task<
       flecsi::execution::spmd_task>(
-      task_ids_t::instance().spmd_task_id,lr_loc, false, true);
+      task_ids_t::instance().spmd_task_id,lr_loc, false, true,
+      AUTO_GENERATE_ID, TaskConfigOptions(), "spmd_task");
 
     // register handoff_to_mpi_task from mpi_legion_interop_t class
     lr_runtime_t::register_legion_task<handoff_to_mpi_task>(
