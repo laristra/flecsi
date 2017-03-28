@@ -89,6 +89,7 @@ mpilegion_runtime_driver(
     std::vector<size_t> hashes;
     std::vector<size_t> namespaces;
     std::vector<size_t> versions;
+    // HACK, FIXME: This is not proper, don't use macros outside of driver
     flecsi_get_all_handles(dc, dense, handles, hashes, namespaces, versions);
     
     //create phase barriers per handle for SPMD launch from partitions created and

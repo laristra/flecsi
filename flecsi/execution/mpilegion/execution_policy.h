@@ -131,7 +131,7 @@ namespace execution {
         read_phase = true;
 
       if ( (SP == size_t(data::privilege::wd)) || (SP == size_t(data::privilege::rw)))
-        write_phase = true;
+        write_phase = true;  // FIXME? DO We need to acquire shared (note exclusive permissions on shared partion above 
 
       if (read_phase) {
         if (!h.is_readable) {
