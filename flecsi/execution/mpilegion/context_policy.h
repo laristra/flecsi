@@ -204,10 +204,6 @@ struct mpilegion_context_policy_t
       task_ids_t::instance().double_copy_task_id,lr_loc, true, false);
 
     lr_runtime_t::register_legion_task<
-      flecsi::execution::lax_wendroff::lax_adv_x_task>(
-      task_ids_t::instance().lax_adv_x_task_id,lr_loc, true, false);
-
-    lr_runtime_t::register_legion_task<
       flecsi::execution::lax_wendroff::lax_adv_y_task>(
       task_ids_t::instance().lax_adv_y_task_id,lr_loc, true, false);
 

@@ -517,14 +517,14 @@ specialization_driver(
   cells_parts.ghost_ip = cells_ghost_ip;
   cells_parts.exclusive_ip = cells_exclusive_ip;
 
-  const size_t versions = 1;
-  size_t index_id = 0;
+  const int versions = 1;
+  int index_id = 0;
 
   dc.put_index_space(index_id, cells_parts);
 
   flecsi_register_data(dc, lax, cell_ID, size_t, dense, versions, index_id);
   flecsi_register_data(dc, lax, phi, double, dense, versions, index_id);
-  flecsi_register_data(dc, lax, phi_temp, double, dense, versions, index_id);
+  flecsi_register_data(dc, lax, phi_update, double, dense, versions, index_id);
 
   auto cell_handle =
     flecsi_get_handle(dc, lax, cell_ID, size_t, dense, index_id, rw, rw, ro);
@@ -593,7 +593,7 @@ static double calc_init_point(const size_t pt) {
     return value;
 }
 
-static double get_x_vel() {
+static double get_x_velocity() {
   const double dx = 1.0  / static_cast<double>(NX - 1);
   const double dy = 1.0  / static_cast<double>(NY - 1);
   const double dt = std::min(CFL * dx / U, CFL * dy / V);
@@ -654,11 +654,11 @@ static void create_maps (accessor_t<size_t>& global_IDs,
 void
 calculate_exclusive_x (
         accessor_t<size_t> global_IDs,
-        accessor_t<double> old_phi,
-        accessor_t<double> new_phi
+        accessor_t<double> phi,
+        accessor_t<double> phi_update
 )
 {
-    const double a = get_x_vel();
+    const double a = get_x_velocity();
 
     std::map<size_t, size_t> excl_map;
     std::map<size_t, size_t> shared_map;
@@ -666,28 +666,76 @@ calculate_exclusive_x (
 
     create_maps(global_IDs, excl_map, shared_map, ghost_map);
 
-    for (size_t index = 0; index < old_phi.size(); index++) {
+    for (size_t index = 0; index < phi.size(); index++) {
         size_t gid_plus_i, gid_minus_i;
         calc_x_indices(global_IDs[index], &gid_plus_i, &gid_minus_i);
 
-        double value = -a * a * old_phi[index];
+        double value = -a * a * phi[index];
 
         if (excl_map.find(gid_plus_i) != excl_map.end())
-                value += 0.5 * (a * a - a) * old_phi[excl_map.find(gid_plus_i)->second];
+                value += 0.5 * (a * a - a) * phi[excl_map.find(gid_plus_i)->second];
         else if (shared_map.find(gid_plus_i) != shared_map.end())
-            value += 0.5 * (a * a - a) * old_phi.shared(shared_map.find(gid_plus_i)->second);
+            value += 0.5 * (a * a - a) * phi.shared(shared_map.find(gid_plus_i)->second);
 
         if (excl_map.find(gid_minus_i) != excl_map.end())
-            value += 0.5 * (a * a + a) * old_phi[excl_map.find(gid_minus_i)->second];
+            value += 0.5 * (a * a + a) * phi[excl_map.find(gid_minus_i)->second];
         else if (shared_map.find(gid_minus_i) != shared_map.end())
-            value += 0.5 * (a * a + a) * old_phi.shared(shared_map.find(gid_minus_i)->second);
+            value += 0.5 * (a * a + a) * phi.shared(shared_map.find(gid_minus_i)->second);
 
-        new_phi[index] = value;
+        phi_update[index] = value;
     }
 
 }
 
 flecsi_register_task(calculate_exclusive_x, loc, single);
+
+void
+advect_own_x (
+        accessor_t<size_t> global_IDs,
+        accessor_t<double> phi,
+        accessor_t<double> phi_update
+)
+{
+    const double a = get_x_velocity();
+
+    std::map<size_t, size_t> excl_map;
+    std::map<size_t, size_t> shared_map;
+    std::map<size_t, size_t> ghost_map;
+
+    create_maps(global_IDs, excl_map, shared_map, ghost_map);
+
+    for (size_t index = 0; index < phi.shared_size(); index++) {
+        size_t gid_plus_i, gid_minus_i;
+        calc_x_indices(global_IDs.shared(index), &gid_plus_i, &gid_minus_i);
+
+        double value = -a * a * phi.shared(index);
+
+        if (shared_map.find(gid_plus_i) != shared_map.end())
+            value += 0.5 * (a * a - a) * phi.shared(shared_map.find(gid_plus_i)->second);
+        else if (ghost_map.find(gid_plus_i) != ghost_map.end())
+            value += 0.5 * (a * a - a) * phi.ghost(ghost_map.find(gid_plus_i)->second);
+        else if (excl_map.find(gid_plus_i) != excl_map.end())
+            value += 0.5 * (a * a - a) * phi[excl_map.find(gid_plus_i)->second];
+
+        if (shared_map.find(gid_minus_i) != shared_map.end())
+            value += 0.5 * (a * a + a) * phi.shared(shared_map.find(gid_minus_i)->second);
+        else if (ghost_map.find(gid_minus_i) != ghost_map.end())
+            value += 0.5 * (a * a + a) * phi.ghost(ghost_map.find(gid_minus_i)->second);
+        else if (excl_map.find(gid_minus_i) != excl_map.end())
+            value += 0.5 * (a * a + a) * phi[excl_map.find(gid_minus_i)->second];
+
+        phi_update.shared(index) = value;
+    }
+
+    for (size_t index = 0; index < phi.size(); index++)
+        phi[index] += phi_update[index];
+
+    for (size_t index = 0; index < phi.shared_size(); index++)
+        phi.shared(index) += phi_update.shared(index);
+
+}
+
+flecsi_register_task(advect_own_x, loc, single);
 
 void
 write_to_disk (
@@ -740,12 +788,16 @@ driver(
 
   auto write_exclusive_shared =
     flecsi_get_handle(dc, lax, phi, double, dense, index_space, rw, rw, none);
+  auto rw_excl_shrd_ro_ghost =
+    flecsi_get_handle(dc, lax, phi, double, dense, index_space, rw, rw, ro);
   auto cell_IDs =
    flecsi_get_handle(dc, lax, cell_ID, size_t, dense, index_space, ro, ro, ro);
   auto read_exclusive_shared =
    flecsi_get_handle(dc, lax, phi, double, dense, index_space, ro, ro, none);
-  auto write_exclusive_temp =
-   flecsi_get_handle(dc, lax, phi_temp, double, dense, index_space, rw, none, none);
+  auto write_exclusive_update =
+   flecsi_get_handle(dc, lax, phi_update, double, dense, index_space, rw, none, none);
+  auto write_shared_update =
+   flecsi_get_handle(dc, lax, phi_update, double, dense, index_space, ro, rw, none);
 
   size_t versions = 1;
 
@@ -760,7 +812,10 @@ driver(
     std::cout << "t=" << time << std::endl;
 
     flecsi_execute_task(calculate_exclusive_x, loc, single, cell_IDs, read_exclusive_shared,
-            write_exclusive_temp);
+            write_exclusive_update);
+
+    flecsi_execute_task(advect_own_x, loc, single, cell_IDs, rw_excl_shrd_ro_ghost,
+            write_shared_update);
 
   }
 
