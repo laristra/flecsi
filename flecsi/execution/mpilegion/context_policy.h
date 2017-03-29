@@ -157,10 +157,6 @@ struct mpilegion_context_policy_t
     
     // FIXME
     // This is Galen's hack to get partitioning working for the sprint
-    lr_runtime_t::register_legion_task<sprint::check_partitioning_task>(
-      task_ids_t::instance().check_partitioning_task_id,lr_loc, false, true,
-      AUTO_GENERATE_ID, TaskConfigOptions(), "check_partitioning_task");
-
     lr_runtime_t::register_legion_task<sprint::init_raw_conn_task>(
       task_ids_t::instance().init_raw_conn_task_id,lr_loc, false, true,
       AUTO_GENERATE_ID, TaskConfigOptions(), "init_raw_conn_task"); 
@@ -191,21 +187,6 @@ struct mpilegion_context_policy_t
       flecsi::execution::legion_dpd::commit_data_task>(
       task_ids_t::instance().dpd_commit_data_task_id,lr_loc, false, true,
       AUTO_GENERATE_ID, TaskConfigOptions(), "commit_data_task");   
-
-    lr_runtime_t::register_legion_task<
-      flecsi::execution::sprint::ghost_access_task>(
-      task_ids_t::instance().ghost_access_task_id,lr_loc, false, true,
-      AUTO_GENERATE_ID, TaskConfigOptions(), "ghost_access_task");
-
-    lr_runtime_t::register_legion_task<
-      flecsi::execution::sprint::ghost_check_task>(
-      task_ids_t::instance().ghost_check_task_id,lr_loc, false, true,
-      AUTO_GENERATE_ID, TaskConfigOptions(), "ghost_check_task");
-
-    lr_runtime_t::register_legion_task<
-      flecsi::execution::sprint::ghost_init_task>(
-      task_ids_t::instance().ghost_init_task_id,lr_loc, false, true,
-      AUTO_GENERATE_ID, TaskConfigOptions(), "ghost_init_task");
 
     lr_runtime_t::register_legion_task<
       flecsi::execution::sprint::size_t_copy_task>(
