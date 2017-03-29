@@ -29,7 +29,7 @@ using namespace LegionRuntime::HighLevel;
 #include "flecsi/data/legion/data_policy.h"
 #include "flecsi/execution/legion/helper.h"
 
-#include "flecsi/execution/test/mpilegion/sprint_common.h"
+#include "flecsi/execution/test/mpilegion/data_client_completion.h"
 
 #include "flecsi/utils/const_string.h"
 

@@ -3,10 +3,12 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_sprint_common_h
-#define flecsi_sprint_common_h
+#ifndef flecsi_data_client_completion_h
+#define flecsi_data_client_completion_h
 
 #include "flecsi/data/data_client.h"
+
+//FIXME ndm - what is this for and where does it belong?
 
 namespace flecsi {
 
@@ -21,4 +23,4 @@ public:
 
 } // namespace flecsi
 
-#endif //flecsi_sprint_common_h
+#endif //flecsi_data_client_completion_h

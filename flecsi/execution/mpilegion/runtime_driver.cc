@@ -16,7 +16,7 @@
 #include "flecsi/execution/task_ids.h"
 #include "flecsi/data/legion/dense.h"
 #include "flecsi/data/data.h"
-#include "flecsi/execution/test/mpilegion/sprint_common.h"
+#include "flecsi/execution/test/mpilegion/data_client_completion.h"
 
 #include <legion_utilities.h>
 

@@ -25,7 +25,7 @@
 #include "flecsi/execution/legion/helper.h"
 #include "flecsi/execution/task_ids.h"
 
-#include "sprint_common.h"
+#include "data_client_completion.h"
 
 ///
 // \file sprint.h
