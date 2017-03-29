@@ -12,12 +12,6 @@
 #include "flecsi/execution/serial/runtime_driver.h"
 #include "flecsi/utils/common.h"
 
-#ifndef FLECSI_DRIVER
-  #include "flecsi/execution/default_driver.h"
-#else
-  #include EXPAND_AND_STRINGIFY(FLECSI_DRIVER)
-#endif
-
 #ifndef FLECSI_SPECIALIZATION_DRIVER
   #include "flecsi/execution/default_specialization_driver.h"
 #else
@@ -27,6 +21,9 @@
 namespace flecsi {
 namespace execution {
 
+void driver(int argc, char ** argv);
+
+// driver prototype
 void serial_runtime_driver(int argc, char ** argv) {
 
   // run default or user-defined specialization driver  

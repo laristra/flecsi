@@ -112,10 +112,9 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
 cinch_add_unit(task
   SOURCES
     test/task.cc
-    test/task_driver.h
+    test/task_driver.cc
     ${RUNTIME_DRIVER}
   DEFINES
-    FLECSI_DRIVER=flecsi/execution/test/task_driver.h
     TEST_INIT=flecsi/execution/test/task_init.h
   POLICY
     ${UNIT_POLICY}
@@ -127,10 +126,8 @@ cinch_add_unit(task
 cinch_add_unit(simple_function
   SOURCES
     test/function.cc
-    test/simple_function.h
+    test/simple_function.cc
     ${RUNTIME_DRIVER}
-  DEFINES
-    FLECSI_DRIVER=flecsi/execution/test/simple_function.h
   POLICY
     ${UNIT_POLICY}
   LIBRARIES
