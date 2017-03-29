@@ -561,12 +561,11 @@ specialization_driver(
 
 
   //call a legion task that tests ghost cell access
-  //TOFIX: free all lr physical regions is
+  //be careful not to destroy any index spaces that we will still be using
   runtime->destroy_logical_region(context, vertices_lr);
   runtime->destroy_logical_region(context, cells_lr);
   runtime->destroy_field_space(context, vertices_fs);
   runtime->destroy_field_space(context, cells_fs);
-  runtime->destroy_index_space(context,cells_is);
   runtime->destroy_index_space(context,vertices_is);
 
 } // specialization_driver

@@ -43,8 +43,6 @@ using accessor_t = flecsi::data::legion::dense_accessor_t<T, flecsi::data::legio
 namespace flecsi {
 namespace execution {
 
-static const size_t N = 16;
-
 using index_partition_t = dmp::index_partition__<size_t>;
 
 void
@@ -825,13 +823,11 @@ specialization_driver(
     runtime->destroy_phase_barrier(context, phase_barriers[idx]);
   phase_barriers.clear();
 
-  //TOFIX: free all lr physical regions is
+  //be careful not to destroy any index spaces that we will still be using
   runtime->destroy_logical_region(context, vertices_lr);
   runtime->destroy_logical_region(context, cells_lr);
   runtime->destroy_field_space(context, vertices_fs);
   runtime->destroy_field_space(context, cells_fs);
-  //?runtime->destroy_index_space(context,cells_is);
-  //?runtime->destroy_index_space(context,vertices_is);
 
 } // driver
 
