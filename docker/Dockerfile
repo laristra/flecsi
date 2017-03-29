@@ -11,8 +11,8 @@ ARG CXX
 ARG CXXFLAGS
 
 #for coverage
-ENV CI true
-ENV TRAVIS true
+ARG CI
+ARG TRAVIS
 ARG TRAVIS_BRANCH
 ARG TRAVIS_JOB_NUMBER
 ARG TRAVIS_PULL_REQUEST 
@@ -20,7 +20,7 @@ ARG TRAVIS_JOB_ID
 ARG TRAVIS_TAG
 ARG TRAVIS_REPO_SLUG
 ARG TRAVIS_COMMIT
-ENV TRAVIS_OS_NAME linux
+ARG TRAVIS_OS_NAME
 
 RUN rm -rf /home/flecsi/.ccache
 COPY flecsi /home/flecsi/flecsi
@@ -56,7 +56,7 @@ RUN if [ ${COVERAGE} ]; then \
       doxy-coverage --threshold 21 doc/doxygen/xml/; \
     fi
 RUN ctest --verbose
-RUN make install DESTDIR=${PWD}
+RUN make install DESTDIR=${PWD}/install && rm -rf ${PWD}/install
 RUN cd .. && if [ ${COVERAGE} ]; then \
   if [ ${CC} = clang ]; then \
     $HOME/.local/bin/codecov -F "${CC}" --gcov-exec "llvm-cov gcov"; \
@@ -64,17 +64,17 @@ RUN cd .. && if [ ${COVERAGE} ]; then \
     $HOME/.local/bin/codecov -F "${CC}"; \
   fi; \
 fi && cd -
-RUN cd .. && if [ ${TRAVIS_BRANCH} == master ] && [ ${TRAVIS_PULL_REQUEST} == false ] && [ ${SONARQUBE} ]; then \
+RUN cd .. && if [ ${TRAVIS_BRANCH} = master ] && [ ${TRAVIS_PULL_REQUEST} = false ] && [ ${SONARQUBE} ]; then \
   sonar-scanner \
     -Dsonar.projectKey=${TRAVIS_REPO_SLUG##*/} \
     -Dsonar.sources=. \
-    -Dsonar.exclusions=build/CMakeFiles/**,cinch/** \
+    -Dsonar.exclusions=build/CMakeFiles/**,cinch/**,build/doc/doxygen/**,build/include/** \
     -Dsonar.cfamily.build-wrapper-output=build/bw-output \
+    -Dsonar.cfamily.gcov.reportsPath=. \
     -Dsonar.host.url=https://sonarqube.com \
     -Dsonar.organization=${TRAVIS_REPO_SLUG%%/*} \
     -Dsonar.login=${SONARQUBE_TOKEN}; \ 
 fi && cd -
-ENV SONARQUBE_TOKEN ""
 USER root
 RUN make install
 USER flecsi
