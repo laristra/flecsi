@@ -177,34 +177,34 @@ if(NOT DEFINED ENV{TRAVIS})
     )
 
     if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
-      cinch_add_unit(mpilegion_sprint
+      cinch_add_unit(test_parmetis_interop
         SOURCES
-         test/mpilegion/sprint_devel.cc
+         test/mpilegion/test_parmetis_interop_devel.cc
          mpilegion/runtime_driver.cc
          ../data/data_client.cc
          ${execution_SOURCES}
         INPUTS
          test/mpilegion/simple2d-16x16.msh
         DEFINES SPRINT_TEST
-         FLECSI_SPECIALIZATION_DRIVER=flecsi/execution/test/mpilegion/sprint.h
-         FLECSI_DRIVER=flecsi/execution/test/check_partitions.h
+         FLECSI_SPECIALIZATION_DRIVER=flecsi/execution/test/mpilegion/test_parmetis_interop.h
+         FLECSI_DRIVER=flecsi/execution/test/test_mpi_interop_partitions.h
          TEST_INIT=flecsi/execution/test/task_init.h
         LIBRARIES ${PARTITION_LIBRARIES}
         POLICY MPILEGION_DEVEL
         THREADS 2
       )
 
-      cinch_add_unit(mpilegion_ghost
+      cinch_add_unit(test_ghost_access
         SOURCES
-         test/mpilegion/sprint_devel.cc
+         test/mpilegion/test_parmetis_interop_devel.cc
          mpilegion/runtime_driver.cc
          ../data/data_client.cc
          ${execution_SOURCES}
         INPUTS
          test/mpilegion/simple2d-16x16.msh
         DEFINES SPRINT_TEST
-         FLECSI_SPECIALIZATION_DRIVER=flecsi/execution/test/mpilegion/sprint.h
-         FLECSI_DRIVER=flecsi/execution/test/check_ghost_access.h
+         FLECSI_SPECIALIZATION_DRIVER=flecsi/execution/test/mpilegion/test_parmetis_interop.h
+         FLECSI_DRIVER=flecsi/execution/test/test_ghost_access.h
          TEST_INIT=flecsi/execution/test/task_init.h
         LIBRARIES ${PARTITION_LIBRARIES}
         POLICY MPILEGION_DEVEL

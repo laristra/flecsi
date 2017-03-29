@@ -21,7 +21,7 @@
 ///required to complete compilation. The actual test logic is
 ///in 'task_driver.h' 
 ///
-DEVEL(sprint) {
+DEVEL(test_parmetis_interop) {
 
 } // TEST
 

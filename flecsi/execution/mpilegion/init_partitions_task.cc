@@ -23,7 +23,7 @@ using namespace LegionRuntime::Accessor;
 
 namespace flecsi {
 namespace execution {
-namespace sprint {
+namespace mpilegion {
 
 parts
 get_numbers_of_cells_task(
@@ -709,7 +709,7 @@ double_copy_task(
     }
 }
 
-} // namespace sprint
+} // namespace mpilegion
 } // namespace execution
 } // namespace flecsi
 

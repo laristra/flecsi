@@ -17,7 +17,7 @@ using namespace LegionRuntime::HighLevel;
 
 namespace flecsi {
 namespace execution {
-namespace sprint{
+namespace mpilegion {
 
 struct parts {
   int primary_cells;

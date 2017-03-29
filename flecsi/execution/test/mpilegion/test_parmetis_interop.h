@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_sprint_h
-#define flecsi_sprint_h
+#ifndef flecsi_test_parmetis_interop_h
+#define flecsi_test_parmetis_interop_h
 
 #include <iostream>
 
@@ -28,7 +28,7 @@
 #include "data_client_completion.h"
 
 ///
-// \file sprint.h
+// \file test_parmetis_interop.h
 // \authors bergen, irina, jgraham
 // \date Initial file creation: Aug 23, 2016
 ///
@@ -115,7 +115,7 @@ specialization_driver(
   using legion_domain = LegionRuntime::HighLevel::Domain;
   field_ids_t & fid_t =field_ids_t::instance();
 
-  flecsi::execution::sprint::parts partitions;
+  flecsi::execution::mpilegion::parts partitions;
   
   // first execute mpi task to setup initial partitions 
   flecsi_execute_task(mpi_task, mpi, single, 1.0);
@@ -159,8 +159,8 @@ specialization_driver(
   //read dimension information from  get_numbers_of_cells task
   for (size_t i = 0; i < num_ranks; i++) {
     std::cout << "about to call get_results" << std::endl;
-    flecsi::execution::sprint::parts received =
-      fm1.get_result<flecsi::execution::sprint::parts>(
+    flecsi::execution::mpilegion::parts received =
+      fm1.get_result<flecsi::execution::mpilegion::parts>(
       DomainPoint::from_point<1>(LegionRuntime::Arrays::make_point(i)));
 
     cells_primary_start_id.push_back(total_num_cells);
@@ -356,8 +356,8 @@ specialization_driver(
   size_t indx=0;
   for (GenericPointInRectIterator<1> pir(rank_rect); pir; pir++)
   {
-    flecsi::execution::sprint::partition_lr sared_lr=
-      fm3.get_result<flecsi::execution::sprint::partition_lr>(
+    flecsi::execution::mpilegion::partition_lr sared_lr=
+      fm3.get_result<flecsi::execution::mpilegion::partition_lr>(
       DomainPoint::from_point<1>(pir.p));
     //gett shared partition info for Cells
     {
@@ -454,8 +454,8 @@ specialization_driver(
   indx=0;
   for (GenericPointInRectIterator<1> pir(rank_rect); pir; pir++)
   {
-    flecsi::execution::sprint::partition_lr exclusive_lr =
-      fm4.get_result<flecsi::execution::sprint::partition_lr>(
+    flecsi::execution::mpilegion::partition_lr exclusive_lr =
+      fm4.get_result<flecsi::execution::mpilegion::partition_lr>(
       DomainPoint::from_point<1>(pir.p)); 
     {
       LogicalRegion exclusive_pts_lr= exclusive_lr.cells;
@@ -555,8 +555,8 @@ specialization_driver(
   indx=0;
   for (GenericPointInRectIterator<1> pir(rank_rect); pir; pir++)
   {
-    flecsi::execution::sprint::partition_lr  ghost_lr=
-      fm5.get_result<flecsi::execution::sprint::partition_lr >(
+    flecsi::execution::mpilegion::partition_lr  ghost_lr=
+      fm5.get_result<flecsi::execution::mpilegion::partition_lr >(
       DomainPoint::from_point<1>(pir.p));
     {
       LogicalRegion ghost_pts_lr=ghost_lr.cells;
@@ -636,11 +636,11 @@ specialization_driver(
 
   dc.put_index_space(index_id, cells_parts);
 
-  flecsi_register_data(dc, sprint, cell_ID, size_t, dense, versions, index_id);
-  flecsi_register_data(dc, sprint, data, size_t, dense, versions, index_id);
+  flecsi_register_data(dc, test, cell_ID, size_t, dense, versions, index_id);
+  flecsi_register_data(dc, test, data, size_t, dense, versions, index_id);
 
   auto cell_handle =
-    flecsi_get_handle(dc, sprint, cell_ID, size_t, dense, index_id, rw, rw, ro);
+    flecsi_get_handle(dc, test, cell_ID, size_t, dense, index_id, rw, rw, ro);
 
   verts_parts.exclusive_ip = vert_exclusive_ip;
   verts_parts.shared_ip = vert_shared_ip;
@@ -649,11 +649,11 @@ specialization_driver(
   index_id = 1;
   dc.put_index_space(index_id, verts_parts);
 
-  flecsi_register_data(dc, sprint, vert_ID, size_t, dense, versions, index_id);
+  flecsi_register_data(dc, test, vert_ID, size_t, dense, versions, index_id);
 
   // FIXME we should do vertices too here.  What is wrong with following handle?
   //auto vert_handle =
-  //  flecsi_get_handle(dc, sprint, vert_ID, size_t, dense, index_id, rw, rw, ro);
+  //  flecsi_get_handle(dc, test, vert_ID, size_t, dense, index_id, rw, rw, ro);
 
   LegionRuntime::HighLevel::IndexLauncher copy_legion_to_flecsi_launcher(
     task_ids_t::instance().copy_legion_to_flecsi_task_id,
@@ -697,12 +697,12 @@ specialization_driver(
   runtime->destroy_field_space(context, vertices_fs);
   runtime->destroy_field_space(context, cells_fs);
 
-} // driver
+} // specialization driver
 
 } // namespace execution
 } // namespace flecsi
 
-#endif // flecsi_sprint_h
+#endif // flecsi_test_parmetis_interop_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

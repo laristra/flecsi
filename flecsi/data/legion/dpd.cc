@@ -25,8 +25,6 @@ namespace execution {
 
   namespace{
 
-    // from sprint.h
-
     const size_t MAX_INDICES = 1024;
 
     struct init_data_args{

@@ -92,11 +92,11 @@ driver(
 
   int index_space = 0;
   auto shared_write_handle =
-    flecsi_get_handle(dc, sprint, data, size_t, dense, index_space, none, rw, none);
+    flecsi_get_handle(dc, test, data, size_t, dense, index_space, none, rw, none);
   auto ghost_read_handle =
-    flecsi_get_handle(dc, sprint, data, size_t, dense, index_space, none, ro, ro);
+    flecsi_get_handle(dc, test, data, size_t, dense, index_space, none, ro, ro);
   auto cell_ID_handle =
-    flecsi_get_handle(dc, sprint, cell_ID, size_t, dense, index_space, none, ro, ro);
+    flecsi_get_handle(dc, test, cell_ID, size_t, dense, index_space, none, ro, ro);
 
   for (int cycle = 0; cycle < 3; cycle++) {
 

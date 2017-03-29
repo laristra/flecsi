@@ -134,7 +134,7 @@ driver(
 
   int index_space = 0;
   auto h1 =
-    flecsi_get_handle(dc, sprint, cell_ID, size_t, dense, index_space, rw, ro, ro);
+    flecsi_get_handle(dc, test, cell_ID, size_t, dense, index_space, rw, ro, ro);
 
   flecsi_execute_task(check_partitioning_task, loc, single, h1);
 } //driver

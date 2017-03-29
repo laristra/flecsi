@@ -24,7 +24,7 @@
 ///
 //  HelperTaskIDs enum struct includes TASK_IDs and Field_IDs for the legion 
 //  tasks used in mpi_legion_interop_t class, in dpd class and some 
-//  temporary legion tasks used in sprint.h
+//  temporary legion tasks that need to be provided another way
 //  These needs to be a singleton due to the fact that the same IDs are used in
 //  mapper.h to se up special rools on executing the tasks used to switch
 //  between MPI and Legion runtimes
