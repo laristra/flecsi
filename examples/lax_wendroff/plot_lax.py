@@ -21,16 +21,19 @@ def plot_snapshot(x, y, phi, time):
     anal_phi = np.zeros((len(x), len(y)))
     for i in range(len(x)):
         for j in range(len(y)):
-            if ((x[i]-time)<=0.5) & ((y[j]-vel*time)<=0.5) & ((x[i]-time)>=0.0) & ((y[j]-vel*time)>=0.0):
+            #if ((x[i]-time)<=0.5) & ((y[j]-vel*time)<=0.5) & ((x[i]-time)>=0.0) & ((y[j]-vel*time)>=0.0):
+            if ((x[i]-time)<=0.5) & ((y[j])<=0.5) & ((x[i]-time)>=0.0) & ((y[j])>=0.0):
                 anal_phi[i,j] = 1.0
 
     plt.figure()
+    plt.title('y='+str(len(y)/2-2))
     plt.xlabel('x')
     plt.plot(x,phi[:,len(y)/2 -2],'--')
     plt.plot(x,anal_phi[:,len(y)/2 -2],':',label='analytic')
     plt.legend(loc='best')
 
     plt.figure()
+    plt.title('x='+str(len(x)/2-2))
     plt.xlabel('y')
     plt.plot(y,phi[len(x)/2 -2,:],'--')
     plt.plot(y,anal_phi[len(x)/2 -2,:],':',label='analytic')
@@ -39,11 +42,15 @@ def plot_snapshot(x, y, phi, time):
     fig, ax = plt.subplots()
     cax = ax.imshow(anal_phi, vmin = -0.2, vmax = 1.4)
     ax.set_title('analytic')
+    ax.set_ylabel('x')
+    ax.set_xlabel('y')
     cbar = fig.colorbar(cax, ticks = np.arange(-0.2,1.6,0.2))
 
     fig, ax = plt.subplots()
     cax = ax.imshow(phi, vmin = -0.2, vmax = 1.4)
     ax.set_title('Split Lax-Wendroff')
+    ax.set_ylabel('x')
+    ax.set_xlabel('y')
     cbar = fig.colorbar(cax, ticks = np.arange(-0.2,1.6,0.2))
 
 if __name__ == "__main__":

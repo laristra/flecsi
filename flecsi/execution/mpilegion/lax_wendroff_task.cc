@@ -221,87 +221,6 @@ lax_calc_excl_y_task(
 }
 
 void
-lax_adv_x_task(
-  const Legion::Task *task,
-  const std::vector<Legion::PhysicalRegion> & regions,
-  Legion::Context ctx, Legion::HighLevelRuntime *runtime
-)
-{
-  using double_acc_t = LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic, double>;
-  using size_t_acc_t = LegionRuntime::Accessor::RegionAccessor<LegionRuntime::Accessor::AccessorType::Generic, size_t>;
-  using field_id = LegionRuntime::HighLevel::FieldID;
-
-  assert(regions.size() == 6);
-  assert(task->regions.size() == 6);
-  assert(task->regions[0].privilege_fields.size() == 2);
-  assert(task->regions[1].privilege_fields.size() == 2);
-  assert(task->regions[2].privilege_fields.size() == 1);
-  assert(task->regions[3].privilege_fields.size() == 1);
-  assert(task->regions[4].privilege_fields.size() == 1);
-  assert(task->regions[5].privilege_fields.size() == 1);
-
-  field_ids_t & fid_t =field_ids_t::instance();
-  field_id fid_phi = fid_t.fid_data;
-  field_id fid_gid = fid_t.fid_cell;
-
-  assert(task->arglen == sizeof(int));
-  int my_rank = *(const int*)task->args;
-
-  const double a = get_x_vel();
-
-  double_acc_t acc_shared_phi = regions[0].get_field_accessor(fid_phi).typeify<double>();
-  size_t_acc_t acc_shared_gid = regions[0].get_field_accessor(fid_gid).typeify<size_t>();
-  IndexIterator itr_shared(runtime, ctx, regions[0].get_logical_region());
-
-  double_acc_t acc_exclsv_phi = regions[1].get_field_accessor(fid_phi).typeify<double>();
-
-  double_acc_t acc_ghost_phi = regions[2].get_field_accessor(fid_phi).typeify<double>();
-
-  double_acc_t acc_shared_tmp_phi = regions[3].get_field_accessor(fid_phi).typeify<double>();
-  IndexIterator itr_shared_tmp(runtime, ctx, regions[3].get_logical_region());
-
-  double_acc_t acc_excl_tmp_phi = regions[4].get_field_accessor(fid_phi).typeify<double>();
-  IndexIterator itr_excl_tmp(runtime, ctx, regions[4].get_logical_region());
-
-  std::map<size_t, ptr_t> shared_map = create_map(runtime, ctx, regions[0]);
-  std::map<size_t, ptr_t> excl_map = create_map(runtime, ctx, regions[1]);
-  std::map<size_t, ptr_t> ghost_map = create_map(runtime, ctx, regions[5]);
-
-  while(itr_shared.has_next()) {
-    const ptr_t ptr = itr_shared.next();
-    int gid_plus_i, gid_minus_i;
-    calc_x_indices(ptr, acc_shared_gid, &gid_plus_i, &gid_minus_i);
-
-    double value = -a * a * acc_shared_phi.read(ptr);
-
-    if (shared_map.find(gid_plus_i) != shared_map.end())
-        value += 0.5 * (a * a - a) * acc_shared_phi.read(shared_map.find(gid_plus_i)->second);
-    else if (ghost_map.find(gid_plus_i) != ghost_map.end())
-        value += 0.5 * (a * a - a) * acc_ghost_phi.read(ghost_map.find(gid_plus_i)->second);
-    else if (excl_map.find(gid_plus_i) != excl_map.end())
-        value += 0.5 * (a * a - a) * acc_exclsv_phi.read(excl_map.find(gid_plus_i)->second);
-
-    if (shared_map.find(gid_minus_i) != shared_map.end())
-        value += 0.5 * (a * a + a) * acc_shared_phi.read(shared_map.find(gid_minus_i)->second);
-    else if (ghost_map.find(gid_minus_i) != ghost_map.end())
-        value += 0.5 * (a * a + a) * acc_ghost_phi.read(ghost_map.find(gid_minus_i)->second);
-    else if (excl_map.find(gid_minus_i) != excl_map.end())
-        value += 0.5 * (a * a + a) * acc_exclsv_phi.read(excl_map.find(gid_minus_i)->second);
-    acc_shared_tmp_phi.write(ptr, value);
-  }
-
-  while(itr_shared_tmp.has_next()) {
-      const ptr_t ptr = itr_shared_tmp.next();
-      acc_shared_phi.write(ptr, acc_shared_phi.read(ptr) + acc_shared_tmp_phi.read(ptr));
-  }
-
-  while(itr_excl_tmp.has_next()) {
-      const ptr_t ptr = itr_excl_tmp.next();
-      acc_exclsv_phi.write(ptr, acc_exclsv_phi.read(ptr) + acc_excl_tmp_phi.read(ptr));
-  }
-}
-
-void
 lax_wendroff_task(
   const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,
@@ -402,7 +321,7 @@ lax_wendroff_task(
 
       // phase READ immediately followed by phase WRITE
 
-	  split_task = task_ids_t::instance().lax_adv_x_task_id;
+	  split_task = task_ids_t::instance().lax_adv_y_task_id;
       if (split)
         split_task = task_ids_t::instance().lax_adv_y_task_id;
       TaskLauncher shared_launcher(split_task, TaskArgument(&my_rank, sizeof(int)));
