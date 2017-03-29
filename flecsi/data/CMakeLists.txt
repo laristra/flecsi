@@ -144,7 +144,6 @@ cinch_add_unit(storage_type
         ../execution/mpilegion/init_partitions_task.cc
         data_client.cc
         legion/dpd.cc
-        ../execution/mpilegion/lax_wendroff_task.cc
       DEFINES DATA_HANDLE_TEST
         FLECSI_SPECIALIZATION_DRIVER=flecsi/data/test/data-handle.h
         TEST_INIT=flecsi/execution/test/task_init.h

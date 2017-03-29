@@ -36,7 +36,6 @@
 #include "flecsi/execution/mpilegion/legion_handshake.h"
 #include "flecsi/execution/mpilegion/mpi_legion_interop.h"
 #include "flecsi/execution/mpilegion/init_partitions_task.h"
-#include "flecsi/execution/mpilegion/lax_wendroff_task.h"
 
 #include "flecsi/data/legion/dpd.h"
 
@@ -214,19 +213,9 @@ struct mpilegion_context_policy_t
       AUTO_GENERATE_ID, TaskConfigOptions(), "size_t_copy_task");
 
     lr_runtime_t::register_legion_task<
-      flecsi::execution::lax_wendroff::lax_wendroff_task>(
-      task_ids_t::instance().lax_wendroff_task_id,lr_loc, false, true,
-      AUTO_GENERATE_ID, TaskConfigOptions(), "lax_wendroff_task");
-
-    lr_runtime_t::register_legion_task<
       flecsi::execution::sprint::double_copy_task>(
       task_ids_t::instance().double_copy_task_id,lr_loc, true, false,
       AUTO_GENERATE_ID, TaskConfigOptions(), "double_copy_task");
-
-    lr_runtime_t::register_legion_task<
-      flecsi::execution::lax_wendroff::lax_calc_excl_y_task>(
-      task_ids_t::instance().lax_calc_excl_y_task_id,lr_loc, true, false,
-      AUTO_GENERATE_ID, TaskConfigOptions(), "lax_calc_excl_y_task");
 
     //register spmd task, that call user's driver
     lr_runtime_t::register_legion_task<
