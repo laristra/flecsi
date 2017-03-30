@@ -16,6 +16,7 @@ set(io_HEADERS
   io.h
   io_base.h
   simple_definition.h
+  PARENT_SCOPE
 )
 
 cinch_add_unit(simple_definition
@@ -39,7 +40,6 @@ if(ENABLE_EXODUS)
 endif(ENABLE_EXODUS)
 
 set(io_SOURCES
-  ${io_HEADERS}
   PARENT_SCOPE
   )
 
