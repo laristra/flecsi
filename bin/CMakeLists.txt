@@ -16,7 +16,8 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     list(APPEND example_src ${exec_path}/legion/runtime_driver.cc)
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
     list(APPEND example_src ${exec_path}/mpilegion/runtime_driver.cc
-                            ${exec_path}/mpilegion/init_partitions_task.cc
+                            ${exec_path}/mpilegion/copy_ghosts.cc
+                            ${exec_path}/test/mpilegion/init_partitions_task.cc
                             ${exec_path}/../data/data_client.cc
                             ${exec_path}/../data/legion/dpd.cc)
 else()

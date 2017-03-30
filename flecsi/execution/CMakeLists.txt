@@ -76,11 +76,13 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
     mpilegion/mpi_legion_interop.h
     mpilegion/runtime_driver.h
     task_ids.h
-    mpilegion/init_partitions_task.h 
+    mpilegion/copy_ghosts.h 
+    test/mpilegion/init_partitions_task.h 
   )
 
   set(execution_SOURCES
-    mpilegion/init_partitions_task.cc
+    test/mpilegion/init_partitions_task.cc 
+    mpilegion/copy_ghosts.cc
     ../data/legion/dpd.cc
   )
 
@@ -142,7 +144,8 @@ if(NOT DEFINED ENV{TRAVIS})
 #         test/task.cc
 #         test/task_driver.h
 #         mpilegion/runtime_driver.cc
-#         mpilegion/init_partitions_task.cc
+#         test/mpilegion/init_partitions_task.cc
+#         mpilegion/copy_ghosts.cc
 #       DEFINES
 #         FLECSI_SPECIALIZATION_DRIVER=flecsi/execution/test/task_driver.h
 #         TEST_INIT=flecsi/execution/test/task_init.h

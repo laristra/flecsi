@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_execution_mpilegion_init_partitions_task_h
-#define flecsi_execution_mpilegion_init_partitions_task_h
+#ifndef flecsi_execution_test_mpilegion_init_partitions_task_h
+#define flecsi_execution_test_mpilegion_init_partitions_task_h
 
 using namespace LegionRuntime::HighLevel;
 
@@ -17,7 +17,7 @@ using namespace LegionRuntime::HighLevel;
 
 namespace flecsi {
 namespace execution {
-namespace mpilegion {
+namespace test {
 
 struct parts {
   int primary_cells;
@@ -79,31 +79,17 @@ copy_legion_to_flecsi_task(
 );
 
 void
-size_t_copy_task(
-  const Legion::Task *task,
-  const std::vector<Legion::PhysicalRegion> & regions,
-  Legion::Context ctx, Legion::HighLevelRuntime *runtime
-);
-
-void
-double_copy_task(
-  const Legion::Task *task,
-  const std::vector<Legion::PhysicalRegion> & regions,
-  Legion::Context ctx, Legion::HighLevelRuntime *runtime
-);
-
-void
 init_raw_conn_task(
   const Legion::Task *task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx, Legion::HighLevelRuntime *runtime
 );
 
-}  //namespace temporary
+}  //namespace test
 } // namespace execution
 } // namespace flecsi
 
-#endif // flecsi_execution_mpilegion_init_partitions_task_h
+#endif // flecsi_execution_test_mpilegion_init_partitions_task_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

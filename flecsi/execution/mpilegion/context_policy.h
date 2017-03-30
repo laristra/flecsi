@@ -35,7 +35,8 @@
 #include "flecsi/execution/common/task_hash.h"
 #include "flecsi/execution/mpilegion/legion_handshake.h"
 #include "flecsi/execution/mpilegion/mpi_legion_interop.h"
-#include "flecsi/execution/mpilegion/init_partitions_task.h"
+#include "flecsi/execution/mpilegion/copy_ghosts.h"
+#include "flecsi/execution/test/mpilegion/init_partitions_task.h"
 
 #include "flecsi/data/legion/dpd.h"
 
@@ -119,45 +120,45 @@ struct mpilegion_context_policy_t
 
     // FIXME
 		// This is Galen's hack to get partitioning working for the sprint
-    lr_runtime_t::register_legion_task<mpilegion::parts,
-      mpilegion::get_numbers_of_cells_task>(
+    lr_runtime_t::register_legion_task<test::parts,
+      test::get_numbers_of_cells_task>(
           task_ids_t::instance().get_numbers_of_cells_task_id,lr_loc, false, true,
           AUTO_GENERATE_ID, TaskConfigOptions(), "get_number_of_cells_task");
 
    // FIXME
     // This is Galen's hack to get partitioning working for the sprint
-    lr_runtime_t::register_legion_task<mpilegion::initialization_task>(
+    lr_runtime_t::register_legion_task<test::initialization_task>(
       task_ids_t::instance().init_task_id,lr_loc, false, true,
       AUTO_GENERATE_ID, TaskConfigOptions(), "initialization_task");
 
    // FIXME
     // This is Galen's hack to get partitioning working for the sprint
-    lr_runtime_t::register_legion_task<mpilegion::partition_lr,
-      mpilegion::shared_part_task>(
+    lr_runtime_t::register_legion_task<test::partition_lr,
+      test::shared_part_task>(
       task_ids_t::instance().shared_part_task_id,lr_loc, false, true,
       AUTO_GENERATE_ID, TaskConfigOptions(), "shared_part_task");
  
    // FIXME
     // This is Galen's hack to get partitioning working for the sprint
-    lr_runtime_t::register_legion_task<mpilegion::partition_lr,
-      mpilegion::exclusive_part_task>(
+    lr_runtime_t::register_legion_task<test::partition_lr,
+      test::exclusive_part_task>(
       task_ids_t::instance().exclusive_part_task_id,lr_loc, false, true,
       AUTO_GENERATE_ID, TaskConfigOptions(), "exclusive_part_task");
 
 		// FIXME
     // This is Galen's hack to get partitioning working for the sprint
-    lr_runtime_t::register_legion_task<mpilegion::partition_lr,
-      mpilegion::ghost_part_task>(
+    lr_runtime_t::register_legion_task<test::partition_lr,
+      test::ghost_part_task>(
       task_ids_t::instance().ghost_part_task_id,lr_loc, false, true,
       AUTO_GENERATE_ID, TaskConfigOptions(), "ghost_part_task");
  
-    lr_runtime_t::register_legion_task<mpilegion::copy_legion_to_flecsi_task>(
+    lr_runtime_t::register_legion_task<test::copy_legion_to_flecsi_task>(
       task_ids_t::instance().copy_legion_to_flecsi_task_id,lr_loc, false, true,
       AUTO_GENERATE_ID, TaskConfigOptions(), "copy_legion_to_flecsi_task");
     
     // FIXME
     // This is Galen's hack to get partitioning working for the sprint
-    lr_runtime_t::register_legion_task<mpilegion::init_raw_conn_task>(
+    lr_runtime_t::register_legion_task<test::init_raw_conn_task>(
       task_ids_t::instance().init_raw_conn_task_id,lr_loc, false, true,
       AUTO_GENERATE_ID, TaskConfigOptions(), "init_raw_conn_task"); 
 

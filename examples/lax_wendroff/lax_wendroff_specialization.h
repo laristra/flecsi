@@ -10,6 +10,7 @@
 
 #include "flecsi/execution/execution.h"
 #include "flecsi/partition/weaver.h"
+#include "flecsi/execution/test/mpilegion/init_partitions_task.h"
 
 ///
 // \file lax_wendroff.h
@@ -20,6 +21,7 @@
 using namespace LegionRuntime::HighLevel;
 using namespace LegionRuntime::Accessor;
 using namespace LegionRuntime::Arrays;
+using namespace flecsi::execution::test;
 
 namespace flecsi {
 namespace execution {
@@ -96,7 +98,7 @@ specialization_driver(
   using legion_domain = LegionRuntime::HighLevel::Domain;
   field_ids_t & fid_t =field_ids_t::instance();
 
-  flecsi::execution::mpilegion::parts partitions;
+  flecsi::execution::test::parts partitions;
   
   // first execute mpi task to setup initial partitions 
   flecsi_execute_task(mpi_task, mpi, single, 1.0);
@@ -140,8 +142,8 @@ specialization_driver(
   //read dimension information from  get_numbers_of_cells task
   for (size_t i = 0; i < num_ranks; i++) {
     std::cout << "about to call get_results" << std::endl;
-    flecsi::execution::mpilegion::parts received =
-      fm1.get_result<flecsi::execution::mpilegion::parts>(
+    flecsi::execution::test::parts received =
+      fm1.get_result<flecsi::execution::test::parts>(
       DomainPoint::from_point<1>(LegionRuntime::Arrays::make_point(i)));
 
     cells_primary_start_id.push_back(total_num_cells);
@@ -336,8 +338,8 @@ specialization_driver(
   size_t indx=0;
   for (GenericPointInRectIterator<1> pir(rank_rect); pir; pir++)
   {
-    flecsi::execution::mpilegion::partition_lr sared_lr=
-      fm3.get_result<flecsi::execution::mpilegion::partition_lr>(
+    flecsi::execution::test::partition_lr sared_lr=
+      fm3.get_result<flecsi::execution::test::partition_lr>(
       DomainPoint::from_point<1>(pir.p));
     //gett shared partition info for Cells
     {
@@ -401,8 +403,8 @@ specialization_driver(
   indx=0;
   for (GenericPointInRectIterator<1> pir(rank_rect); pir; pir++)
   {
-    flecsi::execution::mpilegion::partition_lr exclusive_lr =
-      fm4.get_result<flecsi::execution::mpilegion::partition_lr>(
+    flecsi::execution::test::partition_lr exclusive_lr =
+      fm4.get_result<flecsi::execution::test::partition_lr>(
       DomainPoint::from_point<1>(pir.p)); 
     {
       LogicalRegion exclusive_pts_lr= exclusive_lr.cells;
@@ -468,8 +470,8 @@ specialization_driver(
   indx=0;
   for (GenericPointInRectIterator<1> pir(rank_rect); pir; pir++)
   {
-    flecsi::execution::mpilegion::partition_lr  ghost_lr=
-      fm5.get_result<flecsi::execution::mpilegion::partition_lr >(
+    flecsi::execution::test::partition_lr  ghost_lr=
+      fm5.get_result<flecsi::execution::test::partition_lr >(
       DomainPoint::from_point<1>(pir.p));
     {
       LogicalRegion ghost_pts_lr=ghost_lr.cells;

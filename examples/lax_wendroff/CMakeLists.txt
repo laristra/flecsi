@@ -34,7 +34,8 @@ if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
   set (exmaple_src      lax_wendroff.cc
                         ${exec_path}/mpilegion/runtime_driver.cc
                         ${exec_path}/../data/data_client.cc
-                        ${exec_path}/mpilegion/init_partitions_task.cc
+                        ${exec_path}/mpilegion/copy_ghosts.cc
+                        ${exec_path}/test/mpilegion/init_partitions_task.cc
                         ${exec_path}/../data/legion/dpd.cc)
 
   add_executable(lax_wendroff ${exmaple_src})

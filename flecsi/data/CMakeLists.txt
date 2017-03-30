@@ -141,7 +141,8 @@ cinch_add_unit(storage_type
         ../execution/test/task_driver.h
         test/data-handle.h
         ../execution/mpilegion/runtime_driver.cc
-        ../execution/mpilegion/init_partitions_task.cc
+        ../execution/mpilegion/copy_ghosts.cc
+        ../execution/test/mpilegion/init_partitions_task.cc
         data_client.cc
         legion/dpd.cc
       DEFINES DATA_HANDLE_TEST
