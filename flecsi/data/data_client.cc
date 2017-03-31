@@ -4,12 +4,12 @@
  *~--------------------------------------------------------------------------~*/
 
 ///
-// \file data/data_client.cc
-// \authors bergen, nickm
+/// \file
+/// \date Initial file creation: Dec 7, 2016
 ///
 
-#include "flecsi/data/storage.h"
 #include "flecsi/data/data_client.h"
+#include "flecsi/data/storage.h"
 
 namespace flecsi {
 namespace data {
@@ -41,5 +41,10 @@ void data_client__<flecsi_data_policy_t>::fini()
   flecsi::data::storage_t::instance().reset( runtime_id() );
 }
 
-} // namespace
-} // namespace
+} // namespace data
+} // namespace flecsi
+
+/*~-------------------------------------------------------------------------~-*
+ * Formatting options for vim.
+ * vim: set tabstop=2 shiftwidth=2 expandtab :
+ *~-------------------------------------------------------------------------~-*/

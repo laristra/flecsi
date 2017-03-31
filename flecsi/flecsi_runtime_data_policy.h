@@ -29,9 +29,11 @@
   #define flecsi_user_meta_data_policy_t default_user_meta_data_t
   #define flecsi_storage_policy_t serial_storage_policy_t
 
+// FIXME: Remove rf_mpilegion after refactor
 //Legion Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion || \
-      FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
+      FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion || \
+      FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_rf_mpilegion
 
   #include "flecsi/data/default_user_meta_data.h"
   #include "flecsi/data/legion/storage_policy.h"

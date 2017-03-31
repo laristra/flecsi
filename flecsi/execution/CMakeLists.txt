@@ -89,6 +89,18 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
   set(UNIT_POLICY MPILEGION)
   set(RUNTIME_DRIVER mpilegion/runtime_driver.cc)
 
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "rf_mpilegion")
+
+  set(execution_HEADERS
+    ${execution_HEADERS}
+  )
+
+  set(execution_SOURCES
+  )
+
+  set(UNIT_POLICY MPILEGION)
+  set(RUNTIME_DRIVER rf_mpilegion/runtime_driver.cc)
+
 endif()
 
 set(execution_HEADERS

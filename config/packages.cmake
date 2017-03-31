@@ -47,8 +47,11 @@ endif()
 # Find Legion
 #------------------------------------------------------------------------------#
 
+# FIXME: Remove rf_mpilegion after refactor
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion" OR
-  FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+  FLECSI_RUNTIME_MODEL STREQUAL "mpilegion" OR
+  FLECSI_RUNTIME_MODEL STREQUAL "rf_mpilegion"
+)
 
   find_package(Legion REQUIRED)
 
@@ -99,6 +102,26 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 # MPI+Legion interface
 #
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+
+  if(NOT ENABLE_MPI)
+    message (FATAL_ERROR "MPI is required for the mpilegion runtime model")
+  endif()
+ 
+  set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/mpilegion)
+
+  if(NOT APPLE)
+    set(FLECSI_RUNTIME_LIBRARIES  -ldl ${Legion_LIBRARIES} ${MPI_LIBRARIES})
+  else()
+    set(FLECSI_RUNTIME_LIBRARIES  ${Legion_LIBRARIES} ${MPI_LIBRARIES})
+  endif()
+
+  include_directories(${Legion_INCLUDE_DIRS})
+
+#
+# Refactor
+# FIXME: Remove after refactor
+#
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "rf_mpilegion")
 
   if(NOT ENABLE_MPI)
     message (FATAL_ERROR "MPI is required for the mpilegion runtime model")
@@ -245,7 +268,8 @@ endif(NOT APPLE)
 # configure header
 #------------------------------------------------------------------------------#
 
-configure_file(${PROJECT_SOURCE_DIR}/config/flecsi.h.in ${CMAKE_BINARY_DIR}/flecsi.h @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/config/flecsi.h.in
+  ${CMAKE_BINARY_DIR}/flecsi.h @ONLY)
 include_directories(${CMAKE_BINARY_DIR})
 install(FILES ${CMAKE_BINARY_DIR}/flecsi.h DESTINATION include)
 

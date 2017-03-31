@@ -49,7 +49,8 @@ set(CINCH_HEADER_SUFFIXES "\\.h")
 # Add options for runtime selection
 #------------------------------------------------------------------------------#
 
-set(FLECSI_RUNTIME_MODELS serial mpilegion legion mpi)
+# FIXME: Remove rf_mpilegion after reactor
+set(FLECSI_RUNTIME_MODELS serial mpilegion rf_mpilegion legion mpi)
 
 if(NOT FLECSI_RUNTIME_MODEL)
   list(GET FLECSI_RUNTIME_MODELS 0 FLECSI_RUNTIME_MODEL)

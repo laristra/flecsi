@@ -6,20 +6,22 @@
 #ifndef flecsi_execution_legion_task_wrapper_h
 #define flecsi_execution_legion_task_wrapper_h
 
-#include "flecsi/data/data_handle.h"
 #include "flecsi/data/accessor.h"
+#include "flecsi/data/data_handle.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/legion/task_args.h"
+#include "flecsi/utils/common.h"
+#include "flecsi/utils/tuple_type_converter.h"
 
-#if ( FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion ||  FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion)
+// FIXME: Garbage
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion || \
+  FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion || \
+  FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_rf_mpilegion
   #include "flecsi/execution/mpilegion/legion_handshake.h"
   #include "flecsi/data/legion/dense.h"
 #else
   #include "flecsi/data/serial/dense.h"
 #endif
-
-#include "flecsi/utils/common.h"
-#include "flecsi/utils/tuple_type_converter.h"
 
 ///
 // \file legion/task_wrapper.h
@@ -100,7 +102,7 @@ namespace execution {
           auto ac = 
             pr.get_field_accessor(fid_t.fid_value).typeify<type>();
           
-          IndexIterator itr(runtime, context, is);
+          LegionRuntime::HighLevel::IndexIterator itr(runtime, context, is);
           
           values = new std::vector<type>; 
 

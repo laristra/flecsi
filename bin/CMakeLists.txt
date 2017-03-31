@@ -20,6 +20,9 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
                             ${exec_path}/test/mpilegion/init_partitions_task.cc
                             ${exec_path}/../data/data_client.cc
                             ${exec_path}/../data/legion/dpd.cc)
+# FIXME: Remove this after refactor
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "rf_mpilegion")
+    list(APPEND example_src ${exec_path}/rf_mpilegion/runtime_driver.cc)
 else()
     message(FATAL_ERROR "This runtime is not yet supported")
 endif()

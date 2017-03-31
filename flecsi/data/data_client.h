@@ -7,9 +7,10 @@
 #define flecsi_data_client_h
 
 #include "flecsi_runtime_data_client_policy.h"
-#include "flecsi/utils/common.h"
+
 #include "flecsi/data/data_constants.h"
 #include "flecsi/partition/index_partition.h"
+#include "flecsi/utils/common.h"
 #include "flecsi/utils/const_string.h"
  
 ///

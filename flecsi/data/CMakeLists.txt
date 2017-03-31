@@ -13,18 +13,18 @@
 #~----------------------------------------------------------------------------~#
 
 set(data_HEADERS
-	common/data_types.h
-	data_client.h
-	data_constants.h
-	data.h
-	data_handle.h
-	default_user_meta_data.h
-		old/old_data.h
-	old/default_meta_data.h
-	old/default_storage_policy.h
-	permissions.h
-	storage.h
-	storage_type.h
+  common/data_types.h
+  data_client.h
+  data_constants.h
+  data.h
+  data_handle.h
+  default_user_meta_data.h
+  old/old_data.h
+  old/default_meta_data.h
+  old/default_storage_policy.h
+  permissions.h
+  storage.h
+  storage_type.h
 )
 
 set(data_SOURCES
@@ -76,6 +76,21 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
     legion/handle_policy.h
   )
 
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "rf_mpilegion")
+
+  set(data_HEADERS
+    ${data_HEADERS}
+    legion/dense.h
+    legion/global.h
+    legion/meta_data.h
+    legion/scoped.h
+    legion/sparse.h
+    legion/storage_policy.h
+    legion/tuple.h
+    legion/data_policy.h
+    legion/handle_policy.h
+  )
+
 endif()
 
 set(data_HEADERS
@@ -87,6 +102,7 @@ set(data_SOURCES
     ${data_SOURCES}
     PARENT_SCOPE
 )
+
 #------------------------------------------------------------------------------#
 # Unit tests.
 #------------------------------------------------------------------------------#

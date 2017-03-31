@@ -24,6 +24,7 @@
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
+#include "flecsi/data/common/data_types.h"
 #include "flecsi/data/data_client.h"
 #include "flecsi/data/data_handle.h"
 #include "flecsi/utils/const_string.h"
@@ -49,16 +50,21 @@ namespace serial {
 // Helper type definitions.
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 
-  //----------------------------------------------------------------------------//
-  // Dense handle.
-  //----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+// Dense handle.
+//----------------------------------------------------------------------------//
 
-  template<typename T, size_t PS>
-  struct dense_handle_t : 
-    public data_handle_t<T, PS>
-  {
-    using type = T;
-  }; // struct dense_handle_t
+template<
+  typename T,
+  size_t EP,
+  size_t SP,
+  size_t GP
+>
+struct dense_handle_t : 
+  public data_handle_t<T, EP, SP, GP>
+{
+  using type = T;
+}; // struct dense_handle_t
 
 //----------------------------------------------------------------------------//
 // Dense accessor.
@@ -140,10 +146,13 @@ struct dense_accessor_t
   {}
 
   template<size_t PS>
-  dense_accessor_t(const dense_handle_t<T, PS>& h)
-  : data_(reinterpret_cast<T*>(h.data)),
-    size_(h.size){
-  }
+  dense_accessor_t(
+    const dense_handle_t<T, PS> & h
+  )
+  :
+    data_(reinterpret_cast<T*>(h.data)),
+    size_(h.size)
+  {}
 
   //--------------------------------------------------------------------------//
   // Member data interface.

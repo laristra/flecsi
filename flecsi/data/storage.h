@@ -6,9 +6,9 @@
 #ifndef flecsi_data_storage_h
 #define flecsi_data_storage_h
 
-#include "flecsi/utils/const_string.h"
 #include "flecsi/data/data_client.h"
 #include "flecsi/data/data_handle.h"
+#include "flecsi/utils/const_string.h"
 
 ///
 /// \file

@@ -24,17 +24,18 @@
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
-#include "flecsi/data/data_client.h"
 #include "flecsi/data/accessor.h"
-#include "flecsi/data/data_handle.h"
 #include "flecsi/data/common/data_types.h"
-#include "flecsi/utils/const_string.h"
-#include "flecsi/utils/index_space.h"
-#include "flecsi/execution/context.h"
+#include "flecsi/data/data_client.h"
+#include "flecsi/data/data_handle.h"
 #include "flecsi/data/legion/data_policy.h"
+#include "flecsi/execution/context.h"
 #include "flecsi/execution/legion/helper.h"
 #include "flecsi/execution/task_ids.h"
+#include "flecsi/utils/const_string.h"
+#include "flecsi/utils/index_space.h"
 
+// FIXME: Change to clog
 #define np(X)                                                            \
  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
            << ": " << #X << " = " << (X) << std::endl
@@ -176,7 +177,7 @@ struct dense_accessor_t : public accessor__<T>
         auto ac = 
           exclusive_pr_.get_field_accessor(fid_t.fid_value).typeify<T>();
         
-        IndexIterator itr(runtime_, context_, is);
+        LegionRuntime::HighLevel::IndexIterator itr(runtime_, context_, is);
         
         size_t i = 0;
         while(itr.has_next()){
@@ -197,7 +198,7 @@ struct dense_accessor_t : public accessor__<T>
         auto ac = 
           shared_pr_.get_field_accessor(fid_t.fid_value).typeify<T>();
         
-        IndexIterator itr(runtime_, context_, is);
+        LegionRuntime::HighLevel::IndexIterator itr(runtime_, context_, is);
         
         size_t i = 0;
         while(itr.has_next()){
@@ -599,18 +600,23 @@ struct storage_type_t<dense, DS, MD>
     flecsi::execution::context_t & context =
       flecsi::execution::context_t::instance();
 
+    // FIXME
+    // Why do we need this?
+    // What is specific to the specialization task here?
     size_t task_key = utils::const_string_t{"specialization_driver"}.hash();
     auto runtime = context.runtime(task_key);
     auto ctx = context.context(task_key);
 
     execution::legion_helper helper(runtime, ctx);
 
+    // FIXME
+    // This is broken
     execution::field_ids_t & fid_t = execution::field_ids_t::instance(); 
 
     for(size_t i=0; i<versions; ++i) {
       data_store[NS][h].attributes[i].reset();
 
-      legion_data_policy_t::partitioned_index_space& isp = 
+      legion_data_policy_t::partitioned_index_space & isp = 
         data_client.get_index_space(index_space);
 
       auto data = data_store[NS][h].create_legion_data();
@@ -688,7 +694,8 @@ struct storage_type_t<dense, DS, MD>
     auto ac = 
       pr.get_field_accessor(fid_t.fid_value).typeify<T>();
     
-    IndexIterator itr(runtime, ctx, data.lr.get_index_space());
+    LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx,
+      data.lr.get_index_space());
     
     auto values = new std::vector<T>; 
 

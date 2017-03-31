@@ -7,9 +7,8 @@
 #define flecsi_runtime_context_policy_h
 
 ///
-// \file flecsi_runtime_policy.h
-// \authors bergen
-// \date Initial file creation: Aug 01, 2016
+/// \file
+/// \date Initial file creation: Aug 01, 2016
 ///
 
 ///
@@ -50,6 +49,19 @@
 // MPI+Legion Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
   #include "flecsi/execution/mpilegion/context_policy.h"
+
+  namespace flecsi {
+  namespace execution {
+
+  using flecsi_context_policy_t = mpilegion_context_policy_t;
+
+  }
+  }
+
+// FIXME: Remove this after refactor
+// Refactor: MPI+Legion Policy
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_rf_mpilegion
+  #include "flecsi/execution/rf_mpilegion/context_policy.h"
 
   namespace flecsi {
   namespace execution {

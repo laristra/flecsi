@@ -1,5 +1,3 @@
-#include "cinch.h"
-
 //----------------------------------------------------------------------------//
 // Runtime models
 //----------------------------------------------------------------------------//
@@ -8,6 +6,8 @@
 #define FLECSI_RUNTIME_MODEL_legion 2
 #define FLECSI_RUNTIME_MODEL_mpi 3
 #define FLECSI_RUNTIME_MODEL_mpilegion 4
+// FIXME: Remove rf_mpilegion after refactor
+#define FLECSI_RUNTIME_MODEL_rf_mpilegion 5
 #cmakedefine FLECSI_RUNTIME_MODEL FLECSI_RUNTIME_MODEL_@FLECSI_RUNTIME_MODEL@
 
 //----------------------------------------------------------------------------//

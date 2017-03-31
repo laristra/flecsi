@@ -60,7 +60,21 @@
   }
   }
 
+// FIXME: Remove this after refactor
 // MPI+Legion Policy
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_rf_mpilegion
+
+  #include "flecsi/execution/rf_mpilegion/execution_policy.h"
+
+  namespace flecsi {
+  namespace execution {
+
+  using flecsi_execution_policy_t = mpilegion_execution_policy_t;
+
+  }
+  }
+
+// MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
   #include "flecsi/execution/mpi/execution_policy.h"

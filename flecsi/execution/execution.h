@@ -8,11 +8,11 @@
 
 #include <functional>
 
-#include "flecsi/utils/common.h"
 #include "flecsi/execution/common/function_handle.h"
-#include "flecsi/execution/task.h"
 #include "flecsi/execution/function.h"
 #include "flecsi/execution/kernel.h"
+#include "flecsi/execution/task.h"
+#include "flecsi/utils/common.h"
 
 ///
 /// \file execution.h

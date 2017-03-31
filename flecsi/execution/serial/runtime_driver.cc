@@ -31,6 +31,7 @@ void serial_runtime_driver(int argc, char ** argv) {
 
   // run default or user-defined specialization driver  
   specialization_driver(argc, argv);
+
   // run default or user-defined driver
   driver(argc, argv);
 
