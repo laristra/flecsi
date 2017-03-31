@@ -7,4 +7,5 @@ cmake_install.cmake
 *~
 .DS_Store
 build
+builds
 *_build
