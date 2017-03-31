@@ -23,7 +23,8 @@ if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
 #  set(CMAKE_CXX_COMPILER "mpiCC")
 
   add_definitions(
-    -DFLECSI_SPECIALIZATION_DRIVER=${CMAKE_SOURCE_DIR}/examples/lax_wendroff/lax_wendroff.h)
+    -DFLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
+  )
 
   #----------------------------------------------------------------------------#
   # Add a rule to build the executable
@@ -31,6 +32,7 @@ if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
 
   set(exec_path ${PROJECT_SOURCE_DIR}/flecsi/execution)
   set (exmaple_src      lax_wendroff.cc
+                        lax_wendroff_driver.cc
                         ${exec_path}/mpilegion/runtime_driver.cc
                         ${exec_path}/legion/dpd.cc
                         ${exec_path}/mpilegion/init_partitions_task.cc

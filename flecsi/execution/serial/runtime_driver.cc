@@ -12,16 +12,12 @@
 #include "flecsi/execution/serial/runtime_driver.h"
 #include "flecsi/utils/common.h"
 
-#ifndef FLECSI_SPECIALIZATION_DRIVER
+#ifndef FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
   #include "flecsi/execution/default_specialization_driver.h"
-#else
-  #include EXPAND_AND_STRINGIFY(FLECSI_SPECIALIZATION_DRIVER)
 #endif
 
 namespace flecsi {
 namespace execution {
-
-void driver(int argc, char ** argv);
 
 // driver prototype
 void serial_runtime_driver(int argc, char ** argv) {

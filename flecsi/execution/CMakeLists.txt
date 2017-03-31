@@ -142,12 +142,11 @@ if(NOT DEFINED ENV{TRAVIS})
     cinch_add_unit(mpilegion_task
       SOURCES
         test/task.cc
-        test/task_driver.h
+        test/task_driver.cc
         mpilegion/runtime_driver.cc
         mpilegion/init_partitions_task.cc
         legion/dpd.cc
       DEFINES
-        FLECSI_DRIVER=flecsi/execution/test/task_driver.h
         TEST_INIT=flecsi/execution/test/task_init.h
       POLICY MPILEGION
       LIBRARIES
@@ -180,11 +179,12 @@ if(NOT DEFINED ENV{TRAVIS})
         SOURCES
          test/mpilegion/sprint_devel.cc
          mpilegion/runtime_driver.cc
+         test/mpilegion/sprint.cc
          ${execution_SOURCES}
         INPUTS
          test/mpilegion/simple2d-16x16.msh
         DEFINES SPRINT_TEST
-         FLECSI_SPECIALIZATION_DRIVER=flecsi/execution/test/mpilegion/sprint.h
+         FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
          TEST_INIT=flecsi/execution/test/task_init.h
         LIBRARIES ${PARTITION_LIBRARIES}
         POLICY MPILEGION_DEVEL
