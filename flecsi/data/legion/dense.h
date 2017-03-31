@@ -646,6 +646,36 @@ struct storage_type_t<dense, DS, MD>
     return {};
   } // register_data
 
+	///
+  /// \tparam T Data type to register.
+  /// \tparam NS Namespace
+  /// \tparam Args Variadic arguments that are passed to
+  ///              metadata initialization.
+  ///
+  /// \param data_client Base class reference to client.
+  /// \param data_store A reference for accessing the low-level data.
+  /// \param key A const string instance containing the variable name.
+  /// \param versions The number of variable versions for this datum.
+  /// \param indices The number of indices in the index space.
+  ///
+  template<
+    typename T,
+    size_t NS,
+    typename ... Args
+  >
+  static
+  bool
+  new_register_data(
+    data_store_t & data_store,
+    const utils::const_string_t & key,
+    size_t versions,
+    size_t index_space,
+    Args && ... args
+  )
+  {
+		return true;
+  } // new_register_data
+
   //--------------------------------------------------------------------------//
   // Data accessors.
   //--------------------------------------------------------------------------//

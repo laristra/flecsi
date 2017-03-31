@@ -98,6 +98,35 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
       std::forward<Args>(args) ...);
   } // register_data
 
+  ///
+  /// \brief Register data with the data manager.
+  ///
+  /// \tparam DT Data client type
+  /// \tparam ST Storage type
+  /// \tparam T Data type
+  /// \tparam NS Namespace
+  /// \tparam Args Variadic arguments
+  ///
+  /// \return Returns a boolean with success or failure of registration.
+  ///
+  template<
+    typename DC,
+    size_t ST,
+    typename T,
+    size_t NS,
+    typename ... As
+  >
+  bool
+  new_register_data(
+    const utils::const_string_t & key,
+    size_t versions,
+    As && ... args
+  )
+  {
+    return st_t<ST>::template new_register_data<DC, T, NS>(key, versions,
+      std::forward<As>(args) ...);
+  } // new_register_data
+
   //--------------------------------------------------------------------------//
   // Data accessors.
   //--------------------------------------------------------------------------//
