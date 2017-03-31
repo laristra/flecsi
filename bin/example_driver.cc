@@ -14,9 +14,15 @@
 // \date Initial file creation: Aug 25, 2016
 ///
 
+namespace flecsi {
+namespace execution {
+
 void driver(int argc, char ** argv) {
   std::cout << "Hello World" << std::endl;
 } // driver
+
+} // namespace
+} // namespace
 
 #endif // example_driver_h
 

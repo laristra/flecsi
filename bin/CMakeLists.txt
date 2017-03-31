@@ -7,7 +7,7 @@
 # Add source files for example application.
 #------------------------------------------------------------------------------#
 
-set(example_src example_app.cc)
+set(example_src example_app.cc example_driver.cc)
 set(exec_path ${PROJECT_SOURCE_DIR}/flecsi/execution)
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
@@ -29,13 +29,6 @@ endif()
 #------------------------------------------------------------------------------#
 
 add_executable(example_app ${example_src})
-
-#------------------------------------------------------------------------------#
-# Set compile define for driver.
-#------------------------------------------------------------------------------#
-
-target_compile_definitions(example_app PRIVATE
-  -DFLECSI_DRIVER=${PROJECT_SOURCE_DIR}/bin/example_driver.h)
 
 #------------------------------------------------------------------------------#
 # Add link dependencies.
