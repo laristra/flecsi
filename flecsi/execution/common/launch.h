@@ -7,19 +7,16 @@
 #define flecsi_execution_common_launch_h
 
 ///
-// \file launch.h
-// \authors demeshko
-// \date Initial file creation: Aug 23, 2016
+/// \file
+/// \date Initial file creation: Aug 23, 2016
 ///
 
 namespace flecsi {
 namespace execution {
 
-// FIXME: Finish Doxygen
-
 ///
-// The processor_t enum defines the different Legion task
-// launch types that are supported by FleCSI's execution model.
+/// The processor_t enum defines the different Legion task
+/// launch types that are supported by FleCSI's execution model.
 ///
 
 enum launch_t : size_t {
@@ -28,9 +25,16 @@ enum launch_t : size_t {
   any
 }; // enum launch_t
 
-
 } //namespace execution 
 } // namespace flecsi
+
+#define flecsi_bools_to_launch(S, I)                                           \
+  S && I ?                                                                     \
+    flecsi::execution::launch_t::any                                           \
+  : S ?                                                                        \
+    flecsi::execution::launch_t::single                                        \
+  :                                                                            \
+    flecsi::execution::launch_t::index
 
 #endif // flecsi_execution_common_processor_h
 
