@@ -5,7 +5,7 @@ var searchData=
   ['set_5fintersection_2eh',['set_intersection.h',['../set__intersection_8h.html',1,'']]],
   ['set_5futils_2eh',['set_utils.h',['../set__utils_8h.html',1,'']]],
   ['simple_5fdefinition_2eh',['simple_definition.h',['../simple__definition_8h.html',1,'']]],
-  ['simple_5ffunction_2eh',['simple_function.h',['../simple__function_8h.html',1,'']]],
+  ['simple_5ffunction_2ecc',['simple_function.cc',['../simple__function_8cc.html',1,'']]],
   ['space_5fvector_2eh',['space_vector.h',['../space__vector_8h.html',1,'']]],
   ['sparse_2eh',['sparse.h',['../serial_2sparse_8h.html',1,'']]],
   ['sparse_2eh',['sparse.h',['../legion_2sparse_8h.html',1,'']]],
