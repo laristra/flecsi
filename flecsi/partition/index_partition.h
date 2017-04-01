@@ -7,9 +7,7 @@
 #define flecsi_partition_index_partition_h
 
 #include <cassert>
-
 #include <vector>
-#include <cereal/types/vector.hpp>
 
 #include "flecsi/partition/communicator.h"
 
@@ -68,14 +66,6 @@ struct index_partition__
       this->shared ==  ip.shared &&
       this->ghost == ip.ghost);
   } // operator ==
-
-  ///
-  /// Cereal serialization method.
-  ///
-  template<typename A>
-  void serialize(A & archive) {
-    archive(exclusive, shared, ghost);
-  } // serialize
 
 }; // struct index_partition__
 
