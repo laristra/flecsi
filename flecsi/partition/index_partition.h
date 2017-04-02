@@ -7,6 +7,7 @@
 #define flecsi_partition_index_partition_h
 
 #include <cassert>
+#include <unordered_map>
 #include <vector>
 
 #include "flecsi/partition/communicator.h"

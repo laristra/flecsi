@@ -640,22 +640,6 @@ public:
     size_t M = 0
   >
   auto
-  entities()
-  {
-    using etype = entity_type<D, M>;
-    using dtype = domain_entity<M, etype>;
-    return ms_.index_spaces[M][D].template slice<dtype>();
-  } // entities
-
-  /*!
-    Get the top-level entities of topological dimension D of the specified
-    domain M. e.g: cells of the mesh.
-  */
-  template<
-    size_t D,
-    size_t M = 0
-  >
-  auto
   entities() const
   {
     using etype = entity_type<D, M>;

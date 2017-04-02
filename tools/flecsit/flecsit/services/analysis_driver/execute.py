@@ -3,7 +3,7 @@
 # All rights reserved.
 #------------------------------------------------------------------------------#
 
-def execute():
+def execute(verbose, pack, build):
 
     """
     """

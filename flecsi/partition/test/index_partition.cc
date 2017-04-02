@@ -171,7 +171,6 @@ TEST_F(ip_fixture_t, basic) {
   } // if
 
 } // basic
-//FIXME
 
 TEST(index_partition, compare_output) {
   int rank;

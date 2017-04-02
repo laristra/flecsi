@@ -18,13 +18,13 @@ from flecsit.services import *
 # flecsit module.
 #------------------------------------------------------------------------------#
 
-def main(build):
+def main(config):
 
     """
     """
 
     driver = create_driver()
-    return driver.main(build)
+    return driver.main(config)
 
 # main
 
@@ -74,7 +74,7 @@ class FleCSITDriver():
 
     # __init__
 
-    def main(self, build, args=None):
+    def main(self, config, args=None):
 
         """
         """
@@ -82,7 +82,7 @@ class FleCSITDriver():
         # parse arguments and call the appropriate function
         # as set by the Service subclass.
         args = self.parser.parse_args()
-        args.func(build, args)
+        args.func(config, args)
 
     # main
 

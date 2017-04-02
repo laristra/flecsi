@@ -48,6 +48,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(execution_HEADERS
     ${execution_HEADERS}
     legion/context_policy.h
+    legion/dpd.h
     legion/future.h
     legion/execution_policy.h
     legion/runtime_driver.h
@@ -58,6 +59,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   )
 
   set(execution_SOURCES
+    legion/dpd.cc
   )
 
   set(UNIT_POLICY LEGION)
@@ -67,6 +69,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
   set(execution_HEADERS
     ${execution_HEADERS}
+    legion/dpd.h
     legion/task_args.h
     legion/task_wrapper.h
     mpilegion/context_policy.h
@@ -76,30 +79,18 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
     mpilegion/mpi_legion_interop.h
     mpilegion/runtime_driver.h
     task_ids.h
-    mpilegion/copy_ghosts.h 
-    test/mpilegion/init_partitions_task.h 
+    mpilegion/init_partitions_task.h 
+    mpilegion/lax_wendroff_task.h 
   )
 
   set(execution_SOURCES
-    test/mpilegion/init_partitions_task.cc 
-    mpilegion/copy_ghosts.cc
-    ../data/legion/dpd.cc
+    legion/dpd.cc
+    mpilegion/init_partitions_task.cc
+    mpilegion/lax_wendroff_task.cc
   )
 
   set(UNIT_POLICY MPILEGION)
   set(RUNTIME_DRIVER mpilegion/runtime_driver.cc)
-
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "rf_mpilegion")
-
-  set(execution_HEADERS
-    ${execution_HEADERS}
-  )
-
-  set(execution_SOURCES
-  )
-
-  set(UNIT_POLICY MPILEGION)
-  set(RUNTIME_DRIVER rf_mpilegion/runtime_driver.cc)
 
 endif()
 
@@ -117,41 +108,27 @@ set(execution_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "rf_mpilegion")
-cinch_add_unit(pure
+if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
+    OR (FLECSI_RUNTIME_MODEL STREQUAL "legion") )
+cinch_add_unit(task
   SOURCES
-    test/legion/pure.cc
+    test/task.cc
+    test/task_driver.cc
     ${RUNTIME_DRIVER}
+  DEFINES
+    TEST_INIT=flecsi/execution/test/task_init.h
+  POLICY
+    ${UNIT_POLICY}
   LIBRARIES
     flecsi
     ${CINCH_RUNTIME_LIBRARIES}
 )
-endif()
-
-if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
-    OR (FLECSI_RUNTIME_MODEL STREQUAL "legion") )
-# cinch_add_unit(task
-#   SOURCES
-#     test/task.cc
-#     test/task_driver.h
-#     ${RUNTIME_DRIVER}
-#   DEFINES
-#     FLECSI_SPECIALIZATION_DRIVER=flecsi/execution/test/task_driver.h
-#     TEST_INIT=flecsi/execution/test/task_init.h
-#   POLICY
-#     ${UNIT_POLICY}
-#   LIBRARIES
-#     flecsi
-#     ${CINCH_RUNTIME_LIBRARIES}
-# )
 
 cinch_add_unit(simple_function
   SOURCES
     test/function.cc
-    test/simple_function.h
+    test/simple_function.cc
     ${RUNTIME_DRIVER}
-  DEFINES
-    FLECSI_DRIVER=flecsi/execution/test/simple_function.h
   POLICY
     ${UNIT_POLICY}
   LIBRARIES
@@ -161,23 +138,22 @@ cinch_add_unit(simple_function
 endif()
 
 if(NOT DEFINED ENV{TRAVIS})
-   if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+  if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
-#     cinch_add_unit(mpilegion_task
-#       SOURCES
-#         test/task.cc
-#         test/task_driver.h
-#         mpilegion/runtime_driver.cc
-#         test/mpilegion/init_partitions_task.cc
-#         mpilegion/copy_ghosts.cc
-#       DEFINES
-#         FLECSI_SPECIALIZATION_DRIVER=flecsi/execution/test/task_driver.h
-#         TEST_INIT=flecsi/execution/test/task_init.h
-#       POLICY MPILEGION
-#       LIBRARIES
-#       flecsi
-#       ${CINCH_RUNTIME_LIBRARIES}
-#     )
+    cinch_add_unit(mpilegion_task
+      SOURCES
+        test/task.cc
+        test/task_driver.cc
+        mpilegion/runtime_driver.cc
+        mpilegion/init_partitions_task.cc
+        legion/dpd.cc
+      DEFINES
+        TEST_INIT=flecsi/execution/test/task_init.h
+      POLICY MPILEGION
+      LIBRARIES
+      flecsi
+      ${CINCH_RUNTIME_LIBRARIES}
+    )
 
 #  cinch_add_unit(dpd_sparse
 #    SOURCES
@@ -191,53 +167,45 @@ if(NOT DEFINED ENV{TRAVIS})
   # FIXME: Need to talk about this with Irina and Galen.
     cinch_add_unit(test_legion_handshake
       SOURCES test/mpilegion/test_legion_handshake.cc
-      DEFINES HANDSHAKE_TEST
-        TEST_INIT=flecsi/execution/test/mpilegion/handshake_init.h
       POLICY MPILEGION
     )
 
     cinch_add_unit(test_mpilegion_interop
       SOURCES test/mpilegion/test_mpi_legion_interop.cc
-      DEFINES INTEROP_TEST
-        TEST_INIT=flecsi/execution/test/mpilegion/interop_init.h
       POLICY MPILEGION
     )
 
     if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
-      cinch_add_unit(test_parmetis_interop
+      cinch_add_unit(mpilegion_sprint
         SOURCES
-         test/mpilegion/test_parmetis_interop_devel.cc
+         test/mpilegion/sprint_devel.cc
          mpilegion/runtime_driver.cc
-         ../data/data_client.cc
+         test/mpilegion/sprint.cc
          ${execution_SOURCES}
         INPUTS
          test/mpilegion/simple2d-16x16.msh
         DEFINES SPRINT_TEST
-         FLECSI_SPECIALIZATION_DRIVER=flecsi/execution/test/mpilegion/test_parmetis_interop.h
-         FLECSI_DRIVER=flecsi/execution/test/test_mpi_interop_partitions.h
+         FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
          TEST_INIT=flecsi/execution/test/task_init.h
         LIBRARIES ${PARTITION_LIBRARIES}
         POLICY MPILEGION_DEVEL
         THREADS 2
       )
 
-      cinch_add_unit(test_ghost_access
-        SOURCES
-         test/mpilegion/test_parmetis_interop_devel.cc
-         mpilegion/runtime_driver.cc
-         ../data/data_client.cc
-         ${execution_SOURCES}
-        INPUTS
-         test/mpilegion/simple2d-16x16.msh
-        DEFINES SPRINT_TEST
-         FLECSI_SPECIALIZATION_DRIVER=flecsi/execution/test/mpilegion/test_parmetis_interop.h
-         FLECSI_DRIVER=flecsi/execution/test/test_ghost_access.h
-         TEST_INIT=flecsi/execution/test/task_init.h
-        LIBRARIES ${PARTITION_LIBRARIES}
-        POLICY MPILEGION_DEVEL
-        THREADS 2
-      )
-
+#      cinch_add_unit(mpilegion_lax_wendroff
+#        SOURCES
+#          test/sprint_devel.cc
+#          mpilegion/runtime_driver.cc
+#          ${execution_SOURCES}
+#        INPUTS
+#          test/simple2d-64x64.msh
+#        DEFINES LAX_WENDROFF_TEST
+#          FLECSI_DRIVER=flecsi/execution/test/lax_wendroff.h
+#          TEST_INIT=flecsi/execution/test/task_init.h
+#        LIBRARIES ${PARTITION_LIBRARIES}
+#        POLICY MPILEGION_DEVEL
+#        THREADS 2
+#      )
     endif()
 
   endif()

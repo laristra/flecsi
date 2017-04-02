@@ -18,10 +18,6 @@ set(io_HEADERS
   simple_definition.h
   PARENT_SCOPE
 )
-  
-set(io_SOURCES
-  PARENT_SCOPE
-)
 
 cinch_add_unit(simple_definition
   SOURCES test/simple_definition.cc
@@ -42,6 +38,10 @@ if(ENABLE_EXODUS)
   )
 
 endif(ENABLE_EXODUS)
+
+set(io_SOURCES
+  PARENT_SCOPE
+  )
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options
