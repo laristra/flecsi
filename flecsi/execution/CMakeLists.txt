@@ -117,6 +117,17 @@ set(execution_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
+if(FLECSI_RUNTIME_MODEL STREQUAL "rf_mpilegion")
+cinch_add_unit(pure
+  SOURCES
+    test/legion/pure.cc
+    ${RUNTIME_DRIVER}
+  LIBRARIES
+    flecsi
+    ${CINCH_RUNTIME_LIBRARIES}
+)
+endif()
+
 if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
     OR (FLECSI_RUNTIME_MODEL STREQUAL "legion") )
 # cinch_add_unit(task
