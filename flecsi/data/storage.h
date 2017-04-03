@@ -6,14 +6,13 @@
 #ifndef flecsi_data_storage_h
 #define flecsi_data_storage_h
 
-#include "flecsi/data/data_client.h"
-#include "flecsi/data/data_handle.h"
 #include "flecsi/utils/const_string.h"
+#include "flecsi/data/data_client.h"
 
 ///
 /// \file
 /// \date Initial file creation: Apr 17, 2016
-/// \authors bergen, nickm
+///
 
 namespace flecsi {
 namespace data {
@@ -97,35 +96,6 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
       sp_t::data_store_, key, versions,
       std::forward<Args>(args) ...);
   } // register_data
-
-  ///
-  /// \brief Register data with the data manager.
-  ///
-  /// \tparam DT Data client type
-  /// \tparam ST Storage type
-  /// \tparam T Data type
-  /// \tparam NS Namespace
-  /// \tparam Args Variadic arguments
-  ///
-  /// \return Returns a boolean with success or failure of registration.
-  ///
-  template<
-    typename DC,
-    size_t ST,
-    typename T,
-    size_t NS,
-    typename ... As
-  >
-  bool
-  new_register_data(
-    const utils::const_string_t & key,
-    size_t versions,
-    As && ... args
-  )
-  {
-    return st_t<ST>::template new_register_data<DC, T, NS>(key, versions,
-      std::forward<As>(args) ...);
-  } // new_register_data
 
   //--------------------------------------------------------------------------//
   // Data accessors.
@@ -330,10 +300,9 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   ///
   /// \brief get a handle to registered data.
   ///
-  /// \tparam ST storage type
-  /// \tparam T data type
-  /// \tparam NS namespace
-  /// \tparam PS privileges
+  /// \tparam ST
+  /// \tparam T
+  /// \tparam NS
   ///
   /// \param[in] runtime_namespace
   /// \param[in] key
@@ -342,10 +311,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   template<
     size_t ST,
     typename T,
-    size_t NS,
-    size_t EP,
-    size_t SP,
-    size_t GP
+    size_t NS
   >
   decltype(auto)
   get_handle(
@@ -354,10 +320,10 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     size_t version=0
   )
   {
-    return st_t<ST>::template get_handle<T, NS, EP, SP, GP>(data_client,
+    return st_t<ST>::template get_handle<T, NS>(data_client,
       sp_t::data_store_, key, version);
   } // get_accessor
-
+/*
   template<
     size_t ST>
   void
@@ -386,6 +352,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     return st_t<ST>::put_all_handles(data_client,
       sp_t::data_store_, num_handles, handles, hashes, namespaces, versions);
   }
+  */
 
   //--------------------------------------------------------------------------//
   // Data management.

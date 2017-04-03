@@ -31,7 +31,7 @@
 
 namespace flecsi {
 namespace execution {
-
+/*
   template<size_t I, typename AS, typename PS>
   struct create_task_args__{
     using context_t = LegionRuntime::HighLevel::Context;
@@ -152,7 +152,7 @@ namespace execution {
       return 0;
     }
   };
-
+*/
 ///
 /// \brief
 ///
@@ -171,9 +171,7 @@ template<
 >
 struct legion_task_wrapper__
 {
-  using user_task_args_t = 
-    typename utils::base_convert_tuple_type<accessor_base, 
-    data_handle_t<void, 0, 0, 0>, A>::type;
+  using user_task_args_t = A;
 
   //
   // Type definition for user task.
@@ -186,9 +184,7 @@ struct legion_task_wrapper__
   using lr_proc = LegionRuntime::HighLevel::Processor;
   using task_id_t = LegionRuntime::HighLevel::TaskID;
 
-  using user_args_t = 
-    typename utils::base_convert_tuple_type<accessor_base, 
-    data_handle_t<void, 0, 0, 0>, A>::type;
+  using user_args_t = A;
 
   //
   // This defines a predicate function to pass to tuple_filter that
@@ -197,9 +193,6 @@ struct legion_task_wrapper__
   template<typename T>
   using greater_than = std::conditional_t<(T()>0), std::true_type,
     std::false_type>;
-
-  template<typename T>
-  using is_data_handle = std::is_base_of<data_handle_base,T>;
 
   ///
   /// This function is called by the context singleton to do the actual
@@ -244,11 +237,12 @@ struct legion_task_wrapper__
     // Push the Legion state
     context_t::instance().push_state(user_task_handle.key,
       context, runtime, task, regions);
-
+/*
     size_t region = 0;
     create_task_args__<std::tuple_size<user_task_args_t>::value,
       user_task_args_t, args_t>::create(
         context, runtime, regions, user_task_args, region);
+*/
 
     auto retval = user_task_handle(
       context_t::instance().function(user_task_handle.key),
@@ -305,9 +299,12 @@ struct legion_task_wrapper__<P, S, I, void, A>
   //
   // Type definition for user task.
   //
+  /*
   using user_task_args_t = 
     typename utils::base_convert_tuple_type<accessor_base, 
     data_handle_t<void, 0, 0, 0>, A>::type;
+  */
+  using user_task_args_t = A;
   using args_t = A;
 
   using task_args_t = legion_task_args__<void,A,user_task_args_t>;
@@ -324,9 +321,6 @@ struct legion_task_wrapper__<P, S, I, void, A>
   template<typename T>
   using greater_than = std::conditional_t<(T()>0), std::true_type,
     std::false_type>;
-
-  template<typename T>
-  using is_data_handle = std::is_base_of<data_handle_base, T>;
 
   ///
   /// This function is called by the context singleton to do the actual
@@ -377,10 +371,12 @@ struct legion_task_wrapper__<P, S, I, void, A>
     context_t::instance().push_state(user_task_handle.key,
       context, runtime, task, regions);
 
+    /*
     size_t region = 0;
     create_task_args__<std::tuple_size<user_task_args_t>::value,
       user_task_args_t, args_t>::create(
         context, runtime, regions, user_task_args, region);
+    */
 
     user_task_handle(context_t::instance().function(user_task_handle.key),
       user_task_args);

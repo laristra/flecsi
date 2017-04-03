@@ -6,11 +6,9 @@
 #ifndef flecsi_data_client_h
 #define flecsi_data_client_h
 
-#include "flecsi_runtime_data_client_policy.h"
-
+#include "flecsi/utils/common.h"
 #include "flecsi/data/data_constants.h"
 #include "flecsi/partition/index_partition.h"
-#include "flecsi/utils/common.h"
 #include "flecsi/utils/const_string.h"
  
 ///
@@ -22,35 +20,30 @@ namespace flecsi {
 namespace data {
 
 ///
-/// \class data_client__ data_client.h
-/// \brief data_client__ provides...
+/// \class data_client_t data_client.h
+/// \brief data_client_t provides...
 ///
-template<class P>
-class data_client__ : public P
+class data_client_t
 {
 public:
 
   /// Default constructor
-  data_client__() : id_(utils::unique_id_t<size_t>::instance().next()) {}
+  data_client_t() : id_(utils::unique_id_t<size_t>::instance().next()) {}
 
   /// Copy constructor (disabled)
-  data_client__(const data_client__ &) = delete;
+  data_client_t(const data_client_t &) = delete;
 
   /// Assignment operator (disabled)
-  data_client__ & operator = (const data_client__ &) = delete;
+  data_client_t & operator = (const data_client_t &) = delete;
 
   /// Allow move construction
-  data_client__(data_client__ && o);
+  data_client_t(data_client_t && o);
 
   /// Allow move construction
-  data_client__ & operator=(data_client__ && o);
+  data_client_t & operator=(data_client_t && o);
 
   /// Destructor
-  virtual ~data_client__(){
-    fini();
-  }
-
-  void fini();
+  virtual ~data_client_t();
 
   ///
   /// Return a unique runtime identifier for namespace access to the
@@ -75,13 +68,22 @@ public:
     return 0;
   } // indices
 
+//data instances
+public:
+  using index_partition_t = dmp::index_partition__<size_t>;
+  
+  //map of the all partitions used in the code
+  //std::map <name of the partition<entiry, index partition for entity>
+ 
+  std::unordered_map<utils::const_string_t,
+    std::unordered_map<utils::const_string_t, index_partition_t,
+      utils::const_string_hasher_t>, utils::const_string_hasher_t > partitions;
+
 private:
 
   size_t id_;
 
-}; // class data_client__
-
-using data_client_t = data_client__<flecsi_data_policy_t>;
+}; // class data_client_t
 
 } // namespace data
 } // namespace flecsi
