@@ -46,7 +46,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(execution_HEADERS
     ${execution_HEADERS}
     legion/context_policy.h
-    legion/dpd.h
     legion/future.h
     legion/execution_policy.h
     legion/runtime_driver.h
@@ -67,7 +66,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
   set(execution_HEADERS
     ${execution_HEADERS}
-    legion/dpd.h
     legion/task_args.h
     legion/task_wrapper.h
     mpilegion/context_policy.h

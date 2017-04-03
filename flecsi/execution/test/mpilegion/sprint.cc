@@ -14,7 +14,7 @@
 #include "flecsi/partition/index_partition.h"
 #include "flecsi/execution/mpilegion/init_partitions_task.h"
 #include "flecsi/partition/weaver.h"
-#include "flecsi/execution/legion/dpd.h"
+#include "flecsi/data/legion/dpd.h"
 
 ///
 // \file sprint.h
