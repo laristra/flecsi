@@ -18,8 +18,6 @@ set(execution_HEADERS
 	common/processor.h
 	common/task_hash.h
 	context.h
-	default_driver.h
-  default_specialization_driver.h
 	execution.h
 	function.h
 	kernel.h
@@ -119,6 +117,20 @@ set(execution_SOURCES
 #------------------------------------------------------------------------------#
 # Unit tests.
 #------------------------------------------------------------------------------#
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "rf_mpilegion")
+  cinch_add_unit(internal_task
+  SOURCES
+    test/function.cc
+    test/legion/internal_task.cc
+    ${RUNTIME_DRIVER}
+  POLICY
+    ${UNIT_POLICY}
+  LIBRARIES
+    flecsi
+    ${CINCH_RUNTIME_LIBRARIES}
+  )
+endif()
 
 if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
     OR (FLECSI_RUNTIME_MODEL STREQUAL "legion") )

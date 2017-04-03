@@ -16,23 +16,22 @@
 #define flecsi_execution_legion_context_policy_h
 
 ///
-// \file legion/context_policy.h
-// \authors bergen
-// \date Initial file creation: Jul 14, 2016
+/// \file
+/// \date Initial file creation: Jul 14, 2016
 ///
 
 #include <functional>
 #include <memory>
-#include <unordered_map>
 #include <stack>
+#include <unordered_map>
 
 #include <legion.h>
 
+#include "flecsi/execution/common/task_hash.h"
+#include "flecsi/execution/legion/runtime_driver.h"
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/tuple_wrapper.h"
-#include "flecsi/execution/legion/runtime_driver.h"
-#include "flecsi/execution/common/task_hash.h"
 
 namespace flecsi {
 namespace execution {

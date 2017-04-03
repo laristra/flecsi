@@ -30,11 +30,11 @@ enum launch_t : size_t {
 
 #define flecsi_bools_to_launch(S, I)                                           \
   S && I ?                                                                     \
-    flecsi::execution::launch_t::any                                           \
+    launch_t::any                                                              \
   : S ?                                                                        \
-    flecsi::execution::launch_t::single                                        \
+    launch_t::single                                        									 \
   :                                                                            \
-    flecsi::execution::launch_t::index
+    launch_t::index
 
 #endif // flecsi_execution_common_processor_h
 

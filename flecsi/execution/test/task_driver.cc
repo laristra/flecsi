@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_default_driver_h
-#define flecsi_default_driver_h
+#ifndef flecsi_task_driver_h
+#define flecsi_task_driver_h
 
 #include <iostream>
 
@@ -249,7 +249,7 @@ void specialization_driver(int argc, char ** argv) {
 } // namespace execution
 } // namespace flecsi
 
-#endif // flecsi_default_driver_h
+#endif // flecsi_task_driver_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.
