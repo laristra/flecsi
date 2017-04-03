@@ -1,0 +1,25 @@
+Files affected by sprint
+
+	data/storage.h
+	data/permissions.h => May be able to remove
+	data/data.h => May need to modify handle interface
+	data/accessor.h
+	data/data_client.{cc,h}
+	data/data.h => Need to rename and look at data interface
+	serial/* => Revert to data_handle state
+	legion/* => Nick is responsible for selecting file versions
+
+	execution/task_ids.h => Need to remove this!
+	execution/default_*driver.h => Need to remove these!
+	execution/mpilegion/copy_ghosts.{cc,h}
+	execution/context_policy => Use refactor version
+	execution/execution_policy => Use refactor version
+	execution/runtime_driver.{cc,h} => refactor
+	execution/legion/task_wrapper.h => refactor
+
+	utils/tuple_type_converter.h => May want to remove this.
+	
+
+Files that need a look
+
+	data/data_constants.h

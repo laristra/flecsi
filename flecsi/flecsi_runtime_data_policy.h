@@ -26,8 +26,17 @@
 
   #include "flecsi/data/default_user_meta_data.h"
   #include "flecsi/data/serial/storage_policy.h"
-  #define flecsi_user_meta_data_policy_t default_user_meta_data_t
-  #define flecsi_storage_policy_t serial_storage_policy_t
+
+  namespace flecsi {
+  namespace data {
+
+  using flecsi_user_meta_data_policy_t = default_user_meta_data_t;
+
+  template<typename MD>
+  using flecsi_storage_policy_t = serial_storage_policy_t<MD>;
+
+  } // namespace data
+  } // namespace flecsi
 
 // FIXME: Remove rf_mpilegion after refactor
 //Legion Policy
@@ -37,8 +46,17 @@
 
   #include "flecsi/data/default_user_meta_data.h"
   #include "flecsi/data/legion/storage_policy.h"
-  #define flecsi_user_meta_data_policy_t default_user_meta_data_t
-  #define flecsi_storage_policy_t legion_storage_policy_t
+
+  namespace flecsi {
+  namespace data {
+
+  using flecsi_user_meta_data_policy_t = default_user_meta_data_t;
+
+  template<typename MD>
+  using flecsi_storage_policy_t = legion_storage_policy_t<MD>;
+
+  } // namespace data
+  } // namespace flecsi
 
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi

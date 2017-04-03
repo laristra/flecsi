@@ -19,7 +19,7 @@ namespace flecsi {
 namespace execution {
 
 //! \brief The main driver function to be defined by the user.
- //! \param[in] argc  The number of arguments in argv.
+//! \param[in] argc  The number of arguments in argv.
 //! \param[in] argv  The list arguments passed to the driver.
 void driver(int argc, char ** argv);
 

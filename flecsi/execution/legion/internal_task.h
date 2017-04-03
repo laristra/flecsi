@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef pure_task_h
-#define pure_task_h
+#ifndef internal_task_h
+#define internal_task_h
 
 #include <legion.h>
 
@@ -16,7 +16,7 @@
 ///
 
 ///
-/// This macro registers a pure Legion task.
+/// This macro registers a internal Legion task.
 ///
 #define flecsi_register_legion_task(task, processor, single, index)            \
                                                                                \
@@ -30,7 +30,7 @@
     bool I,                                                                    \
     typename R                                                                 \
   >                                                                            \
-  struct task ## _pure_task__                                                  \
+  struct task ## _internal_task__                                              \
   {                                                                            \
     using lr_runtime = LegionRuntime::HighLevel::HighLevelRuntime;             \
     using lr_proc = LegionRuntime::HighLevel::Processor;                       \
@@ -65,8 +65,8 @@
     typename flecsi::utils::function_traits__<decltype(task)>::return_type;    \
                                                                                \
   /* Task type for registration method */                                      \
-  using task ## pure_task_t =                                                  \
-    flecsi::execution::legion::task ## _pure_task__<                           \
+  using task ## internal_task_t =                                              \
+    flecsi::execution::legion::task ## _internal_task__<                       \
     processor, single, index, task ## _trt_t>;                                 \
                                                                                \
   /* Task key for lookups */                                                   \
@@ -76,9 +76,9 @@
                                                                                \
   /* Register the task */                                                      \
   bool task ## _task_registered = context_t::instance().register_task(         \
-    task ## task_key, task ## _pure_task_t::register_task);
+    task ## task_key, task ## _internal_task_t::register_task);
 
-#endif // pure_task_h
+#endif // internal_task_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

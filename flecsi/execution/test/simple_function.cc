@@ -3,9 +3,6 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_default_driver_h
-#define flecsi_default_driver_h
-
 #include <iostream>
 
 #include "flecsi/data/data.h"
@@ -38,6 +35,7 @@ flecsi_register_function(test_function);
 //----------------------------------------------------------------------------//
 
 void driver(int argc, char ** argv) {
+
   auto handle = flecsi_function_handle(test_function);
 
   double result = flecsi_execute_function(handle, 2.0, 10.0);
@@ -47,8 +45,6 @@ void driver(int argc, char ** argv) {
 
 } // namespace execution
 } // namespace flecsi
-
-#endif // flecsi_default_driver_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

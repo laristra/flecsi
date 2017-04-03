@@ -30,7 +30,8 @@
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/tuple_wrapper.h"
-#include "flecsi/execution/legion/runtime_driver.h"
+//FIXME: Rename after refactor
+#include "flecsi/execution/rf_mpilegion/runtime_driver.h"
 #include "flecsi/execution/common/task_hash.h"
 
 namespace flecsi {
@@ -100,7 +101,8 @@ struct mpilegion_context_policy_t
 
     // Register top-level task
     HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
-    HighLevelRuntime::register_legion_task<legion_runtime_driver>(
+    //FIXME: Rename after refactor
+    HighLevelRuntime::register_legion_task<rf_mpilegion_runtime_driver>(
       TOP_LEVEL_TASK_ID, lr_loc, true, false);
 
     // Register user tasks

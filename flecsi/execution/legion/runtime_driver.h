@@ -9,22 +9,21 @@
 #include <legion.h>
 
 ///
-// \file legion/runtime_driver.h
-// \authors bergen
-// \date Initial file creation: Jul 26, 2016
+/// \file
+/// \date Initial file creation: Jul 26, 2016
 ///
 
 namespace flecsi {
 namespace execution {
 
-//! \brief The main driver function to be defined by the user.
-//! \param[in] argc  The number of arguments in argv.
-//! \param[in] argv  The list arguments passed to the driver.
+/// \brief The main driver function to be defined by the user.
+/// \param[in] argc  The number of arguments in argv.
+/// \param[in] argv  The list arguments passed to the driver.
 void driver(int argc, char ** argv);
 
-//! \brief The specialization driver function to be defined by the user.
-//! \param[in] argc  The number of arguments in argv.
-//! \param[in] argv  The list arguments passed to the driver.
+/// \brief The specialization driver function to be defined by the user.
+/// \param[in] argc  The number of arguments in argv.
+/// \param[in] argv  The list arguments passed to the driver.
 void specialization_driver(int argc, char ** argv);
 
 void legion_runtime_driver(const LegionRuntime::HighLevel::Task * task,

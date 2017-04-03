@@ -92,6 +92,18 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
   set(UNIT_POLICY MPILEGION)
   set(RUNTIME_DRIVER mpilegion/runtime_driver.cc)
 
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "rf_mpilegion")
+
+  set(execution_HEADERS
+    ${execution_HEADERS}
+  )
+
+  set(execution_SOURCES
+  )
+
+  set(UNIT_POLICY MPILEGION)
+  set(RUNTIME_DRIVER rf_mpilegion/runtime_driver.cc)
+
 endif()
 
 set(execution_HEADERS
@@ -110,19 +122,19 @@ set(execution_SOURCES
 
 if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
     OR (FLECSI_RUNTIME_MODEL STREQUAL "legion") )
-cinch_add_unit(task
-  SOURCES
-    test/task.cc
-    test/task_driver.cc
-    ${RUNTIME_DRIVER}
-  DEFINES
-    TEST_INIT=flecsi/execution/test/task_init.h
-  POLICY
-    ${UNIT_POLICY}
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
-)
+#cinch_add_unit(task
+#  SOURCES
+#    test/task.cc
+#    test/task_driver.cc
+#    ${RUNTIME_DRIVER}
+#  DEFINES
+#    TEST_INIT=flecsi/execution/test/task_init.h
+#  POLICY
+#    ${UNIT_POLICY}
+#  LIBRARIES
+#    flecsi
+#    ${CINCH_RUNTIME_LIBRARIES}
+#)
 
 cinch_add_unit(simple_function
   SOURCES
@@ -140,20 +152,20 @@ endif()
 if(NOT DEFINED ENV{TRAVIS})
   if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
-    cinch_add_unit(mpilegion_task
-      SOURCES
-        test/task.cc
-        test/task_driver.cc
-        mpilegion/runtime_driver.cc
-        mpilegion/init_partitions_task.cc
-        legion/dpd.cc
-      DEFINES
-        TEST_INIT=flecsi/execution/test/task_init.h
-      POLICY MPILEGION
-      LIBRARIES
-      flecsi
-      ${CINCH_RUNTIME_LIBRARIES}
-    )
+#    cinch_add_unit(mpilegion_task
+#      SOURCES
+#        test/task.cc
+#        test/task_driver.cc
+#        mpilegion/runtime_driver.cc
+#        mpilegion/init_partitions_task.cc
+#        legion/dpd.cc
+#      DEFINES
+#        TEST_INIT=flecsi/execution/test/task_init.h
+#      POLICY MPILEGION
+#      LIBRARIES
+#      flecsi
+#      ${CINCH_RUNTIME_LIBRARIES}
+#    )
 
 #  cinch_add_unit(dpd_sparse
 #    SOURCES
