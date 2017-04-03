@@ -24,25 +24,14 @@
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
-#include "flecsi/data/accessor.h"
-#include "flecsi/data/common/data_types.h"
 #include "flecsi/data/data_client.h"
 #include "flecsi/data/data_handle.h"
-#include "flecsi/data/legion/data_policy.h"
-#include "flecsi/execution/context.h"
-#include "flecsi/execution/legion/helper.h"
-#include "flecsi/execution/task_ids.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/index_space.h"
 
-// FIXME: Change to clog
-#define np(X)                                                            \
- std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
-           << ": " << #X << " = " << (X) << std::endl
-
 ///
 // \file legion/dense.h
-// \authors bergen, nickm
+// \authors bergen
 // \date Initial file creation: Apr 7, 2016
 ///
 
@@ -53,17 +42,6 @@ namespace legion {
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Helper type definitions.
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
-
-//----------------------------------------------------------------------------//
-// Dense handle.
-//----------------------------------------------------------------------------//
-
-template<typename T, size_t EP, size_t SP, size_t GP>
-struct dense_handle_t :
-  public data_handle_t<T, EP, SP, GP>
-{
-  using type = T;
-}; // struct dense_handle_t
 
 //----------------------------------------------------------------------------//
 // Dense accessor.
@@ -82,7 +60,7 @@ struct dense_handle_t :
 // \tparam MD The meta data type.
 ///
 template<typename T, typename MD>
-struct dense_accessor_t : public accessor__<T>
+struct dense_accessor_t
 {
   //--------------------------------------------------------------------------//
   // Type definitions.
@@ -96,125 +74,28 @@ struct dense_accessor_t : public accessor__<T>
   // Constructors.
   //--------------------------------------------------------------------------//
 
-  dense_accessor_t() = default;
+  dense_accessor_t() {}
   
   ///
   // Constructor.
   //
-  // \param label The c_str() version of the utils::const_string_t used for
+  // \param label The c_str() version of the utils:const_string_t used for
   //              this data variable's hash.
   // \param size The size of the associated index space.
   // \param data A pointer to the raw data.
   // \param meta_data A reference to the user-defined meta data.
   ///
-  dense_accessor_t(
-    const std::string & label,
-    std::vector<T>* data,
-    Legion::PhysicalRegion pr,
-    const user_meta_data_t & meta_data,
-    bitset_t & user_attributes,
-    size_t index_space)
-    : label_(label),
-    data_(data),
-    shared_data_(nullptr),
-    ghost_data_(nullptr),
-    exclusive_pr_(pr), 
-    meta_data_(&meta_data),
-    user_attributes_(&user_attributes),
-    index_space_(index_space),
-    is_(data->size()) {}
+  dense_accessor_t(const std::string & label, const size_t size,
+    T * data, const user_meta_data_t & meta_data)
+    : label_(label), size_(size), data_(data), meta_data_(meta_data),
+    is_(size) {}
 
 	///
   // Copy constructor.
 	///
-  //dense_accessor_t(const dense_accessor_t & a) = delete;
-
-  dense_accessor_t(const dense_accessor_t & a)
-  : label_(a.label_),
-    data_(a.data_),
-    shared_data_(a.shared_data_),
-    ghost_data_(a.ghost_data_),
-    exclusive_priv_(a.exclusive_priv_),
-    shared_priv_(a.shared_priv_),
-    ghost_priv_(a.ghost_priv_),
-    exclusive_pr_(a.exclusive_pr_),
-    shared_pr_(a.shared_pr_),
-    ghost_pr_(a.ghost_pr_),
-    meta_data_(a.meta_data_),
-    user_attributes_(a.user_attributes_),
-    index_space_(a.index_space_),
-    is_(a.is_),
-    context_(a.context_),
-    runtime_(a.runtime_),
-    owned_(false){}
-
-  dense_accessor_t(const data_handle_t<void, 0, 0, 0>& h)
-  : data_(static_cast<std::vector<T>*>(h.exclusive_data)),
-  shared_data_(static_cast<std::vector<T>*>(h.shared_data)),
-  ghost_data_(static_cast<std::vector<T>*>(h.ghost_data)),
-  exclusive_priv_(h.exclusive_priv),
-  shared_priv_(h.shared_priv),
-  ghost_priv_(h.ghost_priv),
-  exclusive_pr_(h.exclusive_pr),
-  shared_pr_(h.shared_pr),
-  ghost_pr_(h.ghost_pr),
-  context_(h.context),
-  runtime_(h.runtime){}
-
-  ~dense_accessor_t(){
-    if(!owned_){
-      return;
-    }
-
-    flecsi::execution::field_ids_t & fid_t = 
-      flecsi::execution::field_ids_t::instance();
-
-    if(data_){
-      if(exclusive_priv_ > size_t(privilege::ro)){
-        Legion::LogicalRegion lr = exclusive_pr_.get_logical_region();
-        Legion::IndexSpace is = lr.get_index_space();
-
-        auto ac = 
-          exclusive_pr_.get_field_accessor(fid_t.fid_value).typeify<T>();
-        
-        LegionRuntime::HighLevel::IndexIterator itr(runtime_, context_, is);
-        
-        size_t i = 0;
-        while(itr.has_next()){
-          ac.write(itr.next(), (*data_)[i++]);
-        }
-      }
-
-      runtime_->unmap_region(context_, exclusive_pr_);
-
-      delete data_;
-    }
-
-    if(shared_data_){
-      if(shared_priv_ > size_t(privilege::ro)){
-        Legion::LogicalRegion lr = shared_pr_.get_logical_region();
-        Legion::IndexSpace is = lr.get_index_space();
-
-        auto ac = 
-          shared_pr_.get_field_accessor(fid_t.fid_value).typeify<T>();
-        
-        LegionRuntime::HighLevel::IndexIterator itr(runtime_, context_, is);
-        
-        size_t i = 0;
-        while(itr.has_next()){
-          ac.write(itr.next(), (*shared_data_)[i++]);
-        }
-      }
-
-      runtime_->unmap_region(context_, shared_pr_);
-      delete shared_data_;
-    }
-
-    if(ghost_data_){
-      runtime_->unmap_region(context_, ghost_pr_);
-      delete ghost_data_;
-    }
-  }
+	dense_accessor_t(const dense_accessor_t & a)
+		: label_(a.label_), size_(a.size_), data_(a.data_),
+			meta_data_(a.meta_data_), is_(a.is_) {}
 
   //--------------------------------------------------------------------------//
   // Member data interface.
@@ -237,29 +118,8 @@ struct dense_accessor_t : public accessor__<T>
   size_t
   size() const
   {
-    return data_->size();
+    return size_;
   } // size
-
-  size_t
-  shared_size() const
-  {
-    return shared_data_->size();
-  } // size
-
-  size_t
-  ghost_size() const
-  {
-    return ghost_data_->size();
-  } // size
-
-  ///
-  ///
-  ///
-  size_t
-  index_space() const
-  {
-    return index_space_;
-  } // index_space
 
 	///
   // \brief Return the user meta data for this data variable.
@@ -269,21 +129,6 @@ struct dense_accessor_t : public accessor__<T>
   {
     return meta_data_;
   } // meta_data
-
-  ///
-  ///
-  ///
-  bitset_t &
-  attributes()
-  {
-    return *user_attributes_;
-  } // attributes
-
-  const bitset_t &
-  attributes() const
-  {
-    return *user_attributes_;
-  } // attributes
 
   //--------------------------------------------------------------------------//
   // Iterator interface.
@@ -295,7 +140,6 @@ struct dense_accessor_t : public accessor__<T>
   iterator_t
   begin()
   {
-    return {is_, 0};
   } // begin
 
   ///
@@ -304,30 +148,12 @@ struct dense_accessor_t : public accessor__<T>
   iterator_t
   end()
   {
-    return {is_, data_->size()};
   } // end
 
   //--------------------------------------------------------------------------//
   // Operators.
   //--------------------------------------------------------------------------//
 
-  /// \brief copy operator.
-  /// \param [in] a  The accessor to copy.
-  /// \return A reference to the new copy.
-  dense_accessor_t & operator=(const dense_accessor_t & a)
-  {
-    label_ = a.label_;
-    data_ = a.data_;
-    exclusive_pr_ = a.exclusive_pr_;
-    shared_pr_ = a.shared_pr_;
-    ghost_pr_ = a.ghost_pr_;
-    meta_data_ = a.meta_data_;
-    user_attributes_ = a.user_attributes_;
-    index_space_ = a.index_space_;
-    is_ = a.is_;
-    return *this;
-  } // operator =
-
 	///
   // \brief Provide logical array-based access to the data for this
   //        data variable.  This is the const operator version.
@@ -375,9 +201,8 @@ struct dense_accessor_t : public accessor__<T>
     size_t index
   ) const
   {
-    assert(data_ && "data has not been mapped");
-    assert(index < data_->size() && "index out of range");
-    return (*data_)[index];
+    assert(index < size_ && "index out of range");
+    return data_[index];
   } // operator []
 
 	///
@@ -391,57 +216,9 @@ struct dense_accessor_t : public accessor__<T>
     size_t index
   )
   {
-    assert(data_ && "data has not been mapped");
-    assert(index < data_->size() && "index out of range");
-    return (*data_)[index];
+    assert(index < size_ && "index out of range");
+    return data_[index];
   } // operator []
-
-  ///
-  /// \brief Provide logical array-based access to the data for this
-  ///        data variable.  This is the const operator version.
-  ///
-  /// \param index The index of the data variable to return.
-  ///
-  T &
-  operator () (
-    size_t index
-  )
-  {
-    assert(data_ && "data has not been mapped");
-    assert(index < data_->size() && "index out of range");
-
-    //return data_[index];
-  } // operator []
-
-  const T &
-  ghost (
-    size_t index
-  ) const
-  {
-    assert(ghost_data_ && "data has not been mapped");
-    assert(index < ghost_data_->size() && "index out of range");
-    return (*ghost_data_)[index];
-  }
-
-  const T &
-  shared (
-    size_t index
-  ) const
-  {
-    assert(shared_data_ && "data has not been mapped");
-    assert(index < shared_data_->size() && "index out of range");
-    return (*shared_data_)[index];
-  }
-
-  T &
-  shared (
-    size_t index
-  )
-  {
-    assert(shared_data_ && "data has not been mapped");
-    assert(index < shared_data_->size() && "index out of range");
-    return (*shared_data_)[index];
-  }
 
 	///
   // \brief Test to see if this accessor is empty
@@ -456,23 +233,22 @@ struct dense_accessor_t : public accessor__<T>
 private:
 
   std::string label_ = "";
-  const user_meta_data_t * meta_data_ = nullptr;
-  bitset_t * user_attributes_ = nullptr;
+  size_t size_ = 0;
+  T * data_ = nullptr;
+  const user_meta_data_t & meta_data_ = {};
   utils::index_space_t is_;
-  size_t index_space_ = 0;
-  std::vector<T>* data_ = nullptr;
-  std::vector<T>* shared_data_ = nullptr;
-  std::vector<T>* ghost_data_ = nullptr;
-  Legion::PhysicalRegion exclusive_pr_;
-  Legion::PhysicalRegion shared_pr_;
-  Legion::PhysicalRegion ghost_pr_;
-  size_t exclusive_priv_;
-  size_t shared_priv_;
-  size_t ghost_priv_;
-  Legion::Context context_;
-  Legion::Runtime* runtime_;
-  bool owned_ = true;
+
 }; // struct dense_accessor_t
+
+//----------------------------------------------------------------------------//
+// Dense handle.
+//----------------------------------------------------------------------------//
+
+template<typename T>
+struct dense_handle_t : public data_handle_t
+{
+  using type = T;
+}; // struct dense_handle_t
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Main type definition.
@@ -498,10 +274,8 @@ struct storage_type_t<dense, DS, MD>
   template<typename T>
   using accessor_t = dense_accessor_t<T, MD>;
 
-  template<typename T, size_t EP, size_t SP, size_t GP>
-  using handle_t = dense_handle_t<T, EP, SP, GP>;
-
-  using st_t = storage_type_t<dense, DS, MD>;
+  template<typename T>
+  using handle_t = dense_handle_t<T>;
 
   //--------------------------------------------------------------------------//
   // Data registration.
@@ -525,7 +299,7 @@ struct storage_type_t<dense, DS, MD>
     typename ... Args
   >
   static
-  handle_t<T, 0, 0, 0>
+  handle_t<T>
   register_data(
     const data_client_t & data_client,
     data_store_t & data_store,
@@ -535,237 +309,13 @@ struct storage_type_t<dense, DS, MD>
     Args && ... args
   )
   {
-
-    size_t h = key.hash()/* ^ data_client.runtime_id()*/;
-    
-    // Runtime assertion that this key is unique
-    assert(data_store[NS].find(h) == data_store[NS].end() &&
-      "key already exists");
-
-    //------------------------------------------------------------------------//
-    // Call the user meta data initialization method passing variadic
-    // user arguments
-    //------------------------------------------------------------------------//
-
-    data_store[NS][h].user_data.initialize(std::forward<Args>(args) ...);
-
-    //------------------------------------------------------------------------//
-    // Set the data label
-    //------------------------------------------------------------------------//
-    
-    data_store[NS][h].label = key.c_str();
-
-    //------------------------------------------------------------------------//
-    // Set the data size by calling the data clients indeces method.
-    // This allows the user to interpret the index space argument
-    // in whatever way they want.
-    //------------------------------------------------------------------------//
-    
-    size_t size = data_client.indices(index_space);
-
-    data_store[NS][h].size = size;
-
-    //------------------------------------------------------------------------//
-    // Store the index space.
-    //------------------------------------------------------------------------//
-
-    data_store[NS][h].index_space = index_space;
-
-    //------------------------------------------------------------------------//
-    // Store the data type size information.
-    //------------------------------------------------------------------------//
-
-    size_t type_size = sizeof(T);
-
-    data_store[NS][h].type_size = type_size;
-
-    //------------------------------------------------------------------------//
-    // This allows us to set the runtime-type-information, which requires
-    // a const reference.
-    //------------------------------------------------------------------------//
-
-    data_store[NS][h].rtti.reset(
-      new typename meta_data_t::type_info_t(typeid(T)));
-
-    //------------------------------------------------------------------------//
-    // Store the number of versions.
-    //------------------------------------------------------------------------//
-
-    data_store[NS][h].versions = versions;
-
-    //------------------------------------------------------------------------//
-    // Allocate data for each version.
-    //------------------------------------------------------------------------//
-
-    flecsi::execution::context_t & context =
-      flecsi::execution::context_t::instance();
-
-    // FIXME
-    // Why do we need this?
-    // What is specific to the specialization task here?
-    size_t task_key = utils::const_string_t{"specialization_driver"}.hash();
-    auto runtime = context.runtime(task_key);
-    auto ctx = context.context(task_key);
-
-    execution::legion_helper helper(runtime, ctx);
-
-    // FIXME
-    // This is broken
-    execution::field_ids_t & fid_t = execution::field_ids_t::instance(); 
-
-    for(size_t i=0; i<versions; ++i) {
-      data_store[NS][h].attributes[i].reset();
-
-      legion_data_policy_t::partitioned_index_space & isp = 
-        data_client.get_index_space(index_space);
-
-      auto data = data_store[NS][h].create_legion_data();
-
-      data.is = isp.entities_lr.get_index_space();
-      
-      data.fs = helper.create_field_space();
-      LegionRuntime::HighLevel::FieldAllocator a =
-          helper.create_field_allocator(data.fs);
-      a.allocate_field(type_size, fid_t.fid_value);
-      data.lr = helper.create_logical_region(data.is, data.fs);
-
-      data.exclusive_ip = isp.exclusive_ip;
-      data.shared_ip = isp.shared_ip;
-      data.ghost_ip = isp.ghost_ip;
-
-      data_store[NS][h].put_legion_data(i, data);
-
-    } // for
-
-    //------------------------------------------------------------------------//
-    // num_entries is unused for this storage type.
-    //------------------------------------------------------------------------//
-
-    data_store[NS][h].num_entries = 0;
-
     return {};
   } // register_data
-
-	///
-  /// \tparam T Data type to register.
-  /// \tparam NS Namespace
-  /// \tparam Args Variadic arguments that are passed to
-  ///              metadata initialization.
-  ///
-  /// \param data_client Base class reference to client.
-  /// \param data_store A reference for accessing the low-level data.
-  /// \param key A const string instance containing the variable name.
-  /// \param versions The number of variable versions for this datum.
-  /// \param indices The number of indices in the index space.
-  ///
-  template<
-    typename T,
-    size_t NS,
-    typename ... Args
-  >
-  static
-  bool
-  new_register_data(
-    data_store_t & data_store,
-    const utils::const_string_t & key,
-    size_t versions,
-    size_t index_space,
-    Args && ... args
-  )
-  {
-		return true;
-  } // new_register_data
 
   //--------------------------------------------------------------------------//
   // Data accessors.
   //--------------------------------------------------------------------------//
 
-  /// \brief Return a dense_accessor_t.
-  ///
-  /// \param [in] meta_data  The meta data to use to build the accessor.
-  /// \param [in] version   The version to select.
-  ///
-  /// \remark In this version, the search for meta data was already done.
-  template< typename T >
-  static
-  accessor_t<T>
-  get_accessor(
-    meta_data_t & meta_data,
-    size_t version
-  )
-  {
-
-    // check that the requested version exists
-    if ( version >= meta_data.versions ) {
-      std::cerr << "version out of range" << std::endl;
-      std::abort();
-    }
-
-    flecsi::execution::context_t & context =
-      flecsi::execution::context_t::instance();
-
-    size_t task_key = utils::const_string_t{"specialization_driver"}.hash();
-    auto runtime = context.runtime(task_key);
-    auto ctx = context.context(task_key);
-
-    execution::legion_helper helper(runtime, ctx);
-
-    auto& data = meta_data.get_legion_data(version);
-
-    execution::field_ids_t & fid_t = execution::field_ids_t::instance(); 
-
-    LegionRuntime::HighLevel::RegionRequirement rr(data.lr, READ_WRITE, EXCLUSIVE, data.lr);
-    rr.add_field(fid_t.fid_value);
-    LegionRuntime::HighLevel::InlineLauncher il(rr);
-
-    auto pr = runtime->map_region(ctx, il);
-    pr.wait_until_valid();
-
-    auto ac = 
-      pr.get_field_accessor(fid_t.fid_value).typeify<T>();
-    
-    LegionRuntime::HighLevel::IndexIterator itr(runtime, ctx,
-      data.lr.get_index_space());
-    
-    auto values = new std::vector<T>; 
-
-    while(itr.has_next()){
-      values->push_back(ac.read(itr.next()));
-    }
-
-    // construct an accessor from the meta data
-    return { meta_data.label, values, pr,
-      meta_data.user_data, meta_data.attributes[version],
-      meta_data.index_space };
-  }
-
-  /// \brief Return a dense_accessor_t.
-  ///
-  /// \param [in] data_store   The data store to search.
-  /// \param [in] hash   The hash to search for.
-  /// \param [in] version   The version to select.
-  ///
-  /// \remark In this version, the search for meta data has not been done,
-  ///   but the key has already been hashed.
-  template<
-    typename T,
-    size_t NS
-  >
-  static
-  accessor_t<T>
-  get_accessor(
-    data_store_t & data_store,
-    const utils::const_string_t::hash_type_t & hash,
-    size_t version
-  )
-  {
-    auto search = data_store[NS].find(hash);
-
-    assert(search != data_store[NS].end() && "invalid key");
-    
-    return get_accessor<T>( search->second, version );
-  } // get_accessor
-
   ///
   //
   ///
@@ -782,8 +332,7 @@ struct storage_type_t<dense, DS, MD>
     size_t version
   )
   {
-    auto hash = key.hash()/* ^ data_client.runtime_id()*/;
-    return get_accessor<T,NS>(data_store, hash, version);
+    return {};
   } // get_accessor
 
   ///
@@ -792,213 +341,17 @@ struct storage_type_t<dense, DS, MD>
   template<
     typename T,
     size_t NS,
-    typename Predicate
+    typename P
   >
   static
-  decltype(auto)
+  std::vector<accessor_t<T>>
   get_accessors(
     const data_client_t & data_client,
-    data_store_t & data_store,
-    size_t version,
-    Predicate && predicate,
-    bool sorted
+    P && preficate
   )
   {
-
-    std::vector< accessor_t<T> > as;
-
-    // the runtime id
-    auto runtime_id = data_client.runtime_id();
-
-    // loop over each key pair
-    for (auto & entry_pair : data_store[NS]) {
-      // get the meta data key and label
-      const auto & meta_data_key = entry_pair.first;
-      auto & meta_data = entry_pair.second;
-      // now build the hash for this label
-      const auto & label = meta_data.label;
-      auto key_hash = 
-        utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
-      auto hash = key_hash ^ runtime_id;
-      // filter out the accessors for different data_clients
-      if ( meta_data_key != hash ) continue;
-      // if the reconstructed hash matches the meta data key,
-      // then we may want this one
-      auto a = get_accessor<T>( meta_data, version );
-      if ( a )
-        if (meta_data.rtti->type_info == typeid(T) && predicate(a))
-          as.emplace_back( std::move(a) );
-    } // for
-
-    // if sorting is requested
-    if (sorted) 
-      std::sort( 
-        as.begin(), as.end(), 
-        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
-      );
-
-    return as;
-  }
-
-  template<
-    typename T,
-    typename Predicate
-  >
-  static
-  decltype(auto)
-  get_accessors(
-    const data_client_t & data_client,
-    data_store_t & data_store,
-    size_t version,
-    Predicate && predicate,
-    bool sorted
-  )
-  {
-    std::vector< accessor_t<T> > as;
-
-    // the runtime id
-    auto runtime_id = data_client.runtime_id();
-
-    // check each namespace
-    for (auto & namespace_map : data_store) {
-
-      // the namespace data
-      auto & namespace_key = namespace_map.first;
-      auto & namespace_data = namespace_map.second;
-      
-      // loop over each key pair
-      for (auto & entry_pair : namespace_data) {
-        // get the meta data key and label
-        const auto & meta_data_key = entry_pair.first;
-        auto & meta_data = entry_pair.second;
-        // now build the hash for this label
-        const auto & label = meta_data.label;
-        auto key_hash = 
-          utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
-        auto hash = key_hash ^ runtime_id;
-        // filter out the accessors for different data_clients
-        if ( meta_data_key != hash ) continue;
-        // if the reconstructed hash matches the meta data key,
-        // then we may want this one
-        auto a = get_accessor<T>( meta_data, version );
-        if ( a )
-          if (meta_data.rtti->type_info == typeid(T) && predicate(a))
-            as.emplace_back( std::move(a) );
-      } // for each key pair
-    } // for each namespace
-
-    // if sorting is requested
-    if (sorted) 
-      std::sort( 
-        as.begin(), as.end(), 
-        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
-      );
-
-    return as;
-  }
-
-  template<
-    typename T,
-    size_t NS
-  >
-  static
-  decltype(auto)
-  get_accessors(
-    const data_client_t & data_client,
-    data_store_t & data_store,
-    size_t version,
-    bool sorted
-  )
-  {
-    std::vector< accessor_t<T> > as;
-
-    // the runtime id
-    auto runtime_id = data_client.runtime_id();
-
-    // loop over each key pair
-    for (auto & entry_pair : data_store[NS]) {
-      // get the meta data key and label
-      const auto & meta_data_key = entry_pair.first;
-      auto & meta_data = entry_pair.second;
-      // now build the hash for this label
-      const auto & label = meta_data.label;
-      auto key_hash = 
-        utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
-      auto hash = key_hash ^ runtime_id;
-      // filter out the accessors for different data_clients
-      if ( meta_data_key != hash ) continue;
-      // if the reconstructed hash matches the meta data key,
-      // then we may want this one
-      auto a = get_accessor<T>( meta_data, version );
-      if ( a )
-        if (meta_data.rtti->type_info == typeid(T))
-          as.emplace_back( std::move(a) );
-    } // for
-
-    // if sorting is requested
-    if (sorted) 
-      std::sort( 
-        as.begin(), as.end(), 
-        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
-      );
-
-    return as;
-  }
-
-  template<
-    typename T
-  >
-  static
-  decltype(auto)
-  get_accessors(
-    const data_client_t & data_client,
-    data_store_t & data_store,
-    size_t version,
-    bool sorted
-  )
-  {
-    std::vector< accessor_t<T> > as;
-
-    // the runtime id
-    auto runtime_id = data_client.runtime_id();
-
-    // check each namespace
-    for (auto & namespace_map : data_store) {
-
-      // the namespace data
-      auto & namespace_key = namespace_map.first;
-      auto & namespace_data = namespace_map.second;
-      
-      // loop over each key pair
-      for (auto & entry_pair : namespace_data) {
-        // get the meta data key and label
-        const auto & meta_data_key = entry_pair.first;
-        auto & meta_data = entry_pair.second;
-        // now build the hash for this label
-        const auto & label = meta_data.label;
-        auto key_hash = 
-          utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
-        auto hash = key_hash ^ runtime_id;
-        // filter out the accessors for different data_clients
-        if ( meta_data_key != hash ) continue;
-        // if the reconstructed hash matches the meta data key,
-        // then we may want this one
-        auto a = get_accessor<T>( meta_data, version );
-        if ( a )
-          if (meta_data.rtti->type_info == typeid(T))
-            as.emplace_back( std::move(a) );
-      } // for each key pair
-    } // for each namespace
-
-    // if sorting is requested
-    if (sorted) 
-      std::sort( 
-        as.begin(), as.end(), 
-        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
-      );
-
-    return as;
-  }
+    return {};
+  } // get_accessors
 
   //--------------------------------------------------------------------------//
   // Data handles.
@@ -1009,13 +362,10 @@ struct storage_type_t<dense, DS, MD>
   ///
   template<
     typename T,
-    size_t NS,
-    size_t EP,
-    size_t SP,
-    size_t GP
+    size_t NS
   >
   static
-  handle_t<T, EP, SP, GP>
+  handle_t<T>
   get_handle(
     const data_client_t & data_client,
     data_store_t & data_store,
@@ -1023,102 +373,8 @@ struct storage_type_t<dense, DS, MD>
     size_t version
   )
   {
-    using namespace execution;
-
-    auto hash = key.hash()/* ^ data_client.runtime_id()*/;
-    auto itr = data_store[NS].find(hash);
-    assert(itr != data_store[NS].end() && "invalid key");
-    auto& md = itr->second;
-
-    auto& data = md.get_legion_data(version);
-
-    handle_t<T, EP, SP, GP> h;
-    h.lr = data.lr;
-    h.exclusive_ip = data.exclusive_ip;
-    h.shared_ip = data.shared_ip;
-    h.ghost_ip = data.ghost_ip;
-    h.exclusive_lr = data.exclusive_lr;
-    h.shared_lr = data.shared_lr;
-    h.ghost_lr = data.ghost_lr;
-    h.pbarrier_as_master_ptr = data.pbarrier_as_master_ptr;
-    h.masters_pbarriers_ptrs = data.masters_pbarriers_ptrs;
-    h.pregions_neighbors_shared = data.pregions_neighbors_shared;
-    h.lregion_ghost = data.lregion_ghost;
-    h.ghost_copy_task_id = data.ghost_copy_task_id;
-    h.ghost_fid = data.ghost_fid;
-    h.is_readable = data.is_readable;
-
-    if (md.type_size == sizeof(size_t))
-      h.ghost_copy_task_id = flecsi::execution::task_ids_t::instance().size_t_copy_task_id;
-
-    return h;
+    return {};
   } // get_handle
-
-  static void get_all_handles(const data_client_t & data_client,
-                       data_store_t & data_store,
-                       std::vector<data_handle_t<void, 0, 0, 0>>& handles,
-                       std::vector<size_t>& hashes,
-                       std::vector<size_t>& namespaces,
-                       std::vector<size_t>& versions){
-    
-    for(auto& itr : data_store){
-      for(auto& itr2 : itr.second){
-
-        auto& md = itr2.second;
-
-        for(auto& itr3 : md.data){
-          hashes.emplace_back(itr.first);
-          namespaces.emplace_back(itr2.first);
-          versions.emplace_back(itr3.first);
-
-          auto& ld = itr3.second;
-          data_handle_t<void, 0, 0, 0> h;
-          h.lr = ld.lr;
-          h.exclusive_ip = ld.exclusive_ip;
-          h.shared_ip = ld.shared_ip;
-          h.ghost_ip = ld.ghost_ip;
-          if (md.type_size == sizeof(size_t))
-            h.ghost_copy_task_id = flecsi::execution::task_ids_t::instance().size_t_copy_task_id;
-
-          handles.emplace_back(std::move(h));
-        }
-      }
-    }
-  }
-
-  static
-  void
-  put_all_handles(
-     const data_client_t & data_client,
-     data_store_t & data_store,
-     size_t num_handles,
-     data_handle_t<void, 0, 0, 0>* handles,
-     size_t* hashes,
-     size_t* namespaces,
-     size_t* versions
-    )
-  {
-    for(size_t i = 0; i < num_handles; ++i){
-      auto& ld = data_store[hashes[i]][namespaces[i]].data[versions[i]];
-      auto& hi = handles[i];
-      ld.exclusive_ip = hi.exclusive_ip;
-      ld.shared_ip = hi.shared_ip;
-      ld.ghost_ip = hi.ghost_ip;
-      ld.exclusive_lr = hi.exclusive_lr;
-      ld.shared_lr = hi.shared_lr;
-      ld.ghost_lr = hi.ghost_lr;
-      
-      ld.pbarrier_as_master_ptr = hi.pbarrier_as_master_ptr;
-      
-      ld.masters_pbarriers_ptrs = hi.masters_pbarriers_ptrs;
-      
-      ld.pregions_neighbors_shared = hi.pregions_neighbors_shared;
-      ld.lregion_ghost = hi.lregion_ghost;
-      ld.ghost_copy_task_id = hi.ghost_copy_task_id;
-      ld.ghost_fid = hi.ghost_fid;
-      ld.is_readable = hi.is_readable;
-    }
-  }
 
 }; // struct storage_type_t
 

@@ -110,11 +110,10 @@
 ///                  figure out whether it get added to the returned list.
 ///
 /// \remark  This version searches all namespaces.
-#define flecsi_get_accessors_all(client, data_type, storage_type,              \
-  version, ...)                                                                \
-                                                                               \
-  flecsi::data::storage_t::instance().get_accessors<                           \
-    flecsi::data::storage_type, data_type>( client, version, ## __VA_ARGS__ )
+#define get_accessors_all(                                                     \
+    client, data_type, storage_type, version, ...)                             \
+  flecsi::data::storage_t::instance().get_accessors<flecsi::data::storage_type,\
+    data_type>( client, version, ## __VA_ARGS__ )
 
 
 /// \brief Select state variables at a given attachment site.
@@ -190,14 +189,10 @@
 ///
 ///
 #define flecsi_get_handle(client, nspace, name, data_type, storage_type,       \
-  version, exclusive_privileges, shared_privileges, ghost_privileges)          \
-                                                                               \
+  version)                                                                     \
   flecsi::data::storage_t::instance().get_handle<flecsi::data::storage_type,   \
     data_type,                                                                 \
-    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
-    size_t(flecsi::data::privilege::exclusive_privileges),                     \
-    size_t(flecsi::data::privilege::shared_privileges),                        \
-    size_t(flecsi::data::ghost_privilege::ghost_privileges)>(                  \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>(       \
       client, EXPAND_AND_STRINGIFY(name), version)
 
 ///
