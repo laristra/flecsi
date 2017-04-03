@@ -26,12 +26,13 @@ void legion_runtime_driver(const LegionRuntime::HighLevel::Task * task,
       LegionRuntime::HighLevel::HighLevelRuntime::get_input_args();
 
 #if defined FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
+
     // Set the current task context to the driver
 		context_t::instance().push_state(
       utils::const_string_t{"specialization_driver"}.hash(),
       ctx, runtime, task, regions);
 
-    // run default or user-defined specialization driver 
+    // run user-defined specialization driver 
     specialization_driver(args.argc, args.argv);
 
     // Set the current task context to the driver

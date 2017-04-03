@@ -19,9 +19,15 @@
 ///
 
 ///
-/// Convenience macro to create a task key from Legion-like interface
+/// Convenience macro to create a task key from Legion task information.
 ///
-
+/// \param task The Legion task to register.
+/// \param processor The processor type \ref processor_t.
+/// \param single A boolean indicating whether this task can be run as a
+///               single task.
+/// \param index A boolean indicating whether this task can be run as an
+///              index space launch.
+///
 #define flecsi_make_legion_task_key(task, processor, single, index)            \
   task_hash_t::make_key(reinterpret_cast<uintptr_t>(&task),                    \
     processor, flecsi_bools_to_launch(single, index));
@@ -35,6 +41,7 @@
   namespace execution {                                                        \
   namespace legion {                                                           \
                                                                                \
+  /* Create a callback wrapper type for each invocation of this macro */       \
   template<                                                                    \
     processor_t P,                                                             \
     bool S,                                                                    \
@@ -47,6 +54,7 @@
     using lr_proc = LegionRuntime::HighLevel::Processor;                       \
     using task_id_t = LegionRuntime::HighLevel::TaskID;                        \
                                                                                \
+    /* Callback method to register a legion task from the runtime context. */  \
     static                                                                     \
     void                                                                       \
     register_task(                                                             \

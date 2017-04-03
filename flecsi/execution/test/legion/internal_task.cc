@@ -14,6 +14,7 @@
 namespace flecsi {
 namespace execution {
 
+// Define a Legion task to register.
 int internal_task_example_1(const LegionRuntime::HighLevel::Task * task,
 	const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
 	LegionRuntime::HighLevel::Context context,
@@ -22,6 +23,7 @@ int internal_task_example_1(const LegionRuntime::HighLevel::Task * task,
 
 flecsi_register_legion_task(internal_task_example_1, loc, true, false);
 
+// Define a Legion task to register.
 int internal_task_example_2(const LegionRuntime::HighLevel::Task * task,
 	const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
 	LegionRuntime::HighLevel::Context context,
