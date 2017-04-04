@@ -111,6 +111,14 @@ struct legion_storage_policy_t {
 
     return false;
   } // register_data
+
+  field_id_t
+  field_id(
+    data_key key
+  )
+  {
+    return data_registry_[key].first;
+  }
 #endif
 
 protected:
