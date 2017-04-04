@@ -109,22 +109,32 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   ///
   /// \return Returns a boolean with success or failure of registration.
   ///
+
   template<
     typename DC,
     size_t ST,
     typename T,
     size_t NS,
-    typename ... As
+    size_t N,
+    size_t V
+  >
+  void register_data(size_t fid) {
+      st_t<ST>::template register_data<T, NS>(DC, sp_t::data_store_, N, V);
+  } // register_data
+
+  template<
+    typename DC,
+    size_t ST,
+    typename T,
+    size_t NS,
+    size_t N,
+    size_t V
   >
   bool
-  new_register_data(
-    const utils::const_string_t & key,
-    size_t versions,
-    As && ... args
-  )
+  new_register_data()
   {
-    return st_t<ST>::template new_register_data<DC, T, NS>(key, versions,
-      std::forward<As>(args) ...);
+    return sp_t::data_store_.instance().register_data(
+      data_registration_wrapper_<DC, ST, T, NS, N, V>::register_data);
   } // new_register_data
 
   //--------------------------------------------------------------------------//
