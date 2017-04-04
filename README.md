@@ -1,5 +1,7 @@
 ![logo](doc/flecsi.png)
 [![Build Status](https://travis-ci.org/laristra/flecsi.svg?branch=master)](https://travis-ci.org/laristra/flecsi)
+[![codecov.io](https://codecov.io/github/laristra/flecsi/coverage.svg?branch=master)](https://codecov.io/github/laristra/flecsi?branch=master)
+[![Quality Gate](https://sonarqube.com/api/badges/gate?key=flecsi%3A%2Fmaster)](https://sonarqube.com/code?id=flecsi%3A%2Fmaster)
 
 # FleCSI Project
 
