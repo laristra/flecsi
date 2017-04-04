@@ -90,40 +90,45 @@ struct dense_accessor_t
     : label_(label), size_(size), data_(data), meta_data_(meta_data),
     is_(size) {}
 
-	///
+  ///
   // Copy constructor.
-	///
-	dense_accessor_t(const dense_accessor_t & a)
-		: label_(a.label_), size_(a.size_), data_(a.data_),
-			meta_data_(a.meta_data_), is_(a.is_) {}
+  ///
+  dense_accessor_t(const dense_accessor_t & a)
+    :
+      label_(a.label_),
+      size_(a.size_),
+      data_(a.data_),
+      meta_data_(a.meta_data_),
+      is_(a.is_)
+    {}
 
   //--------------------------------------------------------------------------//
   // Member data interface.
   //--------------------------------------------------------------------------//
 
-	///
+  ///
   // \brief Return a std::string containing the label of the data variable
   //        reference by this accessor.
-	///
+  ///
   const std::string &
   label() const
   {
     return label_;
   } // label
 
-	///
+  ///
   // \brief Return the index space size of the data variable
   //        referenced by this accessor.
-	///
+  ///
   size_t
   size() const
   {
     return size_;
   } // size
 
-	///
+  ///
   // \brief Return the user meta data for this data variable.
-	///
+  ///
   const user_meta_data_t &
   meta_data() const
   {
@@ -154,7 +159,7 @@ struct dense_accessor_t
   // Operators.
   //--------------------------------------------------------------------------//
 
-	///
+  ///
   // \brief Provide logical array-based access to the data for this
   //        data variable.  This is the const operator version.
   //
@@ -162,7 +167,7 @@ struct dense_accessor_t
   //
   // This version of the operator is provided to support use with
   // \e flecsi mesh entity types \ref mesh_entity_base_t.
-	///
+  ///
   template<typename E>
   const T &
   operator [] (
@@ -172,7 +177,7 @@ struct dense_accessor_t
     return this->operator[](e->template id<0>());
   } // operator []
 
-	///
+  ///
   // \brief Provide logical array-based access to the data for this
   //        data variable.  This is the const operator version.
   //
@@ -180,7 +185,7 @@ struct dense_accessor_t
   //
   // This version of the operator is provided to support use with
   // \e flecsi mesh entity types \ref mesh_entity_base_t.
-	///
+  ///
   template<typename E>
   T &
   operator [] (
@@ -190,12 +195,12 @@ struct dense_accessor_t
     return this->operator[](e->template id<0>());
   } // operator []
 
-	///
+  ///
   // \brief Provide logical array-based access to the data for this
   //        data variable.  This is the const operator version.
   //
   // \param index The index of the data variable to return.
-	///
+  ///
   const T &
   operator [] (
     size_t index
@@ -205,12 +210,12 @@ struct dense_accessor_t
     return data_[index];
   } // operator []
 
-	///
+  ///
   // \brief Provide logical array-based access to the data for this
   //        data variable.  This is the const operator version.
   //
   // \param index The index of the data variable to return.
-	///
+  ///
   T &
   operator [] (
     size_t index
@@ -220,11 +225,11 @@ struct dense_accessor_t
     return data_[index];
   } // operator []
 
-	///
+  ///
   // \brief Test to see if this accessor is empty
   //
   // \return true if registered.
-	///
+  ///
   operator bool() const
   {
     return data_ != nullptr;
@@ -244,8 +249,13 @@ private:
 // Dense handle.
 //----------------------------------------------------------------------------//
 
-template<typename T>
-struct dense_handle_t : public data_handle_t
+template<
+  typename T,
+  size_t EP,
+  size_t SP,
+  size_t GP
+>
+struct dense_handle_t : public data_handle__<T, EP, SP, GP>
 {
   using type = T;
 }; // struct dense_handle_t
@@ -274,24 +284,30 @@ struct storage_type_t<dense, DS, MD>
   template<typename T>
   using accessor_t = dense_accessor_t<T, MD>;
 
-  template<typename T>
-  using handle_t = dense_handle_t<T>;
+  template<
+    typename T,
+    size_t EP,
+    size_t SP,
+    size_t GP
+  >
+  using handle_t = dense_handle_t<T, EP, SP, GP>;
 
   //--------------------------------------------------------------------------//
   // Data registration.
   //--------------------------------------------------------------------------//
 
   ///
-  // \tparam T Data type to register.
-  // \tparam NS Namespace
-  // \tparam Args Variadic arguments that are passed to
-  //              metadata initialization.
-  //
-  // \param data_client Base class reference to client.
-  // \param data_store A reference for accessing the low-level data.
-  // \param key A const string instance containing the variable name.
-  // \param versions The number of variable versions for this datum.
-  // \param indices The number of indices in the index space.
+  /// \tparam T Data type to register.
+  /// \tparam NS Namespace
+  /// \tparam Args Variadic arguments that are passed to
+  ///              metadata initialization.
+  ///
+  /// \param data_client Base class reference to client.
+  /// \param data_store A reference for accessing the low-level data.
+  /// \param key A const string instance containing the variable name.
+  /// \param versions The number of variable versions for this datum.
+  /// \param index_space The index space identifier on which the data
+  ///                    should be registered.
   ///
   template<
     typename T,
@@ -299,7 +315,7 @@ struct storage_type_t<dense, DS, MD>
     typename ... Args
   >
   static
-  handle_t<T>
+  bool
   register_data(
     const data_client_t & data_client,
     data_store_t & data_store,
@@ -309,7 +325,39 @@ struct storage_type_t<dense, DS, MD>
     Args && ... args
   )
   {
-    return {};
+  } // register_data
+
+  ///
+  /// \tparam DC Data client type.
+  /// \tparam T Data type to register.
+  /// \tparam NS Namespace
+  /// \tparam Args Variadic arguments that are passed to
+  ///              metadata initialization.
+  ///
+  /// \param data_client Base class reference to client.
+  /// \param data_store A reference for accessing the low-level data.
+  /// \param key A const string instance containing the variable name.
+  /// \param versions The number of variable versions for this datum.
+  /// \param index_space The index space identifier on which the data
+  ///                    should be registered.
+  ///
+  template<
+    typename DC,
+    typename T,
+    size_t NS,
+    typename ... Args
+  >
+  static
+  bool
+  new_register_data(
+    data_store_t & data_store,
+    const utils::const_string_t & key,
+    size_t versions,
+    size_t index_space,
+    Args && ... args
+  )
+  {
+    return true;
   } // register_data
 
   //--------------------------------------------------------------------------//
@@ -362,10 +410,13 @@ struct storage_type_t<dense, DS, MD>
   ///
   template<
     typename T,
+    size_t EP,
+    size_t SP,
+    size_t GP,
     size_t NS
   >
   static
-  handle_t<T>
+  handle_t<T, EP, SP, GP>
   get_handle(
     const data_client_t & data_client,
     data_store_t & data_store,

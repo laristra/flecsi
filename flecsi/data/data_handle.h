@@ -17,11 +17,33 @@ namespace flecsi {
 /// \struct data_handle_t data_handle.h
 /// \brief data_handle_t provides an empty type for compile-time identification
 ///                      of data handle objects.
+/// \tparam DP Data policy.
 ///
-struct data_handle_t
+template<
+  typename T,
+  size_t EP,
+  size_t SP,
+  size_t GP,
+  typename DP
+>
+struct data_handle_base__ : public DP
 {
-  virtual ~data_handle_t() {};
-}; // struct data_handle_t
+}; // struct data_handle_base_
+
+} // namespace flecsi
+
+#include "flecsi_runtime_data_handle_policy.h"
+
+namespace flecsi {
+  
+  template<
+    typename T,
+    size_t EP,
+    size_t SP,
+    size_t GP
+  >
+  using data_handle__ =
+    data_handle_base__<T, EP, SP, GP, flecsi_data_handle_policy_t>;
 
 } // namespace flecsi
 

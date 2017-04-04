@@ -15,14 +15,14 @@
 #ifndef flecsi_legion_storage_policy_h
 #define flecsi_legion_storage_policy_h
 
-#include <unordered_map>
-#include <vector>
+#include <cassert>
+#include <legion.h>
 #include <memory>
 #include <typeinfo>
-#include <cassert>
+#include <unordered_map>
+#include <vector>
 
 #include "flecsi/data/data_constants.h"
-
 #include "flecsi/data/legion/meta_data.h"
 
 // Include partial specializations
@@ -85,6 +85,33 @@ struct legion_storage_policy_t {
   {
 
   }
+
+  //--------------------------------------------------------------------------//
+  // Data registration.
+  //--------------------------------------------------------------------------//
+
+  using field_id_t = LegionRuntime::HighLevel::FieldID;
+  using register_function_t = std::function<void(size_t)>;
+  using unique_fid_t = utils::unique_id_t<field_id_t>;
+
+#if 0
+  ///
+  ///
+  ///
+  bool
+  register_data(
+    size_t key,
+    const register_function_t & f
+  )
+  {
+    if(data_registry_.find(key) == data_registry_.end()) {
+      data_registry_[key] = { unique_fid_t::instance().next(), f };
+      return true;
+    } // if
+
+    return false;
+  } // register_data
+#endif
 
 protected:
 
