@@ -154,7 +154,7 @@ cinch_add_unit(storage_type
     cinch_add_unit(mpilegion_data_handle
       SOURCES
         ../execution/test/task.cc
-        ../execution/test/task_driver.h
+        ../execution/test/task_driver.cc
         test/data-handle.h
         ../execution/mpilegion/runtime_driver.cc
         ../execution/mpilegion/copy_ghosts.cc
@@ -178,7 +178,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
     cinch_add_unit(serial_data_handle
       SOURCES
         ../execution/test/task.cc
-        ../execution/test/task_driver.h
+        ../execution/test/task_driver.cc
         ../execution/serial/runtime_driver.cc
         test/data-handle-serial.h
         data_client.cc
