@@ -56,7 +56,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   )
 
   set(execution_SOURCES
-    legion/dpd.cc
+    ../data/legion/dpd.cc
   )
 
   set(UNIT_POLICY LEGION)
@@ -75,14 +75,14 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
     mpilegion/mpi_legion_interop.h
     mpilegion/runtime_driver.h
     task_ids.h
-    mpilegion/init_partitions_task.h 
-    mpilegion/lax_wendroff_task.h 
+    mpilegion/copy_ghosts.h 
+    test/mpilegion/init_partitions_task.h 
   )
 
   set(execution_SOURCES
-    legion/dpd.cc
-    mpilegion/init_partitions_task.cc
-    mpilegion/lax_wendroff_task.cc
+    ../data/legion/dpd.cc
+    test/mpilegion/init_partitions_task.cc
+    mpilegion/copy_ghosts.cc
   )
 
   set(UNIT_POLICY MPILEGION)
@@ -168,7 +168,7 @@ if(NOT DEFINED ENV{TRAVIS})
 #        test/task_driver.cc
 #        mpilegion/runtime_driver.cc
 #        mpilegion/init_partitions_task.cc
-#        legion/dpd.cc
+#        ../data/legion/dpd.cc
 #      DEFINES
 #        TEST_INIT=flecsi/execution/test/task_init.h
 #      POLICY MPILEGION
@@ -180,7 +180,7 @@ if(NOT DEFINED ENV{TRAVIS})
 #  cinch_add_unit(dpd_sparse
 #    SOURCES
 #      test/dpd_sparse.cc
-#      legion/dpd.cc
+#      ../data/legion/dpd.cc
 #    POLICY
 #      MPILEGION
 #   THREADS 2
@@ -198,36 +198,42 @@ if(NOT DEFINED ENV{TRAVIS})
     )
 
     if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
-      cinch_add_unit(mpilegion_sprint
+      cinch_add_unit(test_parmetis_interop
         SOURCES
-         test/mpilegion/sprint_devel.cc
+         test/mpilegion/test_parmetis_interop_devel.cc
          mpilegion/runtime_driver.cc
-         test/mpilegion/sprint.cc
+         ../data/data_client.cc
+         test/mpilegion/test_parmetis_interop.h
          ${execution_SOURCES}
         INPUTS
          test/mpilegion/simple2d-16x16.msh
         DEFINES SPRINT_TEST
          FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
+         #FLECSI_DRIVER=flecsi/execution/test/test_mpi_interop_partitions.h
          TEST_INIT=flecsi/execution/test/task_init.h
         LIBRARIES ${PARTITION_LIBRARIES}
         POLICY MPILEGION_DEVEL
         THREADS 2
       )
 
-#      cinch_add_unit(mpilegion_lax_wendroff
-#        SOURCES
-#          test/sprint_devel.cc
-#          mpilegion/runtime_driver.cc
-#          ${execution_SOURCES}
-#        INPUTS
-#          test/simple2d-64x64.msh
-#        DEFINES LAX_WENDROFF_TEST
-#          FLECSI_DRIVER=flecsi/execution/test/lax_wendroff.h
-#          TEST_INIT=flecsi/execution/test/task_init.h
-#        LIBRARIES ${PARTITION_LIBRARIES}
-#        POLICY MPILEGION_DEVEL
-#        THREADS 2
-#      )
+      cinch_add_unit(test_ghost_access
+        SOURCES
+         test/mpilegion/test_parmetis_interop_devel.cc
+         mpilegion/runtime_driver.cc
+         ../data/data_client.cc
+         test/mpilegion/test_parmetis_interop.h
+         ${execution_SOURCES}
+        INPUTS
+         test/mpilegion/simple2d-16x16.msh
+        DEFINES SPRINT_TEST
+         FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
+         #FLECSI_DRIVER=flecsi/execution/test/test_ghost_access.h
+         TEST_INIT=flecsi/execution/test/task_init.h
+        LIBRARIES ${PARTITION_LIBRARIES}
+        POLICY MPILEGION_DEVEL
+        THREADS 2
+      )
+
     endif()
 
   endif()
