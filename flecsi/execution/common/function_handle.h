@@ -35,13 +35,15 @@ struct function_handle__
   using args_t = A;
 
   ///
-  /// default constructor
+  /// Constructor.
+  ///
+  /// \param key A hash key identifier for the function.
   /// 
-  constexpr function_handle__(const size_t key_)
-    : key(key_) {}
+  constexpr function_handle__(const size_t key)
+    : key_(key) {}
 
   ///
-  /// operator()
+  /// Execute the funciton.
   ///
   template< typename T >
   R
@@ -55,7 +57,19 @@ struct function_handle__
     return kr( std::forward<T>(args));
   } // operator ()
 
-  size_t key;
+  ///
+  /// Return the identifier key.
+  ///
+  size_t
+  key()
+  const
+  {
+    return key_;
+  } // key
+
+private:
+
+  size_t key_;
 
 }; // class function_handle__
 

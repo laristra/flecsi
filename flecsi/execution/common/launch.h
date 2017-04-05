@@ -18,7 +18,6 @@ namespace execution {
 /// The processor_t enum defines the different Legion task
 /// launch types that are supported by FleCSI's execution model.
 ///
-
 enum launch_t : size_t {
   single,
   index,
@@ -32,7 +31,6 @@ enum launch_t : size_t {
 /// Macro to convert boolean values for single and index into a valid
 /// launch_t at compile time.
 ///
-
 #define flecsi_bools_to_launch(S, I)                                           \
   S && I ?                                                                     \
     launch_t::any                                                              \

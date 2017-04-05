@@ -259,7 +259,7 @@ struct legion_execution_policy_t
   )
   {
     auto t = std::make_tuple(args ...);
-    return handle(context_t::instance().function(handle.key), t);
+    return handle(context_t::instance().function(handle.key()), t);
   } // execute_function
 
 }; // struct legion_execution_policy_t

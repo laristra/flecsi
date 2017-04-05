@@ -60,8 +60,7 @@ template<
   size_t SP,
   size_t GP
 >
-struct dense_handle_t : 
-  public data_handle_t<T, EP, SP, GP>
+struct dense_handle_t : public data_handle__<T, EP, SP, GP>
 {
   using type = T;
 }; // struct dense_handle_t

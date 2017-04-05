@@ -305,7 +305,7 @@ struct serial_execution_policy_t
   )
   {
     auto targs = std::forward_as_tuple( std::forward<As>(args) ...);
-    return handle(context_t::instance().function(handle.key), targs);
+    return handle(context_t::instance().function(handle.key()), targs);
   } // execute_function
 
 }; // struct serial_execution_policy_t
