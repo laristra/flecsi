@@ -28,14 +28,14 @@
 /// \param index A boolean indicating whether this task can be run as an
 ///              index space launch.
 ///
-#define flecsi_make_legion_task_key(task, processor, single, index)            \
+#define __flecsi_internal_make_legion_task_key(task, processor, single, index) \
   task_hash_t::make_key(reinterpret_cast<uintptr_t>(&task),                    \
     processor, flecsi_bools_to_launch(single, index));
 
 ///
 /// This macro registers a internal Legion task.
 ///
-#define flecsi_register_legion_task(task, processor, single, index)            \
+#define __flecsi_internal_register_legion_task(task, processor, single, index) \
                                                                                \
   namespace flecsi {                                                           \
   namespace execution {                                                        \
