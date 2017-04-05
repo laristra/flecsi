@@ -44,11 +44,11 @@ namespace legion {
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 
 //----------------------------------------------------------------------------//
-// Dense accessor.
+// Dense handle.
 //----------------------------------------------------------------------------//
 
 ///
-// \brief dense_accessor_t provides logically array-based access to data
+// \brief dense_handle_t provides logically array-based access to data
 //        variables that have been registered in the data model.
 //
 // \tparam T The type of the data variable. If this type is not
@@ -59,14 +59,19 @@ namespace legion {
 //           know what you are doing...
 // \tparam MD The meta data type.
 ///
-template<typename T, typename MD>
-struct dense_accessor_t
+template<
+  typename T,
+  size_t EP,
+  size_t SP,
+  size_t GP,
+  typename MD
+>
+struct dense_handle_t : public data_handle__<T, EP, SP, GP>
 {
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using iterator_t = utils::index_space_t::iterator_t;
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
@@ -74,7 +79,7 @@ struct dense_accessor_t
   // Constructors.
   //--------------------------------------------------------------------------//
 
-  dense_accessor_t() {}
+  dense_handle_t() {}
   
   ///
   // Constructor.
@@ -85,21 +90,20 @@ struct dense_accessor_t
   // \param data A pointer to the raw data.
   // \param meta_data A reference to the user-defined meta data.
   ///
-  dense_accessor_t(const std::string & label, const size_t size,
+  dense_handle_t(const std::string & label, const size_t size,
     T * data, const user_meta_data_t & meta_data)
-    : label_(label), size_(size), data_(data), meta_data_(meta_data),
-    is_(size) {}
+    : label_(label), size_(size), data_(data), meta_data_(meta_data)
+    {}
 
   ///
   // Copy constructor.
   ///
-  dense_accessor_t(const dense_accessor_t & a)
+  dense_handle_t(const dense_handle_t & a)
     :
       label_(a.label_),
       size_(a.size_),
       data_(a.data_),
-      meta_data_(a.meta_data_),
-      is_(a.is_)
+      meta_data_(a.meta_data_)
     {}
 
   //--------------------------------------------------------------------------//
@@ -108,7 +112,7 @@ struct dense_accessor_t
 
   ///
   // \brief Return a std::string containing the label of the data variable
-  //        reference by this accessor.
+  //        reference by this handle.
   ///
   const std::string &
   label() const
@@ -118,7 +122,7 @@ struct dense_accessor_t
 
   ///
   // \brief Return the index space size of the data variable
-  //        referenced by this accessor.
+  //        referenced by this handle.
   ///
   size_t
   size() const
@@ -134,26 +138,6 @@ struct dense_accessor_t
   {
     return meta_data_;
   } // meta_data
-
-  //--------------------------------------------------------------------------//
-  // Iterator interface.
-  //--------------------------------------------------------------------------//
-
-  ///
-  //
-  ///
-  iterator_t
-  begin()
-  {
-  } // begin
-
-  ///
-  //
-  ///
-  iterator_t
-  end()
-  {
-  } // end
 
   //--------------------------------------------------------------------------//
   // Operators.
@@ -226,7 +210,7 @@ struct dense_accessor_t
   } // operator []
 
   ///
-  // \brief Test to see if this accessor is empty
+  // \brief Test to see if this handle is empty
   //
   // \return true if registered.
   ///
@@ -241,23 +225,6 @@ private:
   size_t size_ = 0;
   T * data_ = nullptr;
   const user_meta_data_t & meta_data_ = {};
-  utils::index_space_t is_;
-
-}; // struct dense_accessor_t
-
-//----------------------------------------------------------------------------//
-// Dense handle.
-//----------------------------------------------------------------------------//
-
-template<
-  typename T,
-  size_t EP,
-  size_t SP,
-  size_t GP
->
-struct dense_handle_t : public data_handle__<T, EP, SP, GP>
-{
-  using type = T;
 }; // struct dense_handle_t
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
@@ -281,16 +248,13 @@ struct storage_type_t<dense, DS, MD>
   using data_store_t = DS;
   using meta_data_t = MD;
 
-  template<typename T>
-  using accessor_t = dense_accessor_t<T, MD>;
-
   template<
     typename T,
     size_t EP,
     size_t SP,
     size_t GP
   >
-  using handle_t = dense_handle_t<T, EP, SP, GP>;
+  using handle_t = dense_handle_t<T, EP, SP, GP, MD>;
 
   //--------------------------------------------------------------------------//
   // Data registration.
@@ -359,47 +323,6 @@ struct storage_type_t<dense, DS, MD>
   {
     return true;
   } // register_data
-
-  //--------------------------------------------------------------------------//
-  // Data accessors.
-  //--------------------------------------------------------------------------//
-
-  ///
-  //
-  ///
-  template<
-    typename T,
-    size_t NS
-  >
-  static
-  accessor_t<T>
-  get_accessor(
-    const data_client_t & data_client,
-    data_store_t & data_store,
-    const utils::const_string_t & key,
-    size_t version
-  )
-  {
-    return {};
-  } // get_accessor
-
-  ///
-  //
-  ///
-  template<
-    typename T,
-    size_t NS,
-    typename P
-  >
-  static
-  std::vector<accessor_t<T>>
-  get_accessors(
-    const data_client_t & data_client,
-    P && preficate
-  )
-  {
-    return {};
-  } // get_accessors
 
   //--------------------------------------------------------------------------//
   // Data handles.
