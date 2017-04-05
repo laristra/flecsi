@@ -52,6 +52,20 @@ struct entry_info_t {
     return id < c.id;
   } // operator <
 
+  ///
+  /// Comparision operator for equivalence.
+  ///
+  bool
+  operator == (
+    const entry_info_t & c
+  ) const
+  {
+    return id == c.id &&
+      rank == c.rank &&
+      offset == c.offset &&
+      shared == c.shared;
+  } // operator ==
+
 }; // struct entry_info_t
 
 ///

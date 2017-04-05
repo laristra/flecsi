@@ -1,10 +1,11 @@
-/*~--------------------------------------------------------------------------~*
+/*~-------------------------------------------------------------------------~~*
  * Copyright (c) 2015 Los Alamos National Security, LLC
  * All rights reserved.
- *~--------------------------------------------------------------------------~*/
+ *~-------------------------------------------------------------------------~~*/
 
 ///
 /// \file
+/// \date Initial file creation: Dec 7, 2016
 ///
 
 #include "flecsi/data/storage.h"
@@ -13,29 +14,43 @@
 namespace flecsi {
 namespace data {
 
-data_client_t::data_client_t(data_client_t && o) : data_client_t()
+data_client_t::data_client_t(
+  data_client_t && dc
+)
+  : data_client_t()
 {
-  // store old runtime id
-  auto rid = o.runtime_id();
-  // move the data now
+  // Store old runtime id
+  auto rid = dc.runtime_id();
+
+  // Move the data now
   flecsi::data::storage_t::instance().move( rid, runtime_id() );
-}
+} // data_client_t::data_client_t
 
-
-data_client_t & data_client_t::operator=(data_client_t && o)
+data_client_t &
+data_client_t::operator = (
+  data_client_t && dc
+)
 {
-  // store old runtime id
-  auto rid = o.runtime_id();
-  // move the data now
+  // Store old runtime id
+  auto rid = dc.runtime_id();
+
+  // Move the data now
   flecsi::data::storage_t::instance().move( rid, runtime_id() );
-  // return a reference to the new object
+
+  // Return a reference to the new object
   return *this;
-}
+} // data_client_t::operator =
 
-data_client_t::~data_client_t() 
+void
+data_client_t::reset() 
 {
-  flecsi::data::storage_t::instance().reset( runtime_id() );
-}
+  flecsi::data::storage_t::instance().reset(runtime_id());
+} // data_client_t::reset
 
 } // namespace
 } // namespace
+
+/*~------------------------------------------------------------------------~--*
+ * Formatting options for vim.
+ * vim: set tabstop=2 shiftwidth=2 expandtab :
+ *~------------------------------------------------------------------------~--*/

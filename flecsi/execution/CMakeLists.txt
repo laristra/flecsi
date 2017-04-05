@@ -200,17 +200,17 @@ if(NOT DEFINED ENV{TRAVIS})
     if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
       cinch_add_unit(test_parmetis_interop
         SOURCES
-         test/mpilegion/test_parmetis_interop_devel.cc
-         mpilegion/runtime_driver.cc
-         ../data/data_client.cc
-         test/mpilegion/test_parmetis_interop.h
-         ${execution_SOURCES}
+          test/mpilegion/test_parmetis_interop_devel.cc
+          mpilegion/runtime_driver.cc
+          ../data/data_client.cc
+          test/mpilegion/test_parmetis_interop.h
+          ${execution_SOURCES}
         INPUTS
-         test/mpilegion/simple2d-16x16.msh
-        DEFINES SPRINT_TEST
-         FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
-         #FLECSI_DRIVER=flecsi/execution/test/test_mpi_interop_partitions.h
-         TEST_INIT=flecsi/execution/test/task_init.h
+          test/mpilegion/simple2d-16x16.msh
+        DEFINES
+          SPRINT_TEST
+          FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
+        TEST_INIT=flecsi/execution/test/task_init.h
         LIBRARIES ${PARTITION_LIBRARIES}
         POLICY MPILEGION_DEVEL
         THREADS 2
@@ -218,17 +218,16 @@ if(NOT DEFINED ENV{TRAVIS})
 
       cinch_add_unit(test_ghost_access
         SOURCES
-         test/mpilegion/test_parmetis_interop_devel.cc
-         mpilegion/runtime_driver.cc
-         ../data/data_client.cc
-         test/mpilegion/test_parmetis_interop.h
-         ${execution_SOURCES}
+          test/mpilegion/test_parmetis_interop_devel.cc
+          mpilegion/runtime_driver.cc
+          ../data/data_client.cc
+          test/mpilegion/test_parmetis_interop.h
+          ${execution_SOURCES}
         INPUTS
-         test/mpilegion/simple2d-16x16.msh
+          test/mpilegion/simple2d-16x16.msh
         DEFINES SPRINT_TEST
-         FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
-         #FLECSI_DRIVER=flecsi/execution/test/test_ghost_access.h
-         TEST_INIT=flecsi/execution/test/task_init.h
+          FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
+          TEST_INIT=flecsi/execution/test/task_init.h
         LIBRARIES ${PARTITION_LIBRARIES}
         POLICY MPILEGION_DEVEL
         THREADS 2

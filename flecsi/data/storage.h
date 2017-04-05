@@ -110,6 +110,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   /// \return Returns a boolean with success or failure of registration.
   ///
 
+#if 0
   template<
     typename DC,
     size_t ST,
@@ -136,6 +137,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     return sp_t::data_store_.instance().register_data(
       data_registration_wrapper_<DC, ST, T, NS, N, V>::register_data);
   } // new_register_data
+#endif
 
   //--------------------------------------------------------------------------//
   // Data accessors.

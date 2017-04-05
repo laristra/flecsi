@@ -21,32 +21,30 @@ namespace flecsi {
 namespace dmp {
 
 ///
-/// \class partition__ index_partition.h
-/// \brief partition__ provides...
+/// \class index_partition_t index_partition.h
+/// \brief index_partition_t provides...
 ///
-template<typename T>
-struct index_partition__
+struct index_partition_t
 {
-  using identifier_t = T;
   using entry_info_t = flecsi::dmp::entry_info_t;
 
   //------------------------------------------------------------------------//
   // Data members.
   //------------------------------------------------------------------------//
 
-  // Vector of mesh ids of the primary partition
+  // Set of mesh ids of the primary partition
   std::set<size_t> primary;
 
-  // Vector of entry_info_t type of the exclusive partition
+  // Set of entry_info_t type of the exclusive partition
   std::set<entry_info_t > exclusive;
 
-  // Vector of entry_info_t type of the shared partition
+  // Set of entry_info_t type of the shared partition
   std::set<entry_info_t> shared;
 
-  // Vector of entry_info_t type of the ghost partition
+  // Set of entry_info_t type of the ghost partition
   std::set<entry_info_t> ghost;
 
-  //map of rank id to #of entities per rank
+  // Rank id to number of entities
   std::unordered_map<size_t, size_t> entities_per_rank;
 
   ///
@@ -58,7 +56,7 @@ struct index_partition__
   ///
   bool
   operator == (
-    const index_partition__ & ip
+    const index_partition_t & ip
   ) const
   {
     return (
@@ -68,7 +66,7 @@ struct index_partition__
       this->ghost == ip.ghost);
   } // operator ==
 
-}; // struct index_partition__
+}; // struct index_partition_t
 
 } // namespace dmp
 } // namespace flecsi

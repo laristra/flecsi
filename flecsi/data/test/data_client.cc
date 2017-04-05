@@ -15,13 +15,19 @@ using namespace flecsi::data;
 
 static const size_t N = 100000;
 
+// Create a derived type so that we can instantiate a data_client_t.
+struct derived_t : public data_client_t
+{
+  derived_t() : data_client_t() {}
+}; // derived_t
+
 TEST(data_client, sanity) {
 
   // Map to store runtime ids.
   std::unordered_map<uintptr_t, int> map;
 
   // Array of data client
-  data_client_t dc[N];
+  derived_t dc[N];
 
   for(size_t i(0); i<N; ++i) {
 
@@ -44,7 +50,7 @@ TEST(data_client, sanity) {
 TEST(data_client, destructor) {
 
   // create a new data_client
-  auto dc = new data_client_t;
+  auto dc = new derived_t;
 
   // Register data
   flecsi_register_data(*dc, hydro, pressure, double, global, 1);
@@ -74,7 +80,7 @@ TEST(data_client, destructor) {
 TEST(data_client, move) {
 
   // create new data_clients
-  data_client_t dc1, dc2;
+  derived_t dc1, dc2;
   auto rid1 = dc1.runtime_id();
 
   // Register data
