@@ -122,6 +122,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   void register_data(size_t fid) {
       st_t<ST>::template register_data<T, NS>(DC, sp_t::data_store_, N, V);
   } // register_data
+#endif
 
   template<
     typename DC,
@@ -134,10 +135,15 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   bool
   new_register_data()
   {
+    return sp_t::template new_register_data<DC, ST, T, NS, N, V>();
+    #if 0
+    
+    return sp_t::data_store_.instance().register_data(
+
     return sp_t::data_store_.instance().register_data(
       data_registration_wrapper_<DC, ST, T, NS, N, V>::register_data);
+    #endif
   } // new_register_data
-#endif
 
   //--------------------------------------------------------------------------//
   // Data handles.
