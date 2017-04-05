@@ -104,15 +104,15 @@ struct legion_task_wrapper__
     user_task_args_t & user_task_args = task_args.user_args;
 
     // Push the Legion state
-    context_t::instance().push_state(user_task_handle.key,
+    context_t::instance().push_state(user_task_handle.key(),
       context, runtime, task, regions);
 
     auto retval = user_task_handle(
-      context_t::instance().function(user_task_handle.key),
+      context_t::instance().function(user_task_handle.key()),
       user_task_args);
 
     // Pop the Legion state
-    context_t::instance().pop_state(user_task_handle.key);
+    context_t::instance().pop_state(user_task_handle.key());
     
     return retval;
   } // execute
@@ -198,14 +198,14 @@ struct legion_task_wrapper__<P, S, I, void, A>
     user_task_args_t & user_task_args = task_args.user_args;
 
     // Push the Legion state
-    context_t::instance().push_state(user_task_handle.key,
+    context_t::instance().push_state(user_task_handle.key(),
       context, runtime, task, regions);
 
-    user_task_handle(context_t::instance().function(user_task_handle.key),
+    user_task_handle(context_t::instance().function(user_task_handle.key()),
       user_task_args);
 
     // Pop the Legion state
-    context_t::instance().pop_state(user_task_handle.key);
+    context_t::instance().pop_state(user_task_handle.key());
   } // execute
 
   // FIXME: There is not a non-void version of this call. Is this what
@@ -232,7 +232,7 @@ struct legion_task_wrapper__<P, S, I, void, A>
     // Convert the users task into something that we can execute.
     std::function<void()> bound_user_task =
       std::bind(*reinterpret_cast<std::function<void(user_task_args_t)> *>(
-      context_t::instance().function(user_task_handle.key)), user_task_args);
+      context_t::instance().function(user_task_handle.key())), user_task_args);
 
      // Set the function for MPI to execute.
      ext_legion_handshake_t::instance().shared_func_ = bound_user_task;
