@@ -30,8 +30,8 @@
 
   using flecsi_execution_policy_t = serial_execution_policy_t;
 
-  }
-  }
+  } // namespace execution
+  } // namespace flecsi
 
 // Legion Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
@@ -43,8 +43,8 @@
 
   using flecsi_execution_policy_t = legion_execution_policy_t;
 
-  }
-  }
+  } // namespace execution
+  } // namespace flecsi
 
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
@@ -56,8 +56,8 @@
 
   using flecsi_execution_policy_t = mpi_execution_policy_t;
 
-  }
-  }
+  } // namespace execution
+  } // namespace flecsi
 
 #endif // FLECSI_RUNTIME_MODEL
 

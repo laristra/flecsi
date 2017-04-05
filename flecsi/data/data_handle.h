@@ -26,9 +26,7 @@ template<
   size_t GP,
   typename DP
 >
-struct data_handle_base__ : public DP
-{
-}; // struct data_handle_base_
+struct data_handle_base__ : public DP {};
 
 } // namespace flecsi
 

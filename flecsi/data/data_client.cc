@@ -14,6 +14,7 @@
 namespace flecsi {
 namespace data {
 
+// Move constructor.
 data_client_t::data_client_t(
   data_client_t && dc
 )
@@ -26,6 +27,7 @@ data_client_t::data_client_t(
   flecsi::data::storage_t::instance().move( rid, runtime_id() );
 } // data_client_t::data_client_t
 
+// Move assignment.
 data_client_t &
 data_client_t::operator = (
   data_client_t && dc
@@ -41,6 +43,7 @@ data_client_t::operator = (
   return *this;
 } // data_client_t::operator =
 
+// Reset.
 void
 data_client_t::reset() 
 {
