@@ -18,7 +18,9 @@
 #include <cstddef>
 #include <unordered_map>
 
+#include "cinchlog.h"
 #include "flecsi/utils/const_string.h"
+#include "flecsi/partition/index_partition.h"
 
 ///
 /// \file context.h
@@ -37,18 +39,7 @@ namespace execution {
 template<class context_policy_t>
 struct context__ : public context_policy_t
 {
-  using cp_t = context_policy_t;
-
-  ///
-  /// Identify the calling state of the context, i.e., this method
-  /// returns the current execution level within the FleCSI model.
-  ///
-  enum class call_state_t : size_t {
-    driver = 0,
-    task,
-    function,
-    kernel
-  }; // enum class call_state_t
+  using index_partition_t = flecsi::dmp::index_partition_t;
 
   ///
   ///
@@ -61,44 +52,17 @@ struct context__ : public context_policy_t
     return context;
   } // instance
 
-  ///
-  ///
-  ///
-  call_state_t
-  current()
-  {
-    return call_state_ > 0 ? call_state_t::driver : call_state_t::task;
-  } // current
-
-  ///
-  ///
-  ///
-  call_state_t
-  entry()
-  {
-    return static_cast<call_state_t>(++call_state_);
-  } // entry
-
-  ///
-  ///
-  ///
-  call_state_t
-  exit()
-  {
-    return static_cast<call_state_t>(--call_state_);
-  } // exit
-
   /// Copy constructor (disabled)
   context__(const context__ &) = delete;
 
   /// Assignment operator (disabled)
   context__ & operator = (const context__ &) = delete;
 
-  /// Move operators
+  /// Move constructor and assignment operator
   context__(context__ &&) = default;
   context__ & operator = (context__ &&) = default;
 
-
+#if 0
   using partitioned_index_space = 
       typename context_policy_t::partitioned_index_space;
 
@@ -143,18 +107,43 @@ struct context__ : public context_policy_t
     map.insert({entity,is});
     partitioned_index_spaces_.emplace(part_name, std::move(map));
   }
+#endif
 
+  ///
+  /// Add an index partition.
+  ///
+  void
+  add_partition(
+    size_t key,
+    index_partition_t & partition
+  )
+  {
+    if(partitions_.find(key) == partitions_.end()) {
+      partitions_[key] = partition;
+    } // if
+  } // add_partition
 
+  const index_partition_t &
+  partition(
+    size_t key
+  )
+  {
+    if(partitions_.find(key) == partitions_.end()) {
+      clog(fatal) << "invalid key " << key << std::endl;
+    } // if
+
+    return partitions_[key];
+  } // partition
 
 private:
 
   /// Default constructor
-  context__() : cp_t() {}
+  context__() : context_policy_t() {}
 
   /// Destructor
   ~context__() {}
 
-  size_t call_state_;
+  std::unordered_map<size_t, index_partition_t> partitions_;
 
 }; // class context__
 
