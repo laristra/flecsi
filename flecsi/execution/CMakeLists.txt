@@ -96,18 +96,44 @@ set(execution_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
-  cinch_add_unit(internal_task
+if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
+    OR (FLECSI_RUNTIME_MODEL STREQUAL "legion"))
+
+#
+# Test basic function calling capability using the register_function
+# interface.
+#
+cinch_add_unit(simple_function
   SOURCES
-    test/function.cc
-    test/legion/internal_task.cc
+    test/simple_function_driver.cc
+    test/context_runtime.cc
     ${RUNTIME_DRIVER}
   POLICY
     ${UNIT_POLICY}
   LIBRARIES
     flecsi
     ${CINCH_RUNTIME_LIBRARIES}
-  )
+)
+
+  if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+
+    #
+    # Test internal legion task registration.
+    #
+    cinch_add_unit(internal_task
+    SOURCES
+      test/legion/internal_task_driver.cc
+      test/context_runtime.cc
+      ${RUNTIME_DRIVER}
+    POLICY
+      ${UNIT_POLICY}
+    LIBRARIES
+      flecsi
+      ${CINCH_RUNTIME_LIBRARIES}
+    )
+
+  endif()
+
 endif()
 
 #----------------------------------------------------------------------------~-#

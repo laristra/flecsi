@@ -3,6 +3,7 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
+#include <cinchtest.h>
 #include <iostream>
 
 #include "flecsi/data/data.h"
@@ -40,7 +41,8 @@ void driver(int argc, char ** argv) {
 
   double result = flecsi_execute_function(handle, 2.0, 10.0);
 
-  std::cout << "test_function returned: " << result << std::endl;
+  ASSERT_EQ(result, 20);
+
 } // driver
 
 } // namespace execution
