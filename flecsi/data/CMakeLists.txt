@@ -174,21 +174,19 @@ endif()
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
-  # if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
-  #   cinch_add_unit(mpilegion_dh1
-  #     SOURCES
-  #       ../execution/test/task.cc
-  #       ../execution/test/task_driver.cc
-  #       test/data-handle.h
-  #       data_client.cc
-  #     DEFINES DATA_HANDLE_TEST
-  #       FLECSI_SPECIALIZATION_DRIVER=flecsi/data/test/dh1.h
-  #       TEST_INIT=flecsi/execution/test/task_init.h
-  #     LIBRARIES ${PARTITION_LIBRARIES}
-  #     POLICY MPILEGION
-  #     THREADS 2
-  #   )
-  # endif()
+  if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
+    cinch_add_unit(mpilegion_dh1
+      SOURCES
+        ../execution/test/task.cc
+        ../execution/test/context_runtime.cc
+        ../execution/legion/runtime_driver.cc
+        test/dh1.cc
+        data_client.cc
+      LIBRARIES ${PARTITION_LIBRARIES}
+      POLICY MPILEGION
+      THREADS 2
+    )
+  endif()
 
 endif()
 
