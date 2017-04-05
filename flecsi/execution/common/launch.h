@@ -28,6 +28,11 @@ enum launch_t : size_t {
 } //namespace execution 
 } // namespace flecsi
 
+///
+/// Macro to convert boolean values for single and index into a valid
+/// launch_t at compile time.
+///
+
 #define flecsi_bools_to_launch(S, I)                                           \
   S && I ?                                                                     \
     launch_t::any                                                              \
