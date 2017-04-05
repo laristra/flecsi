@@ -78,19 +78,19 @@ struct legion_execution_policy_t
           case single:
           {
             return context_t::instance().register_task(key,
-              legion_task_wrapper__<loc, 1, 0, R, A>::register_task);
+              legion_task_wrapper__<loc, 1, 0, R, A>::register_callback);
           } // single
 
           case index:
           {
             return context_t::instance().register_task(key,
-              legion_task_wrapper__<loc, 0, 1, R, A>::register_task);
+              legion_task_wrapper__<loc, 0, 1, R, A>::register_callback);
           } // index
 
           case any:
           {
             return context_t::instance().register_task(key,
-              legion_task_wrapper__<loc, 1, 1, R, A>::register_task);
+              legion_task_wrapper__<loc, 1, 1, R, A>::register_callback);
           } // any
 
         } // switch
@@ -103,19 +103,19 @@ struct legion_execution_policy_t
           case single:
           {
             return context_t::instance().register_task(key,
-              legion_task_wrapper__<toc, 1, 0, R, A>::register_task);
+              legion_task_wrapper__<toc, 1, 0, R, A>::register_callback);
           } // single
 
           case index:
           {
             return context_t::instance().register_task(key,
-              legion_task_wrapper__<toc, 0, 1, R, A>::register_task);
+              legion_task_wrapper__<toc, 0, 1, R, A>::register_callback);
           } // index
 
           case any:
           {
             return context_t::instance().register_task(key,
-              legion_task_wrapper__<toc, 1, 1, R, A>::register_task);
+              legion_task_wrapper__<toc, 1, 1, R, A>::register_callback);
           } // any
 
         } // switch
@@ -173,8 +173,6 @@ struct legion_execution_policy_t
         TaskLauncher task_launcher(context_.task_id(key),
           TaskArgument(&task_args, sizeof(task_args_t)));
 
-        // !!! needs to do what mpilegion does for data handle
-
         auto future = context_.runtime(parent)->execute_task(
           context_.context(parent), task_launcher);
 
@@ -195,7 +193,7 @@ struct legion_execution_policy_t
           context_.task_id(key), launch_domain, TaskArgument(&task_args,
           sizeof(task_args_t)), arg_map);
 
-        // !!! needs to do what mpilegion does for data handle
+        // !!! needs to do what legion does for data handle
 
         auto future = context_.runtime(parent)->execute_index_space(
           context_.context(parent), index_launcher);

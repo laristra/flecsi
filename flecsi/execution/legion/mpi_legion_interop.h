@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_execution_mpilegion_mpi_legion_interop_h
-#define flecsi_execution_mpilegion_mpi_legion_interop_h
+#ifndef flecsi_execution_legion_mpi_legion_interop_h
+#define flecsi_execution_legion_mpi_legion_interop_h
 
 #include <cstdio>
 #include <condition_variable>
@@ -25,8 +25,8 @@
 #include <mpi.h>
 #include <realm.h>
 
-#include "flecsi/execution/mpilegion/legion_handshake.h"
-#include "flecsi/execution/mpilegion/mapper.h"
+#include "flecsi/execution/legion/handshake.h"
+#include "flecsi/execution/legion/mapper.h"
 #include "flecsi/execution/task_ids.h"
 #include "flecsi/partition/index_partition.h"
 #include "flecsi/utils/any.h"
@@ -330,7 +330,7 @@ struct mpi_legion_interop_t
 } // namespace execution
 } // namespace flecsi
 
-#endif // flecsi_execution_mpilegion_mpi_legion_interop_h
+#endif // flecsi_execution_legion_mpi_legion_interop_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

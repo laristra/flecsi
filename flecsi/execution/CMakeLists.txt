@@ -46,67 +46,47 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(execution_HEADERS
     ${execution_HEADERS}
     legion/context_policy.h
-    legion/future.h
     legion/execution_policy.h
+    legion/future.h
+    legion/handshake.h
+    legion/helper.h
+    legion/internal_task.h
+    legion/mpi_legion_interop.h
     legion/runtime_driver.h
     legion/task_args.h
     legion/task_wrapper.h
-    task_ids.h
-    PARENT_SCOPE
   )
 
   set(execution_SOURCES
+    ${execution_SOURCES}
     ../data/legion/dpd.cc
   )
 
   set(UNIT_POLICY LEGION)
   set(RUNTIME_DRIVER legion/runtime_driver.cc)
 
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
-
-  set(execution_HEADERS
-    ${execution_HEADERS}
-    legion/task_args.h
-    legion/task_wrapper.h
-    mpilegion/context_policy.h
-    mpilegion/execution_policy.h
-    mpilegion/legion_handshake.h
-    mpilegion/mapper.h
-    mpilegion/mpi_legion_interop.h
-    mpilegion/runtime_driver.h
-    task_ids.h
-    mpilegion/copy_ghosts.h 
-    test/mpilegion/init_partitions_task.h 
-  )
-
-  set(execution_SOURCES
-    ../data/legion/dpd.cc
-    test/mpilegion/init_partitions_task.cc
-    mpilegion/copy_ghosts.cc
-  )
-
-  set(UNIT_POLICY MPILEGION)
-  set(RUNTIME_DRIVER mpilegion/runtime_driver.cc)
-
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "rf_mpilegion")
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(execution_HEADERS
     ${execution_HEADERS}
   )
 
   set(execution_SOURCES
+    ${execution_SOURCES}
   )
 
-  set(UNIT_POLICY MPILEGION)
-  set(RUNTIME_DRIVER rf_mpilegion/runtime_driver.cc)
+  set(UNIT_POLICY LEGION)
+  set(RUNTIME_DRIVER mpi/runtime_driver.cc)
 
 endif()
 
+# Capture header list at call site
 set(execution_HEADERS
   ${execution_HEADERS}
   PARENT_SCOPE
 )
 
+# Capture source list at call site
 set(execution_SOURCES
   ${execution_SOURCES}
   PARENT_SCOPE
@@ -116,7 +96,7 @@ set(execution_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "rf_mpilegion")
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   cinch_add_unit(internal_task
   SOURCES
     test/function.cc
@@ -128,115 +108,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "rf_mpilegion")
     flecsi
     ${CINCH_RUNTIME_LIBRARIES}
   )
-endif()
-
-if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
-    OR (FLECSI_RUNTIME_MODEL STREQUAL "legion") )
-#cinch_add_unit(task
-#  SOURCES
-#    test/task.cc
-#    test/task_driver.cc
-#    ${RUNTIME_DRIVER}
-#  DEFINES
-#    TEST_INIT=flecsi/execution/test/task_init.h
-#  POLICY
-#    ${UNIT_POLICY}
-#  LIBRARIES
-#    flecsi
-#    ${CINCH_RUNTIME_LIBRARIES}
-#)
-
-cinch_add_unit(simple_function
-  SOURCES
-    test/function.cc
-    test/simple_function.cc
-    ${RUNTIME_DRIVER}
-  POLICY
-    ${UNIT_POLICY}
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
-)
-endif()
-
-if(NOT DEFINED ENV{TRAVIS})
-  if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
-
-#    cinch_add_unit(mpilegion_task
-#      SOURCES
-#        test/task.cc
-#        test/task_driver.cc
-#        mpilegion/runtime_driver.cc
-#        mpilegion/init_partitions_task.cc
-#        ../data/legion/dpd.cc
-#      DEFINES
-#        TEST_INIT=flecsi/execution/test/task_init.h
-#      POLICY MPILEGION
-#      LIBRARIES
-#      flecsi
-#      ${CINCH_RUNTIME_LIBRARIES}
-#    )
-
-#  cinch_add_unit(dpd_sparse
-#    SOURCES
-#      test/dpd_sparse.cc
-#      ../data/legion/dpd.cc
-#    POLICY
-#      MPILEGION
-#   THREADS 2
-#  )
-
-  # FIXME: Need to talk about this with Irina and Galen.
-    cinch_add_unit(test_legion_handshake
-      SOURCES test/mpilegion/test_legion_handshake.cc
-      POLICY MPILEGION
-    )
-
-    cinch_add_unit(test_mpilegion_interop
-      SOURCES test/mpilegion/test_mpi_legion_interop.cc
-      POLICY MPILEGION
-    )
-
-    if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
-      cinch_add_unit(test_parmetis_interop
-        SOURCES
-          test/mpilegion/test_parmetis_interop_devel.cc
-          mpilegion/runtime_driver.cc
-          ../data/data_client.cc
-          test/mpilegion/test_parmetis_interop.h
-          ${execution_SOURCES}
-        INPUTS
-          test/mpilegion/simple2d-16x16.msh
-        DEFINES
-          SPRINT_TEST
-          FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
-        TEST_INIT=flecsi/execution/test/task_init.h
-        LIBRARIES ${PARTITION_LIBRARIES}
-        POLICY MPILEGION_DEVEL
-        THREADS 2
-      )
-
-      cinch_add_unit(test_ghost_access
-        SOURCES
-          test/mpilegion/test_parmetis_interop_devel.cc
-          mpilegion/runtime_driver.cc
-          ../data/data_client.cc
-          test/mpilegion/test_parmetis_interop.h
-          ${execution_SOURCES}
-        INPUTS
-          test/mpilegion/simple2d-16x16.msh
-        DEFINES SPRINT_TEST
-          FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
-          TEST_INIT=flecsi/execution/test/task_init.h
-        LIBRARIES ${PARTITION_LIBRARIES}
-        POLICY MPILEGION_DEVEL
-        THREADS 2
-      )
-
-    endif()
-
-  endif()
-
 endif()
 
 #----------------------------------------------------------------------------~-#

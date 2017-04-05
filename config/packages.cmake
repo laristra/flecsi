@@ -47,11 +47,7 @@ endif()
 # Find Legion
 #------------------------------------------------------------------------------#
 
-# FIXME: Remove rf_mpilegion after refactor
-if(FLECSI_RUNTIME_MODEL STREQUAL "legion" OR
-  FLECSI_RUNTIME_MODEL STREQUAL "mpilegion" OR
-  FLECSI_RUNTIME_MODEL STREQUAL "rf_mpilegion"
-)
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   find_package(Legion REQUIRED)
 
@@ -75,6 +71,10 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 #
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
+  if(NOT ENABLE_MPI)
+    message (FATAL_ERROR "MPI is required for the legion runtime model")
+  endif()
+ 
   set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/legion)
 
   if(NOT APPLE)
@@ -99,52 +99,13 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
   endif()
 
 #
-# MPI+Legion interface
-#
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
-
-  if(NOT ENABLE_MPI)
-    message (FATAL_ERROR "MPI is required for the mpilegion runtime model")
-  endif()
- 
-  set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/mpilegion)
-
-  if(NOT APPLE)
-    set(FLECSI_RUNTIME_LIBRARIES  -ldl ${Legion_LIBRARIES} ${MPI_LIBRARIES})
-  else()
-    set(FLECSI_RUNTIME_LIBRARIES  ${Legion_LIBRARIES} ${MPI_LIBRARIES})
-  endif()
-
-  include_directories(${Legion_INCLUDE_DIRS})
-
-#
-# Refactor
-# FIXME: Remove after refactor
-#
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "rf_mpilegion")
-
-  if(NOT ENABLE_MPI)
-    message (FATAL_ERROR "MPI is required for the mpilegion runtime model")
-  endif()
- 
-  set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/mpilegion)
-
-  if(NOT APPLE)
-    set(FLECSI_RUNTIME_LIBRARIES  -ldl ${Legion_LIBRARIES} ${MPI_LIBRARIES})
-  else()
-    set(FLECSI_RUNTIME_LIBRARIES  ${Legion_LIBRARIES} ${MPI_LIBRARIES})
-  endif()
-
-  include_directories(${Legion_INCLUDE_DIRS})
-
-#
 # Default
 #
-else(FLECSI_RUNTIME_MODEL STREQUAL "serial")
+else()
 
   message(FATAL_ERROR "Unrecognized runtime selection")  
 
-endif(FLECSI_RUNTIME_MODEL STREQUAL "serial")
+endif()
 
 #------------------------------------------------------------------------------#
 # Process id bits

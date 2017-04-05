@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_execution_mpilegion_legion_handshake_h
-#define flecsi_execution_mpilegion_legion_handshake_h
+#ifndef flecsi_execution_mpilegion_handshake_h
+#define flecsi_execution_mpilegion_handshake_h
 
 #include <condition_variable>
 #include <cstdio>
@@ -132,7 +132,7 @@ public:
 public:
 
    std::function<void()> shared_func_;
-   bool call_mpi_=false;
+   bool call_mpi_ = false;
    int rank_;
  
 protected:
@@ -147,7 +147,7 @@ protected:
 } // namespace execution
 } // namespace flecsi
 
-#endif // flecsi_execution_mpilegion_legion_handshake_h
+#endif // flecsi_execution_mpilegion_handshake_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

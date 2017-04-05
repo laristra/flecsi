@@ -33,9 +33,7 @@
   }
 
 // Legion, MPI+Legion Policy
-#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion || \
-  FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion || \
-  FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_rf_mpilegion
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
   #include "flecsi/data/legion/data_handle_policy.h"
 

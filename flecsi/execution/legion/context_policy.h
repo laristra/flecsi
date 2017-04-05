@@ -17,21 +17,21 @@
 
 ///
 /// \file
-/// \date Initial file creation: Jul 14, 2016
+/// \date Initial file creation: Aug 4, 2016
 ///
 
 #include <functional>
 #include <memory>
-#include <stack>
 #include <unordered_map>
+#include <stack>
 
 #include <legion.h>
 
-#include "flecsi/execution/common/task_hash.h"
-#include "flecsi/execution/legion/runtime_driver.h"
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/tuple_wrapper.h"
+#include "flecsi/execution/legion/runtime_driver.h"
+#include "flecsi/execution/common/task_hash.h"
 
 namespace flecsi {
 namespace execution {
@@ -100,7 +100,7 @@ struct legion_context_policy_t
 
     // Register top-level task
     HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
-    HighLevelRuntime::register_legion_task<legion_runtime_driver>(
+    HighLevelRuntime::register_legion_task<runtime_driver>(
       TOP_LEVEL_TASK_ID, lr_loc, true, false);
 
     // Register user tasks

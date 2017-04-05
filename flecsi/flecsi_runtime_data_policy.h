@@ -7,9 +7,8 @@
 #define flecsi_runtime_data_policy_h
 
 ///
-// \file flecsi_runtime_policy.h
-// \authors bergen
-// \date Initial file creation: Aug 01, 2016
+/// \file
+/// \date Initial file creation: Aug 01, 2016
 ///
 
 ///
@@ -40,9 +39,7 @@
 
 // FIXME: Remove rf_mpilegion after refactor
 //Legion Policy
-#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion || \
-      FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion || \
-      FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_rf_mpilegion
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
   #include "flecsi/data/default_user_meta_data.h"
   #include "flecsi/data/legion/storage_policy.h"
@@ -60,7 +57,9 @@
 
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
+
   #error "This policy is not yet implemented!"
+
 #endif // FLECSI_RUNTIME_MODEL
 
 #endif // flecsi_runtime_data_policy_h
