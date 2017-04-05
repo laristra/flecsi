@@ -210,6 +210,72 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   } // operator []
 
   ///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \tparam E A complex index type.
+  //
+  // This version of the operator is provided to support use with
+  // \e flecsi mesh entity types \ref mesh_entity_base_t.
+  ///
+  template<typename E>
+  const T &
+  operator () (
+    E * e
+  ) const
+  {
+    return this->operator()(e->template id<0>());
+  } // operator ()
+
+  ///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \tparam E A complex index type.
+  //
+  // This version of the operator is provided to support use with
+  // \e flecsi mesh entity types \ref mesh_entity_base_t.
+  ///
+  template<typename E>
+  T &
+  operator () (
+    E * e
+  )
+  {
+    return this->operator()(e->template id<0>());
+  } // operator ()
+
+  ///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+  ///
+  const T &
+  operator () (
+    size_t index
+  ) const
+  {
+    assert(index < size_ && "index out of range");
+    return data_[index];
+  } // operator ()
+
+  ///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+  ///
+  T &
+  operator () (
+    size_t index
+  )
+  {
+    assert(index < size_ && "index out of range");
+    return data_[index];
+  } // operator ()
+
+  ///
   // \brief Test to see if this handle is empty
   //
   // \return true if registered.
@@ -333,13 +399,79 @@ struct storage_type_t<dense, DS, MD>
   ///
   template<
     typename T,
-    size_t EP,
-    size_t SP,
-    size_t GP,
+    size_t NS,
+    typename Predicate
+  >
+  static
+  decltype(auto)
+  get_handles(
+    const data_client_t & data_client,
+    data_store_t & data_store,
+    size_t version,
+    Predicate && predicate,
+    bool sorted
+  )
+  {
+
+  }
+
+  template<
+    typename T,
+    typename Predicate
+  >
+  static
+  decltype(auto)
+  get_handles(
+    const data_client_t & data_client,
+    data_store_t & data_store,
+    size_t version,
+    Predicate && predicate,
+    bool sorted
+  )
+  {
+    
+  }
+
+  template<
+    typename T,
     size_t NS
   >
   static
-  handle_t<T, EP, SP, GP>
+  decltype(auto)
+  get_handles(
+    const data_client_t & data_client,
+    data_store_t & data_store,
+    size_t version,
+    bool sorted
+  )
+  {
+    
+  }
+
+  template<
+    typename T
+  >
+  static
+  decltype(auto)
+  get_handles(
+    const data_client_t & data_client,
+    data_store_t & data_store,
+    size_t version,
+    bool sorted
+  )
+  {
+
+  }
+
+  ///
+  //
+  ///
+  template<
+    typename T,
+    size_t NS
+  >
+  static
+  handle_t<T, 0, 0, 0>
   get_handle(
     const data_client_t & data_client,
     data_store_t & data_store,

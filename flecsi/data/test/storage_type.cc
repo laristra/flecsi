@@ -303,7 +303,7 @@ TEST(storage, dense_attributes) {
     ASSERT_TRUE(t.attributes().test(flagged));
 
     // test is_at(cells)
-    auto cell_vars = flecsi_get_accessors(
+    auto cell_vars = flecsi_get_handles(
       m, hydro, double, dense, 0, flecsi_is_at(cells), /* sorted */ true
     );
 
@@ -311,7 +311,7 @@ TEST(storage, dense_attributes) {
     ASSERT_EQ( cell_vars[0].label(), "density" );
     ASSERT_EQ( cell_vars[1].label(), "pressure" );
 
-    auto all_cell_vars = flecsi_get_accessors_all(
+    auto all_cell_vars = flecsi_get_handles_all(
       m, double, dense, 0, flecsi_is_at(cells), /* sorted */ true 
     );
 
@@ -322,7 +322,7 @@ TEST(storage, dense_attributes) {
 
 
     // test has_attribute_at(flagge,cells)
-    auto flagged_vars = flecsi_get_accessors(
+    auto flagged_vars = flecsi_get_handles(
       m, hydro, double, dense, 0, flecsi_has_attribute_at(flagged, cells), 
       /* sorted */ true
     );
@@ -330,7 +330,7 @@ TEST(storage, dense_attributes) {
     ASSERT_EQ( flagged_vars.size(), 1 );
     ASSERT_EQ( flagged_vars[0].label(), "pressure" );
 
-    auto all_flagged_vars = flecsi_get_accessors_all(
+    auto all_flagged_vars = flecsi_get_handles_all(
       m, double, dense, 0, flecsi_has_attribute_at(flagged, cells), /* sorted */ true 
     );
 
@@ -339,7 +339,7 @@ TEST(storage, dense_attributes) {
     ASSERT_EQ( all_flagged_vars[1].label(), "temperature" );
 
     // test get by type=double
-    auto typed_vars = flecsi_get_accessors(
+    auto typed_vars = flecsi_get_handles(
       m, hydro, double, dense, 0, /* sorted */ true
     );
 
@@ -348,7 +348,7 @@ TEST(storage, dense_attributes) {
     ASSERT_EQ( typed_vars[1].label(), "pressure" );
     ASSERT_EQ( typed_vars[2].label(), "speed" );
 
-    auto all_typed_vars = flecsi_get_accessors_all(
+    auto all_typed_vars = flecsi_get_handles_all(
       m, double, dense, 0, /* sorted */ true 
     );
 
@@ -399,7 +399,7 @@ TEST(storage, global_attributes) {
 
 
     // test has_attribute(flagge)
-    auto flagged_vars = flecsi_get_accessors(
+    auto flagged_vars = flecsi_get_handles(
       m, hydro, double, global, 0, flecsi_has_attribute(flagged), 
       /* sorted */ true
     );
@@ -407,7 +407,7 @@ TEST(storage, global_attributes) {
     ASSERT_EQ( flagged_vars.size(), 1 );
     ASSERT_EQ( flagged_vars[0].label(), "pressure" );
 
-    auto all_flagged_vars = flecsi_get_accessors_all(
+    auto all_flagged_vars = flecsi_get_handles_all(
       m, double, global, 0, flecsi_has_attribute(flagged), /* sorted */ true 
     );
 
@@ -416,7 +416,7 @@ TEST(storage, global_attributes) {
     ASSERT_EQ( all_flagged_vars[1].label(), "temperature" );
 
     // test get by type=double
-    auto typed_vars = flecsi_get_accessors(
+    auto typed_vars = flecsi_get_handles(
       m, hydro, double, global, 0, /* sorted */ true
     );
 
@@ -425,7 +425,7 @@ TEST(storage, global_attributes) {
     ASSERT_EQ( typed_vars[1].label(), "pressure" );
     ASSERT_EQ( typed_vars[2].label(), "speed" );
 
-    auto all_typed_vars = flecsi_get_accessors_all(
+    auto all_typed_vars = flecsi_get_handles_all(
       m, double, global, 0, /* sorted */ true 
     );
 

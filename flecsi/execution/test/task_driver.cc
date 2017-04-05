@@ -46,6 +46,8 @@ enum class privileges : size_t {
 
 struct mesh_t : public data::data_client_t {
 
+/*
+  // FIXME
   size_t indices(size_t index_space_id) const override {
 
     switch(index_space_id) {
@@ -58,6 +60,7 @@ struct mesh_t : public data::data_client_t {
     } // switch
 
   } // indices
+  */
 
 }; // struct mesh_t
 
@@ -221,7 +224,7 @@ void specialization_driver(int argc, char ** argv) {
 
   flecsi_register_data(m, hydro, materials, material_t, dense, 1, cells);
 
-  auto mats1 = flecsi_get_accessor(m, hydro, materials, material_t, dense, 0);
+  auto mats1 = flecsi_get_handle(m, hydro, materials, material_t, dense, 0);
 
   for(size_t i(0); i<4; ++i) {
     mats1(i) = copper_t(2.0, 2.0);

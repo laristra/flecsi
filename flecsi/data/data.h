@@ -58,10 +58,10 @@
 ///                 parameter can be used to manage multiple data versions,
 ///                 e.g., for new and old state.
 ///
-#define flecsi_get_accessor(client, nspace, name, data_type, storage_type,     \
+#define flecsi_get_handle(client, nspace, name, data_type, storage_type,       \
   version)                                                                     \
                                                                                \
-  flecsi::data::storage_t::instance().get_accessor<flecsi::data::storage_type, \
+  flecsi::data::storage_t::instance().get_handle<flecsi::data::storage_type,   \
     data_type,                                                                 \
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>(       \
       client, EXPAND_AND_STRINGIFY(name), version)
@@ -89,10 +89,10 @@
 ///                  figure out whether it get added to the returned list.
 ///
 /// \remark  This version is confined to search within a namespace only.
-#define flecsi_get_accessors(client, nspace, data_type, storage_type,          \
+#define flecsi_get_handles(client, nspace, data_type, storage_type,            \
   version, ...)                                                                \
                                                                                \
-  flecsi::data::storage_t::instance().get_accessors<                           \
+  flecsi::data::storage_t::instance().get_handles<                             \
     flecsi::data::storage_type, data_type,                                     \
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>(       \
     client, version, ## __VA_ARGS__ )
@@ -111,9 +111,9 @@
 ///                  figure out whether it get added to the returned list.
 ///
 /// \remark  This version searches all namespaces.
-#define get_accessors_all(                                                     \
+#define flecsi_get_handles_all(                                                \
     client, data_type, storage_type, version, ...)                             \
-  flecsi::data::storage_t::instance().get_accessors<flecsi::data::storage_type,\
+  flecsi::data::storage_t::instance().get_handles<flecsi::data::storage_type,  \
     data_type>( client, version, ## __VA_ARGS__ )
 
 
@@ -185,16 +185,6 @@
     data_type,                                                                 \
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>(       \
     client, EXPAND_AND_STRINGIFY(name), slots, version)
-
-///
-///
-///
-#define flecsi_get_handle(client, nspace, name, data_type, storage_type,       \
-  version)                                                                     \
-  flecsi::data::storage_t::instance().get_handle<flecsi::data::storage_type,   \
-    data_type,                                                                 \
-    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>(       \
-      client, EXPAND_AND_STRINGIFY(name), version)
 
 ///
 ///

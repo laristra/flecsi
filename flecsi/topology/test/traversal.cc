@@ -234,7 +234,7 @@ TEST(mesh_topology, destructor) {
   flecsi_register_data(*mesh, hydro, density, double, global, 1);
 
   // get all accessors to the data
-  auto accs = flecsi_get_accessors(*mesh, hydro, double, global, 0);
+  auto accs = flecsi_get_handles(*mesh, hydro, double, global, 0);
   
   ASSERT_EQ( accs.size(), 2 );
   ASSERT_EQ( accs[0].label(), "density" );
@@ -264,7 +264,7 @@ TEST(mesh_topology, move) {
 
   // get all accessors to the data
   {
-    auto accs = flecsi_get_accessors(mesh1, hydro, double, global, 0);
+    auto accs = flecsi_get_handles(mesh1, hydro, double, global, 0);
   
     ASSERT_EQ( accs.size(), 2 );
     ASSERT_EQ( accs[0].label(), "density" );
@@ -280,7 +280,7 @@ TEST(mesh_topology, move) {
 
   // it should show up in the new data client though
   {
-    auto accs = flecsi_get_accessors(mesh2, hydro, double, global, 0);
+    auto accs = flecsi_get_handles(mesh2, hydro, double, global, 0);
   
     ASSERT_EQ( accs.size(), 2 );
     ASSERT_EQ( accs[0].label(), "density" );

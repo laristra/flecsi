@@ -57,7 +57,7 @@ TEST(data_client, destructor) {
   flecsi_register_data(*dc, hydro, density, double, global, 1);
 
   // get all accessors to the data
-  auto accs = flecsi_get_accessors(*dc, hydro, double, global, 0);
+  auto accs = flecsi_get_handles(*dc, hydro, double, global, 0);
   
   ASSERT_EQ( accs.size(), 2 );
   ASSERT_EQ( accs[0].label(), "density" );
@@ -89,7 +89,7 @@ TEST(data_client, move) {
 
   // get all accessors to the data
   {
-    auto accs = flecsi_get_accessors(dc1, hydro, double, global, 0);
+    auto accs = flecsi_get_handles(dc1, hydro, double, global, 0);
   
     ASSERT_EQ( accs.size(), 2 );
     ASSERT_EQ( accs[0].label(), "density" );
@@ -105,7 +105,7 @@ TEST(data_client, move) {
 
   // it should show up in the new data client though
   {
-    auto accs = flecsi_get_accessors(dc2, hydro, double, global, 0);
+    auto accs = flecsi_get_handles(dc2, hydro, double, global, 0);
   
     ASSERT_EQ( accs.size(), 2 );
     ASSERT_EQ( accs[0].label(), "density" );

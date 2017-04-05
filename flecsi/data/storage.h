@@ -140,38 +140,11 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
 #endif
 
   //--------------------------------------------------------------------------//
-  // Data accessors.
+  // Data handles.
   //--------------------------------------------------------------------------//
 
   ///
-  /// \brief get an accessor to registered data.
-  ///
-  /// \tparam ST
-  /// \tparam T
-  /// \tparam NS
-  ///
-  /// \param[in] runtime_namespace
-  /// \param[in] key
-  /// \param[in] version
-  ///
-  template<
-    size_t ST,
-    typename T,
-    size_t NS
-  >
-  decltype(auto)
-  get_accessor(
-    const data_client_t & data_client,
-    const utils::const_string_t & key,
-    size_t version=0
-  )
-  {
-    return st_t<ST>::template get_accessor<T, NS>(data_client,
-      sp_t::data_store_, key, version);
-  } // get_accessor
-
-  ///
-  /// \brief get an accessor to registered data.
+  /// \brief get an handle to registered data.
   ///
   /// \tparam ST
   /// \tparam T
@@ -198,7 +171,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   } // get_mutator
 
   ///
-  /// \brief Return a std::vector of accessors to the stored states with
+  /// \brief Return a std::vector of handles to the stored states with
   ///        type \e T in namespace \e NS satisfying the predicate function
   ///        \e predicate.
   ///
@@ -218,7 +191,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   ///
   /// \param [in]  sorted  Sort the returned list by label lexographically.
   /// 
-  /// \return A std::vector of accessors to the state variables that
+  /// \return A std::vector of handles to the state variables that
   ///         match the namespace and predicate criteria.
   ///
   template<
@@ -228,18 +201,18 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     typename P
   >
   decltype(auto)
-  get_accessors(
+  get_handles(
     const data_client_t & data_client,
     size_t version,    
     P && predicate,
     bool sorted = true
   )
   {
-    return st_t<ST>::template get_accessors<T, NS, P>(data_client,
+    return st_t<ST>::template get_handles<T, NS, P>(data_client,
       sp_t::data_store_, version, std::forward<P>(predicate), sorted);
-  } // get_accessors
+  } // get_handles
 
-  /// \brief Return a std::vector of accessors to the stored states with
+  /// \brief Return a std::vector of handles to the stored states with
   ///        type \e T satisfying the predicate function
   ///        \e predicate.
   ///
@@ -258,7 +231,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   ///
   /// \param [in]  sorted  Sort the returned list by label lexographically.
   /// 
-  /// \return A std::vector of accessors to the state variables that
+  /// \return A std::vector of handles to the state variables that
   ///         match the namespace and predicate criteria.
   ///
   template<
@@ -267,19 +240,19 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     typename P
   >
   decltype(auto)
-  get_accessors(
+  get_handles(
     const data_client_t & data_client,
     size_t version,    
     P && predicate,
     bool sorted = true
   )
   {
-    return st_t<ST>::template get_accessors<T, P>(data_client,
+    return st_t<ST>::template get_handles<T, P>(data_client,
       sp_t::data_store_, version, std::forward<P>(predicate), sorted);
-  } // get_accessors
+  } // get_handles
 
   ///
-  /// \brief Return a std::vector of accessors to the stored states with
+  /// \brief Return a std::vector of handles to the stored states with
   ///        type \e T in namespace \e NS.
   ///
   /// \tparam ST
@@ -289,7 +262,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   ///
   /// \param [in]  sorted  Sort the returned list by label lexographically.
   /// 
-  /// \return A std::vector of accessors to the state variables that
+  /// \return A std::vector of handles to the state variables that
   ///         match the namespace and predicate criteria.
   ///
   template<
@@ -298,17 +271,17 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     size_t NS
   >
   decltype(auto)
-  get_accessors(
+  get_handles(
     const data_client_t & data_client,
     size_t version,    
     bool sorted = true
   )
   {
-    return st_t<ST>::template get_accessors<T, NS>(data_client,
+    return st_t<ST>::template get_handles<T, NS>(data_client,
       sp_t::data_store_, version, sorted);
-  } // get_accessors
+  } // get_handles
 
-  /// \brief Return a std::vector of accessors to the stored states with
+  /// \brief Return a std::vector of handles to the stored states with
   ///        type \e T.
   ///
   /// \tparam ST
@@ -317,7 +290,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   ///
   /// \param [in]  sorted  Sort the returned list by label lexographically.
   /// 
-  /// \return A std::vector of accessors to the state variables that
+  /// \return A std::vector of handles to the state variables that
   ///         match the namespace and predicate criteria.
   ///
   template<
@@ -325,15 +298,15 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     typename T
   >
   decltype(auto)
-  get_accessors(
+  get_handles(
     const data_client_t & data_client,
     size_t version,    
     bool sorted = true
   )
   {
-    return st_t<ST>::template get_accessors<T>(data_client,
+    return st_t<ST>::template get_handles<T>(data_client,
       sp_t::data_store_, version, sorted);
-  } // get_accessors
+  } // get_handles
 
   //--------------------------------------------------------------------------//
   // Data handles.
@@ -364,7 +337,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   {
     return st_t<ST>::template get_handle<T, NS>(data_client,
       sp_t::data_store_, key, version);
-  } // get_accessor
+  } // get_handle
 /*
   template<
     size_t ST>

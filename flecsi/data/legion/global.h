@@ -234,7 +234,7 @@ struct storage_type_t<global, DS, MD> {
   >
   static
   std::vector<accessor_t<T>>
-  get_accessors(
+  get_handles(
     const data_client_t & data_client,
     data_store_t & data_store,
     size_t version,
@@ -254,7 +254,7 @@ struct storage_type_t<global, DS, MD> {
   >
   static
   std::vector<accessor_t<T>>
-  get_accessors(
+  get_handles(
     const data_client_t & data_client,
     data_store_t & data_store,
     size_t version,
@@ -274,7 +274,7 @@ struct storage_type_t<global, DS, MD> {
   >
   static
   std::vector<accessor_t<T>>
-  get_accessors(
+  get_handles(
     const data_client_t & data_client,
     data_store_t & data_store,
     size_t version,
@@ -292,7 +292,7 @@ struct storage_type_t<global, DS, MD> {
   >
   static
   std::vector<accessor_t<T>>
-  get_accessors(
+  get_handles(
     const data_client_t & data_client,
     data_store_t & data_store,
     size_t version,
