@@ -42,7 +42,7 @@ struct context__ : public context_policy_t
   using index_partition_t = flecsi::dmp::index_partition_t;
 
   ///
-  ///
+  /// Myer's singleton instance.
   ///
   static
   context__ &
@@ -62,55 +62,11 @@ struct context__ : public context_policy_t
   context__(context__ &&) = default;
   context__ & operator = (context__ &&) = default;
 
-#if 0
-  using partitioned_index_space = 
-      typename context_policy_t::partitioned_index_space;
-
-  //map of the all partitioned_index_spaces used in the code
-  //std::map <name of the partitioned IS <entiry, index partition for entity
-  std::unordered_map<utils::const_string_t,
-     std::unordered_map<utils::const_string_t,
-     typename context_policy_t::partitioned_index_space,
-      utils::const_string_hasher_t>,
-      utils::const_string_hasher_t > partitioned_index_spaces_;
-
-  ///
-  /// getting partitioned index space by name of the partition and entity
-  ///
-  typename context_policy_t::partitioned_index_space& get_index_space(
-    utils::const_string_t part_name,
-    utils::const_string_t entity
-  ) const
-  {
-    auto itr = partitioned_index_spaces_.find(part_name);
-    assert(itr != partitioned_index_spaces_.end() && "invalid index space");
-
-    auto inner_itr=itr->second.find(entity);
-    assert(inner_itr != itr->second.end() && "invalid index space");
-    return  const_cast<typename context_policy_t::partitioned_index_space&>(
-        inner_itr->second);
-  }
-
-  ///
-  /// Adding partitioned ondex space to the context's 
-  /// partitioned_index_spaces_ 
-  ///
-  void add_index_space(
-    utils::const_string_t part_name,
-    utils::const_string_t entity,
-    typename context_policy_t::partitioned_index_space is
-  )
-  {
-    std::unordered_map<utils::const_string_t,
-      typename context_policy_t::partitioned_index_space,
-      utils::const_string_hasher_t> map;
-    map.insert({entity,is});
-    partitioned_index_spaces_.emplace(part_name, std::move(map));
-  }
-#endif
-
   ///
   /// Add an index partition.
+  ///
+  /// \param key The map key.
+  /// \param partition The partition to add.
   ///
   void
   add_partition(
@@ -123,6 +79,11 @@ struct context__ : public context_policy_t
     } // if
   } // add_partition
 
+  ///
+  /// Return the partition referenced by key.
+  ///
+  /// \param key The key associated with the partition to be returned.
+  ///
   const index_partition_t &
   partition(
     size_t key
@@ -134,6 +95,17 @@ struct context__ : public context_policy_t
 
     return partitions_[key];
   } // partition
+
+  ///
+  /// Return the partition map (convenient for iterating through all
+  /// of the partitions.
+  ///
+  const std::unordered_map<size_t, index_partition_t> &
+  partitions()
+  const
+  {
+    return partitions_;
+  } // partitions
 
 private:
 
