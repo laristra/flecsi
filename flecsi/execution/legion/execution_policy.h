@@ -17,6 +17,7 @@
 
 #include <functional>
 #include <memory>
+#include <type_traits>
 
 #include <legion.h>
 
@@ -27,6 +28,8 @@
 #include "flecsi/execution/legion/future.h"
 #include "flecsi/execution/legion/task_wrapper.h"
 #include "flecsi/utils/const_string.h"
+#include "flecsi/utils/tuple_walker.h"
+#include "flecsi/data/data_handle.h"
 
 ///
 /// \file legion/execution_policy.h
@@ -36,6 +39,27 @@
 
 namespace flecsi {
 namespace execution {
+
+  struct args_handler : public utils::tuple_walker<args_handler>{
+    args_handler(Legion::Runtime* runtime, Legion::Context context)
+    : runtime(runtime),
+    context(context){}
+
+    template<typename T, size_t EP, size_t SP, size_t GP>
+    void handle(data_handle__<T, EP, SP, GP>& h){
+
+    }
+
+    template<typename T>
+    static
+    typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::
+      value>
+    handle(T&){}
+
+    Legion::Runtime* runtime;
+    Legion::Context context;
+    std::vector<Legion::RegionRequirement> reqs;
+  };
 
 //----------------------------------------------------------------------------//
 // Execution policy.
@@ -172,6 +196,10 @@ struct legion_execution_policy_t
       {
         TaskLauncher task_launcher(context_.task_id(key),
           TaskArgument(&task_args, sizeof(task_args_t)));
+
+        args_handler handler(context_.runtime(parent),
+                             context_.context(parent));
+        handler.walk(user_task_args_tuple);
 
         auto future = context_.runtime(parent)->execute_task(
           context_.context(parent), task_launcher);

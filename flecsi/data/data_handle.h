@@ -13,6 +13,8 @@
 
 namespace flecsi {
 
+struct data_handle_base{};
+
 ///
 /// \struct data_handle_t data_handle.h
 /// \brief data_handle_t provides an empty type for compile-time identification
@@ -26,7 +28,7 @@ template<
   size_t GP,
   typename DP
 >
-struct data_handle_base__ : public DP {};
+struct data_handle_base__ : public DP, public data_handle_base{};
 
 } // namespace flecsi
 

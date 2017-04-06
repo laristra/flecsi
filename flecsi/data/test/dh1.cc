@@ -44,9 +44,8 @@ using handle_t =
 namespace flecsi {
 namespace execution {
   
-void task1(handle_t<double, 0, 1, 2> x) {
-  np(x[0]);
-  np(x[1]);
+void task1(handle_t<double, 0, 1, 2> x, float y) {
+  np("task");
 } // task1
 
 flecsi_register_task(task1, loc, single);
@@ -84,7 +83,7 @@ driver(
   auto h1 = 
     flecsi_get_handle(dc, hydro, pressure, double, dense, 0);
 
-  flecsi_execute_task(task1, loc, single, h1);
+  flecsi_execute_task(task1, loc, single, h1, 3.4f);
 
 } // driver
 
