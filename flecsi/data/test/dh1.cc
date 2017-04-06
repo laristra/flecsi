@@ -44,7 +44,7 @@ using handle_t =
 namespace flecsi {
 namespace execution {
   
-void task1(handle_t<double, 0, 0, 0> x) {
+void task1(handle_t<double, 0, 1, 2> x) {
   np(x[0]);
   np(x[1]);
 } // task1
@@ -59,22 +59,18 @@ public:
 };
 
 void
-specialization_driver(
-  int argc, 
-  char ** argv
-)
-{
-
-}
-
-void
 driver(
   int argc, 
   char ** argv
 )
 {
   std::cout << "driver start" << std::endl;
-
+/*
+  context_t & context_ = context_t::instance();
+  size_t task_key = utils::const_string_t{"driver"}.hash();
+  auto runtime = context_.runtime(task_key);
+  auto context = context_.context(task_key);
+*/
   data_client dc;
   
   // data client

@@ -60,6 +60,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(execution_SOURCES
     ${execution_SOURCES}
     ../data/legion/dpd.cc
+    legion/context_policy.cc
   )
 
   set(UNIT_POLICY LEGION)
