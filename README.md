@@ -49,7 +49,6 @@ Currently, this equates to G++ 5.0 or greater.
 * CMake >= 3.0
 * GCC >= 6.1.1
 * Doxygen >= 1.8
-* [Cereal](https://github.com/USCiLab/cereal) >= 1.2.1
 * [cinch-utils](https://github.com/laristra/cinch-utils) >= 1.0
 
 ## Legion
