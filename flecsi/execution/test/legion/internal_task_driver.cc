@@ -4,7 +4,7 @@
  *~-------------------------------------------------------------------------~~*/
 
 #include "flecsi/execution/legion/internal_task.h"
-#include "cinchlog.h"
+#include "cinchtest.h"
 
 ///
 /// \file
@@ -50,6 +50,9 @@ void driver(int argc, char ** argv) {
 
 	clog(info) << "Task ID: " << tid_1 << std::endl;
 	clog(info) << "Task ID: " << tid_2 << std::endl;
+
+  ASSERT_EQ(tid_1, 1);
+  ASSERT_EQ(tid_2, 2);
 
 } // driver
 

@@ -6,17 +6,19 @@
 #ifndef flecsi_execution_legion_task_wrapper_h
 #define flecsi_execution_legion_task_wrapper_h
 
+///
+// \file legion/task_wrapper.h
+// \authors bergen, nickm
+// \date Initial file creation: Jul 24, 2016
+///
+
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/legion/handshake.h"
 #include "flecsi/execution/legion/task_args.h"
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/tuple_type_converter.h"
 
-///
-// \file legion/task_wrapper.h
-// \authors bergen, nickm
-// \date Initial file creation: Jul 24, 2016
-///
+clog_register_tag(task_wrapper);
 
 namespace flecsi {
 namespace execution {
@@ -97,6 +99,10 @@ struct legion_task_wrapper__
     LegionRuntime::HighLevel::Context context,
     LegionRuntime::HighLevel::HighLevelRuntime * runtime)
   {
+    {
+    clog_tag_guard(task_wrapper);
+    clog(info) << __PRETTY_FUNCTION__ << std::endl;
+    }
 
     // Unpack task arguments
     task_args_t & task_args = *(reinterpret_cast<task_args_t *>(task->args));
@@ -190,6 +196,11 @@ struct legion_task_wrapper__<P, S, I, void, A>
     LegionRuntime::HighLevel::Context context,
     LegionRuntime::HighLevel::HighLevelRuntime * runtime)
   {
+    {
+    clog_tag_guard(task_wrapper);
+    clog(info) << __PRETTY_FUNCTION__ << std::endl;
+    }
+
     // Unpack task arguments
     task_args_t & task_args = 
       *(reinterpret_cast<task_args_t *>(task->args));
@@ -218,6 +229,7 @@ struct legion_task_wrapper__<P, S, I, void, A>
     LegionRuntime::HighLevel::Context context,
     LegionRuntime::HighLevel::HighLevelRuntime * runtime)
   {
+// FIXME: This should be cleaned up
 #ifdef LEGIONDEBUG
      int rank;
      MPI_Comm_rank( MPI_COMM_WORLD, &rank);

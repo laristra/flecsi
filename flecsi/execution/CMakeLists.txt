@@ -115,6 +115,21 @@ cinch_add_unit(simple_function
     ${CINCH_RUNTIME_LIBRARIES}
 )
 
+#
+# Test basic task calling capability using the register_task
+# interface.
+#
+cinch_add_unit(simple_task
+  SOURCES
+    test/simple_task_driver.cc
+    test/context_runtime.cc
+    ${RUNTIME_DRIVER}
+  POLICY
+    ${UNIT_POLICY}
+  LIBRARIES
+    flecsi
+    ${CINCH_RUNTIME_LIBRARIES}
+)
   if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
     #

@@ -15,9 +15,16 @@
 #ifndef flecsi_execution_legion_execution_policy_h
 #define flecsi_execution_legion_execution_policy_h
 
+///
+/// \file legion/execution_policy.h
+/// \authors bergen
+/// \date Initial file creation: Nov 15, 2015
+///
+
 #include <functional>
 #include <memory>
 
+#include <cinchlog.h>
 #include <legion.h>
 
 #include "flecsi/execution/common/processor.h"
@@ -28,11 +35,7 @@
 #include "flecsi/execution/legion/task_wrapper.h"
 #include "flecsi/utils/const_string.h"
 
-///
-/// \file legion/execution_policy.h
-/// \authors bergen
-/// \date Initial file creation: Nov 15, 2015
-///
+clog_register_tag(execution);
 
 namespace flecsi {
 namespace execution {
@@ -122,7 +125,7 @@ struct legion_execution_policy_t
       } // toc
 
       default:
-        throw std::runtime_error("unsupported processor type");
+        clog(fatal) << "unsupported processor type" << std::endl;
     } // switch
 
   } // register_task
@@ -155,13 +158,19 @@ struct legion_execution_policy_t
 
     context_t & context_ = context_t::instance();
 
+    {
+    clog_tag_guard(execution);
+    clog(info) << __PRETTY_FUNCTION__ << std::endl;
+    }
+
     auto user_task_args_tuple = std::make_tuple(user_task_args...);
     using user_task_args_tuple_t = decltype( user_task_args_tuple );
 
-    using task_args_t = legion_task_args__<R,typename T::args_t, user_task_args_tuple_t>;
+    using task_args_t =
+      legion_task_args__<R,typename T::args_t, user_task_args_tuple_t>;
 
     // We can't use std::forward or && references here because
-    // the calling state is not guarunteed to exist when the
+    // the calling state is not guaranteed to exist when the
     // task is invoked, i.e., we have to use copies...
     task_args_t task_args(user_task_handle, user_task_args_tuple);
 
@@ -202,10 +211,9 @@ struct legion_execution_policy_t
       } // index
         
       default:
-      {
-        throw std::runtime_error("the task can be executed \
-                    only as single or index task");
-      }
+        clog(fatal) <<
+          "the task can be executed only as a single or index task" <<
+          std::endl;
 
     } // switch
   } // execute_task

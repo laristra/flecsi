@@ -18,6 +18,9 @@
 /// \date Initial file creation: Mar 31, 2017
 ///
 
+// FIXME: Change template names to something readable
+//        Add TaskConfigOptions
+
 ///
 /// Convenience macro to create a task key from Legion task information.
 ///
@@ -35,6 +38,15 @@
 ///
 /// This macro registers a internal Legion task.
 ///
+/// \param task The Legion task to register.
+/// \param processor The processor type \ref processor_t.
+/// \param single A boolean indicating whether this task can be run as a
+///               single task.
+/// \param index A boolean indicating whether this task can be run as an
+///              index space launch.
+/// \param config_options A scoped expression containting the task
+///                       configuration options.
+///
 #define __flecsi_internal_register_legion_task(task, processor, single, index) \
                                                                                \
   namespace flecsi {                                                           \
@@ -43,10 +55,10 @@
                                                                                \
   /* Create a callback wrapper type for each invocation of this macro */       \
   template<                                                                    \
-    processor_t P,                                                             \
-    bool S,                                                                    \
-    bool I,                                                                    \
-    typename R                                                                 \
+    processor_t PROCESSOR,                                                     \
+    bool SINGLE,                                                               \
+    bool INDEX,                                                                \
+    typename RETURN                                                            \
   >                                                                            \
   struct task ## _internal_task__                                              \
   {                                                                            \
@@ -61,14 +73,14 @@
       task_id_t tid                                                            \
     )                                                                          \
     {                                                                          \
-      switch(P) {                                                              \
+      switch(PROCESSOR) {                                                      \
         case loc:                                                              \
-          lr_runtime::register_legion_task<R, task>(                           \
-            tid, lr_proc::LOC_PROC, S, I);                                     \
+          lr_runtime::register_legion_task<RETURN, task>(                      \
+            tid, lr_proc::LOC_PROC, SINGLE, INDEX);                            \
           break;                                                               \
         case toc:                                                              \
-          lr_runtime::register_legion_task<R, task>(                           \
-            tid, lr_proc::LOC_PROC, S, I);                                     \
+          lr_runtime::register_legion_task<RETURN, task>(                      \
+            tid, lr_proc::LOC_PROC, SINGLE, INDEX);                            \
           break;                                                               \
       } /* switch */                                                           \
     } /* register_task */                                                      \
