@@ -27,6 +27,9 @@ enum launch_t : size_t {
 } //namespace execution 
 } // namespace flecsi
 
+
+// FIXME: add reverse
+
 ///
 /// Macro to convert boolean values for single and index into a valid
 /// launch_t at compile time.
@@ -38,6 +41,28 @@ enum launch_t : size_t {
     launch_t::single                                        									 \
   :                                                                            \
     launch_t::index
+
+///
+/// Macro to convert launch_t into valid boolean for sinlge at compile time.
+///
+#define flecsi_launch_to_single(L)                                             \
+  launch_t::L == launch_t::any ?                                               \
+    true                                                                       \
+  : launch_t::L == launch_t::single ?                                          \
+    true                                                                       \
+  :                                                                            \
+    false
+
+///
+/// Macro to convert launch_t into valid boolean for index at compile time.
+///
+#define flecsi_launch_to_index(L)                                              \
+  launch_t::L == launch_t::any ?                                               \
+    true                                                                       \
+  : launch_t::L == launch_t::index ?                                           \
+    true                                                                       \
+  :                                                                            \
+    false
 
 #endif // flecsi_execution_common_processor_h
 

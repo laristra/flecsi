@@ -25,6 +25,7 @@
 #include <unordered_map>
 #include <stack>
 
+#include <cinchlog.h>
 #include <legion.h>
 
 #include "flecsi/utils/common.h"
@@ -32,6 +33,8 @@
 #include "flecsi/utils/tuple_wrapper.h"
 #include "flecsi/execution/legion/runtime_driver.h"
 #include "flecsi/execution/common/task_hash.h"
+
+clog_register_tag(context);
 
 namespace flecsi {
 namespace execution {
@@ -105,6 +108,12 @@ struct legion_context_policy_t
 
     // Register user tasks
     for(auto f: task_registry_) {
+
+      {
+      clog_tag_guard(context);
+      clog(info) << "Adding task id: " << f.second.first << std::endl;
+      } // scope
+
       // funky logic: task_registry_ is a map of std::pair
       // f.first is the uintptr_t that holds the user function address
       // f.second is the pair of unique task id and the registration function
@@ -130,9 +139,10 @@ struct legion_context_policy_t
     const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions
   )
   {
-#ifndef NDEBUG
-    std::cout << "pushing task state for " << key << std::endl;
-#endif
+    {
+    clog_tag_guard(context);
+    clog(info) << "Pushing state for " << key << std::endl;
+    }
 
     state_[key].push(std::shared_ptr<legion_runtime_state_t>
       (new legion_runtime_state_t(context, runtime, task, regions)));
@@ -147,9 +157,10 @@ struct legion_context_policy_t
     size_t key
   )
   {
-#ifndef NDEBUG
-    std::cout << "popping task state for " << key << std::endl;
-#endif
+    {
+    clog_tag_guard(context);
+    clog(info) << "Popping state for " << key << std::endl;
+    }
 
     state_[key].pop();
   } // set_state
@@ -187,10 +198,8 @@ struct legion_context_policy_t
     task_hash_key_t key
   )
   {
-#ifndef NDEBUG
-    assert(task_registry_.find(key) != task_registry_.end() &&
-      "task key does not exist!");
-#endif
+    clog_assert(task_registry_.find(key) != task_registry_.end(),
+      "task key does not exist");
 
     return task_registry_[key].first;
   } // task_id
@@ -288,6 +297,7 @@ struct legion_context_policy_t
 
   using  copy_task_map_t = std::unordered_map<size_t, task_hash_key_t>;
 
+  // FIXME: I would like to remove/move this.
   struct partitioned_index_space
   {
     // logical region for the entity
