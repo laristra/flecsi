@@ -22,6 +22,8 @@
 namespace flecsi {
 namespace execution {
 
+  // This is called to walk the task args before the user task functions runs
+  // once we have the corresponding physical regions
   struct handle_args_ : public utils::tuple_walker__<handle_args_>{
     handle_args_(Legion::Runtime* runtime,
                  Legion::Context context,
@@ -134,6 +136,10 @@ struct legion_task_wrapper__
     context_t::instance().push_state(user_task_handle.key(),
       context, runtime, task, regions);
 
+    handle_args_
+      handle_args(runtime, context, regions);
+    handle_args.walk(user_task_args);
+
     auto retval = user_task_handle(
       context_t::instance().function(user_task_handle.key()),
       user_task_args);
@@ -227,6 +233,10 @@ struct legion_task_wrapper__<P, S, I, void, A>
     // Push the Legion state
     context_t::instance().push_state(user_task_handle.key(),
       context, runtime, task, regions);
+
+    handle_args_
+      handle_args(runtime, context, regions);
+    handle_args.walk(user_task_args);
 
     user_task_handle(context_t::instance().function(user_task_handle.key()),
       user_task_args);
