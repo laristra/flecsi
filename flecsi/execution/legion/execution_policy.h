@@ -245,11 +245,10 @@ struct legion_execution_policy_t
     using user_task_args_tuple_t = decltype( user_task_args_tuple );
 
     using task_args_tuple_t = typename T::args_t;
-    auto& task_args_tuple = 
-      *reinterpret_cast<task_args_tuple_t*>(&user_task_args_tuple);
+    task_args_tuple_t task_args_tuple = user_task_args_tuple;
 
     using task_args_t =
-      legion_task_args__<R,typename T::args_t, user_task_args_tuple_t>;
+      legion_task_args__<R, task_args_tuple_t>;
 
     auto legion_runtime = context_.runtime(parent);
     auto legion_context = context_.context(parent);
@@ -260,7 +259,7 @@ struct legion_execution_policy_t
     // We can't use std::forward or && references here because
     // the calling state is not guaranteed to exist when the
     // task is invoked, i.e., we have to use copies...
-    task_args_t task_args(user_task_handle, user_task_args_tuple);
+    task_args_t task_args(user_task_handle, task_args_tuple);
 
     // Switch on launch type: single or index.
     switch(key.launch()) {

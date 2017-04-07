@@ -98,7 +98,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   ///
   // Copy constructor.
   ///
-  dense_handle_t(const dense_handle_t & a)
+  template<size_t EP2, size_t SP2, size_t GP2>
+  dense_handle_t(const dense_handle_t<T, EP2, SP2, GP2, MD> & a)
     :
       label_(a.label_),
       size_(a.size_),
@@ -284,6 +285,9 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   {
     return data_ != nullptr;
   } // operator bool
+
+  template<typename, size_t, size_t, size_t, typename>
+  friend class dense_handle_t;
 
 private:
 
