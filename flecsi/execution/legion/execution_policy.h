@@ -54,7 +54,7 @@ struct init_args_ : public utils::tuple_walker__<init_args_>{
 
   template<typename T, size_t EP, size_t SP, size_t GP>
   void handle(data_handle__<T, EP, SP, GP>& h){
-  
+
   }
 
   template<typename T>
@@ -244,6 +244,10 @@ struct legion_execution_policy_t
     auto user_task_args_tuple = std::make_tuple(user_task_args...);
     using user_task_args_tuple_t = decltype( user_task_args_tuple );
 
+    using task_args_tuple_t = typename T::args_t;
+    auto& task_args_tuple = 
+      *reinterpret_cast<task_args_tuple_t*>(&user_task_args_tuple);
+
     using task_args_t =
       legion_task_args__<R,typename T::args_t, user_task_args_tuple_t>;
 
@@ -251,7 +255,7 @@ struct legion_execution_policy_t
     auto legion_context = context_.context(parent);
 
     init_args_ init_args(legion_runtime, legion_context);
-    init_args.walk(user_task_args_tuple);
+    init_args.walk(task_args_tuple);
 
     // We can't use std::forward or && references here because
     // the calling state is not guaranteed to exist when the
@@ -268,14 +272,14 @@ struct legion_execution_policy_t
 
         task_prolog_
           task_prolog(legion_runtime, legion_context, task_launcher);
-        task_prolog.walk(user_task_args_tuple);
+        task_prolog.walk(task_args_tuple);
 
         auto future = context_.runtime(parent)->execute_task(
           context_.context(parent), task_launcher);
 
         task_epilog_
           task_epilog(legion_runtime, legion_context);
-        task_epilog.walk(user_task_args_tuple);
+        task_epilog.walk(task_args_tuple);
 
         return legion_future__<R>(future);
       } // single
