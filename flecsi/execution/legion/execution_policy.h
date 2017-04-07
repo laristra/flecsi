@@ -40,26 +40,71 @@
 namespace flecsi {
 namespace execution {
 
-  struct args_handler : public utils::tuple_walker<args_handler>{
-    args_handler(Legion::Runtime* runtime, Legion::Context context)
-    : runtime(runtime),
-    context(context){}
+struct init_args_ : public utils::tuple_walker__<init_args_>{
+  init_args_(Legion::Runtime* runtime, Legion::Context context)
+  : runtime(runtime),
+  context(context){}
 
-    template<typename T, size_t EP, size_t SP, size_t GP>
-    void handle(data_handle__<T, EP, SP, GP>& h){
+  template<typename T, size_t EP, size_t SP, size_t GP>
+  void handle(data_handle__<T, EP, SP, GP>& h){
+  
+  }
 
-    }
+  template<typename T>
+  static
+  typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::
+    value>
+  handle(T&){}
 
-    template<typename T>
-    static
-    typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::
-      value>
-    handle(T&){}
+  Legion::Runtime* runtime;
+  Legion::Context context;
+  std::vector<Legion::RegionRequirement> reqs;
+};
 
-    Legion::Runtime* runtime;
-    Legion::Context context;
-    std::vector<Legion::RegionRequirement> reqs;
-  };
+struct task_prolog_ : public utils::tuple_walker__<init_args_>{
+  task_prolog_(Legion::Runtime* runtime,
+               Legion::Context context,
+               Legion::TaskLauncher& launcher)
+  : runtime(runtime),
+  context(context),
+  launcher(launcher){}
+
+  template<typename T, size_t EP, size_t SP, size_t GP>
+  void handle(data_handle__<T, EP, SP, GP>& h){
+  
+  }
+
+  template<typename T>
+  static
+  typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::
+    value>
+  handle(T&){}
+
+  Legion::Runtime* runtime;
+  Legion::Context context;
+  Legion::TaskLauncher& launcher;
+};
+
+struct task_epilog_ : public utils::tuple_walker__<init_args_>{
+  task_epilog_(Legion::Runtime* runtime,
+               Legion::Context context)
+  : runtime(runtime),
+  context(context){}
+
+  template<typename T, size_t EP, size_t SP, size_t GP>
+  void handle(data_handle__<T, EP, SP, GP>& h){
+  
+  }
+
+  template<typename T>
+  static
+  typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::
+    value>
+  handle(T&){}
+
+  Legion::Runtime* runtime;
+  Legion::Context context;
+};
 
 //----------------------------------------------------------------------------//
 // Execution policy.
@@ -184,6 +229,12 @@ struct legion_execution_policy_t
 
     using task_args_t = legion_task_args__<R,typename T::args_t, user_task_args_tuple_t>;
 
+    auto legion_runtime = context_.runtime(parent);
+    auto legion_context = context_.context(parent);
+
+    init_args_ init_args(legion_runtime, legion_context);
+    init_args.walk(user_task_args_tuple);
+
     // We can't use std::forward or && references here because
     // the calling state is not guarunteed to exist when the
     // task is invoked, i.e., we have to use copies...
@@ -197,12 +248,16 @@ struct legion_execution_policy_t
         TaskLauncher task_launcher(context_.task_id(key),
           TaskArgument(&task_args, sizeof(task_args_t)));
 
-        args_handler handler(context_.runtime(parent),
-                             context_.context(parent));
-        handler.walk(user_task_args_tuple);
+        task_prolog_
+          task_prolog(legion_runtime, legion_context, task_launcher);
+        task_prolog.walk(user_task_args_tuple);
 
         auto future = context_.runtime(parent)->execute_task(
           context_.context(parent), task_launcher);
+
+        task_epilog_
+          task_epilog(legion_runtime, legion_context);
+        task_epilog.walk(user_task_args_tuple);
 
         return legion_future__<R>(future);
       } // single
