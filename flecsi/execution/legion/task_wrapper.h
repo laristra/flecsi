@@ -17,11 +17,38 @@
 #include "flecsi/execution/legion/task_args.h"
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/tuple_type_converter.h"
+#include "flecsi/utils/tuple_walker.h"
 
 clog_register_tag(task_wrapper);
 
 namespace flecsi {
 namespace execution {
+
+  struct handle_args_ : public utils::tuple_walker__<handle_args_>{
+    handle_args_(Legion::Runtime* runtime,
+                 Legion::Context context,
+                 const std::vector<Legion::PhysicalRegion>& regions)
+    : runtime(runtime),
+    context(context),
+    regions(regions){}
+
+    template<typename T, size_t EP, size_t SP, size_t GP>
+    void handle(data_handle__<T, EP, SP, GP>& h){
+
+    }
+
+    template<typename T>
+    static
+    typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::
+      value>
+    handle(T&){
+
+    }
+
+    Legion::Runtime* runtime;
+    Legion::Context context;
+    const std::vector<Legion::PhysicalRegion>& regions;
+  };
 
 ///
 /// \brief

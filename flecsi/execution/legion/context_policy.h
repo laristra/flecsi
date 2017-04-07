@@ -71,7 +71,7 @@ struct legion_runtime_state_t {
 // is set for each legion task invocation using the task name hash
 // as a key. This seems like it should be safe, since multiple concurrent
 // invocations of the same task can only occur on seperate threads.
-static thread_local std::unordered_map<size_t,
+extern thread_local std::unordered_map<size_t,
   std::stack<std::shared_ptr<legion_runtime_state_t>>> state_;
 
 ///

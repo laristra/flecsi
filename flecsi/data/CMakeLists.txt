@@ -175,15 +175,16 @@ endif()
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
-    cinch_add_unit(mpilegion_dh1
+    cinch_add_unit(legion_dh1
       SOURCES
         ../execution/test/task.cc
         ../execution/test/context_runtime.cc
         ../execution/legion/runtime_driver.cc
+        ../execution/legion/context_policy.cc
         test/dh1.cc
         data_client.cc
       LIBRARIES ${PARTITION_LIBRARIES}
-      POLICY MPILEGION
+      POLICY LEGION
       THREADS 2
     )
   endif()
