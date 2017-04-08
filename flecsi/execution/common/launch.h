@@ -11,60 +11,89 @@
 /// \date Initial file creation: Aug 23, 2016
 ///
 
+#include <bitset>
+#include <string>
+
 namespace flecsi {
 namespace execution {
 
 ///
-/// The processor_t enum defines the different Legion task
-/// launch types that are supported by FleCSI's execution model.
+/// Use a std::bitset to store launch information.
 ///
-enum launch_t : size_t {
+using launch_t = std::bitset<5>;
+
+///
+/// Enumeration of various task launch types. Not all of these may be
+/// supported by all runtimes. Unsupported launch information will be
+/// ignored.
+///
+enum class launch_type_t : size_t {
   single,
   index,
-  any
-}; // enum launch_t
+  leaf,
+  inner,
+  idempotent
+}; // enum launch_type_t
 
-} //namespace execution 
+///
+/// Bitmasks for launch types.
+///
+/// \note This enumeration is not scoped so that users can do things
+///       like:
+///       \code
+///       launch_t l(single | leaf);
+///       \endcode
+///
+enum launch_mask_t : size_t {
+  single     = 1<<0,
+  index      = 1<<1,
+  leaf       = 1<<2,
+  inner      = 1<<3,
+  idempotent = 1<<4
+}; // enum launch_mask_t
+
+///
+/// Macro to create repetitive interfaces.
+///
+#define test_boolean_interface(name)                                           \
+  inline bool launch_ ## name(const launch_t & l) {                            \
+    return l.test(static_cast<size_t>(launch_type_t::name));                   \
+  }
+
+test_boolean_interface(single)
+test_boolean_interface(index)
+test_boolean_interface(leaf)
+test_boolean_interface(inner)
+test_boolean_interface(idempotent)
+
+#undef test_boolean_interface
+
+///
+/// Static launch_t creation function.
+///
+template<
+  bool SINGLE = false,
+  bool INDEX = false,
+  bool LEAF = false,
+  bool INNER = false,
+  bool IDEMPOTENT = false
+>
+launch_t
+make_launch()
+{
+  return {
+    (SINGLE     ? 1 << 0 : 0) |
+    (INDEX      ? 1 << 1 : 0) |
+    (LEAF       ? 1 << 2 : 0) |
+    (INNER      ? 1 << 3 : 0) |
+    (IDEMPOTENT ? 1 << 4 : 0)
+  };
+} // make_launch
+
+} // namespace execution 
 } // namespace flecsi
 
-
-// FIXME: add reverse
-
-///
-/// Macro to convert boolean values for single and index into a valid
-/// launch_t at compile time.
-///
-#define flecsi_bools_to_launch(S, I)                                           \
-  S && I ?                                                                     \
-    launch_t::any                                                              \
-  : S ?                                                                        \
-    launch_t::single                                        									 \
-  :                                                                            \
-    launch_t::index
-
-///
-/// Macro to convert launch_t into valid boolean for sinlge at compile time.
-///
-#define flecsi_launch_to_single(L)                                             \
-  launch_t::L == launch_t::any ?                                               \
-    true                                                                       \
-  : launch_t::L == launch_t::single ?                                          \
-    true                                                                       \
-  :                                                                            \
-    false
-
-///
-/// Macro to convert launch_t into valid boolean for index at compile time.
-///
-#define flecsi_launch_to_index(L)                                              \
-  launch_t::L == launch_t::any ?                                               \
-    true                                                                       \
-  : launch_t::L == launch_t::index ?                                           \
-    true                                                                       \
-  :                                                                            \
-    false
-
-#endif // flecsi_execution_common_processor_h
+#endif // flecsi_execution_common_launch_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.
