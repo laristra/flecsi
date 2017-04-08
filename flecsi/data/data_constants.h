@@ -20,11 +20,6 @@
 /// \date Initial file creation: Feb 26, 2016
 ///
 
-#include <limits>
-
-#include "flecsi/utils/bitfield.h"
-#include "flecsi/utils/const_string.h"
-
 namespace flecsi {
 namespace data {
 
