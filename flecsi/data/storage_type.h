@@ -15,16 +15,16 @@
 #ifndef flecsi_data_storage_type_h
 #define flecsi_data_storage_type_h
 
+///
+/// \file
+/// \date Initial file creation: Apr 15, 2016
+///
+
 #ifndef POLICY_NAMESPACE
   #error "You must define a data policy namespace before including this file."
 #endif
 
 #include "flecsi/data/data_constants.h"
-
-///
-/// \file
-/// \date Initial file creation: Apr 15, 2016
-///
 
 namespace flecsi {
 namespace data {

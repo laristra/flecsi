@@ -6,13 +6,13 @@
 #ifndef flecsi_data_client_h
 #define flecsi_data_client_h
 
-#include "flecsi/utils/common.h"
- 
 ///
 /// \file
 /// \date Initial file creation: Mar 23, 2016
 ///
 
+#include "flecsi/utils/common.h"
+ 
 namespace flecsi {
 namespace data {
 

@@ -6,12 +6,12 @@
 #ifndef flecsi_data_data_h
 #define flecsi_data_data_h
 
-#include "flecsi/data/storage.h"
-
 ///
 /// \file
 /// \date Initial file creation: Aug 01, 2016
 ///
+
+#include "flecsi/data/storage.h"
 
 ///
 /// \brief Register data with a data_client_t.
