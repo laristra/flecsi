@@ -33,7 +33,7 @@ double task(double dval, int ival) {
   return dval;
 } // task1
 
-flecsi_register_task(task, loc, single);
+flecsi_register_task(task, loc | toc, single | index);
 
 //----------------------------------------------------------------------------//
 // Driver.

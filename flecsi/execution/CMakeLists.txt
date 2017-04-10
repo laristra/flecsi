@@ -13,15 +13,15 @@
 #~----------------------------------------------------------------------------~#
 
 set(execution_HEADERS
-	common/function_handle.h
-	common/launch.h
-	common/processor.h
-	common/task_hash.h
-	context.h
-	execution.h
-	function.h
-	kernel.h
-	task.h
+  common/function_handle.h
+  common/launch.h
+  common/processor.h
+  common/task_hash.h
+  context.h
+  execution.h
+  function.h
+  kernel.h
+  task.h
 )
 
 #------------------------------------------------------------------------------#
@@ -104,6 +104,16 @@ cinch_add_unit(launch
     SERIAL
 )
 
+cinch_add_unit(processor
+  SOURCES
+    test/processor.cc
+  POLICY
+    SERIAL
+  LIBRARIES
+    flecsi
+    ${CINCH_RUNTIME_LIBRARIES}
+)
+
 cinch_add_unit(task_hash
   SOURCES
     test/task_hash.cc
@@ -150,17 +160,17 @@ cinch_add_unit(simple_task
     #
     # Test internal legion task registration.
     #
-    cinch_add_unit(internal_task
-    SOURCES
-      test/legion/internal_task_driver.cc
-      test/context_runtime.cc
-      ${RUNTIME_DRIVER}
-    POLICY
-      ${UNIT_POLICY}
-    LIBRARIES
-      flecsi
-      ${CINCH_RUNTIME_LIBRARIES}
-    )
+#    cinch_add_unit(internal_task
+#    SOURCES
+#      test/legion/internal_task_driver.cc
+#      test/context_runtime.cc
+#      ${RUNTIME_DRIVER}
+#    POLICY
+#      ${UNIT_POLICY}
+#    LIBRARIES
+#      flecsi
+#      ${CINCH_RUNTIME_LIBRARIES}
+#    )
 
   endif()
 

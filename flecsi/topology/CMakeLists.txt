@@ -128,10 +128,11 @@ cinch_add_unit(devel-graph
     SERIAL_DEVEL
 )
 
-cinch_add_unit(index-space
-  SOURCES
-    test/index-space.cc test/pseudo_random.h
-)
+# FIXME: Check this with refactor
+#cinch_add_unit(index-space
+#  SOURCES
+#    test/index-space.cc test/pseudo_random.h
+#)
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options

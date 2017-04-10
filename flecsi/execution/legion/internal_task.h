@@ -67,7 +67,7 @@
   /* Create a callback wrapper type for each invocation of this macro */       \
   template<                                                                    \
     typename RETURN,                                                           \
-    processor_t PROCESSOR,                                                     \
+    processor_type_t PROCESSOR,                                                \
     bool SINGLE=true,                                                          \
     bool INDEX=false,                                                          \
     bool LEAF=false,                                                           \

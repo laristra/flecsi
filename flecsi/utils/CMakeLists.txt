@@ -17,6 +17,7 @@ set(utils_HEADERS
   array_ref.h
   common.h
   const_string.h
+  debruijn.h
   dimensioned_array.h
   factory.h
   hash.h
@@ -37,6 +38,7 @@ set(utils_HEADERS
 
 set(utils_SOURCES
   common.cc
+  debruijn.cc
   PARENT_SCOPE
 )
 

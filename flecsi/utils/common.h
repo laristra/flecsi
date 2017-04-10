@@ -191,7 +191,6 @@ struct function_traits__<volatile T&&> : public function_traits__<T> {};
 template <typename T>
 struct function_traits__<const volatile T&&> : public function_traits__<T> {};
 
-
 } // namespace utils
 } // namespace flecsi
 

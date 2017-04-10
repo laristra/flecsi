@@ -175,7 +175,9 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
         ../execution/legion/context_policy.cc
         test/dh1.cc
         data_client.cc
-      LIBRARIES ${PARTITION_LIBRARIES}
+      LIBRARIES
+        flecsi
+        ${PARTITION_LIBRARIES}
       POLICY LEGION
       THREADS 2
     )

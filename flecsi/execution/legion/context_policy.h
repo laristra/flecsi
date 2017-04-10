@@ -107,17 +107,32 @@ struct legion_context_policy_t
       TOP_LEVEL_TASK_ID, lr_loc, true, false);
 
     // Register user tasks
-    for(auto f: task_registry_) {
+    for(auto t: task_registry_) {
 
+#if 0
       {
       clog_tag_guard(context);
-      clog(info) << "Adding task id: " << f.second.first << std::endl;
+      clog(info) << "Adding task id: " << t.second.first << std::endl;
+
+      // Get the key in the correct form
+      task_hash_key_t key = t.first;
+
+      clog(info) << "Task address: " << key.address() << std::endl;
+      clog(info) << "Task processor: " << key.processor() << std::endl;
+      clog(info) << "Task launch: " << key.launch() << std::endl;
+
       } // scope
 
       // funky logic: task_registry_ is a map of std::pair
-      // f.first is the uintptr_t that holds the user function address
-      // f.second is the pair of unique task id and the registration function
-      f.second.second(f.second.first);
+      // t.first is the task_hash_t key that identifies the task.
+      // t.second is the pair of unique task id and the registration function
+      t.second.second(t.second.first);
+#endif
+
+      // Iterate over task variants
+      for(auto v: t.second) {
+        v.second.second(v.second.first);
+      } // for
     } // for
   
     // Start the runtime
@@ -174,18 +189,28 @@ struct legion_context_policy_t
   using unique_tid_t = utils::unique_id_t<task_id_t>;
 
   ///
-  /// registering FLeCSI task by using task_key and function pointer
+  /// Registering FLeCSI task by using task_key and function pointer
   ///
   bool
   register_task(
     task_hash_key_t key,
+    processor_type_t variant,
     const register_function_t & f
   )
   {
-    if(task_registry_.find(key) == task_registry_.end()) {
-      task_registry_[key] = { unique_tid_t::instance().next(), f };
+    {
+    clog_tag_guard(context);
+    clog(info) << "Registering task " << key << std::endl;
+    }
+
+    // Try to get the task entry.
+    auto task_entry = task_registry_[key];
+
+    // Check for existence and add if this variant has not been defined.
+    if(task_entry.find(variant) == task_entry.end()) {
+      task_registry_[key][variant] = { unique_tid_t::instance().next(), f };
       return true;
-    } // if
+    }
 
     return false;
   } // register_task
@@ -198,10 +223,27 @@ struct legion_context_policy_t
     task_hash_key_t key
   )
   {
-    clog_assert(task_registry_.find(key) != task_registry_.end(),
-      "task key does not exist");
+    {
+    clog_tag_guard(context);
+    clog(info) << "Returning task id: " << key << std::endl;
+    }
 
-    return task_registry_[key].first;
+    // There is only one task variant set.
+    clog_assert(key.processor().count() == 1,
+      "multiple task variants given: " << key.processor());
+
+    // The key exists.
+    auto task_entry = task_registry_.find(key);
+    clog_assert(task_entry != task_registry_.end(),
+      "task key does not exist: " << key);
+
+    auto mask = static_cast<processor_mask_t>(key.processor().to_ulong());
+    auto variant = task_entry->second.find(mask_to_type(mask));
+
+    clog_assert(variant != task_entry->second.end(),
+      "task variant does not exist: " << key);
+    
+    return variant->second.first;
   } // task_id
 
   //--------------------------------------------------------------------------//
@@ -289,6 +331,7 @@ struct legion_context_policy_t
     return state_[task_key].top()->regions;
   } // regions
 
+  // FIXME: Not sure if this is needed...
   //------------------------------------------------------------------------//
   // Data registration
   //------------------------------------------------------------------------//
@@ -329,10 +372,18 @@ private:
   // Task registry
   //--------------------------------------------------------------------------//
 
+  // Define the value type for task map.
+  using task_value_t =
+    std::unordered_map<processor_type_t,
+      std::pair<task_id_t, register_function_t>>;
+
   // Define the map type using the task_hash_t hash function.
-  std::unordered_map<task_hash_t::key_t,
-    std::pair<task_id_t, register_function_t>,
-    task_hash_t> task_registry_;
+  std::unordered_map<
+    task_hash_t::key_t, // key
+    task_value_t,       // value
+    task_hash_t,        // hash function
+    task_hash_t         // equivalence operator
+  > task_registry_;
 
   //--------------------------------------------------------------------------//
   // Function registry

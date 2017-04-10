@@ -104,8 +104,7 @@
   /* Register the user task with the execution policy */                       \
   bool task ## _task_registered =                                              \
     flecsi::execution::task_t::register_task<task ## _trt_t, task ## _tat_t>   \
-    (reinterpret_cast<uintptr_t>(&task), flecsi::execution::processor,         \
-     flecsi::execution::launch)
+    (reinterpret_cast<uintptr_t>(&task), processor, launch)
 
 ///
 /// This macro executes a user task.

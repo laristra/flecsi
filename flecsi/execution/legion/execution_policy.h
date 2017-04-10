@@ -150,45 +150,63 @@ struct legion_execution_policy_t
   )
   {
     const launch_t launch = key.launch();
+    const processor_t processor = key.processor();
 
-    switch(key.processor()) {
+    if(processor_loc(processor)) {
+      bool retval(false);
 
-      case loc:
       {
-        if(launch_single(launch) && launch_index(launch)) {
-          return context_t::instance().register_task(key,
-            legion_task_wrapper__<loc, 1, 1, R, A>::register_callback);
-        }
-        else if(launch_single(launch)) {
-          return context_t::instance().register_task(key,
-            legion_task_wrapper__<loc, 1, 0, R, A>::register_callback);
-        }
-        else if(launch_index(launch)) {
-          return context_t::instance().register_task(key,
-            legion_task_wrapper__<loc, 0, 1, R, A>::register_callback);
-        } // if
-      } // loc
+      clog_tag_guard(execution);
+      clog(info) << "Registering loc task " << key.address() << std::endl;
+      }
 
-      case toc:
+      if(launch_single(launch) && launch_index(launch)) {
+        retval = context_t::instance().register_task(key, processor_type_t::loc,
+          legion_task_wrapper__<processor_type_t::loc, 1, 1, R, A>::
+            register_callback);
+      }
+      else if(launch_single(launch)) {
+        retval = context_t::instance().register_task(key, processor_type_t::loc,
+          legion_task_wrapper__<processor_type_t::loc, 1, 0, R, A>::
+            register_callback);
+      }
+      else if(launch_index(launch)) {
+        retval = context_t::instance().register_task(key, processor_type_t::loc,
+          legion_task_wrapper__<processor_type_t::loc, 0, 1, R, A>::
+            register_callback);
+      } // if
+
+      if(!retval) { return false; }
+    } // if
+
+    if(processor_toc(processor)) {
+      bool retval(false);
+
       {
-        if(launch_single(launch) && launch_index(launch)) {
-          return context_t::instance().register_task(key,
-            legion_task_wrapper__<toc, 1, 1, R, A>::register_callback);
-        }
-        else if(launch_single(launch)) {
-          return context_t::instance().register_task(key,
-            legion_task_wrapper__<toc, 1, 0, R, A>::register_callback);
-        }
-        else if(launch_index(launch)) {
-          return context_t::instance().register_task(key,
-            legion_task_wrapper__<toc, 0, 1, R, A>::register_callback);
-        } // if
-      } // toc
+      clog_tag_guard(execution);
+      clog(info) << "Registering toc task " << key.address() << std::endl;
+      }
 
-      default:
-        clog(fatal) << "unsupported processor type" << std::endl;
-    } // switch
+      if(launch_single(launch) && launch_index(launch)) {
+        retval = context_t::instance().register_task(key, processor_type_t::toc,
+          legion_task_wrapper__<processor_type_t::toc, 1, 1, R, A>::
+            register_callback);
+      }
+      else if(launch_single(launch)) {
+        retval = context_t::instance().register_task(key, processor_type_t::toc,
+          legion_task_wrapper__<processor_type_t::toc, 1, 0, R, A>::
+            register_callback);
+      }
+      else if(launch_index(launch)) {
+        retval = context_t::instance().register_task(key, processor_type_t::toc,
+          legion_task_wrapper__<processor_type_t::toc, 0, 1, R, A>::
+            register_callback);
+      } // if
 
+      if(!retval) { return false; }
+    } // if
+
+    return true;
   } // register_task
 
   ///

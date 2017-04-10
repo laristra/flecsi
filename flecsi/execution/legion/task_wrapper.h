@@ -64,7 +64,7 @@ namespace execution {
 /// \tparam As arguments
 ///
 template<
-  processor_t P,
+  processor_type_t P,
   bool S,
   bool I,
   typename R,
@@ -106,15 +106,15 @@ struct legion_task_wrapper__
   )
   {
     switch(P) {
-      case loc:
+      case processor_type_t::loc:
         lr_runtime::register_legion_task<R, execute>(
           tid, lr_proc::LOC_PROC, S, I);
         break;
-      case toc:
+      case processor_type_t::toc:
         lr_runtime::register_legion_task<R, execute>(
           tid, lr_proc::TOC_PROC, S, I);
         break;
-      case mpi:
+      case processor_type_t::mpi:
         break;
     } // switch
   } // register_callback
@@ -161,7 +161,7 @@ struct legion_task_wrapper__
 /// Partial specialization for void.
 ///
 template<
-  processor_t P,
+  processor_type_t P,
   bool S,
   bool I,
   typename A
@@ -200,17 +200,17 @@ struct legion_task_wrapper__<P, S, I, void, A>
   )
   {
     switch(P) {
-      case loc:
+      case processor_type_t::loc:
         lr_runtime::register_legion_task<execute>(
           tid, lr_proc::LOC_PROC, S, I);
         break;
-      case toc:
+      case processor_type_t::toc:
         lr_runtime::register_legion_task<execute>(
           tid, lr_proc::TOC_PROC, S, I);
         break;
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion || \
   FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
-      case mpi:
+      case processor_type_t::mpi:
         lr_runtime::register_legion_task<execute_mpi>(
           tid, lr_proc::LOC_PROC, S, I);
         break;
