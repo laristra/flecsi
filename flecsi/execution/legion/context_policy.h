@@ -28,7 +28,6 @@
 #include <cinchlog.h>
 #include <legion.h>
 
-#include "flecsi/data/storage.h"
 #include "flecsi/execution/common/task_hash.h"
 #include "flecsi/execution/legion/runtime_driver.h"
 #include "flecsi/utils/common.h"
@@ -98,50 +97,7 @@ struct legion_context_policy_t
   initialize(
     int argc,
     char ** argv
-  )
-  {
-    using namespace LegionRuntime::HighLevel;
-
-    // Register top-level task
-    HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
-    HighLevelRuntime::register_legion_task<runtime_driver>(
-      TOP_LEVEL_TASK_ID, lr_loc, true, false);
-
-    // Register user data
-    data::storage_t::instance().register_all();
-
-    // Register user tasks
-    for(auto t: task_registry_) {
-
-#if 0
-      {
-      clog_tag_guard(context);
-      clog(info) << "Adding task id: " << t.second.first << std::endl;
-
-      // Get the key in the correct form
-      task_hash_key_t key = t.first;
-
-      clog(info) << "Task address: " << key.address() << std::endl;
-      clog(info) << "Task processor: " << key.processor() << std::endl;
-      clog(info) << "Task launch: " << key.launch() << std::endl;
-
-      } // scope
-
-      // funky logic: task_registry_ is a map of std::pair
-      // t.first is the task_hash_t key that identifies the task.
-      // t.second is the pair of unique task id and the registration function
-      t.second.second(t.second.first);
-#endif
-
-      // Iterate over task variants
-      for(auto v: t.second) {
-        v.second.second(v.second.first);
-      } // for
-    } // for
-  
-    // Start the runtime
-    return HighLevelRuntime::start(argc, argv);
-  } // initialize
+  );
 
   ///
   /// push_state is used to control the state of the legion task with id==key.

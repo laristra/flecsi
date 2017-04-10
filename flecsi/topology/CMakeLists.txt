@@ -31,15 +31,15 @@ set(topology_SOURCES
 # Mesh unit tests.
 #------------------------------------------------------------------------------#
 
-cinch_add_unit(traversal
-  SOURCES
-    test/traversal.cc
-  INPUTS
-    test/traversal.blessed
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
-)
+#cinch_add_unit(traversal
+#  SOURCES
+#    test/traversal.cc
+#  INPUTS
+#    test/traversal.blessed
+#  LIBRARIES
+#    flecsi
+#    ${CINCH_RUNTIME_LIBRARIES}
+#)
 
 cinch_add_unit(dual
   SOURCES
@@ -48,54 +48,54 @@ cinch_add_unit(dual
     test/dual.blessed
 )
 
-cinch_add_unit(bindings
-  SOURCES
-    test/bindings.cc
-  INPUTS
-    test/bindings.blessed
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
-)
+#cinch_add_unit(bindings
+#  SOURCES
+#    test/bindings.cc
+#  INPUTS
+#    test/bindings.blessed
+#  LIBRARIES
+#    flecsi
+#    ${CINCH_RUNTIME_LIBRARIES}
+#)
 
 #------------------------------------------------------------------------------#
 # N-Tree unit tests.
 #------------------------------------------------------------------------------#
 
-cinch_add_unit(tree
-  SOURCES
-    test/tree.cc
-    test/pseudo_random.h
-  INPUTS
-    test/tree.blessed
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
-)
+#cinch_add_unit(tree
+#  SOURCES
+#    test/tree.cc
+#    test/pseudo_random.h
+#  INPUTS
+#    test/tree.blessed
+#  LIBRARIES
+#    flecsi
+#    ${CINCH_RUNTIME_LIBRARIES}
+#)
 
-cinch_add_unit(tree1d
-  SOURCES
-    test/tree1d.cc
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
-)
+#cinch_add_unit(tree1d
+#  SOURCES
+#    test/tree1d.cc
+#  LIBRARIES
+#    flecsi
+#    ${CINCH_RUNTIME_LIBRARIES}
+#)
 
-cinch_add_unit(tree3d
-  SOURCES
-    test/tree3d.cc
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
-)
+#cinch_add_unit(tree3d
+#  SOURCES
+#    test/tree3d.cc
+#  LIBRARIES
+#    flecsi
+#    ${CINCH_RUNTIME_LIBRARIES}
+#)
 
-cinch_add_unit(gravity
-  SOURCES
-    test/gravity.cc test/pseudo_random.h
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
-)
+#cinch_add_unit(gravity
+#  SOURCES
+#    test/gravity.cc test/pseudo_random.h
+#  LIBRARIES
+#    flecsi
+#    ${CINCH_RUNTIME_LIBRARIES}
+#)
 
 # FIXME: Broken by refactor
 #cinch_add_unit(gravity-state

@@ -5,6 +5,7 @@
 
 #include <cinchtest.h>
 
+#include "flecsi/execution/default_driver.h"
 #include "flecsi/execution/common/processor.h"
 
 using namespace flecsi::execution;

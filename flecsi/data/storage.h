@@ -130,6 +130,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     typename DATA_TYPE,
     size_t NAMESPACE_HASH,
     size_t NAME_HASH,
+    size_t INDEX_SPACE,
     size_t VERSIONS
   >
   bool
@@ -141,6 +142,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
       DATA_TYPE,
       NAMESPACE_HASH,
       NAME_HASH,
+      INDEX_SPACE,
       VERSIONS
     >();
   } // new_register_data

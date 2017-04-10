@@ -7,6 +7,7 @@
 
 #include <unordered_map>
 
+#include "flecsi/execution/default_driver.h"
 #include "flecsi/data/data_client.h"
 #include "flecsi/data/data.h"
 

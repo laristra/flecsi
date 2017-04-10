@@ -107,6 +107,7 @@ cinch_add_unit(launch
 cinch_add_unit(processor
   SOURCES
     test/processor.cc
+    ${RUNTIME_DRIVER}
   POLICY
     SERIAL
   LIBRARIES

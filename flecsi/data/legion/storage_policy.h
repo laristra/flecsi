@@ -102,6 +102,7 @@ struct legion_storage_policy_t {
     typename DATA_TYPE,
     size_t NAMESPACE_HASH,
     size_t NAME_HASH,
+    size_t INDEX_SPACE,
     size_t VERSIONS
   >
   bool
@@ -109,10 +110,12 @@ struct legion_storage_policy_t {
   {
     using wrapper_t =
       registration_wrapper_t<
+        DATA_CLIENT_TYPE,
         STORAGE_TYPE,
         DATA_TYPE,
         NAMESPACE_HASH,
         NAME_HASH,
+        INDEX_SPACE,
         VERSIONS>;
 
     for(size_t i(0); i<VERSIONS; ++i) {

@@ -57,7 +57,7 @@ public:
 
 };
 
-flecsi_new_register_data(data_client, test, var, double, dense, 2);
+flecsi_new_register_data(data_client, test, var, double, dense, 0, 2);
 
 void
 driver(

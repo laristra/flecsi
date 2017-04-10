@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "flecsi/execution/default_driver.h"
 #include "flecsi/topology/mesh_topology.h"
 
 #include "legion.h"

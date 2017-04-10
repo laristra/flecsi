@@ -43,6 +43,8 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
     serial/handle_policy.h
   )
 
+  set(RUNTIME_DRIVER ../execution/serial/runtime_driver.cc)
+
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(data_HEADERS
@@ -58,35 +60,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/handle_policy.h
   )
 
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
-
-  set(data_HEADERS
-    ${data_HEADERS}
-    legion/dense.h
-    legion/global.h
-    legion/meta_data.h
-    legion/scoped.h
-    legion/sparse.h
-    legion/storage_policy.h
-    legion/tuple.h
-    legion/data_policy.h
-    legion/handle_policy.h
-  )
-
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "rf_mpilegion")
-
-  set(data_HEADERS
-    ${data_HEADERS}
-    legion/dense.h
-    legion/global.h
-    legion/meta_data.h
-    legion/scoped.h
-    legion/sparse.h
-    legion/storage_policy.h
-    legion/tuple.h
-    legion/data_policy.h
-    legion/handle_policy.h
-  )
+  set(RUNTIME_DRIVER ../execution/legion/runtime_driver.cc)
 
 endif()
 
@@ -105,14 +79,18 @@ set(data_SOURCES
 #------------------------------------------------------------------------------#
 
 cinch_add_unit(data_client
-  SOURCES test/data_client.cc
+  SOURCES
+    test/data_client.cc
+    ${RUNTIME_DRIVER}
   LIBRARIES
     flecsi
     ${CINCH_RUNTIME_LIBRARIES}
 )
 
 cinch_add_unit(compaction
-  SOURCES test/legion/compaction.cc
+  SOURCES
+    test/legion/compaction.cc
+    ${RUNTIME_DRIVER}
   LIBRARIES
     flecsi
     ${CINCH_RUNTIME_LIBRARIES}
