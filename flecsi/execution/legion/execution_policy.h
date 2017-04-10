@@ -266,6 +266,11 @@ struct legion_execution_policy_t
 
     // Switch on launch type: single or index.
     if(launch_single(launch)) {
+      {
+      clog_tag_guard(execution);
+      clog(info) << "Executing task: " << key << std::endl;
+      }
+
       TaskLauncher task_launcher(context_.task_id(key),
         TaskArgument(&task_args, sizeof(task_args_t)));
 
@@ -283,6 +288,11 @@ struct legion_execution_policy_t
       return legion_future__<R>(future);
     }
     else if(launch_index(launch)) {
+      {
+      clog_tag_guard(execution);
+      clog(info) << "Executing task: " << key << std::endl;
+      }
+
       //FIXME: get launch domain from partitioning of the data used in
       // the task following launch domeing calculation is temporary:
       LegionRuntime::Arrays::Rect<1> launch_bounds(
