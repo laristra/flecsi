@@ -16,6 +16,7 @@ using namespace std;
 using namespace Legion;
 using namespace LegionRuntime::Accessor;
 using namespace LegionRuntime::HighLevel;
+using namespace LegionRuntime::Arrays;
 
 using namespace flecsi;
 using namespace topology;
