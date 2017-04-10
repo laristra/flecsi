@@ -31,12 +31,12 @@ namespace utils {
 ///
 struct debruijn32_t {
 
-  // Debruijn sequence 
+  // de Bruijn sequence 
   //            binary: 0000 0111 0111 1100 1011 0101 0011 0001
   //               hex:    0    7    7    c    b    5    3    1
   static constexpr uint32_t seq_ = 0x077cb531;
 
-  // Lookup table. Note that this depends on the specific Debruijn
+  // Lookup table. Note that this depends on the specific de Bruijn
   // sequence that is being used.
   static constexpr uint32_t index_[32] = {
     0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8,
