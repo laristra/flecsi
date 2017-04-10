@@ -22,6 +22,10 @@ namespace utils {
 /// \brief debruijn_t provides a mechanism for doing lookups of the set
 ///                   bits in a bitfield.
 ///
+/// A de Bruijn sequence can be used to quickly find the index of the
+/// least significant set bit ("right-most 1") or the most significant
+/// set bit ("left-most 1") in a word using bitwise operations.
+///
 /// \note This implementation is based on the example given in
 ///       http://supertech.csail.mit.edu/papers/debruijn.pdf
 ///
