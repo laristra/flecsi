@@ -28,11 +28,12 @@
 #include <cinchlog.h>
 #include <legion.h>
 
+#include "flecsi/data/storage.h"
+#include "flecsi/execution/common/task_hash.h"
+#include "flecsi/execution/legion/runtime_driver.h"
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/tuple_wrapper.h"
-#include "flecsi/execution/legion/runtime_driver.h"
-#include "flecsi/execution/common/task_hash.h"
 
 clog_register_tag(context);
 
@@ -105,6 +106,9 @@ struct legion_context_policy_t
     HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
     HighLevelRuntime::register_legion_task<runtime_driver>(
       TOP_LEVEL_TASK_ID, lr_loc, true, false);
+
+    // Register user data
+    data::storage_t::instance().register_all();
 
     // Register user tasks
     for(auto t: task_registry_) {

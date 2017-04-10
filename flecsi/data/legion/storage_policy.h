@@ -22,8 +22,10 @@
 #include <unordered_map>
 #include <vector>
 
+#include "flecsi/data/common/data_hash.h"
 #include "flecsi/data/data_constants.h"
 #include "flecsi/data/legion/meta_data.h"
+#include "flecsi/data/legion/registration_wrapper.h"
 
 // Include partial specializations
 #include "flecsi/data/legion/global.h"
@@ -91,40 +93,62 @@ struct legion_storage_policy_t {
   //--------------------------------------------------------------------------//
 
   using field_id_t = LegionRuntime::HighLevel::FieldID;
-  using register_function_t = std::function<void(size_t)>;
+  using registration_function_t = std::function<void(size_t)>;
   using unique_fid_t = utils::unique_id_t<field_id_t>;
 
-#if 0
-  ///
-  ///
-  ///
+  template<
+    typename DATA_CLIENT_TYPE,
+    size_t STORAGE_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE_HASH,
+    size_t NAME_HASH,
+    size_t VERSIONS
+  >
   bool
-  register_data(
-    size_t key,
-    const register_function_t & f
-  )
+  new_register_data()
   {
-    if(data_registry_.find(key) == data_registry_.end()) {
-      data_registry_[key] = { unique_fid_t::instance().next(), f };
-      return true;
-    } // if
+    using wrapper_t =
+      registration_wrapper_t<
+        STORAGE_TYPE,
+        DATA_TYPE,
+        NAMESPACE_HASH,
+        NAME_HASH,
+        VERSIONS>;
 
-    return false;
-  } // register_data
+    for(size_t i(0); i<VERSIONS; ++i) {
+      data_registry_[typeid(DATA_CLIENT_TYPE).hash_code()]
+        [data_hash_t::make_key(NAMESPACE_HASH, NAME_HASH)] =
+        { unique_fid_t::instance().next(), wrapper_t::register_callback };
+    } // for
+  } // new_register_data
 
-  field_id_t
-  field_id(
-    data_key key
-  )
+  void
+  register_all()
   {
-    return data_registry_[key].first;
-  }
-#endif
+    for(auto & c: data_registry_) {
+      for(auto & d: c.second) {
+        d.second.second(d.second.first);
+      } // for
+    } // for
+  } // register_all
 
 protected:
 
   // Storage container instance
   data_store_t data_store_;
+
+  using data_value_t = std::pair<field_id_t, registration_function_t>;
+
+  using client_value_t =
+    std::unordered_map<
+      data_hash_t::key_t, // key
+      data_value_t,       // value
+      data_hash_t,        // hash function
+      data_hash_t         // equialence operator
+    >;
+
+  // Data registration map
+  std::unordered_map<size_t, client_value_t> data_registry_;
 
 }; // struct legion_storage_policy_t
 

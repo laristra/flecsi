@@ -13,6 +13,7 @@
 #~----------------------------------------------------------------------------~#
 
 set(data_HEADERS
+  common/data_hash.h
   common/data_types.h
   data_client.h
   data_constants.h

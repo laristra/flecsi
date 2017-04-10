@@ -30,8 +30,8 @@ struct task_hash_key_t : public std::tuple<uintptr_t, processor_t, launch_t>
 {
   using tuple_key_t = std::tuple<uintptr_t, processor_t, launch_t>;
 
-  task_hash_key_t(const tuple_key_t & key)
-    : tuple_key_t(key) {}
+  task_hash_key_t(const std::tuple<uintptr_t, processor_t, launch_t> & key)
+    : std::tuple<uintptr_t, processor_t, launch_t>(key) {}
 
   ///
   /// Return the task address stored in the key.
@@ -42,8 +42,9 @@ struct task_hash_key_t : public std::tuple<uintptr_t, processor_t, launch_t>
   /// \return uintptr_t & containing the address of the task.
   ///
   const
-  uintptr_t &
-  address() const
+  uintptr_t
+  address()
+  const
   {
     return std::get<0>(*this);
   } // address
@@ -55,7 +56,8 @@ struct task_hash_key_t : public std::tuple<uintptr_t, processor_t, launch_t>
   ///
   const
   processor_t
-  processor() const
+  processor()
+  const
   {
     return std::get<1>(*this);
   } // processor
@@ -67,7 +69,8 @@ struct task_hash_key_t : public std::tuple<uintptr_t, processor_t, launch_t>
   ///
   const
   launch_t
-  launch() const
+  launch()
+  const
   {
     return std::get<2>(*this);
   } // bitset
