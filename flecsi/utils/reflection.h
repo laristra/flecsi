@@ -3,8 +3,21 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
+//
+// Attribution:
+// This logic is an adaptation of Paul Fultz's response on Stack Overflow
+// (41453/how-can-i-add-reflection-to-a-c-application) that is updated to
+// use standard library features that were not available at the time the
+// code was written, and to fit the needs of FleCSI.
+//
+
 #ifndef flecsi_utils_reflection_h
 #define flecsi_utils_reflection_h
+
+///
+/// \file
+/// \date Initial file creation: Jan 10, 2017
+///
 
 #include <type_traits>
 
@@ -18,19 +31,6 @@
 #include <boost/preprocessor.hpp>
 
 #include "flecsi/utils/utility.h"
-
-///
-/// \file
-/// \date Initial file creation: Jan 10, 2017
-///
-
-//
-// Attribution:
-// This logic is an adaptation of Paul Fultz's response on Stack Overflow
-// (41453/how-can-i-add-reflection-to-a-c-application) that is updated to
-// use standard library features that were not available at the time the
-// code was written, and to fit the needs of FleCSI.
-//
 
 /*----------------------------------------------------------------------------*
  * Macro definitions.

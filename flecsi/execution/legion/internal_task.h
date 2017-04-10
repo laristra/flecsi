@@ -8,6 +8,15 @@
 
 #include <legion.h>
 
+#include "flecsi.h"
+
+#if !defined(ENABLE_BOOST_PREPROCESSOR)
+  #error ENABLE_BOOST_PREPROCESSOR not defined! \
+    This file depends on Boost.Preprocessor!
+#endif
+
+#include <boost/preprocessor.hpp>
+
 #include "flecsi/execution/common/processor.h"
 #include "flecsi/execution/common/task_hash.h"
 #include "flecsi/execution/context.h"
@@ -31,9 +40,10 @@
 /// \param index A boolean indicating whether this task can be run as an
 ///              index space launch.
 ///
-#define __flecsi_internal_make_legion_task_key(task, processor, single, index) \
+#define __flecsi_internal_make_legion_task_key(task, processor,                \
+  single, index, ...)                                                          \
   task_hash_t::make_key(reinterpret_cast<uintptr_t>(&task),                    \
-    processor, flecsi_bools_to_launch(single, index));
+    processor, make_launch<single, index, ##__VA_ARGS__>());
 
 ///
 /// This macro registers a internal Legion task.
@@ -47,7 +57,8 @@
 /// \param config_options A scoped expression containting the task
 ///                       configuration options.
 ///
-#define __flecsi_internal_register_legion_task(task, processor, single, index) \
+#define __flecsi_internal_register_legion_task(task, processor,                \
+  single, index, ...)                                                          \
                                                                                \
   namespace flecsi {                                                           \
   namespace execution {                                                        \
@@ -55,10 +66,13 @@
                                                                                \
   /* Create a callback wrapper type for each invocation of this macro */       \
   template<                                                                    \
+    typename RETURN,                                                           \
     processor_t PROCESSOR,                                                     \
-    bool SINGLE,                                                               \
-    bool INDEX,                                                                \
-    typename RETURN                                                            \
+    bool SINGLE=true,                                                          \
+    bool INDEX=false,                                                          \
+    bool LEAF=false,                                                           \
+    bool INNER=false,                                                          \
+    bool IDEMPOTENT=false                                                      \
   >                                                                            \
   struct task ## _internal_task__                                              \
   {                                                                            \
@@ -73,14 +87,18 @@
       task_id_t tid                                                            \
     )                                                                          \
     {                                                                          \
+      Legion::TaskConfigOptions config_options{ LEAF, INNER, IDEMPOTENT };     \
+                                                                               \
       switch(PROCESSOR) {                                                      \
         case loc:                                                              \
           lr_runtime::register_legion_task<RETURN, task>(                      \
-            tid, lr_proc::LOC_PROC, SINGLE, INDEX);                            \
+            tid, lr_proc::LOC_PROC, SINGLE, INDEX, AUTO_GENERATE_ID,           \
+            config_options, EXPAND_AND_STRINGIFY(task));                       \
           break;                                                               \
         case toc:                                                              \
           lr_runtime::register_legion_task<RETURN, task>(                      \
-            tid, lr_proc::LOC_PROC, SINGLE, INDEX);                            \
+            tid, lr_proc::LOC_PROC, SINGLE, INDEX, AUTO_GENERATE_ID,           \
+            config_options, EXPAND_AND_STRINGIFY(task));                       \
           break;                                                               \
       } /* switch */                                                           \
     } /* register_task */                                                      \
@@ -98,12 +116,12 @@
   /* Task type for registration method */                                      \
   using task ## _internal_task_t =                                             \
     flecsi::execution::legion::task ## _internal_task__<                       \
-    processor, single, index, task ## _trt_t>;                                 \
+    task ## _trt_t, processor, single, index, ##__VA_ARGS__>;                  \
                                                                                \
   /* Task key for lookups */                                                   \
   auto task ## _task_key = task_hash_t::make_key(                              \
     reinterpret_cast<uintptr_t>(&task), processor,                             \
-    flecsi_bools_to_launch(single, index));                                    \
+    make_launch<single, index, ##__VA_ARGS__>());                              \
                                                                                \
   /* Register the task */                                                      \
   bool task ## _task_registered = context_t::instance().register_task(         \

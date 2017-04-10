@@ -26,21 +26,19 @@ namespace execution {
 ///
 template<
   typename R,
-  typename A,
-  typename UA
+  typename A
 >
 struct legion_task_args__
 {
   using user_task_handle_t = function_handle__<R, A>;
   using args_t = A;
-  using user_task_args_t = UA;
 
   legion_task_args__(user_task_handle_t & user_task_handle_,
-    user_task_args_t & user_args_)
+    args_t & user_args_)
     : user_task_handle(user_task_handle_), user_args(user_args_) {}
 
   user_task_handle_t user_task_handle;
-  user_task_args_t user_args;
+  args_t user_args;
 
 }; // struct legion_task_args__
 

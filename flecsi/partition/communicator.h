@@ -31,6 +31,7 @@ struct entry_info_t {
   ///            graph definition.
   /// \param rank_ The rank that owns this entity.
   /// \param offset_ The local id or offset of the entity.
+  /// \param shared_ The list of ranks that share this entity.
   ///
   entry_info_t(
     size_t id_ = 0,

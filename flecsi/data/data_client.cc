@@ -8,8 +8,8 @@
 /// \date Initial file creation: Dec 7, 2016
 ///
 
-#include "flecsi/data/storage.h"
 #include "flecsi/data/data_client.h"
+#include "flecsi/data/storage.h"
 
 namespace flecsi {
 namespace data {

@@ -2,7 +2,6 @@
 #include <iostream>
 
 #include "flecsi/topology/tree_topology.h"
-#include "flecsi/data/old/old_data.h"
 #include "pseudo_random.h"
 
 using namespace std;

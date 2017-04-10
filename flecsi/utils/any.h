@@ -15,13 +15,13 @@
 #ifndef flecsi_utils_any_h
 #define flecsi_utils_any_h
 
-#include <iostream>
-#include <typeinfo>
-
 ///
 /// \file any.h
 /// \date Initial file creation: Aug 29, 2016
 ///
+
+#include <iostream>
+#include <typeinfo>
 
 namespace flecsi {
 namespace utils {

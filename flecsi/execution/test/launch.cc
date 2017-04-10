@@ -1,63 +1,37 @@
 /*~-------------------------------------------------------------------------~~*
- *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
- * /@@/////  /@@          @@////@@ @@////// /@@
- * /@@       /@@  @@@@@  @@    // /@@       /@@
- * /@@@@@@@  /@@ @@///@@/@@       /@@@@@@@@@/@@
- * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
- * /@@       /@@/@@//// //@@    @@       /@@/@@
- * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
- * 
- * Copyright (c) 2016 Los Alamos National Laboratory, LLC
- * All rights reserved
+ * Copyright (c) 2014 Los Alamos National Security, LLC
+ * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
 
 #include <cinchtest.h>
 
-#include "flecsi/data/old/old_data.h"
-#include "flecsi/utils/bitfield.h"
+#include "flecsi/execution/common/launch.h"
 
-using data_t = flecsi::data::data_t<
-  flecsi::data::default_state_user_meta_data_t,
-  flecsi::data::default_data_storage_policy_t>;
+using namespace flecsi::execution;
 
-using flecsi::data::persistent;
+TEST(launch, sanity) {
 
-TEST(state, sanity) {
-  data_t & state = data_t::instance();
+  {
+  launch_t l("01011");
 
-  state.register_state<double>("density", 10, 0, 0, persistent);
-  state.register_state<double>("pressure", 10, 0, 1, persistent);
-  state.register_state<float>("velocity", 15, 0, 0, persistent);
-  state.register_global_state<float>("constant", 0, 0, 0x0);
+  ASSERT_TRUE(launch_single(l));
+  ASSERT_TRUE(launch_index(l));
+  ASSERT_FALSE(launch_leaf(l));
+  ASSERT_TRUE(launch_inner(l));
+  ASSERT_FALSE(launch_idempotent(l));
+  } // scope
 
-  auto d = state.dense_accessor<double, 0>("density");
+  {
+  launch_t l(single | leaf | idempotent);
 
-  for(auto i: d) {
-    d[i] = i;
-  } // for
+  ASSERT_TRUE(launch_single(l));
+  ASSERT_FALSE(launch_index(l));
+  ASSERT_TRUE(launch_leaf(l));
+  ASSERT_FALSE(launch_inner(l));
+  ASSERT_TRUE(launch_idempotent(l));
+  } // scope
 
-  for(auto i: d) {
-    ASSERT_EQ(i, d[i]);
-  } // for
-
-  // define a predicate to test for persistent state
-  auto pred = [](const auto & a) -> bool {
-    flecsi::utils::bitfield_t bf(a.meta().attributes);
-    return a.meta().site_id == 0 && bf.bitsset(persistent);
-  };
-
-  // get accessors that match type 'double' and predicate
-  for(auto a: state.dense_accessors<double>(pred)) {
-    std::cout << a.label() << std::endl;
-    ASSERT_TRUE(pred(a));
-  } // for
-
-  auto c = state.global_accessor<float,0>("constant");
-  c = 1.0;
-  ASSERT_EQ( 1.0,  *c );
 } // TEST
-
 
 /*----------------------------------------------------------------------------*
  * Cinch test Macros
@@ -74,6 +48,14 @@ TEST(state, sanity) {
  *                                 contents of a blessed file.
  *
  *  CINCH_WRITE(file);           : Write captured output to file.
+ *
+ *  CINCH_ASSERT(ASSERTION, ...) : Call Google test macro and automatically
+ *                                 dump captured output (from CINCH_CAPTURE)
+ *                                 on failure.
+ *
+ *  CINCH_EXPECT(ASSERTION, ...) : Call Google test macro and automatically
+ *                                 dump captured output (from CINCH_CAPTURE)
+ *                                 on failure.
  *
  * Google Test Macros
  *
@@ -103,6 +85,6 @@ TEST(state, sanity) {
  *----------------------------------------------------------------------------*/
 
 /*~------------------------------------------------------------------------~--*
- * Formatting options
+ * Formatting options for vim.
  * vim: set tabstop=2 shiftwidth=2 expandtab :
  *~------------------------------------------------------------------------~--*/

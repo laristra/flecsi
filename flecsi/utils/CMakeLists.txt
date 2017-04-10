@@ -15,7 +15,6 @@
 set(utils_HEADERS
   any.h
   array_ref.h
-  bitfield.h
   common.h
   const_string.h
   dimensioned_array.h

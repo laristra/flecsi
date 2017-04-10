@@ -24,10 +24,9 @@ namespace execution {
 ///
 /// The uintptr_t is the address of the task.
 /// The processor_t is the processor type of the task.
-/// The launch_t is the launch type of the task.
+/// The bitset holds boolean values that can be interpreted by the runtime.
 ///
-struct task_hash_key_t
-  : public std::tuple<uintptr_t, processor_t, launch_t>
+struct task_hash_key_t : public std::tuple<uintptr_t, processor_t, launch_t>
 {
   using tuple_key_t = std::tuple<uintptr_t, processor_t, launch_t>;
 
@@ -62,16 +61,16 @@ struct task_hash_key_t
   } // processor
 
   ///
-  /// Return the task launch type.
+  /// Return the task bitset type.
   ///
-  /// \return launch_t The launch type for this task.
+  /// \return launch_t The bitset type for this task.
   ///
   const
   launch_t
   launch() const
   {
     return std::get<2>(*this);
-  } // launch
+  } // bitset
 
 }; // struct task_hash_key_t
 
@@ -102,20 +101,20 @@ struct task_hash_t
   make_key(
     uintptr_t address,
     processor_t processor,
-    launch_t launch_type
+    launch_t launch
   )
   {
-    return std::make_tuple(address, processor, launch_type);
+    return std::make_tuple(address, processor, launch);
   } // make_key
 
   ///
   /// Custom hashing function for task registry.
   ///
   /// The key is a std::tuple<uintptr_t, processor_t, launch_t>. We assume
-  /// that the task address is unique even after shifting away the 8 least
-  /// significant bits. There are 4 bits for the processor type, and 4 bits
-  /// for the launch type, i.e., there can be 16 unique processor types and
-  /// 16 unique launch types.
+  /// that the task address is unique even after shifting away the 12 least
+  /// significant bits. There are 4 bits for the processor type, and 8 bits
+  /// for the launch, i.e., there can be 16 unique processor types and
+  /// 8 boolean values.
   ///
   /// \param k A hash key reference. This method is required for using
   ///          this hash type for std::map and std::unordered_map.
@@ -126,9 +125,8 @@ struct task_hash_t
   )
   const
   {
-    // FIXME: We may be able to use a better hash strategy
-    //return (std::get<0>(k) << 8) ^ (std::get<1>(k) << 4) ^ std::get<2>(k);
-    return (key.address() << 8) ^ (key.processor() << 4) ^ key.launch();
+    return (key.address() << 12) ^ (key.processor() << 8) ^
+      key.launch().to_ulong();
   } // operator ()
 
 }; // task_hash_t

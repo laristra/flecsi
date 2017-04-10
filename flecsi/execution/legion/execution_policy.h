@@ -54,7 +54,7 @@ struct init_args_ : public utils::tuple_walker__<init_args_>{
 
   template<typename T, size_t EP, size_t SP, size_t GP>
   void handle(data_handle__<T, EP, SP, GP>& h){
-  
+
   }
 
   template<typename T>
@@ -136,7 +136,6 @@ struct legion_execution_policy_t
   // Task interface.
   //--------------------------------------------------------------------------//
 
-  // FIXME: add task type (leaf, inner, etc...)
   ///
   /// register FLeCSI task depending on the tasks's processor and launch types
   ///
@@ -150,56 +149,40 @@ struct legion_execution_policy_t
     task_hash_key_t key
   )
   {
+    const launch_t launch = key.launch();
+
     switch(key.processor()) {
 
       case loc:
       {
-        switch(key.launch()) {
-
-          case single:
-          {
-            return context_t::instance().register_task(key,
-              legion_task_wrapper__<loc, 1, 0, R, A>::register_callback);
-          } // single
-
-          case index:
-          {
-            return context_t::instance().register_task(key,
-              legion_task_wrapper__<loc, 0, 1, R, A>::register_callback);
-          } // index
-
-          case any:
-          {
-            return context_t::instance().register_task(key,
-              legion_task_wrapper__<loc, 1, 1, R, A>::register_callback);
-          } // any
-
-        } // switch
+        if(launch_single(launch) && launch_index(launch)) {
+          return context_t::instance().register_task(key,
+            legion_task_wrapper__<loc, 1, 1, R, A>::register_callback);
+        }
+        else if(launch_single(launch)) {
+          return context_t::instance().register_task(key,
+            legion_task_wrapper__<loc, 1, 0, R, A>::register_callback);
+        }
+        else if(launch_index(launch)) {
+          return context_t::instance().register_task(key,
+            legion_task_wrapper__<loc, 0, 1, R, A>::register_callback);
+        } // if
       } // loc
 
       case toc:
       {
-        switch(key.launch()) {
-
-          case single:
-          {
-            return context_t::instance().register_task(key,
-              legion_task_wrapper__<toc, 1, 0, R, A>::register_callback);
-          } // single
-
-          case index:
-          {
-            return context_t::instance().register_task(key,
-              legion_task_wrapper__<toc, 0, 1, R, A>::register_callback);
-          } // index
-
-          case any:
-          {
-            return context_t::instance().register_task(key,
-              legion_task_wrapper__<toc, 1, 1, R, A>::register_callback);
-          } // any
-
-        } // switch
+        if(launch_single(launch) && launch_index(launch)) {
+          return context_t::instance().register_task(key,
+            legion_task_wrapper__<toc, 1, 1, R, A>::register_callback);
+        }
+        else if(launch_single(launch)) {
+          return context_t::instance().register_task(key,
+            legion_task_wrapper__<toc, 1, 0, R, A>::register_callback);
+        }
+        else if(launch_index(launch)) {
+          return context_t::instance().register_task(key,
+            legion_task_wrapper__<toc, 0, 1, R, A>::register_callback);
+        } // if
       } // toc
 
       default:
@@ -244,70 +227,66 @@ struct legion_execution_policy_t
     auto user_task_args_tuple = std::make_tuple(user_task_args...);
     using user_task_args_tuple_t = decltype( user_task_args_tuple );
 
+    using task_args_tuple_t = typename T::args_t;
+    task_args_tuple_t task_args_tuple = user_task_args_tuple;
+
     using task_args_t =
-      legion_task_args__<R,typename T::args_t, user_task_args_tuple_t>;
+      legion_task_args__<R, task_args_tuple_t>;
 
     auto legion_runtime = context_.runtime(parent);
     auto legion_context = context_.context(parent);
 
     init_args_ init_args(legion_runtime, legion_context);
-    init_args.walk(user_task_args_tuple);
+    init_args.walk(task_args_tuple);
 
     // We can't use std::forward or && references here because
     // the calling state is not guaranteed to exist when the
     // task is invoked, i.e., we have to use copies...
-    task_args_t task_args(user_task_handle, user_task_args_tuple);
+    task_args_t task_args(user_task_handle, task_args_tuple);
+
+    const launch_t launch = key.launch();
 
     // Switch on launch type: single or index.
-    switch(key.launch()) {
+    if(launch_single(launch)) {
+      TaskLauncher task_launcher(context_.task_id(key),
+        TaskArgument(&task_args, sizeof(task_args_t)));
 
-      case single:
-      {
-        TaskLauncher task_launcher(context_.task_id(key),
-          TaskArgument(&task_args, sizeof(task_args_t)));
+      task_prolog_
+        task_prolog(legion_runtime, legion_context, task_launcher);
+      task_prolog.walk(user_task_args_tuple);
 
-        task_prolog_
-          task_prolog(legion_runtime, legion_context, task_launcher);
-        task_prolog.walk(user_task_args_tuple);
+      auto future = context_.runtime(parent)->execute_task(
+        context_.context(parent), task_launcher);
 
-        auto future = context_.runtime(parent)->execute_task(
-          context_.context(parent), task_launcher);
+      task_epilog_
+        task_epilog(legion_runtime, legion_context);
+      task_epilog.walk(user_task_args_tuple);
 
-        task_epilog_
-          task_epilog(legion_runtime, legion_context);
-        task_epilog.walk(user_task_args_tuple);
+      return legion_future__<R>(future);
+    }
+    else if(launch_index(launch)) {
+      //FIXME: get launch domain from partitioning of the data used in
+      // the task following launch domeing calculation is temporary:
+      LegionRuntime::Arrays::Rect<1> launch_bounds(
+        LegionRuntime::Arrays::Point<1>(0),
+        LegionRuntime::Arrays::Point<1>(5));
+      Domain launch_domain = Domain::from_rect<1>(launch_bounds);
 
-        return legion_future__<R>(future);
-      } // single
+      LegionRuntime::HighLevel::ArgumentMap arg_map;
+      LegionRuntime::HighLevel::IndexLauncher index_launcher(
+        context_.task_id(key), launch_domain, TaskArgument(&task_args,
+        sizeof(task_args_t)), arg_map);
 
-      case index:
-      {
-        //FIXME: get launch domain from partitioning of the data used in
-        // the task following launch domeing calculation is temporary:
-        LegionRuntime::Arrays::Rect<1> launch_bounds(
-          LegionRuntime::Arrays::Point<1>(0),
-          LegionRuntime::Arrays::Point<1>(5));
-        Domain launch_domain = Domain::from_rect<1>(launch_bounds);
+      // !!! needs to do what legion does for data handle
 
-        LegionRuntime::HighLevel::ArgumentMap arg_map;
-        LegionRuntime::HighLevel::IndexLauncher index_launcher(
-          context_.task_id(key), launch_domain, TaskArgument(&task_args,
-          sizeof(task_args_t)), arg_map);
+      auto future = context_.runtime(parent)->execute_index_space(
+        context_.context(parent), index_launcher);
 
-        // !!! needs to do what legion does for data handle
-
-        auto future = context_.runtime(parent)->execute_index_space(
-          context_.context(parent), index_launcher);
-
-        return legion_future__<R>(future);
-      } // index
-        
-      default:
-        clog(fatal) <<
-          "the task can be executed only as a single or index task" <<
-          std::endl;
-
-    } // switch
+      return legion_future__<R>(future);
+    }
+    else {
+      clog(fatal) << "unsupported task type" << std::endl;
+    } // if
   } // execute_task
 
   //--------------------------------------------------------------------------//

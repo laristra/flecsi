@@ -12,6 +12,8 @@
 // \date Initial file creation: Jul 24, 2016
 ///
 
+#include <tuple>
+
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/legion/handshake.h"
 #include "flecsi/execution/legion/task_args.h"
@@ -70,12 +72,10 @@ template<
 >
 struct legion_task_wrapper__
 {
-  using user_task_args_t = A;
-
   //
   // Type definition for user task.
   //
-  using task_args_t = legion_task_args__<R,A,user_task_args_t>;
+  using task_args_t = legion_task_args__<R,A>;
   using user_task_handle_t = typename task_args_t::user_task_handle_t;
   using args_t = A;
 
@@ -136,7 +136,6 @@ struct legion_task_wrapper__
     // Unpack task arguments
     task_args_t & task_args = *(reinterpret_cast<task_args_t *>(task->args));
     user_task_handle_t & user_task_handle = task_args.user_task_handle;
-    user_task_args_t & user_task_args = task_args.user_args;
 
     // Push the Legion state
     context_t::instance().push_state(user_task_handle.key(),
@@ -144,11 +143,11 @@ struct legion_task_wrapper__
 
     handle_args_
       handle_args(runtime, context, regions);
-    handle_args.walk(user_task_args);
+    handle_args.walk(task_args.user_args);
 
     auto retval = user_task_handle(
       context_t::instance().function(user_task_handle.key()),
-      user_task_args);
+      task_args.user_args);
 
     // Pop the Legion state
     context_t::instance().pop_state(user_task_handle.key());
@@ -172,10 +171,9 @@ struct legion_task_wrapper__<P, S, I, void, A>
   //
   // Type definition for user task.
   //
-  using user_task_args_t = A;
   using args_t = A;
 
-  using task_args_t = legion_task_args__<void,A,user_task_args_t>;
+  using task_args_t = legion_task_args__<void, A>;
   using user_task_handle_t = typename task_args_t::user_task_handle_t;
 
   using lr_runtime = LegionRuntime::HighLevel::HighLevelRuntime;
@@ -239,7 +237,6 @@ struct legion_task_wrapper__<P, S, I, void, A>
       *(reinterpret_cast<task_args_t *>(task->args));
 
     user_task_handle_t & user_task_handle = task_args.user_task_handle;
-    user_task_args_t & user_task_args = task_args.user_args;
 
     // Push the Legion state
     context_t::instance().push_state(user_task_handle.key(),
@@ -247,10 +244,10 @@ struct legion_task_wrapper__<P, S, I, void, A>
 
     handle_args_
       handle_args(runtime, context, regions);
-    handle_args.walk(user_task_args);
+    handle_args.walk(task_args.user_args);
 
     user_task_handle(context_t::instance().function(user_task_handle.key()),
-      user_task_args);
+      task_args.user_args);
 
     // Pop the Legion state
     context_t::instance().pop_state(user_task_handle.key());
@@ -276,12 +273,11 @@ struct legion_task_wrapper__<P, S, I, void, A>
 
     task_args_t & task_args = *(reinterpret_cast<task_args_t *>(task->args));
     user_task_handle_t & user_task_handle = task_args.user_task_handle;
-    user_task_args_t & user_task_args = task_args.user_args;
 
     // Convert the users task into something that we can execute.
     std::function<void()> bound_user_task =
-      std::bind(*reinterpret_cast<std::function<void(user_task_args_t)> *>(
-      context_t::instance().function(user_task_handle.key())), user_task_args);
+      std::bind(*reinterpret_cast<std::function<void(task_args_t)> *>(
+      context_t::instance().function(user_task_handle.key())), task_args);
 
      // Set the function for MPI to execute.
      ext_legion_handshake_t::instance().shared_func_ = bound_user_task;
