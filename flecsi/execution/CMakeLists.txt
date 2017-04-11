@@ -58,6 +58,8 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/handshake.h
     legion/helper.h
     legion/internal_task.h
+    legion/legion_tasks.h
+    legion/mapper.h
     legion/mpi_legion_interop.h
     legion/runtime_driver.h
     legion/task_args.h
@@ -68,6 +70,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     ${execution_SOURCES}
     ../data/legion/dpd.cc
     legion/context_policy.cc
+    legion/legion_tasks.cc
   )
 
   set(UNIT_POLICY LEGION)
@@ -174,17 +177,17 @@ cinch_add_unit(simple_task
     #
     # Test internal legion task registration.
     #
-#    cinch_add_unit(internal_task
-#    SOURCES
-#      test/legion/internal_task_driver.cc
-#      test/context_runtime.cc
-#      ${RUNTIME_DRIVER}
-#    POLICY
-#      ${UNIT_POLICY}
-#    LIBRARIES
-#      flecsi
-#      ${CINCH_RUNTIME_LIBRARIES}
-#    )
+    cinch_add_unit(internal_task
+    SOURCES
+      test/legion/internal_task_driver.cc
+      test/context_runtime.cc
+      ${RUNTIME_DRIVER}
+    POLICY
+      ${UNIT_POLICY}
+    LIBRARIES
+      flecsi
+      ${CINCH_RUNTIME_LIBRARIES}
+    )
 
   endif()
 

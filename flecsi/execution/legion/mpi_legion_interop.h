@@ -209,6 +209,7 @@ struct mpi_legion_interop_t
 	void 
 	register_tasks()
 	{
+    // FIXME: Use internal task registration
   	LegionRuntime::HighLevel::HighLevelRuntime::register_legion_task
     	<handoff_to_mpi_task>(
 	    task_ids_t::instance().handoff_to_mpi_task_id,

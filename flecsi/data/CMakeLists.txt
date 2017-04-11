@@ -155,7 +155,9 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
       DEFINES DATA_HANDLE_TEST
         FLECSI_SPECIALIZATION_DRIVER=flecsi/data/test/data-handle-serial.h
         TEST_INIT=flecsi/execution/test/task_init.h
-      LIBRARIES ${PARTITION_LIBRARIES}
+      LIBRARIES
+        flecsi
+        ${CINCH_RUNTIME_LIBRARIES}
       POLICY SERIAL
       THREADS 2
     )
@@ -193,7 +195,7 @@ endif()
 #      DEFINES DATA_HANDLE_TEST
 #        FLECSI_SPECIALIZATION_DRIVER=flecsi/data/test/data-handle.h
 #        TEST_INIT=flecsi/execution/test/task_init.h
-#      LIBRARIES ${PARTITION_LIBRARIES}
+#      LIBRARIES ${CINCH_RUNTIME_LIBRARIES}
 #      POLICY MPILEGION
 #      THREADS 2
 #    )
@@ -204,6 +206,21 @@ endif()
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
+
+    cinch_add_unit(execution_structure
+      SOURCES
+        test/execution_structure_test.cc
+        test/execution_structure_drivers.cc
+        ../execution/test/context_runtime.cc
+        ${RUNTIME_DRIVER}
+      LIBRARIES
+        flecsi
+        ${CINCH_RUNTIME_LIBRARIES}
+      DEFINES -DFLECSI_ENABLE_SPECIALIZATION_DRIVER=1
+      POLICY LEGION
+      THREADS 2
+    )
+
     cinch_add_unit(legion_dh1
       SOURCES
         ../execution/test/task.cc
@@ -214,7 +231,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
         data_client.cc
       LIBRARIES
         flecsi
-        ${PARTITION_LIBRARIES}
+        ${CINCH_RUNTIME_LIBRARIES}
       POLICY LEGION
       THREADS 2
     )

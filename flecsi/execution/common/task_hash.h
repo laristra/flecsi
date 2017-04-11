@@ -146,7 +146,7 @@ struct task_hash_t
   const
   {
     return (
-#if 0
+#if 0 // FIXME: Remove this after refactor
       key.address() << (processor_bits+launch_bits) ^
       (key.processor().to_ulong() << launch_bits) ^
       key.launch().to_ulong()

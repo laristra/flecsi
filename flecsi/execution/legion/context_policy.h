@@ -30,6 +30,7 @@
 
 #include "flecsi/execution/common/task_hash.h"
 #include "flecsi/execution/legion/runtime_driver.h"
+#include "flecsi/execution/legion/mpi_legion_interop.h"
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/tuple_wrapper.h"
@@ -48,10 +49,10 @@ namespace execution {
 struct legion_runtime_state_t {
 
   legion_runtime_state_t(
-    LegionRuntime::HighLevel::Context & context_,
-    LegionRuntime::HighLevel::HighLevelRuntime * runtime_,
-    const LegionRuntime::HighLevel::Task * task_,
-    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions_
+    Legion::Context & context_,
+    Legion::HighLevelRuntime * runtime_,
+    const Legion::Task * task_,
+    const std::vector<Legion::PhysicalRegion> & regions_
   )
   :
     context(context_),
@@ -60,10 +61,10 @@ struct legion_runtime_state_t {
     regions(regions_)
   {}
     
-  LegionRuntime::HighLevel::Context & context;
-  LegionRuntime::HighLevel::HighLevelRuntime * runtime;
-  const LegionRuntime::HighLevel::Task * task;
-  const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions;
+  Legion::Context & context;
+  Legion::HighLevelRuntime * runtime;
+  const Legion::Task * task;
+  const std::vector<Legion::PhysicalRegion> & regions;
 
 }; // struct legion_runtime_state_t
 
@@ -80,8 +81,8 @@ extern thread_local std::unordered_map<size_t,
 ///
 struct legion_context_policy_t
 {
-  const static LegionRuntime::HighLevel::Processor::Kind lr_loc =
-    LegionRuntime::HighLevel::Processor::LOC_PROC;
+  const static Legion::Processor::Kind lr_loc =
+    Legion::Processor::LOC_PROC;
 
   const size_t TOP_LEVEL_TASK_ID = 0;
 
@@ -108,10 +109,10 @@ struct legion_context_policy_t
 
   void push_state(
     size_t key,
-    LegionRuntime::HighLevel::Context & context,
-    LegionRuntime::HighLevel::HighLevelRuntime * runtime,
-    const LegionRuntime::HighLevel::Task * task,
-    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions
+    Legion::Context & context,
+    Legion::HighLevelRuntime * runtime,
+    const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions
   )
   {
     {
@@ -141,10 +142,109 @@ struct legion_context_policy_t
   } // set_state
 
   //--------------------------------------------------------------------------//
+  // MPI interoperabiliy.
+  //--------------------------------------------------------------------------//
+
+  ///
+  /// Set the MPI runtime state. When the state is changed to active,
+  /// the handshake interface will begin executing the current MPI task.
+  ///
+  /// \return A boolean indicating the current MPI runtime state.
+  ///
+  bool
+  set_mpi_state(bool active)
+  {
+    mpi_active_ = active;
+    return mpi_active_;
+  } // toggle_mpi_state
+
+  ///
+  /// Handoff to legion runtime from MPI.
+  ///
+  void
+  handoff_to_legion()
+  {
+    handshake_.mpi_handoff_to_legion();
+  } // handoff_to_mpi
+
+  ///
+  /// Wait for Legion runtime to complete.
+  ///
+  void
+  wait_on_legion()
+  {
+    handshake_.mpi_wait_on_legion();
+  } // wait_on_legion
+
+  ///
+  /// Handoff to MPI from Legion.
+  ///
+  void
+  handoff_to_mpi()
+  {
+    handshake_.legion_handoff_to_mpi();
+  } // handoff_to_mpi
+
+  ///
+  /// Wait for MPI runtime to complete.
+  ///
+  void
+  wait_on_mpi()
+  {
+    handshake_.legion_wait_on_mpi();
+  } // wait_on_legion
+
+  //--------------------------------------------------------------------------//
+  // FIXME: These all seem to be the same calling side below. Need to
+  //        understand what they are doing.
+  //--------------------------------------------------------------------------//
+
+  ///
+  /// FIXME: Comment
+  ///
+  void
+  unset_call_mpi(
+    Legion::Context ctx,
+    Legion::HighLevelRuntime * runtime
+  );
+
+  ///
+  /// FIXME: Comment
+  ///
+  void
+  legion_configure();
+
+  ///
+  /// FIXME: Comment
+  ///
+  void
+  handoff_to_mpi(
+    Legion::Context ctx,
+    Legion::HighLevelRuntime * runtime
+  );
+
+  ///
+  /// FIXME: Comment
+  ///
+  Legion::FutureMap
+  wait_on_mpi(
+    Legion::Context ctx,
+    Legion::HighLevelRuntime * runtime
+  );
+
+  ///
+  /// FIXME: Comment
+  ///
+  void connect_with_mpi(
+    Legion::Context ctx,
+    Legion::HighLevelRuntime * runtime
+  );
+
+  //--------------------------------------------------------------------------//
   // Task registraiton.
   //--------------------------------------------------------------------------//
 
-  using task_id_t = LegionRuntime::HighLevel::TaskID;
+  using task_id_t = Legion::TaskID;
   using register_function_t = std::function<void(size_t)>;
   using unique_tid_t = utils::unique_id_t<task_id_t>;
 
@@ -248,7 +348,7 @@ struct legion_context_policy_t
   ///
   /// return context corresponding to the taks_key
   ///
-  LegionRuntime::HighLevel::Context &
+  Legion::Context &
   context(
     size_t task_key
   )
@@ -259,7 +359,7 @@ struct legion_context_policy_t
   ///
   /// return runtime corresponding to the taks_key
   ///
-  LegionRuntime::HighLevel::HighLevelRuntime *
+  Legion::HighLevelRuntime *
   runtime(
     size_t task_key
   )
@@ -271,7 +371,7 @@ struct legion_context_policy_t
   /// return taks pointer by the  taks_key
   ///
   const
-  LegionRuntime::HighLevel::Task *
+  Legion::Task *
   task(
     size_t task_key
   )
@@ -283,7 +383,7 @@ struct legion_context_policy_t
   /// return PhysicalRegions for the task with the key=task_key
   ///
   const
-  std::vector<LegionRuntime::HighLevel::PhysicalRegion> &
+  std::vector<Legion::PhysicalRegion> &
   regions(
     size_t task_key
   )
@@ -325,7 +425,6 @@ struct legion_context_policy_t
     copy_task_map_t copy_task_map;
   };
  
- 
 private:
 
   //--------------------------------------------------------------------------//
@@ -351,6 +450,14 @@ private:
 
   std::unordered_map<size_t, std::function<void(void)> *>
     function_registry_;
+
+  //--------------------------------------------------------------------------//
+  // MPI Interoperability
+  //--------------------------------------------------------------------------//
+
+  Legion::MPILegionHandshake handshake_;
+  LegionRuntime::Arrays::Rect<1> all_processes_;
+  bool mpi_active_ = false;
 
 }; // class legion_context_policy_t
 

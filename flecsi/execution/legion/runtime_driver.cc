@@ -25,13 +25,19 @@ void runtime_driver(const LegionRuntime::HighLevel::Task * task,
   {
     {
     clog_tag_guard(runtime_driver);
-    clog(info) << __PRETTY_FUNCTION__ << std::endl;
+    clog(info) << "Executing Legion runtime driver" << std::endl;
     }
 
+    // Get the input arguments from the Legion runtime
     const LegionRuntime::HighLevel::InputArgs & args =
       LegionRuntime::HighLevel::HighLevelRuntime::get_input_args();
 
-#if defined FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
+    // Initialize MPI Interoperability
+    context_t & context_ = context_t::instance();
+    //context_.interop_helper_.connect_with_mpi(ctx, runtime);
+    //context_.interop_helper_.wait_on_mpi(ctx, runtime);
+
+#if defined FLECSI_ENABLE_SPECIALIZATION_DRIVER
     {
     clog_tag_guard(runtime_driver);
     clog(info) << "Executing specialization driver task" << std::endl;
@@ -48,22 +54,20 @@ void runtime_driver(const LegionRuntime::HighLevel::Task * task,
     // Set the current task context to the driver
     context_t::instance().pop_state(
       utils::const_string_t{"specialization_driver"}.hash());
-#endif // FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
+#endif // FLECSI_ENABLE_SPECIALIZATION_DRIVER
 
-    // Set the current task context to the driver
-    context_t::instance().push_state(utils::const_string_t{"driver"}.hash(),
-      ctx, runtime, task, regions);
+  // Register user data
+  //data::storage_t::instance().register_all();
 
-    {
-    clog_tag_guard(runtime_driver);
-    clog(info) << "Executing driver task" << std::endl;
-    }
+  // Must epoch launch
+  LegionRuntime::HighLevel::MustEpochLauncher must_epoch_launcher;
 
-    // run default or user-defined driver 
-    driver(args.argc, args.argv); 
-
-    // Set the current task context to the driver
-    context_t::instance().pop_state(utils::const_string_t{"driver"}.hash());
+  int num_colors;
+  MPI_Comm_size(MPI_COMM_WORLD, &num_colors);
+  {
+  clog_tag_guard(runtime_driver);
+  clog(info) << "MPI rank is " << num_colors << std::endl;
+  }
 
   } // runtime_driver
 
