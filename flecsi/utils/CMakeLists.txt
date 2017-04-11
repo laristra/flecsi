@@ -12,6 +12,11 @@
 # All rights reserved
 #~----------------------------------------------------------------------------~#
 
+#------------------------------------------------------------------------------#
+# Add header files. Note that these will be "exported" to the parent
+# scope below.
+#------------------------------------------------------------------------------#
+
 set(utils_HEADERS
   any.h
   array_ref.h
@@ -36,13 +41,61 @@ set(utils_HEADERS
   utility.h
 )
 
+#------------------------------------------------------------------------------#
+# Add source files. Note that these will be "exported" to the parent
+# scope below.
+#------------------------------------------------------------------------------#
+
 set(utils_SOURCES
   common.cc
   debruijn.cc
+)
+
+#------------------------------------------------------------------------------#
+# Runtime-specific files.
+#
+# UNIT_POLICY and RUNTIME_DRIVER are set for unit tests that are not
+# runtime specific and can be configured for whichever runtime is active.
+#------------------------------------------------------------------------------#
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
+
+  set(UNIT_POLICY SERIAL)
+  set(RUNTIME_DRIVER ../execution/serial/runtime_driver.cc)
+
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+
+  set(UNIT_POLICY LEGION)
+  set(RUNTIME_DRIVER ../execution/legion/runtime_driver.cc)
+
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
+
+  set(UNIT_POLICY MPI)
+  set(RUNTIME_DRIVER ../execution/mpi/runtime_driver.cc)
+
+endif()
+
+#------------------------------------------------------------------------------#
+# Export header list to parent scope.
+#------------------------------------------------------------------------------#
+
+set(utils_HEADERS
+  ${utils_HEADERS}
   PARENT_SCOPE
 )
 
-set(utils_HEADERS ${utils_HEADERS} PARENT_SCOPE)
+#------------------------------------------------------------------------------#
+# Export source list to parent scope.
+#------------------------------------------------------------------------------#
+
+set(utils_SOURCES
+  ${utils_SOURCES}
+  PARENT_SCOPE
+)
+
+#------------------------------------------------------------------------------#
+# Unit tests.
+#------------------------------------------------------------------------------#
 
 cinch_add_unit(const_string
   SOURCES test/const_string.cc

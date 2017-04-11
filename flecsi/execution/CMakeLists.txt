@@ -12,6 +12,11 @@
 # All rights reserved
 #~----------------------------------------------------------------------------~#
 
+#------------------------------------------------------------------------------#
+# Add header files. Note that these will be "exported" to the parent
+# scope below.
+#------------------------------------------------------------------------------#
+
 set(execution_HEADERS
   common/function_handle.h
   common/launch.h
@@ -25,6 +30,8 @@ set(execution_HEADERS
 )
 
 #------------------------------------------------------------------------------#
+# Runtime-specific files.
+#
 # UNIT_POLICY and RUNTIME_DRIVER are set for unit tests that are not
 # runtime specific and can be configured for whichever runtime is active.
 #------------------------------------------------------------------------------#
@@ -81,13 +88,19 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
 endif()
 
-# Capture header list at call site
+#------------------------------------------------------------------------------#
+# Export header list to parent scope.
+#------------------------------------------------------------------------------#
+
 set(execution_HEADERS
   ${execution_HEADERS}
   PARENT_SCOPE
 )
 
-# Capture source list at call site
+#------------------------------------------------------------------------------#
+# Export source list to parent scope.
+#------------------------------------------------------------------------------#
+
 set(execution_SOURCES
   ${execution_SOURCES}
   PARENT_SCOPE

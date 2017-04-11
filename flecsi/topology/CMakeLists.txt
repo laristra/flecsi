@@ -12,6 +12,11 @@
 # All rights reserved
 #~----------------------------------------------------------------------------~#
 
+#------------------------------------------------------------------------------#
+# Add header files. Note that these will be "exported" to the parent
+# scope below.
+#------------------------------------------------------------------------------#
+
 set(topology_HEADERS
   graph_definition.h
   graph_utils.h
@@ -20,11 +25,48 @@ set(topology_HEADERS
   mesh_types.h
   mesh_utils.h
   tree_topology.h
-  PARENT_SCOPE
 )
 
+#------------------------------------------------------------------------------#
+# Runtime-specific files.
+#
+# UNIT_POLICY and RUNTIME_DRIVER are set for unit tests that are not
+# runtime specific and can be configured for whichever runtime is active.
+#------------------------------------------------------------------------------#
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
+
+  set(UNIT_POLICY SERIAL)
+  set(RUNTIME_DRIVER ../execution/serial/runtime_driver.cc)
+
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+
+  set(UNIT_POLICY LEGION)
+  set(RUNTIME_DRIVER ../execution/legion/runtime_driver.cc)
+
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
+
+  set(UNIT_POLICY MPI)
+  set(RUNTIME_DRIVER ../execution/mpi/runtime_driver.cc)
+
+endif()
+
+#------------------------------------------------------------------------------#
+# Export header list to parent scope.
+#------------------------------------------------------------------------------#
+
+set(topology_HEADERS
+    ${topology_HEADERS}
+    PARENT_SCOPE
+)
+
+#------------------------------------------------------------------------------#
+# Export source list to parent scope.
+#------------------------------------------------------------------------------#
+
 set(topology_SOURCES
-  PARENT_SCOPE
+    ${topology_SOURCES}
+    PARENT_SCOPE
 )
 
 #------------------------------------------------------------------------------#
