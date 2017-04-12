@@ -14,11 +14,11 @@ namespace flecsi {
 namespace execution {
 
 void specialization_driver(int argc, char ** argv) {
-  clog(info) << "Executing specialization driver" << std::endl;
+  clog(info) << "In specialization driver" << std::endl;
 } // specialization_driver
 
 void driver(int argc, char ** argv) {
-  clog(info) << "Executing driver" << std::endl;
+  clog(info) << "In driver" << std::endl;
 } // specialization_driver
 
 } // namespace execution

@@ -28,14 +28,20 @@
 #include <cinchlog.h>
 #include <legion.h>
 
+#if !defined(ENABLE_MPI)
+  #error ENABLE_MPI not defined! This file depends on MPI!
+#endif
+
+#include <mpi.h>
+
 #include "flecsi/execution/common/task_hash.h"
 #include "flecsi/execution/legion/runtime_driver.h"
-#include "flecsi/execution/legion/mpi_legion_interop.h"
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/tuple_wrapper.h"
 
 clog_register_tag(context);
+clog_register_tag(interop);
 
 namespace flecsi {
 namespace execution {
@@ -154,9 +160,27 @@ struct legion_context_policy_t
   bool
   set_mpi_state(bool active)
   {
+    {
+    clog_tag_guard(interop);
+    clog(info) << "set_mpi_state " << active << std::endl;
+    }
+
     mpi_active_ = active;
     return mpi_active_;
   } // toggle_mpi_state
+
+  void
+  set_mpi_user_task(
+    std::function<void()> & mpi_user_task
+  )
+  {
+    {
+    clog_tag_guard(interop);
+    clog(info) << "set_mpi_user_task" << std::endl;
+    }
+
+    mpi_user_task_ = mpi_user_task;
+  }
 
   ///
   /// Handoff to legion runtime from MPI.
@@ -164,6 +188,11 @@ struct legion_context_policy_t
   void
   handoff_to_legion()
   {
+    {
+    clog_tag_guard(interop);
+    clog(info) << "handoff_to_legion" << std::endl;
+    }
+
     handshake_.mpi_handoff_to_legion();
   } // handoff_to_mpi
 
@@ -173,6 +202,11 @@ struct legion_context_policy_t
   void
   wait_on_legion()
   {
+    {
+    clog_tag_guard(interop);
+    clog(info) << "wait_on_legion" << std::endl;
+    }
+
     handshake_.mpi_wait_on_legion();
   } // wait_on_legion
 
@@ -182,6 +216,11 @@ struct legion_context_policy_t
   void
   handoff_to_mpi()
   {
+    {
+    clog_tag_guard(interop);
+    clog(info) << "handoff_to_mpi" << std::endl;
+    }
+
     handshake_.legion_handoff_to_mpi();
   } // handoff_to_mpi
 
@@ -191,6 +230,11 @@ struct legion_context_policy_t
   void
   wait_on_mpi()
   {
+    {
+    clog_tag_guard(interop);
+    clog(info) << "handoff_to_mpi" << std::endl;
+    }
+
     handshake_.legion_wait_on_mpi();
   } // wait_on_legion
 
@@ -207,12 +251,6 @@ struct legion_context_policy_t
     Legion::Context ctx,
     Legion::HighLevelRuntime * runtime
   );
-
-  ///
-  /// FIXME: Comment
-  ///
-  void
-  legion_configure();
 
   ///
   /// FIXME: Comment
@@ -235,7 +273,8 @@ struct legion_context_policy_t
   ///
   /// FIXME: Comment
   ///
-  void connect_with_mpi(
+  void
+  connect_with_mpi(
     Legion::Context ctx,
     Legion::HighLevelRuntime * runtime
   );
@@ -457,6 +496,7 @@ private:
 
   Legion::MPILegionHandshake handshake_;
   LegionRuntime::Arrays::Rect<1> all_processes_;
+  std::function<void()> mpi_user_task_;
   bool mpi_active_ = false;
 
 }; // class legion_context_policy_t

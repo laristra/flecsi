@@ -15,7 +15,6 @@
 #include <tuple>
 
 #include "flecsi/execution/context.h"
-#include "flecsi/execution/legion/handshake.h"
 #include "flecsi/execution/legion/task_args.h"
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/tuple_type_converter.h"
@@ -263,14 +262,6 @@ struct legion_task_wrapper__<P, S, I, void, A>
     LegionRuntime::HighLevel::Context context,
     LegionRuntime::HighLevel::HighLevelRuntime * runtime)
   {
-// FIXME: This should be cleaned up
-#ifdef LEGIONDEBUG
-     int rank;
-     MPI_Comm_rank( MPI_COMM_WORLD, &rank);
-     clog(info) << "MPI rank from the index task = " << rank <<std::endl;
-     ext_legion_handshake_t::instance().rank_ = rank;
-#endif
-
     task_args_t & task_args = *(reinterpret_cast<task_args_t *>(task->args));
     user_task_handle_t & user_task_handle = task_args.user_task_handle;
 
@@ -280,10 +271,10 @@ struct legion_task_wrapper__<P, S, I, void, A>
       context_t::instance().function(user_task_handle.key())), task_args);
 
      // Set the function for MPI to execute.
-     ext_legion_handshake_t::instance().shared_func_ = bound_user_task;
+     context_t::instance().set_mpi_user_task(bound_user_task);
 
      // Set the call state to true so that the function will execute.
-     ext_legion_handshake_t::instance().call_mpi_ = true;
+     context_t::instance().set_mpi_state(true);
   } // execute_mpi
 #endif // FLECSI_RUNTIME_MODEL_mpilegion
 

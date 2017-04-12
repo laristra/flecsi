@@ -239,7 +239,7 @@ struct legion_execution_policy_t
 
     {
     clog_tag_guard(execution);
-    clog(info) << __PRETTY_FUNCTION__ << std::endl;
+    clog(info) << "Executing task " << key << std::endl;
     }
 
     auto user_task_args_tuple = std::make_tuple(user_task_args...);

@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_execution_legion_runtime_driver_h
-#define flecsi_execution_legion_runtime_driver_h
+#ifndef flecsi_execution_legion_legion_tasks_h
+#define flecsi_execution_legion_legion_tasks_h
 
 #include <legion.h>
 
@@ -20,7 +20,7 @@ namespace execution {
 
 /// Avoid having to repeat all of the Legion boiler-plate function arguments.
 #define legion_task(task, return_type)                                         \
-void task(                                                                     \
+inline return_type task(                                                       \
   const LegionRuntime::HighLevel::Task * task,                                 \
   const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,       \
   LegionRuntime::HighLevel::Context ctx,                                       \
@@ -28,37 +28,46 @@ void task(                                                                     \
 )
 
 /// Initial SPMD task.
-legion_task(spmd_task, void);
+void spmd_task(
+  const LegionRuntime::HighLevel::Task * task,
+  const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
+  LegionRuntime::HighLevel::Context ctx,
+  LegionRuntime::HighLevel::HighLevelRuntime * runtime
+);
 
-__flecsi_internal_register_legion_task(spmd_task, loc, index);
+__flecsi_internal_register_legion_task(spmd_task, loc,
+  false/*single*/, true/*index*/);
 
 /// Interprocess communication to pass control to MPI runtime.
 legion_task(handoff_to_mpi_task, void) {
-  context_t::instance().legion_handoff_to_mpi();
-} // wait_on_mpi_task
+  context_t::instance().handoff_to_mpi();
+} // handoff_to_mpi_task
 
-__flecsi_internal_register_legion_task(wait_on_mpi_task, loc, index | leaf);
+__flecsi_internal_register_legion_task(handoff_to_mpi_task, loc,
+  false/*single*/, true/*index*/, true/*leaf*/);
 
 /// Interprocess communication to unset mpi execute state.
 legion_task(wait_on_mpi_task, void) {
-  context_t::instance().legion_wait_on_mpi();
+  context_t::instance().wait_on_mpi();
 } // wait_on_mpi_task
 
-__flecsi_internal_register_legion_task(wait_on_mpi_task, loc, index | leaf);
+__flecsi_internal_register_legion_task(wait_on_mpi_task, loc,
+  false/*single*/, true/*index*/, true/*leaf*/);
 
 /// Interprocess communication to unset mpi execute state.
 legion_task(unset_call_mpi_task, void) {
   context_t::instance().set_mpi_state(false);
 } // unset_call_mpi_task
 
-__flecsi_internal_register_legion_task(unset_call_mpi_task, loc, index | leaf);
+__flecsi_internal_register_legion_task(unset_call_mpi_task, loc,
+  false/*single*/, true/*index*/, true/*leaf*/);
 
 #undef legion_task
 
 } // namespace execution 
 } // namespace flecsi
 
-#endif // flecsi_execution_legion_runtime_driver_h
+#endif // flecsi_execution_legion_legion_tasks_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

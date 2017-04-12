@@ -8,10 +8,11 @@
 /// \date Initial file creation: Apr 11, 2017
 ///
 
+#include "flecsi/execution/legion/legion_tasks.h"
+
 #include <cinchlog.h>
 
 #include "flecsi/execution/context.h"
-#include "flecsi/execution/legion/legion_tasks.h"
 #include "flecsi/utils/common.h"
 
 clog_register_tag(legion_tasks);

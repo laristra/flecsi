@@ -11,6 +11,7 @@
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
+
 #ifndef flecsi_execution_mpilegion_mapper_h
 #define flecsi_execution_mpilegion_mapper_h
 
@@ -18,7 +19,8 @@
 #include <legion_mapping.h>
 #include <default_mapper.h>
 
-#include "flecsi/execution/task_ids.h"
+#include "flecsi/execution/context.h"
+#include "flecsi/execution/legion/legion_tasks.h"
 
 /// mapper ID
 enum {
@@ -143,19 +145,19 @@ mpi_mapper_t : public Legion::Mapping::DefaultMapper
              )
   {
     using legion_proc=LegionRuntime::HighLevel::Processor;
-    size_t connect_mpi_task_id = task_ids_t::instance().connect_mpi_task_id;
-    size_t handoff_to_mpi_task_id =
-        task_ids_t::instance().handoff_to_mpi_task_id;
-    size_t wait_on_mpi_task_id = task_ids_t::instance().wait_on_mpi_task_id;
-    size_t update_mappers_task_id =
-        task_ids_t::instance().update_mappers_task_id;
 
+    context_t & context_ = context_t::instance();
 
     // tag-based decisions here
-    if(task.task_id == connect_mpi_task_id||
-       task.task_id == handoff_to_mpi_task_id||
+    if(context_.task_id(__flecsi_task_key(handoff_to_mpi_task, loc)) ||
+      context_.task_id(__flecsi_task_key(wait_on_mpi_task, loc)) ||
+       (task.tag & MAPPER_FORCE_RANK_MATCH) != 0) {
+
+#if 0
+    if(task.task_id == handoff_to_mpi_task_id||
        task.task_id == wait_on_mpi_task_id ||
        (task.tag & MAPPER_FORCE_RANK_MATCH) != 0) {
+#endif
       // expect a 1-D index domain
       assert(input.domain.get_dim() == 1);
       LegionRuntime::Arrays::Rect<1> r = input.domain.get_rect<1>();

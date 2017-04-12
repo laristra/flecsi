@@ -30,7 +30,9 @@ struct task_hash_key_t : public std::tuple<uintptr_t, processor_t, launch_t>
 {
   using tuple_key_t = std::tuple<uintptr_t, processor_t, launch_t>;
 
-  task_hash_key_t(const std::tuple<uintptr_t, processor_t, launch_t> & key)
+  task_hash_key_t(
+    const std::tuple<uintptr_t, processor_t, launch_t> & key = { 0, 0, 0 }
+  )
     : std::tuple<uintptr_t, processor_t, launch_t>(key) {}
 
   ///
