@@ -48,12 +48,24 @@ namespace execution {
 // setting any state on the data handle BEFORE Legion gets the task
 // args tuple to be serialized.
 struct init_args_ : public utils::tuple_walker__<init_args_>{
-  init_args_(Legion::Runtime* runtime, Legion::Context context)
+  init_args_(
+    Legion::Runtime* runtime,
+    Legion::Context context
+  )
   : runtime(runtime),
   context(context){}
 
-  template<typename T, size_t EP, size_t SP, size_t GP>
-  void handle(data_handle__<T, EP, SP, GP>& h){
+  template<
+    typename T,
+    size_t EP,
+    size_t SP,
+    size_t GP
+  >
+  void
+  handle(
+    data_handle__<T, EP, SP, GP>& h
+  )
+  {
 
   }
 
@@ -61,7 +73,9 @@ struct init_args_ : public utils::tuple_walker__<init_args_>{
   static
   typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::
     value>
-  handle(T&){}
+  handle(
+    T&
+  ){}
 
   Legion::Runtime* runtime;
   Legion::Context context;
@@ -72,23 +86,40 @@ struct init_args_ : public utils::tuple_walker__<init_args_>{
 // is created but before the task runs for the purposes of 
 // handling synchronization
 struct task_prolog_ : public utils::tuple_walker__<task_prolog_>{
-  task_prolog_(Legion::Runtime* runtime,
-               Legion::Context context,
-               Legion::TaskLauncher& launcher)
+  task_prolog_(
+    Legion::Runtime* runtime,
+    Legion::Context context,
+    Legion::TaskLauncher& launcher
+  )
   : runtime(runtime),
   context(context),
   launcher(launcher){}
 
-  template<typename T, size_t EP, size_t SP, size_t GP>
-  void handle(data_handle__<T, EP, SP, GP>& h){
+  template<
+    typename T,
+    size_t EP,
+    size_t SP,
+    size_t GP
+  >
+  void
+  handle(
+    data_handle__<T, EP, SP, GP>& h
+  )
+  {
   
   }
 
-  template<typename T>
+  template<
+    typename T
+  >
   static
-  typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::
-    value>
-  handle(T&){}
+  typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::value>
+  handle(
+    T&
+  )
+  {
+
+  }
 
   Legion::Runtime* runtime;
   Legion::Context context;
@@ -98,13 +129,22 @@ struct task_prolog_ : public utils::tuple_walker__<task_prolog_>{
 // This is called to walk the task args after the task has run 
 // for the purpose of handling synchronization
 struct task_epilog_ : public utils::tuple_walker__<task_epilog_>{
-  task_epilog_(Legion::Runtime* runtime,
-               Legion::Context context)
+  task_epilog_(
+    Legion::Runtime* runtime,
+    Legion::Context context
+  )
   : runtime(runtime),
   context(context){}
 
-  template<typename T, size_t EP, size_t SP, size_t GP>
-  void handle(data_handle__<T, EP, SP, GP>& h){
+  template<
+    typename T,
+    size_t EP,
+    size_t SP,
+    size_t GP
+  >
+  void handle(
+    data_handle__<T, EP, SP, GP>& h
+  ){
   
   }
 

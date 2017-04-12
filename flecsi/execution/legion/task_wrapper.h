@@ -28,25 +28,32 @@ namespace execution {
   // This is called to walk the task args before the user task functions runs
   // once we have the corresponding physical regions
   struct handle_args_ : public utils::tuple_walker__<handle_args_>{
-    handle_args_(Legion::Runtime* runtime,
-                 Legion::Context context,
-                 const std::vector<Legion::PhysicalRegion>& regions)
+    handle_args_(
+      Legion::Runtime* runtime,
+      Legion::Context context,
+      const std::vector<Legion::PhysicalRegion>& regions
+    )
     : runtime(runtime),
     context(context),
     regions(regions){}
 
-    template<typename T, size_t EP, size_t SP, size_t GP>
-    void handle(data_handle__<T, EP, SP, GP>& h){
+    template<
+      typename T,
+      size_t EP,
+      size_t SP,
+      size_t GP
+    >
+    void handle(
+      data_handle__<T, EP, SP, GP>& h
+    )
+    {
 
     }
 
     template<typename T>
     static
-    typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::
-      value>
-    handle(T&){
-
-    }
+    typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::value>
+    handle(T&){}
 
     Legion::Runtime* runtime;
     Legion::Context context;
