@@ -15,6 +15,8 @@
 #include <legion.h>
 #include <string>
 
+#include "flecsi/data/accessor.h"
+#include "flecsi/data/data_handle.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/common/processor.h"
 #include "flecsi/execution/common/processor.h"
@@ -47,7 +49,7 @@ struct handle_args_ : public utils::tuple_walker__<handle_args_>{
     size_t GP
   >
   void handle(
-    data_handle__<T, EP, SP, GP>& h
+    data_handle__<T, EP, SP, GP> & h
   )
   {
 
@@ -97,6 +99,12 @@ struct handle_args_ : public utils::tuple_walker__<handle_args_>{
           launch_index(launch), AUTO_GENERATE_ID, config_options,              \
           task_name.c_str());                                                  \
         break;                                                                 \
+      case processor_type_t::mpi:                                              \
+        Legion::HighLevelRuntime::register_legion_task<execute_mpi_task>(      \
+          tid, Legion::Processor::LOC_PROC, launch_single(launch),             \
+          launch_index(launch), AUTO_GENERATE_ID, config_options,              \
+          task_name.c_str());                                                  \
+        break;                                                                 \
     } /* switch */                                                             \
   } /* __registration_callback */
 
@@ -110,6 +118,9 @@ template<
 >
 struct task_wrapper__
 {
+  using user_task_args_t =
+    typename utils::base_convert_tuple_type<
+		accessor_base, data_handle__<void, 0, 0, 0>, A>::type;
   using task_args_t = legion_task_args__<R, A>;
   using user_task_handle_t = typename task_args_t::user_task_handle_t;
   using task_id_t = Legion::TaskID;
@@ -177,7 +188,40 @@ struct task_wrapper__
     LegionRuntime::HighLevel::HighLevelRuntime * runtime
   )
   {
+    {
+    clog_tag_guard(wrapper);
+    clog(info) << "In execute_legion_task" << std::endl;
+    }
+
+    // Unpack task arguments
+    task_args_t & task_args = *(reinterpret_cast<task_args_t *>(task->args));
+    user_task_handle_t & user_task_handle = task_args.user_task_handle;
+
+    user_task_handle(context_t::instance().function(user_task_handle.key()),
+      std::make_tuple(task, regions, context, runtime));
   } // execute_legion_task
+
+  ///
+  /// Wrapper method for pure Legion tasks.
+  ///
+  static void execute_mpi_task(
+    const LegionRuntime::HighLevel::Task * task,
+    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
+    LegionRuntime::HighLevel::Context context,
+    LegionRuntime::HighLevel::HighLevelRuntime * runtime
+  )
+  {
+    task_args_t & task_args = *(reinterpret_cast<task_args_t *>(task->args));
+    user_task_handle_t & user_task_handle = task_args.user_task_handle;
+    user_task_args_t & user_task_args = task_args.user_args;
+
+    std::function<void()> bound_user_task =
+			std::bind(*reinterpret_cast<std::function<void(user_task_args_t)> *>(
+			context_t::instance().function(user_task_handle.key())), user_task_args);
+
+			context_t::instance().set_mpi_user_task(bound_user_task);
+			context_t::instance().set_mpi_state(true);
+  } // execute_mpi_task
 
 }; // struct task_wrapper__
 

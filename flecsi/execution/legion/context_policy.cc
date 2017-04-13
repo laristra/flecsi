@@ -126,6 +126,17 @@ legion_context_policy_t::handoff_to_mpi(
   Legion::HighLevelRuntime * runtime
 )
 {
+  auto key = __flecsi_task_key(handoff_to_mpi_task, loc);
+
+  LegionRuntime::HighLevel::ArgumentMap arg_map;
+  LegionRuntime::HighLevel::IndexLauncher handoff_to_mpi_launcher(
+    context_t::instance().task_id(key),
+    LegionRuntime::HighLevel::Domain::from_rect<1>(all_processes_),
+    LegionRuntime::HighLevel::TaskArgument(0, 0), arg_map);
+
+  auto fm = runtime->execute_index_space(ctx, handoff_to_mpi_launcher);
+
+  fm.wait_all_results();
 } // legion_context_policy_t::handoff_to_mpi
 
 ///
@@ -137,16 +148,13 @@ legion_context_policy_t::wait_on_mpi(
   Legion::HighLevelRuntime * runtime
 )
 {
-  // Get a key to look up the task id that was assigned by the runtime.
   auto key = __flecsi_task_key(wait_on_mpi_task, loc);
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher wait_on_mpi_launcher(
     context_t::instance().task_id(key),
     Legion::Domain::from_rect<1>(all_processes_),
-    Legion::TaskArgument(0, 0),
-    arg_map
-  );
+    Legion::TaskArgument(0, 0), arg_map);
 
   auto fm = runtime->execute_index_space(ctx, wait_on_mpi_launcher);
 

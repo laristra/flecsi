@@ -25,7 +25,7 @@ void runtime_driver(const LegionRuntime::HighLevel::Task * task,
   {
     {
     clog_tag_guard(runtime_driver);
-    clog(info) << "Executing Legion runtime driver" << std::endl;
+    clog(info) << "In Legion runtime driver" << std::endl;
     }
 
     // Get the input arguments from the Legion runtime

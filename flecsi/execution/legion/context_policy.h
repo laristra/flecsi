@@ -169,6 +169,10 @@ struct legion_context_policy_t
     return mpi_active_;
   } // toggle_mpi_state
 
+  ///
+  /// Set the MPI user task. When control is given to the MPI runtime
+  /// it will execute whichever function is currently set.
+  ///
   void
   set_mpi_user_task(
     std::function<void()> & mpi_user_task
