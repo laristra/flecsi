@@ -12,7 +12,7 @@
 
 #include "flecsi/execution/legion/context_policy.h"
 #include "flecsi/execution/legion/legion_tasks.h"
-//#include "flecsi/execution/legion/mapper.h"
+#include "flecsi/execution/legion/mapper.h"
 #include "flecsi/data/storage.h"
 
 namespace flecsi {
@@ -99,7 +99,6 @@ legion_context_policy_t::unset_call_mpi(
   Legion::HighLevelRuntime * runtime
 )
 {
-#if 0
   // Get a key to look up the task id that was assigned by the runtime.
   auto key = __flecsi_task_key(unset_call_mpi_task, loc);
 
@@ -116,7 +115,6 @@ legion_context_policy_t::unset_call_mpi(
   auto fm = runtime->execute_index_space(ctx, launcher);
 
   fm.wait_all_results();
-#endif
 } // legion_context_policy_t::unset_call_mpi
 
 ///
@@ -139,7 +137,6 @@ legion_context_policy_t::wait_on_mpi(
   Legion::HighLevelRuntime * runtime
 )
 {
-#if 0
   // Get a key to look up the task id that was assigned by the runtime.
   auto key = __flecsi_task_key(wait_on_mpi_task, loc);
 
@@ -156,7 +153,6 @@ legion_context_policy_t::wait_on_mpi(
   fm.wait_all_results();
 
   return fm;    
-#endif
 } // legion_context_policy_t::wait_on_legion
 
 ///

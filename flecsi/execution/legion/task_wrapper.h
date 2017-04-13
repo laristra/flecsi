@@ -78,7 +78,7 @@ struct handle_args_ : public utils::tuple_walker__<handle_args_>{
     {                                                                          \
     clog_tag_guard(wrapper);                                                   \
     clog(info) << "Executing registration callback (" <<                       \
-      EXPAND_AND_STRINGIFY(name) << std::endl;                                 \
+      task_name << ")" << std::endl;                                           \
     } /* scope */                                                              \
                                                                                \
     Legion::TaskConfigOptions config_options{ launch_leaf(launch),             \
