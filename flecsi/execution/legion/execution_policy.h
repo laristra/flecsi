@@ -34,7 +34,6 @@
 #include "flecsi/execution/legion/context_policy.h"
 #include "flecsi/execution/legion/future.h"
 #include "flecsi/execution/legion/task_wrapper.h"
-#include "flecsi/execution/legion/new_task_wrapper.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/tuple_walker.h"
 #include "flecsi/data/data_handle.h"
@@ -188,7 +187,7 @@ struct task_epilog_ : public utils::tuple_walker__<task_epilog_>{
     if(processor_loc(processor)) {                                             \
       if(!context_t::instance().register_task(                                 \
         key, processor_type_t::loc, task_name,                                 \
-        new_task_wrapper__<R, A>::registration_method)) {                      \
+        task_wrapper__<R, A>::registration_method)) {                          \
         clog(fatal) << "loc callback registration failed" << std::endl;        \
       } /* if */                                                               \
     } /* if */                                                                 \
@@ -197,7 +196,7 @@ struct task_epilog_ : public utils::tuple_walker__<task_epilog_>{
     if(processor_loc(processor)) {                                             \
       if(!context_t::instance().register_task(                                 \
         key, processor_type_t::toc, task_name,                                 \
-        new_task_wrapper__<R, A>::registration_method)) {                      \
+        task_wrapper__<R, A>::registration_method)) {                          \
         clog(fatal) << "toc callback registration failed" << std::endl;        \
       } /* if */                                                               \
     } /* if */                                                                 \
