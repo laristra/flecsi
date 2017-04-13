@@ -138,14 +138,14 @@ struct legion_registration_wrapper2__
           task_name.c_str());                                                  \
         break;                                                                 \
       case processor_type_t::toc:                                              \
-        Legion::HighLevelRuntime::register_legion_task<execute_method>(        \
+        legion_registration_wrapper__<R, execute_method>::register_task(       \
           tid, Legion::Processor::TOC_PROC, launch_single(launch),             \
           launch_index(launch), AUTO_GENERATE_ID, config_options,              \
           task_name.c_str());                                                  \
         break;                                                                 \
       case processor_type_t::mpi:                                              \
-        Legion::HighLevelRuntime::register_legion_task<execute_mpi_task>(      \
-          tid, Legion::Processor::LOC_PROC, launch_single(launch),             \
+        legion_registration_wrapper__<R, execute_method>::register_task(       \
+          tid, Legion::Processor::TOC_PROC, launch_single(launch),             \
           launch_index(launch), AUTO_GENERATE_ID, config_options,              \
           task_name.c_str());                                                  \
         break;                                                                 \
