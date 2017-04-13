@@ -65,6 +65,50 @@ struct handle_args_ : public utils::tuple_walker__<handle_args_>{
   const std::vector<Legion::PhysicalRegion>& regions;
 }; // struct handle_args_
 
+template<
+	typename RETURN,
+	RETURN (*METHOD)(
+		const Legion::Task *,
+		const std::vector<Legion::PhysicalRegion> &,
+    Legion::Context,
+    Legion::Runtime *
+	)
+>
+struct legion_registration_wrapper__
+{
+	template<typename ... ARGS>
+	static void register_task(ARGS && ... args) {
+  	Legion::HighLevelRuntime::register_legion_task<RETURN, METHOD>(
+			std::forward<ARGS>(args) ...);
+	} // register_task
+}; // struct legion_registration_wrapper__
+
+template<
+	void (*METHOD)(
+		const Legion::Task *,
+		const std::vector<Legion::PhysicalRegion> &,
+    Legion::Context,
+    Legion::Runtime *
+	)
+>
+struct legion_registration_wrapper__<void, METHOD>
+{
+	template<typename ... ARGS>
+  static void register_task(ARGS && ... args) {
+  	Legion::HighLevelRuntime::register_legion_task<METHOD>(
+			std::forward<ARGS>(args) ...);
+	} // register_task
+}; // struct legion_registration_wrapper__
+
+#if 0
+template<typename RETURN, legion_task_signature_t<void>, typename ... ARGS>
+struct legion_registration_wrapper2__
+{
+	static void register_task(ARGS && ... args) {
+	} // register_task
+}; // struct legion_registration_wrapper__
+#endif
+
 ///
 /// This macro is used to avoid code duplication below.
 ///
@@ -88,7 +132,7 @@ struct handle_args_ : public utils::tuple_walker__<handle_args_>{
                                                                                \
     switch(processor) {                                                        \
       case processor_type_t::loc:                                              \
-        Legion::HighLevelRuntime::register_legion_task<execute_method>(        \
+				legion_registration_wrapper__<R, execute_method>::register_task(       \
           tid, Legion::Processor::LOC_PROC, launch_single(launch),             \
           launch_index(launch), AUTO_GENERATE_ID, config_options,              \
           task_name.c_str());                                                  \
@@ -216,6 +260,11 @@ struct task_wrapper__
     LegionRuntime::HighLevel::HighLevelRuntime * runtime
   )
   {
+    {
+    clog_tag_guard(wrapper);
+    clog(info) << "In execute_mpi_task" << std::endl;
+    }
+
     task_args_t & task_args = *(reinterpret_cast<task_args_t *>(task->args));
     user_task_handle_t & user_task_handle = task_args.user_task_handle;
     user_task_args_t & user_task_args = task_args.user_args;
