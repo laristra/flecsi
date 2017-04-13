@@ -66,7 +66,7 @@ void runtime_driver(const LegionRuntime::HighLevel::Task * task,
   MPI_Comm_size(MPI_COMM_WORLD, &num_colors);
   {
   clog_tag_guard(runtime_driver);
-  clog(info) << "MPI rank is " << num_colors << std::endl;
+  clog(info) << "MPI size is " << num_colors << std::endl;
   }
 
   // Finish up Legion runtime and fall back out to MPI.
