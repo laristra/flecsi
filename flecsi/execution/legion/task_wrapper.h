@@ -100,15 +100,6 @@ struct legion_registration_wrapper__<void, METHOD>
 	} // register_task
 }; // struct legion_registration_wrapper__
 
-#if 0
-template<typename RETURN, legion_task_signature_t<void>, typename ... ARGS>
-struct legion_registration_wrapper2__
-{
-	static void register_task(ARGS && ... args) {
-	} // register_task
-}; // struct legion_registration_wrapper__
-#endif
-
 ///
 /// This macro is used to avoid code duplication below.
 ///
@@ -145,7 +136,7 @@ struct legion_registration_wrapper2__
         break;                                                                 \
       case processor_type_t::mpi:                                              \
         legion_registration_wrapper__<R, execute_method>::register_task(       \
-          tid, Legion::Processor::TOC_PROC, launch_single(launch),             \
+          tid, Legion::Processor::LOC_PROC, launch_single(launch),             \
           launch_index(launch), AUTO_GENERATE_ID, config_options,              \
           task_name.c_str());                                                  \
         break;                                                                 \
