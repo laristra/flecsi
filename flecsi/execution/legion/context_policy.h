@@ -284,30 +284,27 @@ struct legion_context_policy_t
   //--------------------------------------------------------------------------//
 
   using task_id_t = Legion::TaskID;
-  using register_function_t = std::function<void(size_t)>;
+  using register_function_t =
+    std::function<void(task_id_t, processor_type_t, launch_t, std::string &)>;
   using unique_tid_t = utils::unique_id_t<task_id_t>;
 
-  ///
-  /// Registering FLeCSI task by using task_key and function pointer
-  ///
   bool
   register_task(
-    task_hash_key_t key,
+    task_hash_key_t & key,
     processor_type_t variant,
+    std::string & name,
     const register_function_t & f
   )
   {
-    {
-    clog_tag_guard(context);
-    clog(info) << "Registering task " << key << std::endl;
-    }
-
-    // Try to get the task entry.
+    // Get the task entry. It is ok to create a new entry, and to have
+    // multiple variants for each entry, i.e., we don't need to check
+    // that the entry is empty.
     auto task_entry = task_registry_[key];
 
-    // Check for existence and add if this variant has not been defined.
+    // Add the variant only if it has not been defined.
     if(task_entry.find(variant) == task_entry.end()) {
-      task_registry_[key][variant] = { unique_tid_t::instance().next(), f };
+      task_registry_[key][variant] =
+        { unique_tid_t::instance().next(), f, name };
       return true;
     }
 
@@ -342,7 +339,7 @@ struct legion_context_policy_t
     clog_assert(variant != task_entry->second.end(),
       "task variant does not exist: " << key);
     
-    return variant->second.first;
+    return std::get<0>(variant->second);
   } // task_id
 
   //--------------------------------------------------------------------------//
@@ -473,7 +470,7 @@ private:
   // Define the value type for task map.
   using task_value_t =
     std::unordered_map<processor_type_t,
-      std::pair<task_id_t, register_function_t>>;
+      std::tuple<task_id_t, register_function_t, std::string>>;
 
   // Define the map type using the task_hash_t hash function.
   std::unordered_map<

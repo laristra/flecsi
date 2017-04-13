@@ -23,8 +23,9 @@ int internal_task_example_1(const LegionRuntime::HighLevel::Task * task,
 
 // Register the task. The task id is automatically generated.
 __flecsi_internal_register_legion_task(internal_task_example_1, loc,
-  true/*single*/, false/*index*/);
+  single);
 
+#if 0
 // Define a Legion task to register.
 int internal_task_example_2(const LegionRuntime::HighLevel::Task * task,
   const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
@@ -35,9 +36,11 @@ int internal_task_example_2(const LegionRuntime::HighLevel::Task * task,
 // Register the task. The task id is automatically generated.
 __flecsi_internal_register_legion_task(internal_task_example_2, toc,
   false/*single*/, true/*index*/);
+#endif
 
 void driver(int argc, char ** argv) {
 
+#if 0
   // These keys will allow you to lookup the task id that was assigned.
   auto key_1 = __flecsi_task_key(internal_task_example_1, loc);
   auto key_2 = __flecsi_task_key(internal_task_example_2, toc);
@@ -51,6 +54,7 @@ void driver(int argc, char ** argv) {
 
   ASSERT_EQ(tid_1, 1);
   ASSERT_EQ(tid_2, 2);
+#endif
 
 } // driver
 

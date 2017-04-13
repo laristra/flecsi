@@ -11,9 +11,8 @@
 #include <iostream>
 
 #include "flecsi/execution/legion/context_policy.h"
-#include "flecsi/execution/legion/internal_task.h"
 #include "flecsi/execution/legion/legion_tasks.h"
-#include "flecsi/execution/legion/mapper.h"
+//#include "flecsi/execution/legion/mapper.h"
 #include "flecsi/data/storage.h"
 
 namespace flecsi {
@@ -44,11 +43,18 @@ legion_context_policy_t::initialize(
     TOP_LEVEL_TASK_ID, lr_loc, true, false);
 
   // Register user tasks
-  for(auto t: task_registry_) {
+  for(auto & t: task_registry_) {
+
+    // FIXME: The casts in this section need to be cleaned up...
+    task_hash_key_t key = static_cast<task_hash_key_t>(t.first);
 
     // Iterate over task variants
-    for(auto v: t.second) {
-      v.second.second(v.second.first);
+    for(auto & v: t.second) {
+      auto & value = std::get<1>(v);
+      std::get<1>(value)(std::get<0>(value),
+        mask_to_type(static_cast<processor_mask_t>(
+          key.processor().to_ulong())),
+        key.launch(), std::get<2>(value));
     } // for
   } // for
 
@@ -93,6 +99,7 @@ legion_context_policy_t::unset_call_mpi(
   Legion::HighLevelRuntime * runtime
 )
 {
+#if 0
   // Get a key to look up the task id that was assigned by the runtime.
   auto key = __flecsi_task_key(unset_call_mpi_task, loc);
 
@@ -109,6 +116,7 @@ legion_context_policy_t::unset_call_mpi(
   auto fm = runtime->execute_index_space(ctx, launcher);
 
   fm.wait_all_results();
+#endif
 } // legion_context_policy_t::unset_call_mpi
 
 ///
@@ -131,6 +139,7 @@ legion_context_policy_t::wait_on_mpi(
   Legion::HighLevelRuntime * runtime
 )
 {
+#if 0
   // Get a key to look up the task id that was assigned by the runtime.
   auto key = __flecsi_task_key(wait_on_mpi_task, loc);
 
@@ -147,6 +156,7 @@ legion_context_policy_t::wait_on_mpi(
   fm.wait_all_results();
 
   return fm;    
+#endif
 } // legion_context_policy_t::wait_on_legion
 
 ///

@@ -6,9 +6,9 @@
 #ifndef flecsi_execution_legion_legion_tasks_h
 #define flecsi_execution_legion_legion_tasks_h
 
-#include <legion.h>
+//#include <legion.h>
 
-#include "flecsi/execution/legion/internal_task.h"
+//#include "flecsi/execution/legion/internal_task.h"
 
 ///
 /// \file
@@ -18,6 +18,7 @@
 namespace flecsi {
 namespace execution {
 
+#if 0
 /// Avoid having to repeat all of the Legion boiler-plate function arguments.
 #define legion_task(task, return_type)                                         \
 inline return_type task(                                                       \
@@ -63,6 +64,7 @@ __flecsi_internal_register_legion_task(unset_call_mpi_task, loc,
   false/*single*/, true/*index*/, true/*leaf*/);
 
 #undef legion_task
+#endif
 
 } // namespace execution 
 } // namespace flecsi

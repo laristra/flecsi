@@ -34,6 +34,7 @@
 #include "flecsi/execution/legion/context_policy.h"
 #include "flecsi/execution/legion/future.h"
 #include "flecsi/execution/legion/task_wrapper.h"
+#include "flecsi/execution/legion/new_task_wrapper.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/tuple_walker.h"
 #include "flecsi/data/data_handle.h"
@@ -163,6 +164,46 @@ struct task_epilog_ : public utils::tuple_walker__<task_epilog_>{
 //----------------------------------------------------------------------------//
 
 ///
+/// \note This method only returns a boolean so that it can be
+///       executed with external scope. Failure modes should abort
+///       with clog(fatal).
+///
+#define __register_task(name, registration_method)                             \
+  template<                                                                    \
+    typename R,                                                                \
+    typename A                                                                 \
+  >                                                                            \
+  static                                                                       \
+  bool                                                                         \
+  name(                                                                        \
+    task_hash_key_t key,                                                       \
+    std::string task_name                                                      \
+  )                                                                            \
+  {                                                                            \
+    /* Processor type can be an or-list of values, each of which should */     \
+    /* be register as a different variant. */                                  \
+    const processor_t processor = key.processor();                             \
+                                                                               \
+    /* Register loc task variant */                                            \
+    if(processor_loc(processor)) {                                             \
+      if(!context_t::instance().register_task(                                 \
+        key, processor_type_t::loc, task_name,                                 \
+        new_task_wrapper__<R, A>::registration_method)) {                      \
+        clog(fatal) << "loc callback registration failed" << std::endl;        \
+      } /* if */                                                               \
+    } /* if */                                                                 \
+                                                                               \
+    /* Register loc task variant */                                            \
+    if(processor_loc(processor)) {                                             \
+      if(!context_t::instance().register_task(                                 \
+        key, processor_type_t::toc, task_name,                                 \
+        new_task_wrapper__<R, A>::registration_method)) {                      \
+        clog(fatal) << "toc callback registration failed" << std::endl;        \
+      } /* if */                                                               \
+    } /* if */                                                                 \
+  } /* __register_task */
+
+///
 /// \struct legion_execution_policy legion_execution_policy.h
 /// \brief legion_execution_policy provides...
 ///
@@ -176,78 +217,11 @@ struct legion_execution_policy_t
   // Task interface.
   //--------------------------------------------------------------------------//
 
-  ///
-  /// register FLeCSI task depending on the tasks's processor and launch types
-  ///
-  template<
-    typename R,
-    typename A
-  >
-  static
-  bool
-  register_task(
-    task_hash_key_t key
-  )
-  {
-    const launch_t launch = key.launch();
-    const processor_t processor = key.processor();
+  /// User task registration.
+  __register_task(register_task, user_registration_callback);
 
-    if(processor_loc(processor)) {
-      bool retval(false);
-
-      {
-      clog_tag_guard(execution);
-      clog(info) << "Registering loc task " << key.address() << std::endl;
-      }
-
-      if(launch_single(launch) && launch_index(launch)) {
-        retval = context_t::instance().register_task(key, processor_type_t::loc,
-          legion_task_wrapper__<processor_type_t::loc, 1, 1, R, A>::
-            register_callback);
-      }
-      else if(launch_single(launch)) {
-        retval = context_t::instance().register_task(key, processor_type_t::loc,
-          legion_task_wrapper__<processor_type_t::loc, 1, 0, R, A>::
-            register_callback);
-      }
-      else if(launch_index(launch)) {
-        retval = context_t::instance().register_task(key, processor_type_t::loc,
-          legion_task_wrapper__<processor_type_t::loc, 0, 1, R, A>::
-            register_callback);
-      } // if
-
-      if(!retval) { return false; }
-    } // if
-
-    if(processor_toc(processor)) {
-      bool retval(false);
-
-      {
-      clog_tag_guard(execution);
-      clog(info) << "Registering toc task " << key.address() << std::endl;
-      }
-
-      if(launch_single(launch) && launch_index(launch)) {
-        retval = context_t::instance().register_task(key, processor_type_t::toc,
-          legion_task_wrapper__<processor_type_t::toc, 1, 1, R, A>::
-            register_callback);
-      }
-      else if(launch_single(launch)) {
-        retval = context_t::instance().register_task(key, processor_type_t::toc,
-          legion_task_wrapper__<processor_type_t::toc, 1, 0, R, A>::
-            register_callback);
-      }
-      else if(launch_index(launch)) {
-        retval = context_t::instance().register_task(key, processor_type_t::toc,
-          legion_task_wrapper__<processor_type_t::toc, 0, 1, R, A>::
-            register_callback);
-      } // if
-
-      if(!retval) { return false; }
-    } // if
-
-    return true;
-  } // register_task
+  /// Legion task registration.
+  __register_task(register_legion_task, legion_registration_callback);
 
   ///
   /// Execute FLeCSI task.

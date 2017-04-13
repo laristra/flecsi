@@ -52,12 +52,30 @@ struct task__
   register_task(
     uintptr_t address,
     processor_t processor,
-    launch_t launch
+    launch_t launch,
+    std::string name
   )
   {
     return execution_policy_t::template register_task<R, A>(
-      task_hash_t::make_key(address, processor, launch));
+      task_hash_t::make_key(address, processor, launch), name);
   } // register_task
+
+  template<
+    typename R,
+    typename A
+  >
+  static
+  decltype(auto)
+  register_legion_task(
+    uintptr_t address,
+    processor_t processor,
+    launch_t launch,
+    std::string name
+  )
+  {
+    return execution_policy_t::template register_legion_task<R, A>(
+      task_hash_t::make_key(address, processor, launch), name);
+  } // register_legion_task
 
   ///
   /// Execute a registered task.
