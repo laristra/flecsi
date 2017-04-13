@@ -12,13 +12,21 @@
 ///
 
 #include <bitset>
-#include <string>
 
 namespace flecsi {
 namespace execution {
 
+// This will be used by the task_hash_t type to create hash keys for
+// task registration. If you add more launch flags below, you will need
+// to increase the launch_bits accordingly, i.e., launch_bits must
+// be greater than or equal to the number of bits in the bitset for
+// launch_t below.
+constexpr size_t launch_bits = 4;
+
 ///
 /// Use a std::bitset to store launch information.
+///
+/// \note This will most likely use 4 bytes of data for efficiency.
 ///
 using launch_t = std::bitset<5>;
 
@@ -45,11 +53,11 @@ enum class launch_type_t : size_t {
 ///       \endcode
 ///
 enum launch_mask_t : size_t {
-  single     = 1<<0,
-  index      = 1<<1,
-  leaf       = 1<<2,
-  inner      = 1<<3,
-  idempotent = 1<<4
+  single     = 1 << 0,
+  index      = 1 << 1,
+  leaf       = 1 << 2,
+  inner      = 1 << 3,
+  idempotent = 1 << 4
 }; // enum launch_mask_t
 
 ///

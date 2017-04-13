@@ -30,8 +30,10 @@ struct task_hash_key_t : public std::tuple<uintptr_t, processor_t, launch_t>
 {
   using tuple_key_t = std::tuple<uintptr_t, processor_t, launch_t>;
 
-  task_hash_key_t(const tuple_key_t & key)
-    : tuple_key_t(key) {}
+  task_hash_key_t(
+    const std::tuple<uintptr_t, processor_t, launch_t> & key = { 0, 0, 0 }
+  )
+    : std::tuple<uintptr_t, processor_t, launch_t>(key) {}
 
   ///
   /// Return the task address stored in the key.
@@ -42,8 +44,9 @@ struct task_hash_key_t : public std::tuple<uintptr_t, processor_t, launch_t>
   /// \return uintptr_t & containing the address of the task.
   ///
   const
-  uintptr_t &
-  address() const
+  uintptr_t
+  address()
+  const
   {
     return std::get<0>(*this);
   } // address
@@ -55,7 +58,8 @@ struct task_hash_key_t : public std::tuple<uintptr_t, processor_t, launch_t>
   ///
   const
   processor_t
-  processor() const
+  processor()
+  const
   {
     return std::get<1>(*this);
   } // processor
@@ -67,12 +71,29 @@ struct task_hash_key_t : public std::tuple<uintptr_t, processor_t, launch_t>
   ///
   const
   launch_t
-  launch() const
+  launch()
+  const
   {
     return std::get<2>(*this);
   } // bitset
 
 }; // struct task_hash_key_t
+
+///
+/// Convenience function to print key.
+inline
+std::ostream &
+operator << (
+  std::ostream & stream,
+  const task_hash_key_t & key
+)
+{
+  stream <<
+    "address: " << key.address() <<
+    " processor: " << key.processor() <<
+    " launch: " << key.launch();
+  return stream;
+} // operator <<
 
 ///
 /// \struct task_hash_t execution/common/task_hash.h
@@ -111,10 +132,11 @@ struct task_hash_t
   /// Custom hashing function for task registry.
   ///
   /// The key is a std::tuple<uintptr_t, processor_t, launch_t>. We assume
-  /// that the task address is unique even after shifting away the 12 least
-  /// significant bits. There are 4 bits for the processor type, and 8 bits
-  /// for the launch, i.e., there can be 16 unique processor types and
-  /// 8 boolean values.
+  /// that the task address is unique even after shifting away the N least
+  /// significant bits, where N = processor_bits + launch_bits.
+  /// There are processor_bits bits for the processor type, and
+  /// launch_bits bits for the launch, i.e., there can be processor_bits
+  /// unique processor types and launch_bits unique launch types.
   ///
   /// \param k A hash key reference. This method is required for using
   ///          this hash type for std::map and std::unordered_map.
@@ -125,10 +147,18 @@ struct task_hash_t
   )
   const
   {
-    return (key.address() << 12) ^ (key.processor() << 8) ^
-      key.launch().to_ulong();
+    return key.address();
   } // operator ()
 
+  bool
+  operator () (
+    const task_hash_key_t & a,
+    const task_hash_key_t & b
+  )
+  const
+  {
+    return a.address() == b.address();
+  } // operator ()
 }; // task_hash_t
 
 } // namespace execution

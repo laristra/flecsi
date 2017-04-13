@@ -48,12 +48,24 @@ namespace execution {
 // setting any state on the data handle BEFORE Legion gets the task
 // args tuple to be serialized.
 struct init_args_ : public utils::tuple_walker__<init_args_>{
-  init_args_(Legion::Runtime* runtime, Legion::Context context)
+  init_args_(
+    Legion::Runtime* runtime,
+    Legion::Context context
+  )
   : runtime(runtime),
   context(context){}
 
-  template<typename T, size_t EP, size_t SP, size_t GP>
-  void handle(data_handle__<T, EP, SP, GP>& h){
+  template<
+    typename T,
+    size_t EP,
+    size_t SP,
+    size_t GP
+  >
+  void
+  handle(
+    data_handle__<T, EP, SP, GP>& h
+  )
+  {
 
   }
 
@@ -61,7 +73,9 @@ struct init_args_ : public utils::tuple_walker__<init_args_>{
   static
   typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::
     value>
-  handle(T&){}
+  handle(
+    T&
+  ){}
 
   Legion::Runtime* runtime;
   Legion::Context context;
@@ -72,23 +86,40 @@ struct init_args_ : public utils::tuple_walker__<init_args_>{
 // is created but before the task runs for the purposes of 
 // handling synchronization
 struct task_prolog_ : public utils::tuple_walker__<task_prolog_>{
-  task_prolog_(Legion::Runtime* runtime,
-               Legion::Context context,
-               Legion::TaskLauncher& launcher)
+  task_prolog_(
+    Legion::Runtime* runtime,
+    Legion::Context context,
+    Legion::TaskLauncher& launcher
+  )
   : runtime(runtime),
   context(context),
   launcher(launcher){}
 
-  template<typename T, size_t EP, size_t SP, size_t GP>
-  void handle(data_handle__<T, EP, SP, GP>& h){
+  template<
+    typename T,
+    size_t EP,
+    size_t SP,
+    size_t GP
+  >
+  void
+  handle(
+    data_handle__<T, EP, SP, GP>& h
+  )
+  {
   
   }
 
-  template<typename T>
+  template<
+    typename T
+  >
   static
-  typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::
-    value>
-  handle(T&){}
+  typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::value>
+  handle(
+    T&
+  )
+  {
+
+  }
 
   Legion::Runtime* runtime;
   Legion::Context context;
@@ -98,13 +129,22 @@ struct task_prolog_ : public utils::tuple_walker__<task_prolog_>{
 // This is called to walk the task args after the task has run 
 // for the purpose of handling synchronization
 struct task_epilog_ : public utils::tuple_walker__<task_epilog_>{
-  task_epilog_(Legion::Runtime* runtime,
-               Legion::Context context)
+  task_epilog_(
+    Legion::Runtime* runtime,
+    Legion::Context context
+  )
   : runtime(runtime),
   context(context){}
 
-  template<typename T, size_t EP, size_t SP, size_t GP>
-  void handle(data_handle__<T, EP, SP, GP>& h){
+  template<
+    typename T,
+    size_t EP,
+    size_t SP,
+    size_t GP
+  >
+  void handle(
+    data_handle__<T, EP, SP, GP>& h
+  ){
   
   }
 
@@ -123,6 +163,46 @@ struct task_epilog_ : public utils::tuple_walker__<task_epilog_>{
 //----------------------------------------------------------------------------//
 
 ///
+/// \note This method only returns a boolean so that it can be
+///       executed with external scope. Failure modes should abort
+///       with clog(fatal).
+///
+#define __register_task(name, registration_method)                             \
+  template<                                                                    \
+    typename R,                                                                \
+    typename A                                                                 \
+  >                                                                            \
+  static                                                                       \
+  bool                                                                         \
+  name(                                                                        \
+    task_hash_key_t key,                                                       \
+    std::string task_name                                                      \
+  )                                                                            \
+  {                                                                            \
+    /* Processor type can be an or-list of values, each of which should */     \
+    /* be register as a different variant. */                                  \
+    const processor_t processor = key.processor();                             \
+                                                                               \
+    /* Register loc task variant */                                            \
+    if(processor_loc(processor)) {                                             \
+      if(!context_t::instance().register_task(                                 \
+        key, processor_type_t::loc, task_name,                                 \
+        task_wrapper__<R, A>::registration_method)) {                          \
+        clog(fatal) << "loc callback registration failed" << std::endl;        \
+      } /* if */                                                               \
+    } /* if */                                                                 \
+                                                                               \
+    /* Register loc task variant */                                            \
+    if(processor_loc(processor)) {                                             \
+      if(!context_t::instance().register_task(                                 \
+        key, processor_type_t::toc, task_name,                                 \
+        task_wrapper__<R, A>::registration_method)) {                          \
+        clog(fatal) << "toc callback registration failed" << std::endl;        \
+      } /* if */                                                               \
+    } /* if */                                                                 \
+  } /* __register_task */
+
+///
 /// \struct legion_execution_policy legion_execution_policy.h
 /// \brief legion_execution_policy provides...
 ///
@@ -136,60 +216,11 @@ struct legion_execution_policy_t
   // Task interface.
   //--------------------------------------------------------------------------//
 
-  ///
-  /// register FLeCSI task depending on the tasks's processor and launch types
-  ///
-  template<
-    typename R,
-    typename A
-  >
-  static
-  bool
-  register_task(
-    task_hash_key_t key
-  )
-  {
-    const launch_t launch = key.launch();
+  /// User task registration.
+  __register_task(register_task, user_registration_callback);
 
-    switch(key.processor()) {
-
-      case loc:
-      {
-        if(launch_single(launch) && launch_index(launch)) {
-          return context_t::instance().register_task(key,
-            legion_task_wrapper__<loc, 1, 1, R, A>::register_callback);
-        }
-        else if(launch_single(launch)) {
-          return context_t::instance().register_task(key,
-            legion_task_wrapper__<loc, 1, 0, R, A>::register_callback);
-        }
-        else if(launch_index(launch)) {
-          return context_t::instance().register_task(key,
-            legion_task_wrapper__<loc, 0, 1, R, A>::register_callback);
-        } // if
-      } // loc
-
-      case toc:
-      {
-        if(launch_single(launch) && launch_index(launch)) {
-          return context_t::instance().register_task(key,
-            legion_task_wrapper__<toc, 1, 1, R, A>::register_callback);
-        }
-        else if(launch_single(launch)) {
-          return context_t::instance().register_task(key,
-            legion_task_wrapper__<toc, 1, 0, R, A>::register_callback);
-        }
-        else if(launch_index(launch)) {
-          return context_t::instance().register_task(key,
-            legion_task_wrapper__<toc, 0, 1, R, A>::register_callback);
-        } // if
-      } // toc
-
-      default:
-        clog(fatal) << "unsupported processor type" << std::endl;
-    } // switch
-
-  } // register_task
+  /// Legion task registration.
+  __register_task(register_legion_task, legion_registration_callback);
 
   ///
   /// Execute FLeCSI task.
@@ -221,7 +252,7 @@ struct legion_execution_policy_t
 
     {
     clog_tag_guard(execution);
-    clog(info) << __PRETTY_FUNCTION__ << std::endl;
+    clog(info) << "Executing task " << key << std::endl;
     }
 
     auto user_task_args_tuple = std::make_tuple(user_task_args...);
@@ -248,6 +279,11 @@ struct legion_execution_policy_t
 
     // Switch on launch type: single or index.
     if(launch_single(launch)) {
+      {
+      clog_tag_guard(execution);
+      clog(info) << "Executing task: " << key << std::endl;
+      }
+
       TaskLauncher task_launcher(context_.task_id(key),
         TaskArgument(&task_args, sizeof(task_args_t)));
 
@@ -265,6 +301,11 @@ struct legion_execution_policy_t
       return legion_future__<R>(future);
     }
     else if(launch_index(launch)) {
+      {
+      clog_tag_guard(execution);
+      clog(info) << "Executing task: " << key << std::endl;
+      }
+
       //FIXME: get launch domain from partitioning of the data used in
       // the task following launch domeing calculation is temporary:
       LegionRuntime::Arrays::Rect<1> launch_bounds(

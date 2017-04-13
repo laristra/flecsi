@@ -57,6 +57,9 @@ public:
 
 };
 
+// THIS IS NEW
+flecsi_new_register_data(data_client, test, var, double, dense, 0, 2);
+
 void
 driver(
   int argc, 

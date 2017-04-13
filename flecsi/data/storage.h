@@ -125,24 +125,26 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
 #endif
 
   template<
-    typename DC,
-    size_t ST,
-    typename T,
-    size_t NS,
-    size_t N,
-    size_t V
+    typename DATA_CLIENT_TYPE,
+    size_t STORAGE_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE_HASH,
+    size_t NAME_HASH,
+    size_t INDEX_SPACE,
+    size_t VERSIONS
   >
   bool
   new_register_data()
   {
-    return sp_t::template new_register_data<DC, ST, T, NS, N, V>();
-    #if 0
-    
-    return sp_t::data_store_.instance().register_data(
-
-    return sp_t::data_store_.instance().register_data(
-      data_registration_wrapper_<DC, ST, T, NS, N, V>::register_data);
-    #endif
+    return sp_t::template new_register_data<
+      DATA_CLIENT_TYPE,
+      STORAGE_TYPE,
+      DATA_TYPE,
+      NAMESPACE_HASH,
+      NAME_HASH,
+      INDEX_SPACE,
+      VERSIONS
+    >();
   } // new_register_data
 
   //--------------------------------------------------------------------------//

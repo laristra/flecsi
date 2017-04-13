@@ -38,12 +38,14 @@
       client, EXPAND_AND_STRINGIFY(name), ##__VA_ARGS__)
 
 #define flecsi_new_register_data(client_type, nspace, name, data_type,         \
-  storage_type, versions)                                                      \
-  flecsi::data::storage_t::instance().new_register_data<                       \
-    client_type, flecsi::data::storage_type, data_type,                        \
-    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
-    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),          \
-    versions>()
+  storage_type, index_space, versions)                                         \
+                                                                               \
+  bool client_type ## _ ## nspace ## _ ## name ## _data_registered =           \
+    flecsi::data::storage_t::instance().new_register_data<                     \
+      client_type, flecsi::data::storage_type, data_type,                      \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),        \
+      index_space, versions>()
 
 ///
 /// \brief Access data with a data_client_t.

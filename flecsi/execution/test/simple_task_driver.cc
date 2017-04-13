@@ -7,6 +7,7 @@
 #define flecsi_task_driver_h
 
 #include <iostream>
+#include <cinchlog.h>
 
 #include "flecsi/utils/common.h"
 #include "flecsi/execution/context.h"
@@ -27,19 +28,20 @@ namespace execution {
 //----------------------------------------------------------------------------//
 
 double task(double dval, int ival) {
-  std::cout << "Executing task" << std::endl;
-  std::cout << "Value(double): " << dval << std::endl;
-  std::cout << "Value(int): " << ival << std::endl;
+  clog(info) << "Executing task" << std::endl;
+  clog(info) << "Value(double): " << dval << std::endl;
+  clog(info) << "Value(int): " << ival << std::endl;
   return dval;
 } // task1
 
-flecsi_register_task(task, loc, single);
+flecsi_register_task(task, loc | toc, single | index);
 
 //----------------------------------------------------------------------------//
 // Driver.
 //----------------------------------------------------------------------------//
 
 void driver(int argc, char ** argv) {
+  clog(info) << "Inside user driver" << std::endl;
 
   const double alpha{10.0};
 
