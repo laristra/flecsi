@@ -12,6 +12,7 @@
 #include "flecsi/execution/common/task_hash.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/execution.h"
+#include "flecsi/execution/legion/task_args.h"
 #include "flecsi/utils/common.h"
 
 ///
@@ -56,6 +57,17 @@
       >                                                                        \
     (reinterpret_cast<uintptr_t>(&task), processor, launch,                    \
     { EXPAND_AND_STRINGIFY(task) })
+
+#define __flecsi_internal_task_args(name)                                      \
+  std::make_pair(                                                              \
+    sizeof(flecsi::execution::function_handle__<                               \
+      typename flecsi::utils::function_traits__<decltype(name)>::return_type,  \
+      typename flecsi::utils::function_traits__<decltype(name)>::arguments_type\
+    >),                                                                        \
+    flecsi::execution::function_handle__<                                      \
+      typename flecsi::utils::function_traits__<decltype(name)>::return_type,  \
+      typename flecsi::utils::function_traits__<decltype(name)>::arguments_type\
+    >(flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()))
 
 #endif // flecsi_execution_legion_internal_task_h
 

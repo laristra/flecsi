@@ -194,8 +194,13 @@ struct task_wrapper__
     }
 
     // Unpack task arguments
-    task_args_t & task_args = *(reinterpret_cast<task_args_t *>(task->args));
-    user_task_handle_t & user_task_handle = task_args.user_task_handle;
+    user_task_handle_t & user_task_handle =
+			*(reinterpret_cast<user_task_handle_t *>(task->args));
+
+    {
+    clog_tag_guard(wrapper);
+    clog(info) << "Task handle key " << user_task_handle.key() << std::endl;
+    }
 
     user_task_handle(context_t::instance().function(user_task_handle.key()),
       std::make_tuple(task, regions, context, runtime));

@@ -56,7 +56,6 @@ void runtime_driver(const LegionRuntime::HighLevel::Task * task,
       utils::const_string_t{"specialization_driver"}.hash());
 #endif // FLECSI_ENABLE_SPECIALIZATION_DRIVER
 
-#if 0
   // Register user data
   //data::storage_t::instance().register_all();
 
@@ -71,9 +70,8 @@ void runtime_driver(const LegionRuntime::HighLevel::Task * task,
   }
 
   // Finish up Legion runtime and fall back out to MPI.
-//  context_.unset_call_mpi(ctx, runtime);
-//  context_.handoff_to_mpi(ctx, runtime);
-#endif
+  context_.unset_call_mpi(ctx, runtime);
+  context_.handoff_to_mpi(ctx, runtime);
   } // runtime_driver
 
 } // namespace execution 

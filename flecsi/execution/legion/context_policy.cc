@@ -48,6 +48,11 @@ legion_context_policy_t::initialize(
     // FIXME: The casts in this section need to be cleaned up...
     task_hash_key_t key = static_cast<task_hash_key_t>(t.first);
 
+    {
+    clog_tag_guard(context);
+    clog(info) << "Registering " << key << std::endl;
+    }
+
     // Iterate over task variants
     for(auto & v: t.second) {
       auto & value = std::get<1>(v);
@@ -99,14 +104,25 @@ legion_context_policy_t::unset_call_mpi(
   Legion::HighLevelRuntime * runtime
 )
 {
+  {
+  clog_tag_guard(context);
+  clog(info) << "In unset_call_mpi" << std::endl;
+  }
+
   // Get a key to look up the task id that was assigned by the runtime.
   auto key = __flecsi_task_key(unset_call_mpi_task, loc);
+  auto args = __flecsi_internal_task_args(unset_call_mpi_task);
+
+  {
+  clog_tag_guard(context);
+  clog(info) << "Task handle key " << std::get<1>(args).key() << std::endl;
+  }
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher launcher(
     context_t::instance().task_id(key),
     Legion::Domain::from_rect<1>(all_processes_),
-    Legion::TaskArgument(0, 0),
+    Legion::TaskArgument(&std::get<1>(args), std::get<0>(args)),
     arg_map
   );
 
@@ -127,12 +143,15 @@ legion_context_policy_t::handoff_to_mpi(
 )
 {
   auto key = __flecsi_task_key(handoff_to_mpi_task, loc);
+  auto args = __flecsi_internal_task_args(handoff_to_mpi_task);
 
-  LegionRuntime::HighLevel::ArgumentMap arg_map;
-  LegionRuntime::HighLevel::IndexLauncher handoff_to_mpi_launcher(
+  Legion::ArgumentMap arg_map;
+  Legion::IndexLauncher handoff_to_mpi_launcher(
     context_t::instance().task_id(key),
-    LegionRuntime::HighLevel::Domain::from_rect<1>(all_processes_),
-    LegionRuntime::HighLevel::TaskArgument(0, 0), arg_map);
+    Legion::Domain::from_rect<1>(all_processes_),
+    Legion::TaskArgument(&std::get<1>(args), std::get<0>(args)),
+    arg_map
+  );
 
   auto fm = runtime->execute_index_space(ctx, handoff_to_mpi_launcher);
 
@@ -148,6 +167,7 @@ legion_context_policy_t::wait_on_mpi(
   Legion::HighLevelRuntime * runtime
 )
 {
+#if 0
   auto key = __flecsi_task_key(wait_on_mpi_task, loc);
 
   Legion::ArgumentMap arg_map;
@@ -161,6 +181,7 @@ legion_context_policy_t::wait_on_mpi(
   fm.wait_all_results();
 
   return fm;    
+#endif
 } // legion_context_policy_t::wait_on_legion
 
 ///
