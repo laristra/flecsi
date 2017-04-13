@@ -167,22 +167,23 @@ legion_context_policy_t::wait_on_mpi(
   Legion::HighLevelRuntime * runtime
 )
 {
-#if 0
   auto key = __flecsi_task_key(wait_on_mpi_task, loc);
+  auto args = __flecsi_internal_task_args(wait_on_mpi_task);
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher wait_on_mpi_launcher(
     context_t::instance().task_id(key),
     Legion::Domain::from_rect<1>(all_processes_),
-    Legion::TaskArgument(0, 0), arg_map);
+    Legion::TaskArgument(&std::get<1>(args), std::get<0>(args)),
+    arg_map
+  );
 
   auto fm = runtime->execute_index_space(ctx, wait_on_mpi_launcher);
 
   fm.wait_all_results();
 
   return fm;    
-#endif
-} // legion_context_policy_t::wait_on_legion
+} // legion_context_policy_t::wait_on_mpi
 
 ///
 ///
