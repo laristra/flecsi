@@ -198,7 +198,7 @@ struct legion_context_policy_t
     }
 
     handshake_.mpi_handoff_to_legion();
-  } // handoff_to_mpi
+  } // handoff_to_legion
 
   ///
   /// Wait for Legion runtime to complete.
@@ -236,7 +236,7 @@ struct legion_context_policy_t
   {
     {
     clog_tag_guard(interop);
-    clog(info) << "handoff_to_mpi" << std::endl;
+    clog(info) << "wait_on_mpi" << std::endl;
     }
 
     handshake_.legion_wait_on_mpi();
