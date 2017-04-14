@@ -123,7 +123,7 @@ struct legion_registration_wrapper__<void, METHOD>
                                                                                \
     switch(processor) {                                                        \
       case processor_type_t::loc:                                              \
-				legion_registration_wrapper__<R, execute_method>::register_task(       \
+        legion_registration_wrapper__<R, execute_method>::register_task(       \
           tid, Legion::Processor::LOC_PROC, launch_single(launch),             \
           launch_index(launch), AUTO_GENERATE_ID, config_options,              \
           task_name.c_str());                                                  \
@@ -173,7 +173,7 @@ struct task_wrapper__
   ///
   /// Wrapper method for user tasks.
   ///
-  static void execute_user_task(
+  static R execute_user_task(
     const LegionRuntime::HighLevel::Task * task,
     const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
     LegionRuntime::HighLevel::Context context,
@@ -216,7 +216,7 @@ struct task_wrapper__
   ///
   /// Wrapper method for pure Legion tasks.
   ///
-  static void execute_legion_task(
+  static R execute_legion_task(
     const LegionRuntime::HighLevel::Task * task,
     const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
     LegionRuntime::HighLevel::Context context,
@@ -244,7 +244,7 @@ struct task_wrapper__
   ///
   /// Wrapper method for pure Legion tasks.
   ///
-  static void execute_mpi_task(
+  static R execute_mpi_task(
     const LegionRuntime::HighLevel::Task * task,
     const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
     LegionRuntime::HighLevel::Context context,
