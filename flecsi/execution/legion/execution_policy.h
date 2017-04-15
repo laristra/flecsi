@@ -163,64 +163,92 @@ struct task_epilog_ : public utils::tuple_walker__<task_epilog_>{
 //----------------------------------------------------------------------------//
 
 ///
-/// \note This method only returns a boolean so that it can be
-///       executed with external scope. Failure modes should abort
-///       with clog(fatal).
-///
-#define __register_task(name, registration_method)                             \
-  template<                                                                    \
-    typename R,                                                                \
-    typename A                                                                 \
-  >                                                                            \
-  static                                                                       \
-  bool                                                                         \
-  name(                                                                        \
-    task_hash_key_t key,                                                       \
-    std::string task_name                                                      \
-  )                                                                            \
-  {                                                                            \
-    /* Processor type can be an or-list of values, each of which should */     \
-    /* be register as a different variant. */                                  \
-    const processor_t processor = key.processor();                             \
-                                                                               \
-    /* Register loc task variant */                                            \
-    if(processor_loc(processor)) {                                             \
-      if(!context_t::instance().register_task(                                 \
-        key, processor_type_t::loc, task_name,                                 \
-        task_wrapper__<R, A>::registration_method)) {                          \
-        clog(fatal) << "loc callback registration failed" << std::endl;        \
-      } /* if */                                                               \
-    } /* if */                                                                 \
-                                                                               \
-    /* Register loc task variant */                                            \
-    if(processor_loc(processor)) {                                             \
-      if(!context_t::instance().register_task(                                 \
-        key, processor_type_t::toc, task_name,                                 \
-        task_wrapper__<R, A>::registration_method)) {                          \
-        clog(fatal) << "toc callback registration failed" << std::endl;        \
-      } /* if */                                                               \
-    } /* if */                                                                 \
-  } /* __register_task */
-
-///
 /// \struct legion_execution_policy legion_execution_policy.h
 /// \brief legion_execution_policy provides...
 ///
 struct legion_execution_policy_t
 {
-  template<typename R>
+  template<typename RETURN>
   /// future
-  using future__ = legion_future__<R>;
+  using future__ = legion_future__<RETURN>;
 
   //--------------------------------------------------------------------------//
   // Task interface.
   //--------------------------------------------------------------------------//
 
   /// User task registration.
-  __register_task(register_task, user_registration_callback);
+  template<
+    typename RETURN,
+    typename ARG_TUPLE
+  >
+  static
+  bool
+  register_task(
+    task_hash_key_t key,
+    std::string task_name
+  )
+  {
+    // Processor type can be an or-list of values, each of which should
+    // be register as a different variant.
+    const processor_t processor = key.processor();
 
-  /// Legion task registration.
-  __register_task(register_legion_task, legion_registration_callback);
+    // Register loc task variant
+    if(processor_loc(processor)) {
+      if(!context_t::instance().register_task(
+        key, processor_type_t::loc, task_name,
+        task_wrapper__<RETURN, ARG_TUPLE>::registration_callback)) {
+        clog(fatal) << "loc callback registration failed" << std::endl;
+      } // if
+    } // if
+
+    // Register loc task variant
+    if(processor_loc(processor)) {
+      if(!context_t::instance().register_task(
+        key, processor_type_t::toc, task_name,
+        task_wrapper__<RETURN, ARG_TUPLE>::registration_callback)) {
+        clog(fatal) << "toc callback registration failed" << std::endl;
+      } // if
+    } // if
+  } // register_task
+
+  template<
+    typename RETURN,
+    RETURN (*TASK)(
+          const Legion::Task *,
+    const std::vector<Legion::PhysicalRegion> &,
+    Legion::Context,
+    Legion::Runtime *
+    )
+  >
+  static
+  bool
+  register_legion_task(
+    task_hash_key_t key,
+    std::string task_name
+  )
+  {
+    // Processor type can be an or-list of values, each of which should
+    // be register as a different variant.
+    const processor_t processor = key.processor();
+
+    // Register loc task variant
+    if(processor_loc(processor)) {
+      if(!context_t::instance().register_task(
+        key, processor_type_t::loc, task_name,
+        pure_task_wrapper__<RETURN, TASK>::registration_callback)) {
+        clog(fatal) << "pure loc callback registration failed" << std::endl;
+      } // if
+    } // if
+
+    // Register toc task variant
+    if(processor_toc(processor)) {
+      if(!context_t::instance().register_task(
+        key, processor_type_t::toc, task_name,
+        pure_task_wrapper__<RETURN, TASK>::registration_callback)) {
+        clog(fatal) << "pure toc callback registration failed" << std::endl;
+      } // if
+    } // if
+  } // register_legion_task
 
   ///
   /// Execute FLeCSI task.
@@ -345,14 +373,14 @@ struct legion_execution_policy_t
   ///         successfully registered.
   ///
   template<
-    typename R,
-    typename ... As
+    typename RETURN,
+    typename ... ARGS
   >
   static
   bool
   register_function(
     const utils::const_string_t & key,
-    std::function<R(As ...)> & user_function
+    std::function<RETURN(ARGS ...)> & user_function
   )
   {
     return context_t::instance().register_function(key, user_function);
@@ -368,14 +396,14 @@ struct legion_execution_policy_t
   /// \return The return type of the provided function handle.
   ///
   template<
-    typename T,
-    typename ... As
+    typename FUNCTION_HANDLE,
+    typename ... ARGS
   >
   static
   decltype(auto)
   execute_function(
-    T & handle,
-    As && ... args
+    FUNCTION_HANDLE & handle,
+    ARGS && ... args
   )
   {
     auto t = std::make_tuple(args ...);

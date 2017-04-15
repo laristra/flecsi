@@ -34,8 +34,8 @@ void runtime_driver(const LegionRuntime::HighLevel::Task * task,
 
     // Initialize MPI Interoperability
     context_t & context_ = context_t::instance();
-    //context_.interop_helper_.connect_with_mpi(ctx, runtime);
-    //context_.interop_helper_.wait_on_mpi(ctx, runtime);
+    context_.connect_with_mpi(ctx, runtime);
+    context_.wait_on_mpi(ctx, runtime);
 
 #if defined FLECSI_ENABLE_SPECIALIZATION_DRIVER
     {
@@ -68,6 +68,11 @@ void runtime_driver(const LegionRuntime::HighLevel::Task * task,
   clog_tag_guard(runtime_driver);
   clog(info) << "MPI size is " << num_colors << std::endl;
   }
+
+
+
+
+
 
   // Finish up Legion runtime and fall back out to MPI.
   context_.unset_call_mpi(ctx, runtime);

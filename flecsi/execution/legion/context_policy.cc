@@ -77,17 +77,21 @@ legion_context_policy_t::initialize(
   // Start the Legion runtime
   HighLevelRuntime::start(argc, argv, true);
 
-  do {
+  handoff_to_legion();
+  wait_on_legion();
+
+  while(mpi_active_) {
+    mpi_user_task();
     handoff_to_legion();
     wait_on_legion();
-
-    // execute mpi task
-  } while(mpi_active_);
-
-  handoff_to_legion();
-
+  }
+  
   int version, subversion;
   MPI_Get_version(&version, &subversion);
+#if 0
+  std::cout << "version: " << version << " subversion: " <<
+    subversion << std::endl;
+#endif
   if(version==3 && subversion>0) {
     Legion::Runtime::wait_for_shutdown();
   } // if
@@ -111,18 +115,17 @@ legion_context_policy_t::unset_call_mpi(
 
   // Get a key to look up the task id that was assigned by the runtime.
   auto key = __flecsi_task_key(unset_call_mpi_task, loc);
-  auto args = __flecsi_internal_task_args(unset_call_mpi_task);
 
   {
   clog_tag_guard(context);
-  clog(info) << "Task handle key " << std::get<1>(args).key() << std::endl;
+  clog(info) << "Task handle key " << key << std::endl;
   }
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher launcher(
     context_t::instance().task_id(key),
-    Legion::Domain::from_rect<1>(all_processes_),
-    Legion::TaskArgument(&std::get<1>(args), std::get<0>(args)),
+    Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
+    Legion::TaskArgument(0, 0),
     arg_map
   );
 
@@ -143,13 +146,12 @@ legion_context_policy_t::handoff_to_mpi(
 )
 {
   auto key = __flecsi_task_key(handoff_to_mpi_task, loc);
-  auto args = __flecsi_internal_task_args(handoff_to_mpi_task);
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher handoff_to_mpi_launcher(
     context_t::instance().task_id(key),
-    Legion::Domain::from_rect<1>(all_processes_),
-    Legion::TaskArgument(&std::get<1>(args), std::get<0>(args)),
+    Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
+    Legion::TaskArgument(0, 0),
     arg_map
   );
 
@@ -168,13 +170,12 @@ legion_context_policy_t::wait_on_mpi(
 )
 {
   auto key = __flecsi_task_key(wait_on_mpi_task, loc);
-  auto args = __flecsi_internal_task_args(wait_on_mpi_task);
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher wait_on_mpi_launcher(
     context_t::instance().task_id(key),
-    Legion::Domain::from_rect<1>(all_processes_),
-    Legion::TaskArgument(&std::get<1>(args), std::get<0>(args)),
+    Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
+    Legion::TaskArgument(0, 0),
     arg_map
   );
 
@@ -196,7 +197,8 @@ legion_context_policy_t::connect_with_mpi(
 {
   int size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
-  all_processes_ = LegionRuntime::Arrays::Rect<1>(0, size-1);
+  context_t::instance().set_all_processes(
+    LegionRuntime::Arrays::Rect<1>(0, size-1));
 
   // FIXME: Does this do anything?
   // Both the application and Legion mappers have access to

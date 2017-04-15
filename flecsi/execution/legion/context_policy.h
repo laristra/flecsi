@@ -186,6 +186,31 @@ struct legion_context_policy_t
     mpi_user_task_ = mpi_user_task;
   }
 
+  decltype(auto)
+  mpi_user_task()
+  {
+    return mpi_user_task_;
+  } // mpi_user_task
+
+  ///
+  /// Set distributed-memory domain.
+  ///
+  void
+  set_all_processes(const LegionRuntime::Arrays::Rect<1> & all_processes)
+  {
+    all_processes_ = all_processes;
+  } // all_processes
+
+  ///
+  /// Return distributed-memory domain.
+  ///
+  const LegionRuntime::Arrays::Rect<1> &
+  all_processes()
+  const
+  {
+    return all_processes_;
+  } // all_processes
+
   ///
   /// Handoff to legion runtime from MPI.
   ///

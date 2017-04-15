@@ -10,11 +10,22 @@
 
 #include <cinchlog.h>
 
+#include "flecsi/execution/execution.h"
+
 namespace flecsi {
 namespace execution {
 
+void mpi_task() {
+  clog(info) << "Hello World" << std::endl;
+} // mpi_task
+
+flecsi_register_task(mpi_task, mpi, index);
+
 void specialization_driver(int argc, char ** argv) {
   clog(info) << "In specialization driver" << std::endl;
+
+  flecsi_execute_task(mpi_task, mpi, index);
+
 } // specialization_driver
 
 void driver(int argc, char ** argv) {
