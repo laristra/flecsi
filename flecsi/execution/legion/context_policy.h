@@ -332,8 +332,8 @@ struct legion_context_policy_t
 
     // Add the variant only if it has not been defined.
     if(task_entry.find(variant) == task_entry.end()) {
-      task_registry_[key][variant] =
-        { unique_tid_t::instance().next(), f, name };
+      task_registry_[key][variant] = 
+        std::make_tuple(unique_tid_t::instance().next(), f, name);
       return true;
     }
 
@@ -496,10 +496,34 @@ private:
   // Task registry
   //--------------------------------------------------------------------------//
 
+  struct task_value_hash_t{
+    std::size_t
+    operator () (
+      const processor_type_t & key
+    )
+    const
+    {
+      return size_t(key);
+    } // operator ()
+  };
+
+  struct task_value_equal_t{
+    bool
+    operator () (
+      const processor_type_t & key1,
+      const processor_type_t & key2
+    )
+    const
+    {
+      return size_t(key1) == size_t(key2);
+    } // operator ()
+  };
+
   // Define the value type for task map.
   using task_value_t =
     std::unordered_map<processor_type_t,
-      std::tuple<task_id_t, register_function_t, std::string>>;
+      std::tuple<task_id_t, register_function_t, std::string>,
+      task_value_hash_t, task_value_equal_t>;
 
   // Define the map type using the task_hash_t hash function.
   std::unordered_map<

@@ -224,15 +224,20 @@ struct task_wrapper__
     handle_args_ handle_args(runtime, context, regions);
     handle_args.walk(task_args.user_args);
 
-    user_task_handle(context_t::instance().function(user_task_handle.key()),
+		// FIXME: NEED TO HANDLE RETURN TYPES
+    user_task_handle(
+			context_t::instance().function(user_task_handle.key()),
       task_args.user_args);
 
     // Pop the Legion state
     context_t::instance().pop_state(user_task_handle.key());
+
+		// FIXME: NEED TO HANDLE RETURN TYPES
+		//return retval;
   } // execute_user_task
 
   ///
-  /// Wrapper method for pure Legion tasks.
+  /// Wrapper method for MPI tasks.
   ///
   static void execute_mpi_task(
     const LegionRuntime::HighLevel::Task * task,
