@@ -174,23 +174,23 @@ struct legion_context_policy_t
   /// it will execute whichever function is currently set.
   ///
   void
-  set_mpi_user_task(
-    std::function<void()> & mpi_user_task
+  set_mpi_task(
+    std::function<void()> & mpi_task
   )
   {
     {
     clog_tag_guard(interop);
-    clog(info) << "set_mpi_user_task" << std::endl;
+    clog(info) << "set_mpi_task" << std::endl;
     }
 
-    mpi_user_task_ = mpi_user_task;
+    mpi_task_ = mpi_task;
   }
 
-  decltype(auto)
-  mpi_user_task()
+  void
+  invoke_mpi_task()
   {
-    return mpi_user_task_;
-  } // mpi_user_task
+    return mpi_task_();
+  } // invoke_mpi_task
 
   ///
   /// Set distributed-memory domain.
@@ -549,7 +549,7 @@ private:
 
   Legion::MPILegionHandshake handshake_;
   LegionRuntime::Arrays::Rect<1> all_processes_;
-  std::function<void()> mpi_user_task_;
+  std::function<void()> mpi_task_;
   bool mpi_active_ = false;
 
 }; // class legion_context_policy_t

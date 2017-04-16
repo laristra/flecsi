@@ -105,7 +105,7 @@ struct pure_task_wrapper__
   {
     {
     clog_tag_guard(wrapper);
-    clog(info) << "Executing registration callback (" <<
+    clog(info) << "Executing PURE registration callback (" <<
       task_name << ")" << std::endl;
     }
 
@@ -114,12 +114,22 @@ struct pure_task_wrapper__
 
     switch(processor) {
       case processor_type_t::loc:
+        {
+        clog_tag_guard(wrapper);
+        clog(info) << "Registering PURE loc task: " <<
+          task_name << std::endl << std::endl;
+        }
         registration_wrapper__<RETURN, TASK>::register_task(
           tid, Legion::Processor::LOC_PROC, launch_single(launch),
           launch_index(launch), AUTO_GENERATE_ID, config_options,
           task_name.c_str());
         break;
       case processor_type_t::toc:
+        {
+        clog_tag_guard(wrapper);
+        clog(info) << "Registering PURE loc task: " <<
+          task_name << std::endl << std::endl;
+        }
         registration_wrapper__<RETURN, TASK>::register_task(
           tid, Legion::Processor::TOC_PROC, launch_single(launch),
           launch_index(launch), AUTO_GENERATE_ID, config_options,
@@ -144,7 +154,7 @@ struct pure_task_wrapper__
 template<
   typename RETURN,
   typename ARG_TUPLE,
-	RETURN (*DELEGATE)(ARG_TUPLE &&),
+	RETURN (*DELEGATE)(ARG_TUPLE),
 	size_t KEY
 >
 struct task_wrapper__
@@ -182,18 +192,33 @@ struct task_wrapper__
                                                                                \
     switch(processor) {
       case processor_type_t::loc:
+        {
+        clog_tag_guard(wrapper);
+        clog(info) << "Registering loc task: " <<
+          task_name << std::endl << std::endl;
+        }
 				registration_wrapper__<RETURN, execute_user_task>::register_task(
           tid, Legion::Processor::LOC_PROC, launch_single(launch),
           launch_index(launch), AUTO_GENERATE_ID, config_options,
           task_name.c_str());
         break;
       case processor_type_t::toc:
+        {
+        clog_tag_guard(wrapper);
+        clog(info) << "Registering toc task: " <<
+          task_name << std::endl << std::endl;
+        }
         registration_wrapper__<RETURN, execute_user_task>::register_task(
           tid, Legion::Processor::TOC_PROC, launch_single(launch),
           launch_index(launch), AUTO_GENERATE_ID, config_options,
           task_name.c_str());
         break;
       case processor_type_t::mpi:
+        {
+        clog_tag_guard(wrapper);
+        clog(info) << "Registering MPI task: " <<
+          task_name << std::endl << std::endl;
+        }
         registration_wrapper__<void, execute_mpi_task>::register_task(
           tid, Legion::Processor::LOC_PROC, launch_single(launch),
           launch_index(launch), AUTO_GENERATE_ID, config_options,
@@ -229,7 +254,7 @@ struct task_wrapper__
 
 		// FIXME: NEED TO HANDLE RETURN TYPES
 		// Execute the user's task
-		(*DELEGATE)(std::move(user_task_args));
+		(*DELEGATE)(user_task_args);
 
     // Pop the Legion state
     context_t::instance().pop_state(KEY);
@@ -252,15 +277,15 @@ struct task_wrapper__
     clog(info) << "In execute_mpi_task" << std::endl;
     }
 
-    // Unpack task arguments
-    user_task_args_t & user_task_args =
-			*(reinterpret_cast<user_task_args_t *>(task->args));
+    // Unpack task arguments.
+    ARG_TUPLE & mpi_task_args =
+			*(reinterpret_cast<ARG_TUPLE *>(task->args));
 
-		std::function<void()> bound_user_task =
-			std::bind(*reinterpret_cast<std::function<void(user_task_args_t)> *>(
-				DELEGATE), std::move(user_task_args));
+    // Create bound function to pass to MPI runtime.
+    std::function<void()> bound_mpi_task = std::bind(DELEGATE, mpi_task_args);
 
-		context_t::instance().set_mpi_user_task(bound_user_task);
+    // Set the MPI function and make the runtime active.
+		context_t::instance().set_mpi_task(bound_mpi_task);
 		context_t::instance().set_mpi_state(true);
   } // execute_mpi_task
 

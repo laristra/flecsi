@@ -111,7 +111,7 @@
   inline                                                                       \
   task ## _trt_t                                                               \
   task ## _tuple_wrapper(                                                      \
-    task ## _tat_t && args                                                     \
+    task ## _tat_t args                                                        \
   )                                                                            \
   {                                                                            \
     return flecsi::utils::tuple_function(task, args);                          \

@@ -48,7 +48,7 @@ struct task__
   template<
     typename RETURN,
     typename ARG_TUPLE,
-    RETURN (*DELEGATE)(ARG_TUPLE &&),
+    RETURN (*DELEGATE)(ARG_TUPLE),
     size_t KEY
   >
   static

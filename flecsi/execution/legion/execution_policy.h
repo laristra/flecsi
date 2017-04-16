@@ -180,7 +180,7 @@ struct legion_execution_policy_t
   template<
     typename RETURN,
     typename ARG_TUPLE,
-    RETURN (*DELEGATE)(ARG_TUPLE &&),
+    RETURN (*DELEGATE)(ARG_TUPLE),
     size_t KEY
   >
   static

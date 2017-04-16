@@ -24,7 +24,8 @@ flecsi_register_task(mpi_task, mpi, single);
 void specialization_driver(int argc, char ** argv) {
   clog(info) << "In specialization driver" << std::endl;
 
-  flecsi_execute_task(mpi_task, mpi, single, 2.0);
+  double alpha(2.0);
+  flecsi_execute_task(mpi_task, mpi, single, alpha);
 
 } // specialization_driver
 

@@ -51,7 +51,7 @@ legion_context_policy_t::initialize(
 
     {
     clog_tag_guard(context);
-    clog(info) << "Registering " << key << std::endl;
+    clog(info) << "Registering " << std::endl << key << std::endl;
     }
 
     // Iterate over task variants
@@ -86,7 +86,7 @@ legion_context_policy_t::initialize(
   wait_on_legion();
 
   while(mpi_active_) {
-    mpi_user_task();
+    invoke_mpi_task();
     handoff_to_legion();
     wait_on_legion();
   }
