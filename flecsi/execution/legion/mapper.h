@@ -64,22 +64,26 @@ STLComparator
 /// \brief  mpi_mapper_t - is a custom mapper that handles mpi-legion
 ///                      interoperability in FLeCSI
 ///
-class
-mpi_mapper_t : public Legion::Mapping::DefaultMapper 
+class mpi_mapper_t : public Legion::Mapping::DefaultMapper 
 {
   public:
 
   ///
   /// Contructor. Currently supports only LOC_PROC and TOC_PROC
-	///
+  ///
   mpi_mapper_t(
-  	LegionRuntime::HighLevel::Machine machine,
+    LegionRuntime::HighLevel::Machine machine,
     Legion::Runtime *_runtime,
     LegionRuntime::HighLevel::Processor local
-	)
-  : Legion::Mapping::DefaultMapper(_runtime->get_mapper_runtime(),machine, local, "default")
-  , machine(machine)
-
+  )
+  :
+    Legion::Mapping::DefaultMapper(
+      _runtime->get_mapper_runtime(),
+      machine,
+      local,
+      "default"
+    ),
+    machine(machine)
   {
     using legion_machine=LegionRuntime::HighLevel::Machine;
     using legion_proc=LegionRuntime::HighLevel::Processor;

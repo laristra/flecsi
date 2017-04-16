@@ -15,16 +15,16 @@
 namespace flecsi {
 namespace execution {
 
-void mpi_task() {
-  clog(info) << "Hello World" << std::endl;
+void mpi_task(double val) {
+  clog(info) << "Hello World " << val << std::endl;
 } // mpi_task
 
-flecsi_register_task(mpi_task, mpi, index);
+flecsi_register_task(mpi_task, mpi, single);
 
 void specialization_driver(int argc, char ** argv) {
   clog(info) << "In specialization driver" << std::endl;
 
-  flecsi_execute_task(mpi_task, mpi, index);
+  flecsi_execute_task(mpi_task, mpi, single, 2.0);
 
 } // specialization_driver
 

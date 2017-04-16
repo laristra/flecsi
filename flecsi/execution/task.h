@@ -7,6 +7,7 @@
 #define flecsi_execution_task_h
 
 #include <iostream>
+#include <string>
 
 #include "flecsi/execution/common/processor.h"
 #include "flecsi/execution/common/launch.h"
@@ -33,56 +34,39 @@ struct task__
   ///
   /// Register a user task with the FleCSI runtime.
   ///
-  /// \tparam R The return type of the user task.
-  /// \tparam A A std::tuple of the user task arguments.
+  /// \tparam RETURN The return type of the user task.
+  /// \tparam ARG_TUPLE A std::tuple of the user task arguments.
+  /// \tparam DELEGATE The delegate function that invokes the user task.
+  /// \tparam KEY A hash key identifying the task.
   ///
-  /// \param address The address of the user task.
-  /// \param processor The processor type for task execution.
-  /// \param launch The launch mode for task execution.
+  /// \param key The \ref task_hash_key_t for the task.
+  /// \param name The string identifier of the task.
   ///
   /// \return The return type for task registration is determined by
   ///         the specific backend runtime being used.
   ///
   template<
-    typename R,
-    typename A
+    typename RETURN,
+    typename ARG_TUPLE,
+    RETURN (*DELEGATE)(ARG_TUPLE &&),
+    size_t KEY
   >
   static
   decltype(auto)
   register_task(
-    uintptr_t address,
-    processor_t processor,
-    launch_t launch,
+    task_hash_key_t key,
     std::string name
   )
   {
-    return execution_policy_t::template register_task<R, A>(
-      task_hash_t::make_key(address, processor, launch), name);
-  } // register_task
-
-  template<
-    typename R,
-    typename A
-  >
-  static
-  decltype(auto)
-  register_legion_task(
-    uintptr_t address,
-    processor_t processor,
-    launch_t launch,
-    std::string name
-  )
-  {
-    return execution_policy_t::template register_legion_task<R, A>(
-      task_hash_t::make_key(address, processor, launch), name);
-  } // register_legion_task
+    return execution_policy_t::template register_task<
+      RETURN, ARG_TUPLE, DELEGATE, KEY>(key, name);
+  }
 
   ///
   /// Execute a registered task.
   ///
-  /// \tparam R The return type of the task.
-  /// \tparam T The user task handle type.
-  /// \tparam As The task arguments.
+  /// \tparam RETURN The return type of the task.
+  /// \tparam ARGS The task arguments.
   ///
   /// \param address A unique identifier used to lookup the task
   ///                in the task registry.
@@ -93,24 +77,19 @@ struct task__
   /// \param args The arguments to pass to the user task during execution.
   ///
   template<
-    typename R,
-    typename T,
-    typename ... As
+    typename RETURN,
+    typename ... ARGS
   >
   static
   decltype(auto)
   execute_task(
-    uintptr_t address,
-    processor_t processor,
-    launch_t launch,
+    task_hash_key_t key,
     size_t parent,
-    T user_task_handle,
-    As &&... args
+    ARGS &&... args
   )
   {
-    return execution_policy_t::template execute_task<R>(
-      task_hash_t::make_key(address, processor, launch), parent,
-      user_task_handle, std::forward<As>(args)...);
+    return execution_policy_t::template execute_task<RETURN>(
+      key, parent, std::forward<ARGS>(args)...);
   } // execute
 
 }; // class task

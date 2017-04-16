@@ -521,9 +521,12 @@ private:
 
   // Define the value type for task map.
   using task_value_t =
-    std::unordered_map<processor_type_t,
+    std::unordered_map<
+      processor_type_t,
       std::tuple<task_id_t, register_function_t, std::string>,
-      task_value_hash_t, task_value_equal_t>;
+      task_value_hash_t,
+      task_value_equal_t
+    >;
 
   // Define the map type using the task_hash_t hash function.
   std::unordered_map<

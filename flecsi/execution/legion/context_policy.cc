@@ -40,7 +40,8 @@ legion_context_policy_t::initialize(
   // Register top-level task
   HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
   HighLevelRuntime::register_legion_task<runtime_driver>(
-    TOP_LEVEL_TASK_ID, lr_loc, true, false);
+    TOP_LEVEL_TASK_ID, lr_loc, true, false, AUTO_GENERATE_ID,
+    TaskConfigOptions(), "runtime_driver");
 
   // Register user tasks
   for(auto & t: task_registry_) {
@@ -70,6 +71,10 @@ legion_context_policy_t::initialize(
     1     // Legion participants
   );
 
+  // Register our mapper
+  HighLevelRuntime::set_registration_callback(mapper_registration);
+
+  // Configure interoperability layer.
   int rank;
   MPI_Comm_size(MPI_COMM_WORLD, &rank);
   Legion::Runtime::configure_MPI_interoperability(rank);
@@ -88,10 +93,6 @@ legion_context_policy_t::initialize(
   
   int version, subversion;
   MPI_Get_version(&version, &subversion);
-#if 0
-  std::cout << "version: " << version << " subversion: " <<
-    subversion << std::endl;
-#endif
   if(version==3 && subversion>0) {
     Legion::Runtime::wait_for_shutdown();
   } // if

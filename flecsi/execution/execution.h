@@ -98,14 +98,38 @@
 ///
 #define flecsi_register_task(task, processor, launch)                          \
                                                                                \
-  /* Register the user task in the function table */                           \
-  flecsi_register_function(task);                                              \
+  /* Task return type (trt) */                                                 \
+  using task ## _trt_t =                                                       \
+    typename flecsi::utils::function_traits__<decltype(task)>::return_type;    \
                                                                                \
-  /* Register the user task with the execution policy */                       \
+  /* Task arguments type (tat) */                                              \
+  using task ## _tat_t =                                                       \
+    typename flecsi::utils::function_traits__<decltype(task)>::arguments_type; \
+                                                                               \
+  /* Define a wrapper function to the user's function that takes a tuple */    \
+  /* of the arguments (as opposed to the raw argument pack) */                 \
+  inline                                                                       \
+  task ## _trt_t                                                               \
+  task ## _tuple_wrapper(                                                      \
+    task ## _tat_t && args                                                     \
+  )                                                                            \
+  {                                                                            \
+    return flecsi::utils::tuple_function(task, args);                          \
+  } /* task ## _tuple_wrapper */                                               \
+                                                                               \
   bool task ## _task_registered =                                              \
-    flecsi::execution::task_t::register_task<task ## _trt_t, task ## _tat_t>   \
-    (reinterpret_cast<uintptr_t>(&task), processor, launch, \
-    { EXPAND_AND_STRINGIFY(task) })
+    flecsi::execution::task_t::register_task<                                  \
+      task ## _trt_t,                                                          \
+      task ## _tat_t,                                                          \
+      task ## _tuple_wrapper,                                                  \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()         \
+    >                                                                          \
+    (                                                                          \
+      task_hash_t::make_key(                                                   \
+        reinterpret_cast<uintptr_t>(&task), processor, launch                  \
+      ),                \
+      { EXPAND_AND_STRINGIFY(task) }                                           \
+    )
 
 ///
 /// This macro executes a user task.
@@ -119,12 +143,16 @@
                                                                                \
   /* Execute the user task */                                                  \
   /* WARNING: This macro returns a future. Don't add terminations! */          \
-  flecsi::execution::task_t::execute_task<task ## _trt_t>                      \
-    (reinterpret_cast<uintptr_t>(&task), processor, launch,                    \
+  flecsi::execution::task_t::execute_task<                                     \
+    typename flecsi::utils::function_traits__<decltype(task)>::return_type     \
+  >                                                                            \
+  (                                                                            \
+    task_hash_t::make_key(                                                     \
+      reinterpret_cast<uintptr_t>(&task), processor, launch                    \
+    ),                                                                         \
     flecsi::utils::const_string_t{__func__}.hash(),                            \
-    flecsi::execution::function_handle__<task ## _trt_t, task ## _tat_t>(      \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()),       \
-      ## __VA_ARGS__)
+    ## __VA_ARGS__                                                             \
+  )
 
 //----------------------------------------------------------------------------//
 // Kernel Interface

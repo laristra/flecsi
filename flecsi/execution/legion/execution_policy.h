@@ -179,7 +179,9 @@ struct legion_execution_policy_t
   /// User task registration.
   template<
     typename RETURN,
-    typename ARG_TUPLE
+    typename ARG_TUPLE,
+    RETURN (*DELEGATE)(ARG_TUPLE &&),
+    size_t KEY
   >
   static
   bool
@@ -192,32 +194,45 @@ struct legion_execution_policy_t
     // be register as a different variant.
     const processor_t processor = key.processor();
 
-    // Register loc task variant
-    if(processor_loc(processor)) {
-      if(!context_t::instance().register_task(
-        key, processor_type_t::loc, task_name,
-        task_wrapper__<RETURN, ARG_TUPLE>::registration_callback)) {
-        clog(fatal) << "loc callback registration failed" << std::endl;
-      } // if
-    } // if
+    using wrapper_t = task_wrapper__<RETURN, ARG_TUPLE, DELEGATE, KEY>;
 
-    // Register loc task variant
-    if(processor_loc(processor)) {
+    // Register mpi task variant
+    if(processor_mpi(processor)) {
       if(!context_t::instance().register_task(
-        key, processor_type_t::toc, task_name,
-        task_wrapper__<RETURN, ARG_TUPLE>::registration_callback)) {
-        clog(fatal) << "toc callback registration failed" << std::endl;
+        key, processor_type_t::mpi, task_name,
+        wrapper_t::registration_callback)) {
+        clog(fatal) << "mpi callback registration failed" << std::endl;
+      } // if
+    }
+    else {
+      // Register loc task variant
+      if(processor_loc(processor)) {
+        if(!context_t::instance().register_task(
+          key, processor_type_t::loc, task_name,
+          wrapper_t::registration_callback)) {
+          clog(fatal) << "loc callback registration failed" << std::endl;
+        } // if
+      } // if
+
+      // Register loc task variant
+      if(processor_loc(processor)) {
+        if(!context_t::instance().register_task(
+          key, processor_type_t::toc, task_name,
+          wrapper_t::registration_callback)) {
+          clog(fatal) << "toc callback registration failed" << std::endl;
+        } // if
       } // if
     } // if
   } // register_task
 
+  /// Legion task registration.
   template<
     typename RETURN,
     RETURN (*TASK)(
-          const Legion::Task *,
-    const std::vector<Legion::PhysicalRegion> &,
-    Legion::Context,
-    Legion::Runtime *
+      const Legion::Task *,
+      const std::vector<Legion::PhysicalRegion> &,
+      Legion::Context,
+      Legion::Runtime *
     )
   >
   static
@@ -250,6 +265,138 @@ struct legion_execution_policy_t
     } // if
   } // register_legion_task
 
+  ///
+  /// Execute FLeCSI task.
+  ///
+  /// \tparam RETURN The task return type.
+  /// \tparam FIXME: A
+  ///
+  /// \param key
+  /// \param parent
+  /// \param args
+  ///
+  template<
+    typename RETURN,
+    typename ... ARGS
+  >
+  static
+  decltype(auto)
+  execute_task(
+    task_hash_key_t key,
+    size_t parent,
+    ARGS && ... args
+  )
+  {
+    using namespace Legion;
+
+    // Make a tuple from the task arguments.
+    auto user_task_args = std::make_tuple(args ...);
+    using user_task_args_t = decltype(user_task_args);
+
+    // Get the runtime and context from the calling task.
+    context_t & context_ = context_t::instance();
+    auto legion_runtime = context_.runtime(parent);
+    auto legion_context = context_.context(parent);
+
+    // Handle MPI and Legion invocations separately.
+    if(processor_mpi(key.processor())) {
+      {
+      clog_tag_guard(execution);
+      clog(info) << "Executing MPI task: " << key << std::endl;
+      }
+
+      ArgumentMap arg_map;
+      IndexLauncher launcher(
+        context_.task_id(key),
+        Legion::Domain::from_rect<1>(context_.all_processes()),
+        TaskArgument(&user_task_args, sizeof(user_task_args_t)),
+        arg_map
+      );
+
+      // Enqueue the MPI task.
+      auto future =
+        legion_runtime->execute_index_space(legion_context, launcher);
+      future.wait_all_results();
+
+      // Handoff to the MPI runtime.
+      context_.handoff_to_mpi(legion_context, legion_runtime);
+
+      // Wait for MPI to finish execution (synchronous).
+      context_.wait_on_mpi(legion_context, legion_runtime);
+      
+      // Reset the calling state to false.
+      context_.unset_call_mpi(legion_context, legion_runtime);
+
+      return legion_future__<RETURN>(future);
+    }
+    else {
+      // Initialize the arguments to pass through the runtime.
+      init_args_ init_args(legion_runtime, legion_context);
+      init_args.walk(user_task_args);
+
+      const launch_t launch = key.launch();
+
+      // Switch on launch type: single or index.
+      if(launch_single(launch)) {
+        {
+        clog_tag_guard(execution);
+        clog(info) << "Executing single task: " << key << std::endl;
+        }
+
+        // Create a task launcher, passing the task arguments.
+        TaskLauncher task_launcher(context_.task_id(key),
+          TaskArgument(&user_task_args, sizeof(user_task_args_t)));
+
+        // Enqueue the prolog.
+        task_prolog_
+          task_prolog(legion_runtime, legion_context, task_launcher);
+        task_prolog.walk(user_task_args);
+
+        // Enqueue the task.
+        auto future = context_.runtime(parent)->execute_task(
+          context_.context(parent), task_launcher);
+
+        // Enqueue the epilog.
+        task_epilog_
+          task_epilog(legion_runtime, legion_context);
+        task_epilog.walk(user_task_args);
+
+        return legion_future__<RETURN>(future);
+      }
+      else if(launch_index(launch)) {
+        {
+        clog_tag_guard(execution);
+        clog(info) << "Executing index task: " << key << std::endl;
+        }
+
+        // FIXME:
+        // FIXME: This looks incomplete!
+        // FIXME:
+        //FIXME: get launch domain from partitioning of the data used in
+        // the task following launch domeing calculation is temporary:
+        LegionRuntime::Arrays::Rect<1> launch_bounds(
+          LegionRuntime::Arrays::Point<1>(0),
+          LegionRuntime::Arrays::Point<1>(5));
+        Domain launch_domain = Domain::from_rect<1>(launch_bounds);
+
+        LegionRuntime::HighLevel::ArgumentMap arg_map;
+        LegionRuntime::HighLevel::IndexLauncher index_launcher(
+          context_.task_id(key), launch_domain,
+          TaskArgument(&user_task_args, sizeof(user_task_args_t)), arg_map);
+
+        // Enqueue the task.
+        auto future = context_.runtime(parent)->execute_index_space(
+          context_.context(parent), index_launcher);
+
+        return legion_future__<RETURN>(future);
+      }
+      else {
+        clog(fatal) << "unsupported task type" << std::endl;
+      } // if
+    } // if
+  } // execute_task
+
+#if 0
   ///
   /// Execute FLeCSI task.
   /// \tparam R The task return type.
@@ -357,6 +504,7 @@ struct legion_execution_policy_t
       clog(fatal) << "unsupported task type" << std::endl;
     } // if
   } // execute_task
+#endif
 
   //--------------------------------------------------------------------------//
   // Function interface.

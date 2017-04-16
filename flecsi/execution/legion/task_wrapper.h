@@ -134,20 +134,24 @@ struct pure_task_wrapper__
 //----------------------------------------------------------------------------//
 
 ///
-/// \class task_wrapper__ task_wrapper.h
-/// \brief task_wrapper__ provides...
+/// Task wrapper.
+///
+/// \tparam RETURN The return type of the user task.
+/// \tparam ARG_TUPLE A std::tuple of the user task arguments.
+/// \tparam DELEGATE The delegate function that invokes the user task.
+/// \tparam KEY A hash key identifying the task.
 ///
 template<
   typename RETURN,
-  typename ARG_TUPLE
+  typename ARG_TUPLE,
+	RETURN (*DELEGATE)(ARG_TUPLE &&),
+	size_t KEY
 >
 struct task_wrapper__
 {
   using user_task_args_t =
     typename utils::base_convert_tuple_type<
 		accessor_base, data_handle__<void, 0, 0, 0>, ARG_TUPLE>::type;
-  using task_args_t = legion_task_args__<RETURN, ARG_TUPLE>;
-  using user_task_handle_t = typename task_args_t::user_task_handle_t;
   using task_id_t = Legion::TaskID;
 
   ///
@@ -214,26 +218,23 @@ struct task_wrapper__
     }
 
     // Unpack task arguments
-    task_args_t & task_args = *(reinterpret_cast<task_args_t *>(task->args));
-    user_task_handle_t & user_task_handle = task_args.user_task_handle;
+    user_task_args_t & user_task_args =
+			*(reinterpret_cast<user_task_args_t *>(task->args));
 
     // Push the Legion state
-    context_t::instance().push_state(user_task_handle.key(),
-      context, runtime, task, regions);
+    context_t::instance().push_state(KEY, context, runtime, task, regions);
 
     handle_args_ handle_args(runtime, context, regions);
-    handle_args.walk(task_args.user_args);
+    handle_args.walk(user_task_args);
 
 		// FIXME: NEED TO HANDLE RETURN TYPES
-    user_task_handle(
-			context_t::instance().function(user_task_handle.key()),
-      task_args.user_args);
+		// Execute the user's task
+		(*DELEGATE)(std::move(user_task_args));
 
     // Pop the Legion state
-    context_t::instance().pop_state(user_task_handle.key());
+    context_t::instance().pop_state(KEY);
 
 		// FIXME: NEED TO HANDLE RETURN TYPES
-		//return retval;
   } // execute_user_task
 
   ///
@@ -251,13 +252,13 @@ struct task_wrapper__
     clog(info) << "In execute_mpi_task" << std::endl;
     }
 
-    task_args_t & task_args = *(reinterpret_cast<task_args_t *>(task->args));
-    user_task_handle_t & user_task_handle = task_args.user_task_handle;
-    user_task_args_t & user_task_args = task_args.user_args;
+    // Unpack task arguments
+    user_task_args_t & user_task_args =
+			*(reinterpret_cast<user_task_args_t *>(task->args));
 
-    std::function<void()> bound_user_task =
+		std::function<void()> bound_user_task =
 			std::bind(*reinterpret_cast<std::function<void(user_task_args_t)> *>(
-			context_t::instance().function(user_task_handle.key())), user_task_args);
+				DELEGATE), std::move(user_task_args));
 
 		context_t::instance().set_mpi_user_task(bound_user_task);
 		context_t::instance().set_mpi_state(true);

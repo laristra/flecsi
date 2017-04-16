@@ -139,37 +139,38 @@ cinch_add_unit(task_hash
 if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
     OR (FLECSI_RUNTIME_MODEL STREQUAL "legion"))
 
-#
-# Test basic function calling capability using the register_function
-# interface.
-#
-cinch_add_unit(simple_function
-  SOURCES
-    test/simple_function_driver.cc
-    test/context_runtime.cc
-    ${RUNTIME_DRIVER}
-  POLICY
-    ${UNIT_POLICY}
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
-)
+  #
+  # Test basic function calling capability using the register_function
+  # interface.
+  #
+  cinch_add_unit(simple_function
+    SOURCES
+      test/simple_function_driver.cc
+      test/context_runtime.cc
+      ${RUNTIME_DRIVER}
+    POLICY
+      ${UNIT_POLICY}
+    LIBRARIES
+      flecsi
+      ${CINCH_RUNTIME_LIBRARIES}
+  )
 
-#
-# Test basic task calling capability using the register_task
-# interface.
-#
-cinch_add_unit(simple_task
-  SOURCES
-    test/simple_task_driver.cc
-    test/context_runtime.cc
-    ${RUNTIME_DRIVER}
-  POLICY
-    ${UNIT_POLICY}
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
-)
+  #
+  # Test basic task calling capability using the register_task
+  # interface.
+  #
+  cinch_add_unit(simple_task
+    SOURCES
+      test/simple_task_driver.cc
+      test/context_runtime.cc
+      ${RUNTIME_DRIVER}
+    POLICY
+      ${UNIT_POLICY}
+    LIBRARIES
+      flecsi
+      ${CINCH_RUNTIME_LIBRARIES}
+  )
+
   if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
     #
@@ -185,6 +186,20 @@ cinch_add_unit(simple_task
     LIBRARIES
       flecsi
       ${CINCH_RUNTIME_LIBRARIES}
+    )
+
+    cinch_add_unit(execution_structure
+      SOURCES
+        test/execution_structure_test.cc
+        test/execution_structure_drivers.cc
+        test/context_runtime.cc
+        ${RUNTIME_DRIVER}
+      LIBRARIES
+        flecsi
+        ${CINCH_RUNTIME_LIBRARIES}
+      DEFINES -DFLECSI_ENABLE_SPECIALIZATION_DRIVER=1
+      POLICY LEGION
+      THREADS 1
     )
 
   endif()
