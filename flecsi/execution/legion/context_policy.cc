@@ -115,7 +115,7 @@ legion_context_policy_t::unset_call_mpi(
   }
 
   // Get a key to look up the task id that was assigned by the runtime.
-  auto key = __flecsi_task_key(unset_call_mpi_task, loc);
+  auto key = __flecsi_internal_task_key(unset_call_mpi_task, loc);
 
   {
   clog_tag_guard(context);
@@ -146,7 +146,7 @@ legion_context_policy_t::handoff_to_mpi(
   Legion::HighLevelRuntime * runtime
 )
 {
-  auto key = __flecsi_task_key(handoff_to_mpi_task, loc);
+  auto key = __flecsi_internal_task_key(handoff_to_mpi_task, loc);
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher handoff_to_mpi_launcher(
@@ -170,7 +170,7 @@ legion_context_policy_t::wait_on_mpi(
   Legion::HighLevelRuntime * runtime
 )
 {
-  auto key = __flecsi_task_key(wait_on_mpi_task, loc);
+  auto key = __flecsi_internal_task_key(wait_on_mpi_task, loc);
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher wait_on_mpi_launcher(

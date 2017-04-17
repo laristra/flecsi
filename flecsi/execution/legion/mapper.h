@@ -153,8 +153,8 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
     context_t & context_ = context_t::instance();
 
     // tag-based decisions here
-    if(context_.task_id(__flecsi_task_key(handoff_to_mpi_task, loc)) ||
-      context_.task_id(__flecsi_task_key(wait_on_mpi_task, loc)) ||
+    if(context_.task_id(__flecsi_internal_task_key(handoff_to_mpi_task, loc)) ||
+      context_.task_id(__flecsi_internal_task_key(wait_on_mpi_task, loc)) ||
       (task.tag & MAPPER_FORCE_RANK_MATCH) != 0) {
 
       // expect a 1-D index domain

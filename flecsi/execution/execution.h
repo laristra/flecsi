@@ -127,7 +127,7 @@
     (                                                                          \
       task_hash_t::make_key(                                                   \
         reinterpret_cast<uintptr_t>(&task), processor, launch                  \
-      ),                \
+      ),                                                                       \
       { EXPAND_AND_STRINGIFY(task) }                                           \
     )
 
