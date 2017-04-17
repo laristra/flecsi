@@ -10,7 +10,11 @@
 
 #include "flecsi/execution/legion/runtime_driver.h"
 
+#include <legion.h>
+
 #include "flecsi/execution/context.h"
+#include "flecsi/execution/legion/legion_tasks.h"
+#include "flecsi/execution/legion/mapper.h"
 #include "flecsi/utils/common.h"
 
 clog_register_tag(runtime_driver);
@@ -18,10 +22,10 @@ clog_register_tag(runtime_driver);
 namespace flecsi {
 namespace execution {
 
-void runtime_driver(const LegionRuntime::HighLevel::Task * task,
-  const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
-  LegionRuntime::HighLevel::Context ctx,
-  LegionRuntime::HighLevel::HighLevelRuntime * runtime)
+void runtime_driver(const Legion::Task * task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx,
+  Legion::HighLevelRuntime * runtime)
   {
     {
     clog_tag_guard(runtime_driver);
@@ -29,8 +33,8 @@ void runtime_driver(const LegionRuntime::HighLevel::Task * task,
     }
 
     // Get the input arguments from the Legion runtime
-    const LegionRuntime::HighLevel::InputArgs & args =
-      LegionRuntime::HighLevel::HighLevelRuntime::get_input_args();
+    const Legion::InputArgs & args =
+      Legion::HighLevelRuntime::get_input_args();
 
     // Initialize MPI Interoperability
     context_t & context_ = context_t::instance();
@@ -44,35 +48,49 @@ void runtime_driver(const LegionRuntime::HighLevel::Task * task,
     }
 
     // Set the current task context to the driver
-    context_t::instance().push_state(
-      utils::const_string_t{"specialization_driver"}.hash(),
+    context_.push_state(utils::const_string_t{"specialization_driver"}.hash(),
       ctx, runtime, task, regions);
 
     // run default or user-defined specialization driver 
     specialization_driver(args.argc, args.argv);
 
     // Set the current task context to the driver
-    context_t::instance().pop_state(
-      utils::const_string_t{"specialization_driver"}.hash());
+    context_.pop_state( utils::const_string_t{"specialization_driver"}.hash());
 #endif // FLECSI_ENABLE_SPECIALIZATION_DRIVER
+
+  for(auto p: context_.partitions()) {
+    clog_container_one(info, "exclusive", p.second.exclusive, clog::space);
+  } // for
 
   // Register user data
   //data::storage_t::instance().register_all();
 
   // Must epoch launch
-  LegionRuntime::HighLevel::MustEpochLauncher must_epoch_launcher;
+  Legion::MustEpochLauncher must_epoch_launcher;
 
-  int num_colors;
-  MPI_Comm_size(MPI_COMM_WORLD, &num_colors);
+  int size;
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
   {
   clog_tag_guard(runtime_driver);
-  clog(info) << "MPI size is " << num_colors << std::endl;
+  clog(info) << "MPI size is " << size << std::endl;
   }
 
+#if 0
+  auto spmd_id = context_.task_id(__flecsi_task_key(spmd_task, loc));
 
+  // Add colors to must_epoch_launcher
+  for(size_t i(0); i<size; ++i) {
+    Legion::TaskLauncher spmd_launcher(spmd_id, Legion::TaskArgument(0, 0));
+    spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
+    Legion::DomainPoint point(i);
+    must_epoch_launcher.add_single_task(point, spmd_launcher);
+  } // for
 
-
+  // Launch the spmd tasks
+  auto future = runtime->execute_must_epoch(ctx, must_epoch_launcher);
+  future.wait_all_results();
+#endif
 
   // Finish up Legion runtime and fall back out to MPI.
   context_.unset_call_mpi(ctx, runtime);

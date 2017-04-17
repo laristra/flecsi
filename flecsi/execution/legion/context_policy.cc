@@ -30,7 +30,7 @@ legion_context_policy_t::initialize(
   char ** argv
 )
 {
-  using namespace LegionRuntime::HighLevel;
+  using namespace Legion;
 
   {
   clog_tag_guard(context);

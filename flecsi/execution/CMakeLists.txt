@@ -188,19 +188,28 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
       ${CINCH_RUNTIME_LIBRARIES}
     )
 
-    cinch_add_unit(execution_structure
-      SOURCES
-        test/execution_structure_test.cc
-        test/execution_structure_drivers.cc
-        test/context_runtime.cc
-        ${RUNTIME_DRIVER}
-      LIBRARIES
-        flecsi
-        ${CINCH_RUNTIME_LIBRARIES}
-      DEFINES -DFLECSI_ENABLE_SPECIALIZATION_DRIVER=1
-      POLICY LEGION
-      THREADS 2
-    )
+    if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
+
+      cinch_add_unit(execution_structure
+        SOURCES
+          test/execution_structure_test.cc
+          test/execution_structure_drivers.cc
+          test/context_runtime.cc
+          ${RUNTIME_DRIVER}
+        INPUTS
+          test/simple2d-8x8.msh
+          test/simple2d-16x16.msh
+        LIBRARIES
+          flecsi
+          ${CINCH_RUNTIME_LIBRARIES}
+          ${PARTITION_LIBRARIES}
+        DEFINES
+          -DFLECSI_ENABLE_SPECIALIZATION_DRIVER=1
+        POLICY LEGION
+        THREADS 2
+      )
+
+    endif()
 
   endif()
 

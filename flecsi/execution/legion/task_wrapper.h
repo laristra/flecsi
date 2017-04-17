@@ -36,15 +36,19 @@ namespace execution {
 
 // This is called to walk the task args before the user task functions runs
 // once we have the corresponding physical regions
-struct handle_args_ : public utils::tuple_walker__<handle_args_>{
+struct handle_args_ : public utils::tuple_walker__<handle_args_>
+{
   handle_args_(
-    Legion::Runtime* runtime,
-    Legion::Context context,
-    const std::vector<Legion::PhysicalRegion>& regions
+    Legion::Runtime* runtime_,
+    Legion::Context context_,
+    const std::vector<Legion::PhysicalRegion>& regions_
   )
-  : runtime(runtime),
-  context(context),
-  regions(regions){}
+  :
+		runtime(runtime_),
+  	context(context_),
+  	regions(regions_)
+	{
+	}
 
   template<
     typename T,
@@ -57,12 +61,15 @@ struct handle_args_ : public utils::tuple_walker__<handle_args_>{
   )
   {
 
-  }
+  } // handle
 
-  template<typename T>
+  template<
+		typename T
+	>
   static
   typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::value>
-  handle(T&){}
+  handle(T&)
+	{}
 
   Legion::Runtime* runtime;
   Legion::Context context;
@@ -73,6 +80,12 @@ struct handle_args_ : public utils::tuple_walker__<handle_args_>{
 // Pure Legion task registration.
 //----------------------------------------------------------------------------//
 
+///
+/// Pure Legion task wrapper.
+///
+/// \tparam RETURN The return type of the task.
+/// \tparam TASK The legion task.
+///
 template<
   typename RETURN,
   RETURN (*TASK)(
@@ -109,6 +122,8 @@ struct pure_task_wrapper__
       task_name << ")" << std::endl;
     }
 
+		// Create configuration options using launch information provided
+		// by the user.
     Legion::TaskConfigOptions config_options{ launch_leaf(launch),
       launch_inner(launch), launch_idempotent(launch) };
 
@@ -186,10 +201,12 @@ struct task_wrapper__
     clog(info) << "Executing registration callback (" <<
       task_name << ")" << std::endl;
     }
-                                                                               \
+
+		// Create configuration options using launch information provided
+		// by the user.
     Legion::TaskConfigOptions config_options{ launch_leaf(launch),
       launch_inner(launch), launch_idempotent(launch) };
-                                                                               \
+
     switch(processor) {
       case processor_type_t::loc:
         {
@@ -278,8 +295,7 @@ struct task_wrapper__
     }
 
     // Unpack task arguments.
-    ARG_TUPLE & mpi_task_args =
-			*(reinterpret_cast<ARG_TUPLE *>(task->args));
+    ARG_TUPLE & mpi_task_args = *(reinterpret_cast<ARG_TUPLE *>(task->args));
 
     // Create bound function to pass to MPI runtime.
     std::function<void()> bound_mpi_task = std::bind(DELEGATE, mpi_task_args);
