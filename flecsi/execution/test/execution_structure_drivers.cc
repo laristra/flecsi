@@ -43,7 +43,8 @@ void add_partitions(int dummy) {
   clog(info) << "add_partitions, rank: " << rank << std::endl;
 
   // Read the mesh definition from file.
-  flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
+  //flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
+  flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
 
   // Create the dCRS representation for the distributed partitioner.
   auto dcrs = flecsi::dmp::make_dcrs(sd);
