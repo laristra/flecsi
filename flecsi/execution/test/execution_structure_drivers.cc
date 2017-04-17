@@ -276,7 +276,8 @@ void add_partitions(int dummy) {
   context_.add_partition(0, cells);
   context_.add_partition(1, vertices);
 
-} // mpi_task
+} // add_partitions
+
 
 flecsi_register_task(add_partitions, mpi, index);
 

@@ -58,9 +58,13 @@ void runtime_driver(const Legion::Task * task,
     context_.pop_state( utils::const_string_t{"specialization_driver"}.hash());
 #endif // FLECSI_ENABLE_SPECIALIZATION_DRIVER
 
+  // Add reduction of meta data required to construct Legion data structures.
+
+#if 0
   for(auto p: context_.partitions()) {
     clog_container_one(info, "exclusive", p.second.exclusive, clog::space);
   } // for
+#endif
 
   // Register user data
   //data::storage_t::instance().register_all();

@@ -39,6 +39,8 @@ legion_task(spmd_task, void) {
   clog(info) << "Executing driver task" << std::endl;
   }
 
+  // Add additional setup.
+
   // Get the input arguments from the Legion runtime
   const LegionRuntime::HighLevel::InputArgs & args =
     LegionRuntime::HighLevel::HighLevelRuntime::get_input_args();
