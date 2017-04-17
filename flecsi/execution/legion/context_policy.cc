@@ -30,7 +30,7 @@ legion_context_policy_t::initialize(
   char ** argv
 )
 {
-  using namespace LegionRuntime::HighLevel;
+  using namespace Legion;
 
   {
   clog_tag_guard(context);
@@ -40,7 +40,8 @@ legion_context_policy_t::initialize(
   // Register top-level task
   HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
   HighLevelRuntime::register_legion_task<runtime_driver>(
-    TOP_LEVEL_TASK_ID, lr_loc, true, false);
+    TOP_LEVEL_TASK_ID, lr_loc, true, false, AUTO_GENERATE_ID,
+    TaskConfigOptions(), "runtime_driver");
 
   // Register user tasks
   for(auto & t: task_registry_) {
@@ -50,7 +51,7 @@ legion_context_policy_t::initialize(
 
     {
     clog_tag_guard(context);
-    clog(info) << "Registering " << key << std::endl;
+    clog(info) << "Registering " << std::endl << key << std::endl;
     }
 
     // Iterate over task variants
@@ -70,6 +71,10 @@ legion_context_policy_t::initialize(
     1     // Legion participants
   );
 
+  // Register our mapper
+  HighLevelRuntime::set_registration_callback(mapper_registration);
+
+  // Configure interoperability layer.
   int rank;
   MPI_Comm_size(MPI_COMM_WORLD, &rank);
   Legion::Runtime::configure_MPI_interoperability(rank);
@@ -77,15 +82,15 @@ legion_context_policy_t::initialize(
   // Start the Legion runtime
   HighLevelRuntime::start(argc, argv, true);
 
-  do {
+  handoff_to_legion();
+  wait_on_legion();
+
+  while(mpi_active_) {
+    invoke_mpi_task();
     handoff_to_legion();
     wait_on_legion();
-
-    // execute mpi task
-  } while(mpi_active_);
-
-  handoff_to_legion();
-
+  }
+  
   int version, subversion;
   MPI_Get_version(&version, &subversion);
   if(version==3 && subversion>0) {
@@ -110,19 +115,18 @@ legion_context_policy_t::unset_call_mpi(
   }
 
   // Get a key to look up the task id that was assigned by the runtime.
-  auto key = __flecsi_task_key(unset_call_mpi_task, loc);
-  auto args = __flecsi_internal_task_args(unset_call_mpi_task);
+  auto key = __flecsi_internal_task_key(unset_call_mpi_task, loc);
 
   {
   clog_tag_guard(context);
-  clog(info) << "Task handle key " << std::get<1>(args).key() << std::endl;
+  clog(info) << "Task handle key " << key << std::endl;
   }
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher launcher(
     context_t::instance().task_id(key),
-    Legion::Domain::from_rect<1>(all_processes_),
-    Legion::TaskArgument(&std::get<1>(args), std::get<0>(args)),
+    Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
+    Legion::TaskArgument(0, 0),
     arg_map
   );
 
@@ -142,14 +146,13 @@ legion_context_policy_t::handoff_to_mpi(
   Legion::HighLevelRuntime * runtime
 )
 {
-  auto key = __flecsi_task_key(handoff_to_mpi_task, loc);
-  auto args = __flecsi_internal_task_args(handoff_to_mpi_task);
+  auto key = __flecsi_internal_task_key(handoff_to_mpi_task, loc);
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher handoff_to_mpi_launcher(
     context_t::instance().task_id(key),
-    Legion::Domain::from_rect<1>(all_processes_),
-    Legion::TaskArgument(&std::get<1>(args), std::get<0>(args)),
+    Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
+    Legion::TaskArgument(0, 0),
     arg_map
   );
 
@@ -167,14 +170,13 @@ legion_context_policy_t::wait_on_mpi(
   Legion::HighLevelRuntime * runtime
 )
 {
-  auto key = __flecsi_task_key(wait_on_mpi_task, loc);
-  auto args = __flecsi_internal_task_args(wait_on_mpi_task);
+  auto key = __flecsi_internal_task_key(wait_on_mpi_task, loc);
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher wait_on_mpi_launcher(
     context_t::instance().task_id(key),
-    Legion::Domain::from_rect<1>(all_processes_),
-    Legion::TaskArgument(&std::get<1>(args), std::get<0>(args)),
+    Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
+    Legion::TaskArgument(0, 0),
     arg_map
   );
 
@@ -196,7 +198,8 @@ legion_context_policy_t::connect_with_mpi(
 {
   int size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
-  all_processes_ = LegionRuntime::Arrays::Rect<1>(0, size-1);
+  context_t::instance().set_all_processes(
+    LegionRuntime::Arrays::Rect<1>(0, size-1));
 
   // FIXME: Does this do anything?
   // Both the application and Legion mappers have access to

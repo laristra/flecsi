@@ -174,17 +174,42 @@ struct legion_context_policy_t
   /// it will execute whichever function is currently set.
   ///
   void
-  set_mpi_user_task(
-    std::function<void()> & mpi_user_task
+  set_mpi_task(
+    std::function<void()> & mpi_task
   )
   {
     {
     clog_tag_guard(interop);
-    clog(info) << "set_mpi_user_task" << std::endl;
+    clog(info) << "set_mpi_task" << std::endl;
     }
 
-    mpi_user_task_ = mpi_user_task;
+    mpi_task_ = mpi_task;
   }
+
+  void
+  invoke_mpi_task()
+  {
+    return mpi_task_();
+  } // invoke_mpi_task
+
+  ///
+  /// Set distributed-memory domain.
+  ///
+  void
+  set_all_processes(const LegionRuntime::Arrays::Rect<1> & all_processes)
+  {
+    all_processes_ = all_processes;
+  } // all_processes
+
+  ///
+  /// Return distributed-memory domain.
+  ///
+  const LegionRuntime::Arrays::Rect<1> &
+  all_processes()
+  const
+  {
+    return all_processes_;
+  } // all_processes
 
   ///
   /// Handoff to legion runtime from MPI.
@@ -307,8 +332,8 @@ struct legion_context_policy_t
 
     // Add the variant only if it has not been defined.
     if(task_entry.find(variant) == task_entry.end()) {
-      task_registry_[key][variant] =
-        { unique_tid_t::instance().next(), f, name };
+      task_registry_[key][variant] = 
+        std::make_tuple(unique_tid_t::instance().next(), f, name);
       return true;
     }
 
@@ -471,10 +496,37 @@ private:
   // Task registry
   //--------------------------------------------------------------------------//
 
+  struct task_value_hash_t{
+    std::size_t
+    operator () (
+      const processor_type_t & key
+    )
+    const
+    {
+      return size_t(key);
+    } // operator ()
+  };
+
+  struct task_value_equal_t{
+    bool
+    operator () (
+      const processor_type_t & key1,
+      const processor_type_t & key2
+    )
+    const
+    {
+      return size_t(key1) == size_t(key2);
+    } // operator ()
+  };
+
   // Define the value type for task map.
   using task_value_t =
-    std::unordered_map<processor_type_t,
-      std::tuple<task_id_t, register_function_t, std::string>>;
+    std::unordered_map<
+      processor_type_t,
+      std::tuple<task_id_t, register_function_t, std::string>,
+      task_value_hash_t,
+      task_value_equal_t
+    >;
 
   // Define the map type using the task_hash_t hash function.
   std::unordered_map<
@@ -497,7 +549,7 @@ private:
 
   Legion::MPILegionHandshake handshake_;
   LegionRuntime::Arrays::Rect<1> all_processes_;
-  std::function<void()> mpi_user_task_;
+  std::function<void()> mpi_task_;
   bool mpi_active_ = false;
 
 }; // class legion_context_policy_t

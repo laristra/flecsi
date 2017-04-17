@@ -29,12 +29,17 @@ inline return_type task_name(                                                  \
   LegionRuntime::HighLevel::HighLevelRuntime * runtime                         \
 )
 
-/// Initial SPMD task.
+//----------------------------------------------------------------------------//
+// Initial SPMD task.
+//----------------------------------------------------------------------------//
+
 legion_task(spmd_task, void) {
   {
   clog_tag_guard(legion_tasks);
   clog(info) << "Executing driver task" << std::endl;
   }
+
+  // Add additional setup.
 
   // Get the input arguments from the Legion runtime
   const LegionRuntime::HighLevel::InputArgs & args =
@@ -52,17 +57,26 @@ legion_task(spmd_task, void) {
   context_t::instance().pop_state(utils::const_string_t{"driver"}.hash());
 } // spmd_task
 
-/// Interprocess communication to pass control to MPI runtime.
+//----------------------------------------------------------------------------//
+// Interprocess communication to pass control to MPI runtime.
+//----------------------------------------------------------------------------//
+
 legion_task(handoff_to_mpi_task, void) {
   context_t::instance().handoff_to_mpi();
 } // handoff_to_mpi_task
 
-/// Interprocess communication to unset mpi execute state.
+//----------------------------------------------------------------------------//
+// Interprocess communication to unset mpi execute state.
+//----------------------------------------------------------------------------//
+
 legion_task(wait_on_mpi_task, void) {
   context_t::instance().wait_on_mpi();
 } // wait_on_mpi_task
 
-/// Interprocess communication to unset mpi execute state.
+//----------------------------------------------------------------------------//
+// Interprocess communication to unset mpi execute state.
+//----------------------------------------------------------------------------//
+
 legion_task(unset_call_mpi_task, void) {
   context_t::instance().set_mpi_state(false);
 } // unset_call_mpi_task

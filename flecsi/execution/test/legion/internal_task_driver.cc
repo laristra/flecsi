@@ -39,8 +39,8 @@ __flecsi_internal_register_legion_task(internal_task_example_2, toc,
 void driver(int argc, char ** argv) {
 
   // These keys will allow you to lookup the task id that was assigned.
-  auto key_1 = __flecsi_task_key(internal_task_example_1, loc);
-  auto key_2 = __flecsi_task_key(internal_task_example_2, toc);
+  auto key_1 = __flecsi_internal_task_key(internal_task_example_1, loc);
+  auto key_2 = __flecsi_internal_task_key(internal_task_example_2, toc);
 
   // Lookup the task ids.
   auto tid_1 = context_t::instance().task_id(key_1);

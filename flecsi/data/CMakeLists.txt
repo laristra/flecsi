@@ -207,20 +207,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
 
-    cinch_add_unit(execution_structure
-      SOURCES
-        test/execution_structure_test.cc
-        test/execution_structure_drivers.cc
-        ../execution/test/context_runtime.cc
-        ${RUNTIME_DRIVER}
-      LIBRARIES
-        flecsi
-        ${CINCH_RUNTIME_LIBRARIES}
-      DEFINES -DFLECSI_ENABLE_SPECIALIZATION_DRIVER=1
-      POLICY LEGION
-      THREADS 2
-    )
-
     cinch_add_unit(legion_dh1
       SOURCES
         ../execution/test/task.cc

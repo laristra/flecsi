@@ -47,9 +47,9 @@ void driver(int argc, char ** argv) {
 
   auto f = flecsi_execute_task(task, loc, single, alpha, 5);
 
-  //f.wait();
+  f.wait();
 
-  //clog(info) << "Task return: " << f.get() << std::endl;
+  clog(info) << "Task return: " << f.get() << std::endl;
 
 } // driver
 
