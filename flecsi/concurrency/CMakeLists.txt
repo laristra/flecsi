@@ -12,6 +12,25 @@
 # All rights reserved
 #~----------------------------------------------------------------------------~#
 
+#------------------------------------------------------------------------------#
+# Add header files. Note that these will be "exported" to the parent
+# scope below.
+#------------------------------------------------------------------------------#
+
+set(concurrency_HEADERS
+  thread_pool.h
+  virtual_semaphore.h  
+)
+
+#------------------------------------------------------------------------------#
+# Export header list to parent scope.
+#------------------------------------------------------------------------------#
+
+set(concurrency_HEADERS
+    ${concurrency_HEADERS}
+    PARENT_SCOPE
+)
+
 #~---------------------------------------------------------------------------~-#
 # Formatting options
 # vim: set tabstop=2 shiftwidth=2 expandtab :

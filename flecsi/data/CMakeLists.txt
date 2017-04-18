@@ -18,6 +18,7 @@
 #------------------------------------------------------------------------------#
 
 set(data_HEADERS
+  accessor.h
   common/data_hash.h
   common/data_types.h
   data_client.h
@@ -49,15 +50,16 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
   set(data_HEADERS
     ${data_HEADERS}
+    serial/data_handle_policy.h
+    serial/data_policy.h
     serial/dense.h
     serial/global.h
+    serial/handle_policy.h
     serial/meta_data.h
     serial/scoped.h
     serial/sparse.h
     serial/storage_policy.h
     serial/tuple.h
-    serial/data_policy.h
-    serial/handle_policy.h
   )
 
   set(UNIT_POLICY SERIAL)
@@ -67,16 +69,24 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(data_HEADERS
     ${data_HEADERS}
+    legion/data_handle_policy.h
+    legion/data_policy.h
     legion/dense.h
+    legion/dpd.h
     legion/global.h
+    legion/handle_policy.h
     legion/meta_data.h
+    legion/registration_wrapper.h
     legion/scoped.h
     legion/sparse.h
     legion/storage_policy.h
     legion/tuple.h
-    legion/data_policy.h
-    legion/handle_policy.h
   )
+
+#  set(data_SOURCES
+#    ${data_SOURCES}
+#    legion/dpd.cc
+#  )
 
   set(UNIT_POLICY LEGION)
   set(RUNTIME_DRIVER ../execution/legion/runtime_driver.cc)

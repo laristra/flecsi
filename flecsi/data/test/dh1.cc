@@ -18,7 +18,6 @@
 #include "flecsi/data/data_client.h"
 #include "flecsi/data/legion/data_policy.h"
 #include "flecsi/execution/legion/helper.h"
-#include "flecsi/execution/task_ids.h"
 
 #define np(X)                                                            \
  std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
