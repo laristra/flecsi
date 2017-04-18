@@ -40,8 +40,8 @@ legion_context_policy_t::initialize(
   // Register top-level task
   HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
   HighLevelRuntime::register_legion_task<runtime_driver>(
-    TOP_LEVEL_TASK_ID, lr_loc, true, false, AUTO_GENERATE_ID,
-    TaskConfigOptions(), "runtime_driver");
+    TOP_LEVEL_TASK_ID, Legion::Processor::LOC_PROC,
+    true, false, AUTO_GENERATE_ID, TaskConfigOptions(), "runtime_driver");
 
   // Register user tasks
   for(auto & t: task_registry_) {
