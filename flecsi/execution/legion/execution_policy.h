@@ -223,6 +223,8 @@ struct legion_execution_policy_t
         } // if
       } // if
     } // if
+
+    return true;
   } // register_task
 
   /// Legion task registration.
@@ -263,6 +265,8 @@ struct legion_execution_policy_t
         clog(fatal) << "pure toc callback registration failed" << std::endl;
       } // if
     } // if
+
+    return true;
   } // register_legion_task
 
   ///

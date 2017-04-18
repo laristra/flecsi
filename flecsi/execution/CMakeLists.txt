@@ -23,6 +23,7 @@ set(execution_HEADERS
   common/processor.h
   common/task_hash.h
   context.h
+  default_driver.h
   execution.h
   function.h
   kernel.h
@@ -59,6 +60,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/internal_task.h
     legion/legion_tasks.h
     legion/mapper.h
+    legion/registration_wrapper.h
     legion/runtime_driver.h
     legion/task_args.h
     legion/task_wrapper.h
@@ -66,7 +68,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(execution_SOURCES
     ${execution_SOURCES}
-    ../data/legion/dpd.cc
     legion/context_policy.cc
     legion/legion_tasks.cc
   )

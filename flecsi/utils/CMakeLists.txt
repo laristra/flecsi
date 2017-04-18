@@ -20,6 +20,7 @@
 set(utils_HEADERS
   any.h
   array_ref.h
+  checksum.h
   common.h
   const_string.h
   debruijn.h
@@ -37,6 +38,8 @@ set(utils_HEADERS
   set_utils.h
   static_verify.h
   tuple_function.h
+  tuple_type_converter.h
+  tuple_walker.h
   tuple_wrapper.h
   utility.h
 )

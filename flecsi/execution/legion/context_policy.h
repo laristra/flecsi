@@ -87,9 +87,6 @@ extern thread_local std::unordered_map<size_t,
 ///
 struct legion_context_policy_t
 {
-  const static Legion::Processor::Kind lr_loc =
-    Legion::Processor::LOC_PROC;
-
   const size_t TOP_LEVEL_TASK_ID = 0;
 
   //--------------------------------------------------------------------------//
