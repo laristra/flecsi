@@ -6,7 +6,15 @@
 #ifndef flecsi_partition_mpi_communicator_h
 #define flecsi_partition_mpi_communicator_h
 
+///
+/// \file
+/// \date Initial file creation: Dec 06, 2016
+///
+
 #include "flecsi/partition/communicator.h"
+#include "flecsi/utils/set_utils.h"
+
+#include <cinchlog.h>
 
 #if !defined(ENABLE_MPI)
   #error ENABLE_MPI not defined! This file depends on MPI!
@@ -14,10 +22,7 @@
 
 #include <mpi.h>
 
-///
-/// \file
-/// \date Initial file creation: Dec 06, 2016
-///
+clog_register_tag(mpi_communicator);
 
 namespace flecsi {
 namespace dmp {
@@ -54,6 +59,7 @@ public:
     const std::set<size_t> & primary,
     const std::set<size_t> & request_indices
   )
+  override
   {
     int size;
     int rank;
@@ -73,11 +79,13 @@ public:
       request_indices_size << std::endl;
 #endif
 
+    const auto mpi_size_t_type = flecsi::dmp::mpi_typetraits<size_t>::type();
+
     // This may be inefficient, but this call is doing a reduction
     // to determine the maximum number of indices requested by any rank
     // so that we can pad out the all-to-all communication below.
     int result = MPI_Allreduce(&request_indices_size, &max_request_indices, 1,
-      flecsi::dmp::mpi_typetraits<size_t>::type(), MPI_MAX, MPI_COMM_WORLD);
+      mpi_size_t_type, MPI_MAX, MPI_COMM_WORLD);
 
 #if 0
     if(rank == 0) {
@@ -184,15 +192,13 @@ public:
 
     // Send the indices information back to all ranks.
     result = MPI_Alltoall(&input_indices[0], max_request_indices,
-      flecsi::dmp::mpi_typetraits<size_t>::type(),
-      &info_indices[0], max_request_indices,
-      flecsi::dmp::mpi_typetraits<size_t>::type(), MPI_COMM_WORLD);
+      mpi_size_t_type, &info_indices[0], max_request_indices,
+      mpi_size_t_type, MPI_COMM_WORLD);
 
     // Send the offsets information back to all ranks.
     result = MPI_Alltoall(&input_offsets[0], max_request_indices,
-      flecsi::dmp::mpi_typetraits<size_t>::type(),
-      &info_offsets[0], max_request_indices,
-      flecsi::dmp::mpi_typetraits<size_t>::type(), MPI_COMM_WORLD);
+      mpi_size_t_type, &info_offsets[0], max_request_indices,
+      mpi_size_t_type, MPI_COMM_WORLD);
 
     std::set<entry_info_t> remote;
 
@@ -221,6 +227,145 @@ public:
     return std::make_pair(local , remote);
   } // get_primary_info
 
+  std::unordered_map<size_t, std::set<size_t>>
+  get_intersection_info(
+    const std::set<size_t> & request_indices
+  )
+  override
+  {
+    int size;
+    int rank;
+
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    // Store the request in a vector for indexed access below.
+    std::vector<size_t> request_indices_vector(request_indices.begin(),
+      request_indices.end());
+
+    size_t request_indices_size = request_indices.size();
+    size_t max_request_indices(0);
+
+#if 0
+    std::cout << "rank " << rank << " indices set: " <<
+      request_indices_size << std::endl;
+#endif
+
+    const auto mpi_size_t_type = flecsi::dmp::mpi_typetraits<size_t>::type();
+
+    // This may be inefficient, but this call is doing a reduction
+    // to determine the maximum number of indices requested by any rank
+    // so that we can pad out the all-to-all communication below.
+    int result = MPI_Allreduce(&request_indices_size, &max_request_indices, 1,
+      mpi_size_t_type, MPI_MAX, MPI_COMM_WORLD);
+
+#if 0
+    if(rank == 0) {
+      std::cout << "max indices: " << max_request_indices << std::endl;
+    } // if
+#endif
+
+    // Pad the request indices with size_t max. We will then set
+    // the indices of the actual request. Each rank that receives
+    // the request will try to provide information about the
+    // non size_t max values in the request. The others will
+    // be ignored.
+    std::vector<size_t> input_indices(size*max_request_indices,
+      std::numeric_limits<size_t>::max());
+    std::vector<size_t> info_indices(size*max_request_indices);
+
+    // For now, we need two arrays for each all-to-all communication:
+    // One for rank ownership of the request indices, and one
+    // for the offsets. We could probably combine these. However,
+    // we would probably have to define a custom MPI type. It
+    // will only be worth the effort if this appraoch is slow.
+    // The input offsets do not need to be initialized because
+    // the information is available in the input_indices array.
+    std::vector<size_t> input_offsets(size*max_request_indices);
+    std::vector<size_t> info_offsets(size*max_request_indices);
+
+    // Populate the request vectors for each rank.
+    for(size_t r(0); r<size; ++r) {
+
+      size_t off(0);
+      const size_t roff = r*max_request_indices;
+
+      // Set the actual indices of the request
+      for(auto i: request_indices) {
+        input_indices[roff + off++] = i;
+      } // for
+
+#if 0
+      if(rank == 0) {
+        std::cout << "rank " << rank << " requests: ";
+        for(size_t i(0); i<max_request_indices; ++i) {
+          std::cout << input_indices[roff + i] << " ";
+        } // for
+        std::cout << std::endl;
+      } // if
+#endif
+    } // for
+
+    // Send the request indices to all other ranks.
+    result = MPI_Alltoall(&input_indices[0], max_request_indices,
+      mpi_size_t_type, &info_indices[0], max_request_indices,
+      mpi_size_t_type, MPI_COMM_WORLD);
+
+    // Reset input indices to use to send back information
+    std::fill(input_indices.begin(), input_indices.end(),
+      std::numeric_limits<size_t>::max());
+
+    {
+    clog_tag_guard(mpi_communicator);
+    clog_container_one(info, "input_indices", info_indices, clog::space);
+    }
+
+    //
+    std::unordered_map<size_t, std::set<size_t>> intersection_map;
+
+    for(size_t r(0); r<size; ++r) {
+
+      // Ignore our rank
+      if(r == rank) {
+        continue;
+      } // if
+
+      // Array slice for convenience.
+      size_t * info = &info_indices[r*max_request_indices];
+
+      // Create a set of the off-partition request indices.
+      std::set<size_t> intersection_set;
+      for(size_t i(0); i<max_request_indices; ++i) {
+        if(info[i] != std::numeric_limits<size_t>::max()) {
+          intersection_set.insert(info[i]);
+        } // if
+      } // for
+
+      {
+      clog_tag_guard(mpi_communicator);
+      clog_container_one(info, "intersection_set", intersection_set,
+        clog::space);
+      }
+
+      // Compute the intersection
+      auto intersection = flecsi::utils::set_intersection(intersection_set,
+        request_indices);
+
+      {
+      clog_tag_guard(mpi_communicator);
+      clog_container_one(info,
+        "rank " << r << " intersection", intersection, clog::space);
+      }
+
+      // If the intersection is non-empty, add it to the return map
+      if(intersection.size()) {
+        intersection_map[r] = intersection;
+      } // if
+    } // for
+
+    return intersection_map;
+  } // get_intersection_info
+
   ///
   /// Rerturn a set containing the entry_info_t information for each
   /// member of the input set request_indices (from other ranks).
@@ -236,6 +381,7 @@ public:
     const std::set<entry_info_t> & entity_info,
     const std::vector<std::set<size_t>> & request_indices
   )
+  override
   {
     int size;
     int rank;
@@ -394,31 +540,33 @@ if(rank == 1) {
   } // get_entity_info
 
   ///
-  /// Rerturn a map containing RankID and number of entities corresponding 
-  /// to this RankID
+  /// Rerturn a map containing partition index and the number of indices
+  /// for the given index set.
   ///     
-  std::unordered_map<size_t,size_t>
-  get_number_of_entities_per_rank_map(
-    const std::set<size_t> & primary
+  std::unordered_map<size_t, size_t>
+  get_set_sizes(
+    const std::set<size_t> & index_set
   )
+  override
   {
     int size;
-    int rank;
 
     MPI_Comm_size(MPI_COMM_WORLD, &size);
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank); 
 
-    int num_elements = primary.size();
-    std::unordered_map<size_t,size_t> map;
-    int buff[size];
+    size_t indices = index_set.size();
+    std::unordered_map<size_t, size_t> indices_map;
+    size_t buffer[size];
 
-    MPI_Allgather(&num_elements, 1, MPI_INT, &buff, 1, MPI_INT, MPI_COMM_WORLD);
+    const auto mpi_size_t_type = flecsi::dmp::mpi_typetraits<size_t>::type();
+
+    int result = MPI_Allgather(&indices, 1, mpi_size_t_type,
+      &buffer, 1, mpi_size_t_type, MPI_COMM_WORLD);
 
    for (size_t i=0; i<size; i++)
-     map[i]=buff[i];
+     indices_map[i]=buffer[i];
 
-    return map;
-  }//get_number_of_entities_per_rank_map
+    return indices_map;
+  } // get_set_sizes
 
 private:
 

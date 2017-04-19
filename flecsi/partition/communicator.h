@@ -56,6 +56,19 @@ public:
     const std::set<size_t> & request_indices
   ) = 0;
 
+  ///
+  /// Get the 1-to-1 intersection between all partitions of the given set.
+  ///
+  /// \return A map with an entry for each non-empty intersection containing
+  ///         the intersection between the calling partition and an
+  ///         intersecting partition.
+  ///
+  virtual
+  std::unordered_map<size_t, std::set<size_t>>
+  get_intersection_info(
+    const std::set<size_t> & request_indices
+  ) = 0;
+
   // Same admonishment as for get_primary_info...
   //
   // The point of this method is to get entity offsets from the
@@ -65,6 +78,12 @@ public:
   get_entity_info(
     const std::set<entry_info_t> & entity_info,
     const std::vector<std::set<size_t>> & request_indices
+  ) = 0;
+
+  virtual
+  std::unordered_map<size_t, size_t>
+  get_set_sizes(
+    const std::set<size_t> & index_set
   ) = 0;
 
 private:

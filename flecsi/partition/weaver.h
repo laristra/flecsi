@@ -106,8 +106,7 @@ public:
     auto cell_all_info = communicator->get_primary_info(primary_cells,
       all_neighbors);
 
-    auto cells_per_rank =
-        communicator->get_number_of_entities_per_rank_map(primary_cells);
+    auto cells_per_rank = communicator->get_set_sizes(primary_cells);
 
     // TODO: seperate this part into its own function.
     // Create a map version of the local info for lookups below.
@@ -221,8 +220,7 @@ public:
       primary_vertices.insert(i.id);
     }
 
-    auto vertices_per_rank =
-        communicator->get_number_of_entities_per_rank_map(primary_vertices);
+    auto vertices_per_rank = communicator->get_set_sizes(primary_vertices);
 
     {
       size_t r(0);

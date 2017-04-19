@@ -64,8 +64,8 @@ void add_partitions(int dummy) {
   } // guard
 
   // Compute the dependency closure of the primary cell partition
-  // through vertex intersections (specified by last argument "1").
-  // To specify edge or face intersections, use 2 (edges) or 3 (faces).
+  // through vertex intersections (specified by last argument "0").
+  // To specify edge or face intersections, use 1 (edges) or 2 (faces).
   auto closure = flecsi::topology::entity_closure<2,2,0>(sd, cells.primary);
 
   {
@@ -108,6 +108,12 @@ void add_partitions(int dummy) {
     clog::space);
   } // guard
 
+  auto next_nearest_neighbor_closure =
+    flecsi::topology::entity_closure<2,2,0>(sd, next_nearest_neighbors);
+
+  auto next_next_nearest_neighbors =
+    flecsi::utils::set_difference(next_nearest_neighbor_closure, closure);
+
   // The union of the nearest and next-nearest neighbors gives us all
   // of the cells that might reference a vertex that we need.
   auto all_neighbors = flecsi::utils::set_union(nearest_neighbors,
@@ -127,7 +133,9 @@ void add_partitions(int dummy) {
   auto cell_nn_info =
     communicator->get_primary_info(cells.primary, nearest_neighbors);
 
-  //
+  // Get the rank and offset information for all relevant neighbor
+  // dependencies. This information will be necessary for determining
+  // shared vertices.
   auto cell_all_info =
     communicator->get_primary_info(cells.primary, all_neighbors);
 
