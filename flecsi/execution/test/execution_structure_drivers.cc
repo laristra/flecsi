@@ -64,8 +64,8 @@ void add_partitions(int dummy) {
   } // guard
 
   // Compute the dependency closure of the primary cell partition
-  // through vertex intersections (specified by last argument "1").
-  // To specify edge or face intersections, use 2 (edges) or 3 (faces).
+  // through vertex intersections (specified by last argument "0").
+  // To specify edge or face intersections, use 1 (edges) or 2 (faces).
   auto closure = flecsi::topology::entity_closure<2,2,0>(sd, cells.primary);
 
   {
@@ -83,6 +83,15 @@ void add_partitions(int dummy) {
   clog_tag_guard(partition);
   clog_container_one(info, "nearest neighbors", nearest_neighbors, clog::space);
   } // guard
+
+  // Create a communicator instance to get neighbor information.
+  auto communicator = std::make_shared<flecsi::dmp::mpi_communicator_t>();
+
+  // Get the intersection of our nearest neighbors with the nearest
+  // neighbors of other ranks. This map of sets will only be populated
+  // with intersections that are non-empty
+  auto closure_intersection_map =
+    communicator->get_intersection_info(nearest_neighbors);
 
   // We can iteratively add halos of nearest neighbors, e.g.,
   // here we add the next nearest neighbors. For most mesh types
@@ -118,18 +127,17 @@ void add_partitions(int dummy) {
   clog_container_one(info, "all neighbors", all_neighbors, clog::space);
   } // guard
 
-  // Create a communicator instance to get neighbor information.
-  auto communicator = std::make_shared<flecsi::dmp::mpi_communicator_t>();
-
   // Get the rank and offset information for our nearest neighbor
   // dependencies. This also gives information about the ranks
   // that access our shared cells.
   auto cell_nn_info =
-    communicator->get_cell_info(cells.primary, nearest_neighbors);
+    communicator->get_primary_info(cells.primary, nearest_neighbors);
 
-  //
+  // Get the rank and offset information for all relevant neighbor
+  // dependencies. This information will be necessary for determining
+  // shared vertices.
   auto cell_all_info =
-    communicator->get_cell_info(cells.primary, all_neighbors);
+    communicator->get_primary_info(cells.primary, all_neighbors);
 
   // Create a map version of the local info for lookups below.
   std::unordered_map<size_t, size_t> primary_indices_map;
@@ -203,15 +211,21 @@ void add_partitions(int dummy) {
     size_t min_rank(std::numeric_limits<size_t>::max());
     std::set<size_t> shared_vertices;
 
+    // Iterate the direct referencers to assign vertex ownership.
     for(auto c: referencers) {
 
-      // If the referencing cell isn't in the remote info map
-      // it is a local cell.
+      // Check the remote info map to see if this cell is
+      // off-partition. If it is, compare it's rank for
+      // the ownership logic below.
       if(remote_info_map.find(c) != remote_info_map.end()) {
         min_rank = std::min(min_rank, remote_info_map[c].rank);
         shared_vertices.insert(remote_info_map[c].rank);
       }
       else {
+        // If the local cell is shared, we need to add all of
+        // the ranks that reference it.
+
+        // Add our rank to compare for ownership.
         min_rank = std::min(min_rank, size_t(rank));
 
         // If the local cell is shared, we need to add all of
@@ -221,6 +235,16 @@ void add_partitions(int dummy) {
             shared_cells_map[c].shared.end());
         } // if
       } // if
+
+      // Iterate through the closure intersection map to see if the
+      // indirect reference is part of another rank's closure, i.e.,
+      // that it is an indirect dependency.
+      for(auto ci: closure_intersection_map) {
+        if(ci.second.find(c) != ci.second.end()) {
+          shared_vertices.insert(ci.first);
+        } // if
+      } // for
+
     } // for
 
     if(min_rank == rank) {
@@ -236,7 +260,7 @@ void add_partitions(int dummy) {
   } // for
 
   auto vertex_offset_info =
-    communicator->get_vertex_info(vertex_info, vertex_requests);
+    communicator->get_entity_info(vertex_info, vertex_requests);
 
   // Vertices index partition.
   flecsi::dmp::index_partition_t vertices;

@@ -22,6 +22,7 @@ set(partition_HEADERS
   dcrs.h
   index_partition.h
   partitioner.h
+  partition_types.h
 )
 
 #------------------------------------------------------------------------------#
@@ -65,7 +66,6 @@ if(ENABLE_PARMETIS)
   set(partition_HEADERS
     ${partition_HEADERS}
     parmetis_partitioner.h
-    weaver.h
   )
 endif()
 
@@ -124,18 +124,6 @@ cinch_add_unit(partition
     test/simple2d-48x48.msh
   LIBRARIES ${PARTITION_LIBRARIES}
   POLICY MPI_DEVEL
-  THREADS 5
-)
-
-cinch_add_unit(weaver
-  SOURCES test/weaver.cc
-  INPUTS
-    test/simple2d-8x8.msh
-    test/simple2d-16x16.msh
-    test/simple2d-32x32.msh
-    test/simple2d-48x48.msh
-  LIBRARIES ${PARTITION_LIBRARIES}
-  POLICY MPI
   THREADS 5
 )
 

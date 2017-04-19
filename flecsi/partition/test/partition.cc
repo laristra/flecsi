@@ -90,6 +90,15 @@ DEVEL(partition) {
   clog_container_one(info, "nearest neighbors", nearest_neighbors, clog::space);
   } // guard
 
+  // Create a communicator instance to get neighbor information.
+  auto communicator = std::make_shared<flecsi::dmp::mpi_communicator_t>();
+
+  // Get the intersection of our nearest neighbors with the nearest
+  // neighbors of other ranks. This map of sets will only be populated
+  // with intersections that are non-empty
+  auto closure_intersection_map =
+    communicator->get_intersection_info(nearest_neighbors);
+
   // We can iteratively add halos of nearest neighbors, e.g.,
   // here we add the next nearest neighbors. For most mesh types
   // we actually need information about the ownership of these indices
@@ -124,16 +133,16 @@ DEVEL(partition) {
   clog_container_one(info, "all neighbors", all_neighbors, clog::space);
   } // guard
 
-  // Create a communicator instance to get neighbor information.
-  auto communicator = std::make_shared<flecsi::dmp::mpi_communicator_t>();
-
   // Get the rank and offset information for our nearest neighbor
   // dependencies. This also gives information about the ranks
   // that access our shared cells.
-  auto cell_nn_info = communicator->get_cell_info(primary, nearest_neighbors);
+  auto cell_nn_info =
+    communicator->get_primary_info(primary, nearest_neighbors);
 
-  //
-  auto cell_all_info = communicator->get_cell_info(primary, all_neighbors);
+  // Get the rank and offset information for all relevant neighbor
+  // dependencies. This information will be necessary for determining
+  // shared vertices.
+  auto cell_all_info = communicator->get_primary_info(primary, all_neighbors);
 
   // Create a map version of the local info for lookups below.
   std::unordered_map<size_t, size_t> primary_indices_map;
@@ -206,18 +215,29 @@ DEVEL(partition) {
     // Get the set of cells that reference this vertex.
     auto referencers = flecsi::topology::vertex_referencers<2>(sd, i);
 
+    {
+    clog_tag_guard(partition);
+    clog_container_one(info, i << " referencers", referencers, clog::space);
+    } // guard
+
     size_t min_rank(std::numeric_limits<size_t>::max());
     std::set<size_t> shared_vertices;
 
+    // Iterate the direct referencers to assign vertex ownership.
     for(auto c: referencers) {
 
-      // If the referencing cell isn't in the remote info map
-      // it is a local cell.
+      // Check the remote info map to see if this cell is
+      // off-partition. If it is, compare it's rank for
+      // the ownership logic below.
       if(remote_info_map.find(c) != remote_info_map.end()) {
         min_rank = std::min(min_rank, remote_info_map[c].rank);
         shared_vertices.insert(remote_info_map[c].rank);
       }
       else {
+        // If the referencing cell isn't in the remote info map
+        // it is a local cell.
+
+        // Add our rank to compare for ownership.
         min_rank = std::min(min_rank, size_t(rank));
 
         // If the local cell is shared, we need to add all of
@@ -227,6 +247,15 @@ DEVEL(partition) {
             shared_cells_map[c].shared.end());
         } // if
       } // if
+
+      // Iterate through the closure intersection map to see if the
+      // indirect reference is part of another rank's closure, i.e.,
+      // that it is an indirect dependency.
+      for(auto ci: closure_intersection_map) {
+        if(ci.second.find(c) != ci.second.end()) {
+          shared_vertices.insert(ci.first);
+        } // if
+      } // for
     } // for
 
     if(min_rank == rank) {
@@ -237,11 +266,11 @@ DEVEL(partition) {
     else {
       // Add remote vertex to the request for offset information.
       vertex_requests[min_rank].insert(i);
-    } // fi
+    } // if
   } // for
 
   auto vertex_offset_info =
-    communicator->get_vertex_info(vertex_info, vertex_requests);
+    communicator->get_entity_info(vertex_info, vertex_requests);
 
   std::set<entry_info_t> exclusive_vertices;
   std::set<entry_info_t> shared_vertices;
@@ -309,13 +338,6 @@ DEVEL(partition) {
   for(auto i: exclusive_cells) {
     exclusive_cells_map[i.id] = i;
   } // for
-
-#if 0
-  std::unordered_map<size_t, entry_info_t> shared_cells_map;
-  for(auto i: shared_cells) {
-    shared_cells_map[i.id] = i;
-  } // for
-#endif
 
   std::unordered_map<size_t, entry_info_t> ghost_cells_map;
   for(auto i: ghost_cells) {
