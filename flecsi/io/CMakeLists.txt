@@ -16,7 +16,6 @@ set(io_HEADERS
   io.h
   io_base.h
   simple_definition.h
-  PARENT_SCOPE
 )
 
 cinch_add_unit(simple_definition
@@ -35,6 +34,14 @@ if(ENABLE_EXODUS)
 
   cinch_add_unit(io
     SOURCES test/io.cc
+  )
+
+# no exodus was found
+else()
+
+  set(io_HEADERS
+    ${io_HEADERS}
+    PARENT_SCOPE
   )
 
 endif(ENABLE_EXODUS)
