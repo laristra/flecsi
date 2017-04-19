@@ -50,7 +50,7 @@ public:
   /// the information for the local indices in primary.
   ///
   std::pair<std::vector<std::set<size_t>>, std::set<entry_info_t>>
-  get_cell_info(
+  get_primary_info(
     const std::set<size_t> & primary,
     const std::set<size_t> & request_indices
   )
@@ -136,7 +136,7 @@ public:
     std::fill(input_indices.begin(), input_indices.end(),
       std::numeric_limits<size_t>::max());
 
-    // For the primary partition, provide rank and cell information
+    // For the primary partition, provide rank and entity information
     // on indices that are shared with other processes.
     std::vector<std::set<size_t>> local(primary.size());
 
@@ -159,7 +159,7 @@ public:
         auto match = primary.find(info[i]);
 
         if(match != primary.end()) {
-          // This is a match, i.e., we own this cell, so we can
+          // This is a match, i.e., we own this entity, so we can
           // set the rank (ownership) and offset.
           input[i] = rank;
           offset[i] = std::distance(primary.begin(), match);
@@ -196,7 +196,7 @@ public:
 
     std::set<entry_info_t> remote;
 
-    // Collect all of the information for the remote cells.
+    // Collect all of the information for the remote entities.
     for(size_t r(0); r<size; ++r) {
       // Skip these (we already know them!)
       if(r == rank) {
@@ -219,21 +219,21 @@ public:
     } // for
 
     return std::make_pair(local , remote);
-  } // get_info
+  } // get_primary_info
 
   ///
   /// Rerturn a set containing the entry_info_t information for each
   /// member of the input set request_indices (from other ranks).
   ///
-  /// \param vertex_info FIXME...
-  /// \param request_indices A set of vertex ids for which to return
+  /// \param entity_info FIXME...
+  /// \param request_indices A set of entity ids for which to return
   ///                        information.
   /// \return A std::vector<std::set<size_t>> containing the offset
   ///         information for the requested indices.
   ///
   std::vector<std::set<size_t>>
-  get_vertex_info(
-    const std::set<entry_info_t> & vertex_info,
+  get_entity_info(
+    const std::set<entry_info_t> & entity_info,
     const std::vector<std::set<size_t>> & request_indices
   )
   {
@@ -296,10 +296,10 @@ public:
       } // if
     } // for
 
-    // Create a map version of the vertex info for lookups below.
-    std::unordered_map<size_t, entry_info_t> vertex_info_map;
-    for(auto i: vertex_info) {
-      vertex_info_map[i.id] = i;
+    // Create a map version of the entity info for lookups below.
+    std::unordered_map<size_t, entry_info_t> entity_info_map;
+    for(auto i: entity_info) {
+      entity_info_map[i.id] = i;
     } // for
 
     // Wait on the receive operations
@@ -324,7 +324,7 @@ if(rank == 0) {
 
       size_t offset(0);
       for(auto i: rbuffers[r]) {
-        sbuffers[r][offset++] = vertex_info_map[i].offset;
+        sbuffers[r][offset++] = entity_info_map[i].offset;
       } // for
     } // for
 
@@ -391,7 +391,7 @@ if(rank == 1) {
 #endif
 
     return remote;
-  } // get_vertex_info
+  } // get_entity_info
 
   ///
   /// Rerturn a map containing RankID and number of entities corresponding 

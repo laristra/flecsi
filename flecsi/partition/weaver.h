@@ -99,11 +99,11 @@ public:
     // Get the rank and offset information for our nearest neighbor
     // dependencies. This also gives information about the ranks
     // that access our shared cells.
-    auto cell_nn_info = communicator->get_cell_info(primary_cells,
+    auto cell_nn_info = communicator->get_primary_info(primary_cells,
       nearest_neighbors);
 
     //
-    auto cell_all_info = communicator->get_cell_info(primary_cells,
+    auto cell_all_info = communicator->get_primary_info(primary_cells,
       all_neighbors);
 
     auto cells_per_rank =
@@ -204,7 +204,7 @@ public:
     } // for
 
     auto vertex_offset_info =
-      communicator->get_vertex_info(vertex_info, vertex_requests);
+      communicator->get_entity_info(vertex_info, vertex_requests);
 
     for (auto i: vertex_info) {
       if (i.shared.size()) {

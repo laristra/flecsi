@@ -29,6 +29,7 @@ decltype(auto) tuple_function(T & f, std::tuple<As ...> & t) {
 } // tuple_function
 
 
+// FIXME: Don't need this
 template<typename T, typename ... As, size_t ... Is>
 std::function<void()> tuple_function_mpi(T & f, std::tuple<As ...> & t,
   std::index_sequence<Is ...>) {

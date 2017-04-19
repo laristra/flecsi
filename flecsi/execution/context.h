@@ -21,6 +21,7 @@
 #include "cinchlog.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/partition/index_partition.h"
+#include "flecsi/partition/partition_types.h"
 
 ///
 /// \file context.h
@@ -40,6 +41,7 @@ template<class context_policy_t>
 struct context__ : public context_policy_t
 {
   using index_partition_t = flecsi::dmp::index_partition_t;
+  using partition_info_t = flecsi::dmp::partition_info_t;
 
   ///
   /// Myer's singleton instance.
@@ -116,6 +118,8 @@ private:
   ~context__() {}
 
   std::unordered_map<size_t, index_partition_t> partitions_;
+  std::unordered_map<size_t,
+    std::unordered_map<size_t, partition_info_t>> partition_info_;
 
 }; // class context__
 

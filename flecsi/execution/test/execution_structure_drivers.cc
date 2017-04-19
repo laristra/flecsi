@@ -125,11 +125,11 @@ void add_partitions(int dummy) {
   // dependencies. This also gives information about the ranks
   // that access our shared cells.
   auto cell_nn_info =
-    communicator->get_cell_info(cells.primary, nearest_neighbors);
+    communicator->get_primary_info(cells.primary, nearest_neighbors);
 
   //
   auto cell_all_info =
-    communicator->get_cell_info(cells.primary, all_neighbors);
+    communicator->get_primary_info(cells.primary, all_neighbors);
 
   // Create a map version of the local info for lookups below.
   std::unordered_map<size_t, size_t> primary_indices_map;
@@ -236,7 +236,7 @@ void add_partitions(int dummy) {
   } // for
 
   auto vertex_offset_info =
-    communicator->get_vertex_info(vertex_info, vertex_requests);
+    communicator->get_entity_info(vertex_info, vertex_requests);
 
   // Vertices index partition.
   flecsi::dmp::index_partition_t vertices;

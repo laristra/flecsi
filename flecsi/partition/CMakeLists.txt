@@ -20,8 +20,14 @@
 set(partition_HEADERS
   communicator.h
   dcrs.h
+  dcrs_utils.h
   index_partition.h
+  mpi_communicator.h
+  mpi_utils.h
+  parmetis_partitioner.h
   partitioner.h
+  partition_types.h
+  weaver.h
 )
 
 #------------------------------------------------------------------------------#
