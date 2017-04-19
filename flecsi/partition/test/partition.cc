@@ -139,7 +139,9 @@ DEVEL(partition) {
   auto cell_nn_info =
     communicator->get_primary_info(primary, nearest_neighbors);
 
-  //
+  // Get the rank and offset information for all relevant neighbor
+  // dependencies. This information will be necessary for determining
+  // shared vertices.
   auto cell_all_info = communicator->get_primary_info(primary, all_neighbors);
 
   // Create a map version of the local info for lookups below.

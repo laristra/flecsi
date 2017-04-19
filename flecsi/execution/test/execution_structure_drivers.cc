@@ -84,6 +84,15 @@ void add_partitions(int dummy) {
   clog_container_one(info, "nearest neighbors", nearest_neighbors, clog::space);
   } // guard
 
+  // Create a communicator instance to get neighbor information.
+  auto communicator = std::make_shared<flecsi::dmp::mpi_communicator_t>();
+
+  // Get the intersection of our nearest neighbors with the nearest
+  // neighbors of other ranks. This map of sets will only be populated
+  // with intersections that are non-empty
+  auto closure_intersection_map =
+    communicator->get_intersection_info(nearest_neighbors);
+
   // We can iteratively add halos of nearest neighbors, e.g.,
   // here we add the next nearest neighbors. For most mesh types
   // we actually need information about the ownership of these indices
@@ -108,12 +117,6 @@ void add_partitions(int dummy) {
     clog::space);
   } // guard
 
-  auto next_nearest_neighbor_closure =
-    flecsi::topology::entity_closure<2,2,0>(sd, next_nearest_neighbors);
-
-  auto next_next_nearest_neighbors =
-    flecsi::utils::set_difference(next_nearest_neighbor_closure, closure);
-
   // The union of the nearest and next-nearest neighbors gives us all
   // of the cells that might reference a vertex that we need.
   auto all_neighbors = flecsi::utils::set_union(nearest_neighbors,
@@ -123,9 +126,6 @@ void add_partitions(int dummy) {
   clog_tag_guard(partition);
   clog_container_one(info, "all neighbors", all_neighbors, clog::space);
   } // guard
-
-  // Create a communicator instance to get neighbor information.
-  auto communicator = std::make_shared<flecsi::dmp::mpi_communicator_t>();
 
   // Get the rank and offset information for our nearest neighbor
   // dependencies. This also gives information about the ranks
@@ -211,15 +211,21 @@ void add_partitions(int dummy) {
     size_t min_rank(std::numeric_limits<size_t>::max());
     std::set<size_t> shared_vertices;
 
+    // Iterate the direct referencers to assign vertex ownership.
     for(auto c: referencers) {
 
-      // If the referencing cell isn't in the remote info map
-      // it is a local cell.
+      // Check the remote info map to see if this cell is
+      // off-partition. If it is, compare it's rank for
+      // the ownership logic below.
       if(remote_info_map.find(c) != remote_info_map.end()) {
         min_rank = std::min(min_rank, remote_info_map[c].rank);
         shared_vertices.insert(remote_info_map[c].rank);
       }
       else {
+        // If the local cell is shared, we need to add all of
+        // the ranks that reference it.
+
+        // Add our rank to compare for ownership.
         min_rank = std::min(min_rank, size_t(rank));
 
         // If the local cell is shared, we need to add all of
@@ -229,6 +235,16 @@ void add_partitions(int dummy) {
             shared_cells_map[c].shared.end());
         } // if
       } // if
+
+      // Iterate through the closure intersection map to see if the
+      // indirect reference is part of another rank's closure, i.e.,
+      // that it is an indirect dependency.
+      for(auto ci: closure_intersection_map) {
+        if(ci.second.find(c) != ci.second.end()) {
+          shared_vertices.insert(ci.first);
+        } // if
+      } // for
+
     } // for
 
     if(min_rank == rank) {
