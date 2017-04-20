@@ -106,22 +106,22 @@
   using task ## _tat_t =                                                       \
     typename flecsi::utils::function_traits__<decltype(task)>::arguments_type; \
                                                                                \
-  /* Define a wrapper function to the user's function that takes a tuple */    \
+  /* Define a delegate function to the user's function that takes a tuple */   \
   /* of the arguments (as opposed to the raw argument pack) */                 \
   inline                                                                       \
   task ## _trt_t                                                               \
-  task ## _tuple_wrapper(                                                      \
+  task ## _tuple_delegate(                                                     \
     task ## _tat_t args                                                        \
   )                                                                            \
   {                                                                            \
     return flecsi::utils::tuple_function(task, args);                          \
-  } /* task ## _tuple_wrapper */                                               \
+  } /* task ## _tuple_delegate */                                              \
                                                                                \
   bool task ## _task_registered =                                              \
     flecsi::execution::task_t::register_task<                                  \
       task ## _trt_t,                                                          \
       task ## _tat_t,                                                          \
-      task ## _tuple_wrapper,                                                  \
+      task ## _tuple_delegate,                                                 \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()         \
     >                                                                          \
     (                                                                          \

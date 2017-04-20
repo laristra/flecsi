@@ -6,12 +6,12 @@
 #ifndef flecsi_partition_dcrs_h
 #define flecsi_partition_dcrs_h
 
-#include <vector>
-
 ///
 /// \file
 /// \date Initial file creation: Nov 24, 2016
 ///
+
+#include <vector>
 
 namespace flecsi {
 namespace dmp {
