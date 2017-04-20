@@ -15,8 +15,8 @@ specialized and extended to suit the needs of a broad variety of solver
 and data requirements.  Current support includes multi-dimensional mesh
 topology, mesh geometry, and mesh adjacency information, n-dimensional
 hashed-tree data structures, graph partitioning interfaces, and
-dependency closures, e.g., to identify data dependencies between
-distributed-memory address spaces.
+dependency closures (to identify data dependencies between
+distributed-memory address spaces).
 
 FleCSI also introduces a functional programming model with control,
 execution, and data abstractions that are consistent state-of-the-art

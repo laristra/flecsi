@@ -6,6 +6,11 @@
 #ifndef flecsi_execution_task_h
 #define flecsi_execution_task_h
 
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Jul 26, 2016
+//----------------------------------------------------------------------------//
+
 #include <iostream>
 #include <string>
 
@@ -14,37 +19,30 @@
 #include "flecsi/execution/common/task_hash.h"
 #include "flecsi/utils/static_verify.h"
 
-///
-/// \file task.h
-/// \authors bergen
-/// \date Initial file creation: Jul 26, 2016
-///
-
 namespace flecsi {
 namespace execution {
 
-///
-/// \struct task__ task.h
-/// \brief task__ provides...
-///
+//----------------------------------------------------------------------------//
+//! The task__ type provides a high-level task interface that will be
+//! implemented by the given execution policy.
+//----------------------------------------------------------------------------//
 template<typename execution_policy_t>
 struct task__
 {
-
-  ///
-  /// Register a user task with the FleCSI runtime.
-  ///
-  /// \tparam RETURN The return type of the user task.
-  /// \tparam ARG_TUPLE A std::tuple of the user task arguments.
-  /// \tparam DELEGATE The delegate function that invokes the user task.
-  /// \tparam KEY A hash key identifying the task.
-  ///
-  /// \param key The \ref task_hash_key_t for the task.
-  /// \param name The string identifier of the task.
-  ///
-  /// \return The return type for task registration is determined by
-  ///         the specific backend runtime being used.
-  ///
+  //--------------------------------------------------------------------------//
+  //! Register a user task with the FleCSI runtime.
+  //!
+  //! @tparam RETURN The return type of the user task.
+  //! @tparam ARG_TUPLE A std::tuple of the user task arguments.
+  //! @tparam DELEGATE The delegate function that invokes the user task.
+  //! @tparam KEY A hash key identifying the task.
+  //!
+  //! @param key The \ref task_hash_key_t for the task.
+  //! @param name The string identifier of the task.
+  //!
+  //! @return The return type for task registration is determined by
+  //!         the specific backend runtime being used.
+  //--------------------------------------------------------------------------//
   template<
     typename RETURN,
     typename ARG_TUPLE,
@@ -60,22 +58,19 @@ struct task__
   {
     return execution_policy_t::template register_task<
       RETURN, ARG_TUPLE, DELEGATE, KEY>(key, name);
-  }
+  } // register_task
 
-  ///
-  /// Execute a registered task.
-  ///
-  /// \tparam RETURN The return type of the task.
-  /// \tparam ARGS The task arguments.
-  ///
-  /// \param address A unique identifier used to lookup the task
-  ///                in the task registry.
-  /// \param processor The processor type on which to execute the task.
-  /// \param launch The launch mode for the task.
-  /// \param parent A hash key that uniquely identifies the calling task.
-  /// \param user_task_handle The user task handle.
-  /// \param args The arguments to pass to the user task during execution.
-  ///
+  //--------------------------------------------------------------------------//
+  //! Execute a registered task.
+  //!
+  //! @tparam RETURN The return type of the task.
+  //! @tparam ARGS The task arguments.
+  //!
+  //! @param key A \ref task_hash_t key that uniquely identifies the
+  //!            calling task.
+  //! @param parent A hash key that uniquely identifies the calling task.
+  //! @param args The arguments to pass to the user task during execution.
+  //--------------------------------------------------------------------------//
   template<
     typename RETURN,
     typename ... ARGS
@@ -90,16 +85,16 @@ struct task__
   {
     return execution_policy_t::template execute_task<RETURN>(
       key, parent, std::forward<ARGS>(args)...);
-  } // execute
+  } // execute_task
 
 }; // class task
 
 } // namespace execution 
 } // namespace flecsi
 
-//
+//----------------------------------------------------------------------------//
 // This include file defines the flecsi_execution_policy_t used below.
-//
+//----------------------------------------------------------------------------//
 #include "flecsi_runtime_execution_policy.h"
 
 namespace flecsi {
@@ -107,12 +102,16 @@ namespace execution {
 
 using task_t = task__<flecsi_execution_policy_t>;
 
+//----------------------------------------------------------------------------//
 // Use the execution policy to define the future type.
+//----------------------------------------------------------------------------//
 template<typename R>
 using future__ = flecsi_execution_policy_t::future__<R>;
 
-/// Static verification of public future interface for type defined by
-/// execution policy.
+//----------------------------------------------------------------------------//
+// Static verification of public future interface for type defined by
+// execution policy.
+//----------------------------------------------------------------------------//
 namespace verify_future {
 
 FLECSI_MEMBER_CHECKER(wait);
