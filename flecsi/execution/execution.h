@@ -38,6 +38,7 @@
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
+
 #define flecsi_register_task(task, processor, launch)                          \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
@@ -75,6 +76,7 @@
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
+
 #define flecsi_execute_task(task, processor, launch, ...)                      \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
@@ -106,6 +108,7 @@
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
+
 #define flecsi_register_function(name)                                         \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
@@ -146,6 +149,7 @@
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
+
 #define flecsi_execute_function(handle, ...)                                   \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
@@ -179,6 +183,7 @@
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
+
 #define flecsi_define_function_type(name, return_type, ...)                    \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
@@ -210,6 +215,7 @@
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
+
 #define flecsi_for_each(index, index_space, kernel)                            \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
@@ -228,6 +234,7 @@
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
+
 #define flecsi_reduce_each(index, index_space, variable, kernel)               \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \

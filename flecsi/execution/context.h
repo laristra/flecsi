@@ -15,6 +15,11 @@
 #ifndef flecsi_execution_context_h
 #define flecsi_execution_context_h
 
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Oct 19, 2015
+//----------------------------------------------------------------------------//
+
 #include <cstddef>
 #include <unordered_map>
 
@@ -23,29 +28,28 @@
 #include "flecsi/partition/index_partition.h"
 #include "flecsi/partition/partition_types.h"
 
-///
-/// \file context.h
-/// \authors bergen
-/// \date Initial file creation: Oct 19, 2015
-///
-
 namespace flecsi {
 namespace execution {
 
-///
-/// \class context__ context.h
-/// \brief context__ is a dummy class that must have a specialization
-///        for a specific execution policy.
-///
+//----------------------------------------------------------------------------//
+//! The context__ type provides a high-level runtime context interface that
+//! is implemented by the given context policy.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
 template<class context_policy_t>
 struct context__ : public context_policy_t
 {
   using index_partition_t = flecsi::dmp::index_partition_t;
   using partition_info_t = flecsi::dmp::partition_info_t;
 
-  ///
-  /// Myer's singleton instance.
-  ///
+  //---------------------------------------------------------------------------/
+  //! Myer's singleton instance.
+  //!
+  //! @return The single instance of this type.
+  //---------------------------------------------------------------------------/
+
   static
   context__ &
   instance()
@@ -54,22 +58,23 @@ struct context__ : public context_policy_t
     return context;
   } // instance
 
-  /// Copy constructor (disabled)
+  // Copy constructor (disabled)
   context__(const context__ &) = delete;
 
-  /// Assignment operator (disabled)
+  // Assignment operator (disabled)
   context__ & operator = (const context__ &) = delete;
 
-  /// Move constructor and assignment operator
+  // Move constructor and assignment operator
   context__(context__ &&) = default;
   context__ & operator = (context__ &&) = default;
 
-  ///
-  /// Add an index partition.
-  ///
-  /// \param key The map key.
-  /// \param partition The partition to add.
-  ///
+  //---------------------------------------------------------------------------/
+  //! Add an index partition.
+  //!
+  //! @param key The map key.
+  //! @param partition The index partition to add.
+  //---------------------------------------------------------------------------/
+
   void
   add_partition(
     size_t key,
@@ -81,11 +86,11 @@ struct context__ : public context_policy_t
     } // if
   } // add_partition
 
-  ///
-  /// Return the partition referenced by key.
-  ///
-  /// \param key The key associated with the partition to be returned.
-  ///
+  //---------------------------------------------------------------------------/
+  //! Return the index partition referenced by key.
+  //!
+  //! @param key The key associated with the partition to be returned.
+  //---------------------------------------------------------------------------/
   const index_partition_t &
   partition(
     size_t key
@@ -98,10 +103,12 @@ struct context__ : public context_policy_t
     return partitions_[key];
   } // partition
 
-  ///
-  /// Return the partition map (convenient for iterating through all
-  /// of the partitions.
-  ///
+  //---------------------------------------------------------------------------/
+  //! Return the partition map (convenient for iterating through all
+  //! of the partitions.
+  //!
+  //! @return The map of index partitions.
+  //---------------------------------------------------------------------------/
   const std::unordered_map<size_t, index_partition_t> &
   partitions()
   const

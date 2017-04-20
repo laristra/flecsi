@@ -23,12 +23,16 @@ namespace flecsi {
 namespace execution {
 
 //----------------------------------------------------------------------------//
-//! The task__ type provides a high-level task interface that will be
+//! The task__ type provides a high-level task interface that is
 //! implemented by the given execution policy.
+//!
+//! @ingroup execution
 //----------------------------------------------------------------------------//
+
 template<typename execution_policy_t>
 struct task__
 {
+
   //--------------------------------------------------------------------------//
   //! Register a user task with the FleCSI runtime.
   //!
@@ -43,6 +47,7 @@ struct task__
   //! @return The return type for task registration is determined by
   //!         the specific backend runtime being used.
   //--------------------------------------------------------------------------//
+
   template<
     typename RETURN,
     typename ARG_TUPLE,
@@ -71,6 +76,7 @@ struct task__
   //! @param parent A hash key that uniquely identifies the calling task.
   //! @param args The arguments to pass to the user task during execution.
   //--------------------------------------------------------------------------//
+
   template<
     typename RETURN,
     typename ... ARGS
@@ -95,15 +101,23 @@ struct task__
 //----------------------------------------------------------------------------//
 // This include file defines the flecsi_execution_policy_t used below.
 //----------------------------------------------------------------------------//
+
 #include "flecsi_runtime_execution_policy.h"
 
 namespace flecsi {
 namespace execution {
 
+//----------------------------------------------------------------------------//
+//! The task_t type is the high-level interface to the FleCSI task model.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
 using task_t = task__<flecsi_execution_policy_t>;
 
 //----------------------------------------------------------------------------//
-// Use the execution policy to define the future type.
+//! Use the execution policy to define the future type.
+//!
+//! @ingroup execution
 //----------------------------------------------------------------------------//
 template<typename R>
 using future__ = flecsi_execution_policy_t::future__<R>;

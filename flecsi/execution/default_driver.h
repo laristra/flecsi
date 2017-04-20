@@ -6,16 +6,19 @@
 #ifndef flecsi_execution_default_driver_h
 #define flecsi_execution_default_driver_h
 
-///
-/// \file
-/// \date Initial file creation: Jul 24, 2016
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Jul 24, 2016
+//----------------------------------------------------------------------------//
 
 namespace flecsi {
 namespace execution {
 
 //----------------------------------------------------------------------------//
-// Default driver.
+//! This function is provided to prevent link errors in some instances. It
+//! should be defined by the user's code.
+//!
+//! @ingroup execution
 //----------------------------------------------------------------------------//
 
 void driver(int argc, char ** argv) {
