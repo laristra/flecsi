@@ -15,10 +15,10 @@
 #ifndef flecsi_execution_legion_context_policy_h
 #define flecsi_execution_legion_context_policy_h
 
-///
-/// \file
-/// \date Initial file creation: Aug 4, 2016
-///
+//----------------------------------------------------------------------------//
+//! \file
+//! \date Initial file creation: Aug 4, 2016
+//----------------------------------------------------------------------------//
 
 #include <functional>
 #include <memory>
@@ -46,12 +46,12 @@ clog_register_tag(interop);
 namespace flecsi {
 namespace execution {
 
-///
-/// \struct legion_runtime_runtime_state_t legion/context_policy.h
-/// \brief legion_runtime_state_t provides storage for Legion runtime
-///        information that can be reinitialized as needed to store const
-///        data types and references as required by the Legion runtime.
-///
+//----------------------------------------------------------------------------//
+//! The legion_runtime_state_t type provides storage for Legion runtime
+//! information that can be reinitialized as needed to store const
+//! data types and references as required by the Legion runtime.
+//----------------------------------------------------------------------------//
+
 struct legion_runtime_state_t {
 
   legion_runtime_state_t(

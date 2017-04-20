@@ -112,6 +112,7 @@ namespace execution {
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
+
 using task_t = task__<flecsi_execution_policy_t>;
 
 //----------------------------------------------------------------------------//
@@ -119,6 +120,7 @@ using task_t = task__<flecsi_execution_policy_t>;
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
+
 template<typename R>
 using future__ = flecsi_execution_policy_t::future__<R>;
 
@@ -126,6 +128,7 @@ using future__ = flecsi_execution_policy_t::future__<R>;
 // Static verification of public future interface for type defined by
 // execution policy.
 //----------------------------------------------------------------------------//
+
 namespace verify_future {
 
 FLECSI_MEMBER_CHECKER(wait);

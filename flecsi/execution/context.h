@@ -58,16 +58,6 @@ struct context__ : public context_policy_t
     return context;
   } // instance
 
-  // Copy constructor (disabled)
-  context__(const context__ &) = delete;
-
-  // Assignment operator (disabled)
-  context__ & operator = (const context__ &) = delete;
-
-  // Move constructor and assignment operator
-  context__(context__ &&) = default;
-  context__ & operator = (context__ &&) = default;
-
   //---------------------------------------------------------------------------/
   //! Add an index partition.
   //!
@@ -118,11 +108,17 @@ struct context__ : public context_policy_t
 
 private:
 
-  /// Default constructor
+  // Default constructor
   context__() : context_policy_t() {}
 
-  /// Destructor
+  // Destructor
   ~context__() {}
+
+  // We don't need any of these
+  context__(const context__ &) = delete;
+  context__ & operator = (const context__ &) = delete;
+  context__(context__ &&) = delete;
+  context__ & operator = (context__ &&) = delete;
 
   std::unordered_map<size_t, index_partition_t> partitions_;
   std::unordered_map<size_t,
@@ -133,13 +129,21 @@ private:
 } // namespace execution
 } // namespace flecsi
 
-//
+//----------------------------------------------------------------------------//
 // This include file defines the flecsi_execution_policy_t used below.
-//
+//----------------------------------------------------------------------------//
+
 #include "flecsi_runtime_context_policy.h"
 
 namespace flecsi {
 namespace execution {
+
+//----------------------------------------------------------------------------//
+//! The context_t type is the high-level interface to the FleCSI runtime
+//! context.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
 
 using context_t = context__<flecsi_context_policy_t>;
 
