@@ -81,6 +81,7 @@ struct context__ : public context_policy_t
   //!
   //! @param key The key associated with the partition to be returned.
   //---------------------------------------------------------------------------/
+
   const index_partition_t &
   partition(
     size_t key
@@ -99,6 +100,7 @@ struct context__ : public context_policy_t
   //!
   //! @return The map of index partitions.
   //---------------------------------------------------------------------------/
+
   const std::unordered_map<size_t, index_partition_t> &
   partitions()
   const

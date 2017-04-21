@@ -105,7 +105,7 @@ legion_context_policy_t::initialize(
 ///
 void
 legion_context_policy_t::unset_call_mpi(
-  Legion::Context ctx,
+  Legion::Context & ctx,
   Legion::HighLevelRuntime * runtime
 )
 {
@@ -142,7 +142,7 @@ legion_context_policy_t::unset_call_mpi(
 ///
 void
 legion_context_policy_t::handoff_to_mpi(
-  Legion::Context ctx,
+  Legion::Context & ctx,
   Legion::HighLevelRuntime * runtime
 )
 {
@@ -166,7 +166,7 @@ legion_context_policy_t::handoff_to_mpi(
 ///
 Legion::FutureMap
 legion_context_policy_t::wait_on_mpi(
-  Legion::Context ctx,
+  Legion::Context & ctx,
   Legion::HighLevelRuntime * runtime
 )
 {
@@ -192,7 +192,7 @@ legion_context_policy_t::wait_on_mpi(
 ///
 void
 legion_context_policy_t::connect_with_mpi(
-  Legion::Context ctx,
+  Legion::Context & ctx,
   Legion::HighLevelRuntime * runtime
 )
 {
