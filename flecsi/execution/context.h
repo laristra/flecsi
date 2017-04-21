@@ -35,11 +35,13 @@ namespace execution {
 //! The context__ type provides a high-level runtime context interface that
 //! is implemented by the given context policy.
 //!
+//! @tparam CONTEXT_POLICY The backend context policy.
+//!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
 
-template<class context_policy_t>
-struct context__ : public context_policy_t
+template<class CONTEXT_POLICY>
+struct context__ : public CONTEXT_POLICY
 {
   using index_partition_t = flecsi::dmp::index_partition_t;
   using partition_info_t = flecsi::dmp::partition_info_t;
@@ -111,7 +113,7 @@ struct context__ : public context_policy_t
 private:
 
   // Default constructor
-  context__() : context_policy_t() {}
+  context__() : CONTEXT_POLICY() {}
 
   // Destructor
   ~context__() {}
@@ -132,7 +134,7 @@ private:
 } // namespace flecsi
 
 //----------------------------------------------------------------------------//
-// This include file defines the flecsi_execution_policy_t used below.
+// This include file defines the FLECSI_RUNTIME_CONTEXT_POLICY used below.
 //----------------------------------------------------------------------------//
 
 #include "flecsi_runtime_context_policy.h"
@@ -147,7 +149,7 @@ namespace execution {
 //! @ingroup execution
 //----------------------------------------------------------------------------//
 
-using context_t = context__<flecsi_context_policy_t>;
+using context_t = context__<FLECSI_RUNTIME_CONTEXT_POLICY>;
 
 } //namespace execution 
 } // namespace flecsi

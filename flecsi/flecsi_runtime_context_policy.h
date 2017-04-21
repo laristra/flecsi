@@ -28,7 +28,7 @@
   namespace flecsi {
   namespace execution {
 
-  using flecsi_context_policy_t = serial_context_policy_t;
+  using FLECSI_RUNTIME_CONTEXT_POLICY = serial_context_policy_t;
 
   }
   }
@@ -41,7 +41,7 @@
   namespace flecsi {
   namespace execution {
 
-  using flecsi_context_policy_t = legion_context_policy_t;
+  using FLECSI_RUNTIME_CONTEXT_POLICY = legion_context_policy_t;
 
   }
   }
@@ -54,7 +54,7 @@
   namespace flecsi {
   namespace execution {
 
-  using flecsi_context_policy_t = mpi_context_policy_t;
+  using FLECSI_RUNTIME_CONTEXT_POLICY = mpi_context_policy_t;
 
   }
   }

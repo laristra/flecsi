@@ -28,7 +28,7 @@
   namespace flecsi {
   namespace execution {
 
-  using flecsi_execution_policy_t = serial_execution_policy_t;
+  using FLECSI_RUNTIME_EXECUTION_POLICY = serial_execution_policy_t;
 
   } // namespace execution
   } // namespace flecsi
@@ -41,7 +41,7 @@
   namespace flecsi {
   namespace execution {
 
-  using flecsi_execution_policy_t = legion_execution_policy_t;
+  using FLECSI_RUNTIME_EXECUTION_POLICY = legion_execution_policy_t;
 
   } // namespace execution
   } // namespace flecsi
@@ -54,7 +54,7 @@
   namespace flecsi {
   namespace execution {
 
-  using flecsi_execution_policy_t = mpi_execution_policy_t;
+  using FLECSI_RUNTIME_EXECUTION_POLICY = mpi_execution_policy_t;
 
   } // namespace execution
   } // namespace flecsi

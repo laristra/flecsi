@@ -29,10 +29,10 @@
   namespace flecsi {
   namespace data {
 
-  using flecsi_user_meta_data_policy_t = default_user_meta_data_t;
+  using FLECSI_RUNTIME_USER_META_DATA_POLICY = default_user_meta_data_t;
 
-  template<typename MD>
-  using flecsi_storage_policy_t = serial_storage_policy_t<MD>;
+  template<typename META_DATA>
+  using FLECSI_RUNTIME_STORAGE_POLICY = serial_storage_policy_t<META_DATA>;
 
   } // namespace data
   } // namespace flecsi
@@ -46,10 +46,10 @@
   namespace flecsi {
   namespace data {
 
-  using flecsi_user_meta_data_policy_t = default_user_meta_data_t;
+  using FLECSI_RUNTIME_USER_META_DATA_POLICY = default_user_meta_data_t;
 
-  template<typename MD>
-  using flecsi_storage_policy_t = legion_storage_policy_t<MD>;
+  template<typename META_DATA>
+  using FLECSI_RUNTIME_STORAGE_POLICY = legion_storage_policy_t<META_DATA>;
 
   } // namespace data
   } // namespace flecsi

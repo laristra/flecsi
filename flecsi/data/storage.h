@@ -436,8 +436,8 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
 namespace flecsi {
 namespace data {
 
-using storage_t = storage__<flecsi_user_meta_data_policy_t,
-  flecsi_storage_policy_t>;
+using storage_t = storage__<FLECSI_RUNTIME_USER_META_DATA_POLICY,
+  FLECSI_RUNTIME_STORAGE_POLICY>;
 
 } // namespace data
 } // namespace flecsi

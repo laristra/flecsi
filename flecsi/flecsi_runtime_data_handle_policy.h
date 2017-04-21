@@ -27,7 +27,7 @@
 
   namespace flecsi {
 
-  using flecsi_data_handle_policy_t = serial_data_handle_policy_t;
+  using FLECSI_RUNTIME_DATA_HANDLE_POLICY = serial_data_handle_policy_t;
 
   }
 
@@ -38,7 +38,7 @@
 
   namespace flecsi {
 
-  using flecsi_data_handle_policy_t = legion_data_handle_policy_t;
+  using FLECSI_RUNTIME_DATA_HANDLE_POLICY = legion_data_handle_policy_t;
 
   }
 
@@ -49,7 +49,7 @@
 
   namespace flecsi {
 
-  using flecsi_data_handle_policy_t = mpi_data_handle_policy_t;
+  using FLECSI_RUNTIME_DATA_HANDLE_POLICY = mpi_data_handle_policy_t;
 
   }
 

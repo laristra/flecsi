@@ -26,10 +26,14 @@ namespace execution {
 //! The task__ type provides a high-level task interface that is
 //! implemented by the given execution policy.
 //!
+//! @tparam EXECUTION_POLICY The backend execution policy.
+//!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
 
-template<typename execution_policy_t>
+template<
+  typename EXECUTION_POLICY
+>
 struct task__
 {
 
@@ -61,7 +65,7 @@ struct task__
     std::string name
   )
   {
-    return execution_policy_t::template register_task<
+    return EXECUTION_POLICY::template register_task<
       RETURN, ARG_TUPLE, DELEGATE, KEY>(key, name);
   } // register_task
 
@@ -89,7 +93,7 @@ struct task__
     ARGS &&... args
   )
   {
-    return execution_policy_t::template execute_task<RETURN>(
+    return EXECUTION_POLICY::template execute_task<RETURN>(
       key, parent, std::forward<ARGS>(args)...);
   } // execute_task
 
@@ -99,7 +103,7 @@ struct task__
 } // namespace flecsi
 
 //----------------------------------------------------------------------------//
-// This include file defines the flecsi_execution_policy_t used below.
+// This include file defines the FLECSI_RUNTIME_EXECUTION_POLICY used below.
 //----------------------------------------------------------------------------//
 
 #include "flecsi_runtime_execution_policy.h"
@@ -113,16 +117,18 @@ namespace execution {
 //! @ingroup execution
 //----------------------------------------------------------------------------//
 
-using task_t = task__<flecsi_execution_policy_t>;
+using task_t = task__<FLECSI_RUNTIME_EXECUTION_POLICY>;
 
 //----------------------------------------------------------------------------//
 //! Use the execution policy to define the future type.
 //!
+//! @tparam RETURN The return type of the associated task.
+//!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
 
-template<typename R>
-using future__ = flecsi_execution_policy_t::future__<R>;
+template<typename RETURN>
+using future__ = FLECSI_RUNTIME_EXECUTION_POLICY::future__<RETURN>;
 
 //----------------------------------------------------------------------------//
 // Static verification of public future interface for type defined by

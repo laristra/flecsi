@@ -6,63 +6,85 @@
 #ifndef flecsi_execution_function_h
 #define flecsi_execution_function_h
 
-#include "flecsi/utils/const_string.h"
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Aug 01, 2016
+//----------------------------------------------------------------------------//
 
-///
-// \file function.h
-// \authors bergen
-// \date Initial file creation: Aug 01, 2016
-///
+#include "flecsi/utils/const_string.h"
 
 namespace flecsi {
 namespace execution {
 
-///
-//
-///
+//----------------------------------------------------------------------------//
+//! The function__ type provides a high-level function interface that is
+//! implemented by the given execution policy.
+//!
+//! @tparam EXECUTION_POLICY The backend execution policy.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
 template<
-  typename execution_policy_t
+  typename EXECUTION_POLICY
 >
 struct function__
 {
 
-  // FIXME: Finish Doxygen
+  //--------------------------------------------------------------------------//
+  //! Register a user function with the FleCSI runtime.
+  //!
+  //! @todo: This interface needs to be updated to mirror the task
+  //!        registration model.
+  //!
+  //! @tparam RETURN    The return type of the user function.
+  //! @tparam ARG_TUPLE A std::tuple of the user function arguements.
+  //!
+  //! @param key           The function hash key.
+  //! @param user_function The user function.
+  //--------------------------------------------------------------------------//
 
-  ///
-  // \tparam R Return type.
-  // \tparam A Argument type (std::tuple).
-  ///
   template<
-    typename R,
-    typename A
+    typename RETURN,
+    typename ARG_TUPLE
   >
   static
   decltype(auto)
   register_function(
     const utils::const_string_t & key,
-    std::function<R(A)> & user_function
+    std::function<RETURN(ARG_TUPLE)> & user_function
   )
   {
-    return execution_policy_t::template register_function<R, A>(key,
+    return EXECUTION_POLICY::template register_function<RETURN, ARG_TUPLE>(key,
       user_function);
   } // register_function
 
-  ///
-  //
-  ///
+  //--------------------------------------------------------------------------//
+  //! Execute a registered function.
+  //!
+  //! @todo: This interface needs to be updated to mirror the task
+  //!        registration model.
+  //!
+  //! @tparam FUNCTION_HANDLE The function handle type.
+  //! @tparam ARGS            A variadic pack of the user function arguements.
+  //!
+  //! @param key           The function hash key.
+  //! @param user_function The user function.
+  //--------------------------------------------------------------------------//
+
   template<
-    typename T,
-    typename ... As
+    typename FUNCTION_HANDLE,
+    typename ... ARGS
   >
   static
   decltype(auto)
   execute_function(
-    T & handle,
-    As && ... args
+    FUNCTION_HANDLE & handle,
+    ARGS && ... args
   )
   {
-    return execution_policy_t::execute_function(handle,
-      std::forward<As>(args) ...);
+    return EXECUTION_POLICY::execute_function(handle,
+      std::forward<ARGS>(args) ...);
   } // execute_function
 
 }; // struct function__
@@ -70,15 +92,22 @@ struct function__
 } // namespace execution
 } // namespace flecsi
 
-//
-// This include file defines the flecsi_execution_policy_t used below.
-//
+//----------------------------------------------------------------------------//
+// This include file defines the FLECSI_RUNTIME_EXECUTION_POLICY used below.
+//----------------------------------------------------------------------------//
+
 #include "flecsi_runtime_execution_policy.h"
 
 namespace flecsi {
 namespace execution {
 
-using function_t = function__<flecsi_execution_policy_t>;
+//----------------------------------------------------------------------------//
+//! Use the execution policy to define the function type.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
+using function_t = function__<FLECSI_RUNTIME_EXECUTION_POLICY>;
 
 } // namespace function
 } // namespace flecsi
