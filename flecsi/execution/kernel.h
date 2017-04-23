@@ -9,31 +9,30 @@
 
 #include "flecsi/topology/index_space.h"
 
-///
-// \file kernel.h
-// \authors nickm, bergen
-// \date Initial file creation: Oct 06, 2016
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Oct 06, 2016
+//----------------------------------------------------------------------------//
 
 namespace flecsi {
 namespace execution {
 
-///
-//
-// \tparam T The entity type of the associated index space.
-// \tparam is_storage A boolean indicating whether or not the associated
-//                    index space has storage for the referenced entity types.
-// \tparam is_owned A boolean indicating whether or not the entity data are
-//                  owned by the associated index space.
-// \tparam is_sorted A boolean indicating whether or not the associated index
-//                   space is sorted.
-// \tparam P An optional predicate function used to select indices matching
-//           particular criteria.
-// \tparam F The calleable object type.
-//
-// \param is The index space over which to execute the calleable object.
-// \param f The calleable object instance.
-///
+//----------------------------------------------------------------------------//
+//! @tparam T The entity type of the associated index space.
+//! @tparam is_storage A boolean indicating whether or not the associated
+//!                    index space has storage for the referenced entity types.
+//! @tparam is_owned A boolean indicating whether or not the entity data are
+//!                  owned by the associated index space.
+//! @tparam is_sorted A boolean indicating whether or not the associated index
+//!                   space is sorted.
+//! @tparam P An optional predicate function used to select indices matching
+//!           particular criteria.
+//! @tparam F The calleable object type.
+//!
+//! @param is The index space over which to execute the calleable object.
+//! @param f The calleable object instance.
+//----------------------------------------------------------------------------//
+
 template<
   typename T,
   bool is_storage,

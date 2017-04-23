@@ -16,8 +16,8 @@
 #define flecsi_execution_legion_context_policy_h
 
 //----------------------------------------------------------------------------//
-//! \file
-//! \date Initial file creation: Aug 4, 2016
+//! @file
+//! @date Initial file creation: Aug 4, 2016
 //----------------------------------------------------------------------------//
 
 #include <functional>
