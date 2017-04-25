@@ -16,8 +16,8 @@
 #define flecsi_execution_legion_execution_policy_h
 
 //----------------------------------------------------------------------------//
-//! \file
-//! \date Initial file creation: Nov 15, 2015
+//! @file
+//! @date Initial file creation: Nov 15, 2015
 //----------------------------------------------------------------------------//
 
 #include <functional>

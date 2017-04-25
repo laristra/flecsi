@@ -6,10 +6,10 @@
 #ifndef flecsi_execution_legion_legion_tasks_h
 #define flecsi_execution_legion_legion_tasks_h
 
-///
-/// \file
-/// \date Initial file creation: Jul 26, 2016
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Jul 26, 2016
+//----------------------------------------------------------------------------//
 
 #include <legion.h>
 
@@ -20,8 +20,21 @@ clog_register_tag(legion_tasks);
 namespace flecsi {
 namespace execution {
 
-/// Avoid having to repeat all of the Legion boiler-plate function arguments.
+//----------------------------------------------------------------------------//
+//! @def legion_task
+//!
+//! Avoid having to repeat all of the Legion boiler-plate function arguments.
+//!
+//! @param task_name   The plain-text task name.
+//! @param return_type The return type of the task.
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
 #define legion_task(task_name, return_type)                                    \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+/* Legion task template */                                                     \
 inline return_type task_name(                                                  \
   const LegionRuntime::HighLevel::Task * task,                                 \
   const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,       \

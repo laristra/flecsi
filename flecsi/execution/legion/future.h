@@ -28,12 +28,6 @@
 namespace flecsi {
 namespace execution {
 
-// FIXME: Do we really need this?
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
-// Dummy type for future specialization selection.
-struct mpitask_t {};
-#endif // FLECSI_RUNTIME_MODEL_mpilegion
-
 //----------------------------------------------------------------------------//
 // Future concept.
 //----------------------------------------------------------------------------//
@@ -236,44 +230,29 @@ private:
 
 }; // struct legion_future_model__
 
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
-///
-/// Partial specialization for mpi task
-///
-template<typename RETURN>
-struct legion_future_model__<RETURN, mpitask_t>
-  : public legion_future_concept__<RETURN>
-{
-  legion_future_model__(mpitask_t task) {}
+//----------------------------------------------------------------------------//
+//! Explicit specialization for index launch FutureMap and void.
+//----------------------------------------------------------------------------//
 
-  void
-  wait()
-  {
-  } // wait
-
-  RETURN
-  get(
-    size_t index = 0
-  )
-  {
-    return 0.0;
-  } // get
-
-}; // struct legion_future_model__
-#endif // FLECSI_RUNTIME_MODEL_mpilegion
-
-///
-/// Explicit specialization for index launch FutureMap and void.
-///
 template<>
 struct legion_future_model__<void, LegionRuntime::HighLevel::FutureMap>
   : public legion_future_concept__<void>
 {
 
+  //--------------------------------------------------------------------------//
+  //! Construct a future from a Legion future map.
+  //!
+  //! @param legion_future The Legion future instance.
+  //--------------------------------------------------------------------------//
+
   legion_future_model__(
     const LegionRuntime::HighLevel::FutureMap & legion_future
   )
     : legion_future_(legion_future) {}
+
+  //--------------------------------------------------------------------------//
+  //! Wait on a task result.
+  //--------------------------------------------------------------------------//
 
   void
   wait()
@@ -285,24 +264,6 @@ private:
   LegionRuntime::HighLevel::FutureMap legion_future_;
 
 }; // struct legion_future_model__
-
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
-///
-/// Explicit specialization for mpi task and void
-///
-template<>
-struct legion_future_model__<void, mpitask_t>
-  : public legion_future_concept__<void>
-{
-  legion_future_model__(mpitask_t task) {}
-
-  void
-  wait()
-  {
-  } // wait
-
-}; // struct legion_future_model__
-#endif // FLECSI_RUNTIME_MODEL_mpilegion
 
 //----------------------------------------------------------------------------//
 // Future.
@@ -342,12 +303,18 @@ struct legion_future__
   } // legion_future__
 
   //--------------------------------------------------------------------------//
+  //! Copy constructor.
+  //!
+  //! @param lf The legion_future__ to use to set our state.
   //--------------------------------------------------------------------------//
 
   legion_future__(const legion_future__ & lf)
     : state_(lf.state_) {}
 
   //--------------------------------------------------------------------------//
+  //! Assignment operator.
+  //!
+  //! @param lf The legion_future__ to use to set our state.
   //--------------------------------------------------------------------------//
 
   legion_future__ &
@@ -359,6 +326,7 @@ struct legion_future__
   } // operator =
 
   //--------------------------------------------------------------------------//
+  //! Wait on a task result.
   //--------------------------------------------------------------------------//
 
   void
@@ -368,6 +336,11 @@ struct legion_future__
   } // wait
 
   //--------------------------------------------------------------------------//
+  //! Get a task result.
+  //!
+  //! @param index The index of the task.
+  //!
+  //! @remark This method only applies to indexed task invocations.
   //--------------------------------------------------------------------------//
 
   RETURN
@@ -387,20 +360,32 @@ private:
 
 }; // struct legion_future__
 
-///
-/// Explicit specialization for void.
-///
+//----------------------------------------------------------------------------//
+//! Legion future type. Explicit specialization for void.
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
 template<>
 struct legion_future__<void>
 {
 
-  template<typename F>
-  legion_future__(const F & future)
-    : state_(new legion_future_model__<void, F>(future)) {}
+  //--------------------------------------------------------------------------//
+  //! Construct a future from a Legion future map.
+  //!
+  //! @tparam FUTURE
+  //!
+  //! @param future
+  //--------------------------------------------------------------------------//
 
-  ///
-  ///
-  ///
+  template<typename FUTURE>
+  legion_future__(const FUTURE & future)
+    : state_(new legion_future_model__<void, FUTURE>(future)) {}
+
+  //--------------------------------------------------------------------------//
+  //! Wait on a task result.
+  //--------------------------------------------------------------------------//
+
   void wait()
   {
   } // wait
@@ -413,6 +398,52 @@ struct legion_future__<void>
 } // namespace flecsi
 
 #endif // flecsi_execution_legion_future_h
+
+// FIXME: Do we really need this?
+#if 0
+// Dummy type for future specialization selection.
+struct mpitask_t {};
+
+///
+/// Partial specialization for mpi task
+///
+template<typename RETURN>
+struct legion_future_model__<RETURN, mpitask_t>
+  : public legion_future_concept__<RETURN>
+{
+  legion_future_model__(mpitask_t task) {}
+
+  void
+  wait()
+  {
+  } // wait
+
+  RETURN
+  get(
+    size_t index = 0
+  )
+  {
+    return 0.0;
+  } // get
+
+}; // struct legion_future_model__
+
+///
+/// Explicit specialization for mpi task and void
+///
+template<>
+struct legion_future_model__<void, mpitask_t>
+  : public legion_future_concept__<void>
+{
+  legion_future_model__(mpitask_t task) {}
+
+  void
+  wait()
+  {
+  } // wait
+
+}; // struct legion_future_model__
+#endif
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options
