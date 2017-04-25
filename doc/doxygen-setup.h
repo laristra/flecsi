@@ -48,6 +48,27 @@
  * @ingroup data
  **/
 
+//----------------------------------------------------------------------------//
+// Execution Model
+//----------------------------------------------------------------------------//
+
+/**
+ * Define the Topology group.
+ * @defgroup topology Topology Interface
+ **/
+
+/**
+ * Define the Graph Topology group.
+ * @defgroup graph-topology Graph Toplogy Interface
+ * @ingroup topology
+ **/
+
+/**
+ * Define the Structured Graph Topology group.
+ * @defgroup structured-graph-topology Structured Graph Toplogy Interface
+ * @ingroup topology
+ **/
+
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.
  * vim: set tabstop=2 shiftwidth=2 expandtab :

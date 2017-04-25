@@ -76,10 +76,25 @@ struct legion_runtime_state_t {
 
 }; // struct legion_runtime_state_t
 
-// Use thread local storage for legion state information. The state_
-// is set for each legion task invocation using the task name hash
-// as a key. This seems like it should be safe, since multiple concurrent
-// invocations of the same task can only occur on seperate threads.
+//----------------------------------------------------------------------------//
+//! Context state uses thread-local storage (TLS). The state is set for
+//! each Legion task invocation using the task name hash of the plain-text
+//! task name as a key. This should give sufficient isolation from naming
+//! collisions. State should only be pushed or popped from the FleCSI
+//! task wrapper, or from top-level driver calls.
+//!
+//! FleCSI developers should be extremely careful with how this state
+//! is used. In particular, you should not rely on any particular
+//! initialization of this state, i.e., it may be uninitialized on any
+//! given thread. The current implementation does not make any assumptions
+//! about what tasks may have been invoked from a particular thread before
+//! pushing context inforamtion onto this state. It is safe for this state
+//! to be uninitialized when it is encoutnered by a task executing in
+//! the FleCSI runtime. This property \em must be maintained.
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
 extern thread_local std::unordered_map<size_t,
   std::stack<std::shared_ptr<legion_runtime_state_t>>> state_;
 

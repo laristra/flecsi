@@ -3,14 +3,15 @@
  * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
 
-///
-/// \file
-/// \date Initial file creation: Jul 26, 2016
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Jul 26, 2016
+//----------------------------------------------------------------------------//
+
+#include "flecsi/execution/legion/context_policy.h"
 
 #include <iostream>
 
-#include "flecsi/execution/legion/context_policy.h"
 #include "flecsi/execution/legion/legion_tasks.h"
 #include "flecsi/execution/legion/mapper.h"
 #include "flecsi/data/storage.h"
@@ -18,12 +19,18 @@
 namespace flecsi {
 namespace execution {
 
+//----------------------------------------------------------------------------//
+// External declaration of context state. Please read the description and
+// limitations of this state in the header file.
+//----------------------------------------------------------------------------//
+
 thread_local std::unordered_map<size_t,
   std::stack<std::shared_ptr<legion_runtime_state_t>>> state_;  
 
-///
-///
-///
+//----------------------------------------------------------------------------//
+// Implementation of legion_context_policy_t::initialize.
+//----------------------------------------------------------------------------//
+
 int
 legion_context_policy_t::initialize(
   int argc,
@@ -100,9 +107,10 @@ legion_context_policy_t::initialize(
   return 0;
 } // legion_context_policy_t::initialize
 
-///
-///
-///
+//----------------------------------------------------------------------------//
+// Implementation of legion_context_policy_t::unset_call_mpi.
+//----------------------------------------------------------------------------//
+
 void
 legion_context_policy_t::unset_call_mpi(
   Legion::Context & ctx,
@@ -137,9 +145,10 @@ legion_context_policy_t::unset_call_mpi(
   fm.wait_all_results();
 } // legion_context_policy_t::unset_call_mpi
 
-///
-///
-///
+//----------------------------------------------------------------------------//
+// Implementation of legion_context_policy_t::handoff_to_mpi.
+//----------------------------------------------------------------------------//
+
 void
 legion_context_policy_t::handoff_to_mpi(
   Legion::Context & ctx,
@@ -161,9 +170,10 @@ legion_context_policy_t::handoff_to_mpi(
   fm.wait_all_results();
 } // legion_context_policy_t::handoff_to_mpi
 
-///
-///
-///
+//----------------------------------------------------------------------------//
+// Implementation of legion_context_policy_t::wait_on_mpi.
+//----------------------------------------------------------------------------//
+
 Legion::FutureMap
 legion_context_policy_t::wait_on_mpi(
   Legion::Context & ctx,
@@ -187,9 +197,10 @@ legion_context_policy_t::wait_on_mpi(
   return fm;    
 } // legion_context_policy_t::wait_on_mpi
 
-///
-///
-///
+//----------------------------------------------------------------------------//
+// Implementation of legion_context_policy_t::connect_with_mpi.
+//----------------------------------------------------------------------------//
+
 void
 legion_context_policy_t::connect_with_mpi(
   Legion::Context & ctx,

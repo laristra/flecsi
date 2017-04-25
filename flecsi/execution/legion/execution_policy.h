@@ -294,21 +294,31 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t>
 // Execution policy.
 //----------------------------------------------------------------------------//
 
-///
-/// \struct legion_execution_policy legion_execution_policy.h
-/// \brief legion_execution_policy provides...
-///
+//----------------------------------------------------------------------------//
+//! The legion_execution_policy_t is the backend runtime execution policy
+//! for Legion.
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
 struct legion_execution_policy_t
 {
+  //--------------------------------------------------------------------------//
+  //! The future__ type may be used for explicit synchronization of tasks.
+  //--------------------------------------------------------------------------//
+
   template<typename RETURN>
-  /// future
   using future__ = legion_future__<RETURN>;
 
   //--------------------------------------------------------------------------//
   // Task interface.
   //--------------------------------------------------------------------------//
 
-  /// User task registration.
+  //--------------------------------------------------------------------------//
+  //! Legion backend task registration. For documentation on this
+  //! method please see task__::register_task.
+  //--------------------------------------------------------------------------//
+
   template<
     typename RETURN,
     typename ARG_TUPLE,
@@ -359,7 +369,20 @@ struct legion_execution_policy_t
     return true;
   } // register_task
 
-  /// Legion task registration.
+  //--------------------------------------------------------------------------//
+  //! This method allows the user to register a pure Legion task with
+  //! the runtime. A task id will automatically be generated, and can be
+  //! accessed via legion_context_policy_t::task_id using a valid
+  //! task_hash_key_t.
+  //!
+  //! @tparam RETURN The return type of the pure Legion task.
+  //! @tparam TASK   The function pointer template type of the task (inferred).
+  //!
+  //! @param key       A task_hash_key_t key identifying the task.
+  //! @param task_name The string name for the task. This can be set to any
+  //!                  valid std::string value.
+  //--------------------------------------------------------------------------//
+
   template<
     typename RETURN,
     RETURN (*TASK)(
@@ -401,16 +424,11 @@ struct legion_execution_policy_t
     return true;
   } // register_legion_task
 
-  ///
-  /// Execute FLeCSI task.
-  ///
-  /// \tparam RETURN The task return type.
-  /// \tparam FIXME: A
-  ///
-  /// \param key
-  /// \param parent
-  /// \param args
-  ///
+  //--------------------------------------------------------------------------//
+  //! Legion backend task execution. For documentation on this
+  //! method please see task__::execute_task.
+  //--------------------------------------------------------------------------//
+
   template<
     typename RETURN,
     typename ... ARGS
@@ -536,16 +554,11 @@ struct legion_execution_policy_t
   // Function interface.
   //--------------------------------------------------------------------------//
 
-  ///
-  /// This method registers a user function with the current
-  /// execution context.
-  ///
-  /// \param key The function identifier.
-  /// \param user_function A reference to the user function as a std::function.
-  ///
-  /// \return A boolean value indicating whether or not the function was
-  ///         successfully registered.
-  ///
+  //--------------------------------------------------------------------------//
+  //! Legion backend function registration. For documentation on this
+  //! method please see function__::register_function.
+  //--------------------------------------------------------------------------//
+
   template<
     typename RETURN,
     typename ... ARGS
@@ -560,15 +573,11 @@ struct legion_execution_policy_t
     return context_t::instance().register_function(key, user_function);
   } // register_function
 
-  ///
-  /// This method looks up a function from the \e handle argument
-  /// and executes the associated it with the provided \e args arguments.
-  ///
-  /// \param handle The function handle to execute.
-  /// \param args A variadic argument list of the function parameters.
-  ///
-  /// \return The return type of the provided function handle.
-  ///
+  //--------------------------------------------------------------------------//
+  //! Legion backend function execution. For documentation on this
+  //! method please see function__::execute_function.
+  //--------------------------------------------------------------------------//
+
   template<
     typename FUNCTION_HANDLE,
     typename ... ARGS

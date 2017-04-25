@@ -21,9 +21,10 @@ namespace flecsi {
 namespace execution {
 
 //----------------------------------------------------------------------------//
-//! @def legion_task
+//! @def __flecsi_internal_legion_task
 //!
-//! Avoid having to repeat all of the Legion boiler-plate function arguments.
+//! This macro simplifies pure Legion task definitions by filling in the
+//! boiler-plate function arguments.
 //!
 //! @param task_name   The plain-text task name.
 //! @param return_type The return type of the task.
@@ -31,7 +32,7 @@ namespace execution {
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
-#define legion_task(task_name, return_type)                                    \
+#define __flecsi_internal_legion_task(task_name, return_type)                  \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
 /* Legion task template */                                                     \
@@ -43,10 +44,12 @@ inline return_type task_name(                                                  \
 )
 
 //----------------------------------------------------------------------------//
-// Initial SPMD task.
+//! Initial SPMD task.
+//!
+//! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
-legion_task(spmd_task, void) {
+__flecsi_internal_legion_task(spmd_task, void) {
   {
   clog_tag_guard(legion_tasks);
   clog(info) << "Executing driver task" << std::endl;
@@ -71,30 +74,37 @@ legion_task(spmd_task, void) {
 } // spmd_task
 
 //----------------------------------------------------------------------------//
-// Interprocess communication to pass control to MPI runtime.
+//! Interprocess communication to pass control to MPI runtime.
+//!
+//! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
-legion_task(handoff_to_mpi_task, void) {
+__flecsi_internal_legion_task(handoff_to_mpi_task, void) {
   context_t::instance().handoff_to_mpi();
 } // handoff_to_mpi_task
 
 //----------------------------------------------------------------------------//
-// Interprocess communication to unset mpi execute state.
+//! Interprocess communication to wait for control to pass back to the Legion
+//! runtime.
+//!
+//! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
-legion_task(wait_on_mpi_task, void) {
+__flecsi_internal_legion_task(wait_on_mpi_task, void) {
   context_t::instance().wait_on_mpi();
 } // wait_on_mpi_task
 
 //----------------------------------------------------------------------------//
-// Interprocess communication to unset mpi execute state.
+//! Interprocess communication to unset mpi execute state.
+//!
+//! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
-legion_task(unset_call_mpi_task, void) {
+__flecsi_internal_legion_task(unset_call_mpi_task, void) {
   context_t::instance().set_mpi_state(false);
 } // unset_call_mpi_task
 
-#undef legion_task
+#undef __flecsi_internal_legion_task
 
 } // namespace execution 
 } // namespace flecsi

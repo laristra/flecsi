@@ -21,9 +21,8 @@
 //----------------------------------------------------------------------------//
 
 #include <functional>
-#include <memory>
-
 #include <legion.h>
+#include <memory>
 
 namespace flecsi {
 namespace execution {
@@ -398,52 +397,6 @@ struct legion_future__<void>
 } // namespace flecsi
 
 #endif // flecsi_execution_legion_future_h
-
-// FIXME: Do we really need this?
-#if 0
-// Dummy type for future specialization selection.
-struct mpitask_t {};
-
-///
-/// Partial specialization for mpi task
-///
-template<typename RETURN>
-struct legion_future_model__<RETURN, mpitask_t>
-  : public legion_future_concept__<RETURN>
-{
-  legion_future_model__(mpitask_t task) {}
-
-  void
-  wait()
-  {
-  } // wait
-
-  RETURN
-  get(
-    size_t index = 0
-  )
-  {
-    return 0.0;
-  } // get
-
-}; // struct legion_future_model__
-
-///
-/// Explicit specialization for mpi task and void
-///
-template<>
-struct legion_future_model__<void, mpitask_t>
-  : public legion_future_concept__<void>
-{
-  legion_future_model__(mpitask_t task) {}
-
-  void
-  wait()
-  {
-  } // wait
-
-}; // struct legion_future_model__
-#endif
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

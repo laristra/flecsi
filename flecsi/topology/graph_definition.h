@@ -6,23 +6,25 @@
 #ifndef flecsi_topology_graph_definition_h
 #define flecsi_topology_graph_definition_h
 
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Nov 17, 2016
+//----------------------------------------------------------------------------//
+
 #include <set>
 #include <vector>
 
 #include "flecsi/geometry/point.h"
 
-///
-/// \file
-/// \date Initial file creation: Nov 17, 2016
-///
-
 namespace flecsi {
 namespace topology {
 
-///
-/// \class graph_definition__ graph_definition.h
-/// \brief graph_definition__ provides...
-///
+//----------------------------------------------------------------------------//
+//! The graph_definition__ type...
+//!
+//! @ingroup graph-topology
+//----------------------------------------------------------------------------//
+
 template<size_t D>
 class graph_definition__
 {
@@ -53,9 +55,24 @@ public:
     return D;
   } // dimension
 
+  //--------------------------------------------------------------------------//
+  //! Abstract interface to get the number of entities.
+  //!
+  //! @param dimension The topological dimension of the request.
+  //--------------------------------------------------------------------------//
+
   virtual size_t num_entities(size_t dimension) = 0;
 
+  //--------------------------------------------------------------------------//
+  //! Abstract interface to get the number of entities.
+  //--------------------------------------------------------------------------//
+
   virtual std::vector<size_t> vertices(size_t dimension, size_t entity_id) = 0;
+
+  //--------------------------------------------------------------------------//
+  //! Abstract interface to get the number of entities.
+  //--------------------------------------------------------------------------//
+
   virtual std::set<size_t> vertex_set(size_t dimension, size_t entity_id) = 0;
 
   virtual point_t vertex(size_t vertex_id) = 0;
