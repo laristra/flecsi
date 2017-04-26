@@ -11,18 +11,27 @@
 //----------------------------------------------------------------------------//
 
 /**
- * Define the Execution Model group.
+ * The FleCSI execution model is an hierarchically parallel abstraction that
+ * divides work into coarse-grained, distributed-memory tasks, and
+ * fine-grained data-parallel kernels. Tasks are functionally pure with
+ * controlled side effects. Kernels are shared-memory and may exploit
+ * varying degrees of memory consistency, e.g., sequential or relaxed.
+ *
  * @defgroup execution Execution Interface
  **/
 
 /**
- * Define the Legion Execution Backend group.
+ * This module contains the Legion backend implementation of the FleCSI
+ * execution model.
+ *
  * @defgroup legion-execution Legion Execution Backend
  * @ingroup execution
  **/
 
 /**
- * Define the Serial Execution Backend group.
+ * This module contains the serial backend implementation of the FleCSI
+ * execution model.
+ *
  * @defgroup serial-execution Serial Execution Backend
  * @ingroup execution
  **/
@@ -49,7 +58,7 @@
  **/
 
 //----------------------------------------------------------------------------//
-// Execution Model
+// Topology
 //----------------------------------------------------------------------------//
 
 /**

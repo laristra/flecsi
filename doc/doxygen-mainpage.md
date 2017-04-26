@@ -57,6 +57,34 @@ The FleCSI code base is divided into several namespaces:
   FleCSI utility types and functions.
 
 Each of these is described in more detail in the developer guide.
+Documentation is also provide in the corresponding Doxygen modules.
+
+## Naming Conventions
+
+Because FleCSI makes extensive use of C++ templates, type names are
+designed to indicate whether or not a type is fully qualified (A fully
+qualified type is one for which all template parameters have been
+specified.) Fully qualified types are of the form *type_name_t*, where
+the underscore-t indicates that *type_name_t* is fully resolved. Types
+that are not fully qualified are of the form *type_name__*, where the
+double-underscore indicates that the type still has unresolved
+parameters. The following code illustrates this convention:
+```
+// Unqualified type.
+template<
+  typename T
+>
+struct type_name__ {};
+
+// Fully-qualified type.
+using type_name_t = type_name__<double>;
+```
+
+## Design Patterns
+
+FleCSI makes use of several formal design patterns. Many of these are
+documented in the [Related Pages](pages.html) section of the documentation.
+
 
 ## More Documentation
 

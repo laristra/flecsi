@@ -17,7 +17,6 @@
 #include "flecsi/execution/common/task_hash.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/execution.h"
-#include "flecsi/execution/legion/task_args.h"
 #include "flecsi/utils/common.h"
 
 //----------------------------------------------------------------------------//

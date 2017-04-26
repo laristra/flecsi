@@ -82,8 +82,7 @@ struct init_args_t : public utils::tuple_walker__<init_args_t>
   //! @tparam GHOST_PERMISSIONS     The permissions required on the ghost
   //!                               indices of the index partition.
   //!
-  //! @param runtime The Legion task runtime.
-  //! @param context The Legion task runtime context.
+  //! @param h The data handle.
   //--------------------------------------------------------------------------//
 
   template<
@@ -305,6 +304,8 @@ struct legion_execution_policy_t
 {
   //--------------------------------------------------------------------------//
   //! The future__ type may be used for explicit synchronization of tasks.
+  //!
+  //! @tparam RETURN The return type of the task.
   //--------------------------------------------------------------------------//
 
   template<typename RETURN>
@@ -376,7 +377,7 @@ struct legion_execution_policy_t
   //! task_hash_key_t.
   //!
   //! @tparam RETURN The return type of the pure Legion task.
-  //! @tparam TASK   The function pointer template type of the task (inferred).
+  //! @tparam TASK   The function pointer template type of the task.
   //!
   //! @param key       A task_hash_key_t key identifying the task.
   //! @param task_name The string name for the task. This can be set to any

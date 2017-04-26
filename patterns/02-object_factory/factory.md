@@ -1,8 +1,8 @@
-# Object Factory
+# Design Pattern: Object Factory
 
 An object factory is a design pattern that allows a program to have
 multiple registered handlers for different types. As a motivating
-example, consider a program that must be able to read in a variety of
+example, consider a program that must be able to read-in a variety of
 image formats:
 
 ```
@@ -55,7 +55,7 @@ important to this design pattern:
 
 1. The factory is a singleton, and can be called from external scope to
   register the various handler types. In this example, we are using the
-  Meyer's singleton discussed in the last section.
+  Meyer's singleton discussed elsewhere in this document.
 2. The factory exposes an interface to register a callback function for
   each suffix type. We will see how this can be called from each handler
   type's implementation to avoid having to collect all of the handlers

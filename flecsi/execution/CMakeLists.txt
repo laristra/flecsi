@@ -62,7 +62,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/mapper.h
     legion/registration_wrapper.h
     legion/runtime_driver.h
-    legion/task_args.h
     legion/task_wrapper.h
   )
 

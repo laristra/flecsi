@@ -6,22 +6,29 @@
 #ifndef flecsi_execution_legion_registration_wrapper_h
 #define flecsi_execution_legion_registration_wrapper_h
 
-#include <legion.h>
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Apr 14, 2017
+//----------------------------------------------------------------------------//
 
-///
-/// \file
-/// \date Initial file creation: Apr 14, 2017
-///
+#include <legion.h>
 
 namespace flecsi {
 namespace execution {
 
-///
-/// Fix to select between void and non-void return values for Legion problem.
-///
+//----------------------------------------------------------------------------//
+//! The registration_wrapper__ type selects between void and non-void
+//! return values for task registration.
+//!
+//! @tparam RETURN The return type of the task.
+//! @tparam TASK   The function pointer template type of the task.
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
 template<
   typename RETURN,
-  RETURN (*METHOD)(
+  RETURN (*TASK)(
     const Legion::Task *,
     const std::vector<Legion::PhysicalRegion> &,
     Legion::Context,
@@ -30,29 +37,40 @@ template<
 >
 struct registration_wrapper__
 {
+  //--------------------------------------------------------------------------//
+  //! This method registers the given task with the Legion runtime.
+  //!
+  //! @tparam ARGS The variadic argument pack.
+  //--------------------------------------------------------------------------//
+
   template<typename ... ARGS>
   static void register_task(ARGS && ... args) {
-    Legion::HighLevelRuntime::register_legion_task<RETURN, METHOD>(
+    Legion::HighLevelRuntime::register_legion_task<RETURN, TASK>(
       std::forward<ARGS>(args) ...);
   } // register_task
 }; // struct registration_wrapper__
 
-///
-/// Partial specialization for void.
-///
+//----------------------------------------------------------------------------//
+//! Partial specialization of registration_wrapper__ for void return type.
+//!
+//! @tparam TASK   The function pointer template type of the task.
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
 template<
-  void (*METHOD)(
+  void (*TASK)(
     const Legion::Task *,
     const std::vector<Legion::PhysicalRegion> &,
     Legion::Context,
     Legion::Runtime *
   )
 >
-struct registration_wrapper__<void, METHOD>
+struct registration_wrapper__<void, TASK>
 {
   template<typename ... ARGS>
   static void register_task(ARGS && ... args) {
-    Legion::HighLevelRuntime::register_legion_task<METHOD>(
+    Legion::HighLevelRuntime::register_legion_task<TASK>(
       std::forward<ARGS>(args) ...);
   } // register_task
 }; // struct registration_wrapper__
