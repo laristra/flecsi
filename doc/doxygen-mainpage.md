@@ -57,7 +57,8 @@ The FleCSI code base is divided into several namespaces:
   FleCSI utility types and functions.
 
 Each of these is described in more detail in the developer guide.
-Documentation is also provide in the corresponding Doxygen modules.
+Documentation is also provide in the corresponding Doxygen
+[modules](modules.html).
 
 ## Naming Conventions
 
