@@ -1,5 +1,9 @@
 # FleCSI: Build
-<!-- "FleCSI: Build" label required for Doxygen -->
+<!--
+  The above header ("FleCSI: Build") is required for Doxygen to
+  correctly name the auto-generated page. It is ignored in the FleCSI
+  guide documentation.
+-->
 
 <!-- CINCHDOC DOCUMENT(User Guide) SECTION(Build) -->
 
@@ -75,6 +79,18 @@ The *make* command will also install the TPLs in the specified install
 directory. **It is recommended that users remove the install directory
 before updating or re-compiling the TPLs.**
 
+## Build Environment
+
+FleCSI uses CMake as part of its build system. A convenient mechanism
+for identifying directory paths that should be searched by CMake's
+*find_package* function is to set the *CMAKE_PREFIX_PATH* environment
+variable. If you are using the FleCSI TPLs discussed above, you can set
+*CMAKE_PREFIX_PATH* to include the path to your TPL installation
+directory and FleCSI will automatically find all of its dependencies:
+```
+% export CMAKE_PREFIX_PATH=/path/to/install/directory (bash)
+```
+
 ## Getting The Code
 
 Clone the FleCSI git repository, and create an out-of-source build area
@@ -107,5 +123,32 @@ runtimes, a serial runtime, and one supported node-level runtime:
   logically a valid selection for the distributed-memory backend that is
   not distributed ;-)
 * **Node-Level**: OpenMP
+
+Example configuration: **Serial**
+```
+% cmake -DFLECSI_RUNTIME_MODEL=serial ..
+```
+Example configuration: **Serial + OpenMP**
+```
+% cmake -DFLECSI_RUNTIME_MODEL=serial -DENABLE_OPENMP ..
+```
+Example configuration: **Legion**
+```
+% cmake -DFLECSI_RUNTIME_MODEL=legion -DENABLE_MPI -DENABLE_PARTITIONING ..
+```
+After configuration is complete, just use *make* to build:
+```
+% make -j 16
+```
+This will build all targets *except* for the Doxygen documentation, which
+can be built with:
+```
+% make doxygen
+```
+Installation uses the normal *make install*, and will install FleCSI in
+the directory specified by CMAKE_INSTALL_PREFIX:
+```
+% make install
+```
 
 <!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->
