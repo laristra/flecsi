@@ -15,12 +15,13 @@
 set(geometry_HEADERS
   point.h
   space_vector.h
-  PARENT_SCOPE
 )
 
-set(geometry_SOURCES
-  PARENT_SCOPE
-)
+set(geometry_SOURCES)
+
+cinch_install_headers(
+  FILES ${geometry_HEADERS}
+  DESTINATION include/flecsi/geometry)
 
 cinch_add_unit(point
   SOURCES test/point.cc)

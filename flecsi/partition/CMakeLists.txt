@@ -36,9 +36,9 @@ if(ENABLE_PARMETIS)
   )
 endif()
 
-set(partition_HEADERS
-  ${partition_HEADERS}
-  PARENT_SCOPE)
+cinch_install_headers(
+  FILES ${partition_HEADERS}
+  DESTINATION include/flecsi/partition)
 
 #------------------------------------------------------------------------------#
 # Unit tests.

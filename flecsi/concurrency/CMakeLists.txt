@@ -12,6 +12,15 @@
 # All rights reserved
 #~----------------------------------------------------------------------------~#
 
+
+set(concurrency_HEADERS
+  thread_pool.h
+  virtual_semaphore.h)
+
+cinch_install_headers(
+  FILES ${concurrency_HEADERS}
+  DESTINATION include/flecsi/concurrency)
+
 #~---------------------------------------------------------------------------~-#
 # Formatting options
 # vim: set tabstop=2 shiftwidth=2 expandtab :

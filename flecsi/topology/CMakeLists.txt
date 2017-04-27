@@ -20,12 +20,11 @@ set(topology_HEADERS
   mesh_types.h
   mesh_utils.h
   tree_topology.h
-  PARENT_SCOPE
 )
 
-set(topology_SOURCES
-  PARENT_SCOPE
-)
+cinch_install_headers(
+  FILES ${topology_HEADERS}
+  DESTINATION include/flecsi/topology)
 
 #------------------------------------------------------------------------------#
 # Mesh unit tests.
@@ -34,11 +33,9 @@ set(topology_SOURCES
 cinch_add_unit(traversal
   SOURCES
     test/traversal.cc
+    $<TARGET_OBJECTS:data>
   INPUTS
     test/traversal.blessed
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
 )
 
 cinch_add_unit(dual
@@ -51,11 +48,9 @@ cinch_add_unit(dual
 cinch_add_unit(bindings
   SOURCES
     test/bindings.cc
+    $<TARGET_OBJECTS:data>
   INPUTS
     test/bindings.blessed
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
 )
 
 #------------------------------------------------------------------------------#
@@ -66,44 +61,34 @@ cinch_add_unit(tree
   SOURCES
     test/tree.cc
     test/pseudo_random.h
+    $<TARGET_OBJECTS:data>
   INPUTS
     test/tree.blessed
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
 )
 
 cinch_add_unit(tree1d
   SOURCES
     test/tree1d.cc
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
+    $<TARGET_OBJECTS:data>
 )
 
 cinch_add_unit(tree3d
   SOURCES
     test/tree3d.cc
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
+    $<TARGET_OBJECTS:data>
 )
 
 cinch_add_unit(gravity
   SOURCES
     test/gravity.cc test/pseudo_random.h
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
+    $<TARGET_OBJECTS:data>
 )
 
 cinch_add_unit(gravity-state
   SOURCES
     test/gravity-state.cc
     test/pseudo_random.h
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
+    $<TARGET_OBJECTS:data>
 )
 
 cinch_add_unit(structured

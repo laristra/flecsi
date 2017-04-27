@@ -38,10 +38,13 @@ set(utils_HEADERS
 
 set(utils_SOURCES
   common.cc
-  PARENT_SCOPE
 )
 
-set(utils_HEADERS ${utils_HEADERS} PARENT_SCOPE)
+cinch_install_headers(
+  FILES ${utils_HEADERS}
+  DESTINATION include/flecsi/utils)
+
+add_library(utils OBJECT ${utils_SOURCES})
 
 cinch_add_unit(const_string
   SOURCES test/const_string.cc
