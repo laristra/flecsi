@@ -15,106 +15,155 @@
 #ifndef flecsi_execution_legion_future_h
 #define flecsi_execution_legion_future_h
 
+//----------------------------------------------------------------------------//
+//! \file
+//! \date Initial file creation: Nov 15, 2015
+//----------------------------------------------------------------------------//
+
 #include <functional>
-#include <memory>
-
 #include <legion.h>
-
-///
-/// \file legion/future.h
-/// \authors bergen
-/// \date Initial file creation: Nov 15, 2015
-///
+#include <memory>
 
 namespace flecsi {
 namespace execution {
-
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
-// Dummy type for future specialization selection.
-struct mpitask_t {};
-#endif // FLECSI_RUNTIME_MODEL_mpilegion
 
 //----------------------------------------------------------------------------//
 // Future concept.
 //----------------------------------------------------------------------------//
 
-///
-/// Interface type for Legion futures.
-///
+//----------------------------------------------------------------------------//
+//! Abstract interface type for Legion futures.
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
 template<
-  typename R
+  typename RETURN
 >
 struct legion_future_concept__
 {
+
   virtual ~legion_future_concept__() {}
 
+  //--------------------------------------------------------------------------//
+  //! Abstract interface to wait on a task result.
+  //--------------------------------------------------------------------------//
+
   virtual void wait() = 0;
-  virtual R get(size_t index = 0) = 0;
+
+  //--------------------------------------------------------------------------//
+  //! Abstract interface to get a task result.
+  //--------------------------------------------------------------------------//
+
+  virtual RETURN get(size_t index = 0) = 0;
+
 }; // struct legion_future_concept__
 
-///
-/// Explicit specialization for void.
-///
+//----------------------------------------------------------------------------//
+//! Explicit specialization for void.
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
 template<>
 struct legion_future_concept__<void>
 {
+
   virtual ~legion_future_concept__() {}
 
+  //--------------------------------------------------------------------------//
+  //! Abstract interface to wait on a task result.
+  //--------------------------------------------------------------------------//
+
   virtual void wait() = 0;
+
 }; // struct legion_future_concept__
 
 //----------------------------------------------------------------------------//
 // Future model.
 //----------------------------------------------------------------------------//
 
-///
-/// Base future model type.
-///
-template<typename R, typename F>
-struct legion_future_model__
-  : public legion_future_concept__<R>
+//----------------------------------------------------------------------------//
+//! Base future model type.
+//!
+//! @tparam RETURN The return type of the task.
+//! @tparam FUTURE The Legion runtime future type.
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
+template<
+  typename RETURN,
+  typename FUTURE
+>
+struct legion_future_model__ : public legion_future_concept__<RETURN>
 {
 
-  legion_future_model__(const F & legion_future)
+  //--------------------------------------------------------------------------//
+  //! Construct a future from a Legion future.
+  //!
+  //! @param legion_future The Legion future instance.
+  //--------------------------------------------------------------------------//
+
+  legion_future_model__(const FUTURE & legion_future)
     : legion_future_(legion_future) {}
 
-  ///
-  ///
-  ///
+  //--------------------------------------------------------------------------//
+  //! Wait on a task result.
+  //--------------------------------------------------------------------------//
+
   void
   wait()
   {
   } // wait
 
-  ///
-  /// \param index
-  ///
-  /// \return R
-  ///
-  R
+  //--------------------------------------------------------------------------//
+  //! Get a task result.
+  //!
+  //! @param index The index of the task.
+  //!
+  //! @remark This method only applies to indexed task invocations.
+  //--------------------------------------------------------------------------//
+
+  RETURN
   get(
     size_t index = 0
   )
   {
-    return legion_future_.template get_result<R>();
+    return legion_future_.template get_result<RETURN>();
   } // get
 
 private:
 
-  F legion_future_;
+  FUTURE legion_future_;
 
 }; // struct legion_future_model__
 
-///
-/// Partial specialization for void.
-///
-template<typename F>
-struct legion_future_model__<void, F>
+//----------------------------------------------------------------------------//
+//! Partial specialization for void.
+//!
+//! @tparam FUTURE The Legion runtime future type.
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
+template<typename FUTURE>
+struct legion_future_model__<void, FUTURE>
   : public legion_future_concept__<void>
 {
 
-  legion_future_model__(const F & legion_future)
+  //--------------------------------------------------------------------------//
+  //! Construct a future from a Legion future.
+  //!
+  //! @param legion_future The Legion future instance.
+  //--------------------------------------------------------------------------//
+
+  legion_future_model__(const FUTURE & legion_future)
     : legion_future_(legion_future) {}
+
+  //--------------------------------------------------------------------------//
+  //! Wait on a task result.
+  //--------------------------------------------------------------------------//
 
   void
   wait()
@@ -124,29 +173,48 @@ struct legion_future_model__<void, F>
 
 private:
 
-  F legion_future_;
+  FUTURE legion_future_;
 
 }; // struct legion_future_model__
 
-///
-// Partial specialization for index launch FutureMap.
-///
-template<typename R>
-struct legion_future_model__<R, LegionRuntime::HighLevel::FutureMap>
-  : public legion_future_concept__<R>
+//----------------------------------------------------------------------------//
+//! Partial specialization for index launch FutureMap.
+//----------------------------------------------------------------------------//
+
+template<typename RETURN>
+struct legion_future_model__<RETURN, LegionRuntime::HighLevel::FutureMap>
+  : public legion_future_concept__<RETURN>
 {
+
+  //--------------------------------------------------------------------------//
+  //! Construct a future from a Legion future map.
+  //!
+  //! @param legion_future The Legion future instance.
+  //--------------------------------------------------------------------------//
 
   legion_future_model__(
     const LegionRuntime::HighLevel::FutureMap & legion_future
   )
     : legion_future_(legion_future) {}
 
+  //--------------------------------------------------------------------------//
+  //! Wait on a task result.
+  //--------------------------------------------------------------------------//
+
   void
   wait()
   {
   } // wait
 
-  R
+  //--------------------------------------------------------------------------//
+  //! Get a task result.
+  //!
+  //! @param index The index of the task.
+  //!
+  //! @remark This method only applies to indexed task invocations.
+  //--------------------------------------------------------------------------//
+
+  RETURN
   get(
     size_t index = 0
   )
@@ -161,44 +229,29 @@ private:
 
 }; // struct legion_future_model__
 
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
-///
-/// Partial specialization for mpi task
-///
-template<typename R>
-struct legion_future_model__<R, mpitask_t>
-  : public legion_future_concept__<R>
-{
-  legion_future_model__(mpitask_t task) {}
+//----------------------------------------------------------------------------//
+//! Explicit specialization for index launch FutureMap and void.
+//----------------------------------------------------------------------------//
 
-  void
-  wait()
-  {
-  } // wait
-
-  R
-  get(
-    size_t index = 0
-  )
-  {
-    return 0.0;
-  } // get
-
-}; // struct legion_future_model__
-#endif // FLECSI_RUNTIME_MODEL_mpilegion
-
-///
-/// Explicit specialization for index launch FutureMap and void.
-///
 template<>
 struct legion_future_model__<void, LegionRuntime::HighLevel::FutureMap>
   : public legion_future_concept__<void>
 {
 
+  //--------------------------------------------------------------------------//
+  //! Construct a future from a Legion future map.
+  //!
+  //! @param legion_future The Legion future instance.
+  //--------------------------------------------------------------------------//
+
   legion_future_model__(
     const LegionRuntime::HighLevel::FutureMap & legion_future
   )
     : legion_future_(legion_future) {}
+
+  //--------------------------------------------------------------------------//
+  //! Wait on a task result.
+  //--------------------------------------------------------------------------//
 
   void
   wait()
@@ -211,44 +264,57 @@ private:
 
 }; // struct legion_future_model__
 
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpilegion
-///
-/// Explicit specialization for mpi task and void
-///
-template<>
-struct legion_future_model__<void, mpitask_t>
-  : public legion_future_concept__<void>
-{
-  legion_future_model__(mpitask_t task) {}
-
-  void
-  wait()
-  {
-  } // wait
-
-}; // struct legion_future_model__
-#endif // FLECSI_RUNTIME_MODEL_mpilegion
-
 //----------------------------------------------------------------------------//
 // Future.
 //----------------------------------------------------------------------------//
 
-///
-///
-///
+//----------------------------------------------------------------------------//
+//! Legion future type.
+//!
+//! @tparam RETURN The return type of the task.
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
 template<
-  typename R
+  typename RETURN
 >
 struct legion_future__
 {
-  using result_t = R;
 
-  template<typename F>
-  legion_future__(const F & future)
-    : state_(new legion_future_model__<R, F>(future)) {}
+  //--------------------------------------------------------------------------//
+  //! Construct a future from a Legion future map.
+  //!
+  //! @tparam FUTURE
+  //!
+  //! @param future
+  //--------------------------------------------------------------------------//
+
+  template<
+    typename FUTURE
+  >
+  legion_future__(
+    const FUTURE & future
+  )
+  :
+    state_(new legion_future_model__<RETURN, FUTURE>(future))
+  {
+  } // legion_future__
+
+  //--------------------------------------------------------------------------//
+  //! Copy constructor.
+  //!
+  //! @param lf The legion_future__ to use to set our state.
+  //--------------------------------------------------------------------------//
 
   legion_future__(const legion_future__ & lf)
     : state_(lf.state_) {}
+
+  //--------------------------------------------------------------------------//
+  //! Assignment operator.
+  //!
+  //! @param lf The legion_future__ to use to set our state.
+  //--------------------------------------------------------------------------//
 
   legion_future__ &
   operator = (
@@ -258,18 +324,25 @@ struct legion_future__
     state_ = lf.state_;
   } // operator =
 
-  ///
-  ///
-  ///
-  void wait()
+  //--------------------------------------------------------------------------//
+  //! Wait on a task result.
+  //--------------------------------------------------------------------------//
+
+  void
+  wait()
   {
     state_->wait();
   } // wait
 
-  ///
-  /// get operator
-  ///
-  result_t
+  //--------------------------------------------------------------------------//
+  //! Get a task result.
+  //!
+  //! @param index The index of the task.
+  //!
+  //! @remark This method only applies to indexed task invocations.
+  //--------------------------------------------------------------------------//
+
+  RETURN
   get(
     size_t index = 0
   )
@@ -282,24 +355,36 @@ private:
   // Needed to satisfy static check.
   void set() {}
 
-  std::shared_ptr<legion_future_concept__<R>> state_;
+  std::shared_ptr<legion_future_concept__<RETURN>> state_;
 
 }; // struct legion_future__
 
-///
-/// Explicit specialization for void.
-///
+//----------------------------------------------------------------------------//
+//! Legion future type. Explicit specialization for void.
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
 template<>
 struct legion_future__<void>
 {
 
-  template<typename F>
-  legion_future__(const F & future)
-    : state_(new legion_future_model__<void, F>(future)) {}
+  //--------------------------------------------------------------------------//
+  //! Construct a future from a Legion future map.
+  //!
+  //! @tparam FUTURE
+  //!
+  //! @param future
+  //--------------------------------------------------------------------------//
 
-  ///
-  ///
-  ///
+  template<typename FUTURE>
+  legion_future__(const FUTURE & future)
+    : state_(new legion_future_model__<void, FUTURE>(future)) {}
+
+  //--------------------------------------------------------------------------//
+  //! Wait on a task result.
+  //--------------------------------------------------------------------------//
+
   void wait()
   {
   } // wait

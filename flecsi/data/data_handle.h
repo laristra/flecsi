@@ -43,7 +43,7 @@ namespace flecsi {
     size_t GP
   >
   using data_handle__ =
-    data_handle_base__<T, EP, SP, GP, flecsi_data_handle_policy_t>;
+    data_handle_base__<T, EP, SP, GP, FLECSI_RUNTIME_DATA_HANDLE_POLICY>;
 
 } // namespace flecsi
 

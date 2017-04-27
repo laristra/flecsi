@@ -15,11 +15,10 @@
 #ifndef flecsi_execution_legion_execution_policy_h
 #define flecsi_execution_legion_execution_policy_h
 
-///
-/// \file legion/execution_policy.h
-/// \authors bergen
-/// \date Initial file creation: Nov 15, 2015
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Nov 15, 2015
+//----------------------------------------------------------------------------//
 
 #include <functional>
 #include <memory>
@@ -43,71 +42,154 @@ clog_register_tag(execution);
 namespace flecsi {
 namespace execution {
 
-// This is called to walk the task args before the task launcher
-// is created for the purposes of gathering region requirements and
-// setting any state on the data handle BEFORE Legion gets the task
-// args tuple to be serialized.
-struct init_args_ : public utils::tuple_walker__<init_args_>{
-  init_args_(
+//----------------------------------------------------------------------------//
+//! The init_args_t type can be called to walk task args before the
+//! task launcher is created. This allows us to gather region requirements
+//! and to set state on the associated data handles \em before Legion gets
+//! the task arguments tuple.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
+struct init_args_t : public utils::tuple_walker__<init_args_t>
+{
+
+  //--------------------------------------------------------------------------//
+  //! Construct an init_args_t instance.
+  //!
+  //! @param runtime The Legion task runtime.
+  //! @param context The Legion task runtime context.
+  //--------------------------------------------------------------------------//
+
+  init_args_t(
     Legion::Runtime* runtime,
-    Legion::Context context
+    Legion::Context & context
   )
-  : runtime(runtime),
-  context(context){}
+  :
+    runtime(runtime),
+    context(context)
+  {
+  } // init_args
+
+  //--------------------------------------------------------------------------//
+  //! FIXME: Need a description.
+  //!
+  //! @tparam T                     The data type referenced by the handle.
+  //! @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
+  //!                               indices of the index partition.
+  //! @tparam SHARED_PERMISSIONS    The permissions required on the shared
+  //!                               indices of the index partition.
+  //! @tparam GHOST_PERMISSIONS     The permissions required on the ghost
+  //!                               indices of the index partition.
+  //!
+  //! @param h The data handle.
+  //--------------------------------------------------------------------------//
 
   template<
     typename T,
-    size_t EP,
-    size_t SP,
-    size_t GP
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS
   >
   void
   handle(
-    data_handle__<T, EP, SP, GP>& h
+    data_handle__<
+      T,
+      EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS,
+      GHOST_PERMISSIONS
+    > & h
   )
   {
+  } // handle
 
-  }
+  //--------------------------------------------------------------------------//
+  //! FIXME: Need to document.
+  //--------------------------------------------------------------------------//
 
-  template<typename T>
+  template<
+    typename T
+  >
   static
-  typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::
-    value>
+  typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::value>
   handle(
-    T&
-  ){}
-
-  Legion::Runtime* runtime;
-  Legion::Context context;
-  std::vector<Legion::RegionRequirement> reqs;
-};
-
-// This is called to walk the task args after the task launcher
-// is created but before the task runs for the purposes of 
-// handling synchronization
-struct task_prolog_ : public utils::tuple_walker__<task_prolog_>{
-  task_prolog_(
-    Legion::Runtime* runtime,
-    Legion::Context context,
-    Legion::TaskLauncher& launcher
+    T &
   )
-  : runtime(runtime),
-  context(context),
-  launcher(launcher){}
+  {
+  } // handle
+
+  Legion::Runtime * runtime;
+  Legion::Context & context;
+  std::vector<Legion::RegionRequirement> reqs;
+
+}; // struct init_args_t
+
+//----------------------------------------------------------------------------//
+//! The task_prolog_t type can be called to walk the task args after the
+//! task launcher is created, but before the task has run. This allows
+//! synchronization dependencies to be added to the execution flow.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
+struct task_prolog_t : public utils::tuple_walker__<task_prolog_t>
+{
+
+  //--------------------------------------------------------------------------//
+  //! Construct a task_prolog_t instance.
+  //!
+  //! @param runtime The Legion task runtime.
+  //! @param context The Legion task runtime context.
+  //--------------------------------------------------------------------------//
+
+  task_prolog_t(
+    Legion::Runtime * runtime,
+    Legion::Context & context,
+    Legion::TaskLauncher & launcher
+  )
+  :
+    runtime(runtime),
+    context(context),
+    launcher(launcher)
+  {
+  } // task_prolog_t
+
+  //--------------------------------------------------------------------------//
+  //! FIXME: Need a description.
+  //!
+  //! @tparam T                     The data type referenced by the handle.
+  //! @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
+  //!                               indices of the index partition.
+  //! @tparam SHARED_PERMISSIONS    The permissions required on the shared
+  //!                               indices of the index partition.
+  //! @tparam GHOST_PERMISSIONS     The permissions required on the ghost
+  //!                               indices of the index partition.
+  //!
+  //! @param runtime The Legion task runtime.
+  //! @param context The Legion task runtime context.
+  //--------------------------------------------------------------------------//
 
   template<
     typename T,
-    size_t EP,
-    size_t SP,
-    size_t GP
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS
   >
   void
   handle(
-    data_handle__<T, EP, SP, GP>& h
+    data_handle__<
+      T,
+      EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS,
+      GHOST_PERMISSIONS
+    > & h
   )
   {
-  
-  }
+  } // handle
+
+  //--------------------------------------------------------------------------//
+  //! FIXME: Need to document.
+  //--------------------------------------------------------------------------//
 
   template<
     typename T
@@ -118,65 +200,126 @@ struct task_prolog_ : public utils::tuple_walker__<task_prolog_>{
     T&
   )
   {
-
-  }
+  } // handle
 
   Legion::Runtime* runtime;
-  Legion::Context context;
+  Legion::Context & context;
   Legion::TaskLauncher& launcher;
-};
 
-// This is called to walk the task args after the task has run 
-// for the purpose of handling synchronization
-struct task_epilog_ : public utils::tuple_walker__<task_epilog_>{
-  task_epilog_(
-    Legion::Runtime* runtime,
-    Legion::Context context
+}; // struct task_prolog_t
+
+//----------------------------------------------------------------------------//
+//! The task_epilog_t type can be called to walk the task args after the
+//! task has run. This allows synchronization dependencies to be added
+//! to the execution flow.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
+struct task_epilog_t : public utils::tuple_walker__<task_epilog_t>
+{
+
+  //--------------------------------------------------------------------------//
+  //! Construct a task_epilog_t instance.
+  //!
+  //! @param runtime The Legion task runtime.
+  //! @param context The Legion task runtime context.
+  //--------------------------------------------------------------------------//
+
+  task_epilog_t(
+    Legion::Runtime * runtime,
+    Legion::Context & context
   )
-  : runtime(runtime),
-  context(context){}
+  :
+    runtime(runtime),
+    context(context)
+  {
+  } // task_epilog_t
+
+  //--------------------------------------------------------------------------//
+  //! FIXME: Need description
+  //!
+  //! @tparam T                     The data type referenced by the handle.
+  //! @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
+  //!                               indices of the index partition.
+  //! @tparam SHARED_PERMISSIONS    The permissions required on the shared
+  //!                               indices of the index partition.
+  //! @tparam GHOST_PERMISSIONS     The permissions required on the ghost
+  //!                               indices of the index partition.
+  //!
+  //! @param runtime The Legion task runtime.
+  //! @param context The Legion task runtime context.
+  //--------------------------------------------------------------------------//
 
   template<
     typename T,
-    size_t EP,
-    size_t SP,
-    size_t GP
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS
   >
-  void handle(
-    data_handle__<T, EP, SP, GP>& h
-  ){
-  
-  }
+  void
+  handle(
+    data_handle__<
+      T,
+      EXCLUSIVE_PERMISSIONS,
+      SHARED_PERMISSIONS,
+      GHOST_PERMISSIONS
+    > & h
+  )
+  {
+  } // handle
 
-  template<typename T>
+  //--------------------------------------------------------------------------//
+  //! FIXME: Need to document.
+  //!
+  //! @param T
+  //--------------------------------------------------------------------------//
+
+  template<
+    typename T
+  >
   static
-  typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::
-    value>
-  handle(T&){}
+  typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::value>
+  handle(T &)
+  {
+  } // handle
 
   Legion::Runtime* runtime;
-  Legion::Context context;
-};
+  Legion::Context & context;
+
+}; // struct task_epilog_t
 
 //----------------------------------------------------------------------------//
 // Execution policy.
 //----------------------------------------------------------------------------//
 
-///
-/// \struct legion_execution_policy legion_execution_policy.h
-/// \brief legion_execution_policy provides...
-///
+//----------------------------------------------------------------------------//
+//! The legion_execution_policy_t is the backend runtime execution policy
+//! for Legion.
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
 struct legion_execution_policy_t
 {
+  //--------------------------------------------------------------------------//
+  //! The future__ type may be used for explicit synchronization of tasks.
+  //!
+  //! @tparam RETURN The return type of the task.
+  //--------------------------------------------------------------------------//
+
   template<typename RETURN>
-  /// future
   using future__ = legion_future__<RETURN>;
 
   //--------------------------------------------------------------------------//
   // Task interface.
   //--------------------------------------------------------------------------//
 
-  /// User task registration.
+  //--------------------------------------------------------------------------//
+  //! Legion backend task registration. For documentation on this
+  //! method please see task__::register_task.
+  //--------------------------------------------------------------------------//
+
   template<
     typename RETURN,
     typename ARG_TUPLE,
@@ -227,7 +370,20 @@ struct legion_execution_policy_t
     return true;
   } // register_task
 
-  /// Legion task registration.
+  //--------------------------------------------------------------------------//
+  //! This method allows the user to register a pure Legion task with
+  //! the runtime. A task id will automatically be generated, and can be
+  //! accessed via legion_context_policy_t::task_id using a valid
+  //! task_hash_key_t.
+  //!
+  //! @tparam RETURN The return type of the pure Legion task.
+  //! @tparam TASK   The function pointer template type of the task.
+  //!
+  //! @param key       A task_hash_key_t key identifying the task.
+  //! @param task_name The string name for the task. This can be set to any
+  //!                  valid std::string value.
+  //--------------------------------------------------------------------------//
+
   template<
     typename RETURN,
     RETURN (*TASK)(
@@ -269,16 +425,11 @@ struct legion_execution_policy_t
     return true;
   } // register_legion_task
 
-  ///
-  /// Execute FLeCSI task.
-  ///
-  /// \tparam RETURN The task return type.
-  /// \tparam FIXME: A
-  ///
-  /// \param key
-  /// \param parent
-  /// \param args
-  ///
+  //--------------------------------------------------------------------------//
+  //! Legion backend task execution. For documentation on this
+  //! method please see task__::execute_task.
+  //--------------------------------------------------------------------------//
+
   template<
     typename RETURN,
     typename ... ARGS
@@ -335,7 +486,7 @@ struct legion_execution_policy_t
     }
     else {
       // Initialize the arguments to pass through the runtime.
-      init_args_ init_args(legion_runtime, legion_context);
+      init_args_t init_args(legion_runtime, legion_context);
       init_args.walk(user_task_args);
 
       const launch_t launch = key.launch();
@@ -352,7 +503,7 @@ struct legion_execution_policy_t
           TaskArgument(&user_task_args, sizeof(user_task_args_t)));
 
         // Enqueue the prolog.
-        task_prolog_
+        task_prolog_t
           task_prolog(legion_runtime, legion_context, task_launcher);
         task_prolog.walk(user_task_args);
 
@@ -361,7 +512,7 @@ struct legion_execution_policy_t
           context_.context(parent), task_launcher);
 
         // Enqueue the epilog.
-        task_epilog_
+        task_epilog_t
           task_epilog(legion_runtime, legion_context);
         task_epilog.walk(user_task_args);
 
@@ -404,16 +555,11 @@ struct legion_execution_policy_t
   // Function interface.
   //--------------------------------------------------------------------------//
 
-  ///
-  /// This method registers a user function with the current
-  /// execution context.
-  ///
-  /// \param key The function identifier.
-  /// \param user_function A reference to the user function as a std::function.
-  ///
-  /// \return A boolean value indicating whether or not the function was
-  ///         successfully registered.
-  ///
+  //--------------------------------------------------------------------------//
+  //! Legion backend function registration. For documentation on this
+  //! method please see function__::register_function.
+  //--------------------------------------------------------------------------//
+
   template<
     typename RETURN,
     typename ... ARGS
@@ -428,15 +574,11 @@ struct legion_execution_policy_t
     return context_t::instance().register_function(key, user_function);
   } // register_function
 
-  ///
-  /// This method looks up a function from the \e handle argument
-  /// and executes the associated it with the provided \e args arguments.
-  ///
-  /// \param handle The function handle to execute.
-  /// \param args A variadic argument list of the function parameters.
-  ///
-  /// \return The return type of the provided function handle.
-  ///
+  //--------------------------------------------------------------------------//
+  //! Legion backend function execution. For documentation on this
+  //! method please see function__::execute_function.
+  //--------------------------------------------------------------------------//
+
   template<
     typename FUNCTION_HANDLE,
     typename ... ARGS

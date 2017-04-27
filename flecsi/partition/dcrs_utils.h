@@ -107,16 +107,6 @@ make_dcrs(
 		dcrs.distribution.push_back(dcrs.distribution[r] + indices);
 	} // for
 
-#if 0
-	if(rank == 0) {
-		std::cout << "distribution: ";
-		for(auto i: dcrs.distribution) {
-      std::cout << i << " ";
-		} // for
-    std::cout << std::endl;
-	} // if
-#endif
-
   //--------------------------------------------------------------------------//
   // Create the cell-to-cell graph.
   //--------------------------------------------------------------------------//

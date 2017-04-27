@@ -80,6 +80,9 @@ public:
     const std::vector<std::set<size_t>> & request_indices
   ) = 0;
 
+  ///
+  /// Return the sizes of the given set across all partitions.
+  ///
   virtual
   std::unordered_map<size_t, size_t>
   get_set_sizes(

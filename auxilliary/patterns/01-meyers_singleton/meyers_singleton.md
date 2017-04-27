@@ -1,4 +1,4 @@
-# Meyer's Singleton
+# Design Pattern: Meyer's Singleton
 
 A singleton is a type instance for which there is one, and only one,
 object in the system.
@@ -55,7 +55,7 @@ More explanations about singletons in C++ are
 Here is a more verbose description of static storage duration from the
 C++ standard:
 
-The zero-initialization of all block-scope variables with static storage
+*The zero-initialization of all block-scope variables with static storage
 duration or thread storage duration is performed before any other
 initialization takes place. Constant initialization of a block-scope
 entity with static storage duration, if applicable, is performed before
@@ -72,6 +72,6 @@ time control enters the declaration. If control enters the declaration
 concurrently while the variable is being initialized, the concurrent
 execution shall wait for completion of the initialization. If control
 re-enters the declaration recursively while the variable is being
-initialized, the behavior is undefined.
+initialized, the behavior is undefined.*
 
 <!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->

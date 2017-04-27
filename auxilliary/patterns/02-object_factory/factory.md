@@ -1,10 +1,9 @@
-# Object Factory
+# Design Pattern: Object Factory
 
 An object factory is a design pattern that allows a program to have
 multiple registered handlers for different types. As a motivating
-example, consider a program that must be able to read in a variety of
+example, consider a program that must be able to read-in a variety of
 image formats:
-
 ```
 int main(int argc, char ** argv) {
 
@@ -27,7 +26,6 @@ int main(int argc, char ** argv) {
   return 0;
 } // main
 ```
-
 This code is tedious to maintain for at least two reasons:
 
 * It explicitly collects all of the types that can be handled by the
@@ -38,7 +36,6 @@ This code is tedious to maintain for at least two reasons:
   or may simply violate the project's design.
 
 A much better mechanism is to use an object factory:
-
 ```
 int main(int argc, char ** argv) {
 
@@ -55,7 +52,7 @@ important to this design pattern:
 
 1. The factory is a singleton, and can be called from external scope to
   register the various handler types. In this example, we are using the
-  Meyer's singleton discussed in the last section.
+  Meyer's singleton discussed elsewhere in this document.
 2. The factory exposes an interface to register a callback function for
   each suffix type. We will see how this can be called from each handler
   type's implementation to avoid having to collect all of the handlers
@@ -65,7 +62,6 @@ important to this design pattern:
   appropriate type.
 
 These are enumerated in the code comments in the following section:
-
 ```
 struct factory_t
 {
@@ -119,10 +115,8 @@ private:
 
 }; // struct factory_t
 ```
-
 Using the *factory_t* interface, we can register a particular handler
 like this:
-
 ```
 // 1. Define derived handler class (in this case for GIF images).
 struct gif_io_handler_t : public base_io_handler_t
@@ -149,7 +143,6 @@ create_gif_io_handler(
 bool gif_io_handler_registered =
   factory_t::instance().register_handler("gif", create_gif_io_handler);
 ```
-
 Notice that the logic used to register a new handler can be called from
 within the file that defines it. This is extremely useful in maintaining
 code because there is no single place where all of the handlers must be

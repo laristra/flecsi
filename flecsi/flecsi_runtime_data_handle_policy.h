@@ -6,20 +6,19 @@
 #ifndef flecsi_runtime_data_handle_policy_h
 #define flecsi_runtime_data_handle_policy_h
 
-///
-// \file flecsi_runtime_policy.h
-// \authors bergen
-// \date Initial file creation: Aug 01, 2016
-///
+//----------------------------------------------------------------------------//
+// @file
+// @date Initial file creation: Aug 01, 2016
+//----------------------------------------------------------------------------//
 
-///
+#include "flecsi.h"
+
+//----------------------------------------------------------------------------//
 // This section works with the build system to select the correct runtime
 // implemenation for the task model. If you add to the possible runtimes,
 // remember to edit config/packages.cmake to include a definition using
 // the same convention, e.g., -DFLECSI_RUNTIME_MODEL_new_runtime.
-///
-
-#include "flecsi.h"
+//----------------------------------------------------------------------------//
 
 // Serial Policy
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_serial
@@ -28,7 +27,7 @@
 
   namespace flecsi {
 
-  using flecsi_data_handle_policy_t = serial_data_handle_policy_t;
+  using FLECSI_RUNTIME_DATA_HANDLE_POLICY = serial_data_handle_policy_t;
 
   }
 
@@ -39,7 +38,7 @@
 
   namespace flecsi {
 
-  using flecsi_data_handle_policy_t = legion_data_handle_policy_t;
+  using FLECSI_RUNTIME_DATA_HANDLE_POLICY = legion_data_handle_policy_t;
 
   }
 
@@ -50,7 +49,7 @@
 
   namespace flecsi {
 
-  using flecsi_data_handle_policy_t = mpi_data_handle_policy_t;
+  using FLECSI_RUNTIME_DATA_HANDLE_POLICY = mpi_data_handle_policy_t;
 
   }
 

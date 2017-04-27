@@ -13,20 +13,12 @@
 #~----------------------------------------------------------------------------~#
 
 #------------------------------------------------------------------------------#
-# If a C++14 compiler is available, then set the appropriate flags
+# Set requirement for C++14
 #------------------------------------------------------------------------------#
 
-include(cxx14)
-
-check_for_cxx14_compiler(CXX14_COMPILER)
-
-if(CXX14_COMPILER)
-    enable_cxx14()
-else()
-    message(FATAL_ERROR "C++14 compatible compiler not found")
-endif()
-
-set(FLECSI_RUNTIME_LIBRARIES)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 #------------------------------------------------------------------------------#
 # OpenSSL
@@ -58,6 +50,8 @@ endif()
 #------------------------------------------------------------------------------#
 # Runtime models
 #------------------------------------------------------------------------------#
+
+set(FLECSI_RUNTIME_LIBRARIES)
 
 #
 # Serial interface

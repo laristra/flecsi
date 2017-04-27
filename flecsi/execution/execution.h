@@ -6,6 +6,11 @@
 #ifndef flecsi_execution_execution_h
 #define flecsi_execution_execution_h
 
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Aug 01, 2016
+//----------------------------------------------------------------------------//
+
 #include <functional>
 
 #include "flecsi/execution/common/function_handle.h"
@@ -14,26 +19,96 @@
 #include "flecsi/execution/task.h"
 #include "flecsi/utils/common.h"
 
-///
-/// \file execution.h
-/// \authors bergen
-/// \date Initial file creation: Aug 01, 2016
-///
+//----------------------------------------------------------------------------//
+// Task Interface
+//----------------------------------------------------------------------------//
+
+//----------------------------------------------------------------------------//
+//! @def flecsi_register_task
+//!
+//! This macro registers a user task with the FleCSI runtime.
+//!
+//! @param task      The task to register. This is normally just a function.
+//! @param processor The \ref processor_t type. This may be an or list of
+//!                  supported processor types.
+//! @param launch    The \ref launch_t type. This may be an or list of
+//!                  supported launch types and configuration options.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
+#define flecsi_register_task(task, processor, launch)                          \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  /* Task return type (trt) */                                                 \
+  using task ## _trt_t =                                                       \
+    typename flecsi::utils::function_traits__<decltype(task)>::return_type;    \
+                                                                               \
+  /* Task arguments type (tat) */                                              \
+  using task ## _tat_t =                                                       \
+    typename flecsi::utils::function_traits__<decltype(task)>::arguments_type; \
+                                                                               \
+  /* Define a delegate function to the user's function that takes a tuple */   \
+  /* of the arguments (as opposed to the raw argument pack) */                 \
+  inline task ## _trt_t task ## _tuple_delegate(task ## _tat_t args) {         \
+    return flecsi::utils::tuple_function(task, args);                          \
+  } /* delegate task */                                                        \
+                                                                               \
+  /* Call the execution policy to register the task delegate */                \
+  bool task ## _task_registered =                                              \
+    flecsi::execution::task_t::register_task<task ## _trt_t, task ## _tat_t,   \
+      task ## _tuple_delegate,                                                 \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()>        \
+    (task_hash_t::make_key(reinterpret_cast<uintptr_t>(&task), processor,      \
+      launch), { EXPAND_AND_STRINGIFY(task) })
+
+//----------------------------------------------------------------------------//
+//! @def flecsi_execute_task
+//!
+//! This macro executes a user task.
+//!
+//! @param task The user task to execute.
+//! @param processor The processor type on which to execute the task.
+//! @param launch The launch  mode for the task.
+//! @param ... The arguments to pass to the user task during execution.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
+#define flecsi_execute_task(task, processor, launch, ...)                      \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  /* Execute the user task */                                                  \
+  /* WARNING: This macro returns a future. Don't add terminations! */          \
+  flecsi::execution::task_t::execute_task<                                     \
+    typename flecsi::utils::function_traits__<decltype(task)>::return_type     \
+  >                                                                            \
+  (                                                                            \
+    task_hash_t::make_key(                                                     \
+      reinterpret_cast<uintptr_t>(&task), processor, launch                    \
+    ),                                                                         \
+    flecsi::utils::const_string_t{__func__}.hash(),                            \
+    ## __VA_ARGS__                                                             \
+  )
 
 //----------------------------------------------------------------------------//
 // Function Interface
 //----------------------------------------------------------------------------//
 
-///
-/// This macro registers a user function with the FleCSI runtime, which may
-/// then be passed as state data and executed in any task address space.
-///
-/// \param name The function to register. This should be the plain-text
-///              name of the function (not a string).
-/// \param return_type The function return type.
-/// \param ... The signature of the function (arguments).
-///
+//----------------------------------------------------------------------------//
+//! @def flecsi_register_function
+//!
+//! This macro registers a user function with the FleCSI runtime, which may
+//! then be passed as state data and executed in any task address space.
+//!
+//! @param name The function to register. This should be the plain-text
+//!              name of the function (not a string).
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
 #define flecsi_register_function(name)                                         \
+/* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Function return type (trt) */                                             \
   using name ## _trt_t =                                                       \
@@ -62,112 +137,106 @@
       name ## _trt_t, name ## _tat_t>(                                         \
       EXPAND_AND_STRINGIFY(name), name ## _function_delegate)
 
-///
-/// Execute a user function.
-///
-/// \param handle The function handle.
-/// \param ... The function arguments.
-///
+//----------------------------------------------------------------------------//
+//! @def flecsi_execute_function
+//!
+//! Execute a user function.
+//!
+//! @param handle The function handle.
+//! @param ... The function arguments.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
 #define flecsi_execute_function(handle, ...)                                   \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  /* Call the execution policy to execute the function */                      \
   flecsi::execution::function_t::execute_function(handle, ## __VA_ARGS__)
 
-///
-/// FIXME
-///
+//----------------------------------------------------------------------------//
+//! @def flecsi_function_handle
+//!
+//! Create a function handle.
+//!
+//! @param name The function name.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
 #define flecsi_function_handle(name)                                           \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  /* Create a function handle instance */                                      \
   function_handle_ ## name ## _t(                                              \
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash())
 
-///
-/// FIXME
-///
+//----------------------------------------------------------------------------//
+//! @def flecsi_define_function_type
+//!
+//! Define a function handle type.
+//!
+//! @param name The type name to define.
+//! @param return_type The return type of the function.
+//! @param ... The input parameters to the function.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
 #define flecsi_define_function_type(name, return_type, ...)                    \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  /* Define a function handle type */                                          \
   using name = flecsi::execution::function_handle__<return_type,               \
     std::tuple<__VA_ARGS__>>
-
-//----------------------------------------------------------------------------//
-// Task Interface
-//----------------------------------------------------------------------------//
-
-///
-/// This macro registers a user task with the FleCSI runtime.
-///
-/// \param task
-/// \param processor
-/// \param launch
-///
-#define flecsi_register_task(task, processor, launch)                          \
-                                                                               \
-  /* Task return type (trt) */                                                 \
-  using task ## _trt_t =                                                       \
-    typename flecsi::utils::function_traits__<decltype(task)>::return_type;    \
-                                                                               \
-  /* Task arguments type (tat) */                                              \
-  using task ## _tat_t =                                                       \
-    typename flecsi::utils::function_traits__<decltype(task)>::arguments_type; \
-                                                                               \
-  /* Define a wrapper function to the user's function that takes a tuple */    \
-  /* of the arguments (as opposed to the raw argument pack) */                 \
-  inline                                                                       \
-  task ## _trt_t                                                               \
-  task ## _tuple_wrapper(                                                      \
-    task ## _tat_t args                                                        \
-  )                                                                            \
-  {                                                                            \
-    return flecsi::utils::tuple_function(task, args);                          \
-  } /* task ## _tuple_wrapper */                                               \
-                                                                               \
-  bool task ## _task_registered =                                              \
-    flecsi::execution::task_t::register_task<                                  \
-      task ## _trt_t,                                                          \
-      task ## _tat_t,                                                          \
-      task ## _tuple_wrapper,                                                  \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()         \
-    >                                                                          \
-    (                                                                          \
-      task_hash_t::make_key(                                                   \
-        reinterpret_cast<uintptr_t>(&task), processor, launch                  \
-      ),                                                                       \
-      { EXPAND_AND_STRINGIFY(task) }                                           \
-    )
-
-///
-/// This macro executes a user task.
-///
-/// \param task The user task to execute.
-/// \param processor The processor type on which to execute the task.
-/// \param launch The launch  mode for the task.
-/// \param ... The arguments to pass to the user task during execution.
-///
-#define flecsi_execute_task(task, processor, launch, ...)                      \
-                                                                               \
-  /* Execute the user task */                                                  \
-  /* WARNING: This macro returns a future. Don't add terminations! */          \
-  flecsi::execution::task_t::execute_task<                                     \
-    typename flecsi::utils::function_traits__<decltype(task)>::return_type     \
-  >                                                                            \
-  (                                                                            \
-    task_hash_t::make_key(                                                     \
-      reinterpret_cast<uintptr_t>(&task), processor, launch                    \
-    ),                                                                         \
-    flecsi::utils::const_string_t{__func__}.hash(),                            \
-    ## __VA_ARGS__                                                             \
-  )
 
 //----------------------------------------------------------------------------//
 // Kernel Interface
 //----------------------------------------------------------------------------//
 
-///
-///
-///
+//----------------------------------------------------------------------------//
+//! @def flecsi_for_each
+//!
+//! Kernel abstraction interface for data-parallel execution.
+//!
+//! @param index The name of the counter to use, e.g., \em cnt.
+//! @param index_space A valid \ref index_space_t instance.
+//! @param kernel The kernel logic to execution.
+//!
+//! Code Example:
+//! @code{.cpp}
+//! // Print the id of each mesh cell.
+//!
+//! flecsi_for_each(c, mesh.cells(), {
+//!   std::cout << c.id() << std::endl; 
+//! }); // flecsi_for_each
+//! @endcode
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
 #define flecsi_for_each(index, index_space, kernel)                            \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  /* Call the execution policy for_each function */                            \
   flecsi::execution::for_each__(index_space, [&](auto * index) kernel)
 
-///
-///
-///
+//----------------------------------------------------------------------------//
+//! @def flecsi_reduce_each
+//!
+//! Kernel abstraction interface for data-parallel reductions.
+//!
+//! @param index The name of the counter to use, e.g., \em cnt.
+//! @param index_space A valid \ref index_space_t instance.
+//! @param variable The variable in which to store the result.
+//! @param kernel The kernel logic to execution.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
 #define flecsi_reduce_each(index, index_space, variable, kernel)               \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  /* Call the execution policy reduce_each function */                         \
   flecsi::execution::reduce_each__(index_space, variable,                      \
     [&](auto * index, auto & variable) kernel)
 

@@ -6,19 +6,19 @@
 #ifndef flecsi_runtime_data_policy_h
 #define flecsi_runtime_data_policy_h
 
-///
-/// \file
-/// \date Initial file creation: Aug 01, 2016
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Aug 01, 2016
+//----------------------------------------------------------------------------//
 
-///
+#include "flecsi.h"
+
+//----------------------------------------------------------------------------//
 // This section works with the build system to select the correct runtime
 // implemenation for the task model. If you add to the possible runtimes,
 // remember to edit config/packages.cmake to include a definition using
 // the same convention, e.g., -DFLECSI_RUNTIME_MODEL_new_runtime.
-///
-
-#include "flecsi.h"
+//----------------------------------------------------------------------------//
 
 // Serial Policy
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_serial
@@ -29,15 +29,14 @@
   namespace flecsi {
   namespace data {
 
-  using flecsi_user_meta_data_policy_t = default_user_meta_data_t;
+  using FLECSI_RUNTIME_USER_META_DATA_POLICY = default_user_meta_data_t;
 
-  template<typename MD>
-  using flecsi_storage_policy_t = serial_storage_policy_t<MD>;
+  template<typename META_DATA>
+  using FLECSI_RUNTIME_STORAGE_POLICY = serial_storage_policy_t<META_DATA>;
 
   } // namespace data
   } // namespace flecsi
 
-// FIXME: Remove rf_mpilegion after refactor
 //Legion Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
@@ -47,10 +46,10 @@
   namespace flecsi {
   namespace data {
 
-  using flecsi_user_meta_data_policy_t = default_user_meta_data_t;
+  using FLECSI_RUNTIME_USER_META_DATA_POLICY = default_user_meta_data_t;
 
-  template<typename MD>
-  using flecsi_storage_policy_t = legion_storage_policy_t<MD>;
+  template<typename META_DATA>
+  using FLECSI_RUNTIME_STORAGE_POLICY = legion_storage_policy_t<META_DATA>;
 
   } // namespace data
   } // namespace flecsi

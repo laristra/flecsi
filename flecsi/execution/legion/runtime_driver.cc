@@ -3,10 +3,10 @@
  * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
 
-///
-/// \file
-/// \date Initial file creation: Jul 26, 2016
-///
+//----------------------------------------------------------------------------//
+//! \file
+//! \date Initial file creation: Jul 26, 2016
+//----------------------------------------------------------------------------//
 
 #include "flecsi/execution/legion/runtime_driver.h"
 
@@ -21,6 +21,10 @@ clog_register_tag(runtime_driver);
 
 namespace flecsi {
 namespace execution {
+
+//----------------------------------------------------------------------------//
+// Implementation of FleCSI runtime driver task.
+//----------------------------------------------------------------------------//
 
 void
 runtime_driver(
