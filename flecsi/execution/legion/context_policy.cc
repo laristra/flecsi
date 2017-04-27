@@ -63,6 +63,7 @@ legion_context_policy_t::initialize(
 
     // Iterate over task variants
     for(auto & v: t.second) {
+      // FIXME: Expand this with comments on what things are.
       auto & value = std::get<1>(v);
       std::get<1>(value)(std::get<0>(value),
         mask_to_type(static_cast<processor_mask_t>(

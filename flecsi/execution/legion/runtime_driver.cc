@@ -76,6 +76,10 @@ for(auto p: context_.partitions()) {
 // Register user data
 //data::storage_t::instance().register_all();
 
+// Create index spaces and field spaces
+//
+// Create logical regions...
+
 // Must epoch launch
 Legion::MustEpochLauncher must_epoch_launcher;
 
