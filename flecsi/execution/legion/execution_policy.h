@@ -317,7 +317,7 @@ struct legion_execution_policy_t
 
   //--------------------------------------------------------------------------//
   //! Legion backend task registration. For documentation on this
-  //! method please see task__::register_task.
+  //! method, please see task__::register_task.
   //--------------------------------------------------------------------------//
 
   template<
@@ -427,7 +427,7 @@ struct legion_execution_policy_t
 
   //--------------------------------------------------------------------------//
   //! Legion backend task execution. For documentation on this
-  //! method please see task__::execute_task.
+  //! method, please see task__::execute_task.
   //--------------------------------------------------------------------------//
 
   template<
@@ -557,7 +557,7 @@ struct legion_execution_policy_t
 
   //--------------------------------------------------------------------------//
   //! Legion backend function registration. For documentation on this
-  //! method please see function__::register_function.
+  //! method, please see function__::register_function.
   //--------------------------------------------------------------------------//
 
   template<
@@ -576,7 +576,7 @@ struct legion_execution_policy_t
 
   //--------------------------------------------------------------------------//
   //! Legion backend function execution. For documentation on this
-  //! method please see function__::execute_function.
+  //! method, please see function__::execute_function.
   //--------------------------------------------------------------------------//
 
   template<

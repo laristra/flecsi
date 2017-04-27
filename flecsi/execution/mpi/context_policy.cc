@@ -5,31 +5,28 @@
 
 //----------------------------------------------------------------------------//
 //! @file
-//! @date Initial file creation: Aug 01, 2016
+//! @date Initial file creation: Jul 26, 2016
 //----------------------------------------------------------------------------//
 
-#include "flecsi/execution/serial/runtime_driver.h"
+#include "flecsi/execution/mpi/context_policy.h"
+
+#include "flecsi/data/storage.h"
 
 namespace flecsi {
 namespace execution {
 
 //----------------------------------------------------------------------------//
-// Implementation of FleCSI runtime driver task.
+// Implementation of mpi_context_policy_t::initialize.
 //----------------------------------------------------------------------------//
 
-void serial_runtime_driver(int argc, char ** argv) {
-
-#ifndef FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
-
-  // Execute the specialization driver.
-  specialization_driver(argc, argv);
-
-#endif // FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
-
-  // Execute the user driver.
-  driver(argc, argv);
-
-} // serial_runtime_driver
+int
+mpi_context_policy_t::initialize(
+  int argc,
+  char ** argv
+)
+{
+  return 0;
+} // mpi_context_policy_t::initialize
 
 } // namespace execution 
 } // namespace flecsi
