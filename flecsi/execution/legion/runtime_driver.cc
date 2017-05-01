@@ -65,7 +65,7 @@ runtime_driver(
   context_.pop_state( utils::const_string_t{"specialization_driver"}.hash());
 #endif // FLECSI_ENABLE_SPECIALIZATION_DRIVER
 
-// Add reduction of meta data required to construct Legion data structures.
+  // Add reduction of meta data required to construct Legion data structures.
 
 #if 0
 for(auto p: context_.partitions()) {
@@ -73,43 +73,43 @@ for(auto p: context_.partitions()) {
 } // for
 #endif
 
-// Register user data
-//data::storage_t::instance().register_all();
+  // Register user data
+  //data::storage_t::instance().register_all();
 
-// Create index spaces and field spaces
-//
-// Create logical regions...
+  // Create index spaces and field spaces
+  //
+  // Create logical regions...
 
-// Must epoch launch
-Legion::MustEpochLauncher must_epoch_launcher;
+  // Must epoch launch
+  Legion::MustEpochLauncher must_epoch_launcher;
 
-int size;
-MPI_Comm_size(MPI_COMM_WORLD, &size);
-{
-clog_tag_guard(runtime_driver);
-clog(info) << "MPI size is " << size << std::endl;
-}
+  int size;
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  {
+  clog_tag_guard(runtime_driver);
+  clog(info) << "MPI size is " << size << std::endl;
+  }
 
-#if 0
-auto spmd_id = context_.task_id(__flecsi_task_key(spmd_task, loc));
+  #if 0
+  auto spmd_id = context_.task_id(__flecsi_task_key(spmd_task, loc));
 
-// Add colors to must_epoch_launcher
-for(size_t i(0); i<size; ++i) {
-  Legion::TaskLauncher spmd_launcher(spmd_id, Legion::TaskArgument(0, 0));
-  spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+  // Add colors to must_epoch_launcher
+  for(size_t i(0); i<size; ++i) {
+    Legion::TaskLauncher spmd_launcher(spmd_id, Legion::TaskArgument(0, 0));
+    spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
-  Legion::DomainPoint point(i);
-  must_epoch_launcher.add_single_task(point, spmd_launcher);
-} // for
+    Legion::DomainPoint point(i);
+    must_epoch_launcher.add_single_task(point, spmd_launcher);
+  } // for
 
-// Launch the spmd tasks
-auto future = runtime->execute_must_epoch(ctx, must_epoch_launcher);
-future.wait_all_results();
-#endif
+  // Launch the spmd tasks
+  auto future = runtime->execute_must_epoch(ctx, must_epoch_launcher);
+  future.wait_all_results();
+  #endif
 
-// Finish up Legion runtime and fall back out to MPI.
-context_.unset_call_mpi(ctx, runtime);
-context_.handoff_to_mpi(ctx, runtime);
+  // Finish up Legion runtime and fall back out to MPI.
+  context_.unset_call_mpi(ctx, runtime);
+  context_.handoff_to_mpi(ctx, runtime);
 } // runtime_driver
 
 } // namespace execution 

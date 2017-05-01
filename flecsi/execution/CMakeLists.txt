@@ -62,6 +62,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/mapper.h
     legion/registration_wrapper.h
     legion/runtime_driver.h
+    legion/runtime_state.h
     legion/task_wrapper.h
   )
 
@@ -188,7 +189,7 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
       ${CINCH_RUNTIME_LIBRARIES}
     )
 
-    if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
+    if(ENABLE_COLORING AND ENABLE_PARMETIS)
 
       cinch_add_unit(execution_structure
         SOURCES
@@ -202,7 +203,7 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
         LIBRARIES
           flecsi
           ${CINCH_RUNTIME_LIBRARIES}
-          ${PARTITION_LIBRARIES}
+          ${COLORING_LIBRARIES}
         DEFINES
           -DFLECSI_ENABLE_SPECIALIZATION_DRIVER
         POLICY LEGION

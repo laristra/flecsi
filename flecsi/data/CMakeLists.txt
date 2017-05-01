@@ -154,7 +154,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
       ${CINCH_RUNTIME_LIBRARIES}
   )
 
-  if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
+  if(ENABLE_COLORING AND ENABLE_PARMETIS)
     cinch_add_unit(serial_data_handle
       SOURCES
         ../execution/test/task.cc
@@ -191,7 +191,7 @@ endif()
 #)
 #
 #
-#  if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
+#  if(ENABLE_COLORING AND ENABLE_PARMETIS)
 #    cinch_add_unit(mpilegion_data_handle
 #      SOURCES
 #        ../execution/test/task.cc
@@ -215,7 +215,7 @@ endif()
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
-  if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
+  if(ENABLE_COLORING AND ENABLE_PARMETIS)
 
     cinch_add_unit(legion_dh1
       SOURCES

@@ -51,7 +51,7 @@ public:
   ///
   virtual
   std::set<size_t>
-  coloring(
+  color(
     const dcrs_t & dcrs
   ) = 0;
 
