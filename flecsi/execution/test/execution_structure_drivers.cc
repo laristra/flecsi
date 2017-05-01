@@ -17,7 +17,7 @@
 #include "flecsi/partition/dcrs_utils.h"
 #include "flecsi/partition/parmetis_partitioner.h"
 #include "flecsi/partition/mpi_communicator.h"
-#include "flecsi/topology/graph_utils.h"
+#include "flecsi/topology/closure_utils.h"
 #include "flecsi/utils/set_utils.h"
 
 clog_register_tag(partition);

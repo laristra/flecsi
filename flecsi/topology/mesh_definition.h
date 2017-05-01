@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_topology_graph_definition_h
-#define flecsi_topology_graph_definition_h
+#ifndef flecsi_topology_mesh_definition_h
+#define flecsi_topology_mesh_definition_h
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -20,32 +20,32 @@ namespace flecsi {
 namespace topology {
 
 //----------------------------------------------------------------------------//
-//! The graph_definition__ type...
+//! The mesh_definition__ type...
 //!
-//! @ingroup graph-topology
+//! @ingroup mesh-topology
 //----------------------------------------------------------------------------//
 
 template<size_t D>
-class graph_definition__
+class mesh_definition__
 {
 public:
 
   using point_t = point<double, D>;
 
   /// Default constructor
-  graph_definition__() {}
+  mesh_definition__() {}
 
   /// Copy constructor (disabled)
-  graph_definition__(const graph_definition__ &) = delete;
+  mesh_definition__(const mesh_definition__ &) = delete;
 
   /// Assignment operator (disabled)
-  graph_definition__ & operator = (const graph_definition__ &) = delete;
+  mesh_definition__ & operator = (const mesh_definition__ &) = delete;
 
   /// Destructor
-  virtual ~graph_definition__() {}
+  virtual ~mesh_definition__() {}
   
   ///
-  /// Return the dimension of the graph.
+  /// Return the dimension of the mesh.
   ///
   constexpr
   size_t
@@ -79,14 +79,15 @@ public:
 
 private:
 
-}; // class graph_definition__
+}; // class mesh_definition__
 
-using graph_definition_t = graph_definition__<2>;
+// FIXME: This probably shouldn't be set here...
+using mesh_definition_t = mesh_definition__<2>;
 
 } // namespace topology
 } // namespace flecsi
 
-#endif // flecsi_topology_graph_definition_h
+#endif // flecsi_topology_mesh_definition_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

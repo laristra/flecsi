@@ -18,12 +18,12 @@
 
 // user includes
 #include "flecsi/utils/any.h"
-#include "flecsi/partition/index_partition.h"
+#include "flecsi/coloring/index_coloring.h"
 
 #include <array>
 
 using flecsi::utils::any_t;
-using flecsi::dmp::index_partition_t;
+using flecsi::coloring::index_coloring_t;
 using std::cout;
 using std::endl;
 
@@ -57,7 +57,7 @@ TEST(any, simple) {
 
    double A;
    std::array<int,5> B;
-   index_partition_t ip;
+   index_coloring_t ip;
 
    A=3.14;
    B[0]=1;
@@ -100,7 +100,7 @@ TEST(any, simple) {
 
   //any_t* new_ptr = reinterpret_cast<any_t*>(void_ptr);
 
-    //assert(typeid(new_ptr->type())==typeid(index_partition_t));
+    //assert(typeid(new_ptr->type())==typeid(index_coloring_t));
   //double* a=flecsi::utils::any_cast<double>(new_ptr);
 
   ASSERT_EQ( 3, storage.size() )  << "iterator count mismatch";

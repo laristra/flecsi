@@ -3,15 +3,15 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_partition_mpi_communicator_h
-#define flecsi_partition_mpi_communicator_h
+#ifndef flecsi_coloring_mpi_communicator_h
+#define flecsi_coloring_mpi_communicator_h
 
 ///
 /// \file
 /// \date Initial file creation: Dec 06, 2016
 ///
 
-#include "flecsi/partition/communicator.h"
+#include "flecsi/coloring/communicator.h"
 #include "flecsi/utils/set_utils.h"
 
 #include <cinchlog.h>
@@ -25,7 +25,7 @@
 clog_register_tag(mpi_communicator);
 
 namespace flecsi {
-namespace dmp {
+namespace coloring {
 
 ///
 /// \class mpi_communicator_t mpi_communicator.h
@@ -79,7 +79,8 @@ public:
       request_indices_size << std::endl;
 #endif
 
-    const auto mpi_size_t_type = flecsi::dmp::mpi_typetraits<size_t>::type();
+    const auto mpi_size_t_type =
+      flecsi::coloring::mpi_typetraits<size_t>::type();
 
     // This may be inefficient, but this call is doing a reduction
     // to determine the maximum number of indices requested by any rank
@@ -136,15 +137,15 @@ public:
 
     // Send the request indices to all other ranks.
     result = MPI_Alltoall(&input_indices[0], max_request_indices,
-      flecsi::dmp::mpi_typetraits<size_t>::type(),
+      flecsi::coloring::mpi_typetraits<size_t>::type(),
       &info_indices[0], max_request_indices,
-      flecsi::dmp::mpi_typetraits<size_t>::type(), MPI_COMM_WORLD);
+      flecsi::coloring::mpi_typetraits<size_t>::type(), MPI_COMM_WORLD);
 
     // Reset input indices to use to send back information
     std::fill(input_indices.begin(), input_indices.end(),
       std::numeric_limits<size_t>::max());
 
-    // For the primary partition, provide rank and entity information
+    // For the primary coloring, provide rank and entity information
     // on indices that are shared with other processes.
     std::vector<std::set<size_t>> local(primary.size());
 
@@ -251,7 +252,8 @@ public:
       request_indices_size << std::endl;
 #endif
 
-    const auto mpi_size_t_type = flecsi::dmp::mpi_typetraits<size_t>::type();
+    const auto mpi_size_t_type =
+      flecsi::coloring::mpi_typetraits<size_t>::type();
 
     // This may be inefficient, but this call is doing a reduction
     // to determine the maximum number of indices requested by any rank
@@ -333,7 +335,7 @@ public:
       // Array slice for convenience.
       size_t * info = &info_indices[r*max_request_indices];
 
-      // Create a set of the off-partition request indices.
+      // Create a set of the off-color request indices.
       std::set<size_t> intersection_set;
       for(size_t i(0); i<max_request_indices; ++i) {
         if(info[i] != std::numeric_limits<size_t>::max()) {
@@ -540,7 +542,7 @@ if(rank == 1) {
   } // get_entity_info
 
   ///
-  /// Rerturn a map containing partition index and the number of indices
+  /// Rerturn a map containing the coloring index and the number of indices
   /// for the given index set.
   ///     
   std::unordered_map<size_t, size_t>
@@ -557,7 +559,8 @@ if(rank == 1) {
     std::unordered_map<size_t, size_t> indices_map;
     size_t buffer[size];
 
-    const auto mpi_size_t_type = flecsi::dmp::mpi_typetraits<size_t>::type();
+    const auto mpi_size_t_type =
+      flecsi::coloring::mpi_typetraits<size_t>::type();
 
     int result = MPI_Allgather(&indices, 1, mpi_size_t_type,
       &buffer, 1, mpi_size_t_type, MPI_COMM_WORLD);
@@ -572,10 +575,10 @@ private:
 
 }; // class mpi_communicator_t
 
-} // namespace dmp
+} // namespace coloring
 } // namespace flecsi
 
-#endif // flecsi_partition_mpi_communicator_h
+#endif // flecsi_coloring_mpi_communicator_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

@@ -21,20 +21,20 @@
 #include <mpi.h>
 
 #include "flecsi/io/simple_definition.h"
-#include "flecsi/partition/dcrs_utils.h"
-#include "flecsi/partition/parmetis_partitioner.h"
-#include "flecsi/partition/mpi_communicator.h"
-#include "flecsi/topology/graph_utils.h"
+#include "flecsi/coloring/dcrs_utils.h"
+#include "flecsi/coloring/parmetis_colorer.h"
+#include "flecsi/coloring/mpi_communicator.h"
+#include "flecsi/topology/closure_utils.h"
 #include "flecsi/utils/set_utils.h"
 
-clog_register_tag(partition);
+clog_register_tag(coloring);
 
-DEVEL(partition) {
+DEVEL(coloring) {
 
   // Set the output rank
   clog_set_output_rank(1);
 
-  using entry_info_t = flecsi::dmp::entry_info_t;
+  using entry_info_t = flecsi::coloring::entry_info_t;
 
   int size;
   int rank;
@@ -56,27 +56,27 @@ DEVEL(partition) {
   flecsi::io::simple_definition_t sd("simple2d-32x32.msh");
 #endif
 
-  // Create the dCRS representation for the distributed partitioner.
-  auto dcrs = flecsi::dmp::make_dcrs(sd);
+  // Create the dCRS representation for the distributed colorer.
+  auto dcrs = flecsi::coloring::make_dcrs(sd);
 
-  // Create a partitioner instance to generate the primary partition.
-  auto partitioner = std::make_shared<flecsi::dmp::parmetis_partitioner_t>();
+  // Create a colorer instance to generate the primary coloring.
+  auto colorer = std::make_shared<flecsi::coloring::parmetis_colorer_t>();
 
-  // Create the primary partition.
-  auto primary = partitioner->partition(dcrs);
+  // Create the primary coloring.
+  auto primary = colorer->color(dcrs);
 
   {
-  clog_tag_guard(partition);
-  clog_container_one(info, "primary partition", primary, clog::space);
+  clog_tag_guard(coloring);
+  clog_container_one(info, "primary coloring", primary, clog::space);
   } // guard
 
-  // Compute the dependency closure of the primary cell partition
+  // Compute the dependency closure of the primary cell coloring
   // through vertex intersections (specified by last argument "1").
   // To specify edge or face intersections, use 2 (edges) or 3 (faces).
   auto closure = flecsi::topology::entity_closure<2,2,0>(sd, primary);
 
   {
-  clog_tag_guard(partition);
+  clog_tag_guard(coloring);
   clog_container_one(info, "closure", closure, clog::space);
   } // guard
 
@@ -86,12 +86,12 @@ DEVEL(partition) {
   auto nearest_neighbors = flecsi::utils::set_difference(closure, primary);
 
   {
-  clog_tag_guard(partition);
+  clog_tag_guard(coloring);
   clog_container_one(info, "nearest neighbors", nearest_neighbors, clog::space);
   } // guard
 
   // Create a communicator instance to get neighbor information.
-  auto communicator = std::make_shared<flecsi::dmp::mpi_communicator_t>();
+  auto communicator = std::make_shared<flecsi::coloring::mpi_communicator_t>();
 
   // Get the intersection of our nearest neighbors with the nearest
   // neighbors of other ranks. This map of sets will only be populated
@@ -107,7 +107,7 @@ DEVEL(partition) {
     flecsi::topology::entity_closure<2,2,0>(sd, nearest_neighbors);
 
   {
-  clog_tag_guard(partition);
+  clog_tag_guard(coloring);
   clog_container_one(info, "nearest neighbor closure",
     nearest_neighbor_closure, clog::space);
   } // guard
@@ -118,7 +118,7 @@ DEVEL(partition) {
     flecsi::utils::set_difference(nearest_neighbor_closure, closure);
 
   {
-  clog_tag_guard(partition);
+  clog_tag_guard(coloring);
   clog_container_one(info, "next nearest neighbor", next_nearest_neighbors,
     clog::space);
   } // guard
@@ -129,7 +129,7 @@ DEVEL(partition) {
     next_nearest_neighbors);
 
   {
-  clog_tag_guard(partition);
+  clog_tag_guard(coloring);
   clog_container_one(info, "all neighbors", all_neighbors, clog::space);
   } // guard
 
@@ -188,7 +188,7 @@ DEVEL(partition) {
   } // scope
 
   {
-  clog_tag_guard(partition);
+  clog_tag_guard(coloring);
   clog_container_one(info, "exclusive cells ", exclusive_cells, clog::newline);
   clog_container_one(info, "shared cells ", shared_cells, clog::newline);
   clog_container_one(info, "ghost cells ", ghost_cells, clog::newline);
@@ -216,7 +216,7 @@ DEVEL(partition) {
     auto referencers = flecsi::topology::vertex_referencers<2>(sd, i);
 
     {
-    clog_tag_guard(partition);
+    clog_tag_guard(coloring);
     clog_container_one(info, i << " referencers", referencers, clog::space);
     } // guard
 
@@ -227,7 +227,7 @@ DEVEL(partition) {
     for(auto c: referencers) {
 
       // Check the remote info map to see if this cell is
-      // off-partition. If it is, compare it's rank for
+      // off-color. If it is, compare it's rank for
       // the ownership logic below.
       if(remote_info_map.find(c) != remote_info_map.end()) {
         min_rank = std::min(min_rank, remote_info_map[c].rank);
@@ -300,7 +300,7 @@ DEVEL(partition) {
   } // scope
 
   {
-  clog_tag_guard(partition);
+  clog_tag_guard(coloring);
   clog_container_one(info, "exclusive vertices ", exclusive_vertices,
     clog::newline);
   clog_container_one(info, "shared vertices ", shared_vertices, clog::newline);

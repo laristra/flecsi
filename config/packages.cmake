@@ -166,33 +166,33 @@ if(ENABLE_MPI)
   find_package(ParMETIS 4.0)
 endif()
 
-option(ENABLE_PARTITIONING
+option(ENABLE_COLORING
   "Enable partitioning (uses metis/parmetis or scotch)." OFF)
 
-if(ENABLE_PARTITIONING)
+if(ENABLE_COLORING)
 
-  set(PARTITION_LIBRARIES)
+  set(COLORING_LIBRARIES)
 
   if(METIS_FOUND)
-    list(APPEND PARTITION_LIBRARIES ${METIS_LIBRARIES})
+    list(APPEND COLORING_LIBRARIES ${METIS_LIBRARIES})
     include_directories(${METIS_INCLUDE_DIRS})
     set(ENABLE_METIS TRUE)
     add_definitions(-DENABLE_METIS)
   endif()
 
   if(PARMETIS_FOUND)
-    list(APPEND PARTITION_LIBRARIES ${PARMETIS_LIBRARIES})
+    list(APPEND COLORING_LIBRARIES ${PARMETIS_LIBRARIES})
     include_directories(${PARMETIS_INCLUDE_DIRS})
     set(ENABLE_PARMETIS TRUE)
     add_definitions(-DENABLE_PARMETIS)
   endif()
 
-  if(NOT PARTITION_LIBRARIES)
+  if(NOT COLORING_LIBRARIES)
     MESSAGE(FATAL_ERROR
       "You need parmetis to enable partitioning" )
   endif()
 
-  add_definitions(-DENABLE_PARTITIONING)
+  add_definitions(-DENABLE_COLORING)
 
 endif()
 

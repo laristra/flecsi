@@ -18,9 +18,9 @@
 #------------------------------------------------------------------------------#
 
 set(topology_HEADERS
-  graph_definition.h
-  graph_utils.h
+  closure_utils.h
   index_space.h
+  mesh_definition.h
   mesh_topology.h
   mesh_types.h
   mesh_utils.h
@@ -158,14 +158,14 @@ cinch_add_unit(structured
 # Misc. unit tests.
 #------------------------------------------------------------------------------#
 
-cinch_add_unit(graph
+cinch_add_unit(closure
   SOURCES
-    test/graph.cc
+    test/closure.cc
 )
 
-cinch_add_unit(devel-graph
+cinch_add_unit(devel-closure
   SOURCES
-    test/devel-graph.cc
+    test/devel-closure.cc
   POLICY
     SERIAL_DEVEL
 )

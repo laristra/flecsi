@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_partition_partition_types_h
-#define flecsi_partition_partition_types_h
+#ifndef flecsi_coloring_coloring_types_h
+#define flecsi_coloring_coloring_types_h
 
 ///
 /// \file
@@ -14,19 +14,19 @@
 #include <set>
 
 namespace flecsi {
-namespace dmp {
+namespace coloring {
 
 ///
 /// Type for collecting index space sizes.
 ///
-struct partition_info_t {
+struct coloring_info_t {
   size_t exclusive;
   size_t shared;
   size_t ghost;
-}; // struct partition_info_t
+}; // struct coloring_info_t
 
 ///
-/// Type for passing partition information about a single entity.
+/// Type for passing coloring information about a single entity.
 ///
 struct entry_info_t {
   size_t id;
@@ -98,10 +98,10 @@ operator << (
 } // operator <<
 
 
-} // namespace dmp
+} // namespace coloring
 } // namespace flecsi
 
-#endif // flecsi_partition_partition_types_h
+#endif // flecsi_coloring_coloring_types_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

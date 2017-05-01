@@ -3,14 +3,14 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_partition_index_partition_h
-#define flecsi_partition_index_partition_h
+#ifndef flecsi_coloring_index_coloring_h
+#define flecsi_coloring_index_coloring_h
 
 #include <cassert>
 #include <unordered_map>
 #include <vector>
 
-#include "flecsi/partition/communicator.h"
+#include "flecsi/coloring/communicator.h"
 
 ///
 /// \file
@@ -18,30 +18,30 @@
 ///
 
 namespace flecsi {
-namespace dmp {
+namespace coloring {
 
 ///
-/// \class index_partition_t index_partition.h
-/// \brief index_partition_t provides...
+/// \class index_coloring_t index_coloring.h
+/// \brief index_coloring_t provides...
 ///
-struct index_partition_t
+struct index_coloring_t
 {
-  using entry_info_t = flecsi::dmp::entry_info_t;
+  using entry_info_t = flecsi::coloring::entry_info_t;
 
   //------------------------------------------------------------------------//
   // Data members.
   //------------------------------------------------------------------------//
 
-  // Set of mesh ids of the primary partition
+  // Set of mesh ids of the primary coloring
   std::set<size_t> primary;
 
-  // Set of entry_info_t type of the exclusive partition
+  // Set of entry_info_t type of the exclusive coloring
   std::set<entry_info_t > exclusive;
 
-  // Set of entry_info_t type of the shared partition
+  // Set of entry_info_t type of the shared coloring
   std::set<entry_info_t> shared;
 
-  // Set of entry_info_t type of the ghost partition
+  // Set of entry_info_t type of the ghost coloring
   std::set<entry_info_t> ghost;
 
   // Rank id to number of entities
@@ -50,13 +50,13 @@ struct index_partition_t
   ///
   /// Equality operator.
   ///
-  /// \param ip The index_partition_t to compare with \e this.
+  /// \param ip The index_coloring_t to compare with \e this.
   ///
   /// \return True if \e ip is equivalent to \e this, false otherwise.
   ///
   bool
   operator == (
-    const index_partition_t & ip
+    const index_coloring_t & ip
   ) const
   {
     return (
@@ -66,12 +66,12 @@ struct index_partition_t
       this->ghost == ip.ghost);
   } // operator ==
 
-}; // struct index_partition_t
+}; // struct index_coloring_t
 
-} // namespace dmp
+} // namespace coloring
 } // namespace flecsi
 
-#endif // flecsi_partition_index_partition_h
+#endif // flecsi_coloring_index_coloring_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

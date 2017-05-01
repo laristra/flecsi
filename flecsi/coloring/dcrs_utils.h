@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_partition_dcrs_utils_h
-#define flecsi_partition_dcrs_utils_h
+#ifndef flecsi_coloring_dcrs_utils_h
+#define flecsi_coloring_dcrs_utils_h
 
 #if !defined(ENABLE_MPI)
   #error ENABLE_MPI not defined! This file depends on MPI!
@@ -12,9 +12,9 @@
 
 #include <mpi.h>
 
-#include "flecsi/topology/graph_definition.h"
-#include "flecsi/topology/graph_utils.h"
-#include "flecsi/partition/dcrs.h"
+#include "flecsi/topology/mesh_definition.h"
+#include "flecsi/topology/closure_utils.h"
+#include "flecsi/coloring/dcrs.h"
 
 ///
 /// \file
@@ -22,13 +22,13 @@
 ///
 
 namespace flecsi {
-namespace dmp {
+namespace coloring {
 
 clog_register_tag(dcrs_utils);
 
 std::set<size_t>
-naive_partitioning(
-  topology::graph_definition_t & gd
+naive_coloring(
+  topology::mesh_definition_t & md
 )
 {
   std::set<size_t> indices;
@@ -47,8 +47,8 @@ naive_partitioning(
   // Create a naive initial distribution of the indices
   //--------------------------------------------------------------------------//
 
-	size_t quot = gd.num_entities(2)/size;
-	size_t rem = gd.num_entities(2)%size;
+	size_t quot = md.num_entities(2)/size;
+	size_t rem = md.num_entities(2)%size;
 
   clog_one(info) << "quot: " << quot << " rem: " << rem << std::endl;
 
@@ -70,14 +70,14 @@ naive_partitioning(
   } // guard
 
   return indices;
-} // naive_partitioning
+} // naive_coloring
 
 ///
-/// \param gd The mesh definition.
+/// \param md The mesh definition.
 ///
 dcrs_t
 make_dcrs(
-  topology::graph_definition_t & gd
+  topology::mesh_definition_t & md
 )
 {
 	int size;
@@ -90,8 +90,8 @@ make_dcrs(
   // Create a naive initial distribution of the indices
   //--------------------------------------------------------------------------//
 
-	size_t quot = gd.num_entities(2)/size;
-	size_t rem = gd.num_entities(2)%size;
+	size_t quot = md.num_entities(2)/size;
+	size_t rem = md.num_entities(2)%size;
 
   // Each rank gets the average number of indices, with higher ranks
   // getting an additional index for non-zero remainders.
@@ -125,7 +125,7 @@ make_dcrs(
 //    auto neighbors =
 //      io::cell_neighbors(md, dcrs.distribution[rank] + i, md.dimension());
     auto neighbors =
-      topology::entity_neighbors<2,2,1>(gd, dcrs.distribution[rank] + i);
+      topology::entity_neighbors<2,2,1>(md, dcrs.distribution[rank] + i);
 
 #if 0
       if(rank == 1) {
@@ -163,10 +163,10 @@ make_dcrs(
   return dcrs;
 } // make_dcrs
 
-} // namespace dmp
+} // namespace coloring
 } // namespace flecsi
 
-#endif // flecsi_partition_dcrs_utils_h
+#endif // flecsi_coloring_dcrs_utils_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

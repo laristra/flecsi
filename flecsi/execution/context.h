@@ -25,8 +25,8 @@
 
 #include "cinchlog.h"
 #include "flecsi/utils/const_string.h"
-#include "flecsi/partition/index_partition.h"
-#include "flecsi/partition/partition_types.h"
+#include "flecsi/coloring/index_coloring.h"
+#include "flecsi/coloring/coloring_types.h"
 
 namespace flecsi {
 namespace execution {
@@ -43,8 +43,8 @@ namespace execution {
 template<class CONTEXT_POLICY>
 struct context__ : public CONTEXT_POLICY
 {
-  using index_partition_t = flecsi::dmp::index_partition_t;
-  using partition_info_t = flecsi::dmp::partition_info_t;
+  using index_coloring_t = flecsi::coloring::index_coloring_t;
+  using coloring_info_t = flecsi::coloring::coloring_info_t;
 
   //---------------------------------------------------------------------------/
   //! Myer's singleton instance.
@@ -61,54 +61,54 @@ struct context__ : public CONTEXT_POLICY
   } // instance
 
   //---------------------------------------------------------------------------/
-  //! Add an index partition.
+  //! Add an index coloring.
   //!
   //! @param key The map key.
-  //! @param partition The index partition to add.
+  //! @param coloring The index coloring to add.
   //---------------------------------------------------------------------------/
 
   void
-  add_partition(
+  add_coloring(
     size_t key,
-    index_partition_t & partition
+    index_coloring_t & coloring
   )
   {
-    if(partitions_.find(key) == partitions_.end()) {
-      partitions_[key] = partition;
+    if(colorings_.find(key) == colorings_.end()) {
+      colorings_[key] = coloring;
     } // if
-  } // add_partition
+  } // add_coloring
 
   //---------------------------------------------------------------------------/
-  //! Return the index partition referenced by key.
+  //! Return the index coloring referenced by key.
   //!
-  //! @param key The key associated with the partition to be returned.
+  //! @param key The key associated with the coloring to be returned.
   //---------------------------------------------------------------------------/
 
-  const index_partition_t &
-  partition(
+  const index_coloring_t &
+  coloring(
     size_t key
   )
   {
-    if(partitions_.find(key) == partitions_.end()) {
+    if(colorings_.find(key) == colorings_.end()) {
       clog(fatal) << "invalid key " << key << std::endl;
     } // if
 
-    return partitions_[key];
-  } // partition
+    return colorings_[key];
+  } // coloring
 
   //---------------------------------------------------------------------------/
-  //! Return the partition map (convenient for iterating through all
-  //! of the partitions.
+  //! Return the coloring map (convenient for iterating through all
+  //! of the colorings.
   //!
-  //! @return The map of index partitions.
+  //! @return The map of index colorings.
   //---------------------------------------------------------------------------/
 
-  const std::unordered_map<size_t, index_partition_t> &
-  partitions()
+  const std::unordered_map<size_t, index_coloring_t> &
+  colorings()
   const
   {
-    return partitions_;
-  } // partitions
+    return colorings_;
+  } // colorings
 
 private:
 
@@ -124,9 +124,9 @@ private:
   context__(context__ &&) = delete;
   context__ & operator = (context__ &&) = delete;
 
-  std::unordered_map<size_t, index_partition_t> partitions_;
+  std::unordered_map<size_t, index_coloring_t> colorings_;
   std::unordered_map<size_t,
-    std::unordered_map<size_t, partition_info_t>> partition_info_;
+    std::unordered_map<size_t, coloring_info_t>> coloring_info_;
 
 }; // class context__
 

@@ -3,12 +3,12 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_partition_communicator_h
-#define flecsi_partition_communicator_h
+#ifndef flecsi_coloring_communicator_h
+#define flecsi_coloring_communicator_h
 
 #include <set>
 
-#include "flecsi/partition/partition_types.h"
+#include "flecsi/coloring/coloring_types.h"
 
 ///
 /// \file
@@ -16,7 +16,7 @@
 ///
 
 namespace flecsi {
-namespace dmp {
+namespace coloring {
 
 ///
 /// \class communicator_t communicator.h
@@ -57,11 +57,11 @@ public:
   ) = 0;
 
   ///
-  /// Get the 1-to-1 intersection between all partitions of the given set.
+  /// Get the 1-to-1 intersection between all colorings of the given set.
   ///
   /// \return A map with an entry for each non-empty intersection containing
-  ///         the intersection between the calling partition and an
-  ///         intersecting partition.
+  ///         the intersection between the calling color and an
+  ///         intersecting color.
   ///
   virtual
   std::unordered_map<size_t, std::set<size_t>>
@@ -81,7 +81,7 @@ public:
   ) = 0;
 
   ///
-  /// Return the sizes of the given set across all partitions.
+  /// Return the sizes of the given set across all colors.
   ///
   virtual
   std::unordered_map<size_t, size_t>
@@ -93,10 +93,10 @@ private:
 
 }; // class communicator_t
 
-} // namespace dmp
+} // namespace coloring
 } // namespace flecsi
 
-#endif // flecsi_partition_communicator_h
+#endif // flecsi_coloring_communicator_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.
