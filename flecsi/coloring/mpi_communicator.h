@@ -546,30 +546,29 @@ if(rank == 1) {
   /// for the given index set.
   ///     
   std::unordered_map<size_t, size_t>
-  get_set_sizes(
-    const std::set<size_t> & index_set
+  gather_sizes(
+    const size_t & size
   )
   override
   {
-    int size;
+    int colors;
 
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_size(MPI_COMM_WORLD, &colors);
 
-    size_t indices = index_set.size();
     std::unordered_map<size_t, size_t> indices_map;
-    size_t buffer[size];
+    size_t buffer[colors];
 
     const auto mpi_size_t_type =
       flecsi::coloring::mpi_typetraits<size_t>::type();
 
-    int result = MPI_Allgather(&indices, 1, mpi_size_t_type,
+    int result = MPI_Allgather(&size, 1, mpi_size_t_type,
       &buffer, 1, mpi_size_t_type, MPI_COMM_WORLD);
 
-   for (size_t i=0; i<size; i++)
+   for (size_t i=0; i<colors; i++)
      indices_map[i]=buffer[i];
 
     return indices_map;
-  } // get_set_sizes
+  } // gather_sizes
 
 private:
 

@@ -13,6 +13,7 @@
 #include "flecsi/execution/execution.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/io/simple_definition.h"
+#include "flecsi/coloring/coloring_types.h"
 #include "flecsi/coloring/communicator.h"
 #include "flecsi/coloring/dcrs_utils.h"
 #include "flecsi/coloring/parmetis_colorer.h"
@@ -187,6 +188,40 @@ void add_colorings(int dummy) {
   clog_container_one(info, "ghost cells ", cells.ghost, clog::newline);
   } // guard
 
+
+
+
+// FIXME
+  auto exclusive_size_map = communicator->gather_sizes(cells.exclusive.size());
+  auto shared_size_map = communicator->gather_sizes(cells.shared.size());
+  auto ghost_size_map = communicator->gather_sizes(cells.ghost.size());
+
+#if 0
+  clog_assert((exclusive_size_map.size() == shared_size_map.size() ==
+    ghost_size_map.size(),
+    "colors mismatch " << exclusive_size_map.size() << " " <<
+    shared_size_map.size() << " " << ghost_size_map.size());
+#endif
+
+  std::unordered_map<size_t, coloring::coloring_info_t> coloring_info;
+
+  for(auto c: exclusive_size_map) {
+    coloring::coloring_info_t color_info;
+    color_info.exclusive = c.second;
+    color_info.shared = shared_size_map[c.first];
+    color_info.ghost = ghost_size_map[c.first];
+    coloring_info[c.first] = color_info;
+  } // for
+// FIXME
+
+
+
+
+
+
+
+
+
   // Create a map version for lookups below.
   std::unordered_map<size_t, flecsi::coloring::entry_info_t> shared_cells_map;
   {
@@ -302,7 +337,6 @@ void add_colorings(int dummy) {
   context_.add_coloring(1, vertices);
 
 } // add_colorings
-
 
 flecsi_register_task(add_colorings, mpi, index);
 

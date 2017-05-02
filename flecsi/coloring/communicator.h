@@ -85,8 +85,8 @@ public:
   ///
   virtual
   std::unordered_map<size_t, size_t>
-  get_set_sizes(
-    const std::set<size_t> & index_set
+  gather_sizes(
+    const size_t & size
   ) = 0;
 
 private:
