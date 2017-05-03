@@ -150,7 +150,7 @@ void add_colorings(int dummy) {
   } // scope
 
   // Create a map version of the remote info for lookups below.
-  std::unordered_map<size_t, flecsi::coloring::entry_info_t> remote_info_map;
+  std::unordered_map<size_t, flecsi::coloring::entity_info_t> remote_info_map;
   for(auto i: std::get<1>(cell_all_info)) {
     remote_info_map[i.id] = i;
   } // for
@@ -161,12 +161,12 @@ void add_colorings(int dummy) {
   for(auto i: std::get<0>(cell_nn_info)) {
     if(i.size()) {
       cells.shared.insert(
-        flecsi::coloring::entry_info_t(primary_indices_map[offset],
+        flecsi::coloring::entity_info_t(primary_indices_map[offset],
         rank, offset, i));
     }
     else {
       cells.exclusive.insert(
-        flecsi::coloring::entry_info_t(primary_indices_map[offset],
+        flecsi::coloring::entity_info_t(primary_indices_map[offset],
         rank, offset, i));
     } // if
     ++offset;
@@ -188,42 +188,8 @@ void add_colorings(int dummy) {
   clog_container_one(info, "ghost cells ", cells.ghost, clog::newline);
   } // guard
 
-
-
-
-// FIXME
-  auto exclusive_size_map = communicator->gather_sizes(cells.exclusive.size());
-  auto shared_size_map = communicator->gather_sizes(cells.shared.size());
-  auto ghost_size_map = communicator->gather_sizes(cells.ghost.size());
-
-#if 0
-  clog_assert((exclusive_size_map.size() == shared_size_map.size() ==
-    ghost_size_map.size(),
-    "colors mismatch " << exclusive_size_map.size() << " " <<
-    shared_size_map.size() << " " << ghost_size_map.size());
-#endif
-
-  std::unordered_map<size_t, coloring::coloring_info_t> coloring_info;
-
-  for(auto c: exclusive_size_map) {
-    coloring::coloring_info_t color_info;
-    color_info.exclusive = c.second;
-    color_info.shared = shared_size_map[c.first];
-    color_info.ghost = ghost_size_map[c.first];
-    coloring_info[c.first] = color_info;
-  } // for
-// FIXME
-
-
-
-
-
-
-
-
-
   // Create a map version for lookups below.
-  std::unordered_map<size_t, flecsi::coloring::entry_info_t> shared_cells_map;
+  std::unordered_map<size_t, flecsi::coloring::entity_info_t> shared_cells_map;
   {
   for(auto i: cells.shared) {
     shared_cells_map[i.id] = i;
@@ -235,7 +201,7 @@ void add_colorings(int dummy) {
 
   // Assign vertex ownership
   std::vector<std::set<size_t>> vertex_requests(size);
-  std::set<flecsi::coloring::entry_info_t> vertex_info;
+  std::set<flecsi::coloring::entity_info_t> vertex_info;
 
   size_t offset(0);
   for(auto i: vertex_closure) {
@@ -285,9 +251,9 @@ void add_colorings(int dummy) {
     if(min_rank == rank) {
       // This is a vertex that belongs to our rank.
       auto entry =
-        flecsi::coloring::entry_info_t(i, rank, offset, shared_vertices);
+        flecsi::coloring::entity_info_t(i, rank, offset, shared_vertices);
       vertex_info.insert(
-        flecsi::coloring::entry_info_t(i, rank, offset++, shared_vertices));
+        flecsi::coloring::entity_info_t(i, rank, offset++, shared_vertices));
     }
     else {
       // Add remote vertex to the request for offset information.
@@ -316,7 +282,7 @@ void add_colorings(int dummy) {
 
     auto offset(vertex_offset_info[r].begin());
     for(auto s: i) {
-      vertices.ghost.insert(flecsi::coloring::entry_info_t(s, r, *offset));
+      vertices.ghost.insert(flecsi::coloring::entity_info_t(s, r, *offset));
       ++offset;
     } // for
 
@@ -335,6 +301,14 @@ void add_colorings(int dummy) {
   // Add colorings to the context.
   context_.add_coloring(0, cells);
   context_.add_coloring(1, vertices);
+
+  coloring::coloring_info_t cell_info{ cells.exclusive, cells.shared,
+    cells.ghost };
+  coloring::coloring_info_t vertex_info{ vertices.exclusive, vertices.shared,
+    vertices.ghost };
+
+  auto cell_coloring_info = communicator->get_coloring_info(cell_info);
+  auto vertex_coloring_info = communicator->get_coloring_info(vertex_info);
 
 } // add_colorings
 

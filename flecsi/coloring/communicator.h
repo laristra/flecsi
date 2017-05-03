@@ -50,7 +50,7 @@ public:
   // The point of this method is to get primary ownership information
   // from adjacent ranks.
   virtual
-  std::pair<std::vector<std::set<size_t>>, std::set<entry_info_t>>
+  std::pair<std::vector<std::set<size_t>>, std::set<entity_info_t>>
   get_primary_info(
     const std::set<size_t> & primary,
     const std::set<size_t> & request_indices
@@ -76,18 +76,22 @@ public:
   virtual
   std::vector<std::set<size_t>>
   get_entity_info(
-    const std::set<entry_info_t> & entity_info,
+    const std::set<entity_info_t> & entity_info,
     const std::vector<std::set<size_t>> & request_indices
   ) = 0;
 
   ///
-  /// Return the sizes of the given set across all colors.
+  /// Return size across all colors.
   ///
   virtual
   std::unordered_map<size_t, size_t>
   gather_sizes(
     const size_t & size
   ) = 0;
+
+  virtual
+  std::unordered_map<size_t, coloring_info_t>
+  get_coloring_info(const coloring_info_t & color_info) = 0;
 
 private:
 

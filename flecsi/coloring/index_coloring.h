@@ -26,7 +26,7 @@ namespace coloring {
 ///
 struct index_coloring_t
 {
-  using entry_info_t = flecsi::coloring::entry_info_t;
+  using entity_info_t = flecsi::coloring::entity_info_t;
 
   //------------------------------------------------------------------------//
   // Data members.
@@ -35,14 +35,14 @@ struct index_coloring_t
   // Set of mesh ids of the primary coloring
   std::set<size_t> primary;
 
-  // Set of entry_info_t type of the exclusive coloring
-  std::set<entry_info_t > exclusive;
+  // Set of entity_info_t type of the exclusive coloring
+  std::set<entity_info_t > exclusive;
 
-  // Set of entry_info_t type of the shared coloring
-  std::set<entry_info_t> shared;
+  // Set of entity_info_t type of the shared coloring
+  std::set<entity_info_t> shared;
 
-  // Set of entry_info_t type of the ghost coloring
-  std::set<entry_info_t> ghost;
+  // Set of entity_info_t type of the ghost coloring
+  std::set<entity_info_t> ghost;
 
   // Rank id to number of entities
   std::unordered_map<size_t, size_t> entities_per_rank;

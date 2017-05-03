@@ -79,6 +79,24 @@ struct context__ : public CONTEXT_POLICY
   } // add_coloring
 
   //---------------------------------------------------------------------------/
+  //! Add an index coloring information.
+  //!
+  //! @param key The map key.
+  //! @param coloring The index coloring information to add.
+  //---------------------------------------------------------------------------/
+
+  void
+  add_coloring_info(
+    size_t key,
+    const std::unordered_map<size_t, coloring_info_t> & coloring_info
+  )
+  {
+    if(coloring_info_.find(key) == coloring_info_.end()) {
+      coloring_info_[key] = coloring_info;
+    } // if
+  } // add_coloring_info
+
+  //---------------------------------------------------------------------------/
   //! Return the index coloring referenced by key.
   //!
   //! @param key The key associated with the coloring to be returned.
@@ -97,6 +115,25 @@ struct context__ : public CONTEXT_POLICY
   } // coloring
 
   //---------------------------------------------------------------------------/
+  //! Return the index coloring information referenced by key.
+  //!
+  //! @param key The key associated with the coloring information
+  //!            to be returned.
+  //---------------------------------------------------------------------------/
+
+  const std::unordered_map<size_t, coloring_info_t> &
+  coloring_info(
+    size_t key
+  )
+  {
+    if(coloring_info_.find(key) == coloring_info_.end()) {
+      clog(fatal) << "invalid key " << key << std::endl;
+    } // if
+
+    return coloring_info_[key];
+  } // coloring_info
+
+  //---------------------------------------------------------------------------/
   //! Return the coloring map (convenient for iterating through all
   //! of the colorings.
   //!
@@ -104,10 +141,27 @@ struct context__ : public CONTEXT_POLICY
   //---------------------------------------------------------------------------/
 
   const std::unordered_map<size_t, index_coloring_t> &
-  colorings()
+  coloring_map()
   const
   {
     return colorings_;
+  } // colorings
+
+  //---------------------------------------------------------------------------/
+  //! Return the coloring info map (convenient for iterating through all
+  //! of the colorings.
+  //!
+  //! @return The map of index coloring information.
+  //---------------------------------------------------------------------------/
+
+  const std::unordered_map<
+    size_t,
+    std::unordered_map<size_t, index_coloring_t>
+  > &
+  coloring_info_map()
+  const
+  {
+    return coloring_info_;
   } // colorings
 
 private:

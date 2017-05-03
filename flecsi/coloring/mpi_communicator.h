@@ -50,11 +50,11 @@ public:
    ~mpi_communicator_t() {}
 
   ///
-  /// Rerturn a set containing the entry_info_t information for each
+  /// Rerturn a set containing the entity_info_t information for each
   /// member of the input set request_indices (from other ranks) and
   /// the information for the local indices in primary.
   ///
-  std::pair<std::vector<std::set<size_t>>, std::set<entry_info_t>>
+  std::pair<std::vector<std::set<size_t>>, std::set<entity_info_t>>
   get_primary_info(
     const std::set<size_t> & primary,
     const std::set<size_t> & request_indices
@@ -201,7 +201,7 @@ public:
       mpi_size_t_type, &info_offsets[0], max_request_indices,
       mpi_size_t_type, MPI_COMM_WORLD);
 
-    std::set<entry_info_t> remote;
+    std::set<entity_info_t> remote;
 
     // Collect all of the information for the remote entities.
     for(size_t r(0); r<size; ++r) {
@@ -219,7 +219,7 @@ public:
         if(ranks[i] != std::numeric_limits<size_t>::max()) {
           // If this is not size_t max, this rank answered our request
           // and we can set the information.
-          remote.insert(entry_info_t(request_indices_vector[i], ranks[i],
+          remote.insert(entity_info_t(request_indices_vector[i], ranks[i],
             offsets[i], {}));
         } // if
       } // for
@@ -369,7 +369,7 @@ public:
   } // get_intersection_info
 
   ///
-  /// Rerturn a set containing the entry_info_t information for each
+  /// Rerturn a set containing the entity_info_t information for each
   /// member of the input set request_indices (from other ranks).
   ///
   /// \param entity_info FIXME...
@@ -380,7 +380,7 @@ public:
   ///
   std::vector<std::set<size_t>>
   get_entity_info(
-    const std::set<entry_info_t> & entity_info,
+    const std::set<entity_info_t> & entity_info,
     const std::vector<std::set<size_t>> & request_indices
   )
   override
@@ -445,7 +445,7 @@ public:
     } // for
 
     // Create a map version of the entity info for lookups below.
-    std::unordered_map<size_t, entry_info_t> entity_info_map;
+    std::unordered_map<size_t, entity_info_t> entity_info_map;
     for(auto i: entity_info) {
       entity_info_map[i.id] = i;
     } // for
@@ -569,6 +569,29 @@ if(rank == 1) {
 
     return indices_map;
   } // gather_sizes
+
+  std::unordered_map<size_t, coloring_info_t>
+  get_coloring_info(const coloring_info_t & color_info)
+  override
+  {
+    int colors;
+
+    MPI_Comm_size(MPI_COMM_WORLD, &colors);
+
+    coloring_info_t buffer[colors];
+    const size_t bytes = sizeof(coloring_info_t);
+
+    int result = MPI_Allgather(&color_info, bytes, MPI_BYTE,
+      &buffer, bytes, MPI_BYTE, MPI_COMM_WORLD);
+
+    std::unordered_map<size_t, coloring_info_t> coloring_info;
+
+    for(size_t c(0); c<colors; ++c) {
+      coloring_info[c] =  buffer[c];
+    } // for
+    
+    return coloring_info;
+  } // get_coloring_info
 
 private:
 
