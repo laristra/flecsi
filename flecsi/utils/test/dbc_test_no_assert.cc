@@ -63,7 +63,7 @@ TEST(dbc_no_assert,Equal){
 #elif REQUIRE_ON
       EXPECT_EQ(false,ret_val);
 #else
-      EXPECT_EQ(false,ret_val);
+      EXPECT_FALSE(ret_val);
 #endif
     }
     catch(std::exception & e){
@@ -96,7 +96,7 @@ TEST(dbc_no_assert,InOpenRange){
 #elif REQUIRE_ON
       EXPECT_EQ(false,ret_val);
 #else
-      EXPECT_EQ(false,ret_val);
+      EXPECT_FALSE(ret_val);
 #endif
     }
     catch(std::exception & e){
