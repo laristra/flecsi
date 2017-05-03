@@ -23,6 +23,8 @@ struct coloring_info_t {
   size_t exclusive;
   size_t shared;
   size_t ghost;
+  std::set<size_t> shared_users;
+  std::set<size_t> ghost_owners;
 }; // struct coloring_info_t
 
 inline
@@ -34,6 +36,12 @@ operator << (
 {
   stream << "exclusive: " << ci.exclusive << " shared: " << ci.shared <<
     " ghost: " << ci.ghost;
+  
+  stream << " users [ ";
+  for(auto i: ci.shared_users) {
+    stream << i << " ";
+  } // for
+  stream << "]" << std::endl;
 } // operator <<
 
 ///

@@ -55,7 +55,8 @@ void add_colorings(int dummy) {
 
   // Cells index coloring.
   flecsi::coloring::index_coloring_t cells;
-
+  flecsi::coloring::coloring_info_t cell_color_info;
+ 
   // Create the primary coloring.
   cells.primary = colorer->color(dcrs);
 
@@ -163,6 +164,11 @@ void add_colorings(int dummy) {
       cells.shared.insert(
         flecsi::coloring::entity_info_t(primary_indices_map[offset],
         rank, offset, i));
+      
+      // Collect all colors with whom we require communication
+      // to send shared information.
+      cell_color_info.shared_users = flecsi::utils::set_union(
+        cell_color_info.shared_users, i);
     }
     else {
       cells.exclusive.insert(
@@ -178,8 +184,16 @@ void add_colorings(int dummy) {
   size_t offset(0);
   for(auto i: std::get<1>(cell_nn_info)) {
     cells.ghost.insert(i);
+
+    // Collect all colors with whom we require communication
+    // to receive ghost information.
+    cell_color_info.ghost_owners.insert(i.rank);
   } // for
   } // scope
+
+  cell_color_info.exclusive = cells.exclusive.size();
+  cell_color_info.shared = cells.shared.size();
+  cell_color_info.ghost = cells.ghost.size();
 
   {
   clog_tag_guard(coloring);
@@ -266,10 +280,16 @@ void add_colorings(int dummy) {
 
   // Vertices index coloring.
   flecsi::coloring::index_coloring_t vertices;
+  coloring::coloring_info_t vertex_color_info;
 
   for(auto i: vertex_info) {
     if(i.shared.size()) {
       vertices.shared.insert(i);
+
+      // Collect all colors with whom we require communication
+      // to send shared information.
+      vertex_color_info.shared_users = flecsi::utils::set_union(
+        vertex_color_info.shared_users, i.shared);
     }
     else {
       vertices.exclusive.insert(i);
@@ -284,6 +304,10 @@ void add_colorings(int dummy) {
     for(auto s: i) {
       vertices.ghost.insert(flecsi::coloring::entity_info_t(s, r, *offset));
       ++offset;
+
+      // Collect all colors with whom we require communication
+      // to receive ghost information.
+      vertex_color_info.ghost_owners.insert(r);
     } // for
 
     ++r;
@@ -298,11 +322,16 @@ void add_colorings(int dummy) {
   clog_container_one(info, "ghost vertices ", vertices.ghost, clog::newline);
   } // guard
 
-  // Create coloring information
+#if 0
   coloring::coloring_info_t cell_color_info{ cells.exclusive.size(),
     cells.shared.size(), cells.ghost.size() };
   coloring::coloring_info_t vertex_color_info{ vertices.exclusive.size(),
     vertices.shared.size(), vertices.ghost.size() };
+#endif
+
+  vertex_color_info.exclusive = vertices.exclusive.size();
+  vertex_color_info.shared = vertices.shared.size();
+  vertex_color_info.ghost = vertices.ghost.size();
 
   {
   clog_tag_guard(coloring);

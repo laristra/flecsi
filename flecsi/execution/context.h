@@ -142,7 +142,7 @@ struct context__ : public CONTEXT_POLICY
 
   const std::unordered_map<
     size_t,
-    std::unordered_map<size_t, index_coloring_t>
+    std::unordered_map<size_t, coloring_info_t>
   > &
   coloring_info_map()
   const

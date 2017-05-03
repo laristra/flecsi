@@ -73,6 +73,18 @@ for(auto p: context_.partitions()) {
 } // for
 #endif
 
+  {
+  clog_tag_guard(runtime_driver);
+  auto coloring_info = context_.coloring_info_map();
+
+  for(auto ci: coloring_info) {
+    clog(info) << "index: " << ci.first << std::endl;
+    for(auto c: ci.second) {
+      clog(info) << "color: " << c.first << " " << c.second << std::endl;
+    } // for
+  } // for
+  } // guard
+
   // Register user data
   //data::storage_t::instance().register_all();
 

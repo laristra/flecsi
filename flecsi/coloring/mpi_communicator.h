@@ -578,8 +578,14 @@ if(rank == 1) {
 
     MPI_Comm_size(MPI_COMM_WORLD, &colors);
 
-    coloring_info_t buffer[colors];
-    const size_t bytes = sizeof(coloring_info_t);
+    struct size_info_t {
+      size_t exclusive;
+      size_t shared;
+      size_t ghost;
+    }; // struct size_info_t
+
+    size_info_t buffer[colors];
+    const size_t bytes = sizeof(size_info_t);
 
     int result = MPI_Allgather(&color_info, bytes, MPI_BYTE,
       &buffer, bytes, MPI_BYTE, MPI_COMM_WORLD);
@@ -587,11 +593,85 @@ if(rank == 1) {
     std::unordered_map<size_t, coloring_info_t> coloring_info;
 
     for(size_t c(0); c<colors; ++c) {
-      coloring_info[c] =  buffer[c];
+      coloring_info[c].exclusive =  buffer[c].exclusive;
+      coloring_info[c].shared =  buffer[c].shared;
+      coloring_info[c].ghost =  buffer[c].ghost;
     } // for
+
+    size_t max_request_indices =
+      get_max_request_size(color_info.shared_users.size());
+
+    std::cout << "max_request_indices: " << max_request_indices << std::endl;
     
+    std::vector<size_t> input_indices(colors*max_request_indices,
+      std::numeric_limits<size_t>::max());
+    std::vector<size_t> info_indices(colors*max_request_indices);
+
+    for(size_t c(0); c<colors; ++c) {
+      size_t off(0);
+      const size_t roff = r*max_request_indices;
+
+      for(auto s: color_info.shared_users) {
+        input_indices[roff + off++] = s;
+      } // for
+    } // for
+
+    // Send the request indices to all other ranks.
+    result = MPI_Alltoall(
+      &input_indices[0], max_request_indices, mpi_size_t_type,
+      &info_indices[0], max_request_indices, mpi_size_type,
+      MPI_COMM_WORLD);
+
+    for(size_t c(0); c<colors; ++c) {
+    } // for
+
     return coloring_info;
   } // get_coloring_info
+
+  size_t
+  get_max_request_size(
+    size_t request_indices
+  )
+  {
+    size_t max_request_indices = 0;
+
+    // Get a valid MPI type for size_t.
+    const auto mpi_size_t_type =
+      flecsi::coloring::mpi_typetraits<size_t>::type();
+
+    // This may be inefficient, but this call is doing a reduction
+    // to determine the maximum number of indices requested by any rank
+    // so that we can pad out the all-to-all communication below.
+    int result = MPI_Allreduce(&request_indices, &max_request_indices, 1,
+      mpi_size_t_type, MPI_MAX, MPI_COMM_WORLD);
+
+    return max_request_indices;
+  } // get_max_request_size
+
+#if 0
+  std::vector<size_t>
+  get_all_set_indices(
+    size_t max_request_indices,
+    std::set<size_t> index_set
+  )
+  {
+    std::vector<size_t> input_indices(colors*max_request_indices,
+      std::numeric_limits<size_t>::max());
+    std::vector<size_t> info_indices(colors*max_request_indices);
+
+    size_t index(0);
+    for(auto i: index_set) {
+      input_indices[index++] = i;
+    } // for
+
+    // Send the request indices to all other ranks.
+    result = MPI_Alltoall(
+      &input_indices[0], max_request_indices, mpi_size_t_type,
+      &info_indices[0], max_request_indices, mpi_size_type,
+      MPI_COMM_WORLD);
+
+  } // get_all_set_indices
+#endif
 
 private:
 
