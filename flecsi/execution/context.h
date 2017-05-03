@@ -65,36 +65,22 @@ struct context__ : public CONTEXT_POLICY
   //!
   //! @param key The map key.
   //! @param coloring The index coloring to add.
+  //! @param coloring The index coloring information to add.
   //---------------------------------------------------------------------------/
 
   void
   add_coloring(
     size_t key,
-    index_coloring_t & coloring
+    index_coloring_t & coloring,
+    std::unordered_map<size_t, coloring_info_t> & coloring_info
   )
   {
-    if(colorings_.find(key) == colorings_.end()) {
-      colorings_[key] = coloring;
-    } // if
+    clog_assert(colorings_.find(key) == colorings_.end(),
+      "color index already exists");
+
+    colorings_[key] = coloring;
+    coloring_info_[key] = coloring_info;
   } // add_coloring
-
-  //---------------------------------------------------------------------------/
-  //! Add an index coloring information.
-  //!
-  //! @param key The map key.
-  //! @param coloring The index coloring information to add.
-  //---------------------------------------------------------------------------/
-
-  void
-  add_coloring_info(
-    size_t key,
-    const std::unordered_map<size_t, coloring_info_t> & coloring_info
-  )
-  {
-    if(coloring_info_.find(key) == coloring_info_.end()) {
-      coloring_info_[key] = coloring_info;
-    } // if
-  } // add_coloring_info
 
   //---------------------------------------------------------------------------/
   //! Return the index coloring referenced by key.

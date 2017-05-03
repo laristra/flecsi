@@ -25,6 +25,17 @@ struct coloring_info_t {
   size_t ghost;
 }; // struct coloring_info_t
 
+inline
+std::ostream &
+operator << (
+  std::ostream & stream,
+  const coloring_info_t & ci
+)
+{
+  stream << "exclusive: " << ci.exclusive << " shared: " << ci.shared <<
+    " ghost: " << ci.ghost;
+} // operator <<
+
 ///
 /// Type for passing coloring information about a single entity.
 ///

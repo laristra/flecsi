@@ -298,17 +298,26 @@ void add_colorings(int dummy) {
   clog_container_one(info, "ghost vertices ", vertices.ghost, clog::newline);
   } // guard
 
+  // Create coloring information
+  coloring::coloring_info_t cell_color_info{ cells.exclusive.size(),
+    cells.shared.size(), cells.ghost.size() };
+  coloring::coloring_info_t vertex_color_info{ vertices.exclusive.size(),
+    vertices.shared.size(), vertices.ghost.size() };
+
+  {
+  clog_tag_guard(coloring);
+  clog(info) << cell_color_info << std::endl << std::flush;
+  clog(info) << vertex_color_info << std::endl << std::flush;
+  } // gaurd
+
+  // Gather the coloring info from all colors
+  auto cell_coloring_info = communicator->get_coloring_info(cell_color_info);
+  auto vertex_coloring_info =
+    communicator->get_coloring_info(vertex_color_info);
+
   // Add colorings to the context.
-  context_.add_coloring(0, cells);
-  context_.add_coloring(1, vertices);
-
-  coloring::coloring_info_t cell_info{ cells.exclusive, cells.shared,
-    cells.ghost };
-  coloring::coloring_info_t vertex_info{ vertices.exclusive, vertices.shared,
-    vertices.ghost };
-
-  auto cell_coloring_info = communicator->get_coloring_info(cell_info);
-  auto vertex_coloring_info = communicator->get_coloring_info(vertex_info);
+  context_.add_coloring(0, cells, cell_coloring_info);
+  context_.add_coloring(1, vertices, vertex_coloring_info);
 
 } // add_colorings
 
