@@ -83,8 +83,13 @@ legion_context_policy_t::initialize(
   HighLevelRuntime::set_registration_callback(mapper_registration);
 
   // Configure interoperability layer.
+  {
+  clog_tag_guard(context);
+  clog(info) << "Configuring MPI interoperability " << std::endl;
+  }
+
   int rank;
-  MPI_Comm_size(MPI_COMM_WORLD, &rank);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   Legion::Runtime::configure_MPI_interoperability(rank);
 
   // Start the Legion runtime
