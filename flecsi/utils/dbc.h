@@ -110,11 +110,14 @@ bool in_open_range_func(comp_t const & x, comp_t const & min,
   comp_t const & max, char const * const name, const char * file_name,
   const char * func_name, int line)
 {
-  std::stringstream errstr;
+  auto gen = [&](){
+    std::stringstream errstr;
+    errstr << name << " (" << x << ") was not in range ("
+           << min << "," << max << ")";
+    return errstr.str();
+  };
   bool cond = x > min && x < max;
-  errstr << name << " (" << x << ") was not in range ("
-         << min << "," << max << ")";
-  assertf(cond,errstr.str(),file_name,func_name,line,dbc_action);
+  assertf_l(cond,gen,file_name,func_name,line,dbc_action);
   return cond;
 } // InOpenRange
 
