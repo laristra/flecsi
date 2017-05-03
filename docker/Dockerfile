@@ -16,7 +16,7 @@ ARG CI
 ARG TRAVIS
 ARG TRAVIS_BRANCH
 ARG TRAVIS_JOB_NUMBER
-ARG TRAVIS_PULL_REQUEST 
+ARG TRAVIS_PULL_REQUEST
 ARG TRAVIS_JOB_ID
 ARG TRAVIS_TAG
 ARG TRAVIS_REPO_SLUG
@@ -86,7 +86,7 @@ RUN cd .. && if [ ${SONARQUBE} ]; then \
        -Dsonar.github.pullRequest=${TRAVIS_PULL_REQUEST} \
        -Dsonar.github.repository=${TRAVIS_REPO_SLUG} \
        -Dsonar.github.oauth=${SONARQUBE_GITHUB_TOKEN}) \
-    -Dsonar.login=${SONARQUBE_TOKEN}; \
+    -Dsonar.login=${SONARQUBE_TOKEN} || true; \
 fi && cd -
 USER root
 RUN make install
