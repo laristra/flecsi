@@ -6,8 +6,8 @@
 # /@@////   /@@/@@@@@@@/@@       ////////@@/@@
 # /@@       /@@/@@//// //@@    @@       /@@/@@
 # /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
-# //       ///  //////   //////  ////////  // 
-# 
+# //       ///  //////   //////  ////////  //
+#
 # Copyright (c) 2016 Los Alamos National Laboratory, LLC
 # All rights reserved
 #~----------------------------------------------------------------------------~#
@@ -27,6 +27,19 @@ else()
 endif()
 
 set(FLECSI_RUNTIME_LIBRARIES)
+
+#------------------------------------------------------------------------------#
+# DBC
+#------------------------------------------------------------------------------#
+if(FLECSI_DBC_ACTION STREQUAL "throw")
+  add_definitions(-DFLECSI_DBC_THROW)
+elseif(FLECSI_DBC_ACTION STREQUAL "notify")
+  add_definitions(-DFLECSI_DBC_NOTIFY)
+endif()
+
+if(FLECSI_DBC_REQUIRE)
+  add_definitions(-DFLECSI_REQUIRE_ON)
+endif()
 
 #------------------------------------------------------------------------------#
 # OpenSSL
@@ -103,7 +116,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
   if(NOT ENABLE_MPI)
     message (FATAL_ERROR "MPI is required for the mpilegion runtime model")
   endif()
- 
+
   set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/mpilegion)
 
   if(NOT APPLE)
@@ -119,7 +132,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 #
 else(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
-  message(FATAL_ERROR "Unrecognized runtime selection")  
+  message(FATAL_ERROR "Unrecognized runtime selection")
 
 endif(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
