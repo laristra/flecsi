@@ -574,8 +574,9 @@ if(rank == 1) {
   get_coloring_info(const coloring_info_t & color_info)
   override
   {
-    int colors;
+    int color, colors;
 
+    MPI_Comm_rank(MPI_COMM_WORLD, &color);
     MPI_Comm_size(MPI_COMM_WORLD, &colors);
 
     struct size_info_t {
@@ -598,6 +599,9 @@ if(rank == 1) {
       coloring_info[c].ghost =  buffer[c].ghost;
     } // for
 
+// FIXME: This pattern gets repeated several times in this file -> Need
+//        to create a function to handle it.
+    {
     size_t max_request_indices =
       get_max_request_size(color_info.shared_users.size());
 
@@ -609,21 +613,78 @@ if(rank == 1) {
 
     for(size_t c(0); c<colors; ++c) {
       size_t off(0);
-      const size_t roff = r*max_request_indices;
+      const size_t coff = c*max_request_indices;
 
       for(auto s: color_info.shared_users) {
-        input_indices[roff + off++] = s;
+        input_indices[coff + off++] = s;
       } // for
     } // for
+
+    const auto mpi_size_t_type =
+      flecsi::coloring::mpi_typetraits<size_t>::type();
 
     // Send the request indices to all other ranks.
     result = MPI_Alltoall(
       &input_indices[0], max_request_indices, mpi_size_t_type,
-      &info_indices[0], max_request_indices, mpi_size_type,
+      &info_indices[0], max_request_indices, mpi_size_t_type,
       MPI_COMM_WORLD);
 
     for(size_t c(0); c<colors; ++c) {
+
+      size_t * info = &info_indices[c*max_request_indices];
+      auto & color_info = coloring_info[c];
+
+      for(size_t i(0); i<max_request_indices; ++i) {
+        if(info[i] != std::numeric_limits<size_t>::max()) {
+          color_info.shared_users.insert(info[i]);
+        } // if
+      } // for
     } // for
+    } // scope
+// Pattern ends here
+
+// Repeat
+    {
+    int max_request_indices =
+      get_max_request_size(color_info.ghost_owners.size());
+
+    std::cout << "max_request_indices: " << max_request_indices << std::endl;
+    
+    std::vector<size_t> input_indices(colors*max_request_indices,
+      std::numeric_limits<size_t>::max());
+    std::vector<size_t> info_indices(colors*max_request_indices);
+
+    for(size_t c(0); c<colors; ++c) {
+      size_t off(0);
+      const size_t coff = c*max_request_indices;
+
+      for(auto s: color_info.shared_users) {
+        input_indices[coff + off++] = s;
+      } // for
+    } // for
+
+    const auto mpi_size_t_type =
+      flecsi::coloring::mpi_typetraits<size_t>::type();
+
+    // Send the request indices to all other ranks.
+    result = MPI_Alltoall(
+      &input_indices[0], max_request_indices, mpi_size_t_type,
+      &info_indices[0], max_request_indices, mpi_size_t_type,
+      MPI_COMM_WORLD);
+
+    for(size_t c(0); c<colors; ++c) {
+
+      size_t * info = &info_indices[c*max_request_indices];
+      auto & color_info = coloring_info[c];
+
+      for(size_t i(0); i<max_request_indices; ++i) {
+        if(info[i] != std::numeric_limits<size_t>::max()) {
+          color_info.ghost_owners.insert(info[i]);
+        } // if
+      } // for
+    } // for
+    } // scope
+// Pattern ends here
 
     return coloring_info;
   } // get_coloring_info

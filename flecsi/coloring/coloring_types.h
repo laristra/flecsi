@@ -41,6 +41,12 @@ operator << (
   for(auto i: ci.shared_users) {
     stream << i << " ";
   } // for
+  stream << "]";
+
+  stream << " owners [ ";
+  for(auto i: ci.ghost_owners) {
+    stream << i << " ";
+  } // for
   stream << "]" << std::endl;
 } // operator <<
 
