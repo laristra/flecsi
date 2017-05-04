@@ -94,12 +94,12 @@ struct task__
   )
   {
     return EXECUTION_POLICY::template execute_task<RETURN>(
-      key, parent, std::forward<ARGS>(args)...);
+      key, parent, std::forward<ARGS>(args) ...);
   } // execute_task
 
-}; // class task
+}; // struct task__
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
 
 //----------------------------------------------------------------------------//
@@ -148,7 +148,7 @@ static_assert(verify_future::has_member_get<future__<double>>::value,
 
 } // namespace verify_future
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
 
 #endif // flecsi_execution_task_h

@@ -271,14 +271,14 @@ struct serial_execution_policy_t
   ///         successfully registered.
   ///
   template<
-    typename R,
-    typename A
+    typename RETURN,
+    typename ARG_TUPLE
   >
   static
   bool
   register_function(
     const utils::const_string_t & key,
-    std::function<R(A)> & user_function
+    std::function<RETURN(ARG_TUPLE)> & user_function
   )
   {
     return context_t::instance().register_function(key, user_function);
@@ -293,19 +293,23 @@ struct serial_execution_policy_t
   ///
   /// \return The return type of the provided function handle.
   ///
+
   template<
-    typename T,
-    typename ... As
+    typename RETURN,
+    typename FUNCTION_HANDLE,
+    typename ... ARGS
   >
   static
   decltype(auto)
   execute_function(
-    T & handle,
-    As && ... args
+    FUNCTION_HANDLE & handle,
+    ARGS && ... args
   )
   {
-    auto targs = std::forward_as_tuple( std::forward<As>(args) ...);
-    return handle(context_t::instance().function(handle.key()), targs);
+    auto targs = std::forward_as_tuple( std::forward<ARGS>(args) ...);
+    return handle(
+      context_t::instance().function<RETURN,decltype(targs)>(handle.key()),
+      targs);
   } // execute_function
 
 }; // struct serial_execution_policy_t

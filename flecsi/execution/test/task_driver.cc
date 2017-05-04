@@ -172,7 +172,7 @@ struct material_t {
   double e;
 
   double eos() {
-    return flecsi_execute_function(eos_function, r, e);
+    return flecsi_execute_function(double,eos_function, r, e);
   } // eos
 
   material_t(eos_function_t eos_function_, double r_, double e_)

@@ -39,7 +39,7 @@ void driver(int argc, char ** argv) {
 
   auto handle = flecsi_function_handle(test_function);
 
-  double result = flecsi_execute_function(handle, 2.0, 10.0);
+  double result = flecsi_execute_function(double,handle, 2.0, 10.0);
 
   ASSERT_EQ(result, 20);
 
