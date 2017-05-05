@@ -65,7 +65,12 @@ runtime_driver(
   context_.pop_state( utils::const_string_t{"specialization_driver"}.hash());
 #endif // FLECSI_ENABLE_SPECIALIZATION_DRIVER
 
-  // Add reduction of meta data required to construct Legion data structures.
+  int num_colors;
+  MPI_Comm_size(MPI_COMM_WORLD, &num_colors);
+  {
+  clog_tag_guard(runtime_driver);
+  clog(info) << "MPI num_colors is " << num_colors << std::endl;
+  }
 
 #if 0
 for(auto p: context_.partitions()) {
@@ -73,17 +78,38 @@ for(auto p: context_.partitions()) {
 } // for
 #endif
 
+  std::map<size_t, Legion::IndexSpace> expanded_ispaces;
+  std::map<size_t, Legion::LogicalRegion> expanded_lregions;
   {
   clog_tag_guard(runtime_driver);
   auto coloring_info = context_.coloring_info_map();
 
-  for(auto ci: coloring_info) {
-    clog(info) << "index: " << ci.first << std::endl;
-    for(auto c: ci.second) {
-      clog(info) << "color: " << c.first << " " << c.second << std::endl;
-    } // for
-  } // for
-  } // guard
+  for(auto key_idx: coloring_info) {
+    clog(error) << "index: " << key_idx.first << std::endl;
+    size_t total_num_entities = 0;
+    for(auto color_idx: key_idx.second) {
+      clog(error) << "color: " << color_idx.first << " " << color_idx.second << std::endl;
+      total_num_entities = std::max(total_num_entities,
+          color_idx.second.exclusive + color_idx.second.shared + color_idx.second.ghost);
+    } // for color_idx
+    clog(error) << "total_num_entities " << total_num_entities << std::endl;
+    LegionRuntime::Arrays::Rect<2> expanded_bounds = LegionRuntime::Arrays::Rect<2>(
+        LegionRuntime::Arrays::Point<2>::ZEROES(),
+        LegionRuntime::Arrays::make_point(num_colors,total_num_entities));
+    Legion::Domain expanded_dom(Legion::Domain::from_rect<2>(expanded_bounds));
+    Legion::IndexSpace expanded_is = runtime->create_index_space(ctx,
+        expanded_dom);
+    char buf[80];
+    sprintf(buf, "expanded index space %d", key_idx.first);
+    runtime->attach_name(expanded_is, buf);
+    expanded_ispaces[key_idx.first] = expanded_is;
+#if 0
+    Legion::LogicalRegion expanded_lr = runtime->create_logical_region(ctx,
+        expanded_is, expanded_fs);
+    runtime->attach_name(expanded_lr, buf);
+#endif
+  } // for key_idx
+  } // clog_tag_guard
 
   // Register user data
   //data::storage_t::instance().register_all();
@@ -95,18 +121,11 @@ for(auto p: context_.partitions()) {
   // Must epoch launch
   Legion::MustEpochLauncher must_epoch_launcher;
 
-  int size;
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
-  {
-  clog_tag_guard(runtime_driver);
-  clog(info) << "MPI size is " << size << std::endl;
-  }
-
   #if 0
   auto spmd_id = context_.task_id(__flecsi_task_key(spmd_task, loc));
 
   // Add colors to must_epoch_launcher
-  for(size_t i(0); i<size; ++i) {
+  for(size_t i(0); i<num_colors; ++i) {
     Legion::TaskLauncher spmd_launcher(spmd_id, Legion::TaskArgument(0, 0));
     spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
@@ -120,6 +139,10 @@ for(auto p: context_.partitions()) {
   #endif
 
   // Finish up Legion runtime and fall back out to MPI.
+  for (auto itr = expanded_ispaces.begin(); itr != expanded_ispaces.end(); ++itr)
+    runtime->destroy_index_space(ctx, expanded_ispaces[itr->first]);
+  expanded_ispaces.clear();
+
   context_.unset_call_mpi(ctx, runtime);
   context_.handoff_to_mpi(ctx, runtime);
 } // runtime_driver
