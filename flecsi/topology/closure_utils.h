@@ -3,10 +3,10 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_topology_graph_utils_h
-#define flecsi_topology_graph_utils_h
+#ifndef flecsi_topology_closure_utils_h
+#define flecsi_topology_closure_utils_h
 
-#include "flecsi/topology/graph_definition.h"
+#include "flecsi/topology/mesh_definition.h"
 #include "flecsi/utils/logging.h"
 #include "flecsi/utils/set_utils.h"
 
@@ -27,7 +27,7 @@ namespace topology {
 /// \tparam thru_dim The topological dimension through which the neighbor
 ///                  connection exists.
 ///
-/// \param gd The graph definition containing the topological connectivity
+/// \param md The mesh definition containing the topological connectivity
 ///           information.
 /// \param entity_id The id of the entity in from_dim for which the neighbors
 ///           are to be found.
@@ -39,18 +39,18 @@ template<
 >
 std::set<size_t>
 entity_neighbors(
-  graph_definition_t & gd,
+  mesh_definition_t & md,
   size_t entity_id
 )
 {
   // Get the vertices of the requested id
-  auto vertices = gd.vertex_set(from_dim, entity_id);
+  auto vertices = md.vertex_set(from_dim, entity_id);
 
   // Put the results into set form
   std::set<size_t> neighbors;
 
   // Go through the entities of the to_dim
-  for(size_t e(0); e<gd.num_entities(to_dim); ++e) {
+  for(size_t e(0); e<md.num_entities(to_dim); ++e) {
 
     // Skip the input id if the dimensions are the same
     if(from_dim == to_dim && e == entity_id) {
@@ -58,7 +58,7 @@ entity_neighbors(
     } // if
 
     // Get the vertices that define the current entity from the to_dim
-    auto other = gd.vertex_set(to_dim, e);
+    auto other = md.vertex_set(to_dim, e);
 
     // Get the intersection set
     auto intersect = flecsi::utils::set_intersection(vertices, other);
@@ -82,7 +82,7 @@ entity_neighbors(
 /// \tparam thru_dim The topological dimension through which the neighbor
 ///                  connection exists.
 ///
-/// \param gd The graph definition containing the topological connectivity
+/// \param md The mesh definition containing the topological connectivity
 ///           information.
 /// \param indices The entity indeces of the initial set.
 /// \param intersections The number of intersections that constitute a
@@ -95,7 +95,7 @@ template<
 >
 std::set<size_t>
 entity_closure(
-  graph_definition_t & gd,
+  mesh_definition_t & md,
   std::set<size_t> indices
 )
 {
@@ -105,7 +105,7 @@ entity_closure(
   // Iterate over the entity indices and add all neighbors
   for(auto i: indices) {
     auto ncurr =
-      entity_neighbors<from_dim, to_dim, thru_dim>(gd, i);
+      entity_neighbors<from_dim, to_dim, thru_dim>(md, i);
 
     closure = flecsi::utils::set_union(ncurr, closure);
   } // for
@@ -119,7 +119,7 @@ entity_closure(
 /// \tparam by_dim The topological dimension of the entities that
 ///                reference the vertex.
 ///
-/// \param gd The graph definition containing the topological connectivity
+/// \param md The mesh definition containing the topological connectivity
 ///           information.
 /// \param id The id of the vertex.
 ///
@@ -128,7 +128,7 @@ template<
 >
 std::set<size_t>
 vertex_referencers(
-  graph_definition_t & gd,
+  mesh_definition_t & md,
   size_t id
 )
 {
@@ -136,10 +136,10 @@ vertex_referencers(
 
   // Iterate over entities adding any entity that contains
   // the vertex id to the set.
-  for(size_t e(0); e<gd.num_entities(by_dim); ++e) {
+  for(size_t e(0); e<md.num_entities(by_dim); ++e) {
 
     // Get the vertex ids of current cell
-    auto eset = gd.vertex_set(by_dim, e);
+    auto eset = md.vertex_set(by_dim, e);
 
     // If the cell references this vertex add it
     if(eset.find(id) != eset.end()) {
@@ -157,7 +157,7 @@ vertex_referencers(
 /// \tparam by_dim The topological dimension of the entities that
 ///                reference the vertex.
 ///
-/// \param gd The graph definition containing the topological connectivity
+/// \param md The mesh definition containing the topological connectivity
 ///           information.
 /// \param indices The entity indeces.
 ///
@@ -166,7 +166,7 @@ template<
 >
 std::set<size_t>
 vertex_closure(
-  graph_definition_t & gd,
+  mesh_definition_t & md,
   std::set<size_t> indices
 )
 {
@@ -175,7 +175,7 @@ vertex_closure(
   // Iterate over the entities in indices and add any vertices that are
   // referenced by one of the entity indices
   for(auto i: indices) {
-    auto vset = gd.vertex_set(by_dim, i);
+    auto vset = md.vertex_set(by_dim, i);
 
     closure = flecsi::utils::set_union(closure, vset);
   } // for
@@ -186,7 +186,7 @@ vertex_closure(
 } // namespace topology
 } // namespace flecsi
 
-#endif // flecsi_topology_graph_utils_h
+#endif // flecsi_topology_closure_utils_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

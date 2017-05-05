@@ -40,6 +40,8 @@
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/tuple_wrapper.h"
 
+#include "flecsi/execution/legion/runtime_state.h"
+
 clog_register_tag(context);
 clog_register_tag(interop);
 

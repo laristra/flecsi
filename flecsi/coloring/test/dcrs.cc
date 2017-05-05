@@ -7,23 +7,23 @@
 #include <mpi.h>
 
 #include "flecsi/io/simple_definition.h"
-#include "flecsi/partition/dcrs_utils.h"
+#include "flecsi/coloring/dcrs_utils.h"
 
 const size_t output_rank(0);
 
-TEST(dcrs, naive_partitioning) {
+TEST(dcrs, naive_coloring) {
   flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
-  auto naive = flecsi::dmp::naive_partitioning(sd);
+  auto naive = flecsi::coloring::naive_coloring(sd);
 
   clog_set_output_rank(0);
 
-  clog_container_one(info, "naive partitioning", naive, clog::space);
+  clog_container_one(info, "naive coloring", naive, clog::space);
 } // TEST
 
 TEST(dcrs, simple2d_8x8) {
 
   flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
-  auto dcrs = flecsi::dmp::make_dcrs(sd);
+  auto dcrs = flecsi::coloring::make_dcrs(sd);
 
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -46,7 +46,7 @@ TEST(dcrs, simple2d_8x8) {
 TEST(dcrs, simple2d_16x16) {
 
   flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
-  auto dcrs = flecsi::dmp::make_dcrs(sd);
+  auto dcrs = flecsi::coloring::make_dcrs(sd);
 
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);

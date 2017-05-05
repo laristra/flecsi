@@ -13,23 +13,24 @@
 #include "flecsi/execution/execution.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/io/simple_definition.h"
-#include "flecsi/partition/communicator.h"
-#include "flecsi/partition/dcrs_utils.h"
-#include "flecsi/partition/parmetis_partitioner.h"
-#include "flecsi/partition/mpi_communicator.h"
-#include "flecsi/topology/graph_utils.h"
+#include "flecsi/coloring/coloring_types.h"
+#include "flecsi/coloring/communicator.h"
+#include "flecsi/coloring/dcrs_utils.h"
+#include "flecsi/coloring/parmetis_colorer.h"
+#include "flecsi/coloring/mpi_communicator.h"
+#include "flecsi/topology/closure_utils.h"
 #include "flecsi/utils/set_utils.h"
 
-clog_register_tag(partition);
+clog_register_tag(coloring);
 
 namespace flecsi {
 namespace execution {
 
 //----------------------------------------------------------------------------//
-// Create some basic partitions.
+// Create some basic colorings.
 //----------------------------------------------------------------------------//
 
-void add_partitions(int dummy) {
+void add_colorings(int dummy) {
 
   clog_set_output_rank(0);
 
@@ -40,36 +41,37 @@ void add_partitions(int dummy) {
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  clog(info) << "add_partitions, rank: " << rank << std::endl;
+  clog(info) << "add_colorings, rank: " << rank << std::endl;
 
   // Read the mesh definition from file.
   //flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
   flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
 
-  // Create the dCRS representation for the distributed partitioner.
-  auto dcrs = flecsi::dmp::make_dcrs(sd);
+  // Create the dCRS representation for the distributed colorer.
+  auto dcrs = flecsi::coloring::make_dcrs(sd);
 
-  // Create a partitioner instance to generate the primary partition.
-  auto partitioner = std::make_shared<flecsi::dmp::parmetis_partitioner_t>();
+  // Create a colorer instance to generate the primary coloring.
+  auto colorer = std::make_shared<flecsi::coloring::parmetis_colorer_t>();
 
-  // Cells index partition.
-  flecsi::dmp::index_partition_t cells;
-
-  // Create the primary partition.
-  cells.primary = partitioner->partition(dcrs);
+  // Cells index coloring.
+  flecsi::coloring::index_coloring_t cells;
+  flecsi::coloring::coloring_info_t cell_color_info;
+ 
+  // Create the primary coloring.
+  cells.primary = colorer->color(dcrs);
 
   {
-  clog_tag_guard(partition);
-  clog_container_one(info, "primary partition", cells.primary, clog::space);
+  clog_tag_guard(coloring);
+  clog_container_one(info, "primary coloring", cells.primary, clog::space);
   } // guard
 
-  // Compute the dependency closure of the primary cell partition
+  // Compute the dependency closure of the primary cell coloring
   // through vertex intersections (specified by last argument "0").
   // To specify edge or face intersections, use 1 (edges) or 2 (faces).
   auto closure = flecsi::topology::entity_closure<2,2,0>(sd, cells.primary);
 
   {
-  clog_tag_guard(partition);
+  clog_tag_guard(coloring);
   clog_container_one(info, "closure", closure, clog::space);
   } // guard
 
@@ -80,12 +82,12 @@ void add_partitions(int dummy) {
     flecsi::utils::set_difference(closure, cells.primary);
 
   {
-  clog_tag_guard(partition);
+  clog_tag_guard(coloring);
   clog_container_one(info, "nearest neighbors", nearest_neighbors, clog::space);
   } // guard
 
   // Create a communicator instance to get neighbor information.
-  auto communicator = std::make_shared<flecsi::dmp::mpi_communicator_t>();
+  auto communicator = std::make_shared<flecsi::coloring::mpi_communicator_t>();
 
   // Get the intersection of our nearest neighbors with the nearest
   // neighbors of other ranks. This map of sets will only be populated
@@ -101,7 +103,7 @@ void add_partitions(int dummy) {
     flecsi::topology::entity_closure<2,2,0>(sd, nearest_neighbors);
 
   {
-  clog_tag_guard(partition);
+  clog_tag_guard(coloring);
   clog_container_one(info, "nearest neighbor closure",
     nearest_neighbor_closure, clog::space);
   } // guard
@@ -112,7 +114,7 @@ void add_partitions(int dummy) {
     flecsi::utils::set_difference(nearest_neighbor_closure, closure);
 
   {
-  clog_tag_guard(partition);
+  clog_tag_guard(coloring);
   clog_container_one(info, "next nearest neighbor", next_nearest_neighbors,
     clog::space);
   } // guard
@@ -123,7 +125,7 @@ void add_partitions(int dummy) {
     next_nearest_neighbors);
 
   {
-  clog_tag_guard(partition);
+  clog_tag_guard(coloring);
   clog_container_one(info, "all neighbors", all_neighbors, clog::space);
   } // guard
 
@@ -149,7 +151,7 @@ void add_partitions(int dummy) {
   } // scope
 
   // Create a map version of the remote info for lookups below.
-  std::unordered_map<size_t, flecsi::dmp::entry_info_t> remote_info_map;
+  std::unordered_map<size_t, flecsi::coloring::entity_info_t> remote_info_map;
   for(auto i: std::get<1>(cell_all_info)) {
     remote_info_map[i.id] = i;
   } // for
@@ -160,12 +162,17 @@ void add_partitions(int dummy) {
   for(auto i: std::get<0>(cell_nn_info)) {
     if(i.size()) {
       cells.shared.insert(
-        flecsi::dmp::entry_info_t(primary_indices_map[offset],
+        flecsi::coloring::entity_info_t(primary_indices_map[offset],
         rank, offset, i));
+      
+      // Collect all colors with whom we require communication
+      // to send shared information.
+      cell_color_info.shared_users = flecsi::utils::set_union(
+        cell_color_info.shared_users, i);
     }
     else {
       cells.exclusive.insert(
-        flecsi::dmp::entry_info_t(primary_indices_map[offset],
+        flecsi::coloring::entity_info_t(primary_indices_map[offset],
         rank, offset, i));
     } // if
     ++offset;
@@ -177,18 +184,26 @@ void add_partitions(int dummy) {
   size_t offset(0);
   for(auto i: std::get<1>(cell_nn_info)) {
     cells.ghost.insert(i);
+
+    // Collect all colors with whom we require communication
+    // to receive ghost information.
+    cell_color_info.ghost_owners.insert(i.rank);
   } // for
   } // scope
 
+  cell_color_info.exclusive = cells.exclusive.size();
+  cell_color_info.shared = cells.shared.size();
+  cell_color_info.ghost = cells.ghost.size();
+
   {
-  clog_tag_guard(partition);
+  clog_tag_guard(coloring);
   clog_container_one(info, "exclusive cells ", cells.exclusive, clog::newline);
   clog_container_one(info, "shared cells ", cells.shared, clog::newline);
   clog_container_one(info, "ghost cells ", cells.ghost, clog::newline);
   } // guard
 
   // Create a map version for lookups below.
-  std::unordered_map<size_t, flecsi::dmp::entry_info_t> shared_cells_map;
+  std::unordered_map<size_t, flecsi::coloring::entity_info_t> shared_cells_map;
   {
   for(auto i: cells.shared) {
     shared_cells_map[i.id] = i;
@@ -200,7 +215,7 @@ void add_partitions(int dummy) {
 
   // Assign vertex ownership
   std::vector<std::set<size_t>> vertex_requests(size);
-  std::set<flecsi::dmp::entry_info_t> vertex_info;
+  std::set<flecsi::coloring::entity_info_t> vertex_info;
 
   size_t offset(0);
   for(auto i: vertex_closure) {
@@ -215,7 +230,7 @@ void add_partitions(int dummy) {
     for(auto c: referencers) {
 
       // Check the remote info map to see if this cell is
-      // off-partition. If it is, compare it's rank for
+      // off-color. If it is, compare it's rank for
       // the ownership logic below.
       if(remote_info_map.find(c) != remote_info_map.end()) {
         min_rank = std::min(min_rank, remote_info_map[c].rank);
@@ -249,9 +264,10 @@ void add_partitions(int dummy) {
 
     if(min_rank == rank) {
       // This is a vertex that belongs to our rank.
-      auto entry = flecsi::dmp::entry_info_t(i, rank, offset, shared_vertices);
+      auto entry =
+        flecsi::coloring::entity_info_t(i, rank, offset, shared_vertices);
       vertex_info.insert(
-        flecsi::dmp::entry_info_t(i, rank, offset++, shared_vertices));
+        flecsi::coloring::entity_info_t(i, rank, offset++, shared_vertices));
     }
     else {
       // Add remote vertex to the request for offset information.
@@ -262,12 +278,18 @@ void add_partitions(int dummy) {
   auto vertex_offset_info =
     communicator->get_entity_info(vertex_info, vertex_requests);
 
-  // Vertices index partition.
-  flecsi::dmp::index_partition_t vertices;
+  // Vertices index coloring.
+  flecsi::coloring::index_coloring_t vertices;
+  coloring::coloring_info_t vertex_color_info;
 
   for(auto i: vertex_info) {
     if(i.shared.size()) {
       vertices.shared.insert(i);
+
+      // Collect all colors with whom we require communication
+      // to send shared information.
+      vertex_color_info.shared_users = flecsi::utils::set_union(
+        vertex_color_info.shared_users, i.shared);
     }
     else {
       vertices.exclusive.insert(i);
@@ -280,8 +302,12 @@ void add_partitions(int dummy) {
 
     auto offset(vertex_offset_info[r].begin());
     for(auto s: i) {
-      vertices.ghost.insert(flecsi::dmp::entry_info_t(s, r, *offset));
+      vertices.ghost.insert(flecsi::coloring::entity_info_t(s, r, *offset));
       ++offset;
+
+      // Collect all colors with whom we require communication
+      // to receive ghost information.
+      vertex_color_info.ghost_owners.insert(r);
     } // for
 
     ++r;
@@ -289,21 +315,42 @@ void add_partitions(int dummy) {
   } // scope
 
   {
-  clog_tag_guard(partition);
+  clog_tag_guard(coloring);
   clog_container_one(info, "exclusive vertices ", vertices.exclusive,
     clog::newline);
   clog_container_one(info, "shared vertices ", vertices.shared, clog::newline);
   clog_container_one(info, "ghost vertices ", vertices.ghost, clog::newline);
   } // guard
 
-  // Add partitions to the context.
-  context_.add_partition(0, cells);
-  context_.add_partition(1, vertices);
+#if 0
+  coloring::coloring_info_t cell_color_info{ cells.exclusive.size(),
+    cells.shared.size(), cells.ghost.size() };
+  coloring::coloring_info_t vertex_color_info{ vertices.exclusive.size(),
+    vertices.shared.size(), vertices.ghost.size() };
+#endif
 
-} // add_partitions
+  vertex_color_info.exclusive = vertices.exclusive.size();
+  vertex_color_info.shared = vertices.shared.size();
+  vertex_color_info.ghost = vertices.ghost.size();
 
+  {
+  clog_tag_guard(coloring);
+  clog(info) << cell_color_info << std::endl << std::flush;
+  clog(info) << vertex_color_info << std::endl << std::flush;
+  } // gaurd
 
-flecsi_register_task(add_partitions, mpi, index);
+  // Gather the coloring info from all colors
+  auto cell_coloring_info = communicator->get_coloring_info(cell_color_info);
+  auto vertex_coloring_info =
+    communicator->get_coloring_info(vertex_color_info);
+
+  // Add colorings to the context.
+  context_.add_coloring(0, cells, cell_coloring_info);
+  context_.add_coloring(1, vertices, vertex_coloring_info);
+
+} // add_colorings
+
+flecsi_register_task(add_colorings, mpi, index);
 
 //----------------------------------------------------------------------------//
 // Specialization driver.
@@ -312,7 +359,7 @@ flecsi_register_task(add_partitions, mpi, index);
 void specialization_driver(int argc, char ** argv) {
   clog(info) << "In specialization driver" << std::endl;
 
-  flecsi_execute_task(add_partitions, mpi, index, 0);
+  flecsi_execute_task(add_colorings, mpi, index, 0);
 
 } // specialization_driver
 

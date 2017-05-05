@@ -6,7 +6,7 @@
 #ifndef flecsi_io_simple_definition_h
 #define flecsi_io_simple_definition_h
 
-#include "flecsi/topology/graph_definition.h"
+#include "flecsi/topology/mesh_definition.h"
 
 #include <fstream>
 #include <unordered_map>
@@ -28,7 +28,7 @@ namespace io {
 ///        the mesh_definition_t interface.
 ///
 class simple_definition_t
-  : public topology::graph_definition__<2>
+  : public topology::mesh_definition__<2>
 {
 public:
 

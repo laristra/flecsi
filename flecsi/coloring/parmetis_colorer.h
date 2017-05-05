@@ -3,10 +3,10 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_partition_parmetis_partitioner_h
-#define flecsi_partition_parmetis_partitioner_h
+#ifndef flecsi_coloring_parmetis_colorer_h
+#define flecsi_coloring_parmetis_colorer_h
 
-#include "flecsi/partition/partitioner.h"
+#include "flecsi/coloring/colorer.h"
 
 #include <set>
 
@@ -21,7 +21,7 @@
 #include <mpi.h>
 #include <parmetis.h>
 
-#include "flecsi/partition/mpi_utils.h"
+#include "flecsi/coloring/mpi_utils.h"
 
 ///
 /// \file
@@ -29,33 +29,33 @@
 ///
 
 namespace flecsi {
-namespace dmp {
+namespace coloring {
 
 ///
-/// \class partitioner_t parmetis_partitioner.h
-/// \brief partitioner_t provides a ParMETIS implementation of the
-///        partitioner_t interface.
+/// \class colorer_t parmetis_colorer.h
+/// \brief colorer_t provides a ParMETIS implementation of the
+///        colorer_t interface.
 ///
-struct parmetis_partitioner_t
-  : public partitioner_t
+struct parmetis_colorer_t
+  : public colorer_t
 {
   /// Default constructor
-  parmetis_partitioner_t() {}
+  parmetis_colorer_t() {}
 
   /// Copy constructor (disabled)
-  parmetis_partitioner_t(const parmetis_partitioner_t &) = delete;
+  parmetis_colorer_t(const parmetis_colorer_t &) = delete;
 
   /// Assignment operator (disabled)
-  parmetis_partitioner_t & operator = (const parmetis_partitioner_t &) = delete;
+  parmetis_colorer_t & operator = (const parmetis_colorer_t &) = delete;
 
   /// Destructor
-  ~parmetis_partitioner_t() {}
+  ~parmetis_colorer_t() {}
 
   ///
-  /// Implementation of partition method. See \ref partitioner_t::partition.
+  /// Implementation of color method. See \ref colorer_t::color.
   ///
   std::set<size_t>
-  partition(
+  color(
     const dcrs_t & dcrs
   ) override
   {
@@ -223,7 +223,7 @@ struct parmetis_partitioner_t
 
   #if 0
       if(rank == 0) {
-        std::cout << "rank " << rank << " primary partition:" << std::endl;
+        std::cout << "rank " << rank << " primary coloring:" << std::endl;
         for(auto i: primary) {
           std::cout << i << " ";
         } // for
@@ -232,14 +232,14 @@ struct parmetis_partitioner_t
   #endif
 
     return primary;
-  } // partition
+  } // color
 
-}; // struct parmetis_partitioner_t
+}; // struct parmetis_colorer_t
 
-} // namespace dmp
+} // namespace coloring
 } // namespace flecsi
 
-#endif // flecsi_partition_parmetis_partitioner_h
+#endif // flecsi_coloring_parmetis_colorer_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

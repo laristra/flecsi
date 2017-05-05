@@ -63,6 +63,7 @@ legion_context_policy_t::initialize(
 
     // Iterate over task variants
     for(auto & v: t.second) {
+      // FIXME: Expand this with comments on what things are.
       auto & value = std::get<1>(v);
       std::get<1>(value)(std::get<0>(value),
         mask_to_type(static_cast<processor_mask_t>(
@@ -82,8 +83,13 @@ legion_context_policy_t::initialize(
   HighLevelRuntime::set_registration_callback(mapper_registration);
 
   // Configure interoperability layer.
+  {
+  clog_tag_guard(context);
+  clog(info) << "Configuring MPI interoperability " << std::endl;
+  }
+
   int rank;
-  MPI_Comm_size(MPI_COMM_WORLD, &rank);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   Legion::Runtime::configure_MPI_interoperability(rank);
 
   // Start the Legion runtime
