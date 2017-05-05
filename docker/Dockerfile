@@ -76,7 +76,7 @@ RUN cd .. && if [ ${SONARQUBE} ]; then \
     -Dsonar.links.scm=https://github.com/${TRAVIS_REPO_SLUG} \
     -Dsonar.links.issue=https://github.com/${TRAVIS_REPO_SLUG}/issues \
     -Dsonar.sources=. \
-    -Dsonar.exclusions=build/CMakeFiles/**,cinch/**,build/doc/doxygen/**,build/include/** \
+    -Dsonar.exclusions=build/CMakeFiles/**,cinch/**,build/doc/doxygen/**,build/include/**,flecsi/*/test/* \
     -Dsonar.cfamily.build-wrapper-output=build/bw-output \
     -Dsonar.cfamily.gcov.reportsPath=. \
     -Dsonar.host.url=https://sonarqube.com \
