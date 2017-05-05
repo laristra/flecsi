@@ -542,7 +542,7 @@ if(rank == 1) {
   ///
   /// Rerturn a map containing partition index and the number of indices
   /// for the given index set.
-  ///     
+  ///
   std::unordered_map<size_t, size_t>
   get_set_sizes(
     const std::set<size_t> & index_set

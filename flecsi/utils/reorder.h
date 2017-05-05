@@ -33,7 +33,10 @@ namespace utils {
   \param [in,out] v The begin iterator or the value array
  */
 template< typename order_iterator, typename value_iterator >
-void reorder( order_iterator order_begin, order_iterator order_end, value_iterator v )  {   
+void reorder(
+   order_iterator order_begin,
+   order_iterator order_end,
+   value_iterator v )  {
 
   typedef typename std::iterator_traits< order_iterator >::value_type index_t;
 
@@ -61,9 +64,14 @@ void reorder( order_iterator order_begin, order_iterator order_end, value_iterat
   \param [in,out] v The begin iterator or the value array
  */
 template< typename order_iterator, typename value_iterator >
-void reorder_destructive( order_iterator order_begin, order_iterator order_end, value_iterator v )  {
-  typedef typename std::iterator_traits< order_iterator >::value_type index_t;
-  typedef typename std::iterator_traits< order_iterator >::difference_type diff_t;
+void reorder_destructive(
+   order_iterator order_begin,
+   order_iterator order_end,
+   value_iterator v )  {
+  typedef typename
+    std::iterator_traits< order_iterator >::value_type index_t;
+  typedef typename
+    std::iterator_traits< order_iterator >::difference_type diff_t;
 
   auto remaining = order_end - 1 - order_begin;
   for ( auto s = index_t(); remaining > 0; ++ s ) {

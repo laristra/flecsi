@@ -40,18 +40,19 @@ public:
   void set_precedence(size_t dim, uint64_t precedence) {}
 
   std::vector<size_t>
-  create_entities(id_t cell_id, size_t dim, domain_connectivity<2> & c, id_t * e){
+  create_entities(id_t cell_id, size_t dim,
+                  domain_connectivity<2> & c, id_t * e) {
     id_t* v = c.get_entities(cell_id, 0);
 
     e[0] = v[0];
     e[1] = v[2];
-    
+
     e[2] = v[1];
     e[3] = v[3];
-    
+
     e[4] = v[0];
     e[5] = v[1];
-    
+
     e[6] = v[2];
     e[7] = v[3];
 
@@ -75,7 +76,7 @@ public:
     std::pair<domain_<0>, Edge>,
     std::pair<domain_<0>, Cell>>;
 
-  using connectivities = 
+  using connectivities =
     std::tuple<std::tuple<domain_<0>, Vertex, Edge>,
                std::tuple<domain_<0>, Vertex, Cell>,
                std::tuple<domain_<0>, Edge, Vertex>,
@@ -128,7 +129,7 @@ TEST(mesh_topology, traversal) {
     for(size_t i = 0; i < width + 1; ++i){
       auto v = mesh->make<Vertex>();
       mesh->add_entity<0,0>(v);
-      vs.push_back(v); 
+      vs.push_back(v);
     }
   }
 
@@ -235,7 +236,7 @@ TEST(mesh_topology, destructor) {
 
   // get all accessors to the data
   auto accs = flecsi_get_handles(*mesh, hydro, double, global, 0);
-  
+
   ASSERT_EQ( accs.size(), 2 );
   ASSERT_EQ( accs[0].label(), "density" );
   ASSERT_EQ( accs[1].label(), "pressure" );
@@ -265,7 +266,7 @@ TEST(mesh_topology, move) {
   // get all accessors to the data
   {
     auto accs = flecsi_get_handles(mesh1, hydro, double, global, 0);
-  
+
     ASSERT_EQ( accs.size(), 2 );
     ASSERT_EQ( accs[0].label(), "density" );
     ASSERT_EQ( accs[1].label(), "pressure" );
@@ -281,11 +282,10 @@ TEST(mesh_topology, move) {
   // it should show up in the new data client though
   {
     auto accs = flecsi_get_handles(mesh2, hydro, double, global, 0);
-  
+
     ASSERT_EQ( accs.size(), 2 );
     ASSERT_EQ( accs[0].label(), "density" );
     ASSERT_EQ( accs[1].label(), "pressure" );
   }
 
 }
-

@@ -160,7 +160,7 @@ struct storage_type_t<global, DS, MD> {
   // \param runtime_namespace The runtime namespace to be used.
   // \param The number of variable versions for this datum.
   ///
-  template< 
+  template<
     typename T,
     size_t NS,
     typename ... Args
@@ -175,7 +175,7 @@ struct storage_type_t<global, DS, MD> {
     Args && ... args
   )
   {
-    return {};    
+    return {};
   } // register_data
 
   //--------------------------------------------------------------------------//

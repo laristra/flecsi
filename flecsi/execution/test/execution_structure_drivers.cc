@@ -171,7 +171,7 @@ void add_partitions(int dummy) {
     ++offset;
   } // for
   } // scope
-  
+
   // Populate ghost cell information.
   {
   size_t offset(0);

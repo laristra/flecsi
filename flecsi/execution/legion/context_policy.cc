@@ -25,7 +25,7 @@ namespace execution {
 //----------------------------------------------------------------------------//
 
 thread_local std::unordered_map<size_t,
-  std::stack<std::shared_ptr<legion_runtime_state_t>>> state_;  
+  std::stack<std::shared_ptr<legion_runtime_state_t>>> state_;
 
 //----------------------------------------------------------------------------//
 // Implementation of legion_context_policy_t::initialize.
@@ -97,7 +97,7 @@ legion_context_policy_t::initialize(
     handoff_to_legion();
     wait_on_legion();
   }
-  
+
   int version, subversion;
   MPI_Get_version(&version, &subversion);
   if(version==3 && subversion>0) {
@@ -194,7 +194,7 @@ legion_context_policy_t::wait_on_mpi(
 
   fm.wait_all_results();
 
-  return fm;    
+  return fm;
 } // legion_context_policy_t::wait_on_mpi
 
 //----------------------------------------------------------------------------//
@@ -225,7 +225,7 @@ legion_context_policy_t::connect_with_mpi(
   } // for
 } // legion_context_policy_t::connect_with_mpi
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
 
 /*~------------------------------------------------------------------------~--*

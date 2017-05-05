@@ -31,7 +31,7 @@ namespace utils {
 ///
 struct debruijn32_t {
 
-  // de Bruijn sequence 
+  // de Bruijn sequence
   //            binary: 0000 0111 0111 1100 1011 0101 0011 0001
   //               hex:    0    7    7    c    b    5    3    1
   static constexpr uint32_t seq_ = 0x077cb531;

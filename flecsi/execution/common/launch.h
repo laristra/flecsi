@@ -98,7 +98,7 @@ make_launch()
   };
 } // make_launch
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
 
 #endif // flecsi_execution_common_launch_h

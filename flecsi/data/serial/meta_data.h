@@ -38,7 +38,7 @@ namespace data {
 /// \brief serial_meta_data_t provides storage for extra information that is
 ///        used to interpret data variable information at different points
 ///        in the low-level runtime.
-/// 
+///
 /// \tparam T A user-defined data type that will be carried with the meta data.
 ///
 template<typename T>

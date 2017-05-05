@@ -31,7 +31,7 @@ struct tuple_wrapper_ : generic_tuple_t {
 
   template<size_t I>
   decltype(auto) get() { return std::get<I>(t_); }
-  
+
 private:
 
   tuple_t t_;

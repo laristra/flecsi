@@ -33,10 +33,10 @@ namespace utils {
   class id_
   {
   public:
-    static constexpr size_t FLAGS_UNMASK = 
-      ~(((size_t(1) << FBITS) - size_t(1)) << 59); 
+    static constexpr size_t FLAGS_UNMASK =
+      ~(((size_t(1) << FBITS) - size_t(1)) << 59);
 
-    static_assert(PBITS + EBITS + FBITS + GBITS + 4 == 128, 
+    static_assert(PBITS + EBITS + FBITS + GBITS + 4 == 128,
       "invalid id bit configuration");
 
     id_() = default;
@@ -96,8 +96,8 @@ namespace utils {
     local_id_t local_id() const
     {
       local_id_t r = dimension_;
-      r |= local_id_t(domain_) << 2; 
-      r |= local_id_t(partition_) << 4; 
+      r |= local_id_t(domain_) << 2;
+      r |= local_id_t(partition_) << 4;
       r |= local_id_t(entity_) << (4 + PBITS);
       return r;
     }

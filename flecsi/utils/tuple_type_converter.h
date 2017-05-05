@@ -50,7 +50,7 @@ namespace utils {
 
   template<class B, typename TO, typename... Args>
   struct base_convert_tuple_type<B, TO, std::tuple<Args...>>{
-    using type = std::tuple<typename base_convert_tuple_type_<Args, TO, 
+    using type = std::tuple<typename base_convert_tuple_type_<Args, TO,
       std::is_base_of<B, Args>::value>::type...>;
   };
 

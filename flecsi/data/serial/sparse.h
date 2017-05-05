@@ -101,7 +101,7 @@ struct sparse_accessor_t
 
   using entry_value_t = entry_value__<T>;
 
-  using index_space_ = 
+  using index_space_ =
     topology::index_space<topology::simple_entry<size_t>, true>;
 
   //--------------------------------------------------------------------------//
@@ -129,7 +129,7 @@ struct sparse_accessor_t
     auto iitr = meta_data_.data.find(version | INDICES_FLAG);
     assert(iitr != meta_data_.data.end());
 
-    std::vector<uint8_t> & raw_indices = 
+    std::vector<uint8_t> & raw_indices =
       const_cast<std::vector<uint8_t> &>(iitr->second);
 
     indices_ = reinterpret_cast<size_t *>(&raw_indices[0]);
@@ -137,10 +137,10 @@ struct sparse_accessor_t
     auto mitr = meta_data_.data.find(version | ENTRIES_FLAG);
     assert(mitr != meta_data_.data.end());
 
-    std::vector<uint8_t> & raw_entries = 
+    std::vector<uint8_t> & raw_entries =
       const_cast<std::vector<uint8_t> &>(mitr->second);
 
-    entries_ = reinterpret_cast<entry_value_t *>(&raw_entries[0]);      
+    entries_ = reinterpret_cast<entry_value_t *>(&raw_entries[0]);
   } // sparse_accessor_t
 
   //--------------------------------------------------------------------------//
@@ -174,7 +174,7 @@ struct sparse_accessor_t
     entry_value_t * start = entries_ + indices_[index];
     entry_value_t * end = entries_ + indices_[index + 1];
 
-    entry_value_t * itr = 
+    entry_value_t * itr =
       std::lower_bound(start, end, entry_value_t(entry),
         [](const auto & k1, const auto & k2) -> bool {
           return k1.entry < k2.entry;
@@ -204,7 +204,7 @@ struct sparse_accessor_t
       }
     }
 
-    return is;    
+    return is;
   }
 
   index_space_ entries(size_t index) const{
@@ -221,7 +221,7 @@ struct sparse_accessor_t
       ++itr;
     }
 
-    return is;    
+    return is;
   }
 
   index_space_ indices(){
@@ -302,7 +302,7 @@ struct sparse_mutator_t {
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
-  
+
   using iterator_t = utils::index_space_t::iterator_t;
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
@@ -331,7 +331,7 @@ struct sparse_mutator_t {
   :
     num_slots_(num_slots),
     label_(label),
-    version_(version), 
+    version_(version),
     meta_data_(meta_data),
     num_indices_(meta_data_.size),
     num_entries_(meta_data_.num_entries),
@@ -368,17 +368,17 @@ struct sparse_mutator_t {
         entry_value_t(entry))->second.value;
     } // if
 
-    entry_value_t * start = entries_ + index * num_slots_;     
+    entry_value_t * start = entries_ + index * num_slots_;
     entry_value_t * end = start + n;
 
-    entry_value_t * itr = 
+    entry_value_t * itr =
       std::lower_bound(start, end, entry_value_t(entry),
         [](const auto & k1, const auto & k2) -> bool{
           return k1.entry < k2.entry;
         });
 
-    // if we are creating an that has already been created, just 
-    // over-write the value and exit.  No need to increment the 
+    // if we are creating an that has already been created, just
+    // over-write the value and exit.  No need to increment the
     // counters or move data.
     if ( itr != end && itr->entry == entry) {
       return itr->value;
@@ -428,16 +428,16 @@ struct sparse_mutator_t {
     auto iitr = meta_data_.data.find(version_ | INDICES_FLAG);
     assert(iitr != meta_data_.data.end());
 
-    std::vector<uint8_t> & raw_indices = 
+    std::vector<uint8_t> & raw_indices =
       const_cast<std::vector<uint8_t> &>(iitr->second);
 
-    size_t * indices = 
+    size_t * indices =
       reinterpret_cast<size_t *>(&raw_indices[0]);
 
     auto mitr = meta_data_.data.find(version_ | ENTRIES_FLAG);
     assert(mitr != meta_data_.data.end());
 
-    std::vector<uint8_t> & raw_entries = 
+    std::vector<uint8_t> & raw_entries =
       const_cast<std::vector<uint8_t> &>(mitr->second);
 
     constexpr size_t ev_bytes = sizeof(entry_value_t);
@@ -451,14 +451,14 @@ struct sparse_mutator_t {
       raw_entries.resize(c * ev_bytes + d);
     } // if
 
-    entry_value_t * entries = 
+    entry_value_t * entries =
       reinterpret_cast<entry_value_t *>(&raw_entries[0]);
 
     entry_value_t * entries_end = entries + s / ev_bytes;
 
     for(size_t i = 0; i < num_indices_; ++i) {
       size_t n = indices_[i];
-      
+
       size_t pos = indices[i];
 
       if(n == 0) {
@@ -467,11 +467,11 @@ struct sparse_mutator_t {
       } // if
 
       auto p = spare_map_.equal_range(i);
-      
+
       size_t m = distance(p.first, p.second);
 
-      entry_value_t * start = entries_ + i * num_slots_;     
-      entry_value_t * end = start + n; 
+      entry_value_t * start = entries_ + i * num_slots_;
+      entry_value_t * end = start + n;
 
       auto iitr = entries + pos;
 
@@ -517,11 +517,11 @@ struct sparse_mutator_t {
 
     constexpr size_t erased_marker = std::numeric_limits<size_t>::max();
 
-    entry_value_t * start; 
+    entry_value_t * start;
     entry_value_t * end;
 
     size_t last = std::numeric_limits<size_t>::max();
-  
+
     size_t num_erased = 0;
 
     for(auto p : *erase_set_){
@@ -529,10 +529,10 @@ struct sparse_mutator_t {
         start = entries + indices[p.first];
         end = entries + indices[p.first + 1];
         last = p.first;
-        indices[p.first] -= num_erased;      
+        indices[p.first] -= num_erased;
       }
 
-      entry_value_t * m = 
+      entry_value_t * m =
         std::lower_bound(start, end, entry_value_t(p.second),
           [](const auto & k1, const auto & k2) -> bool {
             return k1.entry < k2.entry;
@@ -569,7 +569,7 @@ private:
   size_t version_ = 0;
   const meta_data_t & meta_data_ =
     *(std::make_unique<meta_data_t>());
-    
+
 
   size_t num_indices_;
   size_t num_entries_;

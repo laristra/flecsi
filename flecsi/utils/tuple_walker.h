@@ -51,7 +51,7 @@ namespace utils {
     typename P
   >
   struct tuple_walker__{
-    
+
     template<
       typename T
     >

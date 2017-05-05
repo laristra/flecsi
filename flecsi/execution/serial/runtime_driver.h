@@ -29,7 +29,7 @@ void specialization_driver(int argc, char ** argv);
 //! \param[in] argv  The list arguments passed to the driver.
 void serial_runtime_driver(int argc, char ** argv);
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
 
 #endif // flecsi_execution_serial_runtime_driver_h

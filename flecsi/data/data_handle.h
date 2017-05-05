@@ -35,7 +35,7 @@ struct data_handle_base__ : public DP, public data_handle_base{};
 #include "flecsi_runtime_data_handle_policy.h"
 
 namespace flecsi {
-  
+
   template<
     typename T,
     size_t EP,

@@ -107,7 +107,7 @@ TEST(index_space, bin) {
   // bin the index space into two seperate bins based on the
   // tag
   auto bins = is.bin_as_vector( [](const auto & o) { return o.tag; } );
- 
+
   // there should be two bins with 500 elements each.
   ASSERT_EQ( bins.size(), 2 );
   ASSERT_EQ( bins.at(0).size(), num_objects/2 );

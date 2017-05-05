@@ -50,7 +50,7 @@ namespace utils {
 // Entity id type.
 //----------------------------------------------------------------------------//
 
-using id_t = 
+using id_t =
   id_<FLECSI_ID_PBITS, FLECSI_ID_EBITS, FLECSI_ID_FBITS, FLECSI_ID_GBITS>;
 
 //----------------------------------------------------------------------------//
@@ -126,51 +126,51 @@ std::string unique_name(const T * t) {
 
 template<typename T>
 struct function_traits__
-  : function_traits__<decltype(&T::operator())> 
+  : function_traits__<decltype(&T::operator())>
 {};
 
 template<typename R, typename ... As>
-struct function_traits__<R(As ...)> 
+struct function_traits__<R(As ...)>
 {
   using return_type = R;
   using arguments_type = std::tuple<As ...>;
 };
 
 template<typename R, typename ... As>
-struct function_traits__<R(*)(As ...)> 
+struct function_traits__<R(*)(As ...)>
   : public function_traits__<R(As ...)>
 {};
 
 template<typename C, typename R, typename ... As>
-struct function_traits__<R(C::*)(As ...)> 
+struct function_traits__<R(C::*)(As ...)>
   : public function_traits__<R(As ...)>
 {
     using owner_type = C;
 };
 
 template<typename C, typename R, typename ... As>
-struct function_traits__<R(C::*)(As ...) const> 
+struct function_traits__<R(C::*)(As ...) const>
   : public function_traits__<R(As ...)>
 {
     using owner_type = C;
 };
 
 template<typename C, typename R, typename ... As>
-struct function_traits__<R(C::*)(As ...) volatile> 
+struct function_traits__<R(C::*)(As ...) volatile>
   : public function_traits__<R(As ...)>
 {
     using owner_type = C;
 };
 
 template<typename C, typename R, typename ... As>
-struct function_traits__<R(C::*)(As ...) const volatile> 
+struct function_traits__<R(C::*)(As ...) const volatile>
   : public function_traits__<R(As ...)>
 {
     using owner_type = C;
 };
 
 template<typename R, typename ... As>
-struct function_traits__< std::function<R(As ...)> > 
+struct function_traits__< std::function<R(As ...)> >
   : public function_traits__<R(As ...)>
 {};
 

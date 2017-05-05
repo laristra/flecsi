@@ -35,7 +35,8 @@ void top_level_task(const Task *task,
                     Context ctx, HighLevelRuntime *runtime)
 {
     const int num_subregions = 2;
-    PhaseBarrier one_barrier = runtime->create_phase_barrier(ctx, num_subregions);
+    PhaseBarrier one_barrier =
+      runtime->create_phase_barrier(ctx, num_subregions);
 
     MustEpochLauncher must_epoch_launcher;
     std::vector<SPMDArgs> args(num_subregions);
@@ -44,7 +45,8 @@ void top_level_task(const Task *task,
         args[i].pbarrier = one_barrier;
         args[i].my_color = i;
 
-        TaskLauncher launcher(SUBTASK_ID, TaskArgument(&args[i],sizeof(args[i])));
+        TaskLauncher
+          launcher(SUBTASK_ID, TaskArgument(&args[i],sizeof(args[i])));
         DomainPoint point(i);
         must_epoch_launcher.add_single_task(point, launcher);
     }

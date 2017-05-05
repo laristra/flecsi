@@ -53,8 +53,8 @@ namespace execution {
     const std::vector<PhysicalRegion>& regions,
     Context ctx, Runtime* runtime)
   {
- 
-    field_ids_t & fid_t = field_ids_t::instance(); 
+
+    field_ids_t & fid_t = field_ids_t::instance();
 
     LogicalRegion ent_from_lr = regions[0].get_logical_region();
     IndexSpace ent_from_is = ent_from_lr.get_index_space();
@@ -70,16 +70,16 @@ namespace execution {
     IndexSpace raw_connectivity_is = raw_connectivity_lr.get_index_space();
 
     LogicalRegion ent_to_lr = regions[4].get_logical_region();
-    IndexSpace ent_to_is = ent_to_lr.get_index_space();    
+    IndexSpace ent_to_is = ent_to_lr.get_index_space();
 
-    auto from_ac = 
+    auto from_ac =
       regions[1].get_field_accessor(
       connectivity_field_id).typeify<ptr_count>();
 
-    auto to_ac = 
+    auto to_ac =
       regions[2].get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
 
-    auto raw_connectivity_ac = 
+    auto raw_connectivity_ac =
       regions[3].get_field_accessor(fid_t.fid_entity_pair).
         typeify<entity_pair>();
 
@@ -119,7 +119,7 @@ namespace execution {
         count = 0;
         to_start = to_ptr;
       }
-      
+
       to_ac.write(to_ptr, itr.second);
       ++count;
 
@@ -153,13 +153,13 @@ namespace execution {
     LogicalRegion ent_from_lr = regions[0].get_logical_region();
     IndexSpace ent_from_is = ent_from_lr.get_index_space();
 
-    auto from_ac = 
+    auto from_ac =
       regions[0].get_field_accessor(fid_t.fid_offset_count).
       typeify<offset_count>();
 
     auto meta_ac = regions[1].get_field_accessor(fid_t.fid_partition_metadata).
       typeify<partition_metadata>();
-    
+
     partition_metadata md;
     md.partition = p;
     md.reserve = args.reserve;
@@ -205,23 +205,23 @@ namespace execution {
 
     from_ = indices;
 
-    Domain cd = 
+    Domain cd =
       runtime_->get_index_partition_color_space(context_, from_.ip);
     LegionRuntime::Arrays::Rect<1> rect = cd.get_rect<1>();
     size_t num_partitions = rect.hi[0] + 1;
 
     {
       IndexSpace is = h.create_index_space(0, num_partitions - 1);
-      
+
       FieldSpace fs = h.create_field_space();
-      
+
       FieldAllocator a = h.create_field_allocator(fs);
       a.allocate_field(sizeof(partition_metadata),fid_t.fid_partition_metadata);
       partition_metadata_lr_ = h.create_logical_region(is, fs);
 
       LegionRuntime::Arrays::Blockify<1> coloring(1);
 
-      partition_metadata_ip_ = 
+      partition_metadata_ip_ =
         runtime_->create_index_partition(context_, is, coloring);
     }
 
@@ -242,7 +242,7 @@ namespace execution {
       runtime_->get_logical_partition(context_, from_.lr, from_.ip);
 
     il.add_region_requirement(
-          RegionRequirement(ent_from_lp, 0, 
+          RegionRequirement(ent_from_lp, 0,
                             WRITE_DISCARD, EXCLUSIVE, from_.lr));
 
     il.region_requirements[0].add_field(fid_t.fid_offset_count);
@@ -251,7 +251,7 @@ namespace execution {
       partition_metadata_lr_, partition_metadata_ip_);
 
     il.add_region_requirement(
-      RegionRequirement(meta_lp, 0, WRITE_DISCARD, EXCLUSIVE, 
+      RegionRequirement(meta_lp, 0, WRITE_DISCARD, EXCLUSIVE,
                         partition_metadata_lr_));
     il.region_requirements[1].add_field(fid_t.fid_partition_metadata);
 
@@ -281,9 +281,9 @@ namespace execution {
     args.entries_buf_size = cd.num_slots * (sizeof(size_t) + value_size);
 
     Serializer serializer;
-    serializer.serialize(cd.indices, args.indices_buf_size); 
+    serializer.serialize(cd.indices, args.indices_buf_size);
     serializer.serialize(cd.entries, args.entries_buf_size);
-    
+
     const void* args_buf = serializer.get_buffer();
     args.buf_size = serializer.get_used_bytes();
 
@@ -301,17 +301,17 @@ namespace execution {
     il.add_region_requirement(
           RegionRequirement(lp, 0, READ_WRITE,
                             EXCLUSIVE, args.md.lr));
-    
+
     il.region_requirements[0].add_field(fid_t.fid_entry_offset);
     il.region_requirements[0].add_field(fid_t.fid_value);
 
     LogicalPartition lp2 =
       runtime_->get_logical_partition(context_, from_.lr, from_.ip);
-    
+
     il.add_region_requirement(
-          RegionRequirement(lp2, 0, 
+          RegionRequirement(lp2, 0,
                             READ_WRITE, EXCLUSIVE, from_.lr));
-    
+
     il.region_requirements[1].add_field(fid_t.fid_offset_count);
 
     FutureMap fm = h.execute_index_space(il);
@@ -328,8 +328,8 @@ namespace execution {
     size_t partition)
   {
 
-    field_ids_t & fid_t = field_ids_t::instance();  
- 
+    field_ids_t & fid_t = field_ids_t::instance();
+
     IndexSpace is = partition_metadata_lr_.get_index_space();
 
     LogicalPartition lp =
@@ -345,9 +345,9 @@ namespace execution {
                      TaskArgument(nullptr, 0), arg_map);
 
     il.add_region_requirement(
-          RegionRequirement(lp, 0, 
+          RegionRequirement(lp, 0,
                             READ_ONLY, EXCLUSIVE, partition_metadata_lr_));
-    
+
     il.region_requirements[0].add_field(fid_t.fid_partition_metadata);
 
     FutureMap fm = h.execute_index_space(il);
@@ -374,10 +374,10 @@ namespace execution {
       partition_metadata_lr_, partition_metadata_ip_);
 
     il.add_region_requirement(
-          RegionRequirement(lp, 0, 
+          RegionRequirement(lp, 0,
                             WRITE_DISCARD, EXCLUSIVE,
                             partition_metadata_lr_));
-    
+
     il.region_requirements[0].add_field(fid_t.fid_partition_metadata);
 
     FutureMap fm = h.execute_index_space(il);
@@ -392,7 +392,7 @@ namespace execution {
   {
 
     field_ids_t & fid_t = field_ids_t::instance();
-  
+
     legion_helper h(runtime, context);
 
     size_t p = task->index_point.point_data[0];
@@ -465,7 +465,7 @@ namespace execution {
     LogicalRegion ent_lr = regions[1].get_logical_region();
     IndexSpace ent_is = ent_lr.get_index_space();
 
-    auto ent_ac = 
+    auto ent_ac =
       regions[1].get_field_accessor(fid_t.fid_offset_count).
       typeify<offset_count>();
 
@@ -507,7 +507,7 @@ namespace execution {
 
       runtime->destroy_logical_region(context, md.lr);
       runtime->destroy_index_partition(context, md.ip);
-      
+
       md.lr = lr2;
 
       DomainPointColoring coloring;
@@ -515,7 +515,7 @@ namespace execution {
         LegionRuntime::Arrays::make_point(p));
       coloring.emplace(dp, h.domain_from_rect(0, md.reserve - 1));
       Domain cd = h.domain_from_point(p);
-      
+
       md.ip = runtime->create_index_partition(context, is, cd, coloring);
     }
 
@@ -556,10 +556,10 @@ namespace execution {
 
       for(size_t j = 0; j < n; ++j){
         entry_offset& ej = entry_offsets[offset + j];
-        
+
         size_t pos = (i * slot_size + j) * entry_value_size;
 
-        ej.entry = 
+        ej.entry =
           ((entry_offset*)(commit_entry_values + pos))->entry;
 
         offsets.push_back(value_offset);
@@ -597,11 +597,11 @@ namespace execution {
 
       if(j != i){
         memcpy(temp, values + i * value_size, value_size);
-        
+
         memcpy(values + i * value_size,
                values + j * value_size,
                value_size);
-        
+
         memcpy(values + j * value_size, temp, value_size);
 
         offsets[i] = i;
@@ -612,21 +612,21 @@ namespace execution {
       }
     }
 
-    delete[] temp;        
+    delete[] temp;
 
     /*
     np("************");
 
     char* value_ptr2 = values;
     for(size_t i = 0; i < md.size; ++i){
-      cout << "entry: " << entry_offsets[i].entry << 
+      cout << "entry: " << entry_offsets[i].entry <<
         " value: " << *((double*)value_ptr2) << endl;
       value_ptr2 += value_size;
     }
     */
 
     return md;
-  }  
+  }
 
   void
   legion_dpd::create_connectivity(
@@ -636,20 +636,20 @@ namespace execution {
     partitioned_unstructured& to,
     partitioned_unstructured& raw_connectivity)
   {
-    
+
     field_ids_t & fid_t = field_ids_t::instance();
 
     from_ = from;
     to_ = to;
 
-    Domain cd = 
+    Domain cd =
       runtime_->get_index_partition_color_space(context_, from.ip);
     LegionRuntime::Arrays::Rect<1> rect = cd.get_rect<1>();
     size_t num_partitions = rect.hi[0] + 1;
 
     {
       IndexSpace is = h.create_index_space(raw_connectivity.size);
-      
+
       FieldSpace fs = h.create_field_space();
 
       FieldAllocator fa = h.create_field_allocator(fs);
@@ -658,7 +658,7 @@ namespace execution {
 
       to_lr_ = h.create_logical_region(is, fs);
 
-      IndexAllocator ia = 
+      IndexAllocator ia =
         runtime_->create_index_allocator(context_, is);
 
       Coloring coloring;
@@ -673,7 +673,7 @@ namespace execution {
         }
       }
 
-      to_ip_ = 
+      to_ip_ =
         runtime_->create_index_partition(context_, is, coloring, true);
 
     }
@@ -690,13 +690,13 @@ namespace execution {
       runtime_->get_logical_partition(context_, from_.lr, from_.ip);
 
     il.add_region_requirement(
-          RegionRequirement(ent_from_lp, 0, 
+          RegionRequirement(ent_from_lp, 0,
                             READ_ONLY, EXCLUSIVE, from_.lr));
 
     il.region_requirements[0].add_field(fid_t.fid_cell);
 
     il.add_region_requirement(
-          RegionRequirement(ent_from_lp, 0, 
+          RegionRequirement(ent_from_lp, 0,
                             WRITE_DISCARD, EXCLUSIVE, from_.lr));
 
     il.region_requirements[1].add_field(connectivity_field_id(from_dim,
@@ -706,7 +706,7 @@ namespace execution {
       runtime_->get_logical_partition(context_, to_lr_, to_ip_);
 
     il.add_region_requirement(
-          RegionRequirement(to_lp, 0, 
+          RegionRequirement(to_lp, 0,
                             WRITE_DISCARD, EXCLUSIVE, to_lr_));
 
     il.region_requirements[2].add_field(fid_t.fid_ptr_t);
@@ -718,14 +718,14 @@ namespace execution {
         raw_connectivity.lr, raw_connectivity.ip);
 
     il.add_region_requirement(
-          RegionRequirement(raw_connectivity_lp, 0, 
+          RegionRequirement(raw_connectivity_lp, 0,
                             WRITE_DISCARD, EXCLUSIVE, raw_connectivity.lr));
 
     il.region_requirements[3].add_field(fid_t.fid_entity_pair);
 
 
     il.add_region_requirement(
-          RegionRequirement(to_.lr, 0, 
+          RegionRequirement(to_.lr, 0,
                             READ_ONLY, EXCLUSIVE, to_.lr));
 
     il.region_requirements[4].add_field(fid_t.fid_vert);
@@ -743,7 +743,7 @@ namespace execution {
   {
     RegionRequirement rr1(from_.lr, READ_ONLY, EXCLUSIVE, from_.lr);
 
-    field_ids_t & fid_t = field_ids_t::instance();    
+    field_ids_t & fid_t = field_ids_t::instance();
 
     size_t cfid = connectivity_field_id(from_dim, to_dim);
 
@@ -771,23 +771,23 @@ namespace execution {
     to_ent_pr.wait_until_valid();
 
     IndexIterator from_itr(runtime_, context_, from_.lr.get_index_space());
-    auto from_ac = 
+    auto from_ac =
       from_pr.get_field_accessor(cfid).typeify<ptr_count>();
 
     for(size_t i = 0; i < from_.size; ++i){
-      cout << "-------- from: " << i << endl; 
+      cout << "-------- from: " << i << endl;
 
       assert(from_itr.has_next());
       ptr_t from_ptr = from_itr.next();
 
       const ptr_count& pc = from_ac.read(from_ptr);
 
-      ptr_t to_ptr = pc.ptr; 
+      ptr_t to_ptr = pc.ptr;
 
-      auto to_ac = 
+      auto to_ac =
         to_pr.get_field_accessor(fid_t.fid_ptr_t).typeify<ptr_t>();
-      
-      auto to_ent_ac = 
+
+      auto to_ent_ac =
         to_ent_pr.get_field_accessor(fid_t.fid_vert).typeify<size_t>();
 
       size_t j = 0;
@@ -809,7 +809,7 @@ namespace execution {
     entry_offset*& entries,
     void*& values)
   {
-    field_ids_t & fid_t = field_ids_t::instance();    
+    field_ids_t & fid_t = field_ids_t::instance();
 
     partition_metadata md = get_partition_metadata(partition);
 
@@ -818,7 +818,7 @@ namespace execution {
 
     RegionRequirement rr(ent_from_lp, 0, READ_ONLY, EXCLUSIVE, from_.lr);
     rr.add_field(fid_t.fid_offset_count);
-    
+
     InlineLauncher il(rr);
 
     data_from_pr_ = runtime_->map_region(context_, il);
@@ -832,7 +832,7 @@ namespace execution {
     rr2.add_field(fid_t.fid_entry_offset);
 
     RegionRequirement rr3(data_lp, 0, READ_WRITE, EXCLUSIVE, md.lr);
-    
+
     rr3.add_field(fid_t.fid_value);
 
     InlineLauncher il2(rr2);
@@ -850,7 +850,7 @@ namespace execution {
     size_t partition,
     void*& values)
   {
-    field_ids_t & fid_t = field_ids_t::instance();    
+    field_ids_t & fid_t = field_ids_t::instance();
 
     partition_metadata md = get_partition_metadata(partition);
 
@@ -879,7 +879,7 @@ namespace execution {
     runtime_->unmap_region(context_, data_values_pr_);
   }
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
 
 /*~------------------------------------------------------------------------~--*

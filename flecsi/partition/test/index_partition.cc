@@ -39,10 +39,10 @@ protected:
     std::vector<size_t> ntart_per_rank;
     for (int i =0; i<size; i++)
     {
-      size_t start = i*(part + (rem > 0 ? 1 : 0));   
+      size_t start = i*(part + (rem > 0 ? 1 : 0));
       ntart_per_rank.push_back(start);
     }
-    
+
     size_t start = rank*(part + (rem > 0 ? 1 : 0));
     size_t end = rank < rem ? start + part+1 : start + part;
 
@@ -54,7 +54,7 @@ protected:
     	size_t end_i = rank < rem ? start_i + part+1 : start + part;
     	start_global_id.push_back(global_end);
     	global_end +=N*(end_i-start_i);
-  	}//end for
+  	} // end for
 
     for(size_t j=0; j<N; ++j) {
     for(size_t i(start); i<end; ++i) {
@@ -113,15 +113,15 @@ protected:
           previous_indx=ip_.exclusive[i];
           j=ip_.shared.size()+1;
           start_indx=ip_.primary.size()-i-1;
-        }//end if
+        } // end if
         else
         {
           ip_.primary.push_back(ip_.shared_id(j));
           previous_indx=ip_.shared_id(j);
           ip_.shared[j].global_id = start_global_id[rank]+ip_.primary.size()-1;
           start_indx++;
-        }//end else
-      }//end for
+        } // end else
+      } // end for
 
       if (start_indx>(ip_.shared.size()-1))
       {
@@ -129,12 +129,12 @@ protected:
           ip_.primary.push_back(ip_.exclusive[i]);
       }
 
-  }//end_for
+  } // end_for
   for (int i = start_indx; i< ip_.shared.size(); i++)
   {
       ip_.primary.push_back(ip_.shared_id(i));
       ip_.shared[i].global_id = start_global_id[rank]+ip_.primary.size()-1;
-  }//end for
+  } // end for
 
 
   if (size>1)

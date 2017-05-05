@@ -54,7 +54,7 @@ struct serial_future__
   using result_t = R;
 
   ///
-  /// wait() method 
+  /// wait() method
   ///
   void wait() {}
 
@@ -63,11 +63,11 @@ struct serial_future__
   ///
   const result_t & get(size_t index = 0) const { return result_; }
 
-private:  
+private:
 
   ///
   /// set method
-  /// 
+  ///
   void set(const result_t & result) { result_ = result; }
 
   result_t result_;
@@ -314,7 +314,7 @@ struct serial_execution_policy_t
 
 }; // struct serial_execution_policy_t
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
 
 #endif // flecsi_execution_serial_execution_policy_h

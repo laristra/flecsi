@@ -478,7 +478,7 @@ struct legion_execution_policy_t
 
       // Wait for MPI to finish execution (synchronous).
       context_.wait_on_mpi(legion_context, legion_runtime);
-      
+
       // Reset the calling state to false.
       context_.unset_call_mpi(legion_context, legion_runtime);
 
@@ -600,7 +600,7 @@ struct legion_execution_policy_t
 
 }; // struct legion_execution_policy_t
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
 
 #endif // flecsi_execution_legion_execution_policy_h

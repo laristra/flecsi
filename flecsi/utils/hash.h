@@ -16,7 +16,7 @@
 #define flecsi_utils_hash_h
 
 ///
-/// \file 
+/// \file
 /// \date Initial file creation: Oct 15, 2015
 ///
 
@@ -44,7 +44,7 @@ hash__(
 {
   return i == n ?  h :
     hash__(str, h ^ static_cast<T>(std::forward<U>(str)[i]) << 8*(i%8),
-      i + 1, n); 
+      i + 1, n);
 } // hash__
 
 ///

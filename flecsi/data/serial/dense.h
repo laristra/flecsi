@@ -482,7 +482,7 @@ struct storage_type_t<dense, DS, MD>
     //------------------------------------------------------------------------//
     // Set the data label
     //------------------------------------------------------------------------//
- 
+
     data_store[NS][h].label = key.c_str();
 
     //------------------------------------------------------------------------//
@@ -490,7 +490,7 @@ struct storage_type_t<dense, DS, MD>
     // This allows the user to interpret the index space argument
     // in whatever way they want.
     //------------------------------------------------------------------------//
- 
+
     data_store[NS][h].size = data_client.indices(index_space);
 
     //------------------------------------------------------------------------//
@@ -666,7 +666,7 @@ struct storage_type_t<dense, DS, MD>
       auto & meta_data = entry_pair.second;
       // now build the hash for this label
       const auto & label = meta_data.label;
-      auto key_hash = 
+      auto key_hash =
         utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
       auto hash = key_hash ^ runtime_id;
       // filter out the accessors for different data_clients
@@ -680,14 +680,14 @@ struct storage_type_t<dense, DS, MD>
     } // for
 
     // if sorting is requested
-    if (sorted) 
-      std::sort( 
-        as.begin(), as.end(), 
-        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
+    if (sorted)
+      std::sort(
+        as.begin(), as.end(),
+        [](const auto & a, const auto &b) { return a.label()<b.label(); }
       );
 
     return as;
-  
+
   } // get_accessor
 
 
@@ -727,7 +727,7 @@ struct storage_type_t<dense, DS, MD>
       // the namespace data
       auto & namespace_key = namespace_map.first;
       auto & namespace_data = namespace_map.second;
-      
+
       // loop over each key pair
       for (auto & entry_pair : namespace_data) {
         // get the meta data key and label
@@ -735,7 +735,7 @@ struct storage_type_t<dense, DS, MD>
         auto & meta_data = entry_pair.second;
         // now build the hash for this label
         const auto & label = meta_data.label;
-        auto key_hash = 
+        auto key_hash =
           utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
         auto hash = key_hash ^ runtime_id;
         // filter out the accessors for different data_clients
@@ -750,14 +750,14 @@ struct storage_type_t<dense, DS, MD>
     } // for each namespace
 
     // if sorting is requested
-    if (sorted) 
-      std::sort( 
-        as.begin(), as.end(), 
-        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
+    if (sorted)
+      std::sort(
+        as.begin(), as.end(),
+        [](const auto & a, const auto &b) { return a.label()<b.label(); }
       );
 
     return as;
-  
+
   } // get_accessor
 
   /// \brief Return a list of all dense_accessor_t's.
@@ -794,7 +794,7 @@ struct storage_type_t<dense, DS, MD>
       auto & meta_data = entry_pair.second;
       // now build the hash for this label
       const auto & label = meta_data.label;
-      auto key_hash = 
+      auto key_hash =
         utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
       auto hash = key_hash ^ runtime_id;
       // filter out the accessors for different data_clients
@@ -808,14 +808,14 @@ struct storage_type_t<dense, DS, MD>
     } // for
 
     // if sorting is requested
-    if (sorted) 
-      std::sort( 
-        as.begin(), as.end(), 
-        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
+    if (sorted)
+      std::sort(
+        as.begin(), as.end(),
+        [](const auto & a, const auto &b) { return a.label()<b.label(); }
       );
 
     return as;
-  
+
   } // get_accessor
 
 
@@ -851,7 +851,7 @@ struct storage_type_t<dense, DS, MD>
       // the namespace data
       auto & namespace_key = namespace_map.first;
       auto & namespace_data = namespace_map.second;
-      
+
       // loop over each key pair
       for (auto & entry_pair : namespace_data) {
         // get the meta data key and label
@@ -859,7 +859,7 @@ struct storage_type_t<dense, DS, MD>
         auto & meta_data = entry_pair.second;
         // now build the hash for this label
         const auto & label = meta_data.label;
-        auto key_hash = 
+        auto key_hash =
           utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
         auto hash = key_hash ^ runtime_id;
         // filter out the accessors for different data_clients
@@ -874,14 +874,14 @@ struct storage_type_t<dense, DS, MD>
     } // for each namespace
 
     // if sorting is requested
-    if (sorted) 
-      std::sort( 
-        as.begin(), as.end(), 
-        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
+    if (sorted)
+      std::sort(
+        as.begin(), as.end(),
+        [](const auto & a, const auto &b) { return a.label()<b.label(); }
       );
 
     return as;
-  
+
   } // get_accessor
 
 

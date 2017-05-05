@@ -58,7 +58,7 @@ runtime_driver(
   context_.push_state(utils::const_string_t{"specialization_driver"}.hash(),
     ctx, runtime, task, regions);
 
-  // run default or user-defined specialization driver 
+  // run default or user-defined specialization driver
   specialization_driver(args.argc, args.argv);
 
   // Set the current task context to the driver
@@ -108,7 +108,7 @@ context_.unset_call_mpi(ctx, runtime);
 context_.handoff_to_mpi(ctx, runtime);
 } // runtime_driver
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
 
 /*~------------------------------------------------------------------------~--*

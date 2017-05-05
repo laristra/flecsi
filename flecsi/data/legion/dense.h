@@ -80,7 +80,7 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   //--------------------------------------------------------------------------//
 
   dense_handle_t() {}
-  
+
   ///
   // Constructor.
   //
@@ -433,7 +433,7 @@ struct storage_type_t<dense, DS, MD>
     bool sorted
   )
   {
-    
+
   }
 
   template<
@@ -449,7 +449,7 @@ struct storage_type_t<dense, DS, MD>
     bool sorted
   )
   {
-    
+
   }
 
   template<

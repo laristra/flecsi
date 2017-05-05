@@ -63,7 +63,7 @@ private:
 } // namespace flecsi
 
 #endif // flecsi_partition_partitioner_h
- 
+
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.
  * vim: set tabstop=2 shiftwidth=2 expandtab :

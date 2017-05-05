@@ -66,7 +66,7 @@ __flecsi_internal_register_legion_task(wait_on_mpi_task, loc, index | leaf);
 
 __flecsi_internal_register_legion_task(unset_call_mpi_task, loc, index | leaf);
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
 
 /*~------------------------------------------------------------------------~--*

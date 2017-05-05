@@ -105,7 +105,7 @@ public:
     std::vector<size_t> ids(4);
 
     for(size_t i(0); i<4; ++i) {
-      ids[i] = cells_[entity_id][i]; 
+      ids[i] = cells_[entity_id][i];
     } // for
 
     return ids;

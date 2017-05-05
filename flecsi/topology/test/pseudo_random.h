@@ -9,7 +9,7 @@
 
 #include <random>
 
-//! \brief A simple, portable random number generator that should yield the 
+//! \brief A simple, portable random number generator that should yield the
 //!        reproduceable results accross all platforms.
 class pseudo_random {
 public:

@@ -393,7 +393,7 @@ struct legion_future__<void>
 
 }; // struct legion_future__
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
 
 #endif // flecsi_execution_legion_future_h

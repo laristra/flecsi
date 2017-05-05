@@ -33,7 +33,10 @@ using namespace LegionRuntime::HighLevel;
 
 
 template<typename T>
-using accessor_t = flecsi::data::legion::dense_accessor_t<T, flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t> >;
+using accessor_t = flecsi::data::legion::dense_accessor_t<
+  T,
+  flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t>
+>;
 
 void
 check_partitioning_task(
@@ -119,7 +122,7 @@ check_partitioning_task(
 #endif
     std::cout << "flecsi test for shared/ghost/exclusive partitions ... passed"
     << std::endl;
-  }//check_partitioning_task
+  } // check_partitioning_task
 
 
 flecsi_register_task(check_partitioning_task, loc, single);
@@ -133,8 +136,8 @@ driver(
   flecsi::data_client& dc = *((flecsi::data_client*)argv[argc - 1]);
 
   int index_space = 0;
-  auto h1 =
-    flecsi_get_handle(dc, test, cell_ID, size_t, dense, index_space, rw, ro, ro);
+  auto h1 = flecsi_get_handle(
+     dc, test, cell_ID, size_t, dense, index_space, rw, ro, ro);
 
   flecsi_execute_task(check_partitioning_task, loc, single, h1);
 } //driver

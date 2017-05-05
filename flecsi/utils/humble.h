@@ -29,4 +29,3 @@ void here_func(const char *filename, const char * fname, int line,
 } // namespace flecsi
 
 #endif // flecsi_utils_humble_h
-

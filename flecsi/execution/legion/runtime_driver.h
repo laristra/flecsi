@@ -60,7 +60,7 @@ void runtime_driver(const LegionRuntime::HighLevel::Task * task,
 // The runtime_driver task is registered directly during context
 // initialization.
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
 
 #endif // flecsi_execution_legion_runtime_driver_h

@@ -76,7 +76,7 @@ struct serial_storage_policy_t {
 
       // the namespace data
       auto & meta_data = sub_map.second;
-      
+
       // loop over each element in the namespace
       auto itr = meta_data.begin();
       while (itr != meta_data.end()) {
@@ -84,13 +84,13 @@ struct serial_storage_policy_t {
         auto & meta_data_key = itr->first;
         auto & label = itr->second.label;
         // now build the hash for this label
-        auto key_hash = 
+        auto key_hash =
           utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
         auto hash = key_hash ^ runtime_namespace;
         // test if it should be deleted
         if (meta_data_key == hash)
           itr = meta_data.erase(itr);
-        else 
+        else
           ++itr;
       } // while
     } // for
@@ -111,7 +111,7 @@ struct serial_storage_policy_t {
 
       // the namespace data
       auto & namespace_data = sub_map.second;
-      
+
       // loop over each element in the namespace
       for ( const auto & entry_pair : namespace_data ) {
         // get the meta data key and label
@@ -120,7 +120,7 @@ struct serial_storage_policy_t {
         // get the label
         auto & label = entry_pair.second.label;
         // now build the hash for this label
-        auto key_hash = 
+        auto key_hash =
           utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
         auto hash = key_hash ^ runtime_namespace;
         // test if it should be deleted
@@ -153,7 +153,7 @@ struct serial_storage_policy_t {
         auto & meta_data_key = itr->first;
         auto & label = itr->second.label;
         // now build the hash for this label
-        auto key_hash = 
+        auto key_hash =
           utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
         auto from_hash = key_hash ^ from;
         // test if it should be moved, and move it

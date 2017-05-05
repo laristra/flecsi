@@ -58,7 +58,7 @@ public:
     }
     else {
       clog_fatal("failed opening " << filename);
-    }// if
+    } // if
   } // simple_definition_t
 
   /// Copy constructor (disabled)
@@ -86,7 +86,7 @@ public:
   ///
   ///
   std::vector<size_t>
-  vertices( 
+  vertices(
     size_t dimension,
     size_t entity_id
   )

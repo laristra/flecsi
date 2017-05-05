@@ -184,7 +184,7 @@ struct global_accessor_t
     return data_;
   } // operator ->
 
-  ///  \brief Provide access to the data for this data variable.  
+  ///  \brief Provide access to the data for this data variable.
   ///  \remark This is the const operator version.
   const T & operator*() const
   {
@@ -289,7 +289,7 @@ struct storage_type_t<global, DS, MD> {
   /// \param runtime_namespace The runtime namespace to be used.
   /// \param The number of variable versions for this datum.
   ///
-  template< 
+  template<
     typename T,
     size_t NS,
     typename ... Args
@@ -326,7 +326,7 @@ struct storage_type_t<global, DS, MD> {
     // num_materials is unused for this storage type
     data_store[NS][h].num_entries = 0;
 
-    return {};    
+    return {};
   } // register_data
 
   //--------------------------------------------------------------------------//
@@ -357,7 +357,7 @@ struct storage_type_t<global, DS, MD> {
     // construct an accessor from the meta data
     return { meta_data.label,
       reinterpret_cast<T *>(&meta_data.data[version][0]),
-      meta_data.user_data, meta_data.attributes[version] };  
+      meta_data.user_data, meta_data.attributes[version] };
   }
 
   /// \brief Return a global_accessor_t.
@@ -454,7 +454,7 @@ struct storage_type_t<global, DS, MD> {
       auto & meta_data = entry_pair.second;
       // now build the hash for this label
       const auto & label = meta_data.label;
-      auto key_hash = 
+      auto key_hash =
         utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
       auto hash = key_hash ^ runtime_id;
       // filter out the accessors for different data_clients
@@ -468,14 +468,14 @@ struct storage_type_t<global, DS, MD> {
     } // for
 
     // if sorting is requested
-    if (sorted) 
-      std::sort( 
-        as.begin(), as.end(), 
-        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
+    if (sorted)
+      std::sort(
+        as.begin(), as.end(),
+        [](const auto & a, const auto &b) { return a.label()<b.label(); }
       );
 
     return as;
-  
+
   } // get_accessor
 
 
@@ -515,7 +515,7 @@ struct storage_type_t<global, DS, MD> {
       // the namespace data
       auto & namespace_key = namespace_map.first;
       auto & namespace_data = namespace_map.second;
-      
+
       // loop over each key pair
       for (auto & entry_pair : namespace_data) {
         // get the meta data key and label
@@ -523,7 +523,7 @@ struct storage_type_t<global, DS, MD> {
         auto & meta_data = entry_pair.second;
         // now build the hash for this label
         const auto & label = meta_data.label;
-        auto key_hash = 
+        auto key_hash =
           utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
         auto hash = key_hash ^ runtime_id;
         // filter out the accessors for different data_clients
@@ -538,14 +538,14 @@ struct storage_type_t<global, DS, MD> {
     } // for each namespace
 
     // if sorting is requested
-    if (sorted) 
-      std::sort( 
-        as.begin(), as.end(), 
-        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
+    if (sorted)
+      std::sort(
+        as.begin(), as.end(),
+        [](const auto & a, const auto &b) { return a.label()<b.label(); }
       );
 
     return as;
-  
+
   } // get_accessor
 
   /// \brief Return a list of all accessor_t's.
@@ -582,7 +582,7 @@ struct storage_type_t<global, DS, MD> {
       auto & meta_data = entry_pair.second;
       // now build the hash for this label
       const auto & label = meta_data.label;
-      auto key_hash = 
+      auto key_hash =
         utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
       auto hash = key_hash ^ runtime_id;
       // filter out the accessors for different data_clients
@@ -596,14 +596,14 @@ struct storage_type_t<global, DS, MD> {
     } // for
 
     // if sorting is requested
-    if (sorted) 
-      std::sort( 
-        as.begin(), as.end(), 
-        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
+    if (sorted)
+      std::sort(
+        as.begin(), as.end(),
+        [](const auto & a, const auto &b) { return a.label()<b.label(); }
       );
 
     return as;
-  
+
   } // get_accessor
 
 
@@ -639,7 +639,7 @@ struct storage_type_t<global, DS, MD> {
       // the namespace data
       auto & namespace_key = namespace_map.first;
       auto & namespace_data = namespace_map.second;
-      
+
       // loop over each key pair
       for (auto & entry_pair : namespace_data) {
         // get the meta data key and label
@@ -647,7 +647,7 @@ struct storage_type_t<global, DS, MD> {
         auto & meta_data = entry_pair.second;
         // now build the hash for this label
         const auto & label = meta_data.label;
-        auto key_hash = 
+        auto key_hash =
           utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
         auto hash = key_hash ^ runtime_id;
         // filter out the accessors for different data_clients
@@ -662,14 +662,14 @@ struct storage_type_t<global, DS, MD> {
     } // for each namespace
 
     // if sorting is requested
-    if (sorted) 
-      std::sort( 
-        as.begin(), as.end(), 
-        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
+    if (sorted)
+      std::sort(
+        as.begin(), as.end(),
+        [](const auto & a, const auto &b) { return a.label()<b.label(); }
       );
 
     return as;
-  
+
   } // get_accessor
 
 

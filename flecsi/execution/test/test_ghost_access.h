@@ -35,7 +35,10 @@ using namespace LegionRuntime::HighLevel;
 
 
 template<typename T>
-using accessor_t = flecsi::data::legion::dense_accessor_t<T, flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t> >;
+using accessor_t = flecsi::data::legion::dense_accessor_t<
+  T,
+  flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t>
+>;
 
 
 void
@@ -46,7 +49,8 @@ shared_write_task(
   int cycle
 )
 {
-  std::cout << my_color << " as master writes data; phase 1 of cycle " << cycle << std::endl;
+  std::cout << my_color << " as master writes data; phase 1 of cycle "
+            << cycle << std::endl;
 
   for (size_t i = 0; i < acc_cells.shared_size(); i++)
     acc_cells.shared(i) = static_cast<size_t>(global_IDs.shared(i) + cycle);
@@ -64,14 +68,17 @@ ghost_read_task(
   int cycle
 )
 {
-  std::cout << my_color << " as slave reads data; phase 2 of cycle " << cycle <<  std::endl;
+  std::cout << my_color << " as slave reads data; phase 2 of cycle "
+            << cycle <<  std::endl;
 
   // If shared data was lost ghost will not be available
   for (size_t i = 0; i < acc_cells.shared_size(); i++)
-    assert(acc_cells.shared(i) == static_cast<size_t>(global_IDs.shared(i) + cycle));
+    assert(acc_cells.shared(i) ==
+           static_cast<size_t>(global_IDs.shared(i) + cycle));
 
   for (size_t i = 0; i < acc_cells.ghost_size(); i++)
-    assert(acc_cells.ghost(i) == static_cast<size_t>(global_IDs.ghost(i) + cycle));
+    assert(acc_cells.ghost(i) ==
+           static_cast<size_t>(global_IDs.ghost(i) + cycle));
 
 }
 
@@ -84,29 +91,34 @@ driver(
   char ** argv
 )
 {
-  flecsi::execution::context_t & context_ = flecsi::execution::context_t::instance();
-  const LegionRuntime::HighLevel::Task *task = context_.task(flecsi::utils::const_string_t{"driver"}.hash());
+  flecsi::execution::context_t & context_ =
+    flecsi::execution::context_t::instance();
+  const LegionRuntime::HighLevel::Task *task =
+    context_.task(flecsi::utils::const_string_t{"driver"}.hash());
   const int my_color = task->index_point.point_data[0];
 
 	flecsi::data_client& dc = *((flecsi::data_client*)argv[argc - 1]);
 
   int index_space = 0;
-  auto shared_write_handle =
-    flecsi_get_handle(dc, test, data, size_t, dense, index_space, none, rw, none);
-  auto ghost_read_handle =
-    flecsi_get_handle(dc, test, data, size_t, dense, index_space, none, ro, ro);
-  auto cell_ID_handle =
-    flecsi_get_handle(dc, test, cell_ID, size_t, dense, index_space, none, ro, ro);
+  auto shared_write_handle = flecsi_get_handle(
+     dc, test, data, size_t, dense, index_space, none, rw, none);
+  auto ghost_read_handle = flecsi_get_handle(
+     dc, test, data, size_t, dense, index_space, none, ro, ro);
+  auto cell_ID_handle = flecsi_get_handle(
+     dc, test, cell_ID, size_t, dense, index_space, none, ro, ro);
 
   for (int cycle = 0; cycle < 3; cycle++) {
 
-    // phase WRITE: masters update their halo regions; slaves may not access data
+    // phase WRITE: masters update their halo regions;
+    // slaves may not access data
 
-    flecsi_execute_task(shared_write_task, loc, single, cell_ID_handle, shared_write_handle, my_color, cycle);
+    flecsi_execute_task(shared_write_task, loc, single, cell_ID_handle,
+                        shared_write_handle, my_color, cycle);
 
     // phase READ: slaves can read data; masters may not write to data
 
-    flecsi_execute_task(ghost_read_task, loc, single, cell_ID_handle, ghost_read_handle, my_color, cycle);
+    flecsi_execute_task(ghost_read_task, loc, single, cell_ID_handle,
+                        ghost_read_handle, my_color, cycle);
 
   }
 

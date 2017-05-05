@@ -59,11 +59,11 @@ void top_level_task(const Task* task,
     IndexSpace is = h.create_index_space(cells_part.size);
 
     IndexAllocator ia = runtime->create_index_allocator(ctx, is);
-    
+
     Coloring coloring;
 
     for(size_t c = 0; c < cells.size(); ++c){
-      size_t p = cells[c]; 
+      size_t p = cells[c];
       ++cells_part.count_map[p];
     }
 
@@ -82,15 +82,15 @@ void top_level_task(const Task* task,
     FieldAllocator fa = h.create_field_allocator(fs);
 
     fa.allocate_field(sizeof(entity_id), fid_t.fid_entity);
-    
+
     fa.allocate_field(sizeof(legion_dpd::ptr_count),
                       fid_t.fid_offset_count);
 
     cells_part.lr = h.create_logical_region(is, fs);
 
-    RegionRequirement rr(cells_part.lr, WRITE_DISCARD, 
+    RegionRequirement rr(cells_part.lr, WRITE_DISCARD,
       EXCLUSIVE, cells_part.lr);
-    
+
     rr.add_field(fid_t.fid_entity);
     InlineLauncher il(rr);
 
@@ -98,7 +98,7 @@ void top_level_task(const Task* task,
 
     pr.wait_until_valid();
 
-    auto ac = 
+    auto ac =
       pr.get_field_accessor(fid_t.fid_entity).typeify<entity_id>();
 
     IndexIterator itr(runtime, ctx, is);
@@ -126,7 +126,7 @@ void top_level_task(const Task* task,
   cd.num_slots = partition_size * 5;
   cd.num_indices = partition_size;
   cd.indices = new size_t[cd.num_indices];
-  cd.entries = 
+  cd.entries =
     new legion_dpd::entry_value<double>[cd.num_indices * cd.num_slots];
 
   cd.entries[0].entry = 3;
@@ -135,9 +135,9 @@ void top_level_task(const Task* task,
   cd.entries[1].value = 555.5;
   cd.entries[2].entry = 8;
   cd.entries[2].value = 888.8;
-  
+
   cd.indices[0] = 3;
-  
+
   for(size_t i = 1; i < cd.num_indices; ++i){
     cd.indices[i] = 0;
   }
@@ -150,9 +150,9 @@ void top_level_task(const Task* task,
   cd.entries[0].value = 444.4;
   cd.entries[1].entry = 9;
   cd.entries[1].value = 999.9;
-  
+
   cd.indices[0] = 2;
-  
+
   for(size_t i = 1; i < cd.num_indices; ++i){
     cd.indices[i] = 0;
   }
@@ -162,7 +162,7 @@ void top_level_task(const Task* task,
 
 TEST(legion, test1) {
   Runtime::set_top_level_task_id(TOP_LEVEL_TID);
-  
+
   Runtime::register_legion_task<top_level_task>(TOP_LEVEL_TID,
     Processor::LOC_PROC, true, false);
 

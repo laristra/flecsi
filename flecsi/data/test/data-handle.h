@@ -41,11 +41,14 @@ using namespace LegionRuntime::Accessor;
 using namespace LegionRuntime::Arrays;
 
 template<typename T>
-using accessor_t = flecsi::data::legion::dense_accessor_t<T, flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t> >;
+using accessor_t = flecsi::data::legion::dense_accessor_t<
+  T,
+  flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t>
+>;
 
 namespace flecsi {
 namespace execution {
-  
+
 void task1(accessor_t<double> x) {
   np(x[0]);
   np(x[1]);
@@ -70,7 +73,7 @@ using partition_vec = vector<entity_id>;
 
 void
 specialization_driver(
-  int argc, 
+  int argc,
   char ** argv
 )
 {
@@ -113,15 +116,15 @@ specialization_driver(
     IndexSpace is = h.create_index_space(cells_part.size);
 
     IndexAllocator ia = runtime->create_index_allocator(context, is);
-    
+
     Coloring coloring;
     Coloring shared_coloring;
     Coloring ghost_coloring;
 
     for(size_t c = 0; c < cells.size(); ++c){
-      size_t p = cells[c]; 
+      size_t p = cells[c];
       ++cells_part.exclusive_count_map[p];
-      
+
       if(cells_shared[c] < NUM_PARTITIONS){
         ++cells_part.shared_count_map[p];
       }
@@ -166,12 +169,12 @@ specialization_driver(
     FieldAllocator fa = h.create_field_allocator(fs);
 
     fa.allocate_field(sizeof(entity_id), fid_t.fid_entity);
-    
+
     cells_part.entities_lr = h.create_logical_region(is, fs);
 
-    RegionRequirement rr(cells_part.entities_lr, WRITE_DISCARD, 
+    RegionRequirement rr(cells_part.entities_lr, WRITE_DISCARD,
       EXCLUSIVE, cells_part.entities_lr);
-    
+
     rr.add_field(fid_t.fid_entity);
     InlineLauncher il(rr);
 
@@ -179,7 +182,7 @@ specialization_driver(
 
     pr.wait_until_valid();
 
-    auto ac = 
+    auto ac =
       pr.get_field_accessor(fid_t.fid_entity).typeify<entity_id>();
 
     IndexIterator itr(runtime, context, is);
@@ -190,13 +193,13 @@ specialization_driver(
       ++ptr;
     }
 
-    cells_part.exclusive_ip = 
+    cells_part.exclusive_ip =
       runtime->create_index_partition(context, is, coloring, true);
 
-    cells_part.shared_ip = 
+    cells_part.shared_ip =
       runtime->create_index_partition(context, is, shared_coloring, true);
 
-    cells_part.ghost_ip = 
+    cells_part.ghost_ip =
       runtime->create_index_partition(context, is, ghost_coloring, false);
 
     runtime->unmap_region(context, pr);
@@ -211,7 +214,7 @@ specialization_driver(
   execution::mpilegion_context_policy_t::partitioned_index_space& is3=
       context_.get_index_space("partition1","cells");
 
-  
+
   // data client
   // "hydro" namespace
   // "pressure" name
@@ -223,14 +226,14 @@ specialization_driver(
   flecsi_register_data(dc, hydro, pressure, double, dense, 1, 0);
 
   {
-    auto ac = 
+    auto ac =
       flecsi_get_accessor(dc, hydro, pressure, double, dense, /* version */ 0);
 
     ac[0] = 100.0;
     ac[1] = 200.0;
   }
 
-  auto h1 = 
+  auto h1 =
     flecsi_get_handle(dc, hydro, pressure, double, dense, 0, rw, rw, ro);
 
   flecsi_execute_task(task1, loc, single, h1);

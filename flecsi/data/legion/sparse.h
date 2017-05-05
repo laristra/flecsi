@@ -78,7 +78,7 @@ struct sparse_accessor_t {
 
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
-  
+
   //--------------------------------------------------------------------------//
   // Constructors.
   //--------------------------------------------------------------------------//
@@ -137,7 +137,7 @@ struct sparse_mutator_t {
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
-  
+
   using meta_data_t = MD;
   using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 

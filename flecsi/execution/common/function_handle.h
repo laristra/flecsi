@@ -38,7 +38,7 @@ struct function_handle__
   /// Constructor.
   ///
   /// \param key A hash key identifier for the function.
-  /// 
+  ///
   constexpr function_handle__(const size_t key)
     : key_(key) {}
 

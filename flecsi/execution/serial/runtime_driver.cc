@@ -20,7 +20,7 @@ void serial_runtime_driver(int argc, char ** argv) {
 
 #ifndef FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
 
-  // run user-defined specialization driver  
+  // run user-defined specialization driver
   specialization_driver(argc, argv);
 
 #endif // FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
@@ -30,7 +30,7 @@ void serial_runtime_driver(int argc, char ** argv) {
 
 } // serial_runtime_driver
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
 
 /*~------------------------------------------------------------------------~--*

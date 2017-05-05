@@ -198,7 +198,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   ///                  \endcode
   ///
   /// \param [in]  sorted  Sort the returned list by label lexographically.
-  /// 
+  ///
   /// \return A std::vector of handles to the state variables that
   ///         match the namespace and predicate criteria.
   ///
@@ -211,7 +211,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   decltype(auto)
   get_handles(
     const data_client_t & data_client,
-    size_t version,    
+    size_t version,
     P && predicate,
     bool sorted = true
   )
@@ -238,7 +238,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   ///                  \endcode
   ///
   /// \param [in]  sorted  Sort the returned list by label lexographically.
-  /// 
+  ///
   /// \return A std::vector of handles to the state variables that
   ///         match the namespace and predicate criteria.
   ///
@@ -250,7 +250,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   decltype(auto)
   get_handles(
     const data_client_t & data_client,
-    size_t version,    
+    size_t version,
     P && predicate,
     bool sorted = true
   )
@@ -269,7 +269,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   /// \tparam P Predicate function type.
   ///
   /// \param [in]  sorted  Sort the returned list by label lexographically.
-  /// 
+  ///
   /// \return A std::vector of handles to the state variables that
   ///         match the namespace and predicate criteria.
   ///
@@ -281,7 +281,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   decltype(auto)
   get_handles(
     const data_client_t & data_client,
-    size_t version,    
+    size_t version,
     bool sorted = true
   )
   {
@@ -297,7 +297,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   /// \tparam P Predicate function type.
   ///
   /// \param [in]  sorted  Sort the returned list by label lexographically.
-  /// 
+  ///
   /// \return A std::vector of handles to the state variables that
   ///         match the namespace and predicate criteria.
   ///
@@ -308,7 +308,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   decltype(auto)
   get_handles(
     const data_client_t & data_client,
-    size_t version,    
+    size_t version,
     bool sorted = true
   )
   {

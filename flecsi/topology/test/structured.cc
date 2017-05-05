@@ -24,7 +24,7 @@ struct structured_mesh_type_t {
   static constexpr size_t num_dimensions = 2;
   static constexpr size_t num_domains = 2;
 
-  
+
 
   using entity_types = std::tuple<
     std::pair<domain_<0>, structured_vertex_t>,

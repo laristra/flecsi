@@ -16,7 +16,7 @@
 #define flecsi_utils_const_string_h
 
 ///
-/// \file 
+/// \file
 /// \date Initial file creation: Oct 15, 2015
 ///
 

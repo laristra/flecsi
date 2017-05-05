@@ -26,14 +26,14 @@
 namespace flecsi {
 namespace utils {
 
-/// 
+///
 /// \class any_t any.h
 /// \brief any_t class can store arbitrary types of information.
 ///
 class any_t
 {
 public:
-  
+
   ///
   /// default constructor
   ///
@@ -109,7 +109,7 @@ public:
 private:
 
   ///
-  /// helper class 
+  /// helper class
   ///
   class i_holder_t
   {
@@ -153,7 +153,7 @@ private:
 
   }; // class Holder
 
-  i_holder_t * holder_; 
+  i_holder_t * holder_;
 
 }; //class any_t
 
@@ -164,7 +164,7 @@ template<
   class T
 >
 inline
-const 
+const
 T & any_cast(
   any_t & rhs
 )

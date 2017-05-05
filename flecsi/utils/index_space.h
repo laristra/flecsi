@@ -18,7 +18,7 @@
 #include "flecsi/utils/iterator.h"
 
 /*!
- * \file 
+ * \file
  * \date Initial file creation: Oct 09, 2015
  */
 

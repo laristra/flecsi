@@ -6,8 +6,8 @@
  * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
  * /@@       /@@/@@//// //@@    @@       /@@/@@
  * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
- * 
+ * //       ///  //////   //////  ////////  //
+ *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
@@ -25,18 +25,22 @@ namespace io {
 
 // Register file extensions with factory.
 bool exodus_g_registered =
-io_factory_t<fake_mesh_t>::instance().registerType("g", create_io_exodus<fake_mesh_t>);
+  io_factory_t<fake_mesh_t>::instance().
+    registerType("g", create_io_exodus<fake_mesh_t>);
 
 bool exodus_exo_registered =
-  io_factory_t<fake_mesh_t>::instance().registerType("exo", create_io_exodus<fake_mesh_t>);
+  io_factory_t<fake_mesh_t>::instance().
+    registerType("exo", create_io_exodus<fake_mesh_t>);
 
 // provide empty implementations of read and write.
 template<>
-int32_t io_exodus_t<fake_mesh_t>::read(const std::string &name, fake_mesh_t &m) {
+int32_t io_exodus_t<fake_mesh_t>::read(const std::string &name, fake_mesh_t &m)
+{
   return 0;
 }
 template<>
-int32_t io_exodus_t<fake_mesh_t>::write(const std::string &name, fake_mesh_t &m) {
+int32_t io_exodus_t<fake_mesh_t>::write(const std::string &name, fake_mesh_t &m)
+{
   return 0;
 }
 

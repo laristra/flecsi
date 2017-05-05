@@ -66,8 +66,8 @@ __flecsi_internal_legion_task(spmd_task, void) {
   context_t::instance().push_state(utils::const_string_t{"driver"}.hash(),
     ctx, runtime, task, regions);
 
-  // run default or user-defined driver 
-  driver(args.argc, args.argv); 
+  // run default or user-defined driver
+  driver(args.argc, args.argv);
 
   // Set the current task context to the driver
   context_t::instance().pop_state(utils::const_string_t{"driver"}.hash());
@@ -106,7 +106,7 @@ __flecsi_internal_legion_task(unset_call_mpi_task, void) {
 
 #undef __flecsi_internal_legion_task
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
 
 #endif // flecsi_execution_legion_legion_tasks_h

@@ -5,7 +5,7 @@
 
 #ifndef flecsi_data_accessor_h
 #define flecsi_data_accessor_h
- 
+
 ///
 /// \file
 /// \date Initial file creation: Feb 24, 2017

@@ -43,7 +43,7 @@ public:
 
   /// Destructor
   virtual ~graph_definition__() {}
-  
+
   ///
   /// Return the dimension of the graph.
   ///

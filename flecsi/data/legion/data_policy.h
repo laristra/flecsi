@@ -29,7 +29,7 @@ public:
   using partitioned_index_space =
     typename flecsi::execution::context_t::partitioned_index_space;
 
-  using index_space_map = 
+  using index_space_map =
     std::unordered_map<size_t, partitioned_index_space>;
 
   ///

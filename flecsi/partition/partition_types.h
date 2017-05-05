@@ -91,7 +91,7 @@ operator << (
 {
   stream << e.id << " " << e.rank << " " << e.offset << " [ ";
   for(auto i: e.shared) {
-    stream << i << " "; 
+    stream << i << " ";
   } // for
   stream << "]";
   return stream;

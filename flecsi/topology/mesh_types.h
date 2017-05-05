@@ -73,7 +73,7 @@ struct id_vector_hash_t {
 }; // struct id_vector_hash_t
 
 // used when building the topology connectivities
-using id_vector_map_t = 
+using id_vector_map_t =
   std::unordered_map<id_vector_t, utils::id_t, id_vector_hash_t>;
 
 // the second topology vector holds the offsets into to from dimension
@@ -345,7 +345,7 @@ class entity_group
 class connectivity_t
 {
  public:
-  
+
   using id_t = flecsi::utils::id_t;
 
   connectivity_t(const connectivity_t&) = delete;
@@ -546,7 +546,8 @@ class connectivity_t
     auto start = from_index_vec_[index];
     auto count = from_index_vec_[index + 1] - start;
     assert( order.size() == count );
-    utils::reorder( order.begin(), order.end(), index_space_.id_array() + start );
+    utils::reorder(
+      order.begin(), order.end(), index_space_.id_array() + start );
   }
 
   /*!
@@ -629,7 +630,7 @@ class connectivity_t
     return index_space_;
   }
 
-  index_space<mesh_entity_base_*> index_space_; 
+  index_space<mesh_entity_base_*> index_space_;
   index_vector_t from_index_vec_;
 
 }; // class connectivity_t
@@ -705,7 +706,8 @@ public:
   }
 
   id_t* get_entities(id_t from_id, size_t to_dim, size_t & count){
-    return get(from_id.dimension(), to_dim).get_entities(from_id.entity(), count);
+    return get(
+       from_id.dimension(), to_dim).get_entities(from_id.entity(), count);
   }
 
   template<size_t FD, size_t ND>
@@ -755,7 +757,7 @@ struct mesh_storage_t {
     \ref entity_vector_t, which is a std::vector of \ref mesh_entity_base_t.
    */
 
-  using index_spaces_t = 
+  using index_spaces_t =
     std::array<index_space<mesh_entity_base_*, true, true, true>, D + 1>;
 
   // array of array of domain_connectivity
@@ -864,7 +866,7 @@ void unserialize_dimension_(mesh_topology_base_t& mesh,
   uint64_t num_entities;
   std::memcpy(&num_entities, buf + pos, sizeof(num_entities));
   pos += sizeof(num_entities);
-  
+
   using id_t = utils::id_t;
 
   std::vector<mesh_entity_base_*> ents;

@@ -152,7 +152,7 @@
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Call the execution policy to execute the function */                      \
-  flecsi::execution::function_t::execute_function<RETURN>(handle, ## __VA_ARGS__)
+  flecsi::execution::function_t::execute_function<RETURN>(handle,## __VA_ARGS__)
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_function_handle

@@ -108,7 +108,7 @@ make_processor()
   };
 } // make_processor
 
-} //namespace execution 
+} //namespace execution
 } // namespace flecsi
 
 #endif // flecsi_execution_common_processor_h

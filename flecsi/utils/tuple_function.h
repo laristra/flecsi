@@ -33,7 +33,7 @@ decltype(auto) tuple_function(T & f, std::tuple<As ...> & t) {
 template<typename T, typename ... As, size_t ... Is>
 std::function<void()> tuple_function_mpi(T & f, std::tuple<As ...> & t,
   std::index_sequence<Is ...>) {
-  
+
   return std::bind(f, std::get<Is>(t) ...);
 //  ext_legion_handshake_t::instance().shared_func_=shared_func_tmp;
 //    return f(std::get<Is>(t) ...);

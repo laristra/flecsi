@@ -25,14 +25,17 @@
 ///
 
 template<typename T>
-using accessor_t = flecsi::data::serial::dense_accessor_t<T, flecsi::data::serial_meta_data_t<flecsi::default_user_meta_data_t> >;
+using accessor_t = flecsi::data::serial::dense_accessor_t<
+  T,
+  flecsi::data::serial_meta_data_t<flecsi::default_user_meta_data_t>
+>;
 
 namespace flecsi {
 namespace execution {
-  
+
 void task1(accessor_t<double> x) {
   std::cout << "Executing task1" << std::endl;
-  
+
   np(x[0]);
   np(x[1]);
 
@@ -51,7 +54,7 @@ public:
 
 void
 specialization_driver(
-  int argc, 
+  int argc,
   char ** argv
 )
 {
@@ -72,7 +75,7 @@ specialization_driver(
 
   register_data(dc, hydro, pressure, double, dense, 1, 0);
 
-  auto ac = 
+  auto ac =
     get_accessor(dc, hydro, pressure, double, dense, /* version */ 0);
 
   auto h1 = get_handle(dc, hydro, pressure, double, dense, 0, rw, rw, ro);

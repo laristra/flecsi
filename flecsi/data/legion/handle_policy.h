@@ -37,7 +37,7 @@ struct legion_handle_policy_t
   void* ghost_data;
   Legion::Context context;
   Legion::Runtime* runtime;
-  
+
   Legion::PhaseBarrier* pbarrier_as_master_ptr;
   std::vector<Legion::PhaseBarrier*> masters_pbarriers_ptrs;
 

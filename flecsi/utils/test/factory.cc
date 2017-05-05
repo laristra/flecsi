@@ -6,8 +6,8 @@
  * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
  * /@@       /@@/@@//// //@@    @@       /@@/@@
  * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
- * 
+ * //       ///  //////   //////  ////////  //
+ *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
@@ -36,14 +36,15 @@ protected:
 }; // struct io_base_t
 
 // create factory type
-using io_factory_t = flecsi::utils::Factory_<io_base_t, std::string, std::string &>;
+using io_factory_t =
+  flecsi::utils::Factory_<io_base_t, std::string, std::string &>;
 
 struct test_io_t : public io_base_t {
 
   test_io_t(std::string & filename) : io_base_t(filename) {}
 
   int32_t read() {
-    return 0; 
+    return 0;
   } // read
 
 }; // struct test_io_t
@@ -54,7 +55,8 @@ io_base_t * create_test_io(std::string & filename) {
 } // create_test_io
 
 // register this io type with factory
-bool test_registered = io_factory_t::instance().registerType("tst", create_test_io);
+bool test_registered =
+  io_factory_t::instance().registerType("tst", create_test_io);
 
 TEST(factory, sanity) {
   std::string filename("myfile");

@@ -37,12 +37,15 @@ using namespace LegionRuntime::Accessor;
 using namespace LegionRuntime::Arrays;
 
 template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t = 
-  flecsi::data::legion::dense_handle_t<T, EP, SP, GP, flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t> >;
+using handle_t =
+  flecsi::data::legion::dense_handle_t<
+    T, EP, SP, GP,
+    flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t>
+  >;
 
 namespace flecsi {
 namespace execution {
-  
+
 void task1(handle_t<double, 0, 1, 2> x, float y) {
   np(y);
 } // task1
@@ -61,7 +64,7 @@ flecsi_new_register_data(data_client, test, var, double, dense, 0, 2);
 
 void
 driver(
-  int argc, 
+  int argc,
   char ** argv
 )
 {
@@ -73,7 +76,7 @@ driver(
   auto context = context_.context(task_key);
 */
   data_client dc;
-  
+
   // data client
   // "hydro" namespace
   // "pressure" name
@@ -82,7 +85,7 @@ driver(
   // versions
   // index space
 
-  auto h1 = 
+  auto h1 =
     flecsi_get_handle(dc, hydro, pressure, double, dense, 0);
 
   flecsi_execute_task(task1, loc, single, h1, 3.7);
