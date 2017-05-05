@@ -59,7 +59,7 @@ FleCSI has been tested against *update hash here*.
 
 To begin, you will need to build the third-party library dependencies:
 
-    % sudo apt-get install liblapacke-dev libscotch-dev libmetis-dev libexodusii-dev 
+    % sudo apt-get install libscotch-dev libmetis-dev libexodusii-dev 
     
 or build them yourself:
 
