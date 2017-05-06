@@ -232,22 +232,6 @@ if(ENABLE_PARTITIONING)
 endif()
 
 #------------------------------------------------------------------------------#
-# LAPACK
-#------------------------------------------------------------------------------#
-
-# NB: The code that uses lapack actually requires lapacke:
-# http://www.netlib.org/lapack/lapacke.html
-# If the installation of lapack that this finds does not contain lapacke then
-# the build will fail.
-if(NOT APPLE)
-  find_package(LAPACKE)
-
-  if(LAPACKE_FOUND)
-      include_directories( ${LAPACKE_INCLUDE_DIRS} )
-  endif(LAPACKE_FOUND)
-endif(NOT APPLE)
-
-#------------------------------------------------------------------------------#
 # configure header
 #------------------------------------------------------------------------------#
 
