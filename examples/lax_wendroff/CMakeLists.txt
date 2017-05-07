@@ -41,13 +41,6 @@ if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
   add_executable(lax_wendroff ${exmaple_src})
   set_target_properties(lax_wendroff PROPERTIES LINKER_LANGUAGE CXX)
 
-  #----------------------------------------------------------------------------#
-  # Add link dependencies
-  #----------------------------------------------------------------------------#
-
-  target_link_libraries(lax_wendroff ${FLECSI_RUNTIME_LIBRARIES}
-                                     ${PARTITION_LIBRARIES})
-
   configure_file(simple2d-64x64.msh
     ${CMAKE_CURRENT_BINARY_DIR}/../../bin/simple2d-64x64.msh COPYONLY) 
  

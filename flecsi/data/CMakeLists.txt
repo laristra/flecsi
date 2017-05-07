@@ -93,14 +93,12 @@ cinch_add_unit(data_client
   SOURCES test/data_client.cc
   LIBRARIES
     flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
 )
 
 cinch_add_unit(storage_type
   SOURCES test/storage_type.cc
   LIBRARIES
     flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
 )
 
 # if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
@@ -119,7 +117,6 @@ cinch_add_unit(storage_type
 #       DEFINES DATA_HANDLE_TEST
 #         FLECSI_DRIVER=flecsi/data/test/data-handle.h
 #         TEST_INIT=flecsi/execution/test/task_init.h
-#       LIBRARIES ${PARTITION_LIBRARIES}
 #       POLICY MPILEGION
 #       THREADS 2
 #     )
@@ -140,7 +137,6 @@ cinch_add_unit(storage_type
 #       DEFINES DATA_HANDLE_TEST
 #         FLECSI_DRIVER=flecsi/data/test/data-handle-serial.h
 #         TEST_INIT=flecsi/execution/test/task_init.h
-#       LIBRARIES ${PARTITION_LIBRARIES}
 #       POLICY SERIAL
 #       THREADS 2
 #     )
