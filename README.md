@@ -59,7 +59,7 @@ FleCSI has been tested against *update hash here*.
 
 To begin, you will need to build the third-party library dependencies:
 
-    % sudo apt-get install libscotch-dev libmetis-dev libexodusii-dev 
+    % sudo apt-get install libmetis-dev 
     
 or build them yourself:
 
@@ -69,8 +69,8 @@ or build them yourself:
     % cd build
     % ccmake ..
 
-At this point, you should enable Exodus (ENABLE\_EXODUS) and set the install
-path to a directory where you have write permissions.
+At this point, you should set the install path to a directory where
+you have write permissions.
 
 Now build the third-party libraries:
 

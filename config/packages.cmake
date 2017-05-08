@@ -171,25 +171,6 @@ message(STATUS "${CINCH_Yellow}Set id_t bits to allow:\n"
   "   ${FLECSI_ID_GBITS} global bits (PBITS*EBITS)${CINCH_ColorReset}")
 
 #------------------------------------------------------------------------------#
-# Enable IO with exodus
-#------------------------------------------------------------------------------#
-
-find_package(EXODUSII)
-option(ENABLE_EXODUS "Enable I/O (uses libexodus)" ${EXODUSII_FOUND})
-
-if(ENABLE_EXODUS)
-
-  if(EXODUSII_FOUND)
-    set(IO_LIBRARIES ${EXODUSII_LIBRARIES})
-    include_directories(${EXODUSII_INCLUDE_DIRS})
-  else()
-    MESSAGE(FATAL_ERROR "You need libexodus either from TPL "
-      "or system to enable I/O")
-  endif()
-
-endif(ENABLE_EXODUS)
-
-#------------------------------------------------------------------------------#
 # Enable partitioning with METIS
 #------------------------------------------------------------------------------#
 
@@ -231,9 +212,9 @@ if(ENABLE_PARTITIONING)
 
 endif()
 
-if ( FLECSI_RUNTIME_LIBRARIES OR PARTITION_LIBRARIES OR IO_LIBRARIES )
+if ( FLECSI_RUNTIME_LIBRARIES OR PARTITION_LIBRARIES )
   cinch_target_link_libraries(
-    flecsi ${FLECSI_RUNTIME_LIBRARIES} ${PARTITION_LIBRARIES} ${IO_LIBRARIES}
+    flecsi ${FLECSI_RUNTIME_LIBRARIES} ${PARTITION_LIBRARIES}
   )
 endif()
 
