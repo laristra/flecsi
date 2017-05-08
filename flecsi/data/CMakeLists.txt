@@ -72,35 +72,28 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
 endif()
 
-set(data_HEADERS
-    ${data_HEADERS}
-    PARENT_SCOPE
-)
+cinch_install_headers(
+  FILES ${data_HEADERS}
+  DESTINATION include/flecsi/data)
 
-set(data_SOURCES
-    ${data_SOURCES}
-    PARENT_SCOPE
-)
+add_library(data OBJECT ${data_SOURCES})
+
 #------------------------------------------------------------------------------#
 # Unit tests.
 #------------------------------------------------------------------------------#
 
 cinch_add_unit(old_data
-  SOURCES test/old_data.cc
+  SOURCES test/old_data.cc 
 )
 
 cinch_add_unit(data_client
-  SOURCES test/data_client.cc
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
+  SOURCES test/data_client.cc 
+    $<TARGET_OBJECTS:data>
 )
 
 cinch_add_unit(storage_type
-  SOURCES test/storage_type.cc
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
+  SOURCES test/storage_type.cc 
+    $<TARGET_OBJECTS:data>
 )
 
 # if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")

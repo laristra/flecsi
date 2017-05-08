@@ -55,7 +55,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/task_args.h
     legion/task_wrapper.h
     task_ids.h
-    PARENT_SCOPE
   )
 
   set(execution_SOURCES
@@ -94,15 +93,20 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
 endif()
 
-set(execution_HEADERS
-  ${execution_HEADERS}
-  PARENT_SCOPE
-)
 
-set(execution_SOURCES
-  ${execution_SOURCES}
-  PARENT_SCOPE
-)
+#------------------------------------------------------------------------------#
+# Create library
+#------------------------------------------------------------------------------#
+
+cinch_install_headers( 
+  FILES ${execution_HEADERS}
+  DESTINATION include/flecsi/execution )
+
+
+if (execution_SOURCES)
+  add_library( execution OBJECT ${execution_SOURCES} )
+  set( execution_LIBRARY $<TARGET_OBJECTS:execution> )
+endif()
 
 #------------------------------------------------------------------------------#
 # Unit tests.
@@ -114,13 +118,11 @@ cinch_add_unit(task
     test/task.cc
     test/task_driver.cc
     ${RUNTIME_DRIVER}
+    $<TARGET_OBJECTS:data>
   DEFINES
     TEST_INIT=flecsi/execution/test/task_init.h
   POLICY
     ${UNIT_POLICY}
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
 )
 
 cinch_add_unit(simple_function
@@ -130,9 +132,6 @@ cinch_add_unit(simple_function
     ${RUNTIME_DRIVER}
   POLICY
     ${UNIT_POLICY}
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
 )
 endif()
 
@@ -149,9 +148,6 @@ if(NOT DEFINED ENV{TRAVIS})
       DEFINES
         TEST_INIT=flecsi/execution/test/task_init.h
       POLICY MPILEGION
-      LIBRARIES
-      flecsi
-      ${CINCH_RUNTIME_LIBRARIES}
     )
 
 #  cinch_add_unit(dpd_sparse
@@ -180,7 +176,7 @@ if(NOT DEFINED ENV{TRAVIS})
          test/mpilegion/sprint_devel.cc
          mpilegion/runtime_driver.cc
          test/mpilegion/sprint.cc
-         ${execution_SOURCES}
+         ${execution_LIBRARY}
         INPUTS
          test/mpilegion/simple2d-16x16.msh
         DEFINES SPRINT_TEST
