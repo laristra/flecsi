@@ -12,8 +12,9 @@
 ///
 
 #include "flecsi/coloring/communicator.h"
-#include "flecsi/utils/set_utils.h"
 
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
 #include <cinchlog.h>
 
 #if !defined(ENABLE_MPI)
@@ -21,6 +22,8 @@
 #endif
 
 #include <mpi.h>
+
+#include "flecsi/utils/set_utils.h"
 
 clog_register_tag(mpi_communicator);
 

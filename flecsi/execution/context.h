@@ -164,7 +164,12 @@ private:
   context__(context__ &&) = delete;
   context__ & operator = (context__ &&) = delete;
 
+  // key: virtual index space id
+  // value: coloring indices (exclusive, shared, ghost)
   std::unordered_map<size_t, index_coloring_t> colorings_;
+
+  // key: color
+  // value: map of virtual index space to coloring info (num exclusive...)
   std::unordered_map<size_t,
     std::unordered_map<size_t, coloring_info_t>> coloring_info_;
 
