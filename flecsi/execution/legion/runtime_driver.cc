@@ -79,6 +79,7 @@ for(auto p: context_.partitions()) {
 #endif
 
   std::map<size_t, Legion::IndexSpace> expanded_ispaces;
+  std::map<size_t, Legion::FieldSpace> expanded_fspaces;
   std::map<size_t, Legion::LogicalRegion> expanded_lregions;
   {
   clog_tag_guard(runtime_driver);
@@ -103,11 +104,23 @@ for(auto p: context_.partitions()) {
     sprintf(buf, "expanded index space %d", key_idx.first);
     runtime->attach_name(expanded_is, buf);
     expanded_ispaces[key_idx.first] = expanded_is;
-#if 0
+
+    Legion::FieldSpace expanded_fs = runtime->create_field_space(ctx);
+    {
+      Legion::FieldAllocator allocator = runtime->create_field_allocator(ctx, expanded_fs);
+      allocator.allocate_field(sizeof(LegionRuntime::Arrays::Point<2>), 42); // FIXME use registration
+    }
+    sprintf(buf, "expanded field space %d", key_idx.first);
+    runtime->attach_name(expanded_fs, buf);
+    expanded_fspaces[key_idx.first] = expanded_fs;
+
+
     Legion::LogicalRegion expanded_lr = runtime->create_logical_region(ctx,
         expanded_is, expanded_fs);
+    sprintf(buf, "expanded logical region %d", key_idx.first);
     runtime->attach_name(expanded_lr, buf);
-#endif
+    expanded_lregions[key_idx.first] = expanded_lr;
+
   } // for key_idx
   } // clog_tag_guard
 
@@ -142,6 +155,14 @@ for(auto p: context_.partitions()) {
   for (auto itr = expanded_ispaces.begin(); itr != expanded_ispaces.end(); ++itr)
     runtime->destroy_index_space(ctx, expanded_ispaces[itr->first]);
   expanded_ispaces.clear();
+
+  for (auto itr = expanded_fspaces.begin(); itr != expanded_fspaces.end(); ++itr)
+    runtime->destroy_field_space(ctx, expanded_fspaces[itr->first]);
+  expanded_fspaces.clear();
+
+  for (auto itr = expanded_lregions.begin(); itr != expanded_lregions.end(); ++itr)
+    runtime->destroy_logical_region(ctx, expanded_lregions[itr->first]);
+  expanded_lregions.clear();
 
   context_.unset_call_mpi(ctx, runtime);
   context_.handoff_to_mpi(ctx, runtime);
