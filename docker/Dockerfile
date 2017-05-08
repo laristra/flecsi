@@ -16,7 +16,7 @@ ARG CI
 ARG TRAVIS
 ARG TRAVIS_BRANCH
 ARG TRAVIS_JOB_NUMBER
-ARG TRAVIS_PULL_REQUEST 
+ARG TRAVIS_PULL_REQUEST
 ARG TRAVIS_JOB_ID
 ARG TRAVIS_TAG
 ARG TRAVIS_REPO_SLUG
@@ -39,8 +39,7 @@ RUN ccache -z
 RUN cmake -DENABLE_MPI=$MPI \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON \
-          -DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON  \
-          -DCMAKE_DISABLE_FIND_PACKAGE_LAPACKE=ON} \
+          -DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
           -DENABLE_UNIT_TESTS=ON \
           -DENABLE_FLECSIT=ON \
           -DENABLE_DOXYGEN=ON \
@@ -76,7 +75,7 @@ RUN cd .. && if [ ${SONARQUBE} ]; then \
     -Dsonar.links.scm=https://github.com/${TRAVIS_REPO_SLUG} \
     -Dsonar.links.issue=https://github.com/${TRAVIS_REPO_SLUG}/issues \
     -Dsonar.sources=. \
-    -Dsonar.exclusions=build/CMakeFiles/**,cinch/**,build/doc/doxygen/**,build/include/** \
+    -Dsonar.exclusions=build/CMakeFiles/**,cinch/**,build/doc/doxygen/**,build/include/**,flecsi/*/test/* \
     -Dsonar.cfamily.build-wrapper-output=build/bw-output \
     -Dsonar.cfamily.gcov.reportsPath=. \
     -Dsonar.host.url=https://sonarqube.com \

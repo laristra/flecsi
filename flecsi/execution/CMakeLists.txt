@@ -120,7 +120,6 @@ cinch_add_unit(task
     ${UNIT_POLICY}
   LIBRARIES
     flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
 )
 
 cinch_add_unit(simple_function
@@ -132,7 +131,6 @@ cinch_add_unit(simple_function
     ${UNIT_POLICY}
   LIBRARIES
     flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
 )
 endif()
 
@@ -151,7 +149,6 @@ if(NOT DEFINED ENV{TRAVIS})
       POLICY MPILEGION
       LIBRARIES
       flecsi
-      ${CINCH_RUNTIME_LIBRARIES}
     )
 
 #  cinch_add_unit(dpd_sparse
@@ -186,7 +183,6 @@ if(NOT DEFINED ENV{TRAVIS})
         DEFINES SPRINT_TEST
          FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
          TEST_INIT=flecsi/execution/test/task_init.h
-        LIBRARIES ${PARTITION_LIBRARIES}
         POLICY MPILEGION_DEVEL
         THREADS 2
       )
@@ -201,7 +197,6 @@ if(NOT DEFINED ENV{TRAVIS})
 #        DEFINES LAX_WENDROFF_TEST
 #          FLECSI_DRIVER=flecsi/execution/test/lax_wendroff.h
 #          TEST_INIT=flecsi/execution/test/task_init.h
-#        LIBRARIES ${PARTITION_LIBRARIES}
 #        POLICY MPILEGION_DEVEL
 #        THREADS 2
 #      )

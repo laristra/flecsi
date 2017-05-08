@@ -6,8 +6,8 @@
 # /@@////   /@@/@@@@@@@/@@       ////////@@/@@
 # /@@       /@@/@@//// //@@    @@       /@@/@@
 # /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
-# //       ///  //////   //////  ////////  // 
-# 
+# //       ///  //////   //////  ////////  //
+#
 # Copyright (c) 2016 Los Alamos National Laboratory, LLC
 # All rights reserved
 #~----------------------------------------------------------------------------~#
@@ -27,6 +27,19 @@ else()
 endif()
 
 set(FLECSI_RUNTIME_LIBRARIES)
+
+#------------------------------------------------------------------------------#
+# DBC
+#------------------------------------------------------------------------------#
+if(FLECSI_DBC_ACTION STREQUAL "throw")
+  add_definitions(-DFLECSI_DBC_THROW)
+elseif(FLECSI_DBC_ACTION STREQUAL "notify")
+  add_definitions(-DFLECSI_DBC_NOTIFY)
+endif()
+
+if(FLECSI_DBC_REQUIRE)
+  add_definitions(-DFLECSI_REQUIRE_ON)
+endif()
 
 #------------------------------------------------------------------------------#
 # OpenSSL
@@ -103,7 +116,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
   if(NOT ENABLE_MPI)
     message (FATAL_ERROR "MPI is required for the mpilegion runtime model")
   endif()
- 
+
   set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/mpilegion)
 
   if(NOT APPLE)
@@ -119,7 +132,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 #
 else(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
-  message(FATAL_ERROR "Unrecognized runtime selection")  
+  message(FATAL_ERROR "Unrecognized runtime selection")
 
 endif(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
@@ -218,21 +231,11 @@ if(ENABLE_PARTITIONING)
 
 endif()
 
-#------------------------------------------------------------------------------#
-# LAPACK
-#------------------------------------------------------------------------------#
-
-# NB: The code that uses lapack actually requires lapacke:
-# http://www.netlib.org/lapack/lapacke.html
-# If the installation of lapack that this finds does not contain lapacke then
-# the build will fail.
-if(NOT APPLE)
-  find_package(LAPACKE)
-
-  if(LAPACKE_FOUND)
-      include_directories( ${LAPACKE_INCLUDE_DIRS} )
-  endif(LAPACKE_FOUND)
-endif(NOT APPLE)
+if ( FLECSI_RUNTIME_LIBRARIES OR PARTITION_LIBRARIES OR IO_LIBRARIES )
+  cinch_target_link_libraries(
+    flecsi ${FLECSI_RUNTIME_LIBRARIES} ${PARTITION_LIBRARIES} ${IO_LIBRARIES}
+  )
+endif()
 
 #------------------------------------------------------------------------------#
 # configure header
