@@ -105,10 +105,10 @@ endif()
 # Boost
 #------------------------------------------------------------------------------#
 
-find_package(Boost 1.58.0 REQUIRED COMPONENTS serialization)
+#find_package(Boost 1.58.0 REQUIRED COMPONENTS serialization)
 
-include_directories(${Boost_INCLUDE_DIRS})
-set(FLECSI_RUNTIME_LIBRARIES ${FLECSI_RUNTIME_LIBRARIES} ${Boost_LIBRARIES})
+#include_directories(${Boost_INCLUDE_DIRS})
+#set(FLECSI_RUNTIME_LIBRARIES ${FLECSI_RUNTIME_LIBRARIES} ${Boost_LIBRARIES})
 
 #------------------------------------------------------------------------------#
 # Process id bits
