@@ -231,6 +231,12 @@ if(ENABLE_PARTITIONING)
 
 endif()
 
+if ( FLECSI_RUNTIME_LIBRARIES OR PARTITION_LIBRARIES OR IO_LIBRARIES )
+  cinch_target_link_libraries(
+    flecsi ${FLECSI_RUNTIME_LIBRARIES} ${PARTITION_LIBRARIES} ${IO_LIBRARIES}
+  )
+endif()
+
 #------------------------------------------------------------------------------#
 # configure header
 #------------------------------------------------------------------------------#
