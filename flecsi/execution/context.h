@@ -168,8 +168,8 @@ private:
   // value: coloring indices (exclusive, shared, ghost)
   std::unordered_map<size_t, index_coloring_t> colorings_;
 
-  // key: color
-  // value: map of virtual index space to coloring info (num exclusive...)
+  // key: virtual index space.
+  // value: map of color to coloring info
   std::unordered_map<size_t,
     std::unordered_map<size_t, coloring_info_t>> coloring_info_;
 
