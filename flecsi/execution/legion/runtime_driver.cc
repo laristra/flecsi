@@ -81,6 +81,11 @@ for(auto p: context_.partitions()) {
   std::map<size_t, Legion::IndexSpace> expanded_ispaces;
   std::map<size_t, Legion::FieldSpace> expanded_fspaces;
   std::map<size_t, Legion::LogicalRegion> expanded_lregions;
+  std::map<size_t, Legion::IndexPartition> color_iparts;
+
+  LegionRuntime::Arrays::Rect<1> color_bounds1D(0, num_colors - 1);
+  Legion::Domain color_domain1D = Legion::Domain::from_rect<1>(color_bounds1D);
+
   {
   clog_tag_guard(runtime_driver);
   auto coloring_info = context_.coloring_info_map();
@@ -88,10 +93,12 @@ for(auto p: context_.partitions()) {
   for(auto key_idx: coloring_info) {
     clog(error) << "index: " << key_idx.first << std::endl;
     size_t total_num_entities = 0;
+    std::map<size_t, size_t> num_extended_entries;
     for(auto color_idx: key_idx.second) {
       clog(error) << "color: " << color_idx.first << " " << color_idx.second << std::endl;
-      total_num_entities = std::max(total_num_entities,
-          color_idx.second.exclusive + color_idx.second.shared + color_idx.second.ghost);
+      num_extended_entries[color_idx.first]
+        = color_idx.second.exclusive + color_idx.second.shared + color_idx.second.ghost;
+      total_num_entities = std::max(total_num_entities,num_extended_entries[color_idx.first]);
     } // for color_idx
     clog(error) << "total_num_entities " << total_num_entities << std::endl;
     LegionRuntime::Arrays::Rect<2> expanded_bounds = LegionRuntime::Arrays::Rect<2>(
@@ -114,13 +121,25 @@ for(auto p: context_.partitions()) {
     runtime->attach_name(expanded_fs, buf);
     expanded_fspaces[key_idx.first] = expanded_fs;
 
-
     Legion::LogicalRegion expanded_lr = runtime->create_logical_region(ctx,
         expanded_is, expanded_fs);
     sprintf(buf, "expanded logical region %d", key_idx.first);
     runtime->attach_name(expanded_lr, buf);
     expanded_lregions[key_idx.first] = expanded_lr;
 
+    Legion::DomainColoring color_partitioning;
+    for (int color = 0; color < num_colors; color++) {
+      LegionRuntime::Arrays::Rect<2> subrect(
+          LegionRuntime::Arrays::make_point(color, 0),
+          LegionRuntime::Arrays::make_point(color, num_extended_entries[color] - 1));
+      color_partitioning[color] = Legion::Domain::from_rect<2>(subrect);
+    }
+
+    Legion::IndexPartition color_ip = runtime->create_index_partition(ctx,
+        expanded_is, color_domain1D, color_partitioning, true /*disjoint*/);
+    sprintf(buf, "color partitioing %d", key_idx.first);
+    runtime->attach_name(color_ip, buf);
+    color_iparts[key_idx.first] = color_ip;
   } // for key_idx
   } // clog_tag_guard
 
@@ -152,6 +171,11 @@ for(auto p: context_.partitions()) {
   #endif
 
   // Finish up Legion runtime and fall back out to MPI.
+
+  for (auto itr = color_iparts.begin(); itr != color_iparts.end(); ++itr)
+    runtime->destroy_index_partition(ctx, color_iparts[itr->first]);
+  color_iparts.clear();
+
   for (auto itr = expanded_ispaces.begin(); itr != expanded_ispaces.end(); ++itr)
     runtime->destroy_index_space(ctx, expanded_ispaces[itr->first]);
   expanded_ispaces.clear();
