@@ -23,7 +23,39 @@ namespace flecsi {
 namespace execution {
 
 //----------------------------------------------------------------------------//
-//! The task__ type provides a high-level task interface that is
+//! The base_task__ type provides FIXME
+//!
+//! @tparam EXECUTION_POLICY The backend execution policy.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
+template<
+  typename EXECUTION_POLICY
+>
+struct base_task__
+{
+
+  template<
+    typename RETURN,
+    typename ARG_TUPLE,
+    RETURN (*DELEGATE)(ARG_TUPLE),
+    size_t KEY
+  >
+  using task_wrapper__ =
+    typename EXECUTION_POLICY::template task_wrapper__<
+      RETURN, ARG_TUPLE, DELEGATE, KEY>;
+
+  friend EXECUTION_POLICY;
+
+protected:
+  
+  typename EXECUTION_POLICY::runtime_state_t context_;
+
+}; // struct base_task__
+
+//----------------------------------------------------------------------------//
+//! The task_model__ type provides a high-level task interface that is
 //! implemented by the given execution policy.
 //!
 //! @tparam EXECUTION_POLICY The backend execution policy.
@@ -34,7 +66,7 @@ namespace execution {
 template<
   typename EXECUTION_POLICY
 >
-struct task__
+struct task_model__
 {
 
   //--------------------------------------------------------------------------//
@@ -112,12 +144,39 @@ namespace flecsi {
 namespace execution {
 
 //----------------------------------------------------------------------------//
-//! The task_t type is the high-level interface to the FleCSI task model.
+//! The base_task_t type defines a base class for FleCSI tasks. FIXME
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
 
-using task_t = task__<FLECSI_RUNTIME_EXECUTION_POLICY>;
+using base_task_t = base_task__<FLECSI_RUNTIME_EXECUTION_POLICY>;
+
+//----------------------------------------------------------------------------//
+//! The task_t type is the base class for all FleCSI tasks. FIXME
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
+template<
+  typename RETURN,
+  typename ARG_TUPLE,
+  RETURN (*DELEGATE)(ARG_TUPLE),
+  size_t KEY
+>
+class task_t : public base_task_t
+{
+
+  friend base_task_t::template task_wrapper__<RETURN, ARG_TUPLE, DELEGATE, KEY>;
+
+}; // class task_t
+
+//----------------------------------------------------------------------------//
+//! The task_model_t type is the high-level interface to the FleCSI task model.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
+using task_model_t = task_model__<FLECSI_RUNTIME_EXECUTION_POLICY>;
 
 //----------------------------------------------------------------------------//
 //! Use the execution policy to define the future type.

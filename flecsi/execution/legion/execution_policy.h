@@ -32,6 +32,7 @@
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/legion/context_policy.h"
 #include "flecsi/execution/legion/future.h"
+#include "flecsi/execution/legion/runtime_state.h"
 #include "flecsi/execution/legion/task_wrapper.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/tuple_walker.h"
@@ -310,6 +311,29 @@ struct legion_execution_policy_t
 
   template<typename RETURN>
   using future__ = legion_future__<RETURN>;
+
+  //--------------------------------------------------------------------------//
+  //! The task_wrapper__ type FIXME
+  //!
+  //! @tparam RETURN The return type of the task. FIXME
+  //--------------------------------------------------------------------------//
+
+  template<
+    typename RETURN,
+    typename ARG_TUPLE,
+    RETURN (*DELEGATE)(ARG_TUPLE),
+    size_t KEY
+  >
+  using task_wrapper__ =
+    typename flecsi::execution::task_wrapper__<
+      RETURN, ARG_TUPLE, DELEGATE, KEY>;
+
+  //--------------------------------------------------------------------------//
+  //! The runtime_state_t type identifies a public type for the high-level
+  //! runtime interface to pass state required by the backend.
+  //--------------------------------------------------------------------------//
+
+  using runtime_state_t = legion_runtime_state_t;
 
   //--------------------------------------------------------------------------//
   // Task interface.
