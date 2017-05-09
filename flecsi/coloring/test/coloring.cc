@@ -34,7 +34,7 @@ DEVEL(coloring) {
   // Set the output rank
   clog_set_output_rank(1);
 
-  using entry_info_t = flecsi::coloring::entry_info_t;
+  using entity_info_t = flecsi::coloring::entity_info_t;
 
   int size;
   int rank;
@@ -154,25 +154,25 @@ DEVEL(coloring) {
   } // scope
 
   // Create a map version of the remote info for lookups below.
-  std::unordered_map<size_t, entry_info_t> remote_info_map;
+  std::unordered_map<size_t, entity_info_t> remote_info_map;
   for(auto i: std::get<1>(cell_all_info)) {
     remote_info_map[i.id] = i;
   } // for
 
-  std::set<entry_info_t> exclusive_cells;
-  std::set<entry_info_t> shared_cells;
-  std::set<entry_info_t> ghost_cells;
+  std::set<entity_info_t> exclusive_cells;
+  std::set<entity_info_t> shared_cells;
+  std::set<entity_info_t> ghost_cells;
 
   // Populate exclusive and shared cell information.
   {
   size_t offset(0);
   for(auto i: std::get<0>(cell_nn_info)) {
     if(i.size()) {
-      shared_cells.insert(entry_info_t(primary_indices_map[offset],
+      shared_cells.insert(entity_info_t(primary_indices_map[offset],
         rank, offset, i));
     }
     else {
-      exclusive_cells.insert(entry_info_t(primary_indices_map[offset],
+      exclusive_cells.insert(entity_info_t(primary_indices_map[offset],
         rank, offset, i));
     } // if
     ++offset;
@@ -195,7 +195,7 @@ DEVEL(coloring) {
   } // guard
 
   // Create a map version for lookups below.
-  std::unordered_map<size_t, entry_info_t> shared_cells_map;
+  std::unordered_map<size_t, entity_info_t> shared_cells_map;
   {
   for(auto i: shared_cells) {
     shared_cells_map[i.id] = i;
@@ -207,7 +207,7 @@ DEVEL(coloring) {
 
   // Assign vertex ownership
   std::vector<std::set<size_t>> vertex_requests(size);
-  std::set<entry_info_t> vertex_info;
+  std::set<entity_info_t> vertex_info;
 
   size_t offset(0);
   for(auto i: vertex_closure) {
@@ -260,8 +260,8 @@ DEVEL(coloring) {
 
     if(min_rank == rank) {
       // This is a vertex that belongs to our rank.
-      auto entry = entry_info_t(i, rank, offset, shared_vertices);
-      vertex_info.insert(entry_info_t(i, rank, offset++, shared_vertices));
+      auto entry = entity_info_t(i, rank, offset, shared_vertices);
+      vertex_info.insert(entity_info_t(i, rank, offset++, shared_vertices));
     }
     else {
       // Add remote vertex to the request for offset information.
@@ -272,9 +272,9 @@ DEVEL(coloring) {
   auto vertex_offset_info =
     communicator->get_entity_info(vertex_info, vertex_requests);
 
-  std::set<entry_info_t> exclusive_vertices;
-  std::set<entry_info_t> shared_vertices;
-  std::set<entry_info_t> ghost_vertices;
+  std::set<entity_info_t> exclusive_vertices;
+  std::set<entity_info_t> shared_vertices;
+  std::set<entity_info_t> ghost_vertices;
 
   for(auto i: vertex_info) {
     if(i.shared.size()) {
@@ -291,7 +291,7 @@ DEVEL(coloring) {
 
     auto offset(vertex_offset_info[r].begin());
     for(auto s: i) {
-      ghost_vertices.insert(entry_info_t(s, r, *offset));
+      ghost_vertices.insert(entity_info_t(s, r, *offset));
       ++offset;
     } // for
 
@@ -334,12 +334,12 @@ DEVEL(coloring) {
     M << ", " << N << ");" << std::endl;
 
   // maps
-  std::unordered_map<size_t, entry_info_t> exclusive_cells_map;
+  std::unordered_map<size_t, entity_info_t> exclusive_cells_map;
   for(auto i: exclusive_cells) {
     exclusive_cells_map[i.id] = i;
   } // for
 
-  std::unordered_map<size_t, entry_info_t> ghost_cells_map;
+  std::unordered_map<size_t, entity_info_t> ghost_cells_map;
   for(auto i: ghost_cells) {
     ghost_cells_map[i.id] = i;
   } // for
@@ -377,17 +377,17 @@ DEVEL(coloring) {
     } // for
   } // for
 
-  std::unordered_map<size_t, entry_info_t> exclusive_vertices_map;
+  std::unordered_map<size_t, entity_info_t> exclusive_vertices_map;
   for(auto i: exclusive_vertices) {
     exclusive_vertices_map[i.id] = i;
   } // for
 
-  std::unordered_map<size_t, entry_info_t> shared_vertices_map;
+  std::unordered_map<size_t, entity_info_t> shared_vertices_map;
   for(auto i: shared_vertices) {
     shared_vertices_map[i.id] = i;
   } // for
 
-  std::unordered_map<size_t, entry_info_t> ghost_vertices_map;
+  std::unordered_map<size_t, entity_info_t> ghost_vertices_map;
   for(auto i: ghost_vertices) {
     ghost_vertices_map[i.id] = i;
   } // for
