@@ -33,7 +33,6 @@
 // Enable IO
 //----------------------------------------------------------------------------//
 
-#cmakedefine EXODUSII_FOUND
 #cmakedefine METIS_FOUND
 #cmakedefine PARMETIS_FOUND
 
