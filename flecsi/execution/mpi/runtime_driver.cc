@@ -4,11 +4,15 @@
  *~-------------------------------------------------------------------------~~*/
 
 //----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Aug 01, 2016
+//! \file
+//! \date Initial file creation: Jul 26, 2016
 //----------------------------------------------------------------------------//
 
-#include "flecsi/execution/serial/runtime_driver.h"
+#include "flecsi/execution/mpi/runtime_driver.h"
+
+#include "flecsi/execution/context.h"
+
+clog_register_tag(runtime_driver);
 
 namespace flecsi {
 namespace execution {
@@ -17,19 +21,31 @@ namespace execution {
 // Implementation of FleCSI runtime driver task.
 //----------------------------------------------------------------------------//
 
-void serial_runtime_driver(int argc, char ** argv) {
+void
+runtime_driver(
+  int argc,
+  char ** argv
+)
+{
+  {
+  clog_tag_guard(runtime_driver);
+  clog(info) << "In MPI runtime driver" << std::endl;
+  }
 
-#ifndef FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
+#if defined FLECSI_ENABLE_SPECIALIZATION_DRIVER
+  {
+  clog_tag_guard(runtime_driver);
+  clog(info) << "Executing specialization driver task" << std::endl;
+  }
 
   // Execute the specialization driver.
-  specialization_driver(argc, argv);
-
-#endif // FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
+  specialization_driver(args.argc, args.argv);
+#endif // FLECSI_ENABLE_SPECIALIZATION_DRIVER
 
   // Execute the user driver.
   driver(argc, argv);
 
-} // serial_runtime_driver
+} // runtime_driver
 
 } // namespace execution 
 } // namespace flecsi

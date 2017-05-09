@@ -52,7 +52,8 @@ inline return_type task_name(                                                  \
 __flecsi_internal_legion_task(spmd_task, void) {
   {
   clog_tag_guard(legion_tasks);
-  clog(info) << "Executing driver task" << std::endl;
+  clog(info) << "Executing spmd task" << std::endl;
+
   }
 
   // Add additional setup.
@@ -65,6 +66,26 @@ __flecsi_internal_legion_task(spmd_task, void) {
   context_t & context_ = context_t::instance();
   context_t::instance().push_state(utils::const_string_t{"driver"}.hash(),
     ctx, runtime, task, regions);
+
+  const std::unordered_map<size_t, flecsi::coloring::index_coloring_t> coloring_map
+    = context_.coloring_map();
+
+  // Create sub-partitions
+  for (auto itr : coloring_map) {
+    clog(trace) << "key " << itr.first << std::endl;
+    clog(trace) << "  primary " << std::endl;
+    for (auto primary_itr = itr.second.primary.begin(); primary_itr != itr.second.primary.end(); ++primary_itr)
+      clog(trace) << "    " << *primary_itr << std::endl;
+    clog(trace) << "  exclusive " << std::endl;
+    for (auto exclusive_itr = itr.second.exclusive.begin(); exclusive_itr != itr.second.exclusive.end(); ++exclusive_itr)
+      clog(trace) << "    " << *exclusive_itr << std::endl;
+    clog(trace) << "  shared " << std::endl;
+    for (auto shared_itr = itr.second.shared.begin(); shared_itr != itr.second.shared.end(); ++shared_itr)
+      clog(trace) << "    " << *shared_itr << std::endl;
+    clog(trace) << "  ghost " << std::endl;
+    for (auto ghost_itr = itr.second.ghost.begin(); ghost_itr != itr.second.ghost.end(); ++ghost_itr)
+      clog(trace) << "    " << *ghost_itr << std::endl;
+  }
 
   // run default or user-defined driver 
   driver(args.argc, args.argv); 

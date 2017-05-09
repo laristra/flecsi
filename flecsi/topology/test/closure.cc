@@ -5,7 +5,7 @@
 
 #include <cinchtest.h>
 
-#include "flecsi/topology/graph_utils.h"
+#include "flecsi/topology/closure_utils.h"
 #include "flecsi/topology/test/test_definition.h"
 
 clog_register_tag(neighbors);
@@ -13,7 +13,7 @@ clog_register_tag(referencers);
 
 // This test checks that the correct neighboring cells are calculated for
 // each cell in a 4x4 mesh through vertex connections.
-TEST(graph, cell_to_cell_thru_vertices) {
+TEST(closure, cell_to_cell_thru_vertices) {
 
   flecsi::topology::test_definition_t td;
 
@@ -52,7 +52,7 @@ TEST(graph, cell_to_cell_thru_vertices) {
 
 // This test checks that the correct neighboring cells are calculated for
 // each cell in a 4x4 mesh through edge connections.
-TEST(graph, cell_to_cell_thru_edges) {
+TEST(closure, cell_to_cell_thru_edges) {
 
   flecsi::topology::test_definition_t td;
 
@@ -90,7 +90,7 @@ TEST(graph, cell_to_cell_thru_edges) {
 
 // This test checks that the correct cell closure is created for
 // a 4x4 mesh through vertex connections.
-TEST(graph, cell_closure_thru_vertices) {
+TEST(closure, cell_closure_thru_vertices) {
 
   flecsi::topology::test_definition_t td;
 
@@ -106,7 +106,7 @@ TEST(graph, cell_closure_thru_vertices) {
 
 // This test checks that the correct cell closure is created for
 // a 4x4 mesh through edge connections.
-TEST(graph, cell_closure_thru_edges) {
+TEST(closure, cell_closure_thru_edges) {
 
   flecsi::topology::test_definition_t td;
 
@@ -122,7 +122,7 @@ TEST(graph, cell_closure_thru_edges) {
 
 // This test checks that the correct set of cells is found that
 // reference a given vertex id in a 4x4 mesh.
-TEST(graph, vertex_referencers) {
+TEST(closure, vertex_referencers) {
 
   flecsi::topology::test_definition_t td;
 
@@ -169,7 +169,7 @@ TEST(graph, vertex_referencers) {
 
 // This test checks that the correct set of cells is found that
 // reference a given vertex id in a 4x4 mesh.
-TEST(graph, vertex_closure) {
+TEST(closure, vertex_closure) {
 
   flecsi::topology::test_definition_t td;
 

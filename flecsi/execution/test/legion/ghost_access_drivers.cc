@@ -5,7 +5,7 @@
 
 ///
 /// \file
-/// \date Initial file creation: Apr 11, 2017
+/// \date Initial file creation: May 4, 2017
 ///
 
 #include <cinchlog.h>

@@ -28,7 +28,7 @@ namespace execution {
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
-__flecsi_internal_register_legion_task(spmd_task, loc, index);
+__flecsi_internal_register_legion_task(spmd_task, loc, index | inner);
 
 //----------------------------------------------------------------------------//
 //! Register task to handoff to the MPI runtime.

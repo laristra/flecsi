@@ -3,10 +3,10 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_partition_partitioner_h
-#define flecsi_partition_partitioner_h
+#ifndef flecsi_coloring_colorer_h
+#define flecsi_coloring_colorer_h
 
-#include "flecsi/partition/dcrs.h"
+#include "flecsi/coloring/dcrs.h"
 
 ///
 /// \file
@@ -14,55 +14,55 @@
 ///
 
 namespace flecsi {
-namespace dmp {
+namespace coloring {
 
 ///
-/// \class partitioner_t partitioner.h
-/// \brief partitioner_t provides an interface for creating distributed-memory
-///                      partitions from a distributed, compressed-row-storage
+/// \class colorer_t colorer.h
+/// \brief colorer_t provides an interface for creating distributed-memory
+///                      colorings from a distributed, compressed-row-storage
 ///                      graph representation.
 ///
-class partitioner_t
+class colorer_t
 {
 public:
 
   /// Default constructor
-  partitioner_t() {}
+  colorer_t() {}
 
   /// Copy constructor (disabled)
-  partitioner_t(const partitioner_t &) = delete;
+  colorer_t(const colorer_t &) = delete;
 
   /// Assignment operator (disabled)
-  partitioner_t & operator = (const partitioner_t &) = delete;
+  colorer_t & operator = (const colorer_t &) = delete;
 
   /// Destructor
-  virtual ~partitioner_t() {}
+  virtual ~colorer_t() {}
 
   ///
   /// This method takes a distributed, compressed-row-storage representation
-  /// of a graph and returns the indepdentent partitioning on a per
+  /// of a graph and returns the indepdentent coloring on a per
   /// execution instance basis, e.g., for each rank or task.
   ///
   /// \param dcrs A distributed, compressed-row-storage representation
-  ///             of the graph to partition.
+  ///             of the graph to color.
   ///
   /// \return The set of indices that belong to the current execution
   ///         instance.
   ///
   virtual
   std::set<size_t>
-  partition(
+  color(
     const dcrs_t & dcrs
   ) = 0;
 
 private:
 
-}; // class partitioner_t
+}; // class colorer_t
 
-} // namespace dmp
+} // namespace coloring
 } // namespace flecsi
 
-#endif // flecsi_partition_partitioner_h
+#endif // flecsi_coloring_colorer_h
  
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

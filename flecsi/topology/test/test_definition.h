@@ -23,7 +23,7 @@ namespace topology {
 // \brief test_definition_t provides...
 ///
 class test_definition_t
-  : public graph_definition_t
+  : public mesh_definition_t
 {
 public:
 

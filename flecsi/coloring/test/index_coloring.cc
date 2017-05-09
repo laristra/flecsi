@@ -3,7 +3,7 @@
  * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
 
-#include "flecsi/partition/index_partition.h"
+#include "flecsi/coloring/index_coloring.h"
 
 #include <cinchtest.h>
 
@@ -12,9 +12,9 @@
 #include <mpi.h>
 #include <sstream>
 
-using index_partition_t = flecsi::dmp::index_partition__<size_t>;
-using ghost_info_t = index_partition_t::ghost_info_t;
-using shared_info_t = index_partition_t::shared_info_t;
+using index_coloring_t = flecsi::coloring::index_coloring__<size_t>;
+using ghost_info_t = index_coloring_t::ghost_info_t;
+using shared_info_t = index_coloring_t::shared_info_t;
 
 static constexpr size_t N = 8;
 
@@ -102,7 +102,7 @@ protected:
     } // for
   } // for
 
-	//creating primary partitioning and filling global_id's for shared elements:
+	// creating primary coloring and filling global_id's for shared elements:
   int start_indx=0;
   size_t previous_indx=0;
   for (int i=0; i<ip_.exclusive.size(); i++){
@@ -144,7 +144,7 @@ protected:
 
   virtual void TearDown() override {}
 
-  index_partition_t ip_;
+  index_coloring_t ip_;
 
 }; // ip_fixture_t
 
@@ -172,13 +172,13 @@ TEST_F(ip_fixture_t, basic) {
 
 } // basic
 
-TEST(index_partition, compare_output) {
+TEST(index_coloring, compare_output) {
   int rank;
 
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   if(rank == 0) {
-    CINCH_ASSERT(TRUE, CINCH_EQUAL_BLESSED("index_partition.blessed"));
+    CINCH_ASSERT(TRUE, CINCH_EQUAL_BLESSED("index_coloring.blessed"));
   } // if
 } // compare_output
 

@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_partition_dcrs_h
-#define flecsi_partition_dcrs_h
+#ifndef flecsi_coloring_dcrs_h
+#define flecsi_coloring_dcrs_h
 
 ///
 /// \file
@@ -14,7 +14,7 @@
 #include <vector>
 
 namespace flecsi {
-namespace dmp {
+namespace coloring {
 
 ///
 /// Convenience macro to avoid having to reimplement this for each member.
@@ -87,10 +87,10 @@ operator <<
   return stream;
 } // operator <<
 
-} // namespace dmp
+} // namespace coloring
 } // namespace flecsi
 
-#endif // flecsi_partition_dcrs_h
+#endif // flecsi_coloring_dcrs_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

@@ -4,89 +4,58 @@
  *~-------------------------------------------------------------------------~~*/
 
 #include <cinchtest.h>
+#include <mpi.h>
 
 #include "flecsi/io/simple_definition.h"
-#include "flecsi/topology/closure_utils.h"
-#include "flecsi/utils/set_utils.h"
+#include "flecsi/coloring/dcrs_utils.h"
 
-TEST(simple_definition, simple) {
+const size_t output_rank(0);
+
+TEST(dcrs, naive_coloring) {
+  flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
+  auto naive = flecsi::coloring::naive_coloring(sd);
+
+  clog_set_output_rank(0);
+
+  clog_container_one(info, "naive coloring", naive, clog::space);
+} // TEST
+
+TEST(dcrs, simple2d_8x8) {
 
   flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
+  auto dcrs = flecsi::coloring::make_dcrs(sd);
 
-  // All values are hard-coded for the test and depend on the
-  // input file being correct
-  const size_t M = 8; // rows
-  const size_t N = 8; // columns
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  // 8x8 = 64 cells
-  CINCH_ASSERT(TRUE, sd.num_entities(0) == 81);
-  CINCH_ASSERT(TRUE, sd.num_entities(2) == 64);
+  if(rank == 0) {
+    // Note: These assume that this test is run with 5 ranks.
+    const std::vector<size_t> offsets =
+      { 0, 2, 5, 8, 11, 14, 17, 20, 22, 25, 29, 33, 37 };
 
-  for(size_t c(0); c<sd.num_entities(2); ++c) {
-    size_t row = c/M;
-    size_t col = c%M;
+    const std::vector<size_t> indices =
+      { 1, 8, 0, 2, 9, 1, 3, 10, 2, 4, 11, 3, 5, 12, 4, 6, 13, 5, 7, 14, 6,
+        15, 0, 9, 16, 1, 8, 10, 17, 2, 9, 11, 18, 3, 10, 12, 19 };
 
-    size_t r0 = col + row*(M+1);
-    size_t r1 = r0 + M+1;
-
-    auto ids = sd.vertices(2, c);
-
-    CINCH_ASSERT(EQ, ids[0], r0);
-    CINCH_ASSERT(EQ, ids[1], (r0+1));
-    CINCH_ASSERT(EQ, ids[2], (r1+1));
-    CINCH_ASSERT(EQ, ids[3], r1);
-  } // for
-
-  double xinc = 1.0/N;
-  double yinc = 1.0/M;
-
-  for(size_t v(0); v<sd.num_entities(2); ++v) {
-    size_t row = v/(M+1);
-    size_t col = v%(M+1);
-
-    auto coords = sd.vertex(v);
-
-    CINCH_ASSERT(EQ, coords[0], col*xinc);
-    CINCH_ASSERT(EQ, coords[1], row*yinc);
-  } // for
+    CINCH_ASSERT(EQ, dcrs.offsets, offsets);
+    CINCH_ASSERT(EQ, dcrs.indices, indices);
+  } // if
 
 } // TEST
 
-TEST(simple_definition, neighbors) {
+TEST(dcrs, simple2d_16x16) {
 
-  flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
+  flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
+  auto dcrs = flecsi::coloring::make_dcrs(sd);
 
-  // Primary partititon
-  std::set<size_t> partition = { 0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19 };
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  // The closure captures any cell that is adjacent to a cell in the
-  // set of indices passed to the method. The closure includes the
-  // initial set of indices.
-  auto closure = flecsi::topology::entity_closure<2,2,1>(sd, partition);
-
-  CINCH_ASSERT(EQ, closure, std::set<size_t>({0, 1, 2, 3, 4, 8, 9, 10, 11,
-                                             12, 16, 17, 18, 19, 20, 24,
-                                             25, 26, 27}));
-
-  // Subtracting out the initial set leaves just the nearest
-  // neighbors. This is similar to the image of the adjacency
-  // graph of the initial indices.
-  auto nn = flecsi::utils::set_difference(closure, partition);
-
-  CINCH_ASSERT(EQ, nn, std::set<size_t>({4, 12, 20, 24, 25, 26, 27}));
-
-  // The closure of the nearest neighbors intersected with
-  // the initial indeces gives the shared indices. This is similar to
-  // the preimage of the nearest neighbors.
-  auto nnclosure = flecsi::topology::entity_closure<2,2,1>(sd, nn);
-  auto shared = flecsi::utils::set_intersection(nnclosure, partition);
-
-  CINCH_ASSERT(EQ, shared, std::set<size_t>({3, 11, 16, 17, 18, 19}));
-
-  // One can iteratively add halos of nearest neighbors, e.g.,
-  // here we add the next nearest neighbors.
-  auto nnn = flecsi::utils::set_difference(nnclosure, closure);
-  CINCH_ASSERT(EQ, nnn, std::set<size_t>({5, 13, 21, 28, 32, 33, 34, 35}));
+#if 0
+  if(rank == output_rank) {
+    std::cout << dcrs << std::endl;
+  } // if
+#endif
 
 } // TEST
 

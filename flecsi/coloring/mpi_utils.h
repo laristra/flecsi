@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_mpi_utils_h
-#define flecsi_mpi_utils_h
+#ifndef flecsi_coloring_mpi_utils_h
+#define flecsi_coloring_mpi_utils_h
 
 #if !defined(ENABLE_MPI)
   #error ENABLE_MPI not defined! This file depends on MPI!
@@ -18,7 +18,7 @@
 ///
 
 namespace flecsi {
-namespace dmp {
+namespace coloring {
 
 template<typename T> struct mpi_typetraits {};
 
@@ -54,10 +54,10 @@ struct mpi_typetraits<size_t>
   }
 }; // mpi_typetraits
 
-} // namespace dmp
+} // namespace coloring
 } // namespace flecsi
 
-#endif // flecsi_mpi_utils_h
+#endif // flecsi_coloring_mpi_utils_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

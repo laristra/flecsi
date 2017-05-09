@@ -3,17 +3,18 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_partition_mpi_communicator_h
-#define flecsi_partition_mpi_communicator_h
+#ifndef flecsi_coloring_mpi_communicator_h
+#define flecsi_coloring_mpi_communicator_h
 
 ///
 /// \file
 /// \date Initial file creation: Dec 06, 2016
 ///
 
-#include "flecsi/partition/communicator.h"
-#include "flecsi/utils/set_utils.h"
+#include "flecsi/coloring/communicator.h"
 
+//#include <boost/archive/binary_iarchive.hpp>
+//#include <boost/archive/binary_oarchive.hpp>
 #include <cinchlog.h>
 
 #if !defined(ENABLE_MPI)
@@ -22,10 +23,12 @@
 
 #include <mpi.h>
 
+#include "flecsi/utils/set_utils.h"
+
 clog_register_tag(mpi_communicator);
 
 namespace flecsi {
-namespace dmp {
+namespace coloring {
 
 ///
 /// \class mpi_communicator_t mpi_communicator.h
@@ -50,11 +53,11 @@ public:
    ~mpi_communicator_t() {}
 
   ///
-  /// Rerturn a set containing the entry_info_t information for each
+  /// Rerturn a set containing the entity_info_t information for each
   /// member of the input set request_indices (from other ranks) and
   /// the information for the local indices in primary.
   ///
-  std::pair<std::vector<std::set<size_t>>, std::set<entry_info_t>>
+  std::pair<std::vector<std::set<size_t>>, std::set<entity_info_t>>
   get_primary_info(
     const std::set<size_t> & primary,
     const std::set<size_t> & request_indices
@@ -79,7 +82,8 @@ public:
       request_indices_size << std::endl;
 #endif
 
-    const auto mpi_size_t_type = flecsi::dmp::mpi_typetraits<size_t>::type();
+    const auto mpi_size_t_type =
+      flecsi::coloring::mpi_typetraits<size_t>::type();
 
     // This may be inefficient, but this call is doing a reduction
     // to determine the maximum number of indices requested by any rank
@@ -136,15 +140,15 @@ public:
 
     // Send the request indices to all other ranks.
     result = MPI_Alltoall(&input_indices[0], max_request_indices,
-      flecsi::dmp::mpi_typetraits<size_t>::type(),
+      flecsi::coloring::mpi_typetraits<size_t>::type(),
       &info_indices[0], max_request_indices,
-      flecsi::dmp::mpi_typetraits<size_t>::type(), MPI_COMM_WORLD);
+      flecsi::coloring::mpi_typetraits<size_t>::type(), MPI_COMM_WORLD);
 
     // Reset input indices to use to send back information
     std::fill(input_indices.begin(), input_indices.end(),
       std::numeric_limits<size_t>::max());
 
-    // For the primary partition, provide rank and entity information
+    // For the primary coloring, provide rank and entity information
     // on indices that are shared with other processes.
     std::vector<std::set<size_t>> local(primary.size());
 
@@ -200,7 +204,7 @@ public:
       mpi_size_t_type, &info_offsets[0], max_request_indices,
       mpi_size_t_type, MPI_COMM_WORLD);
 
-    std::set<entry_info_t> remote;
+    std::set<entity_info_t> remote;
 
     // Collect all of the information for the remote entities.
     for(size_t r(0); r<size; ++r) {
@@ -218,7 +222,7 @@ public:
         if(ranks[i] != std::numeric_limits<size_t>::max()) {
           // If this is not size_t max, this rank answered our request
           // and we can set the information.
-          remote.insert(entry_info_t(request_indices_vector[i], ranks[i],
+          remote.insert(entity_info_t(request_indices_vector[i], ranks[i],
             offsets[i], {}));
         } // if
       } // for
@@ -251,7 +255,8 @@ public:
       request_indices_size << std::endl;
 #endif
 
-    const auto mpi_size_t_type = flecsi::dmp::mpi_typetraits<size_t>::type();
+    const auto mpi_size_t_type =
+      flecsi::coloring::mpi_typetraits<size_t>::type();
 
     // This may be inefficient, but this call is doing a reduction
     // to determine the maximum number of indices requested by any rank
@@ -333,7 +338,7 @@ public:
       // Array slice for convenience.
       size_t * info = &info_indices[r*max_request_indices];
 
-      // Create a set of the off-partition request indices.
+      // Create a set of the off-color request indices.
       std::set<size_t> intersection_set;
       for(size_t i(0); i<max_request_indices; ++i) {
         if(info[i] != std::numeric_limits<size_t>::max()) {
@@ -367,7 +372,7 @@ public:
   } // get_intersection_info
 
   ///
-  /// Rerturn a set containing the entry_info_t information for each
+  /// Rerturn a set containing the entity_info_t information for each
   /// member of the input set request_indices (from other ranks).
   ///
   /// \param entity_info FIXME...
@@ -378,7 +383,7 @@ public:
   ///
   std::vector<std::set<size_t>>
   get_entity_info(
-    const std::set<entry_info_t> & entity_info,
+    const std::set<entity_info_t> & entity_info,
     const std::vector<std::set<size_t>> & request_indices
   )
   override
@@ -443,7 +448,7 @@ public:
     } // for
 
     // Create a map version of the entity info for lookups below.
-    std::unordered_map<size_t, entry_info_t> entity_info_map;
+    std::unordered_map<size_t, entity_info_t> entity_info_map;
     for(auto i: entity_info) {
       entity_info_map[i.id] = i;
     } // for
@@ -540,42 +545,206 @@ if(rank == 1) {
   } // get_entity_info
 
   ///
-  /// Rerturn a map containing partition index and the number of indices
+  /// Rerturn a map containing the coloring index and the number of indices
   /// for the given index set.
   ///     
   std::unordered_map<size_t, size_t>
-  get_set_sizes(
-    const std::set<size_t> & index_set
+  gather_sizes(
+    const size_t & size
   )
   override
   {
-    int size;
+    int colors;
 
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_size(MPI_COMM_WORLD, &colors);
 
-    size_t indices = index_set.size();
     std::unordered_map<size_t, size_t> indices_map;
-    size_t buffer[size];
+    size_t buffer[colors];
 
-    const auto mpi_size_t_type = flecsi::dmp::mpi_typetraits<size_t>::type();
+    const auto mpi_size_t_type =
+      flecsi::coloring::mpi_typetraits<size_t>::type();
 
-    int result = MPI_Allgather(&indices, 1, mpi_size_t_type,
+    int result = MPI_Allgather(&size, 1, mpi_size_t_type,
       &buffer, 1, mpi_size_t_type, MPI_COMM_WORLD);
 
-   for (size_t i=0; i<size; i++)
+   for (size_t i=0; i<colors; i++)
      indices_map[i]=buffer[i];
 
     return indices_map;
-  } // get_set_sizes
+  } // gather_sizes
+
+  std::unordered_map<size_t, coloring_info_t>
+  get_coloring_info(const coloring_info_t & color_info)
+  override
+  {
+    int color, colors;
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &color);
+    MPI_Comm_size(MPI_COMM_WORLD, &colors);
+
+    struct size_info_t {
+      size_t exclusive;
+      size_t shared;
+      size_t ghost;
+    }; // struct size_info_t
+
+    size_info_t buffer[colors];
+    const size_t bytes = sizeof(size_info_t);
+
+    int result = MPI_Allgather(&color_info, bytes, MPI_BYTE,
+      &buffer, bytes, MPI_BYTE, MPI_COMM_WORLD);
+
+    std::unordered_map<size_t, coloring_info_t> coloring_info;
+
+    for(size_t c(0); c<colors; ++c) {
+      coloring_info[c].exclusive =  buffer[c].exclusive;
+      coloring_info[c].shared =  buffer[c].shared;
+      coloring_info[c].ghost =  buffer[c].ghost;
+    } // for
+
+// FIXME: This pattern gets repeated several times in this file -> Need
+//        to create a function to handle it.
+    {
+    size_t max_request_indices =
+      get_max_request_size(color_info.shared_users.size());
+
+    std::cout << "max_request_indices: " << max_request_indices << std::endl;
+    
+    std::vector<size_t> input_indices(colors*max_request_indices,
+      std::numeric_limits<size_t>::max());
+    std::vector<size_t> info_indices(colors*max_request_indices);
+
+    for(size_t c(0); c<colors; ++c) {
+      size_t off(0);
+      const size_t coff = c*max_request_indices;
+
+      for(auto s: color_info.shared_users) {
+        input_indices[coff + off++] = s;
+      } // for
+    } // for
+
+    const auto mpi_size_t_type =
+      flecsi::coloring::mpi_typetraits<size_t>::type();
+
+    // Send the request indices to all other ranks.
+    result = MPI_Alltoall(
+      &input_indices[0], max_request_indices, mpi_size_t_type,
+      &info_indices[0], max_request_indices, mpi_size_t_type,
+      MPI_COMM_WORLD);
+
+    for(size_t c(0); c<colors; ++c) {
+
+      size_t * info = &info_indices[c*max_request_indices];
+      auto & color_info = coloring_info[c];
+
+      for(size_t i(0); i<max_request_indices; ++i) {
+        if(info[i] != std::numeric_limits<size_t>::max()) {
+          color_info.shared_users.insert(info[i]);
+        } // if
+      } // for
+    } // for
+    } // scope
+// Pattern ends here
+
+// Repeat
+    {
+    int max_request_indices =
+      get_max_request_size(color_info.ghost_owners.size());
+
+    std::cout << "max_request_indices: " << max_request_indices << std::endl;
+    
+    std::vector<size_t> input_indices(colors*max_request_indices,
+      std::numeric_limits<size_t>::max());
+    std::vector<size_t> info_indices(colors*max_request_indices);
+
+    for(size_t c(0); c<colors; ++c) {
+      size_t off(0);
+      const size_t coff = c*max_request_indices;
+
+      for(auto s: color_info.shared_users) {
+        input_indices[coff + off++] = s;
+      } // for
+    } // for
+
+    const auto mpi_size_t_type =
+      flecsi::coloring::mpi_typetraits<size_t>::type();
+
+    // Send the request indices to all other ranks.
+    result = MPI_Alltoall(
+      &input_indices[0], max_request_indices, mpi_size_t_type,
+      &info_indices[0], max_request_indices, mpi_size_t_type,
+      MPI_COMM_WORLD);
+
+    for(size_t c(0); c<colors; ++c) {
+
+      size_t * info = &info_indices[c*max_request_indices];
+      auto & color_info = coloring_info[c];
+
+      for(size_t i(0); i<max_request_indices; ++i) {
+        if(info[i] != std::numeric_limits<size_t>::max()) {
+          color_info.ghost_owners.insert(info[i]);
+        } // if
+      } // for
+    } // for
+    } // scope
+// Pattern ends here
+
+    return coloring_info;
+  } // get_coloring_info
+
+  size_t
+  get_max_request_size(
+    size_t request_indices
+  )
+  {
+    size_t max_request_indices = 0;
+
+    // Get a valid MPI type for size_t.
+    const auto mpi_size_t_type =
+      flecsi::coloring::mpi_typetraits<size_t>::type();
+
+    // This may be inefficient, but this call is doing a reduction
+    // to determine the maximum number of indices requested by any rank
+    // so that we can pad out the all-to-all communication below.
+    int result = MPI_Allreduce(&request_indices, &max_request_indices, 1,
+      mpi_size_t_type, MPI_MAX, MPI_COMM_WORLD);
+
+    return max_request_indices;
+  } // get_max_request_size
+
+#if 0
+  std::vector<size_t>
+  get_all_set_indices(
+    size_t max_request_indices,
+    std::set<size_t> index_set
+  )
+  {
+    std::vector<size_t> input_indices(colors*max_request_indices,
+      std::numeric_limits<size_t>::max());
+    std::vector<size_t> info_indices(colors*max_request_indices);
+
+    size_t index(0);
+    for(auto i: index_set) {
+      input_indices[index++] = i;
+    } // for
+
+    // Send the request indices to all other ranks.
+    result = MPI_Alltoall(
+      &input_indices[0], max_request_indices, mpi_size_t_type,
+      &info_indices[0], max_request_indices, mpi_size_type,
+      MPI_COMM_WORLD);
+
+  } // get_all_set_indices
+#endif
 
 private:
 
 }; // class mpi_communicator_t
 
-} // namespace dmp
+} // namespace coloring
 } // namespace flecsi
 
-#endif // flecsi_partition_mpi_communicator_h
+#endif // flecsi_coloring_mpi_communicator_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

@@ -17,12 +17,12 @@
 # scope below.
 #------------------------------------------------------------------------------#
 
-set(partition_HEADERS
+set(coloring_HEADERS
+  colorer.h
+  coloring_types.h
   communicator.h
   dcrs.h
-  index_partition.h
-  partitioner.h
-  partition_types.h
+  index_coloring.h
 )
 
 #------------------------------------------------------------------------------#
@@ -54,8 +54,8 @@ endif()
 #------------------------------------------------------------------------------#
 
 if(ENABLE_MPI)
-  set(partition_HEADERS
-    ${partition_HEADERS}
+  set(coloring_HEADERS
+    ${coloring_HEADERS}
     dcrs_utils.h
     mpi_communicator.h
     mpi_utils.h
@@ -63,9 +63,9 @@ if(ENABLE_MPI)
 endif()
 
 if(ENABLE_PARMETIS)
-  set(partition_HEADERS
-    ${partition_HEADERS}
-    parmetis_partitioner.h
+  set(coloring_HEADERS
+    ${coloring_HEADERS}
+    parmetis_colorer.h
   )
 endif()
 
@@ -73,8 +73,8 @@ endif()
 # Export header list to parent scope.
 #------------------------------------------------------------------------------#
 
-set(partition_HEADERS
-    ${partition_HEADERS}
+set(coloring_HEADERS
+    ${coloring_HEADERS}
     PARENT_SCOPE
 )
 
@@ -82,8 +82,8 @@ set(partition_HEADERS
 # Export source list to parent scope.
 #------------------------------------------------------------------------------#
 
-set(partition_SOURCES
-    ${partition_SOURCES}
+set(coloring_SOURCES
+    ${coloring_SOURCES}
     PARENT_SCOPE
 )
 
@@ -96,7 +96,7 @@ cinch_add_unit(dcrs
   INPUTS
     test/simple2d-8x8.msh
     test/simple2d-16x16.msh
-  LIBRARIES ${PARTITION_LIBRARIES}
+  LIBRARIES ${COLORING_LIBRARIES}
   POLICY MPI
   THREADS 5
 )
@@ -106,23 +106,23 @@ cinch_add_unit(devel-dcrs
   INPUTS
     test/simple2d-8x8.msh
     test/simple2d-16x16.msh
-  LIBRARIES ${PARTITION_LIBRARIES}
+  LIBRARIES ${COLORING_LIBRARIES}
   POLICY MPI_DEVEL
   THREADS 5
 )
 
 # Both of these tests depend on ParMETIS.
-# This could change if we add more partitioner types.
-if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
+# This could change if we add more colorer types.
+if(ENABLE_COLORINGING AND ENABLE_PARMETIS)
 
-cinch_add_unit(partition
-  SOURCES test/partition.cc
+cinch_add_unit(coloring
+  SOURCES test/coloring.cc
   INPUTS
     test/simple2d-8x8.msh
     test/simple2d-16x16.msh
     test/simple2d-32x32.msh
     test/simple2d-48x48.msh
-  LIBRARIES ${PARTITION_LIBRARIES}
+  LIBRARIES ${COLORING_LIBRARIES}
   POLICY MPI_DEVEL
   THREADS 5
 )

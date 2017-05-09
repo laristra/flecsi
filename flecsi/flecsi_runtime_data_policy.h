@@ -57,7 +57,19 @@
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
-  #error "This policy is not yet implemented!"
+  #include "flecsi/data/default_user_meta_data.h"
+  #include "flecsi/data/mpi/storage_policy.h"
+
+  namespace flecsi {
+  namespace data {
+
+  using FLECSI_RUNTIME_USER_META_DATA_POLICY = default_user_meta_data_t;
+
+  template<typename META_DATA>
+  using FLECSI_RUNTIME_STORAGE_POLICY = mpi_storage_policy_t<META_DATA>;
+
+  } // namespace data
+  } // namespace flecsi
 
 #endif // FLECSI_RUNTIME_MODEL
 
