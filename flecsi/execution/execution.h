@@ -55,7 +55,7 @@
   } /* delegate task */                                                        \
                                                                                \
   /* Call the execution policy to register the task delegate */                \
-  bool task ## _task_registered =                                              \
+   bool task ## _task_registered =                                             \
     flecsi::execution::task_t::register_task<task ## _trt_t, task ## _tat_t,   \
       task ## _tuple_delegate,                                                 \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()>        \
@@ -102,7 +102,7 @@
 //! then be passed as state data and executed in any task address space.
 //!
 //! @param name The function to register. This should be the plain-text
-//!              name of the function (not a string).
+//!             name of the function (not a string).
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
@@ -148,11 +148,11 @@
 //! @ingroup execution
 //----------------------------------------------------------------------------//
 
-#define flecsi_execute_function(handle, ...)                                   \
+#define flecsi_execute_function(RETURN,handle, ...)                            \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Call the execution policy to execute the function */                      \
-  flecsi::execution::function_t::execute_function(handle, ## __VA_ARGS__)
+  flecsi::execution::function_t::execute_function<RETURN>(handle, ## __VA_ARGS__)
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_function_handle
@@ -207,7 +207,7 @@
 //! // Print the id of each mesh cell.
 //!
 //! flecsi_for_each(c, mesh.cells(), {
-//!   std::cout << c.id() << std::endl; 
+//!   std::cout << c.id() << std::endl;
 //! }); // flecsi_for_each
 //! @endcode
 //!

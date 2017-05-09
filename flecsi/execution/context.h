@@ -196,7 +196,7 @@ namespace execution {
 
 using context_t = context__<FLECSI_RUNTIME_CONTEXT_POLICY>;
 
-} //namespace execution 
+} // namespace execution
 } // namespace flecsi
 
 #endif // flecsi_execution_context_h
