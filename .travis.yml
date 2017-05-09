@@ -111,6 +111,7 @@ branches:
   - master
   - travis
   - stable
+  - refactor
 
 notifications:
   branches:
