@@ -147,11 +147,13 @@ runtime_driver(
 
   std::vector<Legion::Serializer> args_serializers(num_colors);
 
-  //auto spmd_id = context_.task_id(__flecsi_task_key(spmd_task, loc));
+  auto spmd_id = __flecsi_internal_task_key(spmd_task, loc);
+  clog(error) << "spmd_task is key " << spmd_id << std::endl;
 
   // Add colors to must_epoch_launcher
   for(size_t color(0); color<num_colors; ++color) {
 
+    // Serialize PhaseBarriers and set as task arguments
     std::vector<Legion::PhaseBarrier> pbarriers_as_master;
     std::vector<size_t> num_ghost_owners;
     std::vector<std::vector<Legion::PhaseBarrier>> owners_pbarriers;
@@ -178,8 +180,11 @@ runtime_driver(
       args_serializers[color].serialize(&owners_pbarriers[key][0],
           num_ghost_owners[key] * sizeof(Legion::PhaseBarrier));
 
-    //Legion::TaskLauncher spmd_launcher(spmd_id, Legion::TaskArgument(0, 0));
-    //spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+    Legion::TaskLauncher spmd_launcher(context_.task_id(spmd_id),
+        Legion::TaskArgument(args_serializers[color].get_buffer(), args_serializers[color].get_used_bytes()));
+    spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+
+    // Add region requirements
 
     Legion::DomainPoint point(color);
     //must_epoch_launcher.add_single_task(point, spmd_launcher);
