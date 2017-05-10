@@ -69,37 +69,45 @@ struct serial_context_policy_t
   /// \return A boolean value that is true if the registration succeeded,
   ///         false otherwise.
   ///
-  template<typename T>
+  template<
+    typename RETURN,
+    typename ARG_TUPLE
+  >
   bool
   register_function(
     const utils::const_string_t & key,
-    T & function
+    std::function<RETURN(ARG_TUPLE)> & user_function
   )
   {
     const size_t h = key.hash();
     if(function_registry_.find(h) == function_registry_.end()) {
       function_registry_[h] =
-        reinterpret_cast<std::function<void(void)> *>(&function);
+        reinterpret_cast<std::function<void(void)> *>(&user_function);
       return true;
     } // if
 
     return false;
   } // register_function
-  
+
   ///
-  /// Return the function assocaited with \e key.
+  /// Return the function associated with \e key.
   ///
   /// \param key The unique function identifier.
   ///
   /// \return A pointer to a std::function<void(void)> that may be cast
-  ///         back to the oringinal function type using reinterpret_cast.
+  ///         back to the original function type using reinterpret_cast.
   ///
-  std::function<void(void)> *
+  template<
+    typename RETURN,
+    typename ARG_TUPLE
+  >
+  std::function<RETURN(ARG_TUPLE)> *
   function(
     size_t key
   )
   {
-    return function_registry_[key];
+    return reinterpret_cast<std::function<RETURN(ARG_TUPLE)> *>
+      (function_registry_[key]);
   } // function
 
   //------------------------------------------------------------------------//
@@ -122,7 +130,7 @@ private:
 
 }; // struct serial_context_policy_t
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
 
 #endif // flecsi_execution_serial_context_policy_h

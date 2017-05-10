@@ -23,16 +23,16 @@ namespace execution {
 /// \class function_handle__ function_handle.h
 /// \brief function_handle__ provides...
 ///
-/// \tparam R Return value type.
-/// \tparam A Argument type (std::tuple).
+/// \tparam RETURN Return value type.
+/// \tparam ARGS Argument type (std::tuple).
 ///
 template<
-  typename R,
-  typename A
+  typename RETURN,
+  typename ARGS
 >
 struct function_handle__
 {
-  using args_t = A;
+  using args_t = ARGS;
 
   ///
   /// Constructor.
@@ -43,18 +43,16 @@ struct function_handle__
     : key_(key) {}
 
   ///
-  /// Execute the funciton.
+  /// Execute the function.
   ///
   template< typename T >
-  R
+  RETURN
   operator () (
-    std::function<void(void)> * user_function,
+    std::function<RETURN(ARGS)> *user_function,
     T && args
   )
   {
-    auto & kr =
-      *(reinterpret_cast<std::function<R(A)> *>(user_function));
-    return kr( std::forward<T>(args));
+    return (*user_function)(std::forward<T>(args));
   } // operator ()
 
   ///

@@ -57,8 +57,8 @@ namespace execution {
 //! initialization of this state, i.e., it may be uninitialized on any
 //! given thread. The current implementation does not make any assumptions
 //! about what tasks may have been invoked from a particular thread before
-//! pushing context inforamtion onto this state. It is safe for this state
-//! to be uninitialized when it is encoutnered by a task executing in
+//! pushing context information onto this state. It is safe for this state
+//! to be uninitialized when it is encountered by a task executing in
 //! the FleCSI runtime. This property \em must be maintained.
 //!
 //! @ingroup legion-execution
@@ -146,7 +146,7 @@ struct legion_context_policy_t
   } // pop_state
 
   //--------------------------------------------------------------------------//
-  // MPI interoperabiliy.
+  // MPI interoperability.
   //--------------------------------------------------------------------------//
 
   //--------------------------------------------------------------------------//
@@ -388,7 +388,7 @@ struct legion_context_policy_t
 
     // Add the variant only if it has not been defined.
     if(task_entry.find(variant) == task_entry.end()) {
-      task_registry_[key][variant] = 
+      task_registry_[key][variant] =
         std::make_tuple(unique_tid_t::instance().next(), call_back, name);
       return true;
     }
@@ -426,7 +426,7 @@ struct legion_context_policy_t
 
     clog_assert(variant != task_entry->second.end(),
       "task variant does not exist: " << key);
-    
+
     return std::get<0>(variant->second);
   } // task_id
 
@@ -438,33 +438,41 @@ struct legion_context_policy_t
   //! FIXME: This interface needs to be updated.
   //--------------------------------------------------------------------------//
 
-  template<typename T>
+  template<
+    typename RETURN,
+    typename ARG_TUPLE
+  >
   bool
   register_function(
     const utils::const_string_t & key,
-    T & function
+    std::function<RETURN(ARG_TUPLE)> & user_function
   )
   {
-    size_t h = key.hash();
+    const size_t h = key.hash();
     if(function_registry_.find(h) == function_registry_.end()) {
       function_registry_[h] =
-        reinterpret_cast<std::function<void(void)> *>(&function);
+        reinterpret_cast<std::function<void(void)> *>(&user_function);
       return true;
     } // if
 
     return false;
   } // register_function
-  
+
   //--------------------------------------------------------------------------//
   //! FIXME: This interface needs to be updated.
   //--------------------------------------------------------------------------//
 
-  std::function<void(void)> *
+  template<
+    typename RETURN,
+    typename ARG_TUPLE
+  >
+  std::function<RETURN(ARG_TUPLE)> *
   function(
     size_t key
   )
   {
-    return function_registry_[key];
+    return reinterpret_cast<std::function<RETURN(ARG_TUPLE)> *>
+      (function_registry_[key]);
   } // function
 
   //--------------------------------------------------------------------------//
@@ -561,7 +569,7 @@ struct legion_context_policy_t
     //map for the copy_task ids
     copy_task_map_t copy_task_map;
   };
- 
+
 private:
 
   //--------------------------------------------------------------------------//
@@ -641,7 +649,7 @@ private:
 
 }; // class legion_context_policy_t
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
 
 #endif // flecsi_execution_legion_context_policy_h

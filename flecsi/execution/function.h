@@ -38,7 +38,7 @@ struct function__
   //!        registration model.
   //!
   //! @tparam RETURN    The return type of the user function.
-  //! @tparam ARG_TUPLE A std::tuple of the user function arguements.
+  //! @tparam ARG_TUPLE A std::tuple of the user function arguments.
   //!
   //! @param key           The function hash key.
   //! @param user_function The user function.
@@ -55,8 +55,8 @@ struct function__
     std::function<RETURN(ARG_TUPLE)> & user_function
   )
   {
-    return EXECUTION_POLICY::template register_function<RETURN, ARG_TUPLE>(key,
-      user_function);
+    return EXECUTION_POLICY::template register_function<
+      RETURN, ARG_TUPLE>(key, user_function);
   } // register_function
 
   //--------------------------------------------------------------------------//
@@ -66,13 +66,14 @@ struct function__
   //!        registration model.
   //!
   //! @tparam FUNCTION_HANDLE The function handle type.
-  //! @tparam ARGS            A variadic pack of the user function arguements.
+  //! @tparam ARGS            A variadic pack of the user function arguments.
   //!
   //! @param key           The function hash key.
   //! @param user_function The user function.
   //--------------------------------------------------------------------------//
 
   template<
+    typename RETURN,
     typename FUNCTION_HANDLE,
     typename ... ARGS
   >
@@ -83,7 +84,7 @@ struct function__
     ARGS && ... args
   )
   {
-    return EXECUTION_POLICY::execute_function(handle,
+    return EXECUTION_POLICY::template execute_function<RETURN>(handle,
       std::forward<ARGS>(args) ...);
   } // execute_function
 
@@ -109,7 +110,7 @@ namespace execution {
 
 using function_t = function__<FLECSI_RUNTIME_EXECUTION_POLICY>;
 
-} // namespace function
+} // namespace execution
 } // namespace flecsi
 
 #endif // flecsi_execution_function_h

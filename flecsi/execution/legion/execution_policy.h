@@ -352,7 +352,7 @@ struct legion_execution_policy_t
   )
   {
     // Processor type can be an or-list of values, each of which should
-    // be register as a different variant.
+    // be registered as a different variant.
     const processor_t processor = key.processor();
 
     using wrapper_t = task_wrapper__<RETURN, ARG_TUPLE, DELEGATE, KEY>;
@@ -376,7 +376,7 @@ struct legion_execution_policy_t
       } // if
 
       // Register toc task variant
-      if(processor_loc(processor)) {
+      if(processor_toc(processor)) {
         if(!context_t::instance().register_task(
           key, processor_type_t::toc, task_name,
           wrapper_t::registration_callback)) {
@@ -583,13 +583,13 @@ struct legion_execution_policy_t
 
   template<
     typename RETURN,
-    typename ... ARGS
+    typename ARG_TUPLE
   >
   static
   bool
   register_function(
     const utils::const_string_t & key,
-    std::function<RETURN(ARGS ...)> & user_function
+    std::function<RETURN(ARG_TUPLE)> & user_function
   )
   {
     return context_t::instance().register_function(key, user_function);
@@ -601,6 +601,7 @@ struct legion_execution_policy_t
   //--------------------------------------------------------------------------//
 
   template<
+    typename RETURN,
     typename FUNCTION_HANDLE,
     typename ... ARGS
   >
@@ -611,8 +612,11 @@ struct legion_execution_policy_t
     ARGS && ... args
   )
   {
-    auto t = std::make_tuple(args ...);
-    return handle(context_t::instance().function(handle.key()), t);
+    auto targs = std::make_tuple(args ...);
+    return handle(
+      context_t::instance().function<RETURN,decltype(targs)>(handle.key()),
+      targs
+    );
   } // execute_function
 
 }; // struct legion_execution_policy_t

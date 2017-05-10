@@ -104,7 +104,7 @@ clog_register_tag(execution);
 //! then be passed as state data and executed in any task address space.
 //!
 //! @param name The function to register. This should be the plain-text
-//!              name of the function (not a string).
+//!             name of the function (not a string).
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
@@ -150,11 +150,11 @@ clog_register_tag(execution);
 //! @ingroup execution
 //----------------------------------------------------------------------------//
 
-#define flecsi_execute_function(handle, ...)                                   \
+#define flecsi_execute_function(RETURN,handle, ...)                            \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Call the execution policy to execute the function */                      \
-  flecsi::execution::function_t::execute_function(handle, ## __VA_ARGS__)
+  flecsi::execution::function_t::execute_function<RETURN>(handle, ## __VA_ARGS__)
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_function_handle
@@ -209,7 +209,7 @@ clog_register_tag(execution);
 //! // Print the id of each mesh cell.
 //!
 //! flecsi_for_each(c, mesh.cells(), {
-//!   std::cout << c.id() << std::endl; 
+//!   std::cout << c.id() << std::endl;
 //! }); // flecsi_for_each
 //! @endcode
 //!
