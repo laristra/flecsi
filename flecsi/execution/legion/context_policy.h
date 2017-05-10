@@ -23,6 +23,7 @@
 #include <functional>
 #include <memory>
 #include <unordered_map>
+#include <map>
 #include <stack>
 
 #include <cinchlog.h>
@@ -576,23 +577,8 @@ private:
   // Task data members.
   //--------------------------------------------------------------------------//
 
-  struct task_value_hash_t
+  struct task_value_less_t
   {
-
-    std::size_t
-    operator () (
-      const processor_type_t & key
-    )
-    const
-    {
-      return size_t(key);
-    } // operator ()
-
-  }; // struct task_value_hash_t
-
-  struct task_value_equal_t
-  {
-
     bool
     operator () (
       const processor_type_t & key1,
@@ -600,30 +586,56 @@ private:
     )
     const
     {
-      return size_t(key1) == size_t(key2);
+      return size_t(key1) < size_t(key2);
     } // operator ()
-
   };
 
   // Define the value type for task map.
   using task_value_t =
-    std::unordered_map<
+    std::map<
       processor_type_t,
       std::tuple<
         task_id_t,
         registration_function_t,
         std::string
       >,
-      task_value_hash_t,
-      task_value_equal_t
+      task_value_less_t
     >;
 
+  struct task_hash_key_less_t
+  {
+    bool
+    operator () (
+      const task_hash_t::key_t & key1,
+      const task_hash_t::key_t & key2
+    )
+    const
+    {
+      if(std::get<0>(key1) < std::get<0>(key2)){
+        return true;
+      }
+
+      if(std::get<0>(key1) != std::get<0>(key2)){
+        return false;
+      }
+
+      if(std::get<1>(key1).to_string() < std::get<1>(key2).to_string()){
+        return true;
+      }
+
+      if(std::get<1>(key1).to_string() != std::get<1>(key2).to_string()){
+        return false;
+      }
+
+      return std::get<2>(key1).to_string() < std::get<2>(key2).to_string();
+    } // operator ()
+  };
+
   // Define the map type using the task_hash_t hash function.
-  std::unordered_map<
+  std::map<
     task_hash_t::key_t, // key
-    task_value_t,       // value
-    task_hash_t,        // hash function
-    task_hash_t         // equivalence operator
+    task_value_t,
+    task_hash_key_less_t
   > task_registry_;
 
   //--------------------------------------------------------------------------//
