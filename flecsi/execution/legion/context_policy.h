@@ -613,7 +613,7 @@ private:
       {
         return std::get<0>(key1) <= std::get<0>(key2) &&
           std::get<1>(key1).to_string() <= std::get<1>(key2).to_string() &&
-          std::get<2>(key2).to_string() < std::get<2>(key2).to_string();
+          std::get<2>(key1).to_string() < std::get<2>(key2).to_string();
       } // operator ()
     };
 
