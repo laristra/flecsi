@@ -43,7 +43,7 @@ enum class processor_type_t : size_t {
   loc,
   toc,
   mpi
-}; // enum processor_t
+}; // enum processor_type_t
 
 ///
 /// Bitmasks for processor types.
@@ -107,6 +107,28 @@ make_processor()
     (MPI ? 1 << 2 : 0)
   };
 } // make_processor
+
+inline
+std::ostream &
+operator << (
+  std::ostream & stream,
+  const processor_type_t & variant
+)
+{
+  switch(variant) {
+    case processor_type_t::loc:
+      stream << "loc";
+      break;
+    case processor_type_t::toc:
+      stream << "toc";
+      break;
+    case processor_type_t::mpi:
+      stream << "mpi";
+      break;
+  } // switch
+
+  return stream;
+} // operator <<
 
 } //namespace execution 
 } // namespace flecsi

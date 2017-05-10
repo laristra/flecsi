@@ -26,9 +26,6 @@
 
 #include <mpi.h>
 
-clog_register_tag(context);
-clog_register_tag(interop);
-
 namespace flecsi {
 namespace execution {
 

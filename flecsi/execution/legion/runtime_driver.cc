@@ -187,12 +187,12 @@ runtime_driver(
     // Add region requirements
 
     Legion::DomainPoint point(color);
-    //must_epoch_launcher.add_single_task(point, spmd_launcher);
+    must_epoch_launcher.add_single_task(point, spmd_launcher);
   } // for color
 
   // Launch the spmd tasks
-  //auto future = runtime->execute_must_epoch(ctx, must_epoch_launcher);
-  //future.wait_all_results();
+  auto future = runtime->execute_must_epoch(ctx, must_epoch_launcher);
+  future.wait_all_results();
 
   // Finish up Legion runtime and fall back out to MPI.
 

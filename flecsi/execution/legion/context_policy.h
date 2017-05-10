@@ -42,41 +42,8 @@
 
 #include "flecsi/execution/legion/runtime_state.h"
 
-clog_register_tag(context);
-clog_register_tag(interop);
-
 namespace flecsi {
 namespace execution {
-
-//----------------------------------------------------------------------------//
-//! The legion_runtime_state_t type provides storage for Legion runtime
-//! information that can be reinitialized as needed to store const
-//! data types and references as required by the Legion runtime.
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
-
-struct legion_runtime_state_t {
-
-  legion_runtime_state_t(
-    Legion::Context & context_,
-    Legion::HighLevelRuntime * runtime_,
-    const Legion::Task * task_,
-    const std::vector<Legion::PhysicalRegion> & regions_
-  )
-  :
-    context(context_),
-    runtime(runtime_),
-    task(task_),
-    regions(regions_)
-  {}
-
-  Legion::Context & context;
-  Legion::HighLevelRuntime * runtime;
-  const Legion::Task * task;
-  const std::vector<Legion::PhysicalRegion> & regions;
-
-}; // struct legion_runtime_state_t
 
 //----------------------------------------------------------------------------//
 //! Context state uses thread-local storage (TLS). The state is set for
@@ -193,7 +160,7 @@ struct legion_context_policy_t
   set_mpi_state(bool active)
   {
     {
-    clog_tag_guard(interop);
+    clog_tag_guard(context);
     clog(info) << "set_mpi_state " << active << std::endl;
     }
 
@@ -212,7 +179,7 @@ struct legion_context_policy_t
   )
   {
     {
-    clog_tag_guard(interop);
+    clog_tag_guard(context);
     clog(info) << "set_mpi_task" << std::endl;
     }
 
@@ -259,7 +226,7 @@ struct legion_context_policy_t
   handoff_to_legion()
   {
     {
-    clog_tag_guard(interop);
+    clog_tag_guard(context);
     clog(info) << "handoff_to_legion" << std::endl;
     }
 
@@ -274,7 +241,7 @@ struct legion_context_policy_t
   wait_on_legion()
   {
     {
-    clog_tag_guard(interop);
+    clog_tag_guard(context);
     clog(info) << "wait_on_legion" << std::endl;
     }
 
@@ -289,7 +256,7 @@ struct legion_context_policy_t
   handoff_to_mpi()
   {
     {
-    clog_tag_guard(interop);
+    clog_tag_guard(context);
     clog(info) << "handoff_to_mpi" << std::endl;
     }
 
@@ -304,7 +271,7 @@ struct legion_context_policy_t
   wait_on_mpi()
   {
     {
-    clog_tag_guard(interop);
+    clog_tag_guard(context);
     clog(info) << "wait_on_mpi" << std::endl;
     }
 
@@ -411,6 +378,9 @@ struct legion_context_policy_t
     const registration_function_t & call_back
   )
   {
+    clog(info) << "Registering task callback " << name << " with key " <<
+      key << " and variant " << variant << std::endl;
+
     // Get the task entry. It is ok to create a new entry, and to have
     // multiple variants for each entry, i.e., we don't need to check
     // that the entry is empty.

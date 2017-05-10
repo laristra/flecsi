@@ -32,12 +32,11 @@
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/legion/context_policy.h"
 #include "flecsi/execution/legion/future.h"
+#include "flecsi/execution/legion/runtime_state.h"
 #include "flecsi/execution/legion/task_wrapper.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/tuple_walker.h"
 #include "flecsi/data/data_handle.h"
-
-clog_register_tag(execution);
 
 namespace flecsi {
 namespace execution {
@@ -312,6 +311,25 @@ struct legion_execution_policy_t
   using future__ = legion_future__<RETURN>;
 
   //--------------------------------------------------------------------------//
+  //! The task_wrapper__ type FIXME
+  //!
+  //! @tparam RETURN The return type of the task. FIXME
+  //--------------------------------------------------------------------------//
+
+  template<
+    typename FUNCTOR_TYPE
+  >
+  using user_task_wrapper__ =
+    typename flecsi::execution::user_task_wrapper__<FUNCTOR_TYPE>;
+
+  //--------------------------------------------------------------------------//
+  //! The runtime_state_t type identifies a public type for the high-level
+  //! runtime interface to pass state required by the backend.
+  //--------------------------------------------------------------------------//
+
+  using runtime_state_t = legion_runtime_state_t;
+
+  //--------------------------------------------------------------------------//
   // Task interface.
   //--------------------------------------------------------------------------//
 
@@ -400,6 +418,9 @@ struct legion_execution_policy_t
     std::string task_name
   )
   {
+    clog(info) << "Registering legion task " << key <<
+      " " << task_name << std::endl;
+
     // Processor type can be an or-list of values, each of which should
     // be register as a different variant.
     const processor_t processor = key.processor();

@@ -50,19 +50,27 @@ legion_context_policy_t::initialize(
     TOP_LEVEL_TASK_ID, Legion::Processor::LOC_PROC,
     true, false, AUTO_GENERATE_ID, TaskConfigOptions(), "runtime_driver");
 
-  // Register user tasks
+  // Register tasks in same order on all ranks
+  std::map<uintptr_t, task_hash_key_t> ordered_registry_map;
   for(auto & t: task_registry_) {
-
-    // FIXME: The casts in this section need to be cleaned up...
     task_hash_key_t key = static_cast<task_hash_key_t>(t.first);
+    ordered_registry_map[key.address()] = key;
+  }
+
+  for(auto idx = ordered_registry_map.begin(); idx != ordered_registry_map.end(); ++idx){
+    task_hash_key_t lookup_key = idx->second;
+
+    auto t = task_registry_.find(lookup_key);
+    // FIXME: The casts in this section need to be cleaned up...
+    task_hash_key_t key = static_cast<task_hash_key_t>(t->first);
 
     {
     clog_tag_guard(context);
-    clog(info) << "Registering " << std::endl << key << std::endl;
+    clog(info) << "Registering " << key << std::endl;
     }
 
     // Iterate over task variants
-    for(auto & v: t.second) {
+    for(auto & v: t->second) {
       // FIXME: Expand this with comments on what things are.
       auto & value = std::get<1>(v);
       std::get<1>(value)(std::get<0>(value),
