@@ -172,7 +172,7 @@ runtime_driver(
     for(auto handle : map_handles) {
       pbarriers_as_master.push_back(phase_barriers_map[handle][color]);
       flecsi::coloring::coloring_info_t color_info = coloring_info[handle][color];
-      clog(error) << " Color " << color << " Key " << handle << " has " <<
+      clog(error) << " Color " << color << " Handle " << handle << " has " <<
           color_info.ghost_owners.size() << " ghost owners" << std::endl;
       num_ghost_owners.push_back(color_info.ghost_owners.size());
       std::vector<Legion::PhaseBarrier> per_color_owners_pbs;
@@ -198,6 +198,32 @@ runtime_driver(
     spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
     // Add region requirements
+
+    for(auto handle : map_handles) {
+      Legion::LogicalPartition color_lp = runtime->get_logical_partition(ctx,
+          expanded_lregions_map[handle], color_iparts_map[handle]);
+      Legion::LogicalRegion color_lr = runtime->get_logical_subregion_by_color(ctx,
+          color_lp, color);
+
+      spmd_launcher.add_region_requirement(
+        Legion::RegionRequirement(color_lr, READ_WRITE, SIMULTANEOUS, expanded_lregions_map[handle])
+        .add_field(42));  // FIXME need to do user fields, reference field, connectivity field
+
+      flecsi::coloring::coloring_info_t color_info = coloring_info[handle][color];
+      for (auto ghost_owner : color_info.ghost_owners) {
+        clog(error) << " Color " << color << " Handle " << handle << " has owner" <<
+            ghost_owner << std::endl;
+        Legion::LogicalRegion ghost_owner_lr = runtime->get_logical_subregion_by_color(ctx,
+            color_lp, ghost_owner);
+
+        spmd_launcher.add_region_requirement(
+          Legion::RegionRequirement(ghost_owner_lr, READ_ONLY, SIMULTANEOUS, expanded_lregions_map[handle])
+          .add_flags(NO_ACCESS_FLAG)
+          .add_field(42));  // FIXME need to do user fields, reference field, connectivity field
+
+      } // for owner
+
+    } // for handle
 
     Legion::DomainPoint point(color);
     must_epoch_launcher.add_single_task(point, spmd_launcher);
