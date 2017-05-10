@@ -6,24 +6,35 @@
 #ifndef flecsi_coloring_coloring_types_h
 #define flecsi_coloring_coloring_types_h
 
-///
-/// \file
-/// \date Initial file creation: Apr 18, 2017
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Apr 18, 2017
+//----------------------------------------------------------------------------//
 
 #include <set>
 
 namespace flecsi {
 namespace coloring {
 
-///
-/// Type for collecting index space sizes.
-///
+//----------------------------------------------------------------------------//
+//! Type for collecting aggregate index space information.
+//----------------------------------------------------------------------------//
+
 struct coloring_info_t {
+
+  //! The number of exclusive indices.
   size_t exclusive;
+  
+  //! The number of shared indices.
   size_t shared;
+
+  //! The number of ghost indices.
   size_t ghost;
+
+  //! The aggregate set of colors that depend on our shared indices.
   std::set<size_t> shared_users;
+
+  //! The aggregate set of colors that we depend on for ghosts.
   std::set<size_t> ghost_owners;
 }; // struct coloring_info_t
 
