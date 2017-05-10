@@ -147,6 +147,35 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     >();
   } // new_register_data
 
+  template<
+    typename DATA_CLIENT_TYPE,
+    size_t NAMESPACE_HASH,
+    size_t NAME_HASH
+  >
+  bool
+  register_data_client()
+  {
+    return sp_t::template register_data_client<
+      DATA_CLIENT_TYPE,
+      NAMESPACE_HASH,
+      NAME_HASH
+    >();
+  } // register_data_client
+
+  const auto &
+  data_registry()
+  const
+  {
+    return sp_t::data_registry();
+  }
+
+  const auto &
+  data_client_registry()
+  const
+  {
+    return sp_t::data_client_registry();
+  }
+
   //--------------------------------------------------------------------------//
   // Data handles.
   //--------------------------------------------------------------------------//

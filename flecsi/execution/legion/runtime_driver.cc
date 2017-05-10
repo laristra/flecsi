@@ -12,6 +12,7 @@
 
 #include <legion.h>
 
+#include "flecsi/data/storage.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/legion/legion_tasks.h"
 #include "flecsi/execution/legion/mapper.h"
@@ -62,6 +63,15 @@ runtime_driver(
   // Set the current task context to the driver
   context_.pop_state( utils::const_string_t{"specialization_driver"}.hash());
 #endif // FLECSI_ENABLE_SPECIALIZATION_DRIVER
+
+  auto & data_client_registry =
+    flecsi::data::storage_t::instance().data_client_registry(); 
+
+  for(auto & c: data_client_registry) {
+    for(auto & d: c.second) {
+      d.second.second(d.second.first);
+    } // for
+  } // for
 
   int num_colors;
   MPI_Comm_size(MPI_COMM_WORLD, &num_colors);

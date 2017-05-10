@@ -231,6 +231,22 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
       POLICY LEGION
       THREADS 2
     )
+
+    cinch_add_unit(client_registration
+      SOURCES
+        ../execution/test/task.cc
+        ../execution/test/context_runtime.cc
+        ../execution/legion/runtime_driver.cc
+        ../execution/legion/context_policy.cc
+        test/client_registration.cc
+        data_client.cc
+      LIBRARIES
+        flecsi
+        ${CINCH_RUNTIME_LIBRARIES}
+      POLICY LEGION
+      THREADS 2
+    )
+
   endif()
 
 endif()

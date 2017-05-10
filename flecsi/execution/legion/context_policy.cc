@@ -57,8 +57,8 @@ legion_context_policy_t::initialize(
     ordered_registry_map[key.address()] = key;
   }
 
-  for(auto idx = ordered_registry_map.begin(); idx != ordered_registry_map.end(); ++idx){
-    task_hash_key_t lookup_key = idx->second;
+  for(auto & idx: ordered_registry_map) {
+    task_hash_key_t lookup_key = idx.second;
 
     auto t = task_registry_.find(lookup_key);
     // FIXME: The casts in this section need to be cleaned up...
