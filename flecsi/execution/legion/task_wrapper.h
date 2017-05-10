@@ -180,7 +180,7 @@ struct pure_task_wrapper__
       case processor_type_t::toc:
         {
         clog_tag_guard(wrapper);
-        clog(info) << "Registering PURE loc task: " <<
+        clog(info) << "Registering PURE toc task: " <<
           task_name << std::endl << std::endl;
         }
         registration_wrapper__<RETURN, TASK>::register_task(

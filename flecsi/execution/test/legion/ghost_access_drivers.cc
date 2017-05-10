@@ -357,7 +357,7 @@ flecsi_register_task(add_colorings, mpi, index);
 //----------------------------------------------------------------------------//
 
 void specialization_driver(int argc, char ** argv) {
-  clog(info) << "In specialization driver" << std::endl;
+  clog(error) << "In specialization driver" << std::endl;
 
   flecsi_execute_task(add_colorings, mpi, index, 0);
 
@@ -368,7 +368,7 @@ void specialization_driver(int argc, char ** argv) {
 //----------------------------------------------------------------------------//
 
 void driver(int argc, char ** argv) {
-  clog(info) << "In driver" << std::endl;
+  clog(error) << "In driver" << std::endl;
 } // specialization_driver
 
 } // namespace execution
