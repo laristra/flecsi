@@ -39,6 +39,7 @@ runtime_driver(
   {
   clog_tag_guard(runtime_driver);
   clog(info) << "In Legion runtime driver" << std::endl;
+  }
 
   // Get the input arguments from the Legion runtime
   const Legion::InputArgs & args =
@@ -50,7 +51,10 @@ runtime_driver(
   context_.wait_on_mpi(ctx, runtime);
 
 #if defined FLECSI_ENABLE_SPECIALIZATION_DRIVER
+  {
+  clog_tag_guard(runtime_driver);
   clog(info) << "Executing specialization driver task" << std::endl;
+  }
 
   // Set the current task context to the driver
   context_.push_state(utils::const_string_t{"specialization_driver"}.hash(),
@@ -65,7 +69,10 @@ runtime_driver(
 
   int num_colors;
   MPI_Comm_size(MPI_COMM_WORLD, &num_colors);
+  {
+  clog_tag_guard(runtime_driver);
   clog(info) << "MPI num_colors is " << num_colors << std::endl;
+  }
 
   std::set<size_t> map_handles;
   std::map<size_t, Legion::IndexSpace> expanded_ispaces_map;
@@ -78,6 +85,9 @@ runtime_driver(
   Legion::Domain color_domain = Legion::Domain::from_rect<1>(color_bounds);
 
   auto coloring_info = context_.coloring_info_map();
+
+  {
+  clog_tag_guard(runtime_driver);
 
   for(auto handle_idx: coloring_info) {
     // Create expanded IndexSpace
@@ -97,7 +107,7 @@ runtime_driver(
     Legion::Domain expanded_dom(Legion::Domain::from_rect<2>(expanded_bounds));
     Legion::IndexSpace expanded_is = runtime->create_index_space(ctx, expanded_dom);
     char buf[80];
-    sprintf(buf, "expanded index space %d", handle_idx.first);
+    sprintf(buf, "expanded index space %ld", handle_idx.first);
     runtime->attach_name(expanded_is, buf);
     expanded_ispaces_map[handle_idx.first] = expanded_is;
 
@@ -107,13 +117,13 @@ runtime_driver(
       Legion::FieldAllocator allocator = runtime->create_field_allocator(ctx, expanded_fs);
       allocator.allocate_field(sizeof(LegionRuntime::Arrays::Point<2>), 42); // FIXME use registration
     }
-    sprintf(buf, "expanded field space %d", handle_idx.first);
+    sprintf(buf, "expanded field space %ld", handle_idx.first);
     runtime->attach_name(expanded_fs, buf);
     expanded_fspaces_map[handle_idx.first] = expanded_fs;
 
     Legion::LogicalRegion expanded_lr = runtime->create_logical_region(ctx,
         expanded_is, expanded_fs);
-    sprintf(buf, "expanded logical region %d", handle_idx.first);
+    sprintf(buf, "expanded logical region %ld", handle_idx.first);
     runtime->attach_name(expanded_lr, buf);
     expanded_lregions_map[handle_idx.first] = expanded_lr;
 
@@ -134,10 +144,11 @@ runtime_driver(
 
     Legion::IndexPartition color_ip = runtime->create_index_partition(ctx,
         expanded_is, color_domain, color_partitioning, true /*disjoint*/);
-    sprintf(buf, "color partitioing %d", handle_idx.first);
+    sprintf(buf, "color partitioing %ld", handle_idx.first);
     runtime->attach_name(color_ip, buf);
     color_iparts_map[handle_idx.first] = color_ip;
   } // for handle_idx
+  } // clog_tag_guard
 
   // Register user data
   //data::storage_t::instance().register_all();
@@ -216,7 +227,6 @@ runtime_driver(
 
   context_.unset_call_mpi(ctx, runtime);
   context_.handoff_to_mpi(ctx, runtime);
-  } // clog_tag_guard
 } // runtime_driver
 
 } // namespace execution 
