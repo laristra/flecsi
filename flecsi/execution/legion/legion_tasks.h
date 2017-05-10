@@ -12,6 +12,7 @@
 //----------------------------------------------------------------------------//
 
 #include <legion.h>
+#include <legion_utilities.h>
 
 #include "flecsi/execution/legion/internal_task.h"
 
@@ -50,13 +51,41 @@ inline return_type task_name(                                                  \
 //----------------------------------------------------------------------------//
 
 __flecsi_internal_legion_task(spmd_task, void) {
+  const int my_color = task->index_point.point_data[0];
+
   {
   clog_tag_guard(legion_tasks);
-  clog(info) << "Executing spmd task" << std::endl;
-
+  clog(error) << "Executing spmd task" << std::endl;
   }
 
   // Add additional setup.
+  clog_assert(task->arglen > 0, "spmd_task called without arguments");
+
+  Legion::Deserializer args_deserializer(task->args, task->arglen);
+  size_t num_handles;
+  args_deserializer.deserialize(&num_handles, sizeof(size_t));
+
+  Legion::PhaseBarrier* pbarriers_as_master = (Legion::PhaseBarrier*)
+      malloc(sizeof(Legion::PhaseBarrier) * num_handles);
+  args_deserializer.deserialize((void*)pbarriers_as_master, sizeof(Legion::PhaseBarrier) * num_handles);
+
+  size_t* num_owners = (size_t*)malloc(sizeof(size_t) * num_handles);
+  args_deserializer.deserialize((void*)num_owners, sizeof(size_t) * num_handles);
+
+  for (size_t handle_idx = 0; handle_idx < num_handles; handle_idx++) {
+
+    // SAVE IN HANDLE.pbarrier_as_master_ptr = &(pbarriers_as_master[handle_idx]);
+
+    Legion::PhaseBarrier* ghost_owners_pbarriers_buf = (Legion::PhaseBarrier*)
+        malloc(sizeof(Legion::PhaseBarrier) * num_owners[handle_idx]);
+    args_deserializer.deserialize((void*)ghost_owners_pbarriers_buf, sizeof(Legion::PhaseBarrier) * num_owners[handle_idx]);
+    for (size_t owner = 0; owner < num_owners[handle_idx]; owner++) {
+
+      // SAVE IN HANDLE.ghost_owners_pbarriers_ptrs.push_back(&(ghost_owners_pbarriers_buf[owner]));
+
+    }
+    // clog_assert(SAVED.ghost_owners_ptrs.size() == num_masters[handle_idx], "deserialization error");
+  } // for handle_idx
 
   // Get the input arguments from the Legion runtime
   const LegionRuntime::HighLevel::InputArgs & args =
