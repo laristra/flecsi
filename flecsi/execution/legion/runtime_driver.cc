@@ -154,7 +154,7 @@ for(auto p: context_.partitions()) {
   Legion::MustEpochLauncher must_epoch_launcher;
 
   #if 0
-  auto spmd_id = context_.task_id(__flecsi_task_key(spmd_task, loc));
+  auto spmd_id = context_.task_id(__flecsi_internal_task_key(spmd_task, loc));
 
   // Add colors to must_epoch_launcher
   for(size_t i(0); i<num_colors; ++i) {

@@ -33,8 +33,6 @@
 //#include "flecsi/utils/tuple_walker.h"
 //#include "flecsi/data/data_handle.h"
 
-clog_register_tag(execution);
-
 namespace flecsi {
 namespace execution {
 

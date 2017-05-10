@@ -28,6 +28,8 @@
 #include "flecsi/coloring/index_coloring.h"
 #include "flecsi/coloring/coloring_types.h"
 
+clog_register_tag(context);
+
 namespace flecsi {
 namespace execution {
 

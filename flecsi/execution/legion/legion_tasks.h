@@ -70,6 +70,9 @@ __flecsi_internal_legion_task(spmd_task, void) {
   const std::unordered_map<size_t, flecsi::coloring::index_coloring_t> coloring_map
     = context_.coloring_map();
 
+  {
+  clog_tag_guard(legion_tasks);
+
   // Create sub-partitions
   for (auto itr : coloring_map) {
     clog(trace) << "key " << itr.first << std::endl;
@@ -85,6 +88,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
     clog(trace) << "  ghost " << std::endl;
     for (auto ghost_itr = itr.second.ghost.begin(); ghost_itr != itr.second.ghost.end(); ++ghost_itr)
       clog(trace) << "    " << *ghost_itr << std::endl;
+  }
   }
 
   // run default or user-defined driver 

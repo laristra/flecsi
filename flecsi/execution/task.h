@@ -23,7 +23,8 @@ namespace flecsi {
 namespace execution {
 
 //----------------------------------------------------------------------------//
-//! The base_task__ type provides FIXME
+//! The base_task__ type provides a means to allow friend access
+//! to the backend runtime state.
 //!
 //! @tparam EXECUTION_POLICY The backend execution policy.
 //!
@@ -37,14 +38,10 @@ struct base_task__
 {
 
   template<
-    typename RETURN,
-    typename ARG_TUPLE,
-    RETURN (*DELEGATE)(ARG_TUPLE),
-    size_t KEY
+    typename FUNCTOR_TYPE
   >
-  using task_wrapper__ =
-    typename EXECUTION_POLICY::template task_wrapper__<
-      RETURN, ARG_TUPLE, DELEGATE, KEY>;
+  using user_task_wrapper__ =
+    typename EXECUTION_POLICY::template user_task_wrapper__<FUNCTOR_TYPE>;
 
   friend EXECUTION_POLICY;
 
@@ -144,7 +141,8 @@ namespace flecsi {
 namespace execution {
 
 //----------------------------------------------------------------------------//
-//! The base_task_t type defines a base class for FleCSI tasks. FIXME
+//! The base_task_t type defines a fully-qualified base class for friend
+//! access to the backend runtime state.
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
@@ -152,21 +150,21 @@ namespace execution {
 using base_task_t = base_task__<FLECSI_RUNTIME_EXECUTION_POLICY>;
 
 //----------------------------------------------------------------------------//
-//! The task_t type is the base class for all FleCSI tasks. FIXME
+//! The task_t type is the base class for all FleCSI tasks. User types must
+//! derive from this type, and must implement the \em execute method. Return
+//! and argument parameters for the \em execute method are inferred, and may
+//! be arbitrary.
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
 
 template<
-  typename RETURN,
-  typename ARG_TUPLE,
-  RETURN (*DELEGATE)(ARG_TUPLE),
-  size_t KEY
+  typename FUNCTOR_TYPE
 >
 class task_t : public base_task_t
 {
 
-  friend base_task_t::template task_wrapper__<RETURN, ARG_TUPLE, DELEGATE, KEY>;
+  friend base_task_t::template user_task_wrapper__<FUNCTOR_TYPE>;
 
 }; // class task_t
 

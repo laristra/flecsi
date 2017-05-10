@@ -19,6 +19,8 @@
 #include "flecsi/execution/task.h"
 #include "flecsi/utils/common.h"
 
+clog_register_tag(execution);
+
 //----------------------------------------------------------------------------//
 // Task Interface
 //----------------------------------------------------------------------------//

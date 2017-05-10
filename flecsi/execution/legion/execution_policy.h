@@ -38,8 +38,6 @@
 #include "flecsi/utils/tuple_walker.h"
 #include "flecsi/data/data_handle.h"
 
-clog_register_tag(execution);
-
 namespace flecsi {
 namespace execution {
 
@@ -319,14 +317,10 @@ struct legion_execution_policy_t
   //--------------------------------------------------------------------------//
 
   template<
-    typename RETURN,
-    typename ARG_TUPLE,
-    RETURN (*DELEGATE)(ARG_TUPLE),
-    size_t KEY
+    typename FUNCTOR_TYPE
   >
-  using task_wrapper__ =
-    typename flecsi::execution::task_wrapper__<
-      RETURN, ARG_TUPLE, DELEGATE, KEY>;
+  using user_task_wrapper__ =
+    typename flecsi::execution::user_task_wrapper__<FUNCTOR_TYPE>;
 
   //--------------------------------------------------------------------------//
   //! The runtime_state_t type identifies a public type for the high-level
@@ -381,7 +375,7 @@ struct legion_execution_policy_t
         } // if
       } // if
 
-      // Register loc task variant
+      // Register toc task variant
       if(processor_loc(processor)) {
         if(!context_t::instance().register_task(
           key, processor_type_t::toc, task_name,
@@ -424,6 +418,9 @@ struct legion_execution_policy_t
     std::string task_name
   )
   {
+    clog(info) << "Registering legion task " << key <<
+      " " << task_name << std::endl;
+
     // Processor type can be an or-list of values, each of which should
     // be register as a different variant.
     const processor_t processor = key.processor();
