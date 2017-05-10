@@ -602,34 +602,20 @@ private:
       task_value_less_t
     >;
 
-  struct task_hash_key_less_t
-  {
-    bool
-    operator () (
-      const task_hash_t::key_t & key1,
-      const task_hash_t::key_t & key2
-    )
-    const
+    struct task_hash_key_less_t
     {
-      if(std::get<0>(key1) < std::get<0>(key2)){
-        return true;
-      }
-
-      if(std::get<0>(key1) != std::get<0>(key2)){
-        return false;
-      }
-
-      if(std::get<1>(key1).to_string() < std::get<1>(key2).to_string()){
-        return true;
-      }
-
-      if(std::get<1>(key1).to_string() != std::get<1>(key2).to_string()){
-        return false;
-      }
-
-      return std::get<2>(key1).to_string() < std::get<2>(key2).to_string();
-    } // operator ()
-  };
+      bool
+      operator () (
+        const task_hash_t::key_t & key1,
+        const task_hash_t::key_t & key2
+      )
+      const
+      {
+        return std::get<0>(key1) <= std::get<0>(key2) &&
+          std::get<1>(key1).to_string() <= std::get<1>(key2).to_string() &&
+          std::get<2>(key1).to_string() < std::get<2>(key2).to_string();
+      } // operator ()
+    };
 
   // Define the map type using the task_hash_t hash function.
   std::map<
