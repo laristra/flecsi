@@ -261,6 +261,15 @@ runtime_driver(
     runtime->destroy_logical_region(ctx, expanded_lregions_map[itr->first]);
   expanded_lregions_map.clear();
 
+  for (auto itr : phase_barriers_map) {
+    const size_t handle = itr.first;
+    for (size_t color = 0; color < phase_barriers_map[handle].size(); color ++) {
+      runtime->destroy_phase_barrier(ctx, phase_barriers_map[handle][color]);
+    }
+    phase_barriers_map[handle].clear();
+  }
+  phase_barriers_map.clear();
+
   context_.unset_call_mpi(ctx, runtime);
   context_.handoff_to_mpi(ctx, runtime);
 } // runtime_driver
