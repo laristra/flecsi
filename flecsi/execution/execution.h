@@ -19,6 +19,8 @@
 #include "flecsi/execution/task.h"
 #include "flecsi/utils/common.h"
 
+clog_register_tag(execution);
+
 //----------------------------------------------------------------------------//
 // Task Interface
 //----------------------------------------------------------------------------//
@@ -55,9 +57,9 @@
   } /* delegate task */                                                        \
                                                                                \
   /* Call the execution policy to register the task delegate */                \
-   bool task ## _task_registered =                                             \
-    flecsi::execution::task_t::register_task<task ## _trt_t, task ## _tat_t,   \
-      task ## _tuple_delegate,                                                 \
+  bool task ## _task_registered =                                              \
+    flecsi::execution::task_model_t::register_task<                            \
+      task ## _trt_t, task ## _tat_t, task ## _tuple_delegate,                 \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()>        \
     (task_hash_t::make_key(reinterpret_cast<uintptr_t>(&task), processor,      \
       launch), { EXPAND_AND_STRINGIFY(task) })
@@ -80,7 +82,7 @@
                                                                                \
   /* Execute the user task */                                                  \
   /* WARNING: This macro returns a future. Don't add terminations! */          \
-  flecsi::execution::task_t::execute_task<                                     \
+  flecsi::execution::task_model_t::execute_task<                               \
     typename flecsi::utils::function_traits__<decltype(task)>::return_type     \
   >                                                                            \
   (                                                                            \
