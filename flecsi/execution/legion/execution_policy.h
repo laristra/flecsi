@@ -581,27 +581,26 @@ struct legion_execution_policy_t
   //! method, please see function__::register_function.
   //--------------------------------------------------------------------------//
 
-  template<
+template<
     typename RETURN,
-    typename ARG_TUPLE
+    typename ARG_TUPLE,
+    RETURN (*FUNCTION)(ARG_TUPLE),
+    size_t KEY
   >
   static
   bool
-  register_function(
-    const utils::const_string_t & key,
-    std::function<RETURN(ARG_TUPLE)> & user_function
-  )
+  register_function()
   {
-    return context_t::instance().register_function(key, user_function);
+    return context_t::instance().template register_function<
+      RETURN, ARG_TUPLE, FUNCTION, KEY>();
   } // register_function
-
+  
   //--------------------------------------------------------------------------//
   //! Legion backend function execution. For documentation on this
   //! method, please see function__::execute_function.
   //--------------------------------------------------------------------------//
 
   template<
-    typename RETURN,
     typename FUNCTION_HANDLE,
     typename ... ARGS
   >
@@ -612,11 +611,8 @@ struct legion_execution_policy_t
     ARGS && ... args
   )
   {
-    auto targs = std::make_tuple(args ...);
-    return handle(
-      context_t::instance().function<RETURN,decltype(targs)>(handle.key()),
-      targs
-    );
+    return handle(context_t::instance().function(handle.key()),
+      std::forward_as_tuple(args ...));
   } // execute_function
 
 }; // struct legion_execution_policy_t
