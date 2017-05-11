@@ -28,7 +28,7 @@ env:
 #    - DISTRO=fedora MPI=OFF RUNTIME=serial        DOCKERHUB=true
 #    - DISTRO=fedora MPI=OFF RUNTIME=serial        WERROR=yes
 #    - DISTRO=fedora MPI=OFF RUNTIME=serial COVERAGE=ON
-    - DISTRO=fedora MPI=ON RUNTIME=legion COVERAGE=ON
+    - DISTRO=fedora_Debug MPI=ON RUNTIME=legion COVERAGE=ON
 
 matrix:
   allow_failures:
