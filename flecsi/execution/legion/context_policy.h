@@ -440,39 +440,32 @@ struct legion_context_policy_t
 
   template<
     typename RETURN,
-    typename ARG_TUPLE
+    typename ARG_TUPLE,
+    RETURN (*FUNCTION)(ARG_TUPLE),
+    size_t KEY
   >
   bool
   register_function(
-    const utils::const_string_t & key,
-    std::function<RETURN(ARG_TUPLE)> & user_function
   )
   {
-    const size_t h = key.hash();
-    if(function_registry_.find(h) == function_registry_.end()) {
-      function_registry_[h] =
-        reinterpret_cast<std::function<void(void)> *>(&user_function);
-      return true;
-    } // if
+    clog_assert(function_registry_.find(KEY) == function_registry_.end(),
+      "function has already been registered");
 
-    return false;
+    function_registry_[KEY] =
+      reinterpret_cast<std::function<void(void)> *>(FUNCTION);
+    return true;
   } // register_function
 
   //--------------------------------------------------------------------------//
-  //! FIXME: This interface needs to be updated.
+  //! FIXME: Add description.
   //--------------------------------------------------------------------------//
 
-  template<
-    typename RETURN,
-    typename ARG_TUPLE
-  >
-  std::function<RETURN(ARG_TUPLE)> *
+  std::function<void(void)> *
   function(
     size_t key
   )
   {
-    return reinterpret_cast<std::function<RETURN(ARG_TUPLE)> *>
-      (function_registry_[key]);
+    return function_registry_[key];
   } // function
 
   //--------------------------------------------------------------------------//
