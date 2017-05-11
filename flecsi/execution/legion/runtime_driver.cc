@@ -94,12 +94,12 @@ runtime_driver(
   LegionRuntime::Arrays::Rect<1> color_bounds(0, num_colors - 1);
   Legion::Domain color_domain = Legion::Domain::from_rect<1>(color_bounds);
 
-  auto coloring_info = context_.coloring_info_map();
+  auto & coloring_info = context_.coloring_info_map();
 
   {
   clog_tag_guard(runtime_driver);
 
-  for(auto handle_idx: coloring_info) {
+  for(auto & handle_idx: coloring_info) {
     // Create expanded IndexSpace
     map_handles.insert(handle_idx.first);
     size_t total_num_entities = 0;
