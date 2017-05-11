@@ -538,6 +538,170 @@ struct legion_context_policy_t
   } // regions
 
   //--------------------------------------------------------------------------//
+  //! Set phase barriers as masters.
+  //!
+  //! @param pbarriers_as_masters phase barriers buffer
+  //--------------------------------------------------------------------------//
+  void
+  set_pbarriers_as_masters(
+    Legion::PhaseBarrier* pbarriers_as_masters
+  )
+  {
+    pbarriers_as_masters_ = pbarriers_as_masters;
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Return phase barriers as masters for index space.
+  //!
+  //! @param index_space virtual index space
+  //--------------------------------------------------------------------------//
+  Legion::PhaseBarrier&
+  get_pbarriers_as_master(
+    size_t index_space
+  )
+  const
+  {
+    return pbarriers_as_masters_[index_space];
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Push ghost owners phase barriers buffer corresponding to a virtual
+  //! index space.
+  //!
+  //! @param ghost_owners_pbarriers ghost owners phase barriers buffer 
+  //--------------------------------------------------------------------------//
+  void
+  push_ghost_owners_pbarriers(
+    Legion::PhaseBarrier* ghost_owners_pbarriers
+  )
+  {
+    ghost_owners_pbarriers_.push_back(ghost_owners_pbarriers);
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Return phase barriers for ghost owners.
+  //!
+  //! @param index_space virtual index space
+  //--------------------------------------------------------------------------//
+  Legion::PhaseBarrier&
+  get_ghost_owners_pbarriers(
+    size_t index_space,
+    size_t owner
+  )
+  const
+  {
+    return ghost_owners_pbarriers_[index_space][owner];
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Push logical region corresponding to a virtual index space.
+  //!
+  //! @param region logical region 
+  //--------------------------------------------------------------------------//
+  void
+  push_region(
+    Legion::LogicalRegion region
+  )
+  {
+    regions_.push_back(region);
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Return main logical region.
+  //!
+  //! @param index_space virtual index space
+  //--------------------------------------------------------------------------//
+  Legion::LogicalRegion
+  get_region(
+    size_t index_space
+  )
+  const
+  {
+    return regions_[index_space];
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Push primary ghost index partition corresponding to a virtual 
+  //! index space.
+  //!
+  //! @param primary_ghost_ip primary ghost index partition 
+  //--------------------------------------------------------------------------//
+  void
+  push_primary_ghost_ip(
+    Legion::IndexPartition primary_ghost_ip
+  ){
+    primary_ghost_ips_.push_back(primary_ghost_ip);
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Return primary ghost index partition for virtual index space.
+  //!
+  //! @param index_space virtual index space
+  //--------------------------------------------------------------------------//
+  Legion::IndexPartition
+  get_primary_ghost_ip(
+    size_t index_space
+  )
+  const
+  {
+    return primary_ghost_ips_[index_space];
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Push primary logical region corresponding to a virtual index space.
+  //!
+  //! @param region primary logical region 
+  //--------------------------------------------------------------------------//
+  void
+  push_primary_lr(
+    Legion::LogicalRegion primary_lr
+  )
+  {
+    primary_lrs_.push_back(primary_lr);
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Return primary logical region for virtual index space.
+  //!
+  //! @param index_space virtual index space
+  //--------------------------------------------------------------------------//
+  Legion::LogicalRegion
+  get_primary_lr(
+    size_t index_space
+  )
+  const
+  {
+    return primary_lrs_[index_space];
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Push ghost logical region corresponding to a virtual index space.
+  //!
+  //! @param region ghost logical region 
+  //--------------------------------------------------------------------------//
+  void
+  push_ghost_lr(
+    Legion::LogicalRegion ghost_lr
+  )
+  {
+    ghost_lrs_.push_back(ghost_lr);
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Return ghost logical region for virtual index space.
+  //!
+  //! @param index_space virtual index space
+  //--------------------------------------------------------------------------//
+  Legion::LogicalRegion
+  get_ghost_lr(
+    size_t index_space
+  )
+  const
+  {
+    return ghost_lrs_[index_space];
+  }
+
+  //--------------------------------------------------------------------------//
   // FIXME: Not sure if this is needed...
   //--------------------------------------------------------------------------//
 
@@ -646,6 +810,16 @@ private:
 
   std::function<void()> mpi_task_;
   bool mpi_active_ = false;
+
+  //--------------------------------------------------------------------------//
+  // Legion data members within SPMD task.
+  //--------------------------------------------------------------------------//
+  Legion::PhaseBarrier* pbarriers_as_masters_;
+  std::vector<Legion::PhaseBarrier*> ghost_owners_pbarriers_;
+  std::vector<Legion::LogicalRegion> regions_;
+  std::vector<Legion::IndexPartition> primary_ghost_ips_;
+  std::vector<Legion::LogicalRegion> primary_lrs_;
+  std::vector<Legion::LogicalRegion> ghost_lrs_;
 
 }; // class legion_context_policy_t
 

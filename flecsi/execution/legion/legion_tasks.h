@@ -82,22 +82,18 @@ __flecsi_internal_legion_task(spmd_task, void) {
   size_t* num_owners = (size_t*)malloc(sizeof(size_t) * num_handles);
   args_deserializer.deserialize((void*)num_owners, sizeof(size_t) * num_handles);
 
+  context_.set_pbarriers_as_masters(pbarriers_as_master);
+
   size_t region_index = 0;
   for (size_t handle_idx = 0; handle_idx < num_handles; handle_idx++) {
-
-    // SAVE IN HANDLE.pbarrier_as_master_ptr = &(pbarriers_as_master[handle_idx]);
 
     Legion::PhaseBarrier* ghost_owners_pbarriers_buf = (Legion::PhaseBarrier*)
         malloc(sizeof(Legion::PhaseBarrier) * num_owners[handle_idx]);
     args_deserializer.deserialize((void*)ghost_owners_pbarriers_buf, sizeof(Legion::PhaseBarrier) * num_owners[handle_idx]);
-    for (size_t owner = 0; owner < num_owners[handle_idx]; owner++) {
 
-      // SAVE IN HANDLE.ghost_owners_pbarriers_ptrs.push_back(&(ghost_owners_pbarriers_buf[owner]));
+    context_.push_ghost_owners_pbarriers(ghost_owners_pbarriers_buf);
 
-    }
-    // clog_assert(SAVED.ghost_owners_ptrs.size() == num_masters[handle_idx], "deserialization error");
-
-    // SAVE IN HANDLE regions[region_index].get_logical_region();
+    context_.push_region(regions[region_index].get_logical_region());
 
     const std::unordered_map<size_t, flecsi::coloring::coloring_info_t> coloring_info_map
       = context_.coloring_info(handle_idx);  // FIX_ME what if the keys are not 0,1,2,...
@@ -127,16 +123,16 @@ __flecsi_internal_legion_task(spmd_task, void) {
     Legion::IndexPartition primary_ghost_ip = runtime->create_index_partition(ctx,
         color_ispace, color_domain_1D, primary_ghost_coloring, true /*disjoint*/);
 
-    // SAVE IN HANDLE.primary_ghost_ip = primary_ghost_ip;
+    context_.push_primary_ghost_ip(primary_ghost_ip);
 
     Legion::LogicalPartition primary_ghost_lp = runtime->get_logical_partition(ctx,
         regions[region_index].get_logical_region(), primary_ghost_ip);
 
-    // SAVE IN HANDLE.primary_lr = runtime->get_logical_subregion_by_color(ctx,
-    // primary_ghost_lp, PRIMARY_PART);
+    context_.push_primary_lr(runtime->get_logical_subregion_by_color(ctx,
+      primary_ghost_lp, PRIMARY_PART));
 
-    // SAVE IN HANDLE.ghost_lr = runtime->get_logical_subregion_by_color(ctx,
-    // primary_ghost_lp, GHOST_PART);
+    context_.push_ghost_lr(runtime->get_logical_subregion_by_color(ctx,
+      primary_ghost_lp, GHOST_PART));
 
   } // for handle_idx
 
