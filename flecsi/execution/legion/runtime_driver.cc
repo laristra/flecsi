@@ -102,14 +102,13 @@ runtime_driver(
   for(auto handle_idx: coloring_info) {
     // Create expanded IndexSpace
     map_handles.insert(handle_idx.first);
-    clog(error) << "index: " << handle_idx.first << std::endl;
     size_t total_num_entities = 0;
     for(auto color_idx: handle_idx.second) {
-      clog(error) << "color: " << color_idx.first << " " << color_idx.second << std::endl;
+      clog(error) << "index: " << handle_idx.first << " color: " << color_idx.first << " " << color_idx.second << std::endl;
       total_num_entities = std::max(total_num_entities,
           color_idx.second.exclusive + color_idx.second.shared + color_idx.second.ghost);
     } // for color_idx
-    clog(error) << "total_num_entities " << total_num_entities << std::endl;
+    clog(trace) << "total_num_entities " << total_num_entities << std::endl;
 
     LegionRuntime::Arrays::Rect<2> expanded_bounds = LegionRuntime::Arrays::Rect<2>(
         LegionRuntime::Arrays::Point<2>::ZEROES(),
@@ -148,7 +147,7 @@ runtime_driver(
       color_partitioning[color] = Legion::Domain::from_rect<2>(subrect);
       phase_barriers_map[handle_idx.first].push_back(runtime->create_phase_barrier(ctx,
           1 + color_info.shared_users.size()));
-      clog(error) << "phase barrier " << color << " has " <<
+      clog(trace) << "phase barrier " << color << " has " <<
           color_info.shared_users.size() + 1 << " arrivers" << std::endl;
     }
 
@@ -169,7 +168,7 @@ runtime_driver(
   std::vector<Legion::Serializer> args_serializers(num_colors);
 
   auto spmd_id = __flecsi_internal_task_key(spmd_task, loc);
-  clog(error) << "spmd_task is handle " << spmd_id << std::endl;
+  clog(trace) << "spmd_task is handle " << spmd_id << std::endl;
 
   // Add colors to must_epoch_launcher
   for(size_t color(0); color<num_colors; ++color) {
@@ -182,12 +181,12 @@ runtime_driver(
     for(auto handle : map_handles) {
       pbarriers_as_master.push_back(phase_barriers_map[handle][color]);
       flecsi::coloring::coloring_info_t color_info = coloring_info[handle][color];
-      clog(error) << " Color " << color << " Handle " << handle << " has " <<
+      clog(trace) << " Color " << color << " Handle " << handle << " has " <<
           color_info.ghost_owners.size() << " ghost owners" << std::endl;
       num_ghost_owners.push_back(color_info.ghost_owners.size());
       std::vector<Legion::PhaseBarrier> per_color_owners_pbs;
       for (auto owner : color_info.ghost_owners) {
-        clog(error) << owner << std::endl;
+        clog(trace) << owner << std::endl;
         per_color_owners_pbs.push_back(phase_barriers_map[handle][owner]);
       }
       owners_pbarriers.push_back(per_color_owners_pbs);
@@ -221,7 +220,7 @@ runtime_driver(
 
       flecsi::coloring::coloring_info_t color_info = coloring_info[handle][color];
       for (auto ghost_owner : color_info.ghost_owners) {
-        clog(error) << " Color " << color << " Handle " << handle << " has owner" <<
+        clog(trace) << " Color " << color << " Handle " << handle << " has owner" <<
             ghost_owner << std::endl;
         Legion::LogicalRegion ghost_owner_lr = runtime->get_logical_subregion_by_color(ctx,
             color_lp, ghost_owner);
