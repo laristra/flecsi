@@ -234,8 +234,11 @@ legion_context_policy_t::connect_with_mpi(
     runtime->find_forward_MPI_mapping();
 
   for(auto it: forward_mapping) {
+    {
+    clog_tag_guard(context);
     clog(info) << "MPI rank " << it.first <<
       " maps to Legion address space " << it.second;
+    }
   } // for
 } // legion_context_policy_t::connect_with_mpi
 
