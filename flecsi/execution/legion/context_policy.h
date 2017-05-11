@@ -451,8 +451,10 @@ struct legion_context_policy_t
     clog_assert(function_registry_.find(KEY) == function_registry_.end(),
       "function has already been registered");
 
+    clog(info) << "Registering function: " << FUNCTION << std::endl;
+
     function_registry_[KEY] =
-      reinterpret_cast<std::function<void(void)> *>(FUNCTION);
+      reinterpret_cast<void *>(FUNCTION);
     return true;
   } // register_function
 
@@ -460,7 +462,7 @@ struct legion_context_policy_t
   //! FIXME: Add description.
   //--------------------------------------------------------------------------//
 
-  std::function<void(void)> *
+  void *
   function(
     size_t key
   )
@@ -787,7 +789,7 @@ private:
   // Function data members.
   //--------------------------------------------------------------------------//
 
-  std::unordered_map<size_t, std::function<void(void)> *>
+  std::unordered_map<size_t, void *>
     function_registry_;
 
   //--------------------------------------------------------------------------//

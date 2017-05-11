@@ -46,12 +46,11 @@ struct function_handle__
   ///
   RETURN
   operator () (
-    std::function<void(void)> * function,
+    void * function,
     ARG_TUPLE && args
   )
   {
-    auto & user_function =
-      *(reinterpret_cast<std::function<RETURN(ARG_TUPLE)> *>(function));
+    auto user_function = (reinterpret_cast<RETURN(*)(ARG_TUPLE)>(function));
     return user_function(std::forward<ARG_TUPLE>(args));
   } // operator ()
 
