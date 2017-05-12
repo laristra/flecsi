@@ -112,7 +112,7 @@ branches:
   - master
   - travis
   - stable
-  - refactor
+  - /^refactor.*/
 
 notifications:
   branches:
