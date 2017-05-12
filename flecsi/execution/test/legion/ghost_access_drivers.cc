@@ -350,7 +350,7 @@ void add_colorings(int dummy) {
 
 } // add_colorings
 
-flecsi_register_task(add_colorings, mpi, index);
+flecsi_register_mpi_task(add_colorings);
 
 //----------------------------------------------------------------------------//
 // Specialization driver.
@@ -359,7 +359,7 @@ flecsi_register_task(add_colorings, mpi, index);
 void specialization_driver(int argc, char ** argv) {
   clog(error) << "In specialization driver" << std::endl;
 
-  flecsi_execute_task(add_colorings, mpi, index, 0);
+  flecsi_execute_mpi_task(add_colorings, 0);
 
 } // specialization_driver
 

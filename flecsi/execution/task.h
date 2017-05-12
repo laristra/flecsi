@@ -47,7 +47,7 @@ struct base_task__
 
 protected:
   
-  typename EXECUTION_POLICY::runtime_state_t context_;
+  typename EXECUTION_POLICY::runtime_state_t runtime_state_;
 
 }; // struct base_task__
 
@@ -65,14 +65,26 @@ template<
 >
 struct task_model__
 {
+  //--------------------------------------------------------------------------//
+  //! The runtime_state_t type stores runtime-specific state information
+  //! that is required to execute a user task.
+  //--------------------------------------------------------------------------//
+
+  using runtime_state_t = typename EXECUTION_POLICY::runtime_state_t;
+
+  static
+  runtime_state_t &
+  runtime_state(
+    void * task
+  )
+  {
+    return EXECUTION_POLICY::runtime_state(task);
+  } // runtime_state
 
   //--------------------------------------------------------------------------//
   //! Register a user task with the FleCSI runtime.
   //!
-  //! @tparam RETURN The return type of the user task.
-  //! @tparam ARG_TUPLE A std::tuple of the user task arguments.
-  //! @tparam DELEGATE The delegate function that invokes the user task.
-  //! @tparam KEY A hash key identifying the task.
+  //! @tparam FUNCTOR_TYPE The user task functor type.
   //!
   //! @param key The \ref task_hash_key_t for the task.
   //! @param name The string identifier of the task.
@@ -82,24 +94,58 @@ struct task_model__
   //--------------------------------------------------------------------------//
 
   template<
-    typename RETURN,
-    typename ARG_TUPLE,
-    RETURN (*DELEGATE)(ARG_TUPLE),
-    size_t KEY
+    typename FUNCTOR_TYPE
   >
   static
   decltype(auto)
-  register_task(
+  register_user_task(
     task_hash_key_t key,
     std::string name
   )
   {
-    return EXECUTION_POLICY::template register_task<
-      RETURN, ARG_TUPLE, DELEGATE, KEY>(key, name);
-  } // register_task
+    return EXECUTION_POLICY::template register_user_task<
+      FUNCTOR_TYPE>(key, name);
+  } // register_user_task
 
   //--------------------------------------------------------------------------//
-  //! Execute a registered task.
+  //! Register an MPI task with the FleCSI runtime. MPI tasks are only used
+  //! when it is necessary to explicitly call the MPI runtime, e.g., to call
+  //! ParMETIS or some other MPI-only library. When FleCSI is configured to
+  //! use MPI as the backend, users should still register user tasks through
+  //! the register_user_task interface.
+  //!
+  //! When FleCSI is configured to use Legion as the backend, Legion will
+  //! pass locus to the MPI runtime to execute a registered MPI task.
+  //! 
+  //! @tparam ARG_TUPLE A std::tuple of the user task arguments.
+  //! @tparam DELEGATE  The delegate function that invokes the MPI task.
+  //! @tparam KEY       A hash key identifying the task.
+  //!
+  //! @param name The string identifier of the task.
+  //!
+  //! @return The return type for task registration is determined by
+  //!         the specific backend runtime being used.
+  //--------------------------------------------------------------------------//
+
+#if defined(ENABLE_MPI)
+  template<
+    typename ARG_TUPLE,
+    void (*DELEGATE)(ARG_TUPLE),
+    size_t KEY
+  >
+  static
+  decltype(auto)
+  register_mpi_task(
+    std::string name
+  )
+  {
+    return EXECUTION_POLICY::template register_mpi_task<
+      ARG_TUPLE, DELEGATE, KEY>(name);
+  } // register_mpi_task
+#endif // ENABLE_MPI
+
+  //--------------------------------------------------------------------------//
+  //! Execute a registered user task.
   //!
   //! @tparam RETURN The return type of the task.
   //! @tparam ARGS The task arguments.
@@ -116,15 +162,42 @@ struct task_model__
   >
   static
   decltype(auto)
-  execute_task(
-    task_hash_key_t key,
-    size_t parent,
+  execute_user_task(
+    task_hash_key_t & key,
+    runtime_state_t & runtime_state,
     ARGS &&... args
   )
   {
-    return EXECUTION_POLICY::template execute_task<RETURN>(
-      key, parent, std::forward<ARGS>(args) ...);
-  } // execute_task
+    return EXECUTION_POLICY::template execute_user_task<RETURN>(
+      key, runtime_state, std::forward<ARGS>(args) ...);
+  } // execute_user_task
+
+  //--------------------------------------------------------------------------//
+  //! Execute an MPI task. The task must have been registered using the
+  //! register_mpi_task interface.
+  //!
+  //! @tparam RETURN The return type of the task.
+  //! @tparam ARGS The task arguments.
+  //!
+  //! @param args The arguments to pass to the user task during execution.
+  //--------------------------------------------------------------------------//
+
+#if defined(ENABLE_MPI)
+  template<
+    size_t KEY,
+    typename ... ARGS
+  >
+  static
+  decltype(auto)
+  execute_mpi_task(
+    runtime_state_t & runtime_state,
+    ARGS &&... args
+  )
+  {
+    return EXECUTION_POLICY::template execute_mpi_task<KEY>(
+      runtime_state, std::forward<ARGS>(args) ...);
+  } // execute_mpi_task
+#endif // ENABLE_MPI
 
 }; // struct task__
 

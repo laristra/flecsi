@@ -30,7 +30,8 @@ clog_register_tag(execution);
 //!
 //! This macro registers a user task with the FleCSI runtime.
 //!
-//! @param task      The task to register. This is normally just a function.
+//! @param task_t    The task type to register. This is a functor type with
+//!                  an execute method implementing the user task.
 //! @param processor The \ref processor_t type. This may be an or list of
 //!                  supported processor types.
 //! @param launch    The \ref launch_t type. This may be an or list of
@@ -39,30 +40,46 @@ clog_register_tag(execution);
 //! @ingroup execution
 //----------------------------------------------------------------------------//
 
-#define flecsi_register_task(task, processor, launch)                          \
+#define flecsi_register_task(task_t, processor, launch)                        \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
-  /* Task return type (trt) */                                                 \
-  using task ## _trt_t =                                                       \
-    typename flecsi::utils::function_traits__<decltype(task)>::return_type;    \
+  /* Call the execution policy to register the task */                         \
+  bool task_t ## _task_registered =                                            \
+    flecsi::execution::task_model_t::register_user_task<task_t>                \
+    (task_hash_t::make_key(typeid(task_t).hash_code(), processor, launch),     \
+    { EXPAND_AND_STRINGIFY(task_t) })
+
+//----------------------------------------------------------------------------//
+//! @def flecsi_register_task
+//!
+//! This macro registers an MPI task with the FleCSI runtime.
+//!
+//! @param task The MPI task to register. This is normally just a function.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
+#define flecsi_register_mpi_task(task)                                         \
+/* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Task arguments type (tat) */                                              \
   using task ## _tat_t =                                                       \
     typename flecsi::utils::function_traits__<decltype(task)>::arguments_type; \
                                                                                \
-  /* Define a delegate function to the user's function that takes a tuple */   \
+  /* Define a delegate function to the MPI function that takes a tuple */      \
   /* of the arguments (as opposed to the raw argument pack) */                 \
-  inline task ## _trt_t task ## _tuple_delegate(task ## _tat_t args) {         \
-    return flecsi::utils::tuple_function(task, args);                          \
+  inline void task ## _tuple_delegate(task ## _tat_t args) {                   \
+    flecsi::utils::tuple_function(task, args);                                 \
   } /* delegate task */                                                        \
                                                                                \
-  /* Call the execution policy to register the task delegate */                \
+  /* Call the execution policy to register the MPI task delegate */            \
   bool task ## _task_registered =                                              \
-    flecsi::execution::task_model_t::register_task<                            \
-      task ## _trt_t, task ## _tat_t, task ## _tuple_delegate,                 \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()>        \
-    (task_hash_t::make_key(reinterpret_cast<uintptr_t>(&task), processor,      \
-      launch), { EXPAND_AND_STRINGIFY(task) })
+    flecsi::execution::task_model_t::register_mpi_task<                        \
+      task ## _tat_t,                                                          \
+      task ## _tuple_delegate,                                                 \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()         \
+    >                                                                          \
+    ({ EXPAND_AND_STRINGIFY(task) })
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_execute_task
@@ -82,7 +99,7 @@ clog_register_tag(execution);
                                                                                \
   /* Execute the user task */                                                  \
   /* WARNING: This macro returns a future. Don't add terminations! */          \
-  flecsi::execution::task_model_t::execute_task<                               \
+  flecsi::execution::task_model_t::execute_user_task<                          \
     typename flecsi::utils::function_traits__<decltype(task)>::return_type     \
   >                                                                            \
   (                                                                            \
@@ -92,6 +109,20 @@ clog_register_tag(execution);
     flecsi::utils::const_string_t{__func__}.hash(),                            \
     ## __VA_ARGS__                                                             \
   )
+
+//----------------------------------------------------------------------------//
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
+#define flecsi_execute_mpi_task(task, ...)                                     \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  /* Execute the user task */                                                  \
+  /* WARNING: This macro returns a future. Don't add terminations! */          \
+  flecsi::execution::task_model_t::execute_mpi_task<                           \
+    typename flecsi::utils::function_traits__<decltype(task)>::return_type     \
+  >                                                                            \
+  (flecsi::execution::task_model_t::runtime_state(this), ## __VA_ARGS__)
 
 //----------------------------------------------------------------------------//
 // Function Interface
