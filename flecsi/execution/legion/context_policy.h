@@ -594,11 +594,11 @@ struct legion_context_policy_t
   //! @param region logical region 
   //--------------------------------------------------------------------------//
   void
-  push_region(
+  push_color_region(
     Legion::LogicalRegion region
   )
   {
-    regions_.push_back(region);
+    color_regions_.push_back(region);
   }
 
   //--------------------------------------------------------------------------//
@@ -607,12 +607,12 @@ struct legion_context_policy_t
   //! @param index_space virtual index space
   //--------------------------------------------------------------------------//
   Legion::LogicalRegion
-  get_region(
+  get_color_region(
     size_t index_space
   )
   const
   {
-    return regions_[index_space];
+    return color_regions_[index_space];
   }
 
   //--------------------------------------------------------------------------//
@@ -640,6 +640,33 @@ struct legion_context_policy_t
   const
   {
     return primary_ghost_ips_[index_space];
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Push exclusive shared index partition corresponding to a virtual
+  //! index space.
+  //!
+  //! @param ip exclusive shared index partition
+  //--------------------------------------------------------------------------//
+  void
+  push_excl_shared_ip(
+    Legion::IndexPartition ip
+  ){
+    excl_shared_ips_.push_back(ip);
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Return exclusive ghost index partition for virtual index space.
+  //!
+  //! @param index_space virtual index space
+  //--------------------------------------------------------------------------//
+  Legion::IndexPartition
+  get_excl_shared_ip(
+    size_t index_space
+  )
+  const
+  {
+    return excl_shared_ips_[index_space];
   }
 
   //--------------------------------------------------------------------------//
@@ -694,6 +721,60 @@ struct legion_context_policy_t
   const
   {
     return ghost_lrs_[index_space];
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Push exclusive logical region corresponding to a virtual index space.
+  //!
+  //! @param region exclusive logical region
+  //--------------------------------------------------------------------------//
+  void
+  push_exclusive_lr(
+    Legion::LogicalRegion region
+  )
+  {
+    exclusive_lrs_.push_back(region);
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Return exclusive logical region for virtual index space.
+  //!
+  //! @param index_space virtual index space
+  //--------------------------------------------------------------------------//
+  Legion::LogicalRegion
+  get_exclusive_lr(
+    size_t index_space
+  )
+  const
+  {
+    return exclusive_lrs_[index_space];
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Push shared logical region corresponding to a virtual index space.
+  //!
+  //! @param region shared logical region
+  //--------------------------------------------------------------------------//
+  void
+  push_shared_lr(
+    Legion::LogicalRegion region
+  )
+  {
+    shared_lrs_.push_back(region);
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Return shared logical region for virtual index space.
+  //!
+  //! @param index_space virtual index space
+  //--------------------------------------------------------------------------//
+  Legion::LogicalRegion
+  get_shared_lr(
+    size_t index_space
+  )
+  const
+  {
+    return shared_lrs_[index_space];
   }
 
   //--------------------------------------------------------------------------//
@@ -811,10 +892,13 @@ private:
   //--------------------------------------------------------------------------//
   Legion::PhaseBarrier* pbarriers_as_masters_;
   std::vector<Legion::PhaseBarrier*> ghost_owners_pbarriers_;
-  std::vector<Legion::LogicalRegion> regions_;
+  std::vector<Legion::LogicalRegion> color_regions_;
   std::vector<Legion::IndexPartition> primary_ghost_ips_;
   std::vector<Legion::LogicalRegion> primary_lrs_;
   std::vector<Legion::LogicalRegion> ghost_lrs_;
+  std::vector<Legion::IndexPartition> excl_shared_ips_;
+  std::vector<Legion::LogicalRegion> exclusive_lrs_;
+  std::vector<Legion::LogicalRegion> shared_lrs_;
 
 }; // class legion_context_policy_t
 
