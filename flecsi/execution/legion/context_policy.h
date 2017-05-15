@@ -396,6 +396,37 @@ struct legion_context_policy_t
     return false;
   } // register_task
 
+#if 0
+  //--------------------------------------------------------------------------//
+  //! Register a task variant with the runtime.
+  //!
+  //! @param name      The task name string.
+  //! @param call_back The registration call back function.
+  //--------------------------------------------------------------------------//
+
+  template<
+    size_t KEY
+  >
+  bool
+  register_mpi_task(
+    std::string & name,
+    const registration_function_t & call_back
+  )
+  {
+    // Make sure that this KEY is unique.
+    clog_assert(mpi_task_registry_.find(KEY) == mpi_task_registry_.end(),
+      "MPI task has already been registered");
+
+    clog(info) << "Registering MPI task callback " << name << " with key " <<
+      KEY << " and variant " << std::endl;
+
+    mpi_task_registry_[KEY] = std::make_tuple(unique_tid_t::instance().next(),
+      call_back, name);
+
+    return true;
+  } // register_mpi_task
+#endif
+
   //--------------------------------------------------------------------------//
   //! Return the task id for the task identified by \em key.
   //!
@@ -777,13 +808,23 @@ private:
       task_value_equal_t
     >;
 
-  // Define the map type using the task_hash_t hash function.
+  // Define the map type used to store user and pure task registrations
   std::unordered_map<
     task_hash_t::key_t, // key
     task_value_t,       // value
     task_hash_t,        // hash function
     task_hash_t         // equivalence operator
   > task_registry_;
+
+  // Define the map type used to store MPI task registrations
+  std::unordered_map<
+    size_t,
+    std::tuple<
+      task_id_t,
+      registration_function_t,
+      std::string
+    >
+  > mpi_task_registry_;
 
   //--------------------------------------------------------------------------//
   // Function data members.

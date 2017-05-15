@@ -26,6 +26,30 @@ clog_register_tag(execution);
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
+//! @def flecsi_register_functor_task
+//!
+//! This macro registers a functor task with the FleCSI runtime.
+//!
+//! @param task_t    The task type to register. This is a functor type with
+//!                  an execute method implementing the user task.
+//! @param processor The \ref processor_t type. This may be an or list of
+//!                  supported processor types.
+//! @param launch    The \ref launch_t type. This may be an or list of
+//!                  supported launch types and configuration options.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
+#define flecsi_register_functor_task(task_t, processor, launch)                \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  /* Call the execution policy to register the task */                         \
+  bool task_t ## _task_registered =                                            \
+    flecsi::execution::task_model_t::register_functor_task<task_t>             \
+    (task_hash_t::make_key(typeid(task_t).hash_code(), processor, launch),     \
+    { EXPAND_AND_STRINGIFY(task_t) })
+
+//----------------------------------------------------------------------------//
 //! @def flecsi_register_task
 //!
 //! This macro registers a user task with the FleCSI runtime.
@@ -65,6 +89,21 @@ clog_register_tag(execution);
       launch), { EXPAND_AND_STRINGIFY(task) })
 
 //----------------------------------------------------------------------------//
+//! @def flecsi_register_mpi_task
+//!
+//! This macro registers an MPI task with the FleCSI runtime.
+//!
+//! @param task The MPI task to register. This is normally just a function.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
+#define flecsi_register_mpi_task(task)                                         \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  flecsi_register_task(task, mpi, index)
+
+//----------------------------------------------------------------------------//
 //! @def flecsi_execute_task
 //!
 //! This macro executes a user task.
@@ -92,6 +131,22 @@ clog_register_tag(execution);
     flecsi::utils::const_string_t{__func__}.hash(),                            \
     ## __VA_ARGS__                                                             \
   )
+
+//----------------------------------------------------------------------------//
+//! @def flecsi_execute_mpi_task
+//!
+//! This macro executes an MPI task.
+//!
+//! @param task The MPI task to execute.
+//! @param ... The arguments to pass to the MPI task during execution.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
+#define flecsi_execute_mpi_task(task, ...)                                     \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  flecsi_execute_task(task, mpi, index, #__VA_ARGS__)
 
 //----------------------------------------------------------------------------//
 // Function Interface

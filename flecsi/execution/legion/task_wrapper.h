@@ -22,6 +22,7 @@
 #include "flecsi/execution/common/launch.h"
 #include "flecsi/execution/legion/registration_wrapper.h"
 #include "flecsi/utils/common.h"
+#include "flecsi/utils/tuple_function.h"
 #include "flecsi/utils/tuple_type_converter.h"
 #include "flecsi/utils/tuple_walker.h"
 
@@ -194,11 +195,11 @@ struct pure_task_wrapper__
 }; // struct pure_task_wrapper__
 
 //----------------------------------------------------------------------------//
-//! The user_task_wrapper__ type provides registation and execution callback
-//! functions for user tasks. User tasks must be expressed as functor types
+//! The functor_task_wrapper__ type provides registation and execution callback
+//! functions for functor tasks. User tasks must be expressed as functor types
 //! that implement an \em execute method.
 //!
-//! @tparam FUNCTOR_TYPE The functor type of the user task.
+//! @tparam FUNCTOR_TYPE The functor type of the functor task.
 //!
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
@@ -206,28 +207,28 @@ struct pure_task_wrapper__
 template<
   typename FUNCTOR_TYPE
 >
-struct user_task_wrapper__
+struct functor_task_wrapper__
 {
   //--------------------------------------------------------------------------//
-  //! The return_t type infers the return type of the user task.
+  //! The return_t type infers the return type of the functor task.
   //--------------------------------------------------------------------------//
 
   using return_t = typename flecsi::utils::function_traits__<
       decltype(&FUNCTOR_TYPE::execute)>::return_type;
 
   //--------------------------------------------------------------------------//
-  //! The arg_tuple_t type infers the argument type of the user task.
+  //! The arg_tuple_t type infers the argument type of the functor task.
   //--------------------------------------------------------------------------//
 
   using arg_tuple_t = typename flecsi::utils::function_traits__<
     decltype(&FUNCTOR_TYPE::execute)>::argument_type;
 
   //--------------------------------------------------------------------------//
-  //! The user_task_args_t type defines a task argument type for task
+  //! The functor_task_args_t type defines a task argument type for task
   //! execution through the Legion runtime.
   //--------------------------------------------------------------------------//
 
-  using user_task_args_t =
+  using functor_task_args_t =
     typename utils::base_convert_tuple_type<
     accessor_base, data_handle__<void, 0, 0, 0>, arg_tuple_t>::type;
 
@@ -238,7 +239,7 @@ struct user_task_wrapper__
   using task_id_t = Legion::TaskID;
 
   //--------------------------------------------------------------------------//
-  //! Registration callback function for user tasks.
+  //! Registration callback function for functor tasks.
   //!
   //! @param tid The task id to assign to the task.
   //! @param processor A valid Legion processor type.
@@ -273,7 +274,7 @@ struct user_task_wrapper__
         clog(info) << "Registering loc task: " <<
           task_name << std::endl << std::endl;
         }
-        registration_wrapper__<return_t, execute_user_task>::register_task(
+        registration_wrapper__<return_t, execute_functor_task>::register_task(
           tid, Legion::Processor::LOC_PROC, launch_single(launch),
           launch_index(launch), AUTO_GENERATE_ID, config_options,
           task_name.c_str());
@@ -284,19 +285,8 @@ struct user_task_wrapper__
         clog(info) << "Registering toc task: " <<
           task_name << std::endl << std::endl;
         }
-        registration_wrapper__<return_t, execute_user_task>::register_task(
+        registration_wrapper__<return_t, execute_functor_task>::register_task(
           tid, Legion::Processor::TOC_PROC, launch_single(launch),
-          launch_index(launch), AUTO_GENERATE_ID, config_options,
-          task_name.c_str());
-        break;
-      case processor_type_t::mpi:
-        {
-        clog_tag_guard(wrapper);
-        clog(info) << "Registering MPI task: " <<
-          task_name << std::endl << std::endl;
-        }
-        registration_wrapper__<void, execute_mpi_task>::register_task(
-          tid, Legion::Processor::LOC_PROC, launch_single(launch),
           launch_index(launch), AUTO_GENERATE_ID, config_options,
           task_name.c_str());
         break;
@@ -304,10 +294,10 @@ struct user_task_wrapper__
   } // registration_callback
 
   //--------------------------------------------------------------------------//
-  //! Execution wrapper method for user tasks.
+  //! Execution wrapper method for functor tasks.
   //--------------------------------------------------------------------------//
 
-  static return_t execute_user_task(
+  static return_t execute_functor_task(
     const LegionRuntime::HighLevel::Task * task,
     const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
     LegionRuntime::HighLevel::Context context,
@@ -316,15 +306,15 @@ struct user_task_wrapper__
   {
     {
     clog_tag_guard(wrapper);
-    clog(info) << "In execute_user_task" << std::endl;
+    clog(info) << "In execute_functor_task" << std::endl;
     }
 
     // Unpack task arguments
-    user_task_args_t & user_task_args =
-      *(reinterpret_cast<user_task_args_t *>(task->args));
+    functor_task_args_t & functor_task_args =
+      *(reinterpret_cast<functor_task_args_t *>(task->args));
 
     handle_args_ handle_args(runtime, context, regions);
-    handle_args.walk(user_task_args);
+    handle_args.walk(functor_task_args);
 
     // Instantiate the user's functor type.
     FUNCTOR_TYPE functor;
@@ -333,40 +323,12 @@ struct user_task_wrapper__
     functor.context = { context, runtime, task, regions };
 
     // Execute the user's task
-    flecsi::utils::tuple_function(functor, user_task_args);
+    flecsi::utils::tuple_function(functor, functor_task_args);
 
     // FIXME: NEED TO HANDLE RETURN TYPES
-  } // execute_user_task
+  } // execute_functor_task
 
-  //--------------------------------------------------------------------------//
-  //! Execution wrapper method for MPI tasks.
-  //--------------------------------------------------------------------------//
-
-  static void execute_mpi_task(
-    const LegionRuntime::HighLevel::Task * task,
-    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
-    LegionRuntime::HighLevel::Context context,
-    LegionRuntime::HighLevel::HighLevelRuntime * runtime
-  )
-  {
-    {
-    clog_tag_guard(wrapper);
-    clog(info) << "In execute_mpi_task" << std::endl;
-    }
-
-    // Unpack task arguments.
-    arg_tuple_t & mpi_task_args =
-      *(reinterpret_cast<arg_tuple_t *>(task->args));
-
-    // Create bound function to pass to MPI runtime.
-    std::function<void()> bound_mpi_task =
-      std::bind(FUNCTOR_TYPE::execute, mpi_task_args);
-
-    // Set the MPI function and make the runtime active.
-    context_t::instance().set_mpi_task(bound_mpi_task);
-    context_t::instance().set_mpi_state(true);
-  } // execute_mpi_task
-}; // struct user_task_wrapper__
+}; // struct functor_task_wrapper__
 
 //----------------------------------------------------------------------------//
 //! The task_wrapper__ type provides registation and execution callback
