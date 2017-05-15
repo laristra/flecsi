@@ -194,8 +194,7 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
       cinch_add_unit(execution_structure
         SOURCES
-          test/execution_structure_test.cc
-          test/execution_structure_drivers.cc
+          test/execution_structure.cc
           test/context_runtime.cc
           ${RUNTIME_DRIVER}
         INPUTS

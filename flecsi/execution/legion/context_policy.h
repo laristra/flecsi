@@ -396,6 +396,7 @@ struct legion_context_policy_t
     return false;
   } // register_task
 
+#if 0
   //--------------------------------------------------------------------------//
   //! Register a task variant with the runtime.
   //!
@@ -424,6 +425,7 @@ struct legion_context_policy_t
 
     return true;
   } // register_mpi_task
+#endif
 
   //--------------------------------------------------------------------------//
   //! Return the task id for the task identified by \em key.

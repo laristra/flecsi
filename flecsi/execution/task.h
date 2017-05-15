@@ -40,8 +40,8 @@ struct base_task__
   template<
     typename FUNCTOR_TYPE
   >
-  using user_task_wrapper__ =
-    typename EXECUTION_POLICY::template user_task_wrapper__<FUNCTOR_TYPE>;
+  using functor_task_wrapper__ =
+    typename EXECUTION_POLICY::template functor_task_wrapper__<FUNCTOR_TYPE>;
 
   friend EXECUTION_POLICY;
 
@@ -82,7 +82,7 @@ struct task_model__
   } // runtime_state
 
   //--------------------------------------------------------------------------//
-  //! Register a user task with the FleCSI runtime.
+  //! Register a user functor task with the FleCSI runtime.
   //!
   //! @tparam FUNCTOR_TYPE The user task functor type.
   //!
@@ -98,14 +98,46 @@ struct task_model__
   >
   static
   decltype(auto)
-  register_user_task(
+  register_functor_task(
     task_hash_key_t key,
     std::string name
   )
   {
-    return EXECUTION_POLICY::template register_user_task<
+    return EXECUTION_POLICY::template register_functor_task<
       FUNCTOR_TYPE>(key, name);
-  } // register_user_task
+  } // register_functor_task
+
+  //--------------------------------------------------------------------------//
+  //! Register a user task with the FleCSI runtime.
+  //!
+  //! @tparam RETURN The return type of the user task.
+  //! @tparam ARG_TUPLE A std::tuple of the user task arguments.
+  //! @tparam DELEGATE The delegate function that invokes the user task.
+  //! @tparam KEY A hash key identifying the task.
+  //!
+  //! @param key The \ref task_hash_key_t for the task.
+  //! @param name The string identifier of the task.
+  //!
+  //! @return The return type for task registration is determined by
+  //!         the specific backend runtime being used.
+  //--------------------------------------------------------------------------//
+
+  template<
+    typename RETURN,
+    typename ARG_TUPLE,
+    RETURN (*DELEGATE)(ARG_TUPLE),
+    size_t KEY
+  >
+  static
+  decltype(auto)
+  register_task(
+    task_hash_key_t key,
+    std::string name
+  )
+  {
+    return EXECUTION_POLICY::template register_task<
+      RETURN, ARG_TUPLE, DELEGATE, KEY>(key, name);
+  } // register_task
 
   //--------------------------------------------------------------------------//
   //! Register an MPI task with the FleCSI runtime. MPI tasks are only used
@@ -145,7 +177,7 @@ struct task_model__
 #endif // ENABLE_MPI
 
   //--------------------------------------------------------------------------//
-  //! Execute a registered user task.
+  //! Execute a user functor task.
   //!
   //! @tparam RETURN The return type of the task.
   //! @tparam ARGS The task arguments.
@@ -162,15 +194,43 @@ struct task_model__
   >
   static
   decltype(auto)
-  execute_user_task(
+  execute_functor_task(
     task_hash_key_t & key,
     runtime_state_t & runtime_state,
     ARGS &&... args
   )
   {
-    return EXECUTION_POLICY::template execute_user_task<RETURN>(
+    return EXECUTION_POLICY::template execute_functor_task<RETURN>(
       key, runtime_state, std::forward<ARGS>(args) ...);
-  } // execute_user_task
+  } // execute_functor_task
+
+  //--------------------------------------------------------------------------//
+  //! Execute a task.
+  //!
+  //! @tparam RETURN The return type of the task.
+  //! @tparam ARGS The task arguments.
+  //!
+  //! @param key A \ref task_hash_t key that uniquely identifies the
+  //!            calling task.
+  //! @param parent A hash key that uniquely identifies the calling task.
+  //! @param args The arguments to pass to the user task during execution.
+  //--------------------------------------------------------------------------//
+
+  template<
+    typename RETURN,
+    typename ... ARGS
+  >
+  static
+  decltype(auto)
+  execute_task(
+    task_hash_key_t key,
+    size_t parent,
+    ARGS &&... args
+  )
+  {
+    return EXECUTION_POLICY::template execute_task<RETURN>(
+      key, parent, std::forward<ARGS>(args) ...);
+  } // execute_task
 
   //--------------------------------------------------------------------------//
   //! Execute an MPI task. The task must have been registered using the
@@ -237,7 +297,7 @@ template<
 class task_t : public base_task_t
 {
 
-  friend base_task_t::template user_task_wrapper__<FUNCTOR_TYPE>;
+  friend base_task_t::template functor_task_wrapper__<FUNCTOR_TYPE>;
 
 }; // class task_t
 
