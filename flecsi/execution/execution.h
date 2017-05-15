@@ -101,7 +101,7 @@ clog_register_tag(execution);
 #define flecsi_register_mpi_task(task)                                         \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
-  flecsi_register_task(task, loc, index)
+  flecsi_register_task(task, mpi, index)
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_execute_task
@@ -138,7 +138,7 @@ clog_register_tag(execution);
 //! This macro executes an MPI task.
 //!
 //! @param task The MPI task to execute.
-//! @param ... The arguments to pass to the user task during execution.
+//! @param ... The arguments to pass to the MPI task during execution.
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
@@ -146,18 +146,7 @@ clog_register_tag(execution);
 #define flecsi_execute_mpi_task(task, ...)                                     \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
-  /* Execute the user task */                                                  \
-  /* WARNING: This macro returns a future. Don't add terminations! */          \
-  flecsi::execution::task_model_t::execute_task<                               \
-    typename flecsi::utils::function_traits__<decltype(task)>::return_type     \
-  >                                                                            \
-  (                                                                            \
-    task_hash_t::make_key(                                                     \
-      reinterpret_cast<uintptr_t>(&task), loc, index                           \
-    ),                                                                         \
-    flecsi::utils::const_string_t{__func__}.hash(),                            \
-    ## __VA_ARGS__                                                             \
-  )
+  flecsi_execute_task(task, mpi, index, #__VA_ARGS__)
 
 //----------------------------------------------------------------------------//
 // Function Interface

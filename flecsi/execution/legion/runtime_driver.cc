@@ -84,6 +84,7 @@ runtime_driver(
   clog(info) << "MPI num_colors is " << num_colors << std::endl;
   }
 
+#if 0
   std::set<size_t> map_handles;
   std::map<size_t, Legion::IndexSpace> expanded_ispaces_map;
   std::map<size_t, Legion::FieldSpace> expanded_fspaces_map;
@@ -268,6 +269,7 @@ runtime_driver(
     phase_barriers_map[handle].clear();
   }
   phase_barriers_map.clear();
+#endif
 
   context_.unset_call_mpi(ctx, runtime);
   context_.handoff_to_mpi(ctx, runtime);

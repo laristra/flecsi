@@ -64,11 +64,6 @@ legion_context_policy_t::initialize(
     // FIXME: The casts in this section need to be cleaned up...
     task_hash_key_t key = static_cast<task_hash_key_t>(t->first);
 
-    {
-    clog_tag_guard(context);
-    clog(info) << "Registering " << key << std::endl;
-    }
-
     // Iterate over task variants
     for(auto & v: t->second) {
       // FIXME: Expand this with comments on what things are.
