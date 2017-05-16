@@ -12,6 +12,7 @@
 //----------------------------------------------------------------------------//
 
 #include <legion.h>
+#include <legion_stl.h>
 #include <legion_utilities.h>
 
 #include "flecsi/execution/legion/internal_task.h"
@@ -20,6 +21,10 @@
 #define GHOST_PART 1
 #define EXCLUSIVE_PART 0
 #define SHARED_PART 1
+#define OWNER_COLOR_TAG 1
+
+typedef Legion::STL::map<LegionRuntime::Arrays::coord_t, LegionRuntime::Arrays::coord_t> legion_map;
+
 
 clog_register_tag(legion_tasks);
 
@@ -48,6 +53,70 @@ inline return_type task_name(                                                  \
   LegionRuntime::HighLevel::Context ctx,                                       \
   LegionRuntime::HighLevel::HighLevelRuntime * runtime                         \
 )
+
+//----------------------------------------------------------------------------//
+//! Fix ghost refs task updates ghost reference/pointer to new location
+//! by reading from old location.
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
+__flecsi_internal_legion_task(fix_ghost_refs_task, void) {
+
+  {
+  clog_tag_guard(legion_tasks);
+  clog(trace) << "Executing fix ghost refs task " << std::endl;
+  }
+
+  clog_assert(regions.size() >= 1, "fix_ghost_refs_task called with no regions");
+  clog_assert(task->regions.size() >= 1, "fix_ghost_refs_task called with no regions");
+  for (int region_idx = 0; region_idx < regions.size(); region_idx++)
+    clog_assert(task->regions[region_idx].privilege_fields.size() == 1,
+        "fix_ghost_refs_task called with wrong number of fields");
+
+  using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
+  legion_map owner_map = task->futures[0].get_result<legion_map>();
+
+  if (owner_map.size() > 0) {
+
+    std::vector<LegionRuntime::Accessor::RegionAccessor<generic_type, LegionRuntime::Arrays::Point<2>>> accs_owners_refs;
+    std::vector<LegionRuntime::Arrays::Rect<2>> owners_rects;
+    for (int owner_idx = 0; owner_idx < owner_map.size(); owner_idx++) {
+      accs_owners_refs.push_back(regions[1+owner_idx].get_field_accessor(42)  // FIXME registration not magic number
+          .typeify<LegionRuntime::Arrays::Point<2>>());
+      Legion::Domain owner_domain = runtime->get_index_space_domain(ctx,
+          regions[1+owner_idx].get_logical_region().get_index_space());
+      owners_rects.push_back(owner_domain.get_rect<2>());
+    }
+
+    LegionRuntime::Accessor::RegionAccessor<generic_type,
+      LegionRuntime::Arrays::Point<2>> acc_ghost_ref
+      = regions[0].get_field_accessor(42)
+      .typeify<LegionRuntime::Arrays::Point<2>>();
+    Legion::Domain ghost_domain = runtime->get_index_space_domain(ctx, regions[0]
+      .get_logical_region().get_index_space());
+    LegionRuntime::Arrays::Rect<2> ghost_rect = ghost_domain.get_rect<2>();
+    for (LegionRuntime::Arrays::GenericPointInRectIterator<2> itr(ghost_rect); itr; itr++) {
+      auto ghost_ptr = Legion::DomainPoint::from_point<2>(itr.p);
+      LegionRuntime::Arrays::Point<2> ghost_ref = acc_ghost_ref.read(ghost_ptr);
+      clog(trace) << ghost_ref.x[0] << "," << ghost_ref.x[1] << " needed for " <<
+          ghost_ptr.point_data[0] << "," << ghost_ptr.point_data[1] <<
+          " in " << owner_map[ghost_ref.x[0]] <<
+          " range " << owners_rects[owner_map[ghost_ref.x[0]]].lo[0] <<
+          ":" << owners_rects[owner_map[ghost_ref.x[0]]].lo[1] <<
+          "," << owners_rects[owner_map[ghost_ref.x[0]]].hi[1] << std::endl;
+#if 0
+      // NOTE: We stored a forward pointer in old shared location to new shared location
+      LegionRuntime::Arrays::Point<2> owner_ref =
+          accs_owners_refs[owner_map[ghost_ref.x[0]]].read(Legion::DomainPoint::from_point<2>(ghost_ref));
+      acc_ghost_ref.write(ghost_ptr, owner_ref);
+      clog(trace) << ghost_ptr.point_data[0] << "," << ghost_ptr.point_data[1] << " points to " << owner_ref.x[0] <<
+          "," << owner_ref.x[1] << std::endl;
+#endif
+    } // for itr
+  } // if we have owners
+
+} // fix_ghost_refs_task
 
 //----------------------------------------------------------------------------//
 //! Initial SPMD task.
@@ -100,6 +169,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
   }
 
   std::vector<std::vector<Legion::LogicalRegion>> ghost_owners_lregions(num_handles);
+  std::vector<legion_map> global_to_local_color_map(num_handles);
 
   size_t region_index = 0;
   for (size_t handle_idx = 0; handle_idx < num_handles; handle_idx++) {
@@ -113,7 +183,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
     clog_assert(itr != coloring_info_map.end(), "Can't find partition info for my color");
     const flecsi::coloring::coloring_info_t coloring_info = itr->second;
 
-    clog(error) << my_color << " handle " << handle_idx <<
+    clog(trace) << my_color << " handle " << handle_idx <<
         " exclusive " << coloring_info.exclusive <<
         " shared " << coloring_info.shared <<
         " ghost " << coloring_info.ghost << std::endl;
@@ -171,25 +241,39 @@ __flecsi_internal_legion_task(spmd_task, void) {
     // Add neighbors regions to context_
     for (size_t owner = 0; owner < num_owners[handle_idx]; owner++) {
       ghost_owners_lregions[handle_idx].push_back(regions[region_index].get_logical_region());
+      const void* owner_color;
+      size_t size;
+      const bool can_fail = false;
+      const bool wait_until_ready = true;
+      runtime->retrieve_semantic_information(regions[region_index].get_logical_region(), OWNER_COLOR_TAG,
+          owner_color, size, can_fail, wait_until_ready);
+      clog_assert(size == sizeof(LegionRuntime::Arrays::coord_t), "Unable to map gid to lid with Legion semantic tag");
+      global_to_local_color_map[handle_idx][*(LegionRuntime::Arrays::coord_t*)owner_color] = owner;
       region_index++;
       clog_assert(region_index <= regions.size(), "SPMD attempted to access more regions than passed");
-    }
+    } // for owner
     context_.push_ghost_owners_lregions(ghost_owners_lregions[handle_idx]);
+    context_.push_global_to_local_color_map(global_to_local_color_map[handle_idx]);
 
     // Fix ghost reference/pointer to point to compacted position of shared that it needs
-    //auto fix_ghost_refs_id = __flecsi_internal_task_key(fix_ghost_refs_task, loc);
-    //Legion::TaskLauncher fix_ghost_refs_launcher(context_.task_id(fix_ghost_refs_id),
-    //    Legion::TaskArgument(nullptr, 0));
+    auto fix_ghost_refs_id = __flecsi_internal_task_key(fix_ghost_refs_task, loc);
+    Legion::TaskLauncher fix_ghost_refs_launcher(context_.task_id(fix_ghost_refs_id),
+        Legion::TaskArgument(nullptr, 0));
 
-    //fix_ghost_refs_launcher.add_region_requirement(
-    //    Legion::RegionRequirement(context_.get_ghost_lr(handle_idx), READ_WRITE,
-    //        EXCLUSIVE, context_.get_color_lr(handle_idx))
-    //    .add_field(42)); // FIXME use registration not magic number
+    fix_ghost_refs_launcher.add_region_requirement(
+        Legion::RegionRequirement(context_.get_ghost_lr(handle_idx), READ_WRITE,
+            EXCLUSIVE, context_.get_color_region(handle_idx))
+        .add_field(42)); // FIXME use registration not magic number
 
-    //fix_ghost_refs_launcher.add_future(Legion::Future::from_value(runtime,
-    //    [handle_idx].global_to_local_shard_map));
+    fix_ghost_refs_launcher.add_future(Legion::Future::from_value(runtime,
+        global_to_local_color_map[handle_idx]));
 
+    for (size_t owner = 0; owner < num_owners[handle_idx]; owner++)
+      fix_ghost_refs_launcher.add_region_requirement(
+          Legion::RegionRequirement(ghost_owners_lregions[handle_idx][owner], READ_ONLY, EXCLUSIVE,
+              ghost_owners_lregions[handle_idx][owner]).add_field(42));// FIXME use registration not magic number
 
+    runtime->execute_task(ctx, fix_ghost_refs_launcher);
 
   } // for handle_idx
 
@@ -244,7 +328,7 @@ __flecsi_internal_legion_task(unset_call_mpi_task, void) {
 
 
 //----------------------------------------------------------------------------//
-//! Initial SPMD task.
+//! Compaction task writes new location in old location.
 //!
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
