@@ -605,6 +605,20 @@ struct legion_context_policy_t
   }
 
   //--------------------------------------------------------------------------//
+  //! Push ghost owners logical regions (virtual
+  //! index space).
+  //!
+  //! @param ghost_owners_lregions ghost owners logical regions
+  //--------------------------------------------------------------------------//
+  void
+  push_ghost_owners_lregions(
+    std::vector<Legion::LogicalRegion> ghost_owners_lregions
+  )
+  {
+    ghost_owners_lregions_.push_back(ghost_owners_lregions);
+  }
+
+  //--------------------------------------------------------------------------//
   //! Return phase barriers for ghost owners.
   //!
   //! @param index_space virtual index space
@@ -933,6 +947,7 @@ private:
   //--------------------------------------------------------------------------//
   Legion::PhaseBarrier* pbarriers_as_masters_;
   std::vector<Legion::PhaseBarrier*> ghost_owners_pbarriers_;
+  std::vector<std::vector<Legion::LogicalRegion>> ghost_owners_lregions_;
   std::vector<Legion::LogicalRegion> color_regions_;
   std::vector<Legion::IndexPartition> primary_ghost_ips_;
   std::vector<Legion::LogicalRegion> primary_lrs_;
