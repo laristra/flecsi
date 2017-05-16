@@ -14,6 +14,7 @@
 #include <functional>
 
 #include "flecsi/execution/common/function_handle.h"
+#include "flecsi/execution/common/task_hash.h"
 #include "flecsi/execution/function.h"
 #include "flecsi/execution/kernel.h"
 #include "flecsi/execution/task.h"
@@ -46,8 +47,8 @@ clog_register_tag(execution);
   /* Call the execution policy to register the task */                         \
   bool task_t ## _task_registered =                                            \
     flecsi::execution::task_model_t::register_functor_task<task_t>             \
-    (task_hash_t::make_key(typeid(task_t).hash_code(), processor, launch),     \
-    { EXPAND_AND_STRINGIFY(task_t) })
+    (flecsi::execution::task_hash_t::make_key(typeid(task_t).hash_code(),     \
+    processor, launch), { EXPAND_AND_STRINGIFY(task_t) })
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_register_task
@@ -85,8 +86,8 @@ clog_register_tag(execution);
     flecsi::execution::task_model_t::register_task<                            \
       task ## _trt_t, task ## _tat_t, task ## _tuple_delegate,                 \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()>        \
-    (task_hash_t::make_key(reinterpret_cast<uintptr_t>(&task), processor,      \
-      launch), { EXPAND_AND_STRINGIFY(task) })
+    (flecsi::execution::task_hash_t::make_key(reinterpret_cast<uintptr_t>(     \
+    &task), flecsi::execution::processor, flecsi::execution::launch), { EXPAND_AND_STRINGIFY(task) })
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_register_mpi_task
