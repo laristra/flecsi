@@ -93,7 +93,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
 
     context_.push_ghost_owners_pbarriers(ghost_owners_pbarriers_buf);
 
-    context_.push_region(regions[region_index].get_logical_region());
+    context_.push_color_region(regions[region_index].get_logical_region());
 
     const std::unordered_map<size_t, flecsi::coloring::coloring_info_t> coloring_info_map
       = context_.coloring_info(handle_idx);  // FIX_ME what if the keys are not 0,1,2,...
@@ -134,6 +134,27 @@ __flecsi_internal_legion_task(spmd_task, void) {
     context_.push_ghost_lr(runtime->get_logical_subregion_by_color(ctx,
       primary_ghost_lp, GHOST_PART));
 
+    Legion::DomainColoring excl_shared_coloring;
+    LegionRuntime::Arrays::Rect<2> exclusive_rect(LegionRuntime::Arrays::make_point(my_color, 0),
+        LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive - 1));
+    excl_shared_coloring[EXCLUSIVE_PART] = Legion::Domain::from_rect<2>(exclusive_rect);
+    LegionRuntime::Arrays::Rect<2> shared_rect(LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive),
+        LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive + coloring_info.shared - 1));
+    excl_shared_coloring[SHARED_PART] = Legion::Domain::from_rect<2>(shared_rect);
+
+    Legion::IndexPartition excl_shared_ip = runtime->create_index_partition(ctx,
+        color_ispace, color_domain_1D, excl_shared_coloring, true /*disjoint*/);
+
+    context_.push_excl_shared_ip(excl_shared_ip);
+
+    Legion::LogicalPartition excl_shared_lp = runtime->get_logical_partition(ctx,
+        context_.get_primary_lr(handle_idx), excl_shared_ip);
+
+    context_.push_exclusive_lr(runtime->get_logical_subregion_by_color(ctx,
+      excl_shared_lp, EXCLUSIVE_PART));
+
+    context_.push_shared_lr(runtime->get_logical_subregion_by_color(ctx,
+      excl_shared_lp, SHARED_PART));
   } // for handle_idx
 
   // Get the input arguments from the Legion runtime
