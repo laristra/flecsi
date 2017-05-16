@@ -32,9 +32,9 @@ clog_register_tag(execution);
 //!
 //! @param task_t    The task type to register. This is a functor type with
 //!                  an execute method implementing the user task.
-//! @param processor The \ref processor_t type. This may be an or list of
-//!                  supported processor types.
-//! @param launch    The \ref launch_t type. This may be an or list of
+//! @param processor The \ref processor_t type. This may be an \em or list
+//!                  of supported processor types.
+//! @param launch    The \ref launch_t type. This may be an \em or list of
 //!                  supported launch types and configuration options.
 //!
 //! @ingroup execution
@@ -55,9 +55,9 @@ clog_register_tag(execution);
 //! This macro registers a user task with the FleCSI runtime.
 //!
 //! @param task      The task to register. This is normally just a function.
-//! @param processor The \ref processor_t type. This may be an or list of
-//!                  supported processor types.
-//! @param launch    The \ref launch_t type. This may be an or list of
+//! @param processor The \ref processor_t type. This may be an \em or list
+//!                  of supported processor types.
+//! @param launch    The \ref launch_t type. This may be an \em or list of
 //!                  supported launch types and configuration options.
 //!
 //! @ingroup execution
