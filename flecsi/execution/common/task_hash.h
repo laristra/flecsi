@@ -7,6 +7,7 @@
 #define flecsi_execution_common_task_hash_h
 
 #include <tuple>
+#include <ostream>
 
 #include "flecsi/execution/common/processor.h"
 #include "flecsi/execution/common/launch.h"

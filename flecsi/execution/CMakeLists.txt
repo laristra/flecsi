@@ -229,6 +229,24 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
         THREADS 2
       )
 
+      cinch_add_unit(task_registration
+        SOURCES
+          test/task_registration.cc
+          test/context_runtime.cc
+          ${RUNTIME_DRIVER}
+        INPUTS
+          test/simple2d-8x8.msh
+          test/simple2d-16x16.msh
+        LIBRARIES
+          flecsi
+          ${CINCH_RUNTIME_LIBRARIES}
+          ${COLORING_LIBRARIES}
+        DEFINES
+          -DFLECSI_ENABLE_SPECIALIZATION_DRIVER
+        POLICY LEGION
+        THREADS 2
+      )
+
     endif()
 
   endif()
