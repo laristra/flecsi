@@ -60,7 +60,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
 
   {
   clog_tag_guard(legion_tasks);
-  clog(info) << "Executing spmd task" << std::endl;
+  clog(info) << "Executing spmd task " << my_color << std::endl;
   }
 
   // Add additional setup.
@@ -166,30 +166,6 @@ __flecsi_internal_legion_task(spmd_task, void) {
     ctx, runtime, task, regions);
 
 
-#if 0
-  const std::unordered_map<size_t, flecsi::coloring::index_coloring_t> coloring_map
-    = context_.coloring_map();
-
-  {
-  clog_tag_guard(legion_tasks);
-
-  // Create sub-partitions
-  for (auto itr : coloring_map) {
-    for (auto primary_itr = itr.second.primary.begin(); primary_itr != itr.second.primary.end(); ++primary_itr)
-      clog(error) << my_color << " key " << itr.first << " primary " <<
-        " " << *primary_itr << std::endl;
-    for (auto exclusive_itr = itr.second.exclusive.begin(); exclusive_itr != itr.second.exclusive.end(); ++exclusive_itr)
-      clog(error) << my_color << " key " << itr.first << " exclusive " <<
-        " " <<  *exclusive_itr << std::endl;
-    for (auto shared_itr = itr.second.shared.begin(); shared_itr != itr.second.shared.end(); ++shared_itr)
-      clog(error) << my_color << " key " << itr.first << " shared " <<
-        " " <<  *shared_itr << std::endl;
-    for (auto ghost_itr = itr.second.ghost.begin(); ghost_itr != itr.second.ghost.end(); ++ghost_itr)
-      clog(error) << my_color << " key " << itr.first << " ghost " <<
-        " " << *ghost_itr << std::endl;
-  }
-  }
-#endif
   // run default or user-defined driver 
   driver(args.argc, args.argv); 
 
@@ -227,6 +203,79 @@ __flecsi_internal_legion_task(wait_on_mpi_task, void) {
 __flecsi_internal_legion_task(unset_call_mpi_task, void) {
   context_t::instance().set_mpi_state(false);
 } // unset_call_mpi_task
+
+
+//----------------------------------------------------------------------------//
+//! Initial SPMD task.
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
+__flecsi_internal_legion_task(compaction_task, void) {
+  const int my_color = task->index_point.point_data[0];
+
+  {
+  clog_tag_guard(legion_tasks);
+  clog(trace) << "Executing compaction task " << my_color << std::endl;
+  }
+
+  // Add additional setup.
+  context_t & context_ = context_t::instance();
+
+  const std::unordered_map<size_t, flecsi::coloring::index_coloring_t> coloring_map
+    = context_.coloring_map();
+
+  {
+  clog_tag_guard(legion_tasks);
+
+  // In old position of shared, write compacted location
+  // In compacted position of ghost, write the reference/pointer to pre-compacted shared
+  // ghost reference/pointer will need to communicate with other ranks in spmd_task() to obtain
+  // corrected pointer
+  for (auto handle : coloring_map) {
+
+    Legion::IndexSpace ispace = regions[handle.first].get_logical_region().get_index_space();
+    Legion::FieldID fid_ref = 42;  // FIXME get from registration not magic number
+    LegionRuntime::Accessor::RegionAccessor<
+      LegionRuntime::Accessor::AccessorType::Generic, LegionRuntime::Arrays::Point<2>> acc_ref =
+          regions[handle.first].get_field_accessor(fid_ref).typeify<LegionRuntime::Arrays::Point<2>>();
+
+    Legion::Domain domain = runtime->get_index_space_domain(ctx, ispace);
+    LegionRuntime::Arrays::Rect<2> rect = domain.get_rect<2>();
+    LegionRuntime::Arrays::GenericPointInRectIterator<2> expanded_itr(rect);
+
+    for (auto exclusive_itr = handle.second.exclusive.begin(); exclusive_itr != handle.second.exclusive.end(); ++exclusive_itr) {
+      clog(trace) << my_color << " key " << handle.first << " exclusive " <<
+        " " <<  *exclusive_itr << std::endl;
+      expanded_itr++;
+    } // exclusive_itr
+
+    for (auto shared_itr = handle.second.shared.begin(); shared_itr != handle.second.shared.end(); ++shared_itr) {
+      const flecsi::coloring::entity_info_t shared = *shared_itr;
+      const LegionRuntime::Arrays::Point<2> reference = LegionRuntime::Arrays::make_point(shared.rank,
+          shared.offset);
+      // reference is the old location, expanded_itr.p is the new location
+      acc_ref.write(Legion::DomainPoint::from_point<2>(reference), expanded_itr.p);
+
+      clog(trace) << my_color << " key " << handle.first << " shared was " <<
+        " " <<  *shared_itr << " now at " << expanded_itr.p << std::endl;
+      expanded_itr++;
+    } // shared_itr
+
+    for (auto ghost_itr = handle.second.ghost.begin(); ghost_itr != handle.second.ghost.end(); ++ghost_itr) {
+      const flecsi::coloring::entity_info_t ghost = *ghost_itr;
+      const LegionRuntime::Arrays::Point<2> reference = LegionRuntime::Arrays::make_point(ghost.rank,
+          ghost.offset);
+      // reference is where we used to point, expanded_itr.p is where ghost is now
+      acc_ref.write(Legion::DomainPoint::from_point<2>(expanded_itr.p), reference);
+      clog(trace) << my_color << " key " << handle.first << " ghost " <<
+        " " << *ghost_itr << " now at " << expanded_itr.p << std::endl;
+      expanded_itr++;
+    } // ghost_itr
+  } // for handle
+  }
+
+} // compaction_task
 
 #undef __flecsi_internal_legion_task
 
