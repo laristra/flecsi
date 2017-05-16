@@ -241,7 +241,7 @@ runtime_driver(
 
       flecsi::coloring::coloring_info_t color_info = coloring_info[handle][color];
       for (auto ghost_owner : color_info.ghost_owners) {
-        clog(trace) << " Color " << color << " Handle " << handle << " has owner" <<
+        clog(trace) << " Color " << color << " Handle " << handle << " has owner " <<
             ghost_owner << std::endl;
         Legion::LogicalRegion ghost_owner_lr = runtime->get_logical_subregion_by_color(ctx,
             color_lp, ghost_owner);

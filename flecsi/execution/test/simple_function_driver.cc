@@ -41,7 +41,7 @@ void driver(int argc, char ** argv) {
 
   double result = flecsi_execute_function(handle, 2.0, 10.0);
 
-  ASSERT_EQ(result, 20);
+  ASSERT_EQ(result, 20.0);
 
 } // driver
 
