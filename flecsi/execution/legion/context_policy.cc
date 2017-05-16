@@ -39,30 +39,17 @@ legion_context_policy_t::initialize(
 {
   using namespace Legion;
 
-  {
-  clog_tag_guard(context);
-  clog(info) << "Initializing..." << std::endl;
-  }
-
   // Register top-level task
   HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
   HighLevelRuntime::register_legion_task<runtime_driver>(
     TOP_LEVEL_TASK_ID, Legion::Processor::LOC_PROC,
     true, false, AUTO_GENERATE_ID, TaskConfigOptions(), "runtime_driver");
 
-  // Register tasks in same order on all ranks
-  std::map<uintptr_t, task_hash_key_t> ordered_registry_map;
+  // Register tasks
   for(auto & t: task_registry_) {
-    task_hash_key_t key = static_cast<task_hash_key_t>(t.first);
-    ordered_registry_map[key.address()] = key;
-  }
 
-  for(auto & idx: ordered_registry_map) {
-    task_hash_key_t lookup_key = idx.second;
-
-    auto t = task_registry_.find(lookup_key);
     // FIXME: The casts in this section need to be cleaned up...
-    task_hash_key_t key = static_cast<task_hash_key_t>(t->first);
+    task_hash_key_t key = static_cast<task_hash_key_t>(t.first);
 
     {
     clog_tag_guard(context);
@@ -70,7 +57,7 @@ legion_context_policy_t::initialize(
     }
 
     // Iterate over task variants
-    for(auto & v: t->second) {
+    for(auto & v: t.second) {
       // FIXME: Expand this with comments on what things are.
       auto & value = std::get<1>(v);
       std::get<1>(value)(std::get<0>(value),
@@ -91,11 +78,6 @@ legion_context_policy_t::initialize(
   HighLevelRuntime::set_registration_callback(mapper_registration);
 
   // Configure interoperability layer.
-  {
-  clog_tag_guard(context);
-  clog(info) << "Configuring MPI interoperability " << std::endl;
-  }
-
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   Legion::Runtime::configure_MPI_interoperability(rank);
@@ -232,14 +214,6 @@ legion_context_policy_t::connect_with_mpi(
   // The reverse mapping goes the other way
   const std::map<int, Legion::AddressSpace> & forward_mapping =
     runtime->find_forward_MPI_mapping();
-
-  for(auto it: forward_mapping) {
-    {
-    clog_tag_guard(context);
-    clog(info) << "MPI rank " << it.first <<
-      " maps to Legion address space " << it.second;
-    }
-  } // for
 } // legion_context_policy_t::connect_with_mpi
 
 } // namespace execution 

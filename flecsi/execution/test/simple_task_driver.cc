@@ -50,7 +50,6 @@ void driver(int argc, char ** argv) {
   f.wait();
 
   clog(info) << "Task return: " << f.get() << std::endl;
-
 } // driver
 
 } // namespace execution

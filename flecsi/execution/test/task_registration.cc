@@ -4,10 +4,46 @@
  *~-------------------------------------------------------------------------~~*/
 
 #include <cinchtest.h>
+#include <cinchlog.h>
 
-TEST(execution_structure, testname) {
+#include "flecsi/utils/common.h"
+#include "flecsi/execution/context.h"
+#include "flecsi/execution/execution.h"
+#include "flecsi/data/data.h"
 
-} // TEST
+namespace flecsi {
+namespace execution {
+
+//----------------------------------------------------------------------------//
+// Specialization driver.
+//----------------------------------------------------------------------------//
+
+void specialization_driver(int argc, char ** argv) {
+
+} // specialization_driver
+
+//----------------------------------------------------------------------------//
+// User driver.
+//----------------------------------------------------------------------------//
+
+void driver(int argc, char ** argv) {
+
+} // specialization_driver
+
+} // namespace execution
+} // namespace flecsi
+
+void task1(){
+
+}
+
+flecsi_register_task(task1, loc, single);
+
+void task2(){
+  
+}
+
+flecsi_register_task(task2, loc, single);
 
 /*----------------------------------------------------------------------------*
  * Cinch test Macros

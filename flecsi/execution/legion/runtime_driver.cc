@@ -68,6 +68,9 @@ runtime_driver(
   context_.pop_state( utils::const_string_t{"specialization_driver"}.hash());
 #endif // FLECSI_ENABLE_SPECIALIZATION_DRIVER
 
+  // Register user data
+  //data::storage_t::instance().register_all();
+
   auto & data_client_registry =
     flecsi::data::storage_t::instance().data_client_registry(); 
 
@@ -83,6 +86,7 @@ runtime_driver(
   clog_tag_guard(runtime_driver);
   clog(info) << "MPI num_colors is " << num_colors << std::endl;
   }
+
 
   std::set<size_t> map_handles;
   std::map<size_t, Legion::IndexSpace> expanded_ispaces_map;
@@ -102,6 +106,8 @@ runtime_driver(
   for(auto handle_idx: coloring_info) {
     // Create expanded IndexSpace
     map_handles.insert(handle_idx.first);
+
+    // Determine max size of a color partition
     size_t total_num_entities = 0;
     for(auto color_idx: handle_idx.second) {
       clog(error) << "index: " << handle_idx.first << " color: " << color_idx.first << " " << color_idx.second << std::endl;
@@ -110,6 +116,7 @@ runtime_driver(
     } // for color_idx
     clog(trace) << "total_num_entities " << total_num_entities << std::endl;
 
+    // Create expanded index space
     LegionRuntime::Arrays::Rect<2> expanded_bounds = LegionRuntime::Arrays::Rect<2>(
         LegionRuntime::Arrays::Point<2>::ZEROES(),
         LegionRuntime::Arrays::make_point(num_colors,total_num_entities));
@@ -159,8 +166,22 @@ runtime_driver(
   } // for handle_idx
   } // clog_tag_guard
 
-  // Register user data
-  //data::storage_t::instance().register_all();
+  // Map between pre-compacted and compacted data placement
+  auto compaction_id = __flecsi_internal_task_key(compaction_task, loc);
+  Legion::IndexLauncher compaction_launcher(context_.task_id(compaction_id),
+      color_domain,
+      Legion::TaskArgument(nullptr, 0), Legion::ArgumentMap());
+  compaction_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+
+  for(auto handle : map_handles) {
+    Legion::LogicalPartition color_lp = runtime->get_logical_partition(ctx,
+        expanded_lregions_map[handle], color_iparts_map[handle]);
+    compaction_launcher.add_region_requirement(
+        Legion::RegionRequirement(color_lp, 0/*projection ID*/,
+            WRITE_DISCARD, EXCLUSIVE, expanded_lregions_map[handle]))
+                .add_field(42);  // FIXME register in some way not magic number
+  } // for handle
+  runtime->execute_index_space(ctx, compaction_launcher);
 
   // Must epoch launch
   Legion::MustEpochLauncher must_epoch_launcher;
@@ -220,7 +241,7 @@ runtime_driver(
 
       flecsi::coloring::coloring_info_t color_info = coloring_info[handle][color];
       for (auto ghost_owner : color_info.ghost_owners) {
-        clog(trace) << " Color " << color << " Handle " << handle << " has owner" <<
+        clog(trace) << " Color " << color << " Handle " << handle << " has owner " <<
             ghost_owner << std::endl;
         Legion::LogicalRegion ghost_owner_lr = runtime->get_logical_subregion_by_color(ctx,
             color_lp, ghost_owner);
@@ -268,6 +289,7 @@ runtime_driver(
     phase_barriers_map[handle].clear();
   }
   phase_barriers_map.clear();
+
 
   context_.unset_call_mpi(ctx, runtime);
   context_.handoff_to_mpi(ctx, runtime);

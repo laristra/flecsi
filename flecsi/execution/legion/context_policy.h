@@ -396,6 +396,37 @@ struct legion_context_policy_t
     return false;
   } // register_task
 
+#if 0
+  //--------------------------------------------------------------------------//
+  //! Register a task variant with the runtime.
+  //!
+  //! @param name      The task name string.
+  //! @param call_back The registration call back function.
+  //--------------------------------------------------------------------------//
+
+  template<
+    size_t KEY
+  >
+  bool
+  register_mpi_task(
+    std::string & name,
+    const registration_function_t & call_back
+  )
+  {
+    // Make sure that this KEY is unique.
+    clog_assert(mpi_task_registry_.find(KEY) == mpi_task_registry_.end(),
+      "MPI task has already been registered");
+
+    clog(info) << "Registering MPI task callback " << name << " with key " <<
+      KEY << " and variant " << std::endl;
+
+    mpi_task_registry_[KEY] = std::make_tuple(unique_tid_t::instance().next(),
+      call_back, name);
+
+    return true;
+  } // register_mpi_task
+#endif
+
   //--------------------------------------------------------------------------//
   //! Return the task id for the task identified by \em key.
   //!
@@ -574,6 +605,20 @@ struct legion_context_policy_t
   }
 
   //--------------------------------------------------------------------------//
+  //! Push ghost owners logical regions (virtual
+  //! index space).
+  //!
+  //! @param ghost_owners_lregions ghost owners logical regions
+  //--------------------------------------------------------------------------//
+  void
+  push_ghost_owners_lregions(
+    std::vector<Legion::LogicalRegion> ghost_owners_lregions
+  )
+  {
+    ghost_owners_lregions_.push_back(ghost_owners_lregions);
+  }
+
+  //--------------------------------------------------------------------------//
   //! Return phase barriers for ghost owners.
   //!
   //! @param index_space virtual index space
@@ -594,11 +639,11 @@ struct legion_context_policy_t
   //! @param region logical region 
   //--------------------------------------------------------------------------//
   void
-  push_region(
+  push_color_region(
     Legion::LogicalRegion region
   )
   {
-    regions_.push_back(region);
+    color_regions_.push_back(region);
   }
 
   //--------------------------------------------------------------------------//
@@ -607,12 +652,12 @@ struct legion_context_policy_t
   //! @param index_space virtual index space
   //--------------------------------------------------------------------------//
   Legion::LogicalRegion
-  get_region(
+  get_color_region(
     size_t index_space
   )
   const
   {
-    return regions_[index_space];
+    return color_regions_[index_space];
   }
 
   //--------------------------------------------------------------------------//
@@ -640,6 +685,33 @@ struct legion_context_policy_t
   const
   {
     return primary_ghost_ips_[index_space];
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Push exclusive shared index partition corresponding to a virtual
+  //! index space.
+  //!
+  //! @param ip exclusive shared index partition
+  //--------------------------------------------------------------------------//
+  void
+  push_excl_shared_ip(
+    Legion::IndexPartition ip
+  ){
+    excl_shared_ips_.push_back(ip);
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Return exclusive ghost index partition for virtual index space.
+  //!
+  //! @param index_space virtual index space
+  //--------------------------------------------------------------------------//
+  Legion::IndexPartition
+  get_excl_shared_ip(
+    size_t index_space
+  )
+  const
+  {
+    return excl_shared_ips_[index_space];
   }
 
   //--------------------------------------------------------------------------//
@@ -697,6 +769,60 @@ struct legion_context_policy_t
   }
 
   //--------------------------------------------------------------------------//
+  //! Push exclusive logical region corresponding to a virtual index space.
+  //!
+  //! @param region exclusive logical region
+  //--------------------------------------------------------------------------//
+  void
+  push_exclusive_lr(
+    Legion::LogicalRegion region
+  )
+  {
+    exclusive_lrs_.push_back(region);
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Return exclusive logical region for virtual index space.
+  //!
+  //! @param index_space virtual index space
+  //--------------------------------------------------------------------------//
+  Legion::LogicalRegion
+  get_exclusive_lr(
+    size_t index_space
+  )
+  const
+  {
+    return exclusive_lrs_[index_space];
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Push shared logical region corresponding to a virtual index space.
+  //!
+  //! @param region shared logical region
+  //--------------------------------------------------------------------------//
+  void
+  push_shared_lr(
+    Legion::LogicalRegion region
+  )
+  {
+    shared_lrs_.push_back(region);
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Return shared logical region for virtual index space.
+  //!
+  //! @param index_space virtual index space
+  //--------------------------------------------------------------------------//
+  Legion::LogicalRegion
+  get_shared_lr(
+    size_t index_space
+  )
+  const
+  {
+    return shared_lrs_[index_space];
+  }
+
+  //--------------------------------------------------------------------------//
   // FIXME: Not sure if this is needed...
   //--------------------------------------------------------------------------//
 
@@ -735,55 +861,32 @@ private:
   // Task data members.
   //--------------------------------------------------------------------------//
 
-  struct task_value_hash_t
-  {
-
-    std::size_t
-    operator () (
-      const processor_type_t & key
-    )
-    const
-    {
-      return size_t(key);
-    } // operator ()
-
-  }; // struct task_value_hash_t
-
-  struct task_value_equal_t
-  {
-
-    bool
-    operator () (
-      const processor_type_t & key1,
-      const processor_type_t & key2
-    )
-    const
-    {
-      return size_t(key1) == size_t(key2);
-    } // operator ()
-
-  };
-
   // Define the value type for task map.
   using task_value_t =
-    std::unordered_map<
+    std::map<
       processor_type_t,
       std::tuple<
         task_id_t,
         registration_function_t,
         std::string
-      >,
-      task_value_hash_t,
-      task_value_equal_t
+      >
     >;
 
-  // Define the map type using the task_hash_t hash function.
-  std::unordered_map<
-    task_hash_t::key_t, // key
-    task_value_t,       // value
-    task_hash_t,        // hash function
-    task_hash_t         // equivalence operator
+  // Define the map type used to store user and pure task registrations
+  std::map<
+    task_hash_key_t,  // key
+    task_value_t         // value
   > task_registry_;
+
+  // Define the map type used to store MPI task registrations
+  std::unordered_map<
+    size_t,
+    std::tuple<
+      task_id_t,
+      registration_function_t,
+      std::string
+    >
+  > mpi_task_registry_;
 
   //--------------------------------------------------------------------------//
   // Function data members.
@@ -811,10 +914,14 @@ private:
   //--------------------------------------------------------------------------//
   Legion::PhaseBarrier* pbarriers_as_masters_;
   std::vector<Legion::PhaseBarrier*> ghost_owners_pbarriers_;
-  std::vector<Legion::LogicalRegion> regions_;
+  std::vector<std::vector<Legion::LogicalRegion>> ghost_owners_lregions_;
+  std::vector<Legion::LogicalRegion> color_regions_;
   std::vector<Legion::IndexPartition> primary_ghost_ips_;
   std::vector<Legion::LogicalRegion> primary_lrs_;
   std::vector<Legion::LogicalRegion> ghost_lrs_;
+  std::vector<Legion::IndexPartition> excl_shared_ips_;
+  std::vector<Legion::LogicalRegion> exclusive_lrs_;
+  std::vector<Legion::LogicalRegion> shared_lrs_;
 
 }; // class legion_context_policy_t
 

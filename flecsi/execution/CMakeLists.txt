@@ -69,6 +69,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(execution_SOURCES
     ${execution_SOURCES}
     legion/context_policy.cc
+    legion/execution_policy.cc
     legion/legion_tasks.cc
   )
 
@@ -193,8 +194,7 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
       cinch_add_unit(execution_structure
         SOURCES
-          test/execution_structure_test.cc
-          test/execution_structure_drivers.cc
+          test/execution_structure.cc
           test/context_runtime.cc
           ${RUNTIME_DRIVER}
         INPUTS
@@ -214,6 +214,24 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
         SOURCES
           test/legion/ghost_access_test.cc
           test/legion/ghost_access_drivers.cc
+          test/context_runtime.cc
+          ${RUNTIME_DRIVER}
+        INPUTS
+          test/simple2d-8x8.msh
+          test/simple2d-16x16.msh
+        LIBRARIES
+          flecsi
+          ${CINCH_RUNTIME_LIBRARIES}
+          ${COLORING_LIBRARIES}
+        DEFINES
+          -DFLECSI_ENABLE_SPECIALIZATION_DRIVER
+        POLICY LEGION
+        THREADS 2
+      )
+
+      cinch_add_unit(task_registration
+        SOURCES
+          test/task_registration.cc
           test/context_runtime.cc
           ${RUNTIME_DRIVER}
         INPUTS

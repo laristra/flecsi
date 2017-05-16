@@ -49,8 +49,8 @@ void driver(int argc, char ** argv) {
   clog(info) << "Task ID: " << tid_1 << std::endl;
   clog(info) << "Task ID: " << tid_2 << std::endl;
 
-  ASSERT_EQ(tid_1, 1);
-  ASSERT_EQ(tid_2, 2);
+  ASSERT_EQ(tid_1, 6);
+  ASSERT_EQ(tid_2, 7);
 
 } // driver
 
