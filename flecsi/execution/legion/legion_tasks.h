@@ -99,6 +99,8 @@ __flecsi_internal_legion_task(spmd_task, void) {
     context_.push_ghost_owners_pbarriers(ghost_owners_pbarriers_buf);
   }
 
+  std::vector<std::vector<Legion::LogicalRegion>> ghost_owners_lregions(num_handles);
+
   size_t region_index = 0;
   for (size_t handle_idx = 0; handle_idx < num_handles; handle_idx++) {
 
@@ -167,6 +169,12 @@ __flecsi_internal_legion_task(spmd_task, void) {
       excl_shared_lp, SHARED_PART));
 
     // Add neighbors regions to context_
+    for (size_t owner = 0; owner < num_owners[handle_idx]; owner++) {
+      ghost_owners_lregions[handle_idx].push_back(regions[region_index].get_logical_region());
+      region_index++;
+      clog_assert(region_index <= regions.size(), "SPMD attempted to access more regions than passed");
+    }
+    context_.push_ghost_owners_lregions(ghost_owners_lregions[handle_idx]);
 
     // Fix ghost reference/pointer to point to compacted position of shared that it needs
     //auto fix_ghost_refs_id = __flecsi_internal_task_key(fix_ghost_refs_task, loc);
