@@ -331,7 +331,7 @@ struct functor_task_wrapper__
 }; // struct functor_task_wrapper__
 
 //----------------------------------------------------------------------------//
-//! The task_wrapper__ type provides registation and execution callback
+//! The task_wrapper__ type provides registation callback and execution
 //! functions for user and MPI tasks.
 //!
 //! @tparam RETURN    The return type of the user task.
@@ -351,11 +351,11 @@ template<
 struct task_wrapper__
 {
   //--------------------------------------------------------------------------//
-  //! The user_task_args_t type defines a task argument type for task
+  //! The task_args_t type defines a task argument type for task
   //! execution through the Legion runtime.
   //--------------------------------------------------------------------------//
 
-  using user_task_args_t =
+  using task_args_t =
     typename utils::base_convert_tuple_type<
     accessor_base, data_handle__<void, 0, 0, 0>, ARG_TUPLE>::type;
 
@@ -448,18 +448,18 @@ struct task_wrapper__
     }
 
     // Unpack task arguments
-    user_task_args_t & user_task_args =
-      *(reinterpret_cast<user_task_args_t *>(task->args));
+    task_args_t & task_args =
+      *(reinterpret_cast<task_args_t *>(task->args));
 
     // Push the Legion state
     context_t::instance().push_state(KEY, context, runtime, task, regions);
 
     handle_args_ handle_args(runtime, context, regions);
-    handle_args.walk(user_task_args);
+    handle_args.walk(task_args);
 
     // FIXME: NEED TO HANDLE RETURN TYPES
     // Execute the user's task
-    (*DELEGATE)(user_task_args);
+    (*DELEGATE)(task_args);
 
     // Pop the Legion state
     context_t::instance().pop_state(KEY);
