@@ -79,6 +79,13 @@ struct task_hash_key_t : public std::tuple<uintptr_t, processor_t, launch_t>
     return std::get<2>(*this);
   } // bitset
 
+  bool
+  operator<(const task_hash_key_t& k)
+  const
+  {
+    return address() < k.address();
+  }
+
 }; // struct task_hash_key_t
 
 ///
