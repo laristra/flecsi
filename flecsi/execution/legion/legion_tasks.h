@@ -58,6 +58,9 @@ inline return_type task_name(                                                  \
 __flecsi_internal_legion_task(spmd_task, void) {
   const int my_color = task->index_point.point_data[0];
 
+  // spmd_task is an inner task
+  runtime->unmap_all_regions(ctx);
+
   {
   clog_tag_guard(legion_tasks);
   clog(info) << "Executing spmd task " << my_color << std::endl;
@@ -84,14 +87,20 @@ __flecsi_internal_legion_task(spmd_task, void) {
 
   context_.set_pbarriers_as_masters(pbarriers_as_master);
 
-  size_t region_index = 0;
+  std::vector<Legion::PhaseBarrier*> ghost_owners_pbarriers;
+
   for (size_t handle_idx = 0; handle_idx < num_handles; handle_idx++) {
 
     Legion::PhaseBarrier* ghost_owners_pbarriers_buf = (Legion::PhaseBarrier*)
         malloc(sizeof(Legion::PhaseBarrier) * num_owners[handle_idx]);
     args_deserializer.deserialize((void*)ghost_owners_pbarriers_buf, sizeof(Legion::PhaseBarrier) * num_owners[handle_idx]);
 
+    ghost_owners_pbarriers.push_back(ghost_owners_pbarriers_buf); // FIXME free and clear after driver
     context_.push_ghost_owners_pbarriers(ghost_owners_pbarriers_buf);
+  }
+
+  size_t region_index = 0;
+  for (size_t handle_idx = 0; handle_idx < num_handles; handle_idx++) {
 
     context_.push_color_region(regions[region_index].get_logical_region());
 
@@ -127,6 +136,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
 
     Legion::LogicalPartition primary_ghost_lp = runtime->get_logical_partition(ctx,
         regions[region_index].get_logical_region(), primary_ghost_ip);
+    region_index++;
 
     context_.push_primary_lr(runtime->get_logical_subregion_by_color(ctx,
       primary_ghost_lp, PRIMARY_PART));
@@ -155,6 +165,24 @@ __flecsi_internal_legion_task(spmd_task, void) {
 
     context_.push_shared_lr(runtime->get_logical_subregion_by_color(ctx,
       excl_shared_lp, SHARED_PART));
+
+    // Add neighbors regions to context_
+
+    // Fix ghost reference/pointer to point to compacted position of shared that it needs
+    //auto fix_ghost_refs_id = __flecsi_internal_task_key(fix_ghost_refs_task, loc);
+    //Legion::TaskLauncher fix_ghost_refs_launcher(context_.task_id(fix_ghost_refs_id),
+    //    Legion::TaskArgument(nullptr, 0));
+
+    //fix_ghost_refs_launcher.add_region_requirement(
+    //    Legion::RegionRequirement(context_.get_ghost_lr(handle_idx), READ_WRITE,
+    //        EXCLUSIVE, context_.get_color_lr(handle_idx))
+    //    .add_field(42)); // FIXME use registration not magic number
+
+    //fix_ghost_refs_launcher.add_future(Legion::Future::from_value(runtime,
+    //    [handle_idx].global_to_local_shard_map));
+
+
+
   } // for handle_idx
 
   // Get the input arguments from the Legion runtime
@@ -165,12 +193,14 @@ __flecsi_internal_legion_task(spmd_task, void) {
   context_t::instance().push_state(utils::const_string_t{"driver"}.hash(),
     ctx, runtime, task, regions);
 
-
   // run default or user-defined driver 
   driver(args.argc, args.argv); 
 
   // Set the current task context to the driver
   context_t::instance().pop_state(utils::const_string_t{"driver"}.hash());
+
+  // FIXME free all malloc, vectors, etc.
+
 } // spmd_task
 
 //----------------------------------------------------------------------------//
