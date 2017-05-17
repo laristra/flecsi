@@ -451,6 +451,36 @@ struct legion_execution_policy_t
   //--------------------------------------------------------------------------//
 
   template<
+    size_t KEY,
+    size_t PROCESSOR,
+    typename RETURN,
+    typename ARG_TUPLE,
+    RETURN (*DELEGATE)(ARG_TUPLE)
+  >
+  static
+  bool
+  new_register_task(
+    launch_t launch,
+    std::string name
+  )
+  {
+    using wrapper_t =
+      new_task_wrapper__<KEY, PROCESSOR, RETURN, ARG_TUPLE, DELEGATE>;
+
+    if(!context_t::instance().new_register_task(KEY, PROCESSOR, name,
+      wrapper_t::registration_callback)) {
+      clog(fatal) << "callback registration failed for " << name << std::endl;
+    } // if
+
+    return true;
+  } // register_task
+
+  //--------------------------------------------------------------------------//
+  //! Legion backend task registration. For documentation on this
+  //! method, please see task__::register_task.
+  //--------------------------------------------------------------------------//
+
+  template<
     typename RETURN,
     typename ARG_TUPLE,
     RETURN (*DELEGATE)(ARG_TUPLE),
@@ -499,7 +529,6 @@ struct legion_execution_policy_t
 
     return true;
   } // register_task
-
   //--------------------------------------------------------------------------//
   //! Legion backend task registration. For documentation on this
   //! method, please see task__::register_task.
@@ -622,6 +651,134 @@ struct legion_execution_policy_t
       clog(fatal) << "unsupported task type" << std::endl;
     } // if
   } // execute_functor_task
+
+  //--------------------------------------------------------------------------//
+  //! Legion backend task execution. For documentation on this
+  //! method, please see task__::execute_task.
+  //--------------------------------------------------------------------------//
+
+  template<
+    size_t KEY,
+    typename RETURN,
+    typename ... ARGS
+  >
+  static
+  decltype(auto)
+  new_execute_task(
+    launch_type_t launch,
+    size_t parent,
+    ARGS && ... args
+  )
+  {
+    using namespace Legion;
+
+    // Make a tuple from the task arguments.
+    auto task_args = std::make_tuple(args ...);
+    using task_args_t = decltype(task_args);
+
+    // Get the runtime and context from the calling task.
+    context_t & context_ = context_t::instance();
+    auto legion_runtime = context_.runtime(parent);
+    auto legion_context = context_.context(parent);
+
+    // Handle MPI and Legion invocations separately.
+    if(context_.processor_type<KEY>() == processor_type_t::mpi) {
+      {
+      clog_tag_guard(execution);
+      clog(info) << "Executing MPI task: " << KEY << std::endl;
+      }
+
+      ArgumentMap arg_map;
+      IndexLauncher launcher(
+        context_.task_id<KEY>(),
+        Legion::Domain::from_rect<1>(context_.all_processes()),
+        TaskArgument(&task_args, sizeof(task_args_t)),
+        arg_map
+      );
+
+      // Enqueue the MPI task.
+      auto future =
+        legion_runtime->execute_index_space(legion_context, launcher);
+      future.wait_all_results();
+
+      // Handoff to the MPI runtime.
+      context_.handoff_to_mpi(legion_context, legion_runtime);
+
+      // Wait for MPI to finish execution (synchronous).
+      context_.wait_on_mpi(legion_context, legion_runtime);
+      
+      // Reset the calling state to false.
+      context_.unset_call_mpi(legion_context, legion_runtime);
+
+      return legion_future__<RETURN>(future);
+    }
+    else {
+      // Initialize the arguments to pass through the runtime.
+      init_args_t init_args(legion_runtime, legion_context);
+      init_args.walk(task_args);
+
+      // Switch on launch type: single or index.
+      switch(launch) {
+
+        case launch_type_t::single:
+          {
+          clog_tag_guard(execution);
+          clog(info) << "Executing single task: " << KEY << std::endl;
+
+          // Create a task launcher, passing the task arguments.
+          TaskLauncher task_launcher(context_.task_id<KEY>(),
+            TaskArgument(&task_args, sizeof(task_args_t)));
+
+          // Enqueue the prolog.
+          task_prolog_t
+            task_prolog(legion_runtime, legion_context, task_launcher);
+          task_prolog.walk(task_args);
+
+          // Enqueue the task.
+          auto future = context_.runtime(parent)->execute_task(
+            context_.context(parent), task_launcher);
+
+          // Enqueue the epilog.
+          task_epilog_t
+            task_epilog(legion_runtime, legion_context);
+          task_epilog.walk(task_args);
+
+          return legion_future__<RETURN>(future);
+          } // scope
+
+        case launch_type_t::index:
+          {
+          clog_tag_guard(execution);
+          clog(info) << "Executing index task: " << KEY << std::endl;
+
+          // FIXME:
+          // FIXME: This looks incomplete!
+          // FIXME:
+          //FIXME: get launch domain from partitioning of the data used in
+          // the task following launch domeing calculation is temporary:
+          LegionRuntime::Arrays::Rect<1> launch_bounds(
+            LegionRuntime::Arrays::Point<1>(0),
+            LegionRuntime::Arrays::Point<1>(5));
+          Domain launch_domain = Domain::from_rect<1>(launch_bounds);
+
+          LegionRuntime::HighLevel::ArgumentMap arg_map;
+          LegionRuntime::HighLevel::IndexLauncher index_launcher(
+            context_.task_id<KEY>(), launch_domain,
+            TaskArgument(&task_args, sizeof(task_args_t)), arg_map);
+
+          // Enqueue the task.
+          auto future = context_.runtime(parent)->execute_index_space(
+            context_.context(parent), index_launcher);
+
+          return legion_future__<RETURN>(future);
+          } // scope
+
+        default:
+          clog(fatal) << "invalid launch type" << std::endl;
+
+      } // switch
+    } // if
+  } // execute_task
 
   //--------------------------------------------------------------------------//
   //! Legion backend task execution. For documentation on this

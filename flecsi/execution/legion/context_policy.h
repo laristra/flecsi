@@ -362,6 +362,35 @@ struct legion_context_policy_t
   using unique_tid_t = utils::unique_id_t<task_id_t>;
 
   //--------------------------------------------------------------------------//
+  //! Register a task with the runtime.
+  //!
+  //! @param key       The task hash key.
+  //! @param name      The task name string.
+  //! @param call_back The registration call back function.
+  //--------------------------------------------------------------------------//
+
+  bool
+  new_register_task(
+    size_t key,
+    processor_type_t type,
+    std::string & name,
+    const registration_function_t & callback
+  )
+  {
+    clog(info) << "Registering task callback " << name << " with key " <<
+      key << " and variant " << std::endl;
+
+
+    clog_assert(new_task_registry_.find(key) == new_task_registry_.end(),
+      "task key already exists");
+
+    new_task_registry_[key] = std::make_tuple(unique_tid_t::instance().next(),
+      size_t(type), callback, name);
+
+    return true;
+  } // register_task
+
+  //--------------------------------------------------------------------------//
   //! Register a task variant with the runtime.
   //!
   //! @param key       The task hash key.
@@ -433,6 +462,31 @@ struct legion_context_policy_t
   //! @param key The task hash key.
   //--------------------------------------------------------------------------//
 
+  template<
+    size_t KEY
+  >
+  task_id_t
+  task_id()
+  {
+    {
+    clog_tag_guard(context);
+    clog(info) << "Returning task id for " << KEY << std::endl;
+    }
+
+    auto task_entry = new_task_registry_.find(KEY);
+
+    clog_assert(task_entry != new_task_registry_.end(),
+      "task key " << KEY << " does not exist");
+
+    return std::get<0>(task_entry->second);
+  } // task_id
+
+  //--------------------------------------------------------------------------//
+  //! Return the task id for the task identified by \em key.
+  //!
+  //! @param key The task hash key.
+  //--------------------------------------------------------------------------//
+
   task_id_t
   task_id(
     task_hash_key_t key
@@ -459,6 +513,31 @@ struct legion_context_policy_t
       "task variant does not exist: " << key);
 
     return std::get<0>(variant->second);
+  } // task_id
+
+  //--------------------------------------------------------------------------//
+  //! Return the processor type for the task identified by \em key.
+  //!
+  //! @param key The task hash key.
+  //--------------------------------------------------------------------------//
+
+  template<
+    size_t KEY
+  >
+  processor_type_t
+  processor_type()
+  {
+    {
+    clog_tag_guard(context);
+    clog(info) << "Returning processor type for " << KEY << std::endl;
+    }
+
+    auto task_entry = new_task_registry_.find(KEY);
+
+    clog_assert(task_entry != new_task_registry_.end(),
+      "task key " << KEY << " does not exist");
+
+    return size_t(std::get<1>(task_entry->second));
   } // task_id
 
   //--------------------------------------------------------------------------//
@@ -874,10 +953,22 @@ private:
 
   // Define the map type used to store user and pure task registrations
   std::map<
-    task_hash_key_t,  // key
-    task_value_t         // value
+    task_hash_key_t,
+    task_value_t
   > task_registry_;
 
+  // Map to store task registration callback methods.
+  std::map<
+    size_t,
+    std::tuple<
+      task_id_t,
+      size_t,
+      registration_function_t,
+      std::string
+    >
+  > new_task_registry_;
+
+#if 0
   // Define the map type used to store MPI task registrations
   std::unordered_map<
     size_t,
@@ -887,6 +978,7 @@ private:
       std::string
     >
   > mpi_task_registry_;
+#endif
 
   //--------------------------------------------------------------------------//
   // Function data members.
@@ -912,6 +1004,7 @@ private:
   //--------------------------------------------------------------------------//
   // Legion data members within SPMD task.
   //--------------------------------------------------------------------------//
+
   Legion::PhaseBarrier* pbarriers_as_masters_;
   std::vector<Legion::PhaseBarrier*> ghost_owners_pbarriers_;
   std::vector<std::vector<Legion::LogicalRegion>> ghost_owners_lregions_;

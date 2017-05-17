@@ -8,6 +8,7 @@
 #include "flecsi/execution/default_driver.h"
 #include "flecsi/execution/common/processor.h"
 
+using namespace flecsi;
 using namespace flecsi::execution;
 using namespace flecsi::utils;
 

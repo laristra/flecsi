@@ -37,13 +37,13 @@ void task1(){
 
 }
 
-flecsi_register_task(task1, loc, single);
+flecsi_register_task(task1, flecsi::loc, flecsi::single);
 
 void task2(){
   
 }
 
-flecsi_register_task(task2, loc, single);
+flecsi_register_task(task2, flecsi::loc, flecsi::single);
 
 /*----------------------------------------------------------------------------*
  * Cinch test Macros

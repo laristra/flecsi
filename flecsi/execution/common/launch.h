@@ -14,6 +14,24 @@
 #include <bitset>
 
 namespace flecsi {
+
+///
+/// Bitmasks for launch types.
+///
+/// \note This enumeration is not scoped so that users can do things
+///       like:
+///       \code
+///       launch_t l(single | leaf);
+///       \endcode
+///
+enum launch_mask_t : size_t {
+  single     = 1 << 0,
+  index      = 1 << 1,
+  leaf       = 1 << 2,
+  inner      = 1 << 3,
+  idempotent = 1 << 4
+}; // enum launch_mask_t
+
 namespace execution {
 
 // This will be used by the task_hash_t type to create hash keys for
@@ -42,23 +60,6 @@ enum class launch_type_t : size_t {
   inner,
   idempotent
 }; // enum launch_type_t
-
-///
-/// Bitmasks for launch types.
-///
-/// \note This enumeration is not scoped so that users can do things
-///       like:
-///       \code
-///       launch_t l(single | leaf);
-///       \endcode
-///
-enum launch_mask_t : size_t {
-  single     = 1 << 0,
-  index      = 1 << 1,
-  leaf       = 1 << 2,
-  inner      = 1 << 3,
-  idempotent = 1 << 4
-}; // enum launch_mask_t
 
 ///
 /// Macro to create repetitive interfaces.

@@ -47,7 +47,7 @@ clog_register_tag(execution);
   /* Call the execution policy to register the task */                         \
   bool task_t ## _task_registered =                                            \
     flecsi::execution::task_model_t::register_functor_task<task_t>             \
-    (flecsi::execution::task_hash_t::make_key(typeid(task_t).hash_code(),     \
+    (flecsi::execution::task_hash_t::make_key(typeid(task_t).hash_code(),      \
     processor, launch), { EXPAND_AND_STRINGIFY(task_t) })
 
 //----------------------------------------------------------------------------//
@@ -87,7 +87,7 @@ clog_register_tag(execution);
       task ## _trt_t, task ## _tat_t, task ## _tuple_delegate,                 \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()>        \
     (flecsi::execution::task_hash_t::make_key(reinterpret_cast<uintptr_t>(     \
-    &task), flecsi::execution::processor, flecsi::execution::launch), { EXPAND_AND_STRINGIFY(task) })
+    &task), processor, launch), { EXPAND_AND_STRINGIFY(task) })
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_register_mpi_task

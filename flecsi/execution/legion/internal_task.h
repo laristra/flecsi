@@ -43,7 +43,7 @@
 //----------------------------------------------------------------------------//
 //! @def __flecsi_internal_register_legion_task
 //!
-//! This macro registers a internal Legion task.
+//! This macro registers an internal Legion task.
 //!
 //! @param task      The Legion task to register.
 //! @param processor A processor_mask_t specifying the supported processor
