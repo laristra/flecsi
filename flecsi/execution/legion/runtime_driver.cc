@@ -69,7 +69,7 @@ runtime_driver(
 #endif // FLECSI_ENABLE_SPECIALIZATION_DRIVER
 
   // Register user data
-  //data::storage_t::instance().register_all();
+  data::storage_t::instance().register_all();
 
   auto & data_client_registry =
     flecsi::data::storage_t::instance().data_client_registry(); 
@@ -127,11 +127,25 @@ runtime_driver(
     runtime->attach_name(expanded_is, buf);
     expanded_ispaces_map[handle_idx.first] = expanded_is;
 
+    // Get field info for this index space
+    auto fitr = context_.field_info_map().find(handle_idx.first);
+
     // Read user + FleCSI registered field spaces
     Legion::FieldSpace expanded_fs = runtime->create_field_space(ctx);
+   
+    if(fitr != context_.field_info_map().end())
     {
-      Legion::FieldAllocator allocator = runtime->create_field_allocator(ctx, expanded_fs);
-      allocator.allocate_field(sizeof(LegionRuntime::Arrays::Point<2>), 42); // FIXME use registration
+      auto& field_map = fitr->second;
+
+      Legion::FieldAllocator allocator = 
+        runtime->create_field_allocator(ctx, expanded_fs);
+
+      // Allocate all fields on this index space
+      for(auto& aitr : field_map){
+        const context_t::field_info_t& fi = aitr.second;
+        allocator.allocate_field(fi.size, aitr.first);
+      }
+
     }
     sprintf(buf, "expanded field space %ld", handle_idx.first);
     runtime->attach_name(expanded_fs, buf);
@@ -246,6 +260,10 @@ runtime_driver(
         Legion::LogicalRegion ghost_owner_lr = runtime->get_logical_subregion_by_color(ctx,
             color_lp, ghost_owner);
 
+        const LegionRuntime::Arrays::coord_t owner_color = ghost_owner;
+        const bool is_mutable = false;
+        runtime->attach_semantic_information(ghost_owner_lr, OWNER_COLOR_TAG, (void*)&owner_color,
+            sizeof(LegionRuntime::Arrays::coord_t), is_mutable);
         spmd_launcher.add_region_requirement(
           Legion::RegionRequirement(ghost_owner_lr, READ_ONLY, SIMULTANEOUS, expanded_lregions_map[handle])
           .add_flags(NO_ACCESS_FLAG)
