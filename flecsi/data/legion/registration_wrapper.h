@@ -49,7 +49,7 @@ struct registration_wrapper_t
     
     execution::context_t::field_info_t fi;
 
-    fi.data_client_hash = typeid(fi).hash_code();
+    fi.data_client_hash = typeid(DATA_CLIENT_TYPE).hash_code();
     fi.storage_type = STORAGE_TYPE;
     fi.size = sizeof(DATA_TYPE);
     fi.namespace_hash = NAMESPACE_HASH;

@@ -127,6 +127,7 @@ runtime_driver(
     runtime->attach_name(expanded_is, buf);
     expanded_ispaces_map[handle_idx.first] = expanded_is;
 
+    // Get field info for this index space
     auto fitr = context_.field_info_map().find(handle_idx.first);
 
     // Read user + FleCSI registered field spaces
@@ -136,10 +137,12 @@ runtime_driver(
     {
       auto& field_map = fitr->second;
 
-      Legion::FieldAllocator allocator = runtime->create_field_allocator(ctx, expanded_fs);
+      Legion::FieldAllocator allocator = 
+        runtime->create_field_allocator(ctx, expanded_fs);
 
-      for(auto aitr : field_map){
-        context_t::field_info_t& fi = aitr.second;
+      // Allocate all fields on this index space
+      for(auto& aitr : field_map){
+        const context_t::field_info_t& fi = aitr.second;
         allocator.allocate_field(fi.size, aitr.first);
       }
 

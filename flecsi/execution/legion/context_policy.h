@@ -869,6 +869,9 @@ struct legion_context_policy_t
     copy_task_map_t copy_task_map;
   };
 
+  //--------------------------------------------------------------------------//
+  // Gathers info about registered data fields.
+  //--------------------------------------------------------------------------//
   struct field_info_t{
     size_t data_client_hash;
     size_t storage_type;
@@ -880,6 +883,13 @@ struct legion_context_policy_t
 
   using field_id_t = LegionRuntime::HighLevel::FieldID;
 
+  //--------------------------------------------------------------------------//
+  //! Put field info for index space and field id.
+  //!
+  //! @param index_space virtual index space
+  //! @param field allocated field id
+  //! @param field_info field info as registered 
+  //--------------------------------------------------------------------------//
   void
   put_field_info(
     size_t index_space,
@@ -890,6 +900,9 @@ struct legion_context_policy_t
     field_info_map_[index_space].emplace(fid, field_info);
   }
 
+  //--------------------------------------------------------------------------//
+  //! Get registered field info map for read access.
+  //--------------------------------------------------------------------------//
   const std::map<size_t, std::map<field_id_t, field_info_t>>&
   field_info_map()
   const
@@ -951,7 +964,7 @@ private:
   std::function<void()> mpi_task_;
   bool mpi_active_ = false;
 
-  // Field map, key = index space
+  // Field map, key1 = index space, key2 = fid
   std::map<size_t, std::map<field_id_t, field_info_t>> field_info_map_;
 
   //--------------------------------------------------------------------------//
