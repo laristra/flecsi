@@ -46,7 +46,17 @@ struct registration_wrapper_t
   {
     clog_tag_guard(registration);
     clog(info) << "In register_callback" << std::endl;
-    // Do stuff
+    
+    execution::context_t::field_info_t fi;
+
+    fi.data_client_hash = typeid(fi).hash_code();
+    fi.storage_type = STORAGE_TYPE;
+    fi.size = sizeof(DATA_TYPE);
+    fi.namespace_hash = NAMESPACE_HASH;
+    fi.name_hash = NAME_HASH;
+    fi.versions = VERSIONS;
+
+    execution::context_t::instance().put_field_info(INDEX_SPACE, fid, fi);
   } // register_callback
 
 }; // class registration_wrapper_t

@@ -188,7 +188,7 @@ protected:
 
   // Data client registration map
   std::unordered_map<size_t, client_value_t> data_client_registry_;
-
+  
 }; // struct legion_storage_policy_t
 
 } // namespace data

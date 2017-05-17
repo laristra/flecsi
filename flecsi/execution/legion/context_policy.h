@@ -869,6 +869,34 @@ struct legion_context_policy_t
     copy_task_map_t copy_task_map;
   };
 
+  struct field_info_t{
+    size_t data_client_hash;
+    size_t storage_type;
+    size_t size;
+    size_t namespace_hash;
+    size_t name_hash;
+    size_t versions;
+  };
+
+  using field_id_t = LegionRuntime::HighLevel::FieldID;
+
+  void
+  put_field_info(
+    size_t index_space,
+    field_id_t fid,
+    const field_info_t& field_info
+  )
+  {
+    field_info_map_[index_space].emplace(fid, field_info);
+  }
+
+  const std::map<size_t, std::map<field_id_t, field_info_t>>&
+  field_info_map()
+  const
+  { 
+    return field_info_map_;
+  }
+
 private:
 
   //--------------------------------------------------------------------------//
@@ -922,6 +950,9 @@ private:
 
   std::function<void()> mpi_task_;
   bool mpi_active_ = false;
+
+  // Field map, key = index space
+  std::map<size_t, std::map<field_id_t, field_info_t>> field_info_map_;
 
   //--------------------------------------------------------------------------//
   // Legion data members within SPMD task.
