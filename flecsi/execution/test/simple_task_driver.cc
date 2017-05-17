@@ -49,6 +49,9 @@ void driver(int argc, char ** argv) {
 
   f.wait();
 
+//FIXME IRINA
+//  auto f2 = flecsi_execute_task(task, loc, index, alpha, 5);
+
   clog(info) << "Task return: " << f.get() << std::endl;
 } // driver
 

@@ -9,6 +9,7 @@
 ///
 
 #include <cinchlog.h>
+#include <cinchtest.h>
 
 #include "flecsi/execution/execution.h"
 #include "flecsi/execution/context.h"
@@ -373,6 +374,12 @@ void driver(int argc, char ** argv) {
 
 } // namespace execution
 } // namespace flecsi
+
+
+TEST(ghost_access, testname) {
+
+} // TEST
+
 
 /*~------------------------------------------------------------------------~--*
  * Formatting options for vim.
