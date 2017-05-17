@@ -246,6 +246,10 @@ runtime_driver(
         Legion::LogicalRegion ghost_owner_lr = runtime->get_logical_subregion_by_color(ctx,
             color_lp, ghost_owner);
 
+        const LegionRuntime::Arrays::coord_t owner_color = ghost_owner;
+        const bool is_mutable = false;
+        runtime->attach_semantic_information(ghost_owner_lr, OWNER_COLOR_TAG, (void*)&owner_color,
+            sizeof(LegionRuntime::Arrays::coord_t), is_mutable);
         spmd_launcher.add_region_requirement(
           Legion::RegionRequirement(ghost_owner_lr, READ_ONLY, SIMULTANEOUS, expanded_lregions_map[handle])
           .add_flags(NO_ACCESS_FLAG)

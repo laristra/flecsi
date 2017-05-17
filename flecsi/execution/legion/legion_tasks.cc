@@ -88,7 +88,7 @@ __flecsi_internal_register_legion_task(compaction_task, loc, index | leaf);
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
-//__flecsi_internal_register_legion_task(fix_ghost_refs_task, loc, index | leaf);
+__flecsi_internal_register_legion_task(fix_ghost_refs_task, loc, index | leaf);
 
 } // namespace execution 
 } // namespace flecsi

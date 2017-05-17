@@ -27,6 +27,7 @@
 
 #include <cinchlog.h>
 #include <legion.h>
+#include <legion_stl.h>
 
 #if !defined(ENABLE_MPI)
   #error ENABLE_MPI not defined! This file depends on MPI!
@@ -619,6 +620,19 @@ struct legion_context_policy_t
   }
 
   //--------------------------------------------------------------------------//
+  //! Push global_to_local_color_map
+  //!
+  //! @param ghost_owners_lregions ghost owners logical regions
+  //--------------------------------------------------------------------------//
+  void
+  push_global_to_local_color_map(
+      Legion::STL::map<LegionRuntime::Arrays::coord_t, LegionRuntime::Arrays::coord_t> global_to_local_map
+  )
+  {
+    global_to_local_color_map_.push_back(global_to_local_map);
+  }
+
+  //--------------------------------------------------------------------------//
   //! Return phase barriers for ghost owners.
   //!
   //! @param index_space virtual index space
@@ -915,6 +929,7 @@ private:
   Legion::PhaseBarrier* pbarriers_as_masters_;
   std::vector<Legion::PhaseBarrier*> ghost_owners_pbarriers_;
   std::vector<std::vector<Legion::LogicalRegion>> ghost_owners_lregions_;
+  std::vector<Legion::STL::map<LegionRuntime::Arrays::coord_t, LegionRuntime::Arrays::coord_t>> global_to_local_color_map_;
   std::vector<Legion::LogicalRegion> color_regions_;
   std::vector<Legion::IndexPartition> primary_ghost_ips_;
   std::vector<Legion::LogicalRegion> primary_lrs_;
