@@ -344,7 +344,6 @@ struct functor_task_wrapper__
 
 template<
   size_t KEY,
-  size_t PROCESSOR,
   typename RETURN,
   typename ARG_TUPLE,
   RETURN (*DELEGATE)(ARG_TUPLE)
@@ -378,6 +377,7 @@ struct new_task_wrapper__
   void
   registration_callback(
     task_id_t tid,
+    processor_type_t processor,
     launch_t launch,
     std::string & name
   )
@@ -392,7 +392,7 @@ struct new_task_wrapper__
     Legion::TaskConfigOptions config_options{ launch_leaf(launch),
       launch_inner(launch), launch_idempotent(launch) };
 
-    switch(processor_type_t(PROCESSOR)) {
+    switch(processor) {
       case processor_type_t::loc:
         {
         clog_tag_guard(wrapper);
@@ -512,7 +512,7 @@ template<
   RETURN (*DELEGATE)(ARG_TUPLE),
   size_t KEY
 >
-struct task_wrapper__
+struct old_task_wrapper__
 {
   //--------------------------------------------------------------------------//
   //! The task_args_t type defines a task argument type for task
@@ -658,7 +658,7 @@ struct task_wrapper__
     context_t::instance().set_mpi_state(true);
   } // execute_mpi_task
 
-}; // struct task_wrapper__
+}; // struct old_task_wrapper__
 
 } // namespace execution
 } // namespace flecsi

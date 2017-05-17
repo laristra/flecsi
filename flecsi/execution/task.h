@@ -111,12 +111,13 @@ struct task_model__
   //! Register a user task with the FleCSI runtime.
   //!
   //! @tparam KEY       A hash key identifying the task.
-  //! @tparam PROCESSOR A hash key identifying the processor type.
   //! @tparam RETURN    The return type of the user task.
   //! @tparam ARG_TUPLE A std::tuple of the user task arguments.
   //! @tparam DELEGATE  The delegate function that invokes the user task.
   //!
-  //! @param name The string identifier of the task.
+  //! @param processor The processor type.
+  //! @param launch    The launch flags.
+  //! @param name      The string identifier of the task.
   //!
   //! @return The return type for task registration is determined by
   //!         the specific backend runtime being used.
@@ -124,7 +125,6 @@ struct task_model__
 
   template<
     size_t KEY,
-    size_t PROCESSOR,
     typename RETURN,
     typename ARG_TUPLE,
     RETURN (*DELEGATE)(ARG_TUPLE)
@@ -132,11 +132,13 @@ struct task_model__
   static
   decltype(auto)
   new_register_task(
+    processor_type_t processor,
+    launch_t launch,
     std::string name
   )
   {
-    return EXECUTION_POLICY::template register_task<
-      KEY, PROCESSOR, RETURN, ARG_TUPLE, DELEGATE>(name);
+    return EXECUTION_POLICY::template new_register_task<
+      KEY, RETURN, ARG_TUPLE, DELEGATE>(processor, launch, name);
   } // register_task
 
   //--------------------------------------------------------------------------//
@@ -242,10 +244,11 @@ struct task_model__
   //! @tparam RETURN The return type of the task.
   //! @tparam ARGS The task arguments.
   //!
-  //! @param key A \ref task_hash_t key that uniquely identifies the
-  //!            calling task.
+  //! @param key    A \ref task_hash_t key that uniquely identifies the
+  //!               calling task.
+  //! @param launch The launch mode for this task execution.
   //! @param parent A hash key that uniquely identifies the calling task.
-  //! @param args The arguments to pass to the user task during execution.
+  //! @param args   The arguments to pass to the user task during execution.
   //--------------------------------------------------------------------------//
 
   template<
@@ -256,12 +259,13 @@ struct task_model__
   static
   decltype(auto)
   new_execute_task(
+    launch_type_t launch,
     size_t parent,
     ARGS &&... args
   )
   {
-    return EXECUTION_POLICY::template execute_task<KEY, RETURN>(
-      parent, std::forward<ARGS>(args) ...);
+    return EXECUTION_POLICY::template new_execute_task<KEY, RETURN>(
+      launch, parent, std::forward<ARGS>(args) ...);
   } // execute_task
 
   //--------------------------------------------------------------------------//

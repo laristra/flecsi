@@ -67,6 +67,15 @@ legion_context_policy_t::initialize(
     } // for
   } // for
 
+  // New register tasks
+  for(auto & t: new_task_registry_) {
+    std::get<4>(t.second)(
+      std::get<0>(t.second) /* tid */,
+      std::get<1>(t.second) /* processor */,
+      std::get<2>(t.second) /* launch */,
+      std::get<3>(t.second) /* name */);
+  } // for
+
   // Intialize MPI/Legion interoperability layer.
   handshake_ = Legion::Runtime::create_handshake(
     true, // MPI has initial control

@@ -56,6 +56,46 @@ clog_register_tag(execution);
 //! This macro registers a user task with the FleCSI runtime.
 //!
 //! @param task      The task to register. This is normally just a function.
+//! @param processor The \ref processor_type_t type.
+//! @param launch    The \ref launch_t type. This may be an \em or list of
+//!                  supported launch types and configuration options.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
+#define flecsi_new_register_task(task, processor, launch)                      \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  /* Task return type (trt) */                                                 \
+  using task ## _trt_t =                                                       \
+    typename flecsi::utils::function_traits__<decltype(task)>::return_type;    \
+                                                                               \
+  /* Task arguments type (tat) */                                              \
+  using task ## _tat_t =                                                       \
+    typename flecsi::utils::function_traits__<decltype(task)>::arguments_type; \
+                                                                               \
+  /* Define a delegate function to the user's function that takes a tuple */   \
+  /* of the arguments (as opposed to the raw argument pack) */                 \
+  inline task ## _trt_t task ## _tuple_delegate(task ## _tat_t args) {         \
+    return flecsi::utils::tuple_function(task, args);                          \
+  } /* delegate task */                                                        \
+                                                                               \
+  /* Call the execution policy to register the task delegate */                \
+  bool task ## _task_registered =                                              \
+    flecsi::execution::task_model_t::new_register_task<                        \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
+      task ## _trt_t,                                                          \
+      task ## _tat_t,                                                          \
+      task ## _tuple_delegate                                                  \
+      >                                                                        \
+    (processor, launch, { EXPAND_AND_STRINGIFY(task) })
+
+//----------------------------------------------------------------------------//
+//! @def flecsi_register_task
+//!
+//! This macro registers a user task with the FleCSI runtime.
+//!
+//! @param task      The task to register. This is normally just a function.
 //! @param processor The \ref processor_t type. This may be an \em or list
 //!                  of supported processor types.
 //! @param launch    The \ref launch_t type. This may be an \em or list of
@@ -103,6 +143,33 @@ clog_register_tag(execution);
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   flecsi_register_task(task, mpi, index)
+
+//----------------------------------------------------------------------------//
+//! @def flecsi_execute_task
+//!
+//! This macro executes a user task.
+//!
+//! @param task The user task to execute.
+//! @param processor The processor type on which to execute the task.
+//! @param launch The launch mode for the task.
+//! @param ... The arguments to pass to the user task during execution.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
+#define flecsi_new_execute_task(task, launch, ...)                             \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  /* Execute the user task */                                                  \
+  /* WARNING: This macro returns a future. Don't add terminations! */          \
+  flecsi::execution::task_model_t::new_execute_task<                           \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),          \
+    typename flecsi::utils::function_traits__<decltype(task)>::return_type     \
+  >                                                                            \
+  (                                                                            \
+    flecsi::execution::mask_to_type(launch),                                   \
+    flecsi::utils::const_string_t{__func__}.hash(), ## __VA_ARGS__             \
+  )
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_execute_task

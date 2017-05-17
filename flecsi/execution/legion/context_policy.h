@@ -372,20 +372,20 @@ struct legion_context_policy_t
   bool
   new_register_task(
     size_t key,
-    processor_type_t type,
+    processor_type_t processor,
+    launch_t launch,
     std::string & name,
     const registration_function_t & callback
   )
   {
     clog(info) << "Registering task callback " << name << " with key " <<
-      key << " and variant " << std::endl;
-
+      key << std::endl;
 
     clog_assert(new_task_registry_.find(key) == new_task_registry_.end(),
       "task key already exists");
 
     new_task_registry_[key] = std::make_tuple(unique_tid_t::instance().next(),
-      size_t(type), callback, name);
+      processor, launch, name, callback);
 
     return true;
   } // register_task
@@ -537,7 +537,7 @@ struct legion_context_policy_t
     clog_assert(task_entry != new_task_registry_.end(),
       "task key " << KEY << " does not exist");
 
-    return size_t(std::get<1>(task_entry->second));
+    return processor_type_t(std::get<1>(task_entry->second));
   } // task_id
 
   //--------------------------------------------------------------------------//
@@ -962,9 +962,10 @@ private:
     size_t,
     std::tuple<
       task_id_t,
-      size_t,
-      registration_function_t,
-      std::string
+      processor_type_t,
+      launch_t,
+      std::string,
+      registration_function_t
     >
   > new_task_registry_;
 

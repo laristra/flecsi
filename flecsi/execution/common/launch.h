@@ -13,6 +13,8 @@
 
 #include <bitset>
 
+#include "flecsi/utils/debruijn.h"
+
 namespace flecsi {
 
 ///
@@ -39,14 +41,14 @@ namespace execution {
 // to increase the launch_bits accordingly, i.e., launch_bits must
 // be greater than or equal to the number of bits in the bitset for
 // launch_t below.
-constexpr size_t launch_bits = 4;
+constexpr size_t launch_bits = 5;
 
 ///
 /// Use a std::bitset to store launch information.
 ///
 /// \note This will most likely use 4 bytes of data for efficiency.
 ///
-using launch_t = std::bitset<5>;
+using launch_t = std::bitset<launch_bits>;
 
 ///
 /// Enumeration of various task launch types. Not all of these may be
@@ -60,6 +62,18 @@ enum class launch_type_t : size_t {
   inner,
   idempotent
 }; // enum launch_type_t
+
+///
+/// Convert a processor mask to a processor type.
+///
+inline
+launch_type_t
+mask_to_type(
+  launch_mask_t m
+)
+{
+  return static_cast<launch_type_t>(utils::debruijn32_t::index(m));
+} // mask_to_type
 
 ///
 /// Macro to create repetitive interfaces.
