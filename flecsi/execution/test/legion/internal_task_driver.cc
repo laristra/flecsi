@@ -59,9 +59,9 @@ void driver(int argc, char ** argv) {
   clog(info) << "Task ID: " << tid_2 << std::endl;
 //  clog(info) << "Task ID: " << tid_3 << std::endl;
 
-  ASSERT_EQ(tid_1, 6);
-  ASSERT_EQ(tid_2, 7);
-//  ASSERT_EQ(tid_3, 8);
+  ASSERT_EQ(tid_1, 7);
+  ASSERT_EQ(tid_2, 8);
+//  ASSERT_EQ(tid_3, 9);
 
   context_t & context_ = context_t::instance();
   size_t task_key = utils::const_string_t{"driver"}.hash();
