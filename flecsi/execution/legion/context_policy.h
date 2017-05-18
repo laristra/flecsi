@@ -27,6 +27,7 @@
 
 #include <cinchlog.h>
 #include <legion.h>
+#include <legion_stl.h>
 
 #if !defined(ENABLE_MPI)
   #error ENABLE_MPI not defined! This file depends on MPI!
@@ -698,6 +699,19 @@ struct legion_context_policy_t
   }
 
   //--------------------------------------------------------------------------//
+  //! Push global_to_local_color_map
+  //!
+  //! @param ghost_owners_lregions ghost owners logical regions
+  //--------------------------------------------------------------------------//
+  void
+  push_global_to_local_color_map(
+      Legion::STL::map<LegionRuntime::Arrays::coord_t, LegionRuntime::Arrays::coord_t> global_to_local_map
+  )
+  {
+    global_to_local_color_map_.push_back(global_to_local_map);
+  }
+
+  //--------------------------------------------------------------------------//
   //! Return phase barriers for ghost owners.
   //!
   //! @param index_space virtual index space
@@ -934,6 +948,47 @@ struct legion_context_policy_t
     copy_task_map_t copy_task_map;
   };
 
+  //--------------------------------------------------------------------------//
+  // Gathers info about registered data fields.
+  //--------------------------------------------------------------------------//
+  struct field_info_t{
+    size_t data_client_hash;
+    size_t storage_type;
+    size_t size;
+    size_t namespace_hash;
+    size_t name_hash;
+    size_t versions;
+  };
+
+  using field_id_t = LegionRuntime::HighLevel::FieldID;
+
+  //--------------------------------------------------------------------------//
+  //! Put field info for index space and field id.
+  //!
+  //! @param index_space virtual index space
+  //! @param field allocated field id
+  //! @param field_info field info as registered 
+  //--------------------------------------------------------------------------//
+  void
+  put_field_info(
+    size_t index_space,
+    field_id_t fid,
+    const field_info_t& field_info
+  )
+  {
+    field_info_map_[index_space].emplace(fid, field_info);
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Get registered field info map for read access.
+  //--------------------------------------------------------------------------//
+  const std::map<size_t, std::map<field_id_t, field_info_t>>&
+  field_info_map()
+  const
+  { 
+    return field_info_map_;
+  }
+
 private:
 
   //--------------------------------------------------------------------------//
@@ -1001,6 +1056,9 @@ private:
   std::function<void()> mpi_task_;
   bool mpi_active_ = false;
 
+  // Field map, key1 = index space, key2 = fid
+  std::map<size_t, std::map<field_id_t, field_info_t>> field_info_map_;
+
   //--------------------------------------------------------------------------//
   // Legion data members within SPMD task.
   //--------------------------------------------------------------------------//
@@ -1008,6 +1066,7 @@ private:
   Legion::PhaseBarrier* pbarriers_as_masters_;
   std::vector<Legion::PhaseBarrier*> ghost_owners_pbarriers_;
   std::vector<std::vector<Legion::LogicalRegion>> ghost_owners_lregions_;
+  std::vector<Legion::STL::map<LegionRuntime::Arrays::coord_t, LegionRuntime::Arrays::coord_t>> global_to_local_color_map_;
   std::vector<Legion::LogicalRegion> color_regions_;
   std::vector<Legion::IndexPartition> primary_ghost_ips_;
   std::vector<Legion::LogicalRegion> primary_lrs_;

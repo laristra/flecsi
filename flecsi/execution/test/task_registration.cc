@@ -45,6 +45,10 @@ void task2(){
 
 flecsi_register_task(task2, flecsi::loc, flecsi::single);
 
+class client_type{};
+
+flecsi_new_register_data(client_type, ns, pressure, double, dense, 0, 1);
+
 /*----------------------------------------------------------------------------*
  * Cinch test Macros
  *
