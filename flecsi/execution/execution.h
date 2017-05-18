@@ -87,10 +87,9 @@ clog_register_tag(execution);
 //!
 //! This macro executes a user task.
 //!
-//! @param task The user task to execute.
-//! @param processor The processor type on which to execute the task.
+//! @param task   The user task to execute.
 //! @param launch The launch mode for the task.
-//! @param ... The arguments to pass to the user task during execution.
+//! @param ...    The arguments to pass to the user task during execution.
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
@@ -115,7 +114,7 @@ clog_register_tag(execution);
 //! This macro executes an MPI task.
 //!
 //! @param task The MPI task to execute.
-//! @param ... The arguments to pass to the MPI task during execution.
+//! @param ...  The arguments to pass to the MPI task during execution.
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
@@ -135,7 +134,7 @@ clog_register_tag(execution);
 //! This macro registers a user function with the FleCSI runtime, which may
 //! then be passed as state data and executed in any task address space.
 //!
-//! @param name The function to register. This should be the plain-text
+//! @param func The function to register. This should be the plain-text
 //!             name of the function (not a string).
 //!
 //! @ingroup execution
@@ -173,7 +172,7 @@ clog_register_tag(execution);
 //! Execute a user function.
 //!
 //! @param handle The function handle.
-//! @param ... The function arguments.
+//! @param ...    The function arguments.
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
