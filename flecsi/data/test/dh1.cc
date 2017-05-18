@@ -16,7 +16,6 @@
 #include "flecsi/execution/execution.h"
 #include "flecsi/data/data.h"
 #include "flecsi/data/data_client.h"
-#include "flecsi/data/legion/data_policy.h"
 #include "flecsi/execution/legion/helper.h"
 
 #define np(X)                                                            \
@@ -47,7 +46,7 @@ void task1(handle_t<double, 0, 1, 2> x, float y) {
   np(y);
 } // task1
 
-flecsi_register_task(task1, loc, single);
+flecsi_register_task(task1, processor_type_t::loc, single);
 
 const size_t NUM_CELLS = 16;
 
@@ -57,7 +56,7 @@ public:
 };
 
 // THIS IS NEW
-flecsi_new_register_data(data_client, test, var, double, dense, 0, 2);
+//flecsi_register_data(data_client, test, var, double, dense, 0, 2);
 
 void
 driver(
@@ -82,10 +81,10 @@ driver(
   // versions
   // index space
 
-  auto h1 = 
-    flecsi_get_handle(dc, hydro, pressure, double, dense, 0);
+//  auto h1 = 
+//    flecsi_get_handle(dc, hydro, pressure, double, dense, 0);
 
-  flecsi_execute_task(task1, loc, single, h1, 3.7);
+//  flecsi_execute_task(task1, loc, single, h1, 3.7);
 
 } // driver
 

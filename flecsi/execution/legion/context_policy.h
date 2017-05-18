@@ -35,8 +35,9 @@
 
 #include <mpi.h>
 
-#include "flecsi/execution/common/task_hash.h"
 #include "flecsi/execution/legion/runtime_driver.h"
+#include "flecsi/execution/common/launch.h"
+#include "flecsi/execution/common/processor.h"
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/tuple_wrapper.h"
@@ -78,6 +79,53 @@ extern thread_local std::unordered_map<size_t,
 struct legion_context_policy_t
 {
   const size_t TOP_LEVEL_TASK_ID = 0;
+
+  //--------------------------------------------------------------------------//
+  //! The task_id_t type is used to uniquely identify tasks that have
+  //! been registered with the runtime.
+  //!
+  //! @ingroup execution
+  //--------------------------------------------------------------------------//
+
+  using task_id_t = Legion::TaskID;
+
+  //--------------------------------------------------------------------------//
+  //! The field_id_t type is used to uniquely identify data that have
+  //! been registered with the runtime.
+  //!
+  //! @ingroup execution
+  //--------------------------------------------------------------------------//
+
+  using field_id_t = Legion::FieldID;
+
+  //--------------------------------------------------------------------------//
+  //! The registration_function_t type defines a function type for
+  //! registration callbacks.
+  //--------------------------------------------------------------------------//
+
+  using registration_function_t =
+    std::function<void(task_id_t, processor_type_t, launch_t, std::string &)>;
+
+  //--------------------------------------------------------------------------//
+  //! The unique_tid_t type create a unique id generator for registering
+  //! tasks.
+  //--------------------------------------------------------------------------//
+
+  using unique_tid_t = utils::unique_id_t<task_id_t>;
+
+  //--------------------------------------------------------------------------//
+  //! The task_info_t type is a convenience type for defining the task
+  //! registration map below.
+  //--------------------------------------------------------------------------//
+
+  using task_info_t =
+    std::tuple<
+      task_id_t,
+      processor_type_t,
+      launch_t,
+      std::string,
+      registration_function_t
+    >;
 
   //--------------------------------------------------------------------------//
   // Runtime state.
@@ -339,30 +387,6 @@ struct legion_context_policy_t
   //--------------------------------------------------------------------------//
 
   //--------------------------------------------------------------------------//
-  //! The task_id_t type is used to uniquely identify tasks that have
-  //! been registered with the runtime.
-  //!
-  //! @ingroup execution
-  //--------------------------------------------------------------------------//
-
-  using task_id_t = Legion::TaskID;
-
-  //--------------------------------------------------------------------------//
-  //! The registration_function_t type defines a function type for
-  //! registration callbacks.
-  //--------------------------------------------------------------------------//
-
-  using registration_function_t =
-    std::function<void(task_id_t, processor_type_t, launch_t, std::string &)>;
-
-  //--------------------------------------------------------------------------//
-  //! The unique_tid_t type create a unique id generator for registering
-  //! tasks.
-  //--------------------------------------------------------------------------//
-
-  using unique_tid_t = utils::unique_id_t<task_id_t>;
-
-  //--------------------------------------------------------------------------//
   //! Register a task with the runtime.
   //!
   //! @param key       The task hash key.
@@ -371,94 +395,28 @@ struct legion_context_policy_t
   //--------------------------------------------------------------------------//
 
   bool
-  new_register_task(
+  register_task(
     size_t key,
-    processor_type_t type,
+    processor_type_t processor,
+    launch_t launch,
     std::string & name,
     const registration_function_t & callback
   )
   {
     clog(info) << "Registering task callback " << name << " with key " <<
-      key << " and variant " << std::endl;
+      key << std::endl;
 
-
-    clog_assert(new_task_registry_.find(key) == new_task_registry_.end(),
+    clog_assert(task_registry_.find(key) == task_registry_.end(),
       "task key already exists");
 
-    new_task_registry_[key] = std::make_tuple(unique_tid_t::instance().next(),
-      size_t(type), callback, name);
+    task_registry_[key] = std::make_tuple(unique_tid_t::instance().next(),
+      processor, launch, name, callback);
 
     return true;
   } // register_task
 
   //--------------------------------------------------------------------------//
-  //! Register a task variant with the runtime.
-  //!
-  //! @param key       The task hash key.
-  //! @param variant   The processor variant of the task.
-  //! @param name      The task name string.
-  //! @param call_back The registration call back function.
-  //--------------------------------------------------------------------------//
-
-  bool
-  register_task(
-    task_hash_key_t & key,
-    processor_type_t variant,
-    std::string & name,
-    const registration_function_t & call_back
-  )
-  {
-    clog(info) << "Registering task callback " << name << " with key " <<
-      key << " and variant " << variant << std::endl;
-
-    // Get the task entry. It is ok to create a new entry, and to have
-    // multiple variants for each entry, i.e., we don't need to check
-    // that the entry is empty.
-    auto task_entry = task_registry_[key];
-
-    // Add the variant only if it has not been defined.
-    if(task_entry.find(variant) == task_entry.end()) {
-      task_registry_[key][variant] =
-        std::make_tuple(unique_tid_t::instance().next(), call_back, name);
-      return true;
-    }
-
-    return false;
-  } // register_task
-
-#if 0
-  //--------------------------------------------------------------------------//
-  //! Register a task variant with the runtime.
-  //!
-  //! @param name      The task name string.
-  //! @param call_back The registration call back function.
-  //--------------------------------------------------------------------------//
-
-  template<
-    size_t KEY
-  >
-  bool
-  register_mpi_task(
-    std::string & name,
-    const registration_function_t & call_back
-  )
-  {
-    // Make sure that this KEY is unique.
-    clog_assert(mpi_task_registry_.find(KEY) == mpi_task_registry_.end(),
-      "MPI task has already been registered");
-
-    clog(info) << "Registering MPI task callback " << name << " with key " <<
-      KEY << " and variant " << std::endl;
-
-    mpi_task_registry_[KEY] = std::make_tuple(unique_tid_t::instance().next(),
-      call_back, name);
-
-    return true;
-  } // register_mpi_task
-#endif
-
-  //--------------------------------------------------------------------------//
-  //! Return the task id for the task identified by \em key.
+  //! Return the task registration tuple.
   //!
   //! @param key The task hash key.
   //--------------------------------------------------------------------------//
@@ -466,80 +424,79 @@ struct legion_context_policy_t
   template<
     size_t KEY
   >
-  task_id_t
-  task_id()
+  task_info_t & 
+  task_info()
   {
-    {
-    clog_tag_guard(context);
-    clog(info) << "Returning task id for " << KEY << std::endl;
-    }
+    auto task_entry = task_registry_.find(KEY);
 
-    auto task_entry = new_task_registry_.find(KEY);
-
-    clog_assert(task_entry != new_task_registry_.end(),
-      "task key " << KEY << " does not exist");
-
-    return std::get<0>(task_entry->second);
-  } // task_id
-
-  //--------------------------------------------------------------------------//
-  //! Return the task id for the task identified by \em key.
-  //!
-  //! @param key The task hash key.
-  //--------------------------------------------------------------------------//
-
-  task_id_t
-  task_id(
-    task_hash_key_t key
-  )
-  {
-    {
-    clog_tag_guard(context);
-    clog(info) << "Returning task id: " << key << std::endl;
-    }
-
-    // There is only one task variant set.
-    clog_assert(key.processor().count() == 1,
-      "multiple task variants given: " << key.processor());
-
-    // The key exists.
-    auto task_entry = task_registry_.find(key);
     clog_assert(task_entry != task_registry_.end(),
-      "task key does not exist: " << key);
+      "task key " << KEY << " does not exist");
 
-    auto mask = static_cast<processor_mask_t>(key.processor().to_ulong());
-    auto variant = task_entry->second.find(mask_to_type(mask));
-
-    clog_assert(variant != task_entry->second.end(),
-      "task variant does not exist: " << key);
-
-    return std::get<0>(variant->second);
-  } // task_id
+    return task_entry->second;
+  } // task_info
 
   //--------------------------------------------------------------------------//
-  //! Return the processor type for the task identified by \em key.
+  //! Return the task registration tuple.
   //!
   //! @param key The task hash key.
   //--------------------------------------------------------------------------//
 
-  template<
-    size_t KEY
-  >
-  processor_type_t
-  processor_type()
+  task_info_t & 
+  task_info(size_t key)
   {
-    {
-    clog_tag_guard(context);
-    clog(info) << "Returning processor type for " << KEY << std::endl;
+    auto task_entry = task_registry_.find(key);
+
+    clog_assert(task_entry != task_registry_.end(),
+      "task key " << key << " does not exist");
+
+    return task_entry->second;
+  } // task_info
+
+  //--------------------------------------------------------------------------//
+  //! FIXME
+  //!
+  //! @param key The task hash key.
+  //--------------------------------------------------------------------------//
+
+  #define task_info_template_method(name, return_type, index)                  \
+    template<size_t KEY>                                                       \
+    return_type                                                                \
+    name()                                                                     \
+    {                                                                          \
+      {                                                                        \
+      clog_tag_guard(context);                                                 \
+      clog(info) << "Returning " << #name << " for " << KEY << std::endl;      \
+      }                                                                        \
+      return std::get<index>(task_info<KEY>());                                \
     }
 
-    auto task_entry = new_task_registry_.find(KEY);
+  //--------------------------------------------------------------------------//
+  //! FIXME
+  //!
+  //! @param key The task hash key.
+  //--------------------------------------------------------------------------//
 
-    clog_assert(task_entry != new_task_registry_.end(),
-      "task key " << KEY << " does not exist");
+  #define task_info_method(name, return_type, index)                           \
+    return_type                                                                \
+    name(size_t key)                                                           \
+    {                                                                          \
+      {                                                                        \
+      clog_tag_guard(context);                                                 \
+      clog(info) << "Returning " << #name << " for " << key << std::endl;      \
+      }                                                                        \
+      return std::get<index>(task_info(key));                                  \
+    }
 
-    return size_t(std::get<1>(task_entry->second));
-  } // task_id
+  //--------------------------------------------------------------------------//
+  //! FIXME
+  //!
+  //! @param key The task hash key.
+  //--------------------------------------------------------------------------//
+
+  task_info_template_method(task_id, task_id_t, 0);
+  task_info_method(task_id, task_id_t, 0);
+  task_info_template_method(processor_type, processor_type_t, 1);
+  task_info_method(processor_type, processor_type_t, 1);
 
   //--------------------------------------------------------------------------//
   // Function interface.
@@ -648,6 +605,7 @@ struct legion_context_policy_t
   //!
   //! @param pbarriers_as_masters phase barriers buffer
   //--------------------------------------------------------------------------//
+
   void
   set_pbarriers_as_masters(
     Legion::PhaseBarrier* pbarriers_as_masters
@@ -661,6 +619,7 @@ struct legion_context_policy_t
   //!
   //! @param index_space virtual index space
   //--------------------------------------------------------------------------//
+
   Legion::PhaseBarrier&
   get_pbarriers_as_master(
     size_t index_space
@@ -676,6 +635,7 @@ struct legion_context_policy_t
   //!
   //! @param ghost_owners_pbarriers ghost owners phase barriers buffer 
   //--------------------------------------------------------------------------//
+
   void
   push_ghost_owners_pbarriers(
     Legion::PhaseBarrier* ghost_owners_pbarriers
@@ -690,6 +650,7 @@ struct legion_context_policy_t
   //!
   //! @param ghost_owners_lregions ghost owners logical regions
   //--------------------------------------------------------------------------//
+
   void
   push_ghost_owners_lregions(
     std::vector<Legion::LogicalRegion> ghost_owners_lregions
@@ -716,6 +677,7 @@ struct legion_context_policy_t
   //!
   //! @param index_space virtual index space
   //--------------------------------------------------------------------------//
+
   Legion::PhaseBarrier&
   get_ghost_owners_pbarriers(
     size_t index_space,
@@ -731,6 +693,7 @@ struct legion_context_policy_t
   //!
   //! @param region logical region 
   //--------------------------------------------------------------------------//
+
   void
   push_color_region(
     Legion::LogicalRegion region
@@ -744,6 +707,7 @@ struct legion_context_policy_t
   //!
   //! @param index_space virtual index space
   //--------------------------------------------------------------------------//
+
   Legion::LogicalRegion
   get_color_region(
     size_t index_space
@@ -759,6 +723,7 @@ struct legion_context_policy_t
   //!
   //! @param primary_ghost_ip primary ghost index partition 
   //--------------------------------------------------------------------------//
+
   void
   push_primary_ghost_ip(
     Legion::IndexPartition primary_ghost_ip
@@ -771,6 +736,7 @@ struct legion_context_policy_t
   //!
   //! @param index_space virtual index space
   //--------------------------------------------------------------------------//
+
   Legion::IndexPartition
   get_primary_ghost_ip(
     size_t index_space
@@ -786,6 +752,7 @@ struct legion_context_policy_t
   //!
   //! @param ip exclusive shared index partition
   //--------------------------------------------------------------------------//
+
   void
   push_excl_shared_ip(
     Legion::IndexPartition ip
@@ -798,6 +765,7 @@ struct legion_context_policy_t
   //!
   //! @param index_space virtual index space
   //--------------------------------------------------------------------------//
+
   Legion::IndexPartition
   get_excl_shared_ip(
     size_t index_space
@@ -812,6 +780,7 @@ struct legion_context_policy_t
   //!
   //! @param region primary logical region 
   //--------------------------------------------------------------------------//
+
   void
   push_primary_lr(
     Legion::LogicalRegion primary_lr
@@ -825,6 +794,7 @@ struct legion_context_policy_t
   //!
   //! @param index_space virtual index space
   //--------------------------------------------------------------------------//
+
   Legion::LogicalRegion
   get_primary_lr(
     size_t index_space
@@ -839,6 +809,7 @@ struct legion_context_policy_t
   //!
   //! @param region ghost logical region 
   //--------------------------------------------------------------------------//
+
   void
   push_ghost_lr(
     Legion::LogicalRegion ghost_lr
@@ -852,6 +823,7 @@ struct legion_context_policy_t
   //!
   //! @param index_space virtual index space
   //--------------------------------------------------------------------------//
+
   Legion::LogicalRegion
   get_ghost_lr(
     size_t index_space
@@ -866,6 +838,7 @@ struct legion_context_policy_t
   //!
   //! @param region exclusive logical region
   //--------------------------------------------------------------------------//
+
   void
   push_exclusive_lr(
     Legion::LogicalRegion region
@@ -879,6 +852,7 @@ struct legion_context_policy_t
   //!
   //! @param index_space virtual index space
   //--------------------------------------------------------------------------//
+
   Legion::LogicalRegion
   get_exclusive_lr(
     size_t index_space
@@ -893,6 +867,7 @@ struct legion_context_policy_t
   //!
   //! @param region shared logical region
   //--------------------------------------------------------------------------//
+
   void
   push_shared_lr(
     Legion::LogicalRegion region
@@ -906,6 +881,7 @@ struct legion_context_policy_t
   //!
   //! @param index_space virtual index space
   //--------------------------------------------------------------------------//
+
   Legion::LogicalRegion
   get_shared_lr(
     size_t index_space
@@ -916,41 +892,9 @@ struct legion_context_policy_t
   }
 
   //--------------------------------------------------------------------------//
-  // FIXME: Not sure if this is needed...
-  //--------------------------------------------------------------------------//
-
-  using partition_count_map_t = std::map<size_t, size_t>;
-
-  using  copy_task_map_t = std::unordered_map<size_t, task_hash_key_t>;
-
-  // FIXME: I would like to remove/move this.
-  struct partitioned_index_space
-  {
-    // logical region for the entity
-    Legion::LogicalRegion entities_lr;
-    // index partitions:
-    Legion::IndexPartition primary_ip;
-    Legion::IndexPartition exclusive_ip;
-    Legion::IndexPartition shared_ip;
-    Legion::IndexPartition ghost_ip;
-    // sizes
-    size_t size;
-    size_t exclusive_size;
-    size_t shared_size;
-    size_t ghost_size;
-    //number of elements per each part of the partition
-    partition_count_map_t exclusive_count_map;
-    partition_count_map_t shared_count_map;
-    partition_count_map_t ghost_count_map;
-    // vector of the PhaseBarrires
-    std::vector<Legion::PhaseBarrier> pbs;
-    //map for the copy_task ids
-    copy_task_map_t copy_task_map;
-  };
-
-  //--------------------------------------------------------------------------//
   // Gathers info about registered data fields.
   //--------------------------------------------------------------------------//
+
   struct field_info_t{
     size_t data_client_hash;
     size_t storage_type;
@@ -958,17 +902,16 @@ struct legion_context_policy_t
     size_t namespace_hash;
     size_t name_hash;
     size_t versions;
-  };
-
-  using field_id_t = LegionRuntime::HighLevel::FieldID;
+  }; // struct field_info_t
 
   //--------------------------------------------------------------------------//
   //! Put field info for index space and field id.
   //!
   //! @param index_space virtual index space
   //! @param field allocated field id
-  //! @param field_info field info as registered 
+  //! @param field_info field info as registered
   //--------------------------------------------------------------------------//
+
   void
   put_field_info(
     size_t index_space,
@@ -977,17 +920,18 @@ struct legion_context_policy_t
   )
   {
     field_info_map_[index_space].emplace(fid, field_info);
-  }
+  } // put_field_info
 
   //--------------------------------------------------------------------------//
   //! Get registered field info map for read access.
   //--------------------------------------------------------------------------//
+
   const std::map<size_t, std::map<field_id_t, field_info_t>>&
   field_info_map()
   const
-  { 
+  {
     return field_info_map_;
-  }
+  } // field_info_map
 
 private:
 
@@ -995,45 +939,11 @@ private:
   // Task data members.
   //--------------------------------------------------------------------------//
 
-  // Define the value type for task map.
-  using task_value_t =
-    std::map<
-      processor_type_t,
-      std::tuple<
-        task_id_t,
-        registration_function_t,
-        std::string
-      >
-    >;
-
-  // Define the map type used to store user and pure task registrations
-  std::map<
-    task_hash_key_t,
-    task_value_t
-  > task_registry_;
-
   // Map to store task registration callback methods.
   std::map<
     size_t,
-    std::tuple<
-      task_id_t,
-      size_t,
-      registration_function_t,
-      std::string
-    >
-  > new_task_registry_;
-
-#if 0
-  // Define the map type used to store MPI task registrations
-  std::unordered_map<
-    size_t,
-    std::tuple<
-      task_id_t,
-      registration_function_t,
-      std::string
-    >
-  > mpi_task_registry_;
-#endif
+    task_info_t
+  > task_registry_;
 
   //--------------------------------------------------------------------------//
   // Function data members.
@@ -1056,7 +966,10 @@ private:
   std::function<void()> mpi_task_;
   bool mpi_active_ = false;
 
+  //--------------------------------------------------------------------------//
   // Field map, key1 = index space, key2 = fid
+  //--------------------------------------------------------------------------//
+
   std::map<size_t, std::map<field_id_t, field_info_t>> field_info_map_;
 
   //--------------------------------------------------------------------------//
@@ -1066,7 +979,8 @@ private:
   Legion::PhaseBarrier* pbarriers_as_masters_;
   std::vector<Legion::PhaseBarrier*> ghost_owners_pbarriers_;
   std::vector<std::vector<Legion::LogicalRegion>> ghost_owners_lregions_;
-  std::vector<Legion::STL::map<LegionRuntime::Arrays::coord_t, LegionRuntime::Arrays::coord_t>> global_to_local_color_map_;
+  std::vector<Legion::STL::map<LegionRuntime::Arrays::coord_t,
+    LegionRuntime::Arrays::coord_t>> global_to_local_color_map_;
   std::vector<Legion::LogicalRegion> color_regions_;
   std::vector<Legion::IndexPartition> primary_ghost_ips_;
   std::vector<Legion::LogicalRegion> primary_lrs_;

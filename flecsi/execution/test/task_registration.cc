@@ -37,13 +37,13 @@ void task1(){
 
 }
 
-flecsi_register_task(task1, flecsi::loc, flecsi::single);
+flecsi_register_task(task1, flecsi::execution::processor_type_t::loc, flecsi::single);
 
 void task2(){
   
 }
 
-flecsi_register_task(task2, flecsi::loc, flecsi::single);
+flecsi_register_task(task2, flecsi::execution::processor_type_t::loc, flecsi::single);
 
 class client_type{};
 

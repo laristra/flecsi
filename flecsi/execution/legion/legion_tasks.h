@@ -256,8 +256,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
     context_.push_global_to_local_color_map(global_to_local_color_map[handle_idx]);
 
     // Fix ghost reference/pointer to point to compacted position of shared that it needs
-    auto fix_ghost_refs_id = __flecsi_internal_task_key(fix_ghost_refs_task, loc);
-    Legion::TaskLauncher fix_ghost_refs_launcher(context_.task_id(fix_ghost_refs_id),
+    Legion::TaskLauncher fix_ghost_refs_launcher(context_.task_id<__flecsi_internal_task_key(fix_ghost_refs_task)>(),
         Legion::TaskArgument(nullptr, 0));
 
     fix_ghost_refs_launcher.add_region_requirement(
