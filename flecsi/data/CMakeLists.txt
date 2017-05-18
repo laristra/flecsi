@@ -18,9 +18,9 @@
 #------------------------------------------------------------------------------#
 
 set(data_HEADERS
-  accessor.h
   common/data_hash.h
   common/data_types.h
+  data_accessor.h
   data_client.h
   data_constants.h
   data.h
