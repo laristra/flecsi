@@ -38,7 +38,7 @@ int internal_task_example_2(const LegionRuntime::HighLevel::Task * task,
 
 // Register the task. The task id is automatically generated.
 __flecsi_internal_register_legion_task(internal_task_example_2,
-  processor_type_t::toc, single);
+  processor_type_t::loc, index);
 
 void driver(int argc, char ** argv) {
 
@@ -50,11 +50,9 @@ void driver(int argc, char ** argv) {
 
   clog(info) << "Task ID: " << tid_1 << std::endl;
   clog(info) << "Task ID: " << tid_2 << std::endl;
-//  clog(info) << "Task ID: " << tid_3 << std::endl;
 
   ASSERT_EQ(tid_1, 7);
   ASSERT_EQ(tid_2, 8);
-//  ASSERT_EQ(tid_3, 9);
 
   context_t & context_ = context_t::instance();
   size_t task_key = utils::const_string_t{"driver"}.hash();
@@ -64,7 +62,7 @@ void driver(int argc, char ** argv) {
   auto key_1 = __flecsi_internal_task_key(internal_task_example_1);
   auto key_2 = __flecsi_internal_task_key(internal_task_example_2);
 
-  //executing legion tasks:
+  //executing legion tasks with pure legion calls
   LegionRuntime::HighLevel::TaskLauncher launcher(
     context_t::instance().task_id(key_1),
     LegionRuntime::HighLevel::TaskArgument(0,0));
