@@ -55,6 +55,8 @@ struct registration_wrapper_t
     fi.namespace_hash = NAMESPACE_HASH;
     fi.name_hash = NAME_HASH;
     fi.versions = VERSIONS;
+    fi.index_space = INDEX_SPACE;
+    fi.fid = fid;
 
     execution::context_t::instance().put_field_info(INDEX_SPACE, fid, fi);
   } // register_callback

@@ -902,6 +902,8 @@ struct legion_context_policy_t
     size_t namespace_hash;
     size_t name_hash;
     size_t versions;
+    field_id_t fid;
+    size_t index_space;
   }; // struct field_info_t
 
   //--------------------------------------------------------------------------//
@@ -920,6 +922,9 @@ struct legion_context_policy_t
   )
   {
     field_info_map_[index_space].emplace(fid, field_info);
+    
+    field_map_.insert({{field_info.data_client_hash,
+      field_info.namespace_hash ^ field_info.name_hash}, {index_space, fid}});
   } // put_field_info
 
   //--------------------------------------------------------------------------//
@@ -932,6 +937,31 @@ struct legion_context_policy_t
   {
     return field_info_map_;
   } // field_info_map
+
+
+  //--------------------------------------------------------------------------//
+  //! Lookup registered field info from data client and namespace hash.
+  //! @param data_client_hash data client type hash
+  //! @param namespace_hash namespace/field name hash
+  //!--------------------------------------------------------------------------//
+
+  const field_info_t&
+  get_field_info(
+    size_t data_client_hash,
+    size_t namespace_hash)
+  const
+  {
+    auto itr = field_map_.find({data_client_hash, namespace_hash});
+    clog_assert(itr != field_map_.end(), "invalid field");
+    
+    auto iitr = field_info_map_.find(itr->second.first);
+    clog_assert(iitr != field_info_map_.end(), "invalid index_space");
+    
+    auto fitr = iitr->second.find(itr->second.second);
+    clog_assert(fitr != iitr->second.end(), "invalid fid");
+    
+    return fitr->second;
+  }
 
 private:
 
@@ -967,10 +997,18 @@ private:
   bool mpi_active_ = false;
 
   //--------------------------------------------------------------------------//
-  // Field map, key1 = index space, key2 = fid
+  // Field info map, key1 = index space, key2 = fid
   //--------------------------------------------------------------------------//
 
   std::map<size_t, std::map<field_id_t, field_info_t>> field_info_map_;
+
+  //--------------------------------------------------------------------------//
+  // Field map, key1 = (data client hash, name/namespace hash)
+  // value = (index space, fid)
+  //--------------------------------------------------------------------------//
+
+  std::map<std::pair<size_t, size_t>, std::pair<size_t, field_id_t>>
+    field_map_;
 
   //--------------------------------------------------------------------------//
   // Legion data members within SPMD task.

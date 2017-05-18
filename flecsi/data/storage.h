@@ -363,7 +363,8 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   template<
     size_t ST,
     typename T,
-    size_t NS
+    size_t NS,
+    typename DATA_CLIENT_TYPE
   >
   decltype(auto)
   get_handle(
@@ -372,7 +373,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     size_t version=0
   )
   {
-    return st_t<ST>::template get_handle<T, NS>(data_client,
+    return st_t<ST>::template get_handle<T, NS, DATA_CLIENT_TYPE>(data_client,
       sp_t::data_store_, key, version);
   } // get_handle
 /*

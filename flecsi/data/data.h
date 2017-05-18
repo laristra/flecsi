@@ -105,7 +105,8 @@
   /* Call the storage policy to get a handle to the data */                    \
   flecsi::data::storage_t::instance().get_handle<flecsi::data::storage_type,   \
     data_type,                                                                 \
-    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>(       \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
+    decltype(client)>(                                                         \
       client, EXPAND_AND_STRINGIFY(name), version)
 
 //----------------------------------------------------------------------------//
