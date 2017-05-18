@@ -12,6 +12,7 @@
 ///
 
 #include <bitset>
+#include <iostream>
 
 #include "flecsi/utils/debruijn.h"
 

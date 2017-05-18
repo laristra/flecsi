@@ -348,7 +348,7 @@ template<
   typename ARG_TUPLE,
   RETURN (*DELEGATE)(ARG_TUPLE)
 >
-struct new_task_wrapper__
+struct task_wrapper__
 {
   //--------------------------------------------------------------------------//
   //! The task_args_t type defines a task argument type for task

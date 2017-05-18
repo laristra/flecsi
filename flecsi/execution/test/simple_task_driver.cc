@@ -34,8 +34,7 @@ double task(double dval, int ival) {
   return dval;
 } // task1
 
-//flecsi_register_task(task, loc | toc, single | index);
-flecsi_new_register_task(task, processor_type_t::loc, single | index);
+flecsi_register_task(task, processor_type_t::loc, single | index);
 
 //----------------------------------------------------------------------------//
 // Driver.
@@ -46,8 +45,7 @@ void driver(int argc, char ** argv) {
 
   const double alpha{10.0};
 
-//  auto f = flecsi_execute_task(task, loc, single, alpha, 5);
-  auto f = flecsi_new_execute_task(task, single, alpha, 5);
+  auto f = flecsi_execute_task(task, single, alpha, 5);
 
   f.wait();
 

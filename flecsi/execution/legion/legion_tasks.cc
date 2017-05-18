@@ -28,7 +28,7 @@ namespace execution {
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
-__flecsi_internal_register_legion_task(spmd_task, loc, index | inner);
+__flecsi_internal_register_legion_task(spmd_task, processor_type_t::loc, index | inner);
 
 //----------------------------------------------------------------------------//
 //! Register task to handoff to the MPI runtime.
@@ -40,7 +40,7 @@ __flecsi_internal_register_legion_task(spmd_task, loc, index | inner);
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
-__flecsi_internal_register_legion_task(handoff_to_mpi_task, loc, index | leaf);
+__flecsi_internal_register_legion_task(handoff_to_mpi_task, processor_type_t::loc, index | leaf);
 
 //----------------------------------------------------------------------------//
 //! Register task to wait on the MPI runtime.
@@ -52,7 +52,7 @@ __flecsi_internal_register_legion_task(handoff_to_mpi_task, loc, index | leaf);
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
-__flecsi_internal_register_legion_task(wait_on_mpi_task, loc, index | leaf);
+__flecsi_internal_register_legion_task(wait_on_mpi_task, processor_type_t::loc, index | leaf);
 
 //----------------------------------------------------------------------------//
 //! Register task to unset the active state for the MPI runtime.
@@ -64,7 +64,7 @@ __flecsi_internal_register_legion_task(wait_on_mpi_task, loc, index | leaf);
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
-__flecsi_internal_register_legion_task(unset_call_mpi_task, loc, index | leaf);
+__flecsi_internal_register_legion_task(unset_call_mpi_task, processor_type_t::loc, index | leaf);
 
 //----------------------------------------------------------------------------//
 //! Register compaction task.
@@ -76,7 +76,7 @@ __flecsi_internal_register_legion_task(unset_call_mpi_task, loc, index | leaf);
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
-__flecsi_internal_register_legion_task(compaction_task, loc, index | leaf);
+__flecsi_internal_register_legion_task(compaction_task, processor_type_t::loc, index | leaf);
 
 //----------------------------------------------------------------------------//
 //! Register fix_ghost_refs task.
