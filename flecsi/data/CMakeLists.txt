@@ -53,7 +53,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
     serial/data_handle_policy.h
     serial/dense.h
     serial/global.h
-    serial/handle_policy.h
     serial/meta_data.h
     serial/scoped.h
     serial/sparse.h
@@ -72,7 +71,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/dense.h
     legion/dpd.h
     legion/global.h
-    legion/handle_policy.h
     legion/meta_data.h
     legion/registration_wrapper.h
     legion/scoped.h
@@ -161,7 +159,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
         test/data-handle-serial.h
         data_client.cc
       DEFINES DATA_HANDLE_TEST
-        FLECSI_SPECIALIZATION_DRIVER=flecsi/data/test/data-handle-serial.h
+        ndleFLECSI_SPECIALIZATION_DRIVER=flecsi/data/test/data-handle-serial.h
         TEST_INIT=flecsi/execution/test/task_init.h
       LIBRARIES
         flecsi
