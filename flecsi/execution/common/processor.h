@@ -12,10 +12,31 @@
 ///
 
 #include <bitset>
+#include <iostream>
 
 #include "flecsi/utils/debruijn.h"
 
 namespace flecsi {
+
+///
+/// Bitmasks for processor types.
+///
+/// \note Currently, the maximum number of processor types is limited
+///       to 32. We could increase this. However, it would require adding
+///       a druijn64_t type or larger.
+///
+/// \note This enumeration is not scoped so that users can do things
+///       like:
+///       \code
+///       processor_t p(loc | toc);
+///       \endcode
+///
+enum processor_mask_t : size_t {
+  loc = 1 << 0,
+  toc = 1 << 1,
+  mpi = 1 << 2
+}; // enum processor_mask_t
+
 namespace execution {
 
 // This will be used by the task_hash_t type to create hash keys for
@@ -44,25 +65,6 @@ enum class processor_type_t : size_t {
   toc,
   mpi
 }; // enum processor_type_t
-
-///
-/// Bitmasks for processor types.
-///
-/// \note Currently, the maximum number of processor types is limited
-///       to 32. We could increase this. However, it would require adding
-///       a druijn64_t type or larger.
-///
-/// \note This enumeration is not scoped so that users can do things
-///       like:
-///       \code
-///       processor_t p(loc | toc);
-///       \endcode
-///
-enum processor_mask_t : size_t {
-  loc = 1 << 0,
-  toc = 1 << 1,
-  mpi = 1 << 2
-}; // enum processor_mask_t
 
 ///
 /// Convert a processor mask to a processor type.

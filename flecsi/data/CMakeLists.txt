@@ -51,7 +51,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
   set(data_HEADERS
     ${data_HEADERS}
     serial/data_handle_policy.h
-    serial/data_policy.h
     serial/dense.h
     serial/global.h
     serial/handle_policy.h
@@ -70,7 +69,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(data_HEADERS
     ${data_HEADERS}
     legion/data_handle_policy.h
-    legion/data_policy.h
     legion/dense.h
     legion/dpd.h
     legion/global.h

@@ -156,12 +156,9 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
 
     context_t & context_ = context_t::instance();
 
-    // tag-based decisions below
-    
-    // the case when one want's to make sure legion's shard is executed in the
-    // same memory space as an MPI task
-    if(context_.task_id(__flecsi_internal_task_key(handoff_to_mpi_task, loc)) ||
-      context_.task_id(__flecsi_internal_task_key(wait_on_mpi_task, loc)) ||
+    // tag-based decisions here
+    if(context_.task_id<__flecsi_internal_task_key(handoff_to_mpi_task)>() ||
+      context_.task_id<__flecsi_internal_task_key(wait_on_mpi_task)>() ||
       (task.tag & MAPPER_FORCE_RANK_MATCH) != 0) {
 
       // expect a 1-D index domain

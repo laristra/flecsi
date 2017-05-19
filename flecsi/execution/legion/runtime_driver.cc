@@ -69,7 +69,7 @@ runtime_driver(
 #endif // FLECSI_ENABLE_SPECIALIZATION_DRIVER
 
   // Register user data
-  //data::storage_t::instance().register_all();
+  data::storage_t::instance().register_all();
 
   auto & data_client_registry =
     flecsi::data::storage_t::instance().data_client_registry(); 
@@ -127,11 +127,25 @@ runtime_driver(
     runtime->attach_name(expanded_is, buf);
     expanded_ispaces_map[handle_idx.first] = expanded_is;
 
+    // Get field info for this index space
+    auto fitr = context_.field_info_map().find(handle_idx.first);
+
     // Read user + FleCSI registered field spaces
     Legion::FieldSpace expanded_fs = runtime->create_field_space(ctx);
+   
+    if(fitr != context_.field_info_map().end())
     {
-      Legion::FieldAllocator allocator = runtime->create_field_allocator(ctx, expanded_fs);
-      allocator.allocate_field(sizeof(LegionRuntime::Arrays::Point<2>), 42); // FIXME use registration
+      auto& field_map = fitr->second;
+
+      Legion::FieldAllocator allocator = 
+        runtime->create_field_allocator(ctx, expanded_fs);
+
+      // Allocate all fields on this index space
+      for(auto& aitr : field_map){
+        const context_t::field_info_t& fi = aitr.second;
+        allocator.allocate_field(fi.size, aitr.first);
+      }
+
     }
     sprintf(buf, "expanded field space %ld", handle_idx.first);
     runtime->attach_name(expanded_fs, buf);
@@ -167,9 +181,9 @@ runtime_driver(
   } // clog_tag_guard
 
   // Map between pre-compacted and compacted data placement
-  auto compaction_id = __flecsi_internal_task_key(compaction_task, loc);
-  Legion::IndexLauncher compaction_launcher(context_.task_id(compaction_id),
-      color_domain,
+  const auto compaction_id =
+    context_.task_id<__flecsi_internal_task_key(compaction_task)>();
+  Legion::IndexLauncher compaction_launcher(compaction_id, color_domain,
       Legion::TaskArgument(nullptr, 0), Legion::ArgumentMap());
   compaction_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
@@ -188,7 +202,8 @@ runtime_driver(
 
   std::vector<Legion::Serializer> args_serializers(num_colors);
 
-  auto spmd_id = __flecsi_internal_task_key(spmd_task, loc);
+  const auto spmd_id =
+    context_.task_id<__flecsi_internal_task_key(spmd_task)>();
   clog(trace) << "spmd_task is handle " << spmd_id << std::endl;
 
   // Add colors to must_epoch_launcher
@@ -223,7 +238,7 @@ runtime_driver(
       args_serializers[color].serialize(&owners_pbarriers[handle][0],
           num_ghost_owners[handle] * sizeof(Legion::PhaseBarrier));
 
-    Legion::TaskLauncher spmd_launcher(context_.task_id(spmd_id),
+    Legion::TaskLauncher spmd_launcher(spmd_id,
         Legion::TaskArgument(args_serializers[color].get_buffer(), args_serializers[color].get_used_bytes()));
     spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 

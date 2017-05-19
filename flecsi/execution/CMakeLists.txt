@@ -21,7 +21,6 @@ set(execution_HEADERS
   common/function_handle.h
   common/launch.h
   common/processor.h
-  common/task_hash.h
   context.h
   default_driver.h
   execution.h
@@ -131,13 +130,6 @@ cinch_add_unit(processor
     ${CINCH_RUNTIME_LIBRARIES}
 )
 
-cinch_add_unit(task_hash
-  SOURCES
-    test/task_hash.cc
-  POLICY
-    SERIAL
-)
-
 if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
     OR (FLECSI_RUNTIME_MODEL STREQUAL "legion"))
 
@@ -212,7 +204,6 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
       cinch_add_unit(ghost_access
         SOURCES
-          test/legion/ghost_access_test.cc
           test/legion/ghost_access_drivers.cc
           test/context_runtime.cc
           ${RUNTIME_DRIVER}

@@ -10,6 +10,31 @@
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/execution.h"
 #include "flecsi/data/data.h"
+#include "flecsi/data/data_client.h"
+
+#define np(X)                                                            \
+ std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
+           << ": " << #X << " = " << (X) << std::endl
+
+template<typename T, size_t EP, size_t SP, size_t GP>
+using handle_t = 
+  flecsi::data::legion::dense_handle_t<T, EP, SP, GP, flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t> >;
+
+void task1(handle_t<double, 0, 1, 2> x, float y) {
+  np(y);
+} // task1
+
+flecsi_register_task(task1, flecsi::execution::processor_type_t::loc, flecsi::single);
+
+void task2(){
+  np(87);
+}
+
+flecsi_register_task(task2, flecsi::execution::processor_type_t::loc, flecsi::single);
+
+class client_type : public flecsi::data::data_client_t{};
+
+flecsi_new_register_data(client_type, ns, pressure, double, dense, 0, 1);
 
 namespace flecsi {
 namespace execution {
@@ -27,23 +52,15 @@ void specialization_driver(int argc, char ** argv) {
 //----------------------------------------------------------------------------//
 
 void driver(int argc, char ** argv) {
+  client_type c;
 
+  auto h = flecsi_get_handle(c, ns, pressure, double, dense, 0);
+
+  flecsi_execute_task(task2, single);
 } // specialization_driver
 
 } // namespace execution
 } // namespace flecsi
-
-void task1(){
-
-}
-
-flecsi_register_task(task1, loc, single);
-
-void task2(){
-  
-}
-
-flecsi_register_task(task2, loc, single);
 
 /*----------------------------------------------------------------------------*
  * Cinch test Macros

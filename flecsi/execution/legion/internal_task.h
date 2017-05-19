@@ -14,7 +14,6 @@
 #include <legion.h>
 
 #include "flecsi/execution/common/processor.h"
-#include "flecsi/execution/common/task_hash.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/execution.h"
 #include "flecsi/utils/common.h"
@@ -34,16 +33,16 @@
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
-#define __flecsi_internal_task_key(task, processor)                            \
+#define __flecsi_internal_task_key(task)                                       \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
-  /* Call task_hash_t interface to create the key */                           \
-  task_hash_t::make_key(reinterpret_cast<uintptr_t>(&task), processor, 0UL)
+  /* Use const_string_t interface to create the key */                         \
+  flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()
 
 //----------------------------------------------------------------------------//
 //! @def __flecsi_internal_register_legion_task
 //!
-//! This macro registers a internal Legion task.
+//! This macro registers an internal Legion task.
 //!
 //! @param task      The Legion task to register.
 //! @param processor A processor_mask_t specifying the supported processor
@@ -59,12 +58,11 @@
   /* Call the execution policy to register the task */                         \
   bool task ## _task_registered =                                              \
     flecsi::execution::legion_execution_policy_t::register_legion_task<        \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
       typename flecsi::utils::function_traits__<decltype(task)>::return_type,  \
       task                                                                     \
     >                                                                          \
-    (task_hash_t::make_key(                                                    \
-      reinterpret_cast<uintptr_t>(&task), processor, launch),                  \
-      { EXPAND_AND_STRINGIFY(task) })
+    (processor, launch, { EXPAND_AND_STRINGIFY(task) })
 
 #endif // flecsi_execution_legion_internal_task_h
 

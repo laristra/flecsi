@@ -14,7 +14,8 @@
 #include <functional>
 
 #include "flecsi/execution/common/function_handle.h"
-#include "flecsi/execution/common/task_hash.h"
+#include "flecsi/execution/common/processor.h"
+#include "flecsi/execution/common/launch.h"
 #include "flecsi/execution/function.h"
 #include "flecsi/execution/kernel.h"
 #include "flecsi/execution/task.h"
@@ -27,37 +28,12 @@ clog_register_tag(execution);
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-//! @def flecsi_register_functor_task
-//!
-//! This macro registers a functor task with the FleCSI runtime.
-//!
-//! @param task_t    The task type to register. This is a functor type with
-//!                  an execute method implementing the user task.
-//! @param processor The \ref processor_t type. This may be an \em or list
-//!                  of supported processor types.
-//! @param launch    The \ref launch_t type. This may be an \em or list of
-//!                  supported launch types and configuration options.
-//!
-//! @ingroup execution
-//----------------------------------------------------------------------------//
-
-#define flecsi_register_functor_task(task_t, processor, launch)                \
-/* MACRO IMPLEMENTATION */                                                     \
-                                                                               \
-  /* Call the execution policy to register the task */                         \
-  bool task_t ## _task_registered =                                            \
-    flecsi::execution::task_model_t::register_functor_task<task_t>             \
-    (flecsi::execution::task_hash_t::make_key(typeid(task_t).hash_code(),     \
-    processor, launch), { EXPAND_AND_STRINGIFY(task_t) })
-
-//----------------------------------------------------------------------------//
 //! @def flecsi_register_task
 //!
 //! This macro registers a user task with the FleCSI runtime.
 //!
 //! @param task      The task to register. This is normally just a function.
-//! @param processor The \ref processor_t type. This may be an \em or list
-//!                  of supported processor types.
+//! @param processor The \ref processor_type_t type.
 //! @param launch    The \ref launch_t type. This may be an \em or list of
 //!                  supported launch types and configuration options.
 //!
@@ -84,10 +60,12 @@ clog_register_tag(execution);
   /* Call the execution policy to register the task delegate */                \
   bool task ## _task_registered =                                              \
     flecsi::execution::task_model_t::register_task<                            \
-      task ## _trt_t, task ## _tat_t, task ## _tuple_delegate,                 \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()>        \
-    (flecsi::execution::task_hash_t::make_key(reinterpret_cast<uintptr_t>(     \
-    &task), flecsi::execution::processor, flecsi::execution::launch), { EXPAND_AND_STRINGIFY(task) })
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
+      task ## _trt_t,                                                          \
+      task ## _tat_t,                                                          \
+      task ## _tuple_delegate                                                  \
+      >                                                                        \
+    (processor, launch, { EXPAND_AND_STRINGIFY(task) })
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_register_mpi_task
@@ -102,35 +80,32 @@ clog_register_tag(execution);
 #define flecsi_register_mpi_task(task)                                         \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
-  flecsi_register_task(task, mpi, index)
+  flecsi_register_task(task, processor_type_t::mpi, index)
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_execute_task
 //!
 //! This macro executes a user task.
 //!
-//! @param task The user task to execute.
-//! @param processor The processor type on which to execute the task.
-//! @param launch The launch  mode for the task.
-//! @param ... The arguments to pass to the user task during execution.
+//! @param task   The user task to execute.
+//! @param launch The launch mode for the task.
+//! @param ...    The arguments to pass to the user task during execution.
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
 
-#define flecsi_execute_task(task, processor, launch, ...)                      \
+#define flecsi_execute_task(task, launch, ...)                                 \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Execute the user task */                                                  \
   /* WARNING: This macro returns a future. Don't add terminations! */          \
   flecsi::execution::task_model_t::execute_task<                               \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),          \
     typename flecsi::utils::function_traits__<decltype(task)>::return_type     \
   >                                                                            \
   (                                                                            \
-    task_hash_t::make_key(                                                     \
-      reinterpret_cast<uintptr_t>(&task), processor, launch                    \
-    ),                                                                         \
-    flecsi::utils::const_string_t{__func__}.hash(),                            \
-    ## __VA_ARGS__                                                             \
+    flecsi::execution::mask_to_type(launch),                                   \
+    flecsi::utils::const_string_t{__func__}.hash(), ## __VA_ARGS__             \
   )
 
 //----------------------------------------------------------------------------//
@@ -139,7 +114,7 @@ clog_register_tag(execution);
 //! This macro executes an MPI task.
 //!
 //! @param task The MPI task to execute.
-//! @param ... The arguments to pass to the MPI task during execution.
+//! @param ...  The arguments to pass to the MPI task during execution.
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
@@ -147,7 +122,7 @@ clog_register_tag(execution);
 #define flecsi_execute_mpi_task(task, ...)                                     \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
-  flecsi_execute_task(task, mpi, index, #__VA_ARGS__)
+  flecsi_execute_task(task, index, #__VA_ARGS__)
 
 //----------------------------------------------------------------------------//
 // Function Interface
@@ -159,7 +134,7 @@ clog_register_tag(execution);
 //! This macro registers a user function with the FleCSI runtime, which may
 //! then be passed as state data and executed in any task address space.
 //!
-//! @param name The function to register. This should be the plain-text
+//! @param func The function to register. This should be the plain-text
 //!             name of the function (not a string).
 //!
 //! @ingroup execution
@@ -191,14 +166,13 @@ clog_register_tag(execution);
       func ## _frt_t, func ## _fat_t, func ## _tuple_delegate,                 \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(func)}.hash()>()
 
-
 //----------------------------------------------------------------------------//
 //! @def flecsi_execute_function
 //!
 //! Execute a user function.
 //!
 //! @param handle The function handle.
-//! @param ... The function arguments.
+//! @param ...    The function arguments.
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
@@ -218,6 +192,7 @@ clog_register_tag(execution);
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
+
 #define flecsi_function_handle(func)                                           \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
