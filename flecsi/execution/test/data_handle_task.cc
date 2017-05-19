@@ -35,7 +35,7 @@ using handle_t =
   data::legion::dense_handle_t<T, EP, SP, GP,
   data::legion_meta_data_t<default_user_meta_data_t>>;
 
-void task1(handle_t<double, drd, dno, dno> x, int y) {
+void task1(handle_t<double, dro, dno, dno> x, int y) {
   np(y);
 } // task1
 

@@ -16,8 +16,8 @@ namespace flecsi {
 
   enum privilege_t : size_t{
     dno = 0,
-    drd = 1,
-    dwr = 2,
+    dro = 1,
+    dwd = 2,
     drw = 3
   };
 

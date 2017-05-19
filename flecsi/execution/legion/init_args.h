@@ -24,6 +24,8 @@
 
 #include "legion.h"
 
+#include "flecsi/data/common/privilege.h"
+
 namespace flecsi {
 namespace execution {
 
@@ -70,6 +72,21 @@ namespace execution {
     //! @param h The data handle.
     //--------------------------------------------------------------------------//
 
+    static Legion::PrivilegeMode privilege_mode(size_t mode){
+      switch(mode){
+        case size_t(dno):
+          return NO_ACCESS;
+        case size_t(dro):
+          return READ_ONLY;
+        case size_t(dwd):
+          return WRITE_DISCARD;
+        case size_t(drw):
+          return READ_WRITE;
+        default:
+          assert(false);
+      }
+    }
+
     template<
       typename T,
       size_t EXCLUSIVE_PERMISSIONS,
@@ -86,6 +103,20 @@ namespace execution {
       > & h
     )
     {
+      Legion::RegionRequirement ex_rr(h.exclusive_lr,
+        privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE, h.exclusive_lr);
+      ex_rr.add_field(h.fid);
+      region_reqs.push_back(ex_rr);
+
+      Legion::RegionRequirement sh_rr(h.shared_lr,
+        privilege_mode(SHARED_PERMISSIONS), EXCLUSIVE, h.shared_lr);
+      sh_rr.add_field(h.fid);
+      region_reqs.push_back(sh_rr);
+
+      Legion::RegionRequirement gh_rr(h.ghost_lr,
+        privilege_mode(GHOST_PERMISSIONS), EXCLUSIVE, h.ghost_lr);
+      gh_rr.add_field(h.fid);
+      region_reqs.push_back(gh_rr);
     } // handle
 
     //--------------------------------------------------------------------------//
@@ -105,7 +136,7 @@ namespace execution {
 
     Legion::Runtime * runtime;
     Legion::Context & context;
-    std::vector<Legion::RegionRequirement> reqs;
+    std::vector<Legion::RegionRequirement> region_reqs;
 
   }; // struct init_args_t
 
