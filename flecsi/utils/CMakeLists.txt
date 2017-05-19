@@ -46,38 +46,38 @@ set(utils_SOURCES
 
 set(utils_HEADERS ${utils_HEADERS} PARENT_SCOPE)
 
-cinch_add_unit(any
+mcinch_add_unit(any
   SOURCES test/any.cc
 )
 
-cinch_add_unit(dbc
+mcinch_add_unit(dbc
   SOURCES test/dbc_test.cc
   LIBRARIES flecsi
 )
 
-cinch_add_unit(dbc-no-assert
+mcinch_add_unit(dbc-no-assert
   SOURCES test/dbc_test_no_assert.cc
   LIBRARIES flecsi
 )
 
-cinch_add_unit(dbc-notify
+mcinch_add_unit(dbc-notify
   SOURCES test/dbc_test_notify.cc
   LIBRARIES flecsi
 )
 
-cinch_add_unit(const_string
+mcinch_add_unit(const_string
   SOURCES test/const_string.cc
 )
 
-cinch_add_unit(factory
+mcinch_add_unit(factory
   SOURCES test/factory.cc
 )
 
-cinch_add_unit(reorder
+mcinch_add_unit(reorder
   SOURCES test/reorder.cc
 )
 
-cinch_add_unit(reflection
+mcinch_add_unit(reflection
   SOURCES
     test/reflection.cc
   POLICY
@@ -85,7 +85,7 @@ cinch_add_unit(reflection
 )
 
 if(ENABLE_OPENSSL)
-  cinch_add_unit(checksum
+  mcinch_add_unit(checksum
     SOURCES
       test/checksum.cc
     LIBRARIES

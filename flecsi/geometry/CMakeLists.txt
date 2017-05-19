@@ -22,10 +22,10 @@ set(geometry_SOURCES
   PARENT_SCOPE
 )
 
-cinch_add_unit(point
+mcinch_add_unit(point
   SOURCES test/point.cc)
 
-cinch_add_unit(space_vector
+mcinch_add_unit(space_vector
   SOURCES test/space_vector.cc)
 
 #~---------------------------------------------------------------------------~-#

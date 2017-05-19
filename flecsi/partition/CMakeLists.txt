@@ -44,7 +44,7 @@ set(partition_HEADERS
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-cinch_add_unit(dcrs
+mcinch_add_unit(dcrs
   SOURCES test/dcrs.cc
   INPUTS
     test/simple2d-8x8.msh
@@ -53,7 +53,7 @@ cinch_add_unit(dcrs
   THREADS 5
 )
 
-cinch_add_unit(devel-dcrs
+mcinch_add_unit(devel-dcrs
   SOURCES test/devel-dcrs.cc
   INPUTS
     test/simple2d-8x8.msh
@@ -66,7 +66,7 @@ cinch_add_unit(devel-dcrs
 # This could change if we add more partitioner types.
 if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
 
-cinch_add_unit(partition
+mcinch_add_unit(partition
   SOURCES test/partition.cc
   INPUTS
     test/simple2d-8x8.msh
@@ -77,7 +77,7 @@ cinch_add_unit(partition
   THREADS 5
 )
 
-cinch_add_unit(weaver
+mcinch_add_unit(weaver
   SOURCES test/weaver.cc
   INPUTS
     test/simple2d-8x8.msh

@@ -18,7 +18,7 @@ set(io_HEADERS
   simple_definition.h
 )
 
-cinch_add_unit(simple_definition
+mcinch_add_unit(simple_definition
   SOURCES test/simple_definition.cc
   INPUTS test/simple2d-8x8.msh test/simple2d-4x4.msh
 )
@@ -29,7 +29,7 @@ set(io_HEADERS
   PARENT_SCOPE
 )
 
-cinch_add_unit(io
+mcinch_add_unit(io
   SOURCES test/io.cc
 )
 

@@ -31,7 +31,7 @@ set(topology_SOURCES
 # Mesh unit tests.
 #------------------------------------------------------------------------------#
 
-cinch_add_unit(traversal
+mcinch_add_unit(traversal
   SOURCES
     test/traversal.cc
   INPUTS
@@ -40,14 +40,14 @@ cinch_add_unit(traversal
     flecsi
 )
 
-cinch_add_unit(dual
+mcinch_add_unit(dual
   SOURCES
     test/dual.cc
   INPUTS
     test/dual.blessed
 )
 
-cinch_add_unit(bindings
+mcinch_add_unit(bindings
   SOURCES
     test/bindings.cc
   INPUTS
@@ -60,7 +60,7 @@ cinch_add_unit(bindings
 # N-Tree unit tests.
 #------------------------------------------------------------------------------#
 
-cinch_add_unit(tree
+mcinch_add_unit(tree
   SOURCES
     test/tree.cc
     test/pseudo_random.h
@@ -70,28 +70,28 @@ cinch_add_unit(tree
     flecsi
 )
 
-cinch_add_unit(tree1d
+mcinch_add_unit(tree1d
   SOURCES
     test/tree1d.cc
   LIBRARIES
     flecsi
 )
 
-cinch_add_unit(tree3d
+mcinch_add_unit(tree3d
   SOURCES
     test/tree3d.cc
   LIBRARIES
     flecsi
 )
 
-cinch_add_unit(gravity
+mcinch_add_unit(gravity
   SOURCES
     test/gravity.cc test/pseudo_random.h
   LIBRARIES
     flecsi
 )
 
-cinch_add_unit(gravity-state
+mcinch_add_unit(gravity-state
   SOURCES
     test/gravity-state.cc
     test/pseudo_random.h
@@ -99,7 +99,7 @@ cinch_add_unit(gravity-state
     flecsi
 )
 
-cinch_add_unit(structured
+mcinch_add_unit(structured
   SOURCES
     test/structured.cc
 )
@@ -108,19 +108,19 @@ cinch_add_unit(structured
 # Misc. unit tests.
 #------------------------------------------------------------------------------#
 
-cinch_add_unit(graph
+mcinch_add_unit(graph
   SOURCES
     test/graph.cc
 )
 
-cinch_add_unit(devel-graph
+mcinch_add_unit(devel-graph
   SOURCES
     test/devel-graph.cc
   POLICY
     SERIAL_DEVEL
 )
 
-cinch_add_unit(index-space
+mcinch_add_unit(index-space
   SOURCES
     test/index-space.cc test/pseudo_random.h
 )

@@ -85,26 +85,24 @@ set(data_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-cinch_add_unit(old_data
+mcinch_add_unit(old_data
   SOURCES test/old_data.cc
 )
 
-cinch_add_unit(data_client
+mcinch_add_unit(data_client
   SOURCES test/data_client.cc
-  LIBRARIES
-    flecsi
+  LIBRARIES flecsi
 )
 
-cinch_add_unit(storage_type
+mcinch_add_unit(storage_type
   SOURCES test/storage_type.cc
-  LIBRARIES
-    flecsi
+  LIBRARIES flecsi
 )
 
 # if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
 #   if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
-#     cinch_add_unit(mpilegion_data_handle
+#     mcinch_add_unit(mpilegion_data_handle
 #       SOURCES
 #         ../execution/test/task.cc
 #         ../execution/test/task_driver.h
@@ -127,7 +125,7 @@ cinch_add_unit(storage_type
 # if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
 #   if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
-#     cinch_add_unit(serial_data_handle
+#     mcinch_add_unit(serial_data_handle
 #       SOURCES
 #         ../execution/test/task.cc
 #         ../execution/test/task_driver.h
