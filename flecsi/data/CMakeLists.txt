@@ -72,7 +72,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/dense.h
     legion/dpd.h
     legion/global.h
-    legion/handle_policy.h
     legion/meta_data.h
     legion/registration_wrapper.h
     legion/scoped.h

@@ -11,6 +11,7 @@
 //! @date Initial file creation: Aug 01, 2016
 //----------------------------------------------------------------------------//
 
+#include "flecsi/data/common/privilege.h"
 #include "flecsi/data/storage.h"
 
 #define flecsi_register_data(client, nspace, name, data_type,                  \

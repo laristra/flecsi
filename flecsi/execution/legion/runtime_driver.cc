@@ -132,21 +132,24 @@ runtime_driver(
 
     // Read user + FleCSI registered field spaces
     Legion::FieldSpace expanded_fs = runtime->create_field_space(ctx);
-   
+
+    Legion::FieldAllocator allocator = 
+      runtime->create_field_allocator(ctx, expanded_fs);
+
+    // temporary fix until we add registration of internal fields
+    allocator.allocate_field(sizeof(LegionRuntime::Arrays::Point<2>), 42);
+ 
     if(fitr != context_.field_info_map().end())
     {
       auto& field_map = fitr->second;
-
-      Legion::FieldAllocator allocator = 
-        runtime->create_field_allocator(ctx, expanded_fs);
 
       // Allocate all fields on this index space
       for(auto& aitr : field_map){
         const context_t::field_info_t& fi = aitr.second;
         allocator.allocate_field(fi.size, aitr.first);
       }
-
     }
+
     sprintf(buf, "expanded field space %ld", handle_idx.first);
     runtime->attach_name(expanded_fs, buf);
     expanded_fspaces_map[handle_idx.first] = expanded_fs;
