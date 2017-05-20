@@ -109,7 +109,7 @@ set(execution_SOURCES
 #------------------------------------------------------------------------------#
 if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
     OR (FLECSI_RUNTIME_MODEL STREQUAL "legion") )
-mcinch_add_unit(task
+cinch_add_unit(task
   SOURCES
     test/task.cc
     test/task_driver.cc
@@ -122,7 +122,7 @@ mcinch_add_unit(task
     flecsi
 )
 
-mcinch_add_unit(simple_function
+cinch_add_unit(simple_function
   SOURCES
     test/function.cc
     test/simple_function.cc
@@ -137,7 +137,7 @@ endif()
 if(NOT DEFINED ENV{TRAVIS})
   if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 
-    mcinch_add_unit(mpilegion_task
+    cinch_add_unit(mpilegion_task
       SOURCES
         test/task.cc
         test/task_driver.cc
@@ -151,7 +151,7 @@ if(NOT DEFINED ENV{TRAVIS})
       flecsi
     )
 
-#  mcinch_add_unit(dpd_sparse
+#  cinch_add_unit(dpd_sparse
 #    SOURCES
 #      test/dpd_sparse.cc
 #      legion/dpd.cc
@@ -161,18 +161,18 @@ if(NOT DEFINED ENV{TRAVIS})
 #  )
 
   # FIXME: Need to talk about this with Irina and Galen.
-    mcinch_add_unit(test_legion_handshake
+    cinch_add_unit(test_legion_handshake
       SOURCES test/mpilegion/test_legion_handshake.cc
       POLICY MPILEGION
     )
 
-    mcinch_add_unit(test_mpilegion_interop
+    cinch_add_unit(test_mpilegion_interop
       SOURCES test/mpilegion/test_mpi_legion_interop.cc
       POLICY MPILEGION
     )
 
     if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
-      mcinch_add_unit(mpilegion_sprint
+      cinch_add_unit(mpilegion_sprint
         SOURCES
          test/mpilegion/sprint_devel.cc
          mpilegion/runtime_driver.cc
@@ -187,7 +187,7 @@ if(NOT DEFINED ENV{TRAVIS})
         THREADS 2
       )
 
-#      mcinch_add_unit(mpilegion_lax_wendroff
+#      cinch_add_unit(mpilegion_lax_wendroff
 #        SOURCES
 #          test/sprint_devel.cc
 #          mpilegion/runtime_driver.cc

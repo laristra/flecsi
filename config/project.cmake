@@ -44,7 +44,22 @@ else()
     message(FATAL_ERROR "C++14 compatible compiler not found")
 endif()
 
-set(FLECSI_RUNTIME_LIBRARIES)
+
+
+#------------------------------------------------------------------------------#
+# Enable Boost.Preprocessor
+#------------------------------------------------------------------------------#
+
+# This changes the Cinch default
+set(ENABLE_BOOST_PREPROCESSOR ON CACHE BOOL
+  "Enable Boost.Preprocessor")
+
+#------------------------------------------------------------------------------#
+# Load the cinch extras
+#------------------------------------------------------------------------------#
+
+cinch_load_extras()
+
 
 #------------------------------------------------------------------------------#
 # Add option for setting id bits
@@ -116,14 +131,6 @@ if(FLECSI_DBC_REQUIRE)
 endif()
 
 #------------------------------------------------------------------------------#
-# Enable Boost.Preprocessor
-#------------------------------------------------------------------------------#
-
-# This changes the Cinch default
-set(ENABLE_BOOST_PREPROCESSOR ON CACHE BOOL
-  "Enable Boost.Preprocessor")
-
-#------------------------------------------------------------------------------#
 # OpenSSL
 #------------------------------------------------------------------------------#
 
@@ -143,11 +150,11 @@ endif()
 #------------------------------------------------------------------------------#
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion" OR
-  FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+   FLECSI_RUNTIME_MODEL STREQUAL "mpilegion" AND
+   NOT Legion_FOUND )
 
-  find_package(Legion REQUIRED)
-
-  message(STATUS "Legion found: ${Legion_FOUND}")
+ message( FATAL_ERROR 
+   "Legion is needed to use the ${FLECSI_RUNTIME_MODEL} runtime model!" )
 
 endif()
 
