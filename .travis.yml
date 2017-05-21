@@ -51,7 +51,10 @@ script:
   - cp -r $HOME/.ccache ${HOME}/docker/ccache
   - cp -r $HOME/.sonar ${HOME}/docker/sonar
   - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
-  - docker build --build-arg MPI=${MPI} --build-arg RUNTIME=${RUNTIME} --build-arg CXXFLAGS=${WERROR:+-Werror}
+  - docker build --build-arg MPI=${MPI} 
+                --build-arg LEGION=${LEGION} 
+                --build-arg RUNTIME=${RUNTIME} 
+                --build-arg CXXFLAGS=${WERROR:+-Werror}
                 --build-arg COVERAGE=${COVERAGE} --build-arg MINIMAL=${MINIMAL}
                 --build-arg CC=${CC} --build-arg CXX=${CXX}
                 --build-arg SONARQUBE=${SONARQUBE} --build-arg SONARQUBE_TOKEN=${SONARQUBE_TOKEN}

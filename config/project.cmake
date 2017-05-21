@@ -148,8 +148,6 @@ endif()
 # Find Legion
 #------------------------------------------------------------------------------#
 
-MESSAGE( STATUS "LEGION is ${ENABLE_LEGION}" )
-
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion" OR
    FLECSI_RUNTIME_MODEL STREQUAL "mpilegion" AND
    NOT Legion_FOUND )
