@@ -7,38 +7,38 @@ services:
 
 env:
   matrix:
-    - DISTRO=ubuntu MINIMAL=ON MPI=OFF RUNTIME=serial
-    - DISTRO=ubuntu MPI=OFF RUNTIME=legion    DOCKERHUB=true
-    - DISTRO=ubuntu MPI=OFF RUNTIME=legion    WERROR=yes
-    - DISTRO=ubuntu MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
-    - DISTRO=ubuntu MPI=ON  RUNTIME=mpilegion WERROR=yes
-    - DISTRO=ubuntu_mpich MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
-    - DISTRO=ubuntu_mpich MPI=ON  RUNTIME=mpilegion WERROR=yes
-    - DISTRO=ubuntu MPI=OFF  RUNTIME=serial       DOCKERHUB=true
-    - DISTRO=ubuntu MPI=OFF  RUNTIME=serial       WERROR=yes
-    - DISTRO=ubuntu MPI=OFF  COVERAGE=ON RUNTIME=serial SONARQUBE=ON
+    - DISTRO=ubuntu MINIMAL=ON MPI=OFF LEGION=OFF RUNTIME=serial
+    - DISTRO=ubuntu MPI=OFF LEGION=ON RUNTIME=legion    DOCKERHUB=true
+    - DISTRO=ubuntu MPI=OFF LEGION=ON RUNTIME=legion    WERROR=yes
+    - DISTRO=ubuntu MPI=ON  LEGION=ON RUNTIME=mpilegion DOCKERHUB=true
+    - DISTRO=ubuntu MPI=ON  LEGION=ON RUNTIME=mpilegion WERROR=yes
+    - DISTRO=ubuntu_mpich MPI=ON LEGION=ON RUNTIME=mpilegion DOCKERHUB=true
+    - DISTRO=ubuntu_mpich MPI=ON LEGION=ON RUNTIME=mpilegion WERROR=yes
+    - DISTRO=ubuntu MPI=OFF LEGION=OFF RUNTIME=serial       DOCKERHUB=true
+    - DISTRO=ubuntu MPI=OFF LEGION=OFF RUNTIME=serial       WERROR=yes
+    - DISTRO=ubuntu MPI=OFF LEGION=OFF COVERAGE=ON RUNTIME=serial SONARQUBE=ON
 
-    - DISTRO=fedora MINIMAL=ON MPI=OFF RUNTIME=serial
-    - DISTRO=fedora MPI=OFF RUNTIME=legion    DOCKERHUB=true
-    - DISTRO=fedora MPI=OFF RUNTIME=legion    WERROR=yes
-    - DISTRO=fedora MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
-    - DISTRO=fedora MPI=ON  RUNTIME=mpilegion WERROR=yes
-    - DISTRO=fedora_mpich MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
-    - DISTRO=fedora_mpich MPI=ON  RUNTIME=mpilegion WERROR=yes
-    - DISTRO=fedora MPI=OFF RUNTIME=serial        DOCKERHUB=true
-    - DISTRO=fedora MPI=OFF RUNTIME=serial        WERROR=yes
-    - DISTRO=fedora MPI=OFF RUNTIME=serial COVERAGE=ON
+    - DISTRO=fedora MINIMAL=ON MPI=OFF LEGION=OFF RUNTIME=serial
+    - DISTRO=fedora MPI=OFF LEGION=ON RUNTIME=legion    DOCKERHUB=true
+    - DISTRO=fedora MPI=OFF LEGION=ON RUNTIME=legion    WERROR=yes
+    - DISTRO=fedora MPI=ON  LEGION=ON RUNTIME=mpilegion DOCKERHUB=true
+    - DISTRO=fedora MPI=ON  LEGION=ON RUNTIME=mpilegion WERROR=yes
+    - DISTRO=fedora_mpich MPI=ON LEGION=ON RUNTIME=mpilegion DOCKERHUB=true
+    - DISTRO=fedora_mpich MPI=ON LEGION=ON RUNTIME=mpilegion WERROR=yes
+    - DISTRO=fedora MPI=OFF LEGION=OFF RUNTIME=serial        DOCKERHUB=true
+    - DISTRO=fedora MPI=OFF LEGION=OFF RUNTIME=serial        WERROR=yes
+    - DISTRO=fedora MPI=OFF LEGION=OFF RUNTIME=serial COVERAGE=ON
 
 matrix:
   allow_failures:
     - compiler: clang #wrong warning in older clang, fix in newer (fedora)
-      env: DISTRO=ubuntu MPI=OFF RUNTIME=legion    WERROR=yes 
+      env: DISTRO=ubuntu MPI=OFF LEGION=ON RUNTIME=legion    WERROR=yes 
     - compiler: clang
-      env: DISTRO=ubuntu MPI=ON  RUNTIME=mpilegion WERROR=yes 
+      env: DISTRO=ubuntu MPI=ON LEGION=ON RUNTIME=mpilegion WERROR=yes 
     - compiler: clang
-      env: DISTRO=ubuntu_mpich MPI=ON  RUNTIME=mpilegion WERROR=yes 
+      env: DISTRO=ubuntu_mpich MPI=ON LEGION=ON RUNTIME=mpilegion WERROR=yes 
     - compiler: clang
-      env: DISTRO=ubuntu MPI=OFF  RUNTIME=serial       WERROR=yes 
+      env: DISTRO=ubuntu MPI=OFF LEGION=OFF RUNTIME=serial       WERROR=yes 
 
 before_install:
  - git fetch --unshallow && git fetch --tags #for versioning

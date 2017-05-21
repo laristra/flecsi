@@ -60,7 +60,6 @@ set(ENABLE_BOOST_PREPROCESSOR ON CACHE BOOL
 
 cinch_load_extras()
 
-
 #------------------------------------------------------------------------------#
 # Add option for setting id bits
 #------------------------------------------------------------------------------#
@@ -301,11 +300,6 @@ if(ENABLE_PARTITIONING)
 
 endif()
 
-if ( FLECSI_RUNTIME_LIBRARIES OR PARTITION_LIBRARIES )
-  cinch_target_link_libraries(
-    flecsi ${FLECSI_RUNTIME_LIBRARIES} ${PARTITION_LIBRARIES}
-  )
-endif()
 
 #------------------------------------------------------------------------------#
 # configure header
@@ -321,6 +315,15 @@ install(FILES ${CMAKE_BINARY_DIR}/flecsi.h DESTINATION include)
 
 cinch_add_library_target(flecsi flecsi)
 
+#------------------------------------------------------------------------------#
+# Link the necessary libraries
+#------------------------------------------------------------------------------#
+
+if ( FLECSI_RUNTIME_LIBRARIES OR PARTITION_LIBRARIES )
+  cinch_target_link_libraries(
+    flecsi ${FLECSI_RUNTIME_LIBRARIES} ${PARTITION_LIBRARIES}
+  )
+endif()
 
 #------------------------------------------------------------------------------#
 # Set application directory
