@@ -24,13 +24,13 @@ void task1(handle_t<double, 0, 1, 2> x, float y) {
   np(y);
 } // task1
 
-flecsi_register_task(task1, flecsi::execution::processor_type_t::loc, flecsi::single);
+flecsi_register_task(task1, flecsi::loc, flecsi::single);
 
 void task2(){
   np(87);
 }
 
-flecsi_register_task(task2, flecsi::execution::processor_type_t::loc, flecsi::single);
+flecsi_register_task(task2, flecsi::loc, flecsi::single);
 
 class client_type : public flecsi::data::data_client_t{};
 

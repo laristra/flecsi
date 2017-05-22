@@ -119,17 +119,6 @@ cinch_add_unit(launch
     SERIAL
 )
 
-cinch_add_unit(processor
-  SOURCES
-    test/processor.cc
-    ${RUNTIME_DRIVER}
-  POLICY
-    SERIAL
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
-)
-
 if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
     OR (FLECSI_RUNTIME_MODEL STREQUAL "legion"))
 

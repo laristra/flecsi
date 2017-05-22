@@ -80,41 +80,6 @@ struct mpi_execution_policy_t
     std::string task_name
   )
   {
-    // Processor type can be an or-list of values, each of which should
-    // be register as a different variant.
-    const processor_t processor = key.processor();
-
-    using wrapper_t = task_wrapper__<RETURN, ARG_TUPLE, DELEGATE, KEY>;
-
-    // Register mpi task variant
-    if(processor_mpi(processor)) {
-      if(!context_t::instance().register_task(
-        key, processor_type_t::mpi, task_name,
-        wrapper_t::registration_callback)) {
-        clog(fatal) << "mpi callback registration failed" << std::endl;
-      } // if
-    }
-    else {
-      // Register loc task variant
-      if(processor_loc(processor)) {
-        if(!context_t::instance().register_task(
-          key, processor_type_t::loc, task_name,
-          wrapper_t::registration_callback)) {
-          clog(fatal) << "loc callback registration failed" << std::endl;
-        } // if
-      } // if
-
-      // Register loc task variant
-      if(processor_loc(processor)) {
-        if(!context_t::instance().register_task(
-          key, processor_type_t::toc, task_name,
-          wrapper_t::registration_callback)) {
-          clog(fatal) << "toc callback registration failed" << std::endl;
-        } // if
-      } // if
-    } // if
-
-    return true;
   } // register_task
 
   //--------------------------------------------------------------------------//
