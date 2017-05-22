@@ -47,7 +47,7 @@ RUN cmake -DENABLE_MPI=$MPI \
           -DENABLE_DOCUMENTATION=ON \
           ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} ..
 
-RUN ${SONARQUBE:+build-wrapper-linux-x86-64 --out-dir bw-output} make VERBOSE=1 -j2 || make VERBOSE=1
+RUN ${SONARQUBE:+build-wrapper-linux-x86-64 --out-dir bw-output} make VERBOSE=1
 RUN ccache -s
 RUN make doxygen
 RUN if [ ${COVERAGE} ]; then \
