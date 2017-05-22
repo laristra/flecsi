@@ -103,7 +103,7 @@ clog_register_tag(execution);
 #define flecsi_register_mpi_task(task)                                         \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
-  flecsi_register_task(task, processor_type_t::mpi, index)
+  flecsi_register_task(task, processor_type_t::mpi, flecsi::index)
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_execute_task

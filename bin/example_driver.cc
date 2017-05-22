@@ -17,9 +17,26 @@
 namespace flecsi {
 namespace execution {
 
-void driver(int argc, char ** argv) {
+void
+driver(
+  int argc,
+  char ** argv
+)
+{
   std::cout << "Hello World" << std::endl;
 } // driver
+
+
+
+void
+specialization_driver(
+  int argc,
+  char ** argv
+) 
+{ 
+  std::cout<<"inside Specialization Driver"<<std::endl;
+}//specialization_driver
+
 
 } // namespace
 } // namespace

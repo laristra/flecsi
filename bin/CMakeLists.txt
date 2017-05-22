@@ -17,17 +17,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
                             ${exec_path}/legion/context_policy.cc
                             ${exec_path}/../utils/debruijn.cc
 )
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
-    list(APPEND example_src ${exec_path}/mpilegion/runtime_driver.cc
-                            ${exec_path}/mpilegion/copy_ghosts.cc
-                            ${exec_path}/test/mpilegion/init_partitions_task.cc
-                            ${exec_path}/../data/data_client.cc
-                            ${exec_path}/../data/legion/dpd.cc
-                            ${exec_path}/../utils/debruijn.cc
-)
-# FIXME: Remove this after refactor
-elseif(FLECSI_RUNTIME_MODEL STREQUAL "rf_mpilegion")
-    list(APPEND example_src ${exec_path}/rf_mpilegion/runtime_driver.cc)
 else()
     message(FATAL_ERROR "This runtime is not yet supported")
 endif()
