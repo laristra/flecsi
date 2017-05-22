@@ -39,6 +39,8 @@ matrix:
       env: DISTRO=ubuntu_mpich MPI=ON LEGION=ON RUNTIME=mpilegion WERROR=yes 
     - compiler: clang
       env: DISTRO=ubuntu MPI=OFF LEGION=OFF RUNTIME=serial       WERROR=yes 
+    - compiler: clang
+      env: DISTRO=ubuntu MPI=ON LEGION=ON RUNTIME=mpilegion WERROR=yes 
 
 before_install:
  - git fetch --unshallow && git fetch --tags #for versioning
