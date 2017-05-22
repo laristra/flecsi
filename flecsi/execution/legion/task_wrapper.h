@@ -100,7 +100,7 @@ struct handle_args_ : public utils::tuple_walker__<handle_args_>
     typename T
   >
   static
-  typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::value>
+  typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value>
   handle(T&)
   {
   } // handle
@@ -230,7 +230,7 @@ struct functor_task_wrapper__
 
   using functor_task_args_t =
     typename utils::base_convert_tuple_type<
-    accessor_base, data_handle__<void, 0, 0, 0>, arg_tuple_t>::type;
+    accessor_base_t, data_handle__<void, 0, 0, 0>, arg_tuple_t>::type;
 
   //--------------------------------------------------------------------------//
   //! The task_id_t type is a unique identifier for Legion tasks.
@@ -357,7 +357,7 @@ struct task_wrapper__
 
   using task_args_t =
     typename utils::base_convert_tuple_type<
-    accessor_base, data_handle__<void, 0, 0, 0>, ARG_TUPLE>::type;
+    accessor_base_t, data_handle__<void, 0, 0, 0>, ARG_TUPLE>::type;
 
   //--------------------------------------------------------------------------//
   //! The task_id_t type is a unique identifier for Legion tasks.
@@ -521,7 +521,7 @@ struct old_task_wrapper__
 
   using task_args_t =
     typename utils::base_convert_tuple_type<
-    accessor_base, data_handle__<void, 0, 0, 0>, ARG_TUPLE>::type;
+    accessor_base_t, data_handle__<void, 0, 0, 0>, ARG_TUPLE>::type;
 
   //--------------------------------------------------------------------------//
   //! The task_id_t type is a unique identifier for Legion tasks.

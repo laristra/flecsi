@@ -6,22 +6,30 @@
 #ifndef flecsi_data_accessor_h
 #define flecsi_data_accessor_h
  
-///
-/// \file
-/// \date Initial file creation: Feb 24, 2017
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Feb 24, 2017
+//----------------------------------------------------------------------------//
 
 namespace flecsi {
 
-struct accessor_base{
+//----------------------------------------------------------------------------//
+//! FIXME
+//----------------------------------------------------------------------------//
 
-};
+struct accessor_base_t {};
 
-template<typename T>
-struct accessor__ : public accessor_base
+//----------------------------------------------------------------------------//
+//! FIXME
+//----------------------------------------------------------------------------//
+
+template<
+  typename T
+>
+struct accessor__ : public accessor_base_t
 {
   using type = T;
-};
+}; // struct accessor__
 
 } // namespace flecsi
 

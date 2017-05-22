@@ -6,29 +6,46 @@
 #ifndef flecsi_data_handle_h
 #define flecsi_data_handle_h
 
-///
-/// \file
-/// \date Initial file creation: Aug 01, 2016
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Aug 01, 2016
+//----------------------------------------------------------------------------//
 
 namespace flecsi {
 
-struct data_handle_base{};
+//----------------------------------------------------------------------------//
+//! The data_handle_base_t type provides an empty base type for compile-time
+//! identification of data handle objects.
+//!
+//! @ingroup data
+//----------------------------------------------------------------------------//
 
-///
-/// \struct data_handle_t data_handle.h
-/// \brief data_handle_t provides an empty type for compile-time identification
-///                      of data handle objects.
-/// \tparam DP Data policy.
-///
+struct data_handle_base_t {};
+
+//----------------------------------------------------------------------------//
+//! The data_handle_base__ type captures information about permissions
+//! and specifies a data policy.
+//!
+//! @tparam T                     The data type referenced by the handle.
+//! @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
+//!                               indices of the index partition.
+//! @tparam SHARED_PERMISSIONS    The permissions required on the shared
+//!                               indices of the index partition.
+//! @tparam GHOST_PERMISSIONS     The permissions required on the ghost
+//!                               indices of the index partition.
+//! @tparam DATA_POLICY           The data policy for this handle type.
+//!
+//! @ingroup data
+//----------------------------------------------------------------------------//
+
 template<
   typename T,
-  size_t EP,
-  size_t SP,
-  size_t GP,
-  typename DP
+  size_t EXCLUSIVE_PERMISSIONS,
+  size_t SHARED_PERMISSIONS,
+  size_t GHOST_PERMISSIONS,
+  typename DATA_POLICY
 >
-struct data_handle_base__ : public DP, public data_handle_base{};
+struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {};
 
 } // namespace flecsi
 
@@ -36,14 +53,34 @@ struct data_handle_base__ : public DP, public data_handle_base{};
 
 namespace flecsi {
   
+  //--------------------------------------------------------------------------//
+  //! The data_handle__ type is the high-level data handle type.
+  //!
+  //! @tparam T                     The data type referenced by the handle.
+  //! @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
+  //!                               indices of the index partition.
+  //! @tparam SHARED_PERMISSIONS    The permissions required on the shared
+  //!                               indices of the index partition.
+  //! @tparam GHOST_PERMISSIONS     The permissions required on the ghost
+  //!                               indices of the index partition.
+  //! @tparam DATA_POLICY           The data policy for this handle type.
+  //!
+  //! @ingroup data
+  //--------------------------------------------------------------------------//
+
   template<
     typename T,
-    size_t EP,
-    size_t SP,
-    size_t GP
+    size_t EXCLUSIVE_PERMISSIONS,
+    size_t SHARED_PERMISSIONS,
+    size_t GHOST_PERMISSIONS
   >
-  using data_handle__ =
-    data_handle_base__<T, EP, SP, GP, FLECSI_RUNTIME_DATA_HANDLE_POLICY>;
+  using data_handle__ = data_handle_base__<
+    T,
+    EXCLUSIVE_PERMISSIONS,
+    SHARED_PERMISSIONS,
+    GHOST_PERMISSIONS,
+    FLECSI_RUNTIME_DATA_HANDLE_POLICY
+  >;
 
 } // namespace flecsi
 

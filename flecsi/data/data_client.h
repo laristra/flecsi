@@ -6,20 +6,20 @@
 #ifndef flecsi_data_client_h
 #define flecsi_data_client_h
 
-///
-/// \file
-/// \date Initial file creation: Mar 23, 2016
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Mar 23, 2016
+//----------------------------------------------------------------------------//
 
 #include "flecsi/utils/common.h"
  
 namespace flecsi {
 namespace data {
 
-///
-/// \class data_client_t data_client.h
-/// \brief data_client_t provides...
-///
+//----------------------------------------------------------------------------//
+//! Base type to identify types that allow data registration.
+//----------------------------------------------------------------------------//
+
 class data_client_t
 {
 public:
@@ -36,12 +36,14 @@ public:
   /// Allow move assignment
   data_client_t & operator = (data_client_t && dc);
 
-  ///
-  /// Return a unique runtime identifier for namespace access to the
-  /// data manager.
-  ///
+  //--------------------------------------------------------------------------//
+  //! Return a unique runtime identifier for namespace access to the
+  //! data manager.
+  //--------------------------------------------------------------------------//
+
   uintptr_t
-  runtime_id() const
+  runtime_id()
+  const
   {
     return (reinterpret_cast<uintptr_t>(this) << 4) ^ id_;
   } // runtime_id
@@ -52,19 +54,22 @@ protected:
 
   void reset();
 
-  ///
-  /// Define a dummy type so that we get our own counter below.
-  ///
+  //--------------------------------------------------------------------------//
+  //! Define a dummy type so that we get our own counter below.
+  //--------------------------------------------------------------------------//
+
   struct id_t {};
 
-  ///
-  /// Default constructor.
-  ///
-  /// \note This is protected so that the class cannot be instantiated
-  ///       directly. Normally, this would be accomplished by including
-  ///       a pure-virtual function. However, this doesn't make sense
-  ///       for this type, as the runtime_id method doesn't need to
-  ///       be overridden by derived types.
+  //--------------------------------------------------------------------------//
+  //! Default constructor.
+  //!
+  //! @note This is protected so that the class cannot be instantiated
+  //!       directly. Normally, this would be accomplished by including
+  //!       a pure-virtual function. However, this doesn't make sense
+  //!       for this type, as the runtime_id method doesn't need to
+  //!       be overridden by derived types.
+  //--------------------------------------------------------------------------//
+
   data_client_t()
   :
     id_(utils::unique_id_t<id_t>::instance().next())

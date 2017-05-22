@@ -15,17 +15,18 @@
 #ifndef flecsi_data_constants_h
 #define flecsi_data_constants_h
 
-///
-/// \file
-/// \date Initial file creation: Feb 26, 2016
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Feb 26, 2016
+//----------------------------------------------------------------------------//
 
 namespace flecsi {
 namespace data {
 
-///
-/// Enumeration of supported storage types.
-///
+//----------------------------------------------------------------------------//
+//! Enumeration of supported storage types.
+//----------------------------------------------------------------------------//
+
 enum storage_label_type_t : size_t {
   global,
   dense,

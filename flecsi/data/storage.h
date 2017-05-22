@@ -6,14 +6,14 @@
 #ifndef flecsi_data_storage_h
 #define flecsi_data_storage_h
 
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Apr 17, 2016
+//----------------------------------------------------------------------------//
+
 #include "flecsi/utils/const_string.h"
 #include "flecsi/data/data_client.h"
 #include "flecsi/data/data_handle.h"
-
-///
-/// \file
-/// \date Initial file creation: Apr 17, 2016
-///
 
 namespace flecsi {
 namespace data {

@@ -109,7 +109,7 @@ struct init_args_t : public utils::tuple_walker__<init_args_t>
     typename T
   >
   static
-  typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::value>
+  typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value>
   handle(
     T &
   )
@@ -193,7 +193,7 @@ struct task_prolog_t : public utils::tuple_walker__<task_prolog_t>
     typename T
   >
   static
-  typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::value>
+  typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value>
   handle(
     T&
   )
@@ -277,7 +277,7 @@ struct task_epilog_t : public utils::tuple_walker__<task_epilog_t>
     typename T
   >
   static
-  typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::value>
+  typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value>
   handle(T &)
   {
   } // handle
