@@ -127,26 +127,29 @@ runtime_driver(
     runtime->attach_name(expanded_is, buf);
     expanded_ispaces_map[handle_idx.first] = expanded_is;
 
-    // Get field info for this index space
-    auto fitr = context_.field_info_map().find(handle_idx.first);
-
     // Read user + FleCSI registered field spaces
     Legion::FieldSpace expanded_fs = runtime->create_field_space(ctx);
-   
+
+    Legion::FieldAllocator allocator = 
+      runtime->create_field_allocator(ctx, expanded_fs);
+
+    // temporary fix until we add registration of internal fields
+    allocator.allocate_field(sizeof(LegionRuntime::Arrays::Point<2>), 42);
+
+    // Get field info for this index space
+    auto fitr = context_.field_info_map().find(handle_idx.first);
+ 
     if(fitr != context_.field_info_map().end())
     {
       auto& field_map = fitr->second;
-
-      Legion::FieldAllocator allocator = 
-        runtime->create_field_allocator(ctx, expanded_fs);
 
       // Allocate all fields on this index space
       for(auto& aitr : field_map){
         const context_t::field_info_t& fi = aitr.second;
         allocator.allocate_field(fi.size, aitr.first);
       }
-
     }
+
     sprintf(buf, "expanded field space %ld", handle_idx.first);
     runtime->attach_name(expanded_fs, buf);
     expanded_fspaces_map[handle_idx.first] = expanded_fs;
@@ -250,9 +253,24 @@ runtime_driver(
       Legion::LogicalRegion color_lr = runtime->get_logical_subregion_by_color(ctx,
           color_lp, color);
 
-      spmd_launcher.add_region_requirement(
-        Legion::RegionRequirement(color_lr, READ_WRITE, SIMULTANEOUS, expanded_lregions_map[handle])
-        .add_field(42));  // FIXME need to do user fields, reference field, connectivity field
+      Legion::RegionRequirement rr(color_lr, READ_WRITE, SIMULTANEOUS, expanded_lregions_map[handle]);
+
+      rr.add_field(42);  // FIXME need to do user fields, reference field, connectivity field
+      
+      auto fitr = context_.field_info_map().find(handle);
+      
+      if(fitr != context_.field_info_map().end())
+      {
+        auto& field_map = fitr->second;
+
+        // Allocate all fields on this index space
+        for(auto& aitr : field_map){
+          const context_t::field_info_t& fi = aitr.second;
+          rr.add_field(fi.fid);
+        }
+      }
+
+      spmd_launcher.add_region_requirement(rr);
 
       flecsi::coloring::coloring_info_t color_info = coloring_info[handle][color];
       for (auto ghost_owner : color_info.ghost_owners) {

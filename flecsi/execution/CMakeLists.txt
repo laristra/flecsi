@@ -209,9 +209,9 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
         THREADS 2
       )
 
-      cinch_add_unit(task_registration
+      cinch_add_unit(data_handle_task
         SOURCES
-          test/task_registration.cc
+          test/data_handle_task.cc
           test/context_runtime.cc
           ${RUNTIME_DRIVER}
         INPUTS

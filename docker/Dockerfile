@@ -42,7 +42,10 @@ RUN cmake -DENABLE_MPI=$MPI \
           -DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON  \
           -DCMAKE_DISABLE_FIND_PACKAGE_LAPACKE=ON} \
           -DENABLE_UNIT_TESTS=ON \
-          -DENABLE_FLECSIT=ON \
+          -DCLOG_STRIP_LEVEL=3 \
+          -DCLOG_DEBUG=OFF \
+          -DENABLE_PARMETIS=ON \
+          -DENABLE_COLORING=ON \
           -DENABLE_DOXYGEN=ON \
           -DENABLE_DOCUMENTATION=ON \
           ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} ..
@@ -56,7 +59,7 @@ RUN if [ ${COVERAGE} ]; then \
       bash codecov.sh -X gcov -f doxygen.coverage.info -F documentation; \
       doxy-coverage --threshold 21 doc/doxygen/xml/; \
     fi
-RUN ctest --verbose
+RUN ctest --verbose -E "(data_client|legion_dh1|client_registration|internal_task|execution_structure|ghost_access|task_registration|simple_function|simple_task|data_handle_task)"
 RUN make install DESTDIR=${PWD}/install && rm -rf ${PWD}/install
 RUN cd .. && if [ ${COVERAGE} ]; then \
   if [ ${CC} = clang ]; then \

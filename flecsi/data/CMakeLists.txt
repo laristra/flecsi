@@ -18,9 +18,9 @@
 #------------------------------------------------------------------------------#
 
 set(data_HEADERS
-  accessor.h
   common/data_hash.h
   common/data_types.h
+  data_accessor.h
   data_client.h
   data_constants.h
   data.h
@@ -159,7 +159,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
         test/data-handle-serial.h
         data_client.cc
       DEFINES DATA_HANDLE_TEST
-        FLECSI_SPECIALIZATION_DRIVER=flecsi/data/test/data-handle-serial.h
+        ndleFLECSI_SPECIALIZATION_DRIVER=flecsi/data/test/data-handle-serial.h
         TEST_INIT=flecsi/execution/test/task_init.h
       LIBRARIES
         flecsi

@@ -20,8 +20,30 @@
 #include "flecsi/coloring/mpi_communicator.h"
 #include "flecsi/topology/closure_utils.h"
 #include "flecsi/utils/set_utils.h"
+#include "flecsi/data/data.h"
+
+#define np(X)                                                            \
+ std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
+           << ": " << #X << " = " << (X) << std::endl
+
+using namespace flecsi;
 
 clog_register_tag(coloring);
+
+template<typename T, size_t EP, size_t SP, size_t GP>
+using handle_t = 
+  data::legion::dense_handle_t<T, EP, SP, GP,
+  data::legion_meta_data_t<default_user_meta_data_t>>;
+
+void task1(handle_t<double, dro, dno, dno> x, int y) {
+  np(y);
+} // task1
+
+flecsi_register_task(task1, execution::processor_type_t::loc, single);
+
+class client_type : public flecsi::data::data_client_t{};
+
+flecsi_new_register_data(client_type, ns, pressure, double, dense, 0, 1);
 
 namespace flecsi {
 namespace execution {
@@ -367,7 +389,15 @@ void specialization_driver(int argc, char ** argv) {
 //----------------------------------------------------------------------------//
 
 void driver(int argc, char ** argv) {
+  np(59);
+
   clog(info) << "In driver" << std::endl;
+
+  client_type c;
+
+  auto h = flecsi_get_handle(c, ns, pressure, double, dense, 0);
+
+  flecsi_execute_task(task1, single, h, 128);
 } // specialization_driver
 
 //----------------------------------------------------------------------------//
@@ -375,7 +405,7 @@ void driver(int argc, char ** argv) {
 //----------------------------------------------------------------------------//
 
 TEST(execution_structure, testname) {
-
+  
 } // TEST
 
 } // namespace execution

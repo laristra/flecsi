@@ -15,7 +15,7 @@
 #include <legion.h>
 #include <string>
 
-#include "flecsi/data/accessor.h"
+#include "flecsi/data/data_accessor.h"
 #include "flecsi/data/data_handle.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/common/processor.h"
