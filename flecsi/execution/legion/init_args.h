@@ -127,7 +127,7 @@ namespace execution {
       typename T
     >
     static
-    typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::value>
+    typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value>
     handle(
       T &
     )

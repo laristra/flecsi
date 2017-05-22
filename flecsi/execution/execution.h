@@ -28,6 +28,32 @@ clog_register_tag(execution);
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
+//! @def __flecsi_internal_return_type
+//!
+//! This macro returns the inferred return type for a user task.
+//!
+//! @param task      The task to register. This is normally just a function.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
+#define __flecsi_internal_return_type(task)                                    \
+  typename flecsi::utils::function_traits__<decltype(task)>::return_type
+
+//----------------------------------------------------------------------------//
+//! @def __flecsi_internal_arguments_type
+//!
+//! This macro returns the inferred argument type for a user task.
+//!
+//! @param task      The task to register. This is normally just a function.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
+#define __flecsi_internal_arguments_type(task)                                 \
+  typename flecsi::utils::function_traits__<decltype(task)>::arguments_type
+
+//----------------------------------------------------------------------------//
 //! @def flecsi_register_task
 //!
 //! This macro registers a user task with the FleCSI runtime.
@@ -43,17 +69,14 @@ clog_register_tag(execution);
 #define flecsi_register_task(task, processor, launch)                          \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
-  /* Task return type (trt) */                                                 \
-  using task ## _trt_t =                                                       \
-    typename flecsi::utils::function_traits__<decltype(task)>::return_type;    \
-                                                                               \
-  /* Task arguments type (tat) */                                              \
-  using task ## _tat_t =                                                       \
-    typename flecsi::utils::function_traits__<decltype(task)>::arguments_type; \
-                                                                               \
   /* Define a delegate function to the user's function that takes a tuple */   \
   /* of the arguments (as opposed to the raw argument pack) */                 \
-  inline task ## _trt_t task ## _tuple_delegate(task ## _tat_t args) {         \
+  inline                                                                       \
+  __flecsi_internal_return_type(task)                                          \
+  task ## _tuple_delegate(                                                     \
+    __flecsi_internal_arguments_type(task) args                                \
+  )                                                                            \
+  {                                                                            \
     return flecsi::utils::tuple_function(task, args);                          \
   } /* delegate task */                                                        \
                                                                                \
@@ -61,10 +84,10 @@ clog_register_tag(execution);
   bool task ## _task_registered =                                              \
     flecsi::execution::task_model_t::register_task<                            \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
-      task ## _trt_t,                                                          \
-      task ## _tat_t,                                                          \
+      __flecsi_internal_return_type(task),                                     \
+      __flecsi_internal_arguments_type(task),                                  \
       task ## _tuple_delegate                                                  \
-      >                                                                        \
+    >                                                                          \
     (processor, launch, { EXPAND_AND_STRINGIFY(task) })
 
 //----------------------------------------------------------------------------//
@@ -101,7 +124,8 @@ clog_register_tag(execution);
   /* WARNING: This macro returns a future. Don't add terminations! */          \
   flecsi::execution::task_model_t::execute_task<                               \
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),          \
-    typename flecsi::utils::function_traits__<decltype(task)>::return_type     \
+    __flecsi_internal_return_type(task),                                       \
+    __flecsi_internal_arguments_type(task)                                     \
   >                                                                            \
   (                                                                            \
     flecsi::execution::mask_to_type(launch),                                   \
@@ -122,7 +146,7 @@ clog_register_tag(execution);
 #define flecsi_execute_mpi_task(task, ...)                                     \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
-  flecsi_execute_task(task, index, #__VA_ARGS__)
+  flecsi_execute_task(task, index, ## __VA_ARGS__)
 
 //----------------------------------------------------------------------------//
 // Function Interface

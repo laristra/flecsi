@@ -87,7 +87,7 @@ struct task_model__
   //!
   //! @tparam KEY       A hash key identifying the task.
   //! @tparam RETURN    The return type of the user task.
-  //! @tparam ARG_TUPLE A std::tuple of the user task arguments.
+  //! @tparam ARG_TUPLE A std::tuple of the user task argument types.
   //! @tparam DELEGATE  The delegate function that invokes the user task.
   //!
   //! @param processor The processor type.
@@ -120,6 +120,7 @@ struct task_model__
   //! Execute a task.
   //!
   //! @tparam RETURN The return type of the task.
+  //! @tparam ARG_TUPLE A std::tuple of the user task argument types.
   //! @tparam ARGS The task arguments.
   //!
   //! @param launch The launch mode for this task execution.
@@ -130,6 +131,7 @@ struct task_model__
   template<
     size_t KEY,
     typename RETURN,
+    typename ARG_TUPLE,
     typename ... ARGS
   >
   static
@@ -140,7 +142,7 @@ struct task_model__
     ARGS &&... args
   )
   {
-    return EXECUTION_POLICY::template execute_task<KEY, RETURN>(
+    return EXECUTION_POLICY::template execute_task<KEY, RETURN, ARG_TUPLE>(
       launch, parent, std::forward<ARGS>(args) ...);
   } // execute_task
 

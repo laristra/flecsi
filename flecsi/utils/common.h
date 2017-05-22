@@ -19,6 +19,7 @@
 #include <functional>
 #include <sstream>
 #include <typeinfo>
+#include <limits>
 
 #include "flecsi/utils/id.h"
 
@@ -90,7 +91,10 @@ std::string type() {
 //----------------------------------------------------------------------------//
 
 //! Generate unique ids
-template<typename T>
+template<
+  typename T,
+  size_t MAXIMUM = std::numeric_limits<size_t>::max()
+>
 struct unique_id_t {
   static unique_id_t & instance() {
     static unique_id_t u;
@@ -98,6 +102,7 @@ struct unique_id_t {
   } // instance
 
   auto next() {
+    assert(id_+1 <= MAXIMUM && "id exceeds maximum value");
     return ++id_;
   } // next
 

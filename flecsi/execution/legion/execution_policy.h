@@ -206,6 +206,7 @@ struct legion_execution_policy_t
   template<
     size_t KEY,
     typename RETURN,
+    typename ARG_TUPLE,
     typename ... ARGS
   >
   static
@@ -219,8 +220,7 @@ struct legion_execution_policy_t
     using namespace Legion;
 
     // Make a tuple from the task arguments.
-    auto task_args = std::make_tuple(args ...);
-    using task_args_t = decltype(task_args);
+    ARG_TUPLE task_args = std::make_tuple(args ...);
 
     // Get the runtime and context from the calling task.
     context_t & context_ = context_t::instance();
@@ -238,7 +238,7 @@ struct legion_execution_policy_t
       IndexLauncher launcher(
         context_.task_id<KEY>(),
         Legion::Domain::from_rect<1>(context_.all_processes()),
-        TaskArgument(&task_args, sizeof(task_args_t)),
+        TaskArgument(&task_args, sizeof(ARG_TUPLE)),
         arg_map
       );
 
@@ -273,7 +273,7 @@ struct legion_execution_policy_t
 
           // Create a task launcher, passing the task arguments.
           TaskLauncher task_launcher(context_.task_id<KEY>(),
-            TaskArgument(&task_args, sizeof(task_args_t)));
+            TaskArgument(&task_args, sizeof(ARG_TUPLE)));
 
           // Uncomment after fixing parent task region reqs
           /*
@@ -317,7 +317,7 @@ struct legion_execution_policy_t
           LegionRuntime::HighLevel::ArgumentMap arg_map;
           LegionRuntime::HighLevel::IndexLauncher index_launcher(
             context_.task_id<KEY>(), launch_domain,
-            TaskArgument(&task_args, sizeof(task_args_t)), arg_map);
+            TaskArgument(&task_args, sizeof(ARG_TUPLE)), arg_map);
 
           // Enqueue the task.
           auto future = context_.runtime(parent)->execute_index_space(

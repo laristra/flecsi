@@ -30,23 +30,23 @@
 namespace flecsi {
 namespace execution {
 
-  //----------------------------------------------------------------------------//
+  //--------------------------------------------------------------------------//
   //! The task_epilog_t type can be called to walk the task args after the
   //! task has run. This allows synchronization dependencies to be added
   //! to the execution flow.
   //!
   //! @ingroup execution
-  //----------------------------------------------------------------------------//
+  //--------------------------------------------------------------------------//
 
   struct task_epilog_t : public utils::tuple_walker__<task_epilog_t>
   {
 
-    //--------------------------------------------------------------------------//
+    //------------------------------------------------------------------------//
     //! Construct a task_epilog_t instance.
     //!
     //! @param runtime The Legion task runtime.
     //! @param context The Legion task runtime context.
-    //--------------------------------------------------------------------------//
+    //------------------------------------------------------------------------//
 
     task_epilog_t(
       Legion::Runtime * runtime,
@@ -58,7 +58,7 @@ namespace execution {
     {
     } // task_epilog_t
 
-    //--------------------------------------------------------------------------//
+    //------------------------------------------------------------------------//
     //! FIXME: Need description
     //!
     //! @tparam T                     The data type referenced by the handle.
@@ -71,7 +71,7 @@ namespace execution {
     //!
     //! @param runtime The Legion task runtime.
     //! @param context The Legion task runtime context.
-    //--------------------------------------------------------------------------//
+    //------------------------------------------------------------------------//
 
     template<
       typename T,
@@ -91,17 +91,17 @@ namespace execution {
     {
     } // handle
 
-    //--------------------------------------------------------------------------//
+    //------------------------------------------------------------------------//
     //! FIXME: Need to document.
     //!
     //! @param T
-    //--------------------------------------------------------------------------//
+    //------------------------------------------------------------------------//
 
     template<
       typename T
     >
     static
-    typename std::enable_if_t<!std::is_base_of<data_handle_base, T>::value>
+    typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value>
     handle(T &)
     {
     } // handle

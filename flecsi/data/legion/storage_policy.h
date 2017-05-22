@@ -94,7 +94,8 @@ struct legion_storage_policy_t {
 
   using field_id_t = LegionRuntime::HighLevel::FieldID;
   using registration_function_t = std::function<void(size_t)>;
-  using unique_fid_t = utils::unique_id_t<field_id_t>;
+  using unique_fid_t =
+    utils::unique_id_t<field_id_t, (size_t(1) << 31) - 4096>;
 
   using data_value_t = std::pair<field_id_t, registration_function_t>;
 

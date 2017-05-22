@@ -39,7 +39,7 @@ void task1(handle_t<double, dro, dno, dno> x, int y) {
   np(y);
 } // task1
 
-flecsi_register_task(task1, execution::processor_type_t::loc, single);
+flecsi_register_task(task1, loc, single);
 
 class client_type : public flecsi::data::data_client_t{};
 
