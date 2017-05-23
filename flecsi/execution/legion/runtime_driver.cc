@@ -72,6 +72,7 @@ runtime_driver(
   // Register user data
   data::storage_t::instance().register_all();
 
+  // FIXME auto, auto, auto, second, first tells nothing of what this code does
   auto & data_client_registry =
     flecsi::data::storage_t::instance().data_client_registry(); 
 
@@ -100,9 +101,22 @@ runtime_driver(
   Legion::Domain color_domain = Legion::Domain::from_rect<1>(color_bounds);
 
   auto coloring_info = context_.coloring_info_map();
+  const std::unordered_map<size_t, flecsi::coloring::index_coloring_t> coloring_map
+    = context_.coloring_map();
 
   auto ghost_owner_pos_fid = 
     LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
+
+  for(auto handle_idx: coloring_info) {
+    for(auto color_idx: handle_idx.second) {
+      flecsi::coloring::coloring_info_t color_info = handle_idx.second[color_idx.first];
+      clog(error) << " Kolor " << color_idx.first << " Handle " << handle_idx.first << " has " <<
+          color_info.ghost_owners.size() << " ghost owners" << std::endl;
+      for (auto owner : color_info.ghost_owners)
+        clog(error) << owner << std::endl;
+
+    } // color_idx
+  } // handle idx
 
   {
   clog_tag_guard(runtime_driver);
@@ -114,7 +128,7 @@ runtime_driver(
     // Determine max size of a color partition
     size_t total_num_entities = 0;
     for(auto color_idx: handle_idx.second) {
-      clog(error) << "index: " << handle_idx.first << " color: " << color_idx.first << " " << color_idx.second << std::endl;
+      clog(trace) << "index: " << handle_idx.first << " color: " << color_idx.first << " " << color_idx.second << std::endl;
       total_num_entities = std::max(total_num_entities,
           color_idx.second.exclusive + color_idx.second.shared + color_idx.second.ghost);
     } // for color_idx
@@ -176,7 +190,7 @@ runtime_driver(
       color_partitioning[color] = Legion::Domain::from_rect<2>(subrect);
       phase_barriers_map[handle_idx.first].push_back(runtime->create_phase_barrier(ctx,
           1 + color_info.shared_users.size()));
-      clog(trace) << "phase barrier " << color << " has " <<
+      clog(trace) << handle_idx.first << " phase barrier " << color << " has " <<
           color_info.shared_users.size() + 1 << " arrivers" << std::endl;
     }
 
@@ -201,7 +215,7 @@ runtime_driver(
     compaction_launcher.add_region_requirement(
         Legion::RegionRequirement(color_lp, 0/*projection ID*/,
             WRITE_DISCARD, EXCLUSIVE, expanded_lregions_map[handle]))
-                .add_field(ghost_owner_pos_fid);  // FIXME register in some way not magic number
+                .add_field(ghost_owner_pos_fid);
   } // for handle
   runtime->execute_index_space(ctx, compaction_launcher);
 
@@ -267,7 +281,7 @@ runtime_driver(
 
       Legion::RegionRequirement rr(color_lr, READ_WRITE, SIMULTANEOUS, expanded_lregions_map[handle]);
 
-      rr.add_field(ghost_owner_pos_fid);  // FIXME need to do user fields, reference field, connectivity field
+      rr.add_field(ghost_owner_pos_fid);
       
       auto fitr = context_.field_info_map().find(handle);
       
@@ -298,7 +312,7 @@ runtime_driver(
         spmd_launcher.add_region_requirement(
           Legion::RegionRequirement(ghost_owner_lr, READ_ONLY, SIMULTANEOUS, expanded_lregions_map[handle])
           .add_flags(NO_ACCESS_FLAG)
-          .add_field(ghost_owner_pos_fid));  // FIXME need to do user fields, reference field, connectivity field
+          .add_field(ghost_owner_pos_fid));
 
       } // for owner
 
