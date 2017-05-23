@@ -389,23 +389,17 @@ void specialization_driver(int argc, char ** argv) {
 //----------------------------------------------------------------------------//
 
 void driver(int argc, char ** argv) {
-  /*
-  np(59);
-
   clog(info) << "In driver" << std::endl;
 
   client_type c;
 
-  sleep(2);
+  int rank, size;
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   auto h = flecsi_get_handle(c, ns, pressure, double, dense, 0);
 
-  sleep(3);
-
-  np(60);
-
   flecsi_execute_task(task1, single, h, 128);
-  */
 } // specialization_driver
 
 //----------------------------------------------------------------------------//

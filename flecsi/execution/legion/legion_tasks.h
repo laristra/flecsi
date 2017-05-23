@@ -175,6 +175,21 @@ __flecsi_internal_legion_task(spmd_task, void) {
     context_.push_ghost_owners_pbarriers(ghost_owners_pbarriers_buf);
   }
 
+  size_t num_fields;
+  args_deserializer.deserialize(&num_fields, sizeof(size_t));
+
+  using field_info_t = context_t::field_info_t;
+  auto field_info_buf = 
+    (field_info_t*)malloc(sizeof(field_info_t) * num_fields);
+  
+  args_deserializer.deserialize(field_info_buf,
+                                sizeof(field_info_t) * num_fields);
+  
+  for(size_t i = 0; i < num_fields; ++i){
+    field_info_t& fi = field_info_buf[i];
+    context_.put_field_info(fi.index_space, fi.fid, fi);
+  }
+
   std::vector<std::vector<Legion::LogicalRegion>> ghost_owners_lregions(num_handles);
   std::vector<legion_map> global_to_local_color_map(num_handles);
 
