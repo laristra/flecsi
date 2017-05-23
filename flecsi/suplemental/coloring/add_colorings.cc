@@ -353,7 +353,8 @@ void add_colorings(int dummy) {
     { "green!60!black", "green!60!white" },
     { "black", "black!40!white" },
     { "red", "red!40!white" },
-    { "violet", "violet!40!white" }
+    { "violet", "violet!40!white" },
+    { "cyan", "cyan!40!white" }
   };
 
   std::stringstream texname;
