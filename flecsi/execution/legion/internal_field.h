@@ -19,7 +19,7 @@ namespace execution{
 /// If more than 4096 internal fields are allocated, storage_policy
 /// unique_fid_t must be updated
 enum class internal_field : LegionRuntime::HighLevel::FieldID{
-  ghost_owner = (size_t(1) << 31) - 4095
+  ghost_owner = (size_t(1) << 20) - 4095
 };
 
 } // namespace execution

@@ -112,7 +112,7 @@ struct legion_context_policy_t
   //--------------------------------------------------------------------------//
 
   using unique_tid_t =
-    utils::unique_id_t<task_id_t, (size_t(1) << 31) - 4096>;
+    utils::unique_id_t<task_id_t, FLECSI_GENERATED_ID_MAX>;
 
   //--------------------------------------------------------------------------//
   //! The task_info_t type is a convenience type for defining the task
