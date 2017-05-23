@@ -370,14 +370,6 @@ void driver(int argc, char ** argv) {
   clog(info) << "In driver" << std::endl;
 } // specialization_driver
 
-//----------------------------------------------------------------------------//
-// User driver.
-//----------------------------------------------------------------------------//
-
-TEST(execution_structure, testname) {
-
-} // TEST
-
 } // namespace execution
 } // namespace flecsi
 

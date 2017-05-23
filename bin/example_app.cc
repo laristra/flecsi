@@ -11,7 +11,7 @@
 #include <flecsi.h>
 #include <mpi.h>
 
-#include "flecsi/execution/execution.h"
+#include "flecsi/execution/context.h"
 
 int main(int argc, char ** argv) {
 
@@ -28,8 +28,6 @@ int main(int argc, char ** argv) {
 
   // Call FleCSI runtime initialization
   auto retval = flecsi::execution::context_t::instance().initialize(argc, argv);
-
-//  MPI_Finalize();
 
   return retval;
 } // main

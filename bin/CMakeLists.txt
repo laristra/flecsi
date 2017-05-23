@@ -14,8 +14,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
     list(APPEND example_src ${exec_path}/serial/runtime_driver.cc)
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     list(APPEND example_src ${exec_path}/legion/runtime_driver.cc
-                            ${exec_path}/legion/context_policy.cc
-                            ${exec_path}/../utils/debruijn.cc
 )
 else()
     message(FATAL_ERROR "This runtime is not yet supported")
@@ -31,7 +29,7 @@ add_executable(example_app ${example_src})
 # Add link dependencies.
 #------------------------------------------------------------------------------#
 
-target_link_libraries(example_app  ${FLECSI_RUNTIME_LIBRARIES})
+target_link_libraries(example_app flecsi ${FLECSI_RUNTIME_LIBRARIES})
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options for vim.
