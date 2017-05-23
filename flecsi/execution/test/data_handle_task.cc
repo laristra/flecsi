@@ -396,7 +396,13 @@ void driver(int argc, char ** argv) {
 
   client_type c;
 
+  sleep(2);
+
   auto h = flecsi_get_handle(c, ns, pressure, double, dense, 0);
+
+  sleep(3);
+
+  np(60);
 
   flecsi_execute_task(task1, single, h, 128);
   */
