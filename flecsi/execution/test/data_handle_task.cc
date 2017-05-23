@@ -389,6 +389,7 @@ void specialization_driver(int argc, char ** argv) {
 //----------------------------------------------------------------------------//
 
 void driver(int argc, char ** argv) {
+  /*
   np(59);
 
   clog(info) << "In driver" << std::endl;
@@ -398,6 +399,7 @@ void driver(int argc, char ** argv) {
   auto h = flecsi_get_handle(c, ns, pressure, double, dense, 0);
 
   flecsi_execute_task(task1, single, h, 128);
+  */
 } // specialization_driver
 
 //----------------------------------------------------------------------------//
