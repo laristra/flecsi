@@ -110,20 +110,22 @@ __flecsi_internal_legion_task(fix_ghost_refs_task, void) {
           " range " << owners_rects[owner_map[ghost_ref.x[0]]].lo[0] <<
           ":" << owners_rects[owner_map[ghost_ref.x[0]]].lo[1] <<
           "," << owners_rects[owner_map[ghost_ref.x[0]]].hi[1] << std::endl;
+
       clog_assert(ghost_ref.x[0] == owners_rects[owner_map[ghost_ref.x[0]]].lo[0],
           "ghost dependency closure error in specialization_driver()");
       clog_assert(ghost_ref.x[1] >= owners_rects[owner_map[ghost_ref.x[0]]].lo[1],
-          "underflow error");
+          "ghost owner position error in specialization_driver()");
       clog_assert(ghost_ref.x[1] <= owners_rects[owner_map[ghost_ref.x[0]]].hi[1],
-          "overflow error");
-#if 0
+          "ghost owner position error in specialization_driver()");
+
       // NOTE: We stored a forward pointer in old shared location to new shared location
       LegionRuntime::Arrays::Point<2> owner_ref =
           accs_owners_refs[owner_map[ghost_ref.x[0]]].read(Legion::DomainPoint::from_point<2>(ghost_ref));
       acc_ghost_ref.write(ghost_ptr, owner_ref);
-      clog(error) << ghost_ptr.point_data[0] << "," << ghost_ptr.point_data[1] << " points to " << owner_ref.x[0] <<
+
+      clog(trace) << ghost_ptr.point_data[0] << "," << ghost_ptr.point_data[1] << " points to " << owner_ref.x[0] <<
           "," << owner_ref.x[1] << std::endl;
-#endif
+
     } // for itr
   } // if we have owners
 
