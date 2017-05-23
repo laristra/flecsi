@@ -111,7 +111,7 @@ __flecsi_internal_legion_task(fix_ghost_refs_task, void) {
           ":" << owners_rects[owner_map[ghost_ref.x[0]]].lo[1] <<
           "," << owners_rects[owner_map[ghost_ref.x[0]]].hi[1] << std::endl;
       clog_assert(ghost_ref.x[0] == owners_rects[owner_map[ghost_ref.x[0]]].lo[0],
-          "owner map error");
+          "ghost dependency closure error in specialization_driver()");
       clog_assert(ghost_ref.x[1] >= owners_rects[owner_map[ghost_ref.x[0]]].lo[1],
           "underflow error");
       clog_assert(ghost_ref.x[1] <= owners_rects[owner_map[ghost_ref.x[0]]].hi[1],
