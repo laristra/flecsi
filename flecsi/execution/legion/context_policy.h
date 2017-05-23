@@ -621,13 +621,13 @@ struct legion_context_policy_t
   //! @param index_space virtual index space
   //--------------------------------------------------------------------------//
 
-  Legion::PhaseBarrier&
+  Legion::PhaseBarrier*
   get_pbarriers_as_master(
     size_t index_space
   )
   const
   {
-    return pbarriers_as_masters_[index_space];
+    return &pbarriers_as_masters_[index_space];
   }
 
   //--------------------------------------------------------------------------//
@@ -643,6 +643,21 @@ struct legion_context_policy_t
   )
   {
     ghost_owners_pbarriers_.push_back(ghost_owners_pbarriers);
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Return phase barriers for ghost owners.
+  //!
+  //! @param index_space virtual index space
+  //--------------------------------------------------------------------------//
+
+  Legion::PhaseBarrier*
+  get_ghost_owners_pbarriers(
+    size_t index_space
+  )
+  const
+  {
+    return ghost_owners_pbarriers_[index_space];
   }
 
   //--------------------------------------------------------------------------//
@@ -671,22 +686,6 @@ struct legion_context_policy_t
   )
   {
     global_to_local_color_map_.push_back(global_to_local_map);
-  }
-
-  //--------------------------------------------------------------------------//
-  //! Return phase barriers for ghost owners.
-  //!
-  //! @param index_space virtual index space
-  //--------------------------------------------------------------------------//
-
-  Legion::PhaseBarrier&
-  get_ghost_owners_pbarriers(
-    size_t index_space,
-    size_t owner
-  )
-  const
-  {
-    return ghost_owners_pbarriers_[index_space][owner];
   }
 
   //--------------------------------------------------------------------------//

@@ -60,6 +60,12 @@ struct legion_data_handle_policy_t
   Legion::LogicalRegion exclusive_lr;
   Legion::LogicalRegion shared_lr;
   Legion::LogicalRegion ghost_lr;
+  Legion::PhaseBarrier* pbarriers_as_master;
+  Legion::PhaseBarrier* ghost_owners_pbarriers;
+  std::vector<Legion::LogicalRegion> ghost_owners_lregions;
+  Legion::LogicalRegion color_region;
+  Legion::IndexPartition primary_ghost_ip;
+  Legion::IndexPartition excl_shared_ip;
 }; // class legion_data_handle_policy_t
 
 } // namespace flecsi
