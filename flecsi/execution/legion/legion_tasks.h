@@ -390,7 +390,7 @@ __flecsi_internal_legion_task(compaction_task, void) {
   for (auto handle : coloring_map) {
 
     Legion::IndexSpace ispace = regions[handle.first].get_logical_region().get_index_space();
-    Legion::FieldID fid_ref = ghost_owner_pos_fid;  // FIXME get from registration not magic number
+    Legion::FieldID fid_ref = ghost_owner_pos_fid;
     LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, LegionRuntime::Arrays::Point<2>> acc_ref =
           regions[handle.first].get_field_accessor(fid_ref).typeify<LegionRuntime::Arrays::Point<2>>();
