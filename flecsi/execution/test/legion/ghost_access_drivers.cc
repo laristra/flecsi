@@ -21,8 +21,17 @@
 #include "flecsi/coloring/mpi_communicator.h"
 #include "flecsi/topology/closure_utils.h"
 #include "flecsi/utils/set_utils.h"
+#include "flecsi/data/data.h"
 
 clog_register_tag(coloring);
+
+class client_type : public flecsi::data::data_client_t{};
+
+#define INDEX_ID 0
+#define VERSIONS 1
+
+
+flecsi_new_register_data(client_type, name_space, cell_ID, size_t, dense, INDEX_ID, VERSIONS);
 
 namespace flecsi {
 namespace execution {
@@ -242,7 +251,12 @@ void specialization_driver(int argc, char ** argv) {
 //----------------------------------------------------------------------------//
 
 void driver(int argc, char ** argv) {
-  clog(trace) << "In driver" << std::endl;
+  clog(error) << "In driver" << std::endl;
+
+  client_type client;
+
+  auto handle = flecsi_get_handle(client, name_space, cell_ID, size_t, dense, INDEX_ID);
+
 } // specialization_driver
 
 } // namespace execution
