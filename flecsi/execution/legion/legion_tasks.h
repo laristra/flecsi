@@ -78,15 +78,15 @@ __flecsi_internal_legion_task(fix_ghost_refs_task, void) {
   using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
   legion_map owner_map = task->futures[0].get_result<legion_map>();
 
-  auto ghost_owner_fid = 
-    LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner);
+  auto ghost_owner_pos_fid = 
+    LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
 
   if (owner_map.size() > 0) {
 
     std::vector<LegionRuntime::Accessor::RegionAccessor<generic_type, LegionRuntime::Arrays::Point<2>>> accs_owners_refs;
     std::vector<LegionRuntime::Arrays::Rect<2>> owners_rects;
     for (int owner_idx = 0; owner_idx < owner_map.size(); owner_idx++) {
-      accs_owners_refs.push_back(regions[1+owner_idx].get_field_accessor(ghost_owner_fid)  // FIXME registration not magic number
+      accs_owners_refs.push_back(regions[1+owner_idx].get_field_accessor(ghost_owner_pos_fid)  // FIXME registration not magic number
           .typeify<LegionRuntime::Arrays::Point<2>>());
       Legion::Domain owner_domain = runtime->get_index_space_domain(ctx,
           regions[1+owner_idx].get_logical_region().get_index_space());
@@ -95,7 +95,7 @@ __flecsi_internal_legion_task(fix_ghost_refs_task, void) {
 
     LegionRuntime::Accessor::RegionAccessor<generic_type,
       LegionRuntime::Arrays::Point<2>> acc_ghost_ref
-      = regions[0].get_field_accessor(ghost_owner_fid)
+      = regions[0].get_field_accessor(ghost_owner_pos_fid)
       .typeify<LegionRuntime::Arrays::Point<2>>();
     Legion::Domain ghost_domain = runtime->get_index_space_domain(ctx, regions[0]
       .get_logical_region().get_index_space());
@@ -142,8 +142,8 @@ __flecsi_internal_legion_task(spmd_task, void) {
   // Add additional setup.
   context_t & context_ = context_t::instance();
 
-  auto ghost_owner_fid = 
-    LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner);
+  auto ghost_owner_pos_fid = 
+    LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
 
   clog_assert(task->arglen > 0, "spmd_task called without arguments");
 
@@ -269,7 +269,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
     fix_ghost_refs_launcher.add_region_requirement(
         Legion::RegionRequirement(context_.get_ghost_lr(handle_idx), READ_WRITE,
             EXCLUSIVE, context_.get_color_region(handle_idx))
-        .add_field(ghost_owner_fid)); // FIXME use registration not magic number
+        .add_field(ghost_owner_pos_fid)); // FIXME use registration not magic number
 
     fix_ghost_refs_launcher.add_future(Legion::Future::from_value(runtime,
         global_to_local_color_map[handle_idx]));
@@ -277,7 +277,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
     for (size_t owner = 0; owner < num_owners[handle_idx]; owner++)
       fix_ghost_refs_launcher.add_region_requirement(
           Legion::RegionRequirement(ghost_owners_lregions[handle_idx][owner], READ_ONLY, EXCLUSIVE,
-              ghost_owners_lregions[handle_idx][owner]).add_field(ghost_owner_fid));// FIXME use registration not magic number
+              ghost_owners_lregions[handle_idx][owner]).add_field(ghost_owner_pos_fid));// FIXME use registration not magic number
 
     runtime->execute_task(ctx, fix_ghost_refs_launcher);
 
@@ -353,8 +353,8 @@ __flecsi_internal_legion_task(compaction_task, void) {
   const std::unordered_map<size_t, flecsi::coloring::index_coloring_t> coloring_map
     = context_.coloring_map();
 
-  auto ghost_owner_fid = 
-    LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner);
+  auto ghost_owner_pos_fid = 
+    LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
 
   {
   clog_tag_guard(legion_tasks);
@@ -366,7 +366,7 @@ __flecsi_internal_legion_task(compaction_task, void) {
   for (auto handle : coloring_map) {
 
     Legion::IndexSpace ispace = regions[handle.first].get_logical_region().get_index_space();
-    Legion::FieldID fid_ref = ghost_owner_fid;  // FIXME get from registration not magic number
+    Legion::FieldID fid_ref = ghost_owner_pos_fid;  // FIXME get from registration not magic number
     LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, LegionRuntime::Arrays::Point<2>> acc_ref =
           regions[handle.first].get_field_accessor(fid_ref).typeify<LegionRuntime::Arrays::Point<2>>();

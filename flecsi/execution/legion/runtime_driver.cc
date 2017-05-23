@@ -101,8 +101,8 @@ runtime_driver(
 
   auto coloring_info = context_.coloring_info_map();
 
-  auto ghost_owner_fid = 
-    LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner);
+  auto ghost_owner_pos_fid = 
+    LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
 
   {
   clog_tag_guard(runtime_driver);
@@ -139,7 +139,7 @@ runtime_driver(
 
     // temporary fix until we add registration of internal fields
     allocator.allocate_field(sizeof(LegionRuntime::Arrays::Point<2>), 
-      ghost_owner_fid);
+      ghost_owner_pos_fid);
 
     // Get field info for this index space
     auto fitr = context_.field_info_map().find(handle_idx.first);
@@ -201,7 +201,7 @@ runtime_driver(
     compaction_launcher.add_region_requirement(
         Legion::RegionRequirement(color_lp, 0/*projection ID*/,
             WRITE_DISCARD, EXCLUSIVE, expanded_lregions_map[handle]))
-                .add_field(ghost_owner_fid);  // FIXME register in some way not magic number
+                .add_field(ghost_owner_pos_fid);  // FIXME register in some way not magic number
   } // for handle
   runtime->execute_index_space(ctx, compaction_launcher);
 
@@ -260,7 +260,7 @@ runtime_driver(
 
       Legion::RegionRequirement rr(color_lr, READ_WRITE, SIMULTANEOUS, expanded_lregions_map[handle]);
 
-      rr.add_field(ghost_owner_fid);  // FIXME need to do user fields, reference field, connectivity field
+      rr.add_field(ghost_owner_pos_fid);  // FIXME need to do user fields, reference field, connectivity field
       
       auto fitr = context_.field_info_map().find(handle);
       
@@ -291,7 +291,7 @@ runtime_driver(
         spmd_launcher.add_region_requirement(
           Legion::RegionRequirement(ghost_owner_lr, READ_ONLY, SIMULTANEOUS, expanded_lregions_map[handle])
           .add_flags(NO_ACCESS_FLAG)
-          .add_field(ghost_owner_fid));  // FIXME need to do user fields, reference field, connectivity field
+          .add_field(ghost_owner_pos_fid));  // FIXME need to do user fields, reference field, connectivity field
 
       } // for owner
 
