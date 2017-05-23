@@ -88,7 +88,6 @@ runtime_driver(
   clog(info) << "MPI num_colors is " << num_colors << std::endl;
   }
 
-
   std::set<size_t> map_handles;
   std::map<size_t, Legion::IndexSpace> expanded_ispaces_map;
   std::map<size_t, Legion::FieldSpace> expanded_fspaces_map;
