@@ -247,16 +247,11 @@ runtime_driver(
           num_ghost_owners[handle] * sizeof(Legion::PhaseBarrier));
 
     using field_info_t = context_t::field_info_t;
-    std::vector<field_info_t> field_info_vec;
-    for(auto& iitr : context_.field_info_map()){
-      for(auto& fitr : iitr.second){
-        field_info_vec.emplace_back(fitr.second);
-      }
-    }
-    size_t num_fields = field_info_vec.size();
+
+    size_t num_fields = context_.registered_fields().size();
     args_serializers[color].serialize(&num_fields, sizeof(size_t));
     args_serializers[color].serialize(
-      &field_info_vec[0], num_fields * sizeof(field_info_t));
+      &context_.registered_fields()[0], num_fields * sizeof(field_info_t));
 
     Legion::TaskLauncher spmd_launcher(spmd_id,
         Legion::TaskArgument(args_serializers[color].get_buffer(), args_serializers[color].get_used_bytes()));

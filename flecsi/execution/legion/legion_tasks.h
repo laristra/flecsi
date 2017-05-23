@@ -187,7 +187,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
   
   for(size_t i = 0; i < num_fields; ++i){
     field_info_t& fi = field_info_buf[i];
-    context_.put_field_info(fi.index_space, fi.fid, fi);
+    context_.put_field_info(fi);
   }
 
   std::vector<std::vector<Legion::LogicalRegion>> ghost_owners_lregions(num_handles);

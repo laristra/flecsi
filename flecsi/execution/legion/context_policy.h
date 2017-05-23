@@ -908,20 +908,42 @@ struct legion_context_policy_t
   }; // struct field_info_t
 
   //--------------------------------------------------------------------------//
-  //! Put field info for index space and field id.
+  //! Register field info for index space and field id.
   //!
   //! @param index_space virtual index space
   //! @param field allocated field id
   //! @param field_info field info as registered
   //--------------------------------------------------------------------------//
 
+  void register_field_info(field_info_t& field_info){
+    field_info_vec_.emplace_back(std::move(field_info));
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Return registered fields
+  //--------------------------------------------------------------------------//
+
+  const std::vector<field_info_t>&
+  registered_fields()
+  const
+  {
+    return field_info_vec_;
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Put field info for index space and field id.
+  //!
+  //! @param field_info field info as registered
+  //--------------------------------------------------------------------------//
+  
   void
   put_field_info(
-    size_t index_space,
-    field_id_t fid,
     const field_info_t& field_info
   )
   {
+    size_t index_space = field_info.index_space;
+    field_id_t fid = field_info.fid;
+
     field_info_map_[index_space].emplace(fid, field_info);
     
     field_map_.insert({{field_info.data_client_hash,
@@ -998,7 +1020,13 @@ private:
   bool mpi_active_ = false;
 
   //--------------------------------------------------------------------------//
-  // Field info map, key1 = index space, key2 = fid
+  // Field info vector for registered fields in TLT
+  //--------------------------------------------------------------------------//
+
+  std::vector<field_info_t> field_info_vec_;
+
+  //--------------------------------------------------------------------------//
+  // Field info map for fields in SPMD task, key1 = index space, key2 = fid
   //--------------------------------------------------------------------------//
 
   std::map<size_t, std::map<field_id_t, field_info_t>> field_info_map_;

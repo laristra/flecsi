@@ -58,7 +58,7 @@ struct registration_wrapper_t
     fi.index_space = INDEX_SPACE;
     fi.fid = fid;
 
-    execution::context_t::instance().put_field_info(INDEX_SPACE, fid, fi);
+    execution::context_t::instance().register_field_info(fi);
   } // register_callback
 
 }; // class registration_wrapper_t
