@@ -51,12 +51,13 @@ namespace execution {
     init_handles_t(
       Legion::Runtime* runtime,
       Legion::Context& context,
-      const std::vector<LegionRuntime::HighLevel::PhysicalRegion>& regions
+      const std::vector<Legion::PhysicalRegion>& regions
     )
     :
       runtime(runtime),
       context(context),
-      regions(regions)
+      regions(regions),
+      region(0)
     {
     } // init_handles
 
@@ -76,7 +77,68 @@ namespace execution {
       > & h
     )
     {
+      for(size_t p = 0; p < 3; ++p){
+        bool skip = false;
 
+        switch(p){
+          case 0:
+            skip = EXCLUSIVE_PERMISSIONS == 0;
+            break;
+          case 1:
+            skip = SHARED_PERMISSIONS == 0;
+            break;
+          case 2:
+            skip = GHOST_PERMISSIONS == 0;
+            break;
+          default:
+            assert(false);
+        }
+
+        T* data;
+        Legion::PhysicalRegion pr;
+        size_t size;
+
+        if(skip){
+          data = nullptr;
+        }
+        else{
+          pr = regions[region];
+          Legion::LogicalRegion lr = pr.get_logical_region();
+          Legion::IndexSpace is = lr.get_index_space();
+
+          auto ac = pr.get_field_accessor(h.fid).template typeify<T>();
+          
+          Legion::Domain domain = 
+            runtime->get_index_space_domain(context, is); 
+          
+          LegionRuntime::Arrays::Rect<2> r = domain.get_rect<2>();
+          LegionRuntime::Arrays::Rect<2> sr;
+          LegionRuntime::Accessor::ByteOffset bo[2];
+          data = ac.template raw_rect_ptr<2>(r, sr, bo);
+        }
+
+        region++;
+
+        switch(p){
+          case 0:
+            h.exclusive_pr = pr;
+            h.exclusive_data = data;
+            h.exclusive_size = size;
+            break;
+          case 1:
+            h.shared_pr = pr;
+            h.shared_data = data;
+            h.shared_size = size;
+            break;
+          case 2:
+            h.ghost_pr = pr;
+            h.ghost_data = data;
+            h.shared_size = size;
+            break;
+          default:
+            assert(false);
+        }
+      }
     } // handle
 
     //-----------------------------------------------------------------------//
@@ -97,6 +159,7 @@ namespace execution {
     Legion::Runtime * runtime;
     Legion::Context & context;
     const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions;
+    size_t region;
   }; // struct init_handles_t
 
 } // namespace execution 

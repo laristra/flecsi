@@ -45,7 +45,16 @@ template<
   size_t GHOST_PERMISSIONS,
   typename DATA_POLICY
 >
-struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {};
+struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {
+  T* exclusive_data;
+  size_t exclusive_size;
+  
+  T* shared_data;
+  size_t shared_size;
+  
+  T* ghost_data;
+  size_t ghost_size;
+};
 
 } // namespace flecsi
 

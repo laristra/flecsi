@@ -79,6 +79,9 @@ struct legion_data_handle_policy_t
   Legion::LogicalRegion color_region;
   Legion::IndexPartition primary_ghost_ip;
   Legion::IndexPartition excl_shared_ip;
+  Legion::PhysicalRegion exclusive_pr;
+  Legion::PhysicalRegion shared_pr;
+  Legion::PhysicalRegion ghost_pr;
 }; // class legion_data_handle_policy_t
 
 } // namespace flecsi
