@@ -66,7 +66,10 @@ struct legion_data_handle_policy_t
     ghost_owners_lregions = p.ghost_owners_lregions;
     color_region = p.color_region;
     primary_ghost_ip = p.primary_ghost_ip;
-    excl_shared_ip = p.excl_shared_ip;    
+    excl_shared_ip = p.excl_shared_ip;
+    exclusive_pr = p.exclusive_pr;
+    shared_pr = p.shared_pr;
+    ghost_pr = p.ghost_pr; 
   }
 
   field_id_t fid;

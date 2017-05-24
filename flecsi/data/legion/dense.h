@@ -70,6 +70,8 @@ template<
 >
 struct dense_handle_t : public data_handle__<T, EP, SP, GP>
 {
+  using base = data_handle__<T, EP, SP, GP>;
+
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
@@ -92,10 +94,12 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   // \param data A pointer to the raw data.
   // \param meta_data A reference to the user-defined meta data.
   ///
+  /*
   dense_handle_t(const std::string & label, const size_t size,
     T * data, const user_meta_data_t & meta_data)
-    : label_(label), size_(size), data_(data), meta_data_(meta_data)
+    : label_(label), base::exclusive_size(size), base::exclusive_data(data), meta_data_(meta_data)
     {}
+  */
 
   ///
   // Copy constructor.
@@ -103,10 +107,9 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   template<size_t EP2, size_t SP2, size_t GP2>
   dense_handle_t(const dense_handle_t<T, EP2, SP2, GP2, MD> & a)
     : label_(a.label_),
-      size_(a.size_),
-      data_(a.data_),
       meta_data_(a.meta_data_)
     {
+      base::copy_data(a);
       legion_data_handle_policy_t::copy(a);
     }
 
@@ -131,7 +134,7 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   size_t
   size() const
   {
-    return size_;
+    return base::exclusive_size;
   } // size
 
   ///
@@ -194,8 +197,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   ) const
   {
-    assert(index < size_ && "index out of range");
-    return data_[index];
+    assert(index < base::exclusive_size && "index out of range");
+    return base::exclusive_data[index];
   } // operator []
 
   ///
@@ -209,8 +212,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   )
   {
-    assert(index < size_ && "index out of range");
-    return data_[index];
+    assert(index < base::exclusive_size && "index out of range");
+    return base::exclusive_data[index];
   } // operator []
 
   ///
@@ -260,8 +263,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   ) const
   {
-    assert(index < size_ && "index out of range");
-    return data_[index];
+    assert(index < base::exclusive_size && "index out of range");
+    return base::exclusive_data[index];
   } // operator ()
 
   ///
@@ -275,8 +278,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   )
   {
-    assert(index < size_ && "index out of range");
-    return data_[index];
+    assert(index < base::exclusive_size && "index out of range");
+    return base::exclusive_data[index];
   } // operator ()
 
   ///
@@ -286,7 +289,7 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   ///
   operator bool() const
   {
-    return data_ != nullptr;
+    return base::exclusive_data != nullptr;
   } // operator bool
 
   template<typename, size_t, size_t, size_t, typename>
@@ -295,8 +298,6 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
 private:
 
   std::string label_ = "";
-  size_t size_ = 0;
-  T * data_ = nullptr;
   const user_meta_data_t & meta_data_ = {};
 }; // struct dense_handle_t
 
