@@ -382,6 +382,8 @@ void add_colorings(int dummy) {
     { "cyan", "cyan!40!white" }
   };
 
+  const size_t color = rank%colors.size();
+
   std::stringstream texname;
   texname << "simple2d-" << rank << "-" << M << "x" << N << ".tex";
   std::ofstream tex(texname.str(), std::ofstream::out);
@@ -424,17 +426,18 @@ void add_colorings(int dummy) {
       auto gcell = ghost_cells_map.find(cell);
 
       if(ecell != exclusive_cells_map.end()) {
-        tex << "\\node[" << std::get<0>(colors[rank]) <<
+        tex << "\\node[" << std::get<0>(colors[color]) <<
           "] at (" << xoff << ", " << yoff <<
           ") {" << cell++ << "};" << std::endl;
       }
       else if(scell != shared_cells_map.end()) {
-        tex << "\\node[" << std::get<1>(colors[rank]) <<
+        tex << "\\node[" << std::get<1>(colors[color]) <<
           "] at (" << xoff << ", " << yoff <<
           ") {" << cell++ << "};" << std::endl;
       }
       else if(gcell != ghost_cells_map.end()) {
-        tex << "\\node[" << std::get<1>(colors[gcell->second.rank]) <<
+        const size_t off_color = gcell->second.rank%colors.size();
+        tex << "\\node[" << std::get<1>(colors[off_color]) <<
           "] at (" << xoff << ", " << yoff <<
           ") {" << cell++ << "};" << std::endl;
       }
@@ -474,17 +477,18 @@ void add_colorings(int dummy) {
       auto gvertex = ghost_vertices_map.find(vertex);
 
       if(evertex != exclusive_vertices_map.end()) {
-        tex << "\\node[" << std::get<0>(colors[rank]) <<
+        tex << "\\node[" << std::get<0>(colors[color]) <<
           "] at (" << xoff << ", " << yoff <<
           ") { \\scriptsize " << vertex++ << "};" << std::endl;
       }
       else if(svertex != shared_vertices_map.end()) {
-        tex << "\\node[" << std::get<1>(colors[rank]) <<
+        tex << "\\node[" << std::get<1>(colors[color]) <<
           "] at (" << xoff << ", " << yoff <<
           ") { \\scriptsize " << vertex++ << "};" << std::endl;
       }
       else if(gvertex != ghost_vertices_map.end()) {
-        tex << "\\node[" << std::get<1>(colors[gvertex->second.rank]) <<
+        const size_t off_color = gvertex->second.rank%colors.size();
+        tex << "\\node[" << std::get<1>(colors[off_color]) <<
           "] at (" << xoff << ", " << yoff <<
           ") { \\scriptsize " << vertex++ << "};" << std::endl;
       }

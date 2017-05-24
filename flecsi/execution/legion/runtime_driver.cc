@@ -261,7 +261,7 @@ runtime_driver(
 
       Legion::RegionRequirement rr(color_lr, READ_WRITE, SIMULTANEOUS, expanded_lregions_map[handle]);
 
-      rr.add_field(ghost_owner_pos_fid);  // FIXME need to do user fields, reference field, connectivity field
+      rr.add_field(ghost_owner_pos_fid);
 
       for(const field_info_t& fi : context_.registered_fields()){
         if(fi.index_space == handle){
@@ -282,11 +282,18 @@ runtime_driver(
         const bool is_mutable = false;
         runtime->attach_semantic_information(ghost_owner_lr, OWNER_COLOR_TAG, (void*)&owner_color,
             sizeof(LegionRuntime::Arrays::coord_t), is_mutable);
-        spmd_launcher.add_region_requirement(
-          Legion::RegionRequirement(ghost_owner_lr, READ_ONLY, SIMULTANEOUS, expanded_lregions_map[handle])
-          .add_flags(NO_ACCESS_FLAG)
-          .add_field(ghost_owner_pos_fid));  // FIXME need to do user fields, reference field, connectivity field
 
+        Legion::RegionRequirement rr_owner(ghost_owner_lr, READ_ONLY, SIMULTANEOUS,
+            expanded_lregions_map[handle]);
+        rr_owner.add_flags(NO_ACCESS_FLAG);
+        rr_owner.add_field(ghost_owner_pos_fid);
+        for(const field_info_t& fi : context_.registered_fields()){
+          if(fi.index_space == handle){
+            rr_owner.add_field(fi.fid);
+          }
+        }
+
+        spmd_launcher.add_region_requirement(rr_owner);
       } // for owner
 
     } // for handle

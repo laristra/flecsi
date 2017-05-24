@@ -1,17 +1,43 @@
-/*~-------------------------------------------------------------------------~~*
- * Copyright (c) 2014 Los Alamos National Security, LLC
+/*~--------------------------------------------------------------------------~*
+ * Copyright (c) 2015 Los Alamos National Security, LLC
  * All rights reserved.
- *~-------------------------------------------------------------------------~~*/
+ *~--------------------------------------------------------------------------~*/
 
-//----------------------------------------------------------------------------//
-//! @file example_app.cc
-//! @date Initial file creation: Aug 25, 2016
-//----------------------------------------------------------------------------//
-
+#include <iostream>
 #include <flecsi.h>
 #include <mpi.h>
 
 #include "flecsi/execution/context.h"
+
+///
+// \file example_driver.h
+// \authors bergen
+// \date Initial file creation: Aug 25, 2016
+///
+
+namespace flecsi {
+namespace execution {
+
+void
+specialization_driver(
+  int argc,
+  char ** argv
+) 
+{ 
+  std::cout<<"inside Specialization Driver"<<std::endl;
+}//specialization_driver
+
+void
+driver(
+  int argc,
+  char ** argv
+)
+{
+  std::cout << "Hello World" << std::endl;
+} // driver
+
+} // namespace
+} // namespace
 
 int main(int argc, char ** argv) {
 
@@ -33,7 +59,7 @@ int main(int argc, char ** argv) {
 } // main
 
 
-/*~------------------------------------------------------------------------~--*
+/*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.
  * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~------------------------------------------------------------------------~--*/
+ *~-------------------------------------------------------------------------~-*/

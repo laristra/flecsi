@@ -18,9 +18,6 @@
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
-
-#  set(CMAKE_CXX_COMPILER "mpiCC")
-
   add_definitions(-DFLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER)
   add_definitions(-DFLECSI_ENABLE_SPECIALIZATION_DRIVER)
 
@@ -38,7 +35,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
 
   add_executable(tasks_and_drivers ${exmaple_src})
-  #set_target_properties(tasks_and_drivers PROPERTIES LINKER_LANGUAGE CXX)
 
   #----------------------------------------------------------------------------#
   # Add link dependencies
