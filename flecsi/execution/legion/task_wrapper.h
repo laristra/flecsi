@@ -21,6 +21,7 @@
 #include "flecsi/execution/common/processor.h"
 #include "flecsi/execution/common/launch.h"
 #include "flecsi/execution/legion/registration_wrapper.h"
+#include "flecsi/execution/legion/init_handles.h"
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/tuple_function.h"
 #include "flecsi/utils/tuple_type_converter.h"
@@ -452,8 +453,8 @@ struct task_wrapper__
     // Push the Legion state
     context_t::instance().push_state(KEY, context, runtime, task, regions);
 
-    handle_args_ handle_args(runtime, context, regions);
-    handle_args.walk(task_args);
+    init_handles_t init_handles(runtime, context, regions);
+    init_handles.walk(task_args);
 
     // FIXME: NEED TO HANDLE RETURN TYPES
     // Execute the user's task
