@@ -205,6 +205,7 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
       cinch_add_unit(ghost_access
         SOURCES
           test/legion/ghost_access_drivers.cc
+          ../supplemental/coloring/add_colorings.cc
           ${DRIVER_INITIALIZATION}
           ${RUNTIME_DRIVER}
         INPUTS
