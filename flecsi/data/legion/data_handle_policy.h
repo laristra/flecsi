@@ -56,6 +56,19 @@ struct legion_data_handle_policy_t
 {
   using field_id_t = LegionRuntime::HighLevel::FieldID;
 
+  void copy(const legion_data_handle_policy_t& p){
+    fid = p.fid;
+    exclusive_lr = p.exclusive_lr;
+    shared_lr = p.shared_lr;
+    ghost_lr = p.ghost_lr;
+    pbarriers_as_master = p.pbarriers_as_master;
+    ghost_owners_pbarriers = p.ghost_owners_pbarriers;
+    ghost_owners_lregions = p.ghost_owners_lregions;
+    color_region = p.color_region;
+    primary_ghost_ip = p.primary_ghost_ip;
+    excl_shared_ip = p.excl_shared_ip;    
+  }
+
   field_id_t fid;
   Legion::LogicalRegion exclusive_lr;
   Legion::LogicalRegion shared_lr;

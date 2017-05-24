@@ -60,6 +60,7 @@ struct dcrs_t
 ///
 /// Helper function to print a dcrs_t instance.
 ///
+inline
 std::ostream &
 operator <<
 (

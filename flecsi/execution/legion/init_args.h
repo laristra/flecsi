@@ -59,20 +59,15 @@ namespace execution {
     } // init_args
 
     //--------------------------------------------------------------------------//
-    //! FIXME: Need a description.
+    //! Convert the template privileges to proper Legion privileges.
     //!
-    //! @tparam T                     The data type referenced by the handle.
-    //! @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
-    //!                               indices of the index partition.
-    //! @tparam SHARED_PERMISSIONS    The permissions required on the shared
-    //!                               indices of the index partition.
-    //! @tparam GHOST_PERMISSIONS     The permissions required on the ghost
-    //!                               indices of the index partition.
-    //!
-    //! @param h The data handle.
+    //! @param mode privilege
     //--------------------------------------------------------------------------//
 
-    static Legion::PrivilegeMode privilege_mode(size_t mode){
+    static Legion::PrivilegeMode
+    privilege_mode(
+      size_t mode
+    ){
       switch(mode){
         case size_t(dno):
           return NO_ACCESS;
@@ -119,9 +114,9 @@ namespace execution {
       region_reqs.push_back(gh_rr);
     } // handle
 
-    //--------------------------------------------------------------------------//
-    //! FIXME: Need to document.
-    //--------------------------------------------------------------------------//
+    //-----------------------------------------------------------------------//
+    // If this is not a data handle, then simply skip it.
+    //-----------------------------------------------------------------------//
 
     template<
       typename T

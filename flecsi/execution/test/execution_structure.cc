@@ -18,6 +18,7 @@
 #include "flecsi/coloring/dcrs_utils.h"
 #include "flecsi/coloring/parmetis_colorer.h"
 #include "flecsi/coloring/mpi_communicator.h"
+#include "flecsi/suplemental/coloring/add_colorings.h"
 #include "flecsi/topology/closure_utils.h"
 #include "flecsi/utils/set_utils.h"
 
@@ -26,6 +27,7 @@ clog_register_tag(coloring);
 namespace flecsi {
 namespace execution {
 
+#if 0
 //----------------------------------------------------------------------------//
 // Create some basic colorings.
 //----------------------------------------------------------------------------//
@@ -351,6 +353,7 @@ void add_colorings(int dummy) {
 } // add_colorings
 
 flecsi_register_mpi_task(add_colorings);
+#endif
 
 //----------------------------------------------------------------------------//
 // Specialization driver.
