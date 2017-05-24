@@ -69,7 +69,7 @@ runtime_driver(
   context_.pop_state( utils::const_string_t{"specialization_driver"}.hash());
 #endif // FLECSI_ENABLE_SPECIALIZATION_DRIVER
 
-#if 0
+
   // Register user data
   data::storage_t::instance().register_all();
 
@@ -118,7 +118,7 @@ runtime_driver(
     // Determine max size of a color partition
     size_t total_num_entities = 0;
     for(auto color_idx: handle_idx.second) {
-      clog(error) << "index: " << handle_idx.first << " color: " << color_idx.first << " " << color_idx.second << std::endl;
+      clog(trace) << "index: " << handle_idx.first << " color: " << color_idx.first << " " << color_idx.second << std::endl;
       total_num_entities = std::max(total_num_entities,
           color_idx.second.exclusive + color_idx.second.shared + color_idx.second.ghost);
     } // for color_idx
@@ -325,7 +325,7 @@ runtime_driver(
     phase_barriers_map[handle].clear();
   }
   phase_barriers_map.clear();
-#endif
+
 
   context_.unset_call_mpi(ctx, runtime);
   context_.handoff_to_mpi(ctx, runtime);

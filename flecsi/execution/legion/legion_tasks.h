@@ -425,7 +425,7 @@ __flecsi_internal_legion_task(compaction_task, void) {
           ghost.offset);
       // reference is where we used to point, expanded_itr.p is where ghost is now
       acc_ref.write(Legion::DomainPoint::from_point<2>(expanded_itr.p), reference);
-      clog(error) << "color " << my_color << " key " << handle.first << " ghost " <<
+      clog(trace) << "color " << my_color << " key " << handle.first << " ghost " <<
         " " << *ghost_itr <<
         //" now at " << expanded_itr.p <<
         std::endl;
