@@ -18,7 +18,7 @@
 #include "flecsi/coloring/dcrs_utils.h"
 #include "flecsi/coloring/parmetis_colorer.h"
 #include "flecsi/coloring/mpi_communicator.h"
-#include "flecsi/suplemental/coloring/add_colorings.h"
+#include "flecsi/supplemental/coloring/add_colorings.h"
 #include "flecsi/topology/closure_utils.h"
 #include "flecsi/utils/set_utils.h"
 
