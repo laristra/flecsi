@@ -75,8 +75,10 @@ void driver(int argc, char ** argv) {
     Legion::TaskArgument(0, 0),
     arg_map
   );
+   
+  //index_launcher.tag=MAPPER_FORCE_RANK_MATCH;
  auto fm = runtime->execute_index_space(context, index_launcher);
-
+ fm.wait_all_results();
 } // driver
 
 } // namespace execution

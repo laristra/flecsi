@@ -9,9 +9,9 @@
   #include <legion.h>
 #endif
 
-#include "flecsi/execution/execution.h"
+#include "flecsi/execution/context.h"
 #include "flecsi/execution/common/processor.h"
-
+#include "flecsi/execution/legion/internal_task.h"
 
 ///
 // \file example_app.cc
@@ -19,11 +19,12 @@
 // \date Initial file creation: May 18, 2016
 ///
 
-using namespace flecsi;
-using namespace flecsi::execution;
-
+namespace flecsi{
+namespace execution{
+//----------------------------------------------------------------------------//
+//Define MPI task
 void
-mpi_task(double &a)
+mpi_task(double a)
 { 
   std::cout<<"inside MPI task"<<std::endl;
   int rank = 0;
@@ -34,13 +35,61 @@ mpi_task(double &a)
   std::cout << "My rank: " << rank << std::endl;
 }//mpi_task
 
-
+//register the task
 flecsi_register_mpi_task(mpi_task);
 
+//----------------------------------------------------------------------------//
+// Define internal Legion task to register.
+void internal_task_example_1(
+  const LegionRuntime::HighLevel::Task * task,                                 
+  const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,       
+  LegionRuntime::HighLevel::Context ctx,                                       
+  LegionRuntime::HighLevel::HighLevelRuntime * runtime                         
+)
+{
+  std::cout <<"inside of the task1" <<std::endl;
+} // internal_task_example
+
+// Register the task. The task id is automatically generated.
+__flecsi_internal_register_legion_task(internal_task_example_1,
+  flecsi::processor_type_t::loc, flecsi::single);
+
+//----------------------------------------------------------------------------//
+// Define internal Legion task to register.
+void internal_task_example_2(
+  const LegionRuntime::HighLevel::Task * task,                                 
+  const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,       
+  LegionRuntime::HighLevel::Context ctx,                                       
+  LegionRuntime::HighLevel::HighLevelRuntime * runtime                         
+)
+{
+  std::cout <<"inside of the task2" <<std::endl;
+} // internal_task_example
+
+// Register the task. The task id is automatically generated.
+__flecsi_internal_register_legion_task(internal_task_example_2,
+  flecsi::processor_type_t::loc, flecsi::index);
+
+//----------------------------------------------------------------------------//
+//define FLeCSI task
+void task1() {
+  std::cout << "inside single task" <<std::endl;
+} // task1
+
+//register FLeCSI task
+flecsi_register_task(task1, flecsi::processor_type_t::loc, flecsi::single);
+
+void task2(){
+  std::cout<<"inside index task"<<std::endl;
+}
+
+////register FLeCSI task
+flecsi_register_task(task2, flecsi::processor_type_t::loc, flecsi::index);
 
 
-namespace flecsi{
-namespace execution{
+
+//----------------------------------------------------------------------------//
+//Define Specialization Driver : a driver that gets executed at the top level
 void
 specialization_driver(
   int argc,
@@ -54,23 +103,35 @@ specialization_driver(
 
   std::cout<<"inside Specialization Driver"<<std::endl;
 
- // flecsi_execute_mpi_task(mpi_task);
+  flecsi_execute_mpi_task( mpi_task, 0);
+
+  flecsi_execute_task(task1, flecsi::single);
+
+  flecsi_execute_task(task2, flecsi::index);
+
+  auto key_1 = __flecsi_internal_task_key(internal_task_example_1);
+  auto key_2 = __flecsi_internal_task_key(internal_task_example_2);
+
+  //executing internal legion tasks with pure legion calls
+  LegionRuntime::HighLevel::TaskLauncher launcher(
+    context_t::instance().task_id(key_1),
+    LegionRuntime::HighLevel::TaskArgument(0,0));
+  auto f=runtime->execute_task(context, launcher);
+
+  Legion::ArgumentMap arg_map;
+  Legion::IndexLauncher index_launcher(
+    context_t::instance().task_id(key_2),
+    Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
+    Legion::TaskArgument(0, 0),
+    arg_map
+  );
+
+ auto fm = runtime->execute_index_space(context, index_launcher);
+ fm.wait_all_results();
+
 }//specialization_driver
 
-#if 0
-void task1( float y) {
-  std::cout << "inside single task" <<std::endl;
-} // task1
-
-flecsi_register_task(task1, flecsi::execution::processor_type_t::loc, flecsi::single);
-
-void task2(){
-  std::cout<<"inside index task"<<std::endl;
-}
-
-flecsi_register_task(task2, flecsi::execution::processor_type_t::loc, flecsi::index);
-#endif
-
+//----------------------------------------------------------------------------//
 void
 driver(
   int argc,
@@ -78,19 +139,19 @@ driver(
 )
 {
   std::cout<<"inside Driver"<<std::endl;
-#if 0
+
   flecsi_execute_task(task1, flecsi::single);
   
   flecsi_execute_task(task2, flecsi::index);
-#endif
 }//driver
 
-}
-}
+}//namespace execution
+}//namespace flecsi
+
+//----------------------------------------------------------------------------//
 
 int main(int argc, char ** argv) {
 
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
 #ifdef GASNET_CONDUIT_MPI
     int provided;
@@ -107,18 +168,15 @@ int main(int argc, char ** argv) {
 std::cout <<"MPI MPI  MPI"<< std::endl;
    MPI_Init(&argc, &argv);
 #endif
-#endif
 
   std::cout <<"taks and drivers exmple"<<std::endl;
 
   // Call FleCSI runtime initialization
   auto retval = flecsi::execution::context_t::instance().initialize(argc, argv);
 
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion 
 #ifndef GASNET_CONDUIT_MPI
   MPI_Finalize();
 #endif 
-#endif
 
   return retval;
 } // main
