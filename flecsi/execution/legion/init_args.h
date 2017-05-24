@@ -99,17 +99,17 @@ namespace execution {
     )
     {
       Legion::RegionRequirement ex_rr(h.exclusive_lr,
-        privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE, h.exclusive_lr);
+        privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE, h.color_region);
       ex_rr.add_field(h.fid);
       region_reqs.push_back(ex_rr);
 
       Legion::RegionRequirement sh_rr(h.shared_lr,
-        privilege_mode(SHARED_PERMISSIONS), EXCLUSIVE, h.shared_lr);
+        privilege_mode(SHARED_PERMISSIONS), EXCLUSIVE, h.color_region);
       sh_rr.add_field(h.fid);
       region_reqs.push_back(sh_rr);
 
       Legion::RegionRequirement gh_rr(h.ghost_lr,
-        privilege_mode(GHOST_PERMISSIONS), EXCLUSIVE, h.ghost_lr);
+        privilege_mode(GHOST_PERMISSIONS), EXCLUSIVE, h.color_region);
       gh_rr.add_field(h.fid);
       region_reqs.push_back(gh_rr);
     } // handle

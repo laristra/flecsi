@@ -275,11 +275,9 @@ struct legion_execution_policy_t
           TaskLauncher task_launcher(context_.task_id<KEY>(),
             TaskArgument(&task_args, sizeof(ARG_TUPLE)));
 
-          /*
           for(auto& req : init_args.region_reqs){
             task_launcher.add_region_requirement(req);
           }
-          */
 
           // Enqueue the prolog.
           task_prolog_t
