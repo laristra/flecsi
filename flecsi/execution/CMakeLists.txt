@@ -224,6 +224,7 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
       cinch_add_unit(data_handle_task
         SOURCES
           test/data_handle_task.cc
+          ../supplemental/coloring/add_colorings.cc
           ${DRIVER_INITIALIZATION}
           ${RUNTIME_DRIVER}
         INPUTS
