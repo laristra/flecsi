@@ -69,6 +69,7 @@ runtime_driver(
   context_.pop_state( utils::const_string_t{"specialization_driver"}.hash());
 #endif // FLECSI_ENABLE_SPECIALIZATION_DRIVER
 
+#if 0
   // Register user data
   data::storage_t::instance().register_all();
 
@@ -324,7 +325,7 @@ runtime_driver(
     phase_barriers_map[handle].clear();
   }
   phase_barriers_map.clear();
-
+#endif
 
   context_.unset_call_mpi(ctx, runtime);
   context_.handoff_to_mpi(ctx, runtime);

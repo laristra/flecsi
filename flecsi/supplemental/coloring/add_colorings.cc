@@ -23,13 +23,14 @@
 #include "flecsi/utils/set_utils.h"
 
 clog_register_tag(coloring);
+clog_register_tag(coloring_output);
 
 namespace flecsi {
 namespace execution {
 
 void add_colorings(int dummy) {
 
-  clog_set_output_rank(0);
+  clog_set_output_rank(1);
 
   // Get the context instance.
   context_t & context_ = context_t::instance();
@@ -38,7 +39,10 @@ void add_colorings(int dummy) {
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+  {
+  clog_tag_guard(coloring);
   clog(info) << "add_colorings, rank: " << rank << std::endl;
+  }
 
   // Read the mesh definition from file.
   //flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
@@ -92,6 +96,15 @@ void add_colorings(int dummy) {
   // with intersections that are non-empty
   auto closure_intersection_map =
     communicator->get_intersection_info(nearest_neighbors);
+
+  {
+  clog_tag_guard(coloring);
+
+  for(auto ci: closure_intersection_map) {
+    clog_container_one(info,
+      "closure intersection color " << ci.first << ":", ci.second, clog::space);
+  } // for
+  } // guard
 
   // We can iteratively add halos of nearest neighbors, e.g.,
   // here we add the next nearest neighbors. For most mesh types
@@ -194,7 +207,7 @@ void add_colorings(int dummy) {
   cell_color_info.ghost = cells.ghost.size();
 
   {
-  clog_tag_guard(coloring);
+  clog_tag_guard(coloring_output);
   clog_container_one(info, "exclusive cells ", cells.exclusive, clog::newline);
   clog_container_one(info, "shared cells ", cells.shared, clog::newline);
   clog_container_one(info, "ghost cells ", cells.ghost, clog::newline);
@@ -314,7 +327,7 @@ void add_colorings(int dummy) {
   } // scope
 
   {
-  clog_tag_guard(coloring);
+  clog_tag_guard(coloring_output);
   clog_container_one(info, "exclusive vertices ", vertices.exclusive,
     clog::newline);
   clog_container_one(info, "shared vertices ", vertices.shared, clog::newline);
@@ -342,6 +355,18 @@ void add_colorings(int dummy) {
   auto cell_coloring_info = communicator->get_coloring_info(cell_color_info);
   auto vertex_coloring_info =
     communicator->get_coloring_info(vertex_color_info);
+
+  {
+  clog_tag_guard(coloring_output);
+
+  clog(info) << "vertex input coloring info color " <<
+    rank << vertex_color_info << std::endl;
+
+  for(auto ci: vertex_coloring_info) {
+  clog(info) << "vertex coloring info color " << ci.first
+    << ci.second << std::endl;
+  } // for
+  }
 
   // Add colorings to the context.
   context_.add_coloring(0, cells, cell_coloring_info);

@@ -661,7 +661,7 @@ if(rank == 1) {
       size_t off(0);
       const size_t coff = c*max_request_indices;
 
-      for(auto s: color_info.shared_users) {
+      for(auto s: color_info.ghost_owners) {
         input_indices[coff + off++] = s;
       } // for
     } // for
