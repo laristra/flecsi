@@ -115,6 +115,7 @@ namespace execution {
           LegionRuntime::Arrays::Rect<2> sr;
           LegionRuntime::Accessor::ByteOffset bo[2];
           data = ac.template raw_rect_ptr<2>(r, sr, bo);
+          size = r.hi[1] - r.lo[1];
         }
 
         region++;
