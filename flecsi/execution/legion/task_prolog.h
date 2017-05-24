@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "legion.h"
+#include "flecsi/data/data.h"
 
 namespace flecsi {
 namespace execution {
@@ -88,6 +89,20 @@ namespace execution {
       > & h
     )
     {
+      bool read_phase = false;
+      bool write_phase = false;
+
+      if (GHOST_PERMISSIONS != dno)
+        read_phase = true;
+
+      if ( (SHARED_PERMISSIONS == dwd) || (SHARED_PERMISSIONS == drw) )
+        write_phase = true;
+
+      if (read_phase)
+        clog(error) << "READ PHASE PROLOGUE" << std::endl;
+
+      if (write_phase)
+        clog(error) << "WRITE PHASE PROLOGUE" << std::endl;
     } // handle
 
     //------------------------------------------------------------------------//

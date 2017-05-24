@@ -69,7 +69,8 @@ struct legion_data_handle_policy_t
     excl_shared_ip = p.excl_shared_ip;
     exclusive_pr = p.exclusive_pr;
     shared_pr = p.shared_pr;
-    ghost_pr = p.ghost_pr; 
+    ghost_pr = p.ghost_pr;
+    ghost_is_readable = p.ghost_is_readable;
   }
 
   field_id_t fid;
@@ -85,6 +86,7 @@ struct legion_data_handle_policy_t
   Legion::PhysicalRegion exclusive_pr;
   Legion::PhysicalRegion shared_pr;
   Legion::PhysicalRegion ghost_pr;
+  bool ghost_is_readable;
 }; // class legion_data_handle_policy_t
 
 } // namespace flecsi

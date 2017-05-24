@@ -89,6 +89,15 @@ namespace execution {
       > & h
     )
     {
+      bool write_phase = false;
+
+      if ( (SHARED_PERMISSIONS == dwd) || (SHARED_PERMISSIONS == drw) )
+        write_phase = true;
+
+      if (write_phase) {
+        clog(error) << "WRITE PHASE EPILOGUE" << std::endl;
+        h.ghost_is_readable = false;
+      }
     } // handle
 
     //------------------------------------------------------------------------//
