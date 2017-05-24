@@ -102,12 +102,13 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   ///
   template<size_t EP2, size_t SP2, size_t GP2>
   dense_handle_t(const dense_handle_t<T, EP2, SP2, GP2, MD> & a)
-    :
-      label_(a.label_),
+    : label_(a.label_),
       size_(a.size_),
       data_(a.data_),
       meta_data_(a.meta_data_)
-    {}
+    {
+      legion_data_handle_policy_t::copy(a);
+    }
 
   //--------------------------------------------------------------------------//
   // Member data interface.

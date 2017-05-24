@@ -21,8 +21,17 @@
 #include "flecsi/coloring/mpi_communicator.h"
 #include "flecsi/topology/closure_utils.h"
 #include "flecsi/utils/set_utils.h"
+#include "flecsi/data/data.h"
 
 clog_register_tag(coloring);
+
+class client_type : public flecsi::data::data_client_t{};
+
+#define INDEX_ID 0
+#define VERSIONS 1
+
+
+flecsi_new_register_data(client_type, name_space, cell_ID, size_t, dense, INDEX_ID, VERSIONS);
 
 namespace flecsi {
 namespace execution {
@@ -211,143 +220,16 @@ void add_colorings(int dummy) {
   } // for
   } // scope
 
-  // Form the vertex closure
-  auto vertex_closure = flecsi::topology::vertex_closure<2>(sd, closure);
-
-  // Assign vertex ownership
-  std::vector<std::set<size_t>> vertex_requests(size);
-  std::set<flecsi::coloring::entity_info_t> vertex_info;
-
-  size_t offset(0);
-  for(auto i: vertex_closure) {
-
-    // Get the set of cells that reference this vertex.
-    auto referencers = flecsi::topology::vertex_referencers<2>(sd, i);
-
-    size_t min_rank(std::numeric_limits<size_t>::max());
-    std::set<size_t> shared_vertices;
-
-    // Iterate the direct referencers to assign vertex ownership.
-    for(auto c: referencers) {
-
-      // Check the remote info map to see if this cell is
-      // off-color. If it is, compare it's rank for
-      // the ownership logic below.
-      if(remote_info_map.find(c) != remote_info_map.end()) {
-        min_rank = std::min(min_rank, remote_info_map[c].rank);
-        shared_vertices.insert(remote_info_map[c].rank);
-      }
-      else {
-        // If the local cell is shared, we need to add all of
-        // the ranks that reference it.
-
-        // Add our rank to compare for ownership.
-        min_rank = std::min(min_rank, size_t(rank));
-
-        // If the local cell is shared, we need to add all of
-        // the ranks that reference it.
-        if(shared_cells_map.find(c) != shared_cells_map.end()) {
-          shared_vertices.insert(shared_cells_map[c].shared.begin(),
-            shared_cells_map[c].shared.end());
-        } // if
-      } // if
-
-      // Iterate through the closure intersection map to see if the
-      // indirect reference is part of another rank's closure, i.e.,
-      // that it is an indirect dependency.
-      for(auto ci: closure_intersection_map) {
-        if(ci.second.find(c) != ci.second.end()) {
-          shared_vertices.insert(ci.first);
-        } // if
-      } // for
-
-    } // for
-
-    if(min_rank == rank) {
-      // This is a vertex that belongs to our rank.
-      auto entry =
-        flecsi::coloring::entity_info_t(i, rank, offset, shared_vertices);
-      vertex_info.insert(
-        flecsi::coloring::entity_info_t(i, rank, offset++, shared_vertices));
-    }
-    else {
-      // Add remote vertex to the request for offset information.
-      vertex_requests[min_rank].insert(i);
-    } // fi
-  } // for
-
-  auto vertex_offset_info =
-    communicator->get_entity_info(vertex_info, vertex_requests);
-
-  // Vertices index coloring.
-  flecsi::coloring::index_coloring_t vertices;
-  coloring::coloring_info_t vertex_color_info;
-
-  for(auto i: vertex_info) {
-    if(i.shared.size()) {
-      vertices.shared.insert(i);
-
-      // Collect all colors with whom we require communication
-      // to send shared information.
-      vertex_color_info.shared_users = flecsi::utils::set_union(
-        vertex_color_info.shared_users, i.shared);
-    }
-    else {
-      vertices.exclusive.insert(i);
-    } // if
-  } // for
-
-  {
-  size_t r(0);
-  for(auto i: vertex_requests) {
-
-    auto offset(vertex_offset_info[r].begin());
-    for(auto s: i) {
-      vertices.ghost.insert(flecsi::coloring::entity_info_t(s, r, *offset));
-      ++offset;
-
-      // Collect all colors with whom we require communication
-      // to receive ghost information.
-      vertex_color_info.ghost_owners.insert(r);
-    } // for
-
-    ++r;
-  } // for
-  } // scope
-
-  {
-  clog_tag_guard(coloring);
-  clog_container_one(info, "exclusive vertices ", vertices.exclusive,
-    clog::newline);
-  clog_container_one(info, "shared vertices ", vertices.shared, clog::newline);
-  clog_container_one(info, "ghost vertices ", vertices.ghost, clog::newline);
-  } // guard
-
-#if 0
-  coloring::coloring_info_t cell_color_info{ cells.exclusive.size(),
-    cells.shared.size(), cells.ghost.size() };
-  coloring::coloring_info_t vertex_color_info{ vertices.exclusive.size(),
-    vertices.shared.size(), vertices.ghost.size() };
-#endif
-
-  vertex_color_info.exclusive = vertices.exclusive.size();
-  vertex_color_info.shared = vertices.shared.size();
-  vertex_color_info.ghost = vertices.ghost.size();
-
   {
   clog_tag_guard(coloring);
   clog(info) << cell_color_info << std::endl << std::flush;
-  clog(info) << vertex_color_info << std::endl << std::flush;
   } // gaurd
 
   // Gather the coloring info from all colors
   auto cell_coloring_info = communicator->get_coloring_info(cell_color_info);
-  auto vertex_coloring_info =
-    communicator->get_coloring_info(vertex_color_info);
 
   // Add colorings to the context.
   context_.add_coloring(0, cells, cell_coloring_info);
-  context_.add_coloring(1, vertices, vertex_coloring_info);
 
 } // add_colorings
 
@@ -369,7 +251,12 @@ void specialization_driver(int argc, char ** argv) {
 //----------------------------------------------------------------------------//
 
 void driver(int argc, char ** argv) {
-  clog(trace) << "In driver" << std::endl;
+  clog(error) << "In driver" << std::endl;
+
+  client_type client;
+
+  auto handle = flecsi_get_handle(client, name_space, cell_ID, size_t, dense, INDEX_ID);
+
 } // specialization_driver
 
 } // namespace execution
