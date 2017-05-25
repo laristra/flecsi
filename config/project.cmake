@@ -6,8 +6,8 @@
 # /@@////   /@@/@@@@@@@/@@       ////////@@/@@
 # /@@       /@@/@@//// //@@    @@       /@@/@@
 # /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
-# //       ///  //////   //////  ////////  // 
-# 
+# //       ///  //////   //////  ////////  //
+#
 # Copyright (c) 2016 Los Alamos National Laboratory, LLC
 # All rights reserved
 #~----------------------------------------------------------------------------~#
@@ -60,6 +60,23 @@ set(FLECSI_RUNTIME_MODEL "${FLECSI_RUNTIME_MODEL}" CACHE STRING
   "Select the runtime model")
 set_property(CACHE FLECSI_RUNTIME_MODEL
   PROPERTY STRINGS ${FLECSI_RUNTIME_MODELS})
+
+#------------------------------------------------------------------------------#
+# Add options for design by contract
+#------------------------------------------------------------------------------#
+
+set(FLECSI_DBC_ACTIONS throw notify nothing)
+
+if(NOT FLECSI_DBC_ACTION)
+  list(GET FLECSI_DBC_ACTIONS 0 FLECSI_DBC_ACTION)
+endif()
+
+set(FLECSI_DBC_ACTION "${FLECSI_DBC_ACTION}" CACHE STRING
+  "Select the design by contract action")
+set_property(CACHE FLECSI_DBC_ACTION PROPERTY STRINGS ${FLECSI_DBC_ACTIONS})
+
+set(FLECSI_DBC_REQUIRE ON CACHE BOOL
+  "Enable DBC Pre/Post Condition Assertions")
 
 #------------------------------------------------------------------------------#
 # Enable Boost.Preprocessor

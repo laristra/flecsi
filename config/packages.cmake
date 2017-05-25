@@ -6,8 +6,8 @@
 # /@@////   /@@/@@@@@@@/@@       ////////@@/@@
 # /@@       /@@/@@//// //@@    @@       /@@/@@
 # /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
-# //       ///  //////   //////  ////////  // 
-# 
+# //       ///  //////   //////  ////////  //
+#
 # Copyright (c) 2016 Los Alamos National Laboratory, LLC
 # All rights reserved
 #~----------------------------------------------------------------------------~#
@@ -19,6 +19,19 @@
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+#------------------------------------------------------------------------------#
+# DBC
+#------------------------------------------------------------------------------#
+if(FLECSI_DBC_ACTION STREQUAL "throw")
+  add_definitions(-DFLECSI_DBC_THROW)
+elseif(FLECSI_DBC_ACTION STREQUAL "notify")
+  add_definitions(-DFLECSI_DBC_NOTIFY)
+endif()
+
+if(FLECSI_DBC_REQUIRE)
+  add_definitions(-DFLECSI_REQUIRE_ON)
+endif()
 
 #------------------------------------------------------------------------------#
 # OpenSSL
@@ -145,25 +158,6 @@ message(STATUS "${CINCH_Yellow}Set id_t bits to allow:\n"
   "   ${FLECSI_ID_GBITS} global bits (PBITS*EBITS)${CINCH_ColorReset}")
 
 #------------------------------------------------------------------------------#
-# Enable IO with exodus
-#------------------------------------------------------------------------------#
-
-find_package(EXODUSII)
-option(ENABLE_EXODUS "Enable I/O (uses libexodus)" ${EXODUSII_FOUND})
-
-if(ENABLE_EXODUS)
-
-  if(EXODUSII_FOUND)
-    set(IO_LIBRARIES ${EXODUSII_LIBRARIES})
-    include_directories(${EXODUSII_INCLUDE_DIRS})
-  else()
-    MESSAGE(FATAL_ERROR "You need libexodus either from TPL "
-      "or system to enable I/O")
-  endif()
-
-endif(ENABLE_EXODUS)
-
-#------------------------------------------------------------------------------#
 # Enable partitioning with METIS
 #------------------------------------------------------------------------------#
 
@@ -205,21 +199,11 @@ if(ENABLE_COLORING)
 
 endif()
 
-#------------------------------------------------------------------------------#
-# LAPACK
-#------------------------------------------------------------------------------#
-
-# NB: The code that uses lapack actually requires lapacke:
-# http://www.netlib.org/lapack/lapacke.html
-# If the installation of lapack that this finds does not contain lapacke then
-# the build will fail.
-if(NOT APPLE)
-  find_package(LAPACKE)
-
-  if(LAPACKE_FOUND)
-      include_directories( ${LAPACKE_INCLUDE_DIRS} )
-  endif(LAPACKE_FOUND)
-endif(NOT APPLE)
+if ( FLECSI_RUNTIME_LIBRARIES OR PARTITION_LIBRARIES )
+  cinch_target_link_libraries(
+    flecsi ${FLECSI_RUNTIME_LIBRARIES} ${PARTITION_LIBRARIES}
+  )
+endif()
 
 #------------------------------------------------------------------------------#
 # configure header
