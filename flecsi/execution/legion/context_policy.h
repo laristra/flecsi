@@ -608,11 +608,11 @@ struct legion_context_policy_t
   //--------------------------------------------------------------------------//
 
   void
-  set_pbarriers_as_masters(
-    Legion::PhaseBarrier* pbarriers_as_masters
+  set_pbarriers_as_owners(
+    Legion::PhaseBarrier* pbarriers_as_owners
   )
   {
-    pbarriers_as_masters_ = pbarriers_as_masters;
+    pbarriers_as_owners_ = pbarriers_as_owners;
   }
 
   //--------------------------------------------------------------------------//
@@ -621,13 +621,13 @@ struct legion_context_policy_t
   //! @param index_space virtual index space
   //--------------------------------------------------------------------------//
 
-  Legion::PhaseBarrier
-  get_pbarrier_as_master(
+  Legion::PhaseBarrier*
+  get_pbarrier_as_owner_ptr(
     size_t index_space
   )
   const
   {
-    return pbarriers_as_masters_[index_space];
+    return &pbarriers_as_owners_[index_space];
   }
 
   //--------------------------------------------------------------------------//
@@ -639,10 +639,10 @@ struct legion_context_policy_t
 
   void
   push_ghost_owners_pbarriers(
-    std::vector<Legion::PhaseBarrier> ghost_owners_pbarriers
+    std::vector<Legion::PhaseBarrier*> ghost_owners_pbarriers
   )
   {
-    ghost_owners_pbarriers_.push_back(ghost_owners_pbarriers);
+    ghost_owners_pbarriers_ptrs_.push_back(ghost_owners_pbarriers);
   }
 
   //--------------------------------------------------------------------------//
@@ -651,13 +651,13 @@ struct legion_context_policy_t
   //! @param index_space virtual index space
   //--------------------------------------------------------------------------//
 
-  std::vector<Legion::PhaseBarrier>
-  get_ghost_owners_pbarriers(
+  std::vector<Legion::PhaseBarrier*>
+  get_ghost_owners_pbarriers_ptrs(
     size_t index_space
   )
   const
   {
-    return ghost_owners_pbarriers_[index_space];
+    return ghost_owners_pbarriers_ptrs_[index_space];
   }
 
   //--------------------------------------------------------------------------//
@@ -1042,8 +1042,8 @@ private:
   // Legion data members within SPMD task.
   //--------------------------------------------------------------------------//
 
-  Legion::PhaseBarrier* pbarriers_as_masters_;
-  std::vector<std::vector<Legion::PhaseBarrier>> ghost_owners_pbarriers_;
+  Legion::PhaseBarrier* pbarriers_as_owners_;
+  std::vector<std::vector<Legion::PhaseBarrier*>> ghost_owners_pbarriers_ptrs_;
   std::vector<std::vector<Legion::LogicalRegion>> ghost_owners_lregions_;
   std::vector<Legion::STL::map<LegionRuntime::Arrays::coord_t,
     LegionRuntime::Arrays::coord_t>> global_to_local_color_map_;

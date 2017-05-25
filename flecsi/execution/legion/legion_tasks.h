@@ -170,7 +170,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
   size_t* num_owners = (size_t*)malloc(sizeof(size_t) * num_handles);
   args_deserializer.deserialize((void*)num_owners, sizeof(size_t) * num_handles);
 
-  context_.set_pbarriers_as_masters(pbarriers_as_master);
+  context_.set_pbarriers_as_owners(pbarriers_as_master);
 
   // FIXME free and clear after driver
   std::vector<std::vector<Legion::PhaseBarrier>> ghost_owners_pbarriers(num_handles);
@@ -180,7 +180,10 @@ __flecsi_internal_legion_task(spmd_task, void) {
     ghost_owners_pbarriers[handle_idx].resize(num_owners[handle_idx]);
     args_deserializer.deserialize((void*)&ghost_owners_pbarriers[handle_idx][0],
         sizeof(Legion::PhaseBarrier) * num_owners[handle_idx]);
-    context_.push_ghost_owners_pbarriers(ghost_owners_pbarriers[handle_idx]);
+    std::vector<Legion::PhaseBarrier*> ghost_owners_pbarriers_ptrs;
+    for (size_t owner = 0; owner < ghost_owners_pbarriers[handle_idx].size(); owner++)
+      ghost_owners_pbarriers_ptrs.push_back(&ghost_owners_pbarriers[handle_idx][owner]);
+    context_.push_ghost_owners_pbarriers(ghost_owners_pbarriers_ptrs);
   }
 
   size_t num_fields;

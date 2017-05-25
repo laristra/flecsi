@@ -433,9 +433,9 @@ struct storage_type_t<dense, DS, MD>
     h.exclusive_lr = context.get_exclusive_lr(index_space);
     h.shared_lr = context.get_shared_lr(index_space);
     h.ghost_lr = context.get_ghost_lr(index_space);
-    h.pbarrier_as_master = context.get_pbarrier_as_master(index_space);
-    h.ghost_owners_pbarriers = 
-      context.get_ghost_owners_pbarriers(index_space);
+    h.pbarrier_as_owner_ptr = context.get_pbarrier_as_owner_ptr(index_space);
+    h.ghost_owners_pbarriers_ptrs =
+      context.get_ghost_owners_pbarriers_ptrs(index_space);
     h.color_region = context.get_color_region(index_space);
     h.primary_ghost_ip = context.get_primary_ghost_ip(index_space);
     h.excl_shared_ip = context.get_excl_shared_ip(index_space);
