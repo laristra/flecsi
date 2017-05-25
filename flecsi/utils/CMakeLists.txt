@@ -22,7 +22,6 @@ set(utils_HEADERS
   array_ref.h
   dbc.h
   dbc_impl.h
-  bitfield.h
   checksum.h
   common.h
   const_string.h
