@@ -61,7 +61,7 @@ struct legion_data_handle_policy_t
     exclusive_lr = p.exclusive_lr;
     shared_lr = p.shared_lr;
     ghost_lr = p.ghost_lr;
-    pbarriers_as_master = p.pbarriers_as_master;
+    pbarrier_as_master = p.pbarrier_as_master;
     ghost_owners_pbarriers = p.ghost_owners_pbarriers;
     ghost_owners_lregions = p.ghost_owners_lregions;
     color_region = p.color_region;
@@ -69,15 +69,16 @@ struct legion_data_handle_policy_t
     excl_shared_ip = p.excl_shared_ip;
     exclusive_pr = p.exclusive_pr;
     shared_pr = p.shared_pr;
-    ghost_pr = p.ghost_pr; 
+    ghost_pr = p.ghost_pr;
+    ghost_is_readable = p.ghost_is_readable;
   }
 
   field_id_t fid;
   Legion::LogicalRegion exclusive_lr;
   Legion::LogicalRegion shared_lr;
   Legion::LogicalRegion ghost_lr;
-  Legion::PhaseBarrier* pbarriers_as_master;
-  Legion::PhaseBarrier* ghost_owners_pbarriers;
+  Legion::PhaseBarrier pbarrier_as_master;
+  std::vector<Legion::PhaseBarrier> ghost_owners_pbarriers;
   std::vector<Legion::LogicalRegion> ghost_owners_lregions;
   Legion::LogicalRegion color_region;
   Legion::IndexPartition primary_ghost_ip;
@@ -85,6 +86,7 @@ struct legion_data_handle_policy_t
   Legion::PhysicalRegion exclusive_pr;
   Legion::PhysicalRegion shared_pr;
   Legion::PhysicalRegion ghost_pr;
+  bool ghost_is_readable;
 }; // class legion_data_handle_policy_t
 
 } // namespace flecsi

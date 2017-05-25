@@ -24,29 +24,53 @@
 #include "flecsi/data/data.h"
 #include "flecsi/supplemental/coloring/add_colorings.h"
 
-clog_register_tag(coloring);
+#define INDEX_ID 0
+#define VERSIONS 1
+
+clog_register_tag(ghost_access);
 
 template<typename T, size_t EP, size_t SP, size_t GP>
 using handle_t =
   flecsi::data::legion::dense_handle_t<T, EP, SP, GP,
   flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t>>;
 
+
+void check_all_cells_task(handle_t<size_t, flecsi::dro, flecsi::dro,
+    flecsi::dro> cell_ID, size_t my_color, size_t cycle) {
+
+} // initialize_primary_cells_task
+
+flecsi_register_task(check_all_cells_task, flecsi::loc, flecsi::single);
+
 void initialize_primary_cells_task(handle_t<size_t, flecsi::drw, flecsi::drw,
-    flecsi::dno> cell_ID) {
+    flecsi::dno> cell_ID, size_t my_color) {
 
   flecsi::execution::context_t & context_ = flecsi::execution::context_t::instance();
   const std::unordered_map<size_t, flecsi::coloring::index_coloring_t> coloring_map
     = context_.coloring_map();
+  auto index_coloring = coloring_map.find(INDEX_ID);
+
+  for (auto exclusive_itr = index_coloring->second.exclusive.begin(); exclusive_itr !=
+      index_coloring->second.exclusive.end(); ++exclusive_itr) {
+    clog(trace) << my_color << " exclusive " <<  *exclusive_itr << std::endl;
+  } // exclusive_itr
+
+  for (auto shared_itr = index_coloring->second.shared.begin(); shared_itr !=
+      index_coloring->second.shared.end(); ++shared_itr) {
+    clog(trace) << my_color << " shared " <<  *shared_itr << std::endl;
+  } // shared_itr
+
+  for (auto ghost_itr = index_coloring->second.ghost.begin(); ghost_itr !=
+      index_coloring->second.ghost.end(); ++ghost_itr) {
+    flecsi::coloring::entity_info_t ghost = *ghost_itr;
+    clog(trace) << my_color << " ghost " <<  ghost.id << std::endl;
+  } // ghost_itr
 
 } // initialize_primary_cells_task
 
 flecsi_register_task(initialize_primary_cells_task, flecsi::loc, flecsi::single);
 
 class client_type : public flecsi::data::data_client_t{};
-
-#define INDEX_ID 0
-#define VERSIONS 1
-
 
 flecsi_new_register_data(client_type, name_space, cell_ID, size_t, dense, INDEX_ID, VERSIONS);
 
@@ -71,11 +95,17 @@ void specialization_driver(int argc, char ** argv) {
 void driver(int argc, char ** argv) {
   clog(error) << "In driver" << std::endl;
 
+  flecsi::execution::context_t & context_ = flecsi::execution::context_t::instance();
+  Legion::HighLevelRuntime *runtime = context_.runtime(utils::const_string_t{"driver"}.hash());
+  const int my_color = runtime->find_local_MPI_rank();
+
   client_type client;
 
   auto handle = flecsi_get_handle(client, name_space, cell_ID, size_t, dense, INDEX_ID);
 
-  flecsi_execute_task(initialize_primary_cells_task, single, handle);
+  flecsi_execute_task(initialize_primary_cells_task, single, handle, my_color);
+
+  flecsi_execute_task(check_all_cells_task, single, handle, my_color, 0);
 } // specialization_driver
 
 } // namespace execution

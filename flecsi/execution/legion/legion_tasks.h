@@ -172,16 +172,15 @@ __flecsi_internal_legion_task(spmd_task, void) {
 
   context_.set_pbarriers_as_masters(pbarriers_as_master);
 
-  std::vector<Legion::PhaseBarrier*> ghost_owners_pbarriers;
+  // FIXME free and clear after driver
+  std::vector<std::vector<Legion::PhaseBarrier>> ghost_owners_pbarriers(num_handles);
 
+  // FIXME again assuming handles are 0, 1, 2, ..
   for (size_t handle_idx = 0; handle_idx < num_handles; handle_idx++) {
-
-    Legion::PhaseBarrier* ghost_owners_pbarriers_buf = (Legion::PhaseBarrier*)
-        malloc(sizeof(Legion::PhaseBarrier) * num_owners[handle_idx]);
-    args_deserializer.deserialize((void*)ghost_owners_pbarriers_buf, sizeof(Legion::PhaseBarrier) * num_owners[handle_idx]);
-
-    ghost_owners_pbarriers.push_back(ghost_owners_pbarriers_buf); // FIXME free and clear after driver
-    context_.push_ghost_owners_pbarriers(ghost_owners_pbarriers_buf);
+    ghost_owners_pbarriers[handle_idx].resize(num_owners[handle_idx]);
+    args_deserializer.deserialize((void*)&ghost_owners_pbarriers[handle_idx][0],
+        sizeof(Legion::PhaseBarrier) * num_owners[handle_idx]);
+    context_.push_ghost_owners_pbarriers(ghost_owners_pbarriers[handle_idx]);
   }
 
   size_t num_fields;

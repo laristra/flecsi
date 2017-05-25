@@ -616,18 +616,18 @@ struct legion_context_policy_t
   }
 
   //--------------------------------------------------------------------------//
-  //! Return phase barriers as masters for index space.
+  //! Return phase barrier as master for index space.
   //!
   //! @param index_space virtual index space
   //--------------------------------------------------------------------------//
 
-  Legion::PhaseBarrier*
-  get_pbarriers_as_master(
+  Legion::PhaseBarrier
+  get_pbarrier_as_master(
     size_t index_space
   )
   const
   {
-    return &pbarriers_as_masters_[index_space];
+    return pbarriers_as_masters_[index_space];
   }
 
   //--------------------------------------------------------------------------//
@@ -639,7 +639,7 @@ struct legion_context_policy_t
 
   void
   push_ghost_owners_pbarriers(
-    Legion::PhaseBarrier* ghost_owners_pbarriers
+    std::vector<Legion::PhaseBarrier> ghost_owners_pbarriers
   )
   {
     ghost_owners_pbarriers_.push_back(ghost_owners_pbarriers);
@@ -651,7 +651,7 @@ struct legion_context_policy_t
   //! @param index_space virtual index space
   //--------------------------------------------------------------------------//
 
-  Legion::PhaseBarrier*
+  std::vector<Legion::PhaseBarrier>
   get_ghost_owners_pbarriers(
     size_t index_space
   )
@@ -1043,7 +1043,7 @@ private:
   //--------------------------------------------------------------------------//
 
   Legion::PhaseBarrier* pbarriers_as_masters_;
-  std::vector<Legion::PhaseBarrier*> ghost_owners_pbarriers_;
+  std::vector<std::vector<Legion::PhaseBarrier>> ghost_owners_pbarriers_;
   std::vector<std::vector<Legion::LogicalRegion>> ghost_owners_lregions_;
   std::vector<Legion::STL::map<LegionRuntime::Arrays::coord_t,
     LegionRuntime::Arrays::coord_t>> global_to_local_color_map_;

@@ -89,6 +89,27 @@ namespace execution {
       > & h
     )
     {
+      bool write_phase = false;
+
+      if ( (SHARED_PERMISSIONS == dwd) || (SHARED_PERMISSIONS == drw) )
+        write_phase = true;
+
+      if (write_phase) {
+        const int my_color = runtime->find_local_MPI_rank();
+        clog(error) << "rank " << my_color << " WRITE PHASE EPILOGUE" << std::endl;
+
+        h.pbarrier_as_master = runtime->advance_phase_barrier(context,
+            h.pbarrier_as_master);             // phase READ
+
+        // as slave
+        for (size_t owner=0; owner<h.ghost_owners_pbarriers.size(); owner++) {
+          h.ghost_owners_pbarriers[owner].arrive(1);  // phase READ
+          h.ghost_owners_pbarriers[owner] = runtime->advance_phase_barrier(context,
+              h.ghost_owners_pbarriers[owner]);       // phase READ
+        }
+
+        h.ghost_is_readable = false;
+      } // write_phase
     } // handle
 
     //------------------------------------------------------------------------//
