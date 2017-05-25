@@ -133,15 +133,15 @@ set(data_SOURCES
 #    ${CINCH_RUNTIME_LIBRARIES}
 #)
 
-cinch_add_unit(compaction
-  SOURCES
-    test/legion/compaction.cc
-    ../execution/driver_initialization.cc
-    ${RUNTIME_DRIVER}
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
-)
+# cinch_add_unit(compaction
+#   SOURCES
+#     test/legion/compaction.cc
+#     ../execution/driver_initialization.cc
+#     ${RUNTIME_DRIVER}
+#   LIBRARIES
+#     flecsi
+#     ${CINCH_RUNTIME_LIBRARIES}
+# )
 
 #if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 #  cinch_add_unit(storage_type
@@ -207,45 +207,29 @@ cinch_add_unit(compaction
 
 #endif()
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+# if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
-  if(ENABLE_COLORING AND ENABLE_PARMETIS)
+#   if(ENABLE_COLORING AND ENABLE_PARMETIS)
 
-    cinch_add_unit(legion_dh1
-      SOURCES
-        test/dh1.cc
-        data_client.cc
-        ../execution/driver_initialization.cc
-        ../execution/legion/runtime_driver.cc
-        ../execution/legion/context_policy.cc
-      DEFINES
-        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-      LIBRARIES
-        flecsi
-        ${CINCH_RUNTIME_LIBRARIES}
-      POLICY LEGION
-      THREADS 2
-    )
+#     cinch_add_unit(client_registration
+#       SOURCES
+#         test/client_registration.cc
+#         data_client.cc
+#         ../execution/driver_initialization.cc
+#         ../execution/legion/runtime_driver.cc
+#         ../execution/legion/context_policy.cc
+#       DEFINES
+#         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+#       LIBRARIES
+#         flecsi
+#         ${CINCH_RUNTIME_LIBRARIES}
+#       POLICY LEGION
+#       THREADS 2
+#     )
 
-    cinch_add_unit(client_registration
-      SOURCES
-        test/client_registration.cc
-        data_client.cc
-        ../execution/driver_initialization.cc
-        ../execution/legion/runtime_driver.cc
-        ../execution/legion/context_policy.cc
-      DEFINES
-        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-      LIBRARIES
-        flecsi
-        ${CINCH_RUNTIME_LIBRARIES}
-      POLICY LEGION
-      THREADS 2
-    )
+#   endif()
 
-  endif()
-
-endif()
+# endif()
 
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.

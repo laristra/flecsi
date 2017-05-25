@@ -36,14 +36,16 @@ using handle_t =
 
 
 void check_all_cells_task(handle_t<size_t, flecsi::dro, flecsi::dro,
-    flecsi::dro> cell_ID, size_t my_color, size_t cycle) {
-
+    flecsi::dro> cell_ID, int my_color, size_t cycle) {
+  clog(error) << my_color << " READING " << std::endl;
 } // initialize_primary_cells_task
 
 flecsi_register_task(check_all_cells_task, flecsi::loc, flecsi::single);
 
 void initialize_primary_cells_task(handle_t<size_t, flecsi::drw, flecsi::drw,
-    flecsi::dno> cell_ID, size_t my_color) {
+    flecsi::dno> cell_ID, int my_color) {
+
+  clog(error) << my_color << " WRITING " << std::endl;
 
   flecsi::execution::context_t & context_ = flecsi::execution::context_t::instance();
   const std::unordered_map<size_t, flecsi::coloring::index_coloring_t> coloring_map
@@ -103,9 +105,12 @@ void driver(int argc, char ** argv) {
 
   auto handle = flecsi_get_handle(client, name_space, cell_ID, size_t, dense, INDEX_ID);
 
-  flecsi_execute_task(initialize_primary_cells_task, single, handle, my_color);
+  for(size_t cycle=0; cycle<3; cycle++) {
+    flecsi_execute_task(initialize_primary_cells_task, single, handle, my_color);
 
-  flecsi_execute_task(check_all_cells_task, single, handle, my_color, 0);
+    flecsi_execute_task(check_all_cells_task, single, handle, my_color, cycle);
+  }
+
 } // specialization_driver
 
 } // namespace execution
