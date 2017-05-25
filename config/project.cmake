@@ -51,6 +51,20 @@ endif()
 # This changes the Cinch default
 set(ENABLE_BOOST_PREPROCESSOR ON CACHE BOOL "Enable Boost.Preprocessor")
 
+
+#------------------------------------------------------------------------------#
+# cinch_load_extras will try and find legion and mpi.  If we want to
+# override the defaults, i.e. ENABLE_MPI=on and ENABLE_LEGION=on, we
+# need to do it before cinch_load_extras is called.
+#------------------------------------------------------------------------------#
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
+  set(ENABLE_MPI ON CACHE BOOL "Enable MPI")
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+  set(ENABLE_MPI ON CACHE BOOL "Enable MPI")
+  set(ENABLE_LEGION ON CACHE BOOL "Enable Legion")
+endif()
+
 #------------------------------------------------------------------------------#
 # Load the cinch extras
 #------------------------------------------------------------------------------#
@@ -142,18 +156,6 @@ if(ENABLE_OPENSSL)
 endif()
 
 #------------------------------------------------------------------------------#
-# Find Legion
-#------------------------------------------------------------------------------#
-
-if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
-
-  find_package(Legion REQUIRED)
-
-  message(STATUS "Legion found: ${Legion_FOUND}")
-
-endif()
-
-#------------------------------------------------------------------------------#
 # Runtime models
 #------------------------------------------------------------------------------#
 
@@ -171,8 +173,12 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 #
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
-  if(NOT ENABLE_MPI)
+  if(NOT MPI_${MPI_LANGUAGE}_FOUND)
     message (FATAL_ERROR "MPI is required for the legion runtime model")
+  endif()
+ 
+  if(NOT Legion_FOUND)
+    message (FATAL_ERROR "Legion is required for the legion runtime model")
   endif()
  
   set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/legion)
@@ -189,6 +195,10 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 # MPI interface
 #
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
+
+  if(NOT MPI_${MPI_LANGUAGE}_FOUND)
+    message (FATAL_ERROR "MPI is required for the mpi runtime model")
+  endif()
 
   set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/mpi)
 
