@@ -172,8 +172,9 @@ runtime_driver(
       color_partitioning[color] = Legion::Domain::from_rect<2>(subrect);
       phase_barriers_map[handle_idx.first].push_back(runtime->create_phase_barrier(ctx,
           1 + color_info.shared_users.size()));
-      clog(trace) << "key " << handle_idx.first << " phase barrier " << color <<
-          " has " << color_info.shared_users.size() + 1 << " arrivers" << std::endl;
+      clog(error) << "key " << handle_idx.first << " phase barrier " << color <<
+          " has " << color_info.shared_users.size() + 1 << " arrivers to " <<
+          phase_barriers_map[handle_idx.first].back() << std::endl;
     }
 
     Legion::IndexPartition color_ip = runtime->create_index_partition(ctx,

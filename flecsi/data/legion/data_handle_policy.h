@@ -61,8 +61,8 @@ struct legion_data_handle_policy_t
     exclusive_lr = p.exclusive_lr;
     shared_lr = p.shared_lr;
     ghost_lr = p.ghost_lr;
-    pbarrier_as_master = p.pbarrier_as_master;
-    ghost_owners_pbarriers = p.ghost_owners_pbarriers;
+    pbarrier_as_owner_ptr = p.pbarrier_as_owner_ptr;
+    ghost_owners_pbarriers_ptrs = p.ghost_owners_pbarriers_ptrs;
     ghost_owners_lregions = p.ghost_owners_lregions;
     color_region = p.color_region;
     primary_ghost_ip = p.primary_ghost_ip;
@@ -77,8 +77,8 @@ struct legion_data_handle_policy_t
   Legion::LogicalRegion exclusive_lr;
   Legion::LogicalRegion shared_lr;
   Legion::LogicalRegion ghost_lr;
-  Legion::PhaseBarrier pbarrier_as_master;
-  std::vector<Legion::PhaseBarrier> ghost_owners_pbarriers;
+  Legion::PhaseBarrier* pbarrier_as_owner_ptr;
+  std::vector<Legion::PhaseBarrier*> ghost_owners_pbarriers_ptrs;
   std::vector<Legion::LogicalRegion> ghost_owners_lregions;
   Legion::LogicalRegion color_region;
   Legion::IndexPartition primary_ghost_ip;

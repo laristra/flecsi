@@ -91,6 +91,7 @@ namespace execution {
     {
       bool read_phase = false;
       bool write_phase = false;
+      const int my_color = runtime->find_local_MPI_rank();
 
       if (GHOST_PERMISSIONS != dno)
         read_phase = true;
@@ -98,11 +99,50 @@ namespace execution {
       if ( (SHARED_PERMISSIONS == dwd) || (SHARED_PERMISSIONS == drw) )
         write_phase = true;
 
-      if (read_phase)
-        clog(error) << "READ PHASE PROLOGUE" << std::endl;
+      if (read_phase) {
+        if (!h.ghost_is_readable) {
+          clog(error) << "rank " << my_color <<
+              " READ PHASE PROLOGUE" << std::endl;
+          // as master
+          clog(trace) << "rank " << my_color << " arrives & advances " <<
+              *(h.pbarrier_as_owner_ptr) <<
+              std::endl;
 
-      if (write_phase)
-        clog(error) << "WRITE PHASE PROLOGUE" << std::endl;
+          h.pbarrier_as_owner_ptr->arrive(1);                     // phase WRITE
+          *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(context,
+              *(h.pbarrier_as_owner_ptr));                          // phase WRITE
+
+          // as slave
+          for (size_t owner=0; owner<h.ghost_owners_pbarriers_ptrs.size(); owner++) {
+            clog(trace) << "rank " << my_color << " WAITS " <<
+                *(h.ghost_owners_pbarriers_ptrs[owner]) <<
+                std::endl;
+
+            h.ghost_owners_pbarriers_ptrs[owner]->wait();           // phase READ
+            clog(trace) << "rank " << my_color << " arrives & advances " <<
+                *(h.ghost_owners_pbarriers_ptrs[owner]) <<
+                std::endl;
+
+
+            h.ghost_owners_pbarriers_ptrs[owner]->arrive(1);        // phase WRITE
+            *(h.ghost_owners_pbarriers_ptrs[owner]) = runtime->advance_phase_barrier(context,
+                *(h.ghost_owners_pbarriers_ptrs[owner]));             // phase WRITE
+
+          }  // for owner as user
+
+          h.ghost_is_readable = true;
+        } // !ghost_is_readable
+      } // read_phase
+
+      if (write_phase) {
+        clog(error) << "rank " << runtime->find_local_MPI_rank() <<
+            " WRITE PHASE PROLOGUE" << std::endl;
+        clog(trace) << "rank " << my_color << " wait & arrival barrier " <<
+            *(h.pbarrier_as_owner_ptr) <<
+            std::endl;
+        launcher.add_wait_barrier(*(h.pbarrier_as_owner_ptr));      // phase WRITE
+        launcher.add_arrival_barrier(*(h.pbarrier_as_owner_ptr));   // phase READ
+      }
     } // handle
 
     //------------------------------------------------------------------------//

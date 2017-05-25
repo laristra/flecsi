@@ -606,8 +606,8 @@ struct legion_context_policy_t
   //!--------------------------------------------------------------------------//
 
   struct index_space_data_t{
-    Legion::PhaseBarrier pbarrier_as_master;
-    std::vector<Legion::PhaseBarrier> ghost_owners_pbarriers;
+    Legion::PhaseBarrier* pbarrier_as_owner_ptr;
+    std::vector<Legion::PhaseBarrier*> ghost_owners_pbarriers_ptrs;
     std::vector<Legion::LogicalRegion> ghost_owners_lregions;
     Legion::STL::map<LegionRuntime::Arrays::coord_t,
       LegionRuntime::Arrays::coord_t> global_to_local_color_map;
@@ -782,22 +782,7 @@ private:
   //--------------------------------------------------------------------------//
   // Legion data members within SPMD task.
   //--------------------------------------------------------------------------//
-
-  Legion::PhaseBarrier* pbarriers_as_masters_;
-
   std::map<size_t, index_space_data_t> index_space_data_map_;
-
-  std::vector<std::vector<Legion::PhaseBarrier>> ghost_owners_pbarriers_;
-  std::vector<std::vector<Legion::LogicalRegion>> ghost_owners_lregions_;
-  std::vector<Legion::STL::map<LegionRuntime::Arrays::coord_t,
-    LegionRuntime::Arrays::coord_t>> global_to_local_color_map_;
-  std::vector<Legion::LogicalRegion> color_regions_;
-  std::vector<Legion::IndexPartition> primary_ghost_ips_;
-  std::vector<Legion::LogicalRegion> primary_lrs_;
-  std::vector<Legion::LogicalRegion> ghost_lrs_;
-  std::vector<Legion::IndexPartition> excl_shared_ips_;
-  std::vector<Legion::LogicalRegion> exclusive_lrs_;
-  std::vector<Legion::LogicalRegion> shared_lrs_;
 
 }; // class legion_context_policy_t
 

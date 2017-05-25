@@ -434,9 +434,9 @@ struct storage_type_t<dense, DS, MD>
     h.exclusive_lr = ism[index_space].exclusive_lr;
     h.shared_lr = ism[index_space].shared_lr;
     h.ghost_lr = ism[index_space].ghost_lr;
-    h.pbarrier_as_master = ism[index_space].pbarrier_as_master;
-    h.ghost_owners_pbarriers = 
-      ism[index_space].ghost_owners_pbarriers;
+    h.pbarrier_as_owner_ptr = ism[index_space].pbarrier_as_owner_ptr;
+    h.ghost_owners_pbarriers_ptrs = 
+      ism[index_space].ghost_owners_pbarriers_ptrs;
     h.color_region = ism[index_space].color_region;
     h.primary_ghost_ip = ism[index_space].primary_ghost_ip;
     h.excl_shared_ip = ism[index_space].excl_shared_ip;

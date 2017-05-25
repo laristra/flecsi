@@ -173,13 +173,25 @@ __flecsi_internal_legion_task(spmd_task, void) {
   args_deserializer.deserialize((void*)num_owners, sizeof(size_t) * num_handles);
 
   for(size_t index_space = 0; index_space < num_handles; ++index_space){
-    ism[index_space].pbarrier_as_master = pbarriers_as_master[index_space];
+    ism[index_space].pbarrier_as_owner_ptr = &pbarriers_as_master[index_space];
   }
+
+  std::vector<std::vector<Legion::PhaseBarrier>> ghost_owners_pbarriers(num_handles);
 
   // FIXME again assuming handles are 0, 1, 2, ..
   for (size_t handle_idx = 0; handle_idx < num_handles; handle_idx++) {
-    ism[handle_idx].ghost_owners_pbarriers.resize(num_owners[handle_idx]);
-    args_deserializer.deserialize((void*)&ism[handle_idx].ghost_owners_pbarriers[0], sizeof(Legion::PhaseBarrier) * num_owners[handle_idx]);
+    size_t n = num_owners[handle_idx];
+
+    ghost_owners_pbarriers[handle_idx].resize(n);
+    args_deserializer.deserialize((void*)&ghost_owners_pbarriers[handle_idx][0],
+        sizeof(Legion::PhaseBarrier) * n);
+    
+    ism[handle_idx].ghost_owners_pbarriers_ptrs.resize(n);
+
+    for(size_t owner = 0; owner < n; ++owner){
+      ism[handle_idx].ghost_owners_pbarriers_ptrs[owner] = 
+        &ghost_owners_pbarriers[handle_idx][owner];
+    }
   }
 
   size_t num_fields;
