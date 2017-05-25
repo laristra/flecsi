@@ -101,7 +101,6 @@ namespace execution {
         Legion::PhysicalRegion pr;
         size_t size;
 
-        skip = true;
         if(skip){
           data = nullptr;
         }
