@@ -109,17 +109,17 @@ cinch_add_unit(any
 
 cinch_add_unit(dbc
   SOURCES test/dbc_test.cc
-  LIBRARIES flecsi
+  POLICY SERIAL
 )
 
 cinch_add_unit(dbc-no-assert
   SOURCES test/dbc_test_no_assert.cc
-  LIBRARIES flecsi
+  POLICY SERIAL
 )
 
 cinch_add_unit(dbc-notify
   SOURCES test/dbc_test_notify.cc
-  LIBRARIES flecsi
+  POLICY SERIAL
 )
 
 cinch_add_unit(const_string
