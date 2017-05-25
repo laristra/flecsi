@@ -82,7 +82,7 @@ namespace execution {
 
         switch(p){
           case 0:
-            skip = EXCLUSIVE_PERMISSIONS && SHARED_PERMISSIONS == 0;
+            skip = EXCLUSIVE_PERMISSIONS == 0 && SHARED_PERMISSIONS == 0;
             break;
           case 1:
             skip = EXCLUSIVE_PERMISSIONS == 0;
