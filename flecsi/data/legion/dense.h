@@ -429,16 +429,17 @@ struct storage_type_t<dense, DS, MD>
       key.hash() ^ NS);
 
     size_t index_space = field_info.index_space;
+    auto& ism = context.index_space_data_map();
 
-    h.exclusive_lr = context.get_exclusive_lr(index_space);
-    h.shared_lr = context.get_shared_lr(index_space);
-    h.ghost_lr = context.get_ghost_lr(index_space);
-    h.pbarrier_as_master = context.get_pbarrier_as_master(index_space);
+    h.exclusive_lr = ism[index_space].exclusive_lr;
+    h.shared_lr = ism[index_space].shared_lr;
+    h.ghost_lr = ism[index_space].ghost_lr;
+    h.pbarrier_as_master = ism[index_space].pbarrier_as_master;
     h.ghost_owners_pbarriers = 
-      context.get_ghost_owners_pbarriers(index_space);
-    h.color_region = context.get_color_region(index_space);
-    h.primary_ghost_ip = context.get_primary_ghost_ip(index_space);
-    h.excl_shared_ip = context.get_excl_shared_ip(index_space);
+      ism[index_space].ghost_owners_pbarriers;
+    h.color_region = ism[index_space].color_region;
+    h.primary_ghost_ip = ism[index_space].primary_ghost_ip;
+    h.excl_shared_ip = ism[index_space].excl_shared_ip;
     h.fid = field_info.fid;
 
     return h;
