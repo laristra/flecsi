@@ -614,10 +614,10 @@ struct legion_context_policy_t
     Legion::LogicalRegion color_region;
     Legion::IndexPartition primary_ghost_ip;
     Legion::LogicalRegion primary_lr;
-    Legion::LogicalRegion ghost_lr;
-    Legion::IndexPartition excl_shared_ip;
     Legion::LogicalRegion exclusive_lr;
     Legion::LogicalRegion shared_lr;
+    Legion::LogicalRegion ghost_lr;
+    Legion::IndexPartition excl_shared_ip;
   };
 
   //--------------------------------------------------------------------------//

@@ -123,6 +123,7 @@ namespace execution {
                 *(h.ghost_owners_pbarriers_ptrs[owner]) <<
                 std::endl;
 
+            // ndm - for all fids in context
 
             h.ghost_owners_pbarriers_ptrs[owner]->arrive(1);        // phase WRITE
             *(h.ghost_owners_pbarriers_ptrs[owner]) = runtime->advance_phase_barrier(context,

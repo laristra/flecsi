@@ -77,17 +77,20 @@ namespace execution {
       > & h
     )
     {
-      for(size_t p = 0; p < 3; ++p){
+      for(size_t p = 0; p < 4; ++p){
         bool skip = false;
 
         switch(p){
           case 0:
-            skip = EXCLUSIVE_PERMISSIONS == 0;
+            skip = EXCLUSIVE_PERMISSIONS && SHARED_PERMISSIONS == 0;
             break;
           case 1:
-            skip = SHARED_PERMISSIONS == 0;
+            skip = EXCLUSIVE_PERMISSIONS == 0;
             break;
           case 2:
+            skip = SHARED_PERMISSIONS == 0;
+            break;
+          case 3:
             skip = GHOST_PERMISSIONS == 0;
             break;
           default:
@@ -123,16 +126,21 @@ namespace execution {
 
         switch(p){
           case 0:
+            h.primary_pr = pr;
+            h.primary_data = data;
+            h.primary_size = size;
+            break;
+          case 1:
             h.exclusive_pr = pr;
             h.exclusive_data = data;
             h.exclusive_size = size;
             break;
-          case 1:
+          case 2:
             h.shared_pr = pr;
             h.shared_data = data;
             h.shared_size = size;
             break;
-          case 2:
+          case 3:
             h.ghost_pr = pr;
             h.ghost_data = data;
             h.shared_size = size;

@@ -86,22 +86,6 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   dense_handle_t() {}
   
   ///
-  // Constructor.
-  //
-  // \param label The c_str() version of the utils:const_string_t used for
-  //              this data variable's hash.
-  // \param size The size of the associated index space.
-  // \param data A pointer to the raw data.
-  // \param meta_data A reference to the user-defined meta data.
-  ///
-  /*
-  dense_handle_t(const std::string & label, const size_t size,
-    T * data, const user_meta_data_t & meta_data)
-    : label_(label), base::exclusive_size(size), base::exclusive_data(data), meta_data_(meta_data)
-    {}
-  */
-
-  ///
   // Copy constructor.
   ///
   template<size_t EP2, size_t SP2, size_t GP2>
@@ -134,7 +118,37 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   size_t
   size() const
   {
+    return base::primary_size;
+  } // size
+
+  ///
+  // \brief Return the index space size of the data variable
+  //        referenced by this handle.
+  ///
+  size_t
+  exclusive_size() const
+  {
     return base::exclusive_size;
+  } // size
+
+  ///
+  // \brief Return the index space size of the data variable
+  //        referenced by this handle.
+  ///
+  size_t
+  shared_size() const
+  {
+    return base::shared_size;
+  } // size
+
+  ///
+  // \brief Return the index space size of the data variable
+  //        referenced by this handle.
+  ///
+  size_t
+  ghost_size() const
+  {
+    return base::ghost_size;
   } // size
 
   ///
@@ -197,8 +211,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   ) const
   {
-    assert(index < base::exclusive_size && "index out of range");
-    return base::exclusive_data[index];
+    assert(index < base::primary_size && "index out of range");
+    return base::primary_data[index];
   } // operator []
 
   ///
@@ -212,8 +226,98 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   )
   {
+    assert(index < base::primary_size && "index out of range");
+    return base::primary_data[index];
+  } // operator []
+
+  ///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+  ///
+  const T &
+  exclusive (
+    size_t index
+  ) const
+  {
     assert(index < base::exclusive_size && "index out of range");
     return base::exclusive_data[index];
+  } // operator []
+
+  ///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+  ///
+  T &
+  exclusive (
+    size_t index
+  )
+  {
+    assert(index < base::exclusive_size && "index out of range");
+    return base::exclusive_data[index];
+  } // operator []
+
+  ///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+  ///
+  const T &
+  shared (
+    size_t index
+  ) const
+  {
+    assert(index < base::shared_size && "index out of range");
+    return base::shared_data[index];
+  } // operator []
+
+  ///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+  ///
+  T &
+  shared (
+    size_t index
+  )
+  {
+    assert(index < base::shared_size && "index out of range");
+    return base::shared_data[index];
+  } // operator []
+
+  ///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+  ///
+  const T &
+  ghost (
+    size_t index
+  ) const
+  {
+    assert(index < base::ghost_size && "index out of range");
+    return base::ghost_data[index];
+  } // operator []
+
+  ///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+  ///
+  T &
+  ghost (
+    size_t index
+  )
+  {
+    assert(index < base::ghost_size && "index out of range");
+    return base::ghost_data[index];
   } // operator []
 
   ///
@@ -263,8 +367,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   ) const
   {
-    assert(index < base::exclusive_size && "index out of range");
-    return base::exclusive_data[index];
+    assert(index < base::primary_size && "index out of range");
+    return base::primary_data[index];
   } // operator ()
 
   ///
@@ -278,8 +382,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   )
   {
-    assert(index < base::exclusive_size && "index out of range");
-    return base::exclusive_data[index];
+    assert(index < base::primary_size && "index out of range");
+    return base::primary_data[index];
   } // operator ()
 
   ///
@@ -289,7 +393,7 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   ///
   operator bool() const
   {
-    return base::exclusive_data != nullptr;
+    return base::primary_data != nullptr;
   } // operator bool
 
   template<typename, size_t, size_t, size_t, typename>
@@ -431,6 +535,7 @@ struct storage_type_t<dense, DS, MD>
     size_t index_space = field_info.index_space;
     auto& ism = context.index_space_data_map();
 
+    h.primary_lr = ism[index_space].primary_lr;
     h.exclusive_lr = ism[index_space].exclusive_lr;
     h.shared_lr = ism[index_space].shared_lr;
     h.ghost_lr = ism[index_space].ghost_lr;
