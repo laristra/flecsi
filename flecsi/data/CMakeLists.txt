@@ -133,15 +133,15 @@ set(data_SOURCES
 #    ${CINCH_RUNTIME_LIBRARIES}
 #)
 
-cinch_add_unit(compaction
-  SOURCES
-    test/legion/compaction.cc
-    ../execution/driver_initialization.cc
-    ${RUNTIME_DRIVER}
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
-)
+# cinch_add_unit(compaction
+#   SOURCES
+#     test/legion/compaction.cc
+#     ../execution/driver_initialization.cc
+#     ${RUNTIME_DRIVER}
+#   LIBRARIES
+#     flecsi
+#     ${CINCH_RUNTIME_LIBRARIES}
+# )
 
 #if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 #  cinch_add_unit(storage_type
