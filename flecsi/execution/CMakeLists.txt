@@ -117,9 +117,7 @@ cinch_add_unit(launch
   SOURCES
     test/launch.cc
   POLICY
-    ${UNIT_POLICY}
-  LIBRARIES
-    flecsi
+    SERIAL
 )
 
 if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
