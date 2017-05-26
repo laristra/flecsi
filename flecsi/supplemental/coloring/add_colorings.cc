@@ -3,12 +3,13 @@
  * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
 
-///
-/// \file
-/// \date Initial file creation: Apr 11, 2017
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: May 23, 2017
+//----------------------------------------------------------------------------//
 
-#include <cinchtest.h>
+#include <cinchlog.h>
+#include <mpi.h>
 
 #include "flecsi/execution/execution.h"
 #include "flecsi/execution/context.h"
@@ -18,23 +19,18 @@
 #include "flecsi/coloring/dcrs_utils.h"
 #include "flecsi/coloring/parmetis_colorer.h"
 #include "flecsi/coloring/mpi_communicator.h"
-#include "flecsi/supplemental/coloring/add_colorings.h"
 #include "flecsi/topology/closure_utils.h"
 #include "flecsi/utils/set_utils.h"
 
 clog_register_tag(coloring);
+clog_register_tag(coloring_output);
 
 namespace flecsi {
 namespace execution {
 
-#if 0
-//----------------------------------------------------------------------------//
-// Create some basic colorings.
-//----------------------------------------------------------------------------//
-
 void add_colorings(int dummy) {
 
-  clog_set_output_rank(0);
+  clog_set_output_rank(1);
 
   // Get the context instance.
   context_t & context_ = context_t::instance();
@@ -43,10 +39,14 @@ void add_colorings(int dummy) {
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+  {
+  clog_tag_guard(coloring);
   clog(info) << "add_colorings, rank: " << rank << std::endl;
+  }
 
   // Read the mesh definition from file.
   //flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
+  const size_t M(16), N(16);
   flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
 
   // Create the dCRS representation for the distributed colorer.
@@ -96,6 +96,15 @@ void add_colorings(int dummy) {
   // with intersections that are non-empty
   auto closure_intersection_map =
     communicator->get_intersection_info(nearest_neighbors);
+
+  {
+  clog_tag_guard(coloring);
+
+  for(auto ci: closure_intersection_map) {
+    clog_container_one(info,
+      "closure intersection color " << ci.first << ":", ci.second, clog::space);
+  } // for
+  } // guard
 
   // We can iteratively add halos of nearest neighbors, e.g.,
   // here we add the next nearest neighbors. For most mesh types
@@ -198,14 +207,15 @@ void add_colorings(int dummy) {
   cell_color_info.ghost = cells.ghost.size();
 
   {
-  clog_tag_guard(coloring);
+  clog_tag_guard(coloring_output);
   clog_container_one(info, "exclusive cells ", cells.exclusive, clog::newline);
   clog_container_one(info, "shared cells ", cells.shared, clog::newline);
   clog_container_one(info, "ghost cells ", cells.ghost, clog::newline);
   } // guard
 
   // Create a map version for lookups below.
-  std::unordered_map<size_t, flecsi::coloring::entity_info_t> shared_cells_map;
+  std::unordered_map<size_t, flecsi::coloring::entity_info_t>
+    shared_cells_map;
   {
   for(auto i: cells.shared) {
     shared_cells_map[i.id] = i;
@@ -317,7 +327,7 @@ void add_colorings(int dummy) {
   } // scope
 
   {
-  clog_tag_guard(coloring);
+  clog_tag_guard(coloring_output);
   clog_container_one(info, "exclusive vertices ", vertices.exclusive,
     clog::newline);
   clog_container_one(info, "shared vertices ", vertices.shared, clog::newline);
@@ -346,32 +356,158 @@ void add_colorings(int dummy) {
   auto vertex_coloring_info =
     communicator->get_coloring_info(vertex_color_info);
 
+  {
+  clog_tag_guard(coloring_output);
+
+  clog(info) << "vertex input coloring info color " <<
+    rank << vertex_color_info << std::endl;
+
+  for(auto ci: vertex_coloring_info) {
+  clog(info) << "vertex coloring info color " << ci.first
+    << ci.second << std::endl;
+  } // for
+  }
+
   // Add colorings to the context.
   context_.add_coloring(0, cells, cell_coloring_info);
   context_.add_coloring(1, vertices, vertex_coloring_info);
 
+#if 1
+  std::vector<std::pair<std::string, std::string>> colors = {
+    { "blue", "blue!40!white" },
+    { "green!60!black", "green!60!white" },
+    { "black", "black!40!white" },
+    { "red", "red!40!white" },
+    { "violet", "violet!40!white" },
+    { "cyan", "cyan!40!white" }
+  };
+
+  const size_t color = rank%colors.size();
+
+  std::stringstream texname;
+  texname << "simple2d-" << rank << "-" << M << "x" << N << ".tex";
+  std::ofstream tex(texname.str(), std::ofstream::out);
+
+  tex << "% Mesh visualization" << std::endl;
+  tex << "\\documentclass[tikz,border=7mm]{standalone}" << std::endl;
+  tex << std::endl;
+
+  tex << "\\begin{document}" << std::endl;
+  tex << std::endl;
+
+  tex << "\\begin{tikzpicture}" << std::endl;
+  tex << std::endl;
+
+  tex << "\\draw[step=1cm,black] (0, 0) grid (" <<
+    M << ", " << N << ");" << std::endl;
+
+  // maps
+  std::unordered_map<size_t, flecsi::coloring::entity_info_t>
+    exclusive_cells_map;
+  for(auto i: cells.exclusive) {
+    exclusive_cells_map[i.id] = i;
+  } // for
+
+  std::unordered_map<size_t, flecsi::coloring::entity_info_t>
+    ghost_cells_map;
+  for(auto i: cells.ghost) {
+    ghost_cells_map[i.id] = i;
+  } // for
+
+  size_t cell(0);
+  for(size_t j(0); j<M; ++j) {
+    double yoff(0.5+j);
+    for(size_t i(0); i<M; ++i) {
+      double xoff(0.5+i);
+
+      // Cells
+      auto ecell = exclusive_cells_map.find(cell);
+      auto scell = shared_cells_map.find(cell);
+      auto gcell = ghost_cells_map.find(cell);
+
+      if(ecell != exclusive_cells_map.end()) {
+        tex << "\\node[" << std::get<0>(colors[color]) <<
+          "] at (" << xoff << ", " << yoff <<
+          ") {" << cell++ << "};" << std::endl;
+      }
+      else if(scell != shared_cells_map.end()) {
+        tex << "\\node[" << std::get<1>(colors[color]) <<
+          "] at (" << xoff << ", " << yoff <<
+          ") {" << cell++ << "};" << std::endl;
+      }
+      else if(gcell != ghost_cells_map.end()) {
+        const size_t off_color = gcell->second.rank%colors.size();
+        tex << "\\node[" << std::get<1>(colors[off_color]) <<
+          "] at (" << xoff << ", " << yoff <<
+          ") {" << cell++ << "};" << std::endl;
+      }
+      else {
+        tex << "\\node[white] at (" << xoff << ", " << yoff <<
+          ") {" << cell++ << "};" << std::endl;
+      } // if
+    } // for
+  } // for
+
+  std::unordered_map<size_t, flecsi::coloring::entity_info_t>
+    exclusive_vertices_map;
+  for(auto i: vertices.exclusive) {
+    exclusive_vertices_map[i.id] = i;
+  } // for
+
+  std::unordered_map<size_t, flecsi::coloring::entity_info_t>
+    shared_vertices_map;
+  for(auto i: vertices.shared) {
+    shared_vertices_map[i.id] = i;
+  } // for
+
+  std::unordered_map<size_t, flecsi::coloring::entity_info_t>
+    ghost_vertices_map;
+  for(auto i: vertices.ghost) {
+    ghost_vertices_map[i.id] = i;
+  } // for
+
+  size_t vertex(0);
+  for(size_t j(0); j<M+1; ++j) {
+    double yoff(j-0.15);
+    for(size_t i(0); i<N+1; ++i) {
+      double xoff(i-0.2);
+
+      auto evertex = exclusive_vertices_map.find(vertex);
+      auto svertex = shared_vertices_map.find(vertex);
+      auto gvertex = ghost_vertices_map.find(vertex);
+
+      if(evertex != exclusive_vertices_map.end()) {
+        tex << "\\node[" << std::get<0>(colors[color]) <<
+          "] at (" << xoff << ", " << yoff <<
+          ") { \\scriptsize " << vertex++ << "};" << std::endl;
+      }
+      else if(svertex != shared_vertices_map.end()) {
+        tex << "\\node[" << std::get<1>(colors[color]) <<
+          "] at (" << xoff << ", " << yoff <<
+          ") { \\scriptsize " << vertex++ << "};" << std::endl;
+      }
+      else if(gvertex != ghost_vertices_map.end()) {
+        const size_t off_color = gvertex->second.rank%colors.size();
+        tex << "\\node[" << std::get<1>(colors[off_color]) <<
+          "] at (" << xoff << ", " << yoff <<
+          ") { \\scriptsize " << vertex++ << "};" << std::endl;
+      }
+      else {
+        tex << "\\node[white] at (" << xoff << ", " << yoff <<
+          ") { \\scriptsize " << vertex++ << "};" << std::endl;
+      } // if
+    } // for
+  } // for
+
+  tex << "\\end{tikzpicture}" << std::endl;
+  tex << std::endl;
+
+  tex << "\\end{document}" << std::endl;
+#endif
+
 } // add_colorings
 
 flecsi_register_mpi_task(add_colorings);
-#endif
-
-//----------------------------------------------------------------------------//
-// Specialization driver.
-//----------------------------------------------------------------------------//
-
-void specialization_driver(int argc, char ** argv) {
-  clog(info) << "In specialization driver" << std::endl;
-  flecsi_execute_mpi_task(add_colorings, 0);
-
-} // specialization_driver
-
-//----------------------------------------------------------------------------//
-// User driver.
-//----------------------------------------------------------------------------//
-
-void driver(int argc, char ** argv) {
-  clog(info) << "In driver" << std::endl;
-} // specialization_driver
 
 } // namespace execution
 } // namespace flecsi

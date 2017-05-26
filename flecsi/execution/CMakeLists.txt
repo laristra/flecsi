@@ -29,6 +29,8 @@ set(execution_HEADERS
   task.h
 )
 
+set(DRIVER_INITIALIZATION driver_initialization.cc)
+
 #------------------------------------------------------------------------------#
 # Runtime-specific files.
 #
@@ -129,8 +131,10 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
   cinch_add_unit(simple_function
     SOURCES
       test/simple_function_driver.cc
-      test/context_runtime.cc
+      ${DRIVER_INITIALIZATION}
       ${RUNTIME_DRIVER}
+    DEFINES
+      -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
     POLICY
       ${UNIT_POLICY}
     LIBRARIES
@@ -145,8 +149,10 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
   cinch_add_unit(simple_task
     SOURCES
       test/simple_task_driver.cc
-      test/context_runtime.cc
+      ${DRIVER_INITIALIZATION}
       ${RUNTIME_DRIVER}
+    DEFINES
+      -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
     POLICY
       ${UNIT_POLICY}
     LIBRARIES
@@ -162,13 +168,16 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
     cinch_add_unit(internal_task
     SOURCES
       test/legion/internal_task_driver.cc
-      test/context_runtime.cc
+      ${DRIVER_INITIALIZATION}
       ${RUNTIME_DRIVER}
+    DEFINES
+      -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
     POLICY
       ${UNIT_POLICY}
     LIBRARIES
       flecsi
       ${CINCH_RUNTIME_LIBRARIES}
+    THREADS 2
     )
 
     if(ENABLE_COLORING AND ENABLE_PARMETIS)
@@ -176,7 +185,8 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
       cinch_add_unit(execution_structure
         SOURCES
           test/execution_structure.cc
-          test/context_runtime.cc
+          ../supplemental/coloring/add_colorings.cc
+          ${DRIVER_INITIALIZATION}
           ${RUNTIME_DRIVER}
         INPUTS
           test/simple2d-8x8.msh
@@ -187,6 +197,7 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
           ${COLORING_LIBRARIES}
         DEFINES
           -DFLECSI_ENABLE_SPECIALIZATION_DRIVER
+          -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
         POLICY LEGION
         THREADS 2
       )
@@ -194,7 +205,8 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
       cinch_add_unit(ghost_access
         SOURCES
           test/legion/ghost_access_drivers.cc
-          test/context_runtime.cc
+          ../supplemental/coloring/add_colorings.cc
+          ${DRIVER_INITIALIZATION}
           ${RUNTIME_DRIVER}
         INPUTS
           test/simple2d-8x8.msh
@@ -205,6 +217,7 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
           ${COLORING_LIBRARIES}
         DEFINES
           -DFLECSI_ENABLE_SPECIALIZATION_DRIVER
+          -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
         POLICY LEGION
         THREADS 2
       )
@@ -212,7 +225,8 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
       cinch_add_unit(data_handle_task
         SOURCES
           test/data_handle_task.cc
-          test/context_runtime.cc
+          ../supplemental/coloring/add_colorings.cc
+          ${DRIVER_INITIALIZATION}
           ${RUNTIME_DRIVER}
         INPUTS
           test/simple2d-8x8.msh
@@ -223,6 +237,7 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
           ${COLORING_LIBRARIES}
         DEFINES
           -DFLECSI_ENABLE_SPECIALIZATION_DRIVER
+          -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
         POLICY LEGION
         THREADS 2
       )

@@ -69,12 +69,14 @@ runtime_driver(
   context_.pop_state( utils::const_string_t{"specialization_driver"}.hash());
 #endif // FLECSI_ENABLE_SPECIALIZATION_DRIVER
 
+
   // Register user data
   data::storage_t::instance().register_all();
 
   auto & data_client_registry =
     flecsi::data::storage_t::instance().data_client_registry(); 
 
+  // FIXME documentation required
   for(auto & c: data_client_registry) {
     for(auto & d: c.second) {
       d.second.second(d.second.first);
@@ -100,8 +102,10 @@ runtime_driver(
 
   auto coloring_info = context_.coloring_info_map();
 
-  auto ghost_owner_fid = 
-    LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner);
+  auto ghost_owner_pos_fid = 
+    LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
+
+  using field_info_t = context_t::field_info_t;
 
   {
   clog_tag_guard(runtime_driver);
@@ -113,7 +117,7 @@ runtime_driver(
     // Determine max size of a color partition
     size_t total_num_entities = 0;
     for(auto color_idx: handle_idx.second) {
-      clog(error) << "index: " << handle_idx.first << " color: " << color_idx.first << " " << color_idx.second << std::endl;
+      clog(trace) << "index: " << handle_idx.first << " color: " << color_idx.first << " " << color_idx.second << std::endl;
       total_num_entities = std::max(total_num_entities,
           color_idx.second.exclusive + color_idx.second.shared + color_idx.second.ghost);
     } // for color_idx
@@ -138,19 +142,11 @@ runtime_driver(
 
     // temporary fix until we add registration of internal fields
     allocator.allocate_field(sizeof(LegionRuntime::Arrays::Point<2>), 
-      ghost_owner_fid);
+      ghost_owner_pos_fid);
 
-    // Get field info for this index space
-    auto fitr = context_.field_info_map().find(handle_idx.first);
- 
-    if(fitr != context_.field_info_map().end())
-    {
-      auto& field_map = fitr->second;
-
-      // Allocate all fields on this index space
-      for(auto& aitr : field_map){
-        const context_t::field_info_t& fi = aitr.second;
-        allocator.allocate_field(fi.size, aitr.first);
+    for(const field_info_t& fi : context_.registered_fields()){
+      if(fi.index_space == handle_idx.first){
+        allocator.allocate_field(fi.size, fi.fid);
       }
     }
 
@@ -175,8 +171,9 @@ runtime_driver(
       color_partitioning[color] = Legion::Domain::from_rect<2>(subrect);
       phase_barriers_map[handle_idx.first].push_back(runtime->create_phase_barrier(ctx,
           1 + color_info.shared_users.size()));
-      clog(trace) << "phase barrier " << color << " has " <<
-          color_info.shared_users.size() + 1 << " arrivers" << std::endl;
+      clog(error) << "key " << handle_idx.first << " phase barrier " << color <<
+          " has " << color_info.shared_users.size() + 1 << " arrivers to " <<
+          phase_barriers_map[handle_idx.first].back() << std::endl;
     }
 
     Legion::IndexPartition color_ip = runtime->create_index_partition(ctx,
@@ -200,7 +197,7 @@ runtime_driver(
     compaction_launcher.add_region_requirement(
         Legion::RegionRequirement(color_lp, 0/*projection ID*/,
             WRITE_DISCARD, EXCLUSIVE, expanded_lregions_map[handle]))
-                .add_field(ghost_owner_fid);  // FIXME register in some way not magic number
+                .add_field(ghost_owner_pos_fid);
   } // for handle
   runtime->execute_index_space(ctx, compaction_launcher);
 
@@ -245,6 +242,11 @@ runtime_driver(
       args_serializers[color].serialize(&owners_pbarriers[handle][0],
           num_ghost_owners[handle] * sizeof(Legion::PhaseBarrier));
 
+    size_t num_fields = context_.registered_fields().size();
+    args_serializers[color].serialize(&num_fields, sizeof(size_t));
+    args_serializers[color].serialize(
+      &context_.registered_fields()[0], num_fields * sizeof(field_info_t));
+
     Legion::TaskLauncher spmd_launcher(spmd_id,
         Legion::TaskArgument(args_serializers[color].get_buffer(), args_serializers[color].get_used_bytes()));
     spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
@@ -259,17 +261,10 @@ runtime_driver(
 
       Legion::RegionRequirement rr(color_lr, READ_WRITE, SIMULTANEOUS, expanded_lregions_map[handle]);
 
-      rr.add_field(ghost_owner_fid);  // FIXME need to do user fields, reference field, connectivity field
-      
-      auto fitr = context_.field_info_map().find(handle);
-      
-      if(fitr != context_.field_info_map().end())
-      {
-        auto& field_map = fitr->second;
+      rr.add_field(ghost_owner_pos_fid);
 
-        // Allocate all fields on this index space
-        for(auto& aitr : field_map){
-          const context_t::field_info_t& fi = aitr.second;
+      for(const field_info_t& fi : context_.registered_fields()){
+        if(fi.index_space == handle){
           rr.add_field(fi.fid);
         }
       }
@@ -287,11 +282,18 @@ runtime_driver(
         const bool is_mutable = false;
         runtime->attach_semantic_information(ghost_owner_lr, OWNER_COLOR_TAG, (void*)&owner_color,
             sizeof(LegionRuntime::Arrays::coord_t), is_mutable);
-        spmd_launcher.add_region_requirement(
-          Legion::RegionRequirement(ghost_owner_lr, READ_ONLY, SIMULTANEOUS, expanded_lregions_map[handle])
-          .add_flags(NO_ACCESS_FLAG)
-          .add_field(ghost_owner_fid));  // FIXME need to do user fields, reference field, connectivity field
 
+        Legion::RegionRequirement rr_owner(ghost_owner_lr, READ_ONLY, SIMULTANEOUS,
+            expanded_lregions_map[handle]);
+        rr_owner.add_flags(NO_ACCESS_FLAG);
+        rr_owner.add_field(ghost_owner_pos_fid);
+        for(const field_info_t& fi : context_.registered_fields()){
+          if(fi.index_space == handle){
+            rr_owner.add_field(fi.fid);
+          }
+        }
+
+        spmd_launcher.add_region_requirement(rr_owner);
       } // for owner
 
     } // for handle

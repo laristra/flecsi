@@ -4,19 +4,22 @@
 #-----------------------------------------------------------------------------~#
 
 #------------------------------------------------------------------------------#
+# Add definitions.
+#------------------------------------------------------------------------------#
+#  add_definitions(-DFLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER)
+  add_definitions(-DFLECSI_ENABLE_SPECIALIZATION_DRIVER)
+
+#------------------------------------------------------------------------------#
 # Add source files for example application.
 #------------------------------------------------------------------------------#
 
-set(example_src example_app.cc example_driver.cc)
-set(exec_path ${PROJECT_SOURCE_DIR}/flecsi/execution)
+set(simple_drivers_src simple_drivers.cc )
+set(exec_path ${PROJECT_SOURCE_DIR}/flecsi/execution )
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
-    list(APPEND example_src ${exec_path}/serial/runtime_driver.cc)
+if(FLECSI_RUNTIME_MODEL STREQUAL "serial" )
+    list(APPEND simple_drivers_src ${exec_path}/serial/runtime_driver.cc )
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
-    list(APPEND example_src ${exec_path}/legion/runtime_driver.cc
-                            ${exec_path}/legion/context_policy.cc
-                            ${exec_path}/../utils/debruijn.cc
-)
+    list(APPEND simple_drivers_src ${exec_path}/legion/runtime_driver.cc )
 else()
     message(FATAL_ERROR "This runtime is not yet supported")
 endif()
@@ -25,13 +28,13 @@ endif()
 # Add a rule to build the executable.
 #------------------------------------------------------------------------------#
 
-add_executable(example_app ${example_src})
+add_executable(simple_drivers ${simple_drivers_src})
 
 #------------------------------------------------------------------------------#
 # Add link dependencies.
 #------------------------------------------------------------------------------#
 
-target_link_libraries(example_app  ${FLECSI_RUNTIME_LIBRARIES})
+target_link_libraries(simple_drivers flecsi ${FLECSI_RUNTIME_LIBRARIES})
 
 #~---------------------------------------------------------------------------~-#
 # Formatting options for vim.

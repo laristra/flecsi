@@ -26,6 +26,7 @@ namespace coloring {
 
 clog_register_tag(dcrs_utils);
 
+inline
 std::set<size_t>
 naive_coloring(
   topology::mesh_definition_t & md
@@ -75,6 +76,7 @@ naive_coloring(
 ///
 /// \param md The mesh definition.
 ///
+inline
 dcrs_t
 make_dcrs(
   topology::mesh_definition_t & md

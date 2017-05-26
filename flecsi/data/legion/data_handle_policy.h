@@ -56,10 +56,41 @@ struct legion_data_handle_policy_t
 {
   using field_id_t = LegionRuntime::HighLevel::FieldID;
 
+  void copy(const legion_data_handle_policy_t& p){
+    fid = p.fid;
+    primary_lr = p.primary_lr;
+    exclusive_lr = p.exclusive_lr;
+    shared_lr = p.shared_lr;
+    ghost_lr = p.ghost_lr;
+    pbarrier_as_owner_ptr = p.pbarrier_as_owner_ptr;
+    ghost_owners_pbarriers_ptrs = p.ghost_owners_pbarriers_ptrs;
+    ghost_owners_lregions = p.ghost_owners_lregions;
+    color_region = p.color_region;
+    primary_ghost_ip = p.primary_ghost_ip;
+    excl_shared_ip = p.excl_shared_ip;
+    primary_pr = p.primary_pr;
+    exclusive_pr = p.exclusive_pr;
+    shared_pr = p.shared_pr;
+    ghost_pr = p.ghost_pr;
+    ghost_is_readable = p.ghost_is_readable;
+  }
+
   field_id_t fid;
+  Legion::LogicalRegion primary_lr;
   Legion::LogicalRegion exclusive_lr;
   Legion::LogicalRegion shared_lr;
   Legion::LogicalRegion ghost_lr;
+  Legion::PhaseBarrier* pbarrier_as_owner_ptr;
+  std::vector<Legion::PhaseBarrier*> ghost_owners_pbarriers_ptrs;
+  std::vector<Legion::LogicalRegion> ghost_owners_lregions;
+  Legion::LogicalRegion color_region;
+  Legion::IndexPartition primary_ghost_ip;
+  Legion::IndexPartition excl_shared_ip;
+  Legion::PhysicalRegion primary_pr;
+  Legion::PhysicalRegion exclusive_pr;
+  Legion::PhysicalRegion shared_pr;
+  Legion::PhysicalRegion ghost_pr;
+  bool ghost_is_readable;
 }; // class legion_data_handle_policy_t
 
 } // namespace flecsi

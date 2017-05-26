@@ -1,31 +1,19 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2017 Los Alamos National Security, LLC
+ * Copyright (c) 2015 Los Alamos National Security, LLC
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_execution_legion_internal_field_h
-#define flecsi_execution_legion_internal_field_h
+#ifndef add_colorings_h
+#define add_colorings_h
 
 //----------------------------------------------------------------------------//
 //! @file
-//! @date Initial file creation: May 22, 2017
+//! @date Initial file creation: May 23, 2017
 //----------------------------------------------------------------------------//
 
-#include <legion.h>
+void add_colorings(int dummy);
 
-namespace flecsi{
-namespace execution{
-
-/// If more than 4096 internal fields are allocated, storage_policy
-/// unique_fid_t must be updated
-enum class internal_field : LegionRuntime::HighLevel::FieldID{
-  ghost_owner_pos = (size_t(1) << 20) - 4095
-};
-
-} // namespace execution
-} // namespace flecsi
-
-#endif // flecsi_execution_legion_internal_field_h
+#endif // add_colorings_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

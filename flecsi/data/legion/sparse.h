@@ -235,33 +235,6 @@ struct storage_type_t<sparse, DS, MD> {
   template<typename T>
   using handle_t = sparse_handle_t<T>;
 
-  //--------------------------------------------------------------------------//
-  // Data registration.
-  //--------------------------------------------------------------------------//
-
-  ///
-  //
-  ///
-  template<
-    typename T,
-    size_t NS,
-    typename ... Args
-  >
-  static
-  handle_t<T>
-  register_data(
-    const data_client_t & data_client,
-    data_store_t & data_store,
-    const utils::const_string_t & key,
-    size_t versions,
-    size_t indices,
-    size_t num_entries,
-    Args && ... args
-  )
-  {
-    return {};
-  } // register_data
-
   ///
   //
   ///

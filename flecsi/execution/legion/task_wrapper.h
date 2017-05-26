@@ -21,6 +21,7 @@
 #include "flecsi/execution/common/processor.h"
 #include "flecsi/execution/common/launch.h"
 #include "flecsi/execution/legion/registration_wrapper.h"
+#include "flecsi/execution/legion/init_handles.h"
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/tuple_function.h"
 #include "flecsi/utils/tuple_type_converter.h"
@@ -30,86 +31,6 @@ clog_register_tag(wrapper);
 
 namespace flecsi {
 namespace execution {
-
-//----------------------------------------------------------------------------//
-//! The handle_args_ type provides a mechanism to walk the task args
-//! before the user task function runs from within
-//! task_wrapper__::execute_user_task.
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
-
-struct handle_args_ : public utils::tuple_walker__<handle_args_>
-{
-  //--------------------------------------------------------------------------//
-  //! Constructor.
-  //!
-  //! @param runtime_ The legion task runtime pointer.
-  //! @param context_ The legion task context reference.
-  //! @param regions_ The Legion physical regions.
-  //--------------------------------------------------------------------------//
-
-  handle_args_(
-    Legion::Runtime * runtime_,
-    Legion::Context & context_,
-    const std::vector<Legion::PhysicalRegion> & regions_
-  )
-  :
-    runtime(runtime_),
-    context(context_),
-    regions(regions_)
-  {
-  } // handle_args_
-
-  //--------------------------------------------------------------------------//
-  //! FIXME: Need description.
-  //!
-  //! @tparam T                     The data type referenced by the handle.
-  //! @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
-  //!                               indices of the index partition.
-  //! @tparam SHARED_PERMISSIONS    The permissions required on the shared
-  //!                               indices of the index partition.
-  //! @tparam GHOST_PERMISSIONS     The permissions required on the ghost
-  //!                               indices of the index partition.
-  //!
-  //! @param h The data handle.
-  //--------------------------------------------------------------------------//
-
-  template<
-    typename T,
-    size_t EXCLUSIVE_PERMISSIONS,
-    size_t SHARED_PERMISSIONS,
-    size_t GHOST_PERMISSIONS
-  >
-  void handle(
-    data_handle__<
-      T,
-      EXCLUSIVE_PERMISSIONS,
-      SHARED_PERMISSIONS,
-      GHOST_PERMISSIONS
-    > & h
-  )
-  {
-  } // handle
-
-  //--------------------------------------------------------------------------//
-  //! FIXME: Need to document.
-  //--------------------------------------------------------------------------//
-
-  template<
-    typename T
-  >
-  static
-  typename std::enable_if_t<!std::is_base_of<data_handle_base_t, T>::value>
-  handle(T&)
-  {
-  } // handle
-
-  Legion::Runtime * runtime;
-  Legion::Context & context;
-  const std::vector<Legion::PhysicalRegion> & regions;
-
-}; // struct handle_args_
 
 //----------------------------------------------------------------------------//
 //! Pure Legion task wrapper.
@@ -313,8 +234,8 @@ struct functor_task_wrapper__
     functor_task_args_t & functor_task_args =
       *(reinterpret_cast<functor_task_args_t *>(task->args));
 
-    handle_args_ handle_args(runtime, context, regions);
-    handle_args.walk(functor_task_args);
+    init_handles_t init_handles(runtime, context, regions);
+    init_handles.walk(functor_task_args);
 
     // Instantiate the user's functor type.
     FUNCTOR_TYPE functor;
@@ -452,8 +373,8 @@ struct task_wrapper__
     // Push the Legion state
     context_t::instance().push_state(KEY, context, runtime, task, regions);
 
-    handle_args_ handle_args(runtime, context, regions);
-    handle_args.walk(task_args);
+    init_handles_t init_handles(runtime, context, regions);
+    init_handles.walk(task_args);
 
     // FIXME: NEED TO HANDLE RETURN TYPES
     // Execute the user's task
@@ -618,8 +539,8 @@ struct old_task_wrapper__
     // Push the Legion state
     context_t::instance().push_state(KEY, context, runtime, task, regions);
 
-    handle_args_ handle_args(runtime, context, regions);
-    handle_args.walk(task_args);
+    init_handles_t init_handles(runtime, context, regions);
+    init_handles.walk(task_args);
 
     // FIXME: NEED TO HANDLE RETURN TYPES
     // Execute the user's task

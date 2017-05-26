@@ -274,20 +274,19 @@ struct legion_execution_policy_t
           // Create a task launcher, passing the task arguments.
           TaskLauncher task_launcher(context_.task_id<KEY>(),
             TaskArgument(&task_args, sizeof(ARG_TUPLE)));
-
-          // Uncomment after fixing parent task region reqs
-          /*
+/*
           for(auto& req : init_args.region_reqs){
             task_launcher.add_region_requirement(req);
           }
-          */
-
+*/
           // Enqueue the prolog.
           task_prolog_t
             task_prolog(legion_runtime, legion_context, task_launcher);
           task_prolog.walk(task_args);
 
           // Enqueue the task.
+          clog(error) << "Execute task " <<
+              context_.runtime(parent)->find_local_MPI_rank() << std::endl;
           auto future = context_.runtime(parent)->execute_task(
             context_.context(parent), task_launcher);
 

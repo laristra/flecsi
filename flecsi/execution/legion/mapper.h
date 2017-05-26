@@ -156,9 +156,14 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
 
     context_t & context_ = context_t::instance();
 
+    size_t wait_on_mpi_task_id =
+        context_.task_id<__flecsi_internal_task_key(wait_on_mpi_task)>();
+    size_t handoff_to_mpi_task_id = 
+        context_.task_id<__flecsi_internal_task_key(handoff_to_mpi_task)>();
+
     // tag-based decisions here
-    if(context_.task_id<__flecsi_internal_task_key(handoff_to_mpi_task)>() ||
-      context_.task_id<__flecsi_internal_task_key(wait_on_mpi_task)>() ||
+    if(task.task_id == wait_on_mpi_task_id ||
+       task.task_id == handoff_to_mpi_task_id ||
       (task.tag & MAPPER_FORCE_RANK_MATCH) != 0) {
 
       // expect a 1-D index domain
@@ -177,6 +182,7 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
           legion_machine::ProcessorQuery(machine).only_kind(
               legion_proc::LOC_PROC);
       std::vector<legion_proc> all_procs(pq.begin(), pq.end());
+
       assert((r.lo[0] == 0) && (r.hi[0] == (int)(all_procs.size() - 1)));
       
       for(LegionRuntime::Arrays::GenericPointInRectIterator<1> pir(r);

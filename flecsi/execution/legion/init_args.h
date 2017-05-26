@@ -59,20 +59,15 @@ namespace execution {
     } // init_args
 
     //--------------------------------------------------------------------------//
-    //! FIXME: Need a description.
+    //! Convert the template privileges to proper Legion privileges.
     //!
-    //! @tparam T                     The data type referenced by the handle.
-    //! @tparam EXCLUSIVE_PERMISSIONS The permissions required on the exclusive
-    //!                               indices of the index partition.
-    //! @tparam SHARED_PERMISSIONS    The permissions required on the shared
-    //!                               indices of the index partition.
-    //! @tparam GHOST_PERMISSIONS     The permissions required on the ghost
-    //!                               indices of the index partition.
-    //!
-    //! @param h The data handle.
+    //! @param mode privilege
     //--------------------------------------------------------------------------//
 
-    static Legion::PrivilegeMode privilege_mode(size_t mode){
+    static Legion::PrivilegeMode
+    privilege_mode(
+      size_t mode
+    ){
       switch(mode){
         case size_t(dno):
           return NO_ACCESS;
@@ -103,25 +98,33 @@ namespace execution {
       > & h
     )
     {
+      size_t primary_permissions = 
+        std::max(EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS);
+
+      Legion::RegionRequirement pr_rr(h.primary_lr,
+        privilege_mode(primary_permissions), EXCLUSIVE, h.color_region);
+      pr_rr.add_field(h.fid);
+      region_reqs.push_back(pr_rr);
+
       Legion::RegionRequirement ex_rr(h.exclusive_lr,
-        privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE, h.exclusive_lr);
+        privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE, h.color_region);
       ex_rr.add_field(h.fid);
       region_reqs.push_back(ex_rr);
 
       Legion::RegionRequirement sh_rr(h.shared_lr,
-        privilege_mode(SHARED_PERMISSIONS), EXCLUSIVE, h.shared_lr);
+        privilege_mode(SHARED_PERMISSIONS), EXCLUSIVE, h.color_region);
       sh_rr.add_field(h.fid);
       region_reqs.push_back(sh_rr);
 
       Legion::RegionRequirement gh_rr(h.ghost_lr,
-        privilege_mode(GHOST_PERMISSIONS), EXCLUSIVE, h.ghost_lr);
+        privilege_mode(GHOST_PERMISSIONS), EXCLUSIVE, h.color_region);
       gh_rr.add_field(h.fid);
       region_reqs.push_back(gh_rr);
     } // handle
 
-    //--------------------------------------------------------------------------//
-    //! FIXME: Need to document.
-    //--------------------------------------------------------------------------//
+    //-----------------------------------------------------------------------//
+    // If this is not a data handle, then simply skip it.
+    //-----------------------------------------------------------------------//
 
     template<
       typename T
