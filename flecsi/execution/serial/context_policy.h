@@ -15,13 +15,14 @@
 #ifndef flecsi_execution_serial_context_policy_h
 #define flecsi_execution_serial_context_policy_h
 
-#include <unordered_map>
+#include <map>
 #include <functional>
 
+#include "flecsi/execution/common/launch.h"
+#include "flecsi/execution/common/processor.h"
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/execution/serial/runtime_driver.h"
-#include "flecsi/execution/common/task_hash.h"
 
 ///
 /// \file serial/execution_policy.h
@@ -71,22 +72,22 @@ struct serial_context_policy_t
   ///
   template<
     typename RETURN,
-    typename ARG_TUPLE
+    typename ARG_TUPLE,
+    RETURN (*FUNCTION)(ARG_TUPLE),
+    size_t KEY
   >
   bool
   register_function(
-    const utils::const_string_t & key,
-    std::function<RETURN(ARG_TUPLE)> & user_function
   )
   {
-    const size_t h = key.hash();
-    if(function_registry_.find(h) == function_registry_.end()) {
-      function_registry_[h] =
-        reinterpret_cast<std::function<void(void)> *>(&user_function);
-      return true;
-    } // if
+    clog_assert(function_registry_.find(KEY) == function_registry_.end(),
+      "function has already been registered");
 
-    return false;
+    clog(info) << "Registering function: " << FUNCTION << std::endl;
+
+    function_registry_[KEY] =
+      reinterpret_cast<void *>(FUNCTION);
+    return true;
   } // register_function
 
   ///
@@ -97,35 +98,30 @@ struct serial_context_policy_t
   /// \return A pointer to a std::function<void(void)> that may be cast
   ///         back to the original function type using reinterpret_cast.
   ///
-  template<
-    typename RETURN,
-    typename ARG_TUPLE
-  >
-  std::function<RETURN(ARG_TUPLE)> *
+  void *
   function(
     size_t key
   )
   {
-    return reinterpret_cast<std::function<RETURN(ARG_TUPLE)> *>
-      (function_registry_[key]);
+    return function_registry_[key];
   } // function
 
-  //------------------------------------------------------------------------//
-  // Data registration
-  //------------------------------------------------------------------------//
-
-  struct partitioned_index_space
-  {
-    size_t size;
-  };
-
 private:
+  //--------------------------------------------------------------------------//
+  // Task data members.
+  //--------------------------------------------------------------------------//
+
+  // Map to store task registration callback methods.
+//  std::map<
+//    size_t,
+//    task_info_t
+//  > task_registry_;
 
   //------------------------------------------------------------------------//
   // Function registry
   //------------------------------------------------------------------------//
 
-  std::unordered_map<size_t, std::function<void(void)> *>
+  std::unordered_map<size_t, void *>
     function_registry_;
 
 }; // struct serial_context_policy_t

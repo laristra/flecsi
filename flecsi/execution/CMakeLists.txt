@@ -46,7 +46,10 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
     serial/execution_policy.h
     serial/runtime_driver.h
   )
-
+  set(execution_SOURCES
+    ${execution_SOURCES}
+    serial/execution_policy.cc
+    )
   set(UNIT_POLICY SERIAL)
   set(RUNTIME_DRIVER serial/runtime_driver.cc)
 
