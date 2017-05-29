@@ -133,7 +133,7 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
   #
   cinch_add_unit(simple_function
     SOURCES
-      test/simple_function_driver.cc
+      test/simple_function.cc
       ${DRIVER_INITIALIZATION}
       ${RUNTIME_DRIVER}
     DEFINES
@@ -151,7 +151,7 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
   #
   cinch_add_unit(simple_task
     SOURCES
-      test/simple_task_driver.cc
+      test/simple_task.cc
       ${DRIVER_INITIALIZATION}
       ${RUNTIME_DRIVER}
     DEFINES

@@ -45,6 +45,14 @@ void driver(int argc, char ** argv) {
 
 } // driver
 
+//----------------------------------------------------------------------------//
+// TEST.
+//----------------------------------------------------------------------------//
+
+TEST(simple_function, testname) {
+
+} // TEST
+
 } // namespace execution
 } // namespace flecsi
 
