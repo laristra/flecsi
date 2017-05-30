@@ -21,10 +21,13 @@
 
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/common/processor.h"
-#include "flecsi/execution/common/task_hash.h"
+#include "flecsi/execution/common/launch.h"
 #include "flecsi/utils/tuple_function.h"
 #include "flecsi/utils/const_string.h"
+#include "flecsi/execution/serial/task_wrapper.h"
 #include "flecsi/execution/serial/runtime_driver.h"
+//#include "flecsi/execution/task.h"
+
 
 ///
 // \file serial/execution_policy.h
@@ -34,9 +37,6 @@
 
 namespace flecsi {
 namespace execution {
-
-// Forward.
-template<typename R> struct executor__;
 
 //----------------------------------------------------------------------------//
 // Future.
@@ -50,7 +50,6 @@ template<
 >
 struct serial_future__
 {
-  friend executor__<R>;
   using result_t = R;
 
   ///
@@ -63,7 +62,7 @@ struct serial_future__
   ///
   const result_t & get(size_t index = 0) const { return result_; }
 
-private:  
+//private:
 
   ///
   /// set method
@@ -80,113 +79,12 @@ private:
 template<>
 struct serial_future__<void>
 {
-  friend executor__<void>;
-
   ///
   ///
   ///
   void wait() {}
 
 }; // struct serial_future__
-
-//----------------------------------------------------------------------------//
-// Executor.
-//----------------------------------------------------------------------------//
-
-///
-/// Executor interface.
-///
-template<
-  typename R
->
-struct executor__
-{
-  ///
-  ///
-  ///
-  template<
-    typename T,
-    typename A
-  >
-  static
-  decltype(auto)
-  execute(
-    task_hash_key_t key,
-    size_t parent,
-    T user_task_handle,
-    A && targs
-  )
-  {
-    R value =
-      user_task_handle(context_t::instance().function(user_task_handle.key),
-        std::forward<A>(targs));
-    serial_future__<R> f;
-    f.set(value);
-    return f;
-  } // execute_task
-}; // struct executor__
-
-///
-/// Partial specialization for reference type.
-///
-template<
-  typename R
->
-struct executor__<R &>
-{
-  ///
-  ///
-  ///
-  template<
-    typename T,
-    typename A
-  >
-  static
-  decltype(auto)
-  execute(
-    task_hash_key_t key,
-    size_t parent,
-    T user_task_handle,
-    A && targs
-  )
-  {
-    R & value =
-      user_task_handle(context_t::instance().function(user_task_handle.key),
-        std::forward<A>(targs));
-    serial_future__<R &> f;
-    f.set(value);
-    return f;
-  } // execute_task
-}; // struct executor__
-
-///
-/// Explicit specialization for void
-///
-template<>
-struct executor__<void>
-{
-  ///
-  ///
-  ///
-  template<
-    typename T,
-    typename A
-  >
-  static
-  decltype(auto)
-  execute(
-    task_hash_key_t key,
-    size_t parent,
-    T user_task_handle,
-    A targs
-  )
-  {
-    user_task_handle(context_t::instance().function(user_task_handle.key),
-      targs);
-    return serial_future__<void>();
-  } // execute
-
-}; // struct executor__
 
 //----------------------------------------------------------------------------//
 // Execution policy.
@@ -202,6 +100,24 @@ struct serial_execution_policy_t
   using future__ = serial_future__<R>;
 
   //--------------------------------------------------------------------------//
+  //! The task_wrapper__ type FIXME
+  //!
+  //! @tparam RETURN The return type of the task. FIXME
+  //--------------------------------------------------------------------------//
+
+  template<
+    typename FUNCTOR_TYPE
+  >
+  using functor_task_wrapper__ =
+    typename flecsi::execution::functor_task_wrapper__<FUNCTOR_TYPE>;
+
+  struct runtime_state_t {};
+  static
+  runtime_state_t &
+  runtime_state(
+    void * task
+  );
+  //--------------------------------------------------------------------------//
   // Task interface.
   //--------------------------------------------------------------------------//
 
@@ -213,16 +129,21 @@ struct serial_execution_policy_t
   ///           user task arguments.
   ///
   template<
-    typename R,
-    typename A
+    size_t KEY,
+    typename RETURN,
+    typename ARG_TUPLE,
+    RETURN (*DELEGATE)(ARG_TUPLE)
   >
   static
   bool
   register_task(
-    task_hash_key_t key
+    processor_type_t processor,
+    launch_t launch,
+    std::string name
   )
   {
-    return false;
+    return context_t::instance().template register_function<
+      RETURN, ARG_TUPLE, DELEGATE, KEY>();
   } // register_task
 
   ///
@@ -235,67 +156,53 @@ struct serial_execution_policy_t
   /// \param args
   ///
   template<
-    typename R,
-    typename T,
-    typename...As
+    size_t KEY,
+    typename RETURN,
+    typename ARG_TUPLE,
+    typename ... ARGS
   >
   static
   decltype(auto)
   execute_task(
-    task_hash_key_t key,
+    launch_type_t launch,
     size_t parent,
-    T user_task_handle,
-    As && ... args
+    ARGS && ... args
   )
   {
-    return executor__<R>::execute(
-      key, parent, user_task_handle, std::forward_as_tuple(args...)
-    );
+    auto fun = context_t::instance().function(KEY);
+    auto user_fun = (reinterpret_cast<RETURN(*)(ARG_TUPLE)>(fun));
+    serial_future__<RETURN> fut;
+    fut.set(user_fun(std::forward_as_tuple(args ...)));
+    return fut;
   } // execute_task
 
   //--------------------------------------------------------------------------//
   // Function interface.
   //--------------------------------------------------------------------------//
-
-  ///
-  /// This method registers a user function with the current
-  /// execution context.
-  ///
-  /// \tparam R Return type.
-  /// \tparam A Argument type (std::tuple).
-  ///
-  /// \param key The function identifier.
-  /// \param user_function A reference to the user function as a std::function.
-  ///
-  /// \return A boolean value indicating whether or not the function was
-  ///         successfully registered.
-  ///
   template<
     typename RETURN,
-    typename ARG_TUPLE
+    typename ARG_TUPLE,
+    RETURN (*FUNCTION)(ARG_TUPLE),
+    size_t KEY
   >
   static
   bool
-  register_function(
-    const utils::const_string_t & key,
-    std::function<RETURN(ARG_TUPLE)> & user_function
-  )
+  register_function()
   {
-    return context_t::instance().register_function(key, user_function);
+    return context_t::instance().template register_function<
+      RETURN, ARG_TUPLE, FUNCTION, KEY>();
   } // register_function
 
   ///
   /// This method looks up a function from the \e handle argument
   /// and executes the associated it with the provided \e args arguments.
   ///
-  // \param handle The function handle to execute.
+  /// \param handle The function handle to execute.
   /// \param args A variadic argument list of the function parameters.
   ///
   /// \return The return type of the provided function handle.
   ///
-
   template<
-    typename RETURN,
     typename FUNCTION_HANDLE,
     typename ... ARGS
   >
@@ -306,10 +213,8 @@ struct serial_execution_policy_t
     ARGS && ... args
   )
   {
-    auto targs = std::forward_as_tuple( std::forward<ARGS>(args) ...);
-    return handle(
-      context_t::instance().function<RETURN,decltype(targs)>(handle.key()),
-      targs);
+    return handle(context_t::instance().function(handle.key()),
+      std::forward_as_tuple(args ...));
   } // execute_function
 
 }; // struct serial_execution_policy_t

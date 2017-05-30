@@ -80,10 +80,10 @@ void driver(int argc, char ** argv) {
 } // specialization_driver
 
 //----------------------------------------------------------------------------//
-// User driver.
+// TEST.
 //----------------------------------------------------------------------------//
 
-TEST(execution_structure, testname) {
+TEST(data_handle, testname) {
   
 } // TEST
 
