@@ -98,14 +98,6 @@ namespace execution {
       > & h
     )
     {
-      size_t primary_permissions = 
-        std::max(EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS);
-
-      Legion::RegionRequirement pr_rr(h.primary_lr,
-        privilege_mode(primary_permissions), EXCLUSIVE, h.color_region);
-      pr_rr.add_field(h.fid);
-      region_reqs.push_back(pr_rr);
-
       Legion::RegionRequirement ex_rr(h.exclusive_lr,
         privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE, h.color_region);
       ex_rr.add_field(h.fid);

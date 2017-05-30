@@ -77,20 +77,17 @@ namespace execution {
       > & h
     )
     {
-      for(size_t p = 0; p < 4; ++p){
+      for(size_t p = 0; p < 3; ++p){
         bool skip = false;
 
         switch(p){
           case 0:
-            skip = EXCLUSIVE_PERMISSIONS == 0 && SHARED_PERMISSIONS == 0;
-            break;
-          case 1:
             skip = EXCLUSIVE_PERMISSIONS == 0;
             break;
-          case 2:
+          case 1:
             skip = SHARED_PERMISSIONS == 0;
             break;
-          case 3:
+          case 2:
             skip = GHOST_PERMISSIONS == 0;
             break;
           default:
@@ -125,21 +122,16 @@ namespace execution {
 
         switch(p){
           case 0:
-            h.primary_pr = pr;
-            h.primary_data = data;
-            h.primary_size = size;
-            break;
-          case 1:
             h.exclusive_pr = pr;
             h.exclusive_data = data;
             h.exclusive_size = size;
             break;
-          case 2:
+          case 1:
             h.shared_pr = pr;
             h.shared_data = data;
             h.shared_size = size;
             break;
-          case 3:
+          case 2:
             h.ghost_pr = pr;
             h.ghost_data = data;
             h.ghost_size = size;
@@ -155,15 +147,18 @@ namespace execution {
       h.combined_data = (T*)malloc(combined_size);
       
       size_t size = sizeof(T) * h.exclusive_size;
-      std::memcpy(h.combined_data, h.exclusive_data, size);
+      if (h.exclusive_data != nullptr)
+          std::memcpy(h.combined_data, h.exclusive_data, size);
 
       size_t pos = size;
       size = sizeof(T) * h.shared_size;
-      std::memcpy(h.combined_data + pos, h.shared_data, size);
+      if (h.shared_data != nullptr)
+          std::memcpy(h.combined_data + pos, h.shared_data, size);
       pos += size;
 
       size = sizeof(T) * h.ghost_size;
-      std::memcpy(h.combined_data + pos, h.ghost_data, size);
+      if (h.ghost_data != nullptr)
+          std::memcpy(h.combined_data + pos, h.ghost_data, size);
 
     } // handle
 
