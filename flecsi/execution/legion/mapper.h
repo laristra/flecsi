@@ -66,9 +66,9 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
   //!         LOC_PROC and TOC_PROC
   //--------------------------------------------------------------------------//
   mpi_mapper_t(
-    LegionRuntime::HighLevel::Machine machine,
+    Legion::Machine machine,
     Legion::Runtime *_runtime,
-    LegionRuntime::HighLevel::Processor local
+    Legion::Processor local
   )
   :
     Legion::Mapping::DefaultMapper(
@@ -79,8 +79,8 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
     ),
     machine(machine)
   {
-    using legion_machine=LegionRuntime::HighLevel::Machine;
-    using legion_proc=LegionRuntime::HighLevel::Processor;
+    using legion_machine=Legion::Machine;
+    using legion_proc=Legion::Processor;
     
     legion_machine::ProcessorQuery pq = 
         legion_machine::ProcessorQuery(machine).same_address_space_as(local);   
@@ -152,7 +152,7 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
       Legion::Mapping::Mapper::SliceTaskOutput& output
              )
   {
-    using legion_proc=LegionRuntime::HighLevel::Processor;
+    using legion_proc=Legion::Processor;
 
     context_t & context_ = context_t::instance();
 
@@ -174,8 +174,8 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
       output.slices.resize(r.volume());
       size_t idx = 0;
       
-      using legion_machine=LegionRuntime::HighLevel::Machine;
-      using legion_proc=LegionRuntime::HighLevel::Processor;
+      using legion_machine=Legion::Machine;
+      using legion_proc=Legion::Processor;
       
       // get list of all processors and make sure the count matches
       legion_machine::ProcessorQuery pq =
@@ -216,7 +216,7 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
   
  protected:
   
-  std::map<LegionRuntime::HighLevel::Processor,
+  std::map<Legion::Processor,
            std::map<Realm::Memory::Kind, Realm::Memory> > proc_mem_map;
   Realm::Memory local_sysmem;
   Realm::Machine machine;
@@ -231,12 +231,12 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
 inline
 void
 mapper_registration(
-    LegionRuntime::HighLevel::Machine machine,
-    LegionRuntime::HighLevel::HighLevelRuntime *rt,
-    const std::set<LegionRuntime::HighLevel::Processor> &local_procs
+    Legion::Machine machine,
+    Legion::HighLevelRuntime *rt,
+    const std::set<Legion::Processor> &local_procs
                     )
 {
-  for (std::set<LegionRuntime::HighLevel::Processor>::const_iterator
+  for (std::set<Legion::Processor>::const_iterator
            it = local_procs.begin();
        it != local_procs.end(); it++)
   {

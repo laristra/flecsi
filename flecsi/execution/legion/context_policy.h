@@ -163,7 +163,7 @@ struct legion_context_policy_t
   void push_state(
     size_t key,
     Legion::Context & context,
-    Legion::HighLevelRuntime * runtime,
+    Legion::Runtime * runtime,
     const Legion::Task * task,
     const std::vector<Legion::PhysicalRegion> & regions
   )
@@ -339,7 +339,7 @@ struct legion_context_policy_t
   void
   unset_call_mpi(
     Legion::Context & ctx,
-    Legion::HighLevelRuntime * runtime
+    Legion::Runtime * runtime
   );
 
   //--------------------------------------------------------------------------//
@@ -352,7 +352,7 @@ struct legion_context_policy_t
   void
   handoff_to_mpi(
     Legion::Context & ctx,
-    Legion::HighLevelRuntime * runtime
+    Legion::Runtime * runtime
   );
 
   //--------------------------------------------------------------------------//
@@ -367,7 +367,7 @@ struct legion_context_policy_t
   Legion::FutureMap
   wait_on_mpi(
     Legion::Context & ctx,
-    Legion::HighLevelRuntime * runtime
+    Legion::Runtime * runtime
   );
 
   //--------------------------------------------------------------------------//
@@ -380,7 +380,7 @@ struct legion_context_policy_t
   void
   connect_with_mpi(
     Legion::Context & ctx,
-    Legion::HighLevelRuntime * runtime
+    Legion::Runtime * runtime
   );
 
   //--------------------------------------------------------------------------//
@@ -563,7 +563,7 @@ struct legion_context_policy_t
   //! @param key The task hash key.
   //--------------------------------------------------------------------------//
 
-  Legion::HighLevelRuntime *
+  Legion::Runtime *
   runtime(
     size_t key
   )

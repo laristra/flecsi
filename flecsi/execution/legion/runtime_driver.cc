@@ -35,7 +35,7 @@ runtime_driver(
   const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx,
-  Legion::HighLevelRuntime * runtime
+  Legion::Runtime * runtime
 )
 {
   {
@@ -45,7 +45,7 @@ runtime_driver(
 
   // Get the input arguments from the Legion runtime
   const Legion::InputArgs & args =
-    Legion::HighLevelRuntime::get_input_args();
+    Legion::Runtime::get_input_args();
 
   // Initialize MPI Interoperability
   context_t & context_ = context_t::instance();
@@ -104,7 +104,7 @@ runtime_driver(
   auto coloring_info = context_.coloring_info_map();
 
   auto ghost_owner_pos_fid = 
-    LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
+    Legion::FieldID(internal_field::ghost_owner_pos);
 
   using field_info_t = context_t::field_info_t;
 

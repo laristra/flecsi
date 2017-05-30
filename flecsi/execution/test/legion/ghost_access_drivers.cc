@@ -98,7 +98,7 @@ void driver(int argc, char ** argv) {
   clog(error) << "In driver" << std::endl;
 
   flecsi::execution::context_t & context_ = flecsi::execution::context_t::instance();
-  Legion::HighLevelRuntime *runtime = context_.runtime(utils::const_string_t{"driver"}.hash());
+  Legion::Runtime *runtime = context_.runtime(utils::const_string_t{"driver"}.hash());
   const int my_color = runtime->find_local_MPI_rank();
 
   client_type client;

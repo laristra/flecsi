@@ -52,10 +52,10 @@ void driver(int argc, char ** argv);
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
-void runtime_driver(const LegionRuntime::HighLevel::Task * task,
-  const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
-  LegionRuntime::HighLevel::Context ctx,
-  LegionRuntime::HighLevel::HighLevelRuntime * runtime);
+void runtime_driver(const Legion::Task * task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx,
+  Legion::Runtime * runtime);
 
 // The runtime_driver task is registered directly during context
 // initialization.

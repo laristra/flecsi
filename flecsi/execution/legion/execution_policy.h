@@ -313,8 +313,8 @@ struct legion_execution_policy_t
             LegionRuntime::Arrays::Point<1>(5));
           Domain launch_domain = Domain::from_rect<1>(launch_bounds);
 
-          LegionRuntime::HighLevel::ArgumentMap arg_map;
-          LegionRuntime::HighLevel::IndexLauncher index_launcher(
+          Legion::ArgumentMap arg_map;
+          Legion::IndexLauncher index_launcher(
             context_.task_id<KEY>(), launch_domain,
             TaskArgument(&task_args, sizeof(ARG_TUPLE)), arg_map);
 

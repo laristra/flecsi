@@ -219,10 +219,10 @@ struct functor_task_wrapper__
   //--------------------------------------------------------------------------//
 
   static return_t execute_functor_task(
-    const LegionRuntime::HighLevel::Task * task,
-    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
-    LegionRuntime::HighLevel::Context context,
-    LegionRuntime::HighLevel::HighLevelRuntime * runtime
+    const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context context,
+    Legion::Runtime * runtime
   )
   {
     {
@@ -355,10 +355,10 @@ struct task_wrapper__
   //--------------------------------------------------------------------------//
 
   static RETURN execute_user_task(
-    const LegionRuntime::HighLevel::Task * task,
-    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
-    LegionRuntime::HighLevel::Context context,
-    LegionRuntime::HighLevel::HighLevelRuntime * runtime
+    const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context context,
+    Legion::Runtime * runtime
   )
   {
     {
@@ -391,10 +391,10 @@ struct task_wrapper__
   //--------------------------------------------------------------------------//
 
   static void execute_mpi_task(
-    const LegionRuntime::HighLevel::Task * task,
-    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
-    LegionRuntime::HighLevel::Context context,
-    LegionRuntime::HighLevel::HighLevelRuntime * runtime
+    const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context context,
+    Legion::Runtime * runtime
   )
   {
     {
@@ -521,10 +521,10 @@ struct old_task_wrapper__
   //--------------------------------------------------------------------------//
 
   static RETURN execute_user_task(
-    const LegionRuntime::HighLevel::Task * task,
-    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
-    LegionRuntime::HighLevel::Context context,
-    LegionRuntime::HighLevel::HighLevelRuntime * runtime
+    const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context context,
+    Legion::Runtime * runtime
   )
   {
     {
@@ -557,10 +557,10 @@ struct old_task_wrapper__
   //--------------------------------------------------------------------------//
 
   static void execute_mpi_task(
-    const LegionRuntime::HighLevel::Task * task,
-    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
-    LegionRuntime::HighLevel::Context context,
-    LegionRuntime::HighLevel::HighLevelRuntime * runtime
+    const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context context,
+    Legion::Runtime * runtime
   )
   {
     {

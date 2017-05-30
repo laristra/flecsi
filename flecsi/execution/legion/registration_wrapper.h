@@ -45,7 +45,7 @@ struct registration_wrapper__
 
   template<typename ... ARGS>
   static void register_task(ARGS && ... args) {
-    Legion::HighLevelRuntime::register_legion_task<RETURN, TASK>(
+    Legion::Runtime::register_legion_task<RETURN, TASK>(
       std::forward<ARGS>(args) ...);
   } // register_task
 }; // struct registration_wrapper__
@@ -70,7 +70,7 @@ struct registration_wrapper__<void, TASK>
 {
   template<typename ... ARGS>
   static void register_task(ARGS && ... args) {
-    Legion::HighLevelRuntime::register_legion_task<TASK>(
+    Legion::Runtime::register_legion_task<TASK>(
       std::forward<ARGS>(args) ...);
   } // register_task
 }; // struct registration_wrapper__
