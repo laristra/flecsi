@@ -142,12 +142,29 @@ namespace execution {
           case 3:
             h.ghost_pr = pr;
             h.ghost_data = data;
-            h.shared_size = size;
+            h.ghost_size = size;
             break;
           default:
             assert(false);
         }
       }
+
+      size_t combined_size = 
+        (h.exclusive_size + h.shared_size + h.ghost_size) * sizeof(T);
+      
+      h.combined_data = (T*)malloc(combined_size);
+      
+      size_t size = sizeof(T) * h.exclusive_size;
+      std::memcpy(h.combined_data, h.exclusive_data, size);
+
+      size_t pos = size;
+      size = sizeof(T) * h.shared_size;
+      std::memcpy(h.combined_data + pos, h.shared_data, size);
+      pos += size;
+
+      size = sizeof(T) * h.ghost_size;
+      std::memcpy(h.combined_data + pos, h.ghost_data, size);
+
     } // handle
 
     //-----------------------------------------------------------------------//
