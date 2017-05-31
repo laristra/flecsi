@@ -332,6 +332,12 @@ cinch_add_application_directory("examples")
 cinch_add_application_directory("examples/lax_wendroff")
 cinch_add_application_directory("tools")
 
+#------------------------------------------------------------------------------#
+# Add distclean target
+#------------------------------------------------------------------------------#
+
+add_custom_target(distclean rm -rf ${CMAKE_BINARY_DIR}/*)
+
 #~---------------------------------------------------------------------------~-#
 # Formatting options
 # vim: set tabstop=2 shiftwidth=2 expandtab :
