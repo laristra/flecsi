@@ -24,6 +24,7 @@
 
 #include "legion.h"
 #include "flecsi/data/data.h"
+#include "flecsi/execution/context.h"
 
 namespace flecsi {
 namespace execution {
@@ -89,6 +90,8 @@ namespace execution {
       > & h
     )
     {
+      auto& flecsi_context = context_t::instance();
+      
       bool read_phase = false;
       bool write_phase = false;
       const int my_color = runtime->find_local_MPI_rank();
@@ -123,7 +126,14 @@ namespace execution {
                 *(h.ghost_owners_pbarriers_ptrs[owner]) <<
                 std::endl;
 
-            // ndm - for all fids in context
+            auto iitr = flecsi_context.field_info_map().find(h.index_space);
+            clog_assert(iitr != flecsi_context.field_info_map().end(),
+              "invalid index space");
+
+            // TODO: launch copy task on fields
+            for(auto& fitr : iitr->second){
+              const context_t::field_info_t& fi = fitr.second;
+            }
 
             h.ghost_owners_pbarriers_ptrs[owner]->arrive(1);        // phase WRITE
             *(h.ghost_owners_pbarriers_ptrs[owner]) = runtime->advance_phase_barrier(context,

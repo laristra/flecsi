@@ -545,6 +545,7 @@ struct storage_type_t<dense, DS, MD>
     h.primary_ghost_ip = ism[index_space].primary_ghost_ip;
     h.excl_shared_ip = ism[index_space].excl_shared_ip;
     h.fid = field_info.fid;
+    h.index_space = field_info.index_space;
 
     return h;
   } // get_handle
