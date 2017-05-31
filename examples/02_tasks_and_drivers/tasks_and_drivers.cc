@@ -41,10 +41,10 @@ flecsi_register_mpi_task(mpi_task);
 //----------------------------------------------------------------------------//
 // Define internal Legion task to register.
 void internal_task_example_1(
-  const LegionRuntime::HighLevel::Task * task,                                 
-  const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,       
-  LegionRuntime::HighLevel::Context ctx,                                       
-  LegionRuntime::HighLevel::HighLevelRuntime * runtime                         
+  const Legion::Task * task,                                 
+  const std::vector<Legion::PhysicalRegion> & regions,       
+  Legion::Context ctx,                                       
+  Legion::Runtime * runtime                         
 )
 {
   std::cout <<"inside of the task1" <<std::endl;
@@ -57,10 +57,10 @@ __flecsi_internal_register_legion_task(internal_task_example_1,
 //----------------------------------------------------------------------------//
 // Define internal Legion task to register.
 void internal_task_example_2(
-  const LegionRuntime::HighLevel::Task * task,                                 
-  const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,       
-  LegionRuntime::HighLevel::Context ctx,                                       
-  LegionRuntime::HighLevel::HighLevelRuntime * runtime                         
+  const Legion::Task * task,                                 
+  const std::vector<Legion::PhysicalRegion> & regions,       
+  Legion::Context ctx,                                       
+  Legion::Runtime * runtime                         
 )
 {
   std::cout <<"inside of the task2" <<std::endl;
@@ -113,7 +113,7 @@ specialization_driver(
   auto key_2 = __flecsi_internal_task_key(internal_task_example_2);
 
   //executing internal legion tasks with pure legion calls
-  LegionRuntime::HighLevel::TaskLauncher launcher(
+  Legion::TaskLauncher launcher(
     context_t::instance().task_id(key_1),
     LegionRuntime::HighLevel::TaskArgument(0,0));
   auto f=runtime->execute_task(context, launcher);

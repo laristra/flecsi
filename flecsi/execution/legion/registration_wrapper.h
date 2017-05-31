@@ -43,10 +43,18 @@ struct registration_wrapper__
   //! @tparam ARGS The variadic argument pack.
   //--------------------------------------------------------------------------//
 
-  template<typename ... ARGS>
-  static void register_task(ARGS && ... args) {
-    Legion::Runtime::register_legion_task<RETURN, TASK>(
-      std::forward<ARGS>(args) ...);
+  static void register_task(
+    const Legion::TaskID tid,
+    const Legion::Processor::Kind &processor,
+    std::string & task_name) {
+
+    { 
+      Legion::TaskVariantRegistrar registrar(tid, task_name.c_str());
+      registrar.add_constraint(Legion::ProcessorConstraint(processor));
+      Legion::Runtime::preregister_task_variant<RETURN, TASK>(registrar,
+        task_name.c_str());
+    }//scope
+ 
   } // register_task
 }; // struct registration_wrapper__
 
@@ -68,10 +76,19 @@ template<
 >
 struct registration_wrapper__<void, TASK>
 {
-  template<typename ... ARGS>
-  static void register_task(ARGS && ... args) {
-    Legion::Runtime::register_legion_task<TASK>(
-      std::forward<ARGS>(args) ...);
+
+  static void register_task(
+    const Legion::TaskID tid,
+    const Legion::Processor::Kind &processor, 
+    std::string &task_name) {
+
+    {
+      Legion::TaskVariantRegistrar registrar(tid, task_name.c_str());
+      registrar.add_constraint(Legion::ProcessorConstraint(processor));
+      Legion::Runtime::preregister_task_variant<TASK>(registrar,
+        task_name.c_str());
+    }//scope
+
   } // register_task
 }; // struct registration_wrapper__
 
