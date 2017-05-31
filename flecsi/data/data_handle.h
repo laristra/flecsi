@@ -46,9 +46,6 @@ template<
   typename DATA_POLICY
 >
 struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {
-  T* primary_data;
-  size_t primary_size;
-
   T* exclusive_data;
   size_t exclusive_size;
   
@@ -57,6 +54,8 @@ struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {
   
   T* ghost_data;
   size_t ghost_size;
+
+  T* combined_data;
 
   template<
     size_t EXCLUSIVE_PERMISSIONS2,
@@ -74,11 +73,9 @@ struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {
     >& b
   )
   {
-    primary_data = b.primary_data;
     exclusive_data = b.exclusive_data;
     shared_data = b.shared_data;
     ghost_data = b.ghost_data;
-    primary_size = b.primary_size;
     exclusive_size = b.exclusive_size;
     shared_size = b.shared_size;
     ghost_size = b.ghost_size;

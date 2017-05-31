@@ -58,7 +58,7 @@ struct legion_data_handle_policy_t
 
   void copy(const legion_data_handle_policy_t& p){
     fid = p.fid;
-    primary_lr = p.primary_lr;
+    index_space = p.index_space;
     exclusive_lr = p.exclusive_lr;
     shared_lr = p.shared_lr;
     ghost_lr = p.ghost_lr;
@@ -68,7 +68,6 @@ struct legion_data_handle_policy_t
     color_region = p.color_region;
     primary_ghost_ip = p.primary_ghost_ip;
     excl_shared_ip = p.excl_shared_ip;
-    primary_pr = p.primary_pr;
     exclusive_pr = p.exclusive_pr;
     shared_pr = p.shared_pr;
     ghost_pr = p.ghost_pr;
@@ -76,7 +75,7 @@ struct legion_data_handle_policy_t
   }
 
   field_id_t fid;
-  Legion::LogicalRegion primary_lr;
+  size_t index_space;
   Legion::LogicalRegion exclusive_lr;
   Legion::LogicalRegion shared_lr;
   Legion::LogicalRegion ghost_lr;
@@ -86,7 +85,6 @@ struct legion_data_handle_policy_t
   Legion::LogicalRegion color_region;
   Legion::IndexPartition primary_ghost_ip;
   Legion::IndexPartition excl_shared_ip;
-  Legion::PhysicalRegion primary_pr;
   Legion::PhysicalRegion exclusive_pr;
   Legion::PhysicalRegion shared_pr;
   Legion::PhysicalRegion ghost_pr;
