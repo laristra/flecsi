@@ -118,7 +118,7 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   size_t
   size() const
   {
-    return base::primary_size;
+    return base::combined_size;
   } // size
 
   ///
@@ -211,8 +211,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   ) const
   {
-    assert(index < base::primary_size && "index out of range");
-    return base::primary_data[index];
+    assert(index < base::combined_size && "index out of range");
+    return base::combined_data[index];
   } // operator []
 
   ///
@@ -226,8 +226,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   )
   {
-    assert(index < base::primary_size && "index out of range");
-    return base::primary_data[index];
+    assert(index < base::combined_size && "index out of range");
+    return base::combined_data[index];
   } // operator []
 
   ///
@@ -367,8 +367,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   ) const
   {
-    assert(index < base::primary_size && "index out of range");
-    return base::primary_data[index];
+    assert(index < base::combined_size && "index out of range");
+    return base::combined_data[index];
   } // operator ()
 
   ///
@@ -382,8 +382,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   )
   {
-    assert(index < base::primary_size && "index out of range");
-    return base::primary_data[index];
+    assert(index < base::combined_size && "index out of range");
+    return base::combined_data[index];
   } // operator ()
 
   ///
@@ -393,7 +393,7 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   ///
   operator bool() const
   {
-    return base::primary_data != nullptr;
+    return base::combined_data != nullptr;
   } // operator bool
 
   template<typename, size_t, size_t, size_t, typename>
@@ -535,7 +535,6 @@ struct storage_type_t<dense, DS, MD>
     size_t index_space = field_info.index_space;
     auto& ism = context.index_space_data_map();
 
-    h.primary_lr = ism[index_space].primary_lr;
     h.exclusive_lr = ism[index_space].exclusive_lr;
     h.shared_lr = ism[index_space].shared_lr;
     h.ghost_lr = ism[index_space].ghost_lr;
