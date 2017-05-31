@@ -184,12 +184,17 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(_runtime_path ${PROJECT_SOURCE_DIR}/flecsi/execution/legion)
 
   if(NOT APPLE)
-    set(FLECSI_RUNTIME_LIBRARIES  -ldl ${Legion_LIBRARIES} ${MPI_LIBRARIES})
+    set(FLECSI_RUNTIME_LIBRARIES -ldl ${Legion_LIBRARIES} ${MPI_LIBRARIES})
   else()
-    set(FLECSI_RUNTIME_LIBRARIES  ${Legion_LIBRARIES} ${MPI_LIBRARIES})
+    set(FLECSI_RUNTIME_LIBRARIES ${Legion_LIBRARIES} ${MPI_LIBRARIES})
   endif()
 
   include_directories(${Legion_INCLUDE_DIRS})
+
+  option(ENABLE_LEGION_TLS "Enable TLS storage of runtime state" OFF)
+  if(ENABLE_LEGION_TLS)
+    add_definitions(-DENABLE_LEGION_TLS)
+  endif()
 
 #
 # MPI interface

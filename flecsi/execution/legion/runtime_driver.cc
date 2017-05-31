@@ -58,15 +58,19 @@ runtime_driver(
   clog(info) << "Executing specialization driver task" << std::endl;
   }
 
+#if !defined(ENABLE_LEGION_TLS)
   // Set the current task context to the driver
   context_.push_state(utils::const_string_t{"specialization_driver"}.hash(),
     ctx, runtime, task, regions);
+#endif
 
   // run default or user-defined specialization driver 
   specialization_driver(args.argc, args.argv);
 
+#if !defined(ENABLE_LEGION_TLS)
   // Set the current task context to the driver
   context_.pop_state( utils::const_string_t{"specialization_driver"}.hash());
+#endif
 #endif // FLECSI_ENABLE_SPECIALIZATION_DRIVER
 
 

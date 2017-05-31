@@ -222,13 +222,22 @@ struct legion_execution_policy_t
     // Make a tuple from the task arguments.
     ARG_TUPLE task_args = std::make_tuple(args ...);
 
-    // Get the runtime and context from the calling task.
     context_t & context_ = context_t::instance();
+
+    // Get the processor type.
+    auto processor_type = context_.processor_type<KEY>();
+
+    // Get the runtime and context from the current task.
+#if defined(ENABLE_LEGION_TLS)
+    auto legion_runtime = Legion::Runtime::get_runtime();
+    auto legion_context = Legion::Runtime::get_context();
+#else
     auto legion_runtime = context_.runtime(parent);
     auto legion_context = context_.context(parent);
+#endif
 
     // Handle MPI and Legion invocations separately.
-    if(context_.processor_type<KEY>() == processor_type_t::mpi) {
+    if(processor_type == processor_type_t::mpi) {
       {
       clog_tag_guard(execution);
       clog(info) << "Executing MPI task: " << KEY << std::endl;
@@ -286,9 +295,9 @@ struct legion_execution_policy_t
 
           // Enqueue the task.
           clog(error) << "Execute task " <<
-              context_.runtime(parent)->find_local_MPI_rank() << std::endl;
-          auto future = context_.runtime(parent)->execute_task(
-            context_.context(parent), task_launcher);
+              legion_runtime->find_local_MPI_rank() << std::endl;
+          auto future = legion_runtime->execute_task(legion_context,
+            task_launcher);
 
           // Enqueue the epilog.
           task_epilog_t
@@ -319,8 +328,8 @@ struct legion_execution_policy_t
             TaskArgument(&task_args, sizeof(ARG_TUPLE)), arg_map);
 
           // Enqueue the task.
-          auto future = context_.runtime(parent)->execute_index_space(
-            context_.context(parent), index_launcher);
+          auto future = legion_runtime->execute_index_space(legion_context,
+            index_launcher);
 
           return legion_future__<RETURN>(future);
           } // scope

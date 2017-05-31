@@ -330,15 +330,19 @@ __flecsi_internal_legion_task(spmd_task, void) {
   const LegionRuntime::HighLevel::InputArgs & args =
     LegionRuntime::HighLevel::HighLevelRuntime::get_input_args();
 
+#if !defined(ENABLE_LEGION_TLS)
   // Set the current task context to the driver
   context_t::instance().push_state(utils::const_string_t{"driver"}.hash(),
     ctx, runtime, task, regions);
+#endif
 
   // run default or user-defined driver 
   driver(args.argc, args.argv); 
 
+#if !defined(ENABLE_LEGION_TLS)
   // Set the current task context to the driver
   context_t::instance().pop_state(utils::const_string_t{"driver"}.hash());
+#endif
 
   // FIXME free all malloc, vectors, etc.
 
