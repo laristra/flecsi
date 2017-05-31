@@ -19,12 +19,10 @@ namespace execution {
 
 void serial_runtime_driver(int argc, char ** argv) {
 
-#ifndef FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
-
+#if defined FLECSI_ENABLE_SPECIALIZATION_DRIVER
   // Execute the specialization driver.
   specialization_driver(argc, argv);
-
-#endif // FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
+#endif // FLECSI_ENABLE_SPECIALIZATION_DRIVER
 
   // Execute the user driver.
   driver(argc, argv);

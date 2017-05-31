@@ -46,7 +46,10 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
     serial/execution_policy.h
     serial/runtime_driver.h
   )
-
+  set(execution_SOURCES
+    ${execution_SOURCES}
+    serial/execution_policy.cc
+    )
   set(UNIT_POLICY SERIAL)
   set(RUNTIME_DRIVER serial/runtime_driver.cc)
 
@@ -130,7 +133,7 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
   #
   cinch_add_unit(simple_function
     SOURCES
-      test/simple_function_driver.cc
+      test/simple_function.cc
       ${DRIVER_INITIALIZATION}
       ${RUNTIME_DRIVER}
     DEFINES
@@ -148,7 +151,7 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
   #
   cinch_add_unit(simple_task
     SOURCES
-      test/simple_task_driver.cc
+      test/simple_task.cc
       ${DRIVER_INITIALIZATION}
       ${RUNTIME_DRIVER}
     DEFINES

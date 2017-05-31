@@ -7,6 +7,7 @@
 #define flecsi_task_driver_h
 
 #include <iostream>
+#include <cinchtest.h>
 #include <cinchlog.h>
 
 #include "flecsi/utils/common.h"
@@ -49,11 +50,20 @@ void driver(int argc, char ** argv) {
 
   f.wait();
 
-//FIXME IRINA
-//  auto f2 = flecsi_execute_task(task, loc, index, alpha, 5);
+  auto f2 = flecsi_execute_task(task, index, alpha, 3);
+
+  f2.wait();
 
   clog(info) << "Task return: " << f.get() << std::endl;
 } // driver
+
+//----------------------------------------------------------------------------//
+// TEST.
+//----------------------------------------------------------------------------//
+
+TEST(simple_task, testname) {
+
+} // TEST
 
 } // namespace execution
 } // namespace flecsi
