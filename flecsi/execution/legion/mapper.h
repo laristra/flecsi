@@ -41,6 +41,7 @@ enum {
 enum {
   // Use the first 8 bits for storing the rhsf index
   MAPPER_FORCE_RANK_MATCH = 0x00001000,
+  MAPPER_COMPACTED_STORAGE = 0x00002000,
 //  MAPPER_SUBRANK_LAUNCH   = 0x00080000,
 };
 
@@ -213,9 +214,85 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
                                         input, output, cpu_slices_cache);
     }//end else
   } //end slice_task
+
+
+  virtual
+  void
+  map_task(
+    const Legion::Mapping::MapperContext ctx,
+    const Legion::Task &task,
+    const Legion::Mapping::Mapper::MapTaskInput &input,
+    Legion::Mapping::Mapper::MapTaskOutput &output)
+  {
+
+#if 0
+    Processor::Kind target_kind = task.target_proc.kind();
+    // Get the variant that we are going to use to map this task
+    VariantInfo chosen = default_find_preferred_variant(task, ctx,
+       true/*needs tight bound*/, true/*cache*/, target_kind);
+    output.chosen_variant = chosen.variant;
+    output.task_priority = 0;
+    output.postmap_task = false;
+    // Figure out our target processors
+    DefaultMapper::default_policy_select_target_processors(ctx,
+        task, output.target_procs);
+
+    if (chosen.is_inner)
+    {
+      clog_assert (false, " mapper for the inner variant is not implemented");  
+    }
+#endif
+
+    DefaultMapper::map_task(ctx, task, input,output);
+
+#if 1
+    // Assume we are mapping on the CPUs
+    output.target_procs = local_cpus;
+    Legion::Memory target_mem = local_sysmem;
+
+   // output.chosen_instances.resize(1);
+
+    if ( (task.tag & MAPPER_COMPACTED_STORAGE) != 0) {
+ 
+      clog_assert ((task.regions.size()==3), "");
+
+      output.chosen_instances.resize(1);
+
+      Legion::LayoutConstraintSet layout_constraints;
+      // No specialization
+      layout_constraints.add_constraint(Legion::SpecializedConstraint());
+      layout_constraints.add_constraint(Legion::OrderingConstraint());
+      // Constrained for the target memory kind
+      layout_constraints.add_constraint(Legion::MemoryConstraint(
+            target_mem.kind()));
+      // Have all the field for the instance available
+      std::vector<Legion::FieldID> all_fields;
+      layout_constraints.add_constraint(Legion::FieldConstraint()); 
+
+      Legion::ColocationConstraint colocation_constraints;
+      Legion::Mapping::PhysicalInstance result;
+
+      std::vector<Legion::LogicalRegion> regions;
+      for (size_t i=0; i<task.regions.size();i++)
+        regions.push_back(task.regions[i].region);
+
+      bool created;
+      if (!runtime->find_or_create_physical_instance(
+        ctx, target_mem, layout_constraints,
+        regions, result, created, true/*acquire*/, GC_NEVER_PRIORITY)) {
+          clog(fatal)<<"ERROR: FLeCSI mapper failed to allocate instance"<<
+            std::endl;
+      }//end if
+      output.chosen_instances[0].push_back(result);
+    }//end if
+
+#endif
+  }//map_task
+
   
  protected:
-  
+ 
+  //Legion::Mapping::MapperRuntime  mapper_runtime; 
   std::map<Legion::Processor,
            std::map<Realm::Memory::Kind, Realm::Memory> > proc_mem_map;
   Realm::Memory local_sysmem;
