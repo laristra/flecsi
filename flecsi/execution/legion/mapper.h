@@ -247,14 +247,15 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
 
 #if 1
     // Assume we are mapping on the CPUs
-    output.target_procs = local_cpus;
-    Legion::Memory target_mem = local_sysmem;
+    //output.target_procs = task.target_proc;
+//    Legion::Memory target_mem = local_sysmem;
+    Legion::Memory target_mem = 
+     DefaultMapper::default_policy_select_target_memory(ctx, task.target_proc);
 
-   // output.chosen_instances.resize(1);
 
     if ( (task.tag & MAPPER_COMPACTED_STORAGE) != 0) {
  
-      clog_assert ((task.regions.size()==3), "");
+      clog_assert ((task.regions.size()%3==0), "");
 
       output.chosen_instances.resize(1);
 
@@ -269,21 +270,29 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
       std::vector<Legion::FieldID> all_fields;
       layout_constraints.add_constraint(Legion::FieldConstraint()); 
 
+      //FIXME:: add colocation_constraints
       Legion::ColocationConstraint colocation_constraints;
-      Legion::Mapping::PhysicalInstance result;
 
-      std::vector<Legion::LogicalRegion> regions;
-      for (size_t i=0; i<task.regions.size();i++)
-        regions.push_back(task.regions[i].region);
+      for (size_t indx=0; indx<task.regions.size()/3;indx++){
 
-      bool created;
-      if (!runtime->find_or_create_physical_instance(
+        Legion::Mapping::PhysicalInstance result;
+        std::vector<Legion::LogicalRegion> regions;
+
+        for (size_t j=0; j<3; j++)
+          regions.push_back(task.regions[indx*3+j].region);
+
+        bool created;
+
+        if (!runtime->find_or_create_physical_instance(
         ctx, target_mem, layout_constraints,
         regions, result, created, true/*acquire*/, GC_NEVER_PRIORITY)) {
           clog(fatal)<<"ERROR: FLeCSI mapper failed to allocate instance"<<
             std::endl;
-      }//end if
-      output.chosen_instances[0].push_back(result);
+        }//end if
+
+        output.chosen_instances[indx].push_back(result);
+
+       }//end for
     }//end if
 
 #endif

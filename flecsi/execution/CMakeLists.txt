@@ -183,6 +183,22 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
     THREADS 2
     )
 
+   cinch_add_unit(mapper_compaction_task
+    SOURCES
+      test/legion/mapper_compaction.cc
+      ${DRIVER_INITIALIZATION}
+      ${RUNTIME_DRIVER}
+    DEFINES
+      -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+    POLICY
+      ${UNIT_POLICY}
+    LIBRARIES
+      flecsi
+      ${CINCH_RUNTIME_LIBRARIES}
+    THREADS 2
+    )
+
+
     if(ENABLE_COLORING AND ENABLE_PARMETIS)
 
       cinch_add_unit(execution_structure
