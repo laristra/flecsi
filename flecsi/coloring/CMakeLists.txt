@@ -113,7 +113,7 @@ cinch_add_unit(devel-dcrs
 
 # Both of these tests depend on ParMETIS.
 # This could change if we add more colorer types.
-if(ENABLE_COLORINGING AND ENABLE_PARMETIS)
+if(ENABLE_COLORING AND ENABLE_PARMETIS)
 
 cinch_add_unit(coloring
   SOURCES test/coloring.cc

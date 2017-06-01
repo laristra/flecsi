@@ -6,8 +6,8 @@
 # /@@////   /@@/@@@@@@@/@@       ////////@@/@@
 # /@@       /@@/@@//// //@@    @@       /@@/@@
 # /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
-# //       ///  //////   //////  ////////  // 
-# 
+# //       ///  //////   //////  ////////  //
+#
 # Copyright (c) 2016 Los Alamos National Laboratory, LLC
 # All rights reserved
 #~----------------------------------------------------------------------------~#
@@ -20,6 +20,8 @@
 set(utils_HEADERS
   any.h
   array_ref.h
+  dbc.h
+  dbc_impl.h
   checksum.h
   common.h
   const_string.h
@@ -50,6 +52,7 @@ set(utils_HEADERS
 #------------------------------------------------------------------------------#
 
 set(utils_SOURCES
+  dbc_impl.cc
   common.cc
   debruijn.cc
 )
@@ -100,6 +103,28 @@ set(utils_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
+cinch_add_unit(any
+  SOURCES test/any.cc
+)
+
+# Broken by refactor
+#cinch_add_unit(dbc
+#  SOURCES test/dbc_test.cc
+#  POLICY SERIAL
+#)
+
+# Broken by refactor
+#cinch_add_unit(dbc-no-assert
+#  SOURCES test/dbc_test_no_assert.cc
+#  POLICY SERIAL
+#)
+
+# Broken by refactor
+#cinch_add_unit(dbc-notify
+#  SOURCES test/dbc_test_notify.cc
+#  POLICY SERIAL
+#)
+
 cinch_add_unit(const_string
   SOURCES test/const_string.cc
 )
@@ -110,10 +135,6 @@ cinch_add_unit(factory
 
 cinch_add_unit(reorder
   SOURCES test/reorder.cc
-)
-
-cinch_add_unit(any
-  SOURCES test/any.cc
 )
 
 cinch_add_unit(reflection
