@@ -25,10 +25,6 @@
 #include "flecsi/data/data.h"
 #include "flecsi/supplemental/coloring/add_colorings.h"
 
-#define np(X)                                                            \
- std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
-           << ": " << #X << " = " << (X) << std::endl
-
 using namespace flecsi;
 
 clog_register_tag(coloring);
@@ -39,7 +35,7 @@ using handle_t =
   data::legion_meta_data_t<default_user_meta_data_t>>;
 
 void task1(handle_t<double, dro, dno, dno> x, double y) {
-  np(y);
+  //np(y);
 } // task1
 
 flecsi_register_task(task1, loc, single);
@@ -80,10 +76,10 @@ void driver(int argc, char ** argv) {
 } // specialization_driver
 
 //----------------------------------------------------------------------------//
-// User driver.
+// TEST.
 //----------------------------------------------------------------------------//
 
-TEST(execution_structure, testname) {
+TEST(data_handle, testname) {
   
 } // TEST
 

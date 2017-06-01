@@ -222,6 +222,9 @@ void add_colorings(int dummy) {
   } // for
   } // scope
 
+  //--------------------------------------------------------------------------//
+  //--------------------------------------------------------------------------//
+
   // Form the vertex closure
   auto vertex_closure = flecsi::topology::vertex_closure<2>(sd, closure);
 

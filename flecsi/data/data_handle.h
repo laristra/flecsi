@@ -55,6 +55,8 @@ struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {
   T* ghost_data;
   size_t ghost_size;
 
+  T* combined_data;
+
   template<
     size_t EXCLUSIVE_PERMISSIONS2,
     size_t SHARED_PERMISSIONS2,

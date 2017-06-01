@@ -66,8 +66,10 @@ namespace execution {
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
-extern thread_local std::unordered_map<size_t,
-  std::stack<std::shared_ptr<legion_runtime_state_t>>> state_;
+#if !defined(ENABLE_LEGION_TLS)
+  extern thread_local std::unordered_map<size_t,
+    std::stack<std::shared_ptr<legion_runtime_state_t>>> state_;
+#endif
 
 //----------------------------------------------------------------------------//
 //! The legion_context_policy_t is the backend runtime context policy for
@@ -160,6 +162,7 @@ struct legion_context_policy_t
   //! @param regions The Legion physical regions.
   //--------------------------------------------------------------------------//
 
+#if !defined(ENABLE_LEGION_TLS)
   void push_state(
     size_t key,
     Legion::Context & context,
@@ -176,6 +179,7 @@ struct legion_context_policy_t
     state_[key].push(std::shared_ptr<legion_runtime_state_t>
       (new legion_runtime_state_t(context, runtime, task, regions)));
   } // push_state
+#endif
 
   //--------------------------------------------------------------------------//
   //! Pop Legion runtime state off of the stack.
@@ -183,6 +187,7 @@ struct legion_context_policy_t
   //! @param key The task hash key.
   //--------------------------------------------------------------------------//
 
+#if !defined(ENABLE_LEGION_TLS)
   void pop_state(
     size_t key
   )
@@ -194,6 +199,7 @@ struct legion_context_policy_t
 
     state_[key].pop();
   } // pop_state
+#endif
 
   //--------------------------------------------------------------------------//
   // MPI interoperability.
@@ -549,6 +555,7 @@ struct legion_context_policy_t
   //! @param key The task hash key.
   //--------------------------------------------------------------------------//
 
+#if !defined(ENABLE_LEGION_TLS)
   Legion::Context &
   context(
     size_t key
@@ -556,6 +563,7 @@ struct legion_context_policy_t
   {
     return state_[key].top()->context;
   } // context
+#endif
 
   //--------------------------------------------------------------------------//
   //! Return the Legion task runtime pointer for the given task key.
@@ -563,6 +571,7 @@ struct legion_context_policy_t
   //! @param key The task hash key.
   //--------------------------------------------------------------------------//
 
+#if !defined(ENABLE_LEGION_TLS)
   Legion::HighLevelRuntime *
   runtime(
     size_t key
@@ -570,40 +579,11 @@ struct legion_context_policy_t
   {
     return state_[key].top()->runtime;
   } // runtime
-
-  //--------------------------------------------------------------------------//
-  //! Return the Legion task pointer for the given task key.
-  //!
-  //! @param key The task hash key.
-  //--------------------------------------------------------------------------//
-
-  const
-  Legion::Task *
-  task(
-    size_t key
-  )
-  {
-    return state_[key].top()->task;
-  } // task
-
-  //--------------------------------------------------------------------------//
-  //! Return a reference to the Legion task physical regions vector.
-  //!
-  //! @param key The task hash key.
-  //--------------------------------------------------------------------------//
-
-  const
-  std::vector<Legion::PhysicalRegion> &
-  regions(
-    size_t key
-  )
-  {
-    return state_[key].top()->regions;
-  } // regions
+#endif
 
   //--------------------------------------------------------------------------//
   //! Collects Legion data associated with a FleCSI index space.
-  //!--------------------------------------------------------------------------//
+  //--------------------------------------------------------------------------//
 
   struct index_space_data_t{
     Legion::PhaseBarrier* pbarrier_as_owner_ptr;
@@ -614,10 +594,10 @@ struct legion_context_policy_t
     Legion::LogicalRegion color_region;
     Legion::IndexPartition primary_ghost_ip;
     Legion::LogicalRegion primary_lr;
-    Legion::LogicalRegion ghost_lr;
-    Legion::IndexPartition excl_shared_ip;
     Legion::LogicalRegion exclusive_lr;
     Legion::LogicalRegion shared_lr;
+    Legion::LogicalRegion ghost_lr;
+    Legion::IndexPartition excl_shared_ip;
   };
 
   //--------------------------------------------------------------------------//

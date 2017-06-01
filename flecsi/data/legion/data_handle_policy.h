@@ -58,6 +58,7 @@ struct legion_data_handle_policy_t
 
   void copy(const legion_data_handle_policy_t& p){
     fid = p.fid;
+    index_space = p.index_space;
     exclusive_lr = p.exclusive_lr;
     shared_lr = p.shared_lr;
     ghost_lr = p.ghost_lr;
@@ -74,6 +75,7 @@ struct legion_data_handle_policy_t
   }
 
   field_id_t fid;
+  size_t index_space;
   Legion::LogicalRegion exclusive_lr;
   Legion::LogicalRegion shared_lr;
   Legion::LogicalRegion ghost_lr;

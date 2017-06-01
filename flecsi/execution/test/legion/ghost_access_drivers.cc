@@ -97,8 +97,16 @@ void specialization_driver(int argc, char ** argv) {
 void driver(int argc, char ** argv) {
   clog(error) << "In driver" << std::endl;
 
-  flecsi::execution::context_t & context_ = flecsi::execution::context_t::instance();
-  Legion::HighLevelRuntime *runtime = context_.runtime(utils::const_string_t{"driver"}.hash());
+#if defined(ENABLE_LEGION_TLS)
+  auto runtime = Legion::Runtime::get_runtime();
+  auto context = Legion::Runtime::get_context();
+#else
+  context_t & context_ = context_t::instance();
+  size_t task_key = utils::const_string_t{"driver"}.hash();
+  auto runtime = context_.runtime(task_key);
+  auto context = context_.context(task_key);
+#endif
+
   const int my_color = runtime->find_local_MPI_rank();
 
   client_type client;

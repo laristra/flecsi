@@ -98,9 +98,10 @@ namespace execution {
         Legion::PhysicalRegion pr;
         size_t size;
 
-        skip = true;
         if(skip){
           data = nullptr;
+          size = 0;
+          pr = Legion::PhysicalRegion();
         }
         else{
           pr = regions[region];
@@ -116,7 +117,8 @@ namespace execution {
           LegionRuntime::Arrays::Rect<2> sr;
           LegionRuntime::Accessor::ByteOffset bo[2];
           data = ac.template raw_rect_ptr<2>(r, sr, bo);
-          size = r.hi[1] - r.lo[1];
+          size = sr.hi[1] - sr.lo[1] + 1;
+          data += bo[1];
         }
 
         region++;
@@ -124,23 +126,43 @@ namespace execution {
         switch(p){
           case 0:
             h.exclusive_pr = pr;
-            h.exclusive_data = data;
             h.exclusive_size = size;
+            h.exclusive_data = data;
             break;
           case 1:
             h.shared_pr = pr;
-            h.shared_data = data;
             h.shared_size = size;
+            h.shared_data = data;
             break;
           case 2:
             h.ghost_pr = pr;
+            h.ghost_size = size;
             h.ghost_data = data;
-            h.shared_size = size;
             break;
           default:
             assert(false);
         }
       }
+
+      size_t combined_size = 
+        (h.exclusive_size + h.shared_size + h.ghost_size) * sizeof(T);
+      h.combined_data = (T*)malloc(combined_size);
+      
+      size_t size = sizeof(T) * h.exclusive_size;
+      
+      if (h.exclusive_data != nullptr)
+          std::memcpy(h.combined_data, h.exclusive_data, size);
+
+      size_t pos = h.exclusive_size;
+      size = sizeof(T) * h.shared_size;
+      if (h.shared_data != nullptr)
+          std::memcpy(h.combined_data + pos, h.shared_data, size);
+      pos += h.shared_size;
+
+      size = sizeof(T) * h.ghost_size;
+      if (h.ghost_data != nullptr)
+          std::memcpy(h.combined_data + pos, h.ghost_data, size);
+
     } // handle
 
     //-----------------------------------------------------------------------//
