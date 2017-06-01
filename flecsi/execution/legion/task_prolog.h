@@ -126,6 +126,12 @@ namespace execution {
                 *(h.ghost_owners_pbarriers_ptrs[owner]) <<
                 std::endl;
 
+            Legion::RegionRequirement rr_shared(h.shared_lr,
+              READ_ONLY, EXCLUSIVE, h.color_region);
+
+            Legion::RegionRequirement rr_ghost(h.ghost_lr,
+              WRITE_DISCARD, EXCLUSIVE, h.color_region);
+
             auto iitr = flecsi_context.field_info_map().find(h.index_space);
             clog_assert(iitr != flecsi_context.field_info_map().end(),
               "invalid index space");
@@ -133,7 +139,24 @@ namespace execution {
             // TODO: launch copy task on fields
             for(auto& fitr : iitr->second){
               const context_t::field_info_t& fi = fitr.second;
+              rr_shared.add_field(fi.fid);
+              rr_ghost.add_field(fi.fid);
             }
+
+            // TODO - circular dependency including internal_task.h
+            auto constexpr key = 
+              flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash();
+
+            const auto ghost_copy_tid = flecsi_context.task_id<key>();
+/*
+            Legion::TaskLauncher
+              launcher(ghost_copy_tid,
+              Legion::TaskArgument(&h.index_space, sizeof(h.index_space)));
+            
+            launcher.add_region_requirement(rr_shared);
+            launcher.add_region_requirement(rr_ghost);
+            runtime->execute_task(context, launcher);
+            */
 
             h.ghost_owners_pbarriers_ptrs[owner]->arrive(1);        // phase WRITE
             *(h.ghost_owners_pbarriers_ptrs[owner]) = runtime->advance_phase_barrier(context,

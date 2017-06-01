@@ -457,6 +457,55 @@ __flecsi_internal_legion_task(compaction_task, void) {
 
 } // compaction_task
 
+__flecsi_internal_legion_task(ghost_copy_task, void) {
+  context_t& context = context_t::instance();
+
+  size_t index_space = *(size_t*)task->args;
+
+  assert(regions.size() == 2);
+  assert(task->regions.size() == 2);
+
+  for(auto fid : task->regions[0].privilege_fields){
+    auto iitr = context.field_info_map().find(index_space);
+    clog_assert(iitr != context.field_info_map().end(), "invalid index space");
+    auto fitr = iitr->second.find(fid);
+    clog_assert(fitr != iitr->second.end(), "invalid fid");
+    const context_t::field_info_t& fi = fitr->second;
+
+    Legion::PhysicalRegion pr = regions[0];
+    Legion::LogicalRegion lr = pr.get_logical_region();
+    Legion::IndexSpace is = lr.get_index_space();
+
+    auto acc_shared = regions[0].get_field_accessor(fid);
+
+    Legion::Domain domain = 
+      runtime->get_index_space_domain(ctx, is); 
+    
+    LegionRuntime::Arrays::Rect<2> r = domain.get_rect<2>();
+    LegionRuntime::Arrays::Rect<2> sr;
+    LegionRuntime::Accessor::ByteOffset bo[2];
+    void* data_shared = acc_shared.template raw_rect_ptr<2>(r, sr, bo);
+    data_shared += bo[1];
+    size_t size = sr.hi[1] - sr.lo[1] + 1;
+
+    pr = regions[1];
+    lr = pr.get_logical_region();
+    is = lr.get_index_space();
+
+    auto acc_ghost = regions[1].get_field_accessor(fid);
+
+    domain = runtime->get_index_space_domain(ctx, is); 
+    
+    r = domain.get_rect<2>();
+    void* data_ghost = acc_ghost.template raw_rect_ptr<2>(r, sr, bo);
+    data_ghost += bo[1];
+    size_t shared_size = sr.hi[1] - sr.lo[1] + 1;
+    clog_assert(size == shared_size, "ghost/shared size mismatch");
+
+    std::memcpy(data_ghost, data_shared, size * fi.size);
+  }
+}
+
 #undef __flecsi_internal_legion_task
 
 } // namespace execution 
