@@ -36,14 +36,22 @@ flecsi_register_function(test_function);
 //----------------------------------------------------------------------------//
 
 void driver(int argc, char ** argv) {
-
+//FIXME IRINA do something with the handle
   auto handle = flecsi_function_handle(test_function);
 
-  double result = flecsi_execute_function(double,handle, 2.0, 10.0);
+  double result = flecsi_execute_function(handle, 2.0, 10.0);
 
-  ASSERT_EQ(result, 20);
+  ASSERT_EQ(result, 20.0);
 
 } // driver
+
+//----------------------------------------------------------------------------//
+// TEST.
+//----------------------------------------------------------------------------//
+
+TEST(simple_function, testname) {
+
+} // TEST
 
 } // namespace execution
 } // namespace flecsi

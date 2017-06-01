@@ -5,8 +5,26 @@
 
 #include <cinchtest.h>
 
-TEST(ghost_access, testname) {
+#include "flecsi/data/data.h"
+#include "flecsi/topology/test/test_mesh_2d.h"
 
+namespace flecsi {
+namespace execution {
+
+void specialization_driver(int argc, char ** argv) {
+} // specialization_driver
+
+void driver(int argc, char ** argv) {
+} // driver
+
+} // namespace flecsi
+} // namespace execution
+
+using test_mesh_2d_t = flecsi::topology::test_mesh_2d_t;
+
+flecsi_register_data_client(test_mesh_2d_t, sovler, mesh);
+
+TEST(client_registration, sanity) {
 } // TEST
 
 /*----------------------------------------------------------------------------*

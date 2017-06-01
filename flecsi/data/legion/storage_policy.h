@@ -94,7 +94,18 @@ struct legion_storage_policy_t {
 
   using field_id_t = LegionRuntime::HighLevel::FieldID;
   using registration_function_t = std::function<void(size_t)>;
-  using unique_fid_t = utils::unique_id_t<field_id_t>;
+  using unique_fid_t =
+    utils::unique_id_t<field_id_t, FLECSI_GENERATED_ID_MAX>;
+
+  using data_value_t = std::pair<field_id_t, registration_function_t>;
+
+  using client_value_t =
+    std::unordered_map<
+      data_hash_t::key_t, // key
+      data_value_t,       // value
+      data_hash_t,        // hash function
+      data_hash_t         // equivalence operator
+    >;
 
   template<
     typename DATA_CLIENT_TYPE,
@@ -125,6 +136,25 @@ struct legion_storage_policy_t {
     } // for
   } // new_register_data
 
+  template<
+    typename DATA_CLIENT_TYPE,
+    size_t NAMESPACE_HASH,
+    size_t NAME_HASH
+  >
+  bool
+  register_data_client()
+  {
+    using wrapper_t =
+      client_registration_wrapper_t<
+        DATA_CLIENT_TYPE,
+        NAMESPACE_HASH,
+        NAME_HASH>;
+
+    data_client_registry_[typeid(DATA_CLIENT_TYPE).hash_code()]
+      [data_hash_t::make_key(NAMESPACE_HASH, NAME_HASH)] =
+      { unique_fid_t::instance().next(), wrapper_t::register_callback };
+  } // register_data_client
+
   void
   register_all()
   {
@@ -135,24 +165,31 @@ struct legion_storage_policy_t {
     } // for
   } // register_all
 
+  const std::unordered_map<size_t, client_value_t> &
+  data_registry()
+  const
+  {
+    return data_registry_;
+  }
+
+  const std::unordered_map<size_t, client_value_t> &
+  data_client_registry()
+  const
+  {
+    return data_client_registry_;
+  }
+
 protected:
 
   // Storage container instance
   data_store_t data_store_;
 
-  using data_value_t = std::pair<field_id_t, registration_function_t>;
-
-  using client_value_t =
-    std::unordered_map<
-      data_hash_t::key_t, // key
-      data_value_t,       // value
-      data_hash_t,        // hash function
-      data_hash_t         // equialence operator
-    >;
-
   // Data registration map
   std::unordered_map<size_t, client_value_t> data_registry_;
 
+  // Data client registration map
+  std::unordered_map<size_t, client_value_t> data_client_registry_;
+  
 }; // struct legion_storage_policy_t
 
 } // namespace data

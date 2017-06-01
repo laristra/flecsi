@@ -6,14 +6,14 @@
 #ifndef flecsi_data_storage_h
 #define flecsi_data_storage_h
 
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Apr 17, 2016
+//----------------------------------------------------------------------------//
+
 #include "flecsi/utils/const_string.h"
 #include "flecsi/data/data_client.h"
 #include "flecsi/data/data_handle.h"
-
-///
-/// \file
-/// \date Initial file creation: Apr 17, 2016
-///
 
 namespace flecsi {
 namespace data {
@@ -146,6 +146,35 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
       VERSIONS
     >();
   } // new_register_data
+
+  template<
+    typename DATA_CLIENT_TYPE,
+    size_t NAMESPACE_HASH,
+    size_t NAME_HASH
+  >
+  bool
+  register_data_client()
+  {
+    return sp_t::template register_data_client<
+      DATA_CLIENT_TYPE,
+      NAMESPACE_HASH,
+      NAME_HASH
+    >();
+  } // register_data_client
+
+  const auto &
+  data_registry()
+  const
+  {
+    return sp_t::data_registry();
+  }
+
+  const auto &
+  data_client_registry()
+  const
+  {
+    return sp_t::data_client_registry();
+  }
 
   //--------------------------------------------------------------------------//
   // Data handles.
@@ -334,7 +363,8 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   template<
     size_t ST,
     typename T,
-    size_t NS
+    size_t NS,
+    typename DATA_CLIENT_TYPE
   >
   decltype(auto)
   get_handle(
@@ -343,7 +373,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     size_t version=0
   )
   {
-    return st_t<ST>::template get_handle<T, NS>(data_client,
+    return st_t<ST>::template get_handle<T, NS, DATA_CLIENT_TYPE>(data_client,
       sp_t::data_store_, key, version);
   } // get_handle
 /*

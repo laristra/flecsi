@@ -1,26 +1,19 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2017 Los Alamos National Security, LLC
+ * Copyright (c) 2015 Los Alamos National Security, LLC
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_serial_data_policy_h
-#define flecsi_serial_data_policy_h
+#ifndef add_colorings_h
+#define add_colorings_h
 
-#include "flecsi/partition/index_partition.h"
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: May 23, 2017
+//----------------------------------------------------------------------------//
 
-namespace flecsi {
-namespace data {
+void add_colorings(int dummy);
 
-class serial_data_policy_t
-{
-public:
-
-};
-
-} // namespace data
-} // namespace flecsi
-
-#endif // flecsi_serial_data_policy_h
+#endif // add_colorings_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

@@ -6,14 +6,19 @@
 #ifndef flecsi_data_default_user_meta_data_h
 #define flecsi_data_default_user_meta_data_h
 
-///
-/// \file
-/// \date Initial file creation: Apr 17, 2016
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Apr 17, 2016
+//----------------------------------------------------------------------------//
 
 #include "flecsi/data/data_client.h"
 
 namespace flecsi {
+
+//----------------------------------------------------------------------------//
+//! The default_user_meta_data_t types provides an empty default type
+//! for user meta data.
+//----------------------------------------------------------------------------//
 
 struct default_user_meta_data_t {
   void initialize() {}

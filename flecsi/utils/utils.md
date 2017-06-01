@@ -11,6 +11,8 @@ going to be in the Doxygen documentation.
 
 --------------------------------------------------------------------------------
 
+## Design-By-Contract Assertions (DBC)
+
 ## Template Metaprogramming
 
 ### Tuple Manipulation

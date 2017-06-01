@@ -146,39 +146,6 @@ struct storage_type_t<global, DS, MD> {
   using handle_t = global_handle_t<T>;
 
   //--------------------------------------------------------------------------//
-  // Data registration.
-  //--------------------------------------------------------------------------//
-
-  ///
-  // \tparam T Data type to register.
-  // \tparam NS Namespace.
-  // \tparam Args Variadic arguments that are passed to
-  //              metadata initialization.
-  //
-  // \param data_store A reference for accessing the low-level data.
-  // \param key A const string instance containing the variable name.
-  // \param runtime_namespace The runtime namespace to be used.
-  // \param The number of variable versions for this datum.
-  ///
-  template< 
-    typename T,
-    size_t NS,
-    typename ... Args
-  >
-  static
-  handle_t<T>
-  register_data(
-    const data_client_t & data_client,
-    data_store_t & data_store,
-    const utils::const_string_t & key,
-    size_t versions,
-    Args && ... args
-  )
-  {
-    return {};    
-  } // register_data
-
-  //--------------------------------------------------------------------------//
   // Data accessors.
   //--------------------------------------------------------------------------//
 

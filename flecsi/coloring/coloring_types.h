@@ -45,8 +45,8 @@ operator << (
   const coloring_info_t & ci
 )
 {
-  stream << "exclusive: " << ci.exclusive << " shared: " << ci.shared <<
-    " ghost: " << ci.ghost;
+  stream << std::endl << "exclusive: " << ci.exclusive <<
+    " shared: " << ci.shared << " ghost: " << ci.ghost;
   
   stream << " users [ ";
   for(auto i: ci.shared_users) {

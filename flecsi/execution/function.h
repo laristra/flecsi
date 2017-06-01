@@ -46,17 +46,16 @@ struct function__
 
   template<
     typename RETURN,
-    typename ARG_TUPLE
+    typename ARG_TUPLE,
+    RETURN (*FUNCTION)(ARG_TUPLE),
+    size_t KEY
   >
   static
   decltype(auto)
-  register_function(
-    const utils::const_string_t & key,
-    std::function<RETURN(ARG_TUPLE)> & user_function
-  )
+  register_function()
   {
     return EXECUTION_POLICY::template register_function<
-      RETURN, ARG_TUPLE>(key, user_function);
+      RETURN, ARG_TUPLE, FUNCTION, KEY>();
   } // register_function
 
   //--------------------------------------------------------------------------//
@@ -73,7 +72,6 @@ struct function__
   //--------------------------------------------------------------------------//
 
   template<
-    typename RETURN,
     typename FUNCTION_HANDLE,
     typename ... ARGS
   >
@@ -84,7 +82,7 @@ struct function__
     ARGS && ... args
   )
   {
-    return EXECUTION_POLICY::template execute_function<RETURN>(handle,
+    return EXECUTION_POLICY::template execute_function(handle,
       std::forward<ARGS>(args) ...);
   } // execute_function
 

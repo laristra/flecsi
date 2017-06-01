@@ -18,9 +18,9 @@
 #------------------------------------------------------------------------------#
 
 set(data_HEADERS
-  accessor.h
   common/data_hash.h
   common/data_types.h
+  data_accessor.h
   data_client.h
   data_constants.h
   data.h
@@ -51,10 +51,8 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
   set(data_HEADERS
     ${data_HEADERS}
     serial/data_handle_policy.h
-    serial/data_policy.h
     serial/dense.h
     serial/global.h
-    serial/handle_policy.h
     serial/meta_data.h
     serial/scoped.h
     serial/sparse.h
@@ -70,11 +68,9 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(data_HEADERS
     ${data_HEADERS}
     legion/data_handle_policy.h
-    legion/data_policy.h
     legion/dense.h
     legion/dpd.h
     legion/global.h
-    legion/handle_policy.h
     legion/meta_data.h
     legion/registration_wrapper.h
     legion/scoped.h
@@ -128,52 +124,51 @@ set(data_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-cinch_add_unit(data_client
-  SOURCES
-    test/data_client.cc
-    ${RUNTIME_DRIVER}
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
-)
+#cinch_add_unit(data_client
+#  SOURCES
+#    test/data_client.cc
+#    ${RUNTIME_DRIVER}
+#  LIBRARIES
+#    flecsi
+#    ${CINCH_RUNTIME_LIBRARIES}
+#)
 
-cinch_add_unit(compaction
-  SOURCES
-    test/legion/compaction.cc
-    ${RUNTIME_DRIVER}
-  LIBRARIES
-    flecsi
-    ${CINCH_RUNTIME_LIBRARIES}
-)
+# cinch_add_unit(compaction
+#   SOURCES
+#     test/legion/compaction.cc
+#     ../execution/driver_initialization.cc
+#     ${RUNTIME_DRIVER}
+#   LIBRARIES
+#     flecsi
+#     ${CINCH_RUNTIME_LIBRARIES}
+# )
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
-  cinch_add_unit(storage_type
-    SOURCES test/storage_type.cc
-    LIBRARIES
-      flecsi
-      ${CINCH_RUNTIME_LIBRARIES}
-  )
-
-  if(ENABLE_COLORING AND ENABLE_PARMETIS)
-    cinch_add_unit(serial_data_handle
-      SOURCES
-        ../execution/test/task.cc
-        ../execution/test/task_driver.cc
-        ../execution/serial/runtime_driver.cc
-        test/data-handle-serial.h
-        data_client.cc
-      DEFINES DATA_HANDLE_TEST
-        FLECSI_SPECIALIZATION_DRIVER=flecsi/data/test/data-handle-serial.h
-        TEST_INIT=flecsi/execution/test/task_init.h
-      LIBRARIES
-        flecsi
-        ${CINCH_RUNTIME_LIBRARIES}
-      POLICY SERIAL
-      THREADS 2
-    )
-  endif()
-
-endif()
+#if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
+#  cinch_add_unit(storage_type
+#    SOURCES test/storage_type.cc
+#    LIBRARIES
+#      flecsi
+#      ${CINCH_RUNTIME_LIBRARIES}
+#  )
+#
+#  if(ENABLE_COLORING AND ENABLE_PARMETIS)
+#    cinch_add_unit(serial_data_handle
+#      SOURCES
+#        ../execution/test/task_driver.cc
+#        ../execution/serial/runtime_driver.cc
+#        test/data-handle-serial.h
+#        data_client.cc
+#      DEFINES
+#        DATA_HANDLE_TEST
+#      LIBRARIES
+#        flecsi
+#        ${CINCH_RUNTIME_LIBRARIES}
+#      POLICY SERIAL
+#      THREADS 2
+#    )
+#  endif()
+#
+#endif()
 
 
 #if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
@@ -194,7 +189,6 @@ endif()
 #  if(ENABLE_COLORING AND ENABLE_PARMETIS)
 #    cinch_add_unit(mpilegion_data_handle
 #      SOURCES
-#        ../execution/test/task.cc
 #        ../execution/test/task_driver.cc
 #        test/data-handle.h
 #        ../execution/mpilegion/runtime_driver.cc
@@ -213,27 +207,29 @@ endif()
 
 #endif()
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+# if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
-  if(ENABLE_COLORING AND ENABLE_PARMETIS)
+#   if(ENABLE_COLORING AND ENABLE_PARMETIS)
 
-    cinch_add_unit(legion_dh1
-      SOURCES
-        ../execution/test/task.cc
-        ../execution/test/context_runtime.cc
-        ../execution/legion/runtime_driver.cc
-        ../execution/legion/context_policy.cc
-        test/dh1.cc
-        data_client.cc
-      LIBRARIES
-        flecsi
-        ${CINCH_RUNTIME_LIBRARIES}
-      POLICY LEGION
-      THREADS 2
-    )
-  endif()
+#     cinch_add_unit(client_registration
+#       SOURCES
+#         test/client_registration.cc
+#         data_client.cc
+#         ../execution/driver_initialization.cc
+#         ../execution/legion/runtime_driver.cc
+#         ../execution/legion/context_policy.cc
+#       DEFINES
+#         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+#       LIBRARIES
+#         flecsi
+#         ${CINCH_RUNTIME_LIBRARIES}
+#       POLICY LEGION
+#       THREADS 2
+#     )
 
-endif()
+#   endif()
+
+# endif()
 
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.

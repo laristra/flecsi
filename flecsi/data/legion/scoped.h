@@ -59,26 +59,6 @@ namespace legion {
     ///
     template<
       typename T,
-      size_t NS,
-      typename ... Args
-    >
-    static
-    decltype(auto)
-    register_data(
-      data_store_t & data_store,
-      uintptr_t runtime_namespace,
-      const utils::const_string_t & key,
-      size_t indices,
-      Args && ... args
-    )
-    {
-    } // register_data
-
-    ///
-    //
-    ///
-    template<
-      typename T,
       size_t NS
     >
     static

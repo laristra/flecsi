@@ -19,6 +19,7 @@
 #include <functional>
 #include <sstream>
 #include <typeinfo>
+#include <limits>
 
 #include "flecsi/utils/id.h"
 
@@ -89,8 +90,24 @@ std::string type() {
 // Unique Identifier Utilities
 //----------------------------------------------------------------------------//
 
+//----------------------------------------------------------------------------//
+// This value is used by the Legion runtime backend to automatically
+// assign task and field ids. The current maximum value that is allowed
+// in legion_config.h is 1<<20.
+//
+// We are reserving 4096 places for internal use.
+//----------------------------------------------------------------------------//
+
+#if !defined(FLECSI_GENERATED_ID_MAX)
+  // 1044480 = (1<<20) - 4096
+  #define FLECSI_GENERATED_ID_MAX 1044480
+#endif
+
 //! Generate unique ids
-template<typename T>
+template<
+  typename T,
+  size_t MAXIMUM = std::numeric_limits<size_t>::max()
+>
 struct unique_id_t {
   static unique_id_t & instance() {
     static unique_id_t u;
@@ -98,6 +115,7 @@ struct unique_id_t {
   } // instance
 
   auto next() {
+    assert(id_+1 <= MAXIMUM && "id exceeds maximum value");
     return ++id_;
   } // next
 

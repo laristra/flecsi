@@ -8,7 +8,7 @@
 /// \date Initial file creation: Apr 11, 2017
 ///
 
-#include <cinchlog.h>
+#include <cinchtest.h>
 
 #include "flecsi/execution/execution.h"
 #include "flecsi/execution/context.h"
@@ -18,6 +18,7 @@
 #include "flecsi/coloring/dcrs_utils.h"
 #include "flecsi/coloring/parmetis_colorer.h"
 #include "flecsi/coloring/mpi_communicator.h"
+#include "flecsi/supplemental/coloring/add_colorings.h"
 #include "flecsi/topology/closure_utils.h"
 #include "flecsi/utils/set_utils.h"
 
@@ -26,6 +27,7 @@ clog_register_tag(coloring);
 namespace flecsi {
 namespace execution {
 
+#if 0
 //----------------------------------------------------------------------------//
 // Create some basic colorings.
 //----------------------------------------------------------------------------//
@@ -350,7 +352,8 @@ void add_colorings(int dummy) {
 
 } // add_colorings
 
-flecsi_register_task(add_colorings, mpi, index);
+flecsi_register_mpi_task(add_colorings);
+#endif
 
 //----------------------------------------------------------------------------//
 // Specialization driver.
@@ -358,8 +361,7 @@ flecsi_register_task(add_colorings, mpi, index);
 
 void specialization_driver(int argc, char ** argv) {
   clog(info) << "In specialization driver" << std::endl;
-
-  flecsi_execute_task(add_colorings, mpi, index, 0);
+  flecsi_execute_mpi_task(add_colorings, 0);
 
 } // specialization_driver
 

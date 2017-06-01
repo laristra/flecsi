@@ -105,14 +105,14 @@ cache:
 
 compiler:
   - gcc
-  - clang
+#  - clang
 
 branches:
   only:
   - master
   - travis
   - stable
-  - refactor
+  - /^refactor.*/
 
 notifications:
   branches:
