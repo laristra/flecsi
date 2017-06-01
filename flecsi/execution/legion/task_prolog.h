@@ -136,7 +136,6 @@ namespace execution {
             clog_assert(iitr != flecsi_context.field_info_map().end(),
               "invalid index space");
 
-            // TODO: launch copy task on fields
             for(auto& fitr : iitr->second){
               const context_t::field_info_t& fi = fitr.second;
               rr_shared.add_field(fi.fid);
@@ -145,10 +144,14 @@ namespace execution {
 
             // TODO - circular dependency including internal_task.h
             auto constexpr key = 
-              flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash();
+              flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(
+                ghost_copy_task)}.hash();
 
             const auto ghost_copy_tid = flecsi_context.task_id<key>();
-/*
+            
+            // TODO: uncomment to enable ghost copy task
+
+            /*
             Legion::TaskLauncher
               launcher(ghost_copy_tid,
               Legion::TaskArgument(&h.index_space, sizeof(h.index_space)));

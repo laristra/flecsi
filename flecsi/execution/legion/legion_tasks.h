@@ -457,6 +457,12 @@ __flecsi_internal_legion_task(compaction_task, void) {
 
 } // compaction_task
 
+//----------------------------------------------------------------------------//
+//! Ghost copy task writes data from shared into ghost
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
 __flecsi_internal_legion_task(ghost_copy_task, void) {
   context_t& context = context_t::instance();
 
@@ -464,8 +470,11 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
 
   assert(regions.size() == 2);
   assert(task->regions.size() == 2);
+  // regions 0 and 1 have the same fields
 
+  // For each field, copy data from shared to ghost
   for(auto fid : task->regions[0].privilege_fields){
+    // Look up field info in context
     auto iitr = context.field_info_map().find(index_space);
     clog_assert(iitr != context.field_info_map().end(), "invalid index space");
     auto fitr = iitr->second.find(fid);
@@ -481,6 +490,7 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
     Legion::Domain domain = 
       runtime->get_index_space_domain(ctx, is); 
     
+    // get raw buffer to shared data
     LegionRuntime::Arrays::Rect<2> r = domain.get_rect<2>();
     LegionRuntime::Arrays::Rect<2> sr;
     LegionRuntime::Accessor::ByteOffset bo[2];
@@ -496,12 +506,15 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
 
     domain = runtime->get_index_space_domain(ctx, is); 
     
+    // get raw buffer to ghost data
     r = domain.get_rect<2>();
     void* data_ghost = acc_ghost.template raw_rect_ptr<2>(r, sr, bo);
     data_ghost += bo[1];
     size_t shared_size = sr.hi[1] - sr.lo[1] + 1;
+    
     clog_assert(size == shared_size, "ghost/shared size mismatch");
 
+    // finally, copy the raw data shared -> ghost
     std::memcpy(data_ghost, data_shared, size * fi.size);
   }
 }
