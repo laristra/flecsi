@@ -77,6 +77,10 @@ namespace execution {
       > & h
     )
     {
+
+      h.context = context;
+      h.runtime = runtime;
+
       for(size_t p = 0; p < 3; ++p){
         bool skip = false;
 
@@ -146,7 +150,7 @@ namespace execution {
 
       size_t combined_size = 
         (h.exclusive_size + h.shared_size + h.ghost_size) * sizeof(T);
-      h.combined_data = (T*)malloc(combined_size);
+      h.combined_data = new T[combined_size];
       
       size_t size = sizeof(T) * h.exclusive_size;
       

@@ -70,7 +70,7 @@ template<
 >
 struct dense_handle_t : public data_handle__<T, EP, SP, GP>
 {
-  using base = data_handle__<T, EP, SP, GP>;
+  using base_t = data_handle__<T, EP, SP, GP>;
 
   //--------------------------------------------------------------------------//
   // Type definitions.
@@ -84,6 +84,23 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   //--------------------------------------------------------------------------//
 
   dense_handle_t() {}
+
+  //--------------------------------------------------------------------------//
+  // Destructor.
+  //--------------------------------------------------------------------------//
+
+  ~dense_handle_t(){
+    if(base_t::combined_data){
+      delete[] base_t::combined_data;
+    }
+
+    Legion::Runtime* runtime = base_t::runtime;
+    Legion::Context& context = base_t::context;
+
+    runtime->unmap_region(context, base_t::exclusive_pr);
+    runtime->unmap_region(context, base_t::shared_pr);
+    runtime->unmap_region(context, base_t::ghost_pr);
+  }
   
   ///
   // Copy constructor.
@@ -93,7 +110,7 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     : label_(a.label_),
       meta_data_(a.meta_data_)
     {
-      base::copy_data(a);
+      base_t::copy_data(a);
       legion_data_handle_policy_t::copy(a);
     }
 
@@ -118,7 +135,7 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   size_t
   size() const
   {
-    return base::combined_size;
+    return base_t::combined_size;
   } // size
 
   ///
@@ -128,7 +145,7 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   size_t
   exclusive_size() const
   {
-    return base::exclusive_size;
+    return base_t::exclusive_size;
   } // size
 
   ///
@@ -138,7 +155,7 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   size_t
   shared_size() const
   {
-    return base::shared_size;
+    return base_t::shared_size;
   } // size
 
   ///
@@ -148,7 +165,7 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   size_t
   ghost_size() const
   {
-    return base::ghost_size;
+    return base_t::ghost_size;
   } // size
 
   ///
@@ -168,72 +185,6 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   // \brief Provide logical array-based access to the data for this
   //        data variable.  This is the const operator version.
   //
-  // \tparam E A complex index type.
-  //
-  // This version of the operator is provided to support use with
-  // \e flecsi mesh entity types \ref mesh_entity_base_t.
-  ///
-  template<typename E>
-  const T &
-  operator [] (
-    E * e
-  ) const
-  {
-    return this->operator[](e->template id<0>());
-  } // operator []
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \tparam E A complex index type.
-  //
-  // This version of the operator is provided to support use with
-  // \e flecsi mesh entity types \ref mesh_entity_base_t.
-  ///
-  template<typename E>
-  T &
-  operator [] (
-    E * e
-  )
-  {
-    return this->operator[](e->template id<0>());
-  } // operator []
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
-  ///
-  const T &
-  operator [] (
-    size_t index
-  ) const
-  {
-    assert(index < base::combined_size && "index out of range");
-    return base::combined_data[index];
-  } // operator []
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \param index The index of the data variable to return.
-  ///
-  T &
-  operator [] (
-    size_t index
-  )
-  {
-    assert(index < base::combined_size && "index out of range");
-    return base::combined_data[index];
-  } // operator []
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
   // \param index The index of the data variable to return.
   ///
   const T &
@@ -241,8 +192,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   ) const
   {
-    assert(index < base::exclusive_size && "index out of range");
-    return base::exclusive_data[index];
+    assert(index < base_t::exclusive_size && "index out of range");
+    return base_t::exclusive_data[index];
   } // operator []
 
   ///
@@ -256,8 +207,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   )
   {
-    assert(index < base::exclusive_size && "index out of range");
-    return base::exclusive_data[index];
+    assert(index < base_t::exclusive_size && "index out of range");
+    return base_t::exclusive_data[index];
   } // operator []
 
   ///
@@ -271,8 +222,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   ) const
   {
-    assert(index < base::shared_size && "index out of range");
-    return base::shared_data[index];
+    assert(index < base_t::shared_size && "index out of range");
+    return base_t::shared_data[index];
   } // operator []
 
   ///
@@ -286,8 +237,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   )
   {
-    assert(index < base::shared_size && "index out of range");
-    return base::shared_data[index];
+    assert(index < base_t::shared_size && "index out of range");
+    return base_t::shared_data[index];
   } // operator []
 
   ///
@@ -301,8 +252,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   ) const
   {
-    assert(index < base::ghost_size && "index out of range");
-    return base::ghost_data[index];
+    assert(index < base_t::ghost_size && "index out of range");
+    return base_t::ghost_data[index];
   } // operator []
 
   ///
@@ -316,8 +267,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   )
   {
-    assert(index < base::ghost_size && "index out of range");
-    return base::ghost_data[index];
+    assert(index < base_t::ghost_size && "index out of range");
+    return base_t::ghost_data[index];
   } // operator []
 
   ///
@@ -367,8 +318,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   ) const
   {
-    assert(index < base::combined_size && "index out of range");
-    return base::combined_data[index];
+    assert(index < base_t::combined_size && "index out of range");
+    return base_t::combined_data[index];
   } // operator ()
 
   ///
@@ -382,8 +333,8 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   )
   {
-    assert(index < base::combined_size && "index out of range");
-    return base::combined_data[index];
+    assert(index < base_t::combined_size && "index out of range");
+    return base_t::combined_data[index];
   } // operator ()
 
   ///
@@ -393,7 +344,7 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   ///
   operator bool() const
   {
-    return base::combined_data != nullptr;
+    return base_t::combined_data != nullptr;
   } // operator bool
 
   template<typename, size_t, size_t, size_t, typename>
