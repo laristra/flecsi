@@ -16,7 +16,7 @@ ARG CI
 ARG TRAVIS
 ARG TRAVIS_BRANCH
 ARG TRAVIS_JOB_NUMBER
-ARG TRAVIS_PULL_REQUEST 
+ARG TRAVIS_PULL_REQUEST
 ARG TRAVIS_JOB_ID
 ARG TRAVIS_TAG
 ARG TRAVIS_REPO_SLUG
@@ -38,9 +38,7 @@ WORKDIR build
 RUN ccache -z
 RUN cmake -DENABLE_MPI=$MPI \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
-          ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_EXODUSII=ON \
-          -DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON  \
-          -DCMAKE_DISABLE_FIND_PACKAGE_LAPACKE=ON} \
+          ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
           -DENABLE_UNIT_TESTS=ON \
           -DCLOG_STRIP_LEVEL=3 \
           -DCLOG_DEBUG=OFF \
@@ -57,7 +55,7 @@ RUN if [ ${COVERAGE} ]; then \
       python -m coverxygen --xml-dir doc/doxygen/xml/ --src-dir .. --output doxygen.coverage.info; \
       wget -O codecov.sh https://codecov.io/bash; \
       bash codecov.sh -X gcov -f doxygen.coverage.info -F documentation; \
-      doxy-coverage --threshold 21 doc/doxygen/xml/; \
+      doxy-coverage --threshold 24 doc/doxygen/xml/; \
     fi
 RUN ctest --verbose -E "(data_client|legion_dh1|client_registration|internal_task|execution_structure|ghost_access|task_registration|simple_function|simple_task|data_handle_task|compaction)"
 RUN make install DESTDIR=${PWD}/install && rm -rf ${PWD}/install
@@ -79,7 +77,7 @@ RUN cd .. && if [ ${SONARQUBE} ]; then \
     -Dsonar.links.scm=https://github.com/${TRAVIS_REPO_SLUG} \
     -Dsonar.links.issue=https://github.com/${TRAVIS_REPO_SLUG}/issues \
     -Dsonar.sources=. \
-    -Dsonar.exclusions=build/CMakeFiles/**,cinch/**,build/doc/doxygen/**,build/include/** \
+    -Dsonar.exclusions=build/CMakeFiles/**,cinch/**,build/doc/doxygen/**,build/include/**,flecsi/*/test/* \
     -Dsonar.cfamily.build-wrapper-output=build/bw-output \
     -Dsonar.cfamily.gcov.reportsPath=. \
     -Dsonar.host.url=https://sonarqube.com \

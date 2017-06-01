@@ -1,5 +1,7 @@
 ![logo](doc/flecsi.png)
 [![Build Status](https://travis-ci.org/laristra/flecsi.svg?branch=master)](https://travis-ci.org/laristra/flecsi)
+[![codecov.io](https://codecov.io/github/laristra/flecsi/coverage.svg?branch=master)](https://codecov.io/github/laristra/flecsi?branch=master)
+[![Quality Gate](https://sonarqube.com/api/badges/gate?key=flecsi%3A%2Fmaster)](https://sonarqube.com/dashboard?id=flecsi%3A%2Fmaster)
 
 # FleCSI Project
 
@@ -47,7 +49,6 @@ Currently, this equates to G++ 5.0 or greater.
 * CMake >= 3.0
 * GCC >= 6.1.1
 * Doxygen >= 1.8
-* [Cereal](https://github.com/USCiLab/cereal) >= 1.2.1
 * [cinch-utils](https://github.com/laristra/cinch-utils) >= 1.0
 
 ## Legion
@@ -58,7 +59,7 @@ FleCSI has been tested against *update hash here*.
 
 To begin, you will need to build the third-party library dependencies:
 
-    % sudo apt-get install liblapacke-dev libscotch-dev libmetis-dev libexodusii-dev 
+    % sudo apt-get install libmetis-dev 
     
 or build them yourself:
 
@@ -68,8 +69,8 @@ or build them yourself:
     % cd build
     % ccmake ..
 
-At this point, you should enable Exodus (ENABLE\_EXODUS) and set the install
-path to a directory where you have write permissions.
+At this point, you should set the install path to a directory where
+you have write permissions.
 
 Now build the third-party libraries:
 

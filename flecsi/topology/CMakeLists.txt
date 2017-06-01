@@ -80,7 +80,6 @@ set(topology_SOURCES
 #    test/traversal.blessed
 #  LIBRARIES
 #    flecsi
-#    ${CINCH_RUNTIME_LIBRARIES}
 #)
 
 cinch_add_unit(dual
@@ -97,7 +96,6 @@ cinch_add_unit(dual
 #    test/bindings.blessed
 #  LIBRARIES
 #    flecsi
-#    ${CINCH_RUNTIME_LIBRARIES}
 #)
 
 #------------------------------------------------------------------------------#
@@ -112,7 +110,6 @@ cinch_add_unit(dual
 #    test/tree.blessed
 #  LIBRARIES
 #    flecsi
-#    ${CINCH_RUNTIME_LIBRARIES}
 #)
 
 #cinch_add_unit(tree1d
@@ -120,7 +117,6 @@ cinch_add_unit(dual
 #    test/tree1d.cc
 #  LIBRARIES
 #    flecsi
-#    ${CINCH_RUNTIME_LIBRARIES}
 #)
 
 #cinch_add_unit(tree3d
@@ -128,7 +124,6 @@ cinch_add_unit(dual
 #    test/tree3d.cc
 #  LIBRARIES
 #    flecsi
-#    ${CINCH_RUNTIME_LIBRARIES}
 #)
 
 #cinch_add_unit(gravity
@@ -136,7 +131,6 @@ cinch_add_unit(dual
 #    test/gravity.cc test/pseudo_random.h
 #  LIBRARIES
 #    flecsi
-#    ${CINCH_RUNTIME_LIBRARIES}
 #)
 
 # FIXME: Broken by refactor

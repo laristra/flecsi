@@ -116,7 +116,6 @@ set(execution_SOURCES
 #------------------------------------------------------------------------------#
 # Unit tests.
 #------------------------------------------------------------------------------#
-
 cinch_add_unit(launch
   SOURCES
     test/launch.cc
@@ -142,7 +141,6 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
       ${UNIT_POLICY}
     LIBRARIES
       flecsi
-      ${CINCH_RUNTIME_LIBRARIES}
   )
 
   #
