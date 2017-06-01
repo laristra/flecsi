@@ -54,10 +54,15 @@ void driver(int argc, char ** argv) {
   ASSERT_EQ(tid_1, 7);
   ASSERT_EQ(tid_2, 8);
 
+#if defined(ENABLE_LEGION_TLS)
+  auto runtime = Legion::Runtime::get_runtime();
+  auto context = Legion::Runtime::get_context();  
+#else
   context_t & context_ = context_t::instance();
   size_t task_key = utils::const_string_t{"driver"}.hash();
   auto runtime = context_.runtime(task_key);
   auto context = context_.context(task_key);
+#endif
   
   auto key_1 = __flecsi_internal_task_key(internal_task_example_1);
   auto key_2 = __flecsi_internal_task_key(internal_task_example_2);
@@ -66,7 +71,7 @@ void driver(int argc, char ** argv) {
   Legion::TaskLauncher launcher(
     context_t::instance().task_id(key_1),
     Legion::TaskArgument(0,0));
-  auto f=runtime->execute_task(context, launcher);
+  auto f = runtime->execute_task(context, launcher);
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher index_launcher(

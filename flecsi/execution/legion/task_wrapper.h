@@ -356,8 +356,10 @@ struct task_wrapper__
     task_args_t & task_args =
       *(reinterpret_cast<task_args_t *>(task->args));
 
+#if !defined(ENABLE_LEGION_TLS)
     // Push the Legion state
     context_t::instance().push_state(KEY, context, runtime, task, regions);
+#endif
 
     init_handles_t init_handles(runtime, context, regions);
     init_handles.walk(task_args);
@@ -366,8 +368,10 @@ struct task_wrapper__
     // Execute the user's task
     (*DELEGATE)(task_args);
 
+#if !defined(ENABLE_LEGION_TLS)
     // Pop the Legion state
     context_t::instance().pop_state(KEY);
+#endif
 
     // FIXME: NEED TO HANDLE RETURN TYPES
   } // execute_user_task
@@ -516,8 +520,10 @@ struct old_task_wrapper__
     task_args_t & task_args =
       *(reinterpret_cast<task_args_t *>(task->args));
 
+#if !defined(ENABLE_LEGION_TLS)
     // Push the Legion state
     context_t::instance().push_state(KEY, context, runtime, task, regions);
+#endif
 
     init_handles_t init_handles(runtime, context, regions);
     init_handles.walk(task_args);
@@ -526,8 +532,10 @@ struct old_task_wrapper__
     // Execute the user's task
     (*DELEGATE)(task_args);
 
+#if !defined(ENABLE_LEGION_TLS)
     // Pop the Legion state
     context_t::instance().pop_state(KEY);
+#endif
 
     // FIXME: NEED TO HANDLE RETURN TYPES
   } // execute_user_task
