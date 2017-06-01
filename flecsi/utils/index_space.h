@@ -15,32 +15,32 @@
 #ifndef flecsi_utils_index_space_h
 #define flecsi_utils_index_space_h
 
-#include "flecsi/utils/iterator.h"
+//!
+//! \file index_space.h
+//! \date Initial file creation: Oct 09, 2015
+//!
 
-/*!
- * \file 
- * \date Initial file creation: Oct 09, 2015
- */
+#include "flecsi/utils/iterator.h"
 
 namespace flecsi {
 namespace utils {
 
-/*!
-  \class index_space index_space.h
-  \brief index_space provides...
- */
+//!
+//! \class index_space_t index_space.h
+//! \brief index_space_t provides...
+//!
 
 class index_space_t
 {
- public:
+public:
 
-  using iterator_t = iterator<index_space_t, size_t>;
+  using iterator_t = iterator<index_space_t, std::size_t>;
 
   //! Default constructor
   index_space_t() = default;
 
-  //! constructor with size
-  index_space_t(size_t size) : size_(size), index_(0) {}
+  //! Constructor with size
+  index_space_t(std::size_t size) : size_(size), index_(0) {}
 
   //! Copy constructor
   index_space_t(const index_space_t & is) {
@@ -58,10 +58,11 @@ class index_space_t
   //! Destructor
   ~index_space_t() {}
 
-  size_t operator[](size_t index) const { return index; } // operator []
+  // operator []
+  std::size_t operator[](std::size_t index) const { return index; }
 
   // FIXME: This is not thread-safe!!!
-  size_t & operator[](size_t index) {
+  std::size_t & operator[](std::size_t index) {
     index_ = index;
     return index_;
   } // operator []
@@ -69,10 +70,10 @@ class index_space_t
   iterator_t begin() { return {*this, 0}; }
   iterator_t end() { return {*this, size_}; }
 
- private:
+private:
 
-  size_t size_ = 0;
-  size_t index_ = 0;
+  std::size_t size_ = 0;
+  std::size_t index_ = 0;
 
 }; // class index_space_t
 
