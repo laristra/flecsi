@@ -94,6 +94,7 @@ runtime_driver(
   clog(info) << "MPI num_colors is " << num_colors << std::endl;
   }
 
+  // key is index space
   std::set<size_t> idx_spaces;
   std::map<size_t, Legion::IndexSpace> expanded_ispaces_map;
   std::map<size_t, Legion::FieldSpace> expanded_fspaces_map;
@@ -153,7 +154,6 @@ runtime_driver(
     Legion::FieldAllocator allocator = 
       runtime->create_field_allocator(ctx, expanded_fs);
 
-    // temporary fix until we add registration of internal fields
     allocator.allocate_field(sizeof(LegionRuntime::Arrays::Point<2>), 
       ghost_owner_pos_fid);
 
@@ -175,7 +175,8 @@ runtime_driver(
     // Partition expanded IndexSpace color-wise & create associated PhaseBarriers
     Legion::DomainColoring color_partitioning;
     for (int color = 0; color < num_colors; color++) {
-      flecsi::coloring::coloring_info_t color_info = idx_space.second[color];
+      const flecsi::coloring::coloring_info_t& color_info = 
+        idx_space.second[color];
       
       LegionRuntime::Arrays::Rect<2> subrect(
           LegionRuntime::Arrays::make_point(color, 0),
@@ -228,7 +229,7 @@ runtime_driver(
 
   const auto spmd_id =
     context_.task_id<__flecsi_internal_task_key(spmd_task)>();
-  clog(trace) << "spmd_task is idx_space " << spmd_id << std::endl;
+  clog(trace) << "spmd_task is: " << spmd_id << std::endl;
 
   // Add colors to must_epoch_launcher
   for(size_t color(0); color<num_colors; ++color) {
@@ -285,8 +286,8 @@ runtime_driver(
         runtime->get_logical_partition(ctx,
           expanded_lregions_map[idx_space], color_iparts_map[idx_space]);
       
-      Legion::LogicalRegion color_lr = runtime->get_logical_subregion_by_color(ctx,
-          color_lp, color);
+      Legion::LogicalRegion color_lr = 
+        runtime->get_logical_subregion_by_color(ctx, color_lp, color);
 
       Legion::RegionRequirement rr(color_lr, READ_WRITE, SIMULTANEOUS,
         expanded_lregions_map[idx_space]);
@@ -307,8 +308,8 @@ runtime_driver(
       for (auto ghost_owner : color_info.ghost_owners) {
         clog(trace) << " Color " << color << " idx_space " << idx_space << 
           " has owner " << ghost_owner << std::endl;
-        Legion::LogicalRegion ghost_owner_lr = runtime->get_logical_subregion_by_color(ctx,
-            color_lp, ghost_owner);
+        Legion::LogicalRegion ghost_owner_lr = 
+          runtime->get_logical_subregion_by_color(ctx, color_lp, ghost_owner);
 
         const LegionRuntime::Arrays::coord_t owner_color = ghost_owner;
         const bool is_mutable = false;
@@ -356,7 +357,7 @@ runtime_driver(
     runtime->destroy_logical_region(ctx, expanded_lregions_map[itr.first]);
   expanded_lregions_map.clear();
 
-  for (auto itr : phase_barriers_map) {
+  for (auto& itr : phase_barriers_map) {
     const size_t handle = itr.first;
     for (size_t color = 0; color < phase_barriers_map[handle].size(); color ++) {
       runtime->destroy_phase_barrier(ctx, phase_barriers_map[handle][color]);
