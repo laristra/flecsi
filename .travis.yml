@@ -56,7 +56,7 @@ script:
   - docker build --build-arg MPI=${MPI} 
                 --build-arg LEGION=${LEGION} 
                 --build-arg RUNTIME=${RUNTIME} 
-                --build-arg CXXFLAGS="${WERROR:+-Werror} -Wno-deprecated"
+                --build-arg CXXFLAGS="${WERROR:+-Werror} -Wno-deprecated-declarations"
                 --build-arg COVERAGE=${COVERAGE} --build-arg MINIMAL=${MINIMAL}
                 --build-arg CC=${CC} --build-arg CXX=${CXX}
                 --build-arg SONARQUBE=${SONARQUBE} --build-arg SONARQUBE_TOKEN=${SONARQUBE_TOKEN}
