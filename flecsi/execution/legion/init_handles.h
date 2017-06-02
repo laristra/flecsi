@@ -56,8 +56,7 @@ namespace execution {
     :
       runtime(runtime),
       context(context),
-      regions(regions),
-      region(0)
+      regions(regions)
     {
     } // init_handles
 
@@ -77,91 +76,86 @@ namespace execution {
       > & h
     )
     {
-      for(size_t p = 0; p < 3; ++p){
-        bool skip = false;
 
-        switch(p){
-          case 0:
-            skip = EXCLUSIVE_PERMISSIONS == 0;
-            break;
-          case 1:
-            skip = SHARED_PERMISSIONS == 0;
-            break;
-          case 2:
-            skip = GHOST_PERMISSIONS == 0;
-            break;
-          default:
-            assert(false);
-        }
+      constexpr size_t num_regions = 3;
 
-        T* data;
-        Legion::PhysicalRegion pr;
-        size_t size;
+      h.context = context;
+      h.runtime = runtime;
 
-        if(skip){
-          data = nullptr;
-          size = 0;
-          pr = Legion::PhysicalRegion();
+      Legion::PhysicalRegion prs[num_regions];
+      T* data[num_regions];
+      size_t sizes[num_regions];
+      size_t combined_size = 0;
+      size_t permissions[] = 
+        {EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS};
+
+      // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
+      for(size_t r = 0; r < num_regions; ++r){
+        if(permissions[r] == 0){
+          data[r] = nullptr;
+          sizes[r] = 0;
+          prs[r] = Legion::PhysicalRegion();
         }
         else{
-          pr = regions[region];
-          Legion::LogicalRegion lr = pr.get_logical_region();
+          prs[r] = regions[r];
+          Legion::LogicalRegion lr = prs[r].get_logical_region();
           Legion::IndexSpace is = lr.get_index_space();
 
-          auto ac = pr.get_field_accessor(h.fid).template typeify<T>();
+          auto ac = prs[r].get_field_accessor(h.fid).template typeify<T>();
           
           Legion::Domain domain = 
             runtime->get_index_space_domain(context, is); 
           
-          LegionRuntime::Arrays::Rect<2> r = domain.get_rect<2>();
+          LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
           LegionRuntime::Arrays::Rect<2> sr;
           LegionRuntime::Accessor::ByteOffset bo[2];
-          data = ac.template raw_rect_ptr<2>(r, sr, bo);
-          size = sr.hi[1] - sr.lo[1] + 1;
-          data += bo[1];
+          data[r] = ac.template raw_rect_ptr<2>(dr, sr, bo);
+          data[r] += bo[1];
+          sizes[r] = sr.hi[1] - sr.lo[1] + 1;
+          combined_size += sizes[r];
         }
+      }
 
-        region++;
+      // Create the concatenated buffer E+S+G
+      h.combined_data = new T[combined_size];
 
-        switch(p){
+      // Set additional fields needed by the data handle/accessor
+      // and copy into the combined buffer. Note that exclusive_data, etc.
+      // aliases the combined buffer for its respective region.
+      size_t pos = 0;
+      for(size_t r = 0; r < num_regions; ++r){
+        switch(r){
           case 0:
-            h.exclusive_pr = pr;
-            h.exclusive_size = size;
-            h.exclusive_data = data;
+            h.exclusive_size = sizes[r];
+            h.exclusive_pr = prs[r];
+            h.exclusive_data = h.exclusive_size == 0 ? 
+              nullptr : h.combined_data + pos;
+            h.exclusive_buf = data[r];
+            h.exclusive_priv = EXCLUSIVE_PERMISSIONS;
             break;
           case 1:
-            h.shared_pr = pr;
-            h.shared_size = size;
-            h.shared_data = data;
+            h.shared_size = sizes[r];
+            h.shared_pr = prs[r];
+            h.shared_data = h.shared_size == 0 ? 
+              nullptr : h.combined_data + pos;
+            h.shared_buf = data[r];
+            h.shared_priv = SHARED_PERMISSIONS;
             break;
           case 2:
-            h.ghost_pr = pr;
-            h.ghost_size = size;
-            h.ghost_data = data;
+            h.ghost_size = sizes[r];
+            h.ghost_pr = prs[r];
+            h.ghost_data = h.ghost_size == 0 ? 
+              nullptr : h.combined_data + pos;
+            h.ghost_buf = data[r];
+            h.ghost_priv = GHOST_PERMISSIONS;
             break;
           default:
             assert(false);
         }
+        
+        std::memcpy(h.combined_data + pos, data[r], sizes[r]);
+        pos += sizes[r];
       }
-
-      size_t combined_size = 
-        (h.exclusive_size + h.shared_size + h.ghost_size) * sizeof(T);
-      h.combined_data = (T*)malloc(combined_size);
-      
-      size_t size = sizeof(T) * h.exclusive_size;
-      
-      if (h.exclusive_data != nullptr)
-          std::memcpy(h.combined_data, h.exclusive_data, size);
-
-      size_t pos = h.exclusive_size;
-      size = sizeof(T) * h.shared_size;
-      if (h.shared_data != nullptr)
-          std::memcpy(h.combined_data + pos, h.shared_data, size);
-      pos += h.shared_size;
-
-      size = sizeof(T) * h.ghost_size;
-      if (h.ghost_data != nullptr)
-          std::memcpy(h.combined_data + pos, h.ghost_data, size);
 
     } // handle
 
@@ -183,7 +177,6 @@ namespace execution {
     Legion::Runtime * runtime;
     Legion::Context & context;
     const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions;
-    size_t region;
   }; // struct init_handles_t
 
 } // namespace execution 
