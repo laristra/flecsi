@@ -123,6 +123,8 @@ cinch_add_unit(devel-graph
 cinch_add_unit(index-space
   SOURCES
     test/index-space.cc test/pseudo_random.h
+  LIBRARIES
+    flecsi
 )
 
 #~---------------------------------------------------------------------------~-#
