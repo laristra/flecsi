@@ -74,6 +74,9 @@ struct legion_data_handle_policy_t
     shared_pr = p.shared_pr;
     ghost_pr = p.ghost_pr;
     ghost_is_readable = p.ghost_is_readable;
+    exclusive_priv = p.exclusive_priv;
+    shared_priv = p.shared_priv;
+    ghost_priv = p.ghost_priv;
   }
 
   field_id_t fid;
@@ -92,6 +95,9 @@ struct legion_data_handle_policy_t
   Legion::PhysicalRegion exclusive_pr;
   Legion::PhysicalRegion shared_pr;
   Legion::PhysicalRegion ghost_pr;
+  size_t exclusive_priv;
+  size_t shared_priv;
+  size_t ghost_priv;
   bool ghost_is_readable;
 }; // class legion_data_handle_policy_t
 

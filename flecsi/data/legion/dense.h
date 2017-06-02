@@ -30,6 +30,7 @@
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/index_space.h"
 #include "flecsi/execution/context.h"
+#include "flecsi/data/common/privilege.h"
 
 ///
 // \file legion/dense.h
@@ -97,9 +98,27 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     Legion::Runtime* runtime = base_t::runtime;
     Legion::Context& context = base_t::context;
 
-    runtime->unmap_region(context, base_t::exclusive_pr);
-    runtime->unmap_region(context, base_t::shared_pr);
-    runtime->unmap_region(context, base_t::ghost_pr);
+    if(base_t::exclusive_data){
+      if(base_t::exclusive_priv > privilege_t::dro){
+        std::memcpy(base_t::exclusive_buf, base_t::exclusive_data,
+                    base_t::exclusive_size * sizeof(T));
+      }
+
+      runtime->unmap_region(context, base_t::exclusive_pr);
+    }
+
+    if(base_t::shared_data){
+      if(base_t::shared_priv > privilege_t::dro){
+        std::memcpy(base_t::shared_buf, base_t::shared_data,
+                    base_t::shared_size * sizeof(T));
+      }
+
+      runtime->unmap_region(context, base_t::shared_pr);
+    }
+
+    if(base_t::ghost_data){
+      runtime->unmap_region(context, base_t::ghost_pr);
+    }
   }
   
   ///

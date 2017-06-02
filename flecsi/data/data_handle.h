@@ -47,12 +47,15 @@ template<
 >
 struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {
   T* exclusive_data = nullptr;
+  T* exclusive_buf = nullptr;
   size_t exclusive_size = 0;
   
   T* shared_data = nullptr;
+  T* shared_buf = nullptr;
   size_t shared_size = 0;
   
   T* ghost_data = nullptr;
+  T* ghost_buf = nullptr;
   size_t ghost_size = 0;
 
   T* combined_data;
