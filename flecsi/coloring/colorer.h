@@ -6,12 +6,12 @@
 #ifndef flecsi_coloring_colorer_h
 #define flecsi_coloring_colorer_h
 
-#include "flecsi/coloring/dcrs.h"
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Nov 24, 2016
+//----------------------------------------------------------------------------//
 
-///
-/// \file
-/// \date Initial file creation: Nov 24, 2016
-///
+#include "flecsi/coloring/dcrs.h"
 
 namespace flecsi {
 namespace coloring {
