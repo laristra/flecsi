@@ -56,8 +56,7 @@ namespace execution {
     :
       runtime(runtime),
       context(context),
-      regions(regions),
-      region(0)
+      regions(regions)
     {
     } // init_handles
 
@@ -90,6 +89,7 @@ namespace execution {
       size_t permissions[] = 
         {EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS};
 
+      // Get sizes, physical regions, and raw rect buffer for each of ex/sh/gh
       for(size_t r = 0; r < num_regions; ++r){
         if(permissions[r] == 0){
           data[r] = nullptr;
@@ -97,7 +97,7 @@ namespace execution {
           prs[r] = Legion::PhysicalRegion();
         }
         else{
-          prs[r] = regions[region];
+          prs[r] = regions[r];
           Legion::LogicalRegion lr = prs[r].get_logical_region();
           Legion::IndexSpace is = lr.get_index_space();
 
@@ -116,8 +116,12 @@ namespace execution {
         }
       }
 
+      // Create the concatenated buffer E+S+G
       h.combined_data = new T[combined_size];
 
+      // Set additional fields needed by the data handle/accessor
+      // and copy into the combined buffer. Note that exclusive_data, etc.
+      // aliases the combined buffer for its respective region.
       size_t pos = 0;
       for(size_t r = 0; r < num_regions; ++r){
         switch(r){
@@ -173,7 +177,6 @@ namespace execution {
     Legion::Runtime * runtime;
     Legion::Context & context;
     const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions;
-    size_t region;
   }; // struct init_handles_t
 
 } // namespace execution 

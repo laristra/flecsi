@@ -91,12 +91,11 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   //--------------------------------------------------------------------------//
 
   ~dense_handle_t(){
-    if(base_t::combined_data){
-      delete[] base_t::combined_data;
-    }
-
     Legion::Runtime* runtime = base_t::runtime;
     Legion::Context& context = base_t::context;
+
+    // Unmap physical regions and copy back out ex/sh/gh regions if we
+    // have write permissions 
 
     if(base_t::exclusive_data){
       if(base_t::exclusive_priv > privilege_t::dro){
@@ -116,8 +115,13 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
       runtime->unmap_region(context, base_t::shared_pr);
     }
 
+    // ghost is never mapped with write permissions
     if(base_t::ghost_data){
       runtime->unmap_region(context, base_t::ghost_pr);
+    }
+
+    if(base_t::combined_data){
+      delete[] base_t::combined_data;
     }
   }
   
