@@ -103,7 +103,7 @@ set(utils_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-cinch_add_unit(any
+cinch_add_unit(Any
   SOURCES test/any.cc
 )
 
