@@ -21,7 +21,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
                             ${exec_path}/mpilegion/init_partitions_task.cc
                             ${exec_path}/mpilegion/lax_wendroff_task.cc)
 else()
-    message(FATAL_ERROR "This runtime is not yet supported")
+  message(FATAL_ERROR "Unrecognized runtime selection: ${FLECSI_RUNTIME_MODEL}")
 endif()
 
 #------------------------------------------------------------------------------#

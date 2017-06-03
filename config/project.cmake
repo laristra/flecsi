@@ -16,7 +16,7 @@
 # Set the minimum Cinch version
 #------------------------------------------------------------------------------#
 
-cinch_minimum_required(1.0)
+cinch_minimum_required(2.0)
 
 #------------------------------------------------------------------------------#
 # Set the project name
@@ -220,7 +220,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
 #
 else(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
-  message(FATAL_ERROR "Unrecognized runtime selection")
+  message(FATAL_ERROR "Unrecognized runtime selection: ${FLECSI_RUNTIME_MODEL}")
 
 endif(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
