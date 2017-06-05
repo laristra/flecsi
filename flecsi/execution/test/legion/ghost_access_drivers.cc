@@ -37,7 +37,32 @@ using handle_t =
 
 void check_all_cells_task(handle_t<size_t, flecsi::dro, flecsi::dro,
     flecsi::dro> cell_ID, int my_color, size_t cycle) {
-  clog(error) << my_color << " READING " << std::endl;
+  clog(trace) << my_color << " READING " << std::endl;
+
+  for (size_t i=0; i < cell_ID.exclusive_size(); i++)
+      clog(trace) << my_color << " exclusive " << i << " = " << cell_ID.exclusive(i) <<
+      std::endl;
+
+  flecsi::execution::context_t & context_ = flecsi::execution::context_t::instance();
+  const std::unordered_map<size_t, flecsi::coloring::index_coloring_t> coloring_map
+    = context_.coloring_map();
+  auto index_coloring = coloring_map.find(INDEX_ID);
+
+  size_t index = 0;
+  for (auto exclusive_itr = index_coloring->second.exclusive.begin(); exclusive_itr !=
+      index_coloring->second.exclusive.end(); ++exclusive_itr) {
+      flecsi::coloring::entity_info_t exclusive = *exclusive_itr;
+    assert(cell_ID.exclusive(index) == exclusive.id);
+    index++;
+  } // exclusive_itr
+
+  for (size_t i=0; i < cell_ID.shared_size(); i++)
+      clog(trace) << my_color << " shared " << i << " = " << cell_ID.shared(i) <<
+      std::endl;
+
+  for (size_t i=0; i < cell_ID.ghost_size(); i++)
+      clog(trace) << my_color << " ghost " << i << " = " << cell_ID.ghost(i) <<
+      std::endl;
 } // initialize_primary_cells_task
 
 flecsi_register_task(check_all_cells_task, flecsi::loc, flecsi::single);
@@ -45,16 +70,20 @@ flecsi_register_task(check_all_cells_task, flecsi::loc, flecsi::single);
 void initialize_primary_cells_task(handle_t<size_t, flecsi::drw, flecsi::drw,
     flecsi::dno> cell_ID, int my_color) {
 
-  clog(error) << my_color << " WRITING " << std::endl;
+  clog(trace) << my_color << " WRITING " << std::endl;
 
   flecsi::execution::context_t & context_ = flecsi::execution::context_t::instance();
   const std::unordered_map<size_t, flecsi::coloring::index_coloring_t> coloring_map
     = context_.coloring_map();
   auto index_coloring = coloring_map.find(INDEX_ID);
 
+  size_t index = 0;
   for (auto exclusive_itr = index_coloring->second.exclusive.begin(); exclusive_itr !=
       index_coloring->second.exclusive.end(); ++exclusive_itr) {
-    clog(trace) << my_color << " exclusive " <<  *exclusive_itr << std::endl;
+      flecsi::coloring::entity_info_t exclusive = *exclusive_itr;
+    clog(trace) << my_color << " exclusive " <<  exclusive.id << std::endl;
+    cell_ID(index) = exclusive.id;
+    index++;
   } // exclusive_itr
 
   for (auto shared_itr = index_coloring->second.shared.begin(); shared_itr !=
@@ -95,7 +124,7 @@ void specialization_driver(int argc, char ** argv) {
 //----------------------------------------------------------------------------//
 
 void driver(int argc, char ** argv) {
-  clog(error) << "In driver" << std::endl;
+  clog(trace) << "In driver" << std::endl;
 
 #if defined(ENABLE_LEGION_TLS)
   auto runtime = Legion::Runtime::get_runtime();
