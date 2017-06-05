@@ -32,7 +32,27 @@ int internal_task_example_1(const Legion::Task * task,
 {
   std::cout <<"inside of the task1" <<std::endl;
 
+  assert(regions.size() == 3);
+  assert(task->regions.size() == 3);
+
   LogicalRegion ex_lr=task->regions[0].region;
+  IndexSpace ex_is=ex_lr.get_index_space();
+
+  FieldID fid = *(task->regions[0].privilege_fields.begin());
+  RegionAccessor<AccessorType::Generic, double> acc =
+    regions[0].get_field_accessor(fid).typeify<double>();
+
+  Domain dom = runtime->get_index_space_domain(context,
+      task->regions[0].region.get_index_space());
+  Rect<1> rect = dom.get_rect<1>();
+
+  for (GenericPointInRectIterator<1> pir(rect); pir; pir++)
+  {
+    double count = acc.read(DomainPoint::from_point<1>(pir.p));
+    std::cout<<count<<std::endl;
+  }
+
+
 /*  LogicalRegion sh_lr=task->regions[1].region;
   LogicalRegion gh_lr=task->regions[2].region;
 
@@ -46,22 +66,22 @@ int internal_task_example_1(const Legion::Task * task,
 __flecsi_internal_register_legion_task(internal_task_example_1,
   processor_type_t::loc, single);
 
-void specialization_driver(int argc, char ** argv) {
+void driver(int argc, char ** argv) {
 
 #if defined(ENABLE_LEGION_TLS)
   auto runtime = Legion::Runtime::get_runtime();
   auto context = Legion::Runtime::get_context();  
 #else
   context_t & context_ = context_t::instance();
-  size_t task_key = utils::const_string_t{"specialization_driver"}.hash();
+  size_t task_key = utils::const_string_t{"driver"}.hash();
   auto runtime = context_.runtime(task_key);
   auto context = context_.context(task_key);
 #endif
  
-  int num_elements = 1024;
-  int num_subregions = 4;
+  int num_elmts = 20;
+  int num_ghost=4;
 
-  Rect<1> elem_rect(Point<1>(0),Point<1>(num_elements-1));
+  Rect<1> elem_rect(Point<1>(0),Point<1>(num_elmts+num_ghost-1));
   IndexSpace is = runtime->create_index_space(context ,
                           Domain::from_rect<1>(elem_rect));
   FieldSpace fs = runtime->create_field_space(context );
@@ -73,68 +93,44 @@ void specialization_driver(int argc, char ** argv) {
   }
 
   LogicalRegion stencil_lr = runtime->create_logical_region(context , is, fs);
-  Rect<1> color_bounds(Point<1>(0),Point<1>(num_subregions-1));
+
+  //Fill out LR with numbers:
+  {
+    RegionRequirement req(stencil_lr, READ_WRITE, EXCLUSIVE, stencil_lr);
+    req.add_field(FID_VAL);
+    InlineLauncher input_launcher(req);
+    PhysicalRegion input_region=runtime->map_region(context, input_launcher);
+    input_region.wait_until_valid();
+    RegionAccessor<AccessorType::Generic, double> acc =
+      input_region.get_field_accessor(FID_VAL).typeify<double>();
+    int count=0;
+    for (GenericPointInRectIterator<1> pir(elem_rect); pir; pir++){
+      count++;
+      acc.write(DomainPoint::from_point<1>(pir.p), count);
+    }
+std::cout <<"number of elements = "<<count<<std::endl;
+    runtime->unmap_region(context, input_region);
+  }//scope
+
+  Rect<1> color_bounds(Point<1>(0),Point<1>(1-1));
   Domain color_domain = Domain::from_rect<1>(color_bounds);
+
 
   IndexPartition ex_ip, sh_ip, gh_ip;
   {
-    const int lower_bound = num_elements/num_subregions;
-    const int upper_bound = lower_bound+1;
-    const int number_small = num_subregions - (num_elements % num_subregions);
     DomainColoring ex_coloring, sh_coloring, gh_coloring;
     int index = 0;
     // Iterate over all the colors and compute the entry
     // for both partitions for each color.
-    for (int color = 0; color < num_subregions; color++)
+    for (int color = 0; color < 1; color++)
     {
-      int num_elmts = color < number_small ? lower_bound : upper_bound;
-      assert((index+num_elmts) <= num_elements);
-      Rect<1> subrect1(Point<1>(index),Point<1>(index+num_elmts-4));
-      Rect<1> subrect2(Point<1>(index+num_elmts-4),Point<1>(index+num_elmts-1));
+      Rect<1> subrect1(Point<1>(0),Point<1>(num_elmts-num_ghost-1));
+      Rect<1> subrect2(Point<1>(num_elmts-num_ghost),Point<1>(num_elmts-1));
+      Rect<1> subrect3(Point<1>(num_elmts),Point<1>(num_elmts+num_ghost-1));
       ex_coloring[color] = Domain::from_rect<1>(subrect1);
       sh_coloring[color] = Domain::from_rect<1>(subrect2);
-      // Now compute the points assigned to this color for
-      // the second partition.  Here we need a superset of the
-      // points that we just computed including the two additional
-      // points on each side.  We handle the edge cases by clamping
-      // values to their minimum and maximum values.  This creates
-      // four cases of clamping both above and below, clamping below,
-      // clamping above, and no clamping.
-      if (index < 2)
-      {
-        if ((index+num_elmts+2) > num_elements)
-        {
-          // Clamp both
-          Rect<1> ghost_rect(Point<1>(0),Point<1>(num_elements-1));
-          gh_coloring[color] = Domain::from_rect<1>(ghost_rect);
-        }
-        else
-        {
-          // Clamp below
-          Rect<1> ghost_rect(Point<1>(0),Point<1>(index+num_elmts+1));
-          gh_coloring[color] = Domain::from_rect<1>(ghost_rect);
-        }
-      }
-      else
-      {
-        if ((index+num_elmts+2) > num_elements)
-        {
-          // Clamp above
-          Rect<1> ghost_rect(Point<1>(index-2),Point<1>(num_elements-1));
-          gh_coloring[color] = Domain::from_rect<1>(ghost_rect);
-        }
-        else
-        {
-          // Normal case
-          Rect<1> ghost_rect(Point<1>(index-2),Point<1>(index+num_elmts+1));
-          gh_coloring[color] = Domain::from_rect<1>(ghost_rect);
-        }
-      }
-      index += num_elmts;
+      gh_coloring[color] = Domain::from_rect<1>(subrect3);
     }
-    // Once we've computed both of our colorings then we can
-    // create our partitions.  Note that we tell the runtime
-    // that one is disjoint will the second one is not.
     ex_ip = runtime->create_index_partition(context , is, color_domain,
                                     ex_coloring, true/*disjoint*/);
     sh_ip = runtime->create_index_partition(context , is, color_domain,
@@ -181,8 +177,6 @@ void specialization_driver(int argc, char ** argv) {
  fm.wait_all_results();
 } // specialization_driver
 
-void driver(int argc, char ** argv) {
-}//driver
 
 } // namespace execution
 } // namespace flecsi

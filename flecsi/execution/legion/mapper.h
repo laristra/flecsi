@@ -257,7 +257,7 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
  
       clog_assert ((task.regions.size()%3==0), "");
 
-      output.chosen_instances.resize(1);
+      output.chosen_instances.resize((task.regions.size()/3));
 
       Legion::LayoutConstraintSet layout_constraints;
       // No specialization
@@ -291,6 +291,7 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
         }//end if
 
         output.chosen_instances[indx].push_back(result);
+
 
        }//end for
     }//end if
