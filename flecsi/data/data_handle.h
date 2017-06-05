@@ -58,7 +58,7 @@ struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {
   T* ghost_buf = nullptr;
   size_t ghost_size = 0;
 
-  T* combined_data;
+  T* combined_data = nullptr;
 
   template<
     size_t EXCLUSIVE_PERMISSIONS2,
