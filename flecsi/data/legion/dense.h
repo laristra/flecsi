@@ -120,7 +120,7 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
       //runtime->unmap_region(context, base_t::ghost_pr);
     }
 
-    if(base_t::combined_data){
+    if(base_t::master && base_t::combined_data){
       delete[] base_t::combined_data;
     }
   }

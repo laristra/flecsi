@@ -59,6 +59,7 @@ struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {
   size_t ghost_size = 0;
 
   T* combined_data = nullptr;
+  bool master = true;
 
   template<
     size_t EXCLUSIVE_PERMISSIONS2,
@@ -83,6 +84,7 @@ struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {
     exclusive_size = b.exclusive_size;
     shared_size = b.shared_size;
     ghost_size = b.ghost_size;
+    master = false;
   }   
 };
 
