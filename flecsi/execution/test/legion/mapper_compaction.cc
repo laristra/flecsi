@@ -3,6 +3,7 @@
  * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
 
+#include "flecsi/execution/legion/mapper.h"
 #include "flecsi/execution/legion/internal_task.h"
 #include "cinchtest.h"
 
@@ -30,20 +31,29 @@ int internal_task_example_1(const Legion::Task * task,
   Legion::Runtime * runtime) 
 {
   std::cout <<"inside of the task1" <<std::endl;
+
+  LogicalRegion ex_lr=task->regions[0].region;
+/*  LogicalRegion sh_lr=task->regions[1].region;
+  LogicalRegion gh_lr=task->regions[2].region;
+
+  IndexSpace ex_is=ex_lr.get_index_space();
+  IndexSpace sh_is=sh_lr.get_index_space();
+  IndexSpace gh_is=gh_lr.get_index_space();
+*/
 } // internal_task_example
 
 // Register the task. The task id is automatically generated.
 __flecsi_internal_register_legion_task(internal_task_example_1,
   processor_type_t::loc, single);
 
-void driver(int argc, char ** argv) {
+void specialization_driver(int argc, char ** argv) {
 
 #if defined(ENABLE_LEGION_TLS)
   auto runtime = Legion::Runtime::get_runtime();
   auto context = Legion::Runtime::get_context();  
 #else
   context_t & context_ = context_t::instance();
-  size_t task_key = utils::const_string_t{"driver"}.hash();
+  size_t task_key = utils::const_string_t{"specialization_driver"}.hash();
   auto runtime = context_.runtime(task_key);
   auto context = context_.context(task_key);
 #endif
@@ -132,6 +142,13 @@ void driver(int argc, char ** argv) {
     gh_ip = runtime->create_index_partition(context , is, color_domain,
                                     gh_coloring, false/*disjoint*/);
   }
+
+  LogicalPartition ex_lp =
+    runtime->get_logical_partition(context, stencil_lr, ex_ip);
+  LogicalPartition sh_lp =
+    runtime->get_logical_partition(context, stencil_lr, sh_ip);
+  LogicalPartition gh_lp =
+    runtime->get_logical_partition(context, stencil_lr, gh_ip);
  
   auto key_1 = __flecsi_internal_task_key(internal_task_example_1);
 
@@ -143,11 +160,29 @@ void driver(int argc, char ** argv) {
     Legion::TaskArgument(0, 0),
     arg_map
   );
-   
-  //index_launcher.tag=MAPPER_FORCE_RANK_MATCH;
+ 
+  index_launcher.add_region_requirement(
+      RegionRequirement(ex_lp, 0/*projection ID*/,
+                       READ_WRITE, EXCLUSIVE, stencil_lr));
+  index_launcher.add_field(0, FID_VAL);
+  index_launcher.add_region_requirement(
+      RegionRequirement(sh_lp, 0/*projection ID*/,
+                        READ_WRITE, EXCLUSIVE, stencil_lr));
+  index_launcher.add_field(1, FID_VAL);
+  index_launcher.add_region_requirement(
+      RegionRequirement(gh_lp, 0/*projection ID*/,
+                        READ_ONLY, EXCLUSIVE, stencil_lr));
+  index_launcher.add_field(2, FID_VAL);
+
+
+
+  index_launcher.tag=MAPPER_COMPACTED_STORAGE;
  auto fm = runtime->execute_index_space(context, index_launcher);
  fm.wait_all_results();
-} // driver
+} // specialization_driver
+
+void driver(int argc, char ** argv) {
+}//driver
 
 } // namespace execution
 } // namespace flecsi
