@@ -103,10 +103,6 @@ set(utils_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-#cinch_add_unit(Any
-#  SOURCES test/any.cc
-#)
-
 # Broken by refactor
 #cinch_add_unit(dbc
 #  SOURCES test/dbc_test.cc
@@ -210,6 +206,12 @@ cinch_add_unit(index_space
 cinch_add_unit(array_ref
   SOURCES test/array_ref.cc
   INPUTS  test/array_ref.blessed
+)
+
+cinch_add_unit(common
+  SOURCES common.cc
+          test/common.cc
+  INPUTS  test/common.blessed
 )
 
 if(ENABLE_OPENSSL)
