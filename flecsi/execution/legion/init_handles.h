@@ -85,7 +85,7 @@ namespace execution {
       Legion::PhysicalRegion prs[num_regions];
       T* data[num_regions];
       size_t sizes[num_regions];
-      size_t combined_size = 0;
+      h.combined_size = 0;
       size_t permissions[] = 
         {EXCLUSIVE_PERMISSIONS, SHARED_PERMISSIONS, GHOST_PERMISSIONS};
 
@@ -112,12 +112,12 @@ namespace execution {
           data[r] = ac.template raw_rect_ptr<2>(dr, sr, bo);
           data[r] += bo[1];
           sizes[r] = sr.hi[1] - sr.lo[1] + 1;
-          combined_size += sizes[r];
+          h.combined_size += sizes[r];
         }
       }
 
       // Create the concatenated buffer E+S+G
-      h.combined_data = new T[combined_size];
+      h.combined_data = new T[h.combined_size];
 
       // Set additional fields needed by the data handle/accessor
       // and copy into the combined buffer. Note that exclusive_data, etc.

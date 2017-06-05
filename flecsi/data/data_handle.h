@@ -59,6 +59,7 @@ struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {
   size_t ghost_size = 0;
 
   T* combined_data = nullptr;
+  size_t combined_size = 0;
   bool master = true;
 
   template<
