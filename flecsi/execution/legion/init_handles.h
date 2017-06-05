@@ -153,7 +153,7 @@ namespace execution {
             assert(false);
         }
         
-        std::memcpy(h.combined_data + pos, data[r], sizes[r]);
+        std::memcpy(h.combined_data + pos, data[r], sizes[r] * sizeof(T));
         pos += sizes[r];
       }
 
