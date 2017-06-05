@@ -79,6 +79,7 @@ struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {
     exclusive_data = b.exclusive_data;
     shared_data = b.shared_data;
     ghost_data = b.ghost_data;
+    combined_data = b.combined_data;
     exclusive_size = b.exclusive_size;
     shared_size = b.shared_size;
     ghost_size = b.ghost_size;

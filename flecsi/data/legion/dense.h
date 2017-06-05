@@ -103,7 +103,7 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
                     base_t::exclusive_size * sizeof(T));
       }
 
-      runtime->unmap_region(context, base_t::exclusive_pr);
+      //runtime->unmap_region(context, base_t::exclusive_pr);
     }
 
     if(base_t::shared_data){
@@ -112,12 +112,12 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
                     base_t::shared_size * sizeof(T));
       }
 
-      runtime->unmap_region(context, base_t::shared_pr);
+      //runtime->unmap_region(context, base_t::shared_pr);
     }
 
     // ghost is never mapped with write permissions
     if(base_t::ghost_data){
-      runtime->unmap_region(context, base_t::ghost_pr);
+      //runtime->unmap_region(context, base_t::ghost_pr);
     }
 
     if(base_t::combined_data){
