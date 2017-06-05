@@ -25,6 +25,7 @@
 #include "legion.h"
 #include "flecsi/data/data.h"
 #include "flecsi/execution/context.h"
+#include "flecsi/execution/legion/internal_field.h"
 
 namespace flecsi {
 namespace execution {
@@ -91,7 +92,7 @@ namespace execution {
     )
     {
       auto& flecsi_context = context_t::instance();
-      
+
       bool read_phase = false;
       bool write_phase = false;
       const int my_color = runtime->find_local_MPI_rank();
@@ -135,6 +136,12 @@ namespace execution {
             auto iitr = flecsi_context.field_info_map().find(h.index_space);
             clog_assert(iitr != flecsi_context.field_info_map().end(),
               "invalid index space");
+
+            auto ghost_owner_pos_fid = 
+              LegionRuntime::HighLevel::FieldID(
+              internal_field::ghost_owner_pos);
+
+            rr_ghost.add_field(ghost_owner_pos_fid);
 
             for(auto& fitr : iitr->second){
               const context_t::field_info_t& fi = fitr.second;
