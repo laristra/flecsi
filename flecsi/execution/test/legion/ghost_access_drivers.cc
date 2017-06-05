@@ -56,6 +56,14 @@ void check_all_cells_task(handle_t<size_t, flecsi::dro, flecsi::dro,
     index++;
   } // exclusive_itr
 
+  index = 0;
+  for (auto shared_itr = index_coloring->second.shared.begin(); shared_itr !=
+      index_coloring->second.shared.end(); ++shared_itr) {
+      flecsi::coloring::entity_info_t shared = *shared_itr;
+      assert(cell_ID.shared(index) == shared.id);
+      index++;
+  } // shared_itr
+
   for (size_t i=0; i < cell_ID.shared_size(); i++)
       clog(trace) << my_color << " shared " << i << " = " << cell_ID.shared(i) <<
       std::endl;
@@ -63,12 +71,21 @@ void check_all_cells_task(handle_t<size_t, flecsi::dro, flecsi::dro,
   for (size_t i=0; i < cell_ID.ghost_size(); i++)
       clog(trace) << my_color << " ghost " << i << " = " << cell_ID.ghost(i) <<
       std::endl;
+
+  index = 0;
+  for (auto ghost_itr = index_coloring->second.ghost.begin(); ghost_itr !=
+      index_coloring->second.ghost.end(); ++ghost_itr) {
+    flecsi::coloring::entity_info_t ghost = *ghost_itr;
+    assert(cell_ID.ghost(index) == ghost.id);
+    index++;
+  } // ghost_itr
+
 } // initialize_primary_cells_task
 
 flecsi_register_task(check_all_cells_task, flecsi::loc, flecsi::single);
 
 void initialize_primary_cells_task(handle_t<size_t, flecsi::drw, flecsi::drw,
-    flecsi::dno> cell_ID, int my_color) {
+    flecsi::dro> cell_ID, int my_color) {
 
   clog(trace) << my_color << " WRITING " << std::endl;
 
@@ -88,13 +105,18 @@ void initialize_primary_cells_task(handle_t<size_t, flecsi::drw, flecsi::drw,
 
   for (auto shared_itr = index_coloring->second.shared.begin(); shared_itr !=
       index_coloring->second.shared.end(); ++shared_itr) {
-    clog(trace) << my_color << " shared " <<  *shared_itr << std::endl;
+      flecsi::coloring::entity_info_t shared = *shared_itr;
+    clog(trace) << my_color << " shared " <<  shared.id << std::endl;
+    cell_ID(index) = shared.id;
+    index++;
   } // shared_itr
 
   for (auto ghost_itr = index_coloring->second.ghost.begin(); ghost_itr !=
       index_coloring->second.ghost.end(); ++ghost_itr) {
     flecsi::coloring::entity_info_t ghost = *ghost_itr;
     clog(trace) << my_color << " ghost " <<  ghost.id << std::endl;
+    //cell_ID(index) = ghost.id;
+    index++;
   } // ghost_itr
 
 } // initialize_primary_cells_task
@@ -142,7 +164,7 @@ void driver(int argc, char ** argv) {
 
   auto handle = flecsi_get_handle(client, name_space, cell_ID, size_t, dense, INDEX_ID);
 
-  for(size_t cycle=0; cycle<3; cycle++) {
+  for(size_t cycle=0; cycle<1; cycle++) {
     flecsi_execute_task(initialize_primary_cells_task, single, handle, my_color);
 
     flecsi_execute_task(check_all_cells_task, single, handle, my_color, cycle);
