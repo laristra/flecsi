@@ -103,10 +103,6 @@ set(utils_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
-cinch_add_unit(any
-  SOURCES test/any.cc
-)
-
 # Broken by refactor
 #cinch_add_unit(dbc
 #  SOURCES test/dbc_test.cc
@@ -137,11 +133,85 @@ cinch_add_unit(reorder
   SOURCES test/reorder.cc
 )
 
+cinch_add_unit(any
+  SOURCES test/any.cc
+  INPUTS  test/any.blessed
+)
+
 cinch_add_unit(reflection
   SOURCES
     test/reflection.cc
   POLICY
     SERIAL_DEVEL
+)
+
+cinch_add_unit(hash
+  SOURCES test/hash.cc
+)
+
+cinch_add_unit(humble
+  SOURCES test/humble.cc
+)
+
+cinch_add_unit(Iterator
+  SOURCES test/iterator.cc
+  INPUTS  test/iterator.blessed
+)
+
+cinch_add_unit(logging
+  SOURCES test/logging.cc
+)
+
+cinch_add_unit(set_intersection
+  SOURCES test/set_intersection.cc
+)
+
+cinch_add_unit(set_utils
+  SOURCES test/set_utils.cc
+  INPUTS  test/set_utils.blessed
+)
+
+cinch_add_unit(static_verify
+  SOURCES test/static_verify.cc
+)
+
+cinch_add_unit(Utility
+  SOURCES test/utility.cc
+  INPUTS  test/utility.blessed
+)
+
+cinch_add_unit(tuple_type_converter
+  SOURCES test/tuple_type_converter.cc
+  INPUTS  test/tuple_type_converter.blessed
+)
+
+cinch_add_unit(tuple_walker
+  SOURCES test/tuple_walker.cc
+  INPUTS  test/tuple_walker.blessed
+)
+
+cinch_add_unit(tuple_wrapper
+  SOURCES test/tuple_wrapper.cc
+)
+
+cinch_add_unit(tuple_function
+  SOURCES test/tuple_function.cc
+)
+
+cinch_add_unit(index_space
+  SOURCES test/index_space.cc
+  INPUTS  test/index_space.blessed
+)
+
+cinch_add_unit(array_ref
+  SOURCES test/array_ref.cc
+  INPUTS  test/array_ref.blessed
+)
+
+cinch_add_unit(common
+  SOURCES common.cc
+          test/common.cc
+  INPUTS  test/common.blessed
 )
 
 if(ENABLE_OPENSSL)

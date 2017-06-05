@@ -15,36 +15,35 @@
 #ifndef flecsi_utils_any_h
 #define flecsi_utils_any_h
 
-///
-/// \file any.h
-/// \date Initial file creation: Aug 29, 2016
-///
+//!
+//! \file any.h
+//! \date Initial file creation: Aug 29, 2016
+//!
 
-#include <iostream>
 #include <typeinfo>
 
 namespace flecsi {
 namespace utils {
 
-/// 
-/// \class any_t any.h
-/// \brief any_t class can store arbitrary types of information.
-///
+//!
+//! \class any_t any.h
+//! \brief any_t class can store arbitrary types of information.
+//!
 class any_t
 {
 public:
-  
-  ///
-  /// default constructor
-  ///
+
+  //!
+  //! default constructor
+  //!
   any_t()
   {
     holder_ = nullptr;
   } // any_t
 
-  ///
-  /// copy constructor
-  ///
+  //!
+  //! constructor from T
+  //!
   template<
     class T
   >
@@ -53,26 +52,26 @@ public:
     holder_ = new holder_t<T>(value);
   } // any_t
 
-  ///
-  /// destructor
-  ///
+  //!
+  //! destructor
+  //!
   ~any_t()
   {
     delete holder_;
     holder_ = nullptr;
   } // ~any_t
 
-  ///
-  /// copy operator
-  ///
+  //!
+  //! copy constructor
+  //!
   any_t(const any_t & rhs)
   {
     holder_=rhs.holder_ ? rhs.holder_->copy() : nullptr;
   } // any_t
 
-  ///
-  /// assignment operator
-  ///
+  //!
+  //! copy assignment
+  //!
   any_t & operator = (const any_t & rhs)
   {
     delete holder_;
@@ -80,9 +79,9 @@ public:
     return *this;
   } // operator =
 
-  ///
-  /// cast to the type T
-  ///
+  //!
+  //! cast to the type T
+  //!
   template<
     class T
   >
@@ -93,11 +92,11 @@ public:
   } // operator T()
 
   template<class T>
-  friend const T & any_cast(any_t & rhs);
+  friend const T & any_cast(const any_t & rhs);
 
-  ///
-  /// returns Type of the element
-  ///
+  //!
+  //! returns Type of the element
+  //!
   const
   std::type_info &
   get_type()
@@ -108,9 +107,9 @@ public:
 
 private:
 
-  ///
-  /// helper class 
-  ///
+  //!
+  //! helper class
+  //!
   class i_holder_t
   {
   public:
@@ -119,12 +118,11 @@ private:
     virtual i_holder_t * copy() const = 0;
     virtual const std::type_info & get_type() const = 0;
 
-  }; //class i_holder_t
+  }; // class i_holder_t
 
-
-  ///
-  /// helper class
-  ///
+  //!
+  //! helper class
+  //!
   template<
     typename T
   >
@@ -153,23 +151,25 @@ private:
 
   }; // class Holder
 
-  i_holder_t * holder_; 
+  i_holder_t * holder_;
 
-}; //class any_t
+}; // class any_t
 
-///
-/// cast to the type
-///
+
+
+//!
+//! cast to the type
+//!
 template<
   class T
 >
 inline
-const 
+const
 T & any_cast(
-  any_t & rhs
+  const any_t & rhs
 )
 {
-  return dynamic_cast<any_t::holder_t<T>&>(*(rhs.holder_)).value;
+  return dynamic_cast<any_t::holder_t<T>&>(*rhs.holder_).value;
 } // any_cast
 
 } // namespace utils

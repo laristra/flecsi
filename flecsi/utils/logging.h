@@ -15,12 +15,12 @@
 #ifndef flecsi_utils_logging_h
 #define flecsi_utils_logging_h
 
-#include <cinchlog.h>
-
 /*!
- * \file
+ * \file logging.h
  * \date Initial file creation: Dec 10, 2016
  */
+
+#include <cinchlog.h>
 
 namespace flecsi {
 namespace utils {

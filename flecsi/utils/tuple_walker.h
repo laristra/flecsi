@@ -6,12 +6,12 @@
 #ifndef flecsi_utils_tuple_walker_h
 #define flecsi_utils_tuple_walker_h
 
-#include <tuple>
+//!
+//! \file tuple_walker.h
+//! \date Initial file creation: Jul 28, 2016
+//!
 
-/*!
- * \file
- * \date Initial file creation: Jul 28, 2016
- */
+#include <tuple>
 
 namespace flecsi {
 namespace utils {
@@ -25,8 +25,8 @@ namespace utils {
     static
     size_t
     walk(
-      P& p,
-      T& t)
+      P & p,
+      T & t)
     {
       p.handle(std::get<std::tuple_size<T>::value - I>(t));
       return tuple_walker_helper__<I - 1, T, P>::walk(p, t);
@@ -41,7 +41,7 @@ namespace utils {
     static
     size_t
     walk(
-         P&, T&)
+         P &, T &)
     {
       return 0;
     }
@@ -51,17 +51,15 @@ namespace utils {
     typename P
   >
   struct tuple_walker__{
-    
     template<
       typename T
     >
     void walk(
-      T& t)
+      T & t)
     {
       tuple_walker_helper__<std::tuple_size<T>::value, T, P>::
         walk(*static_cast<P*>(this), t);
     }
-
   };
 
 } // namespace utils
