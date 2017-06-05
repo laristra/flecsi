@@ -144,7 +144,7 @@ runtime_driver(
       runtime->create_index_space(ctx, expanded_dom);
     
     char buf[80];
-    sprintf(buf, "expanded index space %zu", handle_idx.first);
+    sprintf(buf, "expanded index space %zu", idx_space.first);
     runtime->attach_name(expanded_is, buf);
     expanded_ispaces_map[idx_space.first] = expanded_is;
 
@@ -162,13 +162,13 @@ runtime_driver(
         allocator.allocate_field(fi.size, fi.fid);
       }
     }
-    sprintf(buf, "expanded field space %zu", handle_idx.first);
+    sprintf(buf, "expanded field space %zu", idx_space.first);
     runtime->attach_name(expanded_fs, buf);
     expanded_fspaces_map[idx_space.first] = expanded_fs;
 
     Legion::LogicalRegion expanded_lr = runtime->create_logical_region(ctx,
         expanded_is, expanded_fs);
-    sprintf(buf, "expanded logical region %zu", handle_idx.first);
+    sprintf(buf, "expanded logical region %zu", idx_space.first);
     runtime->attach_name(expanded_lr, buf);
     expanded_lregions_map[idx_space.first] = expanded_lr;
 
@@ -196,7 +196,7 @@ runtime_driver(
     Legion::IndexPartition color_ip = 
       runtime->create_index_partition(ctx,
         expanded_is, color_domain, color_partitioning, true /*disjoint*/);
-    sprintf(buf, "color partitioing %zu", handle_idx.first);
+    sprintf(buf, "color partitioing %zu", idx_space.first);
     runtime->attach_name(color_ip, buf);
     color_iparts_map[idx_space.first] = color_ip;
   } // for idx_space
