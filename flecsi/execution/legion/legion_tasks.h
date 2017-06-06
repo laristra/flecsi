@@ -469,7 +469,14 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
 
   assert(regions.size() == 2);
   assert(task->regions.size() == 2);
-  // regions 0 and 1 have the same fields
+  // regions 0 and 1 have the same fields except for ghost_owner_pos_fid
+
+  auto ghost_owner_pos_fid = 
+    LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
+
+  auto acc_gop = 
+    regions[1].get_field_accessor(ghost_owner_pos_fid).typeify<
+    LegionRuntime::Arrays::Point<2>>();
 
   // For each field, copy data from shared to ghost
   for(auto fid : task->regions[0].privilege_fields){
