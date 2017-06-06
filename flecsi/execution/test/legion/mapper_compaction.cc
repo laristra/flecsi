@@ -57,8 +57,10 @@ int internal_task_example_1(const Legion::Task * task,
   //Legions bounds checking ON)
   for (GenericPointInRectIterator<1> pir(parent_rect); pir; pir++)
   {
+#ifndef BOUNDS_CHECKS
     double count = acc.read(DomainPoint::from_point<1>(pir.p));
     std::cout<<count<<std::endl;
+#endif
   }
 } // internal_task_example
 
