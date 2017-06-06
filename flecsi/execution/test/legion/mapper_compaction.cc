@@ -36,30 +36,30 @@ int internal_task_example_1(const Legion::Task * task,
   assert(task->regions.size() == 3);
 
   LogicalRegion ex_lr=task->regions[0].region;
-  IndexSpace ex_is=ex_lr.get_index_space();
 
+  IndexSpace ex_is=ex_lr.get_index_space();
+  
+  //we need to get Rect for the parent index space in purpose to loop over
+  //compacted physical instance
+  IndexPartition parent_ip = runtime->get_parent_index_partition(ex_is);
+  IndexSpace parent_is = runtime->get_parent_index_space(parent_ip); 
+
+  Domain parent_dom = runtime->get_index_space_domain(context, parent_is);
+  Rect<1> parent_rect = parent_dom.get_rect<1>();
+
+  //we get an accessor to the exclusive LR because it points to the
+  //first element in the compacted physical instanse
   FieldID fid = *(task->regions[0].privilege_fields.begin());
   RegionAccessor<AccessorType::Generic, double> acc =
     regions[0].get_field_accessor(fid).typeify<double>();
 
-  Domain dom = runtime->get_index_space_domain(context,
-      task->regions[0].region.get_index_space());
-  Rect<1> rect = dom.get_rect<1>();
-
-  for (GenericPointInRectIterator<1> pir(rect); pir; pir++)
+  //loop over compacted physical instanse (this will not work with
+  //Legions bounds checking ON)
+  for (GenericPointInRectIterator<1> pir(parent_rect); pir; pir++)
   {
     double count = acc.read(DomainPoint::from_point<1>(pir.p));
     std::cout<<count<<std::endl;
   }
-
-
-/*  LogicalRegion sh_lr=task->regions[1].region;
-  LogicalRegion gh_lr=task->regions[2].region;
-
-  IndexSpace ex_is=ex_lr.get_index_space();
-  IndexSpace sh_is=sh_lr.get_index_space();
-  IndexSpace gh_is=gh_lr.get_index_space();
-*/
 } // internal_task_example
 
 // Register the task. The task id is automatically generated.
@@ -108,7 +108,6 @@ void driver(int argc, char ** argv) {
       count++;
       acc.write(DomainPoint::from_point<1>(pir.p), count);
     }
-std::cout <<"number of elements = "<<count<<std::endl;
     runtime->unmap_region(context, input_region);
   }//scope
 
@@ -116,6 +115,7 @@ std::cout <<"number of elements = "<<count<<std::endl;
   Domain color_domain = Domain::from_rect<1>(color_bounds);
 
 
+  //creating exclusive, shared and ghost partitionings  
   IndexPartition ex_ip, sh_ip, gh_ip;
   {
     DomainColoring ex_coloring, sh_coloring, gh_coloring;
@@ -148,7 +148,6 @@ std::cout <<"number of elements = "<<count<<std::endl;
  
   auto key_1 = __flecsi_internal_task_key(internal_task_example_1);
 
-
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher index_launcher(
     context_t::instance().task_id(key_1),
@@ -169,8 +168,6 @@ std::cout <<"number of elements = "<<count<<std::endl;
       RegionRequirement(gh_lp, 0/*projection ID*/,
                         READ_ONLY, EXCLUSIVE, stencil_lr));
   index_launcher.add_field(2, FID_VAL);
-
-
 
   index_launcher.tag=MAPPER_COMPACTED_STORAGE;
  auto fm = runtime->execute_index_space(context, index_launcher);

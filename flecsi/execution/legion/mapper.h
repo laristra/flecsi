@@ -216,6 +216,18 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
   } //end slice_task
 
 
+  //-------------------------------------------------------------------------//
+  //! Specialization of the map_task funtion for FLeCSI
+  //! By default, map_task will execute Legions map_task from DefaultMapper.
+  //! In the case the launcher has been tagged with the 
+  //! "MAPPER_COMPACTED_STORAGE" tag, mapper will create single physical 
+  //! instance for exclusive, shared and ghost partitions for each data handle
+  //!
+  //!  @param ctx Mapper Context
+  //!  @param task Legion's task
+  //!  @param input Input information about task mapping
+  //!  @param output Output information about task mapping
+  //-------------------------------------------------------------------------//
   virtual
   void
   map_task(
@@ -224,41 +236,17 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
     const Legion::Mapping::Mapper::MapTaskInput &input,
     Legion::Mapping::Mapper::MapTaskOutput &output)
   {
-
-#if 0
-    Processor::Kind target_kind = task.target_proc.kind();
-    // Get the variant that we are going to use to map this task
-    VariantInfo chosen = default_find_preferred_variant(task, ctx,
-       true/*needs tight bound*/, true/*cache*/, target_kind);
-    output.chosen_variant = chosen.variant;
-    output.task_priority = 0;
-    output.postmap_task = false;
-    // Figure out our target processors
-    DefaultMapper::default_policy_select_target_processors(ctx,
-        task, output.target_procs);
-
-    if (chosen.is_inner)
-    {
-      clog_assert (false, " mapper for the inner variant is not implemented");  
-    }
-#endif
-
     DefaultMapper::map_task(ctx, task, input,output);
 
-#if 1
-    // Assume we are mapping on the CPUs
-    //output.target_procs = task.target_proc;
-//    Legion::Memory target_mem = local_sysmem;
     Legion::Memory target_mem = 
      DefaultMapper::default_policy_select_target_memory(ctx, task.target_proc);
 
-
     if ( (task.tag & MAPPER_COMPACTED_STORAGE) != 0) {
- 
+      //check if we get region requirements for "exclusive, shared and ghost"
+      //logical regions for each data handle  
       clog_assert ((task.regions.size()%3==0), "");
 
-      output.chosen_instances.resize((task.regions.size()/3));
-
+      //Filling out "layout_constraints" with the defaults
       Legion::LayoutConstraintSet layout_constraints;
       // No specialization
       layout_constraints.add_constraint(Legion::SpecializedConstraint());
@@ -273,30 +261,36 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
       //FIXME:: add colocation_constraints
       Legion::ColocationConstraint colocation_constraints;
 
+      //for each data handle
       for (size_t indx=0; indx<task.regions.size()/3;indx++){
 
         Legion::Mapping::PhysicalInstance result;
         std::vector<Legion::LogicalRegion> regions;
 
+        // we want our mapper to make physical instances that contain space for 
+        // all three different logical regions (exclusive, shared and ghost)
+        // so one can use that physical instance to satisfy the mapping
+        // of all three region requirements. To do so we populate regions
+        // vector with all 3 logical regions and pass it to the 
+        // find_or_create_physical_instance method.   
         for (size_t j=0; j<3; j++)
           regions.push_back(task.regions[indx*3+j].region);
 
         bool created;
 
         if (!runtime->find_or_create_physical_instance(
-        ctx, target_mem, layout_constraints,
-        regions, result, created, true/*acquire*/, GC_NEVER_PRIORITY)) {
-          clog(fatal)<<"ERROR: FLeCSI mapper failed to allocate instance"<<
+          ctx, target_mem, layout_constraints,
+          regions, result, created, true/*acquire*/, GC_NEVER_PRIORITY)) {
+            clog(fatal)<<"ERROR: FLeCSI mapper failed to allocate instance"<<
             std::endl;
         }//end if
 
-        output.chosen_instances[indx].push_back(result);
-
+        for (size_t j=0; j<3; j++)
+          output.chosen_instances[3*indx+j].push_back(result);
 
        }//end for
     }//end if
 
-#endif
   }//map_task
 
   
