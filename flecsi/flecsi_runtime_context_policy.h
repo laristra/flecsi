@@ -47,7 +47,7 @@
   }
 
 // MPI Policy
-#elif FLECSI_RUNTIME_MODEL FLECSI_RUNTIME_MODEL_mpi
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
   #include "flecsi/execution/mpi/context_policy.h"
 

@@ -162,6 +162,14 @@ __flecsi_internal_legion_task(spmd_task, void) {
   size_t num_idx_spaces;
   args_deserializer.deserialize(&num_idx_spaces, sizeof(size_t));
 
+  size_t* idx_spaces = (size_t*)malloc(sizeof(size_t) * num_idx_spaces);
+  args_deserializer.deserialize((void*)idx_spaces,
+    sizeof(size_t) * num_idx_spaces);
+
+  for(size_t i = 0; i < num_idx_spaces; ++i){
+    context_.add_index_space(idx_spaces[i]);
+  }
+
   clog_assert(regions.size() >= num_idx_spaces, "fewer regions than data handles");
   clog_assert(task->regions.size() >= num_idx_spaces, "fewer regions than data handles");
 
@@ -172,14 +180,14 @@ __flecsi_internal_legion_task(spmd_task, void) {
   size_t* num_owners = (size_t*)malloc(sizeof(size_t) * num_idx_spaces);
   args_deserializer.deserialize((void*)num_owners, sizeof(size_t) * num_idx_spaces);
 
-  for(size_t index_space = 0; index_space < num_idx_spaces; ++index_space){
-    ism[index_space].pbarrier_as_owner_ptr = &pbarriers_as_master[index_space];
+  for(size_t idx_space : context_.index_spaces()){
+    ism[idx_space].pbarrier_as_owner_ptr = &pbarriers_as_master[idx_space];
   }
 
   std::vector<std::vector<Legion::PhaseBarrier>> ghost_owners_pbarriers(num_idx_spaces);
 
   // FIXME again assuming handles are 0, 1, 2, ..
-  for (size_t idx_space = 0; idx_space < num_idx_spaces; idx_space++) {
+  for (size_t idx_space : context_.index_spaces()) {
     size_t n = num_owners[idx_space];
 
     ghost_owners_pbarriers[idx_space].resize(n);
@@ -215,7 +223,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
   std::vector<legion_map> global_to_local_color_map(num_idx_spaces);
 
   size_t region_index = 0;
-  for (size_t idx_space = 0; idx_space < num_idx_spaces; idx_space++) {
+  for (size_t idx_space : context_.index_spaces()) {
 
     ism[idx_space].color_region = regions[region_index].get_logical_region();
 
@@ -397,8 +405,8 @@ __flecsi_internal_legion_task(compaction_task, void) {
   // Add additional setup.
   context_t & context_ = context_t::instance();
 
-  const std::unordered_map<size_t, flecsi::coloring::index_coloring_t> coloring_map
-    = context_.coloring_map();
+  const std::unordered_map<size_t, flecsi::coloring::index_coloring_t>
+    coloring_map = context_.coloring_map();
 
   auto ghost_owner_pos_fid = 
     Legion::FieldID(internal_field::ghost_owner_pos);
@@ -410,52 +418,120 @@ __flecsi_internal_legion_task(compaction_task, void) {
   // In compacted position of ghost, write the reference/pointer to pre-compacted shared
   // ghost reference/pointer will need to communicate with other ranks in spmd_task() to obtain
   // corrected pointer
-  for (auto handle : coloring_map) {
+  for (auto idx_space : coloring_map) {
 
-    Legion::IndexSpace ispace = regions[handle.first].get_logical_region().get_index_space();
-    Legion::FieldID fid_ref = ghost_owner_pos_fid;
+    Legion::IndexSpace ispace = regions[idx_space.first].get_logical_region().get_index_space();
     LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, LegionRuntime::Arrays::Point<2>> acc_ref =
-          regions[handle.first].get_field_accessor(fid_ref).typeify<LegionRuntime::Arrays::Point<2>>();
+          regions[idx_space.first].get_field_accessor(ghost_owner_pos_fid).typeify<LegionRuntime::Arrays::Point<2>>();
 
     Legion::Domain domain = runtime->get_index_space_domain(ctx, ispace);
     LegionRuntime::Arrays::Rect<2> rect = domain.get_rect<2>();
     LegionRuntime::Arrays::GenericPointInRectIterator<2> expanded_itr(rect);
 
-    for (auto exclusive_itr = handle.second.exclusive.begin(); exclusive_itr != handle.second.exclusive.end(); ++exclusive_itr) {
-      clog(trace) << my_color << " key " << handle.first << " exclusive " <<
+    for (auto exclusive_itr = idx_space.second.exclusive.begin(); exclusive_itr != idx_space.second.exclusive.end(); ++exclusive_itr) {
+      clog(trace) << my_color << " key " << idx_space.first << " exclusive " <<
         " " <<  *exclusive_itr << std::endl;
       expanded_itr++;
     } // exclusive_itr
 
-    for (auto shared_itr = handle.second.shared.begin(); shared_itr != handle.second.shared.end(); ++shared_itr) {
+    for (auto shared_itr = idx_space.second.shared.begin(); shared_itr != idx_space.second.shared.end(); ++shared_itr) {
       const flecsi::coloring::entity_info_t shared = *shared_itr;
       const LegionRuntime::Arrays::Point<2> reference = LegionRuntime::Arrays::make_point(shared.rank,
           shared.offset);
       // reference is the old location, expanded_itr.p is the new location
       acc_ref.write(Legion::DomainPoint::from_point<2>(reference), expanded_itr.p);
 
-      clog(trace) << my_color << " key " << handle.first << " shared was " <<
+      clog(trace) << my_color << " key " << idx_space.first << " shared was " <<
         " " <<  *shared_itr << " now at " << expanded_itr.p << std::endl;
       expanded_itr++;
     } // shared_itr
 
-    for (auto ghost_itr = handle.second.ghost.begin(); ghost_itr != handle.second.ghost.end(); ++ghost_itr) {
+    for (auto ghost_itr = idx_space.second.ghost.begin(); ghost_itr != idx_space.second.ghost.end(); ++ghost_itr) {
       const flecsi::coloring::entity_info_t ghost = *ghost_itr;
       const LegionRuntime::Arrays::Point<2> reference = LegionRuntime::Arrays::make_point(ghost.rank,
           ghost.offset);
       // reference is where we used to point, expanded_itr.p is where ghost is now
       acc_ref.write(Legion::DomainPoint::from_point<2>(expanded_itr.p), reference);
-      clog(trace) << "color " << my_color << " key " << handle.first << " ghost " <<
+      clog(trace) << "color " << my_color << " key " << idx_space.first << " ghost " <<
         " " << *ghost_itr <<
         //" now at " << expanded_itr.p <<
         std::endl;
       expanded_itr++;
     } // ghost_itr
-  } // for handle
+  } // for idx_space
   }
 
 } // compaction_task
+
+//----------------------------------------------------------------------------//
+//! Ghost copy task writes data from shared into ghost
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
+__flecsi_internal_legion_task(ghost_copy_task, void) {
+  context_t& context = context_t::instance();
+
+  size_t index_space = *(size_t*)task->args;
+
+  assert(regions.size() == 2);
+  assert(task->regions.size() == 2);
+  // regions 0 and 1 have the same fields except for ghost_owner_pos_fid
+
+  auto ghost_owner_pos_fid = 
+    LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
+
+  auto acc_gop = 
+    regions[1].get_field_accessor(ghost_owner_pos_fid).typeify<
+    LegionRuntime::Arrays::Point<2>>();
+
+  // For each field, copy data from shared to ghost
+  for(auto fid : task->regions[0].privilege_fields){
+    // Look up field info in context
+    auto iitr = context.field_info_map().find(index_space);
+    clog_assert(iitr != context.field_info_map().end(), "invalid index space");
+    auto fitr = iitr->second.find(fid);
+    clog_assert(fitr != iitr->second.end(), "invalid fid");
+    const context_t::field_info_t& fi = fitr->second;
+
+    Legion::PhysicalRegion pr = regions[0];
+    Legion::LogicalRegion lr = pr.get_logical_region();
+    Legion::IndexSpace is = lr.get_index_space();
+
+    auto acc_shared = regions[0].get_field_accessor(fid);
+
+    Legion::Domain domain = 
+      runtime->get_index_space_domain(ctx, is); 
+    
+    // get raw buffer to shared data
+    LegionRuntime::Arrays::Rect<2> r = domain.get_rect<2>();
+    LegionRuntime::Arrays::Rect<2> sr;
+    LegionRuntime::Accessor::ByteOffset bo[2];
+    void* data_shared = acc_shared.template raw_rect_ptr<2>(r, sr, bo);
+    data_shared += bo[1];
+    size_t size = sr.hi[1] - sr.lo[1] + 1;
+
+    pr = regions[1];
+    lr = pr.get_logical_region();
+    is = lr.get_index_space();
+
+    auto acc_ghost = regions[1].get_field_accessor(fid);
+
+    domain = runtime->get_index_space_domain(ctx, is); 
+    
+    // get raw buffer to ghost data
+    r = domain.get_rect<2>();
+    void* data_ghost = acc_ghost.template raw_rect_ptr<2>(r, sr, bo);
+    data_ghost += bo[1];
+    size_t shared_size = sr.hi[1] - sr.lo[1] + 1;
+    
+    clog_assert(size == shared_size, "ghost/shared size mismatch");
+
+    // finally, copy the raw data shared -> ghost
+    std::memcpy(data_ghost, data_shared, size * fi.size);
+  }
+}
 
 #undef __flecsi_internal_legion_task
 

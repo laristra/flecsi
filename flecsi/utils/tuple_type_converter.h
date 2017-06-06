@@ -6,13 +6,13 @@
 #ifndef flecsi_utils_tuple_type_converter_h
 #define flecsi_utils_tuple_type_converter_h
 
-#include <tuple>
+//!
+//! \file tuple_type_converter.h
+//! \authors nickm
+//! \date Initial file creation: Feb 24, 2017
+//!
 
-/*!
- * \file
- * \authors nickm
- * \date Initial file creation: Feb 24, 2017
- */
+#include <tuple>
 
 namespace flecsi {
 namespace utils {

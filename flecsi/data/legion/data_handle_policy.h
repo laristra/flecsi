@@ -58,6 +58,8 @@ struct legion_data_handle_policy_t
 
   void copy(const legion_data_handle_policy_t& p){
     fid = p.fid;
+    context = p.context;
+    runtime = p.runtime;
     index_space = p.index_space;
     exclusive_lr = p.exclusive_lr;
     shared_lr = p.shared_lr;
@@ -72,10 +74,15 @@ struct legion_data_handle_policy_t
     shared_pr = p.shared_pr;
     ghost_pr = p.ghost_pr;
     ghost_is_readable = p.ghost_is_readable;
+    exclusive_priv = p.exclusive_priv;
+    shared_priv = p.shared_priv;
+    ghost_priv = p.ghost_priv;
   }
 
   field_id_t fid;
   size_t index_space;
+  Legion::Context context;
+  Legion::Runtime* runtime;
   Legion::LogicalRegion exclusive_lr;
   Legion::LogicalRegion shared_lr;
   Legion::LogicalRegion ghost_lr;
@@ -88,6 +95,9 @@ struct legion_data_handle_policy_t
   Legion::PhysicalRegion exclusive_pr;
   Legion::PhysicalRegion shared_pr;
   Legion::PhysicalRegion ghost_pr;
+  size_t exclusive_priv;
+  size_t shared_priv;
+  size_t ghost_priv;
   bool ghost_is_readable;
 }; // class legion_data_handle_policy_t
 

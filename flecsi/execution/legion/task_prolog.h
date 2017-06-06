@@ -25,6 +25,7 @@
 #include "legion.h"
 #include "flecsi/data/data.h"
 #include "flecsi/execution/context.h"
+#include "flecsi/execution/legion/internal_field.h"
 
 namespace flecsi {
 namespace execution {
@@ -59,7 +60,7 @@ namespace execution {
     {
     } // task_prolog_t
 
-    //--------------------------------------------------------------------------//
+    //------------------------------------------------------------------------//
     //! FIXME: Need a description.
     //!
     //! @tparam T                     The data type referenced by the handle.
@@ -72,7 +73,7 @@ namespace execution {
     //!
     //! @param runtime The Legion task runtime.
     //! @param context The Legion task runtime context.
-    //--------------------------------------------------------------------------//
+    //------------------------------------------------------------------------//
 
     template<
       typename T,
@@ -91,7 +92,7 @@ namespace execution {
     )
     {
       auto& flecsi_context = context_t::instance();
-      
+
       bool read_phase = false;
       bool write_phase = false;
       const int my_color = runtime->find_local_MPI_rank();
@@ -126,14 +127,46 @@ namespace execution {
                 *(h.ghost_owners_pbarriers_ptrs[owner]) <<
                 std::endl;
 
+            Legion::RegionRequirement rr_shared(h.shared_lr,
+              READ_ONLY, EXCLUSIVE, h.color_region);
+
+            Legion::RegionRequirement rr_ghost(h.ghost_lr,
+              WRITE_DISCARD, EXCLUSIVE, h.color_region);
+
             auto iitr = flecsi_context.field_info_map().find(h.index_space);
             clog_assert(iitr != flecsi_context.field_info_map().end(),
               "invalid index space");
 
-            // TODO: launch copy task on fields
+            auto ghost_owner_pos_fid = 
+              LegionRuntime::HighLevel::FieldID(
+              internal_field::ghost_owner_pos);
+
+            rr_ghost.add_field(ghost_owner_pos_fid);
+
             for(auto& fitr : iitr->second){
               const context_t::field_info_t& fi = fitr.second;
+              rr_shared.add_field(fi.fid);
+              rr_ghost.add_field(fi.fid);
             }
+
+            // TODO - circular dependency including internal_task.h
+            auto constexpr key = 
+              flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(
+                ghost_copy_task)}.hash();
+
+            const auto ghost_copy_tid = flecsi_context.task_id<key>();
+            
+            // TODO: uncomment to enable ghost copy task
+
+            /*
+            Legion::TaskLauncher
+              launcher(ghost_copy_tid,
+              Legion::TaskArgument(&h.index_space, sizeof(h.index_space)));
+            
+            launcher.add_region_requirement(rr_shared);
+            launcher.add_region_requirement(rr_ghost);
+            runtime->execute_task(context, launcher);
+            */
 
             h.ghost_owners_pbarriers_ptrs[owner]->arrive(1);        // phase WRITE
             *(h.ghost_owners_pbarriers_ptrs[owner]) = runtime->advance_phase_barrier(context,
