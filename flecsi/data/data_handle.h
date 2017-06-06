@@ -46,16 +46,21 @@ template<
   typename DATA_POLICY
 >
 struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {
-  T* exclusive_data;
-  size_t exclusive_size;
+  T* exclusive_data = nullptr;
+  T* exclusive_buf = nullptr;
+  size_t exclusive_size = 0;
   
-  T* shared_data;
-  size_t shared_size;
+  T* shared_data = nullptr;
+  T* shared_buf = nullptr;
+  size_t shared_size = 0;
   
-  T* ghost_data;
-  size_t ghost_size;
+  T* ghost_data = nullptr;
+  T* ghost_buf = nullptr;
+  size_t ghost_size = 0;
 
-  T* combined_data;
+  T* combined_data = nullptr;
+  size_t combined_size = 0;
+  bool master = true;
 
   template<
     size_t EXCLUSIVE_PERMISSIONS2,
@@ -76,9 +81,11 @@ struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {
     exclusive_data = b.exclusive_data;
     shared_data = b.shared_data;
     ghost_data = b.ghost_data;
+    combined_data = b.combined_data;
     exclusive_size = b.exclusive_size;
     shared_size = b.shared_size;
     ghost_size = b.ghost_size;
+    master = false;
   }   
 };
 

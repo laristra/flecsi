@@ -34,7 +34,7 @@ DEVEL(coloring) {
   // Set the output rank
   clog_set_output_rank(1);
 
-  using entry_info_t = flecsi::coloring::entry_info_t;
+  using entry_info_t = flecsi::coloring::entity_info_t;
 
   int size;
   int rank;
