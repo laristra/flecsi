@@ -260,12 +260,19 @@ runtime_driver(
     } // for idx_space
 
     size_t num_idx_spaces = idx_spaces.size();
+
+    std::vector<size_t> idx_spaces_vec;
+    idx_spaces_vec.insert(idx_spaces_vec.begin(),
+      idx_spaces.begin(), idx_spaces.end());
+
     args_serializers[color].serialize(&num_idx_spaces, sizeof(size_t));
+    args_serializers[color].serialize(&idx_spaces_vec[0], num_idx_spaces
+        * sizeof(size_t));
     args_serializers[color].serialize(&pbarriers_as_master[0], num_idx_spaces
         * sizeof(Legion::PhaseBarrier));
     args_serializers[color].serialize(&num_ghost_owners[0], num_idx_spaces
         * sizeof(size_t));
-    for (size_t idx_space=0; idx_space < num_idx_spaces; idx_space++)
+    for (size_t idx_space : idx_spaces)
       args_serializers[color].serialize(&owners_pbarriers[idx_space][0],
           num_ghost_owners[idx_space] * sizeof(Legion::PhaseBarrier));
 
