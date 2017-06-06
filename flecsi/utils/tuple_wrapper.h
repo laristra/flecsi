@@ -6,22 +6,22 @@
 #ifndef flecsi_utils_tuple_wrapper_h
 #define flecsi_utils_tuple_wrapper_h
 
-#include <tuple>
+//!
+//! \file tuple_wrapper.h
+//! \date Initial file creation: Jul 28, 2016
+//!
 
-/*!
- * \file
- * \date Initial file creation: Jul 28, 2016
- */
+#include <tuple>
 
 namespace flecsi {
 namespace utils {
 
 struct generic_tuple_t {};
 
-/*!
-  \class legion_argument_wrapper legion_argument_wrapper.h
-  \brief legion_argument_wrapper provides...
- */
+//!
+//! \class tuple_wrapper_ tuple_wrapper.h
+//! \brief tuple_wrapper_ provides...
+//!
 template<typename ... Args>
 struct tuple_wrapper_ : generic_tuple_t {
 
@@ -31,7 +31,7 @@ struct tuple_wrapper_ : generic_tuple_t {
 
   template<size_t I>
   decltype(auto) get() { return std::get<I>(t_); }
-  
+
 private:
 
   tuple_t t_;

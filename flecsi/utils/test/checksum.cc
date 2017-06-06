@@ -7,13 +7,13 @@
 
 #include "flecsi/utils/checksum.h"
 
-const size_t N = 100;
+const std::size_t N = 100;
 
 TEST(checksum, basic) {
   flecsi::utils::checksum_t cs;
 
   double array[N];
-  for(size_t i(0); i<N; ++i) {
+  for(std::size_t i(0); i<N; ++i) {
     array[i] = double(i);
   } // for
 

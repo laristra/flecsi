@@ -4,8 +4,8 @@
  *~-------------------------------------------------------------------------~~*/
 
 #include <cinchtest.h>
-#include <data.h>
 
+#include "flecsi/data/data.h"
 #include "flecsi/topology/test/test_mesh_2d.h"
 
 namespace flecsi {

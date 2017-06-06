@@ -2,16 +2,18 @@
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
-/*!
- * \file 
- * \brief A reference array to avoid a million overloads.
- ******************************************************************************/
+
 #ifndef flecsi_utils_array_ref_h
 #define flecsi_utils_array_ref_h
 
+//!
+//! \file  array_ref.h
+//! \brief A reference array to avoid a million overloads.
+//!
 
 #include <assert.h>
 #include <array>
+#include <cstddef>
 #include <limits>
 #include <stdexcept>
 #include <string>
@@ -19,7 +21,7 @@
 
 namespace flecsi {
 namespace utils {
-    
+
 /// An \c array_ref<T> represents an immutable array of \c size()
 /// elements of type T.  The storage for the array is *not* owned by
 /// the \c array_ref object, and clients must arrange for the backing
@@ -74,54 +76,54 @@ public:
   typedef const_iterator iterator;
   typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
   typedef const_reverse_iterator reverse_iterator;
-  typedef size_t size_type;
+  typedef std::size_t size_type;
   typedef ptrdiff_t difference_type;
   /// @}
-        
+
   /// \name construct/copy
   /// @{
-        
+
   /// \post <code>empty() == true</code>
   constexpr array_ref() : ptr_(nullptr), length_(0) { }
-  constexpr array_ref(const array_ref&) = default;
-  array_ref& operator=(const array_ref&) = default;
-        
-  constexpr array_ref(const T* array, size_type length)
+  constexpr array_ref(const array_ref &) = default;
+  array_ref& operator=(const array_ref &) = default;
+
+  constexpr array_ref(const T * array, const size_type length)
     : ptr_(array), length_(length) { }
-        
+
   // Implicit conversion constructors
-        
+
   /// \todo Arguably, this conversion should be a std::vector
   /// conversion operator.
   template<typename Allocator>
-  array_ref(const std::vector<T, Allocator>& v)
+  array_ref(const std::vector<T, Allocator> & v)
     : ptr_(v.data()), length_(v.size()) { }
-        
+
   template<typename traits, typename Allocator>
-  array_ref(const std::basic_string<T, traits, Allocator>& s)
+  array_ref(const std::basic_string<T, traits, Allocator> & s)
     : ptr_(s.data()), length_(s.size()) { }
-        
+
   template<size_type N>
   constexpr array_ref(const T (&a)[N])
   : ptr_(a), length_(N) { }
-        
+
   /// \todo Arguably, this conversion should be a std::array
   /// conversion operator.
   template<size_type N>
-  constexpr array_ref(const std::array<T, N> &a)
+  constexpr array_ref(const std::array<T, N> & a)
     : ptr_(a.data()), length_(N) { }
-        
+
   /// \todo See \c basic_string_ref::substr for interface
   /// questions. We want something like this on \c array_ref, but
   /// probably not with this name.
-  constexpr array_ref substr(size_type pos, size_type n = size_type(-1)) const {
+  constexpr array_ref substr(const size_type pos, const size_type n = size_type(-1)) const {
     // Recursive implementation to satisfy constexpr.
     return (pos > size()     ? substr(size(), n)
             : n > size() - pos ? substr(pos, size() - pos)
             :                    array_ref(data() + pos, n));
   }
   /// @}
-        
+
   /// \name iterators
   /// @{
   constexpr const_iterator begin() const { return ptr_; }
@@ -137,7 +139,7 @@ public:
   const_reverse_iterator crbegin() const { return rbegin(); }
   const_reverse_iterator crend() const { return rend(); }
   /// @}
-        
+
   /// \name capacity
   /// @{
   constexpr size_type size() const { return length_; }
@@ -146,26 +148,33 @@ public:
   }
   constexpr bool empty() const { return length_ == 0; }
   /// @}
-        
+
   /// \name element access
   /// @{
-  constexpr const T& operator[](size_type i) const { return ptr_[i]; }
-  constexpr const T& at(size_type i) const {
+  constexpr const T& operator[](const size_type i) const { return ptr_[i]; }
+  constexpr const T& at(const size_type i) const {
     // This makes at() constexpr as long as the argument is within the
     // bounds of the array_ref.
+    /*
+    // However, possibly returning a throw, as in the following construction,
+    // gives "warning: returning reference to temporary [-Wreturn-local-addr]"
     return i >= size() ? throw std::out_of_range("at() argument out of range")
       : ptr_[i];
+    */
+    if (i >= size())
+      throw std::out_of_range("at() argument out of range");
+    return ptr_[i];
   }
-        
+
   constexpr const T& front() const { return ptr_[0]; }
   constexpr const T& back() const { return ptr_[length_-1]; }
-        
+
   /// \returns A pointer such that [<code>data()</code>,<code>data() +
   /// size()</code>) is a valid range. For a non-empty array_ref,
   /// <code>data() == &front()</code>.
   constexpr const T* data() const { return ptr_; }
   /// @}
-        
+
   /// \name Outgoing conversion operators
   ///
   /// These functions provide explicit conversions to selected other
@@ -178,7 +187,7 @@ public:
   /// operations on type mismatches.
   ///
   /// @{
-        
+
   /// \todo Arguably, this conversion should be a std::vector
   /// constructor.
   explicit operator std::vector<T>() const {
@@ -187,7 +196,7 @@ public:
   std::vector<T> vec() const {
     return std::vector<T>(*this);
   }
-     
+
   /// \todo Arguably, this conversion should be a std::basic_string
   /// constructor.
   template<typename traits, typename Allocator>
@@ -197,29 +206,29 @@ public:
   std::basic_string<T> str() const {
     return std::basic_string<T>(*this);
   }
-        
+
   /// @}
-        
+
   /// \name mutators
   /// @{
-        
+
   /// \par Effects:
   /// Resets *this to its default-constructed state.
   void clear() { *this = array_ref(); }
-        
+
   /// \par Effects:
   /// Advances the start pointer of this array_ref past \p n elements
   /// without moving the end pointer.
-  void remove_prefix(size_type n) {
+  void remove_prefix(const size_type n) {
     assert(length_ >= n);
     ptr_ += n;
     length_ -= n;
   }
-        
+
   /// \par Effects:
   /// Moves the end pointer of this array_ref earlier by \p n elements
   /// without moving the start pointer.
-  void remove_suffix(size_type n) {
+  void remove_suffix(const size_type n) {
     assert(length_ >= n);
     length_ -= n;
   }
@@ -239,9 +248,9 @@ public:
 private:
   const T*      ptr_;
   size_type     length_;
-        
+
 };
-    
+
 /// \name deducing constructor wrappers
 /// \relates std::array_ref
 /// \xmlonly <nonmember/> \endxmlonly
@@ -250,17 +259,17 @@ private:
 /// signature. They just allow users to avoid writing the iterator
 /// type.
 /// @{
-    
+
 template<typename T>
-constexpr array_ref<T> make_array_ref(const T* array, std::size_t length) {
+constexpr array_ref<T> make_array_ref(const T* array, const std::size_t length) {
   return array_ref<T>(array, length);
 }
-    
+
 template<typename T, std::size_t N>
 constexpr array_ref<T> make_array_ref(const T (&a)[N]) {
   return array_ref<T>(a);
 }
-    
+
 template<typename T>
 array_ref<T> make_array_ref(const std::vector<T>& v) {
   return array_ref<T>(v);
@@ -270,10 +279,15 @@ template<typename T, std::size_t N>
 array_ref<T> make_array_ref(const std::array<T,N>& a) {
   return array_ref<T>(a);
 }
-    
+
 /// @}
-    
-}      // End namespace utils
-}      // End namespace flecsi
+
+} // namespace utils
+} // namespace flecsi
 
 #endif // flecsi_utils_array_ref_h
+
+/*~-------------------------------------------------------------------------~-*
+ * Formatting options
+ * vim: set tabstop=2 shiftwidth=2 expandtab :
+ *~-------------------------------------------------------------------------~-*/
