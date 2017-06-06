@@ -91,12 +91,6 @@ public:
     int result = MPI_Allreduce(&request_indices_size, &max_request_indices, 1,
       mpi_size_t_type, MPI_MAX, MPI_COMM_WORLD);
 
-#if 0
-    if(rank == 0) {
-      std::cout << "max indices: " << max_request_indices << std::endl;
-    } // if
-#endif
-
     // Pad the request indices with size_t max. We will then set
     // the indices of the actual request. Each rank that receives
     // the request will try to provide information about the
@@ -127,15 +121,6 @@ public:
         input_indices[roff + off++] = i;
       } // for
 
-#if 0
-      if(rank == 0) {
-        std::cout << "rank " << rank << " requests: ";
-        for(size_t i(0); i<max_request_indices; ++i) {
-          std::cout << input_indices[roff + i] << " ";
-        } // for
-        std::cout << std::endl;
-      } // if
-#endif
     } // for
 
     // Send the request indices to all other ranks.
@@ -250,11 +235,6 @@ public:
     size_t request_indices_size = request_indices.size();
     size_t max_request_indices(0);
 
-#if 0
-    std::cout << "rank " << rank << " indices set: " <<
-      request_indices_size << std::endl;
-#endif
-
     const auto mpi_size_t_type =
       flecsi::coloring::mpi_typetraits<size_t>::type();
 
@@ -263,12 +243,6 @@ public:
     // so that we can pad out the all-to-all communication below.
     int result = MPI_Allreduce(&request_indices_size, &max_request_indices, 1,
       mpi_size_t_type, MPI_MAX, MPI_COMM_WORLD);
-
-#if 0
-    if(rank == 0) {
-      std::cout << "max indices: " << max_request_indices << std::endl;
-    } // if
-#endif
 
     // Pad the request indices with size_t max. We will then set
     // the indices of the actual request. Each rank that receives
@@ -299,16 +273,6 @@ public:
       for(auto i: request_indices) {
         input_indices[roff + off++] = i;
       } // for
-
-#if 0
-      if(rank == 0) {
-        std::cout << "rank " << rank << " requests: ";
-        for(size_t i(0); i<max_request_indices; ++i) {
-          std::cout << input_indices[roff + i] << " ";
-        } // for
-        std::cout << std::endl;
-      } // if
-#endif
     } // for
 
     // Send the request indices to all other ranks.
@@ -594,9 +558,7 @@ bool Func1(int Arg1, Lambda&& Arg2){
     int colors
   )
   {
-    size_t max_request_indices =
-         get_max_request_size((element_set)().size());
-    std::cout << "max_request_indices: " << max_request_indices << std::endl;
+    size_t max_request_indices = get_max_request_size((element_set)().size());
 
     std::vector<size_t> input_indices(colors*max_request_indices,
       std::numeric_limits<size_t>::max());
@@ -633,7 +595,7 @@ bool Func1(int Arg1, Lambda&& Arg2){
       } // for
     } // for
 
-	}//alltoall_coloring_info
+	} // alltoall_coloring_info
 
   std::unordered_map<size_t, coloring_info_t>
   get_coloring_info(const coloring_info_t & color_info)
@@ -691,31 +653,6 @@ bool Func1(int Arg1, Lambda&& Arg2){
 
     return max_request_indices;
   } // get_max_request_size
-
-#if 0
-  std::vector<size_t>
-  get_all_set_indices(
-    size_t max_request_indices,
-    std::set<size_t> index_set
-  )
-  {
-    std::vector<size_t> input_indices(colors*max_request_indices,
-      std::numeric_limits<size_t>::max());
-    std::vector<size_t> info_indices(colors*max_request_indices);
-
-    size_t index(0);
-    for(auto i: index_set) {
-      input_indices[index++] = i;
-    } // for
-
-    // Send the request indices to all other ranks.
-    result = MPI_Alltoall(
-      &input_indices[0], max_request_indices, mpi_size_t_type,
-      &info_indices[0], max_request_indices, mpi_size_type,
-      MPI_COMM_WORLD);
-
-  } // get_all_set_indices
-#endif
 
 private:
 

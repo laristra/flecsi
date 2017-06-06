@@ -124,6 +124,13 @@ cinch_add_unit(launch
     SERIAL
 )
 
+cinch_add_devel_target(devel
+  SOURCES
+    test/devel.cc
+  POLICY
+    MPI
+)
+
 if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
     OR (FLECSI_RUNTIME_MODEL STREQUAL "legion"))
 
@@ -185,7 +192,7 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
     if(ENABLE_COLORING AND ENABLE_PARMETIS)
 
-      cinch_add_unit(execution_structure
+      cinch_add_devel_target(execution_structure
         SOURCES
           test/execution_structure.cc
           ../supplemental/coloring/add_colorings.cc
@@ -202,7 +209,6 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
           -DFLECSI_ENABLE_SPECIALIZATION_DRIVER
           -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
         POLICY LEGION
-        THREADS 2
       )
 
       cinch_add_unit(ghost_access
