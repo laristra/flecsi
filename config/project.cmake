@@ -58,8 +58,12 @@ set(ENABLE_BOOST_PREPROCESSOR ON CACHE BOOL "Enable Boost.Preprocessor")
 # need to do it before cinch_load_extras is called.
 #------------------------------------------------------------------------------#
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
+if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
+  set(ENABLE_MPI OFF CACHE BOOL "Enable MPI" FORCE)
+  set(ENABLE_LEGION OFF CACHE BOOL "Enable Legion" FORCE)
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
   set(ENABLE_MPI ON CACHE BOOL "Enable MPI" FORCE)
+  set(ENABLE_LEGION OFF CACHE BOOL "Enable Legion" FORCE)
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(ENABLE_MPI ON CACHE BOOL "Enable MPI" FORCE)
   set(ENABLE_LEGION ON CACHE BOOL "Enable Legion" FORCE)
