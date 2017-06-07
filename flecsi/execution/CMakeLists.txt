@@ -128,7 +128,7 @@ cinch_add_devel_target(devel
   SOURCES
     test/devel.cc
   POLICY
-    ${UNIT_POLICY}
+    MPI
 )
 
 if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")

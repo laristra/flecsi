@@ -590,7 +590,7 @@ struct legion_context_policy_t
     std::vector<Legion::PhaseBarrier*> ghost_owners_pbarriers_ptrs;
     std::vector<Legion::LogicalRegion> ghost_owners_lregions;
     Legion::STL::map<LegionRuntime::Arrays::coord_t,
-      LegionRuntime::Arrays::coord_t> global_to_local_color_map;
+      LegionRuntime::Arrays::coord_t>* global_to_local_color_map;
     Legion::LogicalRegion color_region;
     Legion::IndexPartition primary_ghost_ip;
     Legion::LogicalRegion primary_lr;

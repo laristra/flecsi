@@ -511,6 +511,7 @@ struct storage_type_t<dense, DS, MD>
     h.ghost_owners_pbarriers_ptrs = 
       ism[index_space].ghost_owners_pbarriers_ptrs;
     h.color_region = ism[index_space].color_region;
+    h.global_to_local_color_map = ism[index_space].global_to_local_color_map;
     h.primary_ghost_ip = ism[index_space].primary_ghost_ip;
     h.excl_shared_ip = ism[index_space].excl_shared_ip;
     h.fid = field_info.fid;

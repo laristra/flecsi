@@ -310,16 +310,8 @@ __flecsi_internal_legion_task(spmd_task, void) {
       clog_assert(region_index <= regions.size(), "SPMD attempted to access more regions than passed");
     } // for owner
     ispace_dmap[idx_space].ghost_owners_lregions =ghost_owners_lregions[idx_space];
-    ispace_dmap[idx_space].global_to_local_color_map = 
-      global_to_local_color_map[idx_space];
-    for(auto itr = global_to_local_color_map[idx_space].begin(); itr !=
-            global_to_local_color_map[idx_space].end(); itr++)
-        clog(error) << my_color << ":" << idx_space << " " << itr->first <<
-          " SET AS " << itr->second << std::endl;
-    for(auto itr = ispace_dmap[idx_space].global_to_local_color_map.begin(); itr !=
-            ispace_dmap[idx_space].global_to_local_color_map.end(); itr++)
-        clog(error) << my_color << ":" << idx_space << " " << itr->first <<
-          " FIRST COPY " << itr->second << std::endl;
+    ispace_dmap[idx_space].global_to_local_color_map = new legion_map(
+      global_to_local_color_map[idx_space]);
 
 
     // Fix ghost reference/pointer to point to compacted position of shared that it needs
@@ -494,7 +486,8 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
   assert(task->regions.size() == 2);
   // regions 0 and 1 have the same fields except for ghost_owner_pos_fid
 
-  typedef Legion::STL::map<Legion::coord_t, Legion::coord_t> legion_map;
+  typedef Legion::STL::map<LegionRuntime::Arrays::coord_t,
+          LegionRuntime::Arrays::coord_t> legion_map;
   legion_map neighbor_map = task->futures[0].get_result<legion_map>();
 
   for(auto itr = neighbor_map.begin(); itr != neighbor_map.end(); itr++)
@@ -512,12 +505,14 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
 
   for (Legion::Domain::DomainPointIterator ghost_itr(ghost_domain); ghost_itr;
           ghost_itr++) {
+
       LegionRuntime::Arrays::Point<2> ghost_ref = acc_position_ref.read(ghost_itr.p);
       clog(error) << "position " << ghost_ref.x[0] << "," << ghost_ref.x[1] << std::endl;
 
       if (neighbor_map[ghost_ref.x[0]] == args.owner)
           clog(error) << "COPY " << neighbor_map[ghost_ref.x[0]] << "==" <<
             args.owner << std::endl;
+
   }
 
 #if 0
