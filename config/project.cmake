@@ -59,10 +59,10 @@ set(ENABLE_BOOST_PREPROCESSOR ON CACHE BOOL "Enable Boost.Preprocessor")
 #------------------------------------------------------------------------------#
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
-  set(ENABLE_MPI ON CACHE BOOL "Enable MPI")
+  set(ENABLE_MPI ON CACHE BOOL "Enable MPI" FORCE)
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
-  set(ENABLE_MPI ON CACHE BOOL "Enable MPI")
-  set(ENABLE_LEGION ON CACHE BOOL "Enable Legion")
+  set(ENABLE_MPI ON CACHE BOOL "Enable MPI" FORCE)
+  set(ENABLE_LEGION ON CACHE BOOL "Enable Legion" FORCE)
 endif()
 
 #------------------------------------------------------------------------------#
