@@ -17,6 +17,7 @@
 #include "flecsi/execution/legion/legion_tasks.h"
 #include "flecsi/execution/legion/mapper.h"
 #include "flecsi/execution/legion/internal_field.h"
+#include "flecsi/data/legion/legion_data.h"
 #include "flecsi/utils/common.h"
 
 #include <legion_utilities.h>
