@@ -18,6 +18,7 @@
 #include <tuple>
 #include <functional>
 #include <unordered_map>
+#include <future>
 
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/common/processor.h"
@@ -85,6 +86,63 @@ struct serial_future__<void>
   void wait() {}
 
 }; // struct serial_future__
+
+///
+/// Executor interface.
+///
+template<
+  typename RETURN,
+  typename ARG_TUPLE>
+struct executor__
+{
+  ///
+  ///
+  ///
+  template<
+    typename T,
+    typename A
+  >
+  static
+  decltype(auto)
+  execute(
+    T fun,
+    A && targs
+  )
+  {
+    auto user_fun = (reinterpret_cast<RETURN(*)(ARG_TUPLE)>(fun));
+    serial_future__<RETURN> fut;
+    fut.set(user_fun(targs));
+    return fut;
+  } // execute_task
+}; // struct executor__
+
+template<
+  typename ARG_TUPLE
+>
+struct executor__<void, ARG_TUPLE>
+{
+  ///
+  ///
+  ///
+  template<
+    typename T,
+    typename A
+  >
+  static
+  decltype(auto)
+  execute(
+    T fun,
+    A && targs
+  )
+  {
+    auto user_fun = (reinterpret_cast<void(*)(ARG_TUPLE)>(fun));
+
+    serial_future__<void> fut;
+    user_fun(targs);
+
+    return fut;
+  } // execute_task
+}; // struct executor__
 
 //----------------------------------------------------------------------------//
 // Execution policy.
@@ -170,10 +228,7 @@ struct serial_execution_policy_t
   )
   {
     auto fun = context_t::instance().function(KEY);
-    auto user_fun = (reinterpret_cast<RETURN(*)(ARG_TUPLE)>(fun));
-    serial_future__<RETURN> fut;
-    fut.set(user_fun(std::forward_as_tuple(args ...)));
-    return fut;
+    return executor__<RETURN, ARG_TUPLE>::execute(fun, std::forward_as_tuple(args ...));
   } // execute_task
 
   //--------------------------------------------------------------------------//
