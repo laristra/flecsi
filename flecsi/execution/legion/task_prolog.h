@@ -60,7 +60,7 @@ namespace execution {
     {
     } // task_prolog_t
 
-    //--------------------------------------------------------------------------//
+    //------------------------------------------------------------------------//
     //! FIXME: Need a description.
     //!
     //! @tparam T                     The data type referenced by the handle.
@@ -73,7 +73,7 @@ namespace execution {
     //!
     //! @param runtime The Legion task runtime.
     //! @param context The Legion task runtime context.
-    //--------------------------------------------------------------------------//
+    //------------------------------------------------------------------------//
 
     template<
       typename T,

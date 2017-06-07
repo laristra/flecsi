@@ -162,6 +162,14 @@ __flecsi_internal_legion_task(spmd_task, void) {
   size_t num_idx_spaces;
   args_deserializer.deserialize(&num_idx_spaces, sizeof(size_t));
 
+  size_t* idx_spaces = (size_t*)malloc(sizeof(size_t) * num_idx_spaces);
+  args_deserializer.deserialize((void*)idx_spaces,
+    sizeof(size_t) * num_idx_spaces);
+
+  for(size_t i = 0; i < num_idx_spaces; ++i){
+    context_.add_index_space(idx_spaces[i]);
+  }
+
   clog_assert(regions.size() >= num_idx_spaces, "fewer regions than data handles");
   clog_assert(task->regions.size() >= num_idx_spaces, "fewer regions than data handles");
 
@@ -172,14 +180,14 @@ __flecsi_internal_legion_task(spmd_task, void) {
   size_t* num_owners = (size_t*)malloc(sizeof(size_t) * num_idx_spaces);
   args_deserializer.deserialize((void*)num_owners, sizeof(size_t) * num_idx_spaces);
 
-  for(size_t index_space = 0; index_space < num_idx_spaces; ++index_space){
-    ism[index_space].pbarrier_as_owner_ptr = &pbarriers_as_master[index_space];
+  for(size_t idx_space : context_.index_spaces()){
+    ism[idx_space].pbarrier_as_owner_ptr = &pbarriers_as_master[idx_space];
   }
 
   std::vector<std::vector<Legion::PhaseBarrier>> ghost_owners_pbarriers(num_idx_spaces);
 
   // FIXME again assuming handles are 0, 1, 2, ..
-  for (size_t idx_space = 0; idx_space < num_idx_spaces; idx_space++) {
+  for (size_t idx_space : context_.index_spaces()) {
     size_t n = num_owners[idx_space];
 
     ghost_owners_pbarriers[idx_space].resize(n);
@@ -215,7 +223,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
   std::vector<legion_map> global_to_local_color_map(num_idx_spaces);
 
   size_t region_index = 0;
-  for (size_t idx_space = 0; idx_space < num_idx_spaces; idx_space++) {
+  for (size_t idx_space : context_.index_spaces()) {
 
     ism[idx_space].color_region = regions[region_index].get_logical_region();
 
@@ -271,7 +279,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
     excl_shared_coloring[SHARED_PART] = Legion::Domain::from_rect<2>(shared_rect);
 
     Legion::IndexPartition excl_shared_ip = runtime->create_index_partition(ctx,
-        color_ispace, color_domain_1D, excl_shared_coloring, true /*disjoint*/);
+        ism[idx_space].primary_lr.get_index_space(), color_domain_1D, excl_shared_coloring, true /*disjoint*/);
 
     ism[idx_space].excl_shared_ip = excl_shared_ip;
 
