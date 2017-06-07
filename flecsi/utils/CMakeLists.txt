@@ -214,6 +214,11 @@ cinch_add_unit(common
   INPUTS  test/common.blessed
 )
 
+cinch_add_unit(debruijn
+  SOURCES debruijn.cc
+          test/debruijn.cc
+)
+
 if(ENABLE_OPENSSL)
   cinch_add_unit(checksum
     SOURCES
