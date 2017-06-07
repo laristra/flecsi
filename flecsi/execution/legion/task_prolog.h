@@ -164,14 +164,11 @@ namespace execution {
             Legion::TaskLauncher
               launcher(ghost_copy_tid,
               Legion::TaskArgument(&args, sizeof(args)));
-            
-            clog(error) << "SENT SIZE " << h.global_to_local_color_map.size() << std::endl;
-            for(auto itr = h.global_to_local_color_map.begin(); itr !=
-                    h.global_to_local_color_map.end(); itr++)
-                clog(error) << itr->first << " SENT AS " << itr->second << std::endl;
 
+            clog(error) << "SENT SIZE " << h.global_to_local_color_map->size() << std::endl;
             launcher.add_future(Legion::Future::from_value(runtime,
-                    h.global_to_local_color_map));
+                    *(h.global_to_local_color_map)));
+
             launcher.add_region_requirement(rr_shared);
             launcher.add_region_requirement(rr_ghost);
             launcher.add_wait_barrier(*(h.ghost_owners_pbarriers_ptrs[owner]));// phase READ
