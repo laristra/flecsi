@@ -279,7 +279,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
     excl_shared_coloring[SHARED_PART] = Legion::Domain::from_rect<2>(shared_rect);
 
     Legion::IndexPartition excl_shared_ip = runtime->create_index_partition(ctx,
-        color_ispace, color_domain_1D, excl_shared_coloring, true /*disjoint*/);
+        ism[idx_space].primary_lr.get_index_space(), color_domain_1D, excl_shared_coloring, true /*disjoint*/);
 
     ism[idx_space].excl_shared_ip = excl_shared_ip;
 
