@@ -51,6 +51,15 @@ endif()
 # This changes the Cinch default
 set(ENABLE_BOOST_PREPROCESSOR ON CACHE BOOL "Enable Boost.Preprocessor")
 
+#------------------------------------------------------------------------------#
+# Boost
+#
+# Note that this find package only sets the header information. To find
+# library dependencies, add COMPONENTS and specify the ones that you need.
+#------------------------------------------------------------------------------#
+
+find_package(Boost 1.58.0 REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
 
 #------------------------------------------------------------------------------#
 # cinch_load_extras will try and find legion and mpi.  If we want to
@@ -58,11 +67,15 @@ set(ENABLE_BOOST_PREPROCESSOR ON CACHE BOOL "Enable Boost.Preprocessor")
 # need to do it before cinch_load_extras is called.
 #------------------------------------------------------------------------------#
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
-  set(ENABLE_MPI ON CACHE BOOL "Enable MPI")
+if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
+  set(ENABLE_MPI OFF CACHE BOOL "Enable MPI" FORCE)
+  set(ENABLE_LEGION OFF CACHE BOOL "Enable Legion" FORCE)
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
+  set(ENABLE_MPI ON CACHE BOOL "Enable MPI" FORCE)
+  set(ENABLE_LEGION OFF CACHE BOOL "Enable Legion" FORCE)
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
-  set(ENABLE_MPI ON CACHE BOOL "Enable MPI")
-  set(ENABLE_LEGION ON CACHE BOOL "Enable Legion")
+  set(ENABLE_MPI ON CACHE BOOL "Enable MPI" FORCE)
+  set(ENABLE_LEGION ON CACHE BOOL "Enable Legion" FORCE)
 endif()
 
 #------------------------------------------------------------------------------#
@@ -156,13 +169,6 @@ endif()
 if(FLECSI_DBC_REQUIRE)
   add_definitions(-DFLECSI_REQUIRE_ON)
 endif()
-
-#------------------------------------------------------------------------------#
-# Boost
-#------------------------------------------------------------------------------#
-
-find_package(Boost REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
 
 #------------------------------------------------------------------------------#
 # OpenSSL
