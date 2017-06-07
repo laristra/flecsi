@@ -88,9 +88,10 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(execution_SOURCES
     ${execution_SOURCES}
+    mpi/context_policy.cc
   )
 
-  set(UNIT_POLICY LEGION)
+  set(UNIT_POLICY MPI)
   set(RUNTIME_DRIVER mpi/runtime_driver.cc)
 
 endif()
@@ -127,7 +128,7 @@ cinch_add_devel_target(devel
   SOURCES
     test/devel.cc
   POLICY
-    MPI
+    ${UNIT_POLICY}
 )
 
 if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")

@@ -151,7 +151,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
   // Add additional setup.
   context_t & context_ = context_t::instance();
 
-  auto& ism = context_.index_space_data_map();
+  auto& ispace_dmap = context_.index_space_data_map();
 
   auto ghost_owner_pos_fid = 
     LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
@@ -181,7 +181,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
   args_deserializer.deserialize((void*)num_owners, sizeof(size_t) * num_idx_spaces);
 
   for(size_t idx_space : context_.index_spaces()){
-    ism[idx_space].pbarrier_as_owner_ptr = &pbarriers_as_master[idx_space];
+    ispace_dmap[idx_space].pbarrier_as_owner_ptr = &pbarriers_as_master[idx_space];
   }
 
   std::vector<std::vector<Legion::PhaseBarrier>> ghost_owners_pbarriers(num_idx_spaces);
@@ -194,10 +194,10 @@ __flecsi_internal_legion_task(spmd_task, void) {
     args_deserializer.deserialize((void*)&ghost_owners_pbarriers[idx_space][0],
         sizeof(Legion::PhaseBarrier) * n);
     
-    ism[idx_space].ghost_owners_pbarriers_ptrs.resize(n);
+    ispace_dmap[idx_space].ghost_owners_pbarriers_ptrs.resize(n);
 
     for(size_t owner = 0; owner < n; ++owner){
-      ism[idx_space].ghost_owners_pbarriers_ptrs[owner] = 
+      ispace_dmap[idx_space].ghost_owners_pbarriers_ptrs[owner] = 
         &ghost_owners_pbarriers[idx_space][owner];
     }
   }
@@ -225,7 +225,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
   size_t region_index = 0;
   for (size_t idx_space : context_.index_spaces()) {
 
-    ism[idx_space].color_region = regions[region_index].get_logical_region();
+    ispace_dmap[idx_space].color_region = regions[region_index].get_logical_region();
 
     const std::unordered_map<size_t, flecsi::coloring::coloring_info_t> coloring_info_map
       = context_.coloring_info(idx_space);  // FIX_ME what if the keys are not 0,1,2,...
@@ -256,17 +256,17 @@ __flecsi_internal_legion_task(spmd_task, void) {
     Legion::IndexPartition primary_ghost_ip = runtime->create_index_partition(ctx,
         color_ispace, color_domain_1D, primary_ghost_coloring, true /*disjoint*/);
 
-    ism[idx_space].primary_ghost_ip = primary_ghost_ip;
+    ispace_dmap[idx_space].primary_ghost_ip = primary_ghost_ip;
 
     Legion::LogicalPartition primary_ghost_lp = runtime->get_logical_partition(ctx,
         regions[region_index].get_logical_region(), primary_ghost_ip);
     region_index++;
 
-    ism[idx_space].primary_lr = 
+    ispace_dmap[idx_space].primary_lr = 
     runtime->get_logical_subregion_by_color(ctx, primary_ghost_lp, 
                                             PRIMARY_PART);
 
-    ism[idx_space].ghost_lr = 
+    ispace_dmap[idx_space].ghost_lr = 
       runtime->get_logical_subregion_by_color(ctx, primary_ghost_lp, 
                                               GHOST_PART);
 
@@ -279,18 +279,18 @@ __flecsi_internal_legion_task(spmd_task, void) {
     excl_shared_coloring[SHARED_PART] = Legion::Domain::from_rect<2>(shared_rect);
 
     Legion::IndexPartition excl_shared_ip = runtime->create_index_partition(ctx,
-        ism[idx_space].primary_lr.get_index_space(), color_domain_1D, excl_shared_coloring, true /*disjoint*/);
+        ispace_dmap[idx_space].primary_lr.get_index_space(), color_domain_1D, excl_shared_coloring, true /*disjoint*/);
 
-    ism[idx_space].excl_shared_ip = excl_shared_ip;
+    ispace_dmap[idx_space].excl_shared_ip = excl_shared_ip;
 
     Legion::LogicalPartition excl_shared_lp = runtime->get_logical_partition(ctx,
-        ism[idx_space].primary_lr, excl_shared_ip);
+        ispace_dmap[idx_space].primary_lr, excl_shared_ip);
 
-    ism[idx_space].exclusive_lr = 
+    ispace_dmap[idx_space].exclusive_lr = 
     runtime->get_logical_subregion_by_color(ctx, excl_shared_lp, 
                                             EXCLUSIVE_PART);
 
-    ism[idx_space].shared_lr = 
+    ispace_dmap[idx_space].shared_lr = 
     runtime->get_logical_subregion_by_color(ctx, excl_shared_lp, SHARED_PART);
 
     // Add neighbors regions to context_
@@ -309,17 +309,26 @@ __flecsi_internal_legion_task(spmd_task, void) {
       region_index++;
       clog_assert(region_index <= regions.size(), "SPMD attempted to access more regions than passed");
     } // for owner
-    ism[idx_space].ghost_owners_lregions =ghost_owners_lregions[idx_space];
-    ism[idx_space].global_to_local_color_map = 
+    ispace_dmap[idx_space].ghost_owners_lregions =ghost_owners_lregions[idx_space];
+    ispace_dmap[idx_space].global_to_local_color_map = 
       global_to_local_color_map[idx_space];
+    for(auto itr = global_to_local_color_map[idx_space].begin(); itr !=
+            global_to_local_color_map[idx_space].end(); itr++)
+        clog(error) << my_color << ":" << idx_space << " " << itr->first <<
+          " SET AS " << itr->second << std::endl;
+    for(auto itr = ispace_dmap[idx_space].global_to_local_color_map.begin(); itr !=
+            ispace_dmap[idx_space].global_to_local_color_map.end(); itr++)
+        clog(error) << my_color << ":" << idx_space << " " << itr->first <<
+          " FIRST COPY " << itr->second << std::endl;
+
 
     // Fix ghost reference/pointer to point to compacted position of shared that it needs
     Legion::TaskLauncher fix_ghost_refs_launcher(context_.task_id<__flecsi_internal_task_key(fix_ghost_refs_task)>(),
         Legion::TaskArgument(nullptr, 0));
 
     fix_ghost_refs_launcher.add_region_requirement(
-        Legion::RegionRequirement(ism[idx_space].ghost_lr, READ_WRITE,
-            EXCLUSIVE, ism[idx_space].color_region)
+        Legion::RegionRequirement(ispace_dmap[idx_space].ghost_lr, READ_WRITE,
+            EXCLUSIVE, ispace_dmap[idx_space].color_region)
         .add_field(ghost_owner_pos_fid));
 
     fix_ghost_refs_launcher.add_future(Legion::Future::from_value(runtime,
@@ -471,21 +480,47 @@ __flecsi_internal_legion_task(compaction_task, void) {
 //----------------------------------------------------------------------------//
 
 __flecsi_internal_legion_task(ghost_copy_task, void) {
+    clog(error) << "COPY TASK" << std::endl;
+
   context_t& context = context_t::instance();
 
-  size_t index_space = *(size_t*)task->args;
+  struct args_t {
+    size_t index_space;
+    size_t owner;
+  };
+  args_t args = *(args_t*)task->args;
 
   assert(regions.size() == 2);
   assert(task->regions.size() == 2);
   // regions 0 and 1 have the same fields except for ghost_owner_pos_fid
 
+  typedef Legion::STL::map<Legion::coord_t, Legion::coord_t> legion_map;
+  legion_map neighbor_map = task->futures[0].get_result<legion_map>();
+
+  for(auto itr = neighbor_map.begin(); itr != neighbor_map.end(); itr++)
+      clog(error) << itr->first << " MAPS TO " << itr->second << std::endl;
+
   auto ghost_owner_pos_fid = 
     LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
 
-  auto acc_gop = 
+  auto acc_position_ref =
     regions[1].get_field_accessor(ghost_owner_pos_fid).typeify<
     LegionRuntime::Arrays::Point<2>>();
 
+  Legion::Domain ghost_domain = runtime->get_index_space_domain(ctx,
+          regions[1].get_logical_region().get_index_space());
+
+  for (Legion::Domain::DomainPointIterator ghost_itr(ghost_domain); ghost_itr;
+          ghost_itr++) {
+      LegionRuntime::Arrays::Point<2> ghost_ref = acc_position_ref.read(ghost_itr.p);
+      clog(error) << "position " << ghost_ref.x[0] << "," << ghost_ref.x[1] << std::endl;
+
+      if (neighbor_map[ghost_ref.x[0]] == args.owner)
+          clog(error) << "COPY " << neighbor_map[ghost_ref.x[0]] << "==" <<
+            args.owner << std::endl;
+  }
+
+#if 0
   // For each field, copy data from shared to ghost
   for(auto fid : task->regions[0].privilege_fields){
     // Look up field info in context
@@ -530,7 +565,8 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
 
     // finally, copy the raw data shared -> ghost
     std::memcpy(data_ghost, data_shared, size * fi.size);
-  }
+  } // for fid
+#endif
 }
 
 #undef __flecsi_internal_legion_task
