@@ -125,8 +125,8 @@ runtime_driver(
   
   compaction_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
-  auto ghost_owner_pos_fid = 
-    LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
+  auto ghost_owner_pos_fid = Legion::FieldID(internal_field::ghost_owner_pos);
+  auto connectivity_pos_fid = Legion::FieldID(internal_field::ghost_owner_pos);
 
   for(auto idx_space : data.index_spaces()) {
     auto& is = data.index_space_info(idx_space);
@@ -222,6 +222,7 @@ runtime_driver(
         is.logical_region);
 
       rr.add_field(ghost_owner_pos_fid);
+      rr.add_field(connectivity_pos_fid);
 
       for(const field_info_t& fi : context_.registered_fields()){
         if(fi.index_space == idx_space){
