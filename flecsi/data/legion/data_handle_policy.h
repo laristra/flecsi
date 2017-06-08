@@ -6,7 +6,8 @@
 #ifndef flecsi_data_legion_data_handle_policy_h
 #define flecsi_data_legion_data_handle_policy_h
 
-#include "legion.h"
+#include <legion.h>
+#include <legion_stl.h>
 
 ///
 /// \file
@@ -14,39 +15,6 @@
 ///
 
 namespace flecsi {
-
-  /*
-  struct legion_handle_policy_t
-  {
-    size_t exclusive_priv;
-    size_t shared_priv;
-    size_t ghost_priv;
-    Legion::LogicalRegion lr;
-    Legion::IndexPartition exclusive_ip;
-    Legion::IndexPartition shared_ip;
-    Legion::IndexPartition ghost_ip;
-    Legion::LogicalRegion exclusive_lr;
-    Legion::LogicalRegion shared_lr;
-    Legion::LogicalRegion ghost_lr;
-    Legion::PhysicalRegion exclusive_pr;
-    void* exclusive_data;
-    Legion::PhysicalRegion shared_pr;
-    void* shared_data;
-    Legion::PhysicalRegion ghost_pr;
-    void* ghost_data;
-    Legion::Context context;
-    Legion::Runtime* runtime;
-    
-    Legion::PhaseBarrier* pbarrier_as_master_ptr;
-    std::vector<Legion::PhaseBarrier*> masters_pbarriers_ptrs;
-
-    std::vector<Legion::PhysicalRegion> pregions_neighbors_shared;
-    Legion::LogicalRegion lregion_ghost;
-    size_t ghost_copy_task_id;
-    Legion::FieldID ghost_fid;
-    bool is_readable;
-  };
-  */
 
 ///
 /// \class legion_data_handle_policy_t data_handle_policy.h
@@ -57,6 +25,7 @@ struct legion_data_handle_policy_t
   using field_id_t = Legion::FieldID;
 
   void copy(const legion_data_handle_policy_t& p){
+      std::cout << "LDHP COPY" << std::endl;
     fid = p.fid;
     context = p.context;
     runtime = p.runtime;
@@ -67,6 +36,7 @@ struct legion_data_handle_policy_t
     pbarrier_as_owner_ptr = p.pbarrier_as_owner_ptr;
     ghost_owners_pbarriers_ptrs = p.ghost_owners_pbarriers_ptrs;
     ghost_owners_lregions = p.ghost_owners_lregions;
+    global_to_local_color_map = p.global_to_local_color_map;
     color_region = p.color_region;
     primary_ghost_ip = p.primary_ghost_ip;
     excl_shared_ip = p.excl_shared_ip;
@@ -89,6 +59,8 @@ struct legion_data_handle_policy_t
   Legion::PhaseBarrier* pbarrier_as_owner_ptr;
   std::vector<Legion::PhaseBarrier*> ghost_owners_pbarriers_ptrs;
   std::vector<Legion::LogicalRegion> ghost_owners_lregions;
+  Legion::STL::map<LegionRuntime::Arrays::coord_t,
+    LegionRuntime::Arrays::coord_t>* global_to_local_color_map;
   Legion::LogicalRegion color_region;
   Legion::IndexPartition primary_ghost_ip;
   Legion::IndexPartition excl_shared_ip;

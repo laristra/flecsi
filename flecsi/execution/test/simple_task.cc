@@ -35,8 +35,12 @@ double task(double dval, int ival) {
   return dval;
 } // task1
 
-flecsi_register_task(task, processor_type_t::loc, single | index);
+void taskvoid(void) {
+  clog(info) << "A void(void) task" << std::endl;
+}
 
+flecsi_register_task(task, processor_type_t::loc, single | index);
+flecsi_register_task(taskvoid, processor_type_t::loc, single | index);
 //----------------------------------------------------------------------------//
 // Driver.
 //----------------------------------------------------------------------------//
@@ -55,6 +59,11 @@ void driver(int argc, char ** argv) {
   f2.wait();
 
   clog(info) << "Task return: " << f.get() << std::endl;
+
+  auto f3 = flecsi_execute_task(taskvoid, index);
+
+  f3.wait();
+
 } // driver
 
 //----------------------------------------------------------------------------//

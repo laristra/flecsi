@@ -122,13 +122,12 @@ namespace execution {
                 *(h.ghost_owners_pbarriers_ptrs[owner]) <<
                 std::endl;
 
-            h.ghost_owners_pbarriers_ptrs[owner]->wait();           // phase READ
             clog(trace) << "rank " << my_color << " arrives & advances " <<
                 *(h.ghost_owners_pbarriers_ptrs[owner]) <<
                 std::endl;
 
-            Legion::RegionRequirement rr_shared(h.shared_lr,
-              READ_ONLY, EXCLUSIVE, h.color_region);
+            Legion::RegionRequirement rr_shared(h.ghost_owners_lregions[owner],
+              READ_ONLY, EXCLUSIVE, h.ghost_owners_lregions[owner]);
 
             Legion::RegionRequirement rr_ghost(h.ghost_lr,
               WRITE_DISCARD, EXCLUSIVE, h.color_region);
@@ -156,19 +155,26 @@ namespace execution {
 
             const auto ghost_copy_tid = flecsi_context.task_id<key>();
             
-            // TODO: uncomment to enable ghost copy task
-
-            /*
+            struct {
+              size_t index_space;
+              size_t owner;
+            } args;
+            args.index_space = h.index_space;
+            args.owner = owner;
             Legion::TaskLauncher
               launcher(ghost_copy_tid,
-              Legion::TaskArgument(&h.index_space, sizeof(h.index_space)));
-            
+              Legion::TaskArgument(&args, sizeof(args)));
+
+            clog(error) << "SENT SIZE " << h.global_to_local_color_map->size() << std::endl;
+            launcher.add_future(Legion::Future::from_value(runtime,
+                    *(h.global_to_local_color_map)));
+
             launcher.add_region_requirement(rr_shared);
             launcher.add_region_requirement(rr_ghost);
+            launcher.add_wait_barrier(*(h.ghost_owners_pbarriers_ptrs[owner]));// phase READ
+            launcher.add_arrival_barrier(*(h.ghost_owners_pbarriers_ptrs[owner]));// phase WRITE
             runtime->execute_task(context, launcher);
-            */
 
-            h.ghost_owners_pbarriers_ptrs[owner]->arrive(1);        // phase WRITE
             *(h.ghost_owners_pbarriers_ptrs[owner]) = runtime->advance_phase_barrier(context,
                 *(h.ghost_owners_pbarriers_ptrs[owner]));             // phase WRITE
 

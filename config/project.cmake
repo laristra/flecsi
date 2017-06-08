@@ -51,6 +51,15 @@ endif()
 # This changes the Cinch default
 set(ENABLE_BOOST_PREPROCESSOR ON CACHE BOOL "Enable Boost.Preprocessor")
 
+#------------------------------------------------------------------------------#
+# Boost
+#
+# Note that this find package only sets the header information. To find
+# library dependencies, add COMPONENTS and specify the ones that you need.
+#------------------------------------------------------------------------------#
+
+find_package(Boost 1.58.0 REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
 
 #------------------------------------------------------------------------------#
 # cinch_load_extras will try and find legion and mpi.  If we want to
@@ -58,12 +67,18 @@ set(ENABLE_BOOST_PREPROCESSOR ON CACHE BOOL "Enable Boost.Preprocessor")
 # need to do it before cinch_load_extras is called.
 #------------------------------------------------------------------------------#
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
-  set(ENABLE_MPI ON CACHE BOOL "Enable MPI")
+if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
+  set(ENABLE_MPI OFF CACHE BOOL "Enable MPI" FORCE)
+  set(ENABLE_LEGION OFF CACHE BOOL "Enable Legion" FORCE)
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
+  set(ENABLE_MPI ON CACHE BOOL "Enable MPI" FORCE)
+  set(ENABLE_LEGION OFF CACHE BOOL "Enable Legion" FORCE)
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
-  set(ENABLE_MPI ON CACHE BOOL "Enable MPI")
-  set(ENABLE_LEGION ON CACHE BOOL "Enable Legion")
+  set(ENABLE_MPI ON CACHE BOOL "Enable MPI" FORCE)
+  set(ENABLE_LEGION ON CACHE BOOL "Enable Legion" FORCE)
 endif()
+
+mark_as_advanced(ENABLE_MPI ENABLE_LEGION)
 
 #------------------------------------------------------------------------------#
 # Add options for design by contract
@@ -208,10 +223,13 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   include_directories(${Legion_INCLUDE_DIRS})
 
-  option(ENABLE_LEGION_TLS "Enable TLS storage of runtime state" OFF)
-  if(ENABLE_LEGION_TLS)
-    add_definitions(-DENABLE_LEGION_TLS)
-  endif()
+# FIXME: This can be removed as soon as Legion is patched to include
+#        build support for this option.
+#
+#  option(ENABLE_LEGION_TLS "Enable TLS storage of runtime state" ON)
+#  if(ENABLE_LEGION_TLS)
+add_definitions(-DENABLE_LEGION_TLS)
+#  endif()
 
 #
 # MPI interface

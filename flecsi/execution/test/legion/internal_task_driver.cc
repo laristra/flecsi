@@ -20,7 +20,7 @@ int internal_task_example_1(const Legion::Task * task,
   Legion::Context context,
   Legion::Runtime * runtime) 
 {
-  std::cout <<"inside of the task1" <<std::endl;
+  clog(info) <<"Executing task1" <<std::endl;
 } // internal_task_example
 
 // Register the task. The task id is automatically generated.
@@ -33,7 +33,7 @@ int internal_task_example_2(const Legion::Task * task,
   Legion::Context context,
   Legion::Runtime * runtime)
 {
-  std::cout <<"inside of the task2" <<std::endl;
+  clog(info) <<"Executing task2" <<std::endl;
 } // internal_task_example
 
 // Register the task. The task id is automatically generated.
@@ -48,11 +48,11 @@ void driver(int argc, char ** argv) {
   auto tid_2 = context_t::instance().task_id<
     __flecsi_internal_task_key(internal_task_example_2)>();
 
-  clog(info) << "Task ID: " << tid_1 << std::endl;
-  clog(info) << "Task ID: " << tid_2 << std::endl;
+  clog(info) << "Task ID task 1: " << tid_1 << std::endl;
+  clog(info) << "Task ID: task 2" << tid_2 << std::endl;
 
-  ASSERT_EQ(tid_1, 7);
-  ASSERT_EQ(tid_2, 8);
+  ASSERT_EQ(tid_1, 8);
+  ASSERT_EQ(tid_2, 9);
 
 #if defined(ENABLE_LEGION_TLS)
   auto runtime = Legion::Runtime::get_runtime();
