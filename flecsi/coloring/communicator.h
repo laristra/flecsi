@@ -91,7 +91,7 @@ public:
 
   virtual
   std::unordered_map<size_t, coloring_info_t>
-  get_coloring_info(const coloring_info_t & color_info) = 0;
+  get_coloring_info(coloring_info_t & color_info) = 0;
 
 private:
 
