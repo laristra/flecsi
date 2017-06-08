@@ -62,18 +62,18 @@ inline return_type task_name(                                                  \
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
-__flecsi_internal_legion_task(fix_ghost_refs_task, void) {
+__flecsi_internal_legion_task(owner_pos_correction_task, void) {
 
   {
   clog_tag_guard(legion_tasks);
   clog(trace) << "Executing fix ghost refs task " << std::endl;
   }
 
-  clog_assert(regions.size() >= 1, "fix_ghost_refs_task called with no regions");
-  clog_assert(task->regions.size() >= 1, "fix_ghost_refs_task called with no regions");
+  clog_assert(regions.size() >= 1, "owner_pos_correction_task called with no regions");
+  clog_assert(task->regions.size() >= 1, "owner_pos_correction_task called with no regions");
   for (int region_idx = 0; region_idx < regions.size(); region_idx++)
     clog_assert(task->regions[region_idx].privilege_fields.size() == 1,
-        "fix_ghost_refs_task called with wrong number of fields");
+        "owner_pos_correction_task called with wrong number of fields");
 
   using generic_type = LegionRuntime::Accessor::AccessorType::Generic;
   legion_map owner_map = task->futures[0].get_result<legion_map>();
@@ -129,7 +129,7 @@ __flecsi_internal_legion_task(fix_ghost_refs_task, void) {
     } // for itr
   } // if we have owners
 
-} // fix_ghost_refs_task
+} // owner_pos_correction_task
 
 //----------------------------------------------------------------------------//
 //! Initial SPMD task.
@@ -315,7 +315,8 @@ __flecsi_internal_legion_task(spmd_task, void) {
 
 
     // Fix ghost reference/pointer to point to compacted position of shared that it needs
-    Legion::TaskLauncher fix_ghost_refs_launcher(context_.task_id<__flecsi_internal_task_key(fix_ghost_refs_task)>(),
+    Legion::TaskLauncher fix_ghost_refs_launcher(context_
+            .task_id<__flecsi_internal_task_key(owner_pos_correction_task)>(),
         Legion::TaskArgument(nullptr, 0));
 
     fix_ghost_refs_launcher.add_region_requirement(
@@ -395,7 +396,7 @@ __flecsi_internal_legion_task(unset_call_mpi_task, void) {
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
-__flecsi_internal_legion_task(compaction_task, void) {
+__flecsi_internal_legion_task(owner_pos_compaction_task, void) {
   const int my_color = task->index_point.point_data[0];
 
   {
@@ -461,9 +462,9 @@ __flecsi_internal_legion_task(compaction_task, void) {
       expanded_itr++;
     } // ghost_itr
   } // for idx_space
-  }
+  } // clog_tag_guard
 
-} // compaction_task
+} // owner_pos_compaction_task
 
 //----------------------------------------------------------------------------//
 //! Ghost copy task writes data from shared into ghost

@@ -76,7 +76,7 @@ __flecsi_internal_register_legion_task(unset_call_mpi_task, processor_type_t::lo
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
-__flecsi_internal_register_legion_task(compaction_task, processor_type_t::loc, index | leaf);
+__flecsi_internal_register_legion_task(owner_pos_compaction_task, processor_type_t::loc, index | leaf);
 
 //----------------------------------------------------------------------------//
 //! Register fix_ghost_refs task.
@@ -88,7 +88,7 @@ __flecsi_internal_register_legion_task(compaction_task, processor_type_t::loc, i
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
-__flecsi_internal_register_legion_task(fix_ghost_refs_task, processor_type_t::loc, index | leaf);
+__flecsi_internal_register_legion_task(owner_pos_correction_task, processor_type_t::loc, index | leaf);
 
 //----------------------------------------------------------------------------//
 //! Register ghost_copy task.
