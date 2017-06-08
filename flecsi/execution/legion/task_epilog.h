@@ -96,7 +96,7 @@ namespace execution {
 
       if (write_phase) {
         const int my_color = runtime->find_local_MPI_rank();
-        clog(error) << "rank " << my_color << " WRITE PHASE EPILOGUE" << std::endl;
+        clog(trace) << "rank " << my_color << " WRITE PHASE EPILOGUE" << std::endl;
 
         clog(trace) << "rank " << my_color << " advances " << *(h.pbarrier_as_owner_ptr) <<
             std::endl;

@@ -113,6 +113,10 @@ runtime_driver(
       phase_barriers_map[idx_space.first].push_back(
         runtime->create_phase_barrier(ctx,
           1 + color_info.shared_users.size()));
+      
+      clog(trace) << "key " << idx_space.first << " phase barrier " << color <<
+          " has " << color_info.shared_users.size() + 1 << " arrivers to " <<
+          phase_barriers_map[idx_space.first].back() << std::endl;
     }
   }
 

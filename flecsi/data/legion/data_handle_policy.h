@@ -25,7 +25,6 @@ struct legion_data_handle_policy_t
   using field_id_t = LegionRuntime::HighLevel::FieldID;
 
   void copy(const legion_data_handle_policy_t& p){
-      std::cout << "LDHP COPY" << std::endl;
     fid = p.fid;
     context = p.context;
     runtime = p.runtime;
