@@ -78,6 +78,8 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(ENABLE_LEGION ON CACHE BOOL "Enable Legion" FORCE)
 endif()
 
+mark_as_advanced(ENABLE_MPI ENABLE_LEGION)
+
 #------------------------------------------------------------------------------#
 # Add options for design by contract
 #------------------------------------------------------------------------------#
@@ -221,10 +223,13 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   include_directories(${Legion_INCLUDE_DIRS})
 
-  option(ENABLE_LEGION_TLS "Enable TLS storage of runtime state" OFF)
-  if(ENABLE_LEGION_TLS)
-    add_definitions(-DENABLE_LEGION_TLS)
-  endif()
+# FIXME: This can be removed as soon as Legion is patched to include
+#        build support for this option.
+#
+#  option(ENABLE_LEGION_TLS "Enable TLS storage of runtime state" ON)
+#  if(ENABLE_LEGION_TLS)
+add_definitions(-DENABLE_LEGION_TLS)
+#  endif()
 
 #
 # MPI interface

@@ -85,7 +85,7 @@ void check_all_cells_task(handle_t<size_t, flecsi::dro, flecsi::dro,
 flecsi_register_task(check_all_cells_task, flecsi::loc, flecsi::single);
 
 void initialize_primary_cells_task(handle_t<size_t, flecsi::drw, flecsi::drw,
-    flecsi::dro> cell_ID, int my_color) {
+    flecsi::dno> cell_ID, int my_color) {
 
   clog(trace) << my_color << " WRITING " << std::endl;
 

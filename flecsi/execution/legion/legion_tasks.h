@@ -310,16 +310,8 @@ __flecsi_internal_legion_task(spmd_task, void) {
       clog_assert(region_index <= regions.size(), "SPMD attempted to access more regions than passed");
     } // for owner
     ispace_dmap[idx_space].ghost_owners_lregions =ghost_owners_lregions[idx_space];
-    ispace_dmap[idx_space].global_to_local_color_map = 
-      global_to_local_color_map[idx_space];
-    for(auto itr = global_to_local_color_map[idx_space].begin(); itr !=
-            global_to_local_color_map[idx_space].end(); itr++)
-        clog(error) << my_color << ":" << idx_space << " " << itr->first <<
-          " SET AS " << itr->second << std::endl;
-    for(auto itr = ispace_dmap[idx_space].global_to_local_color_map.begin(); itr !=
-            ispace_dmap[idx_space].global_to_local_color_map.end(); itr++)
-        clog(error) << my_color << ":" << idx_space << " " << itr->first <<
-          " FIRST COPY " << itr->second << std::endl;
+    ispace_dmap[idx_space].global_to_local_color_map = new legion_map(
+      global_to_local_color_map[idx_space]);  //FIXME delete if new
 
 
     // Fix ghost reference/pointer to point to compacted position of shared that it needs
@@ -481,6 +473,7 @@ __flecsi_internal_legion_task(compaction_task, void) {
 
 __flecsi_internal_legion_task(ghost_copy_task, void) {
     clog(error) << "COPY TASK" << std::endl;
+    const int my_color = runtime->find_local_MPI_rank();
 
   context_t& context = context_t::instance();
 
@@ -494,11 +487,13 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
   assert(task->regions.size() == 2);
   // regions 0 and 1 have the same fields except for ghost_owner_pos_fid
 
-  typedef Legion::STL::map<Legion::coord_t, Legion::coord_t> legion_map;
+  typedef Legion::STL::map<LegionRuntime::Arrays::coord_t,
+          LegionRuntime::Arrays::coord_t> legion_map;
   legion_map neighbor_map = task->futures[0].get_result<legion_map>();
 
   for(auto itr = neighbor_map.begin(); itr != neighbor_map.end(); itr++)
-      clog(error) << itr->first << " MAPS TO " << itr->second << std::endl;
+      clog(error) << my_color << " " << itr->first << " MAPS TO " << itr->second <<
+      "=?" << args.owner << std::endl;
 
   auto ghost_owner_pos_fid = 
     LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
@@ -507,66 +502,64 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
     regions[1].get_field_accessor(ghost_owner_pos_fid).typeify<
     LegionRuntime::Arrays::Point<2>>();
 
+  Legion::Domain shared_domain = runtime->get_index_space_domain(ctx,
+          regions[0].get_logical_region().get_index_space());
   Legion::Domain ghost_domain = runtime->get_index_space_domain(ctx,
           regions[1].get_logical_region().get_index_space());
 
-  for (Legion::Domain::DomainPointIterator ghost_itr(ghost_domain); ghost_itr;
-          ghost_itr++) {
-      LegionRuntime::Arrays::Point<2> ghost_ref = acc_position_ref.read(ghost_itr.p);
-      clog(error) << "position " << ghost_ref.x[0] << "," << ghost_ref.x[1] << std::endl;
+  LegionRuntime::Arrays::Rect<2> shared_rect = shared_domain.get_rect<2>();
+  LegionRuntime::Arrays::Rect<2> ghost_rect = ghost_domain.get_rect<2>();
+  LegionRuntime::Arrays::Rect<2> shared_sub_rect;
+  LegionRuntime::Arrays::Rect<2> ghost_sub_rect;
+  LegionRuntime::Accessor::ByteOffset byte_offset[2];
 
-      if (neighbor_map[ghost_ref.x[0]] == args.owner)
-          clog(error) << "COPY " << neighbor_map[ghost_ref.x[0]] << "==" <<
-            args.owner << std::endl;
-  }
-
-#if 0
   // For each field, copy data from shared to ghost
   for(auto fid : task->regions[0].privilege_fields){
     // Look up field info in context
-    auto iitr = context.field_info_map().find(index_space);
+    auto iitr = context.field_info_map().find(args.index_space);
     clog_assert(iitr != context.field_info_map().end(), "invalid index space");
     auto fitr = iitr->second.find(fid);
     clog_assert(fitr != iitr->second.end(), "invalid fid");
     const context_t::field_info_t& fi = fitr->second;
 
-    Legion::PhysicalRegion pr = regions[0];
-    Legion::LogicalRegion lr = pr.get_logical_region();
-    Legion::IndexSpace is = lr.get_index_space();
-
     auto acc_shared = regions[0].get_field_accessor(fid);
-
-    Legion::Domain domain = 
-      runtime->get_index_space_domain(ctx, is); 
-    
-    // get raw buffer to shared data
-    LegionRuntime::Arrays::Rect<2> r = domain.get_rect<2>();
-    LegionRuntime::Arrays::Rect<2> sr;
-    LegionRuntime::Accessor::ByteOffset bo[2];
-    void* data_shared = acc_shared.template raw_rect_ptr<2>(r, sr, bo);
-    data_shared += bo[1];
-    size_t size = sr.hi[1] - sr.lo[1] + 1;
-
-    pr = regions[1];
-    lr = pr.get_logical_region();
-    is = lr.get_index_space();
-
     auto acc_ghost = regions[1].get_field_accessor(fid);
 
-    domain = runtime->get_index_space_domain(ctx, is); 
-    
-    // get raw buffer to ghost data
-    r = domain.get_rect<2>();
-    void* data_ghost = acc_ghost.template raw_rect_ptr<2>(r, sr, bo);
-    data_ghost += bo[1];
-    size_t shared_size = sr.hi[1] - sr.lo[1] + 1;
-    
-    clog_assert(size == shared_size, "ghost/shared size mismatch");
+    void* data_shared = acc_shared.template raw_rect_ptr<2>(shared_rect,
+            shared_sub_rect, byte_offset);
+    clog(error) <<  my_color << " " << "SHARED RECt " <<
+            shared_rect.lo[0] << "," << shared_rect.lo[1] << " to " <<
+            shared_rect.hi[0] << "," << shared_rect.hi[1] << std::endl;
+    clog(error) <<  my_color << " " << "SHARED Sub " <<
+            shared_sub_rect.lo[0] << "," << shared_sub_rect.lo[1] << " to " <<
+            shared_sub_rect.hi[0] << "," << shared_sub_rect.hi[1] << std::endl;
+    void* start = malloc(124);
+    void* one = start;
+    void* another = start;
+    one += byte_offset[0];
+    another += byte_offset[1];
+    clog(error) << my_color << " " <<  "BO " << start << ":" << one << "," <<
+            another << std::endl;
+    data_shared += byte_offset[1];
+    size_t shared_size = shared_sub_rect.hi[1] - shared_sub_rect.lo[1] + 1;
+    size_t* shared_data = (size_t*) data_shared;
+    for(size_t idx=0; idx < shared_size; idx++)
+        clog(error) << my_color << " " <<  idx << " SHARED " << shared_data[idx] << std::endl;
 
-    // finally, copy the raw data shared -> ghost
-    std::memcpy(data_ghost, data_shared, size * fi.size);
+    for(Legion::Domain::DomainPointIterator ghost_itr(ghost_domain); ghost_itr;
+            ghost_itr++) {
+        LegionRuntime::Arrays::Point<2> ghost_ref = acc_position_ref.read(ghost_itr.p);
+        clog(error) << my_color << " " <<  "position " << ghost_ref.x[0] << "," << ghost_ref.x[1] << std::endl;
+
+        if (neighbor_map[ghost_ref.x[0]] == args.owner) {
+            size_t owner_val = shared_data[ghost_ref.x[1]-shared_sub_rect.lo[1]];
+            clog(error) <<  my_color << " " << ghost_ref.x[1]-shared_sub_rect.lo[1] <<
+                    " COPY " << owner_val << std::endl;
+            //acc_ghost.write(ghost_itr.p, owner_val);
+        }
+
+    } // for ghost_itr
   } // for fid
-#endif
 }
 
 #undef __flecsi_internal_legion_task
