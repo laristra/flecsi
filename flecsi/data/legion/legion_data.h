@@ -81,7 +81,7 @@ public:
     const indexed_coloring_info_map_t& indexed_coloring_info_map
   )
   {
-    for(auto& idx_space : indexed_coloring_info_map){
+    for(auto idx_space : indexed_coloring_info_map){
       add_index_space(idx_space.first, idx_space.second);
     }
   }
@@ -136,11 +136,10 @@ public:
     FieldAllocator allocator = 
       runtime_->create_field_allocator(ctx_, is.field_space);
 
-    auto ghost_owner_pos_fid = FieldID(internal_field::ghost_owner_pos);
-    auto connectivity_pos_fid = FieldID(internal_field::connectivity_pos);
+    auto ghost_owner_pos_fid = 
+      LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
 
     allocator.allocate_field(sizeof(Point<2>), ghost_owner_pos_fid);
-    allocator.allocate_field(sizeof(Point<2>), connectivity_pos_fid);
 
     using field_info_t = context_t::field_info_t;
 
@@ -162,8 +161,10 @@ public:
       clog_assert(citr != coloring_info_map.end(), "invalid color info");
       const coloring_info_t& color_info = citr->second;
 
-      Rect<2> subrect(make_point(color, 0), make_point(color,
-        color_info.exclusive + color_info.shared + color_info.ghost - 1));
+      Rect<2> subrect(
+          make_point(color, 0),
+          make_point(color,
+            color_info.exclusive + color_info.shared + color_info.ghost - 1));
       
       color_partitioning[color] = Domain::from_rect<2>(subrect);
     }
@@ -176,9 +177,7 @@ public:
   }
 
   const index_space_info_t&
-  index_space_info(
-    size_t index_space_id
-  )
+  index_space_info(size_t index_space_id)
   const
   {
     auto itr = index_space_map_.find(index_space_id);
@@ -220,11 +219,7 @@ private:
     class T
   >
   void
-  attach_name(
-    const index_space_info_t& is,
-    T& x,
-    const char* label
-  )
+  attach_name(const index_space_info_t& is, T&& x, const char* label)
   {
     std::stringstream sstr;
     sstr << label << " " << is.index_space_id;
