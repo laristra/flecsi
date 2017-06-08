@@ -45,10 +45,10 @@ public:
 
   struct index_space_info_t{
     size_t index_space_id;
-    Legion::IndexSpace is;
-    Legion::FieldSpace fs;
-    Legion::LogicalRegion lr;
-    Legion::IndexPartition ip;
+    Legion::IndexSpace index_space;
+    Legion::FieldSpace field_space;
+    Legion::LogicalRegion logical_region;
+    Legion::IndexPartition index_partition;
   };
 
   legion_data_t(
@@ -62,6 +62,18 @@ public:
     color_bounds_(0, num_colors_ - 1),
     color_domain_(Legion::Domain::from_rect<1>(color_bounds_))
   {
+  }
+
+  ~legion_data_t()
+  {
+    for(auto& itr : index_space_map_){
+      index_space_info_t& is = itr.second;
+
+      runtime_->destroy_index_partition(ctx_, is.index_partition);
+      runtime_->destroy_index_space(ctx_, is.index_space);
+      runtime_->destroy_field_space(ctx_, is.field_space);
+      runtime_->destroy_logical_region(ctx_, is.logical_region);
+    }
   }
 
   void
@@ -115,14 +127,14 @@ public:
     
     Domain expanded_dom(Domain::from_rect<2>(expanded_bounds));
     
-    is.is = runtime_->create_index_space(ctx_, expanded_dom);
-    attach_name(is, is.is, "expanded index space");
+    is.index_space = runtime_->create_index_space(ctx_, expanded_dom);
+    attach_name(is, is.index_space, "expanded index space");
 
     // Read user + FleCSI registered field spaces
-    is.fs = runtime_->create_field_space(ctx_);
+    is.field_space = runtime_->create_field_space(ctx_);
 
     FieldAllocator allocator = 
-      runtime_->create_field_allocator(ctx_, is.fs);
+      runtime_->create_field_allocator(ctx_, is.field_space);
 
     auto ghost_owner_pos_fid = 
       LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
@@ -137,10 +149,10 @@ public:
       }
     }
 
-    attach_name(is, is.fs, "expanded field space");
+    attach_name(is, is.field_space, "expanded field space");
 
-    is.lr = runtime_->create_logical_region(ctx_, is.is, is.fs);
-    attach_name(is, is.lr, "expanded logical region");
+    is.logical_region = runtime_->create_logical_region(ctx_, is.index_space, is.field_space);
+    attach_name(is, is.logical_region, "expanded logical region");
 
     // Partition expanded IndexSpace color-wise & create associated PhaseBarriers
     DomainColoring color_partitioning;
@@ -157,20 +169,34 @@ public:
       color_partitioning[color] = Domain::from_rect<2>(subrect);
     }
 
-    is.ip = runtime_->create_index_partition(ctx_,
-      is.is, color_domain_, color_partitioning, true /*disjoint*/);
-    attach_name(is, is.ip, "color partitioning");
+    is.index_partition = runtime_->create_index_partition(ctx_,
+      is.index_space, color_domain_, color_partitioning, true /*disjoint*/);
+    attach_name(is, is.index_partition, "color partitioning");
 
     index_space_map_[index_space_id] = std::move(is);
   }
 
   const index_space_info_t&
-  index_space_info(size_t index_space)
+  index_space_info(size_t index_space_id)
   const
   {
-    auto itr = index_space_map_.find(index_space);
+    auto itr = index_space_map_.find(index_space_id);
     clog_assert(itr != index_space_map_.end(), "invalid index space");
     return itr->second;
+  }
+
+  const std::set<size_t>&
+  index_spaces()
+  const
+  {
+    return index_spaces_;
+  }
+
+  const Legion::Domain&
+  color_domain()
+  const
+  {
+    return color_domain_;
   }
 
 private:
