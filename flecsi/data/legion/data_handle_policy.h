@@ -6,7 +6,7 @@
 #ifndef flecsi_data_legion_data_handle_policy_h
 #define flecsi_data_legion_data_handle_policy_h
 
-#include "legion.h"
+#include <legion.h>
 #include <legion_stl.h>
 
 ///
