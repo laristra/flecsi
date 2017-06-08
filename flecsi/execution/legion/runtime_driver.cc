@@ -175,7 +175,7 @@ runtime_driver(
       
       num_ghost_owners.push_back(color_info.ghost_owners.size());
       std::vector<Legion::PhaseBarrier> per_color_owners_pbs;
-      for (auto owner : color_info.ghost_owners) {
+      for(auto owner : color_info.ghost_owners) {
         clog(trace) << owner << std::endl;
         per_color_owners_pbs.push_back(phase_barriers_map[idx_space][owner]);
       }
@@ -196,7 +196,7 @@ runtime_driver(
         * sizeof(Legion::PhaseBarrier));
     args_serializers[color].serialize(&num_ghost_owners[0], num_idx_spaces
         * sizeof(size_t));
-    for (size_t idx_space : data.index_spaces())
+    for(size_t idx_space : data.index_spaces())
       args_serializers[color].serialize(&owners_pbarriers[idx_space][0],
           num_ghost_owners[idx_space] * sizeof(Legion::PhaseBarrier));
 
@@ -275,9 +275,9 @@ runtime_driver(
 
   // Finish up Legion runtime and fall back out to MPI.
 
-  for (auto& itr : phase_barriers_map) {
+  for(auto& itr : phase_barriers_map) {
     const size_t handle = itr.first;
-    for (size_t color = 0; color < phase_barriers_map[handle].size(); color ++) {
+    for(size_t color = 0; color < phase_barriers_map[handle].size(); color ++) {
       runtime->destroy_phase_barrier(ctx, phase_barriers_map[handle][color]);
     }
     phase_barriers_map[handle].clear();
