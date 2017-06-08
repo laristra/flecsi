@@ -510,6 +510,7 @@ struct storage_type_t<dense, DS, MD>
     h.pbarrier_as_owner_ptr = ism[index_space].pbarrier_as_owner_ptr;
     h.ghost_owners_pbarriers_ptrs = 
       ism[index_space].ghost_owners_pbarriers_ptrs;
+    h.ghost_owners_lregions = ism[index_space].ghost_owners_lregions;
     h.color_region = ism[index_space].color_region;
     h.global_to_local_color_map = ism[index_space].global_to_local_color_map;
     h.primary_ghost_ip = ism[index_space].primary_ghost_ip;

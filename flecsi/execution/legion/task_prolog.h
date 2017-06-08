@@ -126,8 +126,8 @@ namespace execution {
                 *(h.ghost_owners_pbarriers_ptrs[owner]) <<
                 std::endl;
 
-            Legion::RegionRequirement rr_shared(h.shared_lr,
-              READ_ONLY, EXCLUSIVE, h.color_region);
+            Legion::RegionRequirement rr_shared(h.ghost_owners_lregions[owner],
+              READ_ONLY, EXCLUSIVE, h.ghost_owners_lregions[owner]);
 
             Legion::RegionRequirement rr_ghost(h.ghost_lr,
               WRITE_DISCARD, EXCLUSIVE, h.color_region);
