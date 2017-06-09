@@ -81,7 +81,7 @@ public:
     const indexed_coloring_info_map_t& indexed_coloring_info_map
   )
   {
-    for(auto idx_space : indexed_coloring_info_map){
+    for(auto& idx_space : indexed_coloring_info_map){
       add_index_space(idx_space.first, idx_space.second);
     }
   }
@@ -219,7 +219,7 @@ private:
     class T
   >
   void
-  attach_name(const index_space_info_t& is, T&& x, const char* label)
+  attach_name(const index_space_info_t& is, T& x, const char* label)
   {
     std::stringstream sstr;
     sstr << label << " " << is.index_space_id;
