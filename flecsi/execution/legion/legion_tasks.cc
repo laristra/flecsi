@@ -109,6 +109,19 @@ __flecsi_internal_register_legion_task(owner_pos_correction_task,
 __flecsi_internal_register_legion_task(ghost_copy_task, processor_type_t::loc,
         index | leaf);
 
+//----------------------------------------------------------------------------//
+//! Register fill connectivity task.
+//!
+//! \remark The translation unit that contains this call will not be
+//!         necessary with C++17, as it will be possible to move this call
+//!         into the header file using inline variables.
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
+__flecsi_internal_register_legion_task(fill_connectivity_task,
+  processor_type_t::loc, index | leaf);
+
 } // namespace execution 
 } // namespace flecsi
 

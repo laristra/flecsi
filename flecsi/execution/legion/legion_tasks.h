@@ -17,6 +17,7 @@
 
 #include "flecsi/execution/legion/internal_task.h"
 #include "flecsi/execution/legion/internal_field.h"
+#include "flecsi/execution/legion/helper.h"
 
 #define PRIMARY_PART 0
 #define GHOST_PART 1
@@ -566,6 +567,67 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
     } // for ghost_itr
   } // for fid
 } // ghost_copy_task
+
+//----------------------------------------------------------------------------//
+//! Fill connectivity task fills connectivity for from/to index space and
+//! and index launched.
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
+__flecsi_internal_legion_task(fill_connectivity_task, void)
+{
+  using namespace std;
+  
+  using namespace Legion;
+  using namespace LegionRuntime;
+  using namespace Arrays;
+
+  using namespace execution;
+
+  using tuple_t = std::tuple<size_t, size_t, size_t>;
+
+  legion_helper h(runtime, ctx);
+
+  const tuple_t& p = *(tuple_t*)task->args;
+
+  size_t from_index_space = std::get<0>(p);
+  size_t to_index_space = std::get<1>(p);
+  size_t size = std::get<2>(p);
+  
+  FieldID adjacency_fid = 
+    size_t(internal_field::connectivity_pos_start) + 
+    from_index_space * 10 + to_index_space;
+
+  auto connectivity_count_fid = 
+    FieldID(internal_field::connectivity_count);
+  
+  auto connectivity_offset_fid = 
+    FieldID(internal_field::connectivity_offset);
+
+  uint64_t* offsets;
+  h.get_buffer(regions[0], offsets, connectivity_offset_fid);
+
+  Point<2>* positions;
+  h.get_buffer(regions[1], positions, adjacency_fid);
+
+  uint8_t* src_counts;
+  h.get_buffer(regions[2], src_counts, connectivity_count_fid);
+
+  uint64_t* src_offsets;
+  h.get_buffer(regions[3], src_offsets, connectivity_offset_fid);
+
+  size_t pos = 0;
+  for(size_t i = 0; i < size; ++i){
+    size_t count = src_counts[i];
+    std::memcpy(offsets, src_offsets, count * sizeof(size_t));
+    (*positions).x[0] = pos;
+    (*positions).x[1] = count;
+    pos += count;
+    offsets += count;
+    positions += count;
+  }
+}
 
 #undef __flecsi_internal_legion_task
 
