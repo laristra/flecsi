@@ -10,20 +10,21 @@
 
 #include "flecsi/coloring/coloring_types.h"
 
-///
-/// \file
-/// \date Initial file creation: Dec 06, 2016
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Dec 06, 2016
+//----------------------------------------------------------------------------//
 
 namespace flecsi {
 namespace coloring {
 
-///
-/// \class communicator_t communicator.h
-/// \brief communicator_t provides an interface for communicating
-///        graph information between different distributed-memory
-///        execution instances.
-///
+//----------------------------------------------------------------------------//
+//! Provide interfaces for communicating graph information between different
+//! distributed-memory colors.
+//!
+//! @ingroup coloring
+//----------------------------------------------------------------------------//
+
 class communicator_t
 {
 public:
@@ -69,10 +70,25 @@ public:
     const std::set<size_t> & request_indices
   ) = 0;
 
+  //--------------------------------------------------------------------------//
+  //! Return a map of the reduced index information across all colors.
+  //!
+  //! @param local_indices The indices of the calling color.
+  //--------------------------------------------------------------------------//
+
+  virtual
+  std::unordered_map<size_t, std::set<size_t>>
+  get_entity_reduction(
+    const std::set<size_t> & local_indices
+  ) = 0;
+
+  //--------------------------------------------------------------------------//
   // Same admonishment as for get_primary_info...
   //
   // The point of this method is to get entity offsets from the
   // owning ranks.
+  //--------------------------------------------------------------------------//
+
   virtual
   std::vector<std::set<size_t>>
   get_entity_info(

@@ -103,7 +103,6 @@ public:
     return info_indices;
   }//get_info_indices
 
-
   //-------------------------------------------------------------------------//
   //! Rerturn a set containing the entity_info_t information for each
   //! member of the input set request_indices (from other ranks) and
@@ -332,6 +331,56 @@ public:
   } // get_intersection_info
 
   //-------------------------------------------------------------------------//
+  //! Rerturn a map containing the reduced index information for each color.
+  //!
+  //! @param local_indices The indices of the calling color.
+  //!
+  //! @return A std::unordered_map<size_t, std::set<size_t>> containing the
+  //!         indices of each rank for the given index space.
+  //!
+  //! @ingroup coloring
+  //-------------------------------------------------------------------------//
+
+  std::unordered_map<size_t, std::set<size_t>>
+  get_entity_reduction(
+    const std::set<size_t> & local_indices
+  )
+  override
+  {
+    int size;
+    int color;
+
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &color);
+
+    size_t max_request_indices =
+         get_max_request_size(local_indices.size());
+
+    auto info_indices =
+      get_info_indices(local_indices, max_request_indices, size);
+  
+    std::unordered_map<size_t, std::set<size_t>> entity_reduction_map;
+
+    for(size_t c(0); c<size; ++c) {
+
+      // Array slice for convenience.
+      size_t * info = &info_indices[c*max_request_indices];
+
+      // Create a set of the off-color request indices.
+      std::set<size_t> reduction_set;
+      for(size_t i(0); i<max_request_indices; ++i) {
+        if(info[i] != std::numeric_limits<size_t>::max()) {
+          reduction_set.insert(info[i]);
+        } // if
+      } // for
+
+      entity_reduction_map[c] = reduction_set;
+    } // for
+
+    return entity_reduction_map;
+  } // get_entity_reduction
+
+  //-------------------------------------------------------------------------//
   //! Rerturn a set containing the entity_info_t information for each
   //! member of the input set request_indices (from other ranks).
   //!
@@ -343,6 +392,7 @@ public:
   //!
   //! @ingroup coloring
   //-------------------------------------------------------------------------//
+
   std::vector<std::set<size_t>>
   get_entity_info(
     const std::set<entity_info_t> & entity_info,
