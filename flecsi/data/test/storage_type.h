@@ -62,7 +62,7 @@ struct mesh_t : public data::data_client_t {
 
 
 void
-specialization_driver(
+specialization_tlt_init(
   int argc,
   char ** argv
 )
@@ -438,7 +438,8 @@ TEST(storage, sparse_delete) {
 
   }//scope
   } // scope
-} // specialization_driver
+} // specialization_tlt_init
+
 /*----------------------------------------------------------------------------*
  * Cinch test Macros
  *

@@ -134,12 +134,12 @@ namespace execution {
 // Specialization driver.
 //----------------------------------------------------------------------------//
 
-void specialization_driver(int argc, char ** argv) {
-  clog(trace) << "In specialization driver" << std::endl;
+void specialization_tlt_init(int argc, char ** argv) {
+  clog(trace) << "In specialization top-level-task init" << std::endl;
 
   flecsi_execute_mpi_task(add_colorings, 0);
 
-} // specialization_driver
+} // specialization_tlt_init
 
 //----------------------------------------------------------------------------//
 // User driver.
@@ -170,7 +170,7 @@ void driver(int argc, char ** argv) {
     flecsi_execute_task(check_all_cells_task, single, handle, my_color, cycle);
   }
 
-} // specialization_driver
+} // driver
 
 } // namespace execution
 } // namespace flecsi

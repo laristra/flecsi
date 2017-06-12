@@ -21,7 +21,7 @@ void serial_runtime_driver(int argc, char ** argv) {
 
 #if defined FLECSI_ENABLE_SPECIALIZATION_DRIVER
   // Execute the specialization driver.
-  specialization_driver(argc, argv);
+  specialization_tlt_init(argc, argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_DRIVER
 
   // Execute the user driver.

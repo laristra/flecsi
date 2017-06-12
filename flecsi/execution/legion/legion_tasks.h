@@ -24,14 +24,33 @@
 #define SHARED_PART 1
 #define OWNER_COLOR_TAG 1
 
-typedef Legion::STL::map<LegionRuntime::Arrays::coord_t,
-        LegionRuntime::Arrays::coord_t> legion_map;
-
+using legion_map = Legion::STL::map<LegionRuntime::Arrays::coord_t,
+  LegionRuntime::Arrays::coord_t>;
 
 clog_register_tag(legion_tasks);
 
 namespace flecsi {
 namespace execution {
+
+//----------------------------------------------------------------------------//
+//! This is the color-specific initialization function to be defined by the
+//! FleCSI specialization layer. This symbol will be undefined in the compiled
+//! library, and is intended as a place holder for the specializations's
+//! initialization function that will resolve the missing symbol.
+//!
+//! The color-specific initialization function is the second of the two
+//! control points that are exposed to the specialization. This function is
+//! responsible for populating specialization-specific data structures.
+//!
+//! @param argc The number of arguments in argv (passed from the command line).
+//! @param argv The list of arguments (passed from the command line).
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
+#if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
+void specialization_color_init(int argc, char ** argv);
+#endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
 //----------------------------------------------------------------------------//
 //! @def __flecsi_internal_legion_task
@@ -358,6 +377,11 @@ __flecsi_internal_legion_task(spmd_task, void) {
     ctx, runtime, task, regions);
 #endif
 
+  // Call the specialization color initialization function.
+#if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
+  specialization_color_init(args.argc, args.argv);
+#endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+
   // run default or user-defined driver 
   driver(args.argc, args.argv); 
 
@@ -566,7 +590,7 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
           data_shared + owner_offset * field_info.size;
         size_t ghost_offset = ghost_itr.p[1]-ghost_sub_rect.lo[1];
         uint8_t * ghost_copy_ptr =
-          ghost_data + ghost_offset *field_info.size;
+          ghost_data + ghost_offset * field_info.size;
         std::memcpy(ghost_copy_ptr, owner_copy_ptr, field_info.size);
       } // if
     } // for ghost_itr

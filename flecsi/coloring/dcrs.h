@@ -43,7 +43,7 @@ struct dcrs_t
   define_dcrs_as(distribution)
 
   ///
-  /// Return the number of entities for which this onject contains
+  /// Return the number of entities for which this object contains
   /// adjacency information.
   ///
   size_t
