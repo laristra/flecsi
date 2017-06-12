@@ -615,7 +615,7 @@ __flecsi_internal_legion_task(fill_connectivity_task, void)
   h.get_buffer(regions[2], src_counts, connectivity_count_fid);
 
   uint64_t* src_offsets;
-  h.get_buffer(regions[3], src_offsets, connectivity_offset_fid);
+  h.get_buffer(regions[2], src_offsets, connectivity_offset_fid);
 
   size_t pos = 0;
   for(size_t i = 0; i < size; ++i){

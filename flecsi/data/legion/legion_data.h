@@ -364,10 +364,14 @@ public:
     PhysicalRegion pr = runtime_->map_region(ctx_, il);
     pr.wait_until_valid();
 
-    char* dst_counts = h.get_raw_buffer(pr, connectivity_count_fid);
+    uint8_t* dst_counts;
+    h.get_buffer(pr, dst_counts, connectivity_count_fid);
+
+    uint64_t* dst_offsets;
+    h.get_buffer(pr, dst_offsets, connectivity_offset_fid);
+
     std::memcpy(dst_counts, counts, sizeof(uint8_t) * size);
 
-    char* dst_offsets = h.get_raw_buffer(pr, connectivity_offset_fid);
     std::memcpy(dst_offsets, offsets, sizeof(uint64_t) * size);
 
     runtime_->unmap_region(ctx_, pr);
@@ -389,7 +393,7 @@ public:
     LogicalRegion color_conn_lr =
       runtime_->get_logical_subregion_by_color(ctx_, color_conn_lp, color);
 
-    RegionRequirement rr1(color_conn_lr, READ_WRITE, SIMULTANEOUS,
+    RegionRequirement rr1(color_conn_lr, WRITE_DISCARD, SIMULTANEOUS,
       c.logical_region);
     rr1.add_field(connectivity_offset_fid);
     l.add_region_requirement(rr1);
