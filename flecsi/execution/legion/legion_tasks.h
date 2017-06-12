@@ -538,31 +538,37 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
     auto acc_shared = regions[0].get_field_accessor(fid);
     auto acc_ghost = regions[1].get_field_accessor(fid);
 
-    void* data_shared = acc_shared.template raw_rect_ptr<2>(owner_rect,
-            owner_sub_rect, byte_offset);
+    uint8_t * data_shared =
+      reinterpret_cast<uint8_t *>(acc_shared.template raw_rect_ptr<2>(
+        owner_rect, owner_sub_rect, byte_offset));
+
     data_shared += byte_offset[1];
     clog(trace) << "my_color = " << my_color << " owner lid = " << args.owner <<
             " owner rect = " <<
             owner_rect.lo[0] << "," << owner_rect.lo[1] << " to " <<
             owner_rect.hi[0] << "," << owner_rect.hi[1] << std::endl;
 
-    void* ghost_data = acc_ghost.template raw_rect_ptr<2>(ghost_rect,
-            ghost_sub_rect, byte_offset);
+    uint8_t * ghost_data =
+      reinterpret_cast<uint8_t *>(acc_ghost.template raw_rect_ptr<2>(
+        ghost_rect, ghost_sub_rect, byte_offset));
     ghost_data += byte_offset[1];
 
     for(Legion::Domain::DomainPointIterator ghost_itr(ghost_domain); ghost_itr;
-            ghost_itr++) {
-        LegionRuntime::Arrays::Point<2> ghost_ref = position_ref_acc.read(ghost_itr.p);
-        clog(trace) << my_color << " copy from position " << ghost_ref.x[0] <<
-                "," << ghost_ref.x[1] << std::endl;
+      ghost_itr++) {
+      LegionRuntime::Arrays::Point<2> ghost_ref =
+        position_ref_acc.read(ghost_itr.p);
+      clog(trace) << my_color << " copy from position " << ghost_ref.x[0] <<
+              "," << ghost_ref.x[1] << std::endl;
 
-        if(owner_map[ghost_ref.x[0]] == args.owner) {
-            size_t owner_offset = ghost_ref.x[1]-owner_sub_rect.lo[1];
-            void* owner_copy_ptr = data_shared + owner_offset * field_info.size;
-            size_t ghost_offset = ghost_itr.p[1]-ghost_sub_rect.lo[1];
-            void * ghost_copy_ptr = ghost_data + ghost_offset *field_info.size;
-            std::memcpy(ghost_copy_ptr, owner_copy_ptr, field_info.size);
-        }
+      if(owner_map[ghost_ref.x[0]] == args.owner) {
+        size_t owner_offset = ghost_ref.x[1]-owner_sub_rect.lo[1];
+        uint8_t * owner_copy_ptr =
+          data_shared + owner_offset * field_info.size;
+        size_t ghost_offset = ghost_itr.p[1]-ghost_sub_rect.lo[1];
+        uint8_t * ghost_copy_ptr =
+          ghost_data + ghost_offset *field_info.size;
+        std::memcpy(ghost_copy_ptr, owner_copy_ptr, field_info.size);
+      } // if
     } // for ghost_itr
   } // for fid
 } // ghost_copy_task
