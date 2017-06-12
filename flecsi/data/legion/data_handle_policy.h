@@ -56,7 +56,7 @@ struct legion_data_handle_policy_t
   Legion::LogicalRegion shared_lr;
   Legion::LogicalRegion ghost_lr;
   Legion::PhaseBarrier* pbarrier_as_owner_ptr;
-  std::vector<Legion::PhaseBarrier*> ghost_owners_pbarriers_ptrs;
+  std::vector<Legion::PhaseBarrier*>* ghost_owners_pbarriers_ptrs;
   std::vector<Legion::LogicalRegion> ghost_owners_lregions;
   Legion::STL::map<LegionRuntime::Arrays::coord_t,
     LegionRuntime::Arrays::coord_t>* global_to_local_color_map;
