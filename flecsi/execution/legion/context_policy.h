@@ -43,6 +43,7 @@
 #include "flecsi/utils/tuple_wrapper.h"
 
 #include "flecsi/execution/legion/runtime_state.h"
+#include "flecsi/execution/legion/internal_field.h"
 
 namespace flecsi {
 namespace execution {
@@ -727,6 +728,20 @@ struct legion_context_policy_t
     clog_assert(fitr != iitr->second.end(), "invalid fid");
     
     return fitr->second;
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Compute internal field id for from/to index space pair for connectivity.
+  //! @param from_index_space from index space
+  //! @param to_index_space to index space
+  //!--------------------------------------------------------------------------//
+
+  size_t
+  adjacency_fid(size_t from_index_space, size_t to_index_space)
+  const
+  {
+    return size_t(internal_field::connectivity_pos_start) + 
+      from_index_space * 10 + to_index_space;
   }
 
 private:

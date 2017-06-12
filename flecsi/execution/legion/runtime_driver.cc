@@ -236,8 +236,7 @@ runtime_driver(
       for(auto& p : context_.adjacencies()){
         if(p.first == idx_space){
           Legion::FieldID adjacency_fid = 
-            size_t(internal_field::connectivity_pos_start) + 
-            p.first * 10 + p.second;
+            context_.adjacency_fid(p.first, p.second);
           
           reg_req.add_field(adjacency_fid);
         }

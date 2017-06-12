@@ -17,12 +17,12 @@ namespace supplemental {
 using palette_data_t = std::tuple<std::string, std::string, std::string>;
 
 const std::vector<palette_data_t> palette = {
-  { "blue", "blue!40!white", "blue!5!white" },
-  { "green!60!black", "green!60!white", "green!10!white" },
-  { "black", "black!40!white", "black!5!white" },
-  { "red", "red!40!white", "red!5!white" },
-  { "violet", "violet!40!white", "violet!5!white" },
-  { "cyan", "cyan!40!white", "cyan!5!white" }
+  std::make_tuple("blue", "blue!40!white", "blue!5!white"),
+  std::make_tuple("green!60!black", "green!60!white", "green!10!white"),
+  std::make_tuple("black", "black!40!white", "black!5!white"),
+  std::make_tuple("red", "red!40!white", "red!5!white"),
+  std::make_tuple("violet", "violet!40!white", "violet!5!white"),
+  std::make_tuple("cyan", "cyan!40!white", "cyan!5!white")
 };
 
 struct tikz_writer_t {

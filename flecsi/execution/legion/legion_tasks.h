@@ -16,7 +16,6 @@
 #include <legion_utilities.h>
 
 #include "flecsi/execution/legion/internal_task.h"
-#include "flecsi/execution/legion/internal_field.h"
 #include "flecsi/execution/legion/helper.h"
 
 #define PRIMARY_PART 0
@@ -587,6 +586,8 @@ __flecsi_internal_legion_task(fill_connectivity_task, void)
 
   using tuple_t = std::tuple<size_t, size_t, size_t>;
 
+  context_t& context = context_t::instance();
+
   legion_helper h(runtime, ctx);
 
   const tuple_t& p = *(tuple_t*)task->args;
@@ -596,8 +597,7 @@ __flecsi_internal_legion_task(fill_connectivity_task, void)
   size_t size = std::get<2>(p);
   
   FieldID adjacency_fid = 
-    size_t(internal_field::connectivity_pos_start) + 
-    from_index_space * 10 + to_index_space;
+    context.adjacency_fid(from_index_space, to_index_space);
 
   auto connectivity_count_fid = 
     FieldID(internal_field::connectivity_count);
@@ -625,7 +625,7 @@ __flecsi_internal_legion_task(fill_connectivity_task, void)
     (*positions).x[1] = count;
     pos += count;
     offsets += count;
-    positions += count;
+    ++positions;
   }
 }
 

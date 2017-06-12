@@ -163,10 +163,8 @@ public:
     }
 
     for(auto& p : context.adjacencies()){
-      FieldID adjacency_fid = 
-        size_t(internal_field::connectivity_pos_start) + 
-        p.first * 10 + p.second;
-      
+      FieldID adjacency_fid = context.adjacency_fid(p.first, p.second);
+
       allocator.allocate_field(sizeof(Point<2>), adjacency_fid);
     }
 
@@ -378,8 +376,7 @@ public:
       context.task_id<__flecsi_internal_task_key(fill_connectivity_task)>();
 
     FieldID adjacency_fid = 
-      size_t(internal_field::connectivity_pos_start) + 
-      from_index_space * 10 + to_index_space;
+      context.adjacency_fid(from_index_space, to_index_space);
 
     auto p = std::make_tuple(from_index_space, to_index_space, size);    
 
