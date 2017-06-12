@@ -371,7 +371,6 @@ public:
     h.get_buffer(pr, dst_offsets, connectivity_offset_fid);
 
     std::memcpy(dst_counts, counts, sizeof(uint8_t) * size);
-
     std::memcpy(dst_offsets, offsets, sizeof(uint64_t) * size);
 
     runtime_->unmap_region(ctx_, pr);
@@ -418,6 +417,13 @@ public:
     MustEpochLauncher must_epoch_launcher;
     DomainPoint point(color);
     must_epoch_launcher.add_single_task(point, l);
+
+    auto future = runtime_->execute_must_epoch(ctx_, must_epoch_launcher);
+    future.wait_all_results();
+
+    runtime_->destroy_index_space(ctx_, is);
+    runtime_->destroy_field_space(ctx_, fs);
+    runtime_->destroy_logical_region(ctx_, lr);
   }
 
 private:
