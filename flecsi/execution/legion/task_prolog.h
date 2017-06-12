@@ -117,13 +117,13 @@ namespace execution {
               *(h.pbarrier_as_owner_ptr));                          // phase WRITE
 
           // as slave
-          for (size_t owner=0; owner<h.ghost_owners_pbarriers_ptrs.size(); owner++) {
+          for (size_t owner=0; owner<h.ghost_owners_pbarriers_ptrs->size(); owner++) {
             clog(trace) << "rank " << my_color << " WAITS " <<
-                *(h.ghost_owners_pbarriers_ptrs[owner]) <<
+                *((*h.ghost_owners_pbarriers_ptrs)[owner]) <<
                 std::endl;
 
             clog(trace) << "rank " << my_color << " arrives & advances " <<
-                *(h.ghost_owners_pbarriers_ptrs[owner]) <<
+                *((*h.ghost_owners_pbarriers_ptrs)[owner]) <<
                 std::endl;
 
             Legion::RegionRequirement rr_shared(h.ghost_owners_lregions[owner],
@@ -172,12 +172,12 @@ namespace execution {
 
             launcher.add_region_requirement(rr_shared);
             launcher.add_region_requirement(rr_ghost);
-            launcher.add_wait_barrier(*(h.ghost_owners_pbarriers_ptrs[owner]));// phase READ
-            launcher.add_arrival_barrier(*(h.ghost_owners_pbarriers_ptrs[owner]));// phase WRITE
+            launcher.add_wait_barrier(*((*h.ghost_owners_pbarriers_ptrs)[owner]));// phase READ
+            launcher.add_arrival_barrier(*((*h.ghost_owners_pbarriers_ptrs)[owner]));// phase WRITE
             runtime->execute_task(context, launcher);
 
-            *(h.ghost_owners_pbarriers_ptrs[owner]) = runtime->advance_phase_barrier(context,
-                *(h.ghost_owners_pbarriers_ptrs[owner]));             // phase WRITE
+            *((*h.ghost_owners_pbarriers_ptrs)[owner]) = runtime->advance_phase_barrier(context,
+                *((*h.ghost_owners_pbarriers_ptrs)[owner]));             // phase WRITE
 
           }  // for owner as user
 
