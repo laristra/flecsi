@@ -54,26 +54,27 @@ runtime_driver(
 
   using field_info_t = context_t::field_info_t;
 
-#if defined FLECSI_ENABLE_SPECIALIZATION_DRIVER
+#if defined FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
   {
   clog_tag_guard(runtime_driver);
-  clog(info) << "Executing specialization driver task" << std::endl;
+  clog(info) << "Executing specialization top-level-task init" << std::endl;
   }
 
 #if !defined(ENABLE_LEGION_TLS)
   // Set the current task context to the driver
-  context_.push_state(utils::const_string_t{"specialization_driver"}.hash(),
+  context_.push_state(utils::const_string_t{"specialization_tlt_init"}.hash(),
     ctx, runtime, task, regions);
 #endif
 
-  // run default or user-defined specialization driver 
-  specialization_driver(args.argc, args.argv);
+  // Invoke the specialization top-level task initialization function.
+  specialization_tlt_init(args.argc, args.argv);
 
 #if !defined(ENABLE_LEGION_TLS)
   // Set the current task context to the driver
-  context_.pop_state( utils::const_string_t{"specialization_driver"}.hash());
+  context_.pop_state( utils::const_string_t{"specialization_tlt_init"}.hash());
 #endif
-#endif // FLECSI_ENABLE_SPECIALIZATION_DRIVER
+
+#endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
 
   // Register user data, invokes callbacks to add field info into context

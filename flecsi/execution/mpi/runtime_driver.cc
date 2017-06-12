@@ -39,7 +39,7 @@ runtime_driver(
   }
 
   // Execute the specialization driver.
-  specialization_driver(args.argc, args.argv);
+  specialization_tlt_init(args.argc, args.argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_DRIVER
 
   // Execute the user driver.

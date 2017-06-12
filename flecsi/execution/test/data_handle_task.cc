@@ -51,11 +51,11 @@ namespace execution {
 // Specialization driver.
 //----------------------------------------------------------------------------//
 
-void specialization_driver(int argc, char ** argv) {
-  clog(info) << "In specialization driver" << std::endl;
+void specialization_tlt_init(int argc, char ** argv) {
+  clog(info) << "In specialization top-level-task init" << std::endl;
   flecsi_execute_mpi_task(add_colorings, 0);
 
-} // specialization_driver
+} // specialization_tlt_init
 
 //----------------------------------------------------------------------------//
 // User driver.
@@ -73,7 +73,7 @@ void driver(int argc, char ** argv) {
   auto h = flecsi_get_handle(c, ns, pressure, double, dense, 0);
 
   flecsi_execute_task(task1, single, h, 128);
-} // specialization_driver
+} // driver
 
 //----------------------------------------------------------------------------//
 // TEST.

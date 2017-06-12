@@ -24,14 +24,33 @@
 #define SHARED_PART 1
 #define OWNER_COLOR_TAG 1
 
-typedef Legion::STL::map<LegionRuntime::Arrays::coord_t,
-        LegionRuntime::Arrays::coord_t> legion_map;
-
+using legion_map = Legion::STL::map<LegionRuntime::Arrays::coord_t,
+  LegionRuntime::Arrays::coord_t>;
 
 clog_register_tag(legion_tasks);
 
 namespace flecsi {
 namespace execution {
+
+//----------------------------------------------------------------------------//
+//! This is the color-specific initialization function to be defined by the
+//! FleCSI specialization layer. This symbol will be undefined in the compiled
+//! library, and is intended as a place holder for the specializations's
+//! initialization function that will resolve the missing symbol.
+//!
+//! The color-specific initialization function is the second of the two
+//! control points that are exposed to the specialization. This function is
+//! responsible for populating specialization-specific data structures.
+//!
+//! @param argc The number of arguments in argv (passed from the command line).
+//! @param argv The list of arguments (passed from the command line).
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
+#if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
+void specialization_color_init(int argc, char ** argv);
+#endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
 //----------------------------------------------------------------------------//
 //! @def __flecsi_internal_legion_task
@@ -358,6 +377,11 @@ __flecsi_internal_legion_task(spmd_task, void) {
     ctx, runtime, task, regions);
 #endif
 
+  // Call the specialization color initialization function.
+#if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
+  specialization_color_init(args.argc, args.argv);
+#endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+
   // run default or user-defined driver 
   driver(args.argc, args.argv); 
 
@@ -538,31 +562,37 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
     auto acc_shared = regions[0].get_field_accessor(fid);
     auto acc_ghost = regions[1].get_field_accessor(fid);
 
-    void* data_shared = acc_shared.template raw_rect_ptr<2>(owner_rect,
-            owner_sub_rect, byte_offset);
+    uint8_t * data_shared =
+      reinterpret_cast<uint8_t *>(acc_shared.template raw_rect_ptr<2>(
+        owner_rect, owner_sub_rect, byte_offset));
+
     data_shared += byte_offset[1];
     clog(trace) << "my_color = " << my_color << " owner lid = " << args.owner <<
             " owner rect = " <<
             owner_rect.lo[0] << "," << owner_rect.lo[1] << " to " <<
             owner_rect.hi[0] << "," << owner_rect.hi[1] << std::endl;
 
-    void* ghost_data = acc_ghost.template raw_rect_ptr<2>(ghost_rect,
-            ghost_sub_rect, byte_offset);
+    uint8_t * ghost_data =
+      reinterpret_cast<uint8_t *>(acc_ghost.template raw_rect_ptr<2>(
+        ghost_rect, ghost_sub_rect, byte_offset));
     ghost_data += byte_offset[1];
 
     for(Legion::Domain::DomainPointIterator ghost_itr(ghost_domain); ghost_itr;
-            ghost_itr++) {
-        LegionRuntime::Arrays::Point<2> ghost_ref = position_ref_acc.read(ghost_itr.p);
-        clog(trace) << my_color << " copy from position " << ghost_ref.x[0] <<
-                "," << ghost_ref.x[1] << std::endl;
+      ghost_itr++) {
+      LegionRuntime::Arrays::Point<2> ghost_ref =
+        position_ref_acc.read(ghost_itr.p);
+      clog(trace) << my_color << " copy from position " << ghost_ref.x[0] <<
+              "," << ghost_ref.x[1] << std::endl;
 
-        if(owner_map[ghost_ref.x[0]] == args.owner) {
-            size_t owner_offset = ghost_ref.x[1]-owner_sub_rect.lo[1];
-            void* owner_copy_ptr = data_shared + owner_offset * field_info.size;
-            size_t ghost_offset = ghost_itr.p[1]-ghost_sub_rect.lo[1];
-            void * ghost_copy_ptr = ghost_data + ghost_offset *field_info.size;
-            std::memcpy(ghost_copy_ptr, owner_copy_ptr, field_info.size);
-        }
+      if(owner_map[ghost_ref.x[0]] == args.owner) {
+        size_t owner_offset = ghost_ref.x[1]-owner_sub_rect.lo[1];
+        uint8_t * owner_copy_ptr =
+          data_shared + owner_offset * field_info.size;
+        size_t ghost_offset = ghost_itr.p[1]-ghost_sub_rect.lo[1];
+        uint8_t * ghost_copy_ptr =
+          ghost_data + ghost_offset * field_info.size;
+        std::memcpy(ghost_copy_ptr, owner_copy_ptr, field_info.size);
+      } // if
     } // for ghost_itr
   } // for fid
 } // ghost_copy_task

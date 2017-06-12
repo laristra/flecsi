@@ -46,9 +46,10 @@ void add_colorings(int dummy) {
   }
 
   // Read the mesh definition from file.
-  //flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
-  const size_t M(16), N(16);
-  flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
+  const size_t M(8), N(8);
+  flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
+  //const size_t M(16), N(16);
+  //flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
 
   // Create the dCRS representation for the distributed colorer.
   auto dcrs = flecsi::coloring::make_dcrs(sd);

@@ -74,7 +74,7 @@ struct entity_info_t {
   /// Constructor.
   ///
   /// \param id_ The entity id. This is generally specified by the
-  ///            graph definition.
+  ///            mesh definition.
   /// \param rank_ The rank that owns this entity.
   /// \param offset_ The local id or offset of the entity.
   /// \param shared_ The list of ranks that share this entity.
