@@ -65,60 +65,60 @@ struct context__ : public CONTEXT_POLICY
   //---------------------------------------------------------------------------/
   //! Add an index coloring.
   //!
-  //! @param key The map key.
+  //! @param index_space The map key.
   //! @param coloring The index coloring to add.
   //! @param coloring The index coloring information to add.
   //---------------------------------------------------------------------------/
 
   void
   add_coloring(
-    size_t key,
+    size_t index_space,
     index_coloring_t & coloring,
     std::unordered_map<size_t, coloring_info_t> & coloring_info
   )
   {
-    clog_assert(colorings_.find(key) == colorings_.end(),
+    clog_assert(colorings_.find(index_space) == colorings_.end(),
       "color index already exists");
 
-    colorings_[key] = coloring;
-    coloring_info_[key] = coloring_info;
+    colorings_[index_space] = coloring;
+    coloring_info_[index_space] = coloring_info;
   } // add_coloring
 
   //---------------------------------------------------------------------------/
   //! Return the index coloring referenced by key.
   //!
-  //! @param key The key associated with the coloring to be returned.
+  //! @param index_space The key associated with the coloring to be returned.
   //---------------------------------------------------------------------------/
 
   const index_coloring_t &
   coloring(
-    size_t key
+    size_t index_space
   )
   {
-    if(colorings_.find(key) == colorings_.end()) {
-      clog(fatal) << "invalid key " << key << std::endl;
+    if(colorings_.find(index_space) == colorings_.end()) {
+      clog(fatal) << "invalid index_space " << index_space << std::endl;
     } // if
 
-    return colorings_[key];
+    return colorings_[index_space];
   } // coloring
 
   //---------------------------------------------------------------------------/
   //! Return the index coloring information referenced by key.
   //!
-  //! @param key The key associated with the coloring information
-  //!            to be returned.
+  //! @param index_space The key associated with the coloring information
+  //!                    to be returned.
   //---------------------------------------------------------------------------/
 
   const std::unordered_map<size_t, coloring_info_t> &
   coloring_info(
-    size_t key
+    size_t index_space
   )
   {
-    if(coloring_info_.find(key) == coloring_info_.end()) {
-      clog(fatal) << "invalid key " << key << std::endl;
+    if(coloring_info_.find(index_space) == coloring_info_.end()) {
+      clog(fatal) << "invalid index space " << index_space << std::endl;
     } // if
 
-    return coloring_info_[key];
+    return coloring_info_[index_space];
   } // coloring_info
 
   //---------------------------------------------------------------------------/
@@ -152,6 +152,38 @@ struct context__ : public CONTEXT_POLICY
     return coloring_info_;
   } // colorings
 
+  //---------------------------------------------------------------------------/
+  //! Add an adjacency/connectivity from one index space to another.
+  //!
+  //! @param from_index_space The index space id of the from side
+  //! @param to_index_space The index space id of the to side
+  //---------------------------------------------------------------------------/
+
+  void
+  add_adjacency(
+    size_t from_index_space,
+    size_t to_index_space
+  )
+  {
+    auto p = std::make_pair(from_index_space, to_index_space);
+    clog_assert(adjacencies_.find(p) == adjacencies_.end(),
+      "adjacency exists");
+    adjacencies_.insert(p);
+  } // add_adjacency
+
+  //---------------------------------------------------------------------------/
+  //! Return the set of registered adjacencies.
+  //!
+  //! @return The set of registered adjacencies
+  //---------------------------------------------------------------------------/
+
+  const std::set<std::pair<size_t, size_t>>&
+  adjacencies()
+  const
+  {
+    return adjacencies_;
+  } // adjacencies
+
 private:
 
   // Default constructor
@@ -174,6 +206,9 @@ private:
   // value: map of color to coloring info
   std::unordered_map<size_t,
     std::unordered_map<size_t, coloring_info_t>> coloring_info_;
+
+  // pair is from, to index space
+  std::set<std::pair<size_t, size_t>> adjacencies_;
 
 }; // class context__
 

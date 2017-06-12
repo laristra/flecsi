@@ -19,6 +19,7 @@
 #include "flecsi/coloring/dcrs_utils.h"
 #include "flecsi/coloring/parmetis_colorer.h"
 #include "flecsi/coloring/mpi_communicator.h"
+#include "flecsi/supplemental/coloring/tikz.h"
 #include "flecsi/topology/closure_utils.h"
 #include "flecsi/utils/set_utils.h"
 
@@ -375,36 +376,7 @@ void add_colorings(int dummy) {
   context_.add_coloring(0, cells, cell_coloring_info);
   context_.add_coloring(1, vertices, vertex_coloring_info);
 
-#if 1
-  std::vector<std::pair<std::string, std::string>> colors = {
-    { "blue", "blue!40!white" },
-    { "green!60!black", "green!60!white" },
-    { "black", "black!40!white" },
-    { "red", "red!40!white" },
-    { "violet", "violet!40!white" },
-    { "cyan", "cyan!40!white" }
-  };
-
-  const size_t color = rank%colors.size();
-
-  std::stringstream texname;
-  texname << "simple2d-" << rank << "-" << M << "x" << N << ".tex";
-  std::ofstream tex(texname.str(), std::ofstream::out);
-
-  tex << "% Mesh visualization" << std::endl;
-  tex << "\\documentclass[tikz,border=7mm]{standalone}" << std::endl;
-  tex << std::endl;
-
-  tex << "\\begin{document}" << std::endl;
-  tex << std::endl;
-
-  tex << "\\begin{tikzpicture}" << std::endl;
-  tex << std::endl;
-
-  tex << "\\draw[step=1cm,black] (0, 0) grid (" <<
-    M << ", " << N << ");" << std::endl;
-
-  // maps
+  // Maps for output
   std::unordered_map<size_t, flecsi::coloring::entity_info_t>
     exclusive_cells_map;
   for(auto i: cells.exclusive) {
@@ -417,50 +389,18 @@ void add_colorings(int dummy) {
     ghost_cells_map[i.id] = i;
   } // for
 
-  size_t cell(0);
-  for(size_t j(0); j<M; ++j) {
-    double yoff(0.5+j);
-    for(size_t i(0); i<M; ++i) {
-      double xoff(0.5+i);
-
-      // Cells
-      auto ecell = exclusive_cells_map.find(cell);
-      auto scell = shared_cells_map.find(cell);
-      auto gcell = ghost_cells_map.find(cell);
-
-      if(ecell != exclusive_cells_map.end()) {
-        tex << "\\node[" << std::get<0>(colors[color]) <<
-          "] at (" << xoff << ", " << yoff <<
-          ") {" << cell++ << "};" << std::endl;
-      }
-      else if(scell != shared_cells_map.end()) {
-        tex << "\\node[" << std::get<1>(colors[color]) <<
-          "] at (" << xoff << ", " << yoff <<
-          ") {" << cell++ << "};" << std::endl;
-      }
-      else if(gcell != ghost_cells_map.end()) {
-        const size_t off_color = gcell->second.rank%colors.size();
-        tex << "\\node[" << std::get<1>(colors[off_color]) <<
-          "] at (" << xoff << ", " << yoff <<
-          ") {" << cell++ << "};" << std::endl;
-      }
-      else {
-        tex << "\\node[white] at (" << xoff << ", " << yoff <<
-          ") {" << cell++ << "};" << std::endl;
-      } // if
-    } // for
-  } // for
-
   std::unordered_map<size_t, flecsi::coloring::entity_info_t>
     exclusive_vertices_map;
   for(auto i: vertices.exclusive) {
     exclusive_vertices_map[i.id] = i;
+    vertices.primary.insert(i.id);
   } // for
 
   std::unordered_map<size_t, flecsi::coloring::entity_info_t>
     shared_vertices_map;
   for(auto i: vertices.shared) {
     shared_vertices_map[i.id] = i;
+    vertices.primary.insert(i.id);
   } // for
 
   std::unordered_map<size_t, flecsi::coloring::entity_info_t>
@@ -469,44 +409,18 @@ void add_colorings(int dummy) {
     ghost_vertices_map[i.id] = i;
   } // for
 
-  size_t vertex(0);
-  for(size_t j(0); j<M+1; ++j) {
-    double yoff(j-0.15);
-    for(size_t i(0); i<N+1; ++i) {
-      double xoff(i-0.2);
+  // Gather primary partitions
+  auto primary_cells = communicator->get_entity_reduction(cells.primary);
+  auto primary_vertices = communicator->get_entity_reduction(vertices.primary);
 
-      auto evertex = exclusive_vertices_map.find(vertex);
-      auto svertex = shared_vertices_map.find(vertex);
-      auto gvertex = ghost_vertices_map.find(vertex);
+  if(rank == 0) {
+    supplemental::tikz_writer_t::write_primary(M, N, primary_cells,
+      primary_vertices);
+  } // if
 
-      if(evertex != exclusive_vertices_map.end()) {
-        tex << "\\node[" << std::get<0>(colors[color]) <<
-          "] at (" << xoff << ", " << yoff <<
-          ") { \\scriptsize " << vertex++ << "};" << std::endl;
-      }
-      else if(svertex != shared_vertices_map.end()) {
-        tex << "\\node[" << std::get<1>(colors[color]) <<
-          "] at (" << xoff << ", " << yoff <<
-          ") { \\scriptsize " << vertex++ << "};" << std::endl;
-      }
-      else if(gvertex != ghost_vertices_map.end()) {
-        const size_t off_color = gvertex->second.rank%colors.size();
-        tex << "\\node[" << std::get<1>(colors[off_color]) <<
-          "] at (" << xoff << ", " << yoff <<
-          ") { \\scriptsize " << vertex++ << "};" << std::endl;
-      }
-      else {
-        tex << "\\node[white] at (" << xoff << ", " << yoff <<
-          ") { \\scriptsize " << vertex++ << "};" << std::endl;
-      } // if
-    } // for
-  } // for
-
-  tex << "\\end{tikzpicture}" << std::endl;
-  tex << std::endl;
-
-  tex << "\\end{document}" << std::endl;
-#endif
+  supplemental::tikz_writer_t::write_color(rank, M, N, exclusive_cells_map,
+    shared_cells_map, ghost_cells_map, exclusive_vertices_map,
+    shared_vertices_map, ghost_vertices_map);
 
 } // add_colorings
 

@@ -11,6 +11,7 @@
 #include "flecsi/execution/legion/runtime_driver.h"
 
 #include <legion.h>
+#include <legion_utilities.h>
 
 #include "flecsi/data/storage.h"
 #include "flecsi/execution/context.h"
@@ -19,8 +20,6 @@
 #include "flecsi/execution/legion/internal_field.h"
 #include "flecsi/data/legion/legion_data.h"
 #include "flecsi/utils/common.h"
-
-#include <legion_utilities.h>
 
 clog_register_tag(runtime_driver);
 
@@ -113,34 +112,39 @@ runtime_driver(
       phase_barriers_map[idx_space.first].push_back(
         runtime->create_phase_barrier(ctx,
           1 + color_info.shared_users.size()));
+      
+      clog(trace) << "key " << idx_space.first << " phase barrier " << color <<
+          " has " << color_info.shared_users.size() + 1 << " arrivers to " <<
+          phase_barriers_map[idx_space.first].back() << std::endl;
     }
   }
 
   // Map between pre-compacted and compacted data placement
-  const auto compaction_id =
-    context_.task_id<__flecsi_internal_task_key(compaction_task)>();
+  const auto pos_compaction_id =
+    context_.task_id<__flecsi_internal_task_key(owner_pos_compaction_task)>();
   
-  Legion::IndexLauncher compaction_launcher(compaction_id, data.color_domain(),
-      Legion::TaskArgument(nullptr, 0), Legion::ArgumentMap());
+  Legion::IndexLauncher pos_compaction_launcher(pos_compaction_id,
+      data.color_domain(), Legion::TaskArgument(nullptr, 0),
+      Legion::ArgumentMap());
   
-  compaction_launcher.tag = MAPPER_FORCE_RANK_MATCH;
+  pos_compaction_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
   auto ghost_owner_pos_fid = 
     LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
 
   for(auto idx_space : data.index_spaces()) {
-    auto& is = data.index_space_info(idx_space);
+    auto& flecsi_ispace = data.index_space_info(idx_space);
 
-    Legion::LogicalPartition color_lp = runtime->get_logical_partition(ctx,
-        is.logical_region, is.index_partition);
+    Legion::LogicalPartition color_lpart = runtime->get_logical_partition(ctx,
+        flecsi_ispace.logical_region, flecsi_ispace.index_partition);
     
-    compaction_launcher.add_region_requirement(
-        Legion::RegionRequirement(color_lp, 0/*projection ID*/,
-            WRITE_DISCARD, EXCLUSIVE, is.logical_region))
+    pos_compaction_launcher.add_region_requirement(
+        Legion::RegionRequirement(color_lpart, 0/*projection ID*/,
+            WRITE_DISCARD, EXCLUSIVE, flecsi_ispace.logical_region))
                 .add_field(ghost_owner_pos_fid);
   } // for idx_space
   
-  runtime->execute_index_space(ctx, compaction_launcher);
+  runtime->execute_index_space(ctx, pos_compaction_launcher);
 
   // Must epoch launch
   Legion::MustEpochLauncher must_epoch_launcher;
@@ -155,12 +159,12 @@ runtime_driver(
   for(size_t color(0); color<num_colors; ++color) {
 
     // Serialize PhaseBarriers and set as task arguments
-    std::vector<Legion::PhaseBarrier> pbarriers_as_master;
+    std::vector<Legion::PhaseBarrier> pbarriers_as_owner;
     std::vector<size_t> num_ghost_owners;
     std::vector<std::vector<Legion::PhaseBarrier>> owners_pbarriers;
 
     for(auto idx_space : data.index_spaces()) {
-      pbarriers_as_master.push_back(phase_barriers_map[idx_space][color]);
+      pbarriers_as_owner.push_back(phase_barriers_map[idx_space][color]);
       
       flecsi::coloring::coloring_info_t color_info = 
         coloring_info[idx_space][color];
@@ -171,7 +175,7 @@ runtime_driver(
       
       num_ghost_owners.push_back(color_info.ghost_owners.size());
       std::vector<Legion::PhaseBarrier> per_color_owners_pbs;
-      for (auto owner : color_info.ghost_owners) {
+      for(auto owner : color_info.ghost_owners) {
         clog(trace) << owner << std::endl;
         per_color_owners_pbs.push_back(phase_barriers_map[idx_space][owner]);
       }
@@ -188,11 +192,11 @@ runtime_driver(
     args_serializers[color].serialize(&num_idx_spaces, sizeof(size_t));
     args_serializers[color].serialize(&idx_spaces_vec[0], num_idx_spaces
         * sizeof(size_t));
-    args_serializers[color].serialize(&pbarriers_as_master[0], num_idx_spaces
+    args_serializers[color].serialize(&pbarriers_as_owner[0], num_idx_spaces
         * sizeof(Legion::PhaseBarrier));
     args_serializers[color].serialize(&num_ghost_owners[0], num_idx_spaces
         * sizeof(size_t));
-    for (size_t idx_space : data.index_spaces())
+    for(size_t idx_space : data.index_spaces())
       args_serializers[color].serialize(&owners_pbarriers[idx_space][0],
           num_ghost_owners[idx_space] * sizeof(Legion::PhaseBarrier));
 
@@ -209,54 +213,64 @@ runtime_driver(
     // Add region requirements
 
     for(auto idx_space : data.index_spaces()){
-      auto& is = data.index_space_info(idx_space);
+      auto& flecsi_ispace = data.index_space_info(idx_space);
 
-      Legion::LogicalPartition color_lp = 
+      Legion::LogicalPartition color_lpart =
         runtime->get_logical_partition(ctx,
-          is.logical_region, is.index_partition);
+          flecsi_ispace.logical_region, flecsi_ispace.index_partition);
       
-      Legion::LogicalRegion color_lr = 
-        runtime->get_logical_subregion_by_color(ctx, color_lp, color);
+      Legion::LogicalRegion color_lregion =
+        runtime->get_logical_subregion_by_color(ctx, color_lpart, color);
 
-      Legion::RegionRequirement rr(color_lr, READ_WRITE, SIMULTANEOUS,
-        is.logical_region);
+      Legion::RegionRequirement reg_req(color_lregion, READ_WRITE, SIMULTANEOUS,
+        flecsi_ispace.logical_region);
 
-      rr.add_field(ghost_owner_pos_fid);
+      reg_req.add_field(ghost_owner_pos_fid);
 
-      for(const field_info_t& fi : context_.registered_fields()){
-        if(fi.index_space == idx_space){
-          rr.add_field(fi.fid);
+      for(const field_info_t& field_info : context_.registered_fields()){
+        if(field_info.index_space == idx_space){
+          reg_req.add_field(field_info.fid);
         }
       }
 
-      spmd_launcher.add_region_requirement(rr);
+      for(auto& p : context_.adjacencies()){
+        if(p.first == idx_space){
+          Legion::FieldID adjacency_fid = 
+            context_.adjacency_fid(p.first, p.second);
+          
+          reg_req.add_field(adjacency_fid);
+        }
+      }
+
+      spmd_launcher.add_region_requirement(reg_req);
 
       flecsi::coloring::coloring_info_t color_info = 
         coloring_info[idx_space][color];
       
-      for (auto ghost_owner : color_info.ghost_owners) {
+      for(auto ghost_owner : color_info.ghost_owners) {
         clog(trace) << " Color " << color << " idx_space " << idx_space << 
           " has owner " << ghost_owner << std::endl;
-        Legion::LogicalRegion ghost_owner_lr = 
-          runtime->get_logical_subregion_by_color(ctx, color_lp, ghost_owner);
+        Legion::LogicalRegion ghost_owner_lregion =
+          runtime->get_logical_subregion_by_color(ctx, color_lpart, ghost_owner);
 
         const LegionRuntime::Arrays::coord_t owner_color = ghost_owner;
         const bool is_mutable = false;
-        runtime->attach_semantic_information(ghost_owner_lr, OWNER_COLOR_TAG, 
-          (void*)&owner_color, sizeof(LegionRuntime::Arrays::coord_t), is_mutable);
+        runtime->attach_semantic_information(ghost_owner_lregion,
+          OWNER_COLOR_TAG, (void*)&owner_color,
+          sizeof(LegionRuntime::Arrays::coord_t), is_mutable);
 
-        Legion::RegionRequirement rr_owner(ghost_owner_lr, READ_ONLY, SIMULTANEOUS,
-            is.logical_region);
-        rr_owner.add_flags(NO_ACCESS_FLAG);
-        rr_owner.add_field(ghost_owner_pos_fid);
-        for(const field_info_t& fi : context_.registered_fields()){
-          if(fi.index_space == idx_space){
-            rr_owner.add_field(fi.fid);
+        Legion::RegionRequirement owner_reg_req(ghost_owner_lregion, READ_ONLY,
+          SIMULTANEOUS, flecsi_ispace.logical_region);
+        owner_reg_req.add_flags(NO_ACCESS_FLAG);
+        owner_reg_req.add_field(ghost_owner_pos_fid);
+        for(const field_info_t& field_info : context_.registered_fields()){
+          if(field_info.index_space == idx_space){
+            owner_reg_req.add_field(field_info.fid);
           }
         }
 
-        spmd_launcher.add_region_requirement(rr_owner);
-      } // for owner
+        spmd_launcher.add_region_requirement(owner_reg_req);
+      } // for ghost_owner
 
     } // for idx_space
 
@@ -270,9 +284,9 @@ runtime_driver(
 
   // Finish up Legion runtime and fall back out to MPI.
 
-  for (auto& itr : phase_barriers_map) {
+  for(auto& itr : phase_barriers_map) {
     const size_t handle = itr.first;
-    for (size_t color = 0; color < phase_barriers_map[handle].size(); color ++) {
+    for(size_t color = 0; color < phase_barriers_map[handle].size(); color ++) {
       runtime->destroy_phase_barrier(ctx, phase_barriers_map[handle][color]);
     }
     phase_barriers_map[handle].clear();
