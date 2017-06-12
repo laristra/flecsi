@@ -54,8 +54,8 @@ public:
 //!
 TEST(any, simple) {
 
-   typedef std::vector<any_t> storage_t;
-   typedef storage_t::const_iterator storage_iter;
+   using storage_t = std::vector<any_t>;
+   using storage_iter = storage_t::const_iterator;
    storage_t storage;
 
    double A;

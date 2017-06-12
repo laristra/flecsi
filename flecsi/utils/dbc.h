@@ -14,7 +14,7 @@
 #include <sstream>
 #include <string>
 
-/**\file dbc.h
+/**\file
  *
  * \brief Design By Contract (DBC) assertions.
  *

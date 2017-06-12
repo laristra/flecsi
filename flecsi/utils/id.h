@@ -16,6 +16,7 @@
 #define flecsi_utils_id_h
 
 #include <cassert>
+#include <climits>
 #include <cstdint>
 #include <iostream>
 
@@ -38,6 +39,11 @@ namespace utils {
 
     static_assert(PBITS + EBITS + FBITS + GBITS + 4 == 128, 
       "invalid id bit configuration");
+
+    // the FLAGS_UNMASK computation appears to assume this... - martin
+    static_assert(sizeof(std::size_t)*CHAR_BIT >= 64,
+      "need std::size_t >= 64 bit"
+    );
 
     id_() = default;
     id_(id_&&) = default;
@@ -108,7 +114,7 @@ namespace utils {
       return (local_id() & unmask) | global_;
     }
 
-    void set_global(size_t global) const
+    void set_global(size_t global)
     {
       global_ = global;
     }
@@ -118,7 +124,7 @@ namespace utils {
       return global_;
     }
 
-    void set_partition(size_t partition) const
+    void set_partition(size_t partition)
     {
       partition_ = partition;
     }
@@ -188,13 +194,25 @@ namespace utils {
     size_t global_ : GBITS;
   }; // id_
 
+  /*
+  // This triggered << overload ambiguities
   inline std::ostream& operator<<(std::ostream& ostr, local_id_t x){
     ostr << uint64_t(x >> 64) << ":" << uint64_t(x);
     return ostr;
   }
+  */
 
 } // namespace utils
 } // namespace flecsi
+
+// Defining out-of-namespace prevents the << overload ambiguity problem
+inline std::ostream &operator<<(
+  std::ostream &ostr,
+  const flecsi::utils::local_id_t x
+) {
+  ostr << uint64_t(x >> 64) << ":" << uint64_t(x);
+  return ostr;
+}
 
 #endif // flecsi_utils_id_h
 

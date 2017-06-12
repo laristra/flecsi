@@ -127,6 +127,7 @@ cinch_add_unit(const_string
 
 cinch_add_unit(factory
   SOURCES test/factory.cc
+  INPUTS  test/factory.blessed
 )
 
 cinch_add_unit(reorder

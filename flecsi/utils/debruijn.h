@@ -7,7 +7,7 @@
 #define flecsi_utils_debruijn_h
 
 //!
-//! \file debruijn.h
+//! \file
 //! \date Initial file creation: Apr 09, 2017
 //!
 

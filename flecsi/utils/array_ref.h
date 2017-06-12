@@ -7,7 +7,7 @@
 #define flecsi_utils_array_ref_h
 
 //!
-//! \file  array_ref.h
+//! \file
 //! \brief A reference array to avoid a million overloads.
 //!
 

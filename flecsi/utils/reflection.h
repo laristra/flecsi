@@ -71,13 +71,14 @@
 ///
 #define declare_reflected(...)                                                 \
                                                                                \
-  static const size_t num_reflected_ = BOOST_PP_VARIADIC_SIZE(__VA_ARGS__);    \
+  static const std::size_t num_reflected_ =                                    \
+    BOOST_PP_VARIADIC_SIZE(__VA_ARGS__);                                       \
                                                                                \
   friend struct reflection;                                                    \
                                                                                \
   /* Unspecialized type declaration. */                                        \
   template<                                                                    \
-    size_t N,                                                                  \
+    std::size_t N,                                                             \
     typename S                                                                 \
   >                                                                            \
   struct reflection_variable__ {};                                             \
@@ -133,14 +134,14 @@ struct reflection
   >
   struct num_variables
   {
-    static constexpr size_t value = T::num_reflected_;
+    static constexpr std::size_t value = T::num_reflected_;
   }; // struct num_variables
 
   ///
   /// Get the reflection variable at index N.
   ///
   template<
-    size_t N,
+    std::size_t N,
     typename T
   >
   static

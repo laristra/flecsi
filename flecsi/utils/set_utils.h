@@ -7,7 +7,7 @@
 #define flecsi_utils_set_utils_h
 
 //!
-//! \file set_utils.h
+//! \file
 //! \authors bergen
 //! \date Initial file creation: Nov 21, 2016
 //!

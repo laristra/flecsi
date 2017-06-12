@@ -16,7 +16,7 @@
 #define flecsi_utils_reorder_h
 
 //!
-//! \file reorder.h
+//! \file
 //!
 
 #include <iterator>

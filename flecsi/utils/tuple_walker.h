@@ -7,7 +7,7 @@
 #define flecsi_utils_tuple_walker_h
 
 //!
-//! \file tuple_walker.h
+//! \file
 //! \date Initial file creation: Jul 28, 2016
 //!
 
@@ -17,13 +17,13 @@ namespace flecsi {
 namespace utils {
 
   template<
-    size_t I,
+    std::size_t I,
     typename T,
     typename P
   >
   struct tuple_walker_helper__{
     static
-    size_t
+    std::size_t
     walk(
       P & p,
       T & t)
@@ -39,7 +39,7 @@ namespace utils {
   >
   struct tuple_walker_helper__<0, T, P>{
     static
-    size_t
+    std::size_t
     walk(
          P &, T &)
     {

@@ -16,7 +16,7 @@
 #define flecsi_utils_const_string_h
 
 //!
-//! \file const_string.h
+//! \file
 //! \date Initial file creation: Oct 15, 2015
 //!
 
