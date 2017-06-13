@@ -165,6 +165,8 @@ namespace execution {
               launcher(ghost_copy_tid,
               Legion::TaskArgument(&args, sizeof(args)));
 
+            launcher.tag = MAPPER_SUBRANK_LAUNCH;
+
             clog(trace) << "gid to lid map size = " <<
                     h.global_to_local_color_map->size() << std::endl;
             launcher.add_future(Legion::Future::from_value(runtime,

@@ -73,6 +73,17 @@ namespace execution {
 #endif
 
 //----------------------------------------------------------------------------//
+//! mapper tag's IDs
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+enum {
+  // Use the first 8 bits for storing the rhsf index
+  MAPPER_FORCE_RANK_MATCH = 0x00001000,
+  MAPPER_SUBRANK_LAUNCH   = 0x00080000,
+};
+
+//----------------------------------------------------------------------------//
 //! The legion_context_policy_t is the backend runtime context policy for
 //! Legion.
 //!

@@ -350,7 +350,12 @@ __flecsi_internal_legion_task(spmd_task, void) {
     // Fix ghost reference/pointer to point to compacted position of shared that it needs
     Legion::TaskLauncher fix_ghost_refs_launcher(context_
             .task_id<__flecsi_internal_task_key(owner_pos_correction_task)>(),
-        Legion::TaskArgument(nullptr, 0));
+            Legion::TaskArgument(nullptr, 0));
+
+    fix_ghost_refs_launcher.tag = MAPPER_SUBRANK_LAUNCH;
+
+    clog(trace) << "Rank" << my_color << " Index " << idx_space <<
+            " RW " << ispace_dmap[idx_space].color_region << std::endl;
 
     fix_ghost_refs_launcher.add_region_requirement(
         Legion::RegionRequirement(ispace_dmap[idx_space].ghost_lr, READ_WRITE,
