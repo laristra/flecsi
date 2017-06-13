@@ -234,10 +234,10 @@ runtime_driver(
         }
       }
 
-      for(auto& p : context_.adjacencies()){
-        if(p.first == idx_space){
+      for(auto& itr : context_.adjacency_info()){
+        if(itr.first.first == idx_space){
           Legion::FieldID adjacency_fid = 
-            context_.adjacency_fid(p.first, p.second);
+            context_.adjacency_fid(itr.first.first, itr.first.second);
           
           reg_req.add_field(adjacency_fid);
         }

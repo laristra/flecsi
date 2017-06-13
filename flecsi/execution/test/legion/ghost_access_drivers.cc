@@ -44,7 +44,7 @@ void check_all_cells_task(handle_t<size_t, flecsi::dro, flecsi::dro,
       std::endl;
 
   flecsi::execution::context_t & context_ = flecsi::execution::context_t::instance();
-  const std::unordered_map<size_t, flecsi::coloring::index_coloring_t> coloring_map
+  const std::map<size_t, flecsi::coloring::index_coloring_t> coloring_map
     = context_.coloring_map();
   auto index_coloring = coloring_map.find(INDEX_ID);
 
@@ -90,7 +90,7 @@ void set_primary_cells_task(handle_t<size_t, flecsi::drw, flecsi::drw,
   clog(trace) << my_color << " WRITING " << std::endl;
 
   flecsi::execution::context_t & context_ = flecsi::execution::context_t::instance();
-  const std::unordered_map<size_t, flecsi::coloring::index_coloring_t> coloring_map
+  const std::map<size_t, flecsi::coloring::index_coloring_t> coloring_map
     = context_.coloring_map();
   auto index_coloring = coloring_map.find(INDEX_ID);
 

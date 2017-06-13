@@ -24,6 +24,7 @@
 #include "flecsi/execution/context.h"
 #include "flecsi/coloring/index_coloring.h"
 #include "flecsi/coloring/coloring_types.h"
+#include "flecsi/coloring/adjacency_types.h"
 #include "flecsi/execution/legion/helper.h"
 #include "flecsi/execution/legion/legion_tasks.h"
 
@@ -39,20 +40,13 @@ namespace data{
 class legion_data_t{
 public:
 
-  struct connectivity_info_t
-  {
-    std::vector<size_t> color_sizes;
-  };
-
   using coloring_info_t = coloring::coloring_info_t;
 
-  using coloring_info_map_t = std::map<size_t, coloring_info_t>;
+  using adjacency_info_t = coloring::adjacency_info_t;
 
-  using indexed_coloring_info_map_t = 
-    std::map<size_t, std::unordered_map<size_t, coloring_info_t>>;
+  using coloring_info_map_t = std::unordered_map<size_t, coloring_info_t>;
 
-  using connectivity_info_map_t =
-    std::map<std::pair<size_t, size_t>, connectivity_info_t>;
+  using indexed_coloring_info_map_t = std::map<size_t, coloring_info_map_t>;
 
   struct index_space_info_t{
     size_t index_space_id;
@@ -63,7 +57,7 @@ public:
     size_t total_num_entities;
   };
 
-  struct connectvity_t{
+  struct adjacency_t{
     size_t from_index_space;
     size_t to_index_space;
     Legion::IndexSpace index_space;
@@ -207,11 +201,10 @@ public:
   }
 
   void
-  init_connectivty(
-    const connectivity_info_map_t& connectivity_info_map
+  add_adjacency(
+    const adjacency_info_t& adjacency_info
   )
   {
-#if 0
     using namespace std;
     
     using namespace Legion;
@@ -222,69 +215,68 @@ public:
 
     context_t & context = context_t::instance();
 
-    for(auto& p : context.adjacencies()){
-      connectvity_t c;
-      c.from_index_space = p.first;
-      c.to_index_space = p.second;
+    adjacency_t c;
+    c.from_index_space = adjacency_info.from_index_space;
+    c.to_index_space = adjacency_info.to_index_space;
 
-      auto fitr = index_space_map_.find(c.from_index_space);
-      clog_assert(fitr != index_space_map_.end(), "invalid from index space");
-      const index_space_info_t& fi = fitr->second;
+    auto fitr = index_space_map_.find(c.from_index_space);
+    clog_assert(fitr != index_space_map_.end(), "invalid from index space");
+    const index_space_info_t& fi = fitr->second;
 
-      auto titr = index_space_map_.find(c.to_index_space);
-      clog_assert(titr != index_space_map_.end(), "invalid to index space");
-      const index_space_info_t& ti = titr->second;
+    auto titr = index_space_map_.find(c.to_index_space);
+    clog_assert(titr != index_space_map_.end(), "invalid to index space");
+    const index_space_info_t& ti = titr->second;
 
-      auto citr = connectivity_info_map.find(p);
-      clog_assert(citr != connectivity_info_map.end(),
-        "invalid connectivity info");
-      const connectivity_info_t& ci = citr->second;
+    auto p = std::make_pair(c.from_index_space, c.to_index_space);
 
-      c.max_conn_size = fi.total_num_entities * ti.total_num_entities;
+    auto citr = adjacency_map_.find(p);
+    clog_assert(citr != adjacency_map_.end(),
+      "invalid adjacency info");
+    const adjacency_t& ci = citr->second;
 
-      // Create expanded index space
-      Rect<2> expanded_bounds = 
-        Rect<2>(Point<2>::ZEROES(), make_point(num_colors_, c.max_conn_size));
+    c.max_conn_size = fi.total_num_entities * ti.total_num_entities;
+
+    // Create expanded index space
+    Rect<2> expanded_bounds = 
+      Rect<2>(Point<2>::ZEROES(), make_point(num_colors_, c.max_conn_size));
+    
+    Domain expanded_dom(Domain::from_rect<2>(expanded_bounds));
+    c.index_space = runtime_->create_index_space(ctx_, expanded_dom);
+    attach_name(c, c.index_space, "expanded index space");
+
+    // Read user + FleCSI registered field spaces
+    c.field_space = runtime_->create_field_space(ctx_);
+
+    FieldAllocator allocator = 
+      runtime_->create_field_allocator(ctx_, c.field_space);
+
+    auto connectivity_offset_fid = 
+      FieldID(internal_field::connectivity_offset);
+
+    allocator.allocate_field(sizeof(size_t), connectivity_offset_fid);
+
+    attach_name(c, c.field_space, "expanded field space");
+
+    c.logical_region = 
+      runtime_->create_logical_region(ctx_, c.index_space, c.field_space);
+    attach_name(c, c.logical_region, "expanded logical region");
+
+    clog_assert(adjacency_info.color_sizes.size() == num_colors_,
+      "mismatch in color sizes");
+
+    DomainColoring color_partitioning;
+    for(size_t color = 0; color < num_colors_; ++color){
+      Rect<2> subrect(make_point(color, 0), make_point(color,
+        adjacency_info.color_sizes[color] - 1));
       
-      Domain expanded_dom(Domain::from_rect<2>(expanded_bounds));
-      c.index_space = runtime_->create_index_space(ctx_, expanded_dom);
-      attach_name(c, c.index_space, "expanded index space");
-
-      // Read user + FleCSI registered field spaces
-      c.field_space = runtime_->create_field_space(ctx_);
-
-      FieldAllocator allocator = 
-        runtime_->create_field_allocator(ctx_, c.field_space);
-
-      auto connectivity_offset_fid = 
-        FieldID(internal_field::connectivity_offset);
-
-      allocator.allocate_field(sizeof(size_t), connectivity_offset_fid);
-
-      attach_name(c, c.field_space, "expanded field space");
-
-      c.logical_region = 
-        runtime_->create_logical_region(ctx_, c.index_space, c.field_space);
-      attach_name(c, c.logical_region, "expanded logical region");
-
-      clog_assert(ci.color_sizes.size() == num_colors_,
-        "mismatch in color sizes");
-
-      DomainColoring color_partitioning;
-      for(size_t color = 0; color < num_colors_; ++color){
-        Rect<2> subrect(make_point(color, 0), make_point(color,
-          ci.color_sizes[color] - 1));
-        
-        color_partitioning[color] = Domain::from_rect<2>(subrect);
-      }
-
-      c.index_partition = runtime_->create_index_partition(ctx_,
-        c.index_space, color_domain_, color_partitioning, true /*disjoint*/);
-      attach_name(c, c.index_partition, "color partitioning");
-
-      connectivity_map_.emplace(p, std::move(c));
+      color_partitioning[color] = Domain::from_rect<2>(subrect);
     }
-#endif
+
+    c.index_partition = runtime_->create_index_partition(ctx_,
+      c.index_space, color_domain_, color_partitioning, true /*disjoint*/);
+    attach_name(c, c.index_partition, "color partitioning");
+
+    adjacency_map_.emplace(p, std::move(c));
   }
 
   const index_space_info_t&
@@ -312,15 +304,15 @@ public:
     return color_domain_;
   }
 
-  const std::map<std::pair<size_t, size_t>, connectvity_t>&
-  connectivity_map()
+  const std::map<std::pair<size_t, size_t>, adjacency_t>&
+  adjacency_map()
   const
   {
-    return connectivity_map_;
+    return adjacency_map_;
   }
 
   void
-  fill_connectivity(
+  fill_adjacency(
     size_t from_index_space,
     size_t to_index_space,
     size_t color,
@@ -339,9 +331,9 @@ public:
 
     context_t & context = context_t::instance();
 
-    auto itr = connectivity_map_.find({from_index_space, to_index_space});
-    clog_assert(itr != connectivity_map_.end(), "invalid connectivity");
-    connectvity_t& c = itr->second;
+    auto itr = adjacency_map_.find({from_index_space, to_index_space});
+    clog_assert(itr != adjacency_map_.end(), "invalid adjacency");
+    adjacency_t& c = itr->second;
     index_space_info_t& iis = index_space_map_[from_index_space];
 
     IndexSpace is = h.create_index_space(0, size - 1);
@@ -351,17 +343,17 @@ public:
     auto connectivity_offset_fid = 
       FieldID(internal_field::connectivity_offset);
     
-    auto connectivity_index_fid = 
+    auto adjacency_index_fid = 
       FieldID(internal_field::connectivity_index);
 
     a.allocate_field(sizeof(uint64_t), connectivity_offset_fid);
-    a.allocate_field(sizeof(uint64_t), connectivity_index_fid);
+    a.allocate_field(sizeof(uint64_t), adjacency_index_fid);
 
     LogicalRegion lr = h.create_logical_region(is, fs);
 
     RegionRequirement rr(lr, WRITE_DISCARD, EXCLUSIVE, lr);
     rr.add_field(connectivity_offset_fid);
-    rr.add_field(connectivity_index_fid);
+    rr.add_field(adjacency_index_fid);
     InlineLauncher il(rr);
 
     PhysicalRegion pr = runtime_->map_region(ctx_, il);
@@ -371,22 +363,22 @@ public:
     h.get_buffer(pr, dst_offsets, connectivity_offset_fid);
 
     uint64_t* dst_indices;
-    h.get_buffer(pr, dst_indices, connectivity_index_fid);
+    h.get_buffer(pr, dst_indices, adjacency_index_fid);
 
     std::memcpy(dst_offsets, offsets, sizeof(uint64_t) * size);
     std::memcpy(dst_indices, indices, sizeof(uint64_t) * size);
 
     runtime_->unmap_region(ctx_, pr);
 
-    auto fill_connectivity_tid =
-      context.task_id<__flecsi_internal_task_key(fill_connectivity_task)>();
+    auto fill_adjacency_tid =
+      context.task_id<__flecsi_internal_task_key(fill_adjacency_task)>();
 
     FieldID adjacency_fid = 
       context.adjacency_fid(from_index_space, to_index_space);
 
     auto p = std::make_tuple(from_index_space, to_index_space, size);    
 
-    TaskLauncher l(fill_connectivity_tid, TaskArgument(&p, sizeof(p)));
+    TaskLauncher l(fill_adjacency_tid, TaskArgument(&p, sizeof(p)));
 
     LogicalPartition color_conn_lp =
       runtime_->get_logical_partition(ctx_,
@@ -397,7 +389,7 @@ public:
 
     RegionRequirement rr1(color_conn_lr, WRITE_DISCARD, SIMULTANEOUS,
       c.logical_region);
-    rr1.add_field(connectivity_index_fid);
+    rr1.add_field(adjacency_index_fid);
     l.add_region_requirement(rr1);
 
     LogicalPartition color_lp =
@@ -414,7 +406,7 @@ public:
 
     RegionRequirement rr3(lr, READ_ONLY, SIMULTANEOUS, lr);
     rr3.add_field(connectivity_offset_fid);
-    rr3.add_field(connectivity_index_fid);
+    rr3.add_field(adjacency_index_fid);
     l.add_region_requirement(rr3);
 
     MustEpochLauncher must_epoch_launcher;
@@ -447,7 +439,7 @@ private:
 
   std::unordered_map<size_t, index_space_info_t> index_space_map_;
   
-  std::map<std::pair<size_t, size_t>, connectvity_t> connectivity_map_;
+  std::map<std::pair<size_t, size_t>, adjacency_t> adjacency_map_;
 
   template<
     class T
@@ -469,7 +461,7 @@ private:
   >
   void
   attach_name(
-    const connectvity_t& c,
+    const adjacency_t& c,
     T& x,
     const char* label
   )
