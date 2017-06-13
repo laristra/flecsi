@@ -38,12 +38,21 @@ namespace data{
 
 class legion_data_t{
 public:
+
+  struct connectivity_info_t
+  {
+    std::vector<size_t> color_sizes;
+  };
+
   using coloring_info_t = coloring::coloring_info_t;
 
   using coloring_info_map_t = std::unordered_map<size_t, coloring_info_t>;
 
   using indexed_coloring_info_map_t = 
     std::unordered_map<size_t, std::unordered_map<size_t, coloring_info_t>>;
+
+  using connectivity_info_map_t =
+    std::map<std::pair<size_t, size_t>, connectivity_info_t>;
 
   struct index_space_info_t{
     size_t index_space_id;
@@ -196,7 +205,9 @@ public:
   }
 
   void
-  init_connectivty()
+  init_connectivty(
+    const connectivity_info_map_t& connectivity_info_map
+  )
   {
     using namespace std;
     
@@ -220,6 +231,11 @@ public:
       auto titr = index_space_map_.find(c.to_index_space);
       clog_assert(titr != index_space_map_.end(), "invalid to index space");
       const index_space_info_t& ti = titr->second;
+
+      auto citr = connectivity_info_map.find(p);
+      clog_assert(citr != connectivity_info_map.end(),
+        "invalid connectivity info");
+      const connectivity_info_t& ci = citr->second;
 
       c.max_conn_size = fi.total_num_entities * ti.total_num_entities;
 
@@ -247,6 +263,21 @@ public:
       c.logical_region = 
         runtime_->create_logical_region(ctx_, c.index_space, c.field_space);
       attach_name(c, c.logical_region, "expanded logical region");
+
+      clog_assert(ci.color_sizes.size() == num_colors_,
+        "mismatch in color sizes");
+
+      DomainColoring color_partitioning;
+      for(size_t color = 0; color < num_colors_; ++color){
+        Rect<2> subrect(make_point(color, 0), make_point(color,
+          ci.color_sizes[color] - 1));
+        
+        color_partitioning[color] = Domain::from_rect<2>(subrect);
+      }
+
+      c.index_partition = runtime_->create_index_partition(ctx_,
+        c.index_space, color_domain_, color_partitioning, true /*disjoint*/);
+      attach_name(c, c.index_partition, "color partitioning");
 
       connectivity_map_.emplace(p, std::move(c));
     }
@@ -282,38 +313,6 @@ public:
   const
   {
     return connectivity_map_;
-  }
-
-  void
-  partition_connectivity(
-    size_t from_index_space,
-    size_t to_index_space,
-    size_t* sizes
-  )
-  {
-    using namespace std;
-    
-    using namespace Legion;
-    using namespace LegionRuntime;
-    using namespace Arrays;
-
-    using namespace execution;
-
-    auto itr = connectivity_map_.find({from_index_space, to_index_space});
-    clog_assert(itr != connectivity_map_.end(), "invalid connectivity");
-    connectvity_t& c = itr->second;
-
-    DomainColoring color_partitioning;
-    for(size_t color = 0; color < num_colors_; ++color){
-      Rect<2> subrect(make_point(color, 0), make_point(color,
-        sizes[color] - 1));
-      
-      color_partitioning[color] = Domain::from_rect<2>(subrect);
-    }
-
-    c.index_partition = runtime_->create_index_partition(ctx_,
-      c.index_space, color_domain_, color_partitioning, true /*disjoint*/);
-    attach_name(c, c.index_partition, "color partitioning");
   }
 
   void
