@@ -90,6 +90,16 @@ template<
   size_t DIMENSION,
   size_t THRU
 >
+dcrs_t
+make_dcrs(
+  topology::mesh_definition_t & md,
+  std::set<size_t> indices
+)
+{
+  // Start to initialize the return object.
+	dcrs_t dcrs;
+	dcrs.distribution.push_back(0);
+} // make_dcrs
 
 #endif
 

@@ -284,12 +284,14 @@ __flecsi_internal_legion_task(spmd_task, void) {
             + coloring_info.ghost - 1));
     primary_ghost_coloring[GHOST_PART] = Legion::Domain::from_rect<2>(ghost_rect);
 
-    Legion::IndexPartition primary_ghost_ip = runtime->create_index_partition(ctx,
-        color_ispace, color_domain_1D, primary_ghost_coloring, true /*disjoint*/);
+    Legion::IndexPartition primary_ghost_ip =
+      runtime->create_index_partition(ctx, color_ispace, color_domain_1D,
+      primary_ghost_coloring, true /*disjoint*/);
 
     ispace_dmap[idx_space].primary_ghost_ip = primary_ghost_ip;
 
-    Legion::LogicalPartition primary_ghost_lp = runtime->get_logical_partition(ctx,
+    Legion::LogicalPartition primary_ghost_lp =
+      runtime->get_logical_partition(ctx,
         regions[region_index].get_logical_region(), primary_ghost_ip);
     region_index++;
 
