@@ -150,52 +150,7 @@ public:
     // Read user + FleCSI registered field spaces
     is.field_space = runtime_->create_field_space(ctx_);
 
-    FieldAllocator allocator = 
-      runtime_->create_field_allocator(ctx_, is.field_space);
-
-    auto ghost_owner_pos_fid = FieldID(internal_field::ghost_owner_pos);
-
-    allocator.allocate_field(sizeof(Point<2>), ghost_owner_pos_fid);
-
-    using field_info_t = context_t::field_info_t;
-
-    for(const field_info_t& fi : context.registered_fields()){
-      if(fi.index_space == index_space_id){
-        allocator.allocate_field(fi.size, fi.fid);
-      }
-    }
-
-#if 0
-    for(auto& p : context.adjacencies()){
-      FieldID adjacency_fid = context.adjacency_fid(p.first, p.second);
-
-      allocator.allocate_field(sizeof(Point<2>), adjacency_fid);
-    }
-#endif
-
     attach_name(is, is.field_space, "expanded field space");
-
-    is.logical_region = runtime_->create_logical_region(ctx_, is.index_space, is.field_space);
-    attach_name(is, is.logical_region, "expanded logical region");
-
-    // Partition expanded IndexSpace color-wise & create associated PhaseBarriers
-    DomainColoring color_partitioning;
-    for(int color = 0; color < num_colors_; color++){
-      auto citr = coloring_info_map.find(color);
-      clog_assert(citr != coloring_info_map.end(), "invalid color info");
-      const coloring_info_t& color_info = citr->second;
-
-      Rect<2> subrect(
-          make_point(color, 0),
-          make_point(color,
-            color_info.exclusive + color_info.shared + color_info.ghost - 1));
-      
-      color_partitioning[color] = Domain::from_rect<2>(subrect);
-    }
-
-    is.index_partition = runtime_->create_index_partition(ctx_,
-      is.index_space, color_domain_, color_partitioning, true /*disjoint*/);
-    attach_name(is, is.index_partition, "color partitioning");
 
     index_space_map_[index_space_id] = std::move(is);
   }
@@ -277,6 +232,77 @@ public:
     attach_name(c, c.index_partition, "color partitioning");
 
     adjacency_map_.emplace(p, std::move(c));
+  }
+
+  void
+  finalize(
+    const indexed_coloring_info_map_t& indexed_coloring_info_map
+  )
+  {
+    using namespace std;
+    
+    using namespace Legion;
+    using namespace LegionRuntime;
+    using namespace Arrays;
+
+    using namespace execution;
+
+    context_t & context = context_t::instance();
+
+    for(auto& itr : index_space_map_){
+      index_space_info_t& is = itr.second;
+
+      auto citr = indexed_coloring_info_map.find(is.index_space_id);
+      clog_assert(citr != indexed_coloring_info_map.end(),
+        "invalid index space");
+      const coloring_info_map_t& coloring_info_map = citr->second;
+
+      FieldAllocator allocator = 
+        runtime_->create_field_allocator(ctx_, is.field_space);
+
+      auto ghost_owner_pos_fid = FieldID(internal_field::ghost_owner_pos);
+
+      allocator.allocate_field(sizeof(Point<2>), ghost_owner_pos_fid);
+
+      using field_info_t = context_t::field_info_t;
+
+      for(const field_info_t& fi : context.registered_fields()){
+        if(fi.index_space == is.index_space_id){
+          allocator.allocate_field(fi.size, fi.fid);
+        }
+      }
+
+      for(auto& aitr : adjacency_map_){
+        adjacency_t& a = aitr.second;
+
+        FieldID adjacency_fid = 
+          context.adjacency_fid(aitr.first.first, aitr.first.second);
+
+        allocator.allocate_field(sizeof(Point<2>), adjacency_fid);
+      }
+
+      is.logical_region = runtime_->create_logical_region(ctx_, is.index_space, is.field_space);
+      attach_name(is, is.logical_region, "expanded logical region");
+
+      // Partition expanded IndexSpace color-wise & create associated PhaseBarriers
+      DomainColoring color_partitioning;
+      for(int color = 0; color < num_colors_; color++){
+        auto citr = coloring_info_map.find(color);
+        clog_assert(citr != coloring_info_map.end(), "invalid color info");
+        const coloring_info_t& color_info = citr->second;
+
+        Rect<2> subrect(
+            make_point(color, 0),
+            make_point(color,
+              color_info.exclusive + color_info.shared + color_info.ghost - 1));
+        
+        color_partitioning[color] = Domain::from_rect<2>(subrect);
+      }
+
+      is.index_partition = runtime_->create_index_partition(ctx_,
+        is.index_space, color_domain_, color_partitioning, true /*disjoint*/);
+      attach_name(is, is.index_partition, "color partitioning");
+    }
   }
 
   const index_space_info_t&
