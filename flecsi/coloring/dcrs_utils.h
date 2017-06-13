@@ -73,6 +73,26 @@ naive_coloring(
   return indices;
 } // naive_coloring
 
+#if 0
+template<
+  size_t FD,
+  size_t TD
+>
+dcrs_t
+make_dcrs(
+  topology::mesh_definition_t & md,
+  std::set<size_t> indices
+)
+{
+}
+
+template<
+  size_t DIMENSION,
+  size_t THRU
+>
+
+#endif
+
 ///
 /// \param md The mesh definition.
 ///

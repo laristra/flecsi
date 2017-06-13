@@ -46,10 +46,10 @@ public:
 
   using coloring_info_t = coloring::coloring_info_t;
 
-  using coloring_info_map_t = std::unordered_map<size_t, coloring_info_t>;
+  using coloring_info_map_t = std::map<size_t, coloring_info_t>;
 
   using indexed_coloring_info_map_t = 
-    std::unordered_map<size_t, std::unordered_map<size_t, coloring_info_t>>;
+    std::map<size_t, std::unordered_map<size_t, coloring_info_t>>;
 
   using connectivity_info_map_t =
     std::map<std::pair<size_t, size_t>, connectivity_info_t>;
@@ -171,11 +171,13 @@ public:
       }
     }
 
+#if 0
     for(auto& p : context.adjacencies()){
       FieldID adjacency_fid = context.adjacency_fid(p.first, p.second);
 
       allocator.allocate_field(sizeof(Point<2>), adjacency_fid);
     }
+#endif
 
     attach_name(is, is.field_space, "expanded field space");
 
@@ -209,6 +211,7 @@ public:
     const connectivity_info_map_t& connectivity_info_map
   )
   {
+#if 0
     using namespace std;
     
     using namespace Legion;
@@ -281,6 +284,7 @@ public:
 
       connectivity_map_.emplace(p, std::move(c));
     }
+#endif
   }
 
   const index_space_info_t&

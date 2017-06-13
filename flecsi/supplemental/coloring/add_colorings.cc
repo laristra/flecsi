@@ -377,6 +377,12 @@ void add_colorings(int dummy) {
   context_.add_coloring(0, cells, cell_coloring_info);
   context_.add_coloring(1, vertices, vertex_coloring_info);
 
+#if 0
+  context_.add_index_space(0, cells, cell_coloring_info);
+
+  context_.add_adjacency();
+#endif
+
   // Maps for output
   std::unordered_map<size_t, flecsi::coloring::entity_info_t>
     exclusive_cells_map;

@@ -18,6 +18,7 @@
 #------------------------------------------------------------------------------#
 
 set(coloring_HEADERS
+  adjacency_types.h
   colorer.h
   coloring_types.h
   communicator.h

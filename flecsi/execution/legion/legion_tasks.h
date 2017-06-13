@@ -49,7 +49,7 @@ namespace execution {
 //----------------------------------------------------------------------------//
 
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
-void specialization_color_init(int argc, char ** argv);
+void specialization_spmd_init(int argc, char ** argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
 //----------------------------------------------------------------------------//
@@ -379,7 +379,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
 
   // Call the specialization color initialization function.
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
-  specialization_color_init(args.argc, args.argv);
+  specialization_spmd_init(args.argc, args.argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
   // run default or user-defined driver 
@@ -443,7 +443,7 @@ __flecsi_internal_legion_task(owner_pos_compaction_task, void) {
   // Add additional setup.
   context_t & context_ = context_t::instance();
 
-  const std::unordered_map<size_t, flecsi::coloring::index_coloring_t>
+  const std::map<size_t, flecsi::coloring::index_coloring_t>
     coloring_map = context_.coloring_map();
 
   auto ghost_owner_pos_fid = 

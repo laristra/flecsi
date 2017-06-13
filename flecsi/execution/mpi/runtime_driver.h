@@ -26,7 +26,7 @@ namespace execution {
 //! @ingroup mpi-execution
 //----------------------------------------------------------------------------//
 
-#if defined FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+#if defined(FLECSI_ENABLE_SPECIALIZATION_TLT_INIT)
 void specialization_tlt_init(int argc, char ** argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
