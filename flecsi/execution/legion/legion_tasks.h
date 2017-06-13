@@ -629,23 +629,23 @@ __flecsi_internal_legion_task(fill_connectivity_task, void)
   FieldID adjacency_fid = 
     context.adjacency_fid(from_index_space, to_index_space);
 
-  auto connectivity_offset_fid = 
-    FieldID(internal_field::connectivity_offset);
+  auto adjacency_offset_fid = 
+    FieldID(internal_field::adjacency_offset);
   
-  auto connectivity_index_fid = 
-    FieldID(internal_field::connectivity_index);
+  auto adjacency_index_fid = 
+    FieldID(internal_field::adjacency_index);
 
   uint64_t* indices;
-  h.get_buffer(regions[0], indices, connectivity_index_fid);
+  h.get_buffer(regions[0], indices, adjacency_index_fid);
 
   Point<2>* positions;
   h.get_buffer(regions[1], positions, adjacency_fid);
 
   uint64_t* src_offsets;
-  h.get_buffer(regions[2], src_offsets, connectivity_offset_fid);
+  h.get_buffer(regions[2], src_offsets, adjacency_offset_fid);
 
   uint64_t* src_indices;
-  h.get_buffer(regions[2], src_indices, connectivity_index_fid);
+  h.get_buffer(regions[2], src_indices, adjacency_index_fid);
 
   size_t last_offset = 0;
   for(size_t i = 0; i < size; ++i){

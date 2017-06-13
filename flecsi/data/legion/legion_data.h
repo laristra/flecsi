@@ -250,10 +250,10 @@ public:
     FieldAllocator allocator = 
       runtime_->create_field_allocator(ctx_, c.field_space);
 
-    auto connectivity_offset_fid = 
-      FieldID(internal_field::connectivity_offset);
+    auto adjacency_offset_fid = 
+      FieldID(internal_field::adjacency_offset);
 
-    allocator.allocate_field(sizeof(size_t), connectivity_offset_fid);
+    allocator.allocate_field(sizeof(size_t), adjacency_offset_fid);
 
     attach_name(c, c.field_space, "expanded field space");
 
@@ -340,19 +340,19 @@ public:
     FieldSpace fs = h.create_field_space();
     FieldAllocator a = h.create_field_allocator(fs);
 
-    auto connectivity_offset_fid = 
-      FieldID(internal_field::connectivity_offset);
+    auto adjacency_offset_fid = 
+      FieldID(internal_field::adjacency_offset);
     
     auto adjacency_index_fid = 
-      FieldID(internal_field::connectivity_index);
+      FieldID(internal_field::adjacency_index);
 
-    a.allocate_field(sizeof(uint64_t), connectivity_offset_fid);
+    a.allocate_field(sizeof(uint64_t), adjacency_offset_fid);
     a.allocate_field(sizeof(uint64_t), adjacency_index_fid);
 
     LogicalRegion lr = h.create_logical_region(is, fs);
 
     RegionRequirement rr(lr, WRITE_DISCARD, EXCLUSIVE, lr);
-    rr.add_field(connectivity_offset_fid);
+    rr.add_field(adjacency_offset_fid);
     rr.add_field(adjacency_index_fid);
     InlineLauncher il(rr);
 
@@ -360,7 +360,7 @@ public:
     pr.wait_until_valid();
 
     uint64_t* dst_offsets;
-    h.get_buffer(pr, dst_offsets, connectivity_offset_fid);
+    h.get_buffer(pr, dst_offsets, adjacency_offset_fid);
 
     uint64_t* dst_indices;
     h.get_buffer(pr, dst_indices, adjacency_index_fid);
@@ -405,7 +405,7 @@ public:
     l.add_region_requirement(rr2);
 
     RegionRequirement rr3(lr, READ_ONLY, SIMULTANEOUS, lr);
-    rr3.add_field(connectivity_offset_fid);
+    rr3.add_field(adjacency_offset_fid);
     rr3.add_field(adjacency_index_fid);
     l.add_region_requirement(rr3);
 

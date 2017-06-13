@@ -20,10 +20,10 @@ namespace execution{
 /// unique_fid_t must be updated
 enum class internal_field : LegionRuntime::HighLevel::FieldID{
   ghost_owner_pos = (size_t(1) << 20) - 4095,
-  connectivity_pos_start,
-  connectivity_pos_end = connectivity_pos_start + 100,
-  connectivity_index,
-  connectivity_offset 
+  adjacency_pos_start,
+  adjacency_pos_end = adjacency_pos_start + 100,
+  adjacency_index,
+  adjacency_offset 
 };
 
 } // namespace execution

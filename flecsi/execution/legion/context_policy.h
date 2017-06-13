@@ -740,7 +740,7 @@ struct legion_context_policy_t
   adjacency_fid(size_t from_index_space, size_t to_index_space)
   const
   {
-    return size_t(internal_field::connectivity_pos_start) + 
+    return size_t(internal_field::adjacency_pos_start) + 
       from_index_space * 10 + to_index_space;
   }
 
