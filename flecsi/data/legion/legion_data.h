@@ -321,8 +321,8 @@ public:
     size_t to_index_space,
     size_t color,
     size_t size,
-    uint8_t* counts,
-    uint64_t* offsets
+    uint64_t* offsets,
+    uint64_t* indices
   )
   {
     using namespace std;
@@ -344,33 +344,33 @@ public:
     FieldSpace fs = h.create_field_space();
     FieldAllocator a = h.create_field_allocator(fs);
 
-    auto connectivity_count_fid = 
-      FieldID(internal_field::connectivity_count);
-    
     auto connectivity_offset_fid = 
       FieldID(internal_field::connectivity_offset);
+    
+    auto connectivity_index_fid = 
+      FieldID(internal_field::connectivity_index);
 
-    a.allocate_field(sizeof(uint8_t), connectivity_count_fid);
     a.allocate_field(sizeof(uint64_t), connectivity_offset_fid);
+    a.allocate_field(sizeof(uint64_t), connectivity_index_fid);
 
     LogicalRegion lr = h.create_logical_region(is, fs);
 
     RegionRequirement rr(lr, WRITE_DISCARD, EXCLUSIVE, lr);
-    rr.add_field(connectivity_count_fid);
     rr.add_field(connectivity_offset_fid);
+    rr.add_field(connectivity_index_fid);
     InlineLauncher il(rr);
 
     PhysicalRegion pr = runtime_->map_region(ctx_, il);
     pr.wait_until_valid();
 
-    uint8_t* dst_counts;
-    h.get_buffer(pr, dst_counts, connectivity_count_fid);
-
     uint64_t* dst_offsets;
     h.get_buffer(pr, dst_offsets, connectivity_offset_fid);
 
-    std::memcpy(dst_counts, counts, sizeof(uint8_t) * size);
+    uint64_t* dst_indices;
+    h.get_buffer(pr, dst_indices, connectivity_index_fid);
+
     std::memcpy(dst_offsets, offsets, sizeof(uint64_t) * size);
+    std::memcpy(dst_indices, indices, sizeof(uint64_t) * size);
 
     runtime_->unmap_region(ctx_, pr);
 
@@ -393,7 +393,7 @@ public:
 
     RegionRequirement rr1(color_conn_lr, WRITE_DISCARD, SIMULTANEOUS,
       c.logical_region);
-    rr1.add_field(connectivity_offset_fid);
+    rr1.add_field(connectivity_index_fid);
     l.add_region_requirement(rr1);
 
     LogicalPartition color_lp =
@@ -409,8 +409,8 @@ public:
     l.add_region_requirement(rr2);
 
     RegionRequirement rr3(lr, READ_ONLY, SIMULTANEOUS, lr);
-    rr3.add_field(connectivity_count_fid);
     rr3.add_field(connectivity_offset_fid);
+    rr3.add_field(connectivity_index_fid);
     l.add_region_requirement(rr3);
 
     MustEpochLauncher must_epoch_launcher;

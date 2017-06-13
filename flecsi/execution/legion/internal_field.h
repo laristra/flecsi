@@ -22,8 +22,8 @@ enum class internal_field : LegionRuntime::HighLevel::FieldID{
   ghost_owner_pos = (size_t(1) << 20) - 4095,
   connectivity_pos_start,
   connectivity_pos_end = connectivity_pos_start + 100,
-  connectivity_offset,
-  connectivity_count 
+  connectivity_index,
+  connectivity_offset 
 };
 
 } // namespace execution

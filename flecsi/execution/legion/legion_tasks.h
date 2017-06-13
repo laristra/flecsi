@@ -629,33 +629,34 @@ __flecsi_internal_legion_task(fill_connectivity_task, void)
   FieldID adjacency_fid = 
     context.adjacency_fid(from_index_space, to_index_space);
 
-  auto connectivity_count_fid = 
-    FieldID(internal_field::connectivity_count);
-  
   auto connectivity_offset_fid = 
     FieldID(internal_field::connectivity_offset);
+  
+  auto connectivity_index_fid = 
+    FieldID(internal_field::connectivity_index);
 
-  uint64_t* offsets;
-  h.get_buffer(regions[0], offsets, connectivity_offset_fid);
+  uint64_t* indices;
+  h.get_buffer(regions[0], indices, connectivity_index_fid);
 
   Point<2>* positions;
   h.get_buffer(regions[1], positions, adjacency_fid);
 
-  uint8_t* src_counts;
-  h.get_buffer(regions[2], src_counts, connectivity_count_fid);
-
   uint64_t* src_offsets;
   h.get_buffer(regions[2], src_offsets, connectivity_offset_fid);
 
-  size_t pos = 0;
+  uint64_t* src_indices;
+  h.get_buffer(regions[2], src_indices, connectivity_index_fid);
+
+  size_t last_offset = 0;
   for(size_t i = 0; i < size; ++i){
-    size_t count = src_counts[i];
-    std::memcpy(offsets, src_offsets, count * sizeof(size_t));
-    (*positions).x[0] = pos;
+    size_t offset = src_offsets[i];
+    size_t count = offset - last_offset;
+    std::memcpy(indices, src_indices, count * sizeof(size_t));
+    (*positions).x[0] = offset;
     (*positions).x[1] = count;
-    pos += count;
-    offsets += count;
+    indices += count;
     ++positions;
+    last_offset = offset;
   }
 }
 
