@@ -128,6 +128,9 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     : label_(a.label_),
       meta_data_(a.meta_data_)
     {
+      static_assert(EP2 == 0 && SP2 == 0 && GP2 == 0,
+        "passing mapped handle to task args");
+
       base_t::copy_data(a);
       legion_data_handle_policy_t::copy(a);
     }
