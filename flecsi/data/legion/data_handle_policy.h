@@ -37,8 +37,6 @@ struct legion_data_handle_policy_t
     ghost_owners_lregions = p.ghost_owners_lregions;
     global_to_local_color_map = p.global_to_local_color_map;
     color_region = p.color_region;
-    primary_ghost_ip = p.primary_ghost_ip;
-    excl_shared_ip = p.excl_shared_ip;
     exclusive_pr = p.exclusive_pr;
     shared_pr = p.shared_pr;
     ghost_pr = p.ghost_pr;
@@ -67,8 +65,6 @@ struct legion_data_handle_policy_t
   Legion::STL::map<LegionRuntime::Arrays::coord_t,
     LegionRuntime::Arrays::coord_t>* global_to_local_color_map;
   Legion::LogicalRegion color_region;
-  Legion::IndexPartition primary_ghost_ip;
-  Legion::IndexPartition excl_shared_ip;
 
   // +++ The following fields are set on the execution side of the handle
   // inside the actual Legion task once we have the physical regions

@@ -248,10 +248,12 @@ __flecsi_internal_legion_task(spmd_task, void) {
     context_.put_field_info(fi);
   }
 
+  // Prevent these objects destructors being called until after driver()
   std::vector<std::vector<Legion::LogicalRegion>>
     ghost_owners_lregions(num_idx_spaces);
-  
   std::vector<legion_map> global_to_local_color_map(num_idx_spaces);
+  std::vector<Legion::IndexPartition> primary_ghost_ips(num_idx_spaces);
+  std::vector<Legion::IndexPartition> exclusive_shared_ips(num_idx_spaces);
 
   size_t region_index = 0;
   for(size_t idx_space : context_.index_spaces()) {
@@ -288,7 +290,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
       runtime->create_index_partition(ctx, color_ispace, color_domain_1D,
       primary_ghost_coloring, true /*disjoint*/);
 
-    ispace_dmap[idx_space].primary_ghost_ip = primary_ghost_ip;
+    primary_ghost_ips[idx_space] = primary_ghost_ip;
 
     Legion::LogicalPartition primary_ghost_lp =
       runtime->get_logical_partition(ctx,
@@ -314,7 +316,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
     Legion::IndexPartition excl_shared_ip = runtime->create_index_partition(ctx,
         ispace_dmap[idx_space].primary_lr.get_index_space(), color_domain_1D, excl_shared_coloring, true /*disjoint*/);
 
-    ispace_dmap[idx_space].excl_shared_ip = excl_shared_ip;
+    exclusive_shared_ips[idx_space] = excl_shared_ip;
 
     Legion::LogicalPartition excl_shared_lp = runtime->get_logical_partition(ctx,
         ispace_dmap[idx_space].primary_lr, excl_shared_ip);
