@@ -48,12 +48,15 @@ struct legion_data_handle_policy_t
     ghost_priv = p.ghost_priv;
   }
 
+  // +++ The following fields are set from get_handle(), reading
+  // information from the context which is data that is the same
+  // across multiple ranks/colors and should be used ONLY as read-only data
+
   field_id_t fid;
   size_t index_space;
-  Legion::Context context;
-  Legion::Runtime* runtime;
 
-  // These depend on color and are potentially not safe for relocation.
+  // These depend on color but are only used in specifying
+  // the region requirements
   Legion::LogicalRegion exclusive_lr;
   Legion::LogicalRegion shared_lr;
   Legion::LogicalRegion ghost_lr;
@@ -64,9 +67,14 @@ struct legion_data_handle_policy_t
   Legion::STL::map<LegionRuntime::Arrays::coord_t,
     LegionRuntime::Arrays::coord_t>* global_to_local_color_map;
   Legion::LogicalRegion color_region;
-
   Legion::IndexPartition primary_ghost_ip;
   Legion::IndexPartition excl_shared_ip;
+
+  // +++ The following fields are set on the execution side of the handle
+  // inside the actual Legion task once we have the physical regions
+
+  Legion::Context context;
+  Legion::Runtime* runtime;
   Legion::PhysicalRegion exclusive_pr;
   Legion::PhysicalRegion shared_pr;
   Legion::PhysicalRegion ghost_pr;
