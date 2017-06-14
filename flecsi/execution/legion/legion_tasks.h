@@ -297,7 +297,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
         regions[region_index].get_logical_region(), primary_ghost_ip);
     region_index++;
 
-    ispace_dmap[idx_space].primary_lr = 
+    Legion::LogicalRegion primary_lr =
     runtime->get_logical_subregion_by_color(ctx, primary_ghost_lp, 
                                             PRIMARY_PART);
 
@@ -314,12 +314,12 @@ __flecsi_internal_legion_task(spmd_task, void) {
     excl_shared_coloring[SHARED_PART] = Legion::Domain::from_rect<2>(shared_rect);
 
     Legion::IndexPartition excl_shared_ip = runtime->create_index_partition(ctx,
-        ispace_dmap[idx_space].primary_lr.get_index_space(), color_domain_1D, excl_shared_coloring, true /*disjoint*/);
+        primary_lr.get_index_space(), color_domain_1D, excl_shared_coloring, true /*disjoint*/);
 
     exclusive_shared_ips[idx_space] = excl_shared_ip;
 
     Legion::LogicalPartition excl_shared_lp = runtime->get_logical_partition(ctx,
-        ispace_dmap[idx_space].primary_lr, excl_shared_ip);
+        primary_lr, excl_shared_ip);
 
     ispace_dmap[idx_space].exclusive_lr = 
     runtime->get_logical_subregion_by_color(ctx, excl_shared_lp, 
