@@ -398,6 +398,10 @@ __flecsi_internal_legion_task(spmd_task, void) {
 #endif
 
   // FIXME free all malloc, vectors, etc.
+  for(auto ipart: primary_ghost_ips)
+      runtime->destroy_index_partition(ctx, ipart);
+  for(auto ipart: exclusive_shared_ips)
+      runtime->destroy_index_partition(ctx, ipart);
 
 } // spmd_task
 
