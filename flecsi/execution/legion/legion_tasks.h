@@ -212,7 +212,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
   args_deserializer.deserialize((void*)num_owners, sizeof(size_t) * num_idx_spaces);
 
   for(size_t idx_space : context_.index_spaces()){
-    ispace_dmap[idx_space].pbarrier_as_owner_ptr = &pbarriers_as_master[idx_space];
+    ispace_dmap[idx_space].pbarrier_as_owner = pbarriers_as_master[idx_space];
   }
 
   std::vector<std::vector<Legion::PhaseBarrier>> ghost_owners_pbarriers(num_idx_spaces);
@@ -225,11 +225,11 @@ __flecsi_internal_legion_task(spmd_task, void) {
     args_deserializer.deserialize((void*)&ghost_owners_pbarriers[idx_space][0],
         sizeof(Legion::PhaseBarrier) * n);
     
-    ispace_dmap[idx_space].ghost_owners_pbarriers_ptrs.resize(n);
+    ispace_dmap[idx_space].ghost_owners_pbarriers.resize(n);
 
     for(size_t owner = 0; owner < n; ++owner){
-      ispace_dmap[idx_space].ghost_owners_pbarriers_ptrs[owner] = 
-        &ghost_owners_pbarriers[idx_space][owner];
+      ispace_dmap[idx_space].ghost_owners_pbarriers[owner] =
+        ghost_owners_pbarriers[idx_space][owner];
     }
   }
 
@@ -251,7 +251,6 @@ __flecsi_internal_legion_task(spmd_task, void) {
   // Prevent these objects destructors being called until after driver()
   std::vector<std::vector<Legion::LogicalRegion>>
     ghost_owners_lregions(num_idx_spaces);
-  std::vector<legion_map> global_to_local_color_map(num_idx_spaces);
   std::vector<Legion::IndexPartition> primary_ghost_ips(num_idx_spaces);
   std::vector<Legion::IndexPartition> exclusive_shared_ips(num_idx_spaces);
 
@@ -338,15 +337,13 @@ __flecsi_internal_legion_task(spmd_task, void) {
       runtime->retrieve_semantic_information(regions[region_index].get_logical_region(), OWNER_COLOR_TAG,
           owner_color, size, can_fail, wait_until_ready);
       clog_assert(size == sizeof(LegionRuntime::Arrays::coord_t), "Unable to map gid to lid with Legion semantic tag");
-      global_to_local_color_map[idx_space][*(LegionRuntime::Arrays::coord_t*)owner_color] = owner;
+      ispace_dmap[idx_space].global_to_local_color_map[*(LegionRuntime::Arrays::coord_t*)owner_color] = owner;
       clog(trace) << my_color << " key " << idx_space << " gid " << *(LegionRuntime::Arrays::coord_t*)owner_color <<
           " maps to " << owner << std::endl;
       region_index++;
       clog_assert(region_index <= regions.size(), "SPMD attempted to access more regions than passed");
     } // for owner
-    ispace_dmap[idx_space].ghost_owners_lregions =ghost_owners_lregions[idx_space];
-    ispace_dmap[idx_space].global_to_local_color_map = new legion_map(
-      global_to_local_color_map[idx_space]);  //FIXME delete if new
+    ispace_dmap[idx_space].ghost_owners_lregions = ghost_owners_lregions[idx_space];
 
 
     // Fix ghost reference/pointer to point to compacted position of shared that it needs
@@ -363,7 +360,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
         .add_field(ghost_owner_pos_fid));
 
     fix_ghost_refs_launcher.add_future(Legion::Future::from_value(runtime,
-        global_to_local_color_map[idx_space]));
+            ispace_dmap[idx_space].global_to_local_color_map));
 
     for(size_t owner = 0; owner < num_owners[idx_space]; owner++)
       fix_ghost_refs_launcher.add_region_requirement(

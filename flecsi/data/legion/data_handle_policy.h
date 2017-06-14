@@ -35,7 +35,7 @@ struct legion_data_handle_policy_t
     pbarrier_as_owner_ptr = p.pbarrier_as_owner_ptr;
     ghost_owners_pbarriers_ptrs = p.ghost_owners_pbarriers_ptrs;
     ghost_owners_lregions = p.ghost_owners_lregions;
-    global_to_local_color_map = p.global_to_local_color_map;
+    global_to_local_color_map_ptr = p.global_to_local_color_map_ptr;
     color_region = p.color_region;
     exclusive_pr = p.exclusive_pr;
     shared_pr = p.shared_pr;
@@ -60,10 +60,10 @@ struct legion_data_handle_policy_t
   Legion::LogicalRegion ghost_lr;
 
   Legion::PhaseBarrier* pbarrier_as_owner_ptr;
-  std::vector<Legion::PhaseBarrier*>* ghost_owners_pbarriers_ptrs;
+  std::vector<Legion::PhaseBarrier*> ghost_owners_pbarriers_ptrs;
   std::vector<Legion::LogicalRegion>* ghost_owners_lregions;
-  Legion::STL::map<LegionRuntime::Arrays::coord_t,
-    LegionRuntime::Arrays::coord_t>* global_to_local_color_map;
+  const Legion::STL::map<LegionRuntime::Arrays::coord_t,
+    LegionRuntime::Arrays::coord_t>* global_to_local_color_map_ptr;
   Legion::LogicalRegion color_region;
 
   // +++ The following fields are set on the execution side of the handle
