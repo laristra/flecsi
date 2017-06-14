@@ -515,7 +515,7 @@ struct storage_type_t<dense, DS, MD>
     for(size_t i=0; i < ism[index_space].ghost_owners_pbarriers.size() ; i++)
         h.ghost_owners_pbarriers_ptrs.push_back(&(ism[index_space]
                                                 .ghost_owners_pbarriers[i]));
-    h.ghost_owners_lregions = &ism[index_space].ghost_owners_lregions;
+    h.ghost_owners_lregions = ism[index_space].ghost_owners_lregions;
     h.color_region = ism[index_space].color_region;
     h.global_to_local_color_map_ptr = &ism[index_space].global_to_local_color_map;
     h.fid = field_info.fid;
