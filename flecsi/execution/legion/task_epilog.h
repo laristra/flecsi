@@ -96,7 +96,7 @@ namespace execution {
 
       if (write_phase) {
         const int my_color = runtime->find_local_MPI_rank();
-        clog(error) << "rank " << my_color << " WRITE PHASE EPILOGUE" << std::endl;
+        clog(trace) << "rank " << my_color << " WRITE PHASE EPILOGUE" << std::endl;
 
         clog(trace) << "rank " << my_color << " advances " << *(h.pbarrier_as_owner_ptr) <<
             std::endl;
@@ -111,11 +111,11 @@ namespace execution {
 
           h.ghost_owners_pbarriers_ptrs[owner]->arrive(1);  // phase READ
           *(h.ghost_owners_pbarriers_ptrs[owner]) = runtime->advance_phase_barrier(context,
-              *(h.ghost_owners_pbarriers_ptrs[owner]));       // phase READ
+              *(h.ghost_owners_pbarriers_ptrs)[owner]);       // phase READ
 
         }
 
-        h.ghost_is_readable = false;
+        *(h.ghost_is_readable) = false;
       } // write_phase
     } // handle
 

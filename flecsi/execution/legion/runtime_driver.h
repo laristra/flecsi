@@ -17,10 +17,16 @@ namespace flecsi {
 namespace execution {
 
 //----------------------------------------------------------------------------//
-//! This is the specialization driver function to be defined by the FleCSI
-//! specialization layer. This symbol will be undefined in the compiled
+//! This is the top-level initialization function to be defined by the
+//! FleCSI specialization layer. This symbol will be undefined in the compiled
 //! library, and is intended as a place holder for the specializations's
-//! driver function that will resolve the missing symbol.
+//! initialization function that will resolve the missing symbol.
+//!
+//! The top-level initialization function is the first of the two control
+//! points that are exposed to the specialization. This function is
+//! responsible for adding specialization-specific inforamtion to the FleCSI
+//! runtime, e.g., named index spaces, adjacencies, etc. that must occur
+//! during the top-level task initialization stage.
 //!
 //! @param argc The number of arguments in argv (passed from the command line).
 //! @param argv The list of arguments (passed from the command line).
@@ -28,9 +34,9 @@ namespace execution {
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
-#if defined FLECSI_ENABLE_SPECIALIZATION_DRIVER
-void specialization_driver(int argc, char ** argv);
-#endif // FLECSI_ENABLE_SPECIALIZATION_DRIVER
+#if defined FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+void specialization_tlt_init(int argc, char ** argv);
+#endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
 //----------------------------------------------------------------------------//
 //! This is the main driver function to be defined by the user. This symbol

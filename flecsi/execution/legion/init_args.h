@@ -29,24 +29,24 @@
 namespace flecsi {
 namespace execution {
 
-  //----------------------------------------------------------------------------//
+  //--------------------------------------------------------------------------//
   //! The init_args_t type can be called to walk task args before the
   //! task launcher is created. This allows us to gather region requirements
   //! and to set state on the associated data handles \em before Legion gets
   //! the task arguments tuple.
   //!
   //! @ingroup execution
-  //----------------------------------------------------------------------------//
+  //--------------------------------------------------------------------------//
 
   struct init_args_t : public utils::tuple_walker__<init_args_t>
   {
 
-    //--------------------------------------------------------------------------//
+    //------------------------------------------------------------------------//
     //! Construct an init_args_t instance.
     //!
     //! @param runtime The Legion task runtime.
     //! @param context The Legion task runtime context.
-    //--------------------------------------------------------------------------//
+    //------------------------------------------------------------------------//
 
     init_args_t(
       Legion::Runtime* runtime,
@@ -58,11 +58,11 @@ namespace execution {
     {
     } // init_args
 
-    //--------------------------------------------------------------------------//
+    //------------------------------------------------------------------------//
     //! Convert the template privileges to proper Legion privileges.
     //!
     //! @param mode privilege
-    //--------------------------------------------------------------------------//
+    //------------------------------------------------------------------------//
 
     static Legion::PrivilegeMode
     privilege_mode(

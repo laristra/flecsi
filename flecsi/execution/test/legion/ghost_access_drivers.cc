@@ -44,7 +44,7 @@ void check_all_cells_task(handle_t<size_t, flecsi::dro, flecsi::dro,
       std::endl;
 
   flecsi::execution::context_t & context_ = flecsi::execution::context_t::instance();
-  const std::unordered_map<size_t, flecsi::coloring::index_coloring_t> coloring_map
+  const std::map<size_t, flecsi::coloring::index_coloring_t> coloring_map
     = context_.coloring_map();
   auto index_coloring = coloring_map.find(INDEX_ID);
 
@@ -52,7 +52,7 @@ void check_all_cells_task(handle_t<size_t, flecsi::dro, flecsi::dro,
   for (auto exclusive_itr = index_coloring->second.exclusive.begin(); exclusive_itr !=
       index_coloring->second.exclusive.end(); ++exclusive_itr) {
       flecsi::coloring::entity_info_t exclusive = *exclusive_itr;
-    assert(cell_ID.exclusive(index) == exclusive.id);
+    assert(cell_ID.exclusive(index) == exclusive.id + cycle);
     index++;
   } // exclusive_itr
 
@@ -60,7 +60,7 @@ void check_all_cells_task(handle_t<size_t, flecsi::dro, flecsi::dro,
   for (auto shared_itr = index_coloring->second.shared.begin(); shared_itr !=
       index_coloring->second.shared.end(); ++shared_itr) {
       flecsi::coloring::entity_info_t shared = *shared_itr;
-      assert(cell_ID.shared(index) == shared.id);
+      assert(cell_ID.shared(index) == shared.id + cycle);
       index++;
   } // shared_itr
 
@@ -76,21 +76,21 @@ void check_all_cells_task(handle_t<size_t, flecsi::dro, flecsi::dro,
   for (auto ghost_itr = index_coloring->second.ghost.begin(); ghost_itr !=
       index_coloring->second.ghost.end(); ++ghost_itr) {
     flecsi::coloring::entity_info_t ghost = *ghost_itr;
-    assert(cell_ID.ghost(index) == ghost.id);
+    assert(cell_ID.ghost(index) == ghost.id + cycle);
     index++;
   } // ghost_itr
 
-} // initialize_primary_cells_task
+} // check_all_cells_task
 
 flecsi_register_task(check_all_cells_task, flecsi::loc, flecsi::single);
 
-void initialize_primary_cells_task(handle_t<size_t, flecsi::drw, flecsi::drw,
-    flecsi::dno> cell_ID, int my_color) {
+void set_primary_cells_task(handle_t<size_t, flecsi::drw, flecsi::drw,
+    flecsi::dno> cell_ID, int my_color, size_t cycle) {
 
   clog(trace) << my_color << " WRITING " << std::endl;
 
   flecsi::execution::context_t & context_ = flecsi::execution::context_t::instance();
-  const std::unordered_map<size_t, flecsi::coloring::index_coloring_t> coloring_map
+  const std::map<size_t, flecsi::coloring::index_coloring_t> coloring_map
     = context_.coloring_map();
   auto index_coloring = coloring_map.find(INDEX_ID);
 
@@ -99,7 +99,7 @@ void initialize_primary_cells_task(handle_t<size_t, flecsi::drw, flecsi::drw,
       index_coloring->second.exclusive.end(); ++exclusive_itr) {
       flecsi::coloring::entity_info_t exclusive = *exclusive_itr;
     clog(trace) << my_color << " exclusive " <<  exclusive.id << std::endl;
-    cell_ID(index) = exclusive.id;
+    cell_ID(index) = exclusive.id + cycle;
     index++;
   } // exclusive_itr
 
@@ -107,7 +107,7 @@ void initialize_primary_cells_task(handle_t<size_t, flecsi::drw, flecsi::drw,
       index_coloring->second.shared.end(); ++shared_itr) {
       flecsi::coloring::entity_info_t shared = *shared_itr;
     clog(trace) << my_color << " shared " <<  shared.id << std::endl;
-    cell_ID(index) = shared.id;
+    cell_ID(index) = shared.id + cycle;
     index++;
   } // shared_itr
 
@@ -119,9 +119,9 @@ void initialize_primary_cells_task(handle_t<size_t, flecsi::drw, flecsi::drw,
     index++;
   } // ghost_itr
 
-} // initialize_primary_cells_task
+} // set_primary_cells_task
 
-flecsi_register_task(initialize_primary_cells_task, flecsi::loc, flecsi::single);
+flecsi_register_task(set_primary_cells_task, flecsi::loc, flecsi::single);
 
 class client_type : public flecsi::data::data_client_t{};
 
@@ -134,12 +134,12 @@ namespace execution {
 // Specialization driver.
 //----------------------------------------------------------------------------//
 
-void specialization_driver(int argc, char ** argv) {
-  clog(trace) << "In specialization driver" << std::endl;
+void specialization_tlt_init(int argc, char ** argv) {
+  clog(trace) << "In specialization top-level-task init" << std::endl;
 
   flecsi_execute_mpi_task(add_colorings, 0);
 
-} // specialization_driver
+} // specialization_tlt_init
 
 //----------------------------------------------------------------------------//
 // User driver.
@@ -164,13 +164,13 @@ void driver(int argc, char ** argv) {
 
   auto handle = flecsi_get_handle(client, name_space, cell_ID, size_t, dense, INDEX_ID);
 
-  for(size_t cycle=0; cycle<1; cycle++) {
-    flecsi_execute_task(initialize_primary_cells_task, single, handle, my_color);
+  for(size_t cycle=0; cycle<3; cycle++) {
+    flecsi_execute_task(set_primary_cells_task, single, handle, my_color,cycle);
 
     flecsi_execute_task(check_all_cells_task, single, handle, my_color, cycle);
   }
 
-} // specialization_driver
+} // driver
 
 } // namespace execution
 } // namespace flecsi

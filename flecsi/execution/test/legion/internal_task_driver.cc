@@ -51,8 +51,9 @@ void driver(int argc, char ** argv) {
   clog(info) << "Task ID task 1: " << tid_1 << std::endl;
   clog(info) << "Task ID: task 2" << tid_2 << std::endl;
 
-  ASSERT_EQ(tid_1, 8);
-  ASSERT_EQ(tid_2, 9);
+  // This will not work as new internal tasks are added
+  //ASSERT_EQ(tid_1, 8);
+  //ASSERT_EQ(tid_2, 9);
 
 #if defined(ENABLE_LEGION_TLS)
   auto runtime = Legion::Runtime::get_runtime();
