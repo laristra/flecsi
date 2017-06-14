@@ -518,6 +518,7 @@ struct storage_type_t<dense, DS, MD>
     h.global_to_local_color_map = ism[index_space].global_to_local_color_map;
     h.fid = field_info.fid;
     h.index_space = field_info.index_space;
+    h.ghost_is_readable = &(ism[index_space].ghost_is_readable);
 
     return h;
   } // get_handle

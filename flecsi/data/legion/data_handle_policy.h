@@ -77,7 +77,7 @@ struct legion_data_handle_policy_t
   size_t exclusive_priv;
   size_t shared_priv;
   size_t ghost_priv;
-  bool ghost_is_readable;
+  bool* ghost_is_readable;
 }; // class legion_data_handle_policy_t
 
 } // namespace flecsi

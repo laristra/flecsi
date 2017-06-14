@@ -104,9 +104,9 @@ namespace execution {
         write_phase = true;
 
       if (read_phase) {
-        if (!h.ghost_is_readable) {
           clog(trace) << "rank " << my_color <<
               " READ PHASE PROLOGUE" << std::endl;
+        if (!*(h.ghost_is_readable)) {
           // as master
           clog(trace) << "rank " << my_color << " arrives & advances " <<
               *(h.pbarrier_as_owner_ptr) <<
@@ -181,7 +181,7 @@ namespace execution {
 
           }  // for owner as user
 
-          h.ghost_is_readable = true;
+          *(h.ghost_is_readable) = true;
         } // !ghost_is_readable
       } // read_phase
 

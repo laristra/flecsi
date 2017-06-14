@@ -607,6 +607,7 @@ struct legion_context_policy_t
     Legion::LogicalRegion exclusive_lr;
     Legion::LogicalRegion shared_lr;
     Legion::LogicalRegion ghost_lr;
+    bool ghost_is_readable;
   };
 
   //--------------------------------------------------------------------------//

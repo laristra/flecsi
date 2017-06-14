@@ -115,7 +115,7 @@ namespace execution {
 
         }
 
-        h.ghost_is_readable = false;
+        *(h.ghost_is_readable) = false;
       } // write_phase
     } // handle
 
