@@ -352,8 +352,6 @@ __flecsi_internal_legion_task(spmd_task, void) {
             .task_id<__flecsi_internal_task_key(owner_pos_correction_task)>(),
             Legion::TaskArgument(nullptr, 0));
 
-    fix_ghost_refs_launcher.tag = MAPPER_SUBRANK_LAUNCH;
-
     clog(trace) << "Rank" << my_color << " Index " << idx_space <<
             " RW " << ispace_dmap[idx_space].color_region << std::endl;
 
