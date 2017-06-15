@@ -14,7 +14,7 @@
 
 #include "flecsi/topology/mesh_definition.h"
 #include "flecsi/topology/closure_utils.h"
-#include "flecsi/coloring/dcrs.h"
+#include "flecsi/coloring/crs.h"
 
 ///
 /// \file

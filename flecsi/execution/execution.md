@@ -47,6 +47,17 @@ compilation tool that allows fast prototyping of multi-physics ideas,
 and the application interface that is intended for production code
 development.
 
+# Mesh Coloring
+
+FleCSI supports the partitioning or *coloring* of meshes through a
+set of core interface methods that can be accessed by a
+specialization. Using these methods, the specialization can generate
+the independent entity coloring, and colorings for dependent entities,
+e.g., a mesh that has a primary or *independent* coloring based on the
+cell adjacency graph, with the *dependent* coloring of the vertices
+generated from the cell coloring by applying a rule such as lowest color
+ownership to assign the vertex owners.
+
 --------------------------------------------------------------------------------
 
 <!-- vim: set tabstop=2 shiftwidth=2 expandtab fo=cqt tw=72 : -->
