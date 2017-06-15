@@ -136,7 +136,7 @@ cinch_add_devel_target(devel
     MPI
 )
 
-if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
+if((FLECSI_RUNTIME_MODEL STREQUAL "serial")
     OR (FLECSI_RUNTIME_MODEL STREQUAL "legion"))
 
   #

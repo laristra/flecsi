@@ -57,7 +57,7 @@ RUN if [ ${COVERAGE} ]; then \
       bash codecov.sh -X gcov -f doxygen.coverage.info -F documentation; \
       doxy-coverage --threshold 24 doc/doxygen/xml/; \
     fi
-RUN ctest --verbose -E "(data_client|legion_dh1|client_registration|internal_task|execution_structure|ghost_access|task_registration|simple_function|simple_task|data_handle_task|compaction)"
+RUN ctest --verbose
 RUN make install DESTDIR=${PWD}/install && rm -rf ${PWD}/install
 RUN cd .. && if [ ${COVERAGE} ]; then \
   if [ ${CC} = clang ]; then \
