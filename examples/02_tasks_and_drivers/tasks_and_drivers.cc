@@ -91,15 +91,15 @@ flecsi_register_task(task2, flecsi::processor_type_t::loc, flecsi::index);
 //----------------------------------------------------------------------------//
 //Define Specialization Driver : a driver that gets executed at the top level
 void
-specialization_driver(
+specialization_tlt_init(
   int argc,
   char ** argv
 )
 {
   context_t & context_ = context_t::instance();
   size_t task_key = utils::const_string_t{"specialization_driver"}.hash();
-  auto runtime = context_.runtime(task_key);
-  auto context = context_.context(task_key);
+  auto runtime = Legion::Runtime::get_runtime();
+  auto context = Legion::Runtime::get_context();
 
   std::cout<<"inside Specialization Driver"<<std::endl;
 
