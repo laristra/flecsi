@@ -61,12 +61,17 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/execution_policy.h
     legion/future.h
     legion/helper.h
+    legion/init_args.h
+    legion/init_handles.h
+    legion/internal_field.h
     legion/internal_task.h
     legion/legion_tasks.h
     legion/mapper.h
     legion/registration_wrapper.h
     legion/runtime_driver.h
     legion/runtime_state.h
+    legion/task_epilog.h
+    legion/task_prolog.h
     legion/task_wrapper.h
   )
 
