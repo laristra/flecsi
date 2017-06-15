@@ -48,7 +48,7 @@ public:
 
   using indexed_coloring_info_map_t = std::map<size_t, coloring_info_map_t>;
 
-  struct index_space_info_t{
+  struct index_space_t{
     size_t index_space_id;
     Legion::IndexSpace index_space;
     Legion::FieldSpace field_space;
@@ -84,7 +84,7 @@ public:
   ~legion_data_t()
   {
     for(auto& itr : index_space_map_){
-      index_space_info_t& is = itr.second;
+      index_space_t& is = itr.second;
 
       runtime_->destroy_index_partition(ctx_, is.index_partition);
       runtime_->destroy_index_space(ctx_, is.index_space);
@@ -119,7 +119,7 @@ public:
 
     context_t & context = context_t::instance();
 
-    index_space_info_t is;
+    index_space_t is;
     is.index_space_id = index_space_id;
 
     // Create expanded IndexSpace
@@ -176,11 +176,11 @@ public:
 
     auto fitr = index_space_map_.find(c.from_index_space);
     clog_assert(fitr != index_space_map_.end(), "invalid from index space");
-    const index_space_info_t& fi = fitr->second;
+    const index_space_t& fi = fitr->second;
 
     auto titr = index_space_map_.find(c.to_index_space);
     clog_assert(titr != index_space_map_.end(), "invalid to index space");
-    const index_space_info_t& ti = titr->second;
+    const index_space_t& ti = titr->second;
 
     auto p = std::make_pair(c.from_index_space, c.to_index_space);
 
@@ -250,7 +250,7 @@ public:
     context_t & context = context_t::instance();
 
     for(auto& itr : index_space_map_){
-      index_space_info_t& is = itr.second;
+      index_space_t& is = itr.second;
 
       auto citr = indexed_coloring_info_map.find(is.index_space_id);
       clog_assert(citr != indexed_coloring_info_map.end(),
@@ -305,8 +305,8 @@ public:
     }
   }
 
-  const index_space_info_t&
-  index_space_info(
+  const index_space_t&
+  index_space(
     size_t index_space_id
   )
   const
@@ -360,7 +360,7 @@ public:
     auto itr = adjacency_map_.find({from_index_space, to_index_space});
     clog_assert(itr != adjacency_map_.end(), "invalid adjacency");
     adjacency_t& c = itr->second;
-    index_space_info_t& iis = index_space_map_[from_index_space];
+    index_space_t& iis = index_space_map_[from_index_space];
 
     IndexSpace is = h.create_index_space(0, size - 1);
     FieldSpace fs = h.create_field_space();
@@ -463,7 +463,7 @@ private:
 
   std::set<size_t> index_spaces_;
 
-  std::unordered_map<size_t, index_space_info_t> index_space_map_;
+  std::unordered_map<size_t, index_space_t> index_space_map_;
   
   std::map<std::pair<size_t, size_t>, adjacency_t> adjacency_map_;
 
@@ -472,7 +472,7 @@ private:
   >
   void
   attach_name(
-    const index_space_info_t& is,
+    const index_space_t& is,
     T& x,
     const char* label
   )

@@ -137,7 +137,7 @@ runtime_driver(
     LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
 
   for(auto idx_space : data.index_spaces()) {
-    auto& flecsi_ispace = data.index_space_info(idx_space);
+    auto& flecsi_ispace = data.index_space(idx_space);
 
     Legion::LogicalPartition color_lpart = runtime->get_logical_partition(ctx,
         flecsi_ispace.logical_region, flecsi_ispace.index_partition);
@@ -217,7 +217,7 @@ runtime_driver(
     // Add region requirements
 
     for(auto idx_space : data.index_spaces()){
-      auto& flecsi_ispace = data.index_space_info(idx_space);
+      auto& flecsi_ispace = data.index_space(idx_space);
 
       Legion::LogicalPartition color_lpart =
         runtime->get_logical_partition(ctx,
