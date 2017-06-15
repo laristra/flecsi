@@ -18,8 +18,8 @@
 
 if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
-  add_definitions(-DFLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER)
-  add_definitions(-DFLECSI_ENABLE_SPECIALIZATION_DRIVER)
+  add_definitions(-DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT)
+  add_definitions(-DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER)
 
   #----------------------------------------------------------------------------#
   # Add source files for example application.

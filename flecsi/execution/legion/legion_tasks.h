@@ -69,10 +69,10 @@ void specialization_spmd_init(int argc, char ** argv);
                                                                                \
 /* Legion task template */                                                     \
 inline return_type task_name(                                                  \
-  const LegionRuntime::HighLevel::Task * task,                                 \
-  const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,       \
-  LegionRuntime::HighLevel::Context ctx,                                       \
-  LegionRuntime::HighLevel::HighLevelRuntime * runtime                         \
+  const Legion::Task * task,                                 \
+  const std::vector<Legion::PhysicalRegion> & regions,       \
+  Legion::Context ctx,                                       \
+  Legion::Runtime * runtime                         \
 )
 
 //----------------------------------------------------------------------------//
@@ -101,7 +101,7 @@ __flecsi_internal_legion_task(owner_pos_correction_task, void) {
   legion_map owner_map = task->futures[0].get_result<legion_map>();
 
   auto ghost_owner_pos_fid = 
-    LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
+    Legion::FieldID(internal_field::ghost_owner_pos);
 
   LegionRuntime::Accessor::RegionAccessor<generic_type,
     LegionRuntime::Arrays::Point<2>> ghost_ref_acc
@@ -185,7 +185,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
   auto& ispace_dmap = context_.index_space_data_map();
 
   auto ghost_owner_pos_fid = 
-    LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
+    Legion::FieldID(internal_field::ghost_owner_pos);
 
   clog_assert(task->arglen > 0, "spmd_task called without arguments");
 
@@ -372,8 +372,8 @@ __flecsi_internal_legion_task(spmd_task, void) {
   } // for idx_space
 
   // Get the input arguments from the Legion runtime
-  const LegionRuntime::HighLevel::InputArgs & args =
-    LegionRuntime::HighLevel::HighLevelRuntime::get_input_args();
+  const Legion::InputArgs & args =
+    Legion::Runtime::get_input_args();
 
 #if !defined(ENABLE_LEGION_TLS)
   // Set the current task context to the driver
@@ -455,7 +455,7 @@ __flecsi_internal_legion_task(owner_pos_compaction_task, void) {
     coloring_map = context_.coloring_map();
 
   auto ghost_owner_pos_fid = 
-    LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
+    Legion::FieldID(internal_field::ghost_owner_pos);
 
   {
   clog_tag_guard(legion_tasks);

@@ -15,10 +15,10 @@ namespace flecsi {
 namespace execution {
 
 // Define a Legion task to register.
-int internal_task_example_1(const LegionRuntime::HighLevel::Task * task,
-  const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
-  LegionRuntime::HighLevel::Context context,
-  LegionRuntime::HighLevel::HighLevelRuntime * runtime) 
+int internal_task_example_1(const Legion::Task * task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context context,
+  Legion::Runtime * runtime) 
 {
   clog(info) <<"Executing task1" <<std::endl;
 } // internal_task_example
@@ -28,10 +28,10 @@ __flecsi_internal_register_legion_task(internal_task_example_1,
   processor_type_t::loc, single);
 
 // Define a Legion task to register.
-int internal_task_example_2(const LegionRuntime::HighLevel::Task * task,
-  const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
-  LegionRuntime::HighLevel::Context context,
-  LegionRuntime::HighLevel::HighLevelRuntime * runtime)
+int internal_task_example_2(const Legion::Task * task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context context,
+  Legion::Runtime * runtime)
 {
   clog(info) <<"Executing task2" <<std::endl;
 } // internal_task_example
@@ -69,9 +69,9 @@ void driver(int argc, char ** argv) {
   auto key_2 = __flecsi_internal_task_key(internal_task_example_2);
 
   //executing legion tasks with pure legion calls
-  LegionRuntime::HighLevel::TaskLauncher launcher(
+  Legion::TaskLauncher launcher(
     context_t::instance().task_id(key_1),
-    LegionRuntime::HighLevel::TaskArgument(0,0));
+    Legion::TaskArgument(0,0));
   auto f = runtime->execute_task(context, launcher);
 
   Legion::ArgumentMap arg_map;

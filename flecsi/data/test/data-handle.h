@@ -36,7 +36,7 @@ using namespace std;
 using namespace flecsi;
 using namespace execution;
 
-using namespace LegionRuntime::HighLevel;
+using namespace Legion;
 using namespace LegionRuntime::Accessor;
 using namespace LegionRuntime::Arrays;
 

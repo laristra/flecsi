@@ -176,7 +176,7 @@ namespace execution {
 
     Legion::Runtime * runtime;
     Legion::Context & context;
-    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions;
+    const std::vector<Legion::PhysicalRegion> & regions;
   }; // struct init_handles_t
 
 } // namespace execution 

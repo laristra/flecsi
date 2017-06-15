@@ -18,7 +18,7 @@ namespace execution{
 
 /// If more than 4096 internal fields are allocated, storage_policy
 /// unique_fid_t must be updated
-enum class internal_field : LegionRuntime::HighLevel::FieldID{
+enum class internal_field : Legion::FieldID{
   ghost_owner_pos = (size_t(1) << 20) - 4095,
   adjacency_pos_start,
   adjacency_pos_end = adjacency_pos_start + 100,

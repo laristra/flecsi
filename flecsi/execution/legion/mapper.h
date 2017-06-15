@@ -42,6 +42,7 @@ enum {
 enum {
   // Use the first 8 bits for storing the rhsf index
   MAPPER_FORCE_RANK_MATCH = 0x00001000,
+  MAPPER_COMPACTED_STORAGE = 0x00002000,
   MAPPER_SUBRANK_LAUNCH   = 0x00080000,
 };
 #endif
@@ -68,9 +69,9 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
   //!         LOC_PROC and TOC_PROC
   //--------------------------------------------------------------------------//
   mpi_mapper_t(
-    LegionRuntime::HighLevel::Machine machine,
+    Legion::Machine machine,
     Legion::Runtime *_runtime,
-    LegionRuntime::HighLevel::Processor local
+    Legion::Processor local
   )
   :
     Legion::Mapping::DefaultMapper(
@@ -81,8 +82,8 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
     ),
     machine(machine)
   {
-    using legion_machine=LegionRuntime::HighLevel::Machine;
-    using legion_proc=LegionRuntime::HighLevel::Processor;
+    using legion_machine=Legion::Machine;
+    using legion_proc=Legion::Processor;
     
     legion_machine::ProcessorQuery pq = 
         legion_machine::ProcessorQuery(machine).same_address_space_as(local);   
@@ -154,7 +155,7 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
       Legion::Mapping::Mapper::SliceTaskOutput& output
              )
   {
-    using legion_proc=LegionRuntime::HighLevel::Processor;
+    using legion_proc=Legion::Processor;
 
     context_t & context_ = context_t::instance();
 
@@ -176,8 +177,8 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
       output.slices.resize(r.volume());
       size_t idx = 0;
       
-      using legion_machine=LegionRuntime::HighLevel::Machine;
-      using legion_proc=LegionRuntime::HighLevel::Processor;
+      using legion_machine=Legion::Machine;
+      using legion_proc=Legion::Processor;
       
       // get list of all processors and make sure the count matches
       legion_machine::ProcessorQuery pq =
@@ -214,10 +215,90 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
                                         input, output, cpu_slices_cache);
     }//end else
   } //end slice_task
+
+
+  //-------------------------------------------------------------------------//
+  //! Specialization of the map_task funtion for FLeCSI
+  //! By default, map_task will execute Legions map_task from DefaultMapper.
+  //! In the case the launcher has been tagged with the 
+  //! "MAPPER_COMPACTED_STORAGE" tag, mapper will create single physical 
+  //! instance for exclusive, shared and ghost partitions for each data handle
+  //!
+  //!  @param ctx Mapper Context
+  //!  @param task Legion's task
+  //!  @param input Input information about task mapping
+  //!  @param output Output information about task mapping
+  //-------------------------------------------------------------------------//
+  virtual
+  void
+  map_task(
+    const Legion::Mapping::MapperContext ctx,
+    const Legion::Task &task,
+    const Legion::Mapping::Mapper::MapTaskInput &input,
+    Legion::Mapping::Mapper::MapTaskOutput &output)
+  {
+    DefaultMapper::map_task(ctx, task, input,output);
+
+    Legion::Memory target_mem = 
+     DefaultMapper::default_policy_select_target_memory(ctx, task.target_proc);
+
+    if ( (task.tag & MAPPER_COMPACTED_STORAGE) != 0) {
+      //check if we get region requirements for "exclusive, shared and ghost"
+      //logical regions for each data handle  
+      clog_assert ((task.regions.size()%3==0), "");
+
+      //Filling out "layout_constraints" with the defaults
+      Legion::LayoutConstraintSet layout_constraints;
+      // No specialization
+      layout_constraints.add_constraint(Legion::SpecializedConstraint());
+      layout_constraints.add_constraint(Legion::OrderingConstraint());
+      // Constrained for the target memory kind
+      layout_constraints.add_constraint(Legion::MemoryConstraint(
+            target_mem.kind()));
+      // Have all the field for the instance available
+      std::vector<Legion::FieldID> all_fields;
+      layout_constraints.add_constraint(Legion::FieldConstraint()); 
+
+      //FIXME:: add colocation_constraints
+      Legion::ColocationConstraint colocation_constraints;
+
+      //for each data handle
+      for (size_t indx=0; indx<task.regions.size()/3;indx++){
+
+        Legion::Mapping::PhysicalInstance result;
+        std::vector<Legion::LogicalRegion> regions;
+
+        // we want our mapper to make physical instances that contain space for 
+        // all three different logical regions (exclusive, shared and ghost)
+        // so one can use that physical instance to satisfy the mapping
+        // of all three region requirements. To do so we populate regions
+        // vector with all 3 logical regions and pass it to the 
+        // find_or_create_physical_instance method.   
+        for (size_t j=0; j<3; j++)
+          regions.push_back(task.regions[indx*3+j].region);
+
+        bool created;
+
+        if (!runtime->find_or_create_physical_instance(
+          ctx, target_mem, layout_constraints,
+          regions, result, created, true/*acquire*/, GC_NEVER_PRIORITY)) {
+            clog(fatal)<<"ERROR: FLeCSI mapper failed to allocate instance"<<
+            std::endl;
+        }//end if
+
+        for (size_t j=0; j<3; j++)
+          output.chosen_instances[3*indx+j].push_back(result);
+
+       }//end for
+    }//end if
+
+  }//map_task
+
   
  protected:
-  
-  std::map<LegionRuntime::HighLevel::Processor,
+ 
+  //Legion::Mapping::MapperRuntime  mapper_runtime; 
+  std::map<Legion::Processor,
            std::map<Realm::Memory::Kind, Realm::Memory> > proc_mem_map;
   Realm::Memory local_sysmem;
   Realm::Machine machine;
@@ -232,12 +313,12 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
 inline
 void
 mapper_registration(
-    LegionRuntime::HighLevel::Machine machine,
-    LegionRuntime::HighLevel::HighLevelRuntime *rt,
-    const std::set<LegionRuntime::HighLevel::Processor> &local_procs
+    Legion::Machine machine,
+    Legion::HighLevelRuntime *rt,
+    const std::set<Legion::Processor> &local_procs
                     )
 {
-  for (std::set<LegionRuntime::HighLevel::Processor>::const_iterator
+  for (std::set<Legion::Processor>::const_iterator
            it = local_procs.begin();
        it != local_procs.end(); it++)
   {
