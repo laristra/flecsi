@@ -36,7 +36,8 @@ using handle_t =
 
 
 void check_all_cells_task(handle_t<size_t, flecsi::dro, flecsi::dro,
-    flecsi::dro> cell_ID, int my_color, size_t cycle) {
+    flecsi::dro> cell_ID, handle_t<double, flecsi::dro, flecsi::dro,
+    flecsi::dro> test, int my_color, size_t cycle) {
   clog(trace) << my_color << " READING " << std::endl;
 
   for (size_t i=0; i < cell_ID.exclusive_size(); i++)
@@ -126,6 +127,7 @@ flecsi_register_task(set_primary_cells_task, flecsi::loc, flecsi::single);
 class client_type : public flecsi::data::data_client_t{};
 
 flecsi_new_register_data(client_type, name_space, cell_ID, size_t, dense, INDEX_ID, VERSIONS);
+flecsi_new_register_data(client_type, name_space, test, double, dense, INDEX_ID, VERSIONS);
 
 namespace flecsi {
 namespace execution {
@@ -163,11 +165,12 @@ void driver(int argc, char ** argv) {
   client_type client;
 
   auto handle = flecsi_get_handle(client, name_space, cell_ID, size_t, dense, INDEX_ID);
+  auto test_handle = flecsi_get_handle(client, name_space, test, double, dense, INDEX_ID);
 
   for(size_t cycle=0; cycle<3; cycle++) {
     flecsi_execute_task(set_primary_cells_task, single, handle, my_color,cycle);
 
-    flecsi_execute_task(check_all_cells_task, single, handle, my_color, cycle);
+    flecsi_execute_task(check_all_cells_task, single, handle, test_handle, my_color, cycle);
   }
 
 } // driver
