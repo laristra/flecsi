@@ -22,7 +22,7 @@ namespace flecsi {
 ///
 struct legion_data_handle_policy_t
 {
-  using field_id_t = LegionRuntime::HighLevel::FieldID;
+  using field_id_t = Legion::FieldID;
 
   void copy(const legion_data_handle_policy_t& p){
     fid = p.fid;

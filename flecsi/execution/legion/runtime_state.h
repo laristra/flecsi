@@ -26,7 +26,7 @@ struct legion_runtime_state_t {
 
   legion_runtime_state_t(
     Legion::Context & context_,
-    Legion::HighLevelRuntime * runtime_,
+    Legion::Runtime * runtime_,
     const Legion::Task * task_,
     const std::vector<Legion::PhysicalRegion> & regions_
   )
@@ -38,7 +38,7 @@ struct legion_runtime_state_t {
   {}
     
   Legion::Context & context;
-  Legion::HighLevelRuntime * runtime;
+  Legion::Runtime * runtime;
   const Legion::Task * task;
   const std::vector<Legion::PhysicalRegion> & regions;
 

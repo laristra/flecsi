@@ -77,10 +77,13 @@ namespace execution {
 //!
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
+//we need to have them here to avoid circular dependency
+//FIXME : should we generate theese IDs somewhere?
 enum {
   // Use the first 8 bits for storing the rhsf index
   MAPPER_FORCE_RANK_MATCH = 0x00001000,
-  MAPPER_SUBRANK_LAUNCH   = 0x00080000,
+  MAPPER_COMPACTED_STORAGE = 0x00002000,
+  MAPPER_SUBRANK_LAUNCH   = 0x00003000,
 };
 
 //----------------------------------------------------------------------------//
@@ -178,7 +181,7 @@ struct legion_context_policy_t
   void push_state(
     size_t key,
     Legion::Context & context,
-    Legion::HighLevelRuntime * runtime,
+    Legion::Runtime * runtime,
     const Legion::Task * task,
     const std::vector<Legion::PhysicalRegion> & regions
   )
@@ -357,7 +360,7 @@ struct legion_context_policy_t
   void
   unset_call_mpi(
     Legion::Context & ctx,
-    Legion::HighLevelRuntime * runtime
+    Legion::Runtime * runtime
   );
 
   //--------------------------------------------------------------------------//
@@ -370,7 +373,7 @@ struct legion_context_policy_t
   void
   handoff_to_mpi(
     Legion::Context & ctx,
-    Legion::HighLevelRuntime * runtime
+    Legion::Runtime * runtime
   );
 
   //--------------------------------------------------------------------------//
@@ -385,7 +388,7 @@ struct legion_context_policy_t
   Legion::FutureMap
   wait_on_mpi(
     Legion::Context & ctx,
-    Legion::HighLevelRuntime * runtime
+    Legion::Runtime * runtime
   );
 
   //--------------------------------------------------------------------------//
@@ -398,7 +401,7 @@ struct legion_context_policy_t
   void
   connect_with_mpi(
     Legion::Context & ctx,
-    Legion::HighLevelRuntime * runtime
+    Legion::Runtime * runtime
   );
 
   //--------------------------------------------------------------------------//
@@ -584,7 +587,7 @@ struct legion_context_policy_t
   //--------------------------------------------------------------------------//
 
 #if !defined(ENABLE_LEGION_TLS)
-  Legion::HighLevelRuntime *
+  Legion::Runtime *
   runtime(
     size_t key
   )
