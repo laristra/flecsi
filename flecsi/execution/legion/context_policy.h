@@ -73,6 +73,17 @@ namespace execution {
 #endif
 
 //----------------------------------------------------------------------------//
+//! mapper tag's IDs
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+enum {
+  // Use the first 8 bits for storing the rhsf index
+  MAPPER_FORCE_RANK_MATCH = 0x00001000,
+  MAPPER_SUBRANK_LAUNCH   = 0x00080000,
+};
+
+//----------------------------------------------------------------------------//
 //! The legion_context_policy_t is the backend runtime context policy for
 //! Legion.
 //!
@@ -587,18 +598,16 @@ struct legion_context_policy_t
   //--------------------------------------------------------------------------//
 
   struct index_space_data_t{
-    Legion::PhaseBarrier* pbarrier_as_owner_ptr; // FIXME const?
-    std::vector<Legion::PhaseBarrier*> ghost_owners_pbarriers_ptrs; // FIXME const?
+    Legion::PhaseBarrier pbarrier_as_owner;
+    std::vector<Legion::PhaseBarrier> ghost_owners_pbarriers;
     std::vector<Legion::LogicalRegion> ghost_owners_lregions;
     Legion::STL::map<LegionRuntime::Arrays::coord_t,
-      LegionRuntime::Arrays::coord_t>* global_to_local_color_map;  // FIXME const?
+      LegionRuntime::Arrays::coord_t> global_to_local_color_map;
     Legion::LogicalRegion color_region;
-    Legion::IndexPartition primary_ghost_ip;
-    Legion::LogicalRegion primary_lr;
     Legion::LogicalRegion exclusive_lr;
     Legion::LogicalRegion shared_lr;
     Legion::LogicalRegion ghost_lr;
-    Legion::IndexPartition excl_shared_ip;
+    bool ghost_is_readable;
   };
 
   //--------------------------------------------------------------------------//

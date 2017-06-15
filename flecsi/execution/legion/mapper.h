@@ -33,6 +33,7 @@ enum {
   MPI_MAPPER_ID       = 1,
 };
 
+#if 0
 //----------------------------------------------------------------------------//
 //! mapper tag's IDs
 //!
@@ -41,8 +42,9 @@ enum {
 enum {
   // Use the first 8 bits for storing the rhsf index
   MAPPER_FORCE_RANK_MATCH = 0x00001000,
-//  MAPPER_SUBRANK_LAUNCH   = 0x00080000,
+  MAPPER_SUBRANK_LAUNCH   = 0x00080000,
 };
+#endif
 
 namespace flecsi {
 namespace execution {
@@ -194,9 +196,8 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
       return;
     }//endi if MAPPER_FORCE_RANK_MATCH
 
-    //FIXME implement logic for the subrank slices
 
-/*  	if((task.tag & MAPPER_SUBRANK_LAUNCH) != 0) {
+  	if((task.tag & MAPPER_SUBRANK_LAUNCH) != 0) {
     	// expect a 1-D index domain
     	assert(input.domain.get_dim() == 1);
 
@@ -206,7 +207,7 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
     	output.slices[0].proc = task.target_proc;
     	return;
   	} //end if MAPPER_SUBRANK_LAUNCH
-*/
+
     
     else{
       DefaultMapper::default_slice_task(task, local_cpus, remote_cpus,
