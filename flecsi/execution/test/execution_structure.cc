@@ -28,7 +28,7 @@ namespace flecsi {
 namespace execution {
 
 //----------------------------------------------------------------------------//
-// Specialization driver.
+// Top-Level Specialization Initialization
 //----------------------------------------------------------------------------//
 
 void specialization_tlt_init(int argc, char ** argv) {
@@ -37,6 +37,13 @@ void specialization_tlt_init(int argc, char ** argv) {
   flecsi_execute_mpi_task(add_colorings, 0);
 
 } // specialization_tlt_init
+
+//----------------------------------------------------------------------------//
+// SPMD Specialization Initialization
+//----------------------------------------------------------------------------//
+
+void specialization_spmd_ini(int argc, char ** argv) {
+} // specialization_spmd_ini
 
 //----------------------------------------------------------------------------//
 // User driver.
