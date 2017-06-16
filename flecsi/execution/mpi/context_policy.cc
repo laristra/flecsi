@@ -25,7 +25,7 @@ mpi_context_policy_t::initialize(
   char ** argv
 )
 {
-  return 0;
+  runtime_driver(argc, argv);
 } // mpi_context_policy_t::initialize
 
 } // namespace execution 

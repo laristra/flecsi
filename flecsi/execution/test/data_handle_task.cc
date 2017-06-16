@@ -38,7 +38,24 @@ void task1(handle_t<double, dro, dno, dno> x, double y) {
   //np(y);
 } // task1
 
+void writer(handle_t<double, dwd, dno, dno> x) {
+  clog(info) << "writer write: " << std::endl;
+  for (int i = 0; i < 5; i++) {
+    x(i) = static_cast<double>(i);
+    clog(info) << x(i) << std::endl;
+  }
+}
+
+void reader(handle_t<double, dro, dno, dno> x) {
+  clog(info) << "reader read: " << std::endl;
+  for (int i = 0; i < 5; i++) {
+    clog(info) << x(i) << std::endl;
+  }
+}
+
 flecsi_register_task(task1, loc, single);
+flecsi_register_task(writer, loc, single);
+flecsi_register_task(reader, loc, single);
 
 class client_type : public flecsi::data::data_client_t{};
 
@@ -73,7 +90,9 @@ void driver(int argc, char ** argv) {
   auto h = flecsi_get_handle(c, ns, pressure, double, dense, 0);
 
   flecsi_execute_task(task1, single, h, 128);
-} // driver
+  flecsi_execute_task(writer, single, h);
+  flecsi_execute_task(reader, single, h);
+} // specialization_driver
 
 //----------------------------------------------------------------------------//
 // TEST.

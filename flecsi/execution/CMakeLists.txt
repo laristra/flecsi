@@ -129,12 +129,12 @@ cinch_add_unit(launch
     SERIAL
 )
 
-cinch_add_devel_target(devel
-  SOURCES
-    test/devel.cc
-  POLICY
-    MPI
-)
+#cinch_add_devel_target(devel
+#  SOURCES
+#    test/devel.cc
+#  POLICY
+#    MPI
+#)
 
 if((FLECSI_RUNTIME_MODEL STREQUAL "serial")
     OR (FLECSI_RUNTIME_MODEL STREQUAL "legion"))
