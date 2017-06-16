@@ -46,9 +46,10 @@ void add_colorings(int dummy) {
   }
 
   // Read the mesh definition from file.
-  //flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
-  const size_t M(16), N(16);
-  flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
+  const size_t M(8), N(8);
+  flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
+  //const size_t M(16), N(16);
+  //flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
 
   // Create the dCRS representation for the distributed colorer.
   auto dcrs = flecsi::coloring::make_dcrs(sd);
@@ -375,6 +376,12 @@ void add_colorings(int dummy) {
   // Add colorings to the context.
   context_.add_coloring(0, cells, cell_coloring_info);
   context_.add_coloring(1, vertices, vertex_coloring_info);
+
+#if 0
+  context_.add_index_space(0, cells, cell_coloring_info);
+
+  context_.add_adjacency();
+#endif
 
   // Maps for output
   std::unordered_map<size_t, flecsi::coloring::entity_info_t>

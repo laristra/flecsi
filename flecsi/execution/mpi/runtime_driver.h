@@ -26,9 +26,9 @@ namespace execution {
 //! @ingroup mpi-execution
 //----------------------------------------------------------------------------//
 
-#if defined FLECSI_ENABLE_SPECIALIZATION_DRIVER
-void specialization_driver(int argc, char ** argv);
-#endif // FLECSI_ENABLE_SPECIALIZATION_DRIVER
+#if defined(FLECSI_ENABLE_SPECIALIZATION_TLT_INIT)
+void specialization_tlt_init(int argc, char ** argv);
+#endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
 //----------------------------------------------------------------------------//
 //! This is the main driver function to be defined by the user. This symbol

@@ -36,7 +36,7 @@ using namespace std;
 using namespace flecsi;
 using namespace execution;
 
-using namespace LegionRuntime::HighLevel;
+using namespace Legion;
 using namespace LegionRuntime::Accessor;
 using namespace LegionRuntime::Arrays;
 
@@ -69,7 +69,7 @@ using partition_id = size_t;
 using partition_vec = vector<entity_id>;
 
 void
-specialization_driver(
+specialization_tlt_init(
   int argc, 
   char ** argv
 )
@@ -235,7 +235,7 @@ specialization_driver(
 
   flecsi_execute_task(task1, loc, single, h1);
 
-} // driver
+} // specialization_tlt_init
 
 } // namespace execution
 } // namespace flecsi

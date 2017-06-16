@@ -35,7 +35,7 @@ runtime_driver(
   const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx,
-  Legion::HighLevelRuntime * runtime
+  Legion::Runtime * runtime
 )
 {
   {
@@ -45,7 +45,7 @@ runtime_driver(
 
   // Get the input arguments from the Legion runtime
   const Legion::InputArgs & args =
-    Legion::HighLevelRuntime::get_input_args();
+    Legion::Runtime::get_input_args();
 
   // Initialize MPI Interoperability
   context_t & context_ = context_t::instance();
@@ -54,26 +54,27 @@ runtime_driver(
 
   using field_info_t = context_t::field_info_t;
 
-#if defined FLECSI_ENABLE_SPECIALIZATION_DRIVER
+#if defined FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
   {
   clog_tag_guard(runtime_driver);
-  clog(info) << "Executing specialization driver task" << std::endl;
+  clog(info) << "Executing specialization top-level-task init" << std::endl;
   }
 
 #if !defined(ENABLE_LEGION_TLS)
   // Set the current task context to the driver
-  context_.push_state(utils::const_string_t{"specialization_driver"}.hash(),
+  context_.push_state(utils::const_string_t{"specialization_tlt_init"}.hash(),
     ctx, runtime, task, regions);
 #endif
 
-  // run default or user-defined specialization driver 
-  specialization_driver(args.argc, args.argv);
+  // Invoke the specialization top-level task initialization function.
+  specialization_tlt_init(args.argc, args.argv);
 
 #if !defined(ENABLE_LEGION_TLS)
   // Set the current task context to the driver
-  context_.pop_state( utils::const_string_t{"specialization_driver"}.hash());
+  context_.pop_state( utils::const_string_t{"specialization_tlt_init"}.hash());
 #endif
-#endif // FLECSI_ENABLE_SPECIALIZATION_DRIVER
+
+#endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
 
   // Register user data, invokes callbacks to add field info into context
@@ -98,9 +99,13 @@ runtime_driver(
 
   auto coloring_info = context_.coloring_info_map();
 
+
   data::legion_data_t data(ctx, runtime, num_colors);
 
   data.init_from_coloring_info_map(coloring_info);
+
+  // TODO: register adjacencies before calling this
+  data.finalize(coloring_info);
 
   std::map<size_t, std::vector<Legion::PhaseBarrier>> phase_barriers_map;
 
@@ -133,7 +138,7 @@ runtime_driver(
     LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
 
   for(auto idx_space : data.index_spaces()) {
-    auto& flecsi_ispace = data.index_space_info(idx_space);
+    auto& flecsi_ispace = data.index_space(idx_space);
 
     Legion::LogicalPartition color_lpart = runtime->get_logical_partition(ctx,
         flecsi_ispace.logical_region, flecsi_ispace.index_partition);
@@ -213,7 +218,7 @@ runtime_driver(
     // Add region requirements
 
     for(auto idx_space : data.index_spaces()){
-      auto& flecsi_ispace = data.index_space_info(idx_space);
+      auto& flecsi_ispace = data.index_space(idx_space);
 
       Legion::LogicalPartition color_lpart =
         runtime->get_logical_partition(ctx,
@@ -233,10 +238,10 @@ runtime_driver(
         }
       }
 
-      for(auto& p : context_.adjacencies()){
-        if(p.first == idx_space){
+      for(auto& itr : context_.adjacency_info()){
+        if(itr.first.first == idx_space){
           Legion::FieldID adjacency_fid = 
-            context_.adjacency_fid(p.first, p.second);
+            context_.adjacency_fid(itr.first.first, itr.first.second);
           
           reg_req.add_field(adjacency_fid);
         }

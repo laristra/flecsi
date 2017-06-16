@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_data_mpi_registration_wrapper_h
-#define flecsi_data_mpi_registration_wrapper_h
+#ifndef flecsi_data_serial_registration_wrapper_h
+#define flecsi_data_serial_registration_wrapper_h
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -31,7 +31,7 @@ template<
   size_t INDEX_SPACE,
   size_t VERSIONS
 >
-struct mpi_registration_wrapper_t
+struct serial_registration_wrapper_t
 {
   using field_id_t = size_t;
 
@@ -45,12 +45,12 @@ struct mpi_registration_wrapper_t
     // Do stuff
   } // register_callback
 
-}; // class mpi_registration_wrapper_t
+}; // class serial_registration_wrapper_t
 
 } // namespace data
 } // namespace flecsi
 
-#endif // flecsi_data_mpi_registration_wrapper_h
+#endif // flecsi_data_serial_registration_wrapper_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

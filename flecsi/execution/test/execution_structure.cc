@@ -28,15 +28,22 @@ namespace flecsi {
 namespace execution {
 
 //----------------------------------------------------------------------------//
-// Specialization driver.
+// Top-Level Specialization Initialization
 //----------------------------------------------------------------------------//
 
-void specialization_driver(int argc, char ** argv) {
+void specialization_tlt_init(int argc, char ** argv) {
 
-  clog(info) << "In specialization driver" << std::endl;
+  clog(info) << "In specialization top-level-task init" << std::endl;
   flecsi_execute_mpi_task(add_colorings, 0);
 
-} // specialization_driver
+} // specialization_tlt_init
+
+//----------------------------------------------------------------------------//
+// SPMD Specialization Initialization
+//----------------------------------------------------------------------------//
+
+void specialization_spmd_ini(int argc, char ** argv) {
+} // specialization_spmd_ini
 
 //----------------------------------------------------------------------------//
 // User driver.
@@ -46,7 +53,7 @@ void driver(int argc, char ** argv) {
 
   clog(info) << "In driver" << std::endl;
 
-} // specialization_driver
+} // driver
 
 } // namespace execution
 } // namespace flecsi

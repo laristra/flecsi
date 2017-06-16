@@ -95,9 +95,7 @@ struct pure_task_wrapper__
           task_name << " " << launch << std::endl << std::endl;
         }
         registration_wrapper__<RETURN, TASK>::register_task(
-          tid, Legion::Processor::LOC_PROC, launch_single(launch),
-          launch_index(launch), AUTO_GENERATE_ID, config_options,
-          task_name.c_str());
+          tid, Legion::Processor::LOC_PROC, task_name);
         break;
       case processor_type_t::toc:
         {
@@ -106,9 +104,7 @@ struct pure_task_wrapper__
           task_name << std::endl << std::endl;
         }
         registration_wrapper__<RETURN, TASK>::register_task(
-          tid, Legion::Processor::TOC_PROC, launch_single(launch),
-          launch_index(launch), AUTO_GENERATE_ID, config_options,
-          task_name.c_str());
+          tid, Legion::Processor::TOC_PROC, task_name);
         break;
     } // switch
   } // registration_callback
@@ -196,9 +192,7 @@ struct functor_task_wrapper__
           task_name << std::endl << std::endl;
         }
         registration_wrapper__<return_t, execute_functor_task>::register_task(
-          tid, Legion::Processor::LOC_PROC, launch_single(launch),
-          launch_index(launch), AUTO_GENERATE_ID, config_options,
-          task_name.c_str());
+          tid, Legion::Processor::LOC_PROC, task_name);
         break;
       case processor_type_t::toc:
         {
@@ -207,9 +201,7 @@ struct functor_task_wrapper__
           task_name << std::endl << std::endl;
         }
         registration_wrapper__<return_t, execute_functor_task>::register_task(
-          tid, Legion::Processor::TOC_PROC, launch_single(launch),
-          launch_index(launch), AUTO_GENERATE_ID, config_options,
-          task_name.c_str());
+          tid, Legion::Processor::TOC_PROC, task_name);
         break;
     } // switch
   } // registration_callback
@@ -219,10 +211,10 @@ struct functor_task_wrapper__
   //--------------------------------------------------------------------------//
 
   static return_t execute_functor_task(
-    const LegionRuntime::HighLevel::Task * task,
-    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
-    LegionRuntime::HighLevel::Context context,
-    LegionRuntime::HighLevel::HighLevelRuntime * runtime
+    const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context context,
+    Legion::Runtime * runtime
   )
   {
     {
@@ -321,9 +313,7 @@ struct task_wrapper__
           name << std::endl << std::endl;
         }
         registration_wrapper__<RETURN, execute_user_task>::register_task(
-          tid, Legion::Processor::LOC_PROC, launch_single(launch),
-          launch_index(launch), AUTO_GENERATE_ID, config_options,
-          name.c_str());
+          tid, Legion::Processor::LOC_PROC, name);
         break;
       case processor_type_t::toc:
         {
@@ -332,9 +322,7 @@ struct task_wrapper__
           name << std::endl << std::endl;
         }
         registration_wrapper__<RETURN, execute_user_task>::register_task(
-          tid, Legion::Processor::TOC_PROC, launch_single(launch),
-          launch_index(launch), AUTO_GENERATE_ID, config_options,
-          name.c_str());
+          tid, Legion::Processor::TOC_PROC, name);
         break;
       case processor_type_t::mpi:
         {
@@ -343,9 +331,7 @@ struct task_wrapper__
           name << std::endl << std::endl;
         }
         registration_wrapper__<void, execute_mpi_task>::register_task(
-          tid, Legion::Processor::LOC_PROC, launch_single(launch),
-          launch_index(launch), AUTO_GENERATE_ID, config_options,
-          name.c_str());
+          tid, Legion::Processor::LOC_PROC, name);
         break;
     } // switch
   } // registration_callback
@@ -355,10 +341,10 @@ struct task_wrapper__
   //--------------------------------------------------------------------------//
 
   static RETURN execute_user_task(
-    const LegionRuntime::HighLevel::Task * task,
-    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
-    LegionRuntime::HighLevel::Context context,
-    LegionRuntime::HighLevel::HighLevelRuntime * runtime
+    const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context context,
+    Legion::Runtime * runtime
   )
   {
     {
@@ -395,10 +381,10 @@ struct task_wrapper__
   //--------------------------------------------------------------------------//
 
   static void execute_mpi_task(
-    const LegionRuntime::HighLevel::Task * task,
-    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
-    LegionRuntime::HighLevel::Context context,
-    LegionRuntime::HighLevel::HighLevelRuntime * runtime
+    const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context context,
+    Legion::Runtime * runtime
   )
   {
     {
@@ -491,9 +477,7 @@ struct old_task_wrapper__
           task_name << std::endl << std::endl;
         }
         registration_wrapper__<RETURN, execute_user_task>::register_task(
-          tid, Legion::Processor::LOC_PROC, launch_single(launch),
-          launch_index(launch), AUTO_GENERATE_ID, config_options,
-          task_name.c_str());
+          tid, Legion::Processor::LOC_PROC, task_name);
         break;
       case processor_type_t::toc:
         {
@@ -502,9 +486,7 @@ struct old_task_wrapper__
           task_name << std::endl << std::endl;
         }
         registration_wrapper__<RETURN, execute_user_task>::register_task(
-          tid, Legion::Processor::TOC_PROC, launch_single(launch),
-          launch_index(launch), AUTO_GENERATE_ID, config_options,
-          task_name.c_str());
+          tid, Legion::Processor::TOC_PROC, task_name);
         break;
       case processor_type_t::mpi:
         {
@@ -513,9 +495,7 @@ struct old_task_wrapper__
           task_name << std::endl << std::endl;
         }
         registration_wrapper__<void, execute_mpi_task>::register_task(
-          tid, Legion::Processor::LOC_PROC, launch_single(launch),
-          launch_index(launch), AUTO_GENERATE_ID, config_options,
-          task_name.c_str());
+          tid, Legion::Processor::LOC_PROC, task_name);
         break;
     } // switch
   } // registration_callback
@@ -525,10 +505,10 @@ struct old_task_wrapper__
   //--------------------------------------------------------------------------//
 
   static RETURN execute_user_task(
-    const LegionRuntime::HighLevel::Task * task,
-    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
-    LegionRuntime::HighLevel::Context context,
-    LegionRuntime::HighLevel::HighLevelRuntime * runtime
+    const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context context,
+    Legion::Runtime * runtime
   )
   {
     {
@@ -565,10 +545,10 @@ struct old_task_wrapper__
   //--------------------------------------------------------------------------//
 
   static void execute_mpi_task(
-    const LegionRuntime::HighLevel::Task * task,
-    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions,
-    LegionRuntime::HighLevel::Context context,
-    LegionRuntime::HighLevel::HighLevelRuntime * runtime
+    const Legion::Task * task,
+    const std::vector<Legion::PhysicalRegion> & regions,
+    Legion::Context context,
+    Legion::Runtime * runtime
   )
   {
     {

@@ -36,7 +36,7 @@ template<
 >
 struct registration_wrapper_t
 {
-  using field_id_t = LegionRuntime::HighLevel::FieldID;
+  using field_id_t = Legion::FieldID;
 
   static
   void
@@ -75,7 +75,7 @@ template<
 struct client_registration_wrapper_t
 {
 #if 0
-  using field_id_t = LegionRuntime::HighLevel::FieldID;
+  using field_id_t = Legion::FieldID;
 
   static
   void
@@ -101,7 +101,7 @@ struct client_registration_wrapper_t<
   NAME_HASH
 >
 {
-  using field_id_t = LegionRuntime::HighLevel::FieldID;
+  using field_id_t = Legion::FieldID;
 
   static
   void

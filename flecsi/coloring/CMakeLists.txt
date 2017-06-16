@@ -18,10 +18,11 @@
 #------------------------------------------------------------------------------#
 
 set(coloring_HEADERS
+  adjacency_types.h
   colorer.h
   coloring_types.h
   communicator.h
-  dcrs.h
+  crs.h
   index_coloring.h
 )
 

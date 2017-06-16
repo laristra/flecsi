@@ -56,7 +56,8 @@ namespace execution {
     :
       runtime(runtime),
       context(context),
-      regions(regions)
+      regions(regions),
+      region(0)
     {
     } // init_handles
 
@@ -97,7 +98,7 @@ namespace execution {
           prs[r] = Legion::PhysicalRegion();
         }
         else{
-          prs[r] = regions[r];
+          prs[r] = regions[region + r];
           Legion::LogicalRegion lr = prs[r].get_logical_region();
           Legion::IndexSpace is = lr.get_index_space();
 
@@ -115,6 +116,8 @@ namespace execution {
           h.combined_size += sizes[r];
         }
       }
+
+      region += num_regions;
 
       // Create the concatenated buffer E+S+G
       h.combined_data = new T[h.combined_size];
@@ -176,7 +179,8 @@ namespace execution {
 
     Legion::Runtime * runtime;
     Legion::Context & context;
-    const std::vector<LegionRuntime::HighLevel::PhysicalRegion> & regions;
+    const std::vector<Legion::PhysicalRegion> & regions;
+    size_t region;
   }; // struct init_handles_t
 
 } // namespace execution 

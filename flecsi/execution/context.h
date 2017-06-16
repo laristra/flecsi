@@ -21,12 +21,14 @@
 //----------------------------------------------------------------------------//
 
 #include <cstddef>
+#include <map>
 #include <unordered_map>
 
 #include "cinchlog.h"
 #include "flecsi/utils/const_string.h"
-#include "flecsi/coloring/index_coloring.h"
+#include "flecsi/coloring/adjacency_types.h"
 #include "flecsi/coloring/coloring_types.h"
+#include "flecsi/coloring/index_coloring.h"
 
 clog_register_tag(context);
 
@@ -47,6 +49,7 @@ struct context__ : public CONTEXT_POLICY
 {
   using index_coloring_t = flecsi::coloring::index_coloring_t;
   using coloring_info_t = flecsi::coloring::coloring_info_t;
+  using adjacency_info_t = flecsi::coloring::adjacency_info_t;
 
   //---------------------------------------------------------------------------/
   //! Myer's singleton instance.
@@ -128,7 +131,7 @@ struct context__ : public CONTEXT_POLICY
   //! @return The map of index colorings.
   //---------------------------------------------------------------------------/
 
-  const std::unordered_map<size_t, index_coloring_t> &
+  const std::map<size_t, index_coloring_t> &
   coloring_map()
   const
   {
@@ -142,7 +145,7 @@ struct context__ : public CONTEXT_POLICY
   //! @return The map of index coloring information.
   //---------------------------------------------------------------------------/
 
-  const std::unordered_map<
+  const std::map<
     size_t,
     std::unordered_map<size_t, coloring_info_t>
   > &
@@ -161,14 +164,16 @@ struct context__ : public CONTEXT_POLICY
 
   void
   add_adjacency(
-    size_t from_index_space,
-    size_t to_index_space
+    adjacency_info_t & adjacency_info
   )
   {
-    auto p = std::make_pair(from_index_space, to_index_space);
-    clog_assert(adjacencies_.find(p) == adjacencies_.end(),
+    auto p = std::make_pair(adjacency_info.from_index_space,
+      adjacency_info.to_index_space);
+
+    clog_assert(adjacency_info_.find(p) == adjacency_info_.end(),
       "adjacency exists");
-    adjacencies_.insert(p);
+
+    adjacency_info_.emplace(p, std::move(adjacency_info));
   } // add_adjacency
 
   //---------------------------------------------------------------------------/
@@ -177,11 +182,11 @@ struct context__ : public CONTEXT_POLICY
   //! @return The set of registered adjacencies
   //---------------------------------------------------------------------------/
 
-  const std::set<std::pair<size_t, size_t>>&
-  adjacencies()
+  const std::map<std::pair<size_t, size_t>, adjacency_info_t> &
+  adjacency_info()
   const
   {
-    return adjacencies_;
+    return adjacency_info_;
   } // adjacencies
 
 private:
@@ -200,15 +205,15 @@ private:
 
   // key: virtual index space id
   // value: coloring indices (exclusive, shared, ghost)
-  std::unordered_map<size_t, index_coloring_t> colorings_;
+  std::map<size_t, index_coloring_t> colorings_;
 
   // key: virtual index space.
   // value: map of color to coloring info
-  std::unordered_map<size_t,
+  std::map<size_t,
     std::unordered_map<size_t, coloring_info_t>> coloring_info_;
 
   // pair is from, to index space
-  std::set<std::pair<size_t, size_t>> adjacencies_;
+  std::map<std::pair<size_t, size_t>, adjacency_info_t> adjacency_info_;
 
 }; // class context__
 

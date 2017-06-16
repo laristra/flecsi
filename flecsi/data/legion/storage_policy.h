@@ -92,7 +92,7 @@ struct legion_storage_policy_t {
   // Data registration.
   //--------------------------------------------------------------------------//
 
-  using field_id_t = LegionRuntime::HighLevel::FieldID;
+  using field_id_t = Legion::FieldID;
   using registration_function_t = std::function<void(size_t)>;
   using unique_fid_t =
     utils::unique_id_t<field_id_t, FLECSI_GENERATED_ID_MAX>;
