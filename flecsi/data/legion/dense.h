@@ -519,6 +519,7 @@ struct storage_type_t<dense, DS, MD>
     h.fid = field_info.fid;
     h.index_space = field_info.index_space;
     h.ghost_is_readable = &(ism[index_space].ghost_is_readable);
+    h.write_phase_started = &(ism[index_space].write_phase_started);
 
     return h;
   } // get_handle

@@ -50,6 +50,7 @@ struct legion_data_handle_policy_t
   const Legion::STL::map<LegionRuntime::Arrays::coord_t,
     LegionRuntime::Arrays::coord_t>* global_to_local_color_map_ptr;
   bool* ghost_is_readable;
+  bool* write_phase_started;
 
   // +++ The following fields are set on the execution side of the handle
   // inside the actual Legion task once we have the physical regions

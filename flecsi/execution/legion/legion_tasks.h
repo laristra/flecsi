@@ -213,6 +213,8 @@ __flecsi_internal_legion_task(spmd_task, void) {
 
   for(size_t idx_space : context_.index_spaces()){
     ispace_dmap[idx_space].pbarrier_as_owner = pbarriers_as_master[idx_space];
+    ispace_dmap[idx_space].ghost_is_readable = true;
+    ispace_dmap[idx_space].write_phase_started = false;
   }
 
   std::vector<std::vector<Legion::PhaseBarrier>> ghost_owners_pbarriers(num_idx_spaces);
