@@ -35,9 +35,10 @@ using handle_t =
   flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t>>;
 
 
-void check_all_cells_task(handle_t<size_t, flecsi::dro, flecsi::dro,
-    flecsi::dro> cell_ID, handle_t<double, flecsi::dro, flecsi::dro,
-    flecsi::dro> test, int my_color, size_t cycle) {
+void check_all_cells_task(
+        handle_t<size_t, flecsi::dro, flecsi::dro, flecsi::dro> cell_ID,
+        handle_t<double, flecsi::dro, flecsi::dro, flecsi::dro> test,
+        int my_color, size_t cycle) {
   clog(trace) << my_color << " READING " << std::endl;
 
   for (size_t i=0; i < cell_ID.exclusive_size(); i++)
@@ -53,8 +54,9 @@ void check_all_cells_task(handle_t<size_t, flecsi::dro, flecsi::dro,
   for (auto exclusive_itr = index_coloring->second.exclusive.begin(); exclusive_itr !=
       index_coloring->second.exclusive.end(); ++exclusive_itr) {
       flecsi::coloring::entity_info_t exclusive = *exclusive_itr;
-    assert(cell_ID.exclusive(index) == exclusive.id + cycle);
-    index++;
+      assert(cell_ID.exclusive(index) == exclusive.id + cycle);
+      assert(test.exclusive(index) == double(exclusive.id + cycle));
+      index++;
   } // exclusive_itr
 
   index = 0;
@@ -62,6 +64,7 @@ void check_all_cells_task(handle_t<size_t, flecsi::dro, flecsi::dro,
       index_coloring->second.shared.end(); ++shared_itr) {
       flecsi::coloring::entity_info_t shared = *shared_itr;
       assert(cell_ID.shared(index) == shared.id + cycle);
+      assert(test.shared(index) == double(shared.id + cycle));
       index++;
   } // shared_itr
 
@@ -85,8 +88,10 @@ void check_all_cells_task(handle_t<size_t, flecsi::dro, flecsi::dro,
 
 flecsi_register_task(check_all_cells_task, flecsi::loc, flecsi::single);
 
-void set_primary_cells_task(handle_t<size_t, flecsi::drw, flecsi::drw,
-    flecsi::dno> cell_ID, int my_color, size_t cycle) {
+void set_primary_cells_task(
+        handle_t<size_t, flecsi::drw, flecsi::drw, flecsi::dno> cell_ID,
+        handle_t<double, flecsi::drw, flecsi::drw, flecsi::dno> test,
+        int my_color, size_t cycle) {
 
   clog(trace) << my_color << " WRITING " << std::endl;
 
@@ -101,6 +106,7 @@ void set_primary_cells_task(handle_t<size_t, flecsi::drw, flecsi::drw,
       flecsi::coloring::entity_info_t exclusive = *exclusive_itr;
     clog(trace) << my_color << " exclusive " <<  exclusive.id << std::endl;
     cell_ID(index) = exclusive.id + cycle;
+    test(index) = double(exclusive.id + cycle);
     index++;
   } // exclusive_itr
 
@@ -109,6 +115,7 @@ void set_primary_cells_task(handle_t<size_t, flecsi::drw, flecsi::drw,
       flecsi::coloring::entity_info_t shared = *shared_itr;
     clog(trace) << my_color << " shared " <<  shared.id << std::endl;
     cell_ID(index) = shared.id + cycle;
+    test(index) = double(shared.id + cycle);
     index++;
   } // shared_itr
 
@@ -168,9 +175,11 @@ void driver(int argc, char ** argv) {
   auto test_handle = flecsi_get_handle(client, name_space, test, double, dense, INDEX_ID);
 
   for(size_t cycle=0; cycle<3; cycle++) {
-    flecsi_execute_task(set_primary_cells_task, single, handle, my_color,cycle);
+    flecsi_execute_task(set_primary_cells_task, single, handle, test_handle,
+            my_color,cycle);
 
-    flecsi_execute_task(check_all_cells_task, single, handle, test_handle, my_color, cycle);
+    flecsi_execute_task(check_all_cells_task, single, handle, test_handle,
+            my_color, cycle);
   }
 
 } // driver
