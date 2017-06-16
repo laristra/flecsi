@@ -629,7 +629,7 @@ class connectivity_t
     return index_space_;
   }
 
-  index_space<mesh_entity_base_*> index_space_; 
+  index_space<mesh_entity_base_*> index_space_;
   index_vector_t from_index_vec_;
 
 }; // class connectivity_t
