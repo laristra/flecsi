@@ -35,11 +35,12 @@ namespace topology {
 template<
   size_t from_dim,
   size_t to_dim,
-  size_t thru_dim
+  size_t thru_dim,
+  size_t D
 >
 std::set<size_t>
 entity_neighbors(
-  mesh_definition_t & md,
+  mesh_definition__<D> & md,
   size_t entity_id
 )
 {
@@ -91,16 +92,19 @@ entity_neighbors(
 template<
   size_t from_dim,
   size_t to_dim,
-  size_t thru_dim
+  size_t thru_dim,
+  size_t D,
+  typename U
 >
 std::set<size_t>
 entity_closure(
-  mesh_definition_t & md,
-  std::set<size_t> indices
+  mesh_definition__<D> & md,
+  U && indices
 )
 {
   // Closure should include the initial set
-  std::set<size_t> closure = indices;
+  std::set<size_t> closure( std::forward<U>(indices).begin(), 
+    std::forward<U>(indices).end() );
 
   // Iterate over the entity indices and add all neighbors
   for(auto i: indices) {
@@ -124,11 +128,12 @@ entity_closure(
 /// \param id The id of the vertex.
 ///
 template<
-  size_t by_dim
+  size_t by_dim,
+  size_t D
 >
 std::set<size_t>
 vertex_referencers(
-  mesh_definition_t & md,
+  mesh_definition__<D> & md,
   size_t id
 )
 {
@@ -162,11 +167,12 @@ vertex_referencers(
 /// \param indices The entity indeces.
 ///
 template<
-  size_t by_dim
+  size_t by_dim,
+  size_t D
 >
 std::set<size_t>
 vertex_closure(
-  mesh_definition_t & md,
+  mesh_definition__<D> & md,
   std::set<size_t> indices
 )
 {

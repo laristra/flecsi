@@ -47,10 +47,10 @@ public:
   ///
   /// Return the dimension of the mesh.
   ///
+  static 
   constexpr
   size_t
   dimension()
-  const
   {
     return D;
   } // dimension
@@ -61,28 +61,35 @@ public:
   //! @param dimension The topological dimension of the request.
   //--------------------------------------------------------------------------//
 
-  virtual size_t num_entities(size_t dimension) = 0;
+  virtual size_t num_entities(size_t dimension) const = 0;
 
   //--------------------------------------------------------------------------//
   //! Abstract interface to get the number of entities.
   //--------------------------------------------------------------------------//
 
-  virtual std::vector<size_t> vertices(size_t dimension, size_t entity_id) = 0;
+  virtual std::vector<size_t> vertices(size_t dimension, size_t entity_id) 
+    const = 0;
 
   //--------------------------------------------------------------------------//
   //! Abstract interface to get the number of entities.
   //--------------------------------------------------------------------------//
 
-  virtual std::set<size_t> vertex_set(size_t dimension, size_t entity_id) = 0;
+  /// Return the set of vertices of a particular entity.
+  /// \param [in] dimension  The entity dimension to query.
+  /// \param [in] entity_id  The id of the entity in question.
+  /// \remark This version returns a set.
+  virtual std::set<size_t> vertex_set(size_t dimension, size_t entity_id) const
+  {
+    auto vvec = vertices(dimension, entity_id);
+    return std::set<size_t>(vvec.begin(), vvec.end());
+  }
 
-  virtual point_t vertex(size_t vertex_id) = 0;
+
+  virtual point_t vertex(size_t vertex_id) const = 0;
 
 private:
 
 }; // class mesh_definition__
-
-// FIXME: This probably shouldn't be set here...
-using mesh_definition_t = mesh_definition__<2>;
 
 } // namespace topology
 } // namespace flecsi
