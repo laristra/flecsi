@@ -125,14 +125,12 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   ///
   template<size_t EP2, size_t SP2, size_t GP2>
   dense_handle_t(const dense_handle_t<T, EP2, SP2, GP2, MD> & a)
-    : label_(a.label_),
+    : base_t(reinterpret_cast<const base_t&>(a)),
+      label_(a.label_),
       meta_data_(a.meta_data_)
     {
       static_assert(EP2 == 0 && SP2 == 0 && GP2 == 0,
         "passing mapped handle to task args");
-
-      base_t::copy_data(a);
-      legion_data_handle_policy_t::copy(a);
     }
 
   //--------------------------------------------------------------------------//
@@ -510,14 +508,18 @@ struct storage_type_t<dense, DS, MD>
     h.exclusive_lr = ism[index_space].exclusive_lr;
     h.shared_lr = ism[index_space].shared_lr;
     h.ghost_lr = ism[index_space].ghost_lr;
-    h.pbarrier_as_owner_ptr = ism[index_space].pbarrier_as_owner_ptr;
-    h.ghost_owners_pbarriers_ptrs = 
-      &ism[index_space].ghost_owners_pbarriers_ptrs;
-    h.ghost_owners_lregions = &ism[index_space].ghost_owners_lregions;
+    h.pbarrier_as_owner_ptr = &ism[index_space].pbarrier_as_owner;
+    h.ghost_owners_pbarriers_ptrs.resize(0);
+    for(size_t i=0; i < ism[index_space].ghost_owners_pbarriers.size() ; i++)
+        h.ghost_owners_pbarriers_ptrs.push_back(&(ism[index_space]
+                                                .ghost_owners_pbarriers[i]));
+    h.ghost_owners_lregions = ism[index_space].ghost_owners_lregions;
     h.color_region = ism[index_space].color_region;
-    h.global_to_local_color_map = ism[index_space].global_to_local_color_map;
+    h.global_to_local_color_map_ptr = &ism[index_space].global_to_local_color_map;
     h.fid = field_info.fid;
     h.index_space = field_info.index_space;
+    h.ghost_is_readable = &(ism[index_space].ghost_is_readable);
+    h.write_phase_started = &(ism[index_space].write_phase_started);
 
     return h;
   } // get_handle

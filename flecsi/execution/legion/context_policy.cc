@@ -40,11 +40,14 @@ legion_context_policy_t::initialize(
   using namespace Legion;
 
   // Register top-level task
-  HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
-  HighLevelRuntime::register_legion_task<runtime_driver>(
-    TOP_LEVEL_TASK_ID, Legion::Processor::LOC_PROC,
-    true, false, AUTO_GENERATE_ID, TaskConfigOptions(), "runtime_driver");
-
+  Runtime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
+ 
+  {
+    Legion::TaskVariantRegistrar registrar(TOP_LEVEL_TASK_ID, "runtime_driver");
+    registrar.add_constraint(ProcessorConstraint(Processor::LOC_PROC));
+    Runtime::preregister_task_variant<runtime_driver>(registrar,
+      "runtime_driver");
+  }
   // Register tasks
   for(auto & t: task_registry_) {
     std::get<4>(t.second)(
@@ -62,7 +65,7 @@ legion_context_policy_t::initialize(
   );
 
   // Register our mapper
-  HighLevelRuntime::set_registration_callback(mapper_registration);
+  Runtime::add_registration_callback(mapper_registration);
 
   // Configure interoperability layer.
   int rank;
@@ -70,7 +73,7 @@ legion_context_policy_t::initialize(
   Legion::Runtime::configure_MPI_interoperability(rank);
 
   // Start the Legion runtime
-  HighLevelRuntime::start(argc, argv, true);
+  Runtime::start(argc, argv, true);
 
   handoff_to_legion();
   wait_on_legion();

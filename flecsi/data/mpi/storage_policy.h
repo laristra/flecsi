@@ -24,14 +24,14 @@
 #include "flecsi/data/common/data_hash.h"
 #include "flecsi/data/data_constants.h"
 #include "flecsi/data/mpi/meta_data.h"
-#include "flecsi/data/mpi/mpi_registration_wrapper.h"
+#include "flecsi/data/mpi/registration_wrapper.h"
 
 // Include partial specializations
-#include "flecsi/data/mpi/global.h"
+//#include "flecsi/data/mpi/global.h"
 #include "flecsi/data/mpi/dense.h"
-#include "flecsi/data/mpi/sparse.h"
-#include "flecsi/data/mpi/scoped.h"
-#include "flecsi/data/mpi/tuple.h"
+//#include "flecsi/data/mpi/sparse.h"
+//#include "flecsi/data/mpi/scoped.h"
+//#include "flecsi/data/mpi/tuple.h"
 
 namespace flecsi {
 namespace data {

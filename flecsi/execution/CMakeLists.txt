@@ -61,12 +61,17 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/execution_policy.h
     legion/future.h
     legion/helper.h
+    legion/init_args.h
+    legion/init_handles.h
+    legion/internal_field.h
     legion/internal_task.h
     legion/legion_tasks.h
     legion/mapper.h
     legion/registration_wrapper.h
     legion/runtime_driver.h
     legion/runtime_state.h
+    legion/task_epilog.h
+    legion/task_prolog.h
     legion/task_wrapper.h
   )
 
@@ -124,15 +129,16 @@ cinch_add_unit(launch
     SERIAL
 )
 
-cinch_add_devel_target(devel
-  SOURCES
-    test/devel.cc
-  POLICY
-    MPI
-)
+#cinch_add_devel_target(devel
+#  SOURCES
+#    test/devel.cc
+#  POLICY
+#    MPI
+#)
 
-if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
-    OR (FLECSI_RUNTIME_MODEL STREQUAL "legion"))
+if((FLECSI_RUNTIME_MODEL STREQUAL "serial")
+    OR (FLECSI_RUNTIME_MODEL STREQUAL "legion")
+    OR (FLECSI_RUNTIME_MODEL STREQUAL "mpi"))
 
   #
   # Test basic function calling capability using the register_function
@@ -169,6 +175,27 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
       ${CINCH_RUNTIME_LIBRARIES}
   )
 
+  if(ENABLE_COLORING AND ENABLE_PARMETIS)
+    cinch_add_unit(execution_structure
+    SOURCES
+      test/execution_structure.cc
+      ../supplemental/coloring/add_colorings.cc
+      ${DRIVER_INITIALIZATION}
+      ${RUNTIME_DRIVER}
+    INPUTS
+      test/simple2d-8x8.msh
+      test/simple2d-16x16.msh
+    LIBRARIES
+      flecsi
+      ${CINCH_RUNTIME_LIBRARIES}
+      ${COLORING_LIBRARIES}
+    DEFINES
+      -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+      -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+    POLICY ${UNIT_POLICY}
+    )
+  endif()
+
   if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
     #
@@ -189,26 +216,23 @@ if((NOT DEFINED ENV{TRAVIS} ) OR (FLECSI_RUNTIME_MODEL STREQUAL "serial")
     THREADS 2
     )
 
-    if(ENABLE_COLORING AND ENABLE_PARMETIS)
+   cinch_add_unit(mapper_compaction_task
+    SOURCES
+      test/legion/mapper_compaction.cc
+      ${DRIVER_INITIALIZATION}
+      ${RUNTIME_DRIVER}
+    DEFINES
+      -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+    POLICY
+      ${UNIT_POLICY}
+    LIBRARIES
+      flecsi
+      ${CINCH_RUNTIME_LIBRARIES}
+    THREADS 1
+    )
 
-      cinch_add_devel_target(execution_structure
-        SOURCES
-          test/execution_structure.cc
-          ../supplemental/coloring/add_colorings.cc
-          ${DRIVER_INITIALIZATION}
-          ${RUNTIME_DRIVER}
-        INPUTS
-          test/simple2d-8x8.msh
-          test/simple2d-16x16.msh
-        LIBRARIES
-          flecsi
-          ${CINCH_RUNTIME_LIBRARIES}
-          ${COLORING_LIBRARIES}
-        DEFINES
-          -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
-          -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-        POLICY LEGION
-      )
+
+    if(ENABLE_COLORING AND ENABLE_PARMETIS)
 
       cinch_add_unit(ghost_access
         SOURCES

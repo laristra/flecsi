@@ -22,29 +22,11 @@ namespace flecsi {
 ///
 struct legion_data_handle_policy_t
 {
-  using field_id_t = LegionRuntime::HighLevel::FieldID;
+  using field_id_t = Legion::FieldID;
 
-  void copy(const legion_data_handle_policy_t& p){
-    fid = p.fid;
-    context = p.context;
-    runtime = p.runtime;
-    index_space = p.index_space;
-    exclusive_lr = p.exclusive_lr;
-    shared_lr = p.shared_lr;
-    ghost_lr = p.ghost_lr;
-    pbarrier_as_owner_ptr = p.pbarrier_as_owner_ptr;
-    ghost_owners_pbarriers_ptrs = p.ghost_owners_pbarriers_ptrs;
-    ghost_owners_lregions = p.ghost_owners_lregions;
-    global_to_local_color_map = p.global_to_local_color_map;
-    color_region = p.color_region;
-    exclusive_pr = p.exclusive_pr;
-    shared_pr = p.shared_pr;
-    ghost_pr = p.ghost_pr;
-    ghost_is_readable = p.ghost_is_readable;
-    exclusive_priv = p.exclusive_priv;
-    shared_priv = p.shared_priv;
-    ghost_priv = p.ghost_priv;
-  }
+  legion_data_handle_policy_t(){}
+
+  legion_data_handle_policy_t(const legion_data_handle_policy_t& p) = default;
 
   // +++ The following fields are set from get_handle(), reading
   // information from the context which is data that is the same
@@ -55,16 +37,20 @@ struct legion_data_handle_policy_t
 
   // These depend on color but are only used in specifying
   // the region requirements
+  Legion::LogicalRegion color_region;
   Legion::LogicalRegion exclusive_lr;
   Legion::LogicalRegion shared_lr;
   Legion::LogicalRegion ghost_lr;
+  std::vector<Legion::LogicalRegion> ghost_owners_lregions;
 
+  // Tuple-walk copies data_handle then discards updates at the end.
+  // Some pointers are necessary for updates to live between walks.
   Legion::PhaseBarrier* pbarrier_as_owner_ptr;
-  std::vector<Legion::PhaseBarrier*>* ghost_owners_pbarriers_ptrs;
-  std::vector<Legion::LogicalRegion>* ghost_owners_lregions;
-  Legion::STL::map<LegionRuntime::Arrays::coord_t,
-    LegionRuntime::Arrays::coord_t>* global_to_local_color_map;
-  Legion::LogicalRegion color_region;
+  std::vector<Legion::PhaseBarrier*> ghost_owners_pbarriers_ptrs;
+  const Legion::STL::map<LegionRuntime::Arrays::coord_t,
+    LegionRuntime::Arrays::coord_t>* global_to_local_color_map_ptr;
+  bool* ghost_is_readable;
+  bool* write_phase_started;
 
   // +++ The following fields are set on the execution side of the handle
   // inside the actual Legion task once we have the physical regions
@@ -77,7 +63,6 @@ struct legion_data_handle_policy_t
   size_t exclusive_priv;
   size_t shared_priv;
   size_t ghost_priv;
-  bool ghost_is_readable;
 }; // class legion_data_handle_policy_t
 
 } // namespace flecsi

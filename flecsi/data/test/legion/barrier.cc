@@ -15,7 +15,6 @@ using namespace std;
 
 using namespace Legion;
 using namespace LegionRuntime::Accessor;
-using namespace LegionRuntime::HighLevel;
 
 using namespace flecsi;
 using namespace topology;
@@ -32,7 +31,7 @@ struct SPMDArgs {
 
 void top_level_task(const Task *task,
                     const std::vector<PhysicalRegion> &regions,
-                    Context ctx, HighLevelRuntime *runtime)
+                    Context ctx, Runtime *runtime)
 {
     const int num_subregions = 2;
     PhaseBarrier one_barrier = runtime->create_phase_barrier(ctx, num_subregions);
@@ -59,7 +58,7 @@ void top_level_task(const Task *task,
 
 void subtask(const Task *task,
                    const std::vector<PhysicalRegion> &regions,
-                   Context ctx, HighLevelRuntime *runtime)
+                   Context ctx, Runtime *runtime)
 {
     const int num_phases = 10;
 
@@ -75,8 +74,8 @@ void subtask(const Task *task,
 }
 
 TEST(legion, test1) {
-  HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
-  HighLevelRuntime::register_legion_task<top_level_task>(TOP_LEVEL_TASK_ID,
+  Runtime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
+  Runtime::register_legion_task<top_level_task>(TOP_LEVEL_TASK_ID,
       Processor::LOC_PROC, true/*single*/, false/*index*/);
   HighLevelRuntime::register_legion_task<subtask>(SUBTASK_ID,
       Processor::LOC_PROC, true/*single*/, false/*index*/);

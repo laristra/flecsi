@@ -12,14 +12,14 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_serial_dense_h
-#define flecsi_serial_dense_h
+#ifndef flecsi_mpi_dense_h
+#define flecsi_mpi_dense_h
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_type.h!!!
 // Using this approach allows us to have only one storage_type_t
 // definintion that can be used by all data policies -> code reuse...
-#define POLICY_NAMESPACE serial
+#define POLICY_NAMESPACE mpi
 #include "flecsi/data/storage_type.h"
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
@@ -38,13 +38,9 @@
 /// \date Initial file creation: Apr 7, 2016
 ///
 
-#define np(X)                                                            \
- std::cout << __FILE__ << ":" << __LINE__ << ": " << __PRETTY_FUNCTION__ \
-           << ": " << #X << " = " << (X) << std::endl
-
 namespace flecsi {
 namespace data {
-namespace serial {
+namespace mpi {
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Helper type definitions.
@@ -858,32 +854,13 @@ struct storage_type_t<dense, DS, MD>
     return h;
   } // get_handle
 #endif
-
-  template<
-    typename T,
-    size_t NS,
-    typename DATA_CLIENT_TYPE
-  >
-  static
-  handle_t<T, 0, 0, 0>
-  get_handle(
-    const data_client_t & data_client,
-    data_store_t & data_store,
-    const utils::const_string_t & key,
-    size_t version
-  )
-  {
-    handle_t<T, 0, 0, 0> h;
-    return h;
-  }
-
 }; // struct storage_type_t
 
-} // namespace serial
+} // namespace mpi
 } // namespace data
 } // namespace flecsi
 
-#endif // flecsi_serial_dense_h
+#endif // flecsi_mpi_dense_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

@@ -46,6 +46,24 @@ template<
   typename DATA_POLICY
 >
 struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {
+  data_handle_base__(){}
+
+  data_handle_base__(const data_handle_base__& b)
+  : DATA_POLICY(b){
+    exclusive_data = b.exclusive_data;
+    shared_data = b.shared_data;
+    ghost_data = b.ghost_data;
+    combined_data = b.combined_data;
+    exclusive_size = b.exclusive_size;
+    shared_size = b.shared_size;
+    ghost_size = b.ghost_size;
+    combined_size = b.combined_size;
+    exclusive_buf = b.exclusive_buf;
+    shared_buf = b.shared_buf;
+    ghost_buf = b.ghost_buf;
+    master = false;
+  }
+
   T* exclusive_data = nullptr;
   T* exclusive_buf = nullptr;
   size_t exclusive_size = 0;
@@ -61,32 +79,6 @@ struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {
   T* combined_data = nullptr;
   size_t combined_size = 0;
   bool master = true;
-
-  template<
-    size_t EXCLUSIVE_PERMISSIONS2,
-    size_t SHARED_PERMISSIONS2,
-    size_t GHOST_PERMISSIONS2
-  >
-  void
-  copy_data(
-    const data_handle_base__<
-      T,
-      EXCLUSIVE_PERMISSIONS2,
-      SHARED_PERMISSIONS2,
-      GHOST_PERMISSIONS2,
-      DATA_POLICY
-    >& b
-  )
-  {
-    exclusive_data = b.exclusive_data;
-    shared_data = b.shared_data;
-    ghost_data = b.ghost_data;
-    combined_data = b.combined_data;
-    exclusive_size = b.exclusive_size;
-    shared_size = b.shared_size;
-    ghost_size = b.ghost_size;
-    master = false;
-  }   
 };
 
 } // namespace flecsi

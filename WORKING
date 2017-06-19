@@ -3,5 +3,5 @@
 #------------------------------------------------------------------------------#
 
 - Update copyrights with standard header.
-
-- Check compile modes with each runtime for merge.
+- Add context interface for adjacency information.
+- Add functional form for specialization tlt initialization

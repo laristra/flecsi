@@ -20,6 +20,7 @@
 set(data_HEADERS
   common/data_hash.h
   common/data_types.h
+  common/privilege.h
   data_accessor.h
   data_client.h
   data_constants.h
@@ -71,6 +72,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/dense.h
     legion/dpd.h
     legion/global.h
+    legion/legion_data.h
     legion/meta_data.h
     legion/registration_wrapper.h
     legion/scoped.h

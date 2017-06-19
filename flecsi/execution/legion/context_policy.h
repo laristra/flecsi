@@ -77,10 +77,13 @@ namespace execution {
 //!
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
+//we need to have them here to avoid circular dependency
+//FIXME : should we generate theese IDs somewhere?
 enum {
   // Use the first 8 bits for storing the rhsf index
   MAPPER_FORCE_RANK_MATCH = 0x00001000,
-  MAPPER_SUBRANK_LAUNCH   = 0x00080000,
+  MAPPER_COMPACTED_STORAGE = 0x00002000,
+  MAPPER_SUBRANK_LAUNCH   = 0x00003000,
 };
 
 //----------------------------------------------------------------------------//
@@ -178,7 +181,7 @@ struct legion_context_policy_t
   void push_state(
     size_t key,
     Legion::Context & context,
-    Legion::HighLevelRuntime * runtime,
+    Legion::Runtime * runtime,
     const Legion::Task * task,
     const std::vector<Legion::PhysicalRegion> & regions
   )
@@ -357,7 +360,7 @@ struct legion_context_policy_t
   void
   unset_call_mpi(
     Legion::Context & ctx,
-    Legion::HighLevelRuntime * runtime
+    Legion::Runtime * runtime
   );
 
   //--------------------------------------------------------------------------//
@@ -370,7 +373,7 @@ struct legion_context_policy_t
   void
   handoff_to_mpi(
     Legion::Context & ctx,
-    Legion::HighLevelRuntime * runtime
+    Legion::Runtime * runtime
   );
 
   //--------------------------------------------------------------------------//
@@ -385,7 +388,7 @@ struct legion_context_policy_t
   Legion::FutureMap
   wait_on_mpi(
     Legion::Context & ctx,
-    Legion::HighLevelRuntime * runtime
+    Legion::Runtime * runtime
   );
 
   //--------------------------------------------------------------------------//
@@ -398,7 +401,7 @@ struct legion_context_policy_t
   void
   connect_with_mpi(
     Legion::Context & ctx,
-    Legion::HighLevelRuntime * runtime
+    Legion::Runtime * runtime
   );
 
   //--------------------------------------------------------------------------//
@@ -584,7 +587,7 @@ struct legion_context_policy_t
   //--------------------------------------------------------------------------//
 
 #if !defined(ENABLE_LEGION_TLS)
-  Legion::HighLevelRuntime *
+  Legion::Runtime *
   runtime(
     size_t key
   )
@@ -598,15 +601,17 @@ struct legion_context_policy_t
   //--------------------------------------------------------------------------//
 
   struct index_space_data_t{
-    Legion::PhaseBarrier* pbarrier_as_owner_ptr; // FIXME const?
-    std::vector<Legion::PhaseBarrier*> ghost_owners_pbarriers_ptrs; // FIXME const?
+    Legion::PhaseBarrier pbarrier_as_owner;
+    std::vector<Legion::PhaseBarrier> ghost_owners_pbarriers;
     std::vector<Legion::LogicalRegion> ghost_owners_lregions;
     Legion::STL::map<LegionRuntime::Arrays::coord_t,
-      LegionRuntime::Arrays::coord_t>* global_to_local_color_map;  // FIXME const?
+      LegionRuntime::Arrays::coord_t> global_to_local_color_map;
     Legion::LogicalRegion color_region;
     Legion::LogicalRegion exclusive_lr;
     Legion::LogicalRegion shared_lr;
     Legion::LogicalRegion ghost_lr;
+    bool ghost_is_readable;
+    bool write_phase_started;
   };
 
   //--------------------------------------------------------------------------//

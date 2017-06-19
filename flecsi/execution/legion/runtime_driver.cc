@@ -35,7 +35,7 @@ runtime_driver(
   const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
   Legion::Context ctx,
-  Legion::HighLevelRuntime * runtime
+  Legion::Runtime * runtime
 )
 {
   {
@@ -45,7 +45,7 @@ runtime_driver(
 
   // Get the input arguments from the Legion runtime
   const Legion::InputArgs & args =
-    Legion::HighLevelRuntime::get_input_args();
+    Legion::Runtime::get_input_args();
 
   // Initialize MPI Interoperability
   context_t & context_ = context_t::instance();
@@ -99,6 +99,7 @@ runtime_driver(
 
   auto coloring_info = context_.coloring_info_map();
 
+
   data::legion_data_t data(ctx, runtime, num_colors);
 
   data.init_from_coloring_info_map(coloring_info);
@@ -137,7 +138,7 @@ runtime_driver(
     LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
 
   for(auto idx_space : data.index_spaces()) {
-    auto& flecsi_ispace = data.index_space_info(idx_space);
+    auto& flecsi_ispace = data.index_space(idx_space);
 
     Legion::LogicalPartition color_lpart = runtime->get_logical_partition(ctx,
         flecsi_ispace.logical_region, flecsi_ispace.index_partition);
@@ -217,7 +218,7 @@ runtime_driver(
     // Add region requirements
 
     for(auto idx_space : data.index_spaces()){
-      auto& flecsi_ispace = data.index_space_info(idx_space);
+      auto& flecsi_ispace = data.index_space(idx_space);
 
       Legion::LogicalPartition color_lpart =
         runtime->get_logical_partition(ctx,

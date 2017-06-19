@@ -21,7 +21,7 @@ namespace flecsi {
 namespace execution {
 
 void
-specialization_driver(
+specialization_tlt_init(
   int argc,
   char ** argv
 ) 

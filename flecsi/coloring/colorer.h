@@ -11,7 +11,7 @@
 //! @date Initial file creation: Nov 24, 2016
 //----------------------------------------------------------------------------//
 
-#include "flecsi/coloring/dcrs.h"
+#include "flecsi/coloring/crs.h"
 
 namespace flecsi {
 namespace coloring {
