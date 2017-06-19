@@ -24,6 +24,7 @@ using namespace LegionRuntime::Arrays;
 namespace flecsi {
 namespace execution {
 
+//----------------------------------------------------------------------------//
 // Define a Legion task to register.
 int internal_task_example_1(const Legion::Task * task,
   const std::vector<Legion::PhysicalRegion> & regions,
@@ -55,18 +56,33 @@ int internal_task_example_1(const Legion::Task * task,
 
   //loop over compacted physical instanse (this will not work with
   //Legions bounds checking ON)
+  size_t k=0;
   for (GenericPointInRectIterator<1> pir(parent_rect); pir; pir++)
   {
+   k++;
 #ifndef BOUNDS_CHECKS
     double count = acc.read(DomainPoint::from_point<1>(pir.p));
+    clog_assert(count==k, " ");
     std::cout<<count<<std::endl;
 #endif
   }
+
+  double * combined_data;
+
+  LegionRuntime::Arrays::Rect<1> sr;
+  LegionRuntime::Accessor::ByteOffset bo[1];
+  combined_data = acc.template raw_rect_ptr<1>(parent_rect, sr, bo);
+
+  for (size_t i=0; i<24;i++){
+   clog_assert((i+1)==*(combined_data+i), " ");
+  }
+
 } // internal_task_example
 
 // Register the task. The task id is automatically generated.
 __flecsi_internal_register_legion_task(internal_task_example_1,
   processor_type_t::loc, single);
+//----------------------------------------------------------------------------//
 
 void driver(int argc, char ** argv) {
 
@@ -174,7 +190,7 @@ void driver(int argc, char ** argv) {
   index_launcher.tag=MAPPER_COMPACTED_STORAGE;
  auto fm = runtime->execute_index_space(context, index_launcher);
  fm.wait_all_results();
-} // specialization_driver
+} // driver
 
 
 } // namespace execution
