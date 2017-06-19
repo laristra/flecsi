@@ -41,6 +41,7 @@ void taskvoid(void) {
 
 flecsi_register_task(task, processor_type_t::loc, single | index);
 flecsi_register_task(taskvoid, processor_type_t::loc, single | index);
+
 //----------------------------------------------------------------------------//
 // Driver.
 //----------------------------------------------------------------------------//

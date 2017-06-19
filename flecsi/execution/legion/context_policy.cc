@@ -48,6 +48,7 @@ legion_context_policy_t::initialize(
     Runtime::preregister_task_variant<runtime_driver>(registrar,
       "runtime_driver");
   }
+
   // Register tasks
   for(auto & t: task_registry_) {
     std::get<4>(t.second)(

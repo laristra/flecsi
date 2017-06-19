@@ -114,6 +114,12 @@ struct client_registration_wrapper_t<
     // Do stuff
   } // register_callback
 
+  static
+  void
+  register_data()
+  {
+  } // register_data
+
 }; // class client_registration_wrapper_t
 
 } // namespace data

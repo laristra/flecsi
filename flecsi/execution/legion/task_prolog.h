@@ -185,7 +185,7 @@ namespace execution {
         } // !ghost_is_readable
       } // read_phase
 
-      if (write_phase) {
+      if (write_phase && (*h.ghost_is_readable)) {
         clog(trace) << "rank " << runtime->find_local_MPI_rank() <<
             " WRITE PHASE PROLOGUE" << std::endl;
         clog(trace) << "rank " << my_color << " wait & arrival barrier " <<
@@ -193,6 +193,9 @@ namespace execution {
             std::endl;
         launcher.add_wait_barrier(*(h.pbarrier_as_owner_ptr));      // phase WRITE
         launcher.add_arrival_barrier(*(h.pbarrier_as_owner_ptr));   // phase READ
+
+        *(h.ghost_is_readable) = false;
+        *(h.write_phase_started) = true;
       }
     } // handle
 

@@ -188,6 +188,24 @@ if(ENABLE_OPENSSL)
 endif()
 
 #------------------------------------------------------------------------------#
+# Exodus II
+#------------------------------------------------------------------------------#
+
+find_package(EXODUSII QUIET)
+
+option(ENABLE_EXODUS "Enable I/O with exodus." ${EXODUSII_FOUND})
+
+if(ENABLE_EXODUS AND NOT EXODUSII_FOUND)
+  message(FATAL_ERROR "Exodus requested, but not found")
+endif()
+
+if(ENABLE_EXODUS)
+  include_directories( ${EXODUSII_INCLUDE_DIRS} )
+  add_definitions( -DHAVE_EXODUS )
+  message( STATUS "IO with exodus enabled" )
+endif()
+
+#------------------------------------------------------------------------------#
 # Runtime models
 #------------------------------------------------------------------------------#
 
@@ -336,6 +354,10 @@ if(ENABLE_COLORING)
     MESSAGE(FATAL_ERROR
       "You need parmetis to enable partitioning" )
   endif()
+  
+  if ( EXODUSII_LIBRARIES )
+    list(APPEND COLORING_LIBRARIES ${EXODUSII_LIBRARIES} )
+  endif()
 
   add_definitions(-DENABLE_COLORING)
 
@@ -372,6 +394,7 @@ endif()
 #------------------------------------------------------------------------------#
 
 cinch_add_application_directory("examples")
+cinch_add_application_directory("examples/00_simple_drivers")
 cinch_add_application_directory("examples/lax_wendroff")
 cinch_add_application_directory("examples/02_tasks_and_drivers")
 cinch_add_application_directory("tools")

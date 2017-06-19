@@ -611,6 +611,7 @@ struct legion_context_policy_t
     Legion::LogicalRegion shared_lr;
     Legion::LogicalRegion ghost_lr;
     bool ghost_is_readable;
+    bool write_phase_started;
   };
 
   //--------------------------------------------------------------------------//

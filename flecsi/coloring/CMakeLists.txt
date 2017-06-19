@@ -102,13 +102,13 @@ cinch_add_unit(dcrs
   THREADS 5
 )
 
-cinch_add_unit(devel-dcrs
+cinch_add_devel_target(devel-dcrs
   SOURCES test/devel-dcrs.cc
   INPUTS
     test/simple2d-8x8.msh
     test/simple2d-16x16.msh
   LIBRARIES ${COLORING_LIBRARIES}
-  POLICY MPI_DEVEL
+  POLICY MPI
   THREADS 5
 )
 
