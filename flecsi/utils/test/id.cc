@@ -329,7 +329,8 @@ TEST(id, all) {
 
    {
       flecsi::utils::local_id_t a = 1, b = 2;
-      CINCH_CAPTURE() << a << '\n' << b;
+      CINCH_CAPTURE() << a << std::endl;
+      CINCH_CAPTURE() << b << std::endl;
    }
 
 
