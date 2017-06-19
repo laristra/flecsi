@@ -98,8 +98,8 @@ struct tuple_walker_helper__<0, TUPLE_TYPE, CRTP_TYPE>
   static
   std::size_t
   walk(
-    CRTP_TYPE &,
-    TUPLE_TYPE &
+    const CRTP_TYPE &,
+    const TUPLE_TYPE &
   )
   {
     return 0;
@@ -112,8 +112,8 @@ struct tuple_walker_helper__<0, TUPLE_TYPE, CRTP_TYPE>
   static
   std::size_t
   walk_types(
-    CRTP_TYPE &,
-    TUPLE_TYPE &
+    const CRTP_TYPE &,
+    const TUPLE_TYPE &
   )
   {
     return 0;
