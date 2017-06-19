@@ -6,8 +6,8 @@
  * /@@////   /@@/@@@@@@@/@@       ////////@@/@@
  * /@@       /@@/@@//// //@@    @@       /@@/@@
  * /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
- * //       ///  //////   //////  ////////  // 
- * 
+ * //       ///  //////   //////  ////////  //
+ *
  * Copyright (c) 2017 Los Alamos National Laboratory, LLC
  * All rights reserved
  *~-------------------------------------------------------------------------~~*/
@@ -17,6 +17,7 @@
 
 // includes: C++
 #include <string>
+#include <vector>
 
 // includes: other
 #include <cinchtest.h>
@@ -28,44 +29,65 @@
 // Helper constructs
 // =============================================================================
 
-// prtype: print boost-demangled type
+// prtype
+// Print boost-demangled type.
 template<class T>
 inline void prtype(void)
 {
    CINCH_CAPTURE() << boost::core::demangle(typeid(T).name()) << std::endl;
 }
 
+
 // print
-// Print a flecsi::utils::id_
+// Print a flecsi::utils::id_.
 template<std::size_t P, std::size_t E, std::size_t F, std::size_t G>
 void print(const flecsi::utils::id_<P,E,F,G> &value)
 {
-   CINCH_CAPTURE() << "\n dimension == " << value.dimension();
-   CINCH_CAPTURE() << "\n domain    == " << value.domain   ();
-   CINCH_CAPTURE() << "\n partition == " << value.partition();
-   CINCH_CAPTURE() << "\n entity    == " << value.entity   ();
-   CINCH_CAPTURE() << "\n flags     == " << value.flags    ();
-   CINCH_CAPTURE() << "\n global    == " << value.global   ();
+   CINCH_CAPTURE() << "\ndimension == " << value.dimension();
+   CINCH_CAPTURE() << "\ndomain    == " << value.domain   ();
+   CINCH_CAPTURE() << "\npartition == " << value.partition();
+   CINCH_CAPTURE() << "\nentity    == " << value.entity   ();
+   CINCH_CAPTURE() << "\nflags     == " << value.flags    ();
+   CINCH_CAPTURE() << "\nglobal    == " << value.global   ();
    CINCH_CAPTURE() << std::endl;
 }
 
+
 // binary
-// Write value as binary.
-// Assumes value is of an unsigned integral type.
+// Write parameter as binary.
+// Assumes parameter is of an unsigned integral type.
+// Second parameter is number of bits to print.
 template<class T>
-std::string binary(const T u)
+std::string binary(const T value, const std::size_t nbit = sizeof(T)*CHAR_BIT)
 {
    std::string s;
-   for (std::size_t i = sizeof(T)*CHAR_BIT;  i-- ; )
-      s += u >> i & T(1) ? '1' : '0';
+   for (std::size_t i = nbit;  i-- ; )
+      s += value >> i & T(1) ? '1' : '0';
    return s;
 }
 
-// numbers of bits for our tests
-#define PBITS 20  /* for partition */
-#define EBITS 40  /* for entity    */
-#define FBITS 4   /* for flags     */
-#define GBITS 60  /* for global    */
+
+// identical
+// Check that the two id_s have identical content.
+// This isn't equivalent to id_'s operator==, which at the time of this
+// writing does the comparison by using local_id() and FLAGS_UNMASK.
+template<
+   std::size_t PBITS, std::size_t EBITS,
+   std::size_t FBITS, std::size_t GBITS
+>
+inline bool identical(
+   const flecsi::utils::id_<PBITS,EBITS,FBITS,GBITS> &lhs,
+   const flecsi::utils::id_<PBITS,EBITS,FBITS,GBITS> &rhs
+) {
+   return
+      lhs.dimension() == rhs.dimension() &&
+      lhs.domain   () == rhs.domain   () &&
+      lhs.partition() == rhs.partition() &&
+      lhs.entity   () == rhs.entity   () &&
+      lhs.flags    () == rhs.flags    () &&
+      lhs.global   () == rhs.global   ()
+   ;
+}
 
 
 
@@ -73,10 +95,20 @@ std::string binary(const T u)
 // Exercise all of id.h's constructs
 // =============================================================================
 
+// Numbers of bits for our tests.
+// Note: we really should test with far more than just one set of these.
+#define PBITS 20  /* for partition */
+#define EBITS 40  /* for entity    */
+#define FBITS 4   /* for flags     */
+#define GBITS 60  /* for global    */
+
+
+// TEST
 TEST(id, all) {
 
    // type: id == id_<PBITS,EBITS,FBITS,GBITS>
    using id = flecsi::utils::id_<PBITS,EBITS,FBITS,GBITS>;
+   using flecsi::utils::local_id_t;
 
 
    // ------------------------
@@ -90,13 +122,12 @@ TEST(id, all) {
       <<  sizeof(flecsi::utils::local_id_t) << std::endl;
 
    // id::FLAGS_UNMASK
-   CINCH_CAPTURE() << "FLAGS_UNMASK == " << id::FLAGS_UNMASK << std::endl;
+   CINCH_CAPTURE() << "FLAGS_UNMASK == " <<        id::FLAGS_UNMASK  << '\n';
    CINCH_CAPTURE() << "FLAGS_UNMASK == " << binary(id::FLAGS_UNMASK) << '\n';
    CINCH_CAPTURE() << std::endl;
 
-   /**/
-   /**/
-   /**/
+   // These here just exercise my binary() function...
+   CINCH_CAPTURE() << binary(0u) << std::endl;
    CINCH_CAPTURE() << binary(1u) << std::endl;
    CINCH_CAPTURE() << binary(2u) << std::endl;
    CINCH_CAPTURE() << binary(3u) << std::endl;
@@ -106,9 +137,6 @@ TEST(id, all) {
    CINCH_CAPTURE() << binary(7u) << std::endl;
    CINCH_CAPTURE() << binary(8u) << std::endl;
    CINCH_CAPTURE() << std::endl;
-   /**/
-   /**/
-   /**/
 
 
    // ------------------------
@@ -118,12 +146,9 @@ TEST(id, all) {
    {
       id a;
       const id b(id{});
+      (void)b;
       const id c = a;
-      const id d(123);
-
-      print(a);
-      print(b);
-      print(c);
+      const id d(12345);
       print(d);
    }
 
@@ -154,6 +179,11 @@ TEST(id, all) {
       print(f);
       print(g);
       print(h);
+
+      EXPECT_TRUE(identical(a,e));
+      EXPECT_TRUE(identical(b,f));
+      EXPECT_TRUE(identical(c,g));
+      EXPECT_TRUE(identical(d,h));
    }
 
 
@@ -165,19 +195,22 @@ TEST(id, all) {
    {
       const id a = id::make<1,2>(3,4,5,6);
       print(a);
-      CINCH_CAPTURE() << std::endl;
 
-      CINCH_CAPTURE() << "entity    : " << binary(a.entity   ()) << std::endl;
-      CINCH_CAPTURE() << "partition : " << binary(a.partition()) << std::endl;
-      CINCH_CAPTURE() << "domain    : " << binary(a.domain   ()) << std::endl;
-      CINCH_CAPTURE() << "dimension : " << binary(a.dimension()) << std::endl;
-      CINCH_CAPTURE() << "local_id(): " << binary(a.local_id ()) << std::endl;
       CINCH_CAPTURE() << std::endl;
-      /*
-        11000000000000000001001001
-        11000000000000000001001001
-      */
+      CINCH_CAPTURE()
+         << "entity    : " << binary(a.entity   (), EBITS) << std::endl;
+      CINCH_CAPTURE()
+         << "partition : " << binary(a.partition(), PBITS) << std::endl;
+      CINCH_CAPTURE()
+         << "domain    : " << binary(a.domain   (), 2    ) << std::endl;
+      CINCH_CAPTURE()
+         << "dimension : " << binary(a.dimension(), 2    ) << std::endl;
 
+      CINCH_CAPTURE()
+         << "\nlocal_id(): "
+         << binary(a.local_id(), EBITS+PBITS+2+2) << std::endl;
+
+      CINCH_CAPTURE() << std::endl;
       CINCH_CAPTURE() << "local_id()  == " << a.local_id () << std::endl;
       CINCH_CAPTURE() << "global_id() == " << a.global_id() << std::endl;
       CINCH_CAPTURE() << std::endl;
@@ -190,77 +223,104 @@ TEST(id, all) {
 
    {
       id a = id::make<1,2>(3,4,5,6);
-      id b;
+      id b = id{};
       a = b = id{};
       b = a = a;
    }
 
 
    // ------------------------
-   // set_*
+   // setters
    // ------------------------
 
    {
       id a = id::make<1,2>(3,4,5,6);
-      a.set_global(100);
+      print(a);
+      a.set_global   (100);
       a.set_partition(200);
-      a.set_flags(300);
+      a.set_flags    ( 15);
+      print(a);
    }
 
-/*
-   // assignment operators
-   id_& operator=(id_ &&) = default;
 
-   id_& operator=(const id_ &id)
+   // ------------------------
+   // getters (accessors)
+   // ------------------------
+
    {
-     // zzz should probably have: if (this != &id) { ... }
-     dimension_ = id.dimension_;
-     domain_ = id.domain_;
-     partition_ = id.partition_;
-     entity_ = id.entity_;
-     global_ = id.global_;
-     flags_ = id.flags_;
-     return *this;
+      id a = id::make<1,2>(3,4,5,6);
+
+      CINCH_CAPTURE() << a.dimension() << std::endl;
+      CINCH_CAPTURE() << a.domain   () << std::endl;
+      CINCH_CAPTURE() << a.partition() << std::endl;
+      CINCH_CAPTURE() << a.entity   () << std::endl;
+      CINCH_CAPTURE() << a.flags    () << std::endl;
+      CINCH_CAPTURE() << a.global   () << std::endl;
+      CINCH_CAPTURE() << std::endl;
+
+      EXPECT_EQ(a.entity(), a.index_space_index());
    }
 
-   // zzz how are the first two const???
 
-   void set_global   (size_t global   ) const
-   { global_ = global; }
+   // ------------------------
+   // <, ==, !=
+   // ------------------------
 
-   void set_partition(size_t partition) const
-   { partition_ = partition; }
-
-   size_t set_flags  (size_t flags    )
    {
-     assert(flags < 1 << FBITS && "flag bits exceeded");
-     flags_ = flags;
-     // zzz no return value???
-     // zzz Also: earlier two set_* have void return
-   }
+      // <  returns:
+      //    this->local_id() < id.local_id()
+      //
+      // == returns:
+      //    (this->local_id() & FLAGS_UNMASK) ==
+      //    (   id.local_id() & FLAGS_UNMASK)
+      //
+      // != returns:
+      //    !(this->local_id() == id.local_id())
+      //
+      // Where:
+      //    local_id() == bits from: [entity partition domain dimension]
 
-   size_t global           () const { return global_;    }
-   size_t dimension        () const { return dimension_; }
-   size_t domain           () const { return domain_;    }
-   size_t partition        () const { return partition_; }
-   size_t entity           () const { return entity_;    }
-   size_t index_space_index() const { return entity_;    }  // zzz why?
-   size_t flags            () const { return flags_;     }
+      // <dimension,domain>(entity,partition,flags,global)...
+      const id a = id::make<2,3>(10,20,30,40);
+      const id b = id::make<2,3>(50,60,70,80);
+      const id c = id::make<2,3>(50,60,7000,8000);
 
-   // zzz must be for convenience/brevity
-   bool operator<(const id_ & id) const{
-     return local_id() < id.local_id();
-   }
+      CINCH_CAPTURE() << a.local_id() << std::endl;
+      CINCH_CAPTURE() << b.local_id() << std::endl;
+      CINCH_CAPTURE() << std::endl;
 
-   bool operator==(const id_ & id) const{
-     return (local_id() & FLAGS_UNMASK) == (id.local_id() & FLAGS_UNMASK);
-   }
+      // <
+      EXPECT_TRUE(  a < b );
+      EXPECT_TRUE(!(b < a));
 
-   // zzz odd != definition
-   bool operator!=(const id_ & id) const{
-     return !(local_id() == id.local_id());
+      // ==
+      // The present operator== returns true iff the LHS and RHS have the same
+      // [entity partition domain dimension] bits when &ed with FLAGS_UNMASK.
+      // Note: my (Martin's) analysis suggests that large values of entity have
+      // high-order bits that would run into the FBITS 0s in FLAGS_UNMASK. So,
+      // I should clarify if the definition is really as it was intended.
+      CINCH_CAPTURE() << binary(a.local_id()) << std::endl;
+      CINCH_CAPTURE() << binary(local_id_t(id::FLAGS_UNMASK)) << std::endl;
+      CINCH_CAPTURE() << binary(a.local_id() & id::FLAGS_UNMASK) << std::endl;
+      CINCH_CAPTURE() << std::endl;
+
+      CINCH_CAPTURE() << binary(b.local_id()) << std::endl;
+      CINCH_CAPTURE() << binary(local_id_t(id::FLAGS_UNMASK)) << std::endl;
+      CINCH_CAPTURE() << binary(b.local_id() & id::FLAGS_UNMASK) << std::endl;
+      CINCH_CAPTURE() << std::endl;
+
+      // Not really fully testing the operator here...
+      EXPECT_FALSE(a == b);
+      EXPECT_TRUE (b == c);
+
+      // !=
+      // At the moment, this isn't quite the same as !(==). I'm unsure
+      // as to why it's defined the way it is. -Martin
+
+      // Not really fully testing the operator here...
+      EXPECT_TRUE (a != b);
+      EXPECT_FALSE(b != c);
    }
-*/
 
 
    // ------------------------
@@ -269,20 +329,15 @@ TEST(id, all) {
 
    {
       flecsi::utils::local_id_t a = 1, b = 2;
-      CINCH_CAPTURE() << a << '\n' << b << std::endl;
-      //flecsi::utils::operator<<(std::cout,a);
-      //flecsi::utils::operator<<(std::cout,b);
+      CINCH_CAPTURE() << a << '\n' << b;
    }
 
 
-
-   /*
    // ------------------------
    // Compare
    // ------------------------
 
    EXPECT_TRUE(CINCH_EQUAL_BLESSED("id.blessed"));
-   */
 
 } // TEST
 

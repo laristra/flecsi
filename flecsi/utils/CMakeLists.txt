@@ -220,6 +220,11 @@ cinch_add_unit(debruijn
           test/debruijn.cc
 )
 
+cinch_add_unit(id
+  SOURCES test/id.cc
+  INPUTS  test/id.blessed
+)
+
 if(ENABLE_OPENSSL)
   cinch_add_unit(checksum
     SOURCES
