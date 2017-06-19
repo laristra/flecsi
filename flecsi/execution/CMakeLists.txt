@@ -136,6 +136,29 @@ cinch_add_unit(launch
 #    MPI
 #)
 
+if(ENABLE_COLORING AND ENABLE_PARMETIS)
+
+    cinch_add_devel_target(execution_structure
+      SOURCES
+        test/execution_structure.cc
+        ../supplemental/coloring/add_colorings.cc
+        ${DRIVER_INITIALIZATION}
+        ${RUNTIME_DRIVER}
+      INPUTS
+        test/simple2d-8x8.msh
+        test/simple2d-16x16.msh
+      LIBRARIES
+        flecsi
+        ${CINCH_RUNTIME_LIBRARIES}
+        ${COLORING_LIBRARIES}
+      DEFINES
+        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+      POLICY ${UNIT_POLICY}
+    )
+
+endif()
+
 if((FLECSI_RUNTIME_MODEL STREQUAL "serial")
     OR (FLECSI_RUNTIME_MODEL STREQUAL "legion")
     OR (FLECSI_RUNTIME_MODEL STREQUAL "mpi"))
@@ -174,27 +197,6 @@ if((FLECSI_RUNTIME_MODEL STREQUAL "serial")
       flecsi
       ${CINCH_RUNTIME_LIBRARIES}
   )
-
-  if(ENABLE_COLORING AND ENABLE_PARMETIS)
-    cinch_add_unit(execution_structure
-    SOURCES
-      test/execution_structure.cc
-      ../supplemental/coloring/add_colorings.cc
-      ${DRIVER_INITIALIZATION}
-      ${RUNTIME_DRIVER}
-    INPUTS
-      test/simple2d-8x8.msh
-      test/simple2d-16x16.msh
-    LIBRARIES
-      flecsi
-      ${CINCH_RUNTIME_LIBRARIES}
-      ${COLORING_LIBRARIES}
-    DEFINES
-      -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
-      -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-    POLICY ${UNIT_POLICY}
-    )
-  endif()
 
   if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 

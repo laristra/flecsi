@@ -58,7 +58,7 @@ void driver(int argc, char ** argv) {
 } // namespace execution
 } // namespace flecsi
 
-//DEVEL(execution_structure) {}
+DEVEL(execution_structure) {}
 
 /*~------------------------------------------------------------------------~--*
  * Formatting options for vim.
