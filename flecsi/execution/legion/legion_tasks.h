@@ -201,25 +201,29 @@ __flecsi_internal_legion_task(spmd_task, void) {
     context_.add_index_space(idx_spaces[i]);
   }
 
-  clog_assert(regions.size() >= num_idx_spaces, "fewer regions than data handles");
-  clog_assert(task->regions.size() >= num_idx_spaces, "fewer regions than data handles");
+  clog_assert(regions.size() >= num_idx_spaces,
+      "fewer regions than data handles");
+  clog_assert(task->regions.size() >= num_idx_spaces,
+      "fewer regions than data handles");
 
-  Legion::PhaseBarrier* pbarriers_as_master = (Legion::PhaseBarrier*)
+  Legion::PhaseBarrier* pbarriers_as_owner = (Legion::PhaseBarrier*)
       malloc(sizeof(Legion::PhaseBarrier) * num_idx_spaces);
-  args_deserializer.deserialize((void*)pbarriers_as_master, sizeof(Legion::PhaseBarrier) * num_idx_spaces);
+  args_deserializer.deserialize((void*)pbarriers_as_owner,
+      sizeof(Legion::PhaseBarrier) * num_idx_spaces);
 
   size_t* num_owners = (size_t*)malloc(sizeof(size_t) * num_idx_spaces);
-  args_deserializer.deserialize((void*)num_owners, sizeof(size_t) * num_idx_spaces);
+  args_deserializer.deserialize((void*)num_owners, sizeof(size_t)
+      * num_idx_spaces);
 
   for(size_t idx_space : context_.index_spaces()){
-    ispace_dmap[idx_space].pbarrier_as_owner = pbarriers_as_master[idx_space];
+    ispace_dmap[idx_space].pbarrier_as_owner = pbarriers_as_owner[idx_space];
     ispace_dmap[idx_space].ghost_is_readable = true;
     ispace_dmap[idx_space].write_phase_started = false;
   }
 
-  std::vector<std::vector<Legion::PhaseBarrier>> ghost_owners_pbarriers(num_idx_spaces);
+  std::vector<std::vector<Legion::PhaseBarrier>>
+  ghost_owners_pbarriers(num_idx_spaces);
 
-  // FIXME again assuming handles are 0, 1, 2, ..
   for(size_t idx_space : context_.index_spaces()) {
     size_t n = num_owners[idx_space];
 
@@ -259,13 +263,15 @@ __flecsi_internal_legion_task(spmd_task, void) {
   size_t region_index = 0;
   for(size_t idx_space : context_.index_spaces()) {
 
-    ispace_dmap[idx_space].color_region = regions[region_index].get_logical_region();
+    ispace_dmap[idx_space].color_region = regions[region_index]
+                                                  .get_logical_region();
 
-    const std::unordered_map<size_t, flecsi::coloring::coloring_info_t> coloring_info_map
-      = context_.coloring_info(idx_space);  // FIX_ME what if the keys are not 0,1,2,...
+    const std::unordered_map<size_t, flecsi::coloring::coloring_info_t>
+      coloring_info_map = context_.coloring_info(idx_space);
 
     auto itr = coloring_info_map.find(my_color);
-    clog_assert(itr != coloring_info_map.end(), "Can't find partition info for my color");
+    clog_assert(itr != coloring_info_map.end(),
+        "Can't find partition info for my color");
     const flecsi::coloring::coloring_info_t coloring_info = itr->second;
 
     clog(trace) << my_color << " handle " << idx_space <<
@@ -276,16 +282,23 @@ __flecsi_internal_legion_task(spmd_task, void) {
     Legion::IndexSpace color_ispace = 
       regions[region_index].get_logical_region().get_index_space();
     LegionRuntime::Arrays::Rect<1> color_bounds_1D(0,1);
-    Legion::Domain color_domain_1D = Legion::Domain::from_rect<1>(color_bounds_1D);
+    Legion::Domain color_domain_1D
+    = Legion::Domain::from_rect<1>(color_bounds_1D);
 
     Legion::DomainColoring primary_ghost_coloring;
-    LegionRuntime::Arrays::Rect<2> primary_rect(LegionRuntime::Arrays::make_point(my_color, 0),
-        LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive + coloring_info.shared - 1));
-    primary_ghost_coloring[PRIMARY_PART] = Legion::Domain::from_rect<2>(primary_rect);
-    LegionRuntime::Arrays::Rect<2> ghost_rect(LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive + coloring_info.shared),
-        LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive + coloring_info.shared
-            + coloring_info.ghost - 1));
-    primary_ghost_coloring[GHOST_PART] = Legion::Domain::from_rect<2>(ghost_rect);
+    LegionRuntime::Arrays::Rect<2>
+    primary_rect(LegionRuntime::Arrays::make_point(my_color, 0),
+        LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive
+            + coloring_info.shared - 1));
+    primary_ghost_coloring[PRIMARY_PART]
+                           = Legion::Domain::from_rect<2>(primary_rect);
+    LegionRuntime::Arrays::Rect<2> ghost_rect(
+        LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive
+            + coloring_info.shared),
+        LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive
+            + coloring_info.shared + coloring_info.ghost - 1));
+    primary_ghost_coloring[GHOST_PART]
+                           = Legion::Domain::from_rect<2>(ghost_rect);
 
     Legion::IndexPartition primary_ghost_ip =
       runtime->create_index_partition(ctx, color_ispace, color_domain_1D,
@@ -307,20 +320,26 @@ __flecsi_internal_legion_task(spmd_task, void) {
                                               GHOST_PART);
 
     Legion::DomainColoring excl_shared_coloring;
-    LegionRuntime::Arrays::Rect<2> exclusive_rect(LegionRuntime::Arrays::make_point(my_color, 0),
+    LegionRuntime::Arrays::Rect<2> exclusive_rect(
+        LegionRuntime::Arrays::make_point(my_color, 0),
         LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive - 1));
-    excl_shared_coloring[EXCLUSIVE_PART] = Legion::Domain::from_rect<2>(exclusive_rect);
-    LegionRuntime::Arrays::Rect<2> shared_rect(LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive),
-        LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive + coloring_info.shared - 1));
-    excl_shared_coloring[SHARED_PART] = Legion::Domain::from_rect<2>(shared_rect);
+    excl_shared_coloring[EXCLUSIVE_PART]
+                         = Legion::Domain::from_rect<2>(exclusive_rect);
+    LegionRuntime::Arrays::Rect<2> shared_rect(
+        LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive),
+        LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive
+            + coloring_info.shared - 1));
+    excl_shared_coloring[SHARED_PART]
+                         = Legion::Domain::from_rect<2>(shared_rect);
 
     Legion::IndexPartition excl_shared_ip = runtime->create_index_partition(ctx,
-        primary_lr.get_index_space(), color_domain_1D, excl_shared_coloring, true /*disjoint*/);
+        primary_lr.get_index_space(), color_domain_1D, excl_shared_coloring,
+        true /*disjoint*/);
 
     exclusive_shared_ips[idx_space] = excl_shared_ip;
 
-    Legion::LogicalPartition excl_shared_lp = runtime->get_logical_partition(ctx,
-        primary_lr, excl_shared_ip);
+    Legion::LogicalPartition excl_shared_lp
+      = runtime->get_logical_partition(ctx, primary_lr, excl_shared_ip);
 
     ispace_dmap[idx_space].exclusive_lr = 
     runtime->get_logical_subregion_by_color(ctx, excl_shared_lp, 
@@ -331,21 +350,29 @@ __flecsi_internal_legion_task(spmd_task, void) {
 
     // Add neighbors regions to context_
     for(size_t owner = 0; owner < num_owners[idx_space]; owner++) {
-      ghost_owners_lregions[idx_space].push_back(regions[region_index].get_logical_region());
+      ghost_owners_lregions[idx_space].push_back(regions[region_index]
+        .get_logical_region());
       const void* owner_color;
       size_t size;
       const bool can_fail = false;
       const bool wait_until_ready = true;
-      runtime->retrieve_semantic_information(regions[region_index].get_logical_region(), OWNER_COLOR_TAG,
+      runtime->retrieve_semantic_information(regions[region_index]
+          .get_logical_region(), OWNER_COLOR_TAG,
           owner_color, size, can_fail, wait_until_ready);
-      clog_assert(size == sizeof(LegionRuntime::Arrays::coord_t), "Unable to map gid to lid with Legion semantic tag");
-      ispace_dmap[idx_space].global_to_local_color_map[*(LegionRuntime::Arrays::coord_t*)owner_color] = owner;
-      clog(trace) << my_color << " key " << idx_space << " gid " << *(LegionRuntime::Arrays::coord_t*)owner_color <<
+      clog_assert(size == sizeof(LegionRuntime::Arrays::coord_t),
+          "Unable to map gid to lid with Legion semantic tag");
+      ispace_dmap[idx_space]
+       .global_to_local_color_map[*(LegionRuntime::Arrays::coord_t*)owner_color]
+       = owner;
+      clog(trace) << my_color << " key " << idx_space << " gid " <<
+          *(LegionRuntime::Arrays::coord_t*)owner_color <<
           " maps to " << owner << std::endl;
       region_index++;
-      clog_assert(region_index <= regions.size(), "SPMD attempted to access more regions than passed");
+      clog_assert(region_index <= regions.size(),
+          "SPMD attempted to access more regions than passed");
     } // for owner
-    ispace_dmap[idx_space].ghost_owners_lregions = ghost_owners_lregions[idx_space];
+    ispace_dmap[idx_space].ghost_owners_lregions
+      = ghost_owners_lregions[idx_space];
 
 
     // Fix ghost reference/pointer to point to compacted position of shared that it needs
@@ -366,8 +393,9 @@ __flecsi_internal_legion_task(spmd_task, void) {
 
     for(size_t owner = 0; owner < num_owners[idx_space]; owner++)
       fix_ghost_refs_launcher.add_region_requirement(
-          Legion::RegionRequirement(ghost_owners_lregions[idx_space][owner], READ_ONLY, EXCLUSIVE,
-              ghost_owners_lregions[idx_space][owner]).add_field(ghost_owner_pos_fid));
+          Legion::RegionRequirement(ghost_owners_lregions[idx_space][owner],
+              READ_ONLY, EXCLUSIVE, ghost_owners_lregions[idx_space][owner])
+              .add_field(ghost_owner_pos_fid));
 
     runtime->execute_task(ctx, fix_ghost_refs_launcher);
 
@@ -396,11 +424,15 @@ __flecsi_internal_legion_task(spmd_task, void) {
   context_t::instance().pop_state(utils::const_string_t{"driver"}.hash());
 #endif
 
-  // FIXME free all malloc, vectors, etc.
+  // Cleanup memory
   for(auto ipart: primary_ghost_ips)
       runtime->destroy_index_partition(ctx, ipart);
   for(auto ipart: exclusive_shared_ips)
       runtime->destroy_index_partition(ctx, ipart);
+  free((void*)field_info_buf);
+  free((void*)num_owners);
+  free((void*)pbarriers_as_owner);
+  free((void*)idx_spaces);
 
 } // spmd_task
 
