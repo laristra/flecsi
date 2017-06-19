@@ -77,7 +77,7 @@ public:
   num_entities(
     size_t dimension
   )
-  override
+  const override
   {
     return dimension == 0 ? num_vertices_ : num_cells_;
   } // num_entities
@@ -90,7 +90,7 @@ public:
     size_t dimension,
     size_t entity_id
   )
-  override
+  const override
   {
     clog_assert(dimension == 2, "invalid dimension " << dimension);
 
@@ -124,25 +124,11 @@ public:
   ///
   ///
   ///
-  std::set<size_t>
-  vertex_set(
-    size_t dimension,
-    size_t entity_id
-  )
-  override
-  {
-    auto vvec = vertices(dimension, entity_id);
-    return std::set<size_t>(vvec.begin(), vvec.end());
-  }
-
-  ///
-  ///
-  ///
   point_t
   vertex(
     size_t vertex_id
   )
-  override
+  const override
   {
     std::string line;
     point_t v;
@@ -167,13 +153,13 @@ public:
 
 private:
 
-  std::ifstream file_;
+  mutable std::ifstream file_;
 
   size_t num_vertices_;
   size_t num_cells_;
 
-  std::iostream::pos_type vertex_start_;
-  std::iostream::pos_type cell_start_;
+  mutable std::iostream::pos_type vertex_start_;
+  mutable std::iostream::pos_type cell_start_;
 
 }; // class simple_definition_t
 

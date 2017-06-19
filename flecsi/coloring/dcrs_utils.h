@@ -29,7 +29,7 @@ clog_register_tag(dcrs_utils);
 inline
 std::set<size_t>
 naive_coloring(
-  topology::mesh_definition_t & md
+  topology::mesh_definition__<2> & md
 )
 {
   std::set<size_t> indices;
@@ -80,7 +80,7 @@ template<
 >
 dcrs_t
 make_dcrs(
-  topology::mesh_definition_t & md,
+  topology::mesh_definition__<2> & md,
   std::set<size_t> indices
 )
 {
@@ -92,7 +92,7 @@ template<
 >
 dcrs_t
 make_dcrs(
-  topology::mesh_definition_t & md,
+  topology::mesh_definition__<2> & md,
   std::set<size_t> indices
 )
 {
@@ -109,7 +109,7 @@ make_dcrs(
 inline
 dcrs_t
 make_dcrs(
-  topology::mesh_definition_t & md
+  topology::mesh_definition__<2> & md
 )
 {
 	int size;
