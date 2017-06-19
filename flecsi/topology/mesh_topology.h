@@ -75,6 +75,7 @@
 #include "flecsi/utils/set_intersection.h"
 #include "flecsi/utils/static_verify.h"
 #include "flecsi/topology/mesh_types.h"
+#include "flecsi/topology/mesh_storage.h"
 
 namespace flecsi {
 namespace topology {

@@ -41,7 +41,8 @@ template<
   bool STORAGE = false,
   bool OWNED = true,
   bool SORTED = false,
-  class F = void
+  class F = void,
+  typename STORAGE_TYPE = std::vector<T>
 >
 class index_space
 {
@@ -49,7 +50,7 @@ public:
   using id_t = typename std::remove_pointer<T>::type::id_t;
   
   using id_vector_t = std::vector<id_t>;
-  using item_vector_t = std::vector<T>;
+  using item_vector_t = STORAGE_TYPE;
 
   using item_t = typename std::remove_pointer<T>::type;
 
@@ -1262,7 +1263,7 @@ public:
   }
   
 private:
-  template<class, bool, bool, bool, class> 
+  template<class, bool, bool, bool, class, class> 
   friend class index_space;
 
   friend class connectivity_t;
