@@ -15,13 +15,15 @@
 #ifndef flecsi_execution_mpi_context_policy_h
 #define flecsi_execution_mpi_context_policy_h
 
-#include <unordered_map>
-#include <functional>
-#include "cinchlog.h"
 //----------------------------------------------------------------------------//
 //! @file
 //! @date Initial file creation: Aug 4, 2016
 //----------------------------------------------------------------------------//
+
+#include <unordered_map>
+#include <functional>
+#include <cinchlog.h>
+
 #include "flecsi/execution/common/launch.h"
 #include "flecsi/execution/common/processor.h"
 #include "flecsi/utils/common.h"

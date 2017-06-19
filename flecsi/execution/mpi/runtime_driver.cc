@@ -32,15 +32,15 @@ runtime_driver(
   clog(info) << "In MPI runtime driver" << std::endl;
   }
 
-#if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
+#if defined(FLECSI_ENABLE_SPECIALIZATION_TLT_INIT)
   {
   clog_tag_guard(runtime_driver);
-  clog(info) << "Executing specialization driver task" << std::endl;
+  clog(info) << "Executing specialization tlt task" << std::endl;
   }
 
   // Execute the specialization driver.
-  specialization_tlt_init(args.argc, args.argv);
-#endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+  specialization_tlt_init(argc, argv);
+#endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
   // Execute the user driver.
   driver(argc, argv);
