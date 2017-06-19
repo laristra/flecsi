@@ -116,7 +116,9 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     // ghost is never mapped with write permissions
 
     if(base_t::master && base_t::combined_data){
+#ifndef MAPPER_COMPACTION
       delete[] base_t::combined_data;
+#endif
     }
   }
   
@@ -340,7 +342,11 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   ) const
   {
     assert(index < base_t::combined_size && "index out of range");
+#ifndef MAPPER_COMPACTION
     return base_t::combined_data[index];
+#else
+    return *(base_t::combined_data+index);
+#endif
   } // operator ()
 
   ///
@@ -355,7 +361,11 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   )
   {
     assert(index < base_t::combined_size && "index out of range");
+#ifndef MAPPER_COMPACTION
     return base_t::combined_data[index];
+#else
+    return *(base_t::combined_data+index);
+#endif
   } // operator ()
 
   ///

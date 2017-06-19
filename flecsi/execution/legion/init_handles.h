@@ -117,11 +117,11 @@ namespace execution {
         }
       }
 
-      region += num_regions;
+      //region += num_regions;
 
+#ifndef MAPPER_COMPACTION
       // Create the concatenated buffer E+S+G
-      h.combined_data = new T[h.combined_size];
-
+      h.combined_data = new T[h.combined_size]; 
       // Set additional fields needed by the data handle/accessor
       // and copy into the combined buffer. Note that exclusive_data, etc.
       // aliases the combined buffer for its respective region.
@@ -155,10 +155,71 @@ namespace execution {
           default:
             assert(false);
         }
-        
         std::memcpy(h.combined_data + pos, data[r], sizes[r] * sizeof(T));
         pos += sizes[r];
       }
+#else
+		
+      {//scope
+        Legion::LogicalRegion lr = regions[region].get_logical_region();
+        Legion::IndexSpace is = lr.get_index_space();
+
+        //we need to get Rect for the parent index space in purpose to loop over
+        //compacted physical instance
+        Legion::IndexPartition parent_ip =
+                runtime->get_parent_index_partition(is);
+        Legion::IndexSpace parent_is =
+                runtime->get_parent_index_space(parent_ip);
+
+        Legion::Domain parent_dom =
+                runtime->get_index_space_domain(context, parent_is);
+        LegionRuntime::Arrays::Rect<2> parent_rect = parent_dom.get_rect<2>();
+
+        LegionRuntime::Arrays::Rect<2> sr;
+        LegionRuntime::Accessor::ByteOffset bo[2];
+
+        //get an accessor to the first element in exclusive LR:
+        auto ac = prs[0].get_field_accessor(h.fid).template typeify<T>();
+        h.combined_data = ac.template raw_rect_ptr<2>(parent_rect, sr, bo);
+        h.combined_data += bo[1];
+      }//end scope
+	
+
+      size_t pos = 0;
+      for(size_t r = 0; r < num_regions; ++r){
+        switch(r){
+          case 0:
+            h.exclusive_size = sizes[r];
+            h.exclusive_pr = prs[r];
+            h.exclusive_data = h.exclusive_size == 0 ?
+              nullptr : h.combined_data;
+            h.exclusive_buf = data[r];
+            h.exclusive_priv = EXCLUSIVE_PERMISSIONS;
+            break;
+          case 1:
+            h.shared_size = sizes[r];
+            h.shared_pr = prs[r];
+            h.shared_data = h.shared_size == 0 ?
+              nullptr : h.combined_data + pos;
+            h.shared_buf = data[r];
+            h.shared_priv = SHARED_PERMISSIONS;
+            break;
+          case 2:
+            h.ghost_size = sizes[r];
+            h.ghost_pr = prs[r];
+            h.ghost_data = h.ghost_size == 0 ?
+              nullptr : h.combined_data + pos;
+            h.ghost_buf = data[r];
+            h.ghost_priv = GHOST_PERMISSIONS;
+            break;
+          default:
+            assert(false);
+        }
+        pos +=sizes[r];
+       }//end for
+#endif
+
+    region += num_regions;
 
     } // handle
 

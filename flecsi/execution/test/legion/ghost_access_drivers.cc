@@ -41,21 +41,24 @@ void check_all_cells_task(handle_t<size_t, flecsi::dro, flecsi::dro,
   clog(trace) << my_color << " READING " << std::endl;
 
   for (size_t i=0; i < cell_ID.exclusive_size(); i++)
-      clog(trace) << my_color << " exclusive " << i << " = " << cell_ID.exclusive(i) <<
-      std::endl;
+      clog(trace) << my_color << " exclusive " << i << " = " <<
+        cell_ID.exclusive(i) << std::endl;
 
-  flecsi::execution::context_t & context_ = flecsi::execution::context_t::instance();
+  flecsi::execution::context_t & context_ =
+    flecsi::execution::context_t::instance();
   const std::map<size_t, flecsi::coloring::index_coloring_t> coloring_map
     = context_.coloring_map();
   auto index_coloring = coloring_map.find(INDEX_ID);
 
   size_t index = 0;
-  for (auto exclusive_itr = index_coloring->second.exclusive.begin(); exclusive_itr !=
-      index_coloring->second.exclusive.end(); ++exclusive_itr) {
+  for (auto exclusive_itr = index_coloring->second.exclusive.begin();
+      exclusive_itr != index_coloring->second.exclusive.end();
+      ++exclusive_itr)
+   {
       flecsi::coloring::entity_info_t exclusive = *exclusive_itr;
     assert(cell_ID.exclusive(index) == exclusive.id + cycle);
     index++;
-  } // exclusive_itr
+   } // exclusive_itr
 
   index = 0;
   for (auto shared_itr = index_coloring->second.shared.begin(); shared_itr !=
