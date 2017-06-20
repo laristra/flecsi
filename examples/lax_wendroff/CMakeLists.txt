@@ -27,7 +27,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(exec_path ${PROJECT_SOURCE_DIR}/flecsi/execution)
   set (exmaple_src      lax_wendroff.cc
-                        ${exec_path}/../supplemental/coloring/add_colorings.cc
                         ${exec_path}/legion/runtime_driver.cc)
 
   #----------------------------------------------------------------------------#
@@ -43,8 +42,8 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   target_link_libraries(lax_wendroff flecsi ${FLECSI_RUNTIME_LIBRARIES})
 
-  configure_file(simple2d-8x8.msh
-    ${CMAKE_CURRENT_BINARY_DIR}/../../examples/lax_wendroff/simple2d-8x8.msh COPYONLY) 
+  configure_file(simple2d-32x32.msh
+    ${CMAKE_CURRENT_BINARY_DIR}/../../examples/lax_wendroff/simple2d-32x32.msh COPYONLY) 
 
   configure_file(plot_lax.py
     ${CMAKE_CURRENT_BINARY_DIR}/../../examples/lax_wendroff/plot_lax.py COPYONLY) 
