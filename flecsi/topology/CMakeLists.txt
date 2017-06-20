@@ -73,14 +73,27 @@ set(topology_SOURCES
 # Mesh unit tests.
 #------------------------------------------------------------------------------#
 
-#cinch_add_unit(traversal
-#  SOURCES
-#    test/traversal.cc
-#  INPUTS
-#    test/traversal.blessed
-#  LIBRARIES
-#    flecsi
-#)
+# if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
+
+#   cinch_add_unit(traversal
+#    SOURCES
+#      test/traversal.cc
+#    INPUTS
+#      test/traversal.blessed
+#    LIBRARIES
+#      flecsi
+#   )
+  
+#   cinch_add_unit(bindings
+#    SOURCES
+#      test/bindings.cc
+#    INPUTS
+#      test/bindings.blessed
+#    LIBRARIES
+#      flecsi
+#   )
+
+# endif()
 
 cinch_add_unit(dual
   SOURCES
@@ -88,15 +101,6 @@ cinch_add_unit(dual
   INPUTS
     test/dual.blessed
 )
-
-#cinch_add_unit(bindings
-#  SOURCES
-#    test/bindings.cc
-#  INPUTS
-#    test/bindings.blessed
-#  LIBRARIES
-#    flecsi
-#)
 
 #------------------------------------------------------------------------------#
 # N-Tree unit tests.
