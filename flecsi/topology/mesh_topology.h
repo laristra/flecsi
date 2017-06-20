@@ -243,10 +243,11 @@ public:
 
   //! Constructor
   mesh_topology_t()
+  : ms_(new mesh_storage_t<MT::num_dimensions, MT::num_domains>)
   {
     for (size_t from_domain = 0; from_domain < MT::num_domains; ++from_domain) {
       for (size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain) {
-        ms_.topology[from_domain][to_domain].init_(from_domain, to_domain);
+        ms_->topology[from_domain][to_domain].init_(from_domain, to_domain);
       }
     }
 
@@ -259,7 +260,7 @@ public:
 
     for (size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain) {
       for (size_t to_dim = 0; to_dim <= MT::num_dimensions; ++to_dim) {
-        auto& master = ms_.index_spaces[to_domain][to_dim];
+        auto& master = ms_->index_spaces[to_domain][to_dim];
 
         for (size_t from_domain = 0; from_domain < MT::num_domains;
              ++from_domain) {
@@ -274,6 +275,11 @@ public:
 
   } // mesh_topology_t()
 
+  mesh_topology_t(
+    mesh_storage_t<MT::num_dimensions, MT::num_domains>* storage
+  )
+  : ms_(storage){}
+
   // The mesh retains ownership of the entities and deletes them
   // upon mesh destruction
   virtual
@@ -281,12 +287,14 @@ public:
   {
     for (size_t m = 0; m < MT::num_domains; ++m) {
       for (size_t d = 0; d <= MT::num_dimensions; ++d) {
-        auto & is = ms_.index_spaces[m][d];
+        auto & is = ms_->index_spaces[m][d];
         for (auto ent : is) {
           delete ent;
         }
       }
     }
+
+    delete ms_;
   }
 
   // Add and entity to a mesh domain and assign its id per domain
@@ -303,7 +311,7 @@ public:
     using etype = entity_type<D, M>;
     using dtype = domain_entity<M, etype>;
 
-    auto & is = ms_.index_spaces[M][D].template cast<dtype>();
+    auto & is = ms_->index_spaces[M][D].template cast<dtype>();
 
     id_t global_id = id_t::make<D, M>(is.size(), partition_id);
 
@@ -426,7 +434,7 @@ public:
   decltype(auto)
   num_entities() const
   {
-    return ms_.index_spaces[M][D].size();
+    return ms_->index_spaces[M][D].size();
   } // num_entities
 
   /*!
@@ -497,7 +505,7 @@ public:
     size_t dim
   ) const
   {
-    return ms_.index_spaces[M][dim];
+    return ms_->index_spaces[M][dim];
   } // get_entities_
 
   template<
@@ -508,7 +516,7 @@ public:
     size_t dim
   )
   {
-    return ms_.index_spaces[M][dim];
+    return ms_->index_spaces[M][dim];
   } // get_entities_
 
   /*!
@@ -524,7 +532,7 @@ public:
   ) const
   {
     using etype = entity_type<D, M>;
-    return static_cast<etype *>(ms_.index_spaces[M][D][global_id.entity()]);
+    return static_cast<etype *>(ms_->index_spaces[M][D][global_id.entity()]);
   } // get_entity
 
   /*!
@@ -539,7 +547,7 @@ public:
     id_t global_id
   )
   {
-    return ms_.index_spaces[M][dim][global_id.entity()];
+    return ms_->index_spaces[M][dim][global_id.entity()];
   } // get_entity
 
   /*!
@@ -645,7 +653,7 @@ public:
   {
     using etype = entity_type<D, M>;
     using dtype = domain_entity<M, etype>;
-    return ms_.index_spaces[M][D].template slice<dtype>();
+    return ms_->index_spaces[M][D].template slice<dtype>();
   } // entities
 
   /*!
@@ -659,7 +667,7 @@ public:
   auto
   entity_ids() const
   {
-    return ms_.index_spaces[M][D].ids();
+    return ms_->index_spaces[M][D].ids();
   } // entity_ids
 
   /*!
@@ -879,7 +887,7 @@ public:
                 << std::endl;
       for (size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain) {
         stream << "========== to domain: " << to_domain << std::endl;
-        ms_.topology[from_domain][to_domain].dump(stream);
+        ms_->topology[from_domain][to_domain].dump(stream);
       }
     }
     return stream;
@@ -941,7 +949,7 @@ public:
 
     for(size_t domain = 0; domain < MT::num_domains; ++domain){
       for(size_t dimension = 0; dimension <= MT::num_dimensions; ++dimension){
-        uint64_t num_entities = ms_.entities[domain][dimension].size();
+        uint64_t num_entities = ms_->entities[domain][dimension].size();
         std::memcpy(buf + pos, &num_entities, sizeof(num_entities));
         pos += sizeof(num_entities);
       }
@@ -950,7 +958,7 @@ public:
     for(size_t from_domain = 0; from_domain < MT::num_domains; ++from_domain){
       for(size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain){
 
-        auto& dc = ms_.topology[from_domain][to_domain];
+        auto& dc = ms_->topology[from_domain][to_domain];
 
         for(size_t from_dim = 0; from_dim <= MT::num_dimensions; ++from_dim){
           for(size_t to_dim = 0; to_dim <= MT::num_dimensions; ++to_dim){
@@ -1018,7 +1026,7 @@ public:
     for(size_t from_domain = 0; from_domain < MT::num_domains; ++from_domain){
       for(size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain){
 
-        auto& dc = ms_.topology[from_domain][to_domain];
+        auto& dc = ms_->topology[from_domain][to_domain];
 
         for(size_t from_dim = 0; from_dim <= MT::num_dimensions; ++from_dim){
           for(size_t to_dim = 0; to_dim <= MT::num_dimensions; ++to_dim){
@@ -1054,13 +1062,13 @@ public:
     std::vector<mesh_entity_base_*>& ents,
     std::vector<id_t>& ids) override
   {
-    auto& is =  ms_.index_spaces[domain][dim];
+    auto& is =  ms_->index_spaces[domain][dim];
     is.append_(ents, ids);
   }
 
 private:
 
-  mesh_storage_t<MT::num_dimensions, MT::num_domains> ms_;
+  mesh_storage_t<MT::num_dimensions, MT::num_domains>* ms_;
 
   template<size_t DM, size_t I, class TS>
   friend class compute_connectivity_;
@@ -1118,7 +1126,7 @@ private:
     size_t domain=0
   ) const
   {
-    return ms_.index_spaces[domain][dim].size();
+    return ms_->index_spaces[domain][dim].size();
   } // num_entities_
 
   /*!
@@ -1181,7 +1189,7 @@ private:
     size_t entity_id = 0;
     size_t max_cell_entity_conns = 1;
 
-    domain_connectivity<MT::num_dimensions> & dc = ms_.topology[Domain][Domain];
+    domain_connectivity<MT::num_dimensions> & dc = ms_->topology[Domain][Domain];
 
     // Get connectivity for cells to vertices.
     connectivity_t & cell_to_vertex = dc.template get<UsingDimension>(0);
@@ -1205,9 +1213,9 @@ private:
     using cell_type = entity_type<UsingDimension, Domain>;
     using entity_type = entity_type<DimensionToBuild, Domain>;
 
-    auto& is = ms_.index_spaces[Domain][DimensionToBuild].template cast<
+    auto& is = ms_->index_spaces[Domain][DimensionToBuild].template cast<
       domain_entity<Domain, entity_type>>();
-    auto& cis = ms_.index_spaces[Domain][UsingDimension];
+    auto& cis = ms_->index_spaces[Domain][UsingDimension];
 
     for (size_t c = 0; c < _num_cells; ++c) {
       // Get the cell object
@@ -1650,7 +1658,7 @@ private:
     connection_vector_t cell_conn(_num_cells);
 
     // Get cell definitions from domain 0
-    auto & cells = ms_.index_spaces[FM][MT::num_dimensions];
+    auto & cells = ms_->index_spaces[FM][MT::num_dimensions];
 
     static constexpr size_t M0 = 0;
 
@@ -1677,9 +1685,9 @@ private:
       id_t cell_id = cell->template global_id<FM>();
 
       domain_connectivity<MT::num_dimensions> & primal_conn =
-        ms_.topology[FM][FM];
+        ms_->topology[FM][FM];
       domain_connectivity<MT::num_dimensions> & domain_conn =
-        ms_.topology[FM][TM];
+        ms_->topology[FM][TM];
 
       // p.first:   The number of entities per cell.
       // p.second:  A std::vector of id_t containing the ids of the
@@ -1697,7 +1705,7 @@ private:
 
       size_t pos = 0;
 
-      auto& is = ms_.index_spaces[TM][TD].template cast<
+      auto& is = ms_->index_spaces[TM][TD].template cast<
         domain_entity<TM, to_entity_type>>();
 
       for (size_t i = 0; i < n; ++i) {
@@ -1770,7 +1778,7 @@ private:
   {
     assert(from_domain < MT::num_domains && "invalid from domain");
     assert(to_domain < MT::num_domains && "invalid to domain");
-    return ms_.topology[from_domain][to_domain].get(from_dim, to_dim);
+    return ms_->topology[from_domain][to_domain].get(from_dim, to_dim);
   } // get_connectivity
 
   /*!
@@ -1786,7 +1794,7 @@ private:
   {
     assert(from_domain < MT::num_domains && "invalid from domain");
     assert(to_domain < MT::num_domains && "invalid to domain");
-    return ms_.topology[from_domain][to_domain].get(from_dim, to_dim);
+    return ms_->topology[from_domain][to_domain].get(from_dim, to_dim);
   } // get_connectivity
 
   /*!
@@ -1803,7 +1811,7 @@ private:
     size_t to_dim
   )
   {
-    return ms_.topology[FM][TM].template get<FD>(to_dim);
+    return ms_->topology[FM][TM].template get<FD>(to_dim);
   } // get_connectivity
 
   /*!
@@ -1819,7 +1827,7 @@ private:
   connectivity_t &
   get_connectivity_()
   {
-    return ms_.topology[FM][TM].template get<FD, TD>();
+    return ms_->topology[FM][TM].template get<FD, TD>();
   } // get_connectivity
 
   /*!
