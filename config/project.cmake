@@ -250,6 +250,14 @@ add_definitions(-DENABLE_LEGION_TLS)
 #  endif()
 
 #
+#Compacted storage interface
+#
+option(ENABLE_MAPPER_COMPACTION "Enable Legion Mapper to compact your shared/exclusive and ghost data" ON)
+if (ENABLE_MAPPER_COMPACTION)
+add_definitions(-DMAPPER_COMPACTION)
+endif()
+
+#
 # MPI interface
 #
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")

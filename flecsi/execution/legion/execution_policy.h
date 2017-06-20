@@ -284,6 +284,10 @@ struct legion_execution_policy_t
           TaskLauncher task_launcher(context_.task_id<KEY>(),
             TaskArgument(&task_args, sizeof(ARG_TUPLE)));
 
+#ifdef MAPPER_COMPACTION
+         task_launcher.tag=MAPPER_COMPACTED_STORAGE;
+#endif
+
           for(auto& req : init_args.region_reqs){
             task_launcher.add_region_requirement(req);
           }
@@ -327,6 +331,9 @@ struct legion_execution_policy_t
             context_.task_id<KEY>(), launch_domain,
             TaskArgument(&task_args, sizeof(ARG_TUPLE)), arg_map);
 
+#ifdef MAPPER_COMPACTION
+          index_launcher.tag=MAPPER_COMPACTED_STORAGE;
+#endif
           // Enqueue the task.
           auto future = legion_runtime->execute_index_space(legion_context,
             index_launcher);

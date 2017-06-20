@@ -747,24 +747,6 @@ private:
   size_t to_domain_;
 };
 
-template <size_t D, size_t NM>
-struct mesh_storage_t {
-
-  /*!
-    Defines a type for storing entity instances as an array of
-    \ref entity_vector_t, which is a std::vector of \ref mesh_entity_base_t.
-   */
-
-  using index_spaces_t = 
-    std::array<index_space<mesh_entity_base_*, true, true, true>, D + 1>;
-
-  // array of array of domain_connectivity
-  std::array<std::array<domain_connectivity<D>, NM>, NM> topology;
-
-  std::array<index_spaces_t, NM> index_spaces;
-
-}; // struct mesh_storage_t
-
 /*----------------------------------------------------------------------------*
  * class mesh_topology_base_t
  *----------------------------------------------------------------------------*/
