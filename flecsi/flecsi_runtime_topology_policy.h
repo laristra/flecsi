@@ -26,9 +26,9 @@
   #include "flecsi/topology/serial/storage_policy.h"
 
   namespace flecsi {
-
+  template <size_t D, size_t NM>
   using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY = 
-    topology::serial_topology_storage_policy_t;
+    topology::serial_topology_storage_policy_t<D, NM>;
 
   }
 
@@ -51,9 +51,9 @@
   #include "flecsi/topology/mpi/storage_policy.h"
 
   namespace flecsi {
-
+  template <size_t D, size_t NM>
   using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY = 
-    topology::mpi_topology_storage_policy_t;
+    topology::mpi_topology_storage_policy_t<D, NM>;
 
   }
 
