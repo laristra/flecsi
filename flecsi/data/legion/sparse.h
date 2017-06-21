@@ -69,77 +69,8 @@ static constexpr size_t INDICES_KEY = 0;
 static constexpr size_t MATERIALS_KEY = 1;
 #endif
 
-template<typename T, typename MD>
-struct sparse_accessor_t {
-
-  //--------------------------------------------------------------------------//
-  // Type definitions.
-  //--------------------------------------------------------------------------//
-
-  using meta_data_t = MD;
-  using user_meta_data_t = typename meta_data_t::user_meta_data_t;
-  
-  //--------------------------------------------------------------------------//
-  // Constructors.
-  //--------------------------------------------------------------------------//
-
-  ///
-  //
-  ///
-  sparse_accessor_t() {}
-
-  ///
-  //
-  ///
-  sparse_accessor_t(
-    const std::string & label,
-    size_t version,
-    meta_data_t & meta_data,
-    const user_meta_data_t & user_meta_data
-  )
-  {
-  } // sparse_accessor_t
-
-  ///
-  //
-  ///
-  T &
-  operator () (
-    size_t index,
-    size_t material
-  )
-  {
-  } // operator ()
-
-  ///
-  //
-  ///
-  void dump()
-  {
-  } // dump
-
-  ///
-  //
-  ///
-  T *
-  data()
-  {
-    return nullptr;
-  } // data
-
-private:
-
-}; // struct sparse_accessor_t
-
-template<typename T, typename MD>
+template<typename T>
 struct sparse_mutator_t {
-
-  //--------------------------------------------------------------------------//
-  // Type definitions.
-  //--------------------------------------------------------------------------//
-  
-  using meta_data_t = MD;
-  using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
   //--------------------------------------------------------------------------//
   // Constructors.
@@ -156,9 +87,7 @@ struct sparse_mutator_t {
   sparse_mutator_t(
     size_t num_slots,
     const std::string & label,
-    size_t version,
-    meta_data_t & meta_data,
-    const user_meta_data_t & user_meta_data
+    size_t version
   )
   {}
 
@@ -199,7 +128,7 @@ struct sparse_mutator_t {
 
 private:
 
-}; // struct sparse_accessor_t
+}; // struct sparse_mutator_t
 
 //----------------------------------------------------------------------------//
 // Sparse handle.
@@ -216,21 +145,15 @@ struct sparse_handle_t {
 ///
 // FIXME: Sparse storage type.
 ///
-template<typename DS, typename MD>
-struct storage_type_t<sparse, DS, MD> {
+template<>
+struct storage_type_t<sparse> {
 
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using data_store_t = DS;
-  using meta_data_t = MD;
-
   template<typename T>
-  using accessor_t = sparse_accessor_t<T, MD>;
-
-  template<typename T>
-  using mutator_t = sparse_mutator_t<T, MD>;
+  using mutator_t = sparse_mutator_t<T>;
 
   template<typename T>
   using handle_t = sparse_handle_t<T>;
@@ -243,29 +166,9 @@ struct storage_type_t<sparse, DS, MD> {
     size_t NS
   >
   static
-  accessor_t<T>
-  get_accessor(
-    const data_client_t & data_client,
-    data_store_t & data_store,
-    const utils::const_string_t & key,
-    size_t version
-  )
-  {
-    return {};
-  } // get_accessor
-
-  ///
-  //
-  ///
-  template<
-    typename T,
-    size_t NS
-  >
-  static
   mutator_t<T>
   get_mutator(
     const data_client_t & data_client,
-    data_store_t & data_store,
     const utils::const_string_t & key,
     size_t slots,
     size_t version
@@ -285,7 +188,6 @@ struct storage_type_t<sparse, DS, MD> {
   handle_t<T>
   get_handle(
     const data_client_t & data_client,
-    data_store_t & data_store,
     const utils::const_string_t & key,
     size_t version
   )

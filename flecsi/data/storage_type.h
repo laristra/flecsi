@@ -37,7 +37,7 @@ namespace POLICY_NAMESPACE {
   /// \tparam ST Data store type.
   /// \tparam MD Metadata type.
   ///
-  template<size_t T, typename ST, typename MD>
+  template<size_t STORAGE_TYPE>
   struct storage_type_t {};
 
 } // namespace POLICY_NAMESPACE

@@ -31,8 +31,7 @@ clog_register_tag(coloring);
 
 template<typename T, size_t EP, size_t SP, size_t GP>
 using handle_t = 
-  data::legion::dense_handle_t<T, EP, SP, GP,
-  data::legion_meta_data_t<default_user_meta_data_t>>;
+  data::legion::dense_handle_t<T, EP, SP, GP>;
 
 void task1(handle_t<double, dro, dno, dno> x, double y) {
   //np(y);

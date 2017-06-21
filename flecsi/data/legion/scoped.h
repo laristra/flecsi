@@ -39,14 +39,8 @@ namespace legion {
   ///
   // FIXME: Scoped storage type.
   ///
-  template<typename data_store_t, typename meta_data_t>
-  struct storage_type_t<scoped, data_store_t, meta_data_t> {
-
-    ///
-    //
-    ///
-    struct scoped_accessor_t {
-    }; // struct scoped_accessor_t
+  template<>
+  struct storage_type_t<scoped> {
 
     ///
     //
@@ -62,27 +56,8 @@ namespace legion {
       size_t NS
     >
     static
-    scoped_accessor_t
-    get_accessor(
-      data_store_t & data_store,
-      uintptr_t runtime_namespace,
-      const utils::const_string_t & key
-    )
-    {
-      return {};
-    } // get_accessor
-
-    ///
-    //
-    ///
-    template<
-      typename T,
-      size_t NS
-    >
-    static
     scoped_handle_t
     get_handle(
-      data_store_t & data_store,
       uintptr_t runtime_namespace,
       const utils::const_string_t & key
     )

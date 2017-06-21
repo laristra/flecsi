@@ -27,9 +27,7 @@
 #define Y_ADVECTION V * DT / DX
 
 template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t =
-  flecsi::data::legion::dense_handle_t<T, EP, SP, GP,
-  flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t>>;
+using handle_t = flecsi::data::legion::dense_handle_t<T, EP, SP, GP>;
 
 void init_global_IDs(
     handle_t<size_t, flecsi::drw, flecsi::drw, flecsi::dno> global_IDs,

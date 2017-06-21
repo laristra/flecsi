@@ -104,6 +104,12 @@ set(utils_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
+cinch_add_devel_target(clog
+  SOURCES
+    test/clog.cc
+  POLICY ${UNIT_POLICY}
+)
+
 # Broken by refactor
 #cinch_add_unit(dbc
 #  SOURCES test/dbc_test.cc

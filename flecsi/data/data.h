@@ -95,11 +95,38 @@
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Call the storage policy to get a handle to the data */                    \
-  flecsi::data::storage_t::instance().get_handle<flecsi::data::storage_type,   \
+  flecsi::data::storage_t::instance().get_handle<                              \
+    decltype(client),                                                          \
     data_type,                                                                 \
+    flecsi::data::storage_type,                                                \
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
-    decltype(client)>(                                                         \
-      client, EXPAND_AND_STRINGIFY(name), version)
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),          \
+    version                                                                    \
+  >                                                                            \
+  (client)
+
+//----------------------------------------------------------------------------//
+//! @def flecsi_get_client_handle
+//!
+//! Access a data client.
+//!
+//! @param client       The data_client_t type.
+//! @param nspace       The namespace to use to access the variable.
+//! @param name         The name of the data variable to access.
+//!
+//! @ingroup data
+//----------------------------------------------------------------------------//
+
+#define flecsi_get_client_handle(client_type, nspace, name)                    \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  /* Call the storage policy to get a handle to the data client */             \
+  flecsi::data::storage_t::instance().get_client_handle<                       \
+    client_type,                                                               \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()           \
+  >                                                                            \
+  ()
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_get_handles

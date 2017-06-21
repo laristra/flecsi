@@ -21,9 +21,7 @@
 clog_register_tag(ghost_access);
 
 template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t =
-  flecsi::data::legion::dense_handle_t<T, EP, SP, GP,
-  flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t>>;
+using handle_t = flecsi::data::legion::dense_handle_t<T, EP, SP, GP>;
 
 void check_all_cells_task(
         handle_t<size_t, flecsi::dro, flecsi::dro, flecsi::dro> cell_ID,

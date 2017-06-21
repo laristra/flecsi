@@ -15,6 +15,7 @@
 
 #include "flecsi/data/common/data_hash.h"
 #include "flecsi/data/data_client.h"
+#include "flecsi/data/data_client_handle.h"
 #include "flecsi/data/data_handle.h"
 #include "flecsi/utils/const_string.h"
 
@@ -32,16 +33,15 @@ namespace data {
 //----------------------------------------------------------------------------//
 
 template<
-  typename USER_META_DATA,
-  template<typename> class STORAGE_POLICY
+  typename STORAGE_POLICY
 >
-struct storage__ : public STORAGE_POLICY<USER_META_DATA> {
+struct storage__ : public STORAGE_POLICY {
 
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using sp_t = STORAGE_POLICY<USER_META_DATA>;
+  using sp_t = STORAGE_POLICY;
 
   template<size_t data_type_t>
   using st_t = typename sp_t::template storage_type_t<data_type_t>;
@@ -431,22 +431,44 @@ struct storage__ : public STORAGE_POLICY<USER_META_DATA> {
   /// \param[in] version
   ///
   template<
+    typename DATA_CLIENT_TYPE,
+    typename DATA_TYPE,
     size_t STORAGE_TYPE,
-    typename TYPE,
     size_t NAMESPACE,
-    typename DATA_CLIENT_TYPE
+    size_t NAME,
+    size_t VERSION = 0
   >
   decltype(auto)
   get_handle(
-    const data_client_t & data_client,
-    const utils::const_string_t & key,
-    size_t version=0
+    const data_client_t & data_client
   )
   {
     return st_t<STORAGE_TYPE>::template get_handle<
-      TYPE, NAMESPACE, DATA_CLIENT_TYPE
-      >(data_client, sp_t::data_store_, key, version);
+      DATA_CLIENT_TYPE,
+      DATA_TYPE,
+      NAMESPACE,
+      NAME,
+      VERSION
+      >
+      (data_client);
   } // get_handle
+
+  template<
+    typename DATA_CLIENT_TYPE,
+    size_t NAMESPACE,
+    size_t NAME
+  >
+  decltype(auto)
+  get_client_handle(
+  )
+  {
+    return sp_t::template get_client_handle<
+      DATA_CLIENT_TYPE,
+      NAMESPACE,
+      NAME
+    >
+    ();
+  } // get_client_handle
 
   //--------------------------------------------------------------------------//
   // Data management.
@@ -515,8 +537,7 @@ private:
 namespace flecsi {
 namespace data {
 
-using storage_t = storage__<FLECSI_RUNTIME_USER_META_DATA_POLICY,
-  FLECSI_RUNTIME_STORAGE_POLICY>;
+using storage_t = storage__<FLECSI_RUNTIME_STORAGE_POLICY>;
 
 } // namespace data
 } // namespace flecsi

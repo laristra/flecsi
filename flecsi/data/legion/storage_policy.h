@@ -24,7 +24,7 @@
 
 #include "flecsi/data/common/data_hash.h"
 #include "flecsi/data/data_constants.h"
-#include "flecsi/data/legion/meta_data.h"
+#include "flecsi/data/data_client_handle.h"
 #include "flecsi/data/legion/registration_wrapper.h"
 
 // Include partial specializations
@@ -43,19 +43,13 @@
 namespace flecsi {
 namespace data {
 
-template<typename user_meta_data_t>
 struct legion_storage_policy_t {
 
-  using meta_data_t = legion_meta_data_t<user_meta_data_t>;
-
-  // Define the data store type
-  // FIXME: THIS NEEDS TO BE IMPLEMENTED!!!
-  using data_store_t = size_t;
-
   // Define the storage type
-  template<size_t data_type_t>
-  using storage_type_t = legion::storage_type_t<data_type_t,
-    data_store_t, meta_data_t>;
+  template<
+    size_t DATA_TYPE
+  >
+  using storage_type_t = legion::storage_type_t<DATA_TYPE>;
 
   using field_id_t = Legion::FieldID;
   using registration_function_t = std::function<void(size_t)>;
@@ -133,10 +127,17 @@ struct legion_storage_policy_t {
 
   }
 
-protected:
-
-  // Storage container instance
-  data_store_t data_store_;
+  template<
+    typename DATA_CLIENT_TYPE,
+    size_t NAMESPACE,
+    size_t NAME
+  >
+  decltype(auto)
+  get_client_handle()
+  {
+    data_client_handle__<DATA_CLIENT_TYPE> client_handle;
+    return client_handle;
+  } // get_client_handle
 
 }; // struct legion_storage_policy_t
 

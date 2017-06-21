@@ -6,5 +6,6 @@
 - Add context interface for adjacency information.
 - Add functional form for specialization tlt initialization.
 
-- Remove user_meta_data_t parameter.
 - Check context header dependencies (Circular? How does this work?)
+
+- Enable CLOG_MPI if MPI_ENABLE is on.

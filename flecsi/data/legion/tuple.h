@@ -39,11 +39,8 @@ namespace legion {
   ///
   // FIXME: Tuple storage type.
   ///
-  template<typename data_store_t, typename meta_data_t>
-  struct storage_type_t<tuple, data_store_t, meta_data_t> {
-
-    struct tuple_accessor_t {
-    }; // struct tuple_accessor_t
+  template<>
+  struct storage_type_t<tuple> {
 
     struct tuple_handle_t {
     }; // struct tuple_handle_t
@@ -56,27 +53,8 @@ namespace legion {
       size_t NS
     >
     static
-    tuple_accessor_t
-    get_accessor(
-      data_store_t & data_store,
-      uintptr_t runtime_namespace,
-      const utils::const_string_t & key
-    )
-    {
-      return {};
-    } // get_accessor
-
-    ///
-    //
-    ///
-    template<
-      typename T,
-      size_t NS
-    >
-    static
     tuple_handle_t
     get_handle(
-      data_store_t & data_store,
       uintptr_t runtime_namespace,
       const utils::const_string_t & key
     )
