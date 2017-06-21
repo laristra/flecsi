@@ -116,7 +116,7 @@ cinch_add_unit(devel-dcrs
 # This could change if we add more colorer types.
 if(ENABLE_COLORING AND ENABLE_PARMETIS)
 
-cinch_add_unit(coloring
+cinch_add_devel_target(coloring
   SOURCES test/coloring.cc
   INPUTS
     test/simple2d-8x8.msh
@@ -124,7 +124,7 @@ cinch_add_unit(coloring
     test/simple2d-32x32.msh
     test/simple2d-48x48.msh
   LIBRARIES ${COLORING_LIBRARIES}
-  POLICY MPI_DEVEL
+  POLICY MPI
   THREADS 5
 )
 
