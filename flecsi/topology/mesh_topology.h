@@ -305,18 +305,11 @@ public:
   void
   add_entity(
     mesh_entity_base_t<MT::num_domains> * ent,
-    size_t partition_id=0
+    size_t partition_id=0   // TODO - do we need this param?
  )
   {
     using etype = entity_type<D, M>;
-    using dtype = domain_entity<M, etype>;
-
-    auto & is = ms_->index_spaces[M][D].template cast<dtype>();
-
-    id_t global_id = id_t::make<D, M>(is.size(), partition_id);
-
-    ent->template set_global_id<M>(global_id);
-    is.push_back(dtype(static_cast<etype*>(ent)));
+    ms_->add_entity<D, M>(static_cast<etype*>(ent), partition_id);
   } // add_entity
 
   // A mesh is constructed by creating cells and vertices and associating
