@@ -330,7 +330,7 @@ public:
   init_cell(
     C * cell,
     V && verts
- )
+  )
   {
     init_cell_<M>(cell, std::forward<V>(verts));
   } // init_cell
@@ -344,7 +344,7 @@ public:
   init_cell(
     C * cell,
     std::initializer_list<V *> verts
- )
+  )
   {
     init_cell_<M>(cell, verts);
   } // init_cell
@@ -361,7 +361,7 @@ public:
   init_entity(
     E1 * super,
     E2 && subs
- )
+  )
   {
     init_entity_<M,D1,D2>(super, std::forward<E2>(subs));
   } // init_entity
@@ -377,7 +377,7 @@ public:
   init_entity(
     E1 * super,
     std::initializer_list<E2*> subs
- )
+  )
   {
     init_entity_<M,D1,D2>(super, subs);
   } // init_entity
@@ -387,7 +387,7 @@ public:
   num_entities(
     size_t dim,
     size_t domain=0
- ) const override
+  ) const override
   {
     return num_entities_(dim, domain);
   } // num_entities

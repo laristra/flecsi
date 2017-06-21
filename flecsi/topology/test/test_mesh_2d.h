@@ -80,9 +80,9 @@ public:
   static constexpr size_t num_domains = 1;
 
   using entity_types = std::tuple<
-    std::pair<domain_<0>, Vertex>,
-    std::pair<domain_<0>, Edge>,
-    std::pair<domain_<0>, Cell>>;
+    std::tuple<domain_<0>, Vertex>,
+    std::tuple<domain_<0>, Edge>,
+    std::tuple<domain_<0>, Cell>>;
 
   using connectivities =
     std::tuple<std::tuple<domain_<0>, Vertex, Edge>,

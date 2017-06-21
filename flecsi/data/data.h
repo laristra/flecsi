@@ -14,17 +14,8 @@
 #include "flecsi/data/common/privilege.h"
 #include "flecsi/data/storage.h"
 
-#define flecsi_register_data(client, nspace, name, data_type,                  \
-  storage_type, ...)                                                           \
-/* MACRO IMPLEMENTATION */                                                     \
-                                                                               \
-  flecsi::data::storage_t::instance().register_data<                           \
-    flecsi::data::storage_type, data_type,                                     \
-    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()>(       \
-      client, EXPAND_AND_STRINGIFY(name), ##__VA_ARGS__)
-
 //----------------------------------------------------------------------------//
-//! @def flecsi_new_register_data
+//! @def flecsi_register_data
 //!
 //! This macro registers data with a data_client_t type. Data registration
 //! creates a data attribute for the given client type. This call does
@@ -44,20 +35,20 @@
 //! @ingroup data
 //----------------------------------------------------------------------------//
 
-#define flecsi_new_register_data(client_type, nspace, name, data_type,         \
+#define flecsi_register_data(client_type, nspace, name, data_type,             \
   storage_type, index_space, versions)                                         \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Call the storage policy to register the data */                           \
   bool client_type ## _ ## nspace ## _ ## name ## _data_registered =           \
-    flecsi::data::storage_t::instance().new_register_data<                     \
+    flecsi::data::storage_t::instance().register_data<                         \
       client_type, flecsi::data::storage_type, data_type,                      \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),        \
       index_space, versions>()
 
 //----------------------------------------------------------------------------//
-//! @def flecsi_get_handle
+//! @def flecsi_register_data_client
 //!
 //! This macro registers a data client with the FleCSI runtime. This call
 //! does not necessarily cause memory to be allocated. It's primary function

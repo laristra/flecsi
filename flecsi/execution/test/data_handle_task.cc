@@ -59,7 +59,7 @@ flecsi_register_task(reader, loc, single);
 
 class client_type : public flecsi::data::data_client_t{};
 
-flecsi_new_register_data(client_type, ns, pressure, double, dense, 0, 1);
+flecsi_register_data(client_type, ns, pressure, double, dense, 0, 1);
 
 namespace flecsi {
 namespace execution {

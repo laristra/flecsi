@@ -100,7 +100,7 @@ struct mpi_storage_policy_t {
     size_t VERSIONS
   >
   bool
-  new_register_data()
+  register_data()
   {
     using wrapper_t =
       mpi_registration_wrapper_t<
@@ -117,7 +117,7 @@ struct mpi_storage_policy_t {
         [data_hash_t::make_key(NAMESPACE_HASH, NAME_HASH)] =
         { unique_fid_t::instance().next(), wrapper_t::register_callback };
     } // for
-  } // new_register_data
+  } // register_data
 
   void
   register_all()

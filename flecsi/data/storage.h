@@ -11,29 +11,88 @@
 //! @date Initial file creation: Apr 17, 2016
 //----------------------------------------------------------------------------//
 
-#include "flecsi/utils/const_string.h"
+#include <unordered_map>
+
+#include "flecsi/data/common/data_hash.h"
 #include "flecsi/data/data_client.h"
 #include "flecsi/data/data_handle.h"
+#include "flecsi/utils/const_string.h"
 
 namespace flecsi {
 namespace data {
 
-///
-/// \class storage__ storage.h
-/// \brief storage__ provides an interface for data registration and access.
-///
-template<typename user_meta_data_t,
-  template<typename> class storage_policy_t>
-struct storage__ : public storage_policy_t<user_meta_data_t> {
+//----------------------------------------------------------------------------//
+//! The storage__ type provides a high-level data model context interface that
+//! is implemented by the given storage policy.
+//!
+//! @tparam USER_META_DATA A user-defined meta data type.
+//! @tparam STORAGE_POLICY The backend storage policy.
+//!
+//! @ingroup data
+//----------------------------------------------------------------------------//
+
+template<
+  typename USER_META_DATA,
+  template<typename> class STORAGE_POLICY
+>
+struct storage__ : public STORAGE_POLICY<USER_META_DATA> {
 
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using sp_t = storage_policy_t<user_meta_data_t>;
+  using sp_t = STORAGE_POLICY<USER_META_DATA>;
 
   template<size_t data_type_t>
   using st_t = typename sp_t::template storage_type_t<data_type_t>;
+
+  using registration_function_t = std::function<void(size_t)>;
+
+  //--------------------------------------------------------------------------//
+  // These types depend on the backend.
+  //--------------------------------------------------------------------------//
+
+  using field_id_t = typename sp_t::field_id_t;
+  using unique_fid_t = utils::unique_id_t<field_id_t, FLECSI_GENERATED_ID_MAX>;
+  using data_value_t = std::pair<field_id_t, registration_function_t>;
+
+  using client_value_t =
+    std::unordered_map<
+      data_hash_t::key_t, // key
+      data_value_t,       // value
+      data_hash_t,        // hash function
+      data_hash_t         // equivalence operator
+    >;
+
+  template<
+    typename DATA_CLIENT_TYPE,
+    size_t STORAGE_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE_HASH,
+    size_t NAME_HASH,
+    size_t INDEX_SPACE,
+    size_t VERSIONS
+  >
+  using registration_wrapper__ =
+      typename sp_t::template registration_wrapper__<
+        DATA_CLIENT_TYPE,
+        STORAGE_TYPE,
+        DATA_TYPE,
+        NAMESPACE_HASH,
+        NAME_HASH,
+        INDEX_SPACE,
+        VERSIONS>;    
+
+  template<
+    typename DATA_CLIENT_TYPE,
+    size_t NAMESPACE_HASH,
+    size_t NAME_HASH
+  >
+  using client_registration_wrapper__ =
+    typename sp_t::template client_registration_wrapper__<
+      DATA_CLIENT_TYPE,
+      NAMESPACE_HASH,
+      NAME_HASH>;
 
   //--------------------------------------------------------------------------//
   // Class interface.
@@ -50,9 +109,12 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   storage__(storage__ &&) = default;
   storage__ & operator = (storage__ &&) = default;
 
-	///
-  /// \brief Return a static instance of the data manager.
-	///
+	//--------------------------------------------------------------------------//
+  //! Myer's singleton instance.
+  //!
+  //! @return The single instance of this type.
+	//--------------------------------------------------------------------------//
+
   static storage__ &
   instance()
   {
@@ -61,68 +123,28 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   } // instance
 
   //--------------------------------------------------------------------------//
-  // Data registration.
+  //! Register data with the FleCSI runtime. This method should be thought
+  //! of as registering a data attribute on the given data client type.
+  //! All instances of the client type will have this attribute. However,
+  //! this does not mean that each data client instance will have an
+  //! an instance of the attribute. Attribute instances will be created
+  //! only when they are actually mapped into a task.
+  //!
+  //! @tparam DATA_CLIENT_TYPE The data client type on which the data
+  //!                          attribute should be registered.
+  //! @tparam STORAGE_TYPE     The storage type for the data attribute.
+  //! @tparam DATA_TYPE        The data type, e.g., double. This may be
+  //!                          P.O.D. or a user-defined type that is
+  //!                          trivially-copyable.
+  //! @tparam NAMESPACE_HASH   The namespace key. Namespaces allow separation
+  //!                          of attribute names to avoid collisions.
+  //! @tparam NAME_HASH        The attribute name.
+  //! @tparam INDEX_SPACE      The index space identifier.
+  //! @tparam VERSIONS         The number of versions that shall be associated
+  //!                          with this attribute.
+  //!
+  //! @ingroup data
   //--------------------------------------------------------------------------//
-
-  ///
-  /// \brief Register data with the data manager.
-  ///
-  /// \tparam ST Storage type...
-  /// \tparam T Type...
-  /// \tparam NS Namespace...
-  /// \tparam Args Variadic arguments...
-  ///
-  /// \param[in] runtime_namespace
-  /// \param[in] key
-  /// \param[in] versions
-  /// \param[in] args
-  ///
-  /// \return Returns a handle to the newly registered data.
-  ///
-  template<
-    size_t ST,
-    typename T,
-    size_t NS,
-    typename ... Args
-  >
-  decltype(auto)
-  register_data(
-    const data_client_t & data_client,
-    const utils::const_string_t & key,
-    size_t versions,
-    Args && ... args
-  )
-  {
-    return st_t<ST>::template register_data<T, NS>(data_client,
-      sp_t::data_store_, key, versions,
-      std::forward<Args>(args) ...);
-  } // register_data
-
-  ///
-  /// \brief Register data with the data manager.
-  ///
-  /// \tparam DT Data client type
-  /// \tparam ST Storage type
-  /// \tparam T Data type
-  /// \tparam NS Namespace
-  /// \tparam Args Variadic arguments
-  ///
-  /// \return Returns a boolean with success or failure of registration.
-  ///
-
-#if 0
-  template<
-    typename DC,
-    size_t ST,
-    typename T,
-    size_t NS,
-    size_t N,
-    size_t V
-  >
-  void register_data(size_t fid) {
-      st_t<ST>::template register_data<T, NS>(DC, sp_t::data_store_, N, V);
-  } // register_data
-#endif
 
   template<
     typename DATA_CLIENT_TYPE,
@@ -134,18 +156,47 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     size_t VERSIONS
   >
   bool
-  new_register_data()
+  register_data()
   {
-    return sp_t::template new_register_data<
-      DATA_CLIENT_TYPE,
-      STORAGE_TYPE,
-      DATA_TYPE,
-      NAMESPACE_HASH,
-      NAME_HASH,
-      INDEX_SPACE,
-      VERSIONS
-    >();
-  } // new_register_data
+    using wrapper_t =
+      registration_wrapper__<
+        DATA_CLIENT_TYPE,
+        STORAGE_TYPE,
+        DATA_TYPE,
+        NAMESPACE_HASH,
+        NAME_HASH,
+        INDEX_SPACE,
+        VERSIONS
+      >;
+
+    for(size_t i(0); i<VERSIONS; ++i) {
+      data_registry_[typeid(DATA_CLIENT_TYPE).hash_code()]
+        [data_hash_t::make_key(NAMESPACE_HASH, NAME_HASH)] =
+        { unique_fid_t::instance().next(), wrapper_t::register_callback };
+    } // for
+
+    return true;
+  } // register_data
+
+  void register_all()
+  {
+    for(auto & c: data_registry_) {
+      for(auto & d: c.second) {
+        d.second.second(d.second.first);
+      } // for
+    } // for
+  } // register_all
+
+  //--------------------------------------------------------------------------//
+  //! Register a data client with the FleCSI runtime.
+  //!
+  //! @tparam DATA_CLIENT_TYPE The data client type.
+  //! @tparam NAMESPACE_HASH   The namespace key. Namespaces allow separation
+  //!                          of attribute names to avoid collisions.
+  //! @tparam NAME_HASH        The attribute name.
+  //!
+  //! @ingroup data
+  //--------------------------------------------------------------------------//
 
   template<
     typename DATA_CLIENT_TYPE,
@@ -155,26 +206,45 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   bool
   register_data_client()
   {
-    return sp_t::template register_data_client<
-      DATA_CLIENT_TYPE,
-      NAMESPACE_HASH,
-      NAME_HASH
-    >();
+    using wrapper_t =
+      client_registration_wrapper__<
+        DATA_CLIENT_TYPE,
+        NAMESPACE_HASH,
+        NAME_HASH
+      >;
+
+    data_client_registry_[typeid(DATA_CLIENT_TYPE).hash_code()]
+      [data_hash_t::make_key(NAMESPACE_HASH, NAME_HASH)] =
+      { unique_fid_t::instance().next(), wrapper_t::register_callback };
+
+    return true;
   } // register_data_client
+
+  //--------------------------------------------------------------------------//
+  //! Return the data registry.
+  //!
+  //! @ingroup data
+  //--------------------------------------------------------------------------//
 
   const auto &
   data_registry()
   const
   {
-    return sp_t::data_registry();
-  }
+    return data_registry_;
+  } // data_registry
+
+  //--------------------------------------------------------------------------//
+  //! Return the data client registry.
+  //!
+  //! @ingroup data
+  //--------------------------------------------------------------------------//
 
   const auto &
   data_client_registry()
   const
   {
-    return sp_t::data_client_registry();
-  }
+    return data_client_registry_;
+  } // data_client_registry
 
   //--------------------------------------------------------------------------//
   // Data handles.
@@ -183,18 +253,18 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   ///
   /// \brief get an handle to registered data.
   ///
-  /// \tparam ST
-  /// \tparam T
-  /// \tparam NS
+  /// \tparam STORAGE_TYPE
+  /// \tparam TYPE
+  /// \tparam NAMESPACE
   ///
   /// \param[in] runtime_namespace
   /// \param[in] key
   /// \param[in] version
   ///
   template<
-    size_t ST,
-    typename T,
-    size_t NS
+    size_t STORAGE_TYPE,
+    typename TYPE,
+    size_t NAMESPACE
   >
   decltype(auto)
   get_mutator(
@@ -203,18 +273,18 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     size_t slots, size_t version=0
   )
   {
-    return st_t<ST>::template get_mutator<T, NS>(data_client,
+    return st_t<STORAGE_TYPE>::template get_mutator<TYPE, NAMESPACE>(data_client,
       sp_t::data_store_, key, slots, version);
   } // get_mutator
 
   ///
   /// \brief Return a std::vector of handles to the stored states with
-  ///        type \e T in namespace \e NS satisfying the predicate function
+  ///        type \e TYPE in namespace \e NAMESPACE satisfying the predicate function
   ///        \e predicate.
   ///
-  /// \tparam ST
-  /// \tparam T All state variables of this type will be returned.
-  /// \tparam NS Namespace to use.
+  /// \tparam STORAGE_TYPE
+  /// \tparam TYPE All state variables of this type will be returned.
+  /// \tparam NAMESPACE Namespace to use.
   /// \tparam P Predicate function type.
   ///
   /// \param predicate A predicate function (returns true or false) that
@@ -223,7 +293,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   ///                  funcitons must match the
   ///                  signature:
   ///                  \code
-  ///                  bool predicate(const & user_meta_data_t)
+  ///                  bool predicate(const & USER_META_DATA)
   ///                  \endcode
   ///
   /// \param [in]  sorted  Sort the returned list by label lexographically.
@@ -232,9 +302,9 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   ///         match the namespace and predicate criteria.
   ///
   template<
-    size_t ST,
-    typename T,
-    size_t NS,
+    size_t STORAGE_TYPE,
+    typename TYPE,
+    size_t NAMESPACE,
     typename P
   >
   decltype(auto)
@@ -245,16 +315,16 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     bool sorted = true
   )
   {
-    return st_t<ST>::template get_handles<T, NS, P>(data_client,
+    return st_t<STORAGE_TYPE>::template get_handles<TYPE, NAMESPACE, P>(data_client,
       sp_t::data_store_, version, std::forward<P>(predicate), sorted);
   } // get_handles
 
   /// \brief Return a std::vector of handles to the stored states with
-  ///        type \e T satisfying the predicate function
+  ///        type \e TYPE satisfying the predicate function
   ///        \e predicate.
   ///
-  /// \tparam ST
-  /// \tparam T All state variables of this type will be returned.
+  /// \tparam STORAGE_TYPE
+  /// \tparam TYPE All state variables of this type will be returned.
   /// \tparam P Predicate function type.
   ///
   /// \param predicate A predicate function (returns true or false) that
@@ -263,7 +333,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   ///                  funcitons must match the
   ///                  signature:
   ///                  \code
-  ///                  bool predicate(const & user_meta_data_t)
+  ///                  bool predicate(const & USER_META_DATA)
   ///                  \endcode
   ///
   /// \param [in]  sorted  Sort the returned list by label lexographically.
@@ -272,8 +342,8 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   ///         match the namespace and predicate criteria.
   ///
   template<
-    size_t ST,
-    typename T,
+    size_t STORAGE_TYPE,
+    typename TYPE,
     typename P
   >
   decltype(auto)
@@ -284,17 +354,17 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     bool sorted = true
   )
   {
-    return st_t<ST>::template get_handles<T, P>(data_client,
+    return st_t<STORAGE_TYPE>::template get_handles<TYPE, P>(data_client,
       sp_t::data_store_, version, std::forward<P>(predicate), sorted);
   } // get_handles
 
   ///
   /// \brief Return a std::vector of handles to the stored states with
-  ///        type \e T in namespace \e NS.
+  ///        type \e TYPE in namespace \e NAMESPACE.
   ///
-  /// \tparam ST
-  /// \tparam T All state variables of this type will be returned.
-  /// \tparam NS Namespace to use.
+  /// \tparam STORAGE_TYPE
+  /// \tparam TYPE All state variables of this type will be returned.
+  /// \tparam NAMESPACE Namespace to use.
   /// \tparam P Predicate function type.
   ///
   /// \param [in]  sorted  Sort the returned list by label lexographically.
@@ -303,9 +373,9 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   ///         match the namespace and predicate criteria.
   ///
   template<
-    size_t ST,
-    typename T,
-    size_t NS
+    size_t STORAGE_TYPE,
+    typename TYPE,
+    size_t NAMESPACE
   >
   decltype(auto)
   get_handles(
@@ -314,15 +384,15 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     bool sorted = true
   )
   {
-    return st_t<ST>::template get_handles<T, NS>(data_client,
+    return st_t<STORAGE_TYPE>::template get_handles<TYPE, NAMESPACE>(data_client,
       sp_t::data_store_, version, sorted);
   } // get_handles
 
   /// \brief Return a std::vector of handles to the stored states with
-  ///        type \e T.
+  ///        type \e TYPE.
   ///
-  /// \tparam ST
-  /// \tparam T All state variables of this type will be returned.
+  /// \tparam STORAGE_TYPE
+  /// \tparam TYPE All state variables of this type will be returned.
   /// \tparam P Predicate function type.
   ///
   /// \param [in]  sorted  Sort the returned list by label lexographically.
@@ -331,8 +401,8 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   ///         match the namespace and predicate criteria.
   ///
   template<
-    size_t ST,
-    typename T
+    size_t STORAGE_TYPE,
+    typename TYPE
   >
   decltype(auto)
   get_handles(
@@ -341,7 +411,7 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     bool sorted = true
   )
   {
-    return st_t<ST>::template get_handles<T>(data_client,
+    return st_t<STORAGE_TYPE>::template get_handles<TYPE>(data_client,
       sp_t::data_store_, version, sorted);
   } // get_handles
 
@@ -352,18 +422,18 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   ///
   /// \brief get a handle to registered data.
   ///
-  /// \tparam ST
-  /// \tparam T
-  /// \tparam NS
+  /// \tparam STORAGE_TYPE
+  /// \tparam TYPE
+  /// \tparam NAMESPACE
   ///
   /// \param[in] runtime_namespace
   /// \param[in] key
   /// \param[in] version
   ///
   template<
-    size_t ST,
-    typename T,
-    size_t NS,
+    size_t STORAGE_TYPE,
+    typename TYPE,
+    size_t NAMESPACE,
     typename DATA_CLIENT_TYPE
   >
   decltype(auto)
@@ -373,39 +443,10 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
     size_t version=0
   )
   {
-    return st_t<ST>::template get_handle<T, NS, DATA_CLIENT_TYPE>(data_client,
-      sp_t::data_store_, key, version);
+    return st_t<STORAGE_TYPE>::template get_handle<
+      TYPE, NAMESPACE, DATA_CLIENT_TYPE
+      >(data_client, sp_t::data_store_, key, version);
   } // get_handle
-/*
-  template<
-    size_t ST>
-  void
-  get_all_handles(
-    const data_client_t & data_client,
-    std::vector<data_handle_t<void, 0, 0, 0>>& handles,
-    std::vector<size_t>& hashes,
-    std::vector<size_t>& namespaces,
-    std::vector<size_t>& versions)
-  {
-    return st_t<ST>::get_all_handles(data_client,
-      sp_t::data_store_, handles, hashes, namespaces, versions);
-  }
-
-  template<
-    size_t ST>
-  void
-  put_all_handles(
-    const data_client_t & data_client,
-    size_t num_handles,
-    data_handle_t<void, 0, 0, 0>* handles,
-    size_t* hashes,
-    size_t* namespaces,
-    size_t* versions)
-  {
-    return st_t<ST>::put_all_handles(data_client,
-      sp_t::data_store_, num_handles, handles, hashes, namespaces, versions);
-  }
-  */
 
   //--------------------------------------------------------------------------//
   // Data management.
@@ -434,14 +475,14 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   ///
   ///
   ///
-  template<typename T>
+  template<typename TYPE>
   void
   release(
-    T && key,
+    TYPE && key,
     uintptr_t runtime_namespace
   )
   {
-    sp_t::release(std::forward<T>(key), runtime_namespace);
+    sp_t::release(std::forward<TYPE>(key), runtime_namespace);
   } // release
 
   ///
@@ -455,6 +496,14 @@ struct storage__ : public storage_policy_t<user_meta_data_t> {
   {
     sp_t::move(from_runtime_namespace, to_runtime_namespace);
   } // move
+
+private:
+
+  // Data registration map
+  std::unordered_map<size_t, client_value_t> data_registry_;
+
+  // Data client registration map
+  std::unordered_map<size_t, client_value_t> data_client_registry_;
 
 }; // class storage__
 
