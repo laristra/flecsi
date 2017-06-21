@@ -256,6 +256,26 @@ if((FLECSI_RUNTIME_MODEL STREQUAL "serial")
         THREADS 2
       )
 
+      cinch_add_unit(barrier_per_field
+        SOURCES
+          test/legion/barrier_per_field_drivers.cc
+          ../supplemental/coloring/add_colorings.cc
+          ${DRIVER_INITIALIZATION}
+          ${RUNTIME_DRIVER}
+        INPUTS
+          test/simple2d-8x8.msh
+          test/simple2d-16x16.msh
+        LIBRARIES
+          flecsi
+          ${CINCH_RUNTIME_LIBRARIES}
+          ${COLORING_LIBRARIES}
+        DEFINES
+          -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+          -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+        POLICY LEGION
+        THREADS 2
+      )
+
       cinch_add_unit(data_handle_task
         SOURCES
           test/data_handle_task.cc
