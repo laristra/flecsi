@@ -16,7 +16,7 @@
 # Compile definition to include driver
 #------------------------------------------------------------------------------#
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion" AND ENABLE_COLORING)
 
   add_definitions(-DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT)
   add_definitions(-DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER)
