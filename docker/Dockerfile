@@ -2,6 +2,7 @@ FROM laristra/flecsi-third-party:fedora
 
 ARG MINIMAL
 ARG MPI
+ARG LEGION
 ARG RUNTIME
 ARG COVERAGE
 ARG SONARQUBE
@@ -37,6 +38,7 @@ RUN mkdir build
 WORKDIR build
 RUN ccache -z
 RUN cmake -DENABLE_MPI=$MPI \
+          -DENABLE_LEGION=$LEGION \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
           -DENABLE_UNIT_TESTS=ON \
