@@ -8,26 +8,21 @@ services:
 env:
   matrix:
 #    - DISTRO=ubuntu MINIMAL=ON MPI=OFF RUNTIME=serial
-#    - DISTRO=ubuntu MPI=OFF RUNTIME=legion    DOCKERHUB=true
-#    - DISTRO=ubuntu MPI=OFF RUNTIME=legion    WERROR=yes
-#    - DISTRO=ubuntu MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
-#    - DISTRO=ubuntu MPI=ON  RUNTIME=mpilegion WERROR=yes
-#    - DISTRO=ubuntu_mpich MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
-#    - DISTRO=ubuntu_mpich MPI=ON  RUNTIME=mpilegion WERROR=yes
+    - DISTRO=ubuntu MPI=OFF RUNTIME=legion    DOCKERHUB=true
+    - DISTRO=ubuntu MPI=OFF RUNTIME=legion    WERROR=yes
+#    - DISTRO=ubuntu_mpich MPI=ON  RUNTIME=legion DOCKERHUB=true
+#    - DISTRO=ubuntu_mpich MPI=ON  RUNTIME=legion WERROR=yes
 #    - DISTRO=ubuntu MPI=OFF  RUNTIME=serial       DOCKERHUB=true
 #    - DISTRO=ubuntu MPI=OFF  RUNTIME=serial       WERROR=yes
-#    - DISTRO=ubuntu MPI=OFF  COVERAGE=ON RUNTIME=serial SONARQUBE=ON
+    - DISTRO=ubuntu MPI=ON  COVERAGE=ON RUNTIME=legion SONARQUBE=ON
 #
 #    - DISTRO=fedora MINIMAL=ON MPI=OFF RUNTIME=serial
-#    - DISTRO=fedora MPI=OFF RUNTIME=legion    DOCKERHUB=true
-#    - DISTRO=fedora MPI=OFF RUNTIME=legion    WERROR=yes
-#    - DISTRO=fedora MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
-#    - DISTRO=fedora MPI=ON  RUNTIME=mpilegion WERROR=yes
-#    - DISTRO=fedora_mpich MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
-#    - DISTRO=fedora_mpich MPI=ON  RUNTIME=mpilegion WERROR=yes
+    - DISTRO=fedora MPI=OFF RUNTIME=legion    DOCKERHUB=true
+    - DISTRO=fedora MPI=OFF RUNTIME=legion    WERROR=yes
+    - DISTRO=fedora_mpich MPI=ON  RUNTIME=legion DOCKERHUB=true
+    - DISTRO=fedora_mpich MPI=ON  RUNTIME=legion WERROR=yes
 #    - DISTRO=fedora MPI=OFF RUNTIME=serial        DOCKERHUB=true
 #    - DISTRO=fedora MPI=OFF RUNTIME=serial        WERROR=yes
-#    - DISTRO=fedora MPI=OFF RUNTIME=serial COVERAGE=ON
     - DISTRO=fedora MPI=ON RUNTIME=legion COVERAGE=ON
 
 matrix:
