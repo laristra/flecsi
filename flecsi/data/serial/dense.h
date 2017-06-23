@@ -74,18 +74,15 @@ template<
   typename T,
   size_t EP,
   size_t SP,
-  size_t GP,
-  typename MD
+  size_t GP
 >
 struct dense_handle_t : public data_handle__<T, EP, SP, GP>
 {
-  using base = data_handle__<T, EP, SP, GP>;
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using meta_data_t = MD;
-  using user_meta_data_t = typename meta_data_t::user_meta_data_t;
+  using base = data_handle__<T, EP, SP, GP>;
 
   //--------------------------------------------------------------------------//
   // Constructors.
@@ -104,14 +101,12 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     const dense_handle_t & a
   )
   :
-    label_(a.label_),
-    user_meta_data_(a.user_meta_data_)
+    label_(a.label_)
   {}
 
   template<size_t EP2, size_t SP2, size_t GP2>
-  dense_handle_t(const dense_handle_t<T, EP2, SP2, GP2, MD> & h)
-    : label_(h.label_),
-      user_meta_data_(h.user_meta_data_)
+  dense_handle_t(const dense_handle_t<T, EP2, SP2, GP2> & h)
+    : label_(h.label_)
   {}
 
   //--------------------------------------------------------------------------//
@@ -157,15 +152,6 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   {
     return base::shared_size;
   } // size
-
-	///
-  /// \brief Return the user meta data for this data variable.
-	///
-  const user_meta_data_t &
-  meta_data() const
-  {
-    return *user_meta_data_;
-  } // meta_data
 
   //--------------------------------------------------------------------------//
   // Operators.
@@ -439,12 +425,11 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     return base::primary_data != nullptr;
   } // operator bool
 
-  template<typename, size_t, size_t, size_t, typename>
+  template<typename, size_t, size_t, size_t>
   friend class dense_handle_t;
 
 private:
   std::string label_ = "";
-  const user_meta_data_t * user_meta_data_ = nullptr;
 }; // struct dense_handle_t
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
@@ -458,15 +443,12 @@ private:
 ///
 /// FIXME: Dense storage type.
 ///
-template<typename DS, typename MD>
-struct storage_type_t<dense, DS, MD>
+template<>
+struct storage_type_t<dense>
 {
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
-
-  using data_store_t = DS;
-  using meta_data_t = MD;
 
   template<
     typename T,
@@ -474,7 +456,7 @@ struct storage_type_t<dense, DS, MD>
     size_t SP,
     size_t GP
   >
-  using handle_t = dense_handle_t<T, EP, SP, GP, MD>;
+  using handle_t = dense_handle_t<T, EP, SP, GP>;
 #if 0
   //--------------------------------------------------------------------------//
   // Data accessors.
@@ -860,20 +842,21 @@ struct storage_type_t<dense, DS, MD>
 #endif
 
   template<
-    typename T,
-    size_t NS,
-    typename DATA_CLIENT_TYPE
+    typename DATA_CLIENT_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t VERSION
   >
   static
-  handle_t<T, 0, 0, 0>
+  handle_t<DATA_TYPE, 0, 0, 0>
   get_handle(
-    const data_client_t & data_client,
-    data_store_t & data_store,
-    const utils::const_string_t & key,
-    size_t version
+    const data_client_t & data_client
   )
   {
-    handle_t<T, 0, 0, 0> h;
+    handle_t<DATA_TYPE, 0, 0, 0> h;
+
+
     return h;
   }
 

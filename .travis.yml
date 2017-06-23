@@ -33,13 +33,15 @@ env:
 matrix:
   allow_failures:
     - compiler: clang #wrong warning in older clang, fix in newer (fedora)
-      env: DISTRO=ubuntu MPI=OFF RUNTIME=legion    WERROR=yes 
+      env: DISTRO=ubuntu MPI=OFF LEGION=ON RUNTIME=legion    WERROR=yes 
     - compiler: clang
-      env: DISTRO=ubuntu MPI=ON  RUNTIME=mpilegion WERROR=yes 
+      env: DISTRO=ubuntu MPI=ON LEGION=ON RUNTIME=mpilegion WERROR=yes 
     - compiler: clang
-      env: DISTRO=ubuntu_mpich MPI=ON  RUNTIME=mpilegion WERROR=yes 
+      env: DISTRO=ubuntu_mpich MPI=ON LEGION=ON RUNTIME=mpilegion WERROR=yes 
     - compiler: clang
-      env: DISTRO=ubuntu MPI=OFF  RUNTIME=serial       WERROR=yes 
+      env: DISTRO=ubuntu MPI=OFF LEGION=OFF RUNTIME=serial       WERROR=yes 
+    - compiler: clang
+      env: DISTRO=ubuntu MPI=ON  LEGION=ON RUNTIME=mpilegion WERROR=yes
 
 before_install:
  - git fetch --unshallow && git fetch --tags #for versioning
@@ -52,7 +54,10 @@ script:
   - cp -r $HOME/.ccache ${HOME}/docker/ccache
   - cp -r $HOME/.sonar ${HOME}/docker/sonar
   - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
-  - docker build --build-arg MPI=${MPI} --build-arg RUNTIME=${RUNTIME} --build-arg CXXFLAGS=${WERROR:+-Werror}
+  - docker build --build-arg MPI=${MPI} 
+                --build-arg LEGION=${LEGION} 
+                --build-arg RUNTIME=${RUNTIME} 
+                --build-arg CXXFLAGS="${WERROR:+-Werror} -Wno-deprecated-declarations"
                 --build-arg COVERAGE=${COVERAGE} --build-arg MINIMAL=${MINIMAL}
                 --build-arg CC=${CC} --build-arg CXX=${CXX}
                 --build-arg SONARQUBE=${SONARQUBE} --build-arg SONARQUBE_TOKEN=${SONARQUBE_TOKEN}

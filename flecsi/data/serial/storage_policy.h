@@ -42,26 +42,52 @@
 namespace flecsi {
 namespace data {
 
-template<typename user_meta_data_t>
 struct serial_storage_policy_t {
-
-  using meta_data_t = serial_meta_data_t<user_meta_data_t>;
-
-  // Define the data store type
-  // This will likely be much more complicated in a real policy
-  using data_store_t = std::unordered_map<size_t,
-    std::unordered_map<utils::const_string_t::hash_type_t, meta_data_t>>;
 
   // Define the storage type
   template<size_t data_type_t>
-  using storage_type_t = serial::storage_type_t<data_type_t,
-    data_store_t, meta_data_t>;
+  using storage_type_t = serial::storage_type_t<data_type_t>;
+
+  using field_id_t = size_t;
+  using registration_function_t = std::function<void(size_t)>;
+
+  using data_value_t = std::pair<field_id_t, registration_function_t>;
+
+  template<
+    typename DATA_CLIENT_TYPE,
+    size_t STORAGE_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE_HASH,
+    size_t NAME_HASH,
+    size_t INDEX_SPACE,
+    size_t VERSIONS
+  >
+  using registration_wrapper__ =
+    serial_registration_wrapper__<
+      DATA_CLIENT_TYPE,
+      STORAGE_TYPE,
+      DATA_TYPE,
+      NAMESPACE_HASH,
+      NAME_HASH,
+      INDEX_SPACE,
+      VERSIONS>;
+
+  template<
+    typename DATA_CLIENT_TYPE,
+    size_t NAMESPACE_HASH,
+    size_t NAME_HASH
+  >
+  using client_registration_wrapper__ =
+    serial_client_registration_wrapper__<
+      DATA_CLIENT_TYPE,
+      NAMESPACE_HASH,
+      NAME_HASH>;
 
   /// \brief delete ALL data.
   void
   reset()
   {
-    data_store_.clear();
+    assert(false && "unimplemented");
   } // reset
 
   ///
@@ -73,29 +99,7 @@ struct serial_storage_policy_t {
     uintptr_t runtime_namespace
   )
   {
-    // check each namespace
-    for (auto & sub_map : data_store_) {
-
-      // the namespace data
-      auto & meta_data = sub_map.second;
-      
-      // loop over each element in the namespace
-      auto itr = meta_data.begin();
-      while (itr != meta_data.end()) {
-        // get the meta data key and label
-        auto & meta_data_key = itr->first;
-        auto & label = itr->second.label;
-        // now build the hash for this label
-        auto key_hash = 
-          utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
-        auto hash = key_hash ^ runtime_namespace;
-        // test if it should be deleted
-        if (meta_data_key == hash)
-          itr = meta_data.erase(itr);
-        else 
-          ++itr;
-      } // while
-    } // for
+    assert(false && "unimplemented");
   } // reset
 
   /// \brief Count all data associated with this runtime namespace.
@@ -106,150 +110,27 @@ struct serial_storage_policy_t {
     uintptr_t runtime_namespace
   )
   {
-    size_t cnt(0);
-
-    // check each namespace
-    for (auto & sub_map : data_store_) {
-
-      // the namespace data
-      auto & namespace_data = sub_map.second;
-      
-      // loop over each element in the namespace
-      for ( const auto & entry_pair : namespace_data ) {
-        // get the meta data key and label
-        const auto & meta_data_key = entry_pair.first;
-        const auto & meta_data = entry_pair.first;
-        // get the label
-        auto & label = entry_pair.second.label;
-        // now build the hash for this label
-        auto key_hash = 
-          utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
-        auto hash = key_hash ^ runtime_namespace;
-        // test if it should be deleted
-        if (meta_data_key == hash) cnt++;
-      } // while
-    } // for
-
-    return cnt;
+    assert(false && "unimplemented");
   } // count
 
   /// \brief move ALL data associated with this runtime namespace
   /// \param [in] from,to the namespaces to move data from and to.
   void move( uintptr_t from, uintptr_t to ) {
-
-    // check each namespace
-    for ( auto & sub_map : data_store_ ) {
-
-      // the namespace data
-      auto & meta_data = sub_map.second;
-
-      // create a temporary map
-      using map_type = typename std::decay< decltype( meta_data ) >::type;
-      map_type tmp_map;
-
-      // loop over each element in the namespace and move
-      // matching ones into the temp map
-      auto itr = meta_data.begin();
-      while ( itr != meta_data.end() ) {
-        // get the meta data key and label
-        auto & meta_data_key = itr->first;
-        auto & label = itr->second.label;
-        // now build the hash for this label
-        auto key_hash = 
-          utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
-        auto from_hash = key_hash ^ from;
-        // test if it should be moved, and move it
-        if ( meta_data_key == from_hash ) {
-          auto to_hash = key_hash ^ to;                // new hash
-          tmp_map[to_hash] = std::move( itr->second ); // move data
-          itr = meta_data.erase(itr);                  // delete old instance
-        }
-        // otherwise just go to next instance
-        else {
-          ++itr;
-        }
-      } // while
-
-
-      // get move iterators
-      using iterator = typename map_type::iterator;
-      using move_iterator = std::move_iterator<iterator>;
-
-      // move the data back into the meta data map with the new key
-      meta_data.insert(
-        move_iterator( tmp_map.begin() ),
-        move_iterator( tmp_map.end() )
-      );
-
-    } // for
-
+    assert(false && "unimplemented");
   } // move
-
-  //--------------------------------------------------------------------------//
-  // Data registration.
-  //--------------------------------------------------------------------------//
-
-  using field_id_t = size_t;
-  struct unique_field_id_t {};
-  using registration_function_t = std::function<void(size_t)>;
-  using unique_fid_t = utils::unique_id_t<unique_field_id_t>;
 
   template<
     typename DATA_CLIENT_TYPE,
-    size_t STORAGE_TYPE,
-    typename DATA_TYPE,
-    size_t NAMESPACE_HASH,
-    size_t NAME_HASH,
-    size_t INDEX_SPACE,
-    size_t VERSIONS
+    size_t NAMESPACE,
+    size_t NAME
   >
-  bool
-  register_data()
+  decltype(auto)
+  get_client_handle()
   {
-    using wrapper_t =
-    serial_registration_wrapper_t<
-      DATA_CLIENT_TYPE,
-      STORAGE_TYPE,
-      DATA_TYPE,
-      NAMESPACE_HASH,
-      NAME_HASH,
-      INDEX_SPACE,
-      VERSIONS>;
+    data_client_handle__<DATA_CLIENT_TYPE> client_handle;
+    return client_handle;
+  } // get_client_handle
 
-    for(size_t i(0); i<VERSIONS; ++i) {
-      data_registry_[typeid(DATA_CLIENT_TYPE).hash_code()]
-      [data_hash_t::make_key(NAMESPACE_HASH, NAME_HASH)] =
-        { unique_fid_t::instance().next(), wrapper_t::register_callback };
-    } // for
-  } // register_data
-
-  void
-  register_all()
-  {
-    for(auto & c: data_registry_) {
-      for(auto & d: c.second) {
-        d.second.second(d.second.first);
-      } // for
-    } // for
-  } // register_all
-
-protected:
-
-  // Storage container instance
-  data_store_t data_store_;
-
-  using data_value_t = std::pair<field_id_t, registration_function_t>;
-
-  using client_value_t =
-    std::unordered_map<
-      data_hash_t::key_t, // key
-      data_value_t,       // value
-      data_hash_t,        // hash function
-      data_hash_t         // equialence operator
-    >;
-
-  // Data registration map
-  std::unordered_map<size_t, client_value_t> data_registry_;
 }; // struct serial_storage_policy_t
 
 } // namespace data

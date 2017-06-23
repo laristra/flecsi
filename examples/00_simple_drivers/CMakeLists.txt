@@ -23,7 +23,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
     list(APPEND simple_drivers_src ${exec_path}/mpi/runtime_driver.cc )
 else()
-    message(FATAL_ERROR "This runtime is not yet supported")
+  message(FATAL_ERROR "Unrecognized runtime selection: ${FLECSI_RUNTIME_MODEL}")
 endif()
 
 #------------------------------------------------------------------------------#
