@@ -229,6 +229,7 @@ set(data_SOURCES
          ${CINCH_RUNTIME_LIBRARIES}
        POLICY LEGION
        THREADS 2
+       NOCI
      )
 
    endif()
