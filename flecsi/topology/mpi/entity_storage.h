@@ -68,12 +68,22 @@ public:
   template<
     typename ... Args
   >
-  void insert(Args && ... args){}
+  void insert(Args && ... args){
+    assert(false && "unimplemented");
+  }
 
   template<
     typename ... Args
   >
-  void push_back(Args && ... args){}
+  void push_back(Args && ... args){
+    assert(false && "unimplemented");
+  }
+
+  void
+  clear()
+  {
+    assert(false && "unimplemented");
+  }
 
 private:
   T buf_;
