@@ -55,9 +55,9 @@ struct serial_topology_storage_policy_t
   {
     using dtype = domain_entity<M, ET>;
 
-    auto & is = index_spaces[M][ND].template cast<dtype>();
+    auto & is = index_spaces[M][D].template cast<dtype>();
 
-    id_t global_id = id_t::make<ND, M>(is.size(), partition_id);
+    id_t global_id = id_t::make<D, M>(is.size(), partition_id);
 
     auto typed_ent = static_cast<mesh_entity_base_t<NM>*>(ent);
 
