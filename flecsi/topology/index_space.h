@@ -36,6 +36,16 @@ namespace topology {
   are owned by this index space or aliased to another index space and then mustcbe copied before this index space can then modify them. SORTED - refers to if the id's are sorted and can then have set operations directly applied to them, else the index space must first be sorted. To make operations on index spaces faster, the index space is parameterized on a number of these parameters and can be efficiently recast depending on how it is to be used: STORAGE - if true then this is a 'master' index space with its own storage. OWNED - if true then id ownership is definitely true, else must check owned_ at runtime. SORTED - if true then id's are definitely stored and shall remain in sorted order.
 */
 
+template<typename T>
+struct index_space_ref_type__{
+  using type = T&;
+};
+
+template<typename S>
+struct index_space_ref_type__<S*>{
+  using type = S*;
+};
+
 template<
   class T,
   bool STORAGE = false,
@@ -54,6 +64,8 @@ public:
 
   using item_t = typename std::remove_pointer<T>::type;
 
+  using ref_t = typename index_space_ref_type__<T>::type;
+  
   using filter_function = std::function<bool(T&)>;
 
   using apply_function = std::function<void(T&)>;
@@ -181,7 +193,7 @@ public:
       return index_ != itr.index_;
     }
 
-    T&
+    ref_t
     get_(
       size_t index
     )
@@ -282,6 +294,8 @@ public:
   public:
     using B = iterator_base_<S>;
 
+    using ref_t = index_space_ref_type__<S>;
+
     iterator_(
       const iterator_& itr
     )
@@ -313,7 +327,7 @@ public:
       return *this;
     }
 
-    S&
+    S
     operator*()
     {
       return B::get_(B::index_);
@@ -546,7 +560,7 @@ public:
     return end_;
   }
 
-  T&
+  ref_t
   get_offset(
     size_t offset
   )
@@ -554,7 +568,7 @@ public:
     return (*s_)[(*v_)[offset].index_space_index()];
   }
 
-  const T&
+  const ref_t
   get_offset(
     size_t offset
   ) const
@@ -597,7 +611,7 @@ public:
     return index_space<S, false, false, SORTED>(*this, begin_, end_);
   }
 
-  T&
+  ref_t
   get_(
     size_t offset
   )
@@ -605,7 +619,7 @@ public:
     return (*s_)[(*v_)[begin_ + offset].index_space_index()];
   }
 
-  const T&
+  const ref_t
   get_(
     size_t offset
   ) const
@@ -613,7 +627,7 @@ public:
     return (*s_)[(*v_)[begin_ + offset].index_space_index()];
   }
 
-  T&
+  ref_t
   get_end_(
     size_t offset
   )
@@ -621,7 +635,7 @@ public:
     return (*s_)[(*v_)[end_ - 1 - offset].index_space_index()];
   }
 
-  const T&
+  const ref_t
   get_end_(
     size_t offset
   ) const
@@ -629,7 +643,7 @@ public:
     return (*s_)[(*v_)[end_ - 1 - offset].index_space_index()];
   }
 
-  T&
+  ref_t
   operator[](
     size_t i
   )
@@ -637,7 +651,7 @@ public:
     return get_(i);
   }
 
-  const T&
+  const ref_t
   operator[](
     size_t i
   ) const
@@ -661,25 +675,25 @@ public:
     return (*v_)[begin_ + i];
   }
 
-  T&
+  ref_t
   front()
   {
     return get_(0);
   }
 
-  const T&
+  const ref_t
   front() const
   {
     return get_(0);
   }
 
-  T&
+  ref_t
   back()
   {
     return get_end_(0);
   }
 
-  const T&
+  const ref_t
   back() const
   {
     return get_end_(0);

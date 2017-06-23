@@ -41,8 +41,10 @@ struct serial_topology_storage_policy_t
   template<typename T>
   class entity_storage_t{
   public:
+    entity_storage_t(){}
+
     entity_storage_t(
-      mesh_entity_base_* buf,
+      T* buf,
       size_t size
     )
     : buf_(buf),
@@ -73,10 +75,29 @@ struct serial_topology_storage_policy_t
       return buf_ + size_;
     }
 
+    const T
+    begin()
+    const
+    {
+      return buf_;
+    }
+
+    const T
+    end()
+    const
+    {
+      return buf_ + size_;
+    }
+
     template<
       typename ... Args
     >
     void insert(Args && ... args){}
+
+    template<
+      typename ... Args
+    >
+    void push_back(Args && ... args){}
 
   private:
     T buf_;
