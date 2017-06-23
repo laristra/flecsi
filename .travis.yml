@@ -10,8 +10,8 @@ env:
 #    - DISTRO=ubuntu MINIMAL=ON RUNTIME=serial
     - DISTRO=ubuntu RUNTIME=legion    DOCKERHUB=true
     - DISTRO=ubuntu RUNTIME=legion    WERROR=yes
-#    - DISTRO=ubuntu_mpich RUNTIME=legion DOCKERHUB=true
-#    - DISTRO=ubuntu_mpich RUNTIME=legion WERROR=yes
+    - DISTRO=ubuntu_mpich RUNTIME=legion DOCKERHUB=true
+    - DISTRO=ubuntu_mpich RUNTIME=legion WERROR=yes
 #    - DISTRO=ubuntu RUNTIME=serial       DOCKERHUB=true
 #    - DISTRO=ubuntu RUNTIME=serial       WERROR=yes
     - DISTRO=ubuntu COVERAGE=ON RUNTIME=legion SONARQUBE=ON
@@ -27,10 +27,14 @@ env:
 
 matrix:
   allow_failures:
-    - compiler: clang #wrong warning in older clang, fix in newer (fedora)
-      env: DISTRO=ubuntu LEGION=ON RUNTIME=legion    WERROR=yes 
     - compiler: clang
-      env: DISTRO=ubuntu LEGION=OFF RUNTIME=serial       WERROR=yes 
+      env: DISTRO=ubuntu RUNTIME=legion    WERROR=yes 
+    - compiler: clang
+      env: DISTRO=ubuntu_mpich RUNTIME=legion WERROR=yes 
+    - compiler: clang
+      env: DISTRO=fedora RUNTIME=legion    WERROR=yes
+    - compiler: clang
+      env: DISTRO=fedora_mpich RUNTIME=legion WERROR=yes
 
 before_install:
  - git fetch --unshallow && git fetch --tags #for versioning
