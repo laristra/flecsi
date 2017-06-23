@@ -44,93 +44,52 @@ namespace data {
 
 struct serial_storage_policy_t {
 
-  // Define the storage type
-  template<size_t data_type_t>
-  using storage_type_t = serial::storage_type_t<data_type_t>;
-
   using field_id_t = size_t;
   using registration_function_t = std::function<void(size_t)>;
-
   using data_value_t = std::pair<field_id_t, registration_function_t>;
+  using field_entry_t = std::unordered_map<size_t, data_value_t>;
 
-  template<
-    typename DATA_CLIENT_TYPE,
-    size_t STORAGE_TYPE,
-    typename DATA_TYPE,
-    size_t NAMESPACE_HASH,
-    size_t NAME_HASH,
-    size_t INDEX_SPACE,
-    size_t VERSIONS
-  >
-  using registration_wrapper__ =
-    serial_registration_wrapper__<
-      DATA_CLIENT_TYPE,
-      STORAGE_TYPE,
-      DATA_TYPE,
-      NAMESPACE_HASH,
-      NAME_HASH,
-      INDEX_SPACE,
-      VERSIONS>;
+  // Field and client registration interfaces are the same for now.
+  using client_entry_t = field_entry_t;
 
-  template<
-    typename DATA_CLIENT_TYPE,
-    size_t NAMESPACE_HASH,
-    size_t NAME_HASH
-  >
-  using client_registration_wrapper__ =
-    serial_client_registration_wrapper__<
-      DATA_CLIENT_TYPE,
-      NAMESPACE_HASH,
-      NAME_HASH>;
-
-  /// \brief delete ALL data.
-  void
-  reset()
-  {
-    assert(false && "unimplemented");
-  } // reset
-
-  ///
-  /// \brief delete ALL data associated with this runtime namespace.
-  /// \param [in] runtime_namespace the namespace to search.
-  ///
-  void
-  reset(
-    uintptr_t runtime_namespace
+  bool
+  register_field(
+    size_t client_key,
+    size_t key,
+    const registration_function_t & callback
   )
   {
-    assert(false && "unimplemented");
-  } // reset
+    //TODO:
+  }
 
-  /// \brief Count all data associated with this runtime namespace.
-  /// \param [in] runtime_namespace the namespace to search.
-  /// \return The number of hits for this namespace.
-  size_t
-  count(
-    uintptr_t runtime_namespace
-  )
+  void
+  register_all()
   {
-    assert(false && "unimplemented");
-  } // count
+    for(auto & c: field_registry_) {
+      for(auto & d: c.second) {
+        d.second.second(d.second.first);
+      } // for
+    } // for
+  } // register_all
 
-  /// \brief move ALL data associated with this runtime namespace
-  /// \param [in] from,to the namespaces to move data from and to.
-  void move( uintptr_t from, uintptr_t to ) {
-    assert(false && "unimplemented");
-  } // move
-
-  template<
-    typename DATA_CLIENT_TYPE,
-    size_t NAMESPACE,
-    size_t NAME
-  >
-  decltype(auto)
-  get_client_handle()
+  auto const &
+  field_registry()
+  const
   {
-    data_client_handle__<DATA_CLIENT_TYPE> client_handle;
-    return client_handle;
-  } // get_client_handle
+    return field_registry_;
+  } // field_registry
 
+  auto const &
+  client_registry()
+  const
+  {
+    return client_registry_;
+  } // client_registry
+
+private:
+
+  std::unordered_map<size_t, field_entry_t> field_registry_;
+  std::unordered_map<size_t, client_entry_t> client_registry_;
 }; // struct serial_storage_policy_t
 
 } // namespace data

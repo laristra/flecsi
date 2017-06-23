@@ -33,7 +33,7 @@ template<
   size_t INDEX_SPACE,
   size_t VERSIONS
 >
-struct serial_registration_wrapper__
+struct serial_field_registration_wrapper__
 {
   using field_id_t = size_t;
 
@@ -47,7 +47,7 @@ struct serial_registration_wrapper__
     // Do stuff
   } // register_callback
 
-}; // class serial_registration_wrapper_t
+}; // class serial_field_registration_wrapper_t
 
 ///
 /// \class registration_wrapper_t registration_wrapper.h
