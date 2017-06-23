@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_data_client_h
-#define flecsi_data_client_h
+#ifndef FLECSI_DATA_data_client_h
+#define FLECSI_DATA_data_client_h
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -84,7 +84,7 @@ private:
 } // namespace data
 } // namespace flecsi
 
-#endif // flecsi_data_client_h
+#endif // FLECSI_DATA_data_client_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

@@ -21,12 +21,13 @@ set(data_HEADERS
   common/data_hash.h
   common/data_types.h
   common/privilege.h
-  data_accessor.h
+  client.h
   data_client.h
+  data_client_handle.h
   data_constants.h
   data.h
   data_handle.h
-  default_user_meta_data.h
+  field.h
   storage.h
   storage_type.h
 )
@@ -68,12 +69,13 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(data_HEADERS
     ${data_HEADERS}
+    legion/data_client_handle_policy.h
     legion/data_handle_policy.h
+    legion/data_policy.h
     legion/dense.h
     legion/dpd.h
     legion/global.h
     legion/legion_data.h
-    legion/meta_data.h
     legion/registration_wrapper.h
     legion/scoped.h
     legion/sparse.h

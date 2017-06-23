@@ -413,7 +413,7 @@ struct legion_context_policy_t
   //!
   //! @param key       The task hash key.
   //! @param name      The task name string.
-  //! @param call_back The registration call back function.
+  //! @param callback The registration call back function.
   //--------------------------------------------------------------------------//
 
   bool
@@ -723,7 +723,7 @@ struct legion_context_policy_t
   //! Lookup registered field info from data client and namespace hash.
   //! @param data_client_hash data client type hash
   //! @param namespace_hash namespace/field name hash
-  //!--------------------------------------------------------------------------//
+  //!-------------------------------------------------------------------------//
 
   const field_info_t&
   get_field_info(
@@ -747,7 +747,7 @@ struct legion_context_policy_t
   //! Compute internal field id for from/to index space pair for connectivity.
   //! @param from_index_space from index space
   //! @param to_index_space to index space
-  //!--------------------------------------------------------------------------//
+  //!-------------------------------------------------------------------------//
 
   size_t
   adjacency_fid(size_t from_index_space, size_t to_index_space)
@@ -819,6 +819,7 @@ private:
   //--------------------------------------------------------------------------//
   // Legion data members within SPMD task.
   //--------------------------------------------------------------------------//
+
   std::map<size_t, index_space_data_t> index_space_data_map_;
 
 }; // class legion_context_policy_t

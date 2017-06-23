@@ -6,14 +6,15 @@
 #ifndef flecsi_data_legion_registration_wrapper_h
 #define flecsi_data_legion_registration_wrapper_h
 
-///
-/// \file
-/// \date Initial file creation: Apr 10, 2017
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Apr 10, 2017
+//----------------------------------------------------------------------------//
 
 #include <cinchlog.h>
 
 #include "flecsi/execution/context.h"
+#include "flecsi/data/storage.h"
 #include "flecsi/topology/mesh_topology.h"
 #include "flecsi/utils/tuple_walker.h"
 
@@ -22,10 +23,10 @@ clog_register_tag(registration);
 namespace flecsi {
 namespace data {
 
-///
-/// \class legion_registration_wrapper_t registration_wrapper.h
-/// \brief legion_registration_wrapper_t provides...
-///
+//----------------------------------------------------------------------------//
+//!
+//----------------------------------------------------------------------------//
+
 template<
   typename DATA_CLIENT_TYPE,
   size_t STORAGE_TYPE,
@@ -35,9 +36,13 @@ template<
   size_t INDEX_SPACE,
   size_t VERSIONS
 >
-struct legion_registration_wrapper__
+struct legion_field_registration_wrapper__
 {
   using field_id_t = Legion::FieldID;
+
+  //--------------------------------------------------------------------------//
+  //!
+  //--------------------------------------------------------------------------//
 
   static
   void
@@ -62,12 +67,12 @@ struct legion_registration_wrapper__
     execution::context_t::instance().register_field_info(fi);
   } // register_callback
 
-}; // class legion_registration_wrapper__
+}; // class legion_field_registration_wrapper__
 
-///
-/// \class legion_registration_wrapper_t registration_wrapper.h
-/// \brief legion_registration_wrapper_t provides...
-///
+//----------------------------------------------------------------------------//
+//!
+//----------------------------------------------------------------------------//
+
 template<
   typename DATA_CLIENT_TYPE,
   size_t NAMESPACE_HASH,
@@ -76,6 +81,10 @@ template<
 struct legion_client_registration_wrapper__
 {
 }; // class legion_client_registration_wrapper__
+
+//----------------------------------------------------------------------------//
+//!
+//----------------------------------------------------------------------------//
 
 template<
   typename POLICY_TYPE,
@@ -90,7 +99,9 @@ struct legion_client_registration_wrapper__<
 {
   using field_id_t = Legion::FieldID;
 
-  //
+  //--------------------------------------------------------------------------//
+  //!
+  //--------------------------------------------------------------------------//
 
   struct entity_walker_t :
     public flecsi::utils::tuple_walker__<entity_walker_t>
@@ -142,7 +153,9 @@ struct legion_client_registration_wrapper__<
 
   }; // struct entity_walker_t
 
-  //
+  //--------------------------------------------------------------------------//
+  //!
+  //--------------------------------------------------------------------------//
 
   static
   void

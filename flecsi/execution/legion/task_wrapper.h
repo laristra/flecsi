@@ -15,7 +15,6 @@
 #include <legion.h>
 #include <string>
 
-#include "flecsi/data/data_accessor.h"
 #include "flecsi/data/data_handle.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/common/processor.h"
@@ -141,15 +140,6 @@ struct functor_task_wrapper__
     decltype(&FUNCTOR_TYPE::execute)>::argument_type;
 
   //--------------------------------------------------------------------------//
-  //! The functor_task_args_t type defines a task argument type for task
-  //! execution through the Legion runtime.
-  //--------------------------------------------------------------------------//
-
-  using functor_task_args_t =
-    typename utils::base_convert_tuple_type<
-    accessor_base_t, data_handle__<void, 0, 0, 0>, arg_tuple_t>::type;
-
-  //--------------------------------------------------------------------------//
   //! The task_id_t type is a unique identifier for Legion tasks.
   //--------------------------------------------------------------------------//
 
@@ -223,11 +213,11 @@ struct functor_task_wrapper__
     }
 
     // Unpack task arguments
-    functor_task_args_t & functor_task_args =
-      *(reinterpret_cast<functor_task_args_t *>(task->args));
+    arg_tuple_t & task_args =
+      *(reinterpret_cast<arg_tuple_t *>(task->args));
 
     init_handles_t init_handles(runtime, context, regions);
-    init_handles.walk(functor_task_args);
+    init_handles.walk(task_args);
 
     // Instantiate the user's functor type.
     FUNCTOR_TYPE functor;
@@ -236,7 +226,7 @@ struct functor_task_wrapper__
     functor.context = { context, runtime, task, regions };
 
     // Execute the user's task
-    flecsi::utils::tuple_function(functor, functor_task_args);
+    flecsi::utils::tuple_function(functor, task_args);
 
     // FIXME: NEED TO HANDLE RETURN TYPES
   } // execute_functor_task
@@ -263,15 +253,6 @@ template<
 >
 struct task_wrapper__
 {
-  //--------------------------------------------------------------------------//
-  //! The task_args_t type defines a task argument type for task
-  //! execution through the Legion runtime.
-  //--------------------------------------------------------------------------//
-
-  using task_args_t =
-    typename utils::base_convert_tuple_type<
-    accessor_base_t, data_handle__<void, 0, 0, 0>, ARG_TUPLE>::type;
-
   //--------------------------------------------------------------------------//
   //! The task_id_t type is a unique identifier for Legion tasks.
   //--------------------------------------------------------------------------//
@@ -353,8 +334,8 @@ struct task_wrapper__
     }
 
     // Unpack task arguments
-    task_args_t & task_args =
-      *(reinterpret_cast<task_args_t *>(task->args));
+    ARG_TUPLE & task_args =
+      *(reinterpret_cast<ARG_TUPLE *>(task->args));
 
 #if !defined(ENABLE_LEGION_TLS)
     // Push the Legion state
@@ -425,15 +406,6 @@ template<
 >
 struct old_task_wrapper__
 {
-  //--------------------------------------------------------------------------//
-  //! The task_args_t type defines a task argument type for task
-  //! execution through the Legion runtime.
-  //--------------------------------------------------------------------------//
-
-  using task_args_t =
-    typename utils::base_convert_tuple_type<
-    accessor_base_t, data_handle__<void, 0, 0, 0>, ARG_TUPLE>::type;
-
   //--------------------------------------------------------------------------//
   //! The task_id_t type is a unique identifier for Legion tasks.
   //--------------------------------------------------------------------------//
@@ -517,8 +489,8 @@ struct old_task_wrapper__
     }
 
     // Unpack task arguments
-    task_args_t & task_args =
-      *(reinterpret_cast<task_args_t *>(task->args));
+    ARG_TUPLE & task_args =
+      *(reinterpret_cast<ARG_TUPLE *>(task->args));
 
 #if !defined(ENABLE_LEGION_TLS)
     // Push the Legion state

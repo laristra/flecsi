@@ -17,11 +17,10 @@
 
 #include "flecsi/utils/common.h"
 
-/*!
-   \file mesh_utils.h
-   \authors nickm@lanl.gov, bergen@lanl.gov
-   \date Initial file creation: Dec 23, 2015
- */
+//----------------------------------------------------------------------------//
+//! @file mesh_utils.h
+//! @date Initial file creation: Dec 23, 2015
+//----------------------------------------------------------------------------//
 
 /*----------------------------------------------------------------------------*
  * debug dump function
@@ -42,12 +41,18 @@ namespace topology {
  * Tuple search utilities.
  *----------------------------------------------------------------------------*/
 
-/*!
-  \struct find_entity__ mesh_utils.h
-  \brief find_entity__ provides static search capabilities.
- */
+//----------------------------------------------------------------------------//
+//!
+//----------------------------------------------------------------------------//
+
 template <size_t I, class T, size_t D, size_t M>
 struct find_entity__ {
+
+  //--------------------------------------------------------------------------//
+  //!
+  //!
+  //--------------------------------------------------------------------------//
+
   /*!
     Find the position index of a type that matches the
     given domain and dimension.
