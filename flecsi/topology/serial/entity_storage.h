@@ -6,6 +6,9 @@
 #ifndef flecsi_topology_serial_entity_storage_policy_h
 #define flecsi_topology_serial_entity_storage_policy_h
 
+#include <vector>
+#include <cassert>
+
 ///
 /// \file
 /// \date Initial file creation: Apr 04, 2017
@@ -14,6 +17,10 @@
 namespace flecsi {
 namespace topology {
 
+template<typename T>
+using entity_storage__ = std::vector<T>;
+
+#if 0
 template<typename T>
 class entity_storage__{
 public:
@@ -68,17 +75,28 @@ public:
   template<
     typename ... Args
   >
-  void insert(Args && ... args){}
+  void insert(Args && ... args){
+    assert(false && "unimplemented");
+  }
 
   template<
     typename ... Args
   >
-  void push_back(Args && ... args){}
+  void push_back(Args && ... args){
+    assert(false && "unimplemented");
+  }
+
+  void
+  clear()
+  {
+    assert(false && "unimplemented");
+  }
 
 private:
   T buf_;
   size_t size_;  
 };
+#endif
 
 } // namespace topology
 } // namespace flecsi
