@@ -177,6 +177,7 @@ if (ENABLE_COLORING AND ENABLE_PARMETIS)
       -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
     POLICY ${UNIT_POLICY}
     THREADS 2
+    NOCI
     )
 endif()
 
@@ -199,6 +200,7 @@ if((FLECSI_RUNTIME_MODEL STREQUAL "serial")
       ${UNIT_POLICY}
     LIBRARIES
       flecsi
+    NOCI
   )
 
   #
@@ -217,6 +219,7 @@ if((FLECSI_RUNTIME_MODEL STREQUAL "serial")
     LIBRARIES
       flecsi
       ${CINCH_RUNTIME_LIBRARIES}
+    NOCI
   )
 
   if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
@@ -237,6 +240,7 @@ if((FLECSI_RUNTIME_MODEL STREQUAL "serial")
       flecsi
       ${CINCH_RUNTIME_LIBRARIES}
     THREADS 2
+    NOCI
     )
 
    cinch_add_unit(mapper_compaction_task
@@ -252,6 +256,7 @@ if((FLECSI_RUNTIME_MODEL STREQUAL "serial")
       flecsi
       ${CINCH_RUNTIME_LIBRARIES}
     THREADS 1
+    NOCI
     )
 
 
@@ -275,6 +280,7 @@ if((FLECSI_RUNTIME_MODEL STREQUAL "serial")
           -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
         POLICY LEGION
         THREADS 2
+	NOCI
       )
 
       cinch_add_unit(barrier_per_field
@@ -295,6 +301,7 @@ if((FLECSI_RUNTIME_MODEL STREQUAL "serial")
           -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
         POLICY LEGION
         THREADS 2
+	NOCI
       )
 
     endif()

@@ -1,7 +1,6 @@
 FROM laristra/flecsi-third-party:fedora
 
 ARG MINIMAL
-ARG MPI
 ARG LEGION
 ARG RUNTIME
 ARG COVERAGE
@@ -37,7 +36,7 @@ RUN mkdir build
 
 WORKDIR build
 RUN ccache -z
-RUN cmake -DENABLE_MPI=$MPI \
+RUN cmake \
           -DENABLE_LEGION=$LEGION \
           -DFLECSI_RUNTIME_MODEL=$RUNTIME \
           ${MINIMAL:+-DCMAKE_DISABLE_FIND_PACKAGE_METIS=ON} \
@@ -59,7 +58,7 @@ RUN if [ ${COVERAGE} ]; then \
       bash codecov.sh -X gcov -f doxygen.coverage.info -F documentation; \
       doxy-coverage --threshold 24 doc/doxygen/xml/; \
     fi
-RUN ctest --verbose -E "(simple_task|internal_task|ghost_access|data_handle_task|client_registration|barrier_per_field)"
+RUN make test ARGS="-V"
 RUN make install DESTDIR=${PWD}/install && rm -rf ${PWD}/install
 RUN cd .. && if [ ${COVERAGE} ]; then \
   if [ ${CC} = clang ]; then \
