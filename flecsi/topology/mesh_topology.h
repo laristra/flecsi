@@ -297,6 +297,11 @@ public:
     delete ms_;
   }
 
+  mesh_storage_t<MT::num_dimensions, MT::num_domains>*
+  storage(){
+    return ms_;  
+  }
+
   // Add and entity to a mesh domain and assign its id per domain
   template<
     size_t D,

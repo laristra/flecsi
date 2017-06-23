@@ -429,6 +429,19 @@ public:
     }
   }
 
+  storage_t*
+  storage()
+  {
+    return s_;
+  }
+
+  const storage_t*
+  storage()
+  const
+  {
+    return s_;
+  }
+
   /*!
     Alias an existing index space unless OWNED.
    */

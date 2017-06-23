@@ -361,6 +361,12 @@ class connectivity_t
   connectivity_t()
   : index_space_(false){}
 
+  auto
+  entity_storage()
+  {
+    return index_space_.storage();
+  }
+
   /*!
     Clear the storage arrays for this instance.
    */

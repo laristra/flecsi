@@ -39,6 +39,7 @@
 
   namespace flecsi {
 
+  template<typename T>
   using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::entity_storage__<T>;
 
   }
@@ -50,6 +51,7 @@
 
   namespace flecsi {
 
+  template<typename T>
   using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::entity_storage__<T>;
 
   }

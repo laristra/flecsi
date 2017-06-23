@@ -85,6 +85,13 @@ public:
     assert(false && "unimplemented");
   }
 
+  void
+  set_buffer(T buf, size_t size)
+  {
+    buf_ = buf;
+    size_ = size;
+  }
+
 private:
   T buf_;
   size_t size_;  

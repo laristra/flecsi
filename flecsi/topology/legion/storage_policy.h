@@ -8,6 +8,8 @@
 
 #include <legion.h>
 #include <legion_stl.h>
+#include <legion_utilities.h>
+#include <arrays.h>
 
 #include "flecsi/topology/mesh_storage.h"
 
@@ -29,7 +31,10 @@ namespace topology {
 /// \brief legion_data_handle_policy_t provides...
 ///
 
-template <size_t ND, size_t NM>
+template<
+  size_t ND,
+  size_t NM
+>
 struct legion_topology_storage_policy_t
 {
   using id_t = utils::id_t;
@@ -42,7 +47,11 @@ struct legion_topology_storage_policy_t
 
   std::array<index_spaces_t, NM> index_spaces;
 
-  template<size_t D, size_t M, typename ET>
+  template<
+    size_t D,
+    size_t M,
+    typename ET
+  >
   void
   add_entity(
     ET* ent,
@@ -51,7 +60,7 @@ struct legion_topology_storage_policy_t
   {
     using dtype = domain_entity<M, ET>;
 
-    auto & is = index_spaces[M][N].template cast<dtype>();
+    auto & is = index_spaces[M][D].template cast<dtype>();
 
     id_t global_id = id_t::make<D, M>(is.size(), partition_id);
 
@@ -59,6 +68,58 @@ struct legion_topology_storage_policy_t
 
     typed_ent->template set_global_id<M>(global_id);
     is.push_back(ent);
+  }
+
+  void
+  init_entities(
+    size_t domain,
+    size_t dim,
+    mesh_entity_base_* entities,
+    size_t num_entities
+  )
+  {
+    auto& is = index_spaces[domain][dim];
+    is.storage()->set_buffer(entities, num_entities);
+    
+    for(auto& from_domain : topology){
+      auto& to_domain_connectivty = from_domain[domain];
+      for(size_t from_dim = 0; from_dim <= ND; ++from_dim){
+        auto& conn = to_domain_connectivty.get(from_dim, dim);
+        conn->entity_storage()->set_buffer(entities, num_entities);
+      }
+    }
+  }
+
+  void
+  init_connectivity(
+    size_t from_domain,                
+    size_t to_domain,                
+    size_t from_dim,                
+    size_t to_dim,
+    LegionRuntime::Arrays::Point<2>* positions,
+    uint64_t* indices,
+    size_t num_positions
+  )
+  {
+    // TODO - this is an initial implementation for testing purposes.
+    // We may wish to store the buffer pointers coming from Legion directly
+    // into the connectivity
+
+    auto& conn = topology[from_domain][to_domain].get(from_dim, to_dim);
+    size_t index_offset = 0;
+    for(size_t i = 0; i < num_positions; ++i){
+      auto& pi = positions[i]; 
+      size_t offset = pi.x[0];
+      size_t count = pi.x[1];
+
+      for(size_t j = index_offset; j < index_offset + count; ++j){
+        conn.push(indices[j]);
+      }
+
+      conn.end_from();
+
+      index_offset += count;
+    }
   }
 
 }; // class legion_topology_storage_policy_t
