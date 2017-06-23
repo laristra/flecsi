@@ -14,6 +14,7 @@ set(flecsi_PUBLIC_HEADERS
     flecsi_runtime_data_policy.h
     flecsi_runtime_execution_policy.h
     flecsi_runtime_topology_policy.h
+    flecsi_runtime_entity_storage_policy.h
 )
 
 #~---------------------------------------------------------------------------~-#

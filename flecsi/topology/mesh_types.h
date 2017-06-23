@@ -32,6 +32,7 @@
 #include "flecsi/utils/array_ref.h"
 #include "flecsi/utils/reorder.h"
 #include "flecsi/topology/index_space.h"
+#include "flecsi/topology/entity_storage.h"
 
 namespace flecsi {
 namespace topology {

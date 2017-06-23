@@ -38,72 +38,7 @@ class mesh_entity_base_;
 template <size_t ND, size_t NM>
 struct serial_topology_storage_policy_t
 {
-  template<typename T>
-  class entity_storage_t{
-  public:
-    entity_storage_t(){}
-
-    entity_storage_t(
-      T* buf,
-      size_t size
-    )
-    : buf_(buf),
-    size_(size){}
-
-    T
-    operator[](size_t index)
-    {
-      return buf_ + index;
-    }
-
-    const T
-    operator[](size_t index)
-    const
-    {
-      return buf_ + index;
-    }
-
-    T
-    begin()
-    {
-      return buf_;
-    }
-
-    T
-    end()
-    {
-      return buf_ + size_;
-    }
-
-    const T
-    begin()
-    const
-    {
-      return buf_;
-    }
-
-    const T
-    end()
-    const
-    {
-      return buf_ + size_;
-    }
-
-    template<
-      typename ... Args
-    >
-    void insert(Args && ... args){}
-
-    template<
-      typename ... Args
-    >
-    void push_back(Args && ... args){}
-
-  private:
-    T buf_;
-    size_t size_;  
-  };
-
+  
   using id_t = utils::id_t;
 
   using index_spaces_t = 
