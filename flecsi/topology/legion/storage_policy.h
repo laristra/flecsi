@@ -51,7 +51,7 @@ struct legion_topology_storage_policy_t
   {
     using dtype = domain_entity<M, ET>;
 
-    auto & is = index_spaces[M][N].template cast<dtype>();
+    auto & is = index_spaces[M][D].template cast<dtype>();
 
     id_t global_id = id_t::make<D, M>(is.size(), partition_id);
 
