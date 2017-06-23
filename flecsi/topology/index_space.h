@@ -42,7 +42,7 @@ template<
   bool OWNED = true,
   bool SORTED = false,
   class F = void,
-  typename STORAGE_TYPE = std::vector<T>
+  template<typename, typename...> typename STORAGE_TYPE = std::vector
 >
 class index_space
 {
@@ -50,7 +50,7 @@ public:
   using id_t = typename std::remove_pointer<T>::type::id_t;
   
   using id_vector_t = std::vector<id_t>;
-  using item_vector_t = STORAGE_TYPE;
+  using storage_t = STORAGE_TYPE<T>;
 
   using item_t = typename std::remove_pointer<T>::type;
 
@@ -135,7 +135,7 @@ public:
     {}
 
     iterator_base_(
-      item_vector_t* s,
+      storage_t* s,
       const id_vector_t& items,
       size_t index,
       size_t end
@@ -144,13 +144,13 @@ public:
     {}
 
     iterator_base_(
-      const item_vector_t* s,
+      const storage_t* s,
       const id_vector_t& items,
       size_t index,
       size_t end
     )
     : items_(&items), index_(index), end_(end),
-    s_(const_cast<item_vector_t*>(s))
+    s_(const_cast<storage_t*>(s))
     {}
 
     iterator_base_&
@@ -193,7 +193,7 @@ public:
     const id_vector_t* items_;
     size_t index_;
     size_t end_;
-    item_vector_t* s_;
+    storage_t* s_;
   };
 
   /*!
@@ -215,7 +215,7 @@ public:
     {}
 
     iterator_(
-      item_vector_t* s,
+      storage_t* s,
       const id_vector_t& items,
       size_t index,
       size_t end
@@ -224,7 +224,7 @@ public:
     {}
 
     iterator_(
-      const item_vector_t* s,
+      const storage_t* s,
       const id_vector_t& items,
       size_t index,
       size_t end
@@ -289,7 +289,7 @@ public:
     {}
 
     iterator_(
-      item_vector_t* s,
+      storage_t* s,
       const id_vector_t& items,
       size_t index,
       size_t end
@@ -298,7 +298,7 @@ public:
     {}
 
     iterator_(
-      const item_vector_t* s,
+      const storage_t* s,
       const id_vector_t& items,
       size_t index,
       size_t end
@@ -330,7 +330,7 @@ public:
     bool storage = STORAGE
   )
   : v_(new id_vector_t), begin_(0), end_(0), owned_(true),
-    sorted_(SORTED), s_(storage ? new item_vector_t : nullptr)
+    sorted_(SORTED), s_(storage ? new storage_t : nullptr)
   {
     assert((STORAGE || !storage) && "invalid instantiation");
     static_assert(OWNED, "expected OWNED");
@@ -344,15 +344,16 @@ public:
     bool STORAGE2,
     bool OWNED2,
     bool SORTED2,
-    class F2
+    class F2,
+    template<typename, typename...> typename STORAGE_TYPE2
   > 
   index_space(
-    const index_space<S, STORAGE2, OWNED2, SORTED2, F2>& is,
+    const index_space<S, STORAGE2, OWNED2, SORTED2, F2, STORAGE_TYPE2>& is,
     size_t begin,
     size_t end
   )
   : v_(is.v_), begin_(begin), end_(end), owned_(false),
-    sorted_(is.sorted_), s_(reinterpret_cast<item_vector_t*>(is.s_))
+    sorted_(is.sorted_), s_(reinterpret_cast<storage_t*>(is.s_))
   {
 
     static_assert(std::is_convertible<T,S>::value,
@@ -480,7 +481,8 @@ public:
     bool STORAGE2 = STORAGE,
     bool OWNED2 = OWNED,
     bool SORTED2 = SORTED,
-    class F2 = F
+    class F2 = F,
+    template<typename, typename...> typename STORAGE_TYPE2 = STORAGE_TYPE
   >
   auto&
   cast()
@@ -488,7 +490,7 @@ public:
     static_assert(std::is_convertible<S,T>::value,
                   "invalid index space cast");
 
-    return *reinterpret_cast<index_space<S,STORAGE2,OWNED2,SORTED2,F2>*>(this);
+    return *reinterpret_cast<index_space<S,STORAGE2,OWNED2,SORTED2,F2,STORAGE_TYPE2>*>(this);
   }
 
   template<
@@ -496,7 +498,8 @@ public:
     bool STORAGE2 = STORAGE,
     bool OWNED2 = OWNED,
     bool SORTED2 = SORTED,
-    class F2 = F
+    class F2 = F,
+    template<typename, typename...> typename STORAGE_TYPE2 = STORAGE_TYPE
   >
   auto&
   cast() const
@@ -504,7 +507,7 @@ public:
     static_assert(std::is_convertible<S,T>::value,
                   "invalid index space cast");
 
-    return *reinterpret_cast<const index_space<S,STORAGE2,OWNED2,SORTED2,F2>*>(this);
+    return *reinterpret_cast<const index_space<S,STORAGE2,OWNED2,SORTED2,F2, STORAGE_TYPE2>*>(this);
   }
 
   auto
@@ -716,14 +719,16 @@ public:
     bool STORAGE2,
     bool OWNED2,
     bool SORTED2,
-    class F2
+    class F2,
+    template<typename, typename...> typename STORAGE_TYPE2
   >
   void
   set_master(
-    const index_space<T, STORAGE2, OWNED2, SORTED2, F2>& master
+    const index_space<T, STORAGE2, OWNED2, SORTED2, F2, STORAGE_TYPE2>& master
   )
   {
-    set_master(const_cast<index_space<T, STORAGE2, OWNED2, SORTED2, F2>&>(master));
+    set_master(const_cast<index_space<T, STORAGE2, OWNED2, SORTED2, F2,
+      STORAGE_TYPE2>&>(master));
   }
 
   /*!
@@ -733,14 +738,15 @@ public:
     bool STORAGE2,
     bool OWNED2,
     bool SORTED2,
-    class F2
+    class F2,
+    template<typename, typename...> typename STORAGE_TYPE2
   >
   void
   set_master(
-    index_space<T, STORAGE2, OWNED2, SORTED2, F2>& master
+    index_space<T, STORAGE2, OWNED2, SORTED2, F2, STORAGE_TYPE2>& master
   )
   {
-    s_ = reinterpret_cast<item_vector_t*>(master.s_);
+    s_ = reinterpret_cast<storage_t*>(master.s_);
   }
 
   std::vector<const T>
@@ -1263,7 +1269,7 @@ public:
   }
   
 private:
-  template<class, bool, bool, bool, class, class> 
+  template<class, bool, bool, bool, class, template<class, class...> class> 
   friend class index_space;
 
   friend class connectivity_t;
@@ -1273,7 +1279,7 @@ private:
   size_t end_;
   bool owned_;
   bool sorted_;
-  item_vector_t* s_;
+  storage_t* s_;
 
   /*!
     Private methods for efficiently populating an index space.

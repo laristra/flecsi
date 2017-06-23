@@ -28,6 +28,8 @@
 namespace flecsi {
 namespace topology {
 
+class mesh_entity_base_;
+
 ///
 /// \class serial_data_handle_policy_t data_handle_policy.h
 /// \brief serial_data_handle_policy_t provides...
@@ -36,10 +38,56 @@ namespace topology {
 template <size_t ND, size_t NM>
 struct serial_topology_storage_policy_t
 {
+  template<typename T>
+  class entity_storage_t{
+  public:
+    entity_storage_t(
+      mesh_entity_base_* buf,
+      size_t size
+    )
+    : buf_(buf),
+    size_(size){}
+
+    T
+    operator[](size_t index)
+    {
+      return buf_ + index;
+    }
+
+    const T
+    operator[](size_t index)
+    const
+    {
+      return buf_ + index;
+    }
+
+    T
+    begin()
+    {
+      return buf_;
+    }
+
+    T
+    end()
+    {
+      return buf_ + size_;
+    }
+
+    template<
+      typename ... Args
+    >
+    void insert(Args && ... args){}
+
+  private:
+    T buf_;
+    size_t size_;  
+  };
+
   using id_t = utils::id_t;
 
   using index_spaces_t = 
-    std::array<index_space<mesh_entity_base_*, true, true, true>, ND + 1>;
+    std::array<index_space<mesh_entity_base_*, true, true, true,
+    void/*, entity_storage_t*/>, ND + 1>;
 
   // array of array of domain_connectivity
   std::array<std::array<domain_connectivity<ND>, NM>, NM> topology;
