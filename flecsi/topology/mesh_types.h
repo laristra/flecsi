@@ -45,11 +45,14 @@ struct typeify {
   static constexpr T value = M;
 };
 
-template <size_t M>
+template<size_t M>
 using dimension_ = typeify<size_t, M>;
 
-template <size_t M>
+template<size_t M>
 using domain_ = typeify<size_t, M>;
+
+template<size_t M>
+using index_space_ = typeify<size_t, M>;
 
 /*----------------------------------------------------------------------------*
  * Simple types

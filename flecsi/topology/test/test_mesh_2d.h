@@ -6,10 +6,10 @@
 #ifndef flecsi_execution_test_mesh_h
 #define flecsi_execution_test_mesh_h
 
-///
-/// \file
-/// \date Initial file creation: May 10, 2017
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: May 10, 2017
+//----------------------------------------------------------------------------//
 
 #include "flecsi/topology/mesh_topology.h"
 
@@ -78,6 +78,13 @@ public:
   static constexpr size_t num_dimensions = 2;
 
   static constexpr size_t num_domains = 1;
+
+#if 0
+  using entity_types = std::tuple<
+    std::tuple<index_space_<0>, domain_<0>, Vertex>,
+    std::tuple<index_space_<1>, domain_<0>, Edge>,
+    std::tuple<index_space_<2>, domain_<0>, Cell>>;
+#endif
 
   using entity_types = std::tuple<
     std::tuple<domain_<0>, Vertex>,

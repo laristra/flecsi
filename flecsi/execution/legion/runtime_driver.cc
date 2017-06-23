@@ -80,11 +80,11 @@ runtime_driver(
   // Register user data, invokes callbacks to add field info into context
   data::storage_t::instance().register_all();
 
-  auto & data_client_registry =
-    flecsi::data::storage_t::instance().data_client_registry(); 
+  auto & client_registry =
+    flecsi::data::storage_t::instance().client_registry(); 
 
   // FIXME documentation required
-  for(auto & c: data_client_registry) {
+  for(auto & c: client_registry) {
     for(auto & d: c.second) {
       d.second.second(d.second.first);
     } // for
