@@ -18,8 +18,10 @@ env:
 #
 #    - DISTRO=fedora MINIMAL=ON RUNTIME=serial
     - DISTRO=fedora RUNTIME=legion    DOCKERHUB=true
+    - DISTRO=fedora RUNTIME=legion    IGNORE_NOCI=true
     - DISTRO=fedora RUNTIME=legion    WERROR=yes
     - DISTRO=fedora_mpich RUNTIME=legion DOCKERHUB=true
+    - DISTRO=fedora_mpich RUNTIME=legion IGNORE_NOCI=true
     - DISTRO=fedora_mpich RUNTIME=legion WERROR=yes
 #    - DISTRO=fedora RUNTIME=serial        DOCKERHUB=true
 #    - DISTRO=fedora RUNTIME=serial        WERROR=yes
@@ -56,6 +58,7 @@ script:
                 --build-arg SONARQUBE=${SONARQUBE} --build-arg SONARQUBE_TOKEN=${SONARQUBE_TOKEN}
                 --build-arg SONARQUBE_GITHUB_TOKEN=${SONARQUBE_GITHUB_TOKEN}
                 --build-arg CI=${CI} --build-arg TRAVIS=${TRAVIS} --build-arg TRAVIS_OS_NAME=${DISTRO}
+                --build-arg IGNORE_NOCI=${IGNORE_NOCI}
                 --build-arg TRAVIS_BRANCH=${TRAVIS_BRANCH} --build-arg TRAVIS_JOB_NUMBER=${TRAVIS_JOB_NUMBER}
                 --build-arg TRAVIS_PULL_REQUEST=${TRAVIS_PULL_REQUEST} --build-arg TRAVIS_JOB_ID=${TRAVIS_JOB_ID}
                 --build-arg TRAVIS_TAG=${TRAVIS_TAG} --build-arg TRAVIS_REPO_SLUG=${TRAVIS_REPO_SLUG}

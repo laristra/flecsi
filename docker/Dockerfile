@@ -22,6 +22,7 @@ ARG TRAVIS_TAG
 ARG TRAVIS_REPO_SLUG
 ARG TRAVIS_COMMIT
 ARG TRAVIS_OS_NAME
+ARG IGNORE_NOCI
 
 RUN rm -rf /home/flecsi/.ccache
 COPY flecsi /home/flecsi/flecsi
