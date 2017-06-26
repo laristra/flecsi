@@ -13,6 +13,7 @@ set(flecsi_PUBLIC_HEADERS
     flecsi_runtime_data_handle_policy.h
     flecsi_runtime_data_policy.h
     flecsi_runtime_execution_policy.h
+    flecsi_runtime_storage_policy.h
     flecsi_runtime_topology_policy.h
 )
 
