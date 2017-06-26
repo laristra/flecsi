@@ -52,10 +52,12 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
   set(data_HEADERS
     ${data_HEADERS}
+    serial/data_client_handle_policy.h
     serial/data_handle_policy.h
     serial/dense.h
     serial/global.h
     serial/meta_data.h
+    serial/registration_wrapper.h
     serial/scoped.h
     serial/sparse.h
     serial/storage_policy.h

@@ -21,6 +21,7 @@ set(topology_HEADERS
   closure_utils.h
   index_space.h
   mesh_definition.h
+  mesh_storage.h
   mesh_topology.h
   mesh_types.h
   mesh_utils.h
@@ -38,6 +39,10 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
   set(UNIT_POLICY SERIAL)
   set(RUNTIME_DRIVER ../execution/serial/runtime_driver.cc)
+  set(topology_HEADERS
+    ${topology_HEADERS}
+    serial/storage_policy.h
+    )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
