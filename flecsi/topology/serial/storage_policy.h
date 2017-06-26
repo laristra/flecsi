@@ -69,6 +69,13 @@ struct serial_topology_storage_policy_t
     is.push_back(ent);
   }
 
+  template <class T, class... S>
+  T * make(S &&... args)
+  {
+    T * entity = new T(std::forward<S>(args)...);
+    return entity;
+  } // make
+
 }; // class serial_topology_storage_policy_t
 
 } // namespace topology

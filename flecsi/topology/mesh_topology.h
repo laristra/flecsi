@@ -229,6 +229,9 @@ public mesh_topology_base_t<
 
 public:
 
+  using base_t = 
+    mesh_topology_base_t<mesh_storage_t<MT::num_dimensions, MT::num_domains>>;
+
   using id_t = utils::id_t;
   
   // used to find the entity type of topological dimension D and domain M
@@ -250,7 +253,8 @@ public:
 
   //! Constructor
   mesh_topology_t()
-  : ms_(new mesh_storage_t<MT::num_dimensions, MT::num_domains>)
+  : ms_(new mesh_storage_t<MT::num_dimensions, MT::num_domains>),
+    base_t(ms_)
   {
     for (size_t from_domain = 0; from_domain < MT::num_domains; ++from_domain) {
       for (size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain) {
@@ -285,7 +289,8 @@ public:
   mesh_topology_t(
     mesh_storage_t<MT::num_dimensions, MT::num_domains>* storage
   )
-  : ms_(storage){}
+  : ms_(storage),
+    base_t(ms_){}
 
   // The mesh retains ownership of the entities and deletes them
   // upon mesh destruction

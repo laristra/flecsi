@@ -774,7 +774,8 @@ public:
   using id_t = utils::id_t;
 
   // Default constructor
-  mesh_topology_base_t() = default;
+  mesh_topology_base_t(STORAGE_TYPE* ms)
+  : ms_(ms){}
 
   // Don't allow the mesh to be copied or copy constructed
   mesh_topology_base_t(const mesh_topology_base_t &) = delete;
@@ -835,14 +836,16 @@ public:
   template <class T, class... S>
   T * make(S &&... args)
   {
-    T * entity = new T(std::forward<S>(args)...);
-    return entity;
+    return ms_->make<T>(std::forward<S>(args)...);
   } // make
 
   virtual void append_to_index_space_(size_t domain,
     size_t dimension,
     std::vector<mesh_entity_base_*>& ents,
     std::vector<id_t>& ids) = 0;
+
+private:
+  STORAGE_TYPE* ms_;
 
 }; // mesh_topology_base_t
 
