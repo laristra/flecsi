@@ -89,6 +89,10 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(execution_HEADERS
     ${execution_HEADERS}
+    mpi/context_policy.h
+    mpi/execution_policy.h
+    mpi/runtime_driver.h
+    mpi/task_wrapper.h
   )
 
   set(execution_SOURCES
