@@ -84,6 +84,7 @@ using index_vector_t = std::vector<size_t>;
  * class mesh_entity_base_t
  *----------------------------------------------------------------------------*/
 
+template<class>
 class mesh_topology_base_t;
 
 /*!
@@ -765,6 +766,7 @@ private:
     on type parameterization, e.g: entity types, domains, etc.
  */
 
+template<class STORAGE_TYPE>
 class mesh_topology_base_t : public data::data_client_t
 {
 public:
@@ -847,8 +849,14 @@ public:
 template <class MT, size_t D, size_t M>
 using entity_type_ = typename find_entity_<MT, D, M>::type;
 
-template<class MT, size_t NM, size_t M, size_t D>
-void unserialize_dimension_(mesh_topology_base_t& mesh,
+template<
+  class ST,
+  class MT,
+  size_t NM,
+  size_t M,
+  size_t D
+>
+void unserialize_dimension_(mesh_topology_base_t<ST>& mesh,
                             char* buf,
                             uint64_t& pos){
   uint64_t num_entities;
@@ -877,45 +885,69 @@ void unserialize_dimension_(mesh_topology_base_t& mesh,
   mesh.append_to_index_space_(M, D, ents, ids);
 }
 
-template<class MT, size_t NM, size_t ND, size_t M, size_t D>
+template<
+  class ST,
+  class MT,
+  size_t NM,
+  size_t ND,
+  size_t M,
+  size_t D
+>
 struct unserialize_dimensions_{
 
-  static void unserialize(mesh_topology_base_t& mesh,
+  static void unserialize(mesh_topology_base_t<ST>& mesh,
                           char* buf,
                           uint64_t& pos){
-    unserialize_dimension_<MT, NM, M, D>(mesh, buf, pos);
-    unserialize_dimensions_<MT, NM, ND, M, D + 1>::unserialize(mesh, buf, pos);
+    unserialize_dimension_<ST, MT, NM, M, D>(mesh, buf, pos);
+    unserialize_dimensions_<ST, MT, NM, ND, M, D + 1>::unserialize(mesh, buf, pos);
   }
 
 };
 
-template<class MT, size_t NM, size_t ND, size_t M>
-struct unserialize_dimensions_<MT, NM, ND, M, ND>{
+template<
+  class ST,
+  class MT,
+  size_t NM,
+  size_t ND,
+  size_t M
+>
+struct unserialize_dimensions_<ST, MT, NM, ND, M, ND>{
 
-  static void unserialize(mesh_topology_base_t& mesh,
+  static void unserialize(mesh_topology_base_t<ST>& mesh,
                           char* buf,
                           uint64_t& pos){
-    unserialize_dimension_<MT, NM, M, ND>(mesh, buf, pos);
+    unserialize_dimension_<ST, MT, NM, M, ND>(mesh, buf, pos);
   }
 
 };
 
-template<class MT, size_t NM, size_t ND, size_t M>
+template<
+  class ST,
+  class MT,
+  size_t NM,
+  size_t ND,
+  size_t M
+>
 struct unserialize_domains_{
 
-  static void unserialize(mesh_topology_base_t& mesh,
+  static void unserialize(mesh_topology_base_t<ST>& mesh,
                           char* buf,
                           uint64_t& pos){
-    unserialize_dimensions_<MT, NM, ND, M, 0>::unserialize(mesh, buf, pos);
-    unserialize_domains_<MT, NM, ND, M + 1>::unserialize(mesh, buf, pos);
+    unserialize_dimensions_<ST, MT, NM, ND, M, 0>::unserialize(mesh, buf, pos);
+    unserialize_domains_<ST, MT, NM, ND, M + 1>::unserialize(mesh, buf, pos);
   }
 
 };
 
-template<class MT, size_t NM, size_t ND>
-struct unserialize_domains_<MT, NM, ND, NM>{
+template<
+  class ST,
+  class MT,
+  size_t NM,
+  size_t ND
+>
+struct unserialize_domains_<ST, MT, NM, ND, NM>{
 
-  static void unserialize(mesh_topology_base_t& mesh,
+  static void unserialize(mesh_topology_base_t<ST>& mesh,
                           char* buf,
                           uint64_t& pos){
     return;

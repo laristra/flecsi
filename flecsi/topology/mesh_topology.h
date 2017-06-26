@@ -93,12 +93,13 @@ public:
 
   template<
     size_t M,
-    size_t D
+    size_t D,
+    class ST
   >
   static
   mesh_entity_base_t<N> *
   create_entity(
-    mesh_topology_base_t * mesh,
+    mesh_topology_base_t<ST> * mesh,
     size_t num_vertices
  )
   {
@@ -119,7 +120,10 @@ public:
 
   mesh_entity() {}
 
-  mesh_entity(mesh_topology_base_t &) {}
+  template<
+    class ST
+  >
+  mesh_entity(mesh_topology_base_t<ST> &) {}
 
   std::vector<size_t>
   create_entities(
@@ -173,7 +177,10 @@ FLECSI_MEMBER_CHECKER(create_entity);
 template<
   class MT
 >
-class mesh_topology_t : public mesh_topology_base_t
+class mesh_topology_t :
+public mesh_topology_base_t<
+  mesh_storage_t<MT::num_dimensions, MT::num_domains>
+>
 {
   // static verification of mesh policy
 
@@ -1018,8 +1025,9 @@ public:
     pos += sizeof(num_dimensions);
     assert(num_dimensions == MT::num_dimensions && "dimension size mismatch");
 
-    unserialize_domains_<MT, MT::num_domains, MT::num_dimensions, 0>::
-      unserialize(*this, buf, pos);
+    unserialize_domains_<mesh_storage_t<MT::num_dimensions, MT::num_domains>,
+      MT, MT::num_domains,
+      MT::num_dimensions, 0>::unserialize(*this, buf, pos);
 
     for(size_t from_domain = 0; from_domain < MT::num_domains; ++from_domain){
       for(size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain){

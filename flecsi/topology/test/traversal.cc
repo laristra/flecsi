@@ -14,18 +14,22 @@ public:
   template<size_t M>
   uint64_t precedence() const { return 0; }
   Vertex() = default;
-  Vertex(mesh_topology_base_t &) {}
+  
+  template<typename ST>
+  Vertex(mesh_topology_base_t<ST> &) {}
 
 };
 
 class Edge : public mesh_entity_t<1, 1>{
 public:
-  Edge(mesh_topology_base_t &) {}
+  template<typename ST>
+  Edge(mesh_topology_base_t<ST> &) {}
 };
 
 class Face : public mesh_entity_t<1, 1>{
 public:
-  Face(mesh_topology_base_t &) {}
+  template<typename ST>
+  Face(mesh_topology_base_t<ST> &) {}
 
 };
 
@@ -34,8 +38,7 @@ public:
 
   using id_t = flecsi::utils::id_t;
 
-  Cell(mesh_topology_base_t& mesh)
-  : mesh_(mesh){}
+  Cell(){}
 
   void set_precedence(size_t dim, uint64_t precedence) {}
 
@@ -60,8 +63,6 @@ public:
 
   void traverse();
 
-private:
-  mesh_topology_base_t& mesh_;
 };
 
 class TestMesh2dType{
@@ -85,14 +86,14 @@ public:
 
   using bindings = std::tuple<>;
 
-  template<size_t M, size_t D>
+  template<size_t M, size_t D, typename ST>
   static mesh_entity_base_t<num_domains>*
-  create_entity(mesh_topology_base_t* mesh, size_t num_vertices){
+  create_entity(mesh_topology_base_t<ST>* mesh, size_t num_vertices){
     switch(M){
       case 0:{
         switch(D){
           case 1:
-            return mesh->make<Edge>(*mesh);
+            return mesh->template make<Edge>(*mesh);
           default:
             assert(false && "invalid topological dimension");
         }
@@ -105,14 +106,6 @@ public:
 };
 
 using TestMesh = mesh_topology_t<TestMesh2dType>;
-
-void Cell::traverse(){
-  auto& mesh = static_cast<TestMesh&>(mesh_);
-
-  for(auto vertex : mesh.entities<0, 0>(this)) {
-    cout << "------- traverse vertex id: " << vertex.id() << endl;
-  }
-}
 
 TEST(mesh_topology, traversal) {
 
@@ -136,7 +129,7 @@ TEST(mesh_topology, traversal) {
   size_t width1 = width + 1;
   for(size_t j = 0; j < height; ++j){
     for(size_t i = 0; i < width; ++i){
-      auto c = mesh->make<Cell>(*mesh);
+      auto c = mesh->template make<Cell>();
 
       mesh->add_entity<2, 0>(c);
 
@@ -152,13 +145,6 @@ TEST(mesh_topology, traversal) {
   }
 
   mesh->init<0>();
-
-/*
-  for(auto cell : mesh->entities<2>()) {
-    cell->traverse();
-  }
-*/
-
   //mesh->dump();
 
   CINCH_CAPTURE() << "------------- forall cells, vertices" << endl;
