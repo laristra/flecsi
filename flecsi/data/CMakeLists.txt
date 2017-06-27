@@ -25,6 +25,7 @@ set(data_HEADERS
   data_client.h
   data_constants.h
   data.h
+  data_client_handle.h
   data_handle.h
   default_user_meta_data.h
   storage.h
@@ -68,6 +69,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(data_HEADERS
     ${data_HEADERS}
+    legion/data_client_handle_policy.h
     legion/data_handle_policy.h
     legion/dense.h
     legion/dpd.h
