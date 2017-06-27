@@ -120,7 +120,6 @@ TEST(mesh_topology, traversal) {
   for(size_t j = 0; j < height + 1; ++j){
     for(size_t i = 0; i < width + 1; ++i){
       auto v = mesh->make<Vertex>();
-      mesh->add_entity<0,0>(v);
       vs.push_back(v); 
     }
   }
@@ -130,8 +129,6 @@ TEST(mesh_topology, traversal) {
   for(size_t j = 0; j < height; ++j){
     for(size_t i = 0; i < width; ++i){
       auto c = mesh->template make<Cell>();
-
-      mesh->add_entity<2, 0>(c);
 
       mesh->init_cell<0>(c,
                          {vs[i + j * width1],

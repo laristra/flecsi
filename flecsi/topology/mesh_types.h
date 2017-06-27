@@ -774,8 +774,7 @@ public:
   using id_t = utils::id_t;
 
   // Default constructor
-  mesh_topology_base_t(STORAGE_TYPE* ms)
-  : ms_(ms){}
+  mesh_topology_base_t() = default;
 
   // Don't allow the mesh to be copied or copy constructed
   mesh_topology_base_t(const mesh_topology_base_t &) = delete;
@@ -793,6 +792,9 @@ public:
     return *this;
   };
 
+  void set_storage(STORAGE_TYPE* ms){
+    ms_ = ms;
+  }
 
   /*!
     Return the number of entities in for a specific domain and topology dim.

@@ -253,9 +253,10 @@ public:
 
   //! Constructor
   mesh_topology_t()
-  : ms_(new mesh_storage_t<MT::num_dimensions, MT::num_domains>),
-    base_t(ms_)
+  : ms_(new mesh_storage_t<MT::num_dimensions, MT::num_domains>)
   {
+    base_t::set_storage(ms_);
+
     for (size_t from_domain = 0; from_domain < MT::num_domains; ++from_domain) {
       for (size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain) {
         ms_->topology[from_domain][to_domain].init_(from_domain, to_domain);
@@ -289,8 +290,9 @@ public:
   mesh_topology_t(
     mesh_storage_t<MT::num_dimensions, MT::num_domains>* storage
   )
-  : ms_(storage),
-    base_t(ms_){}
+  : ms_(storage){
+    base_t::set_storage(ms_);
+  }
 
   // The mesh retains ownership of the entities and deletes them
   // upon mesh destruction
@@ -1285,13 +1287,8 @@ private:
           max_cell_entity_conns = 
             std::max(max_cell_entity_conns, conns.size());
 
-          id_t global_id = id_t::make<Domain>(DimensionToBuild, entity_id);
-          
           auto ent =
             MT::template create_entity<Domain, DimensionToBuild>(this, m);
-          ent->template set_global_id<Domain>(global_id);
-          
-          is.push_back(static_cast<entity_type*>(ent));
 
           // A new entity was added, so we advance the id counter.
           ++entity_id;
@@ -1756,12 +1753,7 @@ private:
           }
         }
 
-        id_t global_id = id_t::make<TM>(TD, entity_id);
-        
         auto ent = MT::template create_entity<TM, TD>(this, num_vertices);
-        ent->template set_global_id<TM>(global_id);
-        
-        is.push_back(static_cast<to_entity_type*>(ent));
 
         ++entity_id;
 

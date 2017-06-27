@@ -13,6 +13,7 @@
 #include <cassert>
 #include <iostream>
 #include <vector>
+#include <np.h>
 
 #include "flecsi/data/data_client.h"
 #include "flecsi/topology/mesh_utils.h"
@@ -53,25 +54,6 @@ struct serial_topology_storage_policy_t
 
   std::array<index_spaces_t, NM> index_spaces;
 
-  template<size_t D, size_t M, typename ET>
-  void
-  add_entity(
-    ET* ent,
-    size_t partition_id = 0
-  )
-  {
-    using dtype = domain_entity<M, ET>;
-
-    auto & is = index_spaces[M][D].template cast<dtype>();
-
-    id_t global_id = id_t::make<D, M>(is.size(), partition_id);
-
-    auto typed_ent = static_cast<mesh_entity_base_t<NM>*>(ent);
-
-    typed_ent->template set_global_id<M>(global_id);
-    is.push_back(ent);
-  }
-
   template<size_t D, size_t N>
   size_t
   entity_dimension(mesh_entity_t<D, N>*)
@@ -82,10 +64,22 @@ struct serial_topology_storage_policy_t
   template <class T, size_t M = 0, class... S>
   T * make(S &&... args)
   {
-    T* entity;
-    size_t dim = entity_dimension(entity);
-    entity = new T(std::forward<S>(args)...);
-    return entity;
+    T* ent;
+    size_t dim = entity_dimension(ent);
+    ent = new T(std::forward<S>(args)...);
+
+    using dtype = domain_entity<M, T>;
+
+    auto & is = index_spaces[M][dim].template cast<dtype>();
+
+    id_t global_id = id_t::make<M>(dim, is.size());
+
+    auto typed_ent = static_cast<mesh_entity_base_t<NM>*>(ent);
+
+    typed_ent->template set_global_id<M>(global_id);
+    is.push_back(ent);
+
+    return ent;
   } // make
 
 }; // class serial_topology_storage_policy_t
