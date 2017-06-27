@@ -53,9 +53,6 @@ struct legion_field_registration_wrapper__
     field_id_t fid
   )
   {
-    clog_tag_guard(registration);
-    clog(info) << "In register_callback" << std::endl;
-    
     execution::context_t::field_info_t fi;
 
     fi.data_client_hash = typeid(DATA_CLIENT_TYPE).hash_code();
@@ -102,6 +99,9 @@ struct legion_client_registration_wrapper__<
 {
   using field_id_t = Legion::FieldID;
 
+  using CLIENT_TYPE =
+    typename flecsi::topology::mesh_topology_t<POLICY_TYPE>;
+
   //--------------------------------------------------------------------------//
   //!
   //--------------------------------------------------------------------------//
@@ -116,8 +116,6 @@ struct legion_client_registration_wrapper__<
     void
     handle_type()
     {
-      using CLIENT_TYPE =
-        typename flecsi::topology::mesh_topology_t<POLICY_TYPE>;
       using INDEX_TYPE =
         typename std::tuple_element<0, TUPLE_ENTRY_TYPE>::type;
       using DOMAIN_TYPE =
@@ -125,12 +123,10 @@ struct legion_client_registration_wrapper__<
       using ENTITY_TYPE =
         typename std::tuple_element<2, TUPLE_ENTRY_TYPE>::type;
 
-      constexpr size_t INDEX_SPACE = INDEX_TYPE::value;     
-
       constexpr size_t entity_hash = utils::hash::client_entity_hash<
         NAMESPACE_HASH,
         NAME_HASH,
-        INDEX_SPACE,
+        INDEX_TYPE::value,
         DOMAIN_TYPE::value,
         ENTITY_TYPE::dimension
         >
@@ -142,13 +138,13 @@ struct legion_client_registration_wrapper__<
         ENTITY_TYPE,
         entity_hash,
         0,
-        INDEX_SPACE,
+        INDEX_TYPE::value,
         1
       >;
 
       const size_t client_key = typeid(CLIENT_TYPE).hash_code();
       const size_t key =
-        (utils::const_string_t("internal").hash() << 8) | INDEX_SPACE;
+        (utils::const_string_t("internal").hash() << 8) | INDEX_TYPE::value;
 
       storage_t::instance().register_field(client_key,
         key, wrapper_t::register_callback);
@@ -166,8 +162,6 @@ struct legion_client_registration_wrapper__<
     void
     handle_type()
     {
-      using CLIENT_TYPE =
-        typename flecsi::topology::mesh_topology_t<POLICY_TYPE>;
       using INDEX_TYPE =
         typename std::tuple_element<0, TUPLE_ENTRY_TYPE>::type;
       using DOMAIN_TYPE =
@@ -177,13 +171,11 @@ struct legion_client_registration_wrapper__<
       using TO_ENTITY_TYPE =
         typename std::tuple_element<3, TUPLE_ENTRY_TYPE>::type;
 
-      constexpr size_t INDEX_SPACE = INDEX_TYPE::value;     
-
       constexpr size_t adjacency_hash =
         utils::hash::client_adjacency_hash<
           NAMESPACE_HASH,
           NAME_HASH,
-          INDEX_SPACE,
+          INDEX_TYPE::value,
           DOMAIN_TYPE::value, // from and to domains are the same
           DOMAIN_TYPE::value, // for connectivity information
           FROM_ENTITY_TYPE::dimension,
@@ -197,13 +189,13 @@ struct legion_client_registration_wrapper__<
         size_t,
         adjacency_hash,
         0,
-        INDEX_SPACE,
+        INDEX_TYPE::value,
         1
       >;
 
       const size_t client_key = typeid(CLIENT_TYPE).hash_code();
       const size_t key =
-        (utils::const_string_t("internal").hash() << 8) | INDEX_SPACE;
+        (utils::const_string_t("internal").hash() << 8) | INDEX_TYPE::value;
 
       storage_t::instance().register_field(client_key,
         key, wrapper_t::register_callback);
@@ -221,8 +213,6 @@ struct legion_client_registration_wrapper__<
     void
     handle_type()
     {
-      using CLIENT_TYPE =
-        typename flecsi::topology::mesh_topology_t<POLICY_TYPE>;
       using INDEX_TYPE =
         typename std::tuple_element<0, TUPLE_ENTRY_TYPE>::type;
       using FROM_DOMAIN_TYPE =
@@ -234,13 +224,11 @@ struct legion_client_registration_wrapper__<
       using TO_ENTITY_TYPE =
         typename std::tuple_element<4, TUPLE_ENTRY_TYPE>::type;
 
-      constexpr size_t INDEX_SPACE = INDEX_TYPE::value;     
-
       constexpr size_t adjacency_hash =
         utils::hash::client_adjacency_hash<
           NAMESPACE_HASH,
           NAME_HASH,
-          INDEX_SPACE,
+          INDEX_TYPE::value,
           FROM_DOMAIN_TYPE::value,
           TO_DOMAIN_TYPE::value,
           FROM_ENTITY_TYPE::dimension,
@@ -254,13 +242,13 @@ struct legion_client_registration_wrapper__<
         size_t,
         adjacency_hash,
         0,
-        INDEX_SPACE,
+        INDEX_TYPE::value,
         1
       >;
 
       const size_t client_key = typeid(CLIENT_TYPE).hash_code();
       const size_t key =
-        (utils::const_string_t("internal").hash() << 8) | INDEX_SPACE;
+        (utils::const_string_t("internal").hash() << 8) | INDEX_TYPE::value;
 
       storage_t::instance().register_field(client_key,
         key, wrapper_t::register_callback);
@@ -278,19 +266,23 @@ struct legion_client_registration_wrapper__<
     field_id_t fid
   )
   {
-    clog_tag_guard(registration);
-    clog(error) << "In client_register_callback" << std::endl;
-    // Do stuff
-
     using entity_types_t = typename POLICY_TYPE::entity_types;
-
-    entity_walker_t entity_walker;
-    entity_walker.template walk_types<entity_types_t>();
-
     using connectivities = typename POLICY_TYPE::connectivities;
+    using bindings = typename POLICY_TYPE::bindings;
 
-    connectivity_walker_t connectivity_walker;
-    connectivity_walker.template walk_types<connectivities>();
+    const size_t client_key = typeid(CLIENT_TYPE).hash_code();
+    auto const & field_registry = storage_t::instance().field_registry();
+
+    // Only register field attributes if this is the first time
+    // that we have seen this type.
+    if(field_registry.find(client_key) == field_registry.end()) {
+      entity_walker_t entity_walker;
+      entity_walker.template walk_types<entity_types_t>();
+
+      connectivity_walker_t connectivity_walker;
+      connectivity_walker.template walk_types<connectivities>();
+    } // if
+
   } // register_callback
 
 }; // class legion_client_registration_wrapper__

@@ -43,7 +43,9 @@ struct client_data__
   >
   static
   bool
-  register_data_client()
+  register_data_client(
+    std::string const & name
+  )
   {
     using wrapper_t = typename DATA_POLICY::template client_wrapper__<
       DATA_CLIENT_TYPE,
@@ -54,7 +56,7 @@ struct client_data__
     const size_t client_key = typeid(DATA_CLIENT_TYPE).hash_code();
     const size_t key = NAMESPACE_HASH ^ NAME_HASH;
 
-    return storage_t::instance().register_field(client_key, key,
+    return storage_t::instance().register_client(client_key, key,
       wrapper_t::register_callback);
   } // register_data_client
 

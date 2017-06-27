@@ -22,7 +22,8 @@ void driver(int argc, char ** argv) {
 
 using test_mesh_2d_t = flecsi::topology::test_mesh_2d_t;
 
-flecsi_register_data_client(test_mesh_2d_t, sovler, mesh);
+flecsi_register_data_client(test_mesh_2d_t, sovler, meshA);
+flecsi_register_data_client(test_mesh_2d_t, sovler, meshB);
 
 TEST(client_registration, sanity) {
 } // TEST

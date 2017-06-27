@@ -62,9 +62,10 @@ struct legion_storage_policy_t {
   )
   {
     if(field_registry_.find(client_key) != field_registry_.end()) {
-      clog_assert(field_registry_[client_key].find(key) ==
-        field_registry_[client_key].end(),
-        "field key already exists");
+      if(field_registry_[client_key].find(key) !=
+        field_registry_[client_key].end()) {
+        clog(warn) << "field key already exists" << std::endl;
+      } // if
     } // if
 
     field_registry_[client_key][key] =
@@ -72,18 +73,6 @@ struct legion_storage_policy_t {
 
     return true;
   } // register_field
-
-////////////////////////////////////////////////////////////////////////////////
-// FIXME: These probably need to be moved up a level
-  void
-  register_all()
-  {
-    for(auto & c: field_registry_) {
-      for(auto & d: c.second) {
-        d.second.second(d.second.first);
-      } // for
-    } // for
-  } // register_all
 
   auto const &
   field_registry()
