@@ -867,18 +867,31 @@ struct storage_type__<dense>
     auto& context = execution::context_t::instance();
 
     // get field_info for this data handle
+    // TODO: lookup rather than hardcoded 0
     auto field_info = context.registered_fields()[0];
 
     // get color_info for this field.
-    auto color_info = context.coloring_info(field_info.index_space);
+    // TODO: lookup rather than hardcoded 0
+    auto color_info = (context.coloring_info(field_info.index_space)).at(0);
 
     // get field_data
     auto &field_data = context.registered_field_data(field_info.fid);
 
     // populate data member of data_handle_t
-    static_cast<data_handle__<DATA_TYPE, 0, 0, 0>*>(&h)->exclusive_size = color_info[0].exclusive;
-    h.combined_data = h.exclusive_buf = h.exclusive_data = reinterpret_cast<DATA_TYPE *>(field_data.data());
-    h.combined_size = color_info[0].exclusive;
+    auto &hb = dynamic_cast<data_handle__<DATA_TYPE, 0, 0, 0>&>(h);
+    hb.exclusive_size = color_info.exclusive;
+    hb.combined_data = hb.exclusive_buf = hb.exclusive_data =
+      reinterpret_cast<DATA_TYPE *>(field_data.data());
+    hb.combined_size = color_info.exclusive;
+
+    hb.shared_size = color_info.shared;
+    hb.shared_data = hb.exclusive_data + hb.exclusive_size;
+    hb.combined_size += color_info.shared;
+
+    hb.ghost_size = color_info.ghost;
+    hb.ghost_data = hb.shared_data + hb.shared_size;
+    hb.combined_size += color_info.ghost;
+
     return h;
   }
 
