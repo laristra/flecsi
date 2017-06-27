@@ -21,6 +21,7 @@
 //----------------------------------------------------------------------------//
 
 #include <unordered_map>
+#include <map>
 #include <functional>
 #include <cinchlog.h>
 
@@ -29,6 +30,7 @@
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/execution/mpi/runtime_driver.h"
+#include "flecsi/coloring/coloring_types.h"
 
 #if !defined(ENABLE_MPI)
   #error ENABLE_MPI not defined! This file depends on MPI!
@@ -190,6 +192,22 @@ struct mpi_context_policy_t
     field_info_vec_.emplace_back(std::move(field_info));
   }
 
+  void register_field_data(field_info_t& field_info,
+                           std::unordered_map<size_t, coloring::coloring_info_t>& infos) {
+    clog(info) << "index space: " << field_info.index_space << std::endl;
+    auto info = infos[rank];
+    auto combined_size = 0;
+    clog(info) << "number of exclusive: " << info.exclusive << std::endl;
+    combined_size += info.exclusive ;
+
+    clog(info) << "number of shared: " << info.shared << std::endl;
+    combined_size += info.shared ;
+
+    clog(info) << "number of ghost: " << info.ghost << std::endl;
+    combined_size += info.ghost ;
+    // TODO: VERSIONS
+    field_data.insert({field_info.fid, std::vector<uint8_t>(combined_size * field_info.size)});
+  }
   //--------------------------------------------------------------------------//
   //! Return registered fields
   //--------------------------------------------------------------------------//
@@ -201,6 +219,11 @@ struct mpi_context_policy_t
     return field_info_vec_;
   }
 
+  std::vector<uint8_t> &
+  registered_field_data(field_id_t fid)
+  {
+    return field_data[fid];
+  }
 private:
 
   // Define the map type using the task_hash_t hash function.
@@ -230,6 +253,9 @@ private:
 
   std::vector<field_info_t> field_info_vec_;
 
+  std::map<field_id_t, std::vector<uint8_t>> field_data;
+
+  int rank;
 }; // class mpi_context_policy_t
 
 } // namespace execution 

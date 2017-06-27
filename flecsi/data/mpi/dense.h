@@ -93,16 +93,17 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
 	///
   /// Copy constructor.
 	///
-	dense_handle_t(
-    const dense_handle_t & a
-  )
-  :
-    label_(a.label_)
-  {}
+//	dense_handle_t(
+//    const dense_handle_t & a
+//  )
+//  :
+//    label_(a.label_)
+//  {}
 
   template<size_t EP2, size_t SP2, size_t GP2>
   dense_handle_t(const dense_handle_t<T, EP2, SP2, GP2> & h)
-    : label_(h.label_)
+    : base(reinterpret_cast<const base&>(h)),
+      label_(h.label_)
   {}
 
   //--------------------------------------------------------------------------//
@@ -863,7 +864,21 @@ struct storage_type__<dense>
   {
     handle_t<DATA_TYPE, 0, 0, 0> h;
 
+    auto& context = execution::context_t::instance();
 
+    // get field_info for this data handle
+    auto field_info = context.registered_fields()[0];
+
+    // get color_info for this field.
+    auto color_info = context.coloring_info(field_info.index_space);
+
+    // get field_data
+    auto &field_data = context.registered_field_data(field_info.fid);
+
+    // populate data member of data_handle_t
+    static_cast<data_handle__<DATA_TYPE, 0, 0, 0>*>(&h)->exclusive_size = color_info[0].exclusive;
+    h.combined_data = h.exclusive_buf = h.exclusive_data = reinterpret_cast<DATA_TYPE *>(field_data.data());
+    h.combined_size = color_info[0].exclusive;
     return h;
   }
 
