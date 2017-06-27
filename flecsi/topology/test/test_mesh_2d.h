@@ -87,17 +87,19 @@ public:
 #endif
 
   using entity_types = std::tuple<
-    std::tuple<domain_<0>, Vertex>,
-    std::tuple<domain_<0>, Edge>,
-    std::tuple<domain_<0>, Cell>>;
+    std::tuple<index_space_<0>, domain_<0>, Vertex>,
+    std::tuple<index_space_<1>, domain_<0>, Edge>,
+    std::tuple<index_space_<2>, domain_<0>, Cell>
+  >;
 
-  using connectivities =
-    std::tuple<std::tuple<domain_<0>, Vertex, Edge>,
-               std::tuple<domain_<0>, Vertex, Cell>,
-               std::tuple<domain_<0>, Edge, Vertex>,
-               std::tuple<domain_<0>, Edge, Cell>,
-               std::tuple<domain_<0>, Cell, Vertex>,
-               std::tuple<domain_<0>, Cell, Edge>>;
+  using connectivities = std::tuple<
+    std::tuple<index_space_<3>, domain_<0>, Vertex, Edge>,
+    std::tuple<index_space_<4>, domain_<0>, Vertex, Cell>,
+    std::tuple<index_space_<5>, domain_<0>, Edge, Vertex>,
+    std::tuple<index_space_<6>, domain_<0>, Edge, Cell>,
+    std::tuple<index_space_<7>, domain_<0>, Cell, Vertex>,
+    std::tuple<index_space_<8>, domain_<0>, Cell, Edge>
+  >;
 
   using bindings = std::tuple<>;
 
