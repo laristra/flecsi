@@ -53,21 +53,22 @@ struct find_entity__ {
   //!
   //--------------------------------------------------------------------------//
 
-  /*!
-    Find the position index of a type that matches the
-    given domain and dimension.
+  //--------------------------------------------------------------------------//
+  //! Find the position index of a type that matches the
+  //! given domain and dimension.
+  //!
+  //! @tparam I The current index in tuple.
+  //! @tparam T The tuple type.
+  //! @tparam D The dimension to match.
+  //! @tparam M The domain to match.
+  //--------------------------------------------------------------------------//
 
-    \tparam I The current index in tuple.
-    \tparam T The tuple type.
-    \tparam D The dimension to match.
-    \tparam M The domain to match.
-   */
   static constexpr size_t find()
   {
     // grab current types
     using E = typename std::tuple_element<I - 1, T>::type;
-    using D1 = typename std::tuple_element<0, E>::type;
-    using T1 = typename std::tuple_element<1, E>::type;
+    using D1 = typename std::tuple_element<1, E>::type;
+    using T1 = typename std::tuple_element<2, E>::type;
 
     // Check match for domain and dimension and return
     // index if matched or recurse if not matched.
@@ -75,7 +76,8 @@ struct find_entity__ {
         ? I
         : find_entity__<I - 1, T, D, M>::find();
   }
-};
+
+}; // find_entity__
 
 /*!
   \struct find_entity__ mesh_utils.h

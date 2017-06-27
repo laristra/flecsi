@@ -49,7 +49,7 @@ bit_range(
   size_t key
 )
 {
-  return(key & MASK) >> SHIFT;
+  return (key >> SHIFT) & MASK;
 } // bit_range
 
 //----------------------------------------------------------------------------//
@@ -67,15 +67,15 @@ template<
   size_t NAME
 >
 inline
-size_t
+constexpr size_t
 field_hash()
 {
   return NAMESPACE ^ NAME;
 } // field_hash__
 
 //----------------------------------------------------------------------------//
-//! Create a hash key suitable for registering client data with the low-level
-//! field registry.
+//! Create a hash key suitable for registering client entity types with
+//! the low-level field registry.
 //!
 //! @tparam NAMESPACE A namespace identifier.
 //! @tparam NAME      A name identifier.
@@ -94,65 +94,186 @@ template<
   size_t DIMENSION
 >
 inline
-size_t
-client_data_hash()
+constexpr size_t
+client_entity_hash()
 {
   return ((NAMESPACE ^ NAME) << 12) ^
-    (INDEX << 4) ^
-    (DOMAIN_ << 2) ^
+    (INDEX << 4) |
+    (DOMAIN_ << 2) |
     DIMENSION;
-} // client_data_hash
+} // client_entity_hash
 
 //----------------------------------------------------------------------------//
-//! Recover the index space from a key to client data.
+//! Recover the index space from a key to a client entity.
 //!
-//! @param key The client data key.
+//! @param key The client entity key.
 //!
 //! @ingroup utils
 //----------------------------------------------------------------------------//
 
 inline
-size_t
-client_data_index(
+constexpr size_t
+client_entity_index(
   size_t key
 )
 {
-  return bit_range<0xff0, 4>(key);
-} // client_data_index
+  return bit_range<0xff, 4>(key);
+} // client_entity_index
 
 //----------------------------------------------------------------------------//
-//! Recover the domain from a key to client data.
+//! Recover the domain from a key to a client entity.
 //!
-//! @param key The client data key.
+//! @param key The client entity key.
 //!
 //! @ingroup utils
 //----------------------------------------------------------------------------//
 
 inline
-size_t
-client_data_domain(
+constexpr size_t
+client_entity_domain(
   size_t key
 )
 {
-  return bit_range<0x0c, 2>(key);
-} // client_data_domain
+  return bit_range<0x03, 2>(key);
+} // client_entity_domain
 
 //----------------------------------------------------------------------------//
-//! Recover the dimension from a key to client data.
+//! Recover the dimension from a key to a client entity.
 //!
-//! @param key The client data key.
+//! @param key The client entity key.
 //!
 //! @ingroup utils
 //----------------------------------------------------------------------------//
 
 inline
-size_t
-client_data_dimension(
+constexpr size_t
+client_entity_dimension(
   size_t key
 )
 {
   return bit_range<0x03, 0>(key);
-} // client_data_dimension
+} // client_entity_dimension
+
+//----------------------------------------------------------------------------//
+//! Create a hash key suitable for registering client adjacency types with
+//! the low-level field registry.
+//!
+//! @tparam NAMESPACE      A namespace identifier.
+//! @tparam NAME           A name identifier.
+//! @tparam INDEX          The associated index space.
+//! @tparam FROM_DOMAIN    The from domain.
+//! @tparam TO_DOMAIN      The to domain.
+//! @tparam FROM_DIMENSION The topological from dimension.
+//! @tparam TO_DIMENSION   The topological to dimension.
+//!
+//! @ingroup utils
+//----------------------------------------------------------------------------//
+
+template<
+  size_t NAMESPACE,
+  size_t NAME,
+  size_t INDEX,
+  size_t FROM_DOMAIN,
+  size_t TO_DOMAIN,
+  size_t FROM_DIMENSION,
+  size_t TO_DIMENSION
+>
+inline
+constexpr size_t
+client_adjacency_hash()
+{
+  return ((NAMESPACE ^ NAME) << 16) ^
+    (INDEX << 8) |
+    (FROM_DOMAIN << 6) |
+    (TO_DOMAIN << 4) |
+    (FROM_DIMENSION << 2) |
+    TO_DIMENSION;
+} // client_adjacency_hash
+
+//----------------------------------------------------------------------------//
+//! Recover the index space from a key to a client entity.
+//!
+//! @param key The client entity key.
+//!
+//! @ingroup utils
+//----------------------------------------------------------------------------//
+
+inline
+constexpr size_t
+client_adjacency_index(
+  size_t key
+)
+{
+  return bit_range<0xff, 8>(key);
+} // client_adjacency_index
+
+//----------------------------------------------------------------------------//
+//! Recover the domain from a key to a client entity.
+//!
+//! @param key The client entity key.
+//!
+//! @ingroup utils
+//----------------------------------------------------------------------------//
+
+inline
+constexpr size_t
+client_adjacency_from_domain(
+  size_t key
+)
+{
+  return bit_range<0x03, 6>(key);
+} // client_adjacency_from_domain
+
+//----------------------------------------------------------------------------//
+//! Recover the to domain from a key to a client entity.
+//!
+//! @param key The client entity key.
+//!
+//! @ingroup utils
+//----------------------------------------------------------------------------//
+
+inline
+constexpr size_t
+client_adjacency_to_domain(
+  size_t key
+)
+{
+  return bit_range<0x03, 4>(key);
+} // client_adjacency_to_domain
+
+//----------------------------------------------------------------------------//
+//! Recover the dimension from a key to a client entity.
+//!
+//! @param key The client entity key.
+//!
+//! @ingroup utils
+//----------------------------------------------------------------------------//
+
+inline
+constexpr size_t
+client_adjacency_from_dimension(
+  size_t key
+)
+{
+  return bit_range<0x03, 2>(key);
+} // client_adjacency_from_dimension
+
+//----------------------------------------------------------------------------//
+//! Recover the dimension from a key to a client entity.
+//!
+//! @param key The client entity key.
+//!
+//! @ingroup utils
+//----------------------------------------------------------------------------//
+
+inline
+constexpr size_t
+client_adjacency_to_dimension(
+  size_t key
+)
+{
+  return bit_range<0x03, 0>(key);
+} // client_adjacency_to_dimension
 
 } // namespace hash
 

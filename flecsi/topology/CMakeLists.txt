@@ -26,6 +26,8 @@ set(topology_HEADERS
   mesh_types.h
   mesh_utils.h
   tree_topology.h
+  mesh_storage.h
+  entity_storage.h
 )
 
 #------------------------------------------------------------------------------#

@@ -37,7 +37,9 @@
     flecsi::data::client_data_t::register_data_client<                         \
       client_type,                                                             \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()>()
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()         \
+      >                                                                        \
+      ({ EXPAND_AND_STRINGIFY(name) })
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_register_field
