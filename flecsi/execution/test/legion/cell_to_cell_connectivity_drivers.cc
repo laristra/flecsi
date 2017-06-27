@@ -30,6 +30,9 @@
 #define EPS 1.0e-16
 #define L_INF_ERROR 210.0
 
+using namespace flecsi;
+using namespace topology;
+
 clog_register_tag(cell_to_cell_connectivity);
 
 template<typename T, size_t EP, size_t SP, size_t GP>
@@ -59,6 +62,96 @@ flecsi_register_field(client_type, name_space, T, double, dense,
     INDEX_ID, VERSIONS);
 flecsi_register_field(client_type, name_space, T_temp, double, dense,
     INDEX_ID, VERSIONS);
+
+class vertex : public mesh_entity_t<0, 1>{
+public:
+  template<size_t M2>
+  uint64_t precedence() const { return 0; }
+  vertex() = default;
+  
+  template<typename ST>
+  vertex(mesh_topology_base_t<ST> &) {}
+
+};
+
+class edge : public mesh_entity_t<1, 1>{
+public:
+  template<typename ST>
+  edge(mesh_topology_base_t<ST> &) {}
+};
+
+class face : public mesh_entity_t<1, 1>{
+public:
+  template<typename ST>
+  face(mesh_topology_base_t<ST> &) {}
+
+};
+
+class cell : public mesh_entity_t<2, 1>{
+public:
+
+  using id_t = utils::id_t;
+
+  cell(){}
+
+  void set_precedence(size_t dim, uint64_t precedence) {}
+
+  std::vector<size_t>
+  create_entities(id_t cell_id, size_t dim, domain_connectivity<2> & c, id_t * e){
+    id_t* v = c.get_entities(cell_id, 0);
+
+    e[0] = v[0];
+    e[1] = v[2];
+    
+    e[2] = v[1];
+    e[3] = v[3];
+    
+    e[4] = v[0];
+    e[5] = v[1];
+    
+    e[6] = v[2];
+    e[7] = v[3];
+
+    return {2, 2, 2, 2};
+  }
+
+};
+
+class mesh_types_t{
+public:
+  static constexpr size_t num_dimensions = 2;
+
+  static constexpr size_t num_domains = 1;
+
+  using entity_types = std::tuple<
+    std::pair<domain_<0>, vertex>,
+    std::pair<domain_<0>, edge>,
+    std::pair<domain_<0>, cell>>;
+
+  using connectivities = 
+    std::tuple<std::tuple<domain_<0>, cell, cell>>;
+
+  using bindings = std::tuple<>;
+
+  template<size_t M2, size_t D2, typename ST>
+  static mesh_entity_base_t<num_domains>*
+  create_entity(mesh_topology_base_t<ST>* mesh, size_t num_vertices){
+    switch(M){
+      case 0:{
+        switch(D2){
+          default:
+            assert(false && "invalid topological dimension");
+        }
+        break;
+      }
+      default:
+        assert(false && "invalid domain");
+    }
+  }
+};
+
+using mesh_t = mesh_topology_t<mesh_types_t>;
+
 
 namespace flecsi {
 namespace execution {
