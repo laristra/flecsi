@@ -92,6 +92,12 @@ public:
     size_ = size;
   }
 
+  T
+  buffer()
+  {
+    return buf_;
+  }
+
 private:
   T buf_;
   size_t size_;  

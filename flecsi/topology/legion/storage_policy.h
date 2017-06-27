@@ -152,18 +152,16 @@ struct legion_topology_storage_policy_t
   {    
     T* ent;
     size_t dim = entity_dimension(ent);
+    auto & is = index_spaces[M][dim].template cast<T>();
+    size_t entity_id = is.size();
 
-    using dtype = domain_entity<M, T>;
+    auto placement_ptr = static_cast<T*>(is.storage().buffer() + entity_id);
+    ent = new (placement_ptr) T(std::forward<S>(args)...);
 
-    auto & is = index_spaces[M][dim].template cast<dtype>();
-
-    ent = new T(std::forward<S>(args)...);
-
-    id_t global_id = id_t::make<M>(dim, is.size());
-
+    id_t global_id = id_t::make<M>(dim, entity_id);
     auto typed_ent = static_cast<mesh_entity_base_t<NM>*>(ent);
-
     typed_ent->template set_global_id<M>(global_id);
+
     is.push_back(ent);
 
     return ent;
