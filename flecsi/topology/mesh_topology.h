@@ -93,12 +93,13 @@ public:
 
   template<
     size_t M,
-    size_t D
+    size_t D,
+    class ST
   >
   static
   mesh_entity_base_t<N> *
   create_entity(
-    mesh_topology_base_t * mesh,
+    mesh_topology_base_t<ST> * mesh,
     size_t num_vertices
  )
   {
@@ -119,7 +120,10 @@ public:
 
   mesh_entity() {}
 
-  mesh_entity(mesh_topology_base_t &) {}
+  template<
+    class ST
+  >
+  mesh_entity(mesh_topology_base_t<ST> &) {}
 
   std::vector<size_t>
   create_entities(
@@ -173,7 +177,10 @@ FLECSI_MEMBER_CHECKER(create_entity);
 template<
   class MT
 >
-class mesh_topology_t : public mesh_topology_base_t
+class mesh_topology_t :
+public mesh_topology_base_t<
+  mesh_storage_t<MT::num_dimensions, MT::num_domains>
+>
 {
   // static verification of mesh policy
 
@@ -222,6 +229,9 @@ class mesh_topology_t : public mesh_topology_base_t
 
 public:
 
+  using base_t = 
+    mesh_topology_base_t<mesh_storage_t<MT::num_dimensions, MT::num_domains>>;
+
   using id_t = utils::id_t;
   
   // used to find the entity type of topological dimension D and domain M
@@ -245,6 +255,8 @@ public:
   mesh_topology_t()
   : ms_(new mesh_storage_t<MT::num_dimensions, MT::num_domains>)
   {
+    base_t::set_storage(ms_);
+
     for (size_t from_domain = 0; from_domain < MT::num_domains; ++from_domain) {
       for (size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain) {
         ms_->topology[from_domain][to_domain].init_(from_domain, to_domain);
@@ -278,7 +290,9 @@ public:
   mesh_topology_t(
     mesh_storage_t<MT::num_dimensions, MT::num_domains>* storage
   )
-  : ms_(storage){}
+  : ms_(storage){
+    base_t::set_storage(ms_);
+  }
 
   // The mesh retains ownership of the entities and deletes them
   // upon mesh destruction
@@ -295,6 +309,11 @@ public:
     }
 
     delete ms_;
+  }
+
+  mesh_storage_t<MT::num_dimensions, MT::num_domains>*
+  storage(){
+    return ms_;  
   }
 
   // Add and entity to a mesh domain and assign its id per domain
@@ -1013,8 +1032,9 @@ public:
     pos += sizeof(num_dimensions);
     assert(num_dimensions == MT::num_dimensions && "dimension size mismatch");
 
-    unserialize_domains_<MT, MT::num_domains, MT::num_dimensions, 0>::
-      unserialize(*this, buf, pos);
+    unserialize_domains_<mesh_storage_t<MT::num_dimensions, MT::num_domains>,
+      MT, MT::num_domains,
+      MT::num_dimensions, 0>::unserialize(*this, buf, pos);
 
     for(size_t from_domain = 0; from_domain < MT::num_domains; ++from_domain){
       for(size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain){
@@ -1267,13 +1287,8 @@ private:
           max_cell_entity_conns = 
             std::max(max_cell_entity_conns, conns.size());
 
-          id_t global_id = id_t::make<Domain>(DimensionToBuild, entity_id);
-          
           auto ent =
             MT::template create_entity<Domain, DimensionToBuild>(this, m);
-          ent->template set_global_id<Domain>(global_id);
-          
-          is.push_back(static_cast<entity_type*>(ent));
 
           // A new entity was added, so we advance the id counter.
           ++entity_id;
@@ -1738,12 +1753,7 @@ private:
           }
         }
 
-        id_t global_id = id_t::make<TM>(TD, entity_id);
-        
         auto ent = MT::template create_entity<TM, TD>(this, num_vertices);
-        ent->template set_global_id<TM>(global_id);
-        
-        is.push_back(static_cast<to_entity_type*>(ent));
 
         ++entity_id;
 

@@ -28,6 +28,11 @@
 namespace flecsi {
 namespace topology {
 
+class mesh_entity_base_;
+
+template<size_t, size_t>
+class mesh_entity_t;
+
 ///
 /// \class serial_data_handle_policy_t data_handle_policy.h
 /// \brief serial_data_handle_policy_t provides...
@@ -36,34 +41,45 @@ namespace topology {
 template <size_t ND, size_t NM>
 struct serial_topology_storage_policy_t
 {
+  
   using id_t = utils::id_t;
 
   using index_spaces_t = 
-    std::array<index_space<mesh_entity_base_*, true, true, true>, ND + 1>;
+    std::array<index_space<mesh_entity_base_*, true, true, true,
+    void/*, entity_storage_t*/>, ND + 1>;
 
   // array of array of domain_connectivity
   std::array<std::array<domain_connectivity<ND>, NM>, NM> topology;
 
   std::array<index_spaces_t, NM> index_spaces;
 
-  template<size_t D, size_t M, typename ET>
-  void
-  add_entity(
-    ET* ent,
-    size_t partition_id = 0
-  )
+  template<size_t D, size_t N>
+  size_t
+  entity_dimension(mesh_entity_t<D, N>*)
   {
-    using dtype = domain_entity<M, ET>;
+    return D;
+  }
 
-    auto & is = index_spaces[M][D].template cast<dtype>();
+  template <class T, size_t M = 0, class... S>
+  T * make(S &&... args)
+  {
+    T* ent;
+    size_t dim = entity_dimension(ent);
+    ent = new T(std::forward<S>(args)...);
 
-    id_t global_id = id_t::make<D, M>(is.size(), partition_id);
+    using dtype = domain_entity<M, T>;
+
+    auto & is = index_spaces[M][dim].template cast<dtype>();
+
+    id_t global_id = id_t::make<M>(dim, is.size());
 
     auto typed_ent = static_cast<mesh_entity_base_t<NM>*>(ent);
 
     typed_ent->template set_global_id<M>(global_id);
     is.push_back(ent);
-  }
+
+    return ent;
+  } // make
 
 }; // class serial_topology_storage_policy_t
 

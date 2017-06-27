@@ -19,6 +19,7 @@
 #include "flecsi/utils/array_ref.h"
 #include "flecsi/utils/reorder.h"
 #include "flecsi/topology/index_space.h"
+#include "flecsi/topology/entity_storage.h"
 
 ///
 /// \file
@@ -39,7 +40,8 @@ struct mpi_topology_storage_policy_t
   using id_t = utils::id_t;
 
   using index_spaces_t = 
-    std::array<index_space<mesh_entity_base_*, true, true, true>, ND + 1>;
+    std::array<index_space<mesh_entity_base_*, true, true, true, 
+    entity_storage_t>, ND + 1>;
 
   // array of array of domain_connectivity
   std::array<std::array<domain_connectivity<ND>, NM>, NM> topology;
