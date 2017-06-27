@@ -21,6 +21,7 @@ set(topology_HEADERS
   closure_utils.h
   index_space.h
   mesh_definition.h
+  mesh_storage.h
   mesh_topology.h
   mesh_types.h
   mesh_utils.h
@@ -43,6 +44,10 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(UNIT_POLICY LEGION)
   set(RUNTIME_DRIVER ../execution/legion/runtime_driver.cc)
+  set(togology_HEADERS
+    ${togology_HEADERS}
+    legion/storage_policy.h
+  )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
