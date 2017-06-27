@@ -13,7 +13,6 @@
 #include <cassert>
 #include <iostream>
 #include <vector>
-#include <np.h>
 
 #include "flecsi/data/data_client.h"
 #include "flecsi/topology/mesh_utils.h"
