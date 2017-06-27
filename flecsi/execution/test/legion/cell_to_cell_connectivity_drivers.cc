@@ -16,9 +16,9 @@
 #include "flecsi/data/data.h"
 #include "flecsi/supplemental/coloring/add_colorings.h"
 
-// from add_colorings.cc
-#define M 8
-#define N 8
+// FIXME: Must match add_colorings.cc
+#define M 16
+#define N 16
 
 #define INDEX_ID 0
 #define VERSIONS 1
@@ -28,8 +28,7 @@
 #define DT (DH * DH * 0.25 / DIFFUSIVITY)
 #define LENGTH (8.0 + DH)
 #define EPS 1.0e-16
-#define L_INF_ERROR 985.0
-#define L_2_ERROR 37.0
+#define L_INF_ERROR 210.0
 
 clog_register_tag(cell_to_cell_connectivity);
 
@@ -93,7 +92,7 @@ void driver(int argc, char ** argv) {
   flecsi_execute_task(init_values_task, single, cell_IDs, Ts);
 
   double time = 0.0;
-  while(time < 1.0) {
+  while(time < 4.0) {
     flecsi_execute_task(fwd_euler_heat_task, single, Ts, temp_Ts);
     time += DT;
   }
@@ -156,22 +155,12 @@ void check_values_task(
   for(size_t i=0; i<(cell_ID.exclusive_size()+cell_ID.shared_size()); i++) {
     double expected = analytic_heat_solution(cell_ID(i), time);
     double error = fabs(expected - T(i));
-    if( (M==8) && (x_coord(cell_ID(i))<M) && (y_coord(cell_ID(i))<N) ) {
-      if(error > (L_2_ERROR/(M*M))) {
-        clog(error) << cell_ID(i) << " actual " << T(i) << " expected " <<
-            expected << " error " << error << " > " << (L_2_ERROR/(M*M)) <<
-            std::endl;
-        assert(error <= (L_2_ERROR/(M*M)));
-      }
-    } else {
-      if(error > (L_INF_ERROR/(M*M))) {
+    if(error > (L_INF_ERROR/(M*M)))
         clog(error) << cell_ID(i) << " actual " << T(i) << " expected " <<
             expected << " error " << error << " > " << (L_INF_ERROR/(M*M)) <<
             std::endl;
-        assert(error <= (L_INF_ERROR/(M*M)));
-      }
-    }
-  }
+    assert(error <= (L_INF_ERROR/(M*M)));
+  }  // for i
 } // check_values_task
 
 void fwd_euler_heat_task(
