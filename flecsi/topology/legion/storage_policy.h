@@ -122,6 +122,25 @@ struct legion_topology_storage_policy_t
     }
   }
 
+  void
+  set_entity_storage(
+    size_t domain,
+    size_t dim,
+    mesh_entity_base_* entities,
+    size_t num_entities
+  )
+  {
+    auto& is = index_spaces[domain][dim];
+    is.storage()->set_buffer(entities, num_entities);
+  }
+
+  template <class T, size_t M, class... S>
+  T * make(S &&... args)
+  {
+    T * entity = new T(std::forward<S>(args)...);
+    return entity;
+  } // make
+
 }; // class legion_topology_storage_policy_t
 
 } // namespace topology

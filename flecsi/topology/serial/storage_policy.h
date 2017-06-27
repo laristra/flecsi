@@ -30,6 +30,9 @@ namespace topology {
 
 class mesh_entity_base_;
 
+template<size_t, size_t>
+class mesh_entity_t;
+
 ///
 /// \class serial_data_handle_policy_t data_handle_policy.h
 /// \brief serial_data_handle_policy_t provides...
@@ -69,10 +72,19 @@ struct serial_topology_storage_policy_t
     is.push_back(ent);
   }
 
-  template <class T, class... S>
+  template<size_t D, size_t N>
+  size_t
+  entity_dimension(mesh_entity_t<D, N>*)
+  {
+    return D;
+  }
+
+  template <class T, size_t M = 0, class... S>
   T * make(S &&... args)
   {
-    T * entity = new T(std::forward<S>(args)...);
+    T* entity;
+    size_t dim = entity_dimension(entity);
+    entity = new T(std::forward<S>(args)...);
     return entity;
   } // make
 
