@@ -21,18 +21,15 @@ public:
   template<size_t M>
   uint64_t precedence() const { return 0; }
   Vertex() = default;
-  Vertex(mesh_topology_base_t &) {}
 
 };
 
 class Edge : public mesh_entity_t<1, 1>{
 public:
-  Edge(mesh_topology_base_t &) {}
 };
 
 class Face : public mesh_entity_t<1, 1>{
 public:
-  Face(mesh_topology_base_t &) {}
 
 };
 
@@ -40,9 +37,6 @@ class Cell : public mesh_entity_t<2, 1>{
 public:
 
   using id_t = flecsi::utils::id_t;
-
-  Cell(mesh_topology_base_t& mesh)
-  : mesh_(mesh){}
 
   void set_precedence(size_t dim, uint64_t precedence) {}
 
@@ -70,7 +64,6 @@ public:
   void traverse();
 
 private:
-  mesh_topology_base_t& mesh_;
 };
 
 class test_mesh_2d_policy_t {
@@ -94,14 +87,14 @@ public:
 
   using bindings = std::tuple<>;
 
-  template<size_t M, size_t D>
+  template<size_t M, size_t D, typename ST>
   static mesh_entity_base_t<num_domains>*
-  create_entity(mesh_topology_base_t* mesh, size_t num_vertices){
+  create_entity(mesh_topology_base_t<ST>* mesh, size_t num_vertices){
     switch(M){
       case 0:{
         switch(D){
           case 1:
-            return mesh->make<Edge>(*mesh);
+            return mesh->template make<Edge>(*mesh);
           default:
             assert(false && "invalid topological dimension");
         }

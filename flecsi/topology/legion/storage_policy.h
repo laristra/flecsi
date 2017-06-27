@@ -150,10 +150,23 @@ struct legion_topology_storage_policy_t
   template <class T, size_t M, class... S>
   T * make(S &&... args)
   {    
-    T* entity;
-    size_t dim = entity_dimension(entity);
-    entity = new T(std::forward<S>(args)...);
-    return entity;
+    T* ent;
+    size_t dim = entity_dimension(ent);
+
+    using dtype = domain_entity<M, T>;
+
+    auto & is = index_spaces[M][dim].template cast<dtype>();
+
+    ent = new T(std::forward<S>(args)...);
+
+    id_t global_id = id_t::make<M>(dim, is.size());
+
+    auto typed_ent = static_cast<mesh_entity_base_t<NM>*>(ent);
+
+    typed_ent->template set_global_id<M>(global_id);
+    is.push_back(ent);
+
+    return ent;
   } // make
 
 }; // class legion_topology_storage_policy_t
