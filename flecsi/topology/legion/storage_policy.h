@@ -50,29 +50,6 @@ struct legion_topology_storage_policy_t
 
   std::array<index_spaces_t, NM> index_spaces;
 
-  template<
-    size_t D,
-    size_t M,
-    typename ET
-  >
-  void
-  add_entity(
-    ET* ent,
-    size_t partition_id = 0
-  )
-  {
-    using dtype = domain_entity<M, ET>;
-
-    auto & is = index_spaces[M][D].template cast<dtype>();
-
-    id_t global_id = id_t::make<D, M>(is.size(), partition_id);
-
-    auto typed_ent = static_cast<mesh_entity_base_t<NM>*>(ent);
-
-    typed_ent->template set_global_id<M>(global_id);
-    is.push_back(ent);
-  }
-
   void
   init_entities(
     size_t domain,
@@ -133,18 +110,6 @@ struct legion_topology_storage_policy_t
   entity_dimension(mesh_entity_t<D, N>*)
   {
     return D;
-  }
-
-  void
-  set_entity_storage(
-    size_t domain,
-    size_t dim,
-    mesh_entity_base_* entities,
-    size_t num_entities
-  )
-  {
-    auto& is = index_spaces[domain][dim];
-    is.storage()->set_buffer(entities, num_entities);
   }
 
   template <class T, size_t M, class... S>
