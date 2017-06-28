@@ -126,7 +126,7 @@ struct legion_topology_storage_policy_t
     auto & is = index_spaces[M][dim].template cast<T>();
     size_t entity_id = is.size();
 
-    auto placement_ptr = static_cast<T*>(is.storage().buffer() + entity_id);
+    auto placement_ptr = static_cast<T*>(is.storage().buffer()) + entity_id;
     ent = new (placement_ptr) T(std::forward<S>(args)...);
 
     id_t global_id = id_t::make<M>(dim, entity_id);
