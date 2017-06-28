@@ -291,7 +291,6 @@ client_adjacency_to_dimension(
 // Client internal field hash interface.
 ////////////////////////////////////////////////////////////////////////////////
 
-
 //----------------------------------------------------------------------------//
 //! Create a hash key suitable for registering internal client field data with
 //! the low-level field registry.

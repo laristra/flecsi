@@ -58,8 +58,9 @@ public:
   };
 
   struct adjacency_t{
-    size_t from_index_space;
-    size_t to_index_space;
+    size_t index_space_id;
+    size_t from_index_space_id;
+    size_t to_index_space_id;
     Legion::IndexSpace index_space;
     Legion::FieldSpace field_space;
     Legion::LogicalRegion logical_region;
@@ -171,18 +172,20 @@ public:
     context_t & context = context_t::instance();
 
     adjacency_t c;
-    c.from_index_space = adjacency_info.from_index_space;
-    c.to_index_space = adjacency_info.to_index_space;
 
-    auto fitr = index_space_map_.find(c.from_index_space);
+    c.index_space_id = adjacency_info.index_space;
+    c.from_index_space_id = adjacency_info.from_index_space;
+    c.to_index_space_id = adjacency_info.to_index_space;
+
+    auto fitr = index_space_map_.find(c.from_index_space_id);
     clog_assert(fitr != index_space_map_.end(), "invalid from index space");
     const index_space_t& fi = fitr->second;
 
-    auto titr = index_space_map_.find(c.to_index_space);
+    auto titr = index_space_map_.find(c.to_index_space_id);
     clog_assert(titr != index_space_map_.end(), "invalid to index space");
     const index_space_t& ti = titr->second;
 
-    auto p = std::make_pair(c.from_index_space, c.to_index_space);
+    auto p = std::make_pair(c.from_index_space_id, c.to_index_space_id);
 
     auto citr = adjacency_map_.find(p);
     clog_assert(citr != adjacency_map_.end(),
@@ -493,7 +496,8 @@ private:
   )
   {
     std::stringstream sstr;
-    sstr << label << " " << c.from_index_space << "->" << c.to_index_space;
+    sstr << label << " " << c.from_index_space_id << "->" <<
+      c.to_index_space_id;
     runtime_->attach_name(x, sstr.str().c_str());
   }
 

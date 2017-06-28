@@ -287,6 +287,9 @@ struct legion_client_registration_wrapper__<
 
       connectivity_walker_t connectivity_walker;
       connectivity_walker.template walk_types<connectivities>();
+
+      binding_walker_t binding_walker;
+      binding_walker.template walk_types<bindings>();
     } // if
 
   } // register_callback
