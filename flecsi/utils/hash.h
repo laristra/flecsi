@@ -52,6 +52,10 @@ bit_range(
   return (key >> SHIFT) & MASK;
 } // bit_range
 
+////////////////////////////////////////////////////////////////////////////////
+// Field data hash interface.
+////////////////////////////////////////////////////////////////////////////////
+
 //----------------------------------------------------------------------------//
 //! Create a hash key suitable for registering a field with the low-level
 //! field registry.
@@ -72,6 +76,10 @@ field_hash()
 {
   return NAMESPACE ^ NAME;
 } // field_hash__
+
+////////////////////////////////////////////////////////////////////////////////
+// Client entities hash interface.
+////////////////////////////////////////////////////////////////////////////////
 
 //----------------------------------------------------------------------------//
 //! Create a hash key suitable for registering client entity types with
@@ -153,6 +161,10 @@ client_entity_dimension(
 {
   return bit_range<0x03, 0>(key);
 } // client_entity_dimension
+
+////////////////////////////////////////////////////////////////////////////////
+// Client adjacency hash interface.
+////////////////////////////////////////////////////////////////////////////////
 
 //----------------------------------------------------------------------------//
 //! Create a hash key suitable for registering client adjacency types with
@@ -274,6 +286,40 @@ client_adjacency_to_dimension(
 {
   return bit_range<0x03, 0>(key);
 } // client_adjacency_to_dimension
+
+////////////////////////////////////////////////////////////////////////////////
+// Client internal field hash interface.
+////////////////////////////////////////////////////////////////////////////////
+
+
+//----------------------------------------------------------------------------//
+//! Create a hash key suitable for registering internal client field data with
+//! the low-level field registry.
+//!
+//! @tparam INDEX_SPACE The index space id of the associated field.
+//!
+//! @ingroup utils
+//----------------------------------------------------------------------------//
+
+template<
+  size_t NAME,
+  size_t INDEX_SPACE
+>
+inline
+constexpr size_t
+client_internal_field_hash()
+{
+  return (NAME << 8) | INDEX_SPACE;
+} // field_hash__
+
+inline
+constexpr size_t
+client_internal_field_index_space(
+  size_t key
+)
+{
+  return bit_range<0xff, 8>(key);
+} // client_internal_field_index_space
 
 } // namespace hash
 
