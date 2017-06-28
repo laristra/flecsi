@@ -67,7 +67,7 @@ struct legion_topology_storage_policy_t
       auto& to_domain_connectivty = from_domain[domain];
       for(size_t from_dim = 0; from_dim <= ND; ++from_dim){
         auto& conn = to_domain_connectivty.get(from_dim, dim);
-        conn->entity_storage().set_buffer(entities, num_entities);
+        conn.entity_storage()->set_buffer(entities, num_entities);
       }
     }
   }
