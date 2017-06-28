@@ -164,6 +164,19 @@ void specialization_tlt_init(int argc, char ** argv) {
   flecsi_execute_mpi_task(add_colorings, 0);
 } // specialization_tlt_init
 
+void specialization_spmd_init(int argc, char ** argv) {
+  auto runtime = Legion::Runtime::get_runtime();
+  const int my_color = runtime->find_local_MPI_rank();
+  clog(error) << "Rank " << my_color << " in specialization_spmd_init" << std::endl;
+
+  mesh_t mesh;
+  auto mesh_storage_policy = mesh.storage();
+  mesh_entity_base_* entities;
+  size_t dimension = 2;
+  //mesh_storage_policy->init_entities(INDEX_ID,dimension,entities,num_cells);
+
+} // specialization_spmd_init
+
 //----------------------------------------------------------------------------//
 // User driver.
 //----------------------------------------------------------------------------//
@@ -300,6 +313,18 @@ TEST(cell_to_cell_connectivity, testname) {
 
 } // TEST
 
+#undef M
+#undef N
+
+#undef INDEX_ID
+#undef VERSIONS
+
+#undef DIFFUSIVITY
+#undef DH
+#undef DT
+#undef LENGTH
+#undef EPS
+#undef L_INF_ERROR
 
 /*~------------------------------------------------------------------------~--*
  * Formatting options for vim.
