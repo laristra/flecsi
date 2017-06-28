@@ -126,8 +126,7 @@ struct legion_topology_storage_policy_t
     ent = new (placement_ptr) T(std::forward<S>(args)...);
 
     id_t global_id = id_t::make<M>(dim, entity_id);
-    auto typed_ent = static_cast<mesh_entity_base_t<NM>*>(ent);
-    typed_ent->template set_global_id<M>(global_id);
+    ent->template set_global_id<M>(global_id);
 
     is.push_back(ent);
 
