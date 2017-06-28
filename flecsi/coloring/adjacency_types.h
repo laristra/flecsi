@@ -21,10 +21,13 @@ namespace coloring {
 
 struct adjacency_info_t {
 
-  //! The from index space.
+  //! The index space of the adjacency information itself.
+  size_t index_space;
+
+  //! The index space of the from entities.
   size_t from_index_space;
 
-  //! The to index space.
+  //! The index space of the to entities.
   size_t to_index_space;
 
   //! The size of adjacency array for each color.
