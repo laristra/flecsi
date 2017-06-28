@@ -130,9 +130,7 @@ void task1(client_handle_t<test_mesh_t> mesh) {
 
 flecsi_register_task(task1, loc, single);
 
-class client_type : public flecsi::data::data_client_t{};
-
-flecsi_register_data(client_type, ns, pressure, double, dense, 0, 1);
+//flecsi_register_data(client_type, ns, pressure, double, dense, 0, 1);
 
 namespace flecsi {
 namespace execution {
@@ -154,15 +152,13 @@ void specialization_tlt_init(int argc, char ** argv) {
 void driver(int argc, char ** argv) {
   clog(info) << "In driver" << std::endl;
 
-  client_type c;
-
   int rank, size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
 
-  flecsi_execute_task(task1, ch);
+  flecsi_execute_task(task1, single, ch);
 } // specialization_driver
 
 //----------------------------------------------------------------------------//

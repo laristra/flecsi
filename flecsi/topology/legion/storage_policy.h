@@ -114,7 +114,11 @@ struct legion_topology_storage_policy_t
     return D;
   }
 
-  template <class T, size_t M, class... S>
+  template<
+    class T,
+    size_t M,
+    class... S
+  >
   T * make(S &&... args)
   {    
     T* ent;
