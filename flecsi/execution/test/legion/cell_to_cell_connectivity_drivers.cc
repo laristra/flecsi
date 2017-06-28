@@ -197,8 +197,11 @@ void driver(int argc, char ** argv) {
   auto mesh_storage_policy = mesh.storage();
   mesh_entity_base_* entities;
   size_t dimension = 2;
-  //mesh_storage_policy->init_entities(INDEX_ID,dimension,entities,num_cells);
-  //cell* c = make<cell>();
+  size_t num_cells = exclusive_rect.hi.x[1] - exclusive_rect.lo.x[1] + 1
+      + shared_rect.hi.x[1] - shared_rect.lo.x[1] + 1;
+  entities = (mesh_entity_base_*)malloc(sizeof(mesh_entity_base_)*num_cells); // FIXME leak
+  mesh_storage_policy->init_entities(INDEX_ID,dimension,entities,num_cells);
+  cell* c = mesh.make<cell>();
 
 
   client_type client;
