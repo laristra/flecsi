@@ -12,6 +12,7 @@
 #include <arrays.h>
 
 #include "flecsi/topology/mesh_storage.h"
+#include "flecsi/topology/legion/entity_storage.h"
 
 #include <array>
 
@@ -43,7 +44,8 @@ struct legion_topology_storage_policy_t
   using id_t = utils::id_t;
 
   using index_spaces_t = 
-    std::array<index_space<mesh_entity_base_*, true, true, true>, ND + 1>;
+    std::array<index_space<mesh_entity_base_*, true, true, true,
+      void, entity_storage__>, ND + 1>;
 
   // array of array of domain_connectivity
   std::array<std::array<domain_connectivity<ND>, NM>, NM> topology;
