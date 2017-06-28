@@ -104,6 +104,12 @@ set(utils_SOURCES
 # Unit tests.
 #------------------------------------------------------------------------------#
 
+cinch_add_devel_target(clog
+  SOURCES
+    test/clog.cc
+  POLICY ${UNIT_POLICY}
+)
+
 # Broken by refactor
 #cinch_add_unit(dbc
 #  SOURCES test/dbc_test.cc
@@ -155,7 +161,7 @@ cinch_add_unit(humble
   SOURCES test/humble.cc
 )
 
-cinch_add_unit(Iterator
+cinch_add_unit(utils_iterator
   SOURCES test/iterator.cc
   INPUTS  test/iterator.blessed
 )
@@ -177,7 +183,7 @@ cinch_add_unit(static_verify
   SOURCES test/static_verify.cc
 )
 
-cinch_add_unit(Utility
+cinch_add_unit(test_utility
   SOURCES test/utility.cc
   INPUTS  test/utility.blessed
 )

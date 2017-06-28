@@ -18,7 +18,7 @@
 //#include <cassert>
 //#include <memory>
 //#include <typeinfo>
-//#include <unordered_map>
+#include <unordered_map>
 //#include <vector>
 
 #include "flecsi/data/common/data_hash.h"
@@ -36,116 +36,82 @@
 namespace flecsi {
 namespace data {
 
-template<typename user_meta_data_t>
 struct mpi_storage_policy_t {
 
-  using meta_data_t = mpi_meta_data_t<user_meta_data_t>;
-
-  // Define the data store type
-  // FIXME: THIS NEEDS TO BE IMPLEMENTED!!!
-  using data_store_t = size_t;
-
-  // Define the storage type
-  template<size_t data_type_t>
-  using storage_type_t = mpi::storage_type_t<data_type_t,
-    data_store_t, meta_data_t>;
-
-  ///
-  // \brief delete ALL data.
-  ///
-  void
-  reset()
-  {
-  } // reset
-
-  ///
-  // \brief delete ALL data associated with this runtime namespace.
-  // \param [in] runtime_namespace the namespace to search.
-  ///
-  void
-  reset(
-    uintptr_t runtime_namespace
-  )
-  {
-  } // reset
-
-  void move( uintptr_t from, uintptr_t to ) {
-    assert(false && "unimplemented");
-  }
-
-  size_t
-  count(
-    uintptr_t runtime_namespace
-  )
-  {
-
-  }
-
-  //--------------------------------------------------------------------------//
-  // Data registration.
-  //--------------------------------------------------------------------------//
-
   using field_id_t = size_t;
-  struct unique_field_id_t {};
   using registration_function_t = std::function<void(size_t)>;
-  using unique_fid_t = utils::unique_id_t<unique_field_id_t>;
+  using unique_fid_t = utils::unique_id_t<field_id_t, FLECSI_GENERATED_ID_MAX>;
+  using data_value_t = std::pair<field_id_t, registration_function_t>;
+  using field_entry_t = std::unordered_map<size_t, data_value_t>;
+  // Field and client registration interfaces are the same for now.
+  using client_entry_t = field_entry_t;
 
-  template<
-    typename DATA_CLIENT_TYPE,
-    size_t STORAGE_TYPE,
-    typename DATA_TYPE,
-    size_t NAMESPACE_HASH,
-    size_t NAME_HASH,
-    size_t INDEX_SPACE,
-    size_t VERSIONS
-  >
   bool
-  new_register_data()
+  register_field(
+    size_t client_key,
+    size_t key,
+    const registration_function_t & callback
+  )
   {
-    using wrapper_t =
-      mpi_registration_wrapper_t<
-        DATA_CLIENT_TYPE,
-        STORAGE_TYPE,
-        DATA_TYPE,
-        NAMESPACE_HASH,
-        NAME_HASH,
-        INDEX_SPACE,
-        VERSIONS>;
-
-    for(size_t i(0); i<VERSIONS; ++i) {
-      data_registry_[typeid(DATA_CLIENT_TYPE).hash_code()]
-        [data_hash_t::make_key(NAMESPACE_HASH, NAME_HASH)] =
-        { unique_fid_t::instance().next(), wrapper_t::register_callback };
-    } // for
-  } // new_register_data
+    //TODO:
+  }
 
   void
   register_all()
   {
-    for(auto & c: data_registry_) {
+    for(auto & c: field_registry_) {
       for(auto & d: c.second) {
         d.second.second(d.second.first);
       } // for
     } // for
   } // register_all
+  auto const &
+  field_registry()
+  const
+  {
+    return field_registry_;
+  } // field_registry
 
-protected:
+  auto const &
+  client_registry()
+  const
+  {
+    return client_registry_;
+  } // client_registry
 
-  // Storage container instance
-  data_store_t data_store_;
+////////////////////////////////////////////////////////////////////////////////
 
-  using data_value_t = std::pair<field_id_t, registration_function_t>;
+  //--------------------------------------------------------------------------//
+  //! Register a client with the runtime.
+  //!
+  //! @param client_key The data client indentifier hash.
+  //! @param key        The identifier hash.
+  //! @param callback   The registration call back function.
+  //--------------------------------------------------------------------------//
 
-  using client_value_t =
-    std::unordered_map<
-      data_hash_t::key_t, // key
-      data_value_t,       // value
-      data_hash_t,        // hash function
-      data_hash_t         // equialence operator
-    >;
+  bool
+  register_client(
+    size_t client_key,
+    size_t key,
+    const registration_function_t & callback
+  )
+  {
+    if(client_registry_.find(client_key) != client_registry_.end()) {
+      clog_assert(client_registry_[client_key].find(key) ==
+        client_registry_[client_key].end(),
+        "client key already exists");
+    } // if
 
-  // Data registration map
-  std::unordered_map<size_t, client_value_t> data_registry_;
+    client_registry_[client_key][key] =
+      std::make_pair(unique_fid_t::instance().next(), callback);
+
+    return true;
+  } // register_client
+
+private:
+
+  std::unordered_map<size_t, field_entry_t> field_registry_;
+  std::unordered_map<size_t, client_entry_t> client_registry_;
 
 }; // struct mpi_storage_policy_t
 

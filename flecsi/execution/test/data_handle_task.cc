@@ -29,37 +29,50 @@ using namespace flecsi;
 
 clog_register_tag(coloring);
 
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t = 
-  data::legion::dense_handle_t<T, EP, SP, GP,
-  data::legion_meta_data_t<default_user_meta_data_t>>;
+using handle_t =
+  data::legion::dense_handle_t<T, EP, SP, GP>;
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
+template<typename T, size_t EP, size_t SP, size_t GP>
+using handle_t =
+  data::mpi::dense_handle_t<T, EP, SP, GP>;
+#endif
 
 void task1(handle_t<double, dro, dno, dno> x, double y) {
   //np(y);
 } // task1
 
-void writer(handle_t<double, dwd, dno, dno> x) {
-  clog(info) << "writer write: " << std::endl;
-  for (int i = 0; i < 5; i++) {
+void data_handle_dump(handle_t<double, drw, dro, dro> x) {
+  clog(info) << "label: " << x.label() << std::endl;
+  clog(info) << "combined size: " << x.size() << std::endl;
+  clog(info) << "exclusive size: " << x.exclusive_size() << std::endl;
+  clog(info) << "shared size: " << x.shared_size() << std::endl;
+  clog(info) << "ghost size: " << x.ghost_size() << std::endl;
+}
+
+void exclusive_writer(handle_t<double, dwd, dno, dno> x) {
+  clog(info) << "exclusive writer write" << std::endl;
+  for (int i = 0; i < x.exclusive_size(); i++) {
     x(i) = static_cast<double>(i);
-    clog(info) << x(i) << std::endl;
   }
 }
 
-void reader(handle_t<double, dro, dno, dno> x) {
-  clog(info) << "reader read: " << std::endl;
-  for (int i = 0; i < 5; i++) {
-    clog(info) << x(i) << std::endl;
+void exclusive_reader(handle_t<double, dro, dno, dno> x) {
+  clog(info) << "exclusive reader read: " << std::endl;
+  for (int i = 0; i < x.exclusive_size(); i++) {
+    ASSERT_EQ(x(i), static_cast<double>(i));
   }
 }
 
 flecsi_register_task(task1, loc, single);
-flecsi_register_task(writer, loc, single);
-flecsi_register_task(reader, loc, single);
+flecsi_register_task(data_handle_dump, loc, single);
+flecsi_register_task(exclusive_writer, loc, single);
+flecsi_register_task(exclusive_reader, loc, single);
 
 class client_type : public flecsi::data::data_client_t{};
 
-flecsi_new_register_data(client_type, ns, pressure, double, dense, 0, 1);
+flecsi_register_field(client_type, ns, pressure, double, dense, 0, 1);
 
 namespace flecsi {
 namespace execution {
@@ -70,8 +83,8 @@ namespace execution {
 
 void specialization_tlt_init(int argc, char ** argv) {
   clog(info) << "In specialization top-level-task init" << std::endl;
-  flecsi_execute_mpi_task(add_colorings, 0);
 
+  flecsi_execute_mpi_task(add_colorings, 0);
 } // specialization_tlt_init
 
 //----------------------------------------------------------------------------//
@@ -89,9 +102,10 @@ void driver(int argc, char ** argv) {
 
   auto h = flecsi_get_handle(c, ns, pressure, double, dense, 0);
 
-  flecsi_execute_task(task1, single, h, 128);
-  flecsi_execute_task(writer, single, h);
-  flecsi_execute_task(reader, single, h);
+//  flecsi_execute_task(task1, single, h, 128);
+  flecsi_execute_task(data_handle_dump, single, h);
+  flecsi_execute_task(exclusive_writer, single, h);
+  flecsi_execute_task(exclusive_reader, single, h);
 } // specialization_driver
 
 //----------------------------------------------------------------------------//

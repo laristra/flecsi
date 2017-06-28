@@ -21,9 +21,7 @@
 clog_register_tag(ghost_access);
 
 template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t =
-  flecsi::data::legion::dense_handle_t<T, EP, SP, GP,
-  flecsi::data::legion_meta_data_t<flecsi::default_user_meta_data_t>>;
+using handle_t = flecsi::data::legion::dense_handle_t<T, EP, SP, GP>;
 
 void check_all_cells_task(
         handle_t<size_t, flecsi::dro, flecsi::dro, flecsi::dro> cell_ID,
@@ -39,9 +37,9 @@ flecsi_register_task(set_primary_cells_task, flecsi::loc, flecsi::single);
 
 class client_type : public flecsi::data::data_client_t{};
 
-flecsi_new_register_data(client_type, name_space, cell_ID, size_t, dense,
+flecsi_register_field(client_type, name_space, cell_ID, size_t, dense,
     INDEX_ID, VERSIONS);
-flecsi_new_register_data(client_type, name_space, test, double, dense,
+flecsi_register_field(client_type, name_space, test, double, dense,
     INDEX_ID, VERSIONS);
 
 namespace flecsi {
@@ -175,6 +173,7 @@ void check_all_cells_task(
       index_coloring->second.ghost.end(); ++ghost_itr) {
     flecsi::coloring::entity_info_t ghost = *ghost_itr;
     assert(cell_ID.ghost(index) == ghost.id + cycle);
+    assert(test.ghost(index) == double(ghost.id + cycle));
     index++;
   } // ghost_itr
 

@@ -33,7 +33,7 @@ template<
   size_t INDEX_SPACE,
   size_t VERSIONS
 >
-struct mpi_registration_wrapper_t
+struct mpi_field_registration_wrapper__
 {
   using field_id_t = size_t;
 
@@ -43,17 +43,40 @@ struct mpi_registration_wrapper_t
     field_id_t fid
   )
   {
-    clog(info) << "In register_callback" << std::endl;
-    // Do stuff
+    clog(info) << "In register_callback, fid: " << fid << std::endl;
+
+    // register field with 'fid' to the execution context.
+    execution::context_t::field_info_t fi;
+    fi.data_client_hash = typeid(DATA_CLIENT_TYPE).hash_code();
+    fi.storage_type = STORAGE_TYPE;
+    fi.size = sizeof(DATA_TYPE);
+    fi.namespace_hash = NAMESPACE_HASH;
+    fi.name_hash = NAME_HASH;
+    fi.versions = VERSIONS;
+    fi.index_space = INDEX_SPACE;
+    fi.fid = fid;
+
+    execution::context_t::instance().register_field_info(fi);
+
+    // FIXME: TBD
+    auto& context = execution::context_t::instance();
+    auto& field_info = context.registered_fields()[0];
+
+    clog(info) << "index space: " << field_info.index_space << std::endl;
+
+    auto infos = context.coloring_info(field_info.index_space);
+    for (auto pair : infos) {
+      clog(info) << "number of exclusive: " << pair.second.exclusive << std::endl;
+    }
+    for (auto pair : infos) {
+      clog(info) << "number of shared: " << pair.second.shared << std::endl;
+    }
+    for (auto pair : infos) {
+      clog(info) << "number of ghost: " << pair.second.ghost << std::endl;
+    }
   } // register_callback
 
-  static
-  void
-  register_data()
-  {
-  } // register_data
-
-}; // class mpi_registration_wrapper_t
+}; // class mpi_field_registration_wrapper_t
 
 ///
 /// \class registration_wrapper_t registration_wrapper.h
@@ -64,16 +87,16 @@ template<
   size_t NAMESPACE_HASH,
   size_t NAME_HASH
 >
-struct client_registration_wrapper_t
+struct mpi_client_registration_wrapper__
 {
-}; // class client_registration_wrapper_t
+}; // class mpi_client_registration_wrapper_t
 
 template<
   typename POLICY_TYPE,
   size_t NAMESPACE_HASH,
   size_t NAME_HASH
 >
-struct client_registration_wrapper_t<
+struct mpi_client_registration_wrapper__<
   flecsi::topology::mesh_topology_t<POLICY_TYPE>,
   NAMESPACE_HASH,
   NAME_HASH
@@ -117,7 +140,7 @@ struct client_registration_wrapper_t<
 
   } // register_data
 
-}; // struct client_registration_wrapper_t
+}; // struct mpi_client_registration_wrapper_t
 
 } // namespace data
 } // namespace flecsi

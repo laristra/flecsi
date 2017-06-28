@@ -17,7 +17,7 @@
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_type.h!!!
-// Using this approach allows us to have only one storage_type_t
+// Using this approach allows us to have only one storage_type__
 // definintion that can be used by all data policies -> code reuse...
 #define POLICY_NAMESPACE legion
 #include "flecsi/data/storage_type.h"
@@ -60,25 +60,20 @@ namespace legion {
 //           e.g., when writing raw bytes. This class is part of the
 //           low-level \e flecsi interface, so it is assumed that you
 //           know what you are doing...
-// \tparam MD The meta data type.
 ///
 template<
   typename T,
   size_t EP,
   size_t SP,
-  size_t GP,
-  typename MD
+  size_t GP
 >
 struct dense_handle_t : public data_handle__<T, EP, SP, GP>
 {
-  using base_t = data_handle__<T, EP, SP, GP>;
-
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using meta_data_t = MD;
-  using user_meta_data_t = typename meta_data_t::user_meta_data_t;
+  using base_t = data_handle__<T, EP, SP, GP>;
 
   //--------------------------------------------------------------------------//
   // Constructors.
@@ -126,10 +121,9 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   // Copy constructor.
   ///
   template<size_t EP2, size_t SP2, size_t GP2>
-  dense_handle_t(const dense_handle_t<T, EP2, SP2, GP2, MD> & a)
+  dense_handle_t(const dense_handle_t<T, EP2, SP2, GP2> & a)
     : base_t(reinterpret_cast<const base_t&>(a)),
-      label_(a.label_),
-      meta_data_(a.meta_data_)
+      label_(a.label_)
     {
       static_assert(EP2 == 0 && SP2 == 0 && GP2 == 0,
         "passing mapped handle to task args");
@@ -188,15 +182,6 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   {
     return base_t::ghost_size;
   } // size
-
-  ///
-  // \brief Return the user meta data for this data variable.
-  ///
-  const user_meta_data_t &
-  meta_data() const
-  {
-    return meta_data_;
-  } // meta_data
 
   //--------------------------------------------------------------------------//
   // Operators.
@@ -376,13 +361,13 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     return base_t::combined_data != nullptr;
   } // operator bool
 
-  template<typename, size_t, size_t, size_t, typename>
+  template<typename, size_t, size_t, size_t>
   friend class dense_handle_t;
 
 private:
 
   std::string label_ = "";
-  const user_meta_data_t & meta_data_ = {};
+
 }; // struct dense_handle_t
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
@@ -396,15 +381,12 @@ private:
 ///
 // FIXME: Dense storage type.
 ///
-template<typename DS, typename MD>
-struct storage_type_t<dense, DS, MD>
+template<>
+struct storage_type__<dense>
 {
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
-
-  using data_store_t = DS;
-  using meta_data_t = MD;
 
   template<
     typename T,
@@ -412,7 +394,7 @@ struct storage_type_t<dense, DS, MD>
     size_t SP,
     size_t GP
   >
-  using handle_t = dense_handle_t<T, EP, SP, GP, MD>;
+  using handle_t = dense_handle_t<T, EP, SP, GP>;
 
   //--------------------------------------------------------------------------//
   // Data handles.
@@ -423,14 +405,13 @@ struct storage_type_t<dense, DS, MD>
   ///
   template<
     typename T,
-    size_t NS,
+    size_t NAMESPACE,
     typename Predicate
   >
   static
   decltype(auto)
   get_handles(
     const data_client_t & data_client,
-    data_store_t & data_store,
     size_t version,
     Predicate && predicate,
     bool sorted
@@ -447,7 +428,6 @@ struct storage_type_t<dense, DS, MD>
   decltype(auto)
   get_handles(
     const data_client_t & data_client,
-    data_store_t & data_store,
     size_t version,
     Predicate && predicate,
     bool sorted
@@ -458,13 +438,12 @@ struct storage_type_t<dense, DS, MD>
 
   template<
     typename T,
-    size_t NS
+    size_t NAMESPACE
   >
   static
   decltype(auto)
   get_handles(
     const data_client_t & data_client,
-    data_store_t & data_store,
     size_t version,
     bool sorted
   )
@@ -479,7 +458,6 @@ struct storage_type_t<dense, DS, MD>
   decltype(auto)
   get_handles(
     const data_client_t & data_client,
-    data_store_t & data_store,
     size_t version,
     bool sorted
   )
@@ -491,26 +469,25 @@ struct storage_type_t<dense, DS, MD>
   //
   ///
   template<
-    typename T,
-    size_t NS,
-    typename DATA_CLIENT_TYPE
+    typename DATA_CLIENT_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t VERSION
   >
   static
-  handle_t<T, 0, 0, 0>
+  handle_t<DATA_TYPE, 0, 0, 0>
   get_handle(
-    const data_client_t & data_client,
-    data_store_t & data_store,
-    const utils::const_string_t & key,
-    size_t version
+    const data_client_t & data_client
   )
   {
-    handle_t<T, 0, 0, 0> h;
+    handle_t<DATA_TYPE, 0, 0, 0> h;
 
     auto& context = execution::context_t::instance();
     
     auto& field_info = 
       context.get_field_info(typeid(DATA_CLIENT_TYPE).hash_code(),
-      key.hash() ^ NS);
+      NAMESPACE ^ NAME);
 
     size_t index_space = field_info.index_space;
     auto& ism = context.index_space_data_map();
@@ -525,7 +502,8 @@ struct storage_type_t<dense, DS, MD>
                                                 .ghost_owners_pbarriers[i]));
     h.ghost_owners_lregions = ism[index_space].ghost_owners_lregions;
     h.color_region = ism[index_space].color_region;
-    h.global_to_local_color_map_ptr = &ism[index_space].global_to_local_color_map;
+    h.global_to_local_color_map_ptr =
+      &ism[index_space].global_to_local_color_map;
     h.fid = field_info.fid;
     h.index_space = field_info.index_space;
     h.ghost_is_readable = &(ism[index_space].ghost_is_readable);
@@ -534,7 +512,7 @@ struct storage_type_t<dense, DS, MD>
     return h;
   } // get_handle
 
-}; // struct storage_type_t
+}; // struct storage_type__
 
 } // namespace legion
 } // namespace data

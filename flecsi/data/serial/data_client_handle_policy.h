@@ -1,39 +1,29 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2017 Los Alamos National Security, LLC
+ * Copyright (c) 2015 Los Alamos National Security, LLC
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_data_accessor_h
-#define flecsi_data_accessor_h
- 
+#ifndef flecsi_data_serial_data_client_handle_policy_h
+#define flecsi_data_serial_data_client_handle_policy_h
+
 //----------------------------------------------------------------------------//
 //! @file
-//! @date Initial file creation: Feb 24, 2017
+//! @date Initial file creation: Jun 21, 2017
 //----------------------------------------------------------------------------//
 
 namespace flecsi {
 
 //----------------------------------------------------------------------------//
-//! FIXME
+//! FIXME: Description of class
 //----------------------------------------------------------------------------//
 
-struct accessor_base_t {};
-
-//----------------------------------------------------------------------------//
-//! FIXME
-//----------------------------------------------------------------------------//
-
-template<
-  typename T
->
-struct accessor__ : public accessor_base_t
+struct serial_data_client_handle_policy_t
 {
-  using type = T;
-}; // struct accessor__
+}; // struct data_client_handle_policy_t
 
 } // namespace flecsi
 
-#endif // flecsi_data_accessor_h
+#endif // flecsi_data_serial_data_client_handle_policy_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

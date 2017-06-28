@@ -73,7 +73,7 @@ struct tuple_walker_helper__
     using ELEMENT_TYPE =
       typename std::tuple_element<CURRENT, TUPLE_TYPE>::type;
     p.template handle_type<ELEMENT_TYPE>();
-    return HELPER_TYPE::walk_type(p);
+    return HELPER_TYPE::walk_types(p);
   } // walk_types
 
 }; // tuple_walker_helper__
@@ -112,8 +112,7 @@ struct tuple_walker_helper__<0, TUPLE_TYPE, CRTP_TYPE>
   static
   std::size_t
   walk_types(
-    const CRTP_TYPE &,
-    const TUPLE_TYPE &
+    const CRTP_TYPE &
   )
   {
     return 0;

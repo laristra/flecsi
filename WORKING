@@ -4,4 +4,8 @@
 
 - Update copyrights with standard header.
 - Add context interface for adjacency information.
-- Add functional form for specialization tlt initialization
+- Add functional form for specialization tlt initialization.
+
+- Check context header dependencies (Circular? How does this work?)
+
+- Enable CLOG_MPI if MPI_ENABLE is on.

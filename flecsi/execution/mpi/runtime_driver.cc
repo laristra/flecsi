@@ -8,6 +8,10 @@
 //! \date Initial file creation: Jul 26, 2016
 //----------------------------------------------------------------------------//
 
+#include <cstddef>
+#include <cstdint>
+
+#include "flecsi/data/data.h"
 #include "flecsi/execution/mpi/runtime_driver.h"
 
 #include "flecsi/execution/context.h"
@@ -41,6 +45,11 @@ runtime_driver(
   // Execute the specialization driver.
   specialization_tlt_init(argc, argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+
+  // Register user data, invokes callbacks to add field info into context
+  data::storage_t::instance().register_all();
+
+  // allocate storage for data.
 
   // Execute the user driver.
   driver(argc, argv);

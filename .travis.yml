@@ -7,39 +7,34 @@ services:
 
 env:
   matrix:
-#    - DISTRO=ubuntu MINIMAL=ON MPI=OFF RUNTIME=serial
-#    - DISTRO=ubuntu MPI=OFF RUNTIME=legion    DOCKERHUB=true
-#    - DISTRO=ubuntu MPI=OFF RUNTIME=legion    WERROR=yes
-#    - DISTRO=ubuntu MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
-#    - DISTRO=ubuntu MPI=ON  RUNTIME=mpilegion WERROR=yes
-#    - DISTRO=ubuntu_mpich MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
-#    - DISTRO=ubuntu_mpich MPI=ON  RUNTIME=mpilegion WERROR=yes
-#    - DISTRO=ubuntu MPI=OFF  RUNTIME=serial       DOCKERHUB=true
-#    - DISTRO=ubuntu MPI=OFF  RUNTIME=serial       WERROR=yes
-#    - DISTRO=ubuntu MPI=OFF  COVERAGE=ON RUNTIME=serial SONARQUBE=ON
+#    - DISTRO=ubuntu MINIMAL=ON RUNTIME=serial
+    - DISTRO=ubuntu RUNTIME=legion    DOCKERHUB=true
+    - DISTRO=ubuntu RUNTIME=legion    WERROR=yes
+    - DISTRO=ubuntu_mpich RUNTIME=legion DOCKERHUB=true
+    - DISTRO=ubuntu_mpich RUNTIME=legion WERROR=yes
+#    - DISTRO=ubuntu RUNTIME=serial       DOCKERHUB=true
+#    - DISTRO=ubuntu RUNTIME=serial       WERROR=yes
+    - DISTRO=ubuntu COVERAGE=ON RUNTIME=legion SONARQUBE=ON
 #
-#    - DISTRO=fedora MINIMAL=ON MPI=OFF RUNTIME=serial
-#    - DISTRO=fedora MPI=OFF RUNTIME=legion    DOCKERHUB=true
-#    - DISTRO=fedora MPI=OFF RUNTIME=legion    WERROR=yes
-#    - DISTRO=fedora MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
-#    - DISTRO=fedora MPI=ON  RUNTIME=mpilegion WERROR=yes
-#    - DISTRO=fedora_mpich MPI=ON  RUNTIME=mpilegion DOCKERHUB=true
-#    - DISTRO=fedora_mpich MPI=ON  RUNTIME=mpilegion WERROR=yes
-#    - DISTRO=fedora MPI=OFF RUNTIME=serial        DOCKERHUB=true
-#    - DISTRO=fedora MPI=OFF RUNTIME=serial        WERROR=yes
-#    - DISTRO=fedora MPI=OFF RUNTIME=serial COVERAGE=ON
-    - DISTRO=fedora MPI=ON RUNTIME=legion COVERAGE=ON
+#    - DISTRO=fedora MINIMAL=ON RUNTIME=serial
+    - DISTRO=fedora RUNTIME=legion    DOCKERHUB=true
+    - DISTRO=fedora RUNTIME=legion    WERROR=yes
+    - DISTRO=fedora_mpich RUNTIME=legion DOCKERHUB=true
+    - DISTRO=fedora_mpich RUNTIME=legion WERROR=yes
+#    - DISTRO=fedora RUNTIME=serial        DOCKERHUB=true
+#    - DISTRO=fedora RUNTIME=serial        WERROR=yes
+    - DISTRO=fedora RUNTIME=legion COVERAGE=ON
 
 matrix:
   allow_failures:
-    - compiler: clang #wrong warning in older clang, fix in newer (fedora)
-      env: DISTRO=ubuntu MPI=OFF RUNTIME=legion    WERROR=yes 
     - compiler: clang
-      env: DISTRO=ubuntu MPI=ON  RUNTIME=mpilegion WERROR=yes 
+      env: DISTRO=ubuntu RUNTIME=legion    WERROR=yes 
     - compiler: clang
-      env: DISTRO=ubuntu_mpich MPI=ON  RUNTIME=mpilegion WERROR=yes 
+      env: DISTRO=ubuntu_mpich RUNTIME=legion WERROR=yes 
     - compiler: clang
-      env: DISTRO=ubuntu MPI=OFF  RUNTIME=serial       WERROR=yes 
+      env: DISTRO=fedora RUNTIME=legion    WERROR=yes
+    - compiler: clang
+      env: DISTRO=fedora_mpich RUNTIME=legion WERROR=yes
 
 before_install:
  - git fetch --unshallow && git fetch --tags #for versioning
@@ -52,7 +47,10 @@ script:
   - cp -r $HOME/.ccache ${HOME}/docker/ccache
   - cp -r $HOME/.sonar ${HOME}/docker/sonar
   - if [[ ${CC} != gcc ]]; then TAG="_${CC}"; fi
-  - docker build --build-arg MPI=${MPI} --build-arg RUNTIME=${RUNTIME} --build-arg CXXFLAGS=${WERROR:+-Werror}
+  - docker build 
+                --build-arg LEGION=${LEGION} 
+                --build-arg RUNTIME=${RUNTIME} 
+                --build-arg CXXFLAGS="${WERROR:+-Werror} -Wno-deprecated-declarations"
                 --build-arg COVERAGE=${COVERAGE} --build-arg MINIMAL=${MINIMAL}
                 --build-arg CC=${CC} --build-arg CXX=${CXX}
                 --build-arg SONARQUBE=${SONARQUBE} --build-arg SONARQUBE_TOKEN=${SONARQUBE_TOKEN}
@@ -105,7 +103,7 @@ cache:
 
 compiler:
   - gcc
-#  - clang
+  - clang
 
 branches:
   only:
