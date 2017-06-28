@@ -12,6 +12,7 @@
 //----------------------------------------------------------------------------//
 
 #include "flecsi/data/storage.h"
+#include "flecsi/data/data_client_handle.h"
 
 namespace flecsi {
 namespace data {
@@ -59,6 +60,20 @@ struct client_data__
     return storage_t::instance().register_client(client_key, key,
       wrapper_t::register_callback);
   } // register_data_client
+
+  template<
+    typename DATA_CLIENT_TYPE,
+    size_t NAMESPACE_HASH,
+    size_t NAME_HASH
+  >
+  static
+  data_client_handle__<DATA_CLIENT_TYPE>
+  get_client_handle()
+  {
+    data_client_handle__<DATA_CLIENT_TYPE> h;
+
+    return h;
+  }
 
 }; // struct client_data__
 

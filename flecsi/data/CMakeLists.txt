@@ -232,6 +232,23 @@ set(data_SOURCES
        NOCI
      )
 
+     cinch_add_unit(data_client_handle
+       SOURCES
+         test/data_client_handle.cc
+         data_client.cc
+         ../execution/driver_initialization.cc
+         ../execution/legion/runtime_driver.cc
+         ../execution/legion/context_policy.cc
+       DEFINES
+         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+       LIBRARIES
+         flecsi
+         ${CINCH_RUNTIME_LIBRARIES}
+       POLICY LEGION
+       THREADS 2
+       NOCI
+     )
+
    endif()
 
  endif()

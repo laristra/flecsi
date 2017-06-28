@@ -67,7 +67,7 @@ struct legion_topology_storage_policy_t
       auto& to_domain_connectivty = from_domain[domain];
       for(size_t from_dim = 0; from_dim <= ND; ++from_dim){
         auto& conn = to_domain_connectivty.get(from_dim, dim);
-        conn->entity_storage()->set_buffer(entities, num_entities);
+        conn.entity_storage()->set_buffer(entities, num_entities);
       }
     }
   }
@@ -114,7 +114,11 @@ struct legion_topology_storage_policy_t
     return D;
   }
 
-  template <class T, size_t M, class... S>
+  template<
+    class T,
+    size_t M,
+    class... S
+  >
   T * make(S &&... args)
   {    
     T* ent;
@@ -122,7 +126,7 @@ struct legion_topology_storage_policy_t
     auto & is = index_spaces[M][dim].template cast<T>();
     size_t entity_id = is.size();
 
-    auto placement_ptr = static_cast<T*>(is.storage().buffer() + entity_id);
+    auto placement_ptr = static_cast<T*>(is.storage().buffer()) + entity_id;
     ent = new (placement_ptr) T(std::forward<S>(args)...);
 
     id_t global_id = id_t::make<M>(dim, entity_id);
