@@ -164,6 +164,13 @@ void specialization_tlt_init(int argc, char ** argv) {
   flecsi_execute_mpi_task(add_colorings, 0);
 } // specialization_tlt_init
 
+void specialization_spmd_init(int argc, char ** argv) {
+  auto runtime = Legion::Runtime::get_runtime();
+  const int my_color = runtime->find_local_MPI_rank();
+  clog(error) << "Rank " << my_color << " in specialization_spmd_init" << std::endl;
+
+} // specialization_spmd_init
+
 //----------------------------------------------------------------------------//
 // User driver.
 //----------------------------------------------------------------------------//
@@ -171,7 +178,28 @@ void specialization_tlt_init(int argc, char ** argv) {
 void driver(int argc, char ** argv) {
   auto runtime = Legion::Runtime::get_runtime();
   const int my_color = runtime->find_local_MPI_rank();
-  clog(trace) << "Rank " << my_color << " in driver" << std::endl;
+  clog(error) << "Rank " << my_color << " in driver" << std::endl;
+
+  // FIXME: Following code should move to spmd_init once control point works
+  auto ctx = runtime->get_context();
+  mesh_t mesh;
+  context_t & context_ = context_t::instance();
+  auto& ispace_dmap = context_.index_space_data_map();
+  Legion::Domain exclusive_domain = runtime->get_index_space_domain(ctx,
+      ispace_dmap[INDEX_ID].exclusive_lr.get_index_space());
+  Legion::Domain shared_domain = runtime->get_index_space_domain(ctx,
+      ispace_dmap[INDEX_ID].shared_lr.get_index_space());
+  LegionRuntime::Arrays::Rect<2> exclusive_rect = exclusive_domain.get_rect<2>();
+  LegionRuntime::Arrays::Rect<2> shared_rect = shared_domain.get_rect<2>();
+  clog(error) << my_color << " exclusive " << exclusive_rect.hi.x[1] - exclusive_rect.lo.x[1] + 1 << std::endl;
+  clog(error) << my_color << " shared " << shared_rect.hi.x[1] - shared_rect.lo.x[1] + 1 << std::endl;
+
+  auto mesh_storage_policy = mesh.storage();
+  mesh_entity_base_* entities;
+  size_t dimension = 2;
+  //mesh_storage_policy->init_entities(INDEX_ID,dimension,entities,num_cells);
+  //cell* c = make<cell>();
+
 
   client_type client;
 
@@ -300,6 +328,18 @@ TEST(cell_to_cell_connectivity, testname) {
 
 } // TEST
 
+#undef M
+#undef N
+
+#undef INDEX_ID
+#undef VERSIONS
+
+#undef DIFFUSIVITY
+#undef DH
+#undef DT
+#undef LENGTH
+#undef EPS
+#undef L_INF_ERROR
 
 /*~------------------------------------------------------------------------~--*
  * Formatting options for vim.

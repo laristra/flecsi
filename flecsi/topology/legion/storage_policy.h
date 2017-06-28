@@ -12,6 +12,7 @@
 #include <arrays.h>
 
 #include "flecsi/topology/mesh_storage.h"
+#include "flecsi/topology/legion/entity_storage.h"
 
 #include <array>
 
@@ -43,7 +44,8 @@ struct legion_topology_storage_policy_t
   using id_t = utils::id_t;
 
   using index_spaces_t = 
-    std::array<index_space<mesh_entity_base_*, true, true, true>, ND + 1>;
+    std::array<index_space<mesh_entity_base_*, true, true, true,
+      void, entity_storage__>, ND + 1>;
 
   // array of array of domain_connectivity
   std::array<std::array<domain_connectivity<ND>, NM>, NM> topology;
@@ -65,7 +67,7 @@ struct legion_topology_storage_policy_t
       auto& to_domain_connectivty = from_domain[domain];
       for(size_t from_dim = 0; from_dim <= ND; ++from_dim){
         auto& conn = to_domain_connectivty.get(from_dim, dim);
-        conn->entity_storage()->set_buffer(entities, num_entities);
+        conn.entity_storage()->set_buffer(entities, num_entities);
       }
     }
   }
@@ -112,7 +114,11 @@ struct legion_topology_storage_policy_t
     return D;
   }
 
-  template <class T, size_t M, class... S>
+  template<
+    class T,
+    size_t M,
+    class... S
+  >
   T * make(S &&... args)
   {    
     T* ent;
@@ -120,12 +126,11 @@ struct legion_topology_storage_policy_t
     auto & is = index_spaces[M][dim].template cast<T>();
     size_t entity_id = is.size();
 
-    auto placement_ptr = static_cast<T*>(is.storage().buffer() + entity_id);
+    auto placement_ptr = static_cast<T*>(is.storage().buffer()) + entity_id;
     ent = new (placement_ptr) T(std::forward<S>(args)...);
 
     id_t global_id = id_t::make<M>(dim, entity_id);
-    auto typed_ent = static_cast<mesh_entity_base_t<NM>*>(ent);
-    typed_ent->template set_global_id<M>(global_id);
+    ent->template set_global_id<M>(global_id);
 
     is.push_back(ent);
 

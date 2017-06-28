@@ -240,8 +240,6 @@ public:
 
   // Don't allow the mesh to be copied or copy constructed
 
-  mesh_topology_t(const mesh_topology_t &) = delete;
-
   mesh_topology_t & operator=(const mesh_topology_t &) = delete;
 
   // Allow move operations
@@ -294,11 +292,20 @@ public:
     base_t::set_storage(ms_);
   }
 
+  //! Copy constructor
+  mesh_topology_t(const mesh_topology_t& m)
+  : ms_(m.ms_),
+    master_(false){}
+
   // The mesh retains ownership of the entities and deletes them
   // upon mesh destruction
   virtual
   ~mesh_topology_t()
   {
+    if(!master_){
+      return;
+    }
+
     for (size_t m = 0; m < MT::num_domains; ++m) {
       for (size_t d = 0; d <= MT::num_dimensions; ++d) {
         auto & is = ms_->index_spaces[m][d];
@@ -1080,6 +1087,7 @@ public:
   }
 
 private:
+  bool master_ = true;
 
   mesh_storage_t<MT::num_dimensions, MT::num_domains>* ms_;
 

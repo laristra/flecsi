@@ -75,9 +75,7 @@ public:
   template<
     typename ... Args
   >
-  void push_back(Args && ... args){
-    assert(false && "unimplemented");
-  }
+  void push_back(Args && ... args){}
 
   void
   clear()
