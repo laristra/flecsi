@@ -18,6 +18,8 @@
 #include <exodusII.h>
 
 // system includes
+#include <algorithm>
+#include <cstring>
 #include <fstream>
 #include <unordered_map>
 #include <string>
@@ -92,34 +94,66 @@ public:
   //============================================================================
   //! \brief open the file for reading or writing
   //! \param [in] name  The name of the file to open.
+  //! \param [in] mode  The mode to open the file in.
   //! \return The exodus handle for the open file.
   //============================================================================
-  static auto open( const std::string &name ) 
+  static auto open( const std::string &name, std::ios_base::openmode mode) 
   {
    
-
 #ifdef DEBUG
-      // useful for debug
-      ex_opts (EX_ABORT | EX_VERBOSE);
+    // useful for debug
+    ex_opts (EX_ABORT | EX_VERBOSE);
 #endif
 
     // size of floating point variables used in app.
     int app_word_size = sizeof(real_t);
 
-    // size of floating point stored in name.
-    int exo_word_size = 0;
-    // the version number
-    float version;
+    if ( (mode & std::ios_base::in) == std::ios_base::in ) 
+    {
+
+      // size of floating point stored in name.
+      int exo_word_size = 0;
+      // the version number
+      float version;
     
-    // open the file
-    auto exo_id = ex_open(
-      name.c_str(), EX_READ, &app_word_size, &exo_word_size, &version);
-    if ( exo_id < 0 ) 
-      clog_fatal( 
-        "Problem opening exodus file, ex_open() returned " << exo_id 
-      );
+      // open the file
+      auto exo_id = ex_open(
+        name.c_str(), EX_READ, &app_word_size, &exo_word_size, &version);
+      if ( exo_id < 0 ) 
+        clog_fatal( 
+          "Problem opening exodus file, ex_open() returned " << exo_id 
+        );
     
-    return exo_id;
+      return exo_id;
+
+    }
+    else if ( (mode & std::ios_base::out) == std::ios_base::out ) 
+    {
+      
+      // size of floating point to be stored in file.
+      // change to float to save space
+      int exo_word_size = sizeof(real_t);
+
+      // determine the file creation mode
+      int cmode = EX_CLOBBER;
+
+      // create file
+      auto exo_id =
+        ex_create(name.c_str(), cmode, &app_word_size, &exo_word_size);
+      if ( exo_id < 0 ) 
+        clog_fatal( 
+          "Problem writing exodus file, ex_create() returned " << exo_id
+        );
+    
+      return exo_id;
+
+    }
+    else {
+
+      clog_fatal( "Unknown file mode" );
+      return -1;
+
+    }
   }
 
   //============================================================================
@@ -206,6 +240,57 @@ public:
       );
 
     return vertex_coord;
+
+  }
+
+  //============================================================================
+  //! \brief write the coordinates of the mesh from a file.
+  //! \param [in] exo_id  The exodus file id.
+  //! \param [in] vertex_coord  the vertex coordinates
+  //============================================================================
+  template< typename V >
+  static auto write_point_coords( int exo_id, const V & vertex_coord ) 
+  { 
+
+    // get the exodus parameters
+    auto exo_params = read_params( exo_id );
+    
+    // get the number of nodes
+    auto num_nodes = exo_params.num_nodes;
+    if ( num_nodes <= 0 )  
+      clog_fatal(
+        "Exodus file has zero nodes, or parmeters haven't been read yet."
+      );
+
+    // the number of dimensions
+    auto num_dims = exo_params.num_dim;
+    if ( num_dims != dimension() )  
+      clog_fatal(
+        "Exodus file has mismatching dimension."
+      );
+
+    // Check to make sure we are writing the write amount of data
+    auto len = vertex_coord.size();
+    if ( len != num_dims * num_nodes )
+      clog_fatal(
+        "Length of vertex array does not match pre-set exodus sizes, " <<
+        "vector size (" << len << ") /= correct length (" << 
+        num_dims * num_nodes << ")."
+      );
+
+    // exodus is kind enough to fetch the data in the real type we ask for
+    auto status = ex_put_coord( 
+      exo_id, 
+      vertex_coord.data(), 
+      vertex_coord.data()+num_nodes, 
+      vertex_coord.data()+2*num_nodes
+    );
+
+    if (status)
+      clog_fatal(
+        "Problem getting vertex coordinates from exodus file, " <<
+        " ex_put_coord() returned " << status 
+      );
 
   }
   
@@ -542,7 +627,7 @@ public:
     clog(info) << "Reading mesh from: " << name << std::endl;
 
     // open the exodus file
-    auto exoid = open( name );
+    auto exoid = open( name, std::ios_base::in );
     if ( exoid < 0 )
       clog_fatal( "Problem reading exodus file" );
 
@@ -577,6 +662,78 @@ public:
       cells_.rows() == exo_params.num_elem,
       "Mismatch in read blocks"
     );
+
+    // close the file
+    close( exoid );
+  }
+
+  //============================================================================
+  //! \brief Implementation of exodus mesh write for burton specialization.
+  //!
+  //! \param[in] name Read burton mesh \e m from \e name.
+  //!
+  //! \return Exodus error code. 0 on success.
+  //============================================================================
+  void write( const std::string &name )
+  {
+
+    clog(info) << "Writing mesh to: " << name << std::endl;
+
+    // open the exodus file
+    auto exoid = open( name, std::ios_base::out );
+    if ( exoid < 0 )
+      clog_fatal( "Problem opening exodus file for write" );
+
+    // get the number of dimensions
+    constexpr auto num_dims = dimension();
+
+    // write the exodus parameters to file
+    ex_init_params exopar;
+    strcpy( exopar.title, "Exodus II output from flecsi." );
+    exopar.num_dim = num_dims;
+    exopar.num_nodes = num_entities(0);
+    exopar.num_edge = 0;
+    exopar.num_edge_blk = 0;
+    if ( num_dims == 3 ) {
+      exopar.num_face = 0; //num_faces;
+      exopar.num_face_blk = 0; //1
+    }
+    else {
+      exopar.num_face = 0;
+      exopar.num_face_blk = 0;
+    }
+    exopar.num_elem = num_entities( num_dims );
+    exopar.num_elem_blk = 1; //num_elem_blk;
+    exopar.num_node_sets = 0;
+    exopar.num_edge_sets = 0;
+    exopar.num_face_sets = 0;
+    exopar.num_side_sets = 0;
+    exopar.num_elem_sets = 0;    
+    exopar.num_node_maps = 0;
+    exopar.num_edge_maps = 0;
+    exopar.num_face_maps = 0;
+    exopar.num_elem_maps = 0;
+    auto status = ex_put_init_ext( exoid, &exopar );
+    if ( status ) 
+      clog_fatal( 
+        "Problem opening exodus file, ex_put_init_ext() returned " << status
+      );
+
+    // write coordinates
+    write_point_coords(exoid, vertices_);
+
+#if 0
+   // read blocks
+    if ( int64 )
+      cells_ = read_element_blocks<long long>( exoid );
+    else 
+      cells_ = read_element_blocks<int>( exoid );
+    
+    clog_assert( 
+      cells_.rows() == exo_params.num_elem,
+      "Mismatch in read blocks"
+    );
+#endif
 
     // close the file
     close( exoid );

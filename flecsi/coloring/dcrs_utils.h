@@ -103,13 +103,26 @@ make_dcrs(
 
 #endif
 
+/// Create an initial naive partitioning
+///
+/// \tparam FROM_DIM The topological dimension of the entity for which
+///                  the partitioning is requested.
+/// \tparam TO_DIM The topological dimension to search for neighbors.
+/// \tparam THRU_DIM The topological dimension through which the neighbor
+///                  connection exists.
 ///
 /// \param md The mesh definition.
 ///
+template< 
+  std::size_t D, 
+  std::size_t FROM_DIM=D, 
+  std::size_t TO_DIM=D, 
+  std::size_t THRU_DIM = D-1
+>
 inline
 dcrs_t
 make_dcrs(
-  topology::mesh_definition__<2> & md
+  const typename topology::mesh_definition__<D> & md
 )
 {
 	int size;
@@ -122,8 +135,8 @@ make_dcrs(
   // Create a naive initial distribution of the indices
   //--------------------------------------------------------------------------//
 
-	size_t quot = md.num_entities(2)/size;
-	size_t rem = md.num_entities(2)%size;
+	size_t quot = md.num_entities(FROM_DIM)/size;
+	size_t rem = md.num_entities(FROM_DIM)%size;
 
   // Each rank gets the average number of indices, with higher ranks
   // getting an additional index for non-zero remainders.
@@ -154,10 +167,11 @@ make_dcrs(
     // a matching criteria of "md.dimension()" vertices. The dimension
     // argument will pick neighbors that are adjacent across facets, e.g.,
     // across edges in two dimension, or across faces in three dimensions.
-//    auto neighbors =
-//      io::cell_neighbors(md, dcrs.distribution[rank] + i, md.dimension());
     auto neighbors =
-      topology::entity_neighbors<2,2,1>(md, dcrs.distribution[rank] + i);
+      topology::entity_neighbors<FROM_DIM,TO_DIM,THRU_DIM>(
+        md, 
+        dcrs.distribution[rank] + i
+      );
 
 #if 0
       if(rank == 1) {
@@ -175,22 +189,6 @@ make_dcrs(
 
       dcrs.offsets.push_back(dcrs.offsets[i] + neighbors.size());
   } // for
-
-#if 0
-  if(rank == 1) {
-    std::cout << "offsets: ";
-    for(auto i: dcrs.offsets) {
-      std::cout << i << " ";
-    } // for
-    std::cout << std::endl;
-
-    std::cout << "indices: ";
-    for(auto i: dcrs.indices) {
-      std::cout << i << " ";
-    } // for
-    std::cout << std::endl;
-  } // if
-#endif
 
   return dcrs;
 } // make_dcrs

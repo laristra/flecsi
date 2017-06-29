@@ -128,6 +128,18 @@ cinch_add_devel_target(coloring
   THREADS 5
 )
 
+cinch_add_devel_target(color-exodus
+  SOURCES test/color-exodus.cc
+  INPUTS
+    test/exodus2d-mixed.exo
+    test/exodus3d-hex.exo
+  LIBRARIES
+    ${COLORING_LIBRARIES}
+    ${EXODUSII_LIBRARIES}
+  POLICY MPI
+  THREADS 5
+)
+
 endif()
 
 #----------------------------------------------------------------------------~-#

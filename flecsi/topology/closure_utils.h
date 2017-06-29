@@ -40,7 +40,7 @@ template<
 >
 std::set<size_t>
 entity_neighbors(
-  mesh_definition__<D> & md,
+  const mesh_definition__<D> & md,
   size_t entity_id
 )
 {
@@ -98,7 +98,7 @@ template<
 >
 std::set<size_t>
 entity_closure(
-  mesh_definition__<D> & md,
+  const mesh_definition__<D> & md,
   U && indices
 )
 {
@@ -133,7 +133,7 @@ template<
 >
 std::set<size_t>
 vertex_referencers(
-  mesh_definition__<D> & md,
+  const mesh_definition__<D> & md,
   size_t id
 )
 {
@@ -172,7 +172,7 @@ template<
 >
 std::set<size_t>
 vertex_closure(
-  mesh_definition__<D> & md,
+  const mesh_definition__<D> & md,
   std::set<size_t> indices
 )
 {
