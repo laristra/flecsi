@@ -33,7 +33,7 @@ template<
   size_t INDEX_SPACE,
   size_t VERSIONS
 >
-struct mpi_registration_wrapper__
+struct mpi_field_registration_wrapper__
 {
   using field_id_t = size_t;
 
@@ -76,7 +76,7 @@ struct mpi_registration_wrapper__
     }
   } // register_callback
 
-}; // class mpi_registration_wrapper_t
+}; // class mpi_field_registration_wrapper_t
 
 ///
 /// \class registration_wrapper_t registration_wrapper.h

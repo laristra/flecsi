@@ -25,6 +25,7 @@
 //----------------------------------------------------------------------------//
 
 #include "flecsi/data/common/data_types.h"
+#include "flecsi/data/common/privilege.h"
 #include "flecsi/data/data_client.h"
 #include "flecsi/data/data_handle.h"
 #include "flecsi/utils/const_string.h"
@@ -449,7 +450,7 @@ private:
 /// FIXME: Dense storage type.
 ///
 template<>
-struct storage_type_t<dense>
+struct storage_type__<dense>
 {
   //--------------------------------------------------------------------------//
   // Type definitions.

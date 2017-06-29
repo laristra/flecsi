@@ -31,14 +31,14 @@ namespace data {
 namespace POLICY_NAMESPACE {
 
   ///
-  /// \struct storage_type_t
+  /// \struct storage_type__
   ///
   /// \tparam T Specialization parameter.
   /// \tparam ST Data store type.
   /// \tparam MD Metadata type.
   ///
   template<size_t STORAGE_TYPE>
-  struct storage_type_t {};
+  struct storage_type__ {};
 
 } // namespace POLICY_NAMESPACE
 } // namespace data

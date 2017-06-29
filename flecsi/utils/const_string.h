@@ -99,7 +99,7 @@ public:
   hash()
   const
   {
-    return flecsi::utils::hash<hash_type_t>( str_, size_ );
+    return flecsi::utils::string_hash<hash_type_t>( str_, size_ );
   } // hash
 
   ///

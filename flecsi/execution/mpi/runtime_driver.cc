@@ -8,6 +8,9 @@
 //! \date Initial file creation: Jul 26, 2016
 //----------------------------------------------------------------------------//
 
+#include <cstddef>
+#include <cstdint>
+
 #include "flecsi/data/data.h"
 #include "flecsi/execution/mpi/runtime_driver.h"
 

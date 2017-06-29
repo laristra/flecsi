@@ -8,7 +8,7 @@
 /// \date Initial file creation: Apr 11, 2017
 ///
 
-#define DH2
+#define DH20
 
 #include <cinchtest.h>
 
@@ -23,56 +23,114 @@
 #include "flecsi/topology/closure_utils.h"
 #include "flecsi/utils/set_utils.h"
 #include "flecsi/data/data.h"
+#include "flecsi/data/data_client_handle.h"
 #include "flecsi/supplemental/coloring/add_colorings.h"
+#include "flecsi/topology/mesh_topology.h"
 
+using namespace std;
 using namespace flecsi;
+using namespace topology;
 
 clog_register_tag(coloring);
 
-#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
-template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t =
-  data::legion::dense_handle_t<T, EP, SP, GP>;
-#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
-template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t =
-  data::mpi::dense_handle_t<T, EP, SP, GP>;
-#endif
+class vertex : public mesh_entity_t<0, 1>{
+public:
+  template<size_t M>
+  uint64_t precedence() const { return 0; }
+  vertex() = default;
 
-void task1(handle_t<double, dro, dno, dno> x, double y) {
+};
+
+class edge : public mesh_entity_t<1, 1>{
+public:
+};
+
+class face : public mesh_entity_t<1, 1>{
+public:
+};
+
+class cell : public mesh_entity_t<2, 1>{
+public:
+
+  using id_t = flecsi::utils::id_t;
+
+  std::vector<size_t>
+  create_entities(id_t cell_id, size_t dim, domain_connectivity<2> & c, id_t * e){
+    id_t* v = c.get_entities(cell_id, 0);
+
+    e[0] = v[0];
+    e[1] = v[2];
+    
+    e[2] = v[1];
+    e[3] = v[3];
+    
+    e[4] = v[0];
+    e[5] = v[1];
+    
+    e[6] = v[2];
+    e[7] = v[3];
+
+    return {2, 2, 2, 2};
+  }
+
+};
+
+class test_mesh_types_t{
+public:
+  static constexpr size_t num_dimensions = 2;
+
+  static constexpr size_t num_domains = 1;
+
+  using entity_types = std::tuple<
+    std::pair<domain_<0>, vertex>,
+    std::pair<domain_<0>, edge>,
+    std::pair<domain_<0>, cell>>;
+
+  using connectivities = 
+    std::tuple<std::tuple<domain_<0>, vertex, edge>,
+               std::tuple<domain_<0>, vertex, cell>,
+               std::tuple<domain_<0>, edge, vertex>,
+               std::tuple<domain_<0>, edge, cell>,
+               std::tuple<domain_<0>, cell, vertex>,
+               std::tuple<domain_<0>, cell, edge>>;
+
+  using bindings = std::tuple<>;
+
+  template<size_t M, size_t D, typename ST>
+  static mesh_entity_base_t<num_domains>*
+  create_entity(mesh_topology_base_t<ST>* mesh, size_t num_vertices){
+    switch(M){
+      case 0:{
+        switch(D){
+          case 1:
+            return mesh->template make<edge>(*mesh);
+          default:
+            assert(false && "invalid topological dimension");
+        }
+        break;
+      }
+      default:
+        assert(false && "invalid domain");
+    }
+  }
+};
+
+using test_mesh_t = mesh_topology_t<test_mesh_types_t>;
+
+template<typename T, size_t EP, size_t SP, size_t GP>
+using handle_t = 
+  data::legion::dense_handle_t<T, EP, SP, GP>;
+
+template<typename DC>
+using client_handle_t = data_client_handle__<DC>;
+
+void task1(client_handle_t<test_mesh_t> mesh) {
   //np(y);
 } // task1
 
-void data_handle_dump(handle_t<double, drw, dro, dro> x) {
-  clog(info) << "label: " << x.label() << std::endl;
-  clog(info) << "combined size: " << x.size() << std::endl;
-  clog(info) << "exclusive size: " << x.exclusive_size() << std::endl;
-  clog(info) << "shared size: " << x.shared_size() << std::endl;
-  clog(info) << "ghost size: " << x.ghost_size() << std::endl;
-}
-
-void exclusive_writer(handle_t<double, dwd, dno, dno> x) {
-  clog(info) << "exclusive writer write" << std::endl;
-  for (int i = 0; i < x.exclusive_size(); i++) {
-    x(i) = static_cast<double>(i);
-  }
-}
-
-void exclusive_reader(handle_t<double, dro, dno, dno> x) {
-  clog(info) << "exclusive reader read: " << std::endl;
-  for (int i = 0; i < x.exclusive_size(); i++) {
-    ASSERT_EQ(x(i), static_cast<double>(i));
-  }
-}
-
 flecsi_register_task(task1, loc, single);
-flecsi_register_task(data_handle_dump, loc, single);
-flecsi_register_task(exclusive_writer, loc, single);
-flecsi_register_task(exclusive_reader, loc, single);
 
-class client_type : public flecsi::data::data_client_t{};
-
-flecsi_register_field(client_type, ns, pressure, double, dense, 0, 1);
+//flecsi_register_data(client_type, ns, pressure, double, dense, 0, 1);
 
 namespace flecsi {
 namespace execution {
@@ -83,8 +141,8 @@ namespace execution {
 
 void specialization_tlt_init(int argc, char ** argv) {
   clog(info) << "In specialization top-level-task init" << std::endl;
-
   flecsi_execute_mpi_task(add_colorings, 0);
+
 } // specialization_tlt_init
 
 //----------------------------------------------------------------------------//
@@ -94,18 +152,13 @@ void specialization_tlt_init(int argc, char ** argv) {
 void driver(int argc, char ** argv) {
   clog(info) << "In driver" << std::endl;
 
-  client_type c;
-
   int rank, size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  auto h = flecsi_get_handle(c, ns, pressure, double, dense, 0);
+  auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
 
-//  flecsi_execute_task(task1, single, h, 128);
-  flecsi_execute_task(data_handle_dump, single, h);
-  flecsi_execute_task(exclusive_writer, single, h);
-  flecsi_execute_task(exclusive_reader, single, h);
+  flecsi_execute_task(task1, single, ch);
 } // specialization_driver
 
 //----------------------------------------------------------------------------//
@@ -124,4 +177,4 @@ TEST(data_handle, testname) {
  * vim: set tabstop=2 shiftwidth=2 expandtab :
  *~------------------------------------------------------------------------~--*/
 
-#undef DH2
+#undef DH20

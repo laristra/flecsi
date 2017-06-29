@@ -15,8 +15,6 @@ class Vertex : public mesh_entity_t<0, 2>{
 public:
   Vertex(){}
 
-  Vertex(mesh_topology_base_t &){}
-
   template<size_t M>
   uint64_t precedence() const { return 0; }
 };
@@ -25,7 +23,6 @@ class Edge : public mesh_entity_t<1, 2>{
 public:
   Edge(){}
 
-  Edge(mesh_topology_base_t &){}
 };
 
 class Cell : public mesh_entity_t<2, 2>{
@@ -33,8 +30,6 @@ public:
   using id_t = flecsi::utils::id_t;
 
   Cell(){}
-
-  Cell(mesh_topology_base_t &){}
 
   void set_precedence(size_t dim, uint64_t precedence) {}
 
@@ -111,15 +106,11 @@ public:
 class Corner : public mesh_entity_t<0, 2>{
 public:
   Corner(){}
-
-  Corner(mesh_topology_base_t &){}
 };
 
 class Wedge : public mesh_entity_t<1, 2>{
 public:
   Wedge(){}
-
-  Wedge(mesh_topology_base_t &){}
 };
 
 class TestMesh2dType{
@@ -158,14 +149,14 @@ public:
               std::tuple<domain_<1>, domain_<0>, Wedge, Edge>,
               std::tuple<domain_<1>, domain_<0>, Wedge, Vertex>>;
 
-  template<size_t M, size_t D>
+  template<size_t M, size_t D, typename ST>
   static mesh_entity_base_t<num_domains>*
-  create_entity(mesh_topology_base_t* mesh, size_t num_vertices){
+  create_entity(mesh_topology_base_t<ST>* mesh, size_t num_vertices){
     switch(M){
       case 0:{
         switch(D){
           case 1:
-            return mesh->make<Edge>();
+            return mesh->template make<Edge>();
           default:
             assert(false);
         }
@@ -174,9 +165,9 @@ public:
       case 1:{
         switch(D){
           case 0:
-            return mesh->make<Corner>();
+            return mesh->template make<Corner, 1>();
           case 1:
-            return mesh->make<Wedge>();
+            return mesh->template make<Wedge, 1>();
           default:
             assert(false);
         }
@@ -202,7 +193,6 @@ TEST(mesh_topology, traversal) {
   for(size_t j = 0; j < height + 1; ++j){
     for(size_t i = 0; i < width + 1; ++i){
       auto v = mesh->make<Vertex>();
-      mesh->add_entity<0,0>(v);
       vs.push_back(v); 
     }
   }
@@ -211,7 +201,6 @@ TEST(mesh_topology, traversal) {
   for(size_t j = 0; j < height; ++j){
     for(size_t i = 0; i < width; ++i){
       auto c = mesh->make<Cell>();
-      mesh->add_entity<2, 0>(c);
 
       mesh->init_cell<0>(c,
                          {vs[i + j * width1],

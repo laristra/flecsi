@@ -153,6 +153,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
         ${COLORING_LIBRARIES}
       DEFINES
         -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
       POLICY ${UNIT_POLICY}
     )
@@ -298,6 +299,28 @@ if((FLECSI_RUNTIME_MODEL STREQUAL "serial")
           ${COLORING_LIBRARIES}
         DEFINES
           -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+          -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+        POLICY LEGION
+        THREADS 2
+	NOCI
+      )
+
+      cinch_add_unit(cell_to_cell_connectivity
+        SOURCES
+          test/legion/cell_to_cell_connectivity_drivers.cc
+          ../supplemental/coloring/add_colorings.cc
+          ${DRIVER_INITIALIZATION}
+          ${RUNTIME_DRIVER}
+        INPUTS
+          test/simple2d-8x8.msh
+          test/simple2d-16x16.msh
+        LIBRARIES
+          flecsi
+          ${CINCH_RUNTIME_LIBRARIES}
+          ${COLORING_LIBRARIES}
+        DEFINES
+          -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+          -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
           -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
         POLICY LEGION
         THREADS 2
