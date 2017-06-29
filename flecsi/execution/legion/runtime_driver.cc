@@ -229,6 +229,15 @@ runtime_driver(
     args_serializers[color].serialize(
       &context_.registered_fields()[0], num_fields * sizeof(field_info_t));
 
+    size_t num_adjacenicies = data.adjacencies().size();
+
+    std::vector<size_t> adjacencies_vec;
+    adjacencies_vec.insert(adjacencies_vec.begin(),
+      data.adjacencies().begin(), data.adjacencies().end());
+    args_serializers[color].serialize(&num_adjacenicies, sizeof(size_t));
+    args_serializers[color].serialize(&adjacencies_vec[0], num_adjacenicies
+        * sizeof(size_t));
+
     Legion::TaskLauncher spmd_launcher(spmd_id,
         Legion::TaskArgument(args_serializers[color].get_buffer(),
                              args_serializers[color].get_used_bytes()));
@@ -298,6 +307,28 @@ runtime_driver(
       } // for ghost_owner
 
     } // for idx_space
+
+    for(size_t adjacency_idx_space : data.adjacencies()){
+      auto& adjacency = data.adjacency(adjacency_idx_space);
+
+      Legion::LogicalPartition color_lpart =
+        runtime->get_logical_partition(ctx,
+          adjacency.logical_region, adjacency.index_partition);
+      
+      Legion::LogicalRegion color_lregion =
+        runtime->get_logical_subregion_by_color(ctx, color_lpart, color);
+
+      Legion::RegionRequirement
+        reg_req(color_lregion, READ_WRITE, SIMULTANEOUS,
+          adjacency.logical_region);
+
+        auto adjacency_index_fid = 
+          LegionRuntime::HighLevel::FieldID(internal_field::adjacency_index);
+
+      reg_req.add_field(adjacency_index_fid);
+
+      spmd_launcher.add_region_requirement(reg_req);
+    }
 
     Legion::DomainPoint point(color);
     must_epoch_launcher.add_single_task(point, spmd_launcher);

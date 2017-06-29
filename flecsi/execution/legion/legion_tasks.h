@@ -254,6 +254,13 @@ __flecsi_internal_legion_task(spmd_task, void) {
     context_.put_field_info(fi);
   }
 
+  size_t num_adjacencies;
+  args_deserializer.deserialize(&num_adjacencies, sizeof(size_t));
+
+  size_t* adjacencies = (size_t*)malloc(sizeof(size_t) * num_adjacencies);
+  args_deserializer.deserialize((void*)adjacencies,
+    sizeof(size_t) * num_adjacencies);
+
   // Prevent these objects destructors being called until after driver()
   std::vector<std::vector<Legion::LogicalRegion>>
     ghost_owners_lregions(num_idx_spaces);
@@ -435,6 +442,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
   free((void*)num_owners);
   free((void*)pbarriers_as_owner);
   free((void*)idx_spaces);
+  free((void*)adjacencies);
 
 } // spmd_task
 
