@@ -42,12 +42,12 @@ template<
 void
 checksum(
   T * buffer,
-  size_t elements,
+  std::size_t elements,
   checksum_t & sum,
   const char * digest = "md5"
 )
 {
-  size_t bytes = elements*sizeof(T);
+  std::size_t bytes = elements*sizeof(T);
 
   EVP_MD_CTX ctx;
 
@@ -76,7 +76,7 @@ checksum(
   char tmp[256];
   strcpy(sum.strvalue, "");
 
-  for(size_t i(0); i<sum.length; i++) {
+  for(std::size_t i(0); i<sum.length; i++) {
     sprintf(tmp, "%02x", sum.value[i]);
     strcat(sum.strvalue, tmp);
   } // for

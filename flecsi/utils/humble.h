@@ -7,7 +7,7 @@
 #define flecsi_utils_humble_h
 
 //!
-//! \file humble.h
+//! \file
 //!
 
 //#include <iostream>

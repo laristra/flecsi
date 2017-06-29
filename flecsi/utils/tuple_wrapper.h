@@ -7,7 +7,7 @@
 #define flecsi_utils_tuple_wrapper_h
 
 //!
-//! \file tuple_wrapper.h
+//! \file
 //! \date Initial file creation: Jul 28, 2016
 //!
 
@@ -29,7 +29,7 @@ struct tuple_wrapper_ : generic_tuple_t {
 
   tuple_wrapper_(Args ... args) : t_(std::make_tuple(args ...)) {}
 
-  template<size_t I>
+  template<std::size_t I>
   decltype(auto) get() { return std::get<I>(t_); }
 
 private:

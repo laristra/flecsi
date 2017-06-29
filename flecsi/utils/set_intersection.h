@@ -16,7 +16,7 @@
 #define flecsi_utils_set_intersection_h
 
 //!
-//! \file  set_intersection.h
+//! \file
 //! \brief Detect set intersections.
 //!
 
