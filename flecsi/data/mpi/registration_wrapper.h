@@ -57,23 +57,8 @@ struct mpi_field_registration_wrapper__
     fi.fid = fid;
 
     execution::context_t::instance().register_field_info(fi);
-
-    // FIXME: TBD
-    auto& context = execution::context_t::instance();
-    auto& field_info = context.registered_fields()[0];
-
-    clog(info) << "index space: " << field_info.index_space << std::endl;
-
-    auto infos = context.coloring_info(field_info.index_space);
-    for (auto pair : infos) {
-      clog(info) << "number of exclusive: " << pair.second.exclusive << std::endl;
-    }
-    for (auto pair : infos) {
-      clog(info) << "number of shared: " << pair.second.shared << std::endl;
-    }
-    for (auto pair : infos) {
-      clog(info) << "number of ghost: " << pair.second.ghost << std::endl;
-    }
+    auto infos = execution::context_t::instance().coloring_info(fi.index_space);
+    execution::context_t::instance().register_field_data(fi, infos);
   } // register_callback
 
 }; // class mpi_field_registration_wrapper_t

@@ -93,16 +93,17 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
 	///
   /// Copy constructor.
 	///
-	dense_handle_t(
-    const dense_handle_t & a
-  )
-  :
-    label_(a.label_)
-  {}
+//	dense_handle_t(
+//    const dense_handle_t & a
+//  )
+//  :
+//    label_(a.label_)
+//  {}
 
   template<size_t EP2, size_t SP2, size_t GP2>
   dense_handle_t(const dense_handle_t<T, EP2, SP2, GP2> & h)
-    : label_(h.label_)
+    : base(reinterpret_cast<const base&>(h)),
+      label_(h.label_)
   {}
 
   //--------------------------------------------------------------------------//
@@ -878,6 +879,7 @@ struct storage_type__<dense>
 
     // populate data member of data_handle_t
     auto &hb = dynamic_cast<data_handle__<DATA_TYPE, 0, 0, 0>&>(h);
+
     hb.index_space = field_info.index_space;
 
     hb.exclusive_size = color_info.exclusive;

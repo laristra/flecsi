@@ -41,6 +41,10 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
   set(UNIT_POLICY SERIAL)
   set(RUNTIME_DRIVER ../execution/serial/runtime_driver.cc)
+  set(topology_HEADERS
+    ${topology_HEADERS}
+    serial/storage_policy.h
+    )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
@@ -52,6 +56,10 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
+  set(topology_HEADERS
+      ${topology_HEADERS}
+      mpi/storage_policy.h
+    )
 
   set(UNIT_POLICY MPI)
   set(RUNTIME_DRIVER ../execution/mpi/runtime_driver.cc)
