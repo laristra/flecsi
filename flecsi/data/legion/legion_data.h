@@ -185,10 +185,8 @@ public:
     clog_assert(titr != index_space_map_.end(), "invalid to index space");
     const index_space_t& ti = titr->second;
 
-    auto p = std::make_pair(c.from_index_space_id, c.to_index_space_id);
-
-    auto citr = adjacency_map_.find(p);
-    clog_assert(citr != adjacency_map_.end(),
+    auto citr = adjacency_map_.find(c.index_space_id);
+    clog_assert(citr == adjacency_map_.end(),
       "invalid adjacency info");
     const adjacency_t& ci = citr->second;
 
@@ -234,7 +232,7 @@ public:
       c.index_space, color_domain_, color_partitioning, true /*disjoint*/);
     attach_name(c, c.index_partition, "color partitioning");
 
-    adjacency_map_.emplace(p, std::move(c));
+    adjacency_map_.emplace(c.index_space_id, std::move(c));
   }
 
   void
@@ -279,7 +277,8 @@ public:
         adjacency_t& a = aitr.second;
 
         FieldID adjacency_fid = 
-          context.adjacency_fid(aitr.first.first, aitr.first.second);
+          context.adjacency_fid(aitr.second.from_index_space_id,
+          aitr.second.to_index_space_id);
 
         allocator.allocate_field(sizeof(Point<2>), adjacency_fid);
       }
@@ -333,7 +332,7 @@ public:
     return color_domain_;
   }
 
-  const std::map<std::pair<size_t, size_t>, adjacency_t>&
+  const std::unordered_map<size_t, adjacency_t>&
   adjacency_map()
   const
   {
@@ -342,8 +341,7 @@ public:
 
   void
   fill_adjacency(
-    size_t from_index_space,
-    size_t to_index_space,
+    size_t index_space_id,
     size_t color,
     size_t size,
     uint64_t* offsets,
@@ -360,10 +358,10 @@ public:
 
     context_t & context = context_t::instance();
 
-    auto itr = adjacency_map_.find({from_index_space, to_index_space});
+    auto itr = adjacency_map_.find(index_space_id);
     clog_assert(itr != adjacency_map_.end(), "invalid adjacency");
     adjacency_t& c = itr->second;
-    index_space_t& iis = index_space_map_[from_index_space];
+    index_space_t& iis = index_space_map_[c.from_index_space_id];
 
     IndexSpace is = h.create_index_space(0, size - 1);
     FieldSpace fs = h.create_field_space();
@@ -403,9 +401,9 @@ public:
       context.task_id<__flecsi_internal_task_key(fill_adjacency_task)>();
 
     FieldID adjacency_fid = 
-      context.adjacency_fid(from_index_space, to_index_space);
+      context.adjacency_fid(c.from_index_space_id, c.to_index_space_id);
 
-    auto p = std::make_tuple(from_index_space, to_index_space, size);    
+    auto p = std::make_tuple(c.from_index_space_id, c.to_index_space_id, size);    
 
     TaskLauncher l(fill_adjacency_tid, TaskArgument(&p, sizeof(p)));
 
@@ -468,7 +466,7 @@ private:
 
   std::unordered_map<size_t, index_space_t> index_space_map_;
   
-  std::map<std::pair<size_t, size_t>, adjacency_t> adjacency_map_;
+  std::unordered_map<size_t, adjacency_t> adjacency_map_;
 
   template<
     class T

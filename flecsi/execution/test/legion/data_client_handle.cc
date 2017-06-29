@@ -16,6 +16,7 @@
 #include "flecsi/execution/context.h"
 #include "flecsi/io/simple_definition.h"
 #include "flecsi/coloring/coloring_types.h"
+#include "flecsi/coloring/adjacency_types.h"
 #include "flecsi/coloring/communicator.h"
 #include "flecsi/coloring/dcrs_utils.h"
 #include "flecsi/coloring/parmetis_colorer.h"
@@ -30,6 +31,8 @@
 using namespace std;
 using namespace flecsi;
 using namespace topology;
+using namespace execution;
+using namespace coloring;
 
 clog_register_tag(coloring);
 
@@ -82,17 +85,11 @@ public:
   static constexpr size_t num_domains = 1;
 
   using entity_types = std::tuple<
-    std::tuple<index_space_<0>, domain_<0>, vertex>,
-    std::tuple<index_space_<1>, domain_<0>, edge>,
-    std::tuple<index_space_<2>, domain_<0>, cell>>;
+    std::tuple<index_space_<0>, domain_<0>, cell>,
+    std::tuple<index_space_<1>, domain_<0>, vertex>>;
 
   using connectivities = 
-    std::tuple<std::tuple<index_space_<3>, domain_<0>, vertex, edge>,
-               std::tuple<index_space_<4>, domain_<0>, vertex, cell>,
-               std::tuple<index_space_<5>, domain_<0>, edge, vertex>,
-               std::tuple<index_space_<6>, domain_<0>, edge, cell>,
-               std::tuple<index_space_<7>, domain_<0>, cell, vertex>,
-               std::tuple<index_space_<8>, domain_<0>, cell, edge>>;
+    std::tuple<std::tuple<index_space_<2>, domain_<0>, cell, vertex>>;
 
   using bindings = std::tuple<>;
 
@@ -130,7 +127,7 @@ void task1(client_handle_t<test_mesh_t> mesh) {
 
 flecsi_register_task(task1, loc, single);
 
-//flecsi_register_data(client_type, ns, pressure, double, dense, 0, 1);
+flecsi_register_field(test_mesh_t, hydro, pressure, double, dense, 0, 1);
 
 namespace flecsi {
 namespace execution {
@@ -143,9 +140,30 @@ void specialization_tlt_init(int argc, char ** argv) {
   clog(info) << "In specialization top-level-task init" << std::endl;
   flecsi_execute_mpi_task(add_colorings, 0);
 
+  auto& context = execution::context_t::instance();
+
+  auto& cc = context.coloring_info(0);
+  auto& cv = context.coloring_info(1);
+
+  adjacency_info_t ai;
+  ai.index_space = 2;
+  ai.from_index_space = 0;
+  ai.to_index_space = 1;
+  ai.color_sizes.resize(2);
+
+  for(auto& itr : cc){
+    size_t color = itr.first;
+    const coloring_info_t& ci = itr.second;
+    ai.color_sizes[color] = (ci.exclusive + ci.shared) * 4;    
+  }
+
+  context.add_adjacency(ai);
+
 } // specialization_tlt_init
 
 void specialization_spmd_init(int argc, char ** argv) {
+  auto& context = execution::context_t::instance();
+
   auto runtime = Legion::Runtime::get_runtime();
   const int my_color = runtime->find_local_MPI_rank();
   clog(error) << "Rank " << my_color << " in specialization_spmd_init" << std::endl;
