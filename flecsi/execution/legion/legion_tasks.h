@@ -374,7 +374,6 @@ __flecsi_internal_legion_task(spmd_task, void) {
     ispace_dmap[idx_space].ghost_owners_lregions
       = ghost_owners_lregions[idx_space];
 
-
     // Fix ghost reference/pointer to point to compacted position of shared that it needs
     Legion::TaskLauncher fix_ghost_refs_launcher(context_
             .task_id<__flecsi_internal_task_key(owner_pos_correction_task)>(),
@@ -398,7 +397,6 @@ __flecsi_internal_legion_task(spmd_task, void) {
               .add_field(ghost_owner_pos_fid));
 
     runtime->execute_task(ctx, fix_ghost_refs_launcher);
-
   } // for idx_space
 
   // Get the input arguments from the Legion runtime
@@ -495,46 +493,64 @@ __flecsi_internal_legion_task(owner_pos_compaction_task, void) {
   clog_tag_guard(legion_tasks);
 
   // In old position of shared, write compacted location
-  // In compacted position of ghost, write the reference/pointer to pre-compacted shared
-  // ghost reference/pointer will need to communicate with other ranks in spmd_task() to obtain
-  // corrected pointer
+  // In compacted position of ghost, write the reference/pointer
+  // to pre-compacted shared
+  // ghost reference/pointer will need to communicate with other ranks in
+  // spmd_task() to obtain corrected pointer
   for(auto idx_space : coloring_map) {
 
-    Legion::IndexSpace ispace = regions[idx_space.first].get_logical_region().get_index_space();
+    Legion::IndexSpace ispace =
+      regions[idx_space.first].get_logical_region().get_index_space();
     LegionRuntime::Accessor::RegionAccessor<
-      LegionRuntime::Accessor::AccessorType::Generic, LegionRuntime::Arrays::Point<2>> acc_ref =
-          regions[idx_space.first].get_field_accessor(ghost_owner_pos_fid).typeify<LegionRuntime::Arrays::Point<2>>();
+      LegionRuntime::Accessor::AccessorType::Generic,
+      LegionRuntime::Arrays::Point<2>> acc_ref =
+          regions[idx_space.first].get_field_accessor(ghost_owner_pos_fid).
+          typeify<LegionRuntime::Arrays::Point<2>>();
 
     Legion::Domain domain = runtime->get_index_space_domain(ctx, ispace);
     LegionRuntime::Arrays::Rect<2> rect = domain.get_rect<2>();
     LegionRuntime::Arrays::GenericPointInRectIterator<2> expanded_itr(rect);
 
-    for(auto exclusive_itr = idx_space.second.exclusive.begin(); exclusive_itr != idx_space.second.exclusive.end(); ++exclusive_itr) {
+    for(auto exclusive_itr = idx_space.second.exclusive.begin();
+        exclusive_itr != idx_space.second.exclusive.end();
+        ++exclusive_itr)
+    {
       clog(trace) << my_color << " key " << idx_space.first << " exclusive " <<
         " " <<  *exclusive_itr << std::endl;
       expanded_itr++;
     } // exclusive_itr
 
-    for(auto shared_itr = idx_space.second.shared.begin(); shared_itr != idx_space.second.shared.end(); ++shared_itr) {
+    for(auto shared_itr = idx_space.second.shared.begin();
+        shared_itr != idx_space.second.shared.end();
+        ++shared_itr)
+    {
       const flecsi::coloring::entity_info_t shared = *shared_itr;
-      const LegionRuntime::Arrays::Point<2> reference = LegionRuntime::Arrays::make_point(shared.rank,
+      const LegionRuntime::Arrays::Point<2> reference =
+        LegionRuntime::Arrays::make_point(shared.rank,
           shared.offset);
       // reference is the old location, expanded_itr.p is the new location
-      acc_ref.write(Legion::DomainPoint::from_point<2>(reference), expanded_itr.p);
+      acc_ref.write(Legion::DomainPoint::from_point<2>(reference),
+        expanded_itr.p);
 
       clog(trace) << my_color << " key " << idx_space.first << " shared was " <<
         " " <<  *shared_itr << " now at " << expanded_itr.p << std::endl;
       expanded_itr++;
     } // shared_itr
 
-    for(auto ghost_itr = idx_space.second.ghost.begin(); ghost_itr != idx_space.second.ghost.end(); ++ghost_itr) {
+    for(auto ghost_itr = idx_space.second.ghost.begin();
+        ghost_itr != idx_space.second.ghost.end();
+        ++ghost_itr)
+    {
       const flecsi::coloring::entity_info_t ghost = *ghost_itr;
-      const LegionRuntime::Arrays::Point<2> reference = LegionRuntime::Arrays::make_point(ghost.rank,
+      const LegionRuntime::Arrays::Point<2> reference =
+        LegionRuntime::Arrays::make_point(ghost.rank,
           ghost.offset);
-      // reference is where we used to point, expanded_itr.p is where ghost is now
-      acc_ref.write(Legion::DomainPoint::from_point<2>(expanded_itr.p), reference);
-      clog(trace) << "color " << my_color << " key " << idx_space.first << " ghost " <<
-        " " << *ghost_itr <<
+      // reference is where we used to point, expanded_itr.p is where ghost
+      // is now
+      acc_ref.write(Legion::DomainPoint::from_point<2>(expanded_itr.p),
+        reference);
+      clog(trace) << "color " << my_color << " key " << idx_space.first <<
+        " ghost " << " " << *ghost_itr <<
         //" now at " << expanded_itr.p <<
         std::endl;
       expanded_itr++;
