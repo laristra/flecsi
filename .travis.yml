@@ -73,7 +73,7 @@ script:
     docker cp ${CON}:/home/flecsi/.sonar ${HOME}/
 
 after_success:
-  - if [[ ${DOCKERHUB} = true && ${DOCKER_EMAIL} && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_PULL_REQUEST} == false && ${TRAVIS_BRANCH} == master ]]; then
+  - if [[ ${DOCKERHUB} = true && ${DOCKER_EMAIL} && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_PULL_REQUEST} == false && ${TRAVIS_BRANCH} == stable ]]; then
       docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
       docker push "${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG}";
     fi
@@ -110,12 +110,6 @@ cache:
 compiler:
   - gcc
   - clang
-
-branches:
-  only:
-  - master
-  - travis
-  - stable
 
 notifications:
   branches:
