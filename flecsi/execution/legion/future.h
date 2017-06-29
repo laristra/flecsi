@@ -182,7 +182,7 @@ private:
 //----------------------------------------------------------------------------//
 
 template<typename RETURN>
-struct legion_future_model__<RETURN, LegionRuntime::HighLevel::FutureMap>
+struct legion_future_model__<RETURN, Legion::FutureMap>
   : public legion_future_concept__<RETURN>
 {
 
@@ -193,7 +193,7 @@ struct legion_future_model__<RETURN, LegionRuntime::HighLevel::FutureMap>
   //--------------------------------------------------------------------------//
 
   legion_future_model__(
-    const LegionRuntime::HighLevel::FutureMap & legion_future
+    const Legion::FutureMap & legion_future
   )
     : legion_future_(legion_future) {}
 
@@ -225,7 +225,7 @@ struct legion_future_model__<RETURN, LegionRuntime::HighLevel::FutureMap>
 
 private:
 
-  LegionRuntime::HighLevel::FutureMap legion_future_;
+  Legion::FutureMap legion_future_;
 
 }; // struct legion_future_model__
 
@@ -234,7 +234,7 @@ private:
 //----------------------------------------------------------------------------//
 
 template<>
-struct legion_future_model__<void, LegionRuntime::HighLevel::FutureMap>
+struct legion_future_model__<void, Legion::FutureMap>
   : public legion_future_concept__<void>
 {
 
@@ -245,7 +245,7 @@ struct legion_future_model__<void, LegionRuntime::HighLevel::FutureMap>
   //--------------------------------------------------------------------------//
 
   legion_future_model__(
-    const LegionRuntime::HighLevel::FutureMap & legion_future
+    const Legion::FutureMap & legion_future
   )
     : legion_future_(legion_future) {}
 
@@ -260,7 +260,7 @@ struct legion_future_model__<void, LegionRuntime::HighLevel::FutureMap>
 
 private:
 
-  LegionRuntime::HighLevel::FutureMap legion_future_;
+  Legion::FutureMap legion_future_;
 
 }; // struct legion_future_model__
 
@@ -393,7 +393,7 @@ struct legion_future__<void>
 
 }; // struct legion_future__
 
-} // namespace execution
+} // namespace execution 
 } // namespace flecsi
 
 #endif // flecsi_execution_legion_future_h

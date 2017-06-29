@@ -6,7 +6,7 @@
 #include <cinchtest.h>
 
 #include "flecsi/io/simple_definition.h"
-#include "flecsi/topology/graph_utils.h"
+#include "flecsi/topology/closure_utils.h"
 #include "flecsi/utils/set_utils.h"
 
 TEST(simple_definition, simple) {

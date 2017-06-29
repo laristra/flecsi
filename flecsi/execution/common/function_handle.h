@@ -10,49 +10,48 @@
 
 #include "flecsi/utils/tuple_function.h"
 
-///
-/// \file function_handle.h
-/// \authors bergen
-/// \date Initial file creation: Aug 04, 2016
-///
+//----------------------------------------------------------------------------//
+//! @file function_handle.h
+//! @date Initial file creation: Aug 04, 2016
+//----------------------------------------------------------------------------//
 
 namespace flecsi {
 namespace execution {
 
-///
-/// \class function_handle__ function_handle.h
-/// \brief function_handle__ provides...
-///
-/// \tparam RETURN Return value type.
-/// \tparam ARGS Argument type (std::tuple).
-///
+//----------------------------------------------------------------------------//
+//!
+//! \tparam RETURN Return value type.
+//! \tparam ARG_TUPLE Argument type (std::tuple).
+//----------------------------------------------------------------------------//
+
 template<
   typename RETURN,
-  typename ARGS
+  typename ARG_TUPLE
 >
 struct function_handle__
 {
-  using args_t = ARGS;
+  using return_t = RETURN;
+  using arg_tuple_t = ARG_TUPLE;
 
   ///
   /// Constructor.
   ///
   /// \param key A hash key identifier for the function.
-  ///
+  /// 
   constexpr function_handle__(const size_t key)
     : key_(key) {}
 
   ///
   /// Execute the function.
   ///
-  template< typename T >
   RETURN
   operator () (
-    std::function<RETURN(ARGS)> *user_function,
-    T && args
+    void * function,
+    ARG_TUPLE && args
   )
   {
-    return (*user_function)(std::forward<T>(args));
+    auto user_function = (reinterpret_cast<RETURN(*)(ARG_TUPLE)>(function));
+    return user_function(std::forward<ARG_TUPLE>(args));
   } // operator ()
 
   ///

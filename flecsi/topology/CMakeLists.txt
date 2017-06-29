@@ -18,13 +18,16 @@
 #------------------------------------------------------------------------------#
 
 set(topology_HEADERS
-  graph_definition.h
-  graph_utils.h
+  closure_utils.h
   index_space.h
+  mesh_definition.h
+  mesh_storage.h
   mesh_topology.h
   mesh_types.h
   mesh_utils.h
   tree_topology.h
+  mesh_storage.h
+  entity_storage.h
 )
 
 #------------------------------------------------------------------------------#
@@ -43,6 +46,10 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   set(UNIT_POLICY LEGION)
   set(RUNTIME_DRIVER ../execution/legion/runtime_driver.cc)
+  set(togology_HEADERS
+    ${togology_HEADERS}
+    legion/storage_policy.h
+  )
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
@@ -73,15 +80,27 @@ set(topology_SOURCES
 # Mesh unit tests.
 #------------------------------------------------------------------------------#
 
-#cinch_add_unit(traversal
-#  SOURCES
-#    test/traversal.cc
-#  INPUTS
-#    test/traversal.blessed
-#  LIBRARIES
-#    flecsi
-#    ${CINCH_RUNTIME_LIBRARIES}
-#)
+if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
+
+  cinch_add_unit(traversal
+   SOURCES
+     test/traversal.cc
+   INPUTS
+     test/traversal.blessed
+   LIBRARIES
+     flecsi
+  )
+  
+  cinch_add_unit(bindings
+   SOURCES
+     test/bindings.cc
+   INPUTS
+     test/bindings.blessed
+   LIBRARIES
+     flecsi
+  )
+
+endif()
 
 cinch_add_unit(dual
   SOURCES
@@ -89,16 +108,6 @@ cinch_add_unit(dual
   INPUTS
     test/dual.blessed
 )
-
-#cinch_add_unit(bindings
-#  SOURCES
-#    test/bindings.cc
-#  INPUTS
-#    test/bindings.blessed
-#  LIBRARIES
-#    flecsi
-#    ${CINCH_RUNTIME_LIBRARIES}
-#)
 
 #------------------------------------------------------------------------------#
 # N-Tree unit tests.
@@ -112,7 +121,6 @@ cinch_add_unit(dual
 #    test/tree.blessed
 #  LIBRARIES
 #    flecsi
-#    ${CINCH_RUNTIME_LIBRARIES}
 #)
 
 #cinch_add_unit(tree1d
@@ -120,7 +128,6 @@ cinch_add_unit(dual
 #    test/tree1d.cc
 #  LIBRARIES
 #    flecsi
-#    ${CINCH_RUNTIME_LIBRARIES}
 #)
 
 #cinch_add_unit(tree3d
@@ -128,7 +135,6 @@ cinch_add_unit(dual
 #    test/tree3d.cc
 #  LIBRARIES
 #    flecsi
-#    ${CINCH_RUNTIME_LIBRARIES}
 #)
 
 #cinch_add_unit(gravity
@@ -136,7 +142,6 @@ cinch_add_unit(dual
 #    test/gravity.cc test/pseudo_random.h
 #  LIBRARIES
 #    flecsi
-#    ${CINCH_RUNTIME_LIBRARIES}
 #)
 
 # FIXME: Broken by refactor
@@ -158,14 +163,14 @@ cinch_add_unit(structured
 # Misc. unit tests.
 #------------------------------------------------------------------------------#
 
-cinch_add_unit(graph
+cinch_add_unit(closure
   SOURCES
-    test/graph.cc
+    test/closure.cc
 )
 
-cinch_add_unit(devel-graph
+cinch_add_unit(devel-closure
   SOURCES
-    test/devel-graph.cc
+    test/devel-closure.cc
   POLICY
     SERIAL_DEVEL
 )

@@ -113,7 +113,7 @@ def generate_compiler_options(config, paths, environment, option):
     else:
         if paths:
             for path in paths or []:
-                options += option + path + ''
+                options += option + path + ' '
 
     return options.strip()
 

@@ -3,34 +3,33 @@
  * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
 
-///
-// \file serial/runtime_driver.cc
-// \authors bergen
-// \date Initial file creation: Aug 01, 2016
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Aug 01, 2016
+//----------------------------------------------------------------------------//
 
 #include "flecsi/execution/serial/runtime_driver.h"
-#include "flecsi/utils/common.h"
 
 namespace flecsi {
 namespace execution {
 
-// driver prototype
+//----------------------------------------------------------------------------//
+// Implementation of FleCSI runtime driver task.
+//----------------------------------------------------------------------------//
+
 void serial_runtime_driver(int argc, char ** argv) {
 
-#ifndef FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
+#if defined FLECSI_ENABLE_SPECIALIZATION_DRIVER
+  // Execute the specialization driver.
+  specialization_tlt_init(argc, argv);
+#endif // FLECSI_ENABLE_SPECIALIZATION_DRIVER
 
-  // run user-defined specialization driver
-  specialization_driver(argc, argv);
-
-#endif // FLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER
-
-  // run default or user-defined driver
+  // Execute the user driver.
   driver(argc, argv);
 
 } // serial_runtime_driver
 
-} // namespace execution
+} // namespace execution 
 } // namespace flecsi
 
 /*~------------------------------------------------------------------------~--*

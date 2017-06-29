@@ -15,17 +15,19 @@
 #ifndef flecsi_utils_common_h
 #define flecsi_utils_common_h
 
+//!
+//! \file common.h
+//! \date Initial file creation: Sep 23, 2015
+//!
+
 #include <cstdint>
 #include <functional>
+#include <limits>
 #include <sstream>
 #include <typeinfo>
 
 #include "flecsi/utils/id.h"
 
-/*!
- * \file
- * \date Initial file creation: Sep 23, 2015
- */
 
 #ifndef FLECSI_ID_PBITS
 #define FLECSI_ID_PBITS 20
@@ -42,6 +44,7 @@
 #ifndef FLECSI_ID_GBITS
 #define FLECSI_ID_GBITS 60
 #endif
+
 
 namespace flecsi {
 namespace utils {
@@ -69,7 +72,7 @@ using counter_t = FLECSI_COUNTER_TYPE;
 
 //! P.O.D.
 template <typename T>
-T square(const T & a)
+inline T square(const T & a)
 {
   return a * a;
 }
@@ -78,10 +81,10 @@ T square(const T & a)
 // C++ demangler
 //----------------------------------------------------------------------------//
 
-std::string demangle(const char* name);
+std::string demangle(const char * const name);
 
 template <class T>
-std::string type() {
+inline std::string type() {
   return demangle(typeid(T).name());
 } // type
 
@@ -89,8 +92,24 @@ std::string type() {
 // Unique Identifier Utilities
 //----------------------------------------------------------------------------//
 
+//----------------------------------------------------------------------------//
+// This value is used by the Legion runtime backend to automatically
+// assign task and field ids. The current maximum value that is allowed
+// in legion_config.h is 1<<20.
+//
+// We are reserving 4096 places for internal use.
+//----------------------------------------------------------------------------//
+
+#if !defined(FLECSI_GENERATED_ID_MAX)
+  // 1044480 = (1<<20) - 4096
+  #define FLECSI_GENERATED_ID_MAX 1044480
+#endif
+
 //! Generate unique ids
-template<typename T>
+template<
+  typename T,
+  std::size_t MAXIMUM = std::numeric_limits<std::size_t>::max()
+>
 struct unique_id_t {
   static unique_id_t & instance() {
     static unique_id_t u;
@@ -98,6 +117,7 @@ struct unique_id_t {
   } // instance
 
   auto next() {
+    assert(id_+1 <= MAXIMUM && "id exceeds maximum value");
     return ++id_;
   } // next
 
@@ -107,14 +127,14 @@ private:
   unique_id_t(const unique_id_t &) {}
   ~unique_id_t() {}
 
-  size_t id_;
+  std::size_t id_;
 };
 
 //! Create a unique name from the type, address, and unique id
 template<typename T>
-std::string unique_name(const T * t) {
-  const void * address = static_cast<const void *>(t);
-  size_t id = unique_id_t<T>::instance().next();
+std::string unique_name(const T * const t) {
+  const void * const address = static_cast<const void *>(t);
+  const std::size_t id = unique_id_t<T>::instance().next();
   std::stringstream ss;
   ss << typeid(T).name() << "-" << address << "-" << id;
   return ss.str();

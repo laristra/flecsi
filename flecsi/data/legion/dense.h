@@ -17,7 +17,7 @@
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_type.h!!!
-// Using this approach allows us to have only one storage_type_t
+// Using this approach allows us to have only one storage_type__
 // definintion that can be used by all data policies -> code reuse...
 #define POLICY_NAMESPACE legion
 #include "flecsi/data/storage_type.h"
@@ -26,8 +26,11 @@
 
 #include "flecsi/data/data_client.h"
 #include "flecsi/data/data_handle.h"
+#include "flecsi/data/storage.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/index_space.h"
+#include "flecsi/execution/context.h"
+#include "flecsi/data/common/privilege.h"
 
 ///
 // \file legion/dense.h
@@ -57,14 +60,12 @@ namespace legion {
 //           e.g., when writing raw bytes. This class is part of the
 //           low-level \e flecsi interface, so it is assumed that you
 //           know what you are doing...
-// \tparam MD The meta data type.
 ///
 template<
   typename T,
   size_t EP,
   size_t SP,
-  size_t GP,
-  typename MD
+  size_t GP
 >
 struct dense_handle_t : public data_handle__<T, EP, SP, GP>
 {
@@ -72,8 +73,7 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using meta_data_t = MD;
-  using user_meta_data_t = typename meta_data_t::user_meta_data_t;
+  using base_t = data_handle__<T, EP, SP, GP>;
 
   //--------------------------------------------------------------------------//
   // Constructors.
@@ -81,31 +81,53 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
 
   dense_handle_t() {}
 
-  ///
-  // Constructor.
-  //
-  // \param label The c_str() version of the utils:const_string_t used for
-  //              this data variable's hash.
-  // \param size The size of the associated index space.
-  // \param data A pointer to the raw data.
-  // \param meta_data A reference to the user-defined meta data.
-  ///
-  dense_handle_t(const std::string & label, const size_t size,
-    T * data, const user_meta_data_t & meta_data)
-    : label_(label), size_(size), data_(data), meta_data_(meta_data)
-    {}
+  //--------------------------------------------------------------------------//
+  // Destructor.
+  //--------------------------------------------------------------------------//
 
+  ~dense_handle_t(){
+    Legion::Runtime* runtime = base_t::runtime;
+    Legion::Context& context = base_t::context;
+
+    // Unmap physical regions and copy back out ex/sh/gh regions if we
+    // have write permissions 
+
+    if(base_t::exclusive_data){
+      if(base_t::exclusive_priv > privilege_t::dro){
+        std::memcpy(base_t::exclusive_buf, base_t::exclusive_data,
+                    base_t::exclusive_size * sizeof(T));
+      }
+
+    }
+
+    if(base_t::shared_data){
+      if(base_t::shared_priv > privilege_t::dro){
+        std::memcpy(base_t::shared_buf, base_t::shared_data,
+                    base_t::shared_size * sizeof(T));
+      }
+
+    }
+
+    // ghost is never mapped with write permissions
+
+    if(base_t::master && base_t::combined_data){
+#ifndef MAPPER_COMPACTION
+      delete[] base_t::combined_data;
+#endif
+    }
+  }
+  
   ///
   // Copy constructor.
   ///
   template<size_t EP2, size_t SP2, size_t GP2>
-  dense_handle_t(const dense_handle_t<T, EP2, SP2, GP2, MD> & a)
-    :
-      label_(a.label_),
-      size_(a.size_),
-      data_(a.data_),
-      meta_data_(a.meta_data_)
-    {}
+  dense_handle_t(const dense_handle_t<T, EP2, SP2, GP2> & a)
+    : base_t(reinterpret_cast<const base_t&>(a)),
+      label_(a.label_)
+    {
+      static_assert(EP2 == 0 && SP2 == 0 && GP2 == 0,
+        "passing mapped handle to task args");
+    }
 
   //--------------------------------------------------------------------------//
   // Member data interface.
@@ -128,17 +150,38 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   size_t
   size() const
   {
-    return size_;
+    return base_t::combined_size;
   } // size
 
   ///
-  // \brief Return the user meta data for this data variable.
+  // \brief Return the index space size of the data variable
+  //        referenced by this handle.
   ///
-  const user_meta_data_t &
-  meta_data() const
+  size_t
+  exclusive_size() const
   {
-    return meta_data_;
-  } // meta_data
+    return base_t::exclusive_size;
+  } // size
+
+  ///
+  // \brief Return the index space size of the data variable
+  //        referenced by this handle.
+  ///
+  size_t
+  shared_size() const
+  {
+    return base_t::shared_size;
+  } // size
+
+  ///
+  // \brief Return the index space size of the data variable
+  //        referenced by this handle.
+  ///
+  size_t
+  ghost_size() const
+  {
+    return base_t::ghost_size;
+  } // size
 
   //--------------------------------------------------------------------------//
   // Operators.
@@ -148,51 +191,15 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   // \brief Provide logical array-based access to the data for this
   //        data variable.  This is the const operator version.
   //
-  // \tparam E A complex index type.
-  //
-  // This version of the operator is provided to support use with
-  // \e flecsi mesh entity types \ref mesh_entity_base_t.
-  ///
-  template<typename E>
-  const T &
-  operator [] (
-    E * e
-  ) const
-  {
-    return this->operator[](e->template id<0>());
-  } // operator []
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
-  // \tparam E A complex index type.
-  //
-  // This version of the operator is provided to support use with
-  // \e flecsi mesh entity types \ref mesh_entity_base_t.
-  ///
-  template<typename E>
-  T &
-  operator [] (
-    E * e
-  )
-  {
-    return this->operator[](e->template id<0>());
-  } // operator []
-
-  ///
-  // \brief Provide logical array-based access to the data for this
-  //        data variable.  This is the const operator version.
-  //
   // \param index The index of the data variable to return.
   ///
   const T &
-  operator [] (
+  exclusive (
     size_t index
   ) const
   {
-    assert(index < size_ && "index out of range");
-    return data_[index];
+    assert(index < base_t::exclusive_size && "index out of range");
+    return base_t::exclusive_data[index];
   } // operator []
 
   ///
@@ -202,12 +209,72 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   // \param index The index of the data variable to return.
   ///
   T &
-  operator [] (
+  exclusive (
     size_t index
   )
   {
-    assert(index < size_ && "index out of range");
-    return data_[index];
+    assert(index < base_t::exclusive_size && "index out of range");
+    return base_t::exclusive_data[index];
+  } // operator []
+
+  ///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+  ///
+  const T &
+  shared (
+    size_t index
+  ) const
+  {
+    assert(index < base_t::shared_size && "index out of range");
+    return base_t::shared_data[index];
+  } // operator []
+
+  ///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+  ///
+  T &
+  shared (
+    size_t index
+  )
+  {
+    assert(index < base_t::shared_size && "index out of range");
+    return base_t::shared_data[index];
+  } // operator []
+
+  ///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+  ///
+  const T &
+  ghost (
+    size_t index
+  ) const
+  {
+    assert(index < base_t::ghost_size && "index out of range");
+    return base_t::ghost_data[index];
+  } // operator []
+
+  ///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+  ///
+  T &
+  ghost (
+    size_t index
+  )
+  {
+    assert(index < base_t::ghost_size && "index out of range");
+    return base_t::ghost_data[index];
   } // operator []
 
   ///
@@ -257,8 +324,12 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   ) const
   {
-    assert(index < size_ && "index out of range");
-    return data_[index];
+    assert(index < base_t::combined_size && "index out of range");
+#ifndef MAPPER_COMPACTION
+    return base_t::combined_data[index];
+#else
+    return *(base_t::combined_data+index);
+#endif
   } // operator ()
 
   ///
@@ -272,8 +343,12 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
     size_t index
   )
   {
-    assert(index < size_ && "index out of range");
-    return data_[index];
+    assert(index < base_t::combined_size && "index out of range");
+#ifndef MAPPER_COMPACTION
+    return base_t::combined_data[index];
+#else
+    return *(base_t::combined_data+index);
+#endif
   } // operator ()
 
   ///
@@ -283,18 +358,16 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
   ///
   operator bool() const
   {
-    return data_ != nullptr;
+    return base_t::combined_data != nullptr;
   } // operator bool
 
-  template<typename, size_t, size_t, size_t, typename>
+  template<typename, size_t, size_t, size_t>
   friend class dense_handle_t;
 
 private:
 
   std::string label_ = "";
-  size_t size_ = 0;
-  T * data_ = nullptr;
-  const user_meta_data_t & meta_data_ = {};
+
 }; // struct dense_handle_t
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
@@ -308,15 +381,12 @@ private:
 ///
 // FIXME: Dense storage type.
 ///
-template<typename DS, typename MD>
-struct storage_type_t<dense, DS, MD>
+template<>
+struct storage_type__<dense>
 {
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
-
-  using data_store_t = DS;
-  using meta_data_t = MD;
 
   template<
     typename T,
@@ -324,75 +394,7 @@ struct storage_type_t<dense, DS, MD>
     size_t SP,
     size_t GP
   >
-  using handle_t = dense_handle_t<T, EP, SP, GP, MD>;
-
-  //--------------------------------------------------------------------------//
-  // Data registration.
-  //--------------------------------------------------------------------------//
-
-  ///
-  /// \tparam T Data type to register.
-  /// \tparam NS Namespace
-  /// \tparam Args Variadic arguments that are passed to
-  ///              metadata initialization.
-  ///
-  /// \param data_client Base class reference to client.
-  /// \param data_store A reference for accessing the low-level data.
-  /// \param key A const string instance containing the variable name.
-  /// \param versions The number of variable versions for this datum.
-  /// \param index_space The index space identifier on which the data
-  ///                    should be registered.
-  ///
-  template<
-    typename T,
-    size_t NS,
-    typename ... Args
-  >
-  static
-  bool
-  register_data(
-    const data_client_t & data_client,
-    data_store_t & data_store,
-    const utils::const_string_t & key,
-    size_t versions,
-    size_t index_space,
-    Args && ... args
-  )
-  {
-  } // register_data
-
-  ///
-  /// \tparam DC Data client type.
-  /// \tparam T Data type to register.
-  /// \tparam NS Namespace
-  /// \tparam Args Variadic arguments that are passed to
-  ///              metadata initialization.
-  ///
-  /// \param data_client Base class reference to client.
-  /// \param data_store A reference for accessing the low-level data.
-  /// \param key A const string instance containing the variable name.
-  /// \param versions The number of variable versions for this datum.
-  /// \param index_space The index space identifier on which the data
-  ///                    should be registered.
-  ///
-  template<
-    typename DC,
-    typename T,
-    size_t NS,
-    typename ... Args
-  >
-  static
-  bool
-  new_register_data(
-    data_store_t & data_store,
-    const utils::const_string_t & key,
-    size_t versions,
-    size_t index_space,
-    Args && ... args
-  )
-  {
-    return true;
-  } // register_data
+  using handle_t = dense_handle_t<T, EP, SP, GP>;
 
   //--------------------------------------------------------------------------//
   // Data handles.
@@ -403,14 +405,13 @@ struct storage_type_t<dense, DS, MD>
   ///
   template<
     typename T,
-    size_t NS,
+    size_t NAMESPACE,
     typename Predicate
   >
   static
   decltype(auto)
   get_handles(
     const data_client_t & data_client,
-    data_store_t & data_store,
     size_t version,
     Predicate && predicate,
     bool sorted
@@ -427,29 +428,27 @@ struct storage_type_t<dense, DS, MD>
   decltype(auto)
   get_handles(
     const data_client_t & data_client,
-    data_store_t & data_store,
     size_t version,
     Predicate && predicate,
     bool sorted
   )
   {
-
+    
   }
 
   template<
     typename T,
-    size_t NS
+    size_t NAMESPACE
   >
   static
   decltype(auto)
   get_handles(
     const data_client_t & data_client,
-    data_store_t & data_store,
     size_t version,
     bool sorted
   )
   {
-
+    
   }
 
   template<
@@ -459,7 +458,6 @@ struct storage_type_t<dense, DS, MD>
   decltype(auto)
   get_handles(
     const data_client_t & data_client,
-    data_store_t & data_store,
     size_t version,
     bool sorted
   )
@@ -471,22 +469,50 @@ struct storage_type_t<dense, DS, MD>
   //
   ///
   template<
-    typename T,
-    size_t NS
+    typename DATA_CLIENT_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t VERSION
   >
   static
-  handle_t<T, 0, 0, 0>
+  handle_t<DATA_TYPE, 0, 0, 0>
   get_handle(
-    const data_client_t & data_client,
-    data_store_t & data_store,
-    const utils::const_string_t & key,
-    size_t version
+    const data_client_t & data_client
   )
   {
-    return {};
+    handle_t<DATA_TYPE, 0, 0, 0> h;
+
+    auto& context = execution::context_t::instance();
+    
+    auto& field_info = 
+      context.get_field_info(typeid(DATA_CLIENT_TYPE).hash_code(),
+      NAMESPACE ^ NAME);
+
+    size_t index_space = field_info.index_space;
+    auto& ism = context.index_space_data_map();
+
+    h.exclusive_lr = ism[index_space].exclusive_lr;
+    h.shared_lr = ism[index_space].shared_lr;
+    h.ghost_lr = ism[index_space].ghost_lr;
+    h.pbarrier_as_owner_ptr = &ism[index_space].pbarrier_as_owner;
+    h.ghost_owners_pbarriers_ptrs.resize(0);
+    for(size_t i=0; i < ism[index_space].ghost_owners_pbarriers.size() ; i++)
+        h.ghost_owners_pbarriers_ptrs.push_back(&(ism[index_space]
+                                                .ghost_owners_pbarriers[i]));
+    h.ghost_owners_lregions = ism[index_space].ghost_owners_lregions;
+    h.color_region = ism[index_space].color_region;
+    h.global_to_local_color_map_ptr =
+      &ism[index_space].global_to_local_color_map;
+    h.fid = field_info.fid;
+    h.index_space = field_info.index_space;
+    h.ghost_is_readable = &(ism[index_space].ghost_is_readable);
+    h.write_phase_started = &(ism[index_space].write_phase_started);
+
+    return h;
   } // get_handle
 
-}; // struct storage_type_t
+}; // struct storage_type__
 
 } // namespace legion
 } // namespace data

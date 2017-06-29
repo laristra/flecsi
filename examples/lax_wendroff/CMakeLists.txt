@@ -16,44 +16,38 @@
 # Compile definition to include driver
 #------------------------------------------------------------------------------#
 
-if(FLECSI_RUNTIME_MODEL STREQUAL "mpilegion")
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion" AND ENABLE_COLORING)
 
-if(ENABLE_PARTITIONING AND ENABLE_PARMETIS)
+  add_definitions(-DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT)
+  add_definitions(-DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER)
 
-#  set(CMAKE_CXX_COMPILER "mpiCC")
+  #----------------------------------------------------------------------------#
+  # Add source files for example application.
+  #----------------------------------------------------------------------------#
 
-  add_definitions(-DFLECSI_OVERRIDE_DEFAULT_SPECIALIZATION_DRIVER)
+  set(exec_path ${PROJECT_SOURCE_DIR}/flecsi/execution)
+  set (exmaple_src      lax_wendroff.cc
+                        ${exec_path}/legion/runtime_driver.cc)
 
   #----------------------------------------------------------------------------#
   # Add a rule to build the executable
   #----------------------------------------------------------------------------#
 
-  set(exec_path ${PROJECT_SOURCE_DIR}/flecsi/execution)
-  set (exmaple_src      lax_wendroff.cc
-                        lax_wendroff_driver.cc
-                        ${exec_path}/mpilegion/runtime_driver.cc
-                        ${exec_path}/../data/data_client.cc
-                        ${exec_path}/mpilegion/copy_ghosts.cc
-                        ${exec_path}/test/mpilegion/init_partitions_task.cc
-                        ${exec_path}/../data/legion/dpd.cc)
 
   add_executable(lax_wendroff ${exmaple_src})
-  set_target_properties(lax_wendroff PROPERTIES LINKER_LANGUAGE CXX)
 
   #----------------------------------------------------------------------------#
   # Add link dependencies
   #----------------------------------------------------------------------------#
 
-  target_link_libraries(lax_wendroff ${FLECSI_RUNTIME_LIBRARIES}
-                                     ${PARTITION_LIBRARIES})
+  target_link_libraries(lax_wendroff flecsi ${FLECSI_RUNTIME_LIBRARIES})
 
   configure_file(simple2d-32x32.msh
-    ${CMAKE_CURRENT_BINARY_DIR}/../../bin/simple2d-32x32.msh COPYONLY) 
+    ${CMAKE_CURRENT_BINARY_DIR}/../../examples/lax_wendroff/simple2d-32x32.msh COPYONLY) 
 
   configure_file(plot_lax.py
-    ${CMAKE_CURRENT_BINARY_DIR}/../../bin/plot_lax.py COPYONLY) 
- 
-endif()
+    ${CMAKE_CURRENT_BINARY_DIR}/../../examples/lax_wendroff/plot_lax.py COPYONLY) 
+
 
 endif()
 #~---------------------------------------------------------------------------~-#

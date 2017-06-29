@@ -54,17 +54,6 @@ namespace serial {
 // Dense handle.
 //----------------------------------------------------------------------------//
 
-template<
-  typename T,
-  size_t EP,
-  size_t SP,
-  size_t GP
->
-struct dense_handle_t : public data_handle__<T, EP, SP, GP>
-{
-  using type = T;
-}; // struct dense_handle_t
-
 //----------------------------------------------------------------------------//
 // Dense accessor.
 //----------------------------------------------------------------------------//
@@ -81,76 +70,43 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
 ///           know what you are doing...
 /// \tparam MD The meta data type.
 ///
-template<typename T, typename MD>
-struct dense_accessor_t
+template<
+  typename T,
+  size_t EP,
+  size_t SP,
+  size_t GP
+>
+struct dense_handle_t : public data_handle__<T, EP, SP, GP>
 {
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using iterator_t = utils::index_space_t::iterator_t;
-  using meta_data_t = MD;
-  using user_meta_data_t = typename meta_data_t::user_meta_data_t;
+  using base = data_handle__<T, EP, SP, GP>;
 
   //--------------------------------------------------------------------------//
   // Constructors.
   //--------------------------------------------------------------------------//
 
+  // FIXME: calling to base class constructor?
   ///
   /// Default constructor.
   ///
-  dense_accessor_t() = default;
-
-  ///
-  /// Constructor.
-  ///
-  /// \param label The c_str() version of the const_string_t used for
-  ///              this data variable's hash.
-  /// \param size The size of the associated index space.
-  /// \param data A pointer to the raw data.
-  /// \param user_meta_data A reference to the user-defined meta data.
-  ///
-  dense_accessor_t(
-    const std::string & label,
-    const size_t size,
-    T * data,
-    const user_meta_data_t & user_meta_data,
-    bitset_t & user_attributes,
-    size_t index_space
-  )
-  :
-    label_(label),
-    size_(size),
-    data_(data),
-    user_meta_data_(&user_meta_data),
-    user_attributes_(&user_attributes),
-    index_space_(index_space),
-    is_(size)
-  {}
+  dense_handle_t() {}
 
 	///
   /// Copy constructor.
 	///
-	dense_accessor_t(
-    const dense_accessor_t & a
+	dense_handle_t(
+    const dense_handle_t & a
   )
   :
-    label_(a.label_),
-    size_(a.size_),
-    data_(a.data_),
-    user_meta_data_(a.user_meta_data_),
-    user_attributes_(a.user_attributes_),
-    index_space_(a.index_space_),
-    is_(a.is_)
+    label_(a.label_)
   {}
 
-  template<size_t PS>
-  dense_accessor_t(
-    const dense_handle_t<T, PS> & h
-  )
-  :
-    data_(reinterpret_cast<T*>(h.data)),
-    size_(h.size)
+  template<size_t EP2, size_t SP2, size_t GP2>
+  dense_handle_t(const dense_handle_t<T, EP2, SP2, GP2> & h)
+    : label_(h.label_)
   {}
 
   //--------------------------------------------------------------------------//
@@ -174,83 +130,33 @@ struct dense_accessor_t
   size_t
   size() const
   {
-    return size_;
+    return base::primary_size;
   } // size
 
-	///
-  /// \brief Return the user meta data for this data variable.
-	///
-  const user_meta_data_t &
-  meta_data() const
-  {
-    return *user_meta_data_;
-  } // meta_data
-
   ///
-  ///
-  ///
-  bitset_t &
-  attributes()
-  {
-    return *user_attributes_;
-  } // attributes
-
-  const bitset_t &
-  attributes() const
-  {
-    return *user_attributes_;
-  } // attributes
-
-  ///
-  ///
+  // \brief Return the index space size of the data variable
+  //        referenced by this handle.
   ///
   size_t
-  index_space() const
+  exclusive_size() const
   {
-    return index_space_;
-  } // index_space
-
-  //--------------------------------------------------------------------------//
-  // Iterator interface.
-  //--------------------------------------------------------------------------//
+    return base::exclusive_size;
+  } // size
 
   ///
+  // \brief Return the index space size of the data variable
+  //        referenced by this handle.
   ///
-  ///
-  iterator_t
-  begin()
+  size_t
+  shared_size() const
   {
-    return {is_, 0};
-  } // begin
-
-  ///
-  ///
-  ///
-  iterator_t
-  end()
-  {
-    return {is_, size_};
-  } // end
+    return base::shared_size;
+  } // size
 
   //--------------------------------------------------------------------------//
   // Operators.
   //--------------------------------------------------------------------------//
 
-  /// \brief copy operator.
-  /// \param [in] a  The accessor to copy.
-  /// \return A reference to the new copy.
-  dense_accessor_t & operator=(const dense_accessor_t & a)
-  {
-    label_ = a.label_;
-    size_ = a.size_;
-    data_ = a.data_;
-    user_meta_data_ = a.user_meta_data_;
-    user_attributes_ = a.user_attributes_;
-    index_space_ = a.index_space_;
-    is_ = a.is_;
-    return *this;
-  } // operator =
-
 	///
   /// \brief Provide logical array-based access to the data for this
   ///        data variable.  This is the const operator version.
@@ -323,65 +229,191 @@ struct dense_accessor_t
     return this->operator[](e->template id<0>());
   } // operator []
 
-	///
-  /// \brief Provide logical array-based access to the data for this
-  ///        data variable.  This is the const operator version.
   ///
-  /// \param index The index of the data variable to return.
-	///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+  ///
   const T &
   operator [] (
     size_t index
   ) const
   {
-    assert(index < size_ && "index out of range");
-    return data_[index];
+    assert(index < base::primary_size && "index out of range");
+    return base::primary_data[index];
   } // operator []
 
-	///
-  /// \brief Provide logical array-based access to the data for this
-  ///        data variable.  This is the const operator version.
   ///
-  /// \param index The index of the data variable to return.
-	///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+  ///
   T &
   operator [] (
     size_t index
   )
   {
-    assert(index < size_ && "index out of range");
-    return data_[index];
+    assert(index < base::primary_size && "index out of range");
+    return base::primary_data[index];
   } // operator []
 
-	///
-  /// \brief Provide logical array-based access to the data for this
-  ///        data variable.  This is the const operator version.
   ///
-  /// \param index The index of the data variable to return.
-	///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+  ///
+  const T &
+  exclusive (
+    size_t index
+  ) const
+  {
+    assert(index < base::exclusive_size && "index out of range");
+    return base::exclusive_data[index];
+  } // operator []
+
+  ///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+  ///
   T &
-  operator () (
+  exclusive (
     size_t index
   )
   {
-    assert(index < size_ && "index out of range");
-    return data_[index];
+    assert(index < base::exclusive_size && "index out of range");
+    return base::exclusive_data[index];
   } // operator []
 
-	///
-  /// \brief Provide logical array-based access to the data for this
-  ///        data variable.  This is the const operator version.
   ///
-  /// \param index The index of the data variable to return.
-	///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+  ///
+  const T &
+  shared (
+    size_t index
+  ) const
+  {
+    assert(index < base::shared_size && "index out of range");
+    return base::shared_data[index];
+  } // operator []
+
+  ///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+  ///
+  T &
+  shared (
+    size_t index
+  )
+  {
+    assert(index < base::shared_size && "index out of range");
+    return base::shared_data[index];
+  } // operator []
+
+  ///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+  ///
+  const T &
+  ghost (
+    size_t index
+  ) const
+  {
+    assert(index < base::ghost_size && "index out of range");
+    return base::ghost_data[index];
+  } // operator []
+
+  ///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+  ///
+  T &
+  ghost (
+    size_t index
+  )
+  {
+    assert(index < base::ghost_size && "index out of range");
+    return base::ghost_data[index];
+  } // operator []
+
+//  ///
+//  // \brief Provide logical array-based access to the data for this
+//  //        data variable.  This is the const operator version.
+//  //
+//  // \tparam E A complex index type.
+//  //
+//  // This version of the operator is provided to support use with
+//  // \e flecsi mesh entity types \ref mesh_entity_base_t.
+//  ///
+//  template<typename E>
+//  const T &
+//  operator () (
+//    E * e
+//  ) const
+//  {
+//    return this->operator()(e->template id<0>());
+//  } // operator ()
+//
+//  ///
+//  // \brief Provide logical array-based access to the data for this
+//  //        data variable.  This is the const operator version.
+//  //
+//  // \tparam E A complex index type.
+//  //
+//  // This version of the operator is provided to support use with
+//  // \e flecsi mesh entity types \ref mesh_entity_base_t.
+//  ///
+//  template<typename E>
+//  T &
+//  operator () (
+//    E * e
+//  )
+//  {
+//    return this->operator()(e->template id<0>());
+//  } // operator ()
+
+  ///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+  ///
   const T &
   operator () (
     size_t index
   ) const
   {
-    assert(index < size_ && "index out of range");
-    return data_[index];
-  } // operator []
+    assert(index < base::primary_size && "index out of range");
+    return base::primary_data[index];
+  } // operator ()
+
+  ///
+  // \brief Provide logical array-based access to the data for this
+  //        data variable.  This is the const operator version.
+  //
+  // \param index The index of the data variable to return.
+  ///
+  T &
+  operator () (
+    size_t index
+  )
+  {
+    assert(index < base::primary_size && "index out of range");
+    return base::primary_data[index];
+  } // operator ()
 
 	///
   /// \brief Test to see if this accessor is empty
@@ -390,20 +422,15 @@ struct dense_accessor_t
   ///
   operator bool() const
   {
-    return data_ != nullptr;
+    return base::primary_data != nullptr;
   } // operator bool
 
+  template<typename, size_t, size_t, size_t>
+  friend class dense_handle_t;
+
 private:
-
   std::string label_ = "";
-  size_t size_ = 0;
-  T * data_ = nullptr;
-  const user_meta_data_t * user_meta_data_ = nullptr;
-  bitset_t * user_attributes_ = nullptr;
-  utils::index_space_t is_;
-  size_t index_space_ = 0;
-
-}; // struct dense_accessor_t
+}; // struct dense_handle_t
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Main type definition.
@@ -416,134 +443,26 @@ private:
 ///
 /// FIXME: Dense storage type.
 ///
-template<typename DS, typename MD>
-struct storage_type_t<dense, DS, MD>
+template<>
+struct storage_type__<dense>
 {
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using data_store_t = DS;
-  using meta_data_t = MD;
-
-  template<typename T>
-  using accessor_t = dense_accessor_t<T, MD>;
-
-  template<typename T, size_t PS>
-  using handle_t = dense_handle_t<T, PS>;
-
-  using st_t = storage_type_t<dense, DS, MD>;
-
-  //--------------------------------------------------------------------------//
-  // Data registration.
-  //--------------------------------------------------------------------------//
-
-  ///
-  /// \tparam T Data type to register.
-  /// \tparam NS Namespace
-  /// \tparam Args Variadic arguments that are passed to
-  ///              metadata initialization.
-  ///
-  /// \param data_client Base class reference to client.
-  /// \param data_store A reference for accessing the low-level data.
-  /// \param key A const string instance containing the variable name.
-  /// \param versions The number of variable versions for this datum.
-  /// \param indices The number of indices in the index space.
-  ///
   template<
     typename T,
-    size_t NS,
-    typename ... Args
+    size_t EP,
+    size_t SP,
+    size_t GP
   >
-  static
-  handle_t<T, 0>
-  register_data(
-    const data_client_t & data_client,
-    data_store_t & data_store,
-    const utils::const_string_t & key,
-    size_t versions,
-    size_t index_space,
-    Args && ... args
-  )
-  {
-    size_t h = key.hash() ^ data_client.runtime_id();
-
-    // Runtime assertion that this key is unique
-    assert(data_store[NS].find(h) == data_store[NS].end() &&
-      "key already exists");
-
-    //------------------------------------------------------------------------//
-    // Call the user meta data initialization method passing variadic
-    // user arguments
-    //------------------------------------------------------------------------//
-
-    data_store[NS][h].user_data.initialize(std::forward<Args>(args) ...);
-
-    //------------------------------------------------------------------------//
-    // Set the data label
-    //------------------------------------------------------------------------//
-
-    data_store[NS][h].label = key.c_str();
-
-    //------------------------------------------------------------------------//
-    // Set the data size by calling the data clients indeces method.
-    // This allows the user to interpret the index space argument
-    // in whatever way they want.
-    //------------------------------------------------------------------------//
-
-    data_store[NS][h].size = data_client.indices(index_space);
-
-    //------------------------------------------------------------------------//
-    // Store the index space.
-    //------------------------------------------------------------------------//
-
-    data_store[NS][h].index_space = index_space;
-
-    //------------------------------------------------------------------------//
-    // Store the data type size information.
-    //------------------------------------------------------------------------//
-
-    data_store[NS][h].type_size = sizeof(T);
-
-    //------------------------------------------------------------------------//
-    // This allows us to set the runtime-type-information, which requires
-    // a const reference.
-    //------------------------------------------------------------------------//
-
-    data_store[NS][h].rtti.reset(
-      new typename meta_data_t::type_info_t(typeid(T)));
-
-    //------------------------------------------------------------------------//
-    // Store the number of versions.
-    //------------------------------------------------------------------------//
-
-    data_store[NS][h].versions = versions;
-
-    //------------------------------------------------------------------------//
-    // Allocate data for each version.
-    //------------------------------------------------------------------------//
-
-    for(size_t i=0; i<versions; ++i) {
-      data_store[NS][h].attributes[i].reset();
-      data_store[NS][h].data[i].resize(
-        data_client.indices(index_space) * sizeof(T));
-    } // for
-
-    //------------------------------------------------------------------------//
-    // num_entries is unused for this storage type.
-    //------------------------------------------------------------------------//
-
-    data_store[NS][h].num_entries = 0;
-
-    handle_t<T, 0> handle;
-    return handle;
-  } // register_data
-
+  using handle_t = dense_handle_t<T, EP, SP, GP>;
+#if 0
   //--------------------------------------------------------------------------//
   // Data accessors.
   //--------------------------------------------------------------------------//
 
-  /// \brief Return a dense_accessor_t.
+  /// \brief Return a denst_handle_t.
   ///
   /// \param [in] meta_data  The meta data to use to build the accessor.
   /// \param [in] version   The version to select.
@@ -571,7 +490,7 @@ struct storage_type_t<dense, DS, MD>
       meta_data.index_space };
   }
 
-  /// \brief Return a dense_accessor_t.
+  /// \brief Return a denst_handle_t.
   ///
   /// \param [in] data_store   The data store to search.
   /// \param [in] hash   The hash to search for.
@@ -601,7 +520,7 @@ struct storage_type_t<dense, DS, MD>
     } // if
   } // get_accessor
 
-  /// \brief Return a dense_accessor_t.
+  /// \brief Return a denst_handle_t.
   ///
   /// \param [in] data_client  The data client to restrict our search to.
   /// \param [in] data_store   The data store to search.
@@ -628,7 +547,7 @@ struct storage_type_t<dense, DS, MD>
   } // get_accessor
 
 
-  /// \brief Return a list of all dense_accessor_t's filtered by a predicate.
+  /// \brief Return a list of all denst_handle_t's filtered by a predicate.
   ///
   /// \param [in] data_client The data client to restrict our search to.
   /// \param [in] data_store The data store to search.
@@ -666,7 +585,7 @@ struct storage_type_t<dense, DS, MD>
       auto & meta_data = entry_pair.second;
       // now build the hash for this label
       const auto & label = meta_data.label;
-      auto key_hash =
+      auto key_hash = 
         utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
       auto hash = key_hash ^ runtime_id;
       // filter out the accessors for different data_clients
@@ -680,18 +599,18 @@ struct storage_type_t<dense, DS, MD>
     } // for
 
     // if sorting is requested
-    if (sorted)
-      std::sort(
-        as.begin(), as.end(),
-        [](const auto & a, const auto &b) { return a.label()<b.label(); }
+    if (sorted) 
+      std::sort( 
+        as.begin(), as.end(), 
+        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
       );
 
     return as;
-
+  
   } // get_accessor
 
 
-  /// \brief Return a list of all dense_accessor_t's filtered by a predicate.
+  /// \brief Return a list of all denst_handle_t's filtered by a predicate.
   ///
   /// \param [in] data_client  The data client to restrict our search to.
   /// \param [in] data_store   The data store to search.
@@ -727,7 +646,7 @@ struct storage_type_t<dense, DS, MD>
       // the namespace data
       auto & namespace_key = namespace_map.first;
       auto & namespace_data = namespace_map.second;
-
+      
       // loop over each key pair
       for (auto & entry_pair : namespace_data) {
         // get the meta data key and label
@@ -735,7 +654,7 @@ struct storage_type_t<dense, DS, MD>
         auto & meta_data = entry_pair.second;
         // now build the hash for this label
         const auto & label = meta_data.label;
-        auto key_hash =
+        auto key_hash = 
           utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
         auto hash = key_hash ^ runtime_id;
         // filter out the accessors for different data_clients
@@ -750,17 +669,17 @@ struct storage_type_t<dense, DS, MD>
     } // for each namespace
 
     // if sorting is requested
-    if (sorted)
-      std::sort(
-        as.begin(), as.end(),
-        [](const auto & a, const auto &b) { return a.label()<b.label(); }
+    if (sorted) 
+      std::sort( 
+        as.begin(), as.end(), 
+        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
       );
 
     return as;
-
+  
   } // get_accessor
 
-  /// \brief Return a list of all dense_accessor_t's.
+  /// \brief Return a list of all denst_handle_t's.
   ///
   /// \param [in] data_client  The data client to restrict our search to.
   /// \param [in] data_store   The data store to search.
@@ -794,7 +713,7 @@ struct storage_type_t<dense, DS, MD>
       auto & meta_data = entry_pair.second;
       // now build the hash for this label
       const auto & label = meta_data.label;
-      auto key_hash =
+      auto key_hash = 
         utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
       auto hash = key_hash ^ runtime_id;
       // filter out the accessors for different data_clients
@@ -808,18 +727,18 @@ struct storage_type_t<dense, DS, MD>
     } // for
 
     // if sorting is requested
-    if (sorted)
-      std::sort(
-        as.begin(), as.end(),
-        [](const auto & a, const auto &b) { return a.label()<b.label(); }
+    if (sorted) 
+      std::sort( 
+        as.begin(), as.end(), 
+        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
       );
 
     return as;
-
+  
   } // get_accessor
 
 
-  /// \brief Return a list of all dense_accessor_t's.
+  /// \brief Return a list of all denst_handle_t's.
   ///
   /// \param [in] data_client  The data client to restrict our search to.
   /// \param [in] data_store   The data store to search.
@@ -851,7 +770,7 @@ struct storage_type_t<dense, DS, MD>
       // the namespace data
       auto & namespace_key = namespace_map.first;
       auto & namespace_data = namespace_map.second;
-
+      
       // loop over each key pair
       for (auto & entry_pair : namespace_data) {
         // get the meta data key and label
@@ -859,7 +778,7 @@ struct storage_type_t<dense, DS, MD>
         auto & meta_data = entry_pair.second;
         // now build the hash for this label
         const auto & label = meta_data.label;
-        auto key_hash =
+        auto key_hash = 
           utils::hash<utils::const_string_t::hash_type_t>(label, label.size());
         auto hash = key_hash ^ runtime_id;
         // filter out the accessors for different data_clients
@@ -874,14 +793,14 @@ struct storage_type_t<dense, DS, MD>
     } // for each namespace
 
     // if sorting is requested
-    if (sorted)
-      std::sort(
-        as.begin(), as.end(),
-        [](const auto & a, const auto &b) { return a.label()<b.label(); }
+    if (sorted) 
+      std::sort( 
+        as.begin(), as.end(), 
+        [](const auto & a, const auto &b) { return a.label()<b.label(); } 
       );
 
     return as;
-
+  
   } // get_accessor
 
 
@@ -920,8 +839,28 @@ struct storage_type_t<dense, DS, MD>
 
     return h;
   } // get_handle
+#endif
 
-}; // struct storage_type_t
+  template<
+    typename DATA_CLIENT_TYPE,
+    typename DATA_TYPE,
+    size_t NAMESPACE,
+    size_t NAME,
+    size_t VERSION
+  >
+  static
+  handle_t<DATA_TYPE, 0, 0, 0>
+  get_handle(
+    const data_client_t & data_client
+  )
+  {
+    handle_t<DATA_TYPE, 0, 0, 0> h;
+
+
+    return h;
+  }
+
+}; // struct storage_type__
 
 } // namespace serial
 } // namespace data

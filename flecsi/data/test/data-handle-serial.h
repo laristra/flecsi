@@ -53,7 +53,7 @@ public:
 };
 
 void
-specialization_driver(
+specialization_tlt_init(
   int argc,
   char ** argv
 )
@@ -85,7 +85,7 @@ specialization_driver(
 
   EXECUTE_TASK(task1, loc, single, h1);
 
-} // driver
+} // specialization_tlt_init
 
 } // namespace execution
 } // namespace flecsi

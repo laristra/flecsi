@@ -1,4 +1,4 @@
-/*~-------------------------------------------------------------------------~~*
+/*~--------------------------------------------------------------------------~*
  *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
  * /@@/////  /@@          @@////@@ @@////// /@@
  * /@@       /@@  @@@@@  @@    // /@@       /@@
@@ -10,25 +10,25 @@
  *
  * Copyright (c) 2016 Los Alamos National Laboratory, LLC
  * All rights reserved
- *~-------------------------------------------------------------------------~~*/
-/*!
- * \file
- * \brief detect set intersections.
- ******************************************************************************/
+ *~--------------------------------------------------------------------------~*/
+
 #ifndef flecsi_utils_set_intersection_h
 #define flecsi_utils_set_intersection_h
 
-// system includes
-#include <algorithm>
+//!
+//! \file  set_intersection.h
+//! \brief Detect set intersections.
+//!
 
+#include <algorithm>
 
 namespace flecsi {
 namespace utils {
 
-////////////////////////////////////////////////////////////////////////////////
-//! \brief Exectute something for each element of a tuple
+//!
+//! \brief  Detect intersections of sorted lists.
 //! \remark This function has complexity O(n + m)
-////////////////////////////////////////////////////////////////////////////////
+//!
 template<class InputIt1, class InputIt2>
 bool intersects(
    InputIt1 first1, InputIt1 last1,
@@ -49,12 +49,12 @@ bool intersects(
 }
 
 #if 0
-////////////////////////////////////////////////////////////////////////////////
-//! \brief detect intersecitions of sorted lists
+//!
+//! \brief  Detect intersections of sorted lists.
 //!
 //! \remark  When input1 is much smaller that input2, this gives O(n * log(m))
 //!          time.
-////////////////////////////////////////////////////////////////////////////////
+//!
 template<class InputIt1, class InputIt2>
 bool intersects(
    InputIt1 first1, InputIt1 last1,
@@ -67,12 +67,12 @@ bool intersects(
 }
 #endif
 
-} // namespace
-} // namespace
+} // namespace utils
+} // namespace flecsi
 
 #endif // flecsi_utils_set_intersection_h
 
-/*~------------------------------------------------------------------------~--*
+/*~-------------------------------------------------------------------------~-*
  * Formatting options
  * vim: set tabstop=2 shiftwidth=2 expandtab :
- *~------------------------------------------------------------------------~--*/
+ *~-------------------------------------------------------------------------~-*/

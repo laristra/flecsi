@@ -15,28 +15,30 @@
 #ifndef flecsi_utils_iterator_h
 #define flecsi_utils_iterator_h
 
-/*!
- * \file
- * \date Initial file creation: Oct 09, 2015
- */
+//!
+//! \file
+//! \date Initial file creation: Oct 09, 2015
+//!
+
+#include <cstring> // for std::size_t
 
 namespace flecsi {
 namespace utils {
 
-/*!
-  \class iterator iterator.h
-  \brief iterator provides...
- */
-template <typename C, typename T>
+//!
+//! \class iterator iterator.h
+//! \brief iterator provides...
+//!
+template<typename C, typename T>
 class iterator
 {
- public:
+public:
 
   using container_t = C;
   using type_t = T;
 
-  //! Default constructor
-  iterator(container_t & values, size_t index)
+  //! Constructor from container and index
+  iterator(container_t & values, const std::size_t index)
     : values_(values), index_(index) {}
 
   //! Destructor
@@ -47,12 +49,12 @@ class iterator
 
   //! Assignment operator
   iterator & operator=(const iterator & it) {
-    index_ = it.index_;
     values_ = it.values_;
+    index_ = it.index_;
     return *this;
   } // operator =
 
-  //! Increment operator
+  //! Pre-increment operator
   iterator & operator ++ () {
     ++index_;
     return *this;
@@ -63,25 +65,31 @@ class iterator
     return values_[index_];
   } // operator *
 
-  //! Dereference operator
+  /*
+  // Remark: operator-> normally returns a pointer, although it isn't required
+  // to do so. I don't see it being used anywhere, and will comment it out for
+  // now. If we eventually want it, let's talk about what we really want it to
+  // do. -Martin S., 2017-may-24.
+  //! Member-of-pointer operator
   type_t & operator -> () {
     return values_[index_];
   } // operator ->
+  */
 
   //! Equivalence operator
   bool operator == (const iterator & it) const {
     return index_ == it.index_;
   } // operator ==
 
-  //! Comparision operator
+  //! Non-equivalence operator
   bool operator != (const iterator & it) const {
     return index_ != it.index_;
   } // operator !=
 
- private:
+private:
 
   container_t & values_;
-  size_t index_;
+  std::size_t index_;
 
 }; // class iterator
 

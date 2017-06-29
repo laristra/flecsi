@@ -14,14 +14,44 @@
 #include <functional>
 
 #include "flecsi/execution/common/function_handle.h"
+#include "flecsi/execution/common/processor.h"
+#include "flecsi/execution/common/launch.h"
 #include "flecsi/execution/function.h"
 #include "flecsi/execution/kernel.h"
 #include "flecsi/execution/task.h"
 #include "flecsi/utils/common.h"
 
+clog_register_tag(execution);
+
 //----------------------------------------------------------------------------//
 // Task Interface
 //----------------------------------------------------------------------------//
+
+//----------------------------------------------------------------------------//
+//! @def __flecsi_internal_return_type
+//!
+//! This macro returns the inferred return type for a user task.
+//!
+//! @param task      The task to register. This is normally just a function.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
+#define __flecsi_internal_return_type(task)                                    \
+  typename flecsi::utils::function_traits__<decltype(task)>::return_type
+
+//----------------------------------------------------------------------------//
+//! @def __flecsi_internal_arguments_type
+//!
+//! This macro returns the inferred argument type for a user task.
+//!
+//! @param task      The task to register. This is normally just a function.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
+#define __flecsi_internal_arguments_type(task)                                 \
+  typename flecsi::utils::function_traits__<decltype(task)>::arguments_type
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_register_task
@@ -29,9 +59,8 @@
 //! This macro registers a user task with the FleCSI runtime.
 //!
 //! @param task      The task to register. This is normally just a function.
-//! @param processor The \ref processor_t type. This may be an or list of
-//!                  supported processor types.
-//! @param launch    The \ref launch_t type. This may be an or list of
+//! @param processor The \ref processor_type_t type.
+//! @param launch    The \ref launch_t type. This may be an \em or list of
 //!                  supported launch types and configuration options.
 //!
 //! @ingroup execution
@@ -40,56 +69,84 @@
 #define flecsi_register_task(task, processor, launch)                          \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
-  /* Task return type (trt) */                                                 \
-  using task ## _trt_t =                                                       \
-    typename flecsi::utils::function_traits__<decltype(task)>::return_type;    \
-                                                                               \
-  /* Task arguments type (tat) */                                              \
-  using task ## _tat_t =                                                       \
-    typename flecsi::utils::function_traits__<decltype(task)>::arguments_type; \
-                                                                               \
   /* Define a delegate function to the user's function that takes a tuple */   \
   /* of the arguments (as opposed to the raw argument pack) */                 \
-  inline task ## _trt_t task ## _tuple_delegate(task ## _tat_t args) {         \
+  inline                                                                       \
+  __flecsi_internal_return_type(task)                                          \
+  task ## _tuple_delegate(                                                     \
+    __flecsi_internal_arguments_type(task) args                                \
+  )                                                                            \
+  {                                                                            \
     return flecsi::utils::tuple_function(task, args);                          \
   } /* delegate task */                                                        \
                                                                                \
   /* Call the execution policy to register the task delegate */                \
-   bool task ## _task_registered =                                             \
-    flecsi::execution::task_t::register_task<task ## _trt_t, task ## _tat_t,   \
-      task ## _tuple_delegate,                                                 \
-      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash()>        \
-    (task_hash_t::make_key(reinterpret_cast<uintptr_t>(&task), processor,      \
-      launch), { EXPAND_AND_STRINGIFY(task) })
+  bool task ## _task_registered =                                              \
+    flecsi::execution::task_model_t::register_task<                            \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),        \
+      __flecsi_internal_return_type(task),                                     \
+      __flecsi_internal_arguments_type(task),                                  \
+      task ## _tuple_delegate                                                  \
+    >                                                                          \
+    (processor, launch, { EXPAND_AND_STRINGIFY(task) })
+
+//----------------------------------------------------------------------------//
+//! @def flecsi_register_mpi_task
+//!
+//! This macro registers an MPI task with the FleCSI runtime.
+//!
+//! @param task The MPI task to register. This is normally just a function.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
+#define flecsi_register_mpi_task(task)                                         \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  flecsi_register_task(task, processor_type_t::mpi, flecsi::index)
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_execute_task
 //!
 //! This macro executes a user task.
 //!
-//! @param task The user task to execute.
-//! @param processor The processor type on which to execute the task.
-//! @param launch The launch  mode for the task.
-//! @param ... The arguments to pass to the user task during execution.
+//! @param task   The user task to execute.
+//! @param launch The launch mode for the task.
+//! @param ...    The arguments to pass to the user task during execution.
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
 
-#define flecsi_execute_task(task, processor, launch, ...)                      \
+#define flecsi_execute_task(task, launch, ...)                                 \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Execute the user task */                                                  \
   /* WARNING: This macro returns a future. Don't add terminations! */          \
-  flecsi::execution::task_t::execute_task<                                     \
-    typename flecsi::utils::function_traits__<decltype(task)>::return_type     \
+  flecsi::execution::task_model_t::execute_task<                               \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(task)}.hash(),          \
+    __flecsi_internal_return_type(task),                                       \
+    __flecsi_internal_arguments_type(task)                                     \
   >                                                                            \
   (                                                                            \
-    task_hash_t::make_key(                                                     \
-      reinterpret_cast<uintptr_t>(&task), processor, launch                    \
-    ),                                                                         \
-    flecsi::utils::const_string_t{__func__}.hash(),                            \
-    ## __VA_ARGS__                                                             \
+    flecsi::execution::mask_to_type(launch),                                   \
+    flecsi::utils::const_string_t{__func__}.hash(), ## __VA_ARGS__             \
   )
+
+//----------------------------------------------------------------------------//
+//! @def flecsi_execute_mpi_task
+//!
+//! This macro executes an MPI task.
+//!
+//! @param task The MPI task to execute.
+//! @param ...  The arguments to pass to the MPI task during execution.
+//!
+//! @ingroup execution
+//----------------------------------------------------------------------------//
+
+#define flecsi_execute_mpi_task(task, ...)                                     \
+/* MACRO IMPLEMENTATION */                                                     \
+                                                                               \
+  flecsi_execute_task(task, index, ## __VA_ARGS__)
 
 //----------------------------------------------------------------------------//
 // Function Interface
@@ -101,41 +158,37 @@
 //! This macro registers a user function with the FleCSI runtime, which may
 //! then be passed as state data and executed in any task address space.
 //!
-//! @param name The function to register. This should be the plain-text
+//! @param func The function to register. This should be the plain-text
 //!             name of the function (not a string).
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
 
-#define flecsi_register_function(name)                                         \
+#define flecsi_register_function(func)                                         \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
-  /* Function return type (trt) */                                             \
-  using name ## _trt_t =                                                       \
-    typename flecsi::utils::function_traits__<decltype(name)>::return_type;    \
+  /* Function return type (frt) */                                             \
+  using func ## _frt_t =                                                       \
+    typename flecsi::utils::function_traits__<decltype(func)>::return_type;    \
                                                                                \
-  /* Function arguments type (tat) */                                          \
-  using name ## _tat_t =                                                       \
-    typename flecsi::utils::function_traits__<decltype(name)>::arguments_type; \
+  /* Function arguments type (fat) */                                          \
+  using func ## _fat_t =                                                       \
+    typename flecsi::utils::function_traits__<decltype(func)>::arguments_type; \
                                                                                \
-  /* Wrapper to call user function with tuple arguments */                     \
-  inline name ## _trt_t name ## _tuple_wrapper(name ## _tat_t && args) {       \
-    return flecsi::utils::tuple_function(name, args);                          \
-  } /* task ## _tuple_wrapper */                                               \
+  /* Define a delegate function to the user's function that takes a tuple */   \
+  /* of the arguments (as opposed to the raw argument pack) */                 \
+  inline func ## _frt_t func ## _tuple_delegate(func ## _fat_t args) {         \
+    return flecsi::utils::tuple_function(func, args);                          \
+  } /* delegate function */                                                    \
                                                                                \
-  /* Make std::function delegate */                                            \
-  std::function<name ## _trt_t(name ## _tat_t)>                                \
-    name ## _function_delegate = name ## _tuple_wrapper;                       \
+  using function_handle_ ## func ## _t =                                       \
+    flecsi::execution::function_handle__<func ## _frt_t, func ## _fat_t>;      \
                                                                                \
-  /* Define name handle type */                                                \
-  using function_handle_ ## name ## _t =                                       \
-    flecsi::execution::function_handle__<name ## _trt_t, name ## _tat_t>;      \
-                                                                               \
-  /* Register the function delegate */                                         \
-  bool name ## _function_registered =                                          \
+  /* Call the execution policy to register the function delegate */            \
+  bool func ## _func_registered =                                              \
     flecsi::execution::function_t::register_function<                          \
-      name ## _trt_t, name ## _tat_t>(                                         \
-      EXPAND_AND_STRINGIFY(name), name ## _function_delegate)
+      func ## _frt_t, func ## _fat_t, func ## _tuple_delegate,                 \
+      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(func)}.hash()>()
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_execute_function
@@ -143,50 +196,51 @@
 //! Execute a user function.
 //!
 //! @param handle The function handle.
-//! @param ... The function arguments.
+//! @param ...    The function arguments.
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
 
-#define flecsi_execute_function(RETURN,handle, ...)                            \
+#define flecsi_execute_function(handle, ...)                                   \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Call the execution policy to execute the function */                      \
-  flecsi::execution::function_t::execute_function<RETURN>(handle,## __VA_ARGS__)
+  flecsi::execution::function_t::execute_function(handle, ## __VA_ARGS__)
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_function_handle
 //!
 //! Create a function handle.
 //!
-//! @param name The function name.
+//! @param func The function name.
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
-#define flecsi_function_handle(name)                                           \
+
+#define flecsi_function_handle(func)                                           \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Create a function handle instance */                                      \
-  function_handle_ ## name ## _t(                                              \
-    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash())
+  function_handle_ ## func ## _t(                                              \
+    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(func)}.hash())
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_define_function_type
 //!
 //! Define a function handle type.
 //!
-//! @param name The type name to define.
+//! @param func The type name to define.
 //! @param return_type The return type of the function.
 //! @param ... The input parameters to the function.
 //!
 //! @ingroup execution
 //----------------------------------------------------------------------------//
 
-#define flecsi_define_function_type(name, return_type, ...)                    \
+#define flecsi_define_function_type(func, return_type, ...)                    \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Define a function handle type */                                          \
-  using name = flecsi::execution::function_handle__<return_type,               \
+  using func = flecsi::execution::function_handle__<return_type,               \
     std::tuple<__VA_ARGS__>>
 
 //----------------------------------------------------------------------------//

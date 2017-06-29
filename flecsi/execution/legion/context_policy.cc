@@ -25,7 +25,7 @@ namespace execution {
 //----------------------------------------------------------------------------//
 
 thread_local std::unordered_map<size_t,
-  std::stack<std::shared_ptr<legion_runtime_state_t>>> state_;
+  std::stack<std::shared_ptr<legion_runtime_state_t>>> state_;  
 
 //----------------------------------------------------------------------------//
 // Implementation of legion_context_policy_t::initialize.
@@ -39,36 +39,23 @@ legion_context_policy_t::initialize(
 {
   using namespace Legion;
 
+  // Register top-level task
+  Runtime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
+ 
   {
-  clog_tag_guard(context);
-  clog(info) << "Initializing..." << std::endl;
+    Legion::TaskVariantRegistrar registrar(TOP_LEVEL_TASK_ID, "runtime_driver");
+    registrar.add_constraint(ProcessorConstraint(Processor::LOC_PROC));
+    Runtime::preregister_task_variant<runtime_driver>(registrar,
+      "runtime_driver");
   }
 
-  // Register top-level task
-  HighLevelRuntime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
-  HighLevelRuntime::register_legion_task<runtime_driver>(
-    TOP_LEVEL_TASK_ID, Legion::Processor::LOC_PROC,
-    true, false, AUTO_GENERATE_ID, TaskConfigOptions(), "runtime_driver");
-
-  // Register user tasks
+  // Register tasks
   for(auto & t: task_registry_) {
-
-    // FIXME: The casts in this section need to be cleaned up...
-    task_hash_key_t key = static_cast<task_hash_key_t>(t.first);
-
-    {
-    clog_tag_guard(context);
-    clog(info) << "Registering " << std::endl << key << std::endl;
-    }
-
-    // Iterate over task variants
-    for(auto & v: t.second) {
-      auto & value = std::get<1>(v);
-      std::get<1>(value)(std::get<0>(value),
-        mask_to_type(static_cast<processor_mask_t>(
-          key.processor().to_ulong())),
-        key.launch(), std::get<2>(value));
-    } // for
+    std::get<4>(t.second)(
+      std::get<0>(t.second) /* tid */,
+      std::get<1>(t.second) /* processor */,
+      std::get<2>(t.second) /* launch */,
+      std::get<3>(t.second) /* name */);
   } // for
 
   // Intialize MPI/Legion interoperability layer.
@@ -79,15 +66,15 @@ legion_context_policy_t::initialize(
   );
 
   // Register our mapper
-  HighLevelRuntime::set_registration_callback(mapper_registration);
+  Runtime::add_registration_callback(mapper_registration);
 
   // Configure interoperability layer.
   int rank;
-  MPI_Comm_size(MPI_COMM_WORLD, &rank);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   Legion::Runtime::configure_MPI_interoperability(rank);
 
   // Start the Legion runtime
-  HighLevelRuntime::start(argc, argv, true);
+  Runtime::start(argc, argv, true);
 
   handoff_to_legion();
   wait_on_legion();
@@ -97,7 +84,7 @@ legion_context_policy_t::initialize(
     handoff_to_legion();
     wait_on_legion();
   }
-
+  
   int version, subversion;
   MPI_Get_version(&version, &subversion);
   if(version==3 && subversion>0) {
@@ -122,17 +109,12 @@ legion_context_policy_t::unset_call_mpi(
   clog(info) << "In unset_call_mpi" << std::endl;
   }
 
-  // Get a key to look up the task id that was assigned by the runtime.
-  auto key = __flecsi_internal_task_key(unset_call_mpi_task, loc);
-
-  {
-  clog_tag_guard(context);
-  clog(info) << "Task handle key " << key << std::endl;
-  }
+  const auto tid = context_t::instance().task_id<
+    __flecsi_internal_task_key(unset_call_mpi_task)>();
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher launcher(
-    context_t::instance().task_id(key),
+    tid,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
     Legion::TaskArgument(0, 0),
     arg_map
@@ -155,11 +137,12 @@ legion_context_policy_t::handoff_to_mpi(
   Legion::HighLevelRuntime * runtime
 )
 {
-  auto key = __flecsi_internal_task_key(handoff_to_mpi_task, loc);
+  const auto tid = context_t::instance().task_id<
+    __flecsi_internal_task_key(handoff_to_mpi_task)>();
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher handoff_to_mpi_launcher(
-    context_t::instance().task_id(key),
+    tid,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
     Legion::TaskArgument(0, 0),
     arg_map
@@ -180,11 +163,12 @@ legion_context_policy_t::wait_on_mpi(
   Legion::HighLevelRuntime * runtime
 )
 {
-  auto key = __flecsi_internal_task_key(wait_on_mpi_task, loc);
+  const auto tid = context_t::instance().task_id<
+    __flecsi_internal_task_key(wait_on_mpi_task)>();
 
   Legion::ArgumentMap arg_map;
   Legion::IndexLauncher wait_on_mpi_launcher(
-    context_t::instance().task_id(key),
+    tid,
     Legion::Domain::from_rect<1>(context_t::instance().all_processes()),
     Legion::TaskArgument(0, 0),
     arg_map
@@ -194,7 +178,7 @@ legion_context_policy_t::wait_on_mpi(
 
   fm.wait_all_results();
 
-  return fm;
+  return fm;    
 } // legion_context_policy_t::wait_on_mpi
 
 //----------------------------------------------------------------------------//
@@ -218,14 +202,9 @@ legion_context_policy_t::connect_with_mpi(
   // The reverse mapping goes the other way
   const std::map<int, Legion::AddressSpace> & forward_mapping =
     runtime->find_forward_MPI_mapping();
-
-  for(auto it: forward_mapping) {
-    clog(info) << "MPI rank " << it.first <<
-      " maps to Legion address space " << it.second;
-  } // for
 } // legion_context_policy_t::connect_with_mpi
 
-} // namespace execution
+} // namespace execution 
 } // namespace flecsi
 
 /*~------------------------------------------------------------------------~--*

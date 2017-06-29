@@ -16,7 +16,7 @@
 #define flecsi_utils_const_string_h
 
 ///
-/// \file
+/// \file 
 /// \date Initial file creation: Oct 15, 2015
 ///
 
@@ -99,7 +99,7 @@ public:
   hash()
   const
   {
-    return flecsi::utils::hash<hash_type_t>( str_, size_ );
+    return flecsi::utils::string_hash<hash_type_t>( str_, size_ );
   } // hash
 
   ///

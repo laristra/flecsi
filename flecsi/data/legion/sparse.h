@@ -20,7 +20,7 @@
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_type.h!!!
-// Using this approach allows us to have only one storage_type_t
+// Using this approach allows us to have only one storage_type__
 // definintion that can be used by all data policies -> code reuse...
 #define POLICY_NAMESPACE legion
 #include "flecsi/data/storage_type.h"
@@ -69,77 +69,8 @@ static constexpr size_t INDICES_KEY = 0;
 static constexpr size_t MATERIALS_KEY = 1;
 #endif
 
-template<typename T, typename MD>
-struct sparse_accessor_t {
-
-  //--------------------------------------------------------------------------//
-  // Type definitions.
-  //--------------------------------------------------------------------------//
-
-  using meta_data_t = MD;
-  using user_meta_data_t = typename meta_data_t::user_meta_data_t;
-
-  //--------------------------------------------------------------------------//
-  // Constructors.
-  //--------------------------------------------------------------------------//
-
-  ///
-  //
-  ///
-  sparse_accessor_t() {}
-
-  ///
-  //
-  ///
-  sparse_accessor_t(
-    const std::string & label,
-    size_t version,
-    meta_data_t & meta_data,
-    const user_meta_data_t & user_meta_data
-  )
-  {
-  } // sparse_accessor_t
-
-  ///
-  //
-  ///
-  T &
-  operator () (
-    size_t index,
-    size_t material
-  )
-  {
-  } // operator ()
-
-  ///
-  //
-  ///
-  void dump()
-  {
-  } // dump
-
-  ///
-  //
-  ///
-  T *
-  data()
-  {
-    return nullptr;
-  } // data
-
-private:
-
-}; // struct sparse_accessor_t
-
-template<typename T, typename MD>
+template<typename T>
 struct sparse_mutator_t {
-
-  //--------------------------------------------------------------------------//
-  // Type definitions.
-  //--------------------------------------------------------------------------//
-
-  using meta_data_t = MD;
-  using user_meta_data_t = typename meta_data_t::user_meta_data_t;
 
   //--------------------------------------------------------------------------//
   // Constructors.
@@ -156,9 +87,7 @@ struct sparse_mutator_t {
   sparse_mutator_t(
     size_t num_slots,
     const std::string & label,
-    size_t version,
-    meta_data_t & meta_data,
-    const user_meta_data_t & user_meta_data
+    size_t version
   )
   {}
 
@@ -199,7 +128,7 @@ struct sparse_mutator_t {
 
 private:
 
-}; // struct sparse_accessor_t
+}; // struct sparse_mutator_t
 
 //----------------------------------------------------------------------------//
 // Sparse handle.
@@ -216,70 +145,18 @@ struct sparse_handle_t {
 ///
 // FIXME: Sparse storage type.
 ///
-template<typename DS, typename MD>
-struct storage_type_t<sparse, DS, MD> {
+template<>
+struct storage_type__<sparse> {
 
   //--------------------------------------------------------------------------//
   // Type definitions.
   //--------------------------------------------------------------------------//
 
-  using data_store_t = DS;
-  using meta_data_t = MD;
-
   template<typename T>
-  using accessor_t = sparse_accessor_t<T, MD>;
-
-  template<typename T>
-  using mutator_t = sparse_mutator_t<T, MD>;
+  using mutator_t = sparse_mutator_t<T>;
 
   template<typename T>
   using handle_t = sparse_handle_t<T>;
-
-  //--------------------------------------------------------------------------//
-  // Data registration.
-  //--------------------------------------------------------------------------//
-
-  ///
-  //
-  ///
-  template<
-    typename T,
-    size_t NS,
-    typename ... Args
-  >
-  static
-  handle_t<T>
-  register_data(
-    const data_client_t & data_client,
-    data_store_t & data_store,
-    const utils::const_string_t & key,
-    size_t versions,
-    size_t indices,
-    size_t num_entries,
-    Args && ... args
-  )
-  {
-    return {};
-  } // register_data
-
-  ///
-  //
-  ///
-  template<
-    typename T,
-    size_t NS
-  >
-  static
-  accessor_t<T>
-  get_accessor(
-    const data_client_t & data_client,
-    data_store_t & data_store,
-    const utils::const_string_t & key,
-    size_t version
-  )
-  {
-    return {};
-  } // get_accessor
 
   ///
   //
@@ -292,7 +169,6 @@ struct storage_type_t<sparse, DS, MD> {
   mutator_t<T>
   get_mutator(
     const data_client_t & data_client,
-    data_store_t & data_store,
     const utils::const_string_t & key,
     size_t slots,
     size_t version
@@ -312,7 +188,6 @@ struct storage_type_t<sparse, DS, MD> {
   handle_t<T>
   get_handle(
     const data_client_t & data_client,
-    data_store_t & data_store,
     const utils::const_string_t & key,
     size_t version
   )
@@ -320,7 +195,7 @@ struct storage_type_t<sparse, DS, MD> {
     return {};
   } // get_handle
 
-}; // struct storage_type_t
+}; // struct storage_type__
 
 } // namespace legion
 } // namespace data

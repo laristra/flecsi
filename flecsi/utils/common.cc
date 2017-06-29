@@ -3,6 +3,12 @@
  * All rights reserved.
  *~-------------------------------------------------------------------------~~*/
 
+//!
+//! \file common.cc
+//! \authors bergen
+//! \date Initial file creation: Aug 01, 2016
+//!
+
 #include "flecsi/utils/common.h"
 
 #include <cstdlib>
@@ -12,17 +18,12 @@
 	#include <cxxabi.h>
 #endif
 
-/*!
- * \file common.cc
- * \authors bergen
- * \date Initial file creation: Aug 01, 2016
- */
-
 namespace flecsi {
 namespace utils {
 
 #ifdef __GNUG__
-std::string demangle(const char* name) {
+
+std::string demangle(const char * const name) {
 	int status = -4;
 
 	std::unique_ptr<char, void(*)(void*)> res {
@@ -34,7 +35,7 @@ std::string demangle(const char* name) {
 #else
 
 // does nothing if not g++
-std::string demangle(const char* name) {
+std::string demangle(const char * const name) {
 	return name;
 } // demangle
 

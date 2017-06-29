@@ -6,13 +6,13 @@
 #ifndef flecsi_utils_tuple_type_converter_h
 #define flecsi_utils_tuple_type_converter_h
 
-#include <tuple>
+//!
+//! \file tuple_type_converter.h
+//! \authors nickm
+//! \date Initial file creation: Feb 24, 2017
+//!
 
-/*!
- * \file
- * \authors nickm
- * \date Initial file creation: Feb 24, 2017
- */
+#include <tuple>
 
 namespace flecsi {
 namespace utils {
@@ -50,7 +50,7 @@ namespace utils {
 
   template<class B, typename TO, typename... Args>
   struct base_convert_tuple_type<B, TO, std::tuple<Args...>>{
-    using type = std::tuple<typename base_convert_tuple_type_<Args, TO,
+    using type = std::tuple<typename base_convert_tuple_type_<Args, TO, 
       std::is_base_of<B, Args>::value>::type...>;
   };
 

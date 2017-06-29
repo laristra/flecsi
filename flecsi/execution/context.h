@@ -21,12 +21,16 @@
 //----------------------------------------------------------------------------//
 
 #include <cstddef>
+#include <map>
 #include <unordered_map>
 
 #include "cinchlog.h"
 #include "flecsi/utils/const_string.h"
-#include "flecsi/partition/index_partition.h"
-#include "flecsi/partition/partition_types.h"
+#include "flecsi/coloring/adjacency_types.h"
+#include "flecsi/coloring/coloring_types.h"
+#include "flecsi/coloring/index_coloring.h"
+
+clog_register_tag(context);
 
 namespace flecsi {
 namespace execution {
@@ -43,8 +47,9 @@ namespace execution {
 template<class CONTEXT_POLICY>
 struct context__ : public CONTEXT_POLICY
 {
-  using index_partition_t = flecsi::dmp::index_partition_t;
-  using partition_info_t = flecsi::dmp::partition_info_t;
+  using index_coloring_t = flecsi::coloring::index_coloring_t;
+  using coloring_info_t = flecsi::coloring::coloring_info_t;
+  using adjacency_info_t = flecsi::coloring::adjacency_info_t;
 
   //---------------------------------------------------------------------------/
   //! Myer's singleton instance.
@@ -61,54 +66,127 @@ struct context__ : public CONTEXT_POLICY
   } // instance
 
   //---------------------------------------------------------------------------/
-  //! Add an index partition.
+  //! Add an index coloring.
   //!
-  //! @param key The map key.
-  //! @param partition The index partition to add.
+  //! @param index_space The map key.
+  //! @param coloring The index coloring to add.
+  //! @param coloring The index coloring information to add.
   //---------------------------------------------------------------------------/
 
   void
-  add_partition(
-    size_t key,
-    index_partition_t & partition
+  add_coloring(
+    size_t index_space,
+    index_coloring_t & coloring,
+    std::unordered_map<size_t, coloring_info_t> & coloring_info
   )
   {
-    if(partitions_.find(key) == partitions_.end()) {
-      partitions_[key] = partition;
-    } // if
-  } // add_partition
+    clog_assert(colorings_.find(index_space) == colorings_.end(),
+      "color index already exists");
+
+    colorings_[index_space] = coloring;
+    coloring_info_[index_space] = coloring_info;
+  } // add_coloring
 
   //---------------------------------------------------------------------------/
-  //! Return the index partition referenced by key.
+  //! Return the index coloring referenced by key.
   //!
-  //! @param key The key associated with the partition to be returned.
+  //! @param index_space The key associated with the coloring to be returned.
   //---------------------------------------------------------------------------/
 
-  const index_partition_t &
-  partition(
-    size_t key
+  const index_coloring_t &
+  coloring(
+    size_t index_space
   )
   {
-    if(partitions_.find(key) == partitions_.end()) {
-      clog(fatal) << "invalid key " << key << std::endl;
+    if(colorings_.find(index_space) == colorings_.end()) {
+      clog(fatal) << "invalid index_space " << index_space << std::endl;
     } // if
 
-    return partitions_[key];
-  } // partition
+    return colorings_[index_space];
+  } // coloring
 
   //---------------------------------------------------------------------------/
-  //! Return the partition map (convenient for iterating through all
-  //! of the partitions.
+  //! Return the index coloring information referenced by key.
   //!
-  //! @return The map of index partitions.
+  //! @param index_space The key associated with the coloring information
+  //!                    to be returned.
   //---------------------------------------------------------------------------/
 
-  const std::unordered_map<size_t, index_partition_t> &
-  partitions()
+  const std::unordered_map<size_t, coloring_info_t> &
+  coloring_info(
+    size_t index_space
+  )
+  {
+    if(coloring_info_.find(index_space) == coloring_info_.end()) {
+      clog(fatal) << "invalid index space " << index_space << std::endl;
+    } // if
+
+    return coloring_info_[index_space];
+  } // coloring_info
+
+  //---------------------------------------------------------------------------/
+  //! Return the coloring map (convenient for iterating through all
+  //! of the colorings.
+  //!
+  //! @return The map of index colorings.
+  //---------------------------------------------------------------------------/
+
+  const std::map<size_t, index_coloring_t> &
+  coloring_map()
   const
   {
-    return partitions_;
-  } // partitions
+    return colorings_;
+  } // colorings
+
+  //---------------------------------------------------------------------------/
+  //! Return the coloring info map (convenient for iterating through all
+  //! of the colorings.
+  //!
+  //! @return The map of index coloring information.
+  //---------------------------------------------------------------------------/
+
+  const std::map<
+    size_t,
+    std::unordered_map<size_t, coloring_info_t>
+  > &
+  coloring_info_map()
+  const
+  {
+    return coloring_info_;
+  } // colorings
+
+  //---------------------------------------------------------------------------/
+  //! Add an adjacency/connectivity from one index space to another.
+  //!
+  //! @param from_index_space The index space id of the from side
+  //! @param to_index_space The index space id of the to side
+  //---------------------------------------------------------------------------/
+
+  void
+  add_adjacency(
+    adjacency_info_t & adjacency_info
+  )
+  {
+    clog_assert(adjacency_info_.find(adjacency_info.index_space) ==
+      adjacency_info_.end(),
+      "adjacency exists");
+
+    adjacency_info_.emplace(adjacency_info.index_space,
+      std::move(adjacency_info));
+  } // add_adjacency
+
+  //---------------------------------------------------------------------------/
+  //! Return the set of registered adjacencies.
+  //!
+  //! @return The set of registered adjacencies
+  //---------------------------------------------------------------------------/
+
+  const std::map<size_t, adjacency_info_t> &
+  adjacency_info()
+  const
+  {
+    return adjacency_info_;
+  } // adjacencies
 
 private:
 
@@ -124,9 +202,17 @@ private:
   context__(context__ &&) = delete;
   context__ & operator = (context__ &&) = delete;
 
-  std::unordered_map<size_t, index_partition_t> partitions_;
-  std::unordered_map<size_t,
-    std::unordered_map<size_t, partition_info_t>> partition_info_;
+  // key: virtual index space id
+  // value: coloring indices (exclusive, shared, ghost)
+  std::map<size_t, index_coloring_t> colorings_;
+
+  // key: virtual index space.
+  // value: map of color to coloring info
+  std::map<size_t,
+    std::unordered_map<size_t, coloring_info_t>> coloring_info_;
+
+  // pair is from, to index space
+  std::map<size_t, adjacency_info_t> adjacency_info_;
 
 }; // class context__
 

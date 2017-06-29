@@ -23,7 +23,7 @@ namespace topology {
 // \brief test_definition_t provides...
 ///
 class test_definition_t
-  : public graph_definition_t
+  : public mesh_definition__<2>
 {
 public:
 
@@ -89,7 +89,7 @@ public:
   size_t
   num_entities(
     size_t topological_dimension
-  ) override
+  ) const override
   {
     return topological_dimension == dimension() ? 16 :
       topological_dimension == 0 ? 25 :
@@ -100,31 +100,21 @@ public:
   vertices(
     size_t topological_dimension,
     size_t entity_id
-  ) override
+  ) const override
   {
     std::vector<size_t> ids(4);
 
     for(size_t i(0); i<4; ++i) {
-      ids[i] = cells_[entity_id][i];
+      ids[i] = cells_[entity_id][i]; 
     } // for
 
     return ids;
   } // vertices
 
-  std::set<size_t>
-  vertex_set(
-    size_t topological_dimension,
-    size_t entity_id
-  ) override
-  {
-    auto vvec = vertices(topological_dimension, entity_id);
-    return std::set<size_t>(vvec.begin(), vvec.end());
-  } // vertex_set
-
   point_t
   vertex(
     size_t vertex_id
-  ) override
+  ) const override
   {
     return point_t(vertices_[vertex_id][0], vertices_[vertex_id][1]);
   } // vertex
