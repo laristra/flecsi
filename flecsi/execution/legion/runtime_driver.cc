@@ -120,7 +120,10 @@ runtime_driver(
 
   data.init_from_coloring_info_map(coloring_info);
 
-  // TODO: register adjacencies before calling this
+  for(auto& itr : context_.adjacency_info()){
+    data.add_adjacency(itr.second);
+  }
+
   data.finalize(coloring_info);
 
   std::map<size_t, std::vector<Legion::PhaseBarrier>> phase_barriers_map;
