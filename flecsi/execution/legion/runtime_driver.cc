@@ -54,6 +54,7 @@ runtime_driver(
   context_.wait_on_mpi(ctx, runtime);
 
   using field_info_t = context_t::field_info_t;
+  using field_id_t = Legion::FieldID;
 
 #if defined FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
   {
@@ -127,28 +128,47 @@ runtime_driver(
 
   data.finalize(coloring_info);
 
-  std::map<size_t, std::vector<Legion::PhaseBarrier>> phase_barriers_map;
 
-  for(auto idx_space : coloring_info){
-    for(int color = 0; color < num_colors; color++){
-      const flecsi::coloring::coloring_info_t& color_info = 
-        idx_space.second[color];
+  std::map<size_t, std::vector<field_info_t>> fields_map;
 
-      phase_barriers_map[idx_space.first].push_back(
-        runtime->create_phase_barrier(ctx,
-          1 + color_info.shared_users.size()));
-      
-      clog(trace) << "key " << idx_space.first << " phase barrier " << color <<
-          " has " << color_info.shared_users.size() + 1 << " arrivers to " <<
-          phase_barriers_map[idx_space.first].back() << std::endl;
-    }
-  }
+  for(auto idx_space : data.index_spaces()){
+    for(const field_info_t& field_info : context_.registered_fields()){
+        if(field_info.index_space == idx_space){
+          fields_map[idx_space].push_back(field_info);
+        }
+      }
+     clog(trace) << "fields_map[" <<idx_space<<"] has "<<
+        fields_map[idx_space].size()<< " fields"<<std::endl;
+  }//end for indx_space
+
+  std::map<size_t, std::map<field_id_t, std::vector<Legion::PhaseBarrier>>>
+    phase_barriers_map;
 
   double min = std::numeric_limits<double>::min();
   Legion::DynamicCollective max_reduction =
   runtime->create_dynamic_collective(ctx, num_colors, MaxReductionOp::redop_id,
              &min, sizeof(min));
 
+  for(auto idx_space : coloring_info){
+    std::map<field_id_t , std::vector<Legion::PhaseBarrier>> inner;
+    for (const field_info_t& field_info : fields_map[idx_space.first]){
+      for(int color = 0; color < num_colors; color++){
+        const flecsi::coloring::coloring_info_t& color_info = 
+          idx_space.second[color];
+
+        inner[field_info.fid].push_back(runtime->create_phase_barrier(ctx,
+             1 + color_info.shared_users.size()));
+      
+       //   clog(trace)<<" has " << color_info.shared_users.size() + 1 << " arrivers to " <<
+        //  phase_barriers_map[idx_space.first].back() << std::endl;
+      }//color
+    }//field_info
+    phase_barriers_map[idx_space.first]=inner;
+  }//indx_space
+
+  auto ghost_owner_pos_fid =
+    LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
+ 
   // Map between pre-compacted and compacted data placement
   const auto pos_compaction_id =
     context_.task_id<__flecsi_internal_task_key(owner_pos_compaction_task)>();
@@ -158,9 +178,6 @@ runtime_driver(
       Legion::ArgumentMap());
   
   pos_compaction_launcher.tag = MAPPER_FORCE_RANK_MATCH;
-
-  auto ghost_owner_pos_fid = 
-    LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
 
   for(auto idx_space : data.index_spaces()) {
     auto& flecsi_ispace = data.index_space(idx_space);
@@ -194,23 +211,27 @@ runtime_driver(
     std::map<size_t, std::vector<Legion::PhaseBarrier>> owners_pbarriers;
 
     for(auto idx_space : data.index_spaces()) {
-      pbarriers_as_owner.push_back(phase_barriers_map[idx_space][color]);
+      for (const field_info_t& field_info : fields_map[idx_space]){
+        pbarriers_as_owner.push_back(
+          phase_barriers_map[idx_space][field_info.fid][color]);
       
-      flecsi::coloring::coloring_info_t color_info = 
-        coloring_info[idx_space][color];
+        flecsi::coloring::coloring_info_t color_info = 
+          coloring_info[idx_space][color];
       
-      clog(trace) << " Color " << color << " idx_space " << idx_space << 
-        " has " << color_info.ghost_owners.size() << 
-        " ghost owners" << std::endl;
+        clog(trace) << " Color " << color << " idx_space " << idx_space << 
+          " has " << color_info.ghost_owners.size() << 
+          " ghost owners" << std::endl;
       
-      num_ghost_owners.push_back(color_info.ghost_owners.size());
-      std::vector<Legion::PhaseBarrier> per_color_owners_pbs;
-      for(auto owner : color_info.ghost_owners) {
-        clog(trace) << owner << std::endl;
-        per_color_owners_pbs.push_back(phase_barriers_map[idx_space][owner]);
-      }
+        num_ghost_owners.push_back(color_info.ghost_owners.size());
+        std::vector<Legion::PhaseBarrier> per_color_owners_pbs;
+        for(auto owner : color_info.ghost_owners) {
+          clog(trace) << owner << std::endl;
+          per_color_owners_pbs.push_back(
+            phase_barriers_map[idx_space][field_info.fid][owner]);
+        }
       
-      owners_pbarriers[idx_space] = per_color_owners_pbs;
+        owners_pbarriers[idx_space] = per_color_owners_pbs;
+      }//for field_info
     } // for idx_space
 
     size_t num_idx_spaces = data.index_spaces().size();
@@ -361,12 +382,18 @@ runtime_driver(
 
   //FIXME runtime->destroy_dynamic_collective(ctx, max_reduction);
 
-  for(auto& itr : phase_barriers_map) {
-    const size_t handle = itr.first;
-    for(size_t color = 0; color < phase_barriers_map[handle].size(); color ++) {
-      runtime->destroy_phase_barrier(ctx, phase_barriers_map[handle][color]);
+  for(auto& itr_idx : phase_barriers_map) {
+    const size_t idx = itr_idx.first;
+    for(auto& itr_fid : phase_barriers_map[idx]) {
+      const field_id_t fid = itr_fid.first;
+      for(size_t color = 0; color < phase_barriers_map[idx][fid].size();
+        color ++) {
+        runtime->destroy_phase_barrier(ctx,
+          phase_barriers_map[idx][fid][color]);
+      }
+      phase_barriers_map[idx][fid].clear();
     }
-    phase_barriers_map[handle].clear();
+    phase_barriers_map[idx].clear();
   }
   phase_barriers_map.clear();
 
