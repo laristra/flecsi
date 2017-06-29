@@ -201,6 +201,14 @@ struct mpi_context_policy_t
     return field_info_vec_;
   }
 
+  std::vector<uint8_t> &
+  registered_field_data(field_id_t fid)
+  {
+    return field_data[fid];
+  }
+
+  int rank;
+
 private:
 
   // Define the map type using the task_hash_t hash function.
@@ -230,6 +238,12 @@ private:
 
   std::vector<field_info_t> field_info_vec_;
 
+<<<<<<< Updated upstream
+=======
+  std::map<field_id_t, std::vector<uint8_t>> field_data;
+
+
+>>>>>>> Stashed changes
 }; // class mpi_context_policy_t
 
 } // namespace execution 

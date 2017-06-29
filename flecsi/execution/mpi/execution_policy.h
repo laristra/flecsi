@@ -29,6 +29,8 @@
 #include "flecsi/execution/common/processor.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/mpi/task_wrapper.h"
+#include "flecsi/execution/mpi/task_prolog.h"
+
 //#include "flecsi/utils/const_string.h"
 //#include "flecsi/utils/tuple_walker.h"
 //#include "flecsi/data/data_handle.h"
@@ -231,7 +233,17 @@ struct mpi_execution_policy_t
   )
   {
     auto fun = context_t::instance().function(KEY);
-    return executor__<RETURN, ARG_TUPLE>::execute(fun, std::forward_as_tuple(args ...));
+    // Make a tuple from the task arguments.
+    ARG_TUPLE task_args = std::make_tuple(args ...);
+
+    // run task_prolog to copy ghost cells.
+//    task_prolog_t task_prolog;
+//    task_prolog.walk(task_args);
+
+    auto fut = executor__<RETURN, ARG_TUPLE>::execute(fun, std::forward_as_tuple(args ...));
+
+    // TODO: Do we nee to run taks_epilog ??
+    return fut;
   } // execute_task
 
   //--------------------------------------------------------------------------//
