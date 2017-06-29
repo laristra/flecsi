@@ -1,132 +1,232 @@
 ![logo](doc/flecsi.png)
+
 [![Build Status](https://travis-ci.org/laristra/flecsi.svg?branch=master)](https://travis-ci.org/laristra/flecsi)
 [![codecov.io](https://codecov.io/github/laristra/flecsi/coverage.svg?branch=master)](https://codecov.io/github/laristra/flecsi?branch=master)
 [![Quality Gate](https://sonarqube.com/api/badges/gate?key=flecsi%3A%2Fmaster)](https://sonarqube.com/dashboard?id=flecsi%3A%2Fmaster)
 
-# FleCSI Project
+
+
+<br>
+# Introduction
 
 FleCSI is a compile-time configurable framework designed to support
-multi-physics application development.  As such, FleCSI attempts to
-provide a very general set of infrastructure design patterns that can be
-specialized and extended to suit the needs of a broad variety of solver
-and data requirements.  Current support includes multi-dimensional mesh
-topology, mesh geometry, and mesh adjacency information, n-dimensional
+multi-physics application development. As such, FleCSI provides a very
+general set of infrastructure design patterns that can be specialized
+and extended to suit the needs of a broad variety of solver and data
+requirements. FleCSI currently supports multi-dimensional mesh topology,
+geometry, and adjacency information, as well as n-dimensional
 hashed-tree data structures, graph partitioning interfaces, and
 dependency closures.
 
-FleCSI also introduces a functional programming model with control,
-execution, and data abstractions that are consistent with both MPI and
-state-of-the-art task-based runtimes such as Legion and Charm++.  The
-FleCSI abstraction layer provides the developer with insulation from the
-underlying runtime, while allowing support for multiple runtime systems,
-including conventional models like asynchronous MPI.  The intent is to
-give developers a concrete set of user-friendly programming tools that
-can be used now, while allowing flexibility in choosing runtime
-implementations and optimizations that can be applied to architectures
-and runtimes that arise in the future.  The control and execution models
-in FleCSI also provide formal nomenclature for
-describing poorly understood concepts like kernels and tasks.  To
-provide a low barrier to entry, the FleCSI data model does not lock
-developers into particular layouts or data structure representations,
-thus providing a low-buy-in approach that make FleCSI an attractive
-option for many application projects.
+FleCSI introduces a functional programming model with control,
+execution, and data abstractions that are consistent both with MPI and
+with state-of-the-art, task-based runtimes such as Legion and Charm++.
+The abstraction layer insulates developers from the underlying runtime,
+while allowing support for multiple runtime systems including
+conventional models like asynchronous MPI.
 
-# Getting the Code
+The intent is to provide developers with a concrete set of user-friendly
+programming tools that can be used now, while allowing flexibility in
+choosing runtime implementations and optimizations that can be applied
+to future architectures and runtimes.
 
-FleCSI uses git submodules, so it must be checked out recursively:
+FleCSI's control and execution models provide formal nomenclature
+for describing poorly understood concepts such as kernels and tasks.
+FleCSI's data model provides a low-buy-in approach that makes it an
+attractive option for many application projects, as developers are
+not locked into particular layouts or data structure representations.
 
-    % git clone --recursive git@github.com:laristra/flecsi.git
 
-https:  
 
-    % git clone --recursive https://github.com/laristra/flecsi.git
-
+<br>
 # Requirements
 
-The primary requirement to build FleCSI is a C++14 capable compiler.
-Currently, this equates to G++ 5.0 or greater.
+The primary requirement for building FleCSI is that you have
+a C++14-capable compiler.
 
-* CMake >= 3.0
-* GCC >= 6.1.1
-* Doxygen >= 1.8
-* [cinch-utils](https://github.com/laristra/cinch-utils) >= 1.0
+## Tools
 
-## Legion
+You'll need the following tools in order to build FleCSI:
 
-FleCSI has been tested against *update hash here*.
+   * Boost >= 1.56
+   * CMake >= 3.0
+   * GCC >= 6.1.1
 
-# Developer Instructions
+Install tools in the customary manner for your machine, e.g. by using
+``apt-get`` on a Ubuntu system.
 
-To begin, you will need to build the third-party library dependencies:
+## Documentation
 
-    % sudo apt-get install libmetis-dev 
-    
-or build them yourself:
+For documentation, you'll need these as well:
 
-    % git clone git@github.com:laristra/flecsi-third-party.git
-    % cd flecsi-third-party
-    % mkdir build
-    % cd build
-    % ccmake ..
+   * Doxygen >= 1.8
+   * [cinch-utils](https://github.com/laristra/cinch-utils) >= 1.0
 
-At this point, you should set the install path to a directory where
-you have write permissions.
+## Darwin
 
-Now build the third-party libraries:
+If you wish to build FleCSI on LANL's Darwin cluster, see the Darwin
+Cluster section later in this document.
 
-    % make
 
-This command will build and install the libraries in the prefix that
-you have specified.
 
-Next, set the CMAKE\_PREFIX\_PATH environment variable to the path you
-specified above:
+<br>
+# Installing the FleCSI Third-Party Libraries
 
-    % export CMAKE_PREFIX_PATH=/path/to/thirdparty/install/directory
+Before installing FleCSI, you should install the FleCSI third-party
+libraries. We'll assume that you wish to install the FleCSI third-party
+libraries in your home directory.
 
-Now, you can configure FleCSI using the ***arch/developer-gnu*** script:
+## Download
 
-    % mkdir build
-    % cd build
-    % ../arch/developer-gnu
-    % make
-    % make test
+Begin by downloading the FleCSI third-party libraries:
 
-**Darwin Build**
+         cd
+         git clone --recursive https://github.com/laristra/flecsi-third-party.git
 
-On Darwin, you can simplify some of the build requirements by using the
-***ngc/devel-gnu*** environment module:
+## Build
 
-    % module load ngc (devel-gnu is the default)
+Next, enter ``flecsi-third-party/`` and make a build directory:
 
-This will load up-to-date compiler and documentation tools.
+         cd flecsi-third-party
+         mkdir build
+         cd build
 
-## Workflow
+Then, for example, you can do the following for a debug-mode build:
 
-FleCSI uses the [GitHub Flow](https://guides.github.com/introduction/flow)
+         cmake .. \
+           -DCMAKE_BUILD_TYPE=Debug \
+           -DCMAKE_INSTALL_PREFIX=$HOME/flecsi-third-party-debug/
+
+Alternatively, you can run ``ccmake`` in place of ``cmake``, and use
+``ccmake``'s interface to set the options.
+
+Finally:
+
+         make
+
+builds and installs the FleCSI third-party libraries in the prefix
+that you specified.
+
+
+
+<br>
+# Installing FleCSI
+
+Now that the FleCSI third-party libraries are installed, you can
+download and build FleCSI itself. As with the third-party libraries,
+we'll assume that you wish to install FleCSI in your home directory.
+
+## Download
+
+First, download FleCSI from GitHub:
+
+         cd
+         git clone --recursive https://github.com/laristra/flecsi.git
+
+By default, you'll be on the ``master`` branch. Let's say you wish to
+work in the ``branchname`` branch instead. Enter ``flecsi/``, switch to
+the relevant branch, and be sure that you have the latest updates:
+
+         cd flecsi
+         git checkout branchname   # if you wish to work in this branch
+         git pull
+         git submodule update --recursive
+
+## Build
+
+You can now build FleCSI. For example, a Debug build using Legion
+can be done like this:
+
+         mkdir build
+         cd build
+
+         cmake .. \
+           -DCMAKE_BUILD_TYPE=Debug \
+           -DCMAKE_PREFIX_PATH=$HOME/flecsi-third-party-debug/ \
+           -DENABLE_UNIT_TESTS=ON \
+           -DFLECSI_RUNTIME_MODEL=legion \
+           -DENABLE_MPI=ON \
+           -DENABLE_PARMETIS=ON \
+           -DENABLE_COLORING=ON
+
+         make
+
+where ``cmake``'s ``-DCMAKE_PREFIX_PATH`` should be the path that
+you used for your FleCSI third-party library installation.
+
+Again, you can run ``ccmake`` in place of ``cmake``.
+
+## Test
+
+From within the ``build`` directory, and after running ``make``
+as described above, you can run
+
+         make test
+
+to run FleCSI's unit tests.
+
+
+
+<br>
+# Workflow
+
+FleCSI uses the
+[GitHub Flow](https://guides.github.com/introduction/flow)
 workflow pattern.
 
-When you check-out FleCSI, you will be on the master branch. This is the
-FleCSI development branch, which is protected to insure that it is always
-deployable. New work should be done on a separate feature branch. When
-you have finished making updates to your branch, you should submit a pull
-request. Your changes will be tested for compliance and reviewed by the
-maintainers of the project. If your changes are accepted, they will be
-merged into the master branch.
+When you check-out FleCSI, you'll be on the ``master`` branch. This is
+the FleCSI development branch, which is protected in order to ensure
+that it is always deployable.
 
+New work should always be done on a separate feature branch.
+When you have finished making updates to your branch, you should submit
+a pull request. Your changes will be tested for compliance, and reviewed
+by the maintainers of the project. If your changes are accepted, they
+will be merged into ``master``.
+
+
+
+<br>
+# Darwin Cluster
+
+On Darwin, you can simplify some of the build requirements by using
+the **ngc/devel-gnu** environment module:
+
+         module load ngc   # ngc/devel-gnu is the default
+
+which will load up-to-date compiler and documentation tools. You'll
+also want OpenMPI:
+
+         module load openmpi
+
+Finally, you may want a later GCC than what the ``ngc`` module might
+provide, and you'll need compatible Boost libraries:
+
+         module unload gcc
+         module load   gcc/6.2.0
+         module load   boost/1.59.0_gcc-6.2.0
+
+Note that the Boost module should match the ``gcc`` version.
+
+
+
+<br>
 # Release
 
 This software has been approved for open source release and has
 been assigned **LA-CC-16-022**.
 
+
+
+<br>
 # Copyright
 
 Copyright (c) 2016, Los Alamos National Security, LLC
 All rights reserved.
 
 Copyright 2016. Los Alamos National Security, LLC. This software was produced under U.S. Government contract DE-AC52-06NA25396 for Los Alamos National Laboratory (LANL), which is operated by Los Alamos National Security, LLC for the U.S. Department of Energy. The U.S. Government has rights to use, reproduce, and distribute this software.  NEITHER THE GOVERNMENT NOR LOS ALAMOS NATIONAL SECURITY, LLC MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR ASSUMES ANY LIABILITY FOR THE USE OF THIS SOFTWARE.  If software is modified to produce derivative works, such modified software should be clearly marked, so as not to confuse it with the version available from LANL.
- 
-Additionally, redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:  
+
+Additionally, redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 
