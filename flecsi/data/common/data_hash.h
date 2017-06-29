@@ -29,7 +29,7 @@ struct data_hash_key_t : public std::pair<size_t, size_t>
   /// Return the hash of the namespace.
   ///
   const
-  size_t 
+  size_t
   namespace_hash()
   const
   {
@@ -40,7 +40,7 @@ struct data_hash_key_t : public std::pair<size_t, size_t>
   /// Return the hash of the name.
   ///
   const
-  size_t 
+  size_t
   name_hash()
   const
   {

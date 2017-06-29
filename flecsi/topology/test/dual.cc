@@ -37,7 +37,7 @@ public:
 class Cell : public MeshEntity{
 public:
   Cell(size_t id) : MeshEntity(id){}
-  
+
   void addSide(Side* s){
     sides_.add(s);
   }
@@ -74,7 +74,7 @@ public:
   static constexpr size_t verticesPerCell(){
     return 4;
   }
-  
+
   static size_t numVerticesPerEntity(size_t dim){
     switch(dim){
     case 0:
@@ -87,20 +87,20 @@ public:
       assert(false && "invalid dimension");
     }
   }
-  
+
   static void createEntities(size_t dim, std::vector<Id>& e, Vertex** v){
     assert(dim = 1);
     assert(e.size() == 8);
-    
+
     e[0] = v[0]->id();
     e[1] = v[2]->id();
-    
+
     e[2] = v[1]->id();
     e[3] = v[3]->id();
-    
+
     e[4] = v[0]->id();
     e[5] = v[1]->id();
-    
+
     e[6] = v[2]->id();
     e[7] = v[3]->id();
   }
@@ -130,7 +130,7 @@ public:
   static constexpr size_t verticesPerCell(){
     return 3;
   }
-  
+
   static size_t numVerticesPerEntity(size_t dim){
     switch(dim){
     case 0:
@@ -143,17 +143,17 @@ public:
       assert(false && "invalid dimension");
     }
   }
-  
+
   static void createEntities(size_t dim, std::vector<Id>& e, SideVertex** v){
     assert(dim = 1);
     assert(e.size() == 6);
-    
+
     e[0] = v[0]->id();
     e[1] = v[1]->id();
-    
+
     e[2] = v[2]->id();
     e[3] = v[3]->id();
-    
+
     e[4] = v[4]->id();
     e[5] = v[5]->id();
   }
@@ -178,7 +178,7 @@ TEST(mesh_topology, dual) {
     for(size_t i = 0; i < width + 1; ++i){
       auto v = new Vertex(id++);
       vs.push_back(v);
-      mesh->addVertex(v); 
+      mesh->addVertex(v);
     }
   }
 

@@ -50,7 +50,7 @@ public:
   IndexSpace create_index_space(unsigned start, unsigned end){
     assert(end >= start);
     Rect<1> rect(Point<1>(start), Point<1>(end - 0));
-    return runtime_->create_index_space(context_, Domain::from_rect<1>(rect));  
+    return runtime_->create_index_space(context_, Domain::from_rect<1>(rect));
   }
 
   DomainPoint domain_point(size_t p){
@@ -70,7 +70,7 @@ public:
   // unstructured
   IndexSpace create_index_space(size_t n) const{
     assert(n > 0);
-    return runtime_->create_index_space(context_, n);  
+    return runtime_->create_index_space(context_, n);
   }
 
   FieldSpace create_field_space() const{
@@ -94,7 +94,7 @@ public:
   }
 
   DomainPoint domain_point(size_t i) const{
-    return DomainPoint::from_point<1>(Point<1>(i)); 
+    return DomainPoint::from_point<1>(Point<1>(i));
   }
 
   FutureMap execute_index_space(IndexLauncher l) const{
@@ -108,13 +108,13 @@ public:
   Domain get_domain(PhysicalRegion pr) const{
     LogicalRegion lr = pr.get_logical_region();
     IndexSpace is = lr.get_index_space();
-    return runtime_->get_index_space_domain(context_, is);     
+    return runtime_->get_index_space_domain(context_, is);
   }
 
   template<class T>
   void get_buffer(PhysicalRegion pr, T*& buf, size_t field = 0) const{
     auto ac = pr.get_field_accessor(field).typeify<T>();
-    Domain domain = get_domain(pr); 
+    Domain domain = get_domain(pr);
     Rect<1> r = domain.get_rect<1>();
     Rect<1> sr;
     ByteOffset bo[1];
@@ -123,7 +123,7 @@ public:
 
   char* get_raw_buffer(PhysicalRegion pr, size_t field = 0) const{
     auto ac = pr.get_field_accessor(field).typeify<char>();
-    Domain domain = get_domain(pr); 
+    Domain domain = get_domain(pr);
     Rect<1> r = domain.get_rect<1>();
     Rect<1> sr;
     ByteOffset bo[1];
@@ -165,7 +165,7 @@ public:
               const partition_vec& exclusive,
               const partition_vec& shared,
               const partition_vec& ghost)
-  : runtime_(runtime), 
+  : runtime_(runtime),
   context_(context),
   h(runtime_, context_),
   num_partitions_(num_partitions),
@@ -182,7 +182,7 @@ public:
 
     Blockify<1> coloring(1);
 
-    IndexPartition ip = 
+    IndexPartition ip =
       runtime_->create_index_partition(context_, is, coloring);
 
     LogicalPartition lp =
@@ -192,7 +192,7 @@ public:
 
     ed_init_args ei;
     ei.num_partitions = num_partitions;
-    ei.index_space = index_space_; 
+    ei.index_space = index_space_;
 
     for(size_t p = 0; p < num_partitions; ++p){
 
@@ -220,7 +220,7 @@ public:
     IndexLauncher il(INIT_TASK_ID, d, TaskArgument(nullptr, 0), arg_map);
 
     il.add_region_requirement(
-          RegionRequirement(lp, 0/*projection ID*/, 
+          RegionRequirement(lp, 0/*projection ID*/,
                             WRITE_DISCARD, EXCLUSIVE, meta_data_));
     il.region_requirements[0].add_field(0);
 
@@ -256,7 +256,7 @@ public:
           TaskArgument(nullptr, 0), arg_map);
 
         il.add_region_requirement(
-              RegionRequirement(lp, 0, 
+              RegionRequirement(lp, 0,
                                 WRITE_DISCARD, EXCLUSIVE, lr));
         il.region_requirements[0].add_field(0);
 
@@ -280,7 +280,7 @@ public:
 
     FieldAllocator a = h.create_field_allocator(fs);
     a.allocate_field(sizeof(T), id);
-    
+
     LogicalRegion lr = h.create_logical_region(index_space_, fs);
 
     field_map_.emplace(id, lr);
@@ -298,7 +298,7 @@ public:
 
     Blockify<1> coloring(1);
 
-    IndexPartition ip = 
+    IndexPartition ip =
       runtime_->create_index_partition(context_, is, coloring);
 
     LogicalPartition lp =
@@ -312,7 +312,7 @@ public:
       TaskArgument(nullptr, 0), arg_map);
 
     il.add_region_requirement(
-          RegionRequirement(lp, 0/*projection ID*/, 
+          RegionRequirement(lp, 0/*projection ID*/,
                             READ_ONLY, EXCLUSIVE, meta_data_));
     il.region_requirements[0].add_field(0);
 
@@ -329,7 +329,7 @@ public:
 
     Blockify<1> coloring(1);
 
-    IndexPartition ip = 
+    IndexPartition ip =
       runtime_->create_index_partition(context_, is, coloring);
 
     LogicalPartition lp =
@@ -343,7 +343,7 @@ public:
       TaskArgument(nullptr, 0), arg_map);
 
     il.add_region_requirement(
-          RegionRequirement(lp, 0/*projection ID*/, 
+          RegionRequirement(lp, 0/*projection ID*/,
                             READ_ONLY, EXCLUSIVE, meta_data_));
     il.region_requirements[0].add_field(0);
 
@@ -351,7 +351,7 @@ public:
     fm.wait_all_results();
 
     for(size_t p = 0; p < num_partitions_; ++p){
-      ed_metadata md = fm.get_result<ed_metadata>(h.domain_point(p));   
+      ed_metadata md = fm.get_result<ed_metadata>(h.domain_point(p));
       mds.emplace_back(move(md));
     }
   }
@@ -380,7 +380,7 @@ void top_level_task(const Task* task,
   partition_vec exclusive(num_partitions);
   partition_vec shared(num_partitions);
   partition_vec ghost(num_partitions);
-  
+
   for(size_t i = 0; i < num_entities; ++i){
     size_t p = equilikely(0, num_partitions - 1);
     exclusive[p].push_back(i);
@@ -392,24 +392,24 @@ void top_level_task(const Task* task,
     for(size_t si : s){
       if(uniform() < 0.1){
         shared[p].push_back(si);
-        
+
         size_t n = equilikely(1, 2);
-        
+
         set<size_t> es;
         es.insert(p);
-        
+
         for(size_t j = 0; j < n; ++j){
           size_t gp;
-          
+
           for(;;){
             gp = equilikely(0, num_partitions - 1);
-          
+
             if(es.find(gp) == es.end()){
               es.insert(gp);
               break;
             }
           }
-          
+
           ghost[gp].push_back(si);
         }
       }
@@ -448,8 +448,9 @@ void init_task(const Task* task,
     //Domain colors = h.domain_from_point(p);
 
     // ndm - correct?
-    md.exclusive_ip = 
-      runtime->create_index_partition(context, args->index_space, colors, mdc, true);
+    md.exclusive_ip =
+      runtime->create_index_partition(
+        context, args->index_space, colors, mdc, true);
   }
 
   start = end;
@@ -469,8 +470,9 @@ void init_task(const Task* task,
     Domain colors = h.domain_from_point(p);
 
     // ndm - correct?
-    md.shared_ip = 
-      runtime->create_index_partition(context, args->index_space, colors, mdc, true);
+    md.shared_ip =
+      runtime->create_index_partition(
+        context, args->index_space, colors, mdc, true);
   }
 
   start = end;
@@ -489,8 +491,9 @@ void init_task(const Task* task,
     Domain colors = h.domain_from_rect(0, args->num_partitions - 1);
 
     // ndm - correct?
-    md.ghost_ip = 
-      runtime->create_index_partition(context, args->index_space, colors, mdc, true);
+    md.ghost_ip =
+      runtime->create_index_partition(
+        context, args->index_space, colors, mdc, true);
   }
 
   auto ac = regions[0].get_field_accessor(0).typeify<ed_metadata>();
@@ -524,14 +527,15 @@ void init_entity_task(const Task* task,
 
 TEST(legion, test1) {
   Runtime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
-  
+
   Runtime::register_legion_task<top_level_task>(TOP_LEVEL_TASK_ID,
     Processor::LOC_PROC, true/*single*/, false/*index*/);
 
   Runtime::register_legion_task<init_task>(INIT_TASK_ID,
     Processor::LOC_PROC, false/*single*/, true/*index*/);
 
-  Runtime::register_legion_task<ed_metadata, get_metadata_task>(GET_METADATA_TASK_ID,
+  Runtime::register_legion_task<ed_metadata, get_metadata_task>(
+    GET_METADATA_TASK_ID,
     Processor::LOC_PROC, false/*single*/, true/*index*/);
 
  Runtime::register_legion_task<init_entity_task>(INIT_ENTITY_TASK_ID,

@@ -138,7 +138,7 @@ class dimensioned_array
   }
 
   // use std::move
-  // http://stackoverflow.com/questions/11726171/numeric-vector-operator-overload-rvalue-reference-parameter
+  // http://stackoverflow.com/questions/11726171/
 
   //! \brief Addition binary operator involving another array.
   //! \param[in] rhs The array on the right hand side of the operator.

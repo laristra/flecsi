@@ -46,7 +46,7 @@ public:
 
     void insert(entity_t* ent){
       ents_.push_back(ent);
-      
+
       if(ents_.size() > 1){
         refine();
       }
@@ -56,7 +56,7 @@ public:
       auto itr = std::find(ents_.begin(), ents_.end(), ent);
       assert(itr != ents_.end());
       ents_.erase(itr);
-      
+
       if(ents_.empty()){
         coarsen();
       }
@@ -136,7 +136,7 @@ TEST(tree_topology, insert_find_remove) {
 
 TEST(tree_topology, assert_branches) {
   tree_topology_t t;
-  
+
   pseudo_random rng;
 
   std::vector<entity_t*> ents;
@@ -216,7 +216,7 @@ TEST(tree_topology, find_radius_thread_pool) {
   tree_topology_t t;
   thread_pool pool;
   pool.start(8);
-  
+
   pseudo_random rng;
 
   std::vector<entity_t*> ents;
@@ -338,7 +338,7 @@ TEST(tree_topology, neighbors_thread_pool) {
       }
     }
 
-    ASSERT_TRUE(s1 == s2);    
+    ASSERT_TRUE(s1 == s2);
   }
 }
 
@@ -418,7 +418,7 @@ TEST(tree_topology, neighbors_box) {
         }
       }
       ASSERT_TRUE(s1 == s2);
-    }    
+    }
   }
 }
 

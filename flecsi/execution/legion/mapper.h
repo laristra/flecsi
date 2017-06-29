@@ -56,7 +56,7 @@ namespace execution {
 //!
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
-class mpi_mapper_t : public Legion::Mapping::DefaultMapper 
+class mpi_mapper_t : public Legion::Mapping::DefaultMapper
 {
   public:
 
@@ -84,13 +84,13 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
   {
     using legion_machine=Legion::Machine;
     using legion_proc=Legion::Processor;
-    
-    legion_machine::ProcessorQuery pq = 
-        legion_machine::ProcessorQuery(machine).same_address_space_as(local);   
+
+    legion_machine::ProcessorQuery pq =
+        legion_machine::ProcessorQuery(machine).same_address_space_as(local);
     for(legion_machine::ProcessorQuery::iterator pqi = pq.begin();
         pqi != pq.end();
         ++pqi)
-    {   
+    {
       legion_proc p = *pqi;
       if(p.kind() == legion_proc::LOC_PROC)
       	local_cpus.push_back(p);
@@ -98,22 +98,22 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
         local_gpus.push_back(p);
       else
         continue;
-      
+
       std::map<Realm::Memory::Kind, Realm::Memory>& mem_map = proc_mem_map[p];
-      
-      legion_machine::MemoryQuery mq = 
+
+      legion_machine::MemoryQuery mq =
           legion_machine::MemoryQuery(machine).has_affinity_to(p);
       for(legion_machine::MemoryQuery::iterator mqi = mq.begin();
           mqi != mq.end();
           ++mqi)
-      {           
+      {
       	Realm::Memory m = *mqi;
         mem_map[m.kind()] = m;
-        
+
         if(m.kind() == Realm::Memory::SYSTEM_MEM)
           local_sysmem = m;
-      }//end for
-    }//end for
+      } // end for
+    } // end for
 
     {
     clog_tag_guard(legion_mapper);
@@ -121,13 +121,13 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
         local_cpus.size() << " gpus=" << local_gpus.size() <<
         " sysmem=" << local_sysmem<<std::endl;
     }
-  }// end mpi_mapper_t
-  
+  } // end mpi_mapper_t
+
   //-------------------------------------------------------------------------//
   //! Destructor
   //-------------------------------------------------------------------------//
   virtual ~mpi_mapper_t(){};
-  
+
   //-------------------------------------------------------------------------//
   //! Specialization of the slice_task funtion for FLeCSI
   //! The slice_task call is used by the runtime
@@ -172,14 +172,14 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
       // expect a 1-D index domain
       assert(input.domain.get_dim() == 1);
       LegionRuntime::Arrays::Rect<1> r = input.domain.get_rect<1>();
-      
+
       // each point in the domain goes to CPUs assigned to that rank
       output.slices.resize(r.volume());
       size_t idx = 0;
-      
+
       using legion_machine=Legion::Machine;
       using legion_proc=Legion::Processor;
-      
+
       // get list of all processors and make sure the count matches
       legion_machine::ProcessorQuery pq =
           legion_machine::ProcessorQuery(machine).only_kind(
@@ -187,15 +187,15 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
       std::vector<legion_proc> all_procs(pq.begin(), pq.end());
 
       assert((r.lo[0] == 0) && (r.hi[0] == (int)(all_procs.size() - 1)));
-      
+
       for(LegionRuntime::Arrays::GenericPointInRectIterator<1> pir(r);
           pir; ++pir, ++idx) {
       	output.slices[idx].domain =Legion::Domain::from_rect<1>(
             LegionRuntime::Arrays::Rect<1>(pir.p, pir.p));
         output.slices[idx].proc = all_procs[idx];
-      }//end for
+      } // end for
       return;
-    }//endi if MAPPER_FORCE_RANK_MATCH
+    } // end if MAPPER_FORCE_RANK_MATCH
 
 
   	if((task.tag & MAPPER_SUBRANK_LAUNCH) != 0) {
@@ -209,7 +209,7 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
     	return;
   	} //end if MAPPER_SUBRANK_LAUNCH
 
-    
+
     else{
       DefaultMapper::default_slice_task(task, local_cpus, remote_cpus,
                                         input, output, cpu_slices_cache);
@@ -236,7 +236,7 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
     const Legion::Task &task,
     const Legion::Mapping::Mapper::MapTaskInput &input,
     Legion::Mapping::Mapper::MapTaskOutput &output)
-  {
+      {
     DefaultMapper::map_task(ctx, task, input,output);
 
     Legion::Memory target_mem = 
@@ -292,14 +292,14 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
         for (size_t j=0; j<3; j++)
           output.chosen_instances[3*indx+j].push_back(result);
 
-       }//end for
+    	} // end for
     }//end if
 
   }//map_task
 
-  
+
  protected:
- 
+
   //Legion::Mapping::MapperRuntime  mapper_runtime; 
   std::map<Legion::Processor,
            std::map<Realm::Memory::Kind, Realm::Memory> > proc_mem_map;
@@ -328,12 +328,12 @@ mapper_registration(
     mpi_mapper_t *mapper = new mpi_mapper_t(machine, rt, *it);
     rt->replace_default_mapper(mapper, *it);
   }
-}//mapper registration
+} // mapper registration
 
 
 
-}//namespace execution
-}//namespace flecsi
+} // namespace execution
+} // namespace flecsi
 
 
 #endif //flecsi_execution_mpilegion_maper_h
@@ -342,4 +342,3 @@ mapper_registration(
  * Formatting options
  * vim: set tabstop=2 shiftwidth=2 expandtab :
  *~-------------------------------------------------------------------------~-*/
-

@@ -47,7 +47,7 @@ public:
   IndexSpace create_index_space(unsigned start, unsigned end){
     assert(end >= start);
     Rect<1> rect(Point<1>(start), Point<1>(end - 0));
-    return runtime_->create_index_space(context_, Domain::from_rect<1>(rect));  
+    return runtime_->create_index_space(context_, Domain::from_rect<1>(rect));
   }
 
   DomainPoint domain_point(size_t p){
@@ -67,7 +67,7 @@ public:
   // unstructured
   IndexSpace create_index_space(size_t n) const{
     assert(n > 0);
-    return runtime_->create_index_space(context_, n);  
+    return runtime_->create_index_space(context_, n);
   }
 
   FieldSpace create_field_space() const{
@@ -91,7 +91,7 @@ public:
   }
 
   DomainPoint domain_point(size_t i) const{
-    return DomainPoint::from_point<1>(Point<1>(i)); 
+    return DomainPoint::from_point<1>(Point<1>(i));
   }
 
   FutureMap execute_index_space(IndexLauncher l) const{
@@ -105,13 +105,13 @@ public:
   Domain get_domain(PhysicalRegion pr) const{
     LogicalRegion lr = pr.get_logical_region();
     IndexSpace is = lr.get_index_space();
-    return runtime_->get_index_space_domain(context_, is);     
+    return runtime_->get_index_space_domain(context_, is);
   }
 
   template<class T>
   void get_buffer(PhysicalRegion pr, T*& buf, size_t field = 0) const{
     auto ac = pr.get_field_accessor(field).typeify<T>();
-    Domain domain = get_domain(pr); 
+    Domain domain = get_domain(pr);
     Rect<1> r = domain.get_rect<1>();
     Rect<1> sr;
     ByteOffset bo[1];
@@ -120,7 +120,7 @@ public:
 
   char* get_raw_buffer(PhysicalRegion pr, size_t field = 0) const{
     auto ac = pr.get_field_accessor(field).typeify<char>();
-    Domain domain = get_domain(pr); 
+    Domain domain = get_domain(pr);
     Rect<1> r = domain.get_rect<1>();
     Rect<1> sr;
     ByteOffset bo[1];
@@ -186,7 +186,7 @@ void top_level_task(const Task* task,
       TaskArgument(&md, sizeof(md)));
   }
 
-  IndexPartition ip = 
+  IndexPartition ip =
     runtime->create_index_partition(ctx, is, coloring, true);
 
   LogicalPartition lp =
@@ -198,9 +198,9 @@ void top_level_task(const Task* task,
     TaskArgument(nullptr, 0), arg_map);
 
   il.add_region_requirement(
-        RegionRequirement(lp, 0, 
+        RegionRequirement(lp, 0,
                           WRITE_DISCARD, EXCLUSIVE, lr));
-  
+
   il.region_requirements[0].add_field(0);
 
   FutureMap fm = h.execute_index_space(il);
@@ -210,13 +210,13 @@ void top_level_task(const Task* task,
     TaskArgument(nullptr, 0), arg_map);
 
   il2.add_region_requirement(
-        RegionRequirement(lp, 0, 
+        RegionRequirement(lp, 0,
                           READ_ONLY, EXCLUSIVE, lr));
-  
+
   il2.region_requirements[0].add_field(0);
 
   FutureMap fm2 = h.execute_index_space(il2);
-  fm2.wait_all_results();  
+  fm2.wait_all_results();
 }
 
 void init_task(const Task* task,
@@ -234,7 +234,7 @@ void init_task(const Task* task,
 
   for(size_t i = 0; i < md->size; ++i){
     assert(itr.has_next());
-    
+
     ptr_t ptr = itr.next();
     ac.write(ptr, i);
   }
@@ -243,7 +243,7 @@ void init_task(const Task* task,
 void read_task(const Task* task,
                const std::vector<PhysicalRegion>& regions,
                Context ctx, Runtime* runtime){
-  
+
   metadata* md = (metadata*)task->local_args;
 
   LogicalRegion lr = regions[0].get_logical_region();
@@ -255,7 +255,7 @@ void read_task(const Task* task,
 
   for(size_t i = 0; i < md->size; ++i){
     assert(itr.has_next());
-    
+
     ptr_t ptr = itr.next();
     int x = ac.read(ptr);
     np(x);
@@ -264,7 +264,7 @@ void read_task(const Task* task,
 
 TEST(legion, test1) {
   Runtime::set_top_level_task_id(TOP_LEVEL_TASK_ID);
-  
+
   Runtime::register_legion_task<top_level_task>(TOP_LEVEL_TASK_ID,
     Processor::LOC_PROC, true, false);
 

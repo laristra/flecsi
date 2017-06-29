@@ -79,9 +79,9 @@ public:
 
 private:
   legion_dpd& dpd_;
-  size_t num_entries_;  
-  size_t num_indices_;  
-  size_t partition_;  
+  size_t num_entries_;
+  size_t num_indices_;
+  size_t partition_;
 };
 
 template<typename T>
@@ -136,7 +136,7 @@ public:
         size_t index = mitr->first;
 
         size_t n = indices_[index];
-        
+
         if(n >= num_slots_){
           ++mitr;
           continue;
@@ -144,10 +144,10 @@ public:
 
         entry_value__<T>& ev = mitr->second;
 
-        entry_value_t * start = entries_ + index * num_slots_;     
+        entry_value_t * start = entries_ + index * num_slots_;
         entry_value_t * end = start + n;
 
-        entry_value_t * itr = 
+        entry_value_t * itr =
           std::lower_bound(start, end, entry_value_t(ev.entry),
             [](const auto & k1, const auto & k2) -> bool{
               return k1.entry < k2.entry;
@@ -185,15 +185,15 @@ public:
     assert(index < num_indices_ && entry < num_entries_);
 
     size_t n = indices_[index];
-    
+
     if(n >= num_slots_) {
       return spare_map_.emplace(index, entry_value_t(entry))->second.value;
     } // if
 
-    entry_value_t * start = entries_ + index * num_slots_;     
+    entry_value_t * start = entries_ + index * num_slots_;
     entry_value_t * end = start + n;
 
-    entry_value_t * itr = 
+    entry_value_t * itr =
       std::lower_bound(start, end, entry_value_t(entry),
         [](const auto & k1, const auto & k2) -> bool{
           return k1.entry < k2.entry;
@@ -286,7 +286,7 @@ public:
     entry_offset * start = entries_ + oc.offset;
     entry_offset * end = start + oc.count;
 
-    entry_offset * itr = 
+    entry_offset * itr =
       std::lower_bound(start, end, entry_offset({entry, 0}),
         [](const auto & k1, const auto & k2) -> bool {
           return k1.entry < k2.entry;
@@ -332,11 +332,11 @@ void top_level_task(const Task* task,
     IndexSpace is = h.create_index_space(cells_part.size);
 
     IndexAllocator ia = runtime->create_index_allocator(ctx, is);
-    
+
     Coloring coloring;
 
     for(size_t c = 0; c < cells.size(); ++c){
-      size_t p = cells[c]; 
+      size_t p = cells[c];
       ++cells_part.count_map[p];
     }
 
@@ -355,15 +355,15 @@ void top_level_task(const Task* task,
     FieldAllocator fa = h.create_field_allocator(fs);
 
     fa.allocate_field(sizeof(entity_id), fid_t.fid_entity);
-    
+
     fa.allocate_field(sizeof(legion_dpd::ptr_count),
                       fid_t.fid_offset_count);
 
     cells_part.lr = h.create_logical_region(is, fs);
 
-    RegionRequirement rr(cells_part.lr, WRITE_DISCARD, 
+    RegionRequirement rr(cells_part.lr, WRITE_DISCARD,
       EXCLUSIVE, cells_part.lr);
-    
+
     rr.add_field(fid_t.fid_entity);
     InlineLauncher il(rr);
 
@@ -371,7 +371,7 @@ void top_level_task(const Task* task,
 
     pr.wait_until_valid();
 
-    auto ac = 
+    auto ac =
       pr.get_field_accessor(fid_t.fid_entity).typeify<entity_id>();
 
     IndexIterator itr(runtime, ctx, is);
@@ -399,7 +399,7 @@ void top_level_task(const Task* task,
   {
 
     sparse_mutator<double> m(data, 5);
-    
+
     m(0, 9) = 9.9;
     m(1, 1) = 1.1;
     m(2, 2) = 2.2;
@@ -425,7 +425,7 @@ void top_level_task(const Task* task,
 
 TEST(legion, test1) {
   Runtime::set_top_level_task_id(TOP_LEVEL_TID);
-  
+
   Runtime::register_legion_task<top_level_task>(TOP_LEVEL_TID,
     Processor::LOC_PROC, true, false);
 

@@ -12,7 +12,7 @@ struct state_user_meta_data_t {
   void initialize(){}
 };
 
-using state_t = 
+using state_t =
   data_t<state_user_meta_data_t, default_data_storage_policy_t>;
 
 struct Aggregate{
@@ -49,7 +49,7 @@ public:
       auto am = state.dense_accessor<double, flecsi_internal>("mass");
       auto av = state.dense_accessor<vector_t, flecsi_internal>("velocity");
       auto ap = state.dense_accessor<vector_t, flecsi_internal>("position");
-      
+
       am[id()] = mass;
       ap[id()] = position;
       av[id()] = velocity;
@@ -89,7 +89,7 @@ public:
       point_t p = ap[id()];
 
       double d = distance(p, a.center);
-      
+
       vector_t& v = av[id()];
       v += 1e-9 * a.mass * (a.center - p)/(d*d);
       av[id()] = v;
@@ -111,7 +111,7 @@ public:
       else if(p[0] < 0.0){
         p[0] = 1.0;
       }
-      
+
       if(p[1] > 1.0){
         p[1] = 0;
       }
@@ -129,7 +129,7 @@ public:
 
     void insert(body* ent){
       ents_.push_back(ent);
-      
+
       if(ents_.size() > 100){
         refine();
       }
@@ -139,7 +139,7 @@ public:
       auto itr = find(ents_.begin(), ents_.end(), ent);
       assert(itr != ents_.end());
       ents_.erase(itr);
-      
+
       if(ents_.empty()){
         coarsen();
       }
@@ -218,17 +218,17 @@ TEST(tree_topology, gravity) {
     if(b0 == b){
       return;
     }
-    
+
     b0->interact(b);
     ++ix;
   };
 
-  auto g = 
+  auto g =
   [&](branch_t* b, size_t depth, vector<Aggregate>& aggs) -> bool{
-    if(depth > 4 || b->is_leaf()){    
+    if(depth > 4 || b->is_leaf()){
       auto h = [&](body* bi, Aggregate& agg){
        agg.center += bi->mass() * bi->coordinates();
-       agg.mass += bi->mass(); 
+       agg.mass += bi->mass();
       };
 
       Aggregate agg;
@@ -254,9 +254,9 @@ TEST(tree_topology, gravity) {
 
     for(size_t i = 0; i < N; ++i){
       auto bi = bodies[i];
-      
+
       for(auto& agg : aggs){
-        bi->interact(agg);  
+        bi->interact(agg);
       }
 
       bi->update();
