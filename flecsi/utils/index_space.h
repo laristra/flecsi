@@ -16,7 +16,7 @@
 #define flecsi_utils_index_space_h
 
 //!
-//! \file index_space.h
+//! \file
 //! \date Initial file creation: Oct 09, 2015
 //!
 

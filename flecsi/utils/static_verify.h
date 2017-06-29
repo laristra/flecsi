@@ -16,7 +16,7 @@
 #define flecsi_utils_static_verify_h
 
 //!
-//! \file  static_verify.h
+//! \file
 //! \brief Utilities for performing static verification.
 //!
 

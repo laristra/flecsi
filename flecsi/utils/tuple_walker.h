@@ -28,14 +28,14 @@ namespace utils {
 //----------------------------------------------------------------------------//
 
 template<
-  size_t INDEX,
+  std::size_t INDEX,
   typename TUPLE_TYPE,
   typename CRTP_TYPE
 >
 struct tuple_walker_helper__
 {
 
-  static constexpr size_t CURRENT =
+  static constexpr std::size_t CURRENT =
     std::tuple_size<TUPLE_TYPE>::value - INDEX;
 
   using HELPER_TYPE = tuple_walker_helper__<INDEX - 1, TUPLE_TYPE, CRTP_TYPE>;
@@ -48,7 +48,7 @@ struct tuple_walker_helper__
   //--------------------------------------------------------------------------//
 
   static
-  size_t
+  std::size_t
   walk(
     CRTP_TYPE & p,
     TUPLE_TYPE & t
@@ -65,7 +65,7 @@ struct tuple_walker_helper__
   //--------------------------------------------------------------------------//
 
   static
-  size_t
+  std::size_t
   walk_types(
     CRTP_TYPE & p
   )
@@ -96,10 +96,10 @@ struct tuple_walker_helper__<0, TUPLE_TYPE, CRTP_TYPE>
   //--------------------------------------------------------------------------//
 
   static
-  size_t
+  std::size_t
   walk(
-    CRTP_TYPE &,
-    TUPLE_TYPE &
+    const CRTP_TYPE &,
+    const TUPLE_TYPE &
   )
   {
     return 0;
@@ -110,9 +110,9 @@ struct tuple_walker_helper__<0, TUPLE_TYPE, CRTP_TYPE>
   //--------------------------------------------------------------------------//
 
   static
-  size_t
+  std::size_t
   walk_types(
-    CRTP_TYPE &
+    const CRTP_TYPE &
   )
   {
     return 0;

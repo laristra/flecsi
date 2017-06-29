@@ -15,29 +15,38 @@
 #ifndef flecsi_utils_id_h
 #define flecsi_utils_id_h
 
+//!
+//! \file
+//! \date Initial file creation: Feb 12, 2016
+//!
+
 #include <cassert>
+#include <climits>
 #include <cstdint>
 #include <iostream>
-
-/*!
- * \file
- * \date Initial file creation: Feb 12, 2016
- */
 
 namespace flecsi {
 namespace utils {
 
   using local_id_t = __uint128_t;
 
-  template<size_t PBITS, size_t EBITS, size_t FBITS, size_t GBITS>
+  template<
+     std::size_t PBITS,
+     std::size_t EBITS,
+     std::size_t FBITS,
+     std::size_t GBITS>
   class id_
   {
   public:
-    static constexpr size_t FLAGS_UNMASK = 
-      ~(((size_t(1) << FBITS) - size_t(1)) << 59); 
+    static constexpr std::size_t FLAGS_UNMASK = 
+      ~(((std::size_t(1) << FBITS) - std::size_t(1)) << 59);
 
     static_assert(PBITS + EBITS + FBITS + GBITS + 4 == 128, 
       "invalid id bit configuration");
+
+    // FLAGS_UNMASK's "<< 59" would seem to require this... - martin
+    static_assert(sizeof(std::size_t)*CHAR_BIT >= 64,
+      "need std::size_t >= 64 bit");
 
     id_() = default;
     id_(id_&&) = default;
@@ -50,7 +59,7 @@ namespace utils {
     flags_(id.flags_),
     global_(id.global_) { }
 
-    explicit id_(size_t local_id)
+    explicit id_(const std::size_t local_id)
     : dimension_(0),
     domain_(0),
     partition_(0),
@@ -58,11 +67,11 @@ namespace utils {
     flags_(0),
     global_(0) { }
 
-    template<size_t D, size_t M>
-    static id_ make(size_t local_id,
-                    size_t partition_id = 0,
-                    size_t flags = 0,
-                    size_t global = 0)
+    template<std::size_t D, std::size_t M>
+    static id_ make(const std::size_t local_id,
+                    const std::size_t partition_id = 0,
+                    const std::size_t flags = 0,
+                    const std::size_t global = 0)
     {
       id_ global_id;
       global_id.dimension_ = D;
@@ -75,12 +84,12 @@ namespace utils {
       return global_id;
     }
 
-    template<size_t M>
-    static id_ make(size_t dim,
-                    size_t local_id,
-                    size_t partition_id = 0,
-                    size_t flags = 0,
-                    size_t global = 0)
+    template<std::size_t M>
+    static id_ make(const std::size_t dim,
+                    const std::size_t local_id,
+                    const std::size_t partition_id = 0,
+                    const std::size_t flags = 0,
+                    const std::size_t global = 0)
     {
       id_ global_id;
       global_id.dimension_ = dim;
@@ -102,23 +111,23 @@ namespace utils {
       return r;
     }
 
-    size_t global_id() const
+    std::size_t global_id() const
     {
-      constexpr size_t unmask = ~((size_t(1) << EBITS) - 1);
+      constexpr std::size_t unmask = ~((std::size_t(1) << EBITS) - 1);
       return (local_id() & unmask) | global_;
     }
 
-    void set_global(size_t global) const
+    void set_global(const std::size_t global)
     {
       global_ = global;
     }
 
-    size_t global() const
+    std::size_t global() const
     {
       return global_;
     }
 
-    void set_partition(size_t partition) const
+    void set_partition(const std::size_t partition)
     {
       partition_ = partition;
     }
@@ -137,31 +146,31 @@ namespace utils {
       return *this;
     }
 
-    size_t dimension() const{
+    std::size_t dimension() const{
       return dimension_;
     }
 
-    size_t domain() const{
+    std::size_t domain() const{
       return domain_;
     }
 
-    size_t partition() const{
+    std::size_t partition() const{
       return partition_;
     }
 
-    size_t entity() const{
+    std::size_t entity() const{
       return entity_;
     }
 
-    size_t index_space_index() const{
+    std::size_t index_space_index() const{
       return entity_;
     }
 
-    size_t flags() const{
+    std::size_t flags() const{
       return flags_;
     }
 
-    size_t set_flags(size_t flags) {
+    void set_flags(const std::size_t flags) {
       assert(flags < 1 << FBITS && "flag bits exceeded");
       flags_ = flags;
     }
@@ -180,21 +189,27 @@ namespace utils {
 
   private:
 
-    size_t dimension_ : 2;
-    size_t domain_ : 2;
-    size_t partition_ : PBITS;
-    size_t entity_ : EBITS;
-    size_t flags_ : FBITS;
-    size_t global_ : GBITS;
+    std::size_t dimension_ : 2;
+    std::size_t domain_ : 2;
+    std::size_t partition_ : PBITS;
+    std::size_t entity_ : EBITS;
+    std::size_t flags_ : FBITS;
+    std::size_t global_ : GBITS;
   }; // id_
-
-  inline std::ostream& operator<<(std::ostream& ostr, local_id_t x){
-    ostr << uint64_t(x >> 64) << ":" << uint64_t(x);
-    return ostr;
-  }
 
 } // namespace utils
 } // namespace flecsi
+
+
+
+// Defining operator<< out-of-namespace prevents an overload ambiguity problem
+// that the unit-test code uncovered when the definition was in flecsi::utils.
+inline std::ostream &operator<<(
+  std::ostream &ostr,
+  const flecsi::utils::local_id_t x
+) {
+  return ostr << uint64_t(x >> 64) << ":" << uint64_t(x);
+}
 
 #endif // flecsi_utils_id_h
 

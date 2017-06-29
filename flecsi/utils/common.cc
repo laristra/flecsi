@@ -4,7 +4,7 @@
  *~-------------------------------------------------------------------------~~*/
 
 //!
-//! \file common.cc
+//! \file
 //! \authors bergen
 //! \date Initial file creation: Aug 01, 2016
 //!

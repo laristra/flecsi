@@ -16,7 +16,7 @@
 #define flecsi_utils_common_h
 
 //!
-//! \file common.h
+//! \file
 //! \date Initial file creation: Sep 23, 2015
 //!
 
