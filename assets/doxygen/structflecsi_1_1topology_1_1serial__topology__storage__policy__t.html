@@ -107,7 +107,7 @@ Inheritance diagram for flecsi::topology::serial_topology_storage_policy_t&lt; N
  <div class="center">
   <img src="structflecsi_1_1topology_1_1serial__topology__storage__policy__t.png" usemap="#flecsi::topology::serial_5Ftopology_5Fstorage_5Fpolicy_5Ft_3C_20ND_2C_20NM_20_3E_map" alt=""/>
   <map id="flecsi::topology::serial_5Ftopology_5Fstorage_5Fpolicy_5Ft_3C_20ND_2C_20NM_20_3E_map" name="flecsi::topology::serial_topology_storage_policy_t&lt; ND, NM &gt;_map">
-<area href="classflecsi_1_1topology_1_1mesh__storage__t.html" alt="flecsi::topology::mesh_storage_t&lt; D, NM &gt;" shape="rect" coords="0,56,439,80"/>
+<area href="classflecsi_1_1topology_1_1mesh__storage__t.html" alt="flecsi::topology::mesh_storage_t&lt; ND, NM &gt;" shape="rect" coords="0,56,439,80"/>
 <area href="classflecsi_1_1topology_1_1mesh__storage__t.html" alt="flecsi::topology::mesh_storage_t&lt; MT::num_dimensions, MT::num_domains &gt;" shape="rect" coords="449,56,888,80"/>
 </map>
  </div></div>
@@ -117,16 +117,20 @@ Public Types</h2></td></tr>
 <tr class="memitem:a383d9b676990f5efc2644bb855b1df32"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a383d9b676990f5efc2644bb855b1df32"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>id_t</b> = <a class="el" href="classflecsi_1_1utils_1_1id__.html">utils::id_t</a></td></tr>
 <tr class="separator:a383d9b676990f5efc2644bb855b1df32"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad09dffcf3e5971ef8e9f12d83799189d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad09dffcf3e5971ef8e9f12d83799189d"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>index_spaces_t</b> = std::array&lt; <a class="el" href="classflecsi_1_1topology_1_1index__space.html">index_space</a>&lt; <a class="el" href="classflecsi_1_1topology_1_1mesh__entity__base__.html">mesh_entity_base_</a> *, true, true, true &gt;, ND+1 &gt;</td></tr>
-<tr class="separator:ad09dffcf3e5971ef8e9f12d83799189d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23db0bd4bd2b775a2f81fa29c835db77"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a23db0bd4bd2b775a2f81fa29c835db77"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>index_spaces_t</b> = std::array&lt; <a class="el" href="classflecsi_1_1topology_1_1index__space.html">index_space</a>&lt; <a class="el" href="classflecsi_1_1topology_1_1mesh__entity__base__.html">mesh_entity_base_</a> *, true, true, true, void &gt;, ND+1 &gt;</td></tr>
+<tr class="separator:a23db0bd4bd2b775a2f81fa29c835db77"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac6c634d3ac102912f26d270547029113"><td class="memTemplParams" colspan="2"><a class="anchor" id="ac6c634d3ac102912f26d270547029113"></a>
-template&lt;size_t D, size_t M, typename ET &gt; </td></tr>
-<tr class="memitem:ac6c634d3ac102912f26d270547029113"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>add_entity</b> (ET *ent, size_t partition_id=0)</td></tr>
-<tr class="separator:ac6c634d3ac102912f26d270547029113"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af02e6ca02a6cdf7d86ac992821edb2a6"><td class="memTemplParams" colspan="2"><a class="anchor" id="af02e6ca02a6cdf7d86ac992821edb2a6"></a>
+template&lt;size_t D, size_t N&gt; </td></tr>
+<tr class="memitem:af02e6ca02a6cdf7d86ac992821edb2a6"><td class="memTemplItemLeft" align="right" valign="top">size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><b>entity_dimension</b> (<a class="el" href="classflecsi_1_1topology_1_1mesh__entity__t.html">mesh_entity_t</a>&lt; D, N &gt; *)</td></tr>
+<tr class="separator:af02e6ca02a6cdf7d86ac992821edb2a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af978bf41a0ee73f86297c47f34b8a56a"><td class="memTemplParams" colspan="2"><a class="anchor" id="af978bf41a0ee73f86297c47f34b8a56a"></a>
+template&lt;class T , size_t M = 0, class... S&gt; </td></tr>
+<tr class="memitem:af978bf41a0ee73f86297c47f34b8a56a"><td class="memTemplItemLeft" align="right" valign="top">T *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>make</b> (S &amp;&amp;...args)</td></tr>
+<tr class="separator:af978bf41a0ee73f86297c47f34b8a56a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>

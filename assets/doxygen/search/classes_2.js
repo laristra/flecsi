@@ -1,8 +1,9 @@
 var searchData=
 [
-  ['cell',['Cell',['../classCell.html',1,'']]],
+  ['cell',['cell',['../classcell.html',1,'cell'],['../classCell.html',1,'Cell']]],
   ['cell',['Cell',['../classflecsi_1_1topology_1_1Cell.html',1,'flecsi::topology']]],
   ['checksum_5ft',['checksum_t',['../structflecsi_1_1utils_1_1checksum__t.html',1,'flecsi::utils']]],
+  ['client_5fdata_5f_5f',['client_data__',['../structflecsi_1_1data_1_1client__data____.html',1,'flecsi::data']]],
   ['client_5ftype',['client_type',['../classclient__type.html',1,'']]],
   ['colorer_5ft',['colorer_t',['../classflecsi_1_1coloring_1_1colorer__t.html',1,'flecsi::coloring']]],
   ['coloring_5finfo_5ft',['coloring_info_t',['../structflecsi_1_1coloring_1_1coloring__info__t.html',1,'flecsi::coloring']]],
@@ -14,6 +15,7 @@ var searchData=
   ['compute_5fconnectivity_5f',['compute_connectivity_',['../structflecsi_1_1topology_1_1compute__connectivity__.html',1,'flecsi::topology']]],
   ['compute_5fconnectivity_5f_3c_20dm_2c_200_2c_20ts_20_3e',['compute_connectivity_&lt; DM, 0, TS &gt;',['../structflecsi_1_1topology_1_1compute__connectivity___3_01DM_00_010_00_01TS_01_4.html',1,'flecsi::topology']]],
   ['connectivity_5ft',['connectivity_t',['../classflecsi_1_1topology_1_1connectivity__t.html',1,'flecsi::topology']]],
+  ['connectivity_5fwalker_5ft',['connectivity_walker_t',['../structflecsi_1_1data_1_1legion__client__registration__wrapper_____3_01flecsi_1_1topology_1_1mesh133990b3481c2c2335cfaa98f9f60426.html',1,'flecsi::data::legion_client_registration_wrapper__&lt; flecsi::topology::mesh_topology_t&lt; POLICY_TYPE &gt;, NAMESPACE_HASH, NAME_HASH &gt;']]],
   ['const_5fstring',['const_string',['../classconst__string.html',1,'']]],
   ['const_5fstring_5fhasher_5ft',['const_string_hasher_t',['../structflecsi_1_1utils_1_1const__string__hasher__t.html',1,'flecsi::utils']]],
   ['const_5fstring_5ft',['const_string_t',['../classflecsi_1_1utils_1_1const__string__t.html',1,'flecsi::utils']]],

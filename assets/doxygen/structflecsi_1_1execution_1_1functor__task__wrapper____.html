@@ -113,8 +113,6 @@ using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="str
 using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1functor__task__wrapper____.html#a8cdbf977d3b62340fab3d1fe645a64cb">arg_tuple_t</a> = typename <a class="el" href="structflecsi_1_1utils_1_1function__traits____.html">flecsi::utils::function_traits__</a>&lt; decltype(&amp;FUNCTOR_TYPE::execute)&gt;::argument_type</td></tr>
 <tr class="memdesc:a8cdbf977d3b62340fab3d1fe645a64cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">The arg_tuple_t type infers the argument type of the functor task. <br /></td></tr>
 <tr class="separator:a8cdbf977d3b62340fab3d1fe645a64cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5e801cd9ce1280427cd7c00b820da39a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1functor__task__wrapper____.html#a5e801cd9ce1280427cd7c00b820da39a">functor_task_args_t</a> = typename <a class="el" href="structflecsi_1_1utils_1_1base__convert__tuple__type.html">utils::base_convert_tuple_type</a>&lt; <a class="el" href="structflecsi_1_1accessor__base__t.html">accessor_base_t</a>, <a class="el" href="group__data.html#gad1d3042e9595ae4b6038fed18c300d76">data_handle__</a>&lt; void, 0, 0, 0 &gt;, <a class="el" href="structflecsi_1_1execution_1_1functor__task__wrapper____.html#a8cdbf977d3b62340fab3d1fe645a64cb">arg_tuple_t</a> &gt;::type</td></tr>
-<tr class="separator:a5e801cd9ce1280427cd7c00b820da39a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa985dab2214d458e0cd2d3c96585afed"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa985dab2214d458e0cd2d3c96585afed"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1functor__task__wrapper____.html#aa985dab2214d458e0cd2d3c96585afed">task_id_t</a> = Legion::TaskID</td></tr>
 <tr class="memdesc:aa985dab2214d458e0cd2d3c96585afed"><td class="mdescLeft">&#160;</td><td class="mdescRight">The task_id_t type is a unique identifier for Legion tasks. <br /></td></tr>
@@ -140,23 +138,7 @@ struct flecsi::execution::functor_task_wrapper__&lt; FUNCTOR_TYPE &gt;</h3>
   </table>
   </dd>
 </dl>
-</div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a class="anchor" id="a5e801cd9ce1280427cd7c00b820da39a"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename FUNCTOR_TYPE &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="structflecsi_1_1execution_1_1functor__task__wrapper____.html">flecsi::execution::functor_task_wrapper__</a>&lt; FUNCTOR_TYPE &gt;::<a class="el" href="structflecsi_1_1execution_1_1functor__task__wrapper____.html#a5e801cd9ce1280427cd7c00b820da39a">functor_task_args_t</a> =  typename <a class="el" href="structflecsi_1_1utils_1_1base__convert__tuple__type.html">utils::base_convert_tuple_type</a>&lt; <a class="el" href="structflecsi_1_1accessor__base__t.html">accessor_base_t</a>, <a class="el" href="group__data.html#gad1d3042e9595ae4b6038fed18c300d76">data_handle__</a>&lt;void, 0, 0, 0&gt;, <a class="el" href="structflecsi_1_1execution_1_1functor__task__wrapper____.html#a8cdbf977d3b62340fab3d1fe645a64cb">arg_tuple_t</a>&gt;::type</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>The functor_task_args_t type defines a task argument type for task execution through the Legion runtime. </p>
-
-</div>
-</div>
-<h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a3e5892ca66e67d5061d8f31073cf9a38"></a>
 <div class="memitem">
 <div class="memproto">

@@ -108,6 +108,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <code>#include &quot;<a class="el" href="array__ref_8h_source.html">flecsi/utils/array_ref.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="reorder_8h_source.html">flecsi/utils/reorder.h</a>&quot;</code><br />
 <code>#include &quot;flecsi/topology/index_space.h&quot;</code><br />
+<code>#include &quot;<a class="el" href="entity__storage_8h_source.html">flecsi/topology/entity_storage.h</a>&quot;</code><br />
 </div>
 <p><a href="mesh__types_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -116,6 +117,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1typeify.html">flecsi::topology::typeify&lt; T, M &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1id__vector__hash__t.html">flecsi::topology::id_vector_hash_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__t.html">flecsi::topology::mesh_topology_base_t&lt; STORAGE_TYPE &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">contains methods and data about the mesh topology that do not depend on type parameterization, e.g: entity types, domains, etc.  <a href="classflecsi_1_1topology_1_1mesh__topology__base__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__entity__base__.html">flecsi::topology::mesh_entity_base_</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -138,16 +142,16 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1domain__connectivity.html">flecsi::topology::domain_connectivity&lt; D &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__t.html">flecsi::topology::mesh_topology_base_t</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1mesh__topology__base__t.html">flecsi::topology::mesh_topology_base_t&lt; STORAGE_TYPE &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">contains methods and data about the mesh topology that do not depend on type parameterization, e.g: entity types, domains, etc.  <a href="classflecsi_1_1topology_1_1mesh__topology__base__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1unserialize__dimensions__.html">flecsi::topology::unserialize_dimensions_&lt; MT, NM, ND, M, D &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1unserialize__dimensions__.html">flecsi::topology::unserialize_dimensions_&lt; ST, MT, NM, ND, M, D &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1unserialize__dimensions___3_01MT_00_01NM_00_01ND_00_01M_00_01ND_01_4.html">flecsi::topology::unserialize_dimensions_&lt; MT, NM, ND, M, ND &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1unserialize__dimensions___3_01ST_00_01MT_00_01NM_00_01ND_00_01M_00_01ND_01_4.html">flecsi::topology::unserialize_dimensions_&lt; ST, MT, NM, ND, M, ND &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1unserialize__domains__.html">flecsi::topology::unserialize_domains_&lt; MT, NM, ND, M &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1unserialize__domains__.html">flecsi::topology::unserialize_domains_&lt; ST, MT, NM, ND, M &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1unserialize__domains___3_01MT_00_01NM_00_01ND_00_01NM_01_4.html">flecsi::topology::unserialize_domains_&lt; MT, NM, ND, NM &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1topology_1_1unserialize__domains___3_01ST_00_01MT_00_01NM_00_01ND_00_01NM_01_4.html">flecsi::topology::unserialize_domains_&lt; ST, MT, NM, ND, NM &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
@@ -160,6 +164,10 @@ template&lt;size_t M&gt; </td></tr>
 template&lt;size_t M&gt; </td></tr>
 <tr class="memitem:a10afce6116aab3b59dee8219fdefa968"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>flecsi::topology::domain_</b> = typeify&lt; size_t, M &gt;</td></tr>
 <tr class="separator:a10afce6116aab3b59dee8219fdefa968"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39e31ea4b007f1c72714cf6f244d2b95"><td class="memTemplParams" colspan="2"><a class="anchor" id="a39e31ea4b007f1c72714cf6f244d2b95"></a>
+template&lt;size_t M&gt; </td></tr>
+<tr class="memitem:a39e31ea4b007f1c72714cf6f244d2b95"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>flecsi::topology::index_space_</b> = typeify&lt; size_t, M &gt;</td></tr>
+<tr class="separator:a39e31ea4b007f1c72714cf6f244d2b95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0b00def1e1ade044bd3759826f91e990"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0b00def1e1ade044bd3759826f91e990"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::topology::id_vector_t</b> = std::vector&lt; utils::id_t &gt;</td></tr>
 <tr class="separator:a0b00def1e1ade044bd3759826f91e990"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -182,10 +190,10 @@ template&lt;class MT , size_t D, size_t M&gt; </td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a174ae20a78e6a1427dec34bbefabcd5a"><td class="memTemplParams" colspan="2"><a class="anchor" id="a174ae20a78e6a1427dec34bbefabcd5a"></a>
-template&lt;class MT , size_t NM, size_t M, size_t D&gt; </td></tr>
-<tr class="memitem:a174ae20a78e6a1427dec34bbefabcd5a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>flecsi::topology::unserialize_dimension_</b> (mesh_topology_base_t &amp;mesh, char *buf, uint64_t &amp;pos)</td></tr>
-<tr class="separator:a174ae20a78e6a1427dec34bbefabcd5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07e244c09506ea1ec93bfc833d1ca241"><td class="memTemplParams" colspan="2"><a class="anchor" id="a07e244c09506ea1ec93bfc833d1ca241"></a>
+template&lt;class ST , class MT , size_t NM, size_t M, size_t D&gt; </td></tr>
+<tr class="memitem:a07e244c09506ea1ec93bfc833d1ca241"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>flecsi::topology::unserialize_dimension_</b> (mesh_topology_base_t&lt; ST &gt; &amp;mesh, char *buf, uint64_t &amp;pos)</td></tr>
+<tr class="separator:a07e244c09506ea1ec93bfc833d1ca241"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><dl class="section author"><dt>Authors</dt><dd><a href="#" onclick="location.href='mai'+'lto:'+'nic'+'km'+'@la'+'nl'+'.go'+'v'; return false;">nickm<span style="display: none;">.nosp@m.</span>@lan<span style="display: none;">.nosp@m.</span>l.gov</a>, <a href="#" onclick="location.href='mai'+'lto:'+'ber'+'ge'+'n@l'+'an'+'l.g'+'ov'; return false;">berge<span style="display: none;">.nosp@m.</span>n@la<span style="display: none;">.nosp@m.</span>nl.go<span style="display: none;">.nosp@m.</span>v</a> </dd></dl>

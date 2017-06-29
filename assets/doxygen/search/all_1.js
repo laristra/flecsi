@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['accessor_5f_5f',['accessor__',['../structflecsi_1_1accessor____.html',1,'flecsi']]],
-  ['accessor_5fbase_5ft',['accessor_base_t',['../structflecsi_1_1accessor__base__t.html',1,'flecsi']]],
   ['action',['action',['../tree__topology_8h.html#a8f7b319d3e182892a584424d77f95c51',1,'flecsi::topology']]],
   ['add_5fadjacency',['add_adjacency',['../structflecsi_1_1execution_1_1context____.html#a895e6a9e90a27a8079bffde0a550a236',1,'flecsi::execution::context__']]],
   ['add_5fcoloring',['add_coloring',['../structflecsi_1_1execution_1_1context____.html#a4f7d507d6e70e23ae27e75a523920baa',1,'flecsi::execution::context__']]],
@@ -9,7 +7,7 @@ var searchData=
   ['add_5fcolorings_2eh',['add_colorings.h',['../add__colorings_8h.html',1,'']]],
   ['add_5findex_5fspace',['add_index_space',['../structflecsi_1_1execution_1_1legion__context__policy__t.html#add3e74e38476adb92640fbea69c3acd2',1,'flecsi::execution::legion_context_policy_t']]],
   ['adjacency_5ffid',['adjacency_fid',['../structflecsi_1_1execution_1_1legion__context__policy__t.html#ab1ac2d14f646df2056afa6a5fc62cc45',1,'flecsi::execution::legion_context_policy_t']]],
-  ['adjacency_5finfo',['adjacency_info',['../structflecsi_1_1execution_1_1context____.html#a53ff0ac8102fbd74e70668966f173da6',1,'flecsi::execution::context__']]],
+  ['adjacency_5finfo',['adjacency_info',['../structflecsi_1_1execution_1_1context____.html#a4d3a706a5edbfc717d00e4cf19d37df7',1,'flecsi::execution::context__']]],
   ['adjacency_5finfo_5ft',['adjacency_info_t',['../structflecsi_1_1coloring_1_1adjacency__info__t.html',1,'flecsi::coloring']]],
   ['adjacency_5ft',['adjacency_t',['../structflecsi_1_1data_1_1legion__data__t_1_1adjacency__t.html',1,'flecsi::data::legion_data_t']]],
   ['adjacency_5ftypes_2eh',['adjacency_types.h',['../adjacency__types_8h.html',1,'']]],
@@ -26,8 +24,8 @@ var searchData=
   ['apply_5fin_5fbox',['apply_in_box',['../classflecsi_1_1topology_1_1tree__topology.html#a0f37e534fcc07f710dde02ed48fb33f1',1,'flecsi::topology::tree_topology::apply_in_box(thread_pool &amp;pool, const point_t &amp;min, const point_t &amp;max, EF &amp;&amp;ef, ARGS &amp;&amp;...args)'],['../classflecsi_1_1topology_1_1tree__topology.html#aea3c9b9c79c5be7adf062cba1e2eb76b',1,'flecsi::topology::tree_topology::apply_in_box(const point_t &amp;min, const point_t &amp;max, EF &amp;&amp;ef, ARGS &amp;&amp;...args)']]],
   ['apply_5fin_5fradius',['apply_in_radius',['../classflecsi_1_1topology_1_1tree__topology.html#a81a52e8635f8c92d2941830378cc99cd',1,'flecsi::topology::tree_topology::apply_in_radius(const point_t &amp;center, element_t radius, EF &amp;&amp;ef, ARGS &amp;&amp;...args)'],['../classflecsi_1_1topology_1_1tree__topology.html#aeca1dbf9575da5037277a3873102ea19',1,'flecsi::topology::tree_topology::apply_in_radius(thread_pool &amp;pool, const point_t &amp;center, element_t radius, EF &amp;&amp;ef, ARGS &amp;&amp;...args)']]],
   ['arg_5ftuple_5ft',['arg_tuple_t',['../structflecsi_1_1execution_1_1functor__task__wrapper____.html#a8cdbf977d3b62340fab3d1fe645a64cb',1,'flecsi::execution::functor_task_wrapper__']]],
-  ['array_5fref',['array_ref',['../classflecsi_1_1utils_1_1array__ref.html',1,'flecsi::utils']]],
   ['array_5fref',['array_ref',['../classflecsi_1_1utils_1_1array__ref.html#ab1a31a06325b1ac319ca71a0ebd3d29d',1,'flecsi::utils::array_ref::array_ref()'],['../classflecsi_1_1utils_1_1array__ref.html#a75091e53095aff11d9f764b0b80e0a76',1,'flecsi::utils::array_ref::array_ref(const std::vector&lt; T, Allocator &gt; &amp;v)'],['../classflecsi_1_1utils_1_1array__ref.html#a291bda96c312b39454590578d2ffa519',1,'flecsi::utils::array_ref::array_ref(const std::array&lt; T, N &gt; &amp;a)']]],
+  ['array_5fref',['array_ref',['../classflecsi_1_1utils_1_1array__ref.html',1,'flecsi::utils']]],
   ['array_5fref_2eh',['array_ref.h',['../array__ref_8h.html',1,'']]],
   ['as_5fconst',['as_const',['../structflecsi_1_1utils_1_1as__const.html',1,'flecsi::utils']]]
 ];

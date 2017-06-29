@@ -103,50 +103,92 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a0fc1306b91db9f189a2397c820433409"><td class="memTemplParams" colspan="2"><a class="anchor" id="a0fc1306b91db9f189a2397c820433409"></a>
-template&lt;size_t data_type_t&gt; </td></tr>
-<tr class="memitem:a0fc1306b91db9f189a2397c820433409"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>storage_type_t</b> = mpi::storage_type_t&lt; data_type_t &gt;</td></tr>
-<tr class="separator:a0fc1306b91db9f189a2397c820433409"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c4c846abd3614de913aab4b3f26f3ea"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4c4c846abd3614de913aab4b3f26f3ea"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>field_id_t</b> = size_t</td></tr>
 <tr class="separator:a4c4c846abd3614de913aab4b3f26f3ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1d19f754fff3c80502df034c8c18a972"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1d19f754fff3c80502df034c8c18a972"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>registration_function_t</b> = std::function&lt; void(size_t)&gt;</td></tr>
 <tr class="separator:a1d19f754fff3c80502df034c8c18a972"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa24aa393519042adc34298f1bb510931"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa24aa393519042adc34298f1bb510931"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>unique_fid_t</b> = <a class="el" href="structflecsi_1_1utils_1_1unique__id__t.html">utils::unique_id_t</a>&lt; field_id_t, FLECSI_GENERATED_ID_MAX &gt;</td></tr>
+<tr class="separator:aa24aa393519042adc34298f1bb510931"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a143877183fe663ecc6a67a2733a6e614"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a143877183fe663ecc6a67a2733a6e614"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>data_value_t</b> = std::pair&lt; field_id_t, registration_function_t &gt;</td></tr>
 <tr class="separator:a143877183fe663ecc6a67a2733a6e614"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6f76ff5dcb6f8e3c5e9b28dcc307eca1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6f76ff5dcb6f8e3c5e9b28dcc307eca1"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>client_value_t</b> = std::unordered_map&lt; data_hash_t::key_t, data_value_t, <a class="el" href="structflecsi_1_1data_1_1data__hash__t.html">data_hash_t</a>, <a class="el" href="structflecsi_1_1data_1_1data__hash__t.html">data_hash_t</a> &gt;</td></tr>
-<tr class="separator:a6f76ff5dcb6f8e3c5e9b28dcc307eca1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a170acfbdbcc89157b190ce41002adbb2"><td class="memTemplParams" colspan="2"><a class="anchor" id="a170acfbdbcc89157b190ce41002adbb2"></a>
-template&lt;typename DATA_CLIENT_TYPE , size_t STORAGE_TYPE, typename DATA_TYPE , size_t NAMESPACE_HASH, size_t NAME_HASH, size_t INDEX_SPACE, size_t VERSIONS&gt; </td></tr>
-<tr class="memitem:a170acfbdbcc89157b190ce41002adbb2"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>registration_wrapper__</b> = <a class="el" href="structflecsi_1_1data_1_1mpi__registration__wrapper____.html">mpi_registration_wrapper__</a>&lt; DATA_CLIENT_TYPE, STORAGE_TYPE, DATA_TYPE, NAMESPACE_HASH, NAME_HASH, INDEX_SPACE, VERSIONS &gt;</td></tr>
-<tr class="separator:a170acfbdbcc89157b190ce41002adbb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9afc99c91b2952c4a6f019a7add5cb50"><td class="memTemplParams" colspan="2"><a class="anchor" id="a9afc99c91b2952c4a6f019a7add5cb50"></a>
-template&lt;typename DATA_CLIENT_TYPE , size_t NAMESPACE_HASH, size_t NAME_HASH&gt; </td></tr>
-<tr class="memitem:a9afc99c91b2952c4a6f019a7add5cb50"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>client_registration_wrapper__</b> = <a class="el" href="structflecsi_1_1data_1_1mpi__client__registration__wrapper____.html">mpi_client_registration_wrapper__</a>&lt; DATA_CLIENT_TYPE, NAMESPACE_HASH, NAME_HASH &gt;</td></tr>
-<tr class="separator:a9afc99c91b2952c4a6f019a7add5cb50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6e68b760c91fb9af87c0c4d6427a93f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab6e68b760c91fb9af87c0c4d6427a93f"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>field_entry_t</b> = std::unordered_map&lt; size_t, data_value_t &gt;</td></tr>
+<tr class="separator:ab6e68b760c91fb9af87c0c4d6427a93f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd94da8d1f85a6f86a56db60de7f90f8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abd94da8d1f85a6f86a56db60de7f90f8"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>client_entry_t</b> = field_entry_t</td></tr>
+<tr class="separator:abd94da8d1f85a6f86a56db60de7f90f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:abbdce6a21349b8edcffe40d8626c9f39"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abbdce6a21349b8edcffe40d8626c9f39"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> ()</td></tr>
-<tr class="separator:abbdce6a21349b8edcffe40d8626c9f39"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4757ceed93eee300d94f4dfdc06caa97"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4757ceed93eee300d94f4dfdc06caa97"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> (uintptr_t runtime_namespace)</td></tr>
-<tr class="separator:a4757ceed93eee300d94f4dfdc06caa97"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9733843fd783d40d4b07daa5d32372cb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9733843fd783d40d4b07daa5d32372cb"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>move</b> (uintptr_t from, uintptr_t to)</td></tr>
-<tr class="separator:a9733843fd783d40d4b07daa5d32372cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6cebd953a75ec21aae72cafa9a7726ad"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6cebd953a75ec21aae72cafa9a7726ad"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>count</b> (uintptr_t runtime_namespace)</td></tr>
-<tr class="separator:a6cebd953a75ec21aae72cafa9a7726ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a05c169145c970610d11130e0b8740a65"><td class="memTemplParams" colspan="2"><a class="anchor" id="a05c169145c970610d11130e0b8740a65"></a>
-template&lt;typename DATA_CLIENT_TYPE , size_t NAMESPACE, size_t NAME&gt; </td></tr>
-<tr class="memitem:a05c169145c970610d11130e0b8740a65"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_client_handle</b> ()</td></tr>
-<tr class="separator:a05c169145c970610d11130e0b8740a65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20ae1aaebc5f731be276bc7d94949538"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a20ae1aaebc5f731be276bc7d94949538"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>register_field</b> (size_t client_key, size_t key, const registration_function_t &amp;callback)</td></tr>
+<tr class="separator:a20ae1aaebc5f731be276bc7d94949538"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac52b2c3832e707b0495661f28cfb7c7d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac52b2c3832e707b0495661f28cfb7c7d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>register_all</b> ()</td></tr>
+<tr class="separator:ac52b2c3832e707b0495661f28cfb7c7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5a544de4d0111a240e67e1f00e208d1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab5a544de4d0111a240e67e1f00e208d1"></a>
+auto const &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>field_registry</b> () const </td></tr>
+<tr class="separator:ab5a544de4d0111a240e67e1f00e208d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a198bf7289c3f3e0c5ac1b2cfd87b9a36"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a198bf7289c3f3e0c5ac1b2cfd87b9a36"></a>
+auto const &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>client_registry</b> () const </td></tr>
+<tr class="separator:a198bf7289c3f3e0c5ac1b2cfd87b9a36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9598b31448c63bbdb9cff04fa65c714a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1mpi__storage__policy__t.html#a9598b31448c63bbdb9cff04fa65c714a">register_client</a> (size_t client_key, size_t key, const registration_function_t &amp;callback)</td></tr>
+<tr class="separator:a9598b31448c63bbdb9cff04fa65c714a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a9598b31448c63bbdb9cff04fa65c714a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool flecsi::data::mpi_storage_policy_t::register_client </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>client_key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const registration_function_t &amp;&#160;</td>
+          <td class="paramname"><em>callback</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Register a client with the runtime.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">client_key</td><td>The data client indentifier hash. </td></tr>
+    <tr><td class="paramname">key</td><td>The identifier hash. </td></tr>
+    <tr><td class="paramname">callback</td><td>The registration call back function. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/data/mpi/<a class="el" href="data_2mpi_2storage__policy_8h_source.html">storage_policy.h</a></li>
 </ul>

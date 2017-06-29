@@ -127,12 +127,15 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>id_t</b> = typename 
 <tr class="memitem:a40c04e79da89e16305cfcc5e4fb3d981"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a40c04e79da89e16305cfcc5e4fb3d981"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>id_vector_t</b> = std::vector&lt; id_t &gt;</td></tr>
 <tr class="separator:a40c04e79da89e16305cfcc5e4fb3d981"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25b2c071601fcfbd2d0bffb8f5a32296"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a25b2c071601fcfbd2d0bffb8f5a32296"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>item_vector_t</b> = STORAGE_TYPE</td></tr>
-<tr class="separator:a25b2c071601fcfbd2d0bffb8f5a32296"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a029afae241da37457929da16c64150cd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a029afae241da37457929da16c64150cd"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>storage_t</b> = STORAGE_TYPE&lt; T &gt;</td></tr>
+<tr class="separator:a029afae241da37457929da16c64150cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa88acbcb3af2156d88d04b25d406f65a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa88acbcb3af2156d88d04b25d406f65a"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>item_t</b> = typename std::remove_pointer&lt; T &gt;::type</td></tr>
 <tr class="separator:aa88acbcb3af2156d88d04b25d406f65a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac238251e2f5994b37bb6bc2a3b251109"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac238251e2f5994b37bb6bc2a3b251109"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ref_t</b> = typename <a class="el" href="structflecsi_1_1topology_1_1index__space__ref__type____.html">index_space_ref_type__</a>&lt; T &gt;::type</td></tr>
+<tr class="separator:ac238251e2f5994b37bb6bc2a3b251109"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a127d04f6c2d84867ce646ea86a63bd43"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a127d04f6c2d84867ce646ea86a63bd43"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>filter_function</b> = std::function&lt; bool(T &amp;)&gt;</td></tr>
 <tr class="separator:a127d04f6c2d84867ce646ea86a63bd43"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -153,27 +156,33 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7d62a3ad8d637dc2151a42254586829e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7d62a3ad8d637dc2151a42254586829e"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>index_space</b> (bool storage=STORAGE)</td></tr>
 <tr class="separator:a7d62a3ad8d637dc2151a42254586829e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab4f43835bfe752fa80cdba9e64d28b5f"><td class="memTemplParams" colspan="2">template&lt;class S , bool STORAGE2, bool OWNED2, bool SORTED2, class F2 &gt; </td></tr>
-<tr class="memitem:ab4f43835bfe752fa80cdba9e64d28b5f"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1index__space.html#ab4f43835bfe752fa80cdba9e64d28b5f">index_space</a> (const <a class="el" href="classflecsi_1_1topology_1_1index__space.html">index_space</a>&lt; S, STORAGE2, OWNED2, SORTED2, F2 &gt; &amp;is, size_t begin, size_t end)</td></tr>
-<tr class="separator:ab4f43835bfe752fa80cdba9e64d28b5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97dab84b258b4a3aa569cc924cc6ae52"><td class="memTemplParams" colspan="2">template&lt;class S , bool STORAGE2, bool OWNED2, bool SORTED2, class F2 , template&lt; typename, typename... &gt; class STORAGE_TYPE2&gt; </td></tr>
+<tr class="memitem:a97dab84b258b4a3aa569cc924cc6ae52"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1index__space.html#a97dab84b258b4a3aa569cc924cc6ae52">index_space</a> (const <a class="el" href="classflecsi_1_1topology_1_1index__space.html">index_space</a>&lt; S, STORAGE2, OWNED2, SORTED2, F2, STORAGE_TYPE2 &gt; &amp;is, size_t begin, size_t end)</td></tr>
+<tr class="separator:a97dab84b258b4a3aa569cc924cc6ae52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6dce86f6dc606ac2947abd78ce88dbf6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1index__space.html#a6dce86f6dc606ac2947abd78ce88dbf6">index_space</a> (const <a class="el" href="classflecsi_1_1topology_1_1index__space.html">index_space</a> &amp;is)</td></tr>
 <tr class="separator:a6dce86f6dc606ac2947abd78ce88dbf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa1b22ef8a083b58ba62a0f27b99c13b6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa1b22ef8a083b58ba62a0f27b99c13b6"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>index_space</b> (<a class="el" href="classflecsi_1_1topology_1_1index__space.html">index_space</a> &amp;&amp;is)</td></tr>
 <tr class="separator:aa1b22ef8a083b58ba62a0f27b99c13b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a845e99186fb662df5ae5c3311054f255"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a845e99186fb662df5ae5c3311054f255"></a>
+storage_t *&#160;</td><td class="memItemRight" valign="bottom"><b>storage</b> ()</td></tr>
+<tr class="separator:a845e99186fb662df5ae5c3311054f255"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a298c4f0ee34d3a89a1e223156548b45c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a298c4f0ee34d3a89a1e223156548b45c"></a>
+const storage_t *&#160;</td><td class="memItemRight" valign="bottom"><b>storage</b> () const </td></tr>
+<tr class="separator:a298c4f0ee34d3a89a1e223156548b45c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad6f0301e8a4cf2bdee1737f970c66644"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classflecsi_1_1topology_1_1index__space.html">index_space</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1index__space.html#ad6f0301e8a4cf2bdee1737f970c66644">operator=</a> (const <a class="el" href="classflecsi_1_1topology_1_1index__space.html">index_space</a> &amp;is)</td></tr>
 <tr class="separator:ad6f0301e8a4cf2bdee1737f970c66644"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a414d6759748e19b4628c1f0b70d6e464"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a414d6759748e19b4628c1f0b70d6e464"></a>
 <a class="el" href="classflecsi_1_1topology_1_1index__space.html">index_space</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classflecsi_1_1topology_1_1index__space.html">index_space</a> &amp;&amp;is)</td></tr>
 <tr class="separator:a414d6759748e19b4628c1f0b70d6e464"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c0a2b5d6981231568e14cb4eb529c45"><td class="memTemplParams" colspan="2"><a class="anchor" id="a0c0a2b5d6981231568e14cb4eb529c45"></a>
-template&lt;class S , bool STORAGE2 = STORAGE, bool OWNED2 = OWNED, bool SORTED2 = SORTED, class F2  = F&gt; </td></tr>
-<tr class="memitem:a0c0a2b5d6981231568e14cb4eb529c45"><td class="memTemplItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>cast</b> ()</td></tr>
-<tr class="separator:a0c0a2b5d6981231568e14cb4eb529c45"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a22c9f78d111304cf7867f27143965152"><td class="memTemplParams" colspan="2"><a class="anchor" id="a22c9f78d111304cf7867f27143965152"></a>
-template&lt;class S , bool STORAGE2 = STORAGE, bool OWNED2 = OWNED, bool SORTED2 = SORTED, class F2  = F&gt; </td></tr>
-<tr class="memitem:a22c9f78d111304cf7867f27143965152"><td class="memTemplItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>cast</b> () const </td></tr>
-<tr class="separator:a22c9f78d111304cf7867f27143965152"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e3d46f29f578fa12f6b4aeed271c97c"><td class="memTemplParams" colspan="2"><a class="anchor" id="a5e3d46f29f578fa12f6b4aeed271c97c"></a>
+template&lt;class S , bool STORAGE2 = STORAGE, bool OWNED2 = OWNED, bool SORTED2 = SORTED, class F2  = F, template&lt; typename, typename... &gt; class STORAGE_TYPE2 = STORAGE_TYPE&gt; </td></tr>
+<tr class="memitem:a5e3d46f29f578fa12f6b4aeed271c97c"><td class="memTemplItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>cast</b> ()</td></tr>
+<tr class="separator:a5e3d46f29f578fa12f6b4aeed271c97c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e04c0de725b265816c82521bfb874d6"><td class="memTemplParams" colspan="2"><a class="anchor" id="a4e04c0de725b265816c82521bfb874d6"></a>
+template&lt;class S , bool STORAGE2 = STORAGE, bool OWNED2 = OWNED, bool SORTED2 = SORTED, class F2  = F, template&lt; typename, typename... &gt; class STORAGE_TYPE2 = STORAGE_TYPE&gt; </td></tr>
+<tr class="memitem:a4e04c0de725b265816c82521bfb874d6"><td class="memTemplItemLeft" align="right" valign="top">auto &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>cast</b> () const </td></tr>
+<tr class="separator:a4e04c0de725b265816c82521bfb874d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a74024c55f56a633003a74a708f4759b9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a74024c55f56a633003a74a708f4759b9"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> ()</td></tr>
 <tr class="separator:a74024c55f56a633003a74a708f4759b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -192,12 +201,12 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>begin_offset</b> ()
 <tr class="memitem:a58c5eb7142438df3b361f999b298569a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a58c5eb7142438df3b361f999b298569a"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>end_offset</b> () const </td></tr>
 <tr class="separator:a58c5eb7142438df3b361f999b298569a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a77e904810bb54ad3702bcb7796753d2d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a77e904810bb54ad3702bcb7796753d2d"></a>
-T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_offset</b> (size_t offset)</td></tr>
-<tr class="separator:a77e904810bb54ad3702bcb7796753d2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af72146b8bf160446336526d6202493ca"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af72146b8bf160446336526d6202493ca"></a>
-const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_offset</b> (size_t offset) const </td></tr>
-<tr class="separator:af72146b8bf160446336526d6202493ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a870b1259bfe46148e97804b35ce5355b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a870b1259bfe46148e97804b35ce5355b"></a>
+ref_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_offset</b> (size_t offset)</td></tr>
+<tr class="separator:a870b1259bfe46148e97804b35ce5355b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a293389a08eaed8978513a9a923c554bc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a293389a08eaed8978513a9a923c554bc"></a>
+const ref_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_offset</b> (size_t offset) const </td></tr>
+<tr class="separator:a293389a08eaed8978513a9a923c554bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad6f0b05ccd5d2b3b63abfff7568b6399"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad6f0b05ccd5d2b3b63abfff7568b6399"></a>
 <a class="el" href="classflecsi_1_1topology_1_1index__space_1_1id__range__.html">id_range_</a>&#160;</td><td class="memItemRight" valign="bottom"><b>ids</b> () const </td></tr>
 <tr class="separator:ad6f0b05ccd5d2b3b63abfff7568b6399"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -212,42 +221,42 @@ template&lt;class S  = T&gt; </td></tr>
 template&lt;class S  = T&gt; </td></tr>
 <tr class="memitem:a2d4693161f496fcd46cf90906386b1fc"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>slice</b> () const </td></tr>
 <tr class="separator:a2d4693161f496fcd46cf90906386b1fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a87ded7f7b42ec48c88dc002c8d5d088a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a87ded7f7b42ec48c88dc002c8d5d088a"></a>
-T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_</b> (size_t offset)</td></tr>
-<tr class="separator:a87ded7f7b42ec48c88dc002c8d5d088a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a42547ac8350c65a6de23d440034d3e56"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a42547ac8350c65a6de23d440034d3e56"></a>
-const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_</b> (size_t offset) const </td></tr>
-<tr class="separator:a42547ac8350c65a6de23d440034d3e56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7f50ded89afa335f1e86d7fe1777e0ca"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7f50ded89afa335f1e86d7fe1777e0ca"></a>
-T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_end_</b> (size_t offset)</td></tr>
-<tr class="separator:a7f50ded89afa335f1e86d7fe1777e0ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a920c7343432ac9b3366538c0d307063b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a920c7343432ac9b3366538c0d307063b"></a>
-const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_end_</b> (size_t offset) const </td></tr>
-<tr class="separator:a920c7343432ac9b3366538c0d307063b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a72a917ce4620b9fea98355a809fc6f4a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a72a917ce4620b9fea98355a809fc6f4a"></a>
-T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (size_t i)</td></tr>
-<tr class="separator:a72a917ce4620b9fea98355a809fc6f4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a49b203523b91d5c49d265293b403cde9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a49b203523b91d5c49d265293b403cde9"></a>
-const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (size_t i) const </td></tr>
-<tr class="separator:a49b203523b91d5c49d265293b403cde9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af069dc30efb9c8bfb2915c83ec1e62b1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af069dc30efb9c8bfb2915c83ec1e62b1"></a>
+ref_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_</b> (size_t offset)</td></tr>
+<tr class="separator:af069dc30efb9c8bfb2915c83ec1e62b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a178be8e0a1e3d601b0bb2bb0e23b99f7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a178be8e0a1e3d601b0bb2bb0e23b99f7"></a>
+const ref_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_</b> (size_t offset) const </td></tr>
+<tr class="separator:a178be8e0a1e3d601b0bb2bb0e23b99f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40d7ff1bbf96806081547c3cb774beac"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a40d7ff1bbf96806081547c3cb774beac"></a>
+ref_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_end_</b> (size_t offset)</td></tr>
+<tr class="separator:a40d7ff1bbf96806081547c3cb774beac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2967e01bd505c70e4c3d75a5bf20a202"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2967e01bd505c70e4c3d75a5bf20a202"></a>
+const ref_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_end_</b> (size_t offset) const </td></tr>
+<tr class="separator:a2967e01bd505c70e4c3d75a5bf20a202"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19c126dcaae9a1d212be04d82e99938b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a19c126dcaae9a1d212be04d82e99938b"></a>
+ref_t&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (size_t i)</td></tr>
+<tr class="separator:a19c126dcaae9a1d212be04d82e99938b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83fb7007e5604667ef6ddff584360aef"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a83fb7007e5604667ef6ddff584360aef"></a>
+const ref_t&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (size_t i) const </td></tr>
+<tr class="separator:a83fb7007e5604667ef6ddff584360aef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab4d7a1381e970975cec83768e629858b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab4d7a1381e970975cec83768e629858b"></a>
 const id_t &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (size_t i) const </td></tr>
 <tr class="separator:ab4d7a1381e970975cec83768e629858b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7da56d777d54ae4ece30ef5a3f279171"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7da56d777d54ae4ece30ef5a3f279171"></a>
 id_t &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (size_t i)</td></tr>
 <tr class="separator:a7da56d777d54ae4ece30ef5a3f279171"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a83d08540e5d272c71c90ff8ae5cebf0e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a83d08540e5d272c71c90ff8ae5cebf0e"></a>
-T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>front</b> ()</td></tr>
-<tr class="separator:a83d08540e5d272c71c90ff8ae5cebf0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afdae31c4abd12114cb9894ed847e8d2e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afdae31c4abd12114cb9894ed847e8d2e"></a>
-const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>front</b> () const </td></tr>
-<tr class="separator:afdae31c4abd12114cb9894ed847e8d2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae318e5409b047dc8f397b8b026d1a75b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae318e5409b047dc8f397b8b026d1a75b"></a>
-T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>back</b> ()</td></tr>
-<tr class="separator:ae318e5409b047dc8f397b8b026d1a75b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9b92f16d784cec6a860346a0df189be6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9b92f16d784cec6a860346a0df189be6"></a>
-const T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>back</b> () const </td></tr>
-<tr class="separator:a9b92f16d784cec6a860346a0df189be6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e5dcb1f39c2fce2c53933825d5282ae"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6e5dcb1f39c2fce2c53933825d5282ae"></a>
+ref_t&#160;</td><td class="memItemRight" valign="bottom"><b>front</b> ()</td></tr>
+<tr class="separator:a6e5dcb1f39c2fce2c53933825d5282ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a196fa6df5389445ff54a40b51c66868d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a196fa6df5389445ff54a40b51c66868d"></a>
+const ref_t&#160;</td><td class="memItemRight" valign="bottom"><b>front</b> () const </td></tr>
+<tr class="separator:a196fa6df5389445ff54a40b51c66868d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72a59e87bc98d6a67005d9a1e62c322d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a72a59e87bc98d6a67005d9a1e62c322d"></a>
+ref_t&#160;</td><td class="memItemRight" valign="bottom"><b>back</b> ()</td></tr>
+<tr class="separator:a72a59e87bc98d6a67005d9a1e62c322d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fe1f1663877b766228c590fe959288d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1fe1f1663877b766228c590fe959288d"></a>
+const ref_t&#160;</td><td class="memItemRight" valign="bottom"><b>back</b> () const </td></tr>
+<tr class="separator:a1fe1f1663877b766228c590fe959288d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33a537d9e161fa92a7ab84312634c3a8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a33a537d9e161fa92a7ab84312634c3a8"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> () const </td></tr>
 <tr class="separator:a33a537d9e161fa92a7ab84312634c3a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -257,13 +266,13 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>empty</b> () const </
 <tr class="memitem:ac1e96db039069a772de7bbdbec8e4a01"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac1e96db039069a772de7bbdbec8e4a01"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
 <tr class="separator:ac1e96db039069a772de7bbdbec8e4a01"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7eed7ab56fb5b3c6be80fb9a41a62601"><td class="memTemplParams" colspan="2"><a class="anchor" id="a7eed7ab56fb5b3c6be80fb9a41a62601"></a>
-template&lt;bool STORAGE2, bool OWNED2, bool SORTED2, class F2 &gt; </td></tr>
-<tr class="memitem:a7eed7ab56fb5b3c6be80fb9a41a62601"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>set_master</b> (const <a class="el" href="classflecsi_1_1topology_1_1index__space.html">index_space</a>&lt; T, STORAGE2, OWNED2, SORTED2, F2 &gt; &amp;master)</td></tr>
-<tr class="separator:a7eed7ab56fb5b3c6be80fb9a41a62601"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a42b8b8aa540d636fb4d2c7b7d272ef47"><td class="memTemplParams" colspan="2">template&lt;bool STORAGE2, bool OWNED2, bool SORTED2, class F2 &gt; </td></tr>
-<tr class="memitem:a42b8b8aa540d636fb4d2c7b7d272ef47"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1index__space.html#a42b8b8aa540d636fb4d2c7b7d272ef47">set_master</a> (<a class="el" href="classflecsi_1_1topology_1_1index__space.html">index_space</a>&lt; T, STORAGE2, OWNED2, SORTED2, F2 &gt; &amp;master)</td></tr>
-<tr class="separator:a42b8b8aa540d636fb4d2c7b7d272ef47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76933f7703de7e2a40ae67f9f4a5a982"><td class="memTemplParams" colspan="2"><a class="anchor" id="a76933f7703de7e2a40ae67f9f4a5a982"></a>
+template&lt;bool STORAGE2, bool OWNED2, bool SORTED2, class F2 , template&lt; typename, typename... &gt; class STORAGE_TYPE2&gt; </td></tr>
+<tr class="memitem:a76933f7703de7e2a40ae67f9f4a5a982"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>set_master</b> (const <a class="el" href="classflecsi_1_1topology_1_1index__space.html">index_space</a>&lt; T, STORAGE2, OWNED2, SORTED2, F2, STORAGE_TYPE2 &gt; &amp;master)</td></tr>
+<tr class="separator:a76933f7703de7e2a40ae67f9f4a5a982"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33136bf2e20caf5784e16c11ca0d0609"><td class="memTemplParams" colspan="2">template&lt;bool STORAGE2, bool OWNED2, bool SORTED2, class F2 , template&lt; typename, typename... &gt; class STORAGE_TYPE2&gt; </td></tr>
+<tr class="memitem:a33136bf2e20caf5784e16c11ca0d0609"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classflecsi_1_1topology_1_1index__space.html#a33136bf2e20caf5784e16c11ca0d0609">set_master</a> (<a class="el" href="classflecsi_1_1topology_1_1index__space.html">index_space</a>&lt; T, STORAGE2, OWNED2, SORTED2, F2, STORAGE_TYPE2 &gt; &amp;master)</td></tr>
+<tr class="separator:a33136bf2e20caf5784e16c11ca0d0609"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a269fe38d213760fd8ffb6b16a6b32c2d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a269fe38d213760fd8ffb6b16a6b32c2d"></a>
 std::vector&lt; const T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>to_vec</b> () const </td></tr>
 <tr class="separator:a269fe38d213760fd8ffb6b16a6b32c2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -353,7 +362,7 @@ id_t&#160;</td><td class="memItemRight" valign="bottom"><b>id_</b> (const item_t
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
 <tr class="memitem:a910bd3bb5be852d4c9b5b50197e7a676"><td class="memTemplParams" colspan="2"><a class="anchor" id="a910bd3bb5be852d4c9b5b50197e7a676"></a>
-template&lt;class , bool , bool , bool , class , class &gt; </td></tr>
+template&lt;class , bool , bool , bool , class , template&lt; class, class... &gt; class&gt; </td></tr>
 <tr class="memitem:a910bd3bb5be852d4c9b5b50197e7a676"><td class="memTemplItemLeft" align="right" valign="top">class&#160;</td><td class="memTemplItemRight" valign="bottom"><b>index_space</b></td></tr>
 <tr class="separator:a910bd3bb5be852d4c9b5b50197e7a676"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade8dbd4836578622362ab6ddeb20c08f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ade8dbd4836578622362ab6ddeb20c08f"></a>
@@ -361,18 +370,18 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>connectivity_t</b></
 <tr class="separator:ade8dbd4836578622362ab6ddeb20c08f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;class T, bool STORAGE = false, bool OWNED = true, bool SORTED = false, class F = void, typename STORAGE_TYPE = std::vector&lt;T&gt;&gt;<br />
+<div class="textblock"><h3>template&lt;class T, bool STORAGE = false, bool OWNED = true, bool SORTED = false, class F = void, template&lt; typename, typename... &gt; class STORAGE_TYPE = std::vector&gt;<br />
 class flecsi::topology::index_space&lt; T, STORAGE, OWNED, SORTED, F, STORAGE_TYPE &gt;</h3>
 
 <p><a class="el" href="classflecsi_1_1topology_1_1index__space.html" title="index_space provides a compile-time configurable and iterable container of objects, e.g. mesh/tree topology entities and their id&#39;s. Index space defines the concept of STORAGE - whether the actual entities referenced are stored within this index space OR contained in a &#39;master&#39; index space. OWNERSHIP - whether its set of id&#39;s are owned by this index space or aliased to another index space and then mustcbe copied before this index space can then modify them. SORTED - refers to if the id&#39;s are sorted and can then have set operations directly applied to them, else the index space must first be sorted. To make operations on index spaces faster, the index space is parameterized on a number of these parameters and can be efficiently recast depending on how it is to be used: STORAGE - if true then this is a &#39;master&#39; index space with its own storage. OWNED - if true then id ownership is definitely true, else must check owned_ at runtime. SORTED - if true then id&#39;s are definitely stored and shall remain in sorted order. ">index_space</a> provides a compile-time configurable and iterable container of objects, e.g. mesh/tree topology entities and their id's. Index space defines the concept of STORAGE - whether the actual entities referenced are stored within this index space OR contained in a 'master' index space. OWNERSHIP - whether its set of id's are owned by this index space or aliased to another index space and then mustcbe copied before this index space can then modify them. SORTED - refers to if the id's are sorted and can then have set operations directly applied to them, else the index space must first be sorted. To make operations on index spaces faster, the index space is parameterized on a number of these parameters and can be efficiently recast depending on how it is to be used: STORAGE - if true then this is a 'master' index space with its own storage. OWNED - if true then id ownership is definitely true, else must check owned_ at runtime. SORTED - if true then id's are definitely stored and shall remain in sorted order. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="ab4f43835bfe752fa80cdba9e64d28b5f"></a>
+<a class="anchor" id="a97dab84b258b4a3aa569cc924cc6ae52"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T, bool STORAGE = false, bool OWNED = true, bool SORTED = false, class F = void, typename STORAGE_TYPE = std::vector&lt;T&gt;&gt; </div>
+template&lt;class T, bool STORAGE = false, bool OWNED = true, bool SORTED = false, class F = void, template&lt; typename, typename... &gt; class STORAGE_TYPE = std::vector&gt; </div>
 <div class="memtemplate">
-template&lt;class S , bool STORAGE2, bool OWNED2, bool SORTED2, class F2 &gt; </div>
+template&lt;class S , bool STORAGE2, bool OWNED2, bool SORTED2, class F2 , template&lt; typename, typename... &gt; class STORAGE_TYPE2&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -380,7 +389,7 @@ template&lt;class S , bool STORAGE2, bool OWNED2, bool SORTED2, class F2 &gt; </
         <tr>
           <td class="memname"><a class="el" href="classflecsi_1_1topology_1_1index__space.html">flecsi::topology::index_space</a>&lt; T, STORAGE, OWNED, SORTED, F, STORAGE_TYPE &gt;::<a class="el" href="classflecsi_1_1topology_1_1index__space.html">index_space</a> </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classflecsi_1_1topology_1_1index__space.html">index_space</a>&lt; S, STORAGE2, OWNED2, SORTED2, F2 &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1topology_1_1index__space.html">index_space</a>&lt; S, STORAGE2, OWNED2, SORTED2, F2, STORAGE_TYPE2 &gt; &amp;&#160;</td>
           <td class="paramname"><em>is</em>, </td>
         </tr>
         <tr>
@@ -415,7 +424,7 @@ template&lt;class S , bool STORAGE2, bool OWNED2, bool SORTED2, class F2 &gt; </
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T, bool STORAGE = false, bool OWNED = true, bool SORTED = false, class F = void, typename STORAGE_TYPE = std::vector&lt;T&gt;&gt; </div>
+template&lt;class T, bool STORAGE = false, bool OWNED = true, bool SORTED = false, class F = void, template&lt; typename, typename... &gt; class STORAGE_TYPE = std::vector&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -443,7 +452,7 @@ template&lt;class T, bool STORAGE = false, bool OWNED = true, bool SORTED = fals
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T, bool STORAGE = false, bool OWNED = true, bool SORTED = false, class F = void, typename STORAGE_TYPE = std::vector&lt;T&gt;&gt; </div>
+template&lt;class T, bool STORAGE = false, bool OWNED = true, bool SORTED = false, class F = void, template&lt; typename, typename... &gt; class STORAGE_TYPE = std::vector&gt; </div>
 <div class="memtemplate">
 template&lt;typename Predicate &gt; </div>
 <table class="mlabels">
@@ -483,7 +492,7 @@ template&lt;typename Predicate &gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T, bool STORAGE = false, bool OWNED = true, bool SORTED = false, class F = void, typename STORAGE_TYPE = std::vector&lt;T&gt;&gt; </div>
+template&lt;class T, bool STORAGE = false, bool OWNED = true, bool SORTED = false, class F = void, template&lt; typename, typename... &gt; class STORAGE_TYPE = std::vector&gt; </div>
 <div class="memtemplate">
 template&lt;typename Predicate &gt; </div>
 <table class="mlabels">
@@ -523,7 +532,7 @@ template&lt;typename Predicate &gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T, bool STORAGE = false, bool OWNED = true, bool SORTED = false, class F = void, typename STORAGE_TYPE = std::vector&lt;T&gt;&gt; </div>
+template&lt;class T, bool STORAGE = false, bool OWNED = true, bool SORTED = false, class F = void, template&lt; typename, typename... &gt; class STORAGE_TYPE = std::vector&gt; </div>
 <div class="memtemplate">
 template&lt;typename Predicate &gt; </div>
 <table class="mlabels">
@@ -563,7 +572,7 @@ template&lt;typename Predicate &gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T, bool STORAGE = false, bool OWNED = true, bool SORTED = false, class F = void, typename STORAGE_TYPE = std::vector&lt;T&gt;&gt; </div>
+template&lt;class T, bool STORAGE = false, bool OWNED = true, bool SORTED = false, class F = void, template&lt; typename, typename... &gt; class STORAGE_TYPE = std::vector&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -586,13 +595,13 @@ template&lt;class T, bool STORAGE = false, bool OWNED = true, bool SORTED = fals
 
 </div>
 </div>
-<a class="anchor" id="a42b8b8aa540d636fb4d2c7b7d272ef47"></a>
+<a class="anchor" id="a33136bf2e20caf5784e16c11ca0d0609"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class T, bool STORAGE = false, bool OWNED = true, bool SORTED = false, class F = void, typename STORAGE_TYPE = std::vector&lt;T&gt;&gt; </div>
+template&lt;class T, bool STORAGE = false, bool OWNED = true, bool SORTED = false, class F = void, template&lt; typename, typename... &gt; class STORAGE_TYPE = std::vector&gt; </div>
 <div class="memtemplate">
-template&lt;bool STORAGE2, bool OWNED2, bool SORTED2, class F2 &gt; </div>
+template&lt;bool STORAGE2, bool OWNED2, bool SORTED2, class F2 , template&lt; typename, typename... &gt; class STORAGE_TYPE2&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -600,7 +609,7 @@ template&lt;bool STORAGE2, bool OWNED2, bool SORTED2, class F2 &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="classflecsi_1_1topology_1_1index__space.html">flecsi::topology::index_space</a>&lt; T, STORAGE, OWNED, SORTED, F, STORAGE_TYPE &gt;::set_master </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classflecsi_1_1topology_1_1index__space.html">index_space</a>&lt; T, STORAGE2, OWNED2, SORTED2, F2 &gt; &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classflecsi_1_1topology_1_1index__space.html">index_space</a>&lt; T, STORAGE2, OWNED2, SORTED2, F2, STORAGE_TYPE2 &gt; &amp;&#160;</td>
           <td class="paramname"><em>master</em></td><td>)</td>
           <td></td>
         </tr>

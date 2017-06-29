@@ -4,7 +4,7 @@ var searchData=
   ['add_5fcoloring',['add_coloring',['../structflecsi_1_1execution_1_1context____.html#a4f7d507d6e70e23ae27e75a523920baa',1,'flecsi::execution::context__']]],
   ['add_5findex_5fspace',['add_index_space',['../structflecsi_1_1execution_1_1legion__context__policy__t.html#add3e74e38476adb92640fbea69c3acd2',1,'flecsi::execution::legion_context_policy_t']]],
   ['adjacency_5ffid',['adjacency_fid',['../structflecsi_1_1execution_1_1legion__context__policy__t.html#ab1ac2d14f646df2056afa6a5fc62cc45',1,'flecsi::execution::legion_context_policy_t']]],
-  ['adjacency_5finfo',['adjacency_info',['../structflecsi_1_1execution_1_1context____.html#a53ff0ac8102fbd74e70668966f173da6',1,'flecsi::execution::context__']]],
+  ['adjacency_5finfo',['adjacency_info',['../structflecsi_1_1execution_1_1context____.html#a4d3a706a5edbfc717d00e4cf19d37df7',1,'flecsi::execution::context__']]],
   ['all_5fentities',['all_entities',['../classflecsi_1_1topology_1_1tree__topology.html#a95a2f57aa9d2201d7546aef806808bf9',1,'flecsi::topology::tree_topology']]],
   ['all_5fprocesses',['all_processes',['../structflecsi_1_1execution_1_1legion__context__policy__t.html#a4ea7ce9250fa40f9ce2168f334d1034a',1,'flecsi::execution::legion_context_policy_t']]],
   ['alltoall_5fcoloring_5finfo',['alltoall_coloring_info',['../classflecsi_1_1coloring_1_1mpi__communicator__t.html#a282377765e2b3e2ce8431a24a7a0aafd',1,'flecsi::coloring::mpi_communicator_t']]],

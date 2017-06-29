@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['accessor_5f_5f',['accessor__',['../structflecsi_1_1accessor____.html',1,'flecsi']]],
-  ['accessor_5fbase_5ft',['accessor_base_t',['../structflecsi_1_1accessor__base__t.html',1,'flecsi']]],
   ['adjacency_5finfo_5ft',['adjacency_info_t',['../structflecsi_1_1coloring_1_1adjacency__info__t.html',1,'flecsi::coloring']]],
   ['adjacency_5ft',['adjacency_t',['../structflecsi_1_1data_1_1legion__data__t_1_1adjacency__t.html',1,'flecsi::data::legion_data_t']]],
   ['aggregate',['Aggregate',['../structAggregate.html',1,'']]],

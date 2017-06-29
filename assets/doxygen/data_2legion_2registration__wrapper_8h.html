@@ -98,21 +98,29 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;cinchlog.h&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
 <code>#include &quot;<a class="el" href="context_8h_source.html">flecsi/execution/context.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="data__constants_8h_source.html">flecsi/data/data_constants.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="storage_8h_source.html">flecsi/data/storage.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="mesh__topology_8h_source.html">flecsi/topology/mesh_topology.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="hash_8h_source.html">flecsi/utils/hash.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="tuple__walker_8h_source.html">flecsi/utils/tuple_walker.h</a>&quot;</code><br />
 </div>
 <p><a href="data_2legion_2registration__wrapper_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1legion__registration__wrapper____.html">flecsi::data::legion_registration_wrapper__&lt; DATA_CLIENT_TYPE, STORAGE_TYPE, DATA_TYPE, NAMESPACE_HASH, NAME_HASH, INDEX_SPACE, VERSIONS &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1legion__field__registration__wrapper____.html">flecsi::data::legion_field_registration_wrapper__&lt; DATA_CLIENT_TYPE, STORAGE_TYPE, DATA_TYPE, NAMESPACE_HASH, NAME_HASH, INDEX_SPACE, VERSIONS &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1legion__client__registration__wrapper____.html">flecsi::data::legion_client_registration_wrapper__&lt; DATA_CLIENT_TYPE, NAMESPACE_HASH, NAME_HASH &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1legion__client__registration__wrapper_____3_01flecsi_1_1topology_1_1mesh942f5c0c70cf4cf7b6fd88c69897edff.html">flecsi::data::legion_client_registration_wrapper__&lt; flecsi::topology::mesh_topology_t&lt; POLICY_TYPE &gt;, NAMESPACE_HASH, NAME_HASH &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1legion__client__registration__wrapper_____3_01flecsi_1_1topology_1_1mesh0d15aac5b674778b7c5785b06dab6cb5.html">flecsi::data::legion_client_registration_wrapper__&lt; flecsi::topology::mesh_topology_t&lt; POLICY_TYPE &gt;, NAMESPACE_HASH, NAME_HASH &gt;::entity_walker_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1legion__client__registration__wrapper_____3_01flecsi_1_1topology_1_1mesh133990b3481c2c2335cfaa98f9f60426.html">flecsi::data::legion_client_registration_wrapper__&lt; flecsi::topology::mesh_topology_t&lt; POLICY_TYPE &gt;, NAMESPACE_HASH, NAME_HASH &gt;::connectivity_walker_t</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1legion__client__registration__wrapper_____3_01flecsi_1_1topology_1_1mesh28644d49177b5dce06f34c2da6377edd.html">flecsi::data::legion_client_registration_wrapper__&lt; flecsi::topology::mesh_topology_t&lt; POLICY_TYPE &gt;, NAMESPACE_HASH, NAME_HASH &gt;::binding_walker_t</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>

@@ -8,6 +8,7 @@ var searchData=
   ['base_5fconvert_5ftuple_5ftype_5f_3c_20t_2c_20to_2c_20false_20_3e',['base_convert_tuple_type_&lt; T, TO, false &gt;',['../structflecsi_1_1utils_1_1base__convert__tuple__type___3_01T_00_01TO_00_01false_01_4.html',1,'flecsi::utils']]],
   ['base_5fconvert_5ftuple_5ftype_5f_3c_20t_2c_20to_2c_20true_20_3e',['base_convert_tuple_type_&lt; T, TO, true &gt;',['../structflecsi_1_1utils_1_1base__convert__tuple__type___3_01T_00_01TO_00_01true_01_4.html',1,'flecsi::utils']]],
   ['base_5ftask_5f_5f',['base_task__',['../structflecsi_1_1execution_1_1base__task____.html',1,'flecsi::execution']]],
+  ['binding_5fwalker_5ft',['binding_walker_t',['../structflecsi_1_1data_1_1legion__client__registration__wrapper_____3_01flecsi_1_1topology_1_1mesh28644d49177b5dce06f34c2da6377edd.html',1,'flecsi::data::legion_client_registration_wrapper__&lt; flecsi::topology::mesh_topology_t&lt; POLICY_TYPE &gt;, NAMESPACE_HASH, NAME_HASH &gt;']]],
   ['body',['body',['../classtree__policy_1_1body.html',1,'tree_policy']]],
   ['both',['both',['../structboth.html',1,'']]],
   ['branch',['branch',['../classtree__policy_1_1branch.html',1,'tree_policy']]],

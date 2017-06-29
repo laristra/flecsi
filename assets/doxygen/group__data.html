@@ -109,10 +109,10 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:ga54a5a5d88f8538fdc7f803edba443944"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#ga54a5a5d88f8538fdc7f803edba443944">flecsi_register_data</a>(<a class="el" href="classclient__type.html">client_type</a>,  nspace,  name,  data_type, storage_type,  index_space,  versions)</td></tr>
-<tr class="separator:ga54a5a5d88f8538fdc7f803edba443944"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaaa855ccd1c709526c76247bce774ff64"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#gaaa855ccd1c709526c76247bce774ff64">flecsi_register_data_client</a>(<a class="el" href="classclient__type.html">client_type</a>,  nspace,  name)</td></tr>
 <tr class="separator:gaaa855ccd1c709526c76247bce774ff64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf5f7198bdd250dfe6c676402efe60d84"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#gaf5f7198bdd250dfe6c676402efe60d84">flecsi_register_field</a>(<a class="el" href="classclient__type.html">client_type</a>,  nspace,  name,  data_type, storage_type,  index_space,  versions)</td></tr>
+<tr class="separator:gaf5f7198bdd250dfe6c676402efe60d84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga746aca95ad6ad5cb4869f095858c5824"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#ga746aca95ad6ad5cb4869f095858c5824">flecsi_get_handle</a>(client,  nspace,  name,  data_type,  storage_type, version)</td></tr>
 <tr class="separator:ga746aca95ad6ad5cb4869f095858c5824"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9673dfe687ab0a65683d20689bd9cc46"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#ga9673dfe687ab0a65683d20689bd9cc46">flecsi_get_client_handle</a>(<a class="el" href="classclient__type.html">client_type</a>,  nspace,  name)</td></tr>
@@ -139,16 +139,21 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga13f695767e12b21b734b5d7a3b719a3d"><td class="memTemplParams" colspan="2">template&lt;typename DATA_CLIENT_TYPE , size_t STORAGE_TYPE, typename DATA_TYPE , size_t NAMESPACE_HASH, size_t NAME_HASH, size_t INDEX_SPACE, size_t VERSIONS&gt; </td></tr>
-<tr class="memitem:ga13f695767e12b21b734b5d7a3b719a3d"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__data.html#ga13f695767e12b21b734b5d7a3b719a3d">flecsi::data::storage__&lt; STORAGE_POLICY &gt;::register_data</a> ()</td></tr>
-<tr class="separator:ga13f695767e12b21b734b5d7a3b719a3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga45ace6ff7fc1587e5eb92a97f7e00cc7"><td class="memTemplParams" colspan="2">template&lt;typename DATA_CLIENT_TYPE , size_t NAMESPACE_HASH, size_t NAME_HASH&gt; </td></tr>
-<tr class="memitem:ga45ace6ff7fc1587e5eb92a97f7e00cc7"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__data.html#ga45ace6ff7fc1587e5eb92a97f7e00cc7">flecsi::data::storage__&lt; STORAGE_POLICY &gt;::register_data_client</a> ()</td></tr>
-<tr class="separator:ga45ace6ff7fc1587e5eb92a97f7e00cc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga085fa2b62b90c494c92969797481a448"><td class="memItemLeft" align="right" valign="top">const auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#ga085fa2b62b90c494c92969797481a448">flecsi::data::storage__&lt; STORAGE_POLICY &gt;::data_registry</a> () const </td></tr>
-<tr class="separator:ga085fa2b62b90c494c92969797481a448"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaaca39a92e572f6a88138039e432b7be8"><td class="memItemLeft" align="right" valign="top">const auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#gaaca39a92e572f6a88138039e432b7be8">flecsi::data::storage__&lt; STORAGE_POLICY &gt;::data_client_registry</a> () const </td></tr>
-<tr class="separator:gaaca39a92e572f6a88138039e432b7be8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga72be0a8b9691a14ebf9c04797086dba7"><td class="memTemplParams" colspan="2">template&lt;typename DATA_CLIENT_TYPE , size_t NAMESPACE_HASH, size_t NAME_HASH&gt; </td></tr>
+<tr class="memitem:ga72be0a8b9691a14ebf9c04797086dba7"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__data.html#ga72be0a8b9691a14ebf9c04797086dba7">flecsi::data::client_data__&lt; DATA_POLICY &gt;::register_data_client</a> (std::string const &amp;name)</td></tr>
+<tr class="separator:ga72be0a8b9691a14ebf9c04797086dba7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5b5a716b7d619ae9385fedea30ad84ad"><td class="memTemplParams" colspan="2">template&lt;typename DATA_CLIENT_TYPE , size_t STORAGE_TYPE, typename DATA_TYPE , size_t NAMESPACE_HASH, size_t NAME_HASH, size_t INDEX_SPACE, size_t VERSIONS&gt; </td></tr>
+<tr class="memitem:ga5b5a716b7d619ae9385fedea30ad84ad"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__data.html#ga5b5a716b7d619ae9385fedea30ad84ad">flecsi::data::field_data__&lt; DATA_POLICY &gt;::register_field</a> (std::string const &amp;name)</td></tr>
+<tr class="separator:ga5b5a716b7d619ae9385fedea30ad84ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gacb8f440663253634d111046212870c0d"><td class="memTemplParams" colspan="2">template&lt;typename DATA_CLIENT_TYPE , size_t STORAGE_TYPE, typename DATA_TYPE , size_t NAMESPACE_HASH, size_t NAME_HASH, size_t VERSION = 0&gt; </td></tr>
+<tr class="memitem:gacb8f440663253634d111046212870c0d"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__data.html#gacb8f440663253634d111046212870c0d">flecsi::data::field_data__&lt; DATA_POLICY &gt;::get_handle</a> (const data_client_t &amp;client)</td></tr>
+<tr class="separator:gacb8f440663253634d111046212870c0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga14031a7a951f0af632437789edb2634d"><td class="memTemplParams" colspan="2">template&lt;size_t STORAGE_TYPE, typename DATA_TYPE , size_t NAMESPACE_HASH, typename PREDICATE &gt; </td></tr>
+<tr class="memitem:ga14031a7a951f0af632437789edb2634d"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__data.html#ga14031a7a951f0af632437789edb2634d">flecsi::data::field_data__&lt; DATA_POLICY &gt;::get_handles</a> (const data_client_t &amp;client, size_t version, PREDICATE &amp;&amp;predicate, bool sorted=true)</td></tr>
+<tr class="separator:ga14031a7a951f0af632437789edb2634d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab182a3dd33f419ab80f0e089fa7352d2"><td class="memTemplParams" colspan="2">template&lt;size_t STORAGE_TYPE, typename DATA_TYPE , typename PREDICATE &gt; </td></tr>
+<tr class="memitem:gab182a3dd33f419ab80f0e089fa7352d2"><td class="memTemplItemLeft" align="right" valign="top">static decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__data.html#gab182a3dd33f419ab80f0e089fa7352d2">flecsi::data::field_data__&lt; DATA_POLICY &gt;::get_handles</a> (const data_client_t &amp;client, size_t version, PREDICATE &amp;&amp;predicate, bool sorted=true)</td></tr>
+<tr class="separator:gab182a3dd33f419ab80f0e089fa7352d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Define the Data Model group. </p>
@@ -182,8 +187,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                     \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the storage policy to get a handle to the data client */</span>             <a class="code" href="structflecsi_1_1data_1_1storage____.html#aff35f99be4724230fb2098e45db71eb3">\</a></div><div class="line"><a class="code" href="structflecsi_1_1data_1_1storage____.html#aff35f99be4724230fb2098e45db71eb3">  flecsi::data::storage_t::instance</a>().get_client_handle&lt;                       \</div><div class="line">    client_type,                                                               \</div><div class="line">    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \</div><div class="line">    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()           \</div><div class="line">  &gt;                                                                            \</div><div class="line">  ()</div><div class="ttc" id="structflecsi_1_1data_1_1storage_____html_aff35f99be4724230fb2098e45db71eb3"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#aff35f99be4724230fb2098e45db71eb3">flecsi::data::storage__::instance</a></div><div class="ttdeci">static storage__ &amp; instance()</div><div class="ttdef"><b>Definition:</b> storage.h:119</div></div>
-</div><!-- fragment --><p>Access a data client.</p>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                     \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the storage policy to get a handle to the data client */</span>             \</div><div class="line">  flecsi::data::client_data_t::get_client_handle&lt;                              \</div><div class="line">    client_type,                                                               \</div><div class="line">    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \</div><div class="line">    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()           \</div><div class="line">  &gt;                                                                            \</div><div class="line">  ()</div></div><!-- fragment --><p>Access a data client.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">client</td><td>The data_client_t type. </td></tr>
@@ -242,8 +246,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                     \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the storage policy to get a handle to the data */</span>                    <a class="code" href="structflecsi_1_1data_1_1storage____.html#aff35f99be4724230fb2098e45db71eb3">\</a></div><div class="line"><a class="code" href="structflecsi_1_1data_1_1storage____.html#aff35f99be4724230fb2098e45db71eb3">  flecsi::data::storage_t::instance</a>().<a class="code" href="structflecsi_1_1data_1_1storage____.html#af9d7b1716d3ddff44cb5198a68a9a6b6">get_handle</a>&lt;                              \</div><div class="line">    decltype(client),                                                          \</div><div class="line">    data_type,                                                                 \</div><div class="line">    flecsi::data::storage_type,                                                \</div><div class="line">    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \</div><div class="line">    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),          \</div><div class="line">    version                                                                    \</div><div class="line">  &gt;                                                                            \</div><div class="line">  (client)</div><div class="ttc" id="structflecsi_1_1data_1_1storage_____html_aff35f99be4724230fb2098e45db71eb3"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#aff35f99be4724230fb2098e45db71eb3">flecsi::data::storage__::instance</a></div><div class="ttdeci">static storage__ &amp; instance()</div><div class="ttdef"><b>Definition:</b> storage.h:119</div></div>
-<div class="ttc" id="structflecsi_1_1data_1_1storage_____html_af9d7b1716d3ddff44cb5198a68a9a6b6"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#af9d7b1716d3ddff44cb5198a68a9a6b6">flecsi::data::storage__::get_handle</a></div><div class="ttdeci">decltype(auto) get_handle(const data_client_t &amp;data_client)</div><div class="ttdoc">get a handle to registered data. </div><div class="ttdef"><b>Definition:</b> storage.h:442</div></div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                     \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the storage policy to get a handle to the data */</span>                    <a class="code" href="group__data.html#gacb8f440663253634d111046212870c0d">\</a></div><div class="line"><a class="code" href="group__data.html#gacb8f440663253634d111046212870c0d">  flecsi::data::field_data_t::get_handle</a>&lt;                                      \</div><div class="line">    decltype(client),                                                          \</div><div class="line">    flecsi::data::storage_type,                                                \</div><div class="line">    data_type,                                                                 \</div><div class="line">    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \</div><div class="line">    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),          \</div><div class="line">    version                                                                    \</div><div class="line">  &gt;                                                                            \</div><div class="line">  (client)</div><div class="ttc" id="group__data_html_gacb8f440663253634d111046212870c0d"><div class="ttname"><a href="group__data.html#gacb8f440663253634d111046212870c0d">flecsi::data::field_data__::get_handle</a></div><div class="ttdeci">static decltype(auto) get_handle(const data_client_t &amp;client)</div><div class="ttdef"><b>Definition:</b> field.h:121</div></div>
 </div><!-- fragment --><p>Access data with a data_client_t instance.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -306,8 +309,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                     \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the storage policy to get the handles to the data */</span>                 <a class="code" href="structflecsi_1_1data_1_1storage____.html#aff35f99be4724230fb2098e45db71eb3">\</a></div><div class="line"><a class="code" href="structflecsi_1_1data_1_1storage____.html#aff35f99be4724230fb2098e45db71eb3">  flecsi::data::storage_t::instance</a>().<a class="code" href="structflecsi_1_1data_1_1storage____.html#a243e78fba780674f2edbcd6c4ca4e696">get_handles</a>&lt;                             \</div><div class="line">    flecsi::data::storage_type, data_type,                                     \</div><div class="line">    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()&gt;(       \</div><div class="line">    client, version, ## __VA_ARGS__ )</div><div class="ttc" id="structflecsi_1_1data_1_1storage_____html_a243e78fba780674f2edbcd6c4ca4e696"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#a243e78fba780674f2edbcd6c4ca4e696">flecsi::data::storage__::get_handles</a></div><div class="ttdeci">decltype(auto) get_handles(const data_client_t &amp;data_client, size_t version, P &amp;&amp;predicate, bool sorted=true)</div><div class="ttdoc">Return a std::vector of handles to the stored states with type TYPE in namespace NAMESPACE satisfying...</div><div class="ttdef"><b>Definition:</b> storage.h:311</div></div>
-<div class="ttc" id="structflecsi_1_1data_1_1storage_____html_aff35f99be4724230fb2098e45db71eb3"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#aff35f99be4724230fb2098e45db71eb3">flecsi::data::storage__::instance</a></div><div class="ttdeci">static storage__ &amp; instance()</div><div class="ttdef"><b>Definition:</b> storage.h:119</div></div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                     \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the storage policy to get the handles to the data */</span>                 <a class="code" href="group__data.html#ga14031a7a951f0af632437789edb2634d">\</a></div><div class="line"><a class="code" href="group__data.html#ga14031a7a951f0af632437789edb2634d">  flecsi::data::field_data_t::get_handles</a>&lt;                                     \</div><div class="line">    flecsi::data::storage_type, data_type,                                     \</div><div class="line">    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()&gt;(       \</div><div class="line">      client, version, ## __VA_ARGS__)</div><div class="ttc" id="group__data_html_ga14031a7a951f0af632437789edb2634d"><div class="ttname"><a href="group__data.html#ga14031a7a951f0af632437789edb2634d">flecsi::data::field_data__::get_handles</a></div><div class="ttdeci">static decltype(auto) get_handles(const data_client_t &amp;client, size_t version, PREDICATE &amp;&amp;predicate, bool sorted=true)</div><div class="ttdef"><b>Definition:</b> field.h:167</div></div>
 </div><!-- fragment --><p>Get a list of all accessors in the namespace of a certain type.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -365,8 +367,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                     \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the storage policy to get the handles to the data */</span>                 <a class="code" href="structflecsi_1_1data_1_1storage____.html#aff35f99be4724230fb2098e45db71eb3">\</a></div><div class="line"><a class="code" href="structflecsi_1_1data_1_1storage____.html#aff35f99be4724230fb2098e45db71eb3">  flecsi::data::storage_t::instance</a>().<a class="code" href="structflecsi_1_1data_1_1storage____.html#a243e78fba780674f2edbcd6c4ca4e696">get_handles</a>&lt;flecsi::data::storage_type,  \</div><div class="line">    data_type&gt;( client, version, ## __VA_ARGS__ )</div><div class="ttc" id="structflecsi_1_1data_1_1storage_____html_a243e78fba780674f2edbcd6c4ca4e696"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#a243e78fba780674f2edbcd6c4ca4e696">flecsi::data::storage__::get_handles</a></div><div class="ttdeci">decltype(auto) get_handles(const data_client_t &amp;data_client, size_t version, P &amp;&amp;predicate, bool sorted=true)</div><div class="ttdoc">Return a std::vector of handles to the stored states with type TYPE in namespace NAMESPACE satisfying...</div><div class="ttdef"><b>Definition:</b> storage.h:311</div></div>
-<div class="ttc" id="structflecsi_1_1data_1_1storage_____html_aff35f99be4724230fb2098e45db71eb3"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#aff35f99be4724230fb2098e45db71eb3">flecsi::data::storage__::instance</a></div><div class="ttdeci">static storage__ &amp; instance()</div><div class="ttdef"><b>Definition:</b> storage.h:119</div></div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                     \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the storage policy to get the handles to the data */</span>                 <a class="code" href="group__data.html#ga14031a7a951f0af632437789edb2634d">\</a></div><div class="line"><a class="code" href="group__data.html#ga14031a7a951f0af632437789edb2634d">  flecsi::data::field_data_t::get_handles</a>&lt;flecsi::data::storage_type,          \</div><div class="line">    data_type&gt;(client, version, ## __VA_ARGS__)</div><div class="ttc" id="group__data_html_ga14031a7a951f0af632437789edb2634d"><div class="ttname"><a href="group__data.html#ga14031a7a951f0af632437789edb2634d">flecsi::data::field_data__::get_handles</a></div><div class="ttdeci">static decltype(auto) get_handles(const data_client_t &amp;client, size_t version, PREDICATE &amp;&amp;predicate, bool sorted=true)</div><div class="ttdef"><b>Definition:</b> field.h:167</div></div>
 </div><!-- fragment --><p>Get a list of all accessors in the namespace of a certain type.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -472,12 +473,55 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga54a5a5d88f8538fdc7f803edba443944"></a>
+<a class="anchor" id="gaaa855ccd1c709526c76247bce774ff64"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define flecsi_register_data</td>
+          <td class="memname">#define flecsi_register_data_client</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><a class="el" href="classclient__type.html">client_type</a>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">nspace, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">name&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                     \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the storage policy to register the data */</span>                           \</div><div class="line">  bool <a class="code" href="classclient__type.html">client_type</a> ## _ ## nspace ## _ ## name ## _data_client_registered =    <a class="code" href="group__data.html#ga72be0a8b9691a14ebf9c04797086dba7">\</a></div><div class="line"><a class="code" href="group__data.html#ga72be0a8b9691a14ebf9c04797086dba7">    flecsi::data::client_data_t::register_data_client</a>&lt;                         \</div><div class="line">      client_type,                                                             \</div><div class="line">      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \</div><div class="line">      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()         \</div><div class="line">      &gt;                                                                        \</div><div class="line">      ({ EXPAND_AND_STRINGIFY(name) })</div><div class="ttc" id="classclient__type_html"><div class="ttname"><a href="classclient__type.html">client_type</a></div><div class="ttdef"><b>Definition:</b> data_handle_task.cc:73</div></div>
+<div class="ttc" id="group__data_html_ga72be0a8b9691a14ebf9c04797086dba7"><div class="ttname"><a href="group__data.html#ga72be0a8b9691a14ebf9c04797086dba7">flecsi::data::client_data__::register_data_client</a></div><div class="ttdeci">static bool register_data_client(std::string const &amp;name)</div><div class="ttdef"><b>Definition:</b> client.h:47</div></div>
+</div><!-- fragment --><p>This macro registers a data client with the FleCSI runtime. This call does not necessarily cause memory to be allocated. It's primary function is to describe the data to the runtime. Memory allocation will likely be deferred.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname"><a class="el" href="classclient__type.html">client_type</a></td><td>The data_client_t type. </td></tr>
+    <tr><td class="paramname">nspace</td><td>The namespace to use to register the variable. </td></tr>
+    <tr><td class="paramname">name</td><td>The name of the data variable to register. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gaf5f7198bdd250dfe6c676402efe60d84"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define flecsi_register_field</td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname"><a class="el" href="classclient__type.html">client_type</a>, </td>
@@ -525,10 +569,9 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                     \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the storage policy to register the data */</span>                           \</div><div class="line">  bool <a class="code" href="classclient__type.html">client_type</a> ## _ ## nspace ## _ ## name ## _data_registered =           <a class="code" href="structflecsi_1_1data_1_1storage____.html#aff35f99be4724230fb2098e45db71eb3">\</a></div><div class="line"><a class="code" href="structflecsi_1_1data_1_1storage____.html#aff35f99be4724230fb2098e45db71eb3">    flecsi::data::storage_t::instance</a>().<a class="code" href="group__data.html#ga13f695767e12b21b734b5d7a3b719a3d">register_data</a>&lt;                         \</div><div class="line">      client_type, flecsi::data::storage_type, data_type,                      \</div><div class="line">      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \</div><div class="line">      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),        \</div><div class="line">      index_space, versions&gt;()</div><div class="ttc" id="structflecsi_1_1data_1_1storage_____html_aff35f99be4724230fb2098e45db71eb3"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#aff35f99be4724230fb2098e45db71eb3">flecsi::data::storage__::instance</a></div><div class="ttdeci">static storage__ &amp; instance()</div><div class="ttdef"><b>Definition:</b> storage.h:119</div></div>
-<div class="ttc" id="group__data_html_ga13f695767e12b21b734b5d7a3b719a3d"><div class="ttname"><a href="group__data.html#ga13f695767e12b21b734b5d7a3b719a3d">flecsi::data::storage__::register_data</a></div><div class="ttdeci">bool register_data()</div><div class="ttdef"><b>Definition:</b> storage.h:159</div></div>
-<div class="ttc" id="classclient__type_html"><div class="ttname"><a href="classclient__type.html">client_type</a></div><div class="ttdef"><b>Definition:</b> data_handle_task.cc:73</div></div>
-</div><!-- fragment --><p>This macro registers data with a data_client_t type. Data registration creates a data attribute for the given client type. This call does not necessarily cause memory to be allocated. It's primary function is to describe the data to the runtime. Memory allocation will likely be deferred.</p>
+<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                     \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the storage policy to register the data */</span>                           \</div><div class="line">  bool <a class="code" href="classclient__type.html">client_type</a> ## _ ## nspace ## _ ## name ## _data_registered =           <a class="code" href="group__data.html#ga5b5a716b7d619ae9385fedea30ad84ad">\</a></div><div class="line"><a class="code" href="group__data.html#ga5b5a716b7d619ae9385fedea30ad84ad">    flecsi::data::field_data_t::register_field</a>&lt;                                \</div><div class="line">      client_type, flecsi::data::storage_type, data_type,                      \</div><div class="line">      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \</div><div class="line">      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),        \</div><div class="line">      index_space,                                                             \</div><div class="line">      versions                                                                 \</div><div class="line">      &gt;                                                                        \</div><div class="line">      ({ EXPAND_AND_STRINGIFY(name) })</div><div class="ttc" id="classclient__type_html"><div class="ttname"><a href="classclient__type.html">client_type</a></div><div class="ttdef"><b>Definition:</b> data_handle_task.cc:73</div></div>
+<div class="ttc" id="group__data_html_ga5b5a716b7d619ae9385fedea30ad84ad"><div class="ttname"><a href="group__data.html#ga5b5a716b7d619ae9385fedea30ad84ad">flecsi::data::field_data__::register_field</a></div><div class="ttdeci">static bool register_field(std::string const &amp;name)</div><div class="ttdef"><b>Definition:</b> field.h:66</div></div>
+</div><!-- fragment --><p>This macro registers field data with a data_client_t type. Data registration creates a data attribute for the given client type. This call does not necessarily cause memory to be allocated. It's primary function is to describe the field data to the runtime. Memory allocation will likely be deferred.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname"><a class="el" href="classclient__type.html">client_type</a></td><td>The data_client_t type. </td></tr>
@@ -537,50 +580,6 @@ Functions</h2></td></tr>
     <tr><td class="paramname">data_type</td><td>The data type to store, e.g., double or my_type_t. </td></tr>
     <tr><td class="paramname">storage_type</td><td>The storage type for the data storage_type_t. </td></tr>
     <tr><td class="paramname">versions</td><td>The number of versions of the data to register. This parameter can be used to manage multiple data versions, e.g., for new and old state. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="gaaa855ccd1c709526c76247bce774ff64"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define flecsi_register_data_client</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><a class="el" href="classclient__type.html">client_type</a>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">nspace, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">name&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="comment">/* MACRO IMPLEMENTATION */</span>                                                     \</div><div class="line">                                                                               \</div><div class="line">  <span class="comment">/* Call the storage policy to register the data */</span>                           \</div><div class="line">  bool <a class="code" href="classclient__type.html">client_type</a> ## _ ## nspace ## _ ## name ## _data_client_registered =    <a class="code" href="structflecsi_1_1data_1_1storage____.html#aff35f99be4724230fb2098e45db71eb3">\</a></div><div class="line"><a class="code" href="structflecsi_1_1data_1_1storage____.html#aff35f99be4724230fb2098e45db71eb3">    flecsi::data::storage_t::instance</a>().<a class="code" href="group__data.html#ga45ace6ff7fc1587e5eb92a97f7e00cc7">register_data_client</a>&lt;                  \</div><div class="line">      client_type,                                                             \</div><div class="line">      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \</div><div class="line">      flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash()&gt;()</div><div class="ttc" id="structflecsi_1_1data_1_1storage_____html_aff35f99be4724230fb2098e45db71eb3"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#aff35f99be4724230fb2098e45db71eb3">flecsi::data::storage__::instance</a></div><div class="ttdeci">static storage__ &amp; instance()</div><div class="ttdef"><b>Definition:</b> storage.h:119</div></div>
-<div class="ttc" id="classclient__type_html"><div class="ttname"><a href="classclient__type.html">client_type</a></div><div class="ttdef"><b>Definition:</b> data_handle_task.cc:73</div></div>
-<div class="ttc" id="group__data_html_ga45ace6ff7fc1587e5eb92a97f7e00cc7"><div class="ttname"><a href="group__data.html#ga45ace6ff7fc1587e5eb92a97f7e00cc7">flecsi::data::storage__::register_data_client</a></div><div class="ttdeci">bool register_data_client()</div><div class="ttdef"><b>Definition:</b> storage.h:207</div></div>
-</div><!-- fragment --><p>This macro registers a data client with the FleCSI runtime. This call does not necessarily cause memory to be allocated. It's primary function is to describe the data to the runtime. Memory allocation will likely be deferred.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname"><a class="el" href="classclient__type.html">client_type</a></td><td>The data_client_t type. </td></tr>
-    <tr><td class="paramname">nspace</td><td>The namespace to use to register the variable. </td></tr>
-    <tr><td class="paramname">name</td><td>The name of the data variable to register. </td></tr>
   </table>
   </dd>
 </dl>
@@ -636,83 +635,32 @@ template&lt;typename T , size_t EXCLUSIVE_PERMISSIONS, size_t SHARED_PERMISSIONS
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="gaaca39a92e572f6a88138039e432b7be8"></a>
+<a class="anchor" id="gacb8f440663253634d111046212870c0d"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename STORAGE_POLICY &gt; </div>
+template&lt;typename DATA_POLICY &gt; </div>
+<div class="memtemplate">
+template&lt;typename DATA_CLIENT_TYPE , size_t STORAGE_TYPE, typename DATA_TYPE , size_t NAMESPACE_HASH, size_t NAME_HASH, size_t VERSION = 0&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const auto&amp; <a class="el" href="structflecsi_1_1data_1_1storage____.html">flecsi::data::storage__</a>&lt; STORAGE_POLICY &gt;::data_client_registry </td>
+          <td class="memname">static decltype(auto) <a class="el" href="structflecsi_1_1data_1_1field__data____.html">flecsi::data::field_data__</a>&lt; DATA_POLICY &gt;::get_handle </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Return the data client registry. </p>
-
-</div>
-</div>
-<a class="anchor" id="ga085fa2b62b90c494c92969797481a448"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename STORAGE_POLICY &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const auto&amp; <a class="el" href="structflecsi_1_1data_1_1storage____.html">flecsi::data::storage__</a>&lt; STORAGE_POLICY &gt;::data_registry </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Return the data registry. </p>
-
-</div>
-</div>
-<a class="anchor" id="ga13f695767e12b21b734b5d7a3b719a3d"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename STORAGE_POLICY &gt; </div>
-<div class="memtemplate">
-template&lt;typename DATA_CLIENT_TYPE , size_t STORAGE_TYPE, typename DATA_TYPE , size_t NAMESPACE_HASH, size_t NAME_HASH, size_t INDEX_SPACE, size_t VERSIONS&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool <a class="el" href="structflecsi_1_1data_1_1storage____.html">flecsi::data::storage__</a>&lt; STORAGE_POLICY &gt;::register_data </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>client</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Register data with the FleCSI runtime. This method should be thought of as registering a data attribute on the given data client type. All instances of the client type will have this attribute. However, this does not mean that each data client instance will have an an instance of the attribute. Attribute instances will be created only when they are actually mapped into a task.</p>
+<p>Return the handle associated with the given parameters and data client.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">DATA_CLIENT_TYPE</td><td>The data client type on which the data attribute should be registered. </td></tr>
@@ -721,18 +669,155 @@ template&lt;typename DATA_CLIENT_TYPE , size_t STORAGE_TYPE, typename DATA_TYPE 
     <tr><td class="paramname">NAMESPACE_HASH</td><td>The namespace key. Namespaces allow separation of attribute names to avoid collisions. </td></tr>
     <tr><td class="paramname">NAME_HASH</td><td>The attribute name. </td></tr>
     <tr><td class="paramname">INDEX_SPACE</td><td>The index space identifier. </td></tr>
-    <tr><td class="paramname">VERSIONS</td><td>The number of versions that shall be associated with this attribute. </td></tr>
+    <tr><td class="paramname">VERSION</td><td>The data version. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a class="anchor" id="ga45ace6ff7fc1587e5eb92a97f7e00cc7"></a>
+<a class="anchor" id="ga14031a7a951f0af632437789edb2634d"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename STORAGE_POLICY &gt; </div>
+template&lt;typename DATA_POLICY &gt; </div>
+<div class="memtemplate">
+template&lt;size_t STORAGE_TYPE, typename DATA_TYPE , size_t NAMESPACE_HASH, typename PREDICATE &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static decltype(auto) <a class="el" href="structflecsi_1_1data_1_1field__data____.html">flecsi::data::field_data__</a>&lt; DATA_POLICY &gt;::get_handles </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>client</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>version</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PREDICATE &amp;&amp;&#160;</td>
+          <td class="paramname"><em>predicate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>sorted</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return all handles of the given storage type, data type, and namespace that satisfy a predicate function.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">STORAGE_TYPE</td><td>The storage type for the data attribute. </td></tr>
+    <tr><td class="paramname">DATA_TYPE</td><td>The data type, e.g., double. This may be P.O.D. or a user-defined type that is trivially-copyable. </td></tr>
+    <tr><td class="paramname">NAMESPACE_HASH</td><td>The namespace key. Namespaces allow separation of attribute names to avoid collisions. </td></tr>
+    <tr><td class="paramname">PREDICATE</td><td>The data version.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">client</td><td>The data client instance. </td></tr>
+    <tr><td class="paramname">version</td><td>The data version to return. </td></tr>
+    <tr><td class="paramname">predicate</td><td>An instance of the predicate function that will be used to select the individual data elements. </td></tr>
+    <tr><td class="paramname">sorted</td><td>Put the return data into sorted order. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="gab182a3dd33f419ab80f0e089fa7352d2"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename DATA_POLICY &gt; </div>
+<div class="memtemplate">
+template&lt;size_t STORAGE_TYPE, typename DATA_TYPE , typename PREDICATE &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static decltype(auto) <a class="el" href="structflecsi_1_1data_1_1field__data____.html">flecsi::data::field_data__</a>&lt; DATA_POLICY &gt;::get_handles </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>client</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>version</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PREDICATE &amp;&amp;&#160;</td>
+          <td class="paramname"><em>predicate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>sorted</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Return all handles of the given storage type, and data type that satisfy a predicate function.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">STORAGE_TYPE</td><td>The storage type for the data attribute. </td></tr>
+    <tr><td class="paramname">DATA_TYPE</td><td>The data type, e.g., double. This may be P.O.D. or a user-defined type that is trivially-copyable. </td></tr>
+    <tr><td class="paramname">PREDICATE</td><td>The data version.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">client</td><td>The data client instance. </td></tr>
+    <tr><td class="paramname">version</td><td>The data version to return. </td></tr>
+    <tr><td class="paramname">predicate</td><td>An instance of the predicate function that will be used to select the individual data elements. </td></tr>
+    <tr><td class="paramname">sorted</td><td>Put the return data into sorted order. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga72be0a8b9691a14ebf9c04797086dba7"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename DATA_POLICY &gt; </div>
 <div class="memtemplate">
 template&lt;typename DATA_CLIENT_TYPE , size_t NAMESPACE_HASH, size_t NAME_HASH&gt; </div>
 <table class="mlabels">
@@ -740,15 +825,16 @@ template&lt;typename DATA_CLIENT_TYPE , size_t NAMESPACE_HASH, size_t NAME_HASH&
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool <a class="el" href="structflecsi_1_1data_1_1storage____.html">flecsi::data::storage__</a>&lt; STORAGE_POLICY &gt;::register_data_client </td>
+          <td class="memname">static bool <a class="el" href="structflecsi_1_1data_1_1client__data____.html">flecsi::data::client_data__</a>&lt; DATA_POLICY &gt;::register_data_client </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -758,6 +844,53 @@ template&lt;typename DATA_CLIENT_TYPE , size_t NAMESPACE_HASH, size_t NAME_HASH&
     <tr><td class="paramname">DATA_CLIENT_TYPE</td><td>The data client type. </td></tr>
     <tr><td class="paramname">NAMESPACE_HASH</td><td>The namespace key. Namespaces allow separation of attribute names to avoid collisions. </td></tr>
     <tr><td class="paramname">NAME_HASH</td><td>The attribute name. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga5b5a716b7d619ae9385fedea30ad84ad"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename DATA_POLICY &gt; </div>
+<div class="memtemplate">
+template&lt;typename DATA_CLIENT_TYPE , size_t STORAGE_TYPE, typename DATA_TYPE , size_t NAMESPACE_HASH, size_t NAME_HASH, size_t INDEX_SPACE, size_t VERSIONS&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool <a class="el" href="structflecsi_1_1data_1_1field__data____.html">flecsi::data::field_data__</a>&lt; DATA_POLICY &gt;::register_field </td>
+          <td>(</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Register a field with the FleCSI runtime. This method should be thought of as registering a field attribute on the given data client type. All instances of the client type will have this attribute. However, this does not mean that each data client instance will have an an instance of the attribute. Attribute instances will be created only when they are actually mapped into a task.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">DATA_CLIENT_TYPE</td><td>The data client type on which the data attribute should be registered. </td></tr>
+    <tr><td class="paramname">STORAGE_TYPE</td><td>The storage type for the data attribute. </td></tr>
+    <tr><td class="paramname">DATA_TYPE</td><td>The data type, e.g., double. This may be P.O.D. or a user-defined type that is trivially-copyable. </td></tr>
+    <tr><td class="paramname">NAMESPACE_HASH</td><td>The namespace key. Namespaces allow separation of attribute names to avoid collisions. </td></tr>
+    <tr><td class="paramname">NAME_HASH</td><td>The attribute name. </td></tr>
+    <tr><td class="paramname">INDEX_SPACE</td><td>The index space identifier. </td></tr>
+    <tr><td class="paramname">VERSIONS</td><td>The number of versions that shall be associated with this attribute.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>The string version of the field name. </td></tr>
   </table>
   </dd>
 </dl>

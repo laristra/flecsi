@@ -1,12 +1,13 @@
 var searchData=
 [
+  ['face',['face',['../classface.html',1,'face'],['../classFace.html',1,'Face']]],
   ['face',['Face',['../classflecsi_1_1topology_1_1Face.html',1,'flecsi::topology']]],
-  ['face',['Face',['../classFace.html',1,'']]],
   ['factory_5f',['Factory_',['../classflecsi_1_1utils_1_1Factory__.html',1,'flecsi::utils']]],
   ['factory_5ft',['factory_t',['../classfactory__t.html',1,'']]],
   ['fake_5fmesh_5ft',['fake_mesh_t',['../classfake__mesh__t.html',1,'']]],
-  ['field_5finfo_5ft',['field_info_t',['../structflecsi_1_1execution_1_1mpi__context__policy__t_1_1field__info__t.html',1,'flecsi::execution::mpi_context_policy_t']]],
+  ['field_5fdata_5f_5f',['field_data__',['../structflecsi_1_1data_1_1field__data____.html',1,'flecsi::data']]],
   ['field_5finfo_5ft',['field_info_t',['../structflecsi_1_1execution_1_1legion__context__policy__t_1_1field__info__t.html',1,'flecsi::execution::legion_context_policy_t']]],
+  ['field_5finfo_5ft',['field_info_t',['../structflecsi_1_1execution_1_1mpi__context__policy__t_1_1field__info__t.html',1,'flecsi::execution::mpi_context_policy_t']]],
   ['filter_5fvalid',['filter_valid',['../structflecsi_1_1topology_1_1tree__topology_1_1filter__valid.html',1,'flecsi::topology::tree_topology']]],
   ['find_5fentity_5f',['find_entity_',['../structflecsi_1_1topology_1_1find__entity__.html',1,'flecsi::topology']]],
   ['find_5fentity_5f_5f',['find_entity__',['../structflecsi_1_1topology_1_1find__entity____.html',1,'flecsi::topology']]],

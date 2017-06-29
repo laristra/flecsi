@@ -103,10 +103,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:ac441ec0ebca839e975ca20567ba83cf1"><td class="memTemplParams" colspan="2"><a class="anchor" id="ac441ec0ebca839e975ca20567ba83cf1"></a>
-template&lt;size_t data_type_t&gt; </td></tr>
-<tr class="memitem:ac441ec0ebca839e975ca20567ba83cf1"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>storage_type_t</b> = serial::storage_type_t&lt; data_type_t &gt;</td></tr>
-<tr class="separator:ac441ec0ebca839e975ca20567ba83cf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a35bb3bcbb0e4841ee223475435dd2964"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a35bb3bcbb0e4841ee223475435dd2964"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>field_id_t</b> = size_t</td></tr>
 <tr class="separator:a35bb3bcbb0e4841ee223475435dd2964"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -116,143 +112,28 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>registration_functio
 <tr class="memitem:a5f879b05259035cb44f4f47713340a13"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5f879b05259035cb44f4f47713340a13"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>data_value_t</b> = std::pair&lt; field_id_t, registration_function_t &gt;</td></tr>
 <tr class="separator:a5f879b05259035cb44f4f47713340a13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a347838dfa9a4ebe7c9f4cb14fcdf80c5"><td class="memTemplParams" colspan="2"><a class="anchor" id="a347838dfa9a4ebe7c9f4cb14fcdf80c5"></a>
-template&lt;typename DATA_CLIENT_TYPE , size_t STORAGE_TYPE, typename DATA_TYPE , size_t NAMESPACE_HASH, size_t NAME_HASH, size_t INDEX_SPACE, size_t VERSIONS&gt; </td></tr>
-<tr class="memitem:a347838dfa9a4ebe7c9f4cb14fcdf80c5"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>registration_wrapper__</b> = <a class="el" href="structflecsi_1_1data_1_1serial__registration__wrapper____.html">serial_registration_wrapper__</a>&lt; DATA_CLIENT_TYPE, STORAGE_TYPE, DATA_TYPE, NAMESPACE_HASH, NAME_HASH, INDEX_SPACE, VERSIONS &gt;</td></tr>
-<tr class="separator:a347838dfa9a4ebe7c9f4cb14fcdf80c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a00effec9b0addeb56edd812baa319ca2"><td class="memTemplParams" colspan="2"><a class="anchor" id="a00effec9b0addeb56edd812baa319ca2"></a>
-template&lt;typename DATA_CLIENT_TYPE , size_t NAMESPACE_HASH, size_t NAME_HASH&gt; </td></tr>
-<tr class="memitem:a00effec9b0addeb56edd812baa319ca2"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>client_registration_wrapper__</b> = <a class="el" href="structflecsi_1_1data_1_1serial__client__registration__wrapper____.html">serial_client_registration_wrapper__</a>&lt; DATA_CLIENT_TYPE, NAMESPACE_HASH, NAME_HASH &gt;</td></tr>
-<tr class="separator:a00effec9b0addeb56edd812baa319ca2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8148257c634be95c3fdbff7827522b91"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8148257c634be95c3fdbff7827522b91"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>field_entry_t</b> = std::unordered_map&lt; size_t, data_value_t &gt;</td></tr>
+<tr class="separator:a8148257c634be95c3fdbff7827522b91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1273b90d1c9a9c48a225ba478f0a7988"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1273b90d1c9a9c48a225ba478f0a7988"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>client_entry_t</b> = field_entry_t</td></tr>
+<tr class="separator:a1273b90d1c9a9c48a225ba478f0a7988"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aa663f08c503387827ec9f87e0b24809b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa663f08c503387827ec9f87e0b24809b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial__storage__policy__t.html#aa663f08c503387827ec9f87e0b24809b">reset</a> ()</td></tr>
-<tr class="memdesc:aa663f08c503387827ec9f87e0b24809b"><td class="mdescLeft">&#160;</td><td class="mdescRight">delete ALL data. <br /></td></tr>
-<tr class="separator:aa663f08c503387827ec9f87e0b24809b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab0a3ecaa28942b705989fcab0a476553"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial__storage__policy__t.html#ab0a3ecaa28942b705989fcab0a476553">reset</a> (uintptr_t runtime_namespace)</td></tr>
-<tr class="memdesc:ab0a3ecaa28942b705989fcab0a476553"><td class="mdescLeft">&#160;</td><td class="mdescRight">delete ALL data associated with this runtime namespace.  <a href="#ab0a3ecaa28942b705989fcab0a476553">More...</a><br /></td></tr>
-<tr class="separator:ab0a3ecaa28942b705989fcab0a476553"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd9d67ddbd8524f5f9bfcf5a09ccebaa"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial__storage__policy__t.html#abd9d67ddbd8524f5f9bfcf5a09ccebaa">count</a> (uintptr_t runtime_namespace)</td></tr>
-<tr class="memdesc:abd9d67ddbd8524f5f9bfcf5a09ccebaa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count all data associated with this runtime namespace.  <a href="#abd9d67ddbd8524f5f9bfcf5a09ccebaa">More...</a><br /></td></tr>
-<tr class="separator:abd9d67ddbd8524f5f9bfcf5a09ccebaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab56ca5f130c4f12c39025b25bc3c862a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1serial__storage__policy__t.html#ab56ca5f130c4f12c39025b25bc3c862a">move</a> (uintptr_t from, uintptr_t to)</td></tr>
-<tr class="memdesc:ab56ca5f130c4f12c39025b25bc3c862a"><td class="mdescLeft">&#160;</td><td class="mdescRight">move ALL data associated with this runtime namespace  <a href="#ab56ca5f130c4f12c39025b25bc3c862a">More...</a><br /></td></tr>
-<tr class="separator:ab56ca5f130c4f12c39025b25bc3c862a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9d531f46d713d0358cc253ab8a441fcc"><td class="memTemplParams" colspan="2"><a class="anchor" id="a9d531f46d713d0358cc253ab8a441fcc"></a>
-template&lt;typename DATA_CLIENT_TYPE , size_t NAMESPACE, size_t NAME&gt; </td></tr>
-<tr class="memitem:a9d531f46d713d0358cc253ab8a441fcc"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><b>get_client_handle</b> ()</td></tr>
-<tr class="separator:a9d531f46d713d0358cc253ab8a441fcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5681bc937df907d912f918ec3243978"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad5681bc937df907d912f918ec3243978"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>register_field</b> (size_t client_key, size_t key, const registration_function_t &amp;callback)</td></tr>
+<tr class="separator:ad5681bc937df907d912f918ec3243978"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95e33d7b3eb934e084d30cecc0280131"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a95e33d7b3eb934e084d30cecc0280131"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>register_all</b> ()</td></tr>
+<tr class="separator:a95e33d7b3eb934e084d30cecc0280131"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16cfbdf6568da918d061590562b58420"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a16cfbdf6568da918d061590562b58420"></a>
+auto const &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>field_registry</b> () const </td></tr>
+<tr class="separator:a16cfbdf6568da918d061590562b58420"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61f7b2cba10cd0373a18ffd6320a4b85"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a61f7b2cba10cd0373a18ffd6320a4b85"></a>
+auto const &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>client_registry</b> () const </td></tr>
+<tr class="separator:a61f7b2cba10cd0373a18ffd6320a4b85"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="abd9d67ddbd8524f5f9bfcf5a09ccebaa"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">size_t flecsi::data::serial_storage_policy_t::count </td>
-          <td>(</td>
-          <td class="paramtype">uintptr_t&#160;</td>
-          <td class="paramname"><em>runtime_namespace</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Count all data associated with this runtime namespace. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">runtime_namespace</td><td>the namespace to search. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The number of hits for this namespace. </dd></dl>
-
-</div>
-</div>
-<a class="anchor" id="ab56ca5f130c4f12c39025b25bc3c862a"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void flecsi::data::serial_storage_policy_t::move </td>
-          <td>(</td>
-          <td class="paramtype">uintptr_t&#160;</td>
-          <td class="paramname"><em>from</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uintptr_t&#160;</td>
-          <td class="paramname"><em>to</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>move ALL data associated with this runtime namespace </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">from,to</td><td>the namespaces to move data from and to. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="ab0a3ecaa28942b705989fcab0a476553"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void flecsi::data::serial_storage_policy_t::reset </td>
-          <td>(</td>
-          <td class="paramtype">uintptr_t&#160;</td>
-          <td class="paramname"><em>runtime_namespace</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>delete ALL data associated with this runtime namespace. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">runtime_namespace</td><td>the namespace to search. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/data/serial/<a class="el" href="data_2serial_2storage__policy_8h_source.html">storage_policy.h</a></li>
 </ul>

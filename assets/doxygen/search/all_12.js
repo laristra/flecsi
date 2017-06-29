@@ -1,7 +1,6 @@
 var searchData=
 [
   ['task_2eh',['task.h',['../task_8h.html',1,'']]],
-  ['task_5fargs_5ft',['task_args_t',['../structflecsi_1_1execution_1_1task__wrapper____.html#a199eb9a2440905a074f70d4c2768e13f',1,'flecsi::execution::task_wrapper__::task_args_t()'],['../structflecsi_1_1execution_1_1old__task__wrapper____.html#aad0085abbf390ba1b342c9361b341d35',1,'flecsi::execution::old_task_wrapper__::task_args_t()']]],
   ['task_5fepilog_2eh',['task_epilog.h',['../task__epilog_8h.html',1,'']]],
   ['task_5fepilog_5ft',['task_epilog_t',['../structflecsi_1_1execution_1_1task__epilog__t.html',1,'flecsi::execution']]],
   ['task_5fepilog_5ft',['task_epilog_t',['../structflecsi_1_1execution_1_1task__epilog__t.html#a5a62dfdb1bac812e2b14e2a7d744c7dd',1,'flecsi::execution::task_epilog_t']]],
@@ -26,6 +25,7 @@ var searchData=
   ['test_5fio_5ft',['test_io_t',['../structtest__io__t.html',1,'']]],
   ['test_5fmesh_5f2d_2eh',['test_mesh_2d.h',['../test__mesh__2d_8h.html',1,'']]],
   ['test_5fmesh_5f2d_5fpolicy_5ft',['test_mesh_2d_policy_t',['../classflecsi_1_1topology_1_1test__mesh__2d__policy__t.html',1,'flecsi::topology']]],
+  ['test_5fmesh_5ftypes_5ft',['test_mesh_types_t',['../classtest__mesh__types__t.html',1,'']]],
   ['test_5ftype_5ft',['test_type_t',['../structtest__type__t.html',1,'']]],
   ['testmesh2dtype',['TestMesh2dType',['../classTestMesh2dType.html',1,'']]],
   ['thing',['thing',['../classthing.html',1,'']]],
@@ -37,7 +37,7 @@ var searchData=
   ['to_5findex_5fspace',['to_index_space',['../structflecsi_1_1coloring_1_1adjacency__info__t.html#a3adcc3828ca3ae019d3e986ae5d4494c',1,'flecsi::coloring::adjacency_info_t']]],
   ['to_5fsize',['to_size',['../classflecsi_1_1topology_1_1connectivity__t.html#a980168d3b8f5248ec10e658aae723d2a',1,'flecsi::topology::connectivity_t']]],
   ['todo_20list',['Todo List',['../todo.html',1,'']]],
-  ['topological_5fdimension',['topological_dimension',['../classflecsi_1_1topology_1_1mesh__topology__t.html#ac5d208bbf53208571298bfb80591f429',1,'flecsi::topology::mesh_topology_t::topological_dimension()'],['../classflecsi_1_1topology_1_1mesh__topology__base__t.html#abc0b08bf7e7959616d1a6f04a04d4c98',1,'flecsi::topology::mesh_topology_base_t::topological_dimension()']]],
+  ['topological_5fdimension',['topological_dimension',['../classflecsi_1_1topology_1_1mesh__topology__t.html#ac5d208bbf53208571298bfb80591f429',1,'flecsi::topology::mesh_topology_t::topological_dimension()'],['../classflecsi_1_1topology_1_1mesh__topology__base__t.html#a730a6314db6aa21608b5bceeaeacca6c',1,'flecsi::topology::mesh_topology_base_t::topological_dimension()']]],
   ['topology_20interface',['Topology Interface',['../group__topology.html',1,'']]],
   ['tree_5fbranch',['tree_branch',['../classflecsi_1_1topology_1_1tree__branch.html',1,'flecsi::topology']]],
   ['tree_5fbranch_3c_20branch_5fint_5ft_2c_20dimension_20_3e',['tree_branch&lt; branch_int_t, dimension &gt;',['../classflecsi_1_1topology_1_1tree__branch.html',1,'flecsi::topology']]],
@@ -54,11 +54,13 @@ var searchData=
   ['truncate',['truncate',['../classflecsi_1_1topology_1_1branch__id.html#ad797b101bdb97a188ce7478ab3405844',1,'flecsi::topology::branch_id']]],
   ['tuple_5faccessor_5ft',['tuple_accessor_t',['../structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01tuple_00_01data__store__t_00_01meta__data__t_01_4_1_1tuple__accessor__t.html',1,'flecsi::data::serial::storage_type_t&lt; tuple, data_store_t, meta_data_t &gt;']]],
   ['tuple_5ffunction_2eh',['tuple_function.h',['../tuple__function_8h.html',1,'']]],
-  ['tuple_5fhandle_5ft',['tuple_handle_t',['../structflecsi_1_1data_1_1legion_1_1storage__type__t_3_01tuple_01_4_1_1tuple__handle__t.html',1,'flecsi::data::legion::storage_type_t&lt; tuple &gt;']]],
+  ['tuple_5fhandle_5ft',['tuple_handle_t',['../structflecsi_1_1data_1_1legion_1_1storage__type_____3_01tuple_01_4_1_1tuple__handle__t.html',1,'flecsi::data::legion::storage_type__&lt; tuple &gt;']]],
   ['tuple_5fhandle_5ft',['tuple_handle_t',['../structflecsi_1_1data_1_1serial_1_1storage__type__t_3_01tuple_00_01data__store__t_00_01meta__data__t_01_4_1_1tuple__handle__t.html',1,'flecsi::data::serial::storage_type_t&lt; tuple, data_store_t, meta_data_t &gt;']]],
   ['tuple_5ftype_5fconverter_2eh',['tuple_type_converter.h',['../tuple__type__converter_8h.html',1,'']]],
   ['tuple_5fwalker_2eh',['tuple_walker.h',['../tuple__walker_8h.html',1,'']]],
   ['tuple_5fwalker_5f_5f',['tuple_walker__',['../structflecsi_1_1utils_1_1tuple__walker____.html',1,'flecsi::utils']]],
+  ['tuple_5fwalker_5f_5f_3c_20binding_5fwalker_5ft_20_3e',['tuple_walker__&lt; binding_walker_t &gt;',['../structflecsi_1_1utils_1_1tuple__walker____.html',1,'flecsi::utils']]],
+  ['tuple_5fwalker_5f_5f_3c_20connectivity_5fwalker_5ft_20_3e',['tuple_walker__&lt; connectivity_walker_t &gt;',['../structflecsi_1_1utils_1_1tuple__walker____.html',1,'flecsi::utils']]],
   ['tuple_5fwalker_5f_5f_3c_20entity_5fwalker_5ft_20_3e',['tuple_walker__&lt; entity_walker_t &gt;',['../structflecsi_1_1utils_1_1tuple__walker____.html',1,'flecsi::utils']]],
   ['tuple_5fwalker_5f_5f_3c_20init_5fargs_5ft_20_3e',['tuple_walker__&lt; init_args_t &gt;',['../structflecsi_1_1utils_1_1tuple__walker____.html',1,'flecsi::utils']]],
   ['tuple_5fwalker_5f_5f_3c_20init_5fhandles_5ft_20_3e',['tuple_walker__&lt; init_handles_t &gt;',['../structflecsi_1_1utils_1_1tuple__walker____.html',1,'flecsi::utils']]],
@@ -75,7 +77,7 @@ var searchData=
   ['twice',['twice',['../structtwice.html',1,'']]],
   ['type',['type',['../structflecsi_1_1topology_1_1find__entity__.html#a2fd97d8ae40a5d5d03e0c43815acb550',1,'flecsi::topology::find_entity_']]],
   ['type_5finfo_5ft',['type_info_t',['../structflecsi_1_1data_1_1serial__meta__data__t_1_1type__info__t.html',1,'flecsi::data::serial_meta_data_t']]],
-  ['type_5fwalker_5f_5f',['type_walker__',['../structflecsi_1_1data_1_1mpi__client__registration__wrapper_____3_01flecsi_1_1topology_1_1mesh__taabf99b4ebd98372ef03d8930c32390d.html',1,'flecsi::data::mpi_client_registration_wrapper__&lt; flecsi::topology::mesh_topology_t&lt; POLICY_TYPE &gt;, NAMESPACE_HASH, NAME_HASH &gt;']]],
   ['type_5fwalker_5f_5f',['type_walker__',['../structflecsi_1_1data_1_1serial__client__registration__wrapper_____3_01flecsi_1_1topology_1_1mesh6fde01daf1de7582e531507185e352bf.html',1,'flecsi::data::serial_client_registration_wrapper__&lt; flecsi::topology::mesh_topology_t&lt; POLICY_TYPE &gt;, NAMESPACE_HASH, NAME_HASH &gt;']]],
+  ['type_5fwalker_5f_5f',['type_walker__',['../structflecsi_1_1data_1_1mpi__client__registration__wrapper_____3_01flecsi_1_1topology_1_1mesh__taabf99b4ebd98372ef03d8930c32390d.html',1,'flecsi::data::mpi_client_registration_wrapper__&lt; flecsi::topology::mesh_topology_t&lt; POLICY_TYPE &gt;, NAMESPACE_HASH, NAME_HASH &gt;']]],
   ['typeify',['typeify',['../structflecsi_1_1topology_1_1typeify.html',1,'flecsi::topology']]]
 ];
