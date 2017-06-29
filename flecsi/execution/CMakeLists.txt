@@ -201,7 +201,6 @@ if((FLECSI_RUNTIME_MODEL STREQUAL "serial")
       ${UNIT_POLICY}
     LIBRARIES
       flecsi
-    NOCI
   )
 
   #
