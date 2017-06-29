@@ -82,17 +82,17 @@ public:
   static constexpr size_t num_domains = 1;
 
   using entity_types = std::tuple<
-    std::pair<domain_<0>, vertex>,
-    std::pair<domain_<0>, edge>,
-    std::pair<domain_<0>, cell>>;
+    std::tuple<index_space_<0>, domain_<0>, vertex>,
+    std::tuple<index_space_<1>, domain_<0>, edge>,
+    std::tuple<index_space_<2>, domain_<0>, cell>>;
 
   using connectivities = 
-    std::tuple<std::tuple<domain_<0>, vertex, edge>,
-               std::tuple<domain_<0>, vertex, cell>,
-               std::tuple<domain_<0>, edge, vertex>,
-               std::tuple<domain_<0>, edge, cell>,
-               std::tuple<domain_<0>, cell, vertex>,
-               std::tuple<domain_<0>, cell, edge>>;
+    std::tuple<std::tuple<index_space_<3>, domain_<0>, vertex, edge>,
+               std::tuple<index_space_<4>, domain_<0>, vertex, cell>,
+               std::tuple<index_space_<5>, domain_<0>, edge, vertex>,
+               std::tuple<index_space_<6>, domain_<0>, edge, cell>,
+               std::tuple<index_space_<7>, domain_<0>, cell, vertex>,
+               std::tuple<index_space_<8>, domain_<0>, cell, edge>>;
 
   using bindings = std::tuple<>;
 
@@ -144,6 +144,13 @@ void specialization_tlt_init(int argc, char ** argv) {
   flecsi_execute_mpi_task(add_colorings, 0);
 
 } // specialization_tlt_init
+
+void specialization_spmd_init(int argc, char ** argv) {
+  auto runtime = Legion::Runtime::get_runtime();
+  const int my_color = runtime->find_local_MPI_rank();
+  clog(error) << "Rank " << my_color << " in specialization_spmd_init" << std::endl;
+
+} // specialization_spmd_init
 
 //----------------------------------------------------------------------------//
 // User driver.
