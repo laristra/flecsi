@@ -34,7 +34,7 @@ template <typename Target, typename... Ts>
 using areTypeT = and_<std::is_same<Ts, Target>...>;
 
 /*!
- * \file dimensioned_array.h
+ * \file
  * \authors bergen
  * \date Initial file creation: Sep 23, 2015
  */

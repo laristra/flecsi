@@ -31,11 +31,11 @@ void print_set(const char *const prefix, const std::set<T> &set)
 // TEST
 TEST(set_utils, all)
 {
-   std::set<size_t> a = { 1, 3, 5, 7, 10, 11 };
-   std::set<size_t> b = { 2, 3, 6, 7, 10, 12 };
-   std::set<size_t> c = { 0, 20 };
-   std::set<size_t> d = { 0, 10, 20 };
-   std::set<size_t> e = { };
+   std::set<std::size_t> a = { 1, 3, 5, 7, 10, 11 };
+   std::set<std::size_t> b = { 2, 3, 6, 7, 10, 12 };
+   std::set<std::size_t> c = { 0, 20 };
+   std::set<std::size_t> d = { 0, 10, 20 };
+   std::set<std::size_t> e = { };
 
    print_set("a", a);
    print_set("b", b);

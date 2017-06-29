@@ -16,7 +16,7 @@
 #define flecsi_utils_logging_h
 
 /*!
- * \file logging.h
+ * \file
  * \date Initial file creation: Dec 10, 2016
  */
 

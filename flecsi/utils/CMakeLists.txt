@@ -134,6 +134,7 @@ cinch_add_unit(const_string
 
 cinch_add_unit(factory
   SOURCES test/factory.cc
+  INPUTS  test/factory.blessed
 )
 
 cinch_add_unit(reorder
@@ -219,6 +220,16 @@ cinch_add_unit(common
   SOURCES common.cc
           test/common.cc
   INPUTS  test/common.blessed
+)
+
+cinch_add_unit(debruijn
+  SOURCES debruijn.cc
+          test/debruijn.cc
+)
+
+cinch_add_unit(id
+  SOURCES test/id.cc
+  INPUTS  test/id.blessed
 )
 
 cinch_add_unit(compressed_storage
