@@ -167,13 +167,12 @@ struct context__ : public CONTEXT_POLICY
     adjacency_info_t & adjacency_info
   )
   {
-    auto p = std::make_pair(adjacency_info.from_index_space,
-      adjacency_info.to_index_space);
-
-    clog_assert(adjacency_info_.find(p) == adjacency_info_.end(),
+    clog_assert(adjacency_info_.find(adjacency_info.index_space) ==
+      adjacency_info_.end(),
       "adjacency exists");
 
-    adjacency_info_.emplace(p, std::move(adjacency_info));
+    adjacency_info_.emplace(adjacency_info.index_space,
+      std::move(adjacency_info));
   } // add_adjacency
 
   //---------------------------------------------------------------------------/
@@ -182,7 +181,7 @@ struct context__ : public CONTEXT_POLICY
   //! @return The set of registered adjacencies
   //---------------------------------------------------------------------------/
 
-  const std::map<std::pair<size_t, size_t>, adjacency_info_t> &
+  const std::map<size_t, adjacency_info_t> &
   adjacency_info()
   const
   {
@@ -213,7 +212,7 @@ private:
     std::unordered_map<size_t, coloring_info_t>> coloring_info_;
 
   // pair is from, to index space
-  std::map<std::pair<size_t, size_t>, adjacency_info_t> adjacency_info_;
+  std::map<size_t, adjacency_info_t> adjacency_info_;
 
 }; // class context__
 

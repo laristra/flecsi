@@ -6,7 +6,6 @@
 
 
 
-<br>
 # Introduction
 
 FleCSI is a compile-time configurable framework designed to support
@@ -38,7 +37,6 @@ not locked into particular layouts or data structure representations.
 
 
 
-<br>
 # Requirements
 
 The primary requirement for building FleCSI is that you have
@@ -69,7 +67,6 @@ Cluster section later in this document.
 
 
 
-<br>
 # Installing the FleCSI Third-Party Libraries
 
 Before installing FleCSI, you should install the FleCSI third-party
@@ -109,7 +106,6 @@ that you specified.
 
 
 
-<br>
 # Installing FleCSI
 
 Now that the FleCSI third-party libraries are installed, you can
@@ -167,7 +163,6 @@ to run FleCSI's unit tests.
 
 
 
-<br>
 # Workflow
 
 FleCSI uses the
@@ -186,7 +181,6 @@ will be merged into ``master``.
 
 
 
-<br>
 # Darwin Cluster
 
 On Darwin, you can simplify some of the build requirements by using
@@ -210,7 +204,6 @@ Note that the Boost module should match the ``gcc`` version.
 
 
 
-<br>
 # Release
 
 This software has been approved for open source release and has
@@ -218,7 +211,6 @@ been assigned **LA-CC-16-022**.
 
 
 
-<br>
 # Copyright
 
 Copyright (c) 2016, Los Alamos National Security, LLC

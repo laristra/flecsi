@@ -82,7 +82,8 @@ public:
   using entity_types = std::tuple<
     std::tuple<index_space_<0>, domain_<0>, Vertex>,
     std::tuple<index_space_<1>, domain_<0>, Edge>,
-    std::tuple<index_space_<2>, domain_<0>, Cell>
+    std::tuple<index_space_<2>, domain_<0>, Cell>,
+    std::tuple<index_space_<2>, domain_<1>, Cell>
   >;
 
   using connectivities = std::tuple<
@@ -94,7 +95,9 @@ public:
     std::tuple<index_space_<8>, domain_<0>, Cell, Edge>
   >;
 
-  using bindings = std::tuple<>;
+  using bindings = std::tuple<
+    std::tuple<index_space_<9>, domain_<0>, domain_<1>, Vertex, Cell>
+  >;
 
   template<size_t M, size_t D, typename ST>
   static mesh_entity_base_t<num_domains>*

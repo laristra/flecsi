@@ -841,7 +841,7 @@ public:
   template <class T, size_t M = 0, class... S>
   T * make(S &&... args)
   {
-    return ms_->make<T, M>(std::forward<S>(args)...);
+    return ms_->template make<T, M>(std::forward<S>(args)...);
   } // make
 
   virtual void append_to_index_space_(size_t domain,

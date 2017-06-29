@@ -143,8 +143,10 @@ struct legion_client_registration_wrapper__<
       >;
 
       const size_t client_key = typeid(CLIENT_TYPE).hash_code();
-      const size_t key =
-        (utils::const_string_t("internal").hash() << 8) | INDEX_TYPE::value;
+      const size_t key = utils::hash::client_internal_field_hash<
+        utils::const_string_t("__flecsi_internal_field_bash_base__").hash(),
+        INDEX_TYPE::value
+      >();
 
       storage_t::instance().register_field(client_key,
         key, wrapper_t::register_callback);
@@ -194,8 +196,10 @@ struct legion_client_registration_wrapper__<
       >;
 
       const size_t client_key = typeid(CLIENT_TYPE).hash_code();
-      const size_t key =
-        (utils::const_string_t("internal").hash() << 8) | INDEX_TYPE::value;
+      const size_t key = utils::hash::client_internal_field_hash<
+        utils::const_string_t("__flecsi_internal_field_bash_base__").hash(),
+        INDEX_TYPE::value
+      >();
 
       storage_t::instance().register_field(client_key,
         key, wrapper_t::register_callback);
@@ -247,8 +251,10 @@ struct legion_client_registration_wrapper__<
       >;
 
       const size_t client_key = typeid(CLIENT_TYPE).hash_code();
-      const size_t key =
-        (utils::const_string_t("internal").hash() << 8) | INDEX_TYPE::value;
+      const size_t key = utils::hash::client_internal_field_hash<
+        utils::const_string_t("__flecsi_internal_field_bash_base__").hash(),
+        INDEX_TYPE::value
+      >();
 
       storage_t::instance().register_field(client_key,
         key, wrapper_t::register_callback);
@@ -281,6 +287,9 @@ struct legion_client_registration_wrapper__<
 
       connectivity_walker_t connectivity_walker;
       connectivity_walker.template walk_types<connectivities>();
+
+      binding_walker_t binding_walker;
+      binding_walker.template walk_types<bindings>();
     } // if
 
   } // register_callback

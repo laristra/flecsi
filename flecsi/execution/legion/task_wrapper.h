@@ -105,6 +105,10 @@ struct pure_task_wrapper__
         registration_wrapper__<RETURN, TASK>::register_task(
           tid, Legion::Processor::TOC_PROC, task_name);
         break;
+      case processor_type_t::mpi:
+        clog(fatal) << "MPI type passed to pure legion registration" <<
+          std::endl;
+        break;
     } // switch
   } // registration_callback
 
@@ -192,6 +196,10 @@ struct functor_task_wrapper__
         }
         registration_wrapper__<return_t, execute_functor_task>::register_task(
           tid, Legion::Processor::TOC_PROC, task_name);
+        break;
+      case processor_type_t::mpi:
+        clog(fatal) << "MPI type passed to functor registration" <<
+          std::endl;
         break;
     } // switch
   } // registration_callback

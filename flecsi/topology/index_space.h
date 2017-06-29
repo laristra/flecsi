@@ -52,7 +52,7 @@ template<
   bool OWNED = true,
   bool SORTED = false,
   class F = void,
-  template<typename, typename...> typename STORAGE_TYPE = std::vector
+  template<typename, typename ...> class STORAGE_TYPE = std::vector
 >
 class index_space
 {
@@ -359,7 +359,7 @@ public:
     bool OWNED2,
     bool SORTED2,
     class F2,
-    template<typename, typename...> typename STORAGE_TYPE2
+    template<typename, typename ...> class STORAGE_TYPE2
   > 
   index_space(
     const index_space<S, STORAGE2, OWNED2, SORTED2, F2, STORAGE_TYPE2>& is,
@@ -509,7 +509,7 @@ public:
     bool OWNED2 = OWNED,
     bool SORTED2 = SORTED,
     class F2 = F,
-    template<typename, typename...> typename STORAGE_TYPE2 = STORAGE_TYPE
+    template<typename, typename ...> class STORAGE_TYPE2 = STORAGE_TYPE
   >
   auto&
   cast()
@@ -526,7 +526,7 @@ public:
     bool OWNED2 = OWNED,
     bool SORTED2 = SORTED,
     class F2 = F,
-    template<typename, typename...> typename STORAGE_TYPE2 = STORAGE_TYPE
+    template<typename, typename ...> class STORAGE_TYPE2 = STORAGE_TYPE
   >
   auto&
   cast() const
@@ -747,7 +747,7 @@ public:
     bool OWNED2,
     bool SORTED2,
     class F2,
-    template<typename, typename...> typename STORAGE_TYPE2
+    template<typename, typename...> class STORAGE_TYPE2
   >
   void
   set_master(
@@ -766,7 +766,7 @@ public:
     bool OWNED2,
     bool SORTED2,
     class F2,
-    template<typename, typename...> typename STORAGE_TYPE2
+    template<typename, typename...> class STORAGE_TYPE2
   >
   void
   set_master(

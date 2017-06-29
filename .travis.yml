@@ -18,8 +18,10 @@ env:
 #
 #    - DISTRO=fedora MINIMAL=ON RUNTIME=serial
     - DISTRO=fedora RUNTIME=legion    DOCKERHUB=true
+    - DISTRO=fedora RUNTIME=legion    IGNORE_NOCI=true
     - DISTRO=fedora RUNTIME=legion    WERROR=yes
     - DISTRO=fedora_mpich RUNTIME=legion DOCKERHUB=true
+    - DISTRO=fedora_mpich RUNTIME=legion IGNORE_NOCI=true
     - DISTRO=fedora_mpich RUNTIME=legion WERROR=yes
 #    - DISTRO=fedora RUNTIME=serial        DOCKERHUB=true
 #    - DISTRO=fedora RUNTIME=serial        WERROR=yes
@@ -35,6 +37,15 @@ matrix:
       env: DISTRO=fedora RUNTIME=legion    WERROR=yes
     - compiler: clang
       env: DISTRO=fedora_mpich RUNTIME=legion WERROR=yes
+    - compiler: gcc
+      env: DISTRO=fedora RUNTIME=legion    IGNORE_NOCI=true
+    - compiler: clang
+      env: DISTRO=fedora RUNTIME=legion    IGNORE_NOCI=true
+    - compiler: gcc
+      env: DISTRO=fedora_mpich RUNTIME=legion IGNORE_NOCI=true
+    - compiler: clang
+      env: DISTRO=fedora_mpich RUNTIME=legion IGNORE_NOCI=true
+    
 
 before_install:
  - git fetch --unshallow && git fetch --tags #for versioning
@@ -56,6 +67,7 @@ script:
                 --build-arg SONARQUBE=${SONARQUBE} --build-arg SONARQUBE_TOKEN=${SONARQUBE_TOKEN}
                 --build-arg SONARQUBE_GITHUB_TOKEN=${SONARQUBE_GITHUB_TOKEN}
                 --build-arg CI=${CI} --build-arg TRAVIS=${TRAVIS} --build-arg TRAVIS_OS_NAME=${DISTRO}
+                --build-arg IGNORE_NOCI=${IGNORE_NOCI}
                 --build-arg TRAVIS_BRANCH=${TRAVIS_BRANCH} --build-arg TRAVIS_JOB_NUMBER=${TRAVIS_JOB_NUMBER}
                 --build-arg TRAVIS_PULL_REQUEST=${TRAVIS_PULL_REQUEST} --build-arg TRAVIS_JOB_ID=${TRAVIS_JOB_ID}
                 --build-arg TRAVIS_TAG=${TRAVIS_TAG} --build-arg TRAVIS_REPO_SLUG=${TRAVIS_REPO_SLUG}
@@ -67,7 +79,7 @@ script:
     docker cp ${CON}:/home/flecsi/.sonar ${HOME}/
 
 after_success:
-  - if [[ ${DOCKERHUB} = true && ${DOCKER_EMAIL} && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_PULL_REQUEST} == false && ${TRAVIS_BRANCH} == master ]]; then
+  - if [[ ${DOCKERHUB} = true && ${DOCKER_EMAIL} && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_PULL_REQUEST} == false && ${TRAVIS_BRANCH} == stable ]]; then
       docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
       docker push "${TRAVIS_REPO_SLUG}:${DISTRO}_${RUNTIME}${TAG}";
     fi
@@ -83,7 +95,7 @@ after_success:
       mv doc/*.pdf assets;
       rm -rf doc;
       git add --all assets/doxygen assets/*.pdf;
-      if [[ ${TRAVIS_BRANCH} = master && ${encrypted_5669a181ba27_key} && ${encrypted_5669a181ba27_iv} && ${TRAVIS_PULL_REQUEST} == false ]]; then
+      if [[ ${TRAVIS_BRANCH} = stable && ${encrypted_5669a181ba27_key} && ${encrypted_5669a181ba27_iv} && ${TRAVIS_PULL_REQUEST} == false ]]; then
         git config --global user.name "Automatic Deployment (Travis CI)";
         git config --global user.email "flecsi-commit@lanl.gov";
         git commit -m "Documentation Update";
@@ -104,13 +116,6 @@ cache:
 compiler:
   - gcc
   - clang
-
-branches:
-  only:
-  - master
-  - travis
-  - stable
-  - /^refactor.*/
 
 notifications:
   branches:
