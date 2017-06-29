@@ -105,7 +105,7 @@ inline
 constexpr size_t
 client_entity_hash()
 {
-  return ((NAMESPACE ^ NAME) << 12) ^
+  return ((NAMESPACE ^ NAME) << 12) |
     (INDEX << 4) |
     (DOMAIN_ << 2) |
     DIMENSION;
@@ -194,7 +194,7 @@ inline
 constexpr size_t
 client_adjacency_hash()
 {
-  return ((NAMESPACE ^ NAME) << 16) ^
+  return ((NAMESPACE ^ NAME) << 16) |
     (INDEX << 8) |
     (FROM_DOMAIN << 6) |
     (TO_DOMAIN << 4) |

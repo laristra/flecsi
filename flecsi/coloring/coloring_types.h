@@ -59,6 +59,8 @@ operator << (
     stream << i << " ";
   } // for
   stream << "]" << std::endl;
+
+  return stream;
 } // operator <<
 
 ///
