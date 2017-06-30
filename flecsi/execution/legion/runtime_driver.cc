@@ -183,7 +183,7 @@ runtime_driver(
     std::vector<Legion::PhaseBarrier> pbarriers_as_owner;
     std::vector<size_t> num_ghost_owners;
     //std::vector<std::vector<Legion::PhaseBarrier>> owners_pbarriers;
-    std::vector<std::map<field_id_t, std::vector<Legion::PhaseBarrier>>>
+    std::map<size_t, std::map<field_id_t, std::vector<Legion::PhaseBarrier>>>
       owners_pbarriers;
 
     for(auto idx_space : data.index_spaces()) {
@@ -196,7 +196,8 @@ runtime_driver(
         flecsi::coloring::coloring_info_t color_info = 
           coloring_info[idx_space][color];
       
-        clog(trace) << " Color " << color << " idx_space " << idx_space << 
+        clog(trace) << " Color " << color << " idx_space " << idx_space 
+        << ", fid = " << field_id<<
           " has " << color_info.ghost_owners.size() << 
           " ghost owners" << std::endl;
 
@@ -204,11 +205,12 @@ runtime_driver(
         //std::vector<Legion::PhaseBarrier> per_color_owners_pbs;
         for(auto owner : color_info.ghost_owners) {
           clog(trace) << owner << std::endl;
-          per_color_owners_pbs[field_id].push_back(
+          owners_pbarriers[idx_space][field_id].push_back(
+          //per_color_owners_pbs[field_id].push_back(
             phase_barriers_map[idx_space][field_id][owner]);
+       
         }
       }//for field_info
-      owners_pbarriers.push_back(per_color_owners_pbs);
     } // for idx_space
 
 //FIXME remove checking below
@@ -247,9 +249,10 @@ runtime_driver(
 //FIXME:: check if serialize and deserialize work 
     // #6 serialize owners_pbarriers
     for(size_t idx_space : data.index_spaces())
-      args_serializers[color].serialize(&owners_pbarriers[idx_space][0],
-          fields_map[idx_space].size()
-          * num_ghost_owners[idx_space] * sizeof(Legion::PhaseBarrier));
+      for (const field_id_t& field_id : fields_map[idx_space])
+      args_serializers[color].serialize(
+          &owners_pbarriers[idx_space][field_id],
+          num_ghost_owners[idx_space] * sizeof(Legion::PhaseBarrier));
 
     Legion::TaskLauncher spmd_launcher(spmd_id,
         Legion::TaskArgument(args_serializers[color].get_buffer(),
@@ -257,7 +260,6 @@ runtime_driver(
     spmd_launcher.tag = MAPPER_FORCE_RANK_MATCH;
 
     // Add region requirements
-
     for(auto idx_space : data.index_spaces()){
       auto& flecsi_ispace = data.index_space(idx_space);
 

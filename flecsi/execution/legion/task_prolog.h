@@ -112,12 +112,13 @@ namespace execution {
               *(h.pbarrier_as_owner_ptr) <<
               std::endl;
 
-          h.pbarrier_as_owner_ptr->arrive(1);                     // phase WRITE
+          h.pbarrier_as_owner_ptr->arrive(1);               // phase WRITE
           *(h.pbarrier_as_owner_ptr) = runtime->advance_phase_barrier(context,
-              *(h.pbarrier_as_owner_ptr));                          // phase WRITE
+              *(h.pbarrier_as_owner_ptr));                  // phase WRITE
 
           // as slave
-          for (size_t owner=0; owner<h.ghost_owners_pbarriers_ptrs.size(); owner++) {
+          for (size_t owner=0;
+              owner<h.ghost_owners_pbarriers_ptrs.size(); owner++) {
             clog(trace) << "rank " << my_color << " WAITS " <<
                 *(h.ghost_owners_pbarriers_ptrs[owner]) <<
                 std::endl;

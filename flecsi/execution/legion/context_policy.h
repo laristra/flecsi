@@ -611,8 +611,8 @@ struct legion_context_policy_t
     Legion::LogicalRegion exclusive_lr;
     Legion::LogicalRegion shared_lr;
     Legion::LogicalRegion ghost_lr;
-    bool ghost_is_readable;
-    bool write_phase_started;
+    std::map<field_id_t, bool> ghost_is_readable;
+    std::map<field_id_t,bool> write_phase_started;
   };
 
   //------------------------------------------------------------------------//

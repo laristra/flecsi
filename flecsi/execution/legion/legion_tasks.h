@@ -230,20 +230,14 @@ __flecsi_internal_legion_task(spmd_task, void) {
     context_.put_field_info(fi);
   }//end for i
 
-
-  //create a fields_map for filling_in phase barriers per fid
-//  std::map<size_t, std::vector<field_id_t>> fields_map;
-
   size_t num_phase_barriers =0;
   for(auto idx_space : context_.index_spaces()){
     for(const field_info_t& field_info : context_.registered_fields()){
         if(field_info.index_space == idx_space){
-  //        fields_map[idx_space].push_back(field_id);
           num_phase_barriers++;
         }
       }
   }//end for indx_space
-//#endif
 
 
 
@@ -265,8 +259,8 @@ __flecsi_internal_legion_task(spmd_task, void) {
       indx++;
       ispace_dmap[idx_space].pbarriers_as_owner[field_id] =
         pbarriers_as_owner[indx];
-      ispace_dmap[idx_space].ghost_is_readable = true;
-      ispace_dmap[idx_space].write_phase_started = false;
+      ispace_dmap[idx_space].ghost_is_readable[field_id] = true;
+      ispace_dmap[idx_space].write_phase_started[field_id] = false;
     }//end field_info
   }//end for idx_space
 
@@ -288,26 +282,10 @@ __flecsi_internal_legion_task(spmd_task, void) {
       for(size_t owner = 0; owner < n; ++owner){
         ispace_dmap[idx_space].ghost_owners_pbarriers[field_id][owner] =
           ghost_owners_pbarriers[idx_space][field_id][owner];
+
       }//end for owner
     }//end for field_id
   }//end for idx_space
-
-#if 0
-  size_t num_fields;
-  args_deserializer.deserialize(&num_fields, sizeof(size_t));
-
-  using field_info_t = context_t::field_info_t;
-  auto field_info_buf = 
-    (field_info_t*)malloc(sizeof(field_info_t) * num_fields);
-  
-  args_deserializer.deserialize(field_info_buf,
-                                sizeof(field_info_t) * num_fields);
-  
-  for(size_t i = 0; i < num_fields; ++i){
-    field_info_t& fi = field_info_buf[i];
-    context_.put_field_info(fi);
-  }
-#endif
 
   // Prevent these objects destructors being called until after driver()
   std::vector<std::vector<Legion::LogicalRegion>>
