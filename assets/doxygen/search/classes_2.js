@@ -1,28 +1,18 @@
 var searchData=
 [
-  ['cell',['cell',['../classcell.html',1,'cell'],['../classCell.html',1,'Cell']]],
-  ['cell',['Cell',['../classflecsi_1_1topology_1_1Cell.html',1,'flecsi::topology']]],
+  ['cell',['Cell',['../classCell.html',1,'']]],
   ['checksum_5ft',['checksum_t',['../structflecsi_1_1utils_1_1checksum__t.html',1,'flecsi::utils']]],
-  ['client_5fdata_5f_5f',['client_data__',['../structflecsi_1_1data_1_1client__data____.html',1,'flecsi::data']]],
-  ['client_5ftype',['client_type',['../classclient__type.html',1,'']]],
-  ['colorer_5ft',['colorer_t',['../classflecsi_1_1coloring_1_1colorer__t.html',1,'flecsi::coloring']]],
-  ['coloring_5finfo_5ft',['coloring_info_t',['../structflecsi_1_1coloring_1_1coloring__info__t.html',1,'flecsi::coloring']]],
   ['commit_5fdata',['commit_data',['../structflecsi_1_1execution_1_1legion__dpd_1_1commit__data.html',1,'flecsi::execution::legion_dpd']]],
-  ['communicator_5ft',['communicator_t',['../classflecsi_1_1coloring_1_1communicator__t.html',1,'flecsi::coloring']]],
-  ['compressed_5frow_5fstorage',['compressed_row_storage',['../classflecsi_1_1utils_1_1compressed__row__storage.html',1,'flecsi::utils']]],
+  ['communicator_5ft',['communicator_t',['../classflecsi_1_1dmp_1_1communicator__t.html',1,'flecsi::dmp']]],
   ['compute_5fbindings_5f',['compute_bindings_',['../structflecsi_1_1topology_1_1compute__bindings__.html',1,'flecsi::topology']]],
   ['compute_5fbindings_5f_3c_20dm_2c_200_2c_20ts_20_3e',['compute_bindings_&lt; DM, 0, TS &gt;',['../structflecsi_1_1topology_1_1compute__bindings___3_01DM_00_010_00_01TS_01_4.html',1,'flecsi::topology']]],
   ['compute_5fconnectivity_5f',['compute_connectivity_',['../structflecsi_1_1topology_1_1compute__connectivity__.html',1,'flecsi::topology']]],
   ['compute_5fconnectivity_5f_3c_20dm_2c_200_2c_20ts_20_3e',['compute_connectivity_&lt; DM, 0, TS &gt;',['../structflecsi_1_1topology_1_1compute__connectivity___3_01DM_00_010_00_01TS_01_4.html',1,'flecsi::topology']]],
   ['connectivity_5ft',['connectivity_t',['../classflecsi_1_1topology_1_1connectivity__t.html',1,'flecsi::topology']]],
-  ['connectivity_5fwalker_5ft',['connectivity_walker_t',['../structflecsi_1_1data_1_1legion__client__registration__wrapper_____3_01flecsi_1_1topology_1_1mesh133990b3481c2c2335cfaa98f9f60426.html',1,'flecsi::data::legion_client_registration_wrapper__&lt; flecsi::topology::mesh_topology_t&lt; POLICY_TYPE &gt;, NAMESPACE_HASH, NAME_HASH &gt;']]],
   ['const_5fstring',['const_string',['../classconst__string.html',1,'']]],
   ['const_5fstring_5fhasher_5ft',['const_string_hasher_t',['../structflecsi_1_1utils_1_1const__string__hasher__t.html',1,'flecsi::utils']]],
   ['const_5fstring_5ft',['const_string_t',['../classflecsi_1_1utils_1_1const__string__t.html',1,'flecsi::utils']]],
   ['context_5f_5f',['context__',['../structflecsi_1_1execution_1_1context____.html',1,'flecsi::execution']]],
-  ['convert_5ftuple_5ftype',['convert_tuple_type',['../structflecsi_1_1utils_1_1convert__tuple__type.html',1,'flecsi::utils']]],
-  ['convert_5ftuple_5ftype_3c_20std_3a_3atuple_3c_20args_2e_2e_2e_20_3e_20_3e',['convert_tuple_type&lt; std::tuple&lt; Args... &gt; &gt;',['../structflecsi_1_1utils_1_1convert__tuple__type_3_01std_1_1tuple_3_01Args_8_8_8_01_4_01_4.html',1,'flecsi::utils']]],
-  ['convert_5ftuple_5ftype_5f',['convert_tuple_type_',['../structflecsi_1_1utils_1_1convert__tuple__type__.html',1,'flecsi::utils']]],
-  ['corner',['Corner',['../classCorner.html',1,'']]],
-  ['crs_5ft',['crs_t',['../structflecsi_1_1coloring_1_1crs__t.html',1,'flecsi::coloring']]]
+  ['copper_5ft',['copper_t',['../structflecsi_1_1execution_1_1copper__t.html',1,'flecsi::execution']]],
+  ['corner',['Corner',['../classCorner.html',1,'']]]
 ];

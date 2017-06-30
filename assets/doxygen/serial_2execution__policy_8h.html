@@ -1,12 +1,10 @@
-<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<link rel="shortcut icon" type="image/x-icon" href="flecsi-favicon.ico" />
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>Interface Documentation: /home/flecsi/flecsi/flecsi/execution/serial/execution_policy.h File Reference</title>
+<title>flecsi: /home/flecsi/flecsi/flecsi/execution/serial/execution_policy.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -24,10 +22,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
+  <td id="projectlogo"><img alt="Logo" src="small-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Interface Documentation<br>
-		<span id="projectnumber">Version:</span>
+   <div id="projectname">flecsi
+   &#160;<span id="projectnumber">0.0(master)</span>
    </div>
   </td>
  </tr>
@@ -43,7 +41,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -91,7 +89,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle">
 <div class="title">execution_policy.h File Reference</div>  </div>
 </div><!--header-->
@@ -99,30 +98,35 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="textblock"><code>#include &lt;tuple&gt;</code><br />
 <code>#include &lt;functional&gt;</code><br />
 <code>#include &lt;unordered_map&gt;</code><br />
-<code>#include &lt;future&gt;</code><br />
-<code>#include &quot;<a class="el" href="context_8h_source.html">flecsi/execution/context.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="processor_8h_source.html">flecsi/execution/common/processor.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="launch_8h_source.html">flecsi/execution/common/launch.h</a>&quot;</code><br />
+<code>#include &quot;flecsi/execution/context.h&quot;</code><br />
+<code>#include &quot;flecsi/execution/common/processor.h&quot;</code><br />
+<code>#include &quot;flecsi/execution/common/task_hash.h&quot;</code><br />
 <code>#include &quot;<a class="el" href="tuple__function_8h_source.html">flecsi/utils/tuple_function.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="const__string_8h_source.html">flecsi/utils/const_string.h</a>&quot;</code><br />
-<code>#include &quot;flecsi/execution/serial/task_wrapper.h&quot;</code><br />
 <code>#include &quot;<a class="el" href="serial_2runtime__driver_8h_source.html">flecsi/execution/serial/runtime_driver.h</a>&quot;</code><br />
 </div>
 <p><a href="serial_2execution__policy_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1executor____.html">flecsi::execution::executor__&lt; R &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1serial__future____.html">flecsi::execution::serial_future__&lt; R &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1serial__future_____3_01void_01_4.html">flecsi::execution::serial_future__&lt; void &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1executor____.html">flecsi::execution::executor__&lt; RETURN, ARG_TUPLE &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1executor____.html">flecsi::execution::executor__&lt; R &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1executor_____3_01void_00_01ARG__TUPLE_01_4.html">flecsi::execution::executor__&lt; void, ARG_TUPLE &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1executor_____3_01R_01_6_01_4.html">flecsi::execution::executor__&lt; R &amp; &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1executor_____3_01void_01_4.html">flecsi::execution::executor__&lt; void &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1serial__execution__policy__t.html">flecsi::execution::serial_execution_policy_t</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1execution_1_1serial__execution__policy__t_1_1runtime__state__t.html">flecsi::execution::serial_execution_policy_t::runtime_state_t</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespaceflecsi"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html">flecsi</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>

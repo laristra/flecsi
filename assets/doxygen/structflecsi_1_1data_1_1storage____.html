@@ -1,12 +1,10 @@
-<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<link rel="shortcut icon" type="image/x-icon" href="flecsi-favicon.ico" />
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>Interface Documentation: flecsi::data::storage__&lt; STORAGE_POLICY &gt; Struct Template Reference</title>
+<title>flecsi: flecsi::data::storage__&lt; user_meta_data_t, storage_policy_t &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -24,10 +22,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
+  <td id="projectlogo"><img alt="Logo" src="small-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Interface Documentation<br>
-		<span id="projectnumber">Version:</span>
+   <div id="projectname">flecsi
+   &#160;<span id="projectnumber">0.0(master)</span>
    </div>
   </td>
  </tr>
@@ -43,7 +41,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -88,84 +86,647 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>data</b></li><li class="navelem"><a class="el" href="structflecsi_1_1data_1_1storage____.html">storage__</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>data</b></li><li class="navelem"><a class="el" href="structflecsi_1_1data_1_1storage____.html">storage__</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
-<a href="structflecsi_1_1data_1_1storage____-members.html">List of all members</a>  </div>
+<a href="classflecsi_1_1data_1_1storage____-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">flecsi::data::storage__&lt; STORAGE_POLICY &gt; Struct Template Reference<div class="ingroups"><a class="el" href="group__data.html">Data Interface</a></div></div>  </div>
+<div class="title">flecsi::data::storage__&lt; user_meta_data_t, storage_policy_t &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
+<p><a class="el" href="structflecsi_1_1data_1_1storage____.html" title="storage__ provides an interface for data registration and access. ">storage__</a> provides an interface for data registration and access.  
+ <a href="structflecsi_1_1data_1_1storage____.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="storage_8h_source.html">storage.h</a>&gt;</code></p>
 <div class="dynheader">
-Inheritance diagram for flecsi::data::storage__&lt; STORAGE_POLICY &gt;:</div>
+Inheritance diagram for flecsi::data::storage__&lt; user_meta_data_t, storage_policy_t &gt;:</div>
 <div class="dyncontent">
  <div class="center">
-  <img src="structflecsi_1_1data_1_1storage____.png" usemap="#flecsi::data::storage_5F_5F_3C_20STORAGE_5FPOLICY_20_3E_map" alt=""/>
-  <map id="flecsi::data::storage_5F_5F_3C_20STORAGE_5FPOLICY_20_3E_map" name="flecsi::data::storage__&lt; STORAGE_POLICY &gt;_map">
+  <img src="structflecsi_1_1data_1_1storage____.png" usemap="#flecsi::data::storage_5F_5F_3C_20user_5Fmeta_5Fdata_5Ft_2C_20storage_5Fpolicy_5Ft_20_3E_map" alt=""/>
+  <map id="flecsi::data::storage_5F_5F_3C_20user_5Fmeta_5Fdata_5Ft_2C_20storage_5Fpolicy_5Ft_20_3E_map" name="flecsi::data::storage__&lt; user_meta_data_t, storage_policy_t &gt;_map">
 </map>
  </div></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a195be584f52eb6ed12199be415a27259"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a195be584f52eb6ed12199be415a27259"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>sp_t</b> = storage_policy_t&lt; user_meta_data_t &gt;</td></tr>
+<tr class="separator:a195be584f52eb6ed12199be415a27259"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e246101b663c5796c3054ba4a4d6f94"><td class="memTemplParams" colspan="2"><a class="anchor" id="a5e246101b663c5796c3054ba4a4d6f94"></a>
+template&lt;size_t data_type_t&gt; </td></tr>
+<tr class="memitem:a5e246101b663c5796c3054ba4a4d6f94"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>st_t</b> = typename sp_t::template storage_type_t&lt; data_type_t &gt;</td></tr>
+<tr class="separator:a5e246101b663c5796c3054ba4a4d6f94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5d7100cc978a1a2fe0310377f0e501ed"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5d7100cc978a1a2fe0310377f0e501ed"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>move</b> (uintptr_t from, uintptr_t to)</td></tr>
-<tr class="separator:a5d7100cc978a1a2fe0310377f0e501ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a692d7b02810e8ee1a0e46aa2bec52d98"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a692d7b02810e8ee1a0e46aa2bec52d98"></a>
+<tr class="memitem:a8dceac1d542b71ef7fc79dc4a584ce37"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8dceac1d542b71ef7fc79dc4a584ce37"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#a8dceac1d542b71ef7fc79dc4a584ce37">storage__</a> ()</td></tr>
+<tr class="memdesc:a8dceac1d542b71ef7fc79dc4a584ce37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. <br /></td></tr>
+<tr class="separator:a8dceac1d542b71ef7fc79dc4a584ce37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af824a1dd7770fecd49b40449d8933b61"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af824a1dd7770fecd49b40449d8933b61"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#af824a1dd7770fecd49b40449d8933b61">storage__</a> (const <a class="el" href="structflecsi_1_1data_1_1storage____.html">storage__</a> &amp;)=delete</td></tr>
+<tr class="memdesc:af824a1dd7770fecd49b40449d8933b61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hide these. <br /></td></tr>
+<tr class="separator:af824a1dd7770fecd49b40449d8933b61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefe9b869eb73caf1bc8b82e912d810ba"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aefe9b869eb73caf1bc8b82e912d810ba"></a>
+<a class="el" href="structflecsi_1_1data_1_1storage____.html">storage__</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="structflecsi_1_1data_1_1storage____.html">storage__</a> &amp;)=delete</td></tr>
+<tr class="separator:aefe9b869eb73caf1bc8b82e912d810ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a991388dc9bef6776a7481f952a78b4f5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a991388dc9bef6776a7481f952a78b4f5"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#a991388dc9bef6776a7481f952a78b4f5">storage__</a> (<a class="el" href="structflecsi_1_1data_1_1storage____.html">storage__</a> &amp;&amp;)=default</td></tr>
+<tr class="memdesc:a991388dc9bef6776a7481f952a78b4f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allow move operations. <br /></td></tr>
+<tr class="separator:a991388dc9bef6776a7481f952a78b4f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ebb6aed60d442cc1ee25ed6e83d5e04"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0ebb6aed60d442cc1ee25ed6e83d5e04"></a>
+<a class="el" href="structflecsi_1_1data_1_1storage____.html">storage__</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="structflecsi_1_1data_1_1storage____.html">storage__</a> &amp;&amp;)=default</td></tr>
+<tr class="separator:a0ebb6aed60d442cc1ee25ed6e83d5e04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab84e7e5f5c9defc92268a0be4d8c88d0"><td class="memTemplParams" colspan="2">template&lt;size_t ST, typename T , size_t NS, typename... Args&gt; </td></tr>
+<tr class="memitem:ab84e7e5f5c9defc92268a0be4d8c88d0"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#ab84e7e5f5c9defc92268a0be4d8c88d0">register_data</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;key, size_t versions, Args &amp;&amp;...args)</td></tr>
+<tr class="memdesc:ab84e7e5f5c9defc92268a0be4d8c88d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register data with the data manager.  <a href="#ab84e7e5f5c9defc92268a0be4d8c88d0">More...</a><br /></td></tr>
+<tr class="separator:ab84e7e5f5c9defc92268a0be4d8c88d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e38b78240da588d604f068d27fff80f"><td class="memTemplParams" colspan="2">template&lt;size_t ST, typename T , size_t NS&gt; </td></tr>
+<tr class="memitem:a7e38b78240da588d604f068d27fff80f"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#a7e38b78240da588d604f068d27fff80f">get_accessor</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;key, size_t version=0)</td></tr>
+<tr class="memdesc:a7e38b78240da588d604f068d27fff80f"><td class="mdescLeft">&#160;</td><td class="mdescRight">get an accessor to registered data.  <a href="#a7e38b78240da588d604f068d27fff80f">More...</a><br /></td></tr>
+<tr class="separator:a7e38b78240da588d604f068d27fff80f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cd78bdef75e9b76302ceef7756777f0"><td class="memTemplParams" colspan="2">template&lt;size_t ST, typename T , size_t NS&gt; </td></tr>
+<tr class="memitem:a6cd78bdef75e9b76302ceef7756777f0"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#a6cd78bdef75e9b76302ceef7756777f0">get_mutator</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;key, size_t slots, size_t version=0)</td></tr>
+<tr class="memdesc:a6cd78bdef75e9b76302ceef7756777f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">get an accessor to registered data.  <a href="#a6cd78bdef75e9b76302ceef7756777f0">More...</a><br /></td></tr>
+<tr class="separator:a6cd78bdef75e9b76302ceef7756777f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add205d5483e0e251363ccd5d4a8d8a37"><td class="memTemplParams" colspan="2">template&lt;size_t ST, typename T , size_t NS, typename P &gt; </td></tr>
+<tr class="memitem:add205d5483e0e251363ccd5d4a8d8a37"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#add205d5483e0e251363ccd5d4a8d8a37">get_accessors</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, size_t version, P &amp;&amp;predicate, bool sorted=true)</td></tr>
+<tr class="memdesc:add205d5483e0e251363ccd5d4a8d8a37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a std::vector of accessors to the stored states with type <em>T</em> in namespace <em>NS</em> satisfying the predicate function <em>predicate</em>.  <a href="#add205d5483e0e251363ccd5d4a8d8a37">More...</a><br /></td></tr>
+<tr class="separator:add205d5483e0e251363ccd5d4a8d8a37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f9ceda27f25db9cfccbfa269a631a0c"><td class="memTemplParams" colspan="2">template&lt;size_t ST, typename T , typename P &gt; </td></tr>
+<tr class="memitem:a8f9ceda27f25db9cfccbfa269a631a0c"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#a8f9ceda27f25db9cfccbfa269a631a0c">get_accessors</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, size_t version, P &amp;&amp;predicate, bool sorted=true)</td></tr>
+<tr class="memdesc:a8f9ceda27f25db9cfccbfa269a631a0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a std::vector of accessors to the stored states with type <em>T</em> satisfying the predicate function <em>predicate</em>.  <a href="#a8f9ceda27f25db9cfccbfa269a631a0c">More...</a><br /></td></tr>
+<tr class="separator:a8f9ceda27f25db9cfccbfa269a631a0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1aa56abe82ab24610fd4f46211aa32aa"><td class="memTemplParams" colspan="2">template&lt;size_t ST, typename T , size_t NS&gt; </td></tr>
+<tr class="memitem:a1aa56abe82ab24610fd4f46211aa32aa"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#a1aa56abe82ab24610fd4f46211aa32aa">get_accessors</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, size_t version, bool sorted=true)</td></tr>
+<tr class="memdesc:a1aa56abe82ab24610fd4f46211aa32aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a std::vector of accessors to the stored states with type <em>T</em> in namespace <em>NS</em>.  <a href="#a1aa56abe82ab24610fd4f46211aa32aa">More...</a><br /></td></tr>
+<tr class="separator:a1aa56abe82ab24610fd4f46211aa32aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbbada1ce87d3667180bccc11051d5ee"><td class="memTemplParams" colspan="2">template&lt;size_t ST, typename T &gt; </td></tr>
+<tr class="memitem:abbbada1ce87d3667180bccc11051d5ee"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#abbbada1ce87d3667180bccc11051d5ee">get_accessors</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, size_t version, bool sorted=true)</td></tr>
+<tr class="memdesc:abbbada1ce87d3667180bccc11051d5ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a std::vector of accessors to the stored states with type <em>T</em>.  <a href="#abbbada1ce87d3667180bccc11051d5ee">More...</a><br /></td></tr>
+<tr class="separator:abbbada1ce87d3667180bccc11051d5ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb4456f5fd68da4ba4def263aee1b933"><td class="memTemplParams" colspan="2">template&lt;size_t ST, typename T , size_t NS, size_t PS&gt; </td></tr>
+<tr class="memitem:adb4456f5fd68da4ba4def263aee1b933"><td class="memTemplItemLeft" align="right" valign="top">decltype(auto)&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#adb4456f5fd68da4ba4def263aee1b933">get_handle</a> (const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;data_client, const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;key, size_t version=0)</td></tr>
+<tr class="memdesc:adb4456f5fd68da4ba4def263aee1b933"><td class="mdescLeft">&#160;</td><td class="mdescRight">get a handle to registered data.  <a href="#adb4456f5fd68da4ba4def263aee1b933">More...</a><br /></td></tr>
+<tr class="separator:adb4456f5fd68da4ba4def263aee1b933"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7ba4c1ba8bcffc9331715c01f4d1f78"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa7ba4c1ba8bcffc9331715c01f4d1f78"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> ()</td></tr>
+<tr class="separator:aa7ba4c1ba8bcffc9331715c01f4d1f78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a7d8a69ba525c2d1db1497927fa0aef"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5a7d8a69ba525c2d1db1497927fa0aef"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> (uintptr_t runtime_namespace)</td></tr>
-<tr class="separator:a692d7b02810e8ee1a0e46aa2bec52d98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a5a7d8a69ba525c2d1db1497927fa0aef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7a55aa75c0168b03f4b21a6f22933f5"><td class="memTemplParams" colspan="2"><a class="anchor" id="ad7a55aa75c0168b03f4b21a6f22933f5"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ad7a55aa75c0168b03f4b21a6f22933f5"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>release</b> (T &amp;&amp;key, uintptr_t runtime_namespace)</td></tr>
+<tr class="separator:ad7a55aa75c0168b03f4b21a6f22933f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb698cb4920eb47cb798c9a3fa9fdb41"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aeb698cb4920eb47cb798c9a3fa9fdb41"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>move</b> (uintptr_t from_runtime_namespace, uintptr_t to_runtime_namespace)</td></tr>
+<tr class="separator:aeb698cb4920eb47cb798c9a3fa9fdb41"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:aff35f99be4724230fb2098e45db71eb3"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structflecsi_1_1data_1_1storage____.html">storage__</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#aff35f99be4724230fb2098e45db71eb3">instance</a> ()</td></tr>
-<tr class="separator:aff35f99be4724230fb2098e45db71eb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a224613d41d8a70736637aedad289a132"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a224613d41d8a70736637aedad289a132"></a>
+static <a class="el" href="structflecsi_1_1data_1_1storage____.html">storage__</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">instance</a> ()</td></tr>
+<tr class="memdesc:a224613d41d8a70736637aedad289a132"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a static instance of the data manager. <br /></td></tr>
+<tr class="separator:a224613d41d8a70736637aedad289a132"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;typename STORAGE_POLICY&gt;<br />
-struct flecsi::data::storage__&lt; STORAGE_POLICY &gt;</h3>
+<div class="textblock"><h3>template&lt;typename user_meta_data_t, template&lt; typename &gt; class storage_policy_t&gt;<br />
+class flecsi::data::storage__&lt; user_meta_data_t, storage_policy_t &gt;</h3>
 
-<p>The <a class="el" href="structflecsi_1_1data_1_1storage____.html">storage__</a> type provides a high-level data model context interface that is implemented by the given storage policy.</p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">USER_META_DATA</td><td>A user-defined meta data type. </td></tr>
-    <tr><td class="paramname">STORAGE_POLICY</td><td>The backend storage policy. </td></tr>
-  </table>
-  </dd>
-</dl>
+<p><a class="el" href="structflecsi_1_1data_1_1storage____.html" title="storage__ provides an interface for data registration and access. ">storage__</a> provides an interface for data registration and access. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="aff35f99be4724230fb2098e45db71eb3"></a>
+<a class="anchor" id="a7e38b78240da588d604f068d27fff80f"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename STORAGE_POLICY &gt; </div>
+template&lt;typename user_meta_data_t , template&lt; typename &gt; class storage_policy_t&gt; </div>
+<div class="memtemplate">
+template&lt;size_t ST, typename T , size_t NS&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static <a class="el" href="structflecsi_1_1data_1_1storage____.html">storage__</a>&amp; <a class="el" href="structflecsi_1_1data_1_1storage____.html">flecsi::data::storage__</a>&lt; STORAGE_POLICY &gt;::instance </td>
+          <td class="memname">decltype(auto) <a class="el" href="structflecsi_1_1data_1_1storage____.html">flecsi::data::storage__</a>&lt; user_meta_data_t, storage_policy_t &gt;::get_accessor </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>data_client</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>version</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Myer's singleton instance.</p>
-<dl class="section return"><dt>Returns</dt><dd>The single instance of this type. </dd></dl>
+
+<p>get an accessor to registered data. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">ST</td><td></td></tr>
+    <tr><td class="paramname">T</td><td></td></tr>
+    <tr><td class="paramname">NS</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">runtime_namespace</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">key</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">version</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
-<hr/>The documentation for this struct was generated from the following file:<ul>
+<a class="anchor" id="add205d5483e0e251363ccd5d4a8d8a37"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename user_meta_data_t , template&lt; typename &gt; class storage_policy_t&gt; </div>
+<div class="memtemplate">
+template&lt;size_t ST, typename T , size_t NS, typename P &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">decltype(auto) <a class="el" href="structflecsi_1_1data_1_1storage____.html">flecsi::data::storage__</a>&lt; user_meta_data_t, storage_policy_t &gt;::get_accessors </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>data_client</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>version</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">P &amp;&amp;&#160;</td>
+          <td class="paramname"><em>predicate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>sorted</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a std::vector of accessors to the stored states with type <em>T</em> in namespace <em>NS</em> satisfying the predicate function <em>predicate</em>. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">ST</td><td></td></tr>
+    <tr><td class="paramname">T</td><td>All state variables of this type will be returned. </td></tr>
+    <tr><td class="paramname">NS</td><td>Namespace to use. </td></tr>
+    <tr><td class="paramname">P</td><td>Predicate function type.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">predicate</td><td>A predicate function (returns true or false) that will be used to select which state variables are included in the return vector. Valid predicate funcitons must match the signature: <div class="fragment"><div class="line"><span class="keywordtype">bool</span> predicate(<span class="keyword">const</span> &amp; user_meta_data_t)</div></div><!-- fragment --></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sorted</td><td>Sort the returned list by label lexographically.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A std::vector of accessors to the state variables that match the namespace and predicate criteria. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a8f9ceda27f25db9cfccbfa269a631a0c"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename user_meta_data_t , template&lt; typename &gt; class storage_policy_t&gt; </div>
+<div class="memtemplate">
+template&lt;size_t ST, typename T , typename P &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">decltype(auto) <a class="el" href="structflecsi_1_1data_1_1storage____.html">flecsi::data::storage__</a>&lt; user_meta_data_t, storage_policy_t &gt;::get_accessors </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>data_client</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>version</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">P &amp;&amp;&#160;</td>
+          <td class="paramname"><em>predicate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>sorted</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a std::vector of accessors to the stored states with type <em>T</em> satisfying the predicate function <em>predicate</em>. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">ST</td><td></td></tr>
+    <tr><td class="paramname">T</td><td>All state variables of this type will be returned. </td></tr>
+    <tr><td class="paramname">P</td><td>Predicate function type.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">predicate</td><td>A predicate function (returns true or false) that will be used to select which state variables are included in the return vector. Valid predicate funcitons must match the signature: <div class="fragment"><div class="line"><span class="keywordtype">bool</span> predicate(<span class="keyword">const</span> &amp; user_meta_data_t)</div></div><!-- fragment --></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sorted</td><td>Sort the returned list by label lexographically.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A std::vector of accessors to the state variables that match the namespace and predicate criteria. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a1aa56abe82ab24610fd4f46211aa32aa"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename user_meta_data_t , template&lt; typename &gt; class storage_policy_t&gt; </div>
+<div class="memtemplate">
+template&lt;size_t ST, typename T , size_t NS&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">decltype(auto) <a class="el" href="structflecsi_1_1data_1_1storage____.html">flecsi::data::storage__</a>&lt; user_meta_data_t, storage_policy_t &gt;::get_accessors </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>data_client</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>version</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>sorted</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a std::vector of accessors to the stored states with type <em>T</em> in namespace <em>NS</em>. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">ST</td><td></td></tr>
+    <tr><td class="paramname">T</td><td>All state variables of this type will be returned. </td></tr>
+    <tr><td class="paramname">NS</td><td>Namespace to use. </td></tr>
+    <tr><td class="paramname">P</td><td>Predicate function type.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">sorted</td><td>Sort the returned list by label lexographically.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A std::vector of accessors to the state variables that match the namespace and predicate criteria. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="abbbada1ce87d3667180bccc11051d5ee"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename user_meta_data_t , template&lt; typename &gt; class storage_policy_t&gt; </div>
+<div class="memtemplate">
+template&lt;size_t ST, typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">decltype(auto) <a class="el" href="structflecsi_1_1data_1_1storage____.html">flecsi::data::storage__</a>&lt; user_meta_data_t, storage_policy_t &gt;::get_accessors </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>data_client</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>version</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>sorted</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a std::vector of accessors to the stored states with type <em>T</em>. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">ST</td><td></td></tr>
+    <tr><td class="paramname">T</td><td>All state variables of this type will be returned. </td></tr>
+    <tr><td class="paramname">P</td><td>Predicate function type.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">sorted</td><td>Sort the returned list by label lexographically.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A std::vector of accessors to the state variables that match the namespace and predicate criteria. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="adb4456f5fd68da4ba4def263aee1b933"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename user_meta_data_t , template&lt; typename &gt; class storage_policy_t&gt; </div>
+<div class="memtemplate">
+template&lt;size_t ST, typename T , size_t NS, size_t PS&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">decltype(auto) <a class="el" href="structflecsi_1_1data_1_1storage____.html">flecsi::data::storage__</a>&lt; user_meta_data_t, storage_policy_t &gt;::get_handle </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>data_client</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>version</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>get a handle to registered data. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">ST</td><td>storage type </td></tr>
+    <tr><td class="paramname">T</td><td>data type </td></tr>
+    <tr><td class="paramname">NS</td><td>namespace </td></tr>
+    <tr><td class="paramname">PS</td><td>privileges</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">runtime_namespace</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">key</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">version</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a6cd78bdef75e9b76302ceef7756777f0"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename user_meta_data_t , template&lt; typename &gt; class storage_policy_t&gt; </div>
+<div class="memtemplate">
+template&lt;size_t ST, typename T , size_t NS&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">decltype(auto) <a class="el" href="structflecsi_1_1data_1_1storage____.html">flecsi::data::storage__</a>&lt; user_meta_data_t, storage_policy_t &gt;::get_mutator </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>data_client</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>slots</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>version</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>get an accessor to registered data. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">ST</td><td></td></tr>
+    <tr><td class="paramname">T</td><td></td></tr>
+    <tr><td class="paramname">NS</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">runtime_namespace</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">key</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">version</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ab84e7e5f5c9defc92268a0be4d8c88d0"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename user_meta_data_t , template&lt; typename &gt; class storage_policy_t&gt; </div>
+<div class="memtemplate">
+template&lt;size_t ST, typename T , size_t NS, typename... Args&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">decltype(auto) <a class="el" href="structflecsi_1_1data_1_1storage____.html">flecsi::data::storage__</a>&lt; user_meta_data_t, storage_policy_t &gt;::register_data </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1data_1_1data__client__t.html">data_client_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>data_client</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classflecsi_1_1utils_1_1const__string__t.html">utils::const_string_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>versions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Args &amp;&amp;...&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Register data with the data manager. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">ST</td><td>Storage type... </td></tr>
+    <tr><td class="paramname">T</td><td>Type... </td></tr>
+    <tr><td class="paramname">NS</td><td>Namespace... </td></tr>
+    <tr><td class="paramname">Args</td><td>Variadic arguments...</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">runtime_namespace</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">key</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">versions</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">args</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Returns a handle to the newly registered data. </dd></dl>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li>/home/flecsi/flecsi/flecsi/data/<a class="el" href="storage_8h_source.html">storage.h</a></li>
 </ul>
 </div><!-- contents -->

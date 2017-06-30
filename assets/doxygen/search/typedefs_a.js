@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['pointer',['pointer',['../classflecsi_1_1utils_1_1array__ref.html#a3f1d32653d18ac149cf013b467ba367b',1,'flecsi::utils::array_ref']]]
+  ['value_5ftype',['value_type',['../classflecsi_1_1utils_1_1dimensioned__array.html#abfbe3da21fee54820e7cf26eb9e20d52',1,'flecsi::utils::dimensioned_array']]]
 ];

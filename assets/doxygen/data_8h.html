@@ -1,12 +1,10 @@
-<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<link rel="shortcut icon" type="image/x-icon" href="flecsi-favicon.ico" />
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>Interface Documentation: /home/flecsi/flecsi/flecsi/data/data.h File Reference</title>
+<title>flecsi: /home/flecsi/flecsi/flecsi/data/data.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -24,10 +22,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
+  <td id="projectlogo"><img alt="Logo" src="small-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Interface Documentation<br>
-		<span id="projectnumber">Version:</span>
+   <div id="projectname">flecsi
+   &#160;<span id="projectnumber">0.0(master)</span>
    </div>
   </td>
  </tr>
@@ -43,7 +41,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -96,50 +94,70 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">data.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="client_8h_source.html">flecsi/data/client.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="field_8h_source.html">flecsi/data/field.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="storage_8h_source.html">flecsi/data/storage.h</a>&quot;</code><br />
 </div>
 <p><a href="data_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:gaaa855ccd1c709526c76247bce774ff64"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#gaaa855ccd1c709526c76247bce774ff64">flecsi_register_data_client</a>(<a class="el" href="classclient__type.html">client_type</a>,  nspace,  name)</td></tr>
-<tr class="separator:gaaa855ccd1c709526c76247bce774ff64"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf5f7198bdd250dfe6c676402efe60d84"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#gaf5f7198bdd250dfe6c676402efe60d84">flecsi_register_field</a>(<a class="el" href="classclient__type.html">client_type</a>,  nspace,  name,  data_type, storage_type,  index_space,  versions)</td></tr>
-<tr class="separator:gaf5f7198bdd250dfe6c676402efe60d84"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga746aca95ad6ad5cb4869f095858c5824"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#ga746aca95ad6ad5cb4869f095858c5824">flecsi_get_handle</a>(client,  nspace,  name,  data_type,  storage_type, version)</td></tr>
-<tr class="separator:ga746aca95ad6ad5cb4869f095858c5824"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga9673dfe687ab0a65683d20689bd9cc46"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#ga9673dfe687ab0a65683d20689bd9cc46">flecsi_get_client_handle</a>(<a class="el" href="classclient__type.html">client_type</a>,  nspace,  name)</td></tr>
-<tr class="separator:ga9673dfe687ab0a65683d20689bd9cc46"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0576713785abd96d5862102414519570"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#ga0576713785abd96d5862102414519570">flecsi_get_handles</a>(client,  nspace,  data_type,  storage_type, version, ...)</td></tr>
-<tr class="separator:ga0576713785abd96d5862102414519570"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga3ee1d233ec4cf650670d2ed43a8073cc"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#ga3ee1d233ec4cf650670d2ed43a8073cc">flecsi_get_handles_all</a>(client,  data_type,  storage_type,  version, ...)</td></tr>
-<tr class="separator:ga3ee1d233ec4cf650670d2ed43a8073cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga151ea5ef345db39934ea8c149074e53b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#ga151ea5ef345db39934ea8c149074e53b">flecsi_is_at</a>(index_space)</td></tr>
-<tr class="separator:ga151ea5ef345db39934ea8c149074e53b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga8e8e9b647fcc580ef5857ad14db4877c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#ga8e8e9b647fcc580ef5857ad14db4877c">flecsi_has_attribute_at</a>(attribute,  index_space)</td></tr>
-<tr class="separator:ga8e8e9b647fcc580ef5857ad14db4877c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gabe93336f4e608acaf933c262e31ca670"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__data.html#gabe93336f4e608acaf933c262e31ca670">flecsi_has_attribute</a>(attribute)</td></tr>
-<tr class="separator:gabe93336f4e608acaf933c262e31ca670"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3f84253d2194b1e501ac8b7a91d7a59"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="data_8h.html#ae3f84253d2194b1e501ac8b7a91d7a59">flecsi_register_data</a>(client,  nspace,  name,  data_type,  storage_type, ...)</td></tr>
+<tr class="memdesc:ae3f84253d2194b1e501ac8b7a91d7a59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register data with a data_client_t.  <a href="#ae3f84253d2194b1e501ac8b7a91d7a59">More...</a><br /></td></tr>
+<tr class="separator:ae3f84253d2194b1e501ac8b7a91d7a59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a222a7e72dece53875d4b64d7801a430a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="data_8h.html#a222a7e72dece53875d4b64d7801a430a">flecsi_get_accessor</a>(client,  nspace,  name,  data_type,  storage_type, version)</td></tr>
+<tr class="memdesc:a222a7e72dece53875d4b64d7801a430a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Access data with a data_client_t.  <a href="#a222a7e72dece53875d4b64d7801a430a">More...</a><br /></td></tr>
+<tr class="separator:a222a7e72dece53875d4b64d7801a430a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78b0987e0c74418b7f124953e02c11fe"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="data_8h.html#a78b0987e0c74418b7f124953e02c11fe">flecsi_get_accessors</a>(client,  nspace,  data_type,  storage_type,  version, ...)</td></tr>
+<tr class="memdesc:a78b0987e0c74418b7f124953e02c11fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a list of all accessors in the namespace of a certain type.  <a href="#a78b0987e0c74418b7f124953e02c11fe">More...</a><br /></td></tr>
+<tr class="separator:a78b0987e0c74418b7f124953e02c11fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d1f30da5c335dde53f003bb33bde253"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="data_8h.html#a5d1f30da5c335dde53f003bb33bde253">flecsi_get_accessors_all</a>(client,  data_type,  storage_type,  version, ...)</td></tr>
+<tr class="memdesc:a5d1f30da5c335dde53f003bb33bde253"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a list of all accessors in the namespace of a certain type.  <a href="#a5d1f30da5c335dde53f003bb33bde253">More...</a><br /></td></tr>
+<tr class="separator:a5d1f30da5c335dde53f003bb33bde253"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a146457dcc2a5c22ba3e68c5282c40a6c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="data_8h.html#a146457dcc2a5c22ba3e68c5282c40a6c">flecsi_is_at</a>(_index_space_)</td></tr>
+<tr class="memdesc:a146457dcc2a5c22ba3e68c5282c40a6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select state variables at a given attachment site.  <a href="#a146457dcc2a5c22ba3e68c5282c40a6c">More...</a><br /></td></tr>
+<tr class="separator:a146457dcc2a5c22ba3e68c5282c40a6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76d6c54f07fde13685bef7fc009f49a8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="data_8h.html#a76d6c54f07fde13685bef7fc009f49a8">flecsi_has_attribute_at</a>(_attribute_,  _index_space_)</td></tr>
+<tr class="memdesc:a76d6c54f07fde13685bef7fc009f49a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select specific variables in an index space with an attribute.  <a href="#a76d6c54f07fde13685bef7fc009f49a8">More...</a><br /></td></tr>
+<tr class="separator:a76d6c54f07fde13685bef7fc009f49a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f83d0f804e985ef6f4b7bb58d4d7fe1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="data_8h.html#a9f83d0f804e985ef6f4b7bb58d4d7fe1">flecsi_has_attribute</a>(_attribute_)</td></tr>
+<tr class="memdesc:a9f83d0f804e985ef6f4b7bb58d4d7fe1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select specific variables with a particular attribute.  <a href="#a9f83d0f804e985ef6f4b7bb58d4d7fe1">More...</a><br /></td></tr>
+<tr class="separator:a9f83d0f804e985ef6f4b7bb58d4d7fe1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a678128456f23b5151b26431dfda1a8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi_get_mutator</b>(client,  nspace,  name,  data_type,  storage_type, version,  slots)</td></tr>
 <tr class="separator:a9a678128456f23b5151b26431dfda1a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a93ff20eb112d8d8375f438776338ca80"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi_get_all_handles</b>(client,  storage_type,  handles, hashes,  namespaces,  versions)</td></tr>
-<tr class="separator:a93ff20eb112d8d8375f438776338ca80"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc61c5243766d6f516bcdc1207e3d6eb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi_put_all_handles</b>(client,  storage_type,  num_handles,  handles, hashes,  namespaces,  versions)</td></tr>
-<tr class="separator:adc61c5243766d6f516bcdc1207e3d6eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7b383e0bd07d025e619720d3c689aa2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi_get_handle</b>(client,  nspace,  name,  data_type,  storage_type, version,  privileges)</td></tr>
+<tr class="separator:af7b383e0bd07d025e619720d3c689aa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><dl class="section date"><dt>Date</dt><dd>Initial file creation: Aug 01, 2016 </dd></dl>
+<div class="textblock"><dl class="section date"><dt>Date</dt><dd>Initial file creation: Aug 01, 2016</dd></dl>
+<dl class="section author"><dt>Authors</dt><dd>bergen </dd></dl>
+<dl class="section date"><dt>Date</dt><dd>Initial file creation: Oct 09, 2015 </dd></dl>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>
-<a class="anchor" id="a93ff20eb112d8d8375f438776338ca80"></a>
+<a class="anchor" id="a222a7e72dece53875d4b64d7801a430a"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define flecsi_get_all_handles</td>
+          <td class="memname">#define flecsi_get_accessor</td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname">client, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">nspace, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">name, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">data_type, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -151,25 +169,7 @@ Macros</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname">handles, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">hashes, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">namespaces, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">versions&#160;</td>
+          <td class="paramname">version&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -178,7 +178,205 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">\</div><div class="line">  flecsi::data::field_data_t::get_all_handles&lt;                                 \</div><div class="line">    flecsi::data::storage_type&gt;(client, handles, hashes, namespaces, versions)</div></div><!-- fragment -->
+<b>Value:</b><div class="fragment"><div class="line"><a class="code" href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">flecsi::data::storage_t::instance</a>().<a class="code" href="structflecsi_1_1data_1_1storage____.html#a7e38b78240da588d604f068d27fff80f">get_accessor</a>&lt;flecsi::data::storage_type, \</div><div class="line">    data_type,                                                                 \</div><div class="line">    flecsi::utils::const_string_t(EXPAND_AND_STRINGIFY(nspace)).hash()&gt;(       \</div><div class="line">      client, EXPAND_AND_STRINGIFY(name), version)</div><div class="ttc" id="structflecsi_1_1data_1_1storage_____html_a7e38b78240da588d604f068d27fff80f"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#a7e38b78240da588d604f068d27fff80f">flecsi::data::storage__::get_accessor</a></div><div class="ttdeci">decltype(auto) get_accessor(const data_client_t &amp;data_client, const utils::const_string_t &amp;key, size_t version=0)</div><div class="ttdoc">get an accessor to registered data. </div><div class="ttdef"><b>Definition:</b> storage.h:128</div></div>
+<div class="ttc" id="structflecsi_1_1data_1_1storage_____html_a224613d41d8a70736637aedad289a132"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">flecsi::data::storage__::instance</a></div><div class="ttdeci">static storage__ &amp; instance()</div><div class="ttdoc">Return a static instance of the data manager. </div><div class="ttdef"><b>Definition:</b> storage.h:63</div></div>
+</div><!-- fragment -->
+<p>Access data with a data_client_t. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">client</td><td>The data_client_t instance with which to access the data from. </td></tr>
+    <tr><td class="paramname">nspace</td><td>The namespace to use to access the variable. </td></tr>
+    <tr><td class="paramname">name</td><td>The name of the data variable to access. </td></tr>
+    <tr><td class="paramname">data_type</td><td>The data type to access, e.g., double or my_type_t. </td></tr>
+    <tr><td class="paramname">storage_type</td><td>The storage type for the data storage_type_t. </td></tr>
+    <tr><td class="paramname">version</td><td>The version number of the data to access. This parameter can be used to manage multiple data versions, e.g., for new and old state. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a78b0987e0c74418b7f124953e02c11fe"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define flecsi_get_accessors</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">client, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">nspace, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">data_type, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">storage_type, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">version, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line"><a class="code" href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">flecsi::data::storage_t::instance</a>().<a class="code" href="structflecsi_1_1data_1_1storage____.html#add205d5483e0e251363ccd5d4a8d8a37">get_accessors</a>&lt;flecsi::data::storage_type,\</div><div class="line">    data_type,                                                                 \</div><div class="line">    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()&gt;(       \</div><div class="line">      client, version, ## __VA_ARGS__ )</div><div class="ttc" id="structflecsi_1_1data_1_1storage_____html_add205d5483e0e251363ccd5d4a8d8a37"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#add205d5483e0e251363ccd5d4a8d8a37">flecsi::data::storage__::get_accessors</a></div><div class="ttdeci">decltype(auto) get_accessors(const data_client_t &amp;data_client, size_t version, P &amp;&amp;predicate, bool sorted=true)</div><div class="ttdoc">Return a std::vector of accessors to the stored states with type T in namespace NS satisfying the pre...</div><div class="ttdef"><b>Definition:</b> storage.h:196</div></div>
+<div class="ttc" id="structflecsi_1_1data_1_1storage_____html_a224613d41d8a70736637aedad289a132"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">flecsi::data::storage__::instance</a></div><div class="ttdeci">static storage__ &amp; instance()</div><div class="ttdoc">Return a static instance of the data manager. </div><div class="ttdef"><b>Definition:</b> storage.h:63</div></div>
+</div><!-- fragment -->
+<p>Get a list of all accessors in the namespace of a certain type. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">client</td><td>The data_client_t instance with which to access the data from. </td></tr>
+    <tr><td class="paramname">nspace</td><td>The namespace to use to access the variables. </td></tr>
+    <tr><td class="paramname">data_type</td><td>The data type to access, e.g., double or my_type_t. </td></tr>
+    <tr><td class="paramname">storage_type</td><td>The storage type for the data storage_type_t. </td></tr>
+    <tr><td class="paramname">version</td><td>The version number of the data to access. This parameter can be used to manage multiple data versions, e.g., for new and old state. </td></tr>
+    <tr><td class="paramname">predicate</td><td>The predicate function to test an accessor against to figure out whether it get added to the returned list.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section remark"><dt>Remarks</dt><dd>This version is confined to search within a namespace only. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a5d1f30da5c335dde53f003bb33bde253"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define flecsi_get_accessors_all</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">client, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">data_type, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">storage_type, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">version, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line"><a class="code" href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">flecsi::data::storage_t::instance</a>().<a class="code" href="structflecsi_1_1data_1_1storage____.html#add205d5483e0e251363ccd5d4a8d8a37">get_accessors</a>&lt;flecsi::data::storage_type,\</div><div class="line">    data_type&gt;( client, version, ## __VA_ARGS__ )</div><div class="ttc" id="structflecsi_1_1data_1_1storage_____html_add205d5483e0e251363ccd5d4a8d8a37"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#add205d5483e0e251363ccd5d4a8d8a37">flecsi::data::storage__::get_accessors</a></div><div class="ttdeci">decltype(auto) get_accessors(const data_client_t &amp;data_client, size_t version, P &amp;&amp;predicate, bool sorted=true)</div><div class="ttdoc">Return a std::vector of accessors to the stored states with type T in namespace NS satisfying the pre...</div><div class="ttdef"><b>Definition:</b> storage.h:196</div></div>
+<div class="ttc" id="structflecsi_1_1data_1_1storage_____html_a224613d41d8a70736637aedad289a132"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">flecsi::data::storage__::instance</a></div><div class="ttdeci">static storage__ &amp; instance()</div><div class="ttdoc">Return a static instance of the data manager. </div><div class="ttdef"><b>Definition:</b> storage.h:63</div></div>
+</div><!-- fragment -->
+<p>Get a list of all accessors in the namespace of a certain type. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">client</td><td>The data_client_t instance with which to access the data from. </td></tr>
+    <tr><td class="paramname">data_type</td><td>The data type to access, e.g., double or my_type_t. </td></tr>
+    <tr><td class="paramname">storage_type</td><td>The storage type for the data storage_type_t. </td></tr>
+    <tr><td class="paramname">version</td><td>The version number of the data to access. This parameter can be used to manage multiple data versions, e.g., for new and old state. </td></tr>
+    <tr><td class="paramname">predicate</td><td>The predicate function to test an accessor against to figure out whether it get added to the returned list.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section remark"><dt>Remarks</dt><dd>This version searches all namespaces. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="af7b383e0bd07d025e619720d3c689aa2"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define flecsi_get_handle</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">client, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">nspace, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">name, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">data_type, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">storage_type, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">version, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">privileges&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line"><a class="code" href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">flecsi::data::storage_t::instance</a>().<a class="code" href="structflecsi_1_1data_1_1storage____.html#adb4456f5fd68da4ba4def263aee1b933">get_handle</a>&lt;flecsi::data::storage_type,   \</div><div class="line">    data_type,                                                     \</div><div class="line">    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(), \</div><div class="line">    size_t(flecsi::data::privilege::privileges)&gt;(       \</div><div class="line">      client, EXPAND_AND_STRINGIFY(name), version)</div><div class="ttc" id="structflecsi_1_1data_1_1storage_____html_adb4456f5fd68da4ba4def263aee1b933"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#adb4456f5fd68da4ba4def263aee1b933">flecsi::data::storage__::get_handle</a></div><div class="ttdeci">decltype(auto) get_handle(const data_client_t &amp;data_client, const utils::const_string_t &amp;key, size_t version=0)</div><div class="ttdoc">get a handle to registered data. </div><div class="ttdef"><b>Definition:</b> storage.h:326</div></div>
+<div class="ttc" id="structflecsi_1_1data_1_1storage_____html_a224613d41d8a70736637aedad289a132"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">flecsi::data::storage__::instance</a></div><div class="ttdeci">static storage__ &amp; instance()</div><div class="ttdoc">Return a static instance of the data manager. </div><div class="ttdef"><b>Definition:</b> storage.h:63</div></div>
+</div><!-- fragment -->
 </div>
 </div>
 <a class="anchor" id="a9a678128456f23b5151b26431dfda1a8"></a>
@@ -234,18 +432,130 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">\</div><div class="line">  flecsi::data::field_data_t::get_mutator&lt;flecsi::data::storage_type,          \</div><div class="line">    data_type,                                                                 \</div><div class="line">    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()&gt;(       \</div><div class="line">    client, EXPAND_AND_STRINGIFY(name), slots, version)</div></div><!-- fragment -->
+<b>Value:</b><div class="fragment"><div class="line"><a class="code" href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">flecsi::data::storage_t::instance</a>().<a class="code" href="structflecsi_1_1data_1_1storage____.html#a6cd78bdef75e9b76302ceef7756777f0">get_mutator</a>&lt;flecsi::data::storage_type,  \</div><div class="line">    data_type,                                                                 \</div><div class="line">    flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash()&gt;(       \</div><div class="line">    client, EXPAND_AND_STRINGIFY(name), slots, version)</div><div class="ttc" id="structflecsi_1_1data_1_1storage_____html_a6cd78bdef75e9b76302ceef7756777f0"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#a6cd78bdef75e9b76302ceef7756777f0">flecsi::data::storage__::get_mutator</a></div><div class="ttdeci">decltype(auto) get_mutator(const data_client_t &amp;data_client, const utils::const_string_t &amp;key, size_t slots, size_t version=0)</div><div class="ttdoc">get an accessor to registered data. </div><div class="ttdef"><b>Definition:</b> storage.h:155</div></div>
+<div class="ttc" id="structflecsi_1_1data_1_1storage_____html_a224613d41d8a70736637aedad289a132"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">flecsi::data::storage__::instance</a></div><div class="ttdeci">static storage__ &amp; instance()</div><div class="ttdoc">Return a static instance of the data manager. </div><div class="ttdef"><b>Definition:</b> storage.h:63</div></div>
+</div><!-- fragment -->
 </div>
 </div>
-<a class="anchor" id="adc61c5243766d6f516bcdc1207e3d6eb"></a>
+<a class="anchor" id="a9f83d0f804e985ef6f4b7bb58d4d7fe1"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define flecsi_put_all_handles</td>
+          <td class="memname">#define flecsi_has_attribute</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">_attribute_</td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">[](<span class="keyword">const</span> <span class="keyword">auto</span> &amp; a) {                                                         \</div><div class="line">    return a.attributes().test(_attribute_);                                   \</div><div class="line">  }</div></div><!-- fragment -->
+<p>Select specific variables with a particular attribute. </p>
+<p>Predicate function to select state variables that have been tagged with some attribute AND are defined at a specific attachment site.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">&lt;em&gt;attribute&lt;/em&gt;</td><td>The attribute to search.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the state is persistent and is registered at the specified attachment site, false, otherwise.</dd></dl>
+<dl class="section remark"><dt>Remarks</dt><dd>The variable name <em><a class="el" href="classindex__space.html" title="index_space provides... ">index_space</a></em> can't match anything in the underlying storage container or else things will get messy. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a76d6c54f07fde13685bef7fc009f49a8"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define flecsi_has_attribute_at</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">_attribute_, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">_index_space_&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">[](<span class="keyword">const</span> <span class="keyword">auto</span> &amp; a) {                                                         \</div><div class="line">    return a.attributes().test(_attribute_) &amp;&amp;                                 \</div><div class="line">           a.index_space() == _index_space_;                                   \</div><div class="line">  }</div></div><!-- fragment -->
+<p>Select specific variables in an index space with an attribute. </p>
+<p>Predicate function to select state variables that have been tagged with some attribute AND are defined at a specific attachment site.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">&lt;em&gt;attribute&lt;/em&gt;</td><td>The attribute to search.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">&lt;em&gt;index_space&lt;/em&gt;</td><td>State data must be registered at this site to meet this predicate criterium. Valid attachement sites are documented in flecsi::burton_mesh_traits_t.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the state is persistent and is registered at the specified attachment site, false, otherwise.</dd></dl>
+<dl class="section remark"><dt>Remarks</dt><dd>The variable name <em><a class="el" href="classindex__space.html" title="index_space provides... ">index_space</a></em> can't match anything in the underlying storage container or else things will get messy. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a146457dcc2a5c22ba3e68c5282c40a6c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define flecsi_is_at</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">_index_space_</td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">[](<span class="keyword">const</span> <span class="keyword">auto</span> &amp; a) {                                                         \</div><div class="line">    return a.index_space() == _index_space_;                                   \</div><div class="line">  }</div></div><!-- fragment -->
+<p>Select state variables at a given attachment site. </p>
+<p>Predicate function to select state variables that are defined at a specific attachment site.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">&lt;em&gt;index_space&lt;/em&gt;</td><td>State data must be registered at this site to meet this predicate criterium. Valid attachement sites are documented in flecsi::burton_mesh_traits_t.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the state is registered at the specified attachment site, false, otherwise.</dd></dl>
+<dl class="section remark"><dt>Remarks</dt><dd>The variable name <em><a class="el" href="classindex__space.html" title="index_space provides... ">index_space</a></em> can't match anything in the underlying storage container or else things will get messy. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ae3f84253d2194b1e501ac8b7a91d7a59"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define flecsi_register_data</td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname">client, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">nspace, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">name, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">data_type, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -257,31 +567,7 @@ Macros</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname">num_handles, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">handles, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">hashes, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">namespaces, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">versions&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -290,7 +576,23 @@ Macros</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">\</div><div class="line">  flecsi::data::field_data_t::put_all_handles&lt;                                 \</div><div class="line">    flecsi::data::storage_type&gt;(client, num_handles, handles, hashes,          \</div><div class="line">    namespaces, versions)</div></div><!-- fragment -->
+<b>Value:</b><div class="fragment"><div class="line"><a class="code" href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">flecsi::data::storage_t::instance</a>().<a class="code" href="structflecsi_1_1data_1_1storage____.html#ab84e7e5f5c9defc92268a0be4d8c88d0">register_data</a>&lt;                           \</div><div class="line">    flecsi::data::storage_type, data_type,                                     \</div><div class="line">        flecsi::utils::const_string_t(EXPAND_AND_STRINGIFY(nspace)).hash()&gt;(       \</div><div class="line">      client, EXPAND_AND_STRINGIFY(name), ##__VA_ARGS__)</div><div class="ttc" id="structflecsi_1_1data_1_1storage_____html_ab84e7e5f5c9defc92268a0be4d8c88d0"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#ab84e7e5f5c9defc92268a0be4d8c88d0">flecsi::data::storage__::register_data</a></div><div class="ttdeci">decltype(auto) register_data(const data_client_t &amp;data_client, const utils::const_string_t &amp;key, size_t versions, Args &amp;&amp;...args)</div><div class="ttdoc">Register data with the data manager. </div><div class="ttdef"><b>Definition:</b> storage.h:95</div></div>
+<div class="ttc" id="structflecsi_1_1data_1_1storage_____html_a224613d41d8a70736637aedad289a132"><div class="ttname"><a href="structflecsi_1_1data_1_1storage____.html#a224613d41d8a70736637aedad289a132">flecsi::data::storage__::instance</a></div><div class="ttdeci">static storage__ &amp; instance()</div><div class="ttdoc">Return a static instance of the data manager. </div><div class="ttdef"><b>Definition:</b> storage.h:63</div></div>
+</div><!-- fragment -->
+<p>Register data with a data_client_t. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">client</td><td>The data_client_t instance with which to register the data. </td></tr>
+    <tr><td class="paramname">nspace</td><td>The namespace to use to register the variable. </td></tr>
+    <tr><td class="paramname">name</td><td>The name of the data variable to register. </td></tr>
+    <tr><td class="paramname">versions</td><td>The number of versions of the data to register. This parameter can be used to manage multiple data versions, e.g., for new and old state. </td></tr>
+    <tr><td class="paramname">data_type</td><td>The data type to store, e.g., double or my_type_t. </td></tr>
+    <tr><td class="paramname">storage_type</td><td>The storage type for the data storage_type_t.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Each storage type may have additional parameters that need to be passed to this macro. </p>
+
 </div>
 </div>
 </div><!-- contents -->

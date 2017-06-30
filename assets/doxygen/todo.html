@@ -1,12 +1,10 @@
-<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<link rel="shortcut icon" type="image/x-icon" href="flecsi-favicon.ico" />
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>Interface Documentation: Todo List</title>
+<title>flecsi: Todo List</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -24,10 +22,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
+  <td id="projectlogo"><img alt="Logo" src="small-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Interface Documentation<br>
-		<span id="projectnumber">Version:</span>
+   <div id="projectname">flecsi
+   &#160;<span id="projectnumber">0.0(master)</span>
    </div>
   </td>
  </tr>
@@ -43,7 +41,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li class="current"><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -85,23 +83,19 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><dl class="reflist">
-<dt><a class="anchor" id="_todo000002"></a>Member <a class="el" href="structflecsi_1_1execution_1_1function____.html#a557a815b066706ad1fd096652499d235">flecsi::execution::function__&lt; EXECUTION_POLICY &gt;::execute_function</a>  (FUNCTION_HANDLE &amp;handle, ARGS &amp;&amp;...args)</dt>
-<dd>: This interface needs to be updated to mirror the task registration model. </dd>
-<dt><a class="anchor" id="_todo000001"></a>Member <a class="el" href="structflecsi_1_1execution_1_1function____.html#a44776facf0dfb46e0dbb8f719bd33f40">flecsi::execution::function__&lt; EXECUTION_POLICY &gt;::register_function</a>  ()</dt>
-<dd>: This interface needs to be updated to mirror the task registration model. </dd>
-<dt><a class="anchor" id="_todo000003"></a>Class <a class="el" href="classflecsi_1_1utils_1_1array__ref.html">flecsi::utils::array_ref&lt; T &gt;</a>  </dt>
+<dt><a class="anchor" id="_todo000001"></a>Class <a class="el" href="classflecsi_1_1utils_1_1array__ref.html">flecsi::utils::array_ref&lt; T &gt;</a>  </dt>
 <dd>The existing <code><a class="el" href="classflecsi_1_1utils_1_1array__ref.html">array_ref</a></code> classes make the view const. It may be useful to extend that to allow modifications of the referenced array elements, and use <code>array_ref&lt;const T&gt;</code> for immutable views.  </dd>
-<dt><a class="anchor" id="_todo000006"></a>Member <a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a291bda96c312b39454590578d2ffa519">flecsi::utils::array_ref&lt; T &gt;::array_ref</a>  (const std::array&lt; T, N &gt; &amp;a)</dt>
+<dt><a class="anchor" id="_todo000004"></a>Member <a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a291bda96c312b39454590578d2ffa519">flecsi::utils::array_ref&lt; T &gt;::array_ref</a>  (const std::array&lt; T, N &gt; &amp;a)</dt>
 <dd>Arguably, this conversion should be a std::array conversion operator.  </dd>
-<dt><a class="anchor" id="_todo000005"></a>Member <a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a75091e53095aff11d9f764b0b80e0a76">flecsi::utils::array_ref&lt; T &gt;::array_ref</a>  (const std::vector&lt; T, Allocator &gt; &amp;v)</dt>
+<dt><a class="anchor" id="_todo000003"></a>Member <a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a75091e53095aff11d9f764b0b80e0a76">flecsi::utils::array_ref&lt; T &gt;::array_ref</a>  (const std::vector&lt; T, Allocator &gt; &amp;v)</dt>
 <dd>Arguably, this conversion should be a std::vector conversion operator.  </dd>
-<dt><a class="anchor" id="_todo000009"></a>Member <a class="el" href="classflecsi_1_1utils_1_1array__ref.html#ad90640442dd84cbd42c563e251ff8f8b">flecsi::utils::array_ref&lt; T &gt;::operator std::basic_string&lt; T, traits, Allocator &gt;</a>  () const </dt>
+<dt><a class="anchor" id="_todo000007"></a>Member <a class="el" href="classflecsi_1_1utils_1_1array__ref.html#ad90640442dd84cbd42c563e251ff8f8b">flecsi::utils::array_ref&lt; T &gt;::operator std::basic_string&lt; T, traits, Allocator &gt;</a>  () const </dt>
 <dd>Arguably, this conversion should be a std::basic_string constructor.  </dd>
-<dt><a class="anchor" id="_todo000008"></a>Member <a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a68e13bd7cbe72e3fba608ab1f5f31b24">flecsi::utils::array_ref&lt; T &gt;::operator std::vector&lt; T &gt;</a>  () const </dt>
+<dt><a class="anchor" id="_todo000006"></a>Member <a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a68e13bd7cbe72e3fba608ab1f5f31b24">flecsi::utils::array_ref&lt; T &gt;::operator std::vector&lt; T &gt;</a>  () const </dt>
 <dd>Arguably, this conversion should be a std::vector constructor.  </dd>
-<dt><a class="anchor" id="_todo000004"></a>Member <a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a3f1d32653d18ac149cf013b467ba367b">flecsi::utils::array_ref&lt; T &gt;::pointer</a>  </dt>
+<dt><a class="anchor" id="_todo000002"></a>Member <a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a3f1d32653d18ac149cf013b467ba367b">flecsi::utils::array_ref&lt; T &gt;::pointer</a>  </dt>
 <dd>Should the pointer type be configurable as a template argument?  </dd>
-<dt><a class="anchor" id="_todo000007"></a>Member <a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a42e1c01f91711dd15a2ef89b4e79e9c1">flecsi::utils::array_ref&lt; T &gt;::substr</a>  (const size_type pos, const size_type n=size_type(-1)) const </dt>
+<dt><a class="anchor" id="_todo000005"></a>Member <a class="el" href="classflecsi_1_1utils_1_1array__ref.html#a6380d7f2fa283da1aab260a4de0146c4">flecsi::utils::array_ref&lt; T &gt;::substr</a>  (size_type pos, size_type n=size_type(-1)) const </dt>
 <dd>See <code>basic_string_ref::substr</code> for interface questions. We want something like this on <code><a class="el" href="classflecsi_1_1utils_1_1array__ref.html">array_ref</a></code>, but probably not with this name. </dd>
 </dl>
 </div></div><!-- contents -->

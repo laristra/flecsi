@@ -1,12 +1,10 @@
-<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<link rel="shortcut icon" type="image/x-icon" href="flecsi-favicon.ico" />
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>Interface Documentation: /home/flecsi/flecsi/flecsi/utils/hash.h File Reference</title>
+<title>flecsi: /home/flecsi/flecsi/flecsi/utils/hash.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -24,10 +22,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
+  <td id="projectlogo"><img alt="Logo" src="small-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Interface Documentation<br>
-		<span id="projectnumber">Version:</span>
+   <div id="projectname">flecsi
+   &#160;<span id="projectnumber">0.0(master)</span>
    </div>
   </td>
  </tr>
@@ -43,7 +41,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -91,486 +89,37 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">hash.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;cstddef&gt;</code><br />
+<div class="textblock"><code>#include &lt;limits&gt;</code><br />
 <code>#include &lt;utility&gt;</code><br />
 </div>
 <p><a href="hash_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespaceflecsi"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceflecsi.html">flecsi</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a30d3da89b0b4e954331d554839f55778"><td class="memTemplParams" colspan="2">template&lt;size_t MASK, size_t SHIFT&gt; </td></tr>
-<tr class="memitem:a30d3da89b0b4e954331d554839f55778"><td class="memTemplItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="hash_8h.html#a30d3da89b0b4e954331d554839f55778">flecsi::utils::hash::bit_range</a> (size_t key)</td></tr>
-<tr class="separator:a30d3da89b0b4e954331d554839f55778"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a641929dd5d68208463ffcdbf072b858c"><td class="memTemplParams" colspan="2">template&lt;size_t NAMESPACE, size_t NAME&gt; </td></tr>
-<tr class="memitem:a641929dd5d68208463ffcdbf072b858c"><td class="memTemplItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="hash_8h.html#a641929dd5d68208463ffcdbf072b858c">flecsi::utils::hash::field_hash</a> ()</td></tr>
-<tr class="separator:a641929dd5d68208463ffcdbf072b858c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4915fd471017b012293f790bbea13ff9"><td class="memTemplParams" colspan="2">template&lt;size_t NAMESPACE, size_t NAME, size_t INDEX, size_t DOMAIN_, size_t DIMENSION&gt; </td></tr>
-<tr class="memitem:a4915fd471017b012293f790bbea13ff9"><td class="memTemplItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="hash_8h.html#a4915fd471017b012293f790bbea13ff9">flecsi::utils::hash::client_entity_hash</a> ()</td></tr>
-<tr class="separator:a4915fd471017b012293f790bbea13ff9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0cca82c27822f6c1ac4b50f06b828523"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hash_8h.html#a0cca82c27822f6c1ac4b50f06b828523">flecsi::utils::hash::client_entity_index</a> (size_t key)</td></tr>
-<tr class="separator:a0cca82c27822f6c1ac4b50f06b828523"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1bd75d511205c26271c4149a2f6d6621"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hash_8h.html#a1bd75d511205c26271c4149a2f6d6621">flecsi::utils::hash::client_entity_domain</a> (size_t key)</td></tr>
-<tr class="separator:a1bd75d511205c26271c4149a2f6d6621"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89be8538a701bdd388cb7c6001d2e331"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hash_8h.html#a89be8538a701bdd388cb7c6001d2e331">flecsi::utils::hash::client_entity_dimension</a> (size_t key)</td></tr>
-<tr class="separator:a89be8538a701bdd388cb7c6001d2e331"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab8a62447576dff8122f72652daa6930d"><td class="memTemplParams" colspan="2">template&lt;size_t NAMESPACE, size_t NAME, size_t INDEX, size_t FROM_DOMAIN, size_t TO_DOMAIN, size_t FROM_DIMENSION, size_t TO_DIMENSION&gt; </td></tr>
-<tr class="memitem:ab8a62447576dff8122f72652daa6930d"><td class="memTemplItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="hash_8h.html#ab8a62447576dff8122f72652daa6930d">flecsi::utils::hash::client_adjacency_hash</a> ()</td></tr>
-<tr class="separator:ab8a62447576dff8122f72652daa6930d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab6dd8a199552a4859ffc68388b56fead"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hash_8h.html#ab6dd8a199552a4859ffc68388b56fead">flecsi::utils::hash::client_adjacency_index</a> (size_t key)</td></tr>
-<tr class="separator:ab6dd8a199552a4859ffc68388b56fead"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a883bec76c428dd41ef3d5c75300852e5"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hash_8h.html#a883bec76c428dd41ef3d5c75300852e5">flecsi::utils::hash::client_adjacency_from_domain</a> (size_t key)</td></tr>
-<tr class="separator:a883bec76c428dd41ef3d5c75300852e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a32b2267d5b111919dba145d19c9c6166"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hash_8h.html#a32b2267d5b111919dba145d19c9c6166">flecsi::utils::hash::client_adjacency_to_domain</a> (size_t key)</td></tr>
-<tr class="separator:a32b2267d5b111919dba145d19c9c6166"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a07c5140f08bc6d2b2a2ebbb6ac3a381c"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hash_8h.html#a07c5140f08bc6d2b2a2ebbb6ac3a381c">flecsi::utils::hash::client_adjacency_from_dimension</a> (size_t key)</td></tr>
-<tr class="separator:a07c5140f08bc6d2b2a2ebbb6ac3a381c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1eac7372609dfad0be40e99baed22af9"><td class="memItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hash_8h.html#a1eac7372609dfad0be40e99baed22af9">flecsi::utils::hash::client_adjacency_to_dimension</a> (size_t key)</td></tr>
-<tr class="separator:a1eac7372609dfad0be40e99baed22af9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ce0a4b6f2aca28c6a1b05b374d2a723"><td class="memTemplParams" colspan="2">template&lt;size_t NAME, size_t INDEX_SPACE&gt; </td></tr>
-<tr class="memitem:a0ce0a4b6f2aca28c6a1b05b374d2a723"><td class="memTemplItemLeft" align="right" valign="top">constexpr size_t&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="hash_8h.html#a0ce0a4b6f2aca28c6a1b05b374d2a723">flecsi::utils::hash::client_internal_field_hash</a> ()</td></tr>
-<tr class="separator:a0ce0a4b6f2aca28c6a1b05b374d2a723"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae910be14a810b613365e12403f80fb26"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae910be14a810b613365e12403f80fb26"></a>
-constexpr size_t&#160;</td><td class="memItemRight" valign="bottom"><b>flecsi::utils::hash::client_internal_field_index_space</b> (size_t key)</td></tr>
-<tr class="separator:ae910be14a810b613365e12403f80fb26"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a55034e9567d58efee98d4917b93f52cb"><td class="memTemplParams" colspan="2"><a class="anchor" id="a55034e9567d58efee98d4917b93f52cb"></a>
+<tr class="memitem:a9989c332175be566ae4087bd4e9a2a86"><td class="memTemplParams" colspan="2"><a class="anchor" id="a9989c332175be566ae4087bd4e9a2a86"></a>
 template&lt;typename T , typename U &gt; </td></tr>
-<tr class="memitem:a55034e9567d58efee98d4917b93f52cb"><td class="memTemplItemLeft" align="right" valign="top">constexpr T&#160;</td><td class="memTemplItemRight" valign="bottom"><b>flecsi::utils::string_hash__</b> (U &amp;&amp;str, const T h, const std::size_t i, const std::size_t n)</td></tr>
-<tr class="separator:a55034e9567d58efee98d4917b93f52cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a82d01f52f66067cd7ad4853ba850fb60"><td class="memTemplParams" colspan="2"><a class="anchor" id="a82d01f52f66067cd7ad4853ba850fb60"></a>
+<tr class="memitem:a9989c332175be566ae4087bd4e9a2a86"><td class="memTemplItemLeft" align="right" valign="top">constexpr T&#160;</td><td class="memTemplItemRight" valign="bottom"><b>flecsi::utils::hash__</b> (U &amp;&amp;str, T h, std::size_t i, std::size_t n)</td></tr>
+<tr class="separator:a9989c332175be566ae4087bd4e9a2a86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36cb77e34185afe0a7f4a1b9d29a3103"><td class="memTemplParams" colspan="2"><a class="anchor" id="a36cb77e34185afe0a7f4a1b9d29a3103"></a>
 template&lt;typename T , typename U &gt; </td></tr>
-<tr class="memitem:a82d01f52f66067cd7ad4853ba850fb60"><td class="memTemplItemLeft" align="right" valign="top">constexpr T&#160;</td><td class="memTemplItemRight" valign="bottom"><b>flecsi::utils::string_hash</b> (U &amp;&amp;str, const std::size_t n)</td></tr>
-<tr class="separator:a82d01f52f66067cd7ad4853ba850fb60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36cb77e34185afe0a7f4a1b9d29a3103"><td class="memTemplItemLeft" align="right" valign="top">constexpr T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="hash_8h.html#a36cb77e34185afe0a7f4a1b9d29a3103">flecsi::utils::hash</a> (U &amp;&amp;str, std::size_t n)</td></tr>
+<tr class="memdesc:a36cb77e34185afe0a7f4a1b9d29a3103"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classconst__string.html" title="const_string provides compile-time string constants and hashing... ">const_string</a> provides compile-time string constants and hashing... <br /></td></tr>
+<tr class="separator:a36cb77e34185afe0a7f4a1b9d29a3103"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><dl class="section date"><dt>Date</dt><dd>Initial file creation: Oct 15, 2015 </dd></dl>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="file_a30d3da89b0b4e954331d554839f55778"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;size_t MASK, size_t SHIFT&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr size_t flecsi::utils::hash::bit_range </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>key</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Hashing function for client registration.</p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">NAMESPACE</td><td>The namespace key. </td></tr>
-    <tr><td class="paramname">NAME</td><td>The name key. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="file_a07c5140f08bc6d2b2a2ebbb6ac3a381c"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr size_t flecsi::utils::hash::client_adjacency_from_dimension </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>key</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Recover the dimension from a key to a client entity.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">key</td><td>The client entity key. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="file_a883bec76c428dd41ef3d5c75300852e5"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr size_t flecsi::utils::hash::client_adjacency_from_domain </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>key</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Recover the domain from a key to a client entity.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">key</td><td>The client entity key. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="file_ab8a62447576dff8122f72652daa6930d"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;size_t NAMESPACE, size_t NAME, size_t INDEX, size_t FROM_DOMAIN, size_t TO_DOMAIN, size_t FROM_DIMENSION, size_t TO_DIMENSION&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr size_t flecsi::utils::hash::client_adjacency_hash </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Create a hash key suitable for registering client adjacency types with the low-level field registry.</p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">NAMESPACE</td><td>A namespace identifier. </td></tr>
-    <tr><td class="paramname">NAME</td><td>A name identifier. </td></tr>
-    <tr><td class="paramname">INDEX</td><td>The associated index space. </td></tr>
-    <tr><td class="paramname">FROM_DOMAIN</td><td>The from domain. </td></tr>
-    <tr><td class="paramname">TO_DOMAIN</td><td>The to domain. </td></tr>
-    <tr><td class="paramname">FROM_DIMENSION</td><td>The topological from dimension. </td></tr>
-    <tr><td class="paramname">TO_DIMENSION</td><td>The topological to dimension. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="file_ab6dd8a199552a4859ffc68388b56fead"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr size_t flecsi::utils::hash::client_adjacency_index </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>key</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Recover the index space from a key to a client entity.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">key</td><td>The client entity key. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="file_a1eac7372609dfad0be40e99baed22af9"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr size_t flecsi::utils::hash::client_adjacency_to_dimension </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>key</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Recover the dimension from a key to a client entity.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">key</td><td>The client entity key. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="file_a32b2267d5b111919dba145d19c9c6166"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr size_t flecsi::utils::hash::client_adjacency_to_domain </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>key</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Recover the to domain from a key to a client entity.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">key</td><td>The client entity key. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="file_a89be8538a701bdd388cb7c6001d2e331"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr size_t flecsi::utils::hash::client_entity_dimension </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>key</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Recover the dimension from a key to a client entity.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">key</td><td>The client entity key. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="file_a1bd75d511205c26271c4149a2f6d6621"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr size_t flecsi::utils::hash::client_entity_domain </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>key</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Recover the domain from a key to a client entity.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">key</td><td>The client entity key. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="file_a4915fd471017b012293f790bbea13ff9"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;size_t NAMESPACE, size_t NAME, size_t INDEX, size_t DOMAIN_, size_t DIMENSION&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr size_t flecsi::utils::hash::client_entity_hash </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Create a hash key suitable for registering client entity types with the low-level field registry.</p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">NAMESPACE</td><td>A namespace identifier. </td></tr>
-    <tr><td class="paramname">NAME</td><td>A name identifier. </td></tr>
-    <tr><td class="paramname">INDEX</td><td>The associated index space. </td></tr>
-    <tr><td class="paramname">DOMAIN</td><td>The domain. </td></tr>
-    <tr><td class="paramname">DIMENSION</td><td>The topological dimension. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="file_a0cca82c27822f6c1ac4b50f06b828523"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr size_t flecsi::utils::hash::client_entity_index </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>key</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Recover the index space from a key to a client entity.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">key</td><td>The client entity key. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="file_a0ce0a4b6f2aca28c6a1b05b374d2a723"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;size_t NAME, size_t INDEX_SPACE&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr size_t flecsi::utils::hash::client_internal_field_hash </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Create a hash key suitable for registering internal client field data with the low-level field registry.</p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">INDEX_SPACE</td><td>The index space id of the associated field. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a class="anchor" id="file_a641929dd5d68208463ffcdbf072b858c"></a>
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;size_t NAMESPACE, size_t NAME&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr size_t flecsi::utils::hash::field_hash </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Create a hash key suitable for registering a field with the low-level field registry.</p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">NAMESPACE</td><td>A namespace identifier. </td></tr>
-    <tr><td class="paramname">NAME</td><td>A name identifier. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

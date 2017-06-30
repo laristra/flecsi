@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['flecsi_5fmember_5fchecker',['FLECSI_MEMBER_CHECKER',['../static__verify_8h.html#aecae600285017def088065e8c3730280',1,'static_verify.h']]]
+  ['define_5fdcrs_5fas',['define_dcrs_as',['../dcrs_8h.html#a8b0378d87620e951bf2705b008726a3a',1,'dcrs.h']]]
 ];

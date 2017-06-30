@@ -1,12 +1,10 @@
-<!-- HTML header for doxygen 1.8.11-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<link rel="shortcut icon" type="image/x-icon" href="flecsi-favicon.ico" />
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>Interface Documentation: flecsi::topology::index_space&lt; T, STORAGE, OWNED, SORTED, F, STORAGE_TYPE &gt;::iterator_base_&lt; S &gt; Class Template Reference</title>
+<title>flecsi: flecsi::topology::index_space&lt; T, STORAGE, OWNED, SORTED, F &gt;::iterator_base_&lt; S &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -24,10 +22,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" height="200" style="margin-top:40px; margin-left:30px; margin-right:10px" src="medium-flecsi.png"/></td>
+  <td id="projectlogo"><img alt="Logo" src="small-flecsi.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Interface Documentation<br>
-		<span id="projectnumber">Version:</span>
+   <div id="projectname">flecsi
+   &#160;<span id="projectnumber">0.0(master)</span>
    </div>
   </td>
  </tr>
@@ -43,7 +41,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
-      <li><a href="modules.html"><span>Modules</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -88,7 +86,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>flecsi</b></li><li class="navelem"><b>topology</b></li><li class="navelem"><a class="el" href="classflecsi_1_1topology_1_1index__space.html">index_space</a></li><li class="navelem"><a class="el" href="classflecsi_1_1topology_1_1index__space_1_1iterator__base__.html">iterator_base_</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceflecsi.html">flecsi</a></li><li class="navelem"><b>topology</b></li><li class="navelem"><a class="el" href="classflecsi_1_1topology_1_1index__space.html">index_space</a></li><li class="navelem"><a class="el" href="classflecsi_1_1topology_1_1index__space_1_1iterator__base__.html">iterator_base_</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -98,71 +96,71 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classflecsi_1_1topology_1_1index__space_1_1iterator__base__-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">flecsi::topology::index_space&lt; T, STORAGE, OWNED, SORTED, F, STORAGE_TYPE &gt;::iterator_base_&lt; S &gt; Class Template Reference</div>  </div>
+<div class="title">flecsi::topology::index_space&lt; T, STORAGE, OWNED, SORTED, F &gt;::iterator_base_&lt; S &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="topology_2index__space_8h_source.html">index_space.h</a>&gt;</code></p>
 <div class="dynheader">
-Inheritance diagram for flecsi::topology::index_space&lt; T, STORAGE, OWNED, SORTED, F, STORAGE_TYPE &gt;::iterator_base_&lt; S &gt;:</div>
+Inheritance diagram for flecsi::topology::index_space&lt; T, STORAGE, OWNED, SORTED, F &gt;::iterator_base_&lt; S &gt;:</div>
 <div class="dyncontent">
  <div class="center">
-  <img src="classflecsi_1_1topology_1_1index__space_1_1iterator__base__.png" usemap="#flecsi::topology::index_5Fspace_3C_20T_2C_20STORAGE_2C_20OWNED_2C_20SORTED_2C_20F_2C_20STORAGE_5FTYPE_20_3E::iterator_5Fbase_5F_3C_20S_20_3E_map" alt=""/>
-  <map id="flecsi::topology::index_5Fspace_3C_20T_2C_20STORAGE_2C_20OWNED_2C_20SORTED_2C_20F_2C_20STORAGE_5FTYPE_20_3E::iterator_5Fbase_5F_3C_20S_20_3E_map" name="flecsi::topology::index_space&lt; T, STORAGE, OWNED, SORTED, F, STORAGE_TYPE &gt;::iterator_base_&lt; S &gt;_map">
-<area href="classflecsi_1_1topology_1_1index__space_1_1iterator__.html" alt="flecsi::topology::index_space&lt; T, STORAGE, OWNED, SORTED, F, STORAGE_TYPE &gt;::iterator_&lt; S, P &gt;" shape="rect" coords="0,56,630,80"/>
-<area href="classflecsi_1_1topology_1_1index__space_1_1iterator___3_01S_00_01void_01_4.html" alt="flecsi::topology::index_space&lt; T, STORAGE, OWNED, SORTED, F, STORAGE_TYPE &gt;::iterator_&lt; S, void &gt;" shape="rect" coords="640,56,1270,80"/>
+  <img src="classflecsi_1_1topology_1_1index__space_1_1iterator__base__.png" usemap="#flecsi::topology::index_5Fspace_3C_20T_2C_20STORAGE_2C_20OWNED_2C_20SORTED_2C_20F_20_3E::iterator_5Fbase_5F_3C_20S_20_3E_map" alt=""/>
+  <map id="flecsi::topology::index_5Fspace_3C_20T_2C_20STORAGE_2C_20OWNED_2C_20SORTED_2C_20F_20_3E::iterator_5Fbase_5F_3C_20S_20_3E_map" name="flecsi::topology::index_space&lt; T, STORAGE, OWNED, SORTED, F &gt;::iterator_base_&lt; S &gt;_map">
+<area href="classflecsi_1_1topology_1_1index__space_1_1iterator__.html" alt="flecsi::topology::index_space&lt; T, STORAGE, OWNED, SORTED, F &gt;::iterator_&lt; S, P &gt;" shape="rect" coords="0,56,523,80"/>
+<area href="classflecsi_1_1topology_1_1index__space_1_1iterator___3_01S_00_01void_01_4.html" alt="flecsi::topology::index_space&lt; T, STORAGE, OWNED, SORTED, F &gt;::iterator_&lt; S, void &gt;" shape="rect" coords="533,56,1056,80"/>
 </map>
  </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a50205e0d6e82961cc6e26826e11ffd3f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a50205e0d6e82961cc6e26826e11ffd3f"></a>
+<tr class="memitem:a4479560e35df78aaa437f7ae14390595"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4479560e35df78aaa437f7ae14390595"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>MS</b> = typename std::remove_const&lt; S &gt;::type</td></tr>
-<tr class="separator:a50205e0d6e82961cc6e26826e11ffd3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a4479560e35df78aaa437f7ae14390595"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a99f899b2bbeb3476fe48999f378d7ce6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a99f899b2bbeb3476fe48999f378d7ce6"></a>
+<tr class="memitem:adfe04bfa0f00cff56cd7fdbb173c6fd8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adfe04bfa0f00cff56cd7fdbb173c6fd8"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>iterator_base_</b> (const <a class="el" href="classflecsi_1_1topology_1_1index__space_1_1iterator__base__.html">iterator_base_</a> &amp;itr)</td></tr>
-<tr class="separator:a99f899b2bbeb3476fe48999f378d7ce6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a22d2c7d2bc07e5c383d299afe6ec3225"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a22d2c7d2bc07e5c383d299afe6ec3225"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>iterator_base_</b> (storage_t *s, const id_vector_t &amp;items, size_t index, size_t end)</td></tr>
-<tr class="separator:a22d2c7d2bc07e5c383d299afe6ec3225"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf114a0a36755d01ea815298f154e6c2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acf114a0a36755d01ea815298f154e6c2"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>iterator_base_</b> (const storage_t *s, const id_vector_t &amp;items, size_t index, size_t end)</td></tr>
-<tr class="separator:acf114a0a36755d01ea815298f154e6c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa634c7cdfec83e6cced4d30f92cb4486"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa634c7cdfec83e6cced4d30f92cb4486"></a>
+<tr class="separator:adfe04bfa0f00cff56cd7fdbb173c6fd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9e52e9073e6d49b9c408e94c4769cda"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa9e52e9073e6d49b9c408e94c4769cda"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>iterator_base_</b> (item_vector_t *s, const id_vector_t &amp;items, size_t index, size_t end)</td></tr>
+<tr class="separator:aa9e52e9073e6d49b9c408e94c4769cda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf5ebd875b30dd4763b18e03e76ee8ee"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaf5ebd875b30dd4763b18e03e76ee8ee"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>iterator_base_</b> (const item_vector_t *s, const id_vector_t &amp;items, size_t index, size_t end)</td></tr>
+<tr class="separator:aaf5ebd875b30dd4763b18e03e76ee8ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54d16096566a8d8580a45eaa4ba4ff81"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a54d16096566a8d8580a45eaa4ba4ff81"></a>
 <a class="el" href="classflecsi_1_1topology_1_1index__space_1_1iterator__base__.html">iterator_base_</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classflecsi_1_1topology_1_1index__space_1_1iterator__base__.html">iterator_base_</a> &amp;itr)</td></tr>
-<tr class="separator:aa634c7cdfec83e6cced4d30f92cb4486"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4e65f4d68a53a9ae20391a673c77cdb4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4e65f4d68a53a9ae20391a673c77cdb4"></a>
+<tr class="separator:a54d16096566a8d8580a45eaa4ba4ff81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a287a23da7548a85711edd8afabcc13a5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a287a23da7548a85711edd8afabcc13a5"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (const <a class="el" href="classflecsi_1_1topology_1_1index__space_1_1iterator__base__.html">iterator_base_</a> &amp;itr) const </td></tr>
-<tr class="separator:a4e65f4d68a53a9ae20391a673c77cdb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa569b0b4530078e29210231e8eb8402"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaa569b0b4530078e29210231e8eb8402"></a>
+<tr class="separator:a287a23da7548a85711edd8afabcc13a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a349a9606b15551e49b5b4d21de209177"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a349a9606b15551e49b5b4d21de209177"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const <a class="el" href="classflecsi_1_1topology_1_1index__space_1_1iterator__base__.html">iterator_base_</a> &amp;itr) const </td></tr>
-<tr class="separator:aaa569b0b4530078e29210231e8eb8402"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa0d86c4a0909345ecd672c724173902c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa0d86c4a0909345ecd672c724173902c"></a>
-ref_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_</b> (size_t index)</td></tr>
-<tr class="separator:aa0d86c4a0909345ecd672c724173902c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a349a9606b15551e49b5b4d21de209177"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb3c142a3e0e6e42f336572cdd42cf01"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abb3c142a3e0e6e42f336572cdd42cf01"></a>
+T &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_</b> (size_t index)</td></tr>
+<tr class="separator:abb3c142a3e0e6e42f336572cdd42cf01"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:a6832fe804b94a2585032d2ba3eece65e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6832fe804b94a2585032d2ba3eece65e"></a>
+<tr class="memitem:a0d5d5f2390647fb1027e4cd104b973f5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0d5d5f2390647fb1027e4cd104b973f5"></a>
 const id_vector_t *&#160;</td><td class="memItemRight" valign="bottom"><b>items_</b></td></tr>
-<tr class="separator:a6832fe804b94a2585032d2ba3eece65e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c13c96382208397f66fd832a9c310d4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0c13c96382208397f66fd832a9c310d4"></a>
+<tr class="separator:a0d5d5f2390647fb1027e4cd104b973f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58af0d2f91542e0edbb6ebb5c9ca142e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a58af0d2f91542e0edbb6ebb5c9ca142e"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>index_</b></td></tr>
-<tr class="separator:a0c13c96382208397f66fd832a9c310d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa7b65e345d97ab2d9061b26008e42c64"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa7b65e345d97ab2d9061b26008e42c64"></a>
+<tr class="separator:a58af0d2f91542e0edbb6ebb5c9ca142e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8c7e153f3556eb1bc7050c8cf1edbd3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa8c7e153f3556eb1bc7050c8cf1edbd3"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>end_</b></td></tr>
-<tr class="separator:aa7b65e345d97ab2d9061b26008e42c64"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a83c1a7086fd26cfc1db96ac14f844576"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a83c1a7086fd26cfc1db96ac14f844576"></a>
-storage_t *&#160;</td><td class="memItemRight" valign="bottom"><b>s_</b></td></tr>
-<tr class="separator:a83c1a7086fd26cfc1db96ac14f844576"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:aa8c7e153f3556eb1bc7050c8cf1edbd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9411866b84c876b3a37441e7895d217"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad9411866b84c876b3a37441e7895d217"></a>
+item_vector_t *&#160;</td><td class="memItemRight" valign="bottom"><b>s_</b></td></tr>
+<tr class="separator:ad9411866b84c876b3a37441e7895d217"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;class T, bool STORAGE = false, bool OWNED = true, bool SORTED = false, class F = void, template&lt; typename, typename... &gt; class STORAGE_TYPE = std::vector&gt;<br />
+<div class="textblock"><h3>template&lt;class T, bool STORAGE = false, bool OWNED = true, bool SORTED = false, class F = void&gt;<br />
 template&lt;class S&gt;<br />
-class flecsi::topology::index_space&lt; T, STORAGE, OWNED, SORTED, F, STORAGE_TYPE &gt;::iterator_base_&lt; S &gt;</h3>
+class flecsi::topology::index_space&lt; T, STORAGE, OWNED, SORTED, F &gt;::iterator_base_&lt; S &gt;</h3>
 
 <p>Iterator base, const be parameterized with 'T' or 'const T'. </p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>

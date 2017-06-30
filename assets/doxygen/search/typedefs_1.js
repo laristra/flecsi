@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['base_5ftask_5ft',['base_task_t',['../group__execution.html#gaa0c4e49c7fcc7d78242ccd0e986d572c',1,'flecsi::execution']]]
+  ['dense_5faccessor_5ft',['dense_accessor_t',['../classflecsi_1_1data_1_1data__t.html#ad5c79f7189ee8535cd994e72711e15d6',1,'flecsi::data::data_t']]]
 ];
