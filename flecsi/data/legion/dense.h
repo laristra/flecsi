@@ -496,11 +496,14 @@ struct storage_type__<dense>
     h.exclusive_lr = ism[index_space].exclusive_lr;
     h.shared_lr = ism[index_space].shared_lr;
     h.ghost_lr = ism[index_space].ghost_lr;
-    h.pbarrier_as_owner_ptr = &ism[index_space].pbarrier_as_owner;
+    h.pbarrier_as_owner_ptr = &ism[index_space].
+        pbarriers_as_owner[field_info.fid];
     h.ghost_owners_pbarriers_ptrs.resize(0);
-    for(size_t i=0; i < ism[index_space].ghost_owners_pbarriers.size() ; i++)
+    for(size_t i=0;
+      i < ism[index_space].ghost_owners_pbarriers[field_info.fid].size() ;
+      i++)
         h.ghost_owners_pbarriers_ptrs.push_back(&(ism[index_space]
-                                                .ghost_owners_pbarriers[i]));
+                            .ghost_owners_pbarriers[field_info.fid][i]));
     h.ghost_owners_lregions = ism[index_space].ghost_owners_lregions;
     h.color_region = ism[index_space].color_region;
     h.global_to_local_color_map_ptr =

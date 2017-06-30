@@ -129,12 +129,14 @@ runtime_driver(
   data.finalize(coloring_info);
 
 
-  std::map<size_t, std::vector<field_info_t>> fields_map;
+  std::map<size_t, std::vector<field_id_t>> fields_map;
 
+  size_t num_phase_barriers =0;
   for(auto idx_space : data.index_spaces()){
     for(const field_info_t& field_info : context_.registered_fields()){
         if(field_info.index_space == idx_space){
-          fields_map[idx_space].push_back(field_info);
+          fields_map[idx_space].push_back(field_info.fid);
+          num_phase_barriers++;
         }
       }
      clog(trace) << "fields_map[" <<idx_space<<"] has "<<
@@ -151,16 +153,13 @@ runtime_driver(
 
   for(auto idx_space : coloring_info){
     std::map<field_id_t , std::vector<Legion::PhaseBarrier>> inner;
-    for (const field_info_t& field_info : fields_map[idx_space.first]){
+    for (const field_id_t& field_id : fields_map[idx_space.first]){
       for(int color = 0; color < num_colors; color++){
         const flecsi::coloring::coloring_info_t& color_info = 
           idx_space.second[color];
 
-        inner[field_info.fid].push_back(runtime->create_phase_barrier(ctx,
+        inner[field_id].push_back(runtime->create_phase_barrier(ctx,
              1 + color_info.shared_users.size()));
-      
-       //   clog(trace)<<" has " << color_info.shared_users.size() + 1 << " arrivers to " <<
-        //  phase_barriers_map[idx_space.first].back() << std::endl;
       }//color
     }//field_info
     phase_barriers_map[idx_space.first]=inner;
@@ -209,11 +208,16 @@ runtime_driver(
     std::vector<Legion::PhaseBarrier> pbarriers_as_owner;
     std::vector<size_t> num_ghost_owners;
     std::map<size_t, std::vector<Legion::PhaseBarrier>> owners_pbarriers;
+    //std::vector<std::vector<Legion::PhaseBarrier>> owners_pbarriers;
+    std::map<size_t, std::map<field_id_t, std::vector<Legion::PhaseBarrier>>>
+      owners_pbarriers;
 
     for(auto idx_space : data.index_spaces()) {
-      for (const field_info_t& field_info : fields_map[idx_space]){
+      std::map<field_id_t, std::vector<Legion::PhaseBarrier>>
+        per_color_owners_pbs;
+      for (const field_id_t& field_id : fields_map[idx_space]){
         pbarriers_as_owner.push_back(
-          phase_barriers_map[idx_space][field_info.fid][color]);
+          phase_barriers_map[idx_space][field_id][color]);
       
         flecsi::coloring::coloring_info_t color_info = 
           coloring_info[idx_space][color];
@@ -221,18 +225,23 @@ runtime_driver(
         clog(trace) << " Color " << color << " idx_space " << idx_space << 
           " has " << color_info.ghost_owners.size() << 
           " ghost owners" << std::endl;
-      
+
         num_ghost_owners.push_back(color_info.ghost_owners.size());
-        std::vector<Legion::PhaseBarrier> per_color_owners_pbs;
+        //std::vector<Legion::PhaseBarrier> per_color_owners_pbs;
         for(auto owner : color_info.ghost_owners) {
           clog(trace) << owner << std::endl;
-          per_color_owners_pbs.push_back(
-            phase_barriers_map[idx_space][field_info.fid][owner]);
+          per_color_owners_pbs[field_id].push_back(
+            phase_barriers_map[idx_space][field_id][owner]);
         }
       
         owners_pbarriers[idx_space] = per_color_owners_pbs;
       }//for field_info
+      owners_pbarriers.push_back(per_color_owners_pbs);
     } // for idx_space
+
+//FIXME remove checking below
+        clog_assert(pbarriers_as_owner.size()==num_phase_barriers,
+            "wron number of phase barriers calculated");
 
     size_t num_idx_spaces = data.index_spaces().size();
 
@@ -240,43 +249,35 @@ runtime_driver(
     idx_spaces_vec.insert(idx_spaces_vec.begin(),
       data.index_spaces().begin(), data.index_spaces().end());
 
+   //data serialization:
+
+    // #1 serialize num_indx_spaces
     args_serializers[color].serialize(&num_idx_spaces, sizeof(size_t));
+
+    // #2 serialize indx_spaces
     args_serializers[color].serialize(&idx_spaces_vec[0], num_idx_spaces
         * sizeof(size_t));
-    args_serializers[color].serialize(&pbarriers_as_owner[0], num_idx_spaces
-        * sizeof(Legion::PhaseBarrier));
-    args_serializers[color].serialize(&num_ghost_owners[0], num_idx_spaces
-        * sizeof(size_t));
-    size_t consecutive_idx = 0;
-    for(size_t idx_space : data.index_spaces()) {
-      args_serializers[color].serialize(&owners_pbarriers[idx_space][0],
-          num_ghost_owners[consecutive_idx++] * sizeof(Legion::PhaseBarrier));
-    }
-
+        
+    // #3 serialize field info
     size_t num_fields = context_.registered_fields().size();
     args_serializers[color].serialize(&num_fields, sizeof(size_t));
     args_serializers[color].serialize(
       &context_.registered_fields()[0], num_fields * sizeof(field_info_t));
 
-    size_t num_adjacenicies = data.adjacencies().size();
+    // #4 serialize pbarriers_as_owner
+    args_serializers[color].serialize(&pbarriers_as_owner[0], 
+      num_phase_barriers * sizeof(Legion::PhaseBarrier));
 
-    using adjacency_triple_t = context_t::adjacency_triple_t;
+    // #5 serialize num_ghost_owners[
+    args_serializers[color].serialize(&num_ghost_owners[0], num_idx_spaces
+        * sizeof(size_t));
 
-    std::vector<adjacency_triple_t> adjacencies_vec;
-
-    for(auto& itr : context_.adjacency_info()){
-      const coloring::adjacency_info_t& ai = itr.second;
-      
-      auto t = std::make_tuple(ai.index_space, ai.from_index_space,
-        ai.to_index_space);
-      adjacencies_vec.push_back(t);
-    }
-
-    args_serializers[color].serialize(&num_adjacenicies, sizeof(size_t));
-    args_serializers[color].serialize(&adjacencies_vec[0], num_adjacenicies
-        * sizeof(adjacency_triple_t));
-    args_serializers[color].serialize(&max_reduction,
-        sizeof(Legion::DynamicCollective));
+//FIXME:: check if serialize and deserialize work 
+    // #6 serialize owners_pbarriers
+    for(size_t idx_space : data.index_spaces())
+      args_serializers[color].serialize(&owners_pbarriers[idx_space][0],
+          fields_map[idx_space].size()
+          * num_ghost_owners[idx_space] * sizeof(Legion::PhaseBarrier));
 
     Legion::TaskLauncher spmd_launcher(spmd_id,
         Legion::TaskArgument(args_serializers[color].get_buffer(),
