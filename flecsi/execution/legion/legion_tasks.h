@@ -171,13 +171,15 @@ __flecsi_internal_legion_task(owner_pos_correction_task, void) {
 __flecsi_internal_legion_task(spmd_task, void) {
   const int my_color = task->index_point.point_data[0];
 
+  using field_id_t = Legion::FieldID;
+
   // spmd_task is an inner task
   runtime->unmap_all_regions(ctx);
 
   {
   clog_tag_guard(legion_tasks);
   clog(info) << "Executing spmd task " << my_color << std::endl;
-  }
+  }//end scope
 
   // Add additional setup.
   context_t & context_ = context_t::instance();
@@ -189,56 +191,108 @@ __flecsi_internal_legion_task(spmd_task, void) {
 
   clog_assert(task->arglen > 0, "spmd_task called without arguments");
 
+  //data deserialization
+
   Legion::Deserializer args_deserializer(task->args, task->arglen);
   size_t num_idx_spaces;
+ 
+  // #1 deserialize num_idx_spaces
   args_deserializer.deserialize(&num_idx_spaces, sizeof(size_t));
 
+  // #2 deserialize idx_spaces
   size_t* idx_spaces = (size_t*)malloc(sizeof(size_t) * num_idx_spaces);
   args_deserializer.deserialize((void*)idx_spaces,
     sizeof(size_t) * num_idx_spaces);
 
+  //adding index_spaces to the context
   for(size_t i = 0; i < num_idx_spaces; ++i){
     context_.add_index_space(idx_spaces[i]);
-  }
+  }//end for i
 
   clog_assert(regions.size() >= num_idx_spaces,
       "fewer regions than data handles");
   clog_assert(task->regions.size() >= num_idx_spaces,
       "fewer regions than data handles");
 
-  Legion::PhaseBarrier* pbarriers_as_owner = (Legion::PhaseBarrier*)
-      malloc(sizeof(Legion::PhaseBarrier) * num_idx_spaces);
-  args_deserializer.deserialize((void*)pbarriers_as_owner,
-      sizeof(Legion::PhaseBarrier) * num_idx_spaces);
+  // #3 deserialize field info
+  size_t num_fields;
+  args_deserializer.deserialize(&num_fields, sizeof(size_t));
 
+  using field_info_t = context_t::field_info_t;
+  auto field_info_buf =
+    (field_info_t*)malloc(sizeof(field_info_t) * num_fields);
+
+  args_deserializer.deserialize(field_info_buf,
+                                sizeof(field_info_t) * num_fields);
+
+  for(size_t i = 0; i < num_fields; ++i){
+    field_info_t& fi = field_info_buf[i];
+    context_.put_field_info(fi);
+  }//end for i
+
+
+  //create a fields_map for filling_in phase barriers per fid
+//  std::map<size_t, std::vector<field_id_t>> fields_map;
+
+  size_t num_phase_barriers =0;
+  for(auto idx_space : context_.index_spaces()){
+    for(const field_info_t& field_info : context_.registered_fields()){
+        if(field_info.index_space == idx_space){
+  //        fields_map[idx_space].push_back(field_id);
+          num_phase_barriers++;
+        }
+      }
+  }//end for indx_space
+//#endif
+
+
+
+  // #4 deserialize pbarriers_as_owner
+ 
+  Legion::PhaseBarrier* pbarriers_as_owner = (Legion::PhaseBarrier*)
+    malloc(sizeof(Legion::PhaseBarrier) * num_phase_barriers);
+  args_deserializer.deserialize((void*)pbarriers_as_owner,
+      sizeof(Legion::PhaseBarrier) * num_phase_barriers);
+
+  // #5 deserialize num_owners
   size_t* num_owners = (size_t*)malloc(sizeof(size_t) * num_idx_spaces);
   args_deserializer.deserialize((void*)num_owners, sizeof(size_t)
       * num_idx_spaces);
 
+  size_t indx =0;
   for(size_t idx_space : context_.index_spaces()){
-    ispace_dmap[idx_space].pbarrier_as_owner = pbarriers_as_owner[idx_space];
-    ispace_dmap[idx_space].ghost_is_readable = true;
-    ispace_dmap[idx_space].write_phase_started = false;
-  }
+    for (const field_id_t& field_id : context_.fields_map()[idx_space]){
+      indx++;
+      ispace_dmap[idx_space].pbarriers_as_owner[field_id] =
+        pbarriers_as_owner[indx];
+      ispace_dmap[idx_space].ghost_is_readable = true;
+      ispace_dmap[idx_space].write_phase_started = false;
+    }//end field_info
+  }//end for idx_space
 
-  std::vector<std::vector<Legion::PhaseBarrier>>
+  // #6 deserialize ghost_owners_pbarriers
+  std::vector<std::map<field_id_t, std::vector<Legion::PhaseBarrier>>>
   ghost_owners_pbarriers(num_idx_spaces);
 
   for(size_t idx_space : context_.index_spaces()) {
-    size_t n = num_owners[idx_space];
+    for (const field_id_t& field_id : context_.fields_map()[idx_space]){
+       size_t n = num_owners[idx_space];
 
-    ghost_owners_pbarriers[idx_space].resize(n);
-    args_deserializer.deserialize((void*)&ghost_owners_pbarriers[idx_space][0],
-        sizeof(Legion::PhaseBarrier) * n);
+      ghost_owners_pbarriers[idx_space][field_id].resize(n);
+      args_deserializer.deserialize(
+        (void*)&ghost_owners_pbarriers[idx_space][field_id][0],
+          sizeof(Legion::PhaseBarrier) * n);
     
-    ispace_dmap[idx_space].ghost_owners_pbarriers.resize(n);
+      ispace_dmap[idx_space].ghost_owners_pbarriers[field_id].resize(n);
 
-    for(size_t owner = 0; owner < n; ++owner){
-      ispace_dmap[idx_space].ghost_owners_pbarriers[owner] =
-        ghost_owners_pbarriers[idx_space][owner];
-    }
-  }
+      for(size_t owner = 0; owner < n; ++owner){
+        ispace_dmap[idx_space].ghost_owners_pbarriers[field_id][owner] =
+          ghost_owners_pbarriers[idx_space][field_id][owner];
+      }//end for owner
+    }//end for field_id
+  }//end for idx_space
 
+#if 0
   size_t num_fields;
   args_deserializer.deserialize(&num_fields, sizeof(size_t));
 
@@ -253,6 +307,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
     field_info_t& fi = field_info_buf[i];
     context_.put_field_info(fi);
   }
+#endif
 
   // Prevent these objects destructors being called until after driver()
   std::vector<std::vector<Legion::LogicalRegion>>

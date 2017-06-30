@@ -601,8 +601,9 @@ struct legion_context_policy_t
   //--------------------------------------------------------------------------//
 
   struct index_space_data_t{
-    Legion::PhaseBarrier pbarrier_as_owner;
-    std::vector<Legion::PhaseBarrier> ghost_owners_pbarriers;
+    std::map<field_id_t, Legion::PhaseBarrier> pbarriers_as_owner;
+    std::map<field_id_t, std::vector<Legion::PhaseBarrier>>
+       ghost_owners_pbarriers;
     std::vector<Legion::LogicalRegion> ghost_owners_lregions;
     Legion::STL::map<LegionRuntime::Arrays::coord_t,
       LegionRuntime::Arrays::coord_t> global_to_local_color_map;
@@ -614,11 +615,11 @@ struct legion_context_policy_t
     bool write_phase_started;
   };
 
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------//
   //! Get index space data.
   //!
   //! @param index_space FleCSI index space, e.g. cells key
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------//
 
   auto&
   index_space_data_map()
@@ -626,9 +627,19 @@ struct legion_context_policy_t
     return index_space_data_map_;
   }
 
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------//
+  //! Get field space data map (fid per index_space).
+  //------------------------------------------------------------------------// 
+
+  auto&
+  fields_map()
+  {
+   return fields_map_;
+  }
+
+  //------------------------------------------------------------------------//
   // Gathers info about registered data fields.
-  //--------------------------------------------------------------------------//
+  //------------------------------------------------------------------------//
 
   struct field_info_t{
     size_t data_client_hash;
@@ -702,6 +713,7 @@ struct legion_context_policy_t
     field_id_t fid = field_info.fid;
 
     field_info_map_[index_space].emplace(fid, field_info);
+    fields_map_[index_space].push_back(fid);
     
     field_map_.insert({{field_info.data_client_hash,
       field_info.namespace_hash ^ field_info.name_hash}, {index_space, fid}});
@@ -820,6 +832,7 @@ private:
   // Legion data members within SPMD task.
   //--------------------------------------------------------------------------//
   std::map<size_t, index_space_data_t> index_space_data_map_;
+  std::map<size_t, std::vector<field_id_t>> fields_map_;
 
 }; // class legion_context_policy_t
 
