@@ -27,8 +27,6 @@
 #include "flecsi/data/common/privilege.h"
 #include "flecsi/data/data_client_handle.h"
 
-#include <np.h>
-
 namespace flecsi {
 namespace execution {
 
