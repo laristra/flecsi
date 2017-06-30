@@ -25,6 +25,9 @@
 #include "legion.h"
 
 #include "flecsi/data/common/privilege.h"
+#include "flecsi/data/data_client_handle.h"
+
+#include <np.h>
 
 namespace flecsi {
 namespace execution {
@@ -112,6 +115,55 @@ namespace execution {
         privilege_mode(GHOST_PERMISSIONS), EXCLUSIVE, h.color_region);
       gh_rr.add_field(h.fid);
       region_reqs.push_back(gh_rr);
+    } // handle
+
+    template<
+      typename T
+    >
+    void
+    handle(
+      data_client_handle__<T> & h
+    )
+    {
+      auto& context_ = context_t::instance();
+
+      auto& ism = context_.index_space_data_map();
+
+      auto adjacency_index_fid = 
+        LegionRuntime::HighLevel::FieldID(internal_field::adjacency_index);
+
+      for(size_t i = 0; i < h.num_adjacencies; ++i){
+        size_t adj_index_space = h.adj_index_spaces[i];
+        size_t from_index_space = h.from_index_spaces[i];
+        size_t to_index_space = h.to_index_spaces[i];
+
+        Legion::RegionRequirement from_rr(ism[from_index_space].color_region,
+          READ_ONLY, EXCLUSIVE, ism[from_index_space].color_region);
+
+        from_rr.add_field(context_.entity_data_fid(from_index_space));
+
+        Legion::FieldID offset_fid = 
+          context_.adjacency_fid(from_index_space, to_index_space);
+
+        from_rr.add_field(offset_fid);
+
+        region_reqs.push_back(from_rr);
+
+        Legion::RegionRequirement to_rr(ism[to_index_space].color_region,
+          READ_ONLY, EXCLUSIVE, ism[to_index_space].color_region);
+
+        to_rr.add_field(context_.entity_data_fid(to_index_space));
+
+        region_reqs.push_back(to_rr);
+
+        Legion::RegionRequirement adj_rr(ism[adj_index_space].color_region,
+          READ_ONLY, EXCLUSIVE, ism[adj_index_space].color_region);
+
+        adj_rr.add_field(adjacency_index_fid);
+
+        region_reqs.push_back(adj_rr);
+
+      }
     } // handle
 
     //-----------------------------------------------------------------------//

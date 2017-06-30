@@ -72,13 +72,20 @@ struct client_data__
   get_client_handle()
   {
     auto& context = execution::context_t::instance();
-    
-
-
 
     data_client_handle__<DATA_CLIENT_TYPE> h;
 
+    size_t i = 0;
+    for(auto& itr : context.adjacencies()){
+      const execution::context_t::adjacency_triple_t& t = itr.second;
 
+      h.adj_index_spaces[i] = std::get<0>(t);
+      h.to_index_spaces[i] = std::get<1>(t);
+      h.from_index_spaces[i] = std::get<2>(t);
+      ++i;
+    }
+
+    h.num_adjacencies = i;
 
     return h;
   }

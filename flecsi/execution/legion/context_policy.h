@@ -786,6 +786,13 @@ struct legion_context_policy_t
       from_index_space * 10 + to_index_space;
   }
 
+  size_t
+  entity_data_fid(size_t index_space)
+  const
+  {
+    return size_t(internal_field::entity_data_start) + index_space;
+  }
+
 private:
 
   //--------------------------------------------------------------------------//
