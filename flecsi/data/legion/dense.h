@@ -510,8 +510,8 @@ struct storage_type__<dense>
       &ism[index_space].global_to_local_color_map;
     h.fid = field_info.fid;
     h.index_space = field_info.index_space;
-    h.ghost_is_readable = &(ism[index_space].ghost_is_readable);
-    h.write_phase_started = &(ism[index_space].write_phase_started);
+    h.ghost_is_readable = &(ism[index_space].ghost_is_readable[h.fid]);
+    h.write_phase_started = &(ism[index_space].write_phase_started[h.fid]);
 
     return h;
   } // get_handle
