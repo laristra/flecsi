@@ -132,6 +132,12 @@ struct legion_context_policy_t
     utils::unique_id_t<task_id_t, FLECSI_GENERATED_ID_MAX>;
 
   //--------------------------------------------------------------------------//
+  //! Adjacency triple: index space, from index space, to index space
+  //--------------------------------------------------------------------------//
+
+  using adjacency_triple_t = std::tuple<size_t, size_t, size_t>;
+
+  //--------------------------------------------------------------------------//
   //! The task_info_t type is a convenience type for defining the task
   //! registration map below.
   //--------------------------------------------------------------------------//
@@ -694,9 +700,9 @@ struct legion_context_policy_t
   //--------------------------------------------------------------------------//
   
   void
-  add_adjacency_index_space(size_t index_space)
+  add_adjacency_triple(const adjacency_triple_t& triple)
   {
-    adjacency_index_spaces_.insert(index_space);    
+    adjacencies_.emplace(std::get<0>(triple), triple);    
   }
 
   //--------------------------------------------------------------------------//
@@ -704,10 +710,10 @@ struct legion_context_policy_t
   //--------------------------------------------------------------------------//
 
   auto&
-  adjacency_index_spaces()
+  adjacencies()
   const
   {
-    return adjacency_index_spaces_;
+    return adjacencies_;
   }
 
   //--------------------------------------------------------------------------//
@@ -832,10 +838,10 @@ private:
   std::set<size_t> index_spaces_;
 
   //--------------------------------------------------------------------------//
-  // Set of adjacency index spaces.
+  // Map of adjacency triples. key: adjacency index space
   //--------------------------------------------------------------------------//
 
-  std::set<size_t> adjacency_index_spaces_;
+  std::map<size_t, adjacency_triple_t> adjacencies_;
 
   //--------------------------------------------------------------------------//
   // Field map, key1 = (data client hash, name/namespace hash)

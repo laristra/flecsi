@@ -257,12 +257,16 @@ __flecsi_internal_legion_task(spmd_task, void) {
   size_t num_adjacencies;
   args_deserializer.deserialize(&num_adjacencies, sizeof(size_t));
 
-  size_t* adjacencies = (size_t*)malloc(sizeof(size_t) * num_adjacencies);
+  using adjacency_triple_t = context_t::adjacency_triple_t;
+
+  adjacency_triple_t* adjacencies = 
+    (adjacency_triple_t*)malloc(sizeof(adjacency_triple_t) * num_adjacencies);
+  
   args_deserializer.deserialize((void*)adjacencies,
-    sizeof(size_t) * num_adjacencies);
+    sizeof(adjacency_triple_t) * num_adjacencies);
 
   for(size_t i = 0; i < num_adjacencies; ++i){
-    context_.add_adjacency_index_space(adjacencies[i]);
+    context_.add_adjacency_triple(adjacencies[i]);
   }
 
   // Prevent these objects destructors being called until after driver()
@@ -412,8 +416,8 @@ __flecsi_internal_legion_task(spmd_task, void) {
 
   } // for idx_space
 
-  for(size_t adj_idx_space : context_.adjacency_index_spaces()) {
-    ispace_dmap[adj_idx_space].color_region = 
+  for(auto& itr : context_.adjacencies()) {
+    ispace_dmap[itr.first].color_region = 
       regions[region_index].get_logical_region();
 
     region_index++;

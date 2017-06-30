@@ -231,12 +231,21 @@ runtime_driver(
 
     size_t num_adjacenicies = data.adjacencies().size();
 
-    std::vector<size_t> adjacencies_vec;
-    adjacencies_vec.insert(adjacencies_vec.begin(),
-      data.adjacencies().begin(), data.adjacencies().end());
+    using adjacency_triple_t = context_t::adjacency_triple_t;
+
+    std::vector<adjacency_triple_t> adjacencies_vec;
+
+    for(auto& itr : context_.adjacency_info()){
+      const coloring::adjacency_info_t& ai = itr.second;
+      
+      auto t = std::make_tuple(ai.index_space, ai.from_index_space,
+        ai.to_index_space);
+      adjacencies_vec.push_back(t);
+    }
+
     args_serializers[color].serialize(&num_adjacenicies, sizeof(size_t));
     args_serializers[color].serialize(&adjacencies_vec[0], num_adjacenicies
-        * sizeof(size_t));
+        * sizeof(adjacency_triple_t));
 
     Legion::TaskLauncher spmd_launcher(spmd_id,
         Legion::TaskArgument(args_serializers[color].get_buffer(),
