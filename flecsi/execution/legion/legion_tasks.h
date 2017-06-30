@@ -261,6 +261,10 @@ __flecsi_internal_legion_task(spmd_task, void) {
   args_deserializer.deserialize((void*)adjacencies,
     sizeof(size_t) * num_adjacencies);
 
+  for(size_t i = 0; i < num_adjacencies; ++i){
+    context_.add_adjacency_index_space(adjacencies[i]);
+  }
+
   // Prevent these objects destructors being called until after driver()
   std::vector<std::vector<Legion::LogicalRegion>>
     ghost_owners_lregions(num_idx_spaces);
@@ -407,6 +411,13 @@ __flecsi_internal_legion_task(spmd_task, void) {
     runtime->execute_task(ctx, fix_ghost_refs_launcher);
 
   } // for idx_space
+
+  for(size_t adj_idx_space : context_.adjacency_index_spaces()) {
+    ispace_dmap[adj_idx_space].color_region = 
+      regions[region_index].get_logical_region();
+
+    region_index++;
+  }
 
   // Get the input arguments from the Legion runtime
   const Legion::InputArgs & args =

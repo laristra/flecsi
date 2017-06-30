@@ -688,6 +688,29 @@ struct legion_context_policy_t
   }
 
   //--------------------------------------------------------------------------//
+  //! Add an adjacency index space.
+  //!
+  //! @param index_space index space to add.
+  //--------------------------------------------------------------------------//
+  
+  void
+  add_adjacency_index_space(size_t index_space)
+  {
+    adjacency_index_spaces_.insert(index_space);    
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Return set of all adjacency index spaces.
+  //--------------------------------------------------------------------------//
+
+  auto&
+  adjacency_index_spaces()
+  const
+  {
+    return adjacency_index_spaces_;
+  }
+
+  //--------------------------------------------------------------------------//
   //! Put field info for index space and field id.
   //!
   //! @param field_info field info as registered
@@ -807,6 +830,12 @@ private:
   //--------------------------------------------------------------------------//
 
   std::set<size_t> index_spaces_;
+
+  //--------------------------------------------------------------------------//
+  // Set of adjacency index spaces.
+  //--------------------------------------------------------------------------//
+
+  std::set<size_t> adjacency_index_spaces_;
 
   //--------------------------------------------------------------------------//
   // Field map, key1 = (data client hash, name/namespace hash)
