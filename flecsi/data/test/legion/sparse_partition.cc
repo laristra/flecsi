@@ -51,7 +51,7 @@ public:
   IndexSpace create_index_space(unsigned start, unsigned end){
     assert(end >= start);
     Rect<1> rect(Point<1>(start), Point<1>(end - 0));
-    return runtime_->create_index_space(context_, Domain::from_rect<1>(rect));  
+    return runtime_->create_index_space(context_, Domain::from_rect<1>(rect));
   }
 
   DomainPoint domain_point(size_t p){
@@ -71,7 +71,7 @@ public:
   // unstructured
   IndexSpace create_index_space(size_t n) const{
     assert(n > 0);
-    return runtime_->create_index_space(context_, n);  
+    return runtime_->create_index_space(context_, n);
   }
 
   FieldSpace create_field_space() const{
@@ -95,7 +95,7 @@ public:
   }
 
   DomainPoint domain_point(size_t i) const{
-    return DomainPoint::from_point<1>(Point<1>(i)); 
+    return DomainPoint::from_point<1>(Point<1>(i));
   }
 
   FutureMap execute_index_space(IndexLauncher l) const{
@@ -109,13 +109,13 @@ public:
   Domain get_domain(PhysicalRegion pr) const{
     LogicalRegion lr = pr.get_logical_region();
     IndexSpace is = lr.get_index_space();
-    return runtime_->get_index_space_domain(context_, is);     
+    return runtime_->get_index_space_domain(context_, is);
   }
 
   template<class T>
   void get_buffer(PhysicalRegion pr, T*& buf, size_t field = 0) const{
     auto ac = pr.get_field_accessor(field).typeify<T>();
-    Domain domain = get_domain(pr); 
+    Domain domain = get_domain(pr);
     Rect<1> r = domain.get_rect<1>();
     Rect<1> sr;
     ByteOffset bo[1];
@@ -124,7 +124,7 @@ public:
 
   char* get_raw_buffer(PhysicalRegion pr, size_t field = 0) const{
     auto ac = pr.get_field_accessor(field).typeify<char>();
-    Domain domain = get_domain(pr); 
+    Domain domain = get_domain(pr);
     Rect<1> r = domain.get_rect<1>();
     Rect<1> sr;
     ByteOffset bo[1];
@@ -205,15 +205,15 @@ void top_level_task(const Task* task,
     IndexSpace is = h.create_index_space(NUM_CELLS);
 
     IndexAllocator ia = runtime->create_index_allocator(ctx, is);
-    
+
     Coloring coloring;
 
     for(entity_id c = 0; c < cells.size(); ++c){
-      partition_id p = cells[c]; 
-      
+      partition_id p = cells[c];
+
       ptr_t ptr = ia.alloc(1);
       cell_ptrs[c] = ptr;
-      coloring[p].points.insert(ptr); 
+      coloring[p].points.insert(ptr);
     }
 
     FieldSpace fs = h.create_field_space();
@@ -235,7 +235,7 @@ void top_level_task(const Task* task,
     auto ac = pr.get_field_accessor(ENTITY_FID).typeify<entity_id>();
 
     IndexIterator itr(runtime, ctx, is);
-    
+
     for(entity_id c = 0; c < cells.size(); ++c){
       assert(itr.has_next());
       ptr_t ptr = itr.next();
@@ -258,19 +258,19 @@ void top_level_task(const Task* task,
     IndexSpace is = h.create_index_space(total_values);
 
     IndexAllocator ia = runtime->create_index_allocator(ctx, is);
-    
+
     Coloring coloring;
 
     for(entity_id c = 0; c < cells.size(); ++c){
-      partition_id p = cells[c]; 
-      
+      partition_id p = cells[c];
+
       const auto& evc = entry_values[c];
 
       size_t n = evc.size();
 
       ptr_t ptr = ia.alloc(n);
       start_ptr_counts[c] = ptr_count{ptr, n};
-      coloring[p].points.insert(ptr); 
+      coloring[p].points.insert(ptr);
     }
 
     FieldSpace fs = h.create_field_space();
@@ -292,16 +292,16 @@ void top_level_task(const Task* task,
     auto ac = pr.get_field_accessor(EV_FID).typeify<entry_value<value_t>>();
 
     IndexIterator itr(runtime, ctx, is);
-    
+
     for(entity_id c = 0; c < cells.size(); ++c){
-      const auto& evc = entry_values[c]; 
+      const auto& evc = entry_values[c];
 
       size_t n = evc.size();
 
       for(size_t j = 0; j < n; ++j){
         assert(itr.has_next());
         ptr_t ptr = itr.next();
-        ac.write(ptr, evc[j]);  
+        ac.write(ptr, evc[j]);
       }
     }
 
@@ -358,7 +358,7 @@ void top_level_task(const Task* task,
     pr2.wait_until_valid();
 
     for(entity_id c = 0; c < cells.size(); ++c){
-      cout << "-------- cell: " << c << endl; 
+      cout << "-------- cell: " << c << endl;
 
       ptr_count* buf;
       h.get_buffer(pr1, buf, PTR_COUNT_FID);
@@ -366,7 +366,7 @@ void top_level_task(const Task* task,
 
       IndexIterator itr(runtime, ctx, ev_lr.get_index_space(), pc.ptr);
 
-      auto ac = 
+      auto ac =
         pr2.get_field_accessor(EV_FID).typeify<entry_value<value_t>>();
 
       size_t i = 0;
@@ -380,7 +380,7 @@ void top_level_task(const Task* task,
 
         cout << "--- entry: " << ev.entry << endl;
         cout << "--- value: " << ev.value << endl;
-        
+
         ++i;
       }
     }
@@ -389,7 +389,7 @@ void top_level_task(const Task* task,
 
 TEST(legion, test1) {
   Runtime::set_top_level_task_id(TOP_LEVEL_TID);
-  
+
   Runtime::register_legion_task<top_level_task>(TOP_LEVEL_TID,
     Processor::LOC_PROC, true, false);
 

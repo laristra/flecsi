@@ -23,7 +23,9 @@ enum class internal_field : Legion::FieldID{
   adjacency_pos_start,
   adjacency_pos_end = adjacency_pos_start + 100,
   adjacency_index,
-  adjacency_offset 
+  adjacency_offset,
+  entity_data_start,  
+  entity_data_end = entity_data_start + 10  
 };
 
 } // namespace execution

@@ -27,7 +27,7 @@
 
 namespace flecsi
 {
-  
+
   class virtual_semaphore{
   public:
     using lock_t = std::unique_lock<std::mutex>;
@@ -37,34 +37,34 @@ namespace flecsi
     max_count_(0){
       done_ = false;
     }
-    
+
     virtual_semaphore(int count, int max_count)
     : count_(count),
     max_count_(max_count){
       done_ = false;
     }
-    
+
     ~virtual_semaphore(){}
-    
+
     bool acquire(){
       if(done_){
         return false;
       }
 
       lock_t lock(mutex_);
-      
+
       while(count_ <= 0){
         cond_.wait(lock);
         if(done_){
           return false;
         }
       }
-      
+
       --count_;
-      
+
       return true;
     }
-    
+
     bool try_acquire(){
       if(done_){
         return false;
@@ -79,7 +79,7 @@ namespace flecsi
 
       return false;
     }
-    
+
     void release(){
       lock_t lock(mutex_);
 
@@ -94,9 +94,9 @@ namespace flecsi
       done_ = true;
       cond_.notify_all();
     }
-    
+
     virtual_semaphore& operator=(const virtual_semaphore&) = delete;
-    
+
     virtual_semaphore(const virtual_semaphore&) = delete;
 
   private:

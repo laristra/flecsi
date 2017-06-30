@@ -245,7 +245,7 @@ public:
   /// FIXME documentation
   ///
   void unmap_data();
-  
+
   void unmap_data_values();
 
 private:
@@ -261,12 +261,12 @@ private:
 
   Legion::LogicalRegion partition_metadata_lr_;
   Legion::IndexPartition partition_metadata_ip_;
-  Legion::PhysicalRegion data_from_pr_;  
-  Legion::PhysicalRegion data_pr_;  
-  Legion::PhysicalRegion data_values_pr_;  
+  Legion::PhysicalRegion data_from_pr_;
+  Legion::PhysicalRegion data_pr_;
+  Legion::PhysicalRegion data_values_pr_;
 };
 
-} // namespace execution 
+} // namespace execution
 } // namespace flecsi
 
 #endif // flecsi_execution_legion_dpd_h

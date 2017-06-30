@@ -34,18 +34,20 @@ public:
   void set_precedence(size_t dim, uint64_t precedence) {}
 
   std::vector<size_t>
-  create_entities(id_t cell_id, size_t dim, domain_connectivity<2> & c, id_t * e){
+  create_entities(id_t cell_id, size_t dim,
+                  domain_connectivity<2> & c, id_t * e) {
+
     id_t* v = c.get_entities(cell_id, 0);
 
     e[0] = v[0];
     e[1] = v[2];
-    
+
     e[2] = v[1];
     e[3] = v[3];
-    
+
     e[4] = v[0];
     e[5] = v[1];
-    
+
     e[6] = v[2];
     e[7] = v[3];
 
@@ -58,9 +60,9 @@ public:
                         size_t create_dim,
                         id_t cell_id,
                         domain_connectivity<2>& primal_conn,
-                        domain_connectivity<2>& domain_conn, 
+                        domain_connectivity<2>& domain_conn,
                         id_t *c) {
-    
+
     id_t* v = primal_conn.get_entities(cell_id, 0);
     id_t* e = primal_conn.get_entities(cell_id, 1);
 
@@ -126,7 +128,7 @@ public:
     std::pair<domain_<1>, Corner>,
     std::pair<domain_<1>, Wedge>>;
 
-  using connectivities = 
+  using connectivities =
     std::tuple<std::tuple<domain_<0>, Vertex, Edge>,
                std::tuple<domain_<0>, Vertex, Cell>,
                std::tuple<domain_<0>, Edge, Vertex>,
@@ -134,7 +136,7 @@ public:
                std::tuple<domain_<0>, Cell, Vertex>,
                std::tuple<domain_<0>, Cell, Edge>>;
 
-  using bindings = 
+  using bindings =
     std::tuple<
               std::tuple<domain_<0>, domain_<1>, Cell, Corner>,
               std::tuple<domain_<0>, domain_<1>, Vertex, Corner>,
@@ -193,7 +195,7 @@ TEST(mesh_topology, traversal) {
   for(size_t j = 0; j < height + 1; ++j){
     for(size_t i = 0; i < width + 1; ++i){
       auto v = mesh->make<Vertex>();
-      vs.push_back(v); 
+      vs.push_back(v);
     }
   }
 
@@ -325,7 +327,7 @@ TEST(mesh_topology, traversal) {
   r4 << r2[0];
 
   for(auto edge : (r1 | r2) & r3){
-    CINCH_CAPTURE() << "---- filter edge id: " << edge.id() << endl;   
+    CINCH_CAPTURE() << "---- filter edge id: " << edge.id() << endl;
   }
 
   ASSERT_TRUE(CINCH_EQUAL_BLESSED("bindings.blessed"));

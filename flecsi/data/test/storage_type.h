@@ -111,7 +111,7 @@ specialization_tlt_init(
     clog_assert(d[i]==(-p0[i]),"");
   } // for
   } // scope
-  }//end scope
+  } // end scope
 
 
  // Scalar storage type.
@@ -129,8 +129,10 @@ specialization_tlt_init(
 
   // initialize simulation data
   {
-  auto s0 = flecsi_get_accessor(m, hydro, simulation_data, my_data_t, global, 0);
-  auto s1 = flecsi_get_accessor(m, hydro, simulation_data, my_data_t, global, 1);
+  auto s0 = flecsi_get_accessor(
+    m, hydro, simulation_data, my_data_t, global, 0);
+  auto s1 = flecsi_get_accessor(
+    m, hydro, simulation_data, my_data_t, global, 1);
 
   s0.attributes().set(flagged);
 
@@ -141,8 +143,10 @@ specialization_tlt_init(
   } // scope
 
   {
-  auto s0 = flecsi_get_accessor(m, hydro, simulation_data, my_data_t, global, 0);
-  auto s1 = flecsi_get_accessor(m, hydro, simulation_data, my_data_t, global, 1);
+  auto s0 = flecsi_get_accessor(
+    m, hydro, simulation_data, my_data_t, global, 0);
+  auto s1 = flecsi_get_accessor(
+    m, hydro, simulation_data, my_data_t, global, 1);
   clog_assert((s0.attributes().test(flagged)),"");
   clog_assert(!(s1.attributes().test(flagged)),"");
 
@@ -151,7 +155,7 @@ specialization_tlt_init(
   clog_assert((s1->t==(1.0 + s0->t)),"");
   clog_assert((s1->n==(100 + s0->n)),"");
   } // scope
-  }//end scope for scalar storage type
+  } // end scope for scalar storage type
   // Sparse storage type.
   {
   using namespace flecsi::data;
@@ -198,7 +202,7 @@ specialization_tlt_init(
   }
   */
 
-  }//end scope
+  } // end scope
 
 
   //sparse2
@@ -238,7 +242,7 @@ specialization_tlt_init(
       clog_assert((a(i, j)==(i * 1000 + j)),"");
     }
   }
-  }//end scope
+  } // end scope
 
 
 /*
@@ -251,7 +255,8 @@ TEST(storage, sparse_delete) {
   size_t num_indices = 5;
   size_t num_materials = 3;
 
-  flecsi_register_data(m, hydro, a, double, sparse, 1, num_indices, num_materials);
+  flecsi_register_data(
+    m, hydro, a, double, sparse, 1, num_indices, num_materials);
 
   auto am = flecsi_get_mutator(m, hydro, a, double, sparse, 0, 30);
 
@@ -314,7 +319,7 @@ TEST(storage, sparse_delete) {
     clog_assert(( cell_vars[1].label()=="pressure"),"" );
 
     auto all_cell_vars = flecsi_get_handles_all(
-      m, double, dense, 0, flecsi_is_at(cells), /* sorted */ true 
+      m, double, dense, 0, flecsi_is_at(cells), /* sorted */ true
     );
 
     clog_assert(( all_cell_vars.size()==3), "" );
@@ -325,7 +330,7 @@ TEST(storage, sparse_delete) {
 
     // test has_attribute_at(flagge,cells)
     auto flagged_vars = flecsi_get_handles(
-      m, hydro, double, dense, 0, flecsi_has_attribute_at(flagged, cells), 
+      m, hydro, double, dense, 0, flecsi_has_attribute_at(flagged, cells),
       /* sorted */ true
     );
 
@@ -333,7 +338,8 @@ TEST(storage, sparse_delete) {
     clog_assert(( flagged_vars[0].label()== "pressure"),"" );
 
     auto all_flagged_vars = flecsi_get_handles_all(
-      m, double, dense, 0, flecsi_has_attribute_at(flagged, cells), /* sorted */ true 
+      m, double, dense, 0,
+      flecsi_has_attribute_at(flagged, cells), /* sorted */ true
     );
 
     clog_assert(( all_flagged_vars.size()==2),"" );
@@ -351,7 +357,7 @@ TEST(storage, sparse_delete) {
     clog_assert(( typed_vars[2].label()=="speed"),"" );
 
     auto all_typed_vars = flecsi_get_handles_all(
-      m, double, dense, 0, /* sorted */ true 
+      m, double, dense, 0, /* sorted */ true
     );
 
     clog_assert(( all_typed_vars.size()==4),"" );
@@ -362,7 +368,7 @@ TEST(storage, sparse_delete) {
 
 
   } // scope
-  }//scope
+  } // scope
 
   //! \brief This tests the various ways to access data via attributes.
   //! \remark Tests the global accessor.
@@ -401,7 +407,7 @@ TEST(storage, sparse_delete) {
 
     // test has_attribute(flagge)
     auto flagged_vars = flecsi_get_handles(
-      m, hydro, double, global, 0, flecsi_has_attribute(flagged), 
+      m, hydro, double, global, 0, flecsi_has_attribute(flagged),
       /* sorted */ true
     );
 
@@ -409,7 +415,7 @@ TEST(storage, sparse_delete) {
     clog_assert(( flagged_vars[0].label()=="pressure"),"" );
 
     auto all_flagged_vars = flecsi_get_handles_all(
-      m, double, global, 0, flecsi_has_attribute(flagged), /* sorted */ true 
+      m, double, global, 0, flecsi_has_attribute(flagged), /* sorted */ true
     );
 
     clog_assert(( all_flagged_vars.size()==2),"" );
@@ -427,7 +433,7 @@ TEST(storage, sparse_delete) {
     clog_assert(( typed_vars[2].label()== "speed"),"" );
 
     auto all_typed_vars = flecsi_get_handles_all(
-      m, double, global, 0, /* sorted */ true 
+      m, double, global, 0, /* sorted */ true
     );
 
     clog_assert(( all_typed_vars.size()== 4),"" );
@@ -436,7 +442,7 @@ TEST(storage, sparse_delete) {
     clog_assert(( all_typed_vars[2].label()=="speed"),"" );
     clog_assert(( all_typed_vars[3].label()=="temperature"),"" );
 
-  }//scope
+  } // scope
   } // scope
 } // specialization_tlt_init
 

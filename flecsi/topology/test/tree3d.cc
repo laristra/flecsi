@@ -45,7 +45,7 @@ public:
 
     void insert(entity_t* ent){
       ents_.push_back(ent);
-      
+
       if(ents_.size() > 1){
         refine();
       }
@@ -55,7 +55,7 @@ public:
       auto itr = std::find(ents_.begin(), ents_.end(), ent);
       assert(itr != ents_.end());
       ents_.erase(itr);
-      
+
       if(ents_.empty()){
         coarsen();
       }

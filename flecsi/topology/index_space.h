@@ -26,14 +26,23 @@ namespace topology {
  * class index_space
  *----------------------------------------------------------------------------*/
 
-/*! 
+/*!
  \class index_space
  \brief index_space provides a compile-time
   configurable and iterable container of objects, e.g. mesh/tree topology
   entities and their id's. Index space defines the concept of STORAGE -
   whether the actual entities referenced are stored within this index space
   OR contained in a 'master' index space. OWNERSHIP - whether its set of id's
-  are owned by this index space or aliased to another index space and then mustcbe copied before this index space can then modify them. SORTED - refers to if the id's are sorted and can then have set operations directly applied to them, else the index space must first be sorted. To make operations on index spaces faster, the index space is parameterized on a number of these parameters and can be efficiently recast depending on how it is to be used: STORAGE - if true then this is a 'master' index space with its own storage. OWNED - if true then id ownership is definitely true, else must check owned_ at runtime. SORTED - if true then id's are definitely stored and shall remain in sorted order.
+  are owned by this index space or aliased to another index space and then
+  must be copied before this index space can then modify them. SORTED - refers
+  to if the id's are sorted and can then have set operations directly applied
+  to them, else the index space must first be sorted. To make operations on
+  index spaces faster, the index space is parameterized on a number of these
+  parameters and can be efficiently recast depending on how it is to be used:
+  STORAGE - if true then this is a 'master' index space with its own storage.
+  OWNED - if true then id ownership is definitely true, else must check owned_
+  at runtime. SORTED - if true then id's are definitely stored and shall remain
+  in sorted order.
 */
 
 template<typename T>
@@ -58,7 +67,7 @@ class index_space
 {
 public:
   using id_t = typename std::remove_pointer<T>::type::id_t;
-  
+
   using id_vector_t = std::vector<id_t>;
   using storage_t = STORAGE_TYPE<T>;
 
@@ -113,13 +122,13 @@ public:
 
     typename id_vector_t::const_iterator
     begin() const
-    { 
+    {
       return items_->begin() + begin_;
     }
 
     typename id_vector_t::const_iterator
     end() const
-    { 
+    {
       return items_->begin() + end_;
     }
 
@@ -360,7 +369,7 @@ public:
     bool SORTED2,
     class F2,
     template<typename, typename ...> class STORAGE_TYPE2
-  > 
+  >
   index_space(
     const index_space<S, STORAGE2, OWNED2, SORTED2, F2, STORAGE_TYPE2>& is,
     size_t begin,
@@ -383,7 +392,7 @@ public:
     const index_space& is
   )
   : v_(OWNED ? new id_vector_t(*is.v_) : is.v_),
-    begin_(is.begin_), end_(is.end_), owned_(OWNED), sorted_(is.sorted_), 
+    begin_(is.begin_), end_(is.end_), owned_(OWNED), sorted_(is.sorted_),
     s_(is.s_)
   {
     assert(s_ && "no storage");
@@ -393,8 +402,8 @@ public:
   index_space(
     index_space&& is
   )
-  : v_(std::move(is.v_)), begin_(std::move(is.begin_)), 
-    end_(std::move(is.end_)), sorted_(std::move(is.sorted_)), 
+  : v_(std::move(is.v_)), begin_(std::move(is.begin_)),
+    end_(std::move(is.end_)), sorted_(std::move(is.sorted_)),
     s_(std::move(is.s_))
   {
 
@@ -467,7 +476,7 @@ public:
     end_ = is.end_;
     sorted_ = is.sorted_;
     s_ = is.s_;
-    
+
     return *this;
   }
 
@@ -496,7 +505,7 @@ public:
     {
       is.s_ = nullptr;
     }
-    
+
     is.begin_ = 0;
     is.end_ = 0;
 
@@ -539,26 +548,26 @@ public:
 
   auto
   begin()
-  { 
+  {
     return iterator_<T, F>(s_, *v_, begin_, end_);
   }
 
   auto
   begin() const
-  { 
+  {
     return iterator_<const T, F>(s_, *v_, begin_, end_);
   }
 
   auto
   end()
   {
-    return iterator_<T, F>(s_, *v_, end_, end_); 
+    return iterator_<T, F>(s_, *v_, end_, end_);
   }
 
   auto
   end() const
   {
-    return iterator_<const T, F>(s_, *v_, end_, end_); 
+    return iterator_<const T, F>(s_, *v_, end_, end_);
   }
 
   size_t
@@ -587,7 +596,7 @@ public:
   ) const
   {
     return (*s_)[(*v_)[offset].index_space_index()];
-  }  
+  }
 
   id_range_
   ids() const
@@ -715,9 +724,9 @@ public:
   size_t
   size() const
   {
-    return end_ - begin_; 
+    return end_ - begin_;
   }
-  
+
   bool
   empty() const
   {
@@ -838,7 +847,7 @@ public:
   void
   apply(
     apply_function f
-  ) const 
+  ) const
   {
     for (auto ent : *this) {
       f(ent);
@@ -851,7 +860,7 @@ public:
   auto
   map(
     map_function<S> f
-  ) const 
+  ) const
   {
     index_space<S, false, true, false> is;
     is.set_master(*this);
@@ -871,7 +880,7 @@ public:
   reduce(
     T start,
     reduce_function<T> f
-  ) const 
+  ) const
   {
     T r = start;
 
@@ -883,7 +892,7 @@ public:
   }
 
   //! \brief Bin entities using a predicate function.
-  //! 
+  //!
   //! The predicate function returns some sortable key that is
   //! used to bin entities.
   //!
@@ -901,13 +910,13 @@ public:
   auto
   bin(
     Predicate && f
-  ) const 
+  ) const
   {
     return bin_as_map( std::forward<Predicate>(f) );
   }
 
   //! \brief Bin entities using a predicate function.
-  //! 
+  //!
   //! The predicate function returns some sortable key that is
   //! used to bin entities.
   //!
@@ -926,7 +935,7 @@ public:
   auto
   bin_as_map(
     Predicate && f
-  ) const 
+  ) const
   {
 
     // If the list was sorted beforehand, the result will also be
@@ -934,7 +943,7 @@ public:
     using new_index_space_t = index_space<T, false, true, SORTED>;
 
     // get the predicate result type
-    using result_t = 
+    using result_t =
       std::decay_t< decltype( std::forward<Predicate>(f)(operator[](0))) >;
 
     // bin the data, and use a map to sort the keys
@@ -950,7 +959,7 @@ public:
   }
 
   //! \brief Bin entities using a predicate function.
-  //! 
+  //!
   //! The predicate function returns some sortable key that is
   //! used to bin entities.
   //!
@@ -968,7 +977,7 @@ public:
   auto
   bin_as_vector(
     Predicate && f
-  ) const 
+  ) const
   {
 
     // get the bins as a map
@@ -976,7 +985,7 @@ public:
 
     // If the list was sorted beforehand, the result will also be
     // sorted.  Own the index_vector_t (i.e., create storage for it)
-    using new_index_space_t = 
+    using new_index_space_t =
       typename std::decay_t<decltype(bins_map)>::mapped_type;
 
     // now extract the results and store them in a vector.
@@ -1212,14 +1221,14 @@ public:
       v_ = new id_vector_t(*v_);
       owned_ = true;
     }
-    
+
     if(STORAGE)
     {
       s_->insert(s_->begin(), is.s_->begin(), is.s_->end());
     }
 
     size_t n = is.size();
-    
+
     if(SORTED || sorted_)
     {
       v_->reserve(n);
@@ -1257,11 +1266,11 @@ public:
     static_assert(OWNED, "expected OWNED");
 
     assert(ents.size() == ids.size());
-    
+
     s_->insert(s_->begin(), ents.begin(), ents.end());
 
     size_t n = ents.size();
-    
+
     if(SORTED || sorted_)
     {
       v_->reserve(n);
@@ -1294,13 +1303,13 @@ public:
   {
     return item->index_space_id();
   }
-  
+
 private:
   template<class, bool, bool, bool, class, template<class, class...> class> 
   friend class index_space;
 
   friend class connectivity_t;
-  
+
   id_vector_t* v_;
   size_t begin_;
   size_t end_;

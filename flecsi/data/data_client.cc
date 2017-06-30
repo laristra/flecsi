@@ -45,7 +45,7 @@ data_client_t::operator = (
 
 // Reset.
 void
-data_client_t::reset() 
+data_client_t::reset()
 {
   flecsi::data::storage_t::instance().reset(runtime_id());
 } // data_client_t::reset

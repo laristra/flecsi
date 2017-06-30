@@ -23,6 +23,15 @@ template<
 >
 struct data_client_handle_base__ : public DATA_CLIENT_TYPE, public DATA_POLICY
 {
+  using field_id_t = Legion::FieldID;
+
+  static constexpr size_t MAX_ADJACENCIES = 20;
+
+  size_t num_adjacencies;
+  size_t adj_index_spaces[MAX_ADJACENCIES];
+  size_t to_index_spaces[MAX_ADJACENCIES];
+  size_t from_index_spaces[MAX_ADJACENCIES];
+
 }; // struct data_client_handle__
 
 } // namespace flecsi

@@ -33,7 +33,8 @@ public:
   structured_mesh_topology_t(const structured_mesh_topology_t &) = delete;
 
   /// Assignment operator (disabled)
-  structured_mesh_topology_t & operator = (const structured_mesh_topology_t &) = delete;
+  structured_mesh_topology_t & operator = (const structured_mesh_topology_t &)
+    = delete;
 
   /// Destructor
    ~structured_mesh_topology_t() {}

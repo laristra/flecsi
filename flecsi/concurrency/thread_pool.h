@@ -36,7 +36,7 @@
 
 namespace flecsi
 {
-  
+
   class thread_pool{
   public:
     using function_t = std::function<void(void)>;
@@ -107,7 +107,7 @@ namespace flecsi
     std::queue<function_t> queue_;
     std::vector<std::thread*> threads_;
     virtual_semaphore sem_;
-    std::atomic_bool done_;    
+    std::atomic_bool done_;
   };
 
 } // namespace flecsi

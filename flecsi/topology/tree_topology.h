@@ -22,13 +22,13 @@
  */
 
 /*
-  Tree topology is a statically configured N-dimensional hashed tree for 
-  representing localized entities, e.g. particles. It stores entities in a 
-  configurable branch type. Inserting entities into a branch can cause that 
-  branch to be refined or coarsened correspondingly. A client of tree topology 
-  defines a policy which defines its branch and entity types and other 
-  compile-time parameters. Specializations can define a policy and default 
-  branch types which can then be specialized in a simpler fashion 
+  Tree topology is a statically configured N-dimensional hashed tree for
+  representing localized entities, e.g. particles. It stores entities in a
+  configurable branch type. Inserting entities into a branch can cause that
+  branch to be refined or coarsened correspondingly. A client of tree topology
+  defines a policy which defines its branch and entity types and other
+  compile-time parameters. Specializations can define a policy and default
+  branch types which can then be specialized in a simpler fashion
   (see the basic_tree specialization).
 */
 
@@ -83,8 +83,8 @@ struct tree_geometry<T, 1>
   using element_t = T;
 
   /*!
-    Return true if point origin lies within the spheroid centered at center 
-    with radius. 
+    Return true if point origin lies within the spheroid centered at center
+    with radius.
    */
   static
   bool
@@ -97,7 +97,7 @@ struct tree_geometry<T, 1>
   }
 
   /*!
-    Return true if point origin lies within the box specified by min/max point. 
+    Return true if point origin lies within the box specified by min/max point.
    */
   static
   bool
@@ -185,8 +185,8 @@ struct tree_geometry<T, 2>
   using element_t = T;
 
   /*!
-    Return true if point origin lies within the spheroid centered at center 
-    with radius. 
+    Return true if point origin lies within the spheroid centered at center
+    with radius.
    */
   static
   bool
@@ -199,7 +199,7 @@ struct tree_geometry<T, 2>
   }
 
   /*!
-    Return true if point origin lies within the box specified by min/max point. 
+    Return true if point origin lies within the box specified by min/max point.
    */
   static
   bool
@@ -215,7 +215,7 @@ struct tree_geometry<T, 2>
   // initial attempt to get this working, needs to be optimized
 
   /*!
-    Spheroid/box intersection test. 
+    Spheroid/box intersection test.
    */
   static
   bool
@@ -302,8 +302,8 @@ struct tree_geometry<T, 3>
   using element_t = T;
 
   /*!
-    Return true if point origin lies within the spheroid centered at center 
-    with radius. 
+    Return true if point origin lies within the spheroid centered at center
+    with radius.
    */
   static
   bool
@@ -316,7 +316,7 @@ struct tree_geometry<T, 3>
   }
 
   /*!
-    Return true if point origin lies within the box specified by min/max point. 
+    Return true if point origin lies within the box specified by min/max point.
    */
   static
   bool
@@ -331,7 +331,7 @@ struct tree_geometry<T, 3>
   }
 
   /*!
-    Spheroid/box intersection test. 
+    Spheroid/box intersection test.
    */
   static
   bool
@@ -836,16 +836,16 @@ public:
   using geometry_t = tree_geometry<element_t, dimension>;
 
   using entity_space_t = index_space<entity_t*, true, true, false>;
-  
+
   using branch_space_t = index_space<branch_t*, true, true, false>;
-  
+
   using subentity_space_t = index_space<entity_t*, false, true, false>;
 
   struct filter_valid{
     bool operator()(entity_t* ent) const{
       return ent->is_valid();
     }
-  };  
+  };
 
   /*!
     Constuct a tree topology with unit coordinates, i.e. each coordinate
@@ -996,7 +996,7 @@ public:
     const point<element_t, dimension>& end
   )
   {
-    
+
     for(size_t d = 0; d < dimension; ++d)
     {
       scale_[d] = end[d] - start[d];
@@ -1004,7 +1004,7 @@ public:
       range_[0][d] = start[d];
       range_[1][d] = end[d];
     }
-    
+
     root_->template dealloc_<branch_t>();
     max_depth_ = 0;
     branch_map_.clear();
@@ -1020,7 +1020,7 @@ public:
   /*!
     Remove an entity from the tree. Note this method does not actually
     delete it. This can trigger coarsening and refinements as determined
-    by the tree topology policy. 
+    by the tree topology policy.
    */
   void
   remove(
@@ -1476,8 +1476,8 @@ public:
   }
 
   /*!
-    Visit and apply callable object f and args on all sub-branches of branch b. 
-    (Concurrent version.) 
+    Visit and apply callable object f and args on all sub-branches of branch b.
+    (Concurrent version.)
    */
   template<
     typename F,
@@ -1503,7 +1503,7 @@ public:
   }
 
   /*!
-    Visit and apply callable object f and args on all sub-entities of branch b. 
+    Visit and apply callable object f and args on all sub-entities of branch b.
    */
   template<
   typename F,
@@ -1534,7 +1534,7 @@ public:
 
   /*!
     Visit and apply callable object f and args on all sub-entities of branch b.
-    (Concurrent version.) 
+    (Concurrent version.)
    */
   template<
     typename F,
@@ -1573,7 +1573,7 @@ public:
     size_t size;
     char* data = serialize_(size);
     archive.saveBinary(&size, sizeof(size));
-    
+
     archive.saveBinary(data, size);
     free(data);
   } // save
@@ -1902,7 +1902,7 @@ private:
       typename BF,
       typename... ARGS
     >
-    void 
+    void
     apply_(
       branch_t* b,
       element_t size,
@@ -1927,7 +1927,8 @@ private:
       {
         branch_t* ci = b->template child_<branch_t>(i);
 
-        if(bf(ci->coordinates(range_), size, scale_, std::forward<ARGS>(args)...))
+        if(bf(ci->coordinates(range_),
+              size, scale_, std::forward<ARGS>(args)...))
         {
           apply_(ci, size,
                  std::forward<EF>(ef), std::forward<BF>(bf),
@@ -1980,7 +1981,8 @@ private:
       {
         branch_t* ci = b->template child_<branch_t>(i);
 
-        if(bf(ci->coordinates(range_), size, scale_, std::forward<ARGS>(args)...))
+        if(bf(ci->coordinates(range_),
+              size, scale_, std::forward<ARGS>(args)...))
         {
           if(depth == queue_depth)
           {
@@ -2053,7 +2055,8 @@ private:
       {
         branch_t* ci = b->template child_<branch_t>(i);
 
-        if(bf(ci->coordinates(range_), size, scale_, std::forward<ARGS>(args)...))
+        if(bf(ci->coordinates(range_),
+              size, scale_, std::forward<ARGS>(args)...))
         {
           find_(ci, size, ents,
                 std::forward<EF>(ef), std::forward<BF>(bf),
@@ -2113,7 +2116,8 @@ private:
       {
         branch_t* ci = b->template child_<branch_t>(i);
 
-        if(bf(ci->coordinates(range_), size, scale_, std::forward<ARGS>(args)...))
+        if(bf(ci->coordinates(range_),
+              size, scale_, std::forward<ARGS>(args)...))
         {
           if(depth == queue_depth)
           {
@@ -2533,7 +2537,7 @@ private:
     {
       for(size_t i = 0; i < num_children; ++i)
       {
-        static_cast<B*>(children_)[i].template dealloc_<B>(); 
+        static_cast<B*>(children_)[i].template dealloc_<B>();
       }
 
       delete[] static_cast<B*>(children_);

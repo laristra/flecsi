@@ -33,7 +33,7 @@ public:
   class body : public topology::tree_entity<branch_int_t, dimension>{
   public:
     body(double mass, const point_t& position, const point_t& velocity)
-    : mass_(mass), 
+    : mass_(mass),
     position_(position),
     velocity_(velocity){}
 
@@ -64,7 +64,7 @@ public:
       else if(position_[0] < 0.0){
         position_[0] = 1.0;
       }
-      
+
       if(position_[1] > 1.0){
         position_[1] = 0;
       }
@@ -87,7 +87,7 @@ public:
 
     void insert(body* ent){
       ents_.push_back(ent);
-      
+
       if(ents_.size() > 100){
         refine();
       }
@@ -97,7 +97,7 @@ public:
       auto itr = find(ents_.begin(), ents_.end(), ent);
       assert(itr != ents_.end());
       ents_.erase(itr);
-      
+
       if(ents_.empty()){
         coarsen();
       }
@@ -119,7 +119,7 @@ public:
       return ents_.size();
     }
 
-    point_t 
+    point_t
     coordinates(const std::array<point<element_t, dimension>, 2>& range) const{
       point_t p;
       branch_id_t bid = id();
@@ -174,7 +174,7 @@ TEST(tree_topology, gravity) {
     if(b0 == b){
       return;
     }
-    
+
     b0->interact(b);
     ++ix;
   };
@@ -182,12 +182,12 @@ TEST(tree_topology, gravity) {
 
   std::mutex mtx;
 
-  auto g = 
+  auto g =
   [&](branch_t* b, size_t depth, vector<Aggregate>& aggs) -> bool{
-    if(depth > 4 || b->is_leaf()){    
+    if(depth > 4 || b->is_leaf()){
       auto h = [&](body* bi, Aggregate& agg){
        agg.center += bi->mass() * bi->coordinates();
-       agg.mass += bi->mass(); 
+       agg.mass += bi->mass();
       };
 
       Aggregate agg;
@@ -220,9 +220,9 @@ TEST(tree_topology, gravity) {
 
     for(size_t i = 0; i < N; ++i){
       auto bi = bodies[i];
-      
+
       for(auto& agg : aggs){
-        bi->interact(agg);  
+        bi->interact(agg);
       }
 
       bi->update();

@@ -254,6 +254,21 @@ __flecsi_internal_legion_task(spmd_task, void) {
     context_.put_field_info(fi);
   }
 
+  size_t num_adjacencies;
+  args_deserializer.deserialize(&num_adjacencies, sizeof(size_t));
+
+  using adjacency_triple_t = context_t::adjacency_triple_t;
+
+  adjacency_triple_t* adjacencies = 
+    (adjacency_triple_t*)malloc(sizeof(adjacency_triple_t) * num_adjacencies);
+  
+  args_deserializer.deserialize((void*)adjacencies,
+    sizeof(adjacency_triple_t) * num_adjacencies);
+
+  for(size_t i = 0; i < num_adjacencies; ++i){
+    context_.add_adjacency_triple(adjacencies[i]);
+  }
+
   // Prevent these objects destructors being called until after driver()
   std::vector<std::vector<Legion::LogicalRegion>>
     ghost_owners_lregions(num_idx_spaces);
@@ -401,6 +416,13 @@ __flecsi_internal_legion_task(spmd_task, void) {
 
   } // for idx_space
 
+  for(auto& itr : context_.adjacencies()) {
+    ispace_dmap[itr.first].color_region = 
+      regions[region_index].get_logical_region();
+
+    region_index++;
+  }
+
   // Get the input arguments from the Legion runtime
   const Legion::InputArgs & args =
     Legion::Runtime::get_input_args();
@@ -435,6 +457,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
   free((void*)num_owners);
   free((void*)pbarriers_as_owner);
   free((void*)idx_spaces);
+  free((void*)adjacencies);
 
 } // spmd_task
 

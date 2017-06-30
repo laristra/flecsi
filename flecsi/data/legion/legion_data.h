@@ -173,6 +173,11 @@ public:
 
     adjacency_t c;
 
+    clog_assert(adjacencies_.find(adjacency_info.index_space) == 
+                adjacencies_.end(), "adjacency exists");
+
+    adjacencies_.insert(adjacency_info.index_space);
+
     c.index_space_id = adjacency_info.index_space;
     c.from_index_space_id = adjacency_info.from_index_space;
     c.to_index_space_id = adjacency_info.to_index_space;
@@ -206,10 +211,9 @@ public:
     FieldAllocator allocator = 
       runtime_->create_field_allocator(ctx_, c.field_space);
 
-    auto adjacency_offset_fid = 
-      FieldID(internal_field::adjacency_offset);
+    auto adjacency_index_fid = FieldID(internal_field::adjacency_index);
 
-    allocator.allocate_field(sizeof(size_t), adjacency_offset_fid);
+    allocator.allocate_field(sizeof(size_t), adjacency_index_fid);
 
     attach_name(c, c.field_space, "expanded field space");
 
@@ -323,6 +327,24 @@ public:
   const
   {
     return index_spaces_;
+  }
+
+  const adjacency_t&
+  adjacency(
+    size_t index_space_id
+  )
+  const
+  {
+    auto itr = adjacency_map_.find(index_space_id);
+    clog_assert(itr != adjacency_map_.end(), "invalid adjacency");
+    return itr->second;
+  }
+
+  const std::set<size_t>&
+  adjacencies()
+  const
+  {
+    return adjacencies_;
   }
 
   const Legion::Domain&
@@ -467,6 +489,8 @@ private:
   std::unordered_map<size_t, index_space_t> index_space_map_;
   
   std::unordered_map<size_t, adjacency_t> adjacency_map_;
+
+  std::set<size_t> adjacencies_;
 
   template<
     class T

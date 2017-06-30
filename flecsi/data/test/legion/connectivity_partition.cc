@@ -50,7 +50,7 @@ public:
   IndexSpace create_index_space(unsigned start, unsigned end){
     assert(end >= start);
     Rect<1> rect(Point<1>(start), Point<1>(end - 0));
-    return runtime_->create_index_space(context_, Domain::from_rect<1>(rect));  
+    return runtime_->create_index_space(context_, Domain::from_rect<1>(rect));
   }
 
   DomainPoint domain_point(size_t p){
@@ -70,7 +70,7 @@ public:
   // unstructured
   IndexSpace create_index_space(size_t n) const{
     assert(n > 0);
-    return runtime_->create_index_space(context_, n);  
+    return runtime_->create_index_space(context_, n);
   }
 
   FieldSpace create_field_space() const{
@@ -94,7 +94,7 @@ public:
   }
 
   DomainPoint domain_point(size_t i) const{
-    return DomainPoint::from_point<1>(Point<1>(i)); 
+    return DomainPoint::from_point<1>(Point<1>(i));
   }
 
   FutureMap execute_index_space(IndexLauncher l) const{
@@ -108,13 +108,13 @@ public:
   Domain get_domain(PhysicalRegion pr) const{
     LogicalRegion lr = pr.get_logical_region();
     IndexSpace is = lr.get_index_space();
-    return runtime_->get_index_space_domain(context_, is);     
+    return runtime_->get_index_space_domain(context_, is);
   }
 
   template<class T>
   void get_buffer(PhysicalRegion pr, T*& buf, size_t field = 0) const{
     auto ac = pr.get_field_accessor(field).typeify<T>();
-    Domain domain = get_domain(pr); 
+    Domain domain = get_domain(pr);
     Rect<1> r = domain.get_rect<1>();
     Rect<1> sr;
     ByteOffset bo[1];
@@ -123,7 +123,7 @@ public:
 
   char* get_raw_buffer(PhysicalRegion pr, size_t field = 0) const{
     auto ac = pr.get_field_accessor(field).typeify<char>();
-    Domain domain = get_domain(pr); 
+    Domain domain = get_domain(pr);
     Rect<1> r = domain.get_rect<1>();
     Rect<1> sr;
     ByteOffset bo[1];
@@ -149,10 +149,10 @@ const size_t WIDTH = 4;
 const size_t HEIGHT = 4;
 const size_t NUM_PARTITIONS = 4;
 
-// develop how mesh connectivity can be represented/traversed 
-// using a test connectivity of cells -> vertices using a 
-// uniform 2d quad mesh and unstructured Logical Regions using 
-// a CRS-like (compressed row storage) scheme 
+// develop how mesh connectivity can be represented/traversed
+// using a test connectivity of cells -> vertices using a
+// uniform 2d quad mesh and unstructured Logical Regions using
+// a CRS-like (compressed row storage) scheme
 
 void top_level_task(const Task* task,
                     const std::vector<PhysicalRegion>& regions,
@@ -183,7 +183,7 @@ void top_level_task(const Task* task,
       size_t p = c / partition_size;
 
       cells[c] = p;
-      
+
       auto& cvc = connectivity[c];
 
       entity_id v1 = j * (WIDTH + 1) + i;
@@ -223,12 +223,12 @@ void top_level_task(const Task* task,
         vertices[v4] = p;
       }
 
-      cvc.push_back(v1); 
-      cvc.push_back(v2); 
-      cvc.push_back(v3); 
+      cvc.push_back(v1);
+      cvc.push_back(v2);
+      cvc.push_back(v3);
       cvc.push_back(v4);
 
-      total_conns += cvc.size(); 
+      total_conns += cvc.size();
     }
   }
 
@@ -247,15 +247,15 @@ void top_level_task(const Task* task,
     IndexSpace is = h.create_index_space(num_cells);
 
     IndexAllocator ia = runtime->create_index_allocator(ctx, is);
-    
+
     Coloring coloring;
 
     for(size_t c = 0; c < cells.size(); ++c){
-      size_t p = cells[c]; 
-      
+      size_t p = cells[c];
+
       ptr_t ptr = ia.alloc(1);
       cell_ptrs[c] = ptr;
-      coloring[p].points.insert(ptr); 
+      coloring[p].points.insert(ptr);
     }
 
     FieldSpace fs = h.create_field_space();
@@ -277,7 +277,7 @@ void top_level_task(const Task* task,
     auto ac = pr.get_field_accessor(ENTITY_FID).typeify<entity_id>();
 
     IndexIterator itr(runtime, ctx, is);
-    
+
     for(size_t c = 0; c < cells.size(); ++c){
       assert(itr.has_next());
       ptr_t ptr = itr.next();
@@ -302,14 +302,14 @@ void top_level_task(const Task* task,
     IndexSpace is = h.create_index_space(num_vertices);
 
     IndexAllocator ia = runtime->create_index_allocator(ctx, is);
-    
+
     Coloring coloring;
 
     for(size_t v = 0; v < vertices.size(); ++v){
       size_t p = vertices[v];
       ptr_t ptr = ia.alloc(1);
       vertex_ptrs[v] = ptr;
-      coloring[p].points.insert(ptr); 
+      coloring[p].points.insert(ptr);
     }
 
     FieldSpace fs = h.create_field_space();
@@ -331,20 +331,20 @@ void top_level_task(const Task* task,
     auto ac = pr.get_field_accessor(ENTITY_FID).typeify<entity_id>();
 
     IndexIterator itr(runtime, ctx, is);
-    
+
     for(size_t v = 0; v < vertices.size(); ++v){
       assert(itr.has_next());
       ptr_t ptr = itr.next();
       ac.write(ptr, v);
     }
-    
+
     vertices_ip = runtime->create_index_partition(ctx, is, coloring, true);
 
     runtime->unmap_region(ctx, pr);
   }
 
-  // create the 'to' side of the connectivity - using a CRS-like scheme - 
-  // this is an unstructured index space that stores ptr_t entries 
+  // create the 'to' side of the connectivity - using a CRS-like scheme -
+  // this is an unstructured index space that stores ptr_t entries
   // that points to entries in the vertices unstructured LR
 
   LogicalRegion cv_to_lr;
@@ -357,17 +357,17 @@ void top_level_task(const Task* task,
     IndexSpace is = h.create_index_space(total_conns);
 
     IndexAllocator ia = runtime->create_index_allocator(ctx, is);
-    
+
     Coloring coloring;
 
     for(size_t c = 0; c < cells.size(); ++c){
-      size_t p = cells[c]; 
-      
+      size_t p = cells[c];
+
       const auto& cvc = connectivity[c];
 
       ptr_t ptr = ia.alloc(cvc.size());
       start_ptrs[c] = ptr;
-      coloring[p].points.insert(ptr); 
+      coloring[p].points.insert(ptr);
     }
 
     FieldSpace fs = h.create_field_space();
@@ -389,9 +389,9 @@ void top_level_task(const Task* task,
     auto ac = pr.get_field_accessor(PTR_FID).typeify<ptr_t>();
 
     IndexIterator itr(runtime, ctx, is);
-    
+
     for(size_t c = 0; c < cells.size(); ++c){
-      const auto& cvc = connectivity[c]; 
+      const auto& cvc = connectivity[c];
 
       size_t n = cvc.size();
 
@@ -399,7 +399,7 @@ void top_level_task(const Task* task,
         assert(itr.has_next());
         ptr_t ptr = itr.next();
         size_t v = cvc[j];
-        ac.write(ptr, vertex_ptrs[v]);  
+        ac.write(ptr, vertex_ptrs[v]);
       }
     }
 
@@ -408,10 +408,10 @@ void top_level_task(const Task* task,
     runtime->unmap_region(ctx, pr);
   }
 
-  // create the 'from' side of the connectivity - using a CRS-like scheme - 
-  // this is an structured index space that has entries 
-  // e[i] and e[i + 1] as ptr_t that point to the 'to' LR that 
-  // correspond to the start of the 'to' side (e[i]) and the end of 
+  // create the 'from' side of the connectivity - using a CRS-like scheme -
+  // this is an structured index space that has entries
+  // e[i] and e[i + 1] as ptr_t that point to the 'to' LR that
+  // correspond to the start of the 'to' side (e[i]) and the end of
   // this range (e[i + 1])
 
   LogicalRegion cv_from_lr;
@@ -479,7 +479,7 @@ void top_level_task(const Task* task,
     pr3.wait_until_valid();
 
     for(entity_id c = 0; c < num_cells; ++c){
-      cout << "-------- cell: " << c << endl; 
+      cout << "-------- cell: " << c << endl;
 
       ptr_t* buf;
       h.get_buffer(pr1, buf, PTR_FID);
@@ -498,7 +498,7 @@ void top_level_task(const Task* task,
         entity_id vertex_id = ac2.read(vertex_ptr);
 
         cout << "--- vertex: " << vertex_id << endl;
-        
+
         if(!itr.has_next()){
           break;
         }
@@ -511,7 +511,7 @@ void top_level_task(const Task* task,
 
 TEST(legion, test1) {
   Runtime::set_top_level_task_id(TOP_LEVEL_TID);
-  
+
   Runtime::register_legion_task<top_level_task>(TOP_LEVEL_TID,
     Processor::LOC_PROC, true, false);
 

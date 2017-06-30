@@ -132,6 +132,12 @@ struct legion_context_policy_t
     utils::unique_id_t<task_id_t, FLECSI_GENERATED_ID_MAX>;
 
   //--------------------------------------------------------------------------//
+  //! Adjacency triple: index space, from index space, to index space
+  //--------------------------------------------------------------------------//
+
+  using adjacency_triple_t = std::tuple<size_t, size_t, size_t>;
+
+  //--------------------------------------------------------------------------//
   //! The task_info_t type is a convenience type for defining the task
   //! registration map below.
   //--------------------------------------------------------------------------//
@@ -688,6 +694,29 @@ struct legion_context_policy_t
   }
 
   //--------------------------------------------------------------------------//
+  //! Add an adjacency index space.
+  //!
+  //! @param index_space index space to add.
+  //--------------------------------------------------------------------------//
+  
+  void
+  add_adjacency_triple(const adjacency_triple_t& triple)
+  {
+    adjacencies_.emplace(std::get<0>(triple), triple);    
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Return set of all adjacency index spaces.
+  //--------------------------------------------------------------------------//
+
+  auto&
+  adjacencies()
+  const
+  {
+    return adjacencies_;
+  }
+
+  //--------------------------------------------------------------------------//
   //! Put field info for index space and field id.
   //!
   //! @param field_info field info as registered
@@ -757,6 +786,13 @@ struct legion_context_policy_t
       from_index_space * 10 + to_index_space;
   }
 
+  size_t
+  entity_data_fid(size_t index_space)
+  const
+  {
+    return size_t(internal_field::entity_data_start) + index_space;
+  }
+
 private:
 
   //--------------------------------------------------------------------------//
@@ -807,6 +843,12 @@ private:
   //--------------------------------------------------------------------------//
 
   std::set<size_t> index_spaces_;
+
+  //--------------------------------------------------------------------------//
+  // Map of adjacency triples. key: adjacency index space
+  //--------------------------------------------------------------------------//
+
+  std::map<size_t, adjacency_triple_t> adjacencies_;
 
   //--------------------------------------------------------------------------//
   // Field map, key1 = (data client hash, name/namespace hash)

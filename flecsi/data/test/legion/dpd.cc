@@ -62,7 +62,7 @@ void top_level_task(const Task* task,
       size_t p = c / partition_size;
 
       cells[c] = p;
-      
+
       auto& cvc = connectivity[c];
 
       entity_id v1 = j * (WIDTH + 1) + i;
@@ -102,12 +102,12 @@ void top_level_task(const Task* task,
         vertices[v4] = p;
       }
 
-      cvc.push_back(v1); 
-      cvc.push_back(v2); 
-      cvc.push_back(v3); 
+      cvc.push_back(v1);
+      cvc.push_back(v2);
+      cvc.push_back(v3);
       cvc.push_back(v4);
 
-      total_conns += cvc.size(); 
+      total_conns += cvc.size();
     }
   }
 
@@ -121,11 +121,11 @@ void top_level_task(const Task* task,
     IndexSpace is = h.create_index_space(cells_part.size);
 
     IndexAllocator ia = runtime->create_index_allocator(ctx, is);
-    
+
     Coloring coloring;
 
     for(size_t c = 0; c < cells.size(); ++c){
-      size_t p = cells[c]; 
+      size_t p = cells[c];
 
       ptr_t ptr = ia.alloc(1);
       coloring[p].points.insert(ptr);
@@ -137,15 +137,15 @@ void top_level_task(const Task* task,
     FieldAllocator fa = h.create_field_allocator(fs);
 
     fa.allocate_field(sizeof(entity_id), legion_dpd::ENTITY_FID);
-    
+
     fa.allocate_field(sizeof(legion_dpd::ptr_count),
                       legion_dpd::connectivity_field_id(from_dim, to_dim));
 
     cells_part.lr = h.create_logical_region(is, fs);
 
-    RegionRequirement rr(cells_part.lr, WRITE_DISCARD, 
+    RegionRequirement rr(cells_part.lr, WRITE_DISCARD,
       EXCLUSIVE, cells_part.lr);
-    
+
     rr.add_field(legion_dpd::ENTITY_FID);
     InlineLauncher il(rr);
 
@@ -153,11 +153,11 @@ void top_level_task(const Task* task,
 
     pr.wait_until_valid();
 
-    auto ac = 
+    auto ac =
       pr.get_field_accessor(legion_dpd::ENTITY_FID).typeify<entity_id>();
 
     IndexIterator itr(runtime, ctx, is);
-    
+
     for(size_t c = 0; c < cells.size(); ++c){
       assert(itr.has_next());
       ptr_t ptr = itr.next();
@@ -176,7 +176,7 @@ void top_level_task(const Task* task,
     vertices_part.size = num_vertices;
 
     IndexAllocator ia = runtime->create_index_allocator(ctx, is);
-    
+
     Coloring coloring;
 
     for(size_t v = 0; v < vertices.size(); ++v){
@@ -194,7 +194,7 @@ void top_level_task(const Task* task,
 
     vertices_part.lr = h.create_logical_region(is, fs);
 
-    RegionRequirement rr(vertices_part.lr, WRITE_DISCARD, 
+    RegionRequirement rr(vertices_part.lr, WRITE_DISCARD,
       EXCLUSIVE, vertices_part.lr);
     rr.add_field(legion_dpd::ENTITY_FID);
     InlineLauncher il(rr);
@@ -203,18 +203,18 @@ void top_level_task(const Task* task,
 
     pr.wait_until_valid();
 
-    auto ac = 
+    auto ac =
       pr.get_field_accessor(legion_dpd::ENTITY_FID).typeify<entity_id>();
 
     IndexIterator itr(runtime, ctx, is);
-    
+
     for(size_t v = 0; v < vertices.size(); ++v){
       assert(itr.has_next());
       ptr_t ptr = itr.next();
       ac.write(ptr, v);
     }
-    
-    vertices_part.ip = 
+
+    vertices_part.ip =
       runtime->create_index_partition(ctx, is, coloring, true);
 
     runtime->unmap_region(ctx, pr);
@@ -243,16 +243,16 @@ void top_level_task(const Task* task,
       auto& cvc = connectivity[c];
       size_t n = cvc.size();
       raw_connectivity_part.count_map[p] += n;
-      
+
       for(size_t j = 0; j < n; ++j){
         ptr_t ptr = ia.alloc(1);
-        coloring[p].points.insert(ptr);    
+        coloring[p].points.insert(ptr);
       }
     }
 
     raw_connectivity_part.lr = h.create_logical_region(is, fs);
 
-    RegionRequirement rr(raw_connectivity_part.lr, 
+    RegionRequirement rr(raw_connectivity_part.lr,
       WRITE_DISCARD, EXCLUSIVE, raw_connectivity_part.lr);
     rr.add_field(legion_dpd::ENTITY_PAIR_FID);
     InlineLauncher il(rr);
@@ -265,7 +265,7 @@ void top_level_task(const Task* task,
       legion_dpd::entity_pair>();
 
     IndexIterator itr(runtime, ctx, is);
-    
+
     for(size_t c = 0; c < cells.size(); ++c){
       auto& cvc = connectivity[c];
       size_t n = cvc.size();
@@ -276,30 +276,31 @@ void top_level_task(const Task* task,
         legion_dpd::entity_pair p;
         p.e1 = c;
         p.e2 = cvc[j];
-        ac.write(ptr, p);        
+        ac.write(ptr, p);
       }
     }
 
-    raw_connectivity_part.ip = 
+    raw_connectivity_part.ip =
       runtime->create_index_partition(ctx, is, coloring, true);
 
     runtime->unmap_region(ctx, pr);
   }
 
   legion_dpd dpd(ctx, runtime);
-  dpd.create_connectivity(from_dim, cells_part, to_dim, vertices_part, 
+  dpd.create_connectivity(from_dim, cells_part, to_dim, vertices_part,
     raw_connectivity_part);
   dpd.dump(from_dim, to_dim);
 }
 
 TEST(legion, test1) {
   Runtime::set_top_level_task_id(TOP_LEVEL_TID);
-  
+
   Runtime::register_legion_task<top_level_task>(TOP_LEVEL_TID,
     Processor::LOC_PROC, true, false);
 
-  Runtime::register_legion_task<legion_dpd::init_connectivity_task>(legion_dpd::INIT_CONNECTIVITY_TID,
-    Processor::LOC_PROC, false, true);
+  Runtime::register_legion_task<
+     legion_dpd::init_connectivity_task
+  >(legion_dpd::INIT_CONNECTIVITY_TID, Processor::LOC_PROC, false, true);
 
   int argc = 1;
   char** argv = (char**)malloc(sizeof(char*));
