@@ -48,6 +48,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(RUNTIME_DRIVER ../execution/legion/runtime_driver.cc)
   set(topology_HEADERS
     ${topology_HEADERS}
+    legion/entity_storage.h
     legion/storage_policy.h
   )
 
