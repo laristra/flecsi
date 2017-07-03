@@ -65,16 +65,6 @@ struct legion_field_registration_wrapper__
     fi.index_space = INDEX_SPACE;
     fi.fid = fid;
 
-    np("-----------------------");
-    np(fi.data_client_hash);
-    np(fi.storage_type);
-    np(fi.size);
-    np(fi.namespace_hash);
-    np(fi.name_hash);
-    np(fi.versions);
-    np(fi.index_space);
-    np(fi.fid);
-
     execution::context_t::instance().register_field_info(fi);
   } // register_callback
 
@@ -148,7 +138,7 @@ struct legion_client_registration_wrapper__<
         flecsi::data::dense,
         ENTITY_TYPE,
         entity_hash,
-        0,
+        33554432, // TODO: fix
         INDEX_TYPE::value,
         1
       >;
@@ -201,7 +191,7 @@ struct legion_client_registration_wrapper__<
         flecsi::data::dense,
         size_t,
         adjacency_hash,
-        0,
+        33554433, // TODO: fix
         INDEX_TYPE::value,
         1
       >;
@@ -212,8 +202,18 @@ struct legion_client_registration_wrapper__<
         INDEX_TYPE::value
       >();
 
+      using offset_wrapper_t = legion_field_registration_wrapper__<
+        CLIENT_TYPE,
+        flecsi::data::dense,
+        size_t,
+        adjacency_hash,
+        33554434, // TODO: fix
+        INDEX_TYPE::value,
+        1
+      >;
+
       storage_t::instance().register_field(client_key,
-        key, wrapper_t::register_callback);
+        key, offset_wrapper_t::register_callback);
     } // handle_type
 
   }; // struct connectivity_walker_t

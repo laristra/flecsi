@@ -329,28 +329,28 @@ if((FLECSI_RUNTIME_MODEL STREQUAL "serial")
 	NOCI
       )
 
-  #     cinch_add_unit(data_client_handle
-  #       SOURCES
-  #         test/legion/data_client_handle.cc
-  #         ../supplemental/coloring/add_colorings.cc
-  #         ${DRIVER_INITIALIZATION}
-  #         ${RUNTIME_DRIVER}
-  #       INPUTS
-  #         test/simple2d-8x8.msh
-  #         test/simple2d-16x16.msh
-  #       LIBRARIES
-  #         flecsi
-  #         ${CINCH_RUNTIME_LIBRARIES}
-  #         ${COLORING_LIBRARIES}
-  #       DEFINES
-  #         -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
-  #         -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
-  #         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-  #         -DFLECSI_8_8_MESH
-  #       POLICY LEGION
-  #       THREADS 2
-  # NOCI
-  #     )
+      cinch_add_unit(data_client_handle
+        SOURCES
+          test/legion/data_client_handle.cc
+          ../supplemental/coloring/add_colorings.cc
+          ${DRIVER_INITIALIZATION}
+          ${RUNTIME_DRIVER}
+        INPUTS
+          test/simple2d-8x8.msh
+          test/simple2d-16x16.msh
+        LIBRARIES
+          flecsi
+          ${CINCH_RUNTIME_LIBRARIES}
+          ${COLORING_LIBRARIES}
+        DEFINES
+          -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+          -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+          -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+          -DFLECSI_8_8_MESH
+        POLICY LEGION
+        THREADS 2
+  NOCI
+      )
 
     endif()
 
