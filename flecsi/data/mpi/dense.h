@@ -93,16 +93,17 @@ struct dense_handle_t : public data_handle__<T, EP, SP, GP>
 	///
   /// Copy constructor.
 	///
-	dense_handle_t(
-    const dense_handle_t & a
-  )
-  :
-    label_(a.label_)
-  {}
+//	dense_handle_t(
+//    const dense_handle_t & a
+//  )
+//  :
+//    label_(a.label_)
+//  {}
 
   template<size_t EP2, size_t SP2, size_t GP2>
   dense_handle_t(const dense_handle_t<T, EP2, SP2, GP2> & h)
-    : label_(h.label_)
+    : base(reinterpret_cast<const base&>(h)),
+      label_(h.label_)
   {}
 
   //--------------------------------------------------------------------------//
@@ -863,6 +864,42 @@ struct storage_type__<dense>
   {
     handle_t<DATA_TYPE, 0, 0, 0> h;
 
+    auto& context = execution::context_t::instance();
+
+    // get field_info for this data handle
+    // TODO: lookup rather than hardcoded 0
+    auto field_infos = context.registered_fields();
+    auto field_info = *(std::find_if(field_infos.begin(), field_infos.end(), [](auto& fi) {
+      return fi.data_client_hash == typeid(DATA_CLIENT_TYPE).hash_code() &&
+        fi.namespace_hash == NAMESPACE &&
+        fi.name_hash == NAME;
+    }));
+    //auto field_info = context.registered_fields()[0];
+
+    // get color_info for this field.
+    // TODO: lookup rather than hardcoded 0
+    auto color_info = (context.coloring_info(field_info.index_space)).at(context.rank);
+
+    // get field_data
+    auto &field_data = context.registered_field_data(field_info.fid);
+
+    // populate data member of data_handle_t
+    auto &hb = dynamic_cast<data_handle__<DATA_TYPE, 0, 0, 0>&>(h);
+
+    hb.index_space = field_info.index_space;
+
+    hb.exclusive_size = color_info.exclusive;
+    hb.combined_data = hb.exclusive_buf = hb.exclusive_data =
+      reinterpret_cast<DATA_TYPE *>(field_data.data());
+    hb.combined_size = color_info.exclusive;
+
+    hb.shared_size = color_info.shared;
+    hb.shared_data = hb.exclusive_data + hb.exclusive_size;
+    hb.combined_size += color_info.shared;
+
+    hb.ghost_size = color_info.ghost;
+    hb.ghost_data = hb.shared_data + hb.shared_size;
+    hb.combined_size += color_info.ghost;
 
     return h;
   }

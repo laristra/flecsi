@@ -53,10 +53,12 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
   set(data_HEADERS
     ${data_HEADERS}
+    serial/data_client_handle_policy.h
     serial/data_handle_policy.h
     serial/dense.h
     serial/global.h
     serial/meta_data.h
+    serial/registration_wrapper.h
     serial/scoped.h
     serial/sparse.h
     serial/storage_policy.h
@@ -94,12 +96,18 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
 elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
-  set(execution_HEADERS
-    ${execution_HEADERS}
+  set(data_HEADERS
+    ${data_HEADERS}
+    mpi/data_client_handle_policy.h
+    mpi/data_handle_policy.h
+    mpi/data_policy.h
+    mpi/dense.h
+    mpi/registration_wrapper.h
+    mpi/storage_policy.h
   )
 
-  set(execution_SOURCES
-    ${execution_SOURCES}
+  set(data_SOURCES
+    ${data_SOURCES}
   )
 
   set(UNIT_POLICY LEGION)

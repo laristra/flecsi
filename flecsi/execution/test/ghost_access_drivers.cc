@@ -20,8 +20,15 @@
 
 clog_register_tag(ghost_access);
 
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t = flecsi::data::legion::dense_handle_t<T, EP, SP, GP>;
+using handle_t =
+  flecsi::data::legion::dense_handle_t<T, EP, SP, GP>;
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
+template<typename T, size_t EP, size_t SP, size_t GP>
+using handle_t =
+flecsi::data::mpi::dense_handle_t<T, EP, SP, GP>;
+#endif
 
 void check_all_cells_task(
         handle_t<size_t, flecsi::dro, flecsi::dro, flecsi::dro> cell_ID,
@@ -61,8 +68,14 @@ void specialization_tlt_init(int argc, char ** argv) {
 //----------------------------------------------------------------------------//
 
 void driver(int argc, char ** argv) {
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
   auto runtime = Legion::Runtime::get_runtime();
   const int my_color = runtime->find_local_MPI_rank();
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
+  int my_color;
+  MPI_Comm_rank(MPI_COMM_WORLD, &my_color);
+#endif
+
   clog(trace) << "Rank " << my_color << " in driver" << std::endl;
 
   client_type client;
@@ -146,8 +159,8 @@ void check_all_cells_task(
   for (auto exclusive_itr = index_coloring->second.exclusive.begin();
       exclusive_itr != index_coloring->second.exclusive.end(); ++exclusive_itr) {
     flecsi::coloring::entity_info_t exclusive = *exclusive_itr;
-    assert(cell_ID.exclusive(index) == exclusive.id + cycle);
-    assert(test.exclusive(index) == double(exclusive.id + cycle));
+    ASSERT_EQ(cell_ID.exclusive(index), exclusive.id + cycle);
+    ASSERT_EQ(test.exclusive(index), double(exclusive.id + cycle));
     index++;
   } // exclusive_itr
 
@@ -155,8 +168,8 @@ void check_all_cells_task(
   for (auto shared_itr = index_coloring->second.shared.begin(); shared_itr !=
       index_coloring->second.shared.end(); ++shared_itr) {
     flecsi::coloring::entity_info_t shared = *shared_itr;
-    assert(cell_ID.shared(index) == shared.id + cycle);
-    assert(test.shared(index) == double(shared.id + cycle));
+    ASSERT_EQ(cell_ID.shared(index), shared.id + cycle);
+    ASSERT_EQ(test.shared(index), double(shared.id + cycle));
     index++;
   } // shared_itr
 
@@ -172,8 +185,8 @@ void check_all_cells_task(
   for (auto ghost_itr = index_coloring->second.ghost.begin(); ghost_itr !=
       index_coloring->second.ghost.end(); ++ghost_itr) {
     flecsi::coloring::entity_info_t ghost = *ghost_itr;
-    assert(cell_ID.ghost(index) == ghost.id + cycle);
-    assert(test.ghost(index) == double(ghost.id + cycle));
+    ASSERT_EQ(cell_ID.ghost(index), ghost.id + cycle);
+    ASSERT_EQ(test.ghost(index), double(ghost.id + cycle));
     index++;
   } // ghost_itr
 

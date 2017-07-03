@@ -23,7 +23,7 @@ template<
 >
 struct data_client_handle_base__ : public DATA_CLIENT_TYPE, public DATA_POLICY
 {
-  using field_id_t = Legion::FieldID;
+  //using field_id_t = Legion::FieldID;
 
   static constexpr size_t MAX_ADJACENCIES = 20;
 

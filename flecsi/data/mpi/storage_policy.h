@@ -23,7 +23,6 @@
 
 #include "flecsi/data/common/data_hash.h"
 #include "flecsi/data/data_constants.h"
-#include "flecsi/data/mpi/meta_data.h"
 #include "flecsi/data/mpi/registration_wrapper.h"
 
 // Include partial specializations
@@ -54,6 +53,16 @@ struct mpi_storage_policy_t {
   )
   {
     //TODO:
+    if(field_registry_.find(client_key) != field_registry_.end()) {
+      clog_assert(field_registry_[client_key].find(key) ==
+        field_registry_[client_key].end(),
+        "field key already exists");
+    } // if
+
+    field_registry_[client_key][key] =
+      std::make_pair(unique_fid_t::instance().next(), callback);
+
+    return true;
   }
 
   void
