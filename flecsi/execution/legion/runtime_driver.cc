@@ -102,7 +102,7 @@ runtime_driver(
 
   for(auto & c: field_registry) {
     for(auto & f: c.second) {
-      f.second.second(f.second.first);
+      f.second.second(f.first, f.second.first);
     } // for
   } // for
 

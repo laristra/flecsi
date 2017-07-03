@@ -50,6 +50,7 @@ struct legion_field_registration_wrapper__
   static
   void
   register_callback(
+    size_t key,
     field_id_t fid
   )
   {
@@ -63,6 +64,16 @@ struct legion_field_registration_wrapper__
     fi.versions = VERSIONS;
     fi.index_space = INDEX_SPACE;
     fi.fid = fid;
+
+    np("-----------------------");
+    np(fi.data_client_hash);
+    np(fi.storage_type);
+    np(fi.size);
+    np(fi.namespace_hash);
+    np(fi.name_hash);
+    np(fi.versions);
+    np(fi.index_space);
+    np(fi.fid);
 
     execution::context_t::instance().register_field_info(fi);
   } // register_callback

@@ -39,13 +39,13 @@ struct legion_storage_policy_t {
 
   using field_id_t = Legion::FieldID;
   using registration_function_t = std::function<void(size_t)>;
+  using field_registration_function_t = std::function<void(size_t, size_t)>;
   using unique_fid_t = utils::unique_id_t<field_id_t, FLECSI_GENERATED_ID_MAX>;
-  using data_value_t = std::pair<field_id_t, registration_function_t>;
+  using field_value_t = std::pair<field_id_t, field_registration_function_t>;
+  using client_value_t = std::pair<field_id_t, registration_function_t>;
 
-  using field_entry_t = std::unordered_map<size_t, data_value_t>;
-
-  // Field and client registration interfaces are the same for now.
-  using client_entry_t = field_entry_t;
+  using field_entry_t = std::unordered_map<size_t, field_value_t>;
+  using client_entry_t = std::unordered_map<size_t, client_value_t>;
 
   //--------------------------------------------------------------------------//
   //! Register a field with the runtime.
@@ -59,7 +59,7 @@ struct legion_storage_policy_t {
   register_field(
     size_t client_key,
     size_t key,
-    const registration_function_t & callback
+    const field_registration_function_t & callback
   )
   {
     if(field_registry_.find(client_key) != field_registry_.end()) {
