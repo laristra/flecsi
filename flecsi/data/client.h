@@ -73,6 +73,18 @@ struct client_data__
   {
     auto& context = execution::context_t::instance();
 
+    auto& m = context.field_map();
+
+    //np(m.size());
+
+    const size_t client_key = typeid(DATA_CLIENT_TYPE).hash_code();
+
+    size_t client_hash = utils::hash::client_hash<NAMESPACE_HASH, NAME_HASH>();
+
+    auto itr = context.field_map().find({client_key, client_hash});
+
+    clog_assert(itr != m.end(), "invalid data client");
+
     data_client_handle__<DATA_CLIENT_TYPE> h;
 
     size_t i = 0;

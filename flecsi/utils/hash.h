@@ -53,6 +53,30 @@ bit_range(
 } // bit_range
 
 ////////////////////////////////////////////////////////////////////////////////
+// Client data hash interface.
+////////////////////////////////////////////////////////////////////////////////
+
+//----------------------------------------------------------------------------//
+//! Create a hash key suitable for registering a data client.
+//!
+//! @tparam NAMESPACE A namespace identifier.
+//! @tparam NAME      A name identifier.
+//!
+//! @ingroup utils
+//----------------------------------------------------------------------------//
+
+template<
+  size_t NAMESPACE,
+  size_t NAME
+>
+inline
+constexpr size_t
+client_hash()
+{
+  return NAMESPACE ^ NAME;
+} // field_hash__
+
+////////////////////////////////////////////////////////////////////////////////
 // Field data hash interface.
 ////////////////////////////////////////////////////////////////////////////////
 

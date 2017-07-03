@@ -747,6 +747,16 @@ struct legion_context_policy_t
     return field_info_map_;
   } // field_info_map
 
+  //--------------------------------------------------------------------------//
+  //! Get field map for read access.
+  //--------------------------------------------------------------------------//
+
+  const std::map<std::pair<size_t, size_t>, std::pair<size_t, field_id_t>>
+  field_map()
+  const
+  {
+    return field_map_;
+  } // field_info_map
 
   //--------------------------------------------------------------------------//
   //! Lookup registered field info from data client and namespace hash.
