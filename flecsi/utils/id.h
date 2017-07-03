@@ -102,6 +102,24 @@ namespace utils {
       return global_id;
     }
 
+    static id_ make(const std::size_t dim,
+                    const std::size_t local_id,
+                    const std::size_t partition_id = 0,
+                    const std::size_t flags = 0,
+                    const std::size_t global = 0,
+                    const std::size_t domain = 0)
+    {
+      id_ global_id;
+      global_id.dimension_ = dim;
+      global_id.domain_ = domain;
+      global_id.partition_ = partition_id;
+      global_id.entity_ = local_id;
+      global_id.global_ = global;
+      global_id.flags_ = flags;
+
+      return global_id;
+    }
+
     local_id_t local_id() const
     {
       local_id_t r = dimension_;
