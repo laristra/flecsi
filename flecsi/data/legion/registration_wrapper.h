@@ -144,7 +144,7 @@ struct legion_client_registration_wrapper__<
 
       const size_t client_key = typeid(CLIENT_TYPE).hash_code();
       const size_t key = utils::hash::client_internal_field_hash<
-        utils::const_string_t("__flecsi_internal_field_bash_base__").hash(),
+        utils::const_string_t("__flecsi_internal_field_hash_base__").hash(),
         INDEX_TYPE::value
       >();
 
@@ -197,7 +197,7 @@ struct legion_client_registration_wrapper__<
 
       const size_t client_key = typeid(CLIENT_TYPE).hash_code();
       const size_t key = utils::hash::client_internal_field_hash<
-        utils::const_string_t("__flecsi_internal_field_bash_base__").hash(),
+        utils::const_string_t("__flecsi_internal_field_hash_base__").hash(),
         INDEX_TYPE::value
       >();
 
@@ -252,7 +252,7 @@ struct legion_client_registration_wrapper__<
 
       const size_t client_key = typeid(CLIENT_TYPE).hash_code();
       const size_t key = utils::hash::client_internal_field_hash<
-        utils::const_string_t("__flecsi_internal_field_bash_base__").hash(),
+        utils::const_string_t("__flecsi_internal_field_hash_base__").hash(),
         INDEX_TYPE::value
       >();
 
@@ -276,12 +276,14 @@ struct legion_client_registration_wrapper__<
     using connectivities = typename POLICY_TYPE::connectivities;
     using bindings = typename POLICY_TYPE::bindings;
 
+    auto& storage = storage_t::instance();
+
     const size_t client_key = typeid(CLIENT_TYPE).hash_code();
-    auto const & field_registry = storage_t::instance().field_registry();
+    auto const & field_registry = storage.field_registry();
 
     // Only register field attributes if this is the first time
     // that we have seen this type.
-    if(field_registry.find(client_key) == field_registry.end()) {
+    if(storage.register_client_fields(client_key)){
       entity_walker_t entity_walker;
       entity_walker.template walk_types<entity_types_t>();
 
