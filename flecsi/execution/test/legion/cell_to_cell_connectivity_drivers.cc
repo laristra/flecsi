@@ -12,9 +12,11 @@
 #include <cinchtest.h>
 #include <math.h>
 
-#include "flecsi/execution/execution.h"
 #include "flecsi/data/data.h"
+#include "flecsi/execution/execution.h"
+#include "flecsi/io/simple_definition.h"
 #include "flecsi/supplemental/coloring/add_colorings.h"
+#include "flecsi/topology/closure_utils.h"
 
 // FIXME: Must match add_colorings.cc
 #define M 16
@@ -175,6 +177,54 @@ void specialization_spmd_init(int argc, char ** argv) {
 // User driver.
 //----------------------------------------------------------------------------//
 
+void fill_connectivity_buffers(
+    const std::set<flecsi::coloring::entity_info_t>& entities,
+    int my_color,
+    const std::map<size_t,size_t>& gid_to_lid_map,
+    LegionRuntime::Arrays::Point<2>* positions,
+    uint64_t* indices,
+    size_t* index)
+{
+  flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
+
+  for (auto entity_itr = entities.begin(); entity_itr != entities.end(); ++entity_itr) {
+    flecsi::coloring::entity_info_t entity = *entity_itr;
+    std::set<size_t> this_cell;
+    this_cell.insert(entity.id);
+
+    auto nearby_cells = flecsi::topology::entity_closure<2,2,0>(sd, this_cell);
+    nearby_cells.erase(entity.id);
+    auto these_verts = flecsi::topology::vertex_closure<2>(sd, this_cell);
+    for(auto neighbor : nearby_cells) {
+      std::set<size_t> this_neighbor;
+      this_neighbor.insert(neighbor);
+      auto neighbor_verts = flecsi::topology::vertex_closure<2>(sd, this_neighbor);
+      size_t shared_vertices_count = 0;
+      for(auto vertex: neighbor_verts) {
+        if(these_verts.find(vertex) != these_verts.end()) {
+          shared_vertices_count++;
+          clog(trace) << " cell " << entity.id << " shares vertex " <<
+            vertex << " with " << neighbor << " : " << shared_vertices_count << std::endl;
+        }
+      } // for vertex
+      if(2==shared_vertices_count) {
+        clog(trace)  << my_color << " cell " << gid_to_lid_map.at(entity.id) <<
+          " nbr " << gid_to_lid_map.at(neighbor) << std::endl;
+        indices[*index] = gid_to_lid_map.at(neighbor);
+        *index = *index + 1;
+      }
+    } // for neighbor
+    LegionRuntime::Arrays::Point<2> this_position;
+    if(0==gid_to_lid_map.at(entity.id))
+      this_position.x[0] = 0; // offset
+    else
+      this_position.x[0] = positions[gid_to_lid_map.at(entity.id)-1].x[0] +
+      positions[gid_to_lid_map.at(entity.id)-1].x[1];
+    this_position.x[1] = *index - this_position.x[0];  // range
+    positions[gid_to_lid_map.at(entity.id)] = this_position;
+  } // for entity_itr
+}
+
 void driver(int argc, char ** argv) {
   auto runtime = Legion::Runtime::get_runtime();
   const int my_color = runtime->find_local_MPI_rank();
@@ -191,19 +241,74 @@ void driver(int argc, char ** argv) {
       ispace_dmap[INDEX_ID].shared_lr.get_index_space());
   LegionRuntime::Arrays::Rect<2> exclusive_rect = exclusive_domain.get_rect<2>();
   LegionRuntime::Arrays::Rect<2> shared_rect = shared_domain.get_rect<2>();
-  clog(error) << my_color << " exclusive " << exclusive_rect.hi.x[1] - exclusive_rect.lo.x[1] + 1 << std::endl;
-  clog(error) << my_color << " shared " << shared_rect.hi.x[1] - shared_rect.lo.x[1] + 1 << std::endl;
+  size_t num_cells = exclusive_rect.hi.x[1] - exclusive_rect.lo.x[1] + 1
+      + shared_rect.hi.x[1] - shared_rect.lo.x[1] + 1;
+  clog(trace) << my_color << " exclusive " << exclusive_rect.hi.x[1] - exclusive_rect.lo.x[1] + 1 << std::endl;
+  clog(trace) << my_color << " shared " << shared_rect.hi.x[1] - shared_rect.lo.x[1] + 1 << std::endl;
+
+  LegionRuntime::Arrays::Point<2>* positions = (LegionRuntime::Arrays::Point<2>*)
+      malloc(sizeof(LegionRuntime::Arrays::Point<2>)*num_cells);  // FIXME leak
+
+  uint64_t* indices = (uint64_t*)malloc(sizeof(uint64_t)*num_cells*8); // FIXME leak, 8 is hack
+
+  flecsi::io::simple_definition_t simple_def("simple2d-16x16.msh");
+
+  const std::map<size_t, flecsi::coloring::index_coloring_t> coloring_map
+    = context_.coloring_map();
+  auto index_coloring = coloring_map.find(INDEX_ID);
+
+  std::map<size_t,size_t> gid_to_lid_map;
+  auto entries = index_coloring->second.exclusive;
+
+  size_t lid = 0;
+  for (auto entity_itr = entries.begin(); entity_itr != entries.end(); ++entity_itr) {
+    flecsi::coloring::entity_info_t entity = *entity_itr;
+    gid_to_lid_map[entity.id] = lid;
+    lid++;
+  }
+
+  entries = index_coloring->second.shared;
+  for (auto entity_itr = entries.begin(); entity_itr != entries.end(); ++entity_itr) {
+    flecsi::coloring::entity_info_t entity = *entity_itr;
+    gid_to_lid_map[entity.id] = lid;
+    lid++;
+  }
+
+  entries = index_coloring->second.ghost;
+  for (auto entity_itr = entries.begin(); entity_itr != entries.end(); ++entity_itr) {
+    flecsi::coloring::entity_info_t entity = *entity_itr;
+    gid_to_lid_map[entity.id] = lid;
+    lid++;
+  }
+
+  size_t idx = 0;
+  fill_connectivity_buffers(index_coloring->second.exclusive, my_color,
+      gid_to_lid_map, positions, indices, &idx);
+  fill_connectivity_buffers(index_coloring->second.shared, my_color,
+      gid_to_lid_map, positions, indices, &idx);
+
+  for(size_t cell=0; cell<num_cells; cell++) {
+    size_t offset = positions[cell].x[0];
+    size_t range = positions[cell].x[1];
+    clog(trace) << "Rank " << my_color << " cell " << cell << " offset " <<
+        offset << " range " << range << std::endl;
+    for(size_t idx=offset; idx < (offset+range); idx++)
+      clog(trace) << "Rank " << my_color << " cell " << cell << " nbr " <<
+          indices[idx] << std::endl;
+
+  }
+
+  // setup connectivity
 
   auto mesh_storage_policy = mesh.storage();
   mesh_entity_base_* entities;
   size_t dimension = 2;
-  size_t num_cells = exclusive_rect.hi.x[1] - exclusive_rect.lo.x[1] + 1
-      + shared_rect.hi.x[1] - shared_rect.lo.x[1] + 1;
   entities = (mesh_entity_base_*)malloc(sizeof(mesh_entity_base_)*num_cells); // FIXME leak
   mesh_storage_policy->init_entities(INDEX_ID,dimension,entities,num_cells);
   cell* c = mesh.make<cell>();
+  mesh_storage_policy->init_connectivity(0,0,2,2, positions, indices, num_cells);
 
-
+  // start what really is driver, not broken spmd_init
   client_type client;
 
   auto cell_IDs = flecsi_get_handle(client, name_space, cell_ID, size_t, dense,
