@@ -50,6 +50,7 @@ struct legion_field_registration_wrapper__
   static
   void
   register_callback(
+    size_t key,
     field_id_t fid
   )
   {
@@ -137,7 +138,7 @@ struct legion_client_registration_wrapper__<
         flecsi::data::dense,
         ENTITY_TYPE,
         entity_hash,
-        0,
+        33554432, // TODO: fix
         INDEX_TYPE::value,
         1
       >;
@@ -190,7 +191,7 @@ struct legion_client_registration_wrapper__<
         flecsi::data::dense,
         size_t,
         adjacency_hash,
-        0,
+        33554433, // TODO: fix
         INDEX_TYPE::value,
         1
       >;
@@ -201,8 +202,18 @@ struct legion_client_registration_wrapper__<
         INDEX_TYPE::value
       >();
 
+      using offset_wrapper_t = legion_field_registration_wrapper__<
+        CLIENT_TYPE,
+        flecsi::data::dense,
+        size_t,
+        adjacency_hash,
+        33554434, // TODO: fix
+        INDEX_TYPE::value,
+        1
+      >;
+
       storage_t::instance().register_field(client_key,
-        key, wrapper_t::register_callback);
+        key, offset_wrapper_t::register_callback);
     } // handle_type
 
   }; // struct connectivity_walker_t

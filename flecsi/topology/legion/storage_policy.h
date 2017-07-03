@@ -95,7 +95,7 @@ struct legion_topology_storage_policy_t
       size_t count = pi.x[1];
 
       for(size_t j = index_offset; j < index_offset + count; ++j){
-        conn.push(indices[j]);
+        conn.push(utils::id_t::make(to_dim, indices[j]));
       }
 
       conn.end_from();
