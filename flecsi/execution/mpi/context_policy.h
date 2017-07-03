@@ -254,6 +254,17 @@ struct mpi_context_policy_t
     return adjacencies_;
   }
 
+  //--------------------------------------------------------------------------//
+  //! Get field map for read access.
+  //--------------------------------------------------------------------------//
+
+  const std::map<std::pair<size_t, size_t>, std::pair<size_t, field_id_t>>
+  field_map()
+  const
+  {
+    return field_map_;
+  } // field_info_map
+
   int rank;
 
 private:
@@ -276,6 +287,14 @@ private:
   //--------------------------------------------------------------------------//
 
   std::map<size_t, adjacency_triple_t> adjacencies_;
+
+  //--------------------------------------------------------------------------//
+  // Field map, key1 = (data client hash, name/namespace hash)
+  // value = (index space, fid)
+  //--------------------------------------------------------------------------//
+
+  std::map<std::pair<size_t, size_t>, std::pair<size_t, field_id_t>>
+    field_map_;
 
   //--------------------------------------------------------------------------//
   // Function data members.

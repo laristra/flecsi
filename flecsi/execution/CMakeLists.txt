@@ -139,6 +139,43 @@ cinch_add_unit(launch
 #  POLICY
 #    MPI
 #)
+#
+# Test basic function calling capability using the register_function
+# interface.
+#
+
+cinch_add_unit(simple_function
+  SOURCES
+  test/simple_function.cc
+  ${DRIVER_INITIALIZATION}
+  ${RUNTIME_DRIVER}
+  DEFINES
+  -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+  POLICY
+  ${UNIT_POLICY}
+  LIBRARIES
+  flecsi
+  NOCI
+  )
+
+#
+# Test basic task calling capability using the register_task
+# interface.
+#
+cinch_add_unit(simple_task
+  SOURCES
+  test/simple_task.cc
+  ${DRIVER_INITIALIZATION}
+  ${RUNTIME_DRIVER}
+  DEFINES
+  -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+  POLICY
+  ${UNIT_POLICY}
+  LIBRARIES
+  flecsi
+  ${CINCH_RUNTIME_LIBRARIES}
+  NOCI
+  )
 
 if(ENABLE_COLORING AND ENABLE_PARMETIS)
 
@@ -161,6 +198,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
       POLICY ${UNIT_POLICY}
     )
+
     cinch_add_unit(data_handle_task
       SOURCES
         test/data_handle_task.cc
@@ -203,55 +241,37 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
       NOCI
       )
 
+    cinch_add_unit(data_client_handle
+      SOURCES
+        test/data_client_handle.cc
+        ../supplemental/coloring/add_colorings.cc
+        ${DRIVER_INITIALIZATION}
+        ${RUNTIME_DRIVER}
+      INPUTS
+        test/simple2d-8x8.msh
+        test/simple2d-16x16.msh
+      LIBRARIES
+        flecsi
+        ${CINCH_RUNTIME_LIBRARIES}
+        ${COLORING_LIBRARIES}
+      DEFINES
+        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+        -DFLECSI_8_8_MESH
+      POLICY ${UNIT_POLICY}
+      THREADS 2
+      NOCI
+      )
 endif()
 
-if((FLECSI_RUNTIME_MODEL STREQUAL "serial")
-    OR (FLECSI_RUNTIME_MODEL STREQUAL "legion")
-    OR (FLECSI_RUNTIME_MODEL STREQUAL "mpi"))
+
+if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
   #
-  # Test basic function calling capability using the register_function
-  # interface.
+  # Test internal legion task registration.
   #
-  cinch_add_unit(simple_function
-    SOURCES
-      test/simple_function.cc
-      ${DRIVER_INITIALIZATION}
-      ${RUNTIME_DRIVER}
-    DEFINES
-      -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-    POLICY
-      ${UNIT_POLICY}
-    LIBRARIES
-      flecsi
-    NOCI
-  )
-
-  #
-  # Test basic task calling capability using the register_task
-  # interface.
-  #
-  cinch_add_unit(simple_task
-    SOURCES
-      test/simple_task.cc
-      ${DRIVER_INITIALIZATION}
-      ${RUNTIME_DRIVER}
-    DEFINES
-      -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-    POLICY
-      ${UNIT_POLICY}
-    LIBRARIES
-      flecsi
-      ${CINCH_RUNTIME_LIBRARIES}
-    NOCI
-  )
-
-  if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
-
-    #
-    # Test internal legion task registration.
-    #
-    cinch_add_unit(internal_task
+  cinch_add_unit(internal_task
     SOURCES
       test/legion/internal_task_driver.cc
       ${DRIVER_INITIALIZATION}
@@ -267,7 +287,7 @@ if((FLECSI_RUNTIME_MODEL STREQUAL "serial")
     NOCI
     )
 
-   cinch_add_unit(mapper_compaction_task
+  cinch_add_unit(mapper_compaction_task
     SOURCES
       test/legion/mapper_compaction.cc
       ${DRIVER_INITIALIZATION}
@@ -283,80 +303,55 @@ if((FLECSI_RUNTIME_MODEL STREQUAL "serial")
     NOCI
     )
 
+  if(ENABLE_COLORING AND ENABLE_PARMETIS)
 
-    if(ENABLE_COLORING AND ENABLE_PARMETIS)
-
-      cinch_add_unit(barrier_per_field
-        SOURCES
-          test/legion/barrier_per_field_drivers.cc
-          ../supplemental/coloring/add_colorings.cc
-          ${DRIVER_INITIALIZATION}
-          ${RUNTIME_DRIVER}
-        INPUTS
-          test/simple2d-8x8.msh
-          test/simple2d-16x16.msh
-        LIBRARIES
-          flecsi
-          ${CINCH_RUNTIME_LIBRARIES}
-          ${COLORING_LIBRARIES}
-        DEFINES
-          -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
-          -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-        POLICY LEGION
-        THREADS 2
-	NOCI
+    cinch_add_unit(barrier_per_field
+      SOURCES
+        test/legion/barrier_per_field_drivers.cc
+        ../supplemental/coloring/add_colorings.cc
+        ${DRIVER_INITIALIZATION}
+        ${RUNTIME_DRIVER}
+      INPUTS
+        test/simple2d-8x8.msh
+        test/simple2d-16x16.msh
+      LIBRARIES
+        flecsi
+        ${CINCH_RUNTIME_LIBRARIES}
+        ${COLORING_LIBRARIES}
+      DEFINES
+        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+      POLICY LEGION
+      THREADS 2
+      NOCI
       )
 
-      cinch_add_unit(cell_to_cell_connectivity
-        SOURCES
-          test/legion/cell_to_cell_connectivity_drivers.cc
-          ../supplemental/coloring/add_colorings.cc
-          ${DRIVER_INITIALIZATION}
-          ${RUNTIME_DRIVER}
-        INPUTS
-          test/simple2d-8x8.msh
-          test/simple2d-16x16.msh
-        LIBRARIES
-          flecsi
-          ${CINCH_RUNTIME_LIBRARIES}
-          ${COLORING_LIBRARIES}
-        DEFINES
-          -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
-          -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
-          -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-        POLICY LEGION
-        THREADS 2
-	NOCI
+    cinch_add_unit(cell_to_cell_connectivity
+      SOURCES
+        test/legion/cell_to_cell_connectivity_drivers.cc
+        ../supplemental/coloring/add_colorings.cc
+        ${DRIVER_INITIALIZATION}
+        ${RUNTIME_DRIVER}
+      INPUTS
+        test/simple2d-8x8.msh
+        test/simple2d-16x16.msh
+      LIBRARIES
+        flecsi
+        ${CINCH_RUNTIME_LIBRARIES}
+        ${COLORING_LIBRARIES}
+      DEFINES
+        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+      POLICY LEGION
+      THREADS 2
+      NOCI
       )
-
-  #     cinch_add_unit(data_client_handle
-  #       SOURCES
-  #         test/legion/data_client_handle.cc
-  #         ../supplemental/coloring/add_colorings.cc
-  #         ${DRIVER_INITIALIZATION}
-  #         ${RUNTIME_DRIVER}
-  #       INPUTS
-  #         test/simple2d-8x8.msh
-  #         test/simple2d-16x16.msh
-  #       LIBRARIES
-  #         flecsi
-  #         ${CINCH_RUNTIME_LIBRARIES}
-  #         ${COLORING_LIBRARIES}
-  #       DEFINES
-  #         -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
-  #         -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
-  #         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-  #         -DFLECSI_8_8_MESH
-  #       POLICY LEGION
-  #       THREADS 2
-  # NOCI
-  #     )
-
-    endif()
 
   endif()
 
 endif()
+
 
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.
