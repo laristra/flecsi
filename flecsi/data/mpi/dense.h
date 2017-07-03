@@ -868,11 +868,17 @@ struct storage_type__<dense>
 
     // get field_info for this data handle
     // TODO: lookup rather than hardcoded 0
-    auto field_info = context.registered_fields()[0];
+    auto field_infos = context.registered_fields();
+    auto field_info = *(std::find_if(field_infos.begin(), field_infos.end(), [](auto& fi) {
+      return fi.data_client_hash == typeid(DATA_CLIENT_TYPE).hash_code() &&
+        fi.namespace_hash == NAMESPACE &&
+        fi.name_hash == NAME;
+    }));
+    //auto field_info = context.registered_fields()[0];
 
     // get color_info for this field.
     // TODO: lookup rather than hardcoded 0
-    auto color_info = (context.coloring_info(field_info.index_space)).at(0);
+    auto color_info = (context.coloring_info(field_info.index_space)).at(context.rank);
 
     // get field_data
     auto &field_data = context.registered_field_data(field_info.fid);

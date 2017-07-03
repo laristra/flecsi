@@ -96,6 +96,12 @@ struct mpi_context_policy_t
   using unique_tid_t = utils::unique_id_t<task_id_t>;
 
   //--------------------------------------------------------------------------//
+  //! Adjacency triple: index space, from index space, to index space
+  //--------------------------------------------------------------------------//
+
+  using adjacency_triple_t = std::tuple<size_t, size_t, size_t>;
+
+  //--------------------------------------------------------------------------//
   //! Register a task with the runtime.
   //!
   //! @param key       The task hash key.
@@ -225,6 +231,29 @@ struct mpi_context_policy_t
     return field_data[fid];
   }
 
+  //--------------------------------------------------------------------------//
+  //! Add an adjacency index space.
+  //!
+  //! @param index_space index space to add.
+  //--------------------------------------------------------------------------//
+
+  void
+  add_adjacency_triple(const adjacency_triple_t& triple)
+  {
+    adjacencies_.emplace(std::get<0>(triple), triple);
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Return set of all adjacency index spaces.
+  //--------------------------------------------------------------------------//
+
+  auto&
+  adjacencies()
+  const
+  {
+    return adjacencies_;
+  }
+
   int rank;
 
 private:
@@ -242,6 +271,11 @@ private:
 //    size_t,
 //    task_info_t
 //  > task_registry_;
+  //--------------------------------------------------------------------------//
+  // Map of adjacency triples. key: adjacency index space
+  //--------------------------------------------------------------------------//
+
+  std::map<size_t, adjacency_triple_t> adjacencies_;
 
   //--------------------------------------------------------------------------//
   // Function data members.
@@ -256,18 +290,9 @@ private:
 
   std::vector<field_info_t> field_info_vec_;
 
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-=======
   std::map<field_id_t, std::vector<uint8_t>> field_data;
 
 
->>>>>>> Stashed changes
-=======
-  std::map<field_id_t, std::vector<uint8_t>> field_data;
-
-  int rank;
->>>>>>> refactor
 }; // class mpi_context_policy_t
 
 } // namespace execution 

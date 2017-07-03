@@ -87,13 +87,21 @@ struct context__ : public CONTEXT_POLICY
     coloring_info_[index_space] = coloring_info;
   } // add_coloring
 
+  void
+  set_coloring(
+    size_t index_space,
+    index_coloring_t & coloring
+  )
+  {
+    colorings_[index_space] = coloring;
+  }
   //---------------------------------------------------------------------------/
   //! Return the index coloring referenced by key.
   //!
   //! @param index_space The key associated with the coloring to be returned.
   //---------------------------------------------------------------------------/
 
-  const index_coloring_t &
+  index_coloring_t &
   coloring(
     size_t index_space
   )

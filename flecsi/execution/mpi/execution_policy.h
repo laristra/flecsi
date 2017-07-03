@@ -237,8 +237,8 @@ struct mpi_execution_policy_t
     ARG_TUPLE task_args = std::make_tuple(args ...);
 
     // run task_prolog to copy ghost cells.
-//    task_prolog_t task_prolog;
-//    task_prolog.walk(task_args);
+    task_prolog_t task_prolog;
+    task_prolog.walk(task_args);
 
     auto fut = executor__<RETURN, ARG_TUPLE>::execute(fun, std::forward_as_tuple(args ...));
 
