@@ -307,6 +307,11 @@ void driver(int argc, char ** argv) {
   cell* c = mesh.make<cell>();
   mesh_storage_policy->init_connectivity(0,0,2,2, positions, indices, num_cells);
 
+  for(auto this_cell : mesh.entities<2>()) {
+    clog(error) << my_color << " cell " << this_cell.id() << std::endl;
+  }
+
+
   // start what really is driver, not broken spmd_init
   client_type client;
 
