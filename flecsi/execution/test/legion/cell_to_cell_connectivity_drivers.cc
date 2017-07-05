@@ -302,15 +302,26 @@ void driver(int argc, char ** argv) {
   auto mesh_storage_policy = mesh.storage();
   mesh_entity_base_* entities;
   size_t dimension = 2;
-  entities = (mesh_entity_base_*)malloc(sizeof(mesh_entity_base_)*num_cells); // FIXME leak
+  entities = (mesh_entity_base_*)malloc(sizeof(cell)*num_cells); // FIXME leak
   mesh_storage_policy->init_entities(INDEX_ID,dimension,entities,num_cells);
-  cell* c = mesh.make<cell>();
+  
+  for(size_t idx = 0; idx < num_cells; idx++)
+    cell* c = mesh.make<cell>();
+
   mesh_storage_policy->init_connectivity(0,0,2,2, positions, indices, num_cells);
 
   for(auto this_cell : mesh.entities<2>()) {
     clog(error) << my_color << " cell " << this_cell.id() << std::endl;
   }
 
+/*
+  for(auto from_cell : mesh.entities<2>()) {
+    for(auto to_cell : mesh.entities<2>(from_cell)) {
+      clog(error) << my_color << " from cell " << from_cell.id() << 
+      " to cell " << to_cell.id() << std::endl;
+    }
+  }
+  */
 
   // start what really is driver, not broken spmd_init
   client_type client;
