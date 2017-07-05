@@ -14,51 +14,66 @@
 namespace flecsi {
 namespace topology {
 
+template<size_t, typename>
+class domain_entity;
+
+template<typename item_t>
+struct entity_storage_type__{
+  using type = item_t;
+};
+
+template<size_t M, typename E>
+struct entity_storage_type__<domain_entity<M, E>>{
+  using type = E*;
+};
+
 template<typename T>
 class entity_storage__{
 public:
+  using item_t = typename entity_storage_type__<T>::type;
+
   entity_storage__(){}
 
   entity_storage__(
-    T* buf,
+    item_t* buf,
     size_t size
   )
   : buf_(buf),
   size_(size){}
 
-  T
+  item_t
   operator[](size_t index)
   {
     return buf_ + index;
   }
 
-  const T
+  const item_t
   operator[](size_t index)
   const
   {
     return buf_ + index;
   }
 
-  T
+  item_t
   begin()
   {
     return buf_;
   }
 
-  T
+  item_t
   end()
   {
     return buf_ + size_;
   }
 
-  const T
+  const item_t
   begin()
   const
   {
     return buf_;
   }
 
-  const T
+  const item_t
   end()
   const
   {
@@ -84,20 +99,20 @@ public:
   }
 
   void
-  set_buffer(T buf, size_t size)
+  set_buffer(item_t buf, size_t size)
   {
     buf_ = buf;
     size_ = size;
   }
 
-  T
+  item_t
   buffer()
   {
     return buf_;
   }
 
 private:
-  T buf_;
+  item_t buf_;
   size_t size_;  
 };
 

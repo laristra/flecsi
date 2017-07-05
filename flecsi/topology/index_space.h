@@ -202,7 +202,7 @@ public:
       return index_ != itr.index_;
     }
 
-    ref_t
+    auto
     get_(
       size_t index
     )
@@ -622,7 +622,8 @@ public:
     size_t end
   ) const
   {
-    return index_space<S, false, false, SORTED>(*this, begin, end);
+    return index_space<S, false, false, SORTED, F, STORAGE_TYPE>(
+      *this, begin, end);
   }
 
   template<
@@ -630,7 +631,8 @@ public:
   >
   auto slice() const
   {
-    return index_space<S, false, false, SORTED>(*this, begin_, end_);
+    return index_space<S, false, false, SORTED, F, STORAGE_TYPE>(
+      *this, begin_, end_);
   }
 
   ref_t
