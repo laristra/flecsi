@@ -207,7 +207,7 @@ void fill_connectivity_buffers(
         }
       } // for vertex
       if(2==shared_vertices_count) {
-        clog(trace)  << my_color << " cell " << gid_to_lid_map.at(entity.id) <<
+        clog(error)  << my_color << " cell " << gid_to_lid_map.at(entity.id) <<
           " nbr " << gid_to_lid_map.at(neighbor) << std::endl;
         indices[*index] = gid_to_lid_map.at(neighbor);
         *index = *index + 1;
@@ -233,17 +233,11 @@ void driver(int argc, char ** argv) {
   auto ctx = runtime->get_context();
   mesh_t mesh;
   context_t & context_ = context_t::instance();
-  auto& ispace_dmap = context_.index_space_data_map();
-  Legion::Domain exclusive_domain = runtime->get_index_space_domain(ctx,
-      ispace_dmap[INDEX_ID].exclusive_lr.get_index_space());
-  Legion::Domain shared_domain = runtime->get_index_space_domain(ctx,
-      ispace_dmap[INDEX_ID].shared_lr.get_index_space());
-  LegionRuntime::Arrays::Rect<2> exclusive_rect = exclusive_domain.get_rect<2>();
-  LegionRuntime::Arrays::Rect<2> shared_rect = shared_domain.get_rect<2>();
-  size_t num_cells = exclusive_rect.hi.x[1] - exclusive_rect.lo.x[1] + 1
-      + shared_rect.hi.x[1] - shared_rect.lo.x[1] + 1;
-  clog(trace) << my_color << " exclusive " << exclusive_rect.hi.x[1] - exclusive_rect.lo.x[1] + 1 << std::endl;
-  clog(trace) << my_color << " shared " << shared_rect.hi.x[1] - shared_rect.lo.x[1] + 1 << std::endl;
+  const std::map<size_t, flecsi::coloring::index_coloring_t> coloring_map
+    = context_.coloring_map();
+  auto index_coloring = coloring_map.find(INDEX_ID);
+  size_t num_cells = index_coloring->second.exclusive.size() +
+      index_coloring->second.shared.size() + index_coloring->second.ghost.size();
 
   LegionRuntime::Arrays::Point<2>* positions = (LegionRuntime::Arrays::Point<2>*)
       malloc(sizeof(LegionRuntime::Arrays::Point<2>)*num_cells);  // FIXME leak
@@ -252,9 +246,13 @@ void driver(int argc, char ** argv) {
 
   flecsi::io::simple_definition_t simple_def("simple2d-16x16.msh");
 
-  const std::map<size_t, flecsi::coloring::index_coloring_t> coloring_map
-    = context_.coloring_map();
-  auto index_coloring = coloring_map.find(INDEX_ID);
+  // setup connectivity
+
+  auto mesh_storage_policy = mesh.storage();
+  mesh_entity_base_* entities;
+  size_t dimension = 2;
+  entities = (mesh_entity_base_*)malloc(sizeof(cell)*num_cells); // FIXME leak
+  mesh_storage_policy->init_entities(INDEX_ID,dimension,entities,num_cells);
 
   std::map<size_t,size_t> gid_to_lid_map;
   auto entries = index_coloring->second.exclusive;
@@ -263,6 +261,7 @@ void driver(int argc, char ** argv) {
   for (auto entity_itr = entries.begin(); entity_itr != entries.end(); ++entity_itr) {
     flecsi::coloring::entity_info_t entity = *entity_itr;
     gid_to_lid_map[entity.id] = lid;
+    cell* c = mesh.make<cell>();
     lid++;
   }
 
@@ -270,6 +269,7 @@ void driver(int argc, char ** argv) {
   for (auto entity_itr = entries.begin(); entity_itr != entries.end(); ++entity_itr) {
     flecsi::coloring::entity_info_t entity = *entity_itr;
     gid_to_lid_map[entity.id] = lid;
+    //cell* c = mesh.make<cell>();
     lid++;
   }
 
@@ -277,6 +277,7 @@ void driver(int argc, char ** argv) {
   for (auto entity_itr = entries.begin(); entity_itr != entries.end(); ++entity_itr) {
     flecsi::coloring::entity_info_t entity = *entity_itr;
     gid_to_lid_map[entity.id] = lid;
+    cell* c = mesh.make<cell>();
     lid++;
   }
 
@@ -297,31 +298,15 @@ void driver(int argc, char ** argv) {
 
   }
 
-  // setup connectivity
-
-  auto mesh_storage_policy = mesh.storage();
-  mesh_entity_base_* entities;
-  size_t dimension = 2;
-  entities = (mesh_entity_base_*)malloc(sizeof(cell)*num_cells); // FIXME leak
-  mesh_storage_policy->init_entities(INDEX_ID,dimension,entities,num_cells);
-  
-  for(size_t idx = 0; idx < num_cells; idx++)
-    cell* c = mesh.make<cell>();
 
   mesh_storage_policy->init_connectivity(0,0,2,2, positions, indices, num_cells);
 
-  for(auto this_cell : mesh.entities<2>()) {
-    clog(error) << my_color << " cell " << this_cell.id() << std::endl;
-  }
-
-/*
   for(auto from_cell : mesh.entities<2>()) {
     for(auto to_cell : mesh.entities<2>(from_cell)) {
       clog(error) << my_color << " from cell " << from_cell.id() << 
       " to cell " << to_cell.id() << std::endl;
     }
   }
-  */
 
   // start what really is driver, not broken spmd_init
   client_type client;
