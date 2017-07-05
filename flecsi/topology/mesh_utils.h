@@ -116,7 +116,7 @@ struct find_entity_ {
     Define the type returned by searching the tuple for matching
     dimension and domain.
    */
-  using type = typename std::tuple_element<1, pair_>::type;
+  using type = typename std::tuple_element<2, pair_>::type;
 };
 
 /*----------------------------------------------------------------------------*
@@ -143,9 +143,9 @@ struct compute_connectivity_ {
     static constexpr size_t size = std::tuple_size<TS>::value;
 
     using T = typename std::tuple_element<size - I, TS>::type;
-    using D1 = typename std::tuple_element<0, T>::type;
-    using T1 = typename std::tuple_element<1, T>::type;
-    using T2 = typename std::tuple_element<2, T>::type;
+    using D1 = typename std::tuple_element<1, T>::type;
+    using T1 = typename std::tuple_element<2, T>::type;
+    using T2 = typename std::tuple_element<3, T>::type;
 
     if (D1::value == DM) {
       mesh.template compute_connectivity<DM, T1::dimension, T2::dimension>();
@@ -205,10 +205,10 @@ struct compute_bindings_ {
     using T = typename std::tuple_element<size - I, TS>::type;
 
     // Get domains and dimension
-    using M1 = typename std::tuple_element<0, T>::type;
-    using M2 = typename std::tuple_element<1, T>::type;
-    using T1 = typename std::tuple_element<2, T>::type;
-    using T2 = typename std::tuple_element<3, T>::type;
+    using M1 = typename std::tuple_element<1, T>::type;
+    using M2 = typename std::tuple_element<2, T>::type;
+    using T1 = typename std::tuple_element<3, T>::type;
+    using T2 = typename std::tuple_element<4, T>::type;
 
     if (M1::value == DM) {
       mesh.template compute_bindings<M1::value, M2::value, T1::dimension,
