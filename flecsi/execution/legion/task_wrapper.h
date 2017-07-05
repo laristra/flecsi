@@ -363,6 +363,7 @@ struct task_wrapper__
 #endif
 
     // FIXME: NEED TO HANDLE RETURN TYPES
+    return (RETURN)true;
   } // execute_user_task
 
   //--------------------------------------------------------------------------//

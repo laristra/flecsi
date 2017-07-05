@@ -77,6 +77,7 @@ int internal_task_example_1(const Legion::Task * task,
    clog_assert((i+1)==*(combined_data+i), " ");
   }
 
+  return 0;
 } // internal_task_example
 
 // Register the task. The task id is automatically generated.
