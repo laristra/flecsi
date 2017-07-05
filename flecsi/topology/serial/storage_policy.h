@@ -53,6 +53,18 @@ struct serial_topology_storage_policy_t
 
   std::array<index_spaces_t, NM> index_spaces;
 
+  ~serial_topology_storage_policy_t()
+  {
+    for (size_t m = 0; m < NM; ++m) {
+      for (size_t d = 0; d <= ND; ++d) {
+        auto & is = index_spaces[m][d];
+        for (auto ent : is) {
+          delete ent;
+        }
+      }
+    }
+  }
+
   template<size_t D, size_t N>
   size_t
   entity_dimension(mesh_entity_t<D, N>*)

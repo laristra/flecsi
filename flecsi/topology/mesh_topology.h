@@ -306,15 +306,6 @@ public:
       return;
     }
 
-    for (size_t m = 0; m < MT::num_domains; ++m) {
-      for (size_t d = 0; d <= MT::num_dimensions; ++d) {
-        auto & is = ms_->index_spaces[m][d];
-        for (auto ent : is) {
-          delete ent;
-        }
-      }
-    }
-
     delete ms_;
   }
 
