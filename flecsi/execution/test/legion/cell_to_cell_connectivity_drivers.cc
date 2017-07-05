@@ -302,9 +302,12 @@ void driver(int argc, char ** argv) {
   auto mesh_storage_policy = mesh.storage();
   mesh_entity_base_* entities;
   size_t dimension = 2;
-  entities = (mesh_entity_base_*)malloc(sizeof(mesh_entity_base_)*num_cells); // FIXME leak
+  entities = (mesh_entity_base_*)malloc(sizeof(cell)*num_cells); // FIXME leak
   mesh_storage_policy->init_entities(INDEX_ID,dimension,entities,num_cells);
-  cell* c = mesh.make<cell>();
+  
+  for(size_t idx = 0; idx < num_cells; idx++)
+    cell* c = mesh.make<cell>();
+
   mesh_storage_policy->init_connectivity(0,0,2,2, positions, indices, num_cells);
 
   for(auto this_cell : mesh.entities<2>()) {
