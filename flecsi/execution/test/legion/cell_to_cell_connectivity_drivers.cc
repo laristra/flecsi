@@ -207,7 +207,7 @@ void fill_connectivity_buffers(
         }
       } // for vertex
       if(2==shared_vertices_count) {
-        clog(trace)  << my_color << " cell " << gid_to_lid_map.at(entity.id) <<
+        clog(error)  << my_color << " cell " << gid_to_lid_map.at(entity.id) <<
           " nbr " << gid_to_lid_map.at(neighbor) << std::endl;
         indices[*index] = gid_to_lid_map.at(neighbor);
         *index = *index + 1;
@@ -310,18 +310,12 @@ void driver(int argc, char ** argv) {
 
   mesh_storage_policy->init_connectivity(0,0,2,2, positions, indices, num_cells);
 
-  for(auto this_cell : mesh.entities<2>()) {
-    clog(error) << my_color << " cell " << this_cell.id() << std::endl;
-  }
-
-/*
   for(auto from_cell : mesh.entities<2>()) {
     for(auto to_cell : mesh.entities<2>(from_cell)) {
       clog(error) << my_color << " from cell " << from_cell.id() << 
       " to cell " << to_cell.id() << std::endl;
     }
   }
-  */
 
   // start what really is driver, not broken spmd_init
   client_type client;
