@@ -314,6 +314,14 @@ void driver(int argc, char ** argv) {
     clog(error) << my_color << " cell " << this_cell.id() << std::endl;
   }
 
+/*
+  for(auto from_cell : mesh.entities<2>()) {
+    for(auto to_cell : mesh.entities<2>(from_cell)) {
+      clog(error) << my_color << " from cell " << from_cell.id() << 
+      " to cell " << to_cell.id() << std::endl;
+    }
+  }
+  */
 
   // start what really is driver, not broken spmd_init
   client_type client;
