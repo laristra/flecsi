@@ -741,6 +741,21 @@ __flecsi_internal_legion_task(fill_connectivity_task, void)
 
 #undef __flecsi_internal_legion_task
 
+struct MaxReductionOp {
+  static const Legion::ReductionOpID redop_id = (size_t(1) << 20) - 4095;
+
+  typedef double LHS;
+  typedef double RHS;
+  static const double identity;
+
+  template <bool EXCLUSIVE>
+  static void apply(LHS &lhs, RHS rhs);
+
+  template <bool EXCLUSIVE>
+  static void fold(RHS &rhs1, RHS rhs2);
+
+};
+
 } // namespace execution 
 } // namespace flecsi
 

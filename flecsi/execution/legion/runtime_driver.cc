@@ -12,6 +12,7 @@
 
 #include <legion.h>
 #include <legion_utilities.h>
+#include <limits>
 
 #include "flecsi/data/storage.h"
 #include "flecsi/execution/context.h"
@@ -143,6 +144,11 @@ runtime_driver(
     }
   }
 
+  double min = std::numeric_limits<double>::min();
+  Legion::DynamicCollective max_reduction =
+  runtime->create_dynamic_collective(ctx, num_colors, MaxReductionOp::redop_id,
+             &min, sizeof(min));
+
   // Map between pre-compacted and compacted data placement
   const auto pos_compaction_id =
     context_.task_id<__flecsi_internal_task_key(owner_pos_compaction_task)>();
@@ -248,6 +254,8 @@ runtime_driver(
     args_serializers[color].serialize(&num_adjacenicies, sizeof(size_t));
     args_serializers[color].serialize(&adjacencies_vec[0], num_adjacenicies
         * sizeof(adjacency_triple_t));
+    args_serializers[color].serialize(&max_reduction,
+        sizeof(Legion::DynamicCollective));
 
     Legion::TaskLauncher spmd_launcher(spmd_id,
         Legion::TaskArgument(args_serializers[color].get_buffer(),
@@ -350,6 +358,8 @@ runtime_driver(
   future.wait_all_results();
 
   // Finish up Legion runtime and fall back out to MPI.
+
+  //FIXME runtime->destroy_dynamic_collective(ctx, max_reduction);
 
   for(auto& itr : phase_barriers_map) {
     const size_t handle = itr.first;
@@ -631,6 +641,10 @@ spmd_task(
 
     region_index++;
   }
+
+  Legion::DynamicCollective max_reduction_ptr;
+  args_deserializer.deserialize((void*)&max_reduction_ptr,
+    sizeof(Legion::DynamicCollective));
 
   // Get the input arguments from the Legion runtime
   const Legion::InputArgs & args =
