@@ -189,20 +189,19 @@ runtime_driver(
     for(auto idx_space : data.index_spaces()) {
       std::map<field_id_t, std::vector<Legion::PhaseBarrier>>
         per_color_owners_pbs;
+
+      flecsi::coloring::coloring_info_t color_info =
+          coloring_info[idx_space][color];
+
       for (const field_id_t& field_id : fields_map[idx_space]){
         pbarriers_as_owner.push_back(
           phase_barriers_map[idx_space][field_id][color]);
-      
-        flecsi::coloring::coloring_info_t color_info = 
-          coloring_info[idx_space][color];
       
         clog(trace) << " Color " << color << " idx_space " << idx_space 
         << ", fid = " << field_id<<
           " has " << color_info.ghost_owners.size() << 
           " ghost owners" << std::endl;
 
-        num_ghost_owners.push_back(color_info.ghost_owners.size());
-        //std::vector<Legion::PhaseBarrier> per_color_owners_pbs;
         for(auto owner : color_info.ghost_owners) {
           clog(trace) << owner << std::endl;
           owners_pbarriers[idx_space][field_id].push_back(
@@ -211,11 +210,12 @@ runtime_driver(
        
         }
       }//for field_info
+      num_ghost_owners.push_back(color_info.ghost_owners.size());
     } // for idx_space
 
 //FIXME remove checking below
         clog_assert(pbarriers_as_owner.size()==num_phase_barriers,
-            "wron number of phase barriers calculated");
+            "wrong number of phase barriers calculated");
 
     size_t num_idx_spaces = data.index_spaces().size();
 
@@ -225,8 +225,9 @@ runtime_driver(
 
    //data serialization:
 
-    // #1 serialize num_indx_spaces
+    // #1 serialize num_indx_spaces & num_phase_barriers
     args_serializers[color].serialize(&num_idx_spaces, sizeof(size_t));
+    args_serializers[color].serialize(&num_phase_barriers, sizeof(size_t));
 
     // #2 serialize indx_spaces
     args_serializers[color].serialize(&idx_spaces_vec[0], num_idx_spaces
@@ -245,6 +246,7 @@ runtime_driver(
     // #5 serialize num_ghost_owners[
     args_serializers[color].serialize(&num_ghost_owners[0], num_idx_spaces
         * sizeof(size_t));
+
 
 //FIXME:: check if serialize and deserialize work 
     // #6 serialize owners_pbarriers

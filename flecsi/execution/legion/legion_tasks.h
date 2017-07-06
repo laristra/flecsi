@@ -195,9 +195,11 @@ __flecsi_internal_legion_task(spmd_task, void) {
 
   Legion::Deserializer args_deserializer(task->args, task->arglen);
   size_t num_idx_spaces;
- 
-  // #1 deserialize num_idx_spaces
+  size_t num_phase_barriers;
+
+  // #1 deserialize num_idx_spaces & num_phase_barriers
   args_deserializer.deserialize(&num_idx_spaces, sizeof(size_t));
+  args_deserializer.deserialize(&num_phase_barriers, sizeof(size_t));
 
   // #2 deserialize idx_spaces
   size_t* idx_spaces = (size_t*)malloc(sizeof(size_t) * num_idx_spaces);
@@ -229,17 +231,6 @@ __flecsi_internal_legion_task(spmd_task, void) {
     field_info_t& fi = field_info_buf[i];
     context_.put_field_info(fi);
   }//end for i
-
-  size_t num_phase_barriers =0;
-  for(auto idx_space : context_.index_spaces()){
-    for(const field_info_t& field_info : context_.registered_fields()){
-        if(field_info.index_space == idx_space){
-          num_phase_barriers++;
-        }
-      }
-  }//end for indx_space
-
-
 
   // #4 deserialize pbarriers_as_owner
  
@@ -389,6 +380,10 @@ __flecsi_internal_legion_task(spmd_task, void) {
       size_t size;
       const bool can_fail = false;
       const bool wait_until_ready = true;
+
+      clog_assert(region_index < regions.size(),
+          "SPMD attempted to access more regions than passed");
+
       runtime->retrieve_semantic_information(regions[region_index]
           .get_logical_region(), OWNER_COLOR_TAG,
           owner_color, size, can_fail, wait_until_ready);
@@ -401,8 +396,6 @@ __flecsi_internal_legion_task(spmd_task, void) {
           *(LegionRuntime::Arrays::coord_t*)owner_color <<
           " maps to " << owner << std::endl;
       region_index++;
-      clog_assert(region_index <= regions.size(),
-          "SPMD attempted to access more regions than passed");
     } // for owner
     ispace_dmap[idx_space].ghost_owners_lregions
       = ghost_owners_lregions[idx_space];
