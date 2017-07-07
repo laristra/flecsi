@@ -547,7 +547,8 @@ struct legion_context_policy_t
     clog_assert(function_registry_.find(KEY) == function_registry_.end(),
       "function has already been registered");
 
-    clog(info) << "Registering function: " << FUNCTION << std::endl;
+    const std::size_t addr = reinterpret_cast<std::size_t>(FUNCTION);
+    clog(info) << "Registering function: " << addr << std::endl;
 
     function_registry_[KEY] =
       reinterpret_cast<void *>(FUNCTION);
