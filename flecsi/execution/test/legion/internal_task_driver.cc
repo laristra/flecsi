@@ -21,6 +21,7 @@ int internal_task_example_1(const Legion::Task * task,
   Legion::Runtime * runtime) 
 {
   clog(info) <<"Executing task1" <<std::endl;
+  return 0;
 } // internal_task_example
 
 // Register the task. The task id is automatically generated.
@@ -34,6 +35,7 @@ int internal_task_example_2(const Legion::Task * task,
   Legion::Runtime * runtime)
 {
   clog(info) <<"Executing task2" <<std::endl;
+  return 0;
 } // internal_task_example
 
 // Register the task. The task id is automatically generated.
