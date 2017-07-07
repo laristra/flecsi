@@ -260,7 +260,7 @@ runtime_driver(
     // #2 serialize indx_spaces
     args_serializers[color].serialize(&idx_spaces_vec[0], num_idx_spaces
         * sizeof(size_t));
-        
+
     // #3 serialize field info
     size_t num_fields = context_.registered_fields().size();
     args_serializers[color].serialize(&num_fields, sizeof(size_t));
@@ -275,15 +275,23 @@ runtime_driver(
     args_serializers[color].serialize(&num_ghost_owners[0], num_idx_spaces
         * sizeof(size_t));
 
-
-//FIXME:: check if serialize and deserialize work 
     // #6 serialize owners_pbarriers
-    for(size_t idx_space : data.index_spaces())
-      for (const field_id_t& field_id : fields_map[idx_space])
-      args_serializers[color].serialize(
-          &owners_pbarriers[idx_space][field_id],
-          num_ghost_owners[idx_space] * sizeof(Legion::PhaseBarrier));
 
+    std::vector <Legion::PhaseBarrier> owners_pbarriers_buf;
+    for(size_t idx_space : data.index_spaces()){
+      for (const field_id_t& field_id : fields_map[idx_space]){
+        for(auto pb:owners_pbarriers[idx_space][field_id]){
+           owners_pbarriers_buf.push_back(pb);
+        }
+      }
+    }
+
+  size_t num_owners_pbarriers = owners_pbarriers_buf.size();
+  args_serializers[color].serialize(&num_owners_pbarriers, sizeof(size_t));
+  args_serializers[color].serialize(&owners_pbarriers_buf[0],
+      num_owners_pbarriers * sizeof(Legion::PhaseBarrier));
+
+   //add region requirements to the spmd_launcher
     Legion::TaskLauncher spmd_launcher(spmd_id,
         Legion::TaskArgument(args_serializers[color].get_buffer(),
                              args_serializers[color].get_used_bytes()));
@@ -300,8 +308,8 @@ runtime_driver(
       Legion::LogicalRegion color_lregion =
         runtime->get_logical_subregion_by_color(ctx, color_lpart, color);
 
-      Legion::RegionRequirement reg_req(color_lregion, READ_WRITE, SIMULTANEOUS,
-        flecsi_ispace.logical_region);
+      Legion::RegionRequirement reg_req(color_lregion, READ_WRITE,
+          SIMULTANEOUS, flecsi_ispace.logical_region);
 
       reg_req.add_field(ghost_owner_pos_fid);
 
