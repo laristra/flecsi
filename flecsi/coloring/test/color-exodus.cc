@@ -41,7 +41,9 @@ using exodus_definition_3d_t =
 
 using std::vector;
 
-
+////////////////////////////////////////////////////////////////////////////////
+/// \brief the main cell coloring driver
+////////////////////////////////////////////////////////////////////////////////
 template< int THRU_DIM, typename MD >
 void color_cells( const MD & md, const std::string & output_prefix ) 
 {
@@ -346,7 +348,13 @@ void color_cells( const MD & md, const std::string & output_prefix )
   //----------------------------------------------------------------------------
   // output the result
   //----------------------------------------------------------------------------
+  
+  constexpr auto num_dims = MD::dimension();
 
+  using real_t = typename MD::real_t;
+  using exodus_t = flecsi::io::exodus_base__< num_dims, real_t >;  
+  
+                          
   //------------------------------------
   // Open the file
 
@@ -357,66 +365,36 @@ void color_cells( const MD & md, const std::string & output_prefix )
   output_filename << std::setfill('0') << std::setw(6) << rank;
   output_filename << ".exo";
 
-  // some type aliases
-  using real_t = typename MD::real_t;
-  using ex_real_t  = real_t;
-  using ex_index_t = int;
-
-  // size of floating point variables used in app.
-  int app_word_size = sizeof(real_t);
-
-  // size of floating point to be stored in file.
-  // change to float to save space
-  int exo_word_size = sizeof(ex_real_t);
-
-  // determine the file creation mode
-  int cmode = EX_CLOBBER;
-
-  // create file
-  auto exoid =
-    ex_create(
-      output_filename.str().c_str(), cmode, &app_word_size, &exo_word_size
-    );
-  if ( exoid < 0 ) 
-    clog_fatal( 
-      "Problem writing exodus file, ex_create() returned " << exoid
-    );
+  // open the exodus file
+  auto exoid = exodus_t::open( output_filename.str(), std::ios_base::out );
 
   //------------------------------------
   // Set exodus parameters
 
   // set exodus parameters
-  constexpr auto num_dims = MD::dimension();
   auto num_nodes = md.num_entities( 0 );
+  auto num_faces = num_dims==3 ? md.num_entities( num_dims-1 ) : 0;
   auto num_elems = 
     exclusive_cells.size() + shared_cells.size() + ghost_cells.size();;
 
-  ex_init_params exopar;
-  strcpy( exopar.title, "Exodus II output from flecsi." );
-  exopar.num_dim = num_dims;
-  exopar.num_nodes = num_nodes;
-  exopar.num_edge = 0;
-  exopar.num_edge_blk = 0;
-  exopar.num_face = 0; //num_faces;
-  exopar.num_face_blk = 0; //1;
-  exopar.num_elem = num_elems;
-  exopar.num_elem_blk = 3; // excl, shared, ghost
-  exopar.num_node_sets = 3; // excl, shared, ghost
-  exopar.num_edge_sets = 0;
-  exopar.num_face_sets = 0;
-  exopar.num_side_sets = 0;
-  exopar.num_elem_sets = 0;
-  exopar.num_node_maps = 0;
-  exopar.num_edge_maps = 0;
-  exopar.num_face_maps = 0;
-  exopar.num_elem_maps = 0;
-  auto status = ex_put_init_ext( exoid, &exopar );
-  assert(status == 0);
-  
+  auto exo_params = exodus_t::make_params();
+  exo_params.num_nodes = num_nodes;
+  if ( num_dims == 3 ) {
+    exo_params.num_face = num_faces;
+    exo_params.num_face_blk = 1;
+  }
+  exo_params.num_elem = num_elems;
+  exo_params.num_elem_blk = 
+    !exclusive_cells.empty() + !shared_cells.empty() + !ghost_cells.empty();
+  exo_params.num_node_sets = 
+    !exclusive_vertices.empty() + !shared_vertices.empty() + 
+    !ghost_vertices.empty();
+
+  exodus_t::write_params(exoid, exo_params);
+
   //------------------------------------
   // Write the coordinates
 
-  // write the coordiantes
   vector<real_t> vertex_coord( num_nodes * num_dims );
   
   for ( size_t i=0; i<num_nodes; ++i ) {
@@ -425,189 +403,96 @@ void color_cells( const MD & md, const std::string & output_prefix )
       vertex_coord[ d*num_nodes + i ] = vert[d];
   }
 
-  status = ex_put_coord( 
-    exoid, 
-    vertex_coord.data(), 
-    vertex_coord.data()+num_nodes, 
-    vertex_coord.data()+2*num_nodes
-  );
-  if (status)
-    clog_fatal(
-      "Problem writing vertex coordinates to exodus file, " <<
-      " ex_put_coord() returned " << status 
-    );
-      
-  //------------------------------------
-  // Lambda to write an element block
-  auto write_elem_block = [&md]( 
-    auto exoid, 
-    auto elem_blk_id,
-    const std::string & name,
-    const auto & cell_list
-  ) {
-
-    // build the connectivitiy list for the exclusive cells
-    vector<ex_index_t> elem_nodes;
-    vector<ex_index_t> elem_node_counts;
-    elem_nodes.reserve( cell_list.size() * (num_dims+1) );
-    elem_node_counts.reserve( cell_list.size() );
-    
-    for ( auto c : cell_list ) {
-      auto verts = md.vertices(num_dims, c.id);
-      std::cout << c.id << " ";
-      for ( auto v : verts ) 
-        std::cout << v << " ";
-      std::cout << std::endl;
-      elem_node_counts.push_back( verts.size() );
-      for (auto v: verts)
-        elem_nodes.push_back( v + 1 ); // 1-based ids
-    }
-
-    // the total size needed to hold the element connectivity
-    ex_index_t num_nodes_this_blk = elem_nodes.size();
-    ex_index_t num_elems_this_blk = elem_node_counts.size();
-
-    // set the block header
-    ex_index_t num_attr_per_elem = 0;
-    ex_index_t num_faces_per_elem = 0;
-    ex_index_t num_edges_per_elem = 0;
-    auto status = ex_put_block( 
-      exoid, EX_ELEM_BLOCK, elem_blk_id, "nsided", num_elems_this_blk, 
-      num_nodes_this_blk, num_edges_per_elem, num_faces_per_elem, 
-      num_attr_per_elem
-    );
-    if (status)
-      clog_fatal(
-        "Problem writing element blocl to exodus file, " <<
-        " ex_put_block() returned " << status 
-      );
-
-    // write the block name
-    status = ex_put_name(
-      exoid, EX_ELEM_BLOCK, elem_blk_id, name.c_str() 
-    );
-    if (status)
-      clog_fatal(
-        "Problem writing element block name to exodus file, " <<
-        " ex_put_name() returned " << status 
-      );
-
-    // write connectivity
-    status = ex_put_conn(
-      exoid, EX_ELEM_BLOCK, elem_blk_id, elem_nodes.data(), 
-      nullptr, nullptr
-    );
-    if (status)
-      clog_fatal(
-        "Problem writing element connectivity to exodus file, " <<
-        " ex_put_conn() returned " << status 
-      );
-        
-    // write counts
-    status = ex_put_entity_count_per_polyhedra(
-      exoid, EX_ELEM_BLOCK, elem_blk_id, elem_node_counts.data() 
-    );
-    if (status)
-      clog_fatal(
-        "Problem writing element counts to exodus file, " <<
-        " ex_put_entity_count_per_polyhedra() returned " << status 
-      );
-  
-  }; // write block
+  exodus_t::write_point_coords( exoid, vertex_coord );
   
   //------------------------------------
-  // A lambda to Write Node sets
-
-  auto write_node_set = [&md]( 
-    auto exoid,
-    auto node_set_id,
-    const std::string & name,
-    const auto & vertex_list
-  ) {
-    
-    // set the node set parameters
-    ex_index_t num_dist_in_set = 0;
-    ex_index_t num_nodes_this_set = vertex_list.size();
-    auto status = ex_put_node_set_param(
-      exoid, node_set_id, num_nodes_this_set, num_dist_in_set
-    ); 
-    if (status)
-      clog_fatal(
-        "Problem writing node set param to exodus file, " <<
-        " ex_put_node_set_param() returned " << status 
-      );
-
-    // copy the vertex ids
-    vector<ex_index_t> node_set;
-    node_set.reserve( vertex_list.size() );
-    
-    for ( auto v : vertex_list ) 
-      node_set.push_back( v.id );
-
-    // write the node set
-    status = ex_put_node_set(
-      exoid, node_set_id, node_set.data()
-    ); 
-    if (status)
-      clog_fatal(
-        "Problem writing node set to exodus file, " <<
-        " ex_put_node_set() returned " << status 
-      );
-
-    // write the set name
-    status = ex_put_name(
-      exoid, EX_NODE_SET, node_set_id, name.c_str() 
+  // Write the faces
+  
+  if ( num_dims == 3 ) {
+    exodus_t::template write_face_block<int>( 
+      exoid, 1, "faces", md.entities(2,0)
     );
-    if (status)
-      clog_fatal(
-        "Problem writing node set name to exodus file, " <<
-        " ex_put_name() returned " << status 
-      );
-
-  };
-
+  }
 
   //------------------------------------
   // Write Exclusive Cells / vertices
   
   // the block id and side set counter
-  ex_index_t elem_blk_id = 0;
-  ex_index_t node_set_id = 0;
-  
+  int elem_blk_id = 0;
+  int node_set_id = 0;
+
+  // 3d wants cell faces, 2d wants cell vertices
+  auto to_dim = (num_dims == 3) ? 2 : 0;
+  const auto & cell_entities = md.entities(cell_dim, to_dim);
+
+  // lambda function to convert to integer lists
+  auto to_list = [&](const auto & list_in)
+    -> std::vector<std::vector<size_t>>
+  {
+    std::vector<std::vector<size_t>> list_out;
+    list_out.reserve( list_in.size() );
+    for ( auto & e : list_in )
+      list_out.emplace_back( cell_entities[e.id] );
+    return list_out;
+  };
+
   // write the cells
-  write_elem_block( exoid, ++elem_blk_id, "exclusive cells", exclusive_cells );
-  write_elem_block( exoid, ++elem_blk_id, "shared cells", shared_cells );
-  write_elem_block( exoid, ++elem_blk_id, "ghost cells", ghost_cells );
+  exodus_t::template write_element_block<int>( 
+    exoid, ++elem_blk_id, "exclusive cells", to_list(exclusive_cells) 
+  );
+  exodus_t::template write_element_block<int>( 
+    exoid, ++elem_blk_id, "shared cells", to_list(shared_cells)
+  );
+  exodus_t::template write_element_block<int>( 
+    exoid, ++elem_blk_id, "ghost cells", to_list(ghost_cells)
+  );
+    
+  // lambda function to convert to integer lists
+  auto to_vec = [](const auto & list_in)
+    -> std::vector<size_t>
+  {
+    std::vector<size_t> list_out;
+    list_out.reserve( list_in.size() );
+    for ( auto & e : list_in )
+      list_out.push_back( e.id );
+    return list_out;
+  };
 
   // write the vertices
-  write_node_set( exoid, ++node_set_id, "exclusive vertices", exclusive_vertices );
-  write_node_set( exoid, ++node_set_id, "shared vertices", shared_vertices );
-  write_node_set( exoid, ++node_set_id, "ghost vertices", ghost_vertices );
+  exodus_t::template write_node_set<int>(
+    exoid, ++node_set_id, "exclusive vertices", to_vec(exclusive_vertices)
+  );
+  exodus_t::template write_node_set<int>( 
+    exoid, ++node_set_id, "shared vertices", to_vec(shared_vertices)
+  );
+  exodus_t::template write_node_set<int>( 
+    exoid, ++node_set_id, "ghost vertices", to_vec(ghost_vertices)
+  );
 
       
   //------------------------------------
   // Close the file
 
-  // close the file
-  status = ex_close(exoid);
-  if ( status ) 
-    clog_fatal( 
-      "Problem closing exodus file, ex_close() returned " << exoid 
-    );
+  exodus_t::close( exoid );
 
 } // somerhing
   
 
+////////////////////////////////////////////////////////////////////////////////
+/// \brief the main cell coloring test
+////////////////////////////////////////////////////////////////////////////////
 DEVEL(coloring-unstruct)
 {
   constexpr auto thru_dim = 0;
 
   auto prefix_2d = std::string( "exodus2d-mixed" );
   exodus_definition_2d_t md2d( prefix_2d+".exo" );
+	md2d.write( "test2.exo" );
   color_cells<thru_dim>( md2d, prefix_2d+"-colored" );
 
   auto prefix_3d = std::string( "exodus3d-hex" );
   exodus_definition_3d_t md3d( prefix_3d+".exo");
+	md3d.write( "test3.exo" );
   color_cells<thru_dim>( md3d, prefix_3d+"-colored" );
 }
 
