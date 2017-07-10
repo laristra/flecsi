@@ -173,7 +173,7 @@ runtime_driver(
   // Must epoch launch
   Legion::MustEpochLauncher must_epoch_launcher;
 
-  std::vector<Legion::Serializer> args_serializers(num_colors);
+  std::map<size_t,Legion::Serializer> args_serializers;
 
   const auto spmd_id =
     context_.task_id<__flecsi_internal_task_key(spmd_task)>();
@@ -185,7 +185,7 @@ runtime_driver(
     // Serialize PhaseBarriers and set as task arguments
     std::vector<Legion::PhaseBarrier> pbarriers_as_owner;
     std::vector<size_t> num_ghost_owners;
-    std::vector<std::vector<Legion::PhaseBarrier>> owners_pbarriers;
+    std::map<size_t, std::vector<Legion::PhaseBarrier>> owners_pbarriers;
 
     for(auto idx_space : data.index_spaces()) {
       pbarriers_as_owner.push_back(phase_barriers_map[idx_space][color]);
@@ -204,7 +204,7 @@ runtime_driver(
         per_color_owners_pbs.push_back(phase_barriers_map[idx_space][owner]);
       }
       
-      owners_pbarriers.push_back(per_color_owners_pbs);
+      owners_pbarriers[idx_space] = per_color_owners_pbs;
     } // for idx_space
 
     size_t num_idx_spaces = data.index_spaces().size();
@@ -220,9 +220,11 @@ runtime_driver(
         * sizeof(Legion::PhaseBarrier));
     args_serializers[color].serialize(&num_ghost_owners[0], num_idx_spaces
         * sizeof(size_t));
-    for(size_t idx_space : data.index_spaces())
+    size_t consecutive_idx = 0;
+    for(size_t idx_space : data.index_spaces()) {
       args_serializers[color].serialize(&owners_pbarriers[idx_space][0],
-          num_ghost_owners[idx_space] * sizeof(Legion::PhaseBarrier));
+          num_ghost_owners[consecutive_idx++] * sizeof(Legion::PhaseBarrier));
+    }
 
     size_t num_fields = context_.registered_fields().size();
     args_serializers[color].serialize(&num_fields, sizeof(size_t));
@@ -416,17 +418,20 @@ spmd_task(
   args_deserializer.deserialize((void*)num_owners, sizeof(size_t)
       * num_idx_spaces);
 
+  size_t consecutive_index = 0;
   for(size_t idx_space : context_.index_spaces()){
-    ispace_dmap[idx_space].pbarrier_as_owner = pbarriers_as_owner[idx_space];
+    ispace_dmap[idx_space].pbarrier_as_owner = pbarriers_as_owner[consecutive_index];
     ispace_dmap[idx_space].ghost_is_readable = true;
     ispace_dmap[idx_space].write_phase_started = false;
+    consecutive_index++;
   }
 
-  std::vector<std::vector<Legion::PhaseBarrier>>
-  ghost_owners_pbarriers(num_idx_spaces);
+  std::map<size_t, std::vector<Legion::PhaseBarrier>>
+  ghost_owners_pbarriers;
 
+  consecutive_index = 0;
   for(size_t idx_space : context_.index_spaces()) {
-    size_t n = num_owners[idx_space];
+    size_t n = num_owners[consecutive_index];
 
     ghost_owners_pbarriers[idx_space].resize(n);
     args_deserializer.deserialize((void*)&ghost_owners_pbarriers[idx_space][0],
@@ -438,6 +443,7 @@ spmd_task(
       ispace_dmap[idx_space].ghost_owners_pbarriers[owner] =
         ghost_owners_pbarriers[idx_space][owner];
     }
+    consecutive_index++;
   }
 
   size_t num_fields;
@@ -471,12 +477,13 @@ spmd_task(
   }
 
   // Prevent these objects destructors being called until after driver()
-  std::vector<std::vector<Legion::LogicalRegion>>
-    ghost_owners_lregions(num_idx_spaces);
+  std::map<size_t, std::vector<Legion::LogicalRegion>>
+    ghost_owners_lregions;
   std::vector<Legion::IndexPartition> primary_ghost_ips(num_idx_spaces);
   std::vector<Legion::IndexPartition> exclusive_shared_ips(num_idx_spaces);
 
   size_t region_index = 0;
+  consecutive_index = 0;
   for(size_t idx_space : context_.index_spaces()) {
 
     ispace_dmap[idx_space].color_region = regions[region_index]
@@ -565,7 +572,7 @@ spmd_task(
     runtime->get_logical_subregion_by_color(ctx, excl_shared_lp, SHARED_PART);
 
     // Add neighbors regions to context_
-    for(size_t owner = 0; owner < num_owners[idx_space]; owner++) {
+    for(size_t owner = 0; owner < num_owners[consecutive_index]; owner++) {
       ghost_owners_lregions[idx_space].push_back(regions[region_index]
         .get_logical_region());
       const void* owner_color;
@@ -607,7 +614,7 @@ spmd_task(
     fix_ghost_refs_launcher.add_future(Legion::Future::from_value(runtime,
             ispace_dmap[idx_space].global_to_local_color_map));
 
-    for(size_t owner = 0; owner < num_owners[idx_space]; owner++)
+    for(size_t owner = 0; owner < num_owners[consecutive_index]; owner++)
       fix_ghost_refs_launcher.add_region_requirement(
           Legion::RegionRequirement(ghost_owners_lregions[idx_space][owner],
               READ_ONLY, EXCLUSIVE, ghost_owners_lregions[idx_space][owner])
@@ -615,6 +622,7 @@ spmd_task(
 
     runtime->execute_task(ctx, fix_ghost_refs_launcher);
 
+    consecutive_index++;
   } // for idx_space
 
   for(auto& itr : context_.adjacencies()) {
