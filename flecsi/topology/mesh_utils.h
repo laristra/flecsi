@@ -119,6 +119,70 @@ struct find_entity_ {
   using type = typename std::tuple_element<2, pair_>::type;
 };
 
+
+template <size_t I, class T, class E>
+struct find_index_space__ {
+
+  //--------------------------------------------------------------------------//
+  //!
+  //!
+  //--------------------------------------------------------------------------//
+
+  //--------------------------------------------------------------------------//
+  //! Find the index corresponding to an entity type in the connectivities 
+  //! tuple - either from or to
+  //!
+  //! @tparam I The current index in tuple.
+  //! @tparam T The tuple type.
+  //! @tparam E The entity type to find.
+  //--------------------------------------------------------------------------//
+
+  static constexpr size_t find_from()
+  {
+    // grab current types
+    using E1 = typename std::tuple_element<I - 1, T>::type;
+    using I1 = typename std::tuple_element<0, E>::type;
+    using F1 = typename std::tuple_element<2, E>::type;
+
+    // Check match for domain and dimension and return
+    // index if matched or recurse if not matched.
+    return std::is_same<E1, F1>::value ? I1::value : 
+      find_index_space__<I - 1, T, E>::find_from();
+  }
+
+  static constexpr size_t find_to()
+  {
+    // grab current types
+    using E1 = typename std::tuple_element<I - 1, T>::type;
+    using I1 = typename std::tuple_element<0, E>::type;
+    using T1 = typename std::tuple_element<3, E>::type;
+
+    // Check match for domain and dimension and return
+    // index if matched or recurse if not matched.
+    return std::is_same<E1, T1>::value ? I1::value : 
+      find_index_space__<I - 1, T, E>::find_from();
+  }
+
+}; // find_index_space__
+
+/*!
+  \struct find_entity__ mesh_utils.h
+  \brief find_entity__ provides a specialization for the root recursion.
+ */
+template <class T, class E>
+struct find_index_space__<0, T, E> {
+  /*!
+    Search last tuple element.
+
+    \tparam T The tuple type.
+    \tparam D The dimension to match.
+    \tparam M The domain to match.
+   */
+  static constexpr size_t find_from() { return 1; } // find_from
+  
+  static constexpr size_t find_to() { return 1; } // find_to
+}; // struct find_index_space__
+
 /*----------------------------------------------------------------------------*
  * Connectivity utilities.
  *----------------------------------------------------------------------------*/
