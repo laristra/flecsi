@@ -336,6 +336,13 @@ client_internal_field_hash()
 } // field_hash__
 
 inline
+size_t
+client_internal_field_hash(size_t name, size_t index_space)
+{
+  return (name << 8) | index_space;
+} // field_hash__
+
+inline
 constexpr size_t
 client_internal_field_index_space(
   size_t key

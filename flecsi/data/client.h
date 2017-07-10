@@ -15,6 +15,7 @@
 #include "flecsi/data/data_client_handle.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/utils/tuple_walker.h"
+#include "flecsi/topology/mesh_types.h"
 
 namespace flecsi {
 
@@ -64,6 +65,11 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
       return D;
     }
 
+    template<typename T, T V>
+    T value(topology::typeify<T, V>){
+      return V;
+    }
+
     template<
       typename TUPLE_ENTRY_TYPE
     >
@@ -77,11 +83,11 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
       using ENTITY_TYPE =
         typename std::tuple_element<2, TUPLE_ENTRY_TYPE>::type;
 
-      index_space_map.emplace(typeid(ENTITY_TYPE).hash_code(),
-        INDEX_TYPE::value);
+      entity_index_space_map.emplace(typeid(ENTITY_TYPE).hash_code(),
+        value(INDEX_TYPE()));
     } // handle_type
 
-    std::map<size_t, size_t> index_space_map;
+    std::map<size_t, size_t> entity_index_space_map;
 
   }; // struct entity_walker_t
 
@@ -109,16 +115,16 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
       hi.index_space = INDEX_TYPE::value;
       
       hi.from_index_space = 
-        index_space_map[typeid(FROM_ENTITY_TYPE).hash_code()];
+        entity_index_space_map[typeid(FROM_ENTITY_TYPE).hash_code()];
       
       hi.to_index_space = 
-        index_space_map[typeid(TO_ENTITY_TYPE).hash_code()];
+        entity_index_space_map[typeid(TO_ENTITY_TYPE).hash_code()];
 
       handles.emplace_back(std::move(hi));
     } // handle_type
 
     std::vector<handle_info_t> handles;
-    std::map<size_t, size_t> index_space_map;
+    std::map<size_t, size_t> entity_index_space_map;
 
   }; // struct connectivity_walker_t
 
@@ -142,9 +148,10 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
         typename std::tuple_element<3, TUPLE_ENTRY_TYPE>::type;
       using TO_ENTITY_TYPE =
         typename std::tuple_element<4, TUPLE_ENTRY_TYPE>::type;
-
-      std::vector<handle_info_t> handles;
     } // handle_type
+
+    std::vector<handle_info_t> handles;
+    std::map<size_t, size_t> entity_index_space_map;
 
   }; // struct binding_walker_t
 
@@ -165,15 +172,15 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
     entity_walker.template walk_types<entity_types_t>();
 
     connectivity_walker_t connectivity_walker;
-    connectivity_walker.index_space_map = 
-      std::move(entity_walker.index_space_map);
+    connectivity_walker.entity_index_space_map = 
+      std::move(entity_walker.entity_index_space_map);
     connectivity_walker.template walk_types<connectivities>();
 
     binding_walker_t binding_walker;
-    binding_walker.index_space_map = 
-      std::move(entity_walker.index_space_map);
+    binding_walker.entity_index_space_map = 
+      std::move(connectivity_walker.entity_index_space_map);
     binding_walker.handles = 
-      std::move(entity_walker.handles);
+      std::move(connectivity_walker.handles);
     binding_walker.template walk_types<bindings>();
 
     data_client_handle__<DATA_CLIENT_TYPE> h;
@@ -182,16 +189,39 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
 
     const size_t data_client_hash = typeid(DATA_CLIENT_TYPE).hash_code();
 
-    // auto& m = context.field_info_map().find({data_client_hash, });
+    for(handle_info_t& hi : binding_walker.handles){
+      auto itr = context.field_info_map().find(
+        {data_client_hash, hi.from_index_space});
+      clog_assert(itr != context.field_info_map().end(),
+        "invalid from index space");
 
-    // //np(m.size());
+      auto& fm = itr->second;
 
-    // size_t client_hash = utils::hash::client_hash<NAMESPACE_HASH, NAME_HASH>();
+      itr = context.field_info_map().find(
+        {data_client_hash, hi.to_index_space});
+      clog_assert(itr != context.field_info_map().end(),
+        "invalid to index space");
 
-    // auto itr = context.field_map().find({client_key, client_hash});
+      auto& tm = itr->second;
 
-    // clog_assert(itr != m.end(), "invalid data client");
+      itr = context.field_info_map().find(
+        {data_client_hash, hi.index_space});
+      clog_assert(itr != context.field_info_map().end(),
+        "invalid index space");
 
+      auto& im = itr->second;
+
+      for(auto& fitr : im){
+        
+        if(fitr.second.key == 
+           utils::hash::client_internal_field_hash(
+           utils::const_string_t("__flecsi_internal_adjacency_offset__").
+           hash(), hi.index_space)){
+          // TODO: FIX
+          break;
+        }
+      }
+    }
 
     // // size_t i = 0;
     // // for(auto& itr : context.adjacencies()){
