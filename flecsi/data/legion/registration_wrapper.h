@@ -138,7 +138,7 @@ struct legion_client_registration_wrapper__<
         flecsi::data::dense,
         ENTITY_TYPE,
         entity_hash,
-        33554432, // TODO: fix
+        0,
         INDEX_TYPE::value,
         1
       >;
@@ -191,7 +191,7 @@ struct legion_client_registration_wrapper__<
         flecsi::data::dense,
         size_t,
         adjacency_hash,
-        33554433, // TODO: fix
+        0,
         INDEX_TYPE::value,
         1
       >;
@@ -207,7 +207,7 @@ struct legion_client_registration_wrapper__<
         flecsi::data::dense,
         size_t,
         adjacency_hash,
-        33554434, // TODO: fix
+        0,
         INDEX_TYPE::value,
         1
       >;
