@@ -69,11 +69,11 @@ flecsi_register_task(advect_owned_cells_in_y, flecsi::loc, flecsi::single);
 
 class client_type : public flecsi::data::data_client_t{};
 
-flecsi_register_data(client_type, lax, cell_ID, size_t, dense,
+flecsi_register_field(client_type, lax, cell_ID, size_t, dense,
         INDEX_ID, VERSIONS);
-flecsi_register_data(client_type, lax, phi, double, dense,
+flecsi_register_field(client_type, lax, phi, double, dense,
         INDEX_ID, VERSIONS);
-flecsi_register_data(client_type, lax, phi_update, double, dense,
+flecsi_register_field(client_type, lax, phi_update, double, dense,
         INDEX_ID, VERSIONS);
 
 namespace flecsi {

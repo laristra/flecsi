@@ -26,6 +26,8 @@ set(topology_HEADERS
   mesh_types.h
   mesh_utils.h
   tree_topology.h
+  mesh_storage.h
+  entity_storage.h
 )
 
 #------------------------------------------------------------------------------#
@@ -78,27 +80,27 @@ set(topology_SOURCES
 # Mesh unit tests.
 #------------------------------------------------------------------------------#
 
-# if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
+if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
 
-#   cinch_add_unit(traversal
-#    SOURCES
-#      test/traversal.cc
-#    INPUTS
-#      test/traversal.blessed
-#    LIBRARIES
-#      flecsi
-#   )
+  cinch_add_unit(traversal
+   SOURCES
+     test/traversal.cc
+   INPUTS
+     test/traversal.blessed
+   LIBRARIES
+     flecsi
+  )
   
-#   cinch_add_unit(bindings
-#    SOURCES
-#      test/bindings.cc
-#    INPUTS
-#      test/bindings.blessed
-#    LIBRARIES
-#      flecsi
-#   )
+  cinch_add_unit(bindings
+   SOURCES
+     test/bindings.cc
+   INPUTS
+     test/bindings.blessed
+   LIBRARIES
+     flecsi
+  )
 
-# endif()
+endif()
 
 cinch_add_unit(dual
   SOURCES

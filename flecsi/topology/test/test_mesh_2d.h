@@ -6,10 +6,10 @@
 #ifndef flecsi_execution_test_mesh_h
 #define flecsi_execution_test_mesh_h
 
-///
-/// \file
-/// \date Initial file creation: May 10, 2017
-///
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: May 10, 2017
+//----------------------------------------------------------------------------//
 
 #include "flecsi/topology/mesh_topology.h"
 
@@ -21,18 +21,15 @@ public:
   template<size_t M>
   uint64_t precedence() const { return 0; }
   Vertex() = default;
-  Vertex(mesh_topology_base_t &) {}
 
 };
 
 class Edge : public mesh_entity_t<1, 1>{
 public:
-  Edge(mesh_topology_base_t &) {}
 };
 
 class Face : public mesh_entity_t<1, 1>{
 public:
-  Face(mesh_topology_base_t &) {}
 
 };
 
@@ -40,9 +37,6 @@ class Cell : public mesh_entity_t<2, 1>{
 public:
 
   using id_t = flecsi::utils::id_t;
-
-  Cell(mesh_topology_base_t& mesh)
-  : mesh_(mesh){}
 
   void set_precedence(size_t dim, uint64_t precedence) {}
 
@@ -70,7 +64,6 @@ public:
   void traverse();
 
 private:
-  mesh_topology_base_t& mesh_;
 };
 
 class test_mesh_2d_policy_t {
@@ -79,29 +72,41 @@ public:
 
   static constexpr size_t num_domains = 1;
 
+#if 0
   using entity_types = std::tuple<
-    std::tuple<domain_<0>, Vertex>,
-    std::tuple<domain_<0>, Edge>,
-    std::tuple<domain_<0>, Cell>>;
+    std::tuple<index_space_<0>, domain_<0>, Vertex>,
+    std::tuple<index_space_<1>, domain_<0>, Edge>,
+    std::tuple<index_space_<2>, domain_<0>, Cell>>;
+#endif
 
-  using connectivities =
-    std::tuple<std::tuple<domain_<0>, Vertex, Edge>,
-               std::tuple<domain_<0>, Vertex, Cell>,
-               std::tuple<domain_<0>, Edge, Vertex>,
-               std::tuple<domain_<0>, Edge, Cell>,
-               std::tuple<domain_<0>, Cell, Vertex>,
-               std::tuple<domain_<0>, Cell, Edge>>;
+  using entity_types = std::tuple<
+    std::tuple<index_space_<0>, domain_<0>, Vertex>,
+    std::tuple<index_space_<1>, domain_<0>, Edge>,
+    std::tuple<index_space_<2>, domain_<0>, Cell>,
+    std::tuple<index_space_<2>, domain_<1>, Cell>
+  >;
 
-  using bindings = std::tuple<>;
+  using connectivities = std::tuple<
+    std::tuple<index_space_<3>, domain_<0>, Vertex, Edge>,
+    std::tuple<index_space_<4>, domain_<0>, Vertex, Cell>,
+    std::tuple<index_space_<5>, domain_<0>, Edge, Vertex>,
+    std::tuple<index_space_<6>, domain_<0>, Edge, Cell>,
+    std::tuple<index_space_<7>, domain_<0>, Cell, Vertex>,
+    std::tuple<index_space_<8>, domain_<0>, Cell, Edge>
+  >;
 
-  template<size_t M, size_t D>
+  using bindings = std::tuple<
+    std::tuple<index_space_<9>, domain_<0>, domain_<1>, Vertex, Cell>
+  >;
+
+  template<size_t M, size_t D, typename ST>
   static mesh_entity_base_t<num_domains>*
-  create_entity(mesh_topology_base_t* mesh, size_t num_vertices){
+  create_entity(mesh_topology_base_t<ST>* mesh, size_t num_vertices){
     switch(M){
       case 0:{
         switch(D){
           case 1:
-            return mesh->make<Edge>(*mesh);
+            return mesh->template make<Edge>(*mesh);
           default:
             assert(false && "invalid topological dimension");
         }

@@ -1,32 +1,28 @@
 /*~--------------------------------------------------------------------------~*
- * Copyright (c) 2015 Los Alamos National Security, LLC
+ * Copyright (c) 2017 Los Alamos National Security, LLC
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_data_default_user_meta_data_h
-#define flecsi_data_default_user_meta_data_h
+#ifndef flecsi_topology_entity_storage_h
+#define flecsi_topology_entity_storage_h
+
+#include "flecsi_runtime_entity_storage_policy.h"
 
 //----------------------------------------------------------------------------//
 //! @file
-//! @date Initial file creation: Apr 17, 2016
+//! @date Initial file creation: Aug 01, 2016
 //----------------------------------------------------------------------------//
-
-#include "flecsi/data/data_client.h"
 
 namespace flecsi {
+namespace topology {
 
-//----------------------------------------------------------------------------//
-//! The default_user_meta_data_t types provides an empty default type
-//! for user meta data.
-//----------------------------------------------------------------------------//
+template<typename T>
+using entity_storage_t = FLECSI_RUNTIME_ENTITY_STORAGE_TYPE<T>;
 
-struct default_user_meta_data_t {
-  void initialize() {}
-}; // struct default_user_meta_data_t
-
+} // namespace topology
 } // namespace flecsi
 
-#endif // flecsi_data_default_user_meta_data_h
+#endif // flecsi_topology_entity_storage_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

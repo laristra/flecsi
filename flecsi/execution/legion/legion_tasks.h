@@ -450,7 +450,9 @@ __flecsi_internal_legion_task(spmd_task, void) {
 #endif
 
   // Call the specialization color initialization function.
+  clog(error) << "check ifdef" << std::endl;
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
+  clog(error) << "IFDEFD" << std::endl;
   specialization_spmd_init(args.argc, args.argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 

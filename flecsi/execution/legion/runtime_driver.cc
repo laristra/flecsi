@@ -77,17 +77,33 @@ runtime_driver(
 
 #endif // FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
 
+  //--------------------------------------------------------------------------//
+  // Invoke callbacks for entries in the client registry.
+  //
+  // NOTE: This needs to be called before the field registry below because
+  //       The client callbacks register field callbacks with the field
+  //       registry.
+  //--------------------------------------------------------------------------//
 
-  // Register user data, invokes callbacks to add field info into context
-  data::storage_t::instance().register_all();
+  auto & client_registry =
+    flecsi::data::storage_t::instance().client_registry(); 
 
-  auto & data_client_registry =
-    flecsi::data::storage_t::instance().data_client_registry(); 
-
-  // FIXME documentation required
-  for(auto & c: data_client_registry) {
+  for(auto & c: client_registry) {
     for(auto & d: c.second) {
       d.second.second(d.second.first);
+    } // for
+  } // for
+
+  //--------------------------------------------------------------------------//
+  // Invoke callbacks for entries in the field registry.
+  //--------------------------------------------------------------------------//
+
+  auto & field_registry =
+    flecsi::data::storage_t::instance().field_registry();
+
+  for(auto & c: field_registry) {
+    for(auto & f: c.second) {
+      f.second.second(f.second.first);
     } // for
   } // for
 
@@ -292,9 +308,10 @@ runtime_driver(
       }
 
       for(auto& itr : context_.adjacency_info()){
-        if(itr.first.first == idx_space){
+        if(itr.first == idx_space){
           Legion::FieldID adjacency_fid = 
-            context_.adjacency_fid(itr.first.first, itr.first.second);
+            context_.adjacency_fid(itr.second.from_index_space,
+              itr.second.to_index_space);
           
           reg_req.add_field(adjacency_fid);
         }

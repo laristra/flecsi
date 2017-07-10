@@ -17,7 +17,7 @@
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_type.h!!!
-// Using this approach allows us to have only one storage_type_t
+// Using this approach allows us to have only one storage_type__
 // definintion that can be used by all data policies -> code reuse...
 #define POLICY_NAMESPACE legion
 #include "flecsi/data/storage_type.h"
@@ -382,7 +382,7 @@ private:
 // FIXME: Dense storage type.
 ///
 template<>
-struct storage_type_t<dense>
+struct storage_type__<dense>
 {
   //--------------------------------------------------------------------------//
   // Type definitions.
@@ -512,7 +512,7 @@ struct storage_type_t<dense>
     return h;
   } // get_handle
 
-}; // struct storage_type_t
+}; // struct storage_type__
 
 } // namespace legion
 } // namespace data

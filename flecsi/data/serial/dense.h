@@ -444,7 +444,7 @@ private:
 /// FIXME: Dense storage type.
 ///
 template<>
-struct storage_type_t<dense>
+struct storage_type__<dense>
 {
   //--------------------------------------------------------------------------//
   // Type definitions.
@@ -860,7 +860,7 @@ struct storage_type_t<dense>
     return h;
   }
 
-}; // struct storage_type_t
+}; // struct storage_type__
 
 } // namespace serial
 } // namespace data

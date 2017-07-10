@@ -21,13 +21,14 @@ set(data_HEADERS
   common/data_hash.h
   common/data_types.h
   common/privilege.h
-  data_accessor.h
+  client.h
   data_client.h
+  data_client_handle.h
   data_constants.h
   data.h
   data_client_handle.h
   data_handle.h
-  default_user_meta_data.h
+  field.h
   storage.h
   storage_type.h
 )
@@ -71,11 +72,11 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     ${data_HEADERS}
     legion/data_client_handle_policy.h
     legion/data_handle_policy.h
+    legion/data_policy.h
     legion/dense.h
     legion/dpd.h
     legion/global.h
     legion/legion_data.h
-    legion/meta_data.h
     legion/registration_wrapper.h
     legion/scoped.h
     legion/sparse.h
@@ -218,6 +219,23 @@ set(data_SOURCES
      cinch_add_unit(client_registration
        SOURCES
          test/client_registration.cc
+         data_client.cc
+         ../execution/driver_initialization.cc
+         ../execution/legion/runtime_driver.cc
+         ../execution/legion/context_policy.cc
+       DEFINES
+         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+       LIBRARIES
+         flecsi
+         ${CINCH_RUNTIME_LIBRARIES}
+       POLICY LEGION
+       THREADS 2
+       NOCI
+     )
+
+     cinch_add_unit(data_client_handle
+       SOURCES
+         test/data_client_handle.cc
          data_client.cc
          ../execution/driver_initialization.cc
          ../execution/legion/runtime_driver.cc
