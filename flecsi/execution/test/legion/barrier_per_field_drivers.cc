@@ -80,6 +80,10 @@ void driver(int argc, char ** argv) {
     flecsi_execute_task(write_task, single, handle2, my_color, cycle, delay);
 
     flecsi_execute_task(read_task, single, handle2, my_color, cycle);
+
+    flecsi_execute_task(read_task, single, handle1, my_color, cycle);
+
+    flecsi_execute_task(read_task, single, handle2, my_color, cycle);
   }
 
 } // driver
