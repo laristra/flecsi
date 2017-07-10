@@ -346,10 +346,6 @@ if(ENABLE_COLORING)
     MESSAGE(FATAL_ERROR
       "You need parmetis to enable partitioning" )
   endif()
-  
-  if ( EXODUSII_LIBRARIES )
-    list(APPEND COLORING_LIBRARIES ${EXODUSII_LIBRARIES} )
-  endif()
 
   add_definitions(-DENABLE_COLORING)
 

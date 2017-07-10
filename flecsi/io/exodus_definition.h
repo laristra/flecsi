@@ -12,7 +12,6 @@
 // user includes
 #include "flecsi/topology/mesh_definition.h"
 #include "flecsi/utils/logging.h"
-#include "flecsi/utils/compressed_storage.h"
 
 // thirdparty includes
 #include <exodusII.h>
