@@ -132,7 +132,9 @@ namespace execution {
             Legion::RegionRequirement rr_ghost(h.ghost_lr,
               WRITE_DISCARD, EXCLUSIVE, h.color_region);
 
-            auto iitr = flecsi_context.field_info_map().find(h.index_space);
+            auto iitr = 
+              flecsi_context.field_info_map().find(
+                {h.data_client_hash, h.index_space});
             clog_assert(iitr != flecsi_context.field_info_map().end(),
               "invalid index space");
 
@@ -156,9 +158,11 @@ namespace execution {
             const auto ghost_copy_tid = flecsi_context.task_id<key>();
             
             struct {
+              size_t data_client_hash;
               size_t index_space;
               size_t owner;
             } args;
+            args.data_client_hash = h.data_client_hash;
             args.index_space = h.index_space;
             args.owner = owner;
             Legion::TaskLauncher

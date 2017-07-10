@@ -492,6 +492,7 @@ struct storage_type__<dense>
     size_t index_space = field_info.index_space;
     auto& ism = context.index_space_data_map();
 
+    h.data_client_hash = field_info.data_client_hash;
     h.exclusive_lr = ism[index_space].exclusive_lr;
     h.shared_lr = ism[index_space].shared_lr;
     h.ghost_lr = ism[index_space].ghost_lr;
