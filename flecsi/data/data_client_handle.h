@@ -23,7 +23,7 @@ template<
 >
 struct data_client_handle_base__ : public DATA_CLIENT_TYPE, public DATA_POLICY
 {
-  //using field_id_t = Legion::FieldID;
+  using field_id_t = Legion::FieldID;
 
   static constexpr size_t MAX_ADJACENCIES = 20;
 
@@ -31,7 +31,11 @@ struct data_client_handle_base__ : public DATA_CLIENT_TYPE, public DATA_POLICY
   size_t adj_index_spaces[MAX_ADJACENCIES];
   size_t to_index_spaces[MAX_ADJACENCIES];
   size_t from_index_spaces[MAX_ADJACENCIES];
-
+  field_id_t indices_fids[MAX_ADJACENCIES];
+  field_id_t entity_fids[MAX_ADJACENCIES];
+  field_id_t offset_fids[MAX_ADJACENCIES];
+  Legion::LogicalRegion indices_regions[MAX_ADJACENCIES];
+  Legion::LogicalRegion color_region;
 }; // struct data_client_handle__
 
 } // namespace flecsi

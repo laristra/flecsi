@@ -71,12 +71,13 @@ struct client_data__
   data_client_handle__<DATA_CLIENT_TYPE>
   get_client_handle()
   {
+    data_client_handle__<DATA_CLIENT_TYPE> h;
+
     auto& context = execution::context_t::instance();
 
     auto& m = context.field_map();
 
     //np(m.size());
-
     const size_t client_key = typeid(DATA_CLIENT_TYPE).hash_code();
 
     size_t client_hash = utils::hash::client_hash<NAMESPACE_HASH, NAME_HASH>();
@@ -85,19 +86,18 @@ struct client_data__
 
     clog_assert(itr != m.end(), "invalid data client");
 
-    data_client_handle__<DATA_CLIENT_TYPE> h;
 
-    size_t i = 0;
-    for(auto& itr : context.adjacencies()){
-      const execution::context_t::adjacency_triple_t& t = itr.second;
+    // size_t i = 0;
+    // for(auto& itr : context.adjacencies()){
+    //   const execution::context_t::adjacency_triple_t& t = itr.second;
 
-      h.adj_index_spaces[i] = std::get<0>(t);
-      h.to_index_spaces[i] = std::get<1>(t);
-      h.from_index_spaces[i] = std::get<2>(t);
-      ++i;
-    }
+    //   h.adj_index_spaces[i] = std::get<0>(t);
+    //   h.to_index_spaces[i] = std::get<1>(t);
+    //   h.from_index_spaces[i] = std::get<2>(t);
+    //   ++i;
+    // }
 
-    h.num_adjacencies = i;
+    // h.num_adjacencies = i;
 
     return h;
   }

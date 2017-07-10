@@ -64,6 +64,7 @@ struct legion_field_registration_wrapper__
     fi.versions = VERSIONS;
     fi.index_space = INDEX_SPACE;
     fi.fid = fid;
+    fi.key = key;
 
     execution::context_t::instance().register_field_info(fi);
   } // register_callback

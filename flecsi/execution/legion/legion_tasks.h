@@ -581,6 +581,7 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
   context_t& context = context_t::instance();
 
   struct args_t {
+    size_t data_client_hash;
     size_t index_space;
     size_t owner;
   };
@@ -620,7 +621,8 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
   // For each field, copy data from shared to ghost
   for(auto fid : task->regions[0].privilege_fields){
     // Look up field info in context
-    auto iitr = context.field_info_map().find(args.index_space);
+    auto iitr = 
+      context.field_info_map().find({args.data_client_hash, args.index_space});
     clog_assert(iitr != context.field_info_map().end(), "invalid index space");
     auto fitr = iitr->second.find(fid);
     clog_assert(fitr != iitr->second.end(), "invalid fid");
