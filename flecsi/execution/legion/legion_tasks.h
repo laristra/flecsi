@@ -168,6 +168,7 @@ __flecsi_internal_legion_task(owner_pos_correction_task, void) {
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
+#if 0
 __flecsi_internal_legion_task(spmd_task, void) {
   const int my_color = task->index_point.point_data[0];
 
@@ -460,6 +461,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
   free((void*)adjacencies);
 
 } // spmd_task
+#endif
 
 //----------------------------------------------------------------------------//
 //! Interprocess communication to pass control to MPI runtime.
