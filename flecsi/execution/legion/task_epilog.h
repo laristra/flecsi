@@ -94,7 +94,7 @@ namespace execution {
       if ( (SHARED_PERMISSIONS == dwd) || (SHARED_PERMISSIONS == drw) )
         write_phase = true;
 
-      if (write_phase && (*h.write_phase_started)) {
+        if (write_phase) {
         const int my_color = runtime->find_local_MPI_rank();
         clog(trace) << "rank " << my_color << " WRITE PHASE EPILOGUE" <<
 			std::endl;
@@ -118,7 +118,6 @@ namespace execution {
 
         }
 
-        *(h.write_phase_started) = false;
       } // write_phase
     } // handle
 

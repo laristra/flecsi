@@ -130,12 +130,12 @@ __flecsi_internal_legion_task(owner_pos_correction_task, void) {
       LegionRuntime::Arrays::Point<2> old_location = ghost_ref_acc.read(
         ghost_ptr);
       clog(trace) << "points to " << old_location.x[0] << "," <<
-          old_location.x[1] << " local mirror is " <<
-          ghost_ptr.point_data[0] << "," << ghost_ptr.point_data[1] <<
-          " nbr " << owner_map[old_location.x[0]] <<
-          " range " << owners_rects[owner_map[old_location.x[0]]].lo[0] <<
-          ":" << owners_rects[owner_map[old_location.x[0]]].lo[1] <<
-          "," << owners_rects[owner_map[old_location.x[0]]].hi[1] << std::endl;
+        old_location.x[1] << " local mirror is " <<
+        ghost_ptr.point_data[0] << "," << ghost_ptr.point_data[1] <<
+        " nbr " << owner_map[old_location.x[0]] <<
+        " range " << owners_rects[owner_map[old_location.x[0]]].lo[0] <<
+        ":" << owners_rects[owner_map[old_location.x[0]]].lo[1] <<
+        "," << owners_rects[owner_map[old_location.x[0]]].hi[1] << std::endl;
 
       clog_assert(old_location.x[0] == owners_rects[owner_map[
           old_location.x[0]]].lo[0],
@@ -147,14 +147,15 @@ __flecsi_internal_legion_task(owner_pos_correction_task, void) {
           old_location.x[0]]].hi[1],
           "ghost owner position error in specialization_driver()");
 
-      // NOTE: We stored a forward pointer in old shared location to new location
+      // NOTE: We stored a forward pointer in old shared location to new
+      // location
       LegionRuntime::Arrays::Point<2> new_location =
           owners_refs_accs[owner_map[old_location.x[0]]].read(
           Legion::DomainPoint::from_point<2>(old_location));
       ghost_ref_acc.write(ghost_ptr, new_location);
 
-      clog(trace) << ghost_ptr.point_data[0] << "," << ghost_ptr.point_data[1] <<
-          " points to " << new_location.x[0] <<
+      clog(trace) << ghost_ptr.point_data[0] << "," << ghost_ptr.point_data[1]
+         << " points to " << new_location.x[0] <<
           "," << new_location.x[1] << std::endl;
 
     } // for itr
@@ -254,8 +255,6 @@ __flecsi_internal_legion_task(spmd_task, void) {
     for (const field_id_t& field_id : context_.fields_map()[idx_space]){
       ispace_dmap[idx_space].pbarriers_as_owner[field_id] =
         pbarriers_as_owner[indx];
-      ispace_dmap[idx_space].ghost_is_readable[field_id] = true;
-      ispace_dmap[idx_space].write_phase_started[field_id] = false;
       indx++;
     }//end field_info
   }//end for idx_space
