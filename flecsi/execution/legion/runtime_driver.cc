@@ -341,10 +341,11 @@ runtime_driver(
         reg_req(color_lregion, READ_WRITE, SIMULTANEOUS,
           adjacency.logical_region);
 
-        auto adjacency_index_fid = 
-          LegionRuntime::HighLevel::FieldID(internal_field::adjacency_index);
-
-      reg_req.add_field(adjacency_index_fid);
+      for(const field_info_t& fi : context_.registered_fields()){
+        if(fi.index_space == adjacency_idx_space){
+          reg_req.add_field(fi.fid);
+        }
+      }
 
       spmd_launcher.add_region_requirement(reg_req);
     }
@@ -547,6 +548,8 @@ spmd_task(
     Legion::LogicalRegion primary_lr =
     runtime->get_logical_subregion_by_color(ctx, primary_ghost_lp, 
                                             PRIMARY_PART);
+
+    ispace_dmap[idx_space].primary_lr = primary_lr;
 
     ispace_dmap[idx_space].ghost_lr = 
       runtime->get_logical_subregion_by_color(ctx, primary_ghost_lp, 

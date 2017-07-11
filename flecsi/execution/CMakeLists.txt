@@ -326,6 +326,22 @@ if((FLECSI_RUNTIME_MODEL STREQUAL "serial")
 	NOCI
       )
 
+      cinch_add_unit(reduction
+        SOURCES
+          test/legion/reduction.cc
+          ${DRIVER_INITIALIZATION}
+          ${RUNTIME_DRIVER}
+        LIBRARIES
+          flecsi
+          ${CINCH_RUNTIME_LIBRARIES}
+          ${COLORING_LIBRARIES}
+        DEFINES
+          -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+          -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+        POLICY LEGION
+        THREADS 5
+      )
+
       cinch_add_unit(cell_to_cell_connectivity
         SOURCES
           test/legion/cell_to_cell_connectivity_drivers.cc
