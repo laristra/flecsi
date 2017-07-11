@@ -119,6 +119,55 @@ struct find_entity_ {
   using type = typename std::tuple_element<2, pair_>::type;
 };
 
+
+template <size_t INDEX, class TUPLE, class ENTITY>
+struct find_index_space__ {
+
+  //--------------------------------------------------------------------------//
+  //!
+  //!
+  //--------------------------------------------------------------------------//
+
+  //--------------------------------------------------------------------------//
+  //! Find the index corresponding to an entity type in the connectivities 
+  //! tuple - either from or to
+  //!
+  //! @tparam I The current index in tuple.
+  //! @tparam T The tuple type.
+  //! @tparam E The entity type to find.
+  //--------------------------------------------------------------------------//
+
+  static constexpr size_t find()
+  {
+    // grab current types
+    using TUPLE_ELEMENT = typename std::tuple_element<INDEX - 1, TUPLE>::type;
+    using INDEX_SPACE = typename std::tuple_element<0, TUPLE_ELEMENT>::type;
+    using ELEMENT_ENTITY = typename std::tuple_element<2, TUPLE_ELEMENT>::type;
+
+    // Check match for domain and dimension and return
+    // index if matched or recurse if not matched.
+    return std::is_same<ELEMENT_ENTITY, ENTITY>::value ? INDEX_SPACE::value : 
+      find_index_space__<INDEX - 1, TUPLE, ENTITY>::find();
+  }
+
+}; // find_index_space__
+
+/*!
+  \struct find_entity__ mesh_utils.h
+  \brief find_entity__ provides a specialization for the root recursion.
+ */
+template <class TUPLE, class ENTITY>
+struct find_index_space__<0, TUPLE, ENTITY> {
+  /*!
+    Search last tuple element.
+
+    \tparam T The tuple type.
+    \tparam D The dimension to match.
+    \tparam M The domain to match.
+   */
+  static constexpr size_t find() { return 1; } // find_from
+}; // struct find_index_space__
+
 /*----------------------------------------------------------------------------*
  * Connectivity utilities.
  *----------------------------------------------------------------------------*/

@@ -13,6 +13,9 @@
 
 #include <cinchlog.h>
 #include <string>
+#include <tuple>
+
+#include "arrays.h"
 
 #include "flecsi/execution/context.h"
 #include "flecsi/data/data_constants.h"
@@ -64,6 +67,7 @@ struct legion_field_registration_wrapper__
     fi.versions = VERSIONS;
     fi.index_space = INDEX_SPACE;
     fi.fid = fid;
+    fi.key = key;
 
     execution::context_t::instance().register_field_info(fi);
   } // register_callback
@@ -111,6 +115,11 @@ struct legion_client_registration_wrapper__<
     public flecsi::utils::tuple_walker__<entity_walker_t>
   {
 
+    template<typename T, T V>
+    T value(topology::typeify<T, V>){
+      return V;
+    }
+
     template<
       typename TUPLE_ENTRY_TYPE
     >
@@ -138,26 +147,36 @@ struct legion_client_registration_wrapper__<
         flecsi::data::dense,
         ENTITY_TYPE,
         entity_hash,
-        33554432, // TODO: fix
+        0,
         INDEX_TYPE::value,
         1
       >;
 
       const size_t client_key = typeid(CLIENT_TYPE).hash_code();
       const size_t key = utils::hash::client_internal_field_hash<
-        utils::const_string_t("__flecsi_internal_field_hash_base__").hash(),
+        utils::const_string_t("__flecsi_internal_entity_data__").hash(),
         INDEX_TYPE::value
       >();
 
       storage_t::instance().register_field(client_key,
         key, wrapper_t::register_callback);
+
+      entity_index_space_map.emplace(typeid(ENTITY_TYPE).hash_code(),
+        value(INDEX_TYPE()));
     } // handle_type
+
+    std::map<size_t, size_t> entity_index_space_map;
 
   }; // struct entity_walker_t
 
   struct connectivity_walker_t :
     public flecsi::utils::tuple_walker__<connectivity_walker_t>
   {
+
+    template<typename T, T V>
+    T value(topology::typeify<T, V>){
+      return V;
+    }
 
     template<
       typename TUPLE_ENTRY_TYPE
@@ -174,6 +193,14 @@ struct legion_client_registration_wrapper__<
       using TO_ENTITY_TYPE =
         typename std::tuple_element<3, TUPLE_ENTRY_TYPE>::type;
 
+      using entity_types_t = typename POLICY_TYPE::entity_types;
+
+      constexpr size_t from_index_space = 
+        topology::find_index_space__<std::tuple_size<entity_types_t>::value, entity_types_t, FROM_ENTITY_TYPE>::find();
+
+      constexpr size_t to_index_space = 
+        topology::find_index_space__<std::tuple_size<entity_types_t>::value, entity_types_t, TO_ENTITY_TYPE>::find();
+
       constexpr size_t adjacency_hash =
         utils::hash::client_adjacency_hash<
           NAMESPACE_HASH,
@@ -186,35 +213,46 @@ struct legion_client_registration_wrapper__<
           >
           ();
 
-      using wrapper_t = legion_field_registration_wrapper__<
+      using index_wrapper_t = legion_field_registration_wrapper__<
         CLIENT_TYPE,
         flecsi::data::dense,
         size_t,
         adjacency_hash,
-        33554433, // TODO: fix
+        0,
         INDEX_TYPE::value,
         1
       >;
 
       const size_t client_key = typeid(CLIENT_TYPE).hash_code();
-      const size_t key = utils::hash::client_internal_field_hash<
-        utils::const_string_t("__flecsi_internal_field_hash_base__").hash(),
+      
+      const size_t index_key = utils::hash::client_internal_field_hash<
+        utils::const_string_t("__flecsi_internal_adjacency_index__").hash(),
         INDEX_TYPE::value
       >();
+
+      storage_t::instance().register_field(client_key,
+        index_key, index_wrapper_t::register_callback);
 
       using offset_wrapper_t = legion_field_registration_wrapper__<
         CLIENT_TYPE,
         flecsi::data::dense,
-        size_t,
+        LegionRuntime::Arrays::Point<2>,
         adjacency_hash,
-        33554434, // TODO: fix
-        INDEX_TYPE::value,
+        0,
+        from_index_space,
         1
       >;
 
+      const size_t offset_key = utils::hash::client_internal_field_hash<
+        utils::const_string_t("__flecsi_internal_adjacency_offset__").hash(),
+        INDEX_TYPE::value
+      >();
+
       storage_t::instance().register_field(client_key,
-        key, offset_wrapper_t::register_callback);
+        offset_key, offset_wrapper_t::register_callback);
     } // handle_type
+
+    std::map<size_t, size_t> entity_index_space_map;
 
   }; // struct connectivity_walker_t
 
@@ -271,6 +309,8 @@ struct legion_client_registration_wrapper__<
         key, wrapper_t::register_callback);
     } // handle_type
 
+    std::map<size_t, size_t> entity_index_space_map;
+
   }; // struct binding_walker_t
 
   //--------------------------------------------------------------------------//
@@ -299,9 +339,13 @@ struct legion_client_registration_wrapper__<
       entity_walker.template walk_types<entity_types_t>();
 
       connectivity_walker_t connectivity_walker;
+      connectivity_walker.entity_index_space_map = 
+        std::move(entity_walker.entity_index_space_map);
       connectivity_walker.template walk_types<connectivities>();
 
       binding_walker_t binding_walker;
+      binding_walker.entity_index_space_map = 
+        std::move(connectivity_walker.entity_index_space_map);
       binding_walker.template walk_types<bindings>();
     } // if
 

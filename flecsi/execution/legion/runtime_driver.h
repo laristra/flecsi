@@ -66,6 +66,18 @@ void runtime_driver(const Legion::Task * task,
 // The runtime_driver task is registered directly during context
 // initialization.
 
+//----------------------------------------------------------------------------//
+//! Initial SPMD task.
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
+void spmd_task(const Legion::Task * task,
+  const std::vector<Legion::PhysicalRegion> & regions,
+  Legion::Context ctx,
+  Legion::Runtime * runtime);
+
+
 } // namespace execution 
 } // namespace flecsi
 

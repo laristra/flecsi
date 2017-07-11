@@ -142,6 +142,29 @@ struct legion_context_policy_t
   //! registration map below.
   //--------------------------------------------------------------------------//
 
+  //--------------------------------------------------------------------------//
+  // Gathers info about registered data fields.
+  //--------------------------------------------------------------------------//
+
+  struct field_info_t{
+    size_t data_client_hash;
+    size_t storage_type;
+    size_t size;
+    size_t namespace_hash;
+    size_t name_hash;
+    size_t versions;
+    field_id_t fid;
+    size_t index_space;
+    size_t key;
+  }; // struct field_info_t
+
+  //--------------------------------------------------------------------------//
+  // Field info map for fields in SPMD task, key1 = (data client hash, index space), key2 = fid
+  //--------------------------------------------------------------------------//
+
+  using field_info_map_t = 
+    std::map<std::pair<size_t, size_t>, std::map<field_id_t, field_info_t>>;
+
   using task_info_t =
     std::tuple<
       task_id_t,
@@ -547,7 +570,8 @@ struct legion_context_policy_t
     clog_assert(function_registry_.find(KEY) == function_registry_.end(),
       "function has already been registered");
 
-    clog(info) << "Registering function: " << FUNCTION << std::endl;
+    const std::size_t addr = reinterpret_cast<std::size_t>(FUNCTION);
+    clog(info) << "Registering function: " << addr << std::endl;
 
     function_registry_[KEY] =
       reinterpret_cast<void *>(FUNCTION);
@@ -633,21 +657,6 @@ struct legion_context_policy_t
   }
 
   //--------------------------------------------------------------------------//
-  // Gathers info about registered data fields.
-  //--------------------------------------------------------------------------//
-
-  struct field_info_t{
-    size_t data_client_hash;
-    size_t storage_type;
-    size_t size;
-    size_t namespace_hash;
-    size_t name_hash;
-    size_t versions;
-    field_id_t fid;
-    size_t index_space;
-  }; // struct field_info_t
-
-  //--------------------------------------------------------------------------//
   //! Register field info for index space and field id.
   //!
   //! @param index_space virtual index space
@@ -728,9 +737,10 @@ struct legion_context_policy_t
   )
   {
     size_t index_space = field_info.index_space;
+    size_t data_client_hash = field_info.data_client_hash;
     field_id_t fid = field_info.fid;
 
-    field_info_map_[index_space].emplace(fid, field_info);
+    field_info_map_[{data_client_hash, index_space}].emplace(fid, field_info);
     
     field_map_.insert({{field_info.data_client_hash,
       field_info.namespace_hash ^ field_info.name_hash}, {index_space, fid}});
@@ -740,7 +750,7 @@ struct legion_context_policy_t
   //! Get registered field info map for read access.
   //--------------------------------------------------------------------------//
 
-  const std::map<size_t, std::map<field_id_t, field_info_t>>&
+  const field_info_map_t&
   field_info_map()
   const
   {
@@ -773,7 +783,7 @@ struct legion_context_policy_t
     auto itr = field_map_.find({data_client_hash, namespace_hash});
     clog_assert(itr != field_map_.end(), "invalid field");
     
-    auto iitr = field_info_map_.find(itr->second.first);
+    auto iitr = field_info_map_.find({data_client_hash, itr->second.first});
     clog_assert(iitr != field_info_map_.end(), "invalid index_space");
     
     auto fitr = iitr->second.find(itr->second.second);
@@ -843,10 +853,10 @@ private:
   std::vector<field_info_t> field_info_vec_;
 
   //--------------------------------------------------------------------------//
-  // Field info map for fields in SPMD task, key1 = index space, key2 = fid
+  // Field info map for fields in SPMD task, key1 = (data client hash, index space), key2 = fid
   //--------------------------------------------------------------------------//
 
-  std::map<size_t, std::map<field_id_t, field_info_t>> field_info_map_;
+  field_info_map_t field_info_map_;
 
   //--------------------------------------------------------------------------//
   // Set of index spaces.

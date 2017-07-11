@@ -42,7 +42,8 @@ void specialization_tlt_init(int argc, char ** argv) {
 // SPMD Specialization Initialization
 //----------------------------------------------------------------------------//
 
-void specialization_spmd_ini(int argc, char ** argv) {
+void specialization_spmd_init(int argc, char ** argv) {
+  clog(info) << "In specialization spmd init" << std::endl;
 } // specialization_spmd_ini
 
 //----------------------------------------------------------------------------//

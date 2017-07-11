@@ -33,10 +33,6 @@ matrix:
       env: DISTRO=ubuntu RUNTIME=legion    WERROR=yes 
     - compiler: clang
       env: DISTRO=ubuntu_mpich RUNTIME=legion WERROR=yes 
-    - compiler: clang
-      env: DISTRO=fedora RUNTIME=legion    WERROR=yes
-    - compiler: clang
-      env: DISTRO=fedora_mpich RUNTIME=legion WERROR=yes
     - compiler: gcc
       env: DISTRO=fedora RUNTIME=legion    IGNORE_NOCI=true
     - compiler: clang

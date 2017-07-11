@@ -343,6 +343,7 @@ struct legion_execution_policy_t
 
         default:
           clog(fatal) << "invalid launch type" << std::endl;
+          throw std::runtime_error ("invalid launch type");
 
       } // switch
     } // if

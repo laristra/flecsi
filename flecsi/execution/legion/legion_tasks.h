@@ -168,6 +168,7 @@ __flecsi_internal_legion_task(owner_pos_correction_task, void) {
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
+#if 0
 __flecsi_internal_legion_task(spmd_task, void) {
   const int my_color = task->index_point.point_data[0];
 
@@ -193,7 +194,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
   size_t num_idx_spaces;
   args_deserializer.deserialize(&num_idx_spaces, sizeof(size_t));
 
-  size_t* idx_spaces = (size_t*)malloc(sizeof(size_t) * num_idx_spaces);
+  size_t* idx_spaces = new size_t [num_idx_spaces];
   args_deserializer.deserialize((void*)idx_spaces,
     sizeof(size_t) * num_idx_spaces);
 
@@ -206,26 +207,29 @@ __flecsi_internal_legion_task(spmd_task, void) {
   clog_assert(task->regions.size() >= num_idx_spaces,
       "fewer regions than data handles");
 
-  Legion::PhaseBarrier* pbarriers_as_owner = (Legion::PhaseBarrier*)
-      malloc(sizeof(Legion::PhaseBarrier) * num_idx_spaces);
+  Legion::PhaseBarrier* pbarriers_as_owner =
+      new Legion::PhaseBarrier [num_idx_spaces];
   args_deserializer.deserialize((void*)pbarriers_as_owner,
       sizeof(Legion::PhaseBarrier) * num_idx_spaces);
 
-  size_t* num_owners = (size_t*)malloc(sizeof(size_t) * num_idx_spaces);
+  size_t* num_owners = new size_t [num_idx_spaces];
   args_deserializer.deserialize((void*)num_owners, sizeof(size_t)
       * num_idx_spaces);
 
+  size_t consecutive_index = 0;
   for(size_t idx_space : context_.index_spaces()){
-    ispace_dmap[idx_space].pbarrier_as_owner = pbarriers_as_owner[idx_space];
+    ispace_dmap[idx_space].pbarrier_as_owner = pbarriers_as_owner[consecutive_index];
     ispace_dmap[idx_space].ghost_is_readable = true;
     ispace_dmap[idx_space].write_phase_started = false;
+    consecutive_index++;
   }
 
-  std::vector<std::vector<Legion::PhaseBarrier>>
-  ghost_owners_pbarriers(num_idx_spaces);
+  std::map<size_t, std::vector<Legion::PhaseBarrier>>
+  ghost_owners_pbarriers;
 
+  consecutive_index = 0;
   for(size_t idx_space : context_.index_spaces()) {
-    size_t n = num_owners[idx_space];
+    size_t n = num_owners[consecutive_index];
 
     ghost_owners_pbarriers[idx_space].resize(n);
     args_deserializer.deserialize((void*)&ghost_owners_pbarriers[idx_space][0],
@@ -237,14 +241,14 @@ __flecsi_internal_legion_task(spmd_task, void) {
       ispace_dmap[idx_space].ghost_owners_pbarriers[owner] =
         ghost_owners_pbarriers[idx_space][owner];
     }
+    consecutive_index++;
   }
 
   size_t num_fields;
   args_deserializer.deserialize(&num_fields, sizeof(size_t));
 
   using field_info_t = context_t::field_info_t;
-  auto field_info_buf = 
-    (field_info_t*)malloc(sizeof(field_info_t) * num_fields);
+  auto field_info_buf = new field_info_t [num_fields];
   
   args_deserializer.deserialize(field_info_buf,
                                 sizeof(field_info_t) * num_fields);
@@ -259,8 +263,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
 
   using adjacency_triple_t = context_t::adjacency_triple_t;
 
-  adjacency_triple_t* adjacencies = 
-    (adjacency_triple_t*)malloc(sizeof(adjacency_triple_t) * num_adjacencies);
+  adjacency_triple_t* adjacencies = new adjacency_triple_t [num_adjacencies];
   
   args_deserializer.deserialize((void*)adjacencies,
     sizeof(adjacency_triple_t) * num_adjacencies);
@@ -270,12 +273,13 @@ __flecsi_internal_legion_task(spmd_task, void) {
   }
 
   // Prevent these objects destructors being called until after driver()
-  std::vector<std::vector<Legion::LogicalRegion>>
-    ghost_owners_lregions(num_idx_spaces);
+  std::map<size_t, std::vector<Legion::LogicalRegion>>
+    ghost_owners_lregions;
   std::vector<Legion::IndexPartition> primary_ghost_ips(num_idx_spaces);
   std::vector<Legion::IndexPartition> exclusive_shared_ips(num_idx_spaces);
 
   size_t region_index = 0;
+  size_t consec_idx = 0;
   for(size_t idx_space : context_.index_spaces()) {
 
     ispace_dmap[idx_space].color_region = regions[region_index]
@@ -364,7 +368,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
     runtime->get_logical_subregion_by_color(ctx, excl_shared_lp, SHARED_PART);
 
     // Add neighbors regions to context_
-    for(size_t owner = 0; owner < num_owners[idx_space]; owner++) {
+    for(size_t owner = 0; owner < num_owners[consec_idx]; owner++) {
       ghost_owners_lregions[idx_space].push_back(regions[region_index]
         .get_logical_region());
       const void* owner_color;
@@ -406,7 +410,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
     fix_ghost_refs_launcher.add_future(Legion::Future::from_value(runtime,
             ispace_dmap[idx_space].global_to_local_color_map));
 
-    for(size_t owner = 0; owner < num_owners[idx_space]; owner++)
+    for(size_t owner = 0; owner < num_owners[consec_idx]; owner++)
       fix_ghost_refs_launcher.add_region_requirement(
           Legion::RegionRequirement(ghost_owners_lregions[idx_space][owner],
               READ_ONLY, EXCLUSIVE, ghost_owners_lregions[idx_space][owner])
@@ -414,6 +418,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
 
     runtime->execute_task(ctx, fix_ghost_refs_launcher);
 
+    consec_idx++;
   } // for idx_space
 
   for(auto& itr : context_.adjacencies()) {
@@ -453,13 +458,15 @@ __flecsi_internal_legion_task(spmd_task, void) {
       runtime->destroy_index_partition(ctx, ipart);
   for(auto ipart: exclusive_shared_ips)
       runtime->destroy_index_partition(ctx, ipart);
-  free((void*)field_info_buf);
-  free((void*)num_owners);
-  free((void*)pbarriers_as_owner);
-  free((void*)idx_spaces);
-  free((void*)adjacencies);
+
+  delete [] field_info_buf;
+  delete [] num_owners;
+  delete [] pbarriers_as_owner;
+  delete [] idx_spaces;
+  delete [] adjacencies;
 
 } // spmd_task
+#endif
 
 //----------------------------------------------------------------------------//
 //! Interprocess communication to pass control to MPI runtime.
@@ -523,12 +530,13 @@ __flecsi_internal_legion_task(owner_pos_compaction_task, void) {
   // In compacted position of ghost, write the reference/pointer to pre-compacted shared
   // ghost reference/pointer will need to communicate with other ranks in spmd_task() to obtain
   // corrected pointer
+  size_t region_idx = 0;
   for(auto idx_space : coloring_map) {
 
-    Legion::IndexSpace ispace = regions[idx_space.first].get_logical_region().get_index_space();
+    Legion::IndexSpace ispace = regions[region_idx].get_logical_region().get_index_space();
     LegionRuntime::Accessor::RegionAccessor<
       LegionRuntime::Accessor::AccessorType::Generic, LegionRuntime::Arrays::Point<2>> acc_ref =
-          regions[idx_space.first].get_field_accessor(ghost_owner_pos_fid).typeify<LegionRuntime::Arrays::Point<2>>();
+          regions[region_idx].get_field_accessor(ghost_owner_pos_fid).typeify<LegionRuntime::Arrays::Point<2>>();
 
     Legion::Domain domain = runtime->get_index_space_domain(ctx, ispace);
     LegionRuntime::Arrays::Rect<2> rect = domain.get_rect<2>();
@@ -564,6 +572,7 @@ __flecsi_internal_legion_task(owner_pos_compaction_task, void) {
         std::endl;
       expanded_itr++;
     } // ghost_itr
+    region_idx++;
   } // for idx_space
   } // clog_tag_guard
 
@@ -581,6 +590,7 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
   context_t& context = context_t::instance();
 
   struct args_t {
+    size_t data_client_hash;
     size_t index_space;
     size_t owner;
   };
@@ -620,7 +630,8 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
   // For each field, copy data from shared to ghost
   for(auto fid : task->regions[0].privilege_fields){
     // Look up field info in context
-    auto iitr = context.field_info_map().find(args.index_space);
+    auto iitr = 
+      context.field_info_map().find({args.data_client_hash, args.index_space});
     clog_assert(iitr != context.field_info_map().end(), "invalid index space");
     auto fitr = iitr->second.find(fid);
     clog_assert(fitr != iitr->second.end(), "invalid fid");
@@ -728,6 +739,21 @@ __flecsi_internal_legion_task(fill_connectivity_task, void)
 }
 
 #undef __flecsi_internal_legion_task
+
+struct MaxReductionOp {
+  static const Legion::ReductionOpID redop_id = (size_t(1) << 20) - 4095;
+
+  typedef double LHS;
+  typedef double RHS;
+  static const double identity;
+
+  template <bool EXCLUSIVE>
+  static void apply(LHS &lhs, RHS rhs);
+
+  template <bool EXCLUSIVE>
+  static void fold(RHS &rhs1, RHS rhs2);
+
+};
 
 } // namespace execution 
 } // namespace flecsi
