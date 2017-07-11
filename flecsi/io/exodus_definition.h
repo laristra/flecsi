@@ -559,7 +559,14 @@ public:
 
       // read element definitions
       vector<ex_index_t> elem_nodes(num_nodes_this_blk);
-      status = ex_get_elem_conn(exoid, blk_id, elem_nodes.data());
+      status = ex_get_conn( 
+        exoid, 
+        entity_type, 
+        blk_id, 
+        elem_nodes.data(), 
+        nullptr, 
+        nullptr 
+      );
       if (status)
         clog_fatal(
           "Problem getting element connectivity, ex_get_elem_conn() " <<
@@ -681,7 +688,8 @@ public:
       else if ( strcasecmp("quad4",elem_type) == 0 || 
                 strcasecmp("shell4",elem_type) == 0 )
         return block_t::quad;
-      else if ( strcasecmp("tet4",elem_type) == 0 )
+      else if ( strcasecmp("tet4",elem_type) == 0 ||
+                strcasecmp("tetra",elem_type) == 0 )
         return block_t::tet;
       else if ( strcasecmp("hex8",elem_type) == 0 )
         return block_t::hex;
