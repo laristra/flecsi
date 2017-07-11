@@ -213,24 +213,26 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
            utils::const_string_t("__flecsi_internal_adjacency_offset__").
            hash(), hi.from_index_space)){
           h.offset_fids[handle_index] = fitr.second.fid;
-        }
-        else if(fitr.second.key == 
-           utils::hash::client_internal_field_hash(
-           utils::const_string_t("__flecsi_internal_entity_data__").
-           hash(), hi.from_index_space)){
-          h.entity_fids[handle_index] = fitr.second.fid;
+          break;
         }
       }
 
-      // Currently the to index space is not needed
-      /*
       itr = context.field_info_map().find(
         {data_client_hash, hi.to_index_space});
       clog_assert(itr != context.field_info_map().end(),
         "invalid to index space");
 
       auto& tm = itr->second;
-      */
+
+      for(auto& fitr : tm){
+        if(fitr.second.key == 
+           utils::hash::client_internal_field_hash(
+           utils::const_string_t("__flecsi_internal_entity_data__").
+           hash(), hi.to_index_space)){
+          h.entity_fids[handle_index] = fitr.second.fid;
+          break;
+        }
+      }
 
       itr = context.field_info_map().find(
         {data_client_hash, hi.index_space});
@@ -249,7 +251,8 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
         }
       }
 
-      h.color_regions[handle_index] = ism[hi.from_index_space].color_region;
+      h.from_regions[handle_index] = ism[hi.from_index_space].color_region;
+      h.to_regions[handle_index] = ism[hi.to_index_space].color_region;
       h.adj_regions[handle_index] = ism[hi.index_space].color_region;
 
       ++handle_index;
