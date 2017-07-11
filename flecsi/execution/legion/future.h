@@ -115,6 +115,7 @@ struct legion_future_model__ : public legion_future_concept__<RETURN>
   void
   wait()
   {
+    legion_future_.wait();
   } // wait
 
   //--------------------------------------------------------------------------//
@@ -204,6 +205,7 @@ struct legion_future_model__<RETURN, Legion::FutureMap>
   void
   wait()
   {
+    legion_future_.wait_all_results();
   } // wait
 
   //--------------------------------------------------------------------------//
@@ -219,8 +221,11 @@ struct legion_future_model__<RETURN, Legion::FutureMap>
     size_t index = 0
   )
   {
-    // FIXME: Need implementation
-    return 0;
+    return legion_future_.get_result<RETURN>(
+      Legion::DomainPoint::from_point<1>(
+        LegionRuntime::Arrays::Point<1>(index)
+      )
+    );
   } // get
 
 private:
@@ -256,6 +261,7 @@ struct legion_future_model__<void, Legion::FutureMap>
   void
   wait()
   {
+    legion_future_.wait_all_results();
   } // wait
 
 private:
@@ -387,6 +393,7 @@ struct legion_future__<void>
 
   void wait()
   {
+    state_->wait();
   } // wait
 
   std::shared_ptr<legion_future_concept__<void>> state_;
