@@ -46,9 +46,6 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
     size_t index_space;
     size_t from_index_space;
     size_t to_index_space;
-    field_id_t entity_fid;
-    field_id_t offset_fid;
-    field_id_t index_fid;
   };
 
   struct entity_walker_t :
@@ -187,9 +184,22 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
 
     auto& context = execution::context_t::instance();
 
+    auto& ism = context.index_space_data_map();
+
     const size_t data_client_hash = typeid(DATA_CLIENT_TYPE).hash_code();
 
+    size_t handle_index = 0;
+
+    clog_assert(binding_walker.handles.size() <= h.MAX_ADJACENCIES,
+                "handle max adjacencies exceeded");
+
+    h.num_adjacencies = binding_walker.handles.size();
+
     for(handle_info_t& hi : binding_walker.handles){
+      h.adj_index_spaces[handle_index] = hi.index_space;
+      h.from_index_spaces[handle_index] = hi.from_index_space;
+      h.to_index_spaces[handle_index] = hi.to_index_space;
+
       auto itr = context.field_info_map().find(
         {data_client_hash, hi.from_index_space});
       clog_assert(itr != context.field_info_map().end(),
@@ -197,12 +207,30 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
 
       auto& fm = itr->second;
 
+      for(auto& fitr : fm){
+        if(fitr.second.key == 
+           utils::hash::client_internal_field_hash(
+           utils::const_string_t("__flecsi_internal_adjacency_offset__").
+           hash(), hi.from_index_space)){
+          h.offset_fids[handle_index] = fitr.second.fid;
+        }
+        else if(fitr.second.key == 
+           utils::hash::client_internal_field_hash(
+           utils::const_string_t("__flecsi_internal_entity_data__").
+           hash(), hi.from_index_space)){
+          h.entity_fids[handle_index] = fitr.second.fid;
+        }
+      }
+
+      // Currently the to index space is not needed
+      /*
       itr = context.field_info_map().find(
         {data_client_hash, hi.to_index_space});
       clog_assert(itr != context.field_info_map().end(),
         "invalid to index space");
 
       auto& tm = itr->second;
+      */
 
       itr = context.field_info_map().find(
         {data_client_hash, hi.index_space});
@@ -212,28 +240,20 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
       auto& im = itr->second;
 
       for(auto& fitr : im){
-        
         if(fitr.second.key == 
            utils::hash::client_internal_field_hash(
-           utils::const_string_t("__flecsi_internal_adjacency_offset__").
+           utils::const_string_t("__flecsi_internal_adjacency_index__").
            hash(), hi.index_space)){
-          // TODO: FIX
+          h.index_fids[handle_index] = fitr.second.fid;
           break;
         }
       }
+
+      h.color_regions[handle_index] = ism[hi.from_index_space].color_region;
+      h.adj_regions[handle_index] = ism[hi.index_space].color_region;
+
+      ++handle_index;
     }
-
-    // // size_t i = 0;
-    // // for(auto& itr : context.adjacencies()){
-    // //   const execution::context_t::adjacency_triple_t& t = itr.second;
-
-    // //   h.adj_index_spaces[i] = std::get<0>(t);
-    // //   h.to_index_spaces[i] = std::get<1>(t);
-    // //   h.from_index_spaces[i] = std::get<2>(t);
-    // //   ++i;
-    // // }
-
-    // // h.num_adjacencies = i;
 
     return h;
   }

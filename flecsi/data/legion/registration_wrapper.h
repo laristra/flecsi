@@ -161,11 +161,7 @@ struct legion_client_registration_wrapper__<
       storage_t::instance().register_field(client_key,
         key, wrapper_t::register_callback);
 
-      entity_index_space_map.emplace(typeid(ENTITY_TYPE).hash_code(),
-        value(INDEX_TYPE()));
     } // handle_type
-
-    std::map<size_t, size_t> entity_index_space_map;
 
   }; // struct entity_walker_t
 
@@ -245,14 +241,12 @@ struct legion_client_registration_wrapper__<
 
       const size_t offset_key = utils::hash::client_internal_field_hash<
         utils::const_string_t("__flecsi_internal_adjacency_offset__").hash(),
-        INDEX_TYPE::value
+        from_index_space
       >();
 
       storage_t::instance().register_field(client_key,
         offset_key, offset_wrapper_t::register_callback);
     } // handle_type
-
-    std::map<size_t, size_t> entity_index_space_map;
 
   }; // struct connectivity_walker_t
 
@@ -309,8 +303,6 @@ struct legion_client_registration_wrapper__<
         key, wrapper_t::register_callback);
     } // handle_type
 
-    std::map<size_t, size_t> entity_index_space_map;
-
   }; // struct binding_walker_t
 
   //--------------------------------------------------------------------------//
@@ -339,13 +331,9 @@ struct legion_client_registration_wrapper__<
       entity_walker.template walk_types<entity_types_t>();
 
       connectivity_walker_t connectivity_walker;
-      connectivity_walker.entity_index_space_map = 
-        std::move(entity_walker.entity_index_space_map);
       connectivity_walker.template walk_types<connectivities>();
 
       binding_walker_t binding_walker;
-      binding_walker.entity_index_space_map = 
-        std::move(connectivity_walker.entity_index_space_map);
       binding_walker.template walk_types<bindings>();
     } // if
 
