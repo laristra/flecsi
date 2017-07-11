@@ -120,7 +120,7 @@ struct find_entity_ {
 };
 
 
-template <size_t I, class T, class E>
+template <size_t INDEX, class TUPLE, class ENTITY>
 struct find_index_space__ {
 
   //--------------------------------------------------------------------------//
@@ -137,30 +137,17 @@ struct find_index_space__ {
   //! @tparam E The entity type to find.
   //--------------------------------------------------------------------------//
 
-  static constexpr size_t find_from()
+  static constexpr size_t find()
   {
     // grab current types
-    using E1 = typename std::tuple_element<I - 1, T>::type;
-    using I1 = typename std::tuple_element<0, E>::type;
-    using F1 = typename std::tuple_element<2, E>::type;
+    using TUPLE_ELEMENT = typename std::tuple_element<INDEX - 1, TUPLE>::type;
+    using INDEX_SPACE = typename std::tuple_element<0, TUPLE_ELEMENT>::type;
+    using ELEMENT_ENTITY = typename std::tuple_element<2, TUPLE_ELEMENT>::type;
 
     // Check match for domain and dimension and return
     // index if matched or recurse if not matched.
-    return std::is_same<E1, F1>::value ? I1::value : 
-      find_index_space__<I - 1, T, E>::find_from();
-  }
-
-  static constexpr size_t find_to()
-  {
-    // grab current types
-    using E1 = typename std::tuple_element<I - 1, T>::type;
-    using I1 = typename std::tuple_element<0, E>::type;
-    using T1 = typename std::tuple_element<3, E>::type;
-
-    // Check match for domain and dimension and return
-    // index if matched or recurse if not matched.
-    return std::is_same<E1, T1>::value ? I1::value : 
-      find_index_space__<I - 1, T, E>::find_from();
+    return std::is_same<ELEMENT_ENTITY, ENTITY>::value ? INDEX_SPACE::value : 
+      find_index_space__<INDEX - 1, TUPLE, ENTITY>::find();
   }
 
 }; // find_index_space__
@@ -169,8 +156,8 @@ struct find_index_space__ {
   \struct find_entity__ mesh_utils.h
   \brief find_entity__ provides a specialization for the root recursion.
  */
-template <class T, class E>
-struct find_index_space__<0, T, E> {
+template <class TUPLE, class ENTITY>
+struct find_index_space__<0, TUPLE, ENTITY> {
   /*!
     Search last tuple element.
 
@@ -178,9 +165,7 @@ struct find_index_space__<0, T, E> {
     \tparam D The dimension to match.
     \tparam M The domain to match.
    */
-  static constexpr size_t find_from() { return 1; } // find_from
-  
-  static constexpr size_t find_to() { return 1; } // find_to
+  static constexpr size_t find() { return 1; } // find_from
 }; // struct find_index_space__
 
 /*----------------------------------------------------------------------------*

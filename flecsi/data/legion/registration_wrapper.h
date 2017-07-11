@@ -13,6 +13,7 @@
 
 #include <cinchlog.h>
 #include <string>
+#include <tuple>
 
 #include "arrays.h"
 
@@ -172,6 +173,11 @@ struct legion_client_registration_wrapper__<
     public flecsi::utils::tuple_walker__<connectivity_walker_t>
   {
 
+    template<typename T, T V>
+    T value(topology::typeify<T, V>){
+      return V;
+    }
+
     template<
       typename TUPLE_ENTRY_TYPE
     >
@@ -186,6 +192,14 @@ struct legion_client_registration_wrapper__<
         typename std::tuple_element<2, TUPLE_ENTRY_TYPE>::type;
       using TO_ENTITY_TYPE =
         typename std::tuple_element<3, TUPLE_ENTRY_TYPE>::type;
+
+      using entity_types_t = typename POLICY_TYPE::entity_types;
+
+      constexpr size_t from_index_space = 
+        topology::find_index_space__<std::tuple_size<entity_types_t>::value, entity_types_t, FROM_ENTITY_TYPE>::find();
+
+      constexpr size_t to_index_space = 
+        topology::find_index_space__<std::tuple_size<entity_types_t>::value, entity_types_t, TO_ENTITY_TYPE>::find();
 
       constexpr size_t adjacency_hash =
         utils::hash::client_adjacency_hash<
@@ -225,7 +239,7 @@ struct legion_client_registration_wrapper__<
         LegionRuntime::Arrays::Point<2>,
         adjacency_hash,
         0,
-        INDEX_TYPE::value,
+        from_index_space,
         1
       >;
 
