@@ -207,8 +207,6 @@ runtime_driver(
     // Serialize PhaseBarriers and set as task arguments
     std::vector<Legion::PhaseBarrier> pbarriers_as_owner;
     std::vector<size_t> num_ghost_owners;
-    std::map<size_t, std::vector<Legion::PhaseBarrier>> owners_pbarriers;
-    //std::vector<std::vector<Legion::PhaseBarrier>> owners_pbarriers;
     std::map<size_t, std::map<field_id_t, std::vector<Legion::PhaseBarrier>>>
       owners_pbarriers;
 
@@ -422,6 +420,8 @@ spmd_task(
   Legion::Runtime * runtime
 )
 {
+  using field_id_t = Legion::FieldID;
+
   const int my_color = task->index_point.point_data[0];
 
   // spmd_task is an inner task
@@ -444,88 +444,81 @@ spmd_task(
 
   Legion::Deserializer args_deserializer(task->args, task->arglen);
   size_t num_idx_spaces;
+  size_t num_phase_barriers;
   args_deserializer.deserialize(&num_idx_spaces, sizeof(size_t));
+  args_deserializer.deserialize(&num_phase_barriers, sizeof(size_t));
 
   size_t* idx_spaces = (size_t*)malloc(sizeof(size_t) * num_idx_spaces);
   args_deserializer.deserialize((void*)idx_spaces,
     sizeof(size_t) * num_idx_spaces);
 
-  for(size_t i = 0; i < num_idx_spaces; ++i){
+  for(size_t i = 0; i < num_idx_spaces; ++i)
     context_.add_index_space(idx_spaces[i]);
-  }
 
   clog_assert(regions.size() >= num_idx_spaces,
       "fewer regions than data handles");
   clog_assert(task->regions.size() >= num_idx_spaces,
       "fewer regions than data handles");
 
+  // Deserialize field info
+  size_t num_fields;
+  args_deserializer.deserialize(&num_fields, sizeof(size_t));
+
+  using field_info_t = context_t::field_info_t;
+  auto field_info_buf =
+    (field_info_t*)malloc(sizeof(field_info_t) * num_fields);
+
+  args_deserializer.deserialize(field_info_buf,
+                                sizeof(field_info_t) * num_fields);
+
+  for(size_t i = 0; i < num_fields; ++i){
+    field_info_t& fi = field_info_buf[i];
+    context_.put_field_info(fi);
+  }//end for i
+
   Legion::PhaseBarrier* pbarriers_as_owner = (Legion::PhaseBarrier*)
-      malloc(sizeof(Legion::PhaseBarrier) * num_idx_spaces);
+    malloc(sizeof(Legion::PhaseBarrier) * num_phase_barriers);
   args_deserializer.deserialize((void*)pbarriers_as_owner,
-      sizeof(Legion::PhaseBarrier) * num_idx_spaces);
+      sizeof(Legion::PhaseBarrier) * num_phase_barriers);
 
   size_t* num_owners = (size_t*)malloc(sizeof(size_t) * num_idx_spaces);
   args_deserializer.deserialize((void*)num_owners, sizeof(size_t)
       * num_idx_spaces);
 
-  size_t consecutive_index = 0;
+  size_t indx = 0;
   for(size_t idx_space : context_.index_spaces()){
-    ispace_dmap[idx_space].pbarrier_as_owner = pbarriers_as_owner[consecutive_index];
-    ispace_dmap[idx_space].ghost_is_readable = true;
-    ispace_dmap[idx_space].write_phase_started = false;
-    consecutive_index++;
-  }
+    for (const field_id_t& field_id : context_.fields_map()[idx_space]){
+      indx++;
+      ispace_dmap[idx_space].pbarriers_as_owner[field_id] =
+        pbarriers_as_owner[indx];
+    }//end field_info
+  }//end for idx_space
 
-  std::map<size_t, std::vector<Legion::PhaseBarrier>>
-  ghost_owners_pbarriers;
+  // Deserialize ghost_owners_pbarriers
+  size_t num_owners_pbarriers;
+  args_deserializer.deserialize(&num_owners_pbarriers, sizeof(size_t));
 
-  consecutive_index = 0;
+  Legion::PhaseBarrier* ghost_owners_pbarriers = (Legion::PhaseBarrier*)
+    malloc(sizeof(Legion::PhaseBarrier) * num_owners_pbarriers);
+
+  args_deserializer.deserialize((void*)ghost_owners_pbarriers,
+    sizeof(Legion::PhaseBarrier) * num_owners_pbarriers);
+
+  indx=0;
   for(size_t idx_space : context_.index_spaces()) {
-    size_t n = num_owners[consecutive_index];
+    size_t n = num_owners[idx_space];
+    for (const field_id_t& field_id : context_.fields_map()[idx_space]){
+       ispace_dmap[idx_space].ghost_owners_pbarriers[field_id].resize(n);
 
-    ghost_owners_pbarriers[idx_space].resize(n);
-    args_deserializer.deserialize((void*)&ghost_owners_pbarriers[idx_space][0],
-        sizeof(Legion::PhaseBarrier) * n);
-    
-    ispace_dmap[idx_space].ghost_owners_pbarriers.resize(n);
-
-    for(size_t owner = 0; owner < n; ++owner){
-      ispace_dmap[idx_space].ghost_owners_pbarriers[owner] =
-        ghost_owners_pbarriers[idx_space][owner];
-    }
-    consecutive_index++;
-  }
-
-  size_t num_fields;
-  args_deserializer.deserialize(&num_fields, sizeof(size_t));
-
-  using field_info_t = context_t::field_info_t;
-  auto field_info_buf = 
-    (field_info_t*)malloc(sizeof(field_info_t) * num_fields);
-  
-  args_deserializer.deserialize(field_info_buf,
-                                sizeof(field_info_t) * num_fields);
-  
-  for(size_t i = 0; i < num_fields; ++i){
-    field_info_t& fi = field_info_buf[i];
-    context_.put_field_info(fi);
-  }
-
-  size_t num_adjacencies;
-  args_deserializer.deserialize(&num_adjacencies, sizeof(size_t));
-
-  using adjacency_triple_t = context_t::adjacency_triple_t;
-
-  adjacency_triple_t* adjacencies = 
-    (adjacency_triple_t*)malloc(sizeof(adjacency_triple_t) * num_adjacencies);
-  
-  args_deserializer.deserialize((void*)adjacencies,
-    sizeof(adjacency_triple_t) * num_adjacencies);
-
-  for(size_t i = 0; i < num_adjacencies; ++i){
-    context_.add_adjacency_triple(adjacencies[i]);
-  }
-
+       for(size_t owner = 0; owner < n; ++owner){
+         ispace_dmap[idx_space].ghost_owners_pbarriers[field_id][owner] =
+            ghost_owners_pbarriers[indx];
+         indx++;
+         clog(trace) <<my_color <<" has ghost_owners_pbarrier "<<
+             ghost_owners_pbarriers[indx-1]<<std::endl;
+      }//idx_spcae
+    }//field_id
+  }//owner
   // Prevent these objects destructors being called until after driver()
   std::map<size_t, std::vector<Legion::LogicalRegion>>
     ghost_owners_lregions;
@@ -533,7 +526,7 @@ spmd_task(
   std::vector<Legion::IndexPartition> exclusive_shared_ips(num_idx_spaces);
 
   size_t region_index = 0;
-  consecutive_index = 0;
+  size_t consecutive_index = 0;
   for(size_t idx_space : context_.index_spaces()) {
 
     ispace_dmap[idx_space].color_region = regions[region_index]
@@ -629,6 +622,10 @@ spmd_task(
       size_t size;
       const bool can_fail = false;
       const bool wait_until_ready = true;
+
+      clog_assert(region_index < regions.size(),
+          "SPMD attempted to access more regions than passed");
+
       runtime->retrieve_semantic_information(regions[region_index]
           .get_logical_region(), OWNER_COLOR_TAG,
           owner_color, size, can_fail, wait_until_ready);
@@ -720,7 +717,6 @@ spmd_task(
   free((void*)num_owners);
   free((void*)pbarriers_as_owner);
   free((void*)idx_spaces);
-  free((void*)adjacencies);
 
 } // spmd_task
 

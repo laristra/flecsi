@@ -665,21 +665,6 @@ struct legion_context_policy_t
    return fields_map_;
   }
 
-  //------------------------------------------------------------------------//
-  // Gathers info about registered data fields.
-  //------------------------------------------------------------------------//
-
-  struct field_info_t{
-    size_t data_client_hash;
-    size_t storage_type;
-    size_t size;
-    size_t namespace_hash;
-    size_t name_hash;
-    size_t versions;
-    field_id_t fid;
-    size_t index_space;
-  }; // struct field_info_t
-
   //--------------------------------------------------------------------------//
   //! Register field info for index space and field id.
   //!
