@@ -645,10 +645,6 @@ spmd_task(
     region_index++;
   }
 
-  Legion::DynamicCollective max_reduction_ptr;
-  args_deserializer.deserialize((void*)&max_reduction_ptr,
-    sizeof(Legion::DynamicCollective));
-
   // Get the input arguments from the Legion runtime
   const Legion::InputArgs & args =
     Legion::Runtime::get_input_args();
@@ -659,10 +655,13 @@ spmd_task(
     ctx, runtime, task, regions);
 #endif
 
+  Legion::DynamicCollective max_reduction;
+  args_deserializer.deserialize((void*)&max_reduction,
+    sizeof(Legion::DynamicCollective));
+  context_.set_max_reduction(max_reduction);
+
   // Call the specialization color initialization function.
-  clog(error) << "check ifdef" << std::endl;
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
-  clog(error) << "IFDEFD" << std::endl;
   specialization_spmd_init(args.argc, args.argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 
