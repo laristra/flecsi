@@ -1575,7 +1575,8 @@ public:
     archive.saveBinary(&size, sizeof(size));
 
     archive.saveBinary(data, size);
-    free(data);
+       
+    delete [] data;
   } // save
 
   /*!
@@ -1592,10 +1593,10 @@ public:
     size_t size;
     archive.loadBinary(&size, sizeof(size));
 
-    char* data = (char*)malloc(size);
+    char* data = new char [size];
     archive.loadBinary(data, size);
     unserialize_(data);
-    free(data);
+    delete [] data;
   } // load
 
   char*
@@ -1610,7 +1611,7 @@ public:
 
     size = alloc_size;
 
-    char* buf = (char*)std::malloc(alloc_size);
+    char* buf = new char [alloc_size];
     uint64_t pos = 0;
 
     std::memcpy(buf + pos, &num_entities, sizeof(num_entities));

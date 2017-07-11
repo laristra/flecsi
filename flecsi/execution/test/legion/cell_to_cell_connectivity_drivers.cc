@@ -239,10 +239,11 @@ void driver(int argc, char ** argv) {
   size_t num_cells = index_coloring->second.exclusive.size() +
       index_coloring->second.shared.size() + index_coloring->second.ghost.size();
 
-  LegionRuntime::Arrays::Point<2>* positions = (LegionRuntime::Arrays::Point<2>*)
-      malloc(sizeof(LegionRuntime::Arrays::Point<2>)*num_cells);  // FIXME leak
+  LegionRuntime::Arrays::Point<2>* positions;
+  positions = new LegionRuntime::Arrays::Point<2> [num_cells];  // FIXME leak
 
-  uint64_t* indices = (uint64_t*)malloc(sizeof(uint64_t)*num_cells*8); // FIXME leak, 8 is hack
+  uint64_t* indices;
+  indices = new uint64_t [num_cells*8]; // FIXME leak, 8 is hack
 
   flecsi::io::simple_definition_t simple_def("simple2d-16x16.msh");
 
@@ -251,7 +252,7 @@ void driver(int argc, char ** argv) {
   auto mesh_storage_policy = mesh.storage();
   mesh_entity_base_* entities;
   size_t dimension = 2;
-  entities = (mesh_entity_base_*)malloc(sizeof(cell)*num_cells); // FIXME leak
+  entities = new mesh_entity_base_ [num_cells]; // FIXME leak
   mesh_storage_policy->init_entities(INDEX_ID,dimension,entities,num_cells);
 
   std::map<size_t,size_t> gid_to_lid_map;
@@ -327,6 +328,10 @@ void driver(int argc, char ** argv) {
   }
 
   flecsi_execute_task(check_values_task, single, cell_IDs, Ts, time);
+
+  delete [] entities;
+  delete [] indices;
+  delete [] positions;
 } // driver
 
 } // namespace execution

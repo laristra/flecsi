@@ -921,7 +921,7 @@ public:
     archive.saveBinary(&size, sizeof(size));
 
     archive.saveBinary(data, size);
-    free(data);
+    delete [] data;
   } // save
 
   template<
@@ -933,10 +933,10 @@ public:
     size_t size;
     archive.loadBinary(&size, sizeof(size));
 
-    char* data = (char*)malloc(size);
+    char* data = new char [size];
     archive.loadBinary(data, size);
     unserialize_(data);
-    free(data);
+    delete [] data;
   } // load
 
   char*
@@ -947,7 +947,7 @@ public:
     const size_t alloc_size = 1048576;
     size = alloc_size;
 
-    char* buf = (char*)std::malloc(alloc_size);
+    char* buf = new char [alloc_size];
     uint64_t pos = 0;
 
     uint32_t num_domains = MT::num_domains;

@@ -194,7 +194,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
   size_t num_idx_spaces;
   args_deserializer.deserialize(&num_idx_spaces, sizeof(size_t));
 
-  size_t* idx_spaces = (size_t*)malloc(sizeof(size_t) * num_idx_spaces);
+  size_t* idx_spaces = new size_t [num_idx_spaces];
   args_deserializer.deserialize((void*)idx_spaces,
     sizeof(size_t) * num_idx_spaces);
 
@@ -207,12 +207,12 @@ __flecsi_internal_legion_task(spmd_task, void) {
   clog_assert(task->regions.size() >= num_idx_spaces,
       "fewer regions than data handles");
 
-  Legion::PhaseBarrier* pbarriers_as_owner = (Legion::PhaseBarrier*)
-      malloc(sizeof(Legion::PhaseBarrier) * num_idx_spaces);
+  Legion::PhaseBarrier* pbarriers_as_owner =
+      new Legion::PhaseBarrier [num_idx_spaces];
   args_deserializer.deserialize((void*)pbarriers_as_owner,
       sizeof(Legion::PhaseBarrier) * num_idx_spaces);
 
-  size_t* num_owners = (size_t*)malloc(sizeof(size_t) * num_idx_spaces);
+  size_t* num_owners = new size_t [num_idx_spaces];
   args_deserializer.deserialize((void*)num_owners, sizeof(size_t)
       * num_idx_spaces);
 
@@ -248,8 +248,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
   args_deserializer.deserialize(&num_fields, sizeof(size_t));
 
   using field_info_t = context_t::field_info_t;
-  auto field_info_buf = 
-    (field_info_t*)malloc(sizeof(field_info_t) * num_fields);
+  auto field_info_buf = new field_info_t [num_fields];
   
   args_deserializer.deserialize(field_info_buf,
                                 sizeof(field_info_t) * num_fields);
@@ -264,8 +263,7 @@ __flecsi_internal_legion_task(spmd_task, void) {
 
   using adjacency_triple_t = context_t::adjacency_triple_t;
 
-  adjacency_triple_t* adjacencies = 
-    (adjacency_triple_t*)malloc(sizeof(adjacency_triple_t) * num_adjacencies);
+  adjacency_triple_t* adjacencies = new adjacency_triple_t [num_adjacencies];
   
   args_deserializer.deserialize((void*)adjacencies,
     sizeof(adjacency_triple_t) * num_adjacencies);
@@ -460,11 +458,12 @@ __flecsi_internal_legion_task(spmd_task, void) {
       runtime->destroy_index_partition(ctx, ipart);
   for(auto ipart: exclusive_shared_ips)
       runtime->destroy_index_partition(ctx, ipart);
-  free((void*)field_info_buf);
-  free((void*)num_owners);
-  free((void*)pbarriers_as_owner);
-  free((void*)idx_spaces);
-  free((void*)adjacencies);
+
+  delete [] field_info_buf;
+  delete [] num_owners;
+  delete [] pbarriers_as_owner;
+  delete [] idx_spaces;
+  delete [] adjacencies;
 
 } // spmd_task
 #endif
