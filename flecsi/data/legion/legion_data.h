@@ -171,6 +171,8 @@ public:
 
     context_t & context = context_t::instance();
 
+    using field_info_t = context_t::field_info_t;
+
     adjacency_t c;
 
     clog_assert(adjacencies_.find(adjacency_info.index_space) == 
@@ -211,9 +213,11 @@ public:
     FieldAllocator allocator = 
       runtime_->create_field_allocator(ctx_, c.field_space);
 
-    auto adjacency_index_fid = FieldID(internal_field::adjacency_index);
-
-    allocator.allocate_field(sizeof(size_t), adjacency_index_fid);
+    for(const field_info_t& fi : context.registered_fields()){
+      if(fi.index_space == c.index_space_id){
+        allocator.allocate_field(fi.size, fi.fid);
+      }
+    }
 
     attach_name(c, c.field_space, "expanded field space");
 
