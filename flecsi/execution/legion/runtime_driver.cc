@@ -549,6 +549,8 @@ spmd_task(
     runtime->get_logical_subregion_by_color(ctx, primary_ghost_lp, 
                                             PRIMARY_PART);
 
+    ispace_dmap[idx_space].primary_lr = primary_lr;
+
     ispace_dmap[idx_space].ghost_lr = 
       runtime->get_logical_subregion_by_color(ctx, primary_ghost_lp, 
                                               GHOST_PART);

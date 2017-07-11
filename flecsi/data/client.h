@@ -251,8 +251,16 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
         }
       }
 
-      h.from_regions[handle_index] = ism[hi.from_index_space].color_region;
-      h.to_regions[handle_index] = ism[hi.to_index_space].color_region;
+      h.from_color_regions[handle_index] = 
+        ism[hi.from_index_space].color_region;
+      h.to_color_regions[handle_index] = 
+        ism[hi.to_index_space].color_region;
+
+      h.from_primary_regions[handle_index] = 
+        ism[hi.from_index_space].primary_lr;
+      h.to_primary_regions[handle_index] = 
+        ism[hi.to_index_space].primary_lr;
+      
       h.adj_regions[handle_index] = ism[hi.index_space].color_region;
 
       ++handle_index;

@@ -35,8 +35,10 @@ struct data_client_handle_base__ : public DATA_CLIENT_TYPE, public DATA_POLICY
   field_id_t entity_fids[MAX_ADJACENCIES];
   field_id_t offset_fids[MAX_ADJACENCIES];
   Legion::LogicalRegion adj_regions[MAX_ADJACENCIES];
-  Legion::LogicalRegion from_regions[MAX_ADJACENCIES];
-  Legion::LogicalRegion to_regions[MAX_ADJACENCIES];
+  Legion::LogicalRegion from_color_regions[MAX_ADJACENCIES];
+  Legion::LogicalRegion to_color_regions[MAX_ADJACENCIES];
+  Legion::LogicalRegion from_primary_regions[MAX_ADJACENCIES];
+  Legion::LogicalRegion to_primary_regions[MAX_ADJACENCIES];
 }; // struct data_client_handle__
 
 } // namespace flecsi

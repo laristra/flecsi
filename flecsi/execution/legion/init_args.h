@@ -130,15 +130,15 @@ namespace execution {
         size_t from_index_space = h.from_index_spaces[i];
         size_t to_index_space = h.to_index_spaces[i];
 
-        Legion::RegionRequirement from_rr(h.from_regions[i],
-          READ_ONLY, EXCLUSIVE, h.from_regions[i]);
+        Legion::RegionRequirement from_rr(h.from_primary_regions[i],
+          READ_ONLY, EXCLUSIVE, h.from_color_regions[i]);
 
         from_rr.add_field(h.offset_fids[i]);
 
         region_reqs.push_back(from_rr);
 
-        Legion::RegionRequirement to_rr(h.to_regions[i],
-          READ_ONLY, EXCLUSIVE, h.to_regions[i]);
+        Legion::RegionRequirement to_rr(h.to_primary_regions[i],
+          READ_ONLY, EXCLUSIVE, h.to_color_regions[i]);
 
         to_rr.add_field(h.entity_fids[i]);
 

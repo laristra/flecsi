@@ -637,6 +637,7 @@ struct legion_context_policy_t
     Legion::STL::map<LegionRuntime::Arrays::coord_t,
       LegionRuntime::Arrays::coord_t> global_to_local_color_map;
     Legion::LogicalRegion color_region;
+    Legion::LogicalRegion primary_lr;
     Legion::LogicalRegion exclusive_lr;
     Legion::LogicalRegion shared_lr;
     Legion::LogicalRegion ghost_lr;
