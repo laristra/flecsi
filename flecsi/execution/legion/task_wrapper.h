@@ -353,17 +353,15 @@ struct task_wrapper__
     init_handles_t init_handles(runtime, context, regions);
     init_handles.walk(task_args);
 
-    // FIXME: NEED TO HANDLE RETURN TYPES
     // Execute the user's task
-    (*DELEGATE)(task_args);
+    RETURN retval = (*DELEGATE)(task_args);
 
 #if !defined(ENABLE_LEGION_TLS)
     // Pop the Legion state
     context_t::instance().pop_state(KEY);
 #endif
 
-    // FIXME: NEED TO HANDLE RETURN TYPES
-    return (RETURN)true;
+    return retval;
   } // execute_user_task
 
   //--------------------------------------------------------------------------//
