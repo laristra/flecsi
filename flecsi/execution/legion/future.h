@@ -57,6 +57,16 @@ struct legion_future_concept__
 
   virtual RETURN get(size_t index = 0) = 0;
 
+  //--------------------------------------------------------------------------//
+  //! Abstract interface for reduction step.
+  //--------------------------------------------------------------------------//
+
+  virtual void
+  defer_dynamic_collective_arrival(
+    Legion::Runtime* runtime,
+    Legion::Context ctx,
+    Legion::DynamicCollective& dc_reduction) = 0;
+
 }; // struct legion_future_concept__
 
 //----------------------------------------------------------------------------//
@@ -134,6 +144,15 @@ struct legion_future_model__ : public legion_future_concept__<RETURN>
     return legion_future_.template get_result<RETURN>();
   } // get
 
+  void
+  defer_dynamic_collective_arrival(
+    Legion::Runtime* runtime,
+    Legion::Context ctx,
+    Legion::DynamicCollective& dc_reduction)
+  {
+    runtime->defer_dynamic_collective_arrival(ctx, dc_reduction, legion_future_);
+  }
+
 private:
 
   FUTURE legion_future_;
@@ -171,6 +190,15 @@ struct legion_future_model__<void, FUTURE>
   {
     legion_future_.get_void_result();
   } // wait
+
+  void
+  defer_dynamic_collective_arrival(
+    Legion::Runtime* runtime,
+    Legion::Context ctx,
+    Legion::DynamicCollective& dc_reduction)
+  {
+    // reduction of a void is still void
+  }
 
 private:
 
@@ -227,6 +255,15 @@ struct legion_future_model__<RETURN, Legion::FutureMap>
       )
     );
   } // get
+
+  void
+  defer_dynamic_collective_arrival(
+    Legion::Runtime* runtime,
+    Legion::Context ctx,
+    Legion::DynamicCollective& dc_reduction)
+  {
+    // Not sure what reducing a map with other maps would mean
+  }
 
 private:
 
@@ -355,6 +392,15 @@ struct legion_future__
   {
     return state_->get(index);
   } // get
+
+  void
+  defer_dynamic_collective_arrival(
+    Legion::Runtime* runtime,
+    Legion::Context ctx,
+    Legion::DynamicCollective& dc_reduction)
+  {
+    state_->defer_dynamic_collective_arrival(runtime, ctx, dc_reduction);
+  }
 
 private:
 
