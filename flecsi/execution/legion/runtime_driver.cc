@@ -276,13 +276,11 @@ runtime_driver(
     // #6 serialize owners_pbarriers
 
     std::vector <Legion::PhaseBarrier> owners_pbarriers_buf;
-    for(size_t idx_space : data.index_spaces()){
-      for (const field_id_t& field_id : fields_map[idx_space]){
-        for(auto pb:owners_pbarriers[idx_space][field_id]){
+    for(size_t idx_space : data.index_spaces())
+      for (const field_id_t& field_id : fields_map[idx_space])
+        for(auto pb:owners_pbarriers[idx_space][field_id])
            owners_pbarriers_buf.push_back(pb);
-        }
-      }
-    }
+
 
   size_t num_owners_pbarriers = owners_pbarriers_buf.size();
   args_serializers[color].serialize(&num_owners_pbarriers, sizeof(size_t));
@@ -512,8 +510,9 @@ spmd_task(
     sizeof(Legion::PhaseBarrier) * num_owners_pbarriers);
 
   indx=0;
+  size_t consec_indx = 0;
   for(size_t idx_space : context_.index_spaces()) {
-    size_t n = num_owners[idx_space];
+    size_t n = num_owners[consec_indx];
     for (const field_id_t& field_id : context_.fields_map()[idx_space]){
        ispace_dmap[idx_space].ghost_owners_pbarriers[field_id].resize(n);
 
@@ -523,9 +522,10 @@ spmd_task(
          indx++;
          clog(trace) <<my_color <<" has ghost_owners_pbarrier "<<
              ghost_owners_pbarriers[indx-1]<<std::endl;
-      }//idx_spcae
+      }//owner
     }//field_id
-  }//owner
+    consec_indx++;
+  }//idx_space
   // Prevent these objects destructors being called until after driver()
   std::map<size_t, std::vector<Legion::LogicalRegion>>
     ghost_owners_lregions;
