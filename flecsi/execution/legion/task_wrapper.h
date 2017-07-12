@@ -354,14 +354,12 @@ struct task_wrapper__
     init_handles.walk(task_args);
 
     // Execute the user's task
-    RETURN retval = (*DELEGATE)(task_args);
+    return (*DELEGATE)(task_args);
 
 #if !defined(ENABLE_LEGION_TLS)
     // Pop the Legion state
     context_t::instance().pop_state(KEY);
 #endif
-
-    return retval;
   } // execute_user_task
 
   //--------------------------------------------------------------------------//
