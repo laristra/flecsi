@@ -46,21 +46,15 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
     size_t index_space;
     size_t from_index_space;
     size_t to_index_space;
+    size_t from_domain;
+    size_t to_domain;
+    size_t from_dim;
+    size_t to_dim;
   };
 
   struct entity_walker_t :
     public flecsi::utils::tuple_walker__<entity_walker_t>
   {
-
-    template<
-      size_t D,
-      size_t N
-    >
-    size_t
-    entity_dimension(topology::mesh_entity_t<D, N>*)
-    {
-      return D;
-    }
 
     template<typename T, T V>
     T value(topology::typeify<T, V>){
@@ -92,6 +86,21 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
     public flecsi::utils::tuple_walker__<connectivity_walker_t>
   {
 
+    template<typename T, T V>
+    T value(topology::typeify<T, V>){
+      return V;
+    }
+
+    template<
+      size_t D,
+      size_t N
+    >
+    size_t
+    dimension(const topology::mesh_entity_t<D, N>&)
+    {
+      return D;
+    }
+
     template<
       typename TUPLE_ENTRY_TYPE
     >
@@ -117,6 +126,14 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
       hi.to_index_space = 
         entity_index_space_map[typeid(TO_ENTITY_TYPE).hash_code()];
 
+      hi.from_domain = value(DOMAIN_TYPE());
+
+      hi.to_domain = value(DOMAIN_TYPE());
+
+      hi.from_dim = dimension(FROM_ENTITY_TYPE());
+
+      hi.to_dim = dimension(TO_ENTITY_TYPE());
+
       handles.emplace_back(std::move(hi));
     } // handle_type
 
@@ -128,6 +145,16 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
   struct binding_walker_t :
     public flecsi::utils::tuple_walker__<binding_walker_t>
   {
+
+    template<
+      size_t D,
+      size_t N
+    >
+    size_t
+    dimension(const topology::mesh_entity_t<D, N>&)
+    {
+      return D;
+    }
 
     template<
       typename TUPLE_ENTRY_TYPE
@@ -145,6 +172,26 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
         typename std::tuple_element<3, TUPLE_ENTRY_TYPE>::type;
       using TO_ENTITY_TYPE =
         typename std::tuple_element<4, TUPLE_ENTRY_TYPE>::type;
+
+      handle_info_t hi;
+
+      hi.index_space = INDEX_TYPE::value;
+      
+      hi.from_index_space = 
+        entity_index_space_map[typeid(FROM_ENTITY_TYPE).hash_code()];
+      
+      hi.to_index_space = 
+        entity_index_space_map[typeid(TO_ENTITY_TYPE).hash_code()];
+
+      hi.from_domain = value(FROM_DOMAIN_TYPE());
+
+      hi.to_domain = value(TO_DOMAIN_TYPE());
+
+      hi.from_dim = dimension(FROM_ENTITY_TYPE());
+
+      hi.to_dim = dimension(TO_ENTITY_TYPE());
+
+      handles.emplace_back(std::move(hi));
     } // handle_type
 
     std::vector<handle_info_t> handles;
@@ -199,6 +246,10 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
       h.adj_index_spaces[handle_index] = hi.index_space;
       h.from_index_spaces[handle_index] = hi.from_index_space;
       h.to_index_spaces[handle_index] = hi.to_index_space;
+      h.from_domains[handle_index] = hi.from_domain;
+      h.to_domains[handle_index] = hi.to_domain;
+      h.from_dims[handle_index] = hi.from_dim;
+      h.to_dims[handle_index] = hi.to_dim;
 
       auto itr = context.field_info_map().find(
         {data_client_hash, hi.from_index_space});

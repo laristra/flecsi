@@ -23,9 +23,12 @@
 #include <vector>
 
 #include "legion.h"
+#include "arrays.h"
 
 #include "flecsi/data/common/privilege.h"
 #include "flecsi/utils/tuple_walker.h"
+#include "flecsi/data/data_client_handle.h"
+#include "flecsi/topology/mesh_types.h"
 
 namespace flecsi {
 namespace execution {
@@ -222,6 +225,91 @@ namespace execution {
     region += num_regions;
 
     } // handle
+
+    template<
+      typename T
+    >
+    void
+    handle(
+      data_client_handle__<T> & h
+    )
+    {
+      auto& context_ = context_t::instance();
+
+      auto storage = h.storage();
+
+      for(size_t i = 0; i < h.num_adjacencies; ++i){
+        size_t adj_index_space = h.adj_index_spaces[i];
+        size_t from_index_space = h.from_index_spaces[i];
+        size_t to_index_space = h.to_index_spaces[i];
+
+        Legion::LogicalRegion lr = regions[region].get_logical_region();
+        Legion::IndexSpace is = lr.get_index_space();
+
+        auto ac = 
+          regions[region].get_field_accessor(h.offset_fids[i]).template
+          typeify<LegionRuntime::Arrays::Point<2>>();
+
+        Legion::Domain domain = 
+          runtime->get_index_space_domain(context, is); 
+        
+        LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
+        LegionRuntime::Arrays::Rect<2> sr;
+        LegionRuntime::Accessor::ByteOffset bo[2];
+        
+        LegionRuntime::Arrays::Point<2>* offsets = 
+          ac.template raw_rect_ptr<2>(dr, sr, bo);
+        offsets += bo[1];
+        
+        size_t num_offsets = sr.hi[1] - sr.lo[1] + 1;
+
+        ++region;
+
+        lr = regions[region].get_logical_region();
+        is = lr.get_index_space();
+
+        auto ac2 = 
+          regions[region].get_field_accessor(h.entity_fids[i]).template
+          typeify<topology::mesh_entity_base_>();
+
+        domain = runtime->get_index_space_domain(context, is); 
+        
+        dr = domain.get_rect<2>();
+
+        topology::mesh_entity_base_* ents = 
+          ac2.template raw_rect_ptr<2>(dr, sr, bo);
+        ents += bo[1];
+        
+        size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
+        clog_assert(num_offsets == num_ents, "offset/entity size mismatch");
+
+        ++region;
+
+        lr = regions[region].get_logical_region();
+        is = lr.get_index_space();
+
+        auto ac3 = 
+          regions[region].get_field_accessor(h.index_fids[i]).template
+          typeify<uint64_t>();
+
+        domain = runtime->get_index_space_domain(context, is); 
+        
+        dr = domain.get_rect<2>();
+
+        uint64_t* indices = 
+          ac3.template raw_rect_ptr<2>(dr, sr, bo);
+        indices += bo[1];
+        
+        size_t num_indices = sr.hi[1] - sr.lo[1] + 1;
+
+        storage->init_entities(h.to_domains[i], h.to_dims[i], ents, num_ents);
+        
+        storage->init_connectivity(h.from_domains[i], h.to_domains[i],
+          h.from_dims[i], h.to_dims[i], offsets, indices, num_offsets);
+
+        ++region;
+      }
+    }
 
     //-----------------------------------------------------------------------//
     // If this is not a data handle, then simply skip it.
