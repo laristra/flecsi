@@ -4,9 +4,12 @@
 #------------------------------------------------------------------------------#
 
 import sys
+import os
 
 from flecsit.base import Service
+from flecsit.services.service_utils import *
 from flecsit.services.analysis_driver.execute import *
+
 
 #------------------------------------------------------------------------------#
 # Documentation handler.
@@ -31,15 +34,13 @@ class FleCSIT_Analysis(Service):
                  ' source:\"defines string\":\"include paths string\", e.g.,' +
                  ' foo.cc:\"-I/path/one -I/path/two\":\"-DDEF1 -DDEF2\"'
         )
+        
+        # Add general compiler options -I, -L, and -l
+        add_command_line_compiler_options(self.parser)
 
         # add command-line options
         self.parser.add_argument('-v', '--verbose', action='store_true',
             help='Turn on verbose output.'
-        )
-
-        self.parser.add_argument('pack', nargs='*', action='append',
-            help='The files to anaylze. Each file pack should be' +
-            ' of the form: source:\"defines string\":\"include paths string\"'
         )
 
         # set the callback for this sub-command
@@ -51,7 +52,7 @@ class FleCSIT_Analysis(Service):
     # Main.
     #--------------------------------------------------------------------------#
 
-    def main(self, build, args=None):
+    def main(self, config, args=None):
 
         """
         """
@@ -60,21 +61,22 @@ class FleCSIT_Analysis(Service):
         # Process command-line arguments
         #----------------------------------------------------------------------#
 
-        # Add any user-provided include paths to build
-        for include in args.include or []:
-            build['includes'] += ' -I' + include
+        project_name = args.driver[0][0]
+        includes = generate_compiler_options(config['includes'],
+            args.include, 'FLECSIT_INCLUDES', '-I')
+        ldflags = generate_compiler_options(config['ldflags'],
+            args.ldflag, 'FLECSIT_LDFLAGS', '-L')
+        libraries = generate_compiler_options(config['libraries'],
+            args.library, 'FLECSIT_LIBRARIES', '-l')
 
-        # Add FleCSI include
-        build['includes'] += ' -I' + build['prefix'] + '/include'
-
-        # Add current directory to includes
-        build['includes'] += ' -I./'
+        # Copy cmake config to initialize build dict
+        build = config
 
         # Add driver to build defines
-        build['defines'] += ' -DFLECSI_DRIVER=' + args.driver        
+        build['driver'] = project_name + '.cc'
 
-        # Execute analysis
-        execute(args.verbose, args.pack, build)
+        # Execute build
+        execute(args.verbose, project_name, build)
 
     # main
 
