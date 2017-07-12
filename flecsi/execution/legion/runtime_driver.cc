@@ -374,10 +374,11 @@ runtime_driver(
         reg_req(color_lregion, READ_WRITE, SIMULTANEOUS,
           adjacency.logical_region);
 
-        auto adjacency_index_fid = 
-          LegionRuntime::HighLevel::FieldID(internal_field::adjacency_index);
-
-      reg_req.add_field(adjacency_index_fid);
+      for(const field_info_t& fi : context_.registered_fields()){
+        if(fi.index_space == adjacency_idx_space){
+          reg_req.add_field(fi.fid);
+        }
+      }
 
       spmd_launcher.add_region_requirement(reg_req);
     }
@@ -588,6 +589,8 @@ spmd_task(
     runtime->get_logical_subregion_by_color(ctx, primary_ghost_lp, 
                                             PRIMARY_PART);
 
+    ispace_dmap[idx_space].primary_lr = primary_lr;
+
     ispace_dmap[idx_space].ghost_lr = 
       runtime->get_logical_subregion_by_color(ctx, primary_ghost_lp, 
                                               GHOST_PART);
@@ -686,10 +689,6 @@ spmd_task(
     region_index++;
   }
 
-  Legion::DynamicCollective max_reduction_ptr;
-  args_deserializer.deserialize((void*)&max_reduction_ptr,
-    sizeof(Legion::DynamicCollective));
-
   // Get the input arguments from the Legion runtime
   const Legion::InputArgs & args =
     Legion::Runtime::get_input_args();
@@ -700,10 +699,13 @@ spmd_task(
     ctx, runtime, task, regions);
 #endif
 
+  Legion::DynamicCollective max_reduction;
+  args_deserializer.deserialize((void*)&max_reduction,
+    sizeof(Legion::DynamicCollective));
+  context_.set_max_reduction(max_reduction);
+
   // Call the specialization color initialization function.
-  clog(error) << "check ifdef" << std::endl;
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
-  clog(error) << "IFDEFD" << std::endl;
   specialization_spmd_init(args.argc, args.argv);
 #endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
 

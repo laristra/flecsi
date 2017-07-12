@@ -447,10 +447,10 @@ namespace execution {
     void* args_buf = task->local_args;
 
     Deserializer deserializer(args_buf, args.buf_size);
-    void* indices_buf = malloc(args.indices_buf_size);
+    void* indices_buf = ::operator new(args.indices_buf_size);
     deserializer.deserialize(indices_buf, args.indices_buf_size);
 
-    void* entries_buf = malloc(args.entries_buf_size);
+    void* entries_buf = ::operator new(args.entries_buf_size);
     deserializer.deserialize(entries_buf, args.entries_buf_size);
 
     char* commit_entry_values = (char*)entries_buf;

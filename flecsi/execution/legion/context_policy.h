@@ -638,6 +638,7 @@ struct legion_context_policy_t
     Legion::STL::map<LegionRuntime::Arrays::coord_t,
       LegionRuntime::Arrays::coord_t> global_to_local_color_map;
     Legion::LogicalRegion color_region;
+    Legion::LogicalRegion primary_lr;
     Legion::LogicalRegion exclusive_lr;
     Legion::LogicalRegion shared_lr;
     Legion::LogicalRegion ghost_lr;
@@ -663,6 +664,28 @@ struct legion_context_policy_t
   fields_map()
   {
    return fields_map_;
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Set DynamicCollective for <double> max reduction
+  //!
+  //! @param max_reduction Legion DynamicCollective for <double> max reduction
+  //--------------------------------------------------------------------------//
+
+  void
+  set_max_reduction(Legion::DynamicCollective& max_reduction)
+  {
+    max_reduction_ = max_reduction;
+  }
+
+  //--------------------------------------------------------------------------//
+  //! Get DynamicCollective for <double> max reduction
+  //--------------------------------------------------------------------------//
+
+  auto&
+  max_reduction()
+  {
+    return max_reduction_;
   }
 
   //--------------------------------------------------------------------------//
@@ -894,6 +917,7 @@ private:
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
   std::map<size_t, std::vector<field_id_t>> fields_map_;
+  Legion::DynamicCollective max_reduction_;
 
 }; // class legion_context_policy_t
 

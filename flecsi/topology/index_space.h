@@ -45,6 +45,9 @@ namespace topology {
   in sorted order.
 */
 
+template<size_t, class E>
+class domain_entity;
+
 template<typename T>
 struct index_space_ref_type__{
   using type = T&;
@@ -53,6 +56,11 @@ struct index_space_ref_type__{
 template<typename S>
 struct index_space_ref_type__<S*>{
   using type = S*;
+};
+
+template<size_t M, class E>
+struct index_space_ref_type__<domain_entity<M, E>>{
+  using type = domain_entity<M, E>;
 };
 
 template<

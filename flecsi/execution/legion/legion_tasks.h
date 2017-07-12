@@ -203,8 +203,12 @@ __flecsi_internal_legion_task(spmd_task, void) {
   args_deserializer.deserialize(&num_idx_spaces, sizeof(size_t));
   args_deserializer.deserialize(&num_phase_barriers, sizeof(size_t));
 
+<<<<<<< HEAD
   // #2 deserialize idx_spaces
   size_t* idx_spaces = (size_t*)malloc(sizeof(size_t) * num_idx_spaces);
+=======
+  size_t* idx_spaces = new size_t [num_idx_spaces];
+>>>>>>> master
   args_deserializer.deserialize((void*)idx_spaces,
     sizeof(size_t) * num_idx_spaces);
 
@@ -218,14 +222,59 @@ __flecsi_internal_legion_task(spmd_task, void) {
   clog_assert(task->regions.size() >= num_idx_spaces,
       "fewer regions than data handles");
 
+<<<<<<< HEAD
   // #3 deserialize field info
+=======
+  Legion::PhaseBarrier* pbarriers_as_owner =
+      new Legion::PhaseBarrier [num_idx_spaces];
+  args_deserializer.deserialize((void*)pbarriers_as_owner,
+      sizeof(Legion::PhaseBarrier) * num_idx_spaces);
+
+  size_t* num_owners = new size_t [num_idx_spaces];
+  args_deserializer.deserialize((void*)num_owners, sizeof(size_t)
+      * num_idx_spaces);
+
+  size_t consecutive_index = 0;
+  for(size_t idx_space : context_.index_spaces()){
+    ispace_dmap[idx_space].pbarrier_as_owner = pbarriers_as_owner[consecutive_index];
+    ispace_dmap[idx_space].ghost_is_readable = true;
+    ispace_dmap[idx_space].write_phase_started = false;
+    consecutive_index++;
+  }
+
+  std::map<size_t, std::vector<Legion::PhaseBarrier>>
+  ghost_owners_pbarriers;
+
+  consecutive_index = 0;
+  for(size_t idx_space : context_.index_spaces()) {
+    size_t n = num_owners[consecutive_index];
+
+    ghost_owners_pbarriers[idx_space].resize(n);
+    args_deserializer.deserialize((void*)&ghost_owners_pbarriers[idx_space][0],
+        sizeof(Legion::PhaseBarrier) * n);
+    
+    ispace_dmap[idx_space].ghost_owners_pbarriers.resize(n);
+
+    for(size_t owner = 0; owner < n; ++owner){
+      ispace_dmap[idx_space].ghost_owners_pbarriers[owner] =
+        ghost_owners_pbarriers[idx_space][owner];
+    }
+    consecutive_index++;
+  }
+
+>>>>>>> master
   size_t num_fields;
   args_deserializer.deserialize(&num_fields, sizeof(size_t));
 
   using field_info_t = context_t::field_info_t;
+<<<<<<< HEAD
   auto field_info_buf =
     (field_info_t*)malloc(sizeof(field_info_t) * num_fields);
 
+=======
+  auto field_info_buf = new field_info_t [num_fields];
+  
+>>>>>>> master
   args_deserializer.deserialize(field_info_buf,
                                 sizeof(field_info_t) * num_fields);
 
@@ -246,10 +295,17 @@ __flecsi_internal_legion_task(spmd_task, void) {
      clog(trace) <<my_color <<" has pbarrier_as_owner "<<
         pbarriers_as_owner[i]<<std::endl;
 
+<<<<<<< HEAD
   // #5 deserialize num_owners
   size_t* num_owners = (size_t*)malloc(sizeof(size_t) * num_idx_spaces);
   args_deserializer.deserialize((void*)num_owners, sizeof(size_t)
       * num_idx_spaces);
+=======
+  adjacency_triple_t* adjacencies = new adjacency_triple_t [num_adjacencies];
+  
+  args_deserializer.deserialize((void*)adjacencies,
+    sizeof(adjacency_triple_t) * num_adjacencies);
+>>>>>>> master
 
   size_t indx =0;
   for(size_t idx_space : context_.index_spaces()){
@@ -480,11 +536,12 @@ __flecsi_internal_legion_task(spmd_task, void) {
       runtime->destroy_index_partition(ctx, ipart);
   for(auto ipart: exclusive_shared_ips)
       runtime->destroy_index_partition(ctx, ipart);
-  free((void*)field_info_buf);
-  free((void*)num_owners);
-  free((void*)pbarriers_as_owner);
-  free((void*)idx_spaces);
-  free((void*)adjacencies);
+
+  delete [] field_info_buf;
+  delete [] num_owners;
+  delete [] pbarriers_as_owner;
+  delete [] idx_spaces;
+  delete [] adjacencies;
 
 } // spmd_task
 #endif
