@@ -211,8 +211,8 @@ runtime_driver(
       owners_pbarriers;
 
     for(auto idx_space : data.index_spaces()) {
-      std::map<field_id_t, std::vector<Legion::PhaseBarrier>>
-        per_color_owners_pbs;
+    //  std::map<field_id_t, std::vector<Legion::PhaseBarrier>>
+    //    per_color_owners_pbs;
 
       flecsi::coloring::coloring_info_t color_info =
           coloring_info[idx_space][color];
@@ -234,7 +234,7 @@ runtime_driver(
        
         }
       
-        owners_pbarriers[idx_space] = per_color_owners_pbs;
+       // owners_pbarriers[idx_space] = per_color_owners_pbs;
       }//for field_info
       num_ghost_owners.push_back(color_info.ghost_owners.size());
     } // for idx_space
@@ -288,6 +288,9 @@ runtime_driver(
   args_serializers[color].serialize(&num_owners_pbarriers, sizeof(size_t));
   args_serializers[color].serialize(&owners_pbarriers_buf[0],
       num_owners_pbarriers * sizeof(Legion::PhaseBarrier));
+
+  args_serializers[color].serialize(&max_reduction,
+        sizeof(Legion::DynamicCollective));
 
    //add region requirements to the spmd_launcher
     Legion::TaskLauncher spmd_launcher(spmd_id,
@@ -481,6 +484,10 @@ spmd_task(
   args_deserializer.deserialize((void*)pbarriers_as_owner,
       sizeof(Legion::PhaseBarrier) * num_phase_barriers);
 
+  for (size_t i=0; i<num_phase_barriers;i++ ) 
+    clog(trace) <<my_color <<" has pbarrier_as_owner "<<
+			pbarriers_as_owner[i]<<std::endl;
+
   size_t* num_owners = (size_t*)malloc(sizeof(size_t) * num_idx_spaces);
   args_deserializer.deserialize((void*)num_owners, sizeof(size_t)
       * num_idx_spaces);
@@ -488,9 +495,9 @@ spmd_task(
   size_t indx = 0;
   for(size_t idx_space : context_.index_spaces()){
     for (const field_id_t& field_id : context_.fields_map()[idx_space]){
-      indx++;
       ispace_dmap[idx_space].pbarriers_as_owner[field_id] =
         pbarriers_as_owner[indx];
+      indx++;
     }//end field_info
   }//end for idx_space
 
