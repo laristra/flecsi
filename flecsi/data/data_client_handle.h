@@ -17,32 +17,38 @@ namespace flecsi {
 //! FIXME: Description of class
 //----------------------------------------------------------------------------//
 
+struct data_client_handle_adjacency
+{
+  using field_id_t = Legion::FieldID;
+  
+  size_t adj_index_space;
+  size_t from_index_space;
+  size_t to_index_space;
+  size_t from_domain;
+  size_t to_domain;
+  size_t from_dim;
+  size_t to_dim;
+  field_id_t index_fid;
+  field_id_t entity_fid;
+  field_id_t offset_fid;
+  Legion::LogicalRegion adj_region;
+  Legion::LogicalRegion from_color_region;
+  Legion::LogicalRegion to_color_region;
+  Legion::LogicalRegion from_primary_region;
+  Legion::LogicalRegion to_primary_region;  
+};
+
 template<
   typename DATA_CLIENT_TYPE,
   typename DATA_POLICY
 >
 struct data_client_handle_base__ : public DATA_CLIENT_TYPE, public DATA_POLICY
 {
-  using field_id_t = Legion::FieldID;
 
   static constexpr size_t MAX_ADJACENCIES = 20;
 
   size_t num_adjacencies;
-  size_t adj_index_spaces[MAX_ADJACENCIES];
-  size_t from_index_spaces[MAX_ADJACENCIES];
-  size_t to_index_spaces[MAX_ADJACENCIES];
-  size_t from_domains[MAX_ADJACENCIES];
-  size_t to_domains[MAX_ADJACENCIES];
-  size_t from_dims[MAX_ADJACENCIES];
-  size_t to_dims[MAX_ADJACENCIES];
-  field_id_t index_fids[MAX_ADJACENCIES];
-  field_id_t entity_fids[MAX_ADJACENCIES];
-  field_id_t offset_fids[MAX_ADJACENCIES];
-  Legion::LogicalRegion adj_regions[MAX_ADJACENCIES];
-  Legion::LogicalRegion from_color_regions[MAX_ADJACENCIES];
-  Legion::LogicalRegion to_color_regions[MAX_ADJACENCIES];
-  Legion::LogicalRegion from_primary_regions[MAX_ADJACENCIES];
-  Legion::LogicalRegion to_primary_regions[MAX_ADJACENCIES];
+  data_client_handle_adjacency adjacencies[MAX_ADJACENCIES];
 }; // struct data_client_handle__
 
 } // namespace flecsi

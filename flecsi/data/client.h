@@ -243,13 +243,15 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
     h.num_adjacencies = binding_walker.handles.size();
 
     for(handle_info_t& hi : binding_walker.handles){
-      h.adj_index_spaces[handle_index] = hi.index_space;
-      h.from_index_spaces[handle_index] = hi.from_index_space;
-      h.to_index_spaces[handle_index] = hi.to_index_space;
-      h.from_domains[handle_index] = hi.from_domain;
-      h.to_domains[handle_index] = hi.to_domain;
-      h.from_dims[handle_index] = hi.from_dim;
-      h.to_dims[handle_index] = hi.to_dim;
+      data_client_handle_adjacency& adj = h.adjacencies[handle_index];
+
+      adj.adj_index_space = hi.index_space;
+      adj.from_index_space = hi.from_index_space;
+      adj.to_index_space = hi.to_index_space;
+      adj.from_domain = hi.from_domain;
+      adj.to_domain = hi.to_domain;
+      adj.from_dim = hi.from_dim;
+      adj.to_dim = hi.to_dim;
 
       auto itr = context.field_info_map().find(
         {data_client_hash, hi.from_index_space});
@@ -263,7 +265,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
            utils::hash::client_internal_field_hash(
            utils::const_string_t("__flecsi_internal_adjacency_offset__").
            hash(), hi.from_index_space)){
-          h.offset_fids[handle_index] = fitr.second.fid;
+          adj.offset_fid = fitr.second.fid;
           break;
         }
       }
@@ -280,7 +282,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
            utils::hash::client_internal_field_hash(
            utils::const_string_t("__flecsi_internal_entity_data__").
            hash(), hi.to_index_space)){
-          h.entity_fids[handle_index] = fitr.second.fid;
+          adj.entity_fid = fitr.second.fid;
           break;
         }
       }
@@ -297,22 +299,22 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
            utils::hash::client_internal_field_hash(
            utils::const_string_t("__flecsi_internal_adjacency_index__").
            hash(), hi.index_space)){
-          h.index_fids[handle_index] = fitr.second.fid;
+          adj.index_fid = fitr.second.fid;
           break;
         }
       }
 
-      h.from_color_regions[handle_index] = 
+      adj.from_color_region = 
         ism[hi.from_index_space].color_region;
-      h.to_color_regions[handle_index] = 
+      adj.to_color_region = 
         ism[hi.to_index_space].color_region;
 
-      h.from_primary_regions[handle_index] = 
+      adj.from_primary_region = 
         ism[hi.from_index_space].primary_lr;
-      h.to_primary_regions[handle_index] = 
+      adj.to_primary_region = 
         ism[hi.to_index_space].primary_lr;
       
-      h.adj_regions[handle_index] = ism[hi.index_space].color_region;
+      adj.adj_region = ism[hi.index_space].color_region;
 
       ++handle_index;
     }

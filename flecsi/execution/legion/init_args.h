@@ -126,28 +126,30 @@ namespace execution {
       auto& context_ = context_t::instance();
 
       for(size_t i = 0; i < h.num_adjacencies; ++i){
-        size_t adj_index_space = h.adj_index_spaces[i];
-        size_t from_index_space = h.from_index_spaces[i];
-        size_t to_index_space = h.to_index_spaces[i];
+        data_client_handle_adjacency& adj = h.adjacencies[i];
 
-        Legion::RegionRequirement from_rr(h.from_primary_regions[i],
-          READ_ONLY, EXCLUSIVE, h.from_color_regions[i]);
+        size_t adj_index_space = adj.adj_index_space;
+        size_t from_index_space = adj.from_index_space;
+        size_t to_index_space = adj.to_index_space;
 
-        from_rr.add_field(h.offset_fids[i]);
+        Legion::RegionRequirement from_rr(adj.from_primary_region,
+          READ_ONLY, EXCLUSIVE, adj.from_color_region);
+
+        from_rr.add_field(adj.offset_fid);
 
         region_reqs.push_back(from_rr);
 
-        Legion::RegionRequirement to_rr(h.to_primary_regions[i],
-          READ_ONLY, EXCLUSIVE, h.to_color_regions[i]);
+        Legion::RegionRequirement to_rr(adj.to_primary_region,
+          READ_ONLY, EXCLUSIVE, adj.to_color_region);
 
-        to_rr.add_field(h.entity_fids[i]);
+        to_rr.add_field(adj.entity_fid);
 
         region_reqs.push_back(to_rr);
 
-        Legion::RegionRequirement adj_rr(h.adj_regions[i],
-          READ_ONLY, EXCLUSIVE, h.adj_regions[i]);
+        Legion::RegionRequirement adj_rr(adj.adj_region,
+          READ_ONLY, EXCLUSIVE, adj.adj_region);
 
-        adj_rr.add_field(h.index_fids[i]);
+        adj_rr.add_field(adj.index_fid);
 
         region_reqs.push_back(adj_rr);
       }

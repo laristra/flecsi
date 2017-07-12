@@ -239,15 +239,17 @@ namespace execution {
       auto storage = h.storage();
 
       for(size_t i = 0; i < h.num_adjacencies; ++i){
-        size_t adj_index_space = h.adj_index_spaces[i];
-        size_t from_index_space = h.from_index_spaces[i];
-        size_t to_index_space = h.to_index_spaces[i];
+        data_client_handle_adjacency& adj = h.adjacencies[i];
+
+        size_t adj_index_space = adj.adj_index_space;
+        size_t from_index_space = adj.from_index_space;
+        size_t to_index_space = adj.to_index_space;
 
         Legion::LogicalRegion lr = regions[region].get_logical_region();
         Legion::IndexSpace is = lr.get_index_space();
 
         auto ac = 
-          regions[region].get_field_accessor(h.offset_fids[i]).template
+          regions[region].get_field_accessor(adj.offset_fid).template
           typeify<LegionRuntime::Arrays::Point<2>>();
 
         Legion::Domain domain = 
@@ -269,7 +271,7 @@ namespace execution {
         is = lr.get_index_space();
 
         auto ac2 = 
-          regions[region].get_field_accessor(h.entity_fids[i]).template
+          regions[region].get_field_accessor(adj.entity_fid).template
           typeify<topology::mesh_entity_base_>();
 
         domain = runtime->get_index_space_domain(context, is); 
@@ -281,7 +283,6 @@ namespace execution {
         ents += bo[1];
         
         size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
-        clog_assert(num_offsets == num_ents, "offset/entity size mismatch");
 
         ++region;
 
@@ -289,23 +290,22 @@ namespace execution {
         is = lr.get_index_space();
 
         auto ac3 = 
-          regions[region].get_field_accessor(h.index_fids[i]).template
+          regions[region].get_field_accessor(adj.index_fid).template
           typeify<uint64_t>();
 
         domain = runtime->get_index_space_domain(context, is); 
         
         dr = domain.get_rect<2>();
 
-        uint64_t* indices = 
-          ac3.template raw_rect_ptr<2>(dr, sr, bo);
+        uint64_t* indices = ac3.template raw_rect_ptr<2>(dr, sr, bo);
         indices += bo[1];
         
         size_t num_indices = sr.hi[1] - sr.lo[1] + 1;
 
-        storage->init_entities(h.to_domains[i], h.to_dims[i], ents, num_ents);
+        storage->init_entities(adj.to_domain, adj.to_dim, ents, num_ents);
         
-        storage->init_connectivity(h.from_domains[i], h.to_domains[i],
-          h.from_dims[i], h.to_dims[i], offsets, indices, num_offsets);
+        storage->init_connectivity(adj.from_domain, adj.to_domain,
+          adj.from_dim, adj.to_dim, offsets, indices, num_offsets);
 
         ++region;
       }
