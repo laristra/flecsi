@@ -24,7 +24,6 @@ set(utils_HEADERS
   dbc_impl.h
   checksum.h
   common.h
-  compressed_storage.h
   const_string.h
   debruijn.h
   dimensioned_array.h
@@ -230,10 +229,6 @@ cinch_add_unit(debruijn
 cinch_add_unit(id
   SOURCES test/id.cc
   INPUTS  test/id.blessed
-)
-
-cinch_add_unit(compressed_storage
-  SOURCES test/compressed_storage.cc
 )
 
 if(ENABLE_OPENSSL)
