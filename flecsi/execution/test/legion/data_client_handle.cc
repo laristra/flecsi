@@ -118,12 +118,17 @@ template<typename T, size_t EP, size_t SP, size_t GP>
 using handle_t = 
   data::legion::dense_handle_t<T, EP, SP, GP>;
 
-template<typename DC>
-using client_handle_t = data_client_handle__<DC>;
+template<typename DC, size_t PS>
+using client_handle_t = data_client_handle__<DC, PS>;
 
-void task1(client_handle_t<test_mesh_t> mesh) {
+void task1(client_handle_t<test_mesh_t, dro> mesh) {
   //np(y);
 } // task1
+
+void fill_task(client_handle_t<test_mesh_t, drw> mesh){
+  //mesh.make<vertex>();
+  //mesh.make<cell>();
+}
 
 flecsi_register_data_client(test_mesh_t, meshes, mesh1); 
 
@@ -169,6 +174,10 @@ void specialization_spmd_init(int argc, char ** argv) {
   auto runtime = Legion::Runtime::get_runtime();
   const int my_color = runtime->find_local_MPI_rank();
   clog(error) << "Rank " << my_color << " in specialization_spmd_init" << std::endl;
+
+  auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
+
+  flecsi_execute_task(fill_task, single, ch);
 
 } // specialization_spmd_init
 

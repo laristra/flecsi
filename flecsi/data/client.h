@@ -205,7 +205,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
     size_t NAME_HASH
   >
   static
-  data_client_handle__<DATA_CLIENT_TYPE>
+  data_client_handle__<DATA_CLIENT_TYPE, 0>
   get_client_handle()
   {
     using entity_types_t = typename POLICY_TYPE::entity_types;
@@ -227,7 +227,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
       std::move(connectivity_walker.handles);
     binding_walker.template walk_types<bindings>();
 
-    data_client_handle__<DATA_CLIENT_TYPE> h;
+    data_client_handle__<DATA_CLIENT_TYPE, 0> h;
 
     auto& context = execution::context_t::instance();
 
@@ -370,7 +370,7 @@ struct client_data__
     size_t NAME_HASH
   >
   static
-  data_client_handle__<DATA_CLIENT_TYPE>
+  data_client_handle__<DATA_CLIENT_TYPE, 0>
   get_client_handle()
   {
     return data_client_policy_handler__<DATA_CLIENT_TYPE>::template 

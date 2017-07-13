@@ -99,9 +99,8 @@ namespace execution {
       > & h
     )
     {
-      Legion::MappingTagID tag = EXCLUSIVE_LR;
       Legion::RegionRequirement ex_rr(h.exclusive_lr,
-        privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE, h.color_region, tag);
+        privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE, h.color_region);
       ex_rr.add_field(h.fid);
       region_reqs.push_back(ex_rr);
 
@@ -117,11 +116,12 @@ namespace execution {
     } // handle
 
     template<
-      typename T
+      typename T,
+      size_t PERMISSIONS
     >
     void
     handle(
-      data_client_handle__<T> & h
+      data_client_handle__<T, PERMISSIONS> & h
     )
     {
       auto& context_ = context_t::instance();

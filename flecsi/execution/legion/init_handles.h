@@ -227,11 +227,12 @@ namespace execution {
     } // handle
 
     template<
-      typename T
+      typename T,
+      size_t PERMISSIONS
     >
     void
     handle(
-      data_client_handle__<T> & h
+      data_client_handle__<T, PERMISSIONS> & h
     )
     {
       auto& context_ = context_t::instance();

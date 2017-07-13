@@ -17,38 +17,30 @@ namespace flecsi {
 //! FIXME: Description of class
 //----------------------------------------------------------------------------//
 
-struct data_client_handle_adjacency
-{
-  using field_id_t = Legion::FieldID;
-  
-  size_t adj_index_space;
-  size_t from_index_space;
-  size_t to_index_space;
-  size_t from_domain;
-  size_t to_domain;
-  size_t from_dim;
-  size_t to_dim;
-  field_id_t index_fid;
-  field_id_t entity_fid;
-  field_id_t offset_fid;
-  Legion::LogicalRegion adj_region;
-  Legion::LogicalRegion from_color_region;
-  Legion::LogicalRegion to_color_region;
-  Legion::LogicalRegion from_primary_region;
-  Legion::LogicalRegion to_primary_region;  
-};
-
 template<
   typename DATA_CLIENT_TYPE,
+  size_t PERMISSIONS,
   typename DATA_POLICY
 >
 struct data_client_handle_base__ : public DATA_CLIENT_TYPE, public DATA_POLICY
 {
+  data_client_handle_base__()
+  {
+    
+  }
 
-  static constexpr size_t MAX_ADJACENCIES = 20;
+  template<
+    size_t UNMAPPED_PERMISSIONS
+  >
+  data_client_handle_base__(
+    const data_client_handle_base__<DATA_CLIENT_TYPE, UNMAPPED_PERMISSIONS,
+      DATA_POLICY>& h)
+  : DATA_POLICY(h)
+  {
+    static_assert(UNMAPPED_PERMISSIONS == 0,
+                  "passing mapped client handle to task args");
+  }
 
-  size_t num_adjacencies;
-  data_client_handle_adjacency adjacencies[MAX_ADJACENCIES];
 }; // struct data_client_handle__
 
 } // namespace flecsi
@@ -67,10 +59,12 @@ namespace flecsi {
 //----------------------------------------------------------------------------//
 
 template<
-  typename DATA_CLIENT_TYPE  
+  typename DATA_CLIENT_TYPE,
+  size_t PERMISSIONS
 >
 using data_client_handle__ = data_client_handle_base__<
   DATA_CLIENT_TYPE,
+  PERMISSIONS,
   FLECSI_RUNTIME_DATA_CLIENT_HANDLE_POLICY
 >;
 
