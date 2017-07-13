@@ -682,6 +682,32 @@ spmd_task(
     consecutive_index++;
   } // for idx_space
 
+  // Setup maps from mesh to compacted (local) index space and vice versa
+  //
+  // This depends on the ordering of the BLIS data structure setup.
+  // Currently, this is Exclusive - Shared - Ghost.
+
+#if 0
+  size_t counter(0);
+  for(auto is: context_.index_spaces()) {
+    std::unordered_map<size_t, size_t> _map;
+
+    for(auto index: is.second.exclusive) {
+      _map[counter++] = index.id;
+    } // for
+
+    for(auto index: is.second.shared) {
+      _map[counter++] = index.id;
+    } // for
+
+    for(auto index: is.second.ghost) {
+      _map[counter++] = index.id;
+    } // for
+
+    context_.add_index_map(is, _map);
+  } // for
+#endif
+
   for(auto& itr : context_.adjacencies()) {
     ispace_dmap[itr.first].color_region = 
       regions[region_index].get_logical_region();
