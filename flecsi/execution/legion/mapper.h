@@ -265,6 +265,46 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
       //FIXME:: add colocation_constraints
       Legion::ColocationConstraint colocation_constraints;
 
+      for (size_t indx=0; indx<task.regions.size();indx++){
+
+          Legion::Mapping::PhysicalInstance result;
+          std::vector<Legion::LogicalRegion> regions;
+          bool created;
+
+          if (task.regions[indx].tag == EXCLUSIVE_LR){
+
+            regions.push_back(task.regions[indx].region); 
+            regions.push_back(task.regions[indx+1].region);
+            regions.push_back(task.regions[indx+2].region);      
+
+            if (!runtime->find_or_create_physical_instance(
+              ctx, target_mem, layout_constraints,
+              regions, result, created, true/*acquire*/, GC_NEVER_PRIORITY)) {
+              clog(fatal)<<"ERROR: FLeCSI mapper failed to allocate instance"<<
+              std::endl;
+            }//end if
+
+            for (size_t j=0; j<3; j++)
+             output.chosen_instances[indx+j].push_back(result);            
+
+            indx=indx+2;
+
+          } else {
+
+            regions.push_back(task.regions[indx].region); 
+            if (!runtime->find_or_create_physical_instance(
+              ctx, target_mem, layout_constraints,
+              regions, result, created, true/*acquire*/, GC_NEVER_PRIORITY)) {
+              clog(fatal)<<"ERROR: FLeCSI mapper failed to allocate instance"<<
+              std::endl;
+            }//end if
+
+            output.chosen_instances[indx].push_back(result);
+         
+          }//end if
+      }// end for
+
+#if 0
       //for each data handle
       for (size_t indx=0; indx<task.regions.size()/3;indx++){
 
@@ -293,6 +333,8 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
           output.chosen_instances[3*indx+j].push_back(result);
 
     	} // end for
+#endif
+
     }//end if
 
   }//map_task

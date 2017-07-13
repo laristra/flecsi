@@ -84,6 +84,7 @@ enum {
   MAPPER_FORCE_RANK_MATCH = 0x00001000,
   MAPPER_COMPACTED_STORAGE = 0x00002000,
   MAPPER_SUBRANK_LAUNCH   = 0x00003000,
+  EXCLUSIVE_LR            = 0x00004000,
 };
 
 //----------------------------------------------------------------------------//
