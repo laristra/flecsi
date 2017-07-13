@@ -383,7 +383,7 @@ cinch_add_library_target(flecsi flecsi)
 # Link the necessary libraries
 #------------------------------------------------------------------------------#
 
-if ( FLECSI_RUNTIME_LIBRARIES OR COLORING_LIBRARIES )
+if(FLECSI_RUNTIME_LIBRARIES OR COLORING_LIBRARIES)
   cinch_target_link_libraries(
     flecsi ${FLECSI_RUNTIME_LIBRARIES} ${COLORING_LIBRARIES}
   )
