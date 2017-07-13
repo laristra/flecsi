@@ -339,7 +339,7 @@ if((FLECSI_RUNTIME_MODEL STREQUAL "serial")
           -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
           -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
         POLICY LEGION
-        THREADS 5
+        THREADS 2
       )
 
       cinch_add_unit(cell_to_cell_connectivity

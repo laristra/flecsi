@@ -23,9 +23,12 @@
 #include <vector>
 
 #include "legion.h"
+#include "arrays.h"
 
 #include "flecsi/data/common/privilege.h"
 #include "flecsi/utils/tuple_walker.h"
+#include "flecsi/data/data_client_handle.h"
+#include "flecsi/topology/mesh_types.h"
 
 namespace flecsi {
 namespace execution {
@@ -222,6 +225,92 @@ namespace execution {
     region += num_regions;
 
     } // handle
+
+    template<
+      typename T,
+      size_t PERMISSIONS
+    >
+    void
+    handle(
+      data_client_handle__<T, PERMISSIONS> & h
+    )
+    {
+      auto& context_ = context_t::instance();
+
+      auto storage = h.storage();
+
+      for(size_t i = 0; i < h.num_adjacencies; ++i){
+        data_client_handle_adjacency& adj = h.adjacencies[i];
+
+        size_t adj_index_space = adj.adj_index_space;
+        size_t from_index_space = adj.from_index_space;
+        size_t to_index_space = adj.to_index_space;
+
+        Legion::LogicalRegion lr = regions[region].get_logical_region();
+        Legion::IndexSpace is = lr.get_index_space();
+
+        auto ac = 
+          regions[region].get_field_accessor(adj.offset_fid).template
+          typeify<LegionRuntime::Arrays::Point<2>>();
+
+        Legion::Domain domain = 
+          runtime->get_index_space_domain(context, is); 
+        
+        LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
+        LegionRuntime::Arrays::Rect<2> sr;
+        LegionRuntime::Accessor::ByteOffset bo[2];
+        
+        LegionRuntime::Arrays::Point<2>* offsets = 
+          ac.template raw_rect_ptr<2>(dr, sr, bo);
+        offsets += bo[1];
+        
+        size_t num_offsets = sr.hi[1] - sr.lo[1] + 1;
+
+        ++region;
+
+        lr = regions[region].get_logical_region();
+        is = lr.get_index_space();
+
+        auto ac2 = 
+          regions[region].get_field_accessor(adj.entity_fid).template
+          typeify<topology::mesh_entity_base_>();
+
+        domain = runtime->get_index_space_domain(context, is); 
+        
+        dr = domain.get_rect<2>();
+
+        topology::mesh_entity_base_* ents = 
+          ac2.template raw_rect_ptr<2>(dr, sr, bo);
+        ents += bo[1];
+        
+        size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
+
+        ++region;
+
+        lr = regions[region].get_logical_region();
+        is = lr.get_index_space();
+
+        auto ac3 = 
+          regions[region].get_field_accessor(adj.index_fid).template
+          typeify<uint64_t>();
+
+        domain = runtime->get_index_space_domain(context, is); 
+        
+        dr = domain.get_rect<2>();
+
+        uint64_t* indices = ac3.template raw_rect_ptr<2>(dr, sr, bo);
+        indices += bo[1];
+        
+        size_t num_indices = sr.hi[1] - sr.lo[1] + 1;
+
+        storage->init_entities(adj.to_domain, adj.to_dim, ents, num_ents);
+        
+        storage->init_connectivity(adj.from_domain, adj.to_domain,
+          adj.from_dim, adj.to_dim, offsets, indices, num_offsets);
+
+        ++region;
+      }
+    }
 
     //-----------------------------------------------------------------------//
     // If this is not a data handle, then simply skip it.

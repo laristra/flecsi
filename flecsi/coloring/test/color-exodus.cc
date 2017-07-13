@@ -1,3 +1,4 @@
+
 /*~-------------------------------------------------------------------------~~*
  *  @@@@@@@@  @@           @@@@@@   @@@@@@@@ @@
  * /@@/////  /@@          @@////@@ @@////// /@@
@@ -18,9 +19,10 @@
   #error ENABLE_MPI not defined! This file depends on MPI!
 #endif
 
+#include <fstream>
 #include <mpi.h>
 
-#include "flecsi/io/simple_definition.h"
+#include "flecsi/io/exodus_definition.h"
 #include "flecsi/coloring/dcrs_utils.h"
 #include "flecsi/coloring/parmetis_colorer.h"
 #include "flecsi/coloring/mpi_communicator.h"
@@ -29,35 +31,46 @@
 
 clog_register_tag(coloring);
 
-DEVEL(coloring) {
+
+// some type aliases
+using exodus_definition_2d_t =
+  flecsi::io::exodus_definition__<2, double>;
+
+using exodus_definition_3d_t =
+  flecsi::io::exodus_definition__<3, double>;
+
+using std::vector;
+
+////////////////////////////////////////////////////////////////////////////////
+/// \brief the main cell coloring driver
+////////////////////////////////////////////////////////////////////////////////
+template< int THRU_DIM, typename MD >
+void color_cells( const MD & md, const std::string & output_prefix ) 
+{
+
+  constexpr auto cell_dim = MD::dimension();
 
   // Set the output rank
   clog_set_output_rank(1);
 
   using entry_info_t = flecsi::coloring::entity_info_t;
 
-  int size;
+  int comm_size;
   int rank;
 
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  // Create a mesh definition from file.
-#if 1
-  const size_t M(8), N(8);
-  flecsi::io::simple_definition_t sd("simple2d-8x8.msh");
-#endif
-#if 0
-  const size_t M(16), N(16);
-  flecsi::io::simple_definition_t sd("simple2d-16x16.msh");
-#endif
-#if 0
-  const size_t M(32), N(32);
-  flecsi::io::simple_definition_t sd("simple2d-32x32.msh");
-#endif
-
+  // Create a communicator instance to get neighbor information.
+  auto communicator = std::make_shared<flecsi::coloring::mpi_communicator_t>();
+  
+  //----------------------------------------------------------------------------
+  // Cell Coloring
+  //----------------------------------------------------------------------------
+    
   // Create the dCRS representation for the distributed colorer.
-  auto dcrs = flecsi::coloring::make_dcrs(sd);
+  // This essentialy makes the graph of the dual mesh.
+  auto dcrs = flecsi::coloring::make_dcrs(md);
 
   // Create a colorer instance to generate the primary coloring.
   auto colorer = std::make_shared<flecsi::coloring::parmetis_colorer_t>();
@@ -70,10 +83,18 @@ DEVEL(coloring) {
   clog_container_one(info, "primary coloring", primary, clog::space);
   } // guard
 
+  //----------------------------------------------------------------------------
+  // Cell Closure.  However many layers of ghost cells are needed are found 
+  // here.
+  //----------------------------------------------------------------------------
+    
   // Compute the dependency closure of the primary cell coloring
   // through vertex intersections (specified by last argument "1").
   // To specify edge or face intersections, use 2 (edges) or 3 (faces).
-  auto closure = flecsi::topology::entity_closure<2,2,0>(sd, primary);
+  auto closure = 
+    flecsi::topology::entity_closure<cell_dim, cell_dim, THRU_DIM>(
+      md, primary
+    );
 
   {
   clog_tag_guard(coloring);
@@ -90,21 +111,19 @@ DEVEL(coloring) {
   clog_container_one(info, "nearest neighbors", nearest_neighbors, clog::space);
   } // guard
 
-  // Create a communicator instance to get neighbor information.
-  auto communicator = std::make_shared<flecsi::coloring::mpi_communicator_t>();
-
-  // Get the intersection of our nearest neighbors with the nearest
-  // neighbors of other ranks. This map of sets will only be populated
-  // with intersections that are non-empty
-  auto closure_intersection_map =
-    communicator->get_intersection_info(nearest_neighbors);
+  //----------------------------------------------------------------------------
+  // Find one more layer of ghost cells now, these are needed to get some corner
+  // cases right.
+  //----------------------------------------------------------------------------
 
   // We can iteratively add halos of nearest neighbors, e.g.,
   // here we add the next nearest neighbors. For most mesh types
   // we actually need information about the ownership of these indices
   // so that we can deterministically assign rank ownership to vertices.
   auto nearest_neighbor_closure =
-    flecsi::topology::entity_closure<2,2,0>(sd, nearest_neighbors);
+    flecsi::topology::entity_closure<cell_dim, cell_dim, THRU_DIM>(
+      md, nearest_neighbors
+    );
 
   {
   clog_tag_guard(coloring);
@@ -133,16 +152,15 @@ DEVEL(coloring) {
   clog_container_one(info, "all neighbors", all_neighbors, clog::space);
   } // guard
 
+  //----------------------------------------------------------------------------
+  // Find exclusive, shared, and ghost cells..
+  //----------------------------------------------------------------------------
+
   // Get the rank and offset information for our nearest neighbor
   // dependencies. This also gives information about the ranks
   // that access our shared cells.
   auto cell_nn_info =
     communicator->get_primary_info(primary, nearest_neighbors);
-
-  // Get the rank and offset information for all relevant neighbor
-  // dependencies. This information will be necessary for determining
-  // shared vertices.
-  auto cell_all_info = communicator->get_primary_info(primary, all_neighbors);
 
   // Create a map version of the local info for lookups below.
   std::unordered_map<size_t, size_t> primary_indices_map;
@@ -152,12 +170,6 @@ DEVEL(coloring) {
     primary_indices_map[offset++] = i;
   } // for
   } // scope
-
-  // Create a map version of the remote info for lookups below.
-  std::unordered_map<size_t, entry_info_t> remote_info_map;
-  for(auto i: std::get<1>(cell_all_info)) {
-    remote_info_map[i.id] = i;
-  } // for
 
   std::set<entry_info_t> exclusive_cells;
   std::set<entry_info_t> shared_cells;
@@ -193,6 +205,11 @@ DEVEL(coloring) {
   clog_container_one(info, "shared cells ", shared_cells, clog::newline);
   clog_container_one(info, "ghost cells ", ghost_cells, clog::newline);
   } // guard
+  
+  //----------------------------------------------------------------------------
+  // Create some maps for easy lookups when determining the other dependent
+  // closures.
+  //----------------------------------------------------------------------------
 
   // Create a map version for lookups below.
   std::unordered_map<size_t, entry_info_t> shared_cells_map;
@@ -202,18 +219,39 @@ DEVEL(coloring) {
   } // for
   } // scope
 
+  // Get the rank and offset information for all relevant neighbor
+  // dependencies. This information will be necessary for determining
+  // shared vertices.
+  auto cell_all_info = communicator->get_primary_info(primary, all_neighbors);
+
+  // Create a map version of the remote info for lookups below.
+  std::unordered_map<size_t, entry_info_t> remote_info_map;
+  for(auto i: std::get<1>(cell_all_info)) {
+    remote_info_map[i.id] = i;
+  } // for
+
+  // Get the intersection of our nearest neighbors with the nearest
+  // neighbors of other ranks. This map of sets will only be populated
+  // with intersections that are non-empty
+  auto closure_intersection_map =
+    communicator->get_intersection_info(nearest_neighbors);
+  
+  //----------------------------------------------------------------------------
+  // Vertex Closure
+  //----------------------------------------------------------------------------
+    
   // Form the vertex closure
-  auto vertex_closure = flecsi::topology::vertex_closure<2>(sd, closure);
+  auto vertex_closure = flecsi::topology::vertex_closure<cell_dim>(md, closure);
 
   // Assign vertex ownership
-  std::vector<std::set<size_t>> vertex_requests(size);
+  vector<std::set<size_t>> vertex_requests(comm_size);
   std::set<entry_info_t> vertex_info;
 
   size_t offset(0);
   for(auto i: vertex_closure) {
 
     // Get the set of cells that reference this vertex.
-    auto referencers = flecsi::topology::vertex_referencers<2>(sd, i);
+    auto referencers = flecsi::topology::vertex_referencers<cell_dim>(md, i);
 
     {
     clog_tag_guard(coloring);
@@ -307,137 +345,156 @@ DEVEL(coloring) {
   clog_container_one(info, "ghost vertices ", ghost_vertices, clog::newline);
   } // guard
 
-#if 1
-  std::vector<std::pair<std::string, std::string>> colors = {
-    { "blue", "blue!40!white" },
-    { "green!60!black", "green!60!white" },
-    { "black", "black!40!white" },
-    { "red", "red!40!white" },
-    { "violet", "violet!40!white" }
+  //----------------------------------------------------------------------------
+  // output the result
+  //----------------------------------------------------------------------------
+  
+  constexpr auto num_dims = MD::dimension();
+
+  using real_t = typename MD::real_t;
+  using exodus_t = flecsi::io::exodus_base__< num_dims, real_t >;  
+  
+                          
+  //------------------------------------
+  // Open the file
+
+  // figure out this ranks file name
+  std::stringstream output_filename;
+  output_filename << output_prefix;
+  output_filename << "_rank";
+  output_filename << std::setfill('0') << std::setw(6) << rank;
+  output_filename << ".exo";
+
+  // open the exodus file
+  auto exoid = exodus_t::open( output_filename.str(), std::ios_base::out );
+
+  //------------------------------------
+  // Set exodus parameters
+
+  // set exodus parameters
+  auto num_nodes = md.num_entities( 0 );
+  auto num_faces = num_dims==3 ? md.num_entities( num_dims-1 ) : 0;
+  auto num_elems = 
+    exclusive_cells.size() + shared_cells.size() + ghost_cells.size();;
+
+  auto exo_params = exodus_t::make_params();
+  exo_params.num_nodes = num_nodes;
+  if ( num_dims == 3 ) {
+    exo_params.num_face = num_faces;
+    exo_params.num_face_blk = 1;
+  }
+  exo_params.num_elem = num_elems;
+  exo_params.num_elem_blk = 
+    !exclusive_cells.empty() + !shared_cells.empty() + !ghost_cells.empty();
+  exo_params.num_node_sets = 
+    !exclusive_vertices.empty() + !shared_vertices.empty() + 
+    !ghost_vertices.empty();
+
+  exodus_t::write_params(exoid, exo_params);
+
+  //------------------------------------
+  // Write the coordinates
+
+  vector<real_t> vertex_coord( num_nodes * num_dims );
+  
+  for ( size_t i=0; i<num_nodes; ++i ) {
+    const auto & vert = md.vertex(i);
+    for ( int d=0; d<num_dims; ++d ) 
+      vertex_coord[ d*num_nodes + i ] = vert[d];
+  }
+
+  exodus_t::write_point_coords( exoid, vertex_coord );
+  
+  //------------------------------------
+  // Write the faces
+  
+  if ( num_dims == 3 ) {
+    exodus_t::template write_face_block<int>( 
+      exoid, 1, "faces", md.entities(2,0)
+    );
+  }
+
+  //------------------------------------
+  // Write Exclusive Cells / vertices
+  
+  // the block id and side set counter
+  int elem_blk_id = 0;
+  int node_set_id = 0;
+
+  // 3d wants cell faces, 2d wants cell vertices
+  auto to_dim = (num_dims == 3) ? 2 : 0;
+  const auto & cell_entities = md.entities(cell_dim, to_dim);
+
+  // lambda function to convert to integer lists
+  auto to_list = [&](const auto & list_in)
+    -> std::vector<std::vector<size_t>>
+  {
+    std::vector<std::vector<size_t>> list_out;
+    list_out.reserve( list_in.size() );
+    for ( auto & e : list_in )
+      list_out.emplace_back( cell_entities[e.id] );
+    return list_out;
   };
 
-  std::stringstream texname;
-  texname << "simple2d-" << rank << "-" << M << "x" << N << ".tex";
-  std::ofstream tex(texname.str(), std::ofstream::out);
+  // write the cells
+  exodus_t::template write_element_block<int>( 
+    exoid, ++elem_blk_id, "exclusive cells", to_list(exclusive_cells) 
+  );
+  exodus_t::template write_element_block<int>( 
+    exoid, ++elem_blk_id, "shared cells", to_list(shared_cells)
+  );
+  exodus_t::template write_element_block<int>( 
+    exoid, ++elem_blk_id, "ghost cells", to_list(ghost_cells)
+  );
+    
+  // lambda function to convert to integer lists
+  auto to_vec = [](const auto & list_in)
+    -> std::vector<size_t>
+  {
+    std::vector<size_t> list_out;
+    list_out.reserve( list_in.size() );
+    for ( auto & e : list_in )
+      list_out.push_back( e.id );
+    return list_out;
+  };
 
-  tex << "% Mesh visualization" << std::endl;
-  tex << "\\documentclass[tikz,border=7mm]{standalone}" << std::endl;
-  tex << std::endl;
+  // write the vertices
+  exodus_t::template write_node_set<int>(
+    exoid, ++node_set_id, "exclusive vertices", to_vec(exclusive_vertices)
+  );
+  exodus_t::template write_node_set<int>( 
+    exoid, ++node_set_id, "shared vertices", to_vec(shared_vertices)
+  );
+  exodus_t::template write_node_set<int>( 
+    exoid, ++node_set_id, "ghost vertices", to_vec(ghost_vertices)
+  );
 
-  tex << "\\begin{document}" << std::endl;
-  tex << std::endl;
+      
+  //------------------------------------
+  // Close the file
 
-  tex << "\\begin{tikzpicture}" << std::endl;
-  tex << std::endl;
+  exodus_t::close( exoid );
 
-  tex << "\\draw[step=1cm,black] (0, 0) grid (" <<
-    M << ", " << N << ");" << std::endl;
+} // somerhing
+  
 
-  // maps
-  std::unordered_map<size_t, entry_info_t> exclusive_cells_map;
-  for(auto i: exclusive_cells) {
-    exclusive_cells_map[i.id] = i;
-  } // for
+////////////////////////////////////////////////////////////////////////////////
+/// \brief the main cell coloring test
+////////////////////////////////////////////////////////////////////////////////
+DEVEL(coloring-unstruct)
+{
+  constexpr auto thru_dim = 0;
 
-  std::unordered_map<size_t, entry_info_t> ghost_cells_map;
-  for(auto i: ghost_cells) {
-    ghost_cells_map[i.id] = i;
-  } // for
+  auto prefix_2d = std::string( "exodus2d-mixed" );
+  exodus_definition_2d_t md2d( prefix_2d+".exo" );
+	md2d.write( "test2.exo" );
+  color_cells<thru_dim>( md2d, prefix_2d+"-colored" );
 
-  size_t cell(0);
-  for(size_t j(0); j<M; ++j) {
-    double yoff(0.5+j);
-    for(size_t i(0); i<M; ++i) {
-      double xoff(0.5+i);
-
-      // Cells
-      auto ecell = exclusive_cells_map.find(cell);
-      auto scell = shared_cells_map.find(cell);
-      auto gcell = ghost_cells_map.find(cell);
-
-      if(ecell != exclusive_cells_map.end()) {
-        tex << "\\node[" << std::get<0>(colors[rank]) <<
-          "] at (" << xoff << ", " << yoff <<
-          ") {" << cell++ << "};" << std::endl;
-      }
-      else if(scell != shared_cells_map.end()) {
-        tex << "\\node[" << std::get<1>(colors[rank]) <<
-          "] at (" << xoff << ", " << yoff <<
-          ") {" << cell++ << "};" << std::endl;
-      }
-      else if(gcell != ghost_cells_map.end()) {
-        tex << "\\node[" << std::get<1>(colors[gcell->second.rank]) <<
-          "] at (" << xoff << ", " << yoff <<
-          ") {" << cell++ << "};" << std::endl;
-      }
-      else {
-        tex << "\\node[white] at (" << xoff << ", " << yoff <<
-          ") {" << cell++ << "};" << std::endl;
-      } // if
-    } // for
-  } // for
-
-  std::unordered_map<size_t, entry_info_t> exclusive_vertices_map;
-  for(auto i: exclusive_vertices) {
-    exclusive_vertices_map[i.id] = i;
-  } // for
-
-  std::unordered_map<size_t, entry_info_t> shared_vertices_map;
-  for(auto i: shared_vertices) {
-    shared_vertices_map[i.id] = i;
-  } // for
-
-  std::unordered_map<size_t, entry_info_t> ghost_vertices_map;
-  for(auto i: ghost_vertices) {
-    ghost_vertices_map[i.id] = i;
-  } // for
-
-  size_t vertex(0);
-  for(size_t j(0); j<M+1; ++j) {
-    double yoff(j-0.15);
-    for(size_t i(0); i<N+1; ++i) {
-      double xoff(i-0.2);
-
-      auto evertex = exclusive_vertices_map.find(vertex);
-      auto svertex = shared_vertices_map.find(vertex);
-      auto gvertex = ghost_vertices_map.find(vertex);
-
-      if(evertex != exclusive_vertices_map.end()) {
-        tex << "\\node[" << std::get<0>(colors[rank]) <<
-          "] at (" << xoff << ", " << yoff <<
-          ") { \\scriptsize " << vertex++ << "};" << std::endl;
-      }
-      else if(svertex != shared_vertices_map.end()) {
-        tex << "\\node[" << std::get<1>(colors[rank]) <<
-          "] at (" << xoff << ", " << yoff <<
-          ") { \\scriptsize " << vertex++ << "};" << std::endl;
-      }
-      else if(gvertex != ghost_vertices_map.end()) {
-        tex << "\\node[" << std::get<1>(colors[gvertex->second.rank]) <<
-          "] at (" << xoff << ", " << yoff <<
-          ") { \\scriptsize " << vertex++ << "};" << std::endl;
-      }
-      else {
-        tex << "\\node[white] at (" << xoff << ", " << yoff <<
-          ") { \\scriptsize " << vertex++ << "};" << std::endl;
-      } // if
-    } // for
-  } // for
-
-  tex << "\\end{tikzpicture}" << std::endl;
-  tex << std::endl;
-
-  tex << "\\end{document}" << std::endl;
-#endif
-
-// We will need to discuss how to expose customization to user
-// specializations. The particular configuration of ParMETIS is
-// likley to need tweaks. There are also likely other closure
-// definitions than the one that was chosen here.
-
-// So far, I am happy that this is relatively concise.
-} // TEST
-
+  auto prefix_3d = std::string( "exodus3d-hex" );
+  exodus_definition_3d_t md3d( prefix_3d+".exo");
+	md3d.write( "test3.exo" );
+  color_cells<thru_dim>( md3d, prefix_3d+"-colored" );
+}
 
 /*~------------------------------------------------------------------------~--*
  * Formatting options

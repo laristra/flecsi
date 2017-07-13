@@ -46,21 +46,15 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
     size_t index_space;
     size_t from_index_space;
     size_t to_index_space;
+    size_t from_domain;
+    size_t to_domain;
+    size_t from_dim;
+    size_t to_dim;
   };
 
   struct entity_walker_t :
     public flecsi::utils::tuple_walker__<entity_walker_t>
   {
-
-    template<
-      size_t D,
-      size_t N
-    >
-    size_t
-    entity_dimension(topology::mesh_entity_t<D, N>*)
-    {
-      return D;
-    }
 
     template<typename T, T V>
     T value(topology::typeify<T, V>){
@@ -92,6 +86,21 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
     public flecsi::utils::tuple_walker__<connectivity_walker_t>
   {
 
+    template<typename T, T V>
+    T value(topology::typeify<T, V>){
+      return V;
+    }
+
+    template<
+      size_t D,
+      size_t N
+    >
+    size_t
+    dimension(const topology::mesh_entity_t<D, N>&)
+    {
+      return D;
+    }
+
     template<
       typename TUPLE_ENTRY_TYPE
     >
@@ -117,6 +126,14 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
       hi.to_index_space = 
         entity_index_space_map[typeid(TO_ENTITY_TYPE).hash_code()];
 
+      hi.from_domain = value(DOMAIN_TYPE());
+
+      hi.to_domain = value(DOMAIN_TYPE());
+
+      hi.from_dim = dimension(FROM_ENTITY_TYPE());
+
+      hi.to_dim = dimension(TO_ENTITY_TYPE());
+
       handles.emplace_back(std::move(hi));
     } // handle_type
 
@@ -128,6 +145,16 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
   struct binding_walker_t :
     public flecsi::utils::tuple_walker__<binding_walker_t>
   {
+
+    template<
+      size_t D,
+      size_t N
+    >
+    size_t
+    dimension(const topology::mesh_entity_t<D, N>&)
+    {
+      return D;
+    }
 
     template<
       typename TUPLE_ENTRY_TYPE
@@ -145,6 +172,26 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
         typename std::tuple_element<3, TUPLE_ENTRY_TYPE>::type;
       using TO_ENTITY_TYPE =
         typename std::tuple_element<4, TUPLE_ENTRY_TYPE>::type;
+
+      handle_info_t hi;
+
+      hi.index_space = INDEX_TYPE::value;
+      
+      hi.from_index_space = 
+        entity_index_space_map[typeid(FROM_ENTITY_TYPE).hash_code()];
+      
+      hi.to_index_space = 
+        entity_index_space_map[typeid(TO_ENTITY_TYPE).hash_code()];
+
+      hi.from_domain = value(FROM_DOMAIN_TYPE());
+
+      hi.to_domain = value(TO_DOMAIN_TYPE());
+
+      hi.from_dim = dimension(FROM_ENTITY_TYPE());
+
+      hi.to_dim = dimension(TO_ENTITY_TYPE());
+
+      handles.emplace_back(std::move(hi));
     } // handle_type
 
     std::vector<handle_info_t> handles;
@@ -158,7 +205,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
     size_t NAME_HASH
   >
   static
-  data_client_handle__<DATA_CLIENT_TYPE>
+  data_client_handle__<DATA_CLIENT_TYPE, 0>
   get_client_handle()
   {
     using entity_types_t = typename POLICY_TYPE::entity_types;
@@ -180,7 +227,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
       std::move(connectivity_walker.handles);
     binding_walker.template walk_types<bindings>();
 
-    data_client_handle__<DATA_CLIENT_TYPE> h;
+    data_client_handle__<DATA_CLIENT_TYPE, 0> h;
 
     auto& context = execution::context_t::instance();
 
@@ -196,9 +243,15 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
     h.num_adjacencies = binding_walker.handles.size();
 
     for(handle_info_t& hi : binding_walker.handles){
-      h.adj_index_spaces[handle_index] = hi.index_space;
-      h.from_index_spaces[handle_index] = hi.from_index_space;
-      h.to_index_spaces[handle_index] = hi.to_index_space;
+      data_client_handle_adjacency& adj = h.adjacencies[handle_index];
+
+      adj.adj_index_space = hi.index_space;
+      adj.from_index_space = hi.from_index_space;
+      adj.to_index_space = hi.to_index_space;
+      adj.from_domain = hi.from_domain;
+      adj.to_domain = hi.to_domain;
+      adj.from_dim = hi.from_dim;
+      adj.to_dim = hi.to_dim;
 
       auto itr = context.field_info_map().find(
         {data_client_hash, hi.from_index_space});
@@ -212,7 +265,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
            utils::hash::client_internal_field_hash(
            utils::const_string_t("__flecsi_internal_adjacency_offset__").
            hash(), hi.from_index_space)){
-          h.offset_fids[handle_index] = fitr.second.fid;
+          adj.offset_fid = fitr.second.fid;
           break;
         }
       }
@@ -229,7 +282,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
            utils::hash::client_internal_field_hash(
            utils::const_string_t("__flecsi_internal_entity_data__").
            hash(), hi.to_index_space)){
-          h.entity_fids[handle_index] = fitr.second.fid;
+          adj.entity_fid = fitr.second.fid;
           break;
         }
       }
@@ -246,22 +299,22 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
            utils::hash::client_internal_field_hash(
            utils::const_string_t("__flecsi_internal_adjacency_index__").
            hash(), hi.index_space)){
-          h.index_fids[handle_index] = fitr.second.fid;
+          adj.index_fid = fitr.second.fid;
           break;
         }
       }
 
-      h.from_color_regions[handle_index] = 
+      adj.from_color_region = 
         ism[hi.from_index_space].color_region;
-      h.to_color_regions[handle_index] = 
+      adj.to_color_region = 
         ism[hi.to_index_space].color_region;
 
-      h.from_primary_regions[handle_index] = 
+      adj.from_primary_region = 
         ism[hi.from_index_space].primary_lr;
-      h.to_primary_regions[handle_index] = 
+      adj.to_primary_region = 
         ism[hi.to_index_space].primary_lr;
       
-      h.adj_regions[handle_index] = ism[hi.index_space].color_region;
+      adj.adj_region = ism[hi.index_space].color_region;
 
       ++handle_index;
     }
@@ -317,7 +370,7 @@ struct client_data__
     size_t NAME_HASH
   >
   static
-  data_client_handle__<DATA_CLIENT_TYPE>
+  data_client_handle__<DATA_CLIENT_TYPE, 0>
   get_client_handle()
   {
     return data_client_policy_handler__<DATA_CLIENT_TYPE>::template 
