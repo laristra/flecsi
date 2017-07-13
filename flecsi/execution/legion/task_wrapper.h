@@ -234,9 +234,7 @@ struct functor_task_wrapper__
     functor.context = { context, runtime, task, regions };
 
     // Execute the user's task
-    flecsi::utils::tuple_function(functor, task_args);
-
-    // FIXME: NEED TO HANDLE RETURN TYPES
+    return flecsi::utils::tuple_function(functor, task_args);
   } // execute_functor_task
 
 }; // struct functor_task_wrapper__

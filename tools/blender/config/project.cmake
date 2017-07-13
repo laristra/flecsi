@@ -24,41 +24,8 @@ cinch_add_library_target(blender blender)
 set(CINCH_HEADER_SUFFIXES "\\.h")
 
 #------------------------------------------------------------------------------#
-# LLVM
+# Find package for Clang and LLVM are called above this level of the build.
 #------------------------------------------------------------------------------#
-
-find_package(LLVM 3.7 REQUIRED)
-
-#------------------------------------------------------------------------------#
-# Clang
-#------------------------------------------------------------------------------#
-
-find_package(Clang
-  REQUIRED
-  COMPONENTS
-    FrontendTool
-    Frontend
-    Driver
-    Serialization
-    CodeGen
-    Parse
-    Sema
-    RewriteFrontend
-    Rewrite
-    StaticAnalyzerFrontend
-    StaticAnalyzerCheckers
-    StaticAnalyzerCore
-    ToolingCore
-    Tooling
-    ARCMigrate
-    Analysis
-    Edit
-    AST
-    ASTMatchers
-    Lex
-    Basic
-    BitReader
-)
 
 target_include_directories(blender PRIVATE ${CLANG_INCLUDE_DIR})
 target_link_libraries(blender ${CLANG_LIBRARIES} ${LLVM_LIBRARIES})

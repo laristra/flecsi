@@ -10,12 +10,6 @@
 add_executable(flecsi-mg mesh-gen/main.cc)
 
 #------------------------------------------------------------------------------#
-# Blender tool
-#------------------------------------------------------------------------------#
-
-add_subdirectory(blender)
-
-#------------------------------------------------------------------------------#
 # Collect information for FleCSIT
 #------------------------------------------------------------------------------#
 
@@ -78,6 +72,50 @@ set(FLECSI_PYTHON_PATH_CSH)
 
 if(ENABLE_FLECSIT)
 
+    #--------------------------------------------------------------------------#
+    # Blender tool
+    #--------------------------------------------------------------------------#
+
+    find_package(LLVM 3.7 REQUIRED)
+
+    find_package(Clang
+      REQUIRED
+      COMPONENTS
+        FrontendTool
+        Frontend
+        Driver
+        Serialization
+        CodeGen
+        Parse
+        Sema
+        RewriteFrontend
+        Rewrite
+        StaticAnalyzerFrontend
+        StaticAnalyzerCheckers
+        StaticAnalyzerCore
+        ToolingCore
+        Tooling
+        ARCMigrate
+        Analysis
+        Edit
+        AST
+        ASTMatchers
+        Lex
+        Basic
+        BitReader
+    )
+
+    EXECUTE_PROCESS(COMMAND ${LLVM_CONFIG} --libdir
+        OUTPUT_VARIABLE LLVM_LIB_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+    set(CLANG_HEADER_PATH ${LLVM_LIB_DIR}/clang/${CLANG_VERSION}/include)
+
+    add_subdirectory(blender)
+
+    #--------------------------------------------------------------------------#
+    # FleCSIT dependencies
+    #--------------------------------------------------------------------------#
+
 	find_package(PythonInterp 2.7 REQUIRED)
 
 	execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import distutils.sysconfig as cg; print cg.get_python_lib(0,0,prefix='${CMAKE_INSTALL_PREFIX}')" OUTPUT_VARIABLE PYTHON_INSTDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -97,15 +135,15 @@ if(ENABLE_FLECSIT)
 			WORLD_READ WORLD_EXECUTE
 	)
 
-  set(FLECSI_PYTHON_PATH_MODULE
-    "prepend-path PYTHONPATH ${PYTHON_INSTDIR}"
-  )
-  set(FLECSI_PYTHON_PATH_BASH
-    "export PYTHONPATH=\${PYTHONPATH}:${PYTHON_INSTDIR}"
-  )
-  set(FLECSI_PYTHON_PATH_CSH
-    "setenv PYTHONPATH $PYTHONPATH:${PYTHON_INSTDIR}"
-  )
+    set(FLECSI_PYTHON_PATH_MODULE
+        "prepend-path PYTHONPATH ${PYTHON_INSTDIR}"
+    )
+    set(FLECSI_PYTHON_PATH_BASH
+        "export PYTHONPATH=\${PYTHONPATH}:${PYTHON_INSTDIR}"
+    )
+    set(FLECSI_PYTHON_PATH_CSH
+        "setenv PYTHONPATH $PYTHONPATH:${PYTHON_INSTDIR}"
+    )
 
 endif()
 

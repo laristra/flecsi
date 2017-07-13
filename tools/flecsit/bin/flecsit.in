@@ -58,7 +58,10 @@ def main():
         libprefix = '@CMAKE_INSTALL_LIBDIR@',
 
         # CMake build system
-        system = '@CMAKE_SYSTEM_NAME@'
+        system = '@CMAKE_SYSTEM_NAME@',
+
+        # Clang header path
+        clang_headers = '@CLANG_HEADER_PATH@'
     )
 
     return flecsit.driver.main(build)
