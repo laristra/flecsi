@@ -340,6 +340,7 @@ if((FLECSI_RUNTIME_MODEL STREQUAL "serial")
           -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
         POLICY LEGION
         THREADS 2
+	NOCI
       )
 
       cinch_add_unit(cell_to_cell_connectivity
