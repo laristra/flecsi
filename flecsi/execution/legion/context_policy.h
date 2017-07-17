@@ -657,16 +657,6 @@ struct legion_context_policy_t
     return index_space_data_map_;
   }
 
-  //------------------------------------------------------------------------//
-  //! Get field space data map (fid per index_space).
-  //------------------------------------------------------------------------// 
-
-  auto&
-  fields_map()
-  {
-   return fields_map_;
-  }
-
   //--------------------------------------------------------------------------//
   //! Set DynamicCollective for <double> max reduction
   //!
@@ -750,7 +740,6 @@ struct legion_context_policy_t
     field_id_t fid = field_info.fid;
 
     field_info_map_[{data_client_hash, index_space}].emplace(fid, field_info);
-    fields_map_[index_space].push_back(fid);
     
     field_map_.insert({{field_info.data_client_hash,
       field_info.namespace_hash ^ field_info.name_hash}, {index_space, fid}});
@@ -770,14 +759,12 @@ struct legion_context_policy_t
   //--------------------------------------------------------------------------//
   //! Get field map for read access.
   //--------------------------------------------------------------------------//
-
   const std::map<std::pair<size_t, size_t>, std::pair<size_t, field_id_t>>
   field_map()
   const
   {
     return field_map_;
   } // field_info_map
-
   //--------------------------------------------------------------------------//
   //! Lookup registered field info from data client and namespace hash.
   //! @param data_client_hash data client type hash
@@ -887,7 +874,6 @@ private:
   //--------------------------------------------------------------------------//
 
   std::map<size_t, index_space_data_t> index_space_data_map_;
-  std::map<size_t, std::vector<field_id_t>> fields_map_;
   Legion::DynamicCollective max_reduction_;
 
 }; // class legion_context_policy_t

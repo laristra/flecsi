@@ -132,6 +132,7 @@ runtime_driver(
   std::map<size_t, std::vector<field_id_t>> fields_map;
 
   size_t num_phase_barriers =0;
+
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
     for(const field_info_t& field_info : context_.registered_fields()){
@@ -458,6 +459,26 @@ spmd_task(
     context_.put_field_info(fi);
   }//end for i
 
+  if (context_.registered_fields().size()==0)
+  {
+    for(size_t i = 0; i < num_fields; ++i){
+      field_info_t& fi = field_info_buf[i];
+      context_.register_field_info(fi);
+    }
+  }
+
+  //the key is IS
+  std::map<size_t, std::vector<field_id_t>> fields_map;
+  for(auto is: context_.coloring_map()) {
+    size_t idx_space = is.first;
+    for(const field_info_t& field_info : context_.registered_fields()){
+        if(field_info.index_space == idx_space){
+          fields_map[idx_space].push_back(field_info.fid);
+        }
+      }
+  }//end for is
+
+
   Legion::PhaseBarrier* pbarriers_as_owner =
     new Legion::PhaseBarrier [num_phase_barriers];
   args_deserializer.deserialize((void*)pbarriers_as_owner,
@@ -474,7 +495,7 @@ spmd_task(
   size_t indx = 0;
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
-    for (const field_id_t& field_id : context_.fields_map()[idx_space]){
+    for (const field_id_t& field_id : fields_map[idx_space]){
       ispace_dmap[idx_space].pbarriers_as_owner[field_id] =
         pbarriers_as_owner[indx];
       indx++;
@@ -496,7 +517,7 @@ spmd_task(
   for(auto is: context_.coloring_map()) {
     size_t idx_space = is.first;
     size_t n = num_owners[consec_indx];
-    for (const field_id_t& field_id : context_.fields_map()[idx_space]){
+    for (const field_id_t& field_id : fields_map[idx_space]){
        ispace_dmap[idx_space].ghost_owners_pbarriers[field_id].resize(n);
 
        for(size_t owner = 0; owner < n; ++owner){
