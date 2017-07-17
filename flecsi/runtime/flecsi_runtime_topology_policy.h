@@ -52,4 +52,17 @@ using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY =
 
 } // namespace flecsi
 
+// HPX Policy
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_hpx
+
+#include "flecsi/topology/hpx/storage_policy.h"
+
+namespace flecsi {
+
+template<size_t ND, size_t NM>
+using FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY =
+    topology::hpx_topology_storage_policy__<ND, NM>;
+
+} // namespace flecsi
+
 #endif // FLECSI_RUNTIME_MODEL

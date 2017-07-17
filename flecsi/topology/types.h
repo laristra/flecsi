@@ -59,7 +59,7 @@ struct id_vector_hash_t {
   size_t operator()(const id_vector_t & v) const {
     size_t h = 0;
     for (utils::id_t id : v) {
-      h |= id.local_id();
+      h |= static_cast<size_t>(id.local_id());
     } // for
 
     return h;

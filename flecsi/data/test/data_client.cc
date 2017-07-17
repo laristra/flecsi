@@ -61,7 +61,7 @@ TEST(data_client, destructor) {
 
   // get all accessors to the data
   auto accs = flecsi_get_handles(*dc, hydro, double, global, 0);
-  
+
   ASSERT_EQ( accs.size(), 2 );
   ASSERT_EQ( accs[0].label(), "density" );
   ASSERT_EQ( accs[1].label(), "pressure" );
@@ -85,7 +85,7 @@ TEST(data_client, move) {
   // create new data_clients
   derived_t dc1, dc2;
   auto rid1 = dc1.runtime_id();
-  
+
 // TODO: fix
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_serial
   // Register data
@@ -96,7 +96,7 @@ TEST(data_client, move) {
   // get all accessors to the data
   {
     auto accs = flecsi_get_handles(dc1, hydro, double, global, 0);
-  
+
     ASSERT_EQ( accs.size(), 2 );
     ASSERT_EQ( accs[0].label(), "density" );
     ASSERT_EQ( accs[1].label(), "pressure" );
@@ -112,7 +112,7 @@ TEST(data_client, move) {
   // it should show up in the new data client though
   {
     auto accs = flecsi_get_handles(dc2, hydro, double, global, 0);
-  
+
     ASSERT_EQ( accs.size(), 2 );
     ASSERT_EQ( accs[0].label(), "density" );
     ASSERT_EQ( accs[1].label(), "pressure" );

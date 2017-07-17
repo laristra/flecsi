@@ -6,8 +6,8 @@
 # /@@////   /@@/@@@@@@@/@@       ////////@@/@@
 # /@@       /@@/@@//// //@@    @@       /@@/@@
 # /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
-# //       ///  //////   //////  ////////  // 
-# 
+# //       ///  //////   //////  ////////  //
+#
 # Copyright (c) 2016 Los Alamos National Laboratory, LLC
 # All rights reserved
 #------------------------------------------------------------------------------#
@@ -66,6 +66,16 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
   set(UNIT_POLICY MPI)
   set(RUNTIME_DRIVER ../execution/mpi/runtime_driver.cc)
 
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+
+  set(topology_HEADERS
+    ${topology_HEADERS}
+    hpx/storage_policy.h
+    )
+
+  set(UNIT_POLICY HPX)
+  set(RUNTIME_DRIVER ../execution/hpx/runtime_driver.cc)
+
 endif()
 
 #------------------------------------------------------------------------------#
@@ -100,7 +110,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
    LIBRARIES
      FleCSI
   )
-  
+
   cinch_add_unit(bindings
    SOURCES
      test/bindings.cc

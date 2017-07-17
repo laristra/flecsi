@@ -91,8 +91,14 @@ public:
   //! ID storage type
   using id_storage_t = ID_STORAGE_TYPE<id_t>;
 
+  template<typename T_, typename... Ts>
+  using id_storage_type_arg = ID_STORAGE_TYPE<T_>;
+
   //! Storage type
   using storage_t = STORAGE_TYPE<T>;
+
+  template<typename T_, typename... Ts>
+  using storage_type_arg = STORAGE_TYPE<T_>;
 
   //! item, e.g. entity type
   using item_t = typename std::remove_pointer<T>::type;
@@ -554,8 +560,9 @@ public:
       bool OWNED2 = OWNED,
       bool SORTED2 = SORTED,
       class F2 = F,
-      template<typename, typename...> class ID_STORAGE_TYPE2 = ID_STORAGE_TYPE,
-      template<typename, typename...> class STORAGE_TYPE2 = STORAGE_TYPE>
+      template<typename, typename...>
+      class ID_STORAGE_TYPE2 = id_storage_type_arg,
+      template<typename, typename...> class STORAGE_TYPE2 = storage_type_arg>
   auto & cast() {
     static_assert(std::is_convertible<S, T>::value, "invalid index space cast");
 
@@ -576,8 +583,9 @@ public:
       bool OWNED2 = OWNED,
       bool SORTED2 = SORTED,
       class F2 = F,
-      template<typename, typename...> class ID_STORAGE_TYPE2 = ID_STORAGE_TYPE,
-      template<typename, typename...> class STORAGE_TYPE2 = STORAGE_TYPE>
+      template<typename, typename...>
+      class ID_STORAGE_TYPE2 = id_storage_type_arg,
+      template<typename, typename...> class STORAGE_TYPE2 = storage_type_arg>
   auto & cast() const {
     static_assert(std::is_convertible<S, T>::value, "invalid index space cast");
 
@@ -1314,7 +1322,7 @@ public:
   }
 
   //-----------------------------------------------------------------//
-  //! Append another index space’s entities to the index space.
+  //! Append another index space's entities to the index space.
   //! If the index space does not have storage then only the indices
   //! are appended. It will create a copy of its aliased indices if
   //! OWNED is false.
