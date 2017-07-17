@@ -18,14 +18,23 @@
 #include "flecsi/topology/mesh_types.h"
 
 namespace flecsi {
-
 namespace topology {
-  template<typename>
-  class mesh_topology_t;
 
-  template<size_t, size_t>
-  class mesh_entity_t;
-}
+//----------------------------------------------------------------------------//
+// Forward declaration
+//----------------------------------------------------------------------------//
+
+template<typename>
+class mesh_topology_t;
+
+//----------------------------------------------------------------------------//
+// Forward declaration
+//----------------------------------------------------------------------------//
+
+template<size_t, size_t>
+class mesh_entity_t;
+
+} // namespace topology
 
 namespace data {
 
@@ -321,7 +330,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
 
     return h;
   }
-};
+}; // struct data_client_policy_handler__
 
 
 template<
