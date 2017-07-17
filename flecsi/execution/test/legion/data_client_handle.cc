@@ -134,7 +134,7 @@ flecsi_register_data_client(test_mesh_t, meshes, mesh1);
 
 flecsi_register_task(task1, loc, single);
 
-flecsi_register_field(test_mesh_t, hydro, pressure, double, dense, 0, 1);
+flecsi_register_field(test_mesh_t, hydro, pressure, double, dense, 1, 0);
 
 namespace flecsi {
 namespace execution {

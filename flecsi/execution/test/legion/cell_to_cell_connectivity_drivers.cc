@@ -59,11 +59,11 @@ flecsi_register_task(fwd_euler_heat_task, flecsi::loc, flecsi::single);
 class client_type : public flecsi::data::data_client_t{};
 
 flecsi_register_field(client_type, name_space, cell_ID, size_t, dense,
-    INDEX_ID, VERSIONS);
+    VERSIONS, INDEX_ID);
 flecsi_register_field(client_type, name_space, T, double, dense,
-    INDEX_ID, VERSIONS);
+    VERSIONS, INDEX_ID);
 flecsi_register_field(client_type, name_space, T_temp, double, dense,
-    INDEX_ID, VERSIONS);
+    VERSIONS, INDEX_ID);
 
 class vertex : public mesh_entity_t<0, 1>{
 public:
