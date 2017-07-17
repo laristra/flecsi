@@ -52,4 +52,18 @@ using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::offset_storage_;
 
 } // namespace flecsi
 
+// HPX Policy
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_hpx
+
+#include <flecsi/topology/common/entity_storage.h>
+
+namespace flecsi {
+
+template<typename T>
+using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::topology_storage__<T>;
+
+using FLECSI_RUNTIME_OFFSET_STORAGE_TYPE = topology::offset_storage_;
+
+} // namespace flecsi
+
 #endif // FLECSI_RUNTIME_MODEL

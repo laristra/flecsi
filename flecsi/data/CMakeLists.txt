@@ -6,8 +6,8 @@
 # /@@////   /@@/@@@@@@@/@@       ////////@@/@@
 # /@@       /@@/@@//// //@@    @@       /@@/@@
 # /@@       @@@//@@@@@@ //@@@@@@  @@@@@@@@ /@@
-# //       ///  //////   //////  ////////  // 
-# 
+# //       ///  //////   //////  ////////  //
+#
 # Copyright (c) 2016 Los Alamos National Laboratory, LLC
 # All rights reserved
 #------------------------------------------------------------------------------#
@@ -105,6 +105,26 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
 
   set(UNIT_POLICY MPI)
   set(RUNTIME_DRIVER ../execution/mpi/runtime_driver.cc)
+
+elseif(FLECSI_RUNTIME_MODEL STREQUAL "hpx")
+
+  set(data_HEADERS
+    ${data_HEADERS}
+    hpx/data_client_handle_policy.h
+    hpx/data_handle_policy.h
+    hpx/data_policy.h
+    hpx/dense.h
+    hpx/global.h
+    hpx/meta_data.h
+    hpx/registration_wrapper.h
+    hpx/scoped.h
+    hpx/sparse.h
+    hpx/storage_policy.h
+    hpx/tuple.h
+  )
+
+  set(UNIT_POLICY HPX)
+  set(RUNTIME_DRIVER ../execution/hpx/runtime_driver.cc)
 
 endif()
 
