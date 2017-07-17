@@ -58,8 +58,8 @@ struct field_data__
     typename DATA_TYPE,
     size_t NAMESPACE_HASH,
     size_t NAME_HASH,
-    size_t INDEX_SPACE,
-    size_t VERSIONS
+    size_t VERSIONS,
+    size_t INDEX_SPACE = 0
   >
   static
   bool
@@ -73,8 +73,8 @@ struct field_data__
       DATA_TYPE,
       NAMESPACE_HASH,
       NAME_HASH,
-      INDEX_SPACE,
-      VERSIONS
+      VERSIONS,
+      INDEX_SPACE
     >;
 
     const size_t client_key = typeid(DATA_CLIENT_TYPE).hash_code();
