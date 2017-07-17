@@ -148,8 +148,8 @@ struct legion_client_registration_wrapper__<
         ENTITY_TYPE,
         entity_hash,
         0,
-        INDEX_TYPE::value,
-        1
+        1,
+        INDEX_TYPE::value
       >;
 
       const size_t client_key = typeid(CLIENT_TYPE).hash_code();
@@ -215,8 +215,8 @@ struct legion_client_registration_wrapper__<
         size_t,
         adjacency_hash,
         0,
-        INDEX_TYPE::value,
-        1
+        1,
+        INDEX_TYPE::value
       >;
 
       const size_t client_key = typeid(CLIENT_TYPE).hash_code();
@@ -235,8 +235,8 @@ struct legion_client_registration_wrapper__<
         LegionRuntime::Arrays::Point<2>,
         adjacency_hash,
         0,
-        from_index_space,
-        1
+        1,
+        from_index_space
       >;
 
       const size_t offset_key = utils::hash::client_internal_field_hash<
@@ -289,8 +289,8 @@ struct legion_client_registration_wrapper__<
         size_t,
         adjacency_hash,
         0,
-        INDEX_TYPE::value,
-        1
+        1,
+        INDEX_TYPE::value
       >;
 
       const size_t client_key = typeid(CLIENT_TYPE).hash_code();
