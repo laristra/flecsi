@@ -128,7 +128,6 @@ runtime_driver(
 
   data.finalize(coloring_info);
 
-
   std::map<size_t, std::vector<field_id_t>> fields_map;
 
   size_t num_phase_barriers =0;
@@ -277,6 +276,23 @@ runtime_driver(
 
     args_serializers[color].serialize(&max_reduction,
         sizeof(Legion::DynamicCollective));
+
+  using adjacency_triple_t = context_t::adjacency_triple_t;
+  
+  std::vector<adjacency_triple_t> adjacencies_vec;
+  
+  for(auto& itr : context_.adjacency_info()){
+    const coloring::adjacency_info_t& ai = itr.second;
+    auto t = std::make_tuple(ai.index_space, ai.from_index_space,
+      ai.to_index_space);
+    adjacencies_vec.push_back(t);
+  }
+
+  size_t num_adjacencies = adjacencies_vec.size();
+
+  args_serializers[color].serialize(&num_adjacencies, sizeof(size_t));
+  args_serializers[color].serialize(&adjacencies_vec[0], num_adjacencies
+    * sizeof(adjacency_triple_t));
 
    //add region requirements to the spmd_launcher
     Legion::TaskLauncher spmd_launcher(spmd_id,
@@ -709,13 +725,6 @@ spmd_task(
     context_.add_index_map(is.first, _map);
   } // for
 
-  for(auto& itr : context_.adjacencies()) {
-    ispace_dmap[itr.first].color_region = 
-      regions[region_index].get_logical_region();
-
-    region_index++;
-  }
-
   // Get the input arguments from the Legion runtime
   const Legion::InputArgs & args =
     Legion::Runtime::get_input_args();
@@ -730,6 +739,27 @@ spmd_task(
   args_deserializer.deserialize((void*)&max_reduction,
     sizeof(Legion::DynamicCollective));
   context_.set_max_reduction(max_reduction);
+
+  size_t num_adjacencies;
+  args_deserializer.deserialize(&num_adjacencies, sizeof(size_t));
+   
+  using adjacency_triple_t = context_t::adjacency_triple_t;
+  adjacency_triple_t* adjacencies = 
+    (adjacency_triple_t*)malloc(sizeof(adjacency_triple_t) * num_adjacencies);
+     
+  args_deserializer.deserialize((void*)adjacencies,
+    sizeof(adjacency_triple_t) * num_adjacencies);
+   
+  for(size_t i = 0; i < num_adjacencies; ++i){
+    context_.add_adjacency_triple(adjacencies[i]);
+  }
+
+  for(auto& itr : context_.adjacencies()) {
+    ispace_dmap[itr.first].color_region = 
+      regions[region_index].get_logical_region();
+
+    region_index++;
+  }
 
   // Call the specialization color initialization function.
 #if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)

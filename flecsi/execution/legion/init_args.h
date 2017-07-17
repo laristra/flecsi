@@ -132,23 +132,22 @@ namespace execution {
         size_t adj_index_space = adj.adj_index_space;
         size_t from_index_space = adj.from_index_space;
         size_t to_index_space = adj.to_index_space;
-
         Legion::RegionRequirement from_rr(adj.from_primary_region,
-          READ_ONLY, EXCLUSIVE, adj.from_color_region);
+          privilege_mode(PERMISSIONS), EXCLUSIVE, adj.from_color_region);
 
         from_rr.add_field(adj.offset_fid);
 
         region_reqs.push_back(from_rr);
 
         Legion::RegionRequirement to_rr(adj.to_primary_region,
-          READ_ONLY, EXCLUSIVE, adj.to_color_region);
+          privilege_mode(PERMISSIONS), EXCLUSIVE, adj.to_color_region);
 
         to_rr.add_field(adj.entity_fid);
 
         region_reqs.push_back(to_rr);
 
         Legion::RegionRequirement adj_rr(adj.adj_region,
-          READ_ONLY, EXCLUSIVE, adj.adj_region);
+          privilege_mode(PERMISSIONS), EXCLUSIVE, adj.adj_region);
 
         adj_rr.add_field(adj.index_fid);
 

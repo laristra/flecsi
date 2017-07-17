@@ -45,9 +45,9 @@ flecsi_register_task(set_primary_cells_task, flecsi::loc, flecsi::single);
 class client_type : public flecsi::data::data_client_t{};
 
 flecsi_register_field(client_type, name_space, cell_ID, size_t, dense,
-    INDEX_ID, VERSIONS);
+    VERSIONS, INDEX_ID);
 flecsi_register_field(client_type, name_space, test, double, dense,
-    INDEX_ID, VERSIONS);
+    VERSIONS, INDEX_ID);
 
 namespace flecsi {
 namespace execution {
