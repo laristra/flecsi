@@ -80,6 +80,11 @@ struct context__ : public CONTEXT_POLICY
   )
   {
     index_map_[index_space] = index_map;
+
+    // Compute the reverse map
+    for(auto i: index_map) {
+      reverse_index_map_[index_space][i.second] = i.first;
+    } // for
   } // add_index_map
 
   //---------------------------------------------------------------------------/
@@ -98,6 +103,23 @@ struct context__ : public CONTEXT_POLICY
 
     return index_map_[index_space];
   } // index_map
+
+  //---------------------------------------------------------------------------/
+  //! Return the index map associated with the given index space.
+  //!
+  //! @param index_space The map key.
+  //---------------------------------------------------------------------------/
+
+  std::unordered_map<size_t, size_t> &
+  reverse_index_map(
+    size_t index_space
+  )
+  {
+    clog_assert(reverse_index_map_.find(index_space) !=
+      reverse_index_map_.end(), "invalid index space");
+
+    return reverse_index_map_[index_space];
+  } // reverse_index_map
 
   //---------------------------------------------------------------------------/
   //! Add an index coloring.
@@ -242,6 +264,7 @@ private:
 
   // key: mesh index space entity id
   std::map<size_t, std::unordered_map<size_t, size_t>> index_map_;
+  std::map<size_t, std::unordered_map<size_t, size_t>> reverse_index_map_;
 
   // key: virtual index space.
   // value: map of color to coloring info
