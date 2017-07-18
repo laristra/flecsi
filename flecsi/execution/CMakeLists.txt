@@ -431,7 +431,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   # NOCI
   #     )
 
-    endif()
+    #endif()
 
   endif()
 
