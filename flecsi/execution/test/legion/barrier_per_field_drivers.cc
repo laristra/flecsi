@@ -38,9 +38,9 @@ flecsi_register_task(write_task, flecsi::loc, flecsi::single);
 class client_type : public flecsi::data::data_client_t{};
 
 flecsi_register_field(client_type, name_space, field1, size_t, dense,
-    INDEX_ID, VERSIONS);
+    VERSIONS, INDEX_ID);
 flecsi_register_field(client_type, name_space, field2, size_t, dense,
-    INDEX_ID, VERSIONS);
+    VERSIONS, INDEX_ID);
 
 namespace flecsi {
 namespace execution {
@@ -78,6 +78,10 @@ void driver(int argc, char ** argv) {
 
     delay = true;
     flecsi_execute_task(write_task, single, handle2, my_color, cycle, delay);
+
+    flecsi_execute_task(read_task, single, handle2, my_color, cycle);
+
+    flecsi_execute_task(read_task, single, handle1, my_color, cycle);
 
     flecsi_execute_task(read_task, single, handle2, my_color, cycle);
   }

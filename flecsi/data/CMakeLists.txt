@@ -237,6 +237,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
 
 endif()
 
+
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.
 # vim: set tabstop=2 shiftwidth=2 expandtab :

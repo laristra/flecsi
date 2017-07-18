@@ -234,9 +234,7 @@ struct functor_task_wrapper__
     functor.context = { context, runtime, task, regions };
 
     // Execute the user's task
-    flecsi::utils::tuple_function(functor, task_args);
-
-    // FIXME: NEED TO HANDLE RETURN TYPES
+    return flecsi::utils::tuple_function(functor, task_args);
   } // execute_functor_task
 
 }; // struct functor_task_wrapper__
@@ -353,17 +351,13 @@ struct task_wrapper__
     init_handles_t init_handles(runtime, context, regions);
     init_handles.walk(task_args);
 
-    // FIXME: NEED TO HANDLE RETURN TYPES
     // Execute the user's task
-    (*DELEGATE)(task_args);
+    return (*DELEGATE)(task_args);
 
 #if !defined(ENABLE_LEGION_TLS)
     // Pop the Legion state
     context_t::instance().pop_state(KEY);
 #endif
-
-    // FIXME: NEED TO HANDLE RETURN TYPES
-    return (RETURN)true;
   } // execute_user_task
 
   //--------------------------------------------------------------------------//

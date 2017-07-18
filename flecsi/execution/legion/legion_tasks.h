@@ -130,12 +130,12 @@ __flecsi_internal_legion_task(owner_pos_correction_task, void) {
       LegionRuntime::Arrays::Point<2> old_location = ghost_ref_acc.read(
         ghost_ptr);
       clog(trace) << "points to " << old_location.x[0] << "," <<
-          old_location.x[1] << " local mirror is " <<
-          ghost_ptr.point_data[0] << "," << ghost_ptr.point_data[1] <<
-          " nbr " << owner_map[old_location.x[0]] <<
-          " range " << owners_rects[owner_map[old_location.x[0]]].lo[0] <<
-          ":" << owners_rects[owner_map[old_location.x[0]]].lo[1] <<
-          "," << owners_rects[owner_map[old_location.x[0]]].hi[1] << std::endl;
+        old_location.x[1] << " local mirror is " <<
+        ghost_ptr.point_data[0] << "," << ghost_ptr.point_data[1] <<
+        " nbr " << owner_map[old_location.x[0]] <<
+        " range " << owners_rects[owner_map[old_location.x[0]]].lo[0] <<
+        ":" << owners_rects[owner_map[old_location.x[0]]].lo[1] <<
+        "," << owners_rects[owner_map[old_location.x[0]]].hi[1] << std::endl;
 
       clog_assert(old_location.x[0] == owners_rects[owner_map[
           old_location.x[0]]].lo[0],
@@ -147,326 +147,21 @@ __flecsi_internal_legion_task(owner_pos_correction_task, void) {
           old_location.x[0]]].hi[1],
           "ghost owner position error in specialization_driver()");
 
-      // NOTE: We stored a forward pointer in old shared location to new location
+      // NOTE: We stored a forward pointer in old shared location to new
+      // location
       LegionRuntime::Arrays::Point<2> new_location =
           owners_refs_accs[owner_map[old_location.x[0]]].read(
           Legion::DomainPoint::from_point<2>(old_location));
       ghost_ref_acc.write(ghost_ptr, new_location);
 
-      clog(trace) << ghost_ptr.point_data[0] << "," << ghost_ptr.point_data[1] <<
-          " points to " << new_location.x[0] <<
+      clog(trace) << ghost_ptr.point_data[0] << "," << ghost_ptr.point_data[1]
+         << " points to " << new_location.x[0] <<
           "," << new_location.x[1] << std::endl;
 
     } // for itr
   } // if we have owners
 
 } // owner_pos_correction_task
-
-//----------------------------------------------------------------------------//
-//! Initial SPMD task.
-//!
-//! @ingroup legion-execution
-//----------------------------------------------------------------------------//
-
-#if 0
-__flecsi_internal_legion_task(spmd_task, void) {
-  const int my_color = task->index_point.point_data[0];
-
-  // spmd_task is an inner task
-  runtime->unmap_all_regions(ctx);
-
-  {
-  clog_tag_guard(legion_tasks);
-  clog(info) << "Executing spmd task " << my_color << std::endl;
-  }
-
-  // Add additional setup.
-  context_t & context_ = context_t::instance();
-
-  auto& ispace_dmap = context_.index_space_data_map();
-
-  auto ghost_owner_pos_fid = 
-    Legion::FieldID(internal_field::ghost_owner_pos);
-
-  clog_assert(task->arglen > 0, "spmd_task called without arguments");
-
-  Legion::Deserializer args_deserializer(task->args, task->arglen);
-  size_t num_idx_spaces;
-  args_deserializer.deserialize(&num_idx_spaces, sizeof(size_t));
-
-  size_t* idx_spaces = new size_t [num_idx_spaces];
-  args_deserializer.deserialize((void*)idx_spaces,
-    sizeof(size_t) * num_idx_spaces);
-
-  for(size_t i = 0; i < num_idx_spaces; ++i){
-    context_.add_index_space(idx_spaces[i]);
-  }
-
-  clog_assert(regions.size() >= num_idx_spaces,
-      "fewer regions than data handles");
-  clog_assert(task->regions.size() >= num_idx_spaces,
-      "fewer regions than data handles");
-
-  Legion::PhaseBarrier* pbarriers_as_owner =
-      new Legion::PhaseBarrier [num_idx_spaces];
-  args_deserializer.deserialize((void*)pbarriers_as_owner,
-      sizeof(Legion::PhaseBarrier) * num_idx_spaces);
-
-  size_t* num_owners = new size_t [num_idx_spaces];
-  args_deserializer.deserialize((void*)num_owners, sizeof(size_t)
-      * num_idx_spaces);
-
-  size_t consecutive_index = 0;
-  for(size_t idx_space : context_.index_spaces()){
-    ispace_dmap[idx_space].pbarrier_as_owner = pbarriers_as_owner[consecutive_index];
-    ispace_dmap[idx_space].ghost_is_readable = true;
-    ispace_dmap[idx_space].write_phase_started = false;
-    consecutive_index++;
-  }
-
-  std::map<size_t, std::vector<Legion::PhaseBarrier>>
-  ghost_owners_pbarriers;
-
-  consecutive_index = 0;
-  for(size_t idx_space : context_.index_spaces()) {
-    size_t n = num_owners[consecutive_index];
-
-    ghost_owners_pbarriers[idx_space].resize(n);
-    args_deserializer.deserialize((void*)&ghost_owners_pbarriers[idx_space][0],
-        sizeof(Legion::PhaseBarrier) * n);
-    
-    ispace_dmap[idx_space].ghost_owners_pbarriers.resize(n);
-
-    for(size_t owner = 0; owner < n; ++owner){
-      ispace_dmap[idx_space].ghost_owners_pbarriers[owner] =
-        ghost_owners_pbarriers[idx_space][owner];
-    }
-    consecutive_index++;
-  }
-
-  size_t num_fields;
-  args_deserializer.deserialize(&num_fields, sizeof(size_t));
-
-  using field_info_t = context_t::field_info_t;
-  auto field_info_buf = new field_info_t [num_fields];
-  
-  args_deserializer.deserialize(field_info_buf,
-                                sizeof(field_info_t) * num_fields);
-  
-  for(size_t i = 0; i < num_fields; ++i){
-    field_info_t& fi = field_info_buf[i];
-    context_.put_field_info(fi);
-  }
-
-  size_t num_adjacencies;
-  args_deserializer.deserialize(&num_adjacencies, sizeof(size_t));
-
-  using adjacency_triple_t = context_t::adjacency_triple_t;
-
-  adjacency_triple_t* adjacencies = new adjacency_triple_t [num_adjacencies];
-  
-  args_deserializer.deserialize((void*)adjacencies,
-    sizeof(adjacency_triple_t) * num_adjacencies);
-
-  for(size_t i = 0; i < num_adjacencies; ++i){
-    context_.add_adjacency_triple(adjacencies[i]);
-  }
-
-  // Prevent these objects destructors being called until after driver()
-  std::map<size_t, std::vector<Legion::LogicalRegion>>
-    ghost_owners_lregions;
-  std::vector<Legion::IndexPartition> primary_ghost_ips(num_idx_spaces);
-  std::vector<Legion::IndexPartition> exclusive_shared_ips(num_idx_spaces);
-
-  size_t region_index = 0;
-  size_t consec_idx = 0;
-  for(size_t idx_space : context_.index_spaces()) {
-
-    ispace_dmap[idx_space].color_region = regions[region_index]
-                                                  .get_logical_region();
-
-    const std::unordered_map<size_t, flecsi::coloring::coloring_info_t>
-      coloring_info_map = context_.coloring_info(idx_space);
-
-    auto itr = coloring_info_map.find(my_color);
-    clog_assert(itr != coloring_info_map.end(),
-        "Can't find partition info for my color");
-    const flecsi::coloring::coloring_info_t coloring_info = itr->second;
-
-    clog(trace) << my_color << " handle " << idx_space <<
-        " exclusive " << coloring_info.exclusive <<
-        " shared " << coloring_info.shared <<
-        " ghost " << coloring_info.ghost << std::endl;
-
-    Legion::IndexSpace color_ispace = 
-      regions[region_index].get_logical_region().get_index_space();
-    LegionRuntime::Arrays::Rect<1> color_bounds_1D(0,1);
-    Legion::Domain color_domain_1D
-    = Legion::Domain::from_rect<1>(color_bounds_1D);
-
-    Legion::DomainColoring primary_ghost_coloring;
-    LegionRuntime::Arrays::Rect<2>
-    primary_rect(LegionRuntime::Arrays::make_point(my_color, 0),
-        LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive
-            + coloring_info.shared - 1));
-    primary_ghost_coloring[PRIMARY_PART]
-                           = Legion::Domain::from_rect<2>(primary_rect);
-    LegionRuntime::Arrays::Rect<2> ghost_rect(
-        LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive
-            + coloring_info.shared),
-        LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive
-            + coloring_info.shared + coloring_info.ghost - 1));
-    primary_ghost_coloring[GHOST_PART]
-                           = Legion::Domain::from_rect<2>(ghost_rect);
-
-    Legion::IndexPartition primary_ghost_ip =
-      runtime->create_index_partition(ctx, color_ispace, color_domain_1D,
-      primary_ghost_coloring, true /*disjoint*/);
-
-    primary_ghost_ips[idx_space] = primary_ghost_ip;
-
-    Legion::LogicalPartition primary_ghost_lp =
-      runtime->get_logical_partition(ctx,
-        regions[region_index].get_logical_region(), primary_ghost_ip);
-    region_index++;
-
-    Legion::LogicalRegion primary_lr =
-    runtime->get_logical_subregion_by_color(ctx, primary_ghost_lp, 
-                                            PRIMARY_PART);
-
-    ispace_dmap[idx_space].ghost_lr = 
-      runtime->get_logical_subregion_by_color(ctx, primary_ghost_lp, 
-                                              GHOST_PART);
-
-    Legion::DomainColoring excl_shared_coloring;
-    LegionRuntime::Arrays::Rect<2> exclusive_rect(
-        LegionRuntime::Arrays::make_point(my_color, 0),
-        LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive - 1));
-    excl_shared_coloring[EXCLUSIVE_PART]
-                         = Legion::Domain::from_rect<2>(exclusive_rect);
-    LegionRuntime::Arrays::Rect<2> shared_rect(
-        LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive),
-        LegionRuntime::Arrays::make_point(my_color, coloring_info.exclusive
-            + coloring_info.shared - 1));
-    excl_shared_coloring[SHARED_PART]
-                         = Legion::Domain::from_rect<2>(shared_rect);
-
-    Legion::IndexPartition excl_shared_ip = runtime->create_index_partition(ctx,
-        primary_lr.get_index_space(), color_domain_1D, excl_shared_coloring,
-        true /*disjoint*/);
-
-    exclusive_shared_ips[idx_space] = excl_shared_ip;
-
-    Legion::LogicalPartition excl_shared_lp
-      = runtime->get_logical_partition(ctx, primary_lr, excl_shared_ip);
-
-    ispace_dmap[idx_space].exclusive_lr = 
-    runtime->get_logical_subregion_by_color(ctx, excl_shared_lp, 
-                                            EXCLUSIVE_PART);
-
-    ispace_dmap[idx_space].shared_lr = 
-    runtime->get_logical_subregion_by_color(ctx, excl_shared_lp, SHARED_PART);
-
-    // Add neighbors regions to context_
-    for(size_t owner = 0; owner < num_owners[consec_idx]; owner++) {
-      ghost_owners_lregions[idx_space].push_back(regions[region_index]
-        .get_logical_region());
-      const void* owner_color;
-      size_t size;
-      const bool can_fail = false;
-      const bool wait_until_ready = true;
-      runtime->retrieve_semantic_information(regions[region_index]
-          .get_logical_region(), OWNER_COLOR_TAG,
-          owner_color, size, can_fail, wait_until_ready);
-      clog_assert(size == sizeof(LegionRuntime::Arrays::coord_t),
-          "Unable to map gid to lid with Legion semantic tag");
-      ispace_dmap[idx_space]
-       .global_to_local_color_map[*(LegionRuntime::Arrays::coord_t*)owner_color]
-       = owner;
-      clog(trace) << my_color << " key " << idx_space << " gid " <<
-          *(LegionRuntime::Arrays::coord_t*)owner_color <<
-          " maps to " << owner << std::endl;
-      region_index++;
-      clog_assert(region_index <= regions.size(),
-          "SPMD attempted to access more regions than passed");
-    } // for owner
-    ispace_dmap[idx_space].ghost_owners_lregions
-      = ghost_owners_lregions[idx_space];
-
-
-    // Fix ghost reference/pointer to point to compacted position of shared that it needs
-    Legion::TaskLauncher fix_ghost_refs_launcher(context_
-            .task_id<__flecsi_internal_task_key(owner_pos_correction_task)>(),
-            Legion::TaskArgument(nullptr, 0));
-
-    clog(trace) << "Rank" << my_color << " Index " << idx_space <<
-            " RW " << ispace_dmap[idx_space].color_region << std::endl;
-
-    fix_ghost_refs_launcher.add_region_requirement(
-        Legion::RegionRequirement(ispace_dmap[idx_space].ghost_lr, READ_WRITE,
-            EXCLUSIVE, ispace_dmap[idx_space].color_region)
-        .add_field(ghost_owner_pos_fid));
-
-    fix_ghost_refs_launcher.add_future(Legion::Future::from_value(runtime,
-            ispace_dmap[idx_space].global_to_local_color_map));
-
-    for(size_t owner = 0; owner < num_owners[consec_idx]; owner++)
-      fix_ghost_refs_launcher.add_region_requirement(
-          Legion::RegionRequirement(ghost_owners_lregions[idx_space][owner],
-              READ_ONLY, EXCLUSIVE, ghost_owners_lregions[idx_space][owner])
-              .add_field(ghost_owner_pos_fid));
-
-    runtime->execute_task(ctx, fix_ghost_refs_launcher);
-
-    consec_idx++;
-  } // for idx_space
-
-  for(auto& itr : context_.adjacencies()) {
-    ispace_dmap[itr.first].color_region = 
-      regions[region_index].get_logical_region();
-
-    region_index++;
-  }
-
-  // Get the input arguments from the Legion runtime
-  const Legion::InputArgs & args =
-    Legion::Runtime::get_input_args();
-
-#if !defined(ENABLE_LEGION_TLS)
-  // Set the current task context to the driver
-  context_t::instance().push_state(utils::const_string_t{"driver"}.hash(),
-    ctx, runtime, task, regions);
-#endif
-
-  // Call the specialization color initialization function.
-  clog(error) << "check ifdef" << std::endl;
-#if defined(FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT)
-  clog(error) << "IFDEFD" << std::endl;
-  specialization_spmd_init(args.argc, args.argv);
-#endif // FLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
-
-  // run default or user-defined driver 
-  driver(args.argc, args.argv); 
-
-#if !defined(ENABLE_LEGION_TLS)
-  // Set the current task context to the driver
-  context_t::instance().pop_state(utils::const_string_t{"driver"}.hash());
-#endif
-
-  // Cleanup memory
-  for(auto ipart: primary_ghost_ips)
-      runtime->destroy_index_partition(ctx, ipart);
-  for(auto ipart: exclusive_shared_ips)
-      runtime->destroy_index_partition(ctx, ipart);
-
-  delete [] field_info_buf;
-  delete [] num_owners;
-  delete [] pbarriers_as_owner;
-  delete [] idx_spaces;
-  delete [] adjacencies;
-
-} // spmd_task
-#endif
 
 //----------------------------------------------------------------------------//
 //! Interprocess communication to pass control to MPI runtime.
@@ -527,47 +222,67 @@ __flecsi_internal_legion_task(owner_pos_compaction_task, void) {
   clog_tag_guard(legion_tasks);
 
   // In old position of shared, write compacted location
-  // In compacted position of ghost, write the reference/pointer to pre-compacted shared
-  // ghost reference/pointer will need to communicate with other ranks in spmd_task() to obtain
-  // corrected pointer
+  // In compacted position of ghost, write the reference/pointer
+  // to pre-compacted shared
+  // ghost reference/pointer will need to communicate with other ranks in
+  // spmd_task() to obtain corrected pointer
   size_t region_idx = 0;
   for(auto idx_space : coloring_map) {
 
-    Legion::IndexSpace ispace = regions[region_idx].get_logical_region().get_index_space();
+    Legion::IndexSpace ispace =
+      regions[region_idx].get_logical_region().get_index_space();
     LegionRuntime::Accessor::RegionAccessor<
-      LegionRuntime::Accessor::AccessorType::Generic, LegionRuntime::Arrays::Point<2>> acc_ref =
-          regions[region_idx].get_field_accessor(ghost_owner_pos_fid).typeify<LegionRuntime::Arrays::Point<2>>();
+      LegionRuntime::Accessor::AccessorType::Generic,
+      LegionRuntime::Arrays::Point<2>> acc_ref =
+          regions[region_idx].get_field_accessor(ghost_owner_pos_fid).
+          typeify<LegionRuntime::Arrays::Point<2>>();
 
     Legion::Domain domain = runtime->get_index_space_domain(ctx, ispace);
     LegionRuntime::Arrays::Rect<2> rect = domain.get_rect<2>();
     LegionRuntime::Arrays::GenericPointInRectIterator<2> expanded_itr(rect);
 
-    for(auto exclusive_itr = idx_space.second.exclusive.begin(); exclusive_itr != idx_space.second.exclusive.end(); ++exclusive_itr) {
-      clog(trace) << my_color << " key " << idx_space.first << " exclusive " <<
-        " " <<  *exclusive_itr << std::endl;
+    for(auto exclusive_itr = idx_space.second.exclusive.begin();
+        exclusive_itr != idx_space.second.exclusive.end();
+        ++exclusive_itr)
+    {
+      clog(trace) << my_color << " key " << idx_space.first << 
+        " exclusive " <<" " <<  *exclusive_itr << std::endl;
       expanded_itr++;
     } // exclusive_itr
 
-    for(auto shared_itr = idx_space.second.shared.begin(); shared_itr != idx_space.second.shared.end(); ++shared_itr) {
+    for(auto shared_itr = idx_space.second.shared.begin();
+        shared_itr != idx_space.second.shared.end();
+        ++shared_itr)
+    {
       const flecsi::coloring::entity_info_t shared = *shared_itr;
-      const LegionRuntime::Arrays::Point<2> reference = LegionRuntime::Arrays::make_point(shared.rank,
+      const LegionRuntime::Arrays::Point<2> reference =
+        LegionRuntime::Arrays::make_point(shared.rank,
           shared.offset);
       // reference is the old location, expanded_itr.p is the new location
-      acc_ref.write(Legion::DomainPoint::from_point<2>(reference), expanded_itr.p);
+      acc_ref.write(Legion::DomainPoint::from_point<2>(reference),
+        expanded_itr.p);
 
-      clog(trace) << my_color << " key " << idx_space.first << " shared was " <<
-        " " <<  *shared_itr << " now at " << expanded_itr.p << std::endl;
+      clog(trace) << my_color << " key " << idx_space.first <<
+         " shared was " <<" " <<  *shared_itr << " now at " <<
+         expanded_itr.p << std::endl;
+
       expanded_itr++;
     } // shared_itr
 
-    for(auto ghost_itr = idx_space.second.ghost.begin(); ghost_itr != idx_space.second.ghost.end(); ++ghost_itr) {
+    for(auto ghost_itr = idx_space.second.ghost.begin();
+        ghost_itr != idx_space.second.ghost.end();
+        ++ghost_itr)
+    {
       const flecsi::coloring::entity_info_t ghost = *ghost_itr;
-      const LegionRuntime::Arrays::Point<2> reference = LegionRuntime::Arrays::make_point(ghost.rank,
+      const LegionRuntime::Arrays::Point<2> reference =
+        LegionRuntime::Arrays::make_point(ghost.rank,
           ghost.offset);
-      // reference is where we used to point, expanded_itr.p is where ghost is now
-      acc_ref.write(Legion::DomainPoint::from_point<2>(expanded_itr.p), reference);
-      clog(trace) << "color " << my_color << " key " << idx_space.first << " ghost " <<
-        " " << *ghost_itr <<
+      // reference is where we used to point, expanded_itr.p is where ghost
+      // is now
+      acc_ref.write(Legion::DomainPoint::from_point<2>(expanded_itr.p),
+        reference);
+      clog(trace) << "color " << my_color << " key " << idx_space.first <<
+        " ghost " << " " << *ghost_itr <<
         //" now at " << expanded_itr.p <<
         std::endl;
       expanded_itr++;
@@ -645,8 +360,8 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
         owner_rect, owner_sub_rect, byte_offset));
 
     data_shared += byte_offset[1];
-    clog(trace) << "my_color = " << my_color << " owner lid = " << args.owner <<
-            " owner rect = " <<
+    clog(trace) << "my_color = " << my_color << " owner lid = " <<
+            args.owner << " owner rect = " <<
             owner_rect.lo[0] << "," << owner_rect.lo[1] << " to " <<
             owner_rect.hi[0] << "," << owner_rect.hi[1] << std::endl;
 
@@ -655,8 +370,8 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
         ghost_rect, ghost_sub_rect, byte_offset));
     ghost_data += byte_offset[1];
 
-    for(Legion::Domain::DomainPointIterator ghost_itr(ghost_domain); ghost_itr;
-      ghost_itr++) {
+    for(Legion::Domain::DomainPointIterator ghost_itr(ghost_domain);
+         ghost_itr; ghost_itr++) {
       LegionRuntime::Arrays::Point<2> ghost_ref =
         position_ref_acc.read(ghost_itr.p);
       clog(trace) << my_color << " copy from position " << ghost_ref.x[0] <<

@@ -66,6 +66,40 @@ struct context__ : public CONTEXT_POLICY
   } // instance
 
   //---------------------------------------------------------------------------/
+  //! Add an index map. This map can be used to go between mesh and locally
+  //! compacted index spaces.
+  //!
+  //! @param index_space The map key.
+  //! @param index_map   The map to add.
+  //---------------------------------------------------------------------------/
+
+  void
+  add_index_map(
+    size_t index_space,
+    std::unordered_map<size_t, size_t> & index_map
+  )
+  {
+    index_map_[index_space] = index_map;
+  } // add_index_map
+
+  //---------------------------------------------------------------------------/
+  //! Return the index map associated with the given index space.
+  //!
+  //! @param index_space The map key.
+  //---------------------------------------------------------------------------/
+
+  std::unordered_map<size_t, size_t> &
+  index_map(
+    size_t index_space
+  )
+  {
+    clog_assert(index_map_.find(index_space) != index_map_.end(),
+      "invalid index space");
+
+    return index_map_[index_space];
+  } // index_map
+
+  //---------------------------------------------------------------------------/
   //! Add an index coloring.
   //!
   //! @param index_space The map key.
@@ -87,14 +121,6 @@ struct context__ : public CONTEXT_POLICY
     coloring_info_[index_space] = coloring_info;
   } // add_coloring
 
-  void
-  set_coloring(
-    size_t index_space,
-    index_coloring_t & coloring
-  )
-  {
-    colorings_[index_space] = coloring;
-  }
   //---------------------------------------------------------------------------/
   //! Return the index coloring referenced by key.
   //!
@@ -214,12 +240,15 @@ private:
   // value: coloring indices (exclusive, shared, ghost)
   std::map<size_t, index_coloring_t> colorings_;
 
+  // key: mesh index space entity id
+  std::map<size_t, std::unordered_map<size_t, size_t>> index_map_;
+
   // key: virtual index space.
   // value: map of color to coloring info
   std::map<size_t,
     std::unordered_map<size_t, coloring_info_t>> coloring_info_;
 
-  // pair is from, to index space
+  // key is index space
   std::map<size_t, adjacency_info_t> adjacency_info_;
 
 }; // class context__

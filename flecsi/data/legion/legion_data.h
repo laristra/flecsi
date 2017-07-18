@@ -171,6 +171,8 @@ public:
 
     context_t & context = context_t::instance();
 
+    using field_info_t = context_t::field_info_t;
+
     adjacency_t c;
 
     clog_assert(adjacencies_.find(adjacency_info.index_space) == 
@@ -211,9 +213,11 @@ public:
     FieldAllocator allocator = 
       runtime_->create_field_allocator(ctx_, c.field_space);
 
-    auto adjacency_index_fid = FieldID(internal_field::adjacency_index);
-
-    allocator.allocate_field(sizeof(size_t), adjacency_index_fid);
+    for(const field_info_t& fi : context.registered_fields()){
+      if(fi.index_space == c.index_space_id){
+        allocator.allocate_field(fi.size, fi.fid);
+      }
+    }
 
     attach_name(c, c.field_space, "expanded field space");
 
@@ -236,7 +240,7 @@ public:
       c.index_space, color_domain_, color_partitioning, true /*disjoint*/);
     attach_name(c, c.index_partition, "color partitioning");
 
-    adjacency_map_.emplace(c.index_space_id, std::move(c));
+    adjacency_map_.emplace(adjacency_info.index_space, std::move(c));
   }
 
   void
@@ -275,16 +279,6 @@ public:
         if(fi.index_space == is.index_space_id){
           allocator.allocate_field(fi.size, fi.fid);
         }
-      }
-
-      for(auto& aitr : adjacency_map_){
-        adjacency_t& a = aitr.second;
-
-        FieldID adjacency_fid = 
-          context.adjacency_fid(aitr.second.from_index_space_id,
-          aitr.second.to_index_space_id);
-
-        allocator.allocate_field(sizeof(Point<2>), adjacency_fid);
       }
 
       is.logical_region = runtime_->create_logical_region(ctx_, is.index_space, is.field_space);

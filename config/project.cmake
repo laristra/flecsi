@@ -354,10 +354,6 @@ if(ENABLE_COLORING)
     MESSAGE(FATAL_ERROR
       "You need parmetis to enable partitioning" )
   endif()
-  
-  if ( EXODUSII_LIBRARIES )
-    list(APPEND COLORING_LIBRARIES ${EXODUSII_LIBRARIES} )
-  endif()
 
   add_definitions(-DENABLE_COLORING)
 
@@ -383,7 +379,7 @@ cinch_add_library_target(flecsi flecsi)
 # Link the necessary libraries
 #------------------------------------------------------------------------------#
 
-if ( FLECSI_RUNTIME_LIBRARIES OR COLORING_LIBRARIES )
+if(FLECSI_RUNTIME_LIBRARIES OR COLORING_LIBRARIES)
   cinch_target_link_libraries(
     flecsi ${FLECSI_RUNTIME_LIBRARIES} ${COLORING_LIBRARIES}
   )

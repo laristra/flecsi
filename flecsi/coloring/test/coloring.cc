@@ -438,6 +438,7 @@ DEVEL(coloring) {
 // So far, I am happy that this is relatively concise.
 } // TEST
 
+
 /*~------------------------------------------------------------------------~--*
  * Formatting options
  * vim: set tabstop=2 shiftwidth=2 expandtab :

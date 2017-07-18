@@ -116,51 +116,42 @@ namespace execution {
     } // handle
 
     template<
-      typename T
+      typename T,
+      size_t PERMISSIONS
     >
     void
     handle(
-      data_client_handle__<T> & h
+      data_client_handle__<T, PERMISSIONS> & h
     )
     {
       auto& context_ = context_t::instance();
 
-      auto& ism = context_.index_space_data_map();
-
-      auto adjacency_index_fid = 
-        LegionRuntime::HighLevel::FieldID(internal_field::adjacency_index);
-
       for(size_t i = 0; i < h.num_adjacencies; ++i){
-        size_t adj_index_space = h.adj_index_spaces[i];
-        size_t from_index_space = h.from_index_spaces[i];
-        size_t to_index_space = h.to_index_spaces[i];
+        data_client_handle_adjacency& adj = h.adjacencies[i];
 
-        Legion::RegionRequirement from_rr(ism[from_index_space].color_region,
-          READ_ONLY, EXCLUSIVE, ism[from_index_space].color_region);
+        size_t adj_index_space = adj.adj_index_space;
+        size_t from_index_space = adj.from_index_space;
+        size_t to_index_space = adj.to_index_space;
+        Legion::RegionRequirement from_rr(adj.from_primary_region,
+          privilege_mode(PERMISSIONS), EXCLUSIVE, adj.from_color_region);
 
-        from_rr.add_field(context_.entity_data_fid(from_index_space));
-
-        Legion::FieldID offset_fid = 
-          context_.adjacency_fid(from_index_space, to_index_space);
-
-        from_rr.add_field(offset_fid);
+        from_rr.add_field(adj.offset_fid);
 
         region_reqs.push_back(from_rr);
 
-        Legion::RegionRequirement to_rr(ism[to_index_space].color_region,
-          READ_ONLY, EXCLUSIVE, ism[to_index_space].color_region);
+        Legion::RegionRequirement to_rr(adj.to_primary_region,
+          privilege_mode(PERMISSIONS), EXCLUSIVE, adj.to_color_region);
 
-        to_rr.add_field(context_.entity_data_fid(to_index_space));
+        to_rr.add_field(adj.entity_fid);
 
         region_reqs.push_back(to_rr);
 
-        Legion::RegionRequirement adj_rr(ism[adj_index_space].color_region,
-          READ_ONLY, EXCLUSIVE, ism[adj_index_space].color_region);
+        Legion::RegionRequirement adj_rr(adj.adj_region,
+          privilege_mode(PERMISSIONS), EXCLUSIVE, adj.adj_region);
 
-        adj_rr.add_field(adjacency_index_fid);
+        adj_rr.add_field(adj.index_fid);
 
         region_reqs.push_back(adj_rr);
-
       }
     } // handle
 

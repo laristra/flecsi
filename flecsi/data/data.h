@@ -63,7 +63,7 @@
 //----------------------------------------------------------------------------//
 
 #define flecsi_register_field(client_type, nspace, name, data_type,            \
-  storage_type, index_space, versions)                                         \
+  storage_type, versions, ...)                                                 \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Call the storage policy to register the data */                           \
@@ -72,8 +72,8 @@
       client_type, flecsi::data::storage_type, data_type,                      \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),      \
       flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),        \
-      index_space,                                                             \
-      versions                                                                 \
+      versions,                                                                \
+      ## __VA_ARGS__                                                           \
       >                                                                        \
       ({ EXPAND_AND_STRINGIFY(name) })
 
