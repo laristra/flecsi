@@ -371,6 +371,13 @@ class connectivity_t
     return index_space_.storage();
   }
 
+  template<class ST>
+  void
+  set_entity_storage(ST s)
+  {
+    index_space_.set_storage(s);
+  }
+
   /*!
     Clear the storage arrays for this instance.
    */
