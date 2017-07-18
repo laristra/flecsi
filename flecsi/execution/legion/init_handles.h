@@ -304,7 +304,7 @@ namespace execution {
         size_t num_indices = sr.hi[1] - sr.lo[1] + 1;
 
         storage->init_entities(adj.to_domain, adj.to_dim, ents, num_ents);
-        
+
         storage->init_connectivity(adj.from_domain, adj.to_domain,
           adj.from_dim, adj.to_dim, offsets, indices, num_offsets);
 
