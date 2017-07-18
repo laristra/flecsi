@@ -63,7 +63,6 @@ struct legion_topology_storage_policy_t
     auto& is = index_spaces[domain][dim];
 
     auto s = is.storage();
-
     s->set_buffer(entities, num_entities);
 
     for(auto& from_domain : topology){
