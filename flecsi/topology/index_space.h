@@ -459,6 +459,14 @@ public:
     return s_;
   }
 
+  void
+  set_storage(
+    storage_t* s
+  )
+  {
+    s_ = s;
+  }
+
   /*!
     Alias an existing index space unless OWNED.
    */
