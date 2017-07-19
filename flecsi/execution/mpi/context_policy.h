@@ -170,6 +170,15 @@ struct mpi_context_policy_t
     return function_registry_[key];
   } // function
 
+  struct index_space_data_t {
+    // TODO: to be defined.
+  };
+  auto&
+  index_space_data_map()
+  {
+    return index_space_data_map_;
+  }
+
   //--------------------------------------------------------------------------//
   // Gathers info about registered data fields.
   //--------------------------------------------------------------------------//
@@ -185,6 +194,13 @@ struct mpi_context_policy_t
     field_id_t fid;
     size_t index_space;
   }; // struct field_info_t
+
+  //--------------------------------------------------------------------------//
+  // Field info map for fields in SPMD task, key1 = (data client hash, index space), key2 = fid
+  //--------------------------------------------------------------------------//
+
+  using field_info_map_t =
+  std::map<std::pair<size_t, size_t>, std::map<field_id_t, field_info_t>>;
 
   //--------------------------------------------------------------------------//
   //! Register field info for index space and field id.
@@ -254,6 +270,73 @@ struct mpi_context_policy_t
     return adjacencies_;
   }
 
+  //--------------------------------------------------------------------------//
+  //! Put field info for index space and field id.
+  //!
+  //! @param field_info field info as registered
+  //--------------------------------------------------------------------------//
+
+  void
+  put_field_info(
+    const field_info_t& field_info
+  )
+  {
+    size_t index_space = field_info.index_space;
+    size_t data_client_hash = field_info.data_client_hash;
+    field_id_t fid = field_info.fid;
+
+    field_info_map_[{data_client_hash, index_space}].emplace(fid, field_info);
+
+    field_map_.insert({{field_info.data_client_hash,
+                         field_info.namespace_hash ^ field_info.name_hash}, {index_space, fid}});
+  } // put_field_info
+
+  //--------------------------------------------------------------------------//
+  //! Get registered field info map for read access.
+  //--------------------------------------------------------------------------//
+
+  const field_info_map_t&
+  field_info_map()
+  const
+  {
+    return field_info_map_;
+  } // field_info_map
+
+  //--------------------------------------------------------------------------//
+  //! Get field map for read access.
+  //--------------------------------------------------------------------------//
+
+  const std::map<std::pair<size_t, size_t>, std::pair<size_t, field_id_t>>
+  field_map()
+  const
+  {
+    return field_map_;
+  } // field_info_map
+
+  //--------------------------------------------------------------------------//
+  //! Lookup registered field info from data client and namespace hash.
+  //! @param data_client_hash data client type hash
+  //! @param namespace_hash namespace/field name hash
+  //!-------------------------------------------------------------------------//
+
+  const field_info_t&
+  get_field_info(
+    size_t data_client_hash,
+    size_t namespace_hash)
+  const
+  {
+    auto itr = field_map_.find({data_client_hash, namespace_hash});
+    clog_assert(itr != field_map_.end(), "invalid field");
+
+    auto iitr = field_info_map_.find({data_client_hash, itr->second.first});
+    clog_assert(iitr != field_info_map_.end(), "invalid index_space");
+
+    auto fitr = iitr->second.find(itr->second.second);
+    clog_assert(fitr != iitr->second.end(), "invalid fid");
+
+    return fitr->second;
+  }
+
   int rank;
 
 private:
@@ -278,6 +361,20 @@ private:
   std::map<size_t, adjacency_triple_t> adjacencies_;
 
   //--------------------------------------------------------------------------//
+  // Field info map for fields in SPMD task, key1 = (data client hash, index space), key2 = fid
+  //--------------------------------------------------------------------------//
+
+  field_info_map_t field_info_map_;
+
+  //--------------------------------------------------------------------------//
+  // Field map, key1 = (data client hash, name/namespace hash)
+  // value = (index space, fid)
+  //--------------------------------------------------------------------------//
+
+  std::map<std::pair<size_t, size_t>, std::pair<size_t, field_id_t>>
+    field_map_;
+
+  //--------------------------------------------------------------------------//
   // Function data members.
   //--------------------------------------------------------------------------//
 
@@ -292,7 +389,7 @@ private:
 
   std::map<field_id_t, std::vector<uint8_t>> field_data;
 
-
+  std::map<size_t, index_space_data_t> index_space_data_map_;
 }; // class mpi_context_policy_t
 
 } // namespace execution 

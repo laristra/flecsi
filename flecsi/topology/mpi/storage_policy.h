@@ -65,7 +65,42 @@ struct mpi_topology_storage_policy_t
     typed_ent->template set_global_id<M>(global_id);
     is.push_back(ent);
   }
-  
+
+  template<
+    size_t D,
+    size_t N
+  >
+  size_t
+  entity_dimension(mesh_entity_t<D, N>*)
+  {
+    return D;
+  }
+
+  template<
+    class T,
+    size_t M,
+    class... S
+  >
+  T * make(S &&... args)
+  {
+    using dtype = domain_entity<M, T>;
+
+    T* ent;
+    size_t dim = entity_dimension(ent);
+    auto & is = index_spaces[M][dim].template cast<dtype>();
+    size_t entity_id = is.size();
+
+    auto placement_ptr = static_cast<T*>(is.storage()->buffer()) + entity_id;
+    ent = new (placement_ptr) T(std::forward<S>(args)...);
+
+    id_t global_id = id_t::make<M>(dim, entity_id);
+    ent->template set_global_id<M>(global_id);
+
+    is.push_back(ent);
+
+    return ent;
+  } // make
+
 }; // class mpi_topology_storage_policy_t
 
 } // namespace topology

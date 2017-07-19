@@ -47,8 +47,11 @@ struct data_client_policy_handler__{};
 
 template<typename POLICY_TYPE>
 struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
-  
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
   using field_id_t = Legion::FieldID;
+#else
+  using field_id_t = size_t;
+#endif
 
   struct handle_info_t
   {
@@ -282,7 +285,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
           break;
         }
       }
-
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
       auto ritr = ism.find(hi.from_index_space);
       clog_assert(ritr != ism.end(), "invalid from index space");
       adj.from_color_region = ritr->second.color_region;
@@ -296,7 +299,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
       ritr = ism.find(hi.index_space);
       clog_assert(ritr != ism.end(), "invalid index space");
       adj.adj_region = ritr->second.color_region;
-
+#endif
       ++handle_index;
     }
 

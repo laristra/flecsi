@@ -114,9 +114,15 @@ public:
 
 using test_mesh_t = mesh_topology_t<test_mesh_types_t>;
 
+#if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 template<typename T, size_t EP, size_t SP, size_t GP>
-using handle_t = 
-  data::legion::dense_handle_t<T, EP, SP, GP>;
+using handle_t =
+data::legion::dense_handle_t<T, EP, SP, GP>;
+#elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
+template<typename T, size_t EP, size_t SP, size_t GP>
+using handle_t =
+  data::mpi::dense_handle_t<T, EP, SP, GP>;
+#endif
 
 template<typename DC, size_t PS>
 using client_handle_t = data_client_handle__<DC, PS>;
@@ -196,7 +202,7 @@ void specialization_tlt_init(int argc, char ** argv) {
   ai.index_space = 2;
   ai.from_index_space = 0;
   ai.to_index_space = 1;
-  ai.color_sizes.resize(2);
+  ai.color_sizes.resize(cc.size());
 
   for(auto& itr : cc){
     size_t color = itr.first;
@@ -208,11 +214,11 @@ void specialization_tlt_init(int argc, char ** argv) {
 } // specialization_tlt_init
 
 void specialization_spmd_init(int argc, char ** argv) {
-  auto& context = execution::context_t::instance();
-
-  auto runtime = Legion::Runtime::get_runtime();
-  const int my_color = runtime->find_local_MPI_rank();
-  clog(error) << "Rank " << my_color << " in specialization_spmd_init" << std::endl;
+//  auto& context = execution::context_t::instance();
+//
+//  auto runtime = Legion::Runtime::get_runtime();
+//  const int my_color = runtime->find_local_MPI_rank();
+//  clog(error) << "Rank " << my_color << " in specialization_spmd_init" << std::endl;
 
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
 
