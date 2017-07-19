@@ -95,7 +95,7 @@ struct function__
 // This include file defines the FLECSI_RUNTIME_EXECUTION_POLICY used below.
 //----------------------------------------------------------------------------//
 
-#include "flecsi_runtime_execution_policy.h"
+#include "flecsi/runtime/flecsi_runtime_execution_policy.h"
 
 namespace flecsi {
 namespace execution {

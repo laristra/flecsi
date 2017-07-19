@@ -282,7 +282,7 @@ private:
 // This include file defines the FLECSI_RUNTIME_CONTEXT_POLICY used below.
 //----------------------------------------------------------------------------//
 
-#include "flecsi_runtime_context_policy.h"
+#include "flecsi/runtime/flecsi_runtime_context_policy.h"
 
 namespace flecsi {
 namespace execution {

@@ -136,8 +136,8 @@ void fill_task(client_handle_t<test_mesh_t, drw> mesh){
   auto & cell_map = context.index_map(0);
   auto & reverse_cell_map = context.reverse_index_map(0);
 
-#if 1
-  std::vector<Vertex *> vertices;
+#if 0
+  std::vector<vertex *> vertices;
   for(auto & vm: vertex_map) {
     vertices.push_back(mesh.make<vertex>());
   } // for
@@ -161,11 +161,11 @@ void fill_task(client_handle_t<test_mesh_t, drw> mesh){
     const size_t lv2 = reverse_vertex_map[v2];
     const size_t lv3 = reverse_vertex_map[v3];
 
-    auto c = mesh.make<cell>();
-    c.init(vertices[lv0], vertices[lv1], vertices[lv2], vertices[lv3]);
+//    auto c = mesh.make<cell>();
+//    c.init(vertices[lv0], vertices[lv1], vertices[lv2], vertices[lv3]);
   } // for
 
-  mesh.init<0>();
+//  mesh.init<0>();
 }
 
 flecsi_register_data_client(test_mesh_t, meshes, mesh1); 
