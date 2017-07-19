@@ -352,7 +352,7 @@ struct client_data__
   )
   {
     using wrapper_t = typename DATA_POLICY::template client_wrapper__<
-      DATA_CLIENT_TYPE,
+      typename DATA_CLIENT_TYPE::type_identifier_t,
       NAMESPACE_HASH,
       NAME_HASH
     >;
@@ -373,7 +373,11 @@ struct client_data__
   data_client_handle__<DATA_CLIENT_TYPE, 0>
   get_client_handle()
   {
-    return data_client_policy_handler__<DATA_CLIENT_TYPE>::template 
+    using data_client_policy_handler_t = 
+      data_client_policy_handler__<
+        typename DATA_CLIENT_TYPE::type_identifier_t
+      >;
+    return data_client_policy_handler_t::template 
       get_client_handle<DATA_CLIENT_TYPE, NAMESPACE_HASH, NAME_HASH>();
   }
 

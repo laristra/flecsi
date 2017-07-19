@@ -238,6 +238,9 @@ public:
   template<size_t D, size_t M = 0>
   using entity_type = typename find_entity_<MT, D, M>::type;
 
+  // insert comment here
+  using type_identifier_t = mesh_topology_t;
+
   // Don't allow the mesh to be copied or copy constructed
 
   mesh_topology_t & operator=(const mesh_topology_t &) = delete;
