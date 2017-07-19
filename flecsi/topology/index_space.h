@@ -82,6 +82,8 @@ public:
   using item_t = typename std::remove_pointer<T>::type;
 
   using ref_t = typename index_space_ref_type__<T>::type;
+
+  using cast_t = std::decay_t<ref_t>;
   
   using filter_function = std::function<bool(T&)>;
 
@@ -215,7 +217,7 @@ public:
       size_t index
     )
     {
-      return static_cast< std::decay_t<ref_t> >( 
+      return static_cast< cast_t >( 
         (*s_)[(*items_)[index].index_space_index()]
       );
     }
@@ -658,7 +660,7 @@ public:
     size_t offset
   )
   {
-    return static_cast< std::decay_t<ref_t> >( 
+    return static_cast< cast_t >( 
       (*s_)[(*v_)[begin_ + offset].index_space_index()] 
     );
   }
@@ -668,7 +670,7 @@ public:
     size_t offset
   ) const
   {
-    return static_cast< std::decay_t<ref_t> >( 
+    return static_cast< cast_t >( 
       (*s_)[(*v_)[begin_ + offset].index_space_index()]
     );
   }
@@ -678,7 +680,7 @@ public:
     size_t offset
   )
   {
-    return static_cast< std::decay_t<ref_t> >( 
+    return static_cast< cast_t >( 
       (*s_)[(*v_)[end_ - 1 - offset].index_space_index()]
     );
   }
@@ -688,7 +690,7 @@ public:
     size_t offset
   ) const
   {
-    return static_cast< std::decay_t<ref_t> >( 
+    return static_cast< cast_t >( 
       (*s_)[(*v_)[end_ - 1 - offset].index_space_index()]
     );
   }
