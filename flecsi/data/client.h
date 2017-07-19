@@ -274,17 +274,19 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
         }
       }
 
-      adj.from_color_region = 
-        ism[hi.from_index_space].color_region;
-      adj.to_color_region = 
-        ism[hi.to_index_space].color_region;
+      auto ritr = ism.find(hi.from_index_space);
+      clog_assert(ritr != ism.end(), "invalid from index space");
+      adj.from_color_region = ritr->second.color_region;
+      adj.from_primary_region = ritr->second.primary_lr;
 
-      adj.from_primary_region = 
-        ism[hi.from_index_space].primary_lr;
-      adj.to_primary_region = 
-        ism[hi.to_index_space].primary_lr;
-      
-      adj.adj_region = ism[hi.index_space].color_region;
+      ritr = ism.find(hi.to_index_space);
+      clog_assert(ritr != ism.end(), "invalid to index space");
+      adj.to_color_region = ritr->second.color_region;
+      adj.to_primary_region = ritr->second.primary_lr;
+
+      ritr = ism.find(hi.index_space);
+      clog_assert(ritr != ism.end(), "invalid index space");
+      adj.adj_region = ritr->second.color_region;
 
       ++handle_index;
     }

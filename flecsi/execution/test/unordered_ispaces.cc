@@ -50,13 +50,13 @@ flecsi_register_task(set_primary_entities_task, flecsi::loc, flecsi::single);
 class client_type : public flecsi::data::data_client_t{};
 
 flecsi_register_field(client_type, name_space, cell_ID, size_t, dense,
-    CELL_ID, VERSIONS);
+    VERSIONS, CELL_ID);
 flecsi_register_field(client_type, name_space, test, double, dense,
-    CELL_ID, VERSIONS);
+    VERSIONS, CELL_ID);
 flecsi_register_field(client_type, name_space, vert_ID, size_t, dense,
-    VERT_ID, VERSIONS);
+    VERSIONS, VERT_ID);
 flecsi_register_field(client_type, name_space, vert_test, double, dense,
-    VERT_ID, VERSIONS);
+    VERSIONS, VERT_ID);
 
 namespace flecsi {
 namespace execution {

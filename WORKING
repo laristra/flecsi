@@ -9,3 +9,7 @@
 - Check context header dependencies (Circular? How does this work?)
 
 - Enable CLOG_MPI if MPI_ENABLE is on.
+
+- Adding blender
+- Define subset index spaces
+- Fix futures

@@ -70,6 +70,7 @@
 #include <map>
 #include <cstring>
 #include <type_traits>
+#include <memory>
 
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/set_intersection.h"
@@ -229,8 +230,10 @@ public mesh_topology_base_t<
 
 public:
 
+  using storage_t = mesh_storage_t<MT::num_dimensions, MT::num_domains>;
+
   using base_t = 
-    mesh_topology_base_t<mesh_storage_t<MT::num_dimensions, MT::num_domains>>;
+    mesh_topology_base_t<storage_t>;
 
   using id_t = utils::id_t;
 
@@ -254,9 +257,10 @@ public:
 
   //! Constructor
   mesh_topology_t()
-  : ms_(new mesh_storage_t<MT::num_dimensions, MT::num_domains>)
+  : ms_(std::make_shared<mesh_storage_t<MT::num_dimensions,
+      MT::num_domains>>())
   {
-    base_t::set_storage(ms_);
+    base_t::set_storage(ms_.get());
 
     for (size_t from_domain = 0; from_domain < MT::num_domains; ++from_domain) {
       for (size_t to_domain = 0; to_domain < MT::num_domains; ++to_domain) {
@@ -289,32 +293,36 @@ public:
   } // mesh_topology_t()
 
   mesh_topology_t(
-    mesh_storage_t<MT::num_dimensions, MT::num_domains>* storage
+    storage_t* storage
   )
   : ms_(storage){
     base_t::set_storage(ms_);
   }
 
-  //! Copy constructor
-  mesh_topology_t(const mesh_topology_t& m)
-  : ms_(m.ms_),
-    master_(false){}
+  //! Copy constructor for data client handle
+  mesh_topology_t(const mesh_topology_t& m, bool)
+  : ms_(m.ms_)
+  {
+    base_t::set_storage(ms_.get());
+  }
 
   // The mesh retains ownership of the entities and deletes them
   // upon mesh destruction
   virtual
   ~mesh_topology_t()
   {
-    if(!master_){
-      return;
-    }
 
-    delete ms_;
   }
 
-  mesh_storage_t<MT::num_dimensions, MT::num_domains>*
+  storage_t*
   storage(){
-    return ms_;  
+    return ms_.get();  
+  }
+
+  void
+  set_storage(storage_t* s){
+    ms_ = std::shared_ptr<storage_t>(s);
+    base_t::set_storage(ms_.get());
   }
 
   // Add and entity to a mesh domain and assign its id per domain
@@ -1034,7 +1042,7 @@ public:
     pos += sizeof(num_dimensions);
     assert(num_dimensions == MT::num_dimensions && "dimension size mismatch");
 
-    unserialize_domains_<mesh_storage_t<MT::num_dimensions, MT::num_domains>,
+    unserialize_domains_<storage_t,
       MT, MT::num_domains,
       MT::num_dimensions, 0>::unserialize(*this, buf, pos);
 
@@ -1082,9 +1090,7 @@ public:
   }
 
 private:
-  bool master_ = true;
-
-  mesh_storage_t<MT::num_dimensions, MT::num_domains>* ms_;
+  std::shared_ptr<storage_t> ms_;
 
   template<size_t DM, size_t I, class TS>
   friend class compute_connectivity_;

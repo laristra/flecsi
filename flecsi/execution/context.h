@@ -248,7 +248,7 @@ private:
   std::map<size_t,
     std::unordered_map<size_t, coloring_info_t>> coloring_info_;
 
-  // pair is from, to index space
+  // key is index space
   std::map<size_t, adjacency_info_t> adjacency_info_;
 
 }; // class context__

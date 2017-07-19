@@ -126,15 +126,17 @@ void task1(client_handle_t<test_mesh_t, dro> mesh) {
 } // task1
 
 void fill_task(client_handle_t<test_mesh_t, drw> mesh){
-  //mesh.make<vertex>();
-  //mesh.make<cell>();
+  mesh.make<cell>();
+  mesh.make<vertex>();
 }
 
 flecsi_register_data_client(test_mesh_t, meshes, mesh1); 
 
 flecsi_register_task(task1, loc, single);
 
-flecsi_register_field(test_mesh_t, hydro, pressure, double, dense, 0, 1);
+flecsi_register_field(test_mesh_t, hydro, pressure, double, dense, 1, 0);
+
+flecsi_register_task(fill_task, loc, single);
 
 namespace flecsi {
 namespace execution {
@@ -165,7 +167,6 @@ void specialization_tlt_init(int argc, char ** argv) {
   }
 
   context.add_adjacency(ai);
-
 } // specialization_tlt_init
 
 void specialization_spmd_init(int argc, char ** argv) {
