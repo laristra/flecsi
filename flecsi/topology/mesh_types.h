@@ -46,6 +46,9 @@ struct typeify {
   static constexpr T value = M;
 };
 
+template <typename T, T M>
+constexpr T typeify<T,M>::value;
+
 template <size_t M>
 using dimension_ = typeify<size_t, M>;
 

@@ -56,11 +56,6 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
     public flecsi::utils::tuple_walker__<entity_walker_t>
   {
 
-    template<typename T, T V>
-    T value(topology::typeify<T, V>){
-      return V;
-    }
-
     template<
       typename TUPLE_ENTRY_TYPE
     >
@@ -75,7 +70,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
         typename std::tuple_element<2, TUPLE_ENTRY_TYPE>::type;
 
       entity_index_space_map.emplace(typeid(ENTITY_TYPE).hash_code(),
-        value(INDEX_TYPE()));
+        INDEX_TYPE::value);
     } // handle_type
 
     std::map<size_t, size_t> entity_index_space_map;
@@ -85,21 +80,6 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
   struct connectivity_walker_t :
     public flecsi::utils::tuple_walker__<connectivity_walker_t>
   {
-
-    template<typename T, T V>
-    T value(topology::typeify<T, V>){
-      return V;
-    }
-
-    template<
-      size_t D,
-      size_t N
-    >
-    size_t
-    dimension(const topology::mesh_entity_t<D, N>&)
-    {
-      return D;
-    }
 
     template<
       typename TUPLE_ENTRY_TYPE
@@ -126,13 +106,13 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
       hi.to_index_space = 
         entity_index_space_map[typeid(TO_ENTITY_TYPE).hash_code()];
 
-      hi.from_domain = value(DOMAIN_TYPE());
+      hi.from_domain = DOMAIN_TYPE::value;
 
-      hi.to_domain = value(DOMAIN_TYPE());
+      hi.to_domain = DOMAIN_TYPE::value;
 
-      hi.from_dim = dimension(FROM_ENTITY_TYPE());
+      hi.from_dim = FROM_ENTITY_TYPE::dimension;
 
-      hi.to_dim = dimension(TO_ENTITY_TYPE());
+      hi.to_dim = TO_ENTITY_TYPE::dimension;
 
       handles.emplace_back(std::move(hi));
     } // handle_type
@@ -145,16 +125,6 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
   struct binding_walker_t :
     public flecsi::utils::tuple_walker__<binding_walker_t>
   {
-
-    template<
-      size_t D,
-      size_t N
-    >
-    size_t
-    dimension(const topology::mesh_entity_t<D, N>&)
-    {
-      return D;
-    }
 
     template<
       typename TUPLE_ENTRY_TYPE
@@ -183,13 +153,13 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
       hi.to_index_space = 
         entity_index_space_map[typeid(TO_ENTITY_TYPE).hash_code()];
 
-      hi.from_domain = value(FROM_DOMAIN_TYPE());
+      hi.from_domain = FROM_DOMAIN_TYPE::value;
 
-      hi.to_domain = value(TO_DOMAIN_TYPE());
+      hi.to_domain = TO_DOMAIN_TYPE::value;
 
-      hi.from_dim = dimension(FROM_ENTITY_TYPE());
+      hi.from_dim = FROM_ENTITY_TYPE::dimension;
 
-      hi.to_dim = dimension(TO_ENTITY_TYPE());
+      hi.to_dim = TO_ENTITY_TYPE::dimension;
 
       handles.emplace_back(std::move(hi));
     } // handle_type
