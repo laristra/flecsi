@@ -21,6 +21,7 @@
 //----------------------------------------------------------------------------//
 
 #include <vector>
+#include <type_traits>
 
 #include "legion.h"
 #include "arrays.h"
@@ -238,9 +239,12 @@ namespace execution {
 #if 0
       auto& context_ = context_t::instance();
 
-      auto storage = h.storage();
+      auto storage = new typename T::storage_t;
+
+      h.set_storage(storage);
 
       for(size_t i = 0; i < h.num_adjacencies; ++i){
+
         data_client_handle_adjacency& adj = h.adjacencies[i];
 
         size_t adj_index_space = adj.adj_index_space;
@@ -306,8 +310,11 @@ namespace execution {
 
         storage->init_entities(adj.to_domain, adj.to_dim, ents, num_ents);
 
-        storage->init_connectivity(adj.from_domain, adj.to_domain,
-          adj.from_dim, adj.to_dim, offsets, indices, num_offsets);
+        // TODO: fix with actual count, not allocation size
+        if(PERMISSIONS <= 1){
+          storage->init_connectivity(adj.from_domain, adj.to_domain,
+            adj.from_dim, adj.to_dim, offsets, indices, num_offsets);
+        }
 
         ++region;
       }

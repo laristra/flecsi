@@ -234,6 +234,8 @@ public:
 
   using id_t = utils::id_t;
 
+  using storage_t = mesh_storage_t<MT::num_dimensions, MT::num_domains>;
+
   // used to find the entity type of topological dimension D and domain M
   template<size_t D, size_t M = 0>
   using entity_type = typename find_entity_<MT, D, M>::type;
@@ -294,8 +296,7 @@ public:
 
   //! Copy constructor
   mesh_topology_t(const mesh_topology_t& m)
-  : ms_(m.ms_),
-    master_(false){}
+  : mesh_topology_t() {}
 
   // The mesh retains ownership of the entities and deletes them
   // upon mesh destruction
