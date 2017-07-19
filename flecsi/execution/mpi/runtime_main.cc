@@ -12,15 +12,28 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#include "flecsi/execution/context.h"
+//----------------------------------------------------------------------------//
+//! @file
+//! @date Initial file creation: Jul 26, 2016
+//----------------------------------------------------------------------------//
 
-using namespace flecsi::execution;
+#ifdef ENABLE_MPI
+  #include <mpi.h>
+#endif
 
-///
-/// FLeCSI main function
-///
+#include <flecsi/execution/context.h>
+
+//----------------------------------------------------------------------------//
+//! FleCSI runtime main function.
+//----------------------------------------------------------------------------//
+
 int main(int argc, char ** argv) {
-  return context_t::instance().initialize(argc, argv);
+
+  MPI_Init(&argc, &argv);
+
+  auto retval = flecsi::execution::context_t::instance().initialize(argc, argv);
+
+  MPI_Finalize();
 } // main
 
 /*~------------------------------------------------------------------------~--*
