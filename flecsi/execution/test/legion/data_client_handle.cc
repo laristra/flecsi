@@ -126,8 +126,8 @@ void task1(client_handle_t<test_mesh_t, dro> mesh) {
 } // task1
 
 void fill_task(client_handle_t<test_mesh_t, drw> mesh){
-  //mesh.make<vertex>();
-  //mesh.make<cell>();
+  mesh.make<cell>();
+  mesh.make<vertex>();
 }
 
 flecsi_register_data_client(test_mesh_t, meshes, mesh1); 
