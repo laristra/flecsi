@@ -76,12 +76,11 @@ struct context__ : public CONTEXT_POLICY
   void
   add_index_map(
     size_t index_space,
-    std::unordered_map<size_t, size_t> & index_map
+    std::map<size_t, size_t> & index_map
   )
   {
     index_map_[index_space] = index_map;
 
-    // Compute the reverse map
     for(auto i: index_map) {
       reverse_index_map_[index_space][i.second] = i.first;
     } // for
@@ -93,7 +92,7 @@ struct context__ : public CONTEXT_POLICY
   //! @param index_space The map key.
   //---------------------------------------------------------------------------/
 
-  std::unordered_map<size_t, size_t> &
+  std::map<size_t, size_t> &
   index_map(
     size_t index_space
   )
@@ -110,7 +109,7 @@ struct context__ : public CONTEXT_POLICY
   //! @param index_space The map key.
   //---------------------------------------------------------------------------/
 
-  std::unordered_map<size_t, size_t> &
+  std::map<size_t, size_t> &
   reverse_index_map(
     size_t index_space
   )
@@ -263,8 +262,8 @@ private:
   std::map<size_t, index_coloring_t> colorings_;
 
   // key: mesh index space entity id
-  std::map<size_t, std::unordered_map<size_t, size_t>> index_map_;
-  std::map<size_t, std::unordered_map<size_t, size_t>> reverse_index_map_;
+  std::map<size_t, std::map<size_t, size_t>> index_map_;
+  std::map<size_t, std::map<size_t, size_t>> reverse_index_map_;
 
   // key: virtual index space.
   // value: map of color to coloring info

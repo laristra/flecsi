@@ -44,17 +44,17 @@ void check_values_task(
     handle_t<size_t, flecsi::dro, flecsi::dro, flecsi::dno> cell_ID,
     handle_t<double, flecsi::dro, flecsi::dro, flecsi::dno> T,
     const double time);
-flecsi_register_task(check_values_task, flecsi::loc, flecsi::single);
+flecsi_register_task(check_values_task, loc, single);
 
 void init_values_task(
     handle_t<size_t, flecsi::drw, flecsi::drw, flecsi::dno> cell_ID,
     handle_t<double, flecsi::drw, flecsi::drw, flecsi::dno> T);
-flecsi_register_task(init_values_task, flecsi::loc, flecsi::single);
+flecsi_register_task(init_values_task, loc, single);
 
 void fwd_euler_heat_task(
     handle_t<double, flecsi::drw, flecsi::drw, flecsi::dro> T,
     handle_t<double, flecsi::drw, flecsi::drw, flecsi::dno> T_temp);
-flecsi_register_task(fwd_euler_heat_task, flecsi::loc, flecsi::single);
+flecsi_register_task(fwd_euler_heat_task, loc, single);
 
 class client_type : public flecsi::data::data_client_t{};
 

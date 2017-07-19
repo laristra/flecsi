@@ -126,8 +126,46 @@ void task1(client_handle_t<test_mesh_t, dro> mesh) {
 } // task1
 
 void fill_task(client_handle_t<test_mesh_t, drw> mesh){
-  //mesh.make<vertex>();
-  //mesh.make<cell>();
+  clog(info) << "IN FILL TASK" << std::endl;
+
+  auto & context = execution::context_t::instance();
+
+  auto & vertex_map = context.index_map(1);
+  auto & reverse_vertex_map = context.reverse_index_map(1);
+
+  auto & cell_map = context.index_map(0);
+  auto & reverse_cell_map = context.reverse_index_map(0);
+
+#if 1
+  std::vector<Vertex *> vertices;
+  for(auto & vm: vertex_map) {
+    vertices.push_back(mesh.make<vertex>());
+  } // for
+#endif
+
+  const size_t width = 8;
+
+  for(auto & cm: cell_map) {
+    const size_t mid = cm.second;
+
+    const size_t row = mid/width;
+    const size_t column = mid%width;
+
+    const size_t v0 = (column    ) + (row    ) * (width + 1);
+    const size_t v1 = (column + 1) + (row    ) * (width + 1);
+    const size_t v2 = (column + 1) + (row + 1) * (width + 1);
+    const size_t v3 = (column    ) + (row + 1) * (width + 1);
+
+    const size_t lv0 = reverse_vertex_map[v0];
+    const size_t lv1 = reverse_vertex_map[v1];
+    const size_t lv2 = reverse_vertex_map[v2];
+    const size_t lv3 = reverse_vertex_map[v3];
+
+    auto c = mesh.make<cell>();
+    c.init(vertices[lv0], vertices[lv1], vertices[lv2], vertices[lv3]);
+  } // for
+
+  mesh.init<0>();
 }
 
 flecsi_register_data_client(test_mesh_t, meshes, mesh1); 
@@ -163,7 +201,7 @@ void specialization_tlt_init(int argc, char ** argv) {
   for(auto& itr : cc){
     size_t color = itr.first;
     const coloring_info_t& ci = itr.second;
-    ai.color_sizes[color] = (ci.exclusive + ci.shared) * 4;    
+    ai.color_sizes[color] = (ci.exclusive + ci.shared) * 4;
   }
 
   context.add_adjacency(ai);

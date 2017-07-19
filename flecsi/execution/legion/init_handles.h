@@ -235,6 +235,7 @@ namespace execution {
       data_client_handle__<T, PERMISSIONS> & h
     )
     {
+#if 0
       auto& context_ = context_t::instance();
 
       auto storage = h.storage();
@@ -310,6 +311,7 @@ namespace execution {
 
         ++region;
       }
+#endif
     }
 
     //-----------------------------------------------------------------------//

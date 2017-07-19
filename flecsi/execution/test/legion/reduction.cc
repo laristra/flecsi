@@ -20,7 +20,7 @@ double local_value_task(
 {
   return static_cast<double>(my_color);
 }
-flecsi_register_task(local_value_task, flecsi::loc, flecsi::single);
+flecsi_register_task(local_value_task, loc, single);
 
 namespace flecsi {
 namespace execution {

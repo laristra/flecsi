@@ -35,37 +35,37 @@ using handle_t = flecsi::data::legion::dense_handle_t<T, EP, SP, GP>;
 void initialize_data(
         handle_t<size_t, flecsi::drw, flecsi::drw, flecsi::dno> global_IDs,
         handle_t<double, flecsi::drw, flecsi::drw, flecsi::dno> phi);
-flecsi_register_task(initialize_data, flecsi::loc, flecsi::single);
+flecsi_register_task(initialize_data, loc, single);
 
 void write_to_disk(
         handle_t<size_t, flecsi::dro, flecsi::dro, flecsi::dno> global_IDs,
         handle_t<double, flecsi::dro, flecsi::dro, flecsi::dno> phi,
         const int my_color);
-flecsi_register_task(write_to_disk, flecsi::loc, flecsi::single);
+flecsi_register_task(write_to_disk, loc, single);
 
 void calculate_exclusive_x_update(
         handle_t<size_t, flecsi::dro, flecsi::dro, flecsi::dro> global_IDs,
         handle_t<double, flecsi::dro, flecsi::dro, flecsi::dno> phi,
         handle_t<double, flecsi::drw, flecsi::dno, flecsi::dno> phi_update);
-flecsi_register_task(calculate_exclusive_x_update, flecsi::loc, flecsi::single);
+flecsi_register_task(calculate_exclusive_x_update, loc, single);
 
 void advect_owned_cells_in_x(
         handle_t<size_t, flecsi::dro, flecsi::dro, flecsi::dro> global_IDs,
         handle_t<double, flecsi::drw, flecsi::drw, flecsi::dro> phi,
         handle_t<double, flecsi::dro, flecsi::drw, flecsi::dno> phi_update);
-flecsi_register_task(advect_owned_cells_in_x, flecsi::loc, flecsi::single);
+flecsi_register_task(advect_owned_cells_in_x, loc, single);
 
 void calculate_exclusive_y_update(
         handle_t<size_t, flecsi::dro, flecsi::dro, flecsi::dro> global_IDs,
         handle_t<double, flecsi::dro, flecsi::dro, flecsi::dno> phi,
         handle_t<double, flecsi::drw, flecsi::dno, flecsi::dno> phi_update);
-flecsi_register_task(calculate_exclusive_y_update, flecsi::loc, flecsi::single);
+flecsi_register_task(calculate_exclusive_y_update, loc, single);
 
 void advect_owned_cells_in_y(
         handle_t<size_t, flecsi::dro, flecsi::dro, flecsi::dro> global_IDs,
         handle_t<double, flecsi::drw, flecsi::drw, flecsi::dro> phi,
         handle_t<double, flecsi::dro, flecsi::drw, flecsi::dno> phi_update);
-flecsi_register_task(advect_owned_cells_in_y, flecsi::loc, flecsi::single);
+flecsi_register_task(advect_owned_cells_in_y, loc, single);
 
 class client_type : public flecsi::data::data_client_t{};
 
