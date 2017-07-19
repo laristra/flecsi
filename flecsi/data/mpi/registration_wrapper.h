@@ -30,8 +30,8 @@ template<
   typename DATA_TYPE,
   size_t NAMESPACE_HASH,
   size_t NAME_HASH,
-  size_t INDEX_SPACE,
-  size_t VERSIONS
+  size_t VERSIONS,
+  size_t INDEX_SPACE
 >
 struct mpi_field_registration_wrapper__
 {

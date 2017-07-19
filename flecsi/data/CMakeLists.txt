@@ -42,6 +42,8 @@ set(data_SOURCES
   data_client.cc
 )
 
+set(DRIVER_INITIALIZATION ../execution/driver_initialization.cc)
+
 #------------------------------------------------------------------------------#
 # Runtime-specific files.
 #
@@ -86,11 +88,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/tuple.h
   )
 
-#  set(data_SOURCES
-#    ${data_SOURCES}
-#    legion/dpd.cc
-#  )
-
   set(UNIT_POLICY LEGION)
   set(RUNTIME_DRIVER ../execution/legion/runtime_driver.cc)
 
@@ -110,8 +107,8 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
     ${data_SOURCES}
   )
 
-  set(UNIT_POLICY LEGION)
-  set(RUNTIME_DRIVER mpi/runtime_driver.cc)
+  set(UNIT_POLICY MPI)
+  set(RUNTIME_DRIVER ../execution/mpi/runtime_driver.cc)
 
 endif()
 
@@ -220,29 +217,26 @@ set(data_SOURCES
 
 #endif()
 
- if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
+if(ENABLE_COLORING AND ENABLE_PARMETIS)
 
-   if(ENABLE_COLORING AND ENABLE_PARMETIS)
+  cinch_add_unit(client_registration
+    SOURCES
+      test/client_registration.cc
+      data_client.cc
+      ${DRIVER_INITIALIZATION}
+      ${RUNTIME_DRIVER}
+    DEFINES
+      -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+    LIBRARIES
+      flecsi
+      ${CINCH_RUNTIME_LIBRARIES}
+    POLICY ${UNIT_POLICY}
+    THREADS 2
+    NOCI
+    )
 
-     cinch_add_unit(client_registration
-       SOURCES
-         test/client_registration.cc
-         data_client.cc
-         ../execution/driver_initialization.cc
-         ../execution/legion/runtime_driver.cc
-         ../execution/legion/context_policy.cc
-       DEFINES
-         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-       LIBRARIES
-         flecsi
-         ${CINCH_RUNTIME_LIBRARIES}
-       POLICY LEGION
-       THREADS 2
-     )
+endif()
 
-   endif()
-
- endif()
 
 #----------------------------------------------------------------------------~-#
 # Formatting options for vim.
