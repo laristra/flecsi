@@ -411,7 +411,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
 
         cinch_add_unit(data_client_handle
           SOURCES
-            test/legion/data_client_handle.cc
+            test/data_client_handle.cc
             ../supplemental/coloring/add_colorings.cc
             ${DRIVER_INITIALIZATION}
             ${RUNTIME_DRIVER}
