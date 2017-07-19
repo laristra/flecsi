@@ -39,13 +39,14 @@ void check_entities_task(
         handle_t<size_t, flecsi::dro, flecsi::dro, flecsi::dro> cell_ID,
         handle_t<double, flecsi::dro, flecsi::dro, flecsi::dro> test,
         int my_color, size_t cycle, size_t index_id);
-flecsi_register_task(check_entities_task, flecsi::loc, flecsi::single);
+
+flecsi_register_task(check_entities_task, loc, single);
 
 void set_primary_entities_task(
         handle_t<size_t, flecsi::drw, flecsi::drw, flecsi::dno> cell_ID,
         handle_t<double, flecsi::drw, flecsi::drw, flecsi::dno> test,
         int my_color, size_t cycle, size_t index_id);
-flecsi_register_task(set_primary_entities_task, flecsi::loc, flecsi::single);
+flecsi_register_task(set_primary_entities_task, loc, single);
 
 class client_type : public flecsi::data::data_client_t{};
 

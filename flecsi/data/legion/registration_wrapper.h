@@ -192,10 +192,12 @@ struct legion_client_registration_wrapper__<
       using entity_types_t = typename POLICY_TYPE::entity_types;
 
       constexpr size_t from_index_space = 
-        topology::find_index_space__<std::tuple_size<entity_types_t>::value, entity_types_t, FROM_ENTITY_TYPE>::find();
+        topology::find_index_space__<std::tuple_size<entity_types_t>::value,
+          entity_types_t, FROM_ENTITY_TYPE>::find();
 
       constexpr size_t to_index_space = 
-        topology::find_index_space__<std::tuple_size<entity_types_t>::value, entity_types_t, TO_ENTITY_TYPE>::find();
+        topology::find_index_space__<std::tuple_size<entity_types_t>::value,
+          entity_types_t, TO_ENTITY_TYPE>::find();
 
       constexpr size_t adjacency_hash =
         utils::hash::client_adjacency_hash<

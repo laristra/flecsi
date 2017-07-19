@@ -6,7 +6,7 @@
 #ifndef flecsi_topology_entity_storage_h
 #define flecsi_topology_entity_storage_h
 
-#include "flecsi_runtime_entity_storage_policy.h"
+#include "flecsi/runtime/flecsi_runtime_entity_storage_policy.h"
 
 //----------------------------------------------------------------------------//
 //! @file

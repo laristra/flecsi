@@ -325,6 +325,11 @@ public:
     base_t::set_storage(ms_.get());
   }
 
+  void
+  release_storage(){
+    ms_.reset();
+  }
+
   // Add and entity to a mesh domain and assign its id per domain
   template<
     size_t D,

@@ -60,7 +60,7 @@ void driver(int argc, char ** argv) {
     = context_.coloring_map();
   auto index_coloring = coloring_map.find(INDEX_ID);
 
-  std::unordered_map<size_t,size_t> gid_to_lid_map;
+  std::map<size_t,size_t> gid_to_lid_map;
 
   auto entries = index_coloring->second.exclusive;
 
@@ -86,7 +86,7 @@ void driver(int argc, char ** argv) {
 std::cout <<"IRINADEBUG"<< entity.id<<std::endl;
   }
 
-  std::unordered_map<size_t, size_t> index_map = context_.index_map(INDEX_ID);
+  std::map<size_t, size_t> index_map = context_.index_map(INDEX_ID);
 
   clog_assert( gid_to_lid_map==index_map , "global to local ID mapping is incorrect" );
 

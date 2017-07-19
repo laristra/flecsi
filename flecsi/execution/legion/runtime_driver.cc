@@ -706,9 +706,9 @@ spmd_task(
   //
   // This depends on the ordering of the BLIS data structure setup.
   // Currently, this is Exclusive - Shared - Ghost.
-  size_t counter(0);
   for(auto is: context_.coloring_map()) {
-    std::unordered_map<size_t, size_t> _map;
+    std::map<size_t, size_t> _map;
+    size_t counter(0);
 
     for(auto index: is.second.exclusive) {
       _map[counter++] = index.id;

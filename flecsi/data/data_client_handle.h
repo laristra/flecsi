@@ -55,7 +55,7 @@ struct data_client_handle_base__ : public DATA_CLIENT_TYPE, public DATA_POLICY
 
 } // namespace flecsi
 
-#include "flecsi_runtime_data_client_handle_policy.h"
+#include "flecsi/runtime/flecsi_runtime_data_client_handle_policy.h"
 
 namespace flecsi {
 
