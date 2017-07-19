@@ -128,7 +128,7 @@ clog_register_tag(execution);
     __flecsi_internal_arguments_type(task)                                     \
   >                                                                            \
   (                                                                            \
-    flecsi::execution::mask_to_type(launch),                                   \
+    flecsi::execution::mask_to_type(flecsi::launch),                           \
     flecsi::utils::const_string_t{__func__}.hash(), ## __VA_ARGS__             \
   )
 
