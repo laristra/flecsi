@@ -78,7 +78,7 @@ private:
 } // namespace data
 } // namespace flecsi
 
-#include "flecsi_runtime_storage_policy.h"
+#include "flecsi/runtime/flecsi_runtime_storage_policy.h"
 
 namespace flecsi {
 namespace data {

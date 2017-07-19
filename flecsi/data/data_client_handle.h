@@ -25,6 +25,7 @@ template<
 struct data_client_handle_base__ : public DATA_CLIENT_TYPE, public DATA_POLICY
 {
   data_client_handle_base__()
+  : DATA_CLIENT_TYPE()
   {
     
   }
@@ -35,17 +36,26 @@ struct data_client_handle_base__ : public DATA_CLIENT_TYPE, public DATA_POLICY
   data_client_handle_base__(
     const data_client_handle_base__<DATA_CLIENT_TYPE, UNMAPPED_PERMISSIONS,
       DATA_POLICY>& h)
-  : DATA_POLICY(h)
+  : DATA_POLICY(h),
+    DATA_CLIENT_TYPE(h, true)
   {
     static_assert(UNMAPPED_PERMISSIONS == 0,
                   "passing mapped client handle to task args");
+  }
+
+  data_client_handle_base__(
+    const data_client_handle_base__& h)
+  : DATA_POLICY(h),
+    DATA_CLIENT_TYPE(h, true)
+  {
+
   }
 
 }; // struct data_client_handle__
 
 } // namespace flecsi
 
-#include "flecsi_runtime_data_client_handle_policy.h"
+#include "flecsi/runtime/flecsi_runtime_data_client_handle_policy.h"
 
 namespace flecsi {
 

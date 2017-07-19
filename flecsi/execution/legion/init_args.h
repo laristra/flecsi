@@ -153,6 +153,9 @@ namespace execution {
 
         region_reqs.push_back(adj_rr);
       }
+
+      h.release_storage();
+
     } // handle
 
     //-----------------------------------------------------------------------//

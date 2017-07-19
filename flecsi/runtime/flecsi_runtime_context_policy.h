@@ -3,15 +3,15 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_runtime_entity_storage_policy_h
-#define flecsi_runtime_entity_storage_policy_h
+#ifndef flecsi_runtime_context_policy_h
+#define flecsi_runtime_context_policy_h
 
 //----------------------------------------------------------------------------//
-// @file
-// @date Initial file creation: Jun 19, 2017
+//! @file
+//! @date Initial file creation: Aug 01, 2016
 //----------------------------------------------------------------------------//
 
-#include "flecsi.h"
+#include <flecsi.h>
 
 //----------------------------------------------------------------------------//
 // This section works with the build system to select the correct runtime
@@ -23,42 +23,45 @@
 // Serial Policy
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_serial
 
-  #include "flecsi/topology/serial/entity_storage.h"
+  #include "flecsi/execution/serial/context_policy.h"
 
   namespace flecsi {
+  namespace execution {
 
-  template<typename T>
-  using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::entity_storage__<T>;
+  using FLECSI_RUNTIME_CONTEXT_POLICY = serial_context_policy_t;
 
   }
+  }
 
-// Legion, MPI+Legion Policy
+// Legion Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
-  #include "flecsi/topology/legion/entity_storage.h"
+  #include "flecsi/execution/legion/context_policy.h"
 
   namespace flecsi {
+  namespace execution {
 
-  template<typename T>
-  using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::entity_storage__<T>;
+  using FLECSI_RUNTIME_CONTEXT_POLICY = legion_context_policy_t;
 
+  }
   }
 
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
-  #include "flecsi/topology/mpi/entity_storage.h"
+  #include "flecsi/execution/mpi/context_policy.h"
 
   namespace flecsi {
+  namespace execution {
 
-  template<typename T>
-  using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::entity_storage__<T>;
+  using FLECSI_RUNTIME_CONTEXT_POLICY = mpi_context_policy_t;
 
+  }
   }
 
 #endif // FLECSI_RUNTIME_MODEL
 
-#endif // flecsi_runtime_entity_storage_policy_h
+#endif // flecsi_runtime_context_policy_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

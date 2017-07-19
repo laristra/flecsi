@@ -28,12 +28,12 @@ using handle_t = flecsi::data::legion::dense_handle_t<T, EP, SP, GP>;
 void read_task(
         handle_t<size_t, flecsi::dro, flecsi::dro, flecsi::dro> cell_ID,
         const int my_color, const size_t cycle);
-flecsi_register_task(read_task, flecsi::loc, flecsi::single);
+flecsi_register_task(read_task, loc, single);
 
 void write_task(
         handle_t<size_t, flecsi::drw, flecsi::drw, flecsi::dno> cell_ID,
         const int my_color, const size_t cycle, const bool delay);
-flecsi_register_task(write_task, flecsi::loc, flecsi::single);
+flecsi_register_task(write_task, loc, single);
 
 class client_type : public flecsi::data::data_client_t{};
 

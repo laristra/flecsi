@@ -11,12 +11,13 @@
 //! @date Initial file creation: May 10, 2017
 //----------------------------------------------------------------------------//
 
+#include "flecsi/topology/mesh.h"
 #include "flecsi/topology/mesh_topology.h"
 
 namespace flecsi {
-namespace topology {
+namespace supplemental {
 
-class Vertex : public mesh_entity_t<0, 1>{
+class Vertex : public flecsi::topology::mesh_entity_t<0, 1>{
 public:
   template<size_t M>
   uint64_t precedence() const { return 0; }
@@ -24,16 +25,16 @@ public:
 
 };
 
-class Edge : public mesh_entity_t<1, 1>{
+class Edge : public flecsi::topology::mesh_entity_t<1, 1>{
 public:
 };
 
-class Face : public mesh_entity_t<1, 1>{
+class Face : public flecsi::topology::mesh_entity_t<1, 1>{
 public:
 
 };
 
-class Cell : public mesh_entity_t<2, 1>{
+class Cell : public flecsi::topology::mesh_entity_t<2, 1>{
 public:
 
   using id_t = flecsi::utils::id_t;
@@ -42,7 +43,7 @@ public:
 
   std::vector<size_t>
   create_entities(id_t cell_id, size_t dim,
-    domain_connectivity<2> & c, id_t * e)
+    flecsi::topology::domain_connectivity<2> & c, id_t * e)
   {
     id_t* v = c.get_entities(cell_id, 0);
 
@@ -66,42 +67,37 @@ public:
 private:
 };
 
-class test_mesh_2d_policy_t {
+class test_mesh_2d_policy_t
+{
 public:
-  static constexpr size_t num_dimensions = 2;
 
-  static constexpr size_t num_domains = 1;
+  flecsi_register_number_dimensions(2);
+  flecsi_register_number_domains(1);
 
-#if 0
-  using entity_types = std::tuple<
-    std::tuple<index_space_<0>, domain_<0>, Vertex>,
-    std::tuple<index_space_<1>, domain_<0>, Edge>,
-    std::tuple<index_space_<2>, domain_<0>, Cell>>;
-#endif
+  flecsi_register_entity_types(
+    flecsi_entity_type(0, 0, Vertex),
+    flecsi_entity_type(1, 0, Edge),
+    flecsi_entity_type(2, 0, Cell)
+  );
 
-  using entity_types = std::tuple<
-    std::tuple<index_space_<0>, domain_<0>, Vertex>,
-    std::tuple<index_space_<1>, domain_<0>, Edge>,
-    std::tuple<index_space_<2>, domain_<0>, Cell>,
-    std::tuple<index_space_<2>, domain_<1>, Cell>
-  >;
+  flecsi_register_connectivities(
+    flecsi_connectivity(3, 0, Vertex, Edge),
+    flecsi_connectivity(4, 0, Vertex, Cell),
+    flecsi_connectivity(5, 0, Edge, Vertex),
+    flecsi_connectivity(6, 0, Edge, Cell),
+    flecsi_connectivity(7, 0, Cell, Vertex),
+    flecsi_connectivity(8, 0, Cell, Edge)
+  );
 
-  using connectivities = std::tuple<
-    std::tuple<index_space_<3>, domain_<0>, Vertex, Edge>,
-    std::tuple<index_space_<4>, domain_<0>, Vertex, Cell>,
-    std::tuple<index_space_<5>, domain_<0>, Edge, Vertex>,
-    std::tuple<index_space_<6>, domain_<0>, Edge, Cell>,
-    std::tuple<index_space_<7>, domain_<0>, Cell, Vertex>,
-    std::tuple<index_space_<8>, domain_<0>, Cell, Edge>
-  >;
-
-  using bindings = std::tuple<
-    std::tuple<index_space_<9>, domain_<0>, domain_<1>, Vertex, Cell>
-  >;
+  flecsi_register_bindings();
 
   template<size_t M, size_t D, typename ST>
-  static mesh_entity_base_t<num_domains>*
-  create_entity(mesh_topology_base_t<ST>* mesh, size_t num_vertices){
+  static flecsi::topology::mesh_entity_base_t<num_domains>*
+  create_entity(
+    flecsi::topology::mesh_topology_base_t<ST>* mesh,
+    size_t num_vertices
+  )
+  {
     switch(M){
       case 0:{
         switch(D){
@@ -118,9 +114,9 @@ public:
   }
 }; // class test_mesh_2d_t
 
-using test_mesh_2d_t = mesh_topology_t<test_mesh_2d_policy_t>;
+using test_mesh_2d_t = flecsi::topology::mesh_topology_t<test_mesh_2d_policy_t>;
 
-} // namespace topology
+} // namespace supplemental
 } // namespace flecsi
 
 #endif // flecsi_execution_test_mesh_h

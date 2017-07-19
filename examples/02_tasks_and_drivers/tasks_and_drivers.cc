@@ -77,14 +77,14 @@ void task1() {
 } // task1
 
 //register FLeCSI task
-flecsi_register_task(task1, flecsi::processor_type_t::loc, flecsi::single);
+flecsi_register_task(task1, loc, single);
 
 void task2(){
   std::cout<<"inside index task"<<std::endl;
 }
 
 ////register FLeCSI task
-flecsi_register_task(task2, flecsi::processor_type_t::loc, flecsi::index);
+flecsi_register_task(task2, loc, index);
 
 
 

@@ -6,7 +6,7 @@
 #ifndef flecsi_mesh_storage_h
 #define flecsi_mesh_storage_h
 
-#include "flecsi_runtime_topology_policy.h"
+#include "flecsi/runtime/flecsi_runtime_topology_policy.h"
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -17,9 +17,8 @@ namespace flecsi {
 namespace topology {
 
 template <size_t ND, size_t NM>
-class mesh_storage_t : public FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY<ND, NM>{
-
-};
+class mesh_storage_t : public FLECSI_RUNTIME_TOPOLOGY_STORAGE_POLICY<ND, NM>
+{};
 
 } // namespace topology
 } // namespace flecsi

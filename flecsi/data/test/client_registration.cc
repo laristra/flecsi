@@ -6,7 +6,7 @@
 #include <cinchtest.h>
 
 #include "flecsi/data/data.h"
-#include "flecsi/topology/test/test_mesh_2d.h"
+#include "flecsi/supplemental/mesh/test_mesh_2d.h"
 
 namespace flecsi {
 namespace execution {
@@ -20,7 +20,7 @@ void driver(int argc, char ** argv) {
 } // namespace flecsi
 } // namespace execution
 
-using test_mesh_2d_t = flecsi::topology::test_mesh_2d_t;
+using test_mesh_2d_t = flecsi::supplemental::test_mesh_2d_t;
 
 flecsi_register_data_client(test_mesh_2d_t, sovler, meshA);
 flecsi_register_data_client(test_mesh_2d_t, sovler, meshB);
