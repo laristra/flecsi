@@ -11,7 +11,7 @@
 // @date Initial file creation: Jun 19, 2017
 //----------------------------------------------------------------------------//
 
-#include "flecsi.h"
+#include <flecsi.h>
 
 //----------------------------------------------------------------------------//
 // This section works with the build system to select the correct runtime
