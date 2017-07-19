@@ -310,8 +310,8 @@ namespace execution {
 
         storage->init_entities(adj.to_domain, adj.to_dim, ents, num_ents);
 
-        // TODO: fix with actual count, not allocation size
-        if(PERMISSIONS <= 1){
+        // TODO: fix
+        if((PERMISSIONS == dro) || (PERMISSIONS == drw)){
           storage->init_connectivity(adj.from_domain, adj.to_domain,
             adj.from_dim, adj.to_dim, offsets, indices, num_offsets);
         }
