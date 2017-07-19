@@ -228,7 +228,9 @@ class domain_entity
   using id_t = typename E::id_t;
   using item_t = E*;
 
-  domain_entity(E * entity) : entity_(entity) {}
+  // implicit type conversions are evil.  This one tries to convert 
+  // all pointers to domain_entities
+  explicit domain_entity(E * entity) : entity_(entity) {}
   domain_entity & operator=(const domain_entity & e)
   {
     entity_ = e.entity_;

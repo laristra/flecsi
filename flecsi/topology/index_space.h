@@ -215,7 +215,9 @@ public:
       size_t index
     )
     {
-      return (*s_)[(*items_)[index].index_space_index()];
+      return static_cast< std::decay_t<ref_t> >( 
+        (*s_)[(*items_)[index].index_space_index()]
+      );
     }
 
    protected:
@@ -648,7 +650,9 @@ public:
     size_t offset
   )
   {
-    return (*s_)[(*v_)[begin_ + offset].index_space_index()];
+    return static_cast< std::decay_t<ref_t> >( 
+      (*s_)[(*v_)[begin_ + offset].index_space_index()] 
+    );
   }
 
   const ref_t
@@ -656,7 +660,9 @@ public:
     size_t offset
   ) const
   {
-    return (*s_)[(*v_)[begin_ + offset].index_space_index()];
+    return static_cast< std::decay_t<ref_t> >( 
+      (*s_)[(*v_)[begin_ + offset].index_space_index()]
+    );
   }
 
   ref_t
@@ -664,7 +670,9 @@ public:
     size_t offset
   )
   {
-    return (*s_)[(*v_)[end_ - 1 - offset].index_space_index()];
+    return static_cast< std::decay_t<ref_t> >( 
+      (*s_)[(*v_)[end_ - 1 - offset].index_space_index()]
+    );
   }
 
   const ref_t
@@ -672,7 +680,9 @@ public:
     size_t offset
   ) const
   {
-    return (*s_)[(*v_)[end_ - 1 - offset].index_space_index()];
+    return static_cast< std::decay_t<ref_t> >( 
+      (*s_)[(*v_)[end_ - 1 - offset].index_space_index()]
+    );
   }
 
   ref_t
