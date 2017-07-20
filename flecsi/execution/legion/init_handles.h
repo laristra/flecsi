@@ -246,12 +246,43 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
     auto storage = h.set_storage(new typename T::storage_t);
     h.initialize_storage();
 
-    for(size_t i = 0; i < h.num_adjacencies; ++i) {
-      data_client_handle_adjacency& adj = h.adjacencies[i];
+    for(size_t i{0}; i<h.num_handle_entities; ++i) {
+      data_client_handle_entity & ent = h.handle_entities[i];
 
-      size_t adj_index_space = adj.adj_index_space;
-      size_t from_index_space = adj.from_index_space;
-      size_t to_index_space = adj.to_index_space;
+      const size_t index_space = ent.index_space;
+      const size_t dim = ent.dim;
+      const size_t domain = ent.domain;
+
+      Legion::LogicalRegion lr = regions[region].get_logical_region();
+      Legion::IndexSpace is = lr.get_index_space();
+
+      auto ac = regions[region].get_field_accessor(ent.fid);
+
+      Legion::Domain d = 
+        runtime->get_index_space_domain(context, is); 
+
+      LegionRuntime::Arrays::Rect<2> dr = d.get_rect<2>();
+      LegionRuntime::Arrays::Rect<2> sr;
+      LegionRuntime::Accessor::ByteOffset bo[2];
+
+      auto ents_raw =
+        static_cast<uint8_t *>(ac.template raw_rect_ptr<2>(dr, sr, bo));
+      ents_raw += bo[1] * ent.size;
+      auto ents = reinterpret_cast<topology::mesh_entity_base_*>(ents_raw);
+
+      size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
+
+      storage->init_entities(ent.domain, ent.dim, ents, num_ents);
+
+      ++region;
+    } // for
+
+    for(size_t i = 0; i < h.num_handle_adjacencies; ++i) {
+      data_client_handle_adjacency& adj = h.handle_adjacencies[i];
+
+      const size_t adj_index_space = adj.adj_index_space;
+      const size_t from_index_space = adj.from_index_space;
+      const size_t to_index_space = adj.to_index_space;
 
       Legion::LogicalRegion lr = regions[region].get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
@@ -259,10 +290,10 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       auto ac = regions[region].get_field_accessor(adj.offset_fid).template
         typeify<LegionRuntime::Arrays::Point<2>>();
 
-      Legion::Domain domain = 
+      Legion::Domain d = 
         runtime->get_index_space_domain(context, is); 
 
-      LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
+      LegionRuntime::Arrays::Rect<2> dr = d.get_rect<2>();
       LegionRuntime::Arrays::Rect<2> sr;
       LegionRuntime::Accessor::ByteOffset bo[2];
 
@@ -277,37 +308,17 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       lr = regions[region].get_logical_region();
       is = lr.get_index_space();
 
-      auto ac2 = regions[region].get_field_accessor(adj.entity_fid).template
-        typeify<topology::mesh_entity_base_>();
-
-      domain = runtime->get_index_space_domain(context, is); 
-
-      dr = domain.get_rect<2>();
-
-      topology::mesh_entity_base_* ents = 
-        ac2.template raw_rect_ptr<2>(dr, sr, bo);
-      ents += bo[1];
-
-      size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
-
-      ++region;
-
-      lr = regions[region].get_logical_region();
-      is = lr.get_index_space();
-
       auto ac3 = regions[region].get_field_accessor(adj.index_fid).template
         typeify<uint64_t>();
 
-      domain = runtime->get_index_space_domain(context, is); 
+      d = runtime->get_index_space_domain(context, is); 
 
-      dr = domain.get_rect<2>();
+      dr = d.get_rect<2>();
 
       uint64_t * indices = ac3.template raw_rect_ptr<2>(dr, sr, bo);
       indices += bo[1];
 
       size_t num_indices = sr.hi[1] - sr.lo[1] + 1;
-
-      storage->init_entities(adj.to_domain, adj.to_dim, ents, num_ents);
 
       // TODO: fix
       if((PERMISSIONS == dro) || (PERMISSIONS == drw)) {

@@ -54,6 +54,13 @@ public:
     return buf_ + index;
   }
 
+  size_t
+  size()
+  const
+  {
+    return size_;
+  } // size
+
   item_t
   begin()
   {

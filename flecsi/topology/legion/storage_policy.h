@@ -130,6 +130,8 @@ struct legion_topology_storage_policy_t
     auto & is = index_spaces[M][dim].template cast<dtype>();
     size_t entity_id = is.size();
 
+    clog(info) << "BUFFER SIZE: " << is.storage()->size() << std::endl;
+
     auto placement_ptr = static_cast<T*>(is.storage()->buffer()) + entity_id;
     ent = new (placement_ptr) T(std::forward<S>(args)...);
 
