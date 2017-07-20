@@ -54,6 +54,7 @@ int main(int argc, char ** argv) {
 #else
    MPI_Init(&argc, &argv);
 #endif
+#endif // ENABLE_MPI
 
   // Execute the flecsi runtime.
   auto retval = flecsi::execution::context_t::instance().initialize(argc, argv);
