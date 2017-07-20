@@ -791,10 +791,13 @@ public:
   using id_t = utils::id_t;
 
   // Default constructor
-  mesh_topology_base_t() = default;
+  mesh_topology_base_t(STORAGE_TYPE * ms = nullptr)
+    : ms_(ms) {}
 
   // Don't allow the mesh to be copied or copy constructed
-  mesh_topology_base_t(const mesh_topology_base_t &) = delete;
+  mesh_topology_base_t(const mesh_topology_base_t & m)
+    : ms_(m.ms_) {}
+
   mesh_topology_base_t & operator=(const mesh_topology_base_t &) = delete;
 
   /// Allow move operations
@@ -809,9 +812,32 @@ public:
     return *this;
   };
 
-  void set_storage(STORAGE_TYPE* ms){
+  STORAGE_TYPE *
+  set_storage(
+    STORAGE_TYPE * ms
+  )
+  {
     ms_ = ms;
-  }
+    return ms_;
+  } // set_storage
+
+  STORAGE_TYPE *
+  storage()
+  {
+    return ms_;
+  } // set_storage
+
+  void
+  clear_storage()
+  {
+    ms_ = nullptr;
+  } // clear_storage
+
+  void
+  delete_storage()
+  {
+    delete ms_;
+  } // delete_storage
 
   /*!
     Return the number of entities in for a specific domain and topology dim.
@@ -863,8 +889,9 @@ public:
     std::vector<mesh_entity_base_*>& ents,
     std::vector<id_t>& ids) = 0;
 
-private:
-  STORAGE_TYPE* ms_;
+protected:
+
+  STORAGE_TYPE * ms_ = nullptr;
 
 }; // mesh_topology_base_t
 
