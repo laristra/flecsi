@@ -132,7 +132,7 @@ void task1(client_handle_t<test_mesh_t, dro> mesh) {
   //np(y);
 } // task1
 
-void fill_task(client_handle_t<test_mesh_t, dwd> mesh){
+void fill_task(client_handle_t<test_mesh_t, dwd> mesh) {
   clog(info) << "IN FILL TASK" << std::endl;
 
   auto & context = execution::context_t::instance();
@@ -192,9 +192,11 @@ void fill_task(client_handle_t<test_mesh_t, dwd> mesh){
   } // for
 #endif
   clog(info) << "MESH INIT" << std::endl;
-}
+} // fill_task
 
-void print_task(client_handle_t<test_mesh_t, dwd> mesh){
+void print_task(client_handle_t<test_mesh_t, dro> mesh) {
+  clog(info) << "IN PRINT_TASK" << std::endl;
+
   for(auto c: mesh.entities<2, 0>()) {
     clog(trace) << "id: " << c->template id<0>() << std::endl;
 
@@ -202,7 +204,11 @@ void print_task(client_handle_t<test_mesh_t, dwd> mesh){
       clog(trace) << "vertex id: " << v->template id<0>() << std::endl;
     } // for
   } // for
-}
+} // print_task
+
+void hello() {
+  clog(info) << "Hello!!!" << std::endl;
+} // hello
 
 flecsi_register_data_client(test_mesh_t, meshes, mesh1); 
 
@@ -212,6 +218,7 @@ flecsi_register_field(test_mesh_t, hydro, pressure, double, dense, 1, 0);
 
 flecsi_register_task(fill_task, loc, single);
 flecsi_register_task(print_task, loc, single);
+flecsi_register_task(hello, loc, single);
 
 namespace flecsi {
 namespace execution {
@@ -251,12 +258,25 @@ void specialization_spmd_init(int argc, char ** argv) {
 //  const int my_color = runtime->find_local_MPI_rank();
 //  clog(error) << "Rank " << my_color << " in specialization_spmd_init" << std::endl;
 
+  {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
 
-  flecsi_execute_task(fill_task, single, ch);
-  flecsi_execute_task(print_task, single, ch);
+  auto f1 = flecsi_execute_task(fill_task, single, ch);
+  f1.wait();
+  } // scope
 
-  clog(info) << "PAST !!!" << std::endl;
+  clog(info) << "FILL TASK" << std::endl;
+
+#if 1
+  {
+  auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
+
+  auto f2 = flecsi_execute_task(print_task, single, ch);
+  f2.wait();
+  } // scope
+#endif
+
+  clog(info) << "GOT PAST !!!" << std::endl;
 
 } // specialization_spmd_init
 
@@ -265,6 +285,7 @@ void specialization_spmd_init(int argc, char ** argv) {
 //----------------------------------------------------------------------------//
 
 void driver(int argc, char ** argv) {
+#if 0
   clog(info) << "In driver" << std::endl;
 
   int rank, size;
@@ -274,6 +295,7 @@ void driver(int argc, char ** argv) {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
 
   flecsi_execute_task(task1, single, ch);
+#endif
 } // specialization_driver
 
 //----------------------------------------------------------------------------//

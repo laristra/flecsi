@@ -505,7 +505,7 @@ struct old_task_wrapper__
 
     // FIXME: NEED TO HANDLE RETURN TYPES
     // Execute the user's task
-    (*DELEGATE)(task_args);
+    return (*DELEGATE)(task_args);
 
 #if !defined(ENABLE_LEGION_TLS)
     // Pop the Legion state

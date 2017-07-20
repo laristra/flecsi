@@ -89,6 +89,7 @@ struct legion_topology_storage_policy_t
     // We may wish to store the buffer pointers coming from Legion directly
     // into the connectivity
 
+    clog(info) << "NUM_POSITIONS: " << num_positions << std::endl;
     auto& conn = topology[from_domain][to_domain].get(from_dim, to_dim);
     size_t index_offset = 0;
     for(size_t i = 0; i < num_positions; ++i){
@@ -96,6 +97,8 @@ struct legion_topology_storage_policy_t
       size_t offset = pi.x[0];
       size_t count = pi.x[1];
 
+      clog(info) << "INDEX_OFFSET: " << index_offset << std::endl;
+      clog(info) << "COUNT: " << count << std::endl;
       for(size_t j = index_offset; j < index_offset + count; ++j){
         conn.push(utils::id_t::make(to_dim, indices[j]));
       }
