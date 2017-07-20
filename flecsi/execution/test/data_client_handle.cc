@@ -86,10 +86,11 @@ public:
 
   using entity_types = std::tuple<
     std::tuple<index_space_<0>, domain_<0>, cell>,
+    std::tuple<index_space_<2>, domain_<0>, edge>,
     std::tuple<index_space_<1>, domain_<0>, vertex>>;
 
   using connectivities = 
-    std::tuple<std::tuple<index_space_<2>, domain_<0>, cell, vertex>>;
+    std::tuple<std::tuple<index_space_<3>, domain_<0>, cell, vertex>>;
 
   using bindings = std::tuple<>;
 
@@ -100,7 +101,7 @@ public:
       case 0:{
         switch(D){
           case 1:
-            return mesh->template make<edge>(*mesh);
+            //return mesh->template make<edge>(*mesh);
           default:
             assert(false && "invalid topological dimension");
         }
@@ -142,7 +143,7 @@ void fill_task(client_handle_t<test_mesh_t, drw> mesh){
   auto & cell_map = context.index_map(0);
   auto & reverse_cell_map = context.reverse_index_map(0);
 
-#if 0
+#if 1
   std::vector<vertex *> vertices;
   for(auto & vm: vertex_map) {
     vertices.push_back(mesh.make<vertex>());
@@ -167,8 +168,9 @@ void fill_task(client_handle_t<test_mesh_t, drw> mesh){
     const size_t lv2 = reverse_vertex_map[v2];
     const size_t lv3 = reverse_vertex_map[v3];
 
-//    auto c = mesh.make<cell>();
-//    c.init(vertices[lv0], vertices[lv1], vertices[lv2], vertices[lv3]);
+    auto c = mesh.make<cell>();
+    //mesh.init_cell<0>(c,
+    //  { vertices[lv0], vertices[lv1], vertices[lv2], vertices[lv3] });
   } // for
 
 //  mesh.init<0>();
@@ -199,7 +201,7 @@ void specialization_tlt_init(int argc, char ** argv) {
   auto& cv = context.coloring_info(1);
 
   adjacency_info_t ai;
-  ai.index_space = 2;
+  ai.index_space = 3;
   ai.from_index_space = 0;
   ai.to_index_space = 1;
   ai.color_sizes.resize(cc.size());
