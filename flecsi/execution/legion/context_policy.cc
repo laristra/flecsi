@@ -92,7 +92,6 @@ legion_context_policy_t::initialize(
   if(version==3 && subversion>0) {
     Legion::Runtime::wait_for_shutdown();
   } // if
-
   return 0;
 } // legion_context_policy_t::initialize
 

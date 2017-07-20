@@ -487,7 +487,7 @@ struct storage_type__<dense>
     
     auto& field_info = 
       context.get_field_info(typeid(DATA_CLIENT_TYPE).hash_code(),
-      NAMESPACE ^ NAME);
+      NAMESPACE ^ NAME ^ VERSION);
 
     size_t index_space = field_info.index_space;
     auto& ism = context.index_space_data_map();

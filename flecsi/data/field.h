@@ -78,9 +78,9 @@ struct field_data__
     >;
 
     const size_t client_key = typeid(DATA_CLIENT_TYPE).hash_code();
-    const size_t key = NAMESPACE_HASH ^ NAME_HASH;
 
     for(size_t i(0); i<VERSIONS; ++i) {
+      const size_t key = NAMESPACE_HASH ^ NAME_HASH ^ i;
       if(!storage_t::instance().register_field(client_key, key,
         wrapper_t::register_callback)) {
         return false;

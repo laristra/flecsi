@@ -12,6 +12,7 @@
 ///
 
 #include "flecsi/coloring/communicator.h"
+#include "flecsi/coloring/mpi_utils.h"
 
 //#include <boost/archive/binary_iarchive.hpp>
 //#include <boost/archive/binary_oarchive.hpp>
