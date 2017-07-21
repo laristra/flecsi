@@ -196,7 +196,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
     size_t pos = 0;
     for(size_t r = 0; r < num_regions; ++r) {
       switch(r) {
-        case 0:
+        case 0: // Exclusive
           h.exclusive_size = sizes[r];
           h.exclusive_pr = prs[r];
           h.exclusive_data = h.exclusive_size == 0 ?
@@ -204,7 +204,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
           h.exclusive_buf = data[r];
           h.exclusive_priv = EXCLUSIVE_PERMISSIONS;
           break;
-        case 1:
+        case 1: // Shared
           h.shared_size = sizes[r];
           h.shared_pr = prs[r];
           h.shared_data = h.shared_size == 0 ?
@@ -212,7 +212,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
           h.shared_buf = data[r];
           h.shared_priv = SHARED_PERMISSIONS;
           break;
-        case 2:
+        case 2: // Ghost
           h.ghost_size = sizes[r];
           h.ghost_pr = prs[r];
           h.ghost_data = h.ghost_size == 0 ?
@@ -246,6 +246,10 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
     auto storage = h.set_storage(new typename T::storage_t);
     h.initialize_storage();
 
+    //------------------------------------------------------------------------//
+    // Mapping entity data from Legion and initializing mesh storage.
+    //------------------------------------------------------------------------//
+
     for(size_t i{0}; i<h.num_handle_entities; ++i) {
       data_client_handle_entity & ent = h.handle_entities[i];
 
@@ -272,10 +276,16 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
 
       size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
 
-      storage->init_entities(ent.domain, ent.dim, ents, num_ents);
+      bool read = PERMISSIONS == dro || PERMISSIONS == drw;
+      storage->init_entities(ent.domain, ent.dim, ents, ent.size,
+        num_ents, read);
 
       ++region;
     } // for
+
+    //------------------------------------------------------------------------//
+    // Mapping adjacency data from Legion and initializing mesh storage.
+    //------------------------------------------------------------------------//
 
     for(size_t i = 0; i < h.num_handle_adjacencies; ++i) {
       data_client_handle_adjacency& adj = h.handle_adjacencies[i];
@@ -297,11 +307,15 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       LegionRuntime::Arrays::Rect<2> sr;
       LegionRuntime::Accessor::ByteOffset bo[2];
 
-      LegionRuntime::Arrays::Point<2>* offsets =
+      LegionRuntime::Arrays::Point<2> * offsets =
         ac.template raw_rect_ptr<2>(dr, sr, bo);
       offsets += bo[1];
 
       size_t num_offsets = sr.hi[1] - sr.lo[1] + 1;
+
+      // Store these for translation to CRS
+      adj.offsets_buf = offsets;
+      adj.num_offsets = num_offsets;
 
       ++region;
 

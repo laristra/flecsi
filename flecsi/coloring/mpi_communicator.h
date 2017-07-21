@@ -57,7 +57,7 @@ public:
   //! Reduces info_indices from all MPI ranks
   //!
   //! @param request_indices  std::set of shared, ghost etc
-  //! @param max_reques_indices Maximum # of indices per rank 
+  //! @param max_request_indices Maximum # of indices per rank 
   //! @param colors Number of MPI ranks
   //! 
   //! @return std::vector vith the infirmation for the info_indices from all
@@ -558,7 +558,6 @@ public:
 
     size_t max_request_indices =
          get_max_request_size(request_indices.size());
-    std::cout << "max_request_indices: " << max_request_indices << std::endl;
 
     // Pad the request indices with size_t max. We will then set
     // the indices of the actual request. Each rank that receives

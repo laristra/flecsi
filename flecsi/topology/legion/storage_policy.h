@@ -57,7 +57,9 @@ struct legion_topology_storage_policy_t
     size_t domain,
     size_t dim,
     mesh_entity_base_* entities,
-    size_t num_entities
+    size_t size,
+    size_t num_entities,
+    bool read
   )
   {
     auto& is = index_spaces[domain][dim];
@@ -65,14 +67,21 @@ struct legion_topology_storage_policy_t
     auto s = is.storage();
     s->set_buffer(entities, num_entities);
 
-    for(auto& from_domain : topology){
+    if(read) {
+      for(size_t i{0}; i<num_entities; ++i) {
+        is.push_back(reinterpret_cast<mesh_entity_base_t<1> *>(
+          (char *)(entities) + i*size)->global_id<0>());
+      } // for
+    } // if
+
+    for(auto& from_domain : topology) {
       auto& to_domain_connectivty = from_domain[domain];
-      for(size_t from_dim = 0; from_dim <= ND; ++from_dim){
+      for(size_t from_dim = 0; from_dim <= ND; ++from_dim) {
         auto& conn = to_domain_connectivty.get(from_dim, dim);
         conn.set_entity_storage(s);
-      }
-    }
-  }
+      } // for
+    } // for
+  } // init_entities
 
   void
   init_connectivity(

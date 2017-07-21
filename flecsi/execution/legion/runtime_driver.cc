@@ -138,11 +138,15 @@ runtime_driver(
         if(field_info.index_space == idx_space){
           fields_map[idx_space].push_back(field_info.fid);
           num_phase_barriers++;
-        }
-      }
-     clog(trace) << "fields_map[" <<idx_space<<"] has "<<
+        } // if
+      } // for
+
+      {
+      clog_tag_guard(runtime_driver);
+      clog(trace) << "fields_map[" <<idx_space<<"] has "<<
         fields_map[idx_space].size()<< " fields"<<std::endl;
-  }//end for is
+      } // scope
+  } // for
 
   std::map<size_t, std::map<field_id_t, std::vector<Legion::PhaseBarrier>>>
     phase_barriers_map;
@@ -201,7 +205,11 @@ runtime_driver(
 
   const auto spmd_id =
     context_.task_id<__flecsi_internal_task_key(spmd_task)>();
+
+  {
+  clog_tag_guard(runtime_driver);
   clog(trace) << "spmd_task is: " << spmd_id << std::endl;
+  } // scope
 
   // Add colors to must_epoch_launcher
   for(size_t color(0); color<num_colors; ++color) {
@@ -339,10 +347,15 @@ runtime_driver(
         coloring_info[idx_space][color];
       
       for(auto ghost_owner : color_info.ghost_owners) {
+        {
+        clog_tag_guard(runtime_driver);
         clog(trace) << " Color " << color << " idx_space " << idx_space << 
           " has owner " << ghost_owner << std::endl;
+        } // scope
+
         Legion::LogicalRegion ghost_owner_lregion =
-          runtime->get_logical_subregion_by_color(ctx, color_lpart, ghost_owner);
+          runtime->get_logical_subregion_by_color(ctx, color_lpart,
+            ghost_owner);
 
         const LegionRuntime::Arrays::coord_t owner_color = ghost_owner;
         const bool is_mutable = false;
@@ -435,7 +448,7 @@ spmd_task(
   runtime->unmap_all_regions(ctx);
 
   {
-  clog_tag_guard(legion_tasks);
+  clog_tag_guard(runtime_driver);
   clog(info) << "Executing spmd task " << my_color << std::endl;
   }
 
@@ -501,8 +514,11 @@ spmd_task(
       sizeof(Legion::PhaseBarrier) * num_phase_barriers);
 
   for (size_t i=0; i<num_phase_barriers;i++ ) 
+    {
+    clog_tag_guard(runtime_driver);
     clog(trace) <<my_color <<" has pbarrier_as_owner "<<
 			pbarriers_as_owner[i]<<std::endl;
+    } // scope
 
   size_t* num_owners = new size_t [num_idx_spaces];
   args_deserializer.deserialize((void*)num_owners, sizeof(size_t)
@@ -568,10 +584,13 @@ spmd_task(
         "Can't find partition info for my color");
     const flecsi::coloring::coloring_info_t coloring_info = itr->second;
 
+    {
+    clog_tag_guard(runtime_driver);
     clog(trace) << my_color << " handle " << idx_space <<
         " exclusive " << coloring_info.exclusive <<
         " shared " << coloring_info.shared <<
         " ghost " << coloring_info.ghost << std::endl;
+    } // scope
 
     Legion::IndexSpace color_ispace = 
       regions[region_index].get_logical_region().get_index_space();
@@ -664,24 +683,33 @@ spmd_task(
       ispace_dmap[idx_space]
        .global_to_local_color_map[*(LegionRuntime::Arrays::coord_t*)owner_color]
        = owner;
+
+      {
+      clog_tag_guard(runtime_driver);
       clog(trace) << my_color << " key " << idx_space << " gid " <<
           *(LegionRuntime::Arrays::coord_t*)owner_color <<
           " maps to " << owner << std::endl;
+      } // scope
+
       region_index++;
       clog_assert(region_index <= regions.size(),
           "SPMD attempted to access more regions than passed");
     } // for owner
+
     ispace_dmap[idx_space].ghost_owners_lregions
       = ghost_owners_lregions[idx_space];
 
 
     // Fix ghost reference/pointer to point to compacted position of shared that it needs
-    Legion::TaskLauncher fix_ghost_refs_launcher(context_
-            .task_id<__flecsi_internal_task_key(owner_pos_correction_task)>(),
-            Legion::TaskArgument(nullptr, 0));
+    Legion::TaskLauncher fix_ghost_refs_launcher(context_.task_id<
+      __flecsi_internal_task_key(owner_pos_correction_task)>(),
+      Legion::TaskArgument(nullptr, 0));
 
+    {
+    clog_tag_guard(runtime_driver);
     clog(trace) << "Rank" << my_color << " Index " << idx_space <<
-            " RW " << ispace_dmap[idx_space].color_region << std::endl;
+      " RW " << ispace_dmap[idx_space].color_region << std::endl;
+    } // scope
 
     fix_ghost_refs_launcher.add_region_requirement(
         Legion::RegionRequirement(ispace_dmap[idx_space].ghost_lr, READ_WRITE,
