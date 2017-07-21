@@ -146,7 +146,7 @@ namespace execution {
         const size_t adj_index_space = adj.adj_index_space;
         const size_t from_index_space = adj.from_index_space;
         const size_t to_index_space = adj.to_index_space;
-        Legion::RegionRequirement from_rr(adj.from_primary_region,
+        Legion::RegionRequirement from_rr(adj.from_color_region,
           privilege_mode(PERMISSIONS), EXCLUSIVE, adj.from_color_region);
 
         from_rr.add_field(adj.offset_fid);

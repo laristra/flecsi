@@ -67,12 +67,20 @@ struct legion_topology_storage_policy_t
     auto s = is.storage();
     s->set_buffer(entities, num_entities);
 
+    clog(info) << "########### " << dim << " ##########" << std::endl;
     if(read) {
       for(size_t i{0}; i<num_entities; ++i) {
-        is.push_back(reinterpret_cast<mesh_entity_base_t<1> *>(
-          (char *)(entities) + i*size)->global_id<0>());
+        is.push_back(id_t::make(dim, i));
       } // for
     } // if
+
+    for(auto& from_domain : topology) {
+      auto& to_domain_connectivty = from_domain[domain];
+      for(size_t to_dim = 0; to_dim <= ND; ++to_dim) {
+        auto& conn = to_domain_connectivty.get(dim, to_dim);
+        conn.set_entity_storage(s);
+      } // for
+    } // for
 
     for(auto& from_domain : topology) {
       auto& to_domain_connectivty = from_domain[domain];
@@ -85,9 +93,9 @@ struct legion_topology_storage_policy_t
 
   void
   init_connectivity(
-    size_t from_domain,                
-    size_t to_domain,                
-    size_t from_dim,                
+    size_t from_domain,
+    size_t to_domain,
+    size_t from_dim,
     size_t to_dim,
     LegionRuntime::Arrays::Point<2>* positions,
     uint64_t* indices,
@@ -109,14 +117,18 @@ struct legion_topology_storage_policy_t
       clog(info) << "INDEX_OFFSET: " << index_offset << std::endl;
       clog(info) << "COUNT: " << count << std::endl;
       for(size_t j = index_offset; j < index_offset + count; ++j){
+        clog(info) << "INDEX: " << indices[j] << std::endl;
         conn.push(utils::id_t::make(to_dim, indices[j]));
       }
 
       conn.end_from();
 
       index_offset += count;
-    }
-  }
+    } // for
+
+    auto & v = conn.from_index_vec();
+    clog(info) << "FROM SIZE: " << v.size() << std::endl;
+  } // init_connectivities
 
   template<
     size_t D,

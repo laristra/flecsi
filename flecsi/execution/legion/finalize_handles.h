@@ -70,6 +70,13 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
           adj.offsets_buf[i].x[0] = from_index_vec[i];
           adj.offsets_buf[i].x[1] = from_index_vec[i+1] - from_index_vec[i];
         } // for
+
+        // Write back indices
+        auto & ents = conn.get_entities();
+        clog_assert(ents.size() == adj.num_indices, "size mismatch");
+        for(size_t i{0}; i<adj.num_indices; ++i) {
+          adj.indices_buf[i] = ents[i].entity();
+        } // for
       } // for
     } // if
 

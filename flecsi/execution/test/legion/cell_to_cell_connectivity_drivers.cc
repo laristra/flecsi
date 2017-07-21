@@ -253,7 +253,7 @@ void driver(int argc, char ** argv) {
   mesh_entity_base_* entities;
   size_t dimension = 2;
   entities = new mesh_entity_base_ [num_cells]; // FIXME leak
-  mesh_storage_policy->init_entities(INDEX_ID,dimension,entities,num_cells, false);
+  mesh_storage_policy->init_entities(INDEX_ID,dimension,entities, sizeof(cell), num_cells, false);
 
   std::map<size_t,size_t> gid_to_lid_map;
   auto entries = index_coloring->second.exclusive;

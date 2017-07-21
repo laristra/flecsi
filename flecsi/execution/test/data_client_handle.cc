@@ -197,13 +197,15 @@ void fill_task(client_handle_t<test_mesh_t, dwd> mesh) {
 void print_task(client_handle_t<test_mesh_t, dro> mesh) {
   clog(info) << "IN PRINT_TASK" << std::endl;
 
+#if 1
   for(auto c: mesh.entities<2, 0>()) {
-    clog(trace) << "id: " << c->template id<0>() << std::endl;
+    clog(trace) << "cell id: " << c->template id<0>() << std::endl;
 
     for(auto v: mesh.entities<0,0>(c)) {
       clog(trace) << "vertex id: " << v->template id<0>() << std::endl;
     } // for
   } // for
+#endif
 } // print_task
 
 void hello() {

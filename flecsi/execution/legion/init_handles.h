@@ -271,7 +271,8 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
 
       auto ents_raw =
         static_cast<uint8_t *>(ac.template raw_rect_ptr<2>(dr, sr, bo));
-      ents_raw += bo[1] * ent.size;
+      //ents_raw += bo[1] * ent.size;
+      ents_raw += bo[1];
       auto ents = reinterpret_cast<topology::mesh_entity_base_*>(ents_raw);
 
       size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
@@ -312,6 +313,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       offsets += bo[1];
 
       size_t num_offsets = sr.hi[1] - sr.lo[1] + 1;
+      clog(info) << "NUM OFFSETS: " << num_offsets << std::endl;
 
       // Store these for translation to CRS
       adj.offsets_buf = offsets;
@@ -333,6 +335,9 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       indices += bo[1];
 
       size_t num_indices = sr.hi[1] - sr.lo[1] + 1;
+
+      adj.indices_buf = indices;
+      adj.num_indices = num_indices;
 
       // TODO: fix
       if((PERMISSIONS == dro) || (PERMISSIONS == drw)) {
