@@ -82,17 +82,20 @@ public:
     return dimension == 0 ? num_vertices_ : num_cells_;
   } // num_entities
 
-  ///
-  ///
-  ///
+  /// return the set of vertices of a particular entity.
+  /// \param [in] dimension  the entity dimension to query.
+  /// \param [in] entity_id  the id of the entity in question.
   std::vector<size_t>
-  vertices( 
-    size_t dimension,
+  entities( 
+    size_t from_dim,
+		size_t to_dim,
     size_t entity_id
   )
-  const override
+  const 
+  override
   {
-    clog_assert(dimension == 2, "invalid dimension " << dimension);
+    clog_assert(from_dim == 2, "invalid dimension " << dimension);
+    clog_assert(to_dim == 0, "invalid dimension " << dimension);
 
     std::string line;
     std::vector<size_t> ids;

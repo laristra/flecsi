@@ -177,7 +177,7 @@ void add_colorings(int dummy) {
   // Compute the dependency closure of the primary cell coloring
   // through vertex intersections (specified by last argument "0").
   // To specify edge or face intersections, use 1 (edges) or 2 (faces).
-  auto closure = flecsi::topology::entity_closure<2,2,0>(sd, cells.primary);
+  auto closure = flecsi::topology::entity_neighbors<2,2,0>(sd, cells.primary);
 
   for(auto cell : cells.primary) {
     const size_t y_index = cell / M;
@@ -218,7 +218,7 @@ void add_colorings(int dummy) {
   // we actually need information about the ownership of these indices
   // so that we can deterministically assign rank ownership to vertices.
   auto nearest_neighbor_closure =
-    flecsi::topology::entity_closure<2,2,0>(sd, nearest_neighbors);
+    flecsi::topology::entity_neighbors<2,2,0>(sd, nearest_neighbors);
 
   for(auto itr: nearest_neighbor_closure)
     clog(trace) << "rank " << rank  << "nearest neighbor closure" <<

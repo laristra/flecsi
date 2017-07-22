@@ -53,7 +53,7 @@ TEST(exodus_definition_2d, neighbors) {
   
   // here we include all cells that use a vertex of the original cell
   auto vertex_neighbors = 
-    flecsi::topology::entity_closure<2,2,0>(mesh, selected_cells);
+    flecsi::topology::entity_neighbors<2,2,0>(mesh, selected_cells);
 
   ASSERT_EQ(
     vertex_neighbors, 
@@ -62,7 +62,7 @@ TEST(exodus_definition_2d, neighbors) {
 
   // now we include all neighbors that share an edge
   auto edge_neighbors = 
-    flecsi::topology::entity_closure<2,2,1>(mesh, selected_cells);
+    flecsi::topology::entity_neighbors<2,2,1>(mesh, selected_cells);
 
   ASSERT_EQ(
     edge_neighbors, 
@@ -86,7 +86,7 @@ TEST(exodus_definition_3d, neighbors_hex) {
   
   // here we include all cells that use a vertex of the original cell
   auto vertex_neighbors = 
-    flecsi::topology::entity_closure<3,3,0>(mesh, selected_cells);
+    flecsi::topology::entity_neighbors<3,3,0>(mesh, selected_cells);
 
   ASSERT_EQ( vertex_neighbors.size(), 27 );
   ASSERT_EQ(
@@ -99,7 +99,7 @@ TEST(exodus_definition_3d, neighbors_hex) {
 
   // now we include all neighbors that share an edge
   auto edge_neighbors = 
-    flecsi::topology::entity_closure<3,3,1>(mesh, selected_cells);
+    flecsi::topology::entity_neighbors<3,3,1>(mesh, selected_cells);
 
   ASSERT_EQ( edge_neighbors.size(), 19 );
   ASSERT_EQ(
@@ -111,7 +111,7 @@ TEST(exodus_definition_3d, neighbors_hex) {
   
   // now we include all neighbors that share a face
   auto face_neighbors = 
-    flecsi::topology::entity_closure<3,3,2>(mesh, selected_cells);
+    flecsi::topology::entity_neighbors<3,3,2>(mesh, selected_cells);
 
   ASSERT_EQ( face_neighbors.size(), 7 );
   ASSERT_EQ(
@@ -137,7 +137,7 @@ TEST(exodus_definition_3d, neighbors_nfaced) {
   
   // here we include all cells that use a vertex of the original cell
   auto vertex_neighbors = 
-    flecsi::topology::entity_closure<3,3,0>(mesh, selected_cells);
+    flecsi::topology::entity_neighbors<3,3,0>(mesh, selected_cells);
 
   ASSERT_EQ( vertex_neighbors.size(), 27 );
   ASSERT_EQ(
@@ -150,7 +150,7 @@ TEST(exodus_definition_3d, neighbors_nfaced) {
 
   // now we include all neighbors that share an edge
   auto edge_neighbors = 
-    flecsi::topology::entity_closure<3,3,1>(mesh, selected_cells);
+    flecsi::topology::entity_neighbors<3,3,1>(mesh, selected_cells);
 
   ASSERT_EQ( edge_neighbors.size(), 19 );
   ASSERT_EQ(
@@ -162,7 +162,7 @@ TEST(exodus_definition_3d, neighbors_nfaced) {
   
   // now we include all neighbors that share a face
   auto face_neighbors = 
-    flecsi::topology::entity_closure<3,3,2>(mesh, selected_cells);
+    flecsi::topology::entity_neighbors<3,3,2>(mesh, selected_cells);
 
   ASSERT_EQ( face_neighbors.size(), 7 );
   ASSERT_EQ(

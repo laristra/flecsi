@@ -9,6 +9,7 @@
 #include "flecsi/topology/mesh_definition.h"
 #include "flecsi/utils/logging.h"
 #include "flecsi/utils/set_utils.h"
+#include "flecsi/utils/type_traits.h"
 
 ///
 /// \file
@@ -45,7 +46,7 @@ entity_neighbors(
 )
 {
   // Get the vertices of the requested id
-  auto vertices = md.vertex_set(from_dim, entity_id);
+  auto vertices = md.entities_set(from_dim, 0, entity_id);
 
   // Put the results into set form
   std::set<size_t> neighbors;
@@ -59,7 +60,7 @@ entity_neighbors(
     } // if
 
     // Get the vertices that define the current entity from the to_dim
-    auto other = md.vertex_set(to_dim, e);
+    auto other = md.entities_set(to_dim, 0, e);
 
     // Get the intersection set
     auto intersect = flecsi::utils::set_intersection(vertices, other);
@@ -94,10 +95,11 @@ template<
   size_t to_dim,
   size_t thru_dim,
   size_t D,
-  typename U
+  typename U,
+  typename = std::enable_if_t< utils::is_iterative_container_v<U> >
 >
 std::set<size_t>
-entity_closure(
+entity_neighbors(
   const mesh_definition__<D> & md,
   U && indices
 )
@@ -128,11 +130,12 @@ entity_closure(
 /// \param id The id of the vertex.
 ///
 template<
-  size_t by_dim,
+  size_t from_dim,
+  size_t to_dim,
   size_t D
 >
 std::set<size_t>
-vertex_referencers(
+entity_referencers(
   const mesh_definition__<D> & md,
   size_t id
 )
@@ -141,15 +144,15 @@ vertex_referencers(
 
   // Iterate over entities adding any entity that contains
   // the vertex id to the set.
-  for(size_t e(0); e<md.num_entities(by_dim); ++e) {
+  for(size_t e(0); e<md.num_entities(from_dim); ++e) {
 
     // Get the vertex ids of current cell
-    auto eset = md.vertex_set(by_dim, e);
+    const auto & eset = md.entities(from_dim, to_dim, e);
 
     // If the cell references this vertex add it
-    if(eset.find(id) != eset.end()) {
+    if(std::find(eset.begin(), eset.end(), id) != eset.end())
       referencers.insert(e);
-    } // if
+
   } // for
 
   return referencers;
@@ -167,23 +170,24 @@ vertex_referencers(
 /// \param indices The entity indeces.
 ///
 template<
-  size_t by_dim,
-  size_t D
+  size_t from_dim,
+  size_t to_dim,
+  size_t D,
+  typename U
 >
 std::set<size_t>
-vertex_closure(
+entity_closure(
   const mesh_definition__<D> & md,
-  std::set<size_t> indices
+  U && indices
 )
 {
   std::set<size_t> closure;
 
   // Iterate over the entities in indices and add any vertices that are
   // referenced by one of the entity indices
-  for(auto i: indices) {
-    auto vset = md.vertex_set(by_dim, i);
-
-    closure = flecsi::utils::set_union(closure, vset);
+  for(auto i: std::forward<U>(indices)) {
+    const auto & vset = md.entities(from_dim, to_dim, i);
+    closure.insert(vset.begin(), vset.end());
   } // for
 
   return closure;

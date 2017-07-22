@@ -97,11 +97,14 @@ public:
   } // num_entities
 
   std::vector<size_t>
-  vertices(
-    size_t topological_dimension,
+  entities(
+    size_t from_dimension,
+    size_t to_dimension,
     size_t entity_id
   ) const override
   {
+    assert( from_dimension == 2 );
+    assert( to_dimension == 0 );
     std::vector<size_t> ids(4);
 
     for(size_t i(0); i<4; ++i) {

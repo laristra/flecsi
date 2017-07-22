@@ -29,7 +29,7 @@ TEST(simple_definition, simple) {
     size_t r0 = col + row*(M+1);
     size_t r1 = r0 + M+1;
 
-    auto ids = sd.vertices(2, c);
+    auto ids = sd.entities(2, 0, c);
 
     CINCH_ASSERT(EQ, ids[0], r0);
     CINCH_ASSERT(EQ, ids[1], (r0+1));
@@ -62,7 +62,7 @@ TEST(simple_definition, neighbors) {
   // The closure captures any cell that is adjacent to a cell in the
   // set of indices passed to the method. The closure includes the
   // initial set of indices.
-  auto closure = flecsi::topology::entity_closure<2,2,1>(sd, partition);
+  auto closure = flecsi::topology::entity_neighbors<2,2,1>(sd, partition);
 
   CINCH_ASSERT(EQ, closure, std::set<size_t>({0, 1, 2, 3, 4, 8, 9, 10, 11,
                                              12, 16, 17, 18, 19, 20, 24,
@@ -78,7 +78,7 @@ TEST(simple_definition, neighbors) {
   // The closure of the nearest neighbors intersected with
   // the initial indeces gives the shared indices. This is similar to
   // the preimage of the nearest neighbors.
-  auto nnclosure = flecsi::topology::entity_closure<2,2,1>(sd, nn);
+  auto nnclosure = flecsi::topology::entity_neighbors<2,2,1>(sd, nn);
   auto shared = flecsi::utils::set_intersection(nnclosure, partition);
 
   CINCH_ASSERT(EQ, shared, std::set<size_t>({3, 11, 16, 17, 18, 19}));

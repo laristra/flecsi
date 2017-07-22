@@ -191,13 +191,13 @@ void fill_connectivity_buffers(
     std::set<size_t> this_cell;
     this_cell.insert(entity.id);
 
-    auto nearby_cells = flecsi::topology::entity_closure<2,2,0>(sd, this_cell);
+    auto nearby_cells = flecsi::topology::entity_neighbors<2,2,0>(sd, this_cell);
     nearby_cells.erase(entity.id);
-    auto these_verts = flecsi::topology::vertex_closure<2>(sd, this_cell);
+    auto these_verts = flecsi::topology::entity_closure<2,0>(sd, this_cell);
     for(auto neighbor : nearby_cells) {
       std::set<size_t> this_neighbor;
       this_neighbor.insert(neighbor);
-      auto neighbor_verts = flecsi::topology::vertex_closure<2>(sd, this_neighbor);
+      auto neighbor_verts = flecsi::topology::entity_closure<2,0>(sd, this_neighbor);
       size_t shared_vertices_count = 0;
       for(auto vertex: neighbor_verts) {
         if(these_verts.find(vertex) != these_verts.end()) {

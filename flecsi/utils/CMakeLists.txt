@@ -43,6 +43,7 @@ set(utils_HEADERS
   tuple_type_converter.h
   tuple_walker.h
   tuple_wrapper.h
+  type_traits.h
   utility.h
 )
 

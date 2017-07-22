@@ -64,11 +64,13 @@ public:
   virtual size_t num_entities(size_t dimension) const = 0;
 
   //--------------------------------------------------------------------------//
-  //! Abstract interface to get the number of entities.
+  //! Abstract interface to get the entities of entities
   //--------------------------------------------------------------------------//
 
-  virtual std::vector<size_t> vertices(size_t dimension, size_t entity_id) 
+  virtual std::vector<size_t>
+    entities(size_t from_dim, size_t to_dim, size_t from_entity_id) 
     const = 0;
+
 
   //--------------------------------------------------------------------------//
   //! Abstract interface to get the number of entities.
@@ -78,9 +80,11 @@ public:
   /// \param [in] dimension  The entity dimension to query.
   /// \param [in] entity_id  The id of the entity in question.
   /// \remark This version returns a set.
-  virtual std::set<size_t> vertex_set(size_t dimension, size_t entity_id) const
+  virtual std::set<size_t> 
+  entities_set(size_t from_dim, size_t to_dim, size_t entity_id) 
+  const
   {
-    auto vvec = vertices(dimension, entity_id);
+    auto vvec = entities(from_dim, to_dim, entity_id);
     return std::set<size_t>(vvec.begin(), vvec.end());
   }
 

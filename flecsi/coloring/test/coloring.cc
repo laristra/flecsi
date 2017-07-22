@@ -73,7 +73,7 @@ DEVEL(coloring) {
   // Compute the dependency closure of the primary cell coloring
   // through vertex intersections (specified by last argument "1").
   // To specify edge or face intersections, use 2 (edges) or 3 (faces).
-  auto closure = flecsi::topology::entity_closure<2,2,0>(sd, primary);
+  auto closure = flecsi::topology::entity_neighbors<2,2,0>(sd, primary);
 
   {
   clog_tag_guard(coloring);
@@ -104,7 +104,7 @@ DEVEL(coloring) {
   // we actually need information about the ownership of these indices
   // so that we can deterministically assign rank ownership to vertices.
   auto nearest_neighbor_closure =
-    flecsi::topology::entity_closure<2,2,0>(sd, nearest_neighbors);
+    flecsi::topology::entity_neighbors<2,2,0>(sd, nearest_neighbors);
 
   {
   clog_tag_guard(coloring);
@@ -203,7 +203,7 @@ DEVEL(coloring) {
   } // scope
 
   // Form the vertex closure
-  auto vertex_closure = flecsi::topology::vertex_closure<2>(sd, closure);
+  auto vertex_closure = flecsi::topology::entity_closure<2,0>(sd, closure);
 
   // Assign vertex ownership
   std::vector<std::set<size_t>> vertex_requests(size);
@@ -213,7 +213,7 @@ DEVEL(coloring) {
   for(auto i: vertex_closure) {
 
     // Get the set of cells that reference this vertex.
-    auto referencers = flecsi::topology::vertex_referencers<2>(sd, i);
+    auto referencers = flecsi::topology::entity_referencers<2,0>(sd, i);
 
     {
     clog_tag_guard(coloring);

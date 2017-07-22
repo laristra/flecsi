@@ -49,6 +49,7 @@ void color_cells( const MD & md, const std::string & output_prefix )
 {
 
   constexpr auto cell_dim = MD::dimension();
+  constexpr auto vertex_dim = 0;
 
   // Set the output rank
   clog_set_output_rank(1);
@@ -92,7 +93,7 @@ void color_cells( const MD & md, const std::string & output_prefix )
   // through vertex intersections (specified by last argument "1").
   // To specify edge or face intersections, use 2 (edges) or 3 (faces).
   auto closure = 
-    flecsi::topology::entity_closure<cell_dim, cell_dim, THRU_DIM>(
+    flecsi::topology::entity_neighbors<cell_dim, cell_dim, THRU_DIM>(
       md, primary
     );
 
@@ -121,7 +122,7 @@ void color_cells( const MD & md, const std::string & output_prefix )
   // we actually need information about the ownership of these indices
   // so that we can deterministically assign rank ownership to vertices.
   auto nearest_neighbor_closure =
-    flecsi::topology::entity_closure<cell_dim, cell_dim, THRU_DIM>(
+    flecsi::topology::entity_neighbors<cell_dim, cell_dim, THRU_DIM>(
       md, nearest_neighbors
     );
 
@@ -241,7 +242,8 @@ void color_cells( const MD & md, const std::string & output_prefix )
   //----------------------------------------------------------------------------
     
   // Form the vertex closure
-  auto vertex_closure = flecsi::topology::vertex_closure<cell_dim>(md, closure);
+  auto vertex_closure = 
+    flecsi::topology::entity_closure<cell_dim, vertex_dim>(md, closure);
 
   // Assign vertex ownership
   vector<std::set<size_t>> vertex_requests(comm_size);
@@ -251,7 +253,8 @@ void color_cells( const MD & md, const std::string & output_prefix )
   for(auto i: vertex_closure) {
 
     // Get the set of cells that reference this vertex.
-    auto referencers = flecsi::topology::vertex_referencers<cell_dim>(md, i);
+    auto referencers = 
+      flecsi::topology::entity_referencers<cell_dim, vertex_dim>(md, i);
 
     {
     clog_tag_guard(coloring);
