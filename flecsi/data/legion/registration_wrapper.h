@@ -243,7 +243,7 @@ struct legion_client_registration_wrapper__<
 
       const size_t offset_key = utils::hash::client_internal_field_hash<
         utils::const_string_t("__flecsi_internal_adjacency_offset__").hash(),
-        INDEX_TYPE::value
+        from_index_space
       >();
 
       storage_t::instance().register_field(client_key,
