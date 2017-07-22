@@ -78,7 +78,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(execution_SOURCES
     ${execution_SOURCES}
     legion/context_policy.cc
-    legion/execution_policy.cc
     legion/legion_tasks.cc
   )
 

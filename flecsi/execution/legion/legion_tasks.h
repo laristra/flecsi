@@ -93,6 +93,7 @@ __flecsi_internal_legion_task(owner_pos_correction_task, void) {
     "owner_pos_correction_task called with no regions");
   clog_assert(task->regions.size() >= 1,
     "owner_pos_correction_task called with no regions");
+
   for(int region_idx = 0; region_idx < regions.size(); region_idx++)
     clog_assert(task->regions[region_idx].privilege_fields.size() == 1,
         "owner_pos_correction_task called with wrong number of fields");
@@ -129,6 +130,9 @@ __flecsi_internal_legion_task(owner_pos_correction_task, void) {
       auto ghost_ptr = Legion::DomainPoint::from_point<2>(itr.p);
       LegionRuntime::Arrays::Point<2> old_location = ghost_ref_acc.read(
         ghost_ptr);
+
+      {
+      clog_tag_guard(legion_tasks);
       clog(trace) << "points to " << old_location.x[0] << "," <<
         old_location.x[1] << " local mirror is " <<
         ghost_ptr.point_data[0] << "," << ghost_ptr.point_data[1] <<
@@ -136,6 +140,7 @@ __flecsi_internal_legion_task(owner_pos_correction_task, void) {
         " range " << owners_rects[owner_map[old_location.x[0]]].lo[0] <<
         ":" << owners_rects[owner_map[old_location.x[0]]].lo[1] <<
         "," << owners_rects[owner_map[old_location.x[0]]].hi[1] << std::endl;
+      } // scope
 
       clog_assert(old_location.x[0] == owners_rects[owner_map[
           old_location.x[0]]].lo[0],
@@ -154,9 +159,12 @@ __flecsi_internal_legion_task(owner_pos_correction_task, void) {
           Legion::DomainPoint::from_point<2>(old_location));
       ghost_ref_acc.write(ghost_ptr, new_location);
 
+      {
+      clog_tag_guard(legion_tasks);
       clog(trace) << ghost_ptr.point_data[0] << "," << ghost_ptr.point_data[1]
          << " points to " << new_location.x[0] <<
           "," << new_location.x[1] << std::endl;
+      } // scope
 
     } // for itr
   } // if we have owners

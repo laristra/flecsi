@@ -196,7 +196,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
     size_t pos = 0;
     for(size_t r = 0; r < num_regions; ++r) {
       switch(r) {
-        case 0:
+        case 0: // Exclusive
           h.exclusive_size = sizes[r];
           h.exclusive_pr = prs[r];
           h.exclusive_data = h.exclusive_size == 0 ?
@@ -204,7 +204,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
           h.exclusive_buf = data[r];
           h.exclusive_priv = EXCLUSIVE_PERMISSIONS;
           break;
-        case 1:
+        case 1: // Shared
           h.shared_size = sizes[r];
           h.shared_pr = prs[r];
           h.shared_data = h.shared_size == 0 ?
@@ -212,7 +212,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
           h.shared_buf = data[r];
           h.shared_priv = SHARED_PERMISSIONS;
           break;
-        case 2:
+        case 2: // Ghost
           h.ghost_size = sizes[r];
           h.ghost_pr = prs[r];
           h.ghost_data = h.ghost_size == 0 ?
@@ -246,12 +246,54 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
     auto storage = h.set_storage(new typename T::storage_t);
     h.initialize_storage();
 
-    for(size_t i = 0; i < h.num_adjacencies; ++i) {
-      data_client_handle_adjacency& adj = h.adjacencies[i];
+    //------------------------------------------------------------------------//
+    // Mapping entity data from Legion and initializing mesh storage.
+    //------------------------------------------------------------------------//
 
-      size_t adj_index_space = adj.adj_index_space;
-      size_t from_index_space = adj.from_index_space;
-      size_t to_index_space = adj.to_index_space;
+    for(size_t i{0}; i<h.num_handle_entities; ++i) {
+      data_client_handle_entity & ent = h.handle_entities[i];
+
+      const size_t index_space = ent.index_space;
+      const size_t dim = ent.dim;
+      const size_t domain = ent.domain;
+
+      Legion::LogicalRegion lr = regions[region].get_logical_region();
+      Legion::IndexSpace is = lr.get_index_space();
+
+      auto ac = regions[region].get_field_accessor(ent.fid);
+
+      Legion::Domain d = 
+        runtime->get_index_space_domain(context, is); 
+
+      LegionRuntime::Arrays::Rect<2> dr = d.get_rect<2>();
+      LegionRuntime::Arrays::Rect<2> sr;
+      LegionRuntime::Accessor::ByteOffset bo[2];
+
+      auto ents_raw =
+        static_cast<uint8_t *>(ac.template raw_rect_ptr<2>(dr, sr, bo));
+      //ents_raw += bo[1] * ent.size;
+      ents_raw += bo[1];
+      auto ents = reinterpret_cast<topology::mesh_entity_base_*>(ents_raw);
+
+      size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
+
+      bool read = PERMISSIONS == dro || PERMISSIONS == drw;
+      storage->init_entities(ent.domain, ent.dim, ents, ent.size,
+        num_ents, read);
+
+      ++region;
+    } // for
+
+    //------------------------------------------------------------------------//
+    // Mapping adjacency data from Legion and initializing mesh storage.
+    //------------------------------------------------------------------------//
+
+    for(size_t i = 0; i < h.num_handle_adjacencies; ++i) {
+      data_client_handle_adjacency& adj = h.handle_adjacencies[i];
+
+      const size_t adj_index_space = adj.adj_index_space;
+      const size_t from_index_space = adj.from_index_space;
+      const size_t to_index_space = adj.to_index_space;
 
       Legion::LogicalRegion lr = regions[region].get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
@@ -259,36 +301,23 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       auto ac = regions[region].get_field_accessor(adj.offset_fid).template
         typeify<LegionRuntime::Arrays::Point<2>>();
 
-      Legion::Domain domain = 
+      Legion::Domain d = 
         runtime->get_index_space_domain(context, is); 
 
-      LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
+      LegionRuntime::Arrays::Rect<2> dr = d.get_rect<2>();
       LegionRuntime::Arrays::Rect<2> sr;
       LegionRuntime::Accessor::ByteOffset bo[2];
 
-      LegionRuntime::Arrays::Point<2>* offsets =
+      LegionRuntime::Arrays::Point<2> * offsets =
         ac.template raw_rect_ptr<2>(dr, sr, bo);
       offsets += bo[1];
 
       size_t num_offsets = sr.hi[1] - sr.lo[1] + 1;
+      clog(info) << "NUM OFFSETS: " << num_offsets << std::endl;
 
-      ++region;
-
-      lr = regions[region].get_logical_region();
-      is = lr.get_index_space();
-
-      auto ac2 = regions[region].get_field_accessor(adj.entity_fid).template
-        typeify<topology::mesh_entity_base_>();
-
-      domain = runtime->get_index_space_domain(context, is); 
-
-      dr = domain.get_rect<2>();
-
-      topology::mesh_entity_base_* ents = 
-        ac2.template raw_rect_ptr<2>(dr, sr, bo);
-      ents += bo[1];
-
-      size_t num_ents = sr.hi[1] - sr.lo[1] + 1;
+      // Store these for translation to CRS
+      adj.offsets_buf = offsets;
+      adj.num_offsets = num_offsets;
 
       ++region;
 
@@ -298,16 +327,17 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       auto ac3 = regions[region].get_field_accessor(adj.index_fid).template
         typeify<uint64_t>();
 
-      domain = runtime->get_index_space_domain(context, is); 
+      d = runtime->get_index_space_domain(context, is); 
 
-      dr = domain.get_rect<2>();
+      dr = d.get_rect<2>();
 
       uint64_t * indices = ac3.template raw_rect_ptr<2>(dr, sr, bo);
       indices += bo[1];
 
       size_t num_indices = sr.hi[1] - sr.lo[1] + 1;
 
-      storage->init_entities(adj.to_domain, adj.to_dim, ents, num_ents);
+      adj.indices_buf = indices;
+      adj.num_indices = num_indices;
 
       // TODO: fix
       if((PERMISSIONS == dro) || (PERMISSIONS == drw)) {

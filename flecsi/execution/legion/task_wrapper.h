@@ -21,6 +21,7 @@
 #include "flecsi/execution/common/launch.h"
 #include "flecsi/execution/legion/registration_wrapper.h"
 #include "flecsi/execution/legion/init_handles.h"
+#include "flecsi/execution/legion/finalize_handles.h"
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/tuple_function.h"
 #include "flecsi/utils/tuple_type_converter.h"
@@ -30,6 +31,70 @@ clog_register_tag(wrapper);
 
 namespace flecsi {
 namespace execution {
+
+//----------------------------------------------------------------------------//
+//! Wrapper to handle returns from user task execution.
+//!
+//! @tparam RETURN    The return type of the user task.
+//! @tparam ARG_TUPLE A std::tuple of the user task arguments.
+//! @tparam DELEGATE  The delegate function that invokes the user task.
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
+template<
+  typename RETURN,
+  typename ARG_TUPLE,
+  RETURN (*DELEGATE)(ARG_TUPLE)
+>
+struct execution_wrapper__
+{
+
+  void execute(
+    ARG_TUPLE && args
+  )
+  {
+    value_ = (*DELEGATE)(std::forward<ARG_TUPLE>(args));
+  } // execute
+
+  RETURN
+  get()
+  {
+    return value_;
+  } // get
+
+private:
+
+  RETURN value_;
+
+}; // struct execution_wrapper__
+
+//----------------------------------------------------------------------------//
+//! Wrapper to handle void returns from user task execution.
+//!
+//! @tparam ARG_TUPLE A std::tuple of the user task arguments.
+//! @tparam DELEGATE  The delegate function that invokes the user task.
+//!
+//! @ingroup legion-execution
+//----------------------------------------------------------------------------//
+
+template<
+  typename ARG_TUPLE,
+  void (*DELEGATE)(ARG_TUPLE)
+>
+struct execution_wrapper__<void, ARG_TUPLE, DELEGATE>
+{
+
+  void execute(
+    ARG_TUPLE && args
+  )
+  {
+    (*DELEGATE)(std::forward<ARG_TUPLE>(args));
+  } // execute
+
+  void get() {}
+
+}; // struct execution_wrapper__
 
 //----------------------------------------------------------------------------//
 //! Pure Legion task wrapper.
@@ -124,6 +189,7 @@ struct pure_task_wrapper__
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
+#if 0
 template<
   typename FUNCTOR_TYPE
 >
@@ -238,6 +304,7 @@ struct functor_task_wrapper__
   } // execute_functor_task
 
 }; // struct functor_task_wrapper__
+#endif
 
 //----------------------------------------------------------------------------//
 //! The task_wrapper__ type provides registation callback and execution
@@ -352,12 +419,19 @@ struct task_wrapper__
     init_handles.walk(task_args);
 
     // Execute the user's task
-    return (*DELEGATE)(task_args);
+    //return (*DELEGATE)(task_args);
+    execution_wrapper__<RETURN, ARG_TUPLE, DELEGATE> wrapper;
+    wrapper.execute(std::forward<ARG_TUPLE>(task_args));
 
 #if !defined(ENABLE_LEGION_TLS)
     // Pop the Legion state
     context_t::instance().pop_state(KEY);
 #endif
+
+    finalize_handles_t finalize_handles;
+    finalize_handles.walk(task_args);
+
+    return wrapper.get();
   } // execute_user_task
 
   //--------------------------------------------------------------------------//
@@ -401,6 +475,7 @@ struct task_wrapper__
 //! @ingroup legion-execution
 //----------------------------------------------------------------------------//
 
+#if 0
 template<
   typename RETURN,
   typename ARG_TUPLE,
@@ -505,7 +580,8 @@ struct old_task_wrapper__
 
     // FIXME: NEED TO HANDLE RETURN TYPES
     // Execute the user's task
-    (*DELEGATE)(task_args);
+    execution_wrapper__<RETURN, ARG_TUPLE, DELEGATE> wrapper;
+    wrapper.execute(task_args);
 
 #if !defined(ENABLE_LEGION_TLS)
     // Pop the Legion state
@@ -513,6 +589,7 @@ struct old_task_wrapper__
 #endif
 
     // FIXME: NEED TO HANDLE RETURN TYPES
+    return wrapper.get();
   } // execute_user_task
 
   //--------------------------------------------------------------------------//
@@ -543,6 +620,7 @@ struct old_task_wrapper__
   } // execute_mpi_task
 
 }; // struct old_task_wrapper__
+#endif
 
 } // namespace execution
 } // namespace flecsi

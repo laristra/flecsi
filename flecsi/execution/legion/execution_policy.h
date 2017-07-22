@@ -64,6 +64,7 @@ struct legion_execution_policy_t
   template<typename RETURN>
   using future__ = legion_future__<RETURN>;
 
+#if 0
   //--------------------------------------------------------------------------//
   //! The task_wrapper__ type FIXME
   //!
@@ -75,6 +76,7 @@ struct legion_execution_policy_t
   >
   using functor_task_wrapper__ =
     typename flecsi::execution::functor_task_wrapper__<FUNCTOR_TYPE>;
+#endif
 
   //--------------------------------------------------------------------------//
   //! The runtime_state_t type identifies a public type for the high-level
@@ -142,6 +144,7 @@ struct legion_execution_policy_t
     return true;
   } // register_legion_task
 
+#if 0
   //--------------------------------------------------------------------------//
   //! Legion backend task registration. For documentation on this
   //! method, please see task__::register_functor_task.
@@ -168,6 +171,7 @@ struct legion_execution_policy_t
 
     return true;
   } // register_functor_task
+#endif
 
   //--------------------------------------------------------------------------//
   //! Legion backend task registration. For documentation on this
