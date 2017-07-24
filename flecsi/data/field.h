@@ -11,6 +11,7 @@
 //! @date Initial file creation: Jun 21, 2017
 //----------------------------------------------------------------------------//
 
+#include "flecsi/data/common/registration_wrapper.h"
 #include "flecsi/data/storage.h"
 
 namespace flecsi {
@@ -67,7 +68,7 @@ struct field_data__
     std::string const & name
   )
   {
-    using wrapper_t = typename DATA_POLICY::template field_wrapper__<
+    using wrapper_t = field_registration_wrapper__<
       DATA_CLIENT_TYPE,
       STORAGE_TYPE,
       DATA_TYPE,

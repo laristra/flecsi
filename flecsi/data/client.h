@@ -11,6 +11,7 @@
 //! @date Initial file creation: Jun 21, 2017
 //----------------------------------------------------------------------------//
 
+#include "flecsi/data/common/registration_wrapper.h"
 #include "flecsi/data/storage.h"
 #include "flecsi/data/data_client_handle.h"
 #include "flecsi/execution/context.h"
@@ -365,7 +366,7 @@ struct client_data__
     std::string const & name
   )
   {
-    using wrapper_t = typename DATA_POLICY::template client_wrapper__<
+    using wrapper_t = client_registration_wrapper__<
       typename DATA_CLIENT_TYPE::type_identifier_t,
       NAMESPACE_HASH,
       NAME_HASH

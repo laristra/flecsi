@@ -12,7 +12,7 @@ P.O.D. (plain-old-data) types and user-defined types.
 
 The FleCSI data model provides an intuitive high-level user interface
 that can be specialized using different low-level storage types. Each
-storage type provides data registration, data accessors, and data
+storage type provides data registration, data handles, and data
 mutators (when appropriate) that allow the user to modify data values
 and structure. The currently supported storage types are:
 
@@ -27,10 +27,6 @@ and structure. The currently supported storage types are:
 * **global**  
   This storage type is suitable for storing data that are
   non-enumerable, i.e., data that are not logically stored as an array.
-
-* **local**  
-  This storage type is designed to provide scratch space that does not
-  need to be managed by the runtime.
 
 * **tuple**  
   This storage type provides c-struct-like support so that task

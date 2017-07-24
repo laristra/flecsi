@@ -23,7 +23,6 @@
 
 #include "flecsi/data/common/data_hash.h"
 #include "flecsi/data/data_constants.h"
-#include "flecsi/data/mpi/registration_wrapper.h"
 
 // Include partial specializations
 //#include "flecsi/data/mpi/global.h"
