@@ -246,10 +246,6 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
       //check if we get region requirements for "exclusive, shared and ghost"
       //logical regions for each data handle  
  
-      clog_assert ((task.regions.size()%3==0), "ERROR:: number of regions you \
-        pass to your task should be multiple of 3 when you use tag \
-        MAPPER_COMPACTED_STORAGE");
-
       //Filling out "layout_constraints" with the defaults
       Legion::LayoutConstraintSet layout_constraints;
       // No specialization
@@ -272,6 +268,11 @@ class mpi_mapper_t : public Legion::Mapping::DefaultMapper
           bool created;
 
           if (task.regions[indx].tag == EXCLUSIVE_LR){
+
+            clog_assert ((task.regions.size()>=(indx+2)),
+             "ERROR:: wrong number of regions passed to the task wirth \
+               the  tag = MAPPER_COMPACTED_STORAGE");
+
 
             regions.push_back(task.regions[indx].region); 
             regions.push_back(task.regions[indx+1].region);

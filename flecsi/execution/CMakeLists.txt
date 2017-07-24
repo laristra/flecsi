@@ -417,6 +417,7 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
           INPUTS
             test/simple2d-8x8.msh
             test/simple2d-16x16.msh
+            test/data_client_handle.blessed
           LIBRARIES
             flecsi
             ${CINCH_RUNTIME_LIBRARIES}

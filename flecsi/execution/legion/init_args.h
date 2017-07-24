@@ -99,8 +99,11 @@ namespace execution {
       > & h
     )
     {
+
+      Legion::MappingTagID tag = EXCLUSIVE_LR;
+
       Legion::RegionRequirement ex_rr(h.exclusive_lr,
-        privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE, h.color_region);
+        privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE, h.color_region, tag);
       ex_rr.add_field(h.fid);
       region_reqs.push_back(ex_rr);
 
