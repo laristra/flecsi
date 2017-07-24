@@ -326,7 +326,7 @@ void add_colorings(int dummy) {
   //--------------------------------------------------------------------------//
 
   // Gather the coloring info from all colors
-  auto cell_coloring_info = communicator->get_coloring_info(cell_color_info);
+  auto cell_coloring_info = communicator->gather_coloring_info(cell_color_info);
 
   // Add colorings to the context.
   context_.add_coloring(0, cells, cell_coloring_info);

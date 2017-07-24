@@ -447,9 +447,9 @@ void add_colorings(int dummy) {
   } // gaurd
 
   // Gather the coloring info from all colors
-  auto cell_coloring_info = communicator->get_coloring_info(cell_color_info);
+  auto cell_coloring_info = communicator->gather_coloring_info(cell_color_info);
   auto vertex_coloring_info =
-    communicator->get_coloring_info(vertex_color_info);
+    communicator->gather_coloring_info(vertex_color_info);
 
   {
   clog_tag_guard(coloring_output);
