@@ -143,12 +143,10 @@ void fill_task(client_handle_t<test_mesh_t, dwd> mesh) {
   auto & cell_map = context.index_map(0);
   auto & reverse_cell_map = context.reverse_index_map(0);
 
-#if 1
   std::vector<vertex *> vertices;
   for(auto & vm: vertex_map) {
     vertices.push_back(mesh.make<vertex>());
   } // for
-#endif
 
   clog(info) << "vertices: " << vertices.size() << std::endl;
 
@@ -182,30 +180,26 @@ void fill_task(client_handle_t<test_mesh_t, dwd> mesh) {
 
   mesh.init<0>();
 
-#if 0
-  for(auto c: mesh.entities<2, 0>()) {
-    clog(trace) << "id: " << c->template id<0>() << std::endl;
-
-    for(auto v: mesh.entities<0,0>(c)) {
-      clog(trace) << "vertex id: " << v->template id<0>() << std::endl;
-    } // for
-  } // for
-#endif
   clog(info) << "MESH INIT" << std::endl;
 } // fill_task
 
 void print_task(client_handle_t<test_mesh_t, dro> mesh) {
-  clog(info) << "IN PRINT_TASK" << std::endl;
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-#if 1
-  for(auto c: mesh.entities<2, 0>()) {
-    clog(trace) << "cell id: " << c->template id<0>() << std::endl;
+  if(rank == 0){
+    CINCH_CAPTURE() << "IN PRINT_TASK" << std::endl;
 
-    for(auto v: mesh.entities<0,0>(c)) {
-      clog(trace) << "vertex id: " << v->template id<0>() << std::endl;
+    for(auto c: mesh.entities<2, 0>()) {
+      CINCH_CAPTURE() << "cell id: " << c->template id<0>() << std::endl;
+
+      for(auto v: mesh.entities<0,0>(c)) {
+        CINCH_CAPTURE() << "vertex id: " << v->template id<0>() << std::endl;
+      } // for
     } // for
-  } // for
-#endif
+
+    ASSERT_TRUE(CINCH_EQUAL_BLESSED("data_client_handle.blessed"));
+  }
 } // print_task
 
 void hello() {
@@ -267,18 +261,12 @@ void specialization_spmd_init(int argc, char ** argv) {
   f1.wait();
   } // scope
 
-  clog(info) << "FILL TASK" << std::endl;
-
-#if 1
   {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
 
   auto f2 = flecsi_execute_task(print_task, single, ch);
   f2.wait();
   } // scope
-#endif
-
-  clog(info) << "GOT PAST !!!" << std::endl;
 
 } // specialization_spmd_init
 
