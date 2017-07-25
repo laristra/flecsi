@@ -132,7 +132,8 @@ void task1(client_handle_t<test_mesh_t, dro> mesh) {
   //np(y);
 } // task1
 
-void fill_task(client_handle_t<test_mesh_t, dwd> mesh) {
+void fill_task(client_handle_t<test_mesh_t, dwd> mesh,
+  handle_t<double, drw, drw, dro> pressure) {
   clog(info) << "IN FILL TASK" << std::endl;
 
   auto & context = execution::context_t::instance();
@@ -181,6 +182,10 @@ void fill_task(client_handle_t<test_mesh_t, dwd> mesh) {
   mesh.init<0>();
 
   clog(info) << "MESH INIT" << std::endl;
+
+  for(auto c: mesh.entities<2,0>()) {
+    pressure(c) = 1.0; 
+  } // for
 } // fill_task
 
 void print_task(client_handle_t<test_mesh_t, dro> mesh) {
@@ -256,8 +261,9 @@ void specialization_spmd_init(int argc, char ** argv) {
 
   {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
+  auto ph = flecsi_get_handle(ch, hydro, pressure, double, dense, 0);
 
-  auto f1 = flecsi_execute_task(fill_task, single, ch);
+  auto f1 = flecsi_execute_task(fill_task, single, ch, ph);
   f1.wait();
   } // scope
 

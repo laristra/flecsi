@@ -50,7 +50,21 @@ struct data_client_handle_base__ : public DATA_CLIENT_TYPE, public DATA_POLICY
 
   }
 
+  size_t client_hash;
+  size_t name_hash;
+  size_t namespace_hash;
 }; // struct data_client_handle__
+
+template<typename T>
+struct data_client_type__{};
+
+template<typename DATA_CLIENT_TYPE, size_t PERMISSIONS, typename DATA_POLICY>
+struct data_client_type__<
+  flecsi::data_client_handle_base__<
+    DATA_CLIENT_TYPE, PERMISSIONS, DATA_POLICY>>
+{
+  using type = DATA_CLIENT_TYPE;
+};
 
 } // namespace flecsi
 
