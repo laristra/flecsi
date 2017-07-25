@@ -525,7 +525,7 @@ public:
   //! @ingroup coloring
   //-------------------------------------------------------------------------//
 
-  std::unordered_map<size_t, size_t>
+  std::vector<size_t>
   gather_sizes(
     const size_t & size
   )
@@ -535,20 +535,15 @@ public:
 
     MPI_Comm_size(MPI_COMM_WORLD, &colors);
 
-    std::unordered_map<size_t, size_t> indices_map;
-    size_t buffer[colors];
+    std::vector<size_t> buffer(colors);
 
     const auto mpi_size_t_type =
       flecsi::coloring::mpi_typetraits<size_t>::type();
 
     int result = MPI_Allgather(&size, 1, mpi_size_t_type,
-      &buffer, 1, mpi_size_t_type, MPI_COMM_WORLD);
+      buffer.data(), 1, mpi_size_t_type, MPI_COMM_WORLD);
 
-    for (size_t i=0; i<colors; i++) {
-      indices_map[i]=buffer[i];
-    } // for
-
-    return indices_map;
+    return buffer;
   } // gather_sizes
 
   //-------------------------------------------------------------------------//
