@@ -183,12 +183,14 @@ void fill_task(client_handle_t<test_mesh_t, dwd> mesh,
 
   clog(info) << "MESH INIT" << std::endl;
 
+  count = 0;
   for(auto c: mesh.entities<2,0>()) {
-    pressure(c) = 1.0; 
+    pressure(c) = count++;
   } // for
 } // fill_task
 
-void print_task(client_handle_t<test_mesh_t, dro> mesh) {
+void print_task(client_handle_t<test_mesh_t, dro> mesh,
+  handle_t<double, drw, drw, dro> pressure) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
@@ -201,6 +203,8 @@ void print_task(client_handle_t<test_mesh_t, dro> mesh) {
       for(auto v: mesh.entities<0,0>(c)) {
         CINCH_CAPTURE() << "vertex id: " << v->template id<0>() << std::endl;
       } // for
+
+      clog(info) << "presure: " << pressure(c) << std::endl;
     } // for
 
     ASSERT_TRUE(CINCH_EQUAL_BLESSED("data_client_handle.blessed"));
@@ -269,8 +273,9 @@ void specialization_spmd_init(int argc, char ** argv) {
 
   {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
+  auto ph = flecsi_get_handle(ch, hydro, pressure, double, dense, 0);
 
-  auto f2 = flecsi_execute_task(print_task, single, ch);
+  auto f2 = flecsi_execute_task(print_task, single, ch, ph);
   f2.wait();
   } // scope
 
