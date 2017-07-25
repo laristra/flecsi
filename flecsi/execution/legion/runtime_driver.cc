@@ -14,12 +14,13 @@
 #include <legion_utilities.h>
 #include <limits>
 
+#include "flecsi/data/legion/legion_data.h"
 #include "flecsi/data/storage.h"
 #include "flecsi/execution/context.h"
 #include "flecsi/execution/legion/legion_tasks.h"
 #include "flecsi/execution/legion/mapper.h"
 #include "flecsi/execution/legion/internal_field.h"
-#include "flecsi/data/legion/legion_data.h"
+#include "flecsi/runtime/types.h"
 #include "flecsi/utils/common.h"
 
 clog_register_tag(runtime_driver);
@@ -54,7 +55,6 @@ runtime_driver(
   context_.wait_on_mpi(ctx, runtime);
 
   using field_info_t = context_t::field_info_t;
-  using field_id_t = Legion::FieldID;
 
 #if defined FLECSI_ENABLE_SPECIALIZATION_TLT_INIT
   {
@@ -440,8 +440,6 @@ spmd_task(
   Legion::Runtime * runtime
 )
 {
-  using field_id_t = Legion::FieldID;
-
   const int my_color = task->index_point.point_data[0];
 
   // spmd_task is an inner task
