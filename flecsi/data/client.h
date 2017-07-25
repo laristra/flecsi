@@ -219,7 +219,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
 
     auto& ism = context.index_space_data_map();
 
-    const size_t data_client_hash = typeid(DATA_CLIENT_TYPE).hash_code();
+    h.client_hash = typeid(DATA_CLIENT_TYPE).hash_code();
 
     entity_walker_t entity_walker;
     entity_walker.template walk_types<entity_types_t>();
@@ -235,9 +235,9 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
       ent.size = ei.size;
 
       auto itr = context.field_info_map().find(
-        {data_client_hash, ent.index_space});
+        {h.client_hash, ent.index_space});
       clog_assert(itr != context.field_info_map().end(),
-        "invalid to index space");
+        "invalid entity index space");
 
       auto & tm = itr->second;
 
@@ -289,7 +289,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
       adj.to_dim = hi.to_dim;
 
       auto itr = context.field_info_map().find(
-        {data_client_hash, hi.from_index_space});
+        {h.client_hash, hi.from_index_space});
       clog_assert(itr != context.field_info_map().end(),
         "invalid from index space");
 
@@ -306,7 +306,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
       }
 
       itr = context.field_info_map().find(
-        {data_client_hash, hi.index_space});
+        {h.client_hash, hi.index_space});
       clog_assert(itr != context.field_info_map().end(),
         "invalid index space");
 

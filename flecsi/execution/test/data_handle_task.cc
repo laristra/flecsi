@@ -17,8 +17,10 @@
 #include "flecsi/coloring/dcrs_utils.h"
 #include "flecsi/data/data.h"
 #include "flecsi/supplemental/coloring/add_colorings.h"
+#include "flecsi/supplemental/mesh/empty_mesh_2d.h"
 
 using namespace flecsi;
+using namespace supplemental;
 
 clog_register_tag(coloring);
 
@@ -63,9 +65,7 @@ flecsi_register_task(data_handle_dump, loc, single);
 flecsi_register_task(exclusive_writer, loc, single);
 flecsi_register_task(exclusive_reader, loc, single);
 
-class client_type : public flecsi::data::data_client_t{};
-
-flecsi_register_field(client_type, ns, pressure, double, dense, 1, 0);
+flecsi_register_field(empty_mesh_2d_t, ns, pressure, double, dense, 1, 0);
 
 namespace flecsi {
 namespace execution {
@@ -87,13 +87,13 @@ void specialization_tlt_init(int argc, char ** argv) {
 void driver(int argc, char ** argv) {
   clog(info) << "In driver" << std::endl;
 
-  client_type c;
-
   int rank, size;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  auto h = flecsi_get_handle(c, ns, pressure, double, dense, 0);
+  auto ch = flecsi_get_client_handle(empty_mesh_2d_t, meshes, mesh1);
+
+  auto h = flecsi_get_handle(ch, ns, pressure, double, dense, 0);
 
 //  flecsi_execute_task(task1, single, h, 128);
   flecsi_execute_task(data_handle_dump, single, h);
