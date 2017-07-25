@@ -115,12 +115,13 @@ struct field_data__
     typename DATA_TYPE,
     size_t NAMESPACE_HASH,
     size_t NAME_HASH,
-    size_t VERSION = 0
+    size_t VERSION = 0,
+    size_t PERMISSIONS
   >
   static
   decltype(auto)
   get_handle(
-    const data_client_t & client
+    const data_client_handle__<DATA_CLIENT_TYPE, PERMISSIONS>& client_handle
   )
   {
     using storage_type_t =
@@ -133,7 +134,7 @@ struct field_data__
       NAME_HASH,
       VERSION
     >
-    (client);
+    (client_handle);
   } // get_handle
 
   //--------------------------------------------------------------------------//

@@ -18,10 +18,14 @@
 #include "flecsi/coloring/dcrs_utils.h"
 #include "flecsi/coloring/parmetis_colorer.h"
 #include "flecsi/coloring/mpi_communicator.h"
+#include "flecsi/supplemental/mesh/empty_mesh_2d.h"
 
 #define CELL_ID 0
 #define VERT_ID 2   // Ensure it's OK if user does non-sequential
 #define VERSIONS 1
+
+using namespace flecsi;
+using namespace supplemental;
 
 clog_register_tag(ghost_access);
 
@@ -48,15 +52,13 @@ void set_primary_entities_task(
         int my_color, size_t cycle, size_t index_id);
 flecsi_register_task(set_primary_entities_task, loc, single);
 
-class client_type : public flecsi::data::data_client_t{};
-
-flecsi_register_field(client_type, name_space, cell_ID, size_t, dense,
+flecsi_register_field(empty_mesh_t, name_space, cell_ID, size_t, dense,
     VERSIONS, CELL_ID);
-flecsi_register_field(client_type, name_space, test, double, dense,
+flecsi_register_field(empty_mesh_t, name_space, test, double, dense,
     VERSIONS, CELL_ID);
-flecsi_register_field(client_type, name_space, vert_ID, size_t, dense,
+flecsi_register_field(empty_mesh_t, name_space, vert_ID, size_t, dense,
     VERSIONS, VERT_ID);
-flecsi_register_field(client_type, name_space, vert_test, double, dense,
+flecsi_register_field(empty_mesh_t, name_space, vert_test, double, dense,
     VERSIONS, VERT_ID);
 
 namespace flecsi {
@@ -90,15 +92,15 @@ void driver(int argc, char ** argv) {
 
   clog(trace) << "Rank " << my_color << " in driver" << std::endl;
 
-  client_type client;
+  auto ch = flecsi_get_client_handle(empty_mesh_t, meshes, mesh1);
 
-  auto handle = flecsi_get_handle(client, name_space, cell_ID, size_t, dense,
+  auto handle = flecsi_get_handle(ch, name_space, cell_ID, size_t, dense,
       CELL_ID);
-  auto test_handle = flecsi_get_handle(client, name_space, test, double, dense,
+  auto test_handle = flecsi_get_handle(ch, name_space, test, double, dense,
       CELL_ID);
-  auto vert_handle = flecsi_get_handle(client, name_space, vert_ID, size_t, dense,
+  auto vert_handle = flecsi_get_handle(ch, name_space, vert_ID, size_t, dense,
       VERT_ID);
-  auto vtest_handle = flecsi_get_handle(client, name_space, vert_test, double, dense,
+  auto vtest_handle = flecsi_get_handle(ch, name_space, vert_test, double, dense,
       VERT_ID);
 
   for(size_t cycle=0; cycle<3; cycle++) {
