@@ -28,6 +28,25 @@
 namespace flecsi {
 namespace io {
 
+namespace detail {
+  
+template< typename T, typename U >
+void transpose( T && in, U && out )
+{
+  using size_type = typename std::decay_t<T>::size_type;
+
+  // invert the list
+  auto num_from = in.size();
+  
+  for ( size_type from=0; from<num_from; ++from )
+    for ( auto to : std::forward<T>(in)[from] ) 
+      std::forward<U>(out)[ to ].push_back( from );
+
+}
+
+} // namespace detail
+
+
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief This is the three-dimensional mesh reader and writer based on the 
 ///        Exodus format.
@@ -889,6 +908,8 @@ public:
       vertices_.size() == dimension()*exo_params.num_nodes,
       "Mismatch in read vertices"
     );
+    
+    auto num_vertices = vertices_.size() / dimension();
 
     //--------------------------------------------------------------------------
     // element blocks
@@ -969,6 +990,17 @@ public:
     for ( const auto & edge : edge_table )
       edge_vertices[edge_id++] = { edge.first, edge.second };
     clog_assert( edge_id == num_edges, "Edges dont match" );
+    
+    //--------------------------------------------------------------------------
+    // Create the remainder of the connectivities
+
+    entities_[1][2].resize(num_edges);
+    entities_[0][2].resize(num_vertices);
+    entities_[0][1].resize(num_vertices);
+
+    detail::transpose( entities_[2][1], entities_[1][2] );
+    detail::transpose( entities_[2][0], entities_[0][2] );
+    detail::transpose( entities_[1][0], entities_[0][1] );
 
     //--------------------------------------------------------------------------
     // close the file
