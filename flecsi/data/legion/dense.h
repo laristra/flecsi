@@ -487,7 +487,8 @@ struct storage_type__<dense>
     auto& context = execution::context_t::instance();
     
     auto& field_info = 
-      context.get_field_info(typeid(DATA_CLIENT_TYPE).hash_code(),
+      context.get_field_info(
+        typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
       NAMESPACE ^ NAME);
 
     size_t index_space = field_info.index_space;

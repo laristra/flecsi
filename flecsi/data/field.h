@@ -78,8 +78,8 @@ struct field_data__
       INDEX_SPACE
     >;
 
-    const size_t client_key = typeid(DATA_CLIENT_TYPE).hash_code();
-    const size_t key = NAMESPACE_HASH ^ NAME_HASH;
+    const size_t client_key = 
+      typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
 
     for(size_t i(0); i<VERSIONS; ++i) {
       if(!storage_t::instance().register_field(client_key, key,

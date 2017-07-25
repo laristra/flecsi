@@ -58,7 +58,9 @@ struct field_registration_wrapper__
   {
     execution::context_t::field_info_t fi;
 
-    fi.data_client_hash = typeid(DATA_CLIENT_TYPE).hash_code();
+    fi.data_client_hash = 
+      typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
+
     fi.storage_type = STORAGE_TYPE;
     fi.size = sizeof(DATA_TYPE);
     fi.namespace_hash = NAMESPACE_HASH;
@@ -149,7 +151,9 @@ struct client_registration_wrapper__<
         INDEX_TYPE::value
       >;
 
-      const size_t client_key = typeid(CLIENT_TYPE).hash_code();
+      const size_t client_key = 
+        typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
+
       const size_t key = utils::hash::client_internal_field_hash<
         utils::const_string_t("__flecsi_internal_entity_data__").hash(),
         INDEX_TYPE::value
@@ -218,7 +222,8 @@ struct client_registration_wrapper__<
         INDEX_TYPE::value
       >;
 
-      const size_t client_key = typeid(CLIENT_TYPE).hash_code();
+      const size_t client_key = 
+        typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
       
       const size_t index_key = utils::hash::client_internal_field_hash<
         utils::const_string_t("__flecsi_internal_adjacency_index__").hash(),
@@ -292,7 +297,8 @@ struct client_registration_wrapper__<
         INDEX_TYPE::value
       >;
 
-      const size_t client_key = typeid(CLIENT_TYPE).hash_code();
+      const size_t client_key = 
+        typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
       const size_t key = utils::hash::client_internal_field_hash<
         utils::const_string_t("__flecsi_internal_field_hash_base__").hash(),
         INDEX_TYPE::value
@@ -320,7 +326,8 @@ struct client_registration_wrapper__<
 
     auto& storage = storage_t::instance();
 
-    const size_t client_key = typeid(CLIENT_TYPE).hash_code();
+    const size_t client_key = 
+      typeid(typename CLIENT_TYPE::type_identifier_t).hash_code();
     auto const & field_registry = storage.field_registry();
 
     // Only register field attributes if this is the first time

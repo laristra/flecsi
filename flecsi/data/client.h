@@ -219,7 +219,8 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
 
     auto& ism = context.index_space_data_map();
 
-    h.client_hash = typeid(DATA_CLIENT_TYPE).hash_code();
+    h.client_hash = 
+      typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
 
     entity_walker_t entity_walker;
     entity_walker.template walk_types<entity_types_t>();
@@ -372,7 +373,8 @@ struct client_data__
       NAME_HASH
     >;
 
-    const size_t client_key = typeid(DATA_CLIENT_TYPE).hash_code();
+    const size_t client_key = 
+      typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
     const size_t key = NAMESPACE_HASH ^ NAME_HASH;
 
     return storage_t::instance().register_client(client_key, key,
