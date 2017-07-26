@@ -212,7 +212,7 @@ runtime_driver(
   } // scope
 
   // Add colors to must_epoch_launcher
-  for(size_t color(0); color<num_colors; ++color) {
+  for(int color(0); color<num_colors; ++color) {
 
     // Serialize PhaseBarriers and set as task arguments
     std::vector<Legion::PhaseBarrier> pbarriers_as_owner;

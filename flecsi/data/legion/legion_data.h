@@ -286,7 +286,7 @@ public:
 
       // Partition expanded IndexSpace color-wise & create associated PhaseBarriers
       DomainColoring color_partitioning;
-      for(int color = 0; color < num_colors_; color++){
+      for(size_t color = 0; color < num_colors_; color++){
         auto citr = coloring_info_map.find(color);
         clog_assert(citr != coloring_info_map.end(), "invalid color info");
         const coloring_info_t& color_info = citr->second;
