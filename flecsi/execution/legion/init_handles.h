@@ -250,12 +250,16 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
     // Mapping entity data from Legion and initializing mesh storage.
     //------------------------------------------------------------------------//
 
+    std::unordered_map<size_t, size_t> region_map;
+
     for(size_t i{0}; i<h.num_handle_entities; ++i) {
       data_client_handle_entity & ent = h.handle_entities[i];
 
       const size_t index_space = ent.index_space;
       const size_t dim = ent.dim;
       const size_t domain = ent.domain;
+
+      region_map[index_space] = region;
 
       Legion::LogicalRegion lr = regions[region].get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
@@ -298,8 +302,9 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       Legion::LogicalRegion lr = regions[region].get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
 
-      auto ac = regions[region].get_field_accessor(adj.offset_fid).template
-        typeify<LegionRuntime::Arrays::Point<2>>();
+      auto ac = regions[region_map[from_index_space]].
+        get_field_accessor(adj.offset_fid).
+        template typeify<LegionRuntime::Arrays::Point<2>>();
 
       Legion::Domain d = 
         runtime->get_index_space_domain(context, is); 
@@ -318,8 +323,6 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       // Store these for translation to CRS
       adj.offsets_buf = offsets;
       adj.num_offsets = num_offsets;
-
-      ++region;
 
       lr = regions[region].get_logical_region();
       is = lr.get_index_space();
