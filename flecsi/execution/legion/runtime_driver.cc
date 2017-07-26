@@ -732,6 +732,7 @@ spmd_task(
   //
   // This depends on the ordering of the BLIS data structure setup.
   // Currently, this is Exclusive - Shared - Ghost.
+
   for(auto is: context_.coloring_map()) {
     std::map<size_t, size_t> _map;
     size_t counter(0);

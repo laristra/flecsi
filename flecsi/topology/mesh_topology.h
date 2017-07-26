@@ -83,33 +83,6 @@ namespace topology {
 namespace verify_mesh {
 
 ///
-// \tparam N
-///
-template<
-  size_t N
->
-class mesh_policy
-{
-public:
-
-  template<
-    size_t M,
-    size_t D,
-    class ST
-  >
-  static
-  mesh_entity_base_t<N> *
-  create_entity(
-    mesh_topology_base_t<ST> * mesh,
-    size_t num_vertices
- )
-  {
-    return nullptr;
-  } // create_entity
-
-}; // class mesh_policy
-
-///
 //
 ///
 template<

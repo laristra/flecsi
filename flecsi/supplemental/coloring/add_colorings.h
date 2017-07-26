@@ -11,7 +11,19 @@
 //! @date Initial file creation: May 23, 2017
 //----------------------------------------------------------------------------//
 
-void add_colorings(int dummy);
+namespace flecsi {
+namespace execution {
+
+struct coloring_map_t
+{
+  size_t vertices;
+  size_t cells;
+}; // struct coloring_map_t
+
+void add_colorings(coloring_map_t map);
+
+} // namespace execution
+} // namespace flecsi
 
 #endif // add_colorings_h
 

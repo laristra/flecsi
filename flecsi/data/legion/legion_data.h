@@ -232,7 +232,7 @@ public:
     for(size_t color = 0; color < num_colors_; ++color){
       Rect<2> subrect(make_point(color, 0), make_point(color,
         adjacency_info.color_sizes[color] - 1));
-      
+
       color_partitioning[color] = Domain::from_rect<2>(subrect);
     }
 
