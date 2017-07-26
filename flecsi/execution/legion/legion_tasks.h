@@ -94,7 +94,7 @@ __flecsi_internal_legion_task(owner_pos_correction_task, void) {
   clog_assert(task->regions.size() >= 1,
     "owner_pos_correction_task called with no regions");
 
-  for(int region_idx = 0; region_idx < regions.size(); region_idx++)
+  for(size_t region_idx = 0; region_idx < regions.size(); region_idx++)
     clog_assert(task->regions[region_idx].privilege_fields.size() == 1,
         "owner_pos_correction_task called with wrong number of fields");
 
@@ -117,7 +117,7 @@ __flecsi_internal_legion_task(owner_pos_correction_task, void) {
     std::vector<LegionRuntime::Accessor::RegionAccessor<generic_type,
       LegionRuntime::Arrays::Point<2>>> owners_refs_accs;
     std::vector<LegionRuntime::Arrays::Rect<2>> owners_rects;
-    for(int owner_idx = 0; owner_idx < owner_map.size(); owner_idx++) {
+    for(size_t owner_idx = 0; owner_idx < owner_map.size(); owner_idx++) {
       owners_refs_accs.push_back(regions[1+owner_idx].get_field_accessor(
         ghost_owner_pos_fid).typeify<LegionRuntime::Arrays::Point<2>>());
       Legion::Domain owner_domain = runtime->get_index_space_domain(ctx,
