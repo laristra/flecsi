@@ -25,7 +25,6 @@
 
 #include "flecsi/data/data_constants.h"
 #include "flecsi/data/serial/meta_data.h"
-#include "flecsi/data/serial/registration_wrapper.h"
 
 // Include partial specializations
 //#include "flecsi/data/serial/global.h"

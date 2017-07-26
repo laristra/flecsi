@@ -99,8 +99,11 @@ namespace execution {
       > & h
     )
     {
+
+      Legion::MappingTagID tag = EXCLUSIVE_LR;
+
       Legion::RegionRequirement ex_rr(h.exclusive_lr,
-        privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE, h.color_region);
+        privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE, h.color_region, tag);
       ex_rr.add_field(h.fid);
       region_reqs.push_back(ex_rr);
 
@@ -126,25 +129,32 @@ namespace execution {
     {
       auto& context_ = context_t::instance();
 
-      for(size_t i = 0; i < h.num_adjacencies; ++i){
-        data_client_handle_adjacency& adj = h.adjacencies[i];
+      for(size_t i{0}; i<h.num_handle_entities; ++i) {
+        data_client_handle_entity & ent = h.handle_entities[i];
 
-        size_t adj_index_space = adj.adj_index_space;
-        size_t from_index_space = adj.from_index_space;
-        size_t to_index_space = adj.to_index_space;
-        Legion::RegionRequirement from_rr(adj.from_primary_region,
+        const size_t index_space = ent.index_space;
+        const size_t dim = ent.dim;
+        const size_t domain = ent.domain;
+
+        Legion::RegionRequirement rr(ent.color_region,
+          privilege_mode(PERMISSIONS), EXCLUSIVE, ent.color_region);
+
+        rr.add_field(ent.fid);
+        region_reqs.push_back(rr);
+      } // for
+
+      for(size_t i{0}; i < h.num_handle_adjacencies; ++i){
+        data_client_handle_adjacency& adj = h.handle_adjacencies[i];
+
+        const size_t adj_index_space = adj.adj_index_space;
+        const size_t from_index_space = adj.from_index_space;
+        const size_t to_index_space = adj.to_index_space;
+        Legion::RegionRequirement from_rr(adj.from_color_region,
           privilege_mode(PERMISSIONS), EXCLUSIVE, adj.from_color_region);
 
         from_rr.add_field(adj.offset_fid);
 
         region_reqs.push_back(from_rr);
-
-        Legion::RegionRequirement to_rr(adj.to_primary_region,
-          privilege_mode(PERMISSIONS), EXCLUSIVE, adj.to_color_region);
-
-        to_rr.add_field(adj.entity_fid);
-
-        region_reqs.push_back(to_rr);
 
         Legion::RegionRequirement adj_rr(adj.adj_region,
           privilege_mode(PERMISSIONS), EXCLUSIVE, adj.adj_region);
@@ -180,3 +190,8 @@ namespace execution {
 } // namespace flecsi
 
 #endif // flecsi_execution_legion_init_args_h
+
+/*~-------------------------------------------------------------------------~-*
+ * Formatting options for vim.
+ * vim: set tabstop=2 shiftwidth=2 expandtab :
+ *~-------------------------------------------------------------------------~-*/

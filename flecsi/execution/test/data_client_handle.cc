@@ -86,10 +86,11 @@ public:
 
   using entity_types = std::tuple<
     std::tuple<index_space_<0>, domain_<0>, cell>,
+//    std::tuple<index_space_<2>, domain_<0>, edge>,
     std::tuple<index_space_<1>, domain_<0>, vertex>>;
 
   using connectivities = 
-    std::tuple<std::tuple<index_space_<2>, domain_<0>, cell, vertex>>;
+    std::tuple<std::tuple<index_space_<3>, domain_<0>, cell, vertex>>;
 
   using bindings = std::tuple<>;
 
@@ -100,7 +101,7 @@ public:
       case 0:{
         switch(D){
           case 1:
-            return mesh->template make<edge>(*mesh);
+            //return mesh->template make<edge>(*mesh);
           default:
             assert(false && "invalid topological dimension");
         }
@@ -131,10 +132,84 @@ void task1(client_handle_t<test_mesh_t, dro> mesh) {
   //np(y);
 } // task1
 
-void fill_task(client_handle_t<test_mesh_t, drw> mesh){
-  //mesh.make<vertex>();
-  //mesh.make<cell>();
-}
+void fill_task(client_handle_t<test_mesh_t, dwd> mesh,
+  handle_t<double, drw, drw, dro> pressure) {
+  clog(info) << "IN FILL TASK" << std::endl;
+
+  auto & context = execution::context_t::instance();
+
+  auto & vertex_map = context.index_map(1);
+  auto & reverse_vertex_map = context.reverse_index_map(1);
+
+  auto & cell_map = context.index_map(0);
+  auto & reverse_cell_map = context.reverse_index_map(0);
+
+  std::vector<vertex *> vertices;
+  for(auto & vm: vertex_map) {
+    vertices.push_back(mesh.make<vertex>());
+  } // for
+
+  clog(info) << "vertices: " << vertices.size() << std::endl;
+
+  const size_t width = 8;
+
+  size_t count(0);
+  for(auto & cm: cell_map) {
+    const size_t mid = cm.second;
+
+    const size_t row = mid/width;
+    const size_t column = mid%width;
+
+    const size_t v0 = (column    ) + (row    ) * (width + 1);
+    const size_t v1 = (column + 1) + (row    ) * (width + 1);
+    const size_t v2 = (column + 1) + (row + 1) * (width + 1);
+    const size_t v3 = (column    ) + (row + 1) * (width + 1);
+
+    clog(info) << "mesh cell(" << count << "): (" << v0 << " " << v1 << " " << v2 << " " << v3 << ")" << std::endl;
+
+    const size_t lv0 = reverse_vertex_map[v0];
+    const size_t lv1 = reverse_vertex_map[v1];
+    const size_t lv2 = reverse_vertex_map[v2];
+    const size_t lv3 = reverse_vertex_map[v3];
+
+    clog(info) << "local cell(" << count++ << "): (" << lv0 << " " << lv1 << " " << lv2 << " " << lv3 << ")" << std::endl;
+
+    auto c = mesh.make<cell>();
+    mesh.init_cell<0>(c,
+      { vertices[lv0], vertices[lv1], vertices[lv2], vertices[lv3] });
+  } // for
+
+  mesh.init<0>();
+
+  clog(info) << "MESH INIT" << std::endl;
+
+  for(auto c: mesh.entities<2,0>()) {
+    pressure(c) = 1.0; 
+  } // for
+} // fill_task
+
+void print_task(client_handle_t<test_mesh_t, dro> mesh) {
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+  if(rank == 0){
+    CINCH_CAPTURE() << "IN PRINT_TASK" << std::endl;
+
+    for(auto c: mesh.entities<2, 0>()) {
+      CINCH_CAPTURE() << "cell id: " << c->template id<0>() << std::endl;
+
+      for(auto v: mesh.entities<0,0>(c)) {
+        CINCH_CAPTURE() << "vertex id: " << v->template id<0>() << std::endl;
+      } // for
+    } // for
+
+    ASSERT_TRUE(CINCH_EQUAL_BLESSED("data_client_handle.blessed"));
+  }
+} // print_task
+
+void hello() {
+  clog(info) << "Hello!!!" << std::endl;
+} // hello
 
 flecsi_register_data_client(test_mesh_t, meshes, mesh1); 
 
@@ -143,6 +218,8 @@ flecsi_register_task(task1, loc, single);
 flecsi_register_field(test_mesh_t, hydro, pressure, double, dense, 1, 0);
 
 flecsi_register_task(fill_task, loc, single);
+flecsi_register_task(print_task, loc, single);
+flecsi_register_task(hello, loc, single);
 
 namespace flecsi {
 namespace execution {
@@ -161,7 +238,7 @@ void specialization_tlt_init(int argc, char ** argv) {
   auto& cv = context.coloring_info(1);
 
   adjacency_info_t ai;
-  ai.index_space = 2;
+  ai.index_space = 3;
   ai.from_index_space = 0;
   ai.to_index_space = 1;
   ai.color_sizes.resize(cc.size());
@@ -169,7 +246,7 @@ void specialization_tlt_init(int argc, char ** argv) {
   for(auto& itr : cc){
     size_t color = itr.first;
     const coloring_info_t& ci = itr.second;
-    ai.color_sizes[color] = (ci.exclusive + ci.shared) * 4;    
+    ai.color_sizes[color] = (ci.exclusive + ci.shared + ci.ghost) * 4;
   }
 
   context.add_adjacency(ai);
@@ -182,9 +259,20 @@ void specialization_spmd_init(int argc, char ** argv) {
 //  const int my_color = runtime->find_local_MPI_rank();
 //  clog(error) << "Rank " << my_color << " in specialization_spmd_init" << std::endl;
 
+  {
+  auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
+  auto ph = flecsi_get_handle(ch, hydro, pressure, double, dense, 0);
+
+  auto f1 = flecsi_execute_task(fill_task, single, ch, ph);
+  f1.wait();
+  } // scope
+
+  {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
 
-  flecsi_execute_task(fill_task, single, ch);
+  auto f2 = flecsi_execute_task(print_task, single, ch);
+  f2.wait();
+  } // scope
 
 } // specialization_spmd_init
 
@@ -193,6 +281,7 @@ void specialization_spmd_init(int argc, char ** argv) {
 //----------------------------------------------------------------------------//
 
 void driver(int argc, char ** argv) {
+#if 0
   clog(info) << "In driver" << std::endl;
 
   int rank, size;
@@ -202,6 +291,7 @@ void driver(int argc, char ** argv) {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
 
   flecsi_execute_task(task1, single, ch);
+#endif
 } // specialization_driver
 
 //----------------------------------------------------------------------------//

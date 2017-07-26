@@ -52,7 +52,7 @@ void internal_task_example_1(
 
 // Register the task. The task id is automatically generated.
 __flecsi_internal_register_legion_task(internal_task_example_1,
-  flecsi::processor_type_t::loc, flecsi::single);
+  flecsi::processor_type_t::loc, single);
 
 //----------------------------------------------------------------------------//
 // Define internal Legion task to register.
@@ -68,7 +68,7 @@ void internal_task_example_2(
 
 // Register the task. The task id is automatically generated.
 __flecsi_internal_register_legion_task(internal_task_example_2,
-  flecsi::processor_type_t::loc, flecsi::index);
+  flecsi::processor_type_t::loc, index);
 
 //----------------------------------------------------------------------------//
 //define FLeCSI task
@@ -77,14 +77,14 @@ void task1() {
 } // task1
 
 //register FLeCSI task
-flecsi_register_task(task1, flecsi::processor_type_t::loc, flecsi::single);
+flecsi_register_task(task1, loc, single);
 
 void task2(){
   std::cout<<"inside index task"<<std::endl;
 }
 
 ////register FLeCSI task
-flecsi_register_task(task2, flecsi::processor_type_t::loc, flecsi::index);
+flecsi_register_task(task2, loc, index);
 
 
 
@@ -105,9 +105,9 @@ specialization_tlt_init(
 
   flecsi_execute_mpi_task( mpi_task, 0);
 
-  flecsi_execute_task(task1, flecsi::single);
+  flecsi_execute_task(task1, single);
 
-  flecsi_execute_task(task2, flecsi::index);
+  flecsi_execute_task(task2, index);
 
   auto key_1 = __flecsi_internal_task_key(internal_task_example_1);
   auto key_2 = __flecsi_internal_task_key(internal_task_example_2);
@@ -140,9 +140,9 @@ driver(
 {
   std::cout<<"inside Driver"<<std::endl;
 
-  flecsi_execute_task(task1, flecsi::single);
+  flecsi_execute_task(task1, single);
   
-  flecsi_execute_task(task2, flecsi::index);
+  flecsi_execute_task(task2, index);
 }//driver
 
 }//namespace execution

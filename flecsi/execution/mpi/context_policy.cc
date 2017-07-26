@@ -28,6 +28,8 @@ mpi_context_policy_t::initialize(
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   runtime_driver(argc, argv);
+
+  return 0;
 } // mpi_context_policy_t::initialize
 
 } // namespace execution 

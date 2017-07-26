@@ -3,15 +3,15 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_runtime_entity_storage_policy_h
-#define flecsi_runtime_entity_storage_policy_h
+#ifndef flecsi_runtime_types_h
+#define flecsi_runtime_types_h
 
 //----------------------------------------------------------------------------//
-// @file
-// @date Initial file creation: Jun 19, 2017
+//! @file
+//! @date Initial file creation: Aug 01, 2016
 //----------------------------------------------------------------------------//
 
-#include "flecsi.h"
+#include <flecsi.h>
 
 //----------------------------------------------------------------------------//
 // This section works with the build system to select the correct runtime
@@ -23,42 +23,35 @@
 // Serial Policy
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_serial
 
-  #include "flecsi/topology/serial/entity_storage.h"
-
   namespace flecsi {
 
-  template<typename T>
-  using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::entity_storage__<T>;
+  using field_id_t = size_t;
 
   }
 
-// Legion, MPI+Legion Policy
+// Legion Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
-  #include "flecsi/topology/legion/entity_storage.h"
+  #include <legion.h>
 
   namespace flecsi {
 
-  template<typename T>
-  using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::entity_storage__<T>;
+  using field_id_t = Legion::FieldID;
 
   }
 
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
-  #include "flecsi/topology/mpi/entity_storage.h"
-
   namespace flecsi {
 
-  template<typename T>
-  using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::entity_storage__<T>;
+  using field_id_t = size_t;
 
   }
 
 #endif // FLECSI_RUNTIME_MODEL
 
-#endif // flecsi_runtime_entity_storage_policy_h
+#endif // flecsi_runtime_types_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

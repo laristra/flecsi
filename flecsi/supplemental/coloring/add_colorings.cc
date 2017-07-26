@@ -77,7 +77,7 @@ void add_colorings(int dummy) {
   // Compute the dependency closure of the primary cell coloring
   // through vertex intersections (specified by last argument "0").
   // To specify edge or face intersections, use 1 (edges) or 2 (faces).
-  auto closure = flecsi::topology::entity_closure<2,2,0>(sd, cells.primary);
+  auto closure = flecsi::topology::entity_neighbors<2,2,0>(sd, cells.primary);
 
   {
   clog_tag_guard(coloring);
@@ -118,7 +118,7 @@ void add_colorings(int dummy) {
   // we actually need information about the ownership of these indices
   // so that we can deterministically assign rank ownership to vertices.
   auto nearest_neighbor_closure =
-    flecsi::topology::entity_closure<2,2,0>(sd, nearest_neighbors);
+    flecsi::topology::entity_neighbors<2,2,0>(sd, nearest_neighbors);
 
   {
   clog_tag_guard(coloring);
@@ -233,7 +233,7 @@ void add_colorings(int dummy) {
   //--------------------------------------------------------------------------//
 
   // Form the vertex closure
-  auto vertex_closure = flecsi::topology::vertex_closure<2>(sd, closure);
+  auto vertex_closure = flecsi::topology::entity_closure<2,0>(sd, closure);
 
   // Assign vertex ownership
   std::vector<std::set<size_t>> vertex_requests(size);
@@ -243,7 +243,7 @@ void add_colorings(int dummy) {
   for(auto i: vertex_closure) {
 
     // Get the set of cells that reference this vertex.
-    auto referencers = flecsi::topology::vertex_referencers<2>(sd, i);
+    auto referencers = flecsi::topology::entity_referencers<2,0>(sd, i);
 
     size_t min_rank(std::numeric_limits<size_t>::max());
     std::set<size_t> shared_vertices;
@@ -362,9 +362,9 @@ void add_colorings(int dummy) {
   } // gaurd
 
   // Gather the coloring info from all colors
-  auto cell_coloring_info = communicator->get_coloring_info(cell_color_info);
+  auto cell_coloring_info = communicator->gather_coloring_info(cell_color_info);
   auto vertex_coloring_info =
-    communicator->get_coloring_info(vertex_color_info);
+    communicator->gather_coloring_info(vertex_color_info);
 
   {
   clog_tag_guard(coloring_output);

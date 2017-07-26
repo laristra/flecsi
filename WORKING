@@ -13,3 +13,7 @@
 - Adding blender
 - Define subset index spaces
 - Fix futures
+
+***
+- Make macro interface self-contained -> users don't need to use the
+  flecsi namespace.

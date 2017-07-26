@@ -88,7 +88,7 @@ clog_register_tag(execution);
       __flecsi_internal_arguments_type(task),                                  \
       task ## _tuple_delegate                                                  \
     >                                                                          \
-    (processor, launch, { EXPAND_AND_STRINGIFY(task) })
+    (flecsi::processor, flecsi::launch, { EXPAND_AND_STRINGIFY(task) })
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_register_mpi_task
@@ -103,7 +103,7 @@ clog_register_tag(execution);
 #define flecsi_register_mpi_task(task)                                         \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
-  flecsi_register_task(task, processor_type_t::mpi, flecsi::index)
+  flecsi_register_task(task, mpi, index)
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_execute_task
@@ -128,7 +128,7 @@ clog_register_tag(execution);
     __flecsi_internal_arguments_type(task)                                     \
   >                                                                            \
   (                                                                            \
-    flecsi::execution::mask_to_type(launch),                                   \
+    flecsi::execution::mask_to_type(flecsi::launch),                           \
     flecsi::utils::const_string_t{__func__}.hash(), ## __VA_ARGS__             \
   )
 

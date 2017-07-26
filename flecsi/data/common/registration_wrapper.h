@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_data_legion_registration_wrapper_h
-#define flecsi_data_legion_registration_wrapper_h
+#ifndef flecsi_data_registration_wrapper_h
+#define flecsi_data_registration_wrapper_h
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -20,11 +20,12 @@
 #include "flecsi/execution/context.h"
 #include "flecsi/data/data_constants.h"
 #include "flecsi/data/storage.h"
+#include "flecsi/runtime/types.h"
 #include "flecsi/topology/mesh_topology.h"
 #include "flecsi/utils/hash.h"
 #include "flecsi/utils/tuple_walker.h"
 
-clog_register_tag(registration);
+//clog_register_tag(registration);
 
 namespace flecsi {
 namespace data {
@@ -42,10 +43,8 @@ template<
   size_t VERSIONS,
   size_t INDEX_SPACE
 >
-struct legion_field_registration_wrapper__
+struct field_registration_wrapper__
 {
-  using field_id_t = Legion::FieldID;
-
   //--------------------------------------------------------------------------//
   //!
   //--------------------------------------------------------------------------//
@@ -72,7 +71,7 @@ struct legion_field_registration_wrapper__
     execution::context_t::instance().register_field_info(fi);
   } // register_callback
 
-}; // class legion_field_registration_wrapper__
+}; // class field_registration_wrapper__
 
 //----------------------------------------------------------------------------//
 //!
@@ -83,9 +82,9 @@ template<
   size_t NAMESPACE_HASH,
   size_t NAME_HASH
 >
-struct legion_client_registration_wrapper__
+struct client_registration_wrapper__
 {
-}; // class legion_client_registration_wrapper__
+}; // class client_registration_wrapper__
 
 //----------------------------------------------------------------------------//
 //!
@@ -96,14 +95,12 @@ template<
   size_t NAMESPACE_HASH,
   size_t NAME_HASH
 >
-struct legion_client_registration_wrapper__<
+struct client_registration_wrapper__<
   flecsi::topology::mesh_topology_t<POLICY_TYPE>,
   NAMESPACE_HASH,
   NAME_HASH
 >
 {
-  using field_id_t = Legion::FieldID;
-
   using CLIENT_TYPE =
     typename flecsi::topology::mesh_topology_t<POLICY_TYPE>;
 
@@ -142,7 +139,7 @@ struct legion_client_registration_wrapper__<
         >
         ();
 
-      using wrapper_t = legion_field_registration_wrapper__<
+      using wrapper_t = field_registration_wrapper__<
         CLIENT_TYPE,
         flecsi::data::dense,
         ENTITY_TYPE,
@@ -192,10 +189,12 @@ struct legion_client_registration_wrapper__<
       using entity_types_t = typename POLICY_TYPE::entity_types;
 
       constexpr size_t from_index_space = 
-        topology::find_index_space__<std::tuple_size<entity_types_t>::value, entity_types_t, FROM_ENTITY_TYPE>::find();
+        topology::find_index_space__<std::tuple_size<entity_types_t>::value,
+          entity_types_t, FROM_ENTITY_TYPE>::find();
 
       constexpr size_t to_index_space = 
-        topology::find_index_space__<std::tuple_size<entity_types_t>::value, entity_types_t, TO_ENTITY_TYPE>::find();
+        topology::find_index_space__<std::tuple_size<entity_types_t>::value,
+          entity_types_t, TO_ENTITY_TYPE>::find();
 
       constexpr size_t adjacency_hash =
         utils::hash::client_adjacency_hash<
@@ -209,7 +208,7 @@ struct legion_client_registration_wrapper__<
           >
           ();
 
-      using index_wrapper_t = legion_field_registration_wrapper__<
+      using index_wrapper_t = field_registration_wrapper__<
         CLIENT_TYPE,
         flecsi::data::dense,
         size_t,
@@ -229,7 +228,7 @@ struct legion_client_registration_wrapper__<
       storage_t::instance().register_field(client_key,
         index_key, index_wrapper_t::register_callback);
 
-      using offset_wrapper_t = legion_field_registration_wrapper__<
+      using offset_wrapper_t = field_registration_wrapper__<
         CLIENT_TYPE,
         flecsi::data::dense,
         LegionRuntime::Arrays::Point<2>,
@@ -283,7 +282,7 @@ struct legion_client_registration_wrapper__<
           >
           ();
 
-      using wrapper_t = legion_field_registration_wrapper__<
+      using wrapper_t = field_registration_wrapper__<
         CLIENT_TYPE,
         flecsi::data::dense,
         size_t,
@@ -339,12 +338,12 @@ struct legion_client_registration_wrapper__<
 
   } // register_callback
 
-}; // class legion_client_registration_wrapper__
+}; // class client_registration_wrapper__
 
 } // namespace data
 } // namespace flecsi
 
-#endif // flecsi_data_legion_registration_wrapper_h
+#endif // flecsi_data_registration_wrapper_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

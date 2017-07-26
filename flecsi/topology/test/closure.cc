@@ -95,7 +95,7 @@ TEST(closure, cell_closure_thru_vertices) {
   flecsi::topology::test_definition_t td;
 
   std::set<size_t> primary = { 0, 1, 4, 5 };
-  auto closure = flecsi::topology::entity_closure<2,2,0>(td, primary);
+  auto closure = flecsi::topology::entity_neighbors<2,2,0>(td, primary);
 
   clog_container(info, "closure ", closure, clog::space);
 
@@ -111,7 +111,7 @@ TEST(closure, cell_closure_thru_edges) {
   flecsi::topology::test_definition_t td;
 
   std::set<size_t> primary = { 0, 1, 4, 5 };
-  auto closure = flecsi::topology::entity_closure<2,2,1>(td, primary);
+  auto closure = flecsi::topology::entity_neighbors<2,2,1>(td, primary);
 
   clog_container(info, "closure ", closure, clog::space);
 
@@ -128,7 +128,7 @@ TEST(closure, vertex_referencers) {
 
 #define referencers_test(id, set)                                              \
   {                                                                            \
-  auto referencers = flecsi::topology::vertex_referencers<2>(td, id);          \
+  auto referencers = flecsi::topology::entity_referencers<2,0>(td, id);        \
   clog_container(info, "referencers " << id, referencers, clog::space);        \
   CINCH_ASSERT(EQ, set, referencers);                                          \
   } // scope
@@ -174,7 +174,7 @@ TEST(closure, vertex_closure) {
   flecsi::topology::test_definition_t td;
 
   std::set<size_t> primary = { 0, 1, 4, 5 };
-  auto closure = flecsi::topology::vertex_closure<2>(td, primary);
+  auto closure = flecsi::topology::entity_closure<2,0>(td, primary);
 
   clog_container(info, "closure ", closure, clog::space);
 

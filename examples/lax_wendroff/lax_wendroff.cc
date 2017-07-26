@@ -15,6 +15,7 @@
 #include "flecsi/coloring/dcrs_utils.h"
 #include "flecsi/coloring/parmetis_colorer.h"
 #include "flecsi/coloring/mpi_communicator.h"
+#include "flecsi/supplemental/mesh/test_mesh_2d.h"
 
 #define INDEX_ID 0
 #define VERSIONS 1
@@ -29,51 +30,52 @@
 #define X_ADVECTION U * DT / DX
 #define Y_ADVECTION V * DT / DX
 
+using namespace flecsi;
+using namespace supplemental;
+
 template<typename T, size_t EP, size_t SP, size_t GP>
 using handle_t = flecsi::data::legion::dense_handle_t<T, EP, SP, GP>;
 
 void initialize_data(
         handle_t<size_t, flecsi::drw, flecsi::drw, flecsi::dno> global_IDs,
         handle_t<double, flecsi::drw, flecsi::drw, flecsi::dno> phi);
-flecsi_register_task(initialize_data, flecsi::loc, flecsi::single);
+flecsi_register_task(initialize_data, loc, single);
 
 void write_to_disk(
         handle_t<size_t, flecsi::dro, flecsi::dro, flecsi::dno> global_IDs,
         handle_t<double, flecsi::dro, flecsi::dro, flecsi::dno> phi,
         const int my_color);
-flecsi_register_task(write_to_disk, flecsi::loc, flecsi::single);
+flecsi_register_task(write_to_disk, loc, single);
 
 void calculate_exclusive_x_update(
         handle_t<size_t, flecsi::dro, flecsi::dro, flecsi::dro> global_IDs,
         handle_t<double, flecsi::dro, flecsi::dro, flecsi::dno> phi,
         handle_t<double, flecsi::drw, flecsi::dno, flecsi::dno> phi_update);
-flecsi_register_task(calculate_exclusive_x_update, flecsi::loc, flecsi::single);
+flecsi_register_task(calculate_exclusive_x_update, loc, single);
 
 void advect_owned_cells_in_x(
         handle_t<size_t, flecsi::dro, flecsi::dro, flecsi::dro> global_IDs,
         handle_t<double, flecsi::drw, flecsi::drw, flecsi::dro> phi,
         handle_t<double, flecsi::dro, flecsi::drw, flecsi::dno> phi_update);
-flecsi_register_task(advect_owned_cells_in_x, flecsi::loc, flecsi::single);
+flecsi_register_task(advect_owned_cells_in_x, loc, single);
 
 void calculate_exclusive_y_update(
         handle_t<size_t, flecsi::dro, flecsi::dro, flecsi::dro> global_IDs,
         handle_t<double, flecsi::dro, flecsi::dro, flecsi::dno> phi,
         handle_t<double, flecsi::drw, flecsi::dno, flecsi::dno> phi_update);
-flecsi_register_task(calculate_exclusive_y_update, flecsi::loc, flecsi::single);
+flecsi_register_task(calculate_exclusive_y_update, loc, single);
 
 void advect_owned_cells_in_y(
         handle_t<size_t, flecsi::dro, flecsi::dro, flecsi::dro> global_IDs,
         handle_t<double, flecsi::drw, flecsi::drw, flecsi::dro> phi,
         handle_t<double, flecsi::dro, flecsi::drw, flecsi::dno> phi_update);
-flecsi_register_task(advect_owned_cells_in_y, flecsi::loc, flecsi::single);
+flecsi_register_task(advect_owned_cells_in_y, loc, single);
 
-class client_type : public flecsi::data::data_client_t{};
-
-flecsi_register_field(client_type, lax, cell_ID, size_t, dense,
+flecsi_register_field(test_mesh_2d_t, lax, cell_ID, size_t, dense,
         INDEX_ID, VERSIONS);
-flecsi_register_field(client_type, lax, phi, double, dense,
+flecsi_register_field(test_mesh_2d_t, lax, phi, double, dense,
         INDEX_ID, VERSIONS);
-flecsi_register_field(client_type, lax, phi_update, double, dense,
+flecsi_register_field(test_mesh_2d_t, lax, phi_update, double, dense,
         INDEX_ID, VERSIONS);
 
 namespace flecsi {
@@ -103,14 +105,14 @@ void driver(int argc, char ** argv) {
 
   const int my_color = runtime->find_local_MPI_rank();
 
-  client_type client;
+  auto ch = flecsi_get_client_handle(test_mesh_2d_t, meshes, mesh1);
 
   auto phi_handle =
-          flecsi_get_handle(client, lax, phi, double, dense, INDEX_ID);
+          flecsi_get_handle(ch, lax, phi, double, dense, INDEX_ID);
   auto phi_update_handle =
-          flecsi_get_handle(client, lax, phi_update, double, dense, INDEX_ID);
+          flecsi_get_handle(ch, lax, phi_update, double, dense, INDEX_ID);
   auto global_IDs_handle =
-          flecsi_get_handle(client, lax, cell_ID, size_t, dense, INDEX_ID);
+          flecsi_get_handle(ch, lax, cell_ID, size_t, dense, INDEX_ID);
 
   flecsi_execute_task(initialize_data, single, global_IDs_handle, phi_handle);
 
@@ -177,7 +179,7 @@ void add_colorings(int dummy) {
   // Compute the dependency closure of the primary cell coloring
   // through vertex intersections (specified by last argument "0").
   // To specify edge or face intersections, use 1 (edges) or 2 (faces).
-  auto closure = flecsi::topology::entity_closure<2,2,0>(sd, cells.primary);
+  auto closure = flecsi::topology::entity_neighbors<2,2,0>(sd, cells.primary);
 
   for(auto cell : cells.primary) {
     const size_t y_index = cell / M;
@@ -218,7 +220,7 @@ void add_colorings(int dummy) {
   // we actually need information about the ownership of these indices
   // so that we can deterministically assign rank ownership to vertices.
   auto nearest_neighbor_closure =
-    flecsi::topology::entity_closure<2,2,0>(sd, nearest_neighbors);
+    flecsi::topology::entity_neighbors<2,2,0>(sd, nearest_neighbors);
 
   for(auto itr: nearest_neighbor_closure)
     clog(trace) << "rank " << rank  << "nearest neighbor closure" <<
@@ -326,7 +328,7 @@ void add_colorings(int dummy) {
   //--------------------------------------------------------------------------//
 
   // Gather the coloring info from all colors
-  auto cell_coloring_info = communicator->get_coloring_info(cell_color_info);
+  auto cell_coloring_info = communicator->gather_coloring_info(cell_color_info);
 
   // Add colorings to the context.
   context_.add_coloring(0, cells, cell_coloring_info);

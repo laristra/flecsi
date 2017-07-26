@@ -67,6 +67,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/internal_task.h
     legion/legion_tasks.h
     legion/mapper.h
+    legion/finalize_handles.h
     legion/registration_wrapper.h
     legion/runtime_driver.h
     legion/runtime_state.h
@@ -78,7 +79,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
   set(execution_SOURCES
     ${execution_SOURCES}
     legion/context_policy.cc
-    legion/execution_policy.cc
     legion/legion_tasks.cc
   )
 
@@ -196,6 +196,7 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
         -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
         -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+        -DFLECSI_8_8_MESH
       POLICY ${UNIT_POLICY}
     )
 
@@ -408,28 +409,29 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "legion")
       )
 
 
-  #     cinch_add_unit(data_client_handle
-  #       SOURCES
-  #         test/legion/data_client_handle.cc
-  #         ../supplemental/coloring/add_colorings.cc
-  #         ${DRIVER_INITIALIZATION}
-  #         ${RUNTIME_DRIVER}
-  #       INPUTS
-  #         test/simple2d-8x8.msh
-  #         test/simple2d-16x16.msh
-  #       LIBRARIES
-  #         flecsi
-  #         ${CINCH_RUNTIME_LIBRARIES}
-  #         ${COLORING_LIBRARIES}
-  #       DEFINES
-  #         -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
-  #         -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
-  #         -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
-  #         -DFLECSI_8_8_MESH
-  #       POLICY LEGION
-  #       THREADS 2
-  # NOCI
-  #     )
+        cinch_add_unit(data_client_handle
+          SOURCES
+            test/data_client_handle.cc
+            ../supplemental/coloring/add_colorings.cc
+            ${DRIVER_INITIALIZATION}
+            ${RUNTIME_DRIVER}
+          INPUTS
+            test/simple2d-8x8.msh
+            test/simple2d-16x16.msh
+            test/data_client_handle.blessed
+          LIBRARIES
+            flecsi
+            ${CINCH_RUNTIME_LIBRARIES}
+            ${COLORING_LIBRARIES}
+          DEFINES
+            -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+            -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+            -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+            -DFLECSI_8_8_MESH
+          POLICY LEGION
+          THREADS 2
+    NOCI
+        )
 
     #endif()
 

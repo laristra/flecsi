@@ -36,6 +36,7 @@ struct coloring_info_t {
 
   //! The aggregate set of colors that we depend on for ghosts.
   std::set<size_t> ghost_owners;
+
 }; // struct coloring_info_t
 
 inline

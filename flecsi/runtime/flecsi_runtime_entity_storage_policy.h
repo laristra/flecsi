@@ -3,15 +3,15 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_runtime_execution_policy_h
-#define flecsi_runtime_execution_policy_h
+#ifndef flecsi_runtime_entity_storage_policy_h
+#define flecsi_runtime_entity_storage_policy_h
 
 //----------------------------------------------------------------------------//
-//! @file
-//! @date Initial file creation: Aug 01, 2016
+// @file
+// @date Initial file creation: Jun 19, 2017
 //----------------------------------------------------------------------------//
 
-#include "flecsi.h"
+#include <flecsi.h>
 
 //----------------------------------------------------------------------------//
 // This section works with the build system to select the correct runtime
@@ -23,45 +23,42 @@
 // Serial Policy
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_serial
 
-  #include "flecsi/execution/serial/execution_policy.h"
+  #include "flecsi/topology/serial/entity_storage.h"
 
   namespace flecsi {
-  namespace execution {
 
-  using FLECSI_RUNTIME_EXECUTION_POLICY = serial_execution_policy_t;
+  template<typename T>
+  using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::entity_storage__<T>;
 
-  } // namespace execution
-  } // namespace flecsi
+  }
 
-// Legion Policy
+// Legion, MPI+Legion Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 
-  #include "flecsi/execution/legion/execution_policy.h"
+  #include "flecsi/topology/legion/entity_storage.h"
 
   namespace flecsi {
-  namespace execution {
 
-  using FLECSI_RUNTIME_EXECUTION_POLICY = legion_execution_policy_t;
+  template<typename T>
+  using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::entity_storage__<T>;
 
-  } // namespace execution
-  } // namespace flecsi
+  }
 
 // MPI Policy
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
-  #include "flecsi/execution/mpi/execution_policy.h"
+  #include "flecsi/topology/mpi/entity_storage.h"
 
   namespace flecsi {
-  namespace execution {
 
-  using FLECSI_RUNTIME_EXECUTION_POLICY = mpi_execution_policy_t;
+  template<typename T>
+  using FLECSI_RUNTIME_ENTITY_STORAGE_TYPE = topology::entity_storage__<T>;
 
-  } // namespace execution
-  } // namespace flecsi
+  }
 
 #endif // FLECSI_RUNTIME_MODEL
 
-#endif // flecsi_runtime_execution_policy_h
+#endif // flecsi_runtime_entity_storage_policy_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

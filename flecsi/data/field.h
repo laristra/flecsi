@@ -11,6 +11,7 @@
 //! @date Initial file creation: Jun 21, 2017
 //----------------------------------------------------------------------------//
 
+#include "flecsi/data/common/registration_wrapper.h"
 #include "flecsi/data/storage.h"
 
 namespace flecsi {
@@ -67,7 +68,7 @@ struct field_data__
     std::string const & name
   )
   {
-    using wrapper_t = typename DATA_POLICY::template field_wrapper__<
+    using wrapper_t = field_registration_wrapper__<
       DATA_CLIENT_TYPE,
       STORAGE_TYPE,
       DATA_TYPE,
@@ -114,12 +115,13 @@ struct field_data__
     typename DATA_TYPE,
     size_t NAMESPACE_HASH,
     size_t NAME_HASH,
-    size_t VERSION = 0
+    size_t VERSION = 0,
+    size_t PERMISSIONS
   >
   static
   decltype(auto)
   get_handle(
-    const data_client_t & client
+    const data_client_handle__<DATA_CLIENT_TYPE, PERMISSIONS>& client_handle
   )
   {
     using storage_type_t =
@@ -132,7 +134,7 @@ struct field_data__
       NAME_HASH,
       VERSION
     >
-    (client);
+    (client_handle);
   } // get_handle
 
   //--------------------------------------------------------------------------//
@@ -229,7 +231,7 @@ struct field_data__
 // This include file defines the FLECSI_RUNTIME_DATA_POLICY used below.
 //----------------------------------------------------------------------------//
 
-#include "flecsi_runtime_data_policy.h"
+#include "flecsi/runtime/flecsi_runtime_data_policy.h"
 
 namespace flecsi {
 namespace data {

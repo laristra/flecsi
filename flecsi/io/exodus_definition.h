@@ -10,6 +10,7 @@
 /// \date Initial file creation: Nov 21, 2016
 
 // user includes
+#include "flecsi/io/edge_table.h"
 #include "flecsi/topology/mesh_definition.h"
 #include "flecsi/utils/logging.h"
 
@@ -918,12 +919,56 @@ public:
           exoid, elem_blk_ids[iblk], cell_vertices
         );
     }
-    
+
     // check some assertions
     clog_assert( 
       cell_vertices.size() == exo_params.num_elem,
       "Mismatch in read blocks"
     );
+    
+    //--------------------------------------------------------------------------
+    // build the edges
+    
+    // make storage for the cell edges
+    auto num_cells = cell_vertices.size();
+    
+    auto & cell_edges = entities_[2][1];
+    cell_edges.resize( num_cells );
+  
+    // create an edge table to filter out duplicate point sets
+    edge_table__<index_t> edge_table;
+
+    // loop over cells, adding all of their edges to the table
+    size_t cell_id = 0;
+    for ( const auto & verts : cell_vertices ) {
+      // reference the storage for this cell's edges
+      auto & edges = cell_edges[cell_id++];
+      // reserve space for the cell edges
+      edges.reserve( verts.size() );
+      // now add the edgees of this cell
+      for ( 
+        auto v0 = std::prev( verts.end() ), v1 = verts.begin();
+        v1 != verts.end();
+        v0=v1, ++v1
+      ) {
+        auto res = edge_table.insert( *v0, *v1 );
+        edges.push_back( res.id ); 
+      }
+    } // for
+    
+    clog_assert( cell_id == num_cells, "Cells dont match" );
+
+    // make storage for the edge vertices
+    auto num_edges = edge_table.size();
+
+    auto & edge_vertices = entities_[1][0];
+    edge_vertices.resize( num_edges );
+
+    // now transfer the filtered edges
+    size_t edge_id = 0;
+    for ( const auto & edge : edge_table )
+      edge_vertices[edge_id++] = { edge.first, edge.second };
+    clog_assert( edge_id == num_edges, "Edges dont match" );
 
     //--------------------------------------------------------------------------
     // close the file
@@ -995,8 +1040,9 @@ public:
     {
       case 0: 
         return vertices_.size()/dimension();
-      case dimension(): 
-        return entities_.at(2).at(0).size();
+      case 1:
+      case 2: 
+        return entities_.at(dim).at(0).size();
       default:
         clog_fatal( 
           "Dimension out of range: 0 < " << dim << " </ " << dimension()
@@ -1004,30 +1050,6 @@ public:
         return 0;
     }
   }
-
-  /// Return the set of vertices of a particular entity.
-  /// \param [in] dimension  The entity dimension to query.
-  /// \param [in] entity_id  The id of the entity in question.
-  std::vector<size_t>
-  vertices( 
-    size_t dim,
-    size_t entity_id
-  )
-  const override
-  {
-    switch (dim)
-    {
-      case 0:
-        return {entity_id};
-      case dimension():
-        return entities_.at(2).at(0)[entity_id];
-      default:
-        clog_fatal(
-          "Dimension out of range: 0 < " << dim << " </ " << dimension() 
-        );
-        return {};
-    }
-  } // vertices
 
   /// Return the set of vertices of a particular entity.
   /// \param [in] dimension  The entity dimension to query.
@@ -1040,6 +1062,21 @@ public:
   const 
   {
     return entities_.at(from_dim).at(to_dim);
+  } // vertices
+
+  /// return the set of vertices of a particular entity.
+  /// \param [in] dimension  the entity dimension to query.
+  /// \param [in] entity_id  the id of the entity in question.
+  std::vector<size_t>
+  entities( 
+    size_t from_dim,
+		size_t to_dim,
+    size_t from_id
+  )
+  const 
+  override
+  {
+    return entities_.at(from_dim).at(to_dim).at(from_id);
   } // vertices
 
   /// Return the vertex coordinates for a certain id.
@@ -1444,25 +1481,6 @@ public:
   /// Return the set of vertices of a particular entity.
   /// \param [in] dimension  The entity dimension to query.
   /// \param [in] entity_id  The id of the entity in question.
-  std::vector<size_t>
-  vertices( 
-    size_t dim,
-    size_t entity_id
-  )
-  const override
-  {
-    switch (dim)
-    {
-      case 0:
-        return {entity_id};
-      default: 
-        return entities_.at(dim).at(0)[entity_id];
-    }
-  } // vertices
-
-  /// Return the set of vertices of a particular entity.
-  /// \param [in] dimension  The entity dimension to query.
-  /// \param [in] entity_id  The id of the entity in question.
   const auto &
   entities( 
     size_t from_dim,
@@ -1471,6 +1489,21 @@ public:
   const 
   {
     return entities_.at(from_dim).at(to_dim);
+  } // vertices
+
+  /// return the set of vertices of a particular entity.
+  /// \param [in] dimension  the entity dimension to query.
+  /// \param [in] entity_id  the id of the entity in question.
+  std::vector<size_t>
+  entities( 
+    size_t from_dim,
+		size_t to_dim,
+    size_t from_id
+  )
+  const 
+  override
+  {
+    return entities_.at(from_dim).at(to_dim).at(from_id);
   } // vertices
 
 

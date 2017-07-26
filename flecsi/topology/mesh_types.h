@@ -46,6 +46,9 @@ struct typeify {
   static constexpr T value = M;
 };
 
+template <typename T, T M>
+constexpr T typeify<T,M>::value;
+
 template <size_t M>
 using dimension_ = typeify<size_t, M>;
 
@@ -228,7 +231,9 @@ class domain_entity
   using id_t = typename E::id_t;
   using item_t = E*;
 
-  domain_entity(E * entity) : entity_(entity) {}
+  // implicit type conversions are evil.  This one tries to convert 
+  // all pointers to domain_entities
+  explicit domain_entity(E * entity) : entity_(entity) {}
   domain_entity & operator=(const domain_entity & e)
   {
     entity_ = e.entity_;
@@ -786,10 +791,13 @@ public:
   using id_t = utils::id_t;
 
   // Default constructor
-  mesh_topology_base_t() = default;
+  mesh_topology_base_t(STORAGE_TYPE * ms = nullptr)
+    : ms_(ms) {}
 
   // Don't allow the mesh to be copied or copy constructed
-  mesh_topology_base_t(const mesh_topology_base_t &) = delete;
+  mesh_topology_base_t(const mesh_topology_base_t & m)
+    : ms_(m.ms_) {}
+
   mesh_topology_base_t & operator=(const mesh_topology_base_t &) = delete;
 
   /// Allow move operations
@@ -804,9 +812,32 @@ public:
     return *this;
   };
 
-  void set_storage(STORAGE_TYPE* ms){
+  STORAGE_TYPE *
+  set_storage(
+    STORAGE_TYPE * ms
+  )
+  {
     ms_ = ms;
-  }
+    return ms_;
+  } // set_storage
+
+  STORAGE_TYPE *
+  storage()
+  {
+    return ms_;
+  } // set_storage
+
+  void
+  clear_storage()
+  {
+    ms_ = nullptr;
+  } // clear_storage
+
+  void
+  delete_storage()
+  {
+    delete ms_;
+  } // delete_storage
 
   /*!
     Return the number of entities in for a specific domain and topology dim.
@@ -858,8 +889,9 @@ public:
     std::vector<mesh_entity_base_*>& ents,
     std::vector<id_t>& ids) = 0;
 
-private:
-  STORAGE_TYPE* ms_;
+protected:
+
+  STORAGE_TYPE * ms_ = nullptr;
 
 }; // mesh_topology_base_t
 

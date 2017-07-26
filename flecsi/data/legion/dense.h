@@ -473,12 +473,13 @@ struct storage_type__<dense>
     typename DATA_TYPE,
     size_t NAMESPACE,
     size_t NAME,
-    size_t VERSION
+    size_t VERSION,
+    size_t PERMISSIONS
   >
   static
   handle_t<DATA_TYPE, 0, 0, 0>
   get_handle(
-    const data_client_t & data_client
+    const data_client_handle__<DATA_CLIENT_TYPE, PERMISSIONS>& client_handle
   )
   {
     handle_t<DATA_TYPE, 0, 0, 0> h;
@@ -496,7 +497,8 @@ struct storage_type__<dense>
     h.exclusive_lr = ism[index_space].exclusive_lr;
     h.shared_lr = ism[index_space].shared_lr;
     h.ghost_lr = ism[index_space].ghost_lr;
-    h.pbarrier_as_owner_ptr = &ism[index_space].pbarriers_as_owner[field_info.fid];
+    h.pbarrier_as_owner_ptr =
+      &ism[index_space].pbarriers_as_owner[field_info.fid];
     h.ghost_owners_pbarriers_ptrs.resize(0);
     for(size_t i=0;
       i < ism[index_space].ghost_owners_pbarriers[field_info.fid].size() ;

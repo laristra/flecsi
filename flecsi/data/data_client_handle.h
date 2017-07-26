@@ -35,17 +35,40 @@ struct data_client_handle_base__ : public DATA_CLIENT_TYPE, public DATA_POLICY
   data_client_handle_base__(
     const data_client_handle_base__<DATA_CLIENT_TYPE, UNMAPPED_PERMISSIONS,
       DATA_POLICY>& h)
-  : DATA_POLICY(h)
+  : DATA_POLICY(h),
+    DATA_CLIENT_TYPE(h)
   {
     static_assert(UNMAPPED_PERMISSIONS == 0,
                   "passing mapped client handle to task args");
   }
 
+  data_client_handle_base__(
+    const data_client_handle_base__& h)
+  : DATA_POLICY(h),
+    DATA_CLIENT_TYPE(h)
+  {
+
+  }
+
+  size_t client_hash;
+  size_t name_hash;
+  size_t namespace_hash;
 }; // struct data_client_handle__
+
+template<typename T>
+struct data_client_type__{};
+
+template<typename DATA_CLIENT_TYPE, size_t PERMISSIONS, typename DATA_POLICY>
+struct data_client_type__<
+  flecsi::data_client_handle_base__<
+    DATA_CLIENT_TYPE, PERMISSIONS, DATA_POLICY>>
+{
+  using type = DATA_CLIENT_TYPE;
+};
 
 } // namespace flecsi
 
-#include "flecsi_runtime_data_client_handle_policy.h"
+#include "flecsi/runtime/flecsi_runtime_data_client_handle_policy.h"
 
 namespace flecsi {
 

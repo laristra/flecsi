@@ -18,10 +18,14 @@
 #include "flecsi/coloring/dcrs_utils.h"
 #include "flecsi/coloring/parmetis_colorer.h"
 #include "flecsi/coloring/mpi_communicator.h"
+#include "flecsi/supplemental/mesh/empty_mesh_2d.h"
 
 #define CELL_ID 0
 #define VERT_ID 2   // Ensure it's OK if user does non-sequential
 #define VERSIONS 1
+
+using namespace flecsi;
+using namespace supplemental;
 
 clog_register_tag(ghost_access);
 
@@ -39,23 +43,22 @@ void check_entities_task(
         handle_t<size_t, flecsi::dro, flecsi::dro, flecsi::dro> cell_ID,
         handle_t<double, flecsi::dro, flecsi::dro, flecsi::dro> test,
         int my_color, size_t cycle, size_t index_id);
-flecsi_register_task(check_entities_task, flecsi::loc, flecsi::single);
+
+flecsi_register_task(check_entities_task, loc, single);
 
 void set_primary_entities_task(
         handle_t<size_t, flecsi::drw, flecsi::drw, flecsi::dno> cell_ID,
         handle_t<double, flecsi::drw, flecsi::drw, flecsi::dno> test,
         int my_color, size_t cycle, size_t index_id);
-flecsi_register_task(set_primary_entities_task, flecsi::loc, flecsi::single);
+flecsi_register_task(set_primary_entities_task, loc, single);
 
-class client_type : public flecsi::data::data_client_t{};
-
-flecsi_register_field(client_type, name_space, cell_ID, size_t, dense,
+flecsi_register_field(empty_mesh_t, name_space, cell_ID, size_t, dense,
     VERSIONS, CELL_ID);
-flecsi_register_field(client_type, name_space, test, double, dense,
+flecsi_register_field(empty_mesh_t, name_space, test, double, dense,
     VERSIONS, CELL_ID);
-flecsi_register_field(client_type, name_space, vert_ID, size_t, dense,
+flecsi_register_field(empty_mesh_t, name_space, vert_ID, size_t, dense,
     VERSIONS, VERT_ID);
-flecsi_register_field(client_type, name_space, vert_test, double, dense,
+flecsi_register_field(empty_mesh_t, name_space, vert_test, double, dense,
     VERSIONS, VERT_ID);
 
 namespace flecsi {
@@ -89,15 +92,15 @@ void driver(int argc, char ** argv) {
 
   clog(trace) << "Rank " << my_color << " in driver" << std::endl;
 
-  client_type client;
+  auto ch = flecsi_get_client_handle(empty_mesh_t, meshes, mesh1);
 
-  auto handle = flecsi_get_handle(client, name_space, cell_ID, size_t, dense,
+  auto handle = flecsi_get_handle(ch, name_space, cell_ID, size_t, dense,
       CELL_ID);
-  auto test_handle = flecsi_get_handle(client, name_space, test, double, dense,
+  auto test_handle = flecsi_get_handle(ch, name_space, test, double, dense,
       CELL_ID);
-  auto vert_handle = flecsi_get_handle(client, name_space, vert_ID, size_t, dense,
+  auto vert_handle = flecsi_get_handle(ch, name_space, vert_ID, size_t, dense,
       VERT_ID);
-  auto vtest_handle = flecsi_get_handle(client, name_space, vert_test, double, dense,
+  auto vtest_handle = flecsi_get_handle(ch, name_space, vert_test, double, dense,
       VERT_ID);
 
   for(size_t cycle=0; cycle<3; cycle++) {
@@ -161,7 +164,7 @@ void add_colorings(int dummy) {
   // Compute the dependency closure of the primary cell coloring
   // through vertex intersections (specified by last argument "0").
   // To specify edge or face intersections, use 1 (edges) or 2 (faces).
-  auto closure = flecsi::topology::entity_closure<2,2,0>(sd, cells.primary);
+  auto closure = flecsi::topology::entity_neighbors<2,2,0>(sd, cells.primary);
 
   {
   clog_tag_guard(coloring);
@@ -202,7 +205,7 @@ void add_colorings(int dummy) {
   // we actually need information about the ownership of these indices
   // so that we can deterministically assign rank ownership to vertices.
   auto nearest_neighbor_closure =
-    flecsi::topology::entity_closure<2,2,0>(sd, nearest_neighbors);
+    flecsi::topology::entity_neighbors<2,2,0>(sd, nearest_neighbors);
 
   {
   clog_tag_guard(coloring);
@@ -317,7 +320,7 @@ void add_colorings(int dummy) {
   //--------------------------------------------------------------------------//
 
   // Form the vertex closure
-  auto vertex_closure = flecsi::topology::vertex_closure<2>(sd, closure);
+  auto vertex_closure = flecsi::topology::entity_closure<2,0>(sd, closure);
 
   // Assign vertex ownership
   std::vector<std::set<size_t>> vertex_requests(size);
@@ -327,7 +330,7 @@ void add_colorings(int dummy) {
   for(auto i: vertex_closure) {
 
     // Get the set of cells that reference this vertex.
-    auto referencers = flecsi::topology::vertex_referencers<2>(sd, i);
+    auto referencers = flecsi::topology::entity_referencers<2,0>(sd, i);
 
     size_t min_rank(std::numeric_limits<size_t>::max());
     std::set<size_t> shared_vertices;
@@ -446,9 +449,9 @@ void add_colorings(int dummy) {
   } // gaurd
 
   // Gather the coloring info from all colors
-  auto cell_coloring_info = communicator->get_coloring_info(cell_color_info);
+  auto cell_coloring_info = communicator->gather_coloring_info(cell_color_info);
   auto vertex_coloring_info =
-    communicator->get_coloring_info(vertex_color_info);
+    communicator->gather_coloring_info(vertex_color_info);
 
   {
   clog_tag_guard(coloring_output);

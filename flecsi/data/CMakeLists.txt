@@ -21,6 +21,7 @@ set(data_HEADERS
   common/data_hash.h
   common/data_types.h
   common/privilege.h
+  common/registration_wrapper.h
   client.h
   data_client.h
   data_client_handle.h
@@ -60,7 +61,6 @@ if(FLECSI_RUNTIME_MODEL STREQUAL "serial")
     serial/dense.h
     serial/global.h
     serial/meta_data.h
-    serial/registration_wrapper.h
     serial/scoped.h
     serial/sparse.h
     serial/storage_policy.h
@@ -81,7 +81,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/dpd.h
     legion/global.h
     legion/legion_data.h
-    legion/registration_wrapper.h
     legion/scoped.h
     legion/sparse.h
     legion/storage_policy.h
@@ -99,7 +98,6 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "mpi")
     mpi/data_handle_policy.h
     mpi/data_policy.h
     mpi/dense.h
-    mpi/registration_wrapper.h
     mpi/storage_policy.h
   )
 

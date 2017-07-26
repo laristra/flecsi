@@ -41,6 +41,14 @@ public:
   /// Destructor
   virtual ~communicator_t() {}
 
+  //! Return the size of the communicatora
+  //! @ingroup coloring
+  virtual size_t size() const = 0;
+
+  //! Return the rank of the communicator
+  //! @ingroup coloring
+  virtual size_t rank() const = 0;
+
   // I don't know where this belongs yet, but I want to work on the
   // interface so I'm putting it here for now. It probably doesn't really
   // belong in this interface definition. For one thing, the specialization
@@ -107,7 +115,7 @@ public:
 
   virtual
   std::unordered_map<size_t, coloring_info_t>
-  get_coloring_info(coloring_info_t & color_info) = 0;
+  gather_coloring_info(coloring_info_t & color_info) = 0;
 
 private:
 

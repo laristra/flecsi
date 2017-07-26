@@ -21,6 +21,7 @@
 namespace flecsi {
 namespace execution {
 
+#if 0
 //----------------------------------------------------------------------------//
 //! The base_task__ type provides a means to allow friend access
 //! to the backend runtime state. This is currently not used because
@@ -50,6 +51,7 @@ protected:
   typename EXECUTION_POLICY::runtime_state_t runtime_state_;
 
 }; // struct base_task__
+#endif
 
 //----------------------------------------------------------------------------//
 //! The task_model__ type provides a high-level task interface that is
@@ -155,11 +157,12 @@ struct task_model__
 // This include file defines the FLECSI_RUNTIME_EXECUTION_POLICY used below.
 //----------------------------------------------------------------------------//
 
-#include "flecsi_runtime_execution_policy.h"
+#include "flecsi/runtime/flecsi_runtime_execution_policy.h"
 
 namespace flecsi {
 namespace execution {
 
+#if 0
 //----------------------------------------------------------------------------//
 //! The base_task_t type defines a fully-qualified base class for friend
 //! access to the backend runtime state.
@@ -187,6 +190,7 @@ class task_t : public base_task_t
   friend base_task_t::template functor_task_wrapper__<FUNCTOR_TYPE>;
 
 }; // class task_t
+#endif
 
 //----------------------------------------------------------------------------//
 //! The task_model_t type is the high-level interface to the FleCSI task model.
