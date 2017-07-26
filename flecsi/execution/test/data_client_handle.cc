@@ -188,7 +188,8 @@ void fill_task(client_handle_t<test_mesh_t, dwd> mesh,
   } // for
 } // fill_task
 
-void print_task(client_handle_t<test_mesh_t, dro> mesh) {
+void print_task(client_handle_t<test_mesh_t, dro> mesh,
+    handle_t<double, dro, dro, dro> pressure) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
@@ -269,8 +270,9 @@ void specialization_spmd_init(int argc, char ** argv) {
 
   {
   auto ch = flecsi_get_client_handle(test_mesh_t, meshes, mesh1);
+  auto ph = flecsi_get_handle(ch, hydro, pressure, double, dense, 0);
 
-  auto f2 = flecsi_execute_task(print_task, single, ch);
+  auto f2 = flecsi_execute_task(print_task, single, ch, ph);
   f2.wait();
   } // scope
 
