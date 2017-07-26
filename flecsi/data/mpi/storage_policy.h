@@ -19,6 +19,7 @@
 //#include <memory>
 //#include <typeinfo>
 #include <unordered_map>
+#include <unordered_set>
 //#include <vector>
 
 #include "flecsi/data/common/data_hash.h"
@@ -74,6 +75,7 @@ struct mpi_storage_policy_t {
       } // for
     } // for
   } // register_all
+
   auto const &
   field_registry()
   const
@@ -117,8 +119,14 @@ struct mpi_storage_policy_t {
     return true;
   } // register_client
 
-private:
+  bool
+  register_client_fields(size_t client_key)
+  {
+    return registered_client_fields_.insert(client_key).second;
+  }
 
+private:
+  std::unordered_set<size_t> registered_client_fields_;
   std::unordered_map<size_t, field_entry_t> field_registry_;
   std::unordered_map<size_t, client_entry_t> client_registry_;
 

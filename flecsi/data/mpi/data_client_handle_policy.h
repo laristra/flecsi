@@ -15,7 +15,20 @@ namespace flecsi {
 
 //----------------------------------------------------------------------------//
 //! FIXME: Description of class
+
 //----------------------------------------------------------------------------//
+struct data_client_handle_entity
+{
+  using field_id_t = size_t;
+
+  size_t index_space;
+  size_t dim;
+  size_t domain;
+  size_t size;
+  field_id_t fid;
+//  Legion::LogicalRegion color_region;
+}; // struct data_client_handle_entity
+
 struct data_client_handle_adjacency
 {
   using field_id_t = size_t ;

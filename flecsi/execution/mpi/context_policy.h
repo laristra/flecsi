@@ -193,6 +193,7 @@ struct mpi_context_policy_t
     size_t versions;
     field_id_t fid;
     size_t index_space;
+    size_t key;
   }; // struct field_info_t
 
   //--------------------------------------------------------------------------//

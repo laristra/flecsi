@@ -28,6 +28,7 @@
 #include "flecsi/data/common/privilege.h"
 #include "flecsi/data/data_client.h"
 #include "flecsi/data/data_handle.h"
+#include "flecsi/execution/context.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/index_space.h"
 
