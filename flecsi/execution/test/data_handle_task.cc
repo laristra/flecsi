@@ -23,13 +23,21 @@ using namespace flecsi;
 clog_register_tag(coloring);
 
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
+
 template<typename T, size_t EP, size_t SP, size_t GP>
 using handle_t =
   data::legion::dense_handle_t<T, EP, SP, GP>;
+
+template<typename T, size_t P>
+using global_handle_t =
+  data::legion::global_handle_t<T, P>;
+
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
+
 template<typename T, size_t EP, size_t SP, size_t GP>
 using handle_t =
   data::mpi::dense_handle_t<T, EP, SP, GP>;
+
 #endif
 
 void task1(handle_t<double, dro, dno, dno> x, double y) {
@@ -42,6 +50,11 @@ void data_handle_dump(handle_t<double, drw, dro, dro> x) {
   clog(info) << "exclusive size: " << x.exclusive_size() << std::endl;
   clog(info) << "shared size: " << x.shared_size() << std::endl;
   clog(info) << "ghost size: " << x.ghost_size() << std::endl;
+}
+
+void global_data_handle_dump(global_handle_t<double, drw> x) {
+  clog(info) << "label: " << x.label() << std::endl;
+  clog(info) << "combined size: " << x.size() << std::endl;
 }
 
 void exclusive_writer(handle_t<double, dwd, dno, dno> x) {
@@ -60,12 +73,15 @@ void exclusive_reader(handle_t<double, dro, dno, dno> x) {
 
 flecsi_register_task(task1, loc, single);
 flecsi_register_task(data_handle_dump, loc, single);
+flecsi_register_task(global_data_handle_dump, loc, single);
 flecsi_register_task(exclusive_writer, loc, single);
 flecsi_register_task(exclusive_reader, loc, single);
 
 class client_type : public flecsi::data::data_client_t{};
 
 flecsi_register_field(client_type, ns, pressure, double, dense, 1, 0);
+
+flecsi_register_field(client_type, ns, velocity, double, global, 1);
 
 namespace flecsi {
 namespace execution {
@@ -99,7 +115,13 @@ void driver(int argc, char ** argv) {
   flecsi_execute_task(data_handle_dump, single, h);
   flecsi_execute_task(exclusive_writer, single, h);
   flecsi_execute_task(exclusive_reader, single, h);
-} // specialization_driver
+
+  //get global handle
+  auto gh=flecsi_get_handle(c, ns, velocity, double, global, 0);
+
+  flecsi_execute_task(global_data_handle_dump, single, gh);
+
+} // driver
 
 //----------------------------------------------------------------------------//
 // TEST.

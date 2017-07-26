@@ -65,6 +65,7 @@ elseif(FLECSI_RUNTIME_MODEL STREQUAL "legion")
     legion/init_handles.h
     legion/internal_field.h
     legion/internal_task.h
+    legion/internal_index_space.h 
     legion/legion_tasks.h
     legion/mapper.h
     legion/registration_wrapper.h

@@ -114,18 +114,34 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       Legion::Domain domain = 
         runtime->get_index_space_domain(context, is); 
 
-      LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
-      LegionRuntime::Arrays::Rect<2> sr;
-      LegionRuntime::Accessor::ByteOffset bo[2];
-      data[r] = ac.template raw_rect_ptr<2>(dr, sr, bo);
-      data[r] += bo[1];
-      sizes[r] = sr.hi[1] - sr.lo[1] + 1;
-      h.combined_size += sizes[r];
+     if (!h.global && !h.color){
+        LegionRuntime::Arrays::Rect<2> dr = domain.get_rect<2>();
+        LegionRuntime::Arrays::Rect<2> sr;
+        LegionRuntime::Accessor::ByteOffset bo[2];
+        data[r] = ac.template raw_rect_ptr<2>(dr, sr, bo);
+        data[r] += bo[1];
+        sizes[r] = sr.hi[1] - sr.lo[1] + 1;
+        h.combined_size += sizes[r];
+      }else{
+        LegionRuntime::Arrays::Rect<1> dr = domain.get_rect<1>();
+        LegionRuntime::Arrays::Rect<1> sr;
+        LegionRuntime::Accessor::ByteOffset bo[2];
+        data[r] = ac.template raw_rect_ptr<1>(dr, sr, bo);
+        data[r] += bo[1];
+        sizes[r] = sr.hi[1] - sr.lo[1] + 1;
+        h.combined_size += sizes[r];      
+        h.combined_data = data[r];
+        h.exclusive_priv = EXCLUSIVE_PERMISSIONS;
+        h.exclusive_buf = data[r];
+        h.exclusive_size = sizes[r];
+        h.exclusive_pr = prs[r];
+      }//if
     } // if
   } // for
 
   //region += num_regions;
 
+  if (!h.global && !h.color){
   #ifndef MAPPER_COMPACTION
     // Create the concatenated buffer E+S+G
     h.combined_data = new T[h.combined_size];
@@ -227,6 +243,7 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       pos +=sizes[r];
     } // for
   #endif
+  }//if (!h.global && !h.color)
 
   region += num_regions;
 
