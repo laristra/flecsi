@@ -299,11 +299,11 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       const size_t from_index_space = adj.from_index_space;
       const size_t to_index_space = adj.to_index_space;
 
-      Legion::LogicalRegion lr = regions[region].get_logical_region();
+      Legion::PhysicalRegion pr = regions[region_map[from_index_space]];
+      Legion::LogicalRegion lr = pr.get_logical_region();
       Legion::IndexSpace is = lr.get_index_space();
 
-      auto ac = regions[region_map[from_index_space]].
-        get_field_accessor(adj.offset_fid).
+      auto ac = pr.get_field_accessor(adj.offset_fid).
         template typeify<LegionRuntime::Arrays::Point<2>>();
 
       Legion::Domain d = 
@@ -318,7 +318,6 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       offsets += bo[1];
 
       size_t num_offsets = sr.hi[1] - sr.lo[1] + 1;
-      clog(info) << "NUM OFFSETS: " << num_offsets << std::endl;
 
       // Store these for translation to CRS
       adj.offsets_buf = offsets;
