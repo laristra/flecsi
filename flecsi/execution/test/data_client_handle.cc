@@ -190,7 +190,7 @@ void fill_task(client_handle_t<test_mesh_t, dwd> mesh,
 } // fill_task
 
 void print_task(client_handle_t<test_mesh_t, dro> mesh,
-  handle_t<double, drw, drw, dro> pressure) {
+  handle_t<double, dro, dro, dro> pressure) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
