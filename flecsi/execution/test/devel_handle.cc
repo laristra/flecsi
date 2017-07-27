@@ -20,20 +20,6 @@ namespace execution {
 // Type definitions
 //----------------------------------------------------------------------------//
 
-template<
-  typename T,
-  size_t EP,
-  size_t SP,
-  size_t GP
->
-using handle__ = data::legion::dense_handle_t<T, EP, SP, GP>;
-
-template<
-  typename DC,
-  size_t PS
->
-using client_handle__ = data_client_handle__<DC, PS>;
-
 using vertex_t = flecsi::supplemental::vertex_t;
 using cell_t = flecsi::supplemental::cell_t;
 using mesh_t = flecsi::supplemental::test_mesh_2d_t;
@@ -41,17 +27,31 @@ using mesh_t = flecsi::supplemental::test_mesh_2d_t;
 using coloring_info_t = flecsi::coloring::coloring_info_t;
 using adjacency_info_t = flecsi::coloring::adjacency_info_t;
 
+template<
+  size_t PS
+>
+using mesh = data_client_handle__<mesh_t, PS>;
+
+template<
+  size_t EP,
+  size_t SP,
+  size_t GP
+>
+using field = data::legion::dense_handle_t<double, EP, SP, GP>;
+
 //----------------------------------------------------------------------------//
 // Variable registration
 //----------------------------------------------------------------------------//
 
-flecsi_register_data_client(mesh_t, clients, mesh);
+flecsi_register_data_client(mesh_t, clients, m);
+flecsi_register_field(mesh_t, data, pressure, double, dense,
+  1, index_spaces::cells);
 
 //----------------------------------------------------------------------------//
 // Initialization task
 //----------------------------------------------------------------------------//
 
-void initialize_mesh(client_handle__<mesh_t, dwd> mesh) {
+void initialize_mesh(mesh<dwd> m) {
 
   {
   clog_tag_guard(devel_handle);
@@ -73,7 +73,7 @@ void initialize_mesh(client_handle__<mesh_t, dwd> mesh) {
       ")" << std::endl;
     } // scope
 
-    vertices.push_back(mesh.make<vertex_t>());
+    vertices.push_back(m.make<vertex_t>());
   } // for
 
   const size_t width = 8;
@@ -95,26 +95,63 @@ void initialize_mesh(client_handle__<mesh_t, dwd> mesh) {
     const size_t lv2 = reverse_vertex_map[v2];
     const size_t lv3 = reverse_vertex_map[v3];
 
-    auto c = mesh.make<cell_t>();
-    mesh.init_cell<0>(c, { vertices[lv0], vertices[lv1],
+    auto c = m.make<cell_t>();
+    m.init_cell<0>(c, { vertices[lv0], vertices[lv1],
       vertices[lv2], vertices[lv3] });
   } // for
 
-  mesh.init<0>();
+  m.init<0>();
 } // initialize_mesh
 
 flecsi_register_task(initialize_mesh, loc, single);
 
 //----------------------------------------------------------------------------//
+// Initialize pressure
+//----------------------------------------------------------------------------//
+
+void initialize_pressure(mesh<dro> m, field<drw, drw, dro> p) {
+
+  size_t count(0);
+
+  for(auto c: m.cells()) {
+    p(c) = count++;
+  } // for
+
+} // initialize_pressure
+
+flecsi_register_task(initialize_pressure, loc, single);
+
+//----------------------------------------------------------------------------//
 // Print task
 //----------------------------------------------------------------------------//
 
-void print_mesh(client_handle__<mesh_t, dro> mesh) {
-  for(auto c: mesh.cells()) {
+void print_mesh(mesh<dro> m, field<dro, dro, dro> p) {
+  {
+  clog_tag_guard(devel_handle);
+  clog(info) << "print_mesh task" << std::endl;
+  } // scope
+
+  auto & context = execution::context_t::instance();
+  auto & vertex_map = context.index_map(index_spaces::vertices);
+  auto & cell_map = context.index_map(index_spaces::cells);
+
+  for(auto c: m.cells()) {
     {
     clog_tag_guard(devel_handle);
-    clog(trace) << "cell id: " << c->template id<0>() << std::endl;
+    const size_t cid = c->template id<0>();
+    clog(trace) << "cell id: (" << cid << ", " <<
+      cell_map[cid] << ")" << std::endl;
+    clog(trace) << "pressure: " << p(c) << std::endl;
     } // scope
+
+    for(auto v: m.vertices(c)) {
+      {
+      clog_tag_guard(devel_handle);
+      const size_t vid = v->template id<0>();
+      clog(trace) << "vertex id: " << vid << ", " <<
+        vertex_map[vid] << ")" << std::endl;
+      } // scope
+    } // for
   } // for
 } // print_mesh
 
@@ -152,6 +189,7 @@ void specialization_tlt_init(int argc, char ** argv) {
     size_t color = itr.first;
     const coloring_info_t & ci = itr.second;
     ai.color_sizes[color] = (ci.exclusive + ci.shared + ci.ghost) * 4;
+    clog(info) << "coloring info: " << ci << std::endl;
   } // for
 
   {
@@ -174,8 +212,7 @@ void specialization_spmd_init(int argc, char ** argv) {
   clog(info) << "specialization_spmd_init function" << std::endl;
   } // scope
 
-  auto mh = flecsi_get_client_handle(mesh_t, clients, mesh);
-
+  auto mh = flecsi_get_client_handle(mesh_t, clients, m);
   flecsi_execute_task(initialize_mesh, single, mh);
 
 } // specialization_spmd_ini
@@ -185,6 +222,13 @@ void specialization_spmd_init(int argc, char ** argv) {
 //----------------------------------------------------------------------------//
 
 void driver(int argc, char ** argv) {
+
+  auto mh = flecsi_get_client_handle(mesh_t, clients, m);
+  auto ph = flecsi_get_handle(mh, data, pressure, double, dense, 0);
+
+  flecsi_execute_task(initialize_pressure, single, mh, ph);
+  flecsi_execute_task(print_mesh, single, mh, ph);
+
 } // driver
 
 } // namespace execution

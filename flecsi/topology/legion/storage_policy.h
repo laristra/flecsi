@@ -121,8 +121,6 @@ struct legion_topology_storage_policy_t
       index_offset += count;
     } // for
 
-    conn.dump();
-
     auto & v = conn.from_index_vec();
   } // init_connectivities
 
