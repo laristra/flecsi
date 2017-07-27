@@ -230,13 +230,20 @@ runtime_driver(
         pbarriers_as_owner.push_back(
           phase_barriers_map[idx_space][field_id][color]);
       
+        {
+        clog_tag_guard(runtime_driver);
         clog(trace) << " Color " << color << " idx_space " << idx_space 
         << ", fid = " << field_id<<
           " has " << color_info.ghost_owners.size() << 
           " ghost owners" << std::endl;
+        } // scope
 
         for(auto owner : color_info.ghost_owners) {
+          {
+          clog_tag_guard(runtime_driver);
           clog(trace) << owner << std::endl;
+          } // scope
+
           owners_pbarriers[idx_space][field_id].push_back(
             phase_barriers_map[idx_space][field_id][owner]);
        
@@ -554,8 +561,11 @@ spmd_task(
          ispace_dmap[idx_space].ghost_owners_pbarriers[field_id][owner] =
             ghost_owners_pbarriers[indx];
          indx++;
+         {
+         clog_tag_guard(runtime_driver);
          clog(trace) <<my_color <<" has ghost_owners_pbarrier "<<
              ghost_owners_pbarriers[indx-1]<<std::endl;
+         } // scope
       }//owner
     }//field_id
     consec_indx++;

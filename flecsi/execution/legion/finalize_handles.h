@@ -57,7 +57,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
     // Write changes back to Legion data.
     if(PERMISSIONS == drw || PERMISSIONS == dwd) {
       for(size_t i = 0; i < h.num_handle_adjacencies; ++i) {
-        data_client_handle_adjacency& adj = h.handle_adjacencies[i];
+        data_client_handle_adjacency_t & adj = h.handle_adjacencies[i];
 
         auto & conn = h.get_connectivity(adj.from_domain, adj.to_domain,
           adj.from_dim, adj.to_dim);

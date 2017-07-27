@@ -200,6 +200,27 @@ if(ENABLE_COLORING AND ENABLE_PARMETIS)
       POLICY ${UNIT_POLICY}
     )
 
+    cinch_add_devel_target(devel_handle
+      SOURCES
+        test/devel_handle.cc
+        ../supplemental/coloring/add_colorings.cc
+        ${DRIVER_INITIALIZATION}
+        ${RUNTIME_DRIVER}
+      INPUTS
+        test/simple2d-8x8.msh
+        test/simple2d-16x16.msh
+      LIBRARIES
+        flecsi
+        ${CINCH_RUNTIME_LIBRARIES}
+        ${COLORING_LIBRARIES}
+      DEFINES
+        -DFLECSI_ENABLE_SPECIALIZATION_TLT_INIT
+        -DFLECSI_ENABLE_SPECIALIZATION_SPMD_INIT
+        -DCINCH_OVERRIDE_DEFAULT_INITIALIZATION_DRIVER
+        -DFLECSI_8_8_MESH
+      POLICY ${UNIT_POLICY}
+    )
+
     cinch_add_unit(data_handle_task
       SOURCES
         test/data_handle_task.cc
