@@ -235,7 +235,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
       ent.size = ei.size;
 
       auto itr = context.field_info_map().find(
-        {h.client_hash, ent.index_space});
+        { h.client_hash, ent.index_space });
       clog_assert(itr != context.field_info_map().end(),
         "invalid entity index space");
 
