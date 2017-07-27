@@ -232,14 +232,18 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
 
     size_t entity_index(0);
     for(auto & ei: entity_walker.entity_info) {
-      data_client_handle_entity & ent = h.handle_entities[entity_index];
+      data_client_handle_entity_t & ent = h.handle_entities[entity_index];
       ent.index_space = ei.index_space;
       ent.domain = ei.domain;
       ent.dim = ei.dim;
       ent.size = ei.size;
 
+      clog(info) << "field info: " << h.client_hash << " " <<
+        ent.index_space << std::endl;
+
       auto itr = context.field_info_map().find(
-        {h.client_hash, ent.index_space});
+        { h.client_hash, ent.index_space });
+
       clog_assert(itr != context.field_info_map().end(),
         "invalid entity index space");
 
@@ -277,12 +281,12 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
     size_t handle_index = 0;
 
     clog_assert(binding_walker.adjacency_info.size() <= h.MAX_ADJACENCIES,
-                "handle max adjacencies exceeded");
+      "handle max adjacencies exceeded");
 
     h.num_handle_adjacencies = binding_walker.adjacency_info.size();
 
     for(adjacency_info_t& hi : binding_walker.adjacency_info){
-      data_client_handle_adjacency& adj = h.handle_adjacencies[handle_index];
+      data_client_handle_adjacency_t & adj = h.handle_adjacencies[handle_index];
 
       adj.adj_index_space = hi.index_space;
       adj.from_index_space = hi.from_index_space;
