@@ -1158,9 +1158,6 @@ public:
   //! the instantiated mesh definition type
   using mesh_definition_t = topology::mesh_definition__<3>;
 
-  //! the point type
-  using typename mesh_definition_t::point_t;
- 
   //! the number of dimensions
   using mesh_definition_t::dimension;
 
@@ -1539,10 +1536,11 @@ public:
 
   /// Return the vertex coordinates for a certain id.
   /// \param [in] vertex_id  The id of the vertex to query.
-  point_t vertex( size_t vertex_id ) const override
+  template < typename POINT_TYPE >
+  auto vertex( size_t vertex_id ) const
   {
     auto num_vertices = vertices_.size()/dimension();
-    point_t p;
+    POINT_TYPE p;
     for ( int i=0; i<dimension(); ++i )
       p[i] = vertices_[ i*num_vertices + vertex_id ];
     return p;
