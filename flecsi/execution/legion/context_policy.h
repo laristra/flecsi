@@ -35,15 +35,15 @@
 
 #include <mpi.h>
 
-#include "flecsi/execution/legion/runtime_driver.h"
 #include "flecsi/execution/common/launch.h"
 #include "flecsi/execution/common/processor.h"
+#include "flecsi/execution/legion/internal_field.h"
+#include "flecsi/execution/legion/runtime_driver.h"
+#include "flecsi/execution/legion/runtime_state.h"
+#include "flecsi/runtime/types.h"
 #include "flecsi/utils/common.h"
 #include "flecsi/utils/const_string.h"
 #include "flecsi/utils/tuple_wrapper.h"
-
-#include "flecsi/execution/legion/runtime_state.h"
-#include "flecsi/execution/legion/internal_field.h"
 
 namespace flecsi {
 namespace execution {
@@ -106,15 +106,6 @@ struct legion_context_policy_t
   //--------------------------------------------------------------------------//
 
   using task_id_t = Legion::TaskID;
-
-  //--------------------------------------------------------------------------//
-  //! The field_id_t type is used to uniquely identify data that have
-  //! been registered with the runtime.
-  //!
-  //! @ingroup execution
-  //--------------------------------------------------------------------------//
-
-  using field_id_t = Legion::FieldID;
 
   //--------------------------------------------------------------------------//
   //! The registration_function_t type defines a function type for

@@ -54,7 +54,11 @@ namespace execution {
 void specialization_tlt_init(int argc, char ** argv) {
   clog(trace) << "In specialization top-level-task init" << std::endl;
 
-  flecsi_execute_mpi_task(add_colorings, 0);
+  coloring_map_t map;
+  map.vertices = 1;
+  map.cells = 0;
+
+  flecsi_execute_mpi_task(add_colorings, map);
 
 } // specialization_tlt_init
 

@@ -51,11 +51,11 @@ struct context__ : public CONTEXT_POLICY
   using coloring_info_t = flecsi::coloring::coloring_info_t;
   using adjacency_info_t = flecsi::coloring::adjacency_info_t;
 
-  //---------------------------------------------------------------------------/
+  //--------------------------------------------------------------------------//
   //! Myer's singleton instance.
   //!
   //! @return The single instance of this type.
-  //---------------------------------------------------------------------------/
+  //--------------------------------------------------------------------------//
 
   static
   context__ &
@@ -65,13 +65,13 @@ struct context__ : public CONTEXT_POLICY
     return context;
   } // instance
 
-  //---------------------------------------------------------------------------/
+  //--------------------------------------------------------------------------//
   //! Add an index map. This map can be used to go between mesh and locally
   //! compacted index spaces.
   //!
   //! @param index_space The map key.
   //! @param index_map   The map to add.
-  //---------------------------------------------------------------------------/
+  //--------------------------------------------------------------------------//
 
   void
   add_index_map(
@@ -86,11 +86,11 @@ struct context__ : public CONTEXT_POLICY
     } // for
   } // add_index_map
 
-  //---------------------------------------------------------------------------/
+  //--------------------------------------------------------------------------//
   //! Return the index map associated with the given index space.
   //!
   //! @param index_space The map key.
-  //---------------------------------------------------------------------------/
+  //--------------------------------------------------------------------------//
 
   std::map<size_t, size_t> &
   index_map(
@@ -103,11 +103,11 @@ struct context__ : public CONTEXT_POLICY
     return index_map_[index_space];
   } // index_map
 
-  //---------------------------------------------------------------------------/
+  //--------------------------------------------------------------------------//
   //! Return the index map associated with the given index space.
   //!
   //! @param index_space The map key.
-  //---------------------------------------------------------------------------/
+  //--------------------------------------------------------------------------//
 
   std::map<size_t, size_t> &
   reverse_index_map(
@@ -120,13 +120,13 @@ struct context__ : public CONTEXT_POLICY
     return reverse_index_map_[index_space];
   } // reverse_index_map
 
-  //---------------------------------------------------------------------------/
+  //--------------------------------------------------------------------------//
   //! Add an index coloring.
   //!
   //! @param index_space The map key.
   //! @param coloring The index coloring to add.
   //! @param coloring The index coloring information to add.
-  //---------------------------------------------------------------------------/
+  //--------------------------------------------------------------------------//
 
   void
   add_coloring(
@@ -142,11 +142,11 @@ struct context__ : public CONTEXT_POLICY
     coloring_info_[index_space] = coloring_info;
   } // add_coloring
 
-  //---------------------------------------------------------------------------/
+  //--------------------------------------------------------------------------//
   //! Return the index coloring referenced by key.
   //!
   //! @param index_space The key associated with the coloring to be returned.
-  //---------------------------------------------------------------------------/
+  //--------------------------------------------------------------------------//
 
   index_coloring_t &
   coloring(
@@ -160,12 +160,12 @@ struct context__ : public CONTEXT_POLICY
     return colorings_[index_space];
   } // coloring
 
-  //---------------------------------------------------------------------------/
+  //--------------------------------------------------------------------------//
   //! Return the index coloring information referenced by key.
   //!
   //! @param index_space The key associated with the coloring information
   //!                    to be returned.
-  //---------------------------------------------------------------------------/
+  //--------------------------------------------------------------------------//
 
   const std::unordered_map<size_t, coloring_info_t> &
   coloring_info(
@@ -179,12 +179,12 @@ struct context__ : public CONTEXT_POLICY
     return coloring_info_[index_space];
   } // coloring_info
 
-  //---------------------------------------------------------------------------/
+  //--------------------------------------------------------------------------//
   //! Return the coloring map (convenient for iterating through all
   //! of the colorings.
   //!
   //! @return The map of index colorings.
-  //---------------------------------------------------------------------------/
+  //--------------------------------------------------------------------------//
 
   const std::map<size_t, index_coloring_t> &
   coloring_map()
@@ -193,12 +193,12 @@ struct context__ : public CONTEXT_POLICY
     return colorings_;
   } // colorings
 
-  //---------------------------------------------------------------------------/
+  //--------------------------------------------------------------------------//
   //! Return the coloring info map (convenient for iterating through all
   //! of the colorings.
   //!
   //! @return The map of index coloring information.
-  //---------------------------------------------------------------------------/
+  //--------------------------------------------------------------------------//
 
   const std::map<
     size_t,
@@ -210,12 +210,12 @@ struct context__ : public CONTEXT_POLICY
     return coloring_info_;
   } // colorings
 
-  //---------------------------------------------------------------------------/
+  //--------------------------------------------------------------------------//
   //! Add an adjacency/connectivity from one index space to another.
   //!
   //! @param from_index_space The index space id of the from side
   //! @param to_index_space The index space id of the to side
-  //---------------------------------------------------------------------------/
+  //--------------------------------------------------------------------------//
 
   void
   add_adjacency(
@@ -230,11 +230,11 @@ struct context__ : public CONTEXT_POLICY
       std::move(adjacency_info));
   } // add_adjacency
 
-  //---------------------------------------------------------------------------/
+  //--------------------------------------------------------------------------//
   //! Return the set of registered adjacencies.
   //!
   //! @return The set of registered adjacencies
-  //---------------------------------------------------------------------------/
+  //--------------------------------------------------------------------------//
 
   const std::map<size_t, adjacency_info_t> &
   adjacency_info()

@@ -67,7 +67,6 @@ struct legion_topology_storage_policy_t
     auto s = is.storage();
     s->set_buffer(entities, num_entities);
 
-    clog(info) << "########### " << dim << " ##########" << std::endl;
     if(read) {
       for(size_t i{0}; i<num_entities; ++i) {
         is.push_back(id_t::make(dim, i));
@@ -106,7 +105,6 @@ struct legion_topology_storage_policy_t
     // We may wish to store the buffer pointers coming from Legion directly
     // into the connectivity
 
-    clog(info) << "NUM_POSITIONS: " << num_positions << std::endl;
     auto& conn = topology[from_domain][to_domain].get(from_dim, to_dim);
     size_t index_offset = 0;
     for(size_t i = 0; i < num_positions; ++i){
@@ -114,10 +112,7 @@ struct legion_topology_storage_policy_t
       size_t offset = pi.x[0];
       size_t count = pi.x[1];
 
-      clog(info) << "INDEX_OFFSET: " << index_offset << std::endl;
-      clog(info) << "COUNT: " << count << std::endl;
       for(size_t j = index_offset; j < index_offset + count; ++j){
-        clog(info) << "INDEX: " << indices[j] << std::endl;
         conn.push(utils::id_t::make(to_dim, indices[j]));
       }
 
@@ -126,8 +121,9 @@ struct legion_topology_storage_policy_t
       index_offset += count;
     } // for
 
+    conn.dump();
+
     auto & v = conn.from_index_vec();
-    clog(info) << "FROM SIZE: " << v.size() << std::endl;
   } // init_connectivities
 
   template<
@@ -153,8 +149,6 @@ struct legion_topology_storage_policy_t
     size_t dim = entity_dimension(ent);
     auto & is = index_spaces[M][dim].template cast<dtype>();
     size_t entity_id = is.size();
-
-    clog(info) << "BUFFER SIZE: " << is.storage()->size() << std::endl;
 
     auto placement_ptr = static_cast<T*>(is.storage()->buffer()) + entity_id;
     ent = new (placement_ptr) T(std::forward<S>(args)...);

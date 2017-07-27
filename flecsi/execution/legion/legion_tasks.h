@@ -328,9 +328,12 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
   legion_map owner_map = task->futures[0].get_result<legion_map>();
 
   for(auto itr = owner_map.begin(); itr != owner_map.end(); itr++)
+      {
+      clog_tag_guard(legion_tasks);
       clog(trace) << "my_color= " << my_color << " gid " << itr->first <<
         " maps to lid " << itr->second << " current owner lid is " <<
         args.owner << std::endl;
+      }
 
   auto ghost_owner_pos_fid = 
     LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
@@ -368,10 +371,14 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
         owner_rect, owner_sub_rect, byte_offset));
 
     data_shared += byte_offset[1];
+
+    {
+    clog_tag_guard(legion_tasks);
     clog(trace) << "my_color = " << my_color << " owner lid = " <<
             args.owner << " owner rect = " <<
             owner_rect.lo[0] << "," << owner_rect.lo[1] << " to " <<
             owner_rect.hi[0] << "," << owner_rect.hi[1] << std::endl;
+    }
 
     uint8_t * ghost_data =
       reinterpret_cast<uint8_t *>(acc_ghost.template raw_rect_ptr<2>(
@@ -382,8 +389,12 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
          ghost_itr; ghost_itr++) {
       LegionRuntime::Arrays::Point<2> ghost_ref =
         position_ref_acc.read(ghost_itr.p);
+
+      {
+      clog_tag_guard(legion_tasks);
       clog(trace) << my_color << " copy from position " << ghost_ref.x[0] <<
               "," << ghost_ref.x[1] << std::endl;
+      }
 
       if(owner_map[ghost_ref.x[0]] == args.owner) {
         size_t owner_offset = ghost_ref.x[1]-owner_sub_rect.lo[1];

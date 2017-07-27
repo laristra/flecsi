@@ -20,7 +20,7 @@
 //----------------------------------------------------------------------------//
 
 #define flecsi_register_number_dimensions(dimensions)                          \
-  /* MACRO IMPLEMENTATION */                                                   \
+/* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   static constexpr size_t num_dimensions = dimensions
 
@@ -33,7 +33,7 @@
 //----------------------------------------------------------------------------//
 
 #define flecsi_register_number_domains(domains)                                \
-  /* MACRO IMPLEMENTATION */                                                   \
+/* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   static constexpr size_t num_domains = domains
 
@@ -47,7 +47,7 @@
 //----------------------------------------------------------------------------//
 
 #define flecsi_register_entity_types(...)                                      \
-  /* MACRO IMPLEMENTATION */                                                   \
+/* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   using entity_types = std::tuple<__VA_ARGS__>
 
@@ -61,7 +61,7 @@
 //----------------------------------------------------------------------------//
 
 #define flecsi_entity_type(index, domain, type)                                \
-  /* MACRO IMPLEMENTATION */                                                   \
+/* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   std::tuple<                                                                  \
     flecsi::topology::index_space_<index>,                                     \
@@ -79,7 +79,7 @@
 //----------------------------------------------------------------------------//
 
 #define flecsi_register_connectivities(...)                                    \
-  /* MACRO IMPLEMENTATION */                                                   \
+/* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   using connectivities = std::tuple<__VA_ARGS__>
 
@@ -93,7 +93,7 @@
 //----------------------------------------------------------------------------//
 
 #define flecsi_connectivity(index, domain, from_type, to_type)                 \
-  /* MACRO IMPLEMENTATION */                                                   \
+/* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   std::tuple<                                                                  \
     flecsi::topology::index_space_<index>,                                     \
@@ -112,7 +112,7 @@
 //----------------------------------------------------------------------------//
 
 #define flecsi_register_bindings(...)                                          \
-  /* MACRO IMPLEMENTATION */                                                   \
+/* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   using bindings = std::tuple<__VA_ARGS__>
 
@@ -126,7 +126,7 @@
 //----------------------------------------------------------------------------//
 
 #define flecsi_binding(index, from_domain, to_domain, from_type, to_type)      \
-  /* MACRO IMPLEMENTATION */                                                   \
+/* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   std::tuple<                                                                  \
     flecsi::topology::index_space_<index>,                                     \
