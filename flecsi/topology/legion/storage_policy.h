@@ -156,7 +156,7 @@ struct legion_topology_storage_policy_t
     id_t global_id = id_t::make<M>(dim, entity_id);
     ent->template set_global_id<M>(global_id);
 
-    is.push_back( static_cast<dtype>(ent) );
+    is.push_back( global_id );
 
     return ent;
   } // make
