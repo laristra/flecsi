@@ -20,9 +20,9 @@
 
 enum index_spaces : size_t
 {
-  cells = 0,
-  vertices = 1,
-  cells_to_vertices = 3
+  vertices,
+  cells,
+  cells_to_vertices
 }; // enum index_spaces
 
 namespace flecsi {
@@ -136,10 +136,24 @@ struct test_mesh_2d_policy_t
 struct test_mesh_2d_t :
   public flecsi::topology::mesh_topology_t<test_mesh_2d_policy_t>
 {
-  decltype(auto)
+
+  auto
   cells() {
-    return entities<2,0>();
+    return entities<2, 0>();
   } // cells
+
+  template<
+    typename E,
+    size_t M
+  >
+  auto
+  vertices( 
+    flecsi::topology::domain_entity<M, E> & e
+  )
+  {
+    return entities<0, 0>(e);
+  } // vertices
+
 }; // struct test_mesh_2d_t
 
 } // namespace supplemental

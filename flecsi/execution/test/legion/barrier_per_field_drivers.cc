@@ -92,6 +92,21 @@ void driver(int argc, char ** argv) {
     flecsi_execute_task(read_task, single, handle2, my_color, cycle);
   }
 
+  // Permutation test
+  bool delay = false;
+  flecsi_execute_task(write_task, single, handle1, my_color, 0, delay);
+  flecsi_execute_task(write_task, single, handle2, my_color, 0, delay);
+  flecsi_execute_task(read_task, single, handle1, my_color, 0);
+  flecsi_execute_task(read_task, single, handle2, my_color, 0);
+
+  flecsi_execute_task(write_task, single, handle2, my_color, 1, delay);
+  flecsi_execute_task(read_task, single, handle1, my_color, 0);
+  flecsi_execute_task(read_task, single, handle2, my_color, 1);
+
+  flecsi_execute_task(write_task, single, handle1, my_color, 2, delay);
+  flecsi_execute_task(read_task, single, handle1, my_color, 2);
+  flecsi_execute_task(read_task, single, handle2, my_color, 1);
+
 } // driver
 
 } // namespace execution

@@ -237,9 +237,6 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
       ent.dim = ei.dim;
       ent.size = ei.size;
 
-      clog(info) << "field info: " << h.client_hash << " " <<
-        ent.index_space << std::endl;
-
       auto itr = context.field_info_map().find(
         { h.client_hash, ent.index_space });
 
