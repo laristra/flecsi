@@ -220,6 +220,8 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
     auto& ism = context.index_space_data_map();
 
     h.client_hash = typeid(DATA_CLIENT_TYPE).hash_code();
+    h.name_hash = NAME_HASH;
+    h.namespace_hash = NAMESPACE_HASH;
 
     entity_walker_t entity_walker;
     entity_walker.template walk_types<entity_types_t>();
