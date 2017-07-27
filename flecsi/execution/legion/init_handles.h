@@ -124,8 +124,6 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
     } // if
   } // for
 
-  //region += num_regions;
-
   #ifndef MAPPER_COMPACTION
     // Create the concatenated buffer E+S+G
     h.combined_data = new T[h.combined_size];

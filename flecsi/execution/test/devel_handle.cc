@@ -109,7 +109,7 @@ flecsi_register_task(initialize_mesh, loc, single);
 // Initialize pressure
 //----------------------------------------------------------------------------//
 
-void initialize_pressure(mesh<dro> m, field<drw, drw, dro> p) {
+void initialize_pressure(mesh<dro> m, field<drw, drw, drw> p) {
 
   size_t count(0);
 
@@ -146,14 +146,16 @@ void print_mesh(mesh<dro> m, field<dro, dro, dro> p) {
       p(c) << std::endl;
     } // scope
 
+    size_t vcount(0);
     for(auto v: m.vertices(c)) {
       const size_t vid = v->template id<0>();
 
       {
       clog_tag_guard(devel_handle);
-      clog(trace) << "vertex id: " << vid << ", " <<
-        vertex_map[vid] << ")" << std::endl;
+      clog(trace) << "color: " << context.color() << " vertex id: (" <<
+        vid << ", " << vertex_map[vid] << ") " << vcount << std::endl;
       } // scope
+      vcount++;
     } // for
   } // for
 } // print_mesh
