@@ -113,7 +113,7 @@ public:
   }
 };
 
-using test_mesh_t = mesh_topology_t<test_mesh_types_t>;
+struct test_mesh_t : public mesh_topology_t<test_mesh_types_t> {};
 
 #if FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_legion
 template<typename T, size_t EP, size_t SP, size_t GP>

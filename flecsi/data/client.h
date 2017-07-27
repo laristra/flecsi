@@ -221,7 +221,6 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
 
     h.client_hash = 
       typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
-    h.client_hash = typeid(DATA_CLIENT_TYPE).hash_code();
     h.name_hash = NAME_HASH;
     h.namespace_hash = NAMESPACE_HASH;
 
