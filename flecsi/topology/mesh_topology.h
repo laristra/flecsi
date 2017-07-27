@@ -1088,7 +1088,7 @@ private:
 
     assert(super->template id<M>() == c.from_size() && "id mismatch");
 
-    for (auto e : subs) {
+    for (auto e : std::forward<E2>(subs)) {
       c.push(e->template global_id<M>());
     } // for
 
