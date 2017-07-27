@@ -20,7 +20,11 @@
 
 clog_register_tag(gid_to_lid);
 
-class client_type : public flecsi::data::data_client_t{};
+class client_type : public flecsi::data::data_client_t
+{
+public:
+  using type_identifier_t = flecsi::data::data_client_t;
+};
 
 flecsi_register_field(client_type, name_space, cell_ID, size_t, dense,
     INDEX_ID, VERSIONS);
