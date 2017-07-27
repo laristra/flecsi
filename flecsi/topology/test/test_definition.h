@@ -117,7 +117,7 @@ public:
   point_t
   vertex(
     size_t vertex_id
-  ) const override
+  ) const 
   {
     return point_t(vertices_[vertex_id][0], vertices_[vertex_id][1]);
   } // vertex
