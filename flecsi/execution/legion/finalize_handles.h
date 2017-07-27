@@ -66,16 +66,16 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
         // We are storing adjacency information for the mesh in CRS
         // format, so we need to convert it back to Legion's storage
         // scheme.
-        for(size_t i{0}; i<from_index_vec.size()-1; ++i) {
-          adj.offsets_buf[i].x[0] = from_index_vec[i];
-          adj.offsets_buf[i].x[1] = from_index_vec[i+1] - from_index_vec[i];
+        for(size_t j{0}; j<from_index_vec.size()-1; ++j) {
+          adj.offsets_buf[j].x[0] = from_index_vec[j];
+          adj.offsets_buf[j].x[1] = from_index_vec[j+1] - from_index_vec[j];
         } // for
 
         // Write back indices
         auto & ents = conn.get_entities();
         clog_assert(ents.size() == adj.num_indices, "size mismatch");
-        for(size_t i{0}; i<adj.num_indices; ++i) {
-          adj.indices_buf[i] = ents[i].entity();
+        for(size_t j{0}; j<adj.num_indices; ++j) {
+          adj.indices_buf[j] = ents[j].entity();
         } // for
       } // for
     } // if
