@@ -1193,7 +1193,8 @@ private:
 
     auto& is = base_t::ms_->index_spaces[Domain][DimensionToBuild].template cast<
       domain_entity<Domain, entity_type>>();
-    auto& cis = base_t::ms_->index_spaces[Domain][UsingDimension];
+    auto& cis = base_t::ms_->index_spaces[Domain][UsingDimension].template cast<
+      domain_entity<Domain, cell_type>>();
 
     for (size_t c = 0; c < _num_cells; ++c) {
       // Get the cell object
