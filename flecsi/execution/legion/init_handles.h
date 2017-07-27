@@ -244,7 +244,6 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
     auto& context_ = context_t::instance();
 
     auto storage = h.set_storage(new typename T::storage_t);
-    h.initialize_storage();
 
     //------------------------------------------------------------------------//
     // Mapping entity data from Legion and initializing mesh storage.
@@ -287,6 +286,8 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
 
       ++region;
     } // for
+
+    h.initialize_storage();
 
     //------------------------------------------------------------------------//
     // Mapping adjacency data from Legion and initializing mesh storage.
