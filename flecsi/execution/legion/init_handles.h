@@ -287,6 +287,8 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
       ++region;
     } // for
 
+    h.initialize_storage();
+
     //------------------------------------------------------------------------//
     // Mapping adjacency data from Legion and initializing mesh storage.
     //------------------------------------------------------------------------//
@@ -348,10 +350,6 @@ struct init_handles_t : public utils::tuple_walker__<init_handles_t>
 
       ++region;
     } // for
-
-    if((PERMISSIONS == dwd) || (PERMISSIONS == drw)) {
-      h.initialize_storage();
-    }
   } // handle
 
   //-----------------------------------------------------------------------//
