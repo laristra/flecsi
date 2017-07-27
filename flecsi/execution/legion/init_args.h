@@ -120,7 +120,7 @@ namespace execution {
       }
       else {
         Legion::RegionRequirement rr(h.color_region,  
-          privilege_mode(EXCLUSIVE_PERMISSIONS), EXCLUSIVE, h.color_region);
+          READ_ONLY, EXCLUSIVE, h.color_region);
         rr.add_field(h.fid);
         region_reqs.push_back(rr);
       }//if

@@ -71,7 +71,7 @@ struct data_handle_base__ : public DATA_POLICY, public data_handle_base_t {
     exclusive_buf = b.exclusive_buf;
     shared_buf = b.shared_buf;
     ghost_buf = b.ghost_buf;
-    master = b.master;
+    master = false;
     global = b.global;
     color = b.color;
   }
