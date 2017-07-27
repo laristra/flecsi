@@ -188,6 +188,16 @@ struct legion_context_policy_t
   );
 
   //--------------------------------------------------------------------------//
+  //! Return the color for which the context was initialized.
+  //--------------------------------------------------------------------------//
+
+  size_t
+  color()
+  {
+    return color_;
+  } // color
+
+  //--------------------------------------------------------------------------//
   //! Push Legion runtime state onto a task specific stack. In this case,
   //! \em task is the plain-text name of the user's task.
   //!
@@ -802,6 +812,8 @@ struct legion_context_policy_t
   }
 
 private:
+
+  size_t color_ = 0;
 
   //--------------------------------------------------------------------------//
   // Task data members.

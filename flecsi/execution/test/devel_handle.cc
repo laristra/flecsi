@@ -136,18 +136,21 @@ void print_mesh(mesh<dro> m, field<dro, dro, dro> p) {
   auto & cell_map = context.index_map(index_spaces::cells);
 
   for(auto c: m.cells()) {
+    const size_t cid = c->template id<0>();
+
     {
     clog_tag_guard(devel_handle);
-    const size_t cid = c->template id<0>();
-    clog(trace) << "cell id: (" << cid << ", " <<
-      cell_map[cid] << ")" << std::endl;
-    clog(trace) << "pressure: " << p(c) << std::endl;
+    clog(trace) << "color: " << context.color() << " cell id: (" <<
+      cid << ", " << cell_map[cid] << ")" << std::endl;
+    clog(trace) << "color: " << context.color() << " pressure: " <<
+      p(c) << std::endl;
     } // scope
 
     for(auto v: m.vertices(c)) {
+      const size_t vid = v->template id<0>();
+
       {
       clog_tag_guard(devel_handle);
-      const size_t vid = v->template id<0>();
       clog(trace) << "vertex id: " << vid << ", " <<
         vertex_map[vid] << ")" << std::endl;
       } // scope
@@ -227,7 +230,8 @@ void driver(int argc, char ** argv) {
   auto ph = flecsi_get_handle(mh, data, pressure, double, dense, 0);
 
   flecsi_execute_task(initialize_pressure, single, mh, ph);
-  flecsi_execute_task(print_mesh, single, mh, ph);
+  auto f = flecsi_execute_task(print_mesh, single, mh, ph);
+  f.wait();
 
 } // driver
 
