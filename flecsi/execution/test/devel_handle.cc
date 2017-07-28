@@ -67,12 +67,6 @@ void initialize_mesh(mesh<dwd> m) {
   std::vector<vertex_t *> vertices;
 
   for(auto & vm: vertex_map) {
-    {
-    clog_tag_guard(devel_handle);
-    clog(info) << "vertex: (" << vm.first << ", " << vm.second <<
-      ")" << std::endl;
-    } // scope
-
     vertices.push_back(m.make<vertex_t>());
   } // for
 
@@ -109,23 +103,80 @@ flecsi_register_task(initialize_mesh, loc, single);
 // Initialize pressure
 //----------------------------------------------------------------------------//
 
-void initialize_pressure(mesh<dro> m, field<drw, drw, drw> p) {
-
+void initialize_pressure(mesh<dro> m, field<drw, drw, dro> p) {
   size_t count(0);
 
-  for(auto c: m.cells()) {
-    p(c) = count++;
-  } // for
+  auto & context = execution::context_t::instance();
 
+  for(auto c: m.cells()) {
+    p(c) = (context.color() + 1)*1000.0 + count++;
+  } // for
 } // initialize_pressure
 
 flecsi_register_task(initialize_pressure, loc, single);
 
 //----------------------------------------------------------------------------//
+// Update pressure
+//----------------------------------------------------------------------------//
+
+void update_pressure(mesh<dro> m, field<drw, drw, dro> p) {
+  size_t count(0);
+
+  for(auto c: m.cells()) {
+    p(c) = 2.0*p(c);
+  } // for
+} // initialize_pressure
+
+flecsi_register_task(update_pressure, loc, single);
+
+//----------------------------------------------------------------------------//
 // Print task
 //----------------------------------------------------------------------------//
 
+#if 1
 void print_mesh(mesh<dro> m, field<dro, dro, dro> p) {
+  {
+  clog_tag_guard(devel_handle);
+  clog(info) << "print_mesh task" << std::endl;
+  } // scope
+
+  auto & context = execution::context_t::instance();
+  auto & vertex_map = context.index_map(index_spaces::vertices);
+  auto & cell_map = context.index_map(index_spaces::cells);
+
+  for(auto c: m.cells()) {
+    const size_t cid = c->template id<0>();
+
+#if 1
+    {
+    clog_tag_guard(devel_handle);
+    clog(trace) << "color: " << context.color() << " cell id: (" <<
+      cid << ", " << cell_map[cid] << ")" << std::endl;
+    clog(trace) << "color: " << context.color() << " pressure: " <<
+      p(c) << std::endl;
+    } // scope
+#endif
+
+    size_t vcount(0);
+    for(auto v: m.vertices(c)) {
+      const size_t vid = v->template id<0>();
+
+#if 1
+      {
+      clog_tag_guard(devel_handle);
+      clog(trace) << "color: " << context.color() << " vertex id: (" <<
+        vid << ", " << vertex_map[vid] << ") " << vcount << std::endl;
+      } // scope
+#endif
+
+      vcount++;
+    } // for
+  } // for
+} // print_mesh
+
+#else
+
+void print_mesh(mesh<dro> m) {
   {
   clog_tag_guard(devel_handle);
   clog(info) << "print_mesh task" << std::endl;
@@ -142,8 +193,6 @@ void print_mesh(mesh<dro> m, field<dro, dro, dro> p) {
     clog_tag_guard(devel_handle);
     clog(trace) << "color: " << context.color() << " cell id: (" <<
       cid << ", " << cell_map[cid] << ")" << std::endl;
-    clog(trace) << "color: " << context.color() << " pressure: " <<
-      p(c) << std::endl;
     } // scope
 
     size_t vcount(0);
@@ -159,6 +208,8 @@ void print_mesh(mesh<dro> m, field<dro, dro, dro> p) {
     } // for
   } // for
 } // print_mesh
+
+#endif
 
 flecsi_register_task(print_mesh, loc, single);
 
@@ -194,7 +245,6 @@ void specialization_tlt_init(int argc, char ** argv) {
     size_t color = itr.first;
     const coloring_info_t & ci = itr.second;
     ai.color_sizes[color] = (ci.exclusive + ci.shared + ci.ghost) * 4;
-    clog(info) << "coloring info: " << ci << std::endl;
   } // for
 
   {
@@ -232,8 +282,8 @@ void driver(int argc, char ** argv) {
   auto ph = flecsi_get_handle(mh, data, pressure, double, dense, 0);
 
   flecsi_execute_task(initialize_pressure, single, mh, ph);
-  auto f = flecsi_execute_task(print_mesh, single, mh, ph);
-  f.wait();
+  //flecsi_execute_task(update_pressure, single, mh, ph);
+  flecsi_execute_task(print_mesh, single, mh, ph);
 
 } // driver
 
