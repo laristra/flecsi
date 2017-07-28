@@ -24,13 +24,14 @@
 #undef POLICY_NAMESPACE
 //----------------------------------------------------------------------------//
 
+#include "flecsi/data/common/privilege.h"
 #include "flecsi/data/data_client.h"
 #include "flecsi/data/data_handle.h"
 #include "flecsi/data/storage.h"
-#include "flecsi/utils/const_string.h"
-#include "flecsi/utils/index_space.h"
 #include "flecsi/execution/context.h"
-#include "flecsi/data/common/privilege.h"
+#include "flecsi/utils/const_string.h"
+#include "flecsi/utils/hash.h"
+#include "flecsi/utils/index_space.h"
 
 ///
 // \file legion/dense.h
@@ -489,7 +490,7 @@ struct storage_type__<dense>
     auto& field_info = 
       context.get_field_info(
         typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code(),
-      NAMESPACE ^ NAME);
+      utils::hash::field_hash<NAMESPACE, NAME>());
 
     size_t index_space = field_info.index_space;
     auto& ism = context.index_space_data_map();

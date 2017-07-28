@@ -21,6 +21,7 @@
 enum index_spaces : size_t
 {
   vertices,
+  edges,
   cells,
   cells_to_vertices
 }; // enum index_spaces
@@ -86,6 +87,7 @@ struct test_mesh_2d_policy_t
 
   flecsi_register_entity_types(
     flecsi_entity_type(index_spaces::vertices, 0, vertex_t),
+//    flecsi_entity_type(index_spaces::edges, 0, edge_t),
     flecsi_entity_type(index_spaces::cells, 0, cell_t)
   );
 

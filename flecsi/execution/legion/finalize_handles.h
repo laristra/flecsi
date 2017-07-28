@@ -82,7 +82,6 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
         );
         for(size_t j{0}; j<adj.num_indices; ++j) {
           adj.indices_buf[j] = ents[j].entity();
-          //clog(error) << adj.indices_buf[j] << std::endl;
         } // for
       } // for
     } // if
