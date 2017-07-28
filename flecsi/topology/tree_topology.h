@@ -1128,7 +1128,7 @@ public:
     ents.set_master(entities_);
 
     size_t depth;
-    &element_t size;
+    element_t size;
     branch_t* b = find_start_(center, radius, depth, size);
     queue_depth += depth;
 
