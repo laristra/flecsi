@@ -355,6 +355,45 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
 
   // For each field, copy data from shared to ghost
   for(auto fid : task->regions[0].privilege_fields){
+
+
+      // FIXME FIXME FIXME
+      // This is extremely inefficient. We should never be updating all
+      // field dependencies everytime!
+      bool skip(false);
+      for(auto & itr: context.field_info_map()) {
+        auto & tm = itr.second;
+
+        for(auto & fitr : tm){
+          if(fitr.second.key ==
+            utils::hash::client_internal_field_hash(
+            utils::const_string_t("__flecsi_internal_entity_data__").
+            hash(), itr.first.second)) {
+              if(fid == fitr.second.fid) {
+                skip = true;
+                break;
+              } // if
+          } // if
+          else if(fitr.second.key ==
+            utils::hash::client_internal_field_hash(
+            utils::const_string_t("__flecsi_internal_adjacency_offset__").
+            hash(), itr.first.second)) {
+              if(fid == fitr.second.fid) {
+                skip = true;
+                break;
+              } // if
+          } // if
+        } // for
+      } // for
+
+      if(skip) {
+        clog(warn) << "SKIPPED FID: " << fid << std::endl;
+        continue;
+      }
+
+
+
+
     // Look up field info in context
     auto iitr = 
       context.field_info_map().find({args.data_client_hash, args.index_space});
