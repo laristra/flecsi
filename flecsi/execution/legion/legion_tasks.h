@@ -371,6 +371,8 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
       if(skip) { break; }
     } // for
 
+    if(skip) { continue; }
+
     // Look up field info in context
     auto iitr = 
       context.field_info_map().find({args.data_client_hash, args.index_space});
