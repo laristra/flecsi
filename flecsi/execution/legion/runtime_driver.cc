@@ -344,13 +344,8 @@ runtime_driver(
 
       reg_req.add_field(ghost_owner_pos_fid);
 
-      for(const field_info_t& field_info : context_.registered_fields()){
-        if((field_info.storage_type != global) &&
-            (field_info.storage_type != color)){
-          if(field_info.index_space == idx_space){
-            reg_req.add_field(field_info.fid);
-          }
-        }//if
+      for (const field_id_t& field_id : fields_map[idx_space]){
+            reg_req.add_field(field_id);
       }//for
 
       for(auto& itr : context_.adjacency_info()){
@@ -389,13 +384,8 @@ runtime_driver(
           SIMULTANEOUS, flecsi_ispace.logical_region);
         owner_reg_req.add_flags(NO_ACCESS_FLAG);
         owner_reg_req.add_field(ghost_owner_pos_fid);
-        for(const field_info_t& field_info : context_.registered_fields()){
-          if((field_info.storage_type != global) &&
-            (field_info.storage_type != color)){
-            if(field_info.index_space == idx_space){
-              owner_reg_req.add_field(field_info.fid);
-            }
-          }//if
+        for (const field_id_t& field_id : fields_map[idx_space]){
+              owner_reg_req.add_field(field_id);
         }
         spmd_launcher.add_region_requirement(owner_reg_req);
 
