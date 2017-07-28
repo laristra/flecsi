@@ -1094,7 +1094,7 @@ public:
 
     size_t depth;
     element_t size;
-    branch_t* b = root();//find_start_(center, radius, depth, size);
+    branch_t* b = find_start_(center, radius, depth, size);
 
     find_(b, size, ents, ef, geometry_t::intersects, center, radius);
 
@@ -1128,8 +1128,8 @@ public:
     ents.set_master(entities_);
 
     size_t depth;
-    element_t size;
-    branch_t* b = root();//find_start_(center, radius, depth, size);
+    &element_t size;
+    branch_t* b = find_start_(center, radius, depth, size);
     queue_depth += depth;
 
     find_(pool, sem, mtx, queue_depth, depth, b, size, ents, ef,
@@ -1862,7 +1862,7 @@ private:
 
       branch_id_t bid = to_branch_id(center, max_depth_);
 
-      int d = -std::log2(norm_radius) - 1;
+      int d = -std::log2(norm_radius) - 2;
 
       while(d > 0)
       {
@@ -1876,8 +1876,8 @@ private:
         bool found = true;
         for(size_t dim = 0; dim < dimension; ++dim)
         {
-          if(!(center[dim] - radius > p2[dim] &&
-               center[dim] + radius < p2[dim] + size))
+          if(!(center[dim] - radius >= p2[dim] &&
+               center[dim] + radius <= p2[dim] + size))
           {
             found = false;
             break;
@@ -2056,13 +2056,13 @@ private:
       {
         branch_t* ci = b->template child_<branch_t>(i);
 
-        //iif(bf(ci->coordinates(range_),
-        //      size, scale_, std::forward<ARGS>(args)...))
-        //{
+        if(bf(ci->coordinates(range_),
+              size, scale_, std::forward<ARGS>(args)...))
+        {
           find_(ci, size, ents,
                 std::forward<EF>(ef), std::forward<BF>(bf),
                 std::forward<ARGS>(args)...);
-        //}
+        }
       }
     }
 
@@ -2117,9 +2117,9 @@ private:
       {
         branch_t* ci = b->template child_<branch_t>(i);
 
-        //if(bf(ci->coordinates(range_),
-        //      size, scale_, std::forward<ARGS>(args)...))
-        //{
+        if(bf(ci->coordinates(range_),
+              size, scale_, std::forward<ARGS>(args)...))
+        {
           if(depth == queue_depth)
           {
 
@@ -2145,21 +2145,21 @@ private:
                   std::forward<EF>(ef), std::forward<BF>(bf),
                   std::forward<ARGS>(args)...);
           }
-        //}
-        //else{
-        //  if(depth > queue_depth)
-        //  {
-        //    continue;
-        //  }
+        }
+        else{
+          if(depth > queue_depth)
+          {
+            continue;
+          }
 
-        //  size_t m =
-        //    branch_int_t(1) << (queue_depth - depth) * P::dimension;
+          size_t m =
+            branch_int_t(1) << (queue_depth - depth) * P::dimension;
 
-        //  for(size_t i = 0; i < m; ++i)
-        //  {
-        //    sem.release();
-        //  }
-        //}
+          for(size_t i = 0; i < m; ++i)
+          {
+            sem.release();
+          }
+        }
       }
     }
 
