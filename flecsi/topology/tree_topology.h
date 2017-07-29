@@ -124,6 +124,18 @@ struct tree_geometry<T, 1>
            center[0] <= origin[0] + size * scale[0] + radius;
   }
 
+  // Intersection of two spheres
+  static 
+  bool 
+  intersects_sphere_sphere(
+    const point_t& c1, 
+    const element_t r1, 
+    const point_t& c2, 
+    const element_t r2)
+  {
+    return distance(c1,c2) < r1+r2; 
+  }
+
   static
   bool
   intersects_box(
@@ -225,12 +237,27 @@ struct tree_geometry<T, 2>
     const point_t& scale,
     const point_t& center,
     element_t radius)
-{
+  {
     return center[0] >= origin[0] - radius &&
            center[0] <= origin[0] + size * scale[0] + radius &&
            center[1] >= origin[1] - radius &&
            center[1] <= origin[1] + size * scale[1] + radius;
   }
+
+
+  // Intersection of two spheres
+  static 
+  bool 
+  intersects_sphere_sphere(
+    const point_t& c1, 
+    const element_t r1, 
+    const point_t& c2, 
+    const element_t r2)
+  {
+    return distance(c1,c2) < r1+r2; 
+  }
+
+
 
   static
   bool
@@ -348,6 +375,18 @@ struct tree_geometry<T, 3>
            center[1] <= origin[1] + size * scale[1] + radius &&
            center[2] >= origin[2] - radius &&
            center[2] <= origin[2] + size * scale[2] + radius;
+  }
+  
+  // Intersection of two spheres
+  static 
+  bool 
+  intersects_sphere_sphere(
+    const point_t& c1, 
+    const element_t r1, 
+    const point_t& c2, 
+    const element_t r2)
+  {
+    return distance(c1,c2) < r1+r2; 
   }
 
   static
@@ -1073,6 +1112,143 @@ public:
 
     return pn;
   }
+
+  /*!
+   * Update the branch boundaries
+   * Go through all the branches in a DFS order
+   */
+  void
+  update_branches(
+      const element_t epsilon = element_t(0))
+  {
+    // Recursive version 
+    std::function<void(branch_t*)> traverse;
+    traverse = [&epsilon,&traverse,this](branch_t* b){
+      element_t mass = element_t(0); // first version, mass = 1.0 for every parts
+      element_t radius = element_t(0);
+      point_t coordinates = point_t{};
+      if(b->is_leaf())
+      {
+        for(auto child: *b)
+        {
+          element_t childmass = 1.0; // Consider every mass to 1.0
+          // \todo children locality 
+          for(size_t d = 0; d < dimension; ++d)
+          {
+            coordinates[d] += child->coordinates()[d]*childmass; 
+          }
+          mass += childmass;
+        }
+        if(mass > element_t(0))
+        {
+          for(size_t d = 0; d < dimension; ++d)
+          {
+            coordinates[d] /= mass; 
+          }
+          // Compute radius 
+          for(auto child: *b)
+          {
+            // \todo children locality 
+            element_t dist = distance(child->coordinates(),coordinates); 
+            if(radius < dist){
+              radius = dist;
+            } 
+          }
+          radius += epsilon;
+          assert(mass<=8.0);
+        }
+      }else{
+        for(int i=0 ; i<(1<<dimension);++i)
+        {
+          auto branch = child(b,i); 
+          traverse(branch);
+          mass += branch->mass();
+          //std::cout<<"c:"<<i<<" adding="<<branch->mass()<<" l="<<
+          //  branch->is_leaf()<<std::endl;
+          // Then sum result 
+          for(size_t d = 0; d < dimension; ++d)
+          {
+            coordinates[d] += branch->get_coordinates()[d]*branch->mass(); 
+          }
+        }
+        if(mass > element_t(0))
+        {
+          for(size_t d = 0; d < dimension; ++d)
+          {
+            coordinates[d] /= mass; 
+          }
+          // Then radius 
+          for(int i=0 ; i<(1<<dimension);++i)
+          {
+            auto branch = child(b,i); 
+            element_t dist = distance(branch->get_coordinates(),coordinates);
+            dist += branch->radius(); 
+            if(radius < dist)
+            {
+              radius = dist; 
+            }
+          }
+        }
+      }
+      // Save in both cases
+      b->set_coordinates(coordinates);
+      b->set_mass(mass);
+      b->set_radius(radius);  
+    };
+    traverse(root());
+  }
+
+  /*!
+    Return an index space containing all entities within the specified
+    spheroid.
+   */
+  subentity_space_t
+  find_in_radius_b(
+
+    const point_t& center,
+    element_t radius
+  )
+  {
+    subentity_space_t ents;
+    ents.set_master(entities_);
+
+    // Tree traversal from root down 
+    // Recursive version 
+    std::function<void(branch_t*)> traverse;
+    traverse = [this,&ents,&traverse,&radius,&center](branch_t* b){
+      if(b->is_leaf())
+      {
+        for(auto child: *b)
+        {
+          // Check if in radius 
+          if(geometry_t::within(center,child->coordinates(),radius))
+          {
+            ents.push_back(child);
+          }
+        }
+      }else{
+        for(int i=0 ; i<(1<<dimension);++i)
+        {
+          auto branch = child(b,i);
+
+          if(geometry_t::intersects_sphere_sphere(
+                center,
+                radius,
+                branch->get_coordinates(),
+                branch->radius()))
+          {
+            //std::cout<<"Down"<<std::endl;
+            traverse(branch);
+          }
+        }
+      }
+    };
+
+    traverse(root()); 
+
+    return ents;
+  }
+
 
   /*!
     Return an index space containing all entities within the specified
@@ -1858,11 +2034,11 @@ private:
     )
     {
 
-      element_t norm_radius = radius / max_scale_;
+      //element_t norm_radius = radius / max_scale_;
 
       branch_id_t bid = to_branch_id(center, max_depth_);
-
-      int d = -std::log2(norm_radius) - 2;
+            
+      int d = bid.depth();
 
       while(d > 0)
       {
@@ -1873,22 +2049,27 @@ private:
 
         size = std::pow(element_t(2), -d);
 
-        bool found = true;
-        for(size_t dim = 0; dim < dimension; ++dim)
-        {
-          if(!(center[dim] - radius >= p2[dim] &&
-               center[dim] + radius <= p2[dim] + size))
-          {
-            found = false;
-            break;
-          }
-        }
-
-        if(found)
-        {
+        //bool found = true;
+        if(!(distance(center,p2) <= radius)){
           depth = d;
           return b;
         }
+        
+        //for(size_t dim = 0; dim < dimension; ++dim)
+        //{
+        //  if(!(center[dim] - radius >= p2[dim] &&
+        //       center[dim] + radius <= p2[dim] + size))
+        //  {
+        //    found = false;
+        //    break;
+        //  }
+        // }
+
+        //if(found)
+        //{
+        //  depth = d;
+        //  return b;
+        //}
 
         --d;
       }
@@ -2389,7 +2570,8 @@ private:
  */
 template<
   typename T,
-  size_t D
+  size_t D,
+  typename E
 >
 class tree_branch
 {
@@ -2404,10 +2586,15 @@ public:
 
   static constexpr size_t num_children = branch_int_t(1) << dimension;
 
+  using point_t = point<E,D>;
+  using element_t = E;
+
   tree_branch()
   : action_(action::none),
   parent_(nullptr),
-  children_(nullptr)
+  children_(nullptr),
+  coordinates_(point_t{}),
+  radius_(element_t(0))
   {}
 
   branch_id_t
@@ -2458,7 +2645,44 @@ public:
     return true;
   }
 
-private:
+  void 
+  set_mass(element_t mass)
+  {
+    mass_ = mass;
+  }
+ 
+  void 
+  set_radius(element_t radius)
+  {
+    radius_ = radius;
+  }
+
+  void 
+  set_coordinates(point_t coordinates)
+  {
+    coordinates_ = coordinates;
+  }
+
+  element_t 
+  mass() const
+  {
+    return mass_;
+  }
+ 
+  element_t 
+  radius() const 
+  {
+    return radius_;
+  }
+
+  point_t 
+  get_coordinates() const
+  {
+    return coordinates_;
+  }
+
+
+protected:
   template<class P>
   friend class tree_topology;
 
@@ -2552,6 +2776,10 @@ private:
   tree_branch* children_;
 
   branch_id_t id_;
+
+  point_t coordinates_; 
+  element_t radius_; 
+  element_t mass_;
 };
 
 } // namespace topology
