@@ -133,7 +133,21 @@ struct tree_geometry<T, 1>
     const point_t& c2, 
     const element_t r2)
   {
-    return distance(c1,c2) < r1+r2; 
+    return distance(c1,c2) <= r1+r2; 
+  }
+
+  // Intersection of sphere and box
+  static 
+  bool 
+  intersects_sphere_box(
+    const point_t& min, 
+    const point_t& max, 
+    const point_t& c, 
+    const element_t r)
+  {
+    point_t x = point_t(std::max(min[0],std::min(c[0],max[0])));  
+    element_t dist = distance(x,c); 
+    return dist <= r;
   }
 
   static
@@ -254,7 +268,23 @@ struct tree_geometry<T, 2>
     const point_t& c2, 
     const element_t r2)
   {
-    return distance(c1,c2) < r1+r2; 
+    return distance(c1,c2) <= r1+r2; 
+  }
+
+  // Intersection of sphere and box
+  static 
+  bool 
+  intersects_sphere_box(
+    const point_t& min, 
+    const point_t& max, 
+    const point_t& c, 
+    const element_t r)
+  {
+    point_t x = point_t(
+        std::max(min[0],std::min(c[0],max[0])),
+        std::max(min[1],std::min(c[1],max[1])));  
+    element_t dist = distance(x,c); 
+    return dist <= r;
   }
 
 
@@ -386,8 +416,29 @@ struct tree_geometry<T, 3>
     const point_t& c2, 
     const element_t r2)
   {
-    return distance(c1,c2) < r1+r2; 
+    return distance(c1,c2) <= r1+r2; 
   }
+
+
+
+  // Intersection of sphere and box
+  static 
+  bool 
+  intersects_sphere_box(
+    const point_t& min, 
+    const point_t& max, 
+    const point_t& c, 
+    const element_t r)
+  {
+    point_t x = point_t(
+        std::max(min[0],std::min(c[0],max[0])),
+        std::max(min[1],std::min(c[1],max[1])), 
+        std::max(min[2],std::min(c[2],max[2]))); 
+    element_t dist = distance(x,c); 
+    return dist <= r;
+  }
+
+
 
   static
   bool
@@ -1124,14 +1175,14 @@ public:
     // Recursive version 
     std::function<void(branch_t*)> traverse;
     traverse = [&epsilon,&traverse,this](branch_t* b){
-      element_t mass = element_t(0); // first version, mass = 1.0 for every parts
+      element_t mass = element_t(0); 
       element_t radius = element_t(0);
       point_t coordinates = point_t{};
       if(b->is_leaf())
       {
         for(auto child: *b)
         {
-          element_t childmass = 1.0; // Consider every mass to 1.0
+          element_t childmass = child->getMass(); 
           // \todo children locality 
           for(size_t d = 0; d < dimension; ++d)
           {
@@ -1155,7 +1206,6 @@ public:
             } 
           }
           radius += epsilon;
-          assert(mass<=8.0);
         }
       }else{
         for(int i=0 ; i<(1<<dimension);++i)
@@ -1204,7 +1254,6 @@ public:
    */
   subentity_space_t
   find_in_radius_b(
-
     const point_t& center,
     element_t radius
   )
@@ -1220,17 +1269,19 @@ public:
       {
         for(auto child: *b)
         {
-          // Check if in radius 
-          if(geometry_t::within(center,child->coordinates(),radius))
-          {
-            ents.push_back(child);
-          }
+          //if(child->getMass() > element_t(0))
+          //{
+            // Check if in radius 
+            if(geometry_t::within(center,child->coordinates(),radius))
+            {
+              ents.push_back(child);
+            }
+          //}
         }
       }else{
         for(int i=0 ; i<(1<<dimension);++i)
         {
           auto branch = child(b,i);
-
           if(geometry_t::intersects_sphere_sphere(
                 center,
                 radius,
@@ -1312,6 +1363,54 @@ public:
           geometry_t::intersects, center, radius);
 
     sem.acquire();
+
+    return ents;
+  }
+
+
+  /*!
+    Return an index space containing all entities within the specified
+   box.
+   */
+  subentity_space_t
+  find_in_box_b(
+    const point_t& min,
+    const point_t& max
+  )
+  {
+    subentity_space_t ents;
+    ents.set_master(entities_);
+
+    // Tree traversal from root down 
+    // Recursive version 
+    std::function<void(branch_t*)> traverse;
+    traverse = [this,&ents,&traverse,&min,&max](branch_t* b){
+      if(b->is_leaf())
+      {
+        for(auto child: *b)
+        {
+            if(geometry_t::within_box(child->coordinates(),min,max))
+            {
+              ents.push_back(child);
+            }
+        }
+      }else{
+        for(int i=0 ; i<(1<<dimension);++i)
+        {
+          auto branch = child(b,i);
+          if(geometry_t::intersects_sphere_box(
+                min,
+                max,
+                branch->get_coordinates(),
+                branch->radius()))
+          {
+            traverse(branch);
+          }
+        }
+      }
+    };
+
+    traverse(root()); 
 
     return ents;
   }
@@ -2506,12 +2605,16 @@ template<
 >
 class tree_entity{
 public:
+
+  enum locality {LOCAL,NONLOCAL,SHARED,EXCL,GHOST}; 
+
   using id_t = entity_id_t;
 
   using branch_id_t = branch_id<T, D>;
 
   tree_entity()
-  : branch_id_(branch_id_t::null())
+  : branch_id_(branch_id_t::null()),
+  locality_(NONLOCAL)
   {}
 
   branch_id_t
@@ -2541,7 +2644,22 @@ public:
     return branch_id_ != branch_id_t::null();
   }
 
-private:
+  /*!
+   * Return true if the entity is local in this process
+   */
+  bool
+  is_local() const 
+  {
+    return (locality_ == LOCAL || locality_ == EXCL || locality_ == SHARED); 
+  }
+
+  void 
+  setLocality(locality loc)
+  {
+    locality_ = loc;
+  }
+
+protected:
   template<class P>
   friend class tree_topology;
 
@@ -2563,6 +2681,8 @@ private:
 
   branch_id_t branch_id_;
   entity_id_t id_;
+
+  int locality_;
 };
 
 /*!
