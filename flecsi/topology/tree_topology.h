@@ -2594,8 +2594,7 @@ private:
   point<element_t, dimension> scale_;
   element_t max_scale_;
 };
-
-
+  
 /*!
   Tree entity base class.
  */
@@ -2606,11 +2605,14 @@ template<
 class tree_entity{
 public:
 
-  enum locality {LOCAL,NONLOCAL,SHARED,EXCL,GHOST}; 
-
   using id_t = entity_id_t;
 
   using branch_id_t = branch_id<T, D>;
+  
+protected:
+  enum locality {LOCAL=0,NONLOCAL=1,SHARED=2,EXCL=3,GHOST=4}; 
+  
+public:
 
   tree_entity()
   : branch_id_(branch_id_t::null()),
@@ -2658,6 +2660,12 @@ public:
   {
     locality_ = loc;
   }
+  
+  locality 
+  getLocality()
+  {
+    return locality_;
+  };
 
 protected:
   template<class P>
@@ -2682,7 +2690,7 @@ protected:
   branch_id_t branch_id_;
   entity_id_t id_;
 
-  int locality_;
+  locality locality_;
 };
 
 /*!
