@@ -414,7 +414,6 @@ runtime_driver(
       }
 
       spmd_launcher.add_region_requirement(reg_req);
-
     }//adjacency_indx
 
     auto global_ispace = data.global_index_space();
@@ -423,21 +422,32 @@ runtime_driver(
 
     global_reg_req.add_flags(NO_ACCESS_FLAG);
     for(const field_info_t& field_info : context_.registered_fields()){
-      if(field_info.storage_type == global ){
+      if(field_info.storage_type == data::global ){
          global_reg_req.add_field(field_info.fid);
        }//if
      }//for
 
      if (number_of_global_fields>0)
        spmd_launcher.add_region_requirement(global_reg_req);
-    
-    //FIXME need to partition color IS
-    auto color_ispace = data.color_index_space();
-    Legion::RegionRequirement color_reg_req(color_ispace.logical_region,
-          READ_WRITE, SIMULTANEOUS, color_ispace.logical_region);
 
+    auto color_ispace = data.color_index_space();
+
+    Legion::IndexPartition color_ip;
+    LegionRuntime::Arrays::Blockify<1> coloring(1);
+    color_ip = runtime->create_index_partition(ctx, color_ispace.index_space,
+      coloring);
+    Legion::LogicalPartition color_lp = runtime->get_logical_partition(ctx,
+        color_ispace.logical_region, color_ip);
+
+    Legion::LogicalRegion color_lregion2 =
+        runtime->get_logical_subregion_by_color(ctx, color_lp, color);
+
+    Legion::RegionRequirement color_reg_req(color_lregion2,
+          READ_ONLY, SIMULTANEOUS, color_ispace.logical_region);
+
+    color_reg_req.add_flags(NO_ACCESS_FLAG);
     for(const field_info_t& field_info : context_.registered_fields()){
-      if(field_info.storage_type == color ){
+       if(field_info.storage_type == data::color ){
          color_reg_req.add_field(field_info.fid);
        }//if
      }//for
@@ -455,7 +465,7 @@ runtime_driver(
 
   // Finish up Legion runtime and fall back out to MPI.
 
-  //FIXME runtime->destroy_dynamic_collective(ctx, max_reduction);
+  runtime->destroy_dynamic_collective(ctx, max_reduction);
 
   for(auto& itr_idx : phase_barriers_map) {
     const size_t idx = itr_idx.first;
@@ -865,7 +875,7 @@ spmd_task(
   if(number_of_color_fields>0){
 
     size_t color_index_space =
-      execution::internal_index_space::global_is;
+      execution::internal_index_space::color_is;
 
     ispace_dmap[color_index_space].color_region =
       regions[region_index].get_logical_region();  

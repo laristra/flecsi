@@ -12,8 +12,8 @@
  * All rights reserved
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_legion_global_h
-#define flecsi_legion_global_h
+#ifndef flecsi_legion_color_h
+#define flecsi_legion_color_h
 
 //----------------------------------------------------------------------------//
 // POLICY_NAMESPACE must be defined before including storage_type.h!!!
@@ -34,7 +34,7 @@
 #include "flecsi/data/common/privilege.h"
 
 ///
-// \file legion/global.h
+// \file legion/color.h
 // \authors Demeshko
 // \date Initial file creation: July, 2017
 ///
@@ -48,7 +48,7 @@ namespace legion {
 //----------------------------------------------------------------------------//
 
 ///-------------------------------------------------------------------------//
-//! global_handle_t provide an access to global variables that have
+//! color_handle_t provide an access to color variables that have
 //! been registered in data model
 //!
 //! \tparam T The type of the data variable. If this type is not
@@ -63,7 +63,7 @@ template<
   typename T,
   size_t P
 >
-struct global_handle_t : public data_handle__<T, P, 0, 0> {
+struct color_handle_t : public data_handle__<T, P, 0, 0> {
 
   //--------------------------------------------------------------------------//
   // Type definitions.
@@ -75,23 +75,23 @@ struct global_handle_t : public data_handle__<T, P, 0, 0> {
   // Constructors.
   //--------------------------------------------------------------------------//
 
-   global_handle_t()
+   color_handle_t()
    {
-    base_t::global=true;
+    base_t::color=true;
    }
 
   //--------------------------------------------------------------------------//
   // Destructor.
   //--------------------------------------------------------------------------//
 
-  ~global_handle_t(){}
+  ~color_handle_t(){}
 
 
   ///
   // Copy constructor.
   ///
   template<size_t P2>
-  global_handle_t(const global_handle_t<T, P2> & a)
+  color_handle_t(const color_handle_t<T, P2> & a)
     : base_t(reinterpret_cast<const base_t&>(a)),
       label_(a.label()),
       size_(a.size())
@@ -211,9 +211,7 @@ struct global_handle_t : public data_handle__<T, P, 0, 0> {
   private:
     std::string label_ = "";
     size_t size_=0;
-//    T* data_ = nullptr;
-//     T* buffer = nullptr;
-}; // struct global_handle_t
+}; // struct color_handle_t
 
 //+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=//
 // Main type definition.
@@ -224,10 +222,10 @@ struct global_handle_t : public data_handle__<T, P, 0, 0> {
 //----------------------------------------------------------------------------//
 
 ///
-// FIXME: Global storage type.
+// FIXME: Color storage type.
 ///
 template<>
-struct storage_type__<global> {
+struct storage_type__<color> {
 
   //--------------------------------------------------------------------------//
   // Type definitions.
@@ -237,7 +235,7 @@ struct storage_type__<global> {
     typename T,
     size_t P
   >
-  using handle_t = global_handle_t<T, P>;
+  using handle_t = color_handle_t<T, P>;
 
   //--------------------------------------------------------------------------//
   // Data handles.
@@ -361,7 +359,7 @@ struct storage_type__<global> {
     h.color_region = ism[index_space].color_region;
     h.fid = field_info.fid;
     h.index_space = field_info.index_space;
-    h.global = true;
+    h.color = true;
 
     return h;
   }
@@ -373,7 +371,7 @@ struct storage_type__<global> {
 } // namespace data
 } // namespace flecsi
 
-#endif // flecsi_legion_global_h
+#endif // flecsi_legion_color_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options

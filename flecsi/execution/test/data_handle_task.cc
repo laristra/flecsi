@@ -83,6 +83,8 @@ flecsi_register_field(client_type, ns, pressure, double, dense, 1, 0);
 
 flecsi_register_field(client_type, ns, velocity, double, global, 1);
 
+flecsi_register_field(client_type, ns, density, double, color, 1);
+
 namespace flecsi {
 namespace execution {
 

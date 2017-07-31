@@ -141,30 +141,28 @@ public:
      }//scope
 
      // Create color index space
-    index_space_t is_color;
     {
       const size_t index_space_id =
 				execution::internal_index_space::color_is;
 
       index_spaces_.insert(index_space_id);
 
-      is_color.index_space_id = index_space_id;
+      color_index_space_.index_space_id = index_space_id;
 
-      Rect<1> bounds(Point<1>(0),Point<1>(4));
+//      Rect<1> bounds(Point<1>(0),Point<1>(4));
 
-      Domain dom(Domain::from_rect<1>(bounds));
+//      Domain dom(Domain::from_rect<1>(bounds));
 
-      is_color.index_space = runtime_->create_index_space(ctx_, dom);
-      attach_name(is_color, is_color.index_space,
-				"global index space");
+      color_index_space_.index_space =
+        runtime_->create_index_space(ctx_, color_domain_);
+      attach_name(color_index_space_, color_index_space_.index_space,
+				"color index space");
 
       // Read user + FleCSI registered field spaces
-      is_color.field_space = runtime_->create_field_space(ctx_);
+      color_index_space_.field_space = runtime_->create_field_space(ctx_);
 
-      attach_name(is_color, is_color.field_space,
-				"global field space");
-
-      color_index_space_ = is_color;
+      attach_name(color_index_space_, color_index_space_.field_space,
+				"color field space");
      }//scope
  
   }//init_from_coloring_info_map
@@ -585,7 +583,7 @@ public:
   index_space_t
   color_index_space()
   {
-    return global_index_space_;
+    return color_index_space_;
   }
 
 private:
