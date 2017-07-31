@@ -13,7 +13,7 @@
 
 namespace flecsi {
 
-  enum partition_t : size_t{
+  enum class partition_t : size_t{
     exclusive = 0x001b,
     shared    = 0x010b,
     ghost     = 0x100b,

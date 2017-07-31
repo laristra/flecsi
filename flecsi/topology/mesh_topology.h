@@ -409,7 +409,7 @@ public:
     size_t M = 0
     >
   decltype(auto)
-  num_entities(size_t partition = all) const
+  num_entities(partition_t partition = partition_t::all) const
   {
     return base_t::ms_->index_spaces[M][D].size();
   } // num_entities
@@ -424,7 +424,7 @@ public:
     size_t to_domain,
     size_t from_dim,
     size_t to_dim,
-    size_t partition) const override
+    partition_t partition) const override
   {
     return get_connectivity_(from_domain, to_domain, from_dim, to_dim, 
       partition);
@@ -440,7 +440,7 @@ public:
     size_t to_domain,
     size_t from_dim,
     size_t to_dim,
-    size_t partition) override
+    partition_t partition) override
   {
     return get_connectivity_(from_domain, to_domain, from_dim, to_dim, 
       partition);
@@ -455,7 +455,7 @@ public:
     size_t domain,
     size_t from_dim,
     size_t to_dim,
-    size_t partition=all) const override
+    partition_t partition = partition_t::all) const override
   {
     return get_connectivity_(domain, domain, from_dim, to_dim, partition);
   } // get_connectivity
@@ -469,7 +469,7 @@ public:
     size_t domain,
     size_t from_dim,
     size_t to_dim,
-    size_t partition=all) override
+    partition_t partition = partition_t::all) override
   {
     return get_connectivity_(domain, domain, from_dim, to_dim, partition);
   } // get_connectivity
@@ -486,7 +486,7 @@ public:
   const auto &
   get_index_space_(
     size_t dim,
-    size_t partition = all
+    partition_t partition = partition_t::all
   ) const
   {
     return base_t::ms_->index_spaces[M][dim];
@@ -498,7 +498,7 @@ public:
   auto &
   get_index_space_(
     size_t dim,
-    size_t partition = all
+    partition_t partition = partition_t::all
   )
   {
     return base_t::ms_->index_spaces[M][dim];
@@ -548,7 +548,7 @@ public:
   const auto
   entities(
     const E * e,
-    size_t partition = all
+    partition_t partition = partition_t::all
   ) const
   {
 
@@ -578,7 +578,7 @@ public:
   auto
   entities(
     E * e,
-    size_t partition = all
+    partition_t partition = partition_t::all
   )
   {
     connectivity_t & c = get_connectivity(FM, TM, E::dimension, D, partition);
@@ -605,7 +605,7 @@ public:
   decltype(auto)
   entities(
     domain_entity<FM, E> & e,
-    size_t partition = all
+    partition_t partition = partition_t::all
   ) const
   {
     return entities<D, FM, TM>(e.entity());
@@ -624,7 +624,7 @@ public:
   decltype(auto)
   entities(
     domain_entity<FM, E> & e,
-    size_t partition = all
+    partition_t partition = partition_t::all
   )
   {
     return entities<D, FM, TM>(e.entity());
@@ -639,7 +639,7 @@ public:
     size_t M = 0
   >
   auto
-  entities(size_t partition = all) const
+  entities(partition_t partition = partition_t::all) const
   {
     using etype = entity_type<D, M>;
     using dtype = domain_entity<M, etype>;
@@ -655,7 +655,7 @@ public:
     size_t M = 0
   >
   auto
-  entity_ids(size_t partition = all) const
+  entity_ids(partition_t partition = partition_t::all) const
   {
     return base_t::ms_->index_spaces[M][D].ids();
   } // entity_ids
@@ -673,7 +673,7 @@ public:
   decltype(auto)
   entity_ids(
     domain_entity<FM, E> & e,
-    size_t partition = all
+    partition_t partition = partition_t::all
   )
   {
     return entity_ids<D, FM, TM>(e.entity());
@@ -692,7 +692,7 @@ public:
   auto
   entity_ids(
     const E * e,
-    size_t partition = all
+    partition_t partition = partition_t::all
   ) const
   {
     const connectivity_t & c = get_connectivity(FM, TM, E::dimension, D, 
@@ -716,7 +716,7 @@ public:
   void
   reverse_entities(
     E * e,
-    size_t partition = all
+    partition_t partition = partition_t::all
   )
   {
     auto & c = get_connectivity(FM, TM, E::dimension, D, partition);
@@ -737,7 +737,7 @@ public:
   void
   reverse_entities(
     domain_entity<FM, E> & e,
-    size_t partition = all
+    partition_t partition = partition_t::all
   )
   {
     return reverse_entities<D, FM, TM>(e.entity(), partition);
@@ -759,7 +759,7 @@ public:
   reorder_entities(
     E * e,
     U && order,
-    size_t partition = all
+    partition_t partition = partition_t::all
   )
   {
     auto & c = get_connectivity(FM, TM, E::dimension, D, partition);
@@ -782,7 +782,7 @@ public:
   reverse_entities(
     domain_entity<FM, E> & e,
     U && order,
-    size_t partition = all
+    partition_t partition = partition_t::all
   )
   {
     return reorder_entities<D, FM, TM>(e.entity(), std::forward<U>(order),
@@ -1059,7 +1059,7 @@ public:
   append_to_index_space_(
     size_t domain,
     size_t dim,
-    size_t partition,
+    partition_t partition,
     std::vector<mesh_entity_base_*>& ents,
     std::vector<id_t>& ids) override
   {
@@ -1123,7 +1123,7 @@ private:
   num_entities_(
     size_t dim,
     size_t domain=0,
-    size_t partition=all
+    partition_t partition = partition_t::all
   ) const
   {
     return base_t::ms_->index_spaces[domain][dim].size();
@@ -1768,7 +1768,7 @@ private:
     size_t to_domain,
     size_t from_dim,
     size_t to_dim,
-    size_t partition) const
+    partition_t partition = partition_t::all) const
   {
     assert(from_domain < MT::num_domains && "invalid from domain");
     assert(to_domain < MT::num_domains && "invalid to domain");
@@ -1785,7 +1785,7 @@ private:
     size_t to_domain,
     size_t from_dim,
     size_t to_dim,
-    size_t partition)
+    partition_t partition = partition_t::all)
   {
     assert(from_domain < MT::num_domains && "invalid from domain");
     assert(to_domain < MT::num_domains && "invalid to domain");
@@ -1804,7 +1804,7 @@ private:
   connectivity_t &
   get_connectivity_(
     size_t to_dim,
-    size_t partition = all
+    partition_t partition = partition_t::all
   )
   {
     return base_t::ms_->topology[FM][TM].template get<FD>(to_dim);
@@ -1821,7 +1821,7 @@ private:
     size_t TD
   >
   connectivity_t &
-  get_connectivity_(size_t partition = all)
+  get_connectivity_(partition_t partition = partition_t::all)
   {
     return base_t::ms_->topology[FM][TM].template get<FD, TD>();
   } // get_connectivity
@@ -1835,7 +1835,7 @@ private:
     size_t domain,
     size_t from_dim,
     size_t to_dim,
-    size_t partition=all) const
+    partition_t partition = partition_t::all) const
   {
     return get_connectivity_(domain, domain, from_dim, to_dim, partition);
   } // get_connectivity
@@ -1845,7 +1845,7 @@ private:
     size_t domain,
     size_t from_dim,
     size_t to_dim,
-    size_t partition=all)
+    partition_t partition = partition_t::all)
   {
     return get_connectivity_(domain, domain, from_dim, to_dim, partition);
   } // get_connectivity

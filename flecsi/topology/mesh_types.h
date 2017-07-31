@@ -855,28 +855,28 @@ public:
    */
   virtual const connectivity_t & get_connectivity(
       size_t domain, size_t from_dim, size_t to_dim,
-      size_t partition=0) const = 0;
+      partition_t partition = partition_t::all) const = 0;
 
   /*!
     Get the normal (non-binding) connectivity of a domain.
    */
   virtual connectivity_t & get_connectivity(
       size_t domain, size_t from_dim, size_t to_dim,
-      size_t partition=0) = 0;
+      partition_t partition = partition_t::all) = 0;
 
   /*!
     Get the binding connectivity of specified domains.
    */
   virtual const connectivity_t & get_connectivity(size_t from_domain,
       size_t to_domain, size_t from_dim, size_t to_dim,
-      size_t partition=0) const = 0;
+      partition_t partition = partition_t::all) const = 0;
 
   /*!
     Get the binding connectivity of specified domains.
    */
   virtual connectivity_t & get_connectivity(
       size_t from_domain, size_t to_domain, size_t from_dim, size_t to_dim,
-      size_t partition=0) = 0;
+      partition_t partition = partition_t::all) = 0;
 
   /*!
     This method should be called to construct and entity rather than
@@ -891,7 +891,7 @@ public:
 
   virtual void append_to_index_space_(size_t domain,
     size_t dimension,
-    size_t partition,
+    partition_t partition,
     std::vector<mesh_entity_base_*>& ents,
     std::vector<id_t>& ids) = 0;
 
@@ -938,7 +938,7 @@ void unserialize_dimension_(mesh_topology_base_t<ST>& mesh,
   }
 
   // TODO: fix - pg
-  mesh.append_to_index_space_(M, D, all, ents, ids);
+  mesh.append_to_index_space_(M, D, partition_t::all, ents, ids);
 }
 
 template<
