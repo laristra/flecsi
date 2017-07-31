@@ -88,11 +88,6 @@ public:
     return std::set<size_t>(vvec.begin(), vvec.end());
   }
 
-
-  virtual point_t vertex(size_t vertex_id) const = 0;
-
-private:
-
 }; // class mesh_definition__
 
 } // namespace topology

@@ -11,6 +11,8 @@
 //! @date Initial file creation: Jun 21, 2017
 //----------------------------------------------------------------------------//
 
+#include "flecsi/runtime/types.h"
+
 namespace flecsi {
 
 //----------------------------------------------------------------------------//
@@ -18,8 +20,6 @@ namespace flecsi {
 //----------------------------------------------------------------------------//
 struct data_client_handle_adjacency
 {
-  using field_id_t = size_t ;
-
   size_t adj_index_space;
   size_t from_index_space;
   size_t to_index_space;

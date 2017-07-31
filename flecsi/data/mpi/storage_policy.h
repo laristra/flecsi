@@ -23,7 +23,7 @@
 
 #include "flecsi/data/common/data_hash.h"
 #include "flecsi/data/data_constants.h"
-#include "flecsi/data/mpi/registration_wrapper.h"
+#include "flecsi/runtime/types.h"
 
 // Include partial specializations
 //#include "flecsi/data/mpi/global.h"
@@ -37,7 +37,6 @@ namespace data {
 
 struct mpi_storage_policy_t {
 
-  using field_id_t = size_t;
   using registration_function_t = std::function<void(size_t)>;
   using unique_fid_t = utils::unique_id_t<field_id_t, FLECSI_GENERATED_ID_MAX>;
   using data_value_t = std::pair<field_id_t, registration_function_t>;

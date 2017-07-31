@@ -20,7 +20,11 @@
 
 clog_register_tag(gid_to_lid);
 
-class client_type : public flecsi::data::data_client_t{};
+class client_type : public flecsi::data::data_client_t
+{
+public:
+  using type_identifier_t = flecsi::data::data_client_t;
+};
 
 flecsi_register_field(client_type, name_space, cell_ID, size_t, dense,
     INDEX_ID, VERSIONS);
@@ -35,7 +39,10 @@ namespace execution {
 void specialization_tlt_init(int argc, char ** argv) {
   clog(trace) << "In specialization top-level-task init" << std::endl;
 
-  flecsi_execute_mpi_task(add_colorings, 0);
+  coloring_map_t map;
+  map.vertices = 1;
+  map.cells = 0;
+  flecsi_execute_mpi_task(add_colorings, map);
 
 } // specialization_tlt_init
 

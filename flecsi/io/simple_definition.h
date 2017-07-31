@@ -131,7 +131,7 @@ public:
   vertex(
     size_t vertex_id
   )
-  const override
+  const
   {
     std::string line;
     point_t v;

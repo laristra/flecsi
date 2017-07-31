@@ -19,6 +19,7 @@
 #include "flecsi/coloring/dcrs_utils.h"
 #include "flecsi/coloring/parmetis_colorer.h"
 #include "flecsi/coloring/mpi_communicator.h"
+#include "flecsi/supplemental/coloring/add_colorings.h"
 #include "flecsi/supplemental/coloring/tikz.h"
 #include "flecsi/topology/closure_utils.h"
 #include "flecsi/utils/set_utils.h"
@@ -29,7 +30,7 @@ clog_register_tag(coloring_output);
 namespace flecsi {
 namespace execution {
 
-void add_colorings(int dummy) {
+void add_colorings(coloring_map_t map) {
 
   clog_set_output_rank(1);
 
@@ -362,9 +363,9 @@ void add_colorings(int dummy) {
   } // gaurd
 
   // Gather the coloring info from all colors
-  auto cell_coloring_info = communicator->get_coloring_info(cell_color_info);
+  auto cell_coloring_info = communicator->gather_coloring_info(cell_color_info);
   auto vertex_coloring_info =
-    communicator->get_coloring_info(vertex_color_info);
+    communicator->gather_coloring_info(vertex_color_info);
 
   {
   clog_tag_guard(coloring_output);
@@ -379,8 +380,8 @@ void add_colorings(int dummy) {
   }
 
   // Add colorings to the context.
-  context_.add_coloring(0, cells, cell_coloring_info);
-  context_.add_coloring(1, vertices, vertex_coloring_info);
+  context_.add_coloring(map.cells, cells, cell_coloring_info);
+  context_.add_coloring(map.vertices, vertices, vertex_coloring_info);
 
 #if 0
   context_.add_index_space(0, cells, cell_coloring_info);

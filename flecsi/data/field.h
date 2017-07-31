@@ -11,7 +11,9 @@
 //! @date Initial file creation: Jun 21, 2017
 //----------------------------------------------------------------------------//
 
+#include "flecsi/data/common/registration_wrapper.h"
 #include "flecsi/data/storage.h"
+#include "flecsi/utils/hash.h"
 
 namespace flecsi {
 namespace data {
@@ -67,7 +69,7 @@ struct field_data__
     std::string const & name
   )
   {
-    using wrapper_t = typename DATA_POLICY::template field_wrapper__<
+    using wrapper_t = field_registration_wrapper__<
       DATA_CLIENT_TYPE,
       STORAGE_TYPE,
       DATA_TYPE,
@@ -77,8 +79,9 @@ struct field_data__
       INDEX_SPACE
     >;
 
-    const size_t client_key = typeid(DATA_CLIENT_TYPE).hash_code();
-    const size_t key = NAMESPACE_HASH ^ NAME_HASH;
+    const size_t client_key = 
+      typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
+    const size_t key = utils::hash::field_hash<NAMESPACE_HASH, NAME_HASH>();
 
     for(size_t i(0); i<VERSIONS; ++i) {
       if(!storage_t::instance().register_field(client_key, key,
@@ -114,12 +117,13 @@ struct field_data__
     typename DATA_TYPE,
     size_t NAMESPACE_HASH,
     size_t NAME_HASH,
-    size_t VERSION = 0
+    size_t VERSION = 0,
+    size_t PERMISSIONS
   >
   static
   decltype(auto)
   get_handle(
-    const data_client_t & client
+    const data_client_handle__<DATA_CLIENT_TYPE, PERMISSIONS>& client_handle
   )
   {
     using storage_type_t =
@@ -132,7 +136,7 @@ struct field_data__
       NAME_HASH,
       VERSION
     >
-    (client);
+    (client_handle);
   } // get_handle
 
   //--------------------------------------------------------------------------//

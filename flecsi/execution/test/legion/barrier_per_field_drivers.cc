@@ -16,9 +16,13 @@
 #include "flecsi/execution/execution.h"
 #include "flecsi/data/data.h"
 #include "flecsi/supplemental/coloring/add_colorings.h"
+#include "flecsi/supplemental/mesh/empty_mesh_2d.h"
 
 #define INDEX_ID 0
 #define VERSIONS 1
+
+using namespace flecsi;
+using namespace supplemental;
 
 clog_register_tag(barrier_per_field);
 
@@ -35,11 +39,9 @@ void write_task(
         const int my_color, const size_t cycle, const bool delay);
 flecsi_register_task(write_task, loc, single);
 
-class client_type : public flecsi::data::data_client_t{};
-
-flecsi_register_field(client_type, name_space, field1, size_t, dense,
+flecsi_register_field(empty_mesh_2d_t, name_space, field1, size_t, dense,
     VERSIONS, INDEX_ID);
-flecsi_register_field(client_type, name_space, field2, size_t, dense,
+flecsi_register_field(empty_mesh_2d_t, name_space, field2, size_t, dense,
     VERSIONS, INDEX_ID);
 
 namespace flecsi {
@@ -52,7 +54,11 @@ namespace execution {
 void specialization_tlt_init(int argc, char ** argv) {
   clog(trace) << "In specialization top-level-task init" << std::endl;
 
-  flecsi_execute_mpi_task(add_colorings, 0);
+  coloring_map_t map;
+  map.vertices = 1;
+  map.cells = 0;
+
+  flecsi_execute_mpi_task(add_colorings, map);
 
 } // specialization_tlt_init
 
@@ -65,11 +71,11 @@ void driver(int argc, char ** argv) {
   const int my_color = runtime->find_local_MPI_rank();
   clog(trace) << "Rank " << my_color << " in driver" << std::endl;
 
-  client_type client;
+  auto ch = flecsi_get_client_handle(empty_mesh_2d_t, meshes, mesh1);
 
-  auto handle1 = flecsi_get_handle(client, name_space,field1, size_t, dense,
+  auto handle1 = flecsi_get_handle(ch, name_space,field1, size_t, dense,
       INDEX_ID);
-  auto handle2 = flecsi_get_handle(client, name_space,field2, size_t, dense,
+  auto handle2 = flecsi_get_handle(ch, name_space,field2, size_t, dense,
       INDEX_ID);
 
   for(size_t cycle=0; cycle<3; cycle++) {
@@ -85,6 +91,21 @@ void driver(int argc, char ** argv) {
 
     flecsi_execute_task(read_task, single, handle2, my_color, cycle);
   }
+
+  // Permutation test
+  bool delay = false;
+  flecsi_execute_task(write_task, single, handle1, my_color, 0, delay);
+  flecsi_execute_task(write_task, single, handle2, my_color, 0, delay);
+  flecsi_execute_task(read_task, single, handle1, my_color, 0);
+  flecsi_execute_task(read_task, single, handle2, my_color, 0);
+
+  flecsi_execute_task(write_task, single, handle2, my_color, 1, delay);
+  flecsi_execute_task(read_task, single, handle1, my_color, 0);
+  flecsi_execute_task(read_task, single, handle2, my_color, 1);
+
+  flecsi_execute_task(write_task, single, handle1, my_color, 2, delay);
+  flecsi_execute_task(read_task, single, handle1, my_color, 2);
+  flecsi_execute_task(read_task, single, handle2, my_color, 1);
 
 } // driver
 

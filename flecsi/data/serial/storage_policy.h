@@ -25,7 +25,7 @@
 
 #include "flecsi/data/data_constants.h"
 #include "flecsi/data/serial/meta_data.h"
-#include "flecsi/data/serial/registration_wrapper.h"
+#include "flecsi/runtime/types.h"
 
 // Include partial specializations
 //#include "flecsi/data/serial/global.h"
@@ -44,7 +44,6 @@ namespace data {
 
 struct serial_storage_policy_t {
 
-  using field_id_t = size_t;
   using registration_function_t = std::function<void(size_t)>;
   using data_value_t = std::pair<field_id_t, registration_function_t>;
   using field_entry_t = std::unordered_map<size_t, data_value_t>;

@@ -6,10 +6,10 @@
 #ifndef flecsi_utils_debruijn_h
 #define flecsi_utils_debruijn_h
 
-//!
+//----------------------------------------------------------------------------//
 //! \file
 //! \date Initial file creation: Apr 09, 2017
-//!
+//----------------------------------------------------------------------------//
 
 #include <cstdint>
 #include <cstddef>
@@ -17,6 +17,7 @@
 namespace flecsi {
 namespace utils {
 
+//----------------------------------------------------------------------------//
 //!
 //! \class debruijn_t debruijn.h
 //! \brief debruijn_t provides a mechanism for doing lookups of the set
@@ -29,6 +30,8 @@ namespace utils {
 //! \note This implementation is based on the example given in
 //!       http://supertech.csail.mit.edu/papers/debruijn.pdf
 //!
+//----------------------------------------------------------------------------//
+
 class debruijn32_t {
 
   // de Bruijn sequence
@@ -45,11 +48,12 @@ class debruijn32_t {
 
 public:
 
-  //!
+  //--------------------------------------------------------------------------//
   //! Return the index of the right-most set bit in the given bit field.
   //!
   //! \note Successive bits can be found by subtracting the indexed bit.
-  //!
+  //--------------------------------------------------------------------------//
+
   static
   constexpr
   uint32_t

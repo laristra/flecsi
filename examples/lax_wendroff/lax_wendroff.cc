@@ -15,6 +15,7 @@
 #include "flecsi/coloring/dcrs_utils.h"
 #include "flecsi/coloring/parmetis_colorer.h"
 #include "flecsi/coloring/mpi_communicator.h"
+#include "flecsi/supplemental/mesh/test_mesh_2d.h"
 
 #define INDEX_ID 0
 #define VERSIONS 1
@@ -28,6 +29,9 @@
 #define DT std::min(CFL * DX / U, CFL * DY / V)
 #define X_ADVECTION U * DT / DX
 #define Y_ADVECTION V * DT / DX
+
+using namespace flecsi;
+using namespace supplemental;
 
 template<typename T, size_t EP, size_t SP, size_t GP>
 using handle_t = flecsi::data::legion::dense_handle_t<T, EP, SP, GP>;
@@ -67,13 +71,11 @@ void advect_owned_cells_in_y(
         handle_t<double, flecsi::dro, flecsi::drw, flecsi::dno> phi_update);
 flecsi_register_task(advect_owned_cells_in_y, loc, single);
 
-class client_type : public flecsi::data::data_client_t{};
-
-flecsi_register_field(client_type, lax, cell_ID, size_t, dense,
+flecsi_register_field(test_mesh_2d_t, lax, cell_ID, size_t, dense,
         INDEX_ID, VERSIONS);
-flecsi_register_field(client_type, lax, phi, double, dense,
+flecsi_register_field(test_mesh_2d_t, lax, phi, double, dense,
         INDEX_ID, VERSIONS);
-flecsi_register_field(client_type, lax, phi_update, double, dense,
+flecsi_register_field(test_mesh_2d_t, lax, phi_update, double, dense,
         INDEX_ID, VERSIONS);
 
 namespace flecsi {
@@ -103,14 +105,14 @@ void driver(int argc, char ** argv) {
 
   const int my_color = runtime->find_local_MPI_rank();
 
-  client_type client;
+  auto ch = flecsi_get_client_handle(test_mesh_2d_t, meshes, mesh1);
 
   auto phi_handle =
-          flecsi_get_handle(client, lax, phi, double, dense, INDEX_ID);
+          flecsi_get_handle(ch, lax, phi, double, dense, INDEX_ID);
   auto phi_update_handle =
-          flecsi_get_handle(client, lax, phi_update, double, dense, INDEX_ID);
+          flecsi_get_handle(ch, lax, phi_update, double, dense, INDEX_ID);
   auto global_IDs_handle =
-          flecsi_get_handle(client, lax, cell_ID, size_t, dense, INDEX_ID);
+          flecsi_get_handle(ch, lax, cell_ID, size_t, dense, INDEX_ID);
 
   flecsi_execute_task(initialize_data, single, global_IDs_handle, phi_handle);
 
@@ -326,7 +328,7 @@ void add_colorings(int dummy) {
   //--------------------------------------------------------------------------//
 
   // Gather the coloring info from all colors
-  auto cell_coloring_info = communicator->get_coloring_info(cell_color_info);
+  auto cell_coloring_info = communicator->gather_coloring_info(cell_color_info);
 
   // Add colorings to the context.
   context_.add_coloring(0, cells, cell_coloring_info);

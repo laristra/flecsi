@@ -3,8 +3,8 @@
  * All rights reserved.
  *~--------------------------------------------------------------------------~*/
 
-#ifndef flecsi_runtime_context_policy_h
-#define flecsi_runtime_context_policy_h
+#ifndef flecsi_runtime_types_h
+#define flecsi_runtime_types_h
 
 //----------------------------------------------------------------------------//
 //! @file
@@ -51,7 +51,7 @@
 
 #endif // FLECSI_RUNTIME_MODEL
 
-#endif // flecsi_runtime_context_policy_h
+#endif // flecsi_runtime_types_h
 
 /*~-------------------------------------------------------------------------~-*
  * Formatting options for vim.

@@ -14,9 +14,13 @@
 #include "flecsi/execution/execution.h"
 #include "flecsi/data/data.h"
 #include "flecsi/supplemental/coloring/add_colorings.h"
+#include "flecsi/supplemental/mesh/empty_mesh_2d.h"
 
 #define INDEX_ID 0
 #define VERSIONS 1
+
+using namespace flecsi;
+using namespace supplemental;
 
 clog_register_tag(ghost_access);
 
@@ -30,6 +34,10 @@ using handle_t =
 flecsi::data::mpi::dense_handle_t<T, EP, SP, GP>;
 #endif
 
+
+using namespace flecsi;
+using namespace topology;
+
 void check_all_cells_task(
         handle_t<size_t, flecsi::dro, flecsi::dro, flecsi::dro> cell_ID,
         handle_t<double, flecsi::dro, flecsi::dro, flecsi::dro> test,
@@ -42,11 +50,9 @@ void set_primary_cells_task(
         int my_color, size_t cycle);
 flecsi_register_task(set_primary_cells_task, loc, single);
 
-class client_type : public flecsi::data::data_client_t{};
-
-flecsi_register_field(client_type, name_space, cell_ID, size_t, dense,
+flecsi_register_field(empty_mesh_t, name_space, cell_ID, size_t, dense,
     VERSIONS, INDEX_ID);
-flecsi_register_field(client_type, name_space, test, double, dense,
+flecsi_register_field(empty_mesh_t, name_space, test, double, dense,
     VERSIONS, INDEX_ID);
 
 namespace flecsi {
@@ -59,7 +65,11 @@ namespace execution {
 void specialization_tlt_init(int argc, char ** argv) {
   clog(trace) << "In specialization top-level-task init" << std::endl;
 
-  flecsi_execute_mpi_task(add_colorings, 0);
+  coloring_map_t map;
+  map.vertices = 1;
+  map.cells = 0;
+
+  flecsi_execute_mpi_task(add_colorings, map);
 
 } // specialization_tlt_init
 
@@ -78,11 +88,11 @@ void driver(int argc, char ** argv) {
 
   clog(trace) << "Rank " << my_color << " in driver" << std::endl;
 
-  client_type client;
+  auto ch = flecsi_get_client_handle(empty_mesh_t, meshes, mesh1);
 
-  auto handle = flecsi_get_handle(client, name_space, cell_ID, size_t, dense,
+  auto handle = flecsi_get_handle(ch, name_space, cell_ID, size_t, dense,
       INDEX_ID);
-  auto test_handle = flecsi_get_handle(client, name_space, test, double, dense,
+  auto test_handle = flecsi_get_handle(ch, name_space, test, double, dense,
       INDEX_ID);
 
   for(size_t cycle=0; cycle<3; cycle++) {

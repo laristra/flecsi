@@ -11,6 +11,7 @@
 //! @date Initial file creation: Jun 21, 2017
 //----------------------------------------------------------------------------//
 
+#include "flecsi/data/common/registration_wrapper.h"
 #include "flecsi/data/storage.h"
 #include "flecsi/data/data_client_handle.h"
 #include "flecsi/execution/context.h"
@@ -218,7 +219,10 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
 
     auto& ism = context.index_space_data_map();
 
-    const size_t data_client_hash = typeid(DATA_CLIENT_TYPE).hash_code();
+    h.client_hash = 
+      typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
+    h.name_hash = NAME_HASH;
+    h.namespace_hash = NAMESPACE_HASH;
 
     entity_walker_t entity_walker;
     entity_walker.template walk_types<entity_types_t>();
@@ -227,16 +231,17 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
 
     size_t entity_index(0);
     for(auto & ei: entity_walker.entity_info) {
-      data_client_handle_entity & ent = h.handle_entities[entity_index];
+      data_client_handle_entity_t & ent = h.handle_entities[entity_index];
       ent.index_space = ei.index_space;
       ent.domain = ei.domain;
       ent.dim = ei.dim;
       ent.size = ei.size;
 
       auto itr = context.field_info_map().find(
-        {data_client_hash, ent.index_space});
+        { h.client_hash, ent.index_space });
+
       clog_assert(itr != context.field_info_map().end(),
-        "invalid to index space");
+        "invalid entity index space");
 
       auto & tm = itr->second;
 
@@ -272,12 +277,12 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
     size_t handle_index = 0;
 
     clog_assert(binding_walker.adjacency_info.size() <= h.MAX_ADJACENCIES,
-                "handle max adjacencies exceeded");
+      "handle max adjacencies exceeded");
 
     h.num_handle_adjacencies = binding_walker.adjacency_info.size();
 
     for(adjacency_info_t& hi : binding_walker.adjacency_info){
-      data_client_handle_adjacency& adj = h.handle_adjacencies[handle_index];
+      data_client_handle_adjacency_t & adj = h.handle_adjacencies[handle_index];
 
       adj.adj_index_space = hi.index_space;
       adj.from_index_space = hi.from_index_space;
@@ -288,7 +293,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
       adj.to_dim = hi.to_dim;
 
       auto itr = context.field_info_map().find(
-        {data_client_hash, hi.from_index_space});
+        {h.client_hash, hi.from_index_space});
       clog_assert(itr != context.field_info_map().end(),
         "invalid from index space");
 
@@ -305,7 +310,7 @@ struct data_client_policy_handler__<topology::mesh_topology_t<POLICY_TYPE>>{
       }
 
       itr = context.field_info_map().find(
-        {data_client_hash, hi.index_space});
+        {h.client_hash, hi.index_space});
       clog_assert(itr != context.field_info_map().end(),
         "invalid index space");
 
@@ -365,13 +370,14 @@ struct client_data__
     std::string const & name
   )
   {
-    using wrapper_t = typename DATA_POLICY::template client_wrapper__<
+    using wrapper_t = client_registration_wrapper__<
       typename DATA_CLIENT_TYPE::type_identifier_t,
       NAMESPACE_HASH,
       NAME_HASH
     >;
 
-    const size_t client_key = typeid(DATA_CLIENT_TYPE).hash_code();
+    const size_t client_key = 
+      typeid(typename DATA_CLIENT_TYPE::type_identifier_t).hash_code();
     const size_t key = NAMESPACE_HASH ^ NAME_HASH;
 
     return storage_t::instance().register_client(client_key, key,

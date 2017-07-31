@@ -57,6 +57,7 @@ public:
   //! Return the size of the communicatora
   //! @ingroup coloring
   //-------------------------------------------------------------------------//
+
   size_t size() const override
   {
     int num; 
@@ -68,6 +69,7 @@ public:
   //! Return the rank of the communicator
   //! @ingroup coloring
   //-------------------------------------------------------------------------//
+
   size_t rank() const override
   {
     int rk; 
@@ -75,7 +77,6 @@ public:
     return rk;
   }
 
-  //reduce info_indices
   //-------------------------------------------------------------------------//
   //! Reduces info_indices from all MPI ranks
   //!
@@ -137,6 +138,7 @@ public:
   //!
   //! @ingroup coloring
   //-------------------------------------------------------------------------//
+
   std::pair<std::vector<std::set<size_t>>, std::set<entity_info_t>>
   get_primary_info(
     const std::set<size_t> & primary,
@@ -395,7 +397,7 @@ public:
   } // get_entity_reduction
 
   //-------------------------------------------------------------------------//
-  //! Rerturn a set containing the entity_info_t information for each
+  //! Return a set containing the entity_info_t information for each
   //! member of the input set request_indices (from other ranks).
   //!
   //! @param entity_info FIXME...
@@ -522,7 +524,8 @@ public:
   //!
   //! @ingroup coloring
   //-------------------------------------------------------------------------//
-  std::unordered_map<size_t, size_t>
+
+  std::vector<size_t>
   gather_sizes(
     const size_t & size
   )
@@ -532,19 +535,15 @@ public:
 
     MPI_Comm_size(MPI_COMM_WORLD, &colors);
 
-    std::unordered_map<size_t, size_t> indices_map;
-    size_t buffer[colors];
+    std::vector<size_t> buffer(colors);
 
     const auto mpi_size_t_type =
       flecsi::coloring::mpi_typetraits<size_t>::type();
 
     int result = MPI_Allgather(&size, 1, mpi_size_t_type,
-      &buffer, 1, mpi_size_t_type, MPI_COMM_WORLD);
+      buffer.data(), 1, mpi_size_t_type, MPI_COMM_WORLD);
 
-   for (size_t i=0; i<colors; i++)
-     indices_map[i]=buffer[i];
-
-    return indices_map;
+    return buffer;
   } // gather_sizes
 
   //-------------------------------------------------------------------------//
@@ -556,6 +555,7 @@ public:
   //!
   //! @ingroup coloring
   //-------------------------------------------------------------------------//
+
   template<typename Lambda>
   void
   alltoall_coloring_info(
@@ -598,8 +598,9 @@ public:
   //!
   //! @ingroup coloring
   //-------------------------------------------------------------------------// 
+
   std::unordered_map<size_t, coloring_info_t>
-  get_coloring_info(coloring_info_t & color_info)
+  gather_coloring_info(coloring_info_t & color_info)
   override
   {
     auto colors = size();
@@ -633,8 +634,7 @@ public:
         coloring_info[c].ghost_owners.insert(value); }  );
 
     return coloring_info;
-  } // get_coloring_info
-
+  } // gather_coloring_info
 
   //-------------------------------------------------------------------------//
   //! Find maximum size for the "requested_indicies" - MPI reduction
@@ -645,6 +645,7 @@ public:
   //!
   //! @ingroup coloring
   //-------------------------------------------------------------------------// 
+
   size_t
   get_max_request_size(
     size_t request_indices

@@ -69,10 +69,10 @@ void specialization_spmd_init(int argc, char ** argv);
                                                                                \
 /* Legion task template */                                                     \
 inline return_type task_name(                                                  \
-  const Legion::Task * task,                                 \
-  const std::vector<Legion::PhysicalRegion> & regions,       \
-  Legion::Context ctx,                                       \
-  Legion::Runtime * runtime                         \
+  const Legion::Task * task,                                                   \
+  const std::vector<Legion::PhysicalRegion> & regions,                         \
+  Legion::Context ctx,                                                         \
+  Legion::Runtime * runtime                                                    \
 )
 
 //----------------------------------------------------------------------------//
@@ -328,9 +328,12 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
   legion_map owner_map = task->futures[0].get_result<legion_map>();
 
   for(auto itr = owner_map.begin(); itr != owner_map.end(); itr++)
+      {
+      clog_tag_guard(legion_tasks);
       clog(trace) << "my_color= " << my_color << " gid " << itr->first <<
         " maps to lid " << itr->second << " current owner lid is " <<
         args.owner << std::endl;
+      }
 
   auto ghost_owner_pos_fid = 
     LegionRuntime::HighLevel::FieldID(internal_field::ghost_owner_pos);
@@ -352,6 +355,24 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
 
   // For each field, copy data from shared to ghost
   for(auto fid : task->regions[0].privilege_fields){
+
+    bool skip(false);
+    for(auto & itr: context.field_info_map()) {
+      auto & tm = itr.second;
+
+      for(auto & fitr : tm) {
+        if(fitr.second.fid == fid &&
+          utils::hash::is_internal(fitr.second.key)) {
+          skip = true;
+          break;
+        } // if
+      } // for
+
+      if(skip) { break; }
+    } // for
+
+    if(skip) { continue; }
+
     // Look up field info in context
     auto iitr = 
       context.field_info_map().find({args.data_client_hash, args.index_space});
@@ -368,10 +389,14 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
         owner_rect, owner_sub_rect, byte_offset));
 
     data_shared += byte_offset[1];
+
+    {
+    clog_tag_guard(legion_tasks);
     clog(trace) << "my_color = " << my_color << " owner lid = " <<
             args.owner << " owner rect = " <<
             owner_rect.lo[0] << "," << owner_rect.lo[1] << " to " <<
             owner_rect.hi[0] << "," << owner_rect.hi[1] << std::endl;
+    }
 
     uint8_t * ghost_data =
       reinterpret_cast<uint8_t *>(acc_ghost.template raw_rect_ptr<2>(
@@ -382,8 +407,12 @@ __flecsi_internal_legion_task(ghost_copy_task, void) {
          ghost_itr; ghost_itr++) {
       LegionRuntime::Arrays::Point<2> ghost_ref =
         position_ref_acc.read(ghost_itr.p);
+
+      {
+      clog_tag_guard(legion_tasks);
       clog(trace) << my_color << " copy from position " << ghost_ref.x[0] <<
               "," << ghost_ref.x[1] << std::endl;
+      }
 
       if(owner_map[ghost_ref.x[0]] == args.owner) {
         size_t owner_offset = ghost_ref.x[1]-owner_sub_rect.lo[1];

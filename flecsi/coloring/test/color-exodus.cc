@@ -19,6 +19,7 @@
   #error ENABLE_MPI not defined! This file depends on MPI!
 #endif
 
+#include <array>
 #include <fstream>
 #include <mpi.h>
 
@@ -355,6 +356,7 @@ void color_cells( const MD & md, const std::string & output_prefix )
   constexpr auto num_dims = MD::dimension();
 
   using real_t = typename MD::real_t;
+  using point_t = std::array< real_t, num_dims >;
   using exodus_t = flecsi::io::exodus_base__< num_dims, real_t >;  
   
                           
@@ -401,7 +403,7 @@ void color_cells( const MD & md, const std::string & output_prefix )
   vector<real_t> vertex_coord( num_nodes * num_dims );
   
   for ( size_t i=0; i<num_nodes; ++i ) {
-    const auto & vert = md.vertex(i);
+    const auto & vert = md.template vertex<point_t>(i);
     for ( int d=0; d<num_dims; ++d ) 
       vertex_coord[ d*num_nodes + i ] = vert[d];
   }

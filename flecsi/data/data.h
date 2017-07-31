@@ -95,20 +95,22 @@
 //! @ingroup data
 //----------------------------------------------------------------------------//
 
-#define flecsi_get_handle(client, nspace, name, data_type, storage_type,       \
-  version)                                                                     \
+
+
+#define flecsi_get_handle(client_handle, nspace, name, data_type,              \
+  storage_type, version)                                                       \
 /* MACRO IMPLEMENTATION */                                                     \
                                                                                \
   /* Call the storage policy to get a handle to the data */                    \
   flecsi::data::field_data_t::get_handle<                                      \
-    decltype(client),                                                          \
+    typename flecsi::data_client_type__<decltype(client_handle)>::type,        \
     flecsi::data::storage_type,                                                \
     data_type,                                                                 \
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(nspace)}.hash(),        \
     flecsi::utils::const_string_t{EXPAND_AND_STRINGIFY(name)}.hash(),          \
     version                                                                    \
   >                                                                            \
-  (client)
+  (client_handle)
 
 //----------------------------------------------------------------------------//
 //! @def flecsi_get_client_handle

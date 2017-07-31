@@ -108,14 +108,14 @@ public:
   /// Return size across all colors.
   ///
   virtual
-  std::unordered_map<size_t, size_t>
+  std::vector<size_t>
   gather_sizes(
     const size_t & size
   ) = 0;
 
   virtual
   std::unordered_map<size_t, coloring_info_t>
-  get_coloring_info(coloring_info_t & color_info) = 0;
+  gather_coloring_info(coloring_info_t & color_info) = 0;
 
 private:
 

@@ -77,37 +77,11 @@
 #include "flecsi/utils/static_verify.h"
 #include "flecsi/topology/mesh_types.h"
 #include "flecsi/topology/mesh_storage.h"
+#include "flecsi/topology/partition.h"
 
 namespace flecsi {
 namespace topology {
 namespace verify_mesh {
-
-///
-// \tparam N
-///
-template<
-  size_t N
->
-class mesh_policy
-{
-public:
-
-  template<
-    size_t M,
-    size_t D,
-    class ST
-  >
-  static
-  mesh_entity_base_t<N> *
-  create_entity(
-    mesh_topology_base_t<ST> * mesh,
-    size_t num_vertices
- )
-  {
-    return nullptr;
-  } // create_entity
-
-}; // class mesh_policy
 
 ///
 //
@@ -432,7 +406,8 @@ public:
    */
   template<
     size_t D,
-    size_t M = 0
+    size_t M = 0,
+    size_t P = pg
     >
   decltype(auto)
   num_entities() const
@@ -449,9 +424,11 @@ public:
     size_t from_domain,
     size_t to_domain,
     size_t from_dim,
-    size_t to_dim) const override
+    size_t to_dim,
+    size_t partition) const override
   {
-    return get_connectivity_(from_domain, to_domain, from_dim, to_dim);
+    return get_connectivity_(from_domain, to_domain, from_dim, to_dim, 
+      partition);
   } // get_connectivity
 
   /*!
@@ -463,9 +440,11 @@ public:
     size_t from_domain,
     size_t to_domain,
     size_t from_dim,
-    size_t to_dim) override
+    size_t to_dim,
+    size_t partition) override
   {
-    return get_connectivity_(from_domain, to_domain, from_dim, to_dim);
+    return get_connectivity_(from_domain, to_domain, from_dim, to_dim, 
+      partition);
   } // get_connectivity
 
   /*!
@@ -476,9 +455,10 @@ public:
   get_connectivity(
     size_t domain,
     size_t from_dim,
-    size_t to_dim) const override
+    size_t to_dim,
+    size_t partition=pg) const override
   {
-    return get_connectivity_(domain, domain, from_dim, to_dim);
+    return get_connectivity_(domain, domain, from_dim, to_dim, partition);
   } // get_connectivity
 
   /*!
@@ -489,9 +469,10 @@ public:
   get_connectivity(
     size_t domain,
     size_t from_dim,
-    size_t to_dim) override
+    size_t to_dim,
+    size_t partition=pg) override
   {
-    return get_connectivity_(domain, domain, from_dim, to_dim);
+    return get_connectivity_(domain, domain, from_dim, to_dim, partition);
   } // get_connectivity
 
   size_t
@@ -501,7 +482,8 @@ public:
   }
 
   template<
-    size_t M = 0
+    size_t M = 0,
+    size_t P = pg
   >
   const auto &
   get_index_space_(
@@ -512,7 +494,8 @@ public:
   } // get_entities_
 
   template<
-    size_t M = 0
+    size_t M = 0,
+    size_t P = pg
   >
   auto &
   get_index_space_(
@@ -561,6 +544,7 @@ public:
     size_t D,
     size_t FM,
     size_t TM = FM,
+    size_t P = pg,
     class E
   >
   const auto
@@ -569,7 +553,7 @@ public:
   ) const
   {
 
-    const connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
+    const connectivity_t & c = get_connectivity(FM, TM, E::dimension, D, P);
     assert(!c.empty() && "empty connectivity");
     const index_vector_t & fv = c.get_from_index_vec();
 
@@ -589,6 +573,7 @@ public:
     size_t D,
     size_t FM,
     size_t TM = FM,
+    size_t P = pg,
     class E
   >
   auto
@@ -596,7 +581,7 @@ public:
     E * e
   )
   {
-    connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
+    connectivity_t & c = get_connectivity(FM, TM, E::dimension, D, P);
     assert(!c.empty() && "empty connectivity");
     const index_vector_t & fv = c.get_from_index_vec();
 
@@ -615,6 +600,7 @@ public:
     size_t D,
     size_t FM = 0,
     size_t TM = FM,
+    size_t P = pg,
     class E
   >
   decltype(auto)
@@ -633,6 +619,7 @@ public:
     size_t D,
     size_t FM = 0,
     size_t TM = FM,
+    size_t P = pg,
     class E
   >
   decltype(auto)
@@ -649,7 +636,8 @@ public:
   */
   template<
     size_t D,
-    size_t M = 0
+    size_t M = 0,
+    size_t P = pg
   >
   auto
   entities() const
@@ -665,7 +653,8 @@ public:
   */
   template<
     size_t D,
-    size_t M = 0
+    size_t M = 0,
+    size_t P = pg
   >
   auto
   entity_ids() const
@@ -681,6 +670,7 @@ public:
     size_t D,
     size_t FM = 0,
     size_t TM = FM,
+    size_t P = pg,
     class E
   >
   decltype(auto)
@@ -699,6 +689,7 @@ public:
     size_t D,
     size_t FM = 0,
     size_t TM = FM,
+    size_t P = pg,
     class E
   >
   auto
@@ -721,6 +712,7 @@ public:
     size_t D,
     size_t FM,
     size_t TM = FM,
+    size_t P = pg,
     class E
   >
   void
@@ -741,6 +733,7 @@ public:
     size_t D,
     size_t FM = 0,
     size_t TM = FM,
+    size_t P = pg,
     class E
   >
   void
@@ -760,6 +753,7 @@ public:
     size_t D,
     size_t FM,
     size_t TM = FM,
+    size_t P = pg,
     class E,
     class U
   >
@@ -782,6 +776,7 @@ public:
     size_t D,
     size_t FM = 0,
     size_t TM = FM,
+    size_t P = pg,
     class E,
     class U
   >
@@ -1064,6 +1059,7 @@ public:
   append_to_index_space_(
     size_t domain,
     size_t dim,
+    size_t partition,
     std::vector<mesh_entity_base_*>& ents,
     std::vector<id_t>& ids) override
   {
@@ -1115,7 +1111,7 @@ private:
 
     assert(super->template id<M>() == c.from_size() && "id mismatch");
 
-    for (auto e : subs) {
+    for (auto e : std::forward<E2>(subs)) {
       c.push(e->template global_id<M>());
     } // for
 
@@ -1126,7 +1122,8 @@ private:
   size_t
   num_entities_(
     size_t dim,
-    size_t domain=0
+    size_t domain=0,
+    size_t partition=pg
   ) const
   {
     return base_t::ms_->index_spaces[domain][dim].size();
@@ -1220,7 +1217,8 @@ private:
 
     auto& is = base_t::ms_->index_spaces[Domain][DimensionToBuild].template cast<
       domain_entity<Domain, entity_type>>();
-    auto& cis = base_t::ms_->index_spaces[Domain][UsingDimension];
+    auto& cis = base_t::ms_->index_spaces[Domain][UsingDimension].template cast<
+      domain_entity<Domain, cell_type>>();
 
     for (size_t c = 0; c < _num_cells; ++c) {
       // Get the cell object
@@ -1769,7 +1767,8 @@ private:
     size_t from_domain,
     size_t to_domain,
     size_t from_dim,
-    size_t to_dim) const
+    size_t to_dim,
+    size_t partition) const
   {
     assert(from_domain < MT::num_domains && "invalid from domain");
     assert(to_domain < MT::num_domains && "invalid to domain");
@@ -1785,7 +1784,8 @@ private:
     size_t from_domain,
     size_t to_domain,
     size_t from_dim,
-    size_t to_dim)
+    size_t to_dim,
+    size_t partition)
   {
     assert(from_domain < MT::num_domains && "invalid from domain");
     assert(to_domain < MT::num_domains && "invalid to domain");
@@ -1799,7 +1799,8 @@ private:
   template<
     size_t FM,
     size_t TM,
-    size_t FD
+    size_t FD,
+    size_t P=pg
   >
   connectivity_t &
   get_connectivity_(
@@ -1817,7 +1818,8 @@ private:
     size_t FM,
     size_t TM,
     size_t FD,
-    size_t TD
+    size_t TD,
+    size_t P=pg
   >
   connectivity_t &
   get_connectivity_()
@@ -1833,18 +1835,20 @@ private:
   get_connectivity_(
     size_t domain,
     size_t from_dim,
-    size_t to_dim) const
+    size_t to_dim,
+    size_t partition=pg) const
   {
-    return get_connectivity_(domain, domain, from_dim, to_dim);
+    return get_connectivity_(domain, domain, from_dim, to_dim, partition);
   } // get_connectivity
 
   connectivity_t &
   get_connectivity_(
     size_t domain,
     size_t from_dim,
-    size_t to_dim)
+    size_t to_dim,
+    size_t partition=pg)
   {
-    return get_connectivity_(domain, domain, from_dim, to_dim);
+    return get_connectivity_(domain, domain, from_dim, to_dim, partition);
   } // get_connectivity
 
 }; // class mesh_topology_t
