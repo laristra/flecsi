@@ -33,8 +33,18 @@ namespace supplemental {
 // Entity types
 //----------------------------------------------------------------------------//
 
+using point_t = std::array<double, 2>;
+
 struct vertex_t : public flecsi::topology::mesh_entity_t<0, 1>
 {
+  vertex_t(point_t & p) : p_(p) {} 
+
+  point_t const & coordinates() const { return p_; }
+
+private:
+
+  point_t p_;
+
 }; // struct vertex_t
 
 struct edge_t : public flecsi::topology::mesh_entity_t<1, 1>
@@ -152,6 +162,19 @@ struct test_mesh_2d_t :
   vertices( 
     flecsi::topology::domain_entity<M, E> & e
   )
+  {
+    return entities<0, 0>(e);
+  } // vertices
+
+  template<
+    typename E,
+    size_t M
+  >
+  auto const &
+  vertices( 
+    flecsi::topology::domain_entity<M, E> & e
+  )
+  const
   {
     return entities<0, 0>(e);
   } // vertices

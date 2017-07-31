@@ -20,6 +20,7 @@ namespace execution {
 // Type definitions
 //----------------------------------------------------------------------------//
 
+using point_t = flecsi::supplemental::point_t;
 using vertex_t = flecsi::supplemental::vertex_t;
 using cell_t = flecsi::supplemental::cell_t;
 using mesh_t = flecsi::supplemental::test_mesh_2d_t;
@@ -66,11 +67,28 @@ void initialize_mesh(mesh<dwd> m) {
 
   std::vector<vertex_t *> vertices;
 
+  const size_t width = 8;
+  const double dt = 1.0/width;
+
+  clog(error) << "DT: " << dt << std::endl;
+  clog(error) << "SIZE vertex_t: " << sizeof(vertex_t) << std::endl;
+
   for(auto & vm: vertex_map) {
-    vertices.push_back(m.make<vertex_t>());
+    const size_t mid = vm.second;
+    const size_t row = mid/(width+1);
+    const size_t column = mid%(width+1);
+
+    point_t p{column*dt, row*dt};
+    vertices.push_back(m.make<vertex_t>(p));
   } // for
 
-  const size_t width = 8;
+#if 0
+  for(auto v: vertices) {
+      point_t p = v->coordinates();
+      clog(error) << "color: " << context.color() << " coordinates: (" <<
+        p[0] << ", " << p[1] << ")" << std::endl;
+  } // for
+#endif
 
   size_t count(0);
   for(auto & cm: cell_map) {
@@ -95,6 +113,35 @@ void initialize_mesh(mesh<dwd> m) {
   } // for
 
   m.init<0>();
+
+#if 1
+  for(auto c: m.cells()) {
+    const size_t cid = c->template id<0>();
+
+    {
+    clog_tag_guard(devel_handle);
+    clog(trace) << "color: " << context.color() << " cell id: (" <<
+      cid << ", " << cell_map[cid] << ")" << std::endl;
+    } // scope
+
+    size_t vcount(0);
+    for(auto v: m.vertices(c)) {
+      const size_t vid = v->template id<0>();
+
+      {
+      clog_tag_guard(devel_handle);
+      clog(trace) << "color: " << context.color() << " vertex id: (" <<
+        vid << ", " << vertex_map[vid] << ") " << vcount << std::endl;
+
+      point_t p = v->coordinates();
+      clog(error) << "color: " << context.color() << " coordinates: (" <<
+        p[0] << ", " << p[1] << ")" << std::endl;
+      } // scope
+
+      vcount++;
+    } // for
+  } // for
+#endif
 } // initialize_mesh
 
 flecsi_register_task(initialize_mesh, loc, single);
@@ -147,7 +194,7 @@ void print_mesh(mesh<dro> m, field<dro, dro, dro> p) {
   for(auto c: m.cells()) {
     const size_t cid = c->template id<0>();
 
-#if 1
+#if 0
     {
     clog_tag_guard(devel_handle);
     clog(trace) << "color: " << context.color() << " cell id: (" <<
@@ -161,11 +208,15 @@ void print_mesh(mesh<dro> m, field<dro, dro, dro> p) {
     for(auto v: m.vertices(c)) {
       const size_t vid = v->template id<0>();
 
-#if 1
+#if 0
       {
       clog_tag_guard(devel_handle);
       clog(trace) << "color: " << context.color() << " vertex id: (" <<
         vid << ", " << vertex_map[vid] << ") " << vcount << std::endl;
+
+      point_t p = v->coordinates();
+      clog(trace) << "color: " << context.color() << " coordinates: (" <<
+        p[0] << ", " << p[1] << ")" << std::endl;
       } // scope
 #endif
 
