@@ -91,18 +91,20 @@ public:
     typename ... Args
   >
   void insert(Args && ... args){
-    assert(false && "unimplemented");
+    assert(false && "attempt to resize topology storage array buffer");
   }
 
   template<
     typename ... Args
   >
-  void push_back(Args && ... args){}
+  void push_back(Args && ... args){
+    assert(false && "attempt to resize topology storage array buffer");
+  }
 
   void
   clear()
   {
-    assert(false && "unimplemented");
+    assert(false && "attempt to resize topology storage array buffer");
   }
 
   void

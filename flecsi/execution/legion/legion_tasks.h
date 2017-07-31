@@ -69,10 +69,10 @@ void specialization_spmd_init(int argc, char ** argv);
                                                                                \
 /* Legion task template */                                                     \
 inline return_type task_name(                                                  \
-  const Legion::Task * task,                                 \
-  const std::vector<Legion::PhysicalRegion> & regions,       \
-  Legion::Context ctx,                                       \
-  Legion::Runtime * runtime                         \
+  const Legion::Task * task,                                                   \
+  const std::vector<Legion::PhysicalRegion> & regions,                         \
+  Legion::Context ctx,                                                         \
+  Legion::Runtime * runtime                                                    \
 )
 
 //----------------------------------------------------------------------------//
