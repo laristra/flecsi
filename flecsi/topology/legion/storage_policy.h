@@ -73,19 +73,11 @@ struct legion_topology_storage_policy_t
       } // for
     } // if
 
-    for(auto& from_domain : topology) {
-      auto& to_domain_connectivty = from_domain[domain];
-      for(size_t to_dim = 0; to_dim <= ND; ++to_dim) {
-        auto& conn = to_domain_connectivty.get(dim, to_dim);
-        conn.set_entity_storage(s);
-      } // for
-    } // for
-
-    for(auto& from_domain : topology) {
-      auto& to_domain_connectivty = from_domain[domain];
-      for(size_t from_dim = 0; from_dim <= ND; ++from_dim) {
-        auto& conn = to_domain_connectivty.get(from_dim, dim);
-        conn.set_entity_storage(s);
+    for(auto& domain_connectivities : topology) {
+      auto& domain_connectivity = domain_connectivities[domain];
+      for(size_t d = 0; d <= ND; ++d) {
+        domain_connectivity.get(dim, d).set_entity_storage(s);
+        domain_connectivity.get(d, dim).set_entity_storage(s);
       } // for
     } // for
   } // init_entities
@@ -120,8 +112,6 @@ struct legion_topology_storage_policy_t
 
       index_offset += count;
     } // for
-
-    auto & v = conn.from_index_vec();
   } // init_connectivities
 
   template<
