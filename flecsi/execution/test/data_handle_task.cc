@@ -34,6 +34,10 @@ template<typename T, size_t P>
 using global_handle_t =
   data::legion::global_handle_t<T, P>;
 
+template<typename T, size_t P>
+using color_handle_t =
+  data::legion::color_handle_t<T, P>;
+
 #elif FLECSI_RUNTIME_MODEL == FLECSI_RUNTIME_MODEL_mpi
 
 template<typename T, size_t EP, size_t SP, size_t GP>
@@ -55,6 +59,11 @@ void data_handle_dump(handle_t<double, drw, dro, dro> x) {
 }
 
 void global_data_handle_dump(global_handle_t<double, drw> x) {
+  clog(info) << "label: " << x.label() << std::endl;
+  clog(info) << "combined size: " << x.size() << std::endl;
+}
+
+void color_data_handle_dump(color_handle_t<double, drw> x) {
   clog(info) << "label: " << x.label() << std::endl;
   clog(info) << "combined size: " << x.size() << std::endl;
 }
@@ -81,9 +90,9 @@ flecsi_register_task(exclusive_reader, loc, single);
 
 flecsi_register_field(empty_mesh_2d_t, ns, pressure, double, dense, 1, 0);
 
-flecsi_register_field(client_type, ns, velocity, double, global, 1);
+flecsi_register_field(empty_mesh_2d_t, ns, velocity, double, global, 1);
 
-flecsi_register_field(client_type, ns, density, double, color, 1);
+flecsi_register_field(empty_mesh_2d_t, ns, density, double, color, 1);
 
 namespace flecsi {
 namespace execution {
@@ -123,9 +132,15 @@ void driver(int argc, char ** argv) {
   flecsi_execute_task(exclusive_reader, single, h);
 
   //get global handle
-  auto gh=flecsi_get_handle(c, ns, velocity, double, global, 0);
+  auto global_handle=flecsi_get_handle(ch, ns, velocity, double, global, 0);
 
-  flecsi_execute_task(global_data_handle_dump, single, gh);
+  flecsi_execute_task(global_data_handle_dump, single, global_handle);
+
+ //get color handle
+  auto color_handle=flecsi_get_handle(ch, ns, density, double, color, 0);
+
+//  flecsi_execute_task(color_data_handle_dump, single, color_handle);
+ 
 
 } // driver
 

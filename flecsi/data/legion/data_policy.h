@@ -14,6 +14,7 @@
 #include "flecsi/data/storage.h"
 
 #include "flecsi/data/legion/global.h"
+#include "flecsi/data/legion/color.h"
 #include "flecsi/data/legion/dense.h"
 #include "flecsi/data/legion/sparse.h"
 #include "flecsi/data/legion/scoped.h"

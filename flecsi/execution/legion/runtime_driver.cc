@@ -425,7 +425,7 @@ runtime_driver(
         owner_reg_req.add_flags(NO_ACCESS_FLAG);
         owner_reg_req.add_field(ghost_owner_pos_fid);
         for (const field_id_t& field_id : fields_map[idx_space]){
-          owner_reg_req.add_field(field_info.fid);
+          owner_reg_req.add_field(field_id);
         }
         spmd_launcher.add_region_requirement(owner_reg_req);
 
