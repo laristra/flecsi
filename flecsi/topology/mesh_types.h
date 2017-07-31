@@ -111,7 +111,7 @@ template <size_t N>
 class mesh_entity_base_t : public mesh_entity_base_
 {
  public:
-  virtual ~mesh_entity_base_t() {}
+  ~mesh_entity_base_t() {}
 
   /*!
     Return the id of this entity.
@@ -200,7 +200,7 @@ class mesh_entity_t : public mesh_entity_base_t<N>
   static const size_t dimension = D;
 
   mesh_entity_t() {}
-  virtual ~mesh_entity_t() {}
+  ~mesh_entity_t() {}
 }; // class mesh_entity_t
 
 /*!
