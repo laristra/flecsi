@@ -77,6 +77,7 @@
 #include "flecsi/utils/static_verify.h"
 #include "flecsi/topology/mesh_types.h"
 #include "flecsi/topology/mesh_storage.h"
+#include "flecsi/topology/partition.h"
 
 namespace flecsi {
 namespace topology {
@@ -408,7 +409,7 @@ public:
     size_t M = 0
     >
   decltype(auto)
-  num_entities() const
+  num_entities(size_t partition = all) const
   {
     return base_t::ms_->index_spaces[M][D].size();
   } // num_entities
@@ -422,9 +423,11 @@ public:
     size_t from_domain,
     size_t to_domain,
     size_t from_dim,
-    size_t to_dim) const override
+    size_t to_dim,
+    size_t partition) const override
   {
-    return get_connectivity_(from_domain, to_domain, from_dim, to_dim);
+    return get_connectivity_(from_domain, to_domain, from_dim, to_dim, 
+      partition);
   } // get_connectivity
 
   /*!
@@ -436,9 +439,11 @@ public:
     size_t from_domain,
     size_t to_domain,
     size_t from_dim,
-    size_t to_dim) override
+    size_t to_dim,
+    size_t partition) override
   {
-    return get_connectivity_(from_domain, to_domain, from_dim, to_dim);
+    return get_connectivity_(from_domain, to_domain, from_dim, to_dim, 
+      partition);
   } // get_connectivity
 
   /*!
@@ -449,9 +454,10 @@ public:
   get_connectivity(
     size_t domain,
     size_t from_dim,
-    size_t to_dim) const override
+    size_t to_dim,
+    size_t partition=all) const override
   {
-    return get_connectivity_(domain, domain, from_dim, to_dim);
+    return get_connectivity_(domain, domain, from_dim, to_dim, partition);
   } // get_connectivity
 
   /*!
@@ -462,9 +468,10 @@ public:
   get_connectivity(
     size_t domain,
     size_t from_dim,
-    size_t to_dim) override
+    size_t to_dim,
+    size_t partition=all) override
   {
-    return get_connectivity_(domain, domain, from_dim, to_dim);
+    return get_connectivity_(domain, domain, from_dim, to_dim, partition);
   } // get_connectivity
 
   size_t
@@ -478,7 +485,8 @@ public:
   >
   const auto &
   get_index_space_(
-    size_t dim
+    size_t dim,
+    size_t partition = all
   ) const
   {
     return base_t::ms_->index_spaces[M][dim];
@@ -489,7 +497,8 @@ public:
   >
   auto &
   get_index_space_(
-    size_t dim
+    size_t dim,
+    size_t partition = all
   )
   {
     return base_t::ms_->index_spaces[M][dim];
@@ -538,11 +547,13 @@ public:
   >
   const auto
   entities(
-    const E * e
+    const E * e,
+    size_t partition = all
   ) const
   {
 
-    const connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
+    const connectivity_t & c = get_connectivity(FM, TM, E::dimension, D, 
+      partition);
     assert(!c.empty() && "empty connectivity");
     const index_vector_t & fv = c.get_from_index_vec();
 
@@ -566,10 +577,11 @@ public:
   >
   auto
   entities(
-    E * e
+    E * e,
+    size_t partition = all
   )
   {
-    connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
+    connectivity_t & c = get_connectivity(FM, TM, E::dimension, D, partition);
     assert(!c.empty() && "empty connectivity");
     const index_vector_t & fv = c.get_from_index_vec();
 
@@ -592,7 +604,8 @@ public:
   >
   decltype(auto)
   entities(
-    domain_entity<FM, E> & e
+    domain_entity<FM, E> & e,
+    size_t partition = all
   ) const
   {
     return entities<D, FM, TM>(e.entity());
@@ -610,7 +623,8 @@ public:
   >
   decltype(auto)
   entities(
-    domain_entity<FM, E> & e
+    domain_entity<FM, E> & e,
+    size_t partition = all
   )
   {
     return entities<D, FM, TM>(e.entity());
@@ -625,7 +639,7 @@ public:
     size_t M = 0
   >
   auto
-  entities() const
+  entities(size_t partition = all) const
   {
     using etype = entity_type<D, M>;
     using dtype = domain_entity<M, etype>;
@@ -641,7 +655,7 @@ public:
     size_t M = 0
   >
   auto
-  entity_ids() const
+  entity_ids(size_t partition = all) const
   {
     return base_t::ms_->index_spaces[M][D].ids();
   } // entity_ids
@@ -658,7 +672,8 @@ public:
   >
   decltype(auto)
   entity_ids(
-    domain_entity<FM, E> & e
+    domain_entity<FM, E> & e,
+    size_t partition = all
   )
   {
     return entity_ids<D, FM, TM>(e.entity());
@@ -676,10 +691,12 @@ public:
   >
   auto
   entity_ids(
-    const E * e
+    const E * e,
+    size_t partition = all
   ) const
   {
-    const connectivity_t & c = get_connectivity(FM, TM, E::dimension, D);
+    const connectivity_t & c = get_connectivity(FM, TM, E::dimension, D, 
+      partition);
     assert(!c.empty() && "empty connectivity");
     const index_vector_t & fv = c.get_from_index_vec();
     return c.get_index_space().ids(
@@ -698,10 +715,11 @@ public:
   >
   void
   reverse_entities(
-    E * e
+    E * e,
+    size_t partition = all
   )
   {
-    auto & c = get_connectivity(FM, TM, E::dimension, D);
+    auto & c = get_connectivity(FM, TM, E::dimension, D, partition);
     assert(!c.empty() && "empty connectivity");
     c.reverse_entities(e->template id<FM>());
   } // entities
@@ -718,10 +736,11 @@ public:
   >
   void
   reverse_entities(
-    domain_entity<FM, E> & e
+    domain_entity<FM, E> & e,
+    size_t partition = all
   )
   {
-    return reverse_entities<D, FM, TM>(e.entity());
+    return reverse_entities<D, FM, TM>(e.entity(), partition);
   } // entities
 
 
@@ -739,10 +758,11 @@ public:
   void
   reorder_entities(
     E * e,
-    U && order
+    U && order,
+    size_t partition = all
   )
   {
-    auto & c = get_connectivity(FM, TM, E::dimension, D);
+    auto & c = get_connectivity(FM, TM, E::dimension, D, partition);
     assert(!c.empty() && "empty connectivity");
     c.reorder_entities(e->template id<FM>(), std::forward<U>(order));
   } // entities
@@ -761,10 +781,12 @@ public:
   void
   reverse_entities(
     domain_entity<FM, E> & e,
-    U && order
+    U && order,
+    size_t partition = all
   )
   {
-    return reorder_entities<D, FM, TM>(e.entity(), std::forward<U>(order));
+    return reorder_entities<D, FM, TM>(e.entity(), std::forward<U>(order),
+      partition);
   } // entities
 
   template<
@@ -1037,6 +1059,7 @@ public:
   append_to_index_space_(
     size_t domain,
     size_t dim,
+    size_t partition,
     std::vector<mesh_entity_base_*>& ents,
     std::vector<id_t>& ids) override
   {
@@ -1099,7 +1122,8 @@ private:
   size_t
   num_entities_(
     size_t dim,
-    size_t domain=0
+    size_t domain=0,
+    size_t partition=all
   ) const
   {
     return base_t::ms_->index_spaces[domain][dim].size();
@@ -1743,7 +1767,8 @@ private:
     size_t from_domain,
     size_t to_domain,
     size_t from_dim,
-    size_t to_dim) const
+    size_t to_dim,
+    size_t partition) const
   {
     assert(from_domain < MT::num_domains && "invalid from domain");
     assert(to_domain < MT::num_domains && "invalid to domain");
@@ -1759,7 +1784,8 @@ private:
     size_t from_domain,
     size_t to_domain,
     size_t from_dim,
-    size_t to_dim)
+    size_t to_dim,
+    size_t partition)
   {
     assert(from_domain < MT::num_domains && "invalid from domain");
     assert(to_domain < MT::num_domains && "invalid to domain");
@@ -1777,7 +1803,8 @@ private:
   >
   connectivity_t &
   get_connectivity_(
-    size_t to_dim
+    size_t to_dim,
+    size_t partition = all
   )
   {
     return base_t::ms_->topology[FM][TM].template get<FD>(to_dim);
@@ -1794,7 +1821,7 @@ private:
     size_t TD
   >
   connectivity_t &
-  get_connectivity_()
+  get_connectivity_(size_t partition = all)
   {
     return base_t::ms_->topology[FM][TM].template get<FD, TD>();
   } // get_connectivity
@@ -1807,18 +1834,20 @@ private:
   get_connectivity_(
     size_t domain,
     size_t from_dim,
-    size_t to_dim) const
+    size_t to_dim,
+    size_t partition=all) const
   {
-    return get_connectivity_(domain, domain, from_dim, to_dim);
+    return get_connectivity_(domain, domain, from_dim, to_dim, partition);
   } // get_connectivity
 
   connectivity_t &
   get_connectivity_(
     size_t domain,
     size_t from_dim,
-    size_t to_dim)
+    size_t to_dim,
+    size_t partition=all)
   {
-    return get_connectivity_(domain, domain, from_dim, to_dim);
+    return get_connectivity_(domain, domain, from_dim, to_dim, partition);
   } // get_connectivity
 
 }; // class mesh_topology_t

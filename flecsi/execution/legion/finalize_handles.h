@@ -60,7 +60,7 @@ struct finalize_handles_t : public utils::tuple_walker__<finalize_handles_t>
         data_client_handle_adjacency_t & adj = h.handle_adjacencies[i];
 
         auto & conn = h.get_connectivity(adj.from_domain, adj.to_domain,
-          adj.from_dim, adj.to_dim);
+          adj.from_dim, adj.to_dim, all);
         auto & from_index_vec = conn.get_from_index_vec();
 
         // We are storing adjacency information for the mesh in CRS
