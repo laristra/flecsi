@@ -938,7 +938,7 @@ void unserialize_dimension_(mesh_topology_base_t<ST>& mesh,
   }
 
   // TODO: fix - pg
-  mesh.append_to_index_space_(M, D, pg, ents, ids);
+  mesh.append_to_index_space_(M, D, all, ents, ids);
 }
 
 template<
